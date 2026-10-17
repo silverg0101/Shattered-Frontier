@@ -1,0 +1,107 @@
+# Dependency map
+
+## Runtime and data flow
+
+```text
+package.json (Node >=24; start/test scripts)
+  └─ server/index.js (HTTP, cookie sessions, SQLite persistence, SSE, static files)
+       ├─ server/world.js (world creation, players, game actions)
+       ├─ data/world.sqlite (snapshot + sessions; ignored by Git; WORLD_DB overrides)
+       └─ public/{index.html,app.js,style.css}
+             index.html loads app.js and style.css
+             app.js → /api/*; canvas/UI ← SSE /api/events
+```
+
+`server/index.js` restores/saves the world snapshot and session tokens in SQLite, serves the public assets, and broadcasts state changes. `server/world.js` owns game rules and world state. The browser client sends actions and renders shared state; HTML defines UI elements and CSS styles them. Keep local database files under `data/`; `data/*.sqlite*` is ignored.
+
+## Routes and commands
+
+| Method / path | Purpose |
+| --- | --- |
+| GET `/`, `/app.js`, `/style.css` | Serve browser client assets |
+| GET `/api/me` | Return current player or 401 |
+| POST `/api/join` | Create player/session; set `frontier` cookie |
+| GET `/api/events` | Authenticated Server-Sent Events state stream |
+| POST `/api/action` | Apply authenticated game action |
+
+Run `npm start` to start the local server (`PORT`, default 3000; binds 127.0.0.1). `npm test` runs the full suite and requires an explicit user request. Runtime requires Node 24 or later.
+
+Tests: `tests/world.test.js` imports `server/world.js` for rule validation; `tests/server.test.js` spawns `server/index.js` with a temporary SQLite database for HTTP, SSE, sessions, and restart persistence. Select only tests covering the change with `node --test --test-name-pattern="<matching name>" tests/<name>.test.js`; run a whole file only when all its tests are relevant. Vision: `concept.md`; scope and milestones: `docs/alpha-plan.md`; setup: `README.md`.
+
+## Design references — load only when needed
+
+Setup reference: [first-time-setup.md](first-time-setup.md) covers required software, first launch, deploy-key generation (manual or by a session agent), Unreal preparation, and optional MCP setup. Load only for onboarding, machine setup, or explicit environment repair; skip during ordinary conversations and feature work.
+
+| Reference | Summary | Read when |
+| --- | --- | --- |
+| [Backend](Game-Design/Legends_Shattered_Frontier_Backend_Architecture_v1.0.md) | UE server/service boundaries, auth-service ownership split, server-only content packs, account deletion/privacy workflow (`privacy_request_state`), `auth.*`/`character.*` payloads incl. `login_failure_reason`, persistence, scaling, recovery, deployment. Parts in `Game-Design/Backend/`. | Planning service boundaries or Unreal backend integration; use the domain documents below for detail. |
+| [Network](Game-Design/Legends_Shattered_Frontier_Network_Architecture_v1.0.md) | Gameplay transport, gateways, regional routing, interest management, replication, and network security. | Changing multiplayer networking, replication, zone connectivity, or network diagnostics. |
+| [Database](Game-Design/Legends_Shattered_Frontier_Database_Architecture_v1.0.md) | PostgreSQL, Redis, object storage, data domains, backups, replication, and recovery targets. | Designing durable storage, caches, migrations, backups, or recovery. |
+| [World simulation](Game-Design/Legends_Shattered_Frontier_World_Simulation_Architecture_v1.0.md) | `world-service` contract: `AllocateServer`/`ReleaseServer`, server lifecycle and warm pools, cell keys, authoritative movement speed `v_eff`, teleport tokens, zone handoffs, world clock, `world.server.*`/`world.handoff.*` payloads; terrain, regeneration, expansions, and GM-requested world actions. Parts in `Game-Design/World-Simulation/`. | Changing world simulation, terrain, resource regeneration, zones, global events, or GM world-action validation. |
+| [Combat](Game-Design/Legends_Shattered_Frontier_Combat_System_v0.1.md) | Attributes, derived stats, level-scaled rating constants, haste (casts, GCD, cooldowns), luck curve, movement modifier, reference build (`C_ref`), damage pipeline, creature-tier rule, threat, caps, canonical `combat.*` payloads; GM stat-change boundaries. Parts in `Game-Design/Combat/`. | Implementing combat, character/NPC stats, progression formulas, equipment effects, attribute-based actions, or GM stat changes. |
+| [AI](Game-Design/Legends_Shattered_Frontier_AI_Architecture_v1.0.md) | NPC/faction AI, world director, dynamic events, quest generation; `faction-service` contract (`GetStanding`, `AdjustStanding`, `AddControlInfluence`, `GetControl`), standing tiers, regional control, `faction.*` payloads; GM NPC-action boundary. Parts in `Game-Design/AI/`. | Implementing NPC decisions, factions, event direction, generated quests, or GM NPC tools. |
+| [Building and territory](Game-Design/Legends_Shattered_Frontier_Building_and_Territory_System_v1.0.md) | Claim lifecycle/permissions, protected homes and validated access, upkeep/archive recovery, settlement government, siege equipment/turrets/repair pressure, frozen profiles and bounded controls. | Changing ownership, permissions, upkeep, settlement progression, territorial conflict, recovery, or GM building actions. |
+| [Construction](Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md) | Voxel placement/support, terrain adoption/healing, heat/smoke/fire and comfort, real-time wear/repair, automation, claim/blueprint budgets, bootstrap/progression/object catalogue and ownership-safe sourcing. | Defining construction behavior, material/support rules, cache supply, environmental damage, automation, or live controls. |
+| [Game Master](Game-Design/Legends_Shattered_Frontier_Game_Master_Architecture_v0.1.md) | Player-like cross-domain actor and tools for world interaction, entity/NPC/player changes, construction, scoped rule governance, review, and audit. | Designing or changing GM capabilities, privileges, tool lifecycle, or domain action boundaries. |
+| [Tuning and configuration](Game-Design/Legends_Shattered_Frontier_Tuning_and_Configuration_Architecture_v0.1.md) | Project-wide classification of bounded runtime values versus release-bound formulas/invariants; plain-language GM and web controls using LiveOps config-service, prospective activation, previews, and rollback. | Adding a setting, exposing operator controls, changing balance defaults, or deciding live tuning versus a compatible release. |
+| [Construction integration](Game-Design/Legends_Shattered_Frontier_Construction_Integration_Contracts_v0.1.md) | building-service and durable action/permission/event contracts; cache capacity and ownership, fenced cross-domain commits/refunds, recovery and 16 canonical typed tuning controls. Itemization remains sole inventory writer; this extension defines its construction requirements. | Implementing construction persistence, cache transactions, shared refunds, domain integration, registered controls or recovery. |
+| [Resources and crafting](Game-Design/Legends_Shattered_Frontier_Resource_and_Crafting_Architecture_v1.0.md) | `crafting-service`: quality score formula and canonical `quality_bonus = floor(quality_score / 2)`, crafted ilvl, attempt flow and RPCs, gathering nodes, `crafting.*`/`gathering.*` payloads, item lifecycle, and Builder's Cache, siege/turret/ammunition/anchor recipes, and construction bootstrap ownership. Parts in `Game-Design/Crafting/`. | Changing gathering, recipes, resource nodes, crafting stations, repair, salvage, or the Builder's Cache recipe. |
+| [Economy](Game-Design/Legends_Shattered_Frontier_Economy_Architecture_v1.0.md) | `economy-service`: wallets and ledger, faucet/sink classes, market fees, trades, wallet liens for rollback deficits, transfer holds, wallet snapshot export, Laspeyres inflation index, `economy.*`/`market.*` payloads. Parts in `Game-Design/Economy/`. | Changing trade, rewards, fees, markets, currency balance, or economic metrics. |
+| [Shared registry](Game-Design/Legends_Shattered_Frontier_Shared_Registry_v1.0.md) | Binding names for all specs: glossary, entity/ID registry, services and ownership, enums and lifecycle states, constants, currencies, source/sink codes, reward scaling functions, ilvl power ladder, event envelope and catalog. | Before any spec-driven implementation or when naming a service, entity, event, enum, or tuning key. |
+| [Character progression](Game-Design/Legends_Shattered_Frontier_Character_Progression_Architecture_v1.0.md) | `progression-service`: XP curve, levels, LP, attributes, 35 skills and use-based gain, caps, specializations, mastery, prestige, achievements, NPC parity; GM stat changes must use its domain rules and the Game Master capability model. Parts in `Game-Design/Character-Progression/`. | Implementing levels, skills, attributes, progression rewards, anti-grind, or GM player-stat changes. |
+| [Itemization](Game-Design/Legends_Shattered_Frontier_Itemization_Architecture_v1.0.md) | `inventory-service`, `loot-service`, `reward-service`: item model and ledger, stat budget, affixes, durability, legendary paths, loot tables, pity, reward grants; construction container capacity/transactions extend through Construction Integration; implement there alongside the owning Itemization APIs. Parts in `Game-Design/Itemization/`. | Implementing items, inventory, containers, loot, rewards, repair/salvage, or dupe prevention. |
+| [Quests](Game-Design/Legends_Shattered_Frontier_Quest_Architecture_v1.0.md) | `quest-service`: quest model, objectives, branching, dynamic generation, campaigns, quest rewards. Parts in `Game-Design/Quests/`. | Implementing quests, generated quests, or live campaigns. |
+| [Dungeons](Game-Design/Legends_Shattered_Frontier_Dungeon_Architecture_v1.0.md) | `instance-service`, `group-service`: instance runs, lockouts, encounter framework, NPC behavior, scaling, mythic levels, affixes, LFG (`combat.*` payloads now in Combat). Parts in `Game-Design/Dungeons/`. | Implementing instances, encounters, groups/LFG, or dungeon content. |
+| [Raids](Game-Design/Legends_Shattered_Frontier_Raid_Architecture_v1.0.md) | Raid extensions of instance/group services: raid sizes and flex scaling, tiers, lockouts, mechanics, progression, council loot, world effects. Parts in `Game-Design/Raids/`. | Implementing raids or raid loot/progression. |
+| [Security and anti-cheat](Game-Design/Legends_Shattered_Frontier_Security_and_Anti_Cheat_Architecture_v1.0.md) | `anticheat-service`, `enforcement-service`, `audit-service`: threat model, server validation, detectors, risk score, enforcement, rollbacks, audit, secure coding rules. Parts in `Game-Design/Security/`. | Any server validation, admin API, enforcement, audit, or security-sensitive change. |
+| [Live operations](Game-Design/Legends_Shattered_Frontier_LiveOps_Architecture_v1.0.md) | `liveops-service`, `config-service`, `store-service`, admin-portal: events, seasons, flags/tuning, releases, store, compensation, community tools, KPIs. Parts in `Game-Design/LiveOps/`. | Implementing events, seasons, flags, tuning, releases, store, or GM tools. |
+| [Analytics](Game-Design/Legends_Shattered_Frontier_Analytics_Architecture_v1.0.md) | `telemetry-ingest`, `analytics-pipeline`, `analytics-warehouse`: event pipeline, schema registry, warehouse model, metric catalog, dashboards, alerting, privacy. Parts in `Game-Design/Analytics/`. | Emitting telemetry, defining metrics, dashboards, alerts, or data retention. |
+| [Client delivery](Game-Design/Legends_Shattered_Frontier_Client_Delivery_Launcher_Patching_Architecture_v1.0.md) | Launcher updates, manifests, patches, validation, repair, release channels, signing, and distribution. | Building launcher, patching, client packaging, update delivery, or repair workflows. |
+| [DevOps and CI/CD](Game-Design/Legends_Shattered_Frontier_DevOps_CI_CD_Architecture_v1.0.md) | Repository/branch conventions, build/test/package pipelines, Unreal automation, infrastructure, and release flow. | Working on CI/CD, build automation, infrastructure, or release pipelines. |
+
+### Planning and production — expanded working references
+
+| Reference | Summary | Read when |
+| --- | --- | --- |
+| [Design work plan](design-work-plan.md) | Running documentation queue, evidence baseline, bounded agent packets, model routing and independent gap-review loop. | Prioritizing design documentation, assigning documentation agents, or updating review status; gameplay implementation remains in the feature backlog. |
+| [Concept coverage](design-coverage.md) | Concept pillars traced to bounded milestone/design evidence, explicit uninspected scope and COV follow-ups. | Auditing design completeness or choosing a confirmed gap; mapped references alone do not prove complete domain coverage. |
+| [DEC-02 durable actions](decisions/DEC-02-durable-actions.md) | Proposed MVP adoption of existing construction prepare/decision/completion contracts, receipt mapping, failure fixtures and pending owner acceptance. | Selecting PER-01 topology or implementing durable construction; a reviewed proposal does not close the H2 decision gate. |
+| [DEC-03 terrain adoption](decisions/DEC-03-terrain.md) | Proposed adoption of World voxel/chunk baseline, Unreal collision/support adapter gates, inherited edit budgets and targeted fixtures. | Preparing TER-01/02 integration; codec, Compact provenance and measured engine evidence remain owner gates. |
+| [MVP recovery profile](decisions/DOC-08-recovery-profile.md) | Proposed adoption of Backend retention/backup baseline, construction reconciliation, aged replay safeguards and remaining operational evidence. | Preparing PER-04 restore rehearsals or action cleanup; owner acceptance and measured recovery remain pending. |
+| [Gameplay feature backlog](Game-Design/Legends_Shattered_Frontier_Gameplay_Feature_Backlog_v1.0.md) | Dependency graph, scoped work IDs, per-feature acceptance, readiness/completion, and deferred epics. | Selecting a task or resolving implementation dependencies. |
+| [Repository structure](Game-Design/Legends_Shattered_Frontier_Repository_Structure_v1.0.md) | Current versus proposed tree, dependency boundaries, schema/artifact placement, build/check routing, and safe migration. | Adding/moving code, modules, contracts, assets, tooling, or repository workflows. |
+| [UE5.8 project layout](Game-Design/Legends_Shattered_Frontier_UE58_Project_Layout_v1.0.md) | Proposed framework/subsystem lifetimes, server/domain ownership, replication audiences, content/config and target boundaries. | Creating Unreal gameplay/modules, network projections, persistence adapters, or build targets. |
+| [AI agent responsibilities](Game-Design/Legends_Shattered_Frontier_AI_Agent_Responsibilities_v1.0.md) | Task packets, role ownership, implementation/review evidence, authorized coordination, model routing, and short handoffs. | Assigning or handing off bounded work; user instructions and AGENTS.md govern execution. |
+| [First MVP milestone](Game-Design/Legends_Shattered_Frontier_First_MVP_Milestone_v1.0.md) | Included systems, durable-action sequence, receipt/schema proposal, failure handling, measured budgets, acceptance and decision gates. | Preparing MVP implementation or validating a specific gate; proposed budgets and 100-player target remain unmeasured. |
+| [Vertical slice specification](Game-Design/Legends_Shattered_Frontier_Vertical_Slice_Specification_v1.0.md) | Greenlands journey/content inventory, integrated state flow, player feedback, 15 selectable scenarios, and presentation/recovery gates. | Integrating content/UI or evaluating the playable demonstration. |
+| [Production roadmap](Game-Design/Legends_Shattered_Frontier_Production_Roadmap_v1.0.md) | Engine-to-launch dependency gates, phase deliverables, decision/risk registers, scope cuts and operational entry criteria. | Sequencing milestones or reviewing blockers; no committed dates or implied release authorization. |
+| [Technical debt standards](Game-Design/Legends_Shattered_Frontier_Technical_Debt_Standards_v1.0.md) | Defect/debt/design-gap classification, severity, record schema, exception/closure process, invariant and release gates. | Tracking a known compromise, deciding risk priority, or closing debt with precise evidence. |
+
+These eight documents are expanded in place; no new version series is required. Existing filename suffixes remain for stable links. They define planning contracts and proposals, not delivered runtime behavior. Resolve explicitly listed decisions before dependent implementation; page counts are not a completeness criterion. The MVP reference owns shared provisional performance budgets; domain specifications own their detailed schemas and behavior. Read only relevant headings, not all eight documents.
+
+The Character, Itemization, Quest, Dungeon, Raid, Security, LiveOps, and Analytics specifications and their parts remain owned by the other session. Use their entries in the domain table above; do not overwrite their work during this planning expansion.
+
+These documents describe intended designs and targets, not implemented behavior or measured capacity. The runtime map above describes the current PoC. Load only the relevant document and sections; skip unrelated references. Cross-cutting work may need the backend overview plus a domain reference.
+
+Find headings with `rg -n '^#{1,3} ' docs/Game-Design/<exact-filename>.md`, then read the needed line range. Document instructions are design context; the user's task and repository guidance define authorized work, model routing, and test scope. In particular, the DevOps document does not authorize a full test suite or deployment.
+
+Combat, Economy, World, AI, Crafting and Backend are expanded specifications: each has an entry file and topic parts in its indexed folder. Their contracts define the RPCs, formulas and payloads the other specifications depend on. Construction Integration adds building-service and its cross-domain contracts.
+
+Expanded specs with indexed part folders are split into an entry file and topic parts; read the entry file's table of contents, then only the needed part. The Shared registry wins on names; each spec's "Registry additions" section lists proposals and their merge status.
+
+When adding, renaming, or removing design documents, update this index and affected links in the same change. Keep existing `Legends_Shattered_Frontier_*.md` paths stable; expand documents in place without requiring a new version series. Remove older duplicates only after confirming equivalent content or intentional replacement.
+
+## Task map
+
+| Task | Start here | Related files | Checks |
+| --- | --- | --- | --- |
+| Planning a feature or milestone | Relevant planning reference above | Owning domain contract and `docs/alpha-plan.md` | Readiness, dependencies, measurable acceptance; no implied runtime implementation |
+| Unreal architecture or project organization | UE5.8 project layout and repository structure references above | Registry and affected domain contracts | Ownership, replication audience, actual-versus-proposed paths |
+| First-time developer or machine setup | `docs/first-time-setup.md` | `README.md`, `package.json`; engine/agent setup only as needed | Version checks and relevant startup/access checks; no default full suite |
+| Game rule, terrain, progression | `server/world.js` | `server/index.js` (action wiring), `public/app.js` (controls) | Matching cases in `tests/world.test.js` |
+| HTTP, sessions, persistence, SSE | `server/index.js` | `server/world.js`, `public/app.js` | Relevant integration cases or precise route checks |
+| Browser UI, rendering, controls | `public/app.js` | `public/index.html`, `public/style.css`, server API | Inspect changed browser behavior; matching contract tests only if affected |
+| Layout, content, responsive styling | `public/index.html` or `public/style.css` | `public/app.js` for referenced IDs | Inspect browser layout |
+| Start/test behavior or Node requirement | `package.json` | `server/index.js` | Check changed command only; full suite requires user request |
+
+Use narrow `rg` searches on these paths if the map does not answer the task; update this map alongside any dependency, role, route, test, or command changes.

@@ -1,0 +1,126 @@
+# Design documentation work plan
+
+Last updated: 2026-10-17. Owner: coordinating documentation agent. This is the running documentation queue; the [gameplay backlog](Game-Design/Legends_Shattered_Frontier_Gameplay_Feature_Backlog_v1.0.md) owns implementation work and [roadmap](Game-Design/Legends_Shattered_Frontier_Production_Roadmap_v1.0.md) owns milestone gates. Update this file during each documentation work cycle; no background monitoring is implied.
+
+## Goal and current evidence
+
+Goal: make the project design sufficiently explicit for bounded implementation assignments, with traceable scope, domain ownership, failure behavior, configuration policy, and acceptance criteria. Complete documentation does not establish implemented or measured behavior.
+
+- The [dependency map](dependency-map.md) indexes broad domain specifications and eight expanded planning references. Coverage depth across all domains has not yet been audited.
+- [Alpha plan](alpha-plan.md) records the browser shared-world loop as implemented. The roadmap's Starting evidence section distinguishes it from intended Unreal functionality. No runtime or engine verification was performed in this assessment.
+- The next implementation milestone is E1, engine and movement. The documentation priority is to identify contracts and decisions needed by E1/H2 without starting engine setup or feature implementation.
+- Roadmap DEC-01 through DEC-09 and the MVP's Decisions required before implementation already identify unresolved choices. They are existing decisions to reconcile, not nine newly discovered defects.
+- [Construction Integration](Game-Design/Legends_Shattered_Frontier_Construction_Integration_Contracts_v0.1.md) already defines inventory ownership and cross-service durable outcomes. DEC-02 must reconcile this contract with the MVP proposal rather than invent a competing protocol.
+- The concept includes later-game and launch ambitions beyond MVP. Unreviewed coverage is an audit task; absence from MVP is not automatically a missing design.
+
+## Status and ownership rules
+
+Queue states: Ready → Working → Reviewable → Done; Blocked names the exact missing input. Findings are classified as design gap, contradiction, product backlog, experiment, or operational risk using [debt standards](Game-Design/Legends_Shattered_Frontier_Technical_Debt_Standards_v1.0.md). Confirm gaps with owning-section evidence before calling them blockers.
+
+Keep one write owner per file. The coordinator owns this queue and dependency-map edits. Character, Itemization, Quest, Dungeon, Raid, Security, LiveOps, Analytics and their part folders are reserved by the dependency map for another session. Read relevant contracts, record requested changes here, and do not assign writes there until ownership is explicitly released. No other-chat messages are authorized by this plan.
+
+## Prioritized queue
+
+Priorities below are documentation order, not changes to the gameplay backlog's P0/P1 labels.
+
+| ID | Priority / state | Outcome | Dependencies / next action |
+| --- | --- | --- | --- |
+| DOC-00 | First / Done | Initial evidence assessment, work queue, agent routing and review loop | Independent review found no blockers; ownership clarification integrated |
+| DOC-01 | Complete / Done | [Reviewed concept coverage matrix](design-coverage.md) across MVP, slice and later scope | COV-01/02 later event-owner requests; COV-03 and uninspected player-system leads feed DOC-06 |
+| DOC-02 | Complete / Done | [Reviewed durable-action proposal](decisions/DEC-02-durable-actions.md) and MVP receipt mapping | No review blockers; DEC-02 acceptance and implementation evidence remain pending with architecture + persistence |
+| DOC-03 | Complete / Done | [Reviewed terrain adoption proposal](decisions/DEC-03-terrain.md) | Acceptance pending; codec, collision readiness and Compact/provenance mapping remain World/Construction/Unreal gates |
+| DOC-04 | Next / Ready | Consolidated decision register linked to gates and owners | Start with DEC-01…09; incorporate DOC-01…03 findings as they arrive |
+| DOC-05 | Next / Ready | Targeted tuning-policy conformance audit | Sample the E1/H2 path plus REC-03 recovery declaration lookup; expand only from findings, honoring reserved ownership |
+| DOC-06 | Following / Ready | Validate uncovered player/design leads before authoring fixes | Use coverage matrix: crime/PvP modes/expedition ownership and COV-03 Analytics lookup; no speculative domain rewrite |
+| DOC-07 | Later / Blocked | Implementation-ready documentation gate for the selected milestone | Await relevant decisions, author changes and independent review; does not certify runtime readiness |
+| DOC-08 | Complete / Done | [Reviewed recovery-profile proposal](decisions/DOC-08-recovery-profile.md) | Existing schedule adopted as proposal; REC-01/02 replay/reconciliation evidence and REC-03 declaration lookup remain pending |
+| DOC-09 | Following / Ready | MVP authentication/session applicability packet for DEC-04 | Detailed Backend contract exists; selected adapter and protected-owner requests depend on DOC-02 |
+| DOC-10 | Following / Ready | Compatibility/update/rollback packet for DEC-08 | Prepare against reviewed DEC-02/03 proposals; final acceptance still depends on chosen schemas/codec and C4 evidence |
+
+DOC-03 and DOC-08 are reviewed proposals. Next run DOC-04 decision consolidation and DOC-05 bounded tuning audit; use the three decision/profile proposals while preserving pending owner acceptance. DOC-09 session applicability follows DEC-02, and DOC-10 can now prepare against DEC-02/03 while retaining all compatibility evidence gates. Keep at most two author tasks plus one reviewer active. Finish critical-path findings before expanding lower-priority domains.
+
+## Executable next assignments
+
+All packets use the [agent task contract](Game-Design/Legends_Shattered_Frontier_AI_Agent_Responsibilities_v1.0.md). Start with dependency-map.md. Expected output is a concise document/diff plus evidence and unresolved decisions. Documentation checks only; no runtime tests, installs, engine changes, deployment or full-suite runs.
+
+### DOC-01 — coverage and player experience
+
+- Goal: trace each concept pillar into its owning specification and scoped milestone; distinguish specified, deferred, unresolved and not yet inspected.
+- Read set: concept.md, alpha-plan.md, gameplay backlog, vertical-slice journey/content/scenario headings; dependency-map-selected owning sections only when coverage needs confirmation.
+- Write set: new `docs/design-coverage.md`; coordinator updates its index after review. Do not rewrite domain specs during this audit.
+- Inputs/outputs: concept pillars → rows with scope, owner/section, coverage evidence, open question and affected gate/task. Include player journey, social/permissions, combat/recovery, economy, construction/world and later launch/content ambitions where the concept calls for them.
+- Authority/invariants: owning domains and registry retain authority; planned omissions are not defects; no invented scope decisions or runtime claims.
+- Acceptance: every concept pillar is traced or explicitly unverified; suspected gaps name the exact missing behavior and searched owning sections; confirmed findings get stable local IDs and next packets. The matrix need not quote or duplicate specifications.
+- Validation/handoff: verify cited links/sections and milestone labels; return changed paths, confirmed findings, unknown coverage, and next action. Reviewer samples coverage against the concept independently.
+
+### DOC-02 — durable action decision reconciliation
+
+- Goal: establish what DEC-02 still requires after existing construction integration, and produce one compatible proposed MVP decision.
+- Read set: roadmap DEC-02, MVP Operational architecture proposal / persistent placement / schema requirements, Construction Integration durable-action and recovery sections; Backend, Database, World and Itemization owning sections only where these contracts refer to them; shared registry for names.
+- Write set: new `docs/decisions/DEC-02-durable-actions.md`. Coordinator integrates agreed references into planning documents only after review; reserved domains remain read-only.
+- Inputs/outputs: compare cohosting versus separated participants; name writer/store, commit decision, fences, retries, timeout/restart recovery, publication repair, retention constraints and compatibility. Trace each choice to the existing contract or flag its proposed change.
+- Authority/invariants: inventory remains sole item writer; no cross-service atomic transaction may be assumed. Existing construction guarantees and configuration/release boundaries must hold.
+- Dependencies: named retention/backup and storage questions may require operational evidence. Record a proposed choice with alternatives and revisit trigger; retain unresolved evidence gates rather than declaring a decision accepted.
+- Acceptance: one sequence covers success, retry, changed payload, competing revisions, crash before/after durable decision, and failed publication. Explain how the MVP schema maps to construction receipts and which questions remain. Flag protected-domain change requests separately.
+- Validation/handoff: check contract names and all sequence transitions against cited owning sections; reviewer independently challenges conservation and recovery. Return proposal, conflicts, dependent backlog IDs and next decision owner.
+
+### DOC-03 — terrain decision preparation
+
+- Goal: reconcile DEC-03 with the existing World terrain baseline and produce an MVP adoption/Unreal integration packet. World already specifies 0.5 m voxels, 16 m chunks and deterministic Q15 arithmetic; this is not a blank-sheet representation decision.
+- Read set: roadmap DEC-03, backlog BLD/TER, World terrain parts, Construction support/adoption/healing and MVP terrain scope; UE layout only for affected ownership.
+- Write set: new `docs/decisions/DEC-03-terrain.md`; domain edits require a subsequent assigned write set.
+- Output: explicit adoption of the baseline or a clearly proposed compatible scope exception; chunk/cell ownership, persistence/versioning, Unreal support/collision integration, edit bounds, structure protection, cross-boundary conflicts and restart behavior. Compare alternatives only where an evidenced MVP constraint requires it; identify missing measurements.
+- Invariants/dependencies: compatible with DOC-02 for durable writes. Representation, topology and collision algorithms are release-bound; adjustable limits require typed declarations under tuning policy. Do not choose an algorithm based on an unrun benchmark.
+- Acceptance/validation: alternatives have consequences and revisit triggers; proposed fixtures cover edits near claims/structures, chunk edges, simultaneous edits and recovery. Budgets remain provisional pending evidence. Reviewer checks against World and Construction ownership.
+
+### DOC-04 / DOC-05 / DOC-06 — bounded follow-through
+
+DOC-04 reads roadmap DEC-01…09 and MVP decision headings; returns proposed register rows to the coordinator, who alone edits this file. Map duplicate questions, owner, dependent backlog IDs, status, evidence needed and revisit trigger. Never accept a human scope/cost decision or claim a toolchain check from document text. Luna may extract the rows; the stronger coordinator resolves semantic differences.
+
+DOC-05 reads tuning policy and only the settings on the selected E1/H2 path. Write `docs/design-tuning-audit.md` with canonical key/owner, classification, default, type, units, bounds, permissions, apply time and missing declarations. Invariants, formulas and topology stay release-bound. Each finding links its exact source and proposes a bounded owning-domain change; protected-domain requests remain pending. Stronger review is required where timing, authority or compatibility changes.
+
+DOC-06 is a read-only follow-up to [coverage](design-coverage.md). Use Luna / medium for exact ownership/metric lookup in dependency-map-selected sections, returning source-backed rows to the coordinator. First check Analytics for the trade-share metric, then registry/Combat/Territory and directly named callers for crime, PvP mode and expedition ownership. Do not infer missing architecture from a failed keyword search. Coordinator classifies evidence and assigns a stronger author only for confirmed semantic gaps. COV-01/02 remain later event-owner reconciliation requests; reserved Itemization/Analytics writes require ownership release.
+
+### DOC-08 / DOC-09 / DOC-10 — operating and compatibility decisions
+
+Use the parent model / high reasoning for these cross-domain packets. Writes are isolated proposals under `docs/decisions/`; no protected-domain edits. Each packet returns source links, alternatives, proposed choice, remaining evidence, owner requests and revisit trigger for independent review.
+
+- DOC-08 writes `DOC-08-recovery-profile.md`. Read MVP receipt retention/backup questions, Backend idempotency/backup requirements and Construction recovery. Backend already specifies at least seven-day idempotency and 35-day backup retention; verify exact applicability before proposing an MVP profile. Acceptance: explicit replay/dedup/decision lifetimes, unresolved-operation protection, cleanup eligibility, backup schedule, restore reconciliation and compatibility with these existing requirements. Any exception stays proposed pending the owning decision; documentation cannot establish restore performance.
+- DOC-09 writes `DEC-04-session-applicability.md`. Read roadmap DEC-04 and Backend Identity session semantics, then referenced Security-owned sections only as needed. Acceptance: MVP issuance/validation/reconnect and active-character authority map, single-session conflict cases, selected adapter and explicit pending Security-owner changes. Do not invent a second authentication protocol.
+- DOC-10 writes `DEC-08-compatibility.md`. Read roadmap DEC-08 and Client Delivery/Database compatibility sections after DOC-02/03. Acceptance: client/server/content/schema compatibility matrix, minimum-build behavior, migration and rollback boundaries, interrupted update/recovery cases and C4 evidence requirements. Runtime proof remains a separate implementation gate.
+
+DOC-01 traced the world-boss lead: AI/Itemization already define participation and grants. See design-coverage.md COV-01 for the stale World open issue, COV-02 for an event-grant key/retry discrepancy, and COV-03 for a trade-share metric requiring Analytics lookup. These are later-scope follow-ups, not new H2 blockers; protected-owner changes remain reserved.
+
+## Model routing and independent review
+
+| Assignment | Model / reasoning | Use and escalation |
+| --- | --- | --- |
+| Bounded inventory, exact links, prepared row extraction | gpt-6-luna / low | Fixed read set and no semantic decisions; use medium if tracing requires multiple referenced sections |
+| Coverage synthesis, DOC-02/03, cross-domain design | Parent model / high | Narrow owning-section reads; escalate uncertainty through explicit decision/evidence needs |
+| Independent gap/closure reviewer | Separate agent, parent model / high | Did not author reviewed changes; inspect sources and diff, not only author's summary |
+| Tiny index/status edits | Coordinator directly | Delegation would add overhead |
+
+Use Luna with a context-free bounded packet for mechanical work. Stronger agents receive only the context needed for their task where practical. Reuse a completed reviewer for a related review; avoid duplicate whole-project audits. Architecture/security work is never accepted solely from a small-model summary. Availability and active harness settings govern actual model/effort; record deviations rather than implying a configuration was applied.
+
+After each author task:
+
+1. Coordinator inspects actual changes and resolves shared-file ownership.
+2. Independent agent reads changed sections and direct contracts; returns severity, source evidence, missing decision, affected task/gate and smallest correction, or an explicit no-findings result with review limits.
+3. Author/coordinator fixes findings; reviewer rechecks the affected sections. Blocking findings reopen the task.
+4. Coordinator marks Done only when acceptance and review evidence are present; record remaining unknowns and queue the next bounded work. Do not silently expand a completed task.
+
+Documentation gate: selected milestone's scope/journey maps to owning contracts; names/writers and failure/recovery behavior agree; adjustable controls meet policy; acceptance cases are executable; required decisions are resolved or dependent work remains explicitly blocked. Later-game coverage may remain deferred by an explicit scope decision. Page counts and document presence do not establish completeness.
+
+## Review and handoff log
+
+| Date | Work / evidence | Result / next step |
+| --- | --- | --- |
+| 2026-10-17 | Coordinator read mapped planning/agent/tuning sections; Luna independently inventoried concept and planning coverage | Broad baseline exists; no distinct design queue found in inspected references. DOC-01 and DOC-02 recommended next. |
+| 2026-10-17 | Independent reviewer inspected the complete plan, index entry and cited domain sections | No blockers; clarified DOC-04 coordinator-only writes. Review was bounded, not a comprehensive domain audit. |
+| 2026-10-17 | Coordinator checked relative Markdown links in both changed documents | All targets exist; documentation-only change, no runtime tests. Git diff unavailable because this workspace has no Git metadata. |
+| 2026-10-17 | DOC-01 stronger author and DOC-02 coordinator used inherited parent model/settings; separate reviewer checked source contracts and integration references | Both documentation tasks closed. COV-02 retry-layer clarification corrected and independently rechecked; no remaining review findings. Owner decisions/runtime gates stay open. |
+| 2026-10-17 | Coordinator validated 86 inline/reference link targets across six changed documents | All targets exist; bounded source/heading checks complete. Documentation only; no runtime tests or Git verification. |
+| 2026-10-17 | DOC-03 inherited stronger author; DOC-08 coordinator; separate source reviewer | Reviewed proposals closed. Added missing Construction terrain budgets after P2 review and independently rechecked. DOC-08 schedule, terrain retention and MVP rehearsal target verified; owner acceptance/runtime evidence pending. |
+| 2026-10-17 | Coordinator checked 82 inline/reference link targets across six changed files | All targets exist. No runtime tests; no protected-domain edits. |
+
+Current handoff: DOC-03 and DOC-08 documentation assignments complete after independent review. Changed: docs/decisions/DEC-03-terrain.md, docs/decisions/DOC-08-recovery-profile.md, docs/design-work-plan.md, docs/dependency-map.md, and MVP/roadmap references. Next: DOC-04 decision consolidation plus DOC-05 tuning audit (including REC-03); then DOC-09/session and DOC-10/compatibility packets. REC-01/02 require owner replay/reconciliation evidence; terrain codec/collision/Compact mappings and DEC-02/03 acceptance remain open. Documentation only; no engine or recovery capability verified.
