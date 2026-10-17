@@ -63,6 +63,7 @@ Setup reference: [first-time-setup.md](first-time-setup.md) covers required soft
 
 | Reference | Summary | Read when |
 | --- | --- | --- |
+| [Design agent continuation](../design-agent.md) | User rules, orchestration/review workflow, current handoff and Git baseline; live statuses remain in the work plan. | Resuming the design documentation orchestration session or preparing its next assignments. |
 | [Design work plan](design-work-plan.md) | Running documentation queue, evidence baseline, bounded agent packets, model routing and independent gap-review loop. | Prioritizing design documentation, assigning documentation agents, or updating review status; gameplay implementation remains in the feature backlog. |
 | [Concept coverage](design-coverage.md) | Concept pillars traced to bounded milestone/design evidence, explicit uninspected scope and COV follow-ups. | Auditing design completeness or choosing a confirmed gap; mapped references alone do not prove complete domain coverage. |
 | [DEC-02 durable actions](decisions/DEC-02-durable-actions.md) | Proposed MVP adoption of existing construction prepare/decision/completion contracts, receipt mapping, failure fixtures and pending owner acceptance. | Selecting PER-01 topology or implementing durable construction; a reviewed proposal does not close the H2 decision gate. |
