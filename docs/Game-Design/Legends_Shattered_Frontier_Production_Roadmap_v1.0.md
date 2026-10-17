@@ -292,11 +292,11 @@ These are planning decision IDs, not public entities.
 | DEC-01 | Installed engine/source path and reproducible server target | Engine owner | E1 / final packaged gate |
 | DEC-02 | MVP backend topology and atomic world/inventory coordination — [reconciled proposal](../decisions/DEC-02-durable-actions.md), acceptance pending | Architecture + persistence | H2 |
 | DEC-03 | Terrain format, support/collision, chunk/edit limits — [adoption proposal](../decisions/DEC-03-terrain.md), acceptance/evidence pending | World + engine | H2 |
-| DEC-04 | Session/authentication and active-character lease | Backend + Security | G3 |
+| DEC-04 | Session/authentication and active-character lease — [applicability proposal](../decisions/DEC-04-session-applicability.md), acceptance and admission/revocation evidence pending | Backend + Security | G3 |
 | DEC-05 | Reference machines, density, workload and ratified budgets | Performance + project owner | C4 |
 | DEC-06 | Restricted market item subset and escrow settlement | Economy + Itemization | C4 |
 | DEC-07 | Binary asset storage and artifact hosting | Repository + operations | Content growth / delivery |
-| DEC-08 | Compatibility/update and rollback contract | Delivery + persistence | C4 |
+| DEC-08 | Compatibility/update and rollback contract — [compatibility proposal](../decisions/DEC-08-compatibility.md), schema/codec choices, acceptance and C4 evidence pending | Delivery + persistence | C4 |
 | DEC-09 | Exposed alpha hosting, cost and data handling | Project owner + operations | Closed alpha |
 
 A decision is ready when the selected option, alternatives, evidence, consequences, and revisit trigger are recorded. Until then, dependent work remains blocked or explicitly experimental.

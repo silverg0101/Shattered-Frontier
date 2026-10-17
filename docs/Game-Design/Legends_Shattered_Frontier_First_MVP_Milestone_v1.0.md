@@ -233,6 +233,8 @@ stateDiagram-v2
 
 Only one active authoritative character presence may hold the simulation lease. Reconnect invalidates or replaces the old presence through the agreed session policy; it must not create two writable inventories.
 
+The [DEC-04 applicability proposal](../decisions/DEC-04-session-applicability.md) maps this lifecycle to existing Backend/Security authority. Ticket-caller reconciliation, atomic admission/fencing and connected-server revocation remain owner/evidence gates; documentation review does not establish an implemented lease.
+
 Server lifecycle: starting → loading → ready → draining → stopped. Failed load enters unavailable, not ready. Draining rejects new joins and mutations, resolves outstanding operations, writes compatible checkpoints, then stops. Abrupt shutdown recovery remains mandatory; graceful shutdown is not the only persistence test.
 
 These lifecycle labels are local planning descriptions. Canonical public enum values remain owned by the registry.
@@ -292,6 +294,8 @@ Record gate, build/content/schema identifiers, environment, dataset, scenario, s
 
 Retain reports with the candidate build. Decide their storage path before automation is written; proposed repository location is `docs/evidence/` for small summaries, with large artifacts outside Git and links/hashes in summaries.
 
+The [DEC-08 compatibility proposal](../decisions/DEC-08-compatibility.md) binds release/client/server/content identities to proposed schema, terrain and action-recovery evidence. The record format, executable codec and actual update/rollback rehearsals remain pending; signed client files alone do not prove compatible persistent state.
+
 ## Decisions required before implementation
 
 | Decision | Owner role | Blocks |
@@ -300,7 +304,7 @@ Retain reports with the candidate build. Decide their storage path before automa
 | Reference client/server hardware and target settings | Project direction + performance owner | Ratified budgets and capacity claim |
 | Atomic world/inventory write topology and recovery semantics | Architecture + persistence owner | PER-01, persistent gathering/building/trade |
 | Terrain representation, chunk limits, support and collision policy — [adoption proposal](../decisions/DEC-03-terrain.md), acceptance/evidence pending | World + Unreal owner | TER-01 |
-| Account/session mechanism and active-character lease | Backend + Security owner | Reconnect and remote testers |
+| Account/session mechanism and active-character lease — [applicability proposal](../decisions/DEC-04-session-applicability.md), acceptance/evidence pending | Backend + Security owner | Reconnect and remote testers |
 | Market escrow/settlement and item subset | Economy + Itemization owner | MKT-01 |
 | Receipt retention and backup schedule — [reconciled profile proposal](../decisions/DOC-08-recovery-profile.md), acceptance/evidence pending | Persistence + operations owner | Recovery/duplicate protection in long-running tests |
 
