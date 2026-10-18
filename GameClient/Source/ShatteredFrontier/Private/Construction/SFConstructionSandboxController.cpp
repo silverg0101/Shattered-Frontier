@@ -1,6 +1,7 @@
 #include "Construction/SFConstructionSandboxController.h"
 #include "Construction/SFConstructionSandbox.h"
 #include "Construction/SFConstructionGeometry.h"
+#include "Construction/SFConstructionLine.h"
 #include "Construction/SFConstructionSandboxDoorProjection.h"
 #include "Components/InputComponent.h"
 #include "DrawDebugHelpers.h"
@@ -27,6 +28,7 @@ void ASFConstructionSandboxController::SetupInputComponent()
     Super::SetupInputComponent();
     if (!InputComponent) { return; }
     InputComponent->BindKey(EKeys::B, IE_Pressed, this, &ThisClass::ToggleBuild);
+    InputComponent->BindKey(EKeys::L, IE_Pressed, this, &ThisClass::ToggleLine);
     InputComponent->BindKey(EKeys::One, IE_Pressed, this, &ThisClass::SelectCube);
     InputComponent->BindKey(EKeys::Two, IE_Pressed, this, &ThisClass::SelectSlab);
     InputComponent->BindKey(EKeys::Three, IE_Pressed, this, &ThisClass::SelectSlope);
@@ -80,17 +82,18 @@ void ASFConstructionSandboxController::LoadDevelopment()
 }
 
 void ASFConstructionSandboxController::ToggleBuild() { CancelRemoval(); bBuilding = !bBuilding; }
+void ASFConstructionSandboxController::ToggleLine() { CancelRemoval(); bDoorSelected = false; bLineMode = !bLineMode; }
 void ASFConstructionSandboxController::SelectCube() { CancelRemoval(); bDoorSelected = false; Shape = 0; }
 void ASFConstructionSandboxController::SelectSlab() { CancelRemoval(); bDoorSelected = false; Shape = 1; }
 void ASFConstructionSandboxController::SelectSlope() { CancelRemoval(); bDoorSelected = false; Shape = 2; }
-void ASFConstructionSandboxController::SelectDoor() { CancelRemoval(); bDoorSelected = true; }
+void ASFConstructionSandboxController::SelectDoor() { CancelRemoval(); bDoorSelected = true; bLineMode = false; }
 void ASFConstructionSandboxController::Rotate()
 {
     CancelRemoval();
     if (bDoorSelected) { DoorYaw = (DoorYaw+1)%4; }
     else { Rotation = (Rotation + 1) % SFConstructionGeometry::RotationCount; }
 }
-void ASFConstructionSandboxController::Place() { Commit(false); }
+void ASFConstructionSandboxController::Place() { if (bLineMode && !bDoorSelected) { CommitLine(); } else { Commit(false); } }
 void ASFConstructionSandboxController::Remove() { Commit(true); }
 
 void ASFConstructionSandboxController::CancelRemoval()
@@ -103,6 +106,33 @@ void ASFConstructionSandboxController::CancelRemoval()
     bHasRemoval = false;
     bHasDoorPreview = false;
     bHasDoorRemoval = false;
+    bHasLineSeed = false;
+    bHasLineEndpoint = false;
+    bLinePreviewAllowed = false;
+    LineGhostCells.Reset();
+    LinePreviewReason.Reset();
+}
+
+void ASFConstructionSandboxController::CommitLine()
+{
+    if (!bBuilding || !State.IsValid()) { return; }
+    // Fence before consulting endpoint availability: input can run before Tick.
+    if ((bHasLineSeed && LineSeedRevision != State->GetRevision())
+        || (bHasLineEndpoint && LinePreviewIntent.ExpectedRevision != State->GetRevision()))
+    { CancelRemoval(); LastResult = TEXT("Line preview stale after construction changed; choose a new start"); return; }
+    if (!bHasLineEndpoint) { return; }
+    const FSFConstructionLineIntent Sample = LinePreviewIntent;
+    if (!bHasLineSeed)
+    {
+        CancelRemoval();
+        LineSeed = Sample.EndCell; LineSeedRevision = Sample.ExpectedRevision; bHasLineSeed = true;
+        LastResult = TEXT("Line start selected; aim at a straight-axis endpoint and click");
+        return;
+    }
+    if (Sample.ExpectedRevision != LineSeedRevision || Sample.StartCell != LineSeed)
+    { CancelRemoval(); LastResult = TEXT("Line samples differ; choose a new start"); return; }
+    // Preserve both observed revisions. Authority rejects any intervening edit.
+    State->ApplyLine(this,Sample,LastResult);
 }
 
 void ASFConstructionSandboxController::Interact()
@@ -190,10 +220,16 @@ void ASFConstructionSandboxController::Tick(float DeltaSeconds)
     if (!IsLocalController() || !State.IsValid()) { return; }
     if (bPendingRemoval && PendingRemoval.ExpectedRevision != State->GetRevision())
     { CancelRemoval(); LastResult = TEXT("Removal preview stale after construction changed; preview again"); }
+    if (bHasLineSeed && LineSeedRevision != State->GetRevision())
+    { CancelRemoval(); LastResult = TEXT("Line preview stale after construction changed; choose a new start"); }
     bHasPreview = false;
     bHasRemoval = false;
     bHasDoorPreview = false;
     bHasDoorRemoval = false;
+    bHasLineEndpoint = false;
+    bLinePreviewAllowed = false;
+    LineGhostCells.Reset();
+    LinePreviewReason.Reset();
     FString Advisory = bBuilding ? TEXT("Aim at the floor or an editable member") : TEXT("Build controls paused");
     const APawn* ControlledPawn = GetPawn();
     if (bBuilding && ControlledPawn)
@@ -247,6 +283,47 @@ void ASFConstructionSandboxController::Tick(float DeltaSeconds)
                             Profile.Transform.GetRotation()*Box.Rotation,bAllowed ? FColor::Green : FColor::Red,false,-1.f,0,2.f); }
                     }
                 }
+                else if (bLineMode)
+                {
+                    const FIntVector Endpoint = PreviewIntent.Cell;
+                    bHasLineEndpoint = Endpoint.X >= -20 && Endpoint.X < 20 && Endpoint.Y >= -20 && Endpoint.Y < 20
+                        && Endpoint.Z >= 0 && Endpoint.Z < 20;
+                    LinePreviewIntent.StartCell = bHasLineSeed ? LineSeed : Endpoint;
+                    LinePreviewIntent.EndCell = Endpoint;
+                    LinePreviewIntent.Shape = Shape; LinePreviewIntent.Rotation = Rotation;
+                    LinePreviewIntent.ExpectedRevision = PreviewIntent.ExpectedRevision;
+                    if (!bHasLineEndpoint) { Advisory = TEXT("Line endpoint outside sandbox plot/height"); }
+                    else if (!bHasLineSeed)
+                    {
+                        LineGhostCells.Add(Endpoint);
+                        Advisory = TEXT("LMB selects start; support checked on the complete line");
+                    }
+                    else if (!SFConstructionLine::Enumerate(LineSeed,Endpoint,State->GetMaximumLineCells(),LineGhostCells))
+                    { Advisory = TEXT("Line requires one grid axis and must fit the captured cell cap"); }
+                    else
+                    {
+                        FString SupportHint;
+                        Advisory = State->EvaluateLine(this,LinePreviewIntent,&SupportHint);
+                        bLinePreviewAllowed = Advisory.IsEmpty();
+                        if (bLinePreviewAllowed) { Advisory = TEXT("Complete line allowed | ")+SupportHint; }
+                    }
+                    LinePreviewReason = Advisory;
+                    FSFConstructionSolid Solid;
+                    if (SFConstructionGeometry::Build(Shape,Rotation,Solid))
+                    {
+                        for (const auto& Cell : LineGhostCells)
+                        {
+                            const FVector Corner = ASFConstructionSandboxState::CellCorner(Cell);
+                            for (const auto& Face : Solid.Faces)
+                            { for (int32 Edge = 0; Edge < Face.Num(); ++Edge)
+                                { DrawDebugLine(GetWorld(),Corner+Solid.Vertices[Face[Edge]],Corner+Solid.Vertices[Face[(Edge+1)%Face.Num()]],
+                                    !bHasLineSeed ? FColor::Yellow : bLinePreviewAllowed ? FColor::Green : FColor::Red,false,-1.f,0,2.f); } }
+                        }
+                    }
+                    if (bHasLineSeed && LineGhostCells.IsEmpty())
+                    { DrawDebugLine(GetWorld(),ASFConstructionSandboxState::CellCorner(LineSeed)+FVector(25),
+                        ASFConstructionSandboxState::CellCorner(Endpoint)+FVector(25),FColor::Red,false,-1.f,0,2.f); }
+                }
                 else
                 {
                     bHasPreview = true;
@@ -275,8 +352,10 @@ void ASFConstructionSandboxController::Tick(float DeltaSeconds)
     {
         const TCHAR* Shapes[] = { TEXT("Cube"), TEXT("Half slab"), TEXT("Slope") };
         GEngine->AddOnScreenDebugMessage(static_cast<uint64>(GetUniqueID()) + (1ull << 32), 0.1f, FColor::Cyan,
-            FString::Printf(TEXT("STANDALONE DEVELOPMENT | UNLIMITED STOCK | Fixed synthetic foundation\nSupport-loss grace/collapse | economic salvage disabled | timber art and networking INCOMPLETE\nB build | 1 Cube  2 Slab  3 Slope  4 Door | R orientation | LMB place | RMB targeted remove | Enter confirm | Esc cancel\nE aimed door toggle (also build paused); otherwise E1 probe | WASD/mouse/Space retained | temporary controls\nF5 save / F9 restore entire plot | fixed Saved/ConstructionSandbox development generations; stable assemblies only\n%s | rough-timber-v1 rules; neutral art | orientation %d/%d | snap 0.5 m | %d cells / %d doors\n%s\n%s\n%s\n%s"),
+            FString::Printf(TEXT("STANDALONE DEVELOPMENT | UNLIMITED STOCK | Fixed synthetic foundation\nSupport-loss grace/collapse | economic salvage disabled | timber art and networking INCOMPLETE\nB build | 1 Cube  2 Slab  3 Slope  4 Door | R orientation | L single/line | LMB start/end or place | RMB targeted remove | Enter confirm | Esc cancel\nE aimed door toggle (also build paused); otherwise E1 probe | WASD/mouse/Space retained | temporary controls\nF5 save / F9 restore entire plot | fixed Saved/ConstructionSandbox development generations; stable assemblies only\n%s | rough-timber-v1 rules; neutral art | orientation %d/%d | snap 0.5 m | %d cells / %d doors\n%s | seed %s | endpoint %s | %d/%d ghost cells\n%s\n%s\n%s\n%s"),
                 bDoorSelected ? TEXT("Ordinary door") : Shapes[Shape], bDoorSelected ? DoorYaw+1 : Rotation+1, bDoorSelected ? 4 : 24,
-                State->GetMemberCount(),State->GetDoorCount(),*Advisory,*State->GetInstabilitySummary(),*RemovalPrompt,*LastResult));
+                State->GetMemberCount(),State->GetDoorCount(),bLineMode ? TEXT("LINE") : TEXT("SINGLE"),
+                bHasLineSeed ? *LineSeed.ToString() : TEXT("unset"),bHasLineEndpoint ? *LinePreviewIntent.EndCell.ToString() : TEXT("unset"),LineGhostCells.Num(),State->GetMaximumLineCells(),
+                *Advisory,*State->GetInstabilitySummary(),*RemovalPrompt,*LastResult));
     }
 }

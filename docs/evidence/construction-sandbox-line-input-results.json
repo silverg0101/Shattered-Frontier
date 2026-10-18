@@ -1,0 +1,564 @@
+{
+  "checkpoint": "SBX-05F temporary line controls/full ghost/actual input",
+  "date": "2026-10-18",
+  "build": "Artifacts/ConstructionSandbox/line-input-build-01/Build-camera.log",
+  "automation": {
+    "report": "Artifacts/ConstructionSandbox/line-input-build-01/Automation/index.json",
+    "succeeded": 4,
+    "succeeded_with_warnings": 0,
+    "failed": 0,
+    "not_run": 0,
+    "module_sha256": "C206B1BEFFF9925BEEE96D985BE6298E9604C91B773C4362A37CDBFF31CA33DB",
+    "note": "Camera-only finite scenario correction followed this report; production Controller unchanged.",
+    "tests": [
+      {
+        "name": "ShatteredFrontier.Construction.Controls.NormalModeIsolation",
+        "state": "Success"
+      },
+      {
+        "name": "ShatteredFrontier.Construction.Controls.ReleaseBounds",
+        "state": "Success"
+      },
+      {
+        "name": "ShatteredFrontier.Construction.Controls.StandaloneAuthority",
+        "state": "Success"
+      },
+      {
+        "name": "ShatteredFrontier.Construction.LineControls.SampleRevisionAndImportCancellation",
+        "state": "Success"
+      }
+    ]
+  },
+  "input_report": "Artifacts/ConstructionSandbox/line-input-02/results.json",
+  "input": {
+    "status": "Passed",
+    "steps": [
+      {
+        "name": "LINE_MODE_ENTERED",
+        "members": 0,
+        "doors": 0,
+        "revision": 0,
+        "lineMode": 1,
+        "seed": 0,
+        "ghostCells": 1,
+        "worldSeconds": 0.665
+      },
+      {
+        "name": "SEED_READ_ONLY",
+        "members": 0,
+        "doors": 0,
+        "revision": 0,
+        "lineMode": 1,
+        "seed": 1,
+        "ghostCells": 1,
+        "worldSeconds": 0.765
+      },
+      {
+        "name": "FULL_GHOST_THREE",
+        "members": 0,
+        "doors": 0,
+        "revision": 0,
+        "lineMode": 1,
+        "seed": 1,
+        "ghostCells": 3,
+        "worldSeconds": 1.249
+      },
+      {
+        "name": "GROUND_LINE_ATOMIC",
+        "members": 3,
+        "doors": 0,
+        "revision": 1,
+        "lineMode": 1,
+        "seed": 0,
+        "ghostCells": 1,
+        "worldSeconds": 1.349
+      },
+      {
+        "name": "REVERSE_LINE_ATOMIC",
+        "members": 6,
+        "doors": 0,
+        "revision": 2,
+        "lineMode": 1,
+        "seed": 0,
+        "ghostCells": 1,
+        "worldSeconds": 2.299
+      },
+      {
+        "name": "OCCUPIED_LINE_DENIED",
+        "members": 6,
+        "doors": 0,
+        "revision": 2,
+        "lineMode": 1,
+        "seed": 1,
+        "ghostCells": 5,
+        "worldSeconds": 3.399
+      },
+      {
+        "name": "DIAGONAL_DENIED",
+        "members": 6,
+        "doors": 0,
+        "revision": 2,
+        "lineMode": 1,
+        "seed": 1,
+        "ghostCells": 0,
+        "worldSeconds": 4.633
+      },
+      {
+        "name": "CAP_DENIED",
+        "members": 6,
+        "doors": 0,
+        "revision": 2,
+        "lineMode": 1,
+        "seed": 1,
+        "ghostCells": 0,
+        "worldSeconds": 5.799
+      },
+      {
+        "name": "SELECTION_CLEARS_SEED",
+        "members": 6,
+        "doors": 0,
+        "revision": 2,
+        "lineMode": 1,
+        "seed": 0,
+        "ghostCells": 1,
+        "worldSeconds": 6.099
+      },
+      {
+        "name": "ROTATION_CLEARS_SEED",
+        "members": 6,
+        "doors": 0,
+        "revision": 2,
+        "lineMode": 1,
+        "seed": 0,
+        "ghostCells": 1,
+        "worldSeconds": 6.299
+      },
+      {
+        "name": "MODE_CLEARS_SEED",
+        "members": 6,
+        "doors": 0,
+        "revision": 2,
+        "lineMode": 0,
+        "seed": 0,
+        "ghostCells": 0,
+        "worldSeconds": 6.499
+      },
+      {
+        "name": "PAUSE_CLEARS_SEED",
+        "members": 6,
+        "doors": 0,
+        "revision": 2,
+        "lineMode": 1,
+        "seed": 0,
+        "ghostCells": 0,
+        "worldSeconds": 6.799
+      },
+      {
+        "name": "CANCEL_CLEARS_SEED",
+        "members": 6,
+        "doors": 0,
+        "revision": 2,
+        "lineMode": 1,
+        "seed": 0,
+        "ghostCells": 1,
+        "worldSeconds": 7.1
+      },
+      {
+        "name": "DOOR_RETURNS_SINGLE",
+        "members": 6,
+        "doors": 0,
+        "revision": 2,
+        "lineMode": 0,
+        "seed": 0,
+        "ghostCells": 0,
+        "worldSeconds": 7.3
+      },
+      {
+        "name": "SINGLE_PLACEMENT_RETAINED",
+        "members": 7,
+        "doors": 0,
+        "revision": 3,
+        "lineMode": 0,
+        "seed": 0,
+        "ghostCells": 0,
+        "worldSeconds": 7.95
+      },
+      {
+        "name": "SINGLE_REMOVAL_RETAINED",
+        "members": 6,
+        "doors": 0,
+        "revision": 4,
+        "lineMode": 0,
+        "seed": 0,
+        "ghostCells": 0,
+        "worldSeconds": 8.4
+      },
+      {
+        "name": "DEMOLITION_CANCELLED_SEED",
+        "members": 5,
+        "doors": 0,
+        "revision": 5,
+        "lineMode": 1,
+        "seed": 0,
+        "ghostCells": 1,
+        "worldSeconds": 9.6
+      },
+      {
+        "name": "INHERITED_MOVEMENT_RETAINED",
+        "members": 5,
+        "doors": 0,
+        "revision": 5,
+        "lineMode": 1,
+        "seed": 0,
+        "ghostCells": 0,
+        "worldSeconds": 9.983
+      }
+    ],
+    "normalModeFlagIgnored": true,
+    "noPlayerSaveLoadDispatch": true,
+    "cleanupComplete": true
+  },
+  "processes": [
+    {
+      "name": "normal-mode-negative",
+      "pid": 52172,
+      "map": "/Game/Frontier/Maps/Greenlands_E1",
+      "arguments": [
+        "\"C:\\Projects\\Shattered-Frontier\\GameClient\\ShatteredFrontier.uproject\"",
+        "/Game/Frontier/Maps/Greenlands_E1",
+        "-game",
+        "-NullRHI",
+        "-unattended",
+        "-nosound",
+        "-nop4",
+        "-ConstructionLineInputScenario",
+        "-ExecCmds=\"t.MaxFPS 60\"",
+        "-abslog=\"C:\\Projects\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\line-input-02\\normal-mode-negative.log\"",
+        "-testexit=E1_WORLD_READY"
+      ],
+      "log": "C:\\Projects\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\line-input-02\\normal-mode-negative.log",
+      "exitCode": 0,
+      "elapsedSeconds": 7.0834744
+    },
+    {
+      "name": "sandbox-input",
+      "pid": 53104,
+      "map": "/Game/Frontier/Maps/Greenlands_ConstructionSandbox",
+      "arguments": [
+        "\"C:\\Projects\\Shattered-Frontier\\GameClient\\ShatteredFrontier.uproject\"",
+        "/Game/Frontier/Maps/Greenlands_ConstructionSandbox",
+        "-game",
+        "-NullRHI",
+        "-unattended",
+        "-nosound",
+        "-nop4",
+        "-ConstructionLineInputScenario",
+        "-ExecCmds=\"t.MaxFPS 60\"",
+        "-abslog=\"C:\\Projects\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\line-input-02\\sandbox-input.log\""
+      ],
+      "log": "C:\\Projects\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\line-input-02\\sandbox-input.log",
+      "exitCode": 0,
+      "elapsedSeconds": 17.9383685
+    }
+  ],
+  "review": "Sol/medium production+focused boundary review; independent Luna/medium remaining scenario-only correction/runner/raw review after Sol capacity failure.",
+  "source_hashes": [
+    {
+      "path": "docs/decisions/SBX-06B-support-loss-pilot.md",
+      "sha256": "cded2bc74b49ed8ff6b95a725a5b37765f239064969643ab660e7128aa31ed30"
+    },
+    {
+      "path": "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md",
+      "sha256": "2bab36fae6994203d5806eb65129646b55ee033e16d448895dcd170eb977354d"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionClearance.cpp",
+      "sha256": "db8aaa9b5cb366c62add2fc10e914feb8b338f65083b4176f9115b00832295c8"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionGeometry.cpp",
+      "sha256": "25b002c390ca33481e10eb19251510e8e53b7f51ae8fe1cd5d5f5539ffe45084"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionGeometryData.h",
+      "sha256": "c6689cd176c42151da37bbc2f0fb2acc04b6d0d7b5e07683043d8d2470dd58b8"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionInstability.cpp",
+      "sha256": "daa527e76da26774f40428e4db9d838f263eb82f0fa945492583f202802d2094"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionSandbox.cpp",
+      "sha256": "e0c980820ee27153d8836c91290e0f5235948d0e8f5cd8b7c7bb823f4c870f21"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionSandboxController.cpp",
+      "sha256": "084abbbbd16dfbda2f40116f1889cf14f3b1213c269e19c7439149df07153b4b"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionSandboxFoundation.cpp",
+      "sha256": "d26e8a2acb51b6b22de94e01a96b9e5b8b4e9640a781eec5abb09637514fc646"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionSandboxSettings.cpp",
+      "sha256": "97c079e7387df8bc04313ef4feb203b927485b3c0afc7ec837ece75492ae6332"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionSandboxState.cpp",
+      "sha256": "30151aa4b64b64623076ebfe7484b8a51315c8ac7e95c9a4cc664add6b32293d"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionSupport.cpp",
+      "sha256": "dbe331cd5d66b4d65af10d4cbe69c721b78479630bf8b7bfc100ed79c5ea2eba"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionClearanceTests.cpp",
+      "sha256": "59a414fbd729c37eb31ad365d33796dc1748b2ceb5e2b032328ede34683b9d02"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionFoundationTests.cpp",
+      "sha256": "33087b3cde183e7e1ef452c68222135c667ac82bb802d9fd89897f880b7edf3b"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionGeometryTests.cpp",
+      "sha256": "0afddbb22ed338097e9bae5031d0c994334c2f90173fc85eb3b6f02de2ce68ec"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionInstabilityTests.cpp",
+      "sha256": "5c1bfdae237875805fdcfea6214e69b9addc1d6adb5d99822b85cb528bcd4e31"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionNeighborTests.cpp",
+      "sha256": "7ed68487a72bbe52d268039ec79842f72366e27c91a7d728702c5e329a308530"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionSandboxControlsTests.cpp",
+      "sha256": "223000ec7816749f3cc3c468f9644391b5885ab98c99629b124f56de11e9be32"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionSupportLossTests.cpp",
+      "sha256": "5c5926ff4c38b700d52ed788599a3e96c8d14a2b29b7abd5f46085878dd7ec8a"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionSupportTests.cpp",
+      "sha256": "05a158fd1db08149336ca438733b1a03469bbf80ac3b9e12aec9ccfe15aa84cc"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionClearance.h",
+      "sha256": "a4d5125acc3be5ed40c5a398750dfb6c656c29798620e08cf1e89e1760fa14f1"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionGeometry.h",
+      "sha256": "437c7f4a261f6041c869416db3f73c6b656908d6a56fe2ceba23fe4e5bf488c1"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionInstability.h",
+      "sha256": "f1752f39551c05b36716faf53f7dc131832dc5035a3e544dc0d2492cffd5ed82"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionSandbox.h",
+      "sha256": "ac3cf926d8379c6525c578ebf0124ce77fc2b133cda5a9dc5f6fdd00358043f5"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionSandboxController.h",
+      "sha256": "42e026870a236c865cb475d8e59f62f5dccd1e8b7dfb672787863e08ef60855f"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionSandboxFoundation.h",
+      "sha256": "204ac66342fec623e44afa566f3d3bd34f3c76ffb596fd28865eb74e2a7281d3"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionSandboxSettings.h",
+      "sha256": "70b71159bba98c686cd46fb2ab6e3265855d04d80131906ef72615b7df734755"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionSandboxState.h",
+      "sha256": "9e9a0f65cba2f08fa535a394fa9ec8e658e7cd84c5551ee28a0d97fc7fe8bc4b"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionSupport.h",
+      "sha256": "7fc3c745d9d53abbfbbab041a644133ede37841bbe56492677f17805914ba0a1"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/ShatteredFrontier.Build.cs",
+      "sha256": "bed9b20852a3ad7d3c0931891534b360400d65daa8034c56d1111f9e7542d763"
+    },
+    {
+      "path": "tools/construction_compatibility.py",
+      "sha256": "ff07f12a4683238370a13d268c8211fffa2c34142d9d5e0967063e5b091fb97e"
+    },
+    {
+      "path": "tools/construction_geometry.py",
+      "sha256": "fb6425556047e84b93059b998f9e4d225f69825389540f208602dc85b6e34a3b"
+    },
+    {
+      "path": "tools/Create-ConstructionSandboxMap.py",
+      "sha256": "317bd93e4b95c3fcf91f4ba99626511701782e5c8c7b98ceebc4899811f52e25"
+    },
+    {
+      "path": "tools/Generate-ConstructionGeometryHeader.py",
+      "sha256": "cd1bac98a9681a5e458160adec7b06fc880b8b645eeefcb0fd20112178926a45"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionInputScenario.h",
+      "sha256": "77024029d7121459e9b25cd4171f6b0e87c3bbfd0148e25a33a5018deb4e6ab9"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionInputScenario.cpp",
+      "sha256": "131d06e1547d41301f6ced8e7f1a19a92457e9ac00e87b8207eeffaea1234752"
+    },
+    {
+      "path": "tools/Test-ConstructionSandboxInput.ps1",
+      "sha256": "c2631eee7ca946949cd9bc4024f267588b40e807b27b4382680041ddb2dfd3f6"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionFunctionalLoadTests.cpp",
+      "sha256": "e11e58032ca82aa5700eb84b3be71a7e32c7cbc9193507fd042907c8a4535833"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionSandboxDoorProjection.h",
+      "sha256": "402a1065ab3d2eacaa0ab730388b8001e0badbea14a446ecd24e15480ae100ef"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionSandboxDoorProjection.cpp",
+      "sha256": "f92476760e22eebe0ce07d9746ef8e5ce51885b711ff94b1a864fb841fa2a0b9"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionDoorProjectionTests.cpp",
+      "sha256": "c6a9ec2a0a51ccaa9f0d15f2e9b200085416166d758a1bed91709ff179ce6fae"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionDoorSupport.h",
+      "sha256": "c6c4e99dc9bc558f75d90bcbd20a27f676c16357190dd53985967ba7a5e24980"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionDoorSupport.cpp",
+      "sha256": "67f455ae60105b0ef6db00d6b6adca3573dd842e20b214e03bb49527cb907c98"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionSaveCodec.h",
+      "sha256": "9e1ea5145c3dbb45142049d762b1a2b496857e3244b23ef82b85a77a123ed3e8"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionSaveCodec.cpp",
+      "sha256": "3a6dc4a217526edda6a82f15609bab669b8a52a4bab0341f4052385fa0171685"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionDoorSupportTests.cpp",
+      "sha256": "d88671725d38facdba42f7508776f8119a0c916297abbd9527893a2340ec2b0d"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionSaveCodecTests.cpp",
+      "sha256": "587d68b711145e21ab59f8e5393d94b7d1e8f18bf2064ce2f3e0d178adfaad09"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionDoorAuthorityTests.cpp",
+      "sha256": "ffab2550252b20fa1c36e03e8174d4ccf991aafabc138fde0d129621878cd53f"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionSaveStore.cpp",
+      "sha256": "3b5a8e9e0d2b7240f98d5c0d31e46df2cd964f73f24da61cb55ce2ae28f9a9dc"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionSaveStore.h",
+      "sha256": "34adc90f48176e309ccdb40a1dfa6d0fefa5f3ca24cae80d24fae49240c8f0ad"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionSaveStoreTests.cpp",
+      "sha256": "4e1b61702c8d1c9d6325d0eec443c5cfb407462c7b64d9f48c131cfac2cbb7fc"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionDoorInputScenario.cpp",
+      "sha256": "9191a4c37bac32e0f88e3c2ebf4b7ac0ab9f49e2805c6116530eb181c897de66"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionDoorInputScenario.h",
+      "sha256": "103c1de8f6c36169209ef88386ebbe4005bfc92b62c93d351a1e33e49313a467"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Interaction/SFE1PlayerController.cpp",
+      "sha256": "5ecd7a6bf40a90cc82fa30659c71fa037e06c8a246b445c55614baba0c92d61f"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Interaction/SFE1PlayerController.h",
+      "sha256": "3dfc61ce67e5eb3a06961ffd6a6804d98679dd58fbcfcfab220419296b949c0e"
+    },
+    {
+      "path": "tools/Test-ConstructionSandboxDoorInput.ps1",
+      "sha256": "bdfd3095680c84fcfb6234ca46911a35d189f72e9bf6acb1922d227c1200bb12"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionProjectionIntegrityTests.cpp",
+      "sha256": "469686e21635c65def3059506767a9faf8c8a4899d38a8bd41ab8c436d0862dd"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionSnapshotRestoreTests.cpp",
+      "sha256": "25ccc769eaaf96a676b8cb767636bc06a29b71fde1ed1ce3809d0167c9bd5fd9"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionSaveRestartScenario.cpp",
+      "sha256": "af8a8f1ef1556ea5d02b69d6dad46e5566f8ba540f868074b75e2052fd4dc2ec"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionSaveRestartScenario.h",
+      "sha256": "fc9556231fd6a95cfeed9ba343bc608bffe92e7232d88614eff23bfa72fa5988"
+    },
+    {
+      "path": "tools/Test-ConstructionSandboxSaveRestart.ps1",
+      "sha256": "0009db200dce9d2d3866ec9487aea7c53557d719a00ba572d1cc48a9ae3e4d46"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionLine.h",
+      "sha256": "79ea04e0a9625fa0103df8add9d9b15bf07749986a3118b79c17b60692dc0903"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionLine.cpp",
+      "sha256": "38a858701fcc4e7812b91630b1ee3b2ffc4987d903278410253ad94650700f1a"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionLineTests.cpp",
+      "sha256": "27e97cbf3bac6c45c273900e1ad8ced3b77bf341a5c6a949b7da145d3c694e56"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionLineAuthorityTests.cpp",
+      "sha256": "acfa008b0ce2431a86a4f3b828ce61865d4e5817aeea15b5fb461821bbb19ac4"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionLineInputScenario.cpp",
+      "sha256": "8ea8ff48957ae860615c79f9fae29479ce607f5d11e1bb777b9c33ae0093ac5e"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionLineInputScenario.h",
+      "sha256": "d1da9c88876a4d1f2e3ad927684e5a68a0966ce41ebf0b8a094c54401519f9bb"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionLineControlsTests.cpp",
+      "sha256": "e4b21df32d848f24b7fbfe832c9cb6d20760a30b34acd78e426b56877cc3a6f4"
+    },
+    {
+      "path": "tools/Test-ConstructionSandboxLineInput.ps1",
+      "sha256": "e37789ff9f6351edd9c68649e434a1ae186a332adef5092a0343459a22a55d76"
+    }
+  ],
+  "current_editor_module_sha256": "44d48fd919ee3238d0cc3536d5de28692c1c4eca782c47e090db2d2735f408d2",
+  "preserved_e1": [
+    {
+      "path": "GameClient/Config/DefaultEngine.ini",
+      "sha256": "f5f136669fdf791015ac1f869a3c4ec4de39d0e81ab181d46f7f498c618f4595"
+    },
+    {
+      "path": "GameClient/Config/DefaultGame.ini",
+      "sha256": "68601712de56090d2709fb4005061d061ca4110d0787960e7ce106906c87953b"
+    },
+    {
+      "path": "GameClient/Content/Frontier/Maps/Greenlands_E1.umap",
+      "sha256": "98d29084a300c89cc78066696ad5ab1f88117ec6c2854b12b1f7606766e12c55"
+    }
+  ],
+  "preserved_sandbox_map_sha256": "d8899ec38b527fe735095de053c56d58d33dea57fe7a47d09c097eafcce753dc",
+  "limits": [
+    "Automated18-step input/native collision under NullRHI; no rendered input acceptance",
+    "Copied interactive preview was launched separately; human acceptance not inferred",
+    "No approved art, permanent UI/remapping, packaged/network or production economy acceptance"
+  ]
+}

@@ -67,6 +67,8 @@ Construction save/load restart: [SBX-06I packet](decisions/SBX-06I-save-input-an
 
 Construction line placement: [SBX-05E packet](decisions/SBX-05E-atomic-line-placement.md) and [passed API evidence](evidence/construction-sandbox-line-authority-pilot.md) / [hashes](evidence/construction-sandbox-line-authority-results.json) cover SFConstructionLine helper/tests and State/Settings atomic line API/authority tests. Eleven unique focused cases pass across initial regression and corrected authority report. Captured8[1,32] cap, per-cell admission, full candidate support/grace and one staged revision; [SBX-05F input/full ghost](decisions/SBX-05F-line-input-and-preview.md) follows, no line input yet.
 
+Construction line input: [SBX-05F packet](decisions/SBX-05F-line-input-and-preview.md) and [passed input/preview evidence](evidence/construction-sandbox-line-input-pilot.md) / [hashes](evidence/construction-sandbox-line-input-results.json) cover Controller start/end/full ghost, SFConstructionLineInputScenario hcpp/Sandbox hook, tools/Test-ConstructionSandboxLineInput.ps1 and focused SFConstructionLineControlsTests. Eighteen semantic input/physics steps and four clean tests pass. Pre-Tick sample-revision fencing, prefix-independent seed, cancellation/import clearing and no fixture disk writes are checked. UI comfort/catalogue/remapping remain next.
+
 ## Routes and commands
 
 | Method / path | Purpose |

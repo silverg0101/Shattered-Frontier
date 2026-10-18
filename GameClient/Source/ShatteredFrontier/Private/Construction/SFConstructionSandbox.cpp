@@ -11,6 +11,7 @@
 #include "Tests/SFConstructionInputScenario.h"
 #include "Tests/SFConstructionDoorInputScenario.h"
 #include "Tests/SFConstructionSaveRestartScenario.h"
+#include "Tests/SFConstructionLineInputScenario.h"
 
 namespace
 {
@@ -259,5 +260,6 @@ void ASFConstructionSandboxGameMode::StartPlay()
     StartConstructionInputScenario(GetWorld());
     StartConstructionDoorInputScenario(GetWorld());
     StartConstructionSaveRestartScenario(GetWorld());
+    StartConstructionLineInputScenario(GetWorld());
 #endif
 }
