@@ -1,0 +1,77 @@
+# PER-01 C-MIG — disposable migration fixture contract
+
+Status: proposed, 2026-10-18. Documentation only: no backend files, database, restore, installation or test execution. This packet prepares C-MIG; it does not accept B-01/B-02 or authorize provisioning. Execution requires B-01 design/role acceptance and B-02 closure, including verified provisioning, under [PER-01-B](PER-01-B-implementation-readiness.md#next-assignments-and-completion-gates).
+
+## Source boundary and deliverable
+
+Inherited requirements: [Backend §§6.1–6.5](../Game-Design/Backend/Legends_Shattered_Frontier_Backend_Service_Communication_Persistence_and_Content_v1.0.md#6-persistence-conventions) own topology, realm scoping, table conventions, roles, migration compatibility and DDL limits; [Repository Structure](../Game-Design/Legends_Shattered_Frontier_Repository_Structure_v1.0.md#persistence-and-schema-placement) owns placement; [DEC-08](DEC-08-compatibility.md#deployment-migration-and-rollback-boundaries) owns compatibility/rollback boundaries. [PER-01](PER-01-durable-state-topology.md#store-record-and-migration-ownership) and [B runner refinement](PER-01-B-implementation-readiness.md#migration-runner-refinement) are proposals, including the unresolved runtime-owner change. Everything below specifying fixture names, records, state machines or cases is a new recommendation requiring acceptance, not an existing implemented contract.
+
+Limit the future harness to one new local disposable PostgreSQL instance/database with `building` schema and synthetic data. A provisioner-owned `world` sentinel schema tests denial only; it is not a World implementation. Inventory, gameplay RPCs/actions, Kafka, Redis, production credentials, browser SQLite, live E1/Windrose and production hosts are excluded. A single node cannot validate tier-0 replication, remote durability, restore recovery or production load.
+
+| Proposed future path / record | Role and fixed scope |
+| --- | --- |
+| `BackendServices/building-service/Migrations/NNNN_<name>.sql` | Ordered owner SQL; first harness changes are synthetic table/additive-column/nonunique-index fixtures, not gameplay schema. Never edit an applied file. |
+| `BackendServices/building-service/Migrations/manifest.json` | Versioned immutable ID/order, raw-file SHA-256, transaction mode, supported source/result schema, artifact/N−1 compatibility, postconditions and exact permitted index recovery targets. UTF-8 LF files; hash exact committed bytes, without normalization. |
+| `BackendServices/building-service/Persistence/Migrations/` | Sole Building runner implementation and history bootstrap; no independent startup migration path. |
+| `BackendServices/building-service.Tests/Migrations/` | Only focused C-MIG cases, deterministic pause/crash hooks and catalog assertions; no production endpoint defaults. |
+| `BackendServices/fixtures/postgres/README.md` | B-LOCK supplies accepted artifact/version/digest, bounded lifecycle commands, identity checks, resource limits and secret handling before this path becomes runnable. No server/image pin or command is selected here. |
+| `Artifacts/Persistence/C-MIG/<run-id>/` | Ignored finite evidence: redacted environment/ownership manifest, case results, catalog snapshots, runner events, file hashes and cleanup receipt; no credentials or player data. |
+| `building.schema_migrations`, `building.schema_migration_attempts` | Unique migration ID/checksum/profile/result and durable attempt identity, mode, state, backend PID, timestamps, error/SQLSTATE and observed recovery facts. History is administrative metadata, not a gameplay ledger. |
+
+## Isolation and roles
+
+B-LOCK must record exact instance/database identity, fresh ownership marker/run ID, local endpoint, dedicated data directory or volume, role names and verified create/cleanup commands. Refuse an unmarked target, unexpected database/server, or endpoint outside that accepted fixture; neither database name nor loopback alone proves ownership. Provisioning identity is unavailable to the runner. Secrets remain outside committed files/evidence. Use explicit schema-qualified identifiers and a controlled search path; no cross-schema foreign keys/joins or migration grants to another service.
+
+| Role | Proposed privilege boundary; subject to B-01 Backend/Security acceptance |
+| --- | --- |
+| Fixture provisioner | Creates only this instance/database, ownership marker, roles and sentinel; owns lifecycle. May inject failures only into registered fixture sessions. Not a service identity. |
+| `own_building` (NOLOGIN) | Owns Building schema/objects/default privileges; no ownership or grants in sentinel `world`. |
+| `mig_building` | Dedicated migration login; can assume `own_building` solely for Building DDL/history; no superuser, database/role creation or other-domain membership. |
+| `svc_building` | Necessary synthetic-table DML/sequence use only; no owner membership, schema CREATE, history mutation or DDL authority. Newly migrated objects receive the same explicit grants. |
+| `ro_building` | SELECT on permitted Building fixture tables/history views only; no writes, sequence advancement or DDL. |
+| Sentinel role | Owns synthetic `world` table; inaccessible to Building identities. Catalog visibility alone is not a data-access failure. |
+
+Backend §6.4 currently makes `svc_building` schema owner; ownership permits DDL. The matrix deliberately proposes a changed owner contract. Do not implement or claim runtime-DDL denial until that refinement is accepted. If rejected, record the accepted risk/alternative and revise C-MIG-09; cross-domain denial remains required. No protected-owner specification is changed by this packet.
+
+## Serialization, history and recovery
+
+Register one stable per-database/schema advisory-lock identity in the accepted runner manifest; do not derive it from process/run ID or randomized language hashes. Every invocation, including bootstrap/recovery, uses that identity. Acquire a session advisory lock before reading/creating migration history and retain it across the entire ordered run, including nontransactional steps, on one dedicated direct PostgreSQL connection. Disable driver pooling/multiplexing for this connection; prohibit transaction-pooler routing. Keep DDL, history and verification on that same backend session; do not hold a lock on connection A while executing on B. [PostgreSQL advisory locking](https://www.postgresql.org/docs/18/explicit-locking.html#ADVISORY-LOCKS), [PgBouncer's pooling matrix](https://www.pgbouncer.org/features.html) and [Npgsql connection parameters](https://www.npgsql.org/doc/connection-string-parameters.html) explain the session/pooling mechanisms; PostgreSQL 18 documentation is mechanism evidence, not a selected fixture version.
+
+Use a nonblocking lock attempt: a duplicate runner exits `busy` without DDL/history mutation. Retain PER-01's transaction mutex for ordinary migration transactions using a separately registered transaction-lock identity; session and transaction lock namespaces must not accidentally alias. A rollback does not release the session mutex. Never reconnect and continue a run automatically: on connection loss stop issuing work, report outcome unknown, and let a new invocation reacquire the same session lock and inspect durable state. A partitioned old backend can retain its lock until PostgreSQL ends that session; no timeout grants a bypass.
+
+Before any pending DDL, verify the complete applied prefix against ordered manifest IDs, checksums and schema/profile identities. Refuse duplicates, unknown/newer IDs, gaps, altered bytes/modes or unsupported source versions; never rewrite a checksum to bless drift. Bootstrap history is transactional and under the same mutex. Ordinary SQL, resulting-version update and completed-history row commit atomically; failure rolls all three back. An independent precommitted attempt row may survive as `running`, but cannot prove application. On retry reconcile against authoritative history/catalog; never mark success from a lost reply alone.
+
+Apply inherited `lock_timeout=2s`, `statement_timeout=60s` to each DDL session/transaction, verify effective settings and record them. Exceeding either fails the attempt; retries do not silently increase limits. Backfills remain separate throttled jobs, outside this fixture. No down migration, destructive contract step or service-startup DDL is introduced. N−1 support requires concrete old/new fixture behavior, not merely an additive label.
+
+Nontransactional indexes have one declared operation per step and explicit expected relation, columns/order, access method, predicate, uniqueness and validity checks. [PostgreSQL concurrent-index documentation](https://www.postgresql.org/docs/18/sql-createindex.html#SQL-CREATEINDEX-CONCURRENTLY) establishes that concurrent creation runs outside a transaction block, can leave an invalid index after failure, and that name existence alone is insufficient. Restrict initial fixtures to nonunique indexes; uniqueness/backfill recovery requires a separate owner packet.
+
+| Durable attempt state / observed catalog | Next action while retaining the session mutex |
+| --- | --- |
+| No attempt / index absent | Commit `pending` with checksum and exact object specification, then commit `running` before issuing concurrent creation outside a transaction. |
+| `pending`, `running` or `failed` / index absent | Recheck target identity, immutable checksum/specification and absence; retain previous attempt/error unchanged, record a new retry attempt and run that same declared operation. No history completion yet. |
+| Any incomplete state, including `failed` / matching valid index | Verify full definition/ownership/postconditions; append reconciliation evidence, then atomically mark step `complete` and advance migration history if its final step. Preserve previous attempt/error; neither an error nor a lost reply proves success. Covers DDL success before history commit. |
+| `running` or `failed` / matching invalid index | Snapshot catalog/error evidence; commit `cleanup_pending`; drop only that exact manifest-owned standalone fixture index using the accepted resumable cleanup operation; verify absence, then commit `pending` and retry. |
+| `cleanup_pending` / absent or matching invalid index | Absence resumes at `pending`; otherwise resume exact cleanup. A crash between drop and state update must be safe. |
+| Any incomplete state / conflicting definition, owner, dependency or unexpected object | Fail closed for owner diagnosis; no broad drops, rename/adoption, `IF NOT EXISTS` success shortcut or automatic schema repair. |
+| `complete` / catalog fails declared postcondition | Report drift and stop; never downgrade history or silently recreate it. |
+
+A failed step records error facts if the same connection remains usable; a killed connection may leave `running`, which is expected. An exception/exit code is not proof of rollback. Schema readiness stays false while any required step is incomplete. These states are runner metadata, not the construction protocol or an operator-editable tuning expression.
+
+## Focused future acceptance cases
+
+Each case starts from a recorded fresh fixture or explicit predecessor checkpoint. Use named deterministic barriers rather than timing sleeps. Preserve before/after history, attempt and relevant catalog rows, synthetic row counts/hashes, role/session IDs, effective timeouts, event ordering, exit status and SQLSTATE where applicable. Every case must list expected and observed results separately; this document supplies no passing result.
+
+| Case | Injection and expected database observation |
+| --- | --- |
+| C-MIG-01 empty/repeat | Empty schema applies the exact prefix once; second run changes no history/checksum/object/data. Bootstrap itself serializes. |
+| C-MIG-02 drift/refusal | Independently alter applied bytes, reorder/gap IDs, insert unknown newer history and request unsupported source: each stops before pending DDL; preexisting history/data unchanged. Include same-name wrong index. |
+| C-MIG-03 atomic interruption | Terminate runner/backend before ordinary transaction commit, then after commit before reply. Before: no schema/result/history effects; after: exactly one committed prefix and unchanged checksum; restart reconciles without a second application. |
+| C-MIG-04 competing runners | Pause A after session acquisition, inside ordinary transaction and after index `running` commit; start B at each barrier. B is `busy`, writes nothing; `pg_locks`/backend IDs show A owns mutex across rollback/nontransactional boundary. After A ends, a new invocation succeeds. |
+| C-MIG-05 connection loss | Disconnect A at the index boundary; it issues no more work. While its backend still owns lock, B remains `busy`; after verified backend termination, B acquires it and reconciles whichever durable index/history state actually exists. Never infer lock release from client death. |
+| C-MIG-06 index crash windows | Crash before creation, after valid creation before completion, during invalid creation, before cleanup, and after cleanup before state update. Capture actual validity flags/definition and attempt state; exact recovery converges to one valid index/one completed step with no data loss. If the induced failure leaves no invalid object, that branch has not been tested and must be reproduced explicitly. |
+| C-MIG-07 contention/timeouts | Hold fixture-only conflicting DDL lock; runner fails at inherited limit with incomplete history. Prove a precreation failure leaves no index and a durable `failed` attempt; release blocker and retry to one valid index/completed step, preserving original error evidence. Separately force statement cancellation and inspect possible invalid index. Effective timeout evidence and unchanged sentinel/data required. |
+| C-MIG-08 compatibility | Synthetic N−1 reader/writer continues accepted operations against expanded schema; new reader/writer works; unsupported schema startup refuses readiness without automatic migration. Capture both artifact/schema identities; no claim about unimplemented gameplay binaries. |
+| C-MIG-09 privileges | Under accepted owner refinement: runtime allowed DML succeeds, runtime DDL/history modification/owner assumption fails, read-only write/sequence advance fails; migration can alter Building but no Building role can read/write/DDL sentinel `world`. Test preexisting and newly migrated objects/default grants; snapshot sentinel unchanged. |
+| C-MIG-10 target/cleanup | Wrong marker/database/endpoint is refused before mutation. Teardown stops only registered fixture sessions and removes only manifest-owned instance/database/roles/storage after exact identity/path verification; record remaining resources and successful removal, preserving evidence. |
+
+The provisioner alone owns teardown; no recursive deletion of computed paths or shared roles/volumes. Failed identity checks preserve resources for diagnosis. No actual backup restore occurs in C-MIG; production recovery, N−1 gameplay compatibility, large backfills and destructive release approval remain separate [DEC-08](DEC-08-compatibility.md) gates. Completion requires independent review, all applicable case evidence, recorded deviations and accepting owners; documentation completeness cannot close B-02 or PER-01.
