@@ -29,6 +29,10 @@ User authorized ready implementation work and subagents while away, moving past 
 
 Hourly quiet continuation is registered as `continue-shattered-frontier-overnight`; pause when the user returns or no meaningful authorized ready work remains. Do not rerun passing checks without a change/failure. No new paid tool is required so far. E1-F performance/capacity, manual rendering/input and packaged runtime gates remain open.
 
+## Feature Control requirement - 2026-10-18
+
+The user requested a management interface for suitable major feature switches, test access and approved properties, including weather, PvP modes and siege events. Recorded in [Tuning and Configuration section9](Game-Design/Legends_Shattered_Frontier_Tuning_and_Configuration_Architecture_v0.1.md#9-feature-control-catalog-and-management). This extends the existing admin-portal/config-service workflow; no new service, runtime UI, canonical flag keys or property bounds are implemented. Shared-world testing must stay consistent per realm/instance; active-state and dependency contracts require owning-domain declarations before controls ship. Protected LiveOps/other-domain files remain unchanged. Implementation is a separate bounded task after those declarations and the required configuration/admin foundation are ready.
+
 ## Status and ownership rules
 
 Queue states: Ready → Working → Reviewable → Done; Blocked names the exact missing input. Findings are classified as design gap, contradiction, product backlog, experiment, or operational risk using [debt standards](Game-Design/Legends_Shattered_Frontier_Technical_Debt_Standards_v1.0.md). Confirm gaps with owning-section evidence before calling them blockers.

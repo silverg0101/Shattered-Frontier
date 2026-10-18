@@ -82,3 +82,37 @@ Rollback publishes a new version restoring previous values; it does not rewrite 
 Before exposing a control, verify that its default reproduces the approved domain design, bounds preserve invariants, units are understandable, the effective value is inspectable in both consoles, expiry restores the underlying profile, and rejected or replayed requests cannot mutate state. Domain verification must cover incompatible values, stale previews, concurrent operations, restart/reconnect, and rollback where those paths are implemented.
 
 This is a design contract; these checks describe required implementation evidence, not tests run for this documentation change. Adding a control without its declaration, domain validation, or audit path is incomplete work.
+
+## 9. Feature Control catalog and management
+
+User requirement: provide one Feature Control area for major systems and activities that have a meaningful enable/disable boundary, together with their approved settings and testing controls. This is a design requirement, not an implemented interface. It uses the existing admin-portal/config-service and authorized GM workflow; LiveOps remains authoritative for flag schemas, targeting, publication, approvals and emergency switches. No parallel flag store or new canonical keys are introduced here.
+
+### 9.1 Eligible features and declarations
+
+Every new major feature must be assessed for this catalog. Register independently switchable behavior, or record why it requires a compatible release instead. Broad foundational systems need not have a master on/off switch. Existing domain safety switches remain in force even when they are not presented as a top-level Feature Control card.
+
+Each eligible entry links its domain-owned availability flag and declared tuning/profile controls. In addition to section3, declare: feature owner and description; dependencies and incompatible combinations; supported test scope; minimum compatible builds; behavior when enabled or disabled; treatment of active participants, instances, published schedules and committed outcomes; any player notice; and whether an emergency stop differs from a normal scheduled change. Unsupported properties remain read-only or release-bound. Feature dependencies and transition algorithms ship in reviewed code/content; operators cannot edit them as expressions.
+
+| Candidate card | Management purpose | Required boundary before implementation |
+| --- | --- | --- |
+| New feature rollout | Keep availability off, expose to supported QA/test targets, inspect approved settings, then promote through the existing rollout workflow. | Separate temporary rollout gates from permanent safety switches; retire temporary gates through the existing review policy. |
+| Weather | Control availability of weather transitions, select approved presets and expose declared bounded weather properties. | World owns transition/fallback behavior; normal changes respect preset boundaries and existing obligations/effects. |
+| PvP modes | Control access to each supported PvP mode and expose that mode's approved controls. | Combat/territory owners define mode scope, existing-combat behavior, notice and exploit prevention; no new PvP mode or instant combat escape is implied. |
+| Siege events | Control new siege scheduling/eligibility and select approved scheduling profiles. | Existing published windows and committed outcomes remain governed by territory rules; active-event cancellation needs its own supported domain transition. |
+| Other optional events or activities | Add catalog entries when the owning domain provides an independent admission/start boundary. | Explicitly define dependencies, in-progress behavior and recovery before exposing the switch. |
+
+These are catalog candidates, not registered flag names or approved new property bounds. Domain declarations and any Shared Registry proposals must be completed before controls become editable.
+
+### 9.2 Management view and test access
+
+Present searchable feature cards with a plain-language purpose, owner, effective availability, target environment/realm/instance, effective configuration version and approved settings. Detail views show proposed versus applied state, pending activation, propagation acknowledgments, dependencies, active work affected, history, rollback/expiry behavior and the precise meaning of Disable. A disabled feature exposes the appropriate unavailable state to players; enforcement remains at the server authority boundary.
+
+The UI may summarize availability as Off, Test access or Live. These are presentation labels over existing flag values and targeting, not a new stored state machine. Emergency kill state and pending changes must be displayed separately. Test access uses only supported LiveOps QA targeting and compatible builds. Region and instance selection must map to an existing authorized domain or realm target; this section does not add cohort selectors.
+
+Shared-world rules such as weather, PvP and sieges are evaluated consistently for everyone in the affected realm or instance. Test them in a designated test/canary realm or instance, never by giving arbitrary player percentages different authoritative rules in the same shared world. Account targeting is suitable only where the domain proves isolation, compatibility and fairness; client visibility alone never grants access.
+
+### 9.3 Activation and safe disable
+
+Availability and properties are separate controls. A coordinated change publishes through the existing validated, versioned workflow, with compatible snapshots and declared apply times. Turning a feature on cannot bypass its dependencies or required approvals. Normal disable commonly stops new admission or starts, while active work follows the owning domain's explicitly declared continuation/drain/cancellation behavior. The console must not invent that behavior. Emergency switches use the owning domain's reviewed safe-stop path and existing LiveOps precedence; they do not erase durable state, retract committed rewards, rewrite published obligations or abort committed cross-domain actions.
+
+Before shipping a card, verify server enforcement, consistent shared-world evaluation, unauthorized/stale requests, dependent feature combinations, on/off transitions during active use, restart/reconnect with the last valid snapshot, propagation failure, expiry and rollback. A feature is incomplete if its switch only hides UI, if active-state handling is undefined, or if its tuning fields lack the declarations required by section3. This adds design acceptance work; it does not claim runtime tests or owner acceptance of candidate domain transitions.
