@@ -5,6 +5,7 @@
   "Description": "Shattered Frontier E1 movement fixture; Linux dedicated-server target for steam-server.",
   "Modules": [{ "Name": "ShatteredFrontier", "Type": "Runtime", "LoadingPhase": "Default" }],
   "Plugins": [
+    { "Name": "ProceduralMeshComponent", "Enabled": true },
     { "Name": "AndroidFileServer", "Enabled": false },
     { "Name": "EnhancedInput", "Enabled": false },
     { "Name": "PythonScriptPlugin", "Enabled": true, "TargetAllowList": ["Editor"] },

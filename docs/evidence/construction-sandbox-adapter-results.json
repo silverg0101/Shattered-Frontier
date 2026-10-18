@@ -1,0 +1,106 @@
+{
+  "status": "bounded-pilot-passed",
+  "evidence_root": "Artifacts/ConstructionSandbox/adapter-02",
+  "python_geometry_tests": 6,
+  "python_compatibility_tests": 9,
+  "independent_contact_pairs": 31104,
+  "unreal_editor_build": "Succeeded",
+  "unreal_automation": {
+    "succeeded": 3,
+    "failed": 0,
+    "not_run": 0,
+    "tests": [
+      {
+        "name": "CanonicalPilot",
+        "state": "Success"
+      },
+      {
+        "name": "ConvexPhysicsAndGeneration",
+        "state": "Success"
+      },
+      {
+        "name": "NormalModeIsolation",
+        "state": "Success"
+      }
+    ]
+  },
+  "runtime_smoke": "Standalone Shapes=3 Edits=0 Economy=0",
+  "map_overwrite_refused_unchanged": true,
+  "source_hashes": [
+    {
+      "path": "tools/construction_geometry.py",
+      "sha256": "fb6425556047e84b93059b998f9e4d225f69825389540f208602dc85b6e34a3b"
+    },
+    {
+      "path": "tools/construction_compatibility.py",
+      "sha256": "ff07f12a4683238370a13d268c8211fffa2c34142d9d5e0967063e5b091fb97e"
+    },
+    {
+      "path": "tests/test_construction_geometry.py",
+      "sha256": "1138a80c107242a1ea8fe1ddfdf1129f3c42bef4538a5ce71b8122c84f7e0ca5"
+    },
+    {
+      "path": "tests/test_construction_compatibility.py",
+      "sha256": "c967785b017c4eda3d93b8af798cb58d8bd8ba19bd1c05d5243d708139781cff"
+    },
+    {
+      "path": "tools/Generate-ConstructionGeometryHeader.py",
+      "sha256": "cd1bac98a9681a5e458160adec7b06fc880b8b645eeefcb0fd20112178926a45"
+    },
+    {
+      "path": "tools/Create-ConstructionSandboxMap.py",
+      "sha256": "c556b30ee1e7a7ad0608ffb18011b83e48d85d2f23062fc7e185eae42dd80749"
+    },
+    {
+      "path": "GameClient/ShatteredFrontier.uproject",
+      "sha256": "f0ebf5494360f6db8d66ba8ce2e8c614cd2b860fbe1692e8f3030383b376a24e"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/ShatteredFrontier.Build.cs",
+      "sha256": "8428c37df481411737e124e57ee9e28581bd85954bb272a9eff2de08131ab89e"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionGeometry.h",
+      "sha256": "39ec17f3e3977e3de037ce84965a958ecd3d921061bd6aa4746f900047cf509f"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionSandbox.h",
+      "sha256": "642a6ea597bae52a7e4f45be15ebb1141fa38fc5e45afd82db8e1837399e28b2"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionGeometry.cpp",
+      "sha256": "e1f68f69665e60f9a11139ca5f09848c9a0b6b914c98acf0ff2e6c21c5dbfb12"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionGeometryData.h",
+      "sha256": "c6689cd176c42151da37bbc2f0fb2acc04b6d0d7b5e07683043d8d2470dd58b8"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionSandbox.cpp",
+      "sha256": "6733a5b6e6eef13b5218d298a6e8ac2930eefc58061eb9a6650ba6f95a654159"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionGeometryTests.cpp",
+      "sha256": "0afddbb22ed338097e9bae5031d0c994334c2f90173fc85eb3b6f02de2ce68ec"
+    }
+  ],
+  "map": {
+    "path": "GameClient/Content/Frontier/Maps/Greenlands_ConstructionSandbox.umap",
+    "sha256": "4b32fce52368b1ecf2683413e3c44c951a025f2278372cf115021b9e2c606fbf"
+  },
+  "editor_module_sha256": "0f4afd06beea9473e8217d6c143731f204897921c2084054c4aa8858eda2dbb3",
+  "limits": [
+    "standalone single-cell geometry fixture",
+    "no neighbor-clipped runtime faces",
+    "no placement/support/door/save tools",
+    "no packaged/Linux/network/rendered traversal acceptance",
+    "not full GEO-02/03 completion"
+  ],
+  "map_overwrite_measurement": {
+    "map": "GameClient/Content/Frontier/Maps/Greenlands_ConstructionSandbox.umap",
+    "before_sha256": "4b32fce52368b1ecf2683413e3c44c951a025f2278372cf115021b9e2c606fbf",
+    "after_sha256": "4b32fce52368b1ecf2683413e3c44c951a025f2278372cf115021b9e2c606fbf",
+    "exit_code": -1,
+    "refused_unchanged": true
+  }
+}

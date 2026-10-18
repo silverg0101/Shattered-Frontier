@@ -1,5 +1,11 @@
 # E1 Unreal foundation
 
+## Isolated construction geometry pilot
+
+The next playable milestone is the [construction sandbox](../docs/construction-sandbox-milestone.md). Its current [SBX-03/04 checkpoint](../docs/evidence/construction-sandbox-adapter-pilot.md) is a standalone three-shape geometry/convex-collision fixture, with no building controls yet. The installed ProceduralMeshComponent runtime plugin is enabled; generated canonical tables are checked with `py -3 tools/Generate-ConstructionGeometryHeader.py --check` from the repository root.
+
+The dedicated map is `/Game/Frontier/Maps/Greenlands_ConstructionSandbox`; launch it explicitly with the matching editor and project, `-game -windowed`. It shows full/half/slope previews and requires its sandbox GameMode. It does not replace E1 defaults, join the LAN service, grant items or certify packaged/network/rendered acceptance. The new generator `tools/Create-ConstructionSandboxMap.py` refuses an existing map. Focused editor automation prefix: `ShatteredFrontier.Construction.Geometry.`; see checkpoint evidence for the exact command, successful cases and limits.
+
 Open `ShatteredFrontier.uproject` with UE 5.8.3. The shared C++ module supplies Game, Editor, Client and Server targets. The initial Greenlands map is a graybox movement fixture, not a finished biome. WASD moves, mouse looks, Space jumps, E probes the nearest test target. The cube avatar is a placeholder.
 
 Build the editor from the repository root:
