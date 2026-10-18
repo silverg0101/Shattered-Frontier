@@ -10,5 +10,5 @@ fi
 test "$(id -u)" != 0
 mkdir -p /srv/saved/Logs
 executable=$(cat /opt/server/.sf-executable)
-exec "$executable" /Game/Frontier/Maps/Greenlands_E1 "-port=$port" \
+exec "$executable" ShatteredFrontier /Game/Frontier/Maps/Greenlands_E1 "-port=$port" \
     -unattended -NullRHI -nosound -stdout -FullStdOutLogOutput -abslog=/srv/saved/Logs/Server.log
