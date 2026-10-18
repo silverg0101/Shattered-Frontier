@@ -34,6 +34,8 @@ The [automated input checkpoint](../docs/evidence/construction-sandbox-input-pil
 
 ## Release-controlled fixture settings
 
+Isolated standalone packaging: from the repository root, `& tools/Build-ConstructionSandbox.ps1 -Preflight` validates the installed UE 5.8.3 and clean tracked project inputs without building. Omit `-Preflight` to copy committed project inputs into a fresh ignored run and build Game/Win64/Development. Only copied configuration selects the sandbox default and explicit sandbox/E1 test cook maps. The runner retains UAT logs, receipts and hashed input/Stage/Archive manifests; it never launches or deploys. See [SBX-07A](../docs/decisions/SBX-07A-isolated-package-route.md) for per-launch user-data isolation and the separate packaged acceptance gates. A successful package does not establish multiplayer or human UI acceptance.
+
 The typed `SFE1Settings` object reads the shipped `Config/DefaultGame.ini` section `/Script/ShatteredFrontier.SFE1Settings`. Release authors may change these values within the declared bounds; they take effect at process startup. Missing entries use shipped C++ defaults; non-finite or out-of-range values fail startup. These are prospective fixture settings, not live GM controls. Any future live controls must use the shared configuration workflow and its permissions/audit rules. Algorithms, replication authority and map topology remain versioned code/content.
 
 | Plain-language setting | Property | Default | Bounds | Units |

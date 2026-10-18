@@ -165,6 +165,8 @@ Expanded specs with indexed part folders are split into an entry file and topic 
 
 When adding, renaming, or removing design documents, update this index and affected links in the same change. Keep existing `Legends_Shattered_Frontier_*.md` paths stable; expand documents in place without requiring a new version series. Remove older duplicates only after confirming equivalent content or intentional replacement.
 
+Isolated sandbox packaging: [SBX-07A route](decisions/SBX-07A-isolated-package-route.md), [checkpoint evidence](evidence/construction-sandbox-package-pilot.md) and `tools/Build-ConstructionSandbox.ps1` define a copied-project Win64 Development **Game** target build, copied-only defaults, explicit sandbox/E1 cook inputs and hashed input/Stage/Archive provenance. `& tools/Build-ConstructionSandbox.ps1 -Preflight` checks without building; omit `-Preflight` for a fresh ignored package run. `tools/Test-ConstructionSandboxPackage.ps1 -PackageRoot <absolute-run>` validates archive closure and runs finite structural/line/door/E1-negative scenarios with isolated per-process UserDir paths. No successful package acceptance yet; standalone authority excludes Client-only packaging. Original defaults/cook list and multiplayer gates remain unchanged.
+
 ## Task map
 
 | Task | Start here | Related files | Checks |
