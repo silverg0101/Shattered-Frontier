@@ -2,6 +2,10 @@
 
 Last updated: 2026-10-18. Owner: coordinating documentation agent. This is the running documentation queue; the [gameplay backlog](Game-Design/Legends_Shattered_Frontier_Gameplay_Feature_Backlog_v1.0.md) owns implementation work and [roadmap](Game-Design/Legends_Shattered_Frontier_Production_Roadmap_v1.0.md) owns milestone gates. Update this file during each documentation work cycle; no background monitoring is implied. Standing user rules and continuation context are preserved in [design-agent.md](../design-agent.md).
 
+## Reusable art prompt library - 2026-10-18
+
+User requested saved, mostly filled prompts for mounts, creatures, weapons, armor, buildings, props and terrain, with only the main concept required. [Library and usage](art-templates/README.md) links all seven templates and optional existing project reference art. This is a visual-reference workflow for later Blender work, not asset generation/import or a change to H2 gates. Independent review and recheck found no remaining actionable findings; all seven single-concept prompts and 16 library links passed focused checks. Commit/push requested; no new reference image is needed because the existing concept artwork is sufficient.
+
 ## Laptop-to-desktop handoff - 2026-10-18
 
 User requested a full commit/push and workstation switch. Current E1 evidence and Feature Control are already pushed (f98df73, 2a94e26). This handoff adds [GM recovery section12](Game-Design/Legends_Shattered_Frontier_Game_Master_Architecture_v0.1.md#12-scoped-player-and-instance-recovery): user confirmed restoration of that death's gear damage, scoped to verified outstanding incident wear. It is a design requirement, with durable evidence/authority/reward and protected-owner contract gates still open; no recovery runtime or UI exists. Independent gpt-6.1-sol source-based review found no material contradiction or blocking prerequisite omission; this is documentation review, not runtime acceptance.
