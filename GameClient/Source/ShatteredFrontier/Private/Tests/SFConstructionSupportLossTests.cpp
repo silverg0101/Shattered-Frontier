@@ -227,7 +227,7 @@ bool FSFConstructionSupportLossTest::RunTest(const FString& Parameters)
         const auto* UnsupportedMesh = Unsupported->GetMesh();
         const uint64 BeforeRevision = F.State->GetRevision();
         const uint64 SurvivorGeneration = Survivor->GetGeneration();
-        Survivor->SetActorScale3D(FVector(0.5));
+        F.State->TestFailAfterPreparedCount = 1;
         F.State->TestTimeOverride = 10.0;
         F.State->ProcessDeadlines(10.0);
         TestEqual(TEXT("Expired staging failure preserves assembly revision"), F.State->GetRevision(), BeforeRevision);
@@ -238,7 +238,7 @@ bool FSFConstructionSupportLossTest::RunTest(const FString& Parameters)
         double Deadline;
         TestTrue(TEXT("Expired staging failure keeps due episode"), F.State->Instability.GetDeadline({10,0,1}, Deadline));
         TestEqual(TEXT("Expired staging failure does not extend deadline"), Deadline, 10.0);
-        Survivor->SetActorScale3D(FVector::OneVector);
+        F.State->TestFailAfterPreparedCount = INDEX_NONE;
         F.State->ProcessDeadlines(10.1);
         TestEqual(TEXT("Projection failure retry is bounded rather than every tick"), F.State->GetRevision(), BeforeRevision);
         F.State->TestTimeOverride = 10.25;

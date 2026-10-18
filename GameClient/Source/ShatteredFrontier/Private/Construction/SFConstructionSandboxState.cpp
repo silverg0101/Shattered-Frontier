@@ -7,6 +7,8 @@
 #include "Construction/SFConstructionSandboxFoundation.h"
 #include "Construction/SFConstructionClearance.h"
 #include "Construction/SFConstructionSandboxDoorProjection.h"
+#include "Components/BoxComponent.h"
+#include "ProceduralMeshComponent.h"
 #include "Engine/World.h"
 #include "GameFramework/Pawn.h"
 
@@ -68,6 +70,142 @@ bool ASFConstructionSandboxState::FindDoorOrigin(const AActor* Projection, FIntV
     for (const auto& Pair : Doors)
     { if (Pair.Value.Projection.Get() == Projection) { OutOrigin = Pair.Key; return true; } }
     return false;
+}
+
+bool ASFConstructionSandboxState::IsReplacementQueryCurrent(const FSFConstructionReplacementSet& Replacement) const
+{
+    if (Replacement.Owner.Get() != this || Replacement.Revision != Revision
+        || Members.Num() > MaximumMembers || Doors.Num() > MaximumDoors || !ValidateEnvironment().IsEmpty()
+        || Replacement.Components.Num() != Members.Num()+Doors.Num()*5) { return false; }
+    TSet<const UPrimitiveComponent*> Expected;
+    for (const auto& Pair : Members) { Expected.Add(Pair.Value.Projection->GetMesh()); }
+    for (const auto& Pair : Doors)
+    { for (int32 Index = 0; Index < 5; ++Index) { Expected.Add(Pair.Value.Projection->GetCollider(Index)); } }
+    if (Expected.Num() != Replacement.Components.Num()) { return false; }
+    for (const auto& Component : Replacement.Components)
+    { if (!Component.IsValid() || Expected.Remove(Component.Get()) != 1) { return false; } }
+    return Expected.Num() == 0;
+}
+
+FSFConstructionReplacementSet ASFConstructionSandboxState::MakeReplacementSet() const
+{
+    FSFConstructionReplacementSet Replacement;
+    Replacement.Owner = const_cast<ASFConstructionSandboxState*>(this); Replacement.Revision = Revision;
+    for (const auto& Pair : Members) { Replacement.Components.Add(const_cast<UProceduralMeshComponent*>(Pair.Value.Projection->GetMesh())); }
+    for (const auto& Pair : Doors)
+    { for (int32 Index = 0; Index < 5; ++Index) { Replacement.Components.Add(const_cast<UBoxComponent*>(Pair.Value.Projection->GetCollider(Index))); } }
+    return Replacement;
+}
+
+FString ASFConstructionSandboxState::ValidateStableSnapshot(const ASFConstructionSandboxController* Controller, uint64 ExpectedRevision) const
+{
+    const FString Error = ValidateOwner(Controller,ExpectedRevision);
+    if (!Error.IsEmpty()) { return Error; }
+    if (Instability.Num() != 0 || DoorInstability.Num() != 0)
+    { return TEXT("Stable snapshot required; saving or restoring cannot reset active support-loss grace"); }
+    TArray<FSFConstructionSupportResult> Structural;
+    TArray<FSFConstructionDoorSupportResult> Functional;
+    const FString SupportError = SolveCombined(Members,Doors,Structural,Functional);
+    if (!SupportError.IsEmpty()) { return SupportError; }
+    for (const auto& Entry : Structural)
+    { if (Entry.State == ESFConstructionSupportState::Unsupported) { return TEXT("Current construction is unsupported; snapshot unavailable"); } }
+    for (const auto& Entry : Functional)
+    { if (Entry.State == ESFConstructionSupportState::Unsupported) { return TEXT("Current door attachment is unsupported; snapshot unavailable"); } }
+    return FString();
+}
+
+bool ASFConstructionSandboxState::ExportSnapshot(const ASFConstructionSandboxController* Controller, uint64 ExpectedRevision,
+    FSFConstructionSandboxSnapshot& OutSnapshot, FString& Result) const
+{
+    Result = ValidateStableSnapshot(Controller,ExpectedRevision);
+    if (!Result.IsEmpty()) { return false; }
+    FSFConstructionSandboxSnapshot Candidate;
+    Candidate.SourceRevision = Revision;
+    for (const auto& Pair : Members) { Candidate.Cells.Add({Pair.Key,Pair.Value.Shape,Pair.Value.Rotation}); }
+    for (const auto& Pair : Doors) { Candidate.Doors.Add({Pair.Key,Pair.Value.YawQuarterTurns,Pair.Value.bOpen}); }
+    TArray<uint8> Bytes;
+    FSFConstructionSandboxSnapshot Canonical;
+    if (!SFConstructionSaveCodec::Encode(Candidate,Bytes) || !SFConstructionSaveCodec::Decode(Bytes,Canonical))
+    { Result = TEXT("Snapshot content invalid; export output preserved"); return false; }
+    OutSnapshot = MoveTemp(Canonical);
+    Result = TEXT("Stable development snapshot exported; no inventory or salvage provenance");
+    return true;
+}
+
+bool ASFConstructionSandboxState::ImportSnapshot(ASFConstructionSandboxController* Controller, uint64 ExpectedRevision,
+    const FSFConstructionSandboxSnapshot& Snapshot, FString& Result)
+{
+    Result = ValidateStableSnapshot(Controller,ExpectedRevision);
+    if (!Result.IsEmpty()) { return false; }
+    if (Snapshot.Cells.Num() > MaximumMembers || Snapshot.Doors.Num() > MaximumDoors)
+    { Result = TEXT("Snapshot exceeds captured sandbox cell or door limits"); return false; }
+    TArray<uint8> Bytes;
+    FSFConstructionSandboxSnapshot Canonical;
+    if (!SFConstructionSaveCodec::Encode(Snapshot,Bytes) || !SFConstructionSaveCodec::Decode(Bytes,Canonical))
+    { Result = TEXT("Invalid or incompatible development snapshot; construction preserved"); return false; }
+    TMap<FIntVector,FSFConstructionSandboxMember> Candidate;
+    TMap<FIntVector,FSFConstructionSandboxDoor> CandidateDoors;
+    TArray<FIntVector> Changed;
+    for (const auto& Pair : Members) { Changed.Add(Pair.Key); }
+    for (const auto& Cell : Canonical.Cells)
+    {
+        auto Member = Members.Contains(Cell.Cell) ? Members.FindChecked(Cell.Cell) : FSFConstructionSandboxMember();
+        Member.Shape = Cell.Shape; Member.Rotation = Cell.Rotation;
+        Candidate.Add(Cell.Cell,Member); Changed.AddUnique(Cell.Cell);
+    }
+    for (const auto& Door : Canonical.Doors)
+    {
+        auto Member = Doors.Contains(Door.OriginCell) ? Doors.FindChecked(Door.OriginCell) : FSFConstructionSandboxDoor();
+        Member.YawQuarterTurns = Door.YawQuarterTurns; Member.bOpen = Door.bOpen;
+        CandidateDoors.Add(Door.OriginCell,Member);
+    }
+    TArray<FSFConstructionSupportResult> Structural;
+    TArray<FSFConstructionDoorSupportResult> Functional;
+    Result = SolveCombined(Candidate,CandidateDoors,Structural,Functional);
+    if (!Result.IsEmpty()) { return false; }
+    for (const auto& Entry : Structural)
+    { if (Entry.State == ESFConstructionSupportState::Unsupported) { Result = TEXT("Snapshot contains unsupported structural occupancy"); return false; } }
+    for (const auto& Entry : Functional)
+    { if (Entry.State == ESFConstructionSupportState::Unsupported) { Result = TEXT("Snapshot contains unsupported door attachments"); return false; } }
+    TArray<FSFConstructionDoorProjectionProfile> Profiles;
+    for (const auto& Door : Canonical.Doors)
+    {
+        FSFConstructionDoorProjectionProfile Profile;
+        if (!ASFConstructionSandboxDoorProjection::BuildProfile(Door.OriginCell,Door.YawQuarterTurns,Door.bOpen,Profile))
+        { Result = TEXT("Snapshot door profile unavailable"); return false; }
+        Profiles.Add(MoveTemp(Profile));
+    }
+    for (int32 I = 0; I < Profiles.Num(); ++I)
+    for (const auto& A : Reservations(Profiles[I]))
+    {
+        for (const auto& Cell : Canonical.Cells)
+        {
+            if (SFConstructionClearance::IntersectsReservation(Cell.Shape,Cell.Rotation,CellCorner(Cell.Cell),A) != SFConstructionClearance::EResult::Clear)
+            { Result = TEXT("Snapshot structure invades door solid, motion or access reservation"); return false; }
+        }
+        for (int32 J = 0; J < I; ++J)
+        for (const auto& B : Reservations(Profiles[J]))
+        { if (PositiveIntersection(A,B)) { Result = TEXT("Snapshot door reservations overlap"); return false; } }
+    }
+    const FSFConstructionReplacementSet Replacement = MakeReplacementSet();
+    if (!Replacement.Validate(GetWorld())) { Result = TEXT("Old owned projection set invalid; restore fenced"); return false; }
+    for (const auto& Cell : Canonical.Cells)
+    {
+        if (SFConstructionClearance::EvaluateReplacing(GetWorld(),Cell.Shape,Cell.Rotation,CellCorner(Cell.Cell),Replacement) != SFConstructionClearance::EResult::Clear)
+        { Result = TEXT("Snapshot occupied solid blocked by current character, prop or unrelated projection"); return false; }
+    }
+    for (const auto& Profile : Profiles)
+    for (const FBox& Box : Reservations(Profile))
+    {
+        if (SFConstructionClearance::EvaluateBoxReplacing(GetWorld(),Box,Replacement) != SFConstructionClearance::EResult::Clear)
+        { Result = TEXT("Snapshot door reservation blocked by current world occupancy"); return false; }
+    }
+    Changed.Sort([](const FIntVector& A,const FIntVector& B)
+    { return A.X != B.X ? A.X < B.X : A.Y != B.Y ? A.Y < B.Y : A.Z < B.Z; });
+    if (!CommitCombined(MoveTemp(Candidate),MoveTemp(CandidateDoors),Changed,AuthorityTime(),Result)) { return false; }
+    Controller->CancelRemoval();
+    Result = TEXT("Whole development assembly restored atomically; source revision retained only as provenance");
+    return true;
 }
 
 FString ASFConstructionSandboxState::StructuralReservations(const FSFConstructionSandboxIntent& Intent) const
@@ -213,7 +351,8 @@ FString ASFConstructionSandboxState::ValidateEnvironment() const
     { return TEXT("Known development foundation unavailable; edits and collapse blocked"); }
     for (const auto& Pair : Members)
     {
-        if (!Pair.Value.Projection.IsValid() || Pair.Value.Projection->IsActorBeingDestroyed())
+        if (!Pair.Value.Projection.IsValid() || Pair.Value.Projection->IsActorBeingDestroyed()
+            || !Pair.Value.Projection->IsProjectionIntact(Pair.Value.Shape,Pair.Value.Rotation,Pair.Value.ProjectionGeneration,CellCorner(Pair.Key)))
         { return TEXT("Construction projection unavailable; edits blocked pending rebuild"); }
     }
     for (const auto& Pair : Doors)
@@ -489,7 +628,11 @@ bool ASFConstructionSandboxState::CommitCombined(TMap<FIntVector, FSFConstructio
     }
     for (auto& Pair : Candidate)
     {
-        if (Members.Contains(Pair.Key)) { continue; }
+        if (const auto* Old = Members.Find(Pair.Key))
+        {
+            if (Old->Shape != Pair.Value.Shape || Old->Rotation != Pair.Value.Rotation) { Pair.Value.Generation = NextRevision; }
+            continue;
+        }
         auto* Projection = GetWorld()->SpawnActor<ASFConstructionSandboxPreview>(CellCorner(Pair.Key), FRotator::ZeroRotator);
         if (!Projection)
         {
@@ -508,7 +651,7 @@ bool ASFConstructionSandboxState::CommitCombined(TMap<FIntVector, FSFConstructio
     }
     for (const auto& Cell : Affected)
     {
-        const auto* Member = Candidate.Find(Cell);
+        auto* Member = Candidate.Find(Cell);
         if (!Member) { continue; }
         FSFConstructionNeighbors Neighbors;
         for (int32 Face = 0; Face < 6; ++Face)
@@ -527,6 +670,11 @@ bool ASFConstructionSandboxState::CommitCombined(TMap<FIntVector, FSFConstructio
             Result = TEXT("Projection staging failed; construction preserved"); return false;
         }
         Prepared.Add(Projection);
+        Member->ProjectionGeneration = NextRevision;
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+        if (TestFailAfterPreparedCount >= 1 && Prepared.Num() == TestFailAfterPreparedCount)
+        { Rollback(); Result = TEXT("Editor fixture interrupted after prepared projection; construction preserved"); return false; }
+#endif
     }
     for (auto* Projection : Prepared)
     {

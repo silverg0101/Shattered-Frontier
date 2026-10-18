@@ -4,6 +4,22 @@
 
 class UWorld;
 class ASFConstructionSandboxDoorProjection;
+class ASFConstructionSandboxState;
+class UPrimitiveComponent;
+
+// Only State can populate this exact, revision-bound component replacement set.
+// Default/unowned/stale contexts fail closed. No actor-wide collision exclusion.
+class SHATTEREDFRONTIER_API FSFConstructionReplacementSet
+{
+public:
+    bool Validate(UWorld* World) const;
+    bool Contains(const UPrimitiveComponent* Component) const;
+private:
+    friend class ASFConstructionSandboxState;
+    TWeakObjectPtr<ASFConstructionSandboxState> Owner;
+    uint64 Revision = 0;
+    TArray<TWeakObjectPtr<UPrimitiveComponent>> Components;
+};
 
 namespace SFConstructionClearance
 {
@@ -21,4 +37,8 @@ namespace SFConstructionClearance
         const ASFConstructionSandboxDoorProjection* OwnOldDoor = nullptr);
     SHATTEREDFRONTIER_API EResult IntersectsReservation(int32 Shape, int32 Rotation,
         const FVector& CellCorner, const FBox& Reservation);
+    SHATTEREDFRONTIER_API EResult EvaluateReplacing(UWorld* World, int32 Shape, int32 Rotation,
+        const FVector& CellCorner, const FSFConstructionReplacementSet& Replacement);
+    SHATTEREDFRONTIER_API EResult EvaluateBoxReplacing(UWorld* World, const FBox& Bounds,
+        const FSFConstructionReplacementSet& Replacement);
 }

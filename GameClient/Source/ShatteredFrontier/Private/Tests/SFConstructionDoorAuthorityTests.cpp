@@ -342,7 +342,7 @@ bool FSFConstructionDoorLifecycleTest::RunTest(const FString& Parameters)
             return F.World->LineTraceSingleByChannel(Hit,FVector(250,175,200),FVector(250,275,200),ECC_Visibility,Query) && Hit.GetActor() == Door;
         };
         TestTrue(TEXT("Due door still has old closed-leaf collision"),TraceDoor());
-        Survivor->SetActorScale3D(FVector(.5));
+        F.State->TestFailAfterPreparedCount = 1;
         F.State->TestTimeOverride = 10;
         AddExpectedError(TEXT("CONSTRUCTION_COLLAPSE_RETRY"),EAutomationExpectedErrorFlags::Contains,1);
         F.State->ProcessDeadlines(10);
@@ -354,7 +354,7 @@ bool FSFConstructionDoorLifecycleTest::RunTest(const FString& Parameters)
         F.State->DoorInstability.GetDeadline({4,4,2},DoorDeadline);
         TestEqual(TEXT("Failed mixed wave preserves structural deadline"),StructuralDeadline,10.0);
         TestEqual(TEXT("Failed mixed wave preserves functional deadline"),DoorDeadline,10.0);
-        Survivor->SetActorScale3D(FVector::OneVector);
+        F.State->TestFailAfterPreparedCount = INDEX_NONE;
         F.State->TestTimeOverride = 10.25;
         F.State->ProcessDeadlines(10.25);
         TestEqual(TEXT("Successful retry publishes one common revision"),F.State->GetRevision(),Before+1);

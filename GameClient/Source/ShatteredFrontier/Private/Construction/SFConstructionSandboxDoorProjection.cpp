@@ -174,7 +174,8 @@ const UBoxComponent* ASFConstructionSandboxDoorProjection::GetCollider(int32 Ind
 bool ASFConstructionSandboxDoorProjection::IsProjectionIntact() const
 {
     if (!IsAllowedContext() || !bConfigured || !MatchesTransform(GetActorTransform(),ConfiguredTransform)
-        || !Visual || !Visual->IsRegistered() || Visual->GetAttachParent() != GetRootComponent()
+        || IsHidden() == bActive || !Visual || Visual->IsVisible() != bActive || Visual->bHiddenInGame
+        || !Visual->IsRegistered() || Visual->GetAttachParent() != GetRootComponent()
         || Visual->GetCollisionEnabled() != ECollisionEnabled::NoCollision
         || !MatchesTransform(Visual->GetRelativeTransform(),FTransform::Identity) || Colliders.Num() != 5 || Boxes.Num() != 5)
     { return false; }

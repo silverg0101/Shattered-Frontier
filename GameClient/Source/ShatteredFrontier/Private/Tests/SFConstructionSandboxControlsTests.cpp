@@ -116,9 +116,9 @@ bool FSFConstructionSandboxAuthorityTest::RunTest(const FString& Parameters)
     const uint64 PriorRevision = State->GetRevision();
     int32 PriorActors = 0;
     for (TActorIterator<ASFConstructionSandboxPreview> It(World); It; ++It) { ++PriorActors; }
-    // Invalid existing projection transform forces its preparation to fail after
-    // the newly added member stages. A smaller scale keeps clearance unblocked.
-    Existing->SetActorScale3D(FVector(0.5));
+    // Interrupt after a real prepared projection; corrupt transforms now fence
+    // before preparation. Newly added actors have already staged at this point.
+    State->TestFailAfterPreparedCount = 1;
     Pawn->SetActorLocation(FVector(575,225,100));
     Intent.Cell = FIntVector(11,0,0);
     TestTrue(TEXT("Failure injection reaches preparation after validation"), State->Evaluate(Controller, Intent).IsEmpty());
@@ -131,7 +131,7 @@ bool FSFConstructionSandboxAuthorityTest::RunTest(const FString& Parameters)
     for (TActorIterator<ASFConstructionSandboxPreview> It(World); It; ++It)
     { if (!It->IsActorBeingDestroyed()) { ++AfterActors; } }
     TestEqual(TEXT("Rejected member leaves no live projection actor"), AfterActors, PriorActors);
-    Existing->SetActorScale3D(FVector::OneVector);
+    State->TestFailAfterPreparedCount = INDEX_NONE;
     Pawn->SetActorLocation(FVector(300,25,100));
     Intent.Cell = FIntVector(10,0,1);
     Intent.ExpectedRevision = State->GetRevision();

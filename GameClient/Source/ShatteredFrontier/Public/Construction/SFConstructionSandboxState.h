@@ -4,11 +4,13 @@
 #include "Construction/SFConstructionInstability.h"
 #include "Construction/SFConstructionSupport.h"
 #include "Construction/SFConstructionDoorSupport.h"
+#include "Construction/SFConstructionSaveCodec.h"
 #include "SFConstructionSandboxState.generated.h"
 
 class ASFConstructionSandboxController;
 class ASFConstructionSandboxPreview;
 class ASFConstructionSandboxDoorProjection;
+class FSFConstructionReplacementSet;
 
 enum class ESFConstructionDoorAction : uint8 { Place, Toggle, Remove };
 struct FSFConstructionDoorIntent
@@ -49,6 +51,7 @@ struct FSFConstructionSandboxMember
     int32 Rotation = 0;
     uint64 Generation = 0;
     TWeakObjectPtr<ASFConstructionSandboxPreview> Projection;
+    uint64 ProjectionGeneration = 0; // Derived mesh/collision stamp; occupancy Generation above is independent.
 };
 
 // Transient standalone authority checkpoint. No persistence,
@@ -67,6 +70,10 @@ public:
     bool PreviewRemoval(ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent, TArray<FIntVector>& Affected, FString& Result, FSFConstructionRemovalConsequences* Consequences = nullptr);
     FString EvaluateDoor(const ASFConstructionSandboxController* Controller, const FSFConstructionDoorIntent& Intent) const;
     bool ApplyDoor(ASFConstructionSandboxController* Controller, const FSFConstructionDoorIntent& Intent, FString& Result);
+    bool ExportSnapshot(const ASFConstructionSandboxController* Controller, uint64 ExpectedRevision,
+        FSFConstructionSandboxSnapshot& OutSnapshot, FString& Result) const;
+    bool ImportSnapshot(ASFConstructionSandboxController* Controller, uint64 ExpectedRevision,
+        const FSFConstructionSandboxSnapshot& Snapshot, FString& Result);
     int32 GetDoorCount() const { return Doors.Num(); }
     const FSFConstructionSandboxDoor* FindDoor(const FIntVector& Origin) const { return Doors.Find(Origin); }
     bool FindDoorOrigin(const AActor* Projection, FIntVector& OutOrigin) const;
@@ -79,6 +86,10 @@ public:
     float GetReachCentimetres() const { return ReachCentimetres; }
     static FVector CellCorner(const FIntVector& Cell);
 private:
+    friend class FSFConstructionReplacementSet;
+    bool IsReplacementQueryCurrent(const FSFConstructionReplacementSet& Replacement) const;
+    FSFConstructionReplacementSet MakeReplacementSet() const;
+    FString ValidateStableSnapshot(const ASFConstructionSandboxController* Controller, uint64 ExpectedRevision) const;
     FString ValidateIntent(const ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent) const;
     FString ValidateEnvironment() const;
     FString ValidateOwner(const ASFConstructionSandboxController* Controller, uint64 ExpectedRevision) const;
@@ -118,5 +129,8 @@ private:
     friend class FSFConstructionSupportLossTest;
     friend class FSFConstructionDoorAuthorityTest;
     friend class FSFConstructionDoorLifecycleTest;
+    friend class FSFConstructionSnapshotRestoreTest;
+    friend class FSFConstructionSandboxAuthorityTest;
+    int32 TestFailAfterPreparedCount = INDEX_NONE;
 #endif
 };

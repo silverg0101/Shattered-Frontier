@@ -18,6 +18,10 @@ public:
     int32 GetDoorYawQuarterTurns() const { return DoorYaw; }
     const FString& GetLastConstructionResult() const { return LastResult; }
 private:
+    friend class ASFConstructionSandboxState;
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+    friend class FSFConstructionSnapshotRestoreTest;
+#endif
     void ToggleBuild();
     void SelectCube();
     void SelectSlab();

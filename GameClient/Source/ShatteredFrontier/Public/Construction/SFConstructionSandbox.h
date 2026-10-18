@@ -6,6 +6,7 @@
 #include "SFConstructionSandbox.generated.h"
 
 class UProceduralMeshComponent;
+class UPrimitiveComponent;
 
 // Explicit opt-in, local development preview only. No economic state or edit RPCs.
 UCLASS(NotBlueprintable)
@@ -33,15 +34,21 @@ public:
     bool CanActivatePrepared() const;
     bool ActivatePrepared();
     void DiscardPrepared();
+    bool IsProjectionIntact(int32 ExpectedShape, int32 ExpectedRotation, uint64 ExpectedGeneration, const FVector& ExpectedCorner) const;
+    bool IsStagedComponent(const UPrimitiveComponent* Component) const;
     uint64 GetGeneration() const { return ActiveGeneration; }
     const FString& GetPayloadHash() const { return ActivePayloadHash; }
     const UProceduralMeshComponent* GetMesh() const { return ActiveMesh; }
 private:
     UPROPERTY(Transient) TObjectPtr<UProceduralMeshComponent> ActiveMesh;
     UPROPERTY(Transient) TObjectPtr<UProceduralMeshComponent> PreparedMesh;
+    int32 PreparedShape = INDEX_NONE;
+    int32 PreparedRotation = INDEX_NONE;
     uint64 PreparedGeneration = 0;
     FString PreparedPayloadHash;
     FTransform PreparedTransform;
     uint64 ActiveGeneration = 0;
+    int32 ActiveShape = INDEX_NONE;
+    int32 ActiveRotation = INDEX_NONE;
     FString ActivePayloadHash;
 };

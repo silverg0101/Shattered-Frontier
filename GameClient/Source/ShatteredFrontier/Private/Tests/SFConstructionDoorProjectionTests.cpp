@@ -158,6 +158,14 @@ bool FSFConstructionDoorBoundsTest::RunTest(const FString& Parameters)
     TestFalse(TEXT("Collider drift fails read-only preflight"),Door->IsProjectionIntact() || Door->Activate());
     Box->SetBoxExtent(Door->GetBoxProfile()[0].Extent);
     TestTrue(TEXT("Restored validated staging activates"),Door->Activate());
+    Door->SetActorHiddenInGame(true);
+    TestFalse(TEXT("Hidden active door fails integrity"),Door->IsProjectionIntact());
+    Door->SetActorHiddenInGame(false);
+    auto* MutableVisual = const_cast<UProceduralMeshComponent*>(Visual);
+    MutableVisual->SetHiddenInGame(true);
+    TestFalse(TEXT("Hidden active door render component fails integrity"),Door->IsProjectionIntact());
+    MutableVisual->SetHiddenInGame(false);
+    TestTrue(TEXT("Restored door visibility passes integrity"),Door->IsProjectionIntact());
     Box->DestroyComponent();
     TestFalse(TEXT("Destroyed active collider fails read-only preflight"),Door->IsProjectionIntact());
     Door->Destroy();

@@ -2,8 +2,10 @@
 #include "Construction/SFConstructionGeometry.h"
 #include "Construction/SFConstructionSandbox.h"
 #include "Construction/SFConstructionSandboxDoorProjection.h"
+#include "Construction/SFConstructionSandboxState.h"
 #include "Chaos/Convex.h"
 #include "Components/PrimitiveComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/OverlapResult.h"
 #include "Engine/World.h"
@@ -13,6 +15,8 @@
 #include "PhysicsEngine/BodyInstance.h"
 #include "PhysicsEngine/BodySetup.h"
 #include "ProceduralMeshComponent.h"
+
+using SFConstructionClearance::EResult;
 
 namespace
 {
@@ -35,12 +39,18 @@ SFConstructionClearance::EResult Admit(UPrimitiveComponent* Component, bool& bSk
     if (!IsValid(Component)) { return EResult::Unavailable; }
     if (const auto* Door = Cast<ASFConstructionSandboxDoorProjection>(Component->GetOwner()))
     {
-        if (!Door->IsActive()) { bSkip = true; return EResult::Clear; }
-        if (!Door->IsProjectionIntact()) { return EResult::Unavailable; }
-        if (Door == OwnOldDoor) { bSkip = true; return EResult::Clear; }
+        bool bKnownCollider = false;
+        for (int32 Index = 0; Index < 5; ++Index) { bKnownCollider |= Door->GetCollider(Index) == Component; }
+        if (!Door->IsActive() && bKnownCollider)
+        {
+            if (!Door->IsProjectionIntact()) { return EResult::Unavailable; }
+            bSkip = true; return EResult::Clear;
+        }
+        if (Door->IsActive() && !Door->IsProjectionIntact()) { return EResult::Unavailable; }
+        if (Door == OwnOldDoor && bKnownCollider) { bSkip = true; return EResult::Clear; }
     }
     if (const auto* Preview = Cast<ASFConstructionSandboxPreview>(Component->GetOwner()))
-    { if (Preview->GetMesh() != Component) { bSkip = true; return EResult::Clear; } }
+    { if (Preview->IsStagedComponent(Component)) { bSkip = true; return EResult::Clear; } }
     if (!Component->IsQueryCollisionEnabled()) { bSkip = true; return EResult::Clear; }
     UBodySetup* Setup = Component->GetBodySetup();
     if (!Setup || Setup->GetCollisionTraceFlag() == CTF_UseComplexAsSimple
@@ -50,13 +60,26 @@ SFConstructionClearance::EResult Admit(UPrimitiveComponent* Component, bool& bSk
 }
 }
 
-SFConstructionClearance::EResult SFConstructionClearance::Evaluate(UWorld* World, int32 Shape,
-    int32 Rotation, const FVector& CellCorner)
+bool FSFConstructionReplacementSet::Validate(UWorld* World) const
+{
+    return IsInGameThread() && IsValid(World) && Owner.IsValid() && Owner->GetWorld() == World
+        && Owner->IsReplacementQueryCurrent(*this);
+}
+
+bool FSFConstructionReplacementSet::Contains(const UPrimitiveComponent* Component) const
+{
+    for (const auto& Entry : Components) { if (Entry.Get() == Component) { return true; } }
+    return false;
+}
+
+static SFConstructionClearance::EResult EvaluateSolidInternal(UWorld* World, int32 Shape,
+    int32 Rotation, const FVector& CellCorner, const FSFConstructionReplacementSet* Replacement)
 {
     FSFConstructionSolid Solid;
     if (!IsInGameThread() || !IsValid(World) || !FMath::IsFinite(CellCorner.X)
         || !FMath::IsFinite(CellCorner.Y) || !FMath::IsFinite(CellCorner.Z)
-        || !SFConstructionGeometry::Build(Shape, Rotation, Solid) || !DoorProjectionsAvailable(World)) { return EResult::Unavailable; }
+        || !SFConstructionGeometry::Build(Shape, Rotation, Solid) || !DoorProjectionsAvailable(World)
+        || (Replacement && !Replacement->Validate(World))) { return EResult::Unavailable; }
 
     // Only broadphase uses bounds. Preserve exact canonical vertices and faces,
     // including the sloped plane; no inset, inflation or render mesh dependency.
@@ -87,7 +110,7 @@ SFConstructionClearance::EResult SFConstructionClearance::Evaluate(UWorld* World
         UPrimitiveComponent* Component = Candidate.GetComponent();
         bool bSkip;
         if (Admit(Component,bSkip) == EResult::Unavailable) { return EResult::Unavailable; }
-        if (bSkip) { continue; }
+        if (bSkip || (Replacement && Replacement->Contains(Component))) { continue; }
         FBodyInstance* Body = Component->GetBodyInstance(NAME_None, true, Candidate.GetItemIndex());
         if (!Body || !Body->IsValidBodyInstance()) { return EResult::Unavailable; }
         bool bRead = false, bOverlap = false;
@@ -105,10 +128,11 @@ SFConstructionClearance::EResult SFConstructionClearance::Evaluate(UWorld* World
     return EResult::Clear;
 }
 
-SFConstructionClearance::EResult SFConstructionClearance::EvaluateBox(UWorld* World, const FBox& Bounds,
-    const ASFConstructionSandboxDoorProjection* OwnOldDoor)
+static SFConstructionClearance::EResult EvaluateBoxInternal(UWorld* World, const FBox& Bounds,
+    const ASFConstructionSandboxDoorProjection* OwnOldDoor, const FSFConstructionReplacementSet* Replacement)
 {
     if (!IsInGameThread() || !IsValid(World) || !ValidBox(Bounds) || !DoorProjectionsAvailable(World)
+        || (Replacement && !Replacement->Validate(World))
         || (OwnOldDoor && (OwnOldDoor->GetWorld() != World || !OwnOldDoor->IsActive() || !OwnOldDoor->IsProjectionIntact()))) { return EResult::Unavailable; }
     TArray<FOverlapResult> Candidates;
     const FCollisionObjectQueryParams Objects(FCollisionObjectQueryParams::AllObjects);
@@ -120,7 +144,7 @@ SFConstructionClearance::EResult SFConstructionClearance::EvaluateBox(UWorld* Wo
         auto* Component = Candidate.GetComponent();
         bool bSkip;
         if (Admit(Component,bSkip,OwnOldDoor) == EResult::Unavailable) { return EResult::Unavailable; }
-        if (bSkip) { continue; }
+        if (bSkip || (Replacement && Replacement->Contains(Component))) { continue; }
         FBodyInstance* Body = Component->GetBodyInstance(NAME_None,true,Candidate.GetItemIndex());
         if (!Body || !Body->IsValidBodyInstance()) { return EResult::Unavailable; }
         FMTDResult Penetration;
@@ -133,6 +157,22 @@ SFConstructionClearance::EResult SFConstructionClearance::EvaluateBox(UWorld* Wo
     }
     return EResult::Clear;
 }
+
+SFConstructionClearance::EResult SFConstructionClearance::Evaluate(UWorld* World, int32 Shape,
+    int32 Rotation, const FVector& CellCorner)
+{ return EvaluateSolidInternal(World,Shape,Rotation,CellCorner,nullptr); }
+
+SFConstructionClearance::EResult SFConstructionClearance::EvaluateReplacing(UWorld* World, int32 Shape,
+    int32 Rotation, const FVector& CellCorner, const FSFConstructionReplacementSet& Replacement)
+{ return EvaluateSolidInternal(World,Shape,Rotation,CellCorner,&Replacement); }
+
+SFConstructionClearance::EResult SFConstructionClearance::EvaluateBox(UWorld* World, const FBox& Bounds,
+    const ASFConstructionSandboxDoorProjection* OwnOldDoor)
+{ return EvaluateBoxInternal(World,Bounds,OwnOldDoor,nullptr); }
+
+SFConstructionClearance::EResult SFConstructionClearance::EvaluateBoxReplacing(UWorld* World,
+    const FBox& Bounds, const FSFConstructionReplacementSet& Replacement)
+{ return EvaluateBoxInternal(World,Bounds,nullptr,&Replacement); }
 
 SFConstructionClearance::EResult SFConstructionClearance::IntersectsReservation(int32 Shape, int32 Rotation,
     const FVector& CellCorner, const FBox& Reservation)
