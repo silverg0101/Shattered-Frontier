@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup><PackageReference Include="Npgsql" /></ItemGroup>
+  <ItemGroup><None Include="Schema.sql" CopyToOutputDirectory="PreserveNewest" /></ItemGroup>
+</Project>

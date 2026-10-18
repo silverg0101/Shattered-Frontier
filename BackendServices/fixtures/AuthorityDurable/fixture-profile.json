@@ -1,0 +1,26 @@
+{
+  "profileId": "stage-s-v1",
+  "fixtureFingerprint": "SHA256 of compact System.Text.Json array-of-strings UTF-8 bytes; domain label is a separate first element. Fixture-only pinned .NET behavior, not a production canonical encoding.",
+  "asciiGoldenVectors": [
+    {"parts": ["stage-s-v1", "a", "bc"], "utf8Hex": "5b2273746167652d732d7631222c2261222c226263225d", "sha256": "06f9ff12bfb84dedf0dbdb2f7dc89d2a29b7383bd8122bb28d1c60a23f44a028"},
+    {"parts": ["stage-s-v1", "ab", "c"], "utf8Hex": "5b2273746167652d732d7631222c226162222c2263225d", "sha256": "53aca9f109b35e28e967c6c2c9d946499339c1a130b7d4388c9a0b1414094d70"}
+  ],
+  "stage": "S",
+  "authorization": "trusted fixture lookup stub",
+  "externalFence": "synthetic proof stub",
+  "lookupIssuer": "trusted-stage-s-building-oracle",
+  "syntheticRealm": "synthetic-realm",
+  "fixedParticipants": ["geometry", "material", "terrain"],
+  "syntheticOrigin": "origin-1",
+  "syntheticWorkers": ["worker-1", "worker-2"],
+  "preparedResourceUnits": 1,
+  "applyDebitUnits": 2,
+  "outputHeldUntilCompletionCertificate": true,
+  "productionWire": false,
+  "productionIdentity": false,
+  "realMutualTls": false,
+  "protobufOrB05Profile": false,
+  "cppByteVectors": false,
+  "purpose": "bounded PostgreSQL transaction, fault, and restart evidence for fixture-owned authority storage",
+  "syntheticRecordsOnly": true
+}

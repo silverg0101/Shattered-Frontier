@@ -1,0 +1,161 @@
+{
+  "recordedOn": "2026-10-18",
+  "stage": "S",
+  "passed": true,
+  "rawEvidence": "Artifacts/Persistence/AuthorityDurable/review-04",
+  "fixtureId": "73cc6aec-bf32-4540-b475-8af2b55f5d86",
+  "profile": "stage-s-v1",
+  "caseGroups": 22,
+  "failedGroups": 0,
+  "skippedGroups": 0,
+  "provisioningRoleChecks": 15,
+  "provisioningRoleFailures": 0,
+  "postgresImmediateRestarts": 1,
+  "ownerOutageTransitions": 2,
+  "evidencePathGuards": [
+    "outside-root refused before provisioning",
+    "existing-run refused before provisioning"
+  ],
+  "fixtureSourceBaseCommit": "fdc55ebf63f127bc02f20d837f931a6d23dfdd41",
+  "sourceSha256": {
+    "Program.cs": "e3ca66b1e007a88669756cc34e0fd1c2ef14603b75f0bf53b30aabb6866b8c32",
+    "Scenarios.cs": "e9b86f225db3d2f741f6fcd38eeedf8a5bdc3c668a6e979503000a79222b5933",
+    "fixture-profile.json": "1a7fdbc7c2e1ce5e4b5fea49667c7f55a089de73eba493f2b0204fd2c533a970",
+    "Schema.sql": "103f4fbd10f4d93e813763d85515fedae94323ab4bbd95ae96d37a86deed2c6f",
+    "SocketProxy.cs": "ed01535b6d48363a24facba7a6e2831c218372dff9221ecf243201e81dd6885b",
+    "AuthorityDurable.csproj": "798300411241d75412885999c6368862d673e83a0af9fda794aa2d0252fd3c51",
+    "packages.lock.json": "08f4ef5a915bc81846117dc6c8d732a4bfe363e068576d0365f091ca933cdf43",
+    "Store.cs": "df544fafb382a0ecfc44d8628ee3ac95c5c892ad988e12709ee0b15e2e51dc09"
+  },
+  "lifecycleSha256": "a3e97fe0a052fd37796419371de3caff2a91df5027d156a94e9dcc76def20aba",
+  "buildConfigurationSha256": {
+    "BackendServices/Directory.Packages.props": "a73ec47010b0f6ebc8229b80b54f64af918232e918775c89c0adb9ddf295f7fe",
+    "BackendServices/toolchain-lock.json": "fe9be20658041d09f73290092de2d58172cdfc77ededfd8c19ea9643ac690b63",
+    "BackendServices/Directory.Build.props": "22fd26c73efa130281d44572ae7ce27a917fbc459355df062c14916b48246db3",
+    "BackendServices/global.json": "81ae2087dbfb46027fd94748351fb4b1ab24145fbb52544a2822bf128e2e48f1"
+  },
+  "binarySha256": "788e388cc061c049b8e14e03e3442643076a7095eb4853febb07c851f5f13faf",
+  "sdkSha256": "abce6623a6729059cf39bb0f728c4a7804f625895099c88c17e6e704661e09eb",
+  "nativeSha256": {
+    "psql.exe": "1e23b7f9ac7649b4717ada9b1f4e1b5b66c343937b6a91583f63528b96a61503",
+    "initdb.exe": "68195f0c6f22694660ba86d914ae8c74bcd38e71eb342f98e065b1962311142e",
+    "postgres.exe": "af5b897cb69c9ce692a4a15ecd022b540db85db1add0f66d2b9f0697be2451a0",
+    "pg_ctl.exe": "552049183df455921657c8e498e9745e8508bf77d2c2e5cb9c21b2cbdc798822"
+  },
+  "postgresSystemIdentifier": "7698063401260273420",
+  "settings": {
+    "version": "PostgreSQL 18.6 on x86_64-windows, compiled by msvc-19.44.35228, 64-bit",
+    "fsync": "on",
+    "synchronous_commit": "on",
+    "full_page_writes": "on"
+  },
+  "cleanup": {
+    "remainingPrivateDirectory": null,
+    "stopped": true,
+    "privateStorageRemoved": true,
+    "fixtureId": "73cc6aec-bf32-4540-b475-8af2b55f5d86",
+    "completedUtc": "2026-10-18T17:40:00.5740996Z"
+  },
+  "groups": [
+    {
+      "name": "F01_absent_barrier_late_prepare_and_abort_tombstone",
+      "passed": true
+    },
+    {
+      "name": "F02_old_apply_before_and_after_barrier",
+      "passed": true
+    },
+    {
+      "name": "F03_same_generation_replay_worker_and_identity_conflicts",
+      "passed": true
+    },
+    {
+      "name": "F03_bound_ack_and_framed_dedup_keys",
+      "passed": true
+    },
+    {
+      "name": "F04_fresh_post_decision_prepare_and_delayed_abort",
+      "passed": true
+    },
+    {
+      "name": "F05_takeover_coordinator_CAS_completion_and_outbox",
+      "passed": true
+    },
+    {
+      "name": "F05_fresh_phases_blocked_until_all_barriers_reconcile",
+      "passed": true
+    },
+    {
+      "name": "F06_overflow_missing_lookup_and_ambiguous_commit",
+      "passed": true
+    },
+    {
+      "name": "storage_crash_rollback_atomic_effect_receipt_outbox",
+      "passed": true
+    },
+    {
+      "name": "storage_unique_insert_and_shared_gate_resource_contention",
+      "passed": true
+    },
+    {
+      "name": "F09_scope_freeze_conflicts_with_shared_phase_and_rechecks_gate",
+      "passed": true
+    },
+    {
+      "name": "F07_F08_F10_partial_restore_mapping_and_new_incarnation_barrier",
+      "passed": true
+    },
+    {
+      "name": "F08_missing_prepare_contradictory_receipt_and_certificate",
+      "passed": true
+    },
+    {
+      "name": "F08_coordinator_rejects_mixed_action_and_profile_receipts",
+      "passed": true
+    },
+    {
+      "name": "F07_F08_absent_mapped_barrier_blocks_open_and_unmapped_restore",
+      "passed": true
+    },
+    {
+      "name": "storage_DB_clock_after_action_lock_deadline",
+      "passed": true
+    },
+    {
+      "name": "storage_outbox_relay_reentry_lost_ack_certificate_worker_crash",
+      "passed": true
+    },
+    {
+      "name": "F06_retained_upstream_socket_partition",
+      "passed": true
+    },
+    {
+      "name": "F06_owner_database_unavailable_and_same_action_recovery",
+      "passed": true
+    },
+    {
+      "name": "storage_runtime_readonly_cross_database_role_denial",
+      "passed": true
+    },
+    {
+      "name": "storage_database_local_recipient_and_coordinator_ownership",
+      "passed": true
+    },
+    {
+      "name": "storage_actual_immediate_PostgreSQL_restart_WAL_recovery",
+      "passed": true
+    }
+  ],
+  "trustedAssumptions": [
+    "Driver supplies trusted synthetic Building lookup/evidence; issuer equality is not authentication.",
+    "TRUSTED_TEST_PROOF/FRONTIER/RECONCILED are explicit test oracles, never external fence/reopen proof.",
+    "Synthetic prepared authorization substitutes for B-03 admission grants; no grant/revocation/handoff implementation."
+  ],
+  "unproven": [
+    "Production B-03/B-04/B-05 acceptance and protected interfaces",
+    "mTLS/SPIRE/PKI, real remote authorization and encoding compatibility",
+    "Old-primary/workload exclusion, external proof survival, real backup restore/erasure/downstream eligibility",
+    "Independent-cluster/AZ/region or power-loss durability, production performance and physical geometry activation"
+  ],
+  "independentReview": "Separate source/evidence review and fix recheck: no remaining blocking findings in bounded Stage S scope."
+}

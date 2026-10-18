@@ -1,6 +1,6 @@
 # B-03 owner decision packet
 
-Status: response form for the owner decisions listed in [B-03](B-03-actor-admission-contract.md#failure-vectors-and-owner-responses). No response or production acceptance is recorded here. Use the cited proposals to review details; this packet does not authorize protected-spec edits, RPC registration, or mutation handlers.
+Status: response form for the owner decisions listed in [B-03](B-03-actor-admission-contract.md#failure-vectors-and-owner-responses). The project owner subsequently [selected the recommended directions and authorized synthetic Stage S](B-03-B-04-stage-s-approval.md); exact identity encoding and protected owning interfaces remain engineering work. No evidence-backed production acceptance is recorded here. This packet does not authorize protected-spec edits, production RPC registration, or mutation handlers.
 
 ## Response record (complete once per decision)
 

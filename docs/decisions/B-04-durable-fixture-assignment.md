@@ -1,6 +1,6 @@
 # B-04 — disposable durable storage and transport assignment
 
-Status: proposed assignment, 2026-10-18; documentation preparation only. No executable authoring, protected-interface release, production identity/topology selection or B-03/B-04/B-05 closure is authorized here. The coordinator owns shared indexes and acceptance records. Independent review follows this draft.
+Status: reviewed assignment, 2026-10-18; the project owner subsequently [authorized Stage S implementation](B-03-B-04-stage-s-approval.md). T/R, protected-interface release and production B-03/B-04/B-05 closure remain separate. The coordinator owns shared indexes and acceptance records; independent source/evidence review follows implementation.
 
 ## Goal and limits
 
@@ -96,4 +96,4 @@ Evidence manifest must identify source commit and dirty-file hashes, exact SDK/p
 
 Always stop only owned registered children/proxies/cluster; verify actual cluster/run marker and resolved private paths before removal, refuse any mismatch, preserve evidence and report residual owned resources. Interrupted setup and failed cases also clean up; if cleanup is blocked, report the exact residue without a destructive workaround. Existing C-MIG evidence/resources and concurrent art work remain untouched. Documentation-only preparation uses link/whitespace checks, no runtime tests.
 
-Next owner decisions: approve S scope/fixture layout/lock contract and exact fixture profiles; allocate paths/writers; later approve T identities/wire subset and R protected proof/frontier interfaces. Until then, this is a concrete reviewable assignment, not permission to create databases, schemas, `.proto`, services or credentials.
+Stage S scope/layout/synthetic profile and assigned writers are now authorized in the [dated approval record](B-03-B-04-stage-s-approval.md); the running work plan tracks implementation and evidence. Later approve T identities/wire subset and R protected proof/frontier interfaces. No production schemas, `.proto`, service activation or certificate infrastructure is authorized by Stage S.
