@@ -54,6 +54,15 @@ struct FSFConstructionSandboxMember
     uint64 ProjectionGeneration = 0; // Derived mesh/collision stamp; occupancy Generation above is independent.
 };
 
+struct FSFConstructionLineIntent
+{
+    FIntVector StartCell = FIntVector::ZeroValue;
+    FIntVector EndCell = FIntVector::ZeroValue;
+    int32 Shape = 0;
+    int32 Rotation = 0;
+    uint64 ExpectedRevision = 0;
+};
+
 // Transient standalone authority with explicit development snapshots. No production persistence,
 // resource economy, authentication, replication or normal E1 mutation route.
 UCLASS(NotBlueprintable, Transient)
@@ -67,6 +76,9 @@ public:
     virtual void Tick(float DeltaSeconds) override;
     FString Evaluate(const ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent, FString* SupportHint = nullptr) const;
     bool Apply(ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent, FString& Result);
+    FString EvaluateLine(const ASFConstructionSandboxController* Controller, const FSFConstructionLineIntent& Intent, FString* SupportHint = nullptr) const;
+    bool ApplyLine(ASFConstructionSandboxController* Controller, const FSFConstructionLineIntent& Intent, FString& Result);
+    int32 GetMaximumLineCells() const { return MaximumLineCells; }
     bool PreviewRemoval(ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent, TArray<FIntVector>& Affected, FString& Result, FSFConstructionRemovalConsequences* Consequences = nullptr);
     FString EvaluateDoor(const ASFConstructionSandboxController* Controller, const FSFConstructionDoorIntent& Intent) const;
     bool ApplyDoor(ASFConstructionSandboxController* Controller, const FSFConstructionDoorIntent& Intent, FString& Result);
@@ -91,6 +103,8 @@ private:
     FSFConstructionReplacementSet MakeReplacementSet() const;
     FString ValidateStableSnapshot(const ASFConstructionSandboxController* Controller, uint64 ExpectedRevision) const;
     FString ValidateIntent(const ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent) const;
+    FString BuildLineCandidate(const ASFConstructionSandboxController* Controller, const FSFConstructionLineIntent& Intent,
+        TMap<FIntVector, FSFConstructionSandboxMember>& Candidate, TArray<FIntVector>& Cells, FString* SupportHint) const;
     FString ValidateEnvironment() const;
     FString ValidateOwner(const ASFConstructionSandboxController* Controller, uint64 ExpectedRevision) const;
     FString DoorReservations(const FIntVector& Origin, int32 Yaw, bool bOpen, bool bToggle, const ASFConstructionSandboxDoorProjection* OwnOldDoor) const;
@@ -110,6 +124,7 @@ private:
     uint64 Revision = 0;
     float ReachCentimetres = 0;
     int32 MaximumMembers = 0;
+    int32 MaximumLineCells = 0;
     int32 MaximumDoors = 0;
     double GraceSeconds = 10.0;
     double RetrySeconds = 0.25;
@@ -131,6 +146,7 @@ private:
     friend class FSFConstructionDoorLifecycleTest;
     friend class FSFConstructionSnapshotRestoreTest;
     friend class FSFConstructionSandboxAuthorityTest;
+    friend class FSFConstructionLineAuthorityTest;
     int32 TestFailAfterPreparedCount = INDEX_NONE;
 #endif
 };

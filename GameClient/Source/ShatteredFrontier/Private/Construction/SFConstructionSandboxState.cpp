@@ -3,6 +3,7 @@
 #include "Construction/SFConstructionSandbox.h"
 #include "Construction/SFConstructionSandboxSettings.h"
 #include "Construction/SFConstructionGeometry.h"
+#include "Construction/SFConstructionLine.h"
 #include "Construction/SFConstructionSupport.h"
 #include "Construction/SFConstructionSandboxFoundation.h"
 #include "Construction/SFConstructionClearance.h"
@@ -41,6 +42,7 @@ void ASFConstructionSandboxState::BeginPlay()
     { UE_LOG(LogTemp, Error, TEXT("CONSTRUCTION_SETTINGS_REJECTED %s"), *Error); return; }
     ReachCentimetres = Settings->BuildReachMetres * 100.0f;
     MaximumMembers = Settings->MaximumMembers;
+    MaximumLineCells = Settings->MaximumLineCells;
     MaximumDoors = Settings->MaximumDoors;
     GraceSeconds = Settings->SupportLossGraceSeconds;
     RetrySeconds = Settings->CollapseRetrySeconds;
@@ -507,6 +509,81 @@ FString ASFConstructionSandboxState::CheckSupport(const FSFConstructionSandboxIn
     { *SupportHint = UnstableCount > 0 ? FString::Printf(TEXT("UNSTABLE: %d existing pieces in grace; new piece supported"), UnstableCount)
         : bStrained ? TEXT("STRAINED support - shorten span or add a column") : TEXT("Stable support (rough-timber-v1; synthetic foundation)"); }
     return FString();
+}
+
+FString ASFConstructionSandboxState::BuildLineCandidate(const ASFConstructionSandboxController* Controller,
+    const FSFConstructionLineIntent& Intent, TMap<FIntVector, FSFConstructionSandboxMember>& Candidate,
+    TArray<FIntVector>& Cells, FString* SupportHint) const
+{
+    if (SupportHint) { SupportHint->Reset(); }
+    const FString OwnerError = ValidateOwner(Controller,Intent.ExpectedRevision);
+    if (!OwnerError.IsEmpty()) { return OwnerError; }
+    if (!SFConstructionLine::Enumerate(Intent.StartCell,Intent.EndCell,MaximumLineCells,Cells))
+    { return TEXT("Line must follow one grid axis within the captured cell limit"); }
+    if (static_cast<int64>(Members.Num()) + Cells.Num() > MaximumMembers)
+    { return TEXT("Development cell limit reached by whole line"); }
+    Candidate = Members;
+    for (const auto& Cell : Cells)
+    {
+        FSFConstructionSandboxIntent Single;
+        Single.Cell = Cell; Single.Shape = Intent.Shape; Single.Rotation = Intent.Rotation; Single.ExpectedRevision = Intent.ExpectedRevision;
+        const FString Error = ValidateIntent(Controller,Single);
+        if (!Error.IsEmpty()) { return FString::Printf(TEXT("Line cell %s: %s"),*Cell.ToString(),*Error); }
+        FSFConstructionSandboxMember Added; Added.Shape = Intent.Shape; Added.Rotation = Intent.Rotation;
+        Candidate.Add(Cell,Added);
+    }
+    TArray<FSFConstructionSupportResult> Support;
+    TArray<FSFConstructionDoorSupportResult> DoorSupport;
+    const FString Error = SolveCombined(Candidate,Doors,Support,DoorSupport);
+    if (!Error.IsEmpty()) { return Error; }
+    int32 ExistingUnstable = 0;
+    int32 ExistingUnstableDoors = 0;
+    bool bStrained = false;
+    for (const auto& Entry : Support)
+    {
+        if (Entry.State == ESFConstructionSupportState::Unsupported)
+        {
+            double Deadline;
+            if (!Members.Contains(Entry.Address) || !Instability.GetDeadline(Entry.Address,Deadline))
+            { return TEXT("Line unsupported or overloads retained structure; add support or shorten the line"); }
+            ++ExistingUnstable;
+        }
+        bStrained |= Entry.State == ESFConstructionSupportState::Strained;
+    }
+    for (const auto& Entry : DoorSupport)
+    {
+        if (Entry.State != ESFConstructionSupportState::Unsupported) { continue; }
+        double Deadline;
+        if (!DoorInstability.GetDeadline(Entry.OriginCell,Deadline))
+        { return TEXT("Line overloads a retained door attachment"); }
+        ++ExistingUnstableDoors;
+    }
+    if (SupportHint)
+    { *SupportHint = FString::Printf(TEXT("%s; %d existing structural and %d door grace episodes retained"),
+        bStrained ? TEXT("Strained support") : TEXT("Stable line support"),ExistingUnstable,ExistingUnstableDoors); }
+    return FString();
+}
+
+FString ASFConstructionSandboxState::EvaluateLine(const ASFConstructionSandboxController* Controller,
+    const FSFConstructionLineIntent& Intent, FString* SupportHint) const
+{
+    TMap<FIntVector, FSFConstructionSandboxMember> Candidate;
+    TArray<FIntVector> Cells;
+    return BuildLineCandidate(Controller,Intent,Candidate,Cells,SupportHint);
+}
+
+bool ASFConstructionSandboxState::ApplyLine(ASFConstructionSandboxController* Controller,
+    const FSFConstructionLineIntent& Intent, FString& Result)
+{
+    TMap<FIntVector, FSFConstructionSandboxMember> Candidate;
+    TArray<FIntVector> Cells;
+    FString SupportHint;
+    Result = BuildLineCandidate(Controller,Intent,Candidate,Cells,&SupportHint);
+    if (!Result.IsEmpty()) { return false; }
+    if (!CommitCombined(MoveTemp(Candidate),Doors,Cells,AuthorityTime(),Result)) { return false; }
+    Controller->CancelRemoval();
+    Result = FString::Printf(TEXT("Placed %d cells atomically; %s"),Cells.Num(),*SupportHint);
+    return true;
 }
 
 bool ASFConstructionSandboxState::Apply(ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent, FString& Result)

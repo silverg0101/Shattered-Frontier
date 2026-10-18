@@ -1,4 +1,5 @@
 #include "Construction/SFConstructionSandboxSettings.h"
+#include "Construction/SFConstructionLine.h"
 
 bool USFConstructionSandboxSettings::Validate(FString& Error) const
 {
@@ -6,6 +7,8 @@ bool USFConstructionSandboxSettings::Validate(FString& Error) const
     { Error = TEXT("Build reach must be 1–8 metres."); return false; }
     if (MaximumMembers < 1 || MaximumMembers > 4096)
     { Error = TEXT("Maximum editable cells must be 1–4096."); return false; }
+    if (MaximumLineCells < 1 || MaximumLineCells > SFConstructionLine::MaximumCells)
+    { Error = TEXT("Maximum line length must be 1–32 cells."); return false; }
     if (MaximumDoors < 1 || MaximumDoors > 64)
     { Error = TEXT("Maximum doors must be 1–64."); return false; }
     if (SaveGenerationsToRetain < 2 || SaveGenerationsToRetain > 16)

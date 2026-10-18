@@ -1,6 +1,6 @@
 # Construction controls and UI proposal
 
-**Status: PROPOSAL FOR REVIEW — the proposed catalogue, remapping, and final control scheme are not implemented or approved.** The sandbox already has a basic palette/HUD and temporary B / 1–3 / right-mouse bindings.
+**Status: PROPOSAL FOR REVIEW — the proposed catalogue, remapping, and final control scheme are not implemented or approved.** The sandbox already has a basic palette/HUD and temporary B, 1–4, R, mouse placement/removal, E door/probe and F5/F9 development save/restore controls. Door walking and actual process restart are tested; final catalogue/remapping and human comfort remain open. SBX-05E has tested atomic straight-line placement APIs; line input is the next gate.
 
 This proposal takes interaction patterns from the [Enshrouded controls research](research/enshrouded-construction-controls.md), not a claim of exact parity. It aims to make the existing construction rules legible through explicit action contexts, a catalogue for deliberate choices, and a compact in-world palette for frequent edits.
 
@@ -57,7 +57,7 @@ Catalogue selection and in-world palette selection address the same item state. 
 1. **Enter:** Select/enter the construction tool or context to enable its controls; Tab opens the catalogue within that context. Whether a global shortcut selects/enters this context remains an explicit prototype choice. Escape closes an unsubmitted catalogue/preview or exits the context.
 2. **Select:** choose action context, category, shape, material and optional appearance. Search/favourites are catalogue conveniences; they do not unlock content.
 3. **Orient:** R rotates 90° about the currently selected axis. Show axis and resulting orientation. Wheel cycles shape while in construction context. Optional visible modifier controls precision (axis, plane lock, grid-step offset); do not require chords for basic shelter building.
-4. **Preview:** primary-place ghost snaps to the structural lattice, or uses the selected category’s bounded rules. Show footprint, cost/source, permission, support, and first block reason. A line/rectangle preview displays every member and batch boundary, with independent intermediate-support validation.
+4. **Preview:** primary-place ghost snaps to the structural lattice, or uses the selected category’s bounded rules. Show footprint, cost/source, permission, support, and first block reason. A line/rectangle preview displays every member and batch boundary, with whole-candidate support validation for every member before one accepted batch.
 5. **Place:** primary action commits one validated batch. Display pending status; on stale/rejected response refresh the preview and explain the reason. Accepted result displays authoritative debit and new revision.
 6. **Block reason:** if invalid, retain the preview and name the first actionable blocker (for example, occupied cell, unsupported, out of reach, no permission, or over terrain cap). Offer a valid adjustment where one exists; never auto-move or silently overwrite.
 7. **Removal preview:** secondary action targets the member and outlines it. Show return eligibility/source and any affected dependent pieces. If more pieces collapse, state the count/area and 10-second recovery rule before the explicit confirmation step.
@@ -73,7 +73,7 @@ At the prototype comfort checkpoint, ask the user to review catalogue versus pal
 
 1. Prototype catalogue and in-world palette with explicit structural, decor/object, terrain, and confirmation contexts; test text-entry focus, modal conflicts, non-colour feedback, keyboard/mouse and controller paths.
 2. Exercise the common flow with search/favourites, material/shape selection, selected-axis rotation, single placement, blocked preview, demolition preview, collapse confirmation and cancellation.
-3. Add bounded line/rectangle preview and visible batch limits after support validation for intermediate states is available.
+3. Add bounded line/rectangle preview and visible batch limits after whole-candidate support validation and bounded atomic publication are available.
 4. Connect the full UI to authoritative refund/source and revision results; preserve Construction §3.4 confirmation/recovery/collapse policy when extending the standalone checkpoint to real paid/networked construction. Do not present UI confirmation as trusted authority.
 5. Return the prototype at the comfort checkpoint for user review, then settle final remappable defaults and accessibility prompts.
 

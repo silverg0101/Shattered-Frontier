@@ -16,6 +16,9 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Development build controls", meta=(ClampMin="1", ClampMax="4096", ToolTip="Maximum editable cells in this transient standalone fixture. Default 512; release review; next sandbox start."))
     int32 MaximumMembers = 512;
 
+    UPROPERTY(Config, EditAnywhere, Category="Development build controls", meta=(ClampMin="1", ClampMax="32", ToolTip="Maximum cells per atomic straight line. Default 8 cells; reviewed release authors only; captured at next sandbox start."))
+    int32 MaximumLineCells = 8;
+
     UPROPERTY(Config, EditAnywhere, Category="Development build controls", meta=(ClampMin="1", ClampMax="64", ToolTip="Maximum transient doors. Default 16; reviewed release authors only; captured at next sandbox start."))
     int32 MaximumDoors = 16;
 
