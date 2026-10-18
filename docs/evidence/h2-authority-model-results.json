@@ -1,0 +1,100 @@
+{
+  "scope": "in-memory specification only; idealized verified lookup registry, external fencing proof and atomic durable storage assumed",
+  "cases": 22,
+  "schedules": 120,
+  "results": [
+    {
+      "name": "complete_requires_all_applied",
+      "passed": true
+    },
+    {
+      "name": "immutable_decision_and_replay",
+      "passed": true
+    },
+    {
+      "name": "stale_coordinator_cannot_decide",
+      "passed": true
+    },
+    {
+      "name": "absent_participant_barrier_tombstone",
+      "passed": true
+    },
+    {
+      "name": "old_apply_before_barrier_reconciles",
+      "passed": true
+    },
+    {
+      "name": "old_apply_after_barrier_rejects",
+      "passed": true
+    },
+    {
+      "name": "same_generation_wrong_worker_rejects",
+      "passed": true
+    },
+    {
+      "name": "higher_generation_requires_barrier",
+      "passed": true
+    },
+    {
+      "name": "partial_barriers_cannot_issue_new_phase_authority",
+      "passed": true
+    },
+    {
+      "name": "prepare_after_apply_or_complete_rejects",
+      "passed": true
+    },
+    {
+      "name": "durable_decision_cannot_issue_fresh_prepare",
+      "passed": true
+    },
+    {
+      "name": "forged_higher_generation_cannot_create_barrier",
+      "passed": true
+    },
+    {
+      "name": "lookup_identity_and_evidence_binding",
+      "passed": true
+    },
+    {
+      "name": "abort_tombstone_blocks_late_prepare",
+      "passed": true
+    },
+    {
+      "name": "generation_overflow_does_not_wrap",
+      "passed": true
+    },
+    {
+      "name": "missing_participant_holds_recovery_pending",
+      "passed": true
+    },
+    {
+      "name": "new_takeover_invalidates_inflight_replacement",
+      "passed": true
+    },
+    {
+      "name": "completion_keeps_original_decision_across_takeover",
+      "passed": true
+    },
+    {
+      "name": "restore_requires_fence_and_all_participant_reconciliation",
+      "passed": true
+    },
+    {
+      "name": "restored_undecided_action_records_new_decision_origin",
+      "passed": true
+    },
+    {
+      "name": "enrollment_replay_cannot_reset_new_delivery_generation",
+      "passed": true
+    },
+    {
+      "name": "all_takeover_interleavings",
+      "passed": true,
+      "schedules": 120
+    }
+  ],
+  "passed": true,
+  "sourceSha256": "170720b7b545ec73562f66639791bbe84355c53209817461b5fbef20f6669f4f",
+  "binarySha256": "4f4a4d6d2ba2038eea9a398e773e3cd8fdfeaee9998ed2f6000e3cb84121e7bb",
+  "completedUtc": "2026-10-18T16:20:46.5100847+00:00"
+}
