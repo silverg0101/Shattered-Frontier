@@ -3,7 +3,8 @@ param(
     [Parameter(Mandatory = $true)][ValidatePattern('^[A-Za-z0-9][A-Za-z0-9.-]*$')][string]$ServerAddress,
     [ValidateRange(1024, 65535)][int]$Port = 17777,
     [string]$EngineRoot = 'C:\Program Files\Epic Games\UE_5.8',
-    [string]$ClientExecutable
+    [string]$ClientExecutable,
+    [ValidateRange(3, 120)][int]$HoldSeconds = 3
 )
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -52,7 +53,18 @@ try {
         if (-not $connected) { throw "Client$index did not receive the expected E1 map/mode welcome; inspect $clientLog" }
     }
     # Leave time for the server to complete both pawn assignments before cleanup.
-    Start-Sleep -Seconds 3
+    $holdDeadline = [DateTime]::UtcNow.AddSeconds($HoldSeconds)
+    while ([DateTime]::UtcNow -lt $holdDeadline) {
+        foreach ($process in $ownedProcesses) {
+            if ($process.HasExited) { throw 'A client exited during the connection hold' }
+        }
+        foreach ($clientLog in $clientLogs) {
+            if (Select-String -LiteralPath $clientLog -Pattern 'NetworkFailure:|Network Failure:|Server is incompatible with the local version|incompatible version of the game' -Quiet) {
+                throw "A client reported a network failure during the connection hold. Inspect $clientLog"
+            }
+        }
+        Start-Sleep -Milliseconds 250
+    }
     foreach ($process in $ownedProcesses) {
         if ($process.HasExited) { throw 'A client exited during the connection check' }
     }
@@ -60,7 +72,7 @@ try {
         $failure = Select-String -LiteralPath $clientLog -Pattern 'NetworkFailure:|Network Failure:|Server is incompatible with the local version|incompatible version of the game' -List
         if ($failure) { throw "A client reported a network or server compatibility failure after welcome: $($failure.Line). Inspect $clientLog" }
     }
-    Write-Output "PASS: two independent clients received E1 welcomes from ${ServerAddress}:$Port. Logs: $logs"
+    Write-Output "PASS: two E1 welcomes; both client processes stayed alive without reported network failure for ${HoldSeconds}s at ${ServerAddress}:$Port. Logs: $logs"
     Write-Output 'Inspect server logs separately for unique authoritative possessions. This does not certify rendered movement, identity or capacity.'
 } finally {
     foreach ($process in $ownedProcesses) {
