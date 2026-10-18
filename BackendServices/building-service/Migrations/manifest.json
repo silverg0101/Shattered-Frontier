@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "profile": "cmig-v1",
+  "sessionLock": 73406001,
+  "transactionLock": 73406002,
+  "migrations": [
+    {
+      "id": "0001",
+      "file": "0001_fixture_items.sql",
+      "sha256": "b8fd65750463780dc4251c43a425ea9999a94b2905231441815d0ab88870095e",
+      "mode": "transaction",
+      "from": 0,
+      "to": 1,
+      "index": null
+    },
+    {
+      "id": "0002",
+      "file": "0002_fixture_note.sql",
+      "sha256": "dd3ff4f75701e956e89bdb3e89578c2d88faacf2b910d99b2f253eb335e0d781",
+      "mode": "transaction",
+      "from": 1,
+      "to": 2,
+      "index": null
+    },
+    {
+      "id": "0003",
+      "file": "0003_fixture_label_index.sql",
+      "sha256": "2e3056164cb11a9e14aaa6b07e00bb5f11782d6a050f1ca767148f7e6ca3d14a",
+      "mode": "concurrent-index",
+      "from": 2,
+      "to": 3,
+      "index": {
+        "table": "fixture_items",
+        "name": "fixture_items_label_idx",
+        "columns": [
+          "label"
+        ]
+      }
+    }
+  ]
+}

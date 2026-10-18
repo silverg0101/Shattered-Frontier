@@ -11,3 +11,5 @@ GameClient/*.sln
 GameClient/*.slnx
 Artifacts/
 __pycache__/
+BackendServices/**/bin/
+BackendServices/**/obj/

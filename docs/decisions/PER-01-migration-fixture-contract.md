@@ -1,6 +1,6 @@
 # PER-01 C-MIG — disposable migration fixture contract
 
-Status: proposed, 2026-10-18. Documentation only: no backend files, database, restore, installation or test execution. This packet prepares C-MIG; it does not accept B-01/B-02 or authorize provisioning. Execution requires B-01 design/role acceptance and B-02 closure, including verified provisioning, under [PER-01-B](PER-01-B-implementation-readiness.md#next-assignments-and-completion-gates).
+Status: original fixture contract, 2026-10-18. The user subsequently selected B-01 fixture direction/B-02 evidence scope and explicitly authorized the isolated implementation. [Workflow](../../BackendServices/README.md) and [reviewed evidence](../evidence/h2-migration-fixture.md) record the fixed synthetic runner and bounded Windows acceptance. This does not accept production/protected-domain role changes or a general migration platform; the contract below remains the source for the fixture's tested requirements and future extensions.
 
 ## Source boundary and deliverable
 

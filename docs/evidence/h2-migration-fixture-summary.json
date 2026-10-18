@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-18",
+  "scope": "Windows x64 fixed synthetic cmig-v1 fixture",
+  "fixtureId": "87329348-5146-401d-9634-2b78c1d82dc6",
+  "assertions": {
+    "passed": 46,
+    "failed": 0,
+    "unproven": 0
+  },
+  "groups": [
+    {
+      "id": "C-MIG-01",
+      "passed": 1
+    },
+    {
+      "id": "C-MIG-02",
+      "passed": 8
+    },
+    {
+      "id": "C-MIG-03",
+      "passed": 2
+    },
+    {
+      "id": "C-MIG-04",
+      "passed": 3
+    },
+    {
+      "id": "C-MIG-05",
+      "passed": 1
+    },
+    {
+      "id": "C-MIG-06",
+      "passed": 5
+    },
+    {
+      "id": "C-MIG-07",
+      "passed": 2
+    },
+    {
+      "id": "C-MIG-08",
+      "passed": 3
+    },
+    {
+      "id": "C-MIG-09",
+      "passed": 17
+    },
+    {
+      "id": "C-MIG-10",
+      "passed": 4
+    }
+  ],
+  "dependencyProjects": 3,
+  "verifiedPackageVersions": 20,
+  "knownVulnerabilitiesReported": 0,
+  "runnerSha256": "e2f030f8b7727c44f05827ba900d6c5ad613e5daffd428c7f35fc8129392c8bb",
+  "migrationManifestSha256": "f08b3f2da350c6324f440e1311a5d8398d0ca2556c3034e1154a9d55b7339f65",
+  "resultsSha256": "dc8b1501fd86a6e0f7cce4220ce8787e38716327324229230436eaad53c63dd4",
+  "cleanup": {
+    "finalRunStopped": true,
+    "finalRunPrivateStorageRemoved": true,
+    "oldFailedRunStoppedDirectoryRetainedDueToPolicy": true
+  },
+  "review": "Independent source and saved-evidence review; findings corrected and rechecked",
+  "productionAcceptance": false
+}

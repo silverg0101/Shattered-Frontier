@@ -1,6 +1,6 @@
 # PER-01-B — implementation candidates and owner decision packet
 
-Status: proposed, 2026-10-18. Documentation preparation for [PER-01 topology](PER-01-durable-state-topology.md), not owner acceptance or an executable dependency lock. No SDK installation, package restore, backend code, database, service start or host change was performed. The topology packet's source boundary and protected-domain ownership apply.
+Status: fixture baseline selected by the user, 2026-10-18. The user approved C#/.NET 10, separate backend services and restricted runtime database roles, and explicitly requested dependency locks and an isolated migration fixture. This records B-01 design direction and B-02 evidence scope for that fixture; B-03/B-04/B-05 and production/protected-domain acceptance remain open. Implementation/evidence entry: [backend workflow](../../BackendServices/README.md). The original candidate observations below remain dated; executable pins live in `BackendServices/`.
 
 ## Goal and decisions
 
@@ -14,11 +14,11 @@ Make the next implementation assignment bounded: one Building migration harness 
 | B-04 / persistence + World + Security/operations | Per-action durable generation barriers; separately enrolled restore incarnation | Exact messages, trust/enrollment contract, race vectors and proof that old database/workloads are fenced |
 | B-05 / shared-contract + domain owners | Separate RPC and semantic hash profiles from PER-01; one bundled protobuf toolchain; [restricted profile draft](INT-02-command-hash-profile.md) | Accepted schema/profile dispatch, rolling compatibility, compiler identity and cross-language byte vectors; terrain representation through DEC-03 remains separate |
 
-All five rows remain proposed. Use two recorded stages: **scope approval** permits only the named isolated evidence-producing assignment; **closure** accepts its exact reviewed artifacts and validation evidence for dependent implementation. Scope approval is not mutation authorization or full decision closure. Each record must name the authority, date, artifact/profile revision, stage, scope and evidence; a review or version lookup does not fill that record. Rejection records the alternative and affected dependent packet instead of silently changing the protocol.
+B-01 fixture direction and B-02 evidence scope were approved directly by the user on 2026-10-18 against this packet and the migration fixture contract, authorizing the Building synthetic runner, locks, local provisioning and focused checks. Runtime-role refinement applies to this fixture; the owning production role contract is not silently amended. Use two recorded stages: **scope approval** permits the named evidence-producing assignment; **closure** accepts its exact reviewed artifacts and evidence for dependent implementation. B-03…05 remain proposed. Each record names authority, date, artifact revision, stage, scope and evidence; review/version lookup alone is not acceptance.
 
 ## Baseline alternatives for the user decision
 
-The user requested pros/cons before selecting the baseline; no approval is recorded. Language, process layout and privileges are independently selectable. The recommendation below is a project-fit judgment, not measured performance or owner acceptance.
+The user requested pros/cons and AAA examples, then selected the recommended fixture baseline on 2026-10-18. Language, process layout and privileges are independently selectable. The comparison below records the rationale, not measured performance or production acceptance.
 
 | Language | Advantages for this project | Costs / adoption consequence |
 | --- | --- | --- |
@@ -37,7 +37,7 @@ Capability references: [ASP.NET gRPC](https://learn.microsoft.com/en-us/aspnet/c
 
 For privileges, recommend a non-login object owner, migration-only ownership access and restricted runtime DML as the fixture contract specifies. Runtime schema ownership is simpler initially but permits altering/dropping owned objects; separating credentials alone does not remove that power ([PostgreSQL ownership/privileges](https://www.postgresql.org/docs/17/sql-grant.html)). The fixture role design does not amend the owning production Backend/Security contract without its separate acceptance.
 
-An explicit fixture-baseline selection can authorize B-01's isolated design direction and B-02 evidence scope. It does not close B-02 before locked build/provisioning evidence, approve B-03/B-04, release protected specs or prove production readiness. Until selection, continue documentation only.
+The fixture-baseline selection authorizes B-01's isolated direction and B-02 evidence scope. It does not close B-02 before locked build/provisioning evidence, approve B-03/B-04, release protected specs or prove production readiness.
 
 ## Dependency candidate manifest
 
@@ -118,4 +118,4 @@ Role conflict requiring B-01 acceptance: Backend §6.4 currently makes runtime `
 | [INT-02-PROFILE](INT-02-command-hash-profile.md) | Shared `.proto`/profile/byte fixtures; no gameplay adapter | Documentation draft prepared; owners approve profile scope/toolchain and relevant B-03 binding proposal before executable authoring. This assignment produces schema/compiler/vector evidence for B-05 closure, not its own entry gate. Include wire rejection, rolling N/N−1/profile dispatch, scoped keys/replay and generation-independent semantic hashes. Terrain subset awaits DEC-03. |
 | [B-AUTH/FENCE](PER-01-authority-fencing-contract.md) | Separately assigned owning contracts and isolated failure vectors | Proposed logical contract prepared; B-03/B-04 scope/owner decisions and exact wire/storage definitions remain open. No protected writes until released. Define enrollment and actor-binding contracts before enabling mutation handlers. |
 
-Independent review and Markdown/link checks complete this bounded preparation only. B-LOCK, accepted authority/profile contracts and required protected-owner releases remain implementation gates. No runtime test was run for this documentation change.
+Initial preparation was documentation-only. User-selected fixture implementation, locked dependency checks and focused database evidence are now tracked in [H2 fixture evidence](../evidence/h2-migration-fixture.md). That bounded result does not accept authority/profile contracts, production topology or protected-owner changes.

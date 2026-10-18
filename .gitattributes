@@ -1,5 +1,6 @@
 /ops/steam-server/* text eol=lf
 /tools/Provision-SteamServer.sh text eol=lf
 /tools/Prepare-NativeLinuxBuild.sh text eol=lf
+/BackendServices/** text eol=lf
 /GameClient/ArtSource/GreenlandsWaystone/*.txt text eol=lf
 /GameClient/ArtSource/GreenlandsWaystone/*.json text eol=lf
