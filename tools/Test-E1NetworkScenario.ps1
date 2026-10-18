@@ -3,7 +3,9 @@ param(
     [string]$EngineRoot = 'C:\Program Files\Epic Games\UE_5.8',
     [ValidateRange(1024, 65535)][int]$Port = 17781,
     [ValidateSet('Normal', 'Adverse100')][string]$NetworkProfile = 'Normal',
-    [switch]$CaptureFrames
+    [switch]$CaptureFrames,
+    [switch]$CaptureProfile,
+    [switch]$RenderOffscreen
 )
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -15,10 +17,20 @@ $logs = Join-Path $repoRoot ('GameClient\Saved\Logs\E1-Network-' + (Get-Date -Fo
 $null = New-Item -ItemType Directory -Path $logs
 $clientRendering = @('-NullRHI')
 $frames = @()
+$profileCaptures = [ordered]@{}
+if ($CaptureProfile) {
+    $profilesDir = Join-Path $logs 'Profiles'
+    foreach ($role in @('Server','Driver','Observer')) {
+        $null = New-Item -ItemType Directory -Path (Join-Path $profilesDir $role)
+    }
+}
+if ($CaptureFrames -or $RenderOffscreen) {
+    $clientRendering = @('-RenderOffScreen', '-windowed', '-ResX=1280', '-ResY=720')
+}
 if ($CaptureFrames) {
     $framesDir = Join-Path $logs 'Frames'
     $null = New-Item -ItemType Directory -Path $framesDir
-    $clientRendering = @('-RenderOffScreen', '-windowed', '-ResX=1280', '-ResY=720', ('-E1CaptureDir="' + $framesDir + '"'))
+    $clientRendering += ('-E1CaptureDir="' + $framesDir + '"')
 }
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
 # Fixed versioned test conditions, not live gameplay/balance controls. Nominal RTT is not measured RTT.
@@ -27,6 +39,12 @@ $varianceMs = if ($NetworkProfile -eq 'Adverse100') { 10 } else { 0 }
 $lossPercent = if ($NetworkProfile -eq 'Adverse100') { 1 } else { 0 }
 $emulationArguments = @("-PktLag=$lagMs", "-PktLagVariance=$varianceMs", "-PktLoss=$lossPercent", '-PktOrder=0', '-PktDup=0', '-PktIncomingLagMin=0', '-PktIncomingLagMax=0')
 function Launch([string[]]$LaunchArguments) {
+    if ($CaptureProfile) {
+        $roleArgument = $LaunchArguments | Where-Object { $_ -match '^-E1ProbeRole=(Server|Driver|Observer)$' } | Select-Object -First 1
+        if (-not $roleArgument) { throw 'Profile launch requires a known scenario role' }
+        $role = $roleArgument.Substring('-E1ProbeRole='.Length)
+        $LaunchArguments += @('-csvCompression=0', ('-E1ProfileDir="' + (Join-Path $profilesDir $role) + '"'), '-ExecCmds="net.EnableNetStats 1"')
+    }
     $process = Start-Process -FilePath $editor -ArgumentList (@('"' + $project + '"') + $LaunchArguments + $emulationArguments) -WindowStyle Hidden -PassThru
     $owned.Add($process)
 }
@@ -39,6 +57,13 @@ function Wait-Log([string]$Path, [string]$Pattern, [int]$Seconds = 90) {
     $deadline = [DateTime]::UtcNow.AddSeconds($Seconds)
     while ([DateTime]::UtcNow -lt $deadline) {
         Assert-OwnedProcessesAlive
+        if ($CaptureProfile) {
+            foreach ($roleLog in @($server,$driver,$observer)) {
+                if ((Test-Path -LiteralPath $roleLog) -and (Select-String -LiteralPath $roleLog -Pattern 'E1_SCENARIO_PROFILE_FAILED' -Quiet)) {
+                    throw "Diagnostic profile failed. Inspect $roleLog"
+                }
+            }
+        }
         if ((Test-Path -LiteralPath $Path) -and (Select-String -LiteralPath $Path -Pattern $Pattern -Quiet)) { return }
         Start-Sleep -Milliseconds 250
     }
@@ -101,6 +126,67 @@ function Assert-JumpAndLanding([string]$Path, [int]$PlayerId) {
     if (-not $airborne.Count -or $last.Grounded -ne 1 -or [Math]::Abs($last.Z-$baseline) -gt 20.0) { throw "No replicated jump and return to ground in $Path" }
     return [Math]::Round((($samples | Measure-Object Z -Maximum).Maximum - $baseline), 1)
 }
+function Read-CompletedProfile([string]$Path, [string]$Role) {
+    $pattern = 'E1_SCENARIO_PROFILE_COMPLETE Role=' + $Role + ' DurationSeconds=([\d.]+) File=(.+)$'
+    Wait-Log $Path $pattern 45
+    $completion = (Select-String -LiteralPath $Path -Pattern $pattern | Select-Object -First 1).Matches[0]
+    $duration = [double]::Parse($completion.Groups[1].Value, [Globalization.CultureInfo]::InvariantCulture)
+    if (-not [double]::IsFinite($duration) -or $duration -lt 10.0 -or $duration -gt 15.0) { throw "Unexpected $Role diagnostic interval: $duration" }
+    $file = [IO.Path]::GetFullPath($completion.Groups[2].Value.Trim())
+    $expected = [IO.Path]::GetFullPath((Join-Path (Join-Path $profilesDir $Role) "$Role.csv"))
+    if ($file -ne $expected -or -not (Test-Path -LiteralPath $file -PathType Leaf) -or (Get-Item -LiteralPath $file).Length -le 0) {
+        throw "Missing or unexpected completed $Role CSV: $file"
+    }
+    $start = Select-String -LiteralPath $Path -Pattern ('E1_SCENARIO_PROFILE_STARTED Role=' + $Role + ' Characters=(\d+) ActorCount=(\d+) DurationSeconds=10') | Select-Object -First 1
+    if (-not $start) { throw "Missing $Role profile start snapshot" }
+    $characters = [int]$start.Matches[0].Groups[1].Value
+    $actors = [int]$start.Matches[0].Groups[2].Value
+    if ($characters -lt 2 -or $actors -lt $characters) { throw "Invalid $Role ready-world snapshot" }
+    $lines = [IO.File]::ReadAllLines($file)
+    # UE writes a final complete header, then metadata. Earlier rows can have fewer columns.
+    $headerIndex = -1
+    for ($index = 0; $index -lt $lines.Count; ++$index) { if ($lines[$index].StartsWith('EVENTS,')) { $headerIndex = $index } }
+    if ($headerIndex -le 1 -or -not ($lines[-1] -match '\[HasHeaderRowAtEnd\],1(?:,|$)')) { throw "Incomplete $Role CSV finalization metadata/header" }
+    if ($lines[-1] -notmatch '\[CaptureDuration\],([^,]+)') { throw "Missing $Role actual CSV capture duration" }
+    $csvDuration = [double]::Parse($Matches[1], [Globalization.CultureInfo]::InvariantCulture)
+    if (-not [double]::IsFinite($csvDuration) -or $csvDuration -lt 10.0 -or $csvDuration -gt 15.0) { throw "Invalid $Role actual CSV capture duration" }
+    $columns = $lines[$headerIndex].Split(',')
+    if ('FrameTime' -notin $columns) { throw "Missing $Role FrameTime column" }
+    if (-not $lines[0].StartsWith('EVENTS,')) { throw "Missing $Role initial CSV header" }
+    $dataLines = @($lines[1..($headerIndex-1)])
+    if (@($dataLines | Where-Object { [string]::IsNullOrWhiteSpace($_) }).Count) { throw "Missing $Role frame row" }
+    $frameTimes = @()
+    $dataRow = 0
+    $leadingZeroRows = 0
+    $parsedRows = @($dataLines | ConvertFrom-Csv -Header $columns)
+    if ($parsedRows.Count -ne $dataLines.Count) { throw "Missing or unexpected multiline $Role frame row" }
+    # Skip only the known first EVENTS header. FinalizeNextRow zero-fills absent series;
+    # one initial boundary-only row can consequently have zero FrameTime, never a later row.
+    foreach ($row in $parsedRows) {
+        ++$dataRow
+        $milliseconds = 0.0
+        if (-not [double]::TryParse($row.FrameTime, [Globalization.NumberStyles]::Float, [Globalization.CultureInfo]::InvariantCulture, [ref]$milliseconds) -or -not [double]::IsFinite($milliseconds)) {
+            throw "Malformed/non-finite $Role FrameTime at data row $dataRow"
+        }
+        if ($milliseconds -eq 0 -and $dataRow -eq 1) { $leadingZeroRows = 1; continue }
+        if ($milliseconds -le 0) { throw "Nonpositive $Role FrameTime at data row $dataRow" }
+        $frameTimes += $milliseconds
+    }
+    if ($frameTimes.Count -lt 2) { throw "No usable $Role frame interval rows" }
+    $sorted = @($frameTimes | Sort-Object)
+    $coveredMilliseconds = ($frameTimes | Measure-Object -Sum).Sum
+    # Capture edges can straddle frame boundaries. This diagnostic validation tolerance is
+    # the greater of 250ms or two observed maximum intervals, not a CPU/performance budget.
+    $boundaryToleranceMs = [Math]::Max(250.0, 2.0*$sorted[-1])
+    $coverageDifferenceMs = [Math]::Abs($coveredMilliseconds - 1000.0*$csvDuration)
+    if (-not [double]::IsFinite($coveredMilliseconds) -or $coverageDifferenceMs -gt $boundaryToleranceMs) {
+        throw "$Role frame intervals do not cover actual capture duration: ${coveredMilliseconds}ms vs $($csvDuration*1000.0)ms (tolerance ${boundaryToleranceMs}ms)"
+    }
+    return [ordered]@{
+        File=$file; Bytes=(Get-Item -LiteralPath $file).Length; CaptureDurationSeconds=$csvDuration; ObservedCaptureIntervalSeconds=$duration; CharacterCountAtStart=$characters; WorldActorCountAtStart=$actors
+        FrameIntervalMs=[ordered]@{ Samples=$frameTimes.Count; LeadingBoundaryZeroRows=$leadingZeroRows; CoveredDuration=[Math]::Round($coveredMilliseconds,3); CaptureDurationDifference=[Math]::Round($coverageDifferenceMs,3); BoundaryTolerance=$boundaryToleranceMs; Mean=[Math]::Round(($frameTimes | Measure-Object -Average).Average,3); P95=[Math]::Round($sorted[[Math]::Ceiling(0.95*$sorted.Count)-1],3); Max=[Math]::Round($sorted[-1],3) }
+    }
+}
 try {
     $server = Join-Path $logs 'Server.log'
     $driver = Join-Path $logs 'Driver.log'
@@ -115,6 +201,11 @@ try {
     Wait-Log $driver 'E1_INTERACTION_RESULT Result=0 Accepted'
     Wait-Log $driver 'E1_SCENARIO_DONE Role=Driver' 45
     Wait-Log $observer 'E1_SCENARIO_DONE Role=Observer' 45
+    if ($CaptureProfile) {
+        $profileCaptures['Server'] = Read-CompletedProfile $server 'Server'
+        $profileCaptures['Driver'] = Read-CompletedProfile $driver 'Driver'
+        $profileCaptures['Observer'] = Read-CompletedProfile $observer 'Observer'
+    }
     $actualEmulation = [ordered]@{ Server=(Read-ActualEmulation $server 'Server'); Driver=(Read-ActualEmulation $driver 'Driver'); Observer=(Read-ActualEmulation $observer 'Observer') }
     $intent = Select-String -LiteralPath $driver -Pattern 'E1_SCENARIO_DRIVER Pawn=(\S+) PlayerId=(\d+) Action=Interact' | Select-Object -First 1
     if (-not $intent) { throw 'Driver never issued the public interaction intent' }
@@ -162,7 +253,9 @@ try {
         LocalMetadata=[ordered]@{ EngineVersion="$($build.MajorVersion).$($build.MinorVersion).$($build.PatchVersion)"; EngineChangelist=$build.Changelist; OSVersion=[Environment]::OSVersion.VersionString; LogicalProcessors=[Environment]::ProcessorCount }
         DriverPlayerId=$playerId; DisplacementCm=[ordered]@{ Driver=$driverDistance; Server=$serverDistance; Observer=$observerDistance }
         JumpHeightObservedCm=[ordered]@{ Server=$serverJumpCm; Observer=$observerJumpCm }
-        CaptureMode=$(if ($CaptureFrames) { 'RenderedOffscreen' } else { 'NullRHI' }); CapturedFrames=$frames
+        CaptureMode=$(if ($CaptureFrames -or $RenderOffscreen) { 'RenderedOffscreen' } else { 'NullRHI' }); CapturedFrames=$frames
+        DiagnosticProfiles=$profileCaptures
+        ProfilingLimits='Two-client diagnostic capture only; budgets unratified, contention uncontrolled. Frame intervals include waits and are not simulation CPU time. No measured RTT or capacity claim.'
         Limits='Development scenario; offscreen frames require visual inspection and are not manual acceptance. No adversarial, Linux runtime, measured RTT or capacity certification.'
     }
     Assert-OwnedProcessesAlive

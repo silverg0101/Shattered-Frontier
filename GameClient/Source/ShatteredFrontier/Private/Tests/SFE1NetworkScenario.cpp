@@ -10,9 +10,11 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "HAL/PlatformTime.h"
+#include "HAL/FileManager.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
 #include "Misc/Paths.h"
+#include "ProfilingDebugging/CsvProfiler.h"
 #include "TimerManager.h"
 #include "UnrealClient.h"
 
@@ -34,7 +36,74 @@ struct FScenario
     bool bProbeCapture = false;
     bool bDepartedCapture = false;
     double NextCaptureAllowed = 0.0;
+    FString ProfileDir;
+    double ProfileRequested = -1.0;
+    double ProfileStarted = -1.0;
+    double ProfileStopped = -1.0;
+    bool bProfileComplete = false;
+    TSharedFuture<FString> ProfileCompletion;
 };
+
+bool UpdateProfile(const TSharedRef<FScenario>& State, double Now, int32 CharacterCount, bool bClientReady)
+{
+    if (State->ProfileDir.IsEmpty() || State->bProfileComplete) { return true; }
+    FCsvProfiler* Profiler = FCsvProfiler::Get();
+    if (State->ProfileRequested < 0.0 && CharacterCount >= 2 && (State->Role == TEXT("Server") || bClientReady))
+    {
+        if (Profiler->IsCapturing() || Profiler->IsWritingFile() || Profiler->IsEndCapturePending())
+        {
+            UE_LOG(LogTemp, Error, TEXT("E1_SCENARIO_PROFILE_FAILED Role=%s Reason=ProfilerBusy"), *State->Role);
+            return false;
+        }
+        Profiler->EnableCategoryByString(TEXT("Basic"));
+        Profiler->EnableCategoryByString(TEXT("Exclusive"));
+        Profiler->EnableCategoryByString(TEXT("Networking"));
+        Profiler->EnableCategoryByString(TEXT("Replication"));
+        Profiler->BeginCapture(-1, State->ProfileDir, State->Role + TEXT(".csv"));
+        State->ProfileRequested = Now;
+    }
+    if (State->ProfileRequested >= 0.0 && State->ProfileStarted < 0.0)
+    {
+        if (Profiler->IsCapturing())
+        {
+            State->ProfileStarted = Now;
+            UE_LOG(LogTemp, Display, TEXT("E1_SCENARIO_PROFILE_STARTED Role=%s Characters=%d ActorCount=%d DurationSeconds=10"),
+                *State->Role, CharacterCount, State->World->GetActorCount());
+        }
+        else if (Now - State->ProfileRequested > 5.0)
+        {
+            UE_LOG(LogTemp, Error, TEXT("E1_SCENARIO_PROFILE_FAILED Role=%s Reason=StartTimeout"), *State->Role);
+            return false;
+        }
+    }
+    // Fixed versioned diagnostic interval, not a gameplay setting or a performance budget.
+    if (State->ProfileStarted >= 0.0 && State->ProfileStopped < 0.0 && Now - State->ProfileStarted >= 10.0)
+    {
+        State->ProfileStopped = Now;
+        State->ProfileCompletion = Profiler->EndCapture();
+    }
+    if (State->ProfileCompletion.IsValid())
+    {
+        if (State->ProfileCompletion.IsReady())
+        {
+            const FString Filename = State->ProfileCompletion.Get();
+            if (Filename.IsEmpty() || IFileManager::Get().FileSize(*Filename) <= 0)
+            {
+                UE_LOG(LogTemp, Error, TEXT("E1_SCENARIO_PROFILE_FAILED Role=%s Reason=MissingCompletedCSV"), *State->Role);
+                return false;
+            }
+            State->bProfileComplete = true;
+            UE_LOG(LogTemp, Display, TEXT("E1_SCENARIO_PROFILE_COMPLETE Role=%s DurationSeconds=%.3f File=%s"),
+                *State->Role, State->ProfileStopped - State->ProfileStarted, *Filename);
+        }
+        else if (Now - State->ProfileStopped > 5.0)
+        {
+            UE_LOG(LogTemp, Error, TEXT("E1_SCENARIO_PROFILE_FAILED Role=%s Reason=FlushTimeout"), *State->Role);
+            return false;
+        }
+    }
+    return true;
+}
 
 void RequestFrame(const TSharedRef<FScenario>& State, const TCHAR* Phase)
 {
@@ -65,6 +134,14 @@ void Step(const TSharedRef<FScenario>& State)
 #endif
     if (Elapsed >= 30.0)
     {
+        if (!State->ProfileDir.IsEmpty() && !State->bProfileComplete)
+        {
+            if (State->ProfileStarted >= 0.0 && State->ProfileStopped < 0.0)
+            {
+                FCsvProfiler::Get()->EndCapture();
+            }
+            UE_LOG(LogTemp, Error, TEXT("E1_SCENARIO_PROFILE_FAILED Role=%s Reason=ScenarioDeadline"), *State->Role);
+        }
         UE_LOG(LogTemp, Display, TEXT("E1_SCENARIO_DONE Role=%s"), *State->Role);
         return;
     }
@@ -97,6 +174,7 @@ void Step(const TSharedRef<FScenario>& State)
     }
     if (Now >= State->NextSample) { State->NextSample = Now + 0.2; }
     const bool bClientReady = CharacterCount >= 2 && OwnedPawn && LocalController;
+    if (!UpdateProfile(State, Now, CharacterCount, bClientReady)) { return; }
     if (!State->CaptureDir.IsEmpty() && bClientReady)
     {
         if (State->CaptureReady < 0.0) { State->CaptureReady = Now; }
@@ -124,7 +202,8 @@ void Step(const TSharedRef<FScenario>& State)
         }
     }
     const bool bCaptureWarm = State->CaptureDir.IsEmpty() || State->bArrivalCapture;
-    if (State->Role == TEXT("Driver") && bClientReady && bCaptureWarm)
+    const bool bProfileWarm = State->ProfileDir.IsEmpty() || State->ProfileStarted >= 0.0;
+    if (State->Role == TEXT("Driver") && bClientReady && bCaptureWarm && bProfileWarm)
     {
         TActorIterator<ASFE1InteractionTarget> ProbeIterator(World);
         ASFE1InteractionTarget* Probe = ProbeIterator ? *ProbeIterator : nullptr;
@@ -173,6 +252,16 @@ void StartE1NetworkScenario(UWorld* World)
     TSharedRef<FScenario> State = MakeShared<FScenario>();
     State->World = World;
     State->Role = Role;
+    FString ProfileDir;
+    if (FParse::Value(FCommandLine::Get(), TEXT("E1ProfileDir="), ProfileDir))
+    {
+        if (FPaths::IsRelative(ProfileDir) || !FPaths::DirectoryExists(ProfileDir))
+        {
+            UE_LOG(LogTemp, Error, TEXT("E1_SCENARIO_PROFILE_FAILED Role=%s Reason=InvalidOutputDirectory"), *Role);
+            return;
+        }
+        State->ProfileDir = ProfileDir;
+    }
     FString CaptureDir;
     if (Role != TEXT("Server") && FParse::Value(FCommandLine::Get(), TEXT("E1CaptureDir="), CaptureDir))
     {
