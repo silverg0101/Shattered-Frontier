@@ -28,6 +28,8 @@ The network helper accepts `-NetworkProfile Normal` (default) or `Adverse100` (5
 
 The fixture deliberately uses legacy input bindings. EnhancedInput is disabled in the project; the editor auto-upgrade is also disabled in shipped editor configuration to preserve those bindings. The optional [waystone art source](ArtSource/GreenlandsWaystone/README.md) is not imported into the runtime map.
 
+The [automated input checkpoint](../docs/evidence/construction-sandbox-input-pilot.md) passes16 semantic checks through actual controller input under NullRHI. After building, run `& tools/Test-ConstructionSandboxInput.ps1 -EvidenceRoot "$PWD/Artifacts/ConstructionSandbox/<new-run>"` from the repository root. The runner owns finite hidden processes and verifies normal E1 ignores the explicit development flag. This does not establish human control feel or rendered UI.
+
 ## Release-controlled fixture settings
 
 The typed `SFE1Settings` object reads the shipped `Config/DefaultGame.ini` section `/Script/ShatteredFrontier.SFE1Settings`. Release authors may change these values within the declared bounds; they take effect at process startup. Missing entries use shipped C++ defaults; non-finite or out-of-range values fail startup. These are prospective fixture settings, not live GM controls. Any future live controls must use the shared configuration workflow and its permissions/audit rules. Algorithms, replication authority and map topology remain versioned code/content.

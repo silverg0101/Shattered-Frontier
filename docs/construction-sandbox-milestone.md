@@ -76,3 +76,5 @@ This command is a known route, not evidence of a sandbox build. Run only constru
 6. Verify the same authoritative edits on a second matching isolated test client. Record asset import/visual review, targeted tests, build provenance and actual manual observations separately.
 
 The milestone is Done only after this exercise passes with independent evidence review. Earlier geometry/tool/demo checkpoints are useful delivered increments, not the completed sandbox.
+
+Sixth cycle: [SBX-05C automated engine input](evidence/construction-sandbox-input-pilot.md) passes16 semantic checks through real controller input, including all three shapes and actual world-time collapse; normal E1 ignores the flag. Independent review passed. Physical input/rendered UI, line placement, door, save, art and packaged/network acceptance remain open. Next ordinary door interface and functional support/approach, then dev save.
