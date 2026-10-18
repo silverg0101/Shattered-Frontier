@@ -8,7 +8,7 @@ Last updated: 2026-10-18. Owner: coordinating documentation agent. This is the r
 
 **Next Working**: refine conservative partial-solid clearance and prepare the release-bound support solver from Construction §3.4, including explicit contact-weighted load formulas; then support-loss confirmation/warnings/collapse. Rendered input exercise, bounded line brush, ordinary door, separate save/reload, two-client edits, art and packaged acceptance remain open. Floating placements remain visibly unvalidated until support integration; no finished-sandbox claim.
 
-**UI-01 Ready**: reconcile existing construction modes, categories/search, plane/depth controls, repeat placement and feedback into a concrete controls/UI flow before bindings become permanent. Current sandbox keys are temporary. Involve the user at the interaction-design checkpoint; no immediate decision is needed to continue geometry/support work.
+**UI-01 Ready for interaction prototype**: [Enshrouded research and proposed UI direction](research/enshrouded-construction-controls.md) records dated sources, reported defaults, structural/decor distinctions and our geometry/authority constraints. Reconcile existing modes, categories/search, plane/depth controls, repeat placement and feedback into a concrete keyboard/mouse/controller flow before bindings become permanent. Current sandbox keys are temporary. Involve the user at the layout/common-action comfort checkpoint; no immediate decision is needed to continue geometry/support work.
 
 ## Sandbox compatibility and isolated Unreal adapter - 2026-10-18
 
