@@ -2,6 +2,7 @@
 
 #if WITH_DEV_AUTOMATION_TESTS
 #include "Characters/SFE1Character.h"
+#include "Framework/SFE1Settings.h"
 #include "Interaction/SFE1InteractionTarget.h"
 #include "Interaction/SFE1PlayerController.h"
 #include "Engine/World.h"
@@ -14,6 +15,7 @@
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
 #include "Misc/Paths.h"
+#include "Misc/ScopeExit.h"
 #include "ProfilingDebugging/CsvProfiler.h"
 #include "TimerManager.h"
 #include "UnrealClient.h"
@@ -42,7 +44,111 @@ struct FScenario
     double ProfileStopped = -1.0;
     bool bProfileComplete = false;
     TSharedFuture<FString> ProfileCompletion;
+    bool bPawnCacheScenario = false;
+    bool bProbePawnCache = false;
+    bool bPawnCacheAttempted = false;
+    double PawnCacheRetreatStopped = -1.0;
+    double PawnCacheStationarySince = -1.0;
 };
+
+bool ProbePawnCache(const TSharedRef<FScenario>& State, ASFE1PlayerController* Controller, ASFE1Character* OwnPawn)
+{
+    if (State->bPawnCacheAttempted) { return true; }
+    UWorld* World = State->World.Get();
+    if (World->GetNetMode() != NM_Client || Controller->HasAuthority() || !Controller->IsLocalController())
+    {
+        UE_LOG(LogTemp, Error, TEXT("E1_SCENARIO_PAWN_CACHE_FAILED Reason=NotLocalClient"));
+        return false;
+    }
+    if (Controller->AcknowledgedPawn.Get() != OwnPawn) { return true; }
+    ASFE1Character* Peer = nullptr;
+    int32 Peers = 0;
+    for (TActorIterator<ASFE1Character> It(World); It; ++It)
+    {
+        if (*It != OwnPawn && IsValid(*It) && It->GetPlayerState()) { Peer = *It; ++Peers; }
+    }
+    TActorIterator<ASFE1InteractionTarget> Targets(World);
+    ASFE1InteractionTarget* Probe = Targets ? *Targets : nullptr;
+    if (Peers != 1 || !Probe || !Peer || !OwnPawn->GetPlayerState()) { return true; }
+    ++Targets;
+    if (Targets || Controller->bCinematicMode || Controller->GetPawn() != OwnPawn
+        || OwnPawn->GetController() != Controller || OwnPawn->GetOwner() != Controller
+        || Peer->IsLocallyControlled() || Peer->GetLocalRole() != ROLE_SimulatedProxy)
+    {
+        UE_LOG(LogTemp, Error, TEXT("E1_SCENARIO_PAWN_CACHE_FAILED Reason=UnsafeFixtureState"));
+        return false;
+    }
+    const FVector OwnPosition = OwnPawn->GetActorLocation(), PeerPosition = Peer->GetActorLocation();
+    const double OwnDistance = FVector::Dist(OwnPosition, Probe->GetInteractionAnchor());
+    const double PeerDistance = FVector::Dist(PeerPosition, Probe->GetInteractionAnchor());
+    const double Range = GetDefault<USFE1Settings>()->InteractionRangeMetres * 100.0;
+    if (!FMath::IsFinite(OwnDistance) || !FMath::IsFinite(PeerDistance) || !FMath::IsFinite(Range))
+    {
+        UE_LOG(LogTemp, Error, TEXT("E1_SCENARIO_PAWN_CACHE_FAILED Reason=NonFinitePosition"));
+        return false;
+    }
+    const double Now = FPlatformTime::Seconds();
+    if (State->PawnCacheRetreatStopped < 0.0)
+    {
+        // Legitimate owned-pawn input happens before the forgery scope. +X clears
+        // the Driver's -Y departure path; no teleport or authority write is used.
+        if (OwnDistance < Range + 150.0)
+        {
+            OwnPawn->AddMovementInput(FVector::ForwardVector, 1.0f);
+            return true;
+        }
+        State->PawnCacheRetreatStopped = Now;
+        UE_LOG(LogTemp, Display, TEXT("E1_SCENARIO_PAWN_CACHE_RETREAT_STOP ObserverPlayerId=%d DistanceCm=%.3f"),
+            OwnPawn->GetPlayerState()->GetPlayerId(), OwnDistance);
+    }
+    const double OwnSpeed = OwnPawn->GetVelocity().Size();
+    if (!FMath::IsFinite(OwnSpeed))
+    {
+        UE_LOG(LogTemp, Error, TEXT("E1_SCENARIO_PAWN_CACHE_FAILED Reason=NonFiniteVelocity"));
+        return false;
+    }
+    if (OwnSpeed >= 1.0 || !OwnPawn->GetCharacterMovement()->IsMovingOnGround()) { State->PawnCacheStationarySince = -1.0; return true; }
+    if (State->PawnCacheStationarySince < 0.0) { State->PawnCacheStationarySince = Now; }
+    if (Now - State->PawnCacheStationarySince < 1.0) { return true; }
+    // Fixed diagnostic margins establish an unambiguous near peer / far real pawn.
+    if (OwnDistance < Range + 100.0 || PeerDistance > Range - 25.0) { return true; }
+    ACharacter* SavedCharacter = Controller->GetCharacter();
+    APawn* SavedAcknowledged = Controller->AcknowledgedPawn.Get();
+    AActor* SavedViewTarget = Controller->GetViewTarget();
+    AActor* SavedControllerOwner = Controller->GetOwner();
+    AActor* SavedPeerOwner = Peer->GetOwner();
+    AController* SavedPeerController = Peer->GetController();
+    const ENetRole OwnRole = OwnPawn->GetLocalRole(), OwnRemoteRole = OwnPawn->GetRemoteRole();
+    const ENetRole PeerRole = Peer->GetLocalRole(), PeerRemoteRole = Peer->GetRemoteRole();
+    const ENetRole ControllerRole = Controller->GetLocalRole(), ControllerRemoteRole = Controller->GetRemoteRole();
+    State->bPawnCacheAttempted = true;
+    bool bSubstituted = false;
+    {
+        // No tick, latent action, possession, ownership write or acknowledgement occurs
+        // between substitution and restoration. The existing RPC carries target/revision only.
+        ON_SCOPE_EXIT { Controller->SetPawn(OwnPawn); };
+        Controller->SetPawn(Peer);
+        bSubstituted = Controller->GetPawn() == Peer && Controller->GetCharacter() == Peer;
+        if (bSubstituted) { Controller->InteractWithSelectedTarget(); }
+    }
+    const bool bRestored = Controller->GetPawn() == OwnPawn && Controller->GetCharacter() == SavedCharacter
+        && Controller->AcknowledgedPawn.Get() == SavedAcknowledged && Controller->GetViewTarget() == SavedViewTarget;
+    const bool bOwnershipStable = OwnPawn->GetController() == Controller && OwnPawn->GetOwner() == Controller
+        && Controller->GetOwner() == SavedControllerOwner && Peer->GetOwner() == SavedPeerOwner && Peer->GetController() == SavedPeerController;
+    const bool bRolesStable = OwnPawn->GetLocalRole() == OwnRole && OwnPawn->GetRemoteRole() == OwnRemoteRole
+        && Peer->GetLocalRole() == PeerRole && Peer->GetRemoteRole() == PeerRemoteRole
+        && Controller->GetLocalRole() == ControllerRole && Controller->GetRemoteRole() == ControllerRemoteRole;
+    const bool bPositionsStable = OwnPawn->GetActorLocation() == OwnPosition && Peer->GetActorLocation() == PeerPosition;
+    if (!bSubstituted || !bRestored || !bOwnershipStable || !bRolesStable || !bPositionsStable)
+    {
+        UE_LOG(LogTemp, Error, TEXT("E1_SCENARIO_PAWN_CACHE_FAILED Reason=LocalRestorationInvariant"));
+        return false;
+    }
+    UE_LOG(LogTemp, Display, TEXT("E1_SCENARIO_PAWN_CACHE_REQUEST ObserverPawn=%s ObserverPlayerId=%d ClaimedPawn=%s ClaimedPlayerId=%d Probe=%s Revision=%u ObserverDistanceCm=%.3f PeerDistanceCm=%.3f RangeCm=%.3f SettledSeconds=%.3f Restored=1 OwnershipStable=1 RolesStable=1 PositionsStable=1"),
+        *OwnPawn->GetName(), OwnPawn->GetPlayerState()->GetPlayerId(), *Peer->GetName(), Peer->GetPlayerState()->GetPlayerId(),
+        *Probe->GetName(), Probe->GetInteractionRevision(), OwnDistance, PeerDistance, Range, Now - State->PawnCacheStationarySince);
+    return true;
+}
 
 bool UpdateProfile(const TSharedRef<FScenario>& State, double Now, int32 CharacterCount, bool bClientReady)
 {
@@ -134,6 +240,10 @@ void Step(const TSharedRef<FScenario>& State)
 #endif
     if (Elapsed >= 30.0)
     {
+        if (State->bProbePawnCache && !State->bPawnCacheAttempted)
+        {
+            UE_LOG(LogTemp, Error, TEXT("E1_SCENARIO_PAWN_CACHE_FAILED Reason=NoEligibleAttemptBeforeDeadline"));
+        }
         if (!State->ProfileDir.IsEmpty() && !State->bProfileComplete)
         {
             if (State->ProfileStarted >= 0.0 && State->ProfileStopped < 0.0)
@@ -203,6 +313,8 @@ void Step(const TSharedRef<FScenario>& State)
     }
     const bool bCaptureWarm = State->CaptureDir.IsEmpty() || State->bArrivalCapture;
     const bool bProfileWarm = State->ProfileDir.IsEmpty() || State->ProfileStarted >= 0.0;
+    if (State->bProbePawnCache && bClientReady && bCaptureWarm && bProfileWarm
+        && !ProbePawnCache(State, LocalController, OwnedPawn)) { return; }
     if (State->Role == TEXT("Driver") && bClientReady && bCaptureWarm && bProfileWarm)
     {
         TActorIterator<ASFE1InteractionTarget> ProbeIterator(World);
@@ -223,16 +335,21 @@ void Step(const TSharedRef<FScenario>& State)
                 State->Requested = Now;
             }
         }
-        if (State->Requested >= 0.0 && Now - State->Requested >= 0.8 && Now - State->Requested < 3.0)
+        // Only the opt-in cache probe needs extra time for Observer retreat/settling.
+        const double DepartureStart = State->bPawnCacheScenario ? 3.0 : 0.8;
+        const double DepartureEnd = State->bPawnCacheScenario ? 5.2 : 3.0;
+        const double JumpStart = State->bPawnCacheScenario ? 3.4 : 1.2;
+        const double JumpStop = State->bPawnCacheScenario ? 3.7 : 1.5;
+        if (State->Requested >= 0.0 && Now - State->Requested >= DepartureStart && Now - State->Requested < DepartureEnd)
         {
             OwnedPawn->AddMovementInput(FVector(0.0, -1.0, 0.0), 1.0f);
-            if (!State->bJumped && Now - State->Requested > 1.2)
+            if (!State->bJumped && Now - State->Requested > JumpStart)
             {
                 OwnedPawn->Jump();
                 State->bJumped = true;
             }
         }
-        if (State->bJumped && Now - State->Requested > 1.5) { OwnedPawn->StopJumping(); }
+        if (State->bJumped && Now - State->Requested > JumpStop) { OwnedPawn->StopJumping(); }
     }
     World->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateLambda([State]() { Step(State); }));
 }
@@ -252,6 +369,8 @@ void StartE1NetworkScenario(UWorld* World)
     TSharedRef<FScenario> State = MakeShared<FScenario>();
     State->World = World;
     State->Role = Role;
+    State->bPawnCacheScenario = FParse::Param(FCommandLine::Get(), TEXT("E1ProbePawnCache"));
+    State->bProbePawnCache = Role == TEXT("Observer") && State->bPawnCacheScenario;
     FString ProfileDir;
     if (FParse::Value(FCommandLine::Get(), TEXT("E1ProfileDir="), ProfileDir))
     {

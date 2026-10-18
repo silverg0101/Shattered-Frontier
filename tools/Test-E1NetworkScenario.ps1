@@ -5,7 +5,9 @@ param(
     [ValidateSet('Normal', 'Adverse100')][string]$NetworkProfile = 'Normal',
     [switch]$CaptureFrames,
     [switch]$CaptureProfile,
-    [switch]$RenderOffscreen
+    [switch]$RenderOffscreen,
+    [switch]$ProbePawnCache,
+    [ValidateSet('720p', '1080p')][string]$Resolution = '720p'
 )
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -16,6 +18,8 @@ if (Get-NetUDPEndpoint -LocalPort $Port -ErrorAction SilentlyContinue) { throw "
 $logs = Join-Path $repoRoot ('GameClient\Saved\Logs\E1-Network-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
 $null = New-Item -ItemType Directory -Path $logs
 $clientRendering = @('-NullRHI')
+$renderWidth = if ($Resolution -eq '1080p') { 1920 } else { 1280 }
+$renderHeight = if ($Resolution -eq '1080p') { 1080 } else { 720 }
 $frames = @()
 $profileCaptures = [ordered]@{}
 if ($CaptureProfile) {
@@ -25,7 +29,7 @@ if ($CaptureProfile) {
     }
 }
 if ($CaptureFrames -or $RenderOffscreen) {
-    $clientRendering = @('-RenderOffScreen', '-windowed', '-ResX=1280', '-ResY=720')
+    $clientRendering = @('-RenderOffScreen', '-windowed', "-ResX=$renderWidth", "-ResY=$renderHeight")
 }
 if ($CaptureFrames) {
     $framesDir = Join-Path $logs 'Frames'
@@ -57,6 +61,10 @@ function Wait-Log([string]$Path, [string]$Pattern, [int]$Seconds = 90) {
     $deadline = [DateTime]::UtcNow.AddSeconds($Seconds)
     while ([DateTime]::UtcNow -lt $deadline) {
         Assert-OwnedProcessesAlive
+        if ($ProbePawnCache -and (Test-Path -LiteralPath $observer) -and
+            (Select-String -LiteralPath $observer -Pattern 'E1_SCENARIO_PAWN_CACHE_FAILED' -Quiet)) {
+            throw "Pawn-cache probe failed. Inspect $observer"
+        }
         if ($CaptureProfile) {
             foreach ($roleLog in @($server,$driver,$observer)) {
                 if ((Test-Path -LiteralPath $roleLog) -and (Select-String -LiteralPath $roleLog -Pattern 'E1_SCENARIO_PROFILE_FAILED' -Quiet)) {
@@ -71,10 +79,80 @@ function Wait-Log([string]$Path, [string]$Pattern, [int]$Seconds = 90) {
 }
 function Read-Samples([string]$Path, [int]$PlayerId) {
     $pattern = 'E1_SCENARIO_SAMPLE Role=(\w+) Pawn=(\S+) PlayerId=(\d+) OwnerLocal=(\d) Time=([\d.]+) X=(-?[\d.]+) Y=(-?[\d.]+) Z=(-?[\d.]+) Grounded=(\d)'
+    $lineNumber = 0
     foreach ($line in Get-Content -LiteralPath $Path) {
+        ++$lineNumber
         if ($line -match $pattern -and [int]$Matches[3] -eq $PlayerId) {
-            [pscustomobject]@{ X=[double]::Parse($Matches[6], [Globalization.CultureInfo]::InvariantCulture); Y=[double]::Parse($Matches[7], [Globalization.CultureInfo]::InvariantCulture); Z=[double]::Parse($Matches[8], [Globalization.CultureInfo]::InvariantCulture); Grounded=[int]$Matches[9] }
+            [pscustomobject]@{ Pawn=$Matches[2]; OwnerLocal=[int]$Matches[4]; Time=[double]::Parse($Matches[5], [Globalization.CultureInfo]::InvariantCulture); Line=$lineNumber; X=[double]::Parse($Matches[6], [Globalization.CultureInfo]::InvariantCulture); Y=[double]::Parse($Matches[7], [Globalization.CultureInfo]::InvariantCulture); Z=[double]::Parse($Matches[8], [Globalization.CultureInfo]::InvariantCulture); Grounded=[int]$Matches[9] }
         }
+    }
+}
+function Assert-StationaryObserver([string]$Path, [int]$PlayerId, [int]$OwnerLocal, [int]$AroundLine) {
+    $allSamples = @(Read-Samples $Path $PlayerId)
+    $names = @($allSamples.Pawn | Select-Object -Unique)
+    $before = @($allSamples | Where-Object Line -lt $AroundLine | Select-Object -Last 4)
+    $after = @($allSamples | Where-Object Line -gt $AroundLine | Select-Object -First 4)
+    if ($names.Count -ne 1 -or @($allSamples | Where-Object OwnerLocal -ne $OwnerLocal).Count -gt 0 -or $before.Count -ne 4 -or $after.Count -ne 4) {
+        throw "Missing stable Observer pawn/ownership samples before and after the probe in $Path"
+    }
+    $samples = @($before) + @($after)
+    if ($samples[-1].Time - $samples[0].Time -gt 2.0) { throw "Observer stationarity bracket exceeds two seconds in $Path" }
+    $first = $samples[0]
+    $maxHorizontal = 0.0
+    $maxVertical = 0.0
+    foreach ($sample in $samples) {
+        if (-not [double]::IsFinite($sample.X) -or -not [double]::IsFinite($sample.Y) -or -not [double]::IsFinite($sample.Z)) { throw "Non-finite Observer position in $Path" }
+        $maxHorizontal = [Math]::Max($maxHorizontal, [Math]::Sqrt([Math]::Pow($sample.X-$first.X,2)+[Math]::Pow($sample.Y-$first.Y,2)))
+        $maxVertical = [Math]::Max($maxVertical, [Math]::Abs($sample.Z-$first.Z))
+    }
+    # The opt-in Observer retreats legitimately first, then settles for one second.
+    # Check only the eight nearest samples bracketing the request/result, not that retreat.
+    if ($maxHorizontal -gt 5.0 -or $maxVertical -gt 20.0) { throw "Observer moved during cache probe in $Path (${maxHorizontal}cm horizontal/${maxVertical}cm vertical)" }
+    return [ordered]@{ Pawn=$names[0]; Samples=$samples.Count; WindowStartSeconds=$samples[0].Time; WindowEndSeconds=$samples[-1].Time; MaxHorizontalDisplacementCm=$maxHorizontal; MaxVerticalDisplacementCm=$maxVertical }
+}
+function Assert-PawnCacheProbe([int]$DriverPlayerId) {
+    $pattern = 'E1_SCENARIO_PAWN_CACHE_REQUEST ObserverPawn=(\S+) ObserverPlayerId=(\d+) ClaimedPawn=(\S+) ClaimedPlayerId=(\d+) Probe=(\S+) Revision=(\d+) ObserverDistanceCm=([\d.]+) PeerDistanceCm=([\d.]+) RangeCm=([\d.]+) SettledSeconds=([\d.]+) Restored=1 OwnershipStable=1 RolesStable=1 PositionsStable=1'
+    $requests = @(Select-String -LiteralPath $observer -Pattern $pattern)
+    if ($requests.Count -ne 1) { throw 'Expected one restored Observer pawn-cache substitution; missing/suppressed attempts are not acceptance' }
+    $request = $requests[0]
+    $groups = $request.Matches[0].Groups
+    $observerId = [int]$groups[2].Value
+    if ($observerId -eq $DriverPlayerId -or [int]$groups[4].Value -ne $DriverPlayerId) { throw 'Pawn-cache probe did not substitute the distinct replicated Driver pawn' }
+    $ownDistance = [double]::Parse($groups[7].Value, [Globalization.CultureInfo]::InvariantCulture)
+    $peerDistance = [double]::Parse($groups[8].Value, [Globalization.CultureInfo]::InvariantCulture)
+    $range = [double]::Parse($groups[9].Value, [Globalization.CultureInfo]::InvariantCulture)
+    $settledSeconds = [double]::Parse($groups[10].Value, [Globalization.CultureInfo]::InvariantCulture)
+    if (-not [double]::IsFinite($ownDistance) -or -not [double]::IsFinite($peerDistance) -or -not [double]::IsFinite($range) -or
+        -not [double]::IsFinite($settledSeconds) -or $settledSeconds -lt 1.0 -or
+        $range -le 0 -or $ownDistance -lt $range+100.0 -or $peerDistance -gt $range-25.0) { throw 'Pawn-cache probe did not establish a settled far real pawn and near claimed pawn' }
+    $clientResults = @(Select-String -LiteralPath $observer -Pattern 'E1_INTERACTION_RESULT Result=')
+    if ($clientResults.Count -ne 1 -or $clientResults[0].LineNumber -le $request.LineNumber -or
+        $clientResults[0].Line -notmatch 'E1_INTERACTION_RESULT Result=5 Unavailable: out of range') {
+        throw 'Observer did not receive exactly one actual OutOfRange RPC result; suppressed/missing RPC is inconclusive'
+    }
+    $serverResults = @(Select-String -LiteralPath $server -Pattern ('E1_INTERACTION_SERVER_RESULT Pawn=(\S+) PlayerId=' + $observerId + ' Result=(\d+) Authority=1'))
+    if ($serverResults.Count -ne 1 -or $serverResults[0].Matches[0].Groups[2].Value -ne '5') { throw 'Server did not reject the real Observer controller request as OutOfRange' }
+    $localStable = Assert-StationaryObserver $observer $observerId 1 $request.LineNumber
+    $serverStable = Assert-StationaryObserver $server $observerId 0 $serverResults[0].LineNumber
+    if ($localStable.Pawn -ne $groups[1].Value -or $serverStable.Pawn -ne $serverResults[0].Matches[0].Groups[1].Value) { throw 'Observer client/server rejection did not retain its original pawn identity' }
+    $peerSamples = @(Read-Samples $observer $DriverPlayerId)
+    $driverServerSamples = @(Read-Samples $server $DriverPlayerId)
+    $peerNames = @($peerSamples.Pawn | Select-Object -Unique)
+    $driverServerNames = @($driverServerSamples.Pawn | Select-Object -Unique)
+    if ($peerNames.Count -ne 1 -or $peerNames[0] -ne $groups[3].Value -or @($peerSamples | Where-Object OwnerLocal -ne 0).Count -gt 0 -or
+        $driverServerNames.Count -ne 1 -or $driverServerNames[0] -eq $serverStable.Pawn) { throw 'Driver/Observer replicated pawn identities or local control changed' }
+    $pairs = @(Select-String -LiteralPath $server -Pattern 'E1_POSSESSION Controller=(\S+) Pawn=(\S+) Authority=1' | ForEach-Object {
+        [pscustomobject]@{ Controller=$_.Matches[0].Groups[1].Value; Pawn=$_.Matches[0].Groups[2].Value }
+    })
+    if ($pairs.Count -ne 2 -or @($pairs.Controller | Select-Object -Unique).Count -ne 2 -or @($pairs.Pawn | Select-Object -Unique).Count -ne 2 -or
+        $serverStable.Pawn -notin $pairs.Pawn -or $driverServerNames[0] -notin $pairs.Pawn -or
+        (Select-String -LiteralPath $server -Pattern 'E1_PLAYER_LEAVE' -Quiet)) { throw 'Server did not preserve its two original authoritative possession pairs' }
+    $driverAccepted = 'E1_INTERACTION_SERVER_RESULT Pawn=' + [regex]::Escape($driverServerNames[0]) + ' PlayerId=' + $DriverPlayerId + ' Result=0 Authority=1'
+    if (-not (Select-String -LiteralPath $server -Pattern $driverAccepted -Quiet)) { throw 'Driver did not retain its own accepted authoritative interaction' }
+    return [ordered]@{
+        Result='PASS'; Scope='One client pawn-cache substitution ignored; no pawn field exists in this RPC payload and no identity/authentication acceptance is established.'
+        ObserverPlayerId=$observerId; ClaimedDriverPlayerId=$DriverPlayerId; ObserverDistanceCm=$ownDistance; ClaimedPeerDistanceCm=$peerDistance; RangeCm=$range; SettledSeconds=$settledSeconds
+        ObserverLocal=$localStable; ObserverServer=$serverStable; OriginalServerPossessionPairs=$pairs; ObserverServerResult=5; ObserverClientResult=5
     }
 }
 function Assert-Movement([string]$Path, [int]$PlayerId) {
@@ -194,8 +272,9 @@ try {
     Launch @('/Game/Frontier/Maps/Greenlands_E1', '-server', '-NullRHI', '-unattended', '-nosound', '-nop4', '-E1ProbeRole=Server', "-port=$Port", '-MULTIHOME=127.0.0.1', ('-abslog="' + $server + '"'))
     Wait-Log $server 'E1_WORLD_READY.*NetMode=1'
     # Start both clients together to preserve the finite server sampling window.
-    Launch (@("127.0.0.1:$Port", '-game', '-unattended', '-nosound', '-nop4', '-E1ProbeRole=Driver', ('-abslog="' + $driver + '"')) + $clientRendering)
-    Launch (@("127.0.0.1:$Port", '-game', '-unattended', '-nosound', '-nop4', '-E1ProbeRole=Observer', ('-abslog="' + $observer + '"')) + $clientRendering)
+    $pawnCacheArguments = if ($ProbePawnCache) { @('-E1ProbePawnCache') } else { @() }
+    Launch (@("127.0.0.1:$Port", '-game', '-unattended', '-nosound', '-nop4', '-E1ProbeRole=Driver', ('-abslog="' + $driver + '"')) + $clientRendering + $pawnCacheArguments)
+    Launch (@("127.0.0.1:$Port", '-game', '-unattended', '-nosound', '-nop4', '-E1ProbeRole=Observer', ('-abslog="' + $observer + '"')) + $clientRendering + $pawnCacheArguments)
     Wait-Log $driver 'Welcomed by server'
     Wait-Log $observer 'Welcomed by server'
     Wait-Log $driver 'E1_INTERACTION_RESULT Result=0 Accepted'
@@ -222,6 +301,7 @@ try {
     if (-not (Select-String -LiteralPath $driver -Pattern $ownerPattern -Quiet)) { throw 'Driver movement did not belong to its locally controlled pawn' }
     $observerPattern = 'E1_SCENARIO_SAMPLE Role=Observer Pawn=\S+ PlayerId=' + $playerId + ' OwnerLocal=0'
     if (-not (Select-String -LiteralPath $observer -Pattern $observerPattern -Quiet)) { throw 'Observer did not sample the remote Driver pawn' }
+    $pawnCacheEvidence = if ($ProbePawnCache) { Assert-PawnCacheProbe $playerId } else { $null }
     if ($CaptureFrames) {
         foreach ($role in @('Driver','Observer')) {
             foreach ($phase in @('Arrival','Probe','Departed')) {
@@ -232,8 +312,8 @@ try {
                 try {
                     $frameStream = [IO.File]::OpenRead($frame)
                     $frameImage = [Drawing.Image]::FromStream($frameStream, $false, $true)
-                    if ($frameImage.RawFormat.Guid -ne [Drawing.Imaging.ImageFormat]::Png.Guid -or $frameImage.Width -ne 1280 -or $frameImage.Height -ne 720) {
-                        throw 'Capture must decode as a 1280x720 PNG'
+                    if ($frameImage.RawFormat.Guid -ne [Drawing.Imaging.ImageFormat]::Png.Guid -or $frameImage.Width -ne $renderWidth -or $frameImage.Height -ne $renderHeight) {
+                        throw "Capture must decode as a ${renderWidth}x${renderHeight} PNG"
                     }
                 } catch {
                     throw "Invalid PNG capture ${frame}: $($_.Exception.Message)"
@@ -254,15 +334,18 @@ try {
         DriverPlayerId=$playerId; DisplacementCm=[ordered]@{ Driver=$driverDistance; Server=$serverDistance; Observer=$observerDistance }
         JumpHeightObservedCm=[ordered]@{ Server=$serverJumpCm; Observer=$observerJumpCm }
         CaptureMode=$(if ($CaptureFrames -or $RenderOffscreen) { 'RenderedOffscreen' } else { 'NullRHI' }); CapturedFrames=$frames
+        RenderDimensionsPixels=$(if ($CaptureFrames -or $RenderOffscreen) { [ordered]@{ Width=$renderWidth; Height=$renderHeight; Evidence=$(if ($CaptureFrames) { 'DecodedPNGs' } else { 'ExplicitLaunchArguments; no decoded frame' }) } } else { $null })
         DiagnosticProfiles=$profileCaptures
+        PawnCacheProbe=$pawnCacheEvidence
         ProfilingLimits='Two-client diagnostic capture only; budgets unratified, contention uncontrolled. Frame intervals include waits and are not simulation CPU time. No measured RTT or capacity claim.'
-        Limits='Development scenario; offscreen frames require visual inspection and are not manual acceptance. No adversarial, Linux runtime, measured RTT or capacity certification.'
+        Limits=$(if ($ProbePawnCache) { 'Development scenario includes one client pawn-cache substitution through the existing interaction RPC. No arbitrary RPC, identity/authentication, Linux runtime, measured RTT or capacity certification; offscreen frames require visual inspection.' } else { 'Development scenario; offscreen frames require visual inspection and are not manual acceptance. No adversarial, Linux runtime, measured RTT or capacity certification.' })
     }
     Assert-OwnedProcessesAlive
     $summaryPath = Join-Path $logs 'Summary.json'
     $summary | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $summaryPath -Encoding utf8
     Write-Output "PASS: replicated Driver PlayerId=$playerId moved Driver=${driverDistance}cm Server=${serverDistance}cm Observer=${observerDistance}cm; owner received Accepted probe RPC. Logs: $logs"
-    Write-Output 'Normal-input replication/probe evidence only; optional offscreen frames require visual inspection, not manual acceptance. No adversarial ownership, Linux runtime or capacity proof.'
+    if ($ProbePawnCache) { Write-Output 'PASS: Observer client pawn-cache substitution ignored; its real server pawn was rejected OutOfRange and both authoritative pawn identities were preserved. No identity/authentication, arbitrary RPC, Linux runtime or capacity acceptance.' }
+    else { Write-Output 'Normal-input replication/probe evidence only; optional offscreen frames require visual inspection, not manual acceptance. No adversarial ownership, Linux runtime or capacity proof.' }
     Write-Output "Profile=$NetworkProfile actual emulation verified on three netdrivers; nominal configured RTT=$($lagMs*2)ms, not measured. Summary: $summaryPath"
 } finally {
     foreach ($process in $owned) { if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue } }
