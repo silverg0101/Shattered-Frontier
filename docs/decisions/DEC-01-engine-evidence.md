@@ -65,3 +65,9 @@ Revisit on root/build changes, failed compile/toolchain selection, or target evi
 [UE layout]: ../Game-Design/Legends_Shattered_Frontier_UE58_Project_Layout_v1.0.md
 [Repository structure]: ../Game-Design/Legends_Shattered_Frontier_Repository_Structure_v1.0.md
 [E1 packet]: ../e1-implementation-packet.md
+
+## Subsequent authorized implementation evidence — 2026-10-18
+
+The inventory above is historical. [E1 foundation](../evidence/e1-foundation.md) now records actual project/editor compilation, targeted movement/interaction/lifecycle/network checks; [the Linux route](../e1-linux-server-build.md) records exact source/SDK identity, native stage/archive and healthy non-root read-only LAN deployment. Windows source UnrealPak remains ASR-blocked; ordinary native Linux packaging succeeded without changing that policy or engine support metadata.
+
+DEC-01 remains open: Launcher client handshake correctly rejects source server effective NetCL0 versus55116800. UBT requires a nonzero source changelist before using its raw CompatibleChangelist; identical major/minor/patch and asset-compatible metadata did not establish network compatibility. A matching-source WindowsClient build/loose cook is the active route. Do not override network checks or stamp Launcher identity merely to connect. Full compatible-client gameplay, manual acceptance, packaged-client release readiness and measurements remain evidence gates.
