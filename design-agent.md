@@ -113,6 +113,8 @@ Current continuation: user returned; automation PAUSED. Steam-server is the game
 
 ## Desktop continuation - 2026-10-18
 
+Latest documentation cycle: H2-PER-01-A is complete after independent source review with no blocking findings. Read [the concrete topology packet](docs/decisions/PER-01-durable-state-topology.md) and the live work plan before continuing; this supersedes the earlier instruction to start topology preparation. It proposes domain deployables/stack, inherited database boundaries, migration tooling, authenticated transport, takeover barriers and hash scopes, and traces GM12 provenance gaps. Next is PER-01-B owner decision/lock-manifest and exact provisioning/authority/profile preparation, then gated isolated harness and INT-02 vectors. These are proposed choices, not owner acceptance or delivered schemas. Backlog PER-01/DEC-02, protected-owner extensions and runtime fixtures remain open. No host/runtime changes or automation restart occurred in this documentation cycle.
+
 User requested committing/pushing all project changes before switching from this laptop. Pull origin/main on the desktop, then read docs/dependency-map.md and docs/design-work-plan.md. This handoff commit includes the GM recovery design and progress/index updates; verify the current Git HEAD rather than relying on a copied laptop path or old commit identifier.
 
 Steam-server remains the selected game host at 192.168.50.133:17777/udp; its independent main service continues alongside the preserved Windrose workload. No Unraid deployment occurred. Do not rebuild or redeploy solely because the workstation changed.
