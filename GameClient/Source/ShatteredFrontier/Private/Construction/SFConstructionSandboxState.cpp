@@ -3,6 +3,9 @@
 #include "Construction/SFConstructionSandbox.h"
 #include "Construction/SFConstructionSandboxSettings.h"
 #include "Construction/SFConstructionGeometry.h"
+#include "Construction/SFConstructionSupport.h"
+#include "Construction/SFConstructionSandboxFoundation.h"
+#include "Construction/SFConstructionClearance.h"
 #include "Engine/World.h"
 #include "GameFramework/Pawn.h"
 
@@ -29,7 +32,7 @@ void ASFConstructionSandboxState::BeginPlay()
     ReachCentimetres = Settings->BuildReachMetres * 100.0f;
     MaximumMembers = Settings->MaximumMembers;
     bReady = true;
-    UE_LOG(LogTemp, Display, TEXT("CONSTRUCTION_TOOLS_READY Standalone=1 PlacementOnly=1 UnlimitedDevelopmentStock=1 Support=0 Save=0 Network=0 ReachMetres=%.1f MaximumMembers=%d"),
+    UE_LOG(LogTemp, Display, TEXT("CONSTRUCTION_TOOLS_READY Standalone=1 PlacementOnly=1 UnlimitedDevelopmentStock=1 Support=FixedFoundationPlacementOnly Collapse=0 Save=0 Network=0 ReachMetres=%.1f MaximumMembers=%d"),
         ReachCentimetres / 100.0f, MaximumMembers);
 }
 
@@ -47,8 +50,9 @@ bool ASFConstructionSandboxState::FindCell(const AActor* Projection, FIntVector&
     return false;
 }
 
-FString ASFConstructionSandboxState::Evaluate(const ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent) const
+FString ASFConstructionSandboxState::Evaluate(const ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent, FString* SupportHint) const
 {
+    if (SupportHint) { SupportHint->Reset(); }
     if (!IsInGameThread() || !bReady || !HasAuthority() || IsActorBeingDestroyed() || !GetWorld()
         || GetNetMode() != NM_Standalone || !GetWorld()->GetAuthGameMode<ASFConstructionSandboxGameMode>()
         || !IsValid(Controller) || Controller->IsActorBeingDestroyed() || !Controller->HasAuthority()
@@ -82,20 +86,59 @@ FString ASFConstructionSandboxState::Evaluate(const ASFConstructionSandboxContro
     { return TEXT("Build line of sight blocked"); }
     if (!Intent.bRemove)
     {
-        // Conservative canonical-solid bounds clearance, including actual character
-        // capsules and fixture props. Touching shared faces remain legal. Fine
-        // partial-solid/world intersection remains a later acceptance gate.
-        const FBox Bounds(Solid.Vertices);
-        const FVector Extent = (Bounds.GetExtent() - FVector(0.1)).ComponentMax(FVector(0.01));
-        FCollisionObjectQueryParams Objects;
-        Objects.AddObjectTypesToQuery(ECC_Pawn);
-        Objects.AddObjectTypesToQuery(ECC_WorldDynamic);
-        Objects.AddObjectTypesToQuery(ECC_WorldStatic);
-        FCollisionQueryParams Clearance(SCENE_QUERY_STAT(ConstructionClearance), false);
-        if (GetWorld()->OverlapAnyTestByObjectType(CellCorner(Intent.Cell) + Bounds.GetCenter(), FQuat::Identity,
-            Objects, FCollisionShape::MakeBox(Extent), Clearance))
+        const auto Clearance = SFConstructionClearance::Evaluate(GetWorld(), Intent.Shape, Intent.Rotation, CellCorner(Intent.Cell));
+        if (Clearance == SFConstructionClearance::EResult::Unavailable)
+        { return TEXT("Canonical clearance unavailable"); }
+        if (Clearance == SFConstructionClearance::EResult::Blocked)
         { return TEXT("Occupied solid, character or prop clearance"); }
     }
+    return CheckSupport(Intent, SupportHint);
+}
+
+FString ASFConstructionSandboxState::CheckSupport(const FSFConstructionSandboxIntent& Intent, FString* SupportHint) const
+{
+    // One authoritative snapshot; never infer compact ground from a prop hit.
+    if (!SFConstructionSandboxFoundation::HasKnownPlane(GetWorld()))
+    { return TEXT("Known development foundation unavailable; edits blocked"); }
+    TArray<FSFConstructionSupportMember> Candidate;
+    Candidate.Reserve(Members.Num() + 1);
+    for (const auto& Pair : Members)
+    {
+        if (!Pair.Value.Projection.IsValid() || Pair.Value.Projection->IsActorBeingDestroyed())
+        { return TEXT("Construction projection unavailable; edits blocked pending rebuild"); }
+        if (Intent.bRemove && Pair.Key == Intent.Cell) { continue; }
+        Candidate.Add({Pair.Key, Pair.Value.Shape, Pair.Value.Rotation, 1.0,
+            SFConstructionSandboxFoundation::TouchesPlane(Pair.Key, Pair.Value.Shape, Pair.Value.Rotation)});
+    }
+    if (!Intent.bRemove)
+    {
+        Candidate.Add({Intent.Cell, Intent.Shape, Intent.Rotation, 1.0,
+            SFConstructionSandboxFoundation::TouchesPlane(Intent.Cell, Intent.Shape, Intent.Rotation)});
+    }
+    TArray<FSFConstructionSupportResult> Results;
+    // Approved release-bound profile only; intent cannot override material rules.
+    if (!SFConstructionSupport::Evaluate(Candidate, FSFConstructionSupportProfile(), Results))
+    { return TEXT("Support snapshot invalid; construction preserved"); }
+    bool bStrained = false;
+    for (const auto& Result : Results)
+    {
+        if (Result.State == ESFConstructionSupportState::Unsupported)
+        {
+            if (Intent.bRemove)
+            { return TEXT("Removal destabilizes other pieces; confirmation/grace/collapse not enabled yet"); }
+            switch (Result.Reason)
+            {
+            case ESFConstructionSupportReason::NoAnchorPath: return TEXT("Unsupported: no positive-area path to the development foundation");
+            case ESFConstructionSupportReason::Reach: return TEXT("Unsupported: span or height limit; add a support column");
+            case ESFConstructionSupportReason::AggregateCapacity:
+            case ESFConstructionSupportReason::ContactCapacity: return TEXT("Unsupported: load/contact capacity; add support or shorten the span");
+            default: return TEXT("Unsupported: dependent support path failed; add support");
+            }
+        }
+        bStrained |= Result.State == ESFConstructionSupportState::Strained;
+    }
+    if (SupportHint)
+    { *SupportHint = bStrained ? TEXT("STRAINED support - shorten span or add a column") : TEXT("Stable support (rough-timber-v1; synthetic foundation)"); }
     return FString();
 }
 
@@ -165,7 +208,7 @@ bool ASFConstructionSandboxState::Apply(ASFConstructionSandboxController* Contro
     if (Removed.IsValid()) { Removed->Destroy(); }
     Members = MoveTemp(Candidate);
     Revision = NextRevision;
-    Result = Intent.bRemove ? TEXT("Removed (support/collapse not implemented)") : TEXT("Placed (support not validated)");
+    Result = Intent.bRemove ? TEXT("Removed; surviving support checked") : TEXT("Placed; rough-timber support checked");
     return true;
 }
 

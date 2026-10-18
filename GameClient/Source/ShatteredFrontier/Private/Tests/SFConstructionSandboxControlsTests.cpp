@@ -10,6 +10,9 @@
 #include "GameFramework/DefaultPawn.h"
 #include "GameFramework/WorldSettings.h"
 #include "EngineUtils.h"
+#include "Engine/StaticMeshActor.h"
+#include "Engine/StaticMesh.h"
+#include "Components/StaticMeshComponent.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFConstructionSandboxSettingsTest, "ShatteredFrontier.Construction.Controls.ReleaseBounds",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
@@ -35,13 +38,21 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFConstructionSandboxAuthorityTest, "Shattered
 
 bool FSFConstructionSandboxAuthorityTest::RunTest(const FString& Parameters)
 {
-    AddInfo(TEXT("Placement-only standalone authority, not support/save/network or actual player-input acceptance."));
+    AddInfo(TEXT("Fixed-foundation support/standalone authority, not collapse/save/network or actual player-input acceptance."));
     FTestWorldWrapper Fixture;
     if (!Fixture.CreateTestWorld(EWorldType::Game)) { Fixture.ForwardErrorMessages(this); return false; }
     UWorld* World = Fixture.GetTestWorld();
     World->GetWorldSettings()->DefaultGameMode = ASFConstructionSandboxGameMode::StaticClass();
     if (!World->SetGameMode(FURL()) || !Fixture.BeginPlayInTestWorld()) { Fixture.ForwardErrorMessages(this); return false; }
     World->GetWorldSettings()->NotifyBeginPlay();
+    auto* Foundation = World->SpawnActor<AStaticMeshActor>();
+    if (!TestNotNull(TEXT("Synthetic test foundation"), Foundation)) { return false; }
+    Foundation->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);
+    Foundation->GetStaticMeshComponent()->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube")));
+    Foundation->GetStaticMeshComponent()->SetCollisionProfileName(TEXT("BlockAll"));
+    Foundation->SetActorLocation(FVector(0,0,-50));
+    Foundation->SetActorScale3D(FVector(20,20,1));
+    Foundation->Tags.Add(TEXT("SFConstructionSandboxFoundationV1"));
     // Test worlds have no local-player admission. Designate local control before
     // BeginPlay, matching GameMode's normal admission rather than bypassing the
     // runtime state/controller guard or calling BeginPlay twice.
@@ -78,6 +89,9 @@ bool FSFConstructionSandboxAuthorityTest::RunTest(const FString& Parameters)
     TestFalse(TEXT("Outside fixed plot rejects"), State->Apply(Controller, Intent, Result));
     Intent.Cell = FIntVector(6,0,2);
     TestFalse(TEXT("Owned pawn physical volume cannot be built through"), State->Apply(Controller, Intent, Result));
+    Intent.Cell = FIntVector(12,0,2);
+    TestFalse(TEXT("New floating construction fails support"), State->Apply(Controller, Intent, Result));
+    TestTrue(TEXT("Floating rejection identifies support path"), Result.Contains(TEXT("Unsupported")));
     ASFConstructionSandboxPreview* Existing = nullptr;
     for (TActorIterator<ASFConstructionSandboxPreview> It(World); It; ++It)
     {
@@ -107,12 +121,39 @@ bool FSFConstructionSandboxAuthorityTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Rejected member leaves no live projection actor"), AfterActors, PriorActors);
     Existing->SetActorScale3D(FVector::OneVector);
     Pawn->SetActorLocation(FVector(300,25,100));
+    Intent.Cell = FIntVector(10,0,1);
+    Intent.ExpectedRevision = State->GetRevision();
+    TestTrue(TEXT("Grounded column supports member above"), State->Apply(Controller, Intent, Result));
+    Intent.ExpectedRevision = State->GetRevision();
+    Intent.Cell = FIntVector(10,0,0);
+    Intent.bRemove = true;
+    TestFalse(TEXT("Unsafe demolition blocked until grace/confirmation checkpoint"), State->Apply(Controller, Intent, Result));
+    TestTrue(TEXT("Removal explains pending support-loss flow"), Result.Contains(TEXT("destabilizes")));
+    Intent.Cell = FIntVector(10,0,1);
+    TestTrue(TEXT("Top member safely removable"), State->Apply(Controller, Intent, Result));
+    Intent.ExpectedRevision = State->GetRevision();
     Intent.Cell = FIntVector(10,0,0);
     Intent.bRemove = true;
     TestTrue(TEXT("Bounded removal of own editable member"), State->Apply(Controller, Intent, Result));
     TestEqual(TEXT("Member removed"), State->GetMemberCount(), 0);
     Intent.ExpectedRevision = State->GetRevision();
     TestFalse(TEXT("Removal of absent member rejects"), State->Apply(Controller, Intent, Result));
+    Intent.bRemove = false;
+    TestTrue(TEXT("Grounded fixture rebuilt for unavailable-projection probe"), State->Apply(Controller, Intent, Result));
+    ASFConstructionSandboxPreview* Unavailable = nullptr;
+    for (TActorIterator<ASFConstructionSandboxPreview> It(World); It; ++It)
+    {
+        FIntVector Cell;
+        if (State->FindCell(*It, Cell) && Cell == Intent.Cell) { Unavailable = *It; break; }
+    }
+    if (!TestNotNull(TEXT("Unavailable projection probe"), Unavailable)) { return false; }
+    Unavailable->Destroy();
+    const uint64 UnavailableRevision = State->GetRevision();
+    Intent.Cell = FIntVector(11,0,0);
+    Intent.ExpectedRevision = UnavailableRevision;
+    TestFalse(TEXT("Missing member projection cannot provide virtual support"), State->Apply(Controller, Intent, Result));
+    TestTrue(TEXT("Missing projection fences edits"), Result.Contains(TEXT("unavailable")));
+    TestEqual(TEXT("Unavailable projection preserves authority revision"), State->GetRevision(), UnavailableRevision);
     return true;
 }
 

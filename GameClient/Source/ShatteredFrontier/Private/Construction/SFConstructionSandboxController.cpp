@@ -92,9 +92,10 @@ void ASFConstructionSandboxController::Tick(float DeltaSeconds)
                 PreviewIntent.ExpectedRevision = State->GetRevision();
                 PreviewIntent.bRemove = false;
                 bHasPreview = true;
-                Advisory = State->Evaluate(this, PreviewIntent);
+                FString SupportHint;
+                Advisory = State->Evaluate(this, PreviewIntent, &SupportHint);
                 const bool bAllowed = Advisory.IsEmpty();
-                if (bAllowed) { Advisory = TEXT("Placement allowed; support NOT validated"); }
+                if (bAllowed) { Advisory = TEXT("Placement allowed | ") + SupportHint; }
                 FSFConstructionSolid Solid;
                 if (SFConstructionGeometry::Build(Shape, Rotation, Solid))
                 {
@@ -115,7 +116,7 @@ void ASFConstructionSandboxController::Tick(float DeltaSeconds)
     {
         const TCHAR* Shapes[] = { TEXT("Cube"), TEXT("Half slab"), TEXT("Slope") };
         GEngine->AddOnScreenDebugMessage(static_cast<uint64>(GetUniqueID()) + (1ull << 32), 0.1f, FColor::Cyan,
-            FString::Printf(TEXT("STANDALONE DEVELOPMENT | UNLIMITED STOCK | Placement-only checkpoint\nSupport/collapse, save/load, timber materials and networking INCOMPLETE\nB build | 1 Cube  2 Slab  3 Slope | R orientation | LMB place | RMB remove | WASD/mouse/Space/E retained\n%s | neutral fixture material | orientation %d/24 | snap 0.5 m | %d cells\n%s\n%s"),
+            FString::Printf(TEXT("STANDALONE DEVELOPMENT | UNLIMITED STOCK | Fixed synthetic foundation\nUnsafe support-loss removal blocked; collapse, saves, timber art and networking INCOMPLETE\nB build | 1 Cube  2 Slab  3 Slope | R orientation | LMB place | RMB remove | WASD/mouse/Space/E retained\n%s | rough-timber-v1 rules; neutral art | orientation %d/24 | snap 0.5 m | %d cells\n%s\n%s"),
                 Shapes[Shape], Rotation + 1, State->GetMemberCount(), *Advisory, *LastResult));
     }
 }

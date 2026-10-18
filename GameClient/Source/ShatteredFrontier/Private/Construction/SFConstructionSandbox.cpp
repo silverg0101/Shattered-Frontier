@@ -143,5 +143,5 @@ void ASFConstructionSandboxGameMode::StartPlay()
         else { ++Installed; }
     }
     if (Installed == SFConstructionGeometry::ShapeCount)
-    { UE_LOG(LogTemp, Display, TEXT("CONSTRUCTION_PILOT_READY StandaloneOnly=1 Shapes=%d Support=0 Economy=0"), Installed); }
+    { UE_LOG(LogTemp, Display, TEXT("CONSTRUCTION_PILOT_READY StandaloneOnly=1 ReferenceSolids=1 Shapes=%d Economy=0"), Installed); }
 }

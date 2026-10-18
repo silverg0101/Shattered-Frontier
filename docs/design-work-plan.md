@@ -2,11 +2,17 @@
 
 Last updated: 2026-10-18. Owner: coordinating documentation agent. This is the running documentation queue; the [gameplay backlog](Game-Design/Legends_Shattered_Frontier_Gameplay_Feature_Backlog_v1.0.md) owns implementation work and [roadmap](Game-Design/Legends_Shattered_Frontier_Production_Roadmap_v1.0.md) owns milestone gates. Update this file during each documentation work cycle; no background monitoring is implied. Standing user rules and continuation context are preserved in [design-agent.md](../design-agent.md).
 
+## Canonical clearance and placement support - 2026-10-18
+
+**SBX-05B Done for admitted simple bodies; SBX-06A Done for fixed-foundation rough-timber placement**: [evidence](evidence/construction-sandbox-support-pilot.md) / [hashes](evidence/construction-sandbox-support-results.json). Final editor build and all 12 construction tests pass. Actual convex narrowphase permits empty partial-solid space/shared contact and rejects intrusion; canonical positive contacts drive deterministic area-weighted support, capacity/reach and stable/strained status. The tagged synthetic foundation is explicitly separated from World terrain. Floating placements and unavailable projections reject; unsafe support-loss removal temporarily blocks. E1 map/defaults/live service preserved.
+
+Routing: Luna/medium authored bounded solver/tests; existing Sol/medium geometry agent authored installed-engine clearance; parent clarified versioned formulas and integrated foundation/state/HUD/tests; separate Sol/medium source and raw-evidence review passed. Private PhysicsCore/Chaos/ChaosCore dependencies are declared; no environment changes. **Next SBX-06B Ready**: support-loss preview/confirmation, 10-second instability/recovery/collapse waves; limiting-contact highlighting remains open. Door, dev save/load, actual input/line brush, art and packaged/two-client acceptance follow. UI-01 research/prototype queue remains below; temporary keys are unchanged.
+
 ## Sandbox neighbor meshes and isolated controls - 2026-10-18
 
 **SBX-03B Done, three-shape runtime subset; SBX-05 Done, standalone single-cell checkpoint only**: [evidence](evidence/construction-sandbox-tools-pilot.md) / [hashes](evidence/construction-sandbox-tools-results.json). Eight focused Unreal tests pass; emitted boundary areas for 31,104 pairs match the independent rational oracle with zero error. Neighbor snapshots, staged multi-member rollback, canonical collision, dedicated palette/ghost/controls, revisioned edits and normal-mode isolation are checked. Finite map launch starts tools; stale map label updated. Two Sol/medium authors, separate Sol/medium source/raw-evidence/oracle review; parent integration/execution. Luna/medium extracted the next support packet. E1 map/defaults/live service preserved.
 
-**Next Working**: refine conservative partial-solid clearance and prepare the release-bound support solver from Construction §3.4, including explicit contact-weighted load formulas; then support-loss confirmation/warnings/collapse. Rendered input exercise, bounded line brush, ordinary door, separate save/reload, two-client edits, art and packaged acceptance remain open. Floating placements remain visibly unvalidated until support integration; no finished-sandbox claim.
+This earlier placement checkpoint is superseded by the canonical-clearance/support checkpoint above; follow the current SBX-06B queue.
 
 **UI-01 Ready for interaction prototype**: [Enshrouded research and proposed UI direction](research/enshrouded-construction-controls.md) records dated sources, reported defaults, structural/decor distinctions and our geometry/authority constraints. Reconcile existing modes, categories/search, plane/depth controls, repeat placement and feedback into a concrete keyboard/mouse/controller flow before bindings become permanent. Current sandbox keys are temporary. Involve the user at the layout/common-action comfort checkpoint; no immediate decision is needed to continue geometry/support work.
 
@@ -16,7 +22,7 @@ Bounded checkpoints Done: [SBX-03/04 evidence](evidence/construction-sandbox-ada
 
 Routing: Luna/medium authored exact rational area compatibility; sol/medium authored engine/collision adapter; parent integrated and executed builds/commandlets; separate sol/medium source and raw-evidence/hash review passed. Runtime readiness marker and zero-auto-spawn assertion were tightened and retested. Installed PMC Runtime is now a private module dependency/explicit plugin. No MCP tools were exposed, so local source/build/owned commandlets were used without editor-connection changes. Only editor Windows standalone evidence is accepted.
 
-Next **SBX-03B Ready**: neighbor-clipped exposed meshes and runtime partial seams/removal, since the numerical pilot emits areas only and the adapter projects isolated cells. **SBX-05 Ready for independent controller/input preparation**: ghost/palette and bounded server-owned intent, isolated from E1; real placement waits for geometry/admission checks. Full GEO-02/03, packaged/network/traversal, support/door/save and art integration remain open. This is a three-shape geometry fixture, not the finished playable sandbox.
+The numerical/adapter follow-ups are now recorded in the neighbor-mesh and support checkpoints above. Full GEO-02/03 and packaged/network/traversal acceptance remain open.
 
 ## Next milestone: playable construction sandbox - 2026-10-18
 
@@ -24,7 +30,7 @@ User selected the [playable construction sandbox](construction-sandbox-milestone
 
 Current assignments: **SBX-01 Done, bounded pilot only** - [six focused tests and CLI evidence](evidence/construction-sandbox-geometry-pilot.md) for full cell, half slab and slope; **SBX-02 Done, packet only** - source/input/build inventory and exact isolated Unreal packet in the milestone; **SBX-ART Ready for other session** - [copyable modeling prompt](art-templates/construction-sandbox-model-handoff.md), reusable scenery first, timber appearance alongside it, final structural solids gated by GEO-01/02. Parent owns architecture/shared docs; Luna/medium authors bounded geometry, Luna/low inventories client sources, separate sol/medium reviews numerical/authority boundaries. Independent numerical/source/document review passed after contact-winding, input strictness, fixed-hash and rotation-test improvements. No sandbox playable/runtime completion claimed.
 
-Current checkpoints are recorded above. Next: SBX-03B runtime neighbor meshing and SBX-05 isolated tools; SBX-05 tools, SBX-06 support/door/save and SBX-07 dressed/package acceptance follow. Full ten-shape GEO-01 remains tracked; the approved simple subset may reach the first playable shelter earlier. Other-session catalog/batches/models remain under its ownership; this task produces the handoff prompt, not an unsolicited message.
+Current checkpoints are recorded above. Next: SBX-06B support-loss confirmation/grace/collapse, then door/dev-save and dressed/package acceptance. Full ten-shape GEO-01 and other-session art ownership remain intact.
 
 ## BLD-01 voxel geometry interface lock - 2026-10-18
 

@@ -17,6 +17,7 @@ if not levels.new_level(MAP):
 unreal.EditorLevelLibrary.get_editor_world().get_world_settings().set_editor_property('default_game_mode', mode)
 floor = actors.spawn_actor_from_class(unreal.StaticMeshActor, unreal.Vector(0, 0, -50))
 floor.set_actor_label('Construction_GeometryPilot_Floor')
+floor.tags = ['SFConstructionSandboxFoundationV1']
 floor.static_mesh_component.set_static_mesh(unreal.load_asset('/Engine/BasicShapes/Cube'))
 floor.static_mesh_component.set_collision_profile_name('BlockAll')
 floor.set_actor_scale3d(unreal.Vector(20, 20, 1))

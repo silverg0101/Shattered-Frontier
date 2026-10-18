@@ -25,7 +25,7 @@ struct FSFConstructionSandboxMember
     TWeakObjectPtr<ASFConstructionSandboxPreview> Projection;
 };
 
-// Transient standalone authority checkpoint. No support solver, persistence,
+// Transient standalone authority checkpoint. No persistence,
 // resource economy, authentication, replication or normal E1 mutation route.
 UCLASS(NotBlueprintable, Transient)
 class SHATTEREDFRONTIER_API ASFConstructionSandboxState : public AActor
@@ -35,7 +35,7 @@ public:
     ASFConstructionSandboxState();
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type Reason) override;
-    FString Evaluate(const ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent) const;
+    FString Evaluate(const ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent, FString* SupportHint = nullptr) const;
     bool Apply(ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent, FString& Result);
     uint64 GetRevision() const { return Revision; }
     int32 GetMemberCount() const { return Members.Num(); }
@@ -43,6 +43,7 @@ public:
     float GetReachCentimetres() const { return ReachCentimetres; }
     static FVector CellCorner(const FIntVector& Cell);
 private:
+    FString CheckSupport(const FSFConstructionSandboxIntent& Intent, FString* SupportHint) const;
     TMap<FIntVector, FSFConstructionSandboxMember> Members;
     uint64 Revision = 0;
     float ReachCentimetres = 0;
