@@ -5,8 +5,15 @@ readonly VOLUME=/srv/shattered-frontier
 readonly REVISION=2a5b634429b75d46519ad2a28560b8953ed99831
 readonly ENGINE=396c9f059903aed5fec78ecd3d437a40c6415368
 readonly SERVER_IMAGE=sha256:42b382b6e3d581388be3bc8341a10ba7ff08876e9b0788457f71cb8e53d6f0ce
-[[ $# == 1 && $1 =~ ^sha256:[0-9a-f]{64}$ ]] || { echo 'Supply one audited diagnostic Client image SHA256 ID' >&2; exit 1; }
+[[ $# -ge 1 && $# -le 2 && $1 =~ ^sha256:[0-9a-f]{64}$ ]] || { echo 'Supply an audited diagnostic Client image SHA256 ID and optional --capture-elapsed-trace' >&2; exit 1; }
 readonly CLIENT_IMAGE=$1
+capture_trace=false
+trace_arguments=()
+if [[ $# == 2 ]]; then
+    [[ $2 == --capture-elapsed-trace ]] || { echo 'Only --capture-elapsed-trace is supported' >&2; exit 1; }
+    capture_trace=true
+    trace_arguments=(-trace=cpu,frame,counters,log -tracefile=/srv/saved/Server.utrace -statnamedevents)
+fi
 [[ $(id -u) == 0 && $(hostname -s) == steam-server ]] || exit 1
 [[ $(findmnt -n -o UUID --mountpoint "$VOLUME") == cade5511-9e1c-4edf-96f9-b16e8ede17fd ]] || exit 1
 [[ $(df -Pk "$VOLUME" | awk 'NR==2 {print $4}') -ge $((10 * 1024 * 1024)) ]] || exit 1
@@ -73,7 +80,7 @@ server=$(docker run -d --name "$NAME-server" --cidfile "$ROOT/Server.cid" "${com
             -NullRHI -nosound -unattended -stdout -FullStdOutLogOutput \
             -UserDir=/srv/home -abslog=/srv/saved/Logs/Server.log \
             -PktLag=0 -PktLagVariance=0 -PktLoss=0 -PktOrder=0 -PktDup=0 \
-            -PktIncomingLagMin=0 -PktIncomingLagMax=0')
+            -PktIncomingLagMin=0 -PktIncomingLagMax=0 "$@"' sf-native-server "${trace_arguments[@]}")
 owned+=("$server")
 running() { [[ $(docker inspect --format '{{.State.Running}} {{.State.OOMKilled}} {{.RestartCount}}' "$1") == 'true false 0' ]]; }
 deadline=$((SECONDS + 15))
@@ -116,5 +123,10 @@ for role in Server Driver Observer; do
         echo "Diagnostic $role reported failure in finalized logs" >&2; exit 1
     fi
 done
+if $capture_trace; then
+    [[ -s "$ROOT/Server/Server.utrace" ]] || { echo 'Missing server trace after orderly shutdown' >&2; exit 1; }
+    printf 'SF_ELAPSED_TRACE_COLLECTED Path=%s\n' "$ROOT/Server/Server.utrace"
+    echo 'Trace scopes measure elapsed time, including waits/descheduling. Successful complete-file analysis is still required.'
+fi
 printf 'SF_DIAGNOSTIC_COLLECTED Root=%s Game=%s ServerImage=%s ClientImage=%s\n' "$ROOT" "$REVISION" "$SERVER_IMAGE" "$CLIENT_IMAGE"
 echo 'Collection only: independently validate welcomes, identity, possession, movement, jump and probe logs before gameplay acceptance.'
