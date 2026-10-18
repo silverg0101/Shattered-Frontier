@@ -85,6 +85,8 @@ Known installed engine/build path, usable compiler/SDK, selected project directo
 
 The gate asks whether the engine foundation supports an authoritative movement slice. It does not require a market or durable terrain. If packaged dedicated-server build is not yet possible, distinguish the editor-server demonstration and leave final packaged readiness open rather than concealing it.
 
+The [E1 implementation packet](../e1-implementation-packet.md) prepares proposed project/authority boundaries, the Greenlands fixture and focused evidence cards while installation completes. It does not satisfy DEC-01 entry, create a project or certify target/launch behavior.
+
 ### Primary risks
 
 Engine installation/source availability, target compatibility, session assumptions, and premature plugin coupling. Mitigate by building the smallest map and shared gameplay target before importing large content packages.
