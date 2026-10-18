@@ -6,6 +6,8 @@ This proposal takes interaction patterns from the [Enshrouded controls research]
 
 ## User playtest direction - 2026-10-18
 
+Latest refinement: X/Delete or the palette explicitly toggles Demolition mode. LMB deletes its orange-highlighted target; held RMB controls the camera in either mode. RMB clicks/releases are read-only. Support-loss confirmation remains required. See [UI-01A](decisions/UI-01A-cursor-construction-prototype.md).
+
 The user confirms the visible standalone client opened and pieces could be placed, but the interaction needs work. Approved direction for the next prototype (not implemented by SBX-05F): free cursor for world placement; hold right mouse only to control the camera; a separate deliberate demolition action; visible stepped plane/depth placement. Cursor targeting must preserve existing reach, sight, clearance, support and revision checks. Palette layout/final bindings still need comfort review.
 
 Door follow-up: target the complete doorway envelope when open or closed, rather than requiring the visible leaf. Closing should give an overlapping player a short collision-checked displacement to legal nearby space; never move through walls or silently teleport into obstruction. Exact implementation/rollback and blocked-space behavior need the next independent architecture review; no current completion claim. Preserve the locked physical door geometry while separating interaction targeting from blocking collision.

@@ -78,6 +78,20 @@ public:
             FVector Camera; FRotator View; Controller->GetPlayerViewPoint(Camera,View);
             Controller->SetControlRotation((AimTarget-Camera).Rotation());
         }
+        if (bAwaitAim)
+        {
+            FVector Camera; FRotator View; Controller->GetPlayerViewPoint(Camera,View);
+            const FVector Delta = AimTarget-Camera;
+            const double Along = FVector::DotProduct(Delta,View.Vector());
+            const double Miss = (Delta-View.Vector()*Along).Size();
+            if (Along > 0 && Miss < .2) { ++AimStableFrames; } else { AimStableFrames = 0; }
+            if (AimStableFrames < 4 || FPlatformTime::Seconds()-AimStarted < .25)
+            {
+                if (FPlatformTime::Seconds()-AimStarted > 3) { Fail(TEXT("Actual view ray failed bounded aim settling")); }
+                return;
+            }
+            bAwaitAim = false; LogAim();
+        }
         if (GFrameCounter < NextFrame) { return; }
         if (!ReleaseKeys.IsEmpty())
         {
@@ -92,7 +106,7 @@ public:
                 *AbsolutePath(FPaths::GetProjectFilePath()),*AbsolutePath(FModuleManager::Get().GetModuleFilename(TEXT("ShatteredFrontier"))),*AbsolutePath(FPaths::ProjectSavedDir()));
             Character->GetCharacterMovement()->DisableMovement();
             Mark(TEXT("FRESH_EMPTY"));
-            if (!bWriter) { Setup(FVector(-600,-600,110),FVector(0,0,0)); Press(EKeys::F9); return; }
+            if (!bWriter) { Press(EKeys::F9); return; }
             Setup(FVector(425,225,110),FVector(425,425,0)); Press(EKeys::One); return;
         }
         if (!bWriter)
@@ -144,7 +158,11 @@ private:
     { Controller->InputKey(FInputKeyEventArgs::CreateSimulated(Key,Event,Event == IE_Pressed ? 1.f : 0.f,1,FInputDeviceId::CreateFromInternalId(0))); }
     void Press(FKey Key) { Input(Key,IE_Pressed); ReleaseKeys.Add(Key); ++Step; NextFrame = GFrameCounter+1; }
     void Advance() { ++Step; NextFrame = GFrameCounter+5; }
-    void Aim(FVector Point) { bAiming = true; AimTarget = Point; Controller->SetControlRotation((Point-Character->GetActorLocation()).Rotation()); }
+    void Aim(FVector Point)
+    {
+        bAiming = true; bAwaitAim = true; AimStableFrames = 0; AimStarted = FPlatformTime::Seconds();
+        AimTarget = Point; Controller->SetControlRotation((Point-Character->GetActorLocation()).Rotation());
+    }
     void Setup(FVector Position,FVector Target)
     {
         Character->SetActorLocation(Position,false,nullptr,ETeleportType::TeleportPhysics);
@@ -164,6 +182,19 @@ private:
         FCollisionQueryParams Query(SCENE_QUERY_STAT(RestartDoorAim),false,Character.Get());
         return World->LineTraceSingleByChannel(Hit,Camera,Camera+View.Vector()*State->GetReachCentimetres(),ECC_Visibility,Query)
             && State->FindDoorOrigin(Hit.GetActor(),Origin) && Origin == FIntVector(8,12,0);
+    }
+    void LogAim() const
+    {
+        FVector Camera; FRotator View; Controller->GetPlayerViewPoint(Camera,View);
+        const FVector Delta = AimTarget-Camera;
+        const double Along = FVector::DotProduct(Delta,View.Vector());
+        const double Miss = (Delta-View.Vector()*Along).Size();
+        FHitResult Hit; FCollisionQueryParams Query(SCENE_QUERY_STAT(RestartAimEvidence),false,Character.Get());
+        const bool bHit = World->LineTraceSingleByChannel(Hit,Camera,Camera+View.Vector()*State->GetReachCentimetres(),ECC_Visibility,Query);
+        FIntVector DoorOrigin; const bool bOwnedDoor = bHit && State->FindDoorOrigin(Hit.GetActor(),DoorOrigin);
+        UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_RESTART_AIM Role=%s Step=%d Camera=%s Direction=%s Target=%s Along=%.3f Miss=%.3f Hit=%d HitActor=%s Impact=%s Normal=%s OwnedDoor=%d AuthorityReason=\"%s\""),
+            Role(),Step,*Camera.ToString(),*View.Vector().ToString(),*AimTarget.ToString(),Along,Miss,bHit,*GetNameSafe(Hit.GetActor()),
+            *Hit.ImpactPoint.ToString(),*Hit.ImpactNormal.ToString(),bOwnedDoor,Controller.IsValid() ? *Controller->GetLastConstructionResult() : TEXT("unavailable"));
     }
     bool ValidateAssembly()
     {
@@ -218,6 +249,7 @@ private:
     {
         bFinished = true;
         if (Controller.IsValid()) { for (const FKey& Key : ReleaseKeys) { Input(Key,IE_Released); } }
+        if (Controller.IsValid() && Character.IsValid() && State.IsValid()) { LogAim(); }
         UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_RESTART_FAILED Role=%s Step=%d Reason=%s AuthorityReason=%s"),Role(),Step,Reason,
             Controller.IsValid() ? *Controller->GetLastConstructionResult() : TEXT("unavailable"));
         FPlatformMisc::RequestExitWithStatus(false,1);
@@ -226,10 +258,10 @@ private:
     TWeakObjectPtr<ASFConstructionSandboxController> Controller;
     TWeakObjectPtr<ASFE1Character> Character;
     TWeakObjectPtr<ASFConstructionSandboxState> State;
-    bool bWriter, bFinished = false, bAiming = false;
-    double Started, SettlingAt = 0;
+    bool bWriter, bFinished = false, bAiming = false, bAwaitAim = false;
+    double Started, SettlingAt = 0, AimStarted = 0;
     uint64 NextFrame = 0;
-    int32 Step = 0, ConsecutiveAim = 0;
+    int32 Step = 0, ConsecutiveAim = 0, AimStableFrames = 0;
     FVector AimTarget = FVector::ZeroVector;
     FString ContentDigest;
     TArray<FKey> ReleaseKeys;

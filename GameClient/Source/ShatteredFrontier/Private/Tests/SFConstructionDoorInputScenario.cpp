@@ -5,6 +5,7 @@
 #include "Construction/SFConstructionSandboxController.h"
 #include "Construction/SFConstructionSandboxDoorProjection.h"
 #include "Construction/SFConstructionSandboxState.h"
+#include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
@@ -30,7 +31,7 @@ public:
     virtual void Tick(float DeltaSeconds) override
     {
         if (bFinished || !World.IsValid()) { return; }
-        if (FPlatformTime::Seconds()-Started > 55) { Fail(TEXT("Finite input/walking timeout")); return; }
+        if (FPlatformTime::Seconds()-Started > 75) { Fail(TEXT("Finite door input/walking timeout")); return; }
         if (World->GetNetMode() != NM_Standalone || !World->GetAuthGameMode<ASFConstructionSandboxGameMode>()) { Fail(TEXT("Standalone sandbox lost")); return; }
         if (Step == 0 && (!Controller.IsValid() || !Character.IsValid() || !State.IsValid()))
         {
@@ -90,11 +91,11 @@ public:
             Mark(TEXT("FOUR_YAWS_CONFIRMED")); Press({EKeys::LeftMouseButton}); break;
         case 7:
             if (!Check(DoorMatches(false),TEXT("Sampled door placement missing"))) { return; }
-            Mark(TEXT("DOOR_PLACED")); Aim(FVector(402.5,425,100)); Advance(); break;
-        case 8: Press({EKeys::RightMouseButton}); break;
+            Mark(TEXT("DOOR_PLACED")); Aim(FVector(402.5,425,100)); Press({EKeys::X}); break;
+        case 8: Press({EKeys::LeftMouseButton}); break;
         case 9:
-            if (!Check(State->GetDoorCount() == 0,TEXT("Targeted RMB did not remove actual door"))) { return; }
-            Mark(TEXT("TARGETED_DOOR_REMOVED")); Aim(FVector(425,425,0)); Advance(); break;
+            if (!Check(State->GetDoorCount() == 0,TEXT("Demolition LMB did not remove actual door"))) { return; }
+            Mark(TEXT("TARGETED_DOOR_REMOVED")); Aim(FVector(425,425,0)); Press({EKeys::Four}); break;
         case 10: Press({EKeys::LeftMouseButton}); break;
         case 11:
             if (!Check(DoorMatches(false),TEXT("Door replacement missing"))) { return; }
@@ -178,20 +179,91 @@ public:
             Mark(TEXT("GROUNDED_SILL_TRAVERSAL"));
             UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_DOOR_WALK Start=%s End=%s OpenTraversalPeakZ=%.3f WorldSeconds=%.3f Teleports=0 GroundedThroughout=1 CapsuleRadius=34 CapsuleHalfHeight=88"),
                 *WalkStart.ToString(),*WalkEnd.ToString(),OpenTraversalPeakZ,Now-WalkStartedAt);
+            Character->GetCharacterMovement()->DisableMovement();
+            SetupPosition(FVector(452.5,455,94)); Aim(FVector(450,425,100));
+            SettlingAt = Now; AimConfirmedFrames = 0; Advance(); break;
+        case 27:
+            if (Now-SettlingAt < .2) { return; }
+            if (!ViewTargetsVirtualDoor())
+            {
+                AimConfirmedFrames = 0;
+                if (Now-SettlingAt > 2) { LogAim(); Fail(TEXT("Interior push setup could not establish virtual owned-door ray")); }
+                return;
+            }
+            if (++AimConfirmedFrames < 3) { return; }
+            ClosePushStart = Character->GetActorLocation();
+            RevisionBeforeClosePush = State->GetRevision();
+            UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_DOOR_CLOSE_PUSH_START Revision=%llu Position=%s VirtualDoorRay=1"),RevisionBeforeClosePush,*ClosePushStart.ToString());
+            Press({EKeys::E}); break;
+        case 28:
+            ClosePushEnd = Character->GetActorLocation();
+            if (!Check(DoorMatches(false) && NoBaseDoorDispatch() && State->GetRevision() == RevisionBeforeClosePush+1
+                && !ClosePushEnd.Equals(ClosePushStart,0.01f) && CapsuleOutsideDoorMotionByRadius(),
+                TEXT("Actual E did not close the open door and push the capsule clear of its motion reservation"))) { return; }
+            UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_DOOR_CLOSE_PUSH_END Revision=%llu Position=%s HorizontalDelta=%.3f CapsuleOutsideMotion=1"),
+                State->GetRevision(),*ClosePushEnd.ToString(),FVector::Dist2D(ClosePushStart,ClosePushEnd));
+            Mark(TEXT("CLOSING_PUSH_SUCCEEDED"));
+            Aim(FVector(450,425,100)); SettlingAt = Now; AimConfirmedFrames = 0; Advance(); break;
+        case 29:
+            if (Now-SettlingAt < .2) { return; }
+            if (!ViewTargetsVirtualDoor())
+            {
+                AimConfirmedFrames = 0;
+                if (Now-SettlingAt > 2) { LogAim(); Fail(TEXT("Clear-front setup could not establish virtual owned-door ray")); }
+                return;
+            }
+            if (++AimConfirmedFrames < 3) { return; }
+            if (!Check(CapsuleOutsideDoorMotionByRadius(),TEXT("Successful push did not leave the capsule outside the closed motion envelope"))) { return; }
+            ReopenStart = Character->GetActorLocation();
+            RevisionBeforeReopen = State->GetRevision();
+            UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_DOOR_REOPEN_START Revision=%llu Position=%s VirtualDoorRay=1"),RevisionBeforeReopen,*ReopenStart.ToString());
+            Press({EKeys::E}); break;
+        case 30:
+            if (!Check(DoorMatches(true) && NoBaseDoorDispatch() && State->GetRevision() == RevisionBeforeReopen+1
+                && Character->GetActorLocation().Equals(ReopenStart,0.01f) && CapsuleOutsideDoorMotionByRadius(),
+                TEXT("E from the clear front position did not reopen the pushed door without moving the capsule"))) { return; }
+            UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_DOOR_REOPEN_END Revision=%llu Position=%s"),State->GetRevision(),*Character->GetActorLocation().ToString());
+            Mark(TEXT("DOOR_REOPENED_AFTER_PUSH"));
+            SetupPosition(FVector(452.5,455,94));
+            if (!CreatePushBlockers()) { Fail(TEXT("Could not create both owned push-path blockers")); return; }
+            Aim(FVector(450,425,100)); SettlingAt = Now; AimConfirmedFrames = 0; Advance(); break;
+        case 31:
+            if (Now-SettlingAt < .2) { return; }
+            if (!ViewTargetsVirtualDoor())
+            {
+                AimConfirmedFrames = 0;
+                if (Now-SettlingAt > 2) { LogAim(); Fail(TEXT("Trapped interior setup could not establish virtual owned-door ray")); }
+                return;
+            }
+            if (++AimConfirmedFrames < 3) { return; }
+            if (!Check(!CapsuleOutsideDoorMotionByRadius(),TEXT("Trapped close setup did not place the capsule inside the motion reservation"))) { return; }
+            TrappedCloseStart = Character->GetActorLocation();
+            RevisionBeforeTrappedClose = State->GetRevision();
+            UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_DOOR_TRAPPED_CLOSE_START Revision=%llu Position=%s VirtualDoorRay=1 Blockers=2"),
+                RevisionBeforeTrappedClose,*TrappedCloseStart.ToString());
+            Press({EKeys::E}); break;
+        case 32:
+            if (!Check(DoorMatches(true) && NoBaseDoorDispatch() && State->GetRevision() == RevisionBeforeTrappedClose
+                && Character->GetActorLocation().Equals(TrappedCloseStart,0.01f)
+                && Controller->GetLastConstructionResult().Contains(TEXT("blocked")),
+                TEXT("Blocked close push changed the open door, capsule location, or revision"))) { return; }
+            UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_DOOR_TRAPPED_CLOSE_END Revision=%llu Position=%s Preserved=1"),
+                State->GetRevision(),*Character->GetActorLocation().ToString());
+            DestroyPushBlockers();
+            Mark(TEXT("TRAPPED_CLOSE_PUSH_DENIED"));
             for (TActorIterator<ASFE1InteractionTarget> It(World.Get()); It; ++It) { Probe = *It; break; }
             if (!Check(Probe.IsValid(),TEXT("Original E1 probe unavailable"))) { return; }
-            Character->GetCharacterMovement()->DisableMovement();
             SetupPosition(Probe->GetActorLocation()+FVector(-150,0,40)); Aim(Probe->GetInteractionAnchor());
             SettlingAt = Now; Advance(); break;
-        case 27:
+        case 33:
             if (Now-SettlingAt < .3) { return; }
             if (!Check(NoBaseDoorDispatch(),TEXT("Door E leaked an inherited probe dispatch"))) { return; }
             Press({EKeys::E}); break;
-        case 28:
+        case 34:
             if (!Check(Controller->GetInteractionInputAttemptCount() == BaseAttempts+1 && DoorMatches(true),TEXT("Probe fallback was missing or dispatched more than once"))) { return; }
             Mark(TEXT("PROBE_FALLBACK_EXACTLY_ONCE"));
             bFinished = true;
-            UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_DOOR_INPUT_SUCCESS Steps=16 Doors=1 BaseEntryDelta=1 AutomatedInput=1 ActualCharacterWalking=1 Rendered=0"));
+            UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_DOOR_INPUT_SUCCESS Steps=19 Doors=1 BaseEntryDelta=1 AutomatedInput=1 ActualCharacterWalking=1 Rendered=0"));
             FPlatformMisc::RequestExitWithStatus(false,0); break;
         }
     }
@@ -229,6 +301,65 @@ private:
         const auto* Door = State->FindDoor(Origin);
         return Door && Door->Projection.IsValid() && Door->Projection->IsProjectionIntact();
     }
+    bool ViewTargetsVirtualDoor() const
+    {
+        FVector Start; FRotator View;
+        Controller->GetPlayerViewPoint(Start,View);
+        const FVector End = Start+View.Vector()*(State->GetReachCentimetres()+FVector::Distance(Start,Character->GetActorLocation()));
+        FIntVector Origin; FVector Point;
+        return State->FindDoorAlongRay(Controller.Get(),Start,End,Origin,&Point) && Origin == FIntVector(8,8,0)
+            && !Point.ContainsNaN();
+    }
+    bool CapsuleOutsideDoorMotionByRadius() const
+    {
+        FSFConstructionDoorProjectionProfile Profile;
+        const auto* Capsule = Character->GetCapsuleComponent();
+        if (!Capsule || !ASFConstructionSandboxDoorProjection::BuildProfile(FIntVector(8,8,0),0,false,Profile)
+            || !Profile.Motion.IsValid) { return false; }
+        const FVector Centre = Capsule->GetComponentLocation();
+        const double DX = FMath::Max(FMath::Max(static_cast<double>(Profile.Motion.Min.X-Centre.X),0.0),
+            static_cast<double>(Centre.X-Profile.Motion.Max.X));
+        const double DY = FMath::Max(FMath::Max(static_cast<double>(Profile.Motion.Min.Y-Centre.Y),0.0),
+            static_cast<double>(Centre.Y-Profile.Motion.Max.Y));
+        const double Required = static_cast<double>(Capsule->GetScaledCapsuleRadius())+0.05;
+        return DX*DX+DY*DY >= Required*Required;
+    }
+    AActor* SpawnPushBlocker(const FVector& Centre, const FName ComponentName)
+    {
+        AActor* Wall = World->SpawnActor<AActor>();
+        if (!Wall) { return nullptr; }
+        UBoxComponent* Box = NewObject<UBoxComponent>(Wall,ComponentName);
+        if (!Box) { Wall->Destroy(); return nullptr; }
+        Wall->SetRootComponent(Box);
+        Box->SetMobility(EComponentMobility::Movable);
+        Box->SetBoxExtent(FVector(60,5,100));
+        Box->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+        Box->SetCollisionObjectType(ECC_WorldStatic);
+        Box->SetCollisionResponseToAllChannels(ECR_Ignore);
+        Box->SetCollisionResponseToChannel(ECC_Pawn,ECR_Block);
+        Box->SetGenerateOverlapEvents(false);
+        Box->RegisterComponent();
+        Wall->SetActorLocation(Centre,false,nullptr,ETeleportType::TeleportPhysics);
+        return Wall;
+    }
+    bool CreatePushBlockers()
+    {
+        AActor* Front = SpawnPushBlocker(FVector(452.5,345,100),TEXT("DoorPushFrontBlocker"));
+        if (!Front) { return false; }
+        PushBlockers.Add(Front);
+        AActor* Back = SpawnPushBlocker(FVector(452.5,555,100),TEXT("DoorPushBackBlocker"));
+        if (!Back) { return false; }
+        PushBlockers.Add(Back);
+        UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_DOOR_PUSH_BLOCKERS_READY Front=%s Back=%s Extent=60,5,100 MotionY=400..520"),
+            *Front->GetActorLocation().ToString(),*Back->GetActorLocation().ToString());
+        return true;
+    }
+    void DestroyPushBlockers()
+    {
+        for (const TWeakObjectPtr<AActor>& Blocker : PushBlockers)
+        { if (AActor* Actor = Blocker.Get()) { Actor->Destroy(); } }
+        PushBlockers.Reset();
+    }
     void LogAim() const
     {
         FVector Eyes; FRotator View;
@@ -250,6 +381,7 @@ private:
     void Fail(const TCHAR* Reason)
     {
         bFinished = true;
+        DestroyPushBlockers();
         if (Controller.IsValid())
         {
             for (const auto& Key : HeldKeys) { Input(Key,IE_Released); }
@@ -264,9 +396,11 @@ private:
     TWeakObjectPtr<ASFE1Character> Character;
     TWeakObjectPtr<ASFConstructionSandboxState> State;
     TWeakObjectPtr<ASFE1InteractionTarget> Probe;
+    TArray<TWeakObjectPtr<AActor>> PushBlockers;
     double Started, SettlingAt = 0, WalkStartedAt = 0, PhaseStartedAt = 0, PeakWalkZ = 0, OpenTraversalPeakZ = 0;
     FVector AimTarget = FVector::ZeroVector, WalkStart = FVector::ZeroVector, WalkEnd = FVector::ZeroVector;
-    uint64 NextFrame = 0, BaseAttempts = 0, RevisionBeforeBlocked = 0;
+    FVector ClosePushStart = FVector::ZeroVector, ClosePushEnd = FVector::ZeroVector, ReopenStart = FVector::ZeroVector, TrappedCloseStart = FVector::ZeroVector;
+    uint64 NextFrame = 0, BaseAttempts = 0, RevisionBeforeBlocked = 0, RevisionBeforeClosePush = 0, RevisionBeforeReopen = 0, RevisionBeforeTrappedClose = 0;
     int32 Step = 0;
     int32 AimConfirmedFrames = 0;
     bool bFinished = false, bAiming = false, bMeasuredWalking = false, bGroundedThroughout = true;

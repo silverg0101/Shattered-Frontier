@@ -51,6 +51,12 @@ public:
             for (const FKey& Key : ReleaseKeys) { Input(Key,IE_Released); }
             ReleaseKeys.Reset(); NextFrame = GFrameCounter+5; return;
         }
+        if (bPendingDemolition)
+        {
+            bPendingDemolition = false;
+            Press({EKeys::LeftMouseButton});
+            return;
+        }
         if (bAwaitAim)
         {
             // Camera boom/view caches settle over ordinary frames. Corroborate
@@ -154,7 +160,7 @@ public:
         case 40:
             if (!Check(Counts(7,3) && Physics({4,12,0}),TEXT("Single placement regression"))) { return; }
             Mark(TEXT("SINGLE_PLACEMENT_RETAINED")); Aim(FVector(225,625,25)); Advance(); break;
-        case 41: Press({EKeys::RightMouseButton}); break;
+        case 41: Press({EKeys::Delete}); break;
         case 42:
             if (!Check(Counts(6,4) && !OwnedProjection({4,12,0}),TEXT("Targeted single removal regression"))) { return; }
             Mark(TEXT("SINGLE_REMOVAL_RETAINED")); Aim(FVector(225,625,0)); Press({EKeys::L}); break;
@@ -162,10 +168,11 @@ public:
         case 44:
             if (!Check(Controller->HasLineSeed(),TEXT("Revision-change seed missing"))) { return; }
             Setup(FVector(525,225,110),FVector(525,400,25)); Advance(); break;
-        case 45: Press({EKeys::RightMouseButton}); break;
+        case 45: Press({EKeys::Delete}); break;
         case 46:
             if (!Check(Counts(5,5) && !Controller->HasLineSeed() && !OwnedProjection({10,8,0}),TEXT("Demolition failed to invalidate line seed"))) { return; }
             Mark(TEXT("DEMOLITION_CANCELLED_SEED"));
+            Input(EKeys::X,IE_Pressed); ReleaseKeys.Add(EKeys::X);
             bAiming = false; SetupForWalking(); Advance(); break;
         case 47:
             if (!Character->GetCharacterMovement()->IsMovingOnGround()) { return; }
@@ -176,8 +183,21 @@ public:
             if (!Check(FVector::Dist2D(WalkStart,Character->GetActorLocation()) > 20 && Counts(5,5),TEXT("Inherited character movement did not process W"))) { return; }
             Mark(TEXT("INHERITED_MOVEMENT_RETAINED"));
             if (!Check(Physics({8,8,0}) && Physics({9,8,0}) && Physics({12,8,0}) && Physics({13,8,0}) && Physics({14,8,0}),TEXT("Final canonical/simple projections changed"))) { return; }
+            LookHoldStartedAt = World->GetRealTimeSeconds(); Input(EKeys::RightMouseButton,IE_Pressed); Advance(); break;
+        case 49:
+            if (World->GetRealTimeSeconds()-LookHoldStartedAt < .4) { return; }
+            if (!Check(!Controller->bShowMouseCursor && !Controller->IsLookInputIgnored() && Counts(5,5),TEXT("RMB did not enter look without deleting"))) { return; }
+            Mark(TEXT("RMB_LOOK_NO_DEMOLITION")); Input(EKeys::RightMouseButton,IE_Released); Advance(); break;
+        case 50:
+            if (!Check(Controller->bShowMouseCursor && Controller->IsLookInputIgnored() && Counts(5,5),TEXT("RMB release did not restore free cursor"))) { return; }
+            Mark(TEXT("FREE_CURSOR_RESTORED")); Press({EKeys::X}); break;
+        case 51:
+            if (!Check(Controller->IsDemolitionMode() && Counts(5,5),TEXT("Dedicated demolition mode did not toggle read-only"))) { return; }
+            Mark(TEXT("DEDICATED_DEMOLITION_MODE")); Press({EKeys::X}); break;
+        case 52:
+            if (!Check(!Controller->IsDemolitionMode() && Counts(5,5),TEXT("Dedicated demolition mode did not toggle off"))) { return; }
             bFinished = true;
-            UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_LINE_INPUT_SUCCESS Steps=18 Members=5 Revision=5 AutomatedInput=1 SimpleCollision=1"));
+            UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_LINE_INPUT_SUCCESS Steps=21 Members=5 Revision=5 AutomatedInput=1 SimpleCollision=1"));
             FPlatformMisc::RequestExitWithStatus(false,0); break;
         }
     }
@@ -185,7 +205,21 @@ private:
     void Input(FKey Key,EInputEvent Event)
     { Controller->InputKey(FInputKeyEventArgs::CreateSimulated(Key,Event,Event == IE_Pressed ? 1.f : 0.f,1,FInputDeviceId::CreateFromInternalId(0))); }
     void Press(std::initializer_list<FKey> Keys)
-    { for (const auto& Key : Keys) { Input(Key,IE_Pressed); ReleaseKeys.Add(Key); } ++Step; NextFrame = GFrameCounter+1; }
+    {
+        if (Keys.size() == 1 && *Keys.begin() == EKeys::Delete)
+        {
+            bPendingDemolition = true;
+            if (!Controller->IsDemolitionMode())
+            {
+                Input(EKeys::X,IE_Pressed); ReleaseKeys.Add(EKeys::X);
+                NextFrame = GFrameCounter+1;
+            }
+            else { NextFrame = GFrameCounter+2; }
+            return;
+        }
+        for (const auto& Key : Keys) { Input(Key,IE_Pressed); ReleaseKeys.Add(Key); }
+        ++Step; NextFrame = GFrameCounter+1;
+    }
     void Advance() { ++Step; NextFrame = GFrameCounter+5; }
     void Aim(FVector Point)
     {
@@ -254,10 +288,11 @@ private:
     TWeakObjectPtr<ASFConstructionSandboxController> Controller;
     TWeakObjectPtr<ASFE1Character> Character;
     TWeakObjectPtr<ASFConstructionSandboxState> State;
+    double LookHoldStartedAt = 0;
     double Started, WalkingAt = 0, AimStarted = 0;
     uint64 NextFrame = 0;
     int32 Step = 0, ReferenceActors = 0, AimStableFrames = 0;
-    bool bFinished = false, bAiming = false, bWalking = false, bAwaitAim = false;
+    bool bFinished = false, bAiming = false, bWalking = false, bAwaitAim = false, bPendingDemolition = false;
     FVector AimTarget = FVector::ZeroVector, WalkStart = FVector::ZeroVector;
     TArray<FKey> ReleaseKeys;
 };

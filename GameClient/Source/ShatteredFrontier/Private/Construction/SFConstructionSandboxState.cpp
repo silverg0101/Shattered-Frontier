@@ -9,9 +9,22 @@
 #include "Construction/SFConstructionClearance.h"
 #include "Construction/SFConstructionSandboxDoorProjection.h"
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "ProceduralMeshComponent.h"
 #include "Engine/World.h"
+#include "Engine/ScopedMovementUpdate.h"
 #include "GameFramework/Pawn.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Characters/SFE1Character.h"
+
+struct FSFConstructionDoorPush
+{
+    TWeakObjectPtr<UCapsuleComponent> Capsule;
+    TWeakObjectPtr<ASFConstructionSandboxDoorProjection> Door;
+    uint64 Revision = 0;
+    FVector From = FVector::ZeroVector;
+    FVector To = FVector::ZeroVector;
+};
 
 namespace
 {
@@ -23,6 +36,24 @@ bool PositiveIntersection(const FBox& A, const FBox& B)
 {
     return A.Min.X < B.Max.X && A.Max.X > B.Min.X && A.Min.Y < B.Max.Y && A.Max.Y > B.Min.Y
         && A.Min.Z < B.Max.Z && A.Max.Z > B.Min.Z;
+}
+bool RayBox(const FVector& Start, const FVector& End, const FBox& Box, double& OutT)
+{
+    if (!Box.IsValid) { return false; }
+    const FVector Delta = End-Start;
+    double Near = 0.0, Far = 1.0;
+    for (int32 Axis = 0; Axis < 3; ++Axis)
+    {
+        if (FMath::Abs(Delta[Axis]) < 1.e-9)
+        { if (Start[Axis] < Box.Min[Axis] || Start[Axis] > Box.Max[Axis]) { return false; } continue; }
+        double A = (Box.Min[Axis]-Start[Axis])/Delta[Axis];
+        double B = (Box.Max[Axis]-Start[Axis])/Delta[Axis];
+        if (A > B) { Swap(A,B); }
+        Near = FMath::Max(Near,A); Far = FMath::Min(Far,B);
+        if (Near > Far) { return false; }
+    }
+    OutT = Near;
+    return true;
 }
 }
 
@@ -74,6 +105,50 @@ bool ASFConstructionSandboxState::FindDoorOrigin(const AActor* Projection, FIntV
     return false;
 }
 
+bool ASFConstructionSandboxState::FindDoorAlongRay(const ASFConstructionSandboxController* Controller,
+    const FVector& Start, const FVector& End,
+    FIntVector& OutOrigin, FVector* OutPoint) const
+{
+    const APawn* Pawn = IsValid(Controller) ? Controller->GetPawn() : nullptr;
+    if (!IsInGameThread() || !GetWorld() || !HasAuthority() || GetNetMode() != NM_Standalone
+        || !IsValid(Controller) || Controller->GetWorld() != GetWorld() || !IsValid(Pawn)
+        || Pawn->GetWorld() != GetWorld() || Pawn->GetController() != Controller
+        || Pawn->GetOwner() != Controller || !Finite(Start) || !Finite(End)
+        || !Finite(Pawn->GetActorLocation()) || !Finite(End-Start)
+        || (End-Start).SizeSquared() < 1.e-6) { return false; }
+    const FVector Delta = End-Start;
+    if (Delta.Size() > ReachCentimetres+FVector::Dist(Start,Pawn->GetActorLocation())+1.0) { return false; }
+    double BestT = TNumericLimits<double>::Max();
+    FIntVector Best = FIntVector::ZeroValue;
+    bool bFound = false;
+    for (const auto& Pair : Doors)
+    {
+        const auto* Door = Pair.Value.Projection.Get();
+        double T;
+        if (!Door || FVector::DistSquared(Pawn->GetActorLocation(),Door->GetEnvelopeBounds().GetCenter())
+                > FMath::Square(static_cast<double>(ReachCentimetres))
+            || !RayBox(Start,End,Door->GetEnvelopeBounds(),T)) { continue; }
+        FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionDoorVirtualTarget),false,Pawn);
+        FHitResult Hit;
+        // A blocker before the envelope entry occludes it. A collider on this
+        // exact door at the entry is part of the selected virtual doorway.
+        const FVector Probe = Start+Delta*FMath::Min(1.0,T+1.e-5);
+        if (GetWorld()->LineTraceSingleByChannel(Hit,Start,Probe,ECC_Visibility,Query)
+            && Hit.GetActor() != Door) { continue; }
+        if (!bFound || T < BestT-1.e-9 || (FMath::IsNearlyEqual(T,BestT,1.e-9)
+            && (Pair.Key.X < Best.X || (Pair.Key.X == Best.X && (Pair.Key.Y < Best.Y
+                || (Pair.Key.Y == Best.Y && Pair.Key.Z < Best.Z))))))
+        { bFound = true; BestT = T; Best = Pair.Key; }
+    }
+    if (!bFound) { return false; }
+    OutOrigin = Best;
+    // Slab-entry arithmetic can land a few ulps outside the exact boundary.
+    // Clamp only this computed intersection; authority still rejects arbitrary
+    // intent points outside the unchanged released envelope.
+    if (OutPoint) { *OutPoint = Doors.FindChecked(Best).Projection->GetEnvelopeBounds().GetClosestPointTo(Start+Delta*BestT); }
+    return true;
+}
+
 bool ASFConstructionSandboxState::IsReplacementQueryCurrent(const FSFConstructionReplacementSet& Replacement) const
 {
     if (Replacement.Owner.Get() != this || Replacement.Revision != Revision
@@ -97,6 +172,108 @@ FSFConstructionReplacementSet ASFConstructionSandboxState::MakeReplacementSet() 
     for (const auto& Pair : Doors)
     { for (int32 Index = 0; Index < 5; ++Index) { Replacement.Components.Add(const_cast<UBoxComponent*>(Pair.Value.Projection->GetCollider(Index))); } }
     return Replacement;
+}
+
+bool ASFConstructionSandboxState::IsDoorCloseQueryCurrent(const FSFConstructionDoorCloseQuery& Query) const
+{
+    const auto* Door = Query.Door.Get();
+    const auto* Capsule = Query.Capsule.Get();
+    const auto* Character = Capsule ? Cast<ASFE1Character>(Capsule->GetOwner()) : nullptr;
+    const auto* Controller = Character ? Cast<ASFConstructionSandboxController>(Character->GetController()) : nullptr;
+    const auto* Record = Door ? Doors.Find(Door->GetOriginCell()) : nullptr;
+    return Query.Owner.Get() == this && Query.Revision == Revision && Door && Record
+        && Record->Projection.Get() == Door && Record->bOpen && Door->IsActive() && Door->IsProjectionIntact()
+        && Character && Character->GetCapsuleComponent() == Capsule && Controller
+        && Controller->GetPawn() == Character && Character->GetOwner() == Controller
+        && Capsule->GetWorld() == GetWorld() && Capsule->GetComponentLocation().Equals(Query.CapturedCentre,0.001)
+        && FMath::IsNearlyEqual(Capsule->GetScaledCapsuleRadius(),Query.Radius,0.001f)
+        && FMath::IsNearlyEqual(Capsule->GetScaledCapsuleHalfHeight(),Query.HalfHeight,0.001f);
+}
+
+bool ASFConstructionSandboxState::PlanDoorPush(const ASFConstructionSandboxController* Controller,
+    const FIntVector& Origin, int32 Yaw, FSFConstructionDoorPush& Out, FSFConstructionDoorCloseQuery& OutQuery) const
+{
+    auto* Character = Controller ? Cast<ASFE1Character>(Controller->GetPawn()) : nullptr;
+    auto* Capsule = Character ? Character->GetCapsuleComponent() : nullptr;
+    auto* Movement = Character ? Character->GetCharacterMovement() : nullptr;
+    const auto* Record = Doors.Find(Origin);
+    auto* Door = Record ? Record->Projection.Get() : nullptr;
+    if (!Capsule || !Door || !Record->bOpen || Record->YawQuarterTurns != Yaw
+        || Character->GetRootComponent() != Capsule || !Movement || Movement->UpdatedComponent != Capsule
+        || !Capsule->IsQueryCollisionEnabled()
+        || !Capsule->IsRegistered() || !Capsule->IsPhysicsStateCreated()
+        || Capsule->IsSimulatingPhysics()) { return false; }
+    const FVector From = Capsule->GetComponentLocation();
+    const FQuat Rotation = Capsule->GetComponentQuat();
+    const float Radius = Capsule->GetScaledCapsuleRadius();
+    const float HalfHeight = Capsule->GetScaledCapsuleHalfHeight();
+    if (!Finite(From) || Rotation.ContainsNaN() || !Rotation.IsNormalized()
+        || !FMath::IsFinite(Radius) || !FMath::IsFinite(HalfHeight)
+        || Radius <= 0 || HalfHeight < Radius || FVector::DotProduct(Rotation.GetUpVector(),FVector::UpVector) < 0.9999)
+    { return false; }
+    FSFConstructionDoorProjectionProfile Closed;
+    if (!ASFConstructionSandboxDoorProjection::BuildProfile(Origin,Yaw,false,Closed)) { return false; }
+    FBox LocalMotion(ForceInit);
+    for (int32 X = 0; X < 2; ++X)
+    for (int32 Y = 0; Y < 2; ++Y)
+    for (int32 Z = 0; Z < 2; ++Z)
+    {
+        const FVector Corner(X ? Closed.Motion.Max.X : Closed.Motion.Min.X,
+            Y ? Closed.Motion.Max.Y : Closed.Motion.Min.Y,
+            Z ? Closed.Motion.Max.Z : Closed.Motion.Min.Z);
+        LocalMotion += Closed.Transform.InverseTransformPosition(Corner);
+    }
+    if (!LocalMotion.IsValid || !Finite(LocalMotion.Min) || !Finite(LocalMotion.Max)) { return false; }
+    const FVector Local = Closed.Transform.InverseTransformPosition(From);
+    // Only the capsule actually occupying this released whole-motion reservation can move.
+    const double CX = FMath::Clamp(static_cast<double>(Local.X),LocalMotion.Min.X,LocalMotion.Max.X);
+    const double CY = FMath::Clamp(static_cast<double>(Local.Y),LocalMotion.Min.Y,LocalMotion.Max.Y);
+    if (FMath::Square(Local.X-CX)+FMath::Square(Local.Y-CY) >= FMath::Square(Radius)
+        || From.Z-HalfHeight >= Closed.Motion.Max.Z || From.Z+HalfHeight <= Closed.Motion.Min.Z)
+    { return false; }
+    // 0.1 cm is a fixed numerical separation from a touching sweep endpoint.
+    const double Front = LocalMotion.Min.Y-static_cast<double>(Radius)-0.1;
+    const double Back = LocalMotion.Max.Y+static_cast<double>(Radius)+0.1;
+    const double Destinations[2] = {FMath::Abs(Local.Y-Front) <= FMath::Abs(Local.Y-Back) ? Front : Back,
+        FMath::Abs(Local.Y-Front) <= FMath::Abs(Local.Y-Back) ? Back : Front};
+    FSFConstructionDoorCloseQuery CloseQuery;
+    CloseQuery.Owner = const_cast<ASFConstructionSandboxState*>(this); CloseQuery.Door = Door;
+    CloseQuery.Capsule = Capsule; CloseQuery.Revision = Revision; CloseQuery.CapturedCentre = From;
+    CloseQuery.Radius = Radius; CloseQuery.HalfHeight = HalfHeight;
+    for (double Destination : Destinations)
+    {
+        FVector CandidateLocal = Local; CandidateLocal.Y = Destination;
+        FVector To = Closed.Transform.TransformPosition(CandidateLocal); To.Z = From.Z;
+        if (!Finite(To) || (To-From).Size() > LocalMotion.Max.Y-LocalMotion.Min.Y+2.0*Radius+1.0) { continue; }
+        // Conservative admission of the entire path, including bodies outside
+        // Motion. Actual capsule sweeps below still test the old open leaf.
+        const FVector Extent(Radius,Radius,HalfHeight);
+        const FBox SweptBounds = FBox(From-Extent,From+Extent)+FBox(To-Extent,To+Extent);
+        const auto SweptResult = SFConstructionClearance::EvaluateBoxClosing(GetWorld(),SweptBounds,Door,CloseQuery);
+        if (SweptResult != SFConstructionClearance::EResult::Clear) { continue; }
+        FCollisionQueryParams PathQuery(SCENE_QUERY_STAT(ConstructionDoorPushPath),false);
+        PathQuery.AddIgnoredComponent(Capsule);
+        const FCollisionShape Shape = FCollisionShape::MakeCapsule(Radius,HalfHeight);
+        FHitResult Hit;
+        if (GetWorld()->SweepSingleByChannel(Hit,From,To,Rotation,ECC_Pawn,Shape,PathQuery)) { continue; }
+        if (GetWorld()->OverlapBlockingTestByChannel(To,Rotation,ECC_Pawn,Shape,PathQuery)) { continue; }
+        bool bClosedBlocked = false;
+        for (const auto& Box : Closed.Boxes)
+        {
+            const FVector Centre = Closed.Transform.TransformPosition(Box.Centre);
+            const FQuat BoxRotation = Closed.Transform.GetRotation()*Box.Rotation;
+            const FVector Relative = BoxRotation.UnrotateVector(To-Centre);
+            const double DX = FMath::Max(FMath::Abs(Relative.X)-Box.Extent.X,0.0);
+            const double DY = FMath::Max(FMath::Abs(Relative.Y)-Box.Extent.Y,0.0);
+            if (DX*DX+DY*DY < FMath::Square(Radius)
+                && FMath::Abs(Relative.Z) < HalfHeight+Box.Extent.Z) { bClosedBlocked = true; break; }
+        }
+        if (bClosedBlocked) { continue; }
+        Out.Capsule = Capsule; Out.Door = Door; Out.Revision = Revision; Out.From = From; Out.To = To;
+        OutQuery = CloseQuery;
+        return true;
+    }
+    return false;
 }
 
 FString ASFConstructionSandboxState::ValidateStableSnapshot(const ASFConstructionSandboxController* Controller, uint64 ExpectedRevision) const
@@ -228,7 +405,8 @@ FString ASFConstructionSandboxState::StructuralReservations(const FSFConstructio
 }
 
 FString ASFConstructionSandboxState::DoorReservations(const FIntVector& Origin, int32 Yaw, bool bOpen,
-    bool bToggle, const ASFConstructionSandboxDoorProjection* OwnOldDoor) const
+    bool bToggle, const ASFConstructionSandboxDoorProjection* OwnOldDoor,
+    const FSFConstructionDoorCloseQuery* CloseQuery) const
 {
     FSFConstructionDoorProjectionProfile Profile;
     if (!ASFConstructionSandboxDoorProjection::BuildProfile(Origin,Yaw,bOpen,Profile)) { return TEXT("Door profile outside sandbox bounds"); }
@@ -250,7 +428,9 @@ FString ASFConstructionSandboxState::DoorReservations(const FIntVector& Origin, 
             if (Intersection == SFConstructionClearance::EResult::Unavailable) { return TEXT("Canonical structural reservation query unavailable"); }
             if (Intersection == SFConstructionClearance::EResult::Blocked) { return TEXT("Door reservation intersects canonical structural occupancy"); }
         }
-        const auto Result = SFConstructionClearance::EvaluateBox(GetWorld(),Box,OwnOldDoor);
+        const auto Result = CloseQuery
+            ? SFConstructionClearance::EvaluateBoxClosing(GetWorld(),Box,OwnOldDoor,*CloseQuery)
+            : SFConstructionClearance::EvaluateBox(GetWorld(),Box,OwnOldDoor);
         if (Result == SFConstructionClearance::EResult::Unavailable) { return TEXT("Door clearance unavailable"); }
         if (Result == SFConstructionClearance::EResult::Blocked) { return TEXT("Door solid, motion or approach blocked by character, structure or prop"); }
     }
@@ -280,10 +460,11 @@ FString ASFConstructionSandboxState::EvaluateDoor(const ASFConstructionSandboxCo
     if (!Finite(Eyes)) { return TEXT("Invalid pawn view"); }
     FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionDoorIntent),false,Pawn);
     FHitResult Hit;
-    const FVector Target = bPlace ? Profile.Envelope.GetCenter()
-        : Existing->Projection->GetActorTransform().TransformPosition(Existing->Projection->GetBoxProfile()[0].Centre);
+    const FVector Target = !bPlace && Intent.bHasInteractionPoint ? Intent.InteractionPoint : Profile.Envelope.GetCenter();
+    if (!Finite(Target) || !Profile.Envelope.IsInsideOrOn(Target))
+    { return TEXT("Door interaction point outside released doorway"); }
     const bool bHit = GetWorld()->LineTraceSingleByChannel(Hit,Eyes,Target,ECC_Visibility,Query);
-    if ((bHit && (bPlace || Hit.GetActor() != Existing->Projection.Get())) || (!bPlace && !bHit))
+    if (bHit && (bPlace || Hit.GetActor() != Existing->Projection.Get()))
     { return TEXT("Door line of sight blocked or target unavailable"); }
     if (Intent.Action == ESFConstructionDoorAction::Toggle)
     {
@@ -292,7 +473,12 @@ FString ASFConstructionSandboxState::EvaluateDoor(const ASFConstructionSandboxCo
     }
     if (Intent.Action != ESFConstructionDoorAction::Remove)
     {
-        const FString Clearance = DoorReservations(Intent.OriginCell,Intent.YawQuarterTurns,bOpen,!bPlace,bPlace ? nullptr : Existing->Projection.Get());
+        FSFConstructionDoorPush Push;
+        FSFConstructionDoorCloseQuery CloseQuery;
+        const bool bPush = Intent.Action == ESFConstructionDoorAction::Toggle && Existing->bOpen
+            && PlanDoorPush(Controller,Intent.OriginCell,Intent.YawQuarterTurns,Push,CloseQuery);
+        const FString Clearance = DoorReservations(Intent.OriginCell,Intent.YawQuarterTurns,bOpen,!bPlace,
+            bPlace ? nullptr : Existing->Projection.Get(),bPush ? &CloseQuery : nullptr);
         if (!Clearance.IsEmpty()) { return Clearance; }
     }
     if (!bPlace) { return FString(); }
@@ -325,10 +511,15 @@ bool ASFConstructionSandboxState::ApplyDoor(ASFConstructionSandboxController* Co
     Result = EvaluateDoor(Controller,Intent);
     if (!Result.IsEmpty()) { return false; }
     auto CandidateDoors = Doors;
+    FSFConstructionDoorPush Push;
+    FSFConstructionDoorCloseQuery CloseQuery;
+    const bool bPush = Intent.Action == ESFConstructionDoorAction::Toggle
+        && Doors.FindChecked(Intent.OriginCell).bOpen
+        && PlanDoorPush(Controller,Intent.OriginCell,Intent.YawQuarterTurns,Push,CloseQuery);
     if (Intent.Action == ESFConstructionDoorAction::Remove) { CandidateDoors.Remove(Intent.OriginCell); }
     else if (Intent.Action == ESFConstructionDoorAction::Toggle) { CandidateDoors.FindChecked(Intent.OriginCell).bOpen = !CandidateDoors.FindChecked(Intent.OriginCell).bOpen; }
     else { FSFConstructionSandboxDoor Added; Added.YawQuarterTurns = Intent.YawQuarterTurns; CandidateDoors.Add(Intent.OriginCell,Added); }
-    if (!CommitCombined(Members,MoveTemp(CandidateDoors),{},AuthorityTime(),Result)) { return false; }
+    if (!CommitCombined(Members,MoveTemp(CandidateDoors),{},AuthorityTime(),Result,bPush ? &Push : nullptr)) { return false; }
     Result = TEXT("Door transaction published; economic salvage disabled");
     return true;
 }
@@ -661,7 +852,8 @@ bool ASFConstructionSandboxState::CommitCandidate(TMap<FIntVector, FSFConstructi
 }
 
 bool ASFConstructionSandboxState::CommitCombined(TMap<FIntVector, FSFConstructionSandboxMember> Candidate,
-    TMap<FIntVector, FSFConstructionSandboxDoor> CandidateDoors, const TArray<FIntVector>& ChangedCells, double Now, FString& Result)
+    TMap<FIntVector, FSFConstructionSandboxDoor> CandidateDoors, const TArray<FIntVector>& ChangedCells,
+    double Now, FString& Result, const FSFConstructionDoorPush* Push)
 {
     Result = ValidateEnvironment();
     if (!Result.IsEmpty()) { return false; }
@@ -765,8 +957,10 @@ bool ASFConstructionSandboxState::CommitCombined(TMap<FIntVector, FSFConstructio
     {
         if (!Door->CanActivate()) { Rollback(); Result = TEXT("Door activation preflight failed; construction preserved"); return false; }
     }
+    auto Publish = [&]() -> bool
+    {
     Result = ValidateEnvironment();
-    if (!Result.IsEmpty()) { Rollback(); return false; }
+    if (!Result.IsEmpty()) { return false; }
     // No callbacks/yields or fallible cooking between preflight and activation.
     // Treat an unexpected activation failure as an invariant violation rather
     // than publishing a member revision over partially installed geometry.
@@ -795,6 +989,44 @@ bool ASFConstructionSandboxState::CommitCombined(TMap<FIntVector, FSFConstructio
     NextCollapseRetryAt = 0.0;
     LastCollapseFailure.Reset();
     ConfirmationController.Reset();
+    return true;
+    };
+    if (!Push)
+    {
+        if (!Publish()) { Rollback(); return false; }
+        return true;
+    }
+    auto* Capsule = Push->Capsule.Get();
+    auto* OldDoor = Push->Door.Get();
+    auto* Character = Capsule ? Cast<ASFE1Character>(Capsule->GetOwner()) : nullptr;
+    auto* CharacterMovement = Character ? Character->GetCharacterMovement() : nullptr;
+    const auto* Current = OldDoor ? Doors.Find(OldDoor->GetOriginCell()) : nullptr;
+    if (!Capsule || !CharacterMovement || CharacterMovement->UpdatedComponent != Capsule
+        || !Current || Current->Projection.Get() != OldDoor || !Current->bOpen
+        || Push->Revision != Revision || !Capsule->GetComponentLocation().Equals(Push->From,0.001))
+    { Rollback(); Result = TEXT("Door push context changed; construction preserved"); return false; }
+    {
+        FScopedMovementUpdate Movement(Capsule,EScopedUpdate::DeferredUpdates);
+        FHitResult Hit;
+        const bool bMoved = Capsule->MoveComponent(Push->To-Push->From,Capsule->GetComponentQuat(),true,&Hit);
+        if (!bMoved || Hit.bBlockingHit || Hit.bStartPenetrating
+            || !Capsule->GetComponentLocation().Equals(Push->To,0.01))
+        {
+            Movement.RevertMove(); Rollback();
+            Result = TEXT("Door push sweep blocked; construction and character preserved"); return false;
+        }
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+        if (bTestFailAfterDoorPush)
+        {
+            Movement.RevertMove(); Rollback();
+            Result = TEXT("Editor fixture interrupted staged door after reversible push"); return false;
+        }
+#endif
+        if (!Publish()) { Movement.RevertMove(); Rollback(); return false; }
+        // Direct capsule displacement leaves CharacterMovement's cached floor
+        // at the old pose; schedule its normal next floor check after success.
+        CharacterMovement->bForceNextFloorCheck = true;
+    } // Deferred movement callbacks observe the published door and revision.
     return true;
 }
 

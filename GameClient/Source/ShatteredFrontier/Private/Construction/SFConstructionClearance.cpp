@@ -6,6 +6,7 @@
 #include "Chaos/Convex.h"
 #include "Components/PrimitiveComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/OverlapResult.h"
 #include "Engine/World.h"
@@ -72,6 +73,15 @@ bool FSFConstructionReplacementSet::Contains(const UPrimitiveComponent* Componen
     return false;
 }
 
+bool FSFConstructionDoorCloseQuery::Validate(UWorld* World) const
+{
+    return IsInGameThread() && IsValid(World) && Owner.IsValid() && Owner->GetWorld() == World
+        && Owner->IsDoorCloseQueryCurrent(*this);
+}
+
+bool FSFConstructionDoorCloseQuery::Contains(const UPrimitiveComponent* Component) const
+{ return Capsule.IsValid() && Component == Capsule.Get(); }
+
 static SFConstructionClearance::EResult EvaluateSolidInternal(UWorld* World, int32 Shape,
     int32 Rotation, const FVector& CellCorner, const FSFConstructionReplacementSet* Replacement)
 {
@@ -129,10 +139,12 @@ static SFConstructionClearance::EResult EvaluateSolidInternal(UWorld* World, int
 }
 
 static SFConstructionClearance::EResult EvaluateBoxInternal(UWorld* World, const FBox& Bounds,
-    const ASFConstructionSandboxDoorProjection* OwnOldDoor, const FSFConstructionReplacementSet* Replacement)
+    const ASFConstructionSandboxDoorProjection* OwnOldDoor, const FSFConstructionReplacementSet* Replacement,
+    const FSFConstructionDoorCloseQuery* CloseQuery = nullptr)
 {
     if (!IsInGameThread() || !IsValid(World) || !ValidBox(Bounds) || !DoorProjectionsAvailable(World)
         || (Replacement && !Replacement->Validate(World))
+        || (CloseQuery && !CloseQuery->Validate(World))
         || (OwnOldDoor && (OwnOldDoor->GetWorld() != World || !OwnOldDoor->IsActive() || !OwnOldDoor->IsProjectionIntact()))) { return EResult::Unavailable; }
     TArray<FOverlapResult> Candidates;
     const FCollisionObjectQueryParams Objects(FCollisionObjectQueryParams::AllObjects);
@@ -144,7 +156,9 @@ static SFConstructionClearance::EResult EvaluateBoxInternal(UWorld* World, const
         auto* Component = Candidate.GetComponent();
         bool bSkip;
         if (Admit(Component,bSkip,OwnOldDoor) == EResult::Unavailable) { return EResult::Unavailable; }
-        if (bSkip || (Replacement && Replacement->Contains(Component))) { continue; }
+        if (bSkip || (Replacement && Replacement->Contains(Component))
+            || (CloseQuery && CloseQuery->Contains(Component)))
+        { continue; }
         FBodyInstance* Body = Component->GetBodyInstance(NAME_None,true,Candidate.GetItemIndex());
         if (!Body || !Body->IsValidBodyInstance()) { return EResult::Unavailable; }
         FMTDResult Penetration;
@@ -173,6 +187,11 @@ SFConstructionClearance::EResult SFConstructionClearance::EvaluateBox(UWorld* Wo
 SFConstructionClearance::EResult SFConstructionClearance::EvaluateBoxReplacing(UWorld* World,
     const FBox& Bounds, const FSFConstructionReplacementSet& Replacement)
 { return EvaluateBoxInternal(World,Bounds,nullptr,&Replacement); }
+
+SFConstructionClearance::EResult SFConstructionClearance::EvaluateBoxClosing(UWorld* World,
+    const FBox& Bounds, const ASFConstructionSandboxDoorProjection* OwnOldDoor,
+    const FSFConstructionDoorCloseQuery& Query)
+{ return EvaluateBoxInternal(World,Bounds,OwnOldDoor,nullptr,&Query); }
 
 SFConstructionClearance::EResult SFConstructionClearance::IntersectsReservation(int32 Shape, int32 Rotation,
     const FVector& CellCorner, const FBox& Reservation)

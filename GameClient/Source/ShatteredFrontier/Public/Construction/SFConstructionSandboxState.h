@@ -11,6 +11,8 @@ class ASFConstructionSandboxController;
 class ASFConstructionSandboxPreview;
 class ASFConstructionSandboxDoorProjection;
 class FSFConstructionReplacementSet;
+class FSFConstructionDoorCloseQuery;
+struct FSFConstructionDoorPush;
 
 enum class ESFConstructionDoorAction : uint8 { Place, Toggle, Remove };
 struct FSFConstructionDoorIntent
@@ -19,6 +21,8 @@ struct FSFConstructionDoorIntent
     int32 YawQuarterTurns = 0; // Place only; other actions must match retained yaw.
     uint64 ExpectedRevision = 0;
     ESFConstructionDoorAction Action = ESFConstructionDoorAction::Place;
+    bool bHasInteractionPoint = false;
+    FVector InteractionPoint = FVector::ZeroVector;
 };
 struct FSFConstructionSandboxDoor
 {
@@ -89,6 +93,8 @@ public:
     int32 GetDoorCount() const { return Doors.Num(); }
     const FSFConstructionSandboxDoor* FindDoor(const FIntVector& Origin) const { return Doors.Find(Origin); }
     bool FindDoorOrigin(const AActor* Projection, FIntVector& OutOrigin) const;
+    bool FindDoorAlongRay(const ASFConstructionSandboxController* Controller, const FVector& Start,
+        const FVector& End, FIntVector& OutOrigin, FVector* OutPoint = nullptr) const;
     bool GetDoorDeadline(const FIntVector& Origin, double& Out) const { return DoorInstability.GetDeadline(Origin,Out); }
     void CancelRemoval(const ASFConstructionSandboxController* Controller);
     FString GetInstabilitySummary() const;
@@ -99,7 +105,9 @@ public:
     static FVector CellCorner(const FIntVector& Cell);
 private:
     friend class FSFConstructionReplacementSet;
+    friend class FSFConstructionDoorCloseQuery;
     bool IsReplacementQueryCurrent(const FSFConstructionReplacementSet& Replacement) const;
+    bool IsDoorCloseQueryCurrent(const FSFConstructionDoorCloseQuery& Query) const;
     FSFConstructionReplacementSet MakeReplacementSet() const;
     FString ValidateStableSnapshot(const ASFConstructionSandboxController* Controller, uint64 ExpectedRevision) const;
     FString ValidateIntent(const ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent) const;
@@ -107,7 +115,10 @@ private:
         TMap<FIntVector, FSFConstructionSandboxMember>& Candidate, TArray<FIntVector>& Cells, FString* SupportHint) const;
     FString ValidateEnvironment() const;
     FString ValidateOwner(const ASFConstructionSandboxController* Controller, uint64 ExpectedRevision) const;
-    FString DoorReservations(const FIntVector& Origin, int32 Yaw, bool bOpen, bool bToggle, const ASFConstructionSandboxDoorProjection* OwnOldDoor) const;
+    FString DoorReservations(const FIntVector& Origin, int32 Yaw, bool bOpen, bool bToggle,
+        const ASFConstructionSandboxDoorProjection* OwnOldDoor, const FSFConstructionDoorCloseQuery* CloseQuery = nullptr) const;
+    bool PlanDoorPush(const ASFConstructionSandboxController* Controller, const FIntVector& Origin,
+        int32 Yaw, FSFConstructionDoorPush& Out, FSFConstructionDoorCloseQuery& OutQuery) const;
     FString StructuralReservations(const FSFConstructionSandboxIntent& Intent) const;
     FString SolveSupport(const TMap<FIntVector, FSFConstructionSandboxMember>& Snapshot, TArray<FSFConstructionSupportResult>& Results) const;
     FString SolveCombined(const TMap<FIntVector, FSFConstructionSandboxMember>& Snapshot,
@@ -116,7 +127,8 @@ private:
     FString CheckSupport(const FSFConstructionSandboxIntent& Intent, FString* SupportHint) const;
     bool CommitCandidate(TMap<FIntVector, FSFConstructionSandboxMember> Candidate, const TArray<FIntVector>& ChangedCells, double Now, FString& Result);
     bool CommitCombined(TMap<FIntVector, FSFConstructionSandboxMember> Candidate,
-        TMap<FIntVector, FSFConstructionSandboxDoor> CandidateDoors, const TArray<FIntVector>& ChangedCells, double Now, FString& Result);
+        TMap<FIntVector, FSFConstructionSandboxDoor> CandidateDoors, const TArray<FIntVector>& ChangedCells, double Now, FString& Result,
+        const FSFConstructionDoorPush* Push = nullptr);
     void ProcessDeadlines(double Now);
     double AuthorityTime() const;
     TMap<FIntVector, FSFConstructionSandboxMember> Members;
@@ -147,6 +159,8 @@ private:
     friend class FSFConstructionSnapshotRestoreTest;
     friend class FSFConstructionSandboxAuthorityTest;
     friend class FSFConstructionLineAuthorityTest;
+    friend class FSFConstructionDoorInteractionTest;
     int32 TestFailAfterPreparedCount = INDEX_NONE;
+    bool bTestFailAfterDoorPush = false;
 #endif
 };

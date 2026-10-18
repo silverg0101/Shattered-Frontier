@@ -6,6 +6,7 @@ class UWorld;
 class ASFConstructionSandboxDoorProjection;
 class ASFConstructionSandboxState;
 class UPrimitiveComponent;
+class UCapsuleComponent;
 
 // Only State can populate this exact, revision-bound component replacement set.
 // Default/unowned/stale contexts fail closed. No actor-wide collision exclusion.
@@ -19,6 +20,24 @@ private:
     TWeakObjectPtr<ASFConstructionSandboxState> Owner;
     uint64 Revision = 0;
     TArray<TWeakObjectPtr<UPrimitiveComponent>> Components;
+};
+
+// State-created exception for one owned capsule at one captured revision and
+// pose. Clearance revalidates it for each query; it cannot omit the actor.
+class SHATTEREDFRONTIER_API FSFConstructionDoorCloseQuery
+{
+public:
+    bool Validate(UWorld* World) const;
+    bool Contains(const UPrimitiveComponent* Component) const;
+private:
+    friend class ASFConstructionSandboxState;
+    TWeakObjectPtr<ASFConstructionSandboxState> Owner;
+    TWeakObjectPtr<ASFConstructionSandboxDoorProjection> Door;
+    TWeakObjectPtr<UCapsuleComponent> Capsule;
+    uint64 Revision = 0;
+    FVector CapturedCentre = FVector::ZeroVector;
+    float Radius = 0;
+    float HalfHeight = 0;
 };
 
 namespace SFConstructionClearance
@@ -41,4 +60,6 @@ namespace SFConstructionClearance
         const FVector& CellCorner, const FSFConstructionReplacementSet& Replacement);
     SHATTEREDFRONTIER_API EResult EvaluateBoxReplacing(UWorld* World, const FBox& Bounds,
         const FSFConstructionReplacementSet& Replacement);
+    SHATTEREDFRONTIER_API EResult EvaluateBoxClosing(UWorld* World, const FBox& Bounds,
+        const ASFConstructionSandboxDoorProjection* OwnOldDoor, const FSFConstructionDoorCloseQuery& Query);
 }

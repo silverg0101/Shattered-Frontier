@@ -58,6 +58,40 @@ public:
             NextFrame = GFrameCounter + 4;
             return;
         }
+        if (bAwaitAim)
+        {
+            FVector Camera; FRotator View;
+            Controller->GetPlayerViewPoint(Camera, View);
+            const FVector Delta = AimTarget - Camera;
+            const double Along = FVector::DotProduct(Delta, View.Vector());
+            const double Miss = (Delta - View.Vector() * Along).Size();
+            if (Along > 0.0 && Miss < 0.2) { ++AimStableFrames; } else { AimStableFrames = 0; }
+            const double WorldElapsed = W->GetTimeSeconds() - AimWorldStartedAt;
+            if (AimStableFrames < 4 || WorldElapsed < 0.25)
+            {
+                if (FPlatformTime::Seconds() - AimRealStartedAt > 3.0)
+                {
+                    LogAimDiagnostics(TEXT("Aim did not settle within three seconds"));
+                    Fail(TEXT("Actual view ray did not settle before input"));
+                }
+                return;
+            }
+            bAwaitAim = false;
+            LogAimDiagnostics(TEXT("Aim settled"));
+        }
+        if (bHasPendingPress)
+        {
+            const TArray<FKey> Keys = MoveTemp(PendingPressKeys);
+            bHasPendingPress = false;
+            DispatchPress(Keys);
+            return;
+        }
+        if (bPendingDemolition)
+        {
+            bPendingDemolition = false;
+            Press({EKeys::LeftMouseButton});
+            return;
+        }
         switch (Step)
         {
         case 0:
@@ -85,7 +119,7 @@ public:
         case 7:
             if (!Check(State->GetMemberCount() == 1 && Matches(FIntVector(8,8,0), 2, 0), TEXT("Input slope/orientation identity mismatch"))) { return; }
             Mark(TEXT("SLOPE_ROTATION_PLACED")); Aim(FVector(400,425,25)); Advance(); break;
-        case 8: Press({EKeys::RightMouseButton}); break;
+        case 8: Press({EKeys::Delete}); break;
         case 9:
             if (!Check(State->GetMemberCount() == 0, TEXT("Safe input removal did not remove slope"))) { return; }
             Mark(TEXT("SAFE_REMOVAL_APPLIED")); Aim(FVector(425,425,0)); Press({EKeys::Two, EKeys::LeftMouseButton}); break;
@@ -95,7 +129,7 @@ public:
         case 11:
             if (!Check(State->GetMemberCount() == 1 && Matches(FIntVector(8,8,0), 1, 0), TEXT("Input half slab identity mismatch"))) { return; }
             Mark(TEXT("HALF_SLAB_PLACED")); Aim(FVector(400,425,12)); Advance(); break;
-        case 12: Press({EKeys::RightMouseButton}); break;
+        case 12: Press({EKeys::Delete}); break;
         case 13:
             if (!Check(State->GetMemberCount() == 0, TEXT("Input half slab removal failed"))) { return; }
             Mark(TEXT("HALF_SLAB_REMOVED")); Aim(FVector(425,425,0)); Press({EKeys::One}); break;
@@ -107,14 +141,14 @@ public:
         case 17:
             if (!Check(State->GetMemberCount() == 2 && Matches(FIntVector(8,8,1), 0, 0), TEXT("Supported input stack missing"))) { return; }
             Mark(TEXT("SUPPORTED_STACK_PLACED")); Aim(FVector(400,425,25)); Advance(); break;
-        case 18: Press({EKeys::RightMouseButton}); break;
+        case 18: Press({EKeys::Delete}); break;
         case 19:
             if (!Check(State->GetMemberCount() == 2, TEXT("Unconfirmed support loss edited members"))) { return; }
             Mark(TEXT("REMOVAL_REQUIRES_CONFIRMATION")); Press({EKeys::Escape}); break;
         case 20: Press({EKeys::Enter}); break;
         case 21:
             if (!Check(State->GetMemberCount() == 2, TEXT("Cancelled removal was confirmed"))) { return; }
-            Mark(TEXT("CANCELLED_CONFIRMATION_DENIED")); Press({EKeys::RightMouseButton}); break;
+            Mark(TEXT("CANCELLED_CONFIRMATION_DENIED")); Press({EKeys::Delete}); break;
         case 22: ConfirmationSentAt = W->GetTimeSeconds(); Press({EKeys::Enter}); break;
         case 23:
             if (!Check(State->GetMemberCount() == 1 && Matches(FIntVector(8,8,1), 0, 0)
@@ -147,6 +181,31 @@ private:
     }
     void Press(std::initializer_list<FKey> Keys)
     {
+        if (bAwaitAim)
+        {
+            PendingPressKeys.Reset();
+            for (const FKey& Key : Keys) { PendingPressKeys.Add(Key); }
+            bHasPendingPress = true;
+            return;
+        }
+        TArray<FKey> Copy;
+        for (const FKey& Key : Keys) { Copy.Add(Key); }
+        DispatchPress(Copy);
+    }
+    void DispatchPress(const TArray<FKey>& Keys)
+    {
+        if (Keys.Num() == 1 && Keys[0] == EKeys::Delete)
+        {
+            bPendingDemolition = true;
+            if (!Controller->IsDemolitionMode())
+            {
+                Input(EKeys::X, IE_Pressed);
+                ReleaseKeys.Add(EKeys::X);
+                NextFrame = GFrameCounter + 1;
+            }
+            else { NextFrame = GFrameCounter + 2; }
+            return;
+        }
         for (const FKey& Key : Keys) { Input(Key, IE_Pressed); ReleaseKeys.Add(Key); }
         ++Step; NextFrame = GFrameCounter + 1;
     }
@@ -154,6 +213,8 @@ private:
     void Aim(const FVector& Target)
     {
         AimTarget = Target; bAiming = true;
+        bAwaitAim = true; AimStableFrames = 0;
+        AimWorldStartedAt = World->GetTimeSeconds(); AimRealStartedAt = FPlatformTime::Seconds();
         Controller->SetControlRotation((Target - Controller->GetPawn()->GetActorLocation()).Rotation());
     }
     bool Matches(const FIntVector& Cell, int32 Shape, int32 Rotation) const
@@ -182,9 +243,30 @@ private:
     }
     void Fail(const TCHAR* Reason)
     {
+        LogAimDiagnostics(TEXT("Scenario failure"));
         bFinished = true;
-        UE_LOG(LogTemp, Error, TEXT("CONSTRUCTION_INPUT_FAILED Step=%d Reason=%s Members=%d"), Step, Reason, State.IsValid() ? State->GetMemberCount() : -1);
+        UE_LOG(LogTemp, Error, TEXT("CONSTRUCTION_INPUT_FAILED Step=%d Reason=%s Members=%d Revision=%llu LastAuthorityReason=%s"),
+            Step, Reason, State.IsValid() ? State->GetMemberCount() : -1, State.IsValid() ? State->GetRevision() : 0,
+            Controller.IsValid() ? *Controller->GetLastConstructionResult() : TEXT("unavailable"));
         FPlatformMisc::RequestExitWithStatus(false, 1);
+    }
+    void LogAimDiagnostics(const TCHAR* Context) const
+    {
+        if (!World.IsValid() || !Controller.IsValid() || !Controller->GetPawn()) { return; }
+        FVector Camera; FRotator View;
+        Controller->GetPlayerViewPoint(Camera, View);
+        const FVector Direction = View.Vector();
+        const FVector Delta = AimTarget - Camera;
+        const double Along = FVector::DotProduct(Delta, Direction);
+        const double Miss = (Delta - Direction * Along).Size();
+        FHitResult Hit;
+        FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionInputAimDiagnostic), false, Controller->GetPawn());
+        const float Reach = State.IsValid() ? State->GetReachCentimetres() : 0.0f;
+        const bool bHit = Reach > 0.0f && World->LineTraceSingleByChannel(Hit, Camera, Camera + Direction * Reach, ECC_Visibility, Query);
+        UE_LOG(LogTemp, Display, TEXT("CONSTRUCTION_INPUT_AIM Context=%s Step=%d Camera=%s Direction=%s Target=%s Along=%.3f Miss=%.3f Hit=%d HitActor=%s HitPoint=%s HitNormal=%s LastAuthorityReason=%s"),
+            Context, Step, *Camera.ToString(), *Direction.ToString(), *AimTarget.ToString(), Along, Miss, bHit,
+            *GetNameSafe(Hit.GetActor()), *Hit.ImpactPoint.ToString(), *Hit.ImpactNormal.ToString(),
+            Controller.IsValid() ? *Controller->GetLastConstructionResult() : TEXT("unavailable"));
     }
     TWeakObjectPtr<UWorld> World;
     TWeakObjectPtr<ASFConstructionSandboxController> Controller;
@@ -192,11 +274,13 @@ private:
     double Started;
     double GraceObservedAt = 0;
     double ConfirmationSentAt = 0;
+    double AimWorldStartedAt = 0, AimRealStartedAt = 0;
     uint64 NextFrame = 0;
-    int32 Step = 0;
+    int32 Step = 0, AimStableFrames = 0;
     bool bFinished = false;
-    bool bAiming = false;
+    bool bAiming = false, bAwaitAim = false, bPendingDemolition = false, bHasPendingPress = false;
     FVector AimTarget = FVector::ZeroVector;
+    TArray<FKey> PendingPressKeys;
     TArray<FKey> ReleaseKeys;
 };
 TUniquePtr<FConstructionInputScenario> Scenario;

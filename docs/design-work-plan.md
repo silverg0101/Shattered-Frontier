@@ -1,5 +1,10 @@
 # Design documentation work plan
 
+## Cursor/UI and doorway playtest improvements - 2026-10-18
+
+**UI-01A / SBX-06J automated acceptance passed; human comfort open**: [evidence](evidence/construction-sandbox-cursor-door-pilot.md) / [source hashes and reports](evidence/construction-sandbox-cursor-door-results.json). Final controls: free cursor, held RMB camera in either mode, LMB place in Build or remove in explicit X/Delete Demolition. Native UMG palette/layers, whole-doorway targeting and safe closing displacement implemented. Focused ten-case report and later two/three-case reruns pass; finite Line21, Door19, Structural16 and isolated save/restart all pass. Separate Luna bounded fixture authors; parent architecture/shared docs/serial builds; independent Sol review. Earlier failures and corrections are retained in evidence. Independent final report/hash audit cleared. Updated isolated preview PID31112 under cursor-preview-20261018-191656 reached renderer readiness; human comfort pending. Next: owned commit/push, then scoped packaged-client acceptance. Approved art and two-client gates remain open. Preserve concurrent art, E1 defaults/maps/cook list, live service and old copied-preview saves.
+
+
 Last updated: 2026-10-18. Owner: coordinating documentation agent. This is the running documentation queue; the [gameplay backlog](Game-Design/Legends_Shattered_Frontier_Gameplay_Feature_Backlog_v1.0.md) owns implementation work and [roadmap](Game-Design/Legends_Shattered_Frontier_Production_Roadmap_v1.0.md) owns milestone gates. Update this file during each documentation work cycle; no background monitoring is implied. Standing user rules and continuation context are preserved in [design-agent.md](../design-agent.md).
 
 ## Line controls and full preview - 2026-10-18
