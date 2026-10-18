@@ -6,10 +6,10 @@ User authorized starting E1, initially targeting Unraid and subsequently selecti
 
 | Check | Observed result | Limits |
 | --- | --- | --- |
-| Editor Win64 Development build | Passed using UE 5.8.3 CL58210709, MSVC14.51.36260, Windows SDK10.0.26100.0 | Non-preferred compiler warning and engine-header deprecation warnings remain. Game/Client/Server packaged targets not built. |
+| Editor Win64 Development build | Passed using UE 5.8.3 CL58210709, MSVC14.51.36260, Windows SDK10.0.26100.0 | Non-preferred compiler warning and engine-header deprecation warnings remain. Game/Client packages not built; later Linux Server compilation is recorded below. |
 | Editor Python map creation | Exit0; `E1_MAP_CREATED /Game/Frontier/Maps/Greenlands_E1 Starts=2 Blocks=6`; commandlet reports 0 errors/warnings | NullRHI: no rendering/camera or manual traversal acceptance. Saved map is versioned fixture content. |
 | Separate editor server plus two independent clients | `tools/Test-E1Connections.ps1` passed on loopback UDP17777; server NetMode1, two distinct PlayerControllers and `SFE1Character_0`/`SFE1Character_1` with Authority1; both client logs welcomed into Greenlands | Headless connection/spawn evidence only. No movement observation, invalid-input tests, lifecycle cleanup/rejoin acceptance, authentication or capacity claim. Test force-stops its own processes afterward. |
-| Linux build entry point | PowerShell parser clean; `-ValidateOnly` against installed engine failed as expected with source-checkout/SDK prerequisites | No UAT build/cook, package, container or deployment ran. |
+| Linux source build/cook | Source validation passed; Linux Server and host UnrealPak native compilation succeeded (1303 actions); LinuxServer map cook exited0 with zero errors/warnings | UAT staging failed: managed Defender ASR blocks source UnrealPak. No runnable archive, game image or deployment. See build route for logs and resume steps. |
 
 Exact editor build command is in [GameClient README](../../GameClient/README.md). Map command:
 
@@ -25,9 +25,9 @@ Independent review corrected the initial jump mismatch to canonical height/gravi
 
 ## Hosting route and next work
 
-Unraid is the selected Linux x86_64 Docker test host. Read-only SSH inspection found an i7-10700 (8 cores/16 threads), nominal32GB RAM, about11GiB available at inspection, Docker27.5.1 and NVMe storage. Shared applications were active; no performance reservation or player-capacity proof exists. The storage pool has no disk redundancy; persistent-world deployment requires independently recoverable backups. No remote workload or network settings were changed.
+Unraid was the initial Linux x86_64 Docker candidate; steam-server supersedes it. Read-only SSH inspection found an i7-10700 (8 cores/16 threads), nominal32GB RAM, about11GiB available at inspection, Docker27.5.1 and NVMe storage. Shared applications were active; no performance reservation or player-capacity proof exists. The storage pool has no disk redundancy; persistent-world deployment requires independently recoverable backups. No remote workload or network settings were changed.
 
-The Launcher distribution has no installed Server-target support. Epic source is pinned to `396c9f059903aed5fec78ecd3d437a40c6415368`. Source checkout and `v26_clang-20.1.8-rockylinux8` installation have now completed; dependency sync/build/cook and runtime acceptance remain in progress under [the source/Linux packaging route](../e1-linux-server-build.md). No full source editor build is claimed; the selected route uses the matching existing editor as cooker.
+The Launcher distribution has no installed Server-target support. Epic source is pinned to `396c9f059903aed5fec78ecd3d437a40c6415368`. Source checkout and `v26_clang-20.1.8-rockylinux8` installation have now completed; dependency sync, native Linux Server compilation and cook passed; staging is blocked by managed Defender execution policy, and deployment/runtime acceptance remain pending under [the source/Linux packaging route](../e1-linux-server-build.md). No full source editor build is claimed; the selected route uses the matching existing editor as cooker.
 
 ### Selected runtime host: steam-server
 
