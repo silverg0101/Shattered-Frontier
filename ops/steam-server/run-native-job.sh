@@ -34,7 +34,42 @@ case "${1:-}" in
         additionalGiB=20
         network=none
         ;;
-    *) echo 'Usage: run-native-job.sh setup|uat-help|stage' >&2; exit 1 ;;
+    client-stage)
+        # UAT may clean its staging output; never follow stale or redirected output roots.
+        for output in "$WORK/client-stage" "$WORK/client-archive"; do
+            [[ ! -e "$output" && ! -L "$output" ]] || { echo 'client-stage requires fresh output roots' >&2; exit 1; }
+        done
+        readonly clientCook="$WORK/cook/LinuxClient"
+        [[ -d "$clientCook" && $(realpath -e "$clientCook") == "$clientCook" \
+           && -f "$WORK/project/GameClient/Binaries/Linux/ShatteredFrontierClient.target" \
+           && -s "$WORK/project/GameClient/Binaries/Linux/ShatteredFrontierClient" \
+           && -s "$clientCook/ShatteredFrontier/Content/Frontier/Maps/Greenlands_E1.umap" ]] || exit 1
+        if find "$clientCook" \( -iname ue.projectstore -o -iname zenfs.manifest \) -print -quit | grep -q .; then
+            echo 'client-stage requires a fresh portable loose LinuxClient cook, without Zen markers' >&2; exit 1
+        fi
+        python3 - "$WORK/project/GameClient/Binaries/Linux/ShatteredFrontierClient.target" <<'PY'
+import json
+import sys
+with open(sys.argv[1], encoding="utf-8-sig") as stream:
+    receipt = json.load(stream)
+expected = {"TargetName": "ShatteredFrontierClient", "TargetType": "Client", "Platform": "Linux",
+            "Configuration": "Development", "Architecture": "x64"}
+if any(receipt.get(key) != value for key, value in expected.items()):
+    raise SystemExit("client-stage requires the unchanged Linux x64 Development Client receipt")
+version = receipt.get("Version", {})
+if tuple(version.get(key) for key in ("MajorVersion", "MinorVersion", "PatchVersion")) != (5, 8, 3):
+    raise SystemExit("client-stage requires UE 5.8.3")
+PY
+        command=(bash Engine/Build/BatchFiles/RunUAT.sh BuildCookRun
+            -project=/work/project/GameClient/ShatteredFrontier.uproject
+            -client -platform=Linux -clientarchitecture=x64 -clientconfig=Development
+            -skipbuild -skipcook -skipiostore -stage -archive
+            -CookOutputDir=/work/cook/LinuxClient -stagingdirectory=/work/client-stage -archivedirectory=/work/client-archive
+            -unattended -nop4 -utf8output)
+        additionalGiB=20
+        network=none
+        ;;
+    *) echo 'Usage: run-native-job.sh setup|uat-help|stage|client-stage' >&2; exit 1 ;;
 esac
 # Fixed ceilings preserve the existing Windrose workload. They are build policy,
 # not public/GM runtime controls; changing them requires a reviewed script release.

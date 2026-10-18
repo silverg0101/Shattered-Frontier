@@ -121,7 +121,16 @@ def inspect_receipt(path, expected_name, expected_type, roots, inputs):
     return {"name": path.name, "sha256": hashlib.sha256(raw).hexdigest(), **counts}
 
 
-def gather(engine, project, cook):
+def target_inputs(target):
+    if target not in {"Server", "Client"}:
+        raise ValueError(f"Unsupported Linux target: {target}")
+    return f"ShatteredFrontier{target}", f"Linux{target}"
+
+
+def gather(engine, project, cook, target="Server"):
+    target_name, cook_platform = target_inputs(target)
+    if cook.name != cook_platform:
+        raise ValueError(f"{target} target requires the exact {cook_platform} cook directory")
     marker = engine / "Engine/Build/InstalledBuild.txt"
     if os.path.lexists(marker):
         raise ValueError("Installed-build engines are not accepted")
@@ -135,7 +144,7 @@ def gather(engine, project, cook):
     receipts = []
     for macro, relative, name, kind in (
         ("EngineDir", "Binaries/Linux/UnrealPak.target", "UnrealPak", "Program"),
-        ("ProjectDir", "Binaries/Linux/ShatteredFrontierServer.target", "ShatteredFrontierServer", "Server"),
+        ("ProjectDir", f"Binaries/Linux/{target_name}.target", target_name, target),
     ):
         receipt, member = receipt_path(f"$({macro})/{relative}", roots)
         add_input(inputs, receipt, member)
@@ -154,11 +163,15 @@ def gather(engine, project, cook):
         if path.name.casefold() in FORBIDDEN_COOK:
             raise ValueError(f"Zen-backed cook marker is not accepted: {relative}")
         cooked_map |= relative.endswith("/Content/Frontier/Maps/Greenlands_E1.umap")
-        add_input(inputs, path, "cook/LinuxServer/" + relative)
+        add_input(inputs, path, f"cook/{cook_platform}/" + relative)
         cook_count += 1
     if not cooked_map:
         raise ValueError("Loose cooked Content/Frontier/Maps/Greenlands_E1.umap is required")
-    return inputs, {"source_commit": commit, "receipts": receipts, "cook_files": cook_count}
+    metadata = {"source_commit": commit, "target": target, "cook_platform": cook_platform,
+                "receipts": receipts, "cook_files": cook_count}
+    if target == "Client":
+        metadata["scope"] = "Diagnostic Linux client inputs only; no production client or runtime acceptance"
+    return inputs, metadata
 
 
 def archive_mode(path, header):
@@ -234,6 +247,8 @@ def self_test():
     from types import SimpleNamespace
     from unittest.mock import patch
 
+    assert argument_parser().parse_args([]).target == "Server"
+    assert argument_parser().parse_args(["--target", "Client"]).target == "Client"
     with tempfile.TemporaryDirectory(prefix="sf-native-export-") as temporary:
         root = Path(temporary)
         elf = b"\x7fELF\x02\x01" + bytes(10) + b"\x02\x00" + bytes(2)
@@ -281,6 +296,84 @@ def self_test():
         else:
             raise AssertionError("Existing output overwritten")
         assert first_manifest.is_file()
+        # Exercise the complete gather/archive route for both targets, without
+        # invoking Git or inspecting any real engine/project/cook on this machine.
+        for selected_target in ("Server", "Client"):
+            target_name, cook_platform = target_inputs(selected_target)
+            fixture = root / "targets" / selected_target
+            engine = fixture / "engine"
+            project_root = fixture / "project" / "GameClient"
+            cook = fixture / cook_platform
+
+            def fixture_file(base, relative, data):
+                destination = base / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(data)
+                return destination
+
+            project = fixture_file(project_root, "ShatteredFrontier.uproject", b"{}")
+            fixture_file(project_root, "Config/DefaultGame.ini", b"fixture config")
+            fixture_file(project_root, "Source/ShatteredFrontier.Target.cs", b"fixture source")
+            fixture_file(project_root, "Content/Frontier/Maps/Greenlands_E1.umap", b"source map")
+            fixture_file(project_root, "Saved/excluded.log", b"must not export")
+            fixture_file(project_root, "Binaries/Win64/excluded.exe", b"must not export")
+            fixture_file(cook, "ShatteredFrontier/Content/Frontier/Maps/Greenlands_E1.umap", b"cooked map")
+            fixture_file(cook, "ShatteredFrontier/Content/Frontier/Maps/Greenlands_E1.uexp", b"cooked exports")
+            fixture_file(engine, "Engine/Binaries/Linux/UnrealPak", elf)
+            fixture_file(engine, "Engine/Binaries/Linux/pak-resource", b"required product")
+            fixture_file(engine, "Engine/Binaries/Linux/pak-dependency", b"runtime dependency")
+            fixture_file(project_root, f"Binaries/Linux/{target_name}", elf)
+            fixture_file(project_root, f"Binaries/Linux/{target_name}.sym", b"required symbols")
+            fixture_file(project_root, "Binaries/Linux/game-dependency", b"game runtime dependency")
+
+            def fixture_receipt(name, kind, macro, products, dependencies):
+                return {"TargetName": name, "TargetType": kind, "Platform": "Linux", "Configuration": "Development",
+                        "Architecture": "x64", "Version": {"MajorVersion": 5, "MinorVersion": 8, "PatchVersion": 3},
+                        "Launch": f"$({macro})/Binaries/Linux/{name}",
+                        "BuildProducts": [{"Path": f"$({macro})/Binaries/Linux/{item}"} for item in products],
+                        "RuntimeDependencies": [{"Path": f"$({macro})/Binaries/Linux/{item}"} for item in dependencies]}
+
+            pak_data = fixture_receipt("UnrealPak", "Program", "EngineDir", ["UnrealPak", "pak-resource"], ["pak-dependency"])
+            game_data = fixture_receipt(target_name, selected_target, "ProjectDir", [target_name, target_name + ".sym"], ["game-dependency"])
+            fixture_file(engine, "Engine/Binaries/Linux/UnrealPak.target", json.dumps(pak_data).encode())
+            game_receipt = fixture_file(project_root, f"Binaries/Linux/{target_name}.target", json.dumps(game_data).encode())
+            original_receipt = game_receipt.read_bytes()
+            with patch("subprocess.run", return_value=SimpleNamespace(stdout=SOURCE_COMMIT + "\n")):
+                # Omitting target here preserves and tests the original Server API.
+                gathered, details = gather(engine, project, cook) if selected_target == "Server" else gather(engine, project, cook, "Client")
+                assert details["target"] == selected_target and details["cook_platform"] == cook_platform
+                assert len(details["receipts"]) == 2 and all(item["BuildProducts"] == 2 and item["RuntimeDependencies"] == 1 for item in details["receipts"])
+                expected_receipt = f"project/GameClient/Binaries/Linux/{target_name}.target"
+                assert gathered[expected_receipt] == game_receipt
+                assert f"project/GameClient/Binaries/Linux/{target_name}.sym" in gathered
+                assert "project/GameClient/Binaries/Linux/game-dependency" in gathered
+                assert f"cook/{cook_platform}/ShatteredFrontier/Content/Frontier/Maps/Greenlands_E1.umap" in gathered
+                assert not any("/Saved/" in name or "/Win64/" in name for name in gathered)
+                _, result = write_archive(gathered, fixture / "inputs.tar.gz", details)
+                with tarfile.open(fixture / "inputs.tar.gz", "r:gz") as archive:
+                    assert archive.extractfile(expected_receipt).read() == original_receipt
+                    assert set(archive.getnames()) == set(gathered)
+                assert result["cook_files"] == 2 and result["target"] == selected_target
+                if selected_target == "Client":
+                    assert "Diagnostic Linux client" in result["scope"]
+                wrong_cook = fixture / ("LinuxClient" if selected_target == "Server" else "LinuxServer")
+                fixture_file(wrong_cook, "ShatteredFrontier/Content/Frontier/Maps/Greenlands_E1.umap", b"wrong target cook")
+                try:
+                    gather(engine, project, wrong_cook, selected_target)
+                except ValueError:
+                    pass
+                else:
+                    raise AssertionError("Mismatched cook target accepted")
+                other_target = "Client" if selected_target == "Server" else "Server"
+                for field, wrong in (("TargetType", other_target), ("TargetName", "ShatteredFrontier" + other_target)):
+                    mismatched = {**game_data, field: wrong}
+                    game_receipt.write_bytes(json.dumps(mismatched).encode())
+                    try:
+                        gather(engine, project, cook, selected_target)
+                    except ValueError:
+                        pass
+                    else:
+                        raise AssertionError(f"Mismatched receipt {field} accepted")
         for invalid in (SimpleNamespace(st_mode=stat.S_IFLNK, st_file_attributes=0),
                         SimpleNamespace(st_mode=stat.S_IFREG, st_file_attributes=0x400),
                         SimpleNamespace(st_mode=stat.S_IFIFO, st_file_attributes=0)):
@@ -309,16 +402,23 @@ def self_test():
                 pass
             else:
                 raise AssertionError("Symlink input accepted")
-    print("PASS: synthetic paths/case/link/special rejection, Zen marker rejection, complete receipt closure, unchanged bytes, hashes, deterministic archive/modes, existing-output rejection")
+    print("PASS: default Server and explicit Client closure/cook/archive mapping; mismatched receipt/cook rejection; synthetic paths/case/link/special rejection; Zen marker rejection; unchanged bytes/hashes; deterministic modes/archive; existing-output rejection")
 
 
-def main():
+def argument_parser():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-engine-root", type=Path)
     parser.add_argument("--project", type=Path)
     parser.add_argument("--cook-dir", type=Path)
     parser.add_argument("--output", type=Path, help="New .tar.gz archive; sibling .manifest.json is also created")
+    parser.add_argument("--target", choices=("Server", "Client"), default="Server",
+                        help="Original Linux receipt/cook target (default: Server); Client is diagnostic only")
     parser.add_argument("--self-test", action="store_true", help="Synthetic validation only; does not inspect or export real build inputs")
+    return parser
+
+
+def main():
+    parser = argument_parser()
     args = parser.parse_args()
     if args.self_test:
         self_test()
@@ -331,11 +431,12 @@ def main():
     validate_root(args.project.parent)
     cook = validate_root(args.cook_dir)
     validate_root(args.output.parent)
-    inputs, metadata = gather(engine, args.project.absolute(), cook)
+    inputs, metadata = gather(engine, args.project.absolute(), cook, args.target)
     manifest_path, manifest = write_archive(inputs, args.output.absolute(), metadata)
     print(json.dumps({"archive": str(args.output.absolute()), "manifest": str(manifest_path),
                       "input_files": manifest["input_files"], "input_bytes": manifest["input_bytes"],
-                      "archive_sha256": manifest["archive"]["sha256"], "receipts": metadata["receipts"]}, indent=2))
+                      "archive_sha256": manifest["archive"]["sha256"], "target": args.target,
+                      "cook_platform": metadata["cook_platform"], "receipts": metadata["receipts"]}, indent=2))
 
 
 if __name__ == "__main__":
