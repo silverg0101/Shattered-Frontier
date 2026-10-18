@@ -2,6 +2,12 @@
 
 Last updated: 2026-10-18. Owner: coordinating documentation agent. This is the running documentation queue; the [gameplay backlog](Game-Design/Legends_Shattered_Frontier_Gameplay_Feature_Backlog_v1.0.md) owns implementation work and [roadmap](Game-Design/Legends_Shattered_Frontier_Production_Roadmap_v1.0.md) owns milestone gates. Update this file during each documentation work cycle; no background monitoring is implied. Standing user rules and continuation context are preserved in [design-agent.md](../design-agent.md).
 
+## Laptop-to-desktop handoff - 2026-10-18
+
+User requested a full commit/push and workstation switch. Current E1 evidence and Feature Control are already pushed (f98df73, 2a94e26). This handoff adds [GM recovery section12](Game-Design/Legends_Shattered_Frontier_Game_Master_Architecture_v0.1.md#12-scoped-player-and-instance-recovery): user confirmed restoration of that death's gear damage, scoped to verified outstanding incident wear. It is a design requirement, with durable evidence/authority/reward and protected-owner contract gates still open; no recovery runtime or UI exists. Independent gpt-6.1-sol source-based review found no material contradiction or blocking prerequisite omission; this is documentation review, not runtime acceptance.
+
+Desktop: pull origin/main and follow [the continuation handoff](../design-agent.md#desktop-continuation---2026-10-18). Steam-server remains live independently, Windrose preserved; no Unraid deployment. Engine/SDK installs, ignored packaged clients/logs and SSH private keys remain machine-local. Inventory desktop tools/access through [first-time setup](first-time-setup.md); a matching-source client is required for the deployed server. Next priority stays H2 PER-01 / DEC-02 concrete topology and durable contracts, incorporating recovery provenance before schema implementation. Reuse passed E1 evidence; no runtime tests required for these documentation changes. Overnight automation remains PAUSED.
+
 ## Goal and current evidence
 
 Goal: make the project design sufficiently explicit for bounded implementation assignments, with traceable scope, domain ownership, failure behavior, configuration policy, and acceptance criteria. Complete documentation does not establish implemented or measured behavior.

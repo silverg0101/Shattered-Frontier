@@ -161,3 +161,33 @@ Rollback follows the owning domain's supported semantics. Temporary modifiers, w
 Every committed mutation and rejected high-impact request is recorded with operator, GM actor, capability grant, reason, target, preview version, result, domain receipt, timestamp, and rollback/cancellation link. Security and privacy retention rules govern storage and access.
 
 This document defines the Game Master design target. Unreal implementation details belong in the project architecture and implementation specifications.
+
+## 12. Scoped player and instance recovery
+
+Status: user-requested design target (2026-10-18), not an implemented tool or approved domain contract. The user explicitly confirmed that GM revival should restore the gear damage caused by that death. This requires durable evidence before persistent gameplay schemas are finalized.
+
+### Player incident recovery
+
+In the open world, recovery targets one player's specific death incident. It does not rewind the world clock or replace a character with a historical snapshot. Combat performs its supported GM resurrection, retaining the existing dead-state and player-acceptance requirements (currently 60 seconds); World owns safe placement through its supported resurrection path. The preview and execution bind to the current authoritative death generation, authority and relevant item versions. A later resurrection, new death or authority change invalidates stale approval.
+
+Equipment already owned by the player keeps its identity. Inventory corrects only the actual, verified durability loss still attributable to that death, including the appropriate broken/active state and equipment-cache refresh. It must not simply restore an old item snapshot or add the nominal death percentage. If death damage was already repaired, a second correction must not erase later combat wear. Partial repairs, upgrades, changed maximum durability and clamped/zero wear require causal domain evidence; ambiguous corrections are unavailable pending review. Refunding repair costs is a separate approved action.
+
+Preserve later legitimate repairs, trades, other players' ownership and unrelated combat/PvP records, sanctions, progression, cooldowns, effects and consumable use. Transferred, escrowed, destroyed, consumed or salvaged items require their owning domain's supported resolution; this tool cannot clone or claw them back. Existing item-restoration identity/provenance rules remain authoritative. Revival with death-wear correction does not imply a general lost-item or currency grant.
+
+### Instance checkpoint recovery
+
+An instance operation targets an owning-domain-supported checkpoint or encounter boundary and previews every affected participant. It is not an arbitrary timestamp slider. Fence admission, transfers and the old simulation/allocation authority, and drain or reconcile outstanding outcome/reward messages before recovery. Revalidate membership and authority before applying the plan; refuse a boundary that cannot be reconciled safely.
+
+Recovery preserves exported loot, grants, lockouts, trades, quest/progression and wallet history. Existing per-attempt reward idempotency alone is insufficient: a new attempt can create a new reward key. The Dungeon and Rewards owners must define a prior-defeat/recovery-lineage eligibility fence, including modes without lockouts, before this tool is available. Player cooldowns remain unchanged under current boss-reset rules. Mythic elapsed time, death penalties and scoring/record eligibility require explicit domain policy; no silent penalty erasure. Cross-boundary economic corrections require separately approved compensating actions.
+
+### Durable prerequisites and management workflow
+
+Combat death/resurrection telemetry is currently best effort, so it cannot authorize recovery. Required owner contracts must establish durable incident references, equipped-item versions, actual penalty receipts and their causal links. Seal and acknowledge the original wear batch before correction, and link correction/deduplication so delayed or redelivered wear cannot apply the death penalty again. Retention eligibility must be declared by the owners; evidence outside that boundary cannot be guessed.
+
+Use a frozen approved plan with scoped expected revisions, incident/item idempotency, narrow mutation fences and durable per-step receipts. Concurrent GMs and retries cannot recover the same incident twice. Partial completion resumes remaining steps: a crash after revival must not resurrect again while retrying wear correction. Report partial status until every intended effect is verified; this is not distributed atomic rollback or direct database editing.
+
+The management interface shows the incident/checkpoint, affected players/items, proposed corrections, preserved effects, conflicts, prior recovery and safe placement. Require a reason/support case, current capability and the existing section7 approval policy for high-impact public persistent changes. Recovery follows owning-domain compensating entries with operator, approval and receipt audit links. Security/LiveOps support routing must be agreed rather than repurposing enforcement cases or QA grants. Any configurable operating value needs the shared typed declaration, bounds, units, defaults, permissions and effective-time rules before exposure; no new recovery defaults are implied here.
+
+### Owner gates and acceptance
+
+Combat/World, Character, Inventory/Itemization, Security, Dungeon/Rewards and applicable LiveOps owners must approve their contract extensions; protected documents remain unchanged. Before implementation acceptance, cover duplicate/concurrent requests, stale death/authority, consent and safe placement, delayed wear, partial/full repair followed by later wear, upgrades/max-durability changes, ownership/lifecycle conflicts, partial crashes/retry, old-authority late outcomes and repeat instance rewards after a new attempt. Verify preserved economic/scoring history and denied unauthorized requests. These are required fixtures, not executed tests.

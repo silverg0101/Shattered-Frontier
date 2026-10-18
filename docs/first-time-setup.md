@@ -4,7 +4,7 @@ Load this guide only when onboarding a developer, setting up a machine, or expli
 
 ## Project status
 
-The repository contains both the Node.js browser harness and the E1 Unreal C++ project at `GameClient/ShatteredFrontier.uproject`. Its UE5.8.3 editor build/local connection smoke passed; source-engine/Linux packaging setup is tracked in [the Linux build route](e1-linux-server-build.md). The selected runtime host is `steam-server`; a packaged dedicated-server success must be recorded separately. See [alpha milestones](alpha-plan.md).
+The repository contains both the Node.js browser harness and the E1 Unreal C++ project at `GameClient/ShatteredFrontier.uproject`. Its UE5.8.3 editor build/local connection smoke passed; source-engine/Linux packaging setup is tracked in [the Linux build route](e1-linux-server-build.md). The selected runtime host is `steam-server`; native Linux packaging/deployment and initial matching-source Linux/Windows client checks passed; see that route and [E1 evidence](evidence/e1-foundation.md) for exact provenance and limits. Workstation-local engine/SDK installs, ignored artifacts and SSH private keys are not supplied by a Git clone. See [alpha milestones](alpha-plan.md).
 
 ## 1. Required software
 
