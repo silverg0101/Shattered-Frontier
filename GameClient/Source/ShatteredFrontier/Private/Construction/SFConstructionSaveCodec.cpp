@@ -5,22 +5,22 @@
 
 namespace
 {
-constexpr int32 MaxCells = 4096;
-constexpr int32 MaxDoors = 64;
+constexpr int32 SaveCodecMaxCells = 4096;
+constexpr int32 SaveCodecMaxDoors = 64;
 constexpr int32 MaxEncodedBytes = 65536;
-constexpr int32 HeaderBytes = 32;
-constexpr int32 FingerprintBytes = 3 * 64;
-constexpr int32 RecordBytes = 14;
-constexpr int32 DigestBytes = 32;
+constexpr int32 SaveCodecHeaderBytes = 32;
+constexpr int32 SaveCodecFingerprintBytes = 3 * 64;
+constexpr int32 SaveCodecRecordBytes = 14;
+constexpr int32 SaveCodecDigestBytes = 32;
 constexpr int32 MinCoordinate = -20;
 constexpr int32 MaxCoordinateExclusive = 20;
 constexpr uint32 FormatVersion = 1;
 constexpr uint32 ProvenanceDevelopmentUnlimited = 1;
 
 const ANSICHAR Magic[] = "SFCSBX01";
-const ANSICHAR Identity[] = "greenlands-construction-sandbox-v1\0rough-timber-v1\0sandbox-rough-timber-door-v1\0";
+const ANSICHAR SaveCodecIdentity[] = "greenlands-construction-sandbox-v1\0rough-timber-v1\0sandbox-rough-timber-door-v1\0";
 
-bool LessCell(const FIntVector& A, const FIntVector& B)
+bool SaveCodecLessCell(const FIntVector& A, const FIntVector& B)
 {
     return A.X != B.X ? A.X < B.X : A.Y != B.Y ? A.Y < B.Y : A.Z < B.Z;
 }
@@ -51,7 +51,7 @@ bool IsValidDoor(const FSFConstructionSavedDoor& Door)
 
 bool CanonicalizeAndValidate(FSFConstructionSandboxSnapshot& Snapshot)
 {
-    if (Snapshot.Cells.Num() > MaxCells || Snapshot.Doors.Num() > MaxDoors) return false;
+    if (Snapshot.Cells.Num() > SaveCodecMaxCells || Snapshot.Doors.Num() > SaveCodecMaxDoors) return false;
     for (const FSFConstructionSavedCell& Cell : Snapshot.Cells)
     {
         if (!IsValidCell(Cell.Cell) || Cell.Shape < 0 || Cell.Shape >= SFConstructionGeometry::ShapeCount
@@ -59,8 +59,8 @@ bool CanonicalizeAndValidate(FSFConstructionSandboxSnapshot& Snapshot)
     }
     for (const FSFConstructionSavedDoor& Door : Snapshot.Doors) if (!IsValidDoor(Door)) return false;
 
-    Snapshot.Cells.Sort([](const auto& A, const auto& B) { return LessCell(A.Cell, B.Cell); });
-    Snapshot.Doors.Sort([](const auto& A, const auto& B) { return LessCell(A.OriginCell, B.OriginCell); });
+    Snapshot.Cells.Sort([](const auto& A, const auto& B) { return SaveCodecLessCell(A.Cell, B.Cell); });
+    Snapshot.Doors.Sort([](const auto& A, const auto& B) { return SaveCodecLessCell(A.OriginCell, B.OriginCell); });
     for (int32 I=1; I<Snapshot.Cells.Num(); ++I) if (Snapshot.Cells[I-1].Cell == Snapshot.Cells[I].Cell) return false;
     for (int32 I=1; I<Snapshot.Doors.Num(); ++I) if (Snapshot.Doors[I-1].OriginCell == Snapshot.Doors[I].OriginCell) return false;
     return true;
@@ -139,9 +139,9 @@ bool MatchesBytes(const TArray<uint8>& Bytes, int32 Offset, const ANSICHAR* Expe
 
 bool HasExpectedDigest(const TArray<uint8>& Bytes)
 {
-    const int32 PayloadLength = Bytes.Num() - DigestBytes;
+    const int32 PayloadLength = Bytes.Num() - SaveCodecDigestBytes;
     const FBlake3Hash Hash = FBlake3::HashBuffer(Bytes.GetData(), PayloadLength);
-    return FMemory::Memcmp(Hash.GetBytes(), Bytes.GetData()+PayloadLength, DigestBytes) == 0;
+    return FMemory::Memcmp(Hash.GetBytes(), Bytes.GetData()+PayloadLength, SaveCodecDigestBytes) == 0;
 }
 
 bool HasExpectedFingerprints(const TArray<uint8>& Bytes, int32 Offset, const TArray<FString>& Fingerprints)
@@ -168,15 +168,15 @@ void AppendDigest(TArray<uint8>& Bytes)
 
 bool SFConstructionSaveCodec::Encode(const FSFConstructionSandboxSnapshot& Snapshot, TArray<uint8>& Out)
 {
-    if (Snapshot.Cells.Num() > MaxCells || Snapshot.Doors.Num() > MaxDoors) return false;
+    if (Snapshot.Cells.Num() > SaveCodecMaxCells || Snapshot.Doors.Num() > SaveCodecMaxDoors) return false;
     FSFConstructionSandboxSnapshot Candidate = Snapshot;
     if (!CanonicalizeAndValidate(Candidate)) return false;
 
     TArray<FString> Fingerprints;
     if (!GetGeometryFingerprints(Fingerprints)) return false;
-    const uint64 ExpectedSize = HeaderBytes + (sizeof(Identity)-1) + FingerprintBytes
-        + static_cast<uint64>(Candidate.Cells.Num())*RecordBytes
-        + static_cast<uint64>(Candidate.Doors.Num())*RecordBytes + DigestBytes;
+    const uint64 ExpectedSize = SaveCodecHeaderBytes + (sizeof(SaveCodecIdentity)-1) + SaveCodecFingerprintBytes
+        + static_cast<uint64>(Candidate.Cells.Num())*SaveCodecRecordBytes
+        + static_cast<uint64>(Candidate.Doors.Num())*SaveCodecRecordBytes + SaveCodecDigestBytes;
     if (ExpectedSize > MaxEncodedBytes) return false;
 
     TArray<uint8> Bytes;
@@ -187,7 +187,7 @@ bool SFConstructionSaveCodec::Encode(const FSFConstructionSandboxSnapshot& Snaps
     AppendU64(Bytes, Candidate.SourceRevision);
     AppendU32(Bytes, static_cast<uint32>(Candidate.Cells.Num()));
     AppendU32(Bytes, static_cast<uint32>(Candidate.Doors.Num()));
-    AppendStringBytes(Bytes, Identity, sizeof(Identity)-1);
+    AppendStringBytes(Bytes, SaveCodecIdentity, sizeof(SaveCodecIdentity)-1);
     for (const FString& Fingerprint : Fingerprints) AppendStringBytes(Bytes, TCHAR_TO_ANSI(*Fingerprint), 64);
     for (const FSFConstructionSavedCell& Cell : Candidate.Cells)
     {
@@ -207,7 +207,7 @@ bool SFConstructionSaveCodec::Encode(const FSFConstructionSandboxSnapshot& Snaps
 
 bool SFConstructionSaveCodec::Decode(const TArray<uint8>& Bytes, FSFConstructionSandboxSnapshot& Out)
 {
-    if (Bytes.Num() > MaxEncodedBytes || Bytes.Num() < HeaderBytes + (sizeof(Identity)-1) + FingerprintBytes + DigestBytes) return false;
+    if (Bytes.Num() > MaxEncodedBytes || Bytes.Num() < SaveCodecHeaderBytes + (sizeof(SaveCodecIdentity)-1) + SaveCodecFingerprintBytes + SaveCodecDigestBytes) return false;
     if (!MatchesBytes(Bytes, 0, Magic, sizeof(Magic)-1)) return false;
 
     int32 Offset = sizeof(Magic)-1;
@@ -216,17 +216,17 @@ bool SFConstructionSaveCodec::Decode(const TArray<uint8>& Bytes, FSFConstruction
     if (!ReadU32(Bytes,Offset,Format) || !ReadU32(Bytes,Offset,Provenance) || !ReadU64(Bytes,Offset,SourceRevision)
         || !ReadU32(Bytes,Offset,CellCount) || !ReadU32(Bytes,Offset,DoorCount)
         || Format != FormatVersion || Provenance != ProvenanceDevelopmentUnlimited
-        || CellCount > MaxCells || DoorCount > MaxDoors) return false;
+        || CellCount > SaveCodecMaxCells || DoorCount > SaveCodecMaxDoors) return false;
 
-    const uint64 ExpectedSize = HeaderBytes + (sizeof(Identity)-1) + FingerprintBytes
-        + static_cast<uint64>(CellCount)*RecordBytes + static_cast<uint64>(DoorCount)*RecordBytes + DigestBytes;
+    const uint64 ExpectedSize = SaveCodecHeaderBytes + (sizeof(SaveCodecIdentity)-1) + SaveCodecFingerprintBytes
+        + static_cast<uint64>(CellCount)*SaveCodecRecordBytes + static_cast<uint64>(DoorCount)*SaveCodecRecordBytes + SaveCodecDigestBytes;
     if (ExpectedSize != static_cast<uint64>(Bytes.Num()) || ExpectedSize > MaxEncodedBytes) return false;
-    if (!MatchesBytes(Bytes,Offset,Identity,sizeof(Identity)-1)) return false;
-    Offset += sizeof(Identity)-1;
+    if (!MatchesBytes(Bytes,Offset,SaveCodecIdentity,sizeof(SaveCodecIdentity)-1)) return false;
+    Offset += sizeof(SaveCodecIdentity)-1;
 
     TArray<FString> Fingerprints;
     if (!GetGeometryFingerprints(Fingerprints) || !HasExpectedFingerprints(Bytes,Offset,Fingerprints)) return false;
-    Offset += FingerprintBytes;
+    Offset += SaveCodecFingerprintBytes;
     if (!HasExpectedDigest(Bytes)) return false;
 
     FSFConstructionSandboxSnapshot Candidate;
@@ -249,7 +249,7 @@ bool SFConstructionSaveCodec::Decode(const TArray<uint8>& Bytes, FSFConstruction
         Door.YawQuarterTurns=Yaw; Door.bOpen=Open == 1;
         Candidate.Doors.Add(Door);
     }
-    if (Offset != Bytes.Num()-DigestBytes || !CanonicalizeAndValidate(Candidate)) return false;
+    if (Offset != Bytes.Num()-SaveCodecDigestBytes || !CanonicalizeAndValidate(Candidate)) return false;
     Out = MoveTemp(Candidate);
     return true;
 }

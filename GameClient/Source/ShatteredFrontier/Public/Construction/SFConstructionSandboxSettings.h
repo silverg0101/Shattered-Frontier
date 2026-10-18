@@ -19,6 +19,12 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Development build controls", meta=(ClampMin="1", ClampMax="64", ToolTip="Maximum transient doors. Default 16; reviewed release authors only; captured at next sandbox start."))
     int32 MaximumDoors = 16;
 
+    UPROPERTY(Config, EditAnywhere, Category="Development saves", meta=(ClampMin="2", ClampMax="16", ToolTip="Published construction versions to retain. Default 3; reviewed release authors only; captured when a save store starts."))
+    int32 SaveGenerationsToRetain = 3;
+
+    UPROPERTY(Config, EditAnywhere, Category="Development saves", meta=(ClampMin="32", ClampMax="512", ToolTip="Maximum entries inspected in the fixed construction save folder. Default 128; reviewed release authors only; captured when a save store starts."))
+    int32 SaveDirectoryEntryLimit = 128;
+
     UPROPERTY(Config, EditAnywhere, Category="Development build controls", meta=(ClampMin="1", ClampMax="60", Units="s", ToolTip="Support-loss grace. Default 10 seconds; reviewed release authors only; next sandbox start. Frozen for each sandbox state."))
     float SupportLossGraceSeconds = 10.0f;
 

@@ -13,11 +13,17 @@ public:
     virtual void BeginPlay() override;
     virtual void SetupInputComponent() override;
     virtual void Tick(float DeltaSeconds) override;
+    bool IsDoorSelected() const { return bDoorSelected; }
+    bool IsBuildingEnabled() const { return bBuilding; }
+    int32 GetDoorYawQuarterTurns() const { return DoorYaw; }
+    const FString& GetLastConstructionResult() const { return LastResult; }
 private:
     void ToggleBuild();
     void SelectCube();
     void SelectSlab();
     void SelectSlope();
+    void SelectDoor();
+    void Interact();
     void Rotate();
     void Place();
     void Remove();
@@ -26,6 +32,7 @@ private:
     void Commit(bool bRemove);
     TWeakObjectPtr<ASFConstructionSandboxState> State;
     FSFConstructionSandboxIntent PreviewIntent;
+    FSFConstructionDoorIntent DoorPreviewIntent;
     FSFConstructionSandboxIntent PendingRemoval;
     bool bPendingRemoval = false;
     FString RemovalPrompt;
@@ -35,5 +42,10 @@ private:
     bool bBuilding = true;
     bool bHasPreview = false;
     bool bHasRemoval = false;
+    bool bDoorSelected = false;
+    bool bHasDoorPreview = false;
+    bool bHasDoorRemoval = false;
+    FIntVector DoorRemovalOrigin = FIntVector::ZeroValue;
+    int32 DoorYaw = 0;
     FString LastResult;
 };

@@ -1,6 +1,7 @@
 #include "Construction/SFConstructionSandboxController.h"
 #include "Construction/SFConstructionSandbox.h"
 #include "Construction/SFConstructionGeometry.h"
+#include "Construction/SFConstructionSandboxDoorProjection.h"
 #include "Components/InputComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/Engine.h"
@@ -28,6 +29,10 @@ void ASFConstructionSandboxController::SetupInputComponent()
     InputComponent->BindKey(EKeys::One, IE_Pressed, this, &ThisClass::SelectCube);
     InputComponent->BindKey(EKeys::Two, IE_Pressed, this, &ThisClass::SelectSlab);
     InputComponent->BindKey(EKeys::Three, IE_Pressed, this, &ThisClass::SelectSlope);
+    InputComponent->BindKey(EKeys::Four, IE_Pressed, this, &ThisClass::SelectDoor);
+    // Controller input is above the pawn's input component. Consume the same
+    // action so its inherited Interact callback cannot dispatch a second time.
+    InputComponent->BindAction(TEXT("Interact"),IE_Pressed,this,&ThisClass::Interact).bConsumeInput = true;
     InputComponent->BindKey(EKeys::R, IE_Pressed, this, &ThisClass::Rotate);
     InputComponent->BindKey(EKeys::LeftMouseButton, IE_Pressed, this, &ThisClass::Place);
     InputComponent->BindKey(EKeys::RightMouseButton, IE_Pressed, this, &ThisClass::Remove);
@@ -36,10 +41,16 @@ void ASFConstructionSandboxController::SetupInputComponent()
 }
 
 void ASFConstructionSandboxController::ToggleBuild() { CancelRemoval(); bBuilding = !bBuilding; }
-void ASFConstructionSandboxController::SelectCube() { CancelRemoval(); Shape = 0; }
-void ASFConstructionSandboxController::SelectSlab() { CancelRemoval(); Shape = 1; }
-void ASFConstructionSandboxController::SelectSlope() { CancelRemoval(); Shape = 2; }
-void ASFConstructionSandboxController::Rotate() { CancelRemoval(); Rotation = (Rotation + 1) % SFConstructionGeometry::RotationCount; }
+void ASFConstructionSandboxController::SelectCube() { CancelRemoval(); bDoorSelected = false; Shape = 0; }
+void ASFConstructionSandboxController::SelectSlab() { CancelRemoval(); bDoorSelected = false; Shape = 1; }
+void ASFConstructionSandboxController::SelectSlope() { CancelRemoval(); bDoorSelected = false; Shape = 2; }
+void ASFConstructionSandboxController::SelectDoor() { CancelRemoval(); bDoorSelected = true; }
+void ASFConstructionSandboxController::Rotate()
+{
+    CancelRemoval();
+    if (bDoorSelected) { DoorYaw = (DoorYaw+1)%4; }
+    else { Rotation = (Rotation + 1) % SFConstructionGeometry::RotationCount; }
+}
 void ASFConstructionSandboxController::Place() { Commit(false); }
 void ASFConstructionSandboxController::Remove() { Commit(true); }
 
@@ -51,6 +62,34 @@ void ASFConstructionSandboxController::CancelRemoval()
     // Clearing a selection also invalidates sampled edits until the next tick.
     bHasPreview = false;
     bHasRemoval = false;
+    bHasDoorPreview = false;
+    bHasDoorRemoval = false;
+}
+
+void ASFConstructionSandboxController::Interact()
+{
+    if (State.IsValid() && GetPawn())
+    {
+        FVector Eyes; FRotator View;
+        GetPlayerViewPoint(Eyes,View);
+        FHitResult Hit;
+        FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionDoorInteraction),false,GetPawn());
+        if (GetWorld()->LineTraceSingleByChannel(Hit,Eyes,Eyes+View.Vector()*State->GetReachCentimetres(),ECC_Visibility,Query)
+            && Cast<ASFConstructionSandboxDoorProjection>(Hit.GetActor()))
+        {
+            FIntVector Origin;
+            CancelRemoval();
+            if (!State->FindDoorOrigin(Hit.GetActor(),Origin)) { LastResult = TEXT("No editable door target"); return; }
+            const auto* Door = State->FindDoor(Origin);
+            if (!Door) { LastResult = TEXT("Door target changed; aim again"); return; }
+            FSFConstructionDoorIntent Intent;
+            Intent.OriginCell = Origin; Intent.YawQuarterTurns = Door->YawQuarterTurns;
+            Intent.ExpectedRevision = State->GetRevision(); Intent.Action = ESFConstructionDoorAction::Toggle;
+            State->ApplyDoor(this,Intent,LastResult);
+            return;
+        }
+    }
+    Super::InteractWithSelectedTarget();
 }
 
 void ASFConstructionSandboxController::ConfirmRemoval()
@@ -63,6 +102,21 @@ void ASFConstructionSandboxController::ConfirmRemoval()
 
 void ASFConstructionSandboxController::Commit(bool bRemove)
 {
+    if (bBuilding && State.IsValid() && bRemove && bHasDoorRemoval)
+    {
+        const auto* Door = State->FindDoor(DoorRemovalOrigin);
+        if (!Door) { CancelRemoval(); LastResult = TEXT("Door target changed; aim again"); return; }
+        FSFConstructionDoorIntent Intent;
+        Intent.OriginCell = DoorRemovalOrigin; Intent.YawQuarterTurns = Door->YawQuarterTurns;
+        Intent.ExpectedRevision = PreviewIntent.ExpectedRevision; Intent.Action = ESFConstructionDoorAction::Remove;
+        CancelRemoval(); State->ApplyDoor(this,Intent,LastResult); return;
+    }
+    if (bDoorSelected && !bRemove)
+    {
+        if (!bBuilding || !State.IsValid() || !bHasDoorPreview) { return; }
+        const auto Intent = DoorPreviewIntent;
+        CancelRemoval(); State->ApplyDoor(this,Intent,LastResult); return;
+    }
     if (!bBuilding || !State.IsValid() || (!bRemove && !bHasPreview) || (bRemove && !bHasRemoval)) { return; }
     auto Intent = PreviewIntent;
     Intent.bRemove = bRemove;
@@ -99,6 +153,8 @@ void ASFConstructionSandboxController::Tick(float DeltaSeconds)
     { CancelRemoval(); LastResult = TEXT("Removal preview stale after construction changed; preview again"); }
     bHasPreview = false;
     bHasRemoval = false;
+    bHasDoorPreview = false;
+    bHasDoorRemoval = false;
     FString Advisory = bBuilding ? TEXT("Aim at the floor or an editable member") : TEXT("Build controls paused");
     const APawn* ControlledPawn = GetPawn();
     if (bBuilding && ControlledPawn)
@@ -116,6 +172,7 @@ void ASFConstructionSandboxController::Tick(float DeltaSeconds)
             {
                 PreviewIntent.Cell = FIntVector(FMath::FloorToInt(Snapped.X), FMath::FloorToInt(Snapped.Y), FMath::FloorToInt(Snapped.Z));
                 bHasRemoval = State->FindCell(Hit.GetActor(), RemovalCell);
+                bHasDoorRemoval = State->FindDoorOrigin(Hit.GetActor(),DoorRemovalOrigin);
                 if (bHasRemoval)
                 {
                     // Partial faces can lie inside their addressed cell. Select
@@ -133,21 +190,42 @@ void ASFConstructionSandboxController::Tick(float DeltaSeconds)
                 PreviewIntent.Rotation = Rotation;
                 PreviewIntent.ExpectedRevision = State->GetRevision();
                 PreviewIntent.bRemove = false;
-                bHasPreview = true;
-                FString SupportHint;
-                Advisory = State->Evaluate(this, PreviewIntent, &SupportHint);
-                const bool bAllowed = Advisory.IsEmpty();
-                if (bAllowed) { Advisory = TEXT("Placement allowed | ") + SupportHint; }
-                FSFConstructionSolid Solid;
-                if (SFConstructionGeometry::Build(Shape, Rotation, Solid))
+                if (bDoorSelected)
                 {
-                    const FVector Corner = ASFConstructionSandboxState::CellCorner(PreviewIntent.Cell);
-                    for (const auto& Face : Solid.Faces)
+                    DoorPreviewIntent.OriginCell = PreviewIntent.Cell;
+                    DoorPreviewIntent.YawQuarterTurns = DoorYaw;
+                    DoorPreviewIntent.ExpectedRevision = PreviewIntent.ExpectedRevision;
+                    DoorPreviewIntent.Action = ESFConstructionDoorAction::Place;
+                    bHasDoorPreview = true;
+                    Advisory = State->EvaluateDoor(this,DoorPreviewIntent);
+                    const bool bAllowed = Advisory.IsEmpty();
+                    if (bAllowed) { Advisory = TEXT("Door placement allowed; reservations/support checked"); }
+                    FSFConstructionDoorProjectionProfile Profile;
+                    if (ASFConstructionSandboxDoorProjection::BuildProfile(DoorPreviewIntent.OriginCell,DoorYaw,false,Profile))
                     {
-                        for (int32 Edge = 0; Edge < Face.Num(); ++Edge)
+                        for (const auto& Box : Profile.Boxes)
+                        { DrawDebugBox(GetWorld(),Profile.Transform.TransformPosition(Box.Centre),Box.Extent,
+                            Profile.Transform.GetRotation()*Box.Rotation,bAllowed ? FColor::Green : FColor::Red,false,-1.f,0,2.f); }
+                    }
+                }
+                else
+                {
+                    bHasPreview = true;
+                    FString SupportHint;
+                    Advisory = State->Evaluate(this, PreviewIntent, &SupportHint);
+                    const bool bAllowed = Advisory.IsEmpty();
+                    if (bAllowed) { Advisory = TEXT("Placement allowed | ") + SupportHint; }
+                    FSFConstructionSolid Solid;
+                    if (SFConstructionGeometry::Build(Shape, Rotation, Solid))
+                    {
+                        const FVector Corner = ASFConstructionSandboxState::CellCorner(PreviewIntent.Cell);
+                        for (const auto& Face : Solid.Faces)
                         {
-                            DrawDebugLine(GetWorld(), Corner + Solid.Vertices[Face[Edge]], Corner + Solid.Vertices[Face[(Edge + 1) % Face.Num()]],
-                                bAllowed ? FColor::Green : FColor::Red, false, -1.0f, 0, 2.0f);
+                            for (int32 Edge = 0; Edge < Face.Num(); ++Edge)
+                            {
+                                DrawDebugLine(GetWorld(), Corner + Solid.Vertices[Face[Edge]], Corner + Solid.Vertices[Face[(Edge + 1) % Face.Num()]],
+                                    bAllowed ? FColor::Green : FColor::Red, false, -1.0f, 0, 2.0f);
+                            }
                         }
                     }
                 }
@@ -158,7 +236,8 @@ void ASFConstructionSandboxController::Tick(float DeltaSeconds)
     {
         const TCHAR* Shapes[] = { TEXT("Cube"), TEXT("Half slab"), TEXT("Slope") };
         GEngine->AddOnScreenDebugMessage(static_cast<uint64>(GetUniqueID()) + (1ull << 32), 0.1f, FColor::Cyan,
-            FString::Printf(TEXT("STANDALONE DEVELOPMENT | UNLIMITED STOCK | Fixed synthetic foundation\nSupport-loss grace/collapse | economic salvage disabled | saves, timber art and networking INCOMPLETE\nB build | 1 Cube  2 Slab  3 Slope | R orientation | LMB place | RMB remove | Enter confirm | Esc cancel | WASD/mouse/Space/E retained\n%s | rough-timber-v1 rules; neutral art | orientation %d/24 | snap 0.5 m | %d cells\n%s\n%s\n%s\n%s"),
-                Shapes[Shape], Rotation + 1, State->GetMemberCount(), *Advisory, *State->GetInstabilitySummary(), *RemovalPrompt, *LastResult));
+            FString::Printf(TEXT("STANDALONE DEVELOPMENT | UNLIMITED STOCK | Fixed synthetic foundation\nSupport-loss grace/collapse | economic salvage disabled | saves, timber art and networking INCOMPLETE\nB build | 1 Cube  2 Slab  3 Slope  4 Door | R orientation | LMB place | RMB targeted remove | Enter confirm | Esc cancel\nE aimed door toggle (also build paused); otherwise E1 probe | WASD/mouse/Space retained | temporary controls\n%s | rough-timber-v1 rules; neutral art | orientation %d/%d | snap 0.5 m | %d cells / %d doors\n%s\n%s\n%s\n%s"),
+                bDoorSelected ? TEXT("Ordinary door") : Shapes[Shape], bDoorSelected ? DoorYaw+1 : Rotation+1, bDoorSelected ? 4 : 24,
+                State->GetMemberCount(),State->GetDoorCount(),*Advisory,*State->GetInstabilitySummary(),*RemovalPrompt,*LastResult));
     }
 }

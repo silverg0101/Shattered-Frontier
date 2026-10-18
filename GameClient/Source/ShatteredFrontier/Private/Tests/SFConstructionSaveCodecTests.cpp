@@ -9,11 +9,11 @@
 
 namespace
 {
-constexpr int32 HeaderBytes=32;
-constexpr int32 FingerprintBytes=192;
-constexpr int32 RecordBytes=14;
-constexpr int32 DigestBytes=32;
-const ANSICHAR Identity[]="greenlands-construction-sandbox-v1\0rough-timber-v1\0sandbox-rough-timber-door-v1\0";
+constexpr int32 SaveCodecTestHeaderBytes=32;
+constexpr int32 SaveCodecTestFingerprintBytes=192;
+constexpr int32 SaveCodecTestRecordBytes=14;
+constexpr int32 SaveCodecTestDigestBytes=32;
+const ANSICHAR SaveCodecTestIdentity[]="greenlands-construction-sandbox-v1\0rough-timber-v1\0sandbox-rough-timber-door-v1\0";
 
 void WriteU32(TArray<uint8>& Bytes, int32 Offset, uint32 Value)
 {
@@ -21,9 +21,9 @@ void WriteU32(TArray<uint8>& Bytes, int32 Offset, uint32 Value)
 }
 void WriteDigest(TArray<uint8>& Bytes)
 {
-    const int32 Length=Bytes.Num()-DigestBytes;
+    const int32 Length=Bytes.Num()-SaveCodecTestDigestBytes;
     const FBlake3Hash Hash=FBlake3::HashBuffer(Bytes.GetData(),Length);
-    FMemory::Memcpy(Bytes.GetData()+Length,Hash.GetBytes(),DigestBytes);
+    FMemory::Memcpy(Bytes.GetData()+Length,Hash.GetBytes(),SaveCodecTestDigestBytes);
 }
 void SetByte(TArray<uint8>& Bytes, int32 Offset, uint8 Value)
 {
@@ -78,11 +78,11 @@ bool FSFConstructionSaveCodecTest::RunTest(const FString& Parameters)
     for (int32 I=0; bBytesEqual && I<MixedBytes.Num(); ++I) bBytesEqual &= MixedBytes[I]==PermutedBytes[I];
     TestTrue(TEXT("Input permutation yields identical bytes"), bBytesEqual);
 
-    const int32 MixedRecordsOffset=HeaderBytes+sizeof(Identity)-1+FingerprintBytes;
+    const int32 MixedRecordsOffset=SaveCodecTestHeaderBytes+sizeof(SaveCodecTestIdentity)-1+SaveCodecTestFingerprintBytes;
     TArray<uint8> ReorderedRecords=MixedBytes;
-    for (int32 I=0; I<RecordBytes; ++I) Swap(ReorderedRecords[MixedRecordsOffset+I],ReorderedRecords[MixedRecordsOffset+RecordBytes+I]);
-    const int32 MixedDoorOffset=MixedRecordsOffset+2*RecordBytes;
-    for (int32 I=0; I<RecordBytes; ++I) Swap(ReorderedRecords[MixedDoorOffset+I],ReorderedRecords[MixedDoorOffset+RecordBytes+I]);
+    for (int32 I=0; I<SaveCodecTestRecordBytes; ++I) Swap(ReorderedRecords[MixedRecordsOffset+I],ReorderedRecords[MixedRecordsOffset+SaveCodecTestRecordBytes+I]);
+    const int32 MixedDoorOffset=MixedRecordsOffset+2*SaveCodecTestRecordBytes;
+    for (int32 I=0; I<SaveCodecTestRecordBytes; ++I) Swap(ReorderedRecords[MixedDoorOffset+I],ReorderedRecords[MixedDoorOffset+SaveCodecTestRecordBytes+I]);
     WriteDigest(ReorderedRecords);
     TestTrue(TEXT("Valid reordered records decode"),SFConstructionSaveCodec::Decode(ReorderedRecords,Decoded));
     TestTrue(TEXT("Decoder canonicalizes accepted record order"),SameSnapshot(Decoded,MixedCanonical));
@@ -183,10 +183,10 @@ bool FSFConstructionSaveCodecTest::RunTest(const FString& Parameters)
     RehashedMutation(TEXT("Rehashed invalid magic rejected"),0,'X');
     RehashedMutation(TEXT("Rehashed invalid format rejected"),8,2);
     RehashedMutation(TEXT("Rehashed invalid provenance rejected"),12,2);
-    RehashedMutation(TEXT("Rehashed invalid identity rejected"),HeaderBytes,'X');
-    const int32 FingerprintOffset=HeaderBytes+sizeof(Identity)-1;
+    RehashedMutation(TEXT("Rehashed invalid identity rejected"),SaveCodecTestHeaderBytes,'X');
+    const int32 FingerprintOffset=SaveCodecTestHeaderBytes+sizeof(SaveCodecTestIdentity)-1;
     RehashedMutation(TEXT("Rehashed invalid geometry fingerprint rejected"),FingerprintOffset,'X');
-    const int32 RecordsOffset=FingerprintOffset+FingerprintBytes;
+    const int32 RecordsOffset=FingerprintOffset+SaveCodecTestFingerprintBytes;
     RehashedMutation(TEXT("Rehashed out-of-bounds cell coordinate rejected"),RecordsOffset,0xff);
     TArray<uint8> InvalidSignedCoordinate=ValidBytes;
     WriteU32(InvalidSignedCoordinate,RecordsOffset,static_cast<uint32>(std::numeric_limits<int32>::max()));
@@ -194,17 +194,17 @@ bool FSFConstructionSaveCodecTest::RunTest(const FString& Parameters)
     RejectDecodePreserving(TEXT("Rehashed INT32_MAX cell coordinate rejected"),InvalidSignedCoordinate);
     RehashedMutation(TEXT("Rehashed invalid cell shape rejected"),RecordsOffset+12,3);
     RehashedMutation(TEXT("Rehashed invalid cell rotation rejected"),RecordsOffset+13,24);
-    RehashedMutation(TEXT("Rehashed invalid door yaw rejected"),RecordsOffset+RecordBytes+12,4);
-    RehashedMutation(TEXT("Rehashed invalid door open flag rejected"),RecordsOffset+Sentinel.Cells.Num()*RecordBytes+13,2);
+    RehashedMutation(TEXT("Rehashed invalid door yaw rejected"),RecordsOffset+SaveCodecTestRecordBytes+12,4);
+    RehashedMutation(TEXT("Rehashed invalid door open flag rejected"),RecordsOffset+Sentinel.Cells.Num()*SaveCodecTestRecordBytes+13,2);
 
     TArray<uint8> DuplicateCellRecords=MixedBytes;
-    FMemory::Memcpy(DuplicateCellRecords.GetData()+MixedRecordsOffset+RecordBytes,
-        DuplicateCellRecords.GetData()+MixedRecordsOffset,RecordBytes);
+    FMemory::Memcpy(DuplicateCellRecords.GetData()+MixedRecordsOffset+SaveCodecTestRecordBytes,
+        DuplicateCellRecords.GetData()+MixedRecordsOffset,SaveCodecTestRecordBytes);
     WriteDigest(DuplicateCellRecords);
     RejectDecodePreserving(TEXT("Rehashed duplicate cell record rejected"),DuplicateCellRecords);
     TArray<uint8> DuplicateDoorRecords=MixedBytes;
-    FMemory::Memcpy(DuplicateDoorRecords.GetData()+MixedDoorOffset+RecordBytes,
-        DuplicateDoorRecords.GetData()+MixedDoorOffset,RecordBytes);
+    FMemory::Memcpy(DuplicateDoorRecords.GetData()+MixedDoorOffset+SaveCodecTestRecordBytes,
+        DuplicateDoorRecords.GetData()+MixedDoorOffset,SaveCodecTestRecordBytes);
     WriteDigest(DuplicateDoorRecords);
     RejectDecodePreserving(TEXT("Rehashed duplicate door record rejected"),DuplicateDoorRecords);
 

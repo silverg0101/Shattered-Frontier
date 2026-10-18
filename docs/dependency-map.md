@@ -58,6 +58,9 @@ package.json (Node >=24; start/test scripts)
 
 `server/index.js` restores/saves the world snapshot and session tokens in SQLite, serves the public assets, and broadcasts state changes. `server/world.js` owns game rules and world state. The browser client sends actions and renders shared state; HTML defines UI elements and CSS styles them. Keep local database files under `data/`; `data/*.sqlite*` is ignored.
 
+Construction door interaction: [SBX-05D packet](decisions/SBX-05D-door-input-and-walking.md) and [passed actual-input/walking evidence](evidence/construction-sandbox-door-input-save-pilot.md) cover sandbox Controller, SFConstructionDoorInputScenario h/cpp, tools/Test-ConstructionSandboxDoorInput.ps1 and sandbox-only hook. Parent dev-only SFE1PlayerController entry counter detects duplicate dispatch before coalescing. Sixteen semantic steps and actual grounded CharacterMovement sill traversal pass; final bindings/remapping and human/rendered acceptance remain open.
+Construction save publication: [SBX-06G packet](decisions/SBX-06G-save-publication.md) and [passed evidence/hashes](evidence/construction-sandbox-door-input-save-results.json) cover SFConstructionSaveStore h/cpp and SFConstructionSaveStoreTests. Fixed Saved/ConstructionSandbox root, Windows nonreplacing immutable generations, bounded scan/retention and strict latest-codec read; fresh-GUID-root actual IO tests. Settings capture retention3[2,16] and scan128[32,512] per store startup. State export/import and player save/restart route are next.
+
 ## Routes and commands
 
 | Method / path | Purpose |

@@ -22,8 +22,16 @@ public:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
     void InteractWithSelectedTarget();
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    // Observes entry before local request coalescing, so input-routing tests can
+    // detect duplicate pawn dispatch even when cooldown hides another request.
+    uint64 GetInteractionInputAttemptCount() const { return InteractionInputAttempts; }
+#endif
 
 private:
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    uint64 InteractionInputAttempts = 0;
+#endif
     // The owning controller is the network intent endpoint; identity/pawn/position/time are never payloads.
     UFUNCTION(Server, Reliable) void ServerRequestInteraction(AActor* Target, uint32 ExpectedRevision);
     UFUNCTION(Client, Reliable) void ClientInteractionResult(ESFE1InteractionResult Result, float ServerCooldownRemainingSeconds);

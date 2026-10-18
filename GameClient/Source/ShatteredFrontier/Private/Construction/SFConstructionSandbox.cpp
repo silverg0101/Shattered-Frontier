@@ -6,6 +6,7 @@
 #include "PhysicsEngine/BodySetup.h"
 #include "ProceduralMeshComponent.h"
 #include "Tests/SFConstructionInputScenario.h"
+#include "Tests/SFConstructionDoorInputScenario.h"
 
 ASFConstructionSandboxPreview::ASFConstructionSandboxPreview()
 {
@@ -147,5 +148,6 @@ void ASFConstructionSandboxGameMode::StartPlay()
     { UE_LOG(LogTemp, Display, TEXT("CONSTRUCTION_PILOT_READY StandaloneOnly=1 ReferenceSolids=1 Shapes=%d Economy=0"), Installed); }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     StartConstructionInputScenario(GetWorld());
+    StartConstructionDoorInputScenario(GetWorld());
 #endif
 }
