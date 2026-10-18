@@ -17,5 +17,7 @@ bool USFE1Settings::Validate(FString& OutError) const
         && Check(TEXT("StepHeightMetres"), StepHeightMetres, 0.0f, 1.0f)
         && Check(TEXT("TurnRateDegreesPerSecond"), TurnRateDegreesPerSecond, 90.0f, 1080.0f)
         && Check(TEXT("CameraBoomLengthCm"), CameraBoomLengthCm, 100.0f, 1000.0f)
-        && Check(TEXT("LookSensitivity"), LookSensitivity, 0.1f, 4.0f);
+        && Check(TEXT("LookSensitivity"), LookSensitivity, 0.1f, 4.0f)
+        && Check(TEXT("InteractionRangeMetres"), InteractionRangeMetres, 0.5f, 5.0f)
+        && Check(TEXT("InteractionAcceptedCooldownSeconds"), InteractionAcceptedCooldownSeconds, 0.1f, 10.0f);
 }

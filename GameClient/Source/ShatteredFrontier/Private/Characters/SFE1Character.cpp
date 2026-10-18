@@ -4,6 +4,7 @@
 #include "Components/InputComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Framework/SFE1Settings.h"
+#include "Interaction/SFE1PlayerController.h"
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -66,6 +67,15 @@ void ASFE1Character::SetupPlayerInputComponent(UInputComponent* Input)
     Input->BindAxis(TEXT("LookUp"), this, &ASFE1Character::LookUp);
     Input->BindAction(TEXT("Jump"), IE_Pressed, this, &ACharacter::Jump);
     Input->BindAction(TEXT("Jump"), IE_Released, this, &ACharacter::StopJumping);
+    Input->BindAction(TEXT("Interact"), IE_Pressed, this, &ASFE1Character::Interact);
+}
+
+void ASFE1Character::Interact()
+{
+    if (ASFE1PlayerController* PlayerController = Cast<ASFE1PlayerController>(Controller))
+    {
+        PlayerController->InteractWithSelectedTarget();
+    }
 }
 
 void ASFE1Character::MoveForward(float Value)

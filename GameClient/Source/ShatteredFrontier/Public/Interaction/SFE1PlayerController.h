@@ -1,0 +1,46 @@
+#pragma once
+
+#include "GameFramework/PlayerController.h"
+#include "Interaction/SFE1InteractionFeedback.h"
+#include "SFE1PlayerController.generated.h"
+
+class ASFE1InteractionTarget;
+
+UENUM()
+enum class ESFE1InteractionResult : uint8
+{
+    Accepted, InvalidController, InvalidTarget, StaleTarget, Disabled, OutOfRange, Occluded, Cooldown
+};
+
+UCLASS()
+class SHATTEREDFRONTIER_API ASFE1PlayerController : public APlayerController
+{
+    GENERATED_BODY()
+
+public:
+    ASFE1PlayerController();
+    virtual void BeginPlay() override;
+    virtual void Tick(float DeltaSeconds) override;
+    void InteractWithSelectedTarget();
+
+private:
+    // The owning controller is the network intent endpoint; identity/pawn/position/time are never payloads.
+    UFUNCTION(Server, Reliable) void ServerRequestInteraction(AActor* Target, uint32 ExpectedRevision);
+    UFUNCTION(Client, Reliable) void ClientInteractionResult(ESFE1InteractionResult Result, float ServerCooldownRemainingSeconds);
+    ESFE1InteractionResult ValidateTarget(AActor* Target, uint32 ExpectedRevision) const;
+    ESFE1InteractionResult ProcessInteraction(AActor* Target, uint32 ExpectedRevision);
+    void RefreshLocalFeedback();
+
+    TWeakObjectPtr<ASFE1InteractionTarget> SelectedTarget;
+    uint32 SelectedRevision = 0;
+    double LastAcceptedServerSeconds = -1.0e30;
+    double NextLocalRefreshSeconds = 0.0;
+    double ResultVisibleUntilSeconds = 0.0;
+    FSFE1InteractionFeedback LocalFeedback;
+    float InteractionRangeCm = 0.0f;
+    float AcceptedCooldownSeconds = 0.0f;
+    bool bSettingsCaptured = false;
+    ESFE1InteractionResult LastResult = ESFE1InteractionResult::InvalidTarget;
+
+    friend class FSFE1InteractionAuthorityTest;
+};

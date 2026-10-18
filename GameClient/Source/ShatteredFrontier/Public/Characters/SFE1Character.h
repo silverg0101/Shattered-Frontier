@@ -26,4 +26,5 @@ private:
     void MoveRight(float Value);
     void LookRight(float Value);
     void LookUp(float Value);
+    void Interact();
 };

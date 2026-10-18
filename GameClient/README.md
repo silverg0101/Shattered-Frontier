@@ -1,6 +1,6 @@
 # E1 Unreal foundation
 
-Open `ShatteredFrontier.uproject` with UE 5.8.3. The shared C++ module supplies Game, Editor, Client and Server targets. The initial Greenlands map is a graybox movement fixture, not a finished biome. WASD moves, mouse looks, Space jumps. The cube avatar is a placeholder.
+Open `ShatteredFrontier.uproject` with UE 5.8.3. The shared C++ module supplies Game, Editor, Client and Server targets. The initial Greenlands map is a graybox movement fixture, not a finished biome. WASD moves, mouse looks, Space jumps, E probes the nearest test target. The cube avatar is a placeholder.
 
 Build the editor from the repository root:
 
@@ -14,7 +14,13 @@ From the repository root, `./tools/Test-E1Connections.ps1` runs the bounded head
 
 After the Linux server is running, `./tools/Test-E1Remote.ps1 -ServerAddress steam-server -Port 17777` checks two independent client welcomes for the expected E1 map/mode and stops its own clients. Inspect server logs separately for distinct authoritative possessions; no rendered movement or account-identity acceptance is implied.
 
-`SFE1GameMode` owns spawn/possession through Unreal's standard authoritative GameMode. `SFE1Character` uses CharacterMovement replication and collision. This local development fixture has no account authentication, persistence, interaction target, production backend or economic actions. Keep its server on a trusted development network.
+`./tools/Test-E1Lifecycle.ps1` checks individual disconnect/rejoin and overlapping anonymous sessions on loopback UDP17779. Deferred server snapshots retain the departing pawn's weak reference and verify cleanup plus surviving possessions. `./tools/Test-E1NetworkScenario.ps1` checks normal owning-client movement, server/observer replication and an accepted probe on UDP17781. Its explicitly enabled development-only scenario runs for30 seconds; cross-process correlation uses replicated PlayerId because actor names differ between clients. This identifier is not account authentication.
+
+The network helper accepts `-NetworkProfile Normal` (default) or `Adverse100` (50ms outgoing lag,±10ms variance and1% configured loss on each process). It reads back actual NetDriver settings; nominal100ms RTT is not a measured RTT. `-CaptureFrames` replaces client NullRHI with Unreal offscreen rendering and requires six real PNGs in the ignored run directory. Inspect those frames separately; they do not certify physical keyboard input, full UI or interactive camera feel. Each run writes `Summary.json` with identities, configured/actual emulation, movement and sampled jump/landing evidence.
+
+`SFE1GameMode` owns spawn/possession through Unreal's standard authoritative GameMode. `SFE1Character` uses CharacterMovement replication and collision. A replicated probe is spawned at fixture coordinates(-300,-750,60)cm. The owning `SFE1PlayerController` sends only target/revision intent; the server derives its current pawn and checks ownership, liveness, world, revision, enabled state, finite positions, range, mandatory eye-to-anchor Visibility trace and server-clock cooldown. The owner's pending/result/cooldown feedback is advisory. Acceptance changes only the controller's transient cooldown. There is no account authentication, persistence, production backend or economic action. Keep the server on a trusted development network.
+
+The fixture deliberately uses legacy input bindings. EnhancedInput is disabled in the project; the editor auto-upgrade is also disabled in shipped editor configuration to preserve those bindings. The optional [waystone art source](ArtSource/GreenlandsWaystone/README.md) is not imported into the runtime map.
 
 ## Release-controlled fixture settings
 
@@ -29,7 +35,13 @@ The typed `SFE1Settings` object reads the shipped `Config/DefaultGame.ini` secti
 | Character turn rate | TurnRateDegreesPerSecond | 540 | 90–1080 | degrees/s |
 | Camera distance | CameraBoomLengthCm | 350 | 100–1000 | cm |
 | Mouse look sensitivity | LookSensitivity | 1 | 0.1–4 | multiplier |
+| E1 probe range | InteractionRangeMetres | 3 | 0.5–5 | m |
+| Time between accepted probes | InteractionAcceptedCooldownSeconds | 0.5 | 0.1–10 | s |
 
 Run speed, jump height, gravity and step height follow the canonical unmodified baseline. Launch speed derives from height/gravity; the character scales world gravity to the declared magnitude on startup. Air control is disabled. Other defaults are E1 fixture choices, not acceptance of the full movement design (including terminal speed and modifiers). Fixture geometry is described in the generator in centimetres.
 
-The dedicated destination is Linux x86_64 Docker on `steam-server`, selected by the user after initial Unraid assessment. See [the Linux build route](../docs/e1-linux-server-build.md). The Launcher engine can build this editor but cannot package the Server target. A matching source engine and Linux SDK are required before packaging or deployment.
+The two interaction values apply only to the non-economic E1 probe, not harvesting/loot/combat. Range measures pawn origin to fixed target anchor; there is no hidden harvesting tolerance. The server snapshots these rules once per process. Only accepted probes consume gameplay cooldown; local input coalescing is separate and cannot authorize an action.
+
+Focused editor automation names are `ShatteredFrontier.E1.Interaction.*` and `ShatteredFrontier.E1.Movement.*`; their source is excluded from non-editor builds. They exercise isolated authority physics/rules, not rendered acceptance. See the evidence document for the executed command and results.
+
+The dedicated destination is Linux x86_64 Docker on `steam-server`, selected by the user after initial Unraid assessment. See [the Linux build route](../docs/e1-linux-server-build.md). Source engine/SDK setup and native Server compilation passed. Managed Defender blocks source UnrealPak during staging, so no runnable archive or deployed game exists yet.

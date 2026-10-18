@@ -1,6 +1,6 @@
 # E1 — Engine and movement implementation packet
 
-Status: implementation authorized by the user on 2026-10-18, with Unraid Linux selected for the dedicated server. The initial project exists at `GameClient/ShatteredFrontier.uproject`; [foundation evidence](evidence/e1-foundation.md) records actual results and remaining cards. The acceptance cards below remain requirements, not a claim that E1 is complete.
+Status: implementation authorized by the user on 2026-10-18, with steam-server Linux now selected for the dedicated server. The initial project exists at `GameClient/ShatteredFrontier.uproject`; [foundation evidence](evidence/e1-foundation.md) records actual results and remaining cards. The acceptance cards below remain requirements, not a claim that E1 is complete.
 
 ## Scope, authority and entry
 
