@@ -66,15 +66,35 @@ The construction system remains voxel-based, with functional objects as a separa
 
 Use the exact functional dimensions and clearance rules in Construction §16 instead of forcing every object into a one-cell block. Respect bootstrap/unlock rules: geometry coverage does not make every shape/material/function available to a new character. Existing support, heat/smoke/fire, weather, shelter, repair/salvage, permissions, power/fluid networks and siege behavior remain in scope; pretty buildings alone do not complete the construction library.
 
+## Complete architectural material kits
+
+Each architectural look is a **coordinated material kit** with a stable kit ID/version, one structural material-profile reference and an explicit cosmetic-style reference. It supplies matching treatment of surfaces, exposed edges, joints and openings across its compatible shapes. A swatch or one attractive wall is only a kit study; record missing components until the declared kit scope is complete.
+
+| Required component family | Matching treatments to define and depict |
+| --- | --- |
+| Main faces | Exterior/interior wall faces, floor/top surfaces and undersides; common grain/stone-course scale, direction, palette and surface finish |
+| Corners and exposed ends | Matching inside/outside corners, convex/concave slope corners, edge returns, end caps, beam/post ends and exposed partial-cell surfaces |
+| Structural joints | Horizontal/vertical seams, stacked courses, wall-to-floor/ceiling joins, beam/post connections and T/cross intersections; declare which treatments are shared and which need a separate variant |
+| Openings | Rectangular and arched jambs/reveals, lintels or arch rings, sills, thresholds and frame interfaces; keep the specified clear opening and door/shutter/gate interfaces intact |
+| Roof and slope transitions | Matching slope faces, hips/valleys, ridge/eave/end treatments and wall-to-roof seams; separately index any attachment with different geometry |
+| Curved surfaces | Matching inner/outer curve treatments, curved courses and straight-to-curve joins; preserve declared radii and contact faces |
+| Boundaries between materials | Foundation-to-wall and timber-to-masonry or other selected tier transitions; each transition names both source kits and its geometry/interface references |
+
+For each kit, record a finite component/variant coverage matrix: required role, compatible `geometry_ref/version`, source kit(s), material/style references, scale/orientation/joint rules, selected image package, state and remaining defects. Shared images may be referenced where they genuinely explain several roles; do not count one scene as multiple completed component assets. Mark a role not applicable only with a geometry-based reason and a named alternative that covers the assembly need. Do not omit difficult intersections to claim a complete kit.
+
+Keep the same neutral geometry/contact references across skins. Stone courses, timber joints and ornament must meet consistently at module boundaries without moving contact planes, filling openings or changing collision/support. An appearance needing a different solid, silhouette envelope or clearance becomes a separately versioned geometry/attachment proposal. Material transitions do not merge gameplay profiles or confer the adjacent tier's properties.
+
+Required kit QA includes an assembled test panel showing repeated faces across multiple cells, stacked and rotated joins, inside/outside corners, a T intersection, a framed rectangular opening, an arch, and slope/curve transitions applicable to the kit. Include a cross-material join using two named kits. Show close-ups of seams and a dimension/contact overlay; retain separately indexed component references. Label intended measurements as targets. Image QA verifies visual coherence; later mesh and engine tests verify numerical fit, collision, support and access.
+
 ## Batch order and variant matrix
 
 The asset session owns its catalog and batches; integrate this addition there rather than editing another session's claimed rows from here. Keep existing essential jobs moving and add a finite construction subqueue with an explicit scope revision.
 
 1. **Geometry briefs:** establish the ten reference records, orthographic dimension/contact diagrams and neutral unornamented views, in batches of 3–5. These diagrams establish intended art geometry; they do not prove runtime masks.
-2. **Material grammar:** one swatch/detail study per existing structural tier, including a common scale and contact/joint rules. Swatches are material references, not completed shape assets.
-3. **Compatibility pilot:** depict `cell-full`, `slope-1to1`, `arch-2m` and `curve-quarter-r2` in rough timber and stone masonry: eight separately indexed shape/material concept packages. Identify combinations as coverage studies, not gameplay unlock approvals.
+2. **Material-kit scope:** register a baseline kit for each of the five existing structural tiers and freeze its required component matrix. Start with rough timber and stone masonry; queue worked timber, reinforced masonry and metal-framed masonry explicitly. Produce swatches/detail grammar first, then complete matching faces, corners, joints, openings and applicable roof/curve transitions. A swatch does not complete a kit.
+3. **Compatibility pilot:** depict `cell-full`, `slope-1to1`, `arch-2m` and `curve-quarter-r2` in rough timber and stone masonry: eight separately indexed shape/material concept packages. Add the kit assembly/seam tests above; these packages alone do not complete either kit. Identify combinations as coverage studies, not gameplay unlock approvals.
 4. **Cosmetic pilot:** establish `cell-full` in worked timber with a plain skin, then add its ornamented appearance-only variant: two packages sharing one shape/material profile. Keep dimensions and interfaces identical.
-5. **Coverage expansion:** complete remaining shape/material combinations justified by the owning progression/content plan, then functional families and more elaborate architectural styles. Record the finite matrix and missing essentials; do not claim the pilot exhausts construction.
+5. **Coverage expansion:** complete the declared baseline material-kit matrices and remaining shape/material combinations justified by progression/content, then functional families and more elaborate architectural styles. Each new architectural style receives its own matching-component matrix and assembly checks. Record missing essentials; neither the pilot nor a collection of swatches exhausts construction.
 
 Reuse the four completed shelter concepts as style references or scene studies. If a selected image conflicts with a geometry brief, keep its historical version and create a new directly linked revision or geometry-fit task. Do not silently stretch a model, relabel an incompatible shape as a skin, overwrite a benchmark, or mark old artwork numerically validated.
 
@@ -99,8 +119,21 @@ Preserve the existing 0.5 m voxel system, complex shape families, five
 gameplay material tiers and functional/automation/environment families.
 Use its explicit proposed reference shapes and interface records; distinguish
 geometry acceptance from image completion. Produce reusable shape concepts
-with multiple material appearances and cosmetic skins without changing the
-same shape's occupied volume, joints, openings, collision or clearances.
+with distinct gameplay material profiles and appearance-only cosmetic skins.
+Retain each material tier's gameplay identity; skins change appearance only.
+Preserve the same shape's occupied volume, joints, openings, collision and
+clearances across these variants.
+Create complete architectural material kits, not just isolated surface looks.
+For each kit, index matching main faces, inside/outside corners, exposed ends,
+structural joints, rectangular/arched opening treatments, and applicable
+roof/slope/curve transitions. Name both kits at cross-material boundaries.
+Keep a finite required-component matrix for each kit/material/style and track
+its missing parts; a swatch, single wall or demonstration scene cannot
+complete the kit. Start with rough timber and stone masonry; explicitly queue
+the other three structural tiers. Validate repeated/stacked/rotated joins,
+corners, T intersections, openings and cross-material seams in assembly
+studies, keeping each component separately indexed. Preserve the fixed shape
+and functional clearances across skins; separately version geometry changes.
 Follow its geometry/material/compatibility pilot order in 3–5-asset batches.
 Reuse suitable completed shelter artwork as styling references; preserve
 its history and flag unresolved geometry rather than claiming numerical fit.
