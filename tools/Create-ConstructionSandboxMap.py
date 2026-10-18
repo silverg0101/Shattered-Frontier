@@ -1,4 +1,4 @@
-"""Opt-in UE editor script: create a NEW local geometry-only fixture map.
+"""Opt-in UE editor script: create a NEW local development sandbox map.
 
 Not run by a normal E1 launch; no default map or cook-list edits.
 """
@@ -24,7 +24,7 @@ actors.spawn_actor_from_class(unreal.PlayerStart, unreal.Vector(100, -350, 110))
 actors.spawn_actor_from_class(unreal.DirectionalLight, unreal.Vector(0, 0, 1000), unreal.Rotator(pitch=-50, yaw=-30))
 actors.spawn_actor_from_class(unreal.SkyLight, unreal.Vector(0, 0, 500))
 label = actors.spawn_actor_from_class(unreal.TextRenderActor, unreal.Vector(0, 100, 100), unreal.Rotator(yaw=-90))
-label.text_render.set_text('GEOMETRY PILOT: full / half slab / slope. No build tool or economy.')
+label.text_render.set_text('CONSTRUCTION DEVELOPMENT SANDBOX | UNLIMITED TEST STOCK | See HUD for controls and incomplete features.')
 label.text_render.set_world_size(12)
 if not levels.save_current_level():
     raise RuntimeError('Could not save sandbox fixture map.')

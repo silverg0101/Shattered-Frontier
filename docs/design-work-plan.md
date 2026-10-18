@@ -2,6 +2,14 @@
 
 Last updated: 2026-10-18. Owner: coordinating documentation agent. This is the running documentation queue; the [gameplay backlog](Game-Design/Legends_Shattered_Frontier_Gameplay_Feature_Backlog_v1.0.md) owns implementation work and [roadmap](Game-Design/Legends_Shattered_Frontier_Production_Roadmap_v1.0.md) owns milestone gates. Update this file during each documentation work cycle; no background monitoring is implied. Standing user rules and continuation context are preserved in [design-agent.md](../design-agent.md).
 
+## Sandbox neighbor meshes and isolated controls - 2026-10-18
+
+**SBX-03B Done, three-shape runtime subset; SBX-05 Done, standalone single-cell checkpoint only**: [evidence](evidence/construction-sandbox-tools-pilot.md) / [hashes](evidence/construction-sandbox-tools-results.json). Eight focused Unreal tests pass; emitted boundary areas for 31,104 pairs match the independent rational oracle with zero error. Neighbor snapshots, staged multi-member rollback, canonical collision, dedicated palette/ghost/controls, revisioned edits and normal-mode isolation are checked. Finite map launch starts tools; stale map label updated. Two Sol/medium authors, separate Sol/medium source/raw-evidence/oracle review; parent integration/execution. Luna/medium extracted the next support packet. E1 map/defaults/live service preserved.
+
+**Next Working**: refine conservative partial-solid clearance and prepare the release-bound support solver from Construction §3.4, including explicit contact-weighted load formulas; then support-loss confirmation/warnings/collapse. Rendered input exercise, bounded line brush, ordinary door, separate save/reload, two-client edits, art and packaged acceptance remain open. Floating placements remain visibly unvalidated until support integration; no finished-sandbox claim.
+
+**UI-01 Ready**: reconcile existing construction modes, categories/search, plane/depth controls, repeat placement and feedback into a concrete controls/UI flow before bindings become permanent. Current sandbox keys are temporary. Involve the user at the interaction-design checkpoint; no immediate decision is needed to continue geometry/support work.
+
 ## Sandbox compatibility and isolated Unreal adapter - 2026-10-18
 
 Bounded checkpoints Done: [SBX-03/04 evidence](evidence/construction-sandbox-adapter-pilot.md) / [source and result hashes](evidence/construction-sandbox-adapter-results.json). Nine compatibility plus six geometry tests pass; independent review enumerated 31,104 reciprocal/conserved contact pairs. Generated C++ tables match canonical payloads. Final editor build succeeds; all three construction automation tests pass, including real convex hit/empty probes for 72 variants, rejected-generation preservation and normal-mode isolation. The new standalone map starts three previews and refuses overwrite. No E1 default/map or live-server changes.

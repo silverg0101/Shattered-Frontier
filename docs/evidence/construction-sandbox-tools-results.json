@@ -1,0 +1,158 @@
+{
+  "checkpoint": "SBX-03B / standalone SBX-05",
+  "date": "2026-10-18",
+  "evidence_root": "Artifacts/ConstructionSandbox/tools-01",
+  "automation": {
+    "succeeded": 8,
+    "failed": 0,
+    "not_run": 0,
+    "tests": [
+      {
+        "fullTestPath": "ShatteredFrontier.Construction.Controls.NormalModeIsolation",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "ShatteredFrontier.Construction.Controls.ReleaseBounds",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "ShatteredFrontier.Construction.Controls.StandaloneAuthority",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "ShatteredFrontier.Construction.Geometry.CanonicalPilot",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "ShatteredFrontier.Construction.Geometry.ConvexPhysicsAndGeneration",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "ShatteredFrontier.Construction.Geometry.NeighborPolygonDifference",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "ShatteredFrontier.Construction.Geometry.NeighborRuntimeMeshAndRemoval",
+        "state": "Success"
+      },
+      {
+        "fullTestPath": "ShatteredFrontier.Construction.Geometry.NormalModeIsolation",
+        "state": "Success"
+      }
+    ]
+  },
+  "surface_oracle": {
+    "cases": 31104,
+    "maximum_absolute_error_cm2": 0.0,
+    "tolerance_cm2": 1E-07,
+    "csv_sha256": "05fde93303f9b36202724ca77c4f602824fe87623c1009e30e4e2fa4a633fee4"
+  },
+  "preserved_e1": [
+    {
+      "path": "GameClient/Config/DefaultEngine.ini",
+      "sha256": "f5f136669fdf791015ac1f869a3c4ec4de39d0e81ab181d46f7f498c618f4595"
+    },
+    {
+      "path": "GameClient/Config/DefaultGame.ini",
+      "sha256": "68601712de56090d2709fb4005061d061ca4110d0787960e7ce106906c87953b"
+    },
+    {
+      "path": "GameClient/Content/Frontier/Maps/Greenlands_E1.umap",
+      "sha256": "98d29084a300c89cc78066696ad5ab1f88117ec6c2854b12b1f7606766e12c55"
+    }
+  ],
+  "source_hashes": [
+    {
+      "path": "GameClient/ShatteredFrontier.uproject",
+      "sha256": "f0ebf5494360f6db8d66ba8ce2e8c614cd2b860fbe1692e8f3030383b376a24e"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionGeometry.cpp",
+      "sha256": "25b002c390ca33481e10eb19251510e8e53b7f51ae8fe1cd5d5f5539ffe45084"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionGeometryData.h",
+      "sha256": "c6689cd176c42151da37bbc2f0fb2acc04b6d0d7b5e07683043d8d2470dd58b8"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionSandbox.cpp",
+      "sha256": "8bfe8b3655311e2290a064ec4906cb74eeb0d66f49196b553d6416c765f41557"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionSandboxController.cpp",
+      "sha256": "0821d0e5baa4dc408e45cd87263541e29fcc482a408482e3c033be528f20ba26"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionSandboxSettings.cpp",
+      "sha256": "83d6059d323510bf32e58eb21d6cfeb70354e3e6c31dc174389e4e56104f7129"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionSandboxState.cpp",
+      "sha256": "3c19f1fd38ca9b7f24f058334443fa61a726d1a69127c4548a33260fad4bfea7"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionGeometryTests.cpp",
+      "sha256": "0afddbb22ed338097e9bae5031d0c994334c2f90173fc85eb3b6f02de2ce68ec"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionNeighborTests.cpp",
+      "sha256": "7ed68487a72bbe52d268039ec79842f72366e27c91a7d728702c5e329a308530"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionSandboxControlsTests.cpp",
+      "sha256": "8c3b59c92eb7ff8a51122a51e7080ecd96a7d932dcb6d76484509a6b6cce3231"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionGeometry.h",
+      "sha256": "437c7f4a261f6041c869416db3f73c6b656908d6a56fe2ceba23fe4e5bf488c1"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionSandbox.h",
+      "sha256": "bb8e4325982c93a130fc9c495ed0e63cfa282d06c672c306825594de657db5d7"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionSandboxController.h",
+      "sha256": "b79dcac6d944c96e7174dd218b3a341108523a89d983fa22a599d511561b8de8"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionSandboxSettings.h",
+      "sha256": "bc8e783d4229dbc56945b01a468d6bee84dbc87c8ca5a248d59c052369a9056e"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionSandboxState.h",
+      "sha256": "810bd8827890df4b1f19d7126653755d974765f3a67a994571140d8ac2e96073"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/ShatteredFrontier.Build.cs",
+      "sha256": "8428c37df481411737e124e57ee9e28581bd85954bb272a9eff2de08131ab89e"
+    },
+    {
+      "path": "tools/Compare-ConstructionSurfaceOracle.py",
+      "sha256": "735fb2aa8dcb928df34265ebe37d9cab8700f3387f89cc8f7f08f8f8144deb3a"
+    },
+    {
+      "path": "tools/construction_compatibility.py",
+      "sha256": "ff07f12a4683238370a13d268c8211fffa2c34142d9d5e0967063e5b091fb97e"
+    },
+    {
+      "path": "tools/construction_geometry.py",
+      "sha256": "fb6425556047e84b93059b998f9e4d225f69825389540f208602dc85b6e34a3b"
+    },
+    {
+      "path": "tools/Create-ConstructionSandboxMap.py",
+      "sha256": "2b9d89d3d11fb45de5d167e4dca4198108bb127593da81a2167564db08626bdb"
+    },
+    {
+      "path": "tools/Generate-ConstructionGeometryHeader.py",
+      "sha256": "cd1bac98a9681a5e458160adec7b06fc880b8b645eeefcb0fd20112178926a45"
+    }
+  ],
+  "editor_module_sha256": "74e23abdde6a1bfea1fce686f6b716934cd8ee82307a087fd157f84d8289f579",
+  "sandbox_map_sha256": "a66ce5ae2644d309dd92da7aceadfaabe0e7582cb442f41e19b6cbbde622cd17",
+  "limits": [
+    "Conservative AABB clearance; not exact partial-solid clearance",
+    "No rendered/manual input acceptance",
+    "No support/collapse/door/save",
+    "No line brush, packaging or network acceptance"
+  ]
+}
