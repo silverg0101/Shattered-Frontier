@@ -31,22 +31,62 @@ void ASFConstructionSandboxController::SetupInputComponent()
     InputComponent->BindKey(EKeys::R, IE_Pressed, this, &ThisClass::Rotate);
     InputComponent->BindKey(EKeys::LeftMouseButton, IE_Pressed, this, &ThisClass::Place);
     InputComponent->BindKey(EKeys::RightMouseButton, IE_Pressed, this, &ThisClass::Remove);
+    InputComponent->BindKey(EKeys::Enter, IE_Pressed, this, &ThisClass::ConfirmRemoval);
+    InputComponent->BindKey(EKeys::Escape, IE_Pressed, this, &ThisClass::CancelRemoval);
 }
 
-void ASFConstructionSandboxController::ToggleBuild() { bBuilding = !bBuilding; }
-void ASFConstructionSandboxController::SelectCube() { Shape = 0; }
-void ASFConstructionSandboxController::SelectSlab() { Shape = 1; }
-void ASFConstructionSandboxController::SelectSlope() { Shape = 2; }
-void ASFConstructionSandboxController::Rotate() { Rotation = (Rotation + 1) % SFConstructionGeometry::RotationCount; }
+void ASFConstructionSandboxController::ToggleBuild() { CancelRemoval(); bBuilding = !bBuilding; }
+void ASFConstructionSandboxController::SelectCube() { CancelRemoval(); Shape = 0; }
+void ASFConstructionSandboxController::SelectSlab() { CancelRemoval(); Shape = 1; }
+void ASFConstructionSandboxController::SelectSlope() { CancelRemoval(); Shape = 2; }
+void ASFConstructionSandboxController::Rotate() { CancelRemoval(); Rotation = (Rotation + 1) % SFConstructionGeometry::RotationCount; }
 void ASFConstructionSandboxController::Place() { Commit(false); }
 void ASFConstructionSandboxController::Remove() { Commit(true); }
+
+void ASFConstructionSandboxController::CancelRemoval()
+{
+    if (State.IsValid()) { State->CancelRemoval(this); }
+    bPendingRemoval = false;
+    RemovalPrompt.Reset();
+    // Clearing a selection also invalidates sampled edits until the next tick.
+    bHasPreview = false;
+    bHasRemoval = false;
+}
+
+void ASFConstructionSandboxController::ConfirmRemoval()
+{
+    if (!bBuilding || !State.IsValid() || !bPendingRemoval) { return; }
+    // Send the recorded cell/revision exactly. Never refresh it on Enter.
+    State->Apply(this, PendingRemoval, LastResult);
+    CancelRemoval();
+}
 
 void ASFConstructionSandboxController::Commit(bool bRemove)
 {
     if (!bBuilding || !State.IsValid() || (!bRemove && !bHasPreview) || (bRemove && !bHasRemoval)) { return; }
     auto Intent = PreviewIntent;
     Intent.bRemove = bRemove;
-    if (bRemove) { Intent.Cell = RemovalCell; }
+    if (bRemove)
+    {
+        Intent.Cell = RemovalCell;
+        CancelRemoval();
+        TArray<FIntVector> Affected;
+        if (!State->PreviewRemoval(this, Intent, Affected, LastResult)) { return; }
+        bPendingRemoval = !Affected.IsEmpty();
+        if (bPendingRemoval)
+        {
+            PendingRemoval = Intent;
+            PendingRemoval.bConfirmSupportLoss = true;
+            RemovalPrompt = LastResult;
+            for (const auto& Cell : Affected)
+            {
+                RemovalPrompt += TEXT(" ") + Cell.ToString();
+                if (RemovalPrompt.Len() > 500) { RemovalPrompt += TEXT(" ..."); break; }
+            }
+            return;
+        }
+    }
+    else { CancelRemoval(); }
     State->Apply(this, Intent, LastResult);
     // Never retry automatically: the next tick refreshes the visible revision.
 }
@@ -55,6 +95,8 @@ void ASFConstructionSandboxController::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     if (!IsLocalController() || !State.IsValid()) { return; }
+    if (bPendingRemoval && PendingRemoval.ExpectedRevision != State->GetRevision())
+    { CancelRemoval(); LastResult = TEXT("Removal preview stale after construction changed; preview again"); }
     bHasPreview = false;
     bHasRemoval = false;
     FString Advisory = bBuilding ? TEXT("Aim at the floor or an editable member") : TEXT("Build controls paused");
@@ -116,7 +158,7 @@ void ASFConstructionSandboxController::Tick(float DeltaSeconds)
     {
         const TCHAR* Shapes[] = { TEXT("Cube"), TEXT("Half slab"), TEXT("Slope") };
         GEngine->AddOnScreenDebugMessage(static_cast<uint64>(GetUniqueID()) + (1ull << 32), 0.1f, FColor::Cyan,
-            FString::Printf(TEXT("STANDALONE DEVELOPMENT | UNLIMITED STOCK | Fixed synthetic foundation\nUnsafe support-loss removal blocked; collapse, saves, timber art and networking INCOMPLETE\nB build | 1 Cube  2 Slab  3 Slope | R orientation | LMB place | RMB remove | WASD/mouse/Space/E retained\n%s | rough-timber-v1 rules; neutral art | orientation %d/24 | snap 0.5 m | %d cells\n%s\n%s"),
-                Shapes[Shape], Rotation + 1, State->GetMemberCount(), *Advisory, *LastResult));
+            FString::Printf(TEXT("STANDALONE DEVELOPMENT | UNLIMITED STOCK | Fixed synthetic foundation\nSupport-loss grace/collapse | economic salvage disabled | saves, timber art and networking INCOMPLETE\nB build | 1 Cube  2 Slab  3 Slope | R orientation | LMB place | RMB remove | Enter confirm | Esc cancel | WASD/mouse/Space/E retained\n%s | rough-timber-v1 rules; neutral art | orientation %d/24 | snap 0.5 m | %d cells\n%s\n%s\n%s\n%s"),
+                Shapes[Shape], Rotation + 1, State->GetMemberCount(), *Advisory, *State->GetInstabilitySummary(), *RemovalPrompt, *LastResult));
     }
 }

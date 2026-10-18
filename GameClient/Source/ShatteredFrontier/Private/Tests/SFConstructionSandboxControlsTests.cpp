@@ -30,6 +30,18 @@ bool FSFConstructionSandboxSettingsTest::RunTest(const FString& Parameters)
     TestFalse(TEXT("Cell capacity bounded"), Settings->Validate(Error));
     Settings->MaximumMembers = 1;
     TestTrue(TEXT("Minimum bounded capacity valid"), Settings->Validate(Error));
+    TestEqual(TEXT("Shipped support-loss grace is ten seconds"), Settings->SupportLossGraceSeconds, 10.0f);
+    Settings->SupportLossGraceSeconds = 0.9f;
+    TestFalse(TEXT("Grace minimum enforced"), Settings->Validate(Error));
+    Settings->SupportLossGraceSeconds = 60.1f;
+    TestFalse(TEXT("Grace maximum enforced"), Settings->Validate(Error));
+    Settings->SupportLossGraceSeconds = 60.0f;
+    TestTrue(TEXT("Grace maximum accepted"), Settings->Validate(Error));
+    TestEqual(TEXT("Shipped bounded collapse retry"), Settings->CollapseRetrySeconds, 0.25f);
+    Settings->CollapseRetrySeconds = 0.01f;
+    TestFalse(TEXT("Collapse retry minimum enforced"), Settings->Validate(Error));
+    Settings->CollapseRetrySeconds = 5.1f;
+    TestFalse(TEXT("Collapse retry maximum enforced"), Settings->Validate(Error));
     return true;
 }
 
@@ -127,7 +139,7 @@ bool FSFConstructionSandboxAuthorityTest::RunTest(const FString& Parameters)
     Intent.ExpectedRevision = State->GetRevision();
     Intent.Cell = FIntVector(10,0,0);
     Intent.bRemove = true;
-    TestFalse(TEXT("Unsafe demolition blocked until grace/confirmation checkpoint"), State->Apply(Controller, Intent, Result));
+    TestFalse(TEXT("Unsafe demolition requires explicit preview and confirmation"), State->Apply(Controller, Intent, Result));
     TestTrue(TEXT("Removal explains pending support-loss flow"), Result.Contains(TEXT("destabilizes")));
     Intent.Cell = FIntVector(10,0,1);
     TestTrue(TEXT("Top member safely removable"), State->Apply(Controller, Intent, Result));

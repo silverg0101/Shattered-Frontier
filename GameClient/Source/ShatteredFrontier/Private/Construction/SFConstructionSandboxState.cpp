@@ -18,7 +18,7 @@ bool Finite(const FVector& P) { return FMath::IsFinite(P.X) && FMath::IsFinite(P
 ASFConstructionSandboxState::ASFConstructionSandboxState()
 {
     bReplicates = false;
-    PrimaryActorTick.bCanEverTick = false;
+    PrimaryActorTick.bCanEverTick = true;
 }
 
 void ASFConstructionSandboxState::BeginPlay()
@@ -31,8 +31,10 @@ void ASFConstructionSandboxState::BeginPlay()
     { UE_LOG(LogTemp, Error, TEXT("CONSTRUCTION_SETTINGS_REJECTED %s"), *Error); return; }
     ReachCentimetres = Settings->BuildReachMetres * 100.0f;
     MaximumMembers = Settings->MaximumMembers;
+    GraceSeconds = Settings->SupportLossGraceSeconds;
+    RetrySeconds = Settings->CollapseRetrySeconds;
     bReady = true;
-    UE_LOG(LogTemp, Display, TEXT("CONSTRUCTION_TOOLS_READY Standalone=1 PlacementOnly=1 UnlimitedDevelopmentStock=1 Support=FixedFoundationPlacementOnly Collapse=0 Save=0 Network=0 ReachMetres=%.1f MaximumMembers=%d"),
+    UE_LOG(LogTemp, Display, TEXT("CONSTRUCTION_TOOLS_READY Standalone=1 UnlimitedDevelopmentStock=1 Support=FixedFoundation Collapse=GraceWaves EconomicSalvage=0 Save=0 Network=0 ReachMetres=%.1f MaximumMembers=%d"),
         ReachCentimetres / 100.0f, MaximumMembers);
 }
 
@@ -43,6 +45,7 @@ FVector ASFConstructionSandboxState::CellCorner(const FIntVector& Cell)
 
 bool ASFConstructionSandboxState::FindCell(const AActor* Projection, FIntVector& OutCell) const
 {
+    if (!IsValid(Projection)) { return false; }
     for (const auto& Pair : Members)
     {
         if (Pair.Value.Projection.Get() == Projection) { OutCell = Pair.Key; return true; }
@@ -53,6 +56,31 @@ bool ASFConstructionSandboxState::FindCell(const AActor* Projection, FIntVector&
 FString ASFConstructionSandboxState::Evaluate(const ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent, FString* SupportHint) const
 {
     if (SupportHint) { SupportHint->Reset(); }
+    const FString Validation = ValidateIntent(Controller, Intent);
+    if (!Validation.IsEmpty()) { return Validation; }
+    if (Intent.bConfirmSupportLoss && (!Intent.bRemove || ConfirmationController.Get() != Controller
+        || ConfirmationCell != Intent.Cell || ConfirmationRevision != Revision))
+    { return TEXT("Removal confirmation stale or missing; preview again"); }
+    return CheckSupport(Intent, SupportHint);
+}
+
+FString ASFConstructionSandboxState::ValidateEnvironment() const
+{
+    if (!IsInGameThread() || !bReady || !HasAuthority() || IsActorBeingDestroyed() || !GetWorld()
+        || GetNetMode() != NM_Standalone || !GetWorld()->GetAuthGameMode<ASFConstructionSandboxGameMode>())
+    { return TEXT("Standalone construction sandbox only"); }
+    if (!SFConstructionSandboxFoundation::HasKnownPlane(GetWorld()))
+    { return TEXT("Known development foundation unavailable; edits and collapse blocked"); }
+    for (const auto& Pair : Members)
+    {
+        if (!Pair.Value.Projection.IsValid() || Pair.Value.Projection->IsActorBeingDestroyed())
+        { return TEXT("Construction projection unavailable; edits blocked pending rebuild"); }
+    }
+    return FString();
+}
+
+FString ASFConstructionSandboxState::ValidateIntent(const ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent) const
+{
     if (!IsInGameThread() || !bReady || !HasAuthority() || IsActorBeingDestroyed() || !GetWorld()
         || GetNetMode() != NM_Standalone || !GetWorld()->GetAuthGameMode<ASFConstructionSandboxGameMode>()
         || !IsValid(Controller) || Controller->IsActorBeingDestroyed() || !Controller->HasAuthority()
@@ -63,6 +91,9 @@ FString ASFConstructionSandboxState::Evaluate(const ASFConstructionSandboxContro
         || Pawn->GetController() != Controller || Pawn->GetOwner() != Controller || !Pawn->HasAuthority())
     { return TEXT("No current owned pawn"); }
     if (Intent.ExpectedRevision != Revision) { return TEXT("Construction changed; preview refreshed"); }
+    double Deadline;
+    if (Instability.GetNextDeadline(Deadline) && AuthorityTime() >= Deadline)
+    { return TEXT("Support collapse due; edits wait for the authoritative wave to resolve"); }
     if (Revision == MAX_uint64) { return TEXT("Revision exhausted; restart fixture"); }
     // Release-bound plot matches the opt-in map floor. These are not tunable world topology.
     if (Intent.Cell.X < -20 || Intent.Cell.X >= 20 || Intent.Cell.Y < -20 || Intent.Cell.Y >= 20
@@ -92,40 +123,55 @@ FString ASFConstructionSandboxState::Evaluate(const ASFConstructionSandboxContro
         if (Clearance == SFConstructionClearance::EResult::Blocked)
         { return TEXT("Occupied solid, character or prop clearance"); }
     }
-    return CheckSupport(Intent, SupportHint);
+    return ValidateEnvironment();
 }
 
-FString ASFConstructionSandboxState::CheckSupport(const FSFConstructionSandboxIntent& Intent, FString* SupportHint) const
+FString ASFConstructionSandboxState::SolveSupport(const TMap<FIntVector, FSFConstructionSandboxMember>& Snapshot, TArray<FSFConstructionSupportResult>& Results) const
 {
     // One authoritative snapshot; never infer compact ground from a prop hit.
     if (!SFConstructionSandboxFoundation::HasKnownPlane(GetWorld()))
     { return TEXT("Known development foundation unavailable; edits blocked"); }
     TArray<FSFConstructionSupportMember> Candidate;
-    Candidate.Reserve(Members.Num() + 1);
-    for (const auto& Pair : Members)
+    Candidate.Reserve(Snapshot.Num());
+    for (const auto& Pair : Snapshot)
     {
-        if (!Pair.Value.Projection.IsValid() || Pair.Value.Projection->IsActorBeingDestroyed())
-        { return TEXT("Construction projection unavailable; edits blocked pending rebuild"); }
-        if (Intent.bRemove && Pair.Key == Intent.Cell) { continue; }
         Candidate.Add({Pair.Key, Pair.Value.Shape, Pair.Value.Rotation, 1.0,
             SFConstructionSandboxFoundation::TouchesPlane(Pair.Key, Pair.Value.Shape, Pair.Value.Rotation)});
     }
-    if (!Intent.bRemove)
-    {
-        Candidate.Add({Intent.Cell, Intent.Shape, Intent.Rotation, 1.0,
-            SFConstructionSandboxFoundation::TouchesPlane(Intent.Cell, Intent.Shape, Intent.Rotation)});
-    }
-    TArray<FSFConstructionSupportResult> Results;
     // Approved release-bound profile only; intent cannot override material rules.
     if (!SFConstructionSupport::Evaluate(Candidate, FSFConstructionSupportProfile(), Results))
     { return TEXT("Support snapshot invalid; construction preserved"); }
+    return FString();
+}
+
+FString ASFConstructionSandboxState::CheckSupport(const FSFConstructionSandboxIntent& Intent, FString* SupportHint) const
+{
+    auto Candidate = Members;
+    if (Intent.bRemove) { Candidate.Remove(Intent.Cell); }
+    else
+    {
+        FSFConstructionSandboxMember Added;
+        Added.Shape = Intent.Shape; Added.Rotation = Intent.Rotation;
+        Candidate.Add(Intent.Cell, Added);
+    }
+    TArray<FSFConstructionSupportResult> Results;
+    const FString Error = SolveSupport(Candidate, Results);
+    if (!Error.IsEmpty()) { return Error; }
     bool bStrained = false;
+    int32 UnstableCount = 0;
+    int32 NewlyUnstableCount = 0;
     for (const auto& Result : Results)
     {
         if (Result.State == ESFConstructionSupportState::Unsupported)
         {
+            ++UnstableCount;
+            double Deadline;
+            const bool bExistingEpisode = Instability.GetDeadline(Result.Address, Deadline);
             if (Intent.bRemove)
-            { return TEXT("Removal destabilizes other pieces; confirmation/grace/collapse not enabled yet"); }
+            { if (!bExistingEpisode) { ++NewlyUnstableCount; } continue; }
+            // Only actual existing unstable members are exempt during repair.
+            // A new member must always have support, even at a former address.
+            if (Result.Address != Intent.Cell && Members.Contains(Result.Address) && bExistingEpisode) { continue; }
             switch (Result.Reason)
             {
             case ESFConstructionSupportReason::NoAnchorPath: return TEXT("Unsupported: no positive-area path to the development foundation");
@@ -137,8 +183,11 @@ FString ASFConstructionSandboxState::CheckSupport(const FSFConstructionSandboxIn
         }
         bStrained |= Result.State == ESFConstructionSupportState::Strained;
     }
+    if (NewlyUnstableCount > 0 && !Intent.bConfirmSupportLoss)
+    { return FString::Printf(TEXT("Removal destabilizes %d pieces; explicit confirmation required"), NewlyUnstableCount); }
     if (SupportHint)
-    { *SupportHint = bStrained ? TEXT("STRAINED support - shorten span or add a column") : TEXT("Stable support (rough-timber-v1; synthetic foundation)"); }
+    { *SupportHint = UnstableCount > 0 ? FString::Printf(TEXT("UNSTABLE: %d existing pieces in grace; new piece supported"), UnstableCount)
+        : bStrained ? TEXT("STRAINED support - shorten span or add a column") : TEXT("Stable support (rough-timber-v1; synthetic foundation)"); }
     return FString();
 }
 
@@ -146,24 +195,97 @@ bool ASFConstructionSandboxState::Apply(ASFConstructionSandboxController* Contro
 {
     Result = Evaluate(Controller, Intent);
     if (!Result.IsEmpty()) { return false; }
-    const uint64 NextRevision = Revision + 1;
     auto Candidate = Members;
-    TWeakObjectPtr<ASFConstructionSandboxPreview> Removed;
-    ASFConstructionSandboxPreview* Added = nullptr;
-    if (Intent.bRemove)
-    { Removed = Candidate.FindChecked(Intent.Cell).Projection; Candidate.Remove(Intent.Cell); }
+    if (Intent.bRemove) { Candidate.Remove(Intent.Cell); }
     else
     {
-        Added = GetWorld()->SpawnActor<ASFConstructionSandboxPreview>(CellCorner(Intent.Cell), FRotator::ZeroRotator);
-        if (!Added) { Result = TEXT("Unable to stage projection"); return false; }
         FSFConstructionSandboxMember NewMember;
         NewMember.Shape = Intent.Shape; NewMember.Rotation = Intent.Rotation;
-        NewMember.Generation = NextRevision; NewMember.Projection = Added;
         Candidate.Add(Intent.Cell, NewMember);
     }
+    if (!CommitCandidate(MoveTemp(Candidate), {Intent.Cell}, AuthorityTime(), Result)) { return false; }
+    Result = Intent.bRemove ? TEXT("Removed; unstable survivors have individual grace deadlines; economic salvage disabled")
+        : TEXT("Placed; rough-timber support checked");
+    return true;
+}
+
+bool ASFConstructionSandboxState::PreviewRemoval(ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent, TArray<FIntVector>& Affected, FString& Result)
+{
+    Result = ValidateIntent(Controller, Intent);
+    if (!Result.IsEmpty()) { return false; }
+    if (!Intent.bRemove || Intent.bConfirmSupportLoss) { Result = TEXT("Removal preview requires unconfirmed removal intent"); return false; }
+    auto Candidate = Members;
+    Candidate.Remove(Intent.Cell);
+    TArray<FSFConstructionSupportResult> Results;
+    Result = SolveSupport(Candidate, Results);
+    if (!Result.IsEmpty()) { return false; }
+    Affected.Reset();
+    for (const auto& Support : Results)
+    {
+        double Deadline;
+        if (Support.State == ESFConstructionSupportState::Unsupported && !Instability.GetDeadline(Support.Address, Deadline))
+        { Affected.Add(Support.Address); }
+    }
+    ConfirmationController.Reset();
+    if (!Affected.IsEmpty())
+    {
+        ConfirmationController = Controller;
+        ConfirmationCell = Intent.Cell;
+        ConfirmationRevision = Revision;
+        Result = FString::Printf(TEXT("Remove %s: %d pieces lose support. Enter confirms this revision; Esc cancels."), *Intent.Cell.ToString(), Affected.Num());
+    }
+    return true;
+}
+
+void ASFConstructionSandboxState::CancelRemoval(const ASFConstructionSandboxController* Controller)
+{
+    if (ConfirmationController.Get() == Controller) { ConfirmationController.Reset(); }
+}
+
+double ASFConstructionSandboxState::AuthorityTime() const
+{
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+    if (TestTimeOverride >= 0.0) { return TestTimeOverride; }
+#endif
+    return GetWorld() ? GetWorld()->GetTimeSeconds() : -1.0;
+}
+
+bool ASFConstructionSandboxState::CommitCandidate(TMap<FIntVector, FSFConstructionSandboxMember> Candidate, const TArray<FIntVector>& ChangedCells, double Now, FString& Result)
+{
+    Result = ValidateEnvironment();
+    if (!Result.IsEmpty()) { return false; }
+    if (Revision == MAX_uint64) { Result = TEXT("Revision exhausted; restart fixture"); return false; }
+    TArray<FSFConstructionSupportResult> Support;
+    Result = SolveSupport(Candidate, Support);
+    if (!Result.IsEmpty()) { return false; }
+    TSet<FIntVector> Unsupported;
+    for (const auto& Entry : Support)
+    { if (Entry.State == ESFConstructionSupportState::Unsupported) { Unsupported.Add(Entry.Address); } }
+    auto NextInstability = Instability;
+    if (!NextInstability.Refresh(Unsupported, Now, GraceSeconds))
+    { Result = TEXT("Invalid support lifecycle clock; construction preserved"); return false; }
+    const uint64 NextRevision = Revision + 1;
+    TArray<ASFConstructionSandboxPreview*> Added;
+    for (auto& Pair : Candidate)
+    {
+        if (Members.Contains(Pair.Key)) { continue; }
+        auto* Projection = GetWorld()->SpawnActor<ASFConstructionSandboxPreview>(CellCorner(Pair.Key), FRotator::ZeroRotator);
+        if (!Projection)
+        {
+            for (auto* NewActor : Added) { NewActor->Destroy(); }
+            Result = TEXT("Unable to stage projection"); return false;
+        }
+        Pair.Value.Projection = Projection;
+        Pair.Value.Generation = NextRevision;
+        Added.Add(Projection);
+    }
     TArray<ASFConstructionSandboxPreview*> Prepared;
-    TArray<FIntVector> Affected = { Intent.Cell };
-    for (const FIntVector& Delta : Adjacent) { Affected.Add(Intent.Cell + Delta); }
+    TArray<FIntVector> Affected;
+    for (const FIntVector& Changed : ChangedCells)
+    {
+        Affected.AddUnique(Changed);
+        for (const FIntVector& Delta : Adjacent) { Affected.AddUnique(Changed + Delta); }
+    }
     for (const auto& Cell : Affected)
     {
         const auto* Member = Candidate.Find(Cell);
@@ -182,7 +304,7 @@ bool ASFConstructionSandboxState::Apply(ASFConstructionSandboxController* Contro
         if (!Projection || !Projection->PrepareRebuild(Member->Shape, Member->Rotation, NextRevision, Neighbors))
         {
             for (auto* Staged : Prepared) { Staged->DiscardPrepared(); }
-            if (Added) { Added->Destroy(); }
+            for (auto* NewActor : Added) { NewActor->Destroy(); }
             Result = TEXT("Projection staging failed; construction preserved"); return false;
         }
         Prepared.Add(Projection);
@@ -192,7 +314,7 @@ bool ASFConstructionSandboxState::Apply(ASFConstructionSandboxController* Contro
         if (!Projection->CanActivatePrepared())
         {
             for (auto* Staged : Prepared) { Staged->DiscardPrepared(); }
-            if (Added) { Added->Destroy(); }
+            for (auto* NewActor : Added) { NewActor->Destroy(); }
             Result = TEXT("Projection activation preflight failed; construction preserved"); return false;
         }
     }
@@ -205,11 +327,69 @@ bool ASFConstructionSandboxState::Apply(ASFConstructionSandboxController* Contro
         checkf(bActivated, TEXT("Construction activation changed after synchronous preflight"));
         if (!bActivated) { UE_LOG(LogTemp, Fatal, TEXT("Construction activation invariant failed")); }
     }
-    if (Removed.IsValid()) { Removed->Destroy(); }
+    for (const auto& Pair : Members)
+    { if (!Candidate.Contains(Pair.Key) && Pair.Value.Projection.IsValid()) { Pair.Value.Projection->Destroy(); } }
     Members = MoveTemp(Candidate);
+    Instability = MoveTemp(NextInstability);
     Revision = NextRevision;
-    Result = Intent.bRemove ? TEXT("Removed; surviving support checked") : TEXT("Placed; rough-timber support checked");
+    NextCollapseRetryAt = 0.0;
+    LastCollapseFailure.Reset();
+    ConfirmationController.Reset();
     return true;
+}
+
+void ASFConstructionSandboxState::ProcessDeadlines(double Now)
+{
+    if (Instability.Num() == 0 || !FMath::IsFinite(Now) || Now < NextCollapseRetryAt) { return; }
+    TArray<FIntVector> Due;
+    if (!Instability.Due(Now, Due) || Due.IsEmpty()) { return; }
+    if (!ValidateEnvironment().IsEmpty()) { NextCollapseRetryAt = Now + RetrySeconds; return; }
+    TArray<FSFConstructionSupportResult> Support;
+    if (!SolveSupport(Members, Support).IsEmpty()) { return; }
+    TSet<FIntVector> Unsupported;
+    for (const auto& Entry : Support)
+    { if (Entry.State == ESFConstructionSupportState::Unsupported) { Unsupported.Add(Entry.Address); } }
+    auto Candidate = Members;
+    TArray<FIntVector> Removed;
+    for (const auto& Cell : Due)
+    { if (Unsupported.Contains(Cell) && Candidate.Remove(Cell) > 0) { Removed.Add(Cell); } }
+    if (Removed.IsEmpty())
+    {
+        auto Recovered = Instability;
+        if (Recovered.Refresh(Unsupported, Now, GraceSeconds)) { Instability = MoveTemp(Recovered); }
+        return;
+    }
+    FString Result;
+    if (CommitCandidate(MoveTemp(Candidate), Removed, Now, Result))
+    { UE_LOG(LogTemp, Display, TEXT("CONSTRUCTION_COLLAPSE Members=%d Revision=%llu EconomicSalvageDisabled=1 RubbleCollision=0"), Removed.Num(), Revision); }
+    else
+    {
+        NextCollapseRetryAt = Now + RetrySeconds;
+        if (LastCollapseFailureRevision != Revision || LastCollapseFailure != Result)
+        { UE_LOG(LogTemp, Warning, TEXT("CONSTRUCTION_COLLAPSE_RETRY DeadlinesPreserved=1 Reason=%s"), *Result); }
+        LastCollapseFailure = Result;
+        LastCollapseFailureRevision = Revision;
+    }
+}
+
+void ASFConstructionSandboxState::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+    // The only periodic work is checking pending deadlines. No arbitrary support
+    // rescan: this fixture has no damage or terrain mutation route.
+    if (Instability.Num() > 0) { ProcessDeadlines(AuthorityTime()); }
+}
+
+FString ASFConstructionSandboxState::GetInstabilitySummary() const
+{
+    double NextDeadline;
+    if (!Instability.GetNextDeadline(NextDeadline)) { return TEXT("Support stable/strained; no unstable members"); }
+    if (AuthorityTime() >= NextDeadline)
+    {
+        return FString::Printf(TEXT("UNSTABLE: %d pieces | collapse pending; edits blocked until authoritative wave/retry resolves | economic salvage disabled"), Instability.Num());
+    }
+    return FString::Printf(TEXT("UNSTABLE: %d pieces | next collapse in %.1f s | add supported columns to recover | economic salvage disabled"),
+        Instability.Num(), FMath::Max(0.0, NextDeadline - AuthorityTime()));
 }
 
 void ASFConstructionSandboxState::EndPlay(const EEndPlayReason::Type Reason)

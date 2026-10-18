@@ -21,9 +21,14 @@ private:
     void Rotate();
     void Place();
     void Remove();
+    void ConfirmRemoval();
+    void CancelRemoval();
     void Commit(bool bRemove);
     TWeakObjectPtr<ASFConstructionSandboxState> State;
     FSFConstructionSandboxIntent PreviewIntent;
+    FSFConstructionSandboxIntent PendingRemoval;
+    bool bPendingRemoval = false;
+    FString RemovalPrompt;
     FIntVector RemovalCell = FIntVector::ZeroValue;
     int32 Shape = 0;
     int32 Rotation = 0;
