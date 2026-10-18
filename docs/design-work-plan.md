@@ -2,6 +2,10 @@
 
 Last updated: 2026-10-18. Owner: coordinating documentation agent. This is the running documentation queue; the [gameplay backlog](Game-Design/Legends_Shattered_Frontier_Gameplay_Feature_Backlog_v1.0.md) owns implementation work and [roadmap](Game-Design/Legends_Shattered_Frontier_Production_Roadmap_v1.0.md) owns milestone gates. Update this file during each documentation work cycle; no background monitoring is implied. Standing user rules and continuation context are preserved in [design-agent.md](../design-agent.md).
 
+## Image-to-model session guide - 2026-10-18
+
+Added [generate-model.md](art-templates/generate-model.md) as the fresh-session entry point: supply an image path to request editable Blender source, reproducible generator, exports, inspected previews and provenance. Independent review identified ambiguous reference-template usage and an overly strong default promise; both were corrected. Local guide links and whitespace checks passed; documentation only, no model generated or runtime tests needed. Next asset request can use this guide; complex organic forms remain dependent on available modeling tools and honest quality review.
+
 ## Reusable art prompt library - 2026-10-18
 
 User requested saved, mostly filled prompts for mounts, creatures, weapons, armor, buildings, props and terrain, with only the main concept required. [Library and usage](art-templates/README.md) links all seven templates and optional existing project reference art. This is a visual-reference workflow for later Blender work, not asset generation/import or a change to H2 gates. Independent review and recheck found no remaining actionable findings; all seven single-concept prompts and 16 library links passed focused checks. Commit/push requested; no new reference image is needed because the existing concept artwork is sufficient.

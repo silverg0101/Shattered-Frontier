@@ -24,6 +24,8 @@ The grounded high-fantasy frontier style is a proposed working default adapted f
 
 ## From reference to Blender
 
+To create the model in a fresh agent session, use [Generate a Blender model from an image](generate-model.md). It contains a copyable request, default outputs, modeling steps and visual/export acceptance checks.
+
 These prompts produce images, not Blender files, meshes, animation rigs, UVs, PBR maps or production heightfields. Confirm scale, proportions, anatomy and construction while modeling; generated orthographic views can disagree. Dimensions and human silhouettes here are modeling guides, not gameplay balance, collision or voxel configuration. Runtime terrain still follows its owning World/Construction contracts.
 
 For each selected asset, preserve the main concept, complete prompt, actual reference images, generated sheet, generation tool/date and human review status with the art source. Store approved source assets/provenance under the project's existing `GameClient/ArtSource/` workflow after assigning an asset-specific folder; do not replace existing assets or infer import/production approval. No mandatory generation vendor or paid tool is introduced by this library.
