@@ -2,6 +2,12 @@
 
 Last updated: 2026-10-18. Owner: coordinating documentation agent. This is the running documentation queue; the [gameplay backlog](Game-Design/Legends_Shattered_Frontier_Gameplay_Feature_Backlog_v1.0.md) owns implementation work and [roadmap](Game-Design/Legends_Shattered_Frontier_Production_Roadmap_v1.0.md) owns milestone gates. Update this file during each documentation work cycle; no background monitoring is implied. Standing user rules and continuation context are preserved in [design-agent.md](../design-agent.md).
 
+## B-03 owner responses and B-04 durable evidence assignment - 2026-10-18
+
+Done as reviewed preparation: [B03-OWNER-PACKET](decisions/B-03-owner-decision-packet.md) supplies seven exact owner-response rows; [B04-DURABLE-PACKET](decisions/B-04-durable-fixture-assignment.md) specifies separate storage, test-authenticated transport and operational restore evidence stages. Parallel routing: Luna/medium for bounded B-03 assembly, inherited stronger author for B-04 transaction/recovery architecture, one separate inherited stronger source reviewer. Parent corrected the cancellation alternative and circular/overbroad gate wording; independent review corrected/rechecked authoritative phase eligibility and gate-lock coverage. No remaining blocking findings in bounded document scope. Thirteen local links/four anchors and changed whitespace pass; no runtime tests or protected writes.
+
+Next: record exact B-03 owner responses and B-04 storage-stage scope/layout/profile/lock-contract approvals, then assign only the approved isolated implementation. Test identities/transport and external restore proof require their own later approvals/evidence; production B-03/B-04/B-05 remain open. Existing tooling/model/migration results need no repeat inventory. Preserve concurrent art work and PAUSED automation.
+
 ## B-03/B-04 authority contracts and parallel model - 2026-10-18
 
 Completed preparation: two stronger authors delivered [B-03 actor admission](decisions/B-03-actor-admission-contract.md) and [B-04 delivery fencing/restore](decisions/B-04-delivery-fencing-and-restore.md); coordinator added a package-free [authority model](../BackendServices/fixtures/AuthorityModel/README.md) in parallel. Separate stronger source/model review corrected/rechecked pre-action/allocated binding, mapped restore barriers, terminal prepare, all-barrier issuance and reconciliation/open ordering. No blocking findings remain in bounded scope. No protected spec or live host edits.
@@ -108,6 +114,8 @@ Priorities below are documentation order, not changes to the gameplay backlog's 
 | B-AUTH/FENCE-DESIGN | Complete / Done preparation | [Reviewed actor and takeover contract draft](decisions/PER-01-authority-fencing-contract.md) | Independent review corrected/rechecked admission ordering; owner responses, exact wire definitions and executable evidence remain B-03/B-04 gates. |
 | B-03-CONTRACT | Complete / Done preparation | [Reviewed gateway/zone actor admission proposal](decisions/B-03-actor-admission-contract.md) | Source review/recheck complete; protected owner/caller/revocation/handoff decisions remain open. |
 | B-04-CONTRACT / MODEL | Complete / Done preparation/model | [Reviewed delivery/restore contract](decisions/B-04-delivery-fencing-and-restore.md) and logical race model | Independent source/hash recheck; 22 case groups/120 schedules passed. Bounded specification evidence, not DB/transport/restore implementation or gate closure. |
+| B03-OWNER-PACKET | Complete / Done preparation | [Seven exact owner response rows](decisions/B-03-owner-decision-packet.md) | Coordinator corrections and independent source recheck complete. Exact owner responses/authorized amendments remain open; no accepted policy inferred. |
+| B04-DURABLE-PACKET | Complete / Done preparation | [Staged durable fixture assignment](decisions/B-04-durable-fixture-assignment.md) mapped to F01–F10 | Independent phase-eligibility/lock-coverage findings corrected/rechecked. S/T/R scope approvals and actual executable evidence remain open. |
 | C-MIG-DESIGN | Complete / Done preparation | [Reviewed disposable migration fixture contract](decisions/PER-01-migration-fixture-contract.md) | Independent review corrected/rechecked failed-index retry; observations and recovery/role assertions prepared without provisioning or execution. |
 | INT-02-DESIGN | Complete / Done preparation | [Reviewed byte/hash profile and scoped key design](decisions/INT-02-command-hash-profile.md) | Stronger author and independent review; enum/rolling-compatibility findings corrected/rechecked. No `.proto`, compiler output or executable vectors; B-05 acceptance remains open. |
 | H2-PER-01-C | Complete / Done fixed synthetic fixture | [Migration runner and disposable database evidence](evidence/h2-migration-fixture.md) | Final fixture06 passed46 assertions with independent source/evidence recheck. Reuse exact fixture; no general production runner, gameplay schema or Inventory implementation inferred. |
@@ -238,11 +246,14 @@ DOC-01 traced the world-boss lead: AI/Itemization already define participation a
 | Assignment | Model / reasoning | Use and escalation |
 | --- | --- | --- |
 | Bounded inventory, exact links, prepared row extraction | gpt-6-luna / low | Fixed read set and no semantic decisions; use medium if tracing requires multiple referenced sections |
-| Coverage synthesis, DOC-02/03, cross-domain design | Parent model / high | Narrow owning-section reads; escalate uncertainty through explicit decision/evidence needs |
-| Independent gap/closure reviewer | Separate agent, parent model / high | Did not author reviewed changes; inspect sources and diff, not only author's summary |
+| Bounded drafting, coverage assembly, routine consistency checks | gpt-6-luna / low or medium | Fixed sources and acceptance checks; escalate unresolved semantic decisions |
+| Cross-domain architecture, security, difficult debugging, recovery | Stronger parent or agent / effort justified by complexity | Narrow owning-section reads; high effort only when needed |
+| Independent gap/closure reviewer | Separate agent / model and effort matched to risk | Luna for routine checks; stronger judgment for architecture/security/recovery; inspect sources and diff, and do not author reviewed changes |
 | Tiny index/status edits | Coordinator directly | Delegation would add overhead |
 
-Use Luna with a context-free bounded packet for mechanical work. Stronger agents receive only the context needed for their task where practical. Reuse a completed reviewer for a related review; avoid duplicate whole-project audits. Architecture/security work is never accepted solely from a small-model summary. Availability and active harness settings govern actual model/effort; record deviations rather than implying a configuration was applied.
+User cost-control rule (2026-10-18): before dispatch, record a short rationale for delegation, model and reasoning effort. Choose the least expensive suitable model and lowest sufficient effort; do not default to inherited stronger settings or high effort, fill slots, or duplicate completed checks. Escalate for identified complexity, risk or failed acceptance, recording the reason. Account for context, retries and coordinator overhead as well as model price.
+
+Use context-free bounded packets with relevant sources, concise outputs and fixed acceptance checks. Reuse a completed reviewer for a related review; avoid duplicate whole-project audits. Architecture/security work is never accepted solely from a small-model summary. Availability and active harness settings govern actual model/effort; record deviations rather than implying a configuration was applied.
 
 After each author task:
 
@@ -254,6 +265,8 @@ After each author task:
 Documentation gate: selected milestone's scope/journey maps to owning contracts; names/writers and failure/recovery behavior agree; adjustable controls meet policy; acceptance cases are executable; required decisions are resolved or dependent work remains explicitly blocked. Later-game coverage may remain deferred by an explicit scope decision. Page counts and document presence do not establish completeness.
 
 ## Review and handoff log
+
+2026-10-18 — B03-OWNER-PACKET/B04-DURABLE-PACKET: Luna/medium bounded author, inherited stronger architecture author and separate inherited stronger reviewer; no remaining blocking findings after source recheck. Both documents Done as preparation only. Changed files: two new packets, PER-01-B assignment links, dependency map, work plan and design-agent handoff/routing. Local links/anchors and whitespace pass; no runtime tests. Next: exact owner responses and S-stage scope/contracts before executable authoring; protected interfaces and production/restore acceptance remain open.
 
 | Date | Work / evidence | Result / next step |
 | --- | --- | --- |
