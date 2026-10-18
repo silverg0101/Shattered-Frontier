@@ -14,6 +14,14 @@ struct SHATTEREDFRONTIER_API FSFConstructionDoorBoxProfile
     FQuat Rotation = FQuat::Identity;
 };
 
+struct SHATTEREDFRONTIER_API FSFConstructionDoorProjectionProfile
+{
+    FTransform Transform;
+    TArray<FSFConstructionDoorBoxProfile> Boxes;
+    FBox Envelope = FBox(ForceInit), Motion = FBox(ForceInit);
+    FBox ApproachFront = FBox(ForceInit), ApproachBack = FBox(ForceInit);
+};
+
 // Endpoint projection only. No authority, edit/input route, animation or invisible
 // reservation collision. Configure and activation are standalone development only.
 UCLASS(NotBlueprintable, Transient)
@@ -22,6 +30,8 @@ class SHATTEREDFRONTIER_API ASFConstructionSandboxDoorProjection : public AActor
     GENERATED_BODY()
 public:
     ASFConstructionSandboxDoorProjection();
+    // Pure released-content builder. Invalid input preserves Out; no world access.
+    static bool BuildProfile(const FIntVector& OriginCell, int32 YawQuarterTurns, bool bOpen, FSFConstructionDoorProjectionProfile& Out);
     // Exactly one successful configuration. All rejection paths preserve output.
     bool Configure(const FIntVector& OriginCell, int32 YawQuarterTurns, bool bOpen);
     bool CanActivate() const;

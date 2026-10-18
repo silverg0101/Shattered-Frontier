@@ -6,6 +6,8 @@ bool USFConstructionSandboxSettings::Validate(FString& Error) const
     { Error = TEXT("Build reach must be 1–8 metres."); return false; }
     if (MaximumMembers < 1 || MaximumMembers > 4096)
     { Error = TEXT("Maximum editable cells must be 1–4096."); return false; }
+    if (MaximumDoors < 1 || MaximumDoors > 64)
+    { Error = TEXT("Maximum doors must be 1–64."); return false; }
     if (!FMath::IsFinite(SupportLossGraceSeconds) || SupportLossGraceSeconds < 1.0f || SupportLossGraceSeconds > 60.0f)
     { Error = TEXT("Support-loss grace must be 1–60 seconds."); return false; }
     if (!FMath::IsFinite(CollapseRetrySeconds) || CollapseRetrySeconds < 0.05f || CollapseRetrySeconds > 5.0f)

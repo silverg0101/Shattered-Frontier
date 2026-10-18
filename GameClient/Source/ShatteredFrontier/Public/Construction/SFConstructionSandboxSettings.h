@@ -16,6 +16,9 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Development build controls", meta=(ClampMin="1", ClampMax="4096", ToolTip="Maximum editable cells in this transient standalone fixture. Default 512; release review; next sandbox start."))
     int32 MaximumMembers = 512;
 
+    UPROPERTY(Config, EditAnywhere, Category="Development build controls", meta=(ClampMin="1", ClampMax="64", ToolTip="Maximum transient doors. Default 16; reviewed release authors only; captured at next sandbox start."))
+    int32 MaximumDoors = 16;
+
     UPROPERTY(Config, EditAnywhere, Category="Development build controls", meta=(ClampMin="1", ClampMax="60", Units="s", ToolTip="Support-loss grace. Default 10 seconds; reviewed release authors only; next sandbox start. Frozen for each sandbox state."))
     float SupportLossGraceSeconds = 10.0f;
 

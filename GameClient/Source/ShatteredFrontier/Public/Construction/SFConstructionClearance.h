@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 
 class UWorld;
+class ASFConstructionSandboxDoorProjection;
 
 namespace SFConstructionClearance
 {
@@ -15,4 +16,9 @@ namespace SFConstructionClearance
     // skeletal body fails closed; this does not certify triangle-shell interiors
     // as occupied volumes or replace the future World terrain density adapter.
     SHATTEREDFRONTIER_API EResult Evaluate(UWorld* World, int32 Shape, int32 Rotation, const FVector& CellCorner);
+    // Trusted released reservation geometry only; not an intent geometry route.
+    SHATTEREDFRONTIER_API EResult EvaluateBox(UWorld* World, const FBox& Bounds,
+        const ASFConstructionSandboxDoorProjection* OwnOldDoor = nullptr);
+    SHATTEREDFRONTIER_API EResult IntersectsReservation(int32 Shape, int32 Rotation,
+        const FVector& CellCorner, const FBox& Reservation);
 }

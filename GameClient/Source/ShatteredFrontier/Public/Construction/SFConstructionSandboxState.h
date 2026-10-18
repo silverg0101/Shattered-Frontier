@@ -3,10 +3,33 @@
 #include "GameFramework/Actor.h"
 #include "Construction/SFConstructionInstability.h"
 #include "Construction/SFConstructionSupport.h"
+#include "Construction/SFConstructionDoorSupport.h"
 #include "SFConstructionSandboxState.generated.h"
 
 class ASFConstructionSandboxController;
 class ASFConstructionSandboxPreview;
+class ASFConstructionSandboxDoorProjection;
+
+enum class ESFConstructionDoorAction : uint8 { Place, Toggle, Remove };
+struct FSFConstructionDoorIntent
+{
+    FIntVector OriginCell = FIntVector::ZeroValue;
+    int32 YawQuarterTurns = 0; // Place only; other actions must match retained yaw.
+    uint64 ExpectedRevision = 0;
+    ESFConstructionDoorAction Action = ESFConstructionDoorAction::Place;
+};
+struct FSFConstructionSandboxDoor
+{
+    int32 YawQuarterTurns = 0;
+    bool bOpen = false;
+    ESFConstructionSupportState Support = ESFConstructionSupportState::Unsupported;
+    TWeakObjectPtr<ASFConstructionSandboxDoorProjection> Projection;
+};
+struct FSFConstructionRemovalConsequences
+{
+    TArray<FIntVector> StructuralCells;
+    TArray<FIntVector> DoorOrigins;
+};
 
 // Bounded intent only; no geometry/material/path input. Every edit compares the
 // assembly revision, so a retry of an accepted edit is stale and cannot duplicate.
@@ -41,7 +64,13 @@ public:
     virtual void Tick(float DeltaSeconds) override;
     FString Evaluate(const ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent, FString* SupportHint = nullptr) const;
     bool Apply(ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent, FString& Result);
-    bool PreviewRemoval(ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent, TArray<FIntVector>& Affected, FString& Result);
+    bool PreviewRemoval(ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent, TArray<FIntVector>& Affected, FString& Result, FSFConstructionRemovalConsequences* Consequences = nullptr);
+    FString EvaluateDoor(const ASFConstructionSandboxController* Controller, const FSFConstructionDoorIntent& Intent) const;
+    bool ApplyDoor(ASFConstructionSandboxController* Controller, const FSFConstructionDoorIntent& Intent, FString& Result);
+    int32 GetDoorCount() const { return Doors.Num(); }
+    const FSFConstructionSandboxDoor* FindDoor(const FIntVector& Origin) const { return Doors.Find(Origin); }
+    bool FindDoorOrigin(const AActor* Projection, FIntVector& OutOrigin) const;
+    bool GetDoorDeadline(const FIntVector& Origin, double& Out) const { return DoorInstability.GetDeadline(Origin,Out); }
     void CancelRemoval(const ASFConstructionSandboxController* Controller);
     FString GetInstabilitySummary() const;
     uint64 GetRevision() const { return Revision; }
@@ -52,21 +81,32 @@ public:
 private:
     FString ValidateIntent(const ASFConstructionSandboxController* Controller, const FSFConstructionSandboxIntent& Intent) const;
     FString ValidateEnvironment() const;
+    FString ValidateOwner(const ASFConstructionSandboxController* Controller, uint64 ExpectedRevision) const;
+    FString DoorReservations(const FIntVector& Origin, int32 Yaw, bool bOpen, bool bToggle, const ASFConstructionSandboxDoorProjection* OwnOldDoor) const;
+    FString StructuralReservations(const FSFConstructionSandboxIntent& Intent) const;
     FString SolveSupport(const TMap<FIntVector, FSFConstructionSandboxMember>& Snapshot, TArray<FSFConstructionSupportResult>& Results) const;
+    FString SolveCombined(const TMap<FIntVector, FSFConstructionSandboxMember>& Snapshot,
+        const TMap<FIntVector, FSFConstructionSandboxDoor>& DoorSnapshot, TArray<FSFConstructionSupportResult>& Results,
+        TArray<FSFConstructionDoorSupportResult>& DoorResults) const;
     FString CheckSupport(const FSFConstructionSandboxIntent& Intent, FString* SupportHint) const;
     bool CommitCandidate(TMap<FIntVector, FSFConstructionSandboxMember> Candidate, const TArray<FIntVector>& ChangedCells, double Now, FString& Result);
+    bool CommitCombined(TMap<FIntVector, FSFConstructionSandboxMember> Candidate,
+        TMap<FIntVector, FSFConstructionSandboxDoor> CandidateDoors, const TArray<FIntVector>& ChangedCells, double Now, FString& Result);
     void ProcessDeadlines(double Now);
     double AuthorityTime() const;
     TMap<FIntVector, FSFConstructionSandboxMember> Members;
+    TMap<FIntVector, FSFConstructionSandboxDoor> Doors;
     uint64 Revision = 0;
     float ReachCentimetres = 0;
     int32 MaximumMembers = 0;
+    int32 MaximumDoors = 0;
     double GraceSeconds = 10.0;
     double RetrySeconds = 0.25;
     double NextCollapseRetryAt = 0.0;
     FString LastCollapseFailure;
     uint64 LastCollapseFailureRevision = 0;
     FSFConstructionInstability Instability;
+    FSFConstructionInstability DoorInstability;
     TWeakObjectPtr<ASFConstructionSandboxController> ConfirmationController;
     FIntVector ConfirmationCell = FIntVector::ZeroValue;
     uint64 ConfirmationRevision = 0;
@@ -76,5 +116,7 @@ private:
     // always use world time. Friend tests may drive finite exact boundaries.
     double TestTimeOverride = -1.0;
     friend class FSFConstructionSupportLossTest;
+    friend class FSFConstructionDoorAuthorityTest;
+    friend class FSFConstructionDoorLifecycleTest;
 #endif
 };

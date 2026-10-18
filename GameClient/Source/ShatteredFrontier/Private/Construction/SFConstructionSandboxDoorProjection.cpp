@@ -76,12 +76,12 @@ bool ASFConstructionSandboxDoorProjection::IsAllowedContext() const
 #endif
 }
 
-bool ASFConstructionSandboxDoorProjection::Configure(const FIntVector& OriginCell, int32 YawQuarterTurns, bool bOpen)
+bool ASFConstructionSandboxDoorProjection::BuildProfile(const FIntVector& OriginCell, int32 YawQuarterTurns,
+    bool bOpen, FSFConstructionDoorProjectionProfile& Out)
 {
-    if (!IsAllowedContext() || bConfigured || YawQuarterTurns < 0 || YawQuarterTurns >= 4
+    if (YawQuarterTurns < 0 || YawQuarterTurns >= 4
         || OriginCell.X < -20 || OriginCell.X >= 20 || OriginCell.Y < -20 || OriginCell.Y >= 20
-        || OriginCell.Z < 0 || OriginCell.Z >= 20 || !GetActorScale3D().Equals(FVector::OneVector, 0)
-        || !GetActorQuat().Equals(FQuat::Identity, 0)) { return false; }
+        || OriginCell.Z < 0 || OriginCell.Z >= 20) { return false; }
     const FVector Corner = FVector(OriginCell) * 50;
     const FBox NewEnvelope = Bounds(FBox(FVector::ZeroVector,FVector(100,50,200)), Corner, YawQuarterTurns);
     if (NewEnvelope.Min.X < -1000 || NewEnvelope.Max.X > 1000 || NewEnvelope.Min.Y < -1000
@@ -95,6 +95,25 @@ bool ASFConstructionSandboxDoorProjection::Configure(const FIntVector& OriginCel
         {TEXT("Leaf"), bOpen ? FVector(8,72.5,100) : FVector(50,24.5,100), FVector(44.5,2.5,94.5),
             bOpen ? FQuat(FRotator(0,90,0)) : FQuat::Identity}
     };
+    FSFConstructionDoorProjectionProfile Candidate;
+    Candidate.Transform = FTransform(FRotator(0,YawQuarterTurns * 90,0),Corner,FVector::OneVector);
+    Candidate.Boxes = MoveTemp(CandidateBoxes);
+    Candidate.Envelope = NewEnvelope;
+    Candidate.Motion = Bounds(FBox(FVector::ZeroVector,FVector(100,120,200)),Corner,YawQuarterTurns);
+    Candidate.ApproachFront = Bounds(FBox(FVector(0,-100,0),FVector(100,0,200)),Corner,YawQuarterTurns);
+    Candidate.ApproachBack = Bounds(FBox(FVector(0,50,0),FVector(100,150,200)),Corner,YawQuarterTurns);
+    Out = MoveTemp(Candidate);
+    return true;
+}
+bool ASFConstructionSandboxDoorProjection::Configure(const FIntVector& OriginCell, int32 YawQuarterTurns, bool bOpen)
+{
+    if (!IsAllowedContext() || bConfigured || YawQuarterTurns < 0 || YawQuarterTurns >= 4
+        || OriginCell.X < -20 || OriginCell.X >= 20 || OriginCell.Y < -20 || OriginCell.Y >= 20
+        || OriginCell.Z < 0 || OriginCell.Z >= 20 || !GetActorScale3D().Equals(FVector::OneVector, 0)
+        || !GetActorQuat().Equals(FQuat::Identity, 0)) { return false; }
+    FSFConstructionDoorProjectionProfile Profile;
+    if (!BuildProfile(OriginCell,YawQuarterTurns,bOpen,Profile)) { return false; }
+    const auto& CandidateBoxes = Profile.Boxes;
     TArray<UBoxComponent*> CandidateColliders;
     UProceduralMeshComponent* CandidateVisual = NewObject<UProceduralMeshComponent>(this);
     CandidateVisual->SetupAttachment(GetRootComponent());
@@ -113,13 +132,13 @@ bool ASFConstructionSandboxDoorProjection::Configure(const FIntVector& OriginCel
         CandidateVisual->DestroyComponent();
     };
     if (!CandidateVisual->IsRegistered()) { Discard(); return false; }
-    for (const auto& Profile : CandidateBoxes)
+    for (const auto& BoxProfile : CandidateBoxes)
     {
         UBoxComponent* Box = NewObject<UBoxComponent>(this);
         CandidateColliders.Add(Box);
         Box->SetupAttachment(GetRootComponent());
-        Box->SetRelativeTransform(FTransform(Profile.Rotation,Profile.Centre));
-        Box->SetBoxExtent(Profile.Extent);
+        Box->SetRelativeTransform(FTransform(BoxProfile.Rotation,BoxProfile.Centre));
+        Box->SetBoxExtent(BoxProfile.Extent);
         Box->SetGenerateOverlapEvents(false);
         Box->SetCollisionObjectType(ECC_WorldStatic);
         Box->SetCollisionResponseToAllChannels(ECR_Ignore);
@@ -131,18 +150,18 @@ bool ASFConstructionSandboxDoorProjection::Configure(const FIntVector& OriginCel
         if (!Box->IsRegistered() || !Box->IsPhysicsStateCreated() || !Body || Body->AggGeom.BoxElems.Num() != 1)
         { Discard(); return false; }
     }
-    ConfiguredTransform = FTransform(FRotator(0,YawQuarterTurns * 90,0),Corner,FVector::OneVector);
+    ConfiguredTransform = Profile.Transform;
     SetActorTransform(ConfiguredTransform, false, nullptr, ETeleportType::TeleportPhysics);
-    Boxes = MoveTemp(CandidateBoxes);
+    Boxes = MoveTemp(Profile.Boxes);
     for (auto* Box : CandidateColliders) { Colliders.Add(Box); }
     Visual = CandidateVisual;
     ConfiguredCell = OriginCell;
     ConfiguredYaw = YawQuarterTurns;
     bConfiguredOpen = bOpen;
-    Envelope = NewEnvelope;
-    Motion = Bounds(FBox(FVector::ZeroVector,FVector(100,120,200)),Corner,YawQuarterTurns);
-    ApproachFront = Bounds(FBox(FVector(0,-100,0),FVector(100,0,200)),Corner,YawQuarterTurns);
-    ApproachBack = Bounds(FBox(FVector(0,50,0),FVector(100,150,200)),Corner,YawQuarterTurns);
+    Envelope = Profile.Envelope;
+    Motion = Profile.Motion;
+    ApproachFront = Profile.ApproachFront;
+    ApproachBack = Profile.ApproachBack;
     bConfigured = true;
     return true;
 }
