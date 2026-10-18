@@ -1025,5 +1025,10 @@
     "Standalone development graybox; no human cursor/Slate comfort acceptance",
     "No approved art, packaged/two-client or production door animation acceptance",
     "Earlier failed runs retained under Artifacts/ConstructionSandbox; see pilot note"
-  ]
+  ],
+  "user_feedback": {
+    "date": "2026-10-18",
+    "quote": "works much better",
+    "scope": "Initial updated cursor/palette playtest; final UI, exhaustive manual edge cases and remaining milestone gates are not accepted by this feedback."
+  }
 }

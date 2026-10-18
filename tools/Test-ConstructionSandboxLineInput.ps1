@@ -81,22 +81,25 @@ try {
         @('MODE_CLEARS_SEED',6,2,0,0,0), @('PAUSE_CLEARS_SEED',6,2,1,0,-1), @('CANCEL_CLEARS_SEED',6,2,1,0,-1),
         @('DOOR_RETURNS_SINGLE',6,2,0,0,0), @('SINGLE_PLACEMENT_RETAINED',7,3,0,0,0),
         @('SINGLE_REMOVAL_RETAINED',6,4,0,0,0), @('DEMOLITION_CANCELLED_SEED',5,5,1,0,-1),
-        @('INHERITED_MOVEMENT_RETAINED',5,5,1,0,-1)
+        @('INHERITED_MOVEMENT_RETAINED',5,5,1,0,-1),
+        @('RMB_LOOK_NO_DEMOLITION',5,5,1,0,0),
+        @('FREE_CURSOR_RESTORED',5,5,1,0,-1),
+        @('DEDICATED_DEMOLITION_MODE',5,5,1,0,0)
     )
     $observed = [regex]::Matches($sandbox,'CONSTRUCTION_LINE_INPUT_STEP Name=(\w+) Members=(\d+) Doors=(\d+) Revision=(\d+) LineMode=(0|1) Seed=(0|1) GhostCells=(\d+) WorldSeconds=([\d.]+)')
-    if ($observed.Count -ne $expected.Count) { throw "Expected18 named steps, observed $($observed.Count)." }
+    if ($observed.Count -ne $expected.Count) { throw "Expected21 named steps, observed $($observed.Count)." }
     for ($index=0; $index -lt $expected.Count; ++$index) {
         $e=$expected[$index]; $o=$observed[$index]
         if ($o.Groups[1].Value -ne $e[0] -or [int]$o.Groups[2].Value -ne $e[1] -or [int]$o.Groups[3].Value -ne 0 -or [uint64]$o.Groups[4].Value -ne $e[2] -or [int]$o.Groups[5].Value -ne $e[3] -or [int]$o.Groups[6].Value -ne $e[4]) { throw "Semantic state/order mismatch at $($e[0])." }
         $ghosts=[int]$o.Groups[7].Value
         if ($ghosts -gt 8 -or ($e[5] -ge 0 -and $ghosts -ne $e[5])) { throw "Ghost geometry/count mismatch at $($e[0])." }
     }
-    if ([regex]::Matches($sandbox,'CONSTRUCTION_LINE_INPUT_STARTED').Count -ne 1 -or [regex]::Matches($sandbox,'CONSTRUCTION_LINE_INPUT_SUCCESS Steps=18 Members=5 Revision=5 AutomatedInput=1 SimpleCollision=1').Count -ne 1) { throw 'Missing unique finite input/physics success.' }
+    if ([regex]::Matches($sandbox,'CONSTRUCTION_LINE_INPUT_STARTED').Count -ne 1 -or [regex]::Matches($sandbox,'CONSTRUCTION_LINE_INPUT_SUCCESS Steps=21 Members=5 Revision=5 AutomatedInput=1 SimpleCollision=1').Count -ne 1) { throw 'Missing unique finite input/physics success.' }
     if ($sandbox -match 'CONSTRUCTION_SAVE_RESULT|CONSTRUCTION_LOAD_RESULT') { throw 'Original-project input fixture must not dispatch player disk save/load.' }
     $results.steps=@($observed | ForEach-Object { [ordered]@{ name=$_.Groups[1].Value; members=[int]$_.Groups[2].Value; doors=[int]$_.Groups[3].Value; revision=[uint64]$_.Groups[4].Value; lineMode=[int]$_.Groups[5].Value; seed=[int]$_.Groups[6].Value; ghostCells=[int]$_.Groups[7].Value; worldSeconds=[double]::Parse($_.Groups[8].Value,[Globalization.CultureInfo]::InvariantCulture) } })
     $results.noPlayerSaveLoadDispatch=$true
     $results.status='Passed'
-    Write-Output "PASS:18 semantic line input/preview/physics checks and normal-mode isolation. Evidence: $EvidenceRoot"
+    Write-Output "PASS:21 semantic line/camera/demolition input/preview/physics checks and normal-mode isolation. Evidence: $EvidenceRoot"
 
 } catch {
     $results.status = 'Failed'
