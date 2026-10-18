@@ -12,9 +12,32 @@ Make the next implementation assignment bounded: one Building migration harness 
 | B-02 / build + operations | Exact candidates below; Linux x64 Ubuntu Noble containers; Windows x64 development SDK | Compatible locked restore/build, licenses/advisories/native dependencies, artifact provenance and disposable fixture provisioning |
 | B-03 / Backend + Security + World/Character owners | Authenticated server-to-actor binding and action-bound participant authorization; [authority draft](PER-01-authority-fencing-contract.md) proposes durable admission reservations | Owning contract/allowlist changes resolving gateway-only callers, authority-only participation, durable admission and grant lifetime across revocation/handoff; no executable zone adapter until resolved |
 | B-04 / persistence + World + Security/operations | Per-action durable generation barriers; separately enrolled restore incarnation | Exact messages, trust/enrollment contract, race vectors and proof that old database/workloads are fenced |
-| B-05 / shared-contract + domain owners | Separate RPC and semantic hash profiles from PER-01; one bundled protobuf toolchain | Schema/profile/compiler identity and cross-language byte vectors, including terrain representation through DEC-03 |
+| B-05 / shared-contract + domain owners | Separate RPC and semantic hash profiles from PER-01; one bundled protobuf toolchain; [restricted profile draft](INT-02-command-hash-profile.md) | Accepted schema/profile dispatch, rolling compatibility, compiler identity and cross-language byte vectors; terrain representation through DEC-03 remains separate |
 
 All five rows remain proposed. Use two recorded stages: **scope approval** permits only the named isolated evidence-producing assignment; **closure** accepts its exact reviewed artifacts and validation evidence for dependent implementation. Scope approval is not mutation authorization or full decision closure. Each record must name the authority, date, artifact/profile revision, stage, scope and evidence; a review or version lookup does not fill that record. Rejection records the alternative and affected dependent packet instead of silently changing the protocol.
+
+## Baseline alternatives for the user decision
+
+The user requested pros/cons before selecting the baseline; no approval is recorded. Language, process layout and privileges are independently selectable. The recommendation below is a project-fit judgment, not measured performance or owner acceptance.
+
+| Language | Advantages for this project | Costs / adoption consequence |
+| --- | --- | --- |
+| C#/.NET 10 (recommended) | Typed application code and integrated ASP.NET Core/gRPC fit service rules, transaction handling and recovery workflows; LTS through November 2028 | Adds a toolchain alongside Unreal C++; garbage collection/allocation needs profiling; package graph still unverified |
+| Go | Built-in concurrency and a relatively small language suit network services | Different package/toolchain selection; garbage collection remains; same durable-action protocol and correctness obligations |
+| Rust | Memory safety without garbage collection suits tightly controlled resource/latency needs | Ownership/async implementation and review complexity; select for maintainer preference or measured need, not assumed capacity |
+| TypeScript/Node | Reuses the browser prototype's language and supports rapid application work | Revises Backend's C# / Go / Rust shortlist; CPU work must avoid event-loop blocking; prototype SQLite is not the proposed service storage |
+
+Capability references: [ASP.NET gRPC](https://learn.microsoft.com/en-us/aspnet/core/grpc/aspnetcore?view=aspnetcore-10.0), [.NET support](https://dotnet.microsoft.com/en-us/platform/support/policy), [Go FAQ](https://go.dev/doc/faq), [Rust](https://rust-lang.org/), [Node event-loop guidance](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop). No language benchmark or relative hosting-cost claim has been established here. Unreal gameplay remains in its existing C++ project under any backend selection.
+
+| Layout | Advantage | Cost / recommendation |
+| --- | --- | --- |
+| Separate domain processes, initially on one host | Separate credentials and process boundaries; domain deployment/scale can evolve independently | More calls and failure paths; recommended starting layout subject to isolation/resource evidence. One host is a common failure domain, not tier-0 availability |
+| One modular backend process | Fewer deployments and simpler local debugging | Weaker process isolation; revise credential boundaries and revisit the separate-deployable proposal before adoption; no automatic cross-domain transaction permission |
+| Separate hosts immediately | Stronger host failure/resource isolation | More infrastructure and operating cost; capacity/failure evidence should justify it. Does not by itself meet the database's AZ/DR requirements |
+
+For privileges, recommend a non-login object owner, migration-only ownership access and restricted runtime DML as the fixture contract specifies. Runtime schema ownership is simpler initially but permits altering/dropping owned objects; separating credentials alone does not remove that power ([PostgreSQL ownership/privileges](https://www.postgresql.org/docs/17/sql-grant.html)). The fixture role design does not amend the owning production Backend/Security contract without its separate acceptance.
+
+An explicit fixture-baseline selection can authorize B-01's isolated design direction and B-02 evidence scope. It does not close B-02 before locked build/provisioning evidence, approve B-03/B-04, release protected specs or prove production readiness. Until selection, continue documentation only.
 
 ## Dependency candidate manifest
 
@@ -92,7 +115,7 @@ Role conflict requiring B-01 acceptance: Backend §6.4 currently makes runtime `
 | B-ACCEPT | This packet and topology proposal only; record B-01…05 staged decisions or alternatives | Accepting owners and referenced revisions; distinguish scope approval from evidence-backed closure, without protected-domain edits or inferred approval |
 | B-LOCK | New backend build/lock files and isolated fixture instructions after B-01 design acceptance and B-02 scope approval | SDK and base digests, full NuGet closure/compiler identities, advisory/license/native checks, PostgreSQL pin and exact create/cleanup commands; restore/build evidence closes B-02, no gameplay mutations |
 | [C-MIG](PER-01-migration-fixture-contract.md) | Building migration runner plus disposable fixture only | B-01 design/role acceptance and B-02 closure from B-LOCK; empty/repeat/checksum/concurrent/interrupted migration, role isolation and schema refusal. Other authority decisions need not block this isolated non-gameplay harness. Inventory schema excluded. |
-| INT-02-PROFILE | Shared `.proto`/profile/byte fixtures; no gameplay adapter | Owners approve profile scope/toolchain and relevant B-03 binding proposal before authoring; this assignment produces the schema/compiler/vector evidence that closes B-05, so B-05 closure is not its entry gate. Positive/negative C#/UE-language vectors; unknown/duplicate fields, optional/default presence, scoped keys, replay/mismatch and generation-independent semantic hash. Terrain subset awaits DEC-03. |
+| [INT-02-PROFILE](INT-02-command-hash-profile.md) | Shared `.proto`/profile/byte fixtures; no gameplay adapter | Documentation draft prepared; owners approve profile scope/toolchain and relevant B-03 binding proposal before executable authoring. This assignment produces schema/compiler/vector evidence for B-05 closure, not its own entry gate. Include wire rejection, rolling N/N−1/profile dispatch, scoped keys/replay and generation-independent semantic hashes. Terrain subset awaits DEC-03. |
 | [B-AUTH/FENCE](PER-01-authority-fencing-contract.md) | Separately assigned owning contracts and isolated failure vectors | Proposed logical contract prepared; B-03/B-04 scope/owner decisions and exact wire/storage definitions remain open. No protected writes until released. Define enrollment and actor-binding contracts before enabling mutation handlers. |
 
 Independent review and Markdown/link checks complete this bounded preparation only. B-LOCK, accepted authority/profile contracts and required protected-owner releases remain implementation gates. No runtime test was run for this documentation change.
