@@ -61,6 +61,8 @@ package.json (Node >=24; start/test scripts)
 Construction door interaction: [SBX-05D packet](decisions/SBX-05D-door-input-and-walking.md) and [passed actual-input/walking evidence](evidence/construction-sandbox-door-input-save-pilot.md) cover sandbox Controller, SFConstructionDoorInputScenario h/cpp, tools/Test-ConstructionSandboxDoorInput.ps1 and sandbox-only hook. Parent dev-only SFE1PlayerController entry counter detects duplicate dispatch before coalescing. Sixteen semantic steps and actual grounded CharacterMovement sill traversal pass; final bindings/remapping and human/rendered acceptance remain open.
 Construction save publication: [SBX-06G packet](decisions/SBX-06G-save-publication.md) and [passed evidence/hashes](evidence/construction-sandbox-door-input-save-results.json) cover SFConstructionSaveStore h/cpp and SFConstructionSaveStoreTests. Fixed Saved/ConstructionSandbox root, Windows nonreplacing immutable generations, bounded scan/retention and strict latest-codec read; fresh-GUID-root actual IO tests. Settings capture retention3[2,16] and scan128[32,512] per store startup. State export/import and player save/restart route are next.
 
+Construction snapshot restore: [SBX-06H packet](decisions/SBX-06H-stable-snapshot-restore.md) assigns Sandbox Preview integrity/tests and State/Clearance snapshot API/restore tests. Stable-only export/import, explicit validated owned-projection exclusions, separate projection-generation stamps and staged whole-assembly publication are Working. [SBX-06I follow-up](decisions/SBX-06I-save-input-and-restart.md) defines temporary fixed-root player actions and an isolated copied-project restart test; unassigned until H passes.
+
 ## Routes and commands
 
 | Method / path | Purpose |
