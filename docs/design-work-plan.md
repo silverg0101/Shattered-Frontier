@@ -1,6 +1,6 @@
 # Design documentation work plan
 
-Last updated: 2026-10-17. Owner: coordinating documentation agent. This is the running documentation queue; the [gameplay backlog](Game-Design/Legends_Shattered_Frontier_Gameplay_Feature_Backlog_v1.0.md) owns implementation work and [roadmap](Game-Design/Legends_Shattered_Frontier_Production_Roadmap_v1.0.md) owns milestone gates. Update this file during each documentation work cycle; no background monitoring is implied. Standing user rules and continuation context are preserved in [design-agent.md](../design-agent.md).
+Last updated: 2026-10-18. Owner: coordinating documentation agent. This is the running documentation queue; the [gameplay backlog](Game-Design/Legends_Shattered_Frontier_Gameplay_Feature_Backlog_v1.0.md) owns implementation work and [roadmap](Game-Design/Legends_Shattered_Frontier_Production_Roadmap_v1.0.md) owns milestone gates. Update this file during each documentation work cycle; no background monitoring is implied. Standing user rules and continuation context are preserved in [design-agent.md](../design-agent.md).
 
 ## Goal and current evidence
 
@@ -26,18 +26,18 @@ Priorities below are documentation order, not changes to the gameplay backlog's 
 | ID | Priority / state | Outcome | Dependencies / next action |
 | --- | --- | --- | --- |
 | DOC-00 | First / Done | Initial evidence assessment, work queue, agent routing and review loop | Independent review found no blockers; ownership clarification integrated |
-| DOC-01 | Complete / Done | [Reviewed concept coverage matrix](design-coverage.md) across MVP, slice and later scope | COV-01/02 later event-owner requests; COV-03 and uninspected player-system leads feed DOC-06 |
+| DOC-01 | Complete / Done | [Reviewed concept coverage matrix](design-coverage.md) across MVP, slice and later scope | DOC-06 updates bounded coverage; COV-01/02 event requests and COV-03…06 owner decisions remain open |
 | DOC-02 | Complete / Done | [Reviewed durable-action proposal](decisions/DEC-02-durable-actions.md) and MVP receipt mapping | No review blockers; DEC-02 acceptance and implementation evidence remain pending with architecture + persistence |
 | DOC-03 | Complete / Done | [Reviewed terrain adoption proposal](decisions/DEC-03-terrain.md) | Acceptance pending; codec, collision readiness and Compact/provenance mapping remain World/Construction/Unreal gates |
 | DOC-04 | Complete / Done | Consolidated decision register linked to gates and owners | DEC-01…09 plus MVP recovery row reconciled; independent source review found no blockers; decisions remain open |
 | DOC-05 | Complete / Done | [Reviewed bounded tuning audit](design-tuning-audit.md) | E1/H2 sample and REC-03 lookup complete; release-bound defaults remain permitted; conditional live declarations and owner classifications remain pending |
-| DOC-06 | Next / Ready | Validate uncovered player/design leads before authoring fixes | Use coverage matrix: COV-03 Analytics lookup first, then crime/PvP modes/expedition ownership; no speculative domain rewrite |
+| DOC-06 | Complete / Done | [Reviewed lookup and owner requests](design-coverage.md#doc-06-lookup-limits-and-classification) | Analytics and guard/validation/territory/dungeon evidence checked; independent source review found no findings; COV-03…06 owner decisions remain open, not new E1/H2 requirements |
 | DOC-07 | Later / Blocked | Implementation-ready documentation gate for the selected milestone | Await relevant decisions, author changes and independent review; does not certify runtime readiness |
 | DOC-08 | Complete / Done | [Reviewed recovery-profile proposal](decisions/DOC-08-recovery-profile.md) | Existing schedule adopted as proposal; REC-01/02 replay/reconciliation evidence and REC-03 owner classification remain pending |
 | DOC-09 | Complete / Done | [Reviewed session applicability proposal](decisions/DEC-04-session-applicability.md) | Existing Backend/Security adapter mapped; ticket caller, atomic admission/fencing, revocation and SESS-01…07 evidence remain owner gates; DEC-04 open |
 | DOC-10 | Complete / Done | [Reviewed compatibility proposal](decisions/DEC-08-compatibility.md) | Release/migration/rollback and CMP-01…07 mapped; binding/codec/schema choices, owner acceptance and C4 evidence remain pending; DEC-08 open |
 
-DOC-02/03/08/09/10 are reviewed proposals; no owner acceptance or runtime readiness is inferred. DOC-04 consolidates decision status below; DOC-05 records only its bounded sample. Next run DOC-06's read-only evidence lookup, then assign fixes only for confirmed gaps and available ownership. Keep at most two author tasks plus one reviewer active. DOC-07 remains blocked by selected-milestone decisions and evidence.
+DOC-02/03/08/09/10 are reviewed proposals; no owner acceptance or runtime readiness is inferred. DOC-04 consolidates decision status below; DOC-05 records only its bounded sample. DOC-06's source lookup separates existing guard/siege/dungeon behavior from later scope and metric questions. Prioritize selected-milestone decision/evidence packets before broader authoring; no domain rewrite follows automatically from these concept questions. Keep at most two author tasks plus one reviewer active. DOC-07 remains blocked by selected-milestone decisions and evidence.
 
 ## Consolidated decision register — DOC-04
 
@@ -71,7 +71,18 @@ Alternatives below are evaluation paths, not approved scope cuts or substitution
 | DEC-09 | Hosting/exposure/cost options remain unselected and require the project owner. Revisit before exposure, population, spending or data-handling changes. |
 | DOC-08 | Reduced local crash rehearsal is useful evidence but cannot close production disaster-recovery gates. Revisit on topology/privacy/runbook changes, aged replay beyond dedup history or missed restore targets. |
 
-DOC-01 COV-01/02 event-owner requests and COV-03 trade-metric lookup remain later-scope follow-ups under DOC-06; they do not become new E1/H2 decision IDs. DOC-03 codec/collision/Compact issues remain under DEC-03. DOC-08 recovery findings remain under its MVP row and DEC-02/08 dependencies. DOC-07 stays blocked on the selected milestone's specific decisions and reviewed contracts; unrelated open decisions do not block all work.
+DOC-06 completed the COV-03 trade-metric lookup and recorded COV-04…06 scope/owner questions in coverage. They and COV-01/02 event requests remain later-scope follow-ups, not new E1/H2 decision IDs. DOC-03 codec/collision/Compact issues remain under DEC-03. DOC-08 recovery findings remain under its MVP row and DEC-02/08 dependencies. DOC-07 stays blocked on the selected milestone's specific decisions and reviewed contracts; unrelated open decisions do not block all work.
+
+### Pending concept-owner packets after DOC-06
+
+These are concrete inputs for later owner assignments, not permission to edit reserved files or adopt new scope. The current E1 critical path remains DEC-01's actual toolchain/project/server-target evidence; H2 retains DEC-02/03 and recovery gates above.
+
+| Request / owner | Required decision before dependent authoring | Boundary |
+| --- | --- | --- |
+| COV-03 / Economy + Analytics | Define player-trade share (count/value, exchange population, NPC treatment, time/aggregation, corrections) with examples, or defer/retire the aspiration | Analytics writes reserved; existing velocity is not a substitute. No restricted-market blocker inferred. |
+| COV-04 / project/product, then named crime lead and AI/Combat/World/Building collaborators | Choose existing guard-only interpretation, selected additional criminal gameplay, or deferral; assign authoritative behavior/validation ownership | Preserve temporary guard offender state and property rights. Security validation/sanctions do not silently own criminal gameplay. |
+| COV-05 / project/product + World/Combat/Territory | Select/defer each non-siege PvP mode, assign lead and define eligibility/lifecycle before detailed contracts | Keep accepted siege protections; no new PvP milestone or generic Dungeon ownership inferred. |
+| COV-06 / project/product + Dungeon | Map expedition label to an existing dungeon type, define distinct scope/lead, or defer | Dungeon writes reserved; no new enum/service or content commitment. |
 
 ## Executable next assignments
 
@@ -161,5 +172,7 @@ Documentation gate: selected milestone's scope/journey maps to owning contracts;
 | 2026-10-17 | Final integration review and coordinator documentation checks | No blockers; corrected stale REC-03 status summaries. All 80 local Markdown targets and nine heading anchors across four changed files resolve. Whitespace check passes with Windows CR-at-EOL recognized; no runtime tests. |
 | 2026-10-17 | DOC-09 and DOC-10 separate inherited stronger authors; independent inherited stronger reviewer inspected actual packets and owning sections | Both bounded proposals reviewed with no remaining findings after DOC-09 citation fixes. Ticket issuer conflict stays explicit; serialization/revocation, schema/codec/install adapters and all runtime fixtures remain owner gates. No protected-domain edits or runtime tests. |
 | 2026-10-17 | Final DOC-09/10 integration review and coordinator documentation validation | No remaining findings; clarified unsafe-content rollback mitigation and rechecked citations. All 118 local link targets and ten heading anchors across seven changed files resolve. Whitespace check recognizes Windows CR-at-EOL; documentation only, no runtime tests. |
+| 2026-10-18 | DOC-06 read-only Luna/medium lookup, coordinator direct-source synthesis and separate inherited stronger source reviewer | Bounded lookup Done with no review findings. COV-03 measurement remains undefined in sampled authorities; COV-04…06 request later scope/ownership decisions while preserving guard/siege/dungeon contracts. No protected-domain writes or runtime tests. |
+| 2026-10-18 | Final DOC-06 integration review and documentation checks | No remaining findings. All 105 local link targets and six heading anchors across four changed files resolve; whitespace check passes with Windows CR-at-EOL recognized. Only coverage, queue, index and handoff changed. |
 
-Current handoff: DOC-09/session and DOC-10/compatibility are independently reviewed proposals, indexed and linked from roadmap/MVP; DEC-04/08 acceptance remains pending. Next: DOC-06 targeted Analytics/trade-metric and player-system ownership lookup. Session caller conflict, atomic admission/fencing, connected-server revocation, schema/codec/install choices and runtime fixtures remain owner work. TUN-01/02 retain release defaults; REC-03 owner classification and REC-01/02 reconciliation remain open. DOC-07 stays blocked. User rules remain in root design-agent.md; publication is recorded in Git history. Documentation only; no engine or recovery capability verified.
+Current handoff: DOC-06 bounded lookup is independently reviewed and Done; COV-03…06 are pending owner decisions documented in coverage and the owner-packet table above. Do not rerun the same inventory or invent later gameplay scope. Next prioritize E1 DEC-01's actual toolchain/project/server-target evidence; H2 DEC-02/03/recovery and G3/C4 session/compatibility gates remain open. DOC-07 stays blocked on the selected milestone's decisions. Protected-owner changes remain requests. User rules remain in root design-agent.md; publication is recorded in Git history. Documentation only; no engine or recovery capability verified.
