@@ -104,6 +104,10 @@ Buildings should improve survival and make settlement life valuable. Enclosed, w
 
 Shelter validation requires a connected floor, wall enclosure on at least 75% of the room perimeter, and roof coverage over at least 90% of its floor voxels. The room must have a 2 m minimum clear height and a maximum interior volume of 2,000 m³. Biome hazards may require heat, insulation, or ventilation. Comfort points are assigned by category: shelter 2, heat source 2, bed 2, seating 1, table 1, lighting 1, decoration 1. One qualifying contribution per category counts; duplicates do not stack. A valid shelter and bed provide the Rested effect: +20% health and stamina recovery for 10 minutes. Each comfort point adds 2 minutes, to a 30 minute cap; the effect's strength does not increase. The player sees the room boundary, unmet criteria, furnishing contributions, and resulting rested duration.
 
+### 3.6 Locked structural geometry interface
+
+[BLD-01](../decisions/BLD-01-voxel-geometry-interface.md) locks the v1 construction-to-mesh contract: one versioned partial solid per occupied 0.5 m address, multi-cell placement brushes compiled into member cells, exact positive-area face contacts, derived exposed surfaces and appearance-only material-kit treatments. Structural solids remain separate from World terrain density and functional objects. Damage/removal and support operate on member cells, not an indivisible brush or render mesh. Reflections require authored geometry, not negative scale. The geometry compiler, numerical compatibility and Unreal adapter gates remain required before final-mesh/engine acceptance; the decision is not runtime delivery.
+
 ## 4. Environmental interaction and degradation
 
 Weather and regional hazards act on structures according to exposure, material, construction quality, and protection. Wind, precipitation, temperature, fire, or other hazards can create damage, discomfort, or functional interruption. A well-designed shelter mitigates the threats it was built to withstand; no single material or roof should solve every biome.

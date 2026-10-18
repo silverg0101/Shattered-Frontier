@@ -8,7 +8,7 @@ User direction, 2026-10-18: include reusable player-construction building blocks
 
 The sources name shape families but do not enumerate their exact masks, pivots or dimensions. The four existing shelter concepts in the other session's `docs/art-templates/asset-lists/basic-greenlands-shelter-03.md` explicitly leave connection sizes unresolved. Preserve their images/history and use suitable styling; they are not verified modular geometry. Record geometry-fit review separately from image-complete status.
 
-The **reference geometries below are new, explicit art proposals**, not already accepted runtime masks, production content IDs, unlocks or cost/support values. They give this image session a deterministic brief now. Record `geometry-proposed` until the construction/engine content author accepts the mask/pivot/connection definition; never infer such acceptance from an image. Later modeling must build the declared geometry from parameters and verify it numerically, using artwork for appearance. Image generation alone cannot certify dimensions or fit.
+The [BLD-01 structural geometry interface](../decisions/BLD-01-voxel-geometry-interface.md) now locks the cell/solid, brush, surface and mesh compatibility contract. The **reference geometries below remain authoring targets**, not approved compiled masks, production content IDs, unlocks or cost/support values. Record `geometry-proposed` until GEO-01 supplies the approved per-cell compiled manifest and applicable GEO-02 compatibility evidence; never infer acceptance from an image. Arches and curves compile into independently editable member cells, not indivisible prefabs. Analytic circles are visual targets; the accepted polygonal solid and its clearance/error report govern final meshes. Final modeling uses approved deterministic base geometry and artwork for appearance. Image generation alone cannot certify dimensions or fit; engine-ready status additionally requires GEO-03.
 
 ## Separate shape, material and cosmetic identity
 
@@ -27,7 +27,7 @@ A stone-looking surface on a timber gameplay profile must not be presented as st
 - Units: meters in briefs, with exact conversion recorded for future Blender/Unreal assets. One structural cell has edge **0.5 m**.
 - Construction-local axes: X = module length/run, Y = depth, Z = up. Record the later engine/model axis conversion explicitly. Origin/pivot is the minimum grid corner of the declared module envelope; an animated door additionally names its hinge pivot.
 - For a one-cell primitive use normalized coordinates `(u,v,w)=(x,y,z)/0.5`, each in `[0,1]`. Internal fractional surfaces do not create a different world placement grid. Anchors remain on the 0.5 m grid.
-- Default structural orientation is grid-aligned; enumerate authored 90-degree rotations and mirrors. An orientation that changes a partial shape's axis requires a named compatible mask. Do not use arbitrary rotation or artist scaling to repair a mismatch.
+- Structural orientation is grid-aligned; enumerate the shape's allowed proper cube rotations in 90-degree steps under BLD-01. Reflections require separately authored geometry; do not use negative scale, arbitrary rotation or artist scaling to repair a mismatch.
 - Each definition records its occupied boundary polygons on `−X,+X,−Y,+Y,−Z,+Z`; face contact, not bounding-box adjacency, determines possible structural transfer. Openings and empty portions remain empty in every skin.
 - For the initial reference set, surface variation stays inside the canonical outer envelope. Joints, openings, contact planes and clearances stay fixed. Larger trim, overhangs or different silhouettes are separately defined attachments/geometry variants, with their own collision/access checks.
 - Formulas below describe versioned authored geometry, not operator-editable expressions. Collision, occupancy, support and shelter masks must later be authored and tested against the selected geometry; concept art is not their source of truth.
@@ -113,11 +113,13 @@ For later modeling, start from deterministic geometry matching the record, then 
 Paste this after the current instructions, or ask that session to read this file:
 
 ```text
-Also read docs/art-templates/player-construction-kit-contract.md.
+Also read docs/art-templates/player-construction-kit-contract.md and
+docs/decisions/BLD-01-voxel-geometry-interface.md. BLD-01 locks the structural
+interface; final meshes require approved GEO-01 geometry and GEO-02 fit checks.
 Include the player-construction library in the finite indexed asset scope.
 Preserve the existing 0.5 m voxel system, complex shape families, five
 gameplay material tiers and functional/automation/environment families.
-Use its explicit proposed reference shapes and interface records; distinguish
+Use its reference shape targets and locked interface records; distinguish
 geometry acceptance from image completion. Produce reusable shape concepts
 with distinct gameplay material profiles and appearance-only cosmetic skins.
 Retain each material tier's gameplay identity; skins change appearance only.
