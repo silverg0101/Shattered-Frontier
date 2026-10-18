@@ -8,3 +8,4 @@ GameClient/.vs/
 GameClient/*.sln
 GameClient/*.slnx
 Artifacts/
+__pycache__/

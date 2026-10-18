@@ -12,6 +12,8 @@ Map source generation is `tools/Create-E1Map.py`, invoked through the editor's P
 
 From the repository root, `./tools/Test-E1Connections.ps1` runs the bounded headless loopback server/two-client connection check, writes ignored logs and stops its own processes. It does not verify rendered movement or lifecycle cleanup. See [recorded evidence and remaining checks](../docs/evidence/e1-foundation.md).
 
+After the Linux server is running, `./tools/Test-E1Remote.ps1 -ServerAddress steam-server -Port 17777` checks two independent client welcomes for the expected E1 map/mode and stops its own clients. Inspect server logs separately for distinct authoritative possessions; no rendered movement or account-identity acceptance is implied.
+
 `SFE1GameMode` owns spawn/possession through Unreal's standard authoritative GameMode. `SFE1Character` uses CharacterMovement replication and collision. This local development fixture has no account authentication, persistence, interaction target, production backend or economic actions. Keep its server on a trusted development network.
 
 ## Release-controlled fixture settings
@@ -30,4 +32,4 @@ The typed `SFE1Settings` object reads the shipped `Config/DefaultGame.ini` secti
 
 Run speed, jump height, gravity and step height follow the canonical unmodified baseline. Launch speed derives from height/gravity; the character scales world gravity to the declared magnitude on startup. Air control is disabled. Other defaults are E1 fixture choices, not acceptance of the full movement design (including terminal speed and modifiers). Fixture geometry is described in the generator in centimetres.
 
-The dedicated destination is Linux x86_64 Docker on Unraid. See [the Linux build route](../docs/e1-linux-server-build.md). The Launcher engine can build this editor but cannot package the Server target. A matching source engine and Linux SDK are required before packaging or deployment.
+The dedicated destination is Linux x86_64 Docker on `steam-server`, selected by the user after initial Unraid assessment. See [the Linux build route](../docs/e1-linux-server-build.md). The Launcher engine can build this editor but cannot package the Server target. A matching source engine and Linux SDK are required before packaging or deployment.

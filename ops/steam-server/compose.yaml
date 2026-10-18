@@ -1,0 +1,36 @@
+name: shattered-frontier
+services:
+  game:
+    image: "${SF_IMAGE:?Set the verified release image}"
+    pull_policy: never
+    restart: unless-stopped
+    init: true
+    user: "${SF_UID:?Set runtime UID}:${SF_GID:?Set runtime GID}"
+    environment:
+      SF_GAME_PORT: "${SF_GAME_PORT:-17777}"
+      HOME: /srv/home
+    ports:
+      - "${SF_BIND_ADDRESS:-127.0.0.1}:${SF_GAME_PORT:-17777}:${SF_GAME_PORT:-17777}/udp"
+    volumes:
+      - /srv/shattered-frontier/shared:/srv/saved
+      - /srv/shattered-frontier/home:/srv/home
+    read_only: true
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=512m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    cpus: "${SF_CPUS:-4}"
+    mem_limit: "${SF_MEMORY_GIB:-8}g"
+    pids_limit: 512
+    stop_grace_period: 45s
+    healthcheck:
+      test: [CMD-SHELL, "grep -q 'E1_WORLD_READY.*NetMode=1' /srv/saved/Logs/Server.log"]
+      interval: 15s
+      timeout: 3s
+      retries: 4
+      start_period: 60s
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"

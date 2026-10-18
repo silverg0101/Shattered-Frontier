@@ -4,7 +4,7 @@ Load this guide only when onboarding a developer, setting up a machine, or expli
 
 ## Project status
 
-The runnable project is currently a Node.js browser harness. The next engine milestone targets Unreal Engine 5.8 and Visual Studio 2026; an Unreal project and packaged dedicated server have not yet been added. See [alpha milestones](alpha-plan.md).
+The repository contains both the Node.js browser harness and the E1 Unreal C++ project at `GameClient/ShatteredFrontier.uproject`. Its UE5.8.3 editor build/local connection smoke passed; source-engine/Linux packaging setup is tracked in [the Linux build route](e1-linux-server-build.md). The selected runtime host is `steam-server`; a packaged dedicated-server success must be recorded separately. See [alpha milestones](alpha-plan.md).
 
 ## 1. Required software
 
@@ -84,7 +84,7 @@ Setup does not require running the full test suite. For later changes, run only 
 
 ## 4. Prepare Unreal development
 
-Finish the engine and Visual Studio installations, then record the engine version/path and installed compiler/SDK versions in the setup handoff. Once this repository contains a `.uproject`, open that project's file with the matching engine and build its editor target using Visual Studio. Until then, there is no Unreal project here to open or build.
+Record the engine version/path and installed compiler/SDK versions in the setup handoff. Open `GameClient/ShatteredFrontier.uproject` with the matching UE5.8.3 engine; [GameClient instructions](../GameClient/README.md) contain the verified editor build command. Use the explicit source-engine path when packaging Server targets; the Launcher build does not support them.
 
 A packaged dedicated-server build requires an Unreal source build in [Epic's documented workflow](https://dev.epicgames.com/documentation/en-us/unreal-engine/setting-up-dedicated-servers-in-unreal-engine). Link your GitHub account to Epic and obtain access to Epic's engine repository before that stage. This is separate from the game's deploy key; a game-repository key does not grant engine-source access.
 

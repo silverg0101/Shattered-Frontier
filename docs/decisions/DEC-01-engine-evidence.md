@@ -1,6 +1,6 @@
 # DEC-01 — E1 engine and toolchain evidence
 
-Status: historical independently reviewed post-install metadata, supplemented by user-authorized E1 implementation on 2026-10-18. [Foundation evidence](../evidence/e1-foundation.md) now records actual editor builds/map checks; [Linux route](../e1-linux-server-build.md) selects matching source-engine packaging for Unraid. DEC-01 remains open for source/toolchain/package compatibility. The earlier sections below preserve the metadata-only investigation and do not describe current implementation status.
+Status: historical independently reviewed post-install metadata, supplemented by user-authorized E1 implementation on 2026-10-18. [Foundation evidence](../evidence/e1-foundation.md) now records actual editor builds/map checks; [Linux route](../e1-linux-server-build.md) selects matching source-engine packaging for steam-server. DEC-01 remains open for source/toolchain/package compatibility. The earlier sections below preserve the metadata-only investigation and do not describe current implementation status.
 
 ## Decision and inspected authority
 

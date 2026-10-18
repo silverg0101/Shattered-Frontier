@@ -1,6 +1,8 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)][string]$SourceEngineRoot,
+    [string]$CookEditorRoot,
+    [ValidateRange(1, 16)][int]$MaxParallelActions = 4,
     [switch]$ValidateOnly
 )
 
@@ -30,6 +32,8 @@ function Assert-SafePath([string]$Path) {
 }
 
 $engineRoot = Assert-SafePath $SourceEngineRoot
+$cookerRoot = if ([string]::IsNullOrWhiteSpace($CookEditorRoot)) { $engineRoot } else { Assert-SafePath $CookEditorRoot }
+$cooker = Join-Path $cookerRoot 'Engine\Binaries\Win64\UnrealEditor-Cmd.exe'
 $null = Assert-SafePath $project
 $null = Assert-SafePath $artifactRoot
 if ($engineRoot.TrimEnd('\') -eq [IO.Path]::GetPathRoot($engineRoot).TrimEnd('\')) {
@@ -40,7 +44,7 @@ foreach ($file in @($project, (Join-Path $repoRoot 'GameClient\Source\ShatteredF
     if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { $issues.Add("Missing project prerequisite: $file") }
 }
 $uat = Join-Path $engineRoot 'Engine\Build\BatchFiles\RunUAT.bat'
-foreach ($relative in @('Engine\Build\BatchFiles\RunUAT.bat', 'Setup.bat', 'GenerateProjectFiles.bat', 'Engine\Binaries\Win64\UnrealEditor-Cmd.exe')) {
+foreach ($relative in @('Engine\Build\BatchFiles\RunUAT.bat', 'Setup.bat', 'GenerateProjectFiles.bat')) {
     if (-not (Test-Path -LiteralPath (Join-Path $engineRoot $relative) -PathType Leaf)) {
         $issues.Add("Missing source/prepared-engine prerequisite: $relative. Complete the pinned source checkout, dependency setup and host editor build.")
     }
@@ -55,6 +59,19 @@ if (Test-Path -LiteralPath $versionPath) {
         $issues.Add('Expected source engine version 5.8.3; review the route before changing engine versions.')
     }
 } else { $issues.Add("Missing engine identity: $versionPath") }
+if (-not (Test-Path -LiteralPath $cooker -PathType Leaf)) { $issues.Add("Missing prepared cook editor: $cooker") }
+if (-not [string]::IsNullOrWhiteSpace($CookEditorRoot)) {
+    $cookVersionPath = Join-Path $cookerRoot 'Engine\Build\Build.version'
+    if (Test-Path -LiteralPath $cookVersionPath -PathType Leaf) {
+        $cookVersion = Get-Content -LiteralPath $cookVersionPath -Raw | ConvertFrom-Json
+        if ($cookVersion.MajorVersion -ne 5 -or $cookVersion.MinorVersion -ne 8 -or $cookVersion.PatchVersion -ne 3 -or $cookVersion.CompatibleChangelist -ne 55116800) {
+            $issues.Add('External cook editor must be matching UE5.8.3 with compatible changelist55116800.')
+        }
+    } else { $issues.Add('External cook editor has no verifiable engine identity.') }
+    if (-not (Test-Path -LiteralPath (Join-Path $repoRoot 'GameClient\Binaries\Win64\UnrealEditor-ShatteredFrontier.dll'))) {
+        $issues.Add('Build the project editor module with the selected external cooker first. Loadability remains a cook-time check.')
+    }
+}
 if ((Test-Path -LiteralPath (Join-Path $engineRoot '.git')) -and (Get-Command git -ErrorAction SilentlyContinue)) {
     $revision = & git -C $engineRoot rev-parse HEAD 2>$null
     if ($LASTEXITCODE -ne 0 -or $revision -ne $requiredCommit) { $issues.Add("Source HEAD must be pinned to 5.8.3-release ($requiredCommit).") }
@@ -78,6 +95,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $sdkRoot 'x86_64-unknown-linux-gnu\b
 
 Write-Output "Project: $project"
 Write-Output "Engine: $engineRoot"
+Write-Output "Cook editor: $cooker"
 Write-Output "Linux SDK: $sdkRoot"
 Write-Output "Archive root: $artifactRoot\Archive"
 if ($issues.Count) { throw ("Linux server prerequisites are incomplete:`n- " + ($issues -join "`n- ")) }
@@ -89,8 +107,11 @@ if ($ValidateOnly) {
 # Project's configured startup map must exist before cooking. UAT owns target discovery.
 $uatArgs = @('BuildCookRun', "-project=$project", '-noP4', '-unattended', '-utf8output',
     '-build', '-cook', '-stage', '-pak', '-archive', '-server', '-noclient',
-    '-serverplatform=Linux', '-serverarchitecture=x64', '-serverconfig=Development',
+    '-platform=Linux', '-serverplatform=Linux', '-serverarchitecture=x64', '-serverconfig=Development', '-nobootstrapexe', "-ubtargs=-MaxParallelActions=$MaxParallelActions",
     "-stagingdirectory=$artifactRoot\Stage", "-archivedirectory=$artifactRoot\Archive")
+if (-not [string]::IsNullOrWhiteSpace($CookEditorRoot)) {
+    $uatArgs += @('-skipbuildeditor', "-unrealexe=$cooker")
+}
 & $uat @uatArgs
 if ($LASTEXITCODE -ne 0) { throw "Linux BuildCookRun failed with exit code $LASTEXITCODE. Preserve UAT logs; no server readiness is established." }
 Write-Output "BuildCookRun completed. Inspect $artifactRoot\Archive and verify the server on Linux before deployment."
