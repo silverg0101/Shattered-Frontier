@@ -2,6 +2,7 @@
 
 #include "Interaction/SFE1PlayerController.h"
 #include "Construction/SFConstructionSandboxState.h"
+#include "Construction/SFConstructionSaveStore.h"
 #include "SFConstructionSandboxController.generated.h"
 
 // Input exists only on this opt-in controller; inherited movement/jump/E remain.
@@ -17,6 +18,9 @@ public:
     bool IsBuildingEnabled() const { return bBuilding; }
     int32 GetDoorYawQuarterTurns() const { return DoorYaw; }
     const FString& GetLastConstructionResult() const { return LastResult; }
+    uint64 GetLastPublishedGeneration() const { return LastPublishedGeneration; }
+    uint64 GetLastLoadedGeneration() const { return LastLoadedGeneration; }
+    uint64 GetLastLoadedSourceRevision() const { return LastLoadedSourceRevision; }
 private:
     friend class ASFConstructionSandboxState;
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
@@ -28,6 +32,8 @@ private:
     void SelectSlope();
     void SelectDoor();
     void Interact();
+    void SaveDevelopment();
+    void LoadDevelopment();
     void Rotate();
     void Place();
     void Remove();
@@ -52,4 +58,8 @@ private:
     FIntVector DoorRemovalOrigin = FIntVector::ZeroValue;
     int32 DoorYaw = 0;
     FString LastResult;
+    TUniquePtr<FSFConstructionSaveStore> SaveStore;
+    uint64 LastPublishedGeneration = 0;
+    uint64 LastLoadedGeneration = 0;
+    uint64 LastLoadedSourceRevision = 0;
 };

@@ -19,6 +19,7 @@ void ASFConstructionSandboxController::BeginPlay()
     for (TActorIterator<ASFConstructionSandboxState> It(GetWorld()); It; ++It)
     { if (IsValid(*It) && !It->IsActorBeingDestroyed()) { State = *It; break; } }
     if (!State.IsValid()) { State = GetWorld()->SpawnActor<ASFConstructionSandboxState>(); }
+    SaveStore = MakeUnique<FSFConstructionSaveStore>();
 }
 
 void ASFConstructionSandboxController::SetupInputComponent()
@@ -38,6 +39,44 @@ void ASFConstructionSandboxController::SetupInputComponent()
     InputComponent->BindKey(EKeys::RightMouseButton, IE_Pressed, this, &ThisClass::Remove);
     InputComponent->BindKey(EKeys::Enter, IE_Pressed, this, &ThisClass::ConfirmRemoval);
     InputComponent->BindKey(EKeys::Escape, IE_Pressed, this, &ThisClass::CancelRemoval);
+    InputComponent->BindKey(EKeys::F5,IE_Pressed,this,&ThisClass::SaveDevelopment);
+    InputComponent->BindKey(EKeys::F9,IE_Pressed,this,&ThisClass::LoadDevelopment);
+}
+
+void ASFConstructionSandboxController::SaveDevelopment()
+{
+    FSFConstructionSandboxSnapshot Snapshot;
+    uint64 Generation = 0;
+    if (!SaveStore || !State.IsValid()) { LastResult = TEXT("Standalone development save unavailable"); }
+    else if (State->ExportSnapshot(this,State->GetRevision(),Snapshot,LastResult)
+        && SaveStore->Publish(Snapshot,Generation,LastResult))
+    {
+        LastPublishedGeneration = Generation;
+        LastResult = FString::Printf(TEXT("Saved local development generation %llu. %s"),Generation,*LastResult);
+        UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_SAVE_RESULT Success=1 Generation=%llu SourceRevision=%llu Reason=%s"),Generation,Snapshot.SourceRevision,*LastResult);
+        return;
+    }
+    UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_SAVE_RESULT Success=0 Generation=0 Reason=%s"),*LastResult);
+}
+
+void ASFConstructionSandboxController::LoadDevelopment()
+{
+    FSFConstructionSandboxSnapshot Snapshot;
+    uint64 Generation = 0;
+    if (!SaveStore || !State.IsValid()) { LastResult = TEXT("Standalone development load unavailable"); }
+    else
+    {
+        const uint64 ExpectedRevision = State->GetRevision();
+        if (SaveStore->ReadLatest(Snapshot,Generation,LastResult)
+            && State->ImportSnapshot(this,ExpectedRevision,Snapshot,LastResult))
+        {
+            LastLoadedGeneration = Generation; LastLoadedSourceRevision = Snapshot.SourceRevision;
+            LastResult = FString::Printf(TEXT("Loaded local development generation %llu; source revision %llu, current revision %llu."),Generation,Snapshot.SourceRevision,State->GetRevision());
+            UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_LOAD_RESULT Success=1 Generation=%llu SourceRevision=%llu LiveRevision=%llu"),Generation,Snapshot.SourceRevision,State->GetRevision());
+            return;
+        }
+    }
+    UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_LOAD_RESULT Success=0 Generation=0 Reason=%s"),*LastResult);
 }
 
 void ASFConstructionSandboxController::ToggleBuild() { CancelRemoval(); bBuilding = !bBuilding; }
@@ -236,7 +275,7 @@ void ASFConstructionSandboxController::Tick(float DeltaSeconds)
     {
         const TCHAR* Shapes[] = { TEXT("Cube"), TEXT("Half slab"), TEXT("Slope") };
         GEngine->AddOnScreenDebugMessage(static_cast<uint64>(GetUniqueID()) + (1ull << 32), 0.1f, FColor::Cyan,
-            FString::Printf(TEXT("STANDALONE DEVELOPMENT | UNLIMITED STOCK | Fixed synthetic foundation\nSupport-loss grace/collapse | economic salvage disabled | saves, timber art and networking INCOMPLETE\nB build | 1 Cube  2 Slab  3 Slope  4 Door | R orientation | LMB place | RMB targeted remove | Enter confirm | Esc cancel\nE aimed door toggle (also build paused); otherwise E1 probe | WASD/mouse/Space retained | temporary controls\n%s | rough-timber-v1 rules; neutral art | orientation %d/%d | snap 0.5 m | %d cells / %d doors\n%s\n%s\n%s\n%s"),
+            FString::Printf(TEXT("STANDALONE DEVELOPMENT | UNLIMITED STOCK | Fixed synthetic foundation\nSupport-loss grace/collapse | economic salvage disabled | timber art and networking INCOMPLETE\nB build | 1 Cube  2 Slab  3 Slope  4 Door | R orientation | LMB place | RMB targeted remove | Enter confirm | Esc cancel\nE aimed door toggle (also build paused); otherwise E1 probe | WASD/mouse/Space retained | temporary controls\nF5 save / F9 restore entire plot | fixed Saved/ConstructionSandbox development generations; stable assemblies only\n%s | rough-timber-v1 rules; neutral art | orientation %d/%d | snap 0.5 m | %d cells / %d doors\n%s\n%s\n%s\n%s"),
                 bDoorSelected ? TEXT("Ordinary door") : Shapes[Shape], bDoorSelected ? DoorYaw+1 : Rotation+1, bDoorSelected ? 4 : 24,
                 State->GetMemberCount(),State->GetDoorCount(),*Advisory,*State->GetInstabilitySummary(),*RemovalPrompt,*LastResult));
     }

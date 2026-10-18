@@ -45,7 +45,7 @@ void ASFConstructionSandboxState::BeginPlay()
     GraceSeconds = Settings->SupportLossGraceSeconds;
     RetrySeconds = Settings->CollapseRetrySeconds;
     bReady = true;
-    UE_LOG(LogTemp, Display, TEXT("CONSTRUCTION_TOOLS_READY Standalone=1 UnlimitedDevelopmentStock=1 Support=FixedFoundation Collapse=GraceWaves EconomicSalvage=0 Save=0 Network=0 ReachMetres=%.1f MaximumMembers=%d"),
+    UE_LOG(LogTemp, Display, TEXT("CONSTRUCTION_TOOLS_READY Standalone=1 UnlimitedDevelopmentStock=1 Support=FixedFoundation Collapse=GraceWaves EconomicSalvage=0 SnapshotAPI=1 Network=0 ReachMetres=%.1f MaximumMembers=%d"),
         ReachCentimetres / 100.0f, MaximumMembers);
 }
 

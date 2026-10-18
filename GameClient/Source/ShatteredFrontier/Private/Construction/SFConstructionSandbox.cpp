@@ -10,6 +10,7 @@
 #include "ProceduralMeshComponent.h"
 #include "Tests/SFConstructionInputScenario.h"
 #include "Tests/SFConstructionDoorInputScenario.h"
+#include "Tests/SFConstructionSaveRestartScenario.h"
 
 namespace
 {
@@ -257,5 +258,6 @@ void ASFConstructionSandboxGameMode::StartPlay()
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     StartConstructionInputScenario(GetWorld());
     StartConstructionDoorInputScenario(GetWorld());
+    StartConstructionSaveRestartScenario(GetWorld());
 #endif
 }

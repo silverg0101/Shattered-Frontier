@@ -54,7 +54,7 @@ struct FSFConstructionSandboxMember
     uint64 ProjectionGeneration = 0; // Derived mesh/collision stamp; occupancy Generation above is independent.
 };
 
-// Transient standalone authority checkpoint. No persistence,
+// Transient standalone authority with explicit development snapshots. No production persistence,
 // resource economy, authentication, replication or normal E1 mutation route.
 UCLASS(NotBlueprintable, Transient)
 class SHATTEREDFRONTIER_API ASFConstructionSandboxState : public AActor

@@ -63,6 +63,10 @@ Construction save publication: [SBX-06G packet](decisions/SBX-06G-save-publicati
 
 Construction snapshot restore: [SBX-06H packet](decisions/SBX-06H-stable-snapshot-restore.md) and [passed API/physics evidence](evidence/construction-sandbox-snapshot-restore-pilot.md) / [hashes](evidence/construction-sandbox-snapshot-restore-results.json) cover Sandbox Preview integrity/tests, State/Clearance snapshot API/restore tests, component-specific replacement contexts and separate projection stamps. Eighteen precise tests and both actual-input regressions pass. [SBX-06I follow-up](decisions/SBX-06I-save-input-and-restart.md) defines temporary fixed-root player actions and isolated copied-project restart; next gate.
 
+Construction save/load restart: [SBX-06I packet](decisions/SBX-06I-save-input-and-restart.md) and [passed restart evidence](evidence/construction-sandbox-save-restart-pilot.md) / [hashes](evidence/construction-sandbox-save-restart-results.json) cover Controller fixed-root F5/F9, new SFConstructionSaveRestartScenario hcpp/Sandbox hook and tools/Test-ConstructionSandboxSaveRestart.ps1. Actual sequential copied-project writer/reader, content/pose/physics, module provenance, ordinary-save preservation, normal-mode isolation and cleanup pass; seven focused tests clean. Temporary keys and standalone development only.
+
+Construction line placement: [SBX-05E packet](decisions/SBX-05E-atomic-line-placement.md) assigns a bounded pure SFConstructionLine helper/tests and State/Settings atomic line API/authority tests. Ready: one straight inclusive grid axis, captured8[1,32] cell cap, whole-candidate support/clearance and one staged revision. Controller line controls/finite input and UI prototype follow; no implementation claim.
+
 ## Routes and commands
 
 | Method / path | Purpose |

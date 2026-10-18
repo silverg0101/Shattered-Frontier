@@ -1,0 +1,25 @@
+# SBX-05E: bounded atomic line-placement API
+
+Next after passed SBX-06I. API-only gate before temporary line controls/finite input and UI comfort prototype. No map/art/default/cook/live-service changes, production economy or networking. Parent architecture/shared docs/serial builds; Luna bounded pure helper, Sol authority/settings/tests, independent Sol review. No author builds/commits; one writer/file.
+
+## Released line subset and configuration
+
+Add FSFConstructionLineIntent with StartCell, EndCell, Shape, Rotation, ExpectedRevision only. One released shape/rotation applies to every addressed cell. Inclusive straight grid-axis line: endpoints differ along at most one axis; equal endpoints mean one cell. Diagonals reject without projection or silent axis selection. Canonical output order is lexicographic, independent of input drag direction. Structural cells only; no door batching or line demolition.
+
+New pure SFConstructionLine helper enumerates into a temporary bounded array and preserves output on invalid input. Use int64 before subtraction/absolute/count to avoid int32 extreme overflow; no geometry/world/actor/config or filesystem input. Code invariant MaximumLineCells=32. Settings MaximumLineCells default8, safe bounds1–32, units cells per line, reviewed release authors only, captured at State startup; no console/live override. This operating limit does not alter geometry/support formulas. Expose the captured limit read-only for future UI.
+
+## Authority and one publication
+
+State EvaluateLine/ApplyLine accept only current admitted standalone local owned pawn/common revision. Enumerate with captured limit, enforce prospective total member budget before staging, then validate EVERY addressed cell using existing plot/height, released shape/rotation, reach, owned-pawn sight, unoccupied-cell, canonical door-reservation and actual current-world simple-body rules. An occupied endpoint/interior never skips/overwrites; any blocked or unavailable query rejects the entire line. No per-cell Apply loop and no partial success.
+
+Assemble the whole temporary final member map and solve combined support once. Every new cell must be stable/strained. No previously supported structural/door object may newly become unsupported. Existing not-yet-due grace episodes may remain or recover, preserving exact deadlines; never create/reset/extend grace through line placement. Due waves keep existing owner fence. Do not call single-cell CheckSupport against incomplete prefixes: a fully supported vertical stack or span may depend on other cells in this same admitted line.
+
+Only after complete validation call existing CommitCombined/CommitCandidate once with all new addresses as ChangedCells. New occupancy stamps and rebuilt-neighbor projection stamps follow the passed H contract. Success publishes exactly one fresh revision, clears stale authority confirmation and returns count/support feedback; immediately clear caller-controller ghosts/confirmation through existing friendship after success. EvaluateLine is read-only and failed evaluation/application preserves confirmation. Failure preserves current maps, actors, actual collision, revision, confirmation and all deadlines. Existing staged interruption hook must prove rollback after a real prepared item; no new public fault route. Single-cell and door behavior remains unchanged.
+
+## Ownership and precise tests
+
+Luna/medium owns only new SFConstructionLine.h/.cpp and SFConstructionLineTests.cpp: canonical reversed order, equal endpoint, X/Y/Z inclusive length, max/cap/invalid-limit/diagonal rejection, int32 extremes and output preservation. Sol/medium owns only State.h/.cpp, Settings.h/.cpp and new SFConstructionLineAuthorityTests.cpp. Agree helper signature before integration. Parent updates dependency map and executes focused helper/authority/affected settings/neighbor/lifecycle checks after both freeze. No Controller/Sandbox hook/input runner in this checkpoint.
+
+Authority tests prove one revision for multi-cell ground line and vertical line supported by its own lower members, reverse equivalence and all retained projections intact. Interior/end occupied, out-of-reach/blocked sight, pawn/prop/door reservation, invalid shape/rotation/bounds/length/prospective budget, stale/wrong owner/environment reject with complete preservation. Force failure after one prepared item in a line that already stages multiple actors; prove no leaked live actors/meshes/collision and old neighbor stamps intact. Existing support grace remains unchanged or recovers; due wave fences line. Test settings shipped/default/safe bounds without touching global runtime settings. No full project suite.
+
+Next SBX-05F: temporary line selection/start/endpoint/cancel/rotation context, full multi-cell ghost and actual finite input evidence; UI prototype/user comfort checkpoint before permanent bindings, catalogue, remapping or controller design. Approved scenery/materials and human/rendered packaged/two-client acceptance remain open.
