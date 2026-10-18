@@ -1,0 +1,9 @@
+# Construction functional-load numerical checkpoint
+
+2026-10-18 — SBX-06C numerical extension only. [Assignment](../decisions/SBX-06C-functional-loads-and-door.md) / [source hashes and results](construction-sandbox-functional-load-results.json). Raw logs/reports remain under ignored `Artifacts/ConstructionSandbox/functional-load-01/`.
+
+`FSFConstructionSupportMember::AttachedLoad` is a trailing default-zero authority-supplied sum in abstract load units. The solver admits finite0–1,000,000 and adds it after occupied structural weight, before unchanged frozen-DAG propagation. It grants no anchor/contact/reach and receives no occupancy/health discount. Existing runtime callers provide no functional loads yet; no door placement or mass input route was added. Construction §3.4 now explicitly includes the §3.2 functional-weight term.
+
+The editor build passed. Three focused `ShatteredFrontier.Construction.Support.` tests passed cleanly. Only test assertions then strengthened; the final build and precise `ShatteredFrontier.Construction.Support.FunctionalLoad` rerun passed cleanly. Cases include default equivalence, full inherited load, exact unequal-area shares, capacity equality/overload, failed-parent closure without rerouting, half-cell occupancy, reduced health, deterministic order and invalid-input output preservation. Independent Sol/medium source and raw-evidence review passed after author corrections. No full project suite ran.
+
+This closes numerical preparation only. Ordinary-door profile dimensions, supported-weight assignment, attachment conservation, motion/access reservations, authoritative lifecycle and actual collision/traversal remain gates in the packet. There is no final mesh, save, terrain, economy, rendered or packaged/network acceptance. E1 defaults, maps and the live service remain preserved.

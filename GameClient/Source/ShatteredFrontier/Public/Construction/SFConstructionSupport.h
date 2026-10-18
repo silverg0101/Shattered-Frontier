@@ -20,6 +20,7 @@ struct SHATTEREDFRONTIER_API FSFConstructionSupportMember
     int32 Rotation = INDEX_NONE;
     double CombatHealth = 1.0;
     bool bAnchored = false; // Trusted synthetic pilot foundation boundary.
+    double AttachedLoad = 0.0; // Authority-supplied functional-object shares in abstract load units.
 };
 
 enum class ESFConstructionSupportState : uint8 { Stable, Strained, Unsupported };

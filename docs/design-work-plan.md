@@ -2,6 +2,10 @@
 
 Last updated: 2026-10-18. Owner: coordinating documentation agent. This is the running documentation queue; the [gameplay backlog](Game-Design/Legends_Shattered_Frontier_Gameplay_Feature_Backlog_v1.0.md) owns implementation work and [roadmap](Game-Design/Legends_Shattered_Frontier_Production_Roadmap_v1.0.md) owns milestone gates. Update this file during each documentation work cycle; no background monitoring is implied. Standing user rules and continuation context are preserved in [design-agent.md](../design-agent.md).
 
+## Functional loads and ordinary door - 2026-10-18
+
+**SBX-06C Done, numerical extension only**: [assignment and door gates](decisions/SBX-06C-functional-loads-and-door.md). Luna/low source inventory, Luna/medium bounded AttachedLoad helper/tests; parent architecture/formula and build; separate Sol/medium review. [Executed evidence](evidence/construction-sandbox-functional-load-pilot.md) / [hashes](evidence/construction-sandbox-functional-load-results.json): initial3 focused support tests and final strengthened1 test pass cleanly; builds and independent source/raw review pass. Existing defaults stay unchanged; ordinary-door profile, attachment/motion/approach, authority integration and save remain open. No door mesh/runtime completion claimed.
+
 ## Support-loss confirmation and grace waves - 2026-10-18
 
 **SBX-06B Done within the standalone synthetic-foundation fixture**: [evidence](evidence/construction-sandbox-support-loss-pilot.md) / [hashes](evidence/construction-sandbox-support-loss-results.json). Fifteen construction tests pass (14 clean, one intentional rollback warning); final targeted lifecycle rerun proves real removed/rebuilt collision, with successful builds. Authority preview/confirmation, monotonic per-member clock, recovery columns, exact-expiry fencing, separate waves and bounded retry preserve member/projection/revision/deadlines. No salvage items or persistent rubble collision. Existing maps/defaults/live service preserved.

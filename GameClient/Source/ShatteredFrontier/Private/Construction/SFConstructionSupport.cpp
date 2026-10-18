@@ -90,9 +90,10 @@ bool SFConstructionSupport::Evaluate(const TArray<FSFConstructionSupportMember>&
     {
         const auto& M=SortedMembers[I];
         if (M.Shape<0 || M.Shape>=SFConstructionGeometry::ShapeCount || M.Rotation<0 || M.Rotation>=SFConstructionGeometry::RotationCount
-            || !FMath::IsFinite(M.CombatHealth) || M.CombatHealth<0 || M.CombatHealth>1 || ByAddress.Contains(M.Address)) return false;
+            || !FMath::IsFinite(M.CombatHealth) || M.CombatHealth<0 || M.CombatHealth>1
+            || !FMath::IsFinite(M.AttachedLoad) || M.AttachedLoad<0 || M.AttachedLoad>1.e6 || ByAddress.Contains(M.Address)) return false;
         FNode& N=Nodes[I]; N.Input=M; if (!SFConstructionGeometry::Build(M.Shape,M.Rotation,N.Solid)) return false;
-        MakeSides(N); N.Load=Profile.WeightPerFullCell*N.Fraction; N.bAnchored=M.bAnchored && N.BottomArea>NumericalGuard;
+        MakeSides(N); N.Load=Profile.WeightPerFullCell*N.Fraction+M.AttachedLoad; N.bAnchored=M.bAnchored && N.BottomArea>NumericalGuard;
         ByAddress.Add(M.Address,I);
     }
     // Retain deterministic positive contacts for graph traversal.
