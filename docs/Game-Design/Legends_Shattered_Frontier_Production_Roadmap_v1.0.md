@@ -18,7 +18,7 @@ Related contracts: [backlog](Legends_Shattered_Frontier_Gameplay_Feature_Backlog
 | Ownership | Browser wall ownership/reclaim rules | Claims, doors, roofs, support, larger permission model |
 | Progression/quest | Prototype skill counters and founder quest | Integration of expanded domain contracts |
 | Networking | Local HTTP/SSE | Unreal replication and active-player capacity |
-| Toolchain | [Read-only 2026-10-18 snapshot](../decisions/DEC-01-engine-evidence.md): VS/VC and SDK files found; inspected UE_5.8 root has only .egstore | Usable engine root/build, compatibility and successful project targets; no engine payload at the inspected root |
+| Toolchain | [Post-install 2026-10-18 evidence](../decisions/DEC-01-engine-evidence.md): UE 5.8.3 CL58210709 editor/build files present; VS/VC and SDK inventory compared with local declarations | Actual toolchain selection/compile, project association and dedicated-server route; non-preferred MSVC is not a demonstrated failure |
 | Production design | Expanded planning plus domain references | Implemented services, measured budgets, launch capability |
 
 Do not collapse “specified,” “implemented,” and “measured” into one percentage complete.
@@ -291,7 +291,7 @@ These are planning decision IDs, not public entities.
 
 | ID | Decision | Owner role | Needed by |
 | --- | --- | --- | --- |
-| DEC-01 | Installed engine/source path and reproducible server target — [evidence snapshot](../decisions/DEC-01-engine-evidence.md), usable engine-root prerequisite blocked | Engine owner | E1 / final packaged gate |
+| DEC-01 | Installed engine/source path and reproducible server target — [post-install evidence](../decisions/DEC-01-engine-evidence.md), payload confirmed; project/compile/server route pending | Engine owner | E1 / final packaged gate |
 | DEC-02 | MVP backend topology and atomic world/inventory coordination — [reconciled proposal](../decisions/DEC-02-durable-actions.md), acceptance pending | Architecture + persistence | H2 |
 | DEC-03 | Terrain format, support/collision, chunk/edit limits — [adoption proposal](../decisions/DEC-03-terrain.md), acceptance/evidence pending | World + engine | H2 |
 | DEC-04 | Session/authentication and active-character lease — [applicability proposal](../decisions/DEC-04-session-applicability.md), acceptance and admission/revocation evidence pending | Backend + Security | G3 |

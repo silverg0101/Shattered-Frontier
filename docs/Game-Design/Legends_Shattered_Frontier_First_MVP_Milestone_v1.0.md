@@ -300,7 +300,7 @@ The [DEC-08 compatibility proposal](../decisions/DEC-08-compatibility.md) binds 
 
 | Decision | Owner role | Blocks |
 | --- | --- | --- |
-| Confirm installed engine/source path and packaged-server toolchain — [read-only evidence snapshot](../decisions/DEC-01-engine-evidence.md), usable engine-root prerequisite blocked | Engine implementation | ENV-02, final delivery |
+| Confirm installed engine/source path and packaged-server toolchain — [post-install evidence](../decisions/DEC-01-engine-evidence.md), payload confirmed; actual compile/targets and server route pending | Engine implementation | ENV-02, final delivery |
 | Reference client/server hardware and target settings | Project direction + performance owner | Ratified budgets and capacity claim |
 | Atomic world/inventory write topology and recovery semantics | Architecture + persistence owner | PER-01, persistent gathering/building/trade |
 | Terrain representation, chunk limits, support and collision policy — [adoption proposal](../decisions/DEC-03-terrain.md), acceptance/evidence pending | World + Unreal owner | TER-01 |

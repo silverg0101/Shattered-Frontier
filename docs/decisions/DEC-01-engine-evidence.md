@@ -1,6 +1,6 @@
 # DEC-01 — E1 engine and toolchain evidence
 
-Status: independently reviewed, blocked evidence packet, 2026-10-18. This is a read-only snapshot of this Windows host, not acceptance of an engine version, project location or server-build route. Installation, project creation, builds and runtime tests were not performed.
+Status: independently reviewed post-install evidence recheck, 2026-10-18. The missing engine-payload prerequisite is cleared; DEC-01 remains open for project/target-route decisions and executable compatibility evidence. This is read-only host evidence, not a successful editor launch or build. Installation, project creation, builds and runtime tests were not performed by this documentation task.
 
 ## Decision and inspected authority
 
@@ -8,7 +8,9 @@ Status: independently reviewed, blocked evidence packet, 2026-10-18. This is a r
 
 [UE layout], Foundation decisions, proposes `GameClient/ShatteredFrontier.uproject`; Build targets requires verification against the actual engine. [Repository structure], Target tree, likewise proposes `GameClient`, not a second copied server gameplay project. Neither document proves an engine/project exists or authorizes installation. The E1 roadmap permits an explicitly scoped editor-server demonstration with final packaged readiness still open.
 
-## Observed evidence
+## Pre-install snapshot (historical)
+
+The following observations were collected before installation completed. They are retained as history and superseded for current engine-file presence by the recheck below.
 
 | Item / read-only source | Observation on 2026-10-18 | What it establishes / limit |
 | --- | --- | --- |
@@ -21,21 +23,35 @@ Status: independently reviewed, blocked evidence packet, 2026-10-18. This is a r
 | Windows SDK files | Under `C:\Program Files (x86)\Windows Kits\10`, SDK `10.0.26100.0` has `Include/.../um/Windows.h`, `Lib/.../um/x64/kernel32.lib`, `bin/.../x64/rc.exe` | Representative header/library/resource-compiler presence, not completeness or compatibility. The registered `C:\Program Files\Windows Kits\10\` root alone did not identify these files. |
 | Proposed repository project | `C:\Projects\Shattered-Frontier\GameClient` and its proposed `ShatteredFrontier.uproject` are absent | No Unreal project/targets at the proposed location. Another project outside this repository was not searched for or selected. |
 
-Collection used only targeted directory/file existence and metadata reads, Epic/SDK registry queries, launcher-manifest parsing and Visual Studio's inventory query. No exhaustive machine scan, credential access, editor/compiler execution or build was used. Engine build/revision, source entitlement/checkout, Unreal tooling access, compiler/SDK compatibility and packaged-server support remain unknown.
+Collection used only targeted directory/file existence and metadata reads, Epic/SDK registry queries, launcher-manifest parsing and Visual Studio's inventory query. No exhaustive machine scan, credential access, editor/compiler execution or build was used.
 
-## Blocker and next owner input
+## Post-install recheck
 
-**DEC-01/E1 is blocked on a usable engine root.** The inspected `UE_5.8` folder has no engine payload. The current documentation mandate excludes installing/repairing the engine or creating/compiling the game project; no installation was started to close this gate.
+After the user reported installation complete, targeted reads at `C:\Program Files\Epic Games\UE_5.8` established:
 
-Engine/project owner can unblock the next evidence pass by completing the intended installation through an authorized setup task, or supplying another usable installed/source engine root and its intended build. A custom/source location was not ruled out. Preserve the proposed repository path until the owner selects it or implementation is authorized; no directory was created by this packet.
+| Source | Current observation | Interpretation / limit |
+| --- | --- | --- |
+| `Engine/Build/Build.version` | 5.8.3; changelist `58210709`, compatible changelist `55116800`, branch `++UE5+Release-5.8`, promoted build | Exact installed build metadata recorded; no inference of successful project compatibility. |
+| Editor and build tooling | `UnrealEditor.exe`, `Build.bat`, `RunUAT.bat`, UnrealBuildTool DLL and `InstalledBuild.txt` present; editor file/product version names CL `58210709` | The prior missing-payload prerequisite is cleared. Tools were not executed. Installed-build marker is present; no source checkout/entitlement assumed. |
+| `Engine/Config/Windows/Windows_SDK.json` | SDK minimum `10.0.19041.0`, maximum `10.9.99999.0`, main version `10.0.22621.0` | SDK `10.0.26100.0` is within the declared range. Its Windows.h/kernel32.lib files remain present; this is not a compilation test. |
+| Same file: MSVC declarations | Minimum `14.38.33130`; preferred families `14.50.35717–14.50.99999`, `14.44.35207–14.44.99999`; banned ranges include early 14.50/14.44 and 14.39…14.43 | Available toolset directory `14.51.36231` is above minimum, outside listed banned ranges and outside preferred ranges. It is non-preferred, not a demonstrated failure. No compiler change was made. |
+| Compiler inventory | VC component query still identifies VS Community 2026; available family `14.51.36231`, cl.exe file `19.51.36260.0` / product `14.51.36260.0` | Preserve both family/binary identities. Actual UnrealBuildTool selection and compile result remain pending. |
+| `Engine/Config/BaseEngine.ini`, InstalledPlatforms | 28 installed-platform rows; six Win64 Game, four Win64 Editor, three Linux Game; zero `PlatformType="Server"` rows. `Engine/Source/UE5Server.Target.cs` absent | Installed metadata does not advertise Server targets. Linux Game entries do not prove a Linux dedicated-server package or cross-toolchain. No target was built; source/server route remains a decision/evidence gate. |
+| Proposed `GameClient/ShatteredFrontier.uproject` | Still absent | No project or project targets were created/compiled as part of verification. |
 
-| Option for the owner | Consequence / remaining evidence |
+The engine's local declaration is the source for the static compiler/SDK comparison; it does not establish that every compiler above its minimum works. No editor, build, SDK installer, server, network test or project-generation command was run.
+
+## Current gate and next input
+
+**The engine-payload blocker is cleared.** E1 can now proceed to authorized ENV-02 project/target work using the prepared [E1 packet]. DEC-01 itself is not accepted/closed: project location/association, actual selected toolchain, editor compile and dedicated-server route still need evidence. Do not replace those with metadata-only success.
+
+| Route / owner decision | Consequence / remaining evidence |
 | --- | --- |
-| Complete the intended engine installation | Reinspect actual `Build.version`, editor/tool scripts and supported toolchain. Folder name or installer completion alone still cannot prove targets. |
-| Supply an existing installed/source engine elsewhere | Record exact root/build/revision and check against the project baseline before adopting it; do not silently substitute another engine version. |
-| Later choose a source/server build route if required by verified target constraints | Requires source access, compatible tools and reproducible target evidence. No source-build requirement is inferred solely from today's missing payload. |
+| E1 editor-server demonstration | Use a separate authority process and two independent clients after the first successful project build. Keep final packaged readiness open. |
+| Packaged dedicated-server route | Select and validate an engine distribution/source route with Server-target capability; current metadata is not package evidence. Source access, compatible toolchains and Linux runtime/package requirements remain unverified. |
+| Non-preferred MSVC family | Record actual selection/compile diagnostics first; use an owner-approved supported toolset change only if required. No automatic installation/downgrade or compatibility failure inferred. |
 
-Revisit after the engine payload becomes available, the chosen root/version changes, or target/toolchain evidence contradicts the proposed route. This operational prerequisite does not retire the browser PoC or resolve DEC-02…09.
+Revisit on root/build changes, failed compile/toolchain selection, or target evidence contradicting the selected route. This inventory does not retire the browser PoC or resolve DEC-02…09. Installation/project implementation remains separate from this documentation task.
 
 ## Next precise evidence pass
 
@@ -48,3 +64,4 @@ Revisit after the engine payload becomes available, the chosen root/version chan
 [Backlog]: ../Game-Design/Legends_Shattered_Frontier_Gameplay_Feature_Backlog_v1.0.md#epic-env--reproducible-engine-foundation
 [UE layout]: ../Game-Design/Legends_Shattered_Frontier_UE58_Project_Layout_v1.0.md
 [Repository structure]: ../Game-Design/Legends_Shattered_Frontier_Repository_Structure_v1.0.md
+[E1 packet]: ../e1-implementation-packet.md

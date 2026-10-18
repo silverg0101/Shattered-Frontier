@@ -1,12 +1,12 @@
 # E1 — Engine and movement implementation packet
 
-Status: independently reviewed implementation assignment proposal, 2026-10-18. Prepared while the user reports Unreal is still installing. This packet creates no Unreal project, does not recheck installation progress, and does not close DEC-01 or the E1 gate. All paths/classes below remain proposed until verified implementation records them.
+Status: independently reviewed implementation assignment proposal, 2026-10-18. Prepared during installation; [DEC-01] now records post-install engine metadata and the remaining build/target gates. This packet creates no Unreal project and does not close DEC-01 or E1. All paths/classes below remain proposed until verified implementation records them.
 
 ## Scope, authority and entry
 
 Implement only [Backlog] ENV-01…05, MOV-01…04, INT-01 and the [Roadmap] E1 baseline-measurement subset. [UE layout] owns framework/target boundaries; [Repository] owns the proposed tree; [Slice] supplies the Greenlands arrival/landmark context. This is a task packet, not a replacement domain specification or authorization to install, compile, expose a server or deploy a release.
 
-Before implementation, resolve [DEC-01] with an actually usable engine root and build metadata, supported compiler/SDK and available Unreal tools. Select the project directory and editor/client/server target route. The earlier host snapshot found only `.egstore` in the inspected engine folder; it is not a live installation status report. C++/SDK file presence alone does not establish compatibility.
+Before implementation, use [DEC-01]'s verified engine root/build metadata and select the project directory and editor/client/server target route. UE 5.8.3 editor/build tooling is now present. MSVC 14.51 is above the engine's declared minimum and outside banned/preferred ranges; actual selection/compile must establish compatibility. Dedicated-server packaging remains unverified. The earlier `.egstore`-only snapshot is historical; file presence alone does not prove a successful build or launch.
 
 Proposed write boundary after implementation is authorized: `GameClient/ShatteredFrontier.uproject`, its selected targets/module, `Config`, and only the Greenlands/map/character/interaction assets and scoped checks below. Update the dependency map with actual roles/commands then. Do not create the full future directory tree, backend services, a copied GameServer gameplay project or additional plugins without a concrete dependency. Existing browser/runtime files and reserved design domains are outside this packet's write set.
 
