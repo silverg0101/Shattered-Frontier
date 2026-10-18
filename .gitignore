@@ -1,2 +1,10 @@
 data/*.sqlite*
 node_modules/
+GameClient/Binaries/
+GameClient/DerivedDataCache/
+GameClient/Intermediate/
+GameClient/Saved/
+GameClient/.vs/
+GameClient/*.sln
+GameClient/*.slnx
+Artifacts/

@@ -1,6 +1,6 @@
 # DEC-01 — E1 engine and toolchain evidence
 
-Status: independently reviewed post-install evidence recheck, 2026-10-18. The missing engine-payload prerequisite is cleared; DEC-01 remains open for project/target-route decisions and executable compatibility evidence. This is read-only host evidence, not a successful editor launch or build. Installation, project creation, builds and runtime tests were not performed by this documentation task.
+Status: historical independently reviewed post-install metadata, supplemented by user-authorized E1 implementation on 2026-10-18. [Foundation evidence](../evidence/e1-foundation.md) now records actual editor builds/map checks; [Linux route](../e1-linux-server-build.md) selects matching source-engine packaging for Unraid. DEC-01 remains open for source/toolchain/package compatibility. The earlier sections below preserve the metadata-only investigation and do not describe current implementation status.
 
 ## Decision and inspected authority
 

@@ -2,6 +2,8 @@
 
 ## Runtime and data flow
 
+E1 Unreal implementation now lives in `GameClient/ShatteredFrontier.uproject` (UE 5.8.3). `Source/ShatteredFrontier{,Editor,Client,Server}.Target.cs` share the `ShatteredFrontier` module. Its Framework GameMode owns server spawn/possession; Characters uses standard replicated CharacterMovement. `SFE1Settings` and `Config/DefaultGame.ini` define bounded release-only fixture values. `DefaultEngine.ini` selects `/Game/Frontier/Maps/Greenlands_E1`; `tools/Create-E1Map.py` creates the graybox map through editor-only Python/EditorScriptingUtilities and refuses overwrite. `tools/Test-E1Connections.ps1` launches a loopback editor server/two hidden clients, checks welcome/distinct possession logs and stops its own processes. See [GameClient startup/settings](../GameClient/README.md), [E1 evidence](evidence/e1-foundation.md), and [Linux server prerequisites](e1-linux-server-build.md). `tools/Build-LinuxServer.ps1` validates a pinned source engine/SDK and invokes Linux x86_64 server UAT packaging into ignored `Artifacts/`; it does not deploy. Launcher editor build success does not establish packaged Server support.
+
 ```text
 package.json (Node >=24; start/test scripts)
   └─ server/index.js (HTTP, cookie sessions, SQLite persistence, SSE, static files)
@@ -101,6 +103,7 @@ When adding, renaming, or removing design documents, update this index and affec
 
 | Task | Start here | Related files | Checks |
 | --- | --- | --- | --- |
+| E1 Unreal build, movement, map or server packaging | `GameClient/README.md`, `docs/evidence/e1-foundation.md` | `GameClient/Source`, `Config`, map/generator; `docs/e1-linux-server-build.md`, `tools/Build-LinuxServer.ps1` for Linux | Targeted editor build; map commandlet; separate local server/two clients; packaging prerequisite validation. No Node suite required. |
 | Planning a feature or milestone | Relevant planning reference above | Owning domain contract and `docs/alpha-plan.md` | Readiness, dependencies, measurable acceptance; no implied runtime implementation |
 | Unreal architecture or project organization | UE5.8 project layout and repository structure references above | Registry and affected domain contracts | Ownership, replication audience, actual-versus-proposed paths |
 | First-time developer or machine setup | `docs/first-time-setup.md` | `README.md`, `package.json`; engine/agent setup only as needed | Version checks and relevant startup/access checks; no default full suite |

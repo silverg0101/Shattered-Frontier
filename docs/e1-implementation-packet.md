@@ -1,6 +1,6 @@
 # E1 — Engine and movement implementation packet
 
-Status: independently reviewed implementation assignment proposal, 2026-10-18. Prepared during installation; [DEC-01] now records post-install engine metadata and the remaining build/target gates. This packet creates no Unreal project and does not close DEC-01 or E1. All paths/classes below remain proposed until verified implementation records them.
+Status: implementation authorized by the user on 2026-10-18, with Unraid Linux selected for the dedicated server. The initial project exists at `GameClient/ShatteredFrontier.uproject`; [foundation evidence](evidence/e1-foundation.md) records actual results and remaining cards. The acceptance cards below remain requirements, not a claim that E1 is complete.
 
 ## Scope, authority and entry
 
@@ -53,7 +53,7 @@ These are future focused checks, not tests already run. Use supported engine fac
 
 The implementation owner returns actual changed paths, commands/logs, selected card outcomes, observed target capability and unresolved owner requests. Independent review checks authority/visibility boundaries, source consistency, scoped checks and limits before E1 acceptance. Client-only control is insufficient for MOV-02/INT-01.
 
-Stop dependent implementation when engine/toolchain compatibility or target support is unavailable, required values/visibility policy are undefined, server possession/identity is uncertain, or a stale connection can retain authority. Record the smallest missing input; do not install packages, disable validation, fabricate results or expand scope to bypass it. Prepared documentation can be reviewed now; executable E1 remains gated by DEC-01 and an authorized implementation task.
+Stop dependent implementation when engine/toolchain compatibility or target support is unavailable, required values/visibility policy are undefined, server possession/identity is uncertain, or a stale connection can retain authority. Record the smallest missing input; do not disable validation, fabricate results or expand scope to bypass it. User authorization now permits E1 implementation. Linux packaging remains gated on the matching source engine/SDK; local editor work can continue independently.
 
 [Backlog]: Game-Design/Legends_Shattered_Frontier_Gameplay_Feature_Backlog_v1.0.md
 [Roadmap]: Game-Design/Legends_Shattered_Frontier_Production_Roadmap_v1.0.md#phase-1a--e1--engine-and-movement
