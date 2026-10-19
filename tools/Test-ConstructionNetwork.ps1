@@ -16,13 +16,14 @@ if (@([Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties().GetAc
 if (Test-Path -LiteralPath $root) { throw 'Evidence root exists.' }
 $null = New-Item -ItemType Directory -Path $root
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
-$results = [ordered]@{ status='Running'; engine=$editor; project=$project; port=$Port; runs=@(); scope='Isolated loopback editor dedicated-server, canonical cube assembly and rough-timber support, transient build capability; no production ownership/persistence/general procedural shape or packaged acceptance.' }
+$results = [ordered]@{ status='Running'; engine=$editor; project=$project; port=$Port; runs=@(); scope='Isolated loopback editor dedicated-server, canonical cube placement/removal and rough-timber support, transient build capability; no production ownership/persistence/general procedural shape or packaged acceptance.' }
 $clock = [Diagnostics.Stopwatch]::StartNew()
 function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
     $user = Join-Path $root ($Name+'-user')
     $null = New-Item -ItemType Directory -Path $user
     $log = Join-Path $root ($Name+'.log')
     $arguments = @(('"'+$project+'"'),$Url,'-unattended','-nosound','-nop4',('-UserDir="'+$user+'/"'),('-abslog="'+$log+'"'))+$Extra
+    if ($Name -in @('driver','observer')) { $arguments += ('-ConstructionNetworkRemovalBarrier="'+(Join-Path $root 'both-projected-three.ready')+'"') }
     if ($CaptureFrames -and $Name -in @('driver','observer')) {
         $arguments += @('-RenderOffscreen','-windowed','-ResX=1280','-ResY=720',('-ConstructionNetworkScreenshot="'+(Join-Path $root ($Name+'.png'))+'"'))
     } else { $arguments += '-NullRHI' }
@@ -56,11 +57,23 @@ try {
     $disabled = Start-Owned 'flag-negative' $url @('-server',('-port='+($Port+2)),'-multihome=127.0.0.1','-testexit=CONSTRUCTION_NETWORK_DISABLED')
     Wait-Exit $disabled 'flag-negative'
     $disabledLog = Get-Content -LiteralPath (Join-Path $root 'flag-negative.log') -Raw
-    if ($disabledLog -notmatch 'CONSTRUCTION_NETWORK_DISABLED' -or $disabledLog -match 'CONSTRUCTION_NETWORK_READY|CONSTRUCTION_NETWORK_ACCEPT') { throw 'Missing startup opt-in did not fence the network mode.' }
+    if ($disabledLog -notmatch 'CONSTRUCTION_NETWORK_DISABLED' -or $disabledLog -match 'CONSTRUCTION_NETWORK_READY|CONSTRUCTION_NETWORK_ACCEPT|CONSTRUCTION_NETWORK_EDIT') { throw 'Missing startup opt-in did not fence the network mode.' }
     $server = Start-Owned 'server' $url @('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox')
     Wait-Log $server 'server' 'CONSTRUCTION_NETWORK_READY'
     $driver = Start-Owned 'driver' ('127.0.0.1:'+$Port) @('-game','-ConstructionNetworkScenario')
     $observer = Start-Owned 'observer' ('127.0.0.1:'+$Port) @('-game','-ConstructionNetworkScenario')
+    $nonemptyPayloads=@()
+    foreach ($role in @('driver','observer')) {
+        $process=if ($role -eq 'driver') { $driver } else { $observer }
+        Wait-Log $process $role 'CONSTRUCTION_NETWORK_PROJECTED Revision=3 Members=3 Collision=1 Content='
+        $log=Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
+        $matches=[regex]::Matches($log,'CONSTRUCTION_NETWORK_PROJECTED Revision=3 Members=3 Collision=1 Content=([a-fA-F0-9]{64})')
+        if ($matches.Count -ne 1) { throw "$role lacks one nonempty pre-removal projection." }
+        $nonemptyPayloads += $matches[0].Groups[1].Value
+    }
+    if ($nonemptyPayloads[0] -ne $nonemptyPayloads[1]) { throw 'Clients disagree before removal.' }
+    $results.nonemptyContentBlake3=$nonemptyPayloads[0]
+    Set-Content -LiteralPath (Join-Path $root 'both-projected-three.ready') -Value 'Both clients projected revision3 with matching content and collision.' -Encoding ascii
     Wait-Exit $driver 'driver'
     Wait-Exit $observer 'observer'
     if ($server.HasExited) { throw 'Owned server exited during the client exercise.' }
@@ -68,10 +81,10 @@ try {
     $observedRoles = @()
     foreach ($role in @('driver','observer')) {
         $log = Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
-        $success = [regex]::Matches($log,'CONSTRUCTION_NETWORK_SCENARIO_SUCCESS Builder=([01]) Revision=3 Members=3')
+        $success = [regex]::Matches($log,'CONSTRUCTION_NETWORK_SCENARIO_SUCCESS Builder=([01]) Revision=6 Members=0')
         if ($success.Count -ne 1 -or $log -match 'CONSTRUCTION_NETWORK_\w*FAILED|Fatal error:|Assertion failed:|Ensure condition failed:') { throw "$role failed its semantic scenario." }
         $observedRoles += [int]$success[0].Groups[1].Value
-        $projection = [regex]::Matches($log,'CONSTRUCTION_NETWORK_PROJECTED Revision=3 Members=3 Collision=1 Content=([a-fA-F0-9]{64})')
+        $projection = [regex]::Matches($log,'CONSTRUCTION_NETWORK_PROJECTED Revision=6 Members=0 Collision=1 Content=([a-fA-F0-9]{64})')
         if ($projection.Count -ne 1) { throw "$role lacks a unique exact local collision projection." }
         $payloads += $projection[0].Groups[1].Value
         if ($CaptureFrames) {
@@ -88,20 +101,27 @@ try {
         $log=Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
         $viewRequests += [regex]::Matches($log,'CONSTRUCTION_NETWORK_VIEW_REQUEST Cell=X=-4 Y=-4 Z=0').Count
     }
+    $removeRequests=0
+    foreach ($role in @('driver','observer')) {
+        $log=Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
+        $removeRequests += [regex]::Matches($log,'CONSTRUCTION_NETWORK_VIEW_REMOVE Cell=X=-4 Y=-4 Z=1').Count
+    }
+    if ($removeRequests -ne 1) { throw 'Expected one supported top removal through ordinary X-key view input.' }
     if ($viewRequests -ne 1) { throw 'Expected one grounded placement through ordinary B-key view input.' }
     if ($payloads[0] -ne $payloads[1]) { throw 'Clients projected different canonical payloads.' }
     $serverLog = Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw
-    foreach ($marker in @('CONSTRUCTION_NETWORK_ACCEPT Revision=1 Members=1 Cell=X=-4 Y=-4 Z=0','CONSTRUCTION_NETWORK_ACCEPT Revision=2 Members=2 Cell=X=-4 Y=-4 Z=1','CONSTRUCTION_NETWORK_ACCEPT Revision=3 Members=3 Cell=X=-3 Y=-4 Z=0','CONSTRUCTION_NETWORK_RESULT Builder=1 Result=7 Revision=0 Members=0 Collision=0','CONSTRUCTION_NETWORK_RESULT Builder=1 Result=9 Revision=1 Members=1 Collision=1','CONSTRUCTION_NETWORK_RESULT Builder=1 Result=3 Revision=3 Members=3 Collision=1','CONSTRUCTION_NETWORK_RESULT Builder=0 Result=2 Revision=3 Members=3 Collision=1')) {
+    if ($serverLog -notmatch ('CONSTRUCTION_NETWORK_EDIT Action=Place Revision=3 Members=3[^\r\n]*Content='+[regex]::Escape($nonemptyPayloads[0]))) { throw 'Nonempty clients differ from server content.' }
+    foreach ($marker in @('CONSTRUCTION_NETWORK_EDIT Action=Place Revision=1 Members=1 Cell=X=-4 Y=-4 Z=0','CONSTRUCTION_NETWORK_EDIT Action=Place Revision=2 Members=2 Cell=X=-4 Y=-4 Z=1','CONSTRUCTION_NETWORK_EDIT Action=Place Revision=3 Members=3 Cell=X=-3 Y=-4 Z=0','CONSTRUCTION_NETWORK_RESULT Builder=1 Result=7 Revision=0 Members=0 Collision=0','CONSTRUCTION_NETWORK_RESULT Builder=1 Result=9 Revision=1 Members=1 Collision=1','CONSTRUCTION_NETWORK_RESULT Builder=1 Result=3 Revision=3 Members=3 Collision=1','CONSTRUCTION_NETWORK_RESULT Builder=1 Result=9 Revision=3 Members=3 Collision=1 Action=Remove','CONSTRUCTION_NETWORK_RESULT Builder=1 Result=11 Revision=4 Members=2 Collision=1 Action=Remove','CONSTRUCTION_NETWORK_RESULT Builder=1 Result=3 Revision=4 Members=2 Collision=1 Action=Remove','CONSTRUCTION_NETWORK_EDIT Action=Remove Revision=4 Members=2 Cell=X=-4 Y=-4 Z=1','CONSTRUCTION_NETWORK_EDIT Action=Remove Revision=5 Members=1 Cell=X=-3 Y=-4 Z=0','CONSTRUCTION_NETWORK_EDIT Action=Remove Revision=6 Members=0 Cell=X=-4 Y=-4 Z=0','CONSTRUCTION_NETWORK_RESULT Builder=0 Result=2 Revision=6 Members=0 Collision=1 Action=Place','CONSTRUCTION_NETWORK_RESULT Builder=0 Result=2 Revision=6 Members=0 Collision=1 Action=Remove')) {
         if ([regex]::Matches($serverLog,[regex]::Escape($marker)).Count -ne 1) { throw "Missing/duplicate authoritative observation: $marker" }
     }
     $join = $serverLog.IndexOf('CONSTRUCTION_NETWORK_PAIR_READY Players=2')
-    $accept = $serverLog.IndexOf('CONSTRUCTION_NETWORK_ACCEPT')
-    if ($join -lt 0 -or $accept -le $join -or [regex]::Matches($serverLog,'CONSTRUCTION_NETWORK_ACCEPT').Count -ne 3) { throw 'Three placements were not accepted after both players joined.' }
-    if ($serverLog -notmatch ('CONSTRUCTION_NETWORK_ACCEPT Revision=3 Members=3[^\r\n]*Content='+[regex]::Escape($payloads[0]))) { throw 'Clients differ from server content.' }
+    $accept = $serverLog.IndexOf('CONSTRUCTION_NETWORK_EDIT')
+    if ($join -lt 0 -or $accept -le $join -or [regex]::Matches($serverLog,'CONSTRUCTION_NETWORK_EDIT').Count -ne 6) { throw 'Six edits were not accepted after both players joined.' }
+    if ($serverLog -notmatch ('CONSTRUCTION_NETWORK_EDIT Action=Remove Revision=6 Members=0[^\r\n]*Content='+[regex]::Escape($payloads[0]))) { throw 'Clients differ from server content.' }
     $results.contentBlake3 = $payloads[0]
     $results.captureFrames = [bool]$CaptureFrames
     $results.status = 'Passed'
-    Write-Output "PASS: two concurrent clients, supported three-cube assembly, matching collision, occupied/floating/stale/permission rejection. Evidence: $root"
+    Write-Output "PASS: two concurrent clients, supported three-cube assembly, X-key removal, coherent empty projection, occupied/floating/supporting-base/stale/missing/permission rejection. Evidence: $root"
 } catch {
     $results.status='Failed'; $results.error=$_.Exception.Message; throw
 } finally {

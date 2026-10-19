@@ -12,7 +12,7 @@ class ASFConstructionNetworkController;
 UENUM()
 enum class ESFConstructionNetworkResult : uint8
 {
-    Accepted, InvalidContext, PermissionDenied, Stale, InvalidCell, OutOfReach, Occluded, Occupied, ProjectionFailed, Unsupported, LimitReached
+    Accepted, InvalidContext, PermissionDenied, Stale, InvalidCell, OutOfReach, Occluded, Occupied, ProjectionFailed, Unsupported, LimitReached, NotFound, Removed
 };
 
 // Canonical-cube development protocol. No material, path, identity or permission payloads.
@@ -38,7 +38,7 @@ public:
     ASFConstructionNetworkState();
     virtual void BeginPlay() override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-    ESFConstructionNetworkResult Place(ASFConstructionNetworkController* Controller, FIntVector Cell, uint64 ExpectedRevision);
+    ESFConstructionNetworkResult Edit(ASFConstructionNetworkController* Controller, FIntVector Cell, uint64 ExpectedRevision, bool bRemove);
     const FSFConstructionNetworkSnapshot& GetSnapshot() const { return Snapshot; }
     bool HasCurrentCollision() const;
     FString GetContentDigest() const;
@@ -90,14 +90,19 @@ public:
     FString GetBuildStatusText() const;
 private:
     void PlaceFromView();
+    void RemoveFromView();
     void RefreshPlacementPreview(bool bDrawOutline);
+    void ProcessEdit(FIntVector Cell, uint64 ExpectedRevision, bool bRemove);
     UFUNCTION(Server, Reliable) void ServerPlace(FIntVector Cell, uint64 ExpectedRevision);
+    UFUNCTION(Server, Reliable) void ServerRemove(FIntVector Cell, uint64 ExpectedRevision);
     UFUNCTION(Client, Reliable) void ClientPlacementResult(ESFConstructionNetworkResult Result, uint64 Revision);
     UPROPERTY(Replicated) bool bRoleAssigned = false;
     UPROPERTY(Replicated) bool bBuilderRole = false; // Advisory; permission is derived again on server.
     uint64 LastRequestFrame = MAX_uint64;
     bool bHasPlacementPreview = false;
     FIntVector PreviewCell = FIntVector::ZeroValue;
+    bool bHasRemovalPreview = false;
+    FIntVector RemovalCell = FIntVector::ZeroValue;
     FString PreviewStatus = TEXT("Connecting to construction state...");
     FString LastPlacementStatus = TEXT("No placement requested.");
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
