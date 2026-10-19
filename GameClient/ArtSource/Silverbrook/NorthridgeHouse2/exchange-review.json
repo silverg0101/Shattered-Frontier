@@ -1,0 +1,96 @@
+{
+  "source": {
+    "meshes": 6,
+    "triangles": 111432,
+    "size_m": [
+      10.857,
+      8.171,
+      9.53
+    ],
+    "materials": [
+      "SB_ChimneyPot",
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LimePlaster",
+      "SB_LitGlass",
+      "SB_NorthridgeHouse2_Ashlar",
+      "SB_NorthridgeHouse2_Banner",
+      "SB_NorthridgeHouse2_Dressed",
+      "SB_NorthridgeHouse2_Emblem",
+      "SB_NorthridgeHouse2_Gilt",
+      "SB_OakTimber",
+      "SB_PlanterSoil",
+      "SB_Slate"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 22
+  },
+  "glb": {
+    "meshes": 6,
+    "triangles": 111432,
+    "size_m": [
+      10.857,
+      8.171,
+      9.53
+    ],
+    "materials": [
+      "SB_ChimneyPot",
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LimePlaster",
+      "SB_LitGlass",
+      "SB_NorthridgeHouse2_Ashlar",
+      "SB_NorthridgeHouse2_Banner",
+      "SB_NorthridgeHouse2_Dressed",
+      "SB_NorthridgeHouse2_Emblem",
+      "SB_NorthridgeHouse2_Gilt",
+      "SB_OakTimber",
+      "SB_PlanterSoil",
+      "SB_Slate"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 6,
+    "triangles": 111432,
+    "size_m": [
+      10.857,
+      8.171,
+      9.53
+    ],
+    "materials": [
+      "SB_ChimneyPot",
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LimePlaster",
+      "SB_LitGlass",
+      "SB_NorthridgeHouse2_Ashlar",
+      "SB_NorthridgeHouse2_Banner",
+      "SB_NorthridgeHouse2_Dressed",
+      "SB_NorthridgeHouse2_Emblem",
+      "SB_NorthridgeHouse2_Gilt",
+      "SB_OakTimber",
+      "SB_PlanterSoil",
+      "SB_Slate"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 14
+  }
+}

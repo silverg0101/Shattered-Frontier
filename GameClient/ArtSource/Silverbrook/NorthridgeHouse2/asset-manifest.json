@@ -1,0 +1,260 @@
+{
+  "asset": "SilverbrookNorthridgeHouse2",
+  "reference": {
+    "file": "NorthridgeHouse2-reference.png",
+    "sha256": "779a911e6bdab3df9fd9dec4542164ef55b6547ef24d159271626c2bf07d389e"
+  },
+  "blender": "5.1.1",
+  "generator": "build_northridgehouse2.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    10.857,
+    8.171,
+    9.53
+  ],
+  "meshes": {
+    "SM_SBNorthridgeHouse2_Masonry": {
+      "triangles": 6080,
+      "materials": [
+        "SB_NorthridgeHouse2_Ashlar"
+      ]
+    },
+    "SM_SBNorthridgeHouse2_Trim": {
+      "triangles": 22280,
+      "materials": [
+        "SB_NorthridgeHouse2_Dressed"
+      ]
+    },
+    "SM_SBNorthridgeHouse2_Plaster": {
+      "triangles": 336,
+      "materials": [
+        "SB_LimePlaster"
+      ]
+    },
+    "SM_SBNorthridgeHouse2_Timber": {
+      "triangles": 5408,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBNorthridgeHouse2_Roof": {
+      "triangles": 58204,
+      "materials": [
+        "SB_Slate",
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBNorthridgeHouse2_Details": {
+      "triangles": 19124,
+      "materials": [
+        "SB_ForgedIron",
+        "SB_LitGlass",
+        "SB_LeadCame",
+        "SB_PlanterSoil",
+        "SB_DoorBoards",
+        "SB_LanternGlow",
+        "SB_ChimneyPot",
+        "SB_NorthridgeHouse2_Banner",
+        "SB_NorthridgeHouse2_Gilt",
+        "SB_NorthridgeHouse2_Emblem"
+      ]
+    }
+  },
+  "triangles": 111432,
+  "materials": [
+    {
+      "name": "SB_Slate",
+      "scan": "grey_roof_tiles_02",
+      "dark": [
+        0.2,
+        0.22,
+        0.28
+      ],
+      "lichen": "lichen_rock",
+      "normal": 1.0
+    },
+    {
+      "name": "SB_NorthridgeHouse2_Ashlar",
+      "scan": "sandstone_blocks_05",
+      "dark": [
+        0.45,
+        0.4,
+        0.33
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_NorthridgeHouse2_Dressed",
+      "scan": "sandstone_blocks_08",
+      "dark": [
+        0.45,
+        0.4,
+        0.33
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_LimePlaster",
+      "scan": "patterned_clay_plaster",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_DoorBoards",
+      "scan": "old_planks_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_NorthridgeHouse2_Banner",
+      "scan": "denim_fabric_03",
+      "dark": [
+        0.16,
+        0.19,
+        0.34
+      ],
+      "lichen": null,
+      "normal": 0.6
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LeadCame",
+      "colour": [
+        0.05,
+        0.05,
+        0.05
+      ],
+      "roughness": 0.45,
+      "metallic": 0.8,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LitGlass",
+      "colour": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "roughness": 0.15,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.5,
+        0.14
+      ],
+      "strength": 3
+    },
+    {
+      "name": "SB_LanternGlow",
+      "colour": [
+        0.3,
+        0.2,
+        0.1
+      ],
+      "roughness": 0.3,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.38,
+        0.08
+      ],
+      "strength": 5
+    },
+    {
+      "name": "SB_PlanterSoil",
+      "colour": [
+        0.06,
+        0.04,
+        0.025
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_ChimneyPot",
+      "colour": [
+        0.2,
+        0.085,
+        0.05
+      ],
+      "roughness": 0.75,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_NorthridgeHouse2_Gilt",
+      "colour": [
+        0.55,
+        0.36,
+        0.1
+      ],
+      "roughness": 0.45,
+      "metallic": 0.8,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_NorthridgeHouse2_Emblem",
+      "colour": [
+        0.72,
+        0.66,
+        0.55
+      ],
+      "roughness": 0.7,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookNorthridgeHouse2",
+  "slot_m": [
+    12,
+    10,
+    10
+  ],
+  "outputs": [
+    "SilverbrookNorthridgeHouse2.blend",
+    "SilverbrookNorthridgeHouse2.glb",
+    "SilverbrookNorthridgeHouse2.fbx"
+  ]
+}
