@@ -1,0 +1,30 @@
+{
+  "status": "Passed",
+  "date": "2026-10-18",
+  "build": "Artifacts/ConstructionSandbox/gathering-tools-build-01.log",
+  "focusedReport": "Artifacts/ConstructionSandbox/gathering-tools-authority-01/Report/index.json",
+  "focusedPassed": 2,
+  "focusedFailed": 0,
+  "network": "Artifacts/ConstructionSandbox/gathering-network-20261018-233210-856/results.json",
+  "checks": [
+    "owned-but-unequipped rejected",
+    "wrong-category rejected",
+    "mid-channel raw equipment change cancels",
+    "replay preserves original outcome",
+    "starter capacity failure grants nothing",
+    "starter initialization cannot duplicate tools",
+    "two clients equip then gather and refine privately"
+  ],
+  "scope": "Session-only Win64 pilot; no durable/wear/progression/public-appearance/native-input/Linux acceptance",
+  "sourceSHA256": {
+    "GameClient/Source/ShatteredFrontier/Public/Gathering/SFGatheringPilot.h": "f1e349704de5a96ee821db92f8722280f125107aae90408450877f578c1545a2",
+    "GameClient/Source/ShatteredFrontier/Private/Gathering/SFGatheringPilot.cpp": "04aa1924b09151fa7ed64c79eed7d03d276bfd367a54936c34bfb648fbc2721b",
+    "GameClient/Source/ShatteredFrontier/Private/Tests/SFGatheringPilotTests.cpp": "4a576129664c05942c45780732c099d7c96f6af50b957195ba9d34808625871a",
+    "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionNetwork.h": "db7a3fe8a1e9ed82031f4f87d03e4f941bef84061f5f178b45c9cd0aae7f3dce",
+    "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionNetwork.cpp": "cae6813dfa000e17ecb3671720a99032a670c417b0d3317189b291b0724727bf",
+    "GameClient/Config/DefaultGame.ini": "5ae400fec3386d94618f015f06d19729e2bbb6e42bafe81b1842c22e4d7b1fc4",
+    "tools/Create-GatheringPilotTools.py": "aaf1d0f2c12fd18536a2a136befe07e30a7af2f79244d5aff720a91496da795b",
+    "GameClient/Content/Frontier/Gameplay/Pilot/DA_IronAxe.uasset": "8d8a5cb454c3a9987a54a35a2300bf3c7dbb9c2b87fe65a230df80d7c1c5d2ce",
+    "GameClient/Content/Frontier/Gameplay/Pilot/DA_IronPickaxe.uasset": "98244df973a8d424fc04d77466463ef0743333daca4bb26079ce0a701ed10a0b"
+  }
+}

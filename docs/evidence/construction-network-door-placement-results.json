@@ -1,0 +1,179 @@
+{
+  "status": "Passed",
+  "engine": "C:\\Program Files\\Epic Games\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor-Cmd.exe",
+  "project": "C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\GameClient\\ShatteredFrontier.uproject",
+  "port": 17791,
+  "runs": [
+    {
+      "name": "normal-negative",
+      "pid": 5352,
+      "arguments": [
+        "\"C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\GameClient\\ShatteredFrontier.uproject\"",
+        "/Game/Frontier/Maps/Greenlands_E1",
+        "-unattended",
+        "-nosound",
+        "-nop4",
+        "-UserDir=\"C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\network-20261018-212646-873\\normal-negative-user/\"",
+        "-abslog=\"C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\network-20261018-212646-873\\normal-negative.log\"",
+        "-game",
+        "-ConstructionNetworkSandbox",
+        "-ConstructionNetworkScenario",
+        "-testexit=E1_WORLD_READY",
+        "-NullRHI"
+      ],
+      "log": "C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\network-20261018-212646-873\\normal-negative.log",
+      "exitCode": 0
+    },
+    {
+      "name": "flag-negative",
+      "pid": 46760,
+      "arguments": [
+        "\"C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\GameClient\\ShatteredFrontier.uproject\"",
+        "/Game/Frontier/Maps/Greenlands_ConstructionSandbox?game=/Script/ShatteredFrontier.SFConstructionNetworkGameMode",
+        "-unattended",
+        "-nosound",
+        "-nop4",
+        "-UserDir=\"C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\network-20261018-212646-873\\flag-negative-user/\"",
+        "-abslog=\"C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\network-20261018-212646-873\\flag-negative.log\"",
+        "-server",
+        "-port=17793",
+        "-multihome=127.0.0.1",
+        "-testexit=CONSTRUCTION_NETWORK_DISABLED",
+        "-NullRHI"
+      ],
+      "log": "C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\network-20261018-212646-873\\flag-negative.log",
+      "exitCode": 0
+    },
+    {
+      "name": "server",
+      "pid": 24756,
+      "arguments": [
+        "\"C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\GameClient\\ShatteredFrontier.uproject\"",
+        "/Game/Frontier/Maps/Greenlands_ConstructionSandbox?game=/Script/ShatteredFrontier.SFConstructionNetworkGameMode",
+        "-unattended",
+        "-nosound",
+        "-nop4",
+        "-UserDir=\"C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\network-20261018-212646-873\\server-user/\"",
+        "-abslog=\"C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\network-20261018-212646-873\\server.log\"",
+        "-server",
+        "-port=17791",
+        "-multihome=127.0.0.1",
+        "-ConstructionNetworkSandbox",
+        "-NullRHI"
+      ],
+      "log": "C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\network-20261018-212646-873\\server.log"
+    },
+    {
+      "name": "driver",
+      "pid": 46368,
+      "arguments": [
+        "\"C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\GameClient\\ShatteredFrontier.uproject\"",
+        "127.0.0.1:17791",
+        "-unattended",
+        "-nosound",
+        "-nop4",
+        "-UserDir=\"C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\network-20261018-212646-873\\driver-user/\"",
+        "-abslog=\"C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\network-20261018-212646-873\\driver.log\"",
+        "-game",
+        "-ConstructionNetworkScenario",
+        "-ConstructionNetworkRemovalBarrier=\"C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\network-20261018-212646-873\\both-projected-three.ready\"",
+        "-RenderOffscreen",
+        "-windowed",
+        "-ResX=1280",
+        "-ResY=720",
+        "-ConstructionNetworkScreenshot=\"C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\network-20261018-212646-873\\driver.png\""
+      ],
+      "log": "C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\network-20261018-212646-873\\driver.log",
+      "exitCode": 0
+    },
+    {
+      "name": "observer",
+      "pid": 17784,
+      "arguments": [
+        "\"C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\GameClient\\ShatteredFrontier.uproject\"",
+        "127.0.0.1:17791",
+        "-unattended",
+        "-nosound",
+        "-nop4",
+        "-UserDir=\"C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\network-20261018-212646-873\\observer-user/\"",
+        "-abslog=\"C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\network-20261018-212646-873\\observer.log\"",
+        "-game",
+        "-ConstructionNetworkScenario",
+        "-ConstructionNetworkRemovalBarrier=\"C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\network-20261018-212646-873\\both-projected-three.ready\"",
+        "-RenderOffscreen",
+        "-windowed",
+        "-ResX=1280",
+        "-ResY=720",
+        "-ConstructionNetworkScreenshot=\"C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\network-20261018-212646-873\\observer.png\""
+      ],
+      "log": "C:\\Users\\gsilver\\.codex\\worktrees\\construction-network-members\\Shattered-Frontier\\Artifacts\\ConstructionSandbox\\network-20261018-212646-873\\observer.log",
+      "exitCode": 0
+    }
+  ],
+  "scope": "Isolated loopback editor dedicated-server, canonical cube/slab/slope placement/removal and closed-door placement with rough-timber support, transient build capability; no production ownership/persistence/general procedural shape or packaged acceptance.",
+  "nonemptyContentBlake3": "0bde21a39b4cc3f4af382199407c35cd723e33424ef9bd5474b51ed3703cdc47",
+  "emptyContentBlake3": "440c9d558761fb85c20ad1399086101295d5ab7498d6c1155d966f88d51da67c",
+  "contentBlake3": "72d378be7fdb8b26e811572019d66378a9582f8b55462d7a46db4fe19f4ad709",
+  "captureFrames": true,
+  "cleanupComplete": true,
+  "elapsedSeconds": 53.9133364,
+  "baselineCommit": "ccbf67b",
+  "rawRoot": "Artifacts/ConstructionSandbox/network-20261018-212646-873",
+  "sourceFiles": [
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionNetwork.h",
+      "sha256": "38ab9f6a7eb84d63638ad2e93191bd00563cbbf8c13adf86f7732cd8b1c99146"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionNetwork.cpp",
+      "sha256": "4cfff1faef69eed8f60e1572a8c4c47a4737aa628dcb7b8f2303c35287b83908"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionNetworkProjection.h",
+      "sha256": "a9b5afcba44947dbb6fc2563f81071227a033775e85ad1b6dc4251aff237dd74"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionNetworkProjection.cpp",
+      "sha256": "8246fe98c8a2d222e86603e629af3c8f70b8a4b2724ccd244cf8704ab0838ca4"
+    },
+    {
+      "path": "tools/Test-ConstructionNetwork.ps1",
+      "sha256": "d72a6a5d51abb1d1113d3db88c2af50c4b5e5891a097f4347e9017eac6408220"
+    }
+  ],
+  "module": {
+    "path": "GameClient/Binaries/Win64/UnrealEditor-ShatteredFrontier.dll",
+    "sha256": "af0b99bd32f3d3d43efdc619404aba3400c52bd23a87a4902fcd1dc14461b283"
+  },
+  "evidenceFiles": [
+    {
+      "path": "Artifacts/ConstructionSandbox/network-20261018-212646-873/results.json",
+      "sha256": "6bcb3638e5be7d9807d2412cd83f1f607ccd1be6d8e469417b2fd802461364ef"
+    },
+    {
+      "path": "Artifacts/ConstructionSandbox/network-20261018-212646-873/server.log",
+      "sha256": "e47ae3c1f4720cb089c17003112cad9fd8f5737e0b4193dfb759d6891739fd76"
+    },
+    {
+      "path": "Artifacts/ConstructionSandbox/network-20261018-212646-873/driver.log",
+      "sha256": "648d8312ea5149deaf2960c9f6c6bd203f12042367a81d943628ef874b354ab7"
+    },
+    {
+      "path": "Artifacts/ConstructionSandbox/network-20261018-212646-873/observer.log",
+      "sha256": "c32c0542a25582b492c31adbcbe15e4fab373755d1f9bb7c0d4ae648f6db020e"
+    },
+    {
+      "path": "Artifacts/ConstructionSandbox/network-20261018-212646-873/driver.png",
+      "sha256": "7e3beb80561d2da5e8dba22a2a2e96e99e7f917432fe703c4dcb281e539bbc33"
+    },
+    {
+      "path": "Artifacts/ConstructionSandbox/network-20261018-212646-873/observer.png",
+      "sha256": "daf11284e71790bd78a6cd24f5a074131bbf717b9682ba7126a4eacf706f1577"
+    }
+  ],
+  "build": {
+    "path": "Artifacts/ConstructionSandbox/network-door-placement-build-02.log",
+    "sha256": "87b3f3cbae6f9d9f4242c1a008a86b4ad024f4238b6d372967ffffd76c17e711"
+  },
+  "visualInspection": "Builder closedframeoutline and observerdoor silhouette/count visible. Shaded surfaces dark under provisional grayboxlighting."
+}

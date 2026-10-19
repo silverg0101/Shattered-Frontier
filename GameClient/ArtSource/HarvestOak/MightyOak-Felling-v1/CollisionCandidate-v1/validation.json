@@ -1,0 +1,966 @@
+{
+  "status": "blender_roundtrip_pass",
+  "fbx": "SM_MightyOak_FallCollision.fbx",
+  "mesh_object_count": 53,
+  "mesh_names": [
+    "SM_MightyOak_FallCollision",
+    "UCX_SM_MightyOak_FallCollision_00",
+    "UCX_SM_MightyOak_FallCollision_01",
+    "UCX_SM_MightyOak_FallCollision_02",
+    "UCX_SM_MightyOak_FallCollision_03",
+    "UCX_SM_MightyOak_FallCollision_04",
+    "UCX_SM_MightyOak_FallCollision_05",
+    "UCX_SM_MightyOak_FallCollision_06",
+    "UCX_SM_MightyOak_FallCollision_07",
+    "UCX_SM_MightyOak_FallCollision_08",
+    "UCX_SM_MightyOak_FallCollision_09",
+    "UCX_SM_MightyOak_FallCollision_10",
+    "UCX_SM_MightyOak_FallCollision_11",
+    "UCX_SM_MightyOak_FallCollision_12",
+    "UCX_SM_MightyOak_FallCollision_13",
+    "UCX_SM_MightyOak_FallCollision_14",
+    "UCX_SM_MightyOak_FallCollision_15",
+    "UCX_SM_MightyOak_FallCollision_16",
+    "UCX_SM_MightyOak_FallCollision_17",
+    "UCX_SM_MightyOak_FallCollision_18",
+    "UCX_SM_MightyOak_FallCollision_19",
+    "UCX_SM_MightyOak_FallCollision_20",
+    "UCX_SM_MightyOak_FallCollision_21",
+    "UCX_SM_MightyOak_FallCollision_22",
+    "UCX_SM_MightyOak_FallCollision_23",
+    "UCX_SM_MightyOak_FallCollision_24",
+    "UCX_SM_MightyOak_FallCollision_25",
+    "UCX_SM_MightyOak_FallCollision_26",
+    "UCX_SM_MightyOak_FallCollision_27",
+    "UCX_SM_MightyOak_FallCollision_28",
+    "UCX_SM_MightyOak_FallCollision_29",
+    "UCX_SM_MightyOak_FallCollision_30",
+    "UCX_SM_MightyOak_FallCollision_31",
+    "UCX_SM_MightyOak_FallCollision_32",
+    "UCX_SM_MightyOak_FallCollision_33",
+    "UCX_SM_MightyOak_FallCollision_34",
+    "UCX_SM_MightyOak_FallCollision_35",
+    "UCX_SM_MightyOak_FallCollision_36",
+    "UCX_SM_MightyOak_FallCollision_37",
+    "UCX_SM_MightyOak_FallCollision_38",
+    "UCX_SM_MightyOak_FallCollision_39",
+    "UCX_SM_MightyOak_FallCollision_40",
+    "UCX_SM_MightyOak_FallCollision_41",
+    "UCX_SM_MightyOak_FallCollision_42",
+    "UCX_SM_MightyOak_FallCollision_43",
+    "UCX_SM_MightyOak_FallCollision_44",
+    "UCX_SM_MightyOak_FallCollision_45",
+    "UCX_SM_MightyOak_FallCollision_46",
+    "UCX_SM_MightyOak_FallCollision_47",
+    "UCX_SM_MightyOak_FallCollision_48",
+    "UCX_SM_MightyOak_FallCollision_49",
+    "UCX_SM_MightyOak_FallCollision_50",
+    "UCX_SM_MightyOak_FallCollision_51"
+  ],
+  "base_mesh": "SM_MightyOak_FallCollision",
+  "base_bounds_m": {
+    "min": [
+      -7.03054141998291,
+      -6.066676616668701,
+      0.9999998211860657
+    ],
+    "max": [
+      6.602985382080078,
+      6.190434455871582,
+      9.964315414428711
+    ],
+    "dimensions": [
+      13.633526802062988,
+      12.257111072540283,
+      8.964315593242645
+    ]
+  },
+  "ucx_count": 52,
+  "ucx_hulls": [
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_00",
+      "vertices": 19,
+      "faces": 34,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.009129439589360584,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_01",
+      "vertices": 23,
+      "faces": 42,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.012687185122427239,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_02",
+      "vertices": 19,
+      "faces": 34,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.01792395517805125,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_03",
+      "vertices": 21,
+      "faces": 38,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.026183883033621392,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_04",
+      "vertices": 22,
+      "faces": 40,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.03829288163846013,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_05",
+      "vertices": 25,
+      "faces": 46,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.05586337353839709,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_06",
+      "vertices": 24,
+      "faces": 44,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.07337070866398587,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_07",
+      "vertices": 23,
+      "faces": 42,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.09940011688648434,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_08",
+      "vertices": 23,
+      "faces": 42,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.13004829671308943,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_09",
+      "vertices": 17,
+      "faces": 30,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.09733058835277024,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_10",
+      "vertices": 22,
+      "faces": 40,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.06876460484220552,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_11",
+      "vertices": 23,
+      "faces": 42,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.03807996699706237,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_12",
+      "vertices": 23,
+      "faces": 42,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.021244842707342233,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_13",
+      "vertices": 21,
+      "faces": 38,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.014312829486287502,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_14",
+      "vertices": 22,
+      "faces": 40,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.01487653225621162,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_15",
+      "vertices": 22,
+      "faces": 40,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.01084068732470387,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_16",
+      "vertices": 22,
+      "faces": 40,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.010271918404619284,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_17",
+      "vertices": 22,
+      "faces": 40,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.010352382126204186,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_18",
+      "vertices": 17,
+      "faces": 30,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.0817792261842269,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_19",
+      "vertices": 24,
+      "faces": 44,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.051445748174231205,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_20",
+      "vertices": 24,
+      "faces": 44,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.030574598026521627,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_21",
+      "vertices": 22,
+      "faces": 40,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.01568171903323962,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_22",
+      "vertices": 23,
+      "faces": 42,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.016553227532866303,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_23",
+      "vertices": 21,
+      "faces": 38,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.01063085744286506,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_24",
+      "vertices": 18,
+      "faces": 32,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.009989604030172941,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_25",
+      "vertices": 21,
+      "faces": 38,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.010484127734430075,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_26",
+      "vertices": 24,
+      "faces": 44,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.010999545181939581,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_27",
+      "vertices": 26,
+      "faces": 48,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.007989882614706784,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_28",
+      "vertices": 16,
+      "faces": 28,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.04451135544162193,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_29",
+      "vertices": 25,
+      "faces": 46,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.025701344774353936,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_30",
+      "vertices": 21,
+      "faces": 38,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.020208942542338897,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_31",
+      "vertices": 26,
+      "faces": 48,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.015849196137017105,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_32",
+      "vertices": 19,
+      "faces": 34,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.013228380153107963,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_33",
+      "vertices": 21,
+      "faces": 38,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.012739472316782382,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_34",
+      "vertices": 21,
+      "faces": 38,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.013879782878088684,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_35",
+      "vertices": 25,
+      "faces": 46,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.01140966919461164,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_36",
+      "vertices": 20,
+      "faces": 36,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.011972292248054595,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_37",
+      "vertices": 17,
+      "faces": 30,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.009230309386827696,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_38",
+      "vertices": 20,
+      "faces": 36,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.009024089821374662,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_39",
+      "vertices": 18,
+      "faces": 32,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.008645600769857714,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_40",
+      "vertices": 26,
+      "faces": 48,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.010701171745993068,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_41",
+      "vertices": 25,
+      "faces": 46,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.01114888569590972,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_42",
+      "vertices": 21,
+      "faces": 38,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.012049745793873058,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_43",
+      "vertices": 16,
+      "faces": 28,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.037051576641258875,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_44",
+      "vertices": 22,
+      "faces": 40,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.020150363271203498,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_45",
+      "vertices": 23,
+      "faces": 42,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.013385031475653904,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_46",
+      "vertices": 20,
+      "faces": 36,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.012219175685116714,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_47",
+      "vertices": 25,
+      "faces": 46,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.010033393474588695,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_48",
+      "vertices": 25,
+      "faces": 46,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.009514684186847927,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_49",
+      "vertices": 21,
+      "faces": 38,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.010024276152991594,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_50",
+      "vertices": 22,
+      "faces": 40,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.009978352994832594,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "UCX_SM_MightyOak_FallCollision_51",
+      "vertices": 24,
+      "faces": 44,
+      "nonmanifold_edges": 0,
+      "volume_m3": 0.010393040354423164,
+      "object_location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "object_scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    }
+  ],
+  "uniform_import_scale": 1.0
+}

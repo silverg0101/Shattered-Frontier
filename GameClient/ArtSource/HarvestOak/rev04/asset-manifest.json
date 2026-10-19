@@ -1,0 +1,154 @@
+{
+  "generator": "tools/Create-HarvestOak.py",
+  "blender": "5.2.2 LTS",
+  "seed": 29183,
+  "units": "metres",
+  "up": "+Z",
+  "origin": "Ground for trees;0.85m cut-plane for Felled; centered local origins for fragments",
+  "quality_status": "Crown rejected at visual review: horizontal leaf shelves and bare terminal branches. Lower trunk and fragments are integration prototypes, no professional visual acceptance.",
+  "method": "Project-authored deterministic procedural geometry; major forks voxel-fused. GPT-generated bark reference retained in HarvestReferences; luminance-derived normal/roughness proxies. Authored leaf/endgrain/longgrain maps.",
+  "objects": [
+    {
+      "name": "SM_HarvestOak_BarkChip01",
+      "vertices": 28,
+      "triangles": 52,
+      "dimensions_m": [
+        0.0655,
+        0.0101,
+        0.1108
+      ]
+    },
+    {
+      "name": "SM_HarvestOak_Crown",
+      "vertices": 187013,
+      "triangles": 214396,
+      "dimensions_m": [
+        8.1079,
+        7.0001,
+        5.7293
+      ]
+    },
+    {
+      "name": "SM_HarvestOak_Cut01",
+      "vertices": 187397,
+      "triangles": 215160,
+      "dimensions_m": [
+        8.1079,
+        7.0001,
+        7.5217
+      ]
+    },
+    {
+      "name": "SM_HarvestOak_Cut02",
+      "vertices": 187397,
+      "triangles": 215160,
+      "dimensions_m": [
+        8.1079,
+        7.0001,
+        7.5217
+      ]
+    },
+    {
+      "name": "SM_HarvestOak_Felled",
+      "vertices": 187157,
+      "triangles": 214680,
+      "dimensions_m": [
+        8.1079,
+        7.0001,
+        6.6175
+      ]
+    },
+    {
+      "name": "SM_HarvestOak_Intact",
+      "vertices": 187397,
+      "triangles": 215160,
+      "dimensions_m": [
+        8.1079,
+        7.0001,
+        7.5217
+      ]
+    },
+    {
+      "name": "SM_HarvestOak_Splinter01",
+      "vertices": 28,
+      "triangles": 52,
+      "dimensions_m": [
+        0.0453,
+        0.0277,
+        0.2204
+      ]
+    },
+    {
+      "name": "SM_HarvestOak_Splinter02",
+      "vertices": 28,
+      "triangles": 52,
+      "dimensions_m": [
+        0.0298,
+        0.0251,
+        0.1407
+      ]
+    },
+    {
+      "name": "SM_HarvestOak_Stump",
+      "vertices": 192,
+      "triangles": 380,
+      "dimensions_m": [
+        1.4745,
+        1.2972,
+        0.9473
+      ]
+    },
+    {
+      "name": "SM_HarvestOak_Trunk",
+      "vertices": 288,
+      "triangles": 572,
+      "dimensions_m": [
+        1.4745,
+        1.2972,
+        1.8304
+      ]
+    }
+  ],
+  "checks": "asset-checks.json",
+  "limitations": [
+    "No final oak quality acceptance",
+    "No foliage wind/LODs/collision/tool animation/audio/performance acceptance",
+    "Staged cuts are comparison assets; current interaction direction is hit-based dynamic cutting"
+  ],
+  "files": {
+    "asset-checks.json": "d1ce310c942261a8940f7e0843346b1f9fe41c37064954d37c3e4a57a7c9a074",
+    "HarvestOak.blend": "eb0a499cc5984fc393ee201abe185f23fd492760a9a283f37917e7a311702ed0",
+    "Oak-Beauty.png": "b8852c8bec71d3b91579da42577a8fa96bb239382d1da27ab230fa0f8e390064",
+    "Oak-Fragments-Close.png": "05b285c2e62c64179689f90fe775a96247732dc2483c5a842bf2447b7d6de6c7",
+    "Oak-Front.png": "9030edf2b00d51a14e0f63e8d5602f3502e1abfd2a5643d358cf9c8c8910ac71",
+    "Oak-Stump-Close.png": "e472b8e7402985ffce994f2dd6a9e1b0b0826047651f522b2c0b319713b0dfec",
+    "Oak-Trunk-Close.png": "6793ed4408a3e77879cdcb5644639e369d2095b37c031589786d2dac5668fce5",
+    "Exports\\SM_HarvestOak_BarkChip01.fbx": "63b965f1f7af0af29963493f8990ad10682c41bdc0d5e5658c7477e13641db73",
+    "Exports\\SM_HarvestOak_BarkChip01.glb": "0555d5aa03cf98c3de7a56e170cecf41ff2f1f2dbe137d83d203cb32382ded1c",
+    "Exports\\SM_HarvestOak_Crown.fbx": "170b161e16c8e74f5a24538fb455a0b20505f369d64989842dc14e3b245070b2",
+    "Exports\\SM_HarvestOak_Crown.glb": "7e386b167db987e073fd1554ae3491c5e9e54d789706424fd6b8bb8820420375",
+    "Exports\\SM_HarvestOak_Cut01.fbx": "e9c0effe1b9863da2d0d25ebea6f7c8e76582a2ca608b3933993db95e5125a82",
+    "Exports\\SM_HarvestOak_Cut01.glb": "fef5322f4731730d1a84b30fd9cd3abb246113cf09071011939b341a3d49a363",
+    "Exports\\SM_HarvestOak_Cut02.fbx": "8432b4a87304c390544b089e333ead22093739e7dc6774b3c7ec240cc91974a9",
+    "Exports\\SM_HarvestOak_Cut02.glb": "db24d4d6e7c7e59a296456e8b84483fdba52b23b0366ab4716025898e6690b60",
+    "Exports\\SM_HarvestOak_Felled.fbx": "5b88b89baf8970fe350d19256e0b03b8b1e5f9833adb1ad3506500bd2f8bc21b",
+    "Exports\\SM_HarvestOak_Felled.glb": "4e379463bc8141d0cf3b82739bcca1f79385db5c3a05c222ab1c743db865edf3",
+    "Exports\\SM_HarvestOak_Intact.fbx": "5686d03a23c175fdc6fb87762a48c03ea338b132255d9fa32029379d5f03ade9",
+    "Exports\\SM_HarvestOak_Intact.glb": "f38cd7cef625769fcd8515b7ce6a899d9bed17df87bce7aba5b907229ccafd2d",
+    "Exports\\SM_HarvestOak_Splinter01.fbx": "ca39014dd4a03ae4466d77386389785da58393aaa12104066d7d51cdd89ba134",
+    "Exports\\SM_HarvestOak_Splinter01.glb": "c7d4a4db2993b5c7953514d690b088020542dcb8186e6a7c98a2d5801071379f",
+    "Exports\\SM_HarvestOak_Splinter02.fbx": "577ba067fe94268db27a4e946978eefeb0f4939cc3492f6ee9205ca8a997eeb7",
+    "Exports\\SM_HarvestOak_Splinter02.glb": "248ba79c7725ea5e1600ce092d2d25e58c7b9e6470f0ae40533bbb937f302024",
+    "Exports\\SM_HarvestOak_Stump.fbx": "34ef4c9430b82faf79fafa734b93ef5fec49195254257cc68f824268a2e7f1f0",
+    "Exports\\SM_HarvestOak_Stump.glb": "67f7f8d2948a9384c8cdc716700b1bfed748b5b72ab9efc8d80abb6351f9d893",
+    "Exports\\SM_HarvestOak_Trunk.fbx": "6a0a1c92e95eb5a1e98df07047fb18162a853d105a6aa09541a21b9e35aa17bf",
+    "Exports\\SM_HarvestOak_Trunk.glb": "c8eac398c332528d57da385b4a4821e7971aed0805190f771205890a71c9af30",
+    "Textures\\T_Oak_Bark_BaseColor.png": "bb7726b0e8a214e4735a99cd6473ede3165789d9d046ea5f36cbabeafefc5809",
+    "Textures\\T_Oak_Bark_Normal.png": "e89fe60e4cbc76ce794e0d21a215855599ee9d929179cefca2a4b9e261039cfa",
+    "Textures\\T_Oak_Bark_Roughness.png": "0e14ae75f66f8c8326669ad1a9539b03949954b7406d39c62e119ae13f534eff",
+    "Textures\\T_Oak_Endgrain_BaseColor.png": "128b258926e86deb760c9eaf5d259527146af9bbb4a2f4558916bd09f45c1b99",
+    "Textures\\T_Oak_Endgrain_Roughness.png": "952fdb9ab9797ec46574b067f71eb2ed3520e8fdd9f23133df6c1a6b5de69a3d",
+    "Textures\\T_Oak_Leaf_BaseColor.png": "e1a688d3d89cebae415b313f10f77b044b19cf236d645607a90c70b6b761dafb",
+    "Textures\\T_Oak_Longgrain_BaseColor.png": "74757d3309170c9ed7d3e0b187db82550480f759a22c0c038d9b837e24615e54"
+  }
+}

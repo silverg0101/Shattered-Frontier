@@ -1,0 +1,9 @@
+# Network support preview
+
+2026-10-18: **passed, isolated editor two-client scope**. [Identities/results](construction-network-support-preview-results.json). Placement outlines turn red for unsupported candidates; targeted removal turns red and explains when it would leave unsupported members. Amber/cyan remain advisory candidates because the server still validates permission, revision, reach, visibility, clearance and support.
+
+One pure member-support helper now serves both server candidate admission and the local estimate. Cached estimates bind state identity, snapshot revision, placement/removal addresses and selected shape/rotation, avoiding full graph evaluation on unchanged aim frames. Pose-dependent range and targeting still update separately. No new tuning values or authority route were added.
+
+`& tools/Test-ConstructionNetwork.ps1 -TimeoutSeconds 150 -CaptureFrames` passed50.83s at `Artifacts/ConstructionSandbox/network-20261018-211519-614/`. Before requests, local preview rejected supporting-base removal and allowed supported-top removal at3; authoritative results matched. At8, preview rejected placement above the slope and allowed removal of that grounded slope. Both final1280x720 frames decoded and were inspected: red unsupported shape, cyan removal target, plain warning/status and readable observer state. The complete cube/removal/empty/mixed-shape input and rejection check remains in this run. Checked exits0; owned cleanup complete; server stopped intentionally. Final editor build9.10s; source/cache review cleared.
+
+Human input feel, full-cell clearance false rejections, internal-face culling, doors, production support-collapse waves, economy/persistence and packaged execution remain open. Parallel environment work remains in its own checkout/editor. Next: server-controlled door integration using the approved ordinary-door profile and existing support boundary.
