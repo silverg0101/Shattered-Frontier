@@ -16,7 +16,7 @@ if (@([Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties().GetAc
 if (Test-Path -LiteralPath $root) { throw 'Evidence root exists.' }
 $null = New-Item -ItemType Directory -Path $root
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
-$results = [ordered]@{ status='Running'; engine=$editor; project=$project; port=$Port; runs=@(); scope='Isolated loopback editor dedicated-server, canonical cube/slab/slope placement/removal and closed-door placement with rough-timber support, transient build capability; no production ownership/persistence/general procedural shape or packaged acceptance.' }
+$results = [ordered]@{ status='Running'; engine=$editor; project=$project; port=$Port; runs=@(); scope='Isolated loopback editor dedicated-server, canonical cube/slab/slope placement/removal and door placement/toggling with rough-timber support, transient build capability; no production ownership/persistence/general procedural shape or packaged acceptance.' }
 $clock = [Diagnostics.Stopwatch]::StartNew()
 function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
     $user = Join-Path $root ($Name+'-user')
@@ -58,7 +58,7 @@ try {
     Wait-Exit $disabled 'flag-negative'
     $disabledLog = Get-Content -LiteralPath (Join-Path $root 'flag-negative.log') -Raw
     if ($disabledLog -notmatch 'CONSTRUCTION_NETWORK_DISABLED' -or $disabledLog -match 'CONSTRUCTION_NETWORK_READY|CONSTRUCTION_NETWORK_ACCEPT|CONSTRUCTION_NETWORK_EDIT') { throw 'Missing startup opt-in did not fence the network mode.' }
-    $server = Start-Owned 'server' $url @('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox')
+    $server = Start-Owned 'server' $url @('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox','-ConstructionNetworkDoorObstruction')
     Wait-Log $server 'server' 'CONSTRUCTION_NETWORK_READY'
     $driver = Start-Owned 'driver' ('127.0.0.1:'+$Port) @('-game','-ConstructionNetworkScenario')
     $observer = Start-Owned 'observer' ('127.0.0.1:'+$Port) @('-game','-ConstructionNetworkScenario')
@@ -86,6 +86,30 @@ try {
     if ($emptyPayloads[0] -ne $emptyPayloads[1]) { throw 'Clients disagree on empty projection.' }
     $results.emptyContentBlake3=$emptyPayloads[0]
     Set-Content -LiteralPath (Join-Path $root 'both-projected-three.ready.empty') -Value 'Both clients validated empty revision6; observer denials completed.' -Encoding ascii
+    $closedPayloads=@()
+    foreach ($role in @('driver','observer')) {
+        $process=if ($role -eq 'driver') { $driver } else { $observer }
+        Wait-Log $process $role 'CONSTRUCTION_NETWORK_DOOR_CLOSED_READY Builder='
+        $log=Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
+        $matches=[regex]::Matches($log,'CONSTRUCTION_NETWORK_PROJECTED Revision=11 Members=2 Collision=1 Content=([a-fA-F0-9]{64}) Doors=1')
+        if ($matches.Count -ne 1) { throw "$role lacks the closed door before toggling." }
+        $closedPayloads += $matches[0].Groups[1].Value
+    }
+    if ($closedPayloads[0] -ne $closedPayloads[1]) { throw 'Clients disagree on the closed door.' }
+    $results.closedDoorContentBlake3=$closedPayloads[0]
+    Set-Content -LiteralPath (Join-Path $root 'both-projected-three.ready.door-closed') -Value 'Both clients projected closed11; observer toggle denied.' -Encoding ascii
+    $openPayloads=@()
+    foreach ($role in @('driver','observer')) {
+        $process=if ($role -eq 'driver') { $driver } else { $observer }
+        Wait-Log $process $role 'CONSTRUCTION_NETWORK_DOOR_OPEN_READY Builder='
+        $log=Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
+        $matches=[regex]::Matches($log,'CONSTRUCTION_NETWORK_PROJECTED Revision=12 Members=2 Collision=1 Content=([a-fA-F0-9]{64}) Doors=1')
+        if ($matches.Count -ne 1) { throw "$role lacks the open-door collision projection." }
+        $openPayloads += $matches[0].Groups[1].Value
+    }
+    if ($openPayloads[0] -ne $openPayloads[1] -or $openPayloads[0] -eq $closedPayloads[0]) { throw 'Open-door clients disagree or did not change pose.' }
+    $results.openDoorContentBlake3=$openPayloads[0]
+    Set-Content -LiteralPath (Join-Path $root 'both-projected-three.ready.door-open') -Value 'Both clients projected open12; optional open captures completed.' -Encoding ascii
     Wait-Exit $driver 'driver'
     Wait-Exit $observer 'observer'
     if ($server.HasExited) { throw 'Owned server exited during the client exercise.' }
@@ -93,10 +117,10 @@ try {
     $observedRoles = @()
     foreach ($role in @('driver','observer')) {
         $log = Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
-        $success = [regex]::Matches($log,'CONSTRUCTION_NETWORK_SCENARIO_SUCCESS Builder=([01]) Revision=11 Members=2 Doors=1')
+        $success = [regex]::Matches($log,'CONSTRUCTION_NETWORK_SCENARIO_SUCCESS Builder=([01]) Revision=13 Members=2 Doors=1')
         if ($success.Count -ne 1 -or $log -match 'CONSTRUCTION_NETWORK_\w*FAILED|Fatal error:|Assertion failed:|Ensure condition failed:') { throw "$role failed its semantic scenario." }
         $observedRoles += [int]$success[0].Groups[1].Value
-        $projection = [regex]::Matches($log,'CONSTRUCTION_NETWORK_PROJECTED Revision=11 Members=2 Collision=1 Content=([a-fA-F0-9]{64}) Doors=1')
+        $projection = [regex]::Matches($log,'CONSTRUCTION_NETWORK_PROJECTED Revision=13 Members=2 Collision=1 Content=([a-fA-F0-9]{64}) Doors=1')
         if ($projection.Count -ne 1) { throw "$role lacks a unique exact local collision projection." }
         $payloads += $projection[0].Groups[1].Value
         if ($CaptureFrames) {
@@ -105,6 +129,10 @@ try {
             try {
                 if ($frame.RawFormat.Guid -ne [Drawing.Imaging.ImageFormat]::Png.Guid -or $frame.Width -ne 1280 -or $frame.Height -ne 720) { throw "$role capture is not the requested 1280x720 PNG." }
             } finally { $frame.Dispose() }
+            $openFrame=[Drawing.Image]::FromFile((Join-Path $root ($role+'.open.png')))
+            try {
+                if ($openFrame.RawFormat.Guid -ne [Drawing.Imaging.ImageFormat]::Png.Guid -or $openFrame.Width -ne 1280 -or $openFrame.Height -ne 720) { throw "$role open capture is not1280x720 PNG." }
+            } finally { $openFrame.Dispose() }
         }
     }
     if (@($observedRoles | Sort-Object -Unique).Count -ne 2) { throw 'Expected one server-assigned builder and one observer.' }
@@ -150,7 +178,7 @@ try {
     $join = $serverLog.IndexOf('CONSTRUCTION_NETWORK_PAIR_READY Players=2')
     $accept = $serverLog.IndexOf('CONSTRUCTION_NETWORK_EDIT')
     if ($join -lt 0 -or $accept -le $join -or [regex]::Matches($serverLog,'CONSTRUCTION_NETWORK_EDIT').Count -ne 10) { throw 'Ten structural edits were not accepted after both players joined.' }
-    if ($serverLog -notmatch ('CONSTRUCTION_NETWORK_EDIT Action=Remove Revision=11 Members=2[^\r\n]*Content='+[regex]::Escape($payloads[0]))) { throw 'Clients differ from server content.' }
+    if ($serverLog -notmatch ('CONSTRUCTION_NETWORK_DOOR_TOGGLE Revision=13 Members=2 Doors=1 Open=0[^\r\n]*Content='+[regex]::Escape($payloads[0]))) { throw 'Clients differ from server content.' }
     if ([regex]::Matches($serverLog,'CONSTRUCTION_NETWORK_RESULT Builder=1 Result=13 Revision=6 Members=0 Collision=1 Action=Place').Count -ne 2) { throw 'Invalid shape/rotation were not rejected unchanged.' }
     if ($serverLog -notmatch ('CONSTRUCTION_NETWORK_EDIT Action=Remove Revision=6 Members=0[^\r\n]*Content='+[regex]::Escape($emptyPayloads[0]))) { throw 'Empty client projection differs from server.' }
     if ($serverLog -notmatch 'CONSTRUCTION_NETWORK_EDIT Action=Place Revision=7 Members=1[^\r\n]*Shape=1 Rotation=' -or $serverLog -notmatch ('CONSTRUCTION_NETWORK_EDIT Action=Place Revision=8 Members=2[^\r\n]*Shape=2 Rotation='+$yawRotation+'(?:\s|$)')) { throw 'Server mixed shape/rotation differs from selected input.' }
@@ -163,10 +191,21 @@ try {
         $doorView += [regex]::Matches($log,'CONSTRUCTION_NETWORK_VIEW_DOOR Cell=X=2 Y=0 Z=0 Yaw=0').Count
     }
     if ($doorView -ne 1 -or [regex]::Matches($serverLog,'CONSTRUCTION_NETWORK_DOOR_PLACE').Count -ne 1) { throw 'Expected one server door from normal4/B input.' }
+    foreach ($marker in @('CONSTRUCTION_NETWORK_TOGGLE_RESULT Builder=0 Result=2 Revision=11 Doors=1 Collision=1','CONSTRUCTION_NETWORK_DOOR_TOGGLE Revision=12 Members=2 Doors=1 Open=1','CONSTRUCTION_NETWORK_DOOR_OBSTRUCTION_READY Physics=1','CONSTRUCTION_NETWORK_TOGGLE_RESULT Builder=1 Result=14 Revision=12 Doors=1 Collision=1','CONSTRUCTION_NETWORK_DOOR_OBSTRUCTION_REMOVED','CONSTRUCTION_NETWORK_DOOR_TOGGLE Revision=13 Members=2 Doors=1 Open=0')) {
+        if ([regex]::Matches($serverLog,[regex]::Escape($marker)).Count -ne 1) { throw "Missing/duplicate door motion observation: $marker" }
+    }
+    if ($serverLog -notmatch ('CONSTRUCTION_NETWORK_DOOR_TOGGLE Revision=12 Members=2 Doors=1 Open=1[^\r\n]*Content='+[regex]::Escape($openPayloads[0]))) { throw 'Server/open-client content differs.' }
+    if ($closedPayloads[0] -ne $payloads[0]) { throw 'Successful close did not restore the initial closed content.' }
+    $toggleViews=0
+    foreach ($role in @('driver','observer')) {
+        $log=Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
+        $toggleViews += [regex]::Matches($log,'CONSTRUCTION_NETWORK_VIEW_TOGGLE Cell=X=2 Y=0 Z=0').Count
+    }
+    if ($toggleViews -ne 3 -or [regex]::Matches($serverLog,'CONSTRUCTION_NETWORK_DOOR_TOGGLE').Count -ne 2) { throw 'Expected three ordinary E requests and only two committed pose changes.' }
     $results.contentBlake3 = $payloads[0]
     $results.captureFrames = [bool]$CaptureFrames
     $results.status = 'Passed'
-    Write-Output "PASS: two concurrent clients, cube assembly/removal, slab/slope input, closed-door placement, reservation rejection and door retention across structural edits, matching canonical collision. Evidence: $root"
+    Write-Output "PASS: two concurrent clients, construction input, retained door, actual E open/blocked-close/retry, both-client pose/collision agreement and scoped physics canary cleanup. Evidence: $root"
 } catch {
     $results.status='Failed'; $results.error=$_.Exception.Message; throw
 } finally {

@@ -17,4 +17,5 @@ namespace SFConstructionNetworkProjection
     bool StageDoor(ASFConstructionNetworkState* Owner, UStaticMesh* Asset, const FSFConstructionNetworkDoor& Door, FSFConstructionNetworkDoorProjection& Out);
     bool MatchesDoor(const ASFConstructionNetworkState* Owner, const FSFConstructionNetworkDoor& Door, const FSFConstructionNetworkDoorProjection& Projection);
     void DiscardDoor(FSFConstructionNetworkDoorProjection& Projection);
+    bool IsDoorMotionClear(const ASFConstructionNetworkState* Owner, const FSFConstructionNetworkDoor& Door, const FSFConstructionNetworkDoorProjection& Projection);
 }

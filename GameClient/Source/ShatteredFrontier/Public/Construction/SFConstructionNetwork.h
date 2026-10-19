@@ -14,7 +14,7 @@ class ASFConstructionNetworkController;
 UENUM()
 enum class ESFConstructionNetworkResult : uint8
 {
-    Accepted, InvalidContext, PermissionDenied, Stale, InvalidCell, OutOfReach, Occluded, Occupied, ProjectionFailed, Unsupported, LimitReached, NotFound, Removed, InvalidPiece
+    Accepted, InvalidContext, PermissionDenied, Stale, InvalidCell, OutOfReach, Occluded, Occupied, ProjectionFailed, Unsupported, LimitReached, NotFound, Removed, InvalidPiece, DoorBlocked, DoorOpened, DoorClosed
 };
 
 USTRUCT()
@@ -70,6 +70,7 @@ public:
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     ESFConstructionNetworkResult Edit(ASFConstructionNetworkController* Controller, FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation);
     ESFConstructionNetworkResult PlaceDoor(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision, uint8 Yaw);
+    ESFConstructionNetworkResult ToggleDoor(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision);
     const FSFConstructionNetworkSnapshot& GetSnapshot() const { return Snapshot; }
     bool HasCurrentCollision() const;
     FString GetContentDigest() const;
@@ -79,6 +80,8 @@ public:
     int32 GetMaximumMembers() const { return MaximumMembers; }
     bool IsProjectionCurrent() const { return bProjectionReady && ProjectionRevision == Snapshot.Revision; }
     bool GetCellForComponent(const UPrimitiveComponent* Component, FIntVector& OutCell) const;
+    bool GetDoorForComponent(const UPrimitiveComponent* Component, FIntVector& OutOrigin) const;
+    bool OwnsDoorProjection(const FSFConstructionNetworkDoor& Door, const FSFConstructionNetworkDoorProjection& Projection) const;
     bool IsSupportAllowedForPreview(FIntVector Cell, uint8 Shape, uint8 Rotation, bool bRemove) const;
     int32 GetMaximumDoors() const { return MaximumDoors; }
 private:
@@ -111,9 +114,17 @@ public:
     virtual void RestartPlayer(AController* NewPlayer) override;
     bool IsAdmitted() const;
     bool IsBuilder(const ASFConstructionNetworkController* Controller) const;
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    void SpawnFiniteDoorObstruction(const FIntVector& Origin, uint8 Yaw);
+    void DiscardFiniteDoorObstruction();
+#endif
 private:
     TWeakObjectPtr<ASFConstructionNetworkController> Builder;
     bool bBuilderAssigned = false;
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    TWeakObjectPtr<AActor> FiniteDoorObstruction;
+    bool bFiniteObstructionSpawned = false;
+#endif
 };
 
 UCLASS(NotBlueprintable)
@@ -131,6 +142,7 @@ public:
 private:
     void PlaceFromView();
     void RemoveFromView();
+    void ToggleDoorFromView();
     void RefreshPlacementPreview(bool bDrawOutline);
     void ProcessEdit(FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation);
     void SelectCube();
@@ -142,6 +154,7 @@ private:
     UFUNCTION(Server, Reliable) void ServerPlace(FIntVector Cell, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation);
     UFUNCTION(Server, Reliable) void ServerRemove(FIntVector Cell, uint64 ExpectedRevision);
     UFUNCTION(Server, Reliable) void ServerPlaceDoor(FIntVector Origin, uint64 ExpectedRevision, uint8 Yaw);
+    UFUNCTION(Server, Reliable) void ServerToggleDoor(FIntVector Origin, uint64 ExpectedRevision);
     UFUNCTION(Client, Reliable) void ClientPlacementResult(ESFConstructionNetworkResult Result, uint64 Revision);
     UPROPERTY(Replicated) bool bRoleAssigned = false;
     UPROPERTY(Replicated) bool bBuilderRole = false; // Advisory; permission is derived again on server.
@@ -156,6 +169,8 @@ private:
     uint8 SelectedRotation = 0;
     uint8 SelectedYaw = 0;
     bool bDoorSelected = false;
+    bool bHasDoorTarget = false;
+    FIntVector TargetDoorOrigin = FIntVector::ZeroValue;
     struct FSupportCache
     {
         TWeakObjectPtr<ASFConstructionNetworkState> State;
@@ -174,6 +189,10 @@ private:
     FString ScenarioScreenshotPath;
     bool bScenarioEmptyReported = false;
     bool bScenarioDoorCameraAimed = false;
+    bool bScenarioDoorClosedReported = false;
+    bool bScenarioDoorOpenReported = false;
+    bool bScenarioDoorOpenCaptureStarted = false;
+    FString ScenarioDoorOpenPath;
 #endif
 };
 

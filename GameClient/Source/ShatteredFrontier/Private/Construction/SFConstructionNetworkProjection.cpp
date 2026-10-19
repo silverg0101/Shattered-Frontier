@@ -5,6 +5,9 @@
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/World.h"
+#include "Engine/OverlapResult.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "PhysicsEngine/BodyInstance.h"
 #include "Chaos/Convex.h"
 #include "PhysicsEngine/BodySetup.h"
 #include "ProceduralMeshComponent.h"
@@ -153,6 +156,39 @@ bool SFConstructionNetworkProjection::MatchesDoor(const ASFConstructionNetworkSt
         FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionNetworkDoorProjection),false);
         const FVector Centre=Expected.GetLocation(),Direction=Expected.GetRotation().RotateVector(FVector::ForwardVector);
         if (!Mesh->LineTraceComponent(Hit,Centre+Direction*(B.Extent.X+10.0),Centre,Query) || Hit.GetComponent()!=Mesh) { return false; }
+    }
+    return true;
+}
+
+bool SFConstructionNetworkProjection::IsDoorMotionClear(const ASFConstructionNetworkState* Owner, const FSFConstructionNetworkDoor& Door, const FSFConstructionNetworkDoorProjection& Projection)
+{
+    FSFConstructionDoorProjectionProfile Profile;
+    if (!IsInGameThread() || !IsValid(Owner) || !Owner->GetWorld() || !Owner->OwnsDoorProjection(Door,Projection)
+        || !ASFConstructionSandboxDoorProjection::BuildProfile(Door.Origin,Door.Yaw,Door.bOpen,Profile)) { return false; }
+    const FBox& Bounds=Profile.Motion;
+    const auto Shape=FCollisionShape::MakeBox(Bounds.GetExtent());
+    TArray<FOverlapResult> Candidates;
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionNetworkDoorMotion),false);
+    Owner->GetWorld()->OverlapMultiByObjectType(Candidates,Bounds.GetCenter(),FQuat::Identity,FCollisionObjectQueryParams::AllObjects,Shape,Query);
+    for (const auto& Candidate : Candidates)
+    {
+        auto* Component=Candidate.GetComponent();
+        if (!IsValid(Component)) { return false; }
+        bool bOwn=false;
+        for (const auto& Box : Projection.Boxes) { bOwn |= Box.Get()==Component; }
+        if (bOwn) { continue; } // Exact proven target components, never its whole actor.
+        if (!Component->IsQueryCollisionEnabled() || Component->GetCollisionResponseToChannel(ECC_WorldStatic)!=ECR_Block) { continue; }
+        const auto* Setup=Component->GetBodySetup();
+        if (!Setup || Setup->GetCollisionTraceFlag()==CTF_UseComplexAsSimple || Setup->AggGeom.GetElementCount()==0
+            || Component->IsA<USkeletalMeshComponent>()) { return false; }
+        auto* Body=Component->GetBodyInstance(NAME_None,true,Candidate.GetItemIndex());
+        if (!Body || !Body->IsValidBodyInstance()) { return false; }
+        FMTDResult Penetration;
+        const bool bHit=Body->OverlapTest(Bounds.GetCenter(),FQuat::Identity,Shape,&Penetration,false);
+        if (!FMath::IsFinite(Penetration.Distance)) { return false; }
+        // Same numerical zero guard as the shared strict simple-body box query;
+        // exact floor contact is legal, with no inset or omitted foreign body.
+        if (bHit && Penetration.Distance>1.e-9) { return false; }
     }
     return true;
 }
