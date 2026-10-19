@@ -18,11 +18,15 @@ void ASFE1GameMode::StartPlay()
 {
     Super::StartPlay();
     // Versioned E1-only placement beside one arrival spawn; no biome/resource claim.
-    FActorSpawnParameters Spawn;
-    Spawn.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    ASFE1InteractionTarget* Target = GetWorld()->SpawnActor<ASFE1InteractionTarget>(
-        FVector(-300.0, -750.0, 60.0), FRotator::ZeroRotator, Spawn);
-    if (!Target) { UE_LOG(LogTemp, Fatal, TEXT("E1 interaction fixture failed to spawn")); }
+    // Zone maps share this game mode, so the fixture stays in the E1 graybox.
+    if (GetWorld()->GetMapName().EndsWith(TEXT("Greenlands_E1")))
+    {
+        FActorSpawnParameters Spawn;
+        Spawn.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+        ASFE1InteractionTarget* Target = GetWorld()->SpawnActor<ASFE1InteractionTarget>(
+            FVector(-300.0, -750.0, 60.0), FRotator::ZeroRotator, Spawn);
+        if (!Target) { UE_LOG(LogTemp, Fatal, TEXT("E1 interaction fixture failed to spawn")); }
+    }
     UE_LOG(LogTemp, Display, TEXT("E1_WORLD_READY Map=%s NetMode=%d LocalDevelopmentOnly=1"), *GetWorld()->GetMapName(), static_cast<int32>(GetNetMode()));
 #if WITH_DEV_AUTOMATION_TESTS
     StartE1NetworkScenario(GetWorld());

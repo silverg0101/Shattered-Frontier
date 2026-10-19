@@ -9,7 +9,8 @@ Use it in this order:
 
 1. Write a region definition from the region's concept art (the [Greenlands region](../Regions/Legends_Shattered_Frontier_Region_Greenlands_v0.1.md) is the first one).
 2. Split the region into zones with the decision rules below.
-3. Complete the zone checklist for each zone before it leaves graybox.
+3. For each zone anchored by a settlement, write a settlement definition and its design board per the [Settlement Design Board Standard](Legends_Shattered_Frontier_Settlement_Design_Board_Standard_v1.0.md). Its districts become areas in this zone.
+4. Complete the zone checklist for each zone before it leaves graybox.
 
 ## Terms
 

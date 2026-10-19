@@ -50,6 +50,8 @@ This is the first region definition written to the [Zone Definition Standard](..
 
 **Starting point (confirmed 2026-10-19):** Silverbrook is the starting zone. The concept copy describes the settlements as running "from Silverbrook to Valemere" and calls Silverbrook the gateway to adventure.
 
+**Settlement definitions:** [Silverbrook](Legends_Shattered_Frontier_Settlement_Silverbrook_v0.1.md) (districts, landmarks, scale, design board brief). Other settlements get theirs when their zone is planned, per the [Settlement Design Board Standard](../World-Simulation/Legends_Shattered_Frontier_Settlement_Design_Board_Standard_v1.0.md).
+
 ## 5. Zone plan
 
 Each mainland settlement anchors one zone of about 2 km × 2 km that includes its surrounding countryside. The islands and seas are future content, because they need sea travel.
