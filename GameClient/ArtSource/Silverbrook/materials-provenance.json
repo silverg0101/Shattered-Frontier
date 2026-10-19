@@ -172,6 +172,41 @@
     ]
   },
   {
+    "asset": "hessian_380",
+    "page": "https://polyhaven.com/a/hessian_380",
+    "license": "CC0-1.0",
+    "authors": {
+      "colormass": "Photography",
+      "Rico Cilliers": "Processing"
+    },
+    "physical_size_metres": [
+      0.2738657700451184,
+      0.27379998564720154
+    ],
+    "files": [
+      {
+        "file": "Textures/hessian_380_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/hessian_380/hessian_380_diff_2k.jpg",
+        "md5": "4d5384ae026bfbe4aafe22c164e79e7a"
+      },
+      {
+        "file": "Textures/hessian_380_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/hessian_380/hessian_380_nor_gl_2k.jpg",
+        "md5": "e5bfe82c3ce5d2e8b651aba74af7747f"
+      },
+      {
+        "file": "Textures/hessian_380_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/hessian_380/hessian_380_rough_2k.jpg",
+        "md5": "3dcc6f5124a9771b8a898e53c958ea2c"
+      },
+      {
+        "file": "Textures/hessian_380_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/hessian_380/hessian_380_disp_2k.jpg",
+        "md5": "79eb064b7df3051c00367955c5596036"
+      }
+    ]
+  },
+  {
     "asset": "lichen_rock",
     "page": "https://polyhaven.com/a/lichen_rock",
     "license": "CC0-1.0",
