@@ -32,7 +32,7 @@
         205
       ],
       "seconds": 116.0,
-      "z_cm": 855
+      "z_cm": 854
     },
     {
       "xy_metres": [
@@ -71,15 +71,15 @@
   "walk_completed": true,
   "walk_seconds": 221.1,
   "frame_ms": {
-    "median": 2.2,
-    "p95": 3.0,
-    "frames": 96403
+    "median": 2.3,
+    "p95": 5.4,
+    "frames": 81212
   },
   "final_pawn_cm": [
     2189,
-    -52601,
+    -52602,
     3616
   ],
-  "elapsed_seconds": 237.4,
+  "elapsed_seconds": 237.5,
   "passed": true
 }

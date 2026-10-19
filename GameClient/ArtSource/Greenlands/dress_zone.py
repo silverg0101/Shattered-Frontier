@@ -24,7 +24,10 @@ ORDER = ('canopy', 'rocks', 'understory', 'ground_cover', 'litter')
 
 
 def content_version(L, P, seed, district):
-    h = hashlib.sha1(json.dumps([L, P, seed, district, RULES_VERSION], sort_keys=True).encode()).hexdigest()
+    """Seed + rules version + hash of what decides placement: the layout and each role's layer, meshes and place rules.
+    Other look-profile edits (descriptions, the building library) leave it unchanged."""
+    placement = [(l['role'], l['layer'], l['have'], l.get('place')) for l in P['layers']]
+    h = hashlib.sha1(json.dumps([L, placement, seed, district, RULES_VERSION], sort_keys=True).encode()).hexdigest()
     return f'{district.lower().replace(" ", "_")}-{seed}-{RULES_VERSION}-{h[:10]}'
 
 
