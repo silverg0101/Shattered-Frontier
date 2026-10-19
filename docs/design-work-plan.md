@@ -1,5 +1,7 @@
 # Design documentation work plan
 
+Current gameplay checkpoint: [timed gathering and private inventory](gameplay-gathering-pilot.md) now pass focused authority and two-client replication/replay checks using the free Minimal Inventory Runtime plugin. Session-only Windows pilot; production ledger/tools/progression/Linux remain open. Next: design-authored rough timber and iron ingot refinement. Code is in the isolated gameplay worktree, preserving the environment checkout.
+
 ## Laptop editor ready and package runner implementation - 2026-10-18
 
 Current gameplay result: Upper-floor line placement is complete: P/PageUp/B creates3supported upper slabs in one revision16, both clients agree on8members and exact collision/content. Focused layer/control test1/1 clean; editor build27.06s; integration171.52s including lengthy editor startup; cleanup complete. [Evidence](evidence/construction-network-layer-pilot.md). User priority: development progress; batch substantive work and keep checks/docs proportional. Next: [free Fab candidate register](Game-Design/Legends_Shattered_Frontier_Gameplay_Reuse_Candidate_Register_v0.1.md) records inventory/interaction/gathering options and later dialogue/animation/UI uses. Evaluate source and Linux/authority fit before the INV/GAT integration; preserve governing mechanics unless a documented player benefit justifies a design change. Gameplay worktree remains isolated from the environment checkout.

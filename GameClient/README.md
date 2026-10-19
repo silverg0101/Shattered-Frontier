@@ -1,5 +1,7 @@
 # E1 Unreal foundation
 
+Optional gathering: the [gameplay pilot](../docs/gameplay-gathering-pilot.md) uses the free Minimal Inventory Runtime 2.0.0 engine plugin on Win64 (install from Fab on a new machine). Add server `-GatheringPilot` alongside the dedicated construction flags; E harvests oak/iron over a timed channel, E/Escape cancel, and the HUD shows your private session-only bag. No startup map or Linux inventory acceptance changes. Focused authority and `tools/Test-GatheringPilot.ps1` evidence are linked there.
+
 ## Isolated construction placement pilot
 
 The next playable milestone is the [construction sandbox](../docs/construction-sandbox-milestone.md). Its current [clearance/support checkpoint](../docs/evidence/construction-sandbox-support-pilot.md) adds actual canonical convex clearance and rough-timber support over an explicitly synthetic foundation to standalone cube/slab/slope placement. Private PhysicsCore/Chaos/ChaosCore dependencies provide the installed simple-body narrowphase; ProceduralMeshComponent projects clipped surfaces and canonical collision. Generated tables are checked with `py -3 tools/Generate-ConstructionGeometryHeader.py --check` from the repository root.

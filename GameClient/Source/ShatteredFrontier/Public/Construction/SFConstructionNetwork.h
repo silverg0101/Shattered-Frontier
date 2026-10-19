@@ -5,6 +5,7 @@
 #include "GameFramework/HUD.h"
 #include "SFConstructionNetwork.generated.h"
 
+class USFGatheringPilotComponent;
 class UStaticMeshComponent;
 class UProceduralMeshComponent;
 class UPrimitiveComponent;
@@ -153,6 +154,8 @@ public:
     void AssignRole(bool bBuilder);
     FString GetBuildStatusText() const;
 private:
+    UPROPERTY(VisibleAnywhere) TObjectPtr<USFGatheringPilotComponent> GatheringPilot;
+    UPROPERTY() TObjectPtr<UActorComponent> PilotInventory;
     void InitializeLocalControls();
     void ApplyCursorMode();
     void LayoutPalette();

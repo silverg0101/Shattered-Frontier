@@ -1,5 +1,7 @@
 # Construction sandbox: laptop handoff
 
+Latest gameplay checkpoint: [timed gathering and private inventory](gameplay-gathering-pilot.md) now pass focused authority and two-client replication/replay checks using the free Minimal Inventory Runtime plugin. Session-only Windows pilot; production ledger/tools/progression/Linux remain open. Next: design-authored rough timber and iron ingot refinement. Code is in the isolated gameplay worktree, preserving the environment checkout.
+
 Checkpoint: 2026-10-18. User played the updated cursor/palette prototype and reported **"works much better."** Record this as positive initial controls feedback; final UI design and exhaustive manual door/edge-case acceptance remain open.
 
 Read `docs/dependency-map.md`, `design-agent.md`, then the top of `docs/design-work-plan.md`. Runtime implementation is in commit `bc1595c`; this handoff's commit adds feedback and the already-verified 21-step line runner. Automated checks and independent review are recorded in [the evidence](evidence/construction-sandbox-cursor-door-pilot.md).

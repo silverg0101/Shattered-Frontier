@@ -1,4 +1,8 @@
 #include "Construction/SFConstructionNetwork.h"
+#include "Gathering/SFGatheringPilot.h"
+#if SF_WITH_MINIMAL_INVENTORY
+#include "InventoryComponent.h"
+#endif
 #include "SFConstructionNetworkProjection.h"
 #include "ProceduralMeshComponent.h"
 #include "Construction/SFConstructionGeometry.h"
@@ -730,6 +734,21 @@ void ASFConstructionNetworkGameMode::StartPlay()
     const auto* State = GetWorld()->SpawnActor<ASFConstructionNetworkState>();
     if (!State) { UE_LOG(LogTemp,Fatal,TEXT("Construction network fixture state could not spawn")); }
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_READY UnlimitedDevelopmentStock=1 Shapes=CubeSlabSlope Support=RoughTimber Persistence=0"));
+    if (USFGatheringPilotComponent::IsPilotRequested())
+    {
+        FString Error;
+        if (!GetDefault<USFGatheringPilotSettings>()->Validate(Error))
+        { UE_LOG(LogTemp,Error,TEXT("GATHERING_PILOT_CONFIGURATION_FAILED %s"),*Error); return; }
+        const FVector Positions[2]={FVector(0,-350,70),FVector(0,-650,70)};
+        for (int32 I=0; I<2; ++I)
+        {
+            auto* Node=GetWorld()->SpawnActorDeferred<ASFGatheringPilotNode>(ASFGatheringPilotNode::StaticClass(),FTransform(Positions[I]));
+            if (!Node) { UE_LOG(LogTemp,Fatal,TEXT("Gathering pilot node could not spawn")); }
+            Node->Resource=I==0 ? ESFGatheringPilotResource::Oak : ESFGatheringPilotResource::Iron;
+            Node->FinishSpawning(FTransform(Positions[I]));
+        }
+        UE_LOG(LogTemp,Display,TEXT("GATHERING_PILOT_READY Nodes=2 Inventory=MinimalInventoryRuntime SessionOnly=1"));
+    }
 }
 
 void ASFConstructionNetworkGameMode::PostLogin(APlayerController* NewPlayer)
@@ -762,12 +781,26 @@ bool ASFConstructionNetworkGameMode::IsBuilder(const ASFConstructionNetworkContr
 void ASFConstructionNetworkController::AssignRole(bool bBuilder)
 {
     if (!HasAuthority()) { return; }
-    bBuilderRole = bBuilder; bRoleAssigned = true; ForceNetUpdate();
+    bBuilderRole = bBuilder; bRoleAssigned = true;
+    if (GatheringPilot) { GatheringPilot->AssignPilotRole(bBuilder); }
+    ForceNetUpdate();
 }
 
 ASFConstructionNetworkController::ASFConstructionNetworkController()
 {
     SelectedRotation=uint8(SFConstructionGeometry::IdentityRotation());
+    GatheringPilot=CreateDefaultSubobject<USFGatheringPilotComponent>(TEXT("GatheringPilot"));
+#if SF_WITH_MINIMAL_INVENTORY
+    auto* Inventory=CreateDefaultSubobject<UInventoryComponent>(TEXT("GatheringPilotInventory"));
+    PilotInventory=Inventory;
+    Inventory->bUseBuiltInInteraction=false; Inventory->bEnableLookPrompt=false;
+    Inventory->bUseExternalInventoryUI=true; Inventory->bEnableEquipment=false;
+    Inventory->bGrantStartupItems=false; Inventory->bAutoLoadOnBeginPlay=false;
+    Inventory->bAutoSaveOnInventoryChanged=false; Inventory->bAutoSaveLoadInNetworkedGames=false;
+    Inventory->bAutoCreateHotbarOnOwningClient=false; Inventory->bAutoShowUIOnOwningClient=false;
+    Inventory->NumSlots=GetDefault<USFGatheringPilotSettings>()->InventorySlots;
+    Inventory->MaxWeight=GetDefault<USFGatheringPilotSettings>()->InventoryWeightKg;
+#endif
 }
 
 void ASFConstructionNetworkController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -884,6 +917,7 @@ void ASFConstructionNetworkController::ApplicationActivationChanged(bool bActive
     bApplicationActive=bActive;
     if (!bActive)
     {
+        if (GatheringPilot) { GatheringPilot->CancelLocalHarvest(); }
         EndCameraLook(); CancelLine(); bHasPlacementPreview=false; bHasRemovalPreview=false; bHasDoorTarget=false;
         if (PlayerInput) { PlayerInput->FlushPressedKeys(); }
         if (GetPawn()) { GetPawn()->ConsumeMovementInputVector(); }
@@ -943,7 +977,8 @@ bool ASFConstructionNetworkController::GetLayerPoint(const FVector& Start, const
 }
 
 void ASFConstructionNetworkController::CancelCursorAction()
-{ if (CanUseConstructionControls()) { CancelLine(); LastPlacementStatus=TEXT("Line start canceled."); } }
+{
+    if (GatheringPilot) { GatheringPilot->CancelLocalHarvest(); } if (CanUseConstructionControls()) { CancelLine(); LastPlacementStatus=TEXT("Line start canceled."); } }
 
 void ASFConstructionNetworkController::PaletteAction(ESFConstructionPaletteAction Action)
 {
@@ -1252,6 +1287,9 @@ void ASFConstructionNetworkController::ServerRemove_Implementation(FIntVector Ce
 
 void ASFConstructionNetworkController::ToggleDoorFromView()
 {
+    if (!CanUseConstructionControls()) { return; }
+    FVector GatherStart, GatherDirection;
+    if (GatheringPilot && GetConstructionRay(GatherStart,GatherDirection) && GatheringPilot->InteractFromRay(GatherStart,GatherDirection)) { return; }
     if (!PrepareCursorAction()) { return; }
     auto* State=FindState(GetWorld());
     if (!bHasDoorTarget || !State) { LastPlacementStatus=TEXT("Aim at a door frame or leaf to open or close it."); return; }
@@ -1391,6 +1429,17 @@ void ASFConstructionNetworkHUD::DrawHUD()
     const float Scale=FMath::Clamp(Canvas->ClipX/1280.f,0.5f,1.5f);
     DrawRect(FLinearColor(0.02f,0.03f,0.04f,0.88f),16*Scale,Canvas->ClipY-202*Scale,FMath::Min(1040*Scale,Canvas->ClipX-32*Scale),186*Scale);
     DrawText(Controller->GetBuildStatusText(),FColor::White,28*Scale,Canvas->ClipY-192*Scale,GEngine->GetSmallFont(),1.25f*Scale);
+    if (const auto* Gather=Controller->FindComponentByClass<USFGatheringPilotComponent>())
+    {
+        FVector Start,Direction;
+        if (!Controller->DeprojectMousePositionToWorld(Start,Direction)) { FRotator Rotation; Controller->GetPlayerViewPoint(Start,Rotation); Direction=Rotation.Vector(); }
+        const FString Text=Gather->GetStatusText(Start,Direction);
+        if (!Text.IsEmpty())
+        {
+            DrawRect(FLinearColor(0.02f,0.03f,0.04f,0.88f),16*Scale,16*Scale,FMath::Min(920*Scale,Canvas->ClipX-32*Scale),76*Scale);
+            DrawText(Text,FColor::White,28*Scale,22*Scale,GEngine->GetSmallFont(),1.25f*Scale);
+        }
+    }
 
 }
 

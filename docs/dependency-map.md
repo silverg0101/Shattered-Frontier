@@ -85,6 +85,8 @@ Run `npm start` to start the local server (`PORT`, default 3000; binds 127.0.0.1
 
 Tests: `tests/world.test.js` imports `server/world.js` for rule validation; `tests/server.test.js` spawns `server/index.js` with a temporary SQLite database for HTTP, SSE, sessions, and restart persistence. Select only tests covering the change with `node --test --test-name-pattern="<matching name>" tests/<name>.test.js`; run a whole file only when all its tests are relevant. Vision: `concept.md`; scope and milestones: `docs/alpha-plan.md`; setup: `README.md`.
 
+Gathering pilot: [current scope, configuration and evidence](gameplay-gathering-pilot.md) routes timed oak/iron harvesting through `Gathering/SFGatheringPilot` and the external free MinimalInventoryRuntime plugin (Win64 only). Construction mode hosts it only with `-GatheringPilot`; private controller inventory, server channel/lock checks and no-loss grants remain session-only. `tools/Create-GatheringPilotItems.py` creates new project-owned item assets; focused test `ShatteredFrontier.Gathering.Pilot.Authority` and `tools/Test-GatheringPilot.ps1` cover authority and two-client replication respectively. No production item ledger, progression or Linux inventory acceptance.
+
 Gameplay reuse: [current assessment](gameplay-reuse-assessment.md) and [design candidate register](Game-Design/Legends_Shattered_Frontier_Gameplay_Reuse_Candidate_Register_v0.1.md) record eight currently free Fab listings, design conflicts and later uses before INV/GAT implementation. No packs owned or imported; Linux/source integration remains unverified.
 
 ## Design references — load only when needed
