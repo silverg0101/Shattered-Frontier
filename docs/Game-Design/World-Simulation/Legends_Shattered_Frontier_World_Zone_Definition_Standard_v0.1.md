@@ -105,6 +105,7 @@ Before any zone in a region is built, the region definition records:
 ## How zones map to the Unreal project
 
 - **One project, one server build.** Every zone, instance and region lives in `GameClient/ShatteredFrontier.uproject`. The same `zone-server` build runs every zone. There is no per-zone or per-region project.
+- **Compass axes.** North is Unreal −Y and east is +X in every zone map, so north is at the top of the editor's top view. Maps, boards and layout data use the same orientation. Decided 2026-10-19.
 - **One map per zone.** Each zone record's `map_id` points at exactly one map. Proposed path: `/Game/Frontier/Maps/<Region>/<Zone>`, for example `/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook`.
 - **One shared art library per biome.** Meshes, materials, foliage and building kits shared by every zone in a biome live in `/Game/Frontier/Environment/<Biome>/`. Assets used by one zone only are allowed, but are the exception and live under that zone's folder.
 - **Zone data outside the map.** The zone record, areas, points of interest, routes and spawn groups are content data under `content/world/{continents,regions,zones,pois,spawn_tables}/` ([World agent guide](Legends_Shattered_Frontier_World_Agent_Implementation_Guide_v1.0.md)). The map supplies geometry and markers; the content record is what servers and tools trust. Persistent references use content ids, never Blueprint or map paths.

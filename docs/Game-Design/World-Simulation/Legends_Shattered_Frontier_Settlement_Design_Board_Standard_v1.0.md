@@ -33,8 +33,10 @@ Adopt a board by recording its file and date in the settlement definition. Super
 
 | Item | Value |
 | --- | --- |
-| Resolution | 4096 × 4096 minimum |
-| Aspect ratio | 1:1 |
+| Aspect ratio | 3:2 landscape |
+| Resolution | The largest size the generation tool produces. gpt-image currently outputs at most 1536 × 1024 for landscape; that is the minimum. Store the original output, not an upscale. |
+| Legibility | Every label, the numbered key and the scale bar can be read at 100% zoom. If the map panel is too small to read, generate it as a separate image (`<Name>-Town-Map-v<n>.webp`) at full resolution and adopt it with the board. |
+| Measurements | Approximate. Scale bars and elevation dimensions show intent; the settlement definition records the numbers that are built. |
 | Style | AAA game development design board; fantasy realism |
 | Presentation | A mix of development blueprint, architectural concept board, geographic planning map and environment art bible |
 
@@ -48,6 +50,8 @@ Adopt a board by recording its file and date in the settlement definition. Super
 | 4 | Gameplay infrastructure | Lower centre | Gameplay-related assets |
 | 5 | Biome reference | Lower right | Environmental identity |
 | 6 | Development notes | Around the board | Implementation guidance |
+
+Positions are a guide. Sections 4 and 5 may share one panel, and the development notes may sit in a panel of their own, provided every listed item appears somewhere on the board.
 
 ### 1. Regional top-down map
 
@@ -114,7 +118,7 @@ The board is the visual source of truth for the settlement's look, and every env
 
 ## Checklist before adoption
 
-1. All six sections are present, in the stated positions.
+1. The content of all six sections is present.
 2. Every district, landmark and gate on the board matches a name in the settlement definition, and no retired region names appear.
 3. Every building in the isometric view appears on the top-down map.
 4. The development notes repeat the definition's metrics. If they differ, the definition is correct and the board gets a correction note.

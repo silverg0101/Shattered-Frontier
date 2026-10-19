@@ -1,6 +1,6 @@
 # Silverbrook zone map — Wave 0 plan
 
-Status: map created 2026-10-19; traversal check not yet passed. Further layout work waits for the Silverbrook design board. Zone `zone/greenlands_silverbrook` (Starter, levels 1–8), per the [Greenlands region](Game-Design/Regions/Legends_Shattered_Frontier_Region_Greenlands_v0.1.md), the [Silverbrook settlement definition](Game-Design/Regions/Legends_Shattered_Frontier_Settlement_Silverbrook_v0.1.md) and the [Zone Definition Standard](Game-Design/World-Simulation/Legends_Shattered_Frontier_World_Zone_Definition_Standard_v0.1.md).
+Status: map created 2026-10-19; traversal check not yet passed. Design board v1 adopted 2026-10-19. Zone `zone/greenlands_silverbrook` (Starter, levels 1–8), per the [Greenlands region](Game-Design/Regions/Legends_Shattered_Frontier_Region_Greenlands_v0.1.md), the [Silverbrook settlement definition](Game-Design/Regions/Legends_Shattered_Frontier_Settlement_Silverbrook_v0.1.md) and the [Zone Definition Standard](Game-Design/World-Simulation/Legends_Shattered_Frontier_World_Zone_Definition_Standard_v0.1.md).
 
 ## Map
 
@@ -23,14 +23,14 @@ The art layout (`region_layout.py`, metres, 600 × 600 m tract, 956 m loop road)
 
 ## Gaps against the v2 concept and the zone checklist
 
-1. **Size.** The art tract is 600 × 600 m. The settlement definition asks for a town core of about 350 m radius, a 750 m playable radius and a zone of about 2.5 × 2.5 km. Only part of the playable ring exists; the countryside is unbuilt.
-2. **Town.** Today's village has a cottage, workshop, herbalist and market stall. The definition calls for seven districts (Town Square, Market, Adventurer, Crafting, Residential, Stable, Inn) and six landmarks (Adventurer Hall, Central Fountain, Great Oak Tree, River Bridge, Watchtower, Marketplace). None of the districts or landmarks exist. The layout waits for the design board.
-3. **Orientation.** No world axis is declared as north (settlement open decision 1). Decide it before placing the roads and rivers below.
+1. **Size.** The art tract is 600 × 600 m. The settlement definition asks for a walled town of about 400–500 m radius, a 750 m playable radius and a zone of about 2.5 × 2.5 km. Only part of the playable ring exists; the countryside is unbuilt.
+2. **Town.** Today's village has a cottage, workshop, herbalist and market stall. The board calls for a walled town about 0.8 × 1 km (four gates) with Northridge, The Commons and Riverside inside, Westfields and Eastwood outside, the Silverbrook River and bridge through it, and the twenty numbered places in settlement §7. The existing 8 × 6 m cottage and workshop match the board's modular sizes and carry over.
+3. **Orientation.** Decided: north is Unreal −Y and east is +X (zone standard, "Compass axes").
 4. **Roads out (Z3, Z7).** v2 roads leave Silverbrook toward Silvermere (north), Everwood (south-west) and Valemere (south-east), as paved primary roads. Today's corridors point west and north-east and end at the tract edge.
-5. **Rivers (Z7, Z12).** Silverbrook sits at the confluence of its brook and the main river, with the River Bridge below. The map has no water.
+5. **River (Z7, Z12).** The Silverbrook River loops through the town past the Riverside docks and mill, with waterfalls upstream to the east. The map has no water.
 6. **Mountain backdrop.** v2 shows snow peaks to the north; the map has distant hills only.
 7. **Resources (Z8).** No zone spawn groups for timber, stone, herbs or iron.
-8. **Wildlife and enemies (Z9).** No boar territories, wolf dens or bandit camps (settlement §10), and no ambient stag, deer or rabbit; combat does not exist yet.
+8. **Wildlife and enemies (Z9).** No boar territories, wolf dens or bandit camps (settlement §11), and no ambient stag, deer or rabbit; combat does not exist yet.
 9. **Areas and safety (Z4, Z5).** Areas exist only as authoring coordinates. No `level_area` polygons or protected/no-edit volumes, and the arrival is not server-protected.
 10. **Respawn (Z2).** One player start; no respawn points.
 11. **Zone data.** No `content/world/regions/greenlands` or `content/world/zones/greenlands_silverbrook` records.
@@ -39,4 +39,4 @@ The art layout (`region_layout.py`, metres, 600 × 600 m tract, 956 m loop road)
 
 ## Order of work
 
-Board first: adopt the Silverbrook design board (settlement §2), then settle orientation (gap 3). Then lay out the town core, roads and rivers (gaps 2, 4, 5) and the backdrop (gap 6), which fix the zone's shape. Gaps 7–11 belong with the gameplay and World Simulation work that uses them.
+Board adopted (settlement §2) and orientation decided (gap 3). Next, lay out the town core, roads and rivers (gaps 2, 4, 5) and the backdrop (gap 6), which fix the zone's shape. Gaps 7–11 belong with the gameplay and World Simulation work that uses them.
