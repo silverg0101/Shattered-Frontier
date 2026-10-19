@@ -54,9 +54,16 @@ This is the first region definition written to the [Zone Definition Standard](..
 
 ## 5. Zone plan
 
-Each mainland settlement anchors one zone of about 2 km × 2 km that includes its surrounding countryside. The islands and seas are future content, because they need sea travel.
+Each mainland settlement anchors one zone: a 2.5 km × 2.5 km tile that includes its surrounding countryside. The islands and seas are future content, because they need sea travel.
 
-**World structure (decided 2026-10-19):** the mainland is one continuous terrain. Zones are tiles of it, and a player can walk from Silverbrook to Valemere without a loading break. The region layout is traced from the region map before any zone is built ([pipeline](../../settlement-world-pipeline.md), step 0 and its hard rule). It fixes each zone's placement, edge heights, river and road crossings, and backdrop. **Region scale:** to be decided by the owner (pending).
+**World structure (decided 2026-10-19):** the mainland is one continuous terrain. Zones are tiles of it, and a player can walk from Silverbrook to Valemere without a loading break. The region layout is traced from the region map before any zone is built ([pipeline](../../settlement-world-pipeline.md), step 0 and its hard rule). It fixes each zone's placement, edge heights, river and road crossings, and backdrop.
+
+**Region scale (decided 2026-10-19):**
+- **Size and grid:** the mainland is about 10 × 12.5 km, a grid of 4 × 5 tiles of 2.5 km.
+- **Settlement tiles:** each of the nine settlements has its own tile. The other eleven are wilderness, mountain or coast.
+- **Map scale and distances:** 1 pixel of the region map panel is 9.3 m. Silverbrook → Valemere is about 3 km.
+- **Data:** `GameClient/ArtSource/Greenlands/greenlands-region-layout.json` holds the region in metres, with Silverbrook's town centre as the origin and heights above sea level. It is checked by `validate_region.py` and shaped by `region_heightfield.py`.
+- **Map change:** Meadowgate sits at its label, slightly south of its icon, so that it gets its own tile.
 
 | Zone id (proposed) | Anchor | Archetype | Level range (proposed) | Claimable land | Layerable |
 | --- | --- | --- | --- | --- | --- |

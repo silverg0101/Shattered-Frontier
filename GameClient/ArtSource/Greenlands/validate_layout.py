@@ -128,16 +128,28 @@ def validate(L):
     # Elevation sanity: water flows downhill; big drops are declared waterfalls.
     elev = L.get('elevation')
     if elev:
-        levels = elev['river_levels']
-        if len(levels) != len(river):
-            errors.append('river_levels count differs from river points')
-        falls = {tuple(w['between_points']) for w in elev['waterfalls']}
-        for i, (h0, h1) in enumerate(zip(levels, levels[1:])):
-            if h1 > h0:
-                errors.append(f'river flows uphill between points {i} and {i + 1}')
-            elif h0 - h1 > elev['max_drop_without_waterfall'] and (i, i + 1) not in falls:
-                errors.append(f'undeclared waterfall between points {i} and {i + 1}')
+        for w in waters(L):
+            if len(w['levels']) != len(w['points']):
+                errors.append(f'{w["name"]} levels count differs from its points')
+                continue
+            falls = {tuple(f['between_points']) for f in w['waterfalls']}
+            for i, (h0, h1) in enumerate(zip(w['levels'], w['levels'][1:])):
+                if h1 > h0:
+                    errors.append(f'{w["name"]} flows uphill between points {i} and {i + 1}')
+                elif h0 - h1 > elev['max_drop_without_waterfall'] and (i, i + 1) not in falls:
+                    errors.append(f'{w["name"]}: undeclared waterfall between points {i} and {i + 1}')
+    for b in L.get('basins', []):
+        if self_intersects(b['polygon']):
+            errors.append(f'basin {b["name"]} polygon self-intersects')
     return errors
+
+
+def waters(L):
+    """The river and every brook as {name, points, width, levels, waterfalls}."""
+    elev = L.get('elevation', {})
+    out = [{'name': L['river']['name'], 'points': L['river']['points'], 'width': L['river']['width'],
+            'levels': elev.get('river_levels', []), 'waterfalls': elev.get('waterfalls', [])}]
+    return out + [dict(b, waterfalls=b.get('waterfalls', [])) for b in L.get('brooks', [])]
 
 
 def _self_test(L):
@@ -156,7 +168,8 @@ def _self_test(L):
     broken(lambda b: b['requirements']['roads_out'].update({'Valemere Road': 'N'}), 'not N')
     broken(lambda b: b['places'][18].update(at=[600, -600]), 'main bridge')
     broken(lambda b: b['districts']['Westfields'].update(polygon=[[-700, -100], [-400, 300], [-700, 300], [-400, -100]]), 'self-intersects')
-    broken(lambda b: b['elevation']['river_levels'].__setitem__(5, 20), 'uphill')
+    broken(lambda b: b['elevation']['river_levels'].__setitem__(8, 20), 'uphill')
+    broken(lambda b: b['brooks'][0]['levels'].__setitem__(2, 10), 'Eastfall Brook: undeclared waterfall')
 
 
 if __name__ == '__main__':

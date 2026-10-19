@@ -6,75 +6,73 @@
   "start_cm": [
     42000,
     84000,
-    495
+    663
   ],
-  "target": 8,
+  "target": 6,
   "reached": [
     {
       "xy_metres": [
         41,
         527
       ],
-      "seconds": 69.9,
-      "z_cm": 306
+      "seconds": 70.0,
+      "z_cm": 661
     },
     {
       "xy_metres": [
-        80,
-        420
+        30,
+        350
       ],
-      "seconds": 86.0,
-      "z_cm": 328
+      "seconds": 95.2,
+      "z_cm": 277
     },
     {
       "xy_metres": [
-        60,
-        260
+        20,
+        205
       ],
-      "seconds": 109.0,
-      "z_cm": 384
+      "seconds": 116.0,
+      "z_cm": 869
     },
     {
       "xy_metres": [
-        -20,
-        150
+        20,
+        100
       ],
-      "seconds": 128.5,
-      "z_cm": 795
+      "seconds": 131.0,
+      "z_cm": 1577
     },
     {
       "xy_metres": [
         0,
         -30
       ],
-      "seconds": 154.3,
-      "z_cm": 754
-    },
-    {
-      "xy_metres": [
-        12,
-        -258
-      ],
-      "seconds": 186.9,
-      "z_cm": 752
-    },
-    {
-      "xy_metres": [
-        22,
-        -529
-      ],
-      "seconds": 225.7,
-      "z_cm": 2635
+      "seconds": 149.8,
+      "z_cm": 1222
     }
   ],
-  "stuck_events": 0,
-  "walk_completed": true,
-  "walk_seconds": 225.7,
-  "final_pawn_cm": [
-    2189,
-    -52602,
-    2635
+  "stuck_events": 3,
+  "stuck_at_cm": [
+    [
+      1184,
+      -25367
+    ],
+    [
+      1184,
+      -25367
+    ],
+    [
+      1184,
+      -25367
+    ]
   ],
-  "elapsed_seconds": 232.9,
-  "passed": true
+  "walk_completed": false,
+  "walk_seconds": 193.0,
+  "final_pawn_cm": [
+    1184,
+    -25367,
+    1766
+  ],
+  "elapsed_seconds": 200.3,
+  "passed": false
 }

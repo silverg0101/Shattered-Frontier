@@ -1,6 +1,6 @@
 # Silverbrook zone map — Wave 0 plan
 
-Status: **graybox**, 2026-10-19. The main route traversal passed; zone size is not yet confirmed. Zone `zone/greenlands_silverbrook` (Starter, levels 1–8), per the [Greenlands region](Game-Design/Regions/Legends_Shattered_Frontier_Region_Greenlands_v0.1.md), the [Silverbrook settlement definition](Game-Design/Regions/Legends_Shattered_Frontier_Settlement_Silverbrook_v0.1.md) with its design board, and the [Zone Definition Standard](Game-Design/World-Simulation/Legends_Shattered_Frontier_World_Zone_Definition_Standard_v0.1.md).
+Status: **graybox, rebuilt from the whole board** on 2026-10-19. The route walk now stalls on North Street (open, see gap 12). The zone is the 2.5 km tile centred on Silverbrook in the [region layout](Game-Design/Regions/Legends_Shattered_Frontier_Region_Greenlands_v0.1.md), and its zone frame equals the region frame. Zone `zone/greenlands_silverbrook` (Starter, levels 1–8), per the [Greenlands region](Game-Design/Regions/Legends_Shattered_Frontier_Region_Greenlands_v0.1.md), the [Silverbrook settlement definition](Game-Design/Regions/Legends_Shattered_Frontier_Settlement_Silverbrook_v0.1.md) with its design board, and the [Zone Definition Standard](Game-Design/World-Simulation/Legends_Shattered_Frontier_World_Zone_Definition_Standard_v0.1.md).
 
 ## Map
 
@@ -8,19 +8,23 @@ Status: **graybox**, 2026-10-19. The main route traversal passed; zone size is n
 
 | Piece | File | Role |
 | --- | --- | --- |
-| Layout data | `GameClient/ArtSource/Greenlands/silverbrook-town-layout.json` | Metres; north −Y, east +X; origin at the town centre. Read from the board at 1.8 m per board pixel. Holds the wall, gates, river, named roads, districts, the 20 numbered places, building sizes, plots, arrival and the review route. |
-| Terrain | `GameClient/ArtSource/Greenlands/heightfield.py` | Standard library only. Shapes a 5 m grid from the layout's elevation data: markers, ridges, river banks and the east cliff, then rolling hills, levelled pads for every building and open area, grade-limited road beds, and the river channel. `python heightfield.py` checks landmark heights (±6 m), banks above the water and road grades (≤ 0.08 plus 0.02 tolerance), and prints `TERRAIN_OK`. |
+| Layout data | `GameClient/ArtSource/Greenlands/silverbrook-town-layout.json` | Metres; north −Y, east +X; origin at the town centre. Read from the board at 1.8 m per board pixel. Holds the wall, gates, river, the Eastfall Brook, the harbour and pond basins, named roads including the ring streets, districts, the 20 numbered places, building sizes, plots, the mountain backdrop, arrival and the review route. Heights are relative to the region datum, 80 m above sea level. |
+| Terrain | `GameClient/ArtSource/Greenlands/heightfield.py` | Standard library only. Shapes a 5 m grid from the layout's elevation data. It starts from markers, ridges, water banks, and the scarp and cliffs. Then it adds rolling hills and levels a pad for every building and open area. It lays grade-limited road beds one road at a time, so that later roads pin to earlier ones where they cross. Last it carves the river, brook and basins. `backdrop()` shapes the mountains beyond the edge. `python heightfield.py` checks landmark heights (±6 m), banks above the water and road grades (≤ 0.08 plus 0.02 tolerance), and prints `TERRAIN_OK`. |
 | Builder | `GameClient/ArtSource/Greenlands/build_silverbrook.py` | Editor Python. Plans every building first, then writes the terrain mesh `/Game/Frontier/Environment/Greenlands/Terrain/SM_Silverbrook_Terrain` (GeometryScripting, complex collision) and puts everything on it. Fails with a list of any place that overlaps a road, the river, the wall or another building. Colours are `/Game/Frontier/Core/Graybox/MI_Graybox_*`. |
 | Review | `GameClient/ArtSource/Greenlands/review_silverbrook_in_game.py` | Walks the project pawn along the review route in `-game` and captures an arrival view and an aerial view. |
 
 **What the graybox contains:**
-- **Ground:** a 2.5 × 2.5 km shaped terrain mesh, −8 to 59 m. Its relief is still gentle compared with the board (see gap 1).
-- **River:** the Silverbrook River, visual only, 24 m wide, at its layout water levels in a carved channel.
-- **Roads:** primary, secondary and trail roads, including the roads out to Silvermere, Everwood and Valemere.
-- **Bridges:** five, placed wherever a road crosses the river. One of them is the Silverbrook Bridge. Each deck reaches dry ground on both banks and tilts to meet it.
+- **Ground:** a 2.5 × 2.5 km shaped terrain mesh, −6 to 122 m. Northridge sits on a plateau above a scarp, with cliffs to the east.
+- **Backdrop:** a 12 km mountain mesh, visual only. It is hand-written for now; the region terrain will replace it (gap 3).
+- **Water:** all visual only, at their layout water levels in carved channels:
+  - the Silverbrook River, 24 m wide. It loops around The Commons and flows into the Riverside harbour.
+  - the Eastfall Brook, which drops over the Riverside falls into the harbour.
+  - the Eastwood pond.
+- **Roads:** primary, secondary and trail roads. These include the Market, Commons and Northridge ring streets, Wall Street, the cross lanes, and the roads out to Silvermere, Everwood and Valemere.
+- **Bridges:** eight, placed wherever a road crosses water. One of them is the Silverbrook Bridge. Each deck reaches dry ground on both banks and tilts to meet it.
 - **Walls:** a 0.8 × 1.06 km elliptical wall with towers, plus four gates.
 - **Key places:** the 20 numbered places at the board's sizes, the Market Square with eight stalls, and the farmlands, cemetery and ruins.
-- **District houses:** 105 seeded houses across the five districts.
+- **District houses:** 312 houses in rows along both sides of the streets: Northridge 60, The Commons 150, Riverside 60, Westfields 12, Eastwood 30.
 - **Wave 0 construction plots:** three 20 × 20 m plots in Eastwood.
 - **Arrival:** a player start and waystone on the Valemere road.
 - **Labels and camera:** district and place labels, and an aerial review camera.
@@ -70,21 +74,18 @@ The builder refuses to start while the editor has unsaved maps or assets. Some m
 
 ## Gaps
 
-1. **Terrain (Z2).** The ground is shaped from the layout's elevation data, but it still reads as nearly flat next to the board. Still to do:
-   - Raise Northridge onto a plateau with a steep edge.
-   - Add the cliffs and waterfalls east of town.
-   - Add a backdrop of mountains beyond the zone edge. Today the horizon is open sky.
-   - Raise the watchtower hill so the overlook works.
+1. **Terrain edges (Z2).** The zone's edges don't yet match the region. Silverbrook sits at an 80 m datum; along its tile edge the region terrain runs 60–166 m. The region's Silvermere road crosses the north edge at x 909, but the zone's road leaves through the North Gate at x 0. Either the region road gets waypoints through the zone's exits, or the zone moves its exits; then the zone edge heights blend to the region's `zone_edges()`.
 2. **Water.** The river has no collision or swimming, so the wall has open gaps where the river crosses it. The gap by the South Gate runs about 90 m, because the river and the gate exclusions overlap.
-3. **Mountain backdrop.** Missing.
+3. **Mountain backdrop.** A hand-written stand-in, which breaks the region-first rule: it shows hills to the west where the region has coast and sea. Replace it with the region terrain beyond the tile.
 4. **Resources (Z8).** No gathering areas or spawn groups.
 5. **Wildlife and enemies (Z9).** No boar territories, wolf dens, bandit camps or ambient animals. Combat does not exist yet.
 6. **Areas and safety (Z4, Z5).** Districts exist as layout data only. There are no `level_area` polygons and no protected or no-edit volumes for the walled town.
 7. **Respawn (Z2).** There is one player start and no respawn points.
 8. **Zone data.** There are no `content/world/regions/greenlands` or `content/world/zones/greenlands_silverbrook` records.
-9. **Size.** The 2.5 × 2.5 km extent is still a proposal (settlement §13). The countryside beyond the town is empty.
+9. **Size.** The 2.5 km tile is fixed by the region grid. The countryside beyond the town is still empty.
 10. **Defaults.** `GameDefaultMap` and `ServerDefaultMap` still point at `Greenlands_E1`. Switch them once the zone passes its checks.
 11. **Editable terrain.** The ground is a static mesh, not the editable voxel terrain of DEC-03.
+12. **Route walk.** After the rebuild, the pawn stops at (12, −254) on North Street, 4 m short of a waypoint, in both runs. The ground there is smooth, and traces at body height find nothing in the way. The cause is not found yet.
 
 ## Pipeline work (brief received 2026-10-19)
 
@@ -108,12 +109,9 @@ Silverbrook is the first run of the [settlement layout-to-world pipeline](settle
 
 ## Order of work
 
-1. Match the board's shape before any art goes in. All four items are layout and terrain data:
-   - **Streets:** trace the ring streets and lanes.
-   - **Buildings:** fill them in rows along street edges instead of scattering them, at the board's density (about 300–400 buildings, against 105 today).
-   - **River:** re-trace the loop around The Commons and add the Riverside harbour basin.
-   - **Terrain:** add the bolder relief and the mountain backdrop listed in gap 1.
-2. Pipeline stages 3 and 4 above: PCG dressing, then the missing-asset list for the building kit and vegetation. TER-01 can run alongside, on a copy.
-3. Water (gap 2): collision and swimming, then close the wall gaps.
-4. Gathering areas and boar territories (gaps 4 and 5), using the stage 3 candidates file, to make the slice loop playable.
-5. Gaps 6–8, with the World Simulation work that uses them.
+1. Board re-read (done 2026-10-19): ring streets, 312 houses in rows, the river loop and harbour, the Eastfall Brook and falls, the Northridge plateau and the east cliffs.
+2. Region fit: close gaps 1, 3 and 12.
+3. Pipeline stages 3 and 4 above: PCG dressing, then the missing-asset list for the building kit and vegetation. TER-01 can run alongside, on a copy.
+4. Water (gap 2): collision and swimming, then close the wall gaps.
+5. Gathering areas and boar territories (gaps 4 and 5), using the stage 3 candidates file, to make the slice loop playable.
+6. Gaps 6–8, with the World Simulation work that uses them.

@@ -2,8 +2,9 @@
 
 Run with the UE 5.8 Python commandlet (-run=pythonscript) or full editor. Replaces
 /Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook with a blocked-out town at real
-scale: terrain shaped by heightfield.py, Silverbrook River, roads and bridges, wall with four
-gates, key buildings, district fill, construction plots, labels and the arrival player start.
+scale: terrain shaped by heightfield.py with its mountain backdrop, Silverbrook River, brooks and
+basins, roads and bridges, wall with four gates, key buildings, district houses in rows along the
+streets, construction plots, labels and the arrival player start.
 Everything is planned first, then spawned onto the terrain once its pads are known. North is -Y,
 east is +X. Script any zone-only change here; the map is regenerated, not hand-edited.
 See docs/greenlands-silverbrook-zone-plan.md.
@@ -14,19 +15,22 @@ import unreal as u
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
-from validate_layout import validate
-from heightfield import Heightfield, check as check_terrain, river_level
+import importlib, validate_layout, heightfield  # an open editor keeps modules between runs; take the files' current state
+importlib.reload(validate_layout); importlib.reload(heightfield)
+from validate_layout import validate, waters
+from heightfield import Heightfield, backdrop, check as check_terrain, in_polygon, water_level
 L = json.loads((ROOT / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))
 _problems = validate(L)
 assert not _problems, f'Layout is invalid; run validate_layout.py: {_problems}'
 ZONE = '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook'
 MAT_DIR = '/Game/Frontier/Core/Graybox'
 TERRAIN = '/Game/Frontier/Environment/Greenlands/Terrain/SM_Silverbrook_Terrain'
+BACKDROP = '/Game/Frontier/Environment/Greenlands/Terrain/SM_Silverbrook_Backdrop'
 CUBE = u.load_asset('/Engine/BasicShapes/Cube')
 COLOURS = {'Ground': (0.16, 0.30, 0.11), 'Road': (0.55, 0.45, 0.30), 'Trail': (0.38, 0.30, 0.19),
            'River': (0.08, 0.25, 0.55), 'Wall': (0.42, 0.42, 0.45), 'Civic': (0.82, 0.80, 0.72),
            'House': (0.62, 0.42, 0.28), 'Plot': (0.88, 0.76, 0.18), 'Field': (0.42, 0.48, 0.14),
-           'Marker': (0.75, 0.10, 0.08)}
+           'Marker': (0.75, 0.10, 0.08), 'Rock': (0.36, 0.37, 0.40)}
 TYPES = L['building_types']
 HALF = L['zone_half_extent']
 actors = u.get_editor_subsystem(u.EditorActorSubsystem)
@@ -138,7 +142,8 @@ def crossing(a, b, c, d):
 
 # --- layout geometry -------------------------------------------------------
 W = L['wall']; A, B = W['semi_axis_x'], W['semi_axis_y']
-RIVER = L['river']['points']; RIVER_W = L['river']['width']
+WATERS = waters(L)  # the river and every brook
+BASINS = L.get('basins', [])
 ROADS = [(name, pts, L['roads'][f'{tier}_width'], tier)
          for tier in ('primary', 'secondary', 'trail') for name, pts in L['roads'][tier].items()]
 ellipse = []
@@ -165,12 +170,19 @@ def inside(p):
     return (p[0] / A) ** 2 + (p[1] / B) ** 2 < 1
 
 
+def water_gap(p):
+    """Distance from p to the nearest water edge; negative inside a basin."""
+    gaps = [line_dist(p, w['points']) - w['width'] / 2 for w in WATERS]
+    gaps += [-1.0 if in_polygon(p, b['polygon']) else line_dist(p, b['polygon'] + b['polygon'][:1]) for b in BASINS]
+    return min(gaps)
+
+
 def clear(x, y, w, d, margin=2.0, on_water=False):
     r = math.hypot(w, d) / 2
     p = (x, y)
     if abs(x) + r > HALF or abs(y) + r > HALF:
         return False
-    if not on_water and line_dist(p, RIVER) < r + RIVER_W / 2 + 4:
+    if not on_water and water_gap(p) < r + 4:
         return False
     if any(line_dist(p, pts) < r + width / 2 + margin for _, pts, width, _ in ROADS):
         return False
@@ -210,24 +222,28 @@ sky = actors.spawn_actor_from_class(u.SkyLight, u.Vector(0, 0, 1000))
 sky.light_component.set_editor_property('real_time_capture', True)
 actors.spawn_actor_from_class(u.ExponentialHeightFog, u.Vector(0, 0, 0))
 
-strip('River', RIVER, RIVER_W, 'River', 0.1, 'River', lambda i, t: river_level(L['elevation'], i, t))
+for w in WATERS:
+    strip(w['name'].replace(' ', ''), w['points'], w['width'], 'River', 0.1, 'Water', lambda i, t, w=w: water_level(w, i, t))
+for b in BASINS:  # one flat surface at the basin level; the shore terrain hides what lies outside the polygon
+    xs, ys = [q[0] for q in b['polygon']], [q[1] for q in b['polygon']]
+    box(b['name'].replace(' ', ''), (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2, max(xs) - min(xs), max(ys) - min(ys),
+        0.1, 'River', z0=b['level'] - 0.1, collide=False, folder='Water', ground=None)
 for name, pts, width, tier in ROADS:
     strip(name.replace(' ', ''), pts, width, 'Trail' if tier == 'trail' else 'Road', 0.3, f'Roads/{tier.title()}', on_ground(pts))
 
-# Bridges where primary or secondary roads cross the river.
+# Bridges where primary or secondary roads cross the river or a brook.
 bridges = []
 for name, pts, width, tier in ROADS:
     if tier == 'trail':
         continue
     for a, b in zip(pts, pts[1:]):
-        for c, d in zip(RIVER, RIVER[1:]):
+        for wtr, (c, d) in ((w, cd) for w in WATERS for cd in zip(w['points'], w['points'][1:])):
             hit = crossing(a, b, c, d)
             if hit and all(math.dist(hit, q) > 5 for q in bridges):
                 bridges.append(hit)
                 yaw = math.degrees(math.atan2(b[1] - a[1], b[0] - a[0]))
                 is_main = math.dist(hit, L['places'][18]['at']) < 40
-                ri = RIVER.index(c)
-                level = river_level(L['elevation'], ri, math.dist(c, hit) / math.dist(c, d))
+                level = water_level(wtr, wtr['points'].index(c), math.dist(c, hit) / math.dist(c, d))
                 cs, sn = math.cos(math.radians(yaw)), math.sin(math.radians(yaw))
 
                 def spawn_bridge(n=name, h=hit, yaw=yaw, cs=cs, sn=sn, level=level, is_main=is_main,
@@ -268,8 +284,8 @@ while s < total - step:
     p, q = ellipse[idx][1], ellipse[j][1]
     mid = ((p[0] + q[0]) / 2, (p[1] + q[1]) / 2)
     near_gate = min(math.dist(mid, g) for g in gate_points.values()) < W['gate_gap'] / 2 + tower[0] + step / 2
-    near_river = line_dist(mid, RIVER) < RIVER_W / 2 + step / 2 + 2
-    if not near_gate and not near_river:
+    near_water = water_gap(mid) < step / 2 + 2
+    if not near_gate and not near_water:
         yaw = math.degrees(math.atan2(q[1] - p[1], q[0] - p[0]))
         box(f'Wall_{int(s):04d}', mid[0], mid[1], step + 0.5, W['thickness'], W['height'], 'Wall', yaw=yaw, folder='Wall')
         if s >= next_tower:
@@ -324,30 +340,48 @@ for i, (x, y) in enumerate(L['construction_plots']['centres']):
 
 assert not blocked, f'Blocked places (move them in the layout): {blocked}'
 
-# District fill (seeded, so rebuilds are stable).
+# District fill: houses in rows along both sides of every street, facing it; seeded scatter fills the rest.
 rng = random.Random(L['seed'])
 fill_report = {}
-def in_polygon(p, poly):
-    hit = False
-    for (ax, ay), (bx, by) in zip(poly, poly[1:] + poly[:1]):
-        if (ay > p[1]) != (by > p[1]) and p[0] < ax + (p[1] - ay) * (bx - ax) / (by - ay):
-            hit = not hit
-    return hit
+
+
+def frontage(kind):
+    """Lots along both sides of every non-trail road, facing it, spaced so neighbours just clear."""
+    w, d, _ = TYPES[kind]; r = math.hypot(w, d) / 2
+    for _, pts, width, tier in ROADS:
+        if tier == 'trail':
+            continue
+        off = width / 2 + r + 2.5
+        for a, b in zip(pts, pts[1:]):
+            seg = math.dist(a, b); ux, uy = (b[0] - a[0]) / seg, (b[1] - a[1]) / seg
+            yaw = math.degrees(math.atan2(uy, ux))
+            t = r
+            while t < seg - r:
+                for side in (-1, 1):
+                    yield a[0] + ux * t - side * uy * off, a[1] + uy * t + side * ux * off, yaw
+                t += 2 * r + 2.5
 
 
 for name, dist in L['districts'].items():
-    cx, cy = dist['centre']; kind = dist['fill']; w, d, _ = TYPES[kind]; made = 0
+    cx, cy = dist['centre']; kind = dist['fill']; made = rows = 0
     poly = dist['polygon']
+    tag = lambda: f'{name.replace(" ", "")}_{kind}_{made:03d}'
+    for x, y, yaw in frontage(kind):
+        if made == dist['count']:
+            break
+        if in_polygon((x, y), poly) and inside((x, y)) == dist['inside_wall']:
+            ok = building(tag(), kind, x, y, yaw, 'House', f'Districts/{name}', require=False)
+            made += ok; rows += ok
     xs, ys = [q[0] for q in poly], [q[1] for q in poly]
-    for attempt in range(dist['count'] * 80):
+    for attempt in range(dist['count'] * 40):
         if made == dist['count']:
             break
         x, y = rng.uniform(min(xs), max(xs)), rng.uniform(min(ys), max(ys))
         if not in_polygon((x, y), poly) or inside((x, y)) != dist['inside_wall']:
             continue
         yaw = round(math.degrees(math.atan2(cy - y, cx - x)) / 15) * 15
-        made += building(f'{name.replace(" ", "")}_{kind}_{made:02d}', kind, x, y, yaw, 'House', f'Districts/{name}', require=False)
-    fill_report[name] = f"{made}/{dist['count']}"
+        made += building(tag(), kind, x, y, yaw, 'House', f'Districts/{name}', require=False)
+    fill_report[name] = f"{made}/{dist['count']} ({rows} in rows)"
     label(name, cx, cy, 30, 10)
 
 # Arrival.
@@ -380,6 +414,30 @@ ground = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(0, 0, 0))
 ground.static_mesh_component.set_static_mesh(terrain_mesh)
 ground.static_mesh_component.set_material(0, M['Ground'])
 ground.set_actor_label('Terrain'); ground.set_folder_path('Ground')
+
+# Backdrop: mountains and far hills beyond the zone edge, visual only.
+n, sp, bz = backdrop(L, HF)
+ext = L['backdrop']['extent']
+if u.EditorAssetLibrary.does_asset_exist(BACKDROP):
+    assert u.EditorAssetLibrary.delete_asset(BACKDROP), 'Could not delete the previous backdrop mesh'
+far = u.DynamicMesh()
+u.GeometryScript_Primitives.append_rectangle_xy(far, u.GeometryScriptPrimitiveOptions(), u.Transform(),
+                                                dimension_x=2 * ext * 100, dimension_y=2 * ext * 100,
+                                                steps_width=n - 1, steps_height=n - 1)
+grid = u.GeometryScript_MeshQueries.get_all_vertex_positions(far, False)[1]
+moved = [u.Vector(v.x, v.y, bz[round((v.y / 100 + ext) / sp) * n + round((v.x / 100 + ext) / sp)] * 100)
+         for v in u.GeometryScript_List.convert_vector_list_to_array(grid)]
+u.GeometryScript_MeshEdits.set_all_mesh_vertex_positions(far, u.GeometryScript_List.convert_array_to_vector_list(moved))
+opts.set_editor_property('enable_collision', False)
+backdrop_mesh = u.GeometryScript_NewAssetUtils.create_new_static_mesh_asset_from_mesh(far, BACKDROP, opts)[0]
+assert backdrop_mesh, 'Could not create the backdrop mesh'
+u.EditorAssetLibrary.save_loaded_asset(backdrop_mesh)
+mountains = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(0, 0, 0))
+mountains.static_mesh_component.set_static_mesh(backdrop_mesh)
+mountains.static_mesh_component.set_material(0, M['Rock'])
+mountains.static_mesh_component.set_collision_enabled(u.CollisionEnabled.NO_COLLISION)
+mountains.set_actor_label('Backdrop'); mountains.set_folder_path('Ground')
+
 for spawn in pending:
     spawn()
 actors.spawn_actor_from_class(u.PlayerStart, u.Vector(ax * 100, ay * 100, (HF.at(ax, ay) + 1.2) * 100),

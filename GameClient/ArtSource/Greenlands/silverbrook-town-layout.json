@@ -1,8 +1,18 @@
 {
-  "_about": "Silverbrook graybox layout in metres. North is -Y, east is +X; origin is the town centre. Read from docs/Game-Design/concept-art/Silverbrook-Design-Board-v1.webp at 1.8 m per board pixel (the board's own scale bar is inconsistent). Sizes follow settlement definition section 8; depth and unlisted sizes are graybox assumptions. Consumed by build_silverbrook.py and review_silverbrook_in_game.py.",
+  "_about": "Silverbrook graybox layout in metres. North is -Y, east is +X; origin is the town centre. Read from the whole of docs/Game-Design/concept-art/Silverbrook-Design-Board-v1.webp (town map, isometric view and panels) at 1.8 m per board pixel: streets, river loop and harbour, relief, falls and the mountain backdrop together. Sizes follow settlement definition section 8; depth and unlisted sizes are graybox assumptions. Consumed by validate_layout.py, heightfield.py, build_silverbrook.py and review_silverbrook_in_game.py.",
   "zone_half_extent": 1250,
   "seed": 1019,
-  "wall": {"centre": [0, 0], "semi_axis_x": 400, "semi_axis_y": 530, "height": 8, "thickness": 3, "segment_length": 20, "gate_gap": 10, "tower_spacing": 110, "tower": [8, 8, 12]},
+  "wall": {
+    "centre": [0, 0],
+    "semi_axis_x": 400,
+    "semi_axis_y": 530,
+    "height": 8,
+    "thickness": 3,
+    "segment_length": 20,
+    "gate_gap": 10,
+    "tower_spacing": 110,
+    "tower": [8, 8, 12]
+  },
   "gates": {
     "North Gate": [22, -529],
     "West Gate": [-383, -151],
@@ -12,7 +22,7 @@
   "river": {
     "name": "Silverbrook River",
     "width": 24,
-    "points": [[-594, -531], [-369, -306], [-189, -248], [-63, -270], [99, -248], [243, -207], [333, -117], [324, 18], [243, 112], [135, 171], [18, 203], [0, 288], [27, 432], [171, 540], [387, 585], [700, 640], [1250, 700]],
+    "points": [[-1250, -1150], [-583, -534], [-484, -506], [-376, -416], [-304, -353], [-223, -272], [-133, -218], [-43, -196], [47, -200], [137, -205], [209, -187], [272, -137], [308, -66], [299, 6], [263, 70], [200, 124], [119, 160], [29, 182], [-43, 196], [-70, 241], [-43, 313], [47, 367], [137, 439], [173, 556], [209, 691], [300, 1250]],
     "bridge_length": 30,
     "bridge_width": 7
   },
@@ -24,7 +34,7 @@
       "North Street": [[0, -30], [12, -258], [22, -529]],
       "West Street": [[0, -30], [-383, -151]],
       "East Street": [[0, -30], [379, -170]],
-      "South Street": [[0, -30], [-20, 150], [60, 260], [80, 420], [41, 527]],
+      "South Street": [[0, -30], [20, 100], [20, 205], [30, 350], [41, 527]],
       "Silvermere Road": [[22, -529], [10, -900], [0, -1250]],
       "Everwood Road": [[-383, -151], [-800, 300], [-1250, 700]],
       "Valemere Road": [[41, 527], [500, 900], [1000, 1250]]
@@ -32,7 +42,14 @@
     "secondary": {
       "Westfields Lane": [[-383, -151], [-470, 140], [-400, 356]],
       "Eastwood Lane": [[379, -170], [527, 45], [500, 160]],
-      "Riverside Quay": [[-40, 360], [80, 420], [110, 380]]
+      "Riverside Quay": [[41, 420], [100, 440]],
+      "Market Ring": [[115, -30], [111, -5], [100, 17], [81, 37], [58, 52], [30, 62], [0, 65], [-30, 62], [-57, 52], [-81, 37], [-100, 17], [-111, -5], [-115, -30], [-111, -55], [-100, -78], [-81, -97], [-58, -112], [-30, -122], [0, -125], [30, -122], [58, -112], [81, -97], [100, -78], [111, -55], [115, -30]],
+      "Commons Ring": [[227, -20], [220, 20], [199, 56], [166, 88], [124, 113], [74, 128], [20, 133], [-34, 128], [-83, 113], [-126, 88], [-159, 56], [-180, 20], [-187, -20], [-180, -60], [-159, -97], [-126, -128], [-84, -153], [-34, -168], [20, -173], [74, -168], [124, -153], [166, -128], [199, -97], [220, -60], [227, -20]],
+      "Northridge Ring": [[220, -380], [213, -354], [193, -330], [161, -309], [120, -293], [72, -283], [20, -280], [-32, -283], [-80, -293], [-121, -309], [-153, -330], [-173, -354], [-180, -380], [-173, -406], [-153, -430], [-121, -451], [-80, -467], [-32, -477], [20, -480], [72, -477], [120, -467], [161, -451], [193, -430], [213, -406], [220, -380]],
+      "Wall Street": [[97, 488], [-2, 505], [-100, 487], [-192, 434], [-270, 351], [-329, 243], [-365, 118], [-375, -15], [-359, -148], [-317, -269], [-253, -372], [-172, -449], [-78, -494], [21, -504], [119, -479], [208, -420], [283, -331], [338, -219], [369, -92], [374, 42], [352, 173]],
+      "Northeast Lane": [[166, -128], [265, -357]],
+      "Northwest Lane": [[-126, -128], [-265, -357]],
+      "Southwest Lane": [[-126, 88], [-265, 357]]
     },
     "trail": {
       "Forest Trail": [[379, -170], [542, -275], [900, -600]],
@@ -44,53 +61,122 @@
   "requirements": {
     "_about": "Mirrors the settlement definition (docs/Game-Design/Regions/Legends_Shattered_Frontier_Settlement_Silverbrook_v0.1.md); the definition wins. Checked by validate_layout.py.",
     "place_keys": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-    "districts": ["Northridge", "The Commons", "Riverside", "Westfields", "Eastwood"],
+    "districts": [
+      "Northridge",
+      "The Commons",
+      "Riverside",
+      "Westfields",
+      "Eastwood"
+    ],
     "walled_town_max_radius": 530,
-    "roads_out": {"Silvermere Road": "N", "Everwood Road": "SW", "Valemere Road": "SE"},
+    "roads_out": {
+      "Silvermere Road": "N",
+      "Everwood Road": "SW",
+      "Valemere Road": "SE"
+    },
     "main_bridge_key": 19,
     "gate_tolerance": 12
   },
   "districts": {
-    "Northridge": {"centre": [22, -380], "inside_wall": true, "fill": "elite_house", "count": 15,
-      "polygon": [[-320, -300], [-200, -285], [-60, -300], [100, -285], [240, -245], [300, -320], [200, -440], [0, -505], [-200, -430]]},
-    "The Commons": {"centre": [0, -40], "inside_wall": true, "fill": "townhouse", "count": 45,
-      "polygon": [[-260, -215], [-60, -240], [100, -220], [230, -180], [295, -110], [290, 10], [220, 90], [120, 140], [20, 170], [-80, 150], [-200, 90], [-280, -40]]},
-    "Riverside": {"centre": [41, 342], "inside_wall": true, "fill": "townhouse", "count": 15,
-      "polygon": [[-240, 300], [-220, 240], [-60, 200], [80, 195], [180, 200], [250, 300], [220, 420], [120, 495], [40, 500], [-60, 490], [-180, 400]]},
-    "Westfields": {"centre": [-520, 171], "inside_wall": false, "fill": "farmhouse", "count": 8,
-      "polygon": [[-700, -100], [-470, -140], [-425, 40], [-420, 300], [-330, 430], [-560, 520], [-760, 260]]},
-    "Eastwood": {"centre": [560, 20], "inside_wall": false, "fill": "cottage", "count": 22,
-      "polygon": [[420, -260], [640, -320], [760, -60], [720, 250], [560, 330], [430, 240], [410, 40]]}
+    "Northridge": {
+      "centre": [22, -380],
+      "inside_wall": true,
+      "fill": "elite_house",
+      "count": 60,
+      "polygon": [[-300, -300], [-223, -262], [-133, -238], [-43, -218], [47, -222], [137, -228], [220, -210], [330, -230], [250, -400], [120, -490], [0, -505], [-130, -480], [-250, -380]]
+    },
+    "The Commons": {
+      "centre": [0, -40],
+      "inside_wall": true,
+      "fill": "townhouse",
+      "count": 150,
+      "polygon": [[-280, -60], [-230, -170], [-130, -190], [-43, -170], [137, -180], [230, -150], [280, -66], [270, 10], [230, 60], [170, 110], [100, 140], [20, 150], [-60, 160], [-160, 120], [-250, 40]]
+    },
+    "Riverside": {
+      "centre": [41, 342],
+      "inside_wall": true,
+      "fill": "townhouse",
+      "count": 60,
+      "polygon": [[-280, 200], [-150, 180], [-60, 205], [40, 195], [130, 175], [230, 110], [320, 150], [280, 300], [200, 420], [100, 500], [0, 515], [-120, 490], [-230, 380]]
+    },
+    "Westfields": {
+      "centre": [-520, 171],
+      "inside_wall": false,
+      "fill": "farmhouse",
+      "count": 12,
+      "polygon": [[-700, -100], [-470, -140], [-425, 40], [-420, 300], [-330, 430], [-560, 520], [-760, 260]]
+    },
+    "Eastwood": {
+      "centre": [560, 20],
+      "inside_wall": false,
+      "fill": "cottage",
+      "count": 30,
+      "polygon": [[420, -260], [640, -320], [760, -60], [720, 250], [560, 330], [430, 240], [410, 40]]
+    }
   },
   "elevation": {
-    "_about": "Proposed terrain targets in metres above the river level at the Silverbrook Bridge, read from the board's isometric view (Northridge on high ground, rising land and mountains to the north, wooded hills and falls to the east). Consumed by the terrain build (pipeline stage 2); the settlement definition wins on conflict.",
+    "_about": "Terrain targets in metres above the river at the Silverbrook Bridge, read from the board's isometric view: Northridge on a plateau above a scarp, The Commons on the low ground inside the river loop, Riverside at the harbour, cliffs and falls to the east, high ground and mountains to the north. Consumed by heightfield.py; the settlement definition wins on conflict.",
     "markers": {
-      "Market Square": [[0, -30], 4],
-      "Town Hall": [[55, -390], 18],
-      "North Gate": [[22, -529], 22],
-      "West Gate": [[-383, -151], 6],
-      "East Gate": [[379, -170], 8],
-      "South Gate": [[41, 527], 2],
-      "Westfields farms": [[-520, 260], 3],
-      "Eastwood woods": [[560, 20], 12],
-      "Watchtower hill": [[-330, -520], 34],
+      "Market Square": [[0, -30], 8],
+      "Town Hall": [[55, -390], 32],
+      "Temple of the Dawn": [[-95, -340], 30],
+      "North Gate": [[22, -529], 34],
+      "West Gate": [[-383, -151], 12],
+      "East Gate": [[379, -170], 14],
+      "South Gate": [[41, 527], 4],
+      "Westfields farms": [[-520, 260], 5],
+      "Eastwood woods": [[560, 20], 26],
+      "Watchtower hill": [[-330, -520], 48],
       "Arrival": [[420, 840], 6],
-      "North edge": [[0, -1250], 60],
-      "North-east hills": [[900, -900], 55],
+      "North edge": [[0, -1250], 85],
+      "North-east hills": [[900, -900], 110],
       "South-east edge": [[1000, 1250], 8],
-      "South-west edge": [[-1250, 700], 14]
+      "South-west edge": [[-1250, 700], 18]
     },
     "ridges": {
-      "Northern ridge": {"points": [[-1250, -900], [-400, -800], [400, -850], [1250, -950]], "height": 55},
-      "Eastern hills": {"points": [[750, -500], [880, -100], [900, 300]], "height": 40}
+      "Northern ridge": {
+        "points": [[-1250, -900], [-400, -800], [400, -850], [1250, -950]],
+        "height": 120
+      },
+      "Eastern hills": {
+        "points": [[750, -500], [880, -100], [900, 300]],
+        "height": 75
+      }
     },
     "cliffs": {
-      "East falls cliff": {"points": [[700, -380], [760, -150]], "drop": 12}
+      "Northridge scarp": {
+        "points": [[-260, -250], [-120, -262], [40, -262], [200, -250], [300, -215]],
+        "drop": 12
+      },
+      "East cliffs": {
+        "points": [[680, -450], [760, -150], [740, 100]],
+        "drop": 25
+      },
+      "Riverside falls cliff": {
+        "points": [[380, 300], [350, 520]],
+        "drop": 18
+      }
     },
-    "river_levels": [14, 12, 6, 5, 4, 4, 3, 2, 1, 0.5, 0, -0.5, -1.5, -2.5, -3.5, -4.5, -6],
-    "waterfalls": [{"name": "Upper town falls", "between_points": [1, 2], "drop": 6}],
+    "river_levels": [40, 20, 19, 17, 15, 13, 8, 7.5, 7, 6.5, 6, 5.5, 5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1, 0.5, 0.3, 0, -1, -4],
+    "waterfalls": [
+      {
+        "name": "Northwest falls",
+        "between_points": [0, 1],
+        "drop": 20
+      },
+      {
+        "name": "Upper town falls",
+        "between_points": [5, 6],
+        "drop": 5
+      }
+    ],
     "max_drop_without_waterfall": 3,
-    "flatten": {"under_buildings_margin": 2, "under_plots_margin": 2, "road_max_grade": 0.08}
+    "flatten": {
+      "under_buildings_margin": 2,
+      "under_plots_margin": 2,
+      "road_max_grade": 0.08,
+      "trail_max_grade": 0.15
+    }
   },
   "building_types": {
     "_size": "[width_x, depth_y, height] in metres",
@@ -113,29 +199,200 @@
     "docks": [30, 10, 1]
   },
   "places": [
-    {"key": 1, "name": "Town Hall", "type": "town_hall", "at": [55, -390], "yaw": 0},
-    {"key": 2, "name": "Adventurers' Guild", "type": "adventurers_guild", "at": [-60, -75], "yaw": 0},
-    {"key": 3, "name": "The Golden Stag Inn", "type": "inn", "at": [65, -75], "yaw": 0},
-    {"key": 4, "name": "Blacksmith", "type": "blacksmith", "at": [-60, 25], "yaw": 0},
-    {"key": 5, "name": "Market Square", "type": "plaza", "at": [0, -30], "size": [60, 50]},
-    {"key": 6, "name": "Stables", "type": "stables", "at": [-500, 100], "yaw": 0},
-    {"key": 7, "name": "Temple of the Dawn", "type": "temple", "at": [-95, -340], "yaw": 0},
-    {"key": 8, "name": "Mill & Granary", "type": "mill", "at": [118, 395], "yaw": 0},
-    {"key": 9, "name": "Fisherman's Wharf", "type": "wharf", "at": [-35, 390], "yaw": 0},
-    {"key": 10, "name": "North Gate", "type": "gate"},
-    {"key": 11, "name": "West Gate", "type": "gate"},
-    {"key": 12, "name": "East Gate", "type": "gate"},
-    {"key": 13, "name": "South Gate", "type": "gate"},
-    {"key": 14, "name": "Farmlands", "type": "fields", "at": [-520, 260], "size": [160, 220]},
-    {"key": 15, "name": "Watchtower", "type": "watchtower", "at": [-330, -520], "yaw": 0},
-    {"key": 16, "name": "Cemetery", "type": "yard", "at": [-275, 468], "size": [50, 40]},
-    {"key": 17, "name": "Ruins", "type": "ruins", "at": [545, 207], "size": [30, 24]},
-    {"key": 18, "name": "Forest Trail", "type": "marker", "at": [542, -275]},
-    {"key": 19, "name": "Silverbrook Bridge", "type": "bridge", "at": [18, 203]},
-    {"key": 20, "name": "Riverside Docks", "type": "docks", "at": [110, 470], "yaw": 37}
+    {
+      "key": 1,
+      "name": "Town Hall",
+      "type": "town_hall",
+      "at": [55, -390],
+      "yaw": 0
+    },
+    {
+      "key": 2,
+      "name": "Adventurers' Guild",
+      "type": "adventurers_guild",
+      "at": [-60, -75],
+      "yaw": 0
+    },
+    {
+      "key": 3,
+      "name": "The Golden Stag Inn",
+      "type": "inn",
+      "at": [65, -75],
+      "yaw": 0
+    },
+    {
+      "key": 4,
+      "name": "Blacksmith",
+      "type": "blacksmith",
+      "at": [-60, 25],
+      "yaw": 0
+    },
+    {
+      "key": 5,
+      "name": "Market Square",
+      "type": "plaza",
+      "at": [0, -30],
+      "size": [60, 50]
+    },
+    {
+      "key": 6,
+      "name": "Stables",
+      "type": "stables",
+      "at": [-500, 100],
+      "yaw": 0
+    },
+    {
+      "key": 7,
+      "name": "Temple of the Dawn",
+      "type": "temple",
+      "at": [-95, -340],
+      "yaw": 0
+    },
+    {
+      "key": 8,
+      "name": "Mill & Granary",
+      "type": "mill",
+      "at": [-110, 300],
+      "yaw": 0
+    },
+    {
+      "key": 9,
+      "name": "Fisherman's Wharf",
+      "type": "wharf",
+      "at": [95, 300],
+      "yaw": 0
+    },
+    {
+      "key": 10,
+      "name": "North Gate",
+      "type": "gate"
+    },
+    {
+      "key": 11,
+      "name": "West Gate",
+      "type": "gate"
+    },
+    {
+      "key": 12,
+      "name": "East Gate",
+      "type": "gate"
+    },
+    {
+      "key": 13,
+      "name": "South Gate",
+      "type": "gate"
+    },
+    {
+      "key": 14,
+      "name": "Farmlands",
+      "type": "fields",
+      "at": [-520, 260],
+      "size": [160, 220]
+    },
+    {
+      "key": 15,
+      "name": "Watchtower",
+      "type": "watchtower",
+      "at": [-330, -520],
+      "yaw": 0
+    },
+    {
+      "key": 16,
+      "name": "Cemetery",
+      "type": "yard",
+      "at": [-275, 468],
+      "size": [50, 40]
+    },
+    {
+      "key": 17,
+      "name": "Ruins",
+      "type": "ruins",
+      "at": [545, 207],
+      "size": [30, 24]
+    },
+    {
+      "key": 18,
+      "name": "Forest Trail",
+      "type": "marker",
+      "at": [542, -275]
+    },
+    {
+      "key": 19,
+      "name": "Silverbrook Bridge",
+      "type": "bridge",
+      "at": [20, 190]
+    },
+    {
+      "key": 20,
+      "name": "Riverside Docks",
+      "type": "docks",
+      "at": [110, 470],
+      "yaw": 37
+    }
   ],
   "market_stalls": 8,
-  "construction_plots": {"size": 20, "centres": [[430, 215], [470, 215], [510, 220]]},
-  "arrival": {"at": [420, 840], "face": [0, 0]},
-  "review_route": [[420, 840], [41, 527], [80, 420], [60, 260], [-20, 150], [0, -30], [12, -258], [22, -529]]
+  "construction_plots": {
+    "size": 20,
+    "centres": [[430, 215], [470, 215], [510, 220]]
+  },
+  "arrival": {
+    "at": [420, 840],
+    "face": [0, 0]
+  },
+  "review_route": [[420, 840], [41, 527], [30, 350], [20, 205], [20, 100], [0, -30], [12, -258], [22, -529]],
+  "brooks": [
+    {
+      "name": "Eastfall Brook",
+      "width": 10,
+      "points": [[1250, 300], [1075, 330], [900, 360], [750, 365], [650, 370], [563, 377], [450, 395], [270, 410]],
+      "levels": [34, 31, 28, 25, 23, 22, 21, 0.3],
+      "waterfalls": [
+        {
+          "name": "Riverside falls",
+          "between_points": [6, 7],
+          "drop": 20.7
+        }
+      ]
+    }
+  ],
+  "basins": [
+    {
+      "name": "Riverside Harbour",
+      "level": 0.3,
+      "polygon": [[70, 230], [160, 230], [240, 280], [290, 380], [260, 460], [170, 480], [120, 430], [70, 330]]
+    },
+    {
+      "name": "Eastwood Pond",
+      "level": 22,
+      "polygon": [[598, 377], [588, 397], [563, 405], [538, 397], [528, 377], [538, 357], [563, 349], [588, 357]]
+    }
+  ],
+  "backdrop": {
+    "_about": "Mountains and far hills beyond the zone edge, read from the board's isometric view. Visual only; part of the area so no view ends at the edge of the world. Heights in metres above the zone edge, width is the falloff distance from the range line.",
+    "extent": 6000,
+    "spacing": 125,
+    "ramp": 800,
+    "ranges": {
+      "Northern peaks": {
+        "points": [[-4500, -3000], [-2000, -3800], [0, -3200], [2000, -3900], [4500, -3000]],
+        "height": 1100,
+        "width": 1900
+      },
+      "Eastern highlands": {
+        "points": [[2800, -1500], [3200, 800]],
+        "height": 450,
+        "width": 1400
+      },
+      "Western hills": {
+        "points": [[-3000, -1000], [-3200, 1500]],
+        "height": 250,
+        "width": 1500
+      },
+      "Southern downs": {
+        "points": [[-2500, 3000], [2500, 3200]],
+        "height": 120,
+        "width": 1500
+      }
+    }
+  }
 }
