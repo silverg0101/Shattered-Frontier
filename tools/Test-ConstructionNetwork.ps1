@@ -218,6 +218,18 @@ try {
         $toggleViews += [regex]::Matches($log,'CONSTRUCTION_NETWORK_VIEW_TOGGLE Cell=X=2 Y=0 Z=0').Count
     }
     if ($toggleViews -ne 3 -or [regex]::Matches($serverLog,'CONSTRUCTION_NETWORK_DOOR_TOGGLE').Count -ne 2) { throw 'Expected three ordinary E requests and only two committed pose changes.' }
+    foreach ($role in @('driver','observer')) {
+        $log=Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
+        foreach ($pose in @(0,1)) {
+            if ([regex]::Matches($log,('CONSTRUCTION_NETWORK_CAPSULE_PASSAGE Builder=[01] Open='+$pose+' BothDirections=1 RadiusCm=34.0 HalfHeightCm=88.0')).Count -ne 1) { throw "$role lacks actual capsule-size passage evidence for pose$pose." }
+        }
+    }
+    $virtualTargets=0
+    foreach ($role in @('driver','observer')) {
+        $log=Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
+        $virtualTargets += [regex]::Matches($log,'CONSTRUCTION_NETWORK_VIRTUAL_DOOR_TARGET Revision=12 PhysicalDoorHit=0').Count
+    }
+    if ($virtualTargets -ne 1) { throw 'Open doorway targeting without a physical frame/leaf hit was not observed.' }
     $results.contentBlake3 = $payloads[0]
     $results.captureFrames = [bool]$CaptureFrames
     $results.status = 'Passed'

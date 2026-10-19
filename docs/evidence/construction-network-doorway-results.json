@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-18",
+  "status": "Passed",
+  "rawRoot": "Artifacts/ConstructionSandbox/network-20261018-214805-563",
+  "buildLog": "Artifacts/ConstructionSandbox/network-doorway-build-02.log",
+  "buildSeconds": 14.53,
+  "elapsedSeconds": 76.8050273,
+  "scope": "Editor virtual doorway targeting and both-client capsule sweeps, not actual walking",
+  "cleanupComplete": true,
+  "sha256": {
+    "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionNetwork.h": "296795fa4bfe3c59c45c242d2bddf6a5de444af437c9bbba7d729d9b9482b0ea",
+    "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionNetwork.cpp": "21d1f099da51a79b6e9cab39dc8fe63f2f5b176a7921e405e07cc9625a2f296c",
+    "tools/Test-ConstructionNetwork.ps1": "a8d5b3ca3be7fa8d1034ef9ee7e32053a56bfb181b8e5b9f6e1de7525aed495c",
+    "Artifacts/ConstructionSandbox/network-20261018-214805-563/results.json": "cbdd36a25758b9ba94139b508bb14124523ab638c73ce0257b6de50985a3ed13",
+    "Artifacts/ConstructionSandbox/network-20261018-214805-563/server.log": "e52ab5335780104198a2b508732b30d2076464c081e82c74759fb784d9132592",
+    "Artifacts/ConstructionSandbox/network-20261018-214805-563/driver.log": "b2b7cf6b70e35d16f929b61207a349acc9d4ab9e513160689d270337802fa989",
+    "Artifacts/ConstructionSandbox/network-20261018-214805-563/observer.log": "f3e4d5e593bb4555e5962731abccce85eea407c5084cea3e2bfb590143fcbf75",
+    "Artifacts/ConstructionSandbox/network-20261018-214805-563/driver.png": "b2dc718b2a3c528ed112575e998ff5d559cf7f3bee5638cdd5a8bbe87f25bbed",
+    "Artifacts/ConstructionSandbox/network-20261018-214805-563/observer.png": "2acd9d5cce46660f8a5091e690a1fcddb19a0021a907368f9bd9ba04520ceba8",
+    "Artifacts/ConstructionSandbox/network-20261018-214805-563/driver.open.png": "ce69d0179fbee791af432ce2cfd624b486af3cfd307fac72856f3eed0602d665",
+    "Artifacts/ConstructionSandbox/network-20261018-214805-563/observer.open.png": "ed566230af549ee4bf1fd7da931f1be5f5ea8744842884825e2924435032b492"
+  }
+}

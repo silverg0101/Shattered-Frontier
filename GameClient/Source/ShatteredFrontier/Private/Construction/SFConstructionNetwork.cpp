@@ -14,6 +14,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/Character.h"
 #include "Engine/OverlapResult.h"
 #include "Engine/World.h"
 #include "Engine/Canvas.h"
@@ -59,6 +61,23 @@ const TCHAR* PlacementResultText(ESFConstructionNetworkResult Result)
     case ESFConstructionNetworkResult::ProjectionFailed: return TEXT("Construction collision unavailable. Placement was not applied.");
     default: return TEXT("Construction unavailable. Wait for the server and try again.");
     }
+}
+
+bool RayEnvelopeEntry(const FVector& Start, const FVector& End, const FBox& Box, double& OutT)
+{
+    if (!Box.IsValid || Start.ContainsNaN() || End.ContainsNaN() || (End-Start).ContainsNaN() || (End-Start).IsNearlyZero()) { return false; }
+    const FVector Delta=End-Start;
+    double Near=0, Far=1;
+    for (int32 Axis=0; Axis<3; ++Axis)
+    {
+        if (FMath::Abs(Delta[Axis])<1.e-9)
+        { if (Start[Axis]<Box.Min[Axis] || Start[Axis]>Box.Max[Axis]) { return false; } continue; }
+        double A=(Box.Min[Axis]-Start[Axis])/Delta[Axis], B=(Box.Max[Axis]-Start[Axis])/Delta[Axis];
+        if (A>B) { Swap(A,B); }
+        Near=FMath::Max(Near,A); Far=FMath::Min(Far,B);
+        if (Near>Far) { return false; }
+    }
+    OutT=Near; return true;
 }
 
 ASFConstructionNetworkState* FindState(UWorld* World)
@@ -499,6 +518,33 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::PlaceDoor(ASFConstruct
     return ESFConstructionNetworkResult::Accepted;
 }
 
+bool ASFConstructionNetworkState::FindDoorAlongRay(const APawn* Pawn, const FVector& Start, const FVector& End, FIntVector& OutOrigin) const
+{
+    if (!IsInGameThread() || !GetWorld() || !IsValid(Pawn) || Pawn->GetWorld()!=GetWorld()
+        || !IsProjectionCurrent() || Start.ContainsNaN() || End.ContainsNaN() || Pawn->GetActorLocation().ContainsNaN()
+        || (End-Start).ContainsNaN() || (End-Start).IsNearlyZero()
+        || (End-Start).Size()>ReachCentimetres+FVector::Dist(Start,Pawn->GetActorLocation())+FMath::Sqrt(3.0)*25.0+1.e-6) { return false; }
+    double BestT=TNumericLimits<double>::Max(); bool bFound=false;
+    FIntVector Best=FIntVector::ZeroValue;
+    for (const auto& Door : Snapshot.Doors)
+    {
+        FSFConstructionDoorProjectionProfile Profile; double T;
+        if (!ASFConstructionSandboxDoorProjection::BuildProfile(Door.Origin,Door.Yaw,Door.bOpen,Profile)
+            || FVector::DistSquared(Pawn->GetActorLocation(),Profile.Envelope.GetCenter())>FMath::Square(ReachCentimetres)
+            || !RayEnvelopeEntry(Start,End,Profile.Envelope,T)) { continue; }
+        FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionNetworkDoorTarget),false,Pawn);
+        FHitResult Hit; FIntVector HitOrigin;
+        const FVector Probe=Start+(End-Start)*FMath::Min(1.0,T+1.e-5);
+        if (GetWorld()->LineTraceSingleByChannel(Hit,Start,Probe,ECC_Visibility,Query)
+            && !(Hit.GetActor()==this && GetDoorForComponent(Hit.GetComponent(),HitOrigin) && HitOrigin==Door.Origin)) { continue; }
+        const bool bEarlier=Door.Origin.X<Best.X || (Door.Origin.X==Best.X && (Door.Origin.Y<Best.Y || (Door.Origin.Y==Best.Y && Door.Origin.Z<Best.Z)));
+        if (!bFound || T<BestT-1.e-9 || (FMath::IsNearlyEqual(T,BestT,1.e-9) && bEarlier))
+        { bFound=true; BestT=T; Best=Door.Origin; }
+    }
+    if (!bFound) { return false; }
+    OutOrigin=Best; return true;
+}
+
 ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateDoorTarget(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision, int32& OutIndex) const
 {
     const APawn* Pawn=nullptr; const AActor* Foundation=nullptr;
@@ -514,10 +560,14 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateDoorTarget(ASF
     if (Pawn->GetActorLocation().ContainsNaN() || FVector::DistSquared(Pawn->GetActorLocation(),Profile.Envelope.GetCenter())>FMath::Square(ReachCentimetres)) { return ESFConstructionNetworkResult::OutOfReach; }
     FVector Eyes; FRotator Rotation; Pawn->GetActorEyesViewPoint(Eyes,Rotation);
     if (Eyes.ContainsNaN()) { return ESFConstructionNetworkResult::Occluded; }
-    bool bVisible=false;
     FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionNetworkDoorUse),false,Pawn);
+    FHitResult CentreHit; FIntVector CentreOrigin;
+    // Clear sight into the aperture is sufficient, even without a leaf/frame hit.
+    bool bVisible=!GetWorld()->LineTraceSingleByChannel(CentreHit,Eyes,Profile.Envelope.GetCenter(),ECC_Visibility,Query)
+        || (CentreHit.GetActor()==this && GetDoorForComponent(CentreHit.GetComponent(),CentreOrigin) && CentreOrigin==Origin);
     for (const auto& Box : Projection->Boxes)
     {
+        if (bVisible) { break; }
         FHitResult Hit;
         if (GetWorld()->LineTraceSingleByChannel(Hit,Eyes,Box->GetComponentLocation(),ECC_Visibility,Query) && Hit.GetComponent()==Box.Get())
         { bVisible=true; break; }
@@ -756,10 +806,23 @@ void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline
     FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionNetworkView),false,GetPawn());
     // Camera offset plus half a cell diagonal covers the server's pawn-centre reach sphere.
     const double TraceLength=State->GetReachCentimetres()+FVector::Dist(Start,GetPawn()->GetActorLocation())+FMath::Sqrt(3.0)*25.0;
-    if (!GetWorld()->LineTraceSingleByChannel(Hit,Start,Start+Rotation.Vector()*TraceLength,ECC_Visibility,Query))
-    { PreviewStatus=TEXT("Aim at the ground or a block face within reach."); return; }
+    const FVector End=Start+Rotation.Vector()*TraceLength;
+    const bool bHit=GetWorld()->LineTraceSingleByChannel(Hit,Start,End,ECC_Visibility,Query);
+    bHasDoorTarget=State->FindDoorAlongRay(GetPawn(),Start,End,TargetDoorOrigin);
+    if (!bHasDoorTarget && bHit)
+    { bHasDoorTarget=Hit.GetActor()==State && State->GetDoorForComponent(Hit.GetComponent(),TargetDoorOrigin); }
+    if (bHasDoorTarget)
+    {
+        PreviewStatus=TEXT("Doorway targeted.");
+        RemovalStatus=TEXT("E: open / close | Right click / X: remove door.");
+        const int32 Index=State->GetSnapshot().FindDoor(TargetDoorOrigin);
+        FSFConstructionDoorProjectionProfile Profile;
+        if (bDrawOutline && Index!=INDEX_NONE && ASFConstructionSandboxDoorProjection::BuildProfile(TargetDoorOrigin,State->GetSnapshot().Doors[Index].Yaw,State->GetSnapshot().Doors[Index].bOpen,Profile))
+        { DrawDebugBox(GetWorld(),Profile.Envelope.GetCenter(),Profile.Envelope.GetExtent(),FColor::Cyan,false,-1.f,0,2.f); }
+        return;
+    }
+    if (!bHit) { PreviewStatus=TEXT("Aim at the ground or a block face within reach."); return; }
     const FVector Point = Hit.ImpactPoint + Hit.ImpactNormal*0.1;
-    bHasDoorTarget=Hit.GetActor()==State && State->GetDoorForComponent(Hit.GetComponent(),TargetDoorOrigin);
     PreviewCell=FIntVector(FMath::FloorToInt(Point.X/50),FMath::FloorToInt(Point.Y/50),FMath::FloorToInt(Point.Z/50));
     bHasRemovalPreview=Hit.GetActor()==State && State->GetCellForComponent(Hit.GetComponent(),RemovalCell);
     if (bHasRemovalPreview)
@@ -1010,6 +1073,33 @@ void ASFConstructionNetworkController::TickFiniteScenario()
         UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_SUPPORT_PREVIEW PlacementAllowed=0 RemovalAllowed=1 Revision=8"));
         ScenarioStep=33; ServerPlaceDoor(FIntVector(2,0,0),8,255); return;
     }
+    if ((State->GetSnapshot().Revision==11 || State->GetSnapshot().Revision==12) && State->HasCurrentCollision())
+    {
+        const bool bOpen=State->GetSnapshot().Revision==12;
+        bool& bReported=bOpen ? bScenarioDoorCapsuleOpenReported : bScenarioDoorCapsuleClosedReported;
+        if (!bReported)
+        {
+            const auto* OwnedCharacter=Cast<ACharacter>(GetPawn());
+            const auto* Capsule=OwnedCharacter ? OwnedCharacter->GetCapsuleComponent() : nullptr;
+            bool bPass=Capsule!=nullptr;
+            if (Capsule)
+            {
+                const auto Shape=FCollisionShape::MakeCapsule(Capsule->GetScaledCapsuleRadius(),Capsule->GetScaledCapsuleHalfHeight());
+                const FVector Front(150,-100,100), Back(150,150,100);
+                FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionNetworkCapsulePassage),false,GetPawn());
+                for (int32 Direction=0; Direction<2; ++Direction)
+                {
+                    FHitResult Hit; FIntVector Origin;
+                    const bool bBlocked=GetWorld()->SweepSingleByChannel(Hit,Direction ? Back : Front,Direction ? Front : Back,FQuat::Identity,ECC_Pawn,Shape,Query);
+                    bPass &= bOpen ? !bBlocked : bBlocked && Hit.GetActor()==State && State->GetDoorForComponent(Hit.GetComponent(),Origin) && Origin==FIntVector(2,0,0);
+                }
+            }
+            if (!bPass)
+            { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_SCENARIO_FAILED CapsulePassage Open=%d"),bOpen); FPlatformMisc::RequestExitWithStatus(false,1); return; }
+            UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_CAPSULE_PASSAGE Builder=%d Open=%d BothDirections=1 RadiusCm=%.1f HalfHeightCm=%.1f"),bBuilderRole,bOpen,Capsule->GetScaledCapsuleRadius(),Capsule->GetScaledCapsuleHalfHeight());
+            bReported=true;
+        }
+    }
     if (((bBuilderRole && ScenarioStep==42) || (!bBuilderRole && ScenarioStep==8))
         && State->GetSnapshot().Revision==11 && State->GetSnapshot().Members.Num()==2 && State->GetSnapshot().Doors.Num()==1 && State->HasCurrentCollision())
     {
@@ -1021,6 +1111,16 @@ void ASFConstructionNetworkController::TickFiniteScenario()
     if (((bBuilderRole && ScenarioStep==44) || (!bBuilderRole && ScenarioStep==8))
         && State->GetSnapshot().Revision==12 && State->GetSnapshot().Doors.Num()==1 && State->GetSnapshot().Doors[0].bOpen && State->HasCurrentCollision())
     {
+        if (bBuilderRole && !bScenarioDoorOpenReported)
+        {
+            SetControlRotation((FVector(150,25,100)-GetPawn()->GetActorLocation()).Rotation());
+            FVector Start; FRotator Aim; GetPlayerViewPoint(Start,Aim);
+            FHitResult Hit; FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionNetworkVirtualProof),false,GetPawn());
+            FIntVector HitOrigin;
+            const bool bPhysical=GetWorld()->LineTraceSingleByChannel(Hit,Start,Start+Aim.Vector()*1000,ECC_Visibility,Query)
+                && Hit.GetActor()==State && State->GetDoorForComponent(Hit.GetComponent(),HitOrigin);
+            if (bPhysical || !bHasDoorTarget || TargetDoorOrigin!=FIntVector(2,0,0)) { return; }
+        }
         if (!bScenarioDoorOpenCaptureStarted)
         {
             bScenarioDoorOpenCaptureStarted=true;
@@ -1029,7 +1129,8 @@ void ASFConstructionNetworkController::TickFiniteScenario()
             { ScenarioDoorOpenPath=FPaths::ChangeExtension(Path,TEXT("open.png")); FScreenshotRequest::RequestScreenshot(ScenarioDoorOpenPath,true,false); }
         }
         if (!bScenarioDoorOpenReported && (ScenarioDoorOpenPath.IsEmpty() || (!FScreenshotRequest::IsScreenshotRequested() && FPaths::FileExists(ScenarioDoorOpenPath))))
-        { UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_DOOR_OPEN_READY Builder=%d Revision=12"),bBuilderRole); bScenarioDoorOpenReported=true; }
+        { UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_DOOR_OPEN_READY Builder=%d Revision=12"),bBuilderRole); bScenarioDoorOpenReported=true;
+            if (bBuilderRole) { UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_VIRTUAL_DOOR_TARGET Revision=12 PhysicalDoorHit=0")); } }
     }
     if (!bBuilderRole && ScenarioStep==8 && State->GetSnapshot().Revision==13 && State->HasCurrentCollision())
     { ScenarioStep=9; ServerRemoveDoor(FIntVector(2,0,0),13); return; }

@@ -82,6 +82,7 @@ public:
     bool IsProjectionCurrent() const { return bProjectionReady && ProjectionRevision == Snapshot.Revision; }
     bool GetCellForComponent(const UPrimitiveComponent* Component, FIntVector& OutCell) const;
     bool GetDoorForComponent(const UPrimitiveComponent* Component, FIntVector& OutOrigin) const;
+    bool FindDoorAlongRay(const APawn* Pawn, const FVector& Start, const FVector& End, FIntVector& OutOrigin) const;
     bool OwnsDoorProjection(const FSFConstructionNetworkDoor& Door, const FSFConstructionNetworkDoorProjection& Projection) const;
     bool IsSupportAllowedForPreview(FIntVector Cell, uint8 Shape, uint8 Rotation, bool bRemove) const;
     int32 GetMaximumDoors() const { return MaximumDoors; }
@@ -192,6 +193,8 @@ private:
     FString ScenarioScreenshotPath;
     bool bScenarioEmptyReported = false;
     bool bScenarioDoorCameraAimed = false;
+    bool bScenarioDoorCapsuleClosedReported = false;
+    bool bScenarioDoorCapsuleOpenReported = false;
     bool bScenarioDoorRemoveReported = false;
     bool bScenarioDoorClosedReported = false;
     bool bScenarioDoorOpenReported = false;
