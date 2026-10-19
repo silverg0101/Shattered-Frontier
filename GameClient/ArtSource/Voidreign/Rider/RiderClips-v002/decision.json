@@ -1,0 +1,1 @@
+{"status":"superseded","reason":"FBX exported in metres with x100 node scale; Unreal applied metre values to the cm Mannequin skeleton (pelvis 0.1175 vs 11.75). v003 bakes unit scale."}

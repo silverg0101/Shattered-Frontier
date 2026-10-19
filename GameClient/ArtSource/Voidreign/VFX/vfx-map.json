@@ -1,0 +1,83 @@
+{
+ "schema_version": 1,
+ "content": "/Game/Frontier/Creatures/Voidreign/V1/VFX",
+ "master": "/Game/Frontier/Creatures/Voidreign/V1/VFX/M_VFX_Void.M_VFX_Void",
+ "noise_texture_found": true,
+ "effects": {
+  "RiftOpen": {
+   "material": "/Game/Frontier/Creatures/Voidreign/V1/VFX/MI_VFX_RiftOpen.MI_VFX_RiftOpen",
+   "events": [
+    "telegraph_start"
+   ],
+   "mesh": "/Engine/BasicShapes/Plane",
+   "scale_m": 2.0,
+   "duration_s": 0.9,
+   "drive": "Progress 0->1->0"
+  },
+  "RiftTrail": {
+   "material": "/Game/Frontier/Creatures/Voidreign/V1/VFX/MI_VFX_RiftTrail.MI_VFX_RiftTrail",
+   "events": [
+    "rift_charge_run"
+   ],
+   "mesh": "/Engine/BasicShapes/Plane",
+   "scale_m": 1.2,
+   "duration_s": 0.4,
+   "drive": "Progress 0->1->0"
+  },
+  "RiftAnchor": {
+   "material": "/Game/Frontier/Creatures/Voidreign/V1/VFX/MI_VFX_RiftAnchor.MI_VFX_RiftAnchor",
+   "events": [
+    "anchor_window"
+   ],
+   "mesh": "/Engine/BasicShapes/Plane",
+   "scale_m": 1.6,
+   "duration_s": 3.0,
+   "drive": "Progress 0->1->0"
+  },
+  "RiftCollapse": {
+   "material": "/Game/Frontier/Creatures/Voidreign/V1/VFX/MI_VFX_RiftCollapse.MI_VFX_RiftCollapse",
+   "events": [
+    "vfx_rift_collapse",
+    "vanish",
+    "appear"
+   ],
+   "mesh": "/Engine/BasicShapes/Plane",
+   "scale_m": 2.4,
+   "duration_s": 0.6,
+   "drive": "Progress 0->1->0"
+  },
+  "MomentumSpark": {
+   "material": "/Game/Frontier/Creatures/Voidreign/V1/VFX/MI_VFX_MomentumSpark.MI_VFX_MomentumSpark",
+   "events": [
+    "hit"
+   ],
+   "mesh": "/Engine/BasicShapes/Plane",
+   "scale_m": 0.6,
+   "duration_s": 0.25,
+   "drive": "Progress 0->1->0"
+  },
+  "GroundCrack": {
+   "material": "/Game/Frontier/Creatures/Voidreign/V1/VFX/MI_VFX_GroundCrack.MI_VFX_GroundCrack",
+   "events": [
+    "vfx_ground_crack"
+   ],
+   "mesh": "/Engine/BasicShapes/Plane",
+   "scale_m": 1.4,
+   "duration_s": 0.8,
+   "drive": "Progress 0->1->0"
+  },
+  "Snort": {
+   "material": "/Game/Frontier/Creatures/Voidreign/V1/VFX/MI_VFX_Snort.MI_VFX_Snort",
+   "events": [
+    "vfx_snort"
+   ],
+   "mesh": "/Engine/BasicShapes/Plane",
+   "scale_m": 0.8,
+   "duration_s": 0.7,
+   "drive": "Progress 0->1->0"
+  }
+ },
+ "limitations": [
+  "Material-on-plane placeholder effects; no Niagara particles."
+ ]
+}

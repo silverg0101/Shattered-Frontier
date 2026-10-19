@@ -1,0 +1,1 @@
+{"status":"failed","reason":"ORM PNG saved all-zero: colorspace set after pixel write reloads the buffer. Fixed in v002 (order + readback assert)."}

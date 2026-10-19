@@ -1,0 +1,48 @@
+00:02.031  blend            | Read blend: "C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\Delivery-v003\SK_Voidreign.blend"
+RIDER rider.seat.idle {"ik_reach": true} {"arm_r": [0.0, 56], "leg_l": [0.0, 60], "leg_r": [0.0, 60], "arm_l": [0.0, 56]}
+RIDER rider.seat.combat_idle {"ik_reach": true} {"arm_l": [0.0, 57], "leg_l": [0.0, 60], "leg_r": [0.0, 60], "arm_r": [0.0, 60]}
+RIDER rider.seat.move {"ik_reach": true} {"leg_l": [0.0, 18], "leg_r": [0.0, 18], "arm_l": [0.0, 17], "arm_r": [0.0, 18]}
+RIDER rider.mount {"ik_reach": true} {"arm_l": [0.0, 58], "arm_r": [0.0, 60], "leg_l": [0.0, 60], "leg_r": [0.0, 60]}
+RIDER rider.dismount {"ik_reach": true} {"arm_r": [0.0, 49], "leg_l": [0.0, 49], "leg_r": [0.0, 47], "arm_l": [0.0, 50]}
+RIDER rider.dismount_forced {"ik_reach": true} {"arm_r": [0.0, 23], "leg_l": [0.0, 34], "leg_r": [0.0, 23], "arm_l": [0.0, 37]}
+RIDER rider.melee_r {"ik_reach": true} {"arm_r": [0.0, 30], "leg_l": [0.0, 30], "leg_r": [0.0, 30], "arm_l": [0.0, 29]}
+RIDER rider.bow_fire {"ik_reach": true} {"arm_r": [0.0, 40], "leg_l": [0.0, 40], "leg_r": [0.0, 40], "arm_l": [0.017, 26]}
+RIDER rider.rift_brace {"ik_reach": true} {"arm_r": [0.0, 12], "leg_l": [0.0, 13], "leg_r": [0.0, 12], "arm_l": [0.0, 30]}
+RIDER rider.recall_hold {"ik_reach": true} {"arm_r": [0.0, 24], "leg_l": [0.0, 24], "leg_r": [0.0, 24], "arm_l": [0.0, 24]}
+00:03.438  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.seat.idle-001.png'
+00:04.203  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.seat.idle-030.png'
+00:04.969  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.seat.idle-060.png'
+00:05.734  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.seat.combat_idle-001.png'
+00:06.484  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.seat.combat_idle-030.png'
+00:07.266  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.seat.combat_idle-060.png'
+00:08.016  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.seat.move-001.png'
+00:08.750  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.seat.move-009.png'
+00:09.516  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.seat.move-018.png'
+00:10.281  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.mount-001.png'
+00:11.047  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.mount-030.png'
+00:11.672  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.mount-060.png'
+00:12.219  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.dismount-001.png'
+00:12.766  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.dismount-025.png'
+00:13.297  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.dismount-050.png'
+00:13.844  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.dismount_forced-001.png'
+00:14.375  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.dismount_forced-020.png'
+00:14.938  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.dismount_forced-040.png'
+00:15.469  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.melee_r-001.png'
+00:16.016  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.melee_r-015.png'
+00:16.578  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.melee_r-030.png'
+00:17.125  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.bow_fire-001.png'
+00:17.672  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.bow_fire-020.png'
+00:18.203  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.bow_fire-040.png'
+00:18.766  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.rift_brace-001.png'
+00:19.313  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.rift_brace-015.png'
+00:19.859  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.rift_brace-030.png'
+00:20.406  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.recall_hold-001.png'
+00:20.953  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.recall_hold-012.png'
+00:21.500  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v005\rider.recall_hold-024.png'
+
+FBX export starting... 'C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\Rider\\RiderClips-v005\\Rider-Mannequin.fbx'
+export finished in 0.7694 sec.
+RIDER_DONE {"passed": true, "socket": [0.0, 10.082289576530457, -26.496124267578125], "seat": [0.0, 0.07500000298023224, 1.663394808769226]}
+Blender 5.1.1 (hash b70da489d7f4 built 2026-04-14 01:37:22)
+
+Blender quit

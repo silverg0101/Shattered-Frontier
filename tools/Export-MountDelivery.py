@@ -48,6 +48,8 @@ bone_names = {b.name for b in rig.data.bones}
 removed_groups = [vg.name for vg in obj.vertex_groups if vg.name not in bone_names]
 for n in removed_groups: obj.vertex_groups.remove(obj.vertex_groups[n])
 assert all(abs(v) < 1e-6 for v in rig.matrix_world.to_euler()), 'rig object must be unrotated'
+# 'Armature' keeps Unreal from adding an object-named root bone and keeps take names short.
+rig.name = 'Armature'; rig.data.name = 'Armature'; obj.name = cfg['asset_name']
 
 # Ground root bone under the rig origin; pelvis re-parented without connection.
 vl.objects.active = rig; rig.select_set(True); bpy.ops.object.mode_set(mode='EDIT')
@@ -56,6 +58,9 @@ head = rig.matrix_world.inverted() @ Vector((0, 0, 0)); root.head = head; root.t
 root.use_deform = False
 for b in eb:
     if b.parent is None and b != root: b.parent = root; b.use_connect = False
+for extra in cfg.get('extra_bones', []):  # attachment bones (e.g. rider seat): non-deforming, axis-aligned to the mount
+    e = eb.new(extra['name']); h = rig.matrix_world.inverted() @ Vector(extra['head_world_m'])
+    e.head = h; e.tail = h + Vector((0, extra.get('length_m', 0.15), 0)); e.roll = 0; e.use_deform = False; e.parent = eb[extra['parent']]
 bpy.ops.object.mode_set(mode='OBJECT')
 R = rig.matrix_world.to_3x3().inverted()
 
@@ -105,6 +110,8 @@ ref = {c['id']: sample(rig, c['id'], max(1, c['frames'] // 2)) for c in clips}
 counts = dict(vertices=len(obj.data.vertices), polygons=len(obj.data.polygons), bones=len(rig.data.bones), materials=len(obj.material_slots))
 
 fbx = out / (cfg['asset_name'] + '.fbx')
+sys.path.insert(0, str(Path(__file__).resolve().parent)); from BlenderUnrealUnits import to_centimetres
+to_centimetres([obj, rig], [bpy.data.actions[t] for t in takes])  # FBX natively in cm: no root-bone scale in Unreal
 bpy.ops.object.select_all(action='DESELECT'); obj.select_set(True); rig.select_set(True); vl.objects.active = rig
 bpy.ops.export_scene.fbx(filepath=str(fbx), use_selection=True, object_types={'ARMATURE', 'MESH'}, add_leaf_bones=False,
                          bake_anim=True, bake_anim_use_all_actions=True, bake_anim_use_nla_strips=False, bake_anim_force_startend_keying=True,

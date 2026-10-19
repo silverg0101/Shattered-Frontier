@@ -75,6 +75,7 @@ tri = np.array([list(q.vertices) for q in obj.data.polygons])
 E = np.unique(np.sort(np.concatenate([tri[:, [0, 1]], tri[:, [1, 2]], tri[:, [2, 0]]]), 1), axis=0)
 E = E[(labels[E] == 0).all(1)]; L0 = np.linalg.norm(rest[E[:, 0]] - rest[E[:, 1]], axis=1)
 bone_len = {b.name: b.length for b in rig.data.bones}
+rest_pose_len = {pb.name: pb.length for pb in rig.pose.bones}  # neutral pose: float32 baseline for length checks
 
 
 def arm_rot(deg):
@@ -125,6 +126,71 @@ def path(g, prog):
     turn = math.radians(g.get('turn_deg_per_cycle', 0.)); s = g['stride_m'] * prog; a = turn * prog
     pos = Vector((0, -s, 0)) if abs(turn) < 1e-9 else Vector((g['stride_m'] / turn * (1 - math.cos(a)), -g['stride_m'] / turn * math.sin(a), 0))
     return pos, Quaternion((0, 0, 1), a)
+
+
+def simulate_chains(clip, n, baked, rigw):
+    """Spring-follow secondary chains (verlet, length constraints, ground) and overwrite their baked matrices.
+    Loops warm up for whole cycles and record the last; one-shots settle on frame 1 first."""
+    sec = cfg.get('secondary')
+    if not sec: return {}
+    order = list(range(1, n + 1)); sub = sec['substeps']; dt = 1 / cfg['fps'] / sub
+    cycles = max(sec['warmup_cycles'], -(-sec['settle_frames'] * 3 // n))
+    seq = order * (cycles + 1) + [1] if clip['loop'] else [1] * sec['settle_frames'] + order
+    passes = [i // n for i in range(len(seq))] if clip['loop'] else [0] * len(seq)
+    rec_from = len(seq) - n - 1 if clip['loop'] else sec['settle_frames']
+    off = Matrix.Identity(4)
+    if clip['loop']:
+        pose_frame(clip, n + 1, n); off = rig.matrix_world @ Matrix(rigw[1]).inverted()
+    def world(fr, k):
+        m = Matrix(rigw[fr])
+        for _ in range(k): m = off @ m
+        return m
+    inertia = sec.get('world_inertia', 1.)
+    stats = dict(max_tip_lag_m=0., min_joint_height_m=1e9, loop_seam_m=0.)
+    for chain in sec['chains']:
+        bones = [rig.pose.bones[b] for b in chain]; L = [b.bone.length for b in bones]
+        def targets(fr, k):
+            W = world(fr, k); m = baked[fr]
+            pts = [W @ m[b.name][0].translation for b in bones]
+            pts.append(W @ (m[bones[-1].name][0] @ Vector((0, L[-1], 0)))); return pts
+        x = xp = None; rec = {}; recw = {}; last = None
+        for step, fr in enumerate(seq):
+            tg = targets(fr, passes[step]); here = world(fr, passes[step]).translation
+            if x is None: x = [v.copy() for v in tg]; xp = [v.copy() for v in tg]
+            if last is not None:  # carry only part of the root's world travel as inertia
+                shift = (here - last) * (1 - inertia); x = [v + shift for v in x]; xp = [v + shift for v in xp]
+            last = here
+            for _ in range(sub):
+                x[0] = tg[0].copy(); xp[0] = tg[0].copy()
+                for j in range(1, len(x)):
+                    v = (x[j] - xp[j]) * (1 - sec['damping']); xp[j] = x[j].copy()
+                    x[j] = x[j] + v + Vector((0, 0, sec['gravity_mps2'])) * dt * dt + (tg[j] - x[j]) * sec['stiffness']
+                for j in range(1, len(x)):
+                    x[j] = x[j - 1] + (x[j] - x[j - 1]).normalized() * L[j - 1]
+                    if x[j].z < sec['ground_z_m']:
+                        x[j].z = sec['ground_z_m']; x[j] = x[j - 1] + (x[j] - x[j - 1]).normalized() * L[j - 1]
+            if step >= rec_from:
+                if clip['loop'] and step == len(seq) - 1:
+                    wi, ri = world(1, passes[step]).inverted(), recw[1].inverted()
+                    stats['loop_seam_m'] = max(stats['loop_seam_m'], max((wi @ a - ri @ b).length for a, b in zip(x, rec[1])))
+                else:
+                    rec[fr] = [v.copy() for v in x]; recw[fr] = world(fr, passes[step])
+                    stats['max_tip_lag_m'] = max(stats['max_tip_lag_m'], (x[-1] - tg[-1]).length)
+                    stats['min_joint_height_m'] = min(stats['min_joint_height_m'], min(v.z for v in x))
+        seam = None
+        if clip['loop']:
+            wi, ri = world(1, passes[-1]).inverted(), recw[1].inverted()
+            seam = [wi @ a - ri @ b for a, b in zip(x, rec[1])]
+        for fr in order:
+            Winv = recw[fr].inverted(); par = baked[fr][bones[0].parent.name][0]; pts = [Winv @ v for v in rec[fr]]
+            if seam: pts = [v - s * ((fr - 1) / n) for v, s in zip(pts, seam)]
+            for i, b in enumerate(bones):
+                restm = b.parent.bone.matrix_local.inverted() @ b.bone.matrix_local; Mr = par @ restm
+                rot = Mr.to_quaternion(); q = (rot @ Vector((0, 1, 0))).rotation_difference(pts[i + 1] - pts[i])
+                Mn = Matrix.Translation(Mr.translation) @ (q @ rot).to_matrix().to_4x4()
+                loc, r, _ = (restm.inverted() @ par.inverted() @ Mn).decompose()
+                baked[fr][b.name] = (Mn, loc, r); par = Mn
+    return {k: round(v, 6) for k, v in stats.items()}
 
 
 def pose_frame(clip, frame, n):
@@ -232,6 +298,7 @@ for clip in cfg['clips']:
         rec['seam_gap_m'] = max(rec['seam_gap_m'], float(np.linalg.norm(local - local[first][canonical], axis=1).max()))
         rec['min_full_height_m'] = min(rec['min_full_height_m'], float(world[:, 2].min()))
         rec['max_bone_length_rel'] = max(rec['max_bone_length_rel'], max(abs(pb.length / bone_len[pb.name] - 1) for pb in rig.pose.bones))
+        rec['max_bone_length_abs_m'] = max(rec.get('max_bone_length_abs_m', 0.), max(abs(pb.length - rest_pose_len[pb.name]) for pb in rig.pose.bones))
         for f in feet:
             k = f['id']; ids = patches[k + '.vertices']; h = float(world[ids, 2].min())
             tip = rig.matrix_world @ rig.pose.bones[f['chain'][-2]].tail
@@ -248,13 +315,12 @@ for clip in cfg['clips']:
             rec['body_edge_max_abs_m'] = max(rec['body_edge_max_abs_m'], float(d.max()))
     checks = dict(planted_contact=rec['max_contact_m'] <= lim['contact_m'], planted_slip=rec['max_slip_m'] <= lim['slip_m'],
                   ground=rec['min_sole_height_m'] >= -lim['penetration_m'], ik_reach=rec['max_target_error_m'] <= lim['target_error_m'],
-                  bone_lengths=rec['max_bone_length_rel'] <= lim['bone_length_relative'], seams=rec['seam_gap_m'] <= lim['seam_m'],
+                  bone_lengths=rec['max_bone_length_abs_m'] <= lim['bone_length_abs_m'], seams=rec['seam_gap_m'] <= lim['seam_m'],
                   loop=(not loop) or rec['loop_error_m'] <= lim['loop_m'])
     # Review sheet frames, then bake to an FK action named by clip id.
-    sheet = []
-    for fr in sorted({1, max(1, n // 3), max(1, 2 * n // 3), n}):
-        pose_frame(clip, fr, n); scene.render.filepath = str(out / f"{clip['id']}-{fr:03d}.png"); bpy.ops.render.render(write_still=True); sheet.append(scene.render.filepath)
+    sheet = [str(out / f"{clip['id']}-{fr:03d}.png") for fr in sorted({1, max(1, n // 3), max(1, 2 * n // 3), n})]
     baked = {}  # frame -> bone -> (armature-space evaluated matrix, basis loc, basis quat)
+    rigw = {}
     for fr in range(1, n + 1):
         pose_frame(clip, fr, n); ev = rig.evaluated_get(bpy.context.evaluated_depsgraph_get())
         mats = {pb.name: ev.pose.bones[pb.name].matrix.copy() for pb in rig.pose.bones}; row = {}
@@ -264,6 +330,8 @@ for clip in cfg['clips']:
             loc, rot, _ = (restm.inverted() @ par.inverted() @ mats[pb.name]).decompose()
             row[pb.name] = (mats[pb.name], loc, rot)
         baked[fr] = row
+        rigw[fr] = rig.matrix_world.copy()
+    sim_stats = simulate_chains(clip, n, baked, rigw)
     action = bpy.data.actions.new(clip['id']); action.use_fake_user = True
     slot = action.slots.new(id_type='OBJECT', name=rig.name); strip = action.layers.new('Baked').strips.new(type='KEYFRAME')
     bag = strip.channelbag(slot, ensure=True)
@@ -279,7 +347,7 @@ for clip in cfg['clips']:
     rec = {k: (round(v, 7) if isinstance(v, float) else v) for k, v in rec.items()}
     entry = dict(id=clip['id'], purpose=clip.get('purpose', ''), frames=n, fps=cfg['fps'], loop=loop, type=clip['type'],
                  root_motion=clip.get('root_motion', 'in-place'), speed_mps=(clip['stride_m'] * clip.get('cycles', 1) * cfg['fps'] / n) if clip['type'] == 'gait' and clip.get('ramp', 'none') == 'none' else None, turn_deg_per_s=(clip.get('turn_deg_per_cycle', 0) * clip.get('cycles', 1) * cfg['fps'] / n) if clip['type'] == 'gait' else None,
-                 events=clip.get('events', {}), checks=checks, passed=all(checks.values()), metrics=rec, review_images=[Path(s).name for s in sheet], root_curve=root_curve)
+                 events=clip.get('events', {}), secondary=sim_stats, checks=checks, passed=all(checks.values()), metrics=rec, review_images=[Path(s).name for s in sheet], root_curve=root_curve)
     catalog.append(entry)
     print('CLIP', clip['id'], json.dumps(dict(passed=entry['passed'], checks={k: v for k, v in checks.items() if not v}, metrics=rec)), flush=True)
 
@@ -293,6 +361,10 @@ for entry in catalog:
     for fr, ref in ref_mats.items():
         scene.frame_set(fr); ev = rig.evaluated_get(bpy.context.evaluated_depsgraph_get())
         err = max(err, max((ev.pose.bones[b].matrix.translation - m.translation).length + (ev.pose.bones[b].matrix.col[1].xyz - m.col[1].xyz).length for b, m in ref.items()))
+    for img in entry['review_images']:
+        fr = int(img.rsplit('-', 1)[1][:3]); r = next(r for r in entry['root_curve'] if r['frame'] == fr)
+        assembly.location = Vector(r['root_m']) + Vector((0, 0, base_z)); assembly.rotation_quaternion = Quaternion((0, 0, 1), math.radians(r['yaw_deg']))
+        scene.frame_set(fr); scene.render.filepath = str(out / img); bpy.ops.render.render(write_still=True)
     entry['checks']['fk_bake_replay'] = err <= lim['bake_m']; entry['metrics']['fk_bake_replay_error'] = err; entry['passed'] = all(entry['checks'].values())
     print('BAKE', entry['id'], err, flush=True)
 rig.animation_data.action = None

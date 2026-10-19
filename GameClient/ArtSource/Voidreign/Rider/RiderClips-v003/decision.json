@@ -1,0 +1,1 @@
+{"status":"superseded","reason":"Still metre values in an animation-only FBX; Unreal does not convert units for anim-only import. v004 writes centimetres."}

@@ -1,0 +1,1 @@
+{"status":"failed-take-name-truncation","reason":"Rig object name prefix pushed 3 take names past the 63-char action name limit on reimport; exporter now names the armature Armature."}

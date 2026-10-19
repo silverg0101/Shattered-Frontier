@@ -1,0 +1,1 @@
+{"status":"superseded","reason":"FBX kept metres with a x100 armature/root scale; Unreal skeleton root carried scale 100. v005 bakes unit scale (FBX_SCALE_ALL)."}

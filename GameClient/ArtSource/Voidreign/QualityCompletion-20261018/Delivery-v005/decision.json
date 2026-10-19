@@ -1,0 +1,1 @@
+{"status":"superseded","reason":"Blender wrote the m->cm factor as a node scale; Unreal root bone scale 100. v006 exports a centimetre scene (BlenderUnrealUnits.to_centimetres)."}
