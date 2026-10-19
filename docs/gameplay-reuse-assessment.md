@@ -1,12 +1,7 @@
 # Gameplay reuse checkpoint
 
-2026-10-18. User prioritizes development progress and asked about existing Blueprints before more custom gameplay implementation. No gameplay Blueprint `.uasset` files were found in this gameplay checkout; the project uses one C++ runtime module and engine components. Only UE5.8 is installed under the inspected Epic installation directory; library ownership is unverified.
+2026-10-18. The user owns no gameplay packs and requested free Fab research beyond Epic defaults, with game design governing selection. The [design candidate register](Game-Design/Legends_Shattered_Frontier_Gameplay_Reuse_Candidate_Register_v0.1.md) records eight listings showing Free at review, sources, implementation types, conflicts and later uses.
 
-| Candidate | Documented offering | Fit still to establish |
-| --- | --- | --- |
-| [Epic Lyra inventory/equipment](https://dev.epicgames.com/documentation/en-us/unreal-engine/lyra-inventory-and-equipment-in-unreal-engine) | Controller-owned inventory, pawn equipment, pickup examples and widget Blueprints | Requires sample source/assets; check framework dependencies and Itemization ownership before migration |
-| [Survival Game Kit V2](https://defusestudios.com/survival-game-kit-v2-feature-list/) | Multiplayer inventory, crafting, harvesting and modular building; interactive and tool-hit resource examples | Licensed assets/source and exact UE5.8 compatibility unverified; its prefabricated building/support model is not the project's canonical voxel contract |
+First inventory candidate: Minimal Inventory Runtime, with advertised UE 5.8 support but Windows-only platform support; Linux and single-writer integration remain unresolved. Advanced Interaction is a selective prompt/input candidate; Easy Building's gathering components merit inspection without replacing canonical construction. Future dialogue, locomotion and UI references are recorded separately from adoption decisions. Blueprint graphs are editable; Blueprint-callable C++ may require C++ changes.
 
-Direction: assess available owned packs or Epic sample components before writing the INV/GAT loop. Preserve the custom construction implementation and environment chat's assets. Blueprint server logic is possible; C++ is not a requirement for multiplayer authority. Reuse decisions must retain one inventory mutation owner and existing server admission rules. No purchase, asset import, framework replacement or new inventory code has occurred. Question pending: existing owned packs / Epic-first / paid candidates.
-
-[Lyra acquisition instructions](https://dev.epicgames.com/documentation/unreal-engine/lyra-sample-game-in-unreal-engine?lang=en-US) use Fab/Launcher. No sample or kit has been downloaded. Documentation claims establish candidates, not successful integration or performance.
+No asset purchased, downloaded or imported; no framework replacement or inventory implementation occurred in this research. Listing claims do not establish integration, security or performance. Next: source inspection and a bounded integration decision against the governing design, preserving the environment session's checkout.

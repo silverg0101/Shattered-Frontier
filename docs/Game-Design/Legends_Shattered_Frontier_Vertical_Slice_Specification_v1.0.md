@@ -8,6 +8,8 @@ This is an expanded planning specification retained under its current filename. 
 
 Read [MVP](Legends_Shattered_Frontier_First_MVP_Milestone_v1.0.md) for technical invariants/budgets, [backlog](Legends_Shattered_Frontier_Gameplay_Feature_Backlog_v1.0.md) for work dependencies, [Unreal layout](Legends_Shattered_Frontier_UE58_Project_Layout_v1.0.md) for runtime ownership, and [roadmap](Legends_Shattered_Frontier_Production_Roadmap_v1.0.md) for entry/exit gates.
 
+Implementation reuse: consult the [free Fab candidate register](Legends_Shattered_Frontier_Gameplay_Reuse_Candidate_Register_v0.1.md) before building inventory, gathering or presentation systems from scratch. Candidates are research references; this specification remains the intended player experience.
+
 ## Intended audience and outcome
 
 Internal testers and project decision-makers should be able to assess:
