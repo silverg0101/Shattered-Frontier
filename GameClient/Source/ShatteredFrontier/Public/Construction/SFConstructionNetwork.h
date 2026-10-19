@@ -8,6 +8,7 @@
 class UStaticMeshComponent;
 class UProceduralMeshComponent;
 class UPrimitiveComponent;
+class UStaticMesh;
 class ASFConstructionNetworkController;
 
 UENUM()
@@ -25,6 +26,22 @@ struct FSFConstructionNetworkMember
     UPROPERTY() uint8 Rotation = 0;
 };
 
+USTRUCT()
+struct FSFConstructionNetworkDoor
+{
+    GENERATED_BODY()
+    UPROPERTY() FIntVector Origin = FIntVector::ZeroValue;
+    UPROPERTY() uint8 Yaw = 0;
+    UPROPERTY() bool bOpen = false;
+};
+
+USTRUCT()
+struct FSFConstructionNetworkDoorProjection
+{
+    GENERATED_BODY()
+    UPROPERTY() TArray<TObjectPtr<UStaticMeshComponent>> Boxes;
+};
+
 // Canonical pilot development protocol. No material, path, identity or permission payloads.
 USTRUCT()
 struct FSFConstructionNetworkSnapshot
@@ -32,7 +49,9 @@ struct FSFConstructionNetworkSnapshot
     GENERATED_BODY()
     UPROPERTY() uint64 Revision = 0;
     UPROPERTY() TArray<FSFConstructionNetworkMember> Members;
+    UPROPERTY() TArray<FSFConstructionNetworkDoor> Doors;
     int32 Find(const FIntVector& Cell) const { return Members.IndexOfByPredicate([&](const auto& M) { return M.Cell==Cell; }); }
+    int32 FindDoor(const FIntVector& Cell) const { return Doors.IndexOfByPredicate([&](const auto& D) { return D.Origin==Cell; }); }
     bool NetSerialize(FArchive& Ar, UPackageMap* Map, bool& bOutSuccess);
 };
 
@@ -50,6 +69,7 @@ public:
     virtual void BeginPlay() override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     ESFConstructionNetworkResult Edit(ASFConstructionNetworkController* Controller, FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation);
+    ESFConstructionNetworkResult PlaceDoor(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision, uint8 Yaw);
     const FSFConstructionNetworkSnapshot& GetSnapshot() const { return Snapshot; }
     bool HasCurrentCollision() const;
     FString GetContentDigest() const;
@@ -60,17 +80,23 @@ public:
     bool IsProjectionCurrent() const { return bProjectionReady && ProjectionRevision == Snapshot.Revision; }
     bool GetCellForComponent(const UPrimitiveComponent* Component, FIntVector& OutCell) const;
     bool IsSupportAllowedForPreview(FIntVector Cell, uint8 Shape, uint8 Rotation, bool bRemove) const;
+    int32 GetMaximumDoors() const { return MaximumDoors; }
 private:
+    ESFConstructionNetworkResult ValidateEditContext(ASFConstructionNetworkController* Controller, uint64 ExpectedRevision, const APawn*& OutPawn, const AActor*& OutFoundation) const;
     bool Activate(const FSFConstructionNetworkSnapshot& Candidate);
     UFUNCTION() void OnRep_Snapshot();
     UPROPERTY(ReplicatedUsing=OnRep_Snapshot) FSFConstructionNetworkSnapshot Snapshot;
     UPROPERTY(Replicated) bool bPairReady = false;
     UPROPERTY(Transient) TMap<FIntVector,TObjectPtr<UProceduralMeshComponent>> Meshes;
+    UPROPERTY() TObjectPtr<UStaticMesh> DoorBoxAsset;
+    UPROPERTY(Transient) TMap<FIntVector,FSFConstructionNetworkDoorProjection> DoorProjections;
     TMap<FIntVector,FSFConstructionNetworkMember> ProjectedMembers;
+    TMap<FIntVector,FSFConstructionNetworkDoor> ProjectedDoors;
     bool bProjectionReady = false;
     bool bConfigurationReady = false;
     UPROPERTY(Replicated) double ReachCentimetres = 0;
     UPROPERTY(Replicated) int32 MaximumMembers = 0;
+    UPROPERTY(Replicated) int32 MaximumDoors = 0;
     uint64 ProjectionRevision = 0;
 };
 
@@ -110,10 +136,12 @@ private:
     void SelectCube();
     void SelectSlab();
     void SelectSlope();
+    void SelectDoor();
     void RotatePiece();
     void SelectShape(uint8 Shape);
     UFUNCTION(Server, Reliable) void ServerPlace(FIntVector Cell, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation);
     UFUNCTION(Server, Reliable) void ServerRemove(FIntVector Cell, uint64 ExpectedRevision);
+    UFUNCTION(Server, Reliable) void ServerPlaceDoor(FIntVector Origin, uint64 ExpectedRevision, uint8 Yaw);
     UFUNCTION(Client, Reliable) void ClientPlacementResult(ESFConstructionNetworkResult Result, uint64 Revision);
     UPROPERTY(Replicated) bool bRoleAssigned = false;
     UPROPERTY(Replicated) bool bBuilderRole = false; // Advisory; permission is derived again on server.
@@ -127,6 +155,7 @@ private:
     uint8 SelectedShape = 0;
     uint8 SelectedRotation = 0;
     uint8 SelectedYaw = 0;
+    bool bDoorSelected = false;
     struct FSupportCache
     {
         TWeakObjectPtr<ASFConstructionNetworkState> State;
@@ -144,6 +173,7 @@ private:
     double ScenarioStarted = 0;
     FString ScenarioScreenshotPath;
     bool bScenarioEmptyReported = false;
+    bool bScenarioDoorCameraAimed = false;
 #endif
 };
 

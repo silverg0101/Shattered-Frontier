@@ -1,6 +1,10 @@
 #include "SFConstructionNetworkProjection.h"
 #include "Construction/SFConstructionNetwork.h"
 #include "Construction/SFConstructionGeometry.h"
+#include "Construction/SFConstructionSandboxDoorProjection.h"
+#include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
+#include "Engine/World.h"
 #include "Chaos/Convex.h"
 #include "PhysicsEngine/BodySetup.h"
 #include "ProceduralMeshComponent.h"
@@ -23,6 +27,16 @@ bool MatchesVertices(const VertexArray& Vertices, const TArray<FVector>& Expecte
         if (!bFound) { return false; }
     }
     return true;
+}
+
+bool CanonicalBoxAsset(const UStaticMesh* Asset)
+{
+    if (!Asset || Asset->GetPathName()!=TEXT("/Engine/BasicShapes/Cube.Cube")) { return false; }
+    const auto* Body=Asset->GetBodySetup();
+    if (!Body || Body->CollisionTraceFlag==CTF_UseComplexAsSimple || Body->AggGeom.GetElementCount()!=1 || Body->AggGeom.BoxElems.Num()!=1) { return false; }
+    const auto& Box=Body->AggGeom.BoxElems[0];
+    return FMath::IsNearlyEqual(Box.X,100.f) && FMath::IsNearlyEqual(Box.Y,100.f) && FMath::IsNearlyEqual(Box.Z,100.f)
+        && Box.Center.IsNearlyZero() && Box.Rotation.IsNearlyZero();
 }
 }
 
@@ -83,4 +97,62 @@ bool SFConstructionNetworkProjection::Matches(const UProceduralMeshComponent* Me
     const auto& Physics=Convex.GetChaosConvexMesh();
     return Physics.IsValid() && Convex.GetTransform().Equals(FTransform::Identity,1.e-12)
         && MatchesVertices(Convex.VertexData,Solid.Vertices) && MatchesVertices(Physics->GetVertices(),Solid.Vertices);
+}
+
+void SFConstructionNetworkProjection::DiscardDoor(FSFConstructionNetworkDoorProjection& Projection)
+{
+    for (auto& Box : Projection.Boxes) { if (Box) { Box->DestroyComponent(); } }
+    Projection.Boxes.Reset();
+}
+
+bool SFConstructionNetworkProjection::StageDoor(ASFConstructionNetworkState* Owner, UStaticMesh* Asset, const FSFConstructionNetworkDoor& Door, FSFConstructionNetworkDoorProjection& Out)
+{
+    FSFConstructionDoorProjectionProfile Profile;
+    if (!IsInGameThread() || !IsValid(Owner) || Owner->GetClass()!=ASFConstructionNetworkState::StaticClass()
+        || !Owner->GetActorTransform().Equals(FTransform::Identity) || !CanonicalBoxAsset(Asset)
+        || !ASFConstructionSandboxDoorProjection::BuildProfile(Door.Origin,Door.Yaw,Door.bOpen,Profile)) { return false; }
+    FSFConstructionNetworkDoorProjection Candidate;
+    for (const auto& B : Profile.Boxes)
+    {
+        auto* Mesh=NewObject<UStaticMeshComponent>(Owner);
+        Mesh->SetupAttachment(Owner->GetRootComponent());
+        Mesh->SetMobility(EComponentMobility::Movable);
+        Mesh->SetStaticMesh(Asset);
+        Mesh->SetRelativeTransform(FTransform(B.Rotation,B.Centre,B.Extent*0.02)*Profile.Transform);
+        Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        Mesh->SetCollisionObjectType(ECC_WorldStatic);
+        Mesh->SetCollisionResponseToAllChannels(ECR_Block);
+        Mesh->SetGenerateOverlapEvents(false);
+        Mesh->SetHiddenInGame(true);
+        Candidate.Boxes.Add(Mesh);
+        Mesh->RegisterComponent();
+        Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    }
+    if (!MatchesDoor(Owner,Door,Candidate)) { DiscardDoor(Candidate); return false; }
+    Out=MoveTemp(Candidate);
+    return true;
+}
+
+bool SFConstructionNetworkProjection::MatchesDoor(const ASFConstructionNetworkState* Owner, const FSFConstructionNetworkDoor& Door, const FSFConstructionNetworkDoorProjection& Projection)
+{
+    FSFConstructionDoorProjectionProfile Profile;
+    if (!IsInGameThread() || !IsValid(Owner) || !Owner->GetActorTransform().Equals(FTransform::Identity)
+        || !ASFConstructionSandboxDoorProjection::BuildProfile(Door.Origin,Door.Yaw,Door.bOpen,Profile) || Projection.Boxes.Num()!=Profile.Boxes.Num()) { return false; }
+    for (int32 I=0; I<Profile.Boxes.Num(); ++I)
+    {
+        auto* Mesh=Projection.Boxes[I].Get();
+        const auto& B=Profile.Boxes[I];
+        const FTransform Expected=FTransform(B.Rotation,B.Centre,B.Extent*0.02)*Profile.Transform;
+        if (!IsValid(Mesh) || Mesh->GetOwner()!=Owner || Mesh->GetAttachParent()!=Owner->GetRootComponent()
+            || !CanonicalBoxAsset(Mesh->GetStaticMesh()) || !Mesh->IsRegistered() || !Mesh->IsPhysicsStateCreated()
+            || Mesh->GetGenerateOverlapEvents() || Mesh->GetCollisionEnabled()!=ECollisionEnabled::QueryAndPhysics
+            || Mesh->GetCollisionObjectType()!=ECC_WorldStatic || Mesh->GetCollisionResponseToChannels()!=FCollisionResponseContainer(ECR_Block)
+            || !Mesh->GetComponentLocation().Equals(Expected.GetLocation(),1.e-9)
+            || !Mesh->GetComponentQuat().Equals(Expected.GetRotation(),1.e-12) || !Mesh->GetComponentScale().Equals(Expected.GetScale3D(),1.e-12)) { return false; }
+        FHitResult Hit;
+        FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionNetworkDoorProjection),false);
+        const FVector Centre=Expected.GetLocation(),Direction=Expected.GetRotation().RotateVector(FVector::ForwardVector);
+        if (!Mesh->LineTraceComponent(Hit,Centre+Direction*(B.Extent.X+10.0),Centre,Query) || Hit.GetComponent()!=Mesh) { return false; }
+    }
+    return true;
 }

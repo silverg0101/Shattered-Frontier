@@ -16,7 +16,7 @@ if (@([Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties().GetAc
 if (Test-Path -LiteralPath $root) { throw 'Evidence root exists.' }
 $null = New-Item -ItemType Directory -Path $root
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
-$results = [ordered]@{ status='Running'; engine=$editor; project=$project; port=$Port; runs=@(); scope='Isolated loopback editor dedicated-server, canonical cube/slab/slope placement/removal and rough-timber support, transient build capability; no production ownership/persistence/general procedural shape or packaged acceptance.' }
+$results = [ordered]@{ status='Running'; engine=$editor; project=$project; port=$Port; runs=@(); scope='Isolated loopback editor dedicated-server, canonical cube/slab/slope placement/removal and closed-door placement with rough-timber support, transient build capability; no production ownership/persistence/general procedural shape or packaged acceptance.' }
 $clock = [Diagnostics.Stopwatch]::StartNew()
 function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
     $user = Join-Path $root ($Name+'-user')
@@ -93,10 +93,10 @@ try {
     $observedRoles = @()
     foreach ($role in @('driver','observer')) {
         $log = Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
-        $success = [regex]::Matches($log,'CONSTRUCTION_NETWORK_SCENARIO_SUCCESS Builder=([01]) Revision=8 Members=2')
+        $success = [regex]::Matches($log,'CONSTRUCTION_NETWORK_SCENARIO_SUCCESS Builder=([01]) Revision=11 Members=2 Doors=1')
         if ($success.Count -ne 1 -or $log -match 'CONSTRUCTION_NETWORK_\w*FAILED|Fatal error:|Assertion failed:|Ensure condition failed:') { throw "$role failed its semantic scenario." }
         $observedRoles += [int]$success[0].Groups[1].Value
-        $projection = [regex]::Matches($log,'CONSTRUCTION_NETWORK_PROJECTED Revision=8 Members=2 Collision=1 Content=([a-fA-F0-9]{64})')
+        $projection = [regex]::Matches($log,'CONSTRUCTION_NETWORK_PROJECTED Revision=11 Members=2 Collision=1 Content=([a-fA-F0-9]{64}) Doors=1')
         if ($projection.Count -ne 1) { throw "$role lacks a unique exact local collision projection." }
         $payloads += $projection[0].Groups[1].Value
         if ($CaptureFrames) {
@@ -149,15 +149,24 @@ try {
     }
     $join = $serverLog.IndexOf('CONSTRUCTION_NETWORK_PAIR_READY Players=2')
     $accept = $serverLog.IndexOf('CONSTRUCTION_NETWORK_EDIT')
-    if ($join -lt 0 -or $accept -le $join -or [regex]::Matches($serverLog,'CONSTRUCTION_NETWORK_EDIT').Count -ne 8) { throw 'Eight edits were not accepted after both players joined.' }
-    if ($serverLog -notmatch ('CONSTRUCTION_NETWORK_EDIT Action=Place Revision=8 Members=2[^\r\n]*Content='+[regex]::Escape($payloads[0]))) { throw 'Clients differ from server content.' }
+    if ($join -lt 0 -or $accept -le $join -or [regex]::Matches($serverLog,'CONSTRUCTION_NETWORK_EDIT').Count -ne 10) { throw 'Ten structural edits were not accepted after both players joined.' }
+    if ($serverLog -notmatch ('CONSTRUCTION_NETWORK_EDIT Action=Remove Revision=11 Members=2[^\r\n]*Content='+[regex]::Escape($payloads[0]))) { throw 'Clients differ from server content.' }
     if ([regex]::Matches($serverLog,'CONSTRUCTION_NETWORK_RESULT Builder=1 Result=13 Revision=6 Members=0 Collision=1 Action=Place').Count -ne 2) { throw 'Invalid shape/rotation were not rejected unchanged.' }
     if ($serverLog -notmatch ('CONSTRUCTION_NETWORK_EDIT Action=Remove Revision=6 Members=0[^\r\n]*Content='+[regex]::Escape($emptyPayloads[0]))) { throw 'Empty client projection differs from server.' }
     if ($serverLog -notmatch 'CONSTRUCTION_NETWORK_EDIT Action=Place Revision=7 Members=1[^\r\n]*Shape=1 Rotation=' -or $serverLog -notmatch ('CONSTRUCTION_NETWORK_EDIT Action=Place Revision=8 Members=2[^\r\n]*Shape=2 Rotation='+$yawRotation+'(?:\s|$)')) { throw 'Server mixed shape/rotation differs from selected input.' }
+    foreach ($marker in @('CONSTRUCTION_NETWORK_DOOR_RESULT Builder=0 Result=2 Revision=6 Doors=0 Collision=1','CONSTRUCTION_NETWORK_DOOR_RESULT Builder=1 Result=4 Revision=8 Doors=0 Collision=1','CONSTRUCTION_NETWORK_DOOR_PLACE Revision=9 Members=2 Doors=1 Cell=X=2 Y=0 Z=0 Yaw=0','CONSTRUCTION_NETWORK_RESULT Builder=1 Result=7 Revision=9 Members=2 Collision=1 Action=Place','CONSTRUCTION_NETWORK_EDIT Action=Place Revision=10 Members=3 Cell=X=-6 Y=-4 Z=0','CONSTRUCTION_NETWORK_EDIT Action=Remove Revision=11 Members=2 Cell=X=-6 Y=-4 Z=0')) {
+        if ([regex]::Matches($serverLog,[regex]::Escape($marker)).Count -ne 1) { throw "Missing/duplicate door admission/reservation/retention observation: $marker" }
+    }
+    $doorView=0
+    foreach ($role in @('driver','observer')) {
+        $log=Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
+        $doorView += [regex]::Matches($log,'CONSTRUCTION_NETWORK_VIEW_DOOR Cell=X=2 Y=0 Z=0 Yaw=0').Count
+    }
+    if ($doorView -ne 1 -or [regex]::Matches($serverLog,'CONSTRUCTION_NETWORK_DOOR_PLACE').Count -ne 1) { throw 'Expected one server door from normal4/B input.' }
     $results.contentBlake3 = $payloads[0]
     $results.captureFrames = [bool]$CaptureFrames
     $results.status = 'Passed'
-    Write-Output "PASS: two concurrent clients, cube assembly/removal, coherent empty projection, slab and rotated slope through ordinary input, matching canonical convex collision and bounded rejection paths. Evidence: $root"
+    Write-Output "PASS: two concurrent clients, cube assembly/removal, slab/slope input, closed-door placement, reservation rejection and door retention across structural edits, matching canonical collision. Evidence: $root"
 } catch {
     $results.status='Failed'; $results.error=$_.Exception.Message; throw
 } finally {

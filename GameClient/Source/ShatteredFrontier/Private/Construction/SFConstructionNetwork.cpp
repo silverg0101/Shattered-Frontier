@@ -5,6 +5,11 @@
 #include "Construction/SFConstructionSandboxFoundation.h"
 #include "Construction/SFConstructionSandboxSettings.h"
 #include "Construction/SFConstructionSupport.h"
+#include "Construction/SFConstructionDoorSupport.h"
+#include "Construction/SFConstructionSandboxDoorProjection.h"
+#include "Construction/SFConstructionClearance.h"
+#include "Engine/StaticMesh.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Components/InputComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h"
@@ -58,13 +63,22 @@ ASFConstructionNetworkState* FindState(UWorld* World)
     return nullptr;
 }
 
-bool SupportsMembers(const TArray<FSFConstructionNetworkMember>& Members)
+bool SupportsMembers(const TArray<FSFConstructionNetworkMember>& Members, const TArray<FSFConstructionNetworkDoor>& Doors)
 {
     TArray<FSFConstructionSupportMember> Inputs;
     for (const auto& M : Members)
     { Inputs.Add({M.Cell,M.Shape,M.Rotation,1.0,SFConstructionSandboxFoundation::TouchesPlane(M.Cell,M.Shape,M.Rotation)}); }
     TArray<FSFConstructionSupportResult> Results;
-    if (!SFConstructionSupport::Evaluate(Inputs,FSFConstructionSupportProfile(),Results)) { return false; }
+    if (Doors.IsEmpty())
+    { if (!SFConstructionSupport::Evaluate(Inputs,FSFConstructionSupportProfile(),Results)) { return false; } }
+    else
+    {
+        TArray<FSFConstructionDoorSupportInput> DoorInputs;
+        for (const auto& D : Doors) { DoorInputs.Add({D.Origin,D.Yaw}); }
+        TArray<FSFConstructionDoorSupportResult> DoorResults;
+        if (!SFConstructionDoorSupport::Evaluate(Inputs,DoorInputs,FSFConstructionDoorSupportProfile(),true,Results,DoorResults)) { return false; }
+        for (const auto& R : DoorResults) { if (R.State==ESFConstructionSupportState::Unsupported) { return false; } }
+    }
     for (const auto& R : Results) { if (R.State==ESFConstructionSupportState::Unsupported) { return false; } }
     return true;
 }
@@ -73,13 +87,13 @@ bool SupportsMembers(const TArray<FSFConstructionNetworkMember>& Members)
 
 bool FSFConstructionNetworkSnapshot::NetSerialize(FArchive& Ar, UPackageMap* Map, bool& bOutSuccess)
 {
-    uint8 Version=4;
+    uint8 Version=5;
     uint64 WireRevision=Revision;
     uint16 Count=uint16(Members.Num());
     bOutSuccess=false;
-    if (Ar.IsSaving() && (Members.Num()>4096 || Revision<uint64(Members.Num()))) { return false; }
+    if (Ar.IsSaving() && (Members.Num()>4096 || Doors.Num()>64 || Revision<uint64(Members.Num()+Doors.Num()))) { return false; }
     Ar << Version; Ar << WireRevision; Ar.SerializeBits(&Count,13);
-    if (Version!=4 || Count>4096 || WireRevision<uint64(Count)) { return false; }
+    if (Version!=5 || Count>4096 || WireRevision<uint64(Count)) { return false; }
     TArray<FSFConstructionNetworkMember> Received;
     TSet<FIntVector> Unique;
     for (uint16 I=0; I<Count; ++I)
@@ -97,8 +111,26 @@ bool FSFConstructionNetworkSnapshot::NetSerialize(FArchive& Ar, UPackageMap* Map
         Unique.Add(Member.Cell);
         if (Ar.IsLoading()) { Received.Add(Member); }
     }
+    uint8 DoorCount=uint8(Doors.Num());
+    Ar.SerializeBits(&DoorCount,7);
+    if (Ar.IsError() || DoorCount>64 || WireRevision<uint64(Count)+DoorCount) { return false; }
+    TArray<FSFConstructionNetworkDoor> ReceivedDoors;
+    TSet<FIntVector> UniqueDoors;
+    for (uint8 I=0; I<DoorCount; ++I)
+    {
+        auto D=Ar.IsSaving() ? Doors[I] : FSFConstructionNetworkDoor();
+        FSFConstructionDoorProjectionProfile Profile;
+        if (Ar.IsSaving() && !ASFConstructionSandboxDoorProjection::BuildProfile(D.Origin,D.Yaw,D.bOpen,Profile)) { return false; }
+        uint8 X=uint8(D.Origin.X+20),Y=uint8(D.Origin.Y+20),Z=uint8(D.Origin.Z),Open=D.bOpen ? 1 : 0;
+        Ar.SerializeBits(&X,6); Ar.SerializeBits(&Y,6); Ar.SerializeBits(&Z,5); Ar.SerializeBits(&D.Yaw,2); Ar.SerializeBits(&Open,1);
+        D.Origin=FIntVector(int32(X)-20,int32(Y)-20,int32(Z)); D.bOpen=Open!=0;
+        if (Ar.IsError() || X>=40 || Y>=40 || Z>=20 || UniqueDoors.Contains(D.Origin)
+            || !ASFConstructionSandboxDoorProjection::BuildProfile(D.Origin,D.Yaw,D.bOpen,Profile)) { return false; }
+        UniqueDoors.Add(D.Origin);
+        if (Ar.IsLoading()) { ReceivedDoors.Add(D); }
+    }
     if (Ar.IsError()) { return false; }
-    if (Ar.IsLoading()) { Revision=WireRevision; Members=MoveTemp(Received); }
+    if (Ar.IsLoading()) { Revision=WireRevision; Members=MoveTemp(Received); Doors=MoveTemp(ReceivedDoors); }
     bOutSuccess=true;
     return true;
 }
@@ -108,6 +140,8 @@ ASFConstructionNetworkState::ASFConstructionNetworkState()
     bReplicates = true;
     bAlwaysRelevant = true;
     SetRootComponent(CreateDefaultSubobject<USceneComponent>(TEXT("ConstructionOrigin")));
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> Box(TEXT("/Engine/BasicShapes/Cube.Cube"));
+    DoorBoxAsset=Box.Object;
 }
 
 void ASFConstructionNetworkState::BeginPlay()
@@ -120,6 +154,7 @@ void ASFConstructionNetworkState::BeginPlay()
     if (!Settings->Validate(Error)) { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_CONFIGURATION_FAILED %s"),*Error); return; }
     ReachCentimetres = double(Settings->BuildReachMetres)*100.0;
     MaximumMembers = Settings->MaximumMembers;
+    MaximumDoors = Settings->MaximumDoors;
     bConfigurationReady = true;
 }
 
@@ -130,6 +165,7 @@ void ASFConstructionNetworkState::GetLifetimeReplicatedProps(TArray<FLifetimePro
     DOREPLIFETIME(ASFConstructionNetworkState, bPairReady);
     DOREPLIFETIME(ASFConstructionNetworkState, ReachCentimetres);
     DOREPLIFETIME(ASFConstructionNetworkState, MaximumMembers);
+    DOREPLIFETIME(ASFConstructionNetworkState, MaximumDoors);
 }
 
 void ASFConstructionNetworkState::AdmitPair()
@@ -141,7 +177,7 @@ void ASFConstructionNetworkState::AdmitPair()
 
 bool ASFConstructionNetworkState::Activate(const FSFConstructionNetworkSnapshot& Candidate)
 {
-    if (Candidate.Revision<=ProjectionRevision || Candidate.Members.Num()>4096 || Candidate.Revision<uint64(Candidate.Members.Num())
+    if (Candidate.Revision<=ProjectionRevision || Candidate.Members.Num()>4096 || Candidate.Doors.Num()>64 || Candidate.Revision<uint64(Candidate.Members.Num()+Candidate.Doors.Num())
         || !GetActorTransform().Equals(FTransform::Identity)) { return false; }
     TSet<FIntVector> Addresses;
     for (const auto& M : Candidate.Members)
@@ -150,6 +186,13 @@ bool ASFConstructionNetworkState::Activate(const FSFConstructionNetworkSnapshot&
         if (C.X < -20 || C.X >= 20 || C.Y < -20 || C.Y >= 20 || C.Z < 0 || C.Z >= 20 || Addresses.Contains(C)
             || M.Shape>=SFConstructionGeometry::ShapeCount || M.Rotation>=SFConstructionGeometry::RotationCount) { return false; }
         Addresses.Add(C);
+    }
+    TSet<FIntVector> DoorAddresses;
+    for (const auto& D : Candidate.Doors)
+    {
+        FSFConstructionDoorProjectionProfile Profile;
+        if (DoorAddresses.Contains(D.Origin) || !ASFConstructionSandboxDoorProjection::BuildProfile(D.Origin,D.Yaw,D.bOpen,Profile)) { return false; }
+        DoorAddresses.Add(D.Origin);
     }
     TMap<FIntVector,TObjectPtr<UProceduralMeshComponent>> Staged;
     for (const auto& M : Candidate.Members)
@@ -165,6 +208,21 @@ bool ASFConstructionNetworkState::Activate(const FSFConstructionNetworkSnapshot&
         }
         Staged.Add(M.Cell,Mesh);
     }
+    TMap<FIntVector,FSFConstructionNetworkDoorProjection> StagedDoors;
+    for (const auto& D : Candidate.Doors)
+    {
+        const auto* Old=ProjectedDoors.Find(D.Origin);
+        const auto* Projection=DoorProjections.Find(D.Origin);
+        if (Old && Projection && Old->Yaw==D.Yaw && Old->bOpen==D.bOpen && SFConstructionNetworkProjection::MatchesDoor(this,D,*Projection)) { continue; }
+        FSFConstructionNetworkDoorProjection ProjectionCandidate;
+        if (!SFConstructionNetworkProjection::StageDoor(this,DoorBoxAsset,D,ProjectionCandidate))
+        {
+            for (const auto& Pair : Staged) { Pair.Value->DestroyComponent(); }
+            for (auto& Pair : StagedDoors) { SFConstructionNetworkProjection::DiscardDoor(Pair.Value); }
+            return false;
+        }
+        StagedDoors.Add(D.Origin,MoveTemp(ProjectionCandidate));
+    }
     // Every replacement is ready before an old component can be retired.
     for (auto It=Meshes.CreateIterator(); It; ++It)
     {
@@ -174,6 +232,18 @@ bool ASFConstructionNetworkState::Activate(const FSFConstructionNetworkSnapshot&
     for (const auto& Pair : Staged) { Meshes.Add(Pair.Key,Pair.Value); Pair.Value->SetHiddenInGame(false); }
     ProjectedMembers.Reset();
     for (const auto& M : Candidate.Members) { ProjectedMembers.Add(M.Cell,M); }
+    for (auto It=DoorProjections.CreateIterator(); It; ++It)
+    {
+        if (!DoorAddresses.Contains(It.Key()) || StagedDoors.Contains(It.Key()))
+        { SFConstructionNetworkProjection::DiscardDoor(It.Value()); It.RemoveCurrent(); }
+    }
+    for (auto& Pair : StagedDoors)
+    {
+        for (auto& Box : Pair.Value.Boxes) { Box->SetHiddenInGame(false); }
+        DoorProjections.Add(Pair.Key,MoveTemp(Pair.Value));
+    }
+    ProjectedDoors.Reset();
+    for (const auto& D : Candidate.Doors) { ProjectedDoors.Add(D.Origin,D); }
     ProjectionRevision=Candidate.Revision;
     bProjectionReady=true;
     return true;
@@ -182,9 +252,9 @@ bool ASFConstructionNetworkState::Activate(const FSFConstructionNetworkSnapshot&
 bool ASFConstructionNetworkState::HasCurrentCollision() const
 {
     if (!bProjectionReady || Snapshot.Revision==0 || ProjectionRevision!=Snapshot.Revision || Meshes.Num()!=Snapshot.Members.Num()
-        || ProjectedMembers.Num()!=Snapshot.Members.Num() || !GetActorTransform().Equals(FTransform::Identity)) { return false; }
+        || ProjectedMembers.Num()!=Snapshot.Members.Num() || DoorProjections.Num()!=Snapshot.Doors.Num() || ProjectedDoors.Num()!=Snapshot.Doors.Num() || !GetActorTransform().Equals(FTransform::Identity)) { return false; }
     TInlineComponentArray<UPrimitiveComponent*> Primitives; GetComponents(Primitives);
-    if (Primitives.Num()!=Meshes.Num()) { return false; }
+    if (Primitives.Num()!=Meshes.Num()+Snapshot.Doors.Num()*5) { return false; }
     for (const auto& M : Snapshot.Members)
     {
         auto* Mesh=Meshes.FindRef(M.Cell).Get();
@@ -199,6 +269,13 @@ bool ASFConstructionNetworkState::HasCurrentCollision() const
         FHitResult Hit;
         FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionNetworkProjection),false);
         if (!Mesh->LineTraceComponent(Hit,Inside+FVector(0,0,100),Inside,Query) || Hit.GetComponent()!=Mesh) { return false; }
+    }
+    for (const auto& D : Snapshot.Doors)
+    {
+        const auto* Applied=ProjectedDoors.Find(D.Origin);
+        const auto* Projection=DoorProjections.Find(D.Origin);
+        if (!Applied || Applied->Yaw!=D.Yaw || Applied->bOpen!=D.bOpen || !Projection
+            || !SFConstructionNetworkProjection::MatchesDoor(this,D,*Projection)) { return false; }
     }
     return true;
 }
@@ -227,12 +304,12 @@ bool ASFConstructionNetworkState::IsSupportAllowedForPreview(FIntVector Cell, ui
         FSFConstructionNetworkMember M; M.Cell=Cell; M.Shape=Shape; M.Rotation=Rotation;
         Candidate.Members.Add(M);
     }
-    return SupportsMembers(Candidate.Members);
+    return SupportsMembers(Candidate.Members,Candidate.Doors);
 }
 
 FString ASFConstructionNetworkState::GetContentDigest() const
 {
-    FString Canonical=TEXT("SF_NETWORK_MEMBERS_V4|");
+    FString Canonical=TEXT("SF_NETWORK_ASSEMBLY_V5|");
     auto Members=Snapshot.Members;
     Members.Sort([](const auto& A,const auto& B) { return A.Cell.X!=B.Cell.X ? A.Cell.X<B.Cell.X : A.Cell.Y!=B.Cell.Y ? A.Cell.Y<B.Cell.Y : A.Cell.Z<B.Cell.Z; });
     for (const auto& M : Members)
@@ -241,6 +318,10 @@ FString ASFConstructionNetworkState::GetContentDigest() const
         if (!SFConstructionGeometry::Build(M.Shape,M.Rotation,Solid)) { return FString(); }
         Canonical+=FString::Printf(TEXT("%d,%d,%d,%u,%u,%s;"),M.Cell.X,M.Cell.Y,M.Cell.Z,M.Shape,M.Rotation,*Solid.PayloadSha256);
     }
+    Canonical+=TEXT("|DOORS|sandbox-rough-timber-door-v1:1|");
+    auto Doors=Snapshot.Doors;
+    Doors.Sort([](const auto& A,const auto& B) { return A.Origin.X!=B.Origin.X ? A.Origin.X<B.Origin.X : A.Origin.Y!=B.Origin.Y ? A.Origin.Y<B.Origin.Y : A.Origin.Z<B.Origin.Z; });
+    for (const auto& D : Doors) { Canonical+=FString::Printf(TEXT("%d,%d,%d,%u,%u;"),D.Origin.X,D.Origin.Y,D.Origin.Z,D.Yaw,D.bOpen ? 1 : 0); }
     FTCHARToUTF8 Bytes(*Canonical);
     return LexToString(FBlake3::HashBuffer(Bytes.Get(),Bytes.Length()));
 }
@@ -248,17 +329,18 @@ FString ASFConstructionNetworkState::GetContentDigest() const
 void ASFConstructionNetworkState::OnRep_Snapshot()
 {
     if (GetNetMode() != NM_Client || GetClass() != StaticClass()) { return; }
-    if (Snapshot.Revision==0 && Snapshot.Members.IsEmpty()) { return; }
+    if (Snapshot.Revision==0 && Snapshot.Members.IsEmpty() && Snapshot.Doors.IsEmpty()) { return; }
     bProjectionReady=false;
     if (Activate(Snapshot) && HasCurrentCollision())
     {
-        UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_PROJECTED Revision=%llu Members=%d Collision=1 Content=%s"),Snapshot.Revision,Snapshot.Members.Num(),*GetContentDigest());
+        UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_PROJECTED Revision=%llu Members=%d Collision=1 Content=%s Doors=%d"),Snapshot.Revision,Snapshot.Members.Num(),*GetContentDigest(),Snapshot.Doors.Num());
     }
     else { bProjectionReady=false; UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_PROJECTION_FAILED")); }
 }
 
-ESFConstructionNetworkResult ASFConstructionNetworkState::Edit(ASFConstructionNetworkController* Controller, FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation)
+ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateEditContext(ASFConstructionNetworkController* Controller, uint64 ExpectedRevision, const APawn*& OutPawn, const AActor*& OutFoundation) const
 {
+    OutPawn=nullptr; OutFoundation=nullptr;
     const auto* Mode = GetWorld() ? GetWorld()->GetAuthGameMode<ASFConstructionNetworkGameMode>() : nullptr;
     if (!IsInGameThread() || !HasAuthority() || IsActorBeingDestroyed() || !bConfigurationReady || !Mode || !Mode->IsAdmitted() || GetClass() != StaticClass()
         || !IsValid(Controller) || Controller->IsActorBeingDestroyed() || !Controller->HasAuthority() || Controller->GetWorld() != GetWorld()) { return ESFConstructionNetworkResult::InvalidContext; }
@@ -266,16 +348,38 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::Edit(ASFConstructionNe
     const APawn* Pawn = Controller->GetPawn();
     if (!IsValid(Pawn) || !Pawn->HasAuthority() || Pawn->GetController() != Controller || Pawn->GetOwner() != Controller
         || Pawn->GetWorld() != GetWorld() || Pawn->IsActorBeingDestroyed()) { return ESFConstructionNetworkResult::InvalidContext; }
-    if (!bRemove && (Shape>=SFConstructionGeometry::ShapeCount || Rotation>=SFConstructionGeometry::RotationCount)) { return ESFConstructionNetworkResult::InvalidPiece; }
     if (ExpectedRevision != Snapshot.Revision) { return ESFConstructionNetworkResult::Stale; }
     if (Snapshot.Revision==MAX_uint64) { return ESFConstructionNetworkResult::InvalidContext; }
+    if (Snapshot.Revision > 0 && !HasCurrentCollision()) { return ESFConstructionNetworkResult::ProjectionFailed; }
+    const AActor* Foundation = nullptr;
+    if (!SFConstructionSandboxFoundation::MatchesKnownPlaneGeometry(GetWorld(),&Foundation)) { return ESFConstructionNetworkResult::InvalidContext; }
+    OutPawn=Pawn; OutFoundation=Foundation;
+    return ESFConstructionNetworkResult::Accepted;
+}
+
+ESFConstructionNetworkResult ASFConstructionNetworkState::Edit(ASFConstructionNetworkController* Controller, FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation)
+{
+    const APawn* Pawn=nullptr; const AActor* Foundation=nullptr;
+    const auto Admission=ValidateEditContext(Controller,ExpectedRevision,Pawn,Foundation);
+    if (Admission!=ESFConstructionNetworkResult::Accepted) { return Admission; }
+    if (!bRemove && (Shape>=SFConstructionGeometry::ShapeCount || Rotation>=SFConstructionGeometry::RotationCount)) { return ESFConstructionNetworkResult::InvalidPiece; }
     if (Cell.X < -20 || Cell.X >= 20 || Cell.Y < -20 || Cell.Y >= 20 || Cell.Z < 0 || Cell.Z >= 20) { return ESFConstructionNetworkResult::InvalidCell; }
     if (bRemove && Snapshot.Find(Cell)==INDEX_NONE) { return ESFConstructionNetworkResult::NotFound; }
     if (!bRemove && Snapshot.Find(Cell)!=INDEX_NONE) { return ESFConstructionNetworkResult::Occupied; }
     if (!bRemove && Snapshot.Members.Num() >= MaximumMembers) { return ESFConstructionNetworkResult::LimitReached; }
-    if (Snapshot.Revision > 0 && !HasCurrentCollision()) { return ESFConstructionNetworkResult::ProjectionFailed; }
-    const AActor* Foundation = nullptr;
-    if (!SFConstructionSandboxFoundation::MatchesKnownPlaneGeometry(GetWorld(),&Foundation)) { return ESFConstructionNetworkResult::InvalidContext; }
+    if (!bRemove)
+    {
+        for (const auto& D : Snapshot.Doors)
+        {
+            FSFConstructionDoorProjectionProfile Profile;
+            if (!ASFConstructionSandboxDoorProjection::BuildProfile(D.Origin,D.Yaw,D.bOpen,Profile)) { return ESFConstructionNetworkResult::InvalidContext; }
+            for (const auto& Bounds : {Profile.Envelope,Profile.Motion,Profile.ApproachFront,Profile.ApproachBack})
+            {
+                if (SFConstructionClearance::IntersectsReservation(Shape,Rotation,FVector(Cell)*50,Bounds)!=SFConstructionClearance::EResult::Clear)
+                { return ESFConstructionNetworkResult::Occupied; }
+            }
+        }
+    }
     const FVector Centre = FVector(Cell)*50.0+FVector(25);
     if (Pawn->GetActorLocation().ContainsNaN() || FVector::DistSquared(Pawn->GetActorLocation(),Centre) > FMath::Square(ReachCentimetres)) { return ESFConstructionNetworkResult::OutOfReach; }
     FVector Eyes; FRotator EyeRotation;
@@ -308,9 +412,8 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::Edit(ASFConstructionNe
         const auto* Component = Overlap.GetComponent();
         if (Component && Component->GetCollisionResponseToChannel(ECC_WorldStatic) == ECR_Block) { return ESFConstructionNetworkResult::Occupied; }
     }
-    FSFConstructionNetworkSnapshot Candidate;
+    auto Candidate=Snapshot;
     Candidate.Revision = Snapshot.Revision+1;
-    Candidate.Members = Snapshot.Members;
     if (bRemove) { Candidate.Members.RemoveAt(Candidate.Find(Cell)); }
     else
     {
@@ -318,12 +421,59 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::Edit(ASFConstructionNe
         Candidate.Members.Add(Member);
     }
     Candidate.Members.Sort([](const auto& A,const auto& B) { return A.Cell.X!=B.Cell.X ? A.Cell.X<B.Cell.X : A.Cell.Y!=B.Cell.Y ? A.Cell.Y<B.Cell.Y : A.Cell.Z<B.Cell.Z; });
-    if (!SupportsMembers(Candidate.Members)) { return ESFConstructionNetworkResult::Unsupported; }
+    if (!SupportsMembers(Candidate.Members,Candidate.Doors)) { return ESFConstructionNetworkResult::Unsupported; }
     if (!Activate(Candidate)) { return ESFConstructionNetworkResult::ProjectionFailed; }
     Snapshot = Candidate; // Publish only after synchronous server physics activation.
     ForceNetUpdate();
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_EDIT Action=%s Revision=%llu Members=%d Cell=%s Content=%s Shape=%u Rotation=%u"),bRemove ? TEXT("Remove") : TEXT("Place"),Snapshot.Revision,Snapshot.Members.Num(),*Cell.ToString(),*GetContentDigest(),Shape,Rotation);
     return bRemove ? ESFConstructionNetworkResult::Removed : ESFConstructionNetworkResult::Accepted;
+}
+
+ESFConstructionNetworkResult ASFConstructionNetworkState::PlaceDoor(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision, uint8 Yaw)
+{
+    const APawn* Pawn=nullptr; const AActor* Foundation=nullptr;
+    const auto Admission=ValidateEditContext(Controller,ExpectedRevision,Pawn,Foundation);
+    if (Admission!=ESFConstructionNetworkResult::Accepted) { return Admission; }
+    if (Snapshot.FindDoor(Origin)!=INDEX_NONE) { return ESFConstructionNetworkResult::Occupied; }
+    if (Snapshot.Doors.Num()>=MaximumDoors) { return ESFConstructionNetworkResult::LimitReached; }
+    FSFConstructionDoorProjectionProfile Profile;
+    if (!ASFConstructionSandboxDoorProjection::BuildProfile(Origin,Yaw,false,Profile)) { return ESFConstructionNetworkResult::InvalidCell; }
+    const FVector Centre=Profile.Envelope.GetCenter();
+    if (Pawn->GetActorLocation().ContainsNaN() || FVector::DistSquared(Pawn->GetActorLocation(),Centre)>FMath::Square(ReachCentimetres)) { return ESFConstructionNetworkResult::OutOfReach; }
+    FVector Eyes; FRotator Rotation; Pawn->GetActorEyesViewPoint(Eyes,Rotation);
+    FHitResult Hit; FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionNetworkDoorPlacement),false,Pawn);
+    if (Eyes.ContainsNaN() || GetWorld()->LineTraceSingleByChannel(Hit,Eyes,Centre,ECC_Visibility,Query)) { return ESFConstructionNetworkResult::Occluded; }
+    const FBox Reservations[]={Profile.Envelope,Profile.Motion,Profile.ApproachFront,Profile.ApproachBack};
+    for (const auto& Bounds : Reservations)
+    {
+        for (const auto& M : Snapshot.Members)
+        {
+            if (SFConstructionClearance::IntersectsReservation(M.Shape,M.Rotation,FVector(M.Cell)*50,Bounds)!=SFConstructionClearance::EResult::Clear)
+            { return ESFConstructionNetworkResult::Occupied; }
+        }
+        for (const auto& D : Snapshot.Doors)
+        {
+            FSFConstructionDoorProjectionProfile Other;
+            if (!ASFConstructionSandboxDoorProjection::BuildProfile(D.Origin,D.Yaw,D.bOpen,Other)) { return ESFConstructionNetworkResult::InvalidContext; }
+            for (const auto& B : {Other.Envelope,Other.Motion,Other.ApproachFront,Other.ApproachBack})
+            {
+                if (FMath::Min(B.Max.X,Bounds.Max.X)>FMath::Max(B.Min.X,Bounds.Min.X)
+                    && FMath::Min(B.Max.Y,Bounds.Max.Y)>FMath::Max(B.Min.Y,Bounds.Min.Y)
+                    && FMath::Min(B.Max.Z,Bounds.Max.Z)>FMath::Max(B.Min.Z,Bounds.Min.Z)) { return ESFConstructionNetworkResult::Occupied; }
+            }
+        }
+        if (SFConstructionClearance::EvaluateBox(GetWorld(),Bounds)!=SFConstructionClearance::EResult::Clear) { return ESFConstructionNetworkResult::Occupied; }
+    }
+    auto Candidate=Snapshot;
+    FSFConstructionNetworkDoor Door; Door.Origin=Origin; Door.Yaw=Yaw;
+    Candidate.Doors.Add(Door);
+    Candidate.Doors.Sort([](const auto& A,const auto& B) { return A.Origin.X!=B.Origin.X ? A.Origin.X<B.Origin.X : A.Origin.Y!=B.Origin.Y ? A.Origin.Y<B.Origin.Y : A.Origin.Z<B.Origin.Z; });
+    Candidate.Revision=Snapshot.Revision+1;
+    if (!SupportsMembers(Candidate.Members,Candidate.Doors)) { return ESFConstructionNetworkResult::Unsupported; }
+    if (!Activate(Candidate)) { return ESFConstructionNetworkResult::ProjectionFailed; }
+    Snapshot=MoveTemp(Candidate); ForceNetUpdate();
+    UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_DOOR_PLACE Revision=%llu Members=%d Doors=%d Cell=%s Yaw=%u Content=%s"),Snapshot.Revision,Snapshot.Members.Num(),Snapshot.Doors.Num(),*Origin.ToString(),Yaw,*GetContentDigest());
+    return ESFConstructionNetworkResult::Accepted;
 }
 
 ASFConstructionNetworkGameMode::ASFConstructionNetworkGameMode()
@@ -407,15 +557,18 @@ void ASFConstructionNetworkController::SetupInputComponent()
     InputComponent->BindKey(EKeys::One,IE_Pressed,this,&ASFConstructionNetworkController::SelectCube);
     InputComponent->BindKey(EKeys::Two,IE_Pressed,this,&ASFConstructionNetworkController::SelectSlab);
     InputComponent->BindKey(EKeys::Three,IE_Pressed,this,&ASFConstructionNetworkController::SelectSlope);
+    InputComponent->BindKey(EKeys::Four,IE_Pressed,this,&ASFConstructionNetworkController::SelectDoor);
     InputComponent->BindKey(EKeys::R,IE_Pressed,this,&ASFConstructionNetworkController::RotatePiece);
 }
 
 void ASFConstructionNetworkController::SelectCube() { SelectShape(0); }
 void ASFConstructionNetworkController::SelectSlab() { SelectShape(1); }
 void ASFConstructionNetworkController::SelectSlope() { SelectShape(2); }
+void ASFConstructionNetworkController::SelectDoor()
+{ bDoorSelected=true; SelectedYaw=0; UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_DOOR_SELECTION Yaw=0")); }
 void ASFConstructionNetworkController::SelectShape(uint8 Shape)
 {
-    SelectedShape=Shape; SelectedYaw=0; SelectedRotation=uint8(SFConstructionGeometry::IdentityRotation());
+    bDoorSelected=false; SelectedShape=Shape; SelectedYaw=0; SelectedRotation=uint8(SFConstructionGeometry::IdentityRotation());
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_SELECTION Shape=%u Yaw=%u Rotation=%u"),SelectedShape,SelectedYaw,SelectedRotation);
 }
 void ASFConstructionNetworkController::RotatePiece()
@@ -448,6 +601,11 @@ void ASFConstructionNetworkController::PlaceFromView()
     auto* State = FindState(GetWorld());
     if (!bHasPlacementPreview || !State) { LastPlacementStatus=PreviewStatus; return; }
     LastPlacementStatus=TEXT("Placement requested. Waiting for server...");
+    if (bDoorSelected)
+    {
+        UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_VIEW_DOOR Cell=%s Yaw=%u"),*PreviewCell.ToString(),SelectedYaw);
+        ServerPlaceDoor(PreviewCell,State->GetSnapshot().Revision,SelectedYaw); return;
+    }
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_VIEW_REQUEST Cell=%s Shape=%u Rotation=%u FromMember=%d"),*PreviewCell.ToString(),SelectedShape,SelectedRotation,bHasRemovalPreview);
     ServerPlace(PreviewCell,State->GetSnapshot().Revision,SelectedShape,SelectedRotation);
 }
@@ -486,6 +644,21 @@ void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline
         PreviewCell=RemovalCell+Step;
     }
     bHasPlacementPreview=true;
+    if (bDoorSelected)
+    {
+        FSFConstructionDoorProjectionProfile Profile;
+        if (!ASFConstructionSandboxDoorProjection::BuildProfile(PreviewCell,SelectedYaw,false,Profile))
+        { bHasPlacementPreview=false; PreviewStatus=TEXT("Door footprint is outside the construction area."); return; }
+        const bool bReach=FVector::DistSquared(GetPawn()->GetActorLocation(),Profile.Envelope.GetCenter())<=FMath::Square(State->GetReachCentimetres());
+        PreviewStatus=FString::Printf(TEXT("Door %d, %d, %d | %s"),PreviewCell.X,PreviewCell.Y,PreviewCell.Z,bReach ? TEXT("Click or B to request placement.") : TEXT("Out of reach."));
+        RemovalStatus=TEXT("Door frame, swing space and both approaches must be clear.");
+        if (bDrawOutline)
+        {
+            for (const auto& B : Profile.Boxes)
+            { DrawDebugBox(GetWorld(),Profile.Transform.TransformPosition(B.Centre),B.Extent,Profile.Transform.GetRotation()*B.Rotation,bReach ? FColor(255,190,60) : FColor::Red,false,-1.f,0,2.f); }
+        }
+        return;
+    }
     const FVector Centre=FVector(PreviewCell)*50.0+FVector(25);
     if (SupportCache.State.Get()!=State || SupportCache.Revision!=State->GetSnapshot().Revision || SupportCache.PlacementCell!=PreviewCell
         || SupportCache.Shape!=SelectedShape || SupportCache.Rotation!=SelectedRotation || SupportCache.bHasRemoval!=bHasRemovalPreview
@@ -538,6 +711,17 @@ void ASFConstructionNetworkController::ServerPlace_Implementation(FIntVector Cel
 void ASFConstructionNetworkController::ServerRemove_Implementation(FIntVector Cell, uint64 ExpectedRevision)
 { ProcessEdit(Cell,ExpectedRevision,true,0,0); }
 
+void ASFConstructionNetworkController::ServerPlaceDoor_Implementation(FIntVector Origin, uint64 ExpectedRevision, uint8 Yaw)
+{
+    auto* State=FindState(GetWorld());
+    auto Result=ESFConstructionNetworkResult::InvalidContext;
+    if (State && LastRequestFrame!=GFrameCounter)
+    { LastRequestFrame=GFrameCounter; Result=State->PlaceDoor(this,Origin,ExpectedRevision,Yaw); }
+    const uint64 Revision=State ? State->GetSnapshot().Revision : 0;
+    UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_DOOR_RESULT Builder=%d Result=%d Revision=%llu Doors=%d Collision=%d"),bBuilderRole,int32(Result),Revision,State ? State->GetSnapshot().Doors.Num() : 0,State && State->HasCurrentCollision());
+    ClientPlacementResult(Result,Revision);
+}
+
 void ASFConstructionNetworkController::ProcessEdit(FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation)
 {
     auto* State = FindState(GetWorld());
@@ -573,8 +757,13 @@ void ASFConstructionNetworkController::ClientPlacementResult_Implementation(ESFC
             || (ScenarioStep==23 && Result==ESFConstructionNetworkResult::Removed && Revision==6)
             || ((ScenarioStep==25 || ScenarioStep==27) && Result==ESFConstructionNetworkResult::InvalidPiece && Revision==6)
             || (ScenarioStep==29 && Result==ESFConstructionNetworkResult::Accepted && Revision==7)
-            || (ScenarioStep==31 && Result==ESFConstructionNetworkResult::Accepted && Revision==8))
-        : ((ScenarioStep==1 || ScenarioStep==3) && Result==ESFConstructionNetworkResult::PermissionDenied && Revision==6);
+            || (ScenarioStep==31 && Result==ESFConstructionNetworkResult::Accepted && Revision==8)
+            || (ScenarioStep==33 && Result==ESFConstructionNetworkResult::InvalidCell && Revision==8)
+            || (ScenarioStep==35 && Result==ESFConstructionNetworkResult::Accepted && Revision==9)
+            || (ScenarioStep==37 && Result==ESFConstructionNetworkResult::Occupied && Revision==9)
+            || (ScenarioStep==39 && Result==ESFConstructionNetworkResult::Accepted && Revision==10)
+            || (ScenarioStep==41 && Result==ESFConstructionNetworkResult::Removed && Revision==11))
+        : ((ScenarioStep==1 || ScenarioStep==3 || ScenarioStep==5) && Result==ESFConstructionNetworkResult::PermissionDenied && Revision==6);
     if (!bExpected) { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_SCENARIO_FAILED Step=%d Result=%d Revision=%llu"),ScenarioStep,int32(Result),Revision); FPlatformMisc::RequestExitWithStatus(false,1); return; }
     ++ScenarioStep;
 #endif
@@ -592,11 +781,11 @@ void ASFConstructionNetworkController::Tick(float DeltaSeconds)
 FString ASFConstructionNetworkController::GetBuildStatusText() const
 {
     const auto* State=FindState(GetWorld());
-    return FString::Printf(TEXT("CONSTRUCTION | %s | DEV: UNLIMITED STOCK\nClick / B: place    Right click / X: remove    WASD: move    Space: jump\n1 Cube | 2 Half slab | 3 Slope | R Rotate | Selected: %s (%u deg)\n%s\n%s\nLast action: %s\nMembers: %d / %d | Reach: %.1f m\nAmber: place target | Cyan: remove target | Red: blocked estimate | Server checks edits."),
+    return FString::Printf(TEXT("CONSTRUCTION | %s | DEV: UNLIMITED STOCK\nClick / B: place    Right click / X: remove    WASD: move    Space: jump\n1 Cube | 2 Half slab | 3 Slope | 4 Door | R Rotate | Selected: %s (%u deg)\n%s\n%s\nLast action: %s\nMembers: %d / %d | Doors: %d / %d | Reach: %.1f m\nAmber: place target | Cyan: remove target | Red: blocked estimate | Server checks edits."),
         !bRoleAssigned ? TEXT("CONNECTING") : bBuilderRole ? TEXT("BUILDER") : TEXT("OBSERVER"),
-        SelectedShape==0 ? TEXT("Cube") : SelectedShape==1 ? TEXT("Half slab") : TEXT("Slope"),SelectedYaw*90,
+        bDoorSelected ? TEXT("Door") : SelectedShape==0 ? TEXT("Cube") : SelectedShape==1 ? TEXT("Half slab") : TEXT("Slope"),SelectedYaw*90,
         *PreviewStatus,*RemovalStatus,*LastPlacementStatus,State ? State->GetSnapshot().Members.Num() : 0,
-        State ? State->GetMaximumMembers() : 0,State ? State->GetReachCentimetres()/100.0 : 0.0);
+        State ? State->GetMaximumMembers() : 0,State ? State->GetSnapshot().Doors.Num() : 0,State ? State->GetMaximumDoors() : 0,State ? State->GetReachCentimetres()/100.0 : 0.0);
 }
 
 void ASFConstructionNetworkHUD::DrawHUD()
@@ -630,23 +819,27 @@ void ASFConstructionNetworkController::TickFiniteScenario()
         { UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_CAPTURE_SAVED Builder=%d"),bBuilderRole); FPlatformMisc::RequestExitWithStatus(false,0); }
         return;
     }
-    if (((bBuilderRole && ScenarioStep==24) || (!bBuilderRole && ScenarioStep==4))
+    if (((bBuilderRole && ScenarioStep==24) || (!bBuilderRole && ScenarioStep==6))
         && State->GetSnapshot().Revision==6 && State->GetSnapshot().Members.IsEmpty() && State->HasCurrentCollision())
     {
         if (!bScenarioEmptyReported)
         { UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_EMPTY_READY Builder=%d Revision=6 Members=0"),bBuilderRole); bScenarioEmptyReported=true; }
     }
-    if (((bBuilderRole && ScenarioStep==32) || (!bBuilderRole && ScenarioStep==4))
+    if (bBuilderRole && ScenarioStep==32
         && State->GetSnapshot().Revision==8 && State->GetSnapshot().Members.Num()==2 && State->HasCurrentCollision())
     {
-        if (bBuilderRole)
-        {
-            if (!bHasPlacementPreview || PreviewCell!=FIntVector(-4,-5,1) || !bHasRemovalPreview || RemovalCell!=FIntVector(-4,-5,0)) { return; }
-            if (SupportCache.bPlacementAllowed || !SupportCache.bRemovalAllowed)
-            { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_SCENARIO_FAILED FinalSupportPreview=1")); FPlatformMisc::RequestExitWithStatus(false,1); return; }
-            UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_SUPPORT_PREVIEW PlacementAllowed=0 RemovalAllowed=1 Revision=8"));
-        }
-        UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_SCENARIO_SUCCESS Builder=%d Revision=8 Members=2"),bBuilderRole);
+        if (!bHasPlacementPreview || PreviewCell!=FIntVector(-4,-5,1) || !bHasRemovalPreview || RemovalCell!=FIntVector(-4,-5,0)) { return; }
+        if (SupportCache.bPlacementAllowed || !SupportCache.bRemovalAllowed)
+        { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_SCENARIO_FAILED FinalSupportPreview=1")); FPlatformMisc::RequestExitWithStatus(false,1); return; }
+        UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_SUPPORT_PREVIEW PlacementAllowed=0 RemovalAllowed=1 Revision=8"));
+        ScenarioStep=33; ServerPlaceDoor(FIntVector(2,0,0),8,255); return;
+    }
+    if (((bBuilderRole && ScenarioStep==42) || (!bBuilderRole && ScenarioStep==6))
+        && State->GetSnapshot().Revision==11 && State->GetSnapshot().Members.Num()==2 && State->GetSnapshot().Doors.Num()==1 && State->HasCurrentCollision())
+    {
+        if (!bBuilderRole && !bScenarioDoorCameraAimed)
+        { SetControlRotation((FVector(150,25,100)-GetPawn()->GetActorLocation()).Rotation()); bScenarioDoorCameraAimed=true; return; }
+        UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_SCENARIO_SUCCESS Builder=%d Revision=11 Members=2 Doors=1"),bBuilderRole);
         if (FParse::Value(FCommandLine::Get(),TEXT("ConstructionNetworkScreenshot="),ScenarioScreenshotPath))
         { ScenarioStep=100; FScreenshotRequest::RequestScreenshot(ScenarioScreenshotPath,true,false); }
         else { FPlatformMisc::RequestExitWithStatus(false,0); }
@@ -706,6 +899,8 @@ void ASFConstructionNetworkController::TickFiniteScenario()
     { ScenarioStep=1; ServerPlace(FIntVector(4,-4,0),6,0,uint8(SFConstructionGeometry::IdentityRotation())); }
     else if (!bBuilderRole && ScenarioStep==2)
     { ScenarioStep=3; ServerRemove(FIntVector(-4,-4,0),6); }
+    else if (!bBuilderRole && ScenarioStep==4)
+    { ScenarioStep=5; ServerPlaceDoor(FIntVector(2,0,0),6,0); }
     else if (bBuilderRole && ScenarioStep==24 && bScenarioEmptyReported)
     {
         FString Barrier;
@@ -745,5 +940,24 @@ void ASFConstructionNetworkController::TickFiniteScenario()
         InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
         InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));
     }
+    else if (bBuilderRole && ScenarioStep==34)
+    {
+        SetControlRotation((FVector(125,25,0)-GetPawn()->GetActorLocation()).Rotation());
+        if (!bDoorSelected)
+        {
+            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::Four,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
+            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::Four,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0))); return;
+        }
+        if (!bHasPlacementPreview || PreviewCell!=FIntVector(2,0,0)) { return; }
+        ScenarioStep=35;
+        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
+        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));
+    }
+    else if (bBuilderRole && ScenarioStep==36 && State->GetSnapshot().Revision==9 && State->HasCurrentCollision())
+    { ScenarioStep=37; ServerPlace(FIntVector(2,-1,0),9,0,uint8(SFConstructionGeometry::IdentityRotation())); }
+    else if (bBuilderRole && ScenarioStep==38)
+    { ScenarioStep=39; ServerPlace(FIntVector(-6,-4,0),9,0,uint8(SFConstructionGeometry::IdentityRotation())); }
+    else if (bBuilderRole && ScenarioStep==40 && State->GetSnapshot().Revision==10 && State->HasCurrentCollision())
+    { ScenarioStep=41; ServerRemove(FIntVector(-6,-4,0),10); }
 }
 #endif
