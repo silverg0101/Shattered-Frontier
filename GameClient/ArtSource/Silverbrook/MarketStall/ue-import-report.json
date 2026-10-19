@@ -1,0 +1,22 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookMarketStall",
+  "size_m": [
+    3.8,
+    1.81,
+    4.0
+  ],
+  "slot_m": [
+    4,
+    4,
+    4
+  ],
+  "fits": true,
+  "slots": 8,
+  "nanite": true,
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 4048,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 64
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookNorthridgeHouse4",
+  "size_m": [
+    11.9,
+    8.67,
+    9.95
+  ],
+  "slot_m": [
+    12,
+    10,
+    10
+  ],
+  "fits": true,
+  "slots": 12,
+  "nanite": true,
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 33063,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 256
+  }
+}

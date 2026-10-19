@@ -9,7 +9,7 @@ Owner-supplied concept images for the Silverbrook buildings. One image is one de
 | [The Golden Stag Inn.png](The%20Golden%20Stag%20Inn.png) | The Golden Stag Inn | BLD-GreenlandsTheGoldenStagInn-01 | 14 × 12 × 14 | — | waiting for a model |
 | [Blacksmith.png](Blacksmith.png) | Blacksmith | BLD-GreenlandsBlacksmith-01 | 14 × 12 × 14 | `GameClient/ArtSource/Silverbrook/Blacksmith` | modelling |
 | [Temple of the Dawn.png](Temple%20of%20the%20Dawn.png) | Temple of the Dawn | BLD-GreenlandsTempleOfTheDawn-01 | 14 × 24 × 20 | `GameClient/ArtSource/Silverbrook/TempleOfTheDawn` | modelling |
-| [Market Stall.png](Market%20Stall.png) | Market stall | BLD-GreenlandsMarketStall-01 | 4 × 4 × 4 | `GameClient/ArtSource/Silverbrook/MarketStall` | modelling |
+| [Market Stall.png](Market%20Stall.png) | Market stall | BLD-GreenlandsMarketStall-01 | 4 × 4 × 4 | `GameClient/ArtSource/Silverbrook/MarketStall` | delivered |
 | [Watchtower.png](Watchtower.png) | Watchtower | BLD-GreenlandsWatchtower-01 | 8 × 8 × 9 | — | waiting for a model |
 | [Stone Bridge.png](Stone%20Bridge.png) | Stone bridge | BLD-GreenlandsStoneBridge-01 | 30 × 7 deck, spans the 24 m river | — | waiting for a model |
 | [Cottage-1.png](Cottage-1.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | `GameClient/ArtSource/Silverbrook/Cottage1` | delivered |
@@ -32,7 +32,7 @@ Owner-supplied concept images for the Silverbrook buildings. One image is one de
 | [Northridge House-3.png](Northridge%20House-3.png) | Northridge house | BLD-GreenlandsNorthridgeHouse-01 | 12 × 10 × 10 | `GameClient/ArtSource/Silverbrook/NorthridgeHouse3` | modelling |
 | [Northridge House-4.png](Northridge%20House-4.png) | Northridge house | BLD-GreenlandsNorthridgeHouse-01 | 12 × 10 × 10 | `GameClient/ArtSource/Silverbrook/NorthridgeHouse4` | modelling |
 | [Northridge House-5.png](Northridge%20House-5.png) | Northridge house | BLD-GreenlandsNorthridgeHouse-01 | 12 × 10 × 10 | `GameClient/ArtSource/Silverbrook/NorthridgeHouse5` | modelling |
-| [Northridge House-6.png](Northridge%20House-6.png) | Northridge house | BLD-GreenlandsNorthridgeHouse-01 | 12 × 10 × 10 | — | waiting for a model |
+| [Northridge House-6.png](Northridge%20House-6.png) | Northridge house | BLD-GreenlandsNorthridgeHouse-01 | 12 × 10 × 10 | `GameClient/ArtSource/Silverbrook/NorthridgeHouse6` | modelling |
 | [Mill.png](Mill.png) | Mill | BLD-GreenlandsMill-01 | 12 × 10 × 9 | — | waiting for a model |
 | [Granary.png](Granary.png) | Granary | BLD-GreenlandsGranary-01 | 8 × 8 × 10 | — | waiting for a model |
 | [Fishermans Wharf.png](Fishermans%20Wharf.png) | Fisherman's wharf | BLD-GreenlandsFishermansWharf-01 | 20 × 8 × 1 | — | waiting for a model |

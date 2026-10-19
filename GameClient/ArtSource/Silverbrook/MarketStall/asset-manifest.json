@@ -1,0 +1,151 @@
+{
+  "asset": "SilverbrookMarketStall",
+  "reference": {
+    "file": "MarketStall-reference.png",
+    "sha256": "1f138e62cab3e09283bcb1a969560bb2e18b8fddf296f6e8d2fb3d2bd8412cee"
+  },
+  "blender": "5.1.1",
+  "generator": "build_marketstall.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    3.8,
+    1.808,
+    4.0
+  ],
+  "meshes": {
+    "SM_SBMarketStall_Timber": {
+      "triangles": 1124,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBMarketStall_Cloth": {
+      "triangles": 8656,
+      "materials": [
+        "SB_MarketStall_AwningRed",
+        "SB_MarketStall_AwningCream"
+      ]
+    },
+    "SM_SBMarketStall_Details": {
+      "triangles": 2796,
+      "materials": [
+        "SB_ForgedIron",
+        "SB_MarketStall_Rope",
+        "SB_LanternGlow",
+        "SB_MarketStall_Banner",
+        "SB_MarketStall_Gilt"
+      ]
+    }
+  },
+  "triangles": 12576,
+  "materials": [
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_MarketStall_AwningRed",
+      "scan": "velour_velvet",
+      "dark": [
+        0.45,
+        0.28,
+        0.24
+      ],
+      "lichen": null,
+      "normal": 0.7
+    },
+    {
+      "name": "SB_MarketStall_AwningCream",
+      "scan": "hessian_380",
+      "dark": [
+        0.5,
+        0.4,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 0.7
+    },
+    {
+      "name": "SB_MarketStall_Rope",
+      "scan": "hessian_380",
+      "dark": [
+        0.45,
+        0.36,
+        0.22
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_MarketStall_Banner",
+      "scan": "denim_fabric_03",
+      "dark": [
+        0.1,
+        0.12,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LanternGlow",
+      "colour": [
+        0.3,
+        0.2,
+        0.1
+      ],
+      "roughness": 0.3,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.38,
+        0.08
+      ],
+      "strength": 5
+    },
+    {
+      "name": "SB_MarketStall_Gilt",
+      "colour": [
+        0.8,
+        0.55,
+        0.18
+      ],
+      "roughness": 0.35,
+      "metallic": 1.0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookMarketStall",
+  "slot_m": [
+    4,
+    4,
+    4
+  ],
+  "outputs": [
+    "SilverbrookMarketStall.blend",
+    "SilverbrookMarketStall.glb",
+    "SilverbrookMarketStall.fbx"
+  ]
+}

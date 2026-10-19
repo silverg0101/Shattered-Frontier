@@ -1,5 +1,7 @@
 {
   "_about": "Greenlands mixed-forest look profile, read from docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp. Each role is a kind of asset the PCG graphs place and the asset-gap report checks. 'have' lists project meshes that fill the role today (paths under /Game/Frontier/Environment/Greenlands unless noted). Licensed Fab assets are read-only and are not counted toward a role here. Counts and shares are proposed targets, not tuning. Placement rules use terrain slope (degrees), height above local valley floor and road/river distance.",
+    "Northridge house": {"have": ["SM_SilverbrookNorthridgeHouse5"]},
+    "Northridge house": {"have": ["SM_SilverbrookNorthridgeHouse4"]},
     "Northridge house": {"have": ["SM_SilverbrookNorthridgeHouse3"]},
     "Northridge house": {"have": ["SM_SilverbrookNorthridgeHouse1"]},
     "Northridge house": {"have": ["SM_SilverbrookNorthridgeHouse2"]},
@@ -24,7 +26,7 @@
     "_about": "Biome building library for the missing-asset report, keyed by settlement building name (definition section 8 or layout type). 'have': delivered meshes in the settlement's design, one main mesh per variant; a building needs as many variants as it has owner-supplied concept images (at least one). 'stand_ins': older project meshes that fill the slot in the graybox until then; they never close a row. Licensed Fab or Megascans meshes don't count.",
     "Cottage": {"have": ["SM_SilverbrookCottage1", "SM_SilverbrookCottage2", "SM_SilverbrookCottage3", "SM_SilverbrookCottage4", "SM_SilverbrookCottage5", "SM_SilverbrookCottage6"], "stand_ins": ["SM_FootholdCottage", "SM_GreenlandsCottage_Structure"]},
     "Workshop": {"have": [], "stand_ins": ["SM_GreenlandsWorkshop_Structure"]},
-    "Market stall": {"have": [], "stand_ins": ["SM_MarketStall"]}
+    "Market stall": {"have": ["SM_SilverbrookMarketStall"], "stand_ins": ["SM_MarketStall"]}
   },
   "layers": [
     {
