@@ -98,14 +98,21 @@ def gaps():
                   ('Gatehouse', f"{W['gate_gap']} m opening", 'Defence', 'Modular', 'Silverbrook definition §10; layout `gates`'),
                   ('Wall tower', ' × '.join(str(v) for v in W['tower']), 'Defence', 'Modular', 'Silverbrook definition §10; layout `wall.tower`')]
     for name, size, use, kind, source in buildings:
-        owned = [n for n in have_b.get(name, []) if n in lib and not licensed(lib[n])]
-        if owned:
+        entry = have_b.get(name, {})
+        owned = [n for n in entry.get('have', []) if n in lib and not licensed(lib[n])]
+        concepts, models = building_work(name)
+        target = max(1, len(concepts))  # one variant per owner-supplied concept
+        if len(owned) >= target:
             continue
         pri = 'P1' if kind == 'Unique' or name in ('Townhouse', 'Cottage') else 'P2'
-        concepts, models = building_work(name)
+        deps = [pri, kind.lower(), 'Greenlands half-timbered style (definition §3)']
+        if target > 1:
+            deps.append(f'{len(owned)} of {target} variants owned')
+        if entry.get('stand_ins'):
+            deps.append(f"stands in today: {', '.join(f'`{m}`' for m in entry['stand_ins'])}")
         out.append(dict(id=asset_id('BLD', name), category='Building', concept=f"{name}{' — ' + use if use else ''}", role=name,
-                        source=source, deps=f'{pri}; {kind.lower()}; Greenlands half-timbered style (definition §3)', where='Silverbrook',
-                        variants=1, priority=pri, concepts=concepts, models=models))
+                        source=source, deps='; '.join(deps), where='Silverbrook',
+                        variants=target - len(owned), priority=pri, concepts=concepts, models=models))
     order = {'P1': 0, 'P2': 1, 'P3': 2}
     return sorted(out, key=lambda r: (order[r['priority']], r['category'] == 'Building', r['id']))
 
@@ -125,7 +132,8 @@ def write(rows):
                if r['category'] != 'Terrain material' else 'reference board and material study, then a project material')
         if r.get('models'):
             state, status = 'Blender session / in-progress', 'owner-supplied / —'
-            nxt = f"modelling in {', '.join(f'`{m}`' for m in r['models'])}; closes when its mesh is in the biome library"
+            nxt = (f"modelling in {', '.join(f'`{m}`' for m in r['models'])}; {r['variants']} variant(s) still to land; "
+                   "closes when its meshes are in the biome library and the look profile's `buildings` map")
         elif r.get('concepts'):
             state, status = 'Blender session / image-complete', 'owner-supplied / —'
             nxt = 'model from the owner-supplied concept in the Blender session; do not generate new concept images'
