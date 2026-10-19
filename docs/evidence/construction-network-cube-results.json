@@ -1,0 +1,85 @@
+{
+  "date": "2026-10-18",
+  "status": "Passed",
+  "scope": "Isolated loopback editor dedicated-server, one canonical cube, transient build capability; no production ownership/persistence/procedural shape or packaged acceptance.",
+  "baselineCommit": "a60a942",
+  "rawRoot": "Artifacts/ConstructionSandbox/network-20261018-201838-673",
+  "engineVersion": "5.8.3",
+  "compatibleChangelist": 55116800,
+  "moduleSha256": "c9a5da122421c38bb89fd50136cc2ca19d2ff9cdc545e3437087a4fdbe910173",
+  "payloadSha256": "9455bd04dab9df9f4643f175c95fb17cb7e25e6248c239975a8f1280f040061a",
+  "cleanupComplete": true,
+  "foundationReport": "Artifacts/ConstructionSandbox/network-foundation-20261018-201816-108/Report/index.json",
+  "foundationSucceeded": 1,
+  "foundationFailed": 0,
+  "sourceFiles": [
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionNetwork.h",
+      "sha256": "4d58c102baccf0d2f8cc15247ea9bc5c542f1a92c5fa7aae7753ec7203b4dfe0"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionNetwork.cpp",
+      "sha256": "6923a8732fabde4611f32c7f206f88c4a70b6517b86ef74cfbb63afc83d42caa"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionSandboxFoundation.h",
+      "sha256": "0937474e8cc5acc1765ae1353b7616944db56b8c830e48fcf165edf3672fdec5"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionSandboxFoundation.cpp",
+      "sha256": "2cffbf956446ce6ed48ef9902c6fa6c8ea2e507642dcb7c90b3cb1eade22b7cb"
+    },
+    {
+      "path": "tools/Test-ConstructionNetwork.ps1",
+      "sha256": "097b56d9764938456494d4615aad3acc40645aee18f52170c3411645b7ccc45c"
+    }
+  ],
+  "logs": [
+    {
+      "path": "server.log",
+      "sha256": "1fa927eb3d2147686b9ca638ef7c55306c47e66ed7f474aaaa557c34e953ec56"
+    },
+    {
+      "path": "driver.log",
+      "sha256": "b181a12cdf6f875972c36f13dc1168b88aea9622a8882ea2e0a8d7e445f6541d"
+    },
+    {
+      "path": "observer.log",
+      "sha256": "5f75f52565ff309dbb1984f005adbed2b9af5455bbbed58864f9ff5531eb7c61"
+    },
+    {
+      "path": "normal-negative.log",
+      "sha256": "f383d664ffcff563cc706dc672bae27c17d95babf9b695838d6c9af382aed496"
+    },
+    {
+      "path": "flag-negative.log",
+      "sha256": "c3be68716b25c4e3a629619d5cc261cfb540fe031d88a591e5b3f031032401d6"
+    },
+    {
+      "path": "results.json",
+      "sha256": "52929730304ef1d82e86aeb75da82133683238df3f3f7c9c3e03dc2c41c7d2a5"
+    }
+  ],
+  "exits": [
+    {
+      "name": "normal-negative",
+      "exitCode": 0
+    },
+    {
+      "name": "flag-negative",
+      "exitCode": 0
+    },
+    {
+      "name": "server",
+      "exitCode": null
+    },
+    {
+      "name": "driver",
+      "exitCode": 0
+    },
+    {
+      "name": "observer",
+      "exitCode": 0
+    }
+  ]
+}

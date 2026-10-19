@@ -169,6 +169,8 @@ Isolated sandbox packaging: [SBX-07A route](decisions/SBX-07A-isolated-package-r
 
 ## Task map
 
+Development network construction: `SFConstructionNetwork.h/.cpp` introduces an explicit dedicated-only mode, owning-controller placement RPC and replicated canonical one-cube snapshot/collision; [passed checkpoint and limits](evidence/construction-network-cube-pilot.md). It requires the sandbox map plus `?game=/Script/ShatteredFrontier.SFConstructionNetworkGameMode` and server `-ConstructionNetworkSandbox`; E1/standalone guards remain intact. `& tools/Test-ConstructionNetwork.ps1` owns loopback editor server/two clients on UDP17791 (flag negative17793), checking occupied/stale/observer-permission rejection and matching simple collision. Foundation `MatchesKnownPlaneGeometry` shares only exact floor geometry; callers retain mode admission. Precise regression: `ShatteredFrontier.Construction.Support.SyntheticFoundation`. Multi-cell/door/backend/persistent construction remains open.
+
 | Task | Start here | Related files | Checks |
 | --- | --- | --- | --- |
 | Playable construction sandbox | `docs/construction-sandbox-milestone.md` | BLD-01; construction geometry tool/test; SBX-02 exact Unreal write set; model-session handoff | `py -3 tests/test_construction_geometry.py`, `py -3 tests/test_construction_compatibility.py`, header generator `--check`; focused `ShatteredFrontier.Construction.` editor automation. See evidence for opt-in map/commands/limits; preserve E1 defaults/live server. |

@@ -18,6 +18,8 @@ This launches the opt-in standalone graybox, not the LAN server. Free cursor aim
 
 ## Next work and machine-local state
 
+New gameplay checkpoint: [network cube evidence](evidence/construction-network-cube-pilot.md) passes actual two-client editor networking, server placement/rejection and matching local collision. This is a separate explicit development network mode, not general multiplayer support for the standalone sandbox. Final independent review cleared. Next: multi-member canonical projection/support and the owning-client placement workflow; keep environment work in a separate preview map/assets.
+
 Laptop continuation: editor/Game builds, 16-step structural-input/E1-negative and retained editor save regression passed. Local branch `codex/construction-package-laptop`, commit `be15127`, adds the reviewed [SBX-07A route](decisions/SBX-07A-isolated-package-route.md). Fresh package build/container verification passed, but managed Defender ASR blocks Game execution; no packaged acceptance is claimed. [Evidence](evidence/construction-sandbox-package-pilot.md) records the blocker. Continue gameplay through the supported editor; no policy workaround or more package reruns. Remote desktop state is unverified; current artifacts are local. See the work plan for next gameplay work.
 
 Current assignment: advance ready gameplay/server integration; packaged execution awaits policy-owner resolution. E1 defaults and the normal cook list remain unchanged. Approved scenery/materials and two-client construction acceptance remain open. Continue collecting specific UI feedback; this playtest does not lock final bindings or approve all presentation details.
