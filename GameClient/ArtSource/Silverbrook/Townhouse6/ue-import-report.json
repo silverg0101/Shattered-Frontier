@@ -1,0 +1,22 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookTownhouse6",
+  "size_m": [
+    6.94,
+    6.13,
+    8.97
+  ],
+  "slot_m": [
+    8,
+    7,
+    9
+  ],
+  "fits": true,
+  "slots": 13,
+  "nanite": true,
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 21712,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 256
+  }
+}
