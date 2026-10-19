@@ -51,11 +51,11 @@ This is the Greenlands half-timbered settlement style at town scale.
 
 ## 5. Scale
 
-The board map is drawn at 1 square = 25 m, with a 500 m scale bar. Measured from that bar, the walled town is about 0.8 km east–west by 1 km north–south (**estimate**).
+The board map is drawn at 1 square = 25 m, with a 500 m scale bar. Measured from that bar, the walled town is about 0.8 km east–west by 1 km north–south. The layout file fixes it at 0.8 × 1.06 km, using 1.8 m per board pixel.
 
 | Ring | Radius | Meaning |
 | --- | --- | --- |
-| Walled town | About 400–500 m from the Market Square | Northridge, The Commons and Riverside, inside the wall and four gates |
+| Walled town | Elliptical wall, 400 m east–west and 530 m north–south semi-axes from the town centre (measured in the layout file) | Northridge, The Commons and Riverside, inside the wall and four gates |
 | Playable radius | 750 m | The town plus Westfields, Eastwood, the farmlands and the first gathering and fighting areas |
 | Settlement radius | 1,250 m | The zone's countryside out to its borders. It sets the zone extent at about 2.5 × 2.5 km (**proposed**). |
 | Influence radius | 5,000 m | How far Silverbrook's routes, quests and trade reach into neighbouring zones. It places no geometry outside this zone. |
@@ -150,7 +150,7 @@ Approximate sizes from the board elevations, given as height × width or length 
 ## 9. Gameplay design rules
 
 - **No minimap needed:** players can find their way using landmarks, roads and signposts alone.
-- **One-minute rule:** every important building is within one minute's walk of the Market Square. At the current run speed of 7 m/s (`RunSpeedMetresPerSecond`), that is about 420 m of path. Key buildings in the board layout fit. The gates sit at about 400–500 m, which is about the limit; confirm in graybox. If the run speed changes, recheck this.
+- **One-minute rule:** every important building is within one minute's walk of the Market Square. At the current run speed of 7 m/s (`RunSpeedMetresPerSecond`), that is about 420 m of path. Key buildings in the board layout fit. The gates sit 380–560 m from the Market Square, so the North and South Gates exceed one minute; the graybox walk took 226 s from arrival to North Gate. Confirm the rule applies to buildings, not gates. If the run speed changes, recheck this.
 - **Supported systems:** core services and vendors, crafting and gathering access, faction introductions, dynamic events, exploration paths to the wilds, guilds, seasonal events and future expansion. Player housing comes in phase 2.
 
 ## 10. Roads and walls

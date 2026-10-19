@@ -51,7 +51,7 @@ The layout file is one JSON per settlement, `GameClient/ArtSource/<Biome>/<settl
 - **Bounds:** zone bounds.
 - **Other:** plots, arrival and a review route.
 
-**Validator:** a standard-library-only Python script with an assert-based `__main__`. It must fail when:
+**Validator:** a standard-library-only Python script with an assert-based `__main__` (first instance: `GameClient/ArtSource/Greenlands/validate_layout.py`; the builder imports it and refuses invalid layouts). It must fail when:
 1. A landmark or district required by the definition is missing.
 2. The walled-town radius from the definition is exceeded, or anything lies outside the zone bounds.
 3. A gate does not sit on both a road and the wall.

@@ -7,12 +7,16 @@ district fill, construction plots, labels and the arrival player start. North is
 east is +X. Script any zone-only change here; the map is regenerated, not hand-edited.
 See docs/greenlands-silverbrook-zone-plan.md.
 """
-import json, math, random
+import json, math, random, sys
 from pathlib import Path
 import unreal as u
 
 ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT))
+from validate_layout import validate
 L = json.loads((ROOT / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))
+_problems = validate(L)
+assert not _problems, f'Layout is invalid; run validate_layout.py: {_problems}'
 ZONE = '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook'
 MAT_DIR = '/Game/Frontier/Core/Graybox'
 CUBE = u.load_asset('/Engine/BasicShapes/Cube')
@@ -259,14 +263,23 @@ assert not blocked, f'Blocked places (move them in the layout): {blocked}'
 # District fill (seeded, so rebuilds are stable).
 rng = random.Random(L['seed'])
 fill_report = {}
+def in_polygon(p, poly):
+    hit = False
+    for (ax, ay), (bx, by) in zip(poly, poly[1:] + poly[:1]):
+        if (ay > p[1]) != (by > p[1]) and p[0] < ax + (p[1] - ay) * (bx - ax) / (by - ay):
+            hit = not hit
+    return hit
+
+
 for name, dist in L['districts'].items():
     cx, cy = dist['centre']; kind = dist['fill']; w, d, _ = TYPES[kind]; made = 0
+    poly = dist['polygon']
+    xs, ys = [q[0] for q in poly], [q[1] for q in poly]
     for attempt in range(dist['count'] * 80):
         if made == dist['count']:
             break
-        ang, rad = rng.uniform(0, 2 * math.pi), dist['radius'] * math.sqrt(rng.random())
-        x, y = cx + rad * math.cos(ang), cy + rad * math.sin(ang)
-        if inside((x, y)) != dist['inside_wall']:
+        x, y = rng.uniform(min(xs), max(xs)), rng.uniform(min(ys), max(ys))
+        if not in_polygon((x, y), poly) or inside((x, y)) != dist['inside_wall']:
             continue
         yaw = round(math.degrees(math.atan2(cy - y, cx - x)) / 15) * 15
         made += building(f'{name.replace(" ", "")}_{kind}_{made:02d}', kind, x, y, yaw, 'House', f'Districts/{name}', require=False)
