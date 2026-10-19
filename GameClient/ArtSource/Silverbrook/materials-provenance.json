@@ -34,6 +34,110 @@
     ]
   },
   {
+    "asset": "denim_fabric_03",
+    "page": "https://polyhaven.com/a/denim_fabric_03",
+    "license": "CC0-1.0",
+    "authors": {
+      "colormass": "Photography",
+      "Rico Cilliers": "Processing"
+    },
+    "physical_size_metres": [
+      0.27142801281852286,
+      0.2709999978542328
+    ],
+    "files": [
+      {
+        "file": "Textures/denim_fabric_03_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/denim_fabric_03/denim_fabric_03_diff_2k.jpg",
+        "md5": "45a8f73b7995fa723cce650f31295a67"
+      },
+      {
+        "file": "Textures/denim_fabric_03_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/denim_fabric_03/denim_fabric_03_nor_gl_2k.jpg",
+        "md5": "f32834732639950888f0f09042c82c6f"
+      },
+      {
+        "file": "Textures/denim_fabric_03_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/denim_fabric_03/denim_fabric_03_rough_2k.jpg",
+        "md5": "aee684c5d8c277762c9b77b5eb4812e0"
+      },
+      {
+        "file": "Textures/denim_fabric_03_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/denim_fabric_03/denim_fabric_03_disp_2k.jpg",
+        "md5": "4559a3e55f2157c5ffa6726e9adc5a05"
+      }
+    ]
+  },
+  {
+    "asset": "denim_fabric_04",
+    "page": "https://polyhaven.com/a/denim_fabric_04",
+    "license": "CC0-1.0",
+    "authors": {
+      "colormass": "Photography",
+      "Rico Cilliers": "Processing"
+    },
+    "physical_size_metres": [
+      0.2728973422962554,
+      0.26930001378059387
+    ],
+    "files": [
+      {
+        "file": "Textures/denim_fabric_04_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/denim_fabric_04/denim_fabric_04_diff_2k.jpg",
+        "md5": "fdfe5ac872f78a15402ceb739b5b5478"
+      },
+      {
+        "file": "Textures/denim_fabric_04_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/denim_fabric_04/denim_fabric_04_nor_gl_2k.jpg",
+        "md5": "8f62d479aa8bd278252e167d95e24e1b"
+      },
+      {
+        "file": "Textures/denim_fabric_04_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/denim_fabric_04/denim_fabric_04_rough_2k.jpg",
+        "md5": "a3d22ffef77234249f81edfbb31ecd31"
+      },
+      {
+        "file": "Textures/denim_fabric_04_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/denim_fabric_04/denim_fabric_04_disp_2k.jpg",
+        "md5": "8911a3766acb5953cdaf230dc74150c0"
+      }
+    ]
+  },
+  {
+    "asset": "green_rough_planks",
+    "page": "https://polyhaven.com/a/green_rough_planks",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_size_metres": [
+      1.5,
+      1.5
+    ],
+    "files": [
+      {
+        "file": "Textures/green_rough_planks_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/green_rough_planks/green_rough_planks_diff_2k.jpg",
+        "md5": "aff8762f0670c033bb7ea5ece9aec57c"
+      },
+      {
+        "file": "Textures/green_rough_planks_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/green_rough_planks/green_rough_planks_nor_gl_2k.jpg",
+        "md5": "1776035e7f412b142c987b3629df4c6b"
+      },
+      {
+        "file": "Textures/green_rough_planks_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/green_rough_planks/green_rough_planks_rough_2k.jpg",
+        "md5": "bf972138e7532dbd74f119bc55ca181f"
+      },
+      {
+        "file": "Textures/green_rough_planks_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/green_rough_planks/green_rough_planks_disp_2k.jpg",
+        "md5": "1a43a0a1c7a93c5d653efe783d58d25d"
+      }
+    ]
+  },
+  {
     "asset": "grey_roof_tiles_02",
     "page": "https://polyhaven.com/a/grey_roof_tiles_02",
     "license": "CC0-1.0",
@@ -98,6 +202,40 @@
         "file": "Textures/lichen_rock_Displacement.jpg",
         "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/lichen_rock/lichen_rock_disp_2k.jpg",
         "md5": "8feedb29e0fc7d10a29ed915bb571865"
+      }
+    ]
+  },
+  {
+    "asset": "medieval_red_brick",
+    "page": "https://polyhaven.com/a/medieval_red_brick",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_size_metres": [
+      2.0,
+      2.0
+    ],
+    "files": [
+      {
+        "file": "Textures/medieval_red_brick_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/medieval_red_brick/medieval_red_brick_diff_2k.jpg",
+        "md5": "6b91c83521af46571d5c59175c0c81fd"
+      },
+      {
+        "file": "Textures/medieval_red_brick_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/medieval_red_brick/medieval_red_brick_nor_gl_2k.jpg",
+        "md5": "8798408548501d9db4a5b97a1d9bedd7"
+      },
+      {
+        "file": "Textures/medieval_red_brick_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/medieval_red_brick/medieval_red_brick_rough_2k.jpg",
+        "md5": "f31aa7d5ef3c4726771a36c975c8b177"
+      },
+      {
+        "file": "Textures/medieval_red_brick_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/medieval_red_brick/medieval_red_brick_disp_2k.jpg",
+        "md5": "fa292f2380d538200106093f6e6ad4de"
       }
     ]
   },
@@ -170,6 +308,314 @@
     ]
   },
   {
+    "asset": "reed_roof_04",
+    "page": "https://polyhaven.com/a/reed_roof_04",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_size_metres": [
+      2.5,
+      2.5
+    ],
+    "files": [
+      {
+        "file": "Textures/reed_roof_04_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/reed_roof_04/reed_roof_04_diff_2k.jpg",
+        "md5": "83dd90ba4aaf8ad126ccc3f842068d56"
+      },
+      {
+        "file": "Textures/reed_roof_04_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/reed_roof_04/reed_roof_04_nor_gl_2k.jpg",
+        "md5": "ca76a07f4a7780dda84ef68a1955c85b"
+      },
+      {
+        "file": "Textures/reed_roof_04_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/reed_roof_04/reed_roof_04_rough_2k.jpg",
+        "md5": "09a2e188cdb7a57de25972345ad82514"
+      },
+      {
+        "file": "Textures/reed_roof_04_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/reed_roof_04/reed_roof_04_disp_2k.jpg",
+        "md5": "4f64e32670ca2ed4a44e30400ea301bb"
+      }
+    ]
+  },
+  {
+    "asset": "rock_wall_08",
+    "page": "https://polyhaven.com/a/rock_wall_08",
+    "license": "CC0-1.0",
+    "authors": {
+      "Amal Kumar": "All"
+    },
+    "physical_size_metres": [
+      1.7999999523162842,
+      1.7999999523162842
+    ],
+    "files": [
+      {
+        "file": "Textures/rock_wall_08_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_wall_08/rock_wall_08_diff_2k.jpg",
+        "md5": "b4411a3f1ef5d0c1754b7a877f24a6cb"
+      },
+      {
+        "file": "Textures/rock_wall_08_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_wall_08/rock_wall_08_nor_gl_2k.jpg",
+        "md5": "0899418abbcb836da7fbe36bffacb5e1"
+      },
+      {
+        "file": "Textures/rock_wall_08_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_wall_08/rock_wall_08_rough_2k.jpg",
+        "md5": "6335d8058453d6cd3be16a3c5170c498"
+      },
+      {
+        "file": "Textures/rock_wall_08_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_wall_08/rock_wall_08_disp_2k.jpg",
+        "md5": "8b62006ab2e0ee6e02b05571f1722323"
+      }
+    ]
+  },
+  {
+    "asset": "roof_tiles_14",
+    "page": "https://polyhaven.com/a/roof_tiles_14",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_size_metres": [
+      1.5,
+      1.5
+    ],
+    "files": [
+      {
+        "file": "Textures/roof_tiles_14_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/roof_tiles_14/roof_tiles_14_diff_2k.jpg",
+        "md5": "4870e0f07b7b36c421fbf4879563e73d"
+      },
+      {
+        "file": "Textures/roof_tiles_14_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/roof_tiles_14/roof_tiles_14_nor_gl_2k.jpg",
+        "md5": "24110fa17984d61ff7a2e0a1b490be3a"
+      },
+      {
+        "file": "Textures/roof_tiles_14_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/roof_tiles_14/roof_tiles_14_rough_2k.jpg",
+        "md5": "e56f7773d86315d3c382e1c182b3fec4"
+      },
+      {
+        "file": "Textures/roof_tiles_14_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/roof_tiles_14/roof_tiles_14_disp_2k.jpg",
+        "md5": "db3ab35e0d5ed4948e1bbe527686a2bc"
+      }
+    ]
+  },
+  {
+    "asset": "rough_block_wall",
+    "page": "https://polyhaven.com/a/rough_block_wall",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_size_metres": [
+      3.0399999618530273,
+      3.0
+    ],
+    "files": [
+      {
+        "file": "Textures/rough_block_wall_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rough_block_wall/rough_block_wall_diff_2k.jpg",
+        "md5": "6347b7a3ed4853c609c87ddbbdc1d20c"
+      },
+      {
+        "file": "Textures/rough_block_wall_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rough_block_wall/rough_block_wall_nor_gl_2k.jpg",
+        "md5": "aff0b13ade92e39c8af28b2028a745f4"
+      },
+      {
+        "file": "Textures/rough_block_wall_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rough_block_wall/rough_block_wall_rough_2k.jpg",
+        "md5": "d72ba325d60a821afde2c716f0e2cbcb"
+      },
+      {
+        "file": "Textures/rough_block_wall_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rough_block_wall/rough_block_wall_disp_2k.jpg",
+        "md5": "7e167e3df75ca48ac8d4852d1b36d8ee"
+      }
+    ]
+  },
+  {
+    "asset": "rough_linen",
+    "page": "https://polyhaven.com/a/rough_linen",
+    "license": "CC0-1.0",
+    "authors": {
+      "colormass": "Photography",
+      "Rico Cilliers": "Processing"
+    },
+    "physical_size_metres": [
+      0.2707081392676629,
+      0.27129998803138733
+    ],
+    "files": [
+      {
+        "file": "Textures/rough_linen_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rough_linen/rough_linen_diff_2k.jpg",
+        "md5": "1287d4d1183c511e4adc55b8d006d763"
+      },
+      {
+        "file": "Textures/rough_linen_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rough_linen/rough_linen_nor_gl_2k.jpg",
+        "md5": "facad45539d3011e197bd87562ba1679"
+      },
+      {
+        "file": "Textures/rough_linen_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rough_linen/rough_linen_rough_2k.jpg",
+        "md5": "fb70674c782d6bead54c8baaae2b77db"
+      },
+      {
+        "file": "Textures/rough_linen_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rough_linen/rough_linen_disp_2k.jpg",
+        "md5": "20b90aaa33ac2b7d071ea0682bf44249"
+      }
+    ]
+  },
+  {
+    "asset": "rustic_stone_wall",
+    "page": "https://polyhaven.com/a/rustic_stone_wall",
+    "license": "CC0-1.0",
+    "authors": {
+      "Dimitrios Savva": "All"
+    },
+    "physical_size_metres": [
+      1.5199998617172241,
+      1.5199998617172241
+    ],
+    "files": [
+      {
+        "file": "Textures/rustic_stone_wall_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rustic_stone_wall/rustic_stone_wall_diff_2k.jpg",
+        "md5": "c4975d0dbac510e746710050fcc8c955"
+      },
+      {
+        "file": "Textures/rustic_stone_wall_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rustic_stone_wall/rustic_stone_wall_nor_gl_2k.jpg",
+        "md5": "31c42224b560df2ef4db780686fb15ce"
+      },
+      {
+        "file": "Textures/rustic_stone_wall_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rustic_stone_wall/rustic_stone_wall_rough_2k.jpg",
+        "md5": "08b54fde78923b0960c60d2a2d47d482"
+      },
+      {
+        "file": "Textures/rustic_stone_wall_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rustic_stone_wall/rustic_stone_wall_disp_2k.jpg",
+        "md5": "ba5adf1b463196e2847bcde35d3e78b9"
+      }
+    ]
+  },
+  {
+    "asset": "sandstone_blocks_05",
+    "page": "https://polyhaven.com/a/sandstone_blocks_05",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_size_metres": [
+      3.0,
+      3.0
+    ],
+    "files": [
+      {
+        "file": "Textures/sandstone_blocks_05_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/sandstone_blocks_05/sandstone_blocks_05_diff_2k.jpg",
+        "md5": "486e2b51beffc6c050d1e2b25fa47cbd"
+      },
+      {
+        "file": "Textures/sandstone_blocks_05_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/sandstone_blocks_05/sandstone_blocks_05_nor_gl_2k.jpg",
+        "md5": "d4d54c89dce5e682e12e38f71db3820d"
+      },
+      {
+        "file": "Textures/sandstone_blocks_05_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/sandstone_blocks_05/sandstone_blocks_05_rough_2k.jpg",
+        "md5": "ccd4bb18858f34cb2ea988dd758a3376"
+      },
+      {
+        "file": "Textures/sandstone_blocks_05_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/sandstone_blocks_05/sandstone_blocks_05_disp_2k.jpg",
+        "md5": "c66bdd127124d05c655c9c5a0789acb1"
+      }
+    ]
+  },
+  {
+    "asset": "sandstone_blocks_08",
+    "page": "https://polyhaven.com/a/sandstone_blocks_08",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_size_metres": [
+      3.0,
+      3.0
+    ],
+    "files": [
+      {
+        "file": "Textures/sandstone_blocks_08_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/sandstone_blocks_08/sandstone_blocks_08_diff_2k.jpg",
+        "md5": "2bd2a87974f1870fad58e25da35ed706"
+      },
+      {
+        "file": "Textures/sandstone_blocks_08_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/sandstone_blocks_08/sandstone_blocks_08_nor_gl_2k.jpg",
+        "md5": "5156759065d1550ef60475c46611b89b"
+      },
+      {
+        "file": "Textures/sandstone_blocks_08_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/sandstone_blocks_08/sandstone_blocks_08_rough_2k.jpg",
+        "md5": "1f6cd4b874436929d438f8f5ba8818d9"
+      },
+      {
+        "file": "Textures/sandstone_blocks_08_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/sandstone_blocks_08/sandstone_blocks_08_disp_2k.jpg",
+        "md5": "819bb58745d120c8f5e70f6854317cfa"
+      }
+    ]
+  },
+  {
+    "asset": "stone_wall",
+    "page": "https://polyhaven.com/a/stone_wall",
+    "license": "CC0-1.0",
+    "authors": {
+      "Dario Barresi": "Processing",
+      "Charlotte Baglioni": "Photography"
+    },
+    "physical_size_metres": [
+      2.0,
+      2.0
+    ],
+    "files": [
+      {
+        "file": "Textures/stone_wall_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/stone_wall/stone_wall_diff_2k.jpg",
+        "md5": "df58e460d6662a67cdee60c9aacdd023"
+      },
+      {
+        "file": "Textures/stone_wall_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/stone_wall/stone_wall_nor_gl_2k.jpg",
+        "md5": "c67918d84b0c5da26b03f46c0016075b"
+      },
+      {
+        "file": "Textures/stone_wall_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/stone_wall/stone_wall_rough_2k.jpg",
+        "md5": "5e5647897908a5fb917439180689ecb6"
+      },
+      {
+        "file": "Textures/stone_wall_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/stone_wall/stone_wall_disp_2k.jpg",
+        "md5": "9b7c573fecf20e8da988e8d62f334377"
+      }
+    ]
+  },
+  {
     "asset": "stone_wall_04",
     "page": "https://polyhaven.com/a/stone_wall_04",
     "license": "CC0-1.0",
@@ -235,6 +681,40 @@
         "file": "Textures/weathered_brown_planks_Displacement.jpg",
         "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/weathered_brown_planks/weathered_brown_planks_disp_2k.jpg",
         "md5": "18c5f810bb461bf82ed1f54b135a91c1"
+      }
+    ]
+  },
+  {
+    "asset": "wood_planks_grey",
+    "page": "https://polyhaven.com/a/wood_planks_grey",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_size_metres": [
+      1.5,
+      1.5000001192092896
+    ],
+    "files": [
+      {
+        "file": "Textures/wood_planks_grey_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/wood_planks_grey/wood_planks_grey_diff_2k.jpg",
+        "md5": "91ca23c2f5584014f465a3a50ada472f"
+      },
+      {
+        "file": "Textures/wood_planks_grey_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/wood_planks_grey/wood_planks_grey_nor_gl_2k.jpg",
+        "md5": "b46a35ec45e38dee2aeeb9330adb270b"
+      },
+      {
+        "file": "Textures/wood_planks_grey_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/wood_planks_grey/wood_planks_grey_rough_2k.jpg",
+        "md5": "91bd16df40f3784b695a6fe2dc6cd709"
+      },
+      {
+        "file": "Textures/wood_planks_grey_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/wood_planks_grey/wood_planks_grey_disp_2k.jpg",
+        "md5": "06b87ab938a91f2423f65648ae53face"
       }
     ]
   }

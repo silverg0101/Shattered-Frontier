@@ -4,16 +4,16 @@ Owner-supplied concept images for the Silverbrook buildings. One image is one de
 
 | Image | Building | Asset ID | Fits (w × d × h m) | Model package | Status |
 |---|---|---|---|---|---|
-| [Town Hall.png](Town%20Hall.png) | Town Hall | BLD-GreenlandsTownHall-01 | 22 × 18 × 28 | — | waiting for a model |
-| [Adventurers Guild.png](Adventurers%20Guild.png) | Adventurers' Guild | BLD-GreenlandsAdventurersGuild-01 | 16 × 13 × 18 | — | waiting for a model |
+| [Town Hall.png](Town%20Hall.png) | Town Hall | BLD-GreenlandsTownHall-01 | 22 × 18 × 28 | `GameClient/ArtSource/Silverbrook/TownHall` | modelling |
+| [Adventurers Guild.png](Adventurers%20Guild.png) | Adventurers' Guild | BLD-GreenlandsAdventurersGuild-01 | 16 × 13 × 18 | `GameClient/ArtSource/Silverbrook/AdventurersGuild` | modelling |
 | [The Golden Stag Inn.png](The%20Golden%20Stag%20Inn.png) | The Golden Stag Inn | BLD-GreenlandsTheGoldenStagInn-01 | 14 × 12 × 14 | — | waiting for a model |
-| [Blacksmith.png](Blacksmith.png) | Blacksmith | BLD-GreenlandsBlacksmith-01 | 14 × 12 × 14 | — | waiting for a model |
+| [Blacksmith.png](Blacksmith.png) | Blacksmith | BLD-GreenlandsBlacksmith-01 | 14 × 12 × 14 | `GameClient/ArtSource/Silverbrook/Blacksmith` | modelling |
 | [Temple of the Dawn.png](Temple%20of%20the%20Dawn.png) | Temple of the Dawn | BLD-GreenlandsTempleOfTheDawn-01 | 14 × 24 × 20 | — | waiting for a model |
 | [Market Stall.png](Market%20Stall.png) | Market stall | BLD-GreenlandsMarketStall-01 | 4 × 4 × 4 | — | waiting for a model |
 | [Watchtower.png](Watchtower.png) | Watchtower | BLD-GreenlandsWatchtower-01 | 8 × 8 × 9 | — | waiting for a model |
 | [Stone Bridge.png](Stone%20Bridge.png) | Stone bridge | BLD-GreenlandsStoneBridge-01 | 30 × 7 deck, spans the 24 m river | — | waiting for a model |
 | [Cottage-1.png](Cottage-1.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | `GameClient/ArtSource/Silverbrook/Cottage1` | modelling |
-| [Cottage-2.png](Cottage-2.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | — | waiting for a model |
+| [Cottage-2.png](Cottage-2.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | `GameClient/ArtSource/Silverbrook/Cottage2` | modelling |
 | [Cottage-3.png](Cottage-3.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | — | waiting for a model |
 | [Cottage-4.png](Cottage-4.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | — | waiting for a model |
 | [Cottage-5.png](Cottage-5.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | — | waiting for a model |

@@ -1,0 +1,18 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookBlacksmith",
+  "size_m": [
+    12.39,
+    9.06,
+    13.39
+  ],
+  "slot_m": [
+    14,
+    12,
+    14
+  ],
+  "fits": true,
+  "slots": 15,
+  "nanite": true,
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 27783
+}

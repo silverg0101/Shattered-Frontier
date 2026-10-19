@@ -1,0 +1,18 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookGoldenStagInn",
+  "size_m": [
+    13.68,
+    10.08,
+    13.78
+  ],
+  "slot_m": [
+    14,
+    12,
+    14
+  ],
+  "fits": true,
+  "slots": 14,
+  "nanite": true,
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 57140
+}

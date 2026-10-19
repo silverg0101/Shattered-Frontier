@@ -1,0 +1,259 @@
+{
+  "asset": "SilverbrookBlacksmith",
+  "reference": {
+    "file": "Blacksmith-reference.png",
+    "sha256": "ae41e8921ba8f04163dd57f716798519c8fc26c7b9abde53a3e53bc2ce67fa1c"
+  },
+  "blender": "5.1.1",
+  "generator": "build_blacksmith.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    12.391,
+    9.055,
+    13.39
+  ],
+  "meshes": {
+    "SM_SBBlacksmith_Masonry": {
+      "triangles": 1380,
+      "materials": [
+        "SB_Ashlar",
+        "SB_Blacksmith_ForgeBrick"
+      ]
+    },
+    "SM_SBBlacksmith_Plaster": {
+      "triangles": 844,
+      "materials": [
+        "SB_LimePlaster"
+      ]
+    },
+    "SM_SBBlacksmith_Timber": {
+      "triangles": 4236,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBBlacksmith_Roof": {
+      "triangles": 62008,
+      "materials": [
+        "SB_Slate",
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBBlacksmith_Details": {
+      "triangles": 11692,
+      "materials": [
+        "SB_ForgedIron",
+        "SB_ChimneyPot",
+        "SB_LitGlass",
+        "SB_LeadCame",
+        "SB_DoorBoards",
+        "SB_Blacksmith_ForgeFire",
+        "SB_PlanterSoil",
+        "SB_Blacksmith_Banner",
+        "SB_Blacksmith_Gilt",
+        "SB_LanternGlow"
+      ]
+    }
+  },
+  "triangles": 80160,
+  "materials": [
+    {
+      "name": "SB_Slate",
+      "scan": "grey_roof_tiles_02",
+      "dark": [
+        0.2,
+        0.22,
+        0.28
+      ],
+      "lichen": "lichen_rock",
+      "normal": 1.0
+    },
+    {
+      "name": "SB_Ashlar",
+      "scan": "stone_wall_04",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_LimePlaster",
+      "scan": "patterned_clay_plaster",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_DoorBoards",
+      "scan": "old_planks_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_Blacksmith_ForgeBrick",
+      "scan": "medieval_red_brick",
+      "dark": [
+        0.1,
+        0.08,
+        0.07
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_Blacksmith_Banner",
+      "scan": "denim_fabric_03",
+      "dark": [
+        0.12,
+        0.14,
+        0.3
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LeadCame",
+      "colour": [
+        0.05,
+        0.05,
+        0.05
+      ],
+      "roughness": 0.45,
+      "metallic": 0.8,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LitGlass",
+      "colour": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "roughness": 0.15,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.5,
+        0.14
+      ],
+      "strength": 3
+    },
+    {
+      "name": "SB_LanternGlow",
+      "colour": [
+        0.3,
+        0.2,
+        0.1
+      ],
+      "roughness": 0.3,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.38,
+        0.08
+      ],
+      "strength": 5
+    },
+    {
+      "name": "SB_PlanterSoil",
+      "colour": [
+        0.06,
+        0.04,
+        0.025
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_ChimneyPot",
+      "colour": [
+        0.2,
+        0.085,
+        0.05
+      ],
+      "roughness": 0.75,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_Blacksmith_ForgeFire",
+      "colour": [
+        0.25,
+        0.08,
+        0.02
+      ],
+      "roughness": 0.9,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.32,
+        0.05
+      ],
+      "strength": 9
+    },
+    {
+      "name": "SB_Blacksmith_Gilt",
+      "colour": [
+        0.62,
+        0.45,
+        0.18
+      ],
+      "roughness": 0.4,
+      "metallic": 0.85,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookBlacksmith",
+  "slot_m": [
+    14,
+    12,
+    14
+  ],
+  "outputs": [
+    "SilverbrookBlacksmith.blend",
+    "SilverbrookBlacksmith.glb",
+    "SilverbrookBlacksmith.fbx"
+  ]
+}
