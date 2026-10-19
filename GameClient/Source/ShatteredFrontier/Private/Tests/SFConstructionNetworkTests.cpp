@@ -7,6 +7,8 @@
 #include "Serialization/BitWriter.h"
 #include "Serialization/MemoryReader.h"
 #include "Serialization/MemoryWriter.h"
+#include "Tests/AutomationCommon.h"
+#include "Construction/SFConstructionSandboxPalette.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFConstructionNetworkBatchSnapshotTest,
     "ShatteredFrontier.Construction.Network.BatchSnapshot",
@@ -54,6 +56,53 @@ bool FSFConstructionNetworkBatchSnapshotTest::RunTest(const FString& Parameters)
     FBitWriter ZeroRevision(4096,true);
     TestFalse(TEXT("Nonempty revision zero rejects"),Source.NetSerialize(ZeroRevision,nullptr,bSuccess));
     TestFalse(TEXT("Revision zero failure does not claim success"),bSuccess);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFConstructionNetworkCursorTest,
+    "ShatteredFrontier.Construction.Network.CursorAndMode",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFConstructionNetworkCursorTest::RunTest(const FString& Parameters)
+{
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::Game)) { return false; }
+    auto* World=Fixture.GetTestWorld();
+    auto* Controller=World->SpawnActorDeferred<ASFConstructionNetworkController>(ASFConstructionNetworkController::StaticClass(),FTransform::Identity);
+    if (!Controller) { return false; }
+    Controller->SetAsLocalPlayerController(); Controller->FinishSpawning(FTransform::Identity);
+    Controller->bScenarioCursor=true;
+    Controller->SetIgnoreLookInput(true); Controller->bOwnsLookSuppression=true; Controller->ApplyCursorMode();
+    TestTrue(TEXT("Free cursor suppresses camera look"),Controller->bShowMouseCursor && Controller->IsLookInputIgnored());
+    Controller->RotationInput=FRotator::ZeroRotator; Controller->AddYawInput(3);
+    TestEqual(TEXT("Free cursor does not turn camera"),Controller->RotationInput.Yaw,0.0);
+    Controller->bHasLineSeed=true; Controller->LineRevision=77;
+    Controller->BeginCameraLook();
+    TestTrue(TEXT("RMB enables look with cursor hidden"),Controller->bCameraLookHeld && !Controller->bShowMouseCursor && !Controller->IsLookInputIgnored());
+    Controller->AddYawInput(3);
+    TestTrue(TEXT("Held RMB admits look axis"),Controller->RotationInput.Yaw!=0);
+    Controller->ToggleDemolition(); Controller->SelectSlab(); Controller->ToggleLineMode();
+    TestTrue(TEXT("Held RMB blocks mode/shape changes"),!Controller->bDemolitionMode && Controller->SelectedShape==0 && !Controller->bLineMode);
+    Controller->EndCameraLook(); Controller->EndCameraLook();
+    TestTrue(TEXT("Repeated RMB release balances look suppression"),!Controller->bCameraLookHeld && Controller->bShowMouseCursor && Controller->IsLookInputIgnored());
+    TestTrue(TEXT("Turning retains start and original revision"),Controller->bHasLineSeed && Controller->LineRevision==77);
+    Controller->bSyntheticPointerOverPalette=true;
+    Controller->ToggleDemolition(); Controller->SelectSlab(); Controller->ToggleLineMode();
+    TestTrue(TEXT("UI hover blocks world shortcuts"),!Controller->bDemolitionMode && Controller->SelectedShape==0 && !Controller->bLineMode);
+    Controller->PaletteAction(ESFConstructionPaletteAction::Slab);
+    TestEqual(TEXT("Palette may dispatch shape despite UI hover"),Controller->SelectedShape,uint8(1));
+    TestFalse(TEXT("Palette selection clears old seed"),Controller->bHasLineSeed);
+    Controller->bSyntheticPointerOverPalette=false;
+    Controller->ToggleDemolition();
+    TestTrue(TEXT("X only selects demolition mode"),Controller->bDemolitionMode);
+    Controller->PaletteAction(ESFConstructionPaletteAction::Line);
+    TestTrue(TEXT("Line palette action returns to placement"),Controller->bLineMode && !Controller->bDemolitionMode);
+    Controller->bHasLineSeed=true; Controller->BeginCameraLook(); Controller->ApplicationActivationChanged(false);
+    TestTrue(TEXT("Focus loss releases capture and discards seed"),!Controller->bCameraLookHeld && !Controller->bHasLineSeed && Controller->IsLookInputIgnored());
+    Controller->SelectCube();
+    TestEqual(TEXT("Inactive application blocks shortcuts"),Controller->SelectedShape,uint8(1));
+    Controller->ApplicationActivationChanged(true); Controller->SelectDoor();
+    TestTrue(TEXT("Door selection resets line and demolition modes"),Controller->bDoorSelected && !Controller->bLineMode && !Controller->bDemolitionMode);
     return true;
 }
 #endif

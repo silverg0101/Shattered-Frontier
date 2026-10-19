@@ -10,6 +10,8 @@ class UProceduralMeshComponent;
 class UPrimitiveComponent;
 class UStaticMesh;
 class ASFConstructionNetworkController;
+class USFConstructionSandboxPalette;
+enum class ESFConstructionPaletteAction : uint8;
 
 UENUM()
 enum class ESFConstructionNetworkResult : uint8
@@ -141,6 +143,9 @@ class SHATTEREDFRONTIER_API ASFConstructionNetworkController : public ASFE1Playe
     GENERATED_BODY()
 public:
     ASFConstructionNetworkController();
+    virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type Reason) override;
+    virtual void ClientRestart_Implementation(APawn* NewPawn) override;
     virtual void SetupInputComponent() override;
     virtual void AcknowledgePossession(APawn* P) override;
     virtual void Tick(float DeltaSeconds) override;
@@ -148,6 +153,18 @@ public:
     void AssignRole(bool bBuilder);
     FString GetBuildStatusText() const;
 private:
+    void InitializeLocalControls();
+    void ApplyCursorMode();
+    void LayoutPalette();
+    void BeginCameraLook();
+    void EndCameraLook();
+    void ApplicationActivationChanged(bool bActive);
+    bool CanUseConstructionControls() const;
+    bool GetConstructionRay(FVector& Start, FVector& Direction) const;
+    bool PrepareCursorAction();
+    void ToggleDemolition();
+    void CancelCursorAction();
+    void PaletteAction(ESFConstructionPaletteAction Action);
     void PlaceFromView();
     void RemoveFromView();
     void ToggleDoorFromView();
@@ -180,6 +197,17 @@ private:
     uint8 SelectedShape = 0;
     uint8 SelectedRotation = 0;
     uint8 SelectedYaw = 0;
+    UPROPERTY(Transient) TObjectPtr<USFConstructionSandboxPalette> Palette;
+    bool bCameraLookHeld = false;
+    bool bOwnsLookSuppression = false;
+    bool bApplicationActive = true;
+    bool bDispatchingPaletteAction = false;
+    FDelegateHandle ActivationHandle;
+    uint64 SampledRevision = MAX_uint64;
+    FString CachedPaletteStatus;
+    FIntPoint PaletteViewportSize = FIntPoint::ZeroValue;
+    float PaletteViewportScale = 0;
+    bool bDemolitionMode = false;
     bool bDoorSelected = false;
     bool bLineMode = false;
     bool bHasLineSeed = false;
@@ -207,7 +235,11 @@ private:
     } SupportCache;
     FString RemovalStatus = TEXT("Aim at a placed piece to remove it.");
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    friend class FSFConstructionNetworkCursorTest;
+    bool bScenarioCursor = false;
+    bool bSyntheticPointerOverPalette = false;
     void TickFiniteScenario();
+    int32 ScenarioCursorCheck = 0;
     int32 ScenarioStep = 0;
     double ScenarioStarted = 0;
     FString ScenarioScreenshotPath;

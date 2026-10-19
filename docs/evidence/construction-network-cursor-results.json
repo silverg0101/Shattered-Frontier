@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-18",
+  "status": "Passed",
+  "rawRoot": "Artifacts/ConstructionSandbox/network-20261018-220928-568",
+  "focusedTestReport": "Artifacts/ConstructionSandbox/network-cursor-controls-20261018-220556-967/Report/index.json",
+  "focusedScope": "CursorAndMode1/1, before presentation-only layout/tint/debug correction; same input logic",
+  "buildLog": "Artifacts/ConstructionSandbox/network-cursor-build-03.log",
+  "buildSeconds": 32.43,
+  "elapsedSeconds": 90.9272102,
+  "cleanupComplete": true,
+  "sha256": {
+    "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionNetwork.h": "56f92eeae018e05186c5be9b6143d287ce7f3c1ec86c4a2c0f6f9d7c3044f69d",
+    "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionNetwork.cpp": "ba887adf323f3d7c97ce88def6c76944287df67e761038e32088a36cd78c312e",
+    "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionSandboxPalette.h": "be4e858498f339aa19e0788796f6847ee787b22dba6a81a86fc56c3ed35aca98",
+    "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionSandboxPalette.cpp": "50503920564ac10d26c1e0c391b5fd4c0d28e1dc7b036f42bf3fd67a1bcd8941",
+    "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionNetworkTests.cpp": "d4f8e32beabeee5fd2f05ebafe81689ac17b117a4cb67620b7f4de2bc62bd248",
+    "tools/Test-ConstructionNetwork.ps1": "5f49178a425ad1fb45af32370c8e05f7e8f5ac447e882ef8abe9290e0172aed3",
+    "Artifacts/ConstructionSandbox/network-20261018-220928-568/results.json": "a291f89f455ec49616b6789831f5a818735218e63b93133fc089a4fe575f4692",
+    "Artifacts/ConstructionSandbox/network-20261018-220928-568/server.log": "74dd894b6794f3334ddc2e57a89d7429bcfb3ab6091c41485dca26874c089120",
+    "Artifacts/ConstructionSandbox/network-20261018-220928-568/driver.log": "79287c8a354f54bcb71a1104f6ab23a2715a8b428c61341073ad5863d723a195",
+    "Artifacts/ConstructionSandbox/network-20261018-220928-568/observer.log": "5368d8e1eec8ca4a688f73b768fba318658153a13a61d62174599e80e8b582e5",
+    "Artifacts/ConstructionSandbox/network-20261018-220928-568/driver.png": "34e3069e586df5bd1191e656dbcdb51bbf5084f93ac4e2da080e0b1953ef352c",
+    "Artifacts/ConstructionSandbox/network-20261018-220928-568/observer.png": "31437e18f9fbad88c3e52805f831b5e6ea23f743cf54562d85e2cde05fb21dcf",
+    "Artifacts/ConstructionSandbox/network-20261018-220928-568/driver.open.png": "2d285e28207a4a8bb08361227f57dc4090122f21ad0e96442224ef76f578c994",
+    "Artifacts/ConstructionSandbox/network-20261018-220928-568/observer.open.png": "665a8b7745811523186a7863aced61882e307590040d5499335b966b81b02604",
+    "Artifacts/ConstructionSandbox/network-cursor-controls-20261018-220556-967/Report/index.json": "6289e0997787e5655d1c34fc3bc0f28bd0d2ed49d3654bf0dc55038446fdf2bd"
+  }
+}

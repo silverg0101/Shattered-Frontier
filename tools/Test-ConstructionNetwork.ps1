@@ -186,7 +186,7 @@ try {
         $log=Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
         $removeRequests += [regex]::Matches($log,'CONSTRUCTION_NETWORK_VIEW_REMOVE Cell=X=-4 Y=-4 Z=1').Count
     }
-    if ($removeRequests -ne 1) { throw 'Expected one supported top removal through ordinary X-key view input.' }
+    if ($removeRequests -ne 1) { throw 'Expected one supported top removal through ordinary demolition-mode LMB input.' }
     if ($viewRequests -ne 1) { throw 'Expected one grounded placement through ordinary B-key view input.' }
     if ($payloads[0] -ne $payloads[1]) { throw 'Clients projected different canonical payloads.' }
     $serverLog = Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw
@@ -222,7 +222,7 @@ try {
         $log=Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
         $doorRemovals += [regex]::Matches($log,'CONSTRUCTION_NETWORK_VIEW_REMOVE_DOOR Cell=X=2 Y=0 Z=0').Count
     }
-    if ($doorRemovals -ne 1 -or [regex]::Matches($serverLog,'CONSTRUCTION_NETWORK_DOOR_REMOVE Revision=').Count -ne 1) { throw 'Expected one ordinary X request and one committed door removal.' }
+    if ($doorRemovals -ne 1 -or [regex]::Matches($serverLog,'CONSTRUCTION_NETWORK_DOOR_REMOVE Revision=').Count -ne 1) { throw 'Expected one ordinary demolition-mode LMB request and one committed door removal.' }
     $toggleViews=0
     foreach ($role in @('driver','observer')) {
         $log=Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
@@ -253,10 +253,17 @@ try {
         $lineSeeds += [regex]::Matches($log,'CONSTRUCTION_NETWORK_LINE_SEED_ONLY Revision=14 Members=2 Collision=1').Count
     }
     if ($lineViews -ne 1 -or $lineSeeds -ne 1) { throw 'Ordinary L/B seed and one atomic line dispatch were not observed.' }
+    $cursorChecks=0; $demolitionModes=0
+    foreach ($role in @('driver','observer')) {
+        $log=Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
+        $cursorChecks += [regex]::Matches($log,'CONSTRUCTION_NETWORK_CURSOR_INPUT CameraHold=1 BlockedWorldClick=1 CursorRestored=1 Revision=0').Count
+        $demolitionModes += [regex]::Matches($log,'CONSTRUCTION_NETWORK_DEMOLITION_MODE Enabled=1').Count
+    }
+    if ($cursorChecks -ne 1 -or $demolitionModes -ne 2) { throw 'Cursor/RMB isolation or explicit block/door demolition mode was not observed.' }
     $results.contentBlake3 = $payloads[0]
     $results.captureFrames = [bool]$CaptureFrames
     $results.status = 'Passed'
-    Write-Output "PASS: two concurrent clients, construction input, retained door, actual E open/blocked-close/retry, both-client pose/collision agreement, X door removal without ghost colliders and scoped physics canary cleanup. Evidence: $root"
+    Write-Output "PASS: two concurrent clients, construction input, retained door, actual E open/blocked-close/retry, both-client pose/collision agreement, explicit demolition-mode door removal without ghost colliders and scoped physics canary cleanup. Evidence: $root"
 } catch {
     $results.status='Failed'; $results.error=$_.Exception.Message; throw
 } finally {
