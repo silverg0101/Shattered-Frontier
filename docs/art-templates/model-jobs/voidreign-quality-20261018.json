@@ -410,8 +410,8 @@
     "primary_skin_adopted": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SmoothedLegSkin-v002/decision.json",
     "clip_library": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ClipLibrary-v003/clips.json",
     "clip_coverage": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ClipLibrary-v003/coverage.json",
-    "delivery_fbx": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Delivery-v006/SK_Voidreign.fbx",
-    "delivery_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Delivery-v006/delivery-report.json",
+    "delivery_fbx": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Delivery-v007/SK_Voidreign.fbx",
+    "delivery_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Delivery-v007/delivery-report.json",
     "secondary_chains": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SecondaryChains-v003/chain-report.json",
     "orm_texture": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ORM-v003/orm-report.json",
     "rider_clips": "GameClient/ArtSource/Voidreign/Rider/RiderClips-v005/rider-report.json",
@@ -437,5 +437,5 @@
     "Primary automatic budget3/3 and walk budget3/3 remain exhausted. Four reviewed construction code corrections /8totalprimarycandidates are tracked separately. Walk v003 target edge improves27.08 to4.06mm but regional check finds new hoof-shell distortion up to20.605mm; no complete hoof fix accepted. Shoulder/body max65.381mm remains.",
     "Whole-mount ground penetration, Tail step86.83mm/80mm, unresolved loose/tack semantics, material relief/effects decisions and runtime gates remain open. Old rigid-harness secondary caches do not transfer to articulated gaits."
   ],
-  "next_action": "Production pass 2026-10-19: Unreal V1 imported and verified headless (mesh 48 bones root scale 1, 60 mount anims incl. baked tail/mane secondary motion and milestone-option clips, 4 engine LODs, ORM material, RiderSeat bone, 10 rider anims on /Game/Mannequin, 17+ event sync markers, VFX material kit). Remaining: animator polish, Niagara VFX, leg-feather chains, LOD0 triangle budget and Git LFS decision for the 246 MB SK_Voidreign.uasset (uncommitted, reproducible from Delivery-v006)."
+  "next_action": "Production pass 2026-10-19: LOD0 budgeted to 99,999 triangles (Delivery-v007, collapse decimation, visually matched to full detail); Unreal /Game/Frontier/Creatures/Voidreign/V1 committed (SK_Voidreign 79 MB, 60 mount anims, 10 rider anims, 4 engine LODs, ORM material, RiderSeat bone, VFX kit), all headless checks pass. Remaining: animator polish, Niagara VFX, leg-feather chains, rendered in-engine review."
 }

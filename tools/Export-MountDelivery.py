@@ -44,6 +44,19 @@ for pb in rig.pose.bones:
 for m in list(obj.modifiers):
     if not (m.type == 'ARMATURE' and m.object == rig): obj.modifiers.remove(m)
 assert len(obj.modifiers) == 1
+source_triangles = len(obj.data.polygons)
+if cfg.get('target_triangles') and source_triangles > cfg['target_triangles']:
+    # Game LOD0 budget: collapse decimation (interpolates UVs and vertex weights), applied ahead of the armature.
+    dec = obj.modifiers.new('LOD0 budget', 'DECIMATE'); dec.decimate_type = 'COLLAPSE'; dec.use_collapse_triangulate = True
+    dec.ratio = cfg['target_triangles'] / source_triangles
+    bpy.context.view_layer.objects.active = obj; bpy.ops.object.modifier_move_to_index(modifier=dec.name, index=0)
+    bpy.ops.object.modifier_apply(modifier=dec.name)
+    import bmesh  # collapse can leave zero-area and duplicate triangles that FBX readers drop; remove them so counts round-trip exactly
+    bm = bmesh.new(); bm.from_mesh(obj.data); bmesh.ops.dissolve_degenerate(bm, dist=1e-7, edges=bm.edges[:])
+    bmesh.ops.triangulate(bm, faces=bm.faces[:]); seen = set(); dupes = []
+    for f in bm.faces:  # duplicate triangles (same three vertices) are merged by FBX readers
+        k = frozenset(v.index for v in f.verts); dupes.append(f) if k in seen else seen.add(k)
+    bmesh.ops.delete(bm, geom=dupes, context='FACES_ONLY'); bm.to_mesh(obj.data); bm.free(); obj.data.update()
 bone_names = {b.name for b in rig.data.bones}
 removed_groups = [vg.name for vg in obj.vertex_groups if vg.name not in bone_names]
 for n in removed_groups: obj.vertex_groups.remove(obj.vertex_groups[n])
@@ -134,7 +147,7 @@ checks = dict(counts=got['polygons'] == counts['polygons'] and got['bones'] == c
               pose_match=all(v is not None and v <= cfg['reimport_tolerance_m'] for v in err.values()))
 report = dict(schema_version=1, status='delivery-export-verified' if all(checks.values()) else 'delivery-export-needs-review', cpu_only=True,
               input_sha256=cfg['input_sha256'], tool_sha256=sha(__file__), profile_sha256=sha(profile), fbx_sha256=sha(fbx), source_blend_sha256=sha(src_blend),
-              source_counts=counts, reimport_counts=got, takes=takes, excluded_failed_clips=[c['id'] for c in lib['clips'] if c['id'] not in takes],
+              source_counts=counts, source_triangles_before_budget=source_triangles, reimport_counts=got, takes=takes, excluded_failed_clips=[c['id'] for c in lib['clips'] if c['id'] not in takes],
               take_names_in_fbx=take_of, reimport_mid_frame_bone_error_m=err, checks=checks, removed_vertex_groups=len(removed_groups),
               dielectric_override_materials=overridden, root_bone=cfg['root_bone'], forward_axis='Blender -Y (exporter default axes)',
               limitations=['Reimport is Blender FBX round trip, not Unreal import acceptance.', 'Single high-poly LOD0; engine LODs not authored.',
