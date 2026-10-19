@@ -34,12 +34,18 @@ namespace
         default: return TEXT("");
         }
     }
+    const TCHAR* ToolPath(bool bAxe)
+    {
+        return bAxe ? TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronAxe.DA_IronAxe")
+            : TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronPickaxe.DA_IronPickaxe");
+    }
     const TCHAR* ResultText(ESFGatheringPilotResult Result)
     {
         switch (Result)
         {
         case ESFGatheringPilotResult::Started: return TEXT("Working. Stay still; E or Escape cancels.");
         case ESFGatheringPilotResult::Refined: return TEXT("Refinement committed to your inventory.");
+        case ESFGatheringPilotResult::ToolRequired: return TEXT("Required tool not equipped: 5 iron axe for oak, 6 iron pickaxe for ore.");
         case ESFGatheringPilotResult::MissingMaterials: return TEXT("Required raw materials are missing. Nothing consumed.");
         case ESFGatheringPilotResult::Granted: return TEXT("Harvest committed to your inventory.");
         case ESFGatheringPilotResult::Stale: return TEXT("Kind changed. Target it again.");
@@ -70,7 +76,8 @@ bool USFGatheringPilotSettings::Validate(FString& Error) const
         && MaterialUnitWeightKg>=0.01f && MaterialUnitWeightKg<=50
         && FMath::IsFinite(RefineSeconds) && RefineSeconds>=0.5f && RefineSeconds<=30
         && TimberInputLogs>=1 && TimberInputLogs<=20 && TimberOutputUnits>=1 && TimberOutputUnits<=20
-        && IngotInputOre>=1 && IngotInputOre<=20 && IngotOutputUnits>=1 && IngotOutputUnits<=20;
+        && IngotInputOre>=1 && IngotInputOre<=20 && IngotOutputUnits>=1 && IngotOutputUnits<=20
+        && FMath::IsFinite(ToolUnitWeightKg) && ToolUnitWeightKg>=0.01f && ToolUnitWeightKg<=50;
     Error=bValid ? TEXT("") : TEXT("Gathering pilot configuration outside declared bounds (including <=30 units per node).");
     return bValid;
 }
@@ -161,6 +168,11 @@ void USFGatheringPilotComponent::BeginPlay()
     {
         const auto* Mode=GetWorld()->GetAuthGameMode<ASFConstructionNetworkGameMode>();
         bEnabled=IsPilotRequested() && Mode && Mode->IsAdmitted();
+        if (bEnabled && !InitializeStarterTools())
+        {
+            bEnabled=false;
+            UE_LOG(LogTemp,Error,TEXT("GATHERING_PILOT_STARTER_TOOLS_FAILED No partial loadout granted; check released tool assets and bag capacity."));
+        }
     }
 #if SF_WITH_MINIMAL_INVENTORY
     if (auto* Inventory=GetOwner()->FindComponentByClass<UInventoryComponent>())
@@ -220,6 +232,64 @@ bool USFGatheringPilotComponent::InventoryReady() const
 #endif
 }
 
+bool USFGatheringPilotComponent::InitializeStarterTools()
+{
+    if (!IsAuthoritativePilotWorld() || !CapturedSettings) { return false; }
+    if (bStarterToolsGranted || !CapturedSettings->bGrantStarterTools) { return true; }
+#if SF_WITH_MINIMAL_INVENTORY
+    auto* Inventory=GetOwner()->FindComponentByClass<UInventoryComponent>();
+    FInventoryItemQuantity Axe; Axe.Item=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(ToolPath(true))); Axe.Quantity=1;
+    FInventoryItemQuantity Pick; Pick.Item=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(ToolPath(false))); Pick.Quantity=1;
+    if (UInventoryTransactionLibrary::ExchangeInventoryItems(Inventory,{}, {Axe,Pick})!=EInventoryTransactionResult::Success) { return false; }
+    bStarterToolsGranted=true; GetOwner()->ForceNetUpdate(); return true;
+#else
+    return false;
+#endif
+}
+
+bool USFGatheringPilotComponent::HasRequiredTool(ESFGatheringPilotKind Kind) const
+{
+    if (Kind==ESFGatheringPilotKind::Sawmill || Kind==ESFGatheringPilotKind::Forge) { return true; }
+#if SF_WITH_MINIMAL_INVENTORY
+    const auto* Inventory=GetOwner()->FindComponentByClass<UInventoryComponent>();
+    TSoftObjectPtr<UInventoryItemDefinition> Equipped; int32 Quantity=0;
+    // These two released definitions are the pilot's tier-one axe/pickaxe catalogue.
+    return Inventory && Inventory->GetEquippedItem(TEXT("tool"),Equipped,Quantity) && Quantity==1
+        && Equipped.ToSoftObjectPath()==FSoftObjectPath(ToolPath(Kind==ESFGatheringPilotKind::Oak));
+#else
+    return false;
+#endif
+}
+
+bool USFGatheringPilotComponent::TryEquipTool(bool bAxe)
+{
+    if (!bEnabled) { return false; }
+    const auto* PC=Cast<APlayerController>(GetOwner());
+    if (!PC || (!PC->HasAuthority() && !PC->IsLocalController()) || (PC->HasAuthority() && !IsAuthoritativePilotWorld())) { return false; }
+    if (HasRequiredTool(bAxe ? ESFGatheringPilotKind::Oak : ESFGatheringPilotKind::Iron)) { return true; }
+#if SF_WITH_MINIMAL_INVENTORY
+    auto* Inventory=GetOwner()->FindComponentByClass<UInventoryComponent>();
+    if (!Inventory) { return false; }
+    const FSoftObjectPath Desired(ToolPath(bAxe));
+    for (int32 I=0; I<FMath::Clamp(Inventory->NumSlots,0,64); ++I)
+    {
+        TSoftObjectPtr<UInventoryItemDefinition> Item; int32 Quantity=0;
+        if (Inventory->GetSlot(I,Item,Quantity) && Quantity>0 && Item.ToSoftObjectPath()==Desired)
+        { CancelLocalHarvest(); return Inventory->EquipFromSlot(I); }
+    }
+#endif
+    return false;
+}
+
+void USFGatheringPilotComponent::EquipAxe() { TryEquipTool(true); }
+void USFGatheringPilotComponent::EquipPickaxe() { TryEquipTool(false); }
+
+FString USFGatheringPilotComponent::GetToolName() const
+{
+    return HasRequiredTool(ESFGatheringPilotKind::Oak) ? TEXT("Iron axe")
+        : HasRequiredTool(ESFGatheringPilotKind::Iron) ? TEXT("Iron pickaxe") : TEXT("None equipped");
+}
+
 ESFGatheringPilotResult USFGatheringPilotComponent::ApplyInventory(ESFGatheringPilotKind Kind, bool bCommit)
 {
 #if SF_WITH_MINIMAL_INVENTORY
@@ -268,6 +338,7 @@ void USFGatheringPilotComponent::ServerGatheringAction_Implementation(ASFGatheri
     if (Result==ESFGatheringPilotResult::None && Node->State.Revision!=Revision) { Result=ESFGatheringPilotResult::Stale; }
     if (Result==ESFGatheringPilotResult::None && !Node->IsRefinery() && Node->State.Charges<=0) { Result=ESFGatheringPilotResult::Depleted; }
     if (Result==ESFGatheringPilotResult::None && Node->State.bBusy) { Result=ESFGatheringPilotResult::Busy; }
+    if (Result==ESFGatheringPilotResult::None && !HasRequiredTool(Node->Kind)) { Result=ESFGatheringPilotResult::ToolRequired; }
     if (Result==ESFGatheringPilotResult::None && !InventoryReady()) { Result=ESFGatheringPilotResult::Unavailable; }
     if (Result==ESFGatheringPilotResult::None) { Result=ApplyInventory(Node->Kind,false); }
     if (Result!=ESFGatheringPilotResult::None) { Finish(ESFGatheringPilotPhase::Rejected,Result); return; }
@@ -307,6 +378,7 @@ void USFGatheringPilotComponent::TickComponent(float Delta, ELevelTick Type, FAc
         >FMath::Square(CapturedSettings->MovementCancelMetres*100.0))) { Result=ESFGatheringPilotResult::Moved; }
     if (Result==ESFGatheringPilotResult::None && (Feedback.Node->Kind!=ActiveKind || Feedback.Node->LockedBy.Get()!=this || Feedback.Node->State.Revision!=LastRevision
         || (!Feedback.Node->IsRefinery() && Feedback.Node->State.Charges<=0) || Feedback.Node->State.Revision==MAX_uint32)) { Result=ESFGatheringPilotResult::Stale; }
+    if (Result==ESFGatheringPilotResult::None && !HasRequiredTool(ActiveKind)) { Result=ESFGatheringPilotResult::ToolRequired; }
     if (Result!=ESFGatheringPilotResult::None) { Finish(ESFGatheringPilotPhase::Canceled,Result); return; }
     if (GetWorld()->GetTimeSeconds()<Feedback.EndsAtServerSeconds) { return; }
     Result=ApplyInventory(ActiveKind,true);
@@ -383,7 +455,7 @@ FString USFGatheringPilotComponent::GetStatusText(const FVector& Start, const FV
             : Node->GetState().bBusy ? TEXT("In use") : Node->IsRefinery() ? TEXT("E: refine") : TEXT("E: harvest"));
         if (!Node->IsRefinery()) { Action+=FString::Printf(TEXT(" (%d charges)"),Node->GetState().Charges); }
     }
-    return TEXT("GATHERING PILOT | Session-only inventory; practice tools\n")+InventoryText+TEXT("\n")+Action;
+    return TEXT("GATHERING PILOT | Session-only inventory and starter tools\n")+InventoryText+TEXT("\nTool: ")+GetToolName()+TEXT(" | 5: axe | 6: pickaxe\n")+Action;
 }
 
 void USFGatheringPilotComponent::AssignPilotRole(bool bPrimary)
@@ -428,6 +500,12 @@ void USFGatheringPilotComponent::TickFiniteNetworkScenario()
     };
     if (ScenarioStep==0)
     {
+        const auto Required=bPrimaryRole ? ESFGatheringPilotKind::Oak : ESFGatheringPilotKind::Iron;
+        if (!HasRequiredTool(Required))
+        {
+            if (!bScenarioToolRequested) { bScenarioToolRequested=TryEquipTool(bPrimaryRole); }
+            return;
+        }
         const auto* Character=Cast<ACharacter>(PC->GetPawn());
         const FVector Position=PC->GetPawn()->GetActorLocation();
         if (!Character || !Character->GetCharacterMovement()->IsMovingOnGround() || !Character->GetVelocity().IsNearlyZero(1.0)

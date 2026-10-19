@@ -794,7 +794,8 @@ ASFConstructionNetworkController::ASFConstructionNetworkController()
     auto* Inventory=CreateDefaultSubobject<UInventoryComponent>(TEXT("GatheringPilotInventory"));
     PilotInventory=Inventory;
     Inventory->bUseBuiltInInteraction=false; Inventory->bEnableLookPrompt=false;
-    Inventory->bUseExternalInventoryUI=true; Inventory->bEnableEquipment=false;
+    Inventory->bUseExternalInventoryUI=true; Inventory->bEnableEquipment=true;
+    Inventory->AllowedEquipmentSlots={FName(TEXT("tool"))};
     Inventory->bGrantStartupItems=false; Inventory->bAutoLoadOnBeginPlay=false;
     Inventory->bAutoSaveOnInventoryChanged=false; Inventory->bAutoSaveLoadInNetworkedGames=false;
     Inventory->bAutoCreateHotbarOnOwningClient=false; Inventory->bAutoShowUIOnOwningClient=false;
@@ -1016,6 +1017,8 @@ void ASFConstructionNetworkController::SetupInputComponent()
     InputComponent->BindKey(EKeys::Two,IE_Pressed,this,&ASFConstructionNetworkController::SelectSlab);
     InputComponent->BindKey(EKeys::Three,IE_Pressed,this,&ASFConstructionNetworkController::SelectSlope);
     InputComponent->BindKey(EKeys::Four,IE_Pressed,this,&ASFConstructionNetworkController::SelectDoor);
+    InputComponent->BindKey(EKeys::Five,IE_Pressed,this,&ASFConstructionNetworkController::EquipGatheringAxe);
+    InputComponent->BindKey(EKeys::Six,IE_Pressed,this,&ASFConstructionNetworkController::EquipGatheringPickaxe);
     // Controller consumes E before the inherited pawn's probe binding.
     InputComponent->BindKey(EKeys::E,IE_Pressed,this,&ASFConstructionNetworkController::ToggleDoorFromView);
     InputComponent->BindKey(EKeys::L,IE_Pressed,this,&ASFConstructionNetworkController::ToggleLineMode);
@@ -1025,6 +1028,11 @@ void ASFConstructionNetworkController::SetupInputComponent()
     InputComponent->BindKey(EKeys::Escape,IE_Pressed,this,&ASFConstructionNetworkController::CancelCursorAction);
     InputComponent->BindKey(EKeys::R,IE_Pressed,this,&ASFConstructionNetworkController::RotatePiece);
 }
+
+void ASFConstructionNetworkController::EquipGatheringAxe()
+{ if (CanUseConstructionControls() && GatheringPilot) { GatheringPilot->EquipAxe(); } }
+void ASFConstructionNetworkController::EquipGatheringPickaxe()
+{ if (CanUseConstructionControls() && GatheringPilot) { GatheringPilot->EquipPickaxe(); } }
 
 void ASFConstructionNetworkController::SelectCube() { SelectShape(0); }
 void ASFConstructionNetworkController::SelectSlab() { SelectShape(1); }

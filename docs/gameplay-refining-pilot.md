@@ -16,4 +16,4 @@ Evidence: final editor build03 passed in 8.74 s; `Artifacts/ConstructionSandbox/
 
 The asset generator initially used a nonexistent Python class wrapper/property spelling; explicit reflected class/native property lookup corrected it before any asset write. Output definitions were then generated successfully. No vendor code was copied or changed.
 
-Next: expose the reused inventory window for inspecting/managing the gathered/refined items, then evaluate equipped gathering tools against the vertical-slice design. Keep checks at substantive integration boundaries.
+Follow-up: [equipped gathering tools](gameplay-gathering-tools-pilot.md) now enforce logging/mining categories. The default desktop inventory window is held for an in-game UMG/HUD route; continue the resource loop without adopting that presentation. Keep checks at substantive integration boundaries.

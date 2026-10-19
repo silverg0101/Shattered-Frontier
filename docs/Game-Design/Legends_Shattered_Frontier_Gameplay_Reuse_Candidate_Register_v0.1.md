@@ -29,6 +29,10 @@ Fab's “Allows usage with AI” metadata was Yes for Minimal Inventory Runtime,
 
 [Ultimate Map System](https://www.fab.com/listings/0db9a37f-5c36-46ac-92af-5fc514e0a88d) is a future map/objective UI candidate, but current free pricing was not verified: checkout showed purchase controls despite “free” description text. Do not classify it as free or acquire on that assumption. Enemy icons must never disclose unauthorized server information. Paid kits and expired giveaways are excluded from the free shortlist.
 
+## Inspected presentation fit
+
+Minimal Inventory Runtime's built-in Slate inventory creates a separate desktop window. Keep it as a reference; the game's bag should use the supported existing-HUD/UMG integration route. Its actual inventory transactions and equipment handling are reused by the [gathering/refinement/tool pilots](../gameplay-gathering-tools-pilot.md). This is a concrete fit decision from installed-source inspection, not adoption of an entire UI framework.
+
 ## Player benefit and next implementation step
 
 Possible improvements worth comparing are consistent action prompts/remappable controls, clearer transaction feedback, readable introductory dialogue and better foot contact. These are proposals, not approved mechanic changes. No listing alone establishes a better player experience. If an asset suggests a rule change, document the concrete player flow, expected benefit, accessibility/latency effects and design/dependency cost before amending the governing design.

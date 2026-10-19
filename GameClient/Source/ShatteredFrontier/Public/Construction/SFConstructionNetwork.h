@@ -176,6 +176,8 @@ private:
     void PlaceFromView();
     void RemoveFromView();
     void ToggleDoorFromView();
+    void EquipGatheringAxe();
+    void EquipGatheringPickaxe();
     void RefreshPlacementPreview(bool bDrawOutline);
     void ProcessEdit(FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation);
     void SelectCube();

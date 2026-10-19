@@ -1,6 +1,6 @@
 # Construction sandbox: laptop handoff
 
-Latest gameplay checkpoint: [gathering](gameplay-gathering-pilot.md) and [sawmill/forge refinement](gameplay-refining-pilot.md) pass focused authority and two-client private-output/replay checks using the free inventory runtime. The design's log-to-four-timber and ore-to-ingot recipes are implemented as session-only pilots. Next: inventory window access and equipped-tool evaluation. Runtime code remains in the isolated gameplay worktree; preserve the environment checkout.
+Latest gameplay checkpoint: [gathering](gameplay-gathering-pilot.md), [refinement](gameplay-refining-pilot.md) and [equipped axe/pickaxe requirements](gameplay-gathering-tools-pilot.md) pass focused authority and two-client gather/refine checks using the free inventory runtime. Next: renewable resource charges at the design's common-node recovery time. All are session-only pilots; durable ownership/wear/progression/Linux remain open. Runtime code stays in the isolated gameplay worktree; preserve the environment checkout.
 
 Checkpoint: 2026-10-18. User played the updated cursor/palette prototype and reported **"works much better."** Record this as positive initial controls feedback; final UI design and exhaustive manual door/edge-case acceptance remain open.
 

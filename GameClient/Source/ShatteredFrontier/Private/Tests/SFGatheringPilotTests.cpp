@@ -42,6 +42,23 @@ bool FSFGatheringPilotAuthorityTest::RunTest(const FString& Parameters)
         Component->CapturedSettings=DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(),Component);
         Component->CapturedSettings->HarvestSeconds=0.5f; Component->CapturedSettings->RefineSeconds=0.5f; Component->bEnabled=true; Component->bTestWorldAdmission=true;
     }
+    const auto GiveAndEquip=[this](UInventoryComponent* Bag, bool bAxe)
+    {
+        FInventoryItemQuantity Tool;
+        Tool.Item=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(bAxe
+            ? TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronAxe.DA_IronAxe")
+            : TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronPickaxe.DA_IronPickaxe")));
+        Tool.Quantity=1;
+        if (UInventoryTransactionLibrary::ExchangeInventoryItems(Bag,{}, {Tool})!=EInventoryTransactionResult::Success) { return false; }
+        for (int32 I=0; I<Bag->NumSlots; ++I)
+        {
+            TSoftObjectPtr<UInventoryItemDefinition> Item; int32 Quantity=0;
+            if (Bag->GetSlot(I,Item,Quantity) && Item==Tool.Item) { return Bag->EquipFromSlot(I); }
+        }
+        return false;
+    };
+    if (!TestTrue(TEXT("Authority fixture equips axe"),GiveAndEquip(Inventory,true))
+        || !TestTrue(TEXT("Other fixture equips pickaxe"),GiveAndEquip(OtherInventory,false))) { return false; }
     auto* Wood=World->SpawnActor<ASFGatheringPilotNode>(FVector(200,0,100),FRotator::ZeroRotator,Spawn);
     auto* Ore=World->SpawnActor<ASFGatheringPilotNode>(FVector(200,140,100),FRotator::ZeroRotator,Spawn);
     if (!Wood || !Ore) { return false; }
@@ -71,6 +88,9 @@ bool FSFGatheringPilotAuthorityTest::RunTest(const FString& Parameters)
     OtherPawn->SetActorLocation(FVector(10,100,100)); Tick(1);
     TestEqual(TEXT("Moving cancels channel"),OtherGather->Feedback.Result,ESFGatheringPilotResult::Moved);
     TestTrue(TEXT("Movement preserves charge and lock becomes available"),Ore->State.Charges==1 && !Ore->State.bBusy);
+    if (!TestTrue(TEXT("Ore test switches to pickaxe"),GiveAndEquip(Inventory,false))) { return false; }
+    FInventoryItemQuantity ReturnedAxe; ReturnedAxe.Item=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronAxe.DA_IronAxe"))); ReturnedAxe.Quantity=1;
+    TestEqual(TEXT("Fixture removes returned axe to isolate raw-material capacity"),UInventoryTransactionLibrary::ExchangeInventoryItems(Inventory,{ReturnedAxe},{}),EInventoryTransactionResult::Success);
     Inventory->MaxWeight=1; // Already contains one 1 kg wood unit.
     Gather->ServerGatheringAction_Implementation(Ore,0,2); Tick(12);
     TestEqual(TEXT("Full bag rejects entire grant"),Gather->Feedback.Result,ESFGatheringPilotResult::InventoryFull);
@@ -139,6 +159,71 @@ bool FSFGatheringPilotAuthorityTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Forge creates exactly one design-authored ingot"),UInventoryTransactionLibrary::GetItemQuantity(Inventory,IngotItem),int64(1));
     Gather->ServerGatheringAction_Implementation(Forge,1,12);
     TestEqual(TEXT("Forge cannot craft from nothing"),Gather->Feedback.Result,ESFGatheringPilotResult::MissingMaterials);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFGatheringPilotToolTest,
+    "ShatteredFrontier.Gathering.Pilot.Tools",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFGatheringPilotToolTest::RunTest(const FString& Parameters)
+{
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) { return false; }
+    auto* World=Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
+    auto* PC=World->SpawnActor<ASFConstructionNetworkController>();
+    FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    auto* Pawn=World->SpawnActor<ASFE1Character>(FVector(0,0,100),FRotator::ZeroRotator,Spawn);
+    auto* Wood=World->SpawnActor<ASFGatheringPilotNode>(FVector(200,0,100),FRotator::ZeroRotator,Spawn);
+    if (!PC || !Pawn || !Wood) { return false; }
+    PC->Possess(Pawn); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
+    auto* Gather=PC->FindComponentByClass<USFGatheringPilotComponent>();
+    auto* Bag=PC->FindComponentByClass<UInventoryComponent>(); if (!Gather || !Bag) { return false; }
+    Gather->CapturedSettings=DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(),Gather);
+    Gather->CapturedSettings->HarvestSeconds=0.5f; Gather->bTestWorldAdmission=true; Gather->bEnabled=true;
+    Wood->State.Charges=1;
+    TestTrue(TEXT("Two-tool starter loadout commits"),Gather->InitializeStarterTools());
+    TestEqual(TEXT("Starter loadout has exactly two items"),Bag->GetTotalItemCount(),2);
+    TestTrue(TEXT("Loadout initialization can repeat safely"),Gather->InitializeStarterTools());
+    TestEqual(TEXT("Repeated initialization cannot duplicate tools"),Bag->GetTotalItemCount(),2);
+    Gather->ServerGatheringAction_Implementation(Wood,0,1);
+    TestEqual(TEXT("Owning a tool without equipping it is insufficient"),Gather->Feedback.Result,ESFGatheringPilotResult::ToolRequired);
+    TestFalse(TEXT("Missing tool does not lock node"),Wood->State.bBusy);
+    TestTrue(TEXT("Plugin equips owned pickaxe"),Gather->TryEquipTool(false));
+    Gather->ServerGatheringAction_Implementation(Wood,0,2);
+    TestEqual(TEXT("Wrong category cannot log wood"),Gather->Feedback.Result,ESFGatheringPilotResult::ToolRequired);
+    TestTrue(TEXT("Plugin swaps to axe"),Gather->TryEquipTool(true));
+    Gather->ServerGatheringAction_Implementation(Wood,0,3);
+    TestTrue(TEXT("Correct equipped tool starts channel"),Wood->State.bBusy);
+    // Direct plugin equipment change exercises server revalidation even when the
+    // normal key path's explicit cancel is bypassed.
+    for (int32 I=0; I<Bag->NumSlots; ++I)
+    {
+        TSoftObjectPtr<UInventoryItemDefinition> Item; int32 Quantity=0;
+        if (Bag->GetSlot(I,Item,Quantity) && Item.ToSoftObjectPath()==FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronPickaxe.DA_IronPickaxe")))
+        { TestTrue(TEXT("Mid-channel raw equipment RPC can swap tool"),Bag->EquipFromSlot(I)); break; }
+    }
+    Fixture.TickTestWorld(0.05f);
+    TestEqual(TEXT("Changing required tool cancels before grant"),Gather->Feedback.Result,ESFGatheringPilotResult::ToolRequired);
+    TestTrue(TEXT("Tool cancellation preserves charge/revision and releases lock"),Wood->State.Charges==1 && Wood->State.Revision==0 && !Wood->State.bBusy);
+    Gather->ServerGatheringAction_Implementation(Wood,0,3);
+    TestEqual(TEXT("Replay retains canceled tool outcome"),Gather->Feedback.Result,ESFGatheringPilotResult::ToolRequired);
+    TestTrue(TEXT("Re-equip axe for a new action"),Gather->TryEquipTool(true));
+    Gather->ServerGatheringAction_Implementation(Wood,0,4);
+    for (int32 I=0; I<12; ++I) { Fixture.TickTestWorld(0.05f); }
+    TestEqual(TEXT("Equipped tool permits exactly one final harvest"),Wood->State.Revision,uint32(1));
+    TestEqual(TEXT("Successful harvest outcome"),Gather->Feedback.Result,ESFGatheringPilotResult::Granted);
+
+    auto* SmallPC=World->SpawnActor<ASFConstructionNetworkController>(); if (!SmallPC) { return false; }
+    auto* SmallGather=SmallPC->FindComponentByClass<USFGatheringPilotComponent>();
+    auto* SmallBag=SmallPC->FindComponentByClass<UInventoryComponent>(); if (!SmallGather || !SmallBag) { return false; }
+    SmallGather->CapturedSettings=DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(),SmallGather);
+    SmallGather->bTestWorldAdmission=true; SmallGather->bEnabled=true; SmallBag->NumSlots=1;
+    TestFalse(TEXT("Starter loadout fails atomically when only one slot fits"),SmallGather->InitializeStarterTools());
+    TestEqual(TEXT("Failed starter grant leaves bag empty"),SmallBag->GetTotalItemCount(),0);
+    SmallBag->NumSlots=2;
+    TestTrue(TEXT("Loadout retries after capacity correction"),SmallGather->InitializeStarterTools());
+    TestEqual(TEXT("Retry grants exactly the two tools"),SmallBag->GetTotalItemCount(),2);
     return true;
 }
 #endif

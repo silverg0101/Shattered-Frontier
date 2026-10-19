@@ -1,6 +1,6 @@
 # E1 Unreal foundation
 
-Optional gathering: the [gameplay pilot](../docs/gameplay-gathering-pilot.md) uses the free Minimal Inventory Runtime 2.0.0 engine plugin on Win64 (install from Fab on a new machine). Add server `-GatheringPilot` alongside the dedicated construction flags; E harvests oak/iron or refines at the sawmill/forge over a timed channel, E/Escape cancel, and the HUD shows your private session-only bag. No startup map or Linux inventory acceptance changes. Focused authority and `tools/Test-GatheringPilot.ps1` evidence are linked there.
+Optional gathering: the [gameplay pilot](../docs/gameplay-gathering-pilot.md) uses the free Minimal Inventory Runtime 2.0.0 engine plugin on Win64 (install from Fab on a new machine). Add server `-GatheringPilot` alongside the dedicated construction flags; E harvests oak/iron or refines at the sawmill/forge over a timed channel, E/Escape cancel, and the HUD shows your private session-only bag. Press5 for the starter iron axe or6 for the starter iron pickaxe; the correct equipped tool is required for logging/mining. No startup map or Linux inventory acceptance changes. Focused authority and `tools/Test-GatheringPilot.ps1` evidence are linked there.
 
 ## Isolated construction placement pilot
 

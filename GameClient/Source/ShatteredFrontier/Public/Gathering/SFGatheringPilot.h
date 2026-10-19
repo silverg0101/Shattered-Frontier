@@ -44,6 +44,10 @@ public:
     int32 IngotInputOre = 1;
     UPROPERTY(Config, EditAnywhere, Category="Refining", meta=(ClampMin="1", ClampMax="20"))
     int32 IngotOutputUnits = 1;
+    UPROPERTY(Config, EditAnywhere, Category="Starter Tools", meta=(ToolTip="Development loadout only: grant one released tier-one axe and pickaxe once per admitted controller. Release authors; next world start."))
+    bool bGrantStarterTools = true;
+    UPROPERTY(Config, EditAnywhere, Category="Starter Tools (Content Generation)", meta=(ClampMin="0.01", ClampMax="50", Units="kg"))
+    float ToolUnitWeightKg = 2;
     bool Validate(FString& Error) const;
 };
 
@@ -76,6 +80,7 @@ public:
 private:
     friend class USFGatheringPilotComponent;
     friend class FSFGatheringPilotAuthorityTest;
+    friend class FSFGatheringPilotToolTest;
     UFUNCTION() void OnRep_State();
     void Release(USFGatheringPilotComponent* Interactor);
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> Mesh;
@@ -91,7 +96,7 @@ UENUM()
 enum class ESFGatheringPilotResult : uint8
 {
     None, Started, Granted, InvalidContext, InvalidTarget, Stale, Busy, Depleted,
-    OutOfReach, Occluded, Moved, Canceled, InventoryFull, Unavailable, KeyConflict, Refined, MissingMaterials
+    OutOfReach, Occluded, Moved, Canceled, InventoryFull, Unavailable, KeyConflict, Refined, MissingMaterials, ToolRequired
 };
 
 USTRUCT()
@@ -118,6 +123,8 @@ public:
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out) const override;
     bool InteractFromRay(const FVector& Start, const FVector& Direction);
     void CancelLocalHarvest();
+    void EquipAxe();
+    void EquipPickaxe();
     FString GetStatusText(const FVector& Start, const FVector& Direction) const;
     static bool IsPilotRequested();
     void AssignPilotRole(bool bPrimary);
@@ -128,9 +135,11 @@ public:
     double ScenarioReplayedAt = 0;
     double ScenarioStableSince = 0;
     FVector ScenarioLastPosition = FVector::ZeroVector;
+    bool bScenarioToolRequested = false;
 #endif
 private:
     friend class FSFGatheringPilotAuthorityTest;
+    friend class FSFGatheringPilotToolTest;
     UFUNCTION(Server, Reliable) void ServerGatheringAction(ASFGatheringPilotNode* Node, uint32 Revision, uint32 Operation);
     UFUNCTION(Server, Reliable) void ServerCancelHarvest(uint32 Operation);
     UFUNCTION() void OnRep_Feedback();
@@ -140,6 +149,10 @@ private:
     ASFGatheringPilotNode* FindNode(const FVector& Start, const FVector& Direction) const;
     ESFGatheringPilotResult ApplyInventory(ESFGatheringPilotKind Kind, bool bCommit);
     bool InventoryReady() const;
+    bool InitializeStarterTools();
+    bool HasRequiredTool(ESFGatheringPilotKind Kind) const;
+    bool TryEquipTool(bool bAxe);
+    FString GetToolName() const;
     bool IsAuthoritativePilotWorld() const;
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
     bool bTestWorldAdmission = false;
@@ -159,4 +172,5 @@ private:
     UPROPERTY(Replicated) bool bPrimaryRole = false;
     UPROPERTY(Replicated) bool bRoleAssigned = false;
     bool bKeyConflict = false;
+    bool bStarterToolsGranted = false;
 };
