@@ -103,9 +103,9 @@ def main():
     mel.connect_material_property(to, 'B', unreal.MaterialProperty.MP_METALLIC)
     mat.set_editor_property('two_sided', True)  # hair sheets are single-sided cards
     mel.recompile_material(mat)
-    mats = mesh.get_editor_property('materials')
-    for m in mats: m.set_editor_property('material_interface', mat)
-    mesh.set_editor_property('materials', mats)
+    # Struct elements of an Unreal array come back as copies: build new entries rather than editing them in place.
+    mesh.set_editor_property('materials', [unreal.SkeletalMaterial(material_interface=mat, material_slot_name=m.get_editor_property('material_slot_name'))
+                                           for m in mesh.get_editor_property('materials')])
 
     # Animations: move, root motion, events as sync markers.
     moved, missing = [], []
@@ -134,6 +134,7 @@ def main():
                   animations=len(moved) == len(report['takes']) and not missing,
                   height_cm=1.0 * 2 * ext.z, lods=lod_count == a.lods)
     checks['height_ok'] = 200 < checks['height_cm'] < 320
+    checks['material_assigned'] = all(m.get_editor_property('material_interface') == mat for m in mesh.get_editor_property('materials'))
     ref = unreal.AnimPoseExtensions.get_reference_pose(skel)
     checks['root_scale_1'] = abs(unreal.AnimPoseExtensions.get_ref_bone_pose(ref, 'root', unreal.AnimPoseSpaces.LOCAL).scale3d.x - 1) < 1e-4  # units converted, not carried as root scale
     unreal.EditorAssetLibrary.save_directory(root, only_if_is_dirty=False, recursive=True)
