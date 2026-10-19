@@ -4,13 +4,14 @@ python tools/Run-InEditor.py GameClient/ArtSource/Silverbrook/import_silverbrook
 
 One shared library under /Game/Frontier/Environment/Greenlands/Silverbrook: the Poly Haven
 textures are imported once; M_SB_Scan (weathering from vertex colour R, lichen from G on UV1 =
-WorldUV) and M_SB_Solid are the masters; each palette material is an MI_ instance. Each package
+WorldUV, Nanite tessellation displacement from the scan's height map; needs r.Nanite.AllowTessellation=1) and M_SB_Solid are the masters; each palette material is an MI_ instance. Each package
 becomes one Nanite static mesh, SM_<package's unreal_mesh>, with convex simple collision.
 No level is touched; the town builder places the meshes.
 """
 import unreal as u,json,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent;LIB='/Game/Frontier/Environment/Greenlands/Silverbrook'
+DISPLACEMENT_CM=3.0  # full 0..1 height range of a scan; real mortar joints and slate laps are 1-3 cm deep
 tools=u.AssetToolsHelpers.get_asset_tools();mel=u.MaterialEditingLibrary;eal=u.EditorAssetLibrary;sme=u.get_editor_subsystem(u.StaticMeshEditorSubsystem)
 assert sme,'Full editor required'
 packages=[a for a in sys.argv[1:] if (ROOT/a/'asset-manifest.json').exists()] or sorted(p.parent.name for p in ROOT.glob('*/asset-manifest.json'))
@@ -21,7 +22,8 @@ def texture(asset,channel):
     if not eal.does_asset_exist(path):
         task=u.AssetImportTask();task.filename=str(ROOT/'Textures'/f'{asset}_{channel}.jpg');task.destination_path=LIB+'/Textures';task.destination_name=f'T_SB_{asset}_{channel}';task.automated=True;task.save=True;tools.import_asset_tasks([task])
         t=u.load_asset(path);t.set_editor_property('srgb',channel=='Diffuse')
-        if channel=='nor_gl':t.set_editor_property('compression_settings',u.TextureCompressionSettings.TC_NORMALMAP);t.set_editor_property('flip_green_channel',True)  # OpenGL -> DirectX
+        if channel=='Displacement':t.set_editor_property('compression_settings',u.TextureCompressionSettings.TC_GRAYSCALE)
+        elif channel=='nor_gl':t.set_editor_property('compression_settings',u.TextureCompressionSettings.TC_NORMALMAP);t.set_editor_property('flip_green_channel',True)  # OpenGL -> DirectX
         elif channel=='Rough':t.set_editor_property('compression_settings',u.TextureCompressionSettings.TC_MASKS)
         eal.save_loaded_asset(t)
     return u.load_asset(path)
@@ -63,7 +65,17 @@ def scan_master():
     ns=node(m,u.MaterialExpressionScalarParameter,-900,450,parameter_name='NormalStrength',default_value=1)
     flat=node(m,u.MaterialExpressionConstant3Vector,-900,520,constant=u.LinearColor(0,0,1,1))
     nl=node(m,u.MaterialExpressionLinearInterpolate,-600,380);link(flat,'',nl,'A');link(nor,'RGB',nl,'B');link(ns,'',nl,'Alpha')
-    out(base,'',u.MaterialProperty.MP_BASE_COLOR);out(rough,'R',u.MaterialProperty.MP_ROUGHNESS);out(nl,'',u.MaterialProperty.MP_NORMAL)
+    # Nanite tessellation: scanned height around 0.5 (no offset), scaled per instance; magnitude in cm.
+    hgt=node(m,u.MaterialExpressionTextureSampleParameter2D,-1100,1000,parameter_name='Height',texture=texture('stone_wall_04','Displacement'),sampler_type=S.SAMPLERTYPE_LINEAR_GRAYSCALE);link(uv0,'',hgt,'UVs')
+    ds=node(m,u.MaterialExpressionScalarParameter,-900,1150,parameter_name='DisplacementScale',default_value=1)
+    half=node(m,u.MaterialExpressionConstant,-900,1250,r=.5)
+    disp=node(m,u.MaterialExpressionLinearInterpolate,-600,1050);link(half,'',disp,'A');link(hgt,'R',disp,'B');link(ds,'',disp,'Alpha')
+    # Displacement is not exposed as a MaterialProperty in Python, so drive everything through attributes.
+    attrs=node(m,u.MaterialExpressionMakeMaterialAttributes,100,0)
+    link(base,'',attrs,'BaseColor');link(rough,'R',attrs,'Roughness');link(nl,'',attrs,'Normal');link(disp,'',attrs,'Displacement')
+    m.set_editor_property('use_material_attributes',True);out(attrs,'',u.MaterialProperty.MP_MATERIAL_ATTRIBUTES)
+    m.set_editor_property('enable_tessellation',True)
+    scale=m.get_editor_property('displacement_scaling');scale.set_editor_property('magnitude',DISPLACEMENT_CM);scale.set_editor_property('center',.5);m.set_editor_property('displacement_scaling',scale)
     mel.recompile_material(m);eal.save_loaded_asset(m);return m
 
 def solid_master():
@@ -84,7 +96,7 @@ def instance(row):
     LC=lambda v:u.LinearColor(*v,1)
     if 'scan' in row:
         mel.set_material_instance_parent(mi,masters['scan'])
-        for p,ch in (('Diffuse','Diffuse'),('Roughness','Rough'),('Normal','nor_gl')):mel.set_material_instance_texture_parameter_value(mi,p,texture(row['scan'],ch))
+        for p,ch in (('Diffuse','Diffuse'),('Roughness','Rough'),('Normal','nor_gl'),('Height','Displacement')):mel.set_material_instance_texture_parameter_value(mi,p,texture(row['scan'],ch))
         mel.set_material_instance_vector_parameter_value(mi,'DarkTint',LC(row['dark']));mel.set_material_instance_scalar_parameter_value(mi,'NormalStrength',row['normal'])
         mel.set_material_instance_scalar_parameter_value(mi,'LichenAmount',1 if row['lichen'] else 0)
         if row['lichen']:mel.set_material_instance_texture_parameter_value(mi,'Lichen',texture(row['lichen'],'Diffuse'))

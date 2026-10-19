@@ -11,7 +11,7 @@ manifest={row['asset']:row for row in json.loads(PROV.read_text())} if PROV.exis
 jobs=[]
 for asset in sys.argv[1:]:
     meta=json.loads(get('https://api.polyhaven.com/info/'+asset));files=json.loads(get('https://api.polyhaven.com/files/'+asset));rows=[]
-    for channel in ['Diffuse','nor_gl','Rough']:
+    for channel in ['Diffuse','nor_gl','Rough','Displacement']:
         item=files[channel]['2k']['jpg'];name=asset+'_'+channel+'.jpg';jobs.append((OUT/name,item));rows.append(dict(file='Textures/'+name,url=item['url'],md5=item['md5']))
     # Poly Haven reports physical size in millimetres.
     manifest[asset]=dict(asset=asset,page='https://polyhaven.com/a/'+asset,license='CC0-1.0',authors=meta.get('authors',{}),physical_size_metres=[d/1000 for d in meta.get('dimensions',[2000,2000])],files=rows)

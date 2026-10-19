@@ -25,6 +25,11 @@
         "file": "Textures/blue_painted_planks_Rough.jpg",
         "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/blue_painted_planks/blue_painted_planks_rough_2k.jpg",
         "md5": "56dfc7d873264c67848c14dd75e92b6e"
+      },
+      {
+        "file": "Textures/blue_painted_planks_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/blue_painted_planks/blue_painted_planks_disp_2k.jpg",
+        "md5": "e7dc50d44fb4251d3c0df547baa271c3"
       }
     ]
   },
@@ -54,6 +59,11 @@
         "file": "Textures/grey_roof_tiles_02_Rough.jpg",
         "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/grey_roof_tiles_02/grey_roof_tiles_02_rough_2k.jpg",
         "md5": "9562363f4f595fdf26cd3c162e31a3c1"
+      },
+      {
+        "file": "Textures/grey_roof_tiles_02_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/grey_roof_tiles_02/grey_roof_tiles_02_disp_2k.jpg",
+        "md5": "b680ca8cda3a8b3606245d2e7f63c6a1"
       }
     ]
   },
@@ -83,6 +93,11 @@
         "file": "Textures/lichen_rock_Rough.jpg",
         "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/lichen_rock/lichen_rock_rough_2k.jpg",
         "md5": "0f6970ee1ff05b053b58cf9ad2451c15"
+      },
+      {
+        "file": "Textures/lichen_rock_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/lichen_rock/lichen_rock_disp_2k.jpg",
+        "md5": "8feedb29e0fc7d10a29ed915bb571865"
       }
     ]
   },
@@ -112,6 +127,11 @@
         "file": "Textures/old_planks_02_Rough.jpg",
         "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/old_planks_02/old_planks_02_rough_2k.jpg",
         "md5": "d0b360ed33e8a747ebc00b5228f0a426"
+      },
+      {
+        "file": "Textures/old_planks_02_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/old_planks_02/old_planks_02_disp_2k.jpg",
+        "md5": "2702deae7d469ce4353d307a2771d410"
       }
     ]
   },
@@ -141,6 +161,11 @@
         "file": "Textures/patterned_clay_plaster_Rough.jpg",
         "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/patterned_clay_plaster/patterned_clay_plaster_rough_2k.jpg",
         "md5": "9b1bffcbb288210024d9a6a260d8076f"
+      },
+      {
+        "file": "Textures/patterned_clay_plaster_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/patterned_clay_plaster/patterned_clay_plaster_disp_2k.jpg",
+        "md5": "c50b5768427fae2d707b5d767f4fb967"
       }
     ]
   },
@@ -170,6 +195,11 @@
         "file": "Textures/stone_wall_04_Rough.jpg",
         "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/stone_wall_04/stone_wall_04_rough_2k.jpg",
         "md5": "d7553a475025e0c7e94b3860d74184fa"
+      },
+      {
+        "file": "Textures/stone_wall_04_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/stone_wall_04/stone_wall_04_disp_2k.jpg",
+        "md5": "b46f9fd4bf1b1dc1bef4a5604955051b"
       }
     ]
   },
@@ -200,6 +230,11 @@
         "file": "Textures/weathered_brown_planks_Rough.jpg",
         "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/weathered_brown_planks/weathered_brown_planks_rough_2k.jpg",
         "md5": "4dd58553f1d0f76bf883b71aa9fc89ea"
+      },
+      {
+        "file": "Textures/weathered_brown_planks_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/weathered_brown_planks/weathered_brown_planks_disp_2k.jpg",
+        "md5": "18c5f810bb461bf82ed1f54b135a91c1"
       }
     ]
   }
