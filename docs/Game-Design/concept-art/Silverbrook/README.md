@@ -8,24 +8,24 @@ Owner-supplied concept images for the Silverbrook buildings. One image is one de
 | [Adventurers Guild.png](Adventurers%20Guild.png) | Adventurers' Guild | BLD-GreenlandsAdventurersGuild-01 | 16 × 13 × 18 | `GameClient/ArtSource/Silverbrook/AdventurersGuild` | modelling |
 | [The Golden Stag Inn.png](The%20Golden%20Stag%20Inn.png) | The Golden Stag Inn | BLD-GreenlandsTheGoldenStagInn-01 | 14 × 12 × 14 | — | waiting for a model |
 | [Blacksmith.png](Blacksmith.png) | Blacksmith | BLD-GreenlandsBlacksmith-01 | 14 × 12 × 14 | `GameClient/ArtSource/Silverbrook/Blacksmith` | modelling |
-| [Temple of the Dawn.png](Temple%20of%20the%20Dawn.png) | Temple of the Dawn | BLD-GreenlandsTempleOfTheDawn-01 | 14 × 24 × 20 | — | waiting for a model |
+| [Temple of the Dawn.png](Temple%20of%20the%20Dawn.png) | Temple of the Dawn | BLD-GreenlandsTempleOfTheDawn-01 | 14 × 24 × 20 | `GameClient/ArtSource/Silverbrook/TempleOfTheDawn` | modelling |
 | [Market Stall.png](Market%20Stall.png) | Market stall | BLD-GreenlandsMarketStall-01 | 4 × 4 × 4 | — | waiting for a model |
 | [Watchtower.png](Watchtower.png) | Watchtower | BLD-GreenlandsWatchtower-01 | 8 × 8 × 9 | — | waiting for a model |
 | [Stone Bridge.png](Stone%20Bridge.png) | Stone bridge | BLD-GreenlandsStoneBridge-01 | 30 × 7 deck, spans the 24 m river | — | waiting for a model |
-| [Cottage-1.png](Cottage-1.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | `GameClient/ArtSource/Silverbrook/Cottage1` | modelling |
-| [Cottage-2.png](Cottage-2.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | `GameClient/ArtSource/Silverbrook/Cottage2` | modelling |
-| [Cottage-3.png](Cottage-3.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | — | waiting for a model |
-| [Cottage-4.png](Cottage-4.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | — | waiting for a model |
-| [Cottage-5.png](Cottage-5.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | — | waiting for a model |
-| [Cottage-6.png](Cottage-6.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | — | waiting for a model |
+| [Cottage-1.png](Cottage-1.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | `GameClient/ArtSource/Silverbrook/Cottage1` | delivered |
+| [Cottage-2.png](Cottage-2.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | `GameClient/ArtSource/Silverbrook/Cottage2` | delivered |
+| [Cottage-3.png](Cottage-3.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | `GameClient/ArtSource/Silverbrook/Cottage3` | delivered |
+| [Cottage-4.png](Cottage-4.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | `GameClient/ArtSource/Silverbrook/Cottage4` | delivered |
+| [Cottage-5.png](Cottage-5.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | `GameClient/ArtSource/Silverbrook/Cottage5` | delivered |
+| [Cottage-6.png](Cottage-6.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | `GameClient/ArtSource/Silverbrook/Cottage6` | delivered |
 | [Stables.png](Stables.png) | Stables | BLD-GreenlandsStables-01 | 12 × 8 × 7 | — | waiting for a model |
 | [Workshop.png](Workshop.png) | Workshop | BLD-GreenlandsWorkshop-01 | 8 × 6 × 6 | — | waiting for a model |
 | [Farmhouse.png](Farmhouse.png) | Farmhouse | BLD-GreenlandsFarmhouse-01 | 12 × 8 × 7 | — | waiting for a model |
-| [Townhouse-1.png](Townhouse-1.png) | Townhouse | BLD-GreenlandsTownhouse-01 | 8 × 7 × 9 | — | waiting for a model |
-| [Townhouse-2.png](Townhouse-2.png) | Townhouse | BLD-GreenlandsTownhouse-01 | 8 × 7 × 9 | — | waiting for a model |
-| [Townhouse-3.png](Townhouse-3.png) | Townhouse | BLD-GreenlandsTownhouse-01 | 8 × 7 × 9 | — | waiting for a model |
-| [Townhouse-4.png](Townhouse-4.png) | Townhouse | BLD-GreenlandsTownhouse-01 | 8 × 7 × 9 | — | waiting for a model |
-| [Townhouse-5.png](Townhouse-5.png) | Townhouse | BLD-GreenlandsTownhouse-01 | 8 × 7 × 9 | — | waiting for a model |
+| [Townhouse-1.png](Townhouse-1.png) | Townhouse | BLD-GreenlandsTownhouse-01 | 8 × 7 × 9 | `GameClient/ArtSource/Silverbrook/Townhouse1` | modelling |
+| [Townhouse-2.png](Townhouse-2.png) | Townhouse | BLD-GreenlandsTownhouse-01 | 8 × 7 × 9 | `GameClient/ArtSource/Silverbrook/Townhouse2` | modelling |
+| [Townhouse-3.png](Townhouse-3.png) | Townhouse | BLD-GreenlandsTownhouse-01 | 8 × 7 × 9 | `GameClient/ArtSource/Silverbrook/Townhouse3` | modelling |
+| [Townhouse-4.png](Townhouse-4.png) | Townhouse | BLD-GreenlandsTownhouse-01 | 8 × 7 × 9 | `GameClient/ArtSource/Silverbrook/Townhouse4` | modelling |
+| [Townhouse-5.png](Townhouse-5.png) | Townhouse | BLD-GreenlandsTownhouse-01 | 8 × 7 × 9 | `GameClient/ArtSource/Silverbrook/Townhouse5` | modelling |
 | [Townhouse-6.png](Townhouse-6.png) | Townhouse | BLD-GreenlandsTownhouse-01 | 8 × 7 × 9 | — | waiting for a model |
 | [Northridge House-1.png](Northridge%20House-1.png) | Northridge house | BLD-GreenlandsNorthridgeHouse-01 | 12 × 10 × 10 | — | waiting for a model |
 | [Northridge House-2.png](Northridge%20House-2.png) | Northridge house | BLD-GreenlandsNorthridgeHouse-01 | 12 × 10 × 10 | — | waiting for a model |

@@ -1,0 +1,22 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookAdventurersGuild",
+  "size_m": [
+    15.61,
+    12.07,
+    17.68
+  ],
+  "slot_m": [
+    16,
+    13,
+    18
+  ],
+  "fits": true,
+  "slots": 14,
+  "nanite": true,
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 54851,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 512
+  }
+}

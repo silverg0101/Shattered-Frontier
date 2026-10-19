@@ -117,7 +117,8 @@ class Geo:
         a,b=Vector(a),Vector(b);rot=(b-a).to_track_quat('Z','Y').to_matrix();kw.setdefault('grain',True);self.box((a+b)/2,(width,depth or width,(b-a).length),mat,.012,rot,**kw)
     def prism(self,points,axis,thickness,mat,**kw):
         points=[Vector(p) for p in points];axis=Vector(axis).normalized()
-        if (points[1]-points[0]).cross(points[2]-points[0]).dot(axis)<0:points.reverse()
+        # Newell normal: the first three points of a concave outline (arch spandrels) can point either way.
+        if sum((a.cross(points[(i+1)%len(points)]) for i,a in enumerate(points)),Vector()).dot(axis)<0:points.reverse()
         o=axis*thickness/2;self.poly([p+o for p in points],mat,**kw);self.poly([p-o for p in reversed(points)],mat,**kw)
         for i,a in enumerate(points):b=points[(i+1)%len(points)];self.poly([a-o,b-o,b+o,a+o],mat,**kw)
     def vessel(self,centre,profile,mat,segments=24):

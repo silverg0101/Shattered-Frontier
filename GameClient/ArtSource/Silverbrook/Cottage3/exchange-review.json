@@ -1,0 +1,87 @@
+{
+  "source": {
+    "meshes": 5,
+    "triangles": 55700,
+    "size_m": [
+      7.755,
+      5.913,
+      5.98
+    ],
+    "materials": [
+      "SB_ChimneyPot",
+      "SB_Cottage3_Rubble",
+      "SB_Cottage3_Shutter",
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LimePlaster",
+      "SB_LitGlass",
+      "SB_OakTimber",
+      "SB_PlanterSoil",
+      "SB_Slate"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 19
+  },
+  "glb": {
+    "meshes": 5,
+    "triangles": 55700,
+    "size_m": [
+      7.755,
+      5.913,
+      5.98
+    ],
+    "materials": [
+      "SB_ChimneyPot",
+      "SB_Cottage3_Rubble",
+      "SB_Cottage3_Shutter",
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LimePlaster",
+      "SB_LitGlass",
+      "SB_OakTimber",
+      "SB_PlanterSoil",
+      "SB_Slate"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 5,
+    "triangles": 55700,
+    "size_m": [
+      7.755,
+      5.913,
+      5.98
+    ],
+    "materials": [
+      "SB_ChimneyPot",
+      "SB_Cottage3_Rubble",
+      "SB_Cottage3_Shutter",
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LimePlaster",
+      "SB_LitGlass",
+      "SB_OakTimber",
+      "SB_PlanterSoil",
+      "SB_Slate"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 12
+  }
+}

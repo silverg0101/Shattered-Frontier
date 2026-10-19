@@ -1,0 +1,212 @@
+{
+  "asset": "SilverbrookCottage4",
+  "reference": {
+    "file": "Cottage4-reference.png",
+    "sha256": "6a06736a1649722ae512a5af650833e6dd183ce163f445aebe2bd092154f0b83"
+  },
+  "blender": "5.1.1",
+  "generator": "build_cottage4.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    7.913,
+    5.906,
+    5.98
+  ],
+  "meshes": {
+    "SM_SBCottage4_Masonry": {
+      "triangles": 1772,
+      "materials": [
+        "SB_Cottage4_Rubble",
+        "SB_Ashlar"
+      ]
+    },
+    "SM_SBCottage4_Timber": {
+      "triangles": 3700,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBCottage4_Roof": {
+      "triangles": 14704,
+      "materials": [
+        "SB_Cottage4_Thatch",
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBCottage4_Details": {
+      "triangles": 11420,
+      "materials": [
+        "SB_LitGlass",
+        "SB_LeadCame",
+        "SB_ChimneyPot",
+        "SB_Cottage4_Shutter",
+        "SB_ForgedIron",
+        "SB_PlanterSoil",
+        "SB_DoorBoards",
+        "SB_LanternGlow"
+      ]
+    }
+  },
+  "triangles": 31596,
+  "materials": [
+    {
+      "name": "SB_Cottage4_Thatch",
+      "scan": "reed_roof_04",
+      "dark": [
+        0.25,
+        0.2,
+        0.14
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_Cottage4_Rubble",
+      "scan": "rustic_stone_wall",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_Ashlar",
+      "scan": "stone_wall_04",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_DoorBoards",
+      "scan": "old_planks_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_Cottage4_Shutter",
+      "scan": "green_rough_planks",
+      "dark": [
+        0.2,
+        0.22,
+        0.2
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LeadCame",
+      "colour": [
+        0.05,
+        0.05,
+        0.05
+      ],
+      "roughness": 0.45,
+      "metallic": 0.8,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LitGlass",
+      "colour": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "roughness": 0.15,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.5,
+        0.14
+      ],
+      "strength": 3
+    },
+    {
+      "name": "SB_LanternGlow",
+      "colour": [
+        0.3,
+        0.2,
+        0.1
+      ],
+      "roughness": 0.3,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.38,
+        0.08
+      ],
+      "strength": 5
+    },
+    {
+      "name": "SB_PlanterSoil",
+      "colour": [
+        0.06,
+        0.04,
+        0.025
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_ChimneyPot",
+      "colour": [
+        0.2,
+        0.085,
+        0.05
+      ],
+      "roughness": 0.75,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookCottage4",
+  "slot_m": [
+    8,
+    6,
+    6
+  ],
+  "outputs": [
+    "SilverbrookCottage4.blend",
+    "SilverbrookCottage4.glb",
+    "SilverbrookCottage4.fbx"
+  ]
+}
