@@ -59,7 +59,7 @@ Governing attributes receive use-based attribute gains (Leveling part, Attribute
 | `skill/farming` | gathering | con .5, wis .5 | Plot action (sow, tend, harvest) on an owned/permitted plot | Crop difficulty | gathering | Harvesting wheat fields |
 | `skill/herbalism` | gathering | wis .6, dex .4 | Herb node harvest | Node difficulty | gathering | Gathering frostbloom |
 | `skill/fishing` | gathering | dex .6, luck .4 | Catch attempt resolved at a fishing spot | Spot difficulty | gathering | Ice fishing in frozen_north |
-| `skill/hunting` | gathering | dex .6, wis .4 | Skinning/tracking a killed or tracked beast | Creature level × 10 | gathering | Skinning dire wolves |
+| `skill/hunting` | gathering | dex .6, wis .4 | Skinning/tracking, or validated creature capture, training or meaningful combat handling (§2.1) | Creature level × 10 for skinning/tracking; authored handling difficulty for companion actions | gathering | Tracking dire wolves, training a captured wolf, coordinating combat companions |
 | `skill/trading` | social | cha .7, int .3 | NPC vendor transaction or market sale to an unrelated buyer | `clamp(150 × log10(value_copper) − 200, 0, 1000)` | social | Selling crafted goods on the market |
 | `skill/diplomacy` | social | cha .6, wis .4 | Persuasion/negotiation check in dialog, quest choice, or faction interaction | Authored check difficulty | social | Negotiating a caravan toll |
 | `skill/performance` | social | cha .7, dex .3 | Performance piece completed with ≥ 1 qualifying audience member | Piece difficulty | social | Playing lute in a settlement tavern |
@@ -71,6 +71,16 @@ Governing attributes receive use-based attribute gains (Leveling part, Attribute
 | `skill/archaeology` | exploration | int .5, luck .5 | Excavation step at a dig site or relic identification | Dig site difficulty | exploration | Excavating corrupted_frontier ruins |
 
 Difficulty offsets for leadership: `story` −100, `normal` 0, `veteran` +100, `heroic` +150, `mythic` +200 (+10 per mythic level).
+
+### 2.1 Hunting: creature handling and combat companions
+
+[Mounts and Companions](../Legends_Shattered_Frontier_Mounts_and_Companions_v0.1.md) extends existing `skill/hunting` with capture, training and combat handling. Tracking and skinning remain supported. The canonical skill count, gathering track, governing attributes and global/track caps are unchanged; archery is not required. This supports a hunter-style build within classless progression.
+
+Validated capture/training steps and player-directed combat handling can emit Hunting practice records using release-authored action difficulty. Handling requires a meaningful resolved action against an eligible creature or hostile encounter: command spam, follow/stay toggles, idle deployment and autonomous pet attack ticks grant no practice. One coordinated action produces at most one Hunting record, irrespective of pet count; existing attempt weighting, fatigue and anti-macro rules apply. Creature XP and the player's Hunting practice are separate awards.
+
+Initial mastery proposal: **Pack Handling**, node `pack_handling` within `mastery/hunting` (reference `mastery/hunting#pack_handling`), is one standard master-tier `utility` node permitting **two active combat companions instead of one** while active. It requires effective Hunting ≥ 700 (displayed **70.0**), at least two expert-tier nodes and the existing master-node cost of 25 LP. It uses an existing node position, not an additional tree slot, and does not require a new skill or specialization. Full Hunting-tree content publication remains integration work. Companion damage/control benefits must be included in combat power-budget validation even though Hunting belongs to gathering; a `utility` label cannot exempt this node from balance review. Gameplay Details §6 owns single/dual output and reference-health profiles, shared interrupt recovery and combination validation.
+
+The active slot follows §8.4 activation/reset rules: dropping below the effective skill requirement or resetting the node removes permission for the extra combat companion. Stable space and owned creatures remain intact. Safe withdrawal, combat-change restrictions and deployment validation follow the companion specification. First reaching Hunting 300 and 700 each grants one permanent Stable slot, reconciled from historical peak evidence when enabling the feature. These are persistent capacity entitlements rather than active-node effects; ordinary retraining/reset does not revoke them. Gameplay Details §§1–9 own capture difficulty, lesson objectives, family progression, two-creature output, source-XP split and Injury/recovery; Integration defines their durable ownership and operation protocol.
 
 ---
 
@@ -100,7 +110,7 @@ Validity rules (enforced by the producer, re-checked by progression where possib
 5. Trading: market sales only to buyers on a different account and not flagged by `security.trade.flagged`; NPC vendor transactions capped at 40 records per 24 h.
 6. Performance: audience member is a character from another account, within 20 m, with input in the last 120 s; or a settlement tavern NPC audience (max 1 record per 60 s).
 7. Crafting: the attempt consumed materials (success or `crafting_failure`).
-8. Gathering: the node yielded or depleted a harvest tick.
+8. Gathering: the node yielded or depleted a harvest tick, or Hunting produced a validated tracking/skinning/creature-handling action (§2.1). Hunting handling does not require consuming a resource node.
 
 Batching: producers flush every 2 s (`tune.progression.practice_flush_ms` = 2000) and at session end (`session_end = true`, `in_rest_area` flag), one batch per producer process containing many characters.
 
@@ -357,7 +367,7 @@ Illustrative `mastery/swordsmanship`: apprentice — Balanced Grip (+20 crit rat
 
 ## 9. NPC parity: NPC progression templates
 
-NPCs use the same attribute and skill framework (Combat spec: "Works identically for players and NPCs"). Profiles are generated deterministically from the `progression_template` block of an `npc/*` definition, its spawn level L, and tier. NPCs do not gain skills at runtime.
+NPCs use the same attribute and skill framework (Combat spec: "Works identically for players and NPCs"). Profiles are generated deterministically from the `progression_template` block of an `npc/*` definition, its spawn level L, and tier. Ordinary wild/encounter NPCs do not gain skills at runtime. Captured, owned companions instead follow the persistent progression and family-skill rules in Mounts and Companions; they do not retain encounter-tier power scaling after capture.
 
 ### 9.1 Attributes
 

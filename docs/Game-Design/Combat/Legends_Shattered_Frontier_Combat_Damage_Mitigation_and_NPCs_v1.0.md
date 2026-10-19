@@ -351,6 +351,8 @@ Tank with stance ×2.0 and `threat_mod_bp` +500 deals 1,000 damage: `1,000 × 1.
 
 Pets and summons have their own threat entries (their damage generates threat for themselves, not their owner). Healing done **by** a pet credits the pet. Owner commands (`pet_attack`, `pet_passive`) never change threat directly.
 
+[Trained creature gameplay](../Companions/Legends_Shattered_Frontier_Companion_Gameplay_Details_v0.1.md) §§5–9 specializes persistent captured pets: character-sourced math with a virtual natural implement, no wild encounter-tier multipliers, single/dual output profiles, owner-shared interrupt recovery and canonical target DR. Both creatures' damage/healing attributes to their owner once for reward credit; each retains its own threat entry. They add no party/reward/scaling slot. Slot withdrawal/storage cannot clear threat, refresh conditions or adopt wild evade immunity/healing. Gameplay Details §11 owns the proposed bounded Combat controls; coefficients and combination balance need targeted evidence before acceptance. Temporary magical summons retain their existing rules and do not become Stable creatures implicitly.
+
 ### PvP
 
 Characters do not use threat. Taunt-flagged abilities applied to a character instead apply `taunt` crowd control (forces target selection for 1.5 s, `tune.combat.pvp_taunt_s`), subject to diminishing returns.

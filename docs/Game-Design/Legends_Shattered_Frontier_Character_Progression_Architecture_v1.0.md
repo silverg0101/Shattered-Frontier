@@ -10,6 +10,8 @@ Registry: [Shared Registry v1.0](Legends_Shattered_Frontier_Shared_Registry_v1.0
 
 ## 1. Vision
 
+Related design baseline: [Mounts and Companions](Legends_Shattered_Frontier_Mounts_and_Companions_v0.1.md) and its Gameplay/Integration parts define capture-level retention, family techniques, owner-capped catch-up XP and the character Stable. Stable starts at two slots; Hunting milestones 300/700 each earn one permanent slot, and four game-gold purchases provide further storage. Hunting handles capture/training/combat use; Pack Handling at effective 700 (70.0) permits two active creatures (Skills and Mastery §2.1). Progression is the selected durable writer; exact schema/protocol adapters remain gated by CMP-01. Captured individuals differ from account mount unlocks; the existing 35-skill catalogue is unchanged.
+
 Classless progression inspired by Ultima Online, with MMO specialization depth. A character improves in two coupled ways:
 
 1. **Experience (XP)** from quests, kills, dungeons, raids, discovery, and practice raises **Character Level** (1–100, `LEVEL_CAP`). Levels grant **Learning Points (LP)** and attribute points, and feed the Combat spec's level terms (health, mana, armor scaling).
@@ -73,6 +75,8 @@ All terms follow the [Shared Registry](Legends_Shattered_Frontier_Shared_Registr
 ## 4. Architecture and service ownership
 
 `progression-service` (stateless + PostgreSQL schema `progression`, Redis for hot practice windows) is the **only writer** of XP, level, LP, attributes, skill values, locks, mastery unlocks, specializations, prestige, achievements, titles, and account unlocks (Registry, Service registry).
+
+The companion extension also places Stables, owned creature training/XP/conditions, capacity entitlements, operation receipts and deployment bindings under this writer, sharing owner-level/Hunting consistency. [Companion Integration](Companions/Legends_Shattered_Frontier_Companion_Integration_and_Delivery_v0.1.md) defines the new records, capture/payment boundaries and extensions to existing privacy/transfer/content-reference participants. Runtime Combat still decides hits and emits trusted condition evidence; it cannot write ownership or XP directly.
 
 ```mermaid
 flowchart LR

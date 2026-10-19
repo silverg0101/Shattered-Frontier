@@ -411,6 +411,8 @@ The scarcity factor slows regeneration in an over-harvested region (at most × 1
 
 **Persistence.** Gathering slots, and NPC slots of tier `elite` or above or flagged `rare_spawn`, are persisted in `world.spawn_slot_state` through `ReportZoneState` (every 60 s and on drain or migration). A server crash therefore never resets a rare timer early ("crash to respawn"). Common NPC slots are memory only.
 
+**Capture-enabled wildlife extension.** The above periodic/memory-only baseline cannot authorize creature capture. [Companion Integration §4](../Companions/Legends_Shattered_Frontier_Companion_Integration_and_Delivery_v0.1.md#4-capture-commit-and-world-persistence-extension) requires durable spawn generation, selected definition/level/rarity/trait seed and disposition before exposing any capture-enabled actor, including common wildlife. Extend slot `cycle`/authority and capture-operation receipt storage in a compatible migration; `(realm, zone, layer, group, slot, generation)` must never identify two different spawn incarnations. World alone prepares/applies capture disposition and ordinary replacement scheduling against Progression's immutable operation decision. Capture grants no death reward/corpse, advances replacement once, cannot reroll the selected individual, and stays gated while an uncertain commit recovers. This is a new write/adapter requirement; existing schema/periodic reports do not already implement it. Measure spawn-write load and prove restart/restore/concurrent-capture fencing before enabling capture populations.
+
 ### Regional scarcity index
 
 ```text

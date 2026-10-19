@@ -1,5 +1,7 @@
 # Construction sandbox: laptop handoff
 
+Latest gameplay checkpoint: [gathering](gameplay-gathering-pilot.md), [refinement](gameplay-refining-pilot.md) and [equipped axe/pickaxe requirements](gameplay-gathering-tools-pilot.md) pass focused authority and two-client gather/refine checks using the free inventory runtime. [Resource lifecycle and Blueprint appearance hooks](gameplay-gathering-lifecycle-pilot.md) now pass focused3/3 checks. Next: integrate and visually review the first tree/rock art packet against the [required gathering quality contract](Game-Design/Legends_Shattered_Frontier_Gathering_Presentation_and_Material_Claiming_v0.1.md). All are session-only pilots; durable ownership/wear/progression/Linux remain open. Runtime code stays in the isolated gameplay worktree; preserve the environment checkout.
+
 Checkpoint: 2026-10-18. User played the updated cursor/palette prototype and reported **"works much better."** Record this as positive initial controls feedback; final UI design and exhaustive manual door/edge-case acceptance remain open.
 
 Read `docs/dependency-map.md`, `design-agent.md`, then the top of `docs/design-work-plan.md`. Runtime implementation is in commit `bc1595c`; this handoff's commit adds feedback and the already-verified 21-step line runner. Automated checks and independent review are recorded in [the evidence](evidence/construction-sandbox-cursor-door-pilot.md).

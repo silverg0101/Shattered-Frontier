@@ -14,6 +14,8 @@ A living world: NPCs that perceive, fight and react believably; factions that pu
 
 ## Scope and non-goals
 
+Related design baseline: [Mounts and Companions](Legends_Shattered_Frontier_Mounts_and_Companions_v0.1.md) extends wildlife into trainable combat partners and rideable creatures. AI supplies family behavior, capture openings, training objectives and validated owner commands; World supplies populations/movement and Combat supplies ability legality/outcomes. Progression is the durable Stable/creature writer. Gameplay Details owns owner-anchored leash, Passive/Defend and unattended-action restrictions; Integration owns fenced deployment/conditions. Creature rarity is independent of encounter `npc_tier`; schema/adapters/runtime evidence remain delivery gates.
+
 | In scope (AI owns) | Not in scope (owner) |
 | --- | --- |
 | NPC behavior: perception, awareness, behavior trees, utility scoring, combat roles, leash/evade, social, schedules, morale/flee | NPC stats, damage, mitigation, threat generation (Combat) |

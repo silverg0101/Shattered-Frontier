@@ -8,6 +8,8 @@ This is an expanded planning specification retained under its current filename. 
 
 Read [MVP](Legends_Shattered_Frontier_First_MVP_Milestone_v1.0.md) for technical invariants/budgets, [backlog](Legends_Shattered_Frontier_Gameplay_Feature_Backlog_v1.0.md) for work dependencies, [Unreal layout](Legends_Shattered_Frontier_UE58_Project_Layout_v1.0.md) for runtime ownership, and [roadmap](Legends_Shattered_Frontier_Production_Roadmap_v1.0.md) for entry/exit gates.
 
+Implementation reuse: consult the [free Fab candidate register](Legends_Shattered_Frontier_Gameplay_Reuse_Candidate_Register_v0.1.md) before building inventory, gathering or presentation systems from scratch. Candidates are research references; this specification remains the intended player experience.
+
 ## Intended audience and outcome
 
 Internal testers and project decision-makers should be able to assess:
@@ -135,6 +137,8 @@ sequenceDiagram
 This diagram is conceptual routing. The concrete transport, event names, and payloads come from the shared registry/domain contracts. The client does not connect directly to a privileged internal service because an arrow names it here. Out-of-order delivery and retries must not duplicate objective credit or grants.
 
 If a reward is pending, display pending progress and preserve a recoverable operation. Do not grant locally to make the sequence appear immediate.
+
+Gathering presentation must meet the [material response and claiming quality contract](Legends_Shattered_Frontier_Gathering_Presentation_and_Material_Claiming_v0.1.md). Review one convincing tree and rock in rendered player/observer footage before accepting gathering presentation.
 
 ## UI and feedback contract
 
