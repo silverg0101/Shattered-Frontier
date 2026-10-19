@@ -2,6 +2,8 @@
 
 2026-10-19. The user authorized the two chats to compare completed work, avoid overlap and agree when to merge. No actual merge or push has been performed.
 
+**Update 2026-10-19 (integration performed):** at the user's request both dirty checkouts were committed and integrated on `main`. Gameplay `codex/construction-network-members` (including the 52-hull felling candidate and skill-choice panel, commit `2594814`) was merged; `docs/dependency-map.md` was the only conflict and both entry sets are preserved. The newer uncommitted environment pass was committed directly and fully supersedes `e31977b` (every file from that checkpoint is present in the newer pass), so `codex/greenlands-arrival` was not merged. Licensed Fab `Village/` and `Garden/` content remains ignored. No build, focused automation or rendered review was run on the combined tree; the first next step is a targeted editor build plus focused `ShatteredFrontier.Gathering.` and `ShatteredFrontier.Construction.Network.` checks.
+
 ## Ownership and current checkpoints
 
 - **Pull Git and read handoff doc:** gameplay worktree `C:/Users/gsilver/.codex/worktrees/construction-network-members/Shattered-Frontier`, branch `codex/construction-network-members`, accepted HEAD `2b60ff7`. Timed gathering/private inventory, equipped tools, refinement and session resource renewal pass three focused tests and two-client gather/refine checks. Own `Source/ShatteredFrontier/{Public,Private}/Gathering`, associated tests, `ArtSource/Harvest*`, generators/importer and gathering design docs.
