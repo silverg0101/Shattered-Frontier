@@ -138,6 +138,8 @@ This diagram is conceptual routing. The concrete transport, event names, and pay
 
 If a reward is pending, display pending progress and preserve a recoverable operation. Do not grant locally to make the sequence appear immediate.
 
+Gathering presentation must meet the [material response and claiming quality contract](Legends_Shattered_Frontier_Gathering_Presentation_and_Material_Claiming_v0.1.md). Review one convincing tree and rock in rendered player/observer footage before accepting gathering presentation.
+
 ## UI and feedback contract
 
 | Condition | Player sees | Authority requirement |

@@ -445,3 +445,8 @@ Gathering skills use Character's gain formula and targets (Character spec, Skill
 4. Bots: `detector/bot_gather_yield` (harvests/hour vs band p99, distinct node types, zero social interaction) and `detector/bot_path_loop` (cell sequences) consume `gathering.node.harvested` (`spawn_point_id` and `world_region_id` are included for path features). `AM_rep` gathering N0 = 80 (Character) reduces skill gain for repeated identical contexts.
 5. Multi-boxing: harvest locks are per node, not per account; concurrent characters of one account harvesting the same pool is allowed but visible to analytics (`distinct_harvesters` per node, account joins in the warehouse).
 6. Analytics: `modeled.fact_gathering` grain = one harvest (all C6.3 fields); `m_gathering_yield_per_hour`, `m_node_depletion_rate`; the Analytics dashboard field `ops.zone.load_sampled.gathering_nodes_available_ratio` is computed by zone-server as `available / (pool points × max_active_ratio)`.
+
+
+## Gathering presentation quality
+
+The [gathering presentation and material-claiming contract](../Legends_Shattered_Frontier_Gathering_Presentation_and_Material_Claiming_v0.1.md) expands material-specific destruction, tree stumps, acquisition feedback and visual acceptance without changing this document's harvest/reward mechanics.

@@ -10,6 +10,8 @@ The owning controller is the command endpoint and owns the plugin inventory comp
 
 Existing construction controls and unlimited construction stock remain separate. Both players may gather. E uses gathering when targeting a resource, otherwise the existing door path; it is consumed before the inherited probe binding.
 
+Required presentation: [gathering quality and material claiming](Game-Design/Legends_Shattered_Frontier_Gathering_Presentation_and_Material_Claiming_v0.1.md) governs the first tree/rock art packet. Contact animation, staged extraction, felling/stump, interior materials, sound/VFX and confirmed collection feedback remain undelivered; primitive fixtures and headless authority checks cannot accept visual quality.
+
 ## Scope and design limits
 
 This is a session-only development loop. The [tool follow-up](gameplay-gathering-tools-pilot.md) now enforces the released axe/pickaxe category requirement; authenticated character identity, skill/combat checks, quality-bearing item instances, progression receipts, durable harvest receipts, mailbox overflow and World regeneration are not implemented here. Do not mark INV-02/GAT-01/GAT-02 production acceptance complete. The governing [gathering design](Game-Design/Crafting/Legends_Shattered_Frontier_Crafting_Gathering_and_Resources_v1.0.md) and [Itemization](Game-Design/Legends_Shattered_Frontier_Itemization_Architecture_v1.0.md) remain unchanged. The vertical-slice no-loss capacity behavior is used for this pilot; later mailbox overflow needs its domain integration.
