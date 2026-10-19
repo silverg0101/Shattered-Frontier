@@ -15,9 +15,9 @@ import unreal as u
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
-import importlib, validate_layout, validate_region, region_heightfield, heightfield  # an open editor keeps modules
-for _m in (validate_layout, validate_region, region_heightfield, heightfield):        # between runs; take the files' current state
-    importlib.reload(_m)
+import importlib, validate_layout, validate_region, region_heightfield, heightfield, dress_zone, pcg_dressing  # an open editor
+for _m in (validate_layout, validate_region, region_heightfield, heightfield, dress_zone, pcg_dressing):        # keeps modules between
+    importlib.reload(_m)                                                                                         # runs; take the files' state
 from validate_layout import validate, waters
 from heightfield import Heightfield, backdrop, check as check_terrain, in_polygon, water_level, zone_region
 L = json.loads((ROOT / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))
@@ -451,6 +451,29 @@ cam = actors.spawn_actor_from_class(u.CameraActor, u.Vector(30000, 90000, 60000)
 cam.set_actor_label('ReviewCamera_Aerial')
 cam.camera_component.set_editor_property('field_of_view', 70)
 
+# Eye-level camera inside Eastwood, looking into the dressed woodland toward the eastern hills.
+ex, ey, tx, ty = 520, 120, 640, -150
+yaw_e = math.degrees(math.atan2(ty - ey, tx - ex))
+cam_e = actors.spawn_actor_from_class(u.CameraActor, u.Vector(ex * 100, ey * 100, (HF.at(ex, ey) + 1.7) * 100), u.Rotator(roll=0, pitch=-3, yaw=yaw_e))
+cam_e.set_actor_label('ReviewCamera_Eastwood')
+cam_e.camera_component.set_editor_property('field_of_view', 75)
+
 assert len(bridges) >= 3, f'Expected at least 3 bridges, built {len(bridges)}'
+
+# Dressing (pipeline stage 3): rules from the look profile decide placements; a PCG graph spawns them.
+PROFILE = json.loads((ROOT / 'greenlands-look-profile.json').read_text(encoding='utf-8'))
+DRESS_DISTRICTS = ['Eastwood']  # first district end to end; add districts as their look is approved
+dressing = {}
+for district in DRESS_DISTRICTS:
+    result = dress_zone.dress(L, PROFILE, HF, placed, district, L['seed'])
+    cands = dress_zone.candidates(result, PROFILE)
+    dress_problems = dress_zone.check(L, result, cands, placed)
+    assert not dress_problems, f'{district} dressing failed its checks: {dress_problems}'
+    (ROOT / f'silverbrook-{district.lower()}-candidates.json').write_text(json.dumps(dict(
+        _about='Gameplay candidates (harvestable trees and stone) from dress_zone.py; produced but not used yet (pipeline stage 3).',
+        version=result['version'], candidates=cands), indent=1) + chr(10), encoding='utf-8')
+    _, expected = pcg_dressing.build(result, {l['role']: l['layer'] for l in PROFILE['layers']}, 'Silverbrook')
+    dressing[district] = dict(version=result['version'], instances=expected, hash=dress_zone.transforms_hash(result),
+                              candidates=len(cands), gaps=result['gaps'])
 assert u.EditorLoadingAndSavingUtils.save_map(world, ZONE), 'Could not save the zone map'
-u.log(f'SILVERBROOK_BUILT Map={ZONE} Datum={DATUM} Bridges={len(bridges)} Fill={fill_report} Terrain={terrain_stats} Counts={counts}')
+u.log(f'SILVERBROOK_BUILT Map={ZONE} Datum={DATUM} Bridges={len(bridges)} Fill={fill_report} Terrain={terrain_stats} Dressing={dressing} Counts={counts}')

@@ -4,7 +4,7 @@ Launch: UnrealEditor.exe <uproject> /Game/Frontier/Maps/Greenlands/Greenlands_Si
         -game -RenderOffscreen -ExecutePythonScript=<this file>
 Follows review_route in silverbrook-town-layout.json: arrival, South Gate, Silverbrook
 Bridge, Market Square, North Street bridge, North Gate. Writes silverbrook-game-review.json
-and two captures beside this script.
+and captures (arrival plus one per ReviewCamera_*) beside this script.
 """
 import json, math, time
 from pathlib import Path
@@ -24,7 +24,8 @@ state = dict(scope='Project pawn walks arrival to North Gate through the graybox
              start_cm=None, target=1, reached=[], stuck_events=0)
 started = time.monotonic(); walk_started = None; handle = None; frame = 0
 last = dict(pos=None, at=0.0)
-shots = dict(arrival=False, aerial=None)  # 'arrival' marks the aerial shot as taken
+frames = []  # frame times in ms during the walk (offscreen, 1280x720; for comparisons, not a budget)
+shots = dict(aerial=None, taken=0)  # aerial: when the walk ended; taken: review cameras captured so far
 
 
 def shot(name):
@@ -68,13 +69,19 @@ def tick(delta):
             walk_started = now; state['start_cm'] = [round(p.x), round(p.y), round(p.z)]
             shot('Silverbrook-Arrival-InGame.png'); last.update(pos=(p.x, p.y), at=now)
             return
-        if shots['aerial'] is not None:
-            waited = now - shots['aerial']
-            if waited > 4 and not shots['arrival']:
-                shot('Silverbrook-Aerial-InGame.png'); shots['arrival'] = True
-            elif waited > 7:
+        if shots['aerial'] is not None:  # after the walk: each ReviewCamera_* in turn, 4 s to settle, then a capture
+            cams = sorted(u.GameplayStatics.get_all_actors_of_class(world, u.CameraActor), key=lambda c: c.get_actor_label())
+            step = int((now - shots['aerial']) // 4)
+            if step > shots['taken'] and shots['taken'] < len(cams):
+                cam = cams[shots['taken']]
+                shot(f"Silverbrook-{cam.get_actor_label().replace('ReviewCamera_', '')}-InGame.png")
+                shots['taken'] += 1
+                if shots['taken'] < len(cams):
+                    pc.set_view_target_with_blend(cams[shots['taken']], 0)
+            elif shots['taken'] == len(cams) and step > len(cams) + 1:
                 finish()
             return
+        frames.append(delta * 1000)
         x, y = ROUTE[state['target']]
         dx, dy = x * 100 - p.x, y * 100 - p.y; d = math.hypot(dx, dy)
         if d < 300:
@@ -91,9 +98,11 @@ def tick(delta):
         if state['target'] == len(ROUTE) or now - walk_started > 420 or state['stuck_events'] >= 3:
             state['walk_completed'] = state['target'] == len(ROUTE)
             state['walk_seconds'] = round(now - walk_started, 1)
+            ordered = sorted(frames)
+            state['frame_ms'] = dict(median=round(ordered[len(ordered) // 2], 1), p95=round(ordered[int(len(ordered) * 0.95)], 1), frames=len(ordered))
             state['final_pawn_cm'] = [round(p.x), round(p.y), round(p.z)]
-            cam = u.GameplayStatics.get_all_actors_of_class(world, u.CameraActor)[0]  # ReviewCamera_Aerial, placed by build_silverbrook.py
-            pc.set_view_target_with_blend(cam, 0)
+            cams = sorted(u.GameplayStatics.get_all_actors_of_class(world, u.CameraActor), key=lambda c: c.get_actor_label())
+            pc.set_view_target_with_blend(cams[0], 0)  # ReviewCamera_* placed by build_silverbrook.py
             shots['aerial'] = now
     except Exception as error:
         state['error'] = str(error); finish()

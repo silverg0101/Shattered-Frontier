@@ -90,10 +90,15 @@ It creates:
 The aim is that the owner can dress a region from the layout file in minutes, then fine-tune it.
 
 **Graphs:**
-- **Plugin and location:** enable Unreal's PCG plugin, which is not enabled today. Graphs live under `/Game/Frontier/PCG/`, one per biome or district type (forest, meadow, farmland, riverbank, town verge).
+- **Plugin and location:** PCG is enabled by default in UE 5.8 (`EnabledByDefault` in `PCG.uplugin`), so the project needs no plugin entry. Graphs live under `/Game/Frontier/PCG/`.
+- **Rules and spawning (decided 2026-10-19, first instance Silverbrook Eastwood):** the placement rules run in standard-library Python, and PCG spawns and tunes the result:
+  - `dress_zone.py` reads each role's `place` block in the look profile: density, spacing, slope, height above the valley floor, sun or shade, clearance and scale. It runs on the zone heightfield and the builder's building footprints. It places canopy first, so the lower layers can tell sun from shade.
+  - `pcg_dressing.py` writes `PCG_<Zone>_<District>`. Per mesh, the graph runs Create Points (world space) → Difference against volumes tagged `PCG_Exclude` → Static Mesh Spawner. Ground cover has no collision.
+  - **Why this split:** rules such as height above the valley floor need the zone heightfield anyway. In Python they are testable and deterministic without the editor, and PCG still gives instanced output and the owner's exclusion volumes.
+  - **Missing meshes:** a role with no mesh uses a fallback role's meshes and is listed as a gap for Stage 4.
 - **Inputs:** the terrain surface, the layout splines (roads, river and walls act as exclusions), the district volumes and the biome look profile.
 - **Layers:** each graph places layers in the profile's order: rocks and bedrock first, then canopy, understory, ground cover and litter. Each layer samples slope, height above the valley floor, shade under canopy and distance to roads or water, following the profile's rules. Shares and variant counts come from the profile, so a new look reference changes the data, not the graph.
-- **Output:** World Partition–partitioned generation that outputs instanced static meshes.
+- **Output:** instanced static meshes, one component per mesh, generated in the editor and saved with the map (generation trigger: on demand). Partitioned generation needs a World Partition map; the zone maps aren't World Partition yet.
 - **Meshes:** use only meshes that already exist in the project.
 
 **Not chosen: the Procedural Foliage Tool** ([Epic docs](https://dev.epicgames.com/documentation/unreal-engine/procedural-foliage-tool-in-unreal-engine?lang=en-US)).
@@ -130,10 +135,15 @@ The gameplay-candidates file is produced but not used yet. Harvestable plant ass
 **Player terrain edits (DEC-03):** write a design note on how decoration instances inside an edited voxel chunk are removed at runtime. This is a design note only; nothing is implemented.
 
 **Exit:**
-- The regenerate-and-compare check passes.
-- One district is dressed end to end, with in-game captures.
-- Frame time and instance count are compared against the per-actor scatter in `dress_region.py`.
-- The checklist below is filled in.
+- The regenerate-and-compare check passes. **Met 2026-10-19:**
+  - Two full rebuilds gave content version `eastwood-1019-1-0b79e48657` and transforms hash `d61a51ba9795`.
+  - `dress_zone.py` also asserts that the same version gives the same output and that a new seed changes it.
+  - `pcg_dressing.py` checks that PCG generated exactly the decided instance count, 22,036.
+- One district is dressed end to end, with in-game captures. **Met 2026-10-19:** Silverbrook Eastwood, `Silverbrook-Eastwood-InGame.png`, with 1,055 gameplay candidates.
+- Frame time and instance count are compared against the per-actor scatter in `dress_region.py`. **Half met:**
+  - The Silverbrook walk records frame time: a 2.2 ms median and 3.0 ms p95, offscreen at 1280 × 720.
+  - The art-review map hasn't been measured the same way yet.
+- The checklist below is filled in. **Not yet.** Also open: confirming that 5.8's per-instance edits survive regeneration (fine-tuning step 2).
 
 ### How to dress a new region
 
