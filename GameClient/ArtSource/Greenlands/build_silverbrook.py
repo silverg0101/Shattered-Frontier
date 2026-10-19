@@ -2,8 +2,9 @@
 
 Run with the UE 5.8 Python commandlet (-run=pythonscript) or full editor. Replaces
 /Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook with a blocked-out town at real
-scale: ground, Silverbrook River, roads and bridges, wall with four gates, key buildings,
-district fill, construction plots, labels and the arrival player start. North is -Y,
+scale: terrain shaped by heightfield.py, Silverbrook River, roads and bridges, wall with four
+gates, key buildings, district fill, construction plots, labels and the arrival player start.
+Everything is planned first, then spawned onto the terrain once its pads are known. North is -Y,
 east is +X. Script any zone-only change here; the map is regenerated, not hand-edited.
 See docs/greenlands-silverbrook-zone-plan.md.
 """
@@ -14,11 +15,13 @@ import unreal as u
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 from validate_layout import validate
+from heightfield import Heightfield, check as check_terrain, river_level
 L = json.loads((ROOT / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))
 _problems = validate(L)
 assert not _problems, f'Layout is invalid; run validate_layout.py: {_problems}'
 ZONE = '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook'
 MAT_DIR = '/Game/Frontier/Core/Graybox'
+TERRAIN = '/Game/Frontier/Environment/Greenlands/Terrain/SM_Silverbrook_Terrain'
 CUBE = u.load_asset('/Engine/BasicShapes/Cube')
 COLOURS = {'Ground': (0.16, 0.30, 0.11), 'Road': (0.55, 0.45, 0.30), 'Trail': (0.38, 0.30, 0.19),
            'River': (0.08, 0.25, 0.55), 'Wall': (0.42, 0.42, 0.45), 'Civic': (0.82, 0.80, 0.72),
@@ -28,6 +31,8 @@ TYPES = L['building_types']
 HALF = L['zone_half_extent']
 actors = u.get_editor_subsystem(u.EditorActorSubsystem)
 counts = {}
+pending = []  # spawns wait for the terrain, which needs every building pad first
+HF = None
 
 
 def material(name, rgb):
@@ -48,8 +53,21 @@ def material(name, rgb):
     return mi
 
 
-def box(label, x, y, w, d, h, mat, z0=0.0, yaw=0.0, collide=True, folder='Graybox'):
-    a = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(x * 100, y * 100, (z0 + h / 2) * 100), u.Rotator(roll=0, pitch=0, yaw=yaw))
+def box(label, x, y, w, d, h, mat, z0=0.0, yaw=0.0, collide=True, folder='Graybox', ground='min'):
+    """Queue a box. ground='min' rests it on the lowest footprint corner, sunk 1 m so slopes show no gap;
+    'centre' puts z0 on the ground at its centre; None keeps z0 absolute."""
+    pending.append(lambda: _box(label, x, y, w, d, h, mat, z0, yaw, collide, folder, ground))
+    counts[folder] = counts.get(folder, 0) + 1
+
+
+def _box(label, x, y, w, d, h, mat, z0, yaw, collide, folder, ground, pitch=0.0):
+    if ground == 'min':
+        c, s = math.cos(math.radians(yaw)), math.sin(math.radians(yaw))
+        z0 += min(HF.at(x + c * ox - s * oy, y + s * ox + c * oy) for ox in (-w / 2, w / 2) for oy in (-d / 2, d / 2)) - 1
+        h += 1
+    elif ground == 'centre':
+        z0 += HF.at(x, y)
+    a = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(x * 100, y * 100, (z0 + h / 2) * 100), u.Rotator(roll=0, pitch=pitch, yaw=yaw))
     a.static_mesh_component.set_static_mesh(CUBE)
     a.set_actor_scale3d(u.Vector(w, d, h))
     a.set_actor_label(label)
@@ -57,18 +75,35 @@ def box(label, x, y, w, d, h, mat, z0=0.0, yaw=0.0, collide=True, folder='Graybo
     a.static_mesh_component.set_material(0, M[mat])
     if not collide:
         a.static_mesh_component.set_collision_enabled(u.CollisionEnabled.NO_COLLISION)
-    counts[folder] = counts.get(folder, 0) + 1
     return a
 
 
-def strip(label, points, width, mat, h, folder, collide=False):
+def strip(label, points, width, mat, h, folder, z_at, collide=False, piece=10.0):
+    """Queue thin boxes along a polyline in pieces of at most `piece` m, pitched to follow z_at(i, t)."""
     for i, (p, q) in enumerate(zip(points, points[1:])):
-        length = math.dist(p, q)
+        length = math.dist(p, q); n = max(1, math.ceil(length / piece))
         yaw = math.degrees(math.atan2(q[1] - p[1], q[0] - p[0]))
-        box(f'{label}_{i:02d}', (p[0] + q[0]) / 2, (p[1] + q[1]) / 2, length + width, width, h, mat, yaw=yaw, collide=collide, folder=folder)
+        for k in range(n):
+            t0 = k / n - (width / 2 / length if k == 0 else 0)  # segment ends overlap so corners stay closed
+            t1 = (k + 1) / n + (width / 2 / length if k == n - 1 else 0)
+            def spawn(i=i, p=p, q=q, k=k, t0=t0, t1=t1, yaw=yaw, length=length):
+                za, zb = z_at(i, max(t0, 0.0)), z_at(i, min(t1, 1.0))
+                run = (t1 - t0) * length; tm = (t0 + t1) / 2
+                _box(f'{label}_{i:02d}_{k:02d}', p[0] + (q[0] - p[0]) * tm, p[1] + (q[1] - p[1]) * tm, run, width, h, mat,
+                     (za + zb) / 2 - h / 2, yaw, collide, folder, None, math.degrees(math.atan2(zb - za, run)))
+            pending.append(spawn)
+            counts[folder] = counts.get(folder, 0) + 1
+
+
+def on_ground(pts):
+    return lambda i, t: HF.at(pts[i][0] + (pts[i + 1][0] - pts[i][0]) * t, pts[i][1] + (pts[i + 1][1] - pts[i][1]) * t)
 
 
 def label(text, x, y, z, size):
+    pending.append(lambda: _label(text, x, y, z + HF.at(x, y), size))
+
+
+def _label(text, x, y, z, size):
     a = actors.spawn_actor_from_class(u.TextRenderActor, u.Vector(x * 100, y * 100, z * 100), u.Rotator(roll=0, pitch=0, yaw=90))
     comp = a.text_render
     comp.set_editor_property('text', text)
@@ -118,6 +153,7 @@ for name, g in L['gates'].items():
     t = math.atan2(g[1] / B, g[0] / A)
     gate_points[name] = (A * math.cos(t), B * math.sin(t))
 placed = []  # (x, y, radius)
+flats = []  # (x, y, radius) open areas to level: plaza, fields, yard, ruins
 blocked = []  # required places that overlap a road, the river, the wall or a building
 
 
@@ -159,7 +195,9 @@ if '-run=' not in u.SystemLibrary.get_command_line().lower():
     # Running inside an open editor (tools/Run-InEditor.py): never discard the user's unsaved work.
     dirty = [p.get_name() for p in u.EditorLoadingAndSavingUtils.get_dirty_map_packages()
              + u.EditorLoadingAndSavingUtils.get_dirty_content_packages()]
-    assert not dirty, f'Save or discard these first, then rebuild: {dirty}'
+    # Some maps mark themselves dirty on load; --discard-unsaved is the owner's explicit go-ahead.
+    assert not dirty or '--discard-unsaved' in sys.argv, \
+        f'Save or discard these first, or pass --discard-unsaved: {dirty}'
 M = {name: material(name, rgb) for name, rgb in COLOURS.items()}
 world = u.EditorLoadingAndSavingUtils.new_blank_map(False)  # also closes the zone map if it is open
 if u.EditorAssetLibrary.does_asset_exist(ZONE):
@@ -172,10 +210,9 @@ sky = actors.spawn_actor_from_class(u.SkyLight, u.Vector(0, 0, 1000))
 sky.light_component.set_editor_property('real_time_capture', True)
 actors.spawn_actor_from_class(u.ExponentialHeightFog, u.Vector(0, 0, 0))
 
-box('Ground', 0, 0, 2 * HALF, 2 * HALF, 1, 'Ground', z0=-1, folder='Ground')
-strip('River', RIVER, RIVER_W, 'River', 0.04, 'River')
+strip('River', RIVER, RIVER_W, 'River', 0.1, 'River', lambda i, t: river_level(L['elevation'], i, t))
 for name, pts, width, tier in ROADS:
-    strip(name.replace(' ', ''), pts, width, 'Trail' if tier == 'trail' else 'Road', 0.06, f'Roads/{tier.title()}')
+    strip(name.replace(' ', ''), pts, width, 'Trail' if tier == 'trail' else 'Road', 0.3, f'Roads/{tier.title()}', on_ground(pts))
 
 # Bridges where primary or secondary roads cross the river.
 bridges = []
@@ -189,8 +226,27 @@ for name, pts, width, tier in ROADS:
                 bridges.append(hit)
                 yaw = math.degrees(math.atan2(b[1] - a[1], b[0] - a[0]))
                 is_main = math.dist(hit, L['places'][18]['at']) < 40
-                box('SilverbrookBridge' if is_main else f'Bridge_{name.replace(" ", "")}', hit[0], hit[1],
-                    L['river']['bridge_length'], max(L['river']['bridge_width'], width), 0.3, 'Wall', yaw=yaw, folder='Bridges')
+                ri = RIVER.index(c)
+                level = river_level(L['elevation'], ri, math.dist(c, hit) / math.dist(c, d))
+                cs, sn = math.cos(math.radians(yaw)), math.sin(math.radians(yaw))
+
+                def spawn_bridge(n=name, h=hit, yaw=yaw, cs=cs, sn=sn, level=level, is_main=is_main,
+                                 w=max(L['river']['bridge_width'], width)):
+                    # Each end reaches dry ground (roads cross the river at an angle), and the deck
+                    # tilts to meet the ground at both ends, so the walk never meets a step.
+                    ends = []
+                    for side in (-1, 1):
+                        s = L['river']['bridge_length'] / 2
+                        while s < 60 and HF.at(h[0] + side * cs * s, h[1] + side * sn * s) < level + 1:
+                            s += 1
+                        ends.append((s, HF.at(h[0] + side * cs * s, h[1] + side * sn * s)))
+                    (s0, z0), (s1, z1) = ends
+                    run, mid = s0 + s1, (s1 - s0) / 2
+                    _box('SilverbrookBridge' if is_main else f'Bridge_{n.replace(" ", "")}', h[0] + cs * mid, h[1] + sn * mid,
+                         run + 2, w, 0.3, 'Wall', (z0 + z1) / 2 - 0.25, yaw, True, 'Bridges', None,
+                         math.degrees(math.atan2(z1 - z0, run)))
+                pending.append(spawn_bridge)
+                counts['Bridges'] = counts.get('Bridges', 0) + 1
 
 # Wall, gate towers and wall towers.
 tower = W['tower']
@@ -235,8 +291,9 @@ for place in L['places']:
             building(f'{tag}_Granary', 'granary', x + 17, y - 6, 0, 'Civic', 'Places')
     elif kind == 'plaza':
         w, d = place['size']
-        box(tag, x, y, w, d, 0.08, 'Civic', collide=False, folder='Places')
+        box(tag, x, y, w, d, 0.08, 'Civic', collide=False, folder='Places', ground='centre')
         placed.append((x, y, 6))  # keep the centre open; stalls ring the edge
+        flats.append((x, y, math.hypot(w, d) / 2))
         stalls = 0
         for k in range(32):
             if stalls == L['market_stalls']:
@@ -246,8 +303,10 @@ for place in L['places']:
             stalls += building(f'MarketStall_{stalls:02d}', 'market_stall', sx, sy, 0, 'House', 'Places', require=False)
     elif kind in ('fields', 'yard'):
         w, d = place['size']
-        box(tag, x, y, w, d, 0.1, 'Field' if kind == 'fields' else 'Plot', collide=False, folder='Places')
+        box(tag, x, y, w, d, 0.1, 'Field' if kind == 'fields' else 'Plot', collide=False, folder='Places', ground='centre')
+        flats.append((x, y, math.hypot(w, d) / 2))
     elif kind == 'ruins':
+        flats.append((x, y, math.hypot(*place['size']) / 2))
         for k, (ox, oy, h) in enumerate(((-8, -5, 3), (6, -6, 2), (-4, 7, 4), (9, 5, 1.5))):
             box(f'{tag}_{k}', x + ox, y + oy, 5, 2, h, 'Wall', folder='Places')
     elif kind == 'marker':
@@ -261,7 +320,7 @@ for i, (x, y) in enumerate(L['construction_plots']['centres']):
         blocked.append(f'ConstructionPlot_{i} at {x},{y}')
         continue
     placed.append((x, y, size * 0.71))
-    box(f'ConstructionPlot_{i}', x, y, size, size, 0.05, 'Plot', collide=False, folder='Plots')
+    box(f'ConstructionPlot_{i}', x, y, size, size, 0.05, 'Plot', collide=False, folder='Plots', ground='centre')
 
 assert not blocked, f'Blocked places (move them in the layout): {blocked}'
 
@@ -294,9 +353,37 @@ for name, dist in L['districts'].items():
 # Arrival.
 ax, ay = L['arrival']['at']; fx, fy = L['arrival']['face']
 yaw = math.degrees(math.atan2(fy - ay, fx - ax))
-actors.spawn_actor_from_class(u.PlayerStart, u.Vector(ax * 100, ay * 100, 120), u.Rotator(roll=0, pitch=0, yaw=yaw)).set_actor_label('Arrival_PlayerStart')
 box('Arrival_Waystone', ax + 7, ay - 9, 1.5, 1.5, 3, 'Civic', folder='Places')  # roadside, ahead and to the right
 label('Arrival', ax, ay, 8, 3)
+
+# Terrain: shaped from the layout's elevation with every building, plot and open area levelled.
+HF = Heightfield(L, pads=placed + flats)
+terrain_problems, terrain_stats = check_terrain(L, HF)
+assert not terrain_problems, f'Terrain checks failed: {terrain_problems}'
+if u.EditorAssetLibrary.does_asset_exist(TERRAIN):
+    assert u.EditorAssetLibrary.delete_asset(TERRAIN), 'Could not delete the previous terrain mesh'
+mesh = u.DynamicMesh()
+u.GeometryScript_Primitives.append_rectangle_xy(mesh, u.GeometryScriptPrimitiveOptions(), u.Transform(),
+                                                dimension_x=2 * HALF * 100, dimension_y=2 * HALF * 100,
+                                                steps_width=HF.nx - 1, steps_height=HF.ny - 1)
+grid = u.GeometryScript_MeshQueries.get_all_vertex_positions(mesh, False)[1]
+moved = [u.Vector(v.x, v.y, HF.at(v.x / 100, v.y / 100) * 100) for v in u.GeometryScript_List.convert_vector_list_to_array(grid)]
+u.GeometryScript_MeshEdits.set_all_mesh_vertex_positions(mesh, u.GeometryScript_List.convert_array_to_vector_list(moved))
+opts = u.GeometryScriptCreateNewStaticMeshAssetOptions()
+opts.set_editor_property('enable_recompute_normals', True)
+opts.set_editor_property('enable_collision', True)
+opts.set_editor_property('collision_mode', u.CollisionTraceFlag.CTF_USE_COMPLEX_AS_SIMPLE)
+terrain_mesh = u.GeometryScript_NewAssetUtils.create_new_static_mesh_asset_from_mesh(mesh, TERRAIN, opts)[0]
+assert terrain_mesh, 'Could not create the terrain mesh'
+u.EditorAssetLibrary.save_loaded_asset(terrain_mesh)
+ground = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(0, 0, 0))
+ground.static_mesh_component.set_static_mesh(terrain_mesh)
+ground.static_mesh_component.set_material(0, M['Ground'])
+ground.set_actor_label('Terrain'); ground.set_folder_path('Ground')
+for spawn in pending:
+    spawn()
+actors.spawn_actor_from_class(u.PlayerStart, u.Vector(ax * 100, ay * 100, (HF.at(ax, ay) + 1.2) * 100),
+                              u.Rotator(roll=0, pitch=0, yaw=yaw)).set_actor_label('Arrival_PlayerStart')
 
 # Aerial review camera, looking north-west over the town from beyond the South Gate.
 cam = actors.spawn_actor_from_class(u.CameraActor, u.Vector(30000, 90000, 60000), u.Rotator(roll=0, pitch=-38, yaw=-105))
@@ -305,4 +392,4 @@ cam.camera_component.set_editor_property('field_of_view', 70)
 
 assert len(bridges) >= 3, f'Expected at least 3 bridges, built {len(bridges)}'
 assert u.EditorLoadingAndSavingUtils.save_map(world, ZONE), 'Could not save the zone map'
-u.log(f'SILVERBROOK_BUILT Map={ZONE} Bridges={len(bridges)} Fill={fill_report} Counts={counts}')
+u.log(f'SILVERBROOK_BUILT Map={ZONE} Bridges={len(bridges)} Fill={fill_report} Terrain={terrain_stats} Counts={counts}')

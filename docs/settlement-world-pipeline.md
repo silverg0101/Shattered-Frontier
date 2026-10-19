@@ -19,9 +19,9 @@ The owner supplies a design board and one or more look references. Agent session
 
 | Step | Agent work | Committed output | Check |
 | --- | --- | --- | --- |
-| 1. Read the board | Trace the board into layout data, using its scale bar, and reconcile it to the settlement definition. Includes elevation: high ground, ridges, cliffs, water levels and waterfall drops. | Layout JSON (Stage 1) | Layout validator |
+| 1. Read the board | Trace the board into layout data, using its scale bar, and reconcile it to the settlement definition. Read the whole board, not only the town plan: the town map, the isometric view and every panel together describe one area. Capture the relief at the centre (such as a raised district), the land around the town, and the backdrop (mountains, cliffs and waterfalls), as well as the streets and buildings. These tie into each other: streets climb the high ground, the river cuts through the relief, and the backdrop frames the views. Includes elevation: high ground, ridges, cliffs, water levels, waterfall drops and the backdrop's heights and distances. | Layout JSON (Stage 1) | Layout validator |
 | 2. Read the look | Turn each look reference into a look profile: asset roles per layer (canopy, understory, ground cover, rocks, litter, surface, backdrop), with variants, shares and placement rules. Record which project assets already fill each role. | `<biome>-look-profile.json` | Profile schema check; owner review of the role list |
-| 3. Shape the land | Generate the terrain from the layout's elevation data: rolling macro forms, high ground, valleys cut for rivers, flattened road and building beds, cliffs and outcrop zones. Not flat. | Terrain source plus build script (Stage 2; the surface type depends on [TER-01](decisions/TER-01-mesh-terrain-fit-check.md)) | Height samples at landmarks, roads within grade, rivers below banks |
+| 3. Shape the land | Generate the terrain from the layout's elevation data: rolling macro forms, high ground, valleys cut for rivers, flattened road and building beds, cliffs and outcrop zones. Also the backdrop beyond the zone edge (mountains and far hills), so no view ends at the edge of the world. Not flat: the relief must read at the board's scale from the arrival point. | Terrain source plus build script (Stage 2; the surface type depends on [TER-01](decisions/TER-01-mesh-terrain-fit-check.md)) | Height samples at landmarks, roads within grade, rivers below banks |
 | 4. Build the town | Splines, district volumes and landmark blockouts on the shaped terrain | Zone map via the builder (Stage 2) | One-line summary; arrival capture |
 | 5. Dress it | Layered PCG driven by the look profile's slope, height, shade and distance rules: macro rocks and bedrock on steep ground, canopy by height and moisture, understory, ground cover, litter. | PCG graphs plus saved output (Stage 3) | Regenerate-and-compare; capture compared against the look reference |
 | 6. List what's missing | Compare look-profile roles and the settlement's building library against the biome library | Missing-asset batch (Stage 4) | Every gap row traces back to a role or building |
@@ -48,6 +48,7 @@ The layout file is one JSON per settlement, `GameClient/ArtSource/<Biome>/<settl
 - **Polygons:** districts.
 - **Points:** landmarks (number, name, footprint, height from the board elevations) and gates.
 - **Elevation:** elevation markers (height in metres at named points), ridge and valley lines, cliff lines, water surface levels, waterfall drops, and areas to flatten for buildings and plots. The terrain build (workflow step 3) reads these.
+- **Backdrop:** the peaks and ranges seen beyond the zone, with direction, distance and height. Take these from the board's isometric view and backgrounds. They are part of the area, not decoration added later.
 - **Bounds:** zone bounds.
 - **Other:** plots, arrival and a review route.
 
