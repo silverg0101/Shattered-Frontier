@@ -14,5 +14,9 @@
   "slots": 14,
   "nanite": true,
   "convex_hulls": 12,
-  "nanite_fallback_triangles": 57140
+  "nanite_fallback_triangles": 57129,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 256
+  }
 }

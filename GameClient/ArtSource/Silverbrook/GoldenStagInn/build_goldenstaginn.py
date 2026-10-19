@@ -153,7 +153,7 @@ G['plaster'].prism([(XG-GW,D2-.15,GC),(XG+GW,D2-.15,GC),(XG,D2-.15,GR-.05)],(0,1
 YS0,YS1=YF+.3,D2-.3;ZS=main_z(W2,YS0)-.05     # side upper walls: rectangle, then the roof profile
 for s in (-1,1):
     wall(G['plaster'],M['plaster'],(s*W2,(YS0+YS1)/2,JZ),(s,0,0),(YS1-YS0)/2,ZS-JZ,[(0,.88,.51,1.59)])
-    top=[(y,main_z(W2-.15,y)-.05) for y in np.linspace(YS0,YS1,41)]
+    top=[(y,main_z(W2,y)-.08) for y in np.linspace(YS0,YS1,41)]
     G['plaster'].prism([(s*(W2-.15),y,z) for y,z in [(YS1,ZS),(YS0,ZS)]+top],(1,0,0),.3,M['plaster'])
 # ---- timber framing ------------------------------------------------------------------
 PY=-D2-.33                     # jetty posts on stone pads, braced to the bressumer
