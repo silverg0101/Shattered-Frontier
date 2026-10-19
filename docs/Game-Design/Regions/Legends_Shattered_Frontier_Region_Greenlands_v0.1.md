@@ -56,6 +56,8 @@ This is the first region definition written to the [Zone Definition Standard](..
 
 Each mainland settlement anchors one zone of about 2 km × 2 km that includes its surrounding countryside. The islands and seas are future content, because they need sea travel.
 
+**World structure (decided 2026-10-19):** the mainland is one continuous terrain. Zones are tiles of it, and a player can walk from Silverbrook to Valemere without a loading break. The region layout is traced from the region map before any zone is built ([pipeline](../../settlement-world-pipeline.md), step 0 and its hard rule). It fixes each zone's placement, edge heights, river and road crossings, and backdrop. **Region scale:** to be decided by the owner (pending).
+
 | Zone id (proposed) | Anchor | Archetype | Level range (proposed) | Claimable land | Layerable |
 | --- | --- | --- | --- | --- | --- |
 | `zone/greenlands_silverbrook` | Silverbrook | Starter | 1–8 | Yes (starter plots) | No (claims) |
