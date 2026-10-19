@@ -26,7 +26,7 @@ Owner-supplied concept images for the Silverbrook buildings. One image is one de
 | [Townhouse-3.png](Townhouse-3.png) | Townhouse | BLD-GreenlandsTownhouse-01 | 8 × 7 × 9 | `GameClient/ArtSource/Silverbrook/Townhouse3` | modelling |
 | [Townhouse-4.png](Townhouse-4.png) | Townhouse | BLD-GreenlandsTownhouse-01 | 8 × 7 × 9 | `GameClient/ArtSource/Silverbrook/Townhouse4` | modelling |
 | [Townhouse-5.png](Townhouse-5.png) | Townhouse | BLD-GreenlandsTownhouse-01 | 8 × 7 × 9 | `GameClient/ArtSource/Silverbrook/Townhouse5` | modelling |
-| [Townhouse-6.png](Townhouse-6.png) | Townhouse | BLD-GreenlandsTownhouse-01 | 8 × 7 × 9 | — | waiting for a model |
+| [Townhouse-6.png](Townhouse-6.png) | Townhouse | BLD-GreenlandsTownhouse-01 | 8 × 7 × 9 | `GameClient/ArtSource/Silverbrook/Townhouse6` | modelling |
 | [Northridge House-1.png](Northridge%20House-1.png) | Northridge house | BLD-GreenlandsNorthridgeHouse-01 | 12 × 10 × 10 | — | waiting for a model |
 | [Northridge House-2.png](Northridge%20House-2.png) | Northridge house | BLD-GreenlandsNorthridgeHouse-01 | 12 × 10 × 10 | — | waiting for a model |
 | [Northridge House-3.png](Northridge%20House-3.png) | Northridge house | BLD-GreenlandsNorthridgeHouse-01 | 12 × 10 × 10 | — | waiting for a model |

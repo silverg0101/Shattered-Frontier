@@ -1,0 +1,230 @@
+{
+  "asset": "SilverbrookTownhouse6",
+  "reference": {
+    "file": "Townhouse6-reference.png",
+    "sha256": "ef727a67424ccd3ea5c8e97129ee634cc62b66e8c6ceaadf9915e89c33741012"
+  },
+  "blender": "5.1.1",
+  "generator": "build_townhouse6.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    6.937,
+    6.13,
+    8.97
+  ],
+  "meshes": {
+    "SM_SBTownhouse6_Masonry": {
+      "triangles": 1048,
+      "materials": [
+        "SB_Townhouse6_Ashlar"
+      ]
+    },
+    "SM_SBTownhouse6_Plaster": {
+      "triangles": 852,
+      "materials": [
+        "SB_LimePlaster"
+      ]
+    },
+    "SM_SBTownhouse6_Timber": {
+      "triangles": 6248,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBTownhouse6_Roof": {
+      "triangles": 42200,
+      "materials": [
+        "SB_Slate",
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBTownhouse6_Details": {
+      "triangles": 20552,
+      "materials": [
+        "SB_ForgedIron",
+        "SB_LitGlass",
+        "SB_LeadCame",
+        "SB_ChimneyPot",
+        "SB_PlanterSoil",
+        "SB_DoorBoards",
+        "SB_LanternGlow",
+        "SB_Townhouse6_Banner",
+        "SB_Townhouse6_Gilt"
+      ]
+    }
+  },
+  "triangles": 70900,
+  "materials": [
+    {
+      "name": "SB_Slate",
+      "scan": "grey_roof_tiles_02",
+      "dark": [
+        0.2,
+        0.22,
+        0.28
+      ],
+      "lichen": "lichen_rock",
+      "normal": 1.0
+    },
+    {
+      "name": "SB_Townhouse6_Ashlar",
+      "scan": "sandstone_blocks_05",
+      "dark": [
+        0.42,
+        0.38,
+        0.31
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_LimePlaster",
+      "scan": "patterned_clay_plaster",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_DoorBoards",
+      "scan": "old_planks_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_Townhouse6_Banner",
+      "scan": "denim_fabric_03",
+      "dark": [
+        0.12,
+        0.14,
+        0.3
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LeadCame",
+      "colour": [
+        0.05,
+        0.05,
+        0.05
+      ],
+      "roughness": 0.45,
+      "metallic": 0.8,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LitGlass",
+      "colour": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "roughness": 0.15,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.5,
+        0.14
+      ],
+      "strength": 3
+    },
+    {
+      "name": "SB_LanternGlow",
+      "colour": [
+        0.3,
+        0.2,
+        0.1
+      ],
+      "roughness": 0.3,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.38,
+        0.08
+      ],
+      "strength": 5
+    },
+    {
+      "name": "SB_PlanterSoil",
+      "colour": [
+        0.06,
+        0.04,
+        0.025
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_ChimneyPot",
+      "colour": [
+        0.2,
+        0.085,
+        0.05
+      ],
+      "roughness": 0.75,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_Townhouse6_Gilt",
+      "colour": [
+        0.8,
+        0.55,
+        0.18
+      ],
+      "roughness": 0.35,
+      "metallic": 1.0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookTownhouse6",
+  "slot_m": [
+    8,
+    7,
+    9
+  ],
+  "outputs": [
+    "SilverbrookTownhouse6.blend",
+    "SilverbrookTownhouse6.glb",
+    "SilverbrookTownhouse6.fbx"
+  ]
+}
