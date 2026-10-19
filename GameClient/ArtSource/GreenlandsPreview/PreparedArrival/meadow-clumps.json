@@ -1,0 +1,46 @@
+[
+  {
+    "mesh": "SM_PH_GrassClump_0",
+    "dimensions_metres": [
+      0.31700897216796875,
+      0.32655882835388184,
+      0.1466887891292572
+    ],
+    "triangles": 6422,
+    "source": "grass_medium_01",
+    "license": "CC0"
+  },
+  {
+    "mesh": "SM_PH_GrassClump_1",
+    "dimensions_metres": [
+      0.27879106998443604,
+      0.25506988167762756,
+      0.14234741032123566
+    ],
+    "triangles": 5945,
+    "source": "grass_medium_01",
+    "license": "CC0"
+  },
+  {
+    "mesh": "SM_PH_GrassClump_2",
+    "dimensions_metres": [
+      0.2840975522994995,
+      0.2757398784160614,
+      0.1692626178264618
+    ],
+    "triangles": 4626,
+    "source": "grass_medium_01",
+    "license": "CC0"
+  },
+  {
+    "mesh": "SM_PH_GrassClump_3",
+    "dimensions_metres": [
+      0.21561527252197266,
+      0.2213778793811798,
+      0.21774429082870483
+    ],
+    "triangles": 2287,
+    "source": "grass_medium_01",
+    "license": "CC0"
+  }
+]

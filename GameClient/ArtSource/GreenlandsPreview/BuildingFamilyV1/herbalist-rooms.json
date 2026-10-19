@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "front": "-Y",
+  "rooms": [
+    {"id": "ground", "floor_z": 0.16, "usable_xy": [-2.8, -3.8, 2.8, 3.8], "ceiling_z": 2.61},
+    {"id": "loft", "floor_z": 2.75, "usable_xy": [-2.8, -3.8, 2.8, 3.8], "roof_ridge_z": 6.8, "roof_eave_z": 3.2, "roof_half_span": 3.45},
+    {"id": "porch", "floor_z": 0.21, "usable_xy": [-4.65, -3.3, -3.1, 0.8]}
+  ],
+  "keep_clear": [
+    {"room": "ground", "id": "entry_aisle", "xy": [-0.6, -5.5, 0.6, 2.0]},
+    {"room": "ground", "id": "stairs", "xy": [0.85, -1.0, 2.25, 2.8]},
+    {"room": "loft", "id": "stairwell", "xy": [0.85, -0.6, 2.25, 2.8]},
+    {"room": "loft", "id": "chimney", "xy": [2.05, 2.55, 2.95, 3.45]},
+    {"room": "porch", "id": "walk_aisle", "xy": [-4.6, -3.3, -3.74, 0.8]}
+  ],
+  "assemblies": [
+    {"room": "ground", "id": "preparation", "anchor": [-1.95, 0.5, 0.16], "footprint_xy": [-0.36, -0.75, 0.36, 0.75]},
+    {"room": "ground", "id": "jar_shelves", "anchor": [-1.15, 3.5, 0.16], "footprint_xy": [-1.44, -0.21, 1.44, 0.21]},
+    {"room": "loft", "id": "bed", "anchor": [-1.25, -0.3, 2.75], "footprint_xy": [-0.65, -1.05, 0.67, 1.05]},
+    {"room": "loft", "id": "trunk", "anchor": [-1.6, 1.55, 2.75], "footprint_xy": [-0.50, -0.30, 0.50, 0.30]},
+    {"room": "porch", "id": "herb_table", "anchor": [-3.38, -1.8, 0.21], "footprint_xy": [-0.26, -0.625, 0.26, 0.625]}
+  ],
+  "status": "Measured authored assembly metadata; generator validates bounds and circulation. This does not implement runtime room generation or gameplay interaction."
+}

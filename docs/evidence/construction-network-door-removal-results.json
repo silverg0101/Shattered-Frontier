@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-18",
+  "status": "Passed",
+  "scope": "Isolated editor two-client door removal; no packaged acceptance",
+  "rawRoot": "Artifacts/ConstructionSandbox/network-20261018-214258-680",
+  "buildLog": "Artifacts/ConstructionSandbox/network-door-remove-build.log",
+  "buildSeconds": 18.62,
+  "elapsedSeconds": 48.838141,
+  "contentBlake3": "13bffcc0d697cde1599fb873d1f9dfc5b6f8f7121f7ad7616a69a04d4af7b8a2",
+  "cleanupComplete": true,
+  "sha256": {
+    "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionNetwork.h": "08207949eedb282699c1e6573ef19f01f18b40b96d7f4653acd5e5bc21d15434",
+    "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionNetwork.cpp": "4c01489244662ad3f4985c1cd1d1ac7c20eadda3bd7c419d654c6d4982097066",
+    "tools/Test-ConstructionNetwork.ps1": "a4885379608d3dcd66213fee076c7ae9fc91b51b51a3b9652e744aad6dd40617",
+    "Artifacts/ConstructionSandbox/network-20261018-214258-680/results.json": "860eeda98de16a92e427a49afd8ac6d3db881d24dfa03a3c0f04f576814423e2",
+    "Artifacts/ConstructionSandbox/network-20261018-214258-680/server.log": "7b32030e4c21f31100d67955cff7dd478169af871b7d78de88ca251afb317154",
+    "Artifacts/ConstructionSandbox/network-20261018-214258-680/driver.log": "26299f2c76669ca871e5ae2d3882197f3d285836f2d0830130d004eca3ca92d7",
+    "Artifacts/ConstructionSandbox/network-20261018-214258-680/observer.log": "7a9dfb661c41af562f8f6b8fb2c325bcf2a433fab6feb6c7294405885008818b",
+    "Artifacts/ConstructionSandbox/network-20261018-214258-680/driver.png": "1e7f2978fe9999ee12682042094c93e1a09b3aac65c5df52c40fcfe198ca78b7",
+    "Artifacts/ConstructionSandbox/network-20261018-214258-680/observer.png": "1f47c0a6f3953425e96645633a57191c7dfbb1091c191a269aa696ead680cfd9",
+    "Artifacts/ConstructionSandbox/network-20261018-214258-680/driver.open.png": "20327686f061393a980fc3ac4ae14aa37f83c58901a3e410b06a82f7fb250314",
+    "Artifacts/ConstructionSandbox/network-20261018-214258-680/observer.open.png": "da48151f5fd65bfb1b41d7fc0d76945aead46d15d4abde18535410f32287b179"
+  }
+}

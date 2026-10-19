@@ -12,6 +12,8 @@ This part defines how every open-world NPC perceives, decides, fights, socialize
 
 Combat owns stats, damage, mitigation and threat generation (Combat spec, NPC Attribute Generation; Threat & Aggro System). World owns spawn tables, population and placement (World spec). This part never changes a number those specs own; it decides *what the NPC does with them*.
 
+Owned trained creatures use [Companion Gameplay](../Companions/Legends_Shattered_Frontier_Companion_Gameplay_Details_v0.1.md) §§2–5 instead of wild spawn-anchored leash/evade, morale and autonomous hostile targeting. They obey owner-directed commands, Passive/Defend stance, owner-anchored path recovery and disconnect/death suppression; they never gain wild evade immunity/full healing. Capture-enabled wildlife must supply a real calm/exhaustion opening compatible with the capture profile. Training projections are non-combat/non-blocking. AI intent is admitted only for the currently fenced deployment binding; persistent ownership/conditions belong to Progression via the integration contract.
+
 ## 1. Runtime architecture on zone-server
 
 ### 1.1 Components

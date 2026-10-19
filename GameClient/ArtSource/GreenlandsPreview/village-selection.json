@@ -1,0 +1,529 @@
+{
+  "source": "Medieval Village Megascans Sample",
+  "listing": "https://www.fab.com/listings/2e11a225-a6ea-4781-a3e1-fe975b461894",
+  "acquired": "User Fab library; downloaded with Epic Games Launcher",
+  "distribution": "Local acquired Fab content; excluded from public Git",
+  "root": "/Game/Frontier/Environment/GreenlandsPreview/Village",
+  "texture_max_dimension": 2048,
+  "package_count": 180,
+  "sample_path_repairs": [
+    {
+      "old": "/Game/Megascans/Surfaces/Nordic_Moss_1x1_M/T_NordicMoss1x1M_A",
+      "supplied": "/Game/Megascans/Surfaces/NordicMoss1x1M/T_NordicMoss1x1M_A"
+    }
+  ],
+  "meshes": [
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/Megascans/3D_Assets/MedievalModularCornerWall1x2M/SM_MedievalModularCornerWall1x2M",
+      "name": "SM_MedievalModularCornerWall1x2M",
+      "minimum": [
+        -2.6043930053710938,
+        -100.0022964477539,
+        0.0
+      ],
+      "maximum": [
+        100.0006103515625,
+        2.5987014770507812,
+        200.0850067138672
+      ],
+      "dimensions": [
+        102.6050033569336,
+        102.60099792480469,
+        200.0850067138672
+      ],
+      "materials": [
+        "/Game/Megascans/3D_Assets/MedievalModularCornerWall1x2M/MI_MedievalModularCornerWall1x2M.MI_MedievalModularCornerWall1x2M"
+      ],
+      "lods": 6,
+      "original_package": "/Game/Megascans/3D_Assets/MedievalModularCornerWall1x2M/SM_MedievalModularCornerWall1x2M"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/Megascans/3D_Assets/MedievalModularDoor3x2M/SM_MedievalModularDoor3x2M",
+      "name": "SM_MedievalModularDoor3x2M",
+      "minimum": [
+        -0.27899169921875,
+        -15.679444313049316,
+        -0.24725341796875
+      ],
+      "maximum": [
+        300.1819763183594,
+        5.880555152893066,
+        200.02574157714844
+      ],
+      "dimensions": [
+        300.4609680175781,
+        21.559999465942383,
+        200.2729949951172
+      ],
+      "materials": [
+        "/Game/Megascans/3D_Assets/MedievalModularDoor3x2M/MI_MedievalModularDoor3x2M.MI_MedievalModularDoor3x2M"
+      ],
+      "lods": 6,
+      "original_package": "/Game/Megascans/3D_Assets/MedievalModularDoor3x2M/SM_MedievalModularDoor3x2M"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/Megascans/3D_Assets/MedievalModularWall2x2MD/SM_MedievalModularWall2x2MD",
+      "name": "SM_MedievalModularWall2x2MD",
+      "minimum": [
+        -0.2546234130859375,
+        -15.315825462341309,
+        -0.001617431640625
+      ],
+      "maximum": [
+        199.9983673095703,
+        1.8601751327514648,
+        199.99838256835938
+      ],
+      "dimensions": [
+        200.25299072265625,
+        17.176000595092773,
+        200.0
+      ],
+      "materials": [
+        "/Game/Megascans/3D_Assets/MedievalModularWall2x2MD/MI_MedievalModularWall2x2MD.MI_MedievalModularWall2x2MD"
+      ],
+      "lods": 4,
+      "original_package": "/Game/Megascans/3D_Assets/MedievalModularWall2x2MD/SM_MedievalModularWall2x2MD"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/Megascans/3D_Assets/MedievalModularWall2x2MG/SM_MedievalModularWall2x2MG",
+      "name": "SM_MedievalModularWall2x2MG",
+      "minimum": [
+        -0.0055084228515625,
+        -15.11229133605957,
+        -0.0001678466796875
+      ],
+      "maximum": [
+        200.0024871826172,
+        4.964292526245117,
+        200.01683044433594
+      ],
+      "dimensions": [
+        200.00799560546875,
+        20.076583862304688,
+        200.01699829101562
+      ],
+      "materials": [
+        "/Game/Megascans/3D_Assets/MedievalModularWall2x2MG/MI_MedievalModularWall2x2MG.MI_MedievalModularWall2x2MG"
+      ],
+      "lods": 4,
+      "original_package": "/Game/Megascans/3D_Assets/MedievalModularWall2x2MG/SM_MedievalModularWall2x2MG"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/Megascans/3D_Assets/MedievalModularWall2x2MH/SM_MedievalModularWall2x2MH",
+      "name": "SM_MedievalModularWall2x2MH",
+      "minimum": [
+        -0.000701904296875,
+        -15.14064073562622,
+        0.0
+      ],
+      "maximum": [
+        200.01930236816406,
+        1.0144762992858887,
+        200.02000427246094
+      ],
+      "dimensions": [
+        200.02000427246094,
+        16.15511703491211,
+        200.02000427246094
+      ],
+      "materials": [
+        "/Game/Megascans/3D_Assets/MedievalModularWall2x2MH/MI_MedievalModularWall2x2MH.MI_MedievalModularWall2x2MH"
+      ],
+      "lods": 6,
+      "original_package": "/Game/Megascans/3D_Assets/MedievalModularWall2x2MH/SM_MedievalModularWall2x2MH"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/Megascans/3D_Assets/MedievalModularWall3x2M/SM_MedievalModularWall3x2M",
+      "name": "SM_MedievalModularWall3x2M",
+      "minimum": [
+        -0.247802734375,
+        -15.353662490844727,
+        -0.365203857421875
+      ],
+      "maximum": [
+        300.26220703125,
+        3.08233642578125,
+        200.48179626464844
+      ],
+      "dimensions": [
+        300.510009765625,
+        18.435998916625977,
+        200.8470001220703
+      ],
+      "materials": [
+        "/Game/Megascans/3D_Assets/MedievalModularWall3x2M/MI_MedievalModularWall3x2M.MI_MedievalModularWall3x2M"
+      ],
+      "lods": 6,
+      "original_package": "/Game/Megascans/3D_Assets/MedievalModularWall3x2M/SM_MedievalModularWall3x2M"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/Megascans/3D_Assets/OldWellCrank/SM_OldWellCrank",
+      "name": "SM_OldWellCrank",
+      "minimum": [
+        -113.9066390991211,
+        -22.948567390441895,
+        0.0
+      ],
+      "maximum": [
+        113.9066390991211,
+        22.94856548309326,
+        78.81664276123047
+      ],
+      "dimensions": [
+        227.8132781982422,
+        45.897132873535156,
+        78.81664276123047
+      ],
+      "materials": [
+        "/Game/Megascans/3D_Assets/OldWellCrank/MI_OldWellCrank.MI_OldWellCrank"
+      ],
+      "lods": 6,
+      "original_package": "/Game/Megascans/3D_Assets/OldWellCrank/SM_OldWellCrank"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/Megascans/3D_Assets/OldWoodenBench/SM_OldWoodenBench",
+      "name": "SM_OldWoodenBench",
+      "minimum": [
+        -16.42741584777832,
+        -95.04497528076172,
+        -0.7999992370605469
+      ],
+      "maximum": [
+        16.42741584777832,
+        95.04497528076172,
+        47.215415954589844
+      ],
+      "dimensions": [
+        32.85483169555664,
+        190.08995056152344,
+        48.01541519165039
+      ],
+      "materials": [
+        "/Game/Megascans/3D_Assets/OldWoodenBench/MI_OldWoodenBench.MI_OldWoodenBench"
+      ],
+      "lods": 6,
+      "original_package": "/Game/Megascans/3D_Assets/OldWoodenBench/SM_OldWoodenBench"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/Megascans/3D_Assets/OldWoodenDoor/SM_OldWoodenDoor",
+      "name": "SM_OldWoodenDoor",
+      "minimum": [
+        -0.03897857666015625,
+        -13.39197301864624,
+        -0.18853759765625
+      ],
+      "maximum": [
+        105.45267486572266,
+        8.52791452407837,
+        190.01675415039062
+      ],
+      "dimensions": [
+        105.49165344238281,
+        21.91988754272461,
+        190.20529174804688
+      ],
+      "materials": [
+        "/Game/Megascans/3D_Assets/OldWoodenDoor/MI_OldWoodenDoor.MI_OldWoodenDoor"
+      ],
+      "lods": 4,
+      "original_package": "/Game/Megascans/3D_Assets/OldWoodenDoor/SM_OldWoodenDoor"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/Megascans/3D_Assets/OldWoodenTable/SM_OldWoodenTable",
+      "name": "SM_OldWoodenTable",
+      "minimum": [
+        -99.03821182250977,
+        -35.813751220703125,
+        -0.7461166381835938
+      ],
+      "maximum": [
+        95.96178817749023,
+        34.34138488769531,
+        82.45317840576172
+      ],
+      "dimensions": [
+        195.0,
+        70.15513610839844,
+        83.19929504394531
+      ],
+      "materials": [
+        "/Game/Megascans/3D_Assets/OldWoodenTable/MI_OldWoodenTable.MI_OldWoodenTable"
+      ],
+      "lods": 6,
+      "original_package": "/Game/Megascans/3D_Assets/OldWoodenTable/SM_OldWoodenTable"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/Meshes/Blockout/Fence/SM_Fence",
+      "name": "SM_Fence",
+      "minimum": [
+        -2.074127197265625,
+        -19.590316772460938,
+        -0.35938262939453125
+      ],
+      "maximum": [
+        299.78167724609375,
+        7.089082717895508,
+        119.32878875732422
+      ],
+      "dimensions": [
+        301.8558044433594,
+        26.679399490356445,
+        119.68817138671875
+      ],
+      "materials": [
+        "/Game/Meshes/Blockout/Fence/MI_Fence.MI_Fence"
+      ],
+      "lods": 5,
+      "original_package": "/Game/Meshes/Blockout/Fence/SM_Fence"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/Meshes/Houses/MODULAR_ASSETS/SM_GableFront_01",
+      "name": "SM_GableFront_01",
+      "minimum": [
+        -272.7539520263672,
+        -70.70831298828125,
+        -127.80534362792969
+      ],
+      "maximum": [
+        272.5733184814453,
+        51.60931396484375,
+        128.7669219970703
+      ],
+      "dimensions": [
+        545.3272705078125,
+        122.317626953125,
+        256.572265625
+      ],
+      "materials": [
+        "/Game/Meshes/Houses/MODULAR_ASSETS/Gable/MI_GableFront1_01.MI_GableFront1_01",
+        "/Game/Meshes/Houses/MODULAR_ASSETS/Gable/MI_GableFront1_03.MI_GableFront1_03",
+        "/Game/Meshes/Houses/MODULAR_ASSETS/Gable/MI_GableFront1_02.MI_GableFront1_02"
+      ],
+      "lods": 6,
+      "original_package": "/Game/Meshes/Houses/MODULAR_ASSETS/SM_GableFront_01"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/Meshes/Houses/MODULAR_ASSETS/SM_GableSet_01",
+      "name": "SM_GableSet_01",
+      "minimum": [
+        -220.1746826171875,
+        -13.664453029632568,
+        -101.07995986938477
+      ],
+      "maximum": [
+        220.03057861328125,
+        13.430162906646729,
+        112.89303207397461
+      ],
+      "dimensions": [
+        440.20526123046875,
+        27.094615936279297,
+        213.97299194335938
+      ],
+      "materials": [
+        "/Game/Meshes/Houses/MODULAR_ASSETS/Gable/MI_GableSet_01.MI_GableSet_01"
+      ],
+      "lods": 6,
+      "original_package": "/Game/Meshes/Houses/MODULAR_ASSETS/SM_GableSet_01"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/Meshes/Houses/Roofs/House02_Roof/SM_House02_Roof",
+      "name": "SM_House02_Roof",
+      "minimum": [
+        -409.11790466308594,
+        -471.3630065917969,
+        -201.4913101196289
+      ],
+      "maximum": [
+        490.20277404785156,
+        445.2749938964844,
+        136.52791595458984
+      ],
+      "dimensions": [
+        899.3206787109375,
+        916.6380004882812,
+        338.01922607421875
+      ],
+      "materials": [
+        "/Game/Meshes/Houses/Roofs/House02_Roof/MI_Roof.MI_Roof"
+      ],
+      "lods": 6,
+      "original_package": "/Game/Meshes/Houses/Roofs/House02_Roof/SM_House02_Roof"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/Meshes/Houses/Roofs/House08_Roof/SM_House08_Roof",
+      "name": "SM_House08_Roof",
+      "minimum": [
+        -412.0386962890625,
+        -340.27239990234375,
+        -157.33650970458984
+      ],
+      "maximum": [
+        414.06201171875,
+        327.749755859375,
+        146.79300689697266
+      ],
+      "dimensions": [
+        826.1007080078125,
+        668.0221557617188,
+        304.1295166015625
+      ],
+      "materials": [
+        "/Game/Meshes/Houses/Roofs/House08_Roof/MI_Roof08.MI_Roof08"
+      ],
+      "lods": 5,
+      "original_package": "/Game/Meshes/Houses/Roofs/House08_Roof/SM_House08_Roof"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/Megascans/3D_Plants/GroundCoverA/SM_GroundCover_02",
+      "name": "SM_GroundCover_02",
+      "minimum": [
+        -26.720277786254883,
+        -26.897907257080078,
+        -1.6383767127990723
+      ],
+      "maximum": [
+        27.790578842163086,
+        22.76865005493164,
+        16.198707103729248
+      ],
+      "dimensions": [
+        54.51085662841797,
+        49.66655731201172,
+        17.83708381652832
+      ],
+      "materials": [
+        "/Game/Megascans/3D_Plants/GroundCoverA/MI_GroundCoverA.MI_GroundCoverA"
+      ],
+      "lods": 3,
+      "original_package": "/Game/Megascans/3D_Plants/GroundCoverA/SM_GroundCover_02"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/Megascans/3D_Plants/GroundCoverA/SM_GroundCover_03",
+      "name": "SM_GroundCover_03",
+      "minimum": [
+        -25.95135498046875,
+        -33.06122398376465,
+        -2.2924022674560547
+      ],
+      "maximum": [
+        35.843997955322266,
+        33.73562049865723,
+        10.648366928100586
+      ],
+      "dimensions": [
+        61.795352935791016,
+        66.79684448242188,
+        12.94076919555664
+      ],
+      "materials": [
+        "/Game/Megascans/3D_Plants/GroundCoverA/MI_GroundCoverA.MI_GroundCoverA"
+      ],
+      "lods": 3,
+      "original_package": "/Game/Megascans/3D_Plants/GroundCoverA/SM_GroundCover_03"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/Megascans/3D_Plants/WheatGrassA/SM_WheatGrass00_V2",
+      "name": "SM_WheatGrass00_V2",
+      "minimum": [
+        -69.86495971679688,
+        -53.00149917602539,
+        -24.404329299926758
+      ],
+      "maximum": [
+        71.6536636352539,
+        90.3463363647461,
+        138.10394287109375
+      ],
+      "dimensions": [
+        141.51862335205078,
+        143.34783554077148,
+        162.5082721710205
+      ],
+      "materials": [
+        "/Game/Megascans/3D_Plants/WheatGrassA/MI_WheatGrassA.MI_WheatGrassA"
+      ],
+      "lods": 5,
+      "original_package": "/Game/Megascans/3D_Plants/WheatGrassA/SM_WheatGrass00_V2"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01",
+      "name": "spruce_full_01",
+      "minimum": [
+        -209.1996307373047,
+        -261.49713134765625,
+        -76.3714599609375
+      ],
+      "maximum": [
+        250.9524383544922,
+        243.912353515625,
+        975.3387451171875
+      ],
+      "dimensions": [
+        460.1520690917969,
+        505.40948486328125,
+        1051.710205078125
+      ],
+      "materials": [
+        "/Game/ThirdParty/PN_interactiveSpruceForest/Materials/MaterialInstances/full/high/spruce_full_01_trunk.spruce_full_01_trunk",
+        "/Game/ThirdParty/PN_interactiveSpruceForest/Materials/MaterialInstances/full/high/spruce_full_01_leaf.spruce_full_01_leaf",
+        "/Game/ThirdParty/PN_interactiveSpruceForest/Materials/MaterialInstances/full/high/spruce_full_01_branch.spruce_full_01_branch",
+        "/Game/ThirdParty/PN_interactiveSpruceForest/Materials/MaterialInstances/imposter/high/full_01_imposter.full_01_imposter"
+      ],
+      "lods": 5,
+      "original_package": "/Game/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_02",
+      "name": "spruce_full_02",
+      "minimum": [
+        -366.9306945800781,
+        -349.6504821777344,
+        -25.80608558654785
+      ],
+      "maximum": [
+        332.50799560546875,
+        325.9316101074219,
+        1165.0113525390625
+      ],
+      "dimensions": [
+        699.4386901855469,
+        675.5820922851562,
+        1190.8174381256104
+      ],
+      "materials": [
+        "/Game/ThirdParty/PN_interactiveSpruceForest/Materials/MaterialInstances/full/high/spruce_full_02_trunk.spruce_full_02_trunk",
+        "/Game/ThirdParty/PN_interactiveSpruceForest/Materials/MaterialInstances/full/high/spruce_full_02_leaf.spruce_full_02_leaf",
+        "/Game/ThirdParty/PN_interactiveSpruceForest/Materials/MaterialInstances/full/high/spruce_full_02_branch.spruce_full_02_branch",
+        "/Game/ThirdParty/PN_interactiveSpruceForest/Materials/MaterialInstances/imposter/high/full_02_imposter.full_02_imposter"
+      ],
+      "lods": 5,
+      "original_package": "/Game/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_02"
+    },
+    {
+      "package": "/Game/Frontier/Environment/GreenlandsPreview/Village/Meshes/SM_WellBase",
+      "name": "SM_WellBase",
+      "minimum": [
+        -72.99002838134766,
+        -70.45431137084961,
+        -136.18665313720703
+      ],
+      "maximum": [
+        77.85364532470703,
+        74.71661758422852,
+        136.98351287841797
+      ],
+      "dimensions": [
+        150.8436737060547,
+        145.17092895507812,
+        273.170166015625
+      ],
+      "materials": [
+        "/Game/Megascans/Surfaces/MossyGround/MI_MossyGround.MI_MossyGround"
+      ],
+      "lods": 3,
+      "original_package": "/Game/Meshes/SM_WellBase"
+    }
+  ]
+}

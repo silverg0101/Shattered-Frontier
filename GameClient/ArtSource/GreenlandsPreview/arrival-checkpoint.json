@@ -1,0 +1,24 @@
+{
+  "map": "/Game/Frontier/Environment/GreenlandsPreview/Greenlands_EnvironmentPreview",
+  "seed": 591,
+  "instances": {
+    "SM_PH_Broadleaf": 447,
+    "SM_PH_grass_medium_01_00": 10713,
+    "SM_PH_grass_medium_01_01": 10910,
+    "SM_PH_grass_medium_01_02": 10831,
+    "SM_PH_grass_medium_01_03": 10669,
+    "SM_PH_fern_02_00": 16,
+    "SM_PH_fern_02_01": 16,
+    "SM_PH_fern_02_02": 11,
+    "SM_PH_fern_02_03": 12,
+    "SM_PH_rock_moss_set_01_00": 13,
+    "SM_PH_rock_moss_set_01_01": 13,
+    "SM_PH_rock_moss_set_01_02": 15,
+    "SM_PH_rock_moss_set_01_03": 13,
+    "SM_PH_rock_moss_set_01_04": 10,
+    "SM_PH_rock_moss_set_01_05": 13
+  },
+  "route": "Existing metre-scale coordinates preserved; continuous road joins resource/build routes and full Greenlands loop",
+  "materials": "Poly Haven CC0 PBR; original source hashes in ArrivalAssets/provenance.json and arrival-surface-provenance.json",
+  "limits": "Environment art only; no new construction, claim, harvesting, combat, networking or default/cook changes"
+}

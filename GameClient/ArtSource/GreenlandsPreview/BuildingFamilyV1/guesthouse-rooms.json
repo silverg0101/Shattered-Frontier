@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "rooms": [
+    {"id": "common", "usable_xy": [-3.8,-2.8,3.8,2.8], "floor_z": 0.16, "ceiling_z": 2.81},
+    {"id": "sleeping", "usable_xy": [-3.8,-2.8,3.8,2.8], "floor_z": 2.95, "roof_ridge_z": 7.8}
+  ],
+  "keep_clear": [
+    {"room": "common", "xy": [-0.8,-2.8,0.8,1.2]},
+    {"room": "common", "xy": [-3.25,1.25,1.2,2.45]},
+    {"room": "sleeping", "xy": [-3.25,1.25,1.2,2.45]},
+    {"room": "sleeping", "xy": [-3.8,0.25,3.0,1.1]},
+    {"room": "sleeping", "xy": [1.2,1.1,2.5,2.6]}
+  ],
+  "assemblies": [
+    {"id": "left_dining", "room": "common", "anchor": [-2.2,-0.7,0.16], "footprint_xy": [-1.0,-0.85,1.0,0.85]},
+    {"id": "right_dining", "room": "common", "anchor": [2.25,-0.8,0.16], "footprint_xy": [-0.9,-0.85,0.9,0.85]},
+    {"id": "service_counter", "room": "common", "anchor": [2.7,0.8,0.16], "footprint_xy": [-0.9,-0.3,0.9,0.3]},
+    {"id": "left_bed", "room": "sleeping", "anchor": [-1.9,-1.25,2.95], "footprint_xy": [-0.62,-1.12,0.62,1.12]},
+    {"id": "right_bed", "room": "sleeping", "anchor": [1.9,-1.25,2.95], "footprint_xy": [-0.62,-1.12,0.62,1.12]},
+    {"id": "left_trunk", "room": "sleeping", "anchor": [-3.2,-0.7,2.95], "footprint_xy": [-0.33,-0.6,0.33,0.6]},
+    {"id": "right_trunk", "room": "sleeping", "anchor": [3.2,-0.7,2.95], "footprint_xy": [-0.33,-0.6,0.33,0.6]}
+  ]
+}

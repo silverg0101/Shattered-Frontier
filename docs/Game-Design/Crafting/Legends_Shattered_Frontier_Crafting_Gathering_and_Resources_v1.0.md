@@ -80,9 +80,44 @@ Gathering skills are therefore "ahead" of character level: a gatherer at skill 5
 | `hunting` | `rough_hide`, `raw_meat` | `thick_hide` | `dune_stalker_pelt` | `frost_wyrm_scale` | `dragon_hide` (world boss) |
 | bonus (gem, essence) | — | `rough_quartz` | `sapphire` | `flawless_ruby` | `prismatic_core` |
 
+### 1.5 Environmental harvesting and material progression
+
+User direction,2026-10-19: **ordinary wild trees and freestanding natural rocks are harvestable materials, not decorative lookalikes mixed with a few arbitrarily enabled nodes. This principle applies to every gatherable family.** Each qualifying placed instance needs a resource identity and an authored skill/tool profile. Eligibility follows material, maturity/toughness and magical properties. A small tree is not automatically the same difficulty or output as an ancient tree using a similar silhouette.
+
+A target above the player's current ability remains a real resource: show the required gathering skill/tool before committing the action and explain the unmet requirement. Deliberately protected town plantings, claimed resources and structural scenery need explicit policy and readable feedback; they are exceptions, not a way to disable ordinary wilderness harvesting. Cliffs/terrain and building fabric remain separate destruction domains. Depleted objects must visibly read as depleted (stump/remnant/regrowth), rather than looking untouched while silently unavailable.
+
+All material families follow this progression:
+
+| Gathering skill | Accessible starting materials | Later progression and crafting uses |
+| --- | --- | --- |
+| Logging | Young/small trees and workable soft/light timber | Mature hardwoods, dense/ancient woods, elemental or magical timber; distinct planks, beams, components and magical recipes |
+| Mining | Workable common stone and surface/base-metal deposits | Harder stone, richer/difficult ores, gems and exotic/magical minerals; masonry, ingots, alloys and specialized components |
+| Herbalism | Common herbs and accessible plant fibers | Tougher/rarer fibers, potent herbs and magical plants; cloth, cordage, medicine, reagents and advanced consumables |
+| Farming | Accessible crops suited to starting tools/skill | More demanding crops and special/magical produce; food, fiber, brewing and specialized ingredients |
+| Fishing | Accessible local fish and fishing conditions | More demanding species, locations and exceptional catches; food, oils and specialized ingredients |
+| Hunting | Accessible wildlife and basic carcass materials | Tougher creatures and demanding hides/bones/scales; leather, armor components and specialized materials; combat and carcass-harvest rules remain distinct |
+
+Use the existing gathering-skill ladder in§1.3 and C5.1, not character level or distance alone. Starting-village routes provide sufficient baseline materials at beginner skill. Tougher types become more prevalent as players travel into deeper woods, rougher terrain and more magical/dangerous regions; terrain, ecology and visible material differences teach the progression. Distance is a world-placement gradient, not a hard radius gate or an excuse for identical-looking objects with arbitrary requirements. Higher-skill pockets may foreshadow later goals when clearly identifiable. Common materials remain useful after advancement.
+
+Wood explicitly spans soft/workable timber through hard/dense woods to magical woods. Illustrative content progression (new names require normal catalogue publication):
+
+| Existing tier | Wood identity | Crafting relationship |
+| --- | --- | --- |
+| Common | Workable pine/light timber, young oak baseline | Basic planks, simple tool handles, starter furniture and everyday construction |
+| Uncommon | Mature sound oak/ash and tougher hardwood grades | Stronger beams/joinery, improved handles, furniture and suitable weapon components |
+| Rare | Dense ironwood and comparable rare timbers | Specialized structural/weapon components and demanding equipment recipes |
+| Epic | Frostbark or other authored elemental/arcane timber | Enchanted components, magical focuses and advanced workshop recipes |
+| Legendary | Heartwood of ages or equivalent exceptional wood | Authored endgame/relic recipes with existing legendary acquisition/forging rules |
+
+Refining preserves the material's identity/grade and lot-quality provenance. Recipes name compatible published material items; a refined magical wood is not merely renamed generic timber. Material tiers unlock distinct recipe inputs/properties within existing crafting formulas; they do not automatically replace every lower-grade ingredient or bypass crafting skill, learning and workshop requirements. Large trees can supply more material only through declared content/balance values, not an unreviewed size-to-yield formula. No new numeric thresholds, yields or skill-gain formulas are introduced by this direction.
+
 ---
 
 ## 2. Gathering node definitions
+
+### 2.0 Coverage and resource identity
+
+Resource nodes are the internal authority/state representation of harvestable world objects. They do not define a player-facing exception where most ordinary trees/rocks cannot be worked. Bind normal wilderness objects to the material/skill profiles in§1.5, including instanced vegetation/rocks; rendering or streaming optimizations must preserve that interaction and current depletion state. Instance identity, promotion/streaming and large-area performance remain implementation work, not proof supplied by the two-node pilot.
 
 ### 2.1 `gathering_node` definition (content)
 
@@ -140,7 +175,7 @@ Spawn points are authored in zone content by world designers (World spec owns pl
 | `rare_spawn_chance` | Per respawn, chance to roll a `rare_spawn` node instead of a weighted one | 0.02 |
 | `pool_resource_ids` | Derived list for scarcity aggregation | derived |
 
-`max_active_ratio < 1` keeps nodes moving across the map so routes vary and fixed-route bots are less effective.
+For authored special-resource pools, `max_active_ratio < 1` keeps special nodes moving so routes vary. This occupancy rule must not leave normal-looking wilderness trees/rocks arbitrarily unharvestable: ordinary material coverage follows§1.5/§2.0, and depleted availability is represented visibly. Existing pool scarcity/yield estimates apply to the corresponding pooled resource population; ordinary-material supply needs its own measured placement/balance inputs.
 
 ---
 
@@ -445,3 +480,8 @@ Gathering skills use Character's gain formula and targets (Character spec, Skill
 4. Bots: `detector/bot_gather_yield` (harvests/hour vs band p99, distinct node types, zero social interaction) and `detector/bot_path_loop` (cell sequences) consume `gathering.node.harvested` (`spawn_point_id` and `world_region_id` are included for path features). `AM_rep` gathering N0 = 80 (Character) reduces skill gain for repeated identical contexts.
 5. Multi-boxing: harvest locks are per node, not per account; concurrent characters of one account harvesting the same pool is allowed but visible to analytics (`distinct_harvesters` per node, account joins in the warehouse).
 6. Analytics: `modeled.fact_gathering` grain = one harvest (all C6.3 fields); `m_gathering_yield_per_hour`, `m_node_depletion_rate`; the Analytics dashboard field `ops.zone.load_sampled.gathering_nodes_available_ratio` is computed by zone-server as `available / (pool points × max_active_ratio)`.
+
+
+## Gathering presentation quality
+
+The [gathering presentation and material-claiming contract](../Legends_Shattered_Frontier_Gathering_Presentation_and_Material_Claiming_v0.1.md) expands material-specific destruction, tree stumps, acquisition feedback and visual acceptance without changing this document's harvest/reward mechanics.

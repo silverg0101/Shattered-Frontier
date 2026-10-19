@@ -150,7 +150,7 @@ Every service of Registry §4, with Backend's platform view. "Tier" is the avail
 | `gateway` | edge API | Backend / Network | 0 | none (Redis buckets, gates table) | — | Part 1 |
 | `auth-service` | stateless + DB | Backend (account core) / Security | 0 | PostgreSQL `auth`, Redis session hot copy | region_global | privacy workflow orchestrator |
 | `character-service` | stateless + DB | Backend | 0 | PostgreSQL `character`, Redis presence/queue | realm_column | creation, transfer, purge orchestrator |
-| `progression-service` | stateless + DB | Character | 0 | `progression` | realm_column | participant (privacy, transfer, content refs) |
+| `progression-service` | stateless + DB | Character | 0 | `progression` | realm_column | participant (privacy, transfer, content refs); Stable/owned-creature writer per [Companion Integration](Companions/Legends_Shattered_Frontier_Companion_Integration_and_Delivery_v0.1.md), including operation/entitlement/deployment records. |
 | `inventory-service` | stateless + DB | Itemization | 0 | `inventory` | realm_sharded | participant; mail attachments |
 | `loot-service` | stateless + DB | Itemization | 1 | `loot` | realm_column | participant |
 | `reward-service` | stateless + DB | Itemization | 1 | `reward` | realm_column | participant; transfer blocker for pending grants |

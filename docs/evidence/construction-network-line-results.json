@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-18",
+  "status": "Passed",
+  "rawRoot": "Artifacts/ConstructionSandbox/network-20261018-215654-373",
+  "focusedTestReport": "Artifacts/ConstructionSandbox/network-batch-codec-20261018-215637-900/Report/index.json",
+  "focusedTest": "ShatteredFrontier.Construction.Network.BatchSnapshot",
+  "buildLog": "Artifacts/ConstructionSandbox/network-line-build-05.log",
+  "buildSeconds": 9.74,
+  "elapsedSeconds": 50.1057129,
+  "contentBlake3": "ea9e4f31ad6ac106cc73500fa1674091370bd4ad9642dc0580db1adbce865970",
+  "cleanupComplete": true,
+  "sha256": {
+    "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionNetwork.h": "06e5a7e3be1569e724909b3c6a4bbf9d969ce6216ae842bb94c5022ad1d73f0b",
+    "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionNetwork.cpp": "6db7dbf6732d7f593945d04ac110db27bd3abf88f72c2fa29ee108a57c26f72f",
+    "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionNetworkTests.cpp": "fac2e124b833b5b6cc25efe8065a0195f3f84aaf973659e3dd822cc5f854b364",
+    "tools/Test-ConstructionNetwork.ps1": "1c70827d958ea0ef225e68118249fcd60df57e4e435a52a431718aa220b28116",
+    "Artifacts/ConstructionSandbox/network-20261018-215654-373/results.json": "dc52316314492873e085bb9b3f5ac67f5233fd525131001f9cb6a144a71c6b35",
+    "Artifacts/ConstructionSandbox/network-20261018-215654-373/server.log": "99d0db0bfea61ea5d3ef38b3f96d0399c56bde1657b9727a7286e042affd7272",
+    "Artifacts/ConstructionSandbox/network-20261018-215654-373/driver.log": "027e650ae4f4dcf4ae507404f5afd409f32d70c0b8460b4b22fdc24374a63cf9",
+    "Artifacts/ConstructionSandbox/network-20261018-215654-373/observer.log": "81dfecfa38989f644001cf8db5e38034c39e1b8d54c8a86c47b64be444dcb5e8",
+    "Artifacts/ConstructionSandbox/network-20261018-215654-373/driver.png": "f7b741a0f56adb0b1c6fdd31086e1ec28bb0ad63626107eee2f1debaf2b2222c",
+    "Artifacts/ConstructionSandbox/network-20261018-215654-373/observer.png": "27e6413ebcae4bfc044621e39aa64545038f46a9111bd74a9a219431fd9f31ec",
+    "Artifacts/ConstructionSandbox/network-20261018-215654-373/driver.open.png": "c214d42b4fa61c1e9258abea3b5809c988117c0170c7888a94ff490a87c7211a",
+    "Artifacts/ConstructionSandbox/network-20261018-215654-373/observer.open.png": "c1188b6e28743079ebb56945692c8bddcb9fee42ebe4881c439f5b8eca7f9b13",
+    "Artifacts/ConstructionSandbox/network-batch-codec-20261018-215637-900/Report/index.json": "1adc03342875bbb8df0491304e10c311ffb1d191579c9156493720fe35a082b7"
+  }
+}

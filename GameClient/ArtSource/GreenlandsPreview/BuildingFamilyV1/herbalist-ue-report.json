@@ -1,0 +1,59 @@
+{
+  "site_metres": [
+    -109,
+    -23
+  ],
+  "yaw": 90,
+  "main_shell_metres": [
+    6,
+    8
+  ],
+  "meshes": [
+    "SM_GreenlandsHerbalist_Structure",
+    "SM_GreenlandsHerbalist_Roof",
+    "SM_GreenlandsHerbalist_Joinery",
+    "SM_GreenlandsHerbalist_Furnishings",
+    "SM_GreenlandsHerbalist_Approach"
+  ],
+  "lods": 4,
+  "removed": [
+    "Herbalist cottage - SM_GreenlandsHerbalist_Structure",
+    "Herbalist cottage - SM_GreenlandsHerbalist_Roof",
+    "Herbalist cottage - SM_GreenlandsHerbalist_Joinery",
+    "Herbalist cottage - SM_GreenlandsHerbalist_Furnishings",
+    "Herbalist cottage - SM_GreenlandsHerbalist_Approach",
+    "Herbalist tended window blooms",
+    "Herbalist tended window blooms",
+    "Herbalist tended window blooms",
+    "Herbalist tended window blooms",
+    "Herbalist tended window blooms",
+    "Herbalist tended window blooms",
+    "Herbalist window greenery",
+    "Herbalist window greenery",
+    "Herbalist tended window blooms",
+    "Herbalist tended window blooms",
+    "Herbalist tended window blooms",
+    "Herbalist tended window blooms",
+    "Herbalist tended window blooms",
+    "Herbalist tended window blooms",
+    "Herbalist window greenery",
+    "Herbalist window greenery",
+    "Herbalist tended window blooms",
+    "Herbalist tended window blooms",
+    "Herbalist tended window blooms",
+    "Herbalist tended window blooms",
+    "Herbalist tended window blooms",
+    "Herbalist tended window blooms",
+    "Herbalist window greenery",
+    "Herbalist window greenery",
+    "Herbalist potted preparation herbs",
+    "Herbalist potted preparation herbs",
+    "Herbalist potted preparation herbs",
+    "Herbalist warm practical light",
+    "Herbalist warm practical light"
+  ],
+  "footprint_instances_cleared": [],
+  "decorative_plant_actors": 27,
+  "plant_source": "Poly Haven CC0 Heliophila and previously acquired Medieval Village Garden leaves; all dependencies inside owned subtree",
+  "pending": "Live pawn, collision and visual review"
+}

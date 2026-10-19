@@ -1,0 +1,11 @@
+{
+  "broadleaf_replacements": 36,
+  "spruce_instances_removed_this_run": 36,
+  "height_metres": [
+    8.5,
+    12.0
+  ],
+  "source": "Existing Poly Haven tree_small_02, CC0 Burkea africana; decorative scenery, not oak/gameplay resource identity",
+  "roads_terrain_plots": "No geometry changed; road/footpath/building/plot exclusion checks applied",
+  "pending": "Actual-game arrival road and visual review"
+}

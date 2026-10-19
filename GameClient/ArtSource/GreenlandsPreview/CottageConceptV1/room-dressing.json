@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "coordinates": "Blender local: X right, front -Y, Z up; transform with the building",
+  "seed": 90317,
+  "rooms": [
+    {"id": "ground", "floor_z": 0.16, "usable_xy": [-3.8, -2.8, 3.8, 2.8], "ceiling_z": 2.57},
+    {"id": "loft", "floor_z": 2.71, "usable_xy": [-3.8, -2.8, 3.8, 2.8], "ceiling": "sloping roof; headroom must be checked before furnishing"}
+  ],
+  "keep_clear": [
+    {"id": "entry_and_main_aisle", "room": "ground", "xy": [-0.6, -3.8, 0.6, 2.4]},
+    {"id": "chimney", "room": "ground", "xy": [-3.8, 1.8, -2.7, 2.8]},
+    {"id": "chimney", "room": "loft", "xy": [-3.8, 1.8, -2.7, 2.8]},
+    {"id": "stairs_and_approach", "room": "ground", "xy": [1.85, -1.3, 3.5, 2.8]},
+    {"id": "stairwell", "room": "loft", "xy": [1.95, -0.7, 3.5, 2.4]}
+  ],
+  "assemblies": [
+    {"id": "dining_01", "room": "ground", "template": "table_bench_two_chairs", "anchor": [-2.05, 0.65, 0.16], "yaw_degrees": 0, "occupied_xy_local": [-1.4, -0.45, 1.4, 1.1]},
+    {"id": "sleeping_01", "room": "loft", "template": "loft_bed_and_chest", "anchor": [-1.5, 0.4, 2.71], "yaw_degrees": 0, "occupied_xy_local": [-2.2, -1.3, 1.1, 0.75]}
+  ],
+  "authoring_policy": "Bake and inspect the same seeded layout for all clients. Assembly footprints include chair space. Reject overlap with other assemblies and keep-clear regions. This descriptor currently authors dining and sleeping groups; it is not a runtime furnishing or interaction system."
+}

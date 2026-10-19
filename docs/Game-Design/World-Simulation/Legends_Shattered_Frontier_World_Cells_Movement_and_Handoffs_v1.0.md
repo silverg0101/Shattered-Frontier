@@ -111,8 +111,8 @@ Mode transitions are server-decided from client intent:
 | --- | --- |
 | → `sprint` | Only out of combat and with Stamina > 0 (Combat spec owns Stamina drain). Combat entry forces `run`. |
 | → `swim` | Server water volume test: water depth at the character ≥ 1.3 m (`tune.world.swim_depth_m`). The client cannot choose `swim`. |
-| → `mounted` | Mount cast 1.5 s (`tune.world.mount_cast_ms`), non-moving (`v_eff = 0` during the cast), out of combat, not in water, not indoors (no roof volume), mount owned (Mounts). |
-| `mounted` → on foot | Player dismount; any hostile damage taken (`tune.world.dismount_on_damage`, true); entering water deeper than 1.3 m; entering a `no_mount` volume (dungeon entrances, settlements' interiors). |
+| → `mounted` | Mount cast 1.5 s (`tune.world.mount_cast_ms`), non-moving (`v_eff = 0` during the cast), out of combat, not in water, not indoors (no roof volume), mount owned (Mounts). Captured individuals additionally require completed riding training, rideability and valid deployment/owner-level admission. |
+| `mounted` → on foot | Player dismount; hostile damage on non-combat travel mounts (`tune.world.dismount_on_damage`, true); explicit dismount effects or creature defeat; entering water deeper than 1.3 m; entering a `no_mount` volume (dungeon entrances, settlements' interiors). Trained combat mounts remain mounted through ordinary damage per the companion design direction. |
 | → `crouch`, `walk` | Any time. |
 
 ### Formula
@@ -125,6 +125,8 @@ on foot (walk, run, sprint, crouch, swim):
 mounted:
   v_raw = v_mount × M_buff_mount × M_zone × M_dir
   v_eff = min(v_raw, V_CAP_MOUNTED)
+  if trained_combat_mount and engaged:
+      v_eff = min(v_eff, v_mount, combat_mount_cap_mps)
 
 always:
   v_eff = min(v_eff, V_CAP_ABSOLUTE);  v_eff = 0 while rooted, stunned or casting a non-moving cast
@@ -169,7 +171,9 @@ Speed effects are Combat-spec effects with a `move_speed` component (Combat owns
 
 ### Mounts
 
-Closes skeleton open issue 3. Mounts are registered content kind `mount` (`mount/<slug>`, Shared Registry §3.2; World owns the kind). World needs only the movement fields. Ownership of a mount is an account unlock of kind `mount` (Character spec, `account_unlock_kind`). An item may teach a mount (Itemization spec owns that item behaviour). The zone-server checks ownership through the character's unlock set loaded at login. Resolved (2026-10-17): content kind and unlock kind are canonical.
+Mounts are registered content kind `mount` (`mount/<slug>`, Shared Registry §3.2; World owns the kind). World owns their movement fields. Existing travel entitlements use account unlock kind `mount` (Character spec, `account_unlock_kind`); an item may teach such an unlock (Itemization owns that item behaviour). The zone-server checks that entitlement through the unlock set loaded at login.
+
+[Mounts and Companions](../Legends_Shattered_Frontier_Mounts_and_Companions_v0.1.md) and its parts extend this travel baseline with capture/training, character Stable, family abilities, rarity, owner-capped growth, combat riding and two active creatures through Hunting mastery. Progression durably owns individuals/deployment bindings; an account unlock alone cannot create or authorize one. Gameplay Details §§5–7 define actor counting, rider permissions, target/dismount geometry and the proposed `tune.world.combat_mount_cap_mps` (default 7 m/s, bounded 5–7) adopted on combat entry through normal `v_eff` history. Integration defines condition-preserving source/destination fencing. Protocol adapter evidence remains gated; movement fields below are not a complete creature record. Ordinary damage dismount applies to non-combat travel mounts only.
 
 | Field | Type | Rule |
 | --- | --- | --- |

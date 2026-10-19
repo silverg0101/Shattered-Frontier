@@ -1,0 +1,19 @@
+{
+  "detail_tile_metres": [
+    2.5,
+    2.9325,
+    3.435
+  ],
+  "rotations_degrees": [
+    0,
+    90,
+    45
+  ],
+  "blend_noise_metres": [
+    13,
+    31
+  ],
+  "macro_variation_metres": 85,
+  "close_detail": "Original scanned leaf/soil detail retained; world-space multi-scale blending breaks repetition",
+  "reference": "https://www.fab.com/listings/6a5ae8db-d80f-4b23-b276-87da390cfe56"
+}

@@ -259,7 +259,9 @@ void ASFConstructionSandboxGameMode::StartPlay()
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     StartConstructionInputScenario(GetWorld());
     StartConstructionDoorInputScenario(GetWorld());
+#if WITH_EDITOR
     StartConstructionSaveRestartScenario(GetWorld());
+#endif
     StartConstructionLineInputScenario(GetWorld());
 #endif
 }

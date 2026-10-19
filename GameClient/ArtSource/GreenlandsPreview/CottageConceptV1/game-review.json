@@ -1,0 +1,65 @@
+{
+  "frame": 711,
+  "target": 6,
+  "phase": "capture",
+  "view": 4,
+  "clearance": {
+    "positive_wall_blocked": true,
+    "entry_clear": true
+  },
+  "reached": [
+    {
+      "local_xy": [
+        0,
+        -1.2
+      ],
+      "pawn_height_over_anchor_m": 1.0614999332355826
+    },
+    {
+      "local_xy": [
+        0,
+        1.6
+      ],
+      "pawn_height_over_anchor_m": 1.0614999332355826
+    },
+    {
+      "local_xy": [
+        1.4,
+        -1
+      ],
+      "pawn_height_over_anchor_m": 1.0614999332355826
+    },
+    {
+      "local_xy": [
+        2.675,
+        -1
+      ],
+      "pawn_height_over_anchor_m": 1.0614999332355826
+    },
+    {
+      "local_xy": [
+        2.675,
+        2.15
+      ],
+      "pawn_height_over_anchor_m": 3.605153606634694
+    },
+    {
+      "local_xy": [
+        1.5,
+        2.15
+      ],
+      "pawn_height_over_anchor_m": 3.6114999418834968
+    }
+  ],
+  "nav_bounds_volumes": 0,
+  "scope": "Native pawn entry, furniture aisle and stair traversal; no AI pathfinding acceptance",
+  "walk_completed": true,
+  "loft_reached": true,
+  "final_pawn_cm": [
+    -10912.025694634913,
+    -5726.348564163725,
+    301.71595056303727
+  ],
+  "capture_frame": 155,
+  "elapsed_seconds": 24.69
+}

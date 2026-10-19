@@ -1,0 +1,189 @@
+{
+  "units": "metres",
+  "front": "-Y",
+  "main_shell_metres": [
+    8,
+    6
+  ],
+  "canopy_extension_metres": 2.4,
+  "ridge_metres": 5.65,
+  "door_clear_metres": [
+    2.2,
+    2.34
+  ],
+  "reference_sha256": "e94212854f2e555847a32db18544c4d319a87bfbda8ebda586ba1c7def941525",
+  "materials": [
+    {
+      "name": "Cottage_Timber",
+      "source": "fine_grained_wood",
+      "tile_metres": 0.6,
+      "uv_interior_crop": false
+    },
+    {
+      "name": "Cottage_LimePlaster",
+      "source": "plastered_wall_02",
+      "tile_metres": 2.2,
+      "uv_interior_crop": true
+    },
+    {
+      "name": "Cottage_ClayTiles",
+      "source": "clay_roof_tiles_02",
+      "tile_metres": 1.5,
+      "uv_interior_crop": false
+    },
+    {
+      "name": "Cottage_Fieldstone",
+      "source": "medieval_wall_02",
+      "tile_metres": 2,
+      "uv_interior_crop": false
+    },
+    {
+      "name": "Cottage_ForgedIron",
+      "colour_linear": [
+        0.035,
+        0.025,
+        0.016
+      ],
+      "roughness": 0.65,
+      "metallic": 0.85,
+      "emission": null
+    },
+    {
+      "name": "Cottage_OldGlass",
+      "colour_linear": [
+        0.025,
+        0.045,
+        0.055
+      ],
+      "roughness": 0.2,
+      "metallic": 0,
+      "emission": [
+        0.005,
+        0.003,
+        0.001
+      ]
+    },
+    {
+      "name": "Cottage_PlanterSoil",
+      "colour_linear": [
+        0.07,
+        0.045,
+        0.022
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null
+    },
+    {
+      "name": "Cottage_LanternGlow",
+      "colour_linear": [
+        0.7,
+        0.3,
+        0.055
+      ],
+      "roughness": 0.3,
+      "metallic": 0,
+      "emission": [
+        2.5,
+        1.1,
+        0.22
+      ]
+    },
+    {
+      "name": "Cottage_Earthenware",
+      "colour_linear": [
+        0.19,
+        0.075,
+        0.035
+      ],
+      "roughness": 0.65,
+      "metallic": 0,
+      "emission": null
+    },
+    {
+      "name": "Cottage_Linen",
+      "colour_linear": [
+        0.34,
+        0.29,
+        0.19
+      ],
+      "roughness": 0.96,
+      "metallic": 0,
+      "emission": null
+    },
+    {
+      "name": "Cottage_Charcoal",
+      "colour_linear": [
+        0.012,
+        0.009,
+        0.007
+      ],
+      "roughness": 0.98,
+      "metallic": 0,
+      "emission": null
+    },
+    {
+      "name": "Cottage_HearthEmber",
+      "colour_linear": [
+        0.14,
+        0.025,
+        0.004
+      ],
+      "roughness": 0.8,
+      "metallic": 0,
+      "emission": [
+        2.8,
+        0.22,
+        0.012
+      ]
+    }
+  ],
+  "meshes": [
+    {
+      "mesh": "SM_GreenlandsWorkshop_Structure",
+      "triangles": 6896,
+      "dimensions_metres": [
+        10.649011611938477,
+        6.819999694824219,
+        5.723976135253906
+      ]
+    },
+    {
+      "mesh": "SM_GreenlandsWorkshop_Roof",
+      "triangles": 57772,
+      "dimensions_metres": [
+        11.038653373718262,
+        7.3257269859313965,
+        3.3416566848754883
+      ]
+    },
+    {
+      "mesh": "SM_GreenlandsWorkshop_Joinery",
+      "triangles": 4032,
+      "dimensions_metres": [
+        8.819999694824219,
+        7.585675239562988,
+        2.8928568363189697
+      ]
+    },
+    {
+      "mesh": "SM_GreenlandsWorkshop_Furnishings",
+      "triangles": 2828,
+      "dimensions_metres": [
+        9.522425651550293,
+        3.5799999237060547,
+        2.43999981880188
+      ]
+    },
+    {
+      "mesh": "SM_GreenlandsWorkshop_Approach",
+      "triangles": 108,
+      "dimensions_metres": [
+        3.0999999046325684,
+        1.619999885559082,
+        0.30000001192092896
+      ]
+    }
+  ],
+  "status": "Prototype; source render, exchange and game review pending"
+}

@@ -11,6 +11,14 @@ bool SFConstructionSandboxFoundation::HasKnownPlane(const UWorld* World)
 {
     if (!World || World->GetNetMode() != NM_Standalone
         || !World->GetAuthGameMode<ASFConstructionSandboxGameMode>()) { return false; }
+    return MatchesKnownPlaneGeometry(World);
+}
+
+bool SFConstructionSandboxFoundation::MatchesKnownPlaneGeometry(const UWorld* World, const AActor** OutFoundation)
+{
+    if (OutFoundation) { *OutFoundation = nullptr; }
+    if (!World) { return false; }
+    const AActor* Foundation = nullptr;
     int32 Found = 0;
     for (TActorIterator<AStaticMeshActor> It(const_cast<UWorld*>(World)); It; ++It)
     {
@@ -26,7 +34,9 @@ bool SFConstructionSandboxFoundation::HasKnownPlane(const UWorld* World)
             || Mesh->GetCollisionResponseToChannel(ECC_Pawn) != ECR_Block
             || Mesh->GetCollisionResponseToChannel(ECC_Visibility) != ECR_Block) { return false; }
         ++Found;
+        Foundation = *It;
     }
+    if (Found == 1 && OutFoundation) { *OutFoundation = Foundation; }
     return Found == 1;
 }
 

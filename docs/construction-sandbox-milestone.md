@@ -10,6 +10,8 @@ Use a dedicated development sandbox map/mode and explicit launch selection. Pres
 
 Development materials are explicitly unlimited test stock, visibly labelled, with no Inventory service, real item grants, crafting progression, salvage rewards, claims or shared-world economy attached. The development action journal/save is a separate test format/path, never schema `building` or `world`, and makes no production durability claim. Only an explicit sandbox mode can accept sandbox edits; packaging or hosting the normal E1 mode cannot accidentally enable them. Exporting a test building cannot import its unlimited-material provenance into the persistent world.
 
+Product boundary clarified 2026-10-18: F5/F9 and local process-restart exercises are developer fixture controls, not the persistent game's player save/load model. The game design requires server-owned durable construction that survives logout/restart through Building/World/Inventory contracts. A passing local snapshot check proves only bounded serialization/reconstruction; it neither replaces that backend nor permits players to rewind shared-world actions. Current packaging work must not expand local saves into a product feature.
+
 The server owns placement/removal and revisioned geometry. A client sends bounded intent, not arbitrary trusted mesh vertices, material quantities, filesystem paths or authority. The server recalculates reach, snap/rotation allowlists, occupied solid intersection, actor/functional clearance and support from approved content. Stale edits reject with a refreshed preview; retries cannot duplicate members. A successful local prototype does not close B-03/B-04 authentication, transaction or recovery gates.
 
 ## Finite playable scope

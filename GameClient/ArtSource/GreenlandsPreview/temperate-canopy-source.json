@@ -1,0 +1,326 @@
+[
+  {
+    "position_cm": [
+      -17541.122709974043,
+      -6273.399785673098,
+      12.574092744031617
+    ],
+    "patch": 0.06627901331062164,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_02.spruce_full_02"
+  },
+  {
+    "position_cm": [
+      -10298.251767134607,
+      -9476.252156486356,
+      283.2933999391351
+    ],
+    "patch": 0.08479706735188054,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -13466.709098935491,
+      -3203.187531265623,
+      -6.615248853438471
+    ],
+    "patch": 0.16780523237144712,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -12866.836998324748,
+      -2933.4539790116974,
+      -40.1644961054473
+    ],
+    "patch": 0.1743288697054403,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_02.spruce_full_02"
+  },
+  {
+    "position_cm": [
+      -10808.524029439308,
+      -9062.63245991573,
+      204.0916492257311
+    ],
+    "patch": 0.19686573246043862,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_02.spruce_full_02"
+  },
+  {
+    "position_cm": [
+      -12953.802834499827,
+      -2145.4562638328894,
+      9.092025269136862
+    ],
+    "patch": 0.2847920397599694,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -14569.696271349716,
+      -9688.126268849666,
+      251.52253464172253
+    ],
+    "patch": 0.3137261391884572,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_02.spruce_full_02"
+  },
+  {
+    "position_cm": [
+      -17981.871959307806,
+      -6767.531707360685,
+      106.48723273250884
+    ],
+    "patch": 0.3386726582189304,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -13254.835816055798,
+      -3857.0668760198514,
+      -8.217264403427327
+    ],
+    "patch": 0.40693510668013666,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -18480.981595153513,
+      -6181.459439740003,
+      49.090187845713714
+    ],
+    "patch": 0.4504752431528776,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -16277.647859437471,
+      -6343.179346906804,
+      75.16504925219648
+    ],
+    "patch": 0.471436680679306,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -15450.907544688194,
+      -8995.068718015418,
+      234.84643816855004
+    ],
+    "patch": 0.4721088427003088,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -16405.596563883995,
+      -5572.34191377253,
+      16.297574723247987
+    ],
+    "patch": 0.48996755614070464,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -13427.419745362797,
+      -1465.2794449708695,
+      51.254968131692536
+    ],
+    "patch": 0.5156880208430904,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -12869.301842332929,
+      -4173.795509541811,
+      -41.18470568667236
+    ],
+    "patch": 0.553741310196026,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_02.spruce_full_02"
+  },
+  {
+    "position_cm": [
+      -17142.24584253928,
+      -4859.295314406737,
+      22.266963533499286
+    ],
+    "patch": 0.5688570197938608,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -7924.499220743638,
+      1482.6092951841872,
+      124.32809857734827
+    ],
+    "patch": 0.5784180592200209,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -18632.55228757534,
+      -5503.383812675773,
+      -46.410612881272684
+    ],
+    "patch": 0.58991219539221,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_02.spruce_full_02"
+  },
+  {
+    "position_cm": [
+      -13676.787341227959,
+      -4327.632685532702,
+      -36.92614804724731
+    ],
+    "patch": 0.6051590727372407,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_02.spruce_full_02"
+  },
+  {
+    "position_cm": [
+      -11435.602335223464,
+      -8222.979604160257,
+      139.92199610807427
+    ],
+    "patch": 0.6225570491728786,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_02.spruce_full_02"
+  },
+  {
+    "position_cm": [
+      -14140.489793349763,
+      -4300.349044404726,
+      -30.31406345697276
+    ],
+    "patch": 0.6614345119326904,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_02.spruce_full_02"
+  },
+  {
+    "position_cm": [
+      -12730.956930431148,
+      -4652.234471413594,
+      -42.47649754165552
+    ],
+    "patch": 0.7452594314302042,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_02.spruce_full_02"
+  },
+  {
+    "position_cm": [
+      -16583.372926677403,
+      -8960.319798063649,
+      150.6078106031803
+    ],
+    "patch": 0.7468209960659083,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_02.spruce_full_02"
+  },
+  {
+    "position_cm": [
+      -19180.412009437252,
+      -5863.002931207631,
+      -36.39633528518081
+    ],
+    "patch": 0.755010341600788,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_02.spruce_full_02"
+  },
+  {
+    "position_cm": [
+      -19180.473694589484,
+      -6638.269961813303,
+      43.311708176547356
+    ],
+    "patch": 0.7640088823555796,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_02.spruce_full_02"
+  },
+  {
+    "position_cm": [
+      -14202.354977133524,
+      -8548.419218673329,
+      213.14822933817445
+    ],
+    "patch": 0.7686002013753699,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -13560.831107502941,
+      -9186.830729804566,
+      256.02339000230813
+    ],
+    "patch": 0.7818195450801437,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -10831.245035840722,
+      -7443.593241961935,
+      58.96053911565731
+    ],
+    "patch": 0.794099150267785,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -16477.26475078077,
+      -4446.566432583952,
+      -43.24399537469121
+    ],
+    "patch": 0.825585820574826,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_02.spruce_full_02"
+  },
+  {
+    "position_cm": [
+      -6115.917601725581,
+      -6052.877908353338,
+      8.902535873516648
+    ],
+    "patch": 0.8258907272400655,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -14639.647640469759,
+      -8172.862762988701,
+      138.35941211756025
+    ],
+    "patch": 0.8362296228528211,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_02.spruce_full_02"
+  },
+  {
+    "position_cm": [
+      -15662.199562039714,
+      -5057.7543750234445,
+      32.27869643148452
+    ],
+    "patch": 0.8664939160715842,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -11375.339869202206,
+      -7448.1819526817135,
+      101.34091782412287
+    ],
+    "patch": 0.872070287849262,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -14460.944668466353,
+      -4851.762785457866,
+      33.051311880099036
+    ],
+    "patch": 0.9067076676256274,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -12524.049749059093,
+      -8763.53580140056,
+      222.9876421542683
+    ],
+    "patch": 0.9128120825588589,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01.spruce_full_01"
+  },
+  {
+    "position_cm": [
+      -12372.094027619065,
+      -10471.414601904058,
+      317.103101522396
+    ],
+    "patch": 0.9557362475509561,
+    "source_mesh": "/Game/Frontier/Environment/GreenlandsPreview/Village/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_02.spruce_full_02"
+  }
+]

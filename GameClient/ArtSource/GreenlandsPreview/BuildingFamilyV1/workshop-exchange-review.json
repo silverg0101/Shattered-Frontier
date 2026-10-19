@@ -1,0 +1,102 @@
+[
+  {
+    "format": "fbx",
+    "meshes": [
+      {
+        "name": "SM_GreenlandsWorkshop_Approach",
+        "dimensions_metres": [
+          3.0999999046325684,
+          1.619999885559082,
+          0.30000001192092896
+        ],
+        "vertex_colour_layers": 1
+      },
+      {
+        "name": "SM_GreenlandsWorkshop_Furnishings",
+        "dimensions_metres": [
+          9.522425651550293,
+          3.5799999237060547,
+          2.43999981880188
+        ],
+        "vertex_colour_layers": 1
+      },
+      {
+        "name": "SM_GreenlandsWorkshop_Joinery",
+        "dimensions_metres": [
+          8.819999694824219,
+          7.585675239562988,
+          2.8928568363189697
+        ],
+        "vertex_colour_layers": 1
+      },
+      {
+        "name": "SM_GreenlandsWorkshop_Roof",
+        "dimensions_metres": [
+          11.038653373718262,
+          7.3257269859313965,
+          3.3416566848754883
+        ],
+        "vertex_colour_layers": 1
+      },
+      {
+        "name": "SM_GreenlandsWorkshop_Structure",
+        "dimensions_metres": [
+          10.649011611938477,
+          6.819999694824219,
+          5.723976135253906
+        ],
+        "vertex_colour_layers": 1
+      }
+    ]
+  },
+  {
+    "format": "glb",
+    "meshes": [
+      {
+        "name": "SM_GreenlandsWorkshop_Approach",
+        "dimensions_metres": [
+          3.0999999046325684,
+          1.619999885559082,
+          0.30000001192092896
+        ],
+        "vertex_colour_layers": 2
+      },
+      {
+        "name": "SM_GreenlandsWorkshop_Furnishings",
+        "dimensions_metres": [
+          9.522425651550293,
+          3.5799999237060547,
+          2.43999981880188
+        ],
+        "vertex_colour_layers": 2
+      },
+      {
+        "name": "SM_GreenlandsWorkshop_Joinery",
+        "dimensions_metres": [
+          8.819999694824219,
+          7.585675239562988,
+          2.8928568363189697
+        ],
+        "vertex_colour_layers": 2
+      },
+      {
+        "name": "SM_GreenlandsWorkshop_Roof",
+        "dimensions_metres": [
+          11.038653373718262,
+          7.3257269859313965,
+          3.3416566848754883
+        ],
+        "vertex_colour_layers": 2
+      },
+      {
+        "name": "SM_GreenlandsWorkshop_Structure",
+        "dimensions_metres": [
+          10.649011611938477,
+          6.819999694824219,
+          5.723976135253906
+        ],
+        "vertex_colour_layers": 2
+      }
+    ]
+  }
+]

@@ -45,7 +45,7 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
         Contents->AddChildToVerticalBox(Row)->SetPadding(FMargin(0.0f, 2.0f));
         for (const TPair<FString, FName>& Action : Actions)
         {
-            UButton* Button = WidgetTree->ConstructWidget<USFConstructionPaletteButton>(USFConstructionPaletteButton::StaticClass());
+            UButton* Button = WidgetTree->ConstructWidget<USFConstructionPaletteButton>(USFConstructionPaletteButton::StaticClass(),Action.Value);
             UTextBlock* Label = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
             Label->SetText(FText::FromString(Action.Key));
             Label->SetFontSize(13.0f);
@@ -76,10 +76,23 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
     Contents->AddChildToVerticalBox(StatusTextBlock)->SetPadding(FMargin(3.0f, 7.0f, 3.0f, 3.0f));
 
     UTextBlock* Hints = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("PaletteHints"));
+    HintsTextBlock=Hints;
     Hints->SetText(FText::FromString(TEXT("Unlimited dev stock | isolated plot\nRMB hold: look in either mode\nDemolish: LMB delete\nX / Delete: mode | R rotate | Esc cancel")));
     Hints->SetFontSize(12.0f);
     Hints->SetAutoWrapText(true);
     Contents->AddChildToVerticalBox(Hints)->SetPadding(FMargin(3.0f, 2.0f, 3.0f, 1.0f));
+}
+
+void USFConstructionSandboxPalette::ConfigureNetworkPresentation()
+{
+    // Presentation capability subset only. The controller retains all actions
+    // and authority; the standalone palette keeps its complete default layout.
+    for (const FName Name : {FName(TEXT("HandleConfirm")),FName(TEXT("HandleSave")),FName(TEXT("HandleLoad"))})
+    { if (auto* Button=WidgetTree->FindWidget(Name)) { Button->SetVisibility(ESlateVisibility::Collapsed); } }
+    WidgetTree->ForEachWidget([](UWidget* Widget)
+    { if (auto* Button=Cast<UButton>(Widget)) { Button->SetBackgroundColor(FLinearColor(0.18f,0.21f,0.25f,1.0f)); } });
+    if (HintsTextBlock)
+    { HintsTextBlock->SetText(FText::FromString(TEXT("RMB hold: look | E: door\nX / Delete: demolition mode\nLMB: place or demolish | L: line\nR: rotate | Escape: cancel start\nP: surface/layer | PgUp/PgDn: level\nUnlimited dev stock"))); }
 }
 
 void USFConstructionSandboxPalette::SetStatusText(const FText& InStatusText)

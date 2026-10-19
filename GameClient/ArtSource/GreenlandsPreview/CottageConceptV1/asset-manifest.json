@@ -1,0 +1,190 @@
+{
+  "source": "Generated concept interpreted as original authored geometry",
+  "reference_sha256": "834afc6de1f4efb538000bab992e3cdb9a242b80fece0e8f952b5e7385f04dc5",
+  "blender": "5.2.2 LTS",
+  "units": "metres",
+  "front": "-Y",
+  "footprint_metres": [
+    8,
+    6
+  ],
+  "ridge_metres": 7.1,
+  "door_clear_metres": [
+    2.04,
+    2.3
+  ],
+  "materials": [
+    {
+      "name": "Cottage_Timber",
+      "source": "fine_grained_wood",
+      "tile_metres": 0.6,
+      "uv_interior_crop": false
+    },
+    {
+      "name": "Cottage_LimePlaster",
+      "source": "plastered_wall_02",
+      "tile_metres": 2.2,
+      "uv_interior_crop": true
+    },
+    {
+      "name": "Cottage_ClayTiles",
+      "source": "clay_roof_tiles_02",
+      "tile_metres": 1.5,
+      "uv_interior_crop": false
+    },
+    {
+      "name": "Cottage_Fieldstone",
+      "source": "medieval_wall_02",
+      "tile_metres": 2,
+      "uv_interior_crop": false
+    },
+    {
+      "name": "Cottage_ForgedIron",
+      "colour_linear": [
+        0.035,
+        0.025,
+        0.016
+      ],
+      "roughness": 0.65,
+      "metallic": 0.85,
+      "emission": null
+    },
+    {
+      "name": "Cottage_OldGlass",
+      "colour_linear": [
+        0.025,
+        0.045,
+        0.055
+      ],
+      "roughness": 0.2,
+      "metallic": 0,
+      "emission": [
+        0.005,
+        0.003,
+        0.001
+      ]
+    },
+    {
+      "name": "Cottage_PlanterSoil",
+      "colour_linear": [
+        0.07,
+        0.045,
+        0.022
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null
+    },
+    {
+      "name": "Cottage_LanternGlow",
+      "colour_linear": [
+        0.7,
+        0.3,
+        0.055
+      ],
+      "roughness": 0.3,
+      "metallic": 0,
+      "emission": [
+        2.5,
+        1.1,
+        0.22
+      ]
+    },
+    {
+      "name": "Cottage_Earthenware",
+      "colour_linear": [
+        0.19,
+        0.075,
+        0.035
+      ],
+      "roughness": 0.65,
+      "metallic": 0,
+      "emission": null
+    },
+    {
+      "name": "Cottage_Linen",
+      "colour_linear": [
+        0.34,
+        0.29,
+        0.19
+      ],
+      "roughness": 0.96,
+      "metallic": 0,
+      "emission": null
+    },
+    {
+      "name": "Cottage_Charcoal",
+      "colour_linear": [
+        0.012,
+        0.009,
+        0.007
+      ],
+      "roughness": 0.98,
+      "metallic": 0,
+      "emission": null
+    },
+    {
+      "name": "Cottage_HearthEmber",
+      "colour_linear": [
+        0.14,
+        0.025,
+        0.004
+      ],
+      "roughness": 0.8,
+      "metallic": 0,
+      "emission": [
+        2.8,
+        0.22,
+        0.012
+      ]
+    }
+  ],
+  "meshes": [
+    {
+      "mesh": "SM_GreenlandsCottage_Structure",
+      "vertices": 13914,
+      "triangles": 7940,
+      "dimensions_metres": [
+        8.460000038146973,
+        6.469999313354492,
+        7.168747901916504
+      ]
+    },
+    {
+      "mesh": "SM_GreenlandsCottage_Roof",
+      "vertices": 101888,
+      "triangles": 59112,
+      "dimensions_metres": [
+        9.216999053955078,
+        7.445849418640137,
+        7.700000286102295
+      ]
+    },
+    {
+      "mesh": "SM_GreenlandsCottage_Joinery",
+      "vertices": 15744,
+      "triangles": 9184,
+      "dimensions_metres": [
+        9.32420539855957,
+        7.728416919708252,
+        5.592499732971191
+      ]
+    },
+    {
+      "mesh": "SM_GreenlandsCottage_Dining",
+      "vertices": 3257,
+      "triangles": 3816,
+      "dimensions_metres": [
+        3.200000047683716,
+        2.4800000190734863,
+        3.3449997901916504
+      ]
+    }
+  ],
+  "assumptions": [
+    "Hero view governs contradictions in secondary generated elevations",
+    "Rear windows and interior loft are conservative authored inferences",
+    "Asset is static environment scenery, not player-construction topology"
+  ],
+  "status": "Authored prototype; fresh-source render and exchange reimport review pending"
+}

@@ -1,0 +1,47 @@
+{
+  "status": "Passed",
+  "date": "2026-10-18",
+  "build": "Artifacts/ConstructionSandbox/gathering-pilot-build-04.log",
+  "focusedReport": "Artifacts/ConstructionSandbox/gathering-pilot-authority-02/Report/index.json",
+  "focusedPassed": 1,
+  "focusedFailed": 0,
+  "network": "Artifacts/ConstructionSandbox/gathering-network-20261018-230502-852/results.json",
+  "clientOutcomes": [
+    {
+      "primary": true,
+      "wood": 1,
+      "ore": 0,
+      "visibleInventories": 1
+    },
+    {
+      "primary": false,
+      "wood": 0,
+      "ore": 1,
+      "visibleInventories": 1
+    }
+  ],
+  "publicNodeRevisions": {
+    "oak": 1,
+    "iron": 1
+  },
+  "serverGrantCount": 2,
+  "replayExtraGrants": 0,
+  "scope": "Session-only Win64 editor pilot; synthetic client targeting; no durable/native-input/production/Linux acceptance",
+  "plugin": {
+    "version": "2.0.0",
+    "externalToGit": true,
+    "descriptorSHA256": "8cd6a8dac1de1a2e82f391e06ebf76b5d027dae16458af64128bc9d2859cbb2b"
+  },
+  "sourceSHA256": {
+    "GameClient/Source/ShatteredFrontier/Public/Gathering/SFGatheringPilot.h": "9426b397c4fca124d7efa0e9961c0650c9bbfd9523e82aaea4b13ad24209536c",
+    "GameClient/Source/ShatteredFrontier/Private/Gathering/SFGatheringPilot.cpp": "311fc0eb2a678f3ceba1cd30dee85e1ee5347c781cb2dea31e0d694f2382ca24",
+    "GameClient/Source/ShatteredFrontier/Private/Tests/SFGatheringPilotTests.cpp": "1041c39b7172734f79af2f328a4b567a16ed42ded03249fa08ce55474e005a9f",
+    "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionNetwork.cpp": "ec125612034cc3c2346e60a2985afd3e0621740f9caffa0a6728f0943d2e535c",
+    "GameClient/ShatteredFrontier.uproject": "497fa1c56cc36a4ad735630534303d4cbd1fa4d7c6dbdf2e5557b7af862f243b",
+    "GameClient/Source/ShatteredFrontier/ShatteredFrontier.Build.cs": "6c1e71ae1d5e68dde5431e16bfddc7ac2aa0d1fa10d0e6f830c1b9e8ab6ac552",
+    "tools/Create-GatheringPilotItems.py": "366a1ef3650f152b56774e75005b7520d55062201673db2637c39ca906299c01",
+    "tools/Test-GatheringPilot.ps1": "e4ec99fe43f2cfee7fc9e0dd2c139641678e9ac1f9960ee9755ba50c34f9d9ba",
+    "GameClient/Content/Frontier/Gameplay/Pilot/DA_OakLog.uasset": "8fd185217cb3c5abaacfcec87976feed61bf3e1e2a73006197d754c7d7057c43",
+    "GameClient/Content/Frontier/Gameplay/Pilot/DA_IronOre.uasset": "e88a171467f63d98d38686b12e69d90a307847d2ca49c1daa1b79ef39911842c"
+  }
+}

@@ -1,0 +1,264 @@
+[
+  {
+    "asset": "red_slate_roof_tiles_01",
+    "page": "https://polyhaven.com/a/red_slate_roof_tiles_01",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_scale_metres": "2.5M x 2.5M",
+    "files": [
+      {
+        "file": "Textures/red_slate_roof_tiles_01_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/red_slate_roof_tiles_01/red_slate_roof_tiles_01_diff_2k.jpg",
+        "md5": "f57a5b52adbd9b619ea53942ee65f353"
+      },
+      {
+        "file": "Textures/red_slate_roof_tiles_01_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/red_slate_roof_tiles_01/red_slate_roof_tiles_01_nor_gl_2k.jpg",
+        "md5": "a7edd8026f594bb263cfcad240510b6e"
+      },
+      {
+        "file": "Textures/red_slate_roof_tiles_01_nor_dx.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/red_slate_roof_tiles_01/red_slate_roof_tiles_01_nor_dx_2k.jpg",
+        "md5": "742ae127b0a5b35b1528df93609bfe18"
+      },
+      {
+        "file": "Textures/red_slate_roof_tiles_01_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/red_slate_roof_tiles_01/red_slate_roof_tiles_01_rough_2k.jpg",
+        "md5": "75d527384a02f9f65f8b21a74c1f9a6e"
+      },
+      {
+        "file": "Textures/red_slate_roof_tiles_01_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/red_slate_roof_tiles_01/red_slate_roof_tiles_01_disp_2k.jpg",
+        "md5": "ae2e70aea327d84acf7220d59ddd4ec4"
+      }
+    ]
+  },
+  {
+    "asset": "roof_tiles_14",
+    "page": "https://polyhaven.com/a/roof_tiles_14",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_scale_metres": [
+      2,
+      2
+    ],
+    "files": [
+      {
+        "file": "Textures/roof_tiles_14_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/roof_tiles_14/roof_tiles_14_diff_2k.jpg",
+        "md5": "4870e0f07b7b36c421fbf4879563e73d"
+      },
+      {
+        "file": "Textures/roof_tiles_14_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/roof_tiles_14/roof_tiles_14_nor_gl_2k.jpg",
+        "md5": "24110fa17984d61ff7a2e0a1b490be3a"
+      },
+      {
+        "file": "Textures/roof_tiles_14_nor_dx.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/roof_tiles_14/roof_tiles_14_nor_dx_2k.jpg",
+        "md5": "0345d1f46c0e871071d7f9f3bdd62ed2"
+      },
+      {
+        "file": "Textures/roof_tiles_14_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/roof_tiles_14/roof_tiles_14_rough_2k.jpg",
+        "md5": "e56f7773d86315d3c382e1c182b3fec4"
+      },
+      {
+        "file": "Textures/roof_tiles_14_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/roof_tiles_14/roof_tiles_14_disp_2k.jpg",
+        "md5": "db3ab35e0d5ed4948e1bbe527686a2bc"
+      }
+    ]
+  },
+  {
+    "asset": "clay_roof_tiles_02",
+    "page": "https://polyhaven.com/a/clay_roof_tiles_02",
+    "license": "CC0-1.0",
+    "authors": {
+      "Amal Kumar": "All"
+    },
+    "physical_scale_metres": [
+      2,
+      2
+    ],
+    "files": [
+      {
+        "file": "Textures/clay_roof_tiles_02_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/clay_roof_tiles_02/clay_roof_tiles_02_diff_2k.jpg",
+        "md5": "0a1350644116c58a19908b22f569bf8e"
+      },
+      {
+        "file": "Textures/clay_roof_tiles_02_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/clay_roof_tiles_02/clay_roof_tiles_02_nor_gl_2k.jpg",
+        "md5": "1ccc234195df3d48107490a7f7f03e59"
+      },
+      {
+        "file": "Textures/clay_roof_tiles_02_nor_dx.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/clay_roof_tiles_02/clay_roof_tiles_02_nor_dx_2k.jpg",
+        "md5": "4cc566cb986d7c6ead6dad18d3efd3b1"
+      },
+      {
+        "file": "Textures/clay_roof_tiles_02_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/clay_roof_tiles_02/clay_roof_tiles_02_rough_2k.jpg",
+        "md5": "a6d3dfd7f495213fa7cf6620f4982422"
+      },
+      {
+        "file": "Textures/clay_roof_tiles_02_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/clay_roof_tiles_02/clay_roof_tiles_02_disp_2k.jpg",
+        "md5": "8efa4576ee01440378d1394b3569a16e"
+      }
+    ]
+  },
+  {
+    "asset": "roof_3",
+    "page": "https://polyhaven.com/a/roof_3",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_scale_metres": [
+      2,
+      2
+    ],
+    "files": [
+      {
+        "file": "Textures/roof_3_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/roof_3/roof_3_diff_2k.jpg",
+        "md5": "2175e560e5b406a7acec011f26ab9c9b"
+      },
+      {
+        "file": "Textures/roof_3_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/roof_3/roof_3_nor_gl_2k.jpg",
+        "md5": "6cc95b97bbe66101079fbbfb0e1ee807"
+      },
+      {
+        "file": "Textures/roof_3_nor_dx.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/roof_3/roof_3_nor_dx_2k.jpg",
+        "md5": "8f20c9db69162f6468396817c133e1e3"
+      },
+      {
+        "file": "Textures/roof_3_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/roof_3/roof_3_rough_2k.jpg",
+        "md5": "eeadc775049c71df6d66a71e18e7f19c"
+      },
+      {
+        "file": "Textures/roof_3_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/roof_3/roof_3_disp_2k.jpg",
+        "md5": "562ecac5296f786e48d28274e150ef82"
+      }
+    ]
+  },
+  {
+    "asset": "plastered_wall_02",
+    "page": "https://polyhaven.com/a/plastered_wall_02",
+    "license": "CC0-1.0",
+    "authors": {
+      "Charlotte Baglioni": "All"
+    },
+    "physical_scale_metres": [
+      2,
+      2
+    ],
+    "files": [
+      {
+        "file": "Textures/plastered_wall_02_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/plastered_wall_02/plastered_wall_02_diff_2k.jpg",
+        "md5": "927533b695ab50bbbdfeaf6f0519fa3f"
+      },
+      {
+        "file": "Textures/plastered_wall_02_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/plastered_wall_02/plastered_wall_02_nor_gl_2k.jpg",
+        "md5": "86090c056cc823f6e0125be0e05add82"
+      },
+      {
+        "file": "Textures/plastered_wall_02_nor_dx.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/plastered_wall_02/plastered_wall_02_nor_dx_2k.jpg",
+        "md5": "00fc144427f23dd4a3ba1b639c4336ac"
+      },
+      {
+        "file": "Textures/plastered_wall_02_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/plastered_wall_02/plastered_wall_02_rough_2k.jpg",
+        "md5": "346ae12db0d37287eb7df2be1848ab0e"
+      },
+      {
+        "file": "Textures/plastered_wall_02_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/plastered_wall_02/plastered_wall_02_disp_2k.jpg",
+        "md5": "e6d9f4d2031d6a46d5916a24e6f38b89"
+      }
+    ]
+  },
+  {
+    "asset": "medieval_wall_02",
+    "page": "https://polyhaven.com/a/medieval_wall_02",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_scale_metres": [
+      2,
+      2
+    ],
+    "files": [
+      {
+        "file": "Textures/medieval_wall_02_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/medieval_wall_02/medieval_wall_02_diff_2k.jpg",
+        "md5": "913517eb0d5aefc68a4a7b15c4af151b"
+      },
+      {
+        "file": "Textures/medieval_wall_02_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/medieval_wall_02/medieval_wall_02_nor_gl_2k.jpg",
+        "md5": "735c3ea10eec1b198d896f535dce25f1"
+      },
+      {
+        "file": "Textures/medieval_wall_02_nor_dx.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/medieval_wall_02/medieval_wall_02_nor_dx_2k.jpg",
+        "md5": "6e0f7bfac342609bb6c6252d0f88fbfa"
+      },
+      {
+        "file": "Textures/medieval_wall_02_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/medieval_wall_02/medieval_wall_02_rough_2k.jpg",
+        "md5": "947d7f228a5aec39e90bede6428c54d4"
+      },
+      {
+        "file": "Textures/medieval_wall_02_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/medieval_wall_02/medieval_wall_02_disp_2k.jpg",
+        "md5": "8b1a994be76578d0f83e2b7296efc38d"
+      }
+    ]
+  },
+  {
+    "asset": "fine_grained_wood",
+    "page": "https://polyhaven.com/a/fine_grained_wood",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_scale_metres": "30x30CM",
+    "files": [
+      {
+        "file": "Textures/fine_grained_wood_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/fine_grained_wood/fine_grained_wood_col_2k.jpg",
+        "md5": "cfbfbf2cc0e0633af9b959a0e6e17182"
+      },
+      {
+        "file": "Textures/fine_grained_wood_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/fine_grained_wood/fine_grained_wood_nor_gl_2k.jpg",
+        "md5": "24423b733087ca4cefe5833d131a1f62"
+      },
+      {
+        "file": "Textures/fine_grained_wood_nor_dx.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/fine_grained_wood/fine_grained_wood_nor_dx_2k.jpg",
+        "md5": "7bd453d3364f1d2be4fdfcecded3040d"
+      },
+      {
+        "file": "Textures/fine_grained_wood_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/fine_grained_wood/fine_grained_wood_rough_2k.jpg",
+        "md5": "1356433f66fe066762c1be121f76738d"
+      }
+    ]
+  }
+]

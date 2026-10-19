@@ -1,0 +1,5 @@
+# Original editable source and prepared FBXs are retained; avoid duplicate containers.
+/source/mighty-oak-trees.zip
+/exports/MightyOak_v1.glb
+*.blend1
+__pycache__/

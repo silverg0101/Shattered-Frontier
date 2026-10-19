@@ -1,0 +1,23 @@
+{
+  "status": "Passed",
+  "rawRoot": "Artifacts/ConstructionSandbox/network-20261018-221927-061",
+  "focusedTestReport": "Artifacts/ConstructionSandbox/network-layer-controls-20261018-221853-596/Report/index.json",
+  "buildLog": "Artifacts/ConstructionSandbox/network-layer-build-02.log",
+  "buildSeconds": 27.06,
+  "elapsedSeconds": 171.5249554,
+  "cleanupComplete": true,
+  "sha256": {
+    "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionNetwork.h": "6a6dd2b576cc507b8ec287b75e4cfcbbb43d4ff0407473dc4a1ff269bcf72472",
+    "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionNetwork.cpp": "059b49493fb7c53aea157f3b90d48c10f8bc92f2de308895307925ab5978ea9b",
+    "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionSandboxPalette.cpp": "ae02ec167f7411613622fbc9798603df842be5bf127b2f60526dd01263016b6c",
+    "GameClient/Source/ShatteredFrontier/Private/Tests/SFConstructionNetworkTests.cpp": "16e92e0068475de39c0ee8490b1228f733e867a016af4ef793c1b680fc2d2025",
+    "tools/Test-ConstructionNetwork.ps1": "c455a26a185c720cd5fe122eb6deaa3aa78876f619535f82a854d2b9ad4be75d",
+    "Artifacts/ConstructionSandbox/network-layer-controls-20261018-221853-596/Report/index.json": "41bb7323bdbce7c310b0cef03f26c40c8abcba75b76b7c8f15b458d1b7582334",
+    "Artifacts/ConstructionSandbox/network-20261018-221927-061/results.json": "270376f50fae0e9f7cf5e41b3ac087091a22177f2a7f38e084351e4023407cc6",
+    "Artifacts/ConstructionSandbox/network-20261018-221927-061/server.log": "964a86ec9a6da491d7e2015b533b3522d6f573d3a445db44ac12fd53251cac85",
+    "Artifacts/ConstructionSandbox/network-20261018-221927-061/driver.log": "4e9aeffc65ce1cb5faa27b78f42f802745675e087730abd47659c16497def4f1",
+    "Artifacts/ConstructionSandbox/network-20261018-221927-061/observer.log": "23b0f8566b8cb9a8147858bdff00563b5a331fd5a6b14b69ac6cffeeb9e1cc53",
+    "Artifacts/ConstructionSandbox/network-20261018-221927-061/driver.png": "599e3f707e325081e9ecd586b53cdb05a24058bceed686a1e5a00021a051c30f",
+    "Artifacts/ConstructionSandbox/network-20261018-221927-061/observer.png": "0e161283efa1080d6d24b8f9212af42398702894e9173ffa318f266538e417ac"
+  }
+}

@@ -1,0 +1,13 @@
+# Rejected canopy experiments remain local; retain the compact cuttable source.
+/rev02/
+/rev04/HarvestOak.blend
+/rev04/Oak-Beauty.png
+/rev04/Oak-Front.png
+/rev04/Exports/*.glb
+/rev04/Exports/SM_HarvestOak_Crown.fbx
+/rev04/Exports/SM_HarvestOak_Intact.fbx
+/rev04/Exports/SM_HarvestOak_Cut01.fbx
+/rev04/Exports/SM_HarvestOak_Cut02.fbx
+/rev04/Exports/SM_HarvestOak_Felled.fbx
+*.blend1
+__pycache__/

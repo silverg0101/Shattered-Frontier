@@ -1,0 +1,190 @@
+{
+  "generator": "tools/Create-HarvestRock.py",
+  "blender": "5.2.2 LTS",
+  "date": "2026-10-19",
+  "seed": 19019,
+  "method": "Original procedural closed rock geometry with sequential reference extraction cuts; GPT Image Gen ironstone source box-projected and baked into UV atlas; procedural fine normal/roughness.",
+  "colour_source": "../HarvestReferences/Ironstone-BaseColor-v1.png",
+  "colour_source_sha256": "e09ddaffd108554fbbd9162ff4e068925698cdf575d094150d4261549ab763cf",
+  "coordinates": "Metres, Z up; main stages ground origin (0,0,0), chips centered.",
+  "meshes": [
+    {
+      "name": "SM_HarvestRock_Chip01",
+      "vertices": 12,
+      "triangles": 20,
+      "dimensions_metres": [
+        0.22537484765052795,
+        0.17224112153053284,
+        0.18244044482707977
+      ],
+      "nonmanifold_edges": 0,
+      "material_slots": [
+        "M_HarvestRock_Exterior",
+        "M_HarvestRock_Fracture"
+      ]
+    },
+    {
+      "name": "SM_HarvestRock_Chip02",
+      "vertices": 12,
+      "triangles": 20,
+      "dimensions_metres": [
+        0.32056480646133423,
+        0.1968357264995575,
+        0.19626674056053162
+      ],
+      "nonmanifold_edges": 0,
+      "material_slots": [
+        "M_HarvestRock_Exterior",
+        "M_HarvestRock_Fracture"
+      ]
+    },
+    {
+      "name": "SM_HarvestRock_Chip03",
+      "vertices": 12,
+      "triangles": 20,
+      "dimensions_metres": [
+        0.40710076689720154,
+        0.22755444049835205,
+        0.19851970672607422
+      ],
+      "nonmanifold_edges": 0,
+      "material_slots": [
+        "M_HarvestRock_Exterior",
+        "M_HarvestRock_Fracture"
+      ]
+    },
+    {
+      "name": "SM_HarvestRock_Chip04",
+      "vertices": 12,
+      "triangles": 20,
+      "dimensions_metres": [
+        0.3959662914276123,
+        0.2598443031311035,
+        0.22129042446613312
+      ],
+      "nonmanifold_edges": 0,
+      "material_slots": [
+        "M_HarvestRock_Exterior",
+        "M_HarvestRock_Fracture"
+      ]
+    },
+    {
+      "name": "SM_HarvestRock_Chip05",
+      "vertices": 12,
+      "triangles": 20,
+      "dimensions_metres": [
+        0.48959681391716003,
+        0.2861745357513428,
+        0.26429662108421326
+      ],
+      "nonmanifold_edges": 0,
+      "material_slots": [
+        "M_HarvestRock_Exterior",
+        "M_HarvestRock_Fracture"
+      ]
+    },
+    {
+      "name": "SM_HarvestRock_Intact",
+      "vertices": 196,
+      "triangles": 388,
+      "dimensions_metres": [
+        1.6042131185531616,
+        1.577502727508545,
+        1.356115698814392
+      ],
+      "nonmanifold_edges": 0,
+      "material_slots": [
+        "M_HarvestRock_Exterior",
+        "M_HarvestRock_Fracture"
+      ]
+    },
+    {
+      "name": "SM_HarvestRock_Mined01",
+      "vertices": 195,
+      "triangles": 386,
+      "dimensions_metres": [
+        1.603722095489502,
+        1.4820541143417358,
+        1.356115698814392
+      ],
+      "nonmanifold_edges": 0,
+      "material_slots": [
+        "M_HarvestRock_Exterior",
+        "M_HarvestRock_Fracture"
+      ]
+    },
+    {
+      "name": "SM_HarvestRock_Mined02",
+      "vertices": 174,
+      "triangles": 344,
+      "dimensions_metres": [
+        1.375045657157898,
+        1.4820541143417358,
+        1.356115698814392
+      ],
+      "nonmanifold_edges": 0,
+      "material_slots": [
+        "M_HarvestRock_Exterior",
+        "M_HarvestRock_Fracture"
+      ]
+    },
+    {
+      "name": "SM_HarvestRock_Remnant",
+      "vertices": 99,
+      "triangles": 194,
+      "dimensions_metres": [
+        1.375045657157898,
+        1.2922759056091309,
+        0.47715631127357483
+      ],
+      "nonmanifold_edges": 0,
+      "material_slots": [
+        "M_HarvestRock_Exterior",
+        "M_HarvestRock_Fracture"
+      ]
+    }
+  ],
+  "checks": [
+    "Fresh-process saved-source lineup and close render inspected.",
+    "All nine meshes: zero nonmanifold edges.",
+    "Nine FBX files reimport individually: one mesh each, dimensions preserved within 0.1 mm.",
+    "Combined GLB reimport: nine meshes."
+  ],
+  "visual_revisions": [
+    "Rejected regular orange crack-grid material.",
+    "Baked generated irregular ironstone colour source.",
+    "Reduced overbright review lighting.",
+    "Smoothed exterior normals; kept fracture planes crisp."
+  ],
+  "limitations": [
+    "Art prototype, no Unreal visual/performance acceptance.",
+    "Generated colour is not photographed/scanned PBR and not guaranteed seamless.",
+    "Normal/roughness approximate geology rather than measured PBR.",
+    "Unreal must explicitly implement projected interior material; Blender projection algorithms do not transfer through FBX/GLB.",
+    "No collision hulls, LODs, contact animation, sound or debris simulation.",
+    "Authored stages retained only as comparisons; target interaction uses localized hit damage."
+  ],
+  "outputs": {
+    "exchange-validation.json": "1fb0529fc01b6e482c65857709545b4241f2628752447da58142f15187e66599",
+    "HarvestRock.blend": "ef081875acf9dce3ba0711581465ab17beb80f834518b4e2d543d8f20d2344a5",
+    "HarvestRock_Close.png": "a9d380aaff476c63320759734332b16cd16eb610ab7c3da40b2f04399c4ca561",
+    "HarvestRock_Stages.png": "065feb1af6c57d0e39b9c7f6960e015258ca636819e9e705a1f84bfb12b930a0",
+    "README.md": "f12573337c564505913c6fbf18bd3c34b6f0b9e42eba30886f96b64e18847031",
+    "Review-Exports.py": "d755c7eb1815bfa8448372c4c8c8ec459e7b428d3da774eb4d4ec0095bea64f3",
+    "Revise-Material.py": "27fbac701d9a5e0a1c27d540d330a2d881269dede8d70655c302b0df3e45f361",
+    "Exports\\HarvestRock.glb": "f6f7c7bff04f5e59aeaa64c316fec29c918c0e99a6e2738c00ae7c8f2205cf86",
+    "Exports\\SM_HarvestRock_Chip01.fbx": "289679ecce7a9a374418d19cab39675a57ed85b80b3805455c96bbe24afee259",
+    "Exports\\SM_HarvestRock_Chip02.fbx": "b4995ffdb85fbff13d147bf2ea877c92bce86ed1d1c3b9b87540f12728065dfc",
+    "Exports\\SM_HarvestRock_Chip03.fbx": "aa1e8802ae64305c21a6eb82b2c94e06bbb446c01483b6c80d1edc9f83758f53",
+    "Exports\\SM_HarvestRock_Chip04.fbx": "060f140a8f1189e60b820051fc6f97e93af8c449e5076ab1160f1b5c7592ab50",
+    "Exports\\SM_HarvestRock_Chip05.fbx": "5f6f36aa650307a159c53a5ee950ea9f8b088278b97e395c3afa541f70f439bf",
+    "Exports\\SM_HarvestRock_Intact.fbx": "384639e76ed69cd552aedf64f28c758b4cfcde197085d64a09475a9041a5310a",
+    "Exports\\SM_HarvestRock_Mined01.fbx": "37555fc1d85bd6bf527b3b0c30a2903aabfa7c6a78fbb00e115b622533661ca2",
+    "Exports\\SM_HarvestRock_Mined02.fbx": "66fc5068dfdf9b6827f52fd320f5fab9116f849e9afa479b02adff7398dfa7f7",
+    "Exports\\SM_HarvestRock_Remnant.fbx": "2db63d3e21fba7c7f9c43569645496c0e8e239c3db93fdfc1ae7e4683c4325cd",
+    "Textures\\T_HarvestRock_BaseColor.png": "b684742da246fd4088ba73ded513b29b635485ab7f5b5a7f4adfc9e28c058945",
+    "Textures\\T_HarvestRock_InteriorBaseColor.png": "e09ddaffd108554fbbd9162ff4e068925698cdf575d094150d4261549ab763cf",
+    "Textures\\T_HarvestRock_Normal.png": "547fc39166cebe8b7ae9288bc19e3c521a77af95be456e6f2f7dd1bea78db299",
+    "Textures\\T_HarvestRock_Roughness.png": "8f0e0c58fad7edee124b3cfc1ffa43452bf290637f7ad296bb1efc1558d76ccb"
+  }
+}

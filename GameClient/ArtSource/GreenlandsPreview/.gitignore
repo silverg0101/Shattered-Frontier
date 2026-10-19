@@ -1,0 +1,16 @@
+*.log
+__pycache__/
+*.blend1
+inspection.json
+ArrivalAssets/*/*.bin
+ArrivalAssets/*/*.gltf
+ArrivalAssets/*/files.json
+ArrivalAssets/*/info.json
+ArrivalAssets/Barrel_01/
+PreparedArrival/SM_PH_Barrel_01_*
+# Downloaded Fab sample stays local; selected dependencies are migrated separately.
+FabSource/
+PreparedArrival/SM_House*.fbx
+PreparedArrival/VillageRoofFit.blend
+PreparedArrival/SM_MedievalModularWall*.fbx
+PreparedArrival/SM_OldWoodenDoor.fbx

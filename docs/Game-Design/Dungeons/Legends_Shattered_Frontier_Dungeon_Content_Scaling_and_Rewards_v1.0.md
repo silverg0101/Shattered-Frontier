@@ -24,6 +24,8 @@ This part defines what a dungeon *is* as content: dungeon types, composition and
 
 `story` runs with fewer than 3 players spawn **companions** (`npc/companion_<role>`) to fill missing `tank` and `healer` roles (max 2 companions). Companions use the Part 2 NPC behavior stack with player-ally behavior trees, count **0.3** toward damage-equivalents and **do not count** toward the scaling group size `n`. They never receive rewards and cannot loot.
 
+These are **story NPC helpers**, distinct from persistent [trained creatures](../Companions/Legends_Shattered_Frontier_Companion_Gameplay_Details_v0.1.md#6-combat-output-and-group-rules). Owned creatures are part of their owner's build: neither `n` nor `n_eq` gains a pet contribution, and pets occupy no group/reward slot. The `companion 0.3` term elsewhere in this part means story NPC helpers only. Instance admission may prohibit riding while allowing walking trained creatures; apply published mode policy and preserve conditions on safe storage. No normal instance capture. Owner participation snapshots support creature XP without changing player loot/kill-credit recipients.
+
 ---
 
 ## 2. Composition and the dungeon definition

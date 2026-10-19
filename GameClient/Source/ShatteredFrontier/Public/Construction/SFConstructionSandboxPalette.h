@@ -47,6 +47,7 @@ class SHATTEREDFRONTIER_API USFConstructionSandboxPalette : public UUserWidget
 public:
     FSFConstructionPaletteActionDelegate OnAction;
 
+    void ConfigureNetworkPresentation();
     void SetStatusText(const FText& InStatusText);
     bool IsPointerOverPalette() const;
 
@@ -81,5 +82,6 @@ private:
     UPROPERTY(Transient)
     TObjectPtr<UTextBlock> StatusTextBlock;
 
+    UPROPERTY(Transient) TObjectPtr<UTextBlock> HintsTextBlock;
     FText CachedStatusText;
 };

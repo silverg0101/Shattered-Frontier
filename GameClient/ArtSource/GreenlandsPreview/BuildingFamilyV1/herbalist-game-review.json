@@ -1,0 +1,107 @@
+{
+  "frame": 3652,
+  "target": 10,
+  "phase": "capture",
+  "view": 4,
+  "reached": [
+    {
+      "local_xy": [
+        0,
+        -1.8
+      ],
+      "height_over_anchor_m": 1.0614999708193336
+    },
+    {
+      "local_xy": [
+        0,
+        1.3
+      ],
+      "height_over_anchor_m": 1.0614999708193336
+    },
+    {
+      "local_xy": [
+        1.55,
+        -0.7
+      ],
+      "height_over_anchor_m": 1.0615000274476385
+    },
+    {
+      "local_xy": [
+        1.55,
+        2.5
+      ],
+      "height_over_anchor_m": 3.6590620622564227
+    },
+    {
+      "local_xy": [
+        0.3,
+        2.5
+      ],
+      "height_over_anchor_m": 3.6515001878429487
+    },
+    {
+      "local_xy": [
+        1.55,
+        2.5
+      ],
+      "height_over_anchor_m": 3.687294377634394
+    },
+    {
+      "local_xy": [
+        1.55,
+        -0.7
+      ],
+      "height_over_anchor_m": 1.2199067058945734
+    },
+    {
+      "local_xy": [
+        0,
+        -5.3
+      ],
+      "height_over_anchor_m": 0.7852370435229853
+    },
+    {
+      "local_xy": [
+        -4.15,
+        -5.3
+      ],
+      "height_over_anchor_m": 0.7414999962368013
+    },
+    {
+      "local_xy": [
+        -4.15,
+        -1.3
+      ],
+      "height_over_anchor_m": 1.1114999431567711
+    }
+  ],
+  "clearance": {
+    "positive_wall_blocked": true,
+    "entry_clear": true
+  },
+  "traces": [
+    {
+      "label": "Solid side wall",
+      "blocked": true,
+      "initial_overlap": false,
+      "actor": "StaticMeshActor_34"
+    },
+    {
+      "label": "Entry",
+      "blocked": false,
+      "initial_overlap": false,
+      "actor": null
+    }
+  ],
+  "scope": "Native pawn movement and static collision only; no AI navigation or gameplay service acceptance",
+  "walk_completed": true,
+  "loft_reached": true,
+  "final_pawn_cm": [
+    -10752.782412282319,
+    -2710.485071576067,
+    51.71595069036469
+  ],
+  "view_started": null,
+  "captured": true,
+  "elapsed_seconds": 91.7
+}

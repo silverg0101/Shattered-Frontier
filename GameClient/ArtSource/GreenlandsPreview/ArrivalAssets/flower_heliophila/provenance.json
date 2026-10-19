@@ -1,0 +1,40 @@
+{
+  "asset": "flower_heliophila",
+  "page": "https://polyhaven.com/a/flower_heliophila",
+  "license": "CC0-1.0",
+  "author": {
+    "Jenelle van Heerden": "All"
+  },
+  "files": [
+    {
+      "file": "flower_heliophila.gltf",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/flower_heliophila/flower_heliophila_1k.gltf",
+      "md5": "0f0838e09b55edfe74ab34ef7d6980ea"
+    },
+    {
+      "file": "textures/flower_heliophila_nor_gl_1k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/flower_heliophila/flower_heliophila_nor_gl_1k.jpg",
+      "md5": "7dee360a2a64500056b1ce0f3cfefba9"
+    },
+    {
+      "file": "textures/flower_heliophila_arm_1k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/flower_heliophila/flower_heliophila_arm_1k.jpg",
+      "md5": "769a32a15f4d73465a12f1f3fa05c948"
+    },
+    {
+      "file": "textures/flower_heliophila_diff_1k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/flower_heliophila/flower_heliophila_diff_1k.jpg",
+      "md5": "5bc66662e45e47c957bcc893dcc79161"
+    },
+    {
+      "file": "flower_heliophila.bin",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/flower_heliophila/flower_heliophila.bin",
+      "md5": "68a757b5563acc23b3d92959f6c07c2d"
+    },
+    {
+      "file": "textures/flower_heliophila_opacity.png",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/flower_heliophila/flower_heliophila_alpha_1k.png",
+      "md5": "fea8485812ce7637d2558a2cc0ba83a3"
+    }
+  ]
+}

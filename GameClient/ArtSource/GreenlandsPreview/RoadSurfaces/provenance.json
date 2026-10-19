@@ -1,0 +1,38 @@
+[
+  {
+    "file": "gravel_road_Diffuse.jpg",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/gravel_road/gravel_road_diff_2k.jpg",
+    "md5": "5d024d27bc8ffa9decad93e4743de749",
+    "license": "CC0",
+    "source": "https://polyhaven.com/a/gravel_road",
+    "license_url": "https://polyhaven.com/license",
+    "physical_tile_metres": 2
+  },
+  {
+    "file": "gravel_road_nor_dx.jpg",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/gravel_road/gravel_road_nor_dx_2k.jpg",
+    "md5": "d81a1a207dca9b635923ad32cf0f932a",
+    "license": "CC0",
+    "source": "https://polyhaven.com/a/gravel_road",
+    "license_url": "https://polyhaven.com/license",
+    "physical_tile_metres": 2
+  },
+  {
+    "file": "gravel_road_Rough.jpg",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/gravel_road/gravel_road_rough_2k.jpg",
+    "md5": "bbd4f6c7c1b8ceb4c88a41d03e4ba158",
+    "license": "CC0",
+    "source": "https://polyhaven.com/a/gravel_road",
+    "license_url": "https://polyhaven.com/license",
+    "physical_tile_metres": 2
+  },
+  {
+    "file": "gravel_road_Displacement.jpg",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/gravel_road/gravel_road_disp_2k.jpg",
+    "md5": "32c59027b713715190ca19dc73c9c0fe",
+    "license": "CC0",
+    "source": "https://polyhaven.com/a/gravel_road",
+    "license_url": "https://polyhaven.com/license",
+    "physical_tile_metres": 2
+  }
+]

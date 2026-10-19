@@ -1,0 +1,966 @@
+[
+  {
+    "package": "/Game/Megascans/3D_Assets/MedievalModularCornerWall1x2M/SM_MedievalModularCornerWall1x2M",
+    "name": "SM_MedievalModularCornerWall1x2M",
+    "minimum": [
+      -2.6043930053710938,
+      -100.0022964477539,
+      0.0
+    ],
+    "maximum": [
+      100.0006103515625,
+      2.5987014770507812,
+      200.0850067138672
+    ],
+    "dimensions": [
+      102.6050033569336,
+      102.60099792480469,
+      200.0850067138672
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/MedievalModularCornerWall1x2M/MI_MedievalModularCornerWall1x2M.MI_MedievalModularCornerWall1x2M"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Megascans/3D_Assets/MedievalModularDoor15x2M/SM_MedievalModularDoor15x2M",
+    "name": "SM_MedievalModularDoor15x2M",
+    "minimum": [
+      -0.3847198486328125,
+      -15.370820999145508,
+      -0.5179595947265625
+    ],
+    "maximum": [
+      150.58026123046875,
+      3.505472183227539,
+      200.3182373046875
+    ],
+    "dimensions": [
+      150.96498107910156,
+      18.876293182373047,
+      200.83619689941406
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/MedievalModularDoor15x2M/MI_MedievalModularDoor15x2M.MI_MedievalModularDoor15x2M"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Megascans/3D_Assets/MedievalModularDoor1x2M/SM_MedievalModularDoor1x2M",
+    "name": "SM_MedievalModularDoor1x2M",
+    "minimum": [
+      0.0161285400390625,
+      -15.046607494354248,
+      -0.4256591796875
+    ],
+    "maximum": [
+      100.01612854003906,
+      1.655773639678955,
+      200.0155029296875
+    ],
+    "dimensions": [
+      100.0,
+      16.702381134033203,
+      200.441162109375
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/MedievalModularDoor1x2M/MI_MedievalModularDoor1x2M.MI_MedievalModularDoor1x2M"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Megascans/3D_Assets/MedievalModularDoor2x2MA/SM_MedievalModularDoor2x2MA",
+    "name": "SM_MedievalModularDoor2x2MA",
+    "minimum": [
+      -0.000396728515625,
+      -15.590083122253418,
+      -0.268951416015625
+    ],
+    "maximum": [
+      200.4824981689453,
+      2.409916877746582,
+      200.18605041503906
+    ],
+    "dimensions": [
+      200.48289489746094,
+      18.0,
+      200.4550018310547
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/MedievalModularDoor2x2MA/MI_MedievalModularDoor2x2MA.MI_MedievalModularDoor2x2MA"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Megascans/3D_Assets/MedievalModularDoor2x2MB/SM_MedievalModularDoor2x2MB",
+    "name": "SM_MedievalModularDoor2x2MB",
+    "minimum": [
+      0.0151214599609375,
+      -15.011502265930176,
+      -0.03045654296875
+    ],
+    "maximum": [
+      200.01513671875,
+      2.742997169494629,
+      199.9695587158203
+    ],
+    "dimensions": [
+      200.00001525878906,
+      17.754499435424805,
+      200.00001525878906
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/MedievalModularDoor2x2MB/MI_MedievalModularDoor2x2MB.MI_MedievalModularDoor2x2MB"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Megascans/3D_Assets/MedievalModularDoor3x2M/SM_MedievalModularDoor3x2M",
+    "name": "SM_MedievalModularDoor3x2M",
+    "minimum": [
+      -0.27899169921875,
+      -15.679444313049316,
+      -0.24725341796875
+    ],
+    "maximum": [
+      300.1819763183594,
+      5.880555152893066,
+      200.02574157714844
+    ],
+    "dimensions": [
+      300.4609680175781,
+      21.559999465942383,
+      200.2729949951172
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/MedievalModularDoor3x2M/MI_MedievalModularDoor3x2M.MI_MedievalModularDoor3x2M"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Megascans/3D_Assets/MedievalModularGable4/SM_MedievalModularGable4",
+    "name": "SM_MedievalModularGable4",
+    "minimum": [
+      -234.24056243896484,
+      -12.057671546936035,
+      -27.842269897460938
+    ],
+    "maximum": [
+      247.8094253540039,
+      5.211239814758301,
+      189.9642333984375
+    ],
+    "dimensions": [
+      482.04998779296875,
+      17.268911361694336,
+      217.80650329589844
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/MedievalModularGable4/MI_MedievalModularGable4.MI_MedievalModularGable4"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Megascans/3D_Assets/MedievalModularGable4M/SM_MedievalModularGable4M",
+    "name": "SM_MedievalModularGable4M",
+    "minimum": [
+      -216.7420425415039,
+      -10.895115852355957,
+      -14.859031677246094
+    ],
+    "maximum": [
+      213.55794525146484,
+      1.9493722915649414,
+      261.15589141845703
+    ],
+    "dimensions": [
+      430.29998779296875,
+      12.844488143920898,
+      276.0149230957031
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/MedievalModularGable4M/MI_MedievalModularGable4M.MI_MedievalModularGable4M"
+    ],
+    "lods": 8
+  },
+  {
+    "package": "/Game/Megascans/3D_Assets/MedievalModularWall15x2M/SM_MedievalModularWall15x2M",
+    "name": "SM_MedievalModularWall15x2M",
+    "minimum": [
+      0.0,
+      -15.222726345062256,
+      -0.024566650390625
+    ],
+    "maximum": [
+      150.0,
+      2.3587727546691895,
+      200.01544189453125
+    ],
+    "dimensions": [
+      150.0,
+      17.581499099731445,
+      200.04000854492188
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/MedievalModularWall15x2M/MI_MedievalModularWall15x2M.MI_MedievalModularWall15x2M"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Megascans/3D_Assets/MedievalModularWall1x2MA/SM_MedievalModularWall1x2MA",
+    "name": "SM_MedievalModularWall1x2MA",
+    "minimum": [
+      0.0086822509765625,
+      -14.984772682189941,
+      0.0277099609375
+    ],
+    "maximum": [
+      100.00868225097656,
+      0.7297954559326172,
+      200.02737426757812
+    ],
+    "dimensions": [
+      100.0,
+      15.714568138122559,
+      199.99966430664062
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/MedievalModularWall1x2MA/MI_MedievalModularWall1x2MA.MI_MedievalModularWall1x2MA"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Megascans/3D_Assets/MedievalModularWall1x2MB/SM_MedievalModularWall1x2MB",
+    "name": "SM_MedievalModularWall1x2MB",
+    "minimum": [
+      0.01092529296875,
+      -15.109190940856934,
+      -0.02984619140625
+    ],
+    "maximum": [
+      100.00692749023438,
+      33.832993507385254,
+      200.0171661376953
+    ],
+    "dimensions": [
+      99.99600219726562,
+      48.94218444824219,
+      200.04701232910156
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/MedievalModularWall1x2MB/MI_MedievalModularWall1x2MB.MI_MedievalModularWall1x2MB"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Megascans/3D_Assets/MedievalModularWall2x2MD/SM_MedievalModularWall2x2MD",
+    "name": "SM_MedievalModularWall2x2MD",
+    "minimum": [
+      -0.2546234130859375,
+      -15.315825462341309,
+      -0.001617431640625
+    ],
+    "maximum": [
+      199.9983673095703,
+      1.8601751327514648,
+      199.99838256835938
+    ],
+    "dimensions": [
+      200.25299072265625,
+      17.176000595092773,
+      200.0
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/MedievalModularWall2x2MD/MI_MedievalModularWall2x2MD.MI_MedievalModularWall2x2MD"
+    ],
+    "lods": 4
+  },
+  {
+    "package": "/Game/Megascans/3D_Assets/MedievalModularWall2x2MG/SM_MedievalModularWall2x2MG",
+    "name": "SM_MedievalModularWall2x2MG",
+    "minimum": [
+      -0.0055084228515625,
+      -15.11229133605957,
+      -0.0001678466796875
+    ],
+    "maximum": [
+      200.0024871826172,
+      4.964292526245117,
+      200.01683044433594
+    ],
+    "dimensions": [
+      200.00799560546875,
+      20.076583862304688,
+      200.01699829101562
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/MedievalModularWall2x2MG/MI_MedievalModularWall2x2MG.MI_MedievalModularWall2x2MG"
+    ],
+    "lods": 4
+  },
+  {
+    "package": "/Game/Megascans/3D_Assets/MedievalModularWall2x2MH/SM_MedievalModularWall2x2MH",
+    "name": "SM_MedievalModularWall2x2MH",
+    "minimum": [
+      -0.000701904296875,
+      -15.14064073562622,
+      0.0
+    ],
+    "maximum": [
+      200.01930236816406,
+      1.0144762992858887,
+      200.02000427246094
+    ],
+    "dimensions": [
+      200.02000427246094,
+      16.15511703491211,
+      200.02000427246094
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/MedievalModularWall2x2MH/MI_MedievalModularWall2x2MH.MI_MedievalModularWall2x2MH"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Megascans/3D_Assets/MedievalModularWall3x2M/SM_MedievalModularWall3x2M",
+    "name": "SM_MedievalModularWall3x2M",
+    "minimum": [
+      -0.247802734375,
+      -15.353662490844727,
+      -0.365203857421875
+    ],
+    "maximum": [
+      300.26220703125,
+      3.08233642578125,
+      200.48179626464844
+    ],
+    "dimensions": [
+      300.510009765625,
+      18.435998916625977,
+      200.8470001220703
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/MedievalModularWall3x2M/MI_MedievalModularWall3x2M.MI_MedievalModularWall3x2M"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Megascans/3D_Assets/Medieval_Modular_Wall/SM_MedievalModularWall",
+    "name": "SM_MedievalModularWall",
+    "minimum": [
+      -0.6102981567382812,
+      -19.575199127197266,
+      -0.619903564453125
+    ],
+    "maximum": [
+      100.09549713134766,
+      0.44499969482421875,
+      200.26210021972656
+    ],
+    "dimensions": [
+      100.70579528808594,
+      20.020198822021484,
+      200.8820037841797
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/MedievalModularWall/MI_MedievalModularWall.MI_MedievalModularWall"
+    ],
+    "lods": 8
+  },
+  {
+    "package": "/Game/Megascans/3D_Assets/OldWellCrank/SM_OldWellCrank",
+    "name": "SM_OldWellCrank",
+    "minimum": [
+      -113.9066390991211,
+      -22.948567390441895,
+      0.0
+    ],
+    "maximum": [
+      113.9066390991211,
+      22.94856548309326,
+      78.81664276123047
+    ],
+    "dimensions": [
+      227.8132781982422,
+      45.897132873535156,
+      78.81664276123047
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/OldWellCrank/MI_OldWellCrank.MI_OldWellCrank"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Megascans/3D_Assets/OldWoodenBench/SM_OldWoodenBench",
+    "name": "SM_OldWoodenBench",
+    "minimum": [
+      -16.42741584777832,
+      -95.04497528076172,
+      -0.7999992370605469
+    ],
+    "maximum": [
+      16.42741584777832,
+      95.04497528076172,
+      47.215415954589844
+    ],
+    "dimensions": [
+      32.85483169555664,
+      190.08995056152344,
+      48.01541519165039
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/OldWoodenBench/MI_OldWoodenBench.MI_OldWoodenBench"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Megascans/3D_Assets/OldWoodenDoor/SM_OldWoodenDoor",
+    "name": "SM_OldWoodenDoor",
+    "minimum": [
+      -0.03897857666015625,
+      -13.39197301864624,
+      -0.18853759765625
+    ],
+    "maximum": [
+      105.45267486572266,
+      8.52791452407837,
+      190.01675415039062
+    ],
+    "dimensions": [
+      105.49165344238281,
+      21.91988754272461,
+      190.20529174804688
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/OldWoodenDoor/MI_OldWoodenDoor.MI_OldWoodenDoor"
+    ],
+    "lods": 4
+  },
+  {
+    "package": "/Game/Megascans/3D_Assets/OldWoodenTable/SM_OldWoodenTable",
+    "name": "SM_OldWoodenTable",
+    "minimum": [
+      -99.03821182250977,
+      -35.813751220703125,
+      -0.7461166381835938
+    ],
+    "maximum": [
+      95.96178817749023,
+      34.34138488769531,
+      82.45317840576172
+    ],
+    "dimensions": [
+      195.0,
+      70.15513610839844,
+      83.19929504394531
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/OldWoodenTable/MI_OldWoodenTable.MI_OldWoodenTable"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Meshes/SM_WellBase",
+    "name": "SM_WellBase",
+    "minimum": [
+      -72.99002838134766,
+      -70.45431137084961,
+      -136.18665313720703
+    ],
+    "maximum": [
+      77.85364532470703,
+      74.71661758422852,
+      136.98351287841797
+    ],
+    "dimensions": [
+      150.8436737060547,
+      145.17092895507812,
+      273.170166015625
+    ],
+    "materials": [
+      "/Game/Megascans/Surfaces/MossyGround/MI_MossyGround.MI_MossyGround"
+    ],
+    "lods": 3
+  },
+  {
+    "package": "/Game/Meshes/Blockout/Fence/SM_Fence",
+    "name": "SM_Fence",
+    "minimum": [
+      -2.074127197265625,
+      -19.590316772460938,
+      -0.35938262939453125
+    ],
+    "maximum": [
+      299.78167724609375,
+      7.089082717895508,
+      119.32878875732422
+    ],
+    "dimensions": [
+      301.8558044433594,
+      26.679399490356445,
+      119.68817138671875
+    ],
+    "materials": [
+      "/Game/Meshes/Blockout/Fence/MI_Fence.MI_Fence"
+    ],
+    "lods": 5
+  },
+  {
+    "package": "/Game/Meshes/Houses/Construction_Pieces/SM_LanternPost",
+    "name": "SM_LanternPost",
+    "minimum": [
+      -12.488688945770264,
+      -100.3922119140625,
+      -10.445045471191406
+    ],
+    "maximum": [
+      11.000244617462158,
+      9.791496276855469,
+      83.91734313964844
+    ],
+    "dimensions": [
+      23.488933563232422,
+      110.18370819091797,
+      94.36238861083984
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/WoodenBeam/MI_WoodenBeam_04.MI_WoodenBeam_04",
+      "/Game/Megascans/3D_Assets/WoodenBeam/MI_WoodenBeam_02.MI_WoodenBeam_02",
+      "/Game/Megascans/3D_Assets/WoodenBeam/MI_WoodenBeam_01.MI_WoodenBeam_01",
+      "/Game/Megascans/3D_Assets/Shingles/MI_Shingles.MI_Shingles"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Meshes/Houses/Construction_Pieces/SM_PorchBase",
+    "name": "SM_PorchBase",
+    "minimum": [
+      -105.07844161987305,
+      -83.39869689941406,
+      -32.34539794921875
+    ],
+    "maximum": [
+      97.1562385559082,
+      60.04847717285156,
+      233.80020141601562
+    ],
+    "dimensions": [
+      202.23468017578125,
+      143.44717407226562,
+      266.1455993652344
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Assets/OldWoodenBoards/MI_OldWoodenBoards.MI_OldWoodenBoards",
+      "/Game/Megascans/3D_Assets/HorseHitchingPost/MI_HorseHitchingPost.MI_HorseHitchingPost",
+      "/Game/Megascans/3D_Assets/WornWoodenBeamA/MI_WornWoodenBeamA.MI_WornWoodenBeamA"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Meshes/Houses/MODULAR_ASSETS/SM_FacadeLarge",
+    "name": "SM_FacadeLarge",
+    "minimum": [
+      -24.039170265197754,
+      -110.08027648925781,
+      0.0
+    ],
+    "maximum": [
+      24.039145469665527,
+      110.08029174804688,
+      486.95892333984375
+    ],
+    "dimensions": [
+      48.07831573486328,
+      220.1605682373047,
+      486.95892333984375
+    ],
+    "materials": [
+      "/Game/Meshes/Houses/MODULAR_ASSETS/FacadeLarge/MI_FacadeLarge_01.MI_FacadeLarge_01",
+      "/Game/Meshes/Houses/MODULAR_ASSETS/FacadeLarge/MI_FacadeLarge_02.MI_FacadeLarge_02"
+    ],
+    "lods": 4
+  },
+  {
+    "package": "/Game/Meshes/Houses/MODULAR_ASSETS/SM_GableFront_01",
+    "name": "SM_GableFront_01",
+    "minimum": [
+      -272.7539520263672,
+      -70.70831298828125,
+      -127.80534362792969
+    ],
+    "maximum": [
+      272.5733184814453,
+      51.60931396484375,
+      128.7669219970703
+    ],
+    "dimensions": [
+      545.3272705078125,
+      122.317626953125,
+      256.572265625
+    ],
+    "materials": [
+      "/Game/Meshes/Houses/MODULAR_ASSETS/Gable/MI_GableFront1_01.MI_GableFront1_01",
+      "/Game/Meshes/Houses/MODULAR_ASSETS/Gable/MI_GableFront1_03.MI_GableFront1_03",
+      "/Game/Meshes/Houses/MODULAR_ASSETS/Gable/MI_GableFront1_02.MI_GableFront1_02"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Meshes/Houses/MODULAR_ASSETS/SM_GableFront_03",
+    "name": "SM_GableFront_03",
+    "minimum": [
+      -79.76904678344727,
+      -219.83404541015625,
+      -96.12514877319336
+    ],
+    "maximum": [
+      79.65310287475586,
+      219.891845703125,
+      95.79159927368164
+    ],
+    "dimensions": [
+      159.42214965820312,
+      439.72589111328125,
+      191.916748046875
+    ],
+    "materials": [
+      "/Game/Meshes/Houses/MODULAR_ASSETS/Gable/MI_GableFront03_01.MI_GableFront03_01",
+      "/Game/Meshes/Houses/MODULAR_ASSETS/Gable/MI_GableFront03_03.MI_GableFront03_03",
+      "/Game/Meshes/Houses/MODULAR_ASSETS/Gable/MI_GableFront03_02.MI_GableFront03_02"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Meshes/Houses/MODULAR_ASSETS/SM_GableSet_01",
+    "name": "SM_GableSet_01",
+    "minimum": [
+      -220.1746826171875,
+      -13.664453029632568,
+      -101.07995986938477
+    ],
+    "maximum": [
+      220.03057861328125,
+      13.430162906646729,
+      112.89303207397461
+    ],
+    "dimensions": [
+      440.20526123046875,
+      27.094615936279297,
+      213.97299194335938
+    ],
+    "materials": [
+      "/Game/Meshes/Houses/MODULAR_ASSETS/Gable/MI_GableSet_01.MI_GableSet_01"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Meshes/Houses/MODULAR_ASSETS/SM_LanternPost",
+    "name": "SM_LanternPost",
+    "minimum": [
+      -11.779914855957031,
+      -104.269287109375,
+      -85.14694213867188
+    ],
+    "maximum": [
+      11.779916763305664,
+      6.35089111328125,
+      9.35693359375
+    ],
+    "dimensions": [
+      23.559831619262695,
+      110.62017822265625,
+      94.50387573242188
+    ],
+    "materials": [
+      "/Game/Meshes/Houses/MODULAR_ASSETS/LanternPost/MI_LanternPost_03.MI_LanternPost_03",
+      "/Game/Meshes/Houses/MODULAR_ASSETS/LanternPost/MI_LanternPost_04.MI_LanternPost_04",
+      "/Game/Meshes/Houses/MODULAR_ASSETS/LanternPost/MI_LanternPost_02.MI_LanternPost_02",
+      "/Game/Meshes/Houses/MODULAR_ASSETS/LanternPost/MI_LanternPost_01.MI_LanternPost_01"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Meshes/Houses/MODULAR_ASSETS/SM_PorchBase",
+    "name": "SM_PorchBase",
+    "minimum": [
+      -104.8355598449707,
+      -83.16937255859375,
+      -32.37939453125
+    ],
+    "maximum": [
+      97.19095993041992,
+      60.2235107421875,
+      233.81729125976562
+    ],
+    "dimensions": [
+      202.02651977539062,
+      143.39288330078125,
+      266.1966857910156
+    ],
+    "materials": [
+      "/Game/Meshes/Houses/MODULAR_ASSETS/Porch/MI_PorchBase_02.MI_PorchBase_02",
+      "/Game/Meshes/Houses/MODULAR_ASSETS/Porch/MI_PorchBase_03.MI_PorchBase_03",
+      "/Game/Meshes/Houses/MODULAR_ASSETS/Porch/MI_PorchBase_01.MI_PorchBase_01"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Meshes/Houses/Roofs/House02_Roof/SM_House02_Roof",
+    "name": "SM_House02_Roof",
+    "minimum": [
+      -409.11790466308594,
+      -471.3630065917969,
+      -201.4913101196289
+    ],
+    "maximum": [
+      490.20277404785156,
+      445.2749938964844,
+      136.52791595458984
+    ],
+    "dimensions": [
+      899.3206787109375,
+      916.6380004882812,
+      338.01922607421875
+    ],
+    "materials": [
+      "/Game/Meshes/Houses/Roofs/House02_Roof/MI_Roof.MI_Roof"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Meshes/Houses/Roofs/House05_Roof/SM_Roof_05",
+    "name": "SM_Roof_05",
+    "minimum": [
+      -223.455322265625,
+      -233.041015625,
+      -162.33065795898438
+    ],
+    "maximum": [
+      790.405517578125,
+      581.5189819335938,
+      285.6981201171875
+    ],
+    "dimensions": [
+      1013.86083984375,
+      814.5599975585938,
+      448.0287780761719
+    ],
+    "materials": [
+      "/Game/Meshes/Houses/Roofs/House05_Roof/MI_Roof05.MI_Roof05"
+    ],
+    "lods": 5
+  },
+  {
+    "package": "/Game/Meshes/Houses/Roofs/House05_Roof/SM_Roof_05small",
+    "name": "SM_Roof_05small",
+    "minimum": [
+      -232.0589828491211,
+      -56.827789306640625,
+      -43.861419677734375
+    ],
+    "maximum": [
+      30.05384063720703,
+      210.45367431640625,
+      39.12467956542969
+    ],
+    "dimensions": [
+      262.1128234863281,
+      267.2814636230469,
+      82.98609924316406
+    ],
+    "materials": [
+      "/Game/Meshes/Houses/Roofs/House05_Roof/MI_Roof05Small.MI_Roof05Small"
+    ],
+    "lods": 5
+  },
+  {
+    "package": "/Game/Meshes/Houses/Roofs/House06_Roof/SM_Roof06",
+    "name": "SM_Roof06",
+    "minimum": [
+      -538.8087310791016,
+      -391.5826721191406,
+      -188.27008819580078
+    ],
+    "maximum": [
+      480.55821228027344,
+      441.0428771972656,
+      171.18987274169922
+    ],
+    "dimensions": [
+      1019.366943359375,
+      832.6255493164062,
+      359.4599609375
+    ],
+    "materials": [
+      "/Game/Meshes/Houses/Roofs/House06_Roof/MI_Roof06.MI_Roof06"
+    ],
+    "lods": 5
+  },
+  {
+    "package": "/Game/Meshes/Houses/Roofs/House08_Roof/SM_House08_Roof",
+    "name": "SM_House08_Roof",
+    "minimum": [
+      -412.0386962890625,
+      -340.27239990234375,
+      -157.33650970458984
+    ],
+    "maximum": [
+      414.06201171875,
+      327.749755859375,
+      146.79300689697266
+    ],
+    "dimensions": [
+      826.1007080078125,
+      668.0221557617188,
+      304.1295166015625
+    ],
+    "materials": [
+      "/Game/Meshes/Houses/Roofs/House08_Roof/MI_Roof08.MI_Roof08"
+    ],
+    "lods": 5
+  },
+  {
+    "package": "/Game/Meshes/Well/WellBase/SM_WellBase",
+    "name": "SM_WellBase",
+    "minimum": [
+      -138.00226593017578,
+      -134.32677459716797,
+      -1.8382034301757812
+    ],
+    "maximum": [
+      138.08574676513672,
+      134.32019805908203,
+      89.48377227783203
+    ],
+    "dimensions": [
+      276.0880126953125,
+      268.64697265625,
+      91.32197570800781
+    ],
+    "materials": [
+      "/Game/Meshes/Well/WellBase/MI_WellBase.MI_WellBase"
+    ],
+    "lods": 6
+  },
+  {
+    "package": "/Game/Megascans/3D_Plants/GroundCoverA/SM_GroundCover_02",
+    "name": "SM_GroundCover_02",
+    "minimum": [
+      -26.720277786254883,
+      -26.897907257080078,
+      -1.6383767127990723
+    ],
+    "maximum": [
+      27.790578842163086,
+      22.76865005493164,
+      16.198707103729248
+    ],
+    "dimensions": [
+      54.51085662841797,
+      49.66655731201172,
+      17.83708381652832
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Plants/GroundCoverA/MI_GroundCoverA.MI_GroundCoverA"
+    ],
+    "lods": 3
+  },
+  {
+    "package": "/Game/Megascans/3D_Plants/GroundCoverA/SM_GroundCover_03",
+    "name": "SM_GroundCover_03",
+    "minimum": [
+      -25.95135498046875,
+      -33.06122398376465,
+      -2.2924022674560547
+    ],
+    "maximum": [
+      35.843997955322266,
+      33.73562049865723,
+      10.648366928100586
+    ],
+    "dimensions": [
+      61.795352935791016,
+      66.79684448242188,
+      12.94076919555664
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Plants/GroundCoverA/MI_GroundCoverA.MI_GroundCoverA"
+    ],
+    "lods": 3
+  },
+  {
+    "package": "/Game/Megascans/3D_Plants/WheatGrassA/SM_WheatGrass00_V2",
+    "name": "SM_WheatGrass00_V2",
+    "minimum": [
+      -69.86495971679688,
+      -53.00149917602539,
+      -24.404329299926758
+    ],
+    "maximum": [
+      71.6536636352539,
+      90.3463363647461,
+      138.10394287109375
+    ],
+    "dimensions": [
+      141.51862335205078,
+      143.34783554077148,
+      162.5082721710205
+    ],
+    "materials": [
+      "/Game/Megascans/3D_Plants/WheatGrassA/MI_WheatGrassA.MI_WheatGrassA"
+    ],
+    "lods": 5
+  },
+  {
+    "package": "/Game/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_01",
+    "name": "spruce_full_01",
+    "minimum": [
+      -209.1996307373047,
+      -261.49713134765625,
+      -76.3714599609375
+    ],
+    "maximum": [
+      250.9524383544922,
+      243.912353515625,
+      975.3387451171875
+    ],
+    "dimensions": [
+      460.1520690917969,
+      505.40948486328125,
+      1051.710205078125
+    ],
+    "materials": [
+      "/Game/ThirdParty/PN_interactiveSpruceForest/Materials/MaterialInstances/full/high/spruce_full_01_trunk.spruce_full_01_trunk",
+      "/Game/ThirdParty/PN_interactiveSpruceForest/Materials/MaterialInstances/full/high/spruce_full_01_leaf.spruce_full_01_leaf",
+      "/Game/ThirdParty/PN_interactiveSpruceForest/Materials/MaterialInstances/full/high/spruce_full_01_branch.spruce_full_01_branch",
+      "/Game/ThirdParty/PN_interactiveSpruceForest/Materials/MaterialInstances/imposter/high/full_01_imposter.full_01_imposter"
+    ],
+    "lods": 5
+  },
+  {
+    "package": "/Game/ThirdParty/PN_interactiveSpruceForest/Meshes/full/high/spruce_full_02",
+    "name": "spruce_full_02",
+    "minimum": [
+      -366.9306945800781,
+      -349.6504821777344,
+      -25.80608558654785
+    ],
+    "maximum": [
+      332.50799560546875,
+      325.9316101074219,
+      1165.0113525390625
+    ],
+    "dimensions": [
+      699.4386901855469,
+      675.5820922851562,
+      1190.8174381256104
+    ],
+    "materials": [
+      "/Game/ThirdParty/PN_interactiveSpruceForest/Materials/MaterialInstances/full/high/spruce_full_02_trunk.spruce_full_02_trunk",
+      "/Game/ThirdParty/PN_interactiveSpruceForest/Materials/MaterialInstances/full/high/spruce_full_02_leaf.spruce_full_02_leaf",
+      "/Game/ThirdParty/PN_interactiveSpruceForest/Materials/MaterialInstances/full/high/spruce_full_02_branch.spruce_full_02_branch",
+      "/Game/ThirdParty/PN_interactiveSpruceForest/Materials/MaterialInstances/imposter/high/full_02_imposter.full_02_imposter"
+    ],
+    "lods": 5
+  }
+]

@@ -34,6 +34,8 @@ The authoritative current text is [AGENTS.md](AGENTS.md). All supplied rules are
 
 ## Working method, ownership, and model routing
 
+Apply the delivery-priority rules in [AGENTS.md](AGENTS.md): advance observable gameplay or required server integration, bound supporting work to a concrete blocker/acceptance gate, and resume implementation when that need is met. Broad continuation authorization does not make speculative setup or expanding development fixtures the default queue.
+
 Read the dependency map first, then the current work plan and only the task's relevant source sections. The map indexes the domain authorities and eight expanded planning references. Keep stable `Legends_Shattered_Frontier_*.md` filenames; expand in place rather than creating unnecessary version series. Shared registry names take precedence; proposed registry additions are not automatically merged.
 
 Use one writer per file. The coordinator owns the work plan, dependency map, shared planning integration, and this handoff. Character, Itemization, Quest, Dungeon, Raid, Security, LiveOps, Analytics and their part folders remain reserved by the dependency map for another session. Read them narrowly when needed; record owner requests and do not assign writes until ownership is explicitly released. Do not message that other session without human authorization.

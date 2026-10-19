@@ -1,0 +1,11 @@
+{
+  "units": "metres",
+  "dimensions": [
+    8.5,
+    6.5,
+    4.05
+  ],
+  "entrance_width_metres": 2.1,
+  "source": "Original facade geometry; existing CC0 plaster/wood/rock PBR scans",
+  "collision": "Existing supplied solid walls remain the collision shell; new exterior finish is cosmetic"
+}

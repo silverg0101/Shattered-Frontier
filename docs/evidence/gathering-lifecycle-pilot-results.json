@@ -1,0 +1,28 @@
+{
+  "status": "Passed",
+  "date": "2026-10-19",
+  "build": "Artifacts/ConstructionSandbox/gathering-lifecycle-build-02.log",
+  "buildSeconds": 7.23,
+  "focusedReport": "Artifacts/ConstructionSandbox/gathering-lifecycle-authority-02/Report/index.json",
+  "focusedPassed": 3,
+  "focusedFailed": 0,
+  "focusedWarnings": 0,
+  "network": "Artifacts/ConstructionSandbox/gathering-network-20261019-003847-157/results.json",
+  "checks": [
+    "actual timed harvest and plugin inventory/equipment",
+    "depleted resource remains unavailable before deadline",
+    "renewal restores captured charges without inventory grant",
+    "old replay and stale revision cannot harvest new generation",
+    "cancellation preserves committed appearance",
+    "repeat depletion and actor timer cleanup",
+    "refining station exclusion and revision exhaustion",
+    "existing two-client private gather/refine regression"
+  ],
+  "scope": "Session-only Win64. Renewal tested in authority fixture with shortened timer; real-client renewal/late join, rendered Blueprint art, production World clock, durability and Linux remain open. Hashes identify working-tree bytes at checkpoint.",
+  "sourceSHA256": {
+    "GameClient/Source/ShatteredFrontier/Public/Gathering/SFGatheringPilot.h": "291132029b295d7608ff0564cc61b93563d6138dd3314f3012ab8f2a1bc2688b",
+    "GameClient/Source/ShatteredFrontier/Private/Gathering/SFGatheringPilot.cpp": "8282e325690510821209206e7227c7afb424fc7a2f4cf393911dce0d843699f0",
+    "GameClient/Source/ShatteredFrontier/Private/Tests/SFGatheringPilotTests.cpp": "150d500d9ecd8134c0eed20034ce579a34af9c2fe6411c0020d3174a01490a4e",
+    "GameClient/Config/DefaultGame.ini": "612137f896ca29fa42328be2c25946f20c43033297f708341c0e4fa053f7d02e"
+  }
+}

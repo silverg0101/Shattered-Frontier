@@ -1,0 +1,36 @@
+[
+  {
+    "label": "Village instances - spruce_full_01",
+    "count": 235,
+    "position": [
+      -19211.050463315376,
+      9067.743961450838,
+      -46.56529284238921
+    ],
+    "authored_height_cm": -115.16668111868591,
+    "hit": "None"
+  },
+  {
+    "label": "Village instances - spruce_full_02",
+    "count": 206,
+    "position": [
+      -25261.347096425085,
+      10007.774243343534,
+      893.8946535356928
+    ],
+    "authored_height_cm": 867.8539045912812,
+    "hit": "None"
+  },
+  {
+    "label": "Village instances - SM_GroundCover_02",
+    "count": 0
+  },
+  {
+    "label": "Village instances - SM_GroundCover_03",
+    "count": 0
+  },
+  {
+    "label": "Village instances - SM_WheatGrass00_V2",
+    "count": 0
+  }
+]

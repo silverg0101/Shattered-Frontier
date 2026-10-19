@@ -1,0 +1,32 @@
+[
+  {
+    "mesh": "SM_PH_FloweringClump_0",
+    "source_object": "Plane.5122",
+    "dimensions_metres": [
+      1.6627042293548584,
+      1.4173967838287354,
+      0.39896324276924133
+    ],
+    "triangles": 51517
+  },
+  {
+    "mesh": "SM_PH_FloweringClump_1",
+    "source_object": "Plane.5143",
+    "dimensions_metres": [
+      0.6743122339248657,
+      0.6016054153442383,
+      0.3749196231365204
+    ],
+    "triangles": 32511
+  },
+  {
+    "mesh": "SM_PH_FloweringClump_2",
+    "source_object": "Plane.2197",
+    "dimensions_metres": [
+      0.34348613023757935,
+      0.27412617206573486,
+      0.26972049474716187
+    ],
+    "triangles": 17593
+  }
+]

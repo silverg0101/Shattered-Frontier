@@ -1,0 +1,31 @@
+{
+  "meshes": [
+    "SM_GreenlandsCottage_Structure",
+    "SM_GreenlandsCottage_Roof",
+    "SM_GreenlandsCottage_Joinery",
+    "SM_GreenlandsCottage_Dining"
+  ],
+  "lods": 4,
+  "house_replaced": 1,
+  "removed": [
+    "Concept cottage 1 - SM_GreenlandsCottage_Structure",
+    "Concept cottage 1 - SM_GreenlandsCottage_Roof",
+    "Concept cottage 1 - SM_GreenlandsCottage_Joinery",
+    "Concept cottage 1 - SM_GreenlandsCottage_Dining",
+    "Concept cottage window blooms",
+    "Concept cottage window blooms",
+    "Concept cottage window blooms",
+    "Concept cottage window blooms",
+    "Concept cottage window blooms",
+    "Concept cottage window blooms",
+    "Concept cottage window blooms",
+    "Concept cottage window blooms",
+    "Concept cottage window blooms",
+    "Concept cottage warm practical light",
+    "Concept cottage warm practical light",
+    "Concept cottage warm practical light"
+  ],
+  "collision": "complex as simple, static scenery",
+  "weathering": "exported per-corner vertex mask; matching Blender and UE colour multiply",
+  "pending": "Actual game collision and visual review"
+}
