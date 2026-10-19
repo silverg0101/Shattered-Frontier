@@ -1,0 +1,92 @@
+[
+  {
+    "asset": "grass_ground",
+    "channel": "Diffuse",
+    "file": "grass_ground_Diffuse.jpg",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/grass_ground/grass_ground_diff_1k.jpg",
+    "md5": "299047258586c762735b7284d3c662c3",
+    "page": "https://polyhaven.com/a/grass_ground",
+    "license": "CC0",
+    "license_url": "https://polyhaven.com/license"
+  },
+  {
+    "asset": "grass_ground",
+    "channel": "nor_dx",
+    "file": "grass_ground_nor_dx.jpg",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/grass_ground/grass_ground_nor_dx_1k.jpg",
+    "md5": "feeb2a1f7b2bb5a016836579a2b9db3d",
+    "page": "https://polyhaven.com/a/grass_ground",
+    "license": "CC0",
+    "license_url": "https://polyhaven.com/license"
+  },
+  {
+    "asset": "grass_ground",
+    "channel": "Rough",
+    "file": "grass_ground_Rough.jpg",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/grass_ground/grass_ground_rough_1k.jpg",
+    "md5": "2e6afca246cf6b80bdb53f46fe7e5ce5",
+    "page": "https://polyhaven.com/a/grass_ground",
+    "license": "CC0",
+    "license_url": "https://polyhaven.com/license"
+  },
+  {
+    "asset": "brown_mud_dry",
+    "channel": "Diffuse",
+    "file": "brown_mud_dry_Diffuse.jpg",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brown_mud_dry/brown_mud_dry_diff_1k.jpg",
+    "md5": "0c0ad82fec60f091690c69c23657cb74",
+    "page": "https://polyhaven.com/a/brown_mud_dry",
+    "license": "CC0",
+    "license_url": "https://polyhaven.com/license"
+  },
+  {
+    "asset": "brown_mud_dry",
+    "channel": "nor_dx",
+    "file": "brown_mud_dry_nor_dx.jpg",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brown_mud_dry/brown_mud_dry_nor_dx_1k.jpg",
+    "md5": "4f4f879a3616e9820e917623ae426f43",
+    "page": "https://polyhaven.com/a/brown_mud_dry",
+    "license": "CC0",
+    "license_url": "https://polyhaven.com/license"
+  },
+  {
+    "asset": "brown_mud_dry",
+    "channel": "Rough",
+    "file": "brown_mud_dry_Rough.jpg",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brown_mud_dry/brown_mud_dry_rough_1k.jpg",
+    "md5": "4e047a601af768eded6468faab4ec615",
+    "page": "https://polyhaven.com/a/brown_mud_dry",
+    "license": "CC0",
+    "license_url": "https://polyhaven.com/license"
+  },
+  {
+    "asset": "rock_face_03",
+    "channel": "Diffuse",
+    "file": "rock_face_03_Diffuse.jpg",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rock_face_03/rock_face_03_diff_1k.jpg",
+    "md5": "e4c34abb1aad5befe12754fad507147a",
+    "page": "https://polyhaven.com/a/rock_face_03",
+    "license": "CC0",
+    "license_url": "https://polyhaven.com/license"
+  },
+  {
+    "asset": "rock_face_03",
+    "channel": "nor_dx",
+    "file": "rock_face_03_nor_dx.jpg",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rock_face_03/rock_face_03_nor_dx_1k.jpg",
+    "md5": "ac27ba72082d122dc6c9b68bce352cbe",
+    "page": "https://polyhaven.com/a/rock_face_03",
+    "license": "CC0",
+    "license_url": "https://polyhaven.com/license"
+  },
+  {
+    "asset": "rock_face_03",
+    "channel": "Rough",
+    "file": "rock_face_03_Rough.jpg",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rock_face_03/rock_face_03_rough_1k.jpg",
+    "md5": "bbb2c7dafde3f81808fa7404d4527a56",
+    "page": "https://polyhaven.com/a/rock_face_03",
+    "license": "CC0",
+    "license_url": "https://polyhaven.com/license"
+  }
+]

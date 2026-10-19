@@ -1,0 +1,6 @@
+{
+  "wall_tile_metres": 2.0,
+  "plaster_tint_blend": 0.3,
+  "plaster_tints_linear_rgb": [[0.55,0.46,0.32],[0.48,0.43,0.32],[0.57,0.52,0.4],[0.46,0.43,0.34]],
+  "timber_tint_linear_rgb": [0.55,0.4,0.28]
+}

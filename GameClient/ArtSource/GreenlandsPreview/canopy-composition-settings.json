@@ -1,0 +1,16 @@
+{
+  "seed": 82163,
+  "maximum_replacements": 90,
+  "height_metres": [8.5, 12.0],
+  "road_clearance_metres": 9.0,
+  "building_clearance_metres": 12.0,
+  "minimum_spacing_metres": 4.5,
+  "patches_metres": [
+    [-174, -62, 24],
+    [-152, -101, 24],
+    [-133, -28, 26],
+    [-104, -93, 24],
+    [-78, 1, 24],
+    [-48, -48, 22]
+  ]
+}

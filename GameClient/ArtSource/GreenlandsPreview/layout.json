@@ -1,0 +1,6 @@
+{
+  "seed": 27,
+  "terrain_metres": 100,
+  "clearing_diameter_metres": 18,
+  "source": "Authored scenery; waystone reused from sibling GreenlandsWaystone package."
+}

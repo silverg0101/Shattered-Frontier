@@ -1,0 +1,111 @@
+{
+  "meshes": [
+    {
+      "mesh": "SM_PH_fern_02_00",
+      "lods": 1,
+      "source_triangles": 2384
+    },
+    {
+      "mesh": "SM_PH_fern_02_01",
+      "lods": 1,
+      "source_triangles": 2248
+    },
+    {
+      "mesh": "SM_PH_fern_02_02",
+      "lods": 1,
+      "source_triangles": 784
+    },
+    {
+      "mesh": "SM_PH_fern_02_03",
+      "lods": 1,
+      "source_triangles": 816
+    },
+    {
+      "mesh": "SM_PH_grass_medium_01_00",
+      "lods": 1,
+      "source_triangles": 310
+    },
+    {
+      "mesh": "SM_PH_grass_medium_01_01",
+      "lods": 1,
+      "source_triangles": 340
+    },
+    {
+      "mesh": "SM_PH_grass_medium_01_02",
+      "lods": 1,
+      "source_triangles": 653
+    },
+    {
+      "mesh": "SM_PH_grass_medium_01_03",
+      "lods": 1,
+      "source_triangles": 833
+    },
+    {
+      "mesh": "SM_PH_rock_moss_set_01_00",
+      "lods": 1,
+      "source_triangles": 11000
+    },
+    {
+      "mesh": "SM_PH_rock_moss_set_01_01",
+      "lods": 1,
+      "source_triangles": 10996
+    },
+    {
+      "mesh": "SM_PH_rock_moss_set_01_02",
+      "lods": 1,
+      "source_triangles": 5000
+    },
+    {
+      "mesh": "SM_PH_rock_moss_set_01_03",
+      "lods": 1,
+      "source_triangles": 10589
+    },
+    {
+      "mesh": "SM_PH_rock_moss_set_01_04",
+      "lods": 1,
+      "source_triangles": 16548
+    },
+    {
+      "mesh": "SM_PH_rock_moss_set_01_05",
+      "lods": 1,
+      "source_triangles": 8994
+    },
+    {
+      "mesh": "SM_PH_Broadleaf",
+      "lods": 1,
+      "source_triangles": 72999
+    },
+    {
+      "mesh": "SM_PH_tree_stump_02_00",
+      "lods": 1,
+      "source_triangles": 18000
+    },
+    {
+      "mesh": "SM_PH_wooden_crate_01_00",
+      "lods": 1,
+      "source_triangles": 5508
+    },
+    {
+      "mesh": "SM_PH_wine_barrel_01_00",
+      "lods": 1,
+      "source_triangles": 224
+    },
+    {
+      "mesh": "SM_PH_wine_barrel_01_01",
+      "lods": 1,
+      "source_triangles": 168
+    },
+    {
+      "mesh": "SM_PH_wine_barrel_01_02",
+      "lods": 1,
+      "source_triangles": 10204
+    },
+    {
+      "mesh": "SM_PH_wine_barrel_01_03",
+      "lods": 1,
+      "source_triangles": 224
+    }
+  ],
+  "materials": 9,
+  "textures": 30
+}

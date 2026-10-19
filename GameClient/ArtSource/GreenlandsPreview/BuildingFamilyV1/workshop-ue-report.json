@@ -1,0 +1,32 @@
+{
+  "site_metres": [
+    -77,
+    -55
+  ],
+  "yaw": 180,
+  "main_shell_metres": [
+    8,
+    6
+  ],
+  "meshes": [
+    "SM_GreenlandsWorkshop_Structure",
+    "SM_GreenlandsWorkshop_Roof",
+    "SM_GreenlandsWorkshop_Joinery",
+    "SM_GreenlandsWorkshop_Furnishings",
+    "SM_GreenlandsWorkshop_Approach"
+  ],
+  "lods": 4,
+  "removed": [
+    "Carpenter workshop - SM_GreenlandsWorkshop_Structure",
+    "Carpenter workshop - SM_GreenlandsWorkshop_Roof",
+    "Carpenter workshop - SM_GreenlandsWorkshop_Joinery",
+    "Carpenter workshop - SM_GreenlandsWorkshop_Furnishings",
+    "Carpenter workshop - SM_GreenlandsWorkshop_Approach",
+    "Workshop warm practical light",
+    "Workshop warm practical light",
+    "Workshop centred window bench"
+  ],
+  "canopy_instances_cleared": [],
+  "material_dependency": "/Game/Frontier/Environment/GreenlandsPreview/CottageConceptV1/Materials",
+  "pending": "Live collision, native pawn movement and visual review"
+}

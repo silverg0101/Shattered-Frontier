@@ -1,0 +1,7 @@
+{
+  "detail": "2m CC0 earth/gravel scan, two-scale variation, darker compacted wheel lanes, 6.5cm rut relief, crowned geometry, irregular shoulders, 3D pebbles and native verge foliage",
+  "source": "https://polyhaven.com/a/gravel_road",
+  "coverage": "Main continuous loop, both expansion corridors and cottage footpaths",
+  "physical_collision": "Complex road mesh collision follows crown and ruts above continuous terrain",
+  "verge_clumps": 3586
+}

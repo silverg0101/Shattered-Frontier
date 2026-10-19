@@ -1,0 +1,47 @@
+{
+  "frame": 2363,
+  "target": 4,
+  "phase": "capture",
+  "view": 3,
+  "reached": [
+    {
+      "xy_metres": [
+        -170,
+        -77.5
+      ],
+      "height_above_terrain_metres": 1.0268391163445036
+    },
+    {
+      "xy_metres": [
+        -145,
+        -65
+      ],
+      "height_above_terrain_metres": 1.0280186051370004
+    },
+    {
+      "xy_metres": [
+        -117.5,
+        -52.5
+      ],
+      "height_above_terrain_metres": 0.9987622380644552
+    },
+    {
+      "xy_metres": [
+        -90,
+        -40
+      ],
+      "height_above_terrain_metres": 1.0814999815095172
+    }
+  ],
+  "scope": "Arrival-to-settlement native pawn movement and visual review; no AI pathfinding, full-region or performance acceptance",
+  "walk_completed": true,
+  "walk_elapsed_seconds": 15.38,
+  "final_pawn_cm": [
+    -9031.694803879254,
+    -4014.4067648587975,
+    32.71595452563932
+  ],
+  "view_started": null,
+  "captured": true,
+  "elapsed_seconds": 95.73
+}

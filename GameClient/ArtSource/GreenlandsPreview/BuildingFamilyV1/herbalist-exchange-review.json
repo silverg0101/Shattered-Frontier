@@ -1,0 +1,102 @@
+[
+  {
+    "format": "fbx",
+    "meshes": [
+      {
+        "name": "SM_GreenlandsHerbalist_Approach",
+        "dimensions_metres": [
+          2.799999952316284,
+          1.2099997997283936,
+          0.30000001192092896
+        ],
+        "vertex_colour_layers": 1
+      },
+      {
+        "name": "SM_GreenlandsHerbalist_Furnishings",
+        "dimensions_metres": [
+          3.9300003051757812,
+          6.135000228881836,
+          3.3399999141693115
+        ],
+        "vertex_colour_layers": 1
+      },
+      {
+        "name": "SM_GreenlandsHerbalist_Joinery",
+        "dimensions_metres": [
+          6.760000228881836,
+          9.45823860168457,
+          5.3324995040893555
+        ],
+        "vertex_colour_layers": 1
+      },
+      {
+        "name": "SM_GreenlandsHerbalist_Roof",
+        "dimensions_metres": [
+          8.668581008911133,
+          9.249999046325684,
+          4.594935417175293
+        ],
+        "vertex_colour_layers": 1
+      },
+      {
+        "name": "SM_GreenlandsHerbalist_Structure",
+        "dimensions_metres": [
+          8.206033706665039,
+          8.440000534057617,
+          7.340000152587891
+        ],
+        "vertex_colour_layers": 1
+      }
+    ]
+  },
+  {
+    "format": "glb",
+    "meshes": [
+      {
+        "name": "SM_GreenlandsHerbalist_Approach",
+        "dimensions_metres": [
+          2.799999952316284,
+          1.2099997997283936,
+          0.30000001192092896
+        ],
+        "vertex_colour_layers": 2
+      },
+      {
+        "name": "SM_GreenlandsHerbalist_Furnishings",
+        "dimensions_metres": [
+          3.9300003051757812,
+          6.135000228881836,
+          3.3399999141693115
+        ],
+        "vertex_colour_layers": 2
+      },
+      {
+        "name": "SM_GreenlandsHerbalist_Joinery",
+        "dimensions_metres": [
+          6.760000228881836,
+          9.45823860168457,
+          5.3324995040893555
+        ],
+        "vertex_colour_layers": 2
+      },
+      {
+        "name": "SM_GreenlandsHerbalist_Roof",
+        "dimensions_metres": [
+          8.668581008911133,
+          9.249999046325684,
+          4.594935417175293
+        ],
+        "vertex_colour_layers": 2
+      },
+      {
+        "name": "SM_GreenlandsHerbalist_Structure",
+        "dimensions_metres": [
+          8.206033706665039,
+          8.440000534057617,
+          7.340000152587891
+        ],
+        "vertex_colour_layers": 2
+      }
+    ]
+  }
+]

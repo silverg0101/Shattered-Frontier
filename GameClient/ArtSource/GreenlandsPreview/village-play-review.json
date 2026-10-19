@@ -1,0 +1,16 @@
+{
+  "frame": 1307,
+  "target": 5,
+  "phase": "meadow_detail",
+  "phase_frame": 1196,
+  "walk_distance_metres": 121.31210913446702,
+  "clearance": "passed live physics with a blocking positive control",
+  "walk_completed": true,
+  "final_pawn_location_cm": [
+    -10435.290929200615,
+    -5900.8777828756565,
+    30.715957543189404
+  ],
+  "elapsed_seconds": 42.11,
+  "walk_frame_median_ms": 28.6
+}

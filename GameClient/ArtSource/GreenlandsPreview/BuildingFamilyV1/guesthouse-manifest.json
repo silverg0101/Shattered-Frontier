@@ -1,0 +1,197 @@
+{
+  "units": "metres",
+  "front": "-Y",
+  "main_shell_metres": [
+    8,
+    6
+  ],
+  "porch_extension_metres": 1.55,
+  "ridge_metres": 7.8,
+  "door_clear_metres": [
+    2.1,
+    2.3
+  ],
+  "reference_sha256": "e94212854f2e555847a32db18544c4d319a87bfbda8ebda586ba1c7def941525",
+  "materials": [
+    {
+      "name": "Cottage_Timber",
+      "source": "fine_grained_wood",
+      "tile_metres": 0.6,
+      "uv_interior_crop": false
+    },
+    {
+      "name": "Cottage_LimePlaster",
+      "source": "plastered_wall_02",
+      "tile_metres": 2.2,
+      "uv_interior_crop": true
+    },
+    {
+      "name": "Cottage_ClayTiles",
+      "source": "clay_roof_tiles_02",
+      "tile_metres": 1.5,
+      "uv_interior_crop": false
+    },
+    {
+      "name": "Cottage_Fieldstone",
+      "source": "medieval_wall_02",
+      "tile_metres": 2,
+      "uv_interior_crop": false
+    },
+    {
+      "name": "Cottage_ForgedIron",
+      "colour_linear": [
+        0.035,
+        0.025,
+        0.016
+      ],
+      "roughness": 0.65,
+      "metallic": 0.85,
+      "emission": null
+    },
+    {
+      "name": "Cottage_OldGlass",
+      "colour_linear": [
+        0.025,
+        0.045,
+        0.055
+      ],
+      "roughness": 0.2,
+      "metallic": 0,
+      "emission": [
+        0.005,
+        0.003,
+        0.001
+      ]
+    },
+    {
+      "name": "Cottage_PlanterSoil",
+      "colour_linear": [
+        0.07,
+        0.045,
+        0.022
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null
+    },
+    {
+      "name": "Cottage_LanternGlow",
+      "colour_linear": [
+        0.7,
+        0.3,
+        0.055
+      ],
+      "roughness": 0.3,
+      "metallic": 0,
+      "emission": [
+        2.5,
+        1.1,
+        0.22
+      ]
+    },
+    {
+      "name": "Cottage_Earthenware",
+      "colour_linear": [
+        0.19,
+        0.075,
+        0.035
+      ],
+      "roughness": 0.65,
+      "metallic": 0,
+      "emission": null
+    },
+    {
+      "name": "Cottage_Linen",
+      "colour_linear": [
+        0.34,
+        0.29,
+        0.19
+      ],
+      "roughness": 0.96,
+      "metallic": 0,
+      "emission": null
+    },
+    {
+      "name": "Cottage_Charcoal",
+      "colour_linear": [
+        0.012,
+        0.009,
+        0.007
+      ],
+      "roughness": 0.98,
+      "metallic": 0,
+      "emission": null
+    },
+    {
+      "name": "Cottage_HearthEmber",
+      "colour_linear": [
+        0.14,
+        0.025,
+        0.004
+      ],
+      "roughness": 0.8,
+      "metallic": 0,
+      "emission": [
+        2.8,
+        0.22,
+        0.012
+      ]
+    }
+  ],
+  "meshes": [
+    {
+      "mesh": "SM_GreenlandsGuesthouse_Structure",
+      "triangles": 12332,
+      "dimensions_metres": [
+        8.4399995803833,
+        7.569999694824219,
+        8.59000015258789
+      ]
+    },
+    {
+      "mesh": "SM_GreenlandsGuesthouse_Roof",
+      "triangles": 61456,
+      "dimensions_metres": [
+        9.217000007629395,
+        8.368038177490234,
+        5.158001899719238
+      ]
+    },
+    {
+      "mesh": "SM_GreenlandsGuesthouse_Joinery",
+      "triangles": 8064,
+      "dimensions_metres": [
+        9.280000686645508,
+        7.516925811767578,
+        6.743239402770996
+      ]
+    },
+    {
+      "mesh": "SM_GreenlandsGuesthouse_Furnishings",
+      "triangles": 8724,
+      "dimensions_metres": [
+        7.194999694824219,
+        4.809999942779541,
+        4.390000343322754
+      ]
+    },
+    {
+      "mesh": "SM_GreenlandsGuesthouse_Approach",
+      "triangles": 108,
+      "dimensions_metres": [
+        2.299999952316284,
+        0.9600000381469727,
+        0.28999999165534973
+      ]
+    }
+  ],
+  "status": "Prototype; source render, exchange and game review pending",
+  "blender": "5.2.2 LTS",
+  "room_descriptor_sha256": "db3d9c8af9dcd50e4034a2a5c62ac4665f54d4bd9bedab9e7458e38a37cfed4d",
+  "method": "Original measured geometry from generated family concept C; shared CC0 PBR; independently authored furniture/porch",
+  "assumptions": [
+    "Hero governs inconsistent generated rear view",
+    "Upper deck, paired dormer valleys and rear guarded stair flight are measured authoring inferences",
+    "Environment scenery only; no inn service or inventory implementation"
+  ]
+}

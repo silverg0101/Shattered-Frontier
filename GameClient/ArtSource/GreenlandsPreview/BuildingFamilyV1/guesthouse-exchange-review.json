@@ -1,0 +1,102 @@
+[
+  {
+    "format": "fbx",
+    "meshes": [
+      {
+        "name": "SM_GreenlandsGuesthouse_Approach",
+        "dimensions_metres": [
+          2.299999952316284,
+          0.9600000381469727,
+          0.28999999165534973
+        ],
+        "vertex_colour_layers": 1
+      },
+      {
+        "name": "SM_GreenlandsGuesthouse_Furnishings",
+        "dimensions_metres": [
+          7.194999694824219,
+          4.809999942779541,
+          4.390000343322754
+        ],
+        "vertex_colour_layers": 1
+      },
+      {
+        "name": "SM_GreenlandsGuesthouse_Joinery",
+        "dimensions_metres": [
+          9.280000686645508,
+          7.516925811767578,
+          6.743239402770996
+        ],
+        "vertex_colour_layers": 1
+      },
+      {
+        "name": "SM_GreenlandsGuesthouse_Roof",
+        "dimensions_metres": [
+          9.217000007629395,
+          8.368038177490234,
+          5.158001899719238
+        ],
+        "vertex_colour_layers": 1
+      },
+      {
+        "name": "SM_GreenlandsGuesthouse_Structure",
+        "dimensions_metres": [
+          8.4399995803833,
+          7.569999694824219,
+          8.59000015258789
+        ],
+        "vertex_colour_layers": 1
+      }
+    ]
+  },
+  {
+    "format": "glb",
+    "meshes": [
+      {
+        "name": "SM_GreenlandsGuesthouse_Approach",
+        "dimensions_metres": [
+          2.299999952316284,
+          0.9600000381469727,
+          0.28999999165534973
+        ],
+        "vertex_colour_layers": 2
+      },
+      {
+        "name": "SM_GreenlandsGuesthouse_Furnishings",
+        "dimensions_metres": [
+          7.194999694824219,
+          4.809999942779541,
+          4.390000343322754
+        ],
+        "vertex_colour_layers": 2
+      },
+      {
+        "name": "SM_GreenlandsGuesthouse_Joinery",
+        "dimensions_metres": [
+          9.280000686645508,
+          7.516925811767578,
+          6.743239402770996
+        ],
+        "vertex_colour_layers": 2
+      },
+      {
+        "name": "SM_GreenlandsGuesthouse_Roof",
+        "dimensions_metres": [
+          9.217000007629395,
+          8.368038177490234,
+          5.158001899719238
+        ],
+        "vertex_colour_layers": 2
+      },
+      {
+        "name": "SM_GreenlandsGuesthouse_Structure",
+        "dimensions_metres": [
+          8.4399995803833,
+          7.569999694824219,
+          8.59000015258789
+        ],
+        "vertex_colour_layers": 2
+      }
+    ]
+  }
+]

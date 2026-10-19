@@ -1,0 +1,298 @@
+[
+  {
+    "mesh": "SM_PH_fern_02_00",
+    "asset": "fern_02",
+    "triangles": 2384,
+    "dimensions_metres": [
+      0.9897474050521851,
+      0.893689751625061,
+      0.427694708108902
+    ],
+    "materials": [
+      "fern_02"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_fern_02_01",
+    "asset": "fern_02",
+    "triangles": 2248,
+    "dimensions_metres": [
+      0.8743258118629456,
+      0.7652256488800049,
+      0.3490203619003296
+    ],
+    "materials": [
+      "fern_02"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_fern_02_02",
+    "asset": "fern_02",
+    "triangles": 784,
+    "dimensions_metres": [
+      0.5519406199455261,
+      0.6134210824966431,
+      0.28680354356765747
+    ],
+    "materials": [
+      "fern_02"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_fern_02_03",
+    "asset": "fern_02",
+    "triangles": 816,
+    "dimensions_metres": [
+      0.5727821588516235,
+      0.5932782888412476,
+      0.2130875587463379
+    ],
+    "materials": [
+      "fern_02"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_grass_medium_01_00",
+    "asset": "grass_medium_01",
+    "triangles": 310,
+    "dimensions_metres": [
+      0.14994847774505615,
+      0.13478967547416687,
+      0.28566300868988037
+    ],
+    "materials": [
+      "grass_medium_01"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_grass_medium_01_01",
+    "asset": "grass_medium_01",
+    "triangles": 340,
+    "dimensions_metres": [
+      0.1530308723449707,
+      0.1281569004058838,
+      0.2362561821937561
+    ],
+    "materials": [
+      "grass_medium_01"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_grass_medium_01_02",
+    "asset": "grass_medium_01",
+    "triangles": 653,
+    "dimensions_metres": [
+      0.16595670580863953,
+      0.18989211320877075,
+      0.09989527612924576
+    ],
+    "materials": [
+      "grass_medium_01"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_grass_medium_01_03",
+    "asset": "grass_medium_01",
+    "triangles": 833,
+    "dimensions_metres": [
+      0.1848401129245758,
+      0.1623130440711975,
+      0.14042668044567108
+    ],
+    "materials": [
+      "grass_medium_01"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_rock_moss_set_01_00",
+    "asset": "rock_moss_set_01",
+    "triangles": 11000,
+    "dimensions_metres": [
+      2.2376322746276855,
+      3.368804454803467,
+      1.4726980924606323
+    ],
+    "materials": [
+      "rock_moss_set_01"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_rock_moss_set_01_01",
+    "asset": "rock_moss_set_01",
+    "triangles": 10996,
+    "dimensions_metres": [
+      2.6553807258605957,
+      3.2637205123901367,
+      1.2619911432266235
+    ],
+    "materials": [
+      "rock_moss_set_01"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_rock_moss_set_01_02",
+    "asset": "rock_moss_set_01",
+    "triangles": 5000,
+    "dimensions_metres": [
+      2.1085824966430664,
+      2.079585552215576,
+      1.0996944904327393
+    ],
+    "materials": [
+      "rock_moss_set_01"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_rock_moss_set_01_03",
+    "asset": "rock_moss_set_01",
+    "triangles": 10589,
+    "dimensions_metres": [
+      2.127629280090332,
+      1.9647413492202759,
+      1.768319845199585
+    ],
+    "materials": [
+      "rock_moss_set_01"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_rock_moss_set_01_04",
+    "asset": "rock_moss_set_01",
+    "triangles": 16548,
+    "dimensions_metres": [
+      1.8173227310180664,
+      2.998663902282715,
+      1.2054507732391357
+    ],
+    "materials": [
+      "rock_moss_set_01"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_rock_moss_set_01_05",
+    "asset": "rock_moss_set_01",
+    "triangles": 8994,
+    "dimensions_metres": [
+      2.1259822845458984,
+      2.757303237915039,
+      1.261852741241455
+    ],
+    "materials": [
+      "rock_moss_set_01"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_tree_stump_02_00",
+    "asset": "tree_stump_02",
+    "triangles": 18000,
+    "dimensions_metres": [
+      1.5218572616577148,
+      1.392386555671692,
+      0.5228903293609619
+    ],
+    "materials": [
+      "tree_stump_02"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_wooden_crate_01_00",
+    "asset": "wooden_crate_01",
+    "triangles": 5508,
+    "dimensions_metres": [
+      0.8252729177474976,
+      0.40831026434898376,
+      0.3219083845615387
+    ],
+    "materials": [
+      "wooden_crate_01"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_wine_barrel_01_00",
+    "asset": "wine_barrel_01",
+    "triangles": 224,
+    "dimensions_metres": [
+      0.5787233114242554,
+      0.5788412094116211,
+      0.015285611152648926
+    ],
+    "materials": [
+      "wine_barrel_01"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_wine_barrel_01_01",
+    "asset": "wine_barrel_01",
+    "triangles": 168,
+    "dimensions_metres": [
+      0.05244750156998634,
+      0.04217270016670227,
+      0.052448570728302
+    ],
+    "materials": [
+      "wine_barrel_01"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_wine_barrel_01_02",
+    "asset": "wine_barrel_01",
+    "triangles": 10204,
+    "dimensions_metres": [
+      0.7419015169143677,
+      0.7419055700302124,
+      0.8712633848190308
+    ],
+    "materials": [
+      "wine_barrel_01"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_wine_barrel_01_03",
+    "asset": "wine_barrel_01",
+    "triangles": 224,
+    "dimensions_metres": [
+      0.5787234306335449,
+      0.5788412690162659,
+      0.015285670757293701
+    ],
+    "materials": [
+      "wine_barrel_01"
+    ],
+    "simple_trunk_collision": false
+  },
+  {
+    "mesh": "SM_PH_Broadleaf",
+    "asset": "tree_small_02",
+    "triangles": 248999,
+    "dimensions_metres": [
+      2.921132802963257,
+      4.293971061706543,
+      4.5641913414001465
+    ],
+    "materials": [
+      "tree_small_02_trunk",
+      "tree_small_02_branches",
+      "tree_small_02_leaves"
+    ],
+    "simple_trunk_collision": true
+  }
+]

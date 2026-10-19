@@ -1,0 +1,72 @@
+{
+  "meadow": "Four full CC0 scanned clumps replace isolated stems; additional low meadow beside the arrival road",
+  "broadleaf_source_triangles": 248999,
+  "broadleaf_positions_metres": [
+    [
+      -128,
+      -39
+    ],
+    [
+      -117,
+      -13
+    ],
+    [
+      -97,
+      -7
+    ],
+    [
+      -66,
+      -10
+    ],
+    [
+      -55,
+      -34
+    ],
+    [
+      -70,
+      -79
+    ],
+    [
+      -103,
+      -83
+    ],
+    [
+      -127,
+      -83
+    ],
+    [
+      -151,
+      -48
+    ],
+    [
+      -162,
+      -91
+    ],
+    [
+      -192,
+      -66
+    ],
+    [
+      -202,
+      -100
+    ],
+    [
+      -119,
+      -94
+    ],
+    [
+      -140,
+      -36
+    ],
+    [
+      -74,
+      -94
+    ],
+    [
+      -62,
+      -65
+    ]
+  ],
+  "collision": "Ground plants do not block movement; native tree trunk collision retained",
+  "source": "https://polyhaven.com/a/grass_medium_01"
+}

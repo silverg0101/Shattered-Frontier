@@ -1,0 +1,92 @@
+[
+  {
+    "format": "fbx",
+    "meshes": [
+      {
+        "name": "SM_GreenlandsCottage_Dining",
+        "dimensions_metres": [
+          3.200000047683716,
+          2.4800000190734863,
+          3.3449997901916504
+        ],
+        "materials": 12,
+        "vertex_colour_layers": 1
+      },
+      {
+        "name": "SM_GreenlandsCottage_Joinery",
+        "dimensions_metres": [
+          9.32420539855957,
+          7.728416919708252,
+          5.592499732971191
+        ],
+        "materials": 12,
+        "vertex_colour_layers": 1
+      },
+      {
+        "name": "SM_GreenlandsCottage_Roof",
+        "dimensions_metres": [
+          9.216999053955078,
+          7.445849418640137,
+          7.700000286102295
+        ],
+        "materials": 12,
+        "vertex_colour_layers": 1
+      },
+      {
+        "name": "SM_GreenlandsCottage_Structure",
+        "dimensions_metres": [
+          8.460000038146973,
+          6.469999313354492,
+          7.168747901916504
+        ],
+        "materials": 12,
+        "vertex_colour_layers": 1
+      }
+    ]
+  },
+  {
+    "format": "glb",
+    "meshes": [
+      {
+        "name": "SM_GreenlandsCottage_Dining",
+        "dimensions_metres": [
+          3.200000047683716,
+          2.4800000190734863,
+          3.3449997901916504
+        ],
+        "materials": 4,
+        "vertex_colour_layers": 2
+      },
+      {
+        "name": "SM_GreenlandsCottage_Joinery",
+        "dimensions_metres": [
+          9.32420539855957,
+          7.728416919708252,
+          5.592499732971191
+        ],
+        "materials": 7,
+        "vertex_colour_layers": 2
+      },
+      {
+        "name": "SM_GreenlandsCottage_Roof",
+        "dimensions_metres": [
+          9.216999053955078,
+          7.445849418640137,
+          7.700000286102295
+        ],
+        "materials": 3,
+        "vertex_colour_layers": 2
+      },
+      {
+        "name": "SM_GreenlandsCottage_Structure",
+        "dimensions_metres": [
+          8.460000038146973,
+          6.469999313354492,
+          7.168747901916504
+        ],
+        "materials": 3,
+        "vertex_colour_layers": 2
+      }
+    ]
+  }
+]

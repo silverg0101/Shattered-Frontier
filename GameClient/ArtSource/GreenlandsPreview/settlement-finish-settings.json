@@ -1,0 +1,8 @@
+{
+  "seed": 72036,
+  "woodland_clusters": 26,
+  "ferns_per_cluster": 28,
+  "woodland_bounds_metres": [-215, -115, -55, 15],
+  "tree_height_metres": [3.0, 4.7],
+  "fern_height_metres": [0.2, 0.45]
+}
