@@ -168,7 +168,9 @@ It writes one batch file under `docs/art-templates/asset-lists/`, in the existin
 
 **Licensing:** licensed Fab or Megascans assets never fill a role in the report. They are read-only and may not be restorable on every machine.
 
-**Exit:** the report for the Greenlands look profile names the current gaps: tall pines, young broadleaf, saplings, large moss boulders, bedrock slabs, cobble scatter, litter, forest-floor and bedrock materials, broad-leaf herbs, moss patches and backdrop domes. Re-running it after an asset lands removes that row.
+**First instance (2026-10-19):** `GameClient/ArtSource/Greenlands/missing_assets.py` writes [environment-greenlands-silverbrook-42](art-templates/asset-lists/environment-greenlands-silverbrook-42.md) and its catalog row. It has 30 rows: 12 environment gaps and 18 Silverbrook buildings. The building library is the look profile's `buildings` map; today it covers the cottage, workshop and market stall. Buildings are rated on their own scale: unique landmarks, townhouses and cottages are P1, and the rest are P2. The script asserts that the gaps named below are present.
+
+**Exit (met 2026-10-19):** the report for the Greenlands look profile names the current gaps: tall pines, young broadleaf, saplings, large moss boulders, bedrock slabs, cobble scatter, litter, forest-floor and bedrock materials, broad-leaf herbs, moss patches and backdrop domes. Re-running it after an asset lands removes that row.
 
 ## Deferred
 

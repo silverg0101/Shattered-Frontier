@@ -1,0 +1,63 @@
+{
+  "asset": "SilverbrookCottage1",
+  "reference": {
+    "file": "Cottage-1-reference.png",
+    "sha256": "064fb9c337bee3a458163ffd698996ec6d615e5e8fa853755bac3cf8ac52fb2b"
+  },
+  "blender": "5.1.1",
+  "generator": "build_cottage1.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    7.654,
+    7.453,
+    6.53
+  ],
+  "meshes": {
+    "SM_SBCottage1_Masonry": {
+      "triangles": 1228,
+      "materials": [
+        "SB_Ashlar"
+      ]
+    },
+    "SM_SBCottage1_Plaster": {
+      "triangles": 580,
+      "materials": [
+        "SB_LimePlaster"
+      ]
+    },
+    "SM_SBCottage1_Timber": {
+      "triangles": 3500,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBCottage1_Roof": {
+      "triangles": 44516,
+      "materials": [
+        "SB_Slate",
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBCottage1_Details": {
+      "triangles": 10416,
+      "materials": [
+        "SB_LitGlass",
+        "SB_LeadCame",
+        "SB_ChimneyPot",
+        "SB_PaintedShutter",
+        "SB_ForgedIron",
+        "SB_PlanterSoil",
+        "SB_DoorBoards",
+        "SB_LanternGlow"
+      ]
+    }
+  },
+  "triangles": 60240,
+  "materials": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "outputs": [
+    "SilverbrookCottage1.blend",
+    "SilverbrookCottage1.glb",
+    "SilverbrookCottage1.fbx"
+  ]
+}

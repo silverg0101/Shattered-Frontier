@@ -6,6 +6,12 @@
     "character": "Rolling, rocky upland: soil hollows with grass, drier rises with exposed bedrock, rounded granite domes and ridges in the distance.",
     "rules": ["Slope above 30 degrees exposes bedrock (rock material plus slab outcrops); below 15 degrees holds soil and grass.", "Rises and ridge lines carry pines; hollows and stream sides carry young broadleaf.", "Paths and dry ground show stone and needle/leaf litter, not grass.", "Moss grows on the upward faces of boulders and slabs, never on their undersides."]
   },
+  "buildings": {
+    "_about": "Biome building library for the missing-asset report: settlement building name (definition section 8 or layout type) -> project meshes that fill it today. Licensed Fab or Megascans meshes don't count.",
+    "Cottage": ["SM_FootholdCottage", "SM_GreenlandsCottage_Structure", "SM_GreenlandsCottage_Roof", "SM_GreenlandsCottage_Joinery"],
+    "Workshop": ["SM_GreenlandsWorkshop_Structure", "SM_GreenlandsWorkshop_Roof", "SM_GreenlandsWorkshop_Joinery"],
+    "Market stall": ["SM_MarketStall"]
+  },
   "layers": [
     {
       "layer": "canopy",

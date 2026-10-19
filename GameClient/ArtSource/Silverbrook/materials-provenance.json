@@ -1,0 +1,206 @@
+[
+  {
+    "asset": "blue_painted_planks",
+    "page": "https://polyhaven.com/a/blue_painted_planks",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "files": [
+      {
+        "file": "Textures/blue_painted_planks_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/blue_painted_planks/blue_painted_planks_diff_2k.jpg",
+        "md5": "3478eb01f0ca0828b866c8fda5aff86f"
+      },
+      {
+        "file": "Textures/blue_painted_planks_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/blue_painted_planks/blue_painted_planks_nor_gl_2k.jpg",
+        "md5": "4e3eff6e8ca693a7e7603b3b86242a00"
+      },
+      {
+        "file": "Textures/blue_painted_planks_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/blue_painted_planks/blue_painted_planks_rough_2k.jpg",
+        "md5": "56dfc7d873264c67848c14dd75e92b6e"
+      }
+    ]
+  },
+  {
+    "asset": "grey_roof_tiles_02",
+    "page": "https://polyhaven.com/a/grey_roof_tiles_02",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_size_metres": [
+      1.5,
+      1.5
+    ],
+    "files": [
+      {
+        "file": "Textures/grey_roof_tiles_02_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/grey_roof_tiles_02/grey_roof_tiles_02_diff_2k.jpg",
+        "md5": "2f49aaebd1b68926e76ddce57d27b6ff"
+      },
+      {
+        "file": "Textures/grey_roof_tiles_02_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/grey_roof_tiles_02/grey_roof_tiles_02_nor_gl_2k.jpg",
+        "md5": "ec60f08e8819bfac34b71e04d354459b"
+      },
+      {
+        "file": "Textures/grey_roof_tiles_02_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/grey_roof_tiles_02/grey_roof_tiles_02_rough_2k.jpg",
+        "md5": "9562363f4f595fdf26cd3c162e31a3c1"
+      }
+    ]
+  },
+  {
+    "asset": "lichen_rock",
+    "page": "https://polyhaven.com/a/lichen_rock",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rico Cilliers": "All"
+    },
+    "physical_size_metres": [
+      2.0,
+      2.0
+    ],
+    "files": [
+      {
+        "file": "Textures/lichen_rock_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/lichen_rock/lichen_rock_diff_2k.jpg",
+        "md5": "5625c90a7b55058b7d89e180376a7cda"
+      },
+      {
+        "file": "Textures/lichen_rock_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/lichen_rock/lichen_rock_nor_gl_2k.jpg",
+        "md5": "801690ee8bbc1d4aa2f16af2d49acc26"
+      },
+      {
+        "file": "Textures/lichen_rock_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/lichen_rock/lichen_rock_rough_2k.jpg",
+        "md5": "0f6970ee1ff05b053b58cf9ad2451c15"
+      }
+    ]
+  },
+  {
+    "asset": "old_planks_02",
+    "page": "https://polyhaven.com/a/old_planks_02",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_size_metres": [
+      2.0,
+      2.0
+    ],
+    "files": [
+      {
+        "file": "Textures/old_planks_02_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/old_planks_02/old_planks_02_diff_2k.jpg",
+        "md5": "62c91ee8701e53a2d81fc070404f3adc"
+      },
+      {
+        "file": "Textures/old_planks_02_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/old_planks_02/old_planks_02_nor_gl_2k.jpg",
+        "md5": "60680a637cc71deeb50ddcd8ce67e62d"
+      },
+      {
+        "file": "Textures/old_planks_02_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/old_planks_02/old_planks_02_rough_2k.jpg",
+        "md5": "d0b360ed33e8a747ebc00b5228f0a426"
+      }
+    ]
+  },
+  {
+    "asset": "patterned_clay_plaster",
+    "page": "https://polyhaven.com/a/patterned_clay_plaster",
+    "license": "CC0-1.0",
+    "authors": {
+      "Amal Kumar": "All"
+    },
+    "physical_size_metres": [
+      2.0,
+      2.0
+    ],
+    "files": [
+      {
+        "file": "Textures/patterned_clay_plaster_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/patterned_clay_plaster/patterned_clay_plaster_diff_2k.jpg",
+        "md5": "b04c26c55ed69c51176e70a38f1fbe41"
+      },
+      {
+        "file": "Textures/patterned_clay_plaster_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/patterned_clay_plaster/patterned_clay_plaster_nor_gl_2k.jpg",
+        "md5": "f1989cdbd02acf691488e0fb813e1cc3"
+      },
+      {
+        "file": "Textures/patterned_clay_plaster_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/patterned_clay_plaster/patterned_clay_plaster_rough_2k.jpg",
+        "md5": "9b1bffcbb288210024d9a6a260d8076f"
+      }
+    ]
+  },
+  {
+    "asset": "stone_wall_04",
+    "page": "https://polyhaven.com/a/stone_wall_04",
+    "license": "CC0-1.0",
+    "authors": {
+      "Amal Kumar": "All"
+    },
+    "physical_size_metres": [
+      1.7000000476837158,
+      1.7000000476837158
+    ],
+    "files": [
+      {
+        "file": "Textures/stone_wall_04_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/stone_wall_04/stone_wall_04_diff_2k.jpg",
+        "md5": "d51ffc29d4779a0b17560312431fda0c"
+      },
+      {
+        "file": "Textures/stone_wall_04_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/stone_wall_04/stone_wall_04_nor_gl_2k.jpg",
+        "md5": "1b97e2e76f49bb8e6e1a9e4f394faa14"
+      },
+      {
+        "file": "Textures/stone_wall_04_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/stone_wall_04/stone_wall_04_rough_2k.jpg",
+        "md5": "d7553a475025e0c7e94b3860d74184fa"
+      }
+    ]
+  },
+  {
+    "asset": "weathered_brown_planks",
+    "page": "https://polyhaven.com/a/weathered_brown_planks",
+    "license": "CC0-1.0",
+    "authors": {
+      "Dimitrios Savva": "Photography",
+      "Rico Cilliers": "Processing"
+    },
+    "physical_size_metres": [
+      1.7999999523162842,
+      1.7999999523162842
+    ],
+    "files": [
+      {
+        "file": "Textures/weathered_brown_planks_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/weathered_brown_planks/weathered_brown_planks_diff_2k.jpg",
+        "md5": "31317a56abbee4fbf7018d9f41180827"
+      },
+      {
+        "file": "Textures/weathered_brown_planks_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/weathered_brown_planks/weathered_brown_planks_nor_gl_2k.jpg",
+        "md5": "d6720855901b27dbdd209942f327b795"
+      },
+      {
+        "file": "Textures/weathered_brown_planks_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/weathered_brown_planks/weathered_brown_planks_rough_2k.jpg",
+        "md5": "4dd58553f1d0f76bf883b71aa9fc89ea"
+      }
+    ]
+  }
+]
