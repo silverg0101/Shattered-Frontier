@@ -51,10 +51,10 @@ Lessons can submit Hunting practice under normal gain/anti-macro rules but grant
 | Basic training complete | Basic attack and follow/stay/recall/engage/disengage. |
 | 10 | Family signature A. |
 | 30 | Family signature B. |
-| 50 | Choose one of two family passives; one active. |
-| 70 | Upgrade replacing an earlier family technique. |
+| 50 | Milestone choice: one active passive from the family pool (2–3 options). |
+| 70 | Milestone choice: one active upgrade from the family pool (2–3 options), each replacing a different earlier technique. |
 
-High-level captures may train all already-eligible techniques in sequence without replaying low-level XP. Swap the family passive at a rest area out of combat, retaining unlocks. During level sync, disable techniques above effective level while preserving training. These gates and the family proficiency-to-combat-skill mapping are release content, not new player skills.
+High-level captures may train all already-eligible techniques in sequence without replaying low-level XP. At levels 50 and 70 the player chooses which unlocked option is active. Each option needs its own coached first use; unlocks are kept, and only one option per milestone is active. The active choice changes **only at a rest area** (Stablekeeper or ordinary rest area), out of combat, with the creature not engaged, injured-pending or bound to a pending operation; there is no field, instance or in-combat swap and no fee. Instance/PvP admission snapshots the active choice. Every option in a pool fits the same combat budget, so a choice changes playstyle, not total power. Pools and their options are release content per family ([Abilities and Animation §4e](Legends_Shattered_Frontier_Companion_Abilities_and_Animation_v0.1.md#e-milestone-choice-pools)). During level sync, disable techniques above effective level while preserving training. These gates and the family proficiency-to-combat-skill mapping are release content, not new player skills.
 
 | Family | Shared kit direction | Riding |
 | --- | --- | --- |

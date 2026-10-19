@@ -1,0 +1,3 @@
+{"schema_version":1,"status":"rejected","stage_attempt":"rig reopened 2026-10-19, attempt 1/3",
+ "reason":"Bone heat on a 12mm voxel body proxy moved 52% of reweighted vertices to a different dominant bone (torso to shoulder/hip bones that the gait IK swings). Body p99 edge change 27.4% -> 537%, hair-root gap 0.4 -> 23.3mm under the same frozen WalkPilot-v003 motion.",
+ "kept":"weights.npz and skin-report.json for evidence; candidate blend deleted (rejected, reproducible from tool/profile)."}

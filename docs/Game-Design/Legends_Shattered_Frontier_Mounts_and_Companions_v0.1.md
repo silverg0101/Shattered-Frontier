@@ -8,6 +8,7 @@ Status: Design only; not implemented or balance-validated. User direction is ado
 | --- | --- |
 | [Gameplay details](Companions/Legends_Shattered_Frontier_Companion_Gameplay_Details_v0.1.md) | Concrete capture/training loop, Hunting milestones, Stable gold prices, family/rarity content, two-pet combat budget, mounted combat, XP eligibility/curve, injury/recovery, UI and complete typed controls. |
 | [Integration and delivery](Companions/Legends_Shattered_Frontier_Companion_Integration_and_Delivery_v0.1.md) | Selected durable writer, records/constraints, proposed RPCs/events, capture/payment commits, condition and handoff fencing, lifecycle participation, playable packets CMP-01–06 and targeted verification. |
+| [Abilities and animation](Companions/Legends_Shattered_Frontier_Companion_Abilities_and_Animation_v0.1.md) | Ability sources by family/species/rarity/trait, ability-to-animation contract, required pet/mount/lifecycle/signature clip sets, Voidreign legendary Rift Recall and animation completeness gates. |
 
 This entry summarizes the feature; the parts own the detailed rules and resolve the initial open choices. Breeding, creature trade/equipment, hunger, permanent death and flight are outside initial delivery. No crowns/real-money purchase is included.
 

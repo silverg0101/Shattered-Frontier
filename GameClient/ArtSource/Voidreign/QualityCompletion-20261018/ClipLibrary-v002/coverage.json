@@ -1,0 +1,88 @@
+{
+ "schema_version": 1,
+ "source": "docs/Game-Design/Companions/Legends_Shattered_Frontier_Companion_Abilities_and_Animation_v0.1.md",
+ "built_and_checked": [
+  "equine.walk_loop",
+  "equine.trot_loop",
+  "equine.canter_loop",
+  "equine.gallop_loop",
+  "equine.combat_move_loop.m",
+  "voidreign.sig_a.rift_charge_run",
+  "equine.idle_loop",
+  "equine.idle_loop.m",
+  "equine.combat_idle_loop",
+  "equine.combat_idle_loop.m",
+  "voidreign.atk.basic",
+  "equine.react.hit_front",
+  "equine.defeat",
+  "equine.defeat_hold_loop",
+  "voidreign.wild.exhausted_loop",
+  "capture.bind_loop",
+  "capture.secured",
+  "capture.break",
+  "train.saddle",
+  "deploy.arrive",
+  "store.depart",
+  "voidreign.rear_throw",
+  "voidreign.sig_a.rift_windup",
+  "voidreign.sig_a.rift_impact",
+  "voidreign.sig_a.recall_enter",
+  "voidreign.sig_a.recall_exit",
+  "equine.turn_l_walk",
+  "equine.turn_r_walk",
+  "equine.turn_l_run",
+  "equine.turn_r_run",
+  "equine.turn_l_inplace",
+  "equine.turn_r_inplace",
+  "equine.turn_l180_inplace",
+  "equine.turn_r180_inplace",
+  "equine.start_walk",
+  "equine.stop_walk",
+  "equine.start_run",
+  "equine.stop_run",
+  "equine.react.hit_back",
+  "equine.react.hit.m",
+  "equine.atk.basic_rear",
+  "equine.react.stun_loop",
+  "equine.react.knockdown",
+  "equine.react.getup",
+  "injured_idle_loop",
+  "recovery.rest_loop",
+  "recovery.rise",
+  "train.approach",
+  "train.hold_loop",
+  "equine.sig_b.rally",
+  "equine.idle_fidget",
+  "equine.cmd.acknowledge",
+  "equine.jump",
+  "equine.fall_loop",
+  "equine.land"
+ ],
+ "count": 55,
+ "missing": {
+  "character_side_P0": [
+   "rider.<seat>.mount",
+   "rider.<seat>.dismount",
+   "rider.<seat>.dismount_forced",
+   "rider.<seat>.melee_l/r or bow_fire",
+   "rider.<seat>.rift_brace",
+   "rider.<seat>.recall_hold"
+  ],
+  "vfx_only_P0": [
+   "voidreign.sig_a.anchor_idle_vfx"
+  ],
+  "undefined_content_P1": [
+   "equine.passive.<id> (level-50 passive pair not designed)",
+   "equine.up70.<id> (level-70 upgrade not designed)"
+  ],
+  "pipeline_P1": [
+   "secondary mane/tail/feather motion (VR-SECONDARY-01); tail hair currently rigid and passes through the floor in lying poses"
+  ]
+ },
+ "quality_notes": [
+  "Procedural blockouts: all automated checks pass; feel needs animator review.",
+  "equine.defeat now ends in sternal recumbency (Delivery-v002/look-defeat-hold.png).",
+  "Turn clips: walk 30 deg/cycle, canter 25 deg/cycle; pivots 90/180 deg with bump ramp.",
+  "Review renders follow the root, so vertical travel is not visible in review sheets."
+ ]
+}

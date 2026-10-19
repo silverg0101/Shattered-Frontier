@@ -1,0 +1,16 @@
+{
+ "schema_version": 1,
+ "asset_name": "SK_Voidreign",
+ "library": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ClipLibrary-v002/Voidreign-ClipLibrary.blend",
+ "clips_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ClipLibrary-v002/clips.json",
+ "object": "geometry_0",
+ "root_bone": "root",
+ "root_bone_length_m": 0.3,
+ "dielectric_override": 0.0,
+ "reimport_tolerance_m": 0.001,
+ "permissions": "User-authorized production delivery 2026-10-19; materials attempt 3/3 = dielectric override of invalid uniform metallic map.",
+ "input_sha256": {
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ClipLibrary-v002/Voidreign-ClipLibrary.blend": "d4d83d1525478a91961153d3b56ee31909beb5afcee065cc0ed5b0de0761e290",
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ClipLibrary-v002/clips.json": "fd1b117ccb76533d6f39be31f1ac8e98d3e0f41f235bd568e5b9bbdf31a15b54"
+ }
+}

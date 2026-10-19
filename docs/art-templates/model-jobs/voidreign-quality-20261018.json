@@ -402,7 +402,16 @@
     "primary_joint_topology": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/JointTopologyInspection-v003/joint-topology.json",
     "primary_joint_transition_atlas": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/JointTransitionAtlas-v003/anatomy-report.json",
     "primary_joint_transition_design": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/JointTransitionDesign-v001/design.json",
-    "primary_joint_design_reproduction": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/JointDesignReproductionKit-v001/manifest.json"
+    "primary_joint_design_reproduction": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/JointDesignReproductionKit-v001/manifest.json",
+    "primary_hind_left_ankle_layout": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleLayout-v001/joint-band-report.json",
+    "primary_hind_left_ankle_layout_review": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleLayoutReview-v001/visual-review.json",
+    "primary_hind_left_ankle_fragment_review": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleFragmentReview-v001/fragment-review.json",
+    "primary_skin_rejected_proxy_heat": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProxyHeatSkin-v001/decision.json",
+    "primary_skin_adopted": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SmoothedLegSkin-v002/decision.json",
+    "clip_library": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ClipLibrary-v002/clips.json",
+    "clip_coverage": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ClipLibrary-v002/coverage.json",
+    "delivery_fbx": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Delivery-v002/SK_Voidreign.fbx",
+    "delivery_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Delivery-v002/delivery-report.json"
   },
   "defects": [
     "133 proposed clump bindings pass current measured gap increase (0.033806mm), but still require semantic approval;219 components are not219 defects.",
@@ -423,5 +432,5 @@
     "Primary automatic budget3/3 and walk budget3/3 remain exhausted. Four reviewed construction code corrections /8totalprimarycandidates are tracked separately. Walk v003 target edge improves27.08 to4.06mm but regional check finds new hoof-shell distortion up to20.605mm; no complete hoof fix accepted. Shoulder/body max65.381mm remains.",
     "Whole-mount ground penetration, Tail step86.83mm/80mm, unresolved loose/tack semantics, material relief/effects decisions and runtime gates remain open. Old rigid-harness secondary caches do not transfer to articulated gaits."
   ],
-  "next_action": "VR-RIG-01 authored hind.L ankle-band layout: inspect8bypass faces from JointTopologyInspection-v003, separate flexible skin/rigid shell/feathers and author exact inner/outer boundaries; review hidden sides before any mesh/skin candidate. Hind collars are26.5/27.9mm below authored joints, so no blind width/solver sweep. Exhausted budgets unchanged. Independent material work: ReviewedDielectricFaces-v003 remaining-review.json lists12response boundaries/full masks still needed before material3; local cloth3/3closed."
+  "next_action": "Production pass 2026-10-19 (user-authorized): SmoothedLegSkin-v002 skin; ClipLibrary-v002 55 procedural clips (P0+P1+P2 mount clips incl. turns, pivots, starts/stops, reactions, knockdown/getup, lie-down defeat, recovery, rally, jump) all pass checks; Delivery-v002 SK_Voidreign.fbx (root bone, 55 takes, Metallic=0) verified by reimport. Remaining: animator review, rider clips (character team), anchor VFX, passive/up70 content, secondary hair motion, LODs, Unreal import acceptance."
 }

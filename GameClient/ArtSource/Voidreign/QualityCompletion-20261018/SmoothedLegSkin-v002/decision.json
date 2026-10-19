@@ -1,0 +1,5 @@
+{"schema_version":1,"status":"adopted-primary-skin-candidate","stage_attempt":"rig reopened 2026-10-19, attempt 2/3 (v001 superseded by a tool bug that skipped writing rigid cores)",
+ "method":"Conductance-weighted diffusion of existing primary weights over leg domains 1-4 plus 30-hop limb-root margin (300 iterations); sole patches fixed; four hoof cores forced 100% to their fetlock bone.",
+ "evidence_same_motion_WalkPilot-v003":{"body_p99_rel":[0.2737,0.2151],"all_p99_rel":[0.1958,0.1497],"max_abs_m":[0.0150,0.0166],"hoof_core_max_edge_change_m":[0.00481,8.7e-08],"hair_root_gap_change_m":[0.00041,0.00042],"seam_gap_m":[0,0]},
+ "visual":"review/ base vs cand Side/Front/Rear frames 33,55 inspected: no visible tearing; silhouettes near-identical.",
+ "limits":"Remaining strain concentrates at limb roots (shoulder/elbow); max absolute +1.6mm vs baseline. Not anatomical approval."}

@@ -14,7 +14,7 @@ Every resume executes the [required acceptance gates](model-production-gates.md)
 
 | --- | --- | --- | --- | --- |
 
-| [voidreign-quality-20261018](model-jobs/voidreign-quality-20261018.json) | Voidreign quality revision | in-progress | secondary_motion | Idle/walk/turn contact and exchange checks pass; skin not accepted. Third walk improves target hoof edge27.08 to4.06mm but introduces hoof-shell regressions. Primary/walk budgets3/3;4reviewed code corrections /8primarycandidates separate.4K material channels and head/saddle lighting views audited. Ground, hair, semantics and runtime remain open |
+| [voidreign-quality-20261018](model-jobs/voidreign-quality-20261018.json) | Voidreign quality revision | in-progress | secondary_motion | Production pass: adopted leg-smoothed skin, 55 procedural clips, verified SK_Voidreign.fbx (Delivery-v002); animator review, P1 clips, secondary motion, LODs, Unreal import pending. |
 
 | [voidreign-motion-20261018](model-jobs/voidreign-motion-20261018.json) | Voidreign earlier benchmark | needs-review | topology_uv | Preserved20-bone baseline and Blender FBX source-contract evidence. Continue current geometry/complete-hair work through voidreign-quality-20261018 |
 
