@@ -1,0 +1,33 @@
+# First tree and rock harvesting presentation
+
+2026-10-19. **Work in progress, no in-engine visual acceptance.** Governing [quality contract](Game-Design/Legends_Shattered_Frontier_Gathering_Presentation_and_Material_Claiming_v0.1.md). User directed professional-quality art, localized hit damage and believable material-specific fragments/effects. Timed harvest/reward mechanics remain server-controlled.
+
+## Current implementation and assets
+
+`SFHarvestLocalizedGeometry` implements bounded runtime Boolean subtraction at validated contacts, preserving outer attributes and assigning exposed interior material/UVs. `SFHarvestPresentation` reconstructs server-approved cuts and moves bounded local cosmetic fragments. Build06 passed all six focused gathering tests, including actual imported rock contacts, three private item grants, depletion, regeneration and replay. A dedicated server plus rendered client completed three cuts, changed live geometry, emitted fragments and captured four frames with replay unchanged. These checks establish the interaction prototype, not visual acceptance. Build11 fixes the angular cutter’s missing triangle-group metadata without weakening topology guards. Both general geometry and exact imported-contact regressions pass. The actual rendered client then completed three angular cuts with three private grants, debris and unchanged replay. Native/static-versus-procedural comparison shows both have the same washed-out exterior, isolating that visual defect to source/import/materials rather than dynamic reconstruction. Debris creates no item and does not block gameplay. Contact animation, audio and credible felling remain open.
+
+Blender agents produced [rock source/evidence](../GameClient/ArtSource/HarvestRock/README.md) and [oak source/evidence](../GameClient/ArtSource/HarvestOak/README.md), with editable generators, source, exports and inspected renders. Rock intact input is closed,388tri, about1.6m wide. Oak lower cutting trunk is closed,572tri, independent of the canopy; wood fragments are52tri each. Static extraction stages remain comparison assets.
+
+**The complete authored oak crown failed visual review.** Revisions improved roots and fused curved forks, but foliage forms shelves and exposes bare branch ends. Do not call it professional art or promote it as a completed environment tree. The lower trunk/fragments are integration prototypes; select a credible oak source or improve the crown structurally before visual acceptance.
+
+`tools/Import-HarvestArt.py` successfully imported V1: five oak lower-trunk/stump/fragment meshes, nine rock comparison/fragment meshes and eleven textures, with checked dimensions and cooked CPU access for the cuttable inputs. Rejected crown/full-tree models were excluded. The actual client review exposed washed-out rock exterior materials and an overly circular cut; visual approval is withheld while those are corrected. Editable sources and exact GPT image prompts remain in [HarvestReferences](../GameClient/ArtSource/HarvestReferences/README.md).
+
+Typed presentation settings are release-author controlled, effective next world start, with no new console overrides: rock radius18cm [2,35], depth12cm [1,25]; wood radius14cm [2,25], depth9cm [1,18]; rock fragments5 [0,12], wood fragments9 [0,20]; debris lifetime3s [0.5,8]; rock launch1.8m/s and wood3.2m/s [0.2,5]; restitution0.25/0.12 [0,0.6]. Geometry-attempt cooldown is0.5s [0.1,2] per controller, enforced before expensive cut preparation. Fracture algorithms/topology and fixed safety ceilings remain versioned code/content. Production live controls must use the shared configuration workflow.
+
+## Reuse and coordination
+
+Free Fab candidates are recorded in the [reuse register](Game-Design/Legends_Shattered_Frontier_Gameplay_Reuse_Candidate_Register_v0.1.md). Source acquisition could not proceed because the computer-use browser inventory was empty; no paid asset, install or new legal agreement was made. Candidate visual fit remains unverified. No paid model-generation service was used.
+
+The [environment integration handoff](gameplay-environment-integration-handoff.md) owns current chat/file boundaries and merge preflight. Environment already has a CC0 small broadleaf and mossy rocks; its broadleaf is wild syringa, not oak. Do not change the resource identity merely to reuse a convenient asset. Environment-owned files remain untouched by this gameplay change.
+
+## Next work
+
+Diagnose the washed-out exterior and review the new angular cut in the actual client. Inspect wood interiors, debris origin/motion and material continuity before expanding content. Verify real-client cut reconstruction, replay, cancellation and late join. Replace the rejected crown, add contact-aligned tool/character animation, material-appropriate audio and controlled felling; profile representative simultaneous use. Primitive/fallback meshes, headless tests and Blender exports alone cannot close the quality gate.
+
+## Newly supplied source candidates
+
+The user supplied Downloads on2026-10-19: `cc0__sawtooth_oak_quercus_acutissima.glb` (embedded CC0-1.0 attribution to ffish.asia/floraZia, source Sketchfab35f02bdd5cc34f90aff1324296f4db7c;18meshes,3materials,1,028,356triangles, unlit-material extension), `quercus_A_packed_v1.zip` (one packed Blender file; license not established by filename), and `tree_debris_pack_vdqjfjhiw_high.zip` (FBX plus4K wood maps; metadata describes weathered3–25cm pieces). Source inspection and rendered oak review are in progress; none is adopted yet. `Free Sample.rar` contains bronze/steel material files rather than gathering animation. The BlenderKit archive is an add-on and has not been installed.
+
+The user subsequently supplied `mighty-oak-trees.zip` (57,516,330bytes) from [Mighty Oak Trees by Jagobo](https://sketchfab.com/3d-models/mighty-oak-trees-4f6ab5594a8a415aba3f958682b9ced5). The signed-in download dialog identifies CC-BY4.0, permits commercial use and requires creator credit; it offers original Blender source for three complete old oaks, advertised100–140k triangles each. Downloaded source/rendered suitability review is underway; not yet imported or adopted. Earlier complete Quercus source was reviewed at its intended LOD0 (36meshobjects,~5,303triangles): sparse shelf-like crown/material repair and open collision trunk remain below the close-harvest quality bar.
+
+[Compact executed evidence](evidence/harvest-localized-pilot-results.json) records the exact functional checkpoints and remaining visual/integration gaps.

@@ -38,3 +38,31 @@ Minimal Inventory Runtime's built-in Slate inventory creates a separate desktop 
 Possible improvements worth comparing are consistent action prompts/remappable controls, clearer transaction feedback, readable introductory dialogue and better foot contact. These are proposals, not approved mechanic changes. No listing alone establishes a better player experience. If an asset suggests a rule change, document the concrete player flow, expected benefit, accessibility/latency effects and design/dependency cost before amending the governing design.
 
 Current implementation: the leading inventory candidate is owned and its installed source is being integrated into the session-only Win64 gathering pilot. Linux, durable ledger/quality-bearing instances and production fit remain open. Assess the interaction component alongside subsequent gathering presentation. Use one bounded integration before committing to a framework. Preserve existing construction and the separate environment session's assets. Check authority and the changed player flow at the integration boundary; this research requires no runtime tests.
+
+
+## First harvesting visual candidates — 2026-10-19
+
+Live listing research observed current Free status for the following. No acquisition/source inspection occurred; a browser surface was unavailable. Visual fit, exact UE5.8 compatibility and terms remain to be checked before adoption. None supplies the complete required harvesting experience.
+
+| Candidate | Possible use and decisive gap |
+| --- | --- |
+| [HighPoly Tree Model](https://www.fab.com/listings/2f1f43fe-fd59-42ff-967d-c8eb1a0785e7) | Realistic tree source candidate, FBX/UE, advertised about500k triangles. Species/oak match, close-up quality and performance unverified; no cut/stump/felling contract. |
+| [Wood_Crack_00](https://www.fab.com/listings/3a07db22-cf25-4016-84f3-6fadd16ac519) | Cut-trunk FBX/PBR reference; no complete harvestable tree or dynamic-cut implementation. |
+| [Rocks and combined](https://www.fab.com/listings/4084b15b-c876-4df9-8e72-9f50b63175ba) | Environment rock/material candidate; ore composition, fracture interiors and localized extraction need review/work. |
+| [Free Sample Animation Set](https://www.fab.com/listings/5b737d10-b4cd-4294-8f6b-757b9088039d) | Listing references selected resource-gathering animations; actual available chop/mine clips, rig and retargetability unverified. AI-use metadata No; inspect applicable workflow/terms before source use. |
+
+The first three showed AI-use metadata Yes, generated-with-AI No; animation sample showed No/No. Metadata is not a license interpretation. Listings titled Free with purchase controls (Rock Collection04, Free Stylized+LowPoly Rocks) were not accepted as verified free. Keep the [quality contract](Legends_Shattered_Frontier_Gathering_Presentation_and_Material_Claiming_v0.1.md): source convenience must not change resource identity or harvest/reward mechanics.
+
+## User-supplied downloads inspected2026-10-19
+
+| Source | Actual contents and design fit |
+| --- | --- |
+| `cc0__sawtooth_oak_quercus_acutissima.glb` | Embedded author ffish.asia/floraZia and CC0-1.0; [source](https://sketchfab.com/3d-models/cc0-sawtooth-oak-quercus-acutissima-35f02bdd5cc34f90aff1324296f4db7c). Render shows flowering twig specimens and a scale chart, about25cm across, despite the oak title. 1,028,356triangles; possible botanical reference/detail, **not a complete harvest tree/crown**. |
+| `quercus_A_packed_v1.zip` | Lauris Kaplinski complete low-poly oak with packed textures; intended LOD0 ~5,303triangles. Sparse shelf-like crown, disconnected image materials and open collision trunk need substantial work. The OpenGameArt listing declares CC-BY-SA3.0/GPL3.0; not adopted. |
+| `tree_debris_pack_vdqjfjhiw_high.zip` | Six connected weathered wood pieces, FBX plus4K maps. Metadata describes3–25cm pieces. Useful ground-scatter candidate; aged bark-covered forms do not match fresh harvest splinters. Archive metadata has no explicit license/author, so no distribution/adoption yet. |
+| `Free Sample.rar` | Bronze and painted-steel PNG/Substance material files; does not supply gathering animation. |
+| `blenderkit-v3.21.3.261002.zip` | Blender add-on archive, not an art pack. Not installed. |
+
+Downloads were preserved; inspection copies/reports/previews remain under ignored `Artifacts/HarvestSourceReview/`. Candidate availability does not override the harvesting quality contract.
+
+[Mighty Oak Trees by Jagobo](https://sketchfab.com/3d-models/mighty-oak-trees-4f6ab5594a8a415aba3f958682b9ced5): user downloaded original Blender ZIP2026-10-19. Signed-in dialog identifies [CC-BY4.0](https://creativecommons.org/licenses/by/4.0/), creator attribution and commercial use. Three complete old oaks with bark color/normal/roughness and foliage color, advertised100–140k triangles/tree. Source/render review in progress; record source hash, credit and modifications before any adoption.

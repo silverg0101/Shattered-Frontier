@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-19",
+  "scope": "Windows editor development pilot; functional evidence only, visual acceptance withheld",
+  "build": {
+    "log": "Artifacts/ConstructionSandbox/harvest-localized-build-11.log",
+    "result": "Succeeded",
+    "seconds": 13.87
+  },
+  "checks": [
+    {
+      "report": "Artifacts/ConstructionSandbox/harvest-localized-authority-03/Report/index.json",
+      "filter": "ShatteredFrontier.Gathering.",
+      "passed": 6,
+      "failed": 0,
+      "scope": "Before angular cutter change; Authority, Lifecycle, SurfaceProtocol, Tools, ArtContact, LocalizedGeometry"
+    },
+    {
+      "report": "Artifacts/ConstructionSandbox/harvest-localized-imported-02/Report/index.json",
+      "filter": "ShatteredFrontier.Gathering.Localized",
+      "passed": 2,
+      "failed": 0,
+      "scope": "Angular cutter and exact imported contact; triangle-group metadata regression"
+    }
+  ],
+  "rendered": {
+    "results": "Artifacts/ConstructionSandbox/harvest-art-20261019-015902-515/results.json",
+    "result": "Passed",
+    "ownedDedicatedServer": true,
+    "renderedClients": 1,
+    "actualCuts": 3,
+    "privateOreGranted": 3,
+    "captures": 4,
+    "replayUnchanged": true,
+    "liveCosmeticFragments": true,
+    "cleanupComplete": true,
+    "nativeSourceComparison": true
+  },
+  "visualFindings": [
+    "Native and procedural rock exterior both washed out; material/rendering diagnosis remains open",
+    "Angular cut removes planar fractured chunk rather than spherical bowl",
+    "Authored procedural oak crown rejected; downloaded Jagobo tree source undergoing bounded closed-lower-trunk preparation"
+  ],
+  "notEstablished": [
+    "Final art quality",
+    "Tool/contact animation",
+    "Credible tree felling",
+    "Auditioned material audio",
+    "Updated two-client/late-join presentation",
+    "Packaged or Linux acceptance",
+    "Production persistence or performance"
+  ]
+}
