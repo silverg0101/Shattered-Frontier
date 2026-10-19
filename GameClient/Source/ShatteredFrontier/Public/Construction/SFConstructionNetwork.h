@@ -5,21 +5,28 @@
 #include "SFConstructionNetwork.generated.h"
 
 class UStaticMeshComponent;
+class UStaticMesh;
 class ASFConstructionNetworkController;
 
 UENUM()
 enum class ESFConstructionNetworkResult : uint8
 {
-    Accepted, InvalidContext, PermissionDenied, Stale, InvalidCell, OutOfReach, Occluded, Occupied, ProjectionFailed
+    Accepted, InvalidContext, PermissionDenied, Stale, InvalidCell, OutOfReach, Occluded, Occupied, ProjectionFailed, Unsupported, LimitReached
 };
 
-// Versioned one-cube development protocol. No material, path, identity or permission payloads.
+// Canonical-cube development protocol. No material, path, identity or permission payloads.
 USTRUCT()
 struct FSFConstructionNetworkSnapshot
 {
     GENERATED_BODY()
     UPROPERTY() uint64 Revision = 0;
-    UPROPERTY() FIntVector Cell = FIntVector::ZeroValue;
+    UPROPERTY() TArray<FIntVector> Cells;
+    bool NetSerialize(FArchive& Ar, UPackageMap* Map, bool& bOutSuccess);
+};
+
+template<> struct TStructOpsTypeTraits<FSFConstructionNetworkSnapshot> : TStructOpsTypeTraitsBase2<FSFConstructionNetworkSnapshot>
+{
+    enum { WithNetSerializer = true };
 };
 
 UCLASS(NotBlueprintable, Transient)
@@ -28,10 +35,12 @@ class SHATTEREDFRONTIER_API ASFConstructionNetworkState : public AActor
     GENERATED_BODY()
 public:
     ASFConstructionNetworkState();
+    virtual void BeginPlay() override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     ESFConstructionNetworkResult Place(ASFConstructionNetworkController* Controller, FIntVector Cell, uint64 ExpectedRevision);
     const FSFConstructionNetworkSnapshot& GetSnapshot() const { return Snapshot; }
     bool HasCurrentCollision() const;
+    FString GetContentDigest() const;
     void AdmitPair();
     bool IsPairReady() const { return bPairReady; }
 private:
@@ -39,8 +48,13 @@ private:
     UFUNCTION() void OnRep_Snapshot();
     UPROPERTY(ReplicatedUsing=OnRep_Snapshot) FSFConstructionNetworkSnapshot Snapshot;
     UPROPERTY(Replicated) bool bPairReady = false;
-    UPROPERTY() TObjectPtr<UStaticMeshComponent> Cube;
+    UPROPERTY() TObjectPtr<UStaticMesh> CubeAsset;
+    UPROPERTY(Transient) TMap<FIntVector,TObjectPtr<UStaticMeshComponent>> Cubes;
     bool bProjectionReady = false;
+    bool bConfigurationReady = false;
+    double ReachCentimetres = 0;
+    int32 MaximumMembers = 0;
+    uint64 ProjectionRevision = 0;
 };
 
 UCLASS(NotBlueprintable)

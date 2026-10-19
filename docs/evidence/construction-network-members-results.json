@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-18",
+  "status": "Passed",
+  "baselineCommit": "c151233",
+  "branch": "codex/construction-network-members",
+  "scope": "Isolated loopback editor dedicated-server, canonical cube assembly and rough-timber support, transient build capability; no production ownership/persistence/general procedural shape or packaged acceptance.",
+  "rawRoot": "Artifacts/ConstructionSandbox/network-20261018-204207-400",
+  "contentBlake3": "1bd00478e70e4feb264d1704822008b4baa80eca6985205f30c7aeecc93d8de7",
+  "cleanupComplete": true,
+  "elapsedSeconds": 79.7260093,
+  "sourceFiles": [
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Public/Construction/SFConstructionNetwork.h",
+      "sha256": "7abfb7bc8e561061c999a8b19a151be5fc4053ac6706251e260556d89c0af761"
+    },
+    {
+      "path": "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionNetwork.cpp",
+      "sha256": "84756e58151d13182303697bbc21aa09a44b7d2c89bab41684e9e09074308395"
+    },
+    {
+      "path": "tools/Test-ConstructionNetwork.ps1",
+      "sha256": "4afc03e679afdc57c2fe99aa8c8ce7a0cb878039e9febd0a2eb4d3830d8b02b3"
+    }
+  ],
+  "module": {
+    "path": "GameClient/Binaries/Win64/UnrealEditor-ShatteredFrontier.dll",
+    "sha256": "009240c09b26d833977ab2883b12d4148abb682b2a5b436ad24900717efef172"
+  },
+  "logs": [
+    {
+      "path": "Artifacts/ConstructionSandbox/network-20261018-204207-400/results.json",
+      "sha256": "f8d85a0afc83fd8e33a3c9c3381e290d28787654622b8a828f69447655903828"
+    },
+    {
+      "path": "Artifacts/ConstructionSandbox/network-20261018-204207-400/server.log",
+      "sha256": "a17f09019d7bcd630a81474f2157d797b846953e4cbcedde94d7f1a26d6c2dd9"
+    },
+    {
+      "path": "Artifacts/ConstructionSandbox/network-20261018-204207-400/driver.log",
+      "sha256": "7d8ef3186932530cdb1f8bf55b6d138d3e2b0873e1d76d1b2c018aac0d295581"
+    },
+    {
+      "path": "Artifacts/ConstructionSandbox/network-20261018-204207-400/observer.log",
+      "sha256": "56bfcfd1a333293be65700c0118a7734c5f8aa02db7249f15bfef4e2abec0a69"
+    },
+    {
+      "path": "Artifacts/ConstructionSandbox/network-20261018-204207-400/normal-negative.log",
+      "sha256": "7821355b75cfb18f01333aa14647213f73aab1df0e9120563247f560cb5baaf0"
+    },
+    {
+      "path": "Artifacts/ConstructionSandbox/network-20261018-204207-400/flag-negative.log",
+      "sha256": "600c849cb43ff840fa7b3939e055f27fde81f5a20ef340f9cc07fc5d871e0b58"
+    }
+  ],
+  "builds": [
+    {
+      "path": "Artifacts/ConstructionSandbox/network-members-worktree-build.log",
+      "sha256": "a33913d8e6cfc60f8222f0fca21d7e1805d64bc2162fdeb1a6ee0aaf2c13edb4"
+    },
+    {
+      "path": "Artifacts/ConstructionSandbox/network-members-worktree-build-02.log",
+      "sha256": "bc74b3d805880112b6f4a1a883eb7fb1d289eff0bd974d6b5e2eb6186c846a12"
+    }
+  ],
+  "review": "Independent source and final raw review cleared; server stopped intentionally during owned cleanup."
+}
