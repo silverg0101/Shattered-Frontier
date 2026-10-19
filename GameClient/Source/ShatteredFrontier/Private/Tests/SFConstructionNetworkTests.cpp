@@ -87,7 +87,8 @@ bool FSFConstructionNetworkCursorTest::RunTest(const FString& Parameters)
     TestTrue(TEXT("Repeated RMB release balances look suppression"),!Controller->bCameraLookHeld && Controller->bShowMouseCursor && Controller->IsLookInputIgnored());
     TestTrue(TEXT("Turning retains start and original revision"),Controller->bHasLineSeed && Controller->LineRevision==77);
     Controller->bSyntheticPointerOverPalette=true;
-    Controller->ToggleDemolition(); Controller->SelectSlab(); Controller->ToggleLineMode();
+    Controller->ToggleDemolition(); Controller->SelectSlab(); Controller->ToggleLineMode(); Controller->LayerUp();
+    TestFalse(TEXT("UI hover blocks layer changes"),Controller->bLayerPlacement);
     TestTrue(TEXT("UI hover blocks world shortcuts"),!Controller->bDemolitionMode && Controller->SelectedShape==0 && !Controller->bLineMode);
     Controller->PaletteAction(ESFConstructionPaletteAction::Slab);
     TestEqual(TEXT("Palette may dispatch shape despite UI hover"),Controller->SelectedShape,uint8(1));
@@ -103,6 +104,29 @@ bool FSFConstructionNetworkCursorTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Inactive application blocks shortcuts"),Controller->SelectedShape,uint8(1));
     Controller->ApplicationActivationChanged(true); Controller->SelectDoor();
     TestTrue(TEXT("Door selection resets line and demolition modes"),Controller->bDoorSelected && !Controller->bLineMode && !Controller->bDemolitionMode);
+    Controller->bHasLineSeed=true; Controller->LayerUp();
+    TestTrue(TEXT("Layer change cancels start and selects upper plane"),Controller->bLayerPlacement && Controller->PlacementLayer==1 && !Controller->bHasLineSeed);
+    FVector Point(99,98,97);
+    TestTrue(TEXT("Downward ray selects exact upper layer"),Controller->GetLayerPoint(FVector(275,-175,300),FVector::DownVector,800,nullptr,Point));
+    TestTrue(TEXT("Layer address and height are exact"),Point==FVector(275,-175,50));
+    const FVector Sentinel(99,98,97); Point=Sentinel;
+    FHitResult Obstacle; Obstacle.Distance=249;
+    TestFalse(TEXT("Closer physical surface occludes plane"),Controller->GetLayerPoint(FVector(275,-175,300),FVector::DownVector,800,&Obstacle,Point));
+    TestTrue(TEXT("Occlusion preserves output"),Point==Sentinel);
+    Obstacle.Distance=250;
+    TestTrue(TEXT("Exact supporting top surface permits plane"),Controller->GetLayerPoint(FVector(275,-175,300),FVector::DownVector,800,&Obstacle,Point));
+    Point=Sentinel;
+    TestFalse(TEXT("Parallel ray rejects"),Controller->GetLayerPoint(FVector(275,-175,300),FVector::ForwardVector,800,nullptr,Point));
+    TestFalse(TEXT("Plane behind ray rejects"),Controller->GetLayerPoint(FVector(275,-175,300),FVector::UpVector,800,nullptr,Point));
+    TestFalse(TEXT("Beyond bounded ray rejects"),Controller->GetLayerPoint(FVector(275,-175,300),FVector::DownVector,200,nullptr,Point));
+    TestFalse(TEXT("Outside plot rejects before integer snapping"),Controller->GetLayerPoint(FVector(1000,-175,300),FVector::DownVector,800,nullptr,Point));
+    TestTrue(TEXT("Rejected selections preserve output"),Point==Sentinel);
+    for (int32 I=0; I<32; ++I) { Controller->LayerUp(); }
+    TestEqual(TEXT("Upper plot layer clamps at19"),Controller->PlacementLayer,19);
+    for (int32 I=0; I<32; ++I) { Controller->LayerDown(); }
+    TestEqual(TEXT("Lower plot layer clamps at0"),Controller->PlacementLayer,0);
+    Controller->PaletteAction(ESFConstructionPaletteAction::Surface);
+    TestFalse(TEXT("Surface palette action restores face placement"),Controller->bLayerPlacement);
     return true;
 }
 #endif

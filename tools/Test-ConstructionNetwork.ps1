@@ -129,6 +129,17 @@ try {
     }
     if ($removedPayloads[0] -ne $removedPayloads[1]) { throw 'Clients disagree on door removal.' }
     Set-Content -LiteralPath (Join-Path $root 'both-projected-three.ready.line') -Value 'Both clients projected removed14; observer line denied.' -Encoding ascii
+    $baseLinePayloads=@()
+    foreach ($role in @('driver','observer')) {
+        $process=if ($role -eq 'driver') { $driver } else { $observer }
+        Wait-Log $process $role 'CONSTRUCTION_NETWORK_LAYER_READY Builder='
+        $log=Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
+        $matches=[regex]::Matches($log,'CONSTRUCTION_NETWORK_PROJECTED Revision=15 Members=5 Collision=1 Content=([a-fA-F0-9]{64}) Doors=0')
+        if ($matches.Count -ne 1) { throw "$role lacks the base row before layer placement." }
+        $baseLinePayloads += $matches[0].Groups[1].Value
+    }
+    if ($baseLinePayloads[0] -ne $baseLinePayloads[1]) { throw 'Clients disagree on the base row.' }
+    Set-Content -LiteralPath (Join-Path $root 'both-projected-three.ready.layer') -Value 'Both clients projected base row15 before upper-floor controls.' -Encoding ascii
     Wait-Exit $driver 'driver'
     Wait-Exit $observer 'observer'
     if ($server.HasExited) { throw 'Owned server exited during the client exercise.' }
@@ -136,10 +147,10 @@ try {
     $observedRoles = @()
     foreach ($role in @('driver','observer')) {
         $log = Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
-        $success = [regex]::Matches($log,'CONSTRUCTION_NETWORK_SCENARIO_SUCCESS Builder=([01]) Revision=15 Members=5 Doors=0')
+        $success = [regex]::Matches($log,'CONSTRUCTION_NETWORK_SCENARIO_SUCCESS Builder=([01]) Revision=16 Members=8 Doors=0')
         if ($success.Count -ne 1 -or $log -match 'CONSTRUCTION_NETWORK_\w*FAILED|Fatal error:|Assertion failed:|Ensure condition failed:') { throw "$role failed its semantic scenario." }
         $observedRoles += [int]$success[0].Groups[1].Value
-        $projection = [regex]::Matches($log,'CONSTRUCTION_NETWORK_PROJECTED Revision=15 Members=5 Collision=1 Content=([a-fA-F0-9]{64}) Doors=0')
+        $projection = [regex]::Matches($log,'CONSTRUCTION_NETWORK_PROJECTED Revision=16 Members=8 Collision=1 Content=([a-fA-F0-9]{64}) Doors=0')
         if ($projection.Count -ne 1) { throw "$role lacks a unique exact local collision projection." }
         $payloads += $projection[0].Groups[1].Value
         if ($CaptureFrames) {
@@ -245,7 +256,7 @@ try {
         if ([regex]::Matches($serverLog,[regex]::Escape($marker)).Count -ne 1) { throw "Missing/duplicate line observation: $marker" }
     }
     if ([regex]::Matches($serverLog,'CONSTRUCTION_NETWORK_LINE_RESULT Builder=1 Result=18 Revision=14 Members=2 Collision=1').Count -ne 2) { throw 'Diagonal/over-limit lines did not reject unchanged.' }
-    if ([regex]::Matches($serverLog,'CONSTRUCTION_NETWORK_LINE Revision=15 Members=5 Doors=0 Cells=3').Count -ne 1 -or $serverLog -notmatch ('CONSTRUCTION_NETWORK_LINE Revision=15[^\r\n]*Content='+[regex]::Escape($payloads[0]))) { throw 'Atomic three-cell line differs from client content.' }
+    if ([regex]::Matches($serverLog,'CONSTRUCTION_NETWORK_LINE Revision=15 Members=5 Doors=0 Cells=3').Count -ne 1 -or $serverLog -notmatch ('CONSTRUCTION_NETWORK_LINE Revision=15[^\r\n]*Content='+[regex]::Escape($baseLinePayloads[0]))) { throw 'Atomic three-cell line differs from client content.' }
     $lineViews=0; $lineSeeds=0
     foreach ($role in @('driver','observer')) {
         $log=Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
@@ -260,6 +271,14 @@ try {
         $demolitionModes += [regex]::Matches($log,'CONSTRUCTION_NETWORK_DEMOLITION_MODE Enabled=1').Count
     }
     if ($cursorChecks -ne 1 -or $demolitionModes -ne 2) { throw 'Cursor/RMB isolation or explicit block/door demolition mode was not observed.' }
+    if ([regex]::Matches($serverLog,'CONSTRUCTION_NETWORK_LINE Revision=16 Members=8 Doors=0 Cells=3 Start=X=5 Y=-4 Z=1 End=X=7 Y=-4 Z=1').Count -ne 1 -or $serverLog -notmatch ('CONSTRUCTION_NETWORK_LINE Revision=16[^\r\n]*Content='+[regex]::Escape($payloads[0]))) { throw 'Upper slab row did not publish atomically with matching content.' }
+    $layerViews=0; $layerSeeds=0
+    foreach ($role in @('driver','observer')) {
+        $log=Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
+        $layerViews += [regex]::Matches($log,'CONSTRUCTION_NETWORK_VIEW_LINE Revision=15 Start=X=5 Y=-4 Z=1 End=X=7 Y=-4 Z=1').Count
+        $layerSeeds += [regex]::Matches($log,'CONSTRUCTION_NETWORK_LAYER_SEED_ONLY Revision=15 Members=5 Layer=1').Count
+    }
+    if ($layerViews -ne 1 -or $layerSeeds -ne 1) { throw 'P/PageUp/B upper-layer seed and dispatch were not observed.' }
     $results.contentBlake3 = $payloads[0]
     $results.captureFrames = [bool]$CaptureFrames
     $results.status = 'Passed'

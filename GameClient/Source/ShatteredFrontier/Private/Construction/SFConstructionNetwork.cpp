@@ -497,7 +497,7 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::PlaceLine(ASFConstruct
     if (!SupportsMembers(Candidate.Members,Candidate.Doors)) { return ESFConstructionNetworkResult::Unsupported; }
     if (!Activate(Candidate)) { return ESFConstructionNetworkResult::ProjectionFailed; }
     Snapshot=MoveTemp(Candidate); ForceNetUpdate();
-    UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_LINE Revision=%llu Members=%d Doors=%d Cells=%d Start=%s End=%s Content=%s"),Snapshot.Revision,Snapshot.Members.Num(),Snapshot.Doors.Num(),Cells.Num(),*Start.ToString(),*End.ToString(),*GetContentDigest());
+    UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_LINE Revision=%llu Members=%d Doors=%d Cells=%d Start=%s End=%s Content=%s Shape=%u Rotation=%u"),Snapshot.Revision,Snapshot.Members.Num(),Snapshot.Doors.Num(),Cells.Num(),*Start.ToString(),*End.ToString(),*GetContentDigest(),Shape,Rotation);
     return ESFConstructionNetworkResult::Accepted;
 }
 
@@ -816,6 +816,7 @@ void ASFConstructionNetworkController::LayoutPalette()
     if (Width<=0 || Height<=0 || !FMath::IsFinite(Scale) || Scale<=0) { return; }
     if (PaletteViewportSize==FIntPoint(Width,Height) && FMath::IsNearlyEqual(PaletteViewportScale,Scale)) { return; }
     PaletteViewportSize=FIntPoint(Width,Height); PaletteViewportScale=Scale;
+    Palette->SetDesiredSizeInViewport(FVector2D(320,FMath::Clamp(Height-234,200,560)));
     Palette->SetRenderTransformPivot(FVector2D::ZeroVector);
     Palette->SetRenderScale(FVector2D(1.0f/Scale));
     Palette->SetPositionInViewport(FVector2D(FMath::Max(16,Width-336),16));
@@ -917,6 +918,30 @@ void ASFConstructionNetworkController::ToggleDemolition()
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_DEMOLITION_MODE Enabled=%d"),bDemolitionMode);
 }
 
+void ASFConstructionNetworkController::TogglePlacementPlane()
+{ if (CanUseConstructionControls()) { CancelLine(); bDemolitionMode=false; bLayerPlacement=!bLayerPlacement; } }
+void ASFConstructionNetworkController::LayerDown()
+{ if (CanUseConstructionControls()) { CancelLine(); bDemolitionMode=false; bLayerPlacement=true; PlacementLayer=FMath::Max(0,PlacementLayer-1); } }
+void ASFConstructionNetworkController::LayerUp()
+{ if (CanUseConstructionControls()) { CancelLine(); bDemolitionMode=false; bLayerPlacement=true; PlacementLayer=FMath::Min(19,PlacementLayer+1); } }
+
+FString ASFConstructionNetworkController::GetPlaneStatusText() const
+{
+    return bLayerPlacement ? FString::Printf(TEXT("Layer %d (%.1f m)"),PlacementLayer,PlacementLayer*SFConstructionGeometry::CellCentimetres/100.0) : TEXT("Surface");
+}
+
+bool ASFConstructionNetworkController::GetLayerPoint(const FVector& Start, const FVector& Direction, double RayLength, const FHitResult* Hit, FVector& OutPoint) const
+{
+    if (PlacementLayer<0 || PlacementLayer>19 || Start.ContainsNaN() || Direction.ContainsNaN() || !Direction.IsNormalized()
+        || !FMath::IsFinite(RayLength) || RayLength<=0 || FMath::Abs(Direction.Z)<=1.e-8) { return false; }
+    const double Height=PlacementLayer*SFConstructionGeometry::CellCentimetres;
+    const double T=(Height-Start.Z)/Direction.Z;
+    if (!FMath::IsFinite(T) || T<0 || T>RayLength || (Hit && (!FMath::IsFinite(Hit->Distance) || Hit->Distance<T-1.e-3))) { return false; }
+    FVector Point=Start+Direction*T; Point.Z=Height;
+    if (Point.ContainsNaN() || Point.X < -1000 || Point.X>=1000 || Point.Y < -1000 || Point.Y>=1000) { return false; }
+    OutPoint=Point; return true;
+}
+
 void ASFConstructionNetworkController::CancelCursorAction()
 { if (CanUseConstructionControls()) { CancelLine(); LastPlacementStatus=TEXT("Line start canceled."); } }
 
@@ -934,6 +959,10 @@ void ASFConstructionNetworkController::PaletteAction(ESFConstructionPaletteActio
     case ESFConstructionPaletteAction::Single: CancelLine(); bLineMode=false; bDemolitionMode=false; break;
     case ESFConstructionPaletteAction::Line: if (!bLineMode || bDemolitionMode) { bLineMode=false; ToggleLineMode(); } break;
     case ESFConstructionPaletteAction::Demolish: ToggleDemolition(); break;
+    case ESFConstructionPaletteAction::Surface: CancelLine(); bDemolitionMode=false; bLayerPlacement=false; break;
+    case ESFConstructionPaletteAction::Layer: CancelLine(); bDemolitionMode=false; bLayerPlacement=true; break;
+    case ESFConstructionPaletteAction::LayerDown: LayerDown(); break;
+    case ESFConstructionPaletteAction::LayerUp: LayerUp(); break;
     case ESFConstructionPaletteAction::Cancel: CancelCursorAction(); break;
     default: break;
     }
@@ -955,6 +984,9 @@ void ASFConstructionNetworkController::SetupInputComponent()
     // Controller consumes E before the inherited pawn's probe binding.
     InputComponent->BindKey(EKeys::E,IE_Pressed,this,&ASFConstructionNetworkController::ToggleDoorFromView);
     InputComponent->BindKey(EKeys::L,IE_Pressed,this,&ASFConstructionNetworkController::ToggleLineMode);
+    InputComponent->BindKey(EKeys::P,IE_Pressed,this,&ASFConstructionNetworkController::TogglePlacementPlane);
+    InputComponent->BindKey(EKeys::PageDown,IE_Pressed,this,&ASFConstructionNetworkController::LayerDown);
+    InputComponent->BindKey(EKeys::PageUp,IE_Pressed,this,&ASFConstructionNetworkController::LayerUp);
     InputComponent->BindKey(EKeys::Escape,IE_Pressed,this,&ASFConstructionNetworkController::CancelCursorAction);
     InputComponent->BindKey(EKeys::R,IE_Pressed,this,&ASFConstructionNetworkController::RotatePiece);
 }
@@ -1067,21 +1099,30 @@ void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline
     bHasDoorTarget=State->FindDoorAlongRay(GetPawn(),Start,End,TargetDoorOrigin);
     if (!bHasDoorTarget && bHit)
     { bHasDoorTarget=Hit.GetActor()==State && State->GetDoorForComponent(Hit.GetComponent(),TargetDoorOrigin); }
-    if (bHasDoorTarget)
+    if (bHasDoorTarget && (!bLayerPlacement || bDemolitionMode))
     {
         PreviewStatus=bDemolitionMode ? TEXT("DEMOLISH: click this doorway to remove it.") : TEXT("Doorway targeted.");
-        RemovalStatus=TEXT("E: open / close | Click: remove in Demolish mode | E: open / close.");
+        RemovalStatus=TEXT("E: open / close | Demolish + click: remove.");
         const int32 Index=State->GetSnapshot().FindDoor(TargetDoorOrigin);
         FSFConstructionDoorProjectionProfile Profile;
         if (bDrawOutline && Index!=INDEX_NONE && ASFConstructionSandboxDoorProjection::BuildProfile(TargetDoorOrigin,State->GetSnapshot().Doors[Index].Yaw,State->GetSnapshot().Doors[Index].bOpen,Profile))
         { DrawDebugBox(GetWorld(),Profile.Envelope.GetCenter(),Profile.Envelope.GetExtent(),bDemolitionMode ? FColor::Orange : FColor::Cyan,false,-1.f,0,2.f); }
         return;
     }
-    if (!bHit) { PreviewStatus=TEXT("Aim at the ground or a block face within reach."); return; }
-    const FVector Point = Hit.ImpactPoint + Hit.ImpactNormal*0.1;
+    FVector Point;
+    if (bLayerPlacement && !bDemolitionMode)
+    {
+        if (!GetLayerPoint(Start,Direction,TraceLength,bHit ? &Hit : nullptr,Point))
+        { PreviewStatus=TEXT("Layer is occluded, behind the cursor, outside the plot or parallel/out of reach."); return; }
+    }
+    else
+    {
+        if (!bHit) { PreviewStatus=TEXT("Aim at the ground or a block face within reach."); return; }
+        Point=Hit.ImpactPoint+Hit.ImpactNormal*0.1;
+    }
     PreviewCell=FIntVector(FMath::FloorToInt(Point.X/50),FMath::FloorToInt(Point.Y/50),FMath::FloorToInt(Point.Z/50));
-    bHasRemovalPreview=Hit.GetActor()==State && State->GetCellForComponent(Hit.GetComponent(),RemovalCell);
-    if (bHasRemovalPreview)
+    bHasRemovalPreview=bHit && Hit.GetActor()==State && State->GetCellForComponent(Hit.GetComponent(),RemovalCell);
+    if (bHasRemovalPreview && (!bLayerPlacement || bDemolitionMode))
     {
         // Partial/sloped faces can be inside their cell. Keep one shape per
         // address and choose its adjacent cell along the dominant face normal.
@@ -1100,7 +1141,7 @@ void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline
         { bHasPlacementPreview=false; PreviewStatus=TEXT("Door footprint is outside the construction area."); return; }
         const bool bReach=FVector::DistSquared(GetPawn()->GetActorLocation(),Profile.Envelope.GetCenter())<=FMath::Square(State->GetReachCentimetres());
         PreviewStatus=FString::Printf(TEXT("Door %d, %d, %d | %s"),PreviewCell.X,PreviewCell.Y,PreviewCell.Z,bReach ? TEXT("Click or B to request placement.") : TEXT("Out of reach."));
-        RemovalStatus=bHasDoorTarget ? TEXT("E: open / close | Click: remove in Demolish mode | E: open / close.") : TEXT("Door frame, swing space and both approaches must be clear.");
+        RemovalStatus=bHasDoorTarget ? TEXT("E: open / close | Demolish + click: remove.") : TEXT("Door frame, swing space and both approaches must be clear.");
         if (bDrawOutline)
         {
             for (const auto& B : Profile.Boxes)
@@ -1145,7 +1186,7 @@ void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline
     }
     if (bHasRemovalPreview)
     { RemovalStatus=SupportCache.bRemovalAllowed ? TEXT("Demolish mode + click: request removal.") : TEXT("Cannot remove: supporting other blocks."); }
-    if (bHasDoorTarget) { RemovalStatus=TEXT("E: open / close | Click: remove in Demolish mode | E: open / close."); }
+    if (bHasDoorTarget) { RemovalStatus=TEXT("E: open / close | Demolish + click: remove."); }
     if (bDemolitionMode)
     {
         bHasPlacementPreview=false;
@@ -1173,8 +1214,6 @@ void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline
             { DrawDebugLine(GetWorld(),FVector(PreviewCell)*50+Solid.Vertices[Face[I]],FVector(PreviewCell)*50+Solid.Vertices[Face[(I+1)%Face.Num()]],BlockReason ? FColor::Red : FColor(255,190,60),false,-1.f,0,2.f); }
         }
     }
-    if (bHasRemovalPreview && bDrawOutline)
-    { DrawDebugBox(GetWorld(),FVector(RemovalCell)*50.0+FVector(25),FVector(25),SupportCache.bRemovalAllowed ? FColor::Cyan : FColor::Red,false,-1.f,0,2.f); }
 }
 
 void ASFConstructionNetworkController::RemoveFromView()
@@ -1302,7 +1341,8 @@ void ASFConstructionNetworkController::ClientPlacementResult_Implementation(ESFC
             || (ScenarioStep==49 && Result==ESFConstructionNetworkResult::DoorRemoved && Revision==14)
             || ((ScenarioStep==51 || ScenarioStep==53) && Result==ESFConstructionNetworkResult::InvalidLine && Revision==14)
             || (ScenarioStep==55 && Result==ESFConstructionNetworkResult::Occupied && Revision==14)
-            || (ScenarioStep==57 && Result==ESFConstructionNetworkResult::Accepted && Revision==15))
+            || (ScenarioStep==57 && Result==ESFConstructionNetworkResult::Accepted && Revision==15)
+            || (ScenarioStep==59 && Result==ESFConstructionNetworkResult::Accepted && Revision==16))
         : (((ScenarioStep==1 || ScenarioStep==3 || ScenarioStep==5) && Result==ESFConstructionNetworkResult::PermissionDenied && Revision==6)
             || (ScenarioStep==7 && Result==ESFConstructionNetworkResult::PermissionDenied && Revision==11)
             || (ScenarioStep==9 && Result==ESFConstructionNetworkResult::PermissionDenied && Revision==13)
@@ -1322,9 +1362,9 @@ void ASFConstructionNetworkController::Tick(float DeltaSeconds)
         if (Palette)
         {
             LayoutPalette();
-            const FString Status=FString::Printf(TEXT("%s | %s (%u deg)\nMode: %s\n%s\n%s\nLast: %s"),bBuilderRole ? TEXT("Builder") : TEXT("Observer"),
+            const FString Status=FString::Printf(TEXT("%s | %s (%u deg)\nMode: %s | %s\n%s\n%s\nLast: %s"),bBuilderRole ? TEXT("Builder") : TEXT("Observer"),
                 bDoorSelected ? TEXT("Door") : SelectedShape==0 ? TEXT("Cube") : SelectedShape==1 ? TEXT("Slab") : TEXT("Slope"),SelectedYaw*90,
-                bDemolitionMode ? TEXT("Demolish") : bLineMode ? TEXT("Line") : TEXT("Single"),*PreviewStatus,*RemovalStatus,*LastPlacementStatus);
+                bDemolitionMode ? TEXT("Demolish") : bLineMode ? TEXT("Line") : TEXT("Single"),*GetPlaneStatusText(),*PreviewStatus,*RemovalStatus,*LastPlacementStatus);
             if (Status!=CachedPaletteStatus) { Palette->SetStatusText(FText::FromString(Status)); CachedPaletteStatus=Status; }
         }
     }
@@ -1336,9 +1376,9 @@ void ASFConstructionNetworkController::Tick(float DeltaSeconds)
 FString ASFConstructionNetworkController::GetBuildStatusText() const
 {
     const auto* State=FindState(GetWorld());
-    return FString::Printf(TEXT("CONSTRUCTION | %s | DEV: UNLIMITED STOCK\nClick / B: apply    RMB hold: look    X / Delete: demolition    E: door    WASD: move\n1 Cube | 2 Half slab | 3 Slope | 4 Door | R Rotate | Selected: %s (%u deg) | L: %s | Esc: cancel\n%s\n%s\nLast action: %s\nMembers: %d / %d | Doors: %d / %d | Reach: %.1f m\nAmber: place | Orange: demolish | Cyan: door | Red: blocked estimate | Server checks edits."),
+    return FString::Printf(TEXT("CONSTRUCTION | %s | DEV: UNLIMITED STOCK\nClick / B: apply    RMB hold: look    X / Delete: demolition    E: door    WASD: move\n1 Cube | 2 Half slab | 3 Slope | 4 Door | R Rotate | Selected: %s (%u deg) | L: %s | P: %s | Esc: cancel\n%s\n%s\nLast action: %s\nMembers: %d / %d | Doors: %d / %d | Reach: %.1f m\nAmber: place | Orange: demolish | Cyan: door | Red: blocked estimate | Server checks edits."),
         !bRoleAssigned ? TEXT("CONNECTING") : bBuilderRole ? TEXT("BUILDER") : TEXT("OBSERVER"),
-        bDoorSelected ? TEXT("Door") : SelectedShape==0 ? TEXT("Cube") : SelectedShape==1 ? TEXT("Half slab") : TEXT("Slope"),SelectedYaw*90,bDemolitionMode ? TEXT("Demolish") : bLineMode ? TEXT("Line") : TEXT("Single"),
+        bDoorSelected ? TEXT("Door") : SelectedShape==0 ? TEXT("Cube") : SelectedShape==1 ? TEXT("Half slab") : TEXT("Slope"),SelectedYaw*90,bDemolitionMode ? TEXT("Demolish") : bLineMode ? TEXT("Line") : TEXT("Single"),*GetPlaneStatusText(),
         *PreviewStatus,*RemovalStatus,*LastPlacementStatus,State ? State->GetSnapshot().Members.Num() : 0,
         State ? State->GetMaximumMembers() : 0,State ? State->GetSnapshot().Doors.Num() : 0,State ? State->GetMaximumDoors() : 0,State ? State->GetReachCentimetres()/100.0 : 0.0);
 }
@@ -1458,9 +1498,18 @@ void ASFConstructionNetworkController::TickFiniteScenario()
         && State->GetSnapshot().Revision==14 && State->GetSnapshot().Members.Num()==2 && State->GetSnapshot().Doors.IsEmpty() && State->HasCurrentCollision() && !bScenarioLineReadyReported)
     { UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_LINE_READY Builder=%d Revision=14"),bBuilderRole); bScenarioLineReadyReported=true; }
     if (((bBuilderRole && ScenarioStep==58) || (!bBuilderRole && ScenarioStep==12))
-        && State->GetSnapshot().Revision==15 && State->GetSnapshot().Members.Num()==5 && State->GetSnapshot().Doors.IsEmpty() && State->HasCurrentCollision())
+        && State->GetSnapshot().Revision==15 && State->GetSnapshot().Members.Num()==5 && State->GetSnapshot().Doors.IsEmpty() && State->HasCurrentCollision() && !bScenarioLayerReadyReported)
+    { UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_LAYER_READY Builder=%d Revision=15"),bBuilderRole); bScenarioLayerReadyReported=true; }
+    if (((bBuilderRole && ScenarioStep==60) || (!bBuilderRole && ScenarioStep==12))
+        && State->GetSnapshot().Revision==16 && State->GetSnapshot().Members.Num()==8 && State->GetSnapshot().Doors.IsEmpty() && State->HasCurrentCollision())
     {
-        UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_SCENARIO_SUCCESS Builder=%d Revision=15 Members=5 Doors=0"),bBuilderRole);
+        for (int32 X=5; X<=7; ++X)
+        {
+            const int32 Index=State->GetSnapshot().Find(FIntVector(X,-4,1));
+            if (Index==INDEX_NONE || State->GetSnapshot().Members[Index].Shape!=1 || State->GetSnapshot().Members[Index].Rotation!=SFConstructionGeometry::IdentityRotation())
+            { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_SCENARIO_FAILED UpperSlabContent=1")); FPlatformMisc::RequestExitWithStatus(false,1); return; }
+        }
+        UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_SCENARIO_SUCCESS Builder=%d Revision=16 Members=8 Doors=0 UpperSlabs=3"),bBuilderRole);
         if (FParse::Value(FCommandLine::Get(),TEXT("ConstructionNetworkScreenshot="),ScenarioScreenshotPath))
         { ScenarioStep=100; FScreenshotRequest::RequestScreenshot(ScenarioScreenshotPath,true,false); }
         else { FPlatformMisc::RequestExitWithStatus(false,0); }
@@ -1695,6 +1744,42 @@ void ASFConstructionNetworkController::TickFiniteScenario()
         InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
         InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));
         if (bSeedOnly) { bScenarioLineSeedQueued=true; }
+    }
+    else if (bBuilderRole && ScenarioStep==58 && bScenarioLayerReadyReported)
+    {
+        FString Barrier;
+        if (!FParse::Value(FCommandLine::Get(),TEXT("ConstructionNetworkRemovalBarrier="),Barrier) || !FPaths::FileExists(Barrier+TEXT(".layer"))) { return; }
+        if (SelectedShape!=1)
+        {
+            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::Two,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
+            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::Two,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0))); return;
+        }
+        if (!bLayerPlacement)
+        {
+            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::P,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
+            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::P,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0))); return;
+        }
+        if (PlacementLayer!=1)
+        {
+            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::PageUp,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
+            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::PageUp,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0))); return;
+        }
+        if (bScenarioLayerSeedQueued && !bHasLineSeed) { return; }
+        if (bScenarioLayerSeedQueued && !bScenarioLayerSeedReported)
+        {
+            if (State->GetSnapshot().Revision!=15 || State->GetSnapshot().Members.Num()!=5 || !State->HasCurrentCollision())
+            { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_SCENARIO_FAILED LayerSeedMutation=1")); FPlatformMisc::RequestExitWithStatus(false,1); return; }
+            UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_LAYER_SEED_ONLY Revision=15 Members=5 Layer=1"));
+            bScenarioLayerSeedReported=true;
+        }
+        SetControlRotation(((bHasLineSeed ? FVector(375,-175,50) : FVector(275,-175,50))-GetPawn()->GetActorLocation()).Rotation());
+        if (!bHasPlacementPreview || PreviewCell!=(bHasLineSeed ? FIntVector(7,-4,1) : FIntVector(5,-4,1))) { return; }
+        const bool bSeedOnly=!bHasLineSeed;
+        if (!bSeedOnly)
+        { if (!LineCache.bSupported || LineCache.End!=FIntVector(7,-4,1)) { return; } ScenarioStep=59; }
+        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
+        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));
+        if (bSeedOnly) { bScenarioLayerSeedQueued=true; }
     }
 }
 #endif

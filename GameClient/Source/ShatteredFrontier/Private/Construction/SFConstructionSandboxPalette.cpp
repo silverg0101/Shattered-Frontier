@@ -87,12 +87,12 @@ void USFConstructionSandboxPalette::ConfigureNetworkPresentation()
 {
     // Presentation capability subset only. The controller retains all actions
     // and authority; the standalone palette keeps its complete default layout.
-    for (const FName Name : {FName(TEXT("HandleSurface")),FName(TEXT("HandleLayer")),FName(TEXT("HandleLayerDown")),FName(TEXT("HandleLayerUp")),FName(TEXT("HandleConfirm")),FName(TEXT("HandleSave")),FName(TEXT("HandleLoad"))})
+    for (const FName Name : {FName(TEXT("HandleConfirm")),FName(TEXT("HandleSave")),FName(TEXT("HandleLoad"))})
     { if (auto* Button=WidgetTree->FindWidget(Name)) { Button->SetVisibility(ESlateVisibility::Collapsed); } }
     WidgetTree->ForEachWidget([](UWidget* Widget)
     { if (auto* Button=Cast<UButton>(Widget)) { Button->SetBackgroundColor(FLinearColor(0.18f,0.21f,0.25f,1.0f)); } });
     if (HintsTextBlock)
-    { HintsTextBlock->SetText(FText::FromString(TEXT("RMB hold: look | E: door\nX / Delete: demolition mode\nLMB: place or demolish | L: line\nR: rotate | Escape: cancel start\nUnlimited dev stock"))); }
+    { HintsTextBlock->SetText(FText::FromString(TEXT("RMB hold: look | E: door\nX / Delete: demolition mode\nLMB: place or demolish | L: line\nR: rotate | Escape: cancel start\nP: surface/layer | PgUp/PgDn: level\nUnlimited dev stock"))); }
 }
 
 void USFConstructionSandboxPalette::SetStatusText(const FText& InStatusText)

@@ -163,6 +163,11 @@ private:
     bool GetConstructionRay(FVector& Start, FVector& Direction) const;
     bool PrepareCursorAction();
     void ToggleDemolition();
+    void TogglePlacementPlane();
+    void LayerDown();
+    void LayerUp();
+    FString GetPlaneStatusText() const;
+    bool GetLayerPoint(const FVector& Start, const FVector& Direction, double RayLength, const FHitResult* Hit, FVector& OutPoint) const;
     void CancelCursorAction();
     void PaletteAction(ESFConstructionPaletteAction Action);
     void PlaceFromView();
@@ -207,6 +212,8 @@ private:
     FString CachedPaletteStatus;
     FIntPoint PaletteViewportSize = FIntPoint::ZeroValue;
     float PaletteViewportScale = 0;
+    bool bLayerPlacement = false;
+    int32 PlacementLayer = 0; // Local selection on the released Z0..19 construction lattice.
     bool bDemolitionMode = false;
     bool bDoorSelected = false;
     bool bLineMode = false;
@@ -243,6 +250,9 @@ private:
     int32 ScenarioStep = 0;
     double ScenarioStarted = 0;
     FString ScenarioScreenshotPath;
+    bool bScenarioLayerReadyReported = false;
+    bool bScenarioLayerSeedQueued = false;
+    bool bScenarioLayerSeedReported = false;
     bool bScenarioLineSeedQueued = false;
     bool bScenarioLineSeedReported = false;
     bool bScenarioLineReadyReported = false;
