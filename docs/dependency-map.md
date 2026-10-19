@@ -167,6 +167,8 @@ When adding, renaming, or removing design documents, update this index and affec
 
 ## Task map
 
+Greenlands environment art: `GameClient/ArtSource/GreenlandsPreview/README.md` owns the opt-in `/Game/Frontier/Environment/GreenlandsPreview/Greenlands_EnvironmentPreview`, metre-scale connected region, Blender/UE authoring sources and CC0 asset provenance. Arrival dressing is in progress; existing maps/defaults/cook inputs and construction/network gameplay are preserved.
+
 | Task | Start here | Related files | Checks |
 | --- | --- | --- | --- |
 | Playable construction sandbox | `docs/construction-sandbox-milestone.md` | BLD-01; construction geometry tool/test; SBX-02 exact Unreal write set; model-session handoff | `py -3 tests/test_construction_geometry.py`, `py -3 tests/test_construction_compatibility.py`, header generator `--check`; focused `ShatteredFrontier.Construction.` editor automation. See evidence for opt-in map/commands/limits; preserve E1 defaults/live server. |

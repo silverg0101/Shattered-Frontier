@@ -1,0 +1,113 @@
+[
+  {
+    "name": "fern_02",
+    "asset": "fern_02",
+    "alpha": "MASK",
+    "two_sided": true,
+    "base": "ArrivalAssets\\fern_02\\textures\\fern_02_diff_1k.jpg",
+    "uv": 0,
+    "transform": {},
+    "arm": "ArrivalAssets\\fern_02\\textures\\fern_02_arm_1k.jpg",
+    "normal": "ArrivalAssets\\fern_02\\textures\\fern_02_nor_gl_1k.jpg",
+    "opacity": "ArrivalAssets\\fern_02\\textures\\fern_02_opacity.png"
+  },
+  {
+    "name": "grass_medium_01",
+    "asset": "grass_medium_01",
+    "alpha": "BLEND",
+    "two_sided": true,
+    "base": "ArrivalAssets\\grass_medium_01\\textures\\grass_medium_01_diff_1k.jpg",
+    "uv": 0,
+    "transform": {},
+    "arm": "ArrivalAssets\\grass_medium_01\\textures\\grass_medium_01_arm_1k.jpg",
+    "normal": "ArrivalAssets\\grass_medium_01\\textures\\grass_medium_01_nor_gl_1k.jpg",
+    "opacity": "ArrivalAssets\\grass_medium_01\\textures\\grass_medium_01_opacity.png"
+  },
+  {
+    "name": "rock_moss_set_01",
+    "asset": "rock_moss_set_01",
+    "alpha": "OPAQUE",
+    "two_sided": true,
+    "base": "ArrivalAssets\\rock_moss_set_01\\textures\\rock_moss_set_01_diff_1k.jpg",
+    "uv": 0,
+    "transform": {},
+    "arm": "ArrivalAssets\\rock_moss_set_01\\textures\\rock_moss_set_01_rough_1k.jpg",
+    "normal": "ArrivalAssets\\rock_moss_set_01\\textures\\rock_moss_set_01_nor_gl_1k.jpg"
+  },
+  {
+    "name": "tree_small_02_branches",
+    "asset": "tree_small_02",
+    "alpha": "OPAQUE",
+    "two_sided": true,
+    "base": "ArrivalAssets\\tree_small_02\\textures\\tree_small_02_branch_diff_1k.jpg",
+    "uv": 1,
+    "transform": {
+      "offset": [
+        0,
+        0.40000009536743164
+      ],
+      "scale": [
+        3,
+        0.5999999046325684
+      ]
+    },
+    "arm": "ArrivalAssets\\tree_small_02\\textures\\tree_small_02_branch_arm_1k.jpg",
+    "normal": "ArrivalAssets\\tree_small_02\\textures\\tree_small_02_branch_nor_gl_1k.jpg"
+  },
+  {
+    "name": "tree_small_02_leaves",
+    "asset": "tree_small_02",
+    "alpha": "BLEND",
+    "two_sided": true,
+    "base": "ArrivalAssets\\tree_small_02\\textures\\tree_small_02_leaves_diff_1k.jpg",
+    "uv": 0,
+    "transform": {},
+    "arm": "ArrivalAssets\\tree_small_02\\textures\\tree_small_02_leaves_arm_1k.jpg",
+    "normal": "ArrivalAssets\\tree_small_02\\textures\\tree_small_02_leaves_nor_gl_1k.jpg",
+    "opacity": "ArrivalAssets\\tree_small_02\\textures\\tree_small_02_opacity.png"
+  },
+  {
+    "name": "tree_small_02_trunk",
+    "asset": "tree_small_02",
+    "alpha": "OPAQUE",
+    "two_sided": true,
+    "base": "ArrivalAssets\\tree_small_02\\textures\\tree_small_02_diff_1k.jpg",
+    "uv": 0,
+    "transform": {},
+    "arm": "ArrivalAssets\\tree_small_02\\textures\\tree_small_02_arm_1k.jpg",
+    "normal": "ArrivalAssets\\tree_small_02\\textures\\tree_small_02_nor_gl_1k.jpg"
+  },
+  {
+    "name": "tree_stump_02",
+    "asset": "tree_stump_02",
+    "alpha": "OPAQUE",
+    "two_sided": true,
+    "base": "ArrivalAssets\\tree_stump_02\\textures\\tree_stump_02_diff_1k.jpg",
+    "uv": 0,
+    "transform": {},
+    "arm": "ArrivalAssets\\tree_stump_02\\textures\\tree_stump_02_arm_1k.jpg",
+    "normal": "ArrivalAssets\\tree_stump_02\\textures\\tree_stump_02_nor_gl_1k.jpg"
+  },
+  {
+    "name": "wooden_crate_01",
+    "asset": "wooden_crate_01",
+    "alpha": "OPAQUE",
+    "two_sided": true,
+    "base": "ArrivalAssets\\wooden_crate_01\\textures\\wooden_crate_01_diff_1k.jpg",
+    "uv": 0,
+    "transform": {},
+    "arm": "ArrivalAssets\\wooden_crate_01\\textures\\wooden_crate_01_arm_1k.jpg",
+    "normal": "ArrivalAssets\\wooden_crate_01\\textures\\wooden_crate_01_nor_gl_1k.jpg"
+  },
+  {
+    "name": "wine_barrel_01",
+    "asset": "wine_barrel_01",
+    "alpha": "OPAQUE",
+    "two_sided": true,
+    "base": "ArrivalAssets\\wine_barrel_01\\textures\\wine_barrel_01_diff_1k.jpg",
+    "uv": 0,
+    "transform": {},
+    "arm": "ArrivalAssets\\wine_barrel_01\\textures\\wine_barrel_01_arm_1k.jpg",
+    "normal": "ArrivalAssets\\wine_barrel_01\\textures\\wine_barrel_01_nor_gl_1k.jpg"
+  }
+]

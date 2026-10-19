@@ -1,0 +1,34 @@
+# Greenlands environment
+
+Opt-in UE 5.8.3 map: `/Game/Frontier/Environment/GreenlandsPreview/Greenlands_EnvironmentPreview`.
+
+```powershell
+& 'C:\Program Files\Epic Games\UE_5.8\Engine\Binaries\Win64\UnrealEditor.exe' 'C:\Projects\Shattered-Frontier\GameClient\ShatteredFrontier.uproject' /Game/Frontier/Environment/GreenlandsPreview/Greenlands_EnvironmentPreview -game -windowed
+```
+
+WASD / mouse / Space. Open the same map in the editor to dress it. Existing walking pawn retains its placeholder body. Defaults, cook settings, gameplay source and other maps are untouched.
+
+World direction: areas are connected places in one continuous landscape, with physical roads, sightlines and gradual biome transitions. Preserve metre-scale coordinates and traversal when expanding. No overworld loading screens or teleport gates between these locations; background streaming may support later expansion. Separate instances are reserved for dungeons/encounters that require them. This first area's outer terrain is unfinished, not a completed continent boundary.
+
+The [vertical-slice region layout](../../../docs/Game-Design/Legends_Shattered_Frontier_Vertical_Slice_Specification_v1.0.md) supplies the arrival / settlement / resource route / build plots / encounter clearing / return overlook roles. The connected area is **600 × 600 m**, with a **956 m route**, approximately **4 m-wide paths**, **three 20 × 20 m plots**, four **8 × 6 m cottages** with open **1.4 m-wide doorways**, stalls, timber stacks and outcrops. These are authored dimensions, not a specified full-biome size. See `region-layout.json` for coordinates in metres. Unreal uses 100 cm/m.
+
+Static scenery supplies those locations; claims, harvesting, combat, markets, construction and network integration remain with their gameplay owners. The terrain is authored mesh terrain, not authoritative editable voxels. Trees/grass/cottages are an initial art pass, not production-certified foliage or an approved player construction kit. Detailed foliage replacement and LOD/performance work remain.
+
+References: existing `concept-art/Concept.png`, construction model handoff, sibling `GreenlandsWaystone` package. The handoff's `docs/art-templates/asset-catalog.md` is absent in this checkout. The existing waystone FBX is reused without editing its source package. Other geometry is authored in the saved Blender sources. `Surfaces/provenance.json` records downloaded Poly Haven **CC0** grass, dry earth and rock textures, source URLs and verified MD5s. No generated textures are represented as scans.
+
+Source pipeline (run with no preview/editor holding these assets open): Blender `author.py`, then UE Python `build_level.py` (refuses an existing map); `fetch_surfaces.py`, Blender `horizon.py`, UE `finish_surfaces.py`; Blender `region_author.py`, UE `dress_region.py`. The final region replaces the small initial terrain within this owned map. Blender 5.2.2; UE 5.8.3 Python commandlet via `-run=pythonscript -script=<absolute script> -unattended -nullrhi`. Incremental dressing scripts modify only the owned preview map/content. Keep subsequent manual map edits; rerunning dressing replaces its static scenery.
+
+`Region-InEngine.png` shows the current connected region at arrival; `Early-InEngine.png` records the superseded 100 m meadow. The saved region imports successfully in UE 5.8.3 and renders with the walking pawn standing on the terrain. Final screenshot follows a W input. No full-route walking, package, multiplayer, editable-terrain or construction acceptance is claimed.
+
+## Next to create the biome
+
+Active arrival pass: seven Poly Haven CC0 source assets are acquired (broadleaf tree, grass, fern, mossy rock set, stump, wine barrel, crate), prepared in `PreparedArrival/` and imported under the owned `Arrival/` content subtree with PBR materials and distance LODs. `ArrivalAssets/provenance.json` and `arrival-surface-provenance.json` record source URLs/hashes. Downloaded original geometry is an ignored cache; `acquire_arrival_assets.py` restores it. Editable prepared `.blend`, FBX and texture sources are included. `author_arrival_details.py` authors connected roads/details; `dress_arrival.py` is the current assembly step, pending rendered review. The current screenshot predates this pass.
+
+1. **Extend the regional composition.** Use the design's connected locations and existing coordinates as the anchor. A **2 × 2 km** region (4 km²) is a proposed MMO-zone planning envelope, not an approved full Greenlands boundary. Place future roads, valleys, ridgelines, waterways and neighbouring-biome transitions on that continuous plan before expanding detailed dressing. WoW community measurements are scale references only; the current 0.36 km² is a settlement district.
+2. **Finish the arrival-to-settlement route first.** Replace prototype trees/grass with a coherent free temperate foliage set, improve cottages and ground transitions, add readable directional signs, undergrowth, fences and roadside detail. Use [Project Nature's free temperate packs](https://www.fab.com/sellers/Project%20Nature) as acquisition candidates; current imported ground/stone surfaces are [Poly Haven CC0](https://polyhaven.com/license). Keep asset dependencies within the owned content folder and record the acquired license.
+3. **Continue outward along the actual loop.** Dress the three plots, timber grove and quarry, then the encounter clearing and return overlook. Use gradual density/elevation changes and landmarks to make the journey readable. Keep homes, paths, openings and plot dimensions at human scale; record route distances and observed travel time. Place scenery for gameplay roles without inventing their authority or interactions.
+4. **Connect the next tract of wilderness.** Extend terrain and roads from the same world coordinates; avoid disconnected dioramas, portals or overworld loading screens. Choose background-streaming/terrain integration only when growth needs it and coordinate any engine/project changes outside this art write set with their owner. Preserve the authoritative editable-terrain design; mesh terrain is the present visual surface.
+5. **Check the delivered journey.** Walk the route and cottage doors, inspect slope/collision, plot space, wayfinding and representative rendered performance. Fix visible defects as found. Add focused checks for concrete risks; avoid repeated fixtures or broad audits replacing area construction. Keep a current in-engine screenshot and exact launch command with each meaningful area increment.
+
+Environment ownership stays within `Content/Frontier/Environment/GreenlandsPreview`, this map and its art sources. Construction/networking remain with the other chat. Do not change existing maps, shared catalogs, default maps or cook settings. No cross-chat messages have been sent.
+

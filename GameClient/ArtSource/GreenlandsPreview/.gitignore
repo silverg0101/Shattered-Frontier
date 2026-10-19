@@ -1,0 +1,10 @@
+*.log
+__pycache__/
+*.blend1
+inspection.json
+ArrivalAssets/*/*.bin
+ArrivalAssets/*/*.gltf
+ArrivalAssets/*/files.json
+ArrivalAssets/*/info.json
+ArrivalAssets/Barrel_01/
+PreparedArrival/SM_PH_Barrel_01_*

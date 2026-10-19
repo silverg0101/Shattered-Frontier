@@ -1,0 +1,141 @@
+{
+  "units": "metres; Unreal import uses 100cm/m",
+  "area_size_metres": [
+    600,
+    600
+  ],
+  "route_metres": 956.1,
+  "path_width_metres": 4,
+  "build_plots_metres": [
+    20,
+    20
+  ],
+  "areas": {
+    "Arrival": {
+      "center": [
+        -185,
+        -85
+      ],
+      "radius": 10
+    },
+    "Settlement": {
+      "center": [
+        -90,
+        -40
+      ],
+      "radius": 30
+    },
+    "Build_West": {
+      "center": [
+        -25,
+        5
+      ],
+      "radius": 14
+    },
+    "Build_Central": {
+      "center": [
+        5,
+        5
+      ],
+      "radius": 14
+    },
+    "Build_East": {
+      "center": [
+        35,
+        5
+      ],
+      "radius": 14
+    },
+    "Resource_Grove": {
+      "center": [
+        90,
+        75
+      ],
+      "radius": 22
+    },
+    "Stone_Outcrop": {
+      "center": [
+        155,
+        55
+      ],
+      "radius": 16
+    },
+    "Enemy_Clearing": {
+      "center": [
+        130,
+        -135
+      ],
+      "radius": 22
+    },
+    "Return_Overlook": {
+      "center": [
+        -65,
+        -150
+      ],
+      "radius": 14
+    }
+  },
+  "route": [
+    [
+      -185,
+      -85
+    ],
+    [
+      -145,
+      -65
+    ],
+    [
+      -90,
+      -40
+    ],
+    [
+      -70,
+      -5
+    ],
+    [
+      -45,
+      -8
+    ],
+    [
+      0,
+      -15
+    ],
+    [
+      45,
+      15
+    ],
+    [
+      90,
+      75
+    ],
+    [
+      155,
+      55
+    ],
+    [
+      175,
+      0
+    ],
+    [
+      130,
+      -135
+    ],
+    [
+      40,
+      -165
+    ],
+    [
+      -65,
+      -150
+    ],
+    [
+      -130,
+      -135
+    ],
+    [
+      -185,
+      -85
+    ]
+  ],
+  "design": "Vertical Slice Specification / Region layout and encounter envelope; dimensions locally authored, not a canonical full-biome size"
+}

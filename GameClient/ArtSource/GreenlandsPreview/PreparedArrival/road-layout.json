@@ -1,0 +1,69 @@
+{
+  "road_width_metres": 3.6,
+  "soft_shoulders_metres": 1.2,
+  "footpath_width_metres": 1.62,
+  "incoming_and_outgoing_route": [
+    [
+      -185,
+      -85
+    ],
+    [
+      -145,
+      -65
+    ],
+    [
+      -90,
+      -40
+    ],
+    [
+      -70,
+      -5
+    ],
+    [
+      -45,
+      -8
+    ],
+    [
+      0,
+      -15
+    ],
+    [
+      45,
+      15
+    ],
+    [
+      90,
+      75
+    ],
+    [
+      155,
+      55
+    ],
+    [
+      175,
+      0
+    ],
+    [
+      130,
+      -135
+    ],
+    [
+      40,
+      -165
+    ],
+    [
+      -65,
+      -150
+    ],
+    [
+      -130,
+      -135
+    ],
+    [
+      -185,
+      -85
+    ]
+  ],
+  "geometry_units": "metres",
+  "surface": "visual ribbon over continuous collision terrain; no loading boundaries"
+}
