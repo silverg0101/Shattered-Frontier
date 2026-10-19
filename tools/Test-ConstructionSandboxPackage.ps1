@@ -70,6 +70,7 @@ function Invoke-Scenario([string]$Name, [string]$Map, [string]$Flag, [string]$Su
     $watch = [Diagnostics.Stopwatch]::StartNew()
     $process = Start-Process -FilePath $game -ArgumentList $quoted -WorkingDirectory ([IO.Path]::GetDirectoryName($game)) -WindowStyle Hidden -PassThru `
         -RedirectStandardOutput (Join-Path $runRoot ($Name + '.stdout.txt')) -RedirectStandardError (Join-Path $runRoot ($Name + '.stderr.txt'))
+    $null = $process.Handle  # PS 5.1 keeps ExitCode only if the handle is opened before exit
     $ownedProcesses.Add($process)
     $run = [ordered]@{ name = $Name; pid = $process.Id; arguments = $quoted; userDir = $userDir; log = $log; exitCode = $null; steps = 0 }
     $results.runs += $run

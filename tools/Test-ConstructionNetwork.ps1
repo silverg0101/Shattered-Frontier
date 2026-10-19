@@ -28,6 +28,7 @@ function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
         $arguments += @('-RenderOffscreen','-windowed','-ResX=1280','-ResY=720',('-ConstructionNetworkScreenshot="'+(Join-Path $root ($Name+'.png'))+'"'))
     } else { $arguments += '-NullRHI' }
     $process = Start-Process -FilePath $editor -ArgumentList $arguments -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $root ($Name+'.stdout.txt')) -RedirectStandardError (Join-Path $root ($Name+'.stderr.txt'))
+    $null = $process.Handle  # PS 5.1 keeps ExitCode only if the handle is opened before exit
     $owned.Add($process)
     $results.runs += [ordered]@{ name=$Name; pid=$process.Id; arguments=$arguments; log=$log }
     return $process

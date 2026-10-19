@@ -28,6 +28,7 @@ function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra,[string]$Captur
     else { $arguments+=@('-RenderOffscreen','-ResX=1280','-ResY=720',('-GatheringSkillsCapture="'+$Capture+'"')) }
     $arguments+=@('-nosound','-nop4',('-UserDir="'+$user+'/"'),('-abslog="'+$log+'"'))+$Extra
     $process=Start-Process -FilePath $editor -ArgumentList $arguments -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $root ($Name+'.stdout.txt')) -RedirectStandardError (Join-Path $root ($Name+'.stderr.txt'))
+    $null = $process.Handle  # PS 5.1 keeps ExitCode only if the handle is opened before exit
     $owned.Add($process)
     $results.runs += [ordered]@{ name=$Name; pid=$process.Id; executable=$editor; arguments=$arguments; log=$log }
     return $process

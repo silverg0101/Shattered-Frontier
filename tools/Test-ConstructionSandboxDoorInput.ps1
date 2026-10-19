@@ -27,6 +27,7 @@ function Invoke-FiniteGame([string]$Name, [string]$Map, [string[]]$Extra) {
         '-ConstructionDoorInputScenario', '-ExecCmds="t.MaxFPS 60"', ('-abslog="' + $log + '"')) + $Extra
     $watch = [Diagnostics.Stopwatch]::StartNew()
     $process = Start-Process -FilePath $editor -ArgumentList $arguments -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $EvidenceRoot ($Name + '.stdout.txt')) -RedirectStandardError (Join-Path $EvidenceRoot ($Name + '.stderr.txt'))
+    $null = $process.Handle  # PS 5.1 keeps ExitCode only if the handle is opened before exit
     $ownedProcesses.Add($process)
     $results.runs += [ordered]@{ name = $Name; pid = $process.Id; map = $Map; arguments = $arguments; log = $log; exitCode = $null; elapsedSeconds = $null }
     while (-not $process.WaitForExit(500)) {

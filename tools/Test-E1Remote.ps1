@@ -34,6 +34,7 @@ try {
             $arguments = @(('"' + $project + '"'), "${ServerAddress}:$Port", '-game', '-NullRHI', '-unattended', '-nosound', '-nop4', ('-abslog="' + $clientLog + '"'))
         }
         $process = Start-Process -FilePath $clientExecutablePath -ArgumentList $arguments -WindowStyle Hidden -PassThru
+        $null = $process.Handle  # PS 5.1 keeps ExitCode only if the handle is opened before exit
         $ownedProcesses.Add($process)
         Write-Output "Client$index PID $($process.Id)"
         $deadline = (Get-Date).AddSeconds(120)

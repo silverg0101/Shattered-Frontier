@@ -50,6 +50,7 @@ function Launch([string[]]$LaunchArguments) {
         $LaunchArguments += @('-csvCompression=0', ('-E1ProfileDir="' + (Join-Path $profilesDir $role) + '"'), '-ExecCmds="net.EnableNetStats 1"')
     }
     $process = Start-Process -FilePath $editor -ArgumentList (@('"' + $project + '"') + $LaunchArguments + $emulationArguments) -WindowStyle Hidden -PassThru
+    $null = $process.Handle  # PS 5.1 keeps ExitCode only if the handle is opened before exit
     $owned.Add($process)
 }
 function Assert-OwnedProcessesAlive {

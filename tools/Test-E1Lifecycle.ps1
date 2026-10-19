@@ -18,6 +18,7 @@ $script:serverLog = Join-Path $logs 'Server.log'
 
 function Launch([string]$Label, [string[]]$LaunchArguments) {
     $process = Start-Process -FilePath $editor -ArgumentList (@('"' + $project + '"') + $LaunchArguments) -WindowStyle Hidden -PassThru
+    $null = $process.Handle  # PS 5.1 keeps ExitCode only if the handle is opened before exit
     $ownedProcesses.Add($process)
     Write-Host "Started $Label PID $($process.Id)"
     return $process

@@ -60,6 +60,7 @@ function Invoke-FiniteRun([string]$Name,[string]$Map,[string[]]$Extra) {
     $run = [ordered]@{ name=$Name; arguments=$arguments; startedUtc=[DateTime]::UtcNow.ToString('o') }
     $results.runs.Add($run)
     $process = Start-Process -FilePath $executable -ArgumentList $arguments -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $EvidenceRoot ($Name + '.stdout.txt')) -RedirectStandardError (Join-Path $EvidenceRoot ($Name + '.stderr.txt'))
+    $null = $process.Handle  # PS 5.1 keeps ExitCode only if the handle is opened before exit
     $ownedProcesses.Add($process)
     $run.pid = $process.Id
     if (-not $process.WaitForExit($TimeoutSeconds * 1000)) { throw "$Name exceeded its finite timeout." }

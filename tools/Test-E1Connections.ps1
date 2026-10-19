@@ -12,6 +12,7 @@ $null = New-Item -ItemType Directory -Path $logs
 $ownedProcesses = [Collections.Generic.List[Diagnostics.Process]]::new()
 function Launch([string[]]$LaunchArguments) {
     $process = Start-Process -FilePath $editor -ArgumentList (@('"' + $project + '"') + $LaunchArguments) -WindowStyle Hidden -PassThru
+    $null = $process.Handle  # PS 5.1 keeps ExitCode only if the handle is opened before exit
     $ownedProcesses.Add($process)
     Write-Output "Started PID $($process.Id)"
 }
