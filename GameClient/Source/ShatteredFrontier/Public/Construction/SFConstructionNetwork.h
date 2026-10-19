@@ -14,7 +14,7 @@ class ASFConstructionNetworkController;
 UENUM()
 enum class ESFConstructionNetworkResult : uint8
 {
-    Accepted, InvalidContext, PermissionDenied, Stale, InvalidCell, OutOfReach, Occluded, Occupied, ProjectionFailed, Unsupported, LimitReached, NotFound, Removed, InvalidPiece, DoorBlocked, DoorOpened, DoorClosed, DoorRemoved
+    Accepted, InvalidContext, PermissionDenied, Stale, InvalidCell, OutOfReach, Occluded, Occupied, ProjectionFailed, Unsupported, LimitReached, NotFound, Removed, InvalidPiece, DoorBlocked, DoorOpened, DoorClosed, DoorRemoved, InvalidLine
 };
 
 USTRUCT()
@@ -69,6 +69,7 @@ public:
     virtual void BeginPlay() override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     ESFConstructionNetworkResult Edit(ASFConstructionNetworkController* Controller, FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation);
+    ESFConstructionNetworkResult PlaceLine(ASFConstructionNetworkController* Controller, FIntVector Start, FIntVector End, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation);
     ESFConstructionNetworkResult PlaceDoor(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision, uint8 Yaw);
     ESFConstructionNetworkResult ToggleDoor(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision);
     ESFConstructionNetworkResult RemoveDoor(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision);
@@ -85,10 +86,13 @@ public:
     bool FindDoorAlongRay(const APawn* Pawn, const FVector& Start, const FVector& End, FIntVector& OutOrigin) const;
     bool OwnsDoorProjection(const FSFConstructionNetworkDoor& Door, const FSFConstructionNetworkDoorProjection& Projection) const;
     bool IsSupportAllowedForPreview(FIntVector Cell, uint8 Shape, uint8 Rotation, bool bRemove) const;
+    bool IsLineSupportedForPreview(FIntVector Start, FIntVector End, uint8 Shape, uint8 Rotation) const;
+    int32 GetMaximumLineCells() const { return MaximumLineCells; }
     int32 GetMaximumDoors() const { return MaximumDoors; }
 private:
     ESFConstructionNetworkResult ValidateEditContext(ASFConstructionNetworkController* Controller, uint64 ExpectedRevision, const APawn*& OutPawn, const AActor*& OutFoundation) const;
     ESFConstructionNetworkResult ValidateDoorTarget(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision, int32& OutIndex) const;
+    ESFConstructionNetworkResult ValidateMemberCell(const APawn* Pawn, const AActor* Foundation, FIntVector Cell, bool bRemove, uint8 Shape, uint8 Rotation) const;
     bool Activate(const FSFConstructionNetworkSnapshot& Candidate);
     UFUNCTION() void OnRep_Snapshot();
     UPROPERTY(ReplicatedUsing=OnRep_Snapshot) FSFConstructionNetworkSnapshot Snapshot;
@@ -103,6 +107,7 @@ private:
     UPROPERTY(Replicated) double ReachCentimetres = 0;
     UPROPERTY(Replicated) int32 MaximumMembers = 0;
     UPROPERTY(Replicated) int32 MaximumDoors = 0;
+    UPROPERTY(Replicated) int32 MaximumLineCells = 0;
     uint64 ProjectionRevision = 0;
 };
 
@@ -153,7 +158,10 @@ private:
     void SelectSlope();
     void SelectDoor();
     void RotatePiece();
+    void ToggleLineMode();
+    void CancelLine();
     void SelectShape(uint8 Shape);
+    UFUNCTION(Server, Reliable) void ServerPlaceLine(FIntVector Start, FIntVector End, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation);
     UFUNCTION(Server, Reliable) void ServerPlace(FIntVector Cell, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation);
     UFUNCTION(Server, Reliable) void ServerRemove(FIntVector Cell, uint64 ExpectedRevision);
     UFUNCTION(Server, Reliable) void ServerPlaceDoor(FIntVector Origin, uint64 ExpectedRevision, uint8 Yaw);
@@ -173,6 +181,18 @@ private:
     uint8 SelectedRotation = 0;
     uint8 SelectedYaw = 0;
     bool bDoorSelected = false;
+    bool bLineMode = false;
+    bool bHasLineSeed = false;
+    FIntVector LineStart = FIntVector::ZeroValue;
+    uint64 LineRevision = 0;
+    struct FLinePreviewCache
+    {
+        TWeakObjectPtr<ASFConstructionNetworkState> State;
+        uint64 Revision = MAX_uint64;
+        FIntVector Start = FIntVector::ZeroValue, End = FIntVector::ZeroValue;
+        uint8 Shape = 255, Rotation = 255;
+        bool bSupported = false;
+    } LineCache;
     bool bHasDoorTarget = false;
     FIntVector TargetDoorOrigin = FIntVector::ZeroValue;
     struct FSupportCache
@@ -191,6 +211,9 @@ private:
     int32 ScenarioStep = 0;
     double ScenarioStarted = 0;
     FString ScenarioScreenshotPath;
+    bool bScenarioLineSeedQueued = false;
+    bool bScenarioLineSeedReported = false;
+    bool bScenarioLineReadyReported = false;
     bool bScenarioEmptyReported = false;
     bool bScenarioDoorCameraAimed = false;
     bool bScenarioDoorCapsuleClosedReported = false;
