@@ -6,22 +6,33 @@
 #include "SFConstructionNetwork.generated.h"
 
 class UStaticMeshComponent;
-class UStaticMesh;
+class UProceduralMeshComponent;
+class UPrimitiveComponent;
 class ASFConstructionNetworkController;
 
 UENUM()
 enum class ESFConstructionNetworkResult : uint8
 {
-    Accepted, InvalidContext, PermissionDenied, Stale, InvalidCell, OutOfReach, Occluded, Occupied, ProjectionFailed, Unsupported, LimitReached, NotFound, Removed
+    Accepted, InvalidContext, PermissionDenied, Stale, InvalidCell, OutOfReach, Occluded, Occupied, ProjectionFailed, Unsupported, LimitReached, NotFound, Removed, InvalidPiece
 };
 
-// Canonical-cube development protocol. No material, path, identity or permission payloads.
+USTRUCT()
+struct FSFConstructionNetworkMember
+{
+    GENERATED_BODY()
+    UPROPERTY() FIntVector Cell = FIntVector::ZeroValue;
+    UPROPERTY() uint8 Shape = 0;
+    UPROPERTY() uint8 Rotation = 0;
+};
+
+// Canonical pilot development protocol. No material, path, identity or permission payloads.
 USTRUCT()
 struct FSFConstructionNetworkSnapshot
 {
     GENERATED_BODY()
     UPROPERTY() uint64 Revision = 0;
-    UPROPERTY() TArray<FIntVector> Cells;
+    UPROPERTY() TArray<FSFConstructionNetworkMember> Members;
+    int32 Find(const FIntVector& Cell) const { return Members.IndexOfByPredicate([&](const auto& M) { return M.Cell==Cell; }); }
     bool NetSerialize(FArchive& Ar, UPackageMap* Map, bool& bOutSuccess);
 };
 
@@ -38,7 +49,7 @@ public:
     ASFConstructionNetworkState();
     virtual void BeginPlay() override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-    ESFConstructionNetworkResult Edit(ASFConstructionNetworkController* Controller, FIntVector Cell, uint64 ExpectedRevision, bool bRemove);
+    ESFConstructionNetworkResult Edit(ASFConstructionNetworkController* Controller, FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation);
     const FSFConstructionNetworkSnapshot& GetSnapshot() const { return Snapshot; }
     bool HasCurrentCollision() const;
     FString GetContentDigest() const;
@@ -47,13 +58,14 @@ public:
     double GetReachCentimetres() const { return ReachCentimetres; }
     int32 GetMaximumMembers() const { return MaximumMembers; }
     bool IsProjectionCurrent() const { return bProjectionReady && ProjectionRevision == Snapshot.Revision; }
+    bool GetCellForComponent(const UPrimitiveComponent* Component, FIntVector& OutCell) const;
 private:
     bool Activate(const FSFConstructionNetworkSnapshot& Candidate);
     UFUNCTION() void OnRep_Snapshot();
     UPROPERTY(ReplicatedUsing=OnRep_Snapshot) FSFConstructionNetworkSnapshot Snapshot;
     UPROPERTY(Replicated) bool bPairReady = false;
-    UPROPERTY() TObjectPtr<UStaticMesh> CubeAsset;
-    UPROPERTY(Transient) TMap<FIntVector,TObjectPtr<UStaticMeshComponent>> Cubes;
+    UPROPERTY(Transient) TMap<FIntVector,TObjectPtr<UProceduralMeshComponent>> Meshes;
+    TMap<FIntVector,FSFConstructionNetworkMember> ProjectedMembers;
     bool bProjectionReady = false;
     bool bConfigurationReady = false;
     UPROPERTY(Replicated) double ReachCentimetres = 0;
@@ -82,6 +94,7 @@ class SHATTEREDFRONTIER_API ASFConstructionNetworkController : public ASFE1Playe
 {
     GENERATED_BODY()
 public:
+    ASFConstructionNetworkController();
     virtual void SetupInputComponent() override;
     virtual void AcknowledgePossession(APawn* P) override;
     virtual void Tick(float DeltaSeconds) override;
@@ -92,8 +105,13 @@ private:
     void PlaceFromView();
     void RemoveFromView();
     void RefreshPlacementPreview(bool bDrawOutline);
-    void ProcessEdit(FIntVector Cell, uint64 ExpectedRevision, bool bRemove);
-    UFUNCTION(Server, Reliable) void ServerPlace(FIntVector Cell, uint64 ExpectedRevision);
+    void ProcessEdit(FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation);
+    void SelectCube();
+    void SelectSlab();
+    void SelectSlope();
+    void RotatePiece();
+    void SelectShape(uint8 Shape);
+    UFUNCTION(Server, Reliable) void ServerPlace(FIntVector Cell, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation);
     UFUNCTION(Server, Reliable) void ServerRemove(FIntVector Cell, uint64 ExpectedRevision);
     UFUNCTION(Client, Reliable) void ClientPlacementResult(ESFConstructionNetworkResult Result, uint64 Revision);
     UPROPERTY(Replicated) bool bRoleAssigned = false;
@@ -105,11 +123,15 @@ private:
     FIntVector RemovalCell = FIntVector::ZeroValue;
     FString PreviewStatus = TEXT("Connecting to construction state...");
     FString LastPlacementStatus = TEXT("No placement requested.");
+    uint8 SelectedShape = 0;
+    uint8 SelectedRotation = 0;
+    uint8 SelectedYaw = 0;
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     void TickFiniteScenario();
     int32 ScenarioStep = 0;
     double ScenarioStarted = 0;
     FString ScenarioScreenshotPath;
+    bool bScenarioEmptyReported = false;
 #endif
 };
 
