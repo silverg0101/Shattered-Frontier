@@ -71,6 +71,7 @@ bool USFGatheringPilotSettings::Validate(FString& Error) const
         && FMath::IsFinite(MovementCancelMetres) && MovementCancelMetres>=0.01f && MovementCancelMetres<=0.25f
         && ChargesPerNode>=1 && ChargesPerNode<=12 && UnitsPerCharge>=1 && UnitsPerCharge<=10
         && ChargesPerNode*UnitsPerCharge<=30 && InventorySlots>=1 && InventorySlots<=64
+        && FMath::IsFinite(RespawnSeconds) && RespawnSeconds>=1 && RespawnSeconds<=86400
         && FMath::IsFinite(InventoryWeightKg) && InventoryWeightKg>=1 && InventoryWeightKg<=1000
         && MaterialStackUnits>=1 && MaterialStackUnits<=100 && FMath::IsFinite(MaterialUnitWeightKg)
         && MaterialUnitWeightKg>=0.01f && MaterialUnitWeightKg<=50
@@ -100,8 +101,51 @@ void ASFGatheringPilotNode::BeginPlay()
 {
     Super::BeginPlay();
     FString Error; const auto* Settings=GetDefault<USFGatheringPilotSettings>();
-    if (HasAuthority() && Settings->Validate(Error)) { State.Charges=IsRefinery() ? 0 : Settings->ChargesPerNode; }
+    if (HasAuthority() && Settings->Validate(Error))
+    {
+        State.Capacity=IsRefinery() ? 0 : Settings->ChargesPerNode;
+        State.Charges=State.Capacity; CapturedRespawnSeconds=Settings->RespawnSeconds;
+    }
     OnRep_State();
+}
+
+void ASFGatheringPilotNode::EndPlay(const EEndPlayReason::Type Reason)
+{
+    GetWorldTimerManager().ClearTimer(RecoveryTimer);
+    Super::EndPlay(Reason);
+}
+
+FSFGatheringPilotPresentation ASFGatheringPilotNode::GetPresentationState() const
+{
+    FSFGatheringPilotPresentation View;
+    View.Kind=Kind; View.Revision=State.Revision; View.RemainingCharges=State.Charges;
+    View.Capacity=State.Capacity; View.bBusy=State.bBusy; View.bRefinery=IsRefinery();
+    View.ExtractedFraction=View.bRefinery || State.Capacity<=0 ? 0
+        : FMath::Clamp(1.0f-static_cast<float>(State.Charges)/State.Capacity,0.0f,1.0f);
+    View.RecoveryAtServerSeconds=State.RecoveryAtServerSeconds;
+    return View;
+}
+
+void ASFGatheringPilotNode::BeginRecovery()
+{
+    if (!HasAuthority() || IsRefinery() || State.Charges!=0 || State.RecoveryAtServerSeconds>0) { return; }
+    RecoveryKind=Kind; State.RecoveryAtServerSeconds=GetWorld()->GetTimeSeconds()+CapturedRespawnSeconds;
+    GetWorldTimerManager().SetTimer(RecoveryTimer,this,&ASFGatheringPilotNode::Recover,CapturedRespawnSeconds,false);
+}
+
+void ASFGatheringPilotNode::Recover()
+{
+    if (!HasAuthority() || IsRefinery() || Kind!=RecoveryKind || State.Charges!=0 || State.Capacity<=0
+        || State.bBusy || LockedBy.IsValid() || State.RecoveryAtServerSeconds<=0 || State.Revision==MAX_uint32) { return; }
+    const double Remaining=State.RecoveryAtServerSeconds-GetWorld()->GetTimeSeconds();
+    if (Remaining>0)
+    {
+        GetWorldTimerManager().SetTimer(RecoveryTimer,this,&ASFGatheringPilotNode::Recover,
+            FMath::Max(static_cast<float>(Remaining),UE_SMALL_NUMBER),false);
+        return;
+    }
+    State.Charges=State.Capacity; State.RecoveryAtServerSeconds=0; ++State.Revision;
+    OnRep_State(); ForceNetUpdate();
 }
 
 void ASFGatheringPilotNode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -131,11 +175,15 @@ void ASFGatheringPilotNode::OnRep_State()
         Label->SetText(FText::FromString(FString::Printf(TEXT("%s\n%s | %d %s -> %d units"),*GetResourceName(),
             State.bBusy ? TEXT("In use") : TEXT("E: refine"),Kind==ESFGatheringPilotKind::Sawmill ? Settings->TimberInputLogs : Settings->IngotInputOre,
             Kind==ESFGatheringPilotKind::Sawmill ? TEXT("log") : TEXT("ore"),Kind==ESFGatheringPilotKind::Sawmill ? Settings->TimberOutputUnits : Settings->IngotOutputUnits)));
-        Label->SetTextRenderColor(FColor::Yellow); return;
+        Label->SetTextRenderColor(FColor::Yellow);
     }
-    Label->SetText(FText::FromString(FString::Printf(TEXT("%s\n%s | %d charges"),*GetResourceName(),
-        State.Charges==0 ? TEXT("Depleted") : State.bBusy ? TEXT("In use") : TEXT("E: harvest"),State.Charges)));
-    Label->SetTextRenderColor(State.Charges==0 ? FColor::Silver : Kind==ESFGatheringPilotKind::Oak ? FColor::Green : FColor::Cyan);
+    else
+    {
+        Label->SetText(FText::FromString(FString::Printf(TEXT("%s\n%s | %d charges"),*GetResourceName(),
+            State.Charges==0 ? TEXT("Depleted") : State.bBusy ? TEXT("In use") : TEXT("E: harvest"),State.Charges)));
+        Label->SetTextRenderColor(State.Charges==0 ? FColor::Silver : Kind==ESFGatheringPilotKind::Oak ? FColor::Green : FColor::Cyan);
+    }
+    if (HasActorBegunPlay() && GetNetMode()!=NM_DedicatedServer) { RefreshResourcePresentation(GetPresentationState()); }
 }
 
 void ASFGatheringPilotNode::Release(USFGatheringPilotComponent* Interactor)
@@ -385,7 +433,7 @@ void USFGatheringPilotComponent::TickComponent(float Delta, ELevelTick Type, FAc
     if (Result!=ESFGatheringPilotResult::None) { Finish(ESFGatheringPilotPhase::Rejected,Result); return; }
     // Synchronous game-thread pilot: no fallible step remains after the inventory commit.
     const bool bRefining=ActiveKind==ESFGatheringPilotKind::Sawmill || ActiveKind==ESFGatheringPilotKind::Forge;
-    if (!bRefining) { --Feedback.Node->State.Charges; }
+    if (!bRefining) { --Feedback.Node->State.Charges; Feedback.Node->BeginRecovery(); }
     ++Feedback.Node->State.Revision;
     Finish(ESFGatheringPilotPhase::Committed,bRefining ? ESFGatheringPilotResult::Refined : ESFGatheringPilotResult::Granted);
 }

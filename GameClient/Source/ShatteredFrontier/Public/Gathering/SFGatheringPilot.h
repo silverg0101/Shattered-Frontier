@@ -3,6 +3,7 @@
 #include "Components/ActorComponent.h"
 #include "Engine/DeveloperSettings.h"
 #include "GameFramework/Actor.h"
+#include "TimerManager.h"
 #include "SFGatheringPilot.generated.h"
 
 class UStaticMesh;
@@ -24,6 +25,8 @@ public:
     float MovementCancelMetres = 0.05f;
     UPROPERTY(Config, EditAnywhere, Category="Harvest", meta=(ClampMin="1", ClampMax="12"))
     int32 ChargesPerNode = 3;
+    UPROPERTY(Config, EditAnywhere, Category="Harvest", meta=(ClampMin="1", ClampMax="86400", Units="s", ToolTip="Session pilot recovery after final depletion. Release authors; next world start. Production regeneration belongs to World."))
+    float RespawnSeconds = 300;
     UPROPERTY(Config, EditAnywhere, Category="Harvest", meta=(ClampMin="1", ClampMax="10"))
     int32 UnitsPerCharge = 1;
     UPROPERTY(Config, EditAnywhere, Category="Inventory", meta=(ClampMin="1", ClampMax="64"))
@@ -61,6 +64,23 @@ struct FSFGatheringPilotNodeState
     UPROPERTY() uint32 Revision = 0;
     UPROPERTY() int32 Charges = 0;
     UPROPERTY() bool bBusy = false;
+    UPROPERTY() int32 Capacity = 0;
+    UPROPERTY() double RecoveryAtServerSeconds = 0;
+};
+
+// Idempotent public appearance snapshot, never an inventory/reward event.
+USTRUCT(BlueprintType)
+struct FSFGatheringPilotPresentation
+{
+    GENERATED_BODY()
+    UPROPERTY(BlueprintReadOnly) ESFGatheringPilotKind Kind = ESFGatheringPilotKind::Oak;
+    UPROPERTY(BlueprintReadOnly) int64 Revision = 0;
+    UPROPERTY(BlueprintReadOnly) int32 RemainingCharges = 0;
+    UPROPERTY(BlueprintReadOnly) int32 Capacity = 0;
+    UPROPERTY(BlueprintReadOnly) bool bBusy = false;
+    UPROPERTY(BlueprintReadOnly) bool bRefinery = false;
+    UPROPERTY(BlueprintReadOnly) float ExtractedFraction = 0;
+    UPROPERTY(BlueprintReadOnly) double RecoveryAtServerSeconds = 0;
 };
 
 // Presentation can be replaced by a Blueprint subclass; item grants remain server-owned.
@@ -71,23 +91,35 @@ class SHATTEREDFRONTIER_API ASFGatheringPilotNode : public AActor
 public:
     ASFGatheringPilotNode();
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type Reason) override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out) const override;
     FString GetResourceName() const;
     bool IsRefinery() const { return Kind==ESFGatheringPilotKind::Sawmill || Kind==ESFGatheringPilotKind::Forge; }
     const FSFGatheringPilotNodeState& GetState() const { return State; }
+    UFUNCTION(BlueprintPure, Category="Gathering Presentation")
+    FSFGatheringPilotPresentation GetPresentationState() const;
+    // Apply current appearance, including late join. May repeat; do not play reward effects here.
+    UFUNCTION(BlueprintImplementableEvent, BlueprintCosmetic, Category="Gathering Presentation")
+    void RefreshResourcePresentation(const FSFGatheringPilotPresentation& Presentation);
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, ReplicatedUsing=OnRep_State, Category="Kind")
     ESFGatheringPilotKind Kind = ESFGatheringPilotKind::Oak;
 private:
     friend class USFGatheringPilotComponent;
     friend class FSFGatheringPilotAuthorityTest;
     friend class FSFGatheringPilotToolTest;
+    friend class FSFGatheringPilotLifecycleTest;
     UFUNCTION() void OnRep_State();
     void Release(USFGatheringPilotComponent* Interactor);
-    UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> Mesh;
-    UPROPERTY(VisibleAnywhere) TObjectPtr<UTextRenderComponent> Label;
+    void BeginRecovery();
+    void Recover();
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true")) TObjectPtr<UStaticMeshComponent> Mesh;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true")) TObjectPtr<UTextRenderComponent> Label;
     UPROPERTY() TObjectPtr<UStaticMesh> StationMesh;
     UPROPERTY(ReplicatedUsing=OnRep_State) FSFGatheringPilotNodeState State;
     TWeakObjectPtr<USFGatheringPilotComponent> LockedBy;
+    FTimerHandle RecoveryTimer;
+    float CapturedRespawnSeconds = 300;
+    ESFGatheringPilotKind RecoveryKind = ESFGatheringPilotKind::Oak;
 };
 
 UENUM()
@@ -140,6 +172,7 @@ public:
 private:
     friend class FSFGatheringPilotAuthorityTest;
     friend class FSFGatheringPilotToolTest;
+    friend class FSFGatheringPilotLifecycleTest;
     UFUNCTION(Server, Reliable) void ServerGatheringAction(ASFGatheringPilotNode* Node, uint32 Revision, uint32 Operation);
     UFUNCTION(Server, Reliable) void ServerCancelHarvest(uint32 Operation);
     UFUNCTION() void OnRep_Feedback();

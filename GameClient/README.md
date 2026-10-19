@@ -75,3 +75,5 @@ Native Linux diagnostic Clients and the source Server now passed an isolated pac
 Windows connection update: the user's folder exclusion resolved source Client execution. Two packaged Windows clients now pass LAN welcome checks against steam-server17777, with distinct authoritative possessions confirmed separately. Use the same staged Client path; no PowerShell/PickerHost process exclusion was needed. Rendered/manual and workload acceptance remain open; see the latest foundation evidence.
 
 The user confirmed basic rendered WASD movement, mouse look, Space jump and E interaction worked against steam-server. Detailed visual edge cases and performance/capacity limits remain in the foundation evidence.
+
+Resource lifecycle and art integration: [session recovery and Blueprint presentation contract](../docs/gameplay-gathering-lifecycle-pilot.md). Common pilot resources recover300s after final depletion. Editable Blueprint appearance uses public committed extraction state; the first tree/rock must still meet the [visual quality contract](../docs/Game-Design/Legends_Shattered_Frontier_Gathering_Presentation_and_Material_Claiming_v0.1.md).

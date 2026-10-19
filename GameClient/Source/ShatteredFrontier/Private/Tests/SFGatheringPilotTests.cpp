@@ -226,4 +226,83 @@ bool FSFGatheringPilotToolTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Retry grants exactly the two tools"),SmallBag->GetTotalItemCount(),2);
     return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFGatheringPilotLifecycleTest,
+    "ShatteredFrontier.Gathering.Pilot.Lifecycle",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFGatheringPilotLifecycleTest::RunTest(const FString& Parameters)
+{
+    USFGatheringPilotSettings* Bounds=NewObject<USFGatheringPilotSettings>(); FString Error;
+    TestEqual(TEXT("Shipped common-node recovery is 300 seconds"),Bounds->RespawnSeconds,300.0f);
+    Bounds->RespawnSeconds=0; TestFalse(TEXT("Zero recovery rejected"),Bounds->Validate(Error));
+    Bounds->RespawnSeconds=86401; TestFalse(TEXT("Unbounded recovery rejected"),Bounds->Validate(Error));
+    Bounds->RespawnSeconds=1; TestTrue(TEXT("Declared minimum recovery accepted"),Bounds->Validate(Error));
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) { return false; }
+    auto* World=Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
+    FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    auto* PC=World->SpawnActor<ASFConstructionNetworkController>();
+    auto* Pawn=World->SpawnActor<ASFE1Character>(FVector(0,0,100),FRotator::ZeroRotator,Spawn);
+    auto* Wood=World->SpawnActor<ASFGatheringPilotNode>(FVector(200,0,100),FRotator::ZeroRotator,Spawn);
+    if (!PC || !Pawn || !Wood) { return false; }
+    PC->Possess(Pawn); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
+    Pawn->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    auto* Gather=PC->FindComponentByClass<USFGatheringPilotComponent>();
+    auto* Bag=PC->FindComponentByClass<UInventoryComponent>(); if (!Gather || !Bag) { return false; }
+    Gather->CapturedSettings=DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(),Gather);
+    Gather->CapturedSettings->HarvestSeconds=0.5f; Gather->bEnabled=true; Gather->bTestWorldAdmission=true;
+    if (!TestTrue(TEXT("Real starter loadout"),Gather->InitializeStarterTools())
+        || !TestTrue(TEXT("Real equipped axe"),Gather->TryEquipTool(true))) { return false; }
+    TestEqual(TEXT("Initial presentation captures node capacity"),Wood->GetPresentationState().Capacity,3);
+    TestEqual(TEXT("Fresh resource has no extraction damage"),Wood->GetPresentationState().ExtractedFraction,0.0f);
+    // Fixture shortens one released node and its timer; no console/runtime override is introduced.
+    Wood->State.Capacity=1; Wood->State.Charges=1; Wood->CapturedRespawnSeconds=1;
+    const auto Tick=[&Fixture](int32 Count) { for (int32 I=0; I<Count; ++I) { Fixture.TickTestWorld(0.05f); } };
+    const TSoftObjectPtr<UInventoryItemDefinition> Item(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_OakLog.DA_OakLog")));
+    Gather->ServerGatheringAction_Implementation(Wood,0,1);
+    TestTrue(TEXT("Observers can reconstruct busy state without bag contents"),Wood->GetPresentationState().bBusy);
+    TestEqual(TEXT("Preview channel has no persistent damage"),Wood->GetPresentationState().ExtractedFraction,0.0f);
+    Tick(12);
+    TestEqual(TEXT("Final harvest grants one log"),UInventoryTransactionLibrary::GetItemQuantity(Bag,Item),int64(1));
+    TestEqual(TEXT("Depleted appearance is fully extracted"),Wood->GetPresentationState().ExtractedFraction,1.0f);
+    TestTrue(TEXT("Recovery deadline is server-owned and in the future"),Wood->State.RecoveryAtServerSeconds>World->GetTimeSeconds());
+    const double Deadline=Wood->State.RecoveryAtServerSeconds;
+    Wood->Recover();
+    TestEqual(TEXT("Early recovery callback cannot restore a charge"),Wood->State.Charges,0);
+    TestEqual(TEXT("Early callback preserves deadline"),Wood->State.RecoveryAtServerSeconds,Deadline);
+    Tick(10);
+    TestEqual(TEXT("Resource stays depleted before recovery"),Wood->State.Charges,0);
+    Tick(14);
+    TestEqual(TEXT("Recovery restores captured capacity"),Wood->State.Charges,1);
+    TestEqual(TEXT("Recovery advances revision beyond depletion"),Wood->State.Revision,uint32(2));
+    TestEqual(TEXT("New generation has no extraction damage"),Wood->GetPresentationState().ExtractedFraction,0.0f);
+    TestEqual(TEXT("Recovery clears its deadline"),Wood->State.RecoveryAtServerSeconds,0.0);
+    TestEqual(TEXT("Recovery never creates inventory items"),UInventoryTransactionLibrary::GetItemQuantity(Bag,Item),int64(1));
+    Gather->ServerGatheringAction_Implementation(Wood,0,1);
+    TestEqual(TEXT("Old successful replay does not harvest renewed resource"),Wood->State.Charges,1);
+    TestEqual(TEXT("Old replay never duplicates material"),UInventoryTransactionLibrary::GetItemQuantity(Bag,Item),int64(1));
+    Gather->ServerGatheringAction_Implementation(Wood,0,2);
+    TestEqual(TEXT("Old-generation new request is stale"),Gather->Feedback.Result,ESFGatheringPilotResult::Stale);
+    Gather->ServerGatheringAction_Implementation(Wood,2,3); Gather->ServerCancelHarvest_Implementation(3);
+    TestEqual(TEXT("Cancellation preserves renewed resource appearance"),Wood->GetPresentationState().ExtractedFraction,0.0f);
+    TestEqual(TEXT("Cancellation does not schedule recovery"),Wood->State.RecoveryAtServerSeconds,0.0);
+    Gather->ServerGatheringAction_Implementation(Wood,2,4); Tick(12);
+    TestEqual(TEXT("New generation can be harvested once"),UInventoryTransactionLibrary::GetItemQuantity(Bag,Item),int64(2));
+    TestEqual(TEXT("Second depletion has its own revision"),Wood->State.Revision,uint32(3));
+    FTimerHandle Timer=Wood->RecoveryTimer;
+    TestTrue(TEXT("Second depletion schedules recovery"),World->GetTimerManager().IsTimerActive(Timer));
+    Wood->Destroy();
+    TestFalse(TEXT("Destroyed resource clears owned timer"),World->GetTimerManager().TimerExists(Timer));
+    auto* Station=World->SpawnActor<ASFGatheringPilotNode>(); if (!Station) { return false; }
+    Station->Kind=ESFGatheringPilotKind::Forge; Station->State.Charges=0; Station->BeginRecovery();
+    TestFalse(TEXT("Refining station never schedules resource recovery"),World->GetTimerManager().IsTimerActive(Station->RecoveryTimer));
+    TestEqual(TEXT("Station has no extraction damage"),Station->GetPresentationState().ExtractedFraction,0.0f);
+    Station->Kind=ESFGatheringPilotKind::Oak; Station->State.Revision=MAX_uint32;
+    Station->State.RecoveryAtServerSeconds=World->GetTimeSeconds()-0.1;
+    Station->Recover();
+    TestEqual(TEXT("Exhausted revision never wraps into fresh resource"),Station->State.Revision,MAX_uint32);
+    TestEqual(TEXT("Revision exhaustion stays depleted"),Station->State.Charges,0);
+    return true;
+}
 #endif

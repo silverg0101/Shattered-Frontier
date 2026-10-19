@@ -18,4 +18,4 @@ Evidence: editor build01 passed in 27.78 s; both tool assets generated successfu
 
 UI fit decision: inspected vendor Slate inventory creates a separate desktop window. It is not adopted as the game's bag presentation; use the documented existing-HUD/UMG route when building that view. This holds a presentation candidate rather than changing the game's interaction model for convenience.
 
-Next: add server-timed renewable charges at the existing resource footprint, using the design's common-node recovery time. Durable World regeneration remains separate.
+Follow-up: [resource lifecycle and presentation hooks](gameplay-gathering-lifecycle-pilot.md) implements session-only recovery. Next visual work must meet the [gathering quality contract](Game-Design/Legends_Shattered_Frontier_Gathering_Presentation_and_Material_Claiming_v0.1.md). Production World regeneration remains separate.
