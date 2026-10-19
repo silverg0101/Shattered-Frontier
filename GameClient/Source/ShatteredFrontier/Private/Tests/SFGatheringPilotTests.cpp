@@ -11,6 +11,7 @@
 #include "InventoryComponent.h"
 #include "InventoryItemDefinition.h"
 #include "InventoryTransactionLibrary.h"
+#include <limits>
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFGatheringPilotAuthorityTest,
     "ShatteredFrontier.Gathering.Pilot.Authority",
@@ -290,6 +291,7 @@ bool FSFGatheringPilotLifecycleTest::RunTest(const FString& Parameters)
     Gather->ServerGatheringAction_Implementation(Wood,2,4); Tick(12);
     TestEqual(TEXT("New generation can be harvested once"),UInventoryTransactionLibrary::GetItemQuantity(Bag,Item),int64(2));
     TestEqual(TEXT("Second depletion has its own revision"),Wood->State.Revision,uint32(3));
+    TestEqual(TEXT("Renewal advances a separate visual generation"),Wood->State.Generation,uint32(1));
     FTimerHandle Timer=Wood->RecoveryTimer;
     TestTrue(TEXT("Second depletion schedules recovery"),World->GetTimerManager().IsTimerActive(Timer));
     Wood->Destroy();
@@ -303,6 +305,40 @@ bool FSFGatheringPilotLifecycleTest::RunTest(const FString& Parameters)
     Station->Recover();
     TestEqual(TEXT("Exhausted revision never wraps into fresh resource"),Station->State.Revision,MAX_uint32);
     TestEqual(TEXT("Revision exhaustion stays depleted"),Station->State.Charges,0);
+    return true;
+}
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFGatheringPilotSurfaceProtocolTest,
+    "ShatteredFrontier.Gathering.Pilot.SurfaceProtocol",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFGatheringPilotSurfaceProtocolTest::RunTest(const FString& Parameters)
+{
+    FSFHarvestVisualCut Cut;
+    Cut.Point=FVector(12.345,67.891,23.456); Cut.Normal=FVector(1,2,3).GetSafeNormal();
+    Cut.RadiusCm=12; Cut.DepthCm=8;
+    TestTrue(TEXT("Server cutter adopts actual quantized wire values"),Cut.CanonicalizeWire());
+    const FSFHarvestVisualCut Once=Cut;
+    TestTrue(TEXT("Wire conversion is repeatable"),Cut.CanonicalizeWire());
+    TestTrue(TEXT("Point remains identical after repeated serialization"),Cut.Point.Equals(Once.Point,0));
+    TestTrue(TEXT("Normal remains identical after repeated serialization"),Cut.Normal.Equals(Once.Normal,0));
+    FVector_NetQuantize10 Point=FVector(100,200,300);
+    TestFalse(TEXT("Nonfinite point rejected"),FSFHarvestVisualCut::CanonicalizePoint(FVector(std::numeric_limits<double>::infinity(),0,0),Point));
+    TestTrue(TEXT("Rejected point leaves output unchanged"),Point.Equals(FVector(100,200,300),0));
+    auto* Component=NewObject<USFGatheringPilotComponent>();
+    Component->CapturedSettings=NewObject<USFGatheringPilotSettings>(Component);
+    Component->LastRevision=7; Component->bLastHadSurface=true; Component->LastRequestedSurface=Cut.Point;
+    TestTrue(TEXT("Identical surface replay matches"),Component->MatchesRequestBinding(nullptr,7,true,Cut.Point));
+    TestFalse(TEXT("Plain replay cannot replace surface variant"),Component->MatchesRequestBinding(nullptr,7,false,FVector::ZeroVector));
+    TestFalse(TEXT("Changed contact cannot replace original"),Component->MatchesRequestBinding(nullptr,7,true,FVector(Cut.Point)+FVector(1,0,0)));
+    Component->bLastHadSurface=false;
+    TestFalse(TEXT("Surface replay cannot replace plain variant"),Component->MatchesRequestBinding(nullptr,7,true,Cut.Point));
+    TestTrue(TEXT("First geometry attempt admitted"),Component->TryBeginGeometryAttempt(10));
+    TestFalse(TEXT("Repeated failed geometry cannot bypass cooldown"),Component->TryBeginGeometryAttempt(10.49));
+    TestTrue(TEXT("Default half-second boundary admitted"),Component->TryBeginGeometryAttempt(10.5));
+    FString Error; Component->CapturedSettings->GeometryAttemptCooldownSeconds=0.09f;
+    TestFalse(TEXT("Cooldown below declared bound fails configuration"),Component->CapturedSettings->Validate(Error));
+    Component->CapturedSettings->GeometryAttemptCooldownSeconds=2.01f;
+    TestFalse(TEXT("Cooldown above declared bound fails configuration"),Component->CapturedSettings->Validate(Error));
     return true;
 }
 #endif

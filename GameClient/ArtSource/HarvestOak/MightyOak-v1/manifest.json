@@ -1,0 +1,183 @@
+{
+  "title": "Mighty Oak Trees",
+  "creator": "Jagobo",
+  "source_url": "https://sketchfab.com/3d-models/mighty-oak-trees-4f6ab5594a8a415aba3f958682b9ced5",
+  "license": "CC BY 4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "required_credit": "Mighty oak trees by Jagobo, CC BY 4.0",
+  "original_archive_sha256": "53ae47104ade8e827d2a83df9a3b6463d6dcc4e61fed56b9304c1b942e03f3ff",
+  "source_blend_sha256": "9fa58cd79a852f4f31cfb70d3ec373325db0b5954577c2c54b8f49507a2b23ea",
+  "preparation_script": "tools/Prepare-HarvestMightyOak.py",
+  "blender": "5.2.2 LTS",
+  "target_full_tree_height_m": 10.0,
+  "lower_join_height_m": 1.0,
+  "source_combined_height_m": 85.52855727013207,
+  "scale_factor": 0.11692001267385062,
+  "ground_origin_m": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "objects": [
+    "SM_MightyOak_LowerTrunk",
+    "SM_MightyOak_UpperStructure",
+    "SM_MightyOak_Foliage"
+  ],
+  "object_metrics": {
+    "SM_MightyOak_LowerTrunk": {
+      "dimensions_m": [
+        0.732374,
+        0.973137,
+        1.0
+      ],
+      "triangles": 88,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "materials": [
+        "bark",
+        "M_HarvestOak_CutWood"
+      ]
+    },
+    "SM_MightyOak_UpperStructure": {
+      "dimensions_m": [
+        13.633527,
+        12.257111,
+        8.964315
+      ],
+      "triangles": 58701,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "materials": [
+        "bark",
+        "M_HarvestOak_CutWood"
+      ]
+    },
+    "SM_MightyOak_Foliage": {
+      "dimensions_m": [
+        14.557439,
+        13.499566,
+        8.782698
+      ],
+      "triangles": 78240,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "materials": [
+        "foliage"
+      ]
+    }
+  },
+  "lower_trunk_validation": {
+    "faces": 80,
+    "triangles": 88,
+    "nonmanifold_edges": 0,
+    "nonadjacent_self_overlap_pairs": 0,
+    "closed_boundary_loops_capped": 2,
+    "join_cap_triangles": 14,
+    "join_cap_normal_z_min": 0.9999999403953552,
+    "join_cap_normal_z_max": 1.0,
+    "join_cap_material_index": 1,
+    "preserved_uv_layers": [
+      "UVMap"
+    ]
+  },
+  "upper_join_contours_capped": {
+    "contours": 1,
+    "cap_triangles": 14,
+    "cap_normal_z_min": -1.0,
+    "cap_normal_z_max": -0.9999999403953552
+  },
+  "materials": [
+    "M_HarvestOak_CutWood",
+    "bark",
+    "foliage"
+  ],
+  "material_slots": {
+    "SM_MightyOak_LowerTrunk": [
+      "bark",
+      "M_HarvestOak_CutWood"
+    ],
+    "SM_MightyOak_UpperStructure": [
+      "bark",
+      "M_HarvestOak_CutWood"
+    ],
+    "SM_MightyOak_Foliage": [
+      "foliage"
+    ]
+  },
+  "cap_material": "M_HarvestOak_CutWood (slot 1; reused project-authored endgrain basecolor/roughness textures)",
+  "cap_textures_sha256": {
+    "T_Oak_Endgrain_BaseColor.png": "128b258926e86deb760c9eaf5d259527146af9bbb4a2f4558916bd09f45c1b99",
+    "T_Oak_Endgrain_Roughness.png": "952fdb9ab9797ec46574b067f71eb2ed3520e8fdd9f23133df6c1a6b5de69a3d"
+  },
+  "source_textures": {
+    "bark_color.png": {
+      "role": "bark base color",
+      "color_space": "sRGB",
+      "alpha": false,
+      "path": "materials/bark_color.png",
+      "sha256": "b03846732903c850b73abdfdd80d00ef9f6f302ae89c63a3d5bd345a83dce53f"
+    },
+    "bark_normal.png": {
+      "role": "bark tangent normal",
+      "color_space": "Non-Color",
+      "alpha": false,
+      "path": "materials/bark_normal.png",
+      "sha256": "cd9106b361d3d85ae84de41486a18bc3bc156a20cab350114a21865b6d849bb0"
+    },
+    "bark_roughness.png": {
+      "role": "bark roughness",
+      "color_space": "Non-Color",
+      "alpha": false,
+      "path": "materials/bark_roughness.png",
+      "sha256": "b59c1e5a542c622d0317e567e8ff279beb6eaef1e38ac54fd2a1129df4da1e6d"
+    },
+    "oak_foliage_plane.png": {
+      "role": "foliage color and opacity mask",
+      "color_space": "sRGB",
+      "alpha": true,
+      "path": "materials/oak_foliage_plane.png",
+      "sha256": "416de22b5089ac2d600ee5c552aa062336c5dbca4b7c238e8057bf6cc51cee45"
+    }
+  },
+  "exports": {
+    "blend": {
+      "path": "exports/MightyOak_v1.blend",
+      "sha256": "1bc2bcfef29f1a1ff37a42286b691f51bd5bae3aa481eac672de0da0a56ad80b"
+    },
+    "glb_review_only": {
+      "path": "exports/MightyOak_v1.glb",
+      "sha256": "d00c33d4c0cfd9ca0c99bfebd13b9ec30d48ecce5101a8c2082dff01a63b9a00"
+    },
+    "fbx": {
+      "SM_MightyOak_LowerTrunk": {
+        "path": "exports/SM_MightyOak_LowerTrunk.fbx",
+        "sha256": "f73b9459bec4f0580cabf14d80ea884a1c4ebadd1c7d5e258655ada2f4f6f5f7"
+      },
+      "SM_MightyOak_UpperStructure": {
+        "path": "exports/SM_MightyOak_UpperStructure.fbx",
+        "sha256": "14c7bc4912ef22f0b2533c6a7f67e2e00f3a25c40ac9ddb0599e84b71950efa8"
+      },
+      "SM_MightyOak_Foliage": {
+        "path": "exports/SM_MightyOak_Foliage.fbx",
+        "sha256": "7ae6bce3cd2f1b85afde39ad16b2026de1346dbf7f414b26dabf85d37722d6d0"
+      }
+    }
+  },
+  "fbx_unit_scale": "Blender metric meters exported with FBX_SCALE_UNITS for import at Unreal scale 1.0",
+  "fbx_validation": "Separate FBX files reimported in Blender 5.2.2; bounds, UVMap, embedded texture images, material slots, and lower manifold topology recorded in validation/import-audit.json.",
+  "previews": [
+    "previews/MightyOak_v1_FullTree.png",
+    "previews/MightyOak_v1_LowerTrunk.png",
+    "previews/MightyOak_v1_CutCap.png"
+  ],
+  "textures_packed_in_blend": true,
+  "limitations": [
+    "Only Tree 3 was prepared; upper branch mesh remains the source mesh with its original terminal topology.",
+    "The lower closed chunk spans ground to 1.0 m; the gameplay hit point around 0.85 m lies inside it.",
+    "Hidden cut/base caps use projected UVs and slot 1 M_HarvestOak_CutWood from the existing project endgrain texture pair.",
+    "The optional GLB is a review export; the FBX meshes are the tested Unreal-facing interchange files."
+  ]
+}

@@ -4,7 +4,11 @@
 #include "Engine/DeveloperSettings.h"
 #include "GameFramework/Actor.h"
 #include "TimerManager.h"
+#include "Gathering/SFHarvestPresentation.h"
+#include "Gathering/SFGatheringProgression.h"
 #include "SFGatheringPilot.generated.h"
+
+struct FSFHarvestArtReviewState;
 
 class UStaticMesh;
 class UStaticMeshComponent;
@@ -19,6 +23,8 @@ class SHATTEREDFRONTIER_API USFGatheringPilotSettings : public UDeveloperSetting
 public:
     UPROPERTY(Config, EditAnywhere, Category="Harvest", meta=(ClampMin="0.5", ClampMax="30", Units="s"))
     float HarvestSeconds = 3;
+    UPROPERTY(Config, EditAnywhere, Category="Harvest", meta=(ClampMin="0.1", ClampMax="2", Units="s", ToolTip="Minimum time between localized geometry preflight attempts per controller. Release authors; next world start."))
+    float GeometryAttemptCooldownSeconds = 0.5f;
     UPROPERTY(Config, EditAnywhere, Category="Harvest", meta=(ClampMin="0.5", ClampMax="5", Units="m"))
     float ReachMetres = 3.5f;
     UPROPERTY(Config, EditAnywhere, Category="Harvest", meta=(ClampMin="0.01", ClampMax="0.25", Units="m"))
@@ -62,10 +68,12 @@ struct FSFGatheringPilotNodeState
 {
     GENERATED_BODY()
     UPROPERTY() uint32 Revision = 0;
+    UPROPERTY() uint32 Generation = 0;
     UPROPERTY() int32 Charges = 0;
     UPROPERTY() bool bBusy = false;
     UPROPERTY() int32 Capacity = 0;
     UPROPERTY() double RecoveryAtServerSeconds = 0;
+    UPROPERTY() TArray<FSFHarvestVisualCut> Cuts;
 };
 
 // Idempotent public appearance snapshot, never an inventory/reward event.
@@ -94,6 +102,8 @@ public:
     virtual void EndPlay(const EEndPlayReason::Type Reason) override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out) const override;
     FString GetResourceName() const;
+    bool GetResourceProfile(ESFGatheringSkill& Skill,ESFGatheringMaterialTier& Tier) const;
+    FSFGatheringResourceProfile GetAuthoredResourceProfile() const;
     bool IsRefinery() const { return Kind==ESFGatheringPilotKind::Sawmill || Kind==ESFGatheringPilotKind::Forge; }
     const FSFGatheringPilotNodeState& GetState() const { return State; }
     UFUNCTION(BlueprintPure, Category="Gathering Presentation")
@@ -108,6 +118,9 @@ private:
     friend class FSFGatheringPilotAuthorityTest;
     friend class FSFGatheringPilotToolTest;
     friend class FSFGatheringPilotLifecycleTest;
+    friend class FSFGatheringPilotArtContactTest;
+    friend class FSFGatheringPilotSurfaceProtocolTest;
+    friend class FSFGatheringPilotProgressionTest;
     UFUNCTION() void OnRep_State();
     void Release(USFGatheringPilotComponent* Interactor);
     void BeginRecovery();
@@ -116,10 +129,14 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true")) TObjectPtr<UTextRenderComponent> Label;
     UPROPERTY() TObjectPtr<UStaticMesh> StationMesh;
     UPROPERTY(ReplicatedUsing=OnRep_State) FSFGatheringPilotNodeState State;
+    UPROPERTY() TObjectPtr<USFHarvestPresentation> HarvestVisuals;
     TWeakObjectPtr<USFGatheringPilotComponent> LockedBy;
     FTimerHandle RecoveryTimer;
     float CapturedRespawnSeconds = 300;
     ESFGatheringPilotKind RecoveryKind = ESFGatheringPilotKind::Oak;
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+    TOptional<ESFGatheringMaterialTier> TestProfileTier;
+#endif
 };
 
 UENUM()
@@ -128,7 +145,7 @@ UENUM()
 enum class ESFGatheringPilotResult : uint8
 {
     None, Started, Granted, InvalidContext, InvalidTarget, Stale, Busy, Depleted,
-    OutOfReach, Occluded, Moved, Canceled, InventoryFull, Unavailable, KeyConflict, Refined, MissingMaterials, ToolRequired
+    OutOfReach, Occluded, Moved, Canceled, InventoryFull, Unavailable, KeyConflict, Refined, MissingMaterials, ToolRequired, SkillRequired
 };
 
 USTRUCT()
@@ -140,6 +157,10 @@ struct FSFGatheringPilotFeedback
     UPROPERTY() ESFGatheringPilotResult Result = ESFGatheringPilotResult::None;
     UPROPERTY() TObjectPtr<ASFGatheringPilotNode> Node = nullptr;
     UPROPERTY() double EndsAtServerSeconds = 0;
+    UPROPERTY() ESFGatheringSkill Skill = ESFGatheringSkill::Mining;
+    UPROPERTY() int32 RequiredSkill = 0;
+    UPROPERTY() int32 CurrentSkill = 0;
+    UPROPERTY() bool bSkillGained = false;
 };
 
 // Owner controller endpoint; no client-supplied item, yield, character, inventory or time.
@@ -162,6 +183,8 @@ public:
     void AssignPilotRole(bool bPrimary);
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     void TickFiniteNetworkScenario();
+    void TickArtReviewScenario();
+    TSharedPtr<FSFHarvestArtReviewState> ArtReviewState;
     int32 ScenarioStep = 0;
     double ScenarioStarted = 0;
     double ScenarioReplayedAt = 0;
@@ -173,11 +196,19 @@ private:
     friend class FSFGatheringPilotAuthorityTest;
     friend class FSFGatheringPilotToolTest;
     friend class FSFGatheringPilotLifecycleTest;
+    friend class FSFGatheringPilotArtContactTest;
+    friend class FSFGatheringPilotSurfaceProtocolTest;
+    friend class FSFGatheringPilotProgressionTest;
     UFUNCTION(Server, Reliable) void ServerGatheringAction(ASFGatheringPilotNode* Node, uint32 Revision, uint32 Operation);
+    UFUNCTION(Server, Reliable) void ServerGatheringActionAtSurface(ASFGatheringPilotNode* Node, uint32 Revision, uint32 Operation,FVector_NetQuantize10 RequestedPoint);
+    void ProcessGatheringAction(ASFGatheringPilotNode* Node,uint32 Revision,uint32 Operation,bool bSurface,const FVector& RequestedPoint);
+    bool MatchesRequestBinding(ASFGatheringPilotNode* Node,uint32 Revision,bool bSurface,const FVector& Point) const;
+    bool TryBeginGeometryAttempt(double Now);
     UFUNCTION(Server, Reliable) void ServerCancelHarvest(uint32 Operation);
     UFUNCTION() void OnRep_Feedback();
     UFUNCTION(Client, Reliable) void ClientKeyConflict(uint32 Operation);
     ESFGatheringPilotResult ValidateTarget(const ASFGatheringPilotNode* Node) const;
+    bool MeetsSkillRequirement(const ASFGatheringPilotNode* Node) const;
     void Finish(ESFGatheringPilotPhase Phase, ESFGatheringPilotResult Result);
     ASFGatheringPilotNode* FindNode(const FVector& Start, const FVector& Direction) const;
     ESFGatheringPilotResult ApplyInventory(ESFGatheringPilotKind Kind, bool bCommit);
@@ -192,6 +223,13 @@ private:
 #endif
     UPROPERTY(ReplicatedUsing=OnRep_Feedback) FSFGatheringPilotFeedback Feedback;
     UPROPERTY(Transient) TObjectPtr<USFGatheringPilotSettings> CapturedSettings;
+    UPROPERTY(Transient) TObjectPtr<USFGatheringProgressionSettings> CapturedProgressionSettings;
+    UPROPERTY(Replicated) FSFGatheringSkillSnapshot Skills;
+    FSFGatheringProgressionSession ProgressionSession;
+    double ActivePracticeInputSeconds = 0;
+    double ActivePracticeDurationSeconds = 0;
+    uint64 ActivePracticeContext = 0;
+    FSFGatheringResourceProfile ActiveResourceProfile;
     TWeakObjectPtr<APawn> HarvestPawn;
     TWeakObjectPtr<ASFGatheringPilotNode> LastNode;
     FVector HarvestStart = FVector::ZeroVector;
@@ -206,4 +244,11 @@ private:
     UPROPERTY(Replicated) bool bRoleAssigned = false;
     bool bKeyConflict = false;
     bool bStarterToolsGranted = false;
+    bool bLastHadSurface=false;
+    bool bActiveVisualCut=false;
+    bool bWaitingHadSurface=false;
+    double NextGeometryAttemptSeconds=0;
+    FVector LastRequestedSurface=FVector::ZeroVector;
+    FVector WaitingSurface=FVector::ZeroVector;
+    FSFHarvestVisualCut ActiveVisualCut;
 };

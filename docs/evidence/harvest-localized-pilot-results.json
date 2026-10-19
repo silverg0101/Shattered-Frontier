@@ -2,28 +2,29 @@
   "date": "2026-10-19",
   "scope": "Windows editor development pilot; functional evidence only, visual acceptance withheld",
   "build": {
-    "log": "Artifacts/ConstructionSandbox/harvest-localized-build-11.log",
+    "log": "Artifacts/ConstructionSandbox/harvest-localized-build-19.log",
     "result": "Succeeded",
-    "seconds": 13.87
+    "seconds": 20.99
   },
   "checks": [
     {
-      "report": "Artifacts/ConstructionSandbox/harvest-localized-authority-03/Report/index.json",
+      "report": "Artifacts/ConstructionSandbox/harvest-varied-authority-01/Report/index.json",
       "filter": "ShatteredFrontier.Gathering.",
-      "passed": 6,
+      "passed": 7,
       "failed": 0,
-      "scope": "Before angular cutter change; Authority, Lifecycle, SurfaceProtocol, Tools, ArtContact, LocalizedGeometry"
+      "warnings": 0,
+      "scope": "Varied seeded profiles, actual RockV2 and MightyOakV1 contacts/grants/depletion/renewal/replay, authority/lifecycle/tools/surface protocol"
     },
     {
-      "report": "Artifacts/ConstructionSandbox/harvest-localized-imported-02/Report/index.json",
-      "filter": "ShatteredFrontier.Gathering.Localized",
-      "passed": 2,
+      "report": "Artifacts/ConstructionSandbox/harvest-audio-contact-01/Report/index.json",
+      "filter": "ShatteredFrontier.Gathering.ArtContact",
+      "passed": 1,
       "failed": 0,
-      "scope": "Angular cutter and exact imported contact; triangle-group metadata regression"
+      "scope": "Actual preferred oak and rock contact lifecycle after cosmetic audio binding; -nosound, not auditioned"
     }
   ],
   "rendered": {
-    "results": "Artifacts/ConstructionSandbox/harvest-art-20261019-015902-515/results.json",
+    "results": "Artifacts/ConstructionSandbox/harvest-art-20261019-032408-201/results.json",
     "result": "Passed",
     "ownedDedicatedServer": true,
     "renderedClients": 1,
@@ -33,12 +34,15 @@
     "replayUnchanged": true,
     "liveCosmeticFragments": true,
     "cleanupComplete": true,
-    "nativeSourceComparison": true
+    "nativeSourceComparison": false,
+    "resourceReadinessVerified": true,
+    "reviewOnlyStudioFill": true
   },
   "visualFindings": [
-    "Native and procedural rock exterior both washed out; material/rendering diagnosis remains open",
-    "Angular cut removes planar fractured chunk rather than spherical bowl",
-    "Authored procedural oak crown rejected; downloaded Jagobo tree source undergoing bounded closed-lower-trunk preparation"
+    "Viewed resource-ready intact and final rock frames: intact unbroken shell, irregular localized extraction after three approved contacts",
+    "Review-only studio fill permits reading the rock under canopy; production lighting unchanged",
+    "Oak appears too pale in fixture; no final visual acceptance",
+    "Mighty Oak lower trunk closed/capped/welded and functionally exercised; felling remains open"
   ],
   "notEstablished": [
     "Final art quality",
@@ -48,5 +52,21 @@
     "Updated two-client/late-join presentation",
     "Packaged or Linux acceptance",
     "Production persistence or performance"
-  ]
+  ],
+  "audioImport": {
+    "log": "Artifacts/HarvestArt/audio-import-01/editor.log",
+    "soundWaves": 4,
+    "auditioned": false
+  },
+  "progression": {
+    "buildLog": "Artifacts/ConstructionSandbox/harvest-progression-build-01.log",
+    "buildSeconds": 37.99,
+    "focusedReport": "Artifacts/ConstructionSandbox/gathering-progression-01/Report/index.json",
+    "focusedPassed": 9,
+    "focusedFailed": 0,
+    "networkResults": "Artifacts/ConstructionSandbox/gathering-network-20261019-033428-758/results.json",
+    "networkResult": "Passed",
+    "clients": 2,
+    "sessionOnly": true
+  }
 }

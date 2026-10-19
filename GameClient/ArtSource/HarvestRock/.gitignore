@@ -1,0 +1,4 @@
+*.blend1
+/Exports/*.glb
+/rev02/Exports/*.glb
+__pycache__/

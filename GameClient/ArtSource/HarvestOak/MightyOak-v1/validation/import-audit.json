@@ -1,0 +1,185 @@
+{
+  "SM_MightyOak_LowerTrunk.fbx": [
+    {
+      "name": "SM_MightyOak_LowerTrunk",
+      "dimensions": [
+        0.7323744893074036,
+        0.9731367528438568,
+        0.9999998882021366
+      ],
+      "triangles": 88,
+      "nonmanifold_edges": 0,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "materials": [
+        "bark",
+        "M_HarvestOak_CutWood"
+      ],
+      "material_face_counts": {
+        "bark": 62,
+        "M_HarvestOak_CutWood": 18
+      },
+      "images": [
+        "bark_color.png",
+        "bark_normal.png",
+        "bark_roughness.png",
+        "T_Oak_Endgrain_BaseColor.png",
+        "T_Oak_Endgrain_Roughness.png"
+      ],
+      "principled_alpha_links": []
+    }
+  ],
+  "SM_MightyOak_UpperStructure.fbx": [
+    {
+      "name": "SM_MightyOak_UpperStructure",
+      "dimensions": [
+        13.633526802062988,
+        12.257111072540283,
+        8.964315593242645
+      ],
+      "triangles": 58701,
+      "nonmanifold_edges": 2133,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "materials": [
+        "bark.001",
+        "M_HarvestOak_CutWood.001"
+      ],
+      "material_face_counts": {
+        "bark.001": 58679,
+        "M_HarvestOak_CutWood.001": 14
+      },
+      "images": [
+        "bark_color.png.001",
+        "bark_normal.png.001",
+        "bark_roughness.png.001",
+        "T_Oak_Endgrain_BaseColor.png.001",
+        "T_Oak_Endgrain_Roughness.png.001"
+      ],
+      "principled_alpha_links": []
+    }
+  ],
+  "SM_MightyOak_Foliage.fbx": [
+    {
+      "name": "SM_MightyOak_Foliage",
+      "dimensions": [
+        14.557438850402832,
+        13.499566078186035,
+        8.782697439193726
+      ],
+      "triangles": 78240,
+      "nonmanifold_edges": 58680,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "materials": [
+        "foliage"
+      ],
+      "material_face_counts": {
+        "foliage": 78240
+      },
+      "images": [
+        "oak_foliage_plane.png",
+        "oak_foliage_plane.png.001"
+      ],
+      "principled_alpha_links": [
+        {
+          "material": "foliage",
+          "from": "Image Texture.001:Alpha",
+          "to": "Principled BSDF:Alpha"
+        }
+      ]
+    }
+  ],
+  "MightyOak_v1.glb": [
+    {
+      "name": "SM_MightyOak_Foliage",
+      "dimensions": [
+        14.557438850402832,
+        13.499566078186035,
+        8.782697796821594
+      ],
+      "triangles": 78240,
+      "nonmanifold_edges": 161558,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "materials": [
+        "foliage.001"
+      ],
+      "material_face_counts": {
+        "foliage.001": 78240
+      },
+      "images": [
+        "oak_foliage_plane"
+      ],
+      "principled_alpha_links": [
+        {
+          "material": "foliage.001",
+          "from": "Math:Value",
+          "to": "Principled BSDF:Alpha"
+        }
+      ]
+    },
+    {
+      "name": "SM_MightyOak_LowerTrunk",
+      "dimensions": [
+        0.7323744893074036,
+        0.9731365740299225,
+        0.9999999403953552
+      ],
+      "triangles": 88,
+      "nonmanifold_edges": 64,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "materials": [
+        "bark.002",
+        "M_HarvestOak_CutWood.002"
+      ],
+      "material_face_counts": {
+        "bark.002": 70,
+        "M_HarvestOak_CutWood.002": 18
+      },
+      "images": [
+        "bark_color",
+        "bark_roughness",
+        "bark_normal",
+        "T_Oak_Endgrain_BaseColor",
+        "T_Oak_Endgrain_Roughness"
+      ],
+      "principled_alpha_links": []
+    },
+    {
+      "name": "SM_MightyOak_UpperStructure",
+      "dimensions": [
+        13.478262901306152,
+        12.122424125671387,
+        8.887242376804352
+      ],
+      "triangles": 58701,
+      "nonmanifold_edges": 33727,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "materials": [
+        "bark.002",
+        "M_HarvestOak_CutWood.002"
+      ],
+      "material_face_counts": {
+        "bark.002": 58687,
+        "M_HarvestOak_CutWood.002": 14
+      },
+      "images": [
+        "bark_color",
+        "bark_roughness",
+        "bark_normal",
+        "T_Oak_Endgrain_BaseColor",
+        "T_Oak_Endgrain_Roughness"
+      ],
+      "principled_alpha_links": []
+    }
+  ]
+}

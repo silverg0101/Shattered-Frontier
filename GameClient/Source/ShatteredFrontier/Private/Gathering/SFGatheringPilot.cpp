@@ -46,6 +46,7 @@ namespace
         case ESFGatheringPilotResult::Started: return TEXT("Working. Stay still; E or Escape cancels.");
         case ESFGatheringPilotResult::Refined: return TEXT("Refinement committed to your inventory.");
         case ESFGatheringPilotResult::ToolRequired: return TEXT("Required tool not equipped: 5 iron axe for oak, 6 iron pickaxe for ore.");
+        case ESFGatheringPilotResult::SkillRequired: return TEXT("Your gathering skill does not meet this material's requirement.");
         case ESFGatheringPilotResult::MissingMaterials: return TEXT("Required raw materials are missing. Nothing consumed.");
         case ESFGatheringPilotResult::Granted: return TEXT("Harvest committed to your inventory.");
         case ESFGatheringPilotResult::Stale: return TEXT("Kind changed. Target it again.");
@@ -67,6 +68,7 @@ namespace
 bool USFGatheringPilotSettings::Validate(FString& Error) const
 {
     const bool bValid=FMath::IsFinite(HarvestSeconds) && HarvestSeconds>=0.5f && HarvestSeconds<=30
+        && FMath::IsFinite(GeometryAttemptCooldownSeconds) && GeometryAttemptCooldownSeconds>=0.1f && GeometryAttemptCooldownSeconds<=2
         && FMath::IsFinite(ReachMetres) && ReachMetres>=0.5f && ReachMetres<=5
         && FMath::IsFinite(MovementCancelMetres) && MovementCancelMetres>=0.01f && MovementCancelMetres<=0.25f
         && ChargesPerNode>=1 && ChargesPerNode<=12 && UnitsPerCharge>=1 && UnitsPerCharge<=10
@@ -95,6 +97,7 @@ ASFGatheringPilotNode::ASFGatheringPilotNode()
     Label=CreateDefaultSubobject<UTextRenderComponent>(TEXT("ResourceLabel")); Label->SetupAttachment(Mesh);
     Label->SetRelativeLocation(FVector(0,-60,90)); Label->SetRelativeRotation(FRotator(0,-90,0));
     Label->SetWorldSize(16); Label->SetHorizontalAlignment(EHTA_Center);
+    HarvestVisuals=CreateDefaultSubobject<USFHarvestPresentation>(TEXT("HarvestPresentation"));
 }
 
 void ASFGatheringPilotNode::BeginPlay()
@@ -136,7 +139,7 @@ void ASFGatheringPilotNode::BeginRecovery()
 void ASFGatheringPilotNode::Recover()
 {
     if (!HasAuthority() || IsRefinery() || Kind!=RecoveryKind || State.Charges!=0 || State.Capacity<=0
-        || State.bBusy || LockedBy.IsValid() || State.RecoveryAtServerSeconds<=0 || State.Revision==MAX_uint32) { return; }
+        || State.bBusy || LockedBy.IsValid() || State.RecoveryAtServerSeconds<=0 || State.Revision==MAX_uint32 || State.Generation==MAX_uint32) { return; }
     const double Remaining=State.RecoveryAtServerSeconds-GetWorld()->GetTimeSeconds();
     if (Remaining>0)
     {
@@ -144,7 +147,7 @@ void ASFGatheringPilotNode::Recover()
             FMath::Max(static_cast<float>(Remaining),UE_SMALL_NUMBER),false);
         return;
     }
-    State.Charges=State.Capacity; State.RecoveryAtServerSeconds=0; ++State.Revision;
+    State.Charges=State.Capacity; State.RecoveryAtServerSeconds=0; State.Cuts.Reset(); ++State.Revision; ++State.Generation;
     OnRep_State(); ForceNetUpdate();
 }
 
@@ -152,6 +155,26 @@ void ASFGatheringPilotNode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ASFGatheringPilotNode,State); DOREPLIFETIME(ASFGatheringPilotNode,Kind);
+}
+
+bool ASFGatheringPilotNode::GetResourceProfile(ESFGatheringSkill& Skill,ESFGatheringMaterialTier& Tier) const
+{
+    // These released item identities are common beginner materials. New tiers need
+    // their own published resource/items and visuals, never an arbitrary retag.
+    const auto Profile=GetAuthoredResourceProfile();
+    if (Profile.ResourceId.IsNone()) { return false; }
+    Skill=Profile.Skill; Tier=Profile.Tier; return true;
+}
+
+FSFGatheringResourceProfile ASFGatheringPilotNode::GetAuthoredResourceProfile() const
+{
+    FSFGatheringResourceProfile Profile;
+    if (Kind==ESFGatheringPilotKind::Oak) { Profile.ResourceId=TEXT("resource/oak_log"); Profile.Skill=ESFGatheringSkill::Logging; }
+    else if (Kind==ESFGatheringPilotKind::Iron) { Profile.ResourceId=TEXT("resource/iron_ore"); Profile.Skill=ESFGatheringSkill::Mining; }
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+    if (TestProfileTier.IsSet()) { Profile.Tier=TestProfileTier.GetValue(); }
+#endif
+    return Profile;
 }
 
 FString ASFGatheringPilotNode::GetResourceName() const
@@ -168,6 +191,11 @@ FString ASFGatheringPilotNode::GetResourceName() const
 
 void ASFGatheringPilotNode::OnRep_State()
 {
+    if (HarvestVisuals&&HarvestVisuals->IsReady())
+    {
+        HarvestVisuals->ApplyState(State.Cuts,State.Charges==0,State.Generation);
+        Mesh->SetVisibility(false); Label->SetVisibility(false);
+    }
     if (IsRefinery())
     {
         Mesh->SetStaticMesh(StationMesh); Mesh->SetRelativeScale3D(FVector(1.4,0.8,0.8));
@@ -210,7 +238,9 @@ void USFGatheringPilotComponent::BeginPlay()
 {
     Super::BeginPlay();
     CapturedSettings=DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(),this);
+    CapturedProgressionSettings=DuplicateObject<USFGatheringProgressionSettings>(GetDefault<USFGatheringProgressionSettings>(),this);
     FString Error;
+    if (!CapturedProgressionSettings->Validate()) { UE_LOG(LogTemp,Error,TEXT("GATHERING_PROGRESSION_CONFIGURATION_FAILED Pilot disabled; release configuration outside declared bounds.")); return; }
     if (!CapturedSettings->Validate(Error)) { UE_LOG(LogTemp,Error,TEXT("GATHERING_PILOT_CONFIGURATION_FAILED %s"),*Error); return; }
     if (GetOwner()->HasAuthority())
     {
@@ -238,6 +268,7 @@ void USFGatheringPilotComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,Feedback,COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,Skills,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,bEnabled,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,bPrimaryRole,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,bRoleAssigned,COND_OwnerOnly);
@@ -251,6 +282,12 @@ bool USFGatheringPilotComponent::IsAuthoritativePilotWorld() const
 #endif
     const auto* Mode=GetWorld()->GetAuthGameMode<ASFConstructionNetworkGameMode>();
     return IsPilotRequested() && Mode && Mode->IsAdmitted();
+}
+
+bool USFGatheringPilotComponent::MeetsSkillRequirement(const ASFGatheringPilotNode* Node) const
+{
+    ESFGatheringSkill Skill; ESFGatheringMaterialTier Tier;
+    return !Node->GetResourceProfile(Skill,Tier)||Skills.Get(Skill)>=FSFGatheringProgressionSession::RequiredSkill(Tier);
 }
 
 ESFGatheringPilotResult USFGatheringPilotComponent::ValidateTarget(const ASFGatheringPilotNode* Node) const
@@ -369,28 +406,78 @@ ESFGatheringPilotResult USFGatheringPilotComponent::ApplyInventory(ESFGatheringP
 #endif
 }
 
+void USFGatheringPilotComponent::ServerGatheringActionAtSurface_Implementation(ASFGatheringPilotNode* Node,uint32 Revision,uint32 Operation,FVector_NetQuantize10 RequestedPoint)
+{
+    ProcessGatheringAction(Node,Revision,Operation,true,RequestedPoint);
+}
+
 void USFGatheringPilotComponent::ServerGatheringAction_Implementation(ASFGatheringPilotNode* Node, uint32 Revision, uint32 Operation)
 {
+    ProcessGatheringAction(Node,Revision,Operation,false,FVector::ZeroVector);
+}
+
+bool USFGatheringPilotComponent::MatchesRequestBinding(ASFGatheringPilotNode* Node,uint32 Revision,bool bSurface,const FVector& Point) const
+{
+    return LastNode.Get()==Node && LastRevision==Revision && bLastHadSurface==bSurface
+        && (!bSurface || LastRequestedSurface.Equals(Point,0));
+}
+
+bool USFGatheringPilotComponent::TryBeginGeometryAttempt(double Now)
+{
+    if (!CapturedSettings || !FMath::IsFinite(Now) || Now<NextGeometryAttemptSeconds) { return false; }
+    NextGeometryAttemptSeconds=Now+CapturedSettings->GeometryAttemptCooldownSeconds;
+    return true;
+}
+
+void USFGatheringPilotComponent::ProcessGatheringAction(ASFGatheringPilotNode* Node,uint32 Revision,uint32 Operation,bool bSurface,const FVector& RequestedPoint)
+{
     if (!IsAuthoritativePilotWorld() || !bEnabled) { return; }
+    FVector_NetQuantize10 Point=FVector::ZeroVector;
+    const bool bValidPoint=!bSurface || FSFHarvestVisualCut::CanonicalizePoint(RequestedPoint,Point);
     if (Operation==Feedback.Operation)
     {
-        if (LastNode.Get()!=Node || LastRevision!=Revision) { ClientKeyConflict(Operation); }
+        if (!bValidPoint || !MatchesRequestBinding(Node,Revision,bSurface,Point)) { ClientKeyConflict(Operation); }
         else { GetOwner()->ForceNetUpdate(); } // Replay returns the current original outcome, never a second grant.
         return;
     }
     if (Feedback.Operation==MAX_uint32 || Operation!=Feedback.Operation+1 || Feedback.Phase==ESFGatheringPilotPhase::Harvesting)
     { ClientKeyConflict(Operation); return; }
-    Feedback.Operation=Operation; Feedback.Node=Node; Feedback.EndsAtServerSeconds=0;
+    Feedback.Operation=Operation; Feedback.Node=Node; Feedback.EndsAtServerSeconds=0; Feedback.bSkillGained=false;
+    Feedback.RequiredSkill=0; Feedback.CurrentSkill=0;
+    ESFGatheringSkill ResourceSkill; ESFGatheringMaterialTier ResourceTier;
+    if (IsValid(Node)&&Node->GetResourceProfile(ResourceSkill,ResourceTier))
+    {
+        Feedback.Skill=ResourceSkill; Feedback.CurrentSkill=Skills.Get(ResourceSkill);
+        Feedback.RequiredSkill=FSFGatheringProgressionSession::RequiredSkill(ResourceTier);
+    }
     LastNode=Node; LastRevision=Revision;
-    ESFGatheringPilotResult Result=ValidateTarget(Node);
+    bLastHadSurface=bSurface; LastRequestedSurface=Point; bActiveVisualCut=false;
+    ESFGatheringPilotResult Result=bValidPoint ? ValidateTarget(Node) : ESFGatheringPilotResult::InvalidTarget;
     if (Result==ESFGatheringPilotResult::None && Node->State.Revision!=Revision) { Result=ESFGatheringPilotResult::Stale; }
     if (Result==ESFGatheringPilotResult::None && !Node->IsRefinery() && Node->State.Charges<=0) { Result=ESFGatheringPilotResult::Depleted; }
     if (Result==ESFGatheringPilotResult::None && Node->State.bBusy) { Result=ESFGatheringPilotResult::Busy; }
+    if (Result==ESFGatheringPilotResult::None && !MeetsSkillRequirement(Node)) { Result=ESFGatheringPilotResult::SkillRequired; }
     if (Result==ESFGatheringPilotResult::None && !HasRequiredTool(Node->Kind)) { Result=ESFGatheringPilotResult::ToolRequired; }
     if (Result==ESFGatheringPilotResult::None && !InventoryReady()) { Result=ESFGatheringPilotResult::Unavailable; }
     if (Result==ESFGatheringPilotResult::None) { Result=ApplyInventory(Node->Kind,false); }
+    if (Result==ESFGatheringPilotResult::None && bSurface && !TryBeginGeometryAttempt(GetWorld()->GetTimeSeconds()))
+    { Result=ESFGatheringPilotResult::Unavailable; }
+    if (Result==ESFGatheringPilotResult::None&&bSurface)
+    {
+        const auto* PC=Cast<APlayerController>(GetOwner()); FVector Eye; FRotator Rotation;
+        PC->GetPawn()->GetActorEyesViewPoint(Eye,Rotation);
+        if (!Node->HarvestVisuals||!Node->HarvestVisuals->IsReady()||!Node->HarvestVisuals->PrepareCut(Eye,Point,PC->GetPawn(),CapturedSettings->ReachMetres*100.0,Node->Mesh,ActiveVisualCut))
+        { Result=ESFGatheringPilotResult::InvalidTarget; }
+        else { bActiveVisualCut=true; }
+    }
     if (Result!=ESFGatheringPilotResult::None) { Finish(ESFGatheringPilotPhase::Rejected,Result); return; }
     ActiveKind=Node->Kind;
+    ActivePracticeInputSeconds=GetWorld()->GetTimeSeconds();
+    ActivePracticeDurationSeconds=CapturedSettings->HarvestSeconds;
+    ActiveResourceProfile=Node->GetAuthoredResourceProfile();
+    // Stable content + authored position across renewal. Production World cell IDs
+    // and character identity are intentionally unavailable in this session adapter.
+    ActivePracticeContext=HashCombine(GetTypeHash(Node->GetAuthoredResourceProfile().ResourceId),GetTypeHash(Node->GetActorLocation()));
     Node->LockedBy=this; Node->State.bBusy=true; Node->OnRep_State(); Node->ForceNetUpdate();
     const auto* PC=Cast<APlayerController>(GetOwner()); HarvestPawn=PC->GetPawn(); HarvestStart=HarvestPawn->GetActorLocation();
     Feedback.Phase=ESFGatheringPilotPhase::Harvesting; Feedback.Result=ESFGatheringPilotResult::Started;
@@ -417,6 +504,7 @@ void USFGatheringPilotComponent::TickComponent(float Delta, ELevelTick Type, FAc
     Super::TickComponent(Delta,Type,Function);
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     TickFiniteNetworkScenario();
+    TickArtReviewScenario();
 #endif
     if (!GetOwner()->HasAuthority() || !bEnabled || Feedback.Phase!=ESFGatheringPilotPhase::Harvesting) { return; }
     if (!IsAuthoritativePilotWorld()) { Finish(ESFGatheringPilotPhase::Canceled,ESFGatheringPilotResult::InvalidContext); return; }
@@ -427,13 +515,37 @@ void USFGatheringPilotComponent::TickComponent(float Delta, ELevelTick Type, FAc
     if (Result==ESFGatheringPilotResult::None && (Feedback.Node->Kind!=ActiveKind || Feedback.Node->LockedBy.Get()!=this || Feedback.Node->State.Revision!=LastRevision
         || (!Feedback.Node->IsRefinery() && Feedback.Node->State.Charges<=0) || Feedback.Node->State.Revision==MAX_uint32)) { Result=ESFGatheringPilotResult::Stale; }
     if (Result==ESFGatheringPilotResult::None && !HasRequiredTool(ActiveKind)) { Result=ESFGatheringPilotResult::ToolRequired; }
+    if (Result==ESFGatheringPilotResult::None && !MeetsSkillRequirement(Feedback.Node)) { Result=ESFGatheringPilotResult::SkillRequired; }
+    if (Result==ESFGatheringPilotResult::None&&!Feedback.Node->IsRefinery())
+    {
+        const auto Current=Feedback.Node->GetAuthoredResourceProfile();
+        if (Current.ResourceId!=ActiveResourceProfile.ResourceId||Current.Skill!=ActiveResourceProfile.Skill
+            ||Current.Tier!=ActiveResourceProfile.Tier||Current.ToolTier!=ActiveResourceProfile.ToolTier) { Result=ESFGatheringPilotResult::Stale; }
+    }
+    if (Result==ESFGatheringPilotResult::None && bActiveVisualCut)
+    {
+        FVector Eye; FRotator Rotation; Pawn->GetActorEyesViewPoint(Eye,Rotation);
+        if (!Feedback.Node->HarvestVisuals || !Feedback.Node->HarvestVisuals->ValidateContact(Eye,Pawn,
+            CapturedSettings->ReachMetres*100.0,Feedback.Node->Mesh,ActiveVisualCut)) { Result=ESFGatheringPilotResult::InvalidTarget; }
+    }
     if (Result!=ESFGatheringPilotResult::None) { Finish(ESFGatheringPilotPhase::Canceled,Result); return; }
     if (GetWorld()->GetTimeSeconds()<Feedback.EndsAtServerSeconds) { return; }
     Result=ApplyInventory(ActiveKind,true);
     if (Result!=ESFGatheringPilotResult::None) { Finish(ESFGatheringPilotPhase::Rejected,Result); return; }
     // Synchronous game-thread pilot: no fallible step remains after the inventory commit.
     const bool bRefining=ActiveKind==ESFGatheringPilotKind::Sawmill || ActiveKind==ESFGatheringPilotKind::Forge;
-    if (!bRefining) { --Feedback.Node->State.Charges; Feedback.Node->BeginRecovery(); }
+    if (!bRefining)
+    {
+        if (CapturedProgressionSettings&&!ActiveResourceProfile.ResourceId.IsNone())
+        {
+            const int64 GainsBefore=Skills.GainCount;
+            ProgressionSession.Practice(Skills,ActiveResourceProfile.Skill,FSFGatheringProgressionSession::Difficulty(ActiveResourceProfile.Tier),ActivePracticeDurationSeconds,
+                ActivePracticeContext,ActivePracticeInputSeconds,GetWorld()->GetTimeSeconds(),*CapturedProgressionSettings);
+            Feedback.bSkillGained=Skills.GainCount>GainsBefore; Feedback.CurrentSkill=Skills.Get(ActiveResourceProfile.Skill);
+        }
+        if (bActiveVisualCut) { Feedback.Node->State.Cuts.Add(ActiveVisualCut); }
+        --Feedback.Node->State.Charges; Feedback.Node->BeginRecovery();
+    }
     ++Feedback.Node->State.Revision;
     Finish(ESFGatheringPilotPhase::Committed,bRefining ? ESFGatheringPilotResult::Refined : ESFGatheringPilotResult::Granted);
 }
@@ -453,11 +565,19 @@ bool USFGatheringPilotComponent::InteractFromRay(const FVector& Start, const FVe
     if (!bEnabled) { return false; }
     if (Feedback.Phase==ESFGatheringPilotPhase::Harvesting) { CancelLocalHarvest(); return true; }
     if (WaitingOperation!=0)
-    { ServerGatheringAction(WaitingNode.Get(),WaitingRevision,WaitingOperation); return true; }
+    {
+        if (bWaitingHadSurface) { ServerGatheringActionAtSurface(WaitingNode.Get(),WaitingRevision,WaitingOperation,WaitingSurface); }
+        else { ServerGatheringAction(WaitingNode.Get(),WaitingRevision,WaitingOperation); }
+        return true;
+    }
     auto* Node=FindNode(Start,Direction); if (!Node) { return false; }
     if (NextLocalOperation==MAX_uint32) { bKeyConflict=true; return true; }
     WaitingOperation=NextLocalOperation++; WaitingNode=Node; WaitingRevision=Node->GetState().Revision; bKeyConflict=false;
-    ServerGatheringAction(Node,WaitingRevision,WaitingOperation); return true;
+    FVector Normal;
+    bWaitingHadSurface=Node->HarvestVisuals&&Node->HarvestVisuals->IsReady()&&Node->HarvestVisuals->TraceSurface(Start,Direction,WaitingSurface,Normal);
+    if (bWaitingHadSurface) { ServerGatheringActionAtSurface(Node,WaitingRevision,WaitingOperation,WaitingSurface); }
+    else { ServerGatheringAction(Node,WaitingRevision,WaitingOperation); }
+    return true;
 }
 
 void USFGatheringPilotComponent::CancelLocalHarvest()
@@ -488,6 +608,7 @@ FString USFGatheringPilotComponent::GetStatusText(const FVector& Start, const FV
     }
 #endif
     FString Action=ResultText(bKeyConflict ? ESFGatheringPilotResult::KeyConflict : Feedback.Result);
+    if (Feedback.bSkillGained&&!bKeyConflict) { Action+=FString::Printf(TEXT(" %s +1 (%d)."),FSFGatheringProgressionSession::SkillName(Feedback.Skill),Feedback.CurrentSkill); }
     if (WaitingOperation!=0) { Action=TEXT("Pending: waiting for server. E retries the same request."); }
     else if (Feedback.Phase==ESFGatheringPilotPhase::Harvesting)
     {
@@ -501,9 +622,20 @@ FString USFGatheringPilotComponent::GetStatusText(const FVector& Start, const FV
         Action+=FString::Printf(TEXT(" | %s: %s"),*Node->GetResourceName(),
             Result!=ESFGatheringPilotResult::None ? ResultText(Result) : !Node->IsRefinery() && Node->GetState().Charges==0 ? TEXT("Depleted")
             : Node->GetState().bBusy ? TEXT("In use") : Node->IsRefinery() ? TEXT("E: refine") : TEXT("E: harvest"));
-        if (!Node->IsRefinery()) { Action+=FString::Printf(TEXT(" (%d charges)"),Node->GetState().Charges); }
+        if (!Node->IsRefinery())
+        {
+            ESFGatheringSkill Skill; ESFGatheringMaterialTier Tier;
+            if (Node->GetResourceProfile(Skill,Tier))
+            {
+                Action+=FString::Printf(TEXT(" | %s %d / required %d | tier-one %s%s"),FSFGatheringProgressionSession::SkillName(Skill),Skills.Get(Skill),
+                    FSFGatheringProgressionSession::RequiredSkill(Tier),Node->Kind==ESFGatheringPilotKind::Oak ? TEXT("axe") : TEXT("pickaxe"),
+                    MeetsSkillRequirement(Node) ? TEXT("") : TEXT(" | Skill too low"));
+            }
+            Action+=FString::Printf(TEXT(" (%d charges)"),Node->GetState().Charges);
+        }
     }
-    return TEXT("GATHERING PILOT | Session-only inventory and starter tools\n")+InventoryText+TEXT("\nTool: ")+GetToolName()+TEXT(" | 5: axe | 6: pickaxe\n")+Action;
+    return FString::Printf(TEXT("GATHERING PILOT | Session-only | Logging %d | Mining %d\n"),Skills.Get(ESFGatheringSkill::Logging),Skills.Get(ESFGatheringSkill::Mining))
+        +InventoryText+TEXT("\nTool: ")+GetToolName()+TEXT(" | 5: axe | 6: pickaxe\n")+Action;
 }
 
 void USFGatheringPilotComponent::AssignPilotRole(bool bPrimary)
@@ -566,18 +698,21 @@ void USFGatheringPilotComponent::TickFiniteNetworkScenario()
         if (bPrimaryRole) { if (Interact(Wood)) { ScenarioStep=1; } }
         else if (Wood->GetState().Revision==1)
         {
-            if (Quantity(ESFGatheringPilotKind::Oak)!=0 || Quantity(ESFGatheringPilotKind::Iron)!=0)
+            if (Quantity(ESFGatheringPilotKind::Oak)!=0 || Quantity(ESFGatheringPilotKind::Iron)!=0 || Skills.PracticeCount!=0 || Skills.GainCount!=0)
             { UE_LOG(LogTemp,Error,TEXT("GATHERING_PILOT_SCENARIO_FAILED ForeignGrant=1")); FPlatformMisc::RequestExitWithStatus(false,1); return; }
-            UE_LOG(LogTemp,Display,TEXT("GATHERING_PILOT_OBSERVER_PRIVATE_EMPTY Wood=0 Ore=0"));
+            UE_LOG(LogTemp,Display,TEXT("GATHERING_PILOT_OBSERVER_PRIVATE_EMPTY Wood=0 Ore=0 Practice=0 Gains=0"));
             if (Interact(Ore)) { ScenarioStep=1; }
         }
     }
     else if (ScenarioStep==1 && Feedback.Phase==ESFGatheringPilotPhase::Committed
+        && Skills.PracticeCount==1
         && Quantity(bPrimaryRole ? ESFGatheringPilotKind::Oak : ESFGatheringPilotKind::Iron)==CapturedSettings->UnitsPerCharge)
     {
         if (bPrimaryRole)
         {
-            ServerGatheringAction(Wood,0,Feedback.Operation); ScenarioReplayedAt=Now; ScenarioStep=2;
+            if (bWaitingHadSurface) { ServerGatheringActionAtSurface(Wood,0,Feedback.Operation,WaitingSurface); }
+            else { ServerGatheringAction(Wood,0,Feedback.Operation); }
+            ScenarioReplayedAt=Now; ScenarioStep=2;
             UE_LOG(LogTemp,Display,TEXT("GATHERING_PILOT_PRIMARY_REPLAY Operation=%u"),Feedback.Operation);
         }
         else { ScenarioStep=2; }
@@ -586,12 +721,24 @@ void USFGatheringPilotComponent::TickFiniteNetworkScenario()
     {
         int32 VisibleInventories=0;
         for (TActorIterator<AActor> It(GetWorld()); It; ++It)
-        { TArray<UInventoryComponent*> Components; It->GetComponents(Components); VisibleInventories+=Components.Num(); }
+        {
+            TArray<UInventoryComponent*> Components; It->GetComponents(Components); VisibleInventories+=Components.Num();
+            TArray<USFGatheringPilotComponent*> Endpoints; It->GetComponents(Endpoints);
+            for (const auto* Endpoint:Endpoints)
+            {
+                if (Endpoint!=this&&(Endpoint->Skills.PracticeCount!=0||Endpoint->Skills.GainCount!=0
+                    ||Endpoint->Skills.Get(ESFGatheringSkill::Mining)!=0||Endpoint->Skills.Get(ESFGatheringSkill::Logging)!=0))
+                { UE_LOG(LogTemp,Error,TEXT("GATHERING_PILOT_SCENARIO_FAILED ForeignProgression=1")); FPlatformMisc::RequestExitWithStatus(false,1); return; }
+            }
+        }
         const int64 WoodCount=Quantity(ESFGatheringPilotKind::Oak), OreCount=Quantity(ESFGatheringPilotKind::Iron);
         if (VisibleInventories!=1 || WoodCount!=(bPrimaryRole ? CapturedSettings->UnitsPerCharge : 0)
-            || OreCount!=(bPrimaryRole ? 0 : CapturedSettings->UnitsPerCharge))
+            || OreCount!=(bPrimaryRole ? 0 : CapturedSettings->UnitsPerCharge)||Skills.PracticeCount!=1||Skills.GainCount>1
+            ||Skills.Get(bPrimaryRole ? ESFGatheringSkill::Mining : ESFGatheringSkill::Logging)!=0
+            ||Skills.Get(bPrimaryRole ? ESFGatheringSkill::Logging : ESFGatheringSkill::Mining)!=Skills.GainCount)
         { UE_LOG(LogTemp,Error,TEXT("GATHERING_PILOT_SCENARIO_FAILED Inventories=%d Wood=%lld Ore=%lld"),VisibleInventories,WoodCount,OreCount); FPlatformMisc::RequestExitWithStatus(false,1); return; }
         UE_LOG(LogTemp,Display,TEXT("GATHERING_PILOT_CLIENT_DONE Primary=%d Inventories=1 Wood=%lld Ore=%lld WoodRevision=1 OreRevision=1"),bPrimaryRole,WoodCount,OreCount);
+        UE_LOG(LogTemp,Display,TEXT("GATHERING_PROGRESSION_CLIENT_DONE Primary=%d Practice=1 Gains=%lld Logging=%d Mining=%d"),bPrimaryRole,Skills.GainCount,Skills.Get(ESFGatheringSkill::Logging),Skills.Get(ESFGatheringSkill::Mining));
         if (bRefiningScenario)
         { if (Interact(bPrimaryRole ? Sawmill : Forge)) { ScenarioStep=3; } }
         else { ScenarioStep=5; FPlatformMisc::RequestExitWithStatus(false,0); }
@@ -605,7 +752,7 @@ void USFGatheringPilotComponent::TickFiniteNetworkScenario()
     else if (ScenarioStep==4 && Sawmill->GetState().Revision==1 && Forge->GetState().Revision==1 && Now-ScenarioReplayedAt>=1)
     {
         const int64 Timber=Quantity(ESFGatheringPilotKind::Sawmill), Ingots=Quantity(ESFGatheringPilotKind::Forge);
-        if (Quantity(ESFGatheringPilotKind::Oak)!=0 || Quantity(ESFGatheringPilotKind::Iron)!=0
+        if (Skills.PracticeCount!=1||Quantity(ESFGatheringPilotKind::Oak)!=0 || Quantity(ESFGatheringPilotKind::Iron)!=0
             || Timber!=(bPrimaryRole ? CapturedSettings->TimberOutputUnits : 0) || Ingots!=(bPrimaryRole ? 0 : CapturedSettings->IngotOutputUnits))
         { UE_LOG(LogTemp,Error,TEXT("GATHERING_PILOT_SCENARIO_FAILED RecipeOutputs=1")); FPlatformMisc::RequestExitWithStatus(false,1); return; }
         UE_LOG(LogTemp,Display,TEXT("REFINING_PILOT_CLIENT_DONE Primary=%d Wood=0 Ore=0 Timber=%lld Ingots=%lld SawmillRevision=1 ForgeRevision=1"),bPrimaryRole,Timber,Ingots);

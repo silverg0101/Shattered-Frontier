@@ -1,0 +1,13 @@
+{
+  "blender": "5.2.2 LTS",
+  "trunk_nonmanifold_edges": 0,
+  "trunk_uv_layers": 1,
+  "trunk_material_slots": [
+    "M_HarvestOak_Bark",
+    "M_HarvestOak_CutWood",
+    "M_HarvestOak_Leaf",
+    "M_HarvestOak_Longgrain"
+  ],
+  "all_texture_images_packed": true,
+  "mesh_count": 10
+}
