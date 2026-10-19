@@ -241,6 +241,40 @@
     ]
   },
   {
+    "asset": "medieval_blocks_03",
+    "page": "https://polyhaven.com/a/medieval_blocks_03",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_size_metres": [
+      2.0,
+      2.0
+    ],
+    "files": [
+      {
+        "file": "Textures/medieval_blocks_03_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/medieval_blocks_03/medieval_blocks_03_diff_2k.jpg",
+        "md5": "1154ad6a83952dc50e14d27e236caa86"
+      },
+      {
+        "file": "Textures/medieval_blocks_03_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/medieval_blocks_03/medieval_blocks_03_nor_gl_2k.jpg",
+        "md5": "582bb92fd15482dd965051f2c9f45a6b"
+      },
+      {
+        "file": "Textures/medieval_blocks_03_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/medieval_blocks_03/medieval_blocks_03_rough_2k.jpg",
+        "md5": "67c9bf30d40aa121ba831c22d76013ba"
+      },
+      {
+        "file": "Textures/medieval_blocks_03_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/medieval_blocks_03/medieval_blocks_03_disp_2k.jpg",
+        "md5": "3e42485a10fe9ff894b2da4587146dc4"
+      }
+    ]
+  },
+  {
     "asset": "medieval_red_brick",
     "page": "https://polyhaven.com/a/medieval_red_brick",
     "license": "CC0-1.0",
@@ -616,6 +650,41 @@
     ]
   },
   {
+    "asset": "stone_brick_wall_001",
+    "page": "https://polyhaven.com/a/stone_brick_wall_001",
+    "license": "CC0-1.0",
+    "authors": {
+      "Dimitrios Savva": "Photography",
+      "Rico Cilliers": "Processing"
+    },
+    "physical_size_metres": [
+      2.5,
+      2.5
+    ],
+    "files": [
+      {
+        "file": "Textures/stone_brick_wall_001_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/stone_brick_wall_001/stone_brick_wall_001_diff_2k.jpg",
+        "md5": "d0ae8ede03545ce2e7d25e10ec02e789"
+      },
+      {
+        "file": "Textures/stone_brick_wall_001_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/stone_brick_wall_001/stone_brick_wall_001_nor_gl_2k.jpg",
+        "md5": "3c1e8ac4bd764957de06794c4f1f0ba9"
+      },
+      {
+        "file": "Textures/stone_brick_wall_001_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/stone_brick_wall_001/stone_brick_wall_001_rough_2k.jpg",
+        "md5": "c4ca4a5e4525d017c5eb697fa33cb4b1"
+      },
+      {
+        "file": "Textures/stone_brick_wall_001_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/stone_brick_wall_001/stone_brick_wall_001_disp_2k.jpg",
+        "md5": "ace241fc33120a57e029669232bd60c6"
+      }
+    ]
+  },
+  {
     "asset": "stone_wall",
     "page": "https://polyhaven.com/a/stone_wall",
     "license": "CC0-1.0",
@@ -681,6 +750,41 @@
         "file": "Textures/stone_wall_04_Displacement.jpg",
         "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/stone_wall_04/stone_wall_04_disp_2k.jpg",
         "md5": "b46f9fd4bf1b1dc1bef4a5604955051b"
+      }
+    ]
+  },
+  {
+    "asset": "velour_velvet",
+    "page": "https://polyhaven.com/a/velour_velvet",
+    "license": "CC0-1.0",
+    "authors": {
+      "colormass": "Photography",
+      "Rico Cilliers": "Processing"
+    },
+    "physical_size_metres": [
+      0.28422817052147237,
+      0.273499995470047
+    ],
+    "files": [
+      {
+        "file": "Textures/velour_velvet_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/velour_velvet/velour_velvet_diff_2k.jpg",
+        "md5": "8a177e9b50140fda3a46e1349b65473a"
+      },
+      {
+        "file": "Textures/velour_velvet_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/velour_velvet/velour_velvet_nor_gl_2k.jpg",
+        "md5": "9118512b61c6f1b074c747d7201fabee"
+      },
+      {
+        "file": "Textures/velour_velvet_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/velour_velvet/velour_velvet_rough_2k.jpg",
+        "md5": "4553577d1d92669fd46534ee2ab55719"
+      },
+      {
+        "file": "Textures/velour_velvet_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/velour_velvet/velour_velvet_disp_2k.jpg",
+        "md5": "4c11661841213ab7c4e47a2af32fe8b0"
       }
     ]
   },
