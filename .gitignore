@@ -13,3 +13,4 @@ Artifacts/
 __pycache__/
 BackendServices/**/bin/
 BackendServices/**/obj/
+.claude/settings.local.json

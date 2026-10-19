@@ -1,0 +1,18 @@
+{
+  "enabledMcpjsonServers": ["unreal-editor"],
+  "permissions": {
+    "allow": [
+      "PowerShell(& 'C:\\Program Files\\Epic Games\\UE_5.8\\Engine\\Build\\BatchFiles\\Build.bat' ShatteredFrontierEditor:*)",
+      "PowerShell(& 'C:\\Program Files\\Epic Games\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor-Cmd.exe':*)",
+      "PowerShell(& .\\tools\\Test-:*)",
+      "PowerShell(.\\tools\\Test-:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "PowerShell(git push:*)"
+    ]
+  }
+}

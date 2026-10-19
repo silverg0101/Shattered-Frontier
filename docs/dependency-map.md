@@ -102,6 +102,8 @@ Gameplay reuse: [current assessment](gameplay-reuse-assessment.md) and [design c
 
 Setup reference: [first-time-setup.md](first-time-setup.md) covers required software, first launch, deploy-key generation (manual or by a session agent), Unreal preparation, and optional MCP setup. Load only for onboarding, machine setup, or explicit environment repair; skip during ordinary conversations and feature work.
 
+Claude Code: `CLAUDE.md` imports `AGENTS.md`; `.mcp.json` (`unreal-editor`, `http://127.0.0.1:8000/mcp`) reaches the interactive editor, whose MCP server `GameClient/Config/DefaultEditorPerProjectUserSettings.ini` auto-starts. `.claude/settings.json` allow-lists build/automation/runner commands; `.claude/commands/` holds `/build-editor`, `/test <filter>` (reports to `Artifacts/Automation/`), `/netcheck <name>` (maps names to `tools/Test-*.ps1`) and `/implement <spec>`.
+
 | Reference | Summary | Read when |
 | --- | --- | --- |
 | [Backend](Game-Design/Legends_Shattered_Frontier_Backend_Architecture_v1.0.md) | UE server/service boundaries, auth-service ownership split, server-only content packs, account deletion/privacy workflow (`privacy_request_state`), `auth.*`/`character.*` payloads incl. `login_failure_reason`, persistence, scaling, recovery, deployment. Parts in `Game-Design/Backend/`. | Planning service boundaries or Unreal backend integration; use the domain documents below for detail. |
