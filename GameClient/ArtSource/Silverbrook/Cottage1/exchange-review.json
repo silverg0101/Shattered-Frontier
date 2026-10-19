@@ -1,7 +1,7 @@
 {
   "source": {
     "meshes": 5,
-    "triangles": 54748,
+    "triangles": 54704,
     "size_m": [
       7.65,
       5.94,
@@ -29,7 +29,7 @@
   },
   "glb": {
     "meshes": 5,
-    "triangles": 54748,
+    "triangles": 54704,
     "size_m": [
       7.65,
       5.94,
@@ -58,7 +58,7 @@
   },
   "fbx": {
     "meshes": 5,
-    "triangles": 54748,
+    "triangles": 54704,
     "size_m": [
       7.65,
       5.94,

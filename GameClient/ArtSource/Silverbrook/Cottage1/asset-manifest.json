@@ -15,7 +15,7 @@
   ],
   "meshes": {
     "SM_SBCottage1_Masonry": {
-      "triangles": 1228,
+      "triangles": 1184,
       "materials": [
         "SB_Ashlar"
       ]
@@ -53,7 +53,7 @@
       ]
     }
   },
-  "triangles": 54748,
+  "triangles": 54704,
   "materials": [
     {
       "name": "SB_Slate",

@@ -14,5 +14,5 @@
   "slots": 12,
   "nanite": true,
   "convex_hulls": 12,
-  "nanite_fallback_triangles": 19190
+  "nanite_fallback_triangles": 19157
 }

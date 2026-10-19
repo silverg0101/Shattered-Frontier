@@ -108,9 +108,10 @@ G['stone'].box((XC,YC,5.51),(.98,.88,.12),M['ashlar'],.015,rect=kit.rng.choice(S
 for dx in (-.2,.2):G['detail'].vessel((XC+dx,YC,5.57),[(.11,0),(.105,.3),(.115,.38),(.13,.42),(.10,.42),(.085,.36),(0,.36)],M['pot'])
 # ---- walls ------------------------------------------------------------------------
 PLATE=main_z(0,-D2)-.04
+STEP,DS=.3,1.6                 # door sill = porch step top; arch spring above it
 WIN=.7;WH=.85;WZ=1.05;WO=(WIN+.18,WZ-.09,WZ+WH+.09)
-front_holes=[(-2.33,WO[0],WO[1],WO[2]),(0,1.0,0,2.25),(2.33,WO[0],WO[1],WO[2])]
-wall(G['stone'],M['stone'],(0,-D2,0),(0,-1,0),W2,PLATE,front_holes,arch=(0,1.0,1.75))
+front_holes=[(-2.33,WO[0],WO[1],WO[2]),(0,1.0,STEP,STEP+DS+.5),(2.33,WO[0],WO[1],WO[2])]
+wall(G['stone'],M['stone'],(0,-D2,0),(0,-1,0),W2,PLATE,front_holes,arch=(0,1.0,STEP+DS))
 wall(G['stone'],M['stone'],(0,D2,0),(0,1,0),W2,PLATE,[(-2.0,WO[0],WO[1],WO[2]),(2.0,WO[0],WO[1],WO[2])])
 for s in (-1,1):
     wall(G['stone'],M['stone'],(s*W2,0,0),(s,0,0),D2-.3,PLATE,[(1.3,WO[0],WO[1],WO[2])],th=.3)
@@ -157,7 +158,7 @@ for x in (-2.33,2.33):window(G,M,(x,-D2,WZ),(0,-1,0),WIN,WH,planter=True,band=ba
 for x in (-2.0,2.0):window(G,M,(x,D2,WZ),(0,1,0),WIN,WH,band=band())
 for s in (-1,1):window(G,M,(s*W2,s*1.3,WZ),(s,0,0),WIN,WH,band=band())
 window(G,M,(0,-D2-.02,GWZ),(0,-1,0),.6,.8,band=band())
-door(G,M,(0,-D2,0),(0,-1,0),1.0,1.75,STONES,band=band())
+door(G,M,(0,-D2,STEP),(0,-1,0),1.0,DS,STONES,band=band())
 # ---- porch ------------------------------------------------------------------------
 LP=math.hypot(PH,PR-PE)
 plane((-PH,0,PE),(0,-1,0),(PH,0,PR-PE),LP,lambda t:D2,lambda t:-PY,[])

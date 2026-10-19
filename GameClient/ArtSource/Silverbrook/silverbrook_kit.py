@@ -32,7 +32,7 @@ def _image(asset,channel):
 
 def scan(name,asset,dark=(.42,.36,.28),lichen=None,normal=1.0,damp=True,aged=0):
     """aged: baseline R darkening (weathered timber, sun-faded paint) on every face."""
-    m=bpy.data.materials.new(name);m.use_nodes=True;nt=m.node_tree;n=nt.nodes;link=nt.links.new;p=n.get('Principled BSDF')
+    m=bpy.data.materials.new(name);m.use_nodes=True;m.use_backface_culling=True;nt=m.node_tree;n=nt.nodes;link=nt.links.new;p=n.get('Principled BSDF')
     uv=n.new('ShaderNodeUVMap');uv.uv_map='UVMap'
     def tex(channel):
         t=n.new('ShaderNodeTexImage');t.image=_image(asset,channel);link(uv.outputs['UV'],t.inputs['Vector']);return t
@@ -54,7 +54,7 @@ def scan(name,asset,dark=(.42,.36,.28),lichen=None,normal=1.0,damp=True,aged=0):
     return m
 
 def solid(name,colour,rough=.6,metal=0,emission=None,strength=0):
-    m=bpy.data.materials.new(name);m.use_nodes=True;p=m.node_tree.nodes.get('Principled BSDF')
+    m=bpy.data.materials.new(name);m.use_nodes=True;m.use_backface_culling=True;p=m.node_tree.nodes.get('Principled BSDF')
     p.inputs['Base Color'].default_value=(*colour,1);p.inputs['Roughness'].default_value=rough;p.inputs['Metallic'].default_value=metal
     if emission:p.inputs['Emission Color'].default_value=(*emission,1);p.inputs['Emission Strength'].default_value=strength
     MATS[name]=m;SCALE[name]=1;ROWS.append(dict(name=name,colour=list(colour),roughness=rough,metallic=metal,emission=list(emission) if emission else None,strength=strength));return m
@@ -100,7 +100,8 @@ class Geo:
         corners=[(-sx/2+cut,-sy/2),(sx/2-cut,-sy/2),(sx/2,-sy/2+cut),(sx/2,sy/2-cut),(sx/2-cut,sy/2),(-sx/2+cut,sy/2),(-sx/2,sy/2-cut),(-sx/2,-sy/2+cut)] if cut else [(-sx/2,-sy/2),(sx/2,-sy/2),(sx/2,sy/2),(-sx/2,sy/2)]
         local=[Vector((x,y,z)) for z in (-sz/2,sz/2) for x,y in corners];world=[(rot@p if rot is not None else p)+Vector(centre) for p in local]
         k=len(corners);faces=[list(reversed(range(k))),list(range(k,2*k))]+[[i,(i+1)%k,(i+1)%k+k,i+k] for i in range(k)]
-        off=(rng.random()*5,rng.random()*5)
+        off=(rng.random()*5,rng.random()*5);mirrored=rot is not None and rot.determinant()<0  # e.g. frame() bases
+        vol=0
         for idx in faces:
             normal=(local[idx[1]]-local[idx[0]]).cross(local[idx[2]]-local[idx[0]]);dom=max(range(3),key=lambda a:abs(normal[a]));axes=[a for a in range(3) if a!=dom];uv=None
             if rect:
@@ -108,7 +109,10 @@ class Geo:
             elif grain:
                 s=SCALE[mat.name];long=max(axes,key=lambda a:size[a]);other=next(a for a in axes if a!=long)
                 uv=[(local[i][long]/s+off[0],band[0]+(local[i][other]/size[other]+.5)*(band[1]-band[0]) if band else local[i][other]/s+off[1]) for i in idx]
+            if mirrored:idx,uv=idx[::-1],(uv[::-1] if uv else uv)   # keep outward winding under a reflection
             self.poly([world[i] for i in idx],mat,uv,w,swap=swap)
+            vol+=sum(world[idx[0]].dot(world[idx[j]].cross(world[idx[j+1]])) for j in range(1,len(idx)-1))
+        assert vol>0,'inside-out box'  # Unreal culls back faces; Blender would hide this
     def beam(self,a,b,width,depth=None,mat=None,**kw):
         a,b=Vector(a),Vector(b);rot=(b-a).to_track_quat('Z','Y').to_matrix();kw.setdefault('grain',True);self.box((a+b)/2,(width,depth or width,(b-a).length),mat,.012,rot,**kw)
     def prism(self,points,axis,thickness,mat,**kw):
