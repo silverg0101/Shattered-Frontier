@@ -28,6 +28,9 @@ PREFIX = {'canopy': 'VEG', 'understory': 'VEG', 'ground_cover': 'VEG', 'litter':
 ROLE_PREFIX = {'cobble_pebble_scatter': 'ROCK'}  # litter that is stone, not plant
 CATEGORY = {'VEG': 'Vegetation', 'ROCK': 'Rock', 'MAT': 'Terrain material', 'TERR': 'Terrain / backdrop', 'BLD': 'Building'}
 GROWTH = {'wood': '`swap`: sapling, young and mature meshes', 'stone': '`rise`: mature mesh only'}
+DEFINITION_TYPES = {'Town Hall': 'town_hall', "Adventurers' Guild": 'adventurers_guild', 'The Golden Stag Inn': 'inn',
+                    'Blacksmith': 'blacksmith', 'Temple of the Dawn': 'temple', 'Market stall': 'market_stall', 'Watchtower': 'watchtower',
+                    'Cottage': 'cottage', 'Stables': 'stables', 'Workshop': 'workshop', 'Farmhouse': 'farmhouse'}
 LAYOUT_TYPES = {'townhouse': 'Townhouse', 'elite_house': 'Northridge house', 'mill': 'Mill', 'granary': 'Granary',
                 'wharf': "Fisherman's wharf", 'docks': 'Riverside docks'}
 
@@ -67,6 +70,19 @@ def definition_buildings():
     return [tuple(r) for r in rows[1:] if len(r) == 4]
 
 
+def building_list(L):
+    """(name, size, use, kind, source) for every Silverbrook building: definition §8 and §10, plus layout types."""
+    buildings = [(n, size, use, kind, f'Silverbrook definition §8 ({size} m, height × width)') for n, size, use, kind in definition_buildings()]
+    sizes = L['building_types']
+    buildings += [(name, ' × '.join(str(v) for v in sizes[t]), '', 'Modular', f"Silverbrook layout `building_types.{t}` ({' × '.join(str(v) for v in sizes[t])} m, width × depth × height; graybox)")
+                  for t, name in LAYOUT_TYPES.items()]
+    W = L['wall']
+    buildings += [('Wall section', f"{W['segment_length']} × {W['thickness']} × {W['height']}", 'Defence', 'Modular', 'Silverbrook definition §10; layout `wall`'),
+                  ('Gatehouse', f"{W['gate_gap']} m opening", 'Defence', 'Modular', 'Silverbrook definition §10; layout `gates`'),
+                  ('Wall tower', ' × '.join(str(v) for v in W['tower']), 'Defence', 'Modular', 'Silverbrook definition §10; layout `wall.tower`')]
+    return buildings
+
+
 def gaps():
     P = json.loads(PROFILE.read_text(encoding='utf-8'))
     L = json.loads(LAYOUT.read_text(encoding='utf-8'))
@@ -89,14 +105,7 @@ def gaps():
                         deps='; '.join(deps), where=layer['where'], variants=layer['variants'] - len(owned),
                         priority=PRIORITY[layer['layer']]))
     have_b = P.get('buildings', {})
-    buildings = [(n, size, use, kind, f'Silverbrook definition §8 ({size} m, height × width)') for n, size, use, kind in definition_buildings()]
-    sizes = L['building_types']
-    buildings += [(name, ' × '.join(str(v) for v in sizes[t]), '', 'Modular', f"Silverbrook layout `building_types.{t}` ({' × '.join(str(v) for v in sizes[t])} m, width × depth × height; graybox)")
-                  for t, name in LAYOUT_TYPES.items()]
-    W = L['wall']
-    buildings += [('Wall section', f"{W['segment_length']} × {W['thickness']} × {W['height']}", 'Defence', 'Modular', 'Silverbrook definition §10; layout `wall`'),
-                  ('Gatehouse', f"{W['gate_gap']} m opening", 'Defence', 'Modular', 'Silverbrook definition §10; layout `gates`'),
-                  ('Wall tower', ' × '.join(str(v) for v in W['tower']), 'Defence', 'Modular', 'Silverbrook definition §10; layout `wall.tower`')]
+    buildings = building_list(L)
     for name, size, use, kind, source in buildings:
         entry = have_b.get(name, {})
         owned = [n for n in entry.get('have', []) if n in lib and not licensed(lib[n])]
@@ -115,6 +124,48 @@ def gaps():
                         variants=target - len(owned), priority=pri, concepts=concepts, models=models))
     order = {'P1': 0, 'P2': 1, 'P3': 2}
     return sorted(out, key=lambda r: (order[r['priority']], r['category'] == 'Building', r['id']))
+
+
+def footprint(L, name):
+    """The slot a building must fit in the town build: width x depth x height in metres."""
+    t = DEFINITION_TYPES.get(name) or {v: k for k, v in LAYOUT_TYPES.items()}.get(name)
+    if t:
+        return ' × '.join(str(v) for v in L['building_types'][t])
+    W, R = L['wall'], L['river']
+    return {'Stone bridge': f"{R['bridge_length']} × {R['bridge_width']} deck, spans the 24 m river",
+            'Wall section': f"{W['segment_length']} × {W['thickness']} × {W['height']}", 'Gatehouse': f"{W['gate_gap']} m opening, towers {' × '.join(map(str, W['tower']))}",
+            'Wall tower': ' × '.join(str(v) for v in W['tower'])}.get(name, '—')
+
+
+def write_index(rows):
+    """README in the concept folder: every image, its building, asset ID, slot size and model status."""
+    if not CONCEPTS.is_dir():
+        return
+    L = json.loads(LAYOUT.read_text(encoding='utf-8'))
+    open_rows = {r['role']: r for r in rows if r['category'] == 'Building'}
+    lines = ['# Silverbrook building concepts', '',
+             'Owner-supplied concept images for the Silverbrook buildings. One image is one design to model; numbered images '
+             '(`Cottage-1` to `Cottage-6`) are variants of one building. Generated by `GameClient/ArtSource/Greenlands/missing_assets.py`; '
+             'the work queue is [batch 42](../../../art-templates/asset-lists/environment-greenlands-silverbrook-42.md). Models are made in '
+             '`GameClient/ArtSource/Silverbrook/<Building><n>/` (metres, Z up, origin at ground centre, front facing -Y) and must fit the slot size, '
+             'which the town builder reserves in `silverbrook-town-layout.json`.', '',
+             '| Image | Building | Asset ID | Fits (w × d × h m) | Model package | Status |', '|---|---|---|---|---|---|']
+    seen = set()
+    for name, *_ in building_list(L):
+        concepts, models = building_work(name)
+        row = open_rows.get(name)
+        for c in concepts:
+            seen.add(c)
+            stem = Path(c).stem
+            pkg = next((m for m in models if _norm(Path(m).name) == _norm(stem)), None)
+            status = 'delivered' if not row else ('modelling' if pkg else 'waiting for a model')
+            link = f"[{Path(c).name}]({Path(c).name.replace(' ', '%20')})"
+            lines.append(f"| {link} | {name} | {asset_id('BLD', name)} | {footprint(L, name)} | "
+                         f"{f'`{pkg}`' if pkg else '—'} | {status} |")
+    stray = sorted(p.name for p in CONCEPTS.glob('*.png') if p.relative_to(REPO).as_posix() not in seen)
+    if stray:
+        lines += ['', f"**Not matched to a building** (name the file after a building in definition §8 or §10, or the layout): {', '.join(stray)}"]
+    (CONCEPTS / 'README.md').write_text(chr(10).join(lines) + chr(10), encoding='utf-8', newline=chr(10))
 
 
 def write(rows):
@@ -187,6 +238,7 @@ if __name__ == '__main__':
     assert not missing, f'pipeline stage 4 exit: these known gaps are missing from the report: {missing}'
     assert len({r['id'] for r in rows}) == len(rows), 'duplicate asset IDs'
     write(rows)
+    write_index(rows)
     catalog_row(rows)
     print(f'MISSING_ASSETS_OK {BATCH.name}: {len(rows)} rows '
           f"({sum(r['category'] != 'Building' for r in rows)} environment, {sum(r['category'] == 'Building' for r in rows)} buildings)")
