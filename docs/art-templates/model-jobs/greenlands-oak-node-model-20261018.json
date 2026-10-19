@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "job_id": "greenlands-oak-node-model-20261018",
+  "asset_id": "RESOURCE-GreenlandsOakNode-01",
+  "status": "needs-review",
+  "owner": "Codex / Greenlands model batch 2026-10-18",
+  "lease_expires_utc": "2026-10-19T00:00:00Z",
+  "reference": {
+    "source_type": "catalog-package",
+    "manifest_path": "GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/References/v001/manifest.json",
+    "image_path": "GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/References/v001/asset-view.png",
+    "sha256": "607f11a55e388d1d6055c83348f20d2f063baa4917c38c0d99a99a580a69107e",
+    "image_batch_path": "docs/art-templates/asset-lists/basic-greenlands-loop-02.md"
+  },
+  "profile": {
+    "category": "foliage",
+    "features": [
+      "trunk",
+      "branches",
+      "leaf-canopy",
+      "texture-uv"
+    ],
+    "path": "docs/art-templates/model-profiles/greenlands-foliage-pixal-20261018.json",
+    "sha256": "32f276def5445ef827f2a747a3ccd9bdc8ca8f94fc739430ec226a01202ba089",
+    "approval": "prototype-authored",
+    "source_lock_path": "GameClient/ArtSource/GreenlandsModelBatch-20261018/backend-lock.json"
+  },
+  "quality_target": "prototype",
+  "repair_policy": {
+    "max_attempts_per_stage": 3,
+    "on_exhaustion": "needs-review"
+  },
+  "current_stage": "geometry",
+  "stages": {
+    "reference": {
+      "status": "needs-review",
+      "attempt_count": 3,
+      "attempt_paths": [
+        "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/attempt-01",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/attempt-02",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/attempt-03"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/References/v001/manifest.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/attempt-01/RESOURCE-GreenlandsOakNode-01.rgba.segmentation.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/attempt-02/RESOURCE-GreenlandsOakNode-01.rgba.segmentation.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/attempt-03/RESOURCE-GreenlandsOakNode-01.rgba.segmentation.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/segmentation-mask-audit-v002.json"
+      ],
+      "note": "Image catalog reference and attempt-03 mask/input are pinned. Profile expected preparer hash ddc6\u2026 but attempt-03 provenance/current preparer hash is 188d\u2026; see reconciliation. Three input-preparation attempts consumed. CPU grayscale-mask audit: attempt-01 had 36 eight-connected foreground regions; attempt-03 has 1, 42.48% foreground and fully transparent image border. This supports mask cleanup/connectivity only; no semantic silhouette acceptance is established. Visual contour review remains open."
+    },
+    "geometry": {
+      "status": "repair-required",
+      "attempt_count": 2,
+      "attempt_paths": [
+        "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/attempt-01",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/attempt-03"
+      ],
+      "check_paths": [
+        "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/attempt-03/pixal/run.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/attempt-03/attempt-provenance.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/production-readiness-v001/gate-summary.json",
+        "GameClient/ArtSource/GreenlandsModelBatch-20261018/geometry-boundary-review-20261019.md"
+      ],
+      "note": "Attempt 2/3. Read-only CPU boundary review confirms C0000 fuses root flare and sheet; triangle seeds 9523/9493/9502 locate extension but not a closed cut. Cutting risks root damage or leaves an inner rim. Preserve last attempt until closed cut loop and underside are authored. See geometry-boundary-review-20261019.md."
+    },
+    "topology_uv": {
+      "status": "needs-review",
+      "attempt_count": 2,
+      "attempt_paths": [
+        "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/review-v002",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/surface-correspondence-v001"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/Model-v001/validation-report.json",
+        "GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/Model-v001/checks/component-inspection/component-report.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/surface-correspondence-v001/surface-correspondence-v002.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/surface-correspondence-v001/fbx-vertex-distance.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/surface-correspondence-v001/evidence-manifest.json"
+      ],
+      "note": "Fresh CPU source-to-GLB/FBX correspondence passes all triangle positions (max drift below 0.11 micrometers), exact loop UVs, and normal orientation on nondegenerate faces; 0.1 mm tolerance. The source and exports share 12 zero-area triangles (indices 11250, 11252, 11253, 11255, 32010, 38825, 89050, 239829, 261367, 265364, 278590, 286633); they are inherited geometry defects. The source still has a root flare fused to a sheet extension; canopy component semantics and branch attachments remain open. See the evidence manifest and surface-correspondence-v002.json."
+    },
+    "materials": {
+      "status": "needs-review",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/Model-v001"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/Model-v001/validation-report.json",
+        "docs/art-templates/model-profiles/unreal58-surface-quality-20261018.json",
+        "GameClient/ArtSource/GreenlandsModelBatch-20261018/material-channel-audit-v001.json"
+      ],
+      "note": "Blender node and pixel audit confirms Image_0 sRGB base color, Image_1 Non-Color Green to roughness, and Image_1 Blue to metallic; blue is zero across all pixels. UV/image dependency checks pass. Metallic semantics remain asset-specific (especially iron-bearing ore); no normal or height maps; AO applicability is asset-dependent and no UE 5.8 material/depth comparison exists. See batch material-channel-audit-v001.json."
+    },
+    "rig": {
+      "status": "skipped",
+      "attempt_count": 0,
+      "attempt_paths": [],
+      "check_paths": [],
+      "note": "Static prop; no skeleton requested or required."
+    },
+    "secondary_motion": {
+      "status": "skipped",
+      "attempt_count": 0,
+      "attempt_paths": [],
+      "check_paths": [],
+      "note": "Wind animation/foliage motion is not a requested deliverable."
+    },
+    "delivery": {
+      "status": "needs-review",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/Model-v001"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/Model-v001/artifact-manifest.json",
+        "GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/Model-v001/README.md"
+      ],
+      "note": "Editable source, GLB/FBX, textures, previews, hashes, generation settings, validation and component reports are packaged. Quality/engine acceptance blockers are retained."
+    }
+  },
+  "artifacts": {
+    "attempt_root": "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01",
+    "source_rights": "Package provenance records built-in image generation; explicit license/permission metadata is absent, so rights are not asserted.",
+    "requested_deliverables": "Editable Blender source, GLB and FBX when supported, textures, three-quarter/front/side/rear previews, hashes, defects, machine checks, and manifest.",
+    "gpu_policy": "One local Radeon GPU inference/render process at a time; Pixal3D batch owns generation; Voidreign work remains CPU-only.",
+    "input_preparation_script": "tools/trellis2/prepare_model_input.py",
+    "inference_runner": "tools/trellis2/run_pixal.py",
+    "unreal58_surface_profile": "docs/art-templates/model-profiles/unreal58-surface-quality-20261018.json",
+    "unreal58_surface_profile_sha256": "7f8dae610732a455465e362db8b730f9a5ddfbc3dd1bdb9b837a80072d4dd8e1",
+    "prepared_input": "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/attempt-03/RESOURCE-GreenlandsOakNode-01.rgba.png",
+    "prepared_input_sha256": "4e227cd5edfded839c3642d4649676b9724ec550d44da2b41ecb46274ff9e974",
+    "segmentation_report": "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/attempt-01/RESOURCE-GreenlandsOakNode-01.segmentation.json",
+    "segmentation_mask_preview": "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/attempt-01/RESOURCE-GreenlandsOakNode-01-mask.png",
+    "segmentation_mask_preview_sha256": "284c4bb8aede00715a5bccdea7173b604987748d37d0213f4902d302891443bc",
+    "geometry_output": "GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/Model-v001/RESOURCE-GreenlandsOakNode-01.glb",
+    "generation_run": "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/attempt-03/pixal/run.json",
+    "generation_provenance": "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/attempt-03/attempt-provenance.json",
+    "delivered_package": "GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/Model-v001",
+    "input_preparer_sha256": "188d70b7b449e363dc9b6a38b7994458afa489f9b4320f27626e285c4598ee5d",
+    "runner_sha256": "ac72817a9c4cc28fda11689c5330f1008a1041531deb8d9f84063f38d71c98a4",
+    "backend_lock_sha256": "a0c4e304794d37d5fa3612a216f93cac8d0239fb7065224f69f51da449ac92fd",
+    "software_lock_sha256": "9faef23fc8c0f20fc9b13966a7319bbc819df5ba523c3006e6f6d3966e5db8cb",
+    "review_report": "GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/Model-v001/asset-review.json",
+    "validation_report": "GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/Model-v001/validation-report.json",
+    "component_report": "GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/Model-v001/checks/component-inspection/component-report.json",
+    "rejected_input_candidate": "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/attempt-02/RESOURCE-GreenlandsOakNode-01.rgba.segmentation.json",
+    "production_readiness_gate_summary": "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/production-readiness-v001/gate-summary.json",
+    "graphics_scalability_policy": "docs/art-templates/pc-graphics-scalability.md",
+    "machine_baseline_candidate": "docs/evidence/pc-graphics-baseline-20261018.md",
+    "production_target_selection": "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/production-readiness-v002/target-selection.json",
+    "preprocessing_attempt_history": "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/attempt-01, attempt-02, and attempt-03 segmentation reports",
+    "effective_segmentation_mask": "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/attempt-03/RESOURCE-GreenlandsOakNode-01.rgba.mask.png",
+    "effective_segmentation_mask_sha256": "47aa02e2b1b5534d7a5d05b1d19c055e5d84e207e0a2e0cc143b375052caa21d",
+    "provenance_reconciliation": "GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/Model-v001/checks/provenance-reconciliation-v002.json",
+    "provenance_reconciliation_sha256": "65b23d548dcc76009ae2fb0f67f159f453d68e3ecb5c491a96f8bf8d6c6e33a7",
+    "material_channel_audit": "GameClient/ArtSource/GreenlandsModelBatch-20261018/material-channel-audit-v001.json",
+    "material_channel_audit_sha256": "5565681cac99916e71719d71d07e346efd709ad2867625772fa82bc60fd7d38f",
+    "geometry_boundary_review": "GameClient/ArtSource/GreenlandsModelBatch-20261018/geometry-boundary-review-20261019.md",
+    "geometry_boundary_review_sha256": "7005487502b2583f9d871be8674acb7678ff12fa03829a7b314304ee24f1f81d",
+    "mask_numeric_audit": "Artifacts/Art/GreenlandsModelBatch-20261018/segmentation-mask-audit-v002.json",
+    "surface_correspondence": "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/surface-correspondence-v001/surface-correspondence-v002.json",
+    "fbx_vertex_distance_check": "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/surface-correspondence-v001/fbx-vertex-distance.json",
+    "exchange_evidence_manifest": "Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/surface-correspondence-v001/evidence-manifest.json"
+  },
+  "defects": [
+    "Beauty render contains an unwanted flat light-colored sheet extending from the root/contact-shadow zone and a detached canopy clump. GrabCut input repair reduced but did not remove it.",
+    "Mesh has 63,929 raw index islands and 128 exact-coincident components; canopy leaves can be intentional separate pieces, but no semantic attachment graph/classifier is implemented.",
+    "Reviewed beauty view retains root/contact sheet and detached canopy clump.",
+    "128 seam-aware components remain without semantic dispositions.",
+    "12 source faces have exactly zero area (triangle indices 11250, 11252, 11253, 11255, 32010, 38825, 89050, 239829, 261367, 265364, 278590, 286633); exports preserve them.",
+    "User-selected 18-22 m mature-oak height envelope exists; final proportions and scale application remain open."
+  ],
+  "blockers": [
+    "The root/sheet boundary is continuous in C0000; no approved closed cut loop or underside closure exists.",
+    "Detached canopy C0006 lacks a reviewed branch attachment; foliage shape quality remains open.",
+    "User-selected 18\u201322 m height envelope is recorded; final proportions and scale application await geometry/reference proportion review.",
+    "UE 5.8 material, collision, LOD/Nanite, 1440p/60 scalability and hardware evidence remain open."
+  ],
+  "next_action": "Author and visually review a closed root/sheet cut loop with protected-root bounds and underside closure, then use the one remaining geometry repair; preserve C0006 and review/rebuild its branch attachment. Do not use height/box/component-size deletion."
+}
+

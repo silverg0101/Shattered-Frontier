@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "scope": "Source-bound startup peak patch; rest and first output pose, not held-frame240 recreation",
+  "permissions": "Offline author diagnostic views only",
+  "effective_time": "This new read-only review",
+  "units": "metres, source frames",
+  "source_sha256": "a5e69cab0f484b2180809b8f60cb61ade34e227bd75ecdecfed97a7f87ae3cb9",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "object": "geometry_0",
+  "assembly_root": "MOTION HARNESS | rigid horse, not gait animation",
+  "surface_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCacheCheck-v001\\surface-report.json",
+  "surface_report_sha256": "2690a793e806ba6024f73d6c611b634efe4de428500227ded7dfb1752b9384a4",
+  "selection_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selection-report.json",
+  "selection_report_sha256": "63eb535dcafe1140c5445ce46bd402cc438af979c437fbb9d7430b723aa11a08",
+  "patch_radius_m": 0.06,
+  "context_pad_m": 0.15,
+  "cases": [
+    {
+      "id": "mane-startup-peak-patch",
+      "label": "Peak settling source patch; first output pose",
+      "vertex": 133921,
+      "frame": 1,
+      "expected_world_position_m": [
+        -0.08913324773311615,
+        -0.6685527563095093,
+        2.2851691246032715
+      ],
+      "diagnostic_origin": "ManeWarmupDiagnostic-v001 heldframe240; this view is outputframe1=simulation241, not same clock"
+    }
+  ],
+  "retention_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCacheRetention-v001\\validation.json",
+  "retention_report_sha256": "9b678425ffccaa91bdb43de7ea75189a3f3d26f8869dc6407ae522afa3f1c57b",
+  "index_preserving_node_modifiers": [
+    "Actual-surface simulated coordinates | diagnostic",
+    "Actual-surface simulated coordinates | diagnostic.001",
+    "Actual surface contacts | diagnostic projection",
+    "Actual surface contacts | diagnostic projection.001"
+  ],
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Voidreign-ActualSurfacePilot.blend": "a5e69cab0f484b2180809b8f60cb61ade34e227bd75ecdecfed97a7f87ae3cb9",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Feature-actual-motion.mdd": "92f65009a6bdfbc677b24c1a767db9f294fa8e1128db66bae68545c9c9927cf1",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Tail-actual-motion.mdd": "41214c51a69e0d6f27085ab1c1adc08bd566feea1a039f95670b4d4dad0f14bf",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeWarmupDiagnostic-v001\\warmup-report.json": "f09739f68faec7ad4866bfdfd878adb77bc9e09bdabfb8ea5762e15ce71663e0"
+  }
+}

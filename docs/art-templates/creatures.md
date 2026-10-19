@@ -2,6 +2,8 @@
 
 [Library workflow](README.md)
 
+This prompt defaults to a concept sheet. For a separate clean single-creature image, apply [the shared asset-view override](generate-images.md#clean-asset-view-prompt-block); keep scale figures in the sheet only.
+
 ```text
 Create a polished visual reference sheet for a 3D creature intended for later Blender modeling and rendering.
 

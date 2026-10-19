@@ -1,0 +1,63 @@
+{
+  "profile_id": "greenlands-static-prop-pixal-20261018",
+  "schema_version": 1,
+  "category": "static-prop",
+  "features": [
+    "single-object",
+    "texture-uv"
+  ],
+  "approval": "prototype-authored",
+  "intended_use": "concept prototype only",
+  "units": "metres",
+  "axes": {
+    "scale": "unresolved until visual review",
+    "ground_origin": "inferred",
+    "forward": "-Y",
+    "up": "Z"
+  },
+  "input_preparation": {
+    "requires_visual_mask_review": true,
+    "alpha_edge_blur_px": 0.8,
+    "tolerance_rgb": 12,
+    "method": "border-connected fixed-range RGB flood fill"
+  },
+  "generation": {
+    "max_num_tokens": 49152,
+    "backend": "Pixal3D",
+    "pipeline": "1024_cascade",
+    "source_revision": "b0cb2e1b794cab9aa0ac38a95d794a4d9337437f",
+    "low_vram": true,
+    "sampler_steps": 12,
+    "camera": "local MoGe2 estimate",
+    "seed": 42,
+    "sparse_attention": "PyTorch SDPA with local NAF adaptation"
+  },
+  "export": {
+    "output_formats": [
+      "glb",
+      "raw-ply"
+    ],
+    "remesh_band": 1,
+    "texture_size_px": 2048,
+    "glb_extension_webp": false,
+    "remesh": true,
+    "remesh_project": 0,
+    "decimation_target_triangles": 300000
+  },
+  "repair_policy": {
+    "initial_attempts": 1,
+    "repairs_per_failed_stage_max": 2,
+    "total_attempts_per_stage_max": 3
+  },
+  "source_lock_path": "GameClient/ArtSource/GreenlandsModelBatch-20261018/backend-lock.json",
+  "model_revisions": {
+    "Pixal3D": "b0cb2e1b794cab9aa0ac38a95d794a4d9337437f",
+    "MoGe2": "39c4d5e957afe587e04eec59dc2bcc3be5ecd968",
+    "DINOv2": "611a9d42f2335e0f921f1e313ad3c1b7178d206d",
+    "NAF_sha256": "c096c1ab2217a5c3ac136365f721685e2201379cb69d509cfb0261183847c98f"
+  },
+  "source_lock_sha256": "a0c4e304794d37d5fa3612a216f93cac8d0239fb7065224f69f51da449ac92fd",
+  "runtime_lock_sha256": "9faef23fc8c0f20fc9b13966a7319bbc819df5ba523c3006e6f6d3966e5db8cb",
+  "runner_sha256": "ac72817a9c4cc28fda11689c5330f1008a1041531deb8d9f84063f38d71c98a4",
+  "input_preparation_script_sha256": "ddc6ac31ee3c7b214a84b15d74630cae40749de67dd7aae8669fce20a87f3196"
+}

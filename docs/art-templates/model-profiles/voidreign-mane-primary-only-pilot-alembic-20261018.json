@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManePrimaryOnlyPilot-v001\\Voidreign-ActualSurfacePilot.blend",
+  "object": "geometry_0",
+  "frame_start": 1,
+  "frame_end": 30,
+  "fps": 30,
+  "maximum_error_m": 1e-05,
+  "units": "metres",
+  "permissions": "Offline30frame primary-only pilot source exchange, not full330 validation",
+  "effective_time": "This frozen source and its adjacent caches",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManePrimaryOnlyPilot-v001\\Voidreign-ActualSurfacePilot.blend": "07664a162bf13f891b463be0aaa196d92da307e0333870578db7a164e05d1e6c",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManePrimaryOnlyPilot-v001\\Settled-feature-motion.mdd": "07f73cb8be5b9fdfbaaa4a99dc04db29d4543a848b6aa78543ced40121793578"
+  }
+}

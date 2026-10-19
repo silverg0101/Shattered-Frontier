@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "fps": 30,
+  "duration_seconds": 11,
+  "substeps": 6,
+  "constraint_iterations": 8,
+  "gravity_m_s2": 9.81,
+  "drag_per_second": 2.8,
+  "shape_spring_per_second_squared": 32.0,
+  "bend_stiffness": 0.35,
+  "collision_radius_m": 0.025,
+  "wind_acceleration_m_s2": 0.8,
+  "render_stride_frames": 3,
+  "permissions": "Offline asset-author settings only; not a live gameplay or server control.",
+  "effective_time": "Applied when rebuilding a new prototype; saved animation does not change until rebaked."
+}

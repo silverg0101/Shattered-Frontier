@@ -1,0 +1,90 @@
+{
+  "profile_id": "construction-material-prototype-20261019-a",
+  "schema_version": 1,
+  "category": "surface-treatment",
+  "features": [
+    "static-mesh-material",
+    "tileable-pbr-maps",
+    "uv0-face-mapping",
+    "normal-depth-review"
+  ],
+  "approval": "prototype-authored",
+  "intended_use": "Appearance-only prototype on a fixed canonical construction carrier. No structural or engine acceptance.",
+  "units": "metres",
+  "geometry_lock": {
+    "allowed_shape_keys": [
+      "cell-full"
+    ],
+    "geometry_source": "GEO-01 construction geometry pilot payload, exact 0.5 m conversion",
+    "scale_pivot_orientation_contacts_mutable": false
+  },
+  "surface_materials": {
+    "rough_timber": "warm, rough sawn wood with directional grain and flush board seams",
+    "stone_masonry": "coursed masonry with nonprojecting mortar; restrained shallow surface relief",
+    "worked_timber": "warm dressed timber with restrained grain and no ornament"
+  },
+  "maps": {
+    "resolution_px": [
+      1024,
+      1024
+    ],
+    "basecolor": {
+      "format": "PNG RGB",
+      "color_space": "sRGB",
+      "method": "authored seamless procedural field guided by selected catalog appearance image"
+    },
+    "roughness": {
+      "format": "PNG grayscale",
+      "color_space": "linear",
+      "required": true
+    },
+    "normal": {
+      "format": "PNG RGB tangent",
+      "color_space": "linear",
+      "convention": "OpenGL +Y; Unreal import adaptation remains open"
+    },
+    "height": {
+      "format": "PNG grayscale",
+      "color_space": "linear",
+      "use": "reference map and shallow relief comparison only; never geometry displacement"
+    }
+  },
+  "prototype_quality_scope": {
+    "render": "Blender Cycles CPU, 1280x960, AgX, 24 samples, denoise",
+    "deliverables": [
+      "editable .blend",
+      "GLB",
+      "FBX",
+      "basecolor",
+      "roughness",
+      "normal",
+      "height",
+      "asset-view.png",
+      "fresh import reports",
+      "hash manifest"
+    ],
+    "required_checks": [
+      "reference ownership/hash",
+      "canonical geometry identity and dimensions",
+      "tileability across texture boundaries",
+      "UV coverage",
+      "fresh GLB/FBX dimensions/material/UV/connectivity",
+      "loose/disconnected island review",
+      "visual reference review"
+    ],
+    "open_production_checks": [
+      "GEO-01 approved manifest",
+      "GEO-02 fit/seam evidence",
+      "Unreal material import and normal convention",
+      "assembly seam validation",
+      "collision/LOD/performance"
+    ]
+  },
+  "repair_policy": {
+    "initial_attempts": 1,
+    "repairs_per_failed_stage_max": 2,
+    "total_attempts_per_stage_max": 3,
+    "on_exhaustion": "needs-review"
+  },
+  "authorized_scope_revision": "User requested continuing construction-model fixes on 2026-10-19. Previous v006 artifacts and findings remain in their provenance history."
+}

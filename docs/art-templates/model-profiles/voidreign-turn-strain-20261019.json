@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "feature_labels": {
+    "Mane": 1,
+    "Tail": 2
+  },
+  "permissions": "Read-only full73 walk source-surface distortion measurement; no authored threshold or automatic repair",
+  "effective_time": "This frozen 73-frame walk only",
+  "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TurnPilot-v001/Mount-TurnPilot.blend",
+  "world_points": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TurnExchange-v001/expected-world-points.npy",
+  "producer_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TurnExchange-v001/exchange-report.json",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "feature_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TurnPilot-v001/Mount-TurnPilot.blend": "68ad8b18e2886efdd042ddb23a47254c761b4159847b5f420c3bd0811cf0650d",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TurnExchange-v001/expected-world-points.npy": "e5d034ded5c8aebbc6cc15802c4a033332333d3557e7612b2a041240c0c565a0",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TurnExchange-v001/exchange-report.json": "537f701fe446d812173e0820469cf8432d51c8a2cb1afc7aec5e11f013403e63",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0"
+  }
+}

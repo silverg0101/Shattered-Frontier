@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "scope": "Authored candidate feature cuts on Cleanup-v001; require multiview review before rig acceptance",
+  "permissions": "Offline asset author; preserve explicit output selections and source hash. A changed mesh needs a new selection revision.",
+  "effective_time": "Next selection build; no runtime effect",
+  "view": {"variant": "materials", "name": "side-posX", "resolution": 768},
+  "features": [
+    {
+      "name": "Mane",
+      "polygon_pixels": [[192,194],[214,176],[254,166],[303,183],[339,200],[365,224],[379,259],[397,285],[382,294],[347,304],[309,299],[281,300],[253,319],[222,343],[208,328],[209,309],[219,284],[213,252],[200,234],[191,220]],
+      "guides": 12,
+      "guide_nodes": 9,
+      "minimum_guide_length_m": 0.12,
+      "root_feather_distance_m": 0.10
+    },
+    {
+      "name": "Tail",
+      "polygon_pixels": [[493,309],[524,305],[551,307],[577,321],[601,349],[641,384],[657,422],[673,459],[685,505],[704,559],[711,611],[672,611],[639,590],[614,552],[585,508],[562,463],[536,423],[521,389],[509,354]],
+      "guides": 12,
+      "guide_nodes": 12,
+      "minimum_guide_length_m": 0.22,
+      "root_feather_distance_m": 0.14
+    }
+  ],
+  "protected_regions": [
+    {"name": "Head and ears", "polygon_pixels": [[151,323],[167,272],[164,226],[167,192],[181,195],[193,218],[202,237],[209,265],[205,300],[201,324]]},
+    {"name": "Saddle and tack", "polygon_pixels": [[213,345],[300,286],[355,298],[434,289],[443,319],[510,344],[526,380],[526,474],[448,470],[298,494],[219,453]]},
+    {"name": "Neck core", "polygon_pixels": [[203,280],[224,285],[249,321],[213,345],[205,329]]}
+  ],
+  "review": "Candidate cuts are authored from the fixed positive-X rest render. Hidden surfaces and fused attachment boundaries require the five-view atlas; spatial proposals alone do not pass semantic coverage."
+}

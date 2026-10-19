@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "scope": "Authored scalp/rump-root continuations for five preserved original clumps; candidate needs depth-tested rest and motion review",
+  "source_sha256": "d7f145aea17d7b2707363059e8276a5720dbdebfa0d8491f1c987dd53d2db180",
+  "mesh_hash": "39b034dd77a9642b76a19a378da6a9dad7a32e9552d96494e08514a9a1e90c46",
+  "object": "geometry_0",
+  "permissions": "Offline asset author; creates new source revision, never changes original vertices",
+  "effective_time": "Next repair build; no runtime effect",
+  "repairs": [
+    {
+      "component_index": 29,
+      "component_id": "39b034dd77a9:C0029",
+      "parent_component_index": 0,
+      "root_facing_endpoint_m": [
+        -0.3118629455566406,
+        -1.0405325889587402,
+        2.393301010131836
+      ],
+      "anatomical_anchor_m": [
+        -0.20000000298023224,
+        -1.1,
+        2.32
+      ],
+      "radius_m": 0.008,
+      "segment_length_m": 0.035,
+      "anchor_search_radius_m": 0.18,
+      "endpoint_search_radius_m": 0.04,
+      "maximum_continuation_length_m": 1.3
+    },
+    {
+      "component_index": 2,
+      "component_id": "39b034dd77a9:C0002",
+      "parent_component_index": 0,
+      "root_facing_endpoint_m": [
+        0.36550602316856384,
+        1.2902019023895264,
+        1.0089547634124756
+      ],
+      "anatomical_anchor_m": [
+        0.20000000298023224,
+        0.8,
+        1.6
+      ],
+      "radius_m": 0.011,
+      "segment_length_m": 0.035,
+      "anchor_search_radius_m": 0.18,
+      "endpoint_search_radius_m": 0.04,
+      "maximum_continuation_length_m": 1.3
+    },
+    {
+      "component_index": 9,
+      "component_id": "39b034dd77a9:C0009",
+      "parent_component_index": 0,
+      "root_facing_endpoint_m": [
+        0.44381171464920044,
+        1.4564647674560547,
+        0.922692060470581
+      ],
+      "anatomical_anchor_m": [
+        0.20000000298023224,
+        0.8,
+        1.6
+      ],
+      "radius_m": 0.011,
+      "segment_length_m": 0.035,
+      "anchor_search_radius_m": 0.18,
+      "endpoint_search_radius_m": 0.04,
+      "maximum_continuation_length_m": 1.3
+    },
+    {
+      "component_index": 32,
+      "component_id": "39b034dd77a9:C0032",
+      "parent_component_index": 0,
+      "root_facing_endpoint_m": [
+        0.5156958103179932,
+        1.4776753187179565,
+        0.9040783047676086
+      ],
+      "anatomical_anchor_m": [
+        0.20000000298023224,
+        0.8,
+        1.6
+      ],
+      "radius_m": 0.011,
+      "segment_length_m": 0.035,
+      "anchor_search_radius_m": 0.18,
+      "endpoint_search_radius_m": 0.04,
+      "maximum_continuation_length_m": 1.3
+    },
+    {
+      "component_index": 23,
+      "component_id": "39b034dd77a9:C0023",
+      "parent_component_index": 0,
+      "root_facing_endpoint_m": [
+        0.3619953393936157,
+        1.3102130889892578,
+        0.994195818901062
+      ],
+      "anatomical_anchor_m": [
+        0.20000000298023224,
+        0.8,
+        1.6
+      ],
+      "radius_m": 0.011,
+      "segment_length_m": 0.035,
+      "anchor_search_radius_m": 0.18,
+      "endpoint_search_radius_m": 0.04,
+      "maximum_continuation_length_m": 1.3
+    }
+  ]
+}

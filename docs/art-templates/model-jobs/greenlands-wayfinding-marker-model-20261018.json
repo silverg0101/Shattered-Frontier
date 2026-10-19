@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "job_id": "greenlands-wayfinding-marker-model-20261018",
+  "asset_id": "PROP-GreenlandsWayfindingMarker-01",
+  "status": "needs-review",
+  "owner": null,
+  "lease_expires_utc": null,
+  "reference": {
+    "source_type": "catalog-package",
+    "manifest_path": "GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/References/v001/manifest.json",
+    "image_path": "GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/References/v001/asset-view.png",
+    "sha256": "46410437aebd82f433db2adfc14667c7287ddcefd7cffd3b1ace0aec4b0ac182",
+    "image_batch_path": "docs/art-templates/asset-lists/basic-greenlands-fixture-01.md"
+  },
+  "profile": {
+    "category": "static-prop",
+    "features": [
+      "single-object",
+      "texture-uv"
+    ],
+    "path": "docs/art-templates/model-profiles/greenlands-static-prop-pixal-20261018.json",
+    "sha256": "cefa5f466d2b5d509c6d90014771450fdef9ac1a5f50b543b00da02a6e3a617d",
+    "approval": "prototype-authored",
+    "source_lock_path": "GameClient/ArtSource/GreenlandsModelBatch-20261018/backend-lock.json"
+  },
+  "quality_target": "prototype",
+  "repair_policy": {
+    "max_attempts_per_stage": 3,
+    "on_exhaustion": "needs-review"
+  },
+  "current_stage": "geometry",
+  "stages": {
+    "reference": {
+      "status": "needs-review",
+      "attempt_count": 3,
+      "attempt_paths": [
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/attempt-01",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/attempt-02",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/attempt-03"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/References/v001/manifest.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/attempt-01/PROP-GreenlandsWayfindingMarker-01.rgba.segmentation.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/attempt-02/PROP-GreenlandsWayfindingMarker-01.rgba.segmentation.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/attempt-03/PROP-GreenlandsWayfindingMarker-01.rgba.segmentation.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/segmentation-mask-audit-v002.json"
+      ],
+      "note": "Image catalog reference and attempt-03 mask/input are pinned. Profile expected preparer hash ddc6… but attempt-03 provenance/current preparer hash is 188d…; see reconciliation. Three input-preparation attempts consumed. CPU grayscale-mask audit: attempt-01 had 543 eight-connected foreground regions; attempt-03 has 11, 17.91% foreground and fully transparent image border. This supports mask cleanup/connectivity only; no semantic silhouette acceptance is established. Visual contour review remains open."
+    },
+    "geometry": {
+      "status": "needs-review",
+      "attempt_count": 3,
+      "attempt_paths": [
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/attempt-01",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/attempt-03",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/GeometryRepair-v003"
+      ],
+      "check_paths": [
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/attempt-03/pixal/run.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/attempt-03/attempt-provenance.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/production-readiness-v001/gate-summary.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/GeometryRepair-v003/attempt-manifest.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/GeometryRepair-v003/repair-report.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/GeometryRepair-v003/component-inspection/component-report.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/GeometryRepair-v003/exchange-checks.json"
+      ],
+      "note": "Attempt 3/3 removed 11 reviewed isolated debris components (2,108 triangles); retained timber positions unchanged; fresh GLB/FBX bounds, triangle count, UV/material/image and loose-vertex checks pass. Major lean, fused underside/side-sheet geometry and unresolved components remain; repair budget exhausted."
+    },
+    "topology_uv": {
+      "status": "needs-review",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/review-v002"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/Model-v001/validation-report.json",
+        "GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/Model-v001/checks/component-inspection/component-report.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/GeometryRepair-v003/component-inspection/component-report.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/GeometryRepair-v003/exchange-checks.json"
+      ],
+      "note": "Fresh v003 inventory has 15 coincident components; GLB/FBX preserve bounds/triangles and UV/material/image dependencies; zero loose vertices. Semantic dispositions and surface correspondence remain open."
+    },
+    "materials": {
+      "status": "needs-review",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/Model-v001"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/Model-v001/validation-report.json",
+        "docs/art-templates/model-profiles/unreal58-surface-quality-20261018.json",
+        "GameClient/ArtSource/GreenlandsModelBatch-20261018/material-channel-audit-v001.json"
+      ],
+      "note": "Blender node and pixel audit confirms Image_0 sRGB base color, Image_1 Non-Color Green to roughness, and Image_1 Blue to metallic; blue is zero across all pixels. UV/image dependency checks pass. Metallic semantics remain asset-specific (especially iron-bearing ore); no normal or height maps; AO applicability is asset-dependent and no UE 5.8 material/depth comparison exists. See batch material-channel-audit-v001.json."
+    },
+    "rig": {
+      "status": "skipped",
+      "attempt_count": 0,
+      "attempt_paths": [],
+      "check_paths": [],
+      "note": "Static prop; no skeleton requested or required."
+    },
+    "secondary_motion": {
+      "status": "skipped",
+      "attempt_count": 0,
+      "attempt_paths": [],
+      "check_paths": [],
+      "note": "No moving feature or animation requested."
+    },
+    "delivery": {
+      "status": "needs-review",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/Model-v001"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/Model-v001/artifact-manifest.json",
+        "GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/Model-v001/README.md"
+      ],
+      "note": "Editable source, GLB/FBX, textures, previews, hashes, generation settings, validation and component reports are packaged. Quality/engine acceptance blockers are retained."
+    }
+  },
+  "artifacts": {
+    "attempt_root": "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01",
+    "source_rights": "Package provenance records built-in image generation; explicit license/permission metadata is absent, so rights are not asserted.",
+    "requested_deliverables": "Editable Blender source, GLB and FBX when supported, textures, three-quarter/front/side/rear previews, hashes, defects, machine checks, and manifest.",
+    "gpu_policy": "One local Radeon GPU inference/render process at a time; Pixal3D batch owns generation; Voidreign work remains CPU-only.",
+    "input_preparation_script": "tools/trellis2/prepare_model_input.py",
+    "inference_runner": "tools/trellis2/run_pixal.py",
+    "unreal58_surface_profile": "docs/art-templates/model-profiles/unreal58-surface-quality-20261018.json",
+    "unreal58_surface_profile_sha256": "7f8dae610732a455465e362db8b730f9a5ddfbc3dd1bdb9b837a80072d4dd8e1",
+    "prepared_input": "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/attempt-03/PROP-GreenlandsWayfindingMarker-01.rgba.png",
+    "prepared_input_sha256": "04fc96efccdae4e48ded8d86bbf12d5168488b80ab2d18ba8a37b3270eae5a5d",
+    "segmentation_report": "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/attempt-01/PROP-GreenlandsWayfindingMarker-01.segmentation.json",
+    "segmentation_mask_preview": "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/attempt-01/PROP-GreenlandsWayfindingMarker-01-mask.png",
+    "segmentation_mask_preview_sha256": "b43cade4ae9f4314883790dd5964985c6659810636441b0475ab3b91d96640d2",
+    "generation_run": "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/attempt-03/pixal/run.json",
+    "generation_provenance": "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/attempt-03/attempt-provenance.json",
+    "delivered_package": "GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/Model-v001",
+    "input_preparer_sha256": "188d70b7b449e363dc9b6a38b7994458afa489f9b4320f27626e285c4598ee5d",
+    "runner_sha256": "ac72817a9c4cc28fda11689c5330f1008a1041531deb8d9f84063f38d71c98a4",
+    "backend_lock_sha256": "a0c4e304794d37d5fa3612a216f93cac8d0239fb7065224f69f51da449ac92fd",
+    "software_lock_sha256": "9faef23fc8c0f20fc9b13966a7319bbc819df5ba523c3006e6f6d3966e5db8cb",
+    "geometry_output": "GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/Model-v001/PROP-GreenlandsWayfindingMarker-01.glb",
+    "review_report": "GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/Model-v001/asset-review.json",
+    "validation_report": "GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/Model-v001/validation-report.json",
+    "component_report": "GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/Model-v001/checks/component-inspection/component-report.json",
+    "rejected_input_candidate": "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/attempt-02/PROP-GreenlandsWayfindingMarker-01.rgba.segmentation.json",
+    "production_readiness_gate_summary": "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/production-readiness-v001/gate-summary.json",
+    "graphics_scalability_policy": "docs/art-templates/pc-graphics-scalability.md",
+    "machine_baseline_candidate": "docs/evidence/pc-graphics-baseline-20261018.md",
+    "preprocessing_attempt_history": "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/attempt-01, attempt-02, and attempt-03 segmentation reports",
+    "effective_segmentation_mask": "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/attempt-03/PROP-GreenlandsWayfindingMarker-01.rgba.mask.png",
+    "effective_segmentation_mask_sha256": "4aa503288aafb125572841ed64dde5a75cc13fd1d6a2caa3de14b3c1d4907265",
+    "provenance_reconciliation": "GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/Model-v001/checks/provenance-reconciliation-v002.json",
+    "provenance_reconciliation_sha256": "de9050c807cccf00a9944862ecaf9c9933252414a234abdca0386d60faf52eed",
+    "geometry_repair_v003_manifest": "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/GeometryRepair-v003/attempt-manifest.json",
+    "geometry_repair_v003_manifest_sha256": "8a86e49f3143f080ffefe844ad0b1698b41c5430bf335a670d464d4a577272aa",
+    "material_channel_audit": "GameClient/ArtSource/GreenlandsModelBatch-20261018/material-channel-audit-v001.json",
+    "material_channel_audit_sha256": "5565681cac99916e71719d71d07e346efd709ad2867625772fa82bc60fd7d38f",
+    "mask_numeric_audit": "Artifacts/Art/GreenlandsModelBatch-20261018/segmentation-mask-audit-v002.json"
+  },
+  "defects": [
+    "Attempt 3/3 safely removed 11 isolated reconstruction-debris components (2,108 triangles), but major post lean and fused black underside/white side-sheet defects remain.",
+    "15 seam-aware components remain; C0008, C0010 and mixed main component are unresolved. Do not remove by color or height.",
+    "Native physical dimensions and approved support/orientation plane remain unresolved.",
+    "Packed green-roughness/blue-metallic image requires semantic and visual validation; normal/height and Unreal material comparisons are open.",
+    "UE 5.8 import, LOD/Nanite selection, collision, scalability and target-hardware performance are not validated."
+  ],
+  "blockers": [
+    "Geometry stage attempt limit 3/3 exhausted with principal silhouette/attachment defects remaining.",
+    "Asset scale and support plane lack approved physical dimensions.",
+    "Remaining semantic attachments and mixed-sheet cut boundary are unclassified.",
+    "UE 5.8 and Windows PC 1440p/60 acceptance evidence is absent."
+  ],
+  "next_action": "Rebuild the marker major forms in a separately authorized geometry revision with a defined scale and timber support plane; preserve reviewed fasteners, resolve the sheet cut boundary, then perform UE 5.8 import and target-tier acceptance. Do not retry this job within its exhausted attempt budget."
+}

@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "job_id": "construction-rt-cellfull-material-20261019",
+  "asset_id": "BLD-RT-CellFull-01",
+  "status": "needs-review",
+  "owner": null,
+  "lease_expires_utc": null,
+  "reference": {
+    "source_type": "catalog-package",
+    "manifest_path": "GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/manifest.json",
+    "image_path": "GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/asset-view.png",
+    "sha256": "c4193eb158e2c5f919312afc638dc0778259314502a248b9cdbedca995ae533f",
+    "image_batch_path": "docs/art-templates/asset-lists/construction-kit-matrix-07.md"
+  },
+  "profile": {
+    "category": "surface-treatment",
+    "features": [
+      "static-mesh-material",
+      "tileable-pbr-maps",
+      "uv0-face-mapping"
+    ],
+    "path": "docs/art-templates/model-profiles/construction-material-prototype-20261019-c.json",
+    "sha256": "8f812f2592c9938aa2c3f2de0945d30ee0ceb5bb859819d1d188b045bdbc815d",
+    "approval": "prototype-authored",
+    "source_lock_path": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v009-source-lock.json"
+  },
+  "quality_target": "prototype",
+  "repair_policy": {
+    "max_attempts_per_stage": 3,
+    "on_exhaustion": "needs-review"
+  },
+  "current_stage": "materials",
+  "stages": {
+    "reference": {
+      "status": "passed",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/asset-view.png"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/manifest.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v008-source-lock.json"
+      ],
+      "note": "Direct catalog package, selected clean asset-view and source hashes pinned in batch source lock."
+    },
+    "geometry": {
+      "status": "needs-review",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/cell-full"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/geometry-source/cell-full.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/manifest.json"
+      ],
+      "note": "Exact canonical pilot carrier retained. Pilot remains prototype-subset; no approved GEO-01 manifest or applicable GEO-02 acceptance is claimed."
+    },
+    "topology_uv": {
+      "status": "passed",
+      "attempt_count": 2,
+      "attempt_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v007/BLD-RT-CellFull-01/SM_BLD_RT_CellFull_01_v002.blend",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v008/BLD-RT-CellFull-01/SM_BLD_RT_CellFull_01_v002.blend"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v008/BLD-RT-CellFull-01/checks/source-open.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v008/BLD-RT-CellFull-01/checks/glb-import.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v008/BLD-RT-CellFull-01/checks/fbx-import.json"
+      ],
+      "note": "Fresh source and GLB/FBX checks pass: 0.5 m bounds, UV0, one position-welded component, no loose vertices. No semantic separated parts were expected for this solid cell; engine-side attachment check remains open."
+    },
+    "materials": {
+      "status": "needs-review",
+      "attempt_count": 3,
+      "attempt_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v007/BLD-RT-CellFull-01",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v008/BLD-RT-CellFull-01",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v009/BLD-RT-CellFull-01"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v009/BLD-RT-CellFull-01/checks/attempt-3-failure.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v009/BLD-RT-CellFull-01/blender-build.log"
+      ],
+      "note": "Materials attempt cap exhausted. Attempt 3 generated maps but the embedded Blender script raised IndentationError; Blender returned 0 and created no source/render/export. Earlier v007/v008 visual defects remain."
+    },
+    "rig": {
+      "status": "skipped",
+      "attempt_count": 0,
+      "attempt_paths": [],
+      "check_paths": [],
+      "note": "Static construction component; no rig requested."
+    },
+    "secondary_motion": {
+      "status": "skipped",
+      "attempt_count": 0,
+      "attempt_paths": [],
+      "check_paths": [],
+      "note": "Static construction component; no motion requested."
+    },
+    "delivery": {
+      "status": "needs-review",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v008/BLD-RT-CellFull-01"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v008/BLD-RT-CellFull-01/checks/glb-import.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v008/BLD-RT-CellFull-01/checks/fbx-import.json"
+      ],
+      "note": "Prototype source, GLB and FBX exist and fresh imports pass mesh structural checks. UE 5.8 material import/preview and assembly tests remain unrun."
+    }
+  },
+  "artifacts": {
+    "source_lock": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v009-source-lock.json",
+    "source_lock_sha256": "6d1896fcb1553a0fc42ed22285387480e42c9cb257dcd6a97eec95d366dfc529",
+    "output_root": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v009",
+    "previous_attempt_history": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v006/provenance/attempt-history.json",
+    "requested_deliverables": "Editable Blender source, GLB/FBX, base-color/roughness/normal/height maps, CPU render, fresh import reports, hashes and defect/open-gate record.",
+    "source_rights": "Reference package is user-provided project content; package manifest records the original image-generation route. This material revision authors procedural maps and does not redistribute external textures.",
+    "gpu_policy": "CPU Cycles only; no GPU inference/render launched.",
+    "material_quality_evidence": "docs/evidence/construction-material-quality-revision-20261019-b.md",
+    "attempt_history": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v009/attempt-history.json",
+    "batch_manifest": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v009/batch-manifest.json"
+  },
+  "defects": [
+    "Previous v006 base-color crops carried perspective shading and produced stretched/repeating patterns.",
+    "Structural carrier is only prototype-subset; production geometry approval remains open.",
+    "v007 first material attempt showed false block-course segmentation on timber and weak/flat stone appearance; v008 repairs improved directional grain but material fidelity still needs visual review.",
+    "Texture map periodic edge-wrap metrics have no approved tolerance; tileability is not signed off.",
+    "Attempt 3 generated script failed with IndentationError; Blender process returned 0 despite traceback, and the first three final deliverables were absent.",
+    "Earlier material visual issues remain: rough/worked timber fidelity and stone variation are below references; material wrap failed review."
+  ],
+  "blockers": [
+    "Material stage exhausted at 3/3 attempts; no further repair under current budget.",
+    "v009 has maps only: no valid Blender source, render, GLB or FBX.",
+    "GEO-01 and applicable GEO-02 acceptance absent.",
+    "Unreal 5.8 import/material/normal adaptation, assembled seams, collision/LOD and performance remain open."
+  ],
+  "next_action": "Preserve this stage as needs-review and continue independent ready assets. Do not claim completion; a new authorized material-stage attempt budget and repaired generator are required for this stable asset."
+}

@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "job_id": "voidreign-motion-20261018",
+  "asset_id": "Voidreign",
+  "status": "needs-review",
+  "owner": null,
+  "lease_expires_utc": null,
+  "reference": {
+    "manifest_path": "GameClient/ArtSource/Voidreign/PixalDetail-20261018/generation-run.json",
+    "image_path": "GameClient/ArtSource/Voidreign/ModelAB-20261018/Voidreign-reference.png",
+    "source_type": "legacy-benchmark",
+    "image_batch_path": null,
+    "sha256": "d67522bf160e2dbfe763a5945e651b6b5c508f32676257dac80c98b26a42aca0"
+  },
+  "profile": {
+    "path": "tools/voidreign-hair-prototype.json",
+    "features": [
+      "mane",
+      "tail",
+      "rider-clearance"
+    ],
+    "source_lock_path": "GameClient/ArtSource/Voidreign/ModelAB-20261018/backend-lock.json",
+    "category": "mount",
+    "approval": "prototype-authored",
+    "sha256": "825c6180ed8665d5b07cd1cd0d485d8a4e7665774825b1bea31d6294aed92f71"
+  },
+  "quality_target": "prototype",
+  "repair_policy": {
+    "max_attempts_per_stage": 3,
+    "on_exhaustion": "needs-review"
+  },
+  "current_stage": "topology_uv",
+  "stages": {
+    "reference": {
+      "attempt_count": 1,
+      "note": "Legacy frozen benchmark image, not a new image-catalog assignment. Image hash recorded in generation report.",
+      "check_paths": [
+        "GameClient/ArtSource/Voidreign/PixalDetail-20261018/generation-run.json"
+      ],
+      "status": "passed",
+      "attempt_paths": []
+    },
+    "geometry": {
+      "attempt_count": 1,
+      "note": "Existing Pixal prototype reused; anatomy/stance defects remain.",
+      "check_paths": [
+        "GameClient/ArtSource/Voidreign/PixalDetail-20261018/comparison-validation.json"
+      ],
+      "status": "needs-review",
+      "attempt_paths": []
+    },
+    "topology_uv": {
+      "attempt_paths": [
+        "GameClient/ArtSource/Voidreign/ComponentReview-20261018/Cleanup-v001"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/Voidreign/ComponentReview-20261018/Inspection-v002/component-report.json",
+        "GameClient/ArtSource/Voidreign/ComponentReview-20261018/component-classifications.json",
+        "GameClient/ArtSource/Voidreign/ComponentReview-20261018/CleanupInspection-v002/component-report.json",
+        "GameClient/ArtSource/Voidreign/ComponentReview-20261018/Cleanup-v001/cleanup-validation.json"
+      ],
+      "attempt_count": 1,
+      "note": "Seam-aware inventory230 components; reviewed C0080/C0065 removed (163vertices/166triangles). Retained geometry/UVs/materials and seven sampled deformations unchanged. Remaining228 components unclassified, not228 defects.",
+      "status": "needs-review"
+    },
+    "materials": {
+      "attempt_count": 1,
+      "note": "Visible-side albedo pilot only; existing texture defects retained.",
+      "check_paths": [
+        "GameClient/ArtSource/Voidreign/PixalDetail-20261018/Pixal-4096-HeadSaddle/validation-report.json"
+      ],
+      "status": "needs-review",
+      "attempt_paths": []
+    },
+    "rig": {
+      "attempt_count": 3,
+      "note": "Initial test clumps superseded at user request by actual mesh; local masks are asset-specific.",
+      "check_paths": [
+        "GameClient/ArtSource/Voidreign/HairMotion-20261018/validation-report.json"
+      ],
+      "status": "needs-review",
+      "attempt_paths": [
+        "Artifacts/Art/Voidreign/hair-prototype-20261018/trial01",
+        "Artifacts/Art/Voidreign/hair-prototype-20261018/trial02",
+        "GameClient/ArtSource/Voidreign/HairMotion-20261018/Voidreign-HairPrototype.blend"
+      ]
+    },
+    "secondary_motion": {
+      "attempt_count": 1,
+      "note": "Actual regions use offline bake. Existing video is pre-cleanup; CPU delta check confirms retained deformation at seven frames, but no new GPU preview was rendered. Full coverage and surface attachment/collision remain open.",
+      "check_paths": [
+        "GameClient/ArtSource/Voidreign/HairMotion-20261018/simulation-report.json"
+      ],
+      "status": "needs-review",
+      "attempt_paths": []
+    },
+    "delivery": {
+      "attempt_count": 3,
+      "note": "Blender FBX default reconnects17 authored-disconnected joints, suppressing translations. New source-hash/exchange-hash contract adapter restores connectivity; all330-frame bone and18-frame full-surface checks pass in FbxImport-v003. Default importer still fails (11.24mm across full clip). Overall delivery remains needs-review for unresolved model gates and final visual inspection.",
+      "check_paths": [
+        "GameClient/ArtSource/Voidreign/HairMotion-20261018/validation-report.json",
+        "GameClient/ArtSource/Voidreign/ComponentReview-20261018/Cleanup-v001/cleanup-validation.json",
+        "GameClient/ArtSource/Voidreign/ComponentReview-20261018/FbxImport-v003/validation.json"
+      ],
+      "status": "needs-review",
+      "attempt_paths": [
+        "Artifacts/Art/Voidreign/hair-prototype-20261018/reexport-final.log",
+        "GameClient/ArtSource/Voidreign/ComponentReview-20261018/FbxImport-v003"
+      ]
+    }
+  },
+  "artifacts": {
+    "previews": "GameClient/ArtSource/Voidreign/ComponentReview-20261018/AfterDiagram",
+    "source": "GameClient/ArtSource/Voidreign/ComponentReview-20261018/Cleanup-v001/Voidreign-HairPrototype.blend",
+    "validation": "GameClient/ArtSource/Voidreign/ComponentReview-20261018/Cleanup-v001/cleanup-validation.json",
+    "detached_parts_user_markup": "GameClient/ArtSource/Voidreign/HairMotion-20261018/ReviewInputs/SuspectedDetachedParts-UserMarkup.png",
+    "original_source": "GameClient/ArtSource/Voidreign/HairMotion-20261018/Voidreign-HairPrototype.blend",
+    "original_validation": "GameClient/ArtSource/Voidreign/HairMotion-20261018/validation-report.json",
+    "component_inventory": "GameClient/ArtSource/Voidreign/ComponentReview-20261018/Inspection-v002/component-report.json",
+    "component_classifications": "GameClient/ArtSource/Voidreign/ComponentReview-20261018/component-classifications.json",
+    "cleanup_preview": "GameClient/ArtSource/Voidreign/ComponentReview-20261018/AfterDiagram/Component-Review.png",
+    "pre_cleanup_video": "GameClient/ArtSource/Voidreign/HairMotion-20261018/Hair-Motion-Diagnostic.mp4",
+    "pre_cleanup_previews": "GameClient/ArtSource/Voidreign/HairMotion-20261018/previews",
+    "rig_import_contract": "GameClient/ArtSource/Voidreign/ComponentReview-20261018/FbxImport-v003/rig-import-contract.json",
+    "exchange_validation": "GameClient/ArtSource/Voidreign/ComponentReview-20261018/FbxImport-v003/validation.json",
+    "corrected_fbx_import": "GameClient/ArtSource/Voidreign/ComponentReview-20261018/FbxImport-v003/Voidreign-FBX-Reimport.blend",
+    "quality_runbook": "docs/art-templates/model-quality-runbook.md"
+  },
+  "defects": [
+    "Fused generated hair and spatial weight boundaries require inspection/cleanup.",
+    "Static legs; rigid horse motion harness, not a full gait rig.",
+    "Selected mane/tail regions only; broad-surface collision and runtime performance unaccepted.",
+    "Remaining228 exact-coincident components need semantic attachment classification; raw UV-seam islands are not defect counts.",
+    "Blender default FBX importer suppresses disconnected-joint translations; require the source-hashed connectivity adapter or use GLB. Other applications remain unvalidated."
+  ],
+  "blockers": [],
+  "next_action": "Earlier20-bone benchmark retained. Resume the newly authored complete-hair/geometry quality revision through docs/art-templates/model-jobs/voidreign-quality-20261018.json; do not reset this historical job's attempts."
+}

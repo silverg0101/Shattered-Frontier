@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "scope": "Analytic split-contact velocity fixtures only; not a full solver or model fix",
+  "permissions": "Offline author; pin new profile for changes",
+  "effective_time": "Next finite diagnostic study only",
+  "units": "metres and seconds; velocity m/s",
+  "dt_seconds": 0.004166666666666667,
+  "analytic_absolute_tolerance": 1E-09,
+  "velocity_settings": {
+    "iterations": 32,
+    "tolerance_m_s": 1E-08
+  }
+}

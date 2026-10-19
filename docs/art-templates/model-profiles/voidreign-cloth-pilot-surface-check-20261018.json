@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "scope": "Actual-surface cloth first30frame pilot only, not full duration",
+  "permissions": "Offline asset author; versioned changes require reasons and invalidate prior evidence",
+  "effective_time": "Next fresh check run",
+  "units": "Distances and displacements in metres",
+  "assembly_root": "MOTION HARNESS | rigid horse, not gait animation",
+  "limits": {
+    "frame_count": 30,
+    "sample_frames": [
+      1,
+      2,
+      15,
+      30
+    ],
+    "protected_tolerance_m": 1e-05,
+    "seam_tolerance_m": 1e-05,
+    "maximum_initial_step_m": 0.02,
+    "maximum_surface_step_m": 0.08,
+    "attachment_gap_increase_m": 0.005,
+    "collision_margin_m": 0.002,
+    "maximum_penetration_m": 0.005,
+    "minimum_dynamic_weight": 0.1,
+    "root_exemption_extra_m": 0.05
+  }
+}

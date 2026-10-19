@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "scope": "CPU Blender roundtrip for CompleteHair-v001 flat229bone source; no surface-collision or engine acceptance",
+  "permissions": "Asset author may create a new version; threshold changes require an explicit reason and cannot retroactively pass old evidence",
+  "effective_time": "Next fresh check run; no effect on existing evidence or runtime",
+  "units": {
+    "distance": "metres",
+    "matrix_linear_elements": "dimensionless",
+    "frames": "integer frames at source FPS"
+  },
+  "settings": {
+    "frame_start": 1,
+    "frame_end": 330,
+    "triangles": 297125,
+    "surface_sample_frames": [
+      1,
+      2,
+      31,
+      60,
+      61,
+      91,
+      120,
+      121,
+      151,
+      180,
+      181,
+      211,
+      240,
+      241,
+      271,
+      300,
+      301,
+      330
+    ],
+    "rest_surface_tolerance_m": 1e-05,
+    "coincident_motion_tolerance_m": 1e-05,
+    "bone_head_tolerance_m": 0.005,
+    "deformed_surface_tolerance_m": 0.0001,
+    "linear_transform_tolerance": 0.0001
+  }
+}

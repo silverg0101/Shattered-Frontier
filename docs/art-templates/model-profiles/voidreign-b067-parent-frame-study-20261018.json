@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "scope": "unapproved-parent-frame-attachment-study",
+  "permissions": "Offline author; one B067 frame-follow proposal, no production/semantic promotion",
+  "effective_time": "This new immutable point-cache design only",
+  "units": "metres,seconds; frame conditioning floors in metres/fraction",
+  "allow_proposed_attachment": true,
+  "binding_id": "Mane:B067",
+  "parent_triangle_source_ids": [
+    11780,
+    11782,
+    11772
+  ],
+  "child_source_ids": [
+    133929,
+    133927,
+    133926,
+    133932,
+    133914,
+    133921,
+    133915,
+    133913,
+    133912,
+    133928,
+    133937,
+    133911,
+    133920,
+    133916,
+    133917,
+    133918
+  ],
+  "child_root_source_id": 133918,
+  "minimum_parent_edge_m": 0.001,
+  "minimum_parent_sine": 0.1,
+  "fps": 30,
+  "control_contract": "Single16point micro-fragment follows the authored parent triangle frame with original rest offsets; other26742points exact. No hard pin, deletion, free-mask change or physics-response tuning. Needs semantic and full-surface review.",
+  "output_points": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeFinalOutputPoints-v001\\output-points.npz",
+  "held_points": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeWarmupDiagnostic-v004\\held-proxy-points.npz",
+  "held_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeWarmupDiagnostic-v004\\warmup-report.json",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeFinalOutputPoints-v001\\output-points.npz": "8702a230cd118806cfa140d114164802efb4fe7882a2dddbe26b1ffc7327223b",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeWarmupDiagnostic-v004\\held-proxy-points.npz": "77df03bb22624b98eaa6411d3b09b9ddbafc691730ff49cd85939cdfa2fa9450",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeWarmupDiagnostic-v004\\warmup-report.json": "8941122de0f8aa37545d859f2c7846539b3a0ca666e269d73cd2e8078efb350e"
+  }
+}

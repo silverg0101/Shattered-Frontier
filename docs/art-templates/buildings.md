@@ -2,6 +2,8 @@
 
 [Library workflow](README.md)
 
+This prompt defaults to a concept sheet. For a separate clean building or module image, apply [the shared asset-view override](generate-images.md#clean-asset-view-prompt-block); omit the scale figure, cutaways and surroundings from that image. Record whether this is a whole-building concept or one module.
+
 ```text
 Create a polished visual reference sheet for one building intended for later Blender modeling and rendering.
 

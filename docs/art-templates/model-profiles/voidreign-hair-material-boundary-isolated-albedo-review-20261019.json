@@ -1,0 +1,2907 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "permissions": "Read-only exact selected source face/UV isolation paired with source albedo-emission; not semantic or material approval.",
+  "effective_time": "This frozen rest-source inspection only",
+  "coordinate_convention": {
+    "up": "+Z",
+    "forward": "-Y (head/horn)",
+    "side_names": "Geometric +X/-X until reviewed"
+  },
+  "object": "geometry_0",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "retention_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkRetention-v003\\validation.json",
+  "render": {
+    "resolution": 512,
+    "samples": 8,
+    "surface_color": [
+      0.36,
+      0.39,
+      0.43
+    ],
+    "landmark_radius_m": 0.025,
+    "light_position_m": [
+      -3,
+      -4,
+      6
+    ],
+    "light_watts": 1300,
+    "light_size_m": 5,
+    "target_m": [
+      0,
+      -0.05,
+      1.3
+    ],
+    "ortho_scale_m": 4.5
+  },
+  "regions": [
+    {
+      "id": "SMB-0d7599c806-f2ac3080aae7",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-f2ac3080aae7.vertices",
+      "face_selection_key": "SMB-0d7599c806-f2ac3080aae7.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-67a2125f483c",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-67a2125f483c.vertices",
+      "face_selection_key": "SMB-0d7599c806-67a2125f483c.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-3bf28272db22",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-3bf28272db22.vertices",
+      "face_selection_key": "SMB-0d7599c806-3bf28272db22.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-fcef00460074",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-fcef00460074.vertices",
+      "face_selection_key": "SMB-0d7599c806-fcef00460074.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-0ded486c5b5e",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-0ded486c5b5e.vertices",
+      "face_selection_key": "SMB-0d7599c806-0ded486c5b5e.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-d4c63dedbd5e",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-d4c63dedbd5e.vertices",
+      "face_selection_key": "SMB-0d7599c806-d4c63dedbd5e.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-bc5c85d932c0",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-bc5c85d932c0.vertices",
+      "face_selection_key": "SMB-0d7599c806-bc5c85d932c0.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-8575242048e6",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-8575242048e6.vertices",
+      "face_selection_key": "SMB-0d7599c806-8575242048e6.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-03ddf3586241",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-03ddf3586241.vertices",
+      "face_selection_key": "SMB-0d7599c806-03ddf3586241.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-b246d0d8fc50",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-b246d0d8fc50.vertices",
+      "face_selection_key": "SMB-0d7599c806-b246d0d8fc50.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-1a6b38bcd2ed",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-1a6b38bcd2ed.vertices",
+      "face_selection_key": "SMB-0d7599c806-1a6b38bcd2ed.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-214908334f85",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-214908334f85.vertices",
+      "face_selection_key": "SMB-0d7599c806-214908334f85.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-45e5a199970f",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-45e5a199970f.vertices",
+      "face_selection_key": "SMB-0d7599c806-45e5a199970f.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-ae39479acb4e",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-ae39479acb4e.vertices",
+      "face_selection_key": "SMB-0d7599c806-ae39479acb4e.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-496a7c339b64",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-496a7c339b64.vertices",
+      "face_selection_key": "SMB-0d7599c806-496a7c339b64.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-76a5b531d804",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-76a5b531d804.vertices",
+      "face_selection_key": "SMB-0d7599c806-76a5b531d804.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-142b88f3f5fe",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-142b88f3f5fe.vertices",
+      "face_selection_key": "SMB-0d7599c806-142b88f3f5fe.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-e985ed9d2776",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-e985ed9d2776.vertices",
+      "face_selection_key": "SMB-0d7599c806-e985ed9d2776.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-f2693581ad0a",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-f2693581ad0a.vertices",
+      "face_selection_key": "SMB-0d7599c806-f2693581ad0a.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-6a2d8e04a727",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-6a2d8e04a727.vertices",
+      "face_selection_key": "SMB-0d7599c806-6a2d8e04a727.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-4afd6188749c",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-4afd6188749c.vertices",
+      "face_selection_key": "SMB-0d7599c806-4afd6188749c.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-4e2fc507de64",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-4e2fc507de64.vertices",
+      "face_selection_key": "SMB-0d7599c806-4e2fc507de64.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-0b3644d3cead",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-0b3644d3cead.vertices",
+      "face_selection_key": "SMB-0d7599c806-0b3644d3cead.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-24c47ae608df",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-24c47ae608df.vertices",
+      "face_selection_key": "SMB-0d7599c806-24c47ae608df.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-59ee26f77533",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-59ee26f77533.vertices",
+      "face_selection_key": "SMB-0d7599c806-59ee26f77533.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-a21db8bf045e",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-a21db8bf045e.vertices",
+      "face_selection_key": "SMB-0d7599c806-a21db8bf045e.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-79496374c95e",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-79496374c95e.vertices",
+      "face_selection_key": "SMB-0d7599c806-79496374c95e.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-219022738900",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-219022738900.vertices",
+      "face_selection_key": "SMB-0d7599c806-219022738900.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-61056aa72863",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-61056aa72863.vertices",
+      "face_selection_key": "SMB-0d7599c806-61056aa72863.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-36e9f96b0629",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-36e9f96b0629.vertices",
+      "face_selection_key": "SMB-0d7599c806-36e9f96b0629.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-13afd9fd68f7",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-13afd9fd68f7.vertices",
+      "face_selection_key": "SMB-0d7599c806-13afd9fd68f7.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-5c255a663a65",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-5c255a663a65.vertices",
+      "face_selection_key": "SMB-0d7599c806-5c255a663a65.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-5f9296f0a8b7",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-5f9296f0a8b7.vertices",
+      "face_selection_key": "SMB-0d7599c806-5f9296f0a8b7.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-2516a986745a",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-2516a986745a.vertices",
+      "face_selection_key": "SMB-0d7599c806-2516a986745a.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-faf086e6bbf3",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-faf086e6bbf3.vertices",
+      "face_selection_key": "SMB-0d7599c806-faf086e6bbf3.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-c1177585d450",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-c1177585d450.vertices",
+      "face_selection_key": "SMB-0d7599c806-c1177585d450.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-da33066a6671",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-da33066a6671.vertices",
+      "face_selection_key": "SMB-0d7599c806-da33066a6671.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-13e30963711d",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-13e30963711d.vertices",
+      "face_selection_key": "SMB-0d7599c806-13e30963711d.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-19f81beb369c",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-19f81beb369c.vertices",
+      "face_selection_key": "SMB-0d7599c806-19f81beb369c.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-707b87545777",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-707b87545777.vertices",
+      "face_selection_key": "SMB-0d7599c806-707b87545777.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-1e8b223aad41",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-1e8b223aad41.vertices",
+      "face_selection_key": "SMB-0d7599c806-1e8b223aad41.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-f8c8ec568f04",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-f8c8ec568f04.vertices",
+      "face_selection_key": "SMB-0d7599c806-f8c8ec568f04.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-cb72c66025e3",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-cb72c66025e3.vertices",
+      "face_selection_key": "SMB-0d7599c806-cb72c66025e3.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-029db0fbd244",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-029db0fbd244.vertices",
+      "face_selection_key": "SMB-0d7599c806-029db0fbd244.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-c218565b2652",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-c218565b2652.vertices",
+      "face_selection_key": "SMB-0d7599c806-c218565b2652.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-9e8e9c14557b",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-9e8e9c14557b.vertices",
+      "face_selection_key": "SMB-0d7599c806-9e8e9c14557b.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-1d1b12900d1a",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-1d1b12900d1a.vertices",
+      "face_selection_key": "SMB-0d7599c806-1d1b12900d1a.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-1b91b1cf823d",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-1b91b1cf823d.vertices",
+      "face_selection_key": "SMB-0d7599c806-1b91b1cf823d.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-602d3f911217",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-602d3f911217.vertices",
+      "face_selection_key": "SMB-0d7599c806-602d3f911217.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-a990b4f2ab88",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-a990b4f2ab88.vertices",
+      "face_selection_key": "SMB-0d7599c806-a990b4f2ab88.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-411bed5eb70e",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-411bed5eb70e.vertices",
+      "face_selection_key": "SMB-0d7599c806-411bed5eb70e.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-c9ecd5507ca0",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-c9ecd5507ca0.vertices",
+      "face_selection_key": "SMB-0d7599c806-c9ecd5507ca0.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-007f90f080bd",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-007f90f080bd.vertices",
+      "face_selection_key": "SMB-0d7599c806-007f90f080bd.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-7d9f8b9ff8a2",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-7d9f8b9ff8a2.vertices",
+      "face_selection_key": "SMB-0d7599c806-7d9f8b9ff8a2.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-2ce453b2e50e",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-2ce453b2e50e.vertices",
+      "face_selection_key": "SMB-0d7599c806-2ce453b2e50e.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-1e925dd6eb59",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-1e925dd6eb59.vertices",
+      "face_selection_key": "SMB-0d7599c806-1e925dd6eb59.faces",
+      "color": [
+        0.95,
+        0.025,
+        0.3
+      ]
+    }
+  ],
+  "landmarks": [],
+  "views": [
+    {
+      "id": "SMB-0d7599c806-f2ac3080aae7-isolated-overlay",
+      "position_m": [
+        0.05203530937433243,
+        -1.0647062063217163,
+        -0.012935280799865723
+      ],
+      "target_m": [
+        0.044516947120428085,
+        -0.37096261978149414,
+        1.8628747463226318
+      ],
+      "ortho_scale_m": 0.438469409942627,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-f2ac3080aae7"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-f2ac3080aae7"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-f2ac3080aae7-isolated-albedo",
+      "position_m": [
+        0.05203530937433243,
+        -1.0647062063217163,
+        -0.012935280799865723
+      ],
+      "target_m": [
+        0.044516947120428085,
+        -0.37096261978149414,
+        1.8628747463226318
+      ],
+      "ortho_scale_m": 0.438469409942627,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-f2ac3080aae7"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-67a2125f483c-isolated-overlay",
+      "position_m": [
+        -0.07015471905469894,
+        0.80827796459198,
+        1.9904916286468506
+      ],
+      "target_m": [
+        0.025610193610191345,
+        -1.162475824356079,
+        2.3175370693206787
+      ],
+      "ortho_scale_m": 0.26475601196289067,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-67a2125f483c"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-67a2125f483c"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-67a2125f483c-isolated-albedo",
+      "position_m": [
+        -0.07015471905469894,
+        0.80827796459198,
+        1.9904916286468506
+      ],
+      "target_m": [
+        0.025610193610191345,
+        -1.162475824356079,
+        2.3175370693206787
+      ],
+      "ortho_scale_m": 0.26475601196289067,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-67a2125f483c"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-3bf28272db22-isolated-overlay",
+      "position_m": [
+        -2.003800630569458,
+        -1.8516268730163574,
+        1.333900809288025
+      ],
+      "target_m": [
+        -0.23269623517990112,
+        -0.9593400955200195,
+        1.5927708148956299
+      ],
+      "ortho_scale_m": 0.2259755849838257,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-3bf28272db22"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-3bf28272db22"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-3bf28272db22-isolated-albedo",
+      "position_m": [
+        -2.003800630569458,
+        -1.8516268730163574,
+        1.333900809288025
+      ],
+      "target_m": [
+        -0.23269623517990112,
+        -0.9593400955200195,
+        1.5927708148956299
+      ],
+      "ortho_scale_m": 0.2259755849838257,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-3bf28272db22"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-fcef00460074-isolated-overlay",
+      "position_m": [
+        0.6270091533660889,
+        0.8656784296035767,
+        1.7264598608016968
+      ],
+      "target_m": [
+        -0.20093843340873718,
+        -0.9496357440948486,
+        1.5881224870681763
+      ],
+      "ortho_scale_m": 0.20355644226074218,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-fcef00460074"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-fcef00460074"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-fcef00460074-isolated-albedo",
+      "position_m": [
+        0.6270091533660889,
+        0.8656784296035767,
+        1.7264598608016968
+      ],
+      "target_m": [
+        -0.20093843340873718,
+        -0.9496357440948486,
+        1.5881224870681763
+      ],
+      "ortho_scale_m": 0.20355644226074218,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-fcef00460074"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-0ded486c5b5e-isolated-overlay",
+      "position_m": [
+        -1.633582353591919,
+        -1.2116589546203613,
+        0.8100124597549438
+      ],
+      "target_m": [
+        0.015540219843387604,
+        -0.6516013145446777,
+        1.7932367324829102
+      ],
+      "ortho_scale_m": 0.23008651733398439,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-0ded486c5b5e"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-0ded486c5b5e"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-0ded486c5b5e-isolated-albedo",
+      "position_m": [
+        -1.633582353591919,
+        -1.2116589546203613,
+        0.8100124597549438
+      ],
+      "target_m": [
+        0.015540219843387604,
+        -0.6516013145446777,
+        1.7932367324829102
+      ],
+      "ortho_scale_m": 0.23008651733398439,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-0ded486c5b5e"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-d4c63dedbd5e-isolated-overlay",
+      "position_m": [
+        0.5685652494430542,
+        0.8016941547393799,
+        0.8509181141853333
+      ],
+      "target_m": [
+        0.10826504230499268,
+        -1.0463649034500122,
+        1.4614923000335693
+      ],
+      "ortho_scale_m": 0.17590274810791015,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-d4c63dedbd5e"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-d4c63dedbd5e"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-d4c63dedbd5e-isolated-albedo",
+      "position_m": [
+        0.5685652494430542,
+        0.8016941547393799,
+        0.8509181141853333
+      ],
+      "target_m": [
+        0.10826504230499268,
+        -1.0463649034500122,
+        1.4614923000335693
+      ],
+      "ortho_scale_m": 0.17590274810791015,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-d4c63dedbd5e"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-bc5c85d932c0-isolated-overlay",
+      "position_m": [
+        1.4310599565505981,
+        0.4059821367263794,
+        2.8281641006469727
+      ],
+      "target_m": [
+        -0.0948190838098526,
+        -0.48371732234954834,
+        1.8900129795074463
+      ],
+      "ortho_scale_m": 0.1892986297607422,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-bc5c85d932c0"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-bc5c85d932c0"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-bc5c85d932c0-isolated-albedo",
+      "position_m": [
+        1.4310599565505981,
+        0.4059821367263794,
+        2.8281641006469727
+      ],
+      "target_m": [
+        -0.0948190838098526,
+        -0.48371732234954834,
+        1.8900129795074463
+      ],
+      "ortho_scale_m": 0.1892986297607422,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-bc5c85d932c0"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-8575242048e6-isolated-overlay",
+      "position_m": [
+        -2.139340400695801,
+        0.5541020035743713,
+        1.1234577894210815
+      ],
+      "target_m": [
+        -0.17803306877613068,
+        0.8194146752357483,
+        1.411351203918457
+      ],
+      "ortho_scale_m": 0.2642438888549805,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-8575242048e6"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-8575242048e6"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-8575242048e6-isolated-albedo",
+      "position_m": [
+        -2.139340400695801,
+        0.5541020035743713,
+        1.1234577894210815
+      ],
+      "target_m": [
+        -0.17803306877613068,
+        0.8194146752357483,
+        1.411351203918457
+      ],
+      "ortho_scale_m": 0.2642438888549805,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-8575242048e6"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-03ddf3586241-isolated-overlay",
+      "position_m": [
+        -1.3243143558502197,
+        -0.5127192735671997,
+        1.8885350227355957
+      ],
+      "target_m": [
+        0.047081463038921356,
+        0.8441121578216553,
+        1.3610105514526367
+      ],
+      "ortho_scale_m": 0.20252704620361328,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-03ddf3586241"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-03ddf3586241"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-03ddf3586241-isolated-albedo",
+      "position_m": [
+        -1.3243143558502197,
+        -0.5127192735671997,
+        1.8885350227355957
+      ],
+      "target_m": [
+        0.047081463038921356,
+        0.8441121578216553,
+        1.3610105514526367
+      ],
+      "ortho_scale_m": 0.20252704620361328,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-03ddf3586241"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-b246d0d8fc50-isolated-overlay",
+      "position_m": [
+        1.8062140941619873,
+        1.8373908996582031,
+        1.5386713743209839
+      ],
+      "target_m": [
+        0.09302080422639847,
+        0.8104995489120483,
+        1.4363861083984375
+      ],
+      "ortho_scale_m": 0.2721410751342774,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-b246d0d8fc50"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-b246d0d8fc50"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-b246d0d8fc50-isolated-albedo",
+      "position_m": [
+        1.8062140941619873,
+        1.8373908996582031,
+        1.5386713743209839
+      ],
+      "target_m": [
+        0.09302080422639847,
+        0.8104995489120483,
+        1.4363861083984375
+      ],
+      "ortho_scale_m": 0.2721410751342774,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-b246d0d8fc50"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-1a6b38bcd2ed-isolated-overlay",
+      "position_m": [
+        -0.6487414240837097,
+        -2.2144455909729004,
+        3.0563204288482666
+      ],
+      "target_m": [
+        -0.30849689245224,
+        -1.0641305446624756,
+        1.456005334854126
+      ],
+      "ortho_scale_m": 0.15050487518310546,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-1a6b38bcd2ed"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-1a6b38bcd2ed"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-1a6b38bcd2ed-isolated-albedo",
+      "position_m": [
+        -0.6487414240837097,
+        -2.2144455909729004,
+        3.0563204288482666
+      ],
+      "target_m": [
+        -0.30849689245224,
+        -1.0641305446624756,
+        1.456005334854126
+      ],
+      "ortho_scale_m": 0.15050487518310546,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-1a6b38bcd2ed"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-214908334f85-isolated-overlay",
+      "position_m": [
+        -2.020200729370117,
+        -0.034765005111694336,
+        1.4480271339416504
+      ],
+      "target_m": [
+        -0.17661739885807037,
+        0.7224104404449463,
+        1.6150188446044922
+      ],
+      "ortho_scale_m": 0.15143089294433593,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-214908334f85"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-214908334f85"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-214908334f85-isolated-albedo",
+      "position_m": [
+        -2.020200729370117,
+        -0.034765005111694336,
+        1.4480271339416504
+      ],
+      "target_m": [
+        -0.17661739885807037,
+        0.7224104404449463,
+        1.6150188446044922
+      ],
+      "ortho_scale_m": 0.15143089294433593,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-214908334f85"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-45e5a199970f-isolated-overlay",
+      "position_m": [
+        -0.8085285425186157,
+        -3.0271434783935547,
+        1.96090829372406
+      ],
+      "target_m": [
+        -0.19698569178581238,
+        -1.1322321891784668,
+        1.7729558944702148
+      ],
+      "ortho_scale_m": 0.23387603759765627,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-45e5a199970f"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-45e5a199970f"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-45e5a199970f-isolated-albedo",
+      "position_m": [
+        -0.8085285425186157,
+        -3.0271434783935547,
+        1.96090829372406
+      ],
+      "target_m": [
+        -0.19698569178581238,
+        -1.1322321891784668,
+        1.7729558944702148
+      ],
+      "ortho_scale_m": 0.23387603759765627,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-45e5a199970f"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-ae39479acb4e-isolated-overlay",
+      "position_m": [
+        -1.3196901082992554,
+        -1.0532236099243164,
+        0.559296727180481
+      ],
+      "target_m": [
+        0.13085070252418518,
+        -0.570281982421875,
+        1.8487534523010254
+      ],
+      "ortho_scale_m": 0.14391441345214845,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-ae39479acb4e"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-ae39479acb4e"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-ae39479acb4e-isolated-albedo",
+      "position_m": [
+        -1.3196901082992554,
+        -1.0532236099243164,
+        0.559296727180481
+      ],
+      "target_m": [
+        0.13085070252418518,
+        -0.570281982421875,
+        1.8487534523010254
+      ],
+      "ortho_scale_m": 0.14391441345214845,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-ae39479acb4e"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-496a7c339b64-isolated-overlay",
+      "position_m": [
+        -0.9232315421104431,
+        -0.18365561962127686,
+        -0.5026592016220093
+      ],
+      "target_m": [
+        0.2593938708305359,
+        0.9641926288604736,
+        0.6304081678390503
+      ],
+      "ortho_scale_m": 0.15472707748413086,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-496a7c339b64"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-496a7c339b64"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-496a7c339b64-isolated-albedo",
+      "position_m": [
+        -0.9232315421104431,
+        -0.18365561962127686,
+        -0.5026592016220093
+      ],
+      "target_m": [
+        0.2593938708305359,
+        0.9641926288604736,
+        0.6304081678390503
+      ],
+      "ortho_scale_m": 0.15472707748413086,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-496a7c339b64"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-76a5b531d804-isolated-overlay",
+      "position_m": [
+        1.832662582397461,
+        0.7107412815093994,
+        2.009934902191162
+      ],
+      "target_m": [
+        0.009591203182935715,
+        -0.09304173290729523,
+        1.835740089416504
+      ],
+      "ortho_scale_m": 0.22728681564331055,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-76a5b531d804"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-76a5b531d804"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-76a5b531d804-isolated-albedo",
+      "position_m": [
+        1.832662582397461,
+        0.7107412815093994,
+        2.009934902191162
+      ],
+      "target_m": [
+        0.009591203182935715,
+        -0.09304173290729523,
+        1.835740089416504
+      ],
+      "ortho_scale_m": 0.22728681564331055,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-76a5b531d804"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-142b88f3f5fe-isolated-overlay",
+      "position_m": [
+        -1.9665584564208984,
+        1.4856925010681152,
+        1.1960234642028809
+      ],
+      "target_m": [
+        -0.016190603375434875,
+        1.252946376800537,
+        1.5727133750915527
+      ],
+      "ortho_scale_m": 0.1771249771118164,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-142b88f3f5fe"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-142b88f3f5fe"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-142b88f3f5fe-isolated-albedo",
+      "position_m": [
+        -1.9665584564208984,
+        1.4856925010681152,
+        1.1960234642028809
+      ],
+      "target_m": [
+        -0.016190603375434875,
+        1.252946376800537,
+        1.5727133750915527
+      ],
+      "ortho_scale_m": 0.1771249771118164,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-142b88f3f5fe"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-e985ed9d2776-isolated-overlay",
+      "position_m": [
+        1.0831202268600464,
+        2.1654140949249268,
+        1.9309899806976318
+      ],
+      "target_m": [
+        0.36694228649139404,
+        0.9803827404975891,
+        0.487802654504776
+      ],
+      "ortho_scale_m": 0.14269304275512695,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-e985ed9d2776"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-e985ed9d2776"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-e985ed9d2776-isolated-albedo",
+      "position_m": [
+        1.0831202268600464,
+        2.1654140949249268,
+        1.9309899806976318
+      ],
+      "target_m": [
+        0.36694228649139404,
+        0.9803827404975891,
+        0.487802654504776
+      ],
+      "ortho_scale_m": 0.14269304275512695,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-e985ed9d2776"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-f2693581ad0a-isolated-overlay",
+      "position_m": [
+        -2.0321924686431885,
+        0.41127508878707886,
+        1.0928504467010498
+      ],
+      "target_m": [
+        -0.1525939255952835,
+        0.680273711681366,
+        1.7211413383483887
+      ],
+      "ortho_scale_m": 0.14551753997802735,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-f2693581ad0a"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-f2693581ad0a"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-f2693581ad0a-isolated-albedo",
+      "position_m": [
+        -2.0321924686431885,
+        0.41127508878707886,
+        1.0928504467010498
+      ],
+      "target_m": [
+        -0.1525939255952835,
+        0.680273711681366,
+        1.7211413383483887
+      ],
+      "ortho_scale_m": 0.14551753997802735,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-f2693581ad0a"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-6a2d8e04a727-isolated-overlay",
+      "position_m": [
+        1.456534743309021,
+        0.01913619041442871,
+        1.600553035736084
+      ],
+      "target_m": [
+        -0.17906105518341064,
+        -1.1310503482818604,
+        1.556996464729309
+      ],
+      "ortho_scale_m": 0.16123542785644532,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-6a2d8e04a727"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-6a2d8e04a727"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-6a2d8e04a727-isolated-albedo",
+      "position_m": [
+        1.456534743309021,
+        0.01913619041442871,
+        1.600553035736084
+      ],
+      "target_m": [
+        -0.17906105518341064,
+        -1.1310503482818604,
+        1.556996464729309
+      ],
+      "ortho_scale_m": 0.16123542785644532,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-6a2d8e04a727"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-4afd6188749c-isolated-overlay",
+      "position_m": [
+        -2.0414907932281494,
+        -1.596430778503418,
+        0.9828121066093445
+      ],
+      "target_m": [
+        -0.2966650426387787,
+        -0.8760961294174194,
+        1.6436457633972168
+      ],
+      "ortho_scale_m": 0.14543647766113282,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-4afd6188749c"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-4afd6188749c"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-4afd6188749c-isolated-albedo",
+      "position_m": [
+        -2.0414907932281494,
+        -1.596430778503418,
+        0.9828121066093445
+      ],
+      "target_m": [
+        -0.2966650426387787,
+        -0.8760961294174194,
+        1.6436457633972168
+      ],
+      "ortho_scale_m": 0.14543647766113282,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-4afd6188749c"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-4e2fc507de64-isolated-overlay",
+      "position_m": [
+        -1.3290951251983643,
+        -2.3735475540161133,
+        1.4729708433151245
+      ],
+      "target_m": [
+        -0.38646790385246277,
+        -0.6398001909255981,
+        1.797892451286316
+      ],
+      "ortho_scale_m": 0.11569404602050781,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-4e2fc507de64"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-4e2fc507de64"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-4e2fc507de64-isolated-albedo",
+      "position_m": [
+        -1.3290951251983643,
+        -2.3735475540161133,
+        1.4729708433151245
+      ],
+      "target_m": [
+        -0.38646790385246277,
+        -0.6398001909255981,
+        1.797892451286316
+      ],
+      "ortho_scale_m": 0.11569404602050781,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-4e2fc507de64"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-0b3644d3cead-isolated-overlay",
+      "position_m": [
+        -1.073509693145752,
+        -2.6050190925598145,
+        0.7713490724563599
+      ],
+      "target_m": [
+        -0.14066550135612488,
+        -1.0183241367340088,
+        1.5537819862365723
+      ],
+      "ortho_scale_m": 0.1185227632522583,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-0b3644d3cead"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-0b3644d3cead"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-0b3644d3cead-isolated-albedo",
+      "position_m": [
+        -1.073509693145752,
+        -2.6050190925598145,
+        0.7713490724563599
+      ],
+      "target_m": [
+        -0.14066550135612488,
+        -1.0183241367340088,
+        1.5537819862365723
+      ],
+      "ortho_scale_m": 0.1185227632522583,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-0b3644d3cead"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-24c47ae608df-isolated-overlay",
+      "position_m": [
+        -1.8474693298339844,
+        0.339964896440506,
+        2.582529306411743
+      ],
+      "target_m": [
+        -0.07711999118328094,
+        0.6810871362686157,
+        1.7167932987213135
+      ],
+      "ortho_scale_m": 0.14001092910766602,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-24c47ae608df"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-24c47ae608df"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-24c47ae608df-isolated-albedo",
+      "position_m": [
+        -1.8474693298339844,
+        0.339964896440506,
+        2.582529306411743
+      ],
+      "target_m": [
+        -0.07711999118328094,
+        0.6810871362686157,
+        1.7167932987213135
+      ],
+      "ortho_scale_m": 0.14001092910766602,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-24c47ae608df"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-59ee26f77533-isolated-overlay",
+      "position_m": [
+        0.12780268490314484,
+        -1.9166337251663208,
+        3.3533554077148438
+      ],
+      "target_m": [
+        0.1871606409549713,
+        -0.8245986700057983,
+        1.6788597106933594
+      ],
+      "ortho_scale_m": 0.21043701171875,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-59ee26f77533"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-59ee26f77533"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-59ee26f77533-isolated-albedo",
+      "position_m": [
+        0.12780268490314484,
+        -1.9166337251663208,
+        3.3533554077148438
+      ],
+      "target_m": [
+        0.1871606409549713,
+        -0.8245986700057983,
+        1.6788597106933594
+      ],
+      "ortho_scale_m": 0.21043701171875,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-59ee26f77533"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-a21db8bf045e-isolated-overlay",
+      "position_m": [
+        -1.8777434825897217,
+        0.9412286877632141,
+        1.914322853088379
+      ],
+      "target_m": [
+        0.044771671295166016,
+        0.8448251485824585,
+        1.3715136051177979
+      ],
+      "ortho_scale_m": 0.14715099334716797,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-a21db8bf045e"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-a21db8bf045e"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-a21db8bf045e-isolated-albedo",
+      "position_m": [
+        -1.8777434825897217,
+        0.9412286877632141,
+        1.914322853088379
+      ],
+      "target_m": [
+        0.044771671295166016,
+        0.8448251485824585,
+        1.3715136051177979
+      ],
+      "ortho_scale_m": 0.14715099334716797,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-a21db8bf045e"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-79496374c95e-isolated-overlay",
+      "position_m": [
+        0.8919084072113037,
+        -0.08213090896606445,
+        1.1829125881195068
+      ],
+      "target_m": [
+        -0.21579834818840027,
+        -1.0544325113296509,
+        2.5348057746887207
+      ],
+      "ortho_scale_m": 0.1427783966064453,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-79496374c95e"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-79496374c95e"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-79496374c95e-isolated-albedo",
+      "position_m": [
+        0.8919084072113037,
+        -0.08213090896606445,
+        1.1829125881195068
+      ],
+      "target_m": [
+        -0.21579834818840027,
+        -1.0544325113296509,
+        2.5348057746887207
+      ],
+      "ortho_scale_m": 0.1427783966064453,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-79496374c95e"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-219022738900-isolated-overlay",
+      "position_m": [
+        1.5471841096878052,
+        -0.16361364722251892,
+        3.0844006538391113
+      ],
+      "target_m": [
+        0.03806229680776596,
+        -0.5817593932151794,
+        1.8403325080871582
+      ],
+      "ortho_scale_m": 0.10885467529296874,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-219022738900"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-219022738900"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-219022738900-isolated-albedo",
+      "position_m": [
+        1.5471841096878052,
+        -0.16361364722251892,
+        3.0844006538391113
+      ],
+      "target_m": [
+        0.03806229680776596,
+        -0.5817593932151794,
+        1.8403325080871582
+      ],
+      "ortho_scale_m": 0.10885467529296874,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-219022738900"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-61056aa72863-isolated-overlay",
+      "position_m": [
+        -1.2020456790924072,
+        -1.094498872756958,
+        0.3150146007537842
+      ],
+      "target_m": [
+        -0.05586623400449753,
+        -0.5488417148590088,
+        1.860502004623413
+      ],
+      "ortho_scale_m": 0.11746118068695069,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-61056aa72863"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-61056aa72863"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-61056aa72863-isolated-albedo",
+      "position_m": [
+        -1.2020456790924072,
+        -1.094498872756958,
+        0.3150146007537842
+      ],
+      "target_m": [
+        -0.05586623400449753,
+        -0.5488417148590088,
+        1.860502004623413
+      ],
+      "ortho_scale_m": 0.11746118068695069,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-61056aa72863"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-36e9f96b0629-isolated-overlay",
+      "position_m": [
+        -0.8759818077087402,
+        0.694403886795044,
+        3.6658380031585693
+      ],
+      "target_m": [
+        -0.1872439682483673,
+        0.0583023726940155,
+        1.8991985321044922
+      ],
+      "ortho_scale_m": 0.09541766643524172,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-36e9f96b0629"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-36e9f96b0629"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-36e9f96b0629-isolated-albedo",
+      "position_m": [
+        -0.8759818077087402,
+        0.694403886795044,
+        3.6658380031585693
+      ],
+      "target_m": [
+        -0.1872439682483673,
+        0.0583023726940155,
+        1.8991985321044922
+      ],
+      "ortho_scale_m": 0.09541766643524172,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-36e9f96b0629"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-13afd9fd68f7-isolated-overlay",
+      "position_m": [
+        -1.0614855289459229,
+        1.7882347106933594,
+        2.9828546047210693
+      ],
+      "target_m": [
+        -0.06250792741775513,
+        0.7214183807373047,
+        1.6175904273986816
+      ],
+      "ortho_scale_m": 0.09520158767700196,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-13afd9fd68f7"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-13afd9fd68f7"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-13afd9fd68f7-isolated-albedo",
+      "position_m": [
+        -1.0614855289459229,
+        1.7882347106933594,
+        2.9828546047210693
+      ],
+      "target_m": [
+        -0.06250792741775513,
+        0.7214183807373047,
+        1.6175904273986816
+      ],
+      "ortho_scale_m": 0.09520158767700196,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-13afd9fd68f7"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-5c255a663a65-isolated-overlay",
+      "position_m": [
+        0.8612143993377686,
+        1.6091917753219604,
+        3.173285484313965
+      ],
+      "target_m": [
+        -0.019908159971237183,
+        0.7275543212890625,
+        1.609208106994629
+      ],
+      "ortho_scale_m": 0.08939123153686523,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-5c255a663a65"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-5c255a663a65"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-5c255a663a65-isolated-albedo",
+      "position_m": [
+        0.8612143993377686,
+        1.6091917753219604,
+        3.173285484313965
+      ],
+      "target_m": [
+        -0.019908159971237183,
+        0.7275543212890625,
+        1.609208106994629
+      ],
+      "ortho_scale_m": 0.08939123153686523,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-5c255a663a65"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-5f9296f0a8b7-isolated-overlay",
+      "position_m": [
+        -2.0800094604492188,
+        -1.8314709663391113,
+        1.5303590297698975
+      ],
+      "target_m": [
+        -0.2288549542427063,
+        -1.0772466659545898,
+        1.4642289876937866
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-5f9296f0a8b7"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-5f9296f0a8b7"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-5f9296f0a8b7-isolated-albedo",
+      "position_m": [
+        -2.0800094604492188,
+        -1.8314709663391113,
+        1.5303590297698975
+      ],
+      "target_m": [
+        -0.2288549542427063,
+        -1.0772466659545898,
+        1.4642289876937866
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-5f9296f0a8b7"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-2516a986745a-isolated-overlay",
+      "position_m": [
+        1.144890308380127,
+        -1.7872048616409302,
+        0.7795647382736206
+      ],
+      "target_m": [
+        0.008031785488128662,
+        -1.1607940196990967,
+        2.301130533218384
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-2516a986745a"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-2516a986745a"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-2516a986745a-isolated-albedo",
+      "position_m": [
+        1.144890308380127,
+        -1.7872048616409302,
+        0.7795647382736206
+      ],
+      "target_m": [
+        0.008031785488128662,
+        -1.1607940196990967,
+        2.301130533218384
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-2516a986745a"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-faf086e6bbf3-isolated-overlay",
+      "position_m": [
+        -0.32300883531570435,
+        -2.1882753372192383,
+        4.104210376739502
+      ],
+      "target_m": [
+        -0.16315075755119324,
+        -0.8958361744880676,
+        2.586301803588867
+      ],
+      "ortho_scale_m": 0.12534122467041017,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-faf086e6bbf3"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-faf086e6bbf3"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-faf086e6bbf3-isolated-albedo",
+      "position_m": [
+        -0.32300883531570435,
+        -2.1882753372192383,
+        4.104210376739502
+      ],
+      "target_m": [
+        -0.16315075755119324,
+        -0.8958361744880676,
+        2.586301803588867
+      ],
+      "ortho_scale_m": 0.12534122467041017,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-faf086e6bbf3"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-c1177585d450-isolated-overlay",
+      "position_m": [
+        1.8184174299240112,
+        0.8594974875450134,
+        2.2277565002441406
+      ],
+      "target_m": [
+        -0.08432506024837494,
+        0.7187167406082153,
+        1.6279635429382324
+      ],
+      "ortho_scale_m": 0.10003223419189453,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-c1177585d450"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-c1177585d450"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-c1177585d450-isolated-albedo",
+      "position_m": [
+        1.8184174299240112,
+        0.8594974875450134,
+        2.2277565002441406
+      ],
+      "target_m": [
+        -0.08432506024837494,
+        0.7187167406082153,
+        1.6279635429382324
+      ],
+      "ortho_scale_m": 0.10003223419189453,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-c1177585d450"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-da33066a6671-isolated-overlay",
+      "position_m": [
+        1.295224666595459,
+        -1.1165837049484253,
+        0.8154498338699341
+      ],
+      "target_m": [
+        -0.1638689786195755,
+        -0.19432920217514038,
+        1.8256440162658691
+      ],
+      "ortho_scale_m": 0.10654988288879394,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-da33066a6671"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-da33066a6671"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-da33066a6671-isolated-albedo",
+      "position_m": [
+        1.295224666595459,
+        -1.1165837049484253,
+        0.8154498338699341
+      ],
+      "target_m": [
+        -0.1638689786195755,
+        -0.19432920217514038,
+        1.8256440162658691
+      ],
+      "ortho_scale_m": 0.10654988288879394,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-da33066a6671"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-13e30963711d-isolated-overlay",
+      "position_m": [
+        -0.8156287670135498,
+        -1.0592527389526367,
+        1.2141492366790771
+      ],
+      "target_m": [
+        -0.1755058616399765,
+        0.8268640041351318,
+        1.3952751159667969
+      ],
+      "ortho_scale_m": 0.11196575164794922,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-13e30963711d"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-13e30963711d"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-13e30963711d-isolated-albedo",
+      "position_m": [
+        -0.8156287670135498,
+        -1.0592527389526367,
+        1.2141492366790771
+      ],
+      "target_m": [
+        -0.1755058616399765,
+        0.8268640041351318,
+        1.3952751159667969
+      ],
+      "ortho_scale_m": 0.11196575164794922,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-13e30963711d"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-19f81beb369c-isolated-overlay",
+      "position_m": [
+        -1.67997145652771,
+        0.4957706332206726,
+        2.8074398040771484
+      ],
+      "target_m": [
+        -0.08866548538208008,
+        -0.2245507687330246,
+        1.8333337306976318
+      ],
+      "ortho_scale_m": 0.09187755584716797,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-19f81beb369c"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-19f81beb369c"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-19f81beb369c-isolated-albedo",
+      "position_m": [
+        -1.67997145652771,
+        0.4957706332206726,
+        2.8074398040771484
+      ],
+      "target_m": [
+        -0.08866548538208008,
+        -0.2245507687330246,
+        1.8333337306976318
+      ],
+      "ortho_scale_m": 0.09187755584716797,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-19f81beb369c"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-707b87545777-isolated-overlay",
+      "position_m": [
+        -0.24873533844947815,
+        1.4258676767349243,
+        2.4885833263397217
+      ],
+      "target_m": [
+        -0.2218603491783142,
+        -0.4797971248626709,
+        1.8821842670440674
+      ],
+      "ortho_scale_m": 0.09110279083251954,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-707b87545777"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-707b87545777"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-707b87545777-isolated-albedo",
+      "position_m": [
+        -0.24873533844947815,
+        1.4258676767349243,
+        2.4885833263397217
+      ],
+      "target_m": [
+        -0.2218603491783142,
+        -0.4797971248626709,
+        1.8821842670440674
+      ],
+      "ortho_scale_m": 0.09110279083251954,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-707b87545777"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-1e8b223aad41-isolated-overlay",
+      "position_m": [
+        0.43257689476013184,
+        0.7863677740097046,
+        1.715165615081787
+      ],
+      "target_m": [
+        -0.07091110944747925,
+        -1.1389870643615723,
+        1.913934588432312
+      ],
+      "ortho_scale_m": 0.08143720626831055,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-1e8b223aad41"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-1e8b223aad41"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-1e8b223aad41-isolated-albedo",
+      "position_m": [
+        0.43257689476013184,
+        0.7863677740097046,
+        1.715165615081787
+      ],
+      "target_m": [
+        -0.07091110944747925,
+        -1.1389870643615723,
+        1.913934588432312
+      ],
+      "ortho_scale_m": 0.08143720626831055,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-1e8b223aad41"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-f8c8ec568f04-isolated-overlay",
+      "position_m": [
+        -1.8632923364639282,
+        -0.2522350549697876,
+        2.153183937072754
+      ],
+      "target_m": [
+        -0.05584573745727539,
+        -1.1063501834869385,
+        2.213383197784424
+      ],
+      "ortho_scale_m": 0.08513011932373046,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-f8c8ec568f04"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-f8c8ec568f04"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-f8c8ec568f04-isolated-albedo",
+      "position_m": [
+        -1.8632923364639282,
+        -0.2522350549697876,
+        2.153183937072754
+      ],
+      "target_m": [
+        -0.05584573745727539,
+        -1.1063501834869385,
+        2.213383197784424
+      ],
+      "ortho_scale_m": 0.08513011932373046,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-f8c8ec568f04"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-cb72c66025e3-isolated-overlay",
+      "position_m": [
+        0.7505558729171753,
+        -2.513420581817627,
+        3.516479969024658
+      ],
+      "target_m": [
+        -0.11790257692337036,
+        -1.1677318811416626,
+        2.31860613822937
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-cb72c66025e3"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-cb72c66025e3"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-cb72c66025e3-isolated-albedo",
+      "position_m": [
+        0.7505558729171753,
+        -2.513420581817627,
+        3.516479969024658
+      ],
+      "target_m": [
+        -0.11790257692337036,
+        -1.1677318811416626,
+        2.31860613822937
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-cb72c66025e3"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-029db0fbd244-isolated-overlay",
+      "position_m": [
+        1.0465936660766602,
+        0.529172956943512,
+        0.034046053886413574
+      ],
+      "target_m": [
+        -0.08652685582637787,
+        0.7050254344940186,
+        1.6726776361465454
+      ],
+      "ortho_scale_m": 0.08993883132934571,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-029db0fbd244"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-029db0fbd244"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-029db0fbd244-isolated-albedo",
+      "position_m": [
+        1.0465936660766602,
+        0.529172956943512,
+        0.034046053886413574
+      ],
+      "target_m": [
+        -0.08652685582637787,
+        0.7050254344940186,
+        1.6726776361465454
+      ],
+      "ortho_scale_m": 0.08993883132934571,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-029db0fbd244"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-c218565b2652-isolated-overlay",
+      "position_m": [
+        -1.821862816810608,
+        -2.2179689407348633,
+        2.809000253677368
+      ],
+      "target_m": [
+        -0.25958287715911865,
+        -1.11513090133667,
+        2.2233128547668457
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-c218565b2652"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-c218565b2652"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-c218565b2652-isolated-albedo",
+      "position_m": [
+        -1.821862816810608,
+        -2.2179689407348633,
+        2.809000253677368
+      ],
+      "target_m": [
+        -0.25958287715911865,
+        -1.11513090133667,
+        2.2233128547668457
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-c218565b2652"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-9e8e9c14557b-isolated-overlay",
+      "position_m": [
+        1.456119179725647,
+        1.7779362201690674,
+        2.090409994125366
+      ],
+      "target_m": [
+        -0.17696617543697357,
+        0.7256483435630798,
+        1.6153075695037842
+      ],
+      "ortho_scale_m": 0.08129463195800782,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-9e8e9c14557b"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-9e8e9c14557b"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-9e8e9c14557b-isolated-albedo",
+      "position_m": [
+        1.456119179725647,
+        1.7779362201690674,
+        2.090409994125366
+      ],
+      "target_m": [
+        -0.17696617543697357,
+        0.7256483435630798,
+        1.6153075695037842
+      ],
+      "ortho_scale_m": 0.08129463195800782,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-9e8e9c14557b"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-1d1b12900d1a-isolated-overlay",
+      "position_m": [
+        -0.6536844968795776,
+        0.5785778760910034,
+        2.448323965072632
+      ],
+      "target_m": [
+        -0.1819288730621338,
+        -1.1162177324295044,
+        1.4969487190246582
+      ],
+      "ortho_scale_m": 0.0809173583984375,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-1d1b12900d1a"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-1d1b12900d1a"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-1d1b12900d1a-isolated-albedo",
+      "position_m": [
+        -0.6536844968795776,
+        0.5785778760910034,
+        2.448323965072632
+      ],
+      "target_m": [
+        -0.1819288730621338,
+        -1.1162177324295044,
+        1.4969487190246582
+      ],
+      "ortho_scale_m": 0.0809173583984375,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-1d1b12900d1a"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-1b91b1cf823d-isolated-overlay",
+      "position_m": [
+        1.8246760368347168,
+        -0.4611237049102783,
+        2.683215379714966
+      ],
+      "target_m": [
+        0.04966238886117935,
+        -0.6769026517868042,
+        1.7872432470321655
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-1b91b1cf823d"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-1b91b1cf823d"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-1b91b1cf823d-isolated-albedo",
+      "position_m": [
+        1.8246760368347168,
+        -0.4611237049102783,
+        2.683215379714966
+      ],
+      "target_m": [
+        0.04966238886117935,
+        -0.6769026517868042,
+        1.7872432470321655
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-1b91b1cf823d"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-602d3f911217-isolated-overlay",
+      "position_m": [
+        -1.6664801836013794,
+        -0.15310460329055786,
+        0.9181671142578125
+      ],
+      "target_m": [
+        0.06283393502235413,
+        -0.7205615043640137,
+        1.7473022937774658
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-602d3f911217"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-602d3f911217"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-602d3f911217-isolated-albedo",
+      "position_m": [
+        -1.6664801836013794,
+        -0.15310460329055786,
+        0.9181671142578125
+      ],
+      "target_m": [
+        0.06283393502235413,
+        -0.7205615043640137,
+        1.7473022937774658
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-602d3f911217"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-a990b4f2ab88-isolated-overlay",
+      "position_m": [
+        0.27323585748672485,
+        -2.5171279907226562,
+        0.2784407138824463
+      ],
+      "target_m": [
+        -0.35731732845306396,
+        -1.0273151397705078,
+        1.4543912410736084
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-a990b4f2ab88"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-a990b4f2ab88"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-a990b4f2ab88-isolated-albedo",
+      "position_m": [
+        0.27323585748672485,
+        -2.5171279907226562,
+        0.2784407138824463
+      ],
+      "target_m": [
+        -0.35731732845306396,
+        -1.0273151397705078,
+        1.4543912410736084
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-a990b4f2ab88"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-411bed5eb70e-isolated-overlay",
+      "position_m": [
+        -1.2938764095306396,
+        -1.620785117149353,
+        3.227843999862671
+      ],
+      "target_m": [
+        -0.2973893880844116,
+        -0.7497094869613647,
+        1.7284305095672607
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-411bed5eb70e"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-411bed5eb70e"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-411bed5eb70e-isolated-albedo",
+      "position_m": [
+        -1.2938764095306396,
+        -1.620785117149353,
+        3.227843999862671
+      ],
+      "target_m": [
+        -0.2973893880844116,
+        -0.7497094869613647,
+        1.7284305095672607
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-411bed5eb70e"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-c9ecd5507ca0-isolated-overlay",
+      "position_m": [
+        0.3742888569831848,
+        -1.8510997295379639,
+        3.1892261505126953
+      ],
+      "target_m": [
+        -0.40021049976348877,
+        -0.6256648302078247,
+        1.8113797903060913
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-c9ecd5507ca0"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-c9ecd5507ca0"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-c9ecd5507ca0-isolated-albedo",
+      "position_m": [
+        0.3742888569831848,
+        -1.8510997295379639,
+        3.1892261505126953
+      ],
+      "target_m": [
+        -0.40021049976348877,
+        -0.6256648302078247,
+        1.8113797903060913
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-c9ecd5507ca0"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-007f90f080bd-isolated-overlay",
+      "position_m": [
+        1.4664815664291382,
+        -0.14523351192474365,
+        1.871722936630249
+      ],
+      "target_m": [
+        -0.19021713733673096,
+        -1.1646854877471924,
+        2.336552619934082
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-007f90f080bd"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-007f90f080bd"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-007f90f080bd-isolated-albedo",
+      "position_m": [
+        1.4664815664291382,
+        -0.14523351192474365,
+        1.871722936630249
+      ],
+      "target_m": [
+        -0.19021713733673096,
+        -1.1646854877471924,
+        2.336552619934082
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-007f90f080bd"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-7d9f8b9ff8a2-isolated-overlay",
+      "position_m": [
+        0.18101990222930908,
+        -2.657194137573242,
+        0.9959464073181152
+      ],
+      "target_m": [
+        -0.26061370968818665,
+        -1.1038261651992798,
+        2.1757802963256836
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-7d9f8b9ff8a2"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-7d9f8b9ff8a2"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-7d9f8b9ff8a2-isolated-albedo",
+      "position_m": [
+        0.18101990222930908,
+        -2.657194137573242,
+        0.9959464073181152
+      ],
+      "target_m": [
+        -0.26061370968818665,
+        -1.1038261651992798,
+        2.1757802963256836
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-7d9f8b9ff8a2"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-2ce453b2e50e-isolated-overlay",
+      "position_m": [
+        -0.433357298374176,
+        -1.6994342803955078,
+        4.261022567749023
+      ],
+      "target_m": [
+        -0.18971017003059387,
+        -1.171386957168579,
+        2.3474388122558594
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-2ce453b2e50e"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-2ce453b2e50e"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-2ce453b2e50e-isolated-albedo",
+      "position_m": [
+        -0.433357298374176,
+        -1.6994342803955078,
+        4.261022567749023
+      ],
+      "target_m": [
+        -0.18971017003059387,
+        -1.171386957168579,
+        2.3474388122558594
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-2ce453b2e50e"
+      ],
+      "highlight_regions": []
+    },
+    {
+      "id": "SMB-0d7599c806-1e925dd6eb59-isolated-overlay",
+      "position_m": [
+        -1.442505955696106,
+        -1.9465584754943848,
+        1.672372579574585
+      ],
+      "target_m": [
+        -0.12584732472896576,
+        -0.45598626136779785,
+        1.8835704326629639
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "overlay",
+      "isolate_regions": [
+        "SMB-0d7599c806-1e925dd6eb59"
+      ],
+      "highlight_regions": [
+        "SMB-0d7599c806-1e925dd6eb59"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-1e925dd6eb59-isolated-albedo",
+      "position_m": [
+        -1.442505955696106,
+        -1.9465584754943848,
+        1.672372579574585
+      ],
+      "target_m": [
+        -0.12584732472896576,
+        -0.45598626136779785,
+        1.8835704326629639
+      ],
+      "ortho_scale_m": 0.08,
+      "appearance": "albedo",
+      "isolate_regions": [
+        "SMB-0d7599c806-1e925dd6eb59"
+      ],
+      "highlight_regions": []
+    }
+  ],
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkRetention-v003\\validation.json": "0630516734df3c1bb11f95ae92056e353dda46c4f4328c4574e32a2e1a451e49",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz": "83e4f07cf16fa21e1e5277950201af199f2928faa0d4fc004e03d00a6602b686"
+  },
+  "source_appearance_mode": "albedo-emission",
+  "chains": []
+}

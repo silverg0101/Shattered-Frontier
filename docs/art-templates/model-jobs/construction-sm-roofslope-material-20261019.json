@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "job_id": "construction-sm-roofslope-material-20261019",
+  "asset_id": "BLD-SM-RoofSlopeFace-01",
+  "status": "needs-review",
+  "owner": null,
+  "lease_expires_utc": null,
+  "reference": {
+    "source_type": "catalog-package",
+    "manifest_path": "GameClient/ArtSource/BLD-SM-RoofSlopeFace-01/References/v001/manifest.json",
+    "image_path": "GameClient/ArtSource/BLD-SM-RoofSlopeFace-01/References/v001/asset-view.png",
+    "sha256": "c53b2b0096003e5dae60283ec4ee4706d873898363cbd55fe67a82a75b81095a",
+    "image_batch_path": "docs/art-templates/asset-lists/construction-kit-matrix-07.md"
+  },
+  "profile": {
+    "category": "surface-treatment",
+    "features": [
+      "static-mesh-material",
+      "tileable-pbr-maps",
+      "face-specific-uv",
+      "height-derived-tangent-normal"
+    ],
+    "path": "docs/art-templates/model-profiles/construction-model-queue-profile-20261019-e.json",
+    "sha256": "3710fd7297f392ea454ea4346f3182b0be0784141b87bc2206f7a078ca31e960",
+    "approval": "prototype-authored",
+    "source_lock_path": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011-sm-continuation-source-lock.json"
+  },
+  "quality_target": "prototype",
+  "repair_policy": {
+    "max_attempts_per_stage": 3,
+    "on_exhaustion": "needs-review"
+  },
+  "current_stage": "materials",
+  "stages": {
+    "reference": {
+      "status": "passed",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "GameClient/ArtSource/BLD-SM-RoofSlopeFace-01/References/v001/asset-view.png"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/BLD-SM-RoofSlopeFace-01/References/v001/manifest.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v010-source-lock.json"
+      ],
+      "note": "Direct image catalog package resolved; reference hashes are pinned in source lock."
+    },
+    "geometry": {
+      "status": "needs-review",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/slope-1to1"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/geometry-source/slope-1to1.json"
+      ],
+      "note": "Exact canonical prototype carrier reused. Shape has no approved GEO-01 manifest/hash and applicable GEO-02 evidence remains open."
+    },
+    "topology_uv": {
+      "status": "passed",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v006/BLD-SM-RoofSlopeFace-01"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-SM-RoofSlopeFace-01/checks/source-open.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-SM-RoofSlopeFace-01/checks/glb-import.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-SM-RoofSlopeFace-01/checks/fbx-import.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-SM-RoofSlopeFace-01/checks/island-classification.json"
+      ],
+      "note": "Fresh source/GLB/FBX checks pass: one connected component, zero loose vertices, UV0 present. Material/reference acceptance remains failed."
+    },
+    "materials": {
+      "status": "needs-review",
+      "attempt_count": 3,
+      "attempt_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v006/BLD-SM-RoofSlopeFace-01",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v010/BLD-SM-RoofSlopeFace-01",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-SM-RoofSlopeFace-01"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-SM-RoofSlopeFace-01/checks/texture-wrap.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-SM-RoofSlopeFace-01/checks/island-classification.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-SM-RoofSlopeFace-01/checks/attachment-integrity.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/review-notes-gpt-6.1-sol.md",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-SM-RoofSlopeFace-01/checks/texture-density-reconciliation.json"
+      ],
+      "note": "Attempt 3/3 source/export and island checks pass; preview hides inclined face and basecolor/height X wrap fail; cap exhausted."
+    },
+    "rig": {
+      "status": "skipped",
+      "attempt_count": 0,
+      "attempt_paths": [],
+      "check_paths": [],
+      "note": "Static construction asset; no rig requested."
+    },
+    "secondary_motion": {
+      "status": "skipped",
+      "attempt_count": 0,
+      "attempt_paths": [],
+      "check_paths": [],
+      "note": "Static construction asset; no motion requested."
+    },
+    "delivery": {
+      "status": "needs-review",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-SM-RoofSlopeFace-01/SM_BLD_SM_RoofSlopeFace_01_v003.blend",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-SM-RoofSlopeFace-01/SM_BLD_SM_RoofSlopeFace_01_v003.glb",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-SM-RoofSlopeFace-01/SM_BLD_SM_RoofSlopeFace_01_v003.fbx"
+      ],
+      "check_paths": [],
+      "note": "Awaiting fresh source, rendered, export and map checks."
+    }
+  },
+  "artifacts": {
+    "source_lock": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011-sm-continuation-source-lock.json",
+    "source_lock_sha256": "f377633b585d6e6b2bcf6f72966ba087f7bc66ea4e3a5527597ddb2844565088",
+    "output_root": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011",
+    "previous_attempt": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v006/BLD-SM-RoofSlopeFace-01",
+    "source_rights": "Project catalog appearance references guide authored procedural materials; no source pixels are projected.",
+    "gpu_policy": "CPU Cycles only; no GPU inference/render launched.",
+    "review": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/review-notes-gpt-6.1-sol.md",
+    "attempt_history": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/attempt-history.json"
+  },
+  "defects": [
+    "Model-v006 material prototype had visible repeated stripe/material artifacts; repair cause documented in v006 manifests.",
+    "v010 reviewer rejected final surface fidelity and/or preview coverage; exact findings preserved in Model-v010/review-notes-gpt-6.1-sol.md.",
+    "Metadata density mismatch from initial generated report was reconciled to 2048 px/m in texture-density-reconciliation.json; maps/mesh unchanged."
+  ],
+  "blockers": [
+    "Material-stage attempt cap 3/3 exhausted; new attempt budget required.",
+    "Approved GEO-01 manifest/hash is absent.",
+    "Applicable GEO-02 compatibility/assembly evidence is absent.",
+    "Unreal 5.8 import/material/normal, collision/LOD, assembled contacts and performance remain open."
+  ],
+  "next_action": "Preserve exact blocker and continue another ready asset; do not retry without explicitly increased attempt budget."
+}

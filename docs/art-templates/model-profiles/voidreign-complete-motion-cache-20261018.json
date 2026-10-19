@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "permissions": "Offline conversion of verified final tail output",
+  "effective_time": "This frozen source only",
+  "units": "metres and frames",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteTailCache-v002\\Voidreign-ActualSurfacePilot.blend",
+  "positions_file": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeFinalOutputPoints-v001\\output-points.npz",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteTailCache-v002\\Voidreign-ActualSurfacePilot.blend": "0913bbf706cb69e9bda3b77a1326c8d68c78cccec97b5d414983437a49c5cf42",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeFinalOutputPoints-v001\\output-points.npz": "8702a230cd118806cfa140d114164802efb4fe7882a2dddbe26b1ffc7327223b",
+    "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteTailCache-v002\\Feature-actual-motion.mdd": "41214c51a69e0d6f27085ab1c1adc08bd566feea1a039f95670b4d4dad0f14bf"
+  },
+  "proxy_object": "SIM | actual source hair surface.001",
+  "frame_start": 1,
+  "frame_end": 330,
+  "fps": 30,
+  "maximum_reopen_error_m": 1e-05,
+  "disable_output_modifiers": [
+    {
+      "object": "geometry_0",
+      "modifier": "Actual surface contacts | diagnostic projection.001"
+    }
+  ],
+  "inherited_mesh_caches": [
+    {
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteTailCache-v002\\Feature-actual-motion.mdd",
+      "filename": "Tail-actual-motion.mdd",
+      "object": "SIM | actual source hair surface",
+      "modifier": "Verified measured surface motion | MDD"
+    }
+  ]
+}

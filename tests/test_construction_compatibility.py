@@ -21,6 +21,22 @@ class ConstructionCompatibilityTests(unittest.TestCase):
         self.assertEqual(result["cell_exposed_area"], Fraction(1, 2))
         self.assertEqual(result["neighbor_exposed_area"], 0)
 
+    def test_new_prototype_shapes_share_exact_contacts(self):
+        quarter = self.cell("slab-quarter", (0, 0, 0))
+        quarter_side = compatibility(quarter, "+X", self.cell("cell-full", (1, 0, 0)))
+        self.assertEqual(quarter_side["contact_area"], Fraction(1, 4))
+        self.assertEqual(quarter_side["cell_exposed_area"], 0)
+
+        post = self.cell("post-quarter", (0, 0, 0))
+        post_side = compatibility(post, "-X", self.cell("cell-full", (-1, 0, 0)))
+        self.assertEqual(post_side["contact_area"], Fraction(1, 2))
+        self.assertEqual(compatibility(post, "+X", self.cell("cell-full", (1, 0, 0)))["contact_area"], 0)
+        self.assertEqual(compatibility(post, "+Z", self.cell("cell-full", (0, 0, 1)))["contact_area"], Fraction(1, 4))
+
+        outer = self.cell("corner-outer", (0, 0, 0))
+        self.assertEqual(compatibility(outer, "+X", self.cell("cell-full", (1, 0, 0)))["contact_area"], Fraction(1, 2))
+        self.assertEqual(compatibility(outer, "+Y", self.cell("cell-full", (0, 1, 0)))["contact_area"], Fraction(1, 2))
+
     def test_lower_and_upper_slabs_complement_on_shared_plane(self):
         upper_rotation = ((-1, 0, 0), (0, 1, 0), (0, 0, -1))
         lower = self.cell("slab-half", (0, 0, 0))

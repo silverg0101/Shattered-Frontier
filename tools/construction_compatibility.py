@@ -1,4 +1,4 @@
-"""Exact face compatibility pilot for the three construction geometry fixtures.
+"""Exact face compatibility pilot for the six current construction geometry shapes.
 
 This operates on convex face polygons from one convex part per cell. It is not a
 general surface mesher, collision system, or structural support solver.

@@ -17,7 +17,10 @@ from tools.construction_geometry import _signed_volume
 GOLDEN_HASHES = {
     "cell-full": "9455bd04dab9df9f4643f175c95fb17cb7e25e6248c239975a8f1280f040061a",
     "slab-half": "e6236a7b600eccb0a2f558f74524e183ef57154a278938694629ed247ecfd154",
+    "slab-quarter": "d355fbd51a05d423f3ae212736b3c40c5aca93ebdd294af57b7379d5df5d1749",
+    "post-quarter": "d46e4ebdfe2d20723d337e3886431621579fa6c3d764acc23cb5d544c0035144",
     "slope-1to1": "e55a54e6824119dffb929bf7de536eba786e7ce145efa732620da147cca4cdda",
+    "corner-outer": "53fc0704c2407d0530716cee82ac9a22c74104ee3b0b8be487b69458fb1b00f1",
 }
 
 
@@ -33,10 +36,16 @@ class ConstructionGeometryTests(unittest.TestCase):
     def test_exact_volumes_and_contact_regions(self):
         full = validate_payload(canonical_payload("cell-full"))
         slab = validate_payload(canonical_payload("slab-half"))
+        quarter_slab = validate_payload(canonical_payload("slab-quarter"))
+        post = validate_payload(canonical_payload("post-quarter"))
         slope = validate_payload(canonical_payload("slope-1to1"))
+        outer = validate_payload(canonical_payload("corner-outer"))
         self.assertEqual(full["volume_fraction"], 1)
         self.assertEqual(slab["volume_fraction"], 1 / 2)
+        self.assertEqual(quarter_slab["volume_fraction"], 1 / 4)
+        self.assertEqual(post["volume_fraction"], 1 / 4)
         self.assertEqual(slope["volume_fraction"], 1 / 2)
+        self.assertEqual(outer["volume_fraction"], Fraction(1, 3))
         self.assertTrue(all(len(full["face_contacts"][f]) == 1 for f in ("-X", "+X", "-Y", "+Y", "-Z", "+Z")))
         self.assertEqual(len(slab["face_contacts"]["-Z"]), 1)
         self.assertEqual(slab["face_contacts"]["+Z"], ())
@@ -45,6 +54,9 @@ class ConstructionGeometryTests(unittest.TestCase):
         self.assertEqual(set(slab_bottom), {(0,0,0),(Q,0,0),(0,Q,0),(Q,Q,0)})
         self.assertEqual(projected_area(slab_bottom, 2), 1)
         self.assertEqual(projected_area(slab["face_contacts"]["+X"][0], 0), Fraction(1, 2))
+        self.assertEqual(projected_area(quarter_slab["face_contacts"]["+X"][0], 0), Fraction(1, 4))
+        self.assertEqual(len(post["face_contacts"]["+Z"]), 1)
+        self.assertEqual(projected_area(post["face_contacts"]["+Z"][0], 2), Fraction(1, 4))
         self.assertEqual(len(slope["face_contacts"]["-Z"]), 1)
         self.assertEqual(slope["face_contacts"]["+Z"], ())
         self.assertEqual(slope["face_contacts"]["-X"], ())
@@ -52,6 +64,11 @@ class ConstructionGeometryTests(unittest.TestCase):
         slope_x = slope["face_contacts"]["+X"][0]
         self.assertEqual(set(slope_x), {(Q,0,0),(Q,Q,0),(Q,0,Q),(Q,Q,Q)})
         self.assertEqual(projected_area(slope_x, 0), 1)
+        self.assertEqual(outer["face_contacts"]["-X"], ())
+        self.assertEqual(outer["face_contacts"]["-Y"], ())
+        self.assertEqual(outer["face_contacts"]["+Z"], ())
+        self.assertEqual(projected_area(outer["face_contacts"]["+X"][0], 0), Fraction(1, 2))
+        self.assertEqual(projected_area(outer["face_contacts"]["+Y"][0], 1), Fraction(1, 2))
 
     def test_canonical_bytes_and_hash_are_stable(self):
         for key in SUPPORTED:

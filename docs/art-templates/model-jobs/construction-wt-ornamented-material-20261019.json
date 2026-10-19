@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "job_id": "construction-wt-ornamented-material-20261019",
+  "asset_id": "BLD-WT-CellFull-Ornamented-01",
+  "status": "needs-review",
+  "owner": null,
+  "lease_expires_utc": null,
+  "reference": {
+    "source_type": "catalog-package",
+    "manifest_path": "GameClient/ArtSource/BLD-WT-CellFull-Ornamented-01/References/v001/manifest.json",
+    "image_path": "GameClient/ArtSource/BLD-WT-CellFull-Ornamented-01/References/v001/asset-view.png",
+    "sha256": "3869abbf9b7705415e388016f5dd544f6535d4aa4f511057d49b84d438e4822e",
+    "image_batch_path": "docs/art-templates/asset-lists/construction-worked-timber-cellfull-variants-41.md"
+  },
+  "profile": {
+    "category": "surface-treatment",
+    "features": [
+      "static-mesh-material",
+      "tileable-pbr-maps",
+      "face-specific-uv",
+      "height-derived-tangent-normal"
+    ],
+    "path": "docs/art-templates/model-profiles/construction-model-queue-profile-20261019-e.json",
+    "sha256": "3710fd7297f392ea454ea4346f3182b0be0784141b87bc2206f7a078ca31e960",
+    "approval": "prototype-authored",
+    "source_lock_path": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011-source-lock.json"
+  },
+  "quality_target": "prototype",
+  "repair_policy": {
+    "max_attempts_per_stage": 3,
+    "on_exhaustion": "needs-review"
+  },
+  "current_stage": "materials",
+  "stages": {
+    "reference": {
+      "status": "passed",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "GameClient/ArtSource/BLD-WT-CellFull-Ornamented-01/References/v001/asset-view.png"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/BLD-WT-CellFull-Ornamented-01/References/v001/manifest.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v010-source-lock.json"
+      ],
+      "note": "Direct image catalog package resolved; reference hashes are pinned in source lock."
+    },
+    "geometry": {
+      "status": "needs-review",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/cell-full"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/geometry-source/cell-full.json"
+      ],
+      "note": "Exact canonical prototype carrier reused. Shape has no approved GEO-01 manifest/hash and applicable GEO-02 evidence remains open."
+    },
+    "topology_uv": {
+      "status": "needs-review",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v006/BLD-WT-CellFull-Ornamented-01"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-WT-CellFull-Ornamented-01/checks/source-open.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-WT-CellFull-Ornamented-01/checks/glb-import.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-WT-CellFull-Ornamented-01/checks/fbx-import.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-WT-CellFull-Ornamented-01/checks/island-classification.json"
+      ],
+      "note": "Attempt-3 topology was not reimported because the Blender build failed."
+    },
+    "materials": {
+      "status": "needs-review",
+      "attempt_count": 3,
+      "attempt_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v006/BLD-WT-CellFull-Ornamented-01",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v010/BLD-WT-CellFull-Ornamented-01",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-WT-CellFull-Ornamented-01"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-WT-CellFull-Ornamented-01/checks/texture-wrap.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-WT-CellFull-Ornamented-01/checks/island-classification.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-WT-CellFull-Ornamented-01/checks/attachment-integrity.json",
+        "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/review-notes-gpt-6.1-sol.md"
+      ],
+      "note": "Attempt 3/3 failed before source/render/export: NameError math is undefined in slope UV branch; attempt cap exhausted."
+    },
+    "rig": {
+      "status": "skipped",
+      "attempt_count": 0,
+      "attempt_paths": [],
+      "check_paths": [],
+      "note": "Static construction asset; no rig requested."
+    },
+    "secondary_motion": {
+      "status": "skipped",
+      "attempt_count": 0,
+      "attempt_paths": [],
+      "check_paths": [],
+      "note": "Static construction asset; no motion requested."
+    },
+    "delivery": {
+      "status": "blocked",
+      "attempt_count": 0,
+      "attempt_paths": [],
+      "check_paths": [],
+      "note": "No final source/render/export emitted; material attempt budget exhausted."
+    }
+  },
+  "artifacts": {
+    "source_lock": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011-source-lock.json",
+    "source_lock_sha256": "c6810f7dbb1f4c8c3479afb9cb04cae77dda48e058f05b7dc631c8954d1a6019",
+    "output_root": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011",
+    "previous_attempt": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v006/BLD-WT-CellFull-Ornamented-01",
+    "source_rights": "Project catalog appearance references guide authored procedural materials; no source pixels are projected.",
+    "gpu_policy": "CPU Cycles only; no GPU inference/render launched.",
+    "review": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/review-notes-gpt-6.1-sol.md",
+    "attempt_history": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/attempt-history.json"
+  },
+  "defects": [
+    "Model-v006 material prototype had visible repeated stripe/material artifacts; repair cause documented in v006 manifests.",
+    "v010 reviewer rejected final surface fidelity and/or preview coverage; exact findings preserved in Model-v010/review-notes-gpt-6.1-sol.md.",
+    "Final allowed attempt failed before source/render/export because embedded script omitted math import; no fourth attempt allowed.",
+    "Final permitted attempt failed before source/render/export: build_material.py line 17 raised NameError: math is not defined; no fourth attempt."
+  ],
+  "blockers": [
+    "Material-stage attempt cap 3/3 exhausted; new attempt budget required.",
+    "Approved GEO-01 manifest/hash is absent.",
+    "Applicable GEO-02 compatibility/assembly evidence is absent.",
+    "Unreal 5.8 import/material/normal, collision/LOD, assembled contacts and performance remain open."
+  ],
+  "next_action": "Preserve exact blocker and continue another ready asset; do not retry without explicitly increased attempt budget."
+}

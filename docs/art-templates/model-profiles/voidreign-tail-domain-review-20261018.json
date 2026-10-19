@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "scope": "Two unreviewed tail domain ownership proposals; rest/posed exact faces, not semantic approval",
+  "permissions": "Offline author diagnostic views only",
+  "effective_time": "This new read-only review",
+  "units": "metres, source frames",
+  "source_sha256": "a1de9660c66c772cdb4cedec20ac5b1a2229a4417af46550f8167f915680c140",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "object": "geometry_0",
+  "assembly_root": "MOTION HARNESS | rigid horse, not gait animation",
+  "surface_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshSurfaceCheck-v001\\surface-report.json",
+  "surface_report_sha256": "f1d161b1c52cdc0cf6a78acb6794af03a2bee7372a4673e0f70825fc3faaca7d",
+  "selection_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selection-report.json",
+  "selection_report_sha256": "63eb535dcafe1140c5445ce46bd402cc438af979c437fbb9d7430b723aa11a08",
+  "patch_radius_m": 0.06,
+  "context_pad_m": 0.15,
+  "cases": [
+    {
+      "id": "tail-post",
+      "label": "Environment post",
+      "vertex": 246783,
+      "frame": 211,
+      "expected_world_position_m": [
+        2.154344320297241,
+        -1.2429206371307373,
+        0.6820907592773438
+      ],
+      "observed_penetration_m": 0.06719650989942494,
+      "domain_prefix": "Tail_FAILURE_02"
+    },
+    {
+      "id": "tail-ground",
+      "label": "Ground",
+      "vertex": 266801,
+      "frame": 271,
+      "expected_world_position_m": [
+        2.3433847427368164,
+        -1.7449415922164917,
+        -0.057964324951171875
+      ],
+      "observed_penetration_m": 0.05996432527899742,
+      "domain_prefix": "Tail_FAILURE_03"
+    }
+  ],
+  "retention_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshRetention-v001\\validation.json",
+  "retention_report_sha256": "3d6b13882666229f3a35f0998214d4a2e9d09e2763d50e27cbf3f713707bbcfd",
+  "domain_archive": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailClumpDomains-v001\\domains.npz",
+  "domain_archive_sha256": "27acac5d56d05f025ba5798113230877e74902098ec2bbbd6071d820a87e0d31"
+}

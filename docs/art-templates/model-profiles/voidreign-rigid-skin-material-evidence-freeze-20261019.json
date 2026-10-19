@@ -1,0 +1,349 @@
+{
+  "schema_version": 1,
+  "workspace": "C:\\Projects\\Shattered-Frontier",
+  "asset_id": "Voidreign",
+  "status": "needs-review",
+  "scope": "Two read-only core-preserving collar preflights; six material channel previews and decoded channel statistics. Neither model nor material promoted. External large source/selection inputs required.",
+  "limits": {
+    "maximum_entries": 150,
+    "maximum_copy_mib": 64
+  },
+  "commands": [
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinPreflight-v001\\tool-source.py",
+      "--",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinPreflight-v001\\profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinPreflight-v002\\tool-source.py",
+      "--",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinPreflight-v002\\profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MaterialChannelAudit-v003\\tool-source.py",
+      "--",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MaterialChannelAudit-v003\\profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MaterialBaseColorReview-v001\\tool-source.py",
+      "--",
+      "--source",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>",
+      "--guides",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MaterialBaseColorReview-v001\\guides.json",
+      "--frame",
+      "1",
+      "--samples",
+      "8",
+      "--channel",
+      "base-color",
+      "--material",
+      "Material_0"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MaterialRoughnessReview-v001\\tool-source.py",
+      "--",
+      "--source",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>",
+      "--guides",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MaterialRoughnessReview-v001\\guides.json",
+      "--frame",
+      "1",
+      "--samples",
+      "8",
+      "--channel",
+      "roughness",
+      "--material",
+      "Material_0"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MaterialMetallicReview-v001\\tool-source.py",
+      "--",
+      "--source",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>",
+      "--guides",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MaterialMetallicReview-v001\\guides.json",
+      "--frame",
+      "1",
+      "--samples",
+      "8",
+      "--channel",
+      "metallic",
+      "--material",
+      "Material_0"
+    ]
+  ],
+  "files": [
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPreflight-v001/preflight.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPreflight-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPreflight-v001/proposal-arrays.npz",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPreflight-v001/README.md",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPreflight-v001/regional-classification.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPreflight-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPreflight-v002/preflight.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPreflight-v002/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPreflight-v002/proposal-arrays.npz",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPreflight-v002/README.md",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPreflight-v002/regional-classification.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPreflight-v002/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPreflightDecision-v001/decision.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialBaseColorReview-v001/guides.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialBaseColorReview-v001/render-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialBaseColorReview-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialBaseColorReview-v001/previews/Detail-Head-Neutral.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialBaseColorReview-v001/previews/Detail-Saddle-Neutral.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialRoughnessReview-v001/guides.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialRoughnessReview-v001/render-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialRoughnessReview-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialRoughnessReview-v001/previews/Detail-Head-Neutral.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialRoughnessReview-v001/previews/Detail-Saddle-Neutral.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialMetallicReview-v001/guides.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialMetallicReview-v001/render-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialMetallicReview-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialMetallicReview-v001/previews/Detail-Head-Neutral.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialMetallicReview-v001/previews/Detail-Saddle-Neutral.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelAudit-v003/material-audit.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelAudit-v003/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelAudit-v003/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelReview-v001/README.md",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelReview-v001/review.json",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Preflight-MountRigidSkin.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Render-VoidreignTextureCloseups.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Audit-AssetMaterialChannels.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Freeze-AssetEvidence.py",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/dependency-map.md",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/mount-primary-motion.md",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-production-gates.md",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-job.schema.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-jobs/voidreign-quality-20261018.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-catalog.md",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryLocomotionPlan-v001/queue.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MountProfile.md",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofSelectionContract-v001/contract.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofSelectionReproductionKit-v001/manifest.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v001/Mount-WalkPilot.blend",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v002/hoof-selections.npz",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz",
+      "mode": "reference"
+    }
+  ]
+}

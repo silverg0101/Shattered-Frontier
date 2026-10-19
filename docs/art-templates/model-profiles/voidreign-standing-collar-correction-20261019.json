@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "permissions": "Reviewed correction of binary hoof-margin cutoff; existing limits and sole anchors retained",
+  "effective_time": "This immutable candidate only",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryRigPilot-v001\\Mount-PrimaryRigPilot.blend",
+  "rig_profile": "docs\\art-templates\\model-profiles\\voidreign-primary-rig-pilot-20261019.json",
+  "sole_patches": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001\\sole-patches.npz",
+  "sole_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001\\sole-report.json",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "semantic_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "domains": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryDomains-v001\\primary-domains.npz",
+  "object": "geometry_0",
+  "rig_object": "PRIMARY | anatomical rig pilot",
+  "body_root_bone": "PRI.body.pelvis",
+  "body_translation_m": [
+    0,
+    0,
+    -0.11
+  ],
+  "ground_height_m": 0.0,
+  "ik_iterations": 128,
+  "pole_distance_m": 0.7,
+  "pole_calibration_angles_radians": [
+    0,
+    1.5707963267948966,
+    3.141592653589793,
+    -1.5707963267948966
+  ],
+  "frame_end": 60,
+  "standing_frame": 30,
+  "fps": 30,
+  "render_samples": 8,
+  "limits": {
+    "neutral_rest_error_m": 1e-05,
+    "sole_contact_height_m": 0.005,
+    "foot_target_error_m": 0.005,
+    "bone_length_relative_change": 1e-05,
+    "seam_error_m": 1e-05
+  },
+  "feet": [
+    {
+      "id": "fore.L",
+      "owner_id": 1,
+      "chain": [
+        "PRI.fore.L.shoulder",
+        "PRI.fore.L.elbow",
+        "PRI.fore.L.carpus",
+        "PRI.fore.L.fetlock"
+      ],
+      "hoof_margin_m": 0.015,
+      "rigid_hoof_maximum_z_m": 0.2,
+      "blend_band_m": 0.04
+    },
+    {
+      "id": "fore.R",
+      "owner_id": 2,
+      "chain": [
+        "PRI.fore.R.shoulder",
+        "PRI.fore.R.elbow",
+        "PRI.fore.R.carpus",
+        "PRI.fore.R.fetlock"
+      ],
+      "hoof_margin_m": 0.015,
+      "rigid_hoof_maximum_z_m": 0.2,
+      "blend_band_m": 0.04
+    },
+    {
+      "id": "hind.L",
+      "owner_id": 3,
+      "chain": [
+        "PRI.hind.L.hip",
+        "PRI.hind.L.stifle",
+        "PRI.hind.L.hock",
+        "PRI.hind.L.fetlock"
+      ],
+      "hoof_margin_m": 0.015,
+      "rigid_hoof_maximum_z_m": 0.14,
+      "blend_band_m": 0.04
+    },
+    {
+      "id": "hind.R",
+      "owner_id": 4,
+      "chain": [
+        "PRI.hind.R.hip",
+        "PRI.hind.R.stifle",
+        "PRI.hind.R.hock",
+        "PRI.hind.R.fetlock"
+      ],
+      "hoof_margin_m": 0.015,
+      "rigid_hoof_maximum_z_m": 0.14,
+      "blend_band_m": 0.04
+    }
+  ],
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryRigPilot-v001\\Mount-PrimaryRigPilot.blend": "00fba7e1c7990ee4cc24188de08f25c80f058a1f5d390c3d1b191634ebfa34d6",
+    "docs\\art-templates\\model-profiles\\voidreign-primary-rig-pilot-20261019.json": "51dbcf18a13a14dde3c8a0d10f1500ac60de2c5138cb0824ee0e214d95447e38",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001\\sole-patches.npz": "5b055301ae1b1349d3f85fb23e2b93985fd93f2a33e0fc1a1e4a05dbaf98614b",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001\\sole-report.json": "c40c5da18a99fd1fe9764d0e7d5f64c5ae7dd4336f26716f1b2b76550f853b76",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryDomains-v001\\primary-domains.npz": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5"
+  },
+  "hoof_xy_blend": "continuous-margin"
+}

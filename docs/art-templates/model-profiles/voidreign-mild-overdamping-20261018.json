@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "scope": "Voidreign final preregistered mild nominal continuous-model overdamping comparison; full design slot3of3",
+  "permissions": "Offline author; preserve exhausted historical stages and review design before delivery",
+  "effective_time": "This new diagnostic design only",
+  "units": "metres, seconds, velocities m/s; zero restitution and friction",
+  "frozen_solver_sha256": "bbb17e6310298993f45e6fbf6b6abadb8824f35969eeb4dd2dfbbe8d3ec6baab",
+  "surface_profile": "docs/art-templates/model-profiles/voidreign-hair-surface-check-20261018.json",
+  "surface_profile_sha256": "f42b54b785653cd13262405b39e26a48e1fc606edeafb392b1372121e29e1abb",
+  "active_contact_margin_m": 1E-07,
+  "velocity_settings": {
+    "iterations": 32,
+    "tolerance_m_s": 1E-08
+  },
+  "velocity_algorithm": "minimum-norm-active-set",
+  "velocity_reconstruction": "net-solved",
+  "velocity_settings_note": "iterations applies only to sequential reference; minimum-norm algorithm enumerates independent active sets of at most3 normals",
+  "damping_model": "style-frequency-damping",
+  "style_damping_ratio": 1.25,
+  "damping_control_contract": "ratio defaults1, bounds0.25..2 dimensionless; effective=max(authored_drag,2*ratio*sqrt(style_spring)), bound0..50/s; authored drag bound remains unchanged; new algorithm only; nominal continuous oscillator relation not stability guarantee"
+}

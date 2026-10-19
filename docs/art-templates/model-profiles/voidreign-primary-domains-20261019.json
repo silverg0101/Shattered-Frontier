@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "permissions": "CPU topology ownership proposal only",
+  "effective_time": "This source-bound proposal",
+  "body_seed_minimum_z_m": 1.25,
+  "leg_seed_maximum_z_m": 1.15,
+  "minimum_seed_vertices": 50,
+  "body_owner_id": 5,
+  "semantic_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "landmark_profile": "docs\\art-templates\\model-profiles\\voidreign-primary-anatomy-landmarks-20261019.json",
+  "legs": [
+    {
+      "id": "fore.L",
+      "owner_id": 1,
+      "seed_segments": [
+        {
+          "landmarks": [
+            "fore.L.elbow",
+            "fore.L.carpus"
+          ],
+          "radius_m": 0.09
+        },
+        {
+          "landmarks": [
+            "fore.L.carpus",
+            "fore.L.fetlock"
+          ],
+          "radius_m": 0.075
+        },
+        {
+          "landmarks": [
+            "fore.L.fetlock",
+            "fore.L.hoof"
+          ],
+          "radius_m": 0.13
+        }
+      ]
+    },
+    {
+      "id": "fore.R",
+      "owner_id": 2,
+      "seed_segments": [
+        {
+          "landmarks": [
+            "fore.R.elbow",
+            "fore.R.carpus"
+          ],
+          "radius_m": 0.09
+        },
+        {
+          "landmarks": [
+            "fore.R.carpus",
+            "fore.R.fetlock"
+          ],
+          "radius_m": 0.075
+        },
+        {
+          "landmarks": [
+            "fore.R.fetlock",
+            "fore.R.hoof"
+          ],
+          "radius_m": 0.13
+        }
+      ]
+    },
+    {
+      "id": "hind.L",
+      "owner_id": 3,
+      "seed_segments": [
+        {
+          "landmarks": [
+            "hind.L.stifle",
+            "hind.L.hock"
+          ],
+          "radius_m": 0.09
+        },
+        {
+          "landmarks": [
+            "hind.L.hock",
+            "hind.L.fetlock"
+          ],
+          "radius_m": 0.075
+        },
+        {
+          "landmarks": [
+            "hind.L.fetlock",
+            "hind.L.hoof"
+          ],
+          "radius_m": 0.13
+        }
+      ]
+    },
+    {
+      "id": "hind.R",
+      "owner_id": 4,
+      "seed_segments": [
+        {
+          "landmarks": [
+            "hind.R.stifle",
+            "hind.R.hock"
+          ],
+          "radius_m": 0.09
+        },
+        {
+          "landmarks": [
+            "hind.R.hock",
+            "hind.R.fetlock"
+          ],
+          "radius_m": 0.075
+        },
+        {
+          "landmarks": [
+            "hind.R.fetlock",
+            "hind.R.hoof"
+          ],
+          "radius_m": 0.13
+        }
+      ]
+    }
+  ],
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "docs\\art-templates\\model-profiles\\voidreign-primary-anatomy-landmarks-20261019.json": "4fae3f558d0e6b8f24ea197b92b1c3046b8964e8ed3b142d2e9ec85b540d768e"
+  }
+}

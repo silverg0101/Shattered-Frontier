@@ -1,0 +1,403 @@
+{
+  "schema_version": 1,
+  "workspace": "C:\\Projects\\Shattered-Frontier",
+  "asset_id": "Voidreign",
+  "status": "needs-review",
+  "scope": "Stable65patch mixed-material inventory and9priority isolations;166feature support proposals; six reviewed hind-leg fringe views; exact195vertex label-only ownership correction; consumer guards and actual-input dispositions. Derived motion not rebuilt, no material3 or new rig/gait. External large rest/source required.",
+  "limits": {
+    "maximum_entries": 180,
+    "maximum_copy_mib": 96
+  },
+  "commands": [
+    [
+      "py",
+      "-3",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\tool-source.py",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "py",
+      "-3",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FeatureSupportAdjacency-v001\\tool-source.py",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FeatureSupportAdjacency-v001\\profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "py",
+      "-3",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FeatureSupportAdjacency-v002\\tool-source.py",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FeatureSupportAdjacency-v002\\profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "py",
+      "-3",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\tool-source.py",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryReview-v001\\tool-source.py",
+      "--",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryReview-v001\\profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeOwnershipReview-v001\\tool-source.py",
+      "--",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeOwnershipReview-v001\\profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ]
+  ],
+  "files": [
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryInventory-v001/boundary-selections.npz",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryInventory-v001/inventory.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryInventory-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryInventory-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/anatomy-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/isolated-source-faces.npz",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/Mane-negX.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/Mane-posX.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/Mount-AnatomyProposal.blend",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/region-selections.npz",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/review.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/SMB-0d7599c806-13398d8f6fa9-isolation.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/SMB-0d7599c806-16aa3f8d2318-isolation.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/SMB-0d7599c806-6c0faadfb656-isolation.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/SMB-0d7599c806-9461782d30e7-isolation.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/SMB-0d7599c806-a23f50cee6c9-isolation.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/SMB-0d7599c806-c5f686eb393a-isolation.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/SMB-0d7599c806-c95bf113bd82-isolation.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/SMB-0d7599c806-d0197039a013-isolation.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/SMB-0d7599c806-fa0932e06fbb-isolation.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/Tail-negX.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/Tail-posX.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FeatureSupportAdjacency-v001/inventory.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FeatureSupportAdjacency-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FeatureSupportAdjacency-v001/support-selections.npz",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FeatureSupportAdjacency-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FeatureSupportAdjacency-v002/inventory.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FeatureSupportAdjacency-v002/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FeatureSupportAdjacency-v002/support-selections.npz",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FeatureSupportAdjacency-v002/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeOwnershipReviewInputs-v001/selections.npz",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeOwnershipReview-v001/anatomy-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeOwnershipReview-v001/FSA-0d7599c806-419f3a26806c-context.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeOwnershipReview-v001/FSA-0d7599c806-419f3a26806c-feature-support.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeOwnershipReview-v001/FSA-0d7599c806-79c8cc654101-context.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeOwnershipReview-v001/FSA-0d7599c806-79c8cc654101-feature-support.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeOwnershipReview-v001/FSA-0d7599c806-f4e0f8a59f51-context.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeOwnershipReview-v001/FSA-0d7599c806-f4e0f8a59f51-feature-support.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeOwnershipReview-v001/isolated-source-faces.npz",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeOwnershipReview-v001/Mount-AnatomyProposal.blend",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeOwnershipReview-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeOwnershipReview-v001/region-selections.npz",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeOwnershipReview-v001/review.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeOwnershipReview-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeLabelCorrection-v001/label-only-selections.npz",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeLabelCorrection-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeLabelCorrection-v001/README.md",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeLabelCorrection-v001/revision.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeLabelCorrection-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeLabelConsumerCheck-v001/FeatureSelectionContract.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeLabelConsumerCheck-v001/validation.json",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Inventory-SemanticMaterialBoundaries.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Inventory-FeatureSupportAdjacency.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Revise-SemanticFeatureLabels.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/FeatureSelectionContract.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Build-FeatureGuides.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Build-FeatureMotionRig.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Render-MountAnatomyAtlas.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Freeze-AssetEvidence.py",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/dependency-map.md",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/mount-secondary-motion.md",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-jobs/voidreign-quality-20261018.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-job.schema.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-catalog.md",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-hair-material-boundaries-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-hair-material-boundary-review-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-feature-support-adjacency-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-leg-fringe-ownership-review-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-leg-fringe-label-correction-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-corrected-feature-support-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PoseHairMaterialReproductionKit-v001/manifest.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MountProfile.md",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryLocomotionPlan-v001/queue.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v003/validation.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryDomains-v001/primary-domains.npz",
+      "mode": "reference"
+    }
+  ]
+}

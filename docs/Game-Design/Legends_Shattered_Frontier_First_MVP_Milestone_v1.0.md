@@ -246,7 +246,7 @@ All numbers below are initial targets, not measurements. Ratify reference client
 | Measure | Proposed target | Measurement condition / interpretation |
 | --- | --- | --- |
 | Server simulation | 30 Hz; p95 simulation frame ≤ 33.3 ms | Warm server, defined mixed workload; report p99/hitches too |
-| Client frame | p95 ≤ 16.7 ms at 1080p target settings | Reference machine; report render/game thread and shader warmup separately |
+| Client frame | p95 ≤ 16.67 ms at Windows PC 2560×1440 output/60 fps | User-selected target (2026-10-18); record internal resolution, adapter/tier, render/game/RHI/GPU timing and warmup separately; apply the [PC graphics policy](../art-templates/pc-graphics-scalability.md) |
 | Interaction feedback | Pending feedback ≤ 100 ms locally | Does not imply durable commit |
 | Durable action response | p95 ≤ 250 ms at 50 ms round-trip latency | End-to-end from request to confirmed outcome; report actual RTT |
 | Durable action failure | < 1% unexpected failures | Exclude deliberate denials; include timeout/unavailability; denominator required |

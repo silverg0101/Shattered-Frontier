@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "scope": "Voidreign exact failed-surface vertex inspection; no semantic or repair approval",
+  "permissions": "Offline author diagnostic views only",
+  "effective_time": "This new read-only review",
+  "units": "metres, source frames",
+  "source_sha256": "6c6044a533c16fc7fad23d42c0407dde37a0252aca84f9be1bc9b9a2367364f6",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "object": "geometry_0",
+  "assembly_root": "MOTION HARNESS | rigid horse, not gait animation",
+  "surface_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSurfaceCheck-v001/surface-report.json",
+  "surface_report_sha256": "ba75cb37c5fd63db1e7e7e016038e42eeb783977ade74dda562f10efab8811f8",
+  "selection_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selection-report.json",
+  "selection_report_sha256": "63eb535dcafe1140c5445ce46bd402cc438af979c437fbb9d7430b723aa11a08",
+  "patch_radius_m": 0.06,
+  "context_pad_m": 0.1,
+  "cases": [
+    {
+      "id": "horse-neck",
+      "label": "Horse neck",
+      "vertex": 71566,
+      "frame": 315,
+      "expected_world_position_m": [
+        -0.18038451671600342,
+        -2.447067975997925,
+        2.05845308303833
+      ],
+      "observed_penetration_m": 0.05118062861551104
+    },
+    {
+      "id": "rider-arm-far",
+      "label": "Rider arm far",
+      "vertex": 10317,
+      "frame": 2,
+      "expected_world_position_m": [
+        -0.3095017671585083,
+        -0.4567236006259918,
+        2.0684454441070557
+      ],
+      "observed_penetration_m": 0.06347528167520605
+    },
+    {
+      "id": "environment-post",
+      "label": "Environment post",
+      "vertex": 246783,
+      "frame": 271,
+      "expected_world_position_m": [
+        2.196183681488037,
+        -1.3107327222824097,
+        0.6257984638214111
+      ],
+      "observed_penetration_m": 0.00824691590807547
+    },
+    {
+      "id": "ground",
+      "label": "Ground",
+      "vertex": 266803,
+      "frame": 241,
+      "expected_world_position_m": [
+        2.328662633895874,
+        -1.752734661102295,
+        -0.06667494773864746
+      ],
+      "observed_penetration_m": 0.06867494434118271
+    }
+  ]
+}

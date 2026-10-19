@@ -1,0 +1,689 @@
+{
+  "schema_version": 1,
+  "workspace": "C:\\Projects\\Shattered-Frontier",
+  "asset_id": "Voidreign",
+  "status": "needs-review-primary-skin-and-full-mount-ground",
+  "scope": "CPU sole proposals, fixed-length standing controls, all60frame source checks/exchange/strain, bounded skin-band failure and detached subset inventory. Not gait, semantic or runtime acceptance. Large inputs external; parent primary-rig kit supplies baseline dependency index.",
+  "limits": {
+    "maximum_entries": 500,
+    "maximum_copy_mib": 128
+  },
+  "commands": [
+    [
+      "py",
+      "-3",
+      "tools/Propose-MountSoles.py",
+      "--profile",
+      "docs\\art-templates\\model-profiles\\voidreign-primary-sole-proposals-20261019.json",
+      "--output",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "tools/Render-MountAnatomyAtlas.py",
+      "--",
+      "--profile",
+      "docs\\art-templates\\model-profiles\\voidreign-primary-sole-review-20261019.json",
+      "--output",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleReview-v001"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "tools/Build-MountStandingPilot.py",
+      "--",
+      "--profile",
+      "docs\\art-templates\\model-profiles\\voidreign-primary-standing-pilot-20261019.json",
+      "--output",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryStandingPilot-v001"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "tools/Export-CheckedMotionAlembic.py",
+      "--",
+      "--profile",
+      "docs\\art-templates\\model-profiles\\voidreign-standing-exchange-20261019.json",
+      "--output",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryStandingExchange-v001"
+    ],
+    [
+      "py",
+      "-3",
+      "tools/Check-MountStandingCache.py",
+      "--profile",
+      "docs\\art-templates\\model-profiles\\voidreign-standing-cache-check-v002-20261019.json",
+      "--output",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryStandingCacheCheck-v001"
+    ],
+    [
+      "py",
+      "-3",
+      "tools/Analyze-AssetSurfaceStrain.py",
+      "--profile",
+      "docs\\art-templates\\model-profiles\\voidreign-standing-strain-v002-20261019.json",
+      "--output",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryStandingStrain-v001"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "tools/Repair-MountRootWeights.py",
+      "--",
+      "--profile",
+      "docs\\art-templates\\model-profiles\\voidreign-root-weight-repair-20261019.json",
+      "--output",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryStandingSkinRepair-v001"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "tools/Export-CheckedMotionAlembic.py",
+      "--",
+      "--profile",
+      "docs\\art-templates\\model-profiles\\voidreign-standing-skin-exchange-20261019.json",
+      "--output",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryStandingSkinExchange-v001"
+    ],
+    [
+      "py",
+      "-3",
+      "tools/Check-MountStandingCache.py",
+      "--profile",
+      "docs\\art-templates\\model-profiles\\voidreign-standing-skin-cache-check-20261019.json",
+      "--output",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryStandingSkinCacheCheck-v001"
+    ],
+    [
+      "py",
+      "-3",
+      "tools/Analyze-AssetSurfaceStrain.py",
+      "--profile",
+      "docs\\art-templates\\model-profiles\\voidreign-standing-skin-strain-20261019.json",
+      "--output",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryStandingSkinStrain-v001"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "tools/Render-MountGroundReview.py",
+      "--",
+      "--profile",
+      "docs\\art-templates\\model-profiles\\voidreign-standing-skin-ground-review-20261019.json",
+      "--output",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryStandingSkinGroundReview-v001"
+    ],
+    [
+      "py",
+      "-3",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\rebuild-inventory.py",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\rebuild-profile.json",
+      "--output",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventoryReplay-v001"
+    ]
+  ],
+  "files": [
+    {
+      "path": "docs/art-templates/model-catalog.md",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-job.schema.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-jobs/voidreign-quality-20261018.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-loose-item-inventory-review-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-primary-rig-pilot-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-primary-sole-proposals-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-primary-sole-review-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-primary-standing-pilot-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-root-weight-repair-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-standing-cache-check-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-standing-cache-check-v002-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-standing-exchange-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-standing-ground-review-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-standing-skin-cache-check-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-standing-skin-exchange-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-standing-skin-ground-review-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-standing-skin-strain-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-standing-strain-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-standing-strain-v002-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/mount-primary-motion.md",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/mount-secondary-motion.md",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/dependency-map.md",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemInventory-v001/inventory.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemInventory-v001/item-selections.npz",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemInventory-v001/README.md",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemInventory-v001/rebuild-inventory.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemInventory-v001/rebuild-profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemInventory-v001/rebuild-verification.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemInventoryReplay-v001/inventory.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemInventoryReplay-v001/item-selections.npz",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemReview-v001/anatomy-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemReview-v001/C0018-context.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemReview-v001/C0026-context.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemReview-v001/C0054-context.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemReview-v001/C0059-context.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemReview-v001/C0074-context.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemReview-v001/C0086-context.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemReview-v001/Mount-AnatomyProposal.blend",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemReview-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemReview-v001/region-selections.npz",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemReview-v001/side-minus-x.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemReview-v001/side-plus-x.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemReview-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MountProfile.md",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryDomains-v001/primary-domains.npz",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryLocomotionPlan-v001/queue.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryLocomotionPlan-v001/README.md",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryOnlyCombinedFull-v001/Voidreign-ActualSurfacePilot.blend",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryOnlyCombinedFullRetention-v001/validation.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryRigPilot-v001/Mount-PrimaryRigPilot.blend",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryRigReproductionKit-v001/manifest.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySkinBoundaryReview-v001/README.md",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySkinBoundaryReview-v001/review.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySoleProposals-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySoleProposals-v001/sole-patches.npz",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySoleProposals-v001/sole-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySoleProposals-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySoleReview-v001/anatomy-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySoleReview-v001/fore-sole-close.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySoleReview-v001/hind-sole-close.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySoleReview-v001/Mount-AnatomyProposal.blend",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySoleReview-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySoleReview-v001/region-selections.npz",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySoleReview-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySoleReview-v001/underside.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingCacheCheck-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingCacheCheck-v001/standing-cache-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingCacheCheck-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingExchange-v001/exchange-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingExchange-v001/expected-world-points.npy",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingExchange-v001/FeatureMotion-Reimport.blend",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingExchange-v001/FeatureMotion.abc",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingExchange-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingExchange-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingGroundReview-v001/frame-1.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingGroundReview-v001/frame-30.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingGroundReview-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingGroundReview-v001/render-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingGroundReview-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingPilot-v001/Mount-StandingPilot.blend",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingPilot-v001/pose-1.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingPilot-v001/pose-30.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingPilot-v001/pose-60.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingPilot-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingPilot-v001/README.md",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingPilot-v001/standing-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingPilot-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingPilot-v001/validation-notes.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinCacheCheck-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinCacheCheck-v001/standing-cache-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinCacheCheck-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinExchange-v001/exchange-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinExchange-v001/expected-world-points.npy",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinExchange-v001/FeatureMotion-Reimport.blend",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinExchange-v001/FeatureMotion.abc",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinExchange-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinExchange-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinGroundReview-v001/frame-1.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinGroundReview-v001/frame-30.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinGroundReview-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinGroundReview-v001/render-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinGroundReview-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinRepair-v001/Mount-StandingSkinRepair.blend",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinRepair-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinRepair-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinRepair-v001/weight-repair-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinRepair-v001/weight-repair.npz",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinRetention-v001/changed-weight-vertices.npz",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinRetention-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinRetention-v001/validation.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinStrain-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinStrain-v001/strain-curves.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinStrain-v001/strain-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinStrain-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingStrain-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingStrain-v001/strain-curves.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingStrain-v001/strain-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingStrain-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/README.md",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Analyze-AssetSurfaceStrain.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Build-MountStandingPilot.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Check-AssetRigRetention.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Check-MountStandingCache.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Export-CheckedMotionAlembic.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Freeze-AssetEvidence.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Propose-MountSoles.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Render-MountAnatomyAtlas.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Render-MountGroundReview.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Repair-MountRootWeights.py",
+      "mode": "copy"
+    }
+  ]
+}

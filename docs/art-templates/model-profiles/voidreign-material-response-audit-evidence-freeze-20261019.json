@@ -1,0 +1,182 @@
+{
+  "schema_version": 1,
+  "workspace": "C:\\Projects\\Shattered-Frontier",
+  "asset_id": "Voidreign",
+  "status": "955face-response-selection-and-CPU-upstream-channel-diagnosis-only",
+  "scope": "No source/material attempt or GPU. Requires parent material review kit/external source/cache. Source snippets and complete two inspected sourcefiles saved.",
+  "limits": {
+    "maximum_entries": 150,
+    "maximum_copy_mib": 16
+  },
+  "commands": [
+    "py -3 tools/Build-MaterialFaceApproval.py --profile docs/art-templates/model-profiles/voidreign-reviewed-dielectric-face-approval-v002-20261019.json --output <new folder>",
+    "Use saved audit commands.json with existing WSL Pixal Python; map_location=cpu and hidden devices, no renderer/inference imports. Use frozen two-file source-snapshot root for source reading if needed.",
+    "Verify parent MaterialBoundaryReproductionKit-v001 before using its390image evidence."
+  ],
+  "files": [
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v001/approval.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v001/approved-response-faces.npz",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v002/approval.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v002/approved-response-faces.npz",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v002/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v002/revision-check.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v002/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PixalVolumeChannelAudit-v001/audit.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PixalVolumeChannelAudit-v001/commands.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PixalVolumeChannelAudit-v001/decision.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PixalVolumeChannelAudit-v001/source-snapshot/manifest.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PixalVolumeChannelAudit-v001/source-snapshot/pixal3d/pipelines/pixal3d_image_to_3d.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PixalVolumeChannelAudit-v001/source-snapshot/pixal3d/representations/mesh/base.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PixalVolumeChannelAudit-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Build-MaterialFaceApproval.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/trellis2/audit_pixal_volume.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/trellis2/rebake_pixal.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Freeze-AssetEvidence.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/trellis2/CHALLENGERS.md",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-production-gates.md",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/dependency-map.md",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-jobs/voidreign-quality-20261018.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-catalog.md",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-reviewed-dielectric-face-approval-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-reviewed-dielectric-face-approval-v002-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/quality-completion-20261018/WORK.md",
+      "mode": "copy"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/pixal-volume-channel-audit-v001.log",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MountProfile.md",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryLocomotionPlan-v001/queue.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/PixalDetail-20261018/manifest.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/PixalDetail-20261018/bake-run.json",
+      "mode": "copy"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/pixal-detail-20261018/generated/material-volume.pt",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialBoundaryReproductionKit-v001/manifest.json",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v003/validation.json",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v003/review.json",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryInventory-v001/inventory.json",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryInventory-v001/boundary-selections.npz",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz",
+      "mode": "reference"
+    }
+  ]
+}

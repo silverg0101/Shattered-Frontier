@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "scope": "Read-only hair-clump attachment proposals; proximity never grants semantic approval",
+  "maximum_proposed_gap_m": 0.025,
+  "safe_bounds_m": [0.001, 0.05],
+  "permissions": "Offline asset author; review each proposed relation before final rig acceptance",
+  "effective_time": "Next proposal build; no source geometry edits or runtime effect"
+}

@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "job_id": "greenlands-waystone-reuse-20261018",
+  "asset_id": "PROP-GreenlandsWaystone-01",
+  "status": "needs-review",
+  "owner": "Codex / Greenlands model batch 2026-10-18",
+  "lease_expires_utc": "2026-10-19T00:00:00Z",
+  "reference": {
+    "source_type": "catalog-package",
+    "manifest_path": "GameClient/ArtSource/GreenlandsWaystone/References/v001/manifest.json",
+    "image_path": "GameClient/ArtSource/GreenlandsWaystone/References/v001/asset-view.png",
+    "sha256": "f4254648f7b38460ad3d3935d9082855e2b8a1636ac8d39feb0ed2015a92afda",
+    "image_batch_path": "docs/art-templates/asset-lists/detailed-greenlands-signature-06.md"
+  },
+  "profile": {
+    "category": "static-prop",
+    "features": [
+      "single-object",
+      "texture-uv"
+    ],
+    "path": "docs/art-templates/model-profiles/greenlands-static-prop-pixal-20261018.json",
+    "sha256": "cefa5f466d2b5d509c6d90014771450fdef9ac1a5f50b543b00da02a6e3a617d",
+    "approval": "prototype-authored",
+    "source_lock_path": "GameClient/ArtSource/GreenlandsModelBatch-20261018/backend-lock.json"
+  },
+  "quality_target": "prototype",
+  "repair_policy": {
+    "max_attempts_per_stage": 3,
+    "on_exhaustion": "needs-review"
+  },
+  "current_stage": "geometry",
+  "stages": {
+    "reference": {
+      "status": "passed",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "GameClient/ArtSource/GreenlandsWaystone/GreenlandsWaystone.blend"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/GreenlandsWaystone/References/v001/manifest.json"
+      ],
+      "note": "Catalog-selected clean asset view and direct package manifest verified; source permissions/license are recorded as unspecified where package metadata omits them."
+    },
+    "geometry": {
+      "status": "needs-review",
+      "attempt_count": 3,
+      "attempt_paths": [
+        "GameClient/ArtSource/GreenlandsWaystone/Model-v001",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/GeometryRepair-v002",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/GeometryRepair-v003"
+      ],
+      "check_paths": [
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/GeometryRepair-v003/attempt-manifest.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/GeometryRepair-v003/validation-report.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/GeometryRepair-v003/repair-report.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/GeometryRepair-v003/uv-degenerate-face-audit-v001.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/GeometryRepair-v003/component-inspection/component-report.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/GeometryRepair-v003/backing-body-distance-check-v001.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/GeometryRepair-v003/surface-correspondence-v001.json"
+      ],
+      "note": "Star C0010 repair v003 is closed and validated; its 16-face star was preserved and backed with 1 mm overlap. GLB/FBX bounds and triangle counts reimport, with no loose vertices; a fresh CPU comparison also matches positions, UVs, material assignments, and normals at 0.1 mm precision. The geometry stage is capped at 3/3. Source blend made with Blender 5.2.2 still cannot be reopened by installed 5.1.1. Four crown triangles have coincident vertices causing geometric and zero-UV-area degeneracy. CPU BVH vertex-to-surface sampling finds the emblem backing 3.6 mm minimum and 22.9 mm median from the body; mount/contact or designed clearance remains unresolved. Do not mutate geometry further under this job's attempt budget."
+    },
+    "topology_uv": {
+      "status": "needs-review",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "GameClient/ArtSource/GreenlandsWaystone/Model-v001"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/GreenlandsWaystone/Model-v001/source-asset-manifest.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/inspection-blocker/inspection-result.txt",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/inspection-blocker/blender.crash.txt",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/reimport-inspection-v002/component-inspection/component-report.json",
+        "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/reimport-inspection-v002/waystone-reimport.blend"
+      ],
+      "note": "All 11 components are semantically classified; v003 IDs and mesh-hash scopes are recorded in the attachment review. Fresh Blender comparison matches all 1,188 triangle positions, UVs, material assignments and normals for GLB and FBX at 0.1 mm coordinate-key precision. A CPU UV audit found four zero-UV-area crown triangles caused by coincident vertices (356, 364, 395, 403); geometry repair is attempt-capped. The backing is 3.6 mm minimum and 22.9 mm median from the body. Original-source reopen, mount intent, and UE 5.8 gates remain open."
+    },
+    "materials": {
+      "status": "needs-review",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "GameClient/ArtSource/GreenlandsWaystone/Model-v001"
+      ],
+      "check_paths": [
+        "docs/art-templates/model-profiles/unreal58-surface-quality-20261018.json"
+      ],
+      "note": "No UE 5.8 depth/material comparison evidence exists. Normal and height techniques, AO applicability, material/package import and scalability require asset-specific evaluation."
+    },
+    "rig": {
+      "status": "skipped",
+      "attempt_count": 0,
+      "attempt_paths": [],
+      "check_paths": [],
+      "note": "Static prop; no skeleton requested or required."
+    },
+    "secondary_motion": {
+      "status": "skipped",
+      "attempt_count": 0,
+      "attempt_paths": [],
+      "check_paths": [],
+      "note": "No moving feature or animation requested."
+    },
+    "delivery": {
+      "status": "needs-review",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "GameClient/ArtSource/GreenlandsWaystone/Model-v001"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/GreenlandsWaystone/Model-v001/artifact-manifest.json"
+      ],
+      "note": "Reused model, original preview, package hashes, and provenance are saved; source compatibility and engine acceptance remain open."
+    }
+  },
+  "artifacts": {
+    "attempt_root": "GameClient/ArtSource/GreenlandsWaystone/GreenlandsWaystone.blend",
+    "source_rights": "Package provenance records built-in image generation; explicit license/permission metadata is absent, so rights are not asserted.",
+    "requested_deliverables": "Editable Blender source, GLB and FBX when supported, textures, three-quarter/front/side/rear previews, hashes, defects, machine checks, and manifest.",
+    "gpu_policy": "One local Radeon GPU inference/render process at a time; Pixal3D batch owns generation; Voidreign work remains CPU-only.",
+    "input_preparation_script": "tools/trellis2/prepare_model_input.py",
+    "inference_runner": "tools/trellis2/run_pixal.py",
+    "unreal58_surface_profile": "docs/art-templates/model-profiles/unreal58-surface-quality-20261018.json",
+    "unreal58_surface_profile_sha256": "7f8dae610732a455465e362db8b730f9a5ddfbc3dd1bdb9b837a80072d4dd8e1",
+    "delivered_package": "GameClient/ArtSource/GreenlandsWaystone/Model-v001",
+    "artifact_manifest": "GameClient/ArtSource/GreenlandsWaystone/Model-v001/artifact-manifest.json",
+    "open_check_blocker": "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/inspection-blocker/inspection-result.txt",
+    "production_readiness_gate_summary": "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/production-readiness-v001/gate-summary.json",
+    "graphics_scalability_policy": "docs/art-templates/pc-graphics-scalability.md",
+    "machine_baseline_candidate": "docs/evidence/pc-graphics-baseline-20261018.md",
+    "glb_reimport_inspection": "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/reimport-inspection-v002/reimport-result.json",
+    "reimport_component_report": "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/reimport-inspection-v002/component-inspection/component-report.json",
+    "latest_geometry_attempt_manifest": "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/GeometryRepair-v003/attempt-manifest.json",
+    "uv_degenerate_face_audit": "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/GeometryRepair-v003/uv-degenerate-face-audit-v001.json",
+    "backing_body_distance_check": "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/GeometryRepair-v003/backing-body-distance-check-v001.json",
+    "surface_correspondence": "Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWaystone-01/GeometryRepair-v003/surface-correspondence-v001.json"
+  },
+  "defects": [
+    "Four crown triangles (356, 364, 395, 403) have coincident vertices and zero UV area; verified as geometric degeneracies.",
+    "CPU closest-surface sampling measures the emblem backing 3.6 mm minimum and 22.9 mm median from the body; the intended mount or clearance is unverified.",
+    "UE 5.8 import, measured depth maps and material/render comparisons are unverified.",
+    "Prototype materials lack production PBR maps and engine comparison.",
+    "Authoring-source reopen remains unavailable in installed Blender 5.1.1 (source was authored in 5.2.2)."
+  ],
+  "blockers": [
+    "Geometry attempts exhausted at 3/3. Crown degeneracies and emblem backing-to-shaft contact require a newly budgeted geometry revision before acceptance.",
+    "Static rest/support attachment intent, original-source compatibility, and engine acceptance remain open; animated deformation checks do not apply to this static prop.",
+    "Windows PC 2560x1440 output at 60 fps is selected; the local machine is recorded as a candidate baseline, but its active UE adapter/RHI and minimum supported tier are unverified. Asset-specific physical scale, scene density, geometry/material budgets, memory and performance results remain open."
+  ],
+  "next_action": "After geometry scope is budgeted and a compatible Blender 5.2.2 runtime is available, repair the four crown degeneracies and author or confirm the emblem mount; rerun exchange correspondence, then complete material/depth and UE 5.8 acceptance."
+}

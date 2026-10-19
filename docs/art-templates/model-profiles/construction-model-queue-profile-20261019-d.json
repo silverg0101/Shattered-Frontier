@@ -1,0 +1,70 @@
+{
+  "profile_id": "construction-model-queue-profile-20261019-d",
+  "schema_version": 1,
+  "category": "surface-treatment",
+  "features": [
+    "static-mesh-material",
+    "tileable-pbr-maps",
+    "face-specific-uv",
+    "height-derived-tangent-normal",
+    "appearance-only-ornament"
+  ],
+  "approval": "prototype-authored",
+  "intended_use": "Reference-guided material studies on exact existing canonical construction carrier prototypes; geometry remains immutable and unapproved.",
+  "units": "metres",
+  "geometry_lock": {
+    "allowed_shape_keys": [
+      "cell-full",
+      "slope-1to1"
+    ],
+    "scale_pivot_orientation_contacts_mutable": false
+  },
+  "materials": {
+    "rough_timber": "domain-warped longitudinal grain, knots, sparse tapered fissures and rough-sawn relief",
+    "worked_timber": "finer grain, quiet knots and restrained flush longitudinal seams",
+    "stone_masonry": "variable courses, soft mortar shoulders, mineral/pit variation; relief fully within unchanged carrier",
+    "worked_timber_ornamented": "flat color-only +Y stain motif and quiet -Y border; same worked-timber master; other faces unchanged"
+  },
+  "maps": {
+    "resolution_px": [
+      1024,
+      1024
+    ],
+    "basecolor": "sRGB PNG; ornament face variants use separate color maps only",
+    "roughness": "linear grayscale PNG",
+    "normal": "tangent +Y OpenGL PNG derived from physical height in metres",
+    "height": "16-bit linear sidecar; not geometry displacement",
+    "texel_density_px_per_m": 2048
+  },
+  "render": {
+    "engine": "Cycles CPU",
+    "resolution": [
+      1280,
+      960
+    ],
+    "samples": 24,
+    "denoise": true,
+    "view_transform": "AgX"
+  },
+  "checks": [
+    "embedded build script compiles before Blender launch",
+    "Blender logs contain no traceback and all required outputs exist",
+    "source reopen and fresh GLB/FBX import",
+    "component islands and loose vertices classified",
+    "map wrap edge-step and normal-angle diagnostics",
+    "neutral-light preview and assembly preview",
+    "direct reference comparison"
+  ],
+  "open_production_gates": [
+    "approved GEO-01 and applicable GEO-02",
+    "Unreal 5.8 material/normal import",
+    "assembly contacts",
+    "collision/LOD/performance"
+  ],
+  "repair_policy": {
+    "initial_attempts": 1,
+    "repairs_per_failed_stage_max": 2,
+    "total_attempts_per_stage_max": 3,
+    "on_exhaustion": "needs-review"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "profile_id": "unreal58-surface-quality-20261018",
+  "schema_version": 1,
+  "engine_target": "Unreal Engine 5.8",
+  "authoring_units": "metres",
+  "engine_units": "centimetres",
+  "engine_units_per_metre": 100,
+  "approval": "prototype-authored",
+  "intended_use": "art-stage quality profile; does not change project renderer settings or establish engine acceptance",
+  "map_outputs": {
+    "base_color": {"required_for_textured_asset": true, "resolution_px_default": 2048, "resolution_px_bounds": [1024, 4096], "color_space": "sRGB", "effective_time": "next texture bake", "permission": "asset-author"},
+    "normal": {"required_for_close_surface_detail": true, "resolution_px_default": 2048, "resolution_px_bounds": [1024, 4096], "color_space": "linear", "encoding": "tangent-space OpenGL +Y; convert only when target import requires it", "effective_time": "next texture bake", "permission": "asset-author"},
+    "roughness": {"required_for_pbr_surface_review": true, "resolution_px_default": 2048, "resolution_px_bounds": [1024, 4096], "color_space": "linear", "effective_time": "next texture bake", "permission": "asset-author"},
+    "metallic": {"required_when_material_is_metal": true, "resolution_px_default": 2048, "resolution_px_bounds": [1024, 4096], "color_space": "linear", "semantic_mask_required": true, "effective_time": "next texture bake", "permission": "asset-author"},
+    "ambient_occlusion": {"required": false, "default": "omitted until material/lighting review", "color_space": "linear", "effective_time": "next texture bake", "permission": "asset-author"},
+    "height": {"required_for_depth_mapping_when_reviewed": true, "default": "absent until supported by source evidence or authoring", "color_space": "linear", "source_must_be_recorded": true, "do_not_derive_from_base_color_without_review": true, "effective_time": "next material bake", "permission": "asset-author"}
+  },
+  "depth_methods": {
+    "nanite_displacement": {"enabled_default": false, "magnitude_m": null, "center_01": 0.5, "magnitude_bounds_m": null, "enable_only_after": ["reviewed height map", "measured relief scale", "silhouette and shadow comparison"], "effective_time": "next material compile and mesh import", "permission": "asset-author after review", "status_when_unset": "needs-review"},
+    "parallax_bump_offset": {"enabled_default": false, "height_ratio_default": 0.02, "height_ratio_bounds": [0.02, 0.1], "height_ratio_units": "dimensionless", "reference_plane_default": 0.5, "reference_plane_bounds": [0.0, 1.0], "use_when": "small relief does not justify geometry displacement", "effective_time": "next material instance update", "permission": "asset-author", "do_not_stack_with_strong_nanite_displacement_without_visual_review": true}
+  },
+  "engine_features_to_evaluate": {
+    "static_geometry": ["Nanite", "Virtual Shadow Maps", "Lumen GI and reflections"],
+    "foliage": ["masked foliage material", "Nanite Pixel Programmable Distance where beneficial", "bounded World Position Offset only when foliage motion is requested"],
+    "scalability": ["UE 5.8 high-quality path", "UE 5.8 Medium Lumen path", "target hardware comparison"]
+  },
+  "render_review": {
+    "matched_views": ["three-quarter", "front", "side", "rear", "close material crop", "shadow view"],
+    "compare": ["base mesh", "normal only", "height/parallax or Nanite displacement", "virtual shadow map behavior", "Lumen lighting"],
+    "visual_review_required": true,
+    "engine_import_required_for_engine_acceptance": true,
+    "current_project_changes_authorized": false
+  },
+  "references": [
+    "https://dev.epicgames.com/documentation/en-us/unreal-engine/working-with-naniteenabled-content",
+    "https://dev.epicgames.com/documentation/en-us/unreal-engine/using-bump-offset-in-unreal-engine?lang=en-US",
+    "https://dev.epicgames.com/documentation/unreal-engine/unreal-engine-5-8-release-notes?lang=en-US",
+    "https://dev.epicgames.com/documentation/en-us/unreal-engine/lumen-technical-details-in-unreal-engine",
+    "https://dev.epicgames.com/documentation/en-us/unreal-engine/virtual-shadow-maps-in-unreal-engine"
+  ]
+}

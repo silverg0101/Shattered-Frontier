@@ -1,4 +1,4 @@
-"""GEO-01 bounded canonical geometry starter for three one-cell solids.
+"""GEO-01 bounded canonical geometry starter for six one-cell solids.
 
 This is a deterministic fixture/compiler, not a general polyhedron compiler.
 """
@@ -14,7 +14,7 @@ from typing import Iterable
 
 Q = 65536
 INTERFACE_VERSION = 1
-SUPPORTED = ("cell-full", "slab-half", "slope-1to1")
+SUPPORTED = ("cell-full", "slab-half", "slab-quarter", "post-quarter", "slope-1to1", "corner-outer")
 
 # Face cycles are outward oriented. Vertices use normalized integer Q65536.
 _GEOMETRY = {
@@ -26,10 +26,24 @@ _GEOMETRY = {
         ((0,0,0),(Q,0,0),(0,Q,0),(Q,Q,0),(0,0,Q//2),(Q,0,Q//2),(0,Q,Q//2),(Q,Q,Q//2)),
         ((0,2,3,1),(4,5,7,6),(0,4,6,2),(1,3,7,5),(0,1,5,4),(2,6,7,3)),
     ),
+    "slab-quarter": (
+        ((0,0,0),(Q,0,0),(0,Q,0),(Q,Q,0),(0,0,Q//4),(Q,0,Q//4),(0,Q,Q//4),(Q,Q,Q//4)),
+        ((0,2,3,1),(4,5,7,6),(0,4,6,2),(1,3,7,5),(0,1,5,4),(2,6,7,3)),
+    ),
+    "post-quarter": (
+        ((0,0,0),(Q//2,0,0),(0,Q//2,0),(Q//2,Q//2,0),
+         (0,0,Q),(Q//2,0,Q),(0,Q//2,Q),(Q//2,Q//2,Q)),
+        ((0,2,3,1),(4,5,7,6),(0,4,6,2),(1,3,7,5),(0,1,5,4),(2,6,7,3)),
+    ),
     # w <= u; triangular prism.
     "slope-1to1": (
         ((0,0,0),(Q,0,0),(Q,Q,0),(0,Q,0),(Q,0,Q),(Q,Q,Q)),
         ((0,3,2,1),(0,1,4),(3,5,2),(1,2,5,4),(0,4,5,3)),
+    ),
+    # z <= min(x,y); convex triangular corner solid.
+    "corner-outer": (
+        ((0,0,0),(Q,0,0),(0,Q,0),(Q,Q,0),(Q,Q,Q)),
+        ((0,2,3,1),(1,3,4),(2,4,3),(0,4,2),(0,1,4)),
     ),
 }
 
@@ -135,8 +149,34 @@ def _face_contacts(vertices, faces):
     return result
 
 
+def _validate_closed_convex_solid(vertices, faces):
+    """Require outward planar faces, paired edges and a convex boundary."""
+    directed_edges = {}
+    for face in faces:
+        if len(face) < 3 or len(set(face)) != len(face) or any(i < 0 or i >= len(vertices) for i in face):
+            raise ValueError("faces must contain unique in-range vertex indices")
+        a, b, c = (vertices[i] for i in face[:3])
+        ab = tuple(b[i] - a[i] for i in range(3))
+        ac = tuple(c[i] - a[i] for i in range(3))
+        normal = (ab[1]*ac[2]-ab[2]*ac[1], ab[2]*ac[0]-ab[0]*ac[2], ab[0]*ac[1]-ab[1]*ac[0])
+        if normal == (0, 0, 0):
+            raise ValueError("face has zero area")
+        for i in face[3:]:
+            p = vertices[i]
+            if sum(normal[k] * (p[k] - a[k]) for k in range(3)) != 0:
+                raise ValueError("face is not planar")
+        for p in vertices:
+            if sum(normal[k] * (p[k] - a[k]) for k in range(3)) > 0:
+                raise ValueError("face is not outward or solid is not convex")
+        for i, j in zip(face, face[1:] + face[:1]):
+            key = tuple(sorted((i, j)))
+            directed_edges.setdefault(key, []).append((i, j))
+    if any(len(rows) != 2 or rows[0] != rows[1][::-1] for rows in directed_edges.values()):
+        raise ValueError("boundary edges must have exactly two opposite face uses")
+
+
 def validate_payload(payload: bytes):
-    """Validate exact canonical payloads for the three fixed v1 shapes."""
+    """Validate exact canonical payloads for the supported fixed v1 shapes."""
     if not isinstance(payload, bytes):
         raise TypeError("payload must be bytes")
     try:
@@ -154,6 +194,7 @@ def validate_payload(payload: bytes):
         raise ValueError("payload bytes are not canonical or geometry differs from supported v1 target")
     verts = tuple(tuple(p) for p in obj["vertices"])
     faces = tuple(tuple(f) for f in obj["parts"][0])
+    _validate_closed_convex_solid(verts, faces)
     volume = _signed_volume(verts, faces)
     if volume <= 0:
         raise ValueError("boundary is not outward oriented or has zero volume")

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "rest_selection": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz",
+  "domains": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryDomains-v001/primary-domains.npz",
+  "semantic_selection": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz",
+  "inventory": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemInventory-v001/inventory.json",
+  "item_selections": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemInventory-v001/item-selections.npz",
+  "support_owner_ids": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "support_semantic_labels": [
+    0
+  ],
+  "maximum_items": 23,
+  "review_distance_m": 0.005,
+  "permissions": "CPU read-only support proposal; no deletion, binding or semantic approval",
+  "effective_time": "Frozen indexed rest mesh only",
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryDomains-v001/primary-domains.npz": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemInventory-v001/inventory.json": "4cda0c117ca27be89c9a687a21514e6b20685174ebdbc226833964b04c83228f",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemInventory-v001/item-selections.npz": "fcd4db77cdd50ccae21e0f134e845c8bf64c3243285bcc565788f6fda33d665d"
+  }
+}

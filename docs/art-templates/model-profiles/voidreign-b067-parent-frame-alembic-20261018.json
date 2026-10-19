@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\B067ParentFrameCache-v001\\Voidreign-ActualSurfacePilot.blend",
+  "object": "geometry_0",
+  "frame_start": 1,
+  "frame_end": 330,
+  "fps": 30,
+  "maximum_error_m": 1e-05,
+  "units": "metres",
+  "permissions": "Offline proposed B067 attachment geometry-cache exchange; semantic/runtime gates remain open",
+  "effective_time": "This frozen source and its adjacent caches",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\B067ParentFrameCache-v001\\Voidreign-ActualSurfacePilot.blend": "0541b577a6bb6326ecf5467b2fdfce4466e2e87ec535b0cda93abaddf3ccff35",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\B067ParentFrameCache-v001\\Feature-actual-motion.mdd": "0f96563a3cfe05dfeccb695edd3c8d8a46695bb9f90ffee1bfed00ecc8df99ff",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\B067ParentFrameCache-v001\\Tail-actual-motion.mdd": "41214c51a69e0d6f27085ab1c1adc08bd566feea1a039f95670b4d4dad0f14bf"
+  }
+}

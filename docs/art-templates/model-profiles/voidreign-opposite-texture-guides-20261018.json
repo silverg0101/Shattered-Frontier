@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "source_sha256": "35f3f95a01387cf805444060fde95a77e17d51f5c01378529879af053894ce96",
+  "object": "geometry_0",
+  "resolution": 1024,
+  "scope": "Opposite-side unlit base-color edits only; preserve pose, silhouette, seams and PBR maps. Offline author, next material revision only.",
+  "views": [
+    {
+      "name": "Head-NegX",
+      "target_m": [
+        0,
+        -1.15,
+        2.02
+      ],
+      "camera_offset_m": [
+        -7,
+        0,
+        0
+      ],
+      "scale_m": 1.65,
+      "region_bounds_m": [
+        [
+          -2,
+          2
+        ],
+        [
+          -3,
+          -0.6
+        ],
+        [
+          1.45,
+          4
+        ]
+      ],
+      "region_feather_m": 0.18
+    },
+    {
+      "name": "Saddle-NegX",
+      "target_m": [
+        0,
+        -0.05,
+        1.65
+      ],
+      "camera_offset_m": [
+        -7,
+        0,
+        0
+      ],
+      "scale_m": 1.35,
+      "region_bounds_m": [
+        [
+          -2,
+          2
+        ],
+        [
+          -0.7,
+          0.9
+        ],
+        [
+          0.88,
+          2.18
+        ]
+      ],
+      "region_feather_m": 0.15
+    }
+  ]
+}

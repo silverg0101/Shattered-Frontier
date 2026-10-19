@@ -2,6 +2,8 @@
 
 [Library workflow](README.md)
 
+This prompt creates a terrain concept study. Use [the image-only workflow](generate-images.md) to package it; a whole landscape study is not a ready-made reconstruction input or terrain system. Create separate clean rock, cliff, vegetation or other component concepts when those are the intended assets.
+
 ```text
 Create a polished visual reference sheet for one local terrain patch intended for later Blender modeling and rendering.
 

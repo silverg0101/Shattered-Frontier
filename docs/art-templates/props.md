@@ -2,6 +2,8 @@
 
 Use this reusable prompt to create a modeling and rendering reference for one prop; see [README.md](README.md) for how the template fits the art-reference workflow.
 
+This prompt defaults to a concept sheet. For a separate clean single-prop image, apply [the shared asset-view override](generate-images.md#clean-asset-view-prompt-block); keep context and scale cues in the sheet only.
+
 ```text
 Create a clear visual reference sheet for one fictional placeable prop intended for later manual Blender modeling and rendering.
 

@@ -46,6 +46,16 @@ Build final structural bases deterministically from the approved geometry,
 then apply appearance. No arbitrary scaling, negative-scale mirroring,
 filled openings or decorative changes to collision/support/clearance.
 Do not bake the whole shelter into one replacement construction prefab.
+Apply the art contract's buildability route before consuming a construction
+image: distinguish an exposed-patch treatment from a structural solid,
+an explicit cell-member assembly study and a separately defined attachment.
+An L/V-shaped corner picture or steel/rebar wall collage does not define a
+new cell shape or snap interface. Architectural corner treatments are not
+automatically the sloped corner-inner/corner-outer reference solids.
+Keep source cutaways as evidence; reconstruct intact approved geometry,
+including exposed end faces and neighbor-removal surfaces. Record patch-role
+mapping and grid-anchored seam phase; missing generic material binding and
+geometry/interface evidence stay open, without an inferred replacement mesh.
 
 The ordinary door is a separate object: use Construction Architecture §16
 for dimensions, record hinge/motion/access envelopes, and wait for the

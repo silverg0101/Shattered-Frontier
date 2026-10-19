@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "permissions": "Third reviewed code correction; automatic3/3 budget not reset; same four influence/contact limits",
+  "effective_time": "This immutable candidate only",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryStandingPilot-v001\\Mount-StandingPilot.blend",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "semantic_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "domains": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryDomains-v001\\primary-domains.npz",
+  "object": "geometry_0",
+  "boundary_band_m": 0.12,
+  "maximum_iterations": 512,
+  "weight_convergence_tolerance": 1e-05,
+  "maximum_influences": 4,
+  "primary_bones": [
+    "PRI.body.pelvis",
+    "PRI.body.spine",
+    "PRI.body.chest",
+    "PRI.body.neck",
+    "PRI.body.head",
+    "PRI.body.muzzle",
+    "PRI.body.tail-base",
+    "PRI.fore.L.shoulder",
+    "PRI.fore.L.elbow",
+    "PRI.fore.L.carpus",
+    "PRI.fore.L.fetlock",
+    "PRI.fore.R.shoulder",
+    "PRI.fore.R.elbow",
+    "PRI.fore.R.carpus",
+    "PRI.fore.R.fetlock",
+    "PRI.hind.L.hip",
+    "PRI.hind.L.stifle",
+    "PRI.hind.L.hock",
+    "PRI.hind.L.fetlock",
+    "PRI.hind.R.hip",
+    "PRI.hind.R.stifle",
+    "PRI.hind.R.hock",
+    "PRI.hind.R.fetlock"
+  ],
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryStandingPilot-v001\\Mount-StandingPilot.blend": "0f22f6f488ecd4634bbab6a46171924d6e817cc9dd37ba5e4de4b88f40606844",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryDomains-v001\\primary-domains.npz": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5",
+    "docs\\art-templates\\model-profiles\\voidreign-primary-rig-pilot-20261019.json": "51dbcf18a13a14dde3c8a0d10f1500ac60de2c5138cb0824ee0e214d95447e38",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001\\sole-patches.npz": "5b055301ae1b1349d3f85fb23e2b93985fd93f2a33e0fc1a1e4a05dbaf98614b"
+  },
+  "solver": "pcg",
+  "body_only_priors": true,
+  "body_owner_id": 5,
+  "rig_profile": "docs\\art-templates\\model-profiles\\voidreign-primary-rig-pilot-20261019.json",
+  "include_semantic_boundaries": true,
+  "fixed_vertex_selections": [
+    {
+      "path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001\\sole-patches.npz",
+      "keys": [
+        "fore.L.vertices",
+        "fore.R.vertices",
+        "hind.L.vertices",
+        "hind.R.vertices"
+      ]
+    }
+  ],
+  "influence_reduction": "continuous-top-k"
+}

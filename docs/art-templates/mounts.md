@@ -2,6 +2,8 @@
 
 Copy the prompt, replace only MAIN CONCEPT, and follow the [library workflow](README.md). Attached references are optional.
 
+This prompt defaults to a concept sheet. For the separate clean asset image used later by 3D generation, apply [the shared asset-view override](generate-images.md#clean-asset-view-prompt-block); keep rider and scale guides in the sheet only.
+
 ```text
 MAIN CONCEPT: [Describe the mount in one sentence.]
 

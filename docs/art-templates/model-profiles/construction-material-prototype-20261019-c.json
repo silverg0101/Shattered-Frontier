@@ -1,0 +1,115 @@
+{
+  "profile_id": "construction-material-prototype-20261019-c",
+  "schema_version": 1,
+  "category": "surface-treatment",
+  "features": [
+    "static-mesh-material",
+    "tileable-pbr-maps",
+    "uv0-face-mapping",
+    "normal-depth-review"
+  ],
+  "approval": "prototype-authored",
+  "intended_use": "Appearance-only prototype on a fixed canonical construction carrier. No structural or engine acceptance.",
+  "units": "metres",
+  "geometry_lock": {
+    "allowed_shape_keys": [
+      "cell-full"
+    ],
+    "geometry_source": "GEO-01 construction geometry pilot payload, exact 0.5 m conversion",
+    "scale_pivot_orientation_contacts_mutable": false
+  },
+  "surface_materials": {
+    "rough_timber": "rough-sawn timber with distinct domain-warped longitudinal grain, knots, sparse tapered fissures and shallow saw scoring; explicit six-face UV orientation; no false brick courses",
+    "stone_masonry": "hand-cut variable-scale masonry courses with nonprojecting irregular mortar shoulders, restrained granular pits and mineral variation",
+    "worked_timber": "dressed timber with fine longitudinal grain, restrained knots and shallow flush longitudinal board seams; smoother than rough timber"
+  },
+  "maps": {
+    "resolution_px": [
+      1024,
+      1024
+    ],
+    "basecolor": {
+      "format": "PNG RGB",
+      "color_space": "sRGB",
+      "method": "authored seamless procedural field guided by selected catalog appearance image"
+    },
+    "roughness": {
+      "format": "PNG grayscale",
+      "color_space": "linear",
+      "required": true
+    },
+    "normal": {
+      "format": "PNG RGB tangent",
+      "color_space": "linear",
+      "convention": "OpenGL +Y; Unreal import adaptation remains open"
+    },
+    "height": {
+      "format": "PNG grayscale",
+      "color_space": "linear",
+      "use": "reference map and shallow relief comparison only; never geometry displacement"
+    }
+  },
+  "prototype_quality_scope": {
+    "render": "Blender Cycles CPU, 1280x960, AgX, 24 samples, denoise",
+    "deliverables": [
+      "editable .blend",
+      "GLB",
+      "FBX",
+      "basecolor",
+      "roughness",
+      "normal",
+      "height",
+      "asset-view.png",
+      "fresh import reports",
+      "hash manifest"
+    ],
+    "required_checks": [
+      "reference ownership/hash",
+      "canonical geometry identity and dimensions",
+      "tileability across texture boundaries",
+      "UV coverage",
+      "fresh GLB/FBX dimensions/material/UV/connectivity",
+      "loose/disconnected island review",
+      "visual reference review",
+      "edge-wrap pixel comparison for all maps",
+      "six-face UV orientation table",
+      "physical height-derived normals",
+      "neutral-light reference comparison",
+      "3x3 tiled material plane",
+      "2x2x2 assembled contact view",
+      "numeric texture seam threshold"
+    ],
+    "open_production_checks": [
+      "GEO-01 approved manifest",
+      "GEO-02 fit/seam evidence",
+      "Unreal material import and normal convention",
+      "assembly seam validation",
+      "collision/LOD/performance"
+    ]
+  },
+  "repair_policy": {
+    "initial_attempts": 1,
+    "repairs_per_failed_stage_max": 2,
+    "total_attempts_per_stage_max": 3,
+    "on_exhaustion": "needs-review"
+  },
+  "authorized_scope_revision": "User requested continuing construction-model fixes on 2026-10-19. Previous v006 artifacts and findings remain in their provenance history.",
+  "height_relief_m": {
+    "rough_timber_face_peak": 0.0008,
+    "worked_timber_face_peak": 0.00025,
+    "stone_face_peak": 0.0006,
+    "stone_mortar_recession": 0.001
+  },
+  "normal_generation": {
+    "source": "float height field in metres",
+    "texel_size_m": 0.00048828125,
+    "formula": "normalize(-dh/du,-dh/dv,1)",
+    "convention": "tangent OpenGL +Y",
+    "normal_node_strength": 1.0
+  },
+  "face_uv_orientation": {
+    "axis_units": "0.5 m cell normalized to [0,1]",
+    "timber_long_grain_axis": "V",
+    "rough_timber_top": "selected clean-view longitudinal grain; underside remains an explicitly unresolved reference assumption"
+  }
+}

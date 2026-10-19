@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "permissions": "Exact articulated-strain edge context review on indexed rest surface; no weight or mesh correction",
+  "effective_time": "This immutable proposal only",
+  "coordinate_convention": {
+    "up": "+Z",
+    "forward": "-Y (head/horn)",
+    "side_names": "Geometric +X/-X until reviewed"
+  },
+  "object": "geometry_0",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "retention_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFullRetention-v001\\validation.json",
+  "render": {
+    "resolution": 640,
+    "samples": 8,
+    "surface_color": [
+      0.36,
+      0.39,
+      0.43
+    ],
+    "landmark_radius_m": 0.025,
+    "light_position_m": [
+      -3,
+      -4,
+      6
+    ],
+    "light_watts": 1300,
+    "light_size_m": 5,
+    "target_m": [
+      0,
+      -0.05,
+      1.3
+    ],
+    "ortho_scale_m": 4.5
+  },
+  "regions": [
+    {
+      "id": "walk1-absolute",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReviewInputs-v001/worst-edge-selections.npz",
+      "selection_key": "walk1-absolute",
+      "color": [
+        1,
+        0.15,
+        0.02
+      ]
+    },
+    {
+      "id": "walk2-absolute",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReviewInputs-v001/worst-edge-selections.npz",
+      "selection_key": "walk2-absolute",
+      "color": [
+        1,
+        0.15,
+        0.02
+      ]
+    },
+    {
+      "id": "walk2-sole",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReviewInputs-v001/worst-edge-selections.npz",
+      "selection_key": "walk2-sole",
+      "color": [
+        1,
+        0.15,
+        0.02
+      ]
+    }
+  ],
+  "landmarks": [],
+  "views": [
+    {
+      "id": "walk1-absolute-side",
+      "position_m": [
+        4.161026120185852,
+        -0.7947055101394653,
+        1.2317315578460692
+      ],
+      "target_m": [
+        0.16102612018585205,
+        -0.7947055101394653,
+        1.0817315578460693
+      ],
+      "ortho_scale_m": 0.65
+    },
+    {
+      "id": "walk1-absolute-front",
+      "position_m": [
+        4.161026120185852,
+        -2.7947055101394653,
+        1.4817315578460692
+      ],
+      "target_m": [
+        0.16102612018585205,
+        -0.7947055101394653,
+        1.0817315578460693
+      ],
+      "ortho_scale_m": 0.65
+    },
+    {
+      "id": "walk2-absolute-side",
+      "position_m": [
+        -4.21517750620842,
+        -0.873206615447998,
+        1.3059826135635375
+      ],
+      "target_m": [
+        -0.2151775062084198,
+        -0.873206615447998,
+        1.1559826135635376
+      ],
+      "ortho_scale_m": 0.65
+    },
+    {
+      "id": "walk2-absolute-front",
+      "position_m": [
+        -4.21517750620842,
+        -2.873206615447998,
+        1.5559826135635375
+      ],
+      "target_m": [
+        -0.2151775062084198,
+        -0.873206615447998,
+        1.1559826135635376
+      ],
+      "ortho_scale_m": 0.65
+    },
+    {
+      "id": "walk2-sole-side",
+      "position_m": [
+        4.266948580741882,
+        -0.6950682401657104,
+        0.2980042934417725
+      ],
+      "target_m": [
+        0.2669485807418823,
+        -0.6950682401657104,
+        0.14800429344177246
+      ],
+      "ortho_scale_m": 0.35
+    },
+    {
+      "id": "walk2-sole-front",
+      "position_m": [
+        4.266948580741882,
+        -2.6950682401657104,
+        0.5480042934417725
+      ],
+      "target_m": [
+        0.2669485807418823,
+        -0.6950682401657104,
+        0.14800429344177246
+      ],
+      "ortho_scale_m": 0.35
+    }
+  ],
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend": "c507e31813fea5ea61e30f7cbf8bae37609135b549238b64ad1e61a1e42111ee",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFullRetention-v001\\validation.json": "fcd05cbae371af89b71bd0b9ab427bf74a48b3667abc0c454fee46e3947ea840",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz": "fcd4db77cdd50ccae21e0f134e845c8bf64c3243285bcc565788f6fda33d665d",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReviewInputs-v001/worst-edge-selections.npz": "4134e3077d6f3ca0f0dd12f38e065ef024c18e5af6c47eb9431f34a2d5648e33"
+  }
+}

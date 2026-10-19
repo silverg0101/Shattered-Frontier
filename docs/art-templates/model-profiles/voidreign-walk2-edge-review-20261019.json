@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v002/Mount-WalkPilot.blend",
+  "strain_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkStrain-v002/strain-report.json",
+  "domains": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryDomains-v001/primary-domains.npz",
+  "semantic_selection": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz",
+  "object": "geometry_0",
+  "bone_prefix": "PRI.",
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v002/Mount-WalkPilot.blend": "d175746ff5d44a6b8d05151200f67e1efee2798c506029991091ca379f771c35",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkStrain-v002/strain-report.json": "b21db1fccb8401e88ef39a914bf6ac9bef68c31e3c542993a42a3b78c213789a",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryDomains-v001/primary-domains.npz": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0"
+  }
+}

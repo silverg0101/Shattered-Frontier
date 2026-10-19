@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "scope": "Four remaining held peak failures; exact whole-source-island domains, no semantic approval",
+  "permissions": "Offline author diagnostic views only",
+  "effective_time": "This new read-only review",
+  "units": "metres, source frames",
+  "source_sha256": "a5e69cab0f484b2180809b8f60cb61ade34e227bd75ecdecfed97a7f87ae3cb9",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "object": "geometry_0",
+  "assembly_root": "MOTION HARNESS | rigid horse, not gait animation",
+  "surface_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCacheCheck-v001\\surface-report.json",
+  "surface_report_sha256": "2690a793e806ba6024f73d6c611b634efe4de428500227ded7dfb1752b9384a4",
+  "selection_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selection-report.json",
+  "selection_report_sha256": "63eb535dcafe1140c5445ce46bd402cc438af979c437fbb9d7430b723aa11a08",
+  "patch_radius_m": 0.06,
+  "context_pad_m": 0.15,
+  "cases": [
+    {
+      "id": "settling-C0002",
+      "label": "Unresolved Mane settling island C0002",
+      "vertex": 72045,
+      "frame": 122,
+      "expected_world_position_m": [
+        -0.28813016414642334,
+        -1.2933355569839478,
+        1.9174879789352417
+      ],
+      "domain_prefix": "C0002"
+    },
+    {
+      "id": "settling-C0007",
+      "label": "Unresolved Mane settling island C0007",
+      "vertex": 132628,
+      "frame": 122,
+      "expected_world_position_m": [
+        -0.05817466601729393,
+        -1.425131916999817,
+        1.9492603540420532
+      ],
+      "domain_prefix": "C0007"
+    },
+    {
+      "id": "settling-C0048",
+      "label": "Unresolved Mane settling island C0048",
+      "vertex": 58526,
+      "frame": 122,
+      "expected_world_position_m": [
+        -0.24441319704055786,
+        -1.8697439432144165,
+        2.293062925338745
+      ],
+      "domain_prefix": "C0048"
+    },
+    {
+      "id": "settling-C0136",
+      "label": "Unresolved Mane settling island C0136",
+      "vertex": 57771,
+      "frame": 122,
+      "expected_world_position_m": [
+        -0.21907822787761688,
+        -1.9257481098175049,
+        2.2911407947540283
+      ],
+      "domain_prefix": "C0136"
+    }
+  ],
+  "retention_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCacheRetention-v001\\validation.json",
+  "retention_report_sha256": "9b678425ffccaa91bdb43de7ea75189a3f3d26f8869dc6407ae522afa3f1c57b",
+  "index_preserving_node_modifiers": [
+    "Actual-surface simulated coordinates | diagnostic",
+    "Actual-surface simulated coordinates | diagnostic.001",
+    "Actual surface contacts | diagnostic projection",
+    "Actual surface contacts | diagnostic projection.001"
+  ],
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Voidreign-ActualSurfacePilot.blend": "a5e69cab0f484b2180809b8f60cb61ade34e227bd75ecdecfed97a7f87ae3cb9",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Feature-actual-motion.mdd": "92f65009a6bdfbc677b24c1a767db9f294fa8e1128db66bae68545c9c9927cf1",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Tail-actual-motion.mdd": "41214c51a69e0d6f27085ab1c1adc08bd566feea1a039f95670b4d4dad0f14bf",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeWarmupDiagnostic-v001\\warmup-report.json": "f09739f68faec7ad4866bfdfd878adb77bc9e09bdabfb8ea5762e15ce71663e0"
+  },
+  "domain_archive": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeSettlingIslandDomains-v001\\domains.npz",
+  "domain_archive_sha256": "ee334353fe9eefbbe7313c41533662a164a6a9f93251904571804a609efa63ad"
+}

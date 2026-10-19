@@ -2,6 +2,8 @@
 
 Use this reusable prompt to create a modeling and rendering reference for one armor design; see [README.md](README.md) for how the template fits the art-reference workflow.
 
+This prompt defaults to a concept sheet. For a separate clean asset image, apply [the shared asset-view override](generate-images.md#clean-asset-view-prompt-block). Specify whether the intended asset is a dressed figure or individual armor piece; do not silently turn equipment into a complete character.
+
 ```text
 Create a clear visual reference sheet for one fictional armor design intended for later manual Blender modeling and rendering.
 

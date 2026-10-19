@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "scope": "B067 parent-frame proposal whole micro-fragment review; not semantic acceptance",
+  "permissions": "Offline author diagnostic views only",
+  "effective_time": "This new read-only review",
+  "units": "metres, source frames",
+  "source_sha256": "0541b577a6bb6326ecf5467b2fdfce4466e2e87ec535b0cda93abaddf3ccff35",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "object": "geometry_0",
+  "assembly_root": "MOTION HARNESS | rigid horse, not gait animation",
+  "surface_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\B067ParentFrameSurfaceCheck-v001\\surface-report.json",
+  "surface_report_sha256": "832dbd39bdc73dfcf261746fe006683acec058359ab875202fc3ec9bd7edd81f",
+  "selection_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selection-report.json",
+  "selection_report_sha256": "63eb535dcafe1140c5445ce46bd402cc438af979c437fbb9d7430b723aa11a08",
+  "patch_radius_m": 0.06,
+  "context_pad_m": 0.15,
+  "cases": [
+    {
+      "id": "B067-parent-frame-source-C0122",
+      "label": "Proposed rigid micro-fragment parent frame",
+      "vertex": 133921,
+      "frame": 1,
+      "expected_world_position_m": [
+        -0.026798831298947334,
+        -0.5443031191825867,
+        2.2135043144226074
+      ],
+      "diagnostic_origin": "ManeWarmupDiagnostic-v001 heldframe240; this view is outputframe1=simulation241, not same clock"
+    }
+  ],
+  "retention_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\B067ParentFrameRetention-v001\\validation.json",
+  "retention_report_sha256": "4b69e7c2ecdecddaba7b91e0dfa91f91fa6c8508ac4cedbe429e17da978d5b6a",
+  "index_preserving_node_modifiers": [
+    "Actual-surface simulated coordinates | diagnostic",
+    "Actual-surface simulated coordinates | diagnostic.001",
+    "Actual surface contacts | diagnostic projection",
+    "Actual surface contacts | diagnostic projection.001"
+  ],
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\B067ParentFrameCache-v001\\Voidreign-ActualSurfacePilot.blend": "0541b577a6bb6326ecf5467b2fdfce4466e2e87ec535b0cda93abaddf3ccff35",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\B067ParentFrameCache-v001\\Feature-actual-motion.mdd": "0f96563a3cfe05dfeccb695edd3c8d8a46695bb9f90ffee1bfed00ecc8df99ff",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\B067ParentFrameCache-v001\\Tail-actual-motion.mdd": "41214c51a69e0d6f27085ab1c1adc08bd566feea1a039f95670b4d4dad0f14bf",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\B067ParentFrameStudy-v001\\attachment-frame-report.json": "e34c3b23e78a44c37d3bc04f557bd28249cf36b0e0eca3323eccb4ba5af302e3"
+  }
+}

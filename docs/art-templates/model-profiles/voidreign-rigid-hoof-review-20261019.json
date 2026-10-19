@@ -1,0 +1,328 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "permissions": "Connected hoof versus legacy rigid selection diagnostic; no source/skin changes",
+  "effective_time": "This immutable proposal only",
+  "coordinate_convention": {
+    "up": "+Z",
+    "forward": "-Y (head/horn)",
+    "side_names": "Geometric +X/-X until reviewed"
+  },
+  "object": "geometry_0",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "retention_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFullRetention-v001\\validation.json",
+  "render": {
+    "resolution": 640,
+    "samples": 8,
+    "surface_color": [
+      0.36,
+      0.39,
+      0.43
+    ],
+    "landmark_radius_m": 0.025,
+    "light_position_m": [
+      -3,
+      -4,
+      6
+    ],
+    "light_watts": 1300,
+    "light_size_m": 5,
+    "target_m": [
+      0,
+      -0.05,
+      1.3
+    ],
+    "ortho_scale_m": 4.5
+  },
+  "regions": [
+    {
+      "id": "fore.L-core",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v001/hoof-selections.npz",
+      "selection_key": "fore.L.core_vertices",
+      "face_selection_key": "fore.L.core_faces",
+      "color": [
+        0.1,
+        0.8,
+        0.8
+      ]
+    },
+    {
+      "id": "fore.L-legacy-missing",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v001/hoof-selections.npz",
+      "selection_key": "fore.L.legacy_rigid_not_in_core",
+      "color": [
+        1,
+        0.1,
+        0.1
+      ]
+    },
+    {
+      "id": "fore.L-new",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v001/hoof-selections.npz",
+      "selection_key": "fore.L.core_outside_legacy_rigid",
+      "color": [
+        1,
+        0.8,
+        0.1
+      ]
+    },
+    {
+      "id": "fore.R-core",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v001/hoof-selections.npz",
+      "selection_key": "fore.R.core_vertices",
+      "face_selection_key": "fore.R.core_faces",
+      "color": [
+        0.1,
+        0.8,
+        0.8
+      ]
+    },
+    {
+      "id": "fore.R-legacy-missing",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v001/hoof-selections.npz",
+      "selection_key": "fore.R.legacy_rigid_not_in_core",
+      "color": [
+        1,
+        0.1,
+        0.1
+      ]
+    },
+    {
+      "id": "fore.R-new",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v001/hoof-selections.npz",
+      "selection_key": "fore.R.core_outside_legacy_rigid",
+      "color": [
+        1,
+        0.8,
+        0.1
+      ]
+    },
+    {
+      "id": "hind.L-core",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v001/hoof-selections.npz",
+      "selection_key": "hind.L.core_vertices",
+      "face_selection_key": "hind.L.core_faces",
+      "color": [
+        0.1,
+        0.8,
+        0.8
+      ]
+    },
+    {
+      "id": "hind.L-legacy-missing",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v001/hoof-selections.npz",
+      "selection_key": "hind.L.legacy_rigid_not_in_core",
+      "color": [
+        1,
+        0.1,
+        0.1
+      ]
+    },
+    {
+      "id": "hind.L-new",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v001/hoof-selections.npz",
+      "selection_key": "hind.L.core_outside_legacy_rigid",
+      "color": [
+        1,
+        0.8,
+        0.1
+      ]
+    },
+    {
+      "id": "hind.R-core",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v001/hoof-selections.npz",
+      "selection_key": "hind.R.core_vertices",
+      "face_selection_key": "hind.R.core_faces",
+      "color": [
+        0.1,
+        0.8,
+        0.8
+      ]
+    },
+    {
+      "id": "hind.R-new",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v001/hoof-selections.npz",
+      "selection_key": "hind.R.core_outside_legacy_rigid",
+      "color": [
+        1,
+        0.8,
+        0.1
+      ]
+    }
+  ],
+  "landmarks": [],
+  "views": [
+    {
+      "id": "fore.L-side",
+      "position_m": [
+        4.331456087529659,
+        -0.8239082098007202,
+        0.4511596441268921
+      ],
+      "target_m": [
+        0.33145608752965927,
+        -0.8239082098007202,
+        0.1511596441268921
+      ],
+      "ortho_scale_m": 0.5
+    },
+    {
+      "id": "fore.L-below",
+      "position_m": [
+        1.1314560875296593,
+        -1.2239082098007201,
+        -1.848840355873108
+      ],
+      "target_m": [
+        0.33145608752965927,
+        -0.8239082098007202,
+        0.1511596441268921
+      ],
+      "ortho_scale_m": 0.5
+    },
+    {
+      "id": "fore.L-legacy-isolated",
+      "position_m": [
+        4.331456087529659,
+        -1.8239082098007202,
+        0.5511596441268921
+      ],
+      "target_m": [
+        0.33145608752965927,
+        -0.8239082098007202,
+        0.1511596441268921
+      ],
+      "ortho_scale_m": 0.5,
+      "isolate_regions": [
+        "fore.L-legacy-missing"
+      ]
+    },
+    {
+      "id": "fore.R-side",
+      "position_m": [
+        -4.305229000747204,
+        -0.9043468832969666,
+        0.4429550051689148
+      ],
+      "target_m": [
+        -0.3052290007472038,
+        -0.9043468832969666,
+        0.1429550051689148
+      ],
+      "ortho_scale_m": 0.5
+    },
+    {
+      "id": "fore.R-below",
+      "position_m": [
+        -1.1052290007472039,
+        -1.3043468832969665,
+        -1.8570449948310852
+      ],
+      "target_m": [
+        -0.3052290007472038,
+        -0.9043468832969666,
+        0.1429550051689148
+      ],
+      "ortho_scale_m": 0.5
+    },
+    {
+      "id": "fore.R-legacy-isolated",
+      "position_m": [
+        -4.305229000747204,
+        -1.9043468832969666,
+        0.5429550051689148
+      ],
+      "target_m": [
+        -0.3052290007472038,
+        -0.9043468832969666,
+        0.1429550051689148
+      ],
+      "ortho_scale_m": 0.5,
+      "isolate_regions": [
+        "fore.R-legacy-missing"
+      ]
+    },
+    {
+      "id": "hind.L-side",
+      "position_m": [
+        4.459290117025375,
+        0.7356831729412079,
+        0.3946086049079895
+      ],
+      "target_m": [
+        0.45929011702537537,
+        0.7356831729412079,
+        0.0946086049079895
+      ],
+      "ortho_scale_m": 0.5
+    },
+    {
+      "id": "hind.L-below",
+      "position_m": [
+        1.2592901170253754,
+        0.33568317294120786,
+        -1.9053913950920105
+      ],
+      "target_m": [
+        0.45929011702537537,
+        0.7356831729412079,
+        0.0946086049079895
+      ],
+      "ortho_scale_m": 0.5
+    },
+    {
+      "id": "hind.L-legacy-isolated",
+      "position_m": [
+        4.459290117025375,
+        -0.2643168270587921,
+        0.4946086049079895
+      ],
+      "target_m": [
+        0.45929011702537537,
+        0.7356831729412079,
+        0.0946086049079895
+      ],
+      "ortho_scale_m": 0.5,
+      "isolate_regions": [
+        "hind.L-legacy-missing"
+      ]
+    },
+    {
+      "id": "hind.R-side",
+      "position_m": [
+        -4.226567327976227,
+        0.30710019171237946,
+        0.37475799322128295
+      ],
+      "target_m": [
+        -0.2265673279762268,
+        0.30710019171237946,
+        0.07475799322128296
+      ],
+      "ortho_scale_m": 0.5
+    },
+    {
+      "id": "hind.R-below",
+      "position_m": [
+        -1.0265673279762269,
+        -0.09289980828762057,
+        -1.925242006778717
+      ],
+      "target_m": [
+        -0.2265673279762268,
+        0.30710019171237946,
+        0.07475799322128296
+      ],
+      "ortho_scale_m": 0.5
+    }
+  ],
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend": "c507e31813fea5ea61e30f7cbf8bae37609135b549238b64ad1e61a1e42111ee",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFullRetention-v001\\validation.json": "fcd05cbae371af89b71bd0b9ab427bf74a48b3667abc0c454fee46e3947ea840",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz": "fcd4db77cdd50ccae21e0f134e845c8bf64c3243285bcc565788f6fda33d665d",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReviewInputs-v001/worst-edge-selections.npz": "4134e3077d6f3ca0f0dd12f38e065ef024c18e5af6c47eb9431f34a2d5648e33",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v001/hoof-selections.npz": "60dc08ca6786028ddd7c7a076562c26459141e2e4f2f86b0fe744acc94b6386c"
+  }
+}
