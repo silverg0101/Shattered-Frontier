@@ -181,6 +181,8 @@ For authored special-resource pools, `max_active_ratio < 1` keeps special nodes 
 
 ## 3. Node lifecycle
 
+> **2026-10-19 amendment ([GAT-01](../../decisions/GAT-01-growing-resource-nodes.md)).** `spawned` nodes grow. A node appears at its pool point `grow_s` before World's `respawn_at` and grows through stages, and can be harvested from the young stage for fewer charges. It is mature at `respawn_at`. The states below are unchanged; growth is an attribute of `available`. There are no stumps: a depleted node disappears. The node definition gains an optional `growth_profile`.
+
 ### 3.1 State machine
 
 States use the canonical `gathering_node_state` enum (Shared Registry, Phase-2 enums; entry file, C10).

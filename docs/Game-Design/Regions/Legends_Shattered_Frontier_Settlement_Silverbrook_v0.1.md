@@ -21,6 +21,7 @@ Silverbrook is the primary starter settlement of the Greenlands and the first ma
 | Source | gpt-image generation from the §13 brief; stored at 2000 × 1337 |
 | Wins on | Layout intent, district placement, architecture, materials and mood |
 | This document wins on | Names, numbers, level range and requirements (§13 lists where the board differs) |
+| Layout data | `GameClient/ArtSource/Greenlands/silverbrook-town-layout.json`, measured from the board map; it drives the graybox ([zone plan](../../greenlands-silverbrook-zone-plan.md)) |
 
 **Standard check:**
 - **Present:** sections 1–3 (map, isometric view, elevations). Sections 4 and 5 share the environment and asset reference panel. Development notes appear as the categories panel, the key gameplay features and the callouts.

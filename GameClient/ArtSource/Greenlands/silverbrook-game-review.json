@@ -1,0 +1,80 @@
+{
+  "scope": "Project pawn walks arrival to North Gate through the graybox; no AI, combat, gathering or performance acceptance",
+  "game_mode": "SFE1GameMode",
+  "pawn": "SFE1Character",
+  "e1_fixtures": 0,
+  "start_cm": [
+    42000,
+    84000,
+    96
+  ],
+  "target": 8,
+  "reached": [
+    {
+      "xy_metres": [
+        41,
+        531
+      ],
+      "seconds": 69.6,
+      "z_cm": 96
+    },
+    {
+      "xy_metres": [
+        80,
+        420
+      ],
+      "seconds": 86.2,
+      "z_cm": 96
+    },
+    {
+      "xy_metres": [
+        60,
+        260
+      ],
+      "seconds": 109.2,
+      "z_cm": 96
+    },
+    {
+      "xy_metres": [
+        -20,
+        150
+      ],
+      "seconds": 128.6,
+      "z_cm": 96
+    },
+    {
+      "xy_metres": [
+        0,
+        -30
+      ],
+      "seconds": 154.3,
+      "z_cm": 98
+    },
+    {
+      "xy_metres": [
+        12,
+        -258
+      ],
+      "seconds": 187.0,
+      "z_cm": 120
+    },
+    {
+      "xy_metres": [
+        22,
+        -531
+      ],
+      "seconds": 226.0,
+      "z_cm": 96
+    }
+  ],
+  "stuck_events": 0,
+  "walk_completed": true,
+  "walk_seconds": 226.0,
+  "final_pawn_cm": [
+    2189,
+    -52801,
+    96
+  ],
+  "elapsed_seconds": 233.2,
+  "passed": true
+}

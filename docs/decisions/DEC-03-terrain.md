@@ -95,6 +95,8 @@ These are future focused verification cases, not tests executed by this document
 
 Revisit representation only if measured capability or compatibility evidence shows the baseline cannot satisfy the bounded scope. Compare a scoped content reduction, a different derived mesh/collision adapter preserving World storage, and an explicit representation migration in that order. Each alternative needs affected contracts, player/data impact and new fixtures; no live console exception or unreviewed algorithm replacement.
 
+Pending evidence for the derived-adapter option: [TER-01](TER-01-mesh-terrain-fit-check.md) spikes UE 5.8 Mesh Terrain as an adapter, base-terrain authoring source or backdrop. It does not change this representation.
+
 Validation: source link targets and named headings checked; documentation-only work, no runtime tests. Independent review and correction evidence are recorded in the work plan. Coordinator owns planning/index integration.
 
 [roadmap]: ../Game-Design/Legends_Shattered_Frontier_Production_Roadmap_v1.0.md

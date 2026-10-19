@@ -162,7 +162,7 @@ The World Simulation Phase 1 plans 6–8 zones per realm across all biomes. That
 
 Renaming Unreal content must be done inside the editor (move, then fix up redirectors), not with Git. [ENV-01](../../decisions/ENV-01-greenlands-preview-rename.md) records the renames and their order. The environment work's licensed Fab content must be restorable on every build machine before Silverbrook can reach the Production stage.
 
-**Silverbrook maturity today:** Concept, with a graybox (`Greenlands_E1`) and an art block-in (`Greenlands_ArtReview`) that have not yet been combined.
+**Silverbrook maturity today:** Graybox. `/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook` is generated from the design board layout and passes a main-route traversal; terrain, water and zone size are open ([zone plan](../../greenlands-silverbrook-zone-plan.md)). `Greenlands_E1` stays the movement test fixture, and `Greenlands_ArtReview` is the art reference.
 
 ## 9. Open decisions
 

@@ -1,0 +1,96 @@
+{
+  "_about": "Silverbrook graybox layout in metres. North is -Y, east is +X; origin is the town centre. Read from docs/Game-Design/concept-art/Silverbrook-Design-Board-v1.webp at 1.8 m per board pixel (the board's own scale bar is inconsistent). Sizes follow settlement definition section 8; depth and unlisted sizes are graybox assumptions. Consumed by build_silverbrook.py and review_silverbrook_in_game.py.",
+  "zone_half_extent": 1250,
+  "seed": 1019,
+  "wall": {"centre": [0, 0], "semi_axis_x": 400, "semi_axis_y": 530, "height": 8, "thickness": 3, "segment_length": 20, "gate_gap": 10, "tower_spacing": 110, "tower": [8, 8, 12]},
+  "gates": {
+    "North Gate": [22, -531],
+    "West Gate": [-401, -158],
+    "East Gate": [401, -180],
+    "South Gate": [41, 531]
+  },
+  "river": {
+    "name": "Silverbrook River",
+    "width": 24,
+    "points": [[-594, -531], [-369, -306], [-189, -248], [-63, -270], [99, -248], [243, -207], [333, -117], [324, 18], [243, 112], [135, 171], [18, 203], [0, 288], [27, 432], [171, 540], [387, 585], [700, 640], [1250, 700]],
+    "bridge_length": 30,
+    "bridge_width": 7
+  },
+  "roads": {
+    "primary_width": 8,
+    "secondary_width": 5,
+    "trail_width": 3,
+    "primary": {
+      "North Street": [[0, -30], [12, -258], [22, -531]],
+      "West Street": [[0, -30], [-401, -158]],
+      "East Street": [[0, -30], [401, -180]],
+      "South Street": [[0, -30], [-20, 150], [60, 260], [80, 420], [41, 531]],
+      "Silvermere Road": [[22, -531], [10, -900], [0, -1250]],
+      "Everwood Road": [[-401, -158], [-800, 300], [-1250, 700]],
+      "Valemere Road": [[41, 531], [500, 900], [1000, 1250]]
+    },
+    "secondary": {
+      "Westfields Lane": [[-401, -158], [-470, 140], [-400, 356]],
+      "Eastwood Lane": [[401, -180], [527, 45], [500, 160]],
+      "Riverside Quay": [[-40, 360], [80, 420], [110, 380]]
+    },
+    "trail": {
+      "Forest Trail": [[401, -180], [542, -275], [900, -600]],
+      "Cemetery Path": [[41, 531], [-60, 600], [-275, 520], [-275, 468]],
+      "Ruins Path": [[527, 45], [545, 207]]
+    }
+  },
+  "districts": {
+    "Northridge": {"centre": [22, -320], "radius": 150, "inside_wall": true, "fill": "elite_house", "count": 15},
+    "The Commons": {"centre": [0, -40], "radius": 190, "inside_wall": true, "fill": "townhouse", "count": 45},
+    "Riverside": {"centre": [41, 342], "radius": 130, "inside_wall": true, "fill": "townhouse", "count": 15},
+    "Westfields": {"centre": [-470, 171], "radius": 150, "inside_wall": false, "fill": "farmhouse", "count": 8},
+    "Eastwood": {"centre": [527, 45], "radius": 140, "inside_wall": false, "fill": "cottage", "count": 22}
+  },
+  "building_types": {
+    "_size": "[width_x, depth_y, height] in metres",
+    "town_hall": [22, 18, 28],
+    "adventurers_guild": [16, 13, 18],
+    "inn": [14, 12, 14],
+    "blacksmith": [14, 12, 14],
+    "temple": [14, 24, 20],
+    "market_stall": [4, 4, 4],
+    "watchtower": [8, 8, 9],
+    "stables": [12, 8, 7],
+    "workshop": [8, 6, 6],
+    "farmhouse": [12, 8, 7],
+    "cottage": [8, 6, 6],
+    "townhouse": [8, 7, 9],
+    "elite_house": [12, 10, 10],
+    "mill": [12, 10, 9],
+    "granary": [8, 8, 10],
+    "wharf": [20, 8, 1],
+    "docks": [30, 10, 1]
+  },
+  "places": [
+    {"key": 1, "name": "Town Hall", "type": "town_hall", "at": [55, -390], "yaw": 0},
+    {"key": 2, "name": "Adventurers' Guild", "type": "adventurers_guild", "at": [-60, -75], "yaw": 0},
+    {"key": 3, "name": "The Golden Stag Inn", "type": "inn", "at": [65, -75], "yaw": 0},
+    {"key": 4, "name": "Blacksmith", "type": "blacksmith", "at": [-60, 25], "yaw": 0},
+    {"key": 5, "name": "Market Square", "type": "plaza", "at": [0, -30], "size": [60, 50]},
+    {"key": 6, "name": "Stables", "type": "stables", "at": [-500, 100], "yaw": 0},
+    {"key": 7, "name": "Temple of the Dawn", "type": "temple", "at": [-95, -340], "yaw": 0},
+    {"key": 8, "name": "Mill & Granary", "type": "mill", "at": [118, 395], "yaw": 0},
+    {"key": 9, "name": "Fisherman's Wharf", "type": "wharf", "at": [-35, 390], "yaw": 0},
+    {"key": 10, "name": "North Gate", "type": "gate"},
+    {"key": 11, "name": "West Gate", "type": "gate"},
+    {"key": 12, "name": "East Gate", "type": "gate"},
+    {"key": 13, "name": "South Gate", "type": "gate"},
+    {"key": 14, "name": "Farmlands", "type": "fields", "at": [-520, 260], "size": [160, 220]},
+    {"key": 15, "name": "Watchtower", "type": "watchtower", "at": [-330, -520], "yaw": 0},
+    {"key": 16, "name": "Cemetery", "type": "yard", "at": [-275, 468], "size": [50, 40]},
+    {"key": 17, "name": "Ruins", "type": "ruins", "at": [545, 207], "size": [30, 24]},
+    {"key": 18, "name": "Forest Trail", "type": "marker", "at": [542, -275]},
+    {"key": 19, "name": "Silverbrook Bridge", "type": "bridge", "at": [18, 203]},
+    {"key": 20, "name": "Riverside Docks", "type": "docks", "at": [110, 470], "yaw": 37}
+  ],
+  "market_stalls": 8,
+  "construction_plots": {"size": 20, "centres": [[430, 215], [470, 215], [510, 220]]},
+  "arrival": {"at": [420, 840], "face": [0, 0]},
+  "review_route": [[420, 840], [41, 531], [80, 420], [60, 260], [-20, 150], [0, -30], [12, -258], [22, -531]]
+}
