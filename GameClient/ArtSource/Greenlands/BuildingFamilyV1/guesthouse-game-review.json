@@ -1,0 +1,123 @@
+{
+  "frame": 3655,
+  "target": 12,
+  "phase": "capture",
+  "view": 3,
+  "reached": [
+    {
+      "local_xy": [
+        0,
+        -1.6
+      ],
+      "height_over_anchor_m": 1.0603014931573782
+    },
+    {
+      "local_xy": [
+        0,
+        0.7
+      ],
+      "height_over_anchor_m": 1.0603014931573782
+    },
+    {
+      "local_xy": [
+        -3.4,
+        0.7
+      ],
+      "height_over_anchor_m": 1.0614999886097964
+    },
+    {
+      "local_xy": [
+        -3.4,
+        1.85
+      ],
+      "height_over_anchor_m": 1.0614999701281094
+    },
+    {
+      "local_xy": [
+        1.5,
+        1.85
+      ],
+      "height_over_anchor_m": 3.851500008556939
+    },
+    {
+      "local_xy": [
+        1.5,
+        0.7
+      ],
+      "height_over_anchor_m": 3.851500008556939
+    },
+    {
+      "local_xy": [
+        -1.9,
+        0.7
+      ],
+      "height_over_anchor_m": 3.851500008556939
+    },
+    {
+      "local_xy": [
+        1.5,
+        0.7
+      ],
+      "height_over_anchor_m": 3.851500008556939
+    },
+    {
+      "local_xy": [
+        1.5,
+        1.85
+      ],
+      "height_over_anchor_m": 3.851500008556939
+    },
+    {
+      "local_xy": [
+        -3.4,
+        1.85
+      ],
+      "height_over_anchor_m": 1.0615000183316594
+    },
+    {
+      "local_xy": [
+        -3.4,
+        0.7
+      ],
+      "height_over_anchor_m": 1.0614999998499721
+    },
+    {
+      "local_xy": [
+        0,
+        -5.6
+      ],
+      "height_over_anchor_m": 0.7646909179012469
+    }
+  ],
+  "clearance": {
+    "positive_wall_blocked": true,
+    "entry_clear": true
+  },
+  "traces": [
+    {
+      "label": "Solid side wall",
+      "blocked": true,
+      "initial_overlap": false,
+      "actor": "StaticMeshActor_34",
+      "component": "/Game/Frontier/Maps/Test/Greenlands_ArtReview.Greenlands_ArtReview:PersistentLevel.StaticMeshActor_34.StaticMeshComponent0"
+    },
+    {
+      "label": "Entry",
+      "blocked": false,
+      "initial_overlap": false,
+      "actor": null,
+      "component": null
+    }
+  ],
+  "scope": "Native pawn movement and static collision only; no AI navigation or gameplay service acceptance",
+  "walk_completed": true,
+  "loft_reached": true,
+  "final_pawn_cm": [
+    -6802.911920900233,
+    -2941.571233999997,
+    17.035048164812284
+  ],
+  "view_started": null,
+  "captured": true,
+  "elapsed_seconds": 85.47
+}

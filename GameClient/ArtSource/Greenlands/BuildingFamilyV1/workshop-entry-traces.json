@@ -1,0 +1,49 @@
+[
+  {
+    "start": [
+      -1,
+      -3.7,
+      1.3
+    ],
+    "end": [
+      -1,
+      -2.7,
+      1.3
+    ],
+    "result": [
+      "True",
+      "False",
+      "0.165326327085495",
+      "16.53263282775879",
+      "<Struct 'Vector' (0x0000023C01CC46A0) {x: -7600.000000, y: -5146.532633, z: 70.565956}>",
+      "<Struct 'Vector' (0x0000023C8A827530) {x: -7600.000000, y: -5181.000641, z: 0.566887}>",
+      "<Struct 'Vector' (0x0000023C8A89E810) {x: 0.000000, y: 0.820667, z: 0.571406}>",
+      "<Struct 'Vector' (0x0000023C8A89E7C0) {x: 0.000000, y: 1.000000, z: 0.000000}>",
+      "<Object '/Engine/EngineMaterials/DefaultPhysicalMaterial.DefaultPhysicalMaterial' (0x0000023CF3C5E700) Class 'PhysicalMaterial'>",
+      "<Object '/Game/Frontier/Maps/Test/Greenlands_ArtReview.Greenlands_ArtReview:PersistentLevel.StaticMeshActor_34' (0x0000023C102C1E00) Class 'StaticMeshActor'>",
+      "<Object '/Game/Frontier/Maps/Test/Greenlands_ArtReview.Greenlands_ArtReview:PersistentLevel.StaticMeshActor_34.StaticMeshComponent0' (0x0000023C102D3200) Class 'StaticMeshComponent'>",
+      "None",
+      "None",
+      "-1",
+      "0",
+      "3100",
+      "<Struct 'Vector' (0x0000023C8A89E860) {x: -7600.000000, y: -5130.000000, z: 70.565956}>",
+      "<Struct 'Vector' (0x0000023C8A89E950) {x: -7600.000000, y: -5230.000000, z: 70.565956}>"
+    ],
+    "native": "(FaceIndex=3100,Time=0.165326,Distance=16.532633,Location=(X=-7600.000000,Y=-5146.532633,Z=70.565956),ImpactPoint=(X=-7600.000000,Y=-5181.000641,Z=0.566887),Normal=(X=0.000000,Y=0.820667,Z=0.571406),ImpactNormal=(X=0.000000,Y=1.000000,Z=0.000000),TraceStart=(X=-7600.000000,Y=-5130.000000,Z=70.565956),TraceEnd=(X=-7600.000000,Y=-5230.000000,Z=70.565956),PenetrationDepth=0.000000,MyItem=-1,Item=-1,ElementIndex=0,bBlockingHit=True,bStartPenetrating=False,PhysMaterial=\"/Script/PhysicsCore.PhysicalMaterial'/Engine/EngineMaterials/DefaultPhysicalMaterial.DefaultPhysicalMaterial'\",HitObjectHandle=(ReferenceObject=\"/Script/Engine.StaticMeshComponent'/Game/Frontier/Maps/Test/Greenlands_ArtReview.Greenlands_ArtReview:PersistentLevel.StaticMeshActor_34.StaticMeshComponent0'\"),Component=\"/Script/Engine.StaticMeshComponent'/Game/Frontier/Maps/Test/Greenlands_ArtReview.Greenlands_ArtReview:PersistentLevel.StaticMeshActor_34.StaticMeshComponent0'\",BoneName=\"\",MyBoneName=\"\")"
+  },
+  {
+    "start": [
+      0.9,
+      -4,
+      1.1
+    ],
+    "end": [
+      0.9,
+      -1,
+      1.1
+    ],
+    "result": "None",
+    "native": null
+  }
+]

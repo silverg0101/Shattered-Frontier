@@ -8,7 +8,7 @@
 
 Primary target: [Designer (6) — The Greenlands](Game-Design/concept-art/Designer%20(6).png). Its intended mood is lush, bright, welcoming and fertile, with rolling valleys, clear water, mixed woodland and friendly settlements. [Concept](Game-Design/concept-art/Concept.png) and [Designer (9)](Game-Design/concept-art/Designer%20(9).png) support the same regional identity. City/stronghold/siege concepts establish broader world ambition; they do not require building a capital city into this starter preview. Concept-map labels are visual/design context, not a new approved world layout.
 
-Compared actual current images in `GameClient/ArtSource/GreenlandsPreview/`: `Settlement-Finished-InGame.png` and `Cottage-Finished-Front-InGame.png` (01:59 local), `Arrival-Woodland-Detail-InGame.png`, `Arrival-Meadow-InGame.png`, `Settlement-Meadow-InGame.png` and `Wildflower-Patch-InGame.png`. The broad arrival/settlement views matter more to this comparison than isolated close-ups. The separate grey construction/harvesting sandbox is a mechanics fixture and cannot represent finished Greenlands art.
+Compared actual current images in `GameClient/ArtSource/Greenlands/`: `Settlement-Finished-InGame.png` and `Cottage-Finished-Front-InGame.png` (01:59 local), `Arrival-Woodland-Detail-InGame.png`, `Arrival-Meadow-InGame.png`, `Settlement-Meadow-InGame.png` and `Wildflower-Patch-InGame.png`. The broad arrival/settlement views matter more to this comparison than isolated close-ups. The separate grey construction/harvesting sandbox is a mechanics fixture and cannot represent finished Greenlands art.
 
 | Aspect | Concept target | Observed gap / correction |
 | --- | --- | --- |

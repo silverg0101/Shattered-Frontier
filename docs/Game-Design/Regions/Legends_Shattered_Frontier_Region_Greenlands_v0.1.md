@@ -152,14 +152,15 @@ The World Simulation Phase 1 plans 6–8 zones per realm across all biomes. That
 | Today | Becomes |
 | --- | --- |
 | `/Game/Frontier/Maps/Greenlands_E1` (graybox, current default map) | The gameplay basis for `zone/greenlands_silverbrook`. It stays a test fixture until the Silverbrook map exists. |
-| `/Game/Frontier/Environment/GreenlandsPreview/` art and its `Greenlands_EnvironmentPreview` map | The Greenlands biome library at `/Game/Frontier/Environment/Greenlands/`. Its arrival and settlement layout is the first art pass for Silverbrook. |
-| `GameClient/ArtSource/GreenlandsPreview/` | `GameClient/ArtSource/Greenlands/` |
+| `/Game/Frontier/Environment/Greenlands/` biome library (renamed from `GreenlandsPreview`, [ENV-01](../../decisions/ENV-01-greenlands-preview-rename.md)) | Shared by every Greenlands zone. |
+| `/Game/Frontier/Maps/Test/Greenlands_ArtReview` (was `Greenlands_EnvironmentPreview`) | Stays an art review map. Its arrival and settlement layout is the first art pass for Silverbrook. |
+| `GameClient/ArtSource/Greenlands/` (was `GreenlandsPreview`) | Art sources and editor scripts for the biome library. |
 | `/Game/Frontier/Maps/Greenlands_ConstructionSandbox` | Stays a test map. |
 | No zone or region content data | `content/world/regions/greenlands` and `content/world/zones/greenlands_silverbrook`, per the standard |
 
-Renaming Unreal content must be done inside the editor (move, then fix up redirectors), not with Git. The environment work's licensed Fab content must be restorable on every build machine before Silverbrook can reach the Production stage.
+Renaming Unreal content must be done inside the editor (move, then fix up redirectors), not with Git. [ENV-01](../../decisions/ENV-01-greenlands-preview-rename.md) records the renames and their order. The environment work's licensed Fab content must be restorable on every build machine before Silverbrook can reach the Production stage.
 
-**Silverbrook maturity today:** Concept, with a graybox (`Greenlands_E1`) and an art block-in (`Greenlands_EnvironmentPreview`) that have not yet been combined.
+**Silverbrook maturity today:** Concept, with a graybox (`Greenlands_E1`) and an art block-in (`Greenlands_ArtReview`) that have not yet been combined.
 
 ## 9. Open decisions
 

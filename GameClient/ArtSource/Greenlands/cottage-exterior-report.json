@@ -1,0 +1,12 @@
+{
+  "cottages": 4,
+  "wall_material": "/Game/Frontier/Environment/Greenlands/Arrival/Materials/M_CottageExteriorPlaster.M_CottageExteriorPlaster",
+  "wood_material": "/Game/Frontier/Environment/Greenlands/Arrival/Materials/M_CottageExteriorTimber.M_CottageExteriorTimber",
+  "wall_texture_metres": 2.0,
+  "channels": [
+    "Scanned diffuse",
+    "DirectX tangent normal",
+    "Scanned roughness"
+  ],
+  "scope": "Owned exterior skins only; existing wall collision, doors, other maps and gameplay remain intact"
+}

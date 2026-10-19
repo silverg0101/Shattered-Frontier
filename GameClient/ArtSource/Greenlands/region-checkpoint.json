@@ -1,0 +1,27 @@
+{
+  "map": "/Game/Frontier/Maps/Test/Greenlands_ArtReview",
+  "terrain_metres": [
+    600,
+    600
+  ],
+  "route_metres": 956.1,
+  "trees": 410,
+  "plots": 3,
+  "plot_metres": [
+    20,
+    20
+  ],
+  "cottages": 4,
+  "design_roles": [
+    "Arrival",
+    "Settlement",
+    "Build_West",
+    "Build_Central",
+    "Build_East",
+    "Resource_Grove",
+    "Stone_Outcrop",
+    "Enemy_Clearing",
+    "Return_Overlook"
+  ],
+  "status": "Authored environment and static scenery; no claims, nodes, combat, economy, terrain edits or networking implemented here."
+}

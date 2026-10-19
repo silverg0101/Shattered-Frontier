@@ -1,0 +1,85 @@
+{
+  "source": "Acquired Medieval Village Megascans Sample",
+  "distribution": "Licensed local Fab content, excluded from public Git",
+  "meshes": [
+    {
+      "name": "SM_WhiteEverlasting_00",
+      "package": "/Game/Frontier/Environment/Greenlands/Garden/Megascans/3D_Plants/WhiteEverlasting/SM_WhiteEverlasting_00",
+      "minimum": [
+        -15.200665473937988,
+        -9.746744155883789,
+        -0.724029541015625
+      ],
+      "dimensions": [
+        30.508141040802002,
+        22.029220581054688,
+        27.920738220214844
+      ],
+      "lods": 4
+    },
+    {
+      "name": "SM_WhiteEverlasting_01",
+      "package": "/Game/Frontier/Environment/Greenlands/Garden/Megascans/3D_Plants/WhiteEverlasting/SM_WhiteEverlasting_01",
+      "minimum": [
+        -4.330080986022949,
+        -2.9866652488708496,
+        -0.43508148193359375
+      ],
+      "dimensions": [
+        9.922289848327637,
+        9.175154685974121,
+        19.59021759033203
+      ],
+      "lods": 4
+    },
+    {
+      "name": "SM_LeafyDandelions_00",
+      "package": "/Game/Frontier/Environment/Greenlands/Garden/Megascans/3D_Plants/LeafyDandelions/SM_LeafyDandelions_00",
+      "minimum": [
+        -21.543532371520996,
+        -26.164796829223633,
+        -0.8201942443847656
+      ],
+      "dimensions": [
+        45.059913635253906,
+        45.21134281158447,
+        23.4647216796875
+      ],
+      "lods": 4
+    },
+    {
+      "name": "SM_LeafyDandelions_02",
+      "package": "/Game/Frontier/Environment/Greenlands/Garden/Megascans/3D_Plants/LeafyDandelions/SM_LeafyDandelions_02",
+      "minimum": [
+        -15.692858219146729,
+        -18.536154747009277,
+        -1.3362922668457031
+      ],
+      "dimensions": [
+        42.62498092651367,
+        40.31798553466797,
+        23.567596435546875
+      ],
+      "lods": 4
+    }
+  ],
+  "mapping": {
+    "/Game/Megascans/3D_Plants/LeafyDandelions/T_LeafyDandelions_T": "/Game/Frontier/Environment/Greenlands/Garden/Megascans/3D_Plants/LeafyDandelions/T_LeafyDandelions_T",
+    "/Game/Megascans/3D_Plants/LeafyDandelions/T_LeafyDandelions_O": "/Game/Frontier/Environment/Greenlands/Garden/Megascans/3D_Plants/LeafyDandelions/T_LeafyDandelions_O",
+    "/Game/Megascans/3D_Plants/LeafyDandelions/T_LeafyDandelions_N": "/Game/Frontier/Environment/Greenlands/Garden/Megascans/3D_Plants/LeafyDandelions/T_LeafyDandelions_N",
+    "/Game/Megascans/3D_Plants/LeafyDandelions/T_LeafyDandelions_A": "/Game/Frontier/Environment/Greenlands/Garden/Megascans/3D_Plants/LeafyDandelions/T_LeafyDandelions_A",
+    "/Game/Megascans/3D_Plants/WhiteEverlasting/T_WhiteEverlasting_T": "/Game/Frontier/Environment/Greenlands/Garden/Megascans/3D_Plants/WhiteEverlasting/T_WhiteEverlasting_T",
+    "/Game/Megascans/3D_Plants/WhiteEverlasting/T_WhiteEverlasting_O": "/Game/Frontier/Environment/Greenlands/Garden/Megascans/3D_Plants/WhiteEverlasting/T_WhiteEverlasting_O",
+    "/Game/Megascans/3D_Plants/WhiteEverlasting/T_WhiteEverlasting_N": "/Game/Frontier/Environment/Greenlands/Garden/Megascans/3D_Plants/WhiteEverlasting/T_WhiteEverlasting_N",
+    "/Game/Megascans/3D_Plants/WhiteEverlasting/T_WhiteEverlasting_A": "/Game/Frontier/Environment/Greenlands/Garden/Megascans/3D_Plants/WhiteEverlasting/T_WhiteEverlasting_A",
+    "/Game/Megascans/3D_Plants/LeafyDandelions/SM_LeafyDandelions_02": "/Game/Frontier/Environment/Greenlands/Garden/Megascans/3D_Plants/LeafyDandelions/SM_LeafyDandelions_02",
+    "/Game/Megascans/3D_Plants/LeafyDandelions/MI_LeafyDandelions": "/Game/Frontier/Environment/Greenlands/Garden/Megascans/3D_Plants/LeafyDandelions/MI_LeafyDandelions",
+    "/Game/Megascans/3D_Plants/LeafyDandelions/SM_LeafyDandelions_00": "/Game/Frontier/Environment/Greenlands/Garden/Megascans/3D_Plants/LeafyDandelions/SM_LeafyDandelions_00",
+    "/Game/Megascans/3D_Plants/WhiteEverlasting/SM_WhiteEverlasting_01": "/Game/Frontier/Environment/Greenlands/Garden/Megascans/3D_Plants/WhiteEverlasting/SM_WhiteEverlasting_01",
+    "/Game/Megascans/3D_Plants/WhiteEverlasting/MI_WhiteEverlasting": "/Game/Frontier/Environment/Greenlands/Garden/Megascans/3D_Plants/WhiteEverlasting/MI_WhiteEverlasting",
+    "/Game/Megascans/3D_Plants/WhiteEverlasting/SM_WhiteEverlasting_00": "/Game/Frontier/Environment/Greenlands/Garden/Megascans/3D_Plants/WhiteEverlasting/SM_WhiteEverlasting_00"
+  },
+  "reused": [
+    "/Game/Frontier/Environment/Greenlands/Village/Materials/Masters/M_FoliageCustomWind"
+  ]
+}
