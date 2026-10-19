@@ -43,6 +43,7 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Input Timing", meta=(ClampMin="0", ClampMax="0.2", DisplayName="Minimum input timing variation", ToolTip="Standard deviation divided by mean input interval over200 practice inputs. Release authors; next session.")) float TimingCoefficientMinimum = 0.05f;
     UPROPERTY(Config, EditAnywhere, Category="Input Timing", meta=(ClampMin="0", ClampMax="1", DisplayName="Uniform input timing practice multiplier", ToolTip="Improvement multiplier when the latest200 practice inputs are unusually regular. Release authors; next session.")) float RegularTimingGainFactor = 0.25f;
     bool Validate() const;
+    UPROPERTY(Config, EditAnywhere, Category="Skill Choices", meta=(ClampMin="5", ClampMax="60", Units="s", DisplayName="Time between training preference changes", ToolTip="Per-skill minimum delay between accepted player training preference changes. Release authors; captured next session. Cannot shorten the canonical five-second limit.")) float SkillLockChangeCooldownSeconds = 5;
 };
 
 USTRUCT(BlueprintType)

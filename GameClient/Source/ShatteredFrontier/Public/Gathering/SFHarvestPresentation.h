@@ -6,6 +6,9 @@
 #include "SFHarvestPresentation.generated.h"
 
 class USFHarvestImpactAudio;
+class USFHarvestTreeFallSettings;
+class ASFHarvestFallingTree;
+class UBoxComponent;
 class UStaticMesh;
 class UStaticMeshComponent;
 class UProceduralMeshComponent;
@@ -63,14 +66,21 @@ public:
         double ReachCm,const UPrimitiveComponent* TargetProxy,FSFHarvestVisualCut& Cut) const;
     bool ValidateContact(const FVector& Eye,const APawn* Interactor,double ReachCm,
         const UPrimitiveComponent* TargetProxy,const FSFHarvestVisualCut& Cut) const;
-    void ApplyState(const TArray<FSFHarvestVisualCut>& Cuts,bool bDepleted,uint32 Generation);
+    void ApplyState(const TArray<FSFHarvestVisualCut>& Cuts,bool bDepleted,uint32 Generation,ASFHarvestFallingTree* FallingTree=nullptr);
+    ASFHarvestFallingTree* BeginTreeFall(uint32 Generation,const FSFHarvestVisualCut& FinalCut);
+    bool IsTreeDetachedTo(const ASFHarvestFallingTree* Tree) const;
 private:
     bool bWood=false;
+    bool bSupportsTreeFelling=false;
     bool bSawInitialState=false;
     int32 AppliedCuts=0;
     uint32 AppliedGeneration=0;
     TArray<FSFHarvestVisualCut> AppliedCutSnapshot;
     UPROPERTY() TObjectPtr<USFHarvestPresentationSettings> Settings;
+    UPROPERTY() TObjectPtr<USFHarvestTreeFallSettings> TreeFallSettings;
+    UPROPERTY() TObjectPtr<ASFHarvestFallingTree> DetachedTree;
+    UPROPERTY() TObjectPtr<UProceduralMeshComponent> FallingCollar;
+    UPROPERTY() TObjectPtr<UBoxComponent> StumpCollision;
     UPROPERTY() TObjectPtr<USFHarvestImpactAudio> ImpactAudio;
     UPROPERTY() TObjectPtr<UStaticMesh> Source;
     UPROPERTY() TObjectPtr<UProceduralMeshComponent> Surface;

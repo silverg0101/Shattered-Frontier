@@ -28,4 +28,16 @@ inline constexpr double MaxCutDimensionCm = 100.0;
 // Keeps source overlays; new interior faces use material slot 1 and planar UVs.
 bool Subtract(const UE::Geometry::FDynamicMesh3& Source, const FCut& Cut,
     UE::Geometry::FDynamicMesh3& Out, FString* Failure = nullptr);
+
+struct FTreeSplit
+{
+    FCut FinalCut;
+    FVector3d FallDirection = FVector3d::UnitX();
+};
+
+// Splits the already-notched LOWER trunk at the approved contact height. The
+// complementary collar stays in original local coordinates for authored upper
+// trunk attachment. Both outputs are staged; no output changes on failure.
+bool SplitTree(const UE::Geometry::FDynamicMesh3& CurrentLowerTrunk,const FTreeSplit& Split,
+    UE::Geometry::FDynamicMesh3& OutStump,UE::Geometry::FDynamicMesh3& OutUpperCollar,FString* Failure=nullptr);
 }

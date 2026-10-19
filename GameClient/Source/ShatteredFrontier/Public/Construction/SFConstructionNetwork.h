@@ -12,6 +12,7 @@ class UPrimitiveComponent;
 class UStaticMesh;
 class ASFConstructionNetworkController;
 class USFConstructionSandboxPalette;
+class USFGatheringSkillsPanel;
 enum class ESFConstructionPaletteAction : uint8;
 
 UENUM()
@@ -159,6 +160,9 @@ private:
     void InitializeLocalControls();
     void ApplyCursorMode();
     void LayoutPalette();
+    void EnsureGatheringSkillsPanel();
+    void ToggleGatheringSkillsPanel();
+    void HandleEscape();
     void BeginCameraLook();
     void EndCameraLook();
     void ApplicationActivationChanged(bool bActive);
@@ -208,6 +212,9 @@ private:
     uint8 SelectedRotation = 0;
     uint8 SelectedYaw = 0;
     UPROPERTY(Transient) TObjectPtr<USFConstructionSandboxPalette> Palette;
+    UPROPERTY(Transient) TObjectPtr<USFGatheringSkillsPanel> GatheringSkillsPanel;
+    FIntPoint SkillsPanelViewportSize = FIntPoint::ZeroValue;
+    float SkillsPanelViewportScale = 0;
     bool bCameraLookHeld = false;
     bool bOwnsLookSuppression = false;
     bool bApplicationActive = true;

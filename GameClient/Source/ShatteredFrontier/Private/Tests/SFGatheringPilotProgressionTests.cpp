@@ -56,12 +56,32 @@ bool FSFGatheringPilotProgressionTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Failed capacity preflight gives no practice"),Gather->Skills.PracticeCount,int64(1));
     TestEqual(TEXT("Failed/canceled channels preserve remaining charges"),Wood->State.Charges,2);
     Bag->MaxWeight=24;
-    Gather->Skills.Locks[int32(ESFGatheringSkill::Logging)]=ESFGatheringSkillLock::Locked;
+    Gather->ServerChangeSkillLock_Implementation(ESFGatheringSkill(255),ESFGatheringSkillLock::Locked);
+    Gather->ServerChangeSkillLock_Implementation(ESFGatheringSkill::Logging,ESFGatheringSkillLock(255));
+    TestEqual(TEXT("Malformed skill/lock requests leave preference unchanged"),Gather->Skills.Locks[1],ESFGatheringSkillLock::Up);
+    Gather->ServerChangeSkillLock_Implementation(ESFGatheringSkill::Logging,ESFGatheringSkillLock::Up);
+    TestEqual(TEXT("Selecting current preference does not start cooldown"),Gather->SkillLockReadyAt[1],0.0);
+    Gather->bEnabled=false;
+    Gather->ServerChangeSkillLock_Implementation(ESFGatheringSkill::Logging,ESFGatheringSkillLock::Locked);
+    TestEqual(TEXT("Disabled endpoint cannot change preferences"),Gather->Skills.Locks[1],ESFGatheringSkillLock::Up);
+    Gather->bEnabled=true;
+    Gather->ServerChangeSkillLock_Implementation(ESFGatheringSkill::Logging,ESFGatheringSkillLock::Locked);
+    TestEqual(TEXT("Player chooses to hold logging"),Gather->Skills.Locks[1],ESFGatheringSkillLock::Locked);
+    TestTrue(TEXT("Server starts declared preference cooldown"),Gather->GetSkillLockCooldownRemaining(ESFGatheringSkill::Logging)>4.9f);
+    Gather->ServerChangeSkillLock_Implementation(ESFGatheringSkill::Logging,ESFGatheringSkillLock::Up);
+    TestEqual(TEXT("Rapid preference change is rejected"),Gather->Skills.Locks[1],ESFGatheringSkillLock::Locked);
+    Gather->ServerChangeSkillLock_Implementation(ESFGatheringSkill::Mining,ESFGatheringSkillLock::Down);
+    TestEqual(TEXT("Cooldown is per skill"),Gather->Skills.Locks[0],ESFGatheringSkillLock::Down);
     Gather->ServerGatheringAction_Implementation(Wood,1,4); Tick();
     TestEqual(TEXT("Locked skill still permits beginner harvesting"),Gather->Feedback.Result,ESFGatheringPilotResult::Granted);
     TestEqual(TEXT("Locked successful harvest still records practice"),Gather->Skills.PracticeCount,int64(2));
     TestEqual(TEXT("Locked skill cannot gain"),Gather->Skills.Get(ESFGatheringSkill::Logging),1);
     TestFalse(TEXT("No gain notification fabricated for locked skill"),Gather->Feedback.bSkillGained);
+    for (int32 I=0;I<100;++I) { Fixture.TickTestWorld(0.05f); }
+    Gather->ServerChangeSkillLock_Implementation(ESFGatheringSkill::Logging,ESFGatheringSkillLock::Down);
+    TestEqual(TEXT("Preference changes after server cooldown"),Gather->Skills.Locks[1],ESFGatheringSkillLock::Down);
+    TestEqual(TEXT("Allow decrease never immediately deletes skill points"),Gather->Skills.Get(ESFGatheringSkill::Logging),1);
+    TestEqual(TEXT("Preference changes never fabricate practice"),Gather->Skills.PracticeCount,int64(2));
     // Test-only content seam exercises future authored tier gates without publishing
     // advanced material identities or exposing a live tier mutation setting/RPC.
     Wood->TestProfileTier=ESFGatheringMaterialTier::Uncommon; Gather->Skills.Values[1]=99;

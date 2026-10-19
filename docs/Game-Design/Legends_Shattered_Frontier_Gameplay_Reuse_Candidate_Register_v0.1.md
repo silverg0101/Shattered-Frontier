@@ -66,3 +66,19 @@ The first three showed AI-use metadata Yes, generated-with-AI No; animation samp
 Downloads were preserved; inspection copies/reports/previews remain under ignored `Artifacts/HarvestSourceReview/`. Candidate availability does not override the harvesting quality contract.
 
 [Mighty Oak Trees by Jagobo](https://sketchfab.com/3d-models/mighty-oak-trees-4f6ab5594a8a415aba3f958682b9ced5): user downloaded original Blender ZIP2026-10-19. Signed-in dialog identifies [CC-BY4.0](https://creativecommons.org/licenses/by/4.0/), creator attribution and commercial use. Three complete old oaks with bark color/normal/roughness and foliage color, advertised100–140k triangles/tree. Source/render review in progress; record source hash, credit and modifications before any adoption.
+
+## Next material/effects candidates (2026-10-19)
+
+The session skill foundation is implemented; an actual uncommon material still needs its own suitable source and crafting identity. No free commercially usable complete ash tree was verified in this bounded follow-up. Nothing below was downloaded, installed or adopted.
+
+| Candidate | Verified fit and decision |
+| --- | --- |
+| [High Detail Ash Trees](https://www.fab.com/listings/bed243e4-6bd3-438f-8ba5-930b4de29809) / [creator Sketchfab listing](https://sketchfab.com/3d-models/high-detail-ash-trees-e88c882570ed49979e83eb1386c4a80c) | Nine complete Fraxinus variants, separate bark/foliage and editable source look relevant to `ash_log`. **Not verified free:** Sketchfab says Buy Royalty Free; readable Fab price/license were unavailable. Keep unresolved; do not buy or substitute another species just to exercise a gate. |
+| [Japanese Ash Tree](https://sketchfab.com/3d-models/japanese-ash-tree-6aa7c758064a4991abd40e560b7ff6e8) | Free complete tree, but explicitly CC Attribution-NonCommercial. Rejected for shipping. |
+| [Wood Splinters](https://www.fab.com/listings/50ef0193-0c22-4aec-8ef2-a9faf4e7c7d3) | Listing explicitly Free;0.29m atlas with opacity and surface maps. Potential lightweight splinter cards after license/source review; this is a texture set, not ready meshes or Niagara effects. Exact license selection was not exposed in readable page data. |
+| [Wood Debris](https://www.fab.com/listings/fdcb0a34-f09f-42d5-8403-b500b9055dc0) | Listing explicitly Free; closed2×9×1cm mesh, useful fragment scale. Weathered/eroded tags make fresh-chip suitability uncertain. Exact license/source review remains open. |
+| [Broken branch debris](https://www.fab.com/listings/64d0acef-46e3-4a55-931b-e5944edc9024?lang=en) | Explicitly Free; optimized FBX/4K surface maps, mossy/weathered scatter. Later ground-dressing candidate; poor fresh axe-chip fit. Exact license review remains open. |
+
+Ash search hits [ceb8f233](https://www.fab.com/listings/ceb8f233-d00e-4b96-a3ea-2bf2f1556034) and [abe53b65](https://www.fab.com/listings/abe53b65-5392-4f5f-b54d-6390f2845a38) are texture atlases; [Ash Tree Trunk](https://www.fab.com/listings/6aee6616-f976-4f43-bde4-e19086e03de3) is an open1.98m trunk. None supplies a complete harvestable ash tree. The free [spruce stump](https://www.fab.com/listings/f86148c9-6939-443b-9540-1eb6148ac873) must not be relabeled oak/ash.
+
+Felling observation reference: [Husqvarna directional felling](https://www.husqvarna.com/ca-en/learn-and-discover/academy/chainsaw-academy/basic-tree-felling/felling-trees/understanding-directional-felling/) describes notch, retained hinge, guided rotation and separation. Use as motion observation without copying its media. It is chainsaw guidance, not an axe animation or game implementation.

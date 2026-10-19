@@ -14,6 +14,12 @@ Canonical references: [GatheringÂ§1.3â€“1.5 andÂ§2.0](Game-Design/Craft
 
 The adapter covers the six canonical gathering skills. Only logging and mining currently have playable gathering content. Account rested/diversity/event/catch-up bonuses, security-risk projections, other skill tracks, specialization, XP and durable account storage are outside this pilot; unavailable gain modifiers remain neutral. Production caps across other tracks and authoritative service transactions still require their production owners.
 
+## Player training preferences
+
+In development: M opens a gathering skills panel with current logging/mining values and explicit Train, Hold and Allow decrease choices. Hold prevents future gains; Allow decrease supplies donor points only when a new gain needs room at the gathering-track cap. Choosing it never immediately removes points. These preferences do not prevent harvesting a resource whose requirements are met.
+
+The owning controller requests a preference, never a skill value. The server validates admission, enum values and a separate cooldown for each skill. `SkillLockChangeCooldownSeconds` ships at5s, accepts5–60s, is controlled by release authors and takes effect next session. Selected actions and actions awaiting cooldown are unavailable in the panel. Skills, preferences and deadlines replicate only to the owner. This session pilot does not persist choices after reconnect. Build02 succeeded (5.90s incremental), and the two focused progression cases passed (`gathering-skill-choices-authority-01`). The first concurrent-client check (`gathering-skill-choices-20261019-044053-278`) verified initial choices, independent skills and rapid reversal rejection, then failed waiting for the post-cooldown Train confirmation on both clients. This network issue remains open; the panel has not yet been rendered/reviewed.
+
 ## Next content increment
 
 Add a visibly identifiable uncommon resource with its distinct catalogue output and compatible recipe/workshop use; retain useful beginner materials. Existing design candidates include `ash_log` and the worked-timber recipe, which also requires iron nails and carpentry250. Do not rename oak or raise its requirement merely to demonstrate a skill gate. Higher material tiers require authored ecological/visual differences and their own content release.
@@ -22,7 +28,7 @@ Add a visibly identifiable uncommon resource with its distinct catalogue output 
 
 `USFGatheringProgressionSettings` exposes bounded, labeled release-author controls with shipped defaults in `DefaultGame.ini`: base gain0.15, maximum chance0.9, standard practice6s, difficulty optimum25/width100 skill points, expert/master/legendary multipliers0.9/0.8/0.5, fatigue window240min/free90min/floor0.25, repetition threshold80/hour, input-timing coefficient minimum0.05 and regular-timing multiplier0.25. Values are captured per admitted controller for the next world/session; invalid settings disable the pilot at startup. This is a local release configuration adapter, not a shipped live admin workflow. Formula topology, tier mapping, lock semantics and caps stay in versioned code.
 
-Supported local controls include difficulty/duration/band effects, rolling active-minute fatigue, same-resource repetition, the last200 successful-practice inputs, hourly gain ceiling, skill locks and gathering-track cap/down-skill donors. Unspecialized skill cap is900. Other-track/global projections and production anti-cheat reporting are absent. The practice context uses canonical resource identity and authored node position, stable across renewal; production World cell IDs are not available. No player lock-change UI is introduced.
+Supported local controls include difficulty/duration/band effects, rolling active-minute fatigue, same-resource repetition, the last200 successful-practice inputs, hourly gain ceiling, skill locks and gathering-track cap/down-skill donors. Unspecialized skill cap is900. Other-track/global projections and production anti-cheat reporting are absent. The practice context uses canonical resource identity and authored node position, stable across renewal; production World cell IDs are not available. The player preference panel uses the existing lock semantics.
 
 ## Verification
 

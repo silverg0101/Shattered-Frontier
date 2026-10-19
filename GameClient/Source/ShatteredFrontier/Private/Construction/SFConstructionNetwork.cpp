@@ -1,5 +1,6 @@
 #include "Construction/SFConstructionNetwork.h"
 #include "Gathering/SFGatheringPilot.h"
+#include "Gathering/SFGatheringSkillsPanel.h"
 #if SF_WITH_MINIMAL_INVENTORY
 #include "InventoryComponent.h"
 #endif
@@ -839,7 +840,36 @@ void ASFConstructionNetworkController::InitializeLocalControls()
         if (bRegisterFocus && !ActivationHandle.IsValid() && FSlateApplication::IsInitialized())
         { ActivationHandle=FSlateApplication::Get().OnApplicationActivationStateChanged().AddUObject(this,&ASFConstructionNetworkController::ApplicationActivationChanged); }
     }
+    EnsureGatheringSkillsPanel();
     ApplyCursorMode();
+}
+
+void ASFConstructionNetworkController::EnsureGatheringSkillsPanel()
+{
+    if (GatheringSkillsPanel || !IsLocalController() || GetNetMode()!=NM_Client || !GetLocalPlayer()
+        || !GetLocalPlayer()->ViewportClient || !GatheringPilot || !GatheringPilot->IsEnabled()) { return; }
+    GatheringSkillsPanel=CreateWidget<USFGatheringSkillsPanel>(this,USFGatheringSkillsPanel::StaticClass());
+    if (!GatheringSkillsPanel) { return; }
+    GatheringSkillsPanel->Configure(GatheringPilot);
+    GatheringSkillsPanel->AddToViewport(20);
+    GatheringSkillsPanel->SetDesiredSizeInViewport(FVector2D(500,470));
+    GatheringSkillsPanel->SetVisibility(ESlateVisibility::Collapsed);
+}
+
+void ASFConstructionNetworkController::ToggleGatheringSkillsPanel()
+{
+    EnsureGatheringSkillsPanel();
+    if (!GatheringSkillsPanel || !GatheringPilot || !GatheringPilot->IsEnabled() || bCameraLookHeld) { return; }
+    const bool bOpen=GatheringSkillsPanel->GetVisibility()!=ESlateVisibility::Visible;
+    GatheringSkillsPanel->SetVisibility(bOpen ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    if (bOpen) { SkillsPanelViewportSize=FIntPoint::ZeroValue; }
+}
+
+void ASFConstructionNetworkController::HandleEscape()
+{
+    if (GatheringSkillsPanel && GatheringSkillsPanel->GetVisibility()==ESlateVisibility::Visible)
+    { GatheringSkillsPanel->SetVisibility(ESlateVisibility::Collapsed); return; }
+    CancelCursorAction();
 }
 
 void ASFConstructionNetworkController::LayoutPalette()
@@ -868,6 +898,7 @@ void ASFConstructionNetworkController::EndPlay(const EEndPlayReason::Type Reason
     if (ActivationHandle.IsValid() && FSlateApplication::IsInitialized())
     { FSlateApplication::Get().OnApplicationActivationStateChanged().Remove(ActivationHandle); }
     if (Palette) { Palette->OnAction.Unbind(); Palette->RemoveFromParent(); Palette=nullptr; }
+    if (GatheringSkillsPanel) { GatheringSkillsPanel->RemoveFromParent(); GatheringSkillsPanel=nullptr; }
     if (bOwnsLookSuppression) { SetIgnoreLookInput(false); bOwnsLookSuppression=false; }
     Super::EndPlay(Reason);
 }
@@ -879,6 +910,7 @@ bool ASFConstructionNetworkController::CanUseConstructionControls() const
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (bScenarioCursor) { return !bSyntheticPointerOverPalette; }
 #endif
+    if (GatheringSkillsPanel && GatheringSkillsPanel->GetVisibility()==ESlateVisibility::Visible && GatheringSkillsPanel->IsHovered()) { return false; }
     return !Palette || !Palette->IsPointerOverPalette();
 }
 
@@ -1025,7 +1057,8 @@ void ASFConstructionNetworkController::SetupInputComponent()
     InputComponent->BindKey(EKeys::P,IE_Pressed,this,&ASFConstructionNetworkController::TogglePlacementPlane);
     InputComponent->BindKey(EKeys::PageDown,IE_Pressed,this,&ASFConstructionNetworkController::LayerDown);
     InputComponent->BindKey(EKeys::PageUp,IE_Pressed,this,&ASFConstructionNetworkController::LayerUp);
-    InputComponent->BindKey(EKeys::Escape,IE_Pressed,this,&ASFConstructionNetworkController::CancelCursorAction);
+    InputComponent->BindKey(EKeys::Escape,IE_Pressed,this,&ASFConstructionNetworkController::HandleEscape);
+    InputComponent->BindKey(EKeys::M,IE_Pressed,this,&ASFConstructionNetworkController::ToggleGatheringSkillsPanel);
     InputComponent->BindKey(EKeys::R,IE_Pressed,this,&ASFConstructionNetworkController::RotatePiece);
 }
 
@@ -1403,6 +1436,24 @@ void ASFConstructionNetworkController::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
     if (IsLocalController())
     {
+        EnsureGatheringSkillsPanel();
+        if (GatheringSkillsPanel && GatheringSkillsPanel->GetVisibility()==ESlateVisibility::Visible)
+        {
+            int32 Width=0,Height=0; GetViewportSize(Width,Height);
+            const float Scale=UWidgetLayoutLibrary::GetViewportScale(this);
+            if (Width>0 && Height>0 && FMath::IsFinite(Scale) && Scale>0
+                && (SkillsPanelViewportSize!=FIntPoint(Width,Height) || !FMath::IsNearlyEqual(SkillsPanelViewportScale,Scale)))
+            {
+                SkillsPanelViewportSize=FIntPoint(Width,Height); SkillsPanelViewportScale=Scale;
+                const float PanelWidth=FMath::Min(500.f,FMath::Max(1.f,float(Width)-16.f));
+                const float PanelHeight=FMath::Min(470.f,FMath::Max(1.f,float(Height)-16.f));
+                GatheringSkillsPanel->SetDesiredSizeInViewport(FVector2D(PanelWidth,PanelHeight));
+                GatheringSkillsPanel->SetRenderTransformPivot(FVector2D::ZeroVector);
+                GatheringSkillsPanel->SetRenderScale(FVector2D(1.f/Scale));
+                GatheringSkillsPanel->SetPositionInViewport(FVector2D(FMath::Clamp((Width-PanelWidth)/2.f,8.f,FMath::Max(8.f,float(Width)-PanelWidth-8.f)),
+                    FMath::Clamp((Height-PanelHeight)/2.f,8.f,FMath::Max(8.f,float(Height)-PanelHeight-8.f))));
+            }
+        }
         if (GEngine) { GEngine->RemoveOnScreenDebugMessage(uint64(GetUniqueID())); }
         RefreshPlacementPreview(true);
         if (Palette)

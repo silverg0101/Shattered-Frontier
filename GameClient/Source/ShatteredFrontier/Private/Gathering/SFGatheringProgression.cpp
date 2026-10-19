@@ -8,7 +8,7 @@ bool USFGatheringProgressionSettings::Validate() const
         &&In(MasterGainFactor,0,1)&&In(LegendaryGainFactor,0,1)&&FatigueWindowMinutes>=120&&FatigueWindowMinutes<=480
         &&FatigueFreeMinutes>=0&&FatigueFreeMinutes<=120&&FatigueFreeMinutes<FatigueWindowMinutes
         &&In(FatigueFloor,0.1,1)&&RepetitionThreshold>=1&&RepetitionThreshold<=1000
-        &&In(TimingCoefficientMinimum,0,0.2)&&In(RegularTimingGainFactor,0,1);
+        &&In(TimingCoefficientMinimum,0,0.2)&&In(RegularTimingGainFactor,0,1)&&In(SkillLockChangeCooldownSeconds,5,60);
 }
 
 const TCHAR* FSFGatheringProgressionSession::SkillId(ESFGatheringSkill Skill)

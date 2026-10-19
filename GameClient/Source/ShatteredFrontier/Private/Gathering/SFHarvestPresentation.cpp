@@ -1,6 +1,8 @@
 #include "Gathering/SFHarvestPresentation.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Gathering/SFHarvestImpactAudio.h"
+#include "Gathering/SFHarvestFallingTree.h"
+#include "Components/BoxComponent.h"
 #include "Gathering/SFHarvestLocalizedGeometry.h"
 #include "Framework/SFE1Settings.h"
 #include "Components/StaticMeshComponent.h"
@@ -31,6 +33,44 @@ bool CanonicalizeVector(VectorType& Value)
     if (!Decoded.NetSerialize(Reader,nullptr,bSuccess)||!bSuccess||Reader.IsError()||Decoded.ContainsNaN()) { return false; }
     Value=Decoded; return true;
 }
+void CopyHarvestSurface(const FDynamicMesh3& Mesh,UProceduralMeshComponent* Surface)
+{
+    if (!Surface) { return; }
+    Surface->ClearAllMeshSections(); const auto* Attr=Mesh.Attributes();
+    for (int32 Material=0;Material<2;++Material)
+    {
+        TArray<FVector> Vertices,Normals; TArray<int32> Indices; TArray<FVector2D> UVs; TArray<FLinearColor> Colors;
+        TArray<FProcMeshTangent> Tangents;
+        for (int32 T:Mesh.TriangleIndicesItr())
+        {
+            if ((Attr&&Attr->HasMaterialID()?Attr->GetMaterialID()->GetValue(T):0)!=Material) { continue; }
+            const auto Tri=Mesh.GetTriangle(T); const auto UVTri=Attr->PrimaryUV()->GetTriangle(T);
+            const auto NormalTri=Attr->PrimaryNormals()->GetTriangle(T);
+            for (int32 K=0;K<3;++K)
+            {
+                Indices.Add(Vertices.Num()); Vertices.Add(FVector(Mesh.GetVertex(Tri[K])));
+                Normals.Add(FVector(Attr->PrimaryNormals()->GetElement(NormalTri[K])));
+                UVs.Add(FVector2D(Attr->PrimaryUV()->GetElement(UVTri[K])));
+            }
+        }
+        // Real tangent basis is needed for normal-mapped bark/stone.
+        TArray<FVector> CalculatedNormals;
+        UKismetProceduralMeshLibrary::CalculateTangentsForMesh(Vertices,Indices,UVs,CalculatedNormals,Tangents);
+        Surface->CreateMeshSection_LinearColor(Material,Vertices,Indices,Normals,UVs,Colors,Tangents,false);
+    }
+}
+
+SFHarvestLocalizedGeometry::FTreeSplit TreeSplitFor(const FSFHarvestVisualCut& Cut)
+{
+    SFHarvestLocalizedGeometry::FTreeSplit Split;
+    Split.FinalCut.Center=FVector3d(Cut.Point); Split.FinalCut.OutwardNormal=FVector3d(Cut.Normal);
+    Split.FinalCut.Radius=Cut.RadiusCm; Split.FinalCut.Depth=Cut.DepthCm; Split.FinalCut.FractureSeed=Cut.FractureSeed;
+    Split.FinalCut.Shape=SFHarvestLocalizedGeometry::ECutterShape::TreeNotch;
+    Split.FallDirection=FVector3d(-Cut.Normal.X,-Cut.Normal.Y,0).GetSafeNormal();
+    if (Split.FallDirection.IsNearlyZero()) { Split.FallDirection=FVector3d::UnitX(); }
+    return Split;
+}
+
 bool SameCut(const FSFHarvestVisualCut& A,const FSFHarvestVisualCut& B)
 {
     return A.Point.Equals(B.Point,0)&&A.Normal.Equals(B.Normal,0)&&A.RadiusCm==B.RadiusCm&&A.DepthCm==B.DepthCm&&A.FractureSeed==B.FractureSeed;
@@ -56,6 +96,7 @@ struct FSFHarvestPresentationRuntime
 {
     FDynamicMesh3 Base,Current;
     FTransform Transform;
+    ECollisionEnabled::Type OriginalProxyCollision=ECollisionEnabled::QueryAndPhysics;
     struct FFragment { FVector Velocity; FVector Spin; float Age=0; bool bResting=false; };
     TArray<FFragment> Debris;
 };
@@ -86,6 +127,10 @@ void USFHarvestPresentation::BeginPlay()
     const FString MightyRoot=TEXT("/Game/Frontier/Gameplay/Harvest/MightyOakV1/Meshes/");
     const FString RevisedRockRoot=TEXT("/Game/Frontier/Gameplay/Harvest/RockV2/Meshes/");
     const bool bMighty=bWood&&FPackageName::DoesPackageExist(MightyRoot+TEXT("SM_MightyOak_LowerTrunk"));
+    TreeFallSettings=DuplicateObject<USFHarvestTreeFallSettings>(GetDefault<USFHarvestTreeFallSettings>(),this);
+    // Server configuration admits a fall; observers follow the replicated fall even if their local release default is off.
+    bSupportsTreeFelling=bMighty&&ASFHarvestFallingTree::HasPreparedSource()
+        &&(!GetOwner()->HasAuthority()||(TreeFallSettings->bEnablePreparedOakFelling&&TreeFallSettings->Validate()));
     const bool bRevisedRock=!bWood&&FPackageName::DoesPackageExist(RevisedRockRoot+TEXT("SM_HarvestRock_Intact"));
     const FString Root=bMighty?MightyRoot:(bRevisedRock?RevisedRockRoot:PrototypeRoot);
     const FString Name=bMighty?TEXT("SM_MightyOak_LowerTrunk"):(bWood?TEXT("SM_HarvestOak_Trunk"):TEXT("SM_HarvestRock_Intact"));
@@ -103,6 +148,7 @@ void USFHarvestPresentation::BeginPlay()
         ||!Runtime->Base.HasAttributes()||!Runtime->Base.Attributes()->PrimaryUV()||!Runtime->Base.Attributes()->PrimaryNormals())
     { UE_LOG(LogTemp,Warning,TEXT("HARVEST_PRESENTATION_SOURCE_REJECTED %s"),*Path); Runtime.Reset(); return; }
     Runtime->Current=Runtime->Base;
+    if (const auto* Proxy=Cast<UPrimitiveComponent>(GetOwner()->GetRootComponent())) { Runtime->OriginalProxyCollision=Proxy->GetCollisionEnabled(); }
     Runtime->Transform=FTransform(Node->GetActorRotation(),Node->GetActorLocation()-FVector(0,0,70));
     if (GetNetMode()!=NM_DedicatedServer)
     {
@@ -144,6 +190,8 @@ void USFHarvestPresentation::BeginPlay()
 void USFHarvestPresentation::EndPlay(const EEndPlayReason::Type Reason)
 {
     for (UStaticMeshComponent* Fragment:Fragments) { if (Fragment) { Fragment->DestroyComponent(); } }
+    if (FallingCollar) { FallingCollar->DestroyComponent(); }
+    if (StumpCollision) { StumpCollision->DestroyComponent(); }
     if (ImpactAudio) { ImpactAudio->DestroyComponent(); }
     if (Surface) { Surface->DestroyComponent(); }
     for (UStaticMeshComponent* Part:CrownParts) { if (Part) { Part->DestroyComponent(); } } CrownParts.Reset();
@@ -209,6 +257,12 @@ bool USFHarvestPresentation::PrepareCut(const FVector& Eye,const FVector& Reques
             *FVector(Shape.Center).ToString(),*FVector(Shape.OutwardNormal).ToString(),*Failure);
         return false;
     }
+    if (bSupportsTreeFelling&&Node->GetState().Charges==1)
+    {
+        FDynamicMesh3 Stump,Collar;
+        if (!SFHarvestLocalizedGeometry::SplitTree(Staged,TreeSplitFor(Candidate),Stump,Collar,&Failure))
+        { UE_LOG(LogTemp,Warning,TEXT("HARVEST_TREE_SPLIT_PREFLIGHT_REJECTED %s"),*Failure); return false; }
+    }
     Cut=Candidate; return true;
 }
 
@@ -225,13 +279,16 @@ bool USFHarvestPresentation::ValidateContact(const FVector& Eye,const APawn* Int
     return !GetWorld()->LineTraceSingleByChannel(Obstacle,Eye,Contact,ECC_Visibility,Query);
 }
 
-void USFHarvestPresentation::ApplyState(const TArray<FSFHarvestVisualCut>& Cuts,bool bDepleted,uint32 Generation)
+void USFHarvestPresentation::ApplyState(const TArray<FSFHarvestVisualCut>& Cuts,bool bDepleted,uint32 Generation,ASFHarvestFallingTree* FallingTree)
 {
-    (void)bDepleted;
     if (!Runtime||Cuts.Num()>12) { return; }
+    const auto* Node=Cast<ASFGatheringPilotNode>(GetOwner());
+    const bool bDetach=bSupportsTreeFelling&&bWood&&bDepleted&&!Cuts.IsEmpty()&&IsValid(FallingTree)
+        &&FallingTree->MatchesResource(Node,Generation)&&FallingTree->IsVisualSourceReady();
     const bool bNewGeneration=bSawInitialState&&Generation!=AppliedGeneration;
     bool bSamePrefix=!bNewGeneration&&Cuts.Num()>=AppliedCutSnapshot.Num();
-    bool bChanged=!bSawInitialState||bNewGeneration||Cuts.Num()!=AppliedCutSnapshot.Num();
+    bool bChanged=!bSawInitialState||bNewGeneration||Cuts.Num()!=AppliedCutSnapshot.Num()
+        ||bDetach!=IsValid(DetachedTree)||(bDetach&&DetachedTree!=FallingTree);
     for (int32 I=0;I<FMath::Min(Cuts.Num(),AppliedCutSnapshot.Num());++I)
     { if (!SameCut(Cuts[I],AppliedCutSnapshot[I])) { bChanged=true; bSamePrefix=false; } }
     if (bChanged)
@@ -245,6 +302,53 @@ void USFHarvestPresentation::ApplyState(const TArray<FSFHarvestVisualCut>& Cuts,
             FDynamicMesh3 Next;
             if (!SFHarvestLocalizedGeometry::Subtract(Staged,Shape,Next)) { return; }
             Staged=MoveTemp(Next);
+        }
+        FDynamicMesh3 Collar;
+        if (bDetach)
+        {
+            FDynamicMesh3 Stump; FString Failure;
+            if (!SFHarvestLocalizedGeometry::SplitTree(Staged,TreeSplitFor(Cuts.Last()),Stump,Collar,&Failure))
+            { UE_LOG(LogTemp,Warning,TEXT("HARVEST_TREE_HANDOFF_REJECTED %s"),*Failure); return; }
+            Staged=MoveTemp(Stump);
+        }
+        if (DetachedTree!=FallingTree||!bDetach)
+        {
+            if (FallingCollar) { FallingCollar->DestroyComponent(); FallingCollar=nullptr; }
+            if (IsValid(DetachedTree)&&(!bDepleted||bNewGeneration)) { DetachedTree->SetActorHiddenInGame(true); }
+            DetachedTree=nullptr;
+        }
+        if (bDetach)
+        {
+            DetachedTree=FallingTree;
+            if (GetNetMode()!=NM_DedicatedServer)
+            {
+                if (!FallingCollar)
+                {
+                    FallingCollar=NewObject<UProceduralMeshComponent>(FallingTree,TEXT("DetachedHarvestCollar"));
+                    FallingCollar->SetupAttachment(FallingTree->GetRootComponent());
+                    FallingCollar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+                    FallingCollar->SetCanEverAffectNavigation(false);
+                    for (int32 I=0;I<Source->GetStaticMaterials().Num();++I) { FallingCollar->SetMaterial(I,Source->GetMaterial(I)); }
+                    FallingCollar->RegisterComponent(); FallingCollar->SetRelativeTransform(FTransform::Identity);
+                }
+                CopyHarvestSurface(Collar,FallingCollar);
+            }
+            if (!StumpCollision)
+            {
+                StumpCollision=NewObject<UBoxComponent>(GetOwner(),TEXT("DepletedOakCollision"));
+                StumpCollision->SetCollisionProfileName(TEXT("BlockAllDynamic"));
+                StumpCollision->SetCanEverAffectNavigation(false); StumpCollision->RegisterComponent();
+            }
+            const auto Bounds=Staged.GetBounds(); const FVector Center((Bounds.Min+Bounds.Max)*0.5);
+            StumpCollision->SetBoxExtent(FVector((Bounds.Max-Bounds.Min)*0.5));
+            StumpCollision->SetWorldLocationAndRotation(Runtime->Transform.TransformPosition(Center),Runtime->Transform.GetRotation());
+            StumpCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+            if (auto* Proxy=Cast<UPrimitiveComponent>(GetOwner()->GetRootComponent())) { Proxy->SetCollisionEnabled(ECollisionEnabled::NoCollision); }
+        }
+        else
+        {
+            if (StumpCollision) { StumpCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision); }
+            if (auto* Proxy=Cast<UPrimitiveComponent>(GetOwner()->GetRootComponent())) { Proxy->SetCollisionEnabled(Runtime->OriginalProxyCollision); }
         }
         Runtime->Current=MoveTemp(Staged); UpdateSurface();
         // Initial/late-join snapshots never replay historical impact debris.
@@ -263,35 +367,35 @@ void USFHarvestPresentation::ApplyState(const TArray<FSFHarvestVisualCut>& Cuts,
         Fragments.Reset(); Runtime->Debris.Reset(); SetComponentTickEnabled(false);
     }
     bSawInitialState=true;
-    // Proper felling is pending: keep the crown until a real fall can be shown.
-    for (UStaticMeshComponent* Part:CrownParts) { if (Part) { Part->SetVisibility(true); } }
+    for (UStaticMeshComponent* Part:CrownParts) { if (Part) { Part->SetVisibility(!bDetach); } }
+}
+
+bool USFHarvestPresentation::IsTreeDetachedTo(const ASFHarvestFallingTree* Tree) const
+{ return IsValid(DetachedTree)&&DetachedTree==Tree; }
+
+ASFHarvestFallingTree* USFHarvestPresentation::BeginTreeFall(uint32 Generation,const FSFHarvestVisualCut& FinalCut)
+{
+    auto* Node=Cast<ASFGatheringPilotNode>(GetOwner());
+    if (!Node||!Node->HasAuthority()||!bSupportsTreeFelling||!Runtime||!TreeFallSettings||!TreeFallSettings->Validate()
+        ||Node->GetState().Generation!=Generation||Node->GetState().Charges!=0||Node->GetState().Cuts.IsEmpty()) { return nullptr; }
+    ApplyState(Node->GetState().Cuts,true,Generation);
+    FDynamicMesh3 Stump,Collar; FString Failure;
+    const auto Split=TreeSplitFor(FinalCut);
+    if (!SFHarvestLocalizedGeometry::SplitTree(Runtime->Current,Split,Stump,Collar,&Failure))
+    { UE_LOG(LogTemp,Warning,TEXT("HARVEST_TREE_FALL_REJECTED %s"),*Failure); return nullptr; }
+    const auto Bounds=Runtime->Base.GetBounds(); const auto Center=(Bounds.Min+Bounds.Max)*0.5;
+    const FVector Pivot(Center.X,Center.Y,FinalCut.Point.Z);
+    FActorSpawnParameters Spawn; Spawn.Owner=Node; Spawn.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    auto* Tree=GetWorld()->SpawnActor<ASFHarvestFallingTree>(ASFHarvestFallingTree::StaticClass(),Runtime->Transform,Spawn);
+    if (Tree&&!Tree->InitializeFall(Node,Generation,Runtime->Transform,Pivot,
+        Runtime->Transform.TransformVectorNoScale(FVector(Split.FallDirection)),TreeFallSettings))
+    { Tree->Destroy(); Tree=nullptr; }
+    return Tree;
 }
 
 void USFHarvestPresentation::UpdateSurface()
 {
-    if (!Surface||!Runtime) { return; }
-    Surface->ClearAllMeshSections(); const auto& Mesh=Runtime->Current; const auto* Attr=Mesh.Attributes();
-    for (int32 Material=0;Material<2;++Material)
-    {
-        TArray<FVector> Vertices,Normals; TArray<int32> Indices; TArray<FVector2D> UVs; TArray<FLinearColor> Colors;
-        TArray<FProcMeshTangent> Tangents;
-        for (int32 T:Mesh.TriangleIndicesItr())
-        {
-            if ((Attr&&Attr->HasMaterialID()?Attr->GetMaterialID()->GetValue(T):0)!=Material) { continue; }
-            const auto Tri=Mesh.GetTriangle(T); const auto UVTri=Attr->PrimaryUV()->GetTriangle(T);
-            const auto NormalTri=Attr->PrimaryNormals()->GetTriangle(T);
-            for (int32 K=0;K<3;++K)
-            {
-                Indices.Add(Vertices.Num()); Vertices.Add(FVector(Mesh.GetVertex(Tri[K])));
-                Normals.Add(FVector(Attr->PrimaryNormals()->GetElement(NormalTri[K])));
-                UVs.Add(FVector2D(Attr->PrimaryUV()->GetElement(UVTri[K])));
-            }
-        }
-        // Real tangent basis is needed for normal-mapped bark/stone.
-        TArray<FVector> CalculatedNormals;
-        UKismetProceduralMeshLibrary::CalculateTangentsForMesh(Vertices,Indices,UVs,CalculatedNormals,Tangents);
-        Surface->CreateMeshSection_LinearColor(Material,Vertices,Indices,Normals,UVs,Colors,Tangents,false);
-    }
+    if (Runtime) { CopyHarvestSurface(Runtime->Current,Surface); }
 }
 
 void USFHarvestPresentation::EmitFragments(const FSFHarvestVisualCut& Cut,uint32 Seed)

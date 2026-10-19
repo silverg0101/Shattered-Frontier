@@ -1,4 +1,5 @@
 #include "Gathering/SFGatheringPilot.h"
+#include "Gathering/SFHarvestFallingTree.h"
 #include "Construction/SFConstructionNetwork.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/TextRenderComponent.h"
@@ -115,6 +116,7 @@ void ASFGatheringPilotNode::BeginPlay()
 void ASFGatheringPilotNode::EndPlay(const EEndPlayReason::Type Reason)
 {
     GetWorldTimerManager().ClearTimer(RecoveryTimer);
+    if (HasAuthority()&&IsValid(State.FallingTree)) { State.FallingTree->Destroy(); State.FallingTree=nullptr; }
     Super::EndPlay(Reason);
 }
 
@@ -147,6 +149,7 @@ void ASFGatheringPilotNode::Recover()
             FMath::Max(static_cast<float>(Remaining),UE_SMALL_NUMBER),false);
         return;
     }
+    if (IsValid(State.FallingTree)) { State.FallingTree->Destroy(); } State.FallingTree=nullptr;
     State.Charges=State.Capacity; State.RecoveryAtServerSeconds=0; State.Cuts.Reset(); ++State.Revision; ++State.Generation;
     OnRep_State(); ForceNetUpdate();
 }
@@ -193,7 +196,7 @@ void ASFGatheringPilotNode::OnRep_State()
 {
     if (HarvestVisuals&&HarvestVisuals->IsReady())
     {
-        HarvestVisuals->ApplyState(State.Cuts,State.Charges==0,State.Generation);
+        HarvestVisuals->ApplyState(State.Cuts,State.Charges==0,State.Generation,State.FallingTree);
         Mesh->SetVisibility(false); Label->SetVisibility(false);
     }
     if (IsRefinery())
@@ -269,9 +272,67 @@ void USFGatheringPilotComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProp
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,Feedback,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,Skills,COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,SkillLockReadyAt,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,bEnabled,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,bPrimaryRole,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,bRoleAssigned,COND_OwnerOnly);
+}
+
+float USFGatheringPilotComponent::GetSkillLockCooldownRemaining(ESFGatheringSkill Skill) const
+{
+    const int32 Index=int32(Skill);
+    if (!GetWorld()||!SkillLockReadyAt.IsValidIndex(Index)) { return 0; }
+    if (!GetOwner()->HasAuthority())
+    { return float(FMath::Max(0.0,LocalSkillLockReadyAt[Index]-GetWorld()->GetTimeSeconds())); }
+    const auto* GS=GetWorld()->GetGameState();
+    const double Now=GS ? GS->GetServerWorldTimeSeconds() : GetWorld()->GetTimeSeconds();
+    return float(FMath::Max(0.0,SkillLockReadyAt[Index]-Now));
+}
+
+bool USFGatheringPilotComponent::IsSkillLockReady(ESFGatheringSkill Skill) const
+{
+    if (uint8(Skill)>=6||!GetOwner()) { return false; }
+    return GetOwner()->HasAuthority() ? GetSkillLockCooldownRemaining(Skill)<=0 : LocalSkillLockReady[int32(Skill)];
+}
+
+bool USFGatheringPilotComponent::RequestSkillLock(ESFGatheringSkill Skill,ESFGatheringSkillLock Lock)
+{
+    const auto* PC=Cast<APlayerController>(GetOwner());
+    if (bEnabled&&PC&&PC->IsLocalController()&&uint8(Skill)<6&&uint8(Lock)<=uint8(ESFGatheringSkillLock::Locked)
+        &&!IsSkillLockChangePending(Skill)&&IsSkillLockReady(Skill)&&GetSkillLockCooldownRemaining(Skill)<=0)
+    { SkillLockPending[int32(Skill)]=true; ServerChangeSkillLock(Skill,Lock); return true; }
+    return false;
+}
+
+void USFGatheringPilotComponent::ClientSkillLockTiming_Implementation(ESFGatheringSkill Skill,float RemainingSeconds)
+{
+    if (uint8(Skill)>=6||!GetWorld()||!FMath::IsFinite(RemainingSeconds)||RemainingSeconds<0||RemainingSeconds>60) { return; }
+    // Receipt-relative remaining time avoids jumps in the client's estimated server clock.
+    // The server still makes every admission decision; this countdown is advisory.
+    LocalSkillLockReadyAt[int32(Skill)]=GetWorld()->GetTimeSeconds()+RemainingSeconds;
+    LocalSkillLockReady[int32(Skill)]=RemainingSeconds==0;
+    SkillLockPending[int32(Skill)]=false;
+}
+
+void USFGatheringPilotComponent::ServerChangeSkillLock_Implementation(ESFGatheringSkill Skill,ESFGatheringSkillLock Lock)
+{
+    const int32 Index=int32(Skill);
+    if (!bEnabled||!IsAuthoritativePilotWorld()||!CapturedProgressionSettings
+        ||uint8(Skill)>=6||uint8(Lock)>uint8(ESFGatheringSkillLock::Locked)
+        ||!Skills.Locks.IsValidIndex(Index)||!SkillLockReadyAt.IsValidIndex(Index)) { return; }
+    const double Now=GetWorld()->GetTimeSeconds();
+    #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (FParse::Param(FCommandLine::Get(),TEXT("GatheringSkillChoicesTrace")))
+    { UE_LOG(LogTemp,Display,TEXT("GATHERING_SKILL_CHOICE_REQUEST Skill=%d Requested=%d Current=%d Now=%.3f ReadyAt=%.3f"),Index,int32(Lock),int32(Skills.Locks[Index]),Now,SkillLockReadyAt[Index]); }
+    #endif
+    if (Now<SkillLockReadyAt[Index]||Skills.Locks[Index]==Lock)
+    { ClientSkillLockTiming(Skill,float(FMath::Max(0.0,SkillLockReadyAt[Index]-Now))); return; }
+    // Preferences change future gain admission only. Values and practice remain server-owned.
+    Skills.Locks[Index]=Lock;
+    SkillLockReadyAt[Index]=Now+CapturedProgressionSettings->SkillLockChangeCooldownSeconds;
+    SkillLockReadyNotifications|=uint8(1<<Index);
+    ClientSkillLockTiming(Skill,CapturedProgressionSettings->SkillLockChangeCooldownSeconds);
+    GetOwner()->ForceNetUpdate();
 }
 
 bool USFGatheringPilotComponent::IsAuthoritativePilotWorld() const
@@ -502,9 +563,20 @@ void USFGatheringPilotComponent::ServerCancelHarvest_Implementation(uint32 Opera
 void USFGatheringPilotComponent::TickComponent(float Delta, ELevelTick Type, FActorComponentTickFunction* Function)
 {
     Super::TickComponent(Delta,Type,Function);
+    if (GetOwner()->HasAuthority()&&bEnabled&&SkillLockReadyNotifications)
+    {
+        const double Now=GetWorld()->GetTimeSeconds();
+        for (int32 Index=0;Index<6;++Index)
+        {
+            if ((SkillLockReadyNotifications&(1<<Index))&&Now>=SkillLockReadyAt[Index])
+            { SkillLockReadyNotifications&=uint8(~(1<<Index)); ClientSkillLockTiming(ESFGatheringSkill(Index),0); }
+        }
+    }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     TickFiniteNetworkScenario();
     TickArtReviewScenario();
+    TickFellingNetworkScenario();
+    TickSkillChoicesNetworkScenario();
 #endif
     if (!GetOwner()->HasAuthority() || !bEnabled || Feedback.Phase!=ESFGatheringPilotPhase::Harvesting) { return; }
     if (!IsAuthoritativePilotWorld()) { Finish(ESFGatheringPilotPhase::Canceled,ESFGatheringPilotResult::InvalidContext); return; }
@@ -532,7 +604,8 @@ void USFGatheringPilotComponent::TickComponent(float Delta, ELevelTick Type, FAc
     if (GetWorld()->GetTimeSeconds()<Feedback.EndsAtServerSeconds) { return; }
     Result=ApplyInventory(ActiveKind,true);
     if (Result!=ESFGatheringPilotResult::None) { Finish(ESFGatheringPilotPhase::Rejected,Result); return; }
-    // Synchronous game-thread pilot: no fallible step remains after the inventory commit.
+    // Synchronous game-thread pilot: no fallible reward mutation remains after the inventory commit.
+    // Optional cosmetic felling cannot roll back or repeat the granted material.
     const bool bRefining=ActiveKind==ESFGatheringPilotKind::Sawmill || ActiveKind==ESFGatheringPilotKind::Forge;
     if (!bRefining)
     {
@@ -545,6 +618,8 @@ void USFGatheringPilotComponent::TickComponent(float Delta, ELevelTick Type, FAc
         }
         if (bActiveVisualCut) { Feedback.Node->State.Cuts.Add(ActiveVisualCut); }
         --Feedback.Node->State.Charges; Feedback.Node->BeginRecovery();
+        if (Feedback.Node->State.Charges==0&&ActiveKind==ESFGatheringPilotKind::Oak&&bActiveVisualCut&&Feedback.Node->HarvestVisuals)
+        { Feedback.Node->State.FallingTree=Feedback.Node->HarvestVisuals->BeginTreeFall(Feedback.Node->State.Generation,ActiveVisualCut); }
     }
     ++Feedback.Node->State.Revision;
     Finish(ESFGatheringPilotPhase::Committed,bRefining ? ESFGatheringPilotResult::Refined : ESFGatheringPilotResult::Granted);
@@ -635,7 +710,7 @@ FString USFGatheringPilotComponent::GetStatusText(const FVector& Start, const FV
         }
     }
     return FString::Printf(TEXT("GATHERING PILOT | Session-only | Logging %d | Mining %d\n"),Skills.Get(ESFGatheringSkill::Logging),Skills.Get(ESFGatheringSkill::Mining))
-        +InventoryText+TEXT("\nTool: ")+GetToolName()+TEXT(" | 5: axe | 6: pickaxe\n")+Action;
+        +InventoryText+TEXT("\nTool: ")+GetToolName()+TEXT(" | 5: axe | 6: pickaxe | M: skills\n")+Action;
 }
 
 void USFGatheringPilotComponent::AssignPilotRole(bool bPrimary)

@@ -9,6 +9,7 @@
 #include "SFGatheringPilot.generated.h"
 
 struct FSFHarvestArtReviewState;
+struct FSFHarvestTreeFallNetworkState;
 
 class UStaticMesh;
 class UStaticMeshComponent;
@@ -63,6 +64,8 @@ public:
 UENUM(BlueprintType)
 enum class ESFGatheringPilotKind : uint8 { Oak, Iron, Sawmill, Forge };
 
+class ASFHarvestFallingTree;
+
 USTRUCT()
 struct FSFGatheringPilotNodeState
 {
@@ -74,6 +77,7 @@ struct FSFGatheringPilotNodeState
     UPROPERTY() int32 Capacity = 0;
     UPROPERTY() double RecoveryAtServerSeconds = 0;
     UPROPERTY() TArray<FSFHarvestVisualCut> Cuts;
+    UPROPERTY() TObjectPtr<ASFHarvestFallingTree> FallingTree;
 };
 
 // Idempotent public appearance snapshot, never an inventory/reward event.
@@ -114,11 +118,13 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, ReplicatedUsing=OnRep_State, Category="Kind")
     ESFGatheringPilotKind Kind = ESFGatheringPilotKind::Oak;
 private:
+    friend class ASFHarvestFallingTree;
     friend class USFGatheringPilotComponent;
     friend class FSFGatheringPilotAuthorityTest;
     friend class FSFGatheringPilotToolTest;
     friend class FSFGatheringPilotLifecycleTest;
     friend class FSFGatheringPilotArtContactTest;
+    friend class FSFHarvestFellingAuthorityTest;
     friend class FSFGatheringPilotSurfaceProtocolTest;
     friend class FSFGatheringPilotProgressionTest;
     UFUNCTION() void OnRep_State();
@@ -178,13 +184,25 @@ public:
     void CancelLocalHarvest();
     void EquipAxe();
     void EquipPickaxe();
+    bool IsEnabled() const { return bEnabled; }
+    const FSFGatheringSkillSnapshot& GetSkillSnapshot() const { return Skills; }
+    bool RequestSkillLock(ESFGatheringSkill Skill,ESFGatheringSkillLock Lock);
+    float GetSkillLockCooldownRemaining(ESFGatheringSkill Skill) const;
+    bool IsSkillLockReady(ESFGatheringSkill Skill) const;
+    bool IsSkillLockChangePending(ESFGatheringSkill Skill) const { return SkillLockPending.IsValidIndex(int32(Skill))&&SkillLockPending[int32(Skill)]; }
     FString GetStatusText(const FVector& Start, const FVector& Direction) const;
     static bool IsPilotRequested();
     void AssignPilotRole(bool bPrimary);
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     void TickFiniteNetworkScenario();
     void TickArtReviewScenario();
+    void TickFellingNetworkScenario();
+    void TickSkillChoicesNetworkScenario();
+    int32 SkillChoiceScenarioStep=0;
+    double SkillChoiceScenarioStarted=0;
+    double SkillChoiceCaptureAt=0;
     TSharedPtr<FSFHarvestArtReviewState> ArtReviewState;
+    TSharedPtr<FSFHarvestTreeFallNetworkState> FellingNetworkState;
     int32 ScenarioStep = 0;
     double ScenarioStarted = 0;
     double ScenarioReplayedAt = 0;
@@ -197,6 +215,7 @@ private:
     friend class FSFGatheringPilotToolTest;
     friend class FSFGatheringPilotLifecycleTest;
     friend class FSFGatheringPilotArtContactTest;
+    friend class FSFHarvestFellingAuthorityTest;
     friend class FSFGatheringPilotSurfaceProtocolTest;
     friend class FSFGatheringPilotProgressionTest;
     UFUNCTION(Server, Reliable) void ServerGatheringAction(ASFGatheringPilotNode* Node, uint32 Revision, uint32 Operation);
@@ -205,6 +224,8 @@ private:
     bool MatchesRequestBinding(ASFGatheringPilotNode* Node,uint32 Revision,bool bSurface,const FVector& Point) const;
     bool TryBeginGeometryAttempt(double Now);
     UFUNCTION(Server, Reliable) void ServerCancelHarvest(uint32 Operation);
+    UFUNCTION(Server, Reliable) void ServerChangeSkillLock(ESFGatheringSkill Skill,ESFGatheringSkillLock Lock);
+    UFUNCTION(Client, Reliable) void ClientSkillLockTiming(ESFGatheringSkill Skill,float RemainingSeconds);
     UFUNCTION() void OnRep_Feedback();
     UFUNCTION(Client, Reliable) void ClientKeyConflict(uint32 Operation);
     ESFGatheringPilotResult ValidateTarget(const ASFGatheringPilotNode* Node) const;
@@ -225,6 +246,11 @@ private:
     UPROPERTY(Transient) TObjectPtr<USFGatheringPilotSettings> CapturedSettings;
     UPROPERTY(Transient) TObjectPtr<USFGatheringProgressionSettings> CapturedProgressionSettings;
     UPROPERTY(Replicated) FSFGatheringSkillSnapshot Skills;
+    UPROPERTY(Replicated) TArray<double> SkillLockReadyAt = {0,0,0,0,0,0};
+    TArray<double> LocalSkillLockReadyAt = {0,0,0,0,0,0};
+    TArray<bool> SkillLockPending = {false,false,false,false,false,false};
+    TArray<bool> LocalSkillLockReady = {true,true,true,true,true,true};
+    uint8 SkillLockReadyNotifications=0;
     FSFGatheringProgressionSession ProgressionSession;
     double ActivePracticeInputSeconds = 0;
     double ActivePracticeDurationSeconds = 0;
