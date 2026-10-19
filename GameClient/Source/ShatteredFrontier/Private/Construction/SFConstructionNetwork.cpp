@@ -739,15 +739,15 @@ void ASFConstructionNetworkGameMode::StartPlay()
         FString Error;
         if (!GetDefault<USFGatheringPilotSettings>()->Validate(Error))
         { UE_LOG(LogTemp,Error,TEXT("GATHERING_PILOT_CONFIGURATION_FAILED %s"),*Error); return; }
-        const FVector Positions[2]={FVector(0,-350,70),FVector(0,-650,70)};
-        for (int32 I=0; I<2; ++I)
+        const FVector Positions[4]={FVector(0,-350,70),FVector(0,-650,70),FVector(-400,-600,40),FVector(400,-600,40)};
+        for (int32 I=0; I<4; ++I)
         {
             auto* Node=GetWorld()->SpawnActorDeferred<ASFGatheringPilotNode>(ASFGatheringPilotNode::StaticClass(),FTransform(Positions[I]));
             if (!Node) { UE_LOG(LogTemp,Fatal,TEXT("Gathering pilot node could not spawn")); }
-            Node->Resource=I==0 ? ESFGatheringPilotResource::Oak : ESFGatheringPilotResource::Iron;
+            Node->Kind=static_cast<ESFGatheringPilotKind>(I);
             Node->FinishSpawning(FTransform(Positions[I]));
         }
-        UE_LOG(LogTemp,Display,TEXT("GATHERING_PILOT_READY Nodes=2 Inventory=MinimalInventoryRuntime SessionOnly=1"));
+        UE_LOG(LogTemp,Display,TEXT("GATHERING_PILOT_READY Resources=2 Stations=2 Inventory=MinimalInventoryRuntime SessionOnly=1"));
     }
 }
 

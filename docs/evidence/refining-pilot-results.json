@@ -1,0 +1,45 @@
+{
+  "status": "Passed",
+  "date": "2026-10-18",
+  "build": "Artifacts/ConstructionSandbox/refining-pilot-build-03.log",
+  "focusedReport": "Artifacts/ConstructionSandbox/refining-pilot-authority-01/Report/index.json",
+  "focusedPassed": 1,
+  "focusedFailed": 0,
+  "network": "Artifacts/ConstructionSandbox/gathering-network-20261018-231605-642/results.json",
+  "clientOutcomes": [
+    {
+      "primary": true,
+      "wood": 0,
+      "ore": 0,
+      "timber": 4,
+      "ingots": 0
+    },
+    {
+      "primary": false,
+      "wood": 0,
+      "ore": 0,
+      "timber": 0,
+      "ingots": 1
+    }
+  ],
+  "stationRevisions": {
+    "sawmill": 1,
+    "forge": 1
+  },
+  "serverHarvestCommits": 2,
+  "serverRefinementCommits": 2,
+  "replayExtraOutputs": 0,
+  "scope": "Session-only Win64 editor pilot; synthetic targeting and real RPC/replication; no production crafting/durability/native input/Linux acceptance",
+  "sourceSHA256": {
+    "GameClient/Source/ShatteredFrontier/Public/Gathering/SFGatheringPilot.h": "ee335e49700981026740a12e082afdfa7981c9b9f1efa75d4f687ec218f689f4",
+    "GameClient/Source/ShatteredFrontier/Private/Gathering/SFGatheringPilot.cpp": "11b3783a38756e87ff0a87f87d8b14f86c727979152c6765afe8d4383cad5044",
+    "GameClient/Source/ShatteredFrontier/Private/Tests/SFGatheringPilotTests.cpp": "0f24ea1392f99397fc2627fb38446d14927ff6d780369fd8784c86b2712b4d57",
+    "GameClient/Source/ShatteredFrontier/Private/Construction/SFConstructionNetwork.cpp": "9f99ab0ad24ab3d2c8a9891b0568eb0d371cda06b7d10dc6d1ea6ac66af4baef",
+    "GameClient/Config/DefaultGame.ini": "cf2ef4e75bf55e016f65ac9decfd3ddeb7d950141f22abaf34e5f9f11587210e",
+    "tools/Create-GatheringPilotItems.py": "bca915fe3946de5a6fd92698f917e6b2621fe561fdc05a25d25b1e9de3363aa4",
+    "tools/Create-RefiningPilotItems.py": "d79806f5e66c71591e3c40e805ac1d072fbf4ea4b08ef95d124a9011cb559706",
+    "tools/Test-GatheringPilot.ps1": "d284e5cfd863a780c95cff438b5ca807b45a7819611f8e978d230e08fb361713",
+    "GameClient/Content/Frontier/Gameplay/Pilot/DA_RoughTimber.uasset": "84b7a917c250613e0ee5d4335953950fa27bf8b4ca725483ec255d85a895fe75",
+    "GameClient/Content/Frontier/Gameplay/Pilot/DA_IronIngot.uasset": "7b61b67388f44fc9544d7fdba59c8d5df6065159e1cd8c2ea64fcac6d9b78ee3"
+  }
+}

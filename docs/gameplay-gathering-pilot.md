@@ -32,4 +32,4 @@ The first network attempt canceled harvesting while the spawned character settle
 
 Run only `ShatteredFrontier.Gathering.Pilot.Authority` for authority checks. `tools/Test-GatheringPilot.ps1` launches one owned loopback editor server/two clients, checks both private grants, replay and public node revisions, then cleans only its processes. It uses synthetic resource targeting through the real owning-component RPC path; it does not prove native E input, rendered acceptance, durable recovery or Linux support.
 
-Next: add a useful refinement interaction through the same server-owned recipe/transaction boundary. Keep free component selection tied to the [candidate register](Game-Design/Legends_Shattered_Frontier_Gameplay_Reuse_Candidate_Register_v0.1.md); do not substitute a kit's recipes or construction rules.
+Follow-up: [sawmill and forge refinement](gameplay-refining-pilot.md) now passes through the same server-owned recipe/transaction boundary. Keep free component selection tied to the [candidate register](Game-Design/Legends_Shattered_Frontier_Gameplay_Reuse_Candidate_Register_v0.1.md); do not substitute a kit's recipes or construction rules.

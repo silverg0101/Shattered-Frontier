@@ -5,6 +5,7 @@
 #include "GameFramework/Actor.h"
 #include "SFGatheringPilot.generated.h"
 
+class UStaticMesh;
 class UStaticMeshComponent;
 class UTextRenderComponent;
 class USFGatheringPilotComponent;
@@ -33,11 +34,21 @@ public:
     int32 MaterialStackUnits = 20;
     UPROPERTY(Config, EditAnywhere, Category="Material defaults (Content Generation)", meta=(ClampMin="0.01", ClampMax="50", Units="kg", ToolTip="Weight per unit. Applied only when generating new pilot item assets for a compatible release."))
     float MaterialUnitWeightKg = 1;
+    UPROPERTY(Config, EditAnywhere, Category="Refining", meta=(ClampMin="0.5", ClampMax="30", Units="s"))
+    float RefineSeconds = 3;
+    UPROPERTY(Config, EditAnywhere, Category="Refining", meta=(ClampMin="1", ClampMax="20"))
+    int32 TimberInputLogs = 1;
+    UPROPERTY(Config, EditAnywhere, Category="Refining", meta=(ClampMin="1", ClampMax="20"))
+    int32 TimberOutputUnits = 4;
+    UPROPERTY(Config, EditAnywhere, Category="Refining", meta=(ClampMin="1", ClampMax="20"))
+    int32 IngotInputOre = 1;
+    UPROPERTY(Config, EditAnywhere, Category="Refining", meta=(ClampMin="1", ClampMax="20"))
+    int32 IngotOutputUnits = 1;
     bool Validate(FString& Error) const;
 };
 
 UENUM(BlueprintType)
-enum class ESFGatheringPilotResource : uint8 { Oak, Iron };
+enum class ESFGatheringPilotKind : uint8 { Oak, Iron, Sawmill, Forge };
 
 USTRUCT()
 struct FSFGatheringPilotNodeState
@@ -58,9 +69,10 @@ public:
     virtual void BeginPlay() override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out) const override;
     FString GetResourceName() const;
+    bool IsRefinery() const { return Kind==ESFGatheringPilotKind::Sawmill || Kind==ESFGatheringPilotKind::Forge; }
     const FSFGatheringPilotNodeState& GetState() const { return State; }
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, ReplicatedUsing=OnRep_State, Category="Resource")
-    ESFGatheringPilotResource Resource = ESFGatheringPilotResource::Oak;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, ReplicatedUsing=OnRep_State, Category="Kind")
+    ESFGatheringPilotKind Kind = ESFGatheringPilotKind::Oak;
 private:
     friend class USFGatheringPilotComponent;
     friend class FSFGatheringPilotAuthorityTest;
@@ -68,6 +80,7 @@ private:
     void Release(USFGatheringPilotComponent* Interactor);
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> Mesh;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UTextRenderComponent> Label;
+    UPROPERTY() TObjectPtr<UStaticMesh> StationMesh;
     UPROPERTY(ReplicatedUsing=OnRep_State) FSFGatheringPilotNodeState State;
     TWeakObjectPtr<USFGatheringPilotComponent> LockedBy;
 };
@@ -78,7 +91,7 @@ UENUM()
 enum class ESFGatheringPilotResult : uint8
 {
     None, Started, Granted, InvalidContext, InvalidTarget, Stale, Busy, Depleted,
-    OutOfReach, Occluded, Moved, Canceled, InventoryFull, Unavailable, KeyConflict
+    OutOfReach, Occluded, Moved, Canceled, InventoryFull, Unavailable, KeyConflict, Refined, MissingMaterials
 };
 
 USTRUCT()
@@ -118,14 +131,14 @@ public:
 #endif
 private:
     friend class FSFGatheringPilotAuthorityTest;
-    UFUNCTION(Server, Reliable) void ServerHarvest(ASFGatheringPilotNode* Node, uint32 Revision, uint32 Operation);
+    UFUNCTION(Server, Reliable) void ServerGatheringAction(ASFGatheringPilotNode* Node, uint32 Revision, uint32 Operation);
     UFUNCTION(Server, Reliable) void ServerCancelHarvest(uint32 Operation);
     UFUNCTION() void OnRep_Feedback();
     UFUNCTION(Client, Reliable) void ClientKeyConflict(uint32 Operation);
     ESFGatheringPilotResult ValidateTarget(const ASFGatheringPilotNode* Node) const;
     void Finish(ESFGatheringPilotPhase Phase, ESFGatheringPilotResult Result);
     ASFGatheringPilotNode* FindNode(const FVector& Start, const FVector& Direction) const;
-    bool Grant(ESFGatheringPilotResource Resource);
+    ESFGatheringPilotResult ApplyInventory(ESFGatheringPilotKind Kind, bool bCommit);
     bool InventoryReady() const;
     bool IsAuthoritativePilotWorld() const;
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
@@ -136,6 +149,7 @@ private:
     TWeakObjectPtr<APawn> HarvestPawn;
     TWeakObjectPtr<ASFGatheringPilotNode> LastNode;
     FVector HarvestStart = FVector::ZeroVector;
+    ESFGatheringPilotKind ActiveKind = ESFGatheringPilotKind::Oak;
     uint32 LastRevision = 0;
     uint32 NextLocalOperation = 1;
     uint32 WaitingOperation = 0;

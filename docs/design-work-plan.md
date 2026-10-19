@@ -1,6 +1,6 @@
 # Design documentation work plan
 
-Current gameplay checkpoint: [timed gathering and private inventory](gameplay-gathering-pilot.md) now pass focused authority and two-client replication/replay checks using the free Minimal Inventory Runtime plugin. Session-only Windows pilot; production ledger/tools/progression/Linux remain open. Next: design-authored rough timber and iron ingot refinement. Code is in the isolated gameplay worktree, preserving the environment checkout.
+Latest gameplay checkpoint: [gathering](gameplay-gathering-pilot.md) and [sawmill/forge refinement](gameplay-refining-pilot.md) pass focused authority and two-client private-output/replay checks using the free inventory runtime. The design's log-to-four-timber and ore-to-ingot recipes are implemented as session-only pilots. Next: inventory window access and equipped-tool evaluation. Runtime code remains in the isolated gameplay worktree; preserve the environment checkout.
 
 ## Laptop editor ready and package runner implementation - 2026-10-18
 

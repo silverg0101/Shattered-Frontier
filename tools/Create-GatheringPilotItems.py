@@ -12,9 +12,12 @@ ITEMS = (
     ('DA_OakLog', 'item/oak_log', 'Oak Log'),
     ('DA_IronOre', 'item/iron_ore', 'Iron Ore'),
 )
-settings = unreal.get_default_object(unreal.SFGatheringPilotSettings)
-MAX_STACK_SIZE = settings.get_editor_property('material_stack_units')
-WEIGHT = settings.get_editor_property('material_unit_weight_kg')
+settings_class = unreal.load_class(None, '/Script/ShatteredFrontier.SFGatheringPilotSettings')
+if settings_class is None:
+    raise RuntimeError('Build the gathering pilot settings before generating item assets.')
+settings = unreal.get_default_object(settings_class)
+MAX_STACK_SIZE = settings.get_editor_property('MaterialStackUnits')
+WEIGHT = settings.get_editor_property('MaterialUnitWeightKg')
 if not 1 <= MAX_STACK_SIZE <= 100 or not 0.01 <= WEIGHT <= 50:
     raise RuntimeError('Pilot material configuration outside declared bounds.')
 

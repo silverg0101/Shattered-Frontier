@@ -1,5 +1,6 @@
 [CmdletBinding()]
 param(
+    [switch]$Refining,
     [string]$EngineRoot = 'C:\Program Files\Epic Games\UE_5.8',
     [ValidateRange(12000,65000)][int]$Port = 17811,
     [ValidateRange(30,150)][int]$TimeoutSeconds = 90
@@ -45,8 +46,9 @@ try {
     $url='/Game/Frontier/Maps/Greenlands_ConstructionSandbox?game=/Script/ShatteredFrontier.SFConstructionNetworkGameMode'
     $server=Start-Owned 'server' $url @('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox','-GatheringPilot')
     Wait-Log $server 'server' 'GATHERING_PILOT_READY'
-    $first=Start-Owned 'first' ('127.0.0.1:'+$Port) @('-game','-GatheringPilotScenario')
-    $second=Start-Owned 'second' ('127.0.0.1:'+$Port) @('-game','-GatheringPilotScenario')
+    $scenarioFlag=if ($Refining) { '-GatheringRefiningScenario' } else { '-GatheringPilotScenario' }
+    $first=Start-Owned 'first' ('127.0.0.1:'+$Port) @('-game',$scenarioFlag)
+    $second=Start-Owned 'second' ('127.0.0.1:'+$Port) @('-game',$scenarioFlag)
     Wait-Exit $first 'first'; Wait-Exit $second 'second'
     $clientText=@()
     foreach ($name in @('first','second')) {
@@ -60,6 +62,12 @@ try {
         $all -notmatch 'OBSERVER_PRIVATE_EMPTY Wood=0 Ore=0' -or $all -notmatch 'PRIMARY_REPLAY Operation=1') { throw 'Grant/replay/private inventory evidence incomplete (runner expects shipped pilot defaults).' }
     $serverText=Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw
     if ([regex]::Matches($serverText,'GATHERING_PILOT_OUTCOME Operation=1 Result=2').Count -ne 2) { throw 'Server did not commit exactly two harvests.' }
+    if ($Refining) {
+        if ($all -notmatch 'REFINING_PILOT_CLIENT_DONE Primary=1 Wood=0 Ore=0 Timber=4 Ingots=0 SawmillRevision=1 ForgeRevision=1' -or
+            $all -notmatch 'REFINING_PILOT_CLIENT_DONE Primary=0 Wood=0 Ore=0 Timber=0 Ingots=1 SawmillRevision=1 ForgeRevision=1' -or
+            [regex]::Matches($serverText,'GATHERING_PILOT_OUTCOME Operation=2 Result=15').Count -ne 2) { throw 'Refinement outputs or exactly-once commits are incomplete.' }
+    }
+    $results.refining=[bool]$Refining
     $results.status='Passed'
 } catch { $results.status='Failed'; $results.error=$_.Exception.Message; throw }
 finally {
