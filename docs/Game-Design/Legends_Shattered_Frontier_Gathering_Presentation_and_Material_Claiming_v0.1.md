@@ -10,6 +10,8 @@ Keep those mechanics while developing presentation. Strike animation beats may o
 
 ## Target experience
 
+Environmental readability: ordinary wild trees and freestanding natural rocks are harvestable under material-appropriate skill/tool requirements, as are the other gathering families (Gathering§1.5). Starting areas offer accessible materials; tougher/mature and magical types become more prevalent deeper into the world and feed distinct crafted materials/items. Silhouette, growth/maturity, bark/grain, rock composition and magical traits must make differences credible. Explain skill/tool/permission limits before a committed action; depleted resources visibly show depletion. Avoid lookalike scenery that silently refuses harvesting.
+
 | Material/action | Required treatment |
 | --- | --- |
 | Mining rock or ore | Pick contact aligns with the surface; pose, recoil, impact sound and chips communicate weight. Authored fractures and exposed interior material follow the rock's composition. Committed extraction progressively changes its silhouette; final depletion leaves a credible remnant. Avoid uniform exploding cubes, hollow-looking interiors and an unchanged rock that simply vanishes. |

@@ -456,3 +456,7 @@ Tier-2 fittings are made at Engineering Workshop tier 1, difficulty 300, in 20 s
 | `recipe/builders_cache` | component | carpentry | 40 | 1 | §9.2 | Builder's Cache |
 
 Recipe count targets at launch: ≈ 120 per crafting skill (≈ 25 per band from novice to master, ≈ 20 above 800), of which ≈ 30 % `default`, 50 % `trainer`, 15 % `scroll`/`reward`, 5 % `discovery`.
+
+## Material identity across harvesting and crafting
+
+User direction,2026-10-19: the gathering progression applies to every material family, from accessible starting resources to tougher, rare and magical types (Gathering§1.5). Wood spans workable soft/light timber, mature hardwoods, dense rare wood and magical timber; stone/ore, plant fibers/herbs, crops, fish and animal materials have equivalent authored ladders. Refining preserves published material identity/grade and lot-quality provenance. Recipe inputs distinguish those materials and support appropriate different outputs/components/properties through existing formulas and workshop/learning gates. Do not collapse all harvested wood into a universal timber item or all stone/ore into one resource, and do not silently allow higher-grade substitution into every recipe. Existing low-grade materials retain everyday crafting/construction uses. New item slugs/recipes require catalogue publication; this note does not publish unimplemented items.

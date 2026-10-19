@@ -504,6 +504,8 @@ Attempt states are the proposed enum `crafting_attempt_state` (`requested`, `rol
 
 ### C5.1 Nodes
 
+Environmental coverage and progression: ordinary wild trees, freestanding natural rocks and other gatherable materials have authored resource identities and skill/tool requirements. Beginner materials support starting villages; tougher, denser and magical types become more prevalent farther into the world. Material grades feed distinct refining/crafting inputs. See Gathering§1.5/§2.0 for the all-family rule and explicit protected/depleted feedback. Authored special-node pools do not make otherwise normal wilderness objects arbitrarily non-interactive. This is required design, not current pilot implementation.
+
 Nodes are authored as content kind `gathering_node` (`gathering_node/iron_vein`) and spawned by zone-server as `WorldEntity` (`ent_`). Each definition sets `resource_id`, `skill_id`, `resource_tier`, `charges` (harvests before depletion), `respawn_s`, `tool_category?`, and a `quality_band` from which each spawned node rolls `node_quality` (0–100). Node difficulty by tier (Character spec uses it for gains):
 
 | `resource_tier` | Node difficulty `D_node` (`tune.crafting.node_difficulty.<tier>`) | Default `quality_band` |
