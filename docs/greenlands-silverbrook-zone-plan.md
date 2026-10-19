@@ -1,6 +1,6 @@
 # Silverbrook zone map — Wave 0 plan
 
-Status: **graybox, rebuilt from the whole board** on 2026-10-19. The route walk now stalls on North Street (open, see gap 12). The zone is the 2.5 km tile centred on Silverbrook in the [region layout](Game-Design/Regions/Legends_Shattered_Frontier_Region_Greenlands_v0.1.md), and its zone frame equals the region frame. Zone `zone/greenlands_silverbrook` (Starter, levels 1–8), per the [Greenlands region](Game-Design/Regions/Legends_Shattered_Frontier_Region_Greenlands_v0.1.md), the [Silverbrook settlement definition](Game-Design/Regions/Legends_Shattered_Frontier_Settlement_Silverbrook_v0.1.md) with its design board, and the [Zone Definition Standard](Game-Design/World-Simulation/Legends_Shattered_Frontier_World_Zone_Definition_Standard_v0.1.md).
+Status: **graybox, rebuilt from the whole board** on 2026-10-19. The route walk passes on the region-fitted terrain. The zone is the 2.5 km tile centred on Silverbrook in the [region layout](Game-Design/Regions/Legends_Shattered_Frontier_Region_Greenlands_v0.1.md), and its zone frame equals the region frame. Zone `zone/greenlands_silverbrook` (Starter, levels 1–8), per the [Greenlands region](Game-Design/Regions/Legends_Shattered_Frontier_Region_Greenlands_v0.1.md), the [Silverbrook settlement definition](Game-Design/Regions/Legends_Shattered_Frontier_Settlement_Silverbrook_v0.1.md) with its design board, and the [Zone Definition Standard](Game-Design/World-Simulation/Legends_Shattered_Frontier_World_Zone_Definition_Standard_v0.1.md).
 
 ## Map
 
@@ -15,7 +15,7 @@ Status: **graybox, rebuilt from the whole board** on 2026-10-19. The route walk 
 
 **What the graybox contains:**
 - **Ground:** a 2.5 × 2.5 km shaped terrain mesh, −6 to 122 m. Northridge sits on a plateau above a scarp, with cliffs to the east.
-- **Backdrop:** a 12 km mountain mesh, visual only. It is hand-written for now; the region terrain will replace it (gap 3).
+- **Edges and backdrop:** within 300 m of the edge, the terrain eases into the region terrain. The backdrop is the region terrain out to 6 km, visual only, with a sea surface at sea level. Both come from `heightfield.zone_region()`.
 - **Water:** all visual only, at their layout water levels in carved channels:
   - the Silverbrook River, 24 m wide. It loops around The Commons and flows into the Riverside harbour.
   - the Eastfall Brook, which drops over the Riverside falls into the harbour.
@@ -74,9 +74,9 @@ The builder refuses to start while the editor has unsaved maps or assets. Some m
 
 ## Gaps
 
-1. **Terrain edges (Z2).** The zone's edges don't yet match the region. Silverbrook sits at an 80 m datum; along its tile edge the region terrain runs 60–166 m. The region's Silvermere road crosses the north edge at x 909, but the zone's road leaves through the North Gate at x 0. Either the region road gets waypoints through the zone's exits, or the zone moves its exits; then the zone edge heights blend to the region's `zone_edges()`.
+1. **Terrain edges (Z2).** Closed 2026-10-19: the zone edge matches the region (edge error 0.0 m). The region roads run through the zone's road exits, and the Eastfall Brook comes in from the region.
 2. **Water.** The river has no collision or swimming, so the wall has open gaps where the river crosses it. The gap by the South Gate runs about 90 m, because the river and the gate exclusions overlap.
-3. **Mountain backdrop.** A hand-written stand-in, which breaks the region-first rule: it shows hills to the west where the region has coast and sea. Replace it with the region terrain beyond the tile.
+3. **Mountain backdrop.** Closed 2026-10-19: it is the region terrain. Rivers in the backdrop are carved but have no water surface yet.
 4. **Resources (Z8).** No gathering areas or spawn groups.
 5. **Wildlife and enemies (Z9).** No boar territories, wolf dens, bandit camps or ambient animals. Combat does not exist yet.
 6. **Areas and safety (Z4, Z5).** Districts exist as layout data only. There are no `level_area` polygons and no protected or no-edit volumes for the walled town.
@@ -85,7 +85,8 @@ The builder refuses to start while the editor has unsaved maps or assets. Some m
 9. **Size.** The 2.5 km tile is fixed by the region grid. The countryside beyond the town is still empty.
 10. **Defaults.** `GameDefaultMap` and `ServerDefaultMap` still point at `Greenlands_E1`. Switch them once the zone passes its checks.
 11. **Editable terrain.** The ground is a static mesh, not the editable voxel terrain of DEC-03.
-12. **Route walk.** After the rebuild, the pawn stops at (12, −254) on North Street, 4 m short of a waypoint, in both runs. The ground there is smooth, and traces at body height find nothing in the way. The cause is not found yet.
+12. **Route walk.** Closed 2026-10-19. The road, river and other no-collision pieces kept their default collision profile, which is reapplied on load, so the pawn caught on the lip where two tilted road pieces meet. The builder now sets the NoCollision profile itself.
+13. **Unassigned walled ground.** Parts of the walled town west and east of The Commons belong to no district, so they stay empty.
 
 ## Pipeline work (brief received 2026-10-19)
 
@@ -110,7 +111,7 @@ Silverbrook is the first run of the [settlement layout-to-world pipeline](settle
 ## Order of work
 
 1. Board re-read (done 2026-10-19): ring streets, 312 houses in rows, the river loop and harbour, the Eastfall Brook and falls, the Northridge plateau and the east cliffs.
-2. Region fit: close gaps 1, 3 and 12.
+2. Region fit (done 2026-10-19): gaps 1, 3 and 12.
 3. Pipeline stages 3 and 4 above: PCG dressing, then the missing-asset list for the building kit and vegetation. TER-01 can run alongside, on a copy.
 4. Water (gap 2): collision and swimming, then close the wall gaps.
 5. Gathering areas and boar territories (gaps 4 and 5), using the stage 3 candidates file, to make the slice loop playable.

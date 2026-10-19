@@ -63,8 +63,10 @@ def _smoothstep(t):
 
 
 class Heightfield:
-    def __init__(self, L, pads=(), spacing=5.0):
-        """pads: (x, y, radius) footprints to flatten, e.g. the builder's placed buildings."""
+    def __init__(self, L, pads=(), spacing=5.0, region=None):
+        """pads: (x, y, radius) footprints to flatten, e.g. the builder's placed buildings.
+        region: local(x, y) height of the region terrain in this zone's frame; the zone blends to it at its edges."""
+        self.region = region
         self.L, self.step = L, spacing
         self.x0, self.y0, x1, y1 = L['zone_bounds']
         self.nx = int(round((x1 - self.x0) / spacing)) + 1
@@ -73,6 +75,8 @@ class Heightfield:
         self.h = array('d', bytes(8 * self.nx * self.ny))
         self._base(elev)
         self._hills(L['seed'])
+        if region:
+            self._edges(region, L['backdrop']['edge_blend'])
         for x, y, r in pads:
             self._pad(x, y, r + elev['flatten']['under_buildings_margin'])
         self.road_profiles = self._roads(elev['flatten'])
@@ -218,6 +222,18 @@ class Heightfield:
                     locked[k] = 1
         return profiles
 
+    def _edges(self, region, band):
+        """Within `band` m of the zone edge, ease into the region terrain so neighbouring zones meet seamlessly."""
+        H = self.L['zone_half_extent']
+        for j in range(self.ny):
+            y = self.y0 + j * self.step
+            for i in range(self.nx):
+                x = self.x0 + i * self.step
+                w = 1 - _smoothstep((H - max(abs(x), abs(y))) / band)
+                if w > 0:
+                    k = j * self.nx + i
+                    self.h[k] += (region(x, y) - self.h[k]) * w
+
     def _pad(self, x, y, r):
         z = self.at(x, y)
         for k, cx, cy in self._cells(x, y, r + SHOULDER):
@@ -260,14 +276,12 @@ class Heightfield:
                 self.h[k] = min(self.h[k], level + 0.3 + d * BANK_SLOPE)
 
 
-def backdrop(L, hf):
-    """Heights on a coarse grid out to backdrop.extent: zone-edge height plus the mountain ranges.
+def backdrop(L, hf, region):
+    """Heights on a coarse grid out to backdrop.extent: the region terrain beyond the zone, in zone-local metres.
     Vertices inside the zone sit under its terrain. Returns (n, spacing, heights row-major, x fastest)."""
     B, H = L['backdrop'], L['zone_half_extent']
     ext, sp = B['extent'], B['spacing']
     n = int(round(2 * ext / sp)) + 1
-    rng = random.Random(L['seed'] + 7)
-    waves = [(wl, rng.uniform(0, math.tau), rng.uniform(0, math.tau), wt) for wl, wt in ((1700, 0.5), (900, 0.3), (420, 0.2))]
     z = []
     for j in range(n):
         y = -ext + j * sp
@@ -280,13 +294,7 @@ def backdrop(L, hf):
                 else:
                     z.append(min(hf.at(x + dx, y + dy) for dx in range(-sp, sp + 1, 25) for dy in range(-sp, sp + 1, 25)) - 3)
                 continue
-            edge = hf.at(max(-H, min(H, x)), max(-H, min(H, y)))
-            m = 0.0
-            for r in B['ranges'].values():
-                m = max(m, r['height'] * _smoothstep(1 - _dist((x, y), r['points']) / r['width']))
-            ridged = sum(wt * (1 - abs(math.sin(math.tau * x / wl + p) + math.sin(math.tau * y / (wl * 0.8) + q)) / 2)
-                         for wl, p, q, wt in waves)
-            z.append(edge - (0.3 if out < 1 else 0) + m * (0.35 + 0.65 * ridged) * _smoothstep(out / B['ramp']))
+            z.append(hf.at(max(-H, min(H, x)), max(-H, min(H, y))) - 0.3 if out < 1 else region(x, y))
     return n, sp, z
 
 
@@ -334,21 +342,50 @@ def check(L, hf):
             if g > limit + 0.02:
                 problems.append(f'{name} grade {g:.2f} at {p[0]:.0f},{p[1]:.0f}')
                 break
+    edge_err = 0.0
+    if hf.region:  # the zone edge meets the region terrain, away from carved water and road beds
+        H = L['zone_half_extent']
+        ring = [(-H, -H), (H, -H), (H, H), (-H, H), (-H, -H)]
+        roads = [pts for tier in ('primary', 'secondary', 'trail') for pts in L['roads'][tier].values()]
+        for (x, y), _, _ in _samples(ring, 25):
+            if wet((x, y), 40) or any(_dist((x, y), pts) < 25 for pts in roads):
+                continue
+            e = abs(hf.at(x, y) - hf.region(x, y))
+            edge_err = max(edge_err, e)
+            if e > 2:
+                problems.append(f'zone edge {e:.1f} m off the region at {x:.0f},{y:.0f}')
+                break
     lo, hi = min(hf.h), max(hf.h)
     return problems, {'markers_max_error': round(max(abs(e) for e in errs.values()), 1),
-                      'road_max_grade': round(worst, 3), 'height_range': [round(lo, 1), round(hi, 1)]}
+                      'road_max_grade': round(worst, 3), 'edge_max_error': round(edge_err, 2),
+                      'height_range': [round(lo, 1), round(hi, 1)]}
+
+
+def zone_region(zone_file):
+    """The region around a zone layout file: (local(x, y) region height in the zone frame, datum, sea level in
+    zone-local metres). Found through the region layout beside it that names this zone layout."""
+    from region_heightfield import RegionHeightfield  # noqa: E402  (only zone builds need the region)
+    for path in sorted(Path(__file__).resolve().parent.glob('*-region-layout.json')):
+        R = json.loads(path.read_text(encoding='utf-8'))
+        for s in R['settlements'].values():
+            if s.get('zone_layout') == zone_file:
+                rhf, (sx, sy), datum = RegionHeightfield(R), s['at'], s['datum']
+                return (lambda x, y: rhf.at(sx + x, sy + y) - datum), datum, R['sea_level'] - datum
+    raise LookupError(f'no region layout names {zone_file}; lay out the region first (pipeline step 0)')
 
 
 if __name__ == '__main__':
     path = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent / 'silverbrook-town-layout.json'
     layout = json.loads(path.read_text(encoding='utf-8'))
-    hf = Heightfield(layout)
+    region, datum, sea = zone_region(path.name)
+    hf = Heightfield(layout, region=region)
     problems, stats = check(layout, hf)
     for p in problems:
         print('FAIL', p)
-    flat = Heightfield(dict(layout, elevation=dict(layout['elevation'], river_levels=[30] * len(layout['river']['points']))))
+    flat = Heightfield(dict(layout, elevation=dict(layout['elevation'], river_levels=[30] * len(layout['river']['points']))), region=region)
     assert check(layout, flat)[0], 'self-test: a river drawn above its banks must fail'
     if problems:
         sys.exit(1)
-    n, sp, z = backdrop(layout, hf)
-    print(f'TERRAIN_OK {path.name}: {hf.nx}x{hf.ny} at {hf.step} m, {stats}, backdrop {n}x{n} at {sp} m up to {max(z):.0f} m')
+    n, sp, z = backdrop(layout, hf, region)
+    print(f'TERRAIN_OK {path.name}: {hf.nx}x{hf.ny} at {hf.step} m, datum {datum} m, {stats}, '
+          f'backdrop {n}x{n} at {sp} m from {min(z):.0f} to {max(z):.0f} m (sea at {sea} m)')

@@ -9,7 +9,7 @@ import copy, json, math, sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from validate_layout import DIRECTIONS, line_dist, self_intersects  # noqa: E402
+from validate_layout import DIRECTIONS, line_dist, self_intersects, waters  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
 
@@ -99,14 +99,18 @@ def validate(R, zones=None):
             elif lv[-1] < level - 0.5:
                 errors.append(f'{name} joins {r["mouth"]} below its level')
 
-    # 4. Roads link the required pairs and stay on land.
-    pairs = {frozenset(rd) for rd in R['roads']}
-    for a, b in R['roads']:
+    # 4. Roads run from settlement to settlement over land.
+    roads = {frozenset(rd['between']): rd['points'] for rd in R['roads']}
+    pairs = set(roads)
+    for rd in R['roads']:
+        (a, b), pts = rd['between'], rd['points']
         if a not in S or b not in S:
             errors.append(f'road {a}-{b} names an unknown settlement')
             continue
-        pa, pb = S[a]['at'], S[b]['at']
-        if not all(in_polygon((pa[0] + (pb[0] - pa[0]) * k / 20, pa[1] + (pb[1] - pa[1]) * k / 20), coast) for k in range(21)):
+        if list(pts[0]) != list(S[a]['at']) or list(pts[-1]) != list(S[b]['at']):
+            errors.append(f'road {a}-{b} does not run from {a} to {b}')
+        steps = [(p[0] + (q[0] - p[0]) * k / 10, p[1] + (q[1] - p[1]) * k / 10) for p, q in zip(pts, pts[1:]) for k in range(11)]
+        if not all(in_polygon(q, coast) for q in steps):
             errors.append(f'road {a}-{b} crosses the sea')
     for name in S:
         if not any(name in pr for pr in pairs):
@@ -130,11 +134,17 @@ def validate(R, zones=None):
             heading = math.degrees(math.atan2(p[1] - s['at'][1], p[0] - s['at'][0]))
             if abs((heading - DIRECTIONS[direction] + 180) % 360 - 180) > 45:
                 errors.append(f'{name} zone sends {road} {direction}, but {to} lies at {heading:.0f} deg')
-        zr = Z['river']['points']
-        rr = rivers.get(Z['river']['name'])
-        if not rr or [list(p) for p in rr['points'][:len(zr)]] != [[s['at'][0] + p[0], s['at'][1] + p[1]] for p in zr] \
-                or rr['levels'][:len(zr)] != [round(s['datum'] + h, 1) for h in Z['elevation']['river_levels']]:
-            errors.append(f'{name} zone river differs from region river {Z["river"]["name"]}')
+            exit_ = Z['roads']['primary'][road][-1]
+            exit_ = (s['at'][0] + exit_[0], s['at'][1] + exit_[1])
+            if line_dist(exit_, roads[frozenset((name, to))]) > 30:
+                errors.append(f'{name} zone road {road} leaves the zone off the region road to {to}')
+        for w in waters(Z):  # every zone water is a stretch of the region river of the same name
+            rr = rivers.get(w['name'])
+            zp = [[s['at'][0] + p[0], s['at'][1] + p[1]] for p in w['points']]
+            zl = [round(s['datum'] + h, 1) for h in w['levels']]
+            starts = [i for i, q in enumerate(rr['points']) if list(q) == zp[0]] if rr else []
+            if not any([list(q) for q in rr['points'][i:i + len(zp)]] == zp and rr['levels'][i:i + len(zp)] == zl for i in starts):
+                errors.append(f'{name} zone water {w["name"]} differs from the region')
     return errors
 
 
@@ -150,8 +160,9 @@ def _self_test(R):
     broken(lambda b: b['rivers']['Greenlands River']['levels'].__setitem__(7, 90), 'Greenlands River flows uphill')
     broken(lambda b: [b['rivers']['Eldenfall Branch'][k].__delitem__(slice(-3, None)) for k in ('points', 'levels')], 'Eldenfall Branch does not reach the sea')
     broken(lambda b: b['rivers']['Silverbrook River']['levels'].__setitem__(-1, 20), 'joins Greenlands River below its level')
-    broken(lambda b: b['roads'].remove(['Rivermoor', 'Stonehollow']) or b['roads'].remove(['Meadowgate', 'Stonehollow']), 'Stonehollow has no road')
-    broken(lambda b: b['settlements']['Silverbrook'].update(datum=90), 'Silverbrook zone river differs')
+    broken(lambda b: b.update(roads=[rd for rd in b['roads'] if 'Stonehollow' not in rd['between']]), 'Stonehollow has no road')
+    broken(lambda b: b['roads'][0].update(points=[b['roads'][0]['points'][0], b['roads'][0]['points'][-1]]), 'leaves the zone off the region road')
+    broken(lambda b: b['settlements']['Silverbrook'].update(datum=90), 'Silverbrook zone water Silverbrook River differs')
     broken(lambda b: b.update(bounds=[-3750, -3750, 6000, 8750]), 'whole tiles')
 
 

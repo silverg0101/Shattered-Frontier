@@ -41,6 +41,21 @@ def finish():
     u.SystemLibrary.execute_console_command(world, 'quit')
 
 
+def stuck_report(p, ahead):
+    """What the pawn is doing and what its own capsule meets 2 m ahead, for diagnosing a stall."""
+    move, capsule = pawn.character_movement, pawn.capsule_component
+    r, hh = capsule.get_scaled_capsule_radius(), capsule.get_scaled_capsule_half_height()
+    types = [getattr(u.ObjectTypeQuery, f'OBJECT_TYPE_QUERY{i}') for i in range(1, 7)]
+    hits = u.SystemLibrary.capsule_trace_multi_for_objects(world, p, p + ahead * 200, r, hh, types, True, [pawn],
+                                                           u.DrawDebugTrace.NONE, True) or []
+    floor = move.current_floor.hit_result.to_tuple() if move.current_floor else None
+    return dict(velocity_cm_s=round(pawn.get_velocity().length()), mode=str(move.movement_mode),
+                capsule=[round(r), round(hh)], floor=floor[9].get_actor_label() if floor and floor[9] else None,
+                sweep=[dict(actor=h.to_tuple()[9].get_actor_label() if h.to_tuple()[9] else None,
+                            impact_cm=[round(h.to_tuple()[5].x), round(h.to_tuple()[5].y), round(h.to_tuple()[5].z)],
+                            blocking=h.to_tuple()[0]) for h in hits])
+
+
 def tick(delta):
     global walk_started, frame
     frame += 1
@@ -70,6 +85,8 @@ def tick(delta):
         if now - last['at'] > 3:
             if math.dist(last['pos'], (p.x, p.y)) < 200:
                 state['stuck_events'] += 1; state.setdefault('stuck_at_cm', []).append([round(p.x), round(p.y)])
+                if 'stuck_report' not in state:
+                    state['stuck_report'] = stuck_report(p, u.Vector(dx / d, dy / d, 0))
             last.update(pos=(p.x, p.y), at=now)
         if state['target'] == len(ROUTE) or now - walk_started > 420 or state['stuck_events'] >= 3:
             state['walk_completed'] = state['target'] == len(ROUTE)

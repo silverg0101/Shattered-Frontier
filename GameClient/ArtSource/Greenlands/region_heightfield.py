@@ -146,7 +146,7 @@ def zone_edges(R, hf, settlement, step=50):
     crossings = []
     S = R['settlements']
     lines = [(name, rv['points']) for name, rv in R['rivers'].items()]
-    lines += [(f'road {a}-{b}', [S[a]['at'], S[b]['at']]) for a, b in R['roads']]
+    lines += [(f'road {rd["between"][0]}-{rd["between"][1]}', rd['points']) for rd in R['roads']]
     for name, pts in lines:
         for a, b in zip(pts, pts[1:]):
             for e0, e1 in zip(corners, corners[1:]):

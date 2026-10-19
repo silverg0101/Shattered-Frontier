@@ -104,10 +104,80 @@
         }
       ],
       "mouth": "Greenlands River"
+    },
+    "Eastfall Brook": {
+      "width": 10,
+      "points": [[2600, 150], [1900, 250], [1250, 300], [1075, 330], [900, 360], [750, 365], [650, 370], [563, 377], [450, 395], [200, 430]],
+      "levels": [170, 140, 114, 111, 108, 105, 103, 102, 101, 80.3],
+      "waterfalls": [
+        {
+          "name": "Riverside falls",
+          "between_points": [8, 9],
+          "drop": 20.7
+        }
+      ],
+      "mouth": "Silverbrook River"
     }
   },
   "max_drop_without_waterfall": 40,
-  "roads": [["Silvermere", "Silverbrook"], ["Silvermere", "Highcrest"], ["Silverbrook", "Everwood"], ["Silverbrook", "Valemere"], ["Highcrest", "Valemere"], ["Highcrest", "Eldenfall"], ["Everwood", "Valemere"], ["Everwood", "Meadowgate"], ["Meadowgate", "Valemere"], ["Meadowgate", "Stonehollow"], ["Valemere", "Rivermoor"], ["Valemere", "Eldenfall"], ["Eldenfall", "Rivermoor"], ["Rivermoor", "Stonehollow"]],
+  "roads": [
+    {
+      "between": ["Silvermere", "Silverbrook"],
+      "points": [[1490, -2050], [0, -1250], [10, -900], [22, -529], [0, 0]]
+    },
+    {
+      "between": ["Silvermere", "Highcrest"],
+      "points": [[1490, -2050], [3630, 280]]
+    },
+    {
+      "between": ["Silverbrook", "Everwood"],
+      "points": [[0, 0], [-383, -151], [-800, 300], [-1250, 700], [-1400, 1300]]
+    },
+    {
+      "between": ["Silverbrook", "Valemere"],
+      "points": [[0, 0], [41, 527], [500, 900], [1000, 1250], [1580, 2510]]
+    },
+    {
+      "between": ["Highcrest", "Valemere"],
+      "points": [[3630, 280], [1580, 2510]]
+    },
+    {
+      "between": ["Highcrest", "Eldenfall"],
+      "points": [[3630, 280], [5020, 3160]]
+    },
+    {
+      "between": ["Everwood", "Valemere"],
+      "points": [[-1400, 1300], [1580, 2510]]
+    },
+    {
+      "between": ["Everwood", "Meadowgate"],
+      "points": [[-1400, 1300], [-2050, 4000]]
+    },
+    {
+      "between": ["Meadowgate", "Valemere"],
+      "points": [[-2050, 4000], [1580, 2510]]
+    },
+    {
+      "between": ["Meadowgate", "Stonehollow"],
+      "points": [[-2050, 4000], [470, 5950]]
+    },
+    {
+      "between": ["Valemere", "Rivermoor"],
+      "points": [[1580, 2510], [2420, 5300]]
+    },
+    {
+      "between": ["Valemere", "Eldenfall"],
+      "points": [[1580, 2510], [5020, 3160]]
+    },
+    {
+      "between": ["Eldenfall", "Rivermoor"],
+      "points": [[5020, 3160], [2420, 5300]]
+    },
+    {
+      "between": ["Rivermoor", "Stonehollow"],
+      "points": [[2420, 5300], [470, 5950]]
+    }
+  ],
   "requirements": {
     "_about": "Mirrors the region definition (docs/Game-Design/Regions/Legends_Shattered_Frontier_Region_Greenlands_v0.1.md, sections 4-5); the definition wins.",
     "settlements": [
@@ -121,6 +191,6 @@
       "Rivermoor",
       "Stonehollow"
     ],
-    "adjacency": "roads"
+    "adjacency": "every road's between pair; each settlement has at least one road"
   }
 }

@@ -15,10 +15,11 @@ import unreal as u
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
-import importlib, validate_layout, heightfield  # an open editor keeps modules between runs; take the files' current state
-importlib.reload(validate_layout); importlib.reload(heightfield)
+import importlib, validate_layout, validate_region, region_heightfield, heightfield  # an open editor keeps modules
+for _m in (validate_layout, validate_region, region_heightfield, heightfield):        # between runs; take the files' current state
+    importlib.reload(_m)
 from validate_layout import validate, waters
-from heightfield import Heightfield, backdrop, check as check_terrain, in_polygon, water_level
+from heightfield import Heightfield, backdrop, check as check_terrain, in_polygon, water_level, zone_region
 L = json.loads((ROOT / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))
 _problems = validate(L)
 assert not _problems, f'Layout is invalid; run validate_layout.py: {_problems}'
@@ -78,7 +79,7 @@ def _box(label, x, y, w, d, h, mat, z0, yaw, collide, folder, ground, pitch=0.0)
     a.set_folder_path(folder)
     a.static_mesh_component.set_material(0, M[mat])
     if not collide:
-        a.static_mesh_component.set_collision_enabled(u.CollisionEnabled.NO_COLLISION)
+        a.static_mesh_component.set_collision_profile_name('NoCollision')  # the profile is reapplied on load; a bare flag is not kept
     return a
 
 
@@ -391,7 +392,8 @@ box('Arrival_Waystone', ax + 7, ay - 9, 1.5, 1.5, 3, 'Civic', folder='Places')  
 label('Arrival', ax, ay, 8, 3)
 
 # Terrain: shaped from the layout's elevation with every building, plot and open area levelled.
-HF = Heightfield(L, pads=placed + flats)
+REGION, DATUM, SEA = zone_region('silverbrook-town-layout.json')  # region first: edges and backdrop come from it
+HF = Heightfield(L, pads=placed + flats, region=REGION)
 terrain_problems, terrain_stats = check_terrain(L, HF)
 assert not terrain_problems, f'Terrain checks failed: {terrain_problems}'
 if u.EditorAssetLibrary.does_asset_exist(TERRAIN):
@@ -415,8 +417,8 @@ ground.static_mesh_component.set_static_mesh(terrain_mesh)
 ground.static_mesh_component.set_material(0, M['Ground'])
 ground.set_actor_label('Terrain'); ground.set_folder_path('Ground')
 
-# Backdrop: mountains and far hills beyond the zone edge, visual only.
-n, sp, bz = backdrop(L, HF)
+# Backdrop: the region terrain beyond the zone edge, visual only, with the sea at the region's sea level.
+n, sp, bz = backdrop(L, HF, REGION)
 ext = L['backdrop']['extent']
 if u.EditorAssetLibrary.does_asset_exist(BACKDROP):
     assert u.EditorAssetLibrary.delete_asset(BACKDROP), 'Could not delete the previous backdrop mesh'
@@ -435,8 +437,9 @@ u.EditorAssetLibrary.save_loaded_asset(backdrop_mesh)
 mountains = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(0, 0, 0))
 mountains.static_mesh_component.set_static_mesh(backdrop_mesh)
 mountains.static_mesh_component.set_material(0, M['Rock'])
-mountains.static_mesh_component.set_collision_enabled(u.CollisionEnabled.NO_COLLISION)
+mountains.static_mesh_component.set_collision_profile_name('NoCollision')
 mountains.set_actor_label('Backdrop'); mountains.set_folder_path('Ground')
+_box('Sea', 0, 0, 2 * ext, 2 * ext, 0.1, 'River', SEA - 0.1, 0, False, 'Water', None)
 
 for spawn in pending:
     spawn()
@@ -450,4 +453,4 @@ cam.camera_component.set_editor_property('field_of_view', 70)
 
 assert len(bridges) >= 3, f'Expected at least 3 bridges, built {len(bridges)}'
 assert u.EditorLoadingAndSavingUtils.save_map(world, ZONE), 'Could not save the zone map'
-u.log(f'SILVERBROOK_BUILT Map={ZONE} Bridges={len(bridges)} Fill={fill_report} Terrain={terrain_stats} Counts={counts}')
+u.log(f'SILVERBROOK_BUILT Map={ZONE} Datum={DATUM} Bridges={len(bridges)} Fill={fill_report} Terrain={terrain_stats} Counts={counts}')

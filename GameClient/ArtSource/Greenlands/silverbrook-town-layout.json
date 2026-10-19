@@ -127,11 +127,7 @@
       "Westfields farms": [[-520, 260], 5],
       "Eastwood woods": [[560, 20], 26],
       "Watchtower hill": [[-330, -520], 48],
-      "Arrival": [[420, 840], 6],
-      "North edge": [[0, -1250], 85],
-      "North-east hills": [[900, -900], 110],
-      "South-east edge": [[1000, 1250], 8],
-      "South-west edge": [[-1250, 700], 18]
+      "Arrival": [[420, 840], 6]
     },
     "ridges": {
       "Northern ridge": {
@@ -344,7 +340,7 @@
     {
       "name": "Eastfall Brook",
       "width": 10,
-      "points": [[1250, 300], [1075, 330], [900, 360], [750, 365], [650, 370], [563, 377], [450, 395], [270, 410]],
+      "points": [[1250, 300], [1075, 330], [900, 360], [750, 365], [650, 370], [563, 377], [450, 395], [200, 430]],
       "levels": [34, 31, 28, 25, 23, 22, 21, 0.3],
       "waterfalls": [
         {
@@ -368,31 +364,9 @@
     }
   ],
   "backdrop": {
-    "_about": "Mountains and far hills beyond the zone edge, read from the board's isometric view. Visual only; part of the area so no view ends at the edge of the world. Heights in metres above the zone edge, width is the falloff distance from the range line.",
+    "_about": "Beyond the zone edge the backdrop is the region terrain (greenlands-region-layout.json), never invented per zone. Extent and spacing of the backdrop mesh in metres; sea surface at the region's sea level.",
     "extent": 6000,
     "spacing": 125,
-    "ramp": 800,
-    "ranges": {
-      "Northern peaks": {
-        "points": [[-4500, -3000], [-2000, -3800], [0, -3200], [2000, -3900], [4500, -3000]],
-        "height": 1100,
-        "width": 1900
-      },
-      "Eastern highlands": {
-        "points": [[2800, -1500], [3200, 800]],
-        "height": 450,
-        "width": 1400
-      },
-      "Western hills": {
-        "points": [[-3000, -1000], [-3200, 1500]],
-        "height": 250,
-        "width": 1500
-      },
-      "Southern downs": {
-        "points": [[-2500, 3000], [2500, 3200]],
-        "height": 120,
-        "width": 1500
-      }
-    }
+    "edge_blend": 300
   }
 }
