@@ -9,9 +9,9 @@
   "method": "procedural original geometry (concept interpretation, not image reconstruction)",
   "units": "metres, Z up, front -Y, origin ground centre",
   "bounds_m": [
-    7.654,
-    7.453,
-    6.53
+    7.65,
+    5.94,
+    5.99
   ],
   "meshes": {
     "SM_SBCottage1_Masonry": {
@@ -21,7 +21,7 @@
       ]
     },
     "SM_SBCottage1_Plaster": {
-      "triangles": 580,
+      "triangles": 516,
       "materials": [
         "SB_LimePlaster"
       ]
@@ -33,7 +33,7 @@
       ]
     },
     "SM_SBCottage1_Roof": {
-      "triangles": 44516,
+      "triangles": 39088,
       "materials": [
         "SB_Slate",
         "SB_OakTimber"
@@ -53,8 +53,162 @@
       ]
     }
   },
-  "triangles": 60240,
-  "materials": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "triangles": 54748,
+  "materials": [
+    {
+      "name": "SB_Slate",
+      "scan": "grey_roof_tiles_02",
+      "dark": [
+        0.2,
+        0.22,
+        0.28
+      ],
+      "lichen": "lichen_rock",
+      "normal": 1.0
+    },
+    {
+      "name": "SB_Ashlar",
+      "scan": "stone_wall_04",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_LimePlaster",
+      "scan": "patterned_clay_plaster",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_DoorBoards",
+      "scan": "old_planks_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_PaintedShutter",
+      "scan": "blue_painted_planks",
+      "dark": [
+        0.2,
+        0.22,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LeadCame",
+      "colour": [
+        0.05,
+        0.05,
+        0.05
+      ],
+      "roughness": 0.45,
+      "metallic": 0.8,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LitGlass",
+      "colour": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "roughness": 0.15,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.5,
+        0.14
+      ],
+      "strength": 3
+    },
+    {
+      "name": "SB_LanternGlow",
+      "colour": [
+        0.3,
+        0.2,
+        0.1
+      ],
+      "roughness": 0.3,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.38,
+        0.08
+      ],
+      "strength": 5
+    },
+    {
+      "name": "SB_PlanterSoil",
+      "colour": [
+        0.06,
+        0.04,
+        0.025
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_ChimneyPot",
+      "colour": [
+        0.2,
+        0.085,
+        0.05
+      ],
+      "roughness": 0.75,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookCottage1",
+  "slot_m": [
+    8,
+    6,
+    6
+  ],
   "outputs": [
     "SilverbrookCottage1.blend",
     "SilverbrookCottage1.glb",

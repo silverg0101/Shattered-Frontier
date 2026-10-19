@@ -1,0 +1,18 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookCottage1",
+  "size_m": [
+    7.65,
+    5.94,
+    5.99
+  ],
+  "slot_m": [
+    8,
+    6,
+    6
+  ],
+  "fits": true,
+  "slots": 12,
+  "nanite": true,
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 19190
+}

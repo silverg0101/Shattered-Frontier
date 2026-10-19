@@ -11,10 +11,10 @@ from pathlib import Path
 from mathutils import Vector,Matrix
 KIT=Path(__file__).resolve().parent;TEX=KIT/'Textures'
 SIZE={r['asset']:r['physical_size_metres'][0] for r in json.loads((KIT/'materials-provenance.json').read_text())}
-UP=Vector((0,0,1));rng=random.Random(0);MATS={};SCALE={};DAMP=set();AGED={}
+UP=Vector((0,0,1));rng=random.Random(0);MATS={};SCALE={};DAMP=set();AGED={};ROWS=[]  # ROWS: engine-neutral material table for the UE library
 
 def reset(seed):
-    bpy.ops.wm.read_factory_settings(use_empty=True);rng.seed(seed);MATS.clear();SCALE.clear();DAMP.clear();AGED.clear()
+    bpy.ops.wm.read_factory_settings(use_empty=True);rng.seed(seed);MATS.clear();SCALE.clear();DAMP.clear();AGED.clear();ROWS.clear()
     scene=bpy.context.scene;scene.unit_settings.system='METRIC';scene.unit_settings.scale_length=1;return scene
 
 def _sock(node,ident):return next(s for s in [*node.inputs,*node.outputs] if s.identifier==ident)
@@ -49,7 +49,7 @@ def scan(name,asset,dark=(.42,.36,.28),lichen=None,normal=1.0,damp=True,aged=0):
         colour=_mix(nt,mul.outputs['Value'],colour,_mix(nt,1,lt.outputs['Color'],(1.0,.6,.2,1),'MULTIPLY'))
     link(colour,p.inputs['Base Color']);link(rough.outputs['Color'],p.inputs['Roughness'])
     nm=n.new('ShaderNodeNormalMap');nm.uv_map='UVMap';nm.inputs['Strength'].default_value=normal;link(nor.outputs['Color'],nm.inputs['Color']);link(nm.outputs['Normal'],p.inputs['Normal'])
-    MATS[name]=m;SCALE[name]=SIZE[asset];AGED[name]=aged
+    MATS[name]=m;SCALE[name]=SIZE[asset];AGED[name]=aged;ROWS.append(dict(name=name,scan=asset,dark=list(dark),lichen=lichen,normal=normal))
     if damp:DAMP.add(name)
     return m
 
@@ -57,7 +57,7 @@ def solid(name,colour,rough=.6,metal=0,emission=None,strength=0):
     m=bpy.data.materials.new(name);m.use_nodes=True;p=m.node_tree.nodes.get('Principled BSDF')
     p.inputs['Base Color'].default_value=(*colour,1);p.inputs['Roughness'].default_value=rough;p.inputs['Metallic'].default_value=metal
     if emission:p.inputs['Emission Color'].default_value=(*emission,1);p.inputs['Emission Strength'].default_value=strength
-    MATS[name]=m;SCALE[name]=1;return m
+    MATS[name]=m;SCALE[name]=1;ROWS.append(dict(name=name,colour=list(colour),roughness=rough,metallic=metal,emission=list(emission) if emission else None,strength=strength));return m
 
 def _pixels(asset):
     image=_image(asset,'Diffuse');px=np.empty(len(image.pixels),np.float32);image.pixels.foreach_get(px)

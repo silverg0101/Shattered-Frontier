@@ -1,11 +1,11 @@
 {
   "source": {
     "meshes": 5,
-    "triangles": 60240,
+    "triangles": 54748,
     "size_m": [
-      7.654,
-      7.453,
-      6.53
+      7.65,
+      5.94,
+      5.99
     ],
     "materials": [
       "SB_Ashlar",
@@ -23,15 +23,17 @@
     ],
     "colour_attributes": [
       "Weathering"
-    ]
+    ],
+    "images_missing": [],
+    "images": 19
   },
   "glb": {
     "meshes": 5,
-    "triangles": 60240,
+    "triangles": 54748,
     "size_m": [
-      7.654,
-      7.453,
-      6.53
+      7.65,
+      5.94,
+      5.99
     ],
     "materials": [
       "SB_Ashlar",
@@ -50,15 +52,17 @@
     "colour_attributes": [
       "Color",
       "Color.001"
-    ]
+    ],
+    "images_missing": [],
+    "images": 0
   },
   "fbx": {
     "meshes": 5,
-    "triangles": 60240,
+    "triangles": 54748,
     "size_m": [
-      7.654,
-      7.453,
-      6.53
+      7.65,
+      5.94,
+      5.99
     ],
     "materials": [
       "SB_Ashlar",
@@ -76,6 +80,8 @@
     ],
     "colour_attributes": [
       "Weathering"
-    ]
+    ],
+    "images_missing": [],
+    "images": 12
   }
 }

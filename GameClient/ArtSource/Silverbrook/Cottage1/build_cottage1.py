@@ -36,16 +36,18 @@ def band():return kit.rng.choice(BANDS)
 
 G=dict(stone=Geo('SM_SBCottage1_Masonry',asset),plaster=Geo('SM_SBCottage1_Plaster',asset),timber=Geo('SM_SBCottage1_Timber',asset),roof=Geo('SM_SBCottage1_Roof',asset),detail=Geo('SM_SBCottage1_Details',asset))
 # ---- measured layout (metres) -------------------------------------------------
-W2,D2=3.3,2.7                  # outer wall half-extents
+SLOT=(8,6,6)                   # town-layout slot w x d x h (concept README 'Fits')
+W2,D2=3.3,2.3                  # outer wall half-extents
 EAVE,RIDGE=2.4,5.35            # main hip roof
-EX,EY,RX=3.7,3.1,2.7           # eave half-extents, ridge half-length
+EX,EY,RX=3.7,2.6,2.7           # eave half-extents, ridge half-length
 KF,KS=(RIDGE-EAVE)/EY,(RIDGE-EAVE)/(EX-RX)
 GH,GW,GE=1.5,1.15,3.6          # front wall gable: roof half, wall half, eave on the main slope
-KG=(RIDGE-GE)/GH;GY=-3.0
-XD,YD,DH,DW,DE,DR=2.2,-2.36,.62,.5,3.95,4.35   # dormer
+KG=(RIDGE-GE)/GH;GY=-D2-.3
+XD,DH,DW,DE,DR=2.2,.62,.5,3.95,4.35   # dormer
+YD=-(RIDGE-3.1)/KF
 KD=(DR-DE)/DH
 XC,YC=2.55,-.25                # ridge stack
-PE,PR,PH,PY=2.1,2.95,1.25,-3.95  # porch eave, ridge, roof half, front
+PE,PR,PH,PY=2.1,2.95,1.25,-D2-.75  # porch eave, ridge, roof half, front
 def main_z(x,y):return min(RIDGE-abs(y)*KF,RIDGE-max(0,abs(x)-RX)*KS)
 def gable_z(x):return RIDGE-abs(x)*KG
 def dormer_z(x):return DR-abs(x-XD)*KD
@@ -83,8 +85,8 @@ for s in (-1,1):G['timber'].beam((s*(GH+.05),GY-.04,GE-.08),(-s*.16,GY-.04,RIDGE
 # cheek walls close the wall gable down to the main slope
 yq=-(RIDGE-(gable_z(GW)-.05))/KF
 for s in (-1,1):G['plaster'].prism([(s*GW,-D2,main_z(0,-D2)-.04),(s*GW,-D2,gable_z(GW)-.05),(s*GW,yq,gable_z(GW)-.05)],(1,0,0),.1,M['plaster'])
-G['timber'].box((0,GY-.06,5.55),(.15,.15,.95),M['timber'],.02,grain=True,band=band())
-G['timber'].box((0,GY-.06,6.03),(.2,.2,.05),M['timber'],.02,grain=True,band=band())
+G['timber'].box((0,GY-.06,5.5),(.15,.15,.9),M['timber'],.02,grain=True,band=band())
+G['timber'].box((0,GY-.06,5.96),(.2,.2,.05),M['timber'],.02,grain=True,band=band())
 # ---- dormer -------------------------------------------------------------------
 LD=math.hypot(DH,DR-DE)
 plane((XD-DH,0,DE),(0,-1,0),(DH,0,DR-DE),LD,lambda t:.9,lambda t:-YD+.16,[under_main])
@@ -100,10 +102,10 @@ for s in (-1,1):G['timber'].box((XD+s*(DW-.05),YD-.02,(DB+DE)/2),(.12,.12,DE-DB)
 G['timber'].box((XD,YD-.03,DE-.02),(2*DW+.08,.14,.13),M['timber'],.01,grain=True,band=band())
 window(G,M,(XD,YD,DB+.22),(0,-1,0),.4,.4,shutters=False,wall_th=.12,band=band())
 # ---- ridge stack ------------------------------------------------------------------
-G['stone'].box((XC,YC,4.5),(.86,.76,3.0),M['stone'],.01,w=(0,0))
-G['stone'].box((XC,YC,5.6),(.92,.82,.1),M['ashlar'],.015,rect=kit.rng.choice(STONES))
-G['stone'].box((XC,YC,6.05),(.98,.88,.12),M['ashlar'],.015,rect=kit.rng.choice(STONES),w=(.45,0))
-for dx in (-.2,.2):G['detail'].vessel((XC+dx,YC,6.11),[(.11,0),(.105,.3),(.115,.38),(.13,.42),(.10,.42),(.085,.36),(0,.36)],M['pot'])
+G['stone'].box((XC,YC,4.2),(.86,.76,2.5),M['stone'],.01,w=(0,0))
+G['stone'].box((XC,YC,5.1),(.92,.82,.1),M['ashlar'],.015,rect=kit.rng.choice(STONES))
+G['stone'].box((XC,YC,5.51),(.98,.88,.12),M['ashlar'],.015,rect=kit.rng.choice(STONES),w=(.45,0))
+for dx in (-.2,.2):G['detail'].vessel((XC+dx,YC,5.57),[(.11,0),(.105,.3),(.115,.38),(.13,.42),(.10,.42),(.085,.36),(0,.36)],M['pot'])
 # ---- walls ------------------------------------------------------------------------
 PLATE=main_z(0,-D2)-.04
 WIN=.7;WH=.85;WZ=1.05;WO=(WIN+.18,WZ-.09,WZ+WH+.09)
@@ -112,7 +114,7 @@ wall(G['stone'],M['stone'],(0,-D2,0),(0,-1,0),W2,PLATE,front_holes,arch=(0,1.0,1
 wall(G['stone'],M['stone'],(0,D2,0),(0,1,0),W2,PLATE,[(-2.0,WO[0],WO[1],WO[2]),(2.0,WO[0],WO[1],WO[2])])
 for s in (-1,1):
     wall(G['stone'],M['stone'],(s*W2,0,0),(s,0,0),D2-.3,PLATE,[(1.3,WO[0],WO[1],WO[2])],th=.3)
-    top=[(y/10,main_z(W2,y/10)-.05) for y in range(-27,28) if main_z(W2,y/10)-.05>PLATE+.01]
+    top=[(y/10,main_z(W2,y/10)-.05) for y in range(-round(D2*10),round(D2*10)+1) if main_z(W2,y/10)-.05>PLATE+.01]
     G['plaster'].prism([(s*(W2-.15),y,z) for y,z in [(top[-1][0],PLATE),(top[0][0],PLATE)]+top],(1,0,0),.3,M['plaster'])
 # gable face (plaster infill) above the main wall plate
 # gable face (plaster infill) above the main wall plate, with a real window aperture
@@ -144,9 +146,9 @@ for s in (-1,1):rail((s*(GW-.1),y,2.98),(s*.5,y,GWZ-.24),.1)
 # side and rear framing
 for s in (-1,1):
     x=s*(W2+.03)
-    for yy in (-2.6,0,2.6):post(x,yy,.44,PLATE,'x')
+    for yy in (-D2+.1,0,D2-.1):post(x,yy,.44,PLATE,'x')
     rail((x,-D2,.5),(x,D2,.5));rail((x,-D2,2.05),(x,D2,2.05))
-    rail((x,-2.5,1.55),(x,-2.2,2.0),.12);rail((x,2.5,1.55),(x,2.2,2.0),.12)
+    rail((x,-D2+.2,1.55),(x,-D2+.5,2.0),.12);rail((x,D2-.2,1.55),(x,D2-.5,2.0),.12)
 y=D2+.03
 for x in (-3.2,-.6,.6,3.2):post(x,y,.44,PLATE,'y')
 rail((-W2,y,.5),(W2,y,.5));rail((-W2,y,2.05),(W2,y,2.05));rail((-W2,y,PLATE-.08),(W2,y,PLATE-.08),.18)
@@ -168,11 +170,16 @@ for s in (-1,1):
     rail((s*1.0,PY+.15,1.6),(s*.62,PY+.15,PE-.03),.1);rail((s*1.0,PY+.15,1.6),(s*1.0,PY+.5,PE-.03),.1)
 rail((-1.12,PY+.15,PE+.02),(1.12,PY+.15,PE+.02),.18);post(0,PY+.12,PE+.1,PR-.06,'y')
 G['stone'].box((0,(PY+.05-D2)/2,.15),(2.4,abs(PY+.05+D2),.3),M['stone'],.015)
-G['stone'].box((0,PY-.15,.075),(1.9,.4,.15),M['stone'],.015)
+G['stone'].box((0,PY-.08,.075),(1.9,.3,.15),M['stone'],.015)
 lantern(G,M,(0,PY+.55,PR-.12))
 lantern(G,M,(3.2,-D2-.42,2.15),arm=((3.2,-D2-.09,2.15),(0,-1,0)))
 # ---- export, preview scene, manifest ---------------------------------------------
 objs=[g.object() for g in G.values()]
+# Origin at the slot's ground centre: the porch side is deeper than the back eave.
+from mathutils import Matrix
+lo=[min((o.matrix_world@Vector(c))[k] for o in objs for c in o.bound_box) for k in range(3)];hi=[max((o.matrix_world@Vector(c))[k] for o in objs for c in o.bound_box) for k in range(3)]
+for o in objs:o.data.transform(Matrix.Translation((-(lo[0]+hi[0])/2,-(lo[1]+hi[1])/2,0)))
+assert all(h-l<=s+1e-3 for l,h,s in zip(lo,hi,SLOT)),f'exceeds slot {SLOT}: {[round(h-l,3) for l,h in zip(lo,hi)]}'
 OUT=HERE/'SilverbrookCottage1'
 for o in bpy.data.objects:o.select_set(o in objs)
 bpy.context.view_layer.objects.active=objs[0]
@@ -197,6 +204,6 @@ manifest=dict(asset='SilverbrookCottage1',reference=dict(file='Cottage-1-referen
     blender=bpy.app.version_string,generator='build_cottage1.py',method='procedural original geometry (concept interpretation, not image reconstruction)',
     units='metres, Z up, front -Y, origin ground centre',bounds_m=[round(v,3) for v in maxs-mins],
     meshes={o.name:dict(triangles=sum(len(p.vertices)-2 for p in o.data.polygons),materials=[m.name for m in o.data.materials]) for o in objs},triangles=tris,
-    materials='../materials-provenance.json (CC0 Poly Haven scans)',outputs=['SilverbrookCottage1.blend','SilverbrookCottage1.glb','SilverbrookCottage1.fbx'])
+    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookCottage1',slot_m=list(SLOT),outputs=['SilverbrookCottage1.blend','SilverbrookCottage1.glb','SilverbrookCottage1.fbx'])
 (HERE/'asset-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print('COTTAGE1_BUILT',manifest['bounds_m'],tris)
