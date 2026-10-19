@@ -6,7 +6,8 @@ Status: proposed 2026-10-19; Silverbrook is the first user ([zone plan](greenlan
 
 | Input | Owns |
 | --- | --- |
-| Settlement definition (`docs/Game-Design/Regions/…Settlement_<Name>…md`) | Every number and name. Wins all conflicts. |
+| Region definition and region map (`docs/Game-Design/Regions/…Region_<Name>…md`) | Where each settlement and zone sits, plus coast, mountains, main rivers and the roads between settlements. A zone may add detail inside its bounds but never contradicts the region. |
+| Settlement definition (`docs/Game-Design/Regions/…Settlement_<Name>…md`) | Every number and name inside the settlement. Wins all conflicts within the zone. |
 | Design board ([standard](Game-Design/World-Simulation/Legends_Shattered_Frontier_Settlement_Design_Board_Standard_v1.0.md)) | Visual direction only. Layout is traced from it, then reconciled to the definition. |
 | [Zone Definition Standard](Game-Design/World-Simulation/Legends_Shattered_Frontier_World_Zone_Definition_Standard_v0.1.md) | Z-checklist, budgets, compass axes (north −Y, east +X) |
 | [DEC-03](decisions/DEC-03-terrain.md) | Voxel density is the terrain authority. The client surface/mesh adapter is still open (see [TER-01](decisions/TER-01-mesh-terrain-fit-check.md)). |
@@ -15,10 +16,19 @@ Status: proposed 2026-10-19; Silverbrook is the first user ([zone plan](greenlan
 
 ## Target: the agent zone workflow
 
-The owner supplies a design board and one or more look references. Agent sessions turn them into a dressed, elevated, playable zone, plus a list of assets that are still missing. Each step is a separate session-sized task with a committed output and a check, so any step can be rerun without redoing the others.
+The owner supplies a region map, then per settlement a design board and one or more look references. Agent sessions turn them into a dressed, elevated, playable zone, plus a list of assets that are still missing. Each step is a separate session-sized task with a committed output and a check, so any step can be rerun without redoing the others.
+
+**Hard rule: region first.** No zone layout, terrain or build may start until its region has a layout that passes its validator. The region layout fixes everything a zone inherits from its surroundings:
+- where the zone sits;
+- its ground height along every edge;
+- where rivers and roads enter and leave it;
+- what lies beyond it, such as coast, mountains or neighbouring zones.
+
+A zone's backdrop is the region terrain beyond the zone's edge. Never invent it per zone.
 
 | Step | Agent work | Committed output | Check |
 | --- | --- | --- | --- |
+| 0. Lay out the region | Trace the region map into region layout data at the owner-confirmed scale. Include coastline and sea level, mountain ranges with heights, the main rivers from source to mouth with water levels and falls, lakes, settlements with their zone footprints, the roads between settlements, and biome areas. From that, build one coarse region heightfield. | `<region>-region-layout.json` and the region heightfield script | Region validator: rivers run downhill to the sea, settlements and zones sit on land and don't overlap, roads connect the settlements named in the region definition, and every zone's edge heights and its river and road entry and exit points can be read from it |
 | 1. Read the board | Trace the board into layout data, using its scale bar, and reconcile it to the settlement definition. Read the whole board, not only the town plan: the town map, the isometric view and every panel together describe one area. Capture the relief at the centre (such as a raised district), the land around the town, and the backdrop (mountains, cliffs and waterfalls), as well as the streets and buildings. These tie into each other: streets climb the high ground, the river cuts through the relief, and the backdrop frames the views. Includes elevation: high ground, ridges, cliffs, water levels, waterfall drops and the backdrop's heights and distances. | Layout JSON (Stage 1) | Layout validator |
 | 2. Read the look | Turn each look reference into a look profile: asset roles per layer (canopy, understory, ground cover, rocks, litter, surface, backdrop), with variants, shares and placement rules. Record which project assets already fill each role. | `<biome>-look-profile.json` | Profile schema check; owner review of the role list |
 | 3. Shape the land | Generate the terrain from the layout's elevation data: rolling macro forms, high ground, valleys cut for rivers, flattened road and building beds, cliffs and outcrop zones. Also the backdrop beyond the zone edge (mountains and far hills), so no view ends at the edge of the world. Not flat: the relief must read at the board's scale from the arrival point. | Terrain source plus build script (Stage 2; the surface type depends on [TER-01](decisions/TER-01-mesh-terrain-fit-check.md)) | Height samples at landmarks, roads within grade, rivers below banks |
