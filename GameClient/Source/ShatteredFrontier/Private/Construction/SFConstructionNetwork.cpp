@@ -47,6 +47,7 @@ const TCHAR* PlacementResultText(ESFConstructionNetworkResult Result)
     case ESFConstructionNetworkResult::DoorBlocked: return TEXT("Doorway blocked. Step out of the swing space.");
     case ESFConstructionNetworkResult::DoorOpened: return TEXT("Door opened.");
     case ESFConstructionNetworkResult::DoorClosed: return TEXT("Door closed.");
+    case ESFConstructionNetworkResult::DoorRemoved: return TEXT("Door removed.");
     case ESFConstructionNetworkResult::PermissionDenied: return TEXT("Observer only: building permission required.");
     case ESFConstructionNetworkResult::Stale: return TEXT("The structure changed. Aim again and retry.");
     case ESFConstructionNetworkResult::InvalidCell: return TEXT("Outside the construction area.");
@@ -498,12 +499,13 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::PlaceDoor(ASFConstruct
     return ESFConstructionNetworkResult::Accepted;
 }
 
-ESFConstructionNetworkResult ASFConstructionNetworkState::ToggleDoor(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision)
+ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateDoorTarget(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision, int32& OutIndex) const
 {
     const APawn* Pawn=nullptr; const AActor* Foundation=nullptr;
     const auto Admission=ValidateEditContext(Controller,ExpectedRevision,Pawn,Foundation);
     if (Admission!=ESFConstructionNetworkResult::Accepted) { return Admission; }
-    const int32 Index=Snapshot.FindDoor(Origin);
+    OutIndex=Snapshot.FindDoor(Origin);
+    const int32 Index=OutIndex;
     const auto* Projection=DoorProjections.Find(Origin);
     if (Index==INDEX_NONE || !Projection) { return ESFConstructionNetworkResult::NotFound; }
     const auto& Door=Snapshot.Doors[Index];
@@ -521,6 +523,31 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::ToggleDoor(ASFConstruc
         { bVisible=true; break; }
     }
     if (!bVisible) { return ESFConstructionNetworkResult::Occluded; }
+    return ESFConstructionNetworkResult::Accepted;
+}
+
+ESFConstructionNetworkResult ASFConstructionNetworkState::RemoveDoor(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision)
+{
+    int32 Index=INDEX_NONE;
+    const auto Admission=ValidateDoorTarget(Controller,Origin,ExpectedRevision,Index);
+    if (Admission!=ESFConstructionNetworkResult::Accepted) { return Admission; }
+    auto Candidate=Snapshot;
+    Candidate.Doors.RemoveAt(Index);
+    Candidate.Revision=Snapshot.Revision+1;
+    if (!SupportsMembers(Candidate.Members,Candidate.Doors)) { return ESFConstructionNetworkResult::Unsupported; }
+    if (!Activate(Candidate)) { return ESFConstructionNetworkResult::ProjectionFailed; }
+    Snapshot=MoveTemp(Candidate); ForceNetUpdate();
+    UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_DOOR_REMOVE Revision=%llu Members=%d Doors=%d Cell=%s Content=%s"),Snapshot.Revision,Snapshot.Members.Num(),Snapshot.Doors.Num(),*Origin.ToString(),*GetContentDigest());
+    return ESFConstructionNetworkResult::DoorRemoved;
+}
+
+ESFConstructionNetworkResult ASFConstructionNetworkState::ToggleDoor(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision)
+{
+    int32 Index=INDEX_NONE;
+    const auto Admission=ValidateDoorTarget(Controller,Origin,ExpectedRevision,Index);
+    if (Admission!=ESFConstructionNetworkResult::Accepted) { return Admission; }
+    const auto& Door=Snapshot.Doors[Index];
+    const auto* Projection=DoorProjections.Find(Origin);
     if (!SFConstructionNetworkProjection::IsDoorMotionClear(this,Door,*Projection))
     {
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
@@ -754,7 +781,7 @@ void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline
         { bHasPlacementPreview=false; PreviewStatus=TEXT("Door footprint is outside the construction area."); return; }
         const bool bReach=FVector::DistSquared(GetPawn()->GetActorLocation(),Profile.Envelope.GetCenter())<=FMath::Square(State->GetReachCentimetres());
         PreviewStatus=FString::Printf(TEXT("Door %d, %d, %d | %s"),PreviewCell.X,PreviewCell.Y,PreviewCell.Z,bReach ? TEXT("Click or B to request placement.") : TEXT("Out of reach."));
-        RemovalStatus=bHasDoorTarget ? TEXT("E: open / close targeted door.") : TEXT("Door frame, swing space and both approaches must be clear.");
+        RemovalStatus=bHasDoorTarget ? TEXT("E: open / close | Right click / X: remove door.") : TEXT("Door frame, swing space and both approaches must be clear.");
         if (bDrawOutline)
         {
             for (const auto& B : Profile.Boxes)
@@ -775,7 +802,7 @@ void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline
     }
     if (bHasRemovalPreview)
     { RemovalStatus=SupportCache.bRemovalAllowed ? TEXT("Right click / X: request removal.") : TEXT("Cannot remove: supporting other blocks."); }
-    if (bHasDoorTarget) { RemovalStatus=TEXT("E: open / close targeted door."); }
+    if (bHasDoorTarget) { RemovalStatus=TEXT("E: open / close | Right click / X: remove door."); }
     const TCHAR* BlockReason=nullptr;
     if (PreviewCell.X < -20 || PreviewCell.X >= 20 || PreviewCell.Y < -20 || PreviewCell.Y >= 20 || PreviewCell.Z < 0 || PreviewCell.Z >= 20)
     { BlockReason=PlacementResultText(ESFConstructionNetworkResult::InvalidCell); }
@@ -803,7 +830,14 @@ void ASFConstructionNetworkController::RemoveFromView()
 {
     RefreshPlacementPreview(false);
     auto* State=FindState(GetWorld());
-    if (!bHasRemovalPreview || !State) { LastPlacementStatus=TEXT("Aim at a construction block to remove it."); return; }
+    if (!State) { return; }
+    if (bHasDoorTarget)
+    {
+        LastPlacementStatus=TEXT("Door removal requested. Waiting for server...");
+        UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_VIEW_REMOVE_DOOR Cell=%s"),*TargetDoorOrigin.ToString());
+        ServerRemoveDoor(TargetDoorOrigin,State->GetSnapshot().Revision); return;
+    }
+    if (!bHasRemovalPreview) { LastPlacementStatus=TEXT("Aim at a construction piece or door to remove it."); return; }
     LastPlacementStatus=TEXT("Removal requested. Waiting for server...");
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_VIEW_REMOVE Cell=%s"),*RemovalCell.ToString());
     ServerRemove(RemovalCell,State->GetSnapshot().Revision);
@@ -823,6 +857,17 @@ void ASFConstructionNetworkController::ToggleDoorFromView()
     LastPlacementStatus=TEXT("Door request sent. Waiting for server...");
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_VIEW_TOGGLE Cell=%s"),*TargetDoorOrigin.ToString());
     ServerToggleDoor(TargetDoorOrigin,State->GetSnapshot().Revision);
+}
+
+void ASFConstructionNetworkController::ServerRemoveDoor_Implementation(FIntVector Origin, uint64 ExpectedRevision)
+{
+    auto* State=FindState(GetWorld());
+    auto Result=ESFConstructionNetworkResult::InvalidContext;
+    if (State && LastRequestFrame!=GFrameCounter)
+    { LastRequestFrame=GFrameCounter; Result=State->RemoveDoor(this,Origin,ExpectedRevision); }
+    const uint64 Revision=State ? State->GetSnapshot().Revision : 0;
+    UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_REMOVE_DOOR_RESULT Builder=%d Result=%d Revision=%llu Doors=%d Collision=%d"),bBuilderRole,int32(Result),Revision,State ? State->GetSnapshot().Doors.Num() : 0,State && State->HasCurrentCollision());
+    ClientPlacementResult(Result,Revision);
 }
 
 void ASFConstructionNetworkController::ServerToggleDoor_Implementation(FIntVector Origin, uint64 ExpectedRevision)
@@ -890,9 +935,11 @@ void ASFConstructionNetworkController::ClientPlacementResult_Implementation(ESFC
             || (ScenarioStep==41 && Result==ESFConstructionNetworkResult::Removed && Revision==11)
             || (ScenarioStep==43 && Result==ESFConstructionNetworkResult::DoorOpened && Revision==12)
             || (ScenarioStep==45 && Result==ESFConstructionNetworkResult::DoorBlocked && Revision==12)
-            || (ScenarioStep==47 && Result==ESFConstructionNetworkResult::DoorClosed && Revision==13))
+            || (ScenarioStep==47 && Result==ESFConstructionNetworkResult::DoorClosed && Revision==13)
+            || (ScenarioStep==49 && Result==ESFConstructionNetworkResult::DoorRemoved && Revision==14))
         : (((ScenarioStep==1 || ScenarioStep==3 || ScenarioStep==5) && Result==ESFConstructionNetworkResult::PermissionDenied && Revision==6)
-            || (ScenarioStep==7 && Result==ESFConstructionNetworkResult::PermissionDenied && Revision==11));
+            || (ScenarioStep==7 && Result==ESFConstructionNetworkResult::PermissionDenied && Revision==11)
+            || (ScenarioStep==9 && Result==ESFConstructionNetworkResult::PermissionDenied && Revision==13));
     if (!bExpected) { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_SCENARIO_FAILED Step=%d Result=%d Revision=%llu"),ScenarioStep,int32(Result),Revision); FPlatformMisc::RequestExitWithStatus(false,1); return; }
     ++ScenarioStep;
 #endif
@@ -984,11 +1031,21 @@ void ASFConstructionNetworkController::TickFiniteScenario()
         if (!bScenarioDoorOpenReported && (ScenarioDoorOpenPath.IsEmpty() || (!FScreenshotRequest::IsScreenshotRequested() && FPaths::FileExists(ScenarioDoorOpenPath))))
         { UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_DOOR_OPEN_READY Builder=%d Revision=12"),bBuilderRole); bScenarioDoorOpenReported=true; }
     }
-    if (((bBuilderRole && ScenarioStep==48) || (!bBuilderRole && ScenarioStep==8))
-        && State->GetSnapshot().Revision==13 && State->GetSnapshot().Members.Num()==2 && State->GetSnapshot().Doors.Num()==1
-        && !State->GetSnapshot().Doors[0].bOpen && State->HasCurrentCollision())
+    if (!bBuilderRole && ScenarioStep==8 && State->GetSnapshot().Revision==13 && State->HasCurrentCollision())
+    { ScenarioStep=9; ServerRemoveDoor(FIntVector(2,0,0),13); return; }
+    if (((bBuilderRole && ScenarioStep==48) || (!bBuilderRole && ScenarioStep==10))
+        && State->GetSnapshot().Revision==13 && State->GetSnapshot().Doors.Num()==1
+        && !State->GetSnapshot().Doors[0].bOpen && State->HasCurrentCollision() && !bScenarioDoorRemoveReported)
+    { UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_DOOR_REMOVE_READY Builder=%d Revision=13"),bBuilderRole); bScenarioDoorRemoveReported=true; }
+    if (((bBuilderRole && ScenarioStep==50) || (!bBuilderRole && ScenarioStep==10))
+        && State->GetSnapshot().Revision==14 && State->GetSnapshot().Members.Num()==2 && State->GetSnapshot().Doors.IsEmpty() && State->HasCurrentCollision())
     {
-        UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_SCENARIO_SUCCESS Builder=%d Revision=13 Members=2 Doors=1"),bBuilderRole);
+        if (bBuilderRole && bDoorSelected)
+        {
+            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::One,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
+            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::One,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0))); return;
+        }
+        UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_SCENARIO_SUCCESS Builder=%d Revision=14 Members=2 Doors=0"),bBuilderRole);
         if (FParse::Value(FCommandLine::Get(),TEXT("ConstructionNetworkScreenshot="),ScenarioScreenshotPath))
         { ScenarioStep=100; FScreenshotRequest::RequestScreenshot(ScenarioScreenshotPath,true,false); }
         else { FPlatformMisc::RequestExitWithStatus(false,0); }
@@ -1131,6 +1188,14 @@ void ASFConstructionNetworkController::TickFiniteScenario()
         ScenarioStep=47;
         InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::E,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
         InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::E,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));
+    }
+    else if (bBuilderRole && ScenarioStep==48 && bScenarioDoorRemoveReported)
+    {
+        FString Barrier;
+        if (!FParse::Value(FCommandLine::Get(),TEXT("ConstructionNetworkRemovalBarrier="),Barrier) || !FPaths::FileExists(Barrier+TEXT(".door-remove")) || !bHasDoorTarget || TargetDoorOrigin!=FIntVector(2,0,0)) { return; }
+        ScenarioStep=49;
+        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::X,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
+        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::X,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));
     }
 }
 #endif

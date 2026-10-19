@@ -1,0 +1,7 @@
+# Network door removal
+
+2026-10-18: **passed, isolated editor two-client scope**. [Identities/results](construction-network-door-removal-results.json). Right-click/X removes a targeted door through ordinary view input. Shared opening/removal admission verifies server builder capability, revision, owned pawn, reach and exact visible target components. Whole-snapshot candidates retain other pieces, recheck support and stage remaining bodies before retiring the door's five components. Removing a door does not swing or displace an occupant; no swing-space clearance is required for deletion. No refund/economy behavior is added.
+
+`& tools/Test-ConstructionNetwork.ps1 -TimeoutSeconds 150 -CaptureFrames` passed48.84s at `Artifacts/ConstructionSandbox/network-20261018-214258-680/`. Existing placement/support/shape/door motion checks remain covered. Both clients restore closed13 before deletion; observer removal is denied unchanged13. Builder X removes14. Both project exactly two structural pieces and zero doors with current collision proof (including exact primitive count), matching server content. Four1280x720 PNGs decode; final deletion views inspected. Checked client/negative exits0; owned cleanup complete; server intentionally stopped. Editor build18.62s; independent final source/raw review cleared.
+
+Character passage, animated swing, pushing, production access/economy/persistence, support-collapse waves and packaged/human-input acceptance remain open. Parallel environment checkout/editor untouched. Next: character doorway passage.
