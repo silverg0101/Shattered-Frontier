@@ -53,7 +53,10 @@ sock_cfg = rep['socket']  # attachment is the mount bone named like the socket (
 mount_bones = [str(n) for n in unreal.AnimPoseExtensions.get_bone_names(unreal.AnimPoseExtensions.get_reference_pose(mount.get_editor_property('skeleton')))]
 unreal.EditorAssetLibrary.save_directory(dest, only_if_is_dirty=False, recursive=True)
 
-expected_z = 100 * (0.968 - 0.85)  # seated pelvis offset authored in make-profile (rest pelvis 96.8 cm, lowered 85 cm)
+prof = json.loads((src / 'profile.json').read_text())  # expected seated pelvis = rest pelvis height + authored offset
+idle_key = next(c for c in prof['clips'] if c['id'] == 'rider.seat.idle')['keys'][0]
+rest_pelvis_cm = next(b for b in json.loads(Path(prof['skeleton']).read_text() if Path(prof['skeleton']).is_absolute() else (PROJECT / prof['skeleton']).read_text())['bones'] if b['name'] == 'pelvis')['world']['t'][2]
+expected_z = rest_pelvis_cm + 100 * idle_key['pelvis_m'][2]
 checks = dict(all_takes=len(got) == len(clips), seat_bone=sock_cfg['name'] in mount_bones,
               seated_pelvis_height=pelvis_cm is not None and abs(pelvis_cm.z - expected_z) < 3.0)
 manifest = dict(schema_version=1, source=str(src), fbx_sha256=rep['fbx_sha256'], skeleton=skel.get_path_name(), mount=mount_path,

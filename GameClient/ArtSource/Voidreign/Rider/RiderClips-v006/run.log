@@ -1,0 +1,48 @@
+00:01.703  blend            | Read blend: "C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\Delivery-v007\SK_Voidreign.blend"
+RIDER rider.seat.idle {"ik_reach": true, "leg_clearance": true} {"leg_l": [0.0, 60], "arm_l": [0.0, 60], "arm_r": [0.0, 57]}
+RIDER rider.seat.combat_idle {"ik_reach": true, "leg_clearance": true} {"leg_l": [0.0, 60], "arm_r": [0.0, 60], "arm_l": [0.0, 60]}
+RIDER rider.seat.move {"ik_reach": true, "leg_clearance": true} {"arm_l": [0.0, 18], "arm_r": [0.0, 18], "leg_l": [0.0, 18]}
+RIDER rider.mount {"ik_reach": true, "leg_clearance": true} {"arm_l": [0.0, 59], "arm_r": [0.0, 56], "leg_l": [0.0, 60], "leg_r": [0.0, 59]}
+RIDER rider.dismount {"ik_reach": true, "leg_clearance": true} {"leg_l": [0.0, 49], "arm_r": [0.0, 49], "leg_r": [0.0, 47], "arm_l": [0.0, 50]}
+RIDER rider.dismount_forced {"ik_reach": true, "leg_clearance": true} {"leg_l": [0.0, 34], "arm_l": [0.0, 37], "arm_r": [0.0, 23], "leg_r": [0.0, 23]}
+RIDER rider.melee_r {"ik_reach": true, "leg_clearance": true} {"leg_l": [0.0, 30], "arm_l": [0.0, 28], "arm_r": [0.0, 29]}
+RIDER rider.bow_fire {"ik_reach": true, "leg_clearance": true} {"leg_l": [0.0, 40], "arm_l": [0.0179, 26], "arm_r": [0.0, 39]}
+RIDER rider.rift_brace {"ik_reach": true, "leg_clearance": true} {"leg_l": [0.0, 10], "arm_r": [0.0, 13], "leg_r": [0.0, 13], "arm_l": [0.0, 30]}
+RIDER rider.recall_hold {"ik_reach": true, "leg_clearance": true} {"leg_l": [0.0, 9], "arm_l": [0.0, 24], "arm_r": [0.0, 24], "leg_r": [0.0, 24]}
+00:02.906  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.seat.idle-001.png'
+00:03.516  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.seat.idle-030.png'
+00:04.094  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.seat.idle-060.png'
+00:04.672  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.seat.combat_idle-001.png'
+00:05.234  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.seat.combat_idle-030.png'
+00:05.766  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.seat.combat_idle-060.png'
+00:06.359  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.seat.move-001.png'
+00:06.984  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.seat.move-009.png'
+00:07.516  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.seat.move-018.png'
+00:08.047  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.mount-001.png'
+00:08.578  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.mount-030.png'
+00:09.109  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.mount-060.png'
+00:09.672  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.dismount-001.png'
+00:10.203  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.dismount-025.png'
+00:10.734  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.dismount-050.png'
+00:11.281  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.dismount_forced-001.png'
+00:11.828  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.dismount_forced-020.png'
+00:12.375  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.dismount_forced-040.png'
+00:12.953  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.melee_r-001.png'
+00:13.531  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.melee_r-015.png'
+00:14.125  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.melee_r-030.png'
+00:14.719  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.bow_fire-001.png'
+00:15.266  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.bow_fire-020.png'
+00:15.875  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.bow_fire-040.png'
+00:16.484  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.rift_brace-001.png'
+00:17.047  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.rift_brace-015.png'
+00:17.625  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.rift_brace-030.png'
+00:18.172  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.recall_hold-001.png'
+00:18.766  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.recall_hold-012.png'
+00:19.328  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\Rider\RiderClips-v006\rider.recall_hold-024.png'
+
+FBX export starting... 'C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\Rider\\RiderClips-v006\\Rider-Mannequin.fbx'
+export finished in 0.9077 sec.
+RIDER_DONE {"passed": true, "socket": [0.0, 10.082289576530457, -26.496124267578125], "seat": [0.0, 0.07500000298023224, 1.663394808769226]}
+Blender 5.1.1 (hash b70da489d7f4 built 2026-04-14 01:37:22)
+
+Blender quit

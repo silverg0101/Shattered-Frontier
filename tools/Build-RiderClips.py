@@ -56,6 +56,11 @@ for lo, hi in zip(bins, bins[1:]):
     s = ridge[(ridge[:, 1] >= lo) & (ridge[:, 1] < hi)]
     if len(s): tops.append((0.5 * (lo + hi), float(s[:, 2].max())))
 tops = np.array(tops); k = int(np.argmin(tops[:, 1])); seat = Vector((0.0, tops[k, 0], tops[k, 1]))
+from mathutils.kdtree import KDTree
+horse_kd = KDTree(len(W))  # mount surface (rest) for rider leg clearance
+for i, v in enumerate(W[:, :3]): horse_kd.insert(v, i)
+horse_kd.balance()
+LEG_SEGS = [('thigh_l', 'calf_l'), ('calf_l', 'foot_l'), ('thigh_r', 'calf_r'), ('calf_r', 'foot_r')]
 sock_bone = harm.pose.bones[cfg['socket_bone']]; Bw = harm.matrix_world @ sock_bone.matrix
 v_b = Bw.inverted() @ seat; R_rel = (Bw.to_quaternion().inverted()).to_matrix()
 socket = dict(bone=cfg['socket_bone'], name=cfg['socket_name'],
@@ -167,12 +172,18 @@ rig.animation_data_create(); catalog = []
 for clip in cfg['clips']:
     n = clip['frames']; action = bpy.data.actions.new(clip['id']); action.use_fake_user = True
     slot = action.slots.new(id_type='OBJECT', name=rig.name); bag = action.layers.new('Baked').strips.new(type='KEYFRAME').channelbag(slot, ensure=True)
-    vals = {b: ([], []) for b in order}; max_err = 0.; min_foot = 1e9; worst = {}
+    vals = {b: ([], []) for b in order}; max_err = 0.; min_foot = 1e9; worst = {}; clear = (1e9, 0, None)
     for fr in range(1, n + 1):
         M, err = pose(clip, fr); max_err = max([max_err] + list(err.values()))
         for limb, e_ in err.items():
             if e_ > worst.get(limb, (0, 0))[0]: worst[limb] = (round(e_, 4), fr)
         min_foot = min(min_foot, min((rig.matrix_world @ M[f].translation).z for f in ('foot_l', 'foot_r', 'ball_l', 'ball_r')))
+        if clip.get('seated', True):  # leg bone axis points vs mount surface; minus nominal limb radius
+            for a_, b_ in LEG_SEGS:
+                A_, B_ = rig.matrix_world @ M[a_].translation, rig.matrix_world @ M[b_].translation
+                for s_ in ((.5, .75) if a_.startswith('thigh') else (.25, .5, .75)):  # upper thigh rests on the saddle by design
+                    d_ = horse_kd.find(A_.lerp(B_, s_))[2] - cfg['limits']['leg_radius_m']
+                    if d_ < clear[0]: clear = (d_, fr, f'{a_}@{s_}')
         for b in order:
             local = (rest[parent[b]].inverted() @ rest[b]) if parent[b] else rest[b]
             basis = local.inverted() @ (M[parent[b]].inverted() if parent[b] else Matrix.Identity(4)) @ M[b]
@@ -183,8 +194,8 @@ for clip in cfg['clips']:
                 fc = bag.fcurves.new(f'pose.bones["{b}"].{path}', index=i, group_name=b); fc.keyframe_points.add(n)
                 fc.keyframe_points.foreach_set('co', [v for fr in range(n) for v in (fr + 1, vals[b][idx][fr][i])])
     catalog.append(dict(id=clip['id'], purpose=clip.get('purpose', ''), frames=n, loop=clip['loop'], events=clip.get('events', {}),
-                        ik_target_error_m=round(max_err, 6), worst_by_limb=worst, min_foot_height_m=round(min_foot, 4),
-                        checks=dict(ik_reach=max_err <= cfg['limits']['ik_target_error_m'])))
+                        ik_target_error_m=round(max_err, 6), worst_by_limb=worst, min_leg_clearance_m=round(clear[0], 4) if clear[0] < 1e8 else None, min_leg_clearance_frame=clear[1], min_leg_clearance_at=clear[2], min_foot_height_m=round(min_foot, 4),
+                        checks=dict(ik_reach=max_err <= cfg['limits']['ik_target_error_m'], leg_clearance=clear[0] >= cfg['limits']['leg_clearance_m'])))
     print('RIDER', clip['id'], json.dumps(catalog[-1]['checks']), json.dumps(worst), flush=True)
 
 # Review: proxy capsules on rider bones, mount in rest pose, side camera.
