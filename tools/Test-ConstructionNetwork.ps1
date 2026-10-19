@@ -2,9 +2,11 @@
 param(
     [string]$EngineRoot = 'C:\Program Files\Epic Games\UE_5.8',
     [ValidateRange(12000,65000)][int]$Port = 17791,
+    [switch]$CaptureFrames,
     [Parameter(HelpMessage='Maximum seconds per startup or exit phase.')][ValidateRange(60,150)][int]$TimeoutSeconds = 90
 )
 $ErrorActionPreference = 'Stop'
+if ($CaptureFrames) { Add-Type -AssemblyName System.Drawing }
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $root = Join-Path $repoRoot ('Artifacts\ConstructionSandbox\network-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
 $editor = Join-Path $EngineRoot 'Engine\Binaries\Win64\UnrealEditor-Cmd.exe'
@@ -20,7 +22,10 @@ function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
     $user = Join-Path $root ($Name+'-user')
     $null = New-Item -ItemType Directory -Path $user
     $log = Join-Path $root ($Name+'.log')
-    $arguments = @(('"'+$project+'"'),$Url,'-NullRHI','-unattended','-nosound','-nop4',('-UserDir="'+$user+'/"'),('-abslog="'+$log+'"'))+$Extra
+    $arguments = @(('"'+$project+'"'),$Url,'-unattended','-nosound','-nop4',('-UserDir="'+$user+'/"'),('-abslog="'+$log+'"'))+$Extra
+    if ($CaptureFrames -and $Name -in @('driver','observer')) {
+        $arguments += @('-RenderOffscreen','-windowed','-ResX=1280','-ResY=720',('-ConstructionNetworkScreenshot="'+(Join-Path $root ($Name+'.png'))+'"'))
+    } else { $arguments += '-NullRHI' }
     $process = Start-Process -FilePath $editor -ArgumentList $arguments -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $root ($Name+'.stdout.txt')) -RedirectStandardError (Join-Path $root ($Name+'.stderr.txt'))
     $owned.Add($process)
     $results.runs += [ordered]@{ name=$Name; pid=$process.Id; arguments=$arguments; log=$log }
@@ -69,8 +74,21 @@ try {
         $projection = [regex]::Matches($log,'CONSTRUCTION_NETWORK_PROJECTED Revision=3 Members=3 Collision=1 Content=([a-fA-F0-9]{64})')
         if ($projection.Count -ne 1) { throw "$role lacks a unique exact local collision projection." }
         $payloads += $projection[0].Groups[1].Value
+        if ($CaptureFrames) {
+            if ($log -notmatch 'CONSTRUCTION_NETWORK_CAPTURE_SAVED') { throw "$role did not complete its capture." }
+            $frame=[Drawing.Image]::FromFile((Join-Path $root ($role+'.png')))
+            try {
+                if ($frame.RawFormat.Guid -ne [Drawing.Imaging.ImageFormat]::Png.Guid -or $frame.Width -ne 1280 -or $frame.Height -ne 720) { throw "$role capture is not the requested 1280x720 PNG." }
+            } finally { $frame.Dispose() }
+        }
     }
     if (@($observedRoles | Sort-Object -Unique).Count -ne 2) { throw 'Expected one server-assigned builder and one observer.' }
+    $viewRequests=0
+    foreach ($role in @('driver','observer')) {
+        $log=Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
+        $viewRequests += [regex]::Matches($log,'CONSTRUCTION_NETWORK_VIEW_REQUEST Cell=X=-4 Y=-4 Z=0').Count
+    }
+    if ($viewRequests -ne 1) { throw 'Expected one grounded placement through ordinary B-key view input.' }
     if ($payloads[0] -ne $payloads[1]) { throw 'Clients projected different canonical payloads.' }
     $serverLog = Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw
     foreach ($marker in @('CONSTRUCTION_NETWORK_ACCEPT Revision=1 Members=1 Cell=X=-4 Y=-4 Z=0','CONSTRUCTION_NETWORK_ACCEPT Revision=2 Members=2 Cell=X=-4 Y=-4 Z=1','CONSTRUCTION_NETWORK_ACCEPT Revision=3 Members=3 Cell=X=-3 Y=-4 Z=0','CONSTRUCTION_NETWORK_RESULT Builder=1 Result=7 Revision=0 Members=0 Collision=0','CONSTRUCTION_NETWORK_RESULT Builder=1 Result=9 Revision=1 Members=1 Collision=1','CONSTRUCTION_NETWORK_RESULT Builder=1 Result=3 Revision=3 Members=3 Collision=1','CONSTRUCTION_NETWORK_RESULT Builder=0 Result=2 Revision=3 Members=3 Collision=1')) {
@@ -81,6 +99,7 @@ try {
     if ($join -lt 0 -or $accept -le $join -or [regex]::Matches($serverLog,'CONSTRUCTION_NETWORK_ACCEPT').Count -ne 3) { throw 'Three placements were not accepted after both players joined.' }
     if ($serverLog -notmatch ('CONSTRUCTION_NETWORK_ACCEPT Revision=3 Members=3[^\r\n]*Content='+[regex]::Escape($payloads[0]))) { throw 'Clients differ from server content.' }
     $results.contentBlake3 = $payloads[0]
+    $results.captureFrames = [bool]$CaptureFrames
     $results.status = 'Passed'
     Write-Output "PASS: two concurrent clients, supported three-cube assembly, matching collision, occupied/floating/stale/permission rejection. Evidence: $root"
 } catch {

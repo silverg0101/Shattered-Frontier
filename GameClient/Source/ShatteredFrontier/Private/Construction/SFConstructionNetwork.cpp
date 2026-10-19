@@ -9,20 +9,45 @@
 #include "Engine/StaticMesh.h"
 #include "Engine/OverlapResult.h"
 #include "Engine/World.h"
+#include "Engine/Canvas.h"
+#include "Engine/Engine.h"
+#include "Engine/GameViewportClient.h"
 #include "EngineUtils.h"
+#include "DrawDebugHelpers.h"
 #include "GameFramework/Pawn.h"
 #include "HAL/PlatformMisc.h"
 #include "HAL/PlatformTime.h"
 #include "Hash/Blake3.h"
 #include "InputCoreTypes.h"
+#include "InputKeyEventArgs.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
+#include "Misc/Paths.h"
+#include "UnrealClient.h"
 #include "Net/UnrealNetwork.h"
 #include "PhysicsEngine/BodySetup.h"
 #include "UObject/ConstructorHelpers.h"
 
 namespace
 {
+const TCHAR* PlacementResultText(ESFConstructionNetworkResult Result)
+{
+    switch (Result)
+    {
+    case ESFConstructionNetworkResult::Accepted: return TEXT("Placed.");
+    case ESFConstructionNetworkResult::PermissionDenied: return TEXT("Observer only: building permission required.");
+    case ESFConstructionNetworkResult::Stale: return TEXT("The structure changed. Aim again and retry.");
+    case ESFConstructionNetworkResult::InvalidCell: return TEXT("Outside the construction area.");
+    case ESFConstructionNetworkResult::OutOfReach: return TEXT("Out of reach. Move closer.");
+    case ESFConstructionNetworkResult::Occluded: return TEXT("Blocked view. Move so you can see the placement.");
+    case ESFConstructionNetworkResult::Occupied: return TEXT("Space occupied. Aim at an empty neighboring cell.");
+    case ESFConstructionNetworkResult::Unsupported: return TEXT("Needs support. Build from the ground or a supported block.");
+    case ESFConstructionNetworkResult::LimitReached: return TEXT("Construction member limit reached.");
+    case ESFConstructionNetworkResult::ProjectionFailed: return TEXT("Construction collision unavailable. Placement was not applied.");
+    default: return TEXT("Construction unavailable. Wait for the server and try again.");
+    }
+}
+
 ASFConstructionNetworkState* FindState(UWorld* World)
 {
     if (!World) { return nullptr; }
@@ -101,6 +126,8 @@ void ASFConstructionNetworkState::GetLifetimeReplicatedProps(TArray<FLifetimePro
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ASFConstructionNetworkState, Snapshot);
     DOREPLIFETIME(ASFConstructionNetworkState, bPairReady);
+    DOREPLIFETIME(ASFConstructionNetworkState, ReachCentimetres);
+    DOREPLIFETIME(ASFConstructionNetworkState, MaximumMembers);
 }
 
 void ASFConstructionNetworkState::AdmitPair()
@@ -193,11 +220,12 @@ void ASFConstructionNetworkState::OnRep_Snapshot()
 {
     if (GetNetMode() != NM_Client || GetClass() != StaticClass()) { return; }
     if (Snapshot.Revision==0 && Snapshot.Cells.IsEmpty()) { return; }
+    bProjectionReady=false;
     if (Activate(Snapshot) && HasCurrentCollision())
     {
         UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_PROJECTED Revision=%llu Members=%d Collision=1 Content=%s"),Snapshot.Revision,Snapshot.Cells.Num(),*GetContentDigest());
     }
-    else { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_PROJECTION_FAILED")); }
+    else { bProjectionReady=false; UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_PROJECTION_FAILED")); }
 }
 
 ESFConstructionNetworkResult ASFConstructionNetworkState::Place(ASFConstructionNetworkController* Controller, FIntVector Cell, uint64 ExpectedRevision)
@@ -259,6 +287,7 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::Place(ASFConstructionN
 
 ASFConstructionNetworkGameMode::ASFConstructionNetworkGameMode()
 {
+    HUDClass = ASFConstructionNetworkHUD::StaticClass();
     PlayerControllerClass = ASFConstructionNetworkController::StaticClass();
 }
 
@@ -326,19 +355,62 @@ void ASFConstructionNetworkController::SetupInputComponent()
 {
     Super::SetupInputComponent();
     InputComponent->BindKey(EKeys::B,IE_Pressed,this,&ASFConstructionNetworkController::PlaceFromView);
+    InputComponent->BindKey(EKeys::LeftMouseButton,IE_Pressed,this,&ASFConstructionNetworkController::PlaceFromView);
+}
+
+void ASFConstructionNetworkController::AcknowledgePossession(APawn* P)
+{
+    Super::AcknowledgePossession(P);
+    if (!IsLocalController() || !P) { return; }
+    // Keep the local placeholder body from hiding the build target. Other
+    // players still see it, and its capsule/authority remain unchanged.
+    TInlineComponentArray<UStaticMeshComponent*> Meshes;
+    P->GetComponents(Meshes);
+    for (auto* Mesh : Meshes) { Mesh->SetOwnerNoSee(true); }
 }
 
 void ASFConstructionNetworkController::PlaceFromView()
 {
+    RefreshPlacementPreview(false);
     auto* State = FindState(GetWorld());
-    if (!IsLocalController() || !GetPawn() || !State || (State->GetSnapshot().Revision>0 && !State->HasCurrentCollision())) { return; }
+    if (!bHasPlacementPreview || !State) { LastPlacementStatus=PreviewStatus; return; }
+    LastPlacementStatus=TEXT("Placement requested. Waiting for server...");
+    UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_VIEW_REQUEST Cell=%s"),*PreviewCell.ToString());
+    ServerPlace(PreviewCell,State->GetSnapshot().Revision);
+}
+
+void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline)
+{
+    bHasPlacementPreview=false;
+    auto* State = FindState(GetWorld());
+    if (!IsLocalController() || GetNetMode()!=NM_Client || !GetPawn() || !bRoleAssigned || !State
+        || State->GetReachCentimetres()<=0 || State->GetMaximumMembers()<=0)
+    { PreviewStatus=TEXT("Waiting for server construction state..."); return; }
+    if (!bBuilderRole) { PreviewStatus=TEXT("Observer: watch the builder's placements."); return; }
+    if (State->GetSnapshot().Revision>0 && !State->IsProjectionCurrent())
+    { PreviewStatus=TEXT("Waiting for local construction collision..."); return; }
     FVector Start; FRotator Rotation; GetPlayerViewPoint(Start,Rotation);
     FHitResult Hit;
     FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionNetworkView),false,GetPawn());
-    const auto* Settings = GetDefault<USFConstructionSandboxSettings>();
-    if (!GetWorld()->LineTraceSingleByChannel(Hit,Start,Start+Rotation.Vector()*(Settings->BuildReachMetres*100.0+500.0),ECC_Visibility,Query)) { return; }
+    // Camera offset plus half a cell diagonal covers the server's pawn-centre reach sphere.
+    const double TraceLength=State->GetReachCentimetres()+FVector::Dist(Start,GetPawn()->GetActorLocation())+FMath::Sqrt(3.0)*25.0;
+    if (!GetWorld()->LineTraceSingleByChannel(Hit,Start,Start+Rotation.Vector()*TraceLength,ECC_Visibility,Query))
+    { PreviewStatus=TEXT("Aim at the ground or a block face within reach."); return; }
     const FVector Point = Hit.ImpactPoint + Hit.ImpactNormal*0.1;
-    ServerPlace(FIntVector(FMath::FloorToInt(Point.X/50),FMath::FloorToInt(Point.Y/50),FMath::FloorToInt(Point.Z/50)),State->GetSnapshot().Revision);
+    PreviewCell=FIntVector(FMath::FloorToInt(Point.X/50),FMath::FloorToInt(Point.Y/50),FMath::FloorToInt(Point.Z/50));
+    bHasPlacementPreview=true;
+    const FVector Centre=FVector(PreviewCell)*50.0+FVector(25);
+    const TCHAR* BlockReason=nullptr;
+    if (PreviewCell.X < -20 || PreviewCell.X >= 20 || PreviewCell.Y < -20 || PreviewCell.Y >= 20 || PreviewCell.Z < 0 || PreviewCell.Z >= 20)
+    { BlockReason=PlacementResultText(ESFConstructionNetworkResult::InvalidCell); }
+    else if (FVector::DistSquared(GetPawn()->GetActorLocation(),Centre)>FMath::Square(State->GetReachCentimetres()))
+    { BlockReason=PlacementResultText(ESFConstructionNetworkResult::OutOfReach); }
+    else if (State->GetSnapshot().Cells.Contains(PreviewCell)) { BlockReason=PlacementResultText(ESFConstructionNetworkResult::Occupied); }
+    else if (State->GetSnapshot().Cells.Num()>=State->GetMaximumMembers()) { BlockReason=PlacementResultText(ESFConstructionNetworkResult::LimitReached); }
+    PreviewStatus=FString::Printf(TEXT("Target %d, %d, %d | %s"),PreviewCell.X,PreviewCell.Y,PreviewCell.Z,
+        BlockReason ? BlockReason : TEXT("Click or B to request placement."));
+    if (bDrawOutline)
+    { DrawDebugBox(GetWorld(),Centre,FVector(25),BlockReason ? FColor::Red : FColor(255,190,60),false,-1.f,0,2.f); }
 }
 
 void ASFConstructionNetworkController::ServerPlace_Implementation(FIntVector Cell, uint64 ExpectedRevision)
@@ -357,7 +429,8 @@ void ASFConstructionNetworkController::ServerPlace_Implementation(FIntVector Cel
 
 void ASFConstructionNetworkController::ClientPlacementResult_Implementation(ESFConstructionNetworkResult Result, uint64 Revision)
 {
-    ClientMessage(FString::Printf(TEXT("Development network build: result %d, revision %llu"),int32(Result),Revision));
+    LastPlacementStatus=PlacementResultText(Result);
+    UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_FEEDBACK Result=%d Revision=%llu Text=%s"),int32(Result),Revision,*LastPlacementStatus);
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (!FParse::Param(FCommandLine::Get(),TEXT("ConstructionNetworkScenario"))) { return; }
     const bool bExpected = bBuilderRole
@@ -371,16 +444,44 @@ void ASFConstructionNetworkController::ClientPlacementResult_Implementation(ESFC
     if (!bExpected) { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_SCENARIO_FAILED Step=%d Result=%d Revision=%llu"),ScenarioStep,int32(Result),Revision); FPlatformMisc::RequestExitWithStatus(false,1); return; }
     ++ScenarioStep;
     if ((bBuilderRole && ScenarioStep==12) || (!bBuilderRole && ScenarioStep==2))
-    { UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_SCENARIO_SUCCESS Builder=%d Revision=3 Members=3"),bBuilderRole); FPlatformMisc::RequestExitWithStatus(false,0); }
+    {
+        UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_SCENARIO_SUCCESS Builder=%d Revision=3 Members=3"),bBuilderRole);
+        if (FParse::Value(FCommandLine::Get(),TEXT("ConstructionNetworkScreenshot="),ScenarioScreenshotPath))
+        { ScenarioStep=100; FScreenshotRequest::RequestScreenshot(ScenarioScreenshotPath,true,false); }
+        else { FPlatformMisc::RequestExitWithStatus(false,0); }
+    }
 #endif
 }
 
 void ASFConstructionNetworkController::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+    if (IsLocalController()) { RefreshPlacementPreview(true); }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     TickFiniteScenario();
 #endif
+}
+
+FString ASFConstructionNetworkController::GetBuildStatusText() const
+{
+    const auto* State=FindState(GetWorld());
+    return FString::Printf(TEXT("CONSTRUCTION | %s\nClick / B: place cube    WASD: move    Mouse: look    Space: jump\n%s\nServer: %s\nMembers: %d / %d | Reach: %.1f m\nAmber outline: target only; server checks support and clearance."),
+        !bRoleAssigned ? TEXT("CONNECTING") : bBuilderRole ? TEXT("BUILDER") : TEXT("OBSERVER"),
+        *PreviewStatus,*LastPlacementStatus,State ? State->GetSnapshot().Cells.Num() : 0,
+        State ? State->GetMaximumMembers() : 0,State ? State->GetReachCentimetres()/100.0 : 0.0);
+}
+
+void ASFConstructionNetworkHUD::DrawHUD()
+{
+    Super::DrawHUD();
+    const auto* Controller=Cast<ASFConstructionNetworkController>(GetOwningPlayerController());
+    if (!Controller || !Canvas || !GEngine) { return; }
+    const float Scale=FMath::Clamp(Canvas->ClipX/1280.f,0.5f,1.5f);
+    DrawRect(FLinearColor(0.02f,0.03f,0.04f,0.88f),16*Scale,Canvas->ClipY-158*Scale,820*Scale,142*Scale);
+    DrawText(Controller->GetBuildStatusText(),FColor::White,28*Scale,Canvas->ClipY-148*Scale,GEngine->GetSmallFont(),1.25f*Scale);
+    const float X=Canvas->ClipX/2,Y=Canvas->ClipY/2;
+    DrawLine(X-7*Scale,Y,X+7*Scale,Y,FLinearColor::White);
+    DrawLine(X,Y-7*Scale,X,Y+7*Scale,FLinearColor::White);
 }
 
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
@@ -392,11 +493,27 @@ void ASFConstructionNetworkController::TickFiniteScenario()
     const FVector Position = GetPawn()->GetActorLocation();
     if (FMath::Abs(Position.X-(bBuilderRole ? -200.0 : 200.0))>1.0 || FMath::Abs(Position.Y+400.0)>1.0) { return; }
     if (ScenarioStarted==0) { ScenarioStarted=FPlatformTime::Seconds(); }
+    if (!bBuilderRole && ScenarioStep==0)
+    { SetControlRotation((FVector(-150,-175,50)-GetPawn()->GetActorLocation()).Rotation()); }
     if (FPlatformTime::Seconds()-ScenarioStarted>45) { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_SCENARIO_FAILED Timeout=1")); FPlatformMisc::RequestExitWithStatus(false,1); return; }
+    if (ScenarioStep==100)
+    {
+        if (!FScreenshotRequest::IsScreenshotRequested() && FPaths::FileExists(ScenarioScreenshotPath))
+        { UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_CAPTURE_SAVED Builder=%d"),bBuilderRole); FPlatformMisc::RequestExitWithStatus(false,0); }
+        return;
+    }
     if (bBuilderRole && ScenarioStep==0)
     { ScenarioStep=1; ServerPlace(FIntVector(-4,-8,0),0); }
     else if (bBuilderRole && ScenarioStep==2)
-    { ScenarioStep=3; ServerPlace(FIntVector(-4,-4,0),0); }
+    {
+        // Aim through the third-person camera at the known floor cell; wait for
+        // the ordinary camera/input stack rather than calling placement directly.
+        SetControlRotation((FVector(-175,-175,0)-GetPawn()->GetActorLocation()).Rotation());
+        if (!bHasPlacementPreview || PreviewCell!=FIntVector(-4,-4,0)) { return; }
+        ScenarioStep=3;
+        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
+        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));
+    }
     else if (bBuilderRole && ScenarioStep==4 && State->HasCurrentCollision())
     { ScenarioStep=5; ServerPlace(FIntVector(-4,-4,2),1); }
     else if (bBuilderRole && ScenarioStep==6)

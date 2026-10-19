@@ -2,6 +2,7 @@
 
 #include "Framework/SFE1GameMode.h"
 #include "Interaction/SFE1PlayerController.h"
+#include "GameFramework/HUD.h"
 #include "SFConstructionNetwork.generated.h"
 
 class UStaticMeshComponent;
@@ -43,6 +44,9 @@ public:
     FString GetContentDigest() const;
     void AdmitPair();
     bool IsPairReady() const { return bPairReady; }
+    double GetReachCentimetres() const { return ReachCentimetres; }
+    int32 GetMaximumMembers() const { return MaximumMembers; }
+    bool IsProjectionCurrent() const { return bProjectionReady && ProjectionRevision == Snapshot.Revision; }
 private:
     bool Activate(const FSFConstructionNetworkSnapshot& Candidate);
     UFUNCTION() void OnRep_Snapshot();
@@ -52,8 +56,8 @@ private:
     UPROPERTY(Transient) TMap<FIntVector,TObjectPtr<UStaticMeshComponent>> Cubes;
     bool bProjectionReady = false;
     bool bConfigurationReady = false;
-    double ReachCentimetres = 0;
-    int32 MaximumMembers = 0;
+    UPROPERTY(Replicated) double ReachCentimetres = 0;
+    UPROPERTY(Replicated) int32 MaximumMembers = 0;
     uint64 ProjectionRevision = 0;
 };
 
@@ -79,19 +83,35 @@ class SHATTEREDFRONTIER_API ASFConstructionNetworkController : public ASFE1Playe
     GENERATED_BODY()
 public:
     virtual void SetupInputComponent() override;
+    virtual void AcknowledgePossession(APawn* P) override;
     virtual void Tick(float DeltaSeconds) override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     void AssignRole(bool bBuilder);
+    FString GetBuildStatusText() const;
 private:
     void PlaceFromView();
+    void RefreshPlacementPreview(bool bDrawOutline);
     UFUNCTION(Server, Reliable) void ServerPlace(FIntVector Cell, uint64 ExpectedRevision);
     UFUNCTION(Client, Reliable) void ClientPlacementResult(ESFConstructionNetworkResult Result, uint64 Revision);
     UPROPERTY(Replicated) bool bRoleAssigned = false;
     UPROPERTY(Replicated) bool bBuilderRole = false; // Advisory; permission is derived again on server.
     uint64 LastRequestFrame = MAX_uint64;
+    bool bHasPlacementPreview = false;
+    FIntVector PreviewCell = FIntVector::ZeroValue;
+    FString PreviewStatus = TEXT("Connecting to construction state...");
+    FString LastPlacementStatus = TEXT("No placement requested.");
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     void TickFiniteScenario();
     int32 ScenarioStep = 0;
     double ScenarioStarted = 0;
+    FString ScenarioScreenshotPath;
 #endif
+};
+
+UCLASS(NotBlueprintable)
+class SHATTEREDFRONTIER_API ASFConstructionNetworkHUD : public AHUD
+{
+    GENERATED_BODY()
+public:
+    virtual void DrawHUD() override;
 };
