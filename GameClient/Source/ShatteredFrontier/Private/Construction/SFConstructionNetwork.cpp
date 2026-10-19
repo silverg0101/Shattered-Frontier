@@ -44,7 +44,7 @@ const TCHAR* PlacementResultText(ESFConstructionNetworkResult Result)
     case ESFConstructionNetworkResult::OutOfReach: return TEXT("Out of reach. Move closer.");
     case ESFConstructionNetworkResult::Occluded: return TEXT("Blocked view. Move so you can see the placement.");
     case ESFConstructionNetworkResult::Occupied: return TEXT("Space occupied. Aim at an empty neighboring cell.");
-    case ESFConstructionNetworkResult::Unsupported: return TEXT("Needs support. This edit would leave unsupported blocks.");
+    case ESFConstructionNetworkResult::Unsupported: return TEXT("Needs support. Keep every remaining block supported.");
     case ESFConstructionNetworkResult::LimitReached: return TEXT("Construction member limit reached.");
     case ESFConstructionNetworkResult::ProjectionFailed: return TEXT("Construction collision unavailable. Placement was not applied.");
     default: return TEXT("Construction unavailable. Wait for the server and try again.");
@@ -56,6 +56,17 @@ ASFConstructionNetworkState* FindState(UWorld* World)
     if (!World) { return nullptr; }
     for (TActorIterator<ASFConstructionNetworkState> It(World); It; ++It) { return *It; }
     return nullptr;
+}
+
+bool SupportsMembers(const TArray<FSFConstructionNetworkMember>& Members)
+{
+    TArray<FSFConstructionSupportMember> Inputs;
+    for (const auto& M : Members)
+    { Inputs.Add({M.Cell,M.Shape,M.Rotation,1.0,SFConstructionSandboxFoundation::TouchesPlane(M.Cell,M.Shape,M.Rotation)}); }
+    TArray<FSFConstructionSupportResult> Results;
+    if (!SFConstructionSupport::Evaluate(Inputs,FSFConstructionSupportProfile(),Results)) { return false; }
+    for (const auto& R : Results) { if (R.State==ESFConstructionSupportState::Unsupported) { return false; } }
+    return true;
 }
 
 }
@@ -199,6 +210,26 @@ bool ASFConstructionNetworkState::GetCellForComponent(const UPrimitiveComponent*
     return false;
 }
 
+bool ASFConstructionNetworkState::IsSupportAllowedForPreview(FIntVector Cell, uint8 Shape, uint8 Rotation, bool bRemove) const
+{
+    if (!IsInGameThread() || Cell.X < -20 || Cell.X >= 20 || Cell.Y < -20 || Cell.Y >= 20 || Cell.Z < 0 || Cell.Z >= 20
+        || Shape>=SFConstructionGeometry::ShapeCount || Rotation>=SFConstructionGeometry::RotationCount) { return false; }
+    auto Candidate=Snapshot;
+    const int32 Index=Candidate.Find(Cell);
+    if (bRemove)
+    {
+        if (Index==INDEX_NONE) { return false; }
+        Candidate.Members.RemoveAt(Index);
+    }
+    else
+    {
+        if (Index!=INDEX_NONE || Candidate.Members.Num()>=4096) { return false; }
+        FSFConstructionNetworkMember M; M.Cell=Cell; M.Shape=Shape; M.Rotation=Rotation;
+        Candidate.Members.Add(M);
+    }
+    return SupportsMembers(Candidate.Members);
+}
+
 FString ASFConstructionNetworkState::GetContentDigest() const
 {
     FString Canonical=TEXT("SF_NETWORK_MEMBERS_V4|");
@@ -287,15 +318,7 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::Edit(ASFConstructionNe
         Candidate.Members.Add(Member);
     }
     Candidate.Members.Sort([](const auto& A,const auto& B) { return A.Cell.X!=B.Cell.X ? A.Cell.X<B.Cell.X : A.Cell.Y!=B.Cell.Y ? A.Cell.Y<B.Cell.Y : A.Cell.Z<B.Cell.Z; });
-    TArray<FSFConstructionSupportMember> Members;
-    for (const auto& Member : Candidate.Members)
-    {
-        Members.Add({Member.Cell,Member.Shape,Member.Rotation,1.0,
-            SFConstructionSandboxFoundation::TouchesPlane(Member.Cell,Member.Shape,Member.Rotation)});
-    }
-    TArray<FSFConstructionSupportResult> Support;
-    if (!SFConstructionSupport::Evaluate(Members,FSFConstructionSupportProfile(),Support)) { return ESFConstructionNetworkResult::Unsupported; }
-    for (const auto& Result : Support) { if (Result.State == ESFConstructionSupportState::Unsupported) { return ESFConstructionNetworkResult::Unsupported; } }
+    if (!SupportsMembers(Candidate.Members)) { return ESFConstructionNetworkResult::Unsupported; }
     if (!Activate(Candidate)) { return ESFConstructionNetworkResult::ProjectionFailed; }
     Snapshot = Candidate; // Publish only after synchronous server physics activation.
     ForceNetUpdate();
@@ -433,11 +456,12 @@ void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline
 {
     bHasPlacementPreview=false;
     bHasRemovalPreview=false;
+    RemovalStatus=TEXT("Aim at a placed piece to remove it.");
     auto* State = FindState(GetWorld());
     if (!IsLocalController() || GetNetMode()!=NM_Client || !GetPawn() || !bRoleAssigned || !State
         || State->GetReachCentimetres()<=0 || State->GetMaximumMembers()<=0)
     { PreviewStatus=TEXT("Waiting for server construction state..."); return; }
-    if (!bBuilderRole) { PreviewStatus=TEXT("Observer: watch the builder's placements."); return; }
+    if (!bBuilderRole) { PreviewStatus=TEXT("Observer: watch the builder's placements."); RemovalStatus=TEXT("Observer: removal unavailable."); return; }
     if (State->GetSnapshot().Revision>0 && !State->IsProjectionCurrent())
     { PreviewStatus=TEXT("Waiting for local construction collision..."); return; }
     FVector Start; FRotator Rotation; GetPlayerViewPoint(Start,Rotation);
@@ -463,6 +487,18 @@ void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline
     }
     bHasPlacementPreview=true;
     const FVector Centre=FVector(PreviewCell)*50.0+FVector(25);
+    if (SupportCache.State.Get()!=State || SupportCache.Revision!=State->GetSnapshot().Revision || SupportCache.PlacementCell!=PreviewCell
+        || SupportCache.Shape!=SelectedShape || SupportCache.Rotation!=SelectedRotation || SupportCache.bHasRemoval!=bHasRemovalPreview
+        || (bHasRemovalPreview && SupportCache.RemovalCell!=RemovalCell))
+    {
+        SupportCache.State=State; SupportCache.Revision=State->GetSnapshot().Revision; SupportCache.PlacementCell=PreviewCell;
+        SupportCache.Shape=SelectedShape; SupportCache.Rotation=SelectedRotation;
+        SupportCache.bHasRemoval=bHasRemovalPreview; SupportCache.RemovalCell=RemovalCell;
+        SupportCache.bPlacementAllowed=State->IsSupportAllowedForPreview(PreviewCell,SelectedShape,SelectedRotation,false);
+        SupportCache.bRemovalAllowed=bHasRemovalPreview && State->IsSupportAllowedForPreview(RemovalCell,SelectedShape,SelectedRotation,true);
+    }
+    if (bHasRemovalPreview)
+    { RemovalStatus=SupportCache.bRemovalAllowed ? TEXT("Right click / X: request removal.") : TEXT("Cannot remove: supporting other blocks."); }
     const TCHAR* BlockReason=nullptr;
     if (PreviewCell.X < -20 || PreviewCell.X >= 20 || PreviewCell.Y < -20 || PreviewCell.Y >= 20 || PreviewCell.Z < 0 || PreviewCell.Z >= 20)
     { BlockReason=PlacementResultText(ESFConstructionNetworkResult::InvalidCell); }
@@ -470,6 +506,7 @@ void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline
     { BlockReason=PlacementResultText(ESFConstructionNetworkResult::OutOfReach); }
     else if (State->GetSnapshot().Find(PreviewCell)!=INDEX_NONE) { BlockReason=PlacementResultText(ESFConstructionNetworkResult::Occupied); }
     else if (State->GetSnapshot().Members.Num()>=State->GetMaximumMembers()) { BlockReason=PlacementResultText(ESFConstructionNetworkResult::LimitReached); }
+    else if (!SupportCache.bPlacementAllowed) { BlockReason=TEXT("Needs support."); }
     PreviewStatus=FString::Printf(TEXT("Target %d, %d, %d | %s"),PreviewCell.X,PreviewCell.Y,PreviewCell.Z,
         BlockReason ? BlockReason : TEXT("Click or B to request placement."));
     if (bDrawOutline)
@@ -482,7 +519,7 @@ void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline
         }
     }
     if (bHasRemovalPreview && bDrawOutline)
-    { DrawDebugBox(GetWorld(),FVector(RemovalCell)*50.0+FVector(25),FVector(25),FColor::Cyan,false,-1.f,0,2.f); }
+    { DrawDebugBox(GetWorld(),FVector(RemovalCell)*50.0+FVector(25),FVector(25),SupportCache.bRemovalAllowed ? FColor::Cyan : FColor::Red,false,-1.f,0,2.f); }
 }
 
 void ASFConstructionNetworkController::RemoveFromView()
@@ -555,10 +592,10 @@ void ASFConstructionNetworkController::Tick(float DeltaSeconds)
 FString ASFConstructionNetworkController::GetBuildStatusText() const
 {
     const auto* State=FindState(GetWorld());
-    return FString::Printf(TEXT("CONSTRUCTION | %s | DEV: UNLIMITED STOCK\nClick / B: place    Right click / X: remove    WASD: move    Space: jump\n1 Cube | 2 Half slab | 3 Slope | R Rotate | Selected: %s (%u deg)\n%s\nLast action: %s\nMembers: %d / %d | Reach: %.1f m\nAmber: placement target | Cyan: removal target | Server validates edits."),
+    return FString::Printf(TEXT("CONSTRUCTION | %s | DEV: UNLIMITED STOCK\nClick / B: place    Right click / X: remove    WASD: move    Space: jump\n1 Cube | 2 Half slab | 3 Slope | R Rotate | Selected: %s (%u deg)\n%s\n%s\nLast action: %s\nMembers: %d / %d | Reach: %.1f m\nAmber: place target | Cyan: remove target | Red: blocked estimate | Server checks edits."),
         !bRoleAssigned ? TEXT("CONNECTING") : bBuilderRole ? TEXT("BUILDER") : TEXT("OBSERVER"),
         SelectedShape==0 ? TEXT("Cube") : SelectedShape==1 ? TEXT("Half slab") : TEXT("Slope"),SelectedYaw*90,
-        *PreviewStatus,*LastPlacementStatus,State ? State->GetSnapshot().Members.Num() : 0,
+        *PreviewStatus,*RemovalStatus,*LastPlacementStatus,State ? State->GetSnapshot().Members.Num() : 0,
         State ? State->GetMaximumMembers() : 0,State ? State->GetReachCentimetres()/100.0 : 0.0);
 }
 
@@ -568,8 +605,8 @@ void ASFConstructionNetworkHUD::DrawHUD()
     const auto* Controller=Cast<ASFConstructionNetworkController>(GetOwningPlayerController());
     if (!Controller || !Canvas || !GEngine) { return; }
     const float Scale=FMath::Clamp(Canvas->ClipX/1280.f,0.5f,1.5f);
-    DrawRect(FLinearColor(0.02f,0.03f,0.04f,0.88f),16*Scale,Canvas->ClipY-180*Scale,820*Scale,164*Scale);
-    DrawText(Controller->GetBuildStatusText(),FColor::White,28*Scale,Canvas->ClipY-170*Scale,GEngine->GetSmallFont(),1.25f*Scale);
+    DrawRect(FLinearColor(0.02f,0.03f,0.04f,0.88f),16*Scale,Canvas->ClipY-202*Scale,820*Scale,186*Scale);
+    DrawText(Controller->GetBuildStatusText(),FColor::White,28*Scale,Canvas->ClipY-192*Scale,GEngine->GetSmallFont(),1.25f*Scale);
     const float X=Canvas->ClipX/2,Y=Canvas->ClipY/2;
     DrawLine(X-7*Scale,Y,X+7*Scale,Y,FLinearColor::White);
     DrawLine(X,Y-7*Scale,X,Y+7*Scale,FLinearColor::White);
@@ -602,6 +639,13 @@ void ASFConstructionNetworkController::TickFiniteScenario()
     if (((bBuilderRole && ScenarioStep==32) || (!bBuilderRole && ScenarioStep==4))
         && State->GetSnapshot().Revision==8 && State->GetSnapshot().Members.Num()==2 && State->HasCurrentCollision())
     {
+        if (bBuilderRole)
+        {
+            if (!bHasPlacementPreview || PreviewCell!=FIntVector(-4,-5,1) || !bHasRemovalPreview || RemovalCell!=FIntVector(-4,-5,0)) { return; }
+            if (SupportCache.bPlacementAllowed || !SupportCache.bRemovalAllowed)
+            { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_SCENARIO_FAILED FinalSupportPreview=1")); FPlatformMisc::RequestExitWithStatus(false,1); return; }
+            UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_SUPPORT_PREVIEW PlacementAllowed=0 RemovalAllowed=1 Revision=8"));
+        }
         UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_SCENARIO_SUCCESS Builder=%d Revision=8 Members=2"),bBuilderRole);
         if (FParse::Value(FCommandLine::Get(),TEXT("ConstructionNetworkScreenshot="),ScenarioScreenshotPath))
         { ScenarioStep=100; FScreenshotRequest::RequestScreenshot(ScenarioScreenshotPath,true,false); }
@@ -634,12 +678,18 @@ void ASFConstructionNetworkController::TickFiniteScenario()
         // clients have projected the nonempty structure, so deletion is exercised.
         FString Barrier;
         if (!FParse::Value(FCommandLine::Get(),TEXT("ConstructionNetworkRemovalBarrier="),Barrier) || !FPaths::FileExists(Barrier)) { return; }
+        if (!bHasRemovalPreview || RemovalCell!=FIntVector(-4,-4,0) || SupportCache.bRemovalAllowed)
+        { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_SCENARIO_FAILED SupportRemovalPreview=1")); FPlatformMisc::RequestExitWithStatus(false,1); return; }
+        UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_SUPPORT_PREVIEW SupportingBaseAllowed=0 Revision=3"));
         ScenarioStep=13; ServerRemove(FIntVector(-4,-4,0),3);
     }
     else if (bBuilderRole && ScenarioStep==14 && State->GetSnapshot().Revision==3 && State->HasCurrentCollision())
     {
         SetControlRotation((FVector(-175,-175,75)-GetPawn()->GetActorLocation()).Rotation());
         if (!bHasRemovalPreview || RemovalCell!=FIntVector(-4,-4,1)) { return; }
+        if (!SupportCache.bRemovalAllowed)
+        { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_SCENARIO_FAILED SupportedTopPreview=1")); FPlatformMisc::RequestExitWithStatus(false,1); return; }
+        UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_SUPPORT_PREVIEW SupportedTopAllowed=1 Revision=3"));
         ScenarioStep=15;
         InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::X,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
         InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::X,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));

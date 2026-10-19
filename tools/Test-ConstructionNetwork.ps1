@@ -123,10 +123,15 @@ try {
         if ($yaw.Count -eq 1) { $yawRotation=$yaw[0].Groups[1].Value }
     }
     $memberSnap=0
+    $supportPreviews=0
     foreach ($role in @('driver','observer')) {
         $log=Get-Content -LiteralPath (Join-Path $root ($role+'.log')) -Raw
         $memberSnap += [regex]::Matches($log,'CONSTRUCTION_NETWORK_VIEW_REQUEST Cell=X=-4 Y=-5 Z=0 Shape=2 Rotation=[0-9]+ FromMember=1').Count
+        foreach ($marker in @('CONSTRUCTION_NETWORK_SUPPORT_PREVIEW SupportingBaseAllowed=0 Revision=3','CONSTRUCTION_NETWORK_SUPPORT_PREVIEW SupportedTopAllowed=1 Revision=3','CONSTRUCTION_NETWORK_SUPPORT_PREVIEW PlacementAllowed=0 RemovalAllowed=1 Revision=8')) {
+            $supportPreviews += [regex]::Matches($log,[regex]::Escape($marker)).Count
+        }
     }
+    if ($supportPreviews -ne 3) { throw 'Expected all three local support preview observations.' }
     if ($memberSnap -ne 1) { throw 'Slope placement did not snap from the existing slab face.' }
     if ($mixedViewRequests -ne 2 -or $null -eq $yawRotation) { throw 'Slab/slope selection, R yaw or B input path missing.' }
     $removeRequests=0

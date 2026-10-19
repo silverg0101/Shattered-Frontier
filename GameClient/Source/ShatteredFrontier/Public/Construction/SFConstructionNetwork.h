@@ -59,6 +59,7 @@ public:
     int32 GetMaximumMembers() const { return MaximumMembers; }
     bool IsProjectionCurrent() const { return bProjectionReady && ProjectionRevision == Snapshot.Revision; }
     bool GetCellForComponent(const UPrimitiveComponent* Component, FIntVector& OutCell) const;
+    bool IsSupportAllowedForPreview(FIntVector Cell, uint8 Shape, uint8 Rotation, bool bRemove) const;
 private:
     bool Activate(const FSFConstructionNetworkSnapshot& Candidate);
     UFUNCTION() void OnRep_Snapshot();
@@ -126,6 +127,17 @@ private:
     uint8 SelectedShape = 0;
     uint8 SelectedRotation = 0;
     uint8 SelectedYaw = 0;
+    struct FSupportCache
+    {
+        TWeakObjectPtr<ASFConstructionNetworkState> State;
+        uint64 Revision = MAX_uint64;
+        FIntVector PlacementCell = FIntVector::ZeroValue;
+        FIntVector RemovalCell = FIntVector::ZeroValue;
+        uint8 Shape = 255, Rotation = 255;
+        bool bHasRemoval = false;
+        bool bPlacementAllowed = false, bRemovalAllowed = false;
+    } SupportCache;
+    FString RemovalStatus = TEXT("Aim at a placed piece to remove it.");
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     void TickFiniteScenario();
     int32 ScenarioStep = 0;
