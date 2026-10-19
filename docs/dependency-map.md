@@ -85,6 +85,8 @@ Run `npm start` to start the local server (`PORT`, default 3000; binds 127.0.0.1
 
 Tests: `tests/world.test.js` imports `server/world.js` for rule validation; `tests/server.test.js` spawns `server/index.js` with a temporary SQLite database for HTTP, SSE, sessions, and restart persistence. Select only tests covering the change with `node --test --test-name-pattern="<matching name>" tests/<name>.test.js`; run a whole file only when all its tests are relevant. Vision: `concept.md`; scope and milestones: `docs/alpha-plan.md`; setup: `README.md`.
 
+Gameplay reuse: [current assessment](gameplay-reuse-assessment.md) tracks Epic Lyra and survival Blueprint kit candidates before INV/GAT implementation. Ownership, source availability and UE5.8 fit remain unverified; no framework imported.
+
 ## Design references — load only when needed
 
 Setup reference: [first-time-setup.md](first-time-setup.md) covers required software, first launch, deploy-key generation (manual or by a session agent), Unreal preparation, and optional MCP setup. Load only for onboarding, machine setup, or explicit environment repair; skip during ordinary conversations and feature work.
