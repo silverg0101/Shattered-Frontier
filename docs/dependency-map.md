@@ -102,7 +102,7 @@ Gameplay reuse: [current assessment](gameplay-reuse-assessment.md) and [design c
 
 Setup reference: [first-time-setup.md](first-time-setup.md) covers required software, first launch, deploy-key generation (manual or by a session agent), Unreal preparation, and optional MCP setup. Load only for onboarding, machine setup, or explicit environment repair; skip during ordinary conversations and feature work.
 
-Claude Code: `CLAUDE.md` imports `AGENTS.md`; `.mcp.json` (`unreal-editor`, `http://127.0.0.1:8000/mcp`) reaches the interactive editor, whose MCP server `GameClient/Config/DefaultEditorPerProjectUserSettings.ini` auto-starts. `.claude/settings.json` allow-lists build/automation/runner commands; `.claude/commands/` holds `/build-editor`, `/test <filter>` (reports to `Artifacts/Automation/`), `/netcheck <name>` (maps names to `tools/Test-*.ps1`) and `/implement <spec>`.
+Claude Code: `CLAUDE.md` imports `AGENTS.md`; `.mcp.json` (`unreal-editor`, `http://127.0.0.1:8000/mcp`) reaches the interactive editor, whose MCP server `GameClient/Config/DefaultEditorPerProjectUserSettings.ini` auto-starts. `.claude/settings.json` allow-lists build/automation/runner commands; `tools/Run-InEditor.py` runs a Python file inside the open editor through PythonScriptPlugin remote execution (localhost; enable it in Project Settings); MCP `execute_tool_script` is sandboxed without `unreal`. `.claude/commands/` holds `/build-editor`, `/test <filter>` (reports to `Artifacts/Automation/`), `/netcheck <name>` (maps names to `tools/Test-*.ps1`) and `/implement <spec>`.
 
 | Reference | Summary | Read when |
 | --- | --- | --- |

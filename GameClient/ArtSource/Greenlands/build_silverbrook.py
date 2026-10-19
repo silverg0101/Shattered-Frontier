@@ -155,10 +155,15 @@ def building(label_text, kind, x, y, yaw, mat, folder, require=True):
 
 
 # --- build ------------------------------------------------------------------
+if '-run=' not in u.SystemLibrary.get_command_line().lower():
+    # Running inside an open editor (tools/Run-InEditor.py): never discard the user's unsaved work.
+    dirty = [p.get_name() for p in u.EditorLoadingAndSavingUtils.get_dirty_map_packages()
+             + u.EditorLoadingAndSavingUtils.get_dirty_content_packages()]
+    assert not dirty, f'Save or discard these first, then rebuild: {dirty}'
+M = {name: material(name, rgb) for name, rgb in COLOURS.items()}
+world = u.EditorLoadingAndSavingUtils.new_blank_map(False)  # also closes the zone map if it is open
 if u.EditorAssetLibrary.does_asset_exist(ZONE):
     assert u.EditorAssetLibrary.delete_asset(ZONE), 'Could not delete the previous zone map'
-M = {name: material(name, rgb) for name, rgb in COLOURS.items()}
-world = u.EditorLoadingAndSavingUtils.new_blank_map(False)
 
 sun = actors.spawn_actor_from_class(u.DirectionalLight, u.Vector(0, 0, 50000), u.Rotator(roll=0, pitch=-40, yaw=-60))
 sun.light_component.set_editor_property('atmosphere_sun_light', True)

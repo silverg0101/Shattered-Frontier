@@ -46,6 +46,14 @@ Review:
 
 `-ExecutePythonScript` is refused in `-game`; use `-ExecCmds="py <script>"`.
 
+With the editor open, rebuild inside it instead of headless, so the editor and the files on disk never disagree. First enable Project Settings > Plugins > Python > "Enable Remote Execution?", then run:
+
+```
+python tools/Run-InEditor.py GameClient/ArtSource/Greenlands/build_silverbrook.py
+```
+
+The builder refuses to start while the editor has unsaved maps or assets.
+
 **Evidence (2026-10-19):** `silverbrook-game-review.json`. The pawn walked arrival → South Gate → Silverbrook Bridge → Market Square → North Street bridge → North Gate, reaching all 7 legs in 226 s with no stalls. `SFE1GameMode`, no E1 fixture. Captures: `Silverbrook-Arrival-InGame.png` and `Silverbrook-Aerial-InGame.png`.
 
 ## Slice spaces in the graybox
