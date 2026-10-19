@@ -13,3 +13,11 @@
 - When a change alters dependencies, file roles, routes, tests, or commands, update `docs/dependency-map.md` in the same change.
 - Keep stable instructions stable to support prompt caching. Caching is platform controlled; do not claim it is enabled or invent configuration for it.
 - Design adjustable balance and operating values as declared, typed configuration with shipped defaults, safe bounds, units, permissions, and effective-time rules. Expose plain-language controls through the shared configuration workflow; avoid scattered hard-coded tuning and console-only overrides. Keep formulas, algorithms, security invariants, and data topology in versioned code/content delivered through compatible releases, never editable console expressions. Follow `docs/Game-Design/Legends_Shattered_Frontier_Tuning_and_Configuration_Architecture_v0.1.md`.
+
+## Delivery priority
+
+- Default to the smallest ready change that advances playable gameplay or its required server integration. Judge progress by observable game behavior; report enabling work separately.
+- Do setup, infrastructure, documentation and validation to resolve a concrete blocker or satisfy the current change's acceptance criteria. State the blocker and a bounded exit condition before substantial supporting work; return to implementation once it is met. Avoid speculative tooling, repeated audits and unrelated preparation.
+- Preserve necessary design, security, persistence and authority invariants. Run the targeted checks needed for the change and required gates; reuse relevant evidence when its inputs are unchanged. Delivery priority never means skipping a failing check or claiming unobserved acceptance.
+- Keep development fixtures separate from product requirements. Do not expand a local test mechanism into a player feature or substitute it for the designed production system.
+- If a task is blocked, record the evidence briefly and move to the next ready gameplay task when possible. Keep supporting docs concise and current; do not create extra process merely to demonstrate progress.

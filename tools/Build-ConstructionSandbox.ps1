@@ -2,10 +2,12 @@
 param(
     [string]$EngineRoot = 'C:\Program Files\Epic Games\UE_5.8',
     [string]$RunRoot,
-    [switch]$Preflight
+    [switch]$Preflight,
+    [switch]$VerifyOnly
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+if ($VerifyOnly -and ($Preflight -or -not $RunRoot)) { throw 'VerifyOnly requires an explicit completed RunRoot and cannot combine with Preflight.' }
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $packageRoot = Join-Path $repoRoot 'Artifacts\ConstructionSandbox\Packages'
 
@@ -81,7 +83,8 @@ $packageRoot = Get-SafePath $packageRoot
 if (-not $runRootFull.StartsWith($packageRoot + '\', [StringComparison]::OrdinalIgnoreCase)) {
     throw 'RunRoot must be a new child of Artifacts/ConstructionSandbox/Packages.'
 }
-if (Test-Path -LiteralPath $runRootFull) { throw 'RunRoot already exists; refusing reuse.' }
+if ((Test-Path -LiteralPath $runRootFull) -and -not $VerifyOnly) { throw 'RunRoot already exists; refusing reuse.' }
+if ($VerifyOnly -and -not (Test-Path -LiteralPath $runRootFull -PathType Container)) { throw 'VerifyOnly requires an existing owned run.' }
 $uat = Join-Path $engineRootFull 'Engine\Build\BatchFiles\RunUAT.bat'
 $versionFile = Join-Path $engineRootFull 'Engine\Build\Build.version'
 $installedMarker = Join-Path $engineRootFull 'Engine\Build\InstalledBuild.txt'
@@ -131,9 +134,25 @@ if ($Preflight) {
     return
 }
 
-$null = New-Item -ItemType Directory -Path $runRootFull
 $summary = Join-Path $runRootFull 'package.json'
+if ($VerifyOnly) {
+    $prior = Get-Content -LiteralPath $summary -Raw | ConvertFrom-Json
+    if ($prior.uatExitCode -ne 0 -or -not $prior.originalInputsUnchanged -or $prior.runRoot -ne $runRootFull -or $prior.engine.versionSha256 -ne $record.engine.versionSha256) { throw 'VerifyOnly requires matching engine/root and a completed successful UAT run with unchanged inputs.' }
+    if (@(Compare-Object @($inputs | ForEach-Object { $_.path + ':' + $_.sha256 }) @($prior.inputs | ForEach-Object { $_.path + ':' + $_.sha256 })).Count) { throw 'VerifyOnly input snapshot differs from the recorded build.' }
+    $record = [ordered]@{}
+    foreach ($property in $prior.PSObject.Properties) { $record[$property.Name] = $property.Value }
+    foreach ($config in $record.derivedConfig) {
+        if ((Get-Hash (Join-Path $runRootFull ('Project\GameClient\Config\' + $config.path))) -ne $config.sha256) { throw 'Copied configuration changed since UAT.' }
+    }
+    $priorPath = Join-Path $runRootFull ('package-before-verification-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff') + '.json')
+    [IO.File]::Copy($summary, $priorPath, $false)
+    $record.priorManifest = [ordered]@{ path = $priorPath; sha256 = Get-Hash $priorPath }
+    $record.Remove('error')
+} else {
+    $null = New-Item -ItemType Directory -Path $runRootFull
+}
 try {
+    if (-not $VerifyOnly) {
     $record.status = 'Copying'
     Write-Json $summary $record
     foreach ($inputFile in $inputs) {
@@ -154,19 +173,44 @@ try {
     & $uat @uatArgs *> $log
     $record.uatExitCode = $LASTEXITCODE
     if ($LASTEXITCODE -ne 0) { throw "BuildCookRun failed (exit $LASTEXITCODE); retain $log" }
+    }
+    $record.status = 'Verifying'
     $receipt = Join-Path $runRootFull 'Project\GameClient\Binaries\Win64\ShatteredFrontier.target'
     $receiptData = Get-Content -LiteralPath $receipt -Raw | ConvertFrom-Json
     if ($receiptData.TargetName -ne 'ShatteredFrontier' -or $receiptData.TargetType -ne 'Game' -or $receiptData.Platform -ne 'Win64' -or $receiptData.Configuration -ne 'Development') {
         throw 'Actual target receipt does not match Game/Win64/Development.'
     }
-    $cookedFiles = @(Get-OwnedFiles (Join-Path $runRootFull 'Project\GameClient\Saved\Cooked'))
-    foreach ($map in $maps) {
-        $suffix = $map.Replace('/Game/', '/Content/') + '.umap'
-        if (-not @($cookedFiles | Where-Object { $_.FullName.Replace('\', '/').EndsWith($suffix, [StringComparison]::OrdinalIgnoreCase) }).Count) {
-            throw "Cooked map missing: $map"
-        }
-    }
     $archiveFiles = @(Get-OwnedFiles $archive)
+    $containers = @($archiveFiles | Where-Object { $_.Extension -eq '.utoc' })
+    if (-not $containers.Count) { throw 'Expected UE5.8.3 IoStore archive containers.' }
+    $verificationRoot = Join-Path $runRootFull ('verification-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
+    $null = New-Item -ItemType Directory -Path $verificationRoot
+    $pakTool = Get-SafePath (Join-Path $engineRootFull 'Engine\Binaries\Win64\UnrealPak.exe')
+    $record.containerToolSha256 = Get-Hash $pakTool
+    $record.containerListings = @()
+    $foundMaps = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    foreach ($container in $containers) {
+        if (-not (Test-Path -LiteralPath ([IO.Path]::ChangeExtension($container.FullName, '.ucas')) -PathType Leaf)) { throw 'IoStore container has no sibling data file.' }
+        $csv = Join-Path $verificationRoot ($container.BaseName + '.csv')
+        $listLog = Join-Path $verificationRoot ($container.BaseName + '.log')
+        $listArgs = @(('-ListContainer="' + $container.FullName + '"'), ('-Csv="' + $csv + '"'))
+        & $pakTool @listArgs *> $listLog
+        if ($LASTEXITCODE -ne 0 -or (Get-Content -LiteralPath $listLog -Raw) -match 'Failed to read container toc|Log\w+: Error:') { throw 'IoStore listing failed; retain its verification log.' }
+        $rows = @(Import-Csv -LiteralPath $csv)
+        if (-not $rows.Count) { throw 'IoStore listing contains no chunk rows.' }
+        foreach ($row in $rows) {
+            $fields = @{}
+            foreach ($property in $row.PSObject.Properties) { $fields[$property.Name.Trim()] = "$($property.Value)".Trim() }
+            if ($fields['ChunkType'] -ne 'ExportBundleData') { continue }
+            foreach ($map in $maps) {
+                $suffix = $map.Replace('/Game/', '/Content/') + '.umap'
+                if ($fields['Filename'].Replace('\', '/').EndsWith($suffix, [StringComparison]::Ordinal) -or $fields['PackageName'] -eq $map) { $null = $foundMaps.Add($map) }
+            }
+        }
+        $record.containerListings += [ordered]@{ container = $container.FullName; arguments = $listArgs; csv = $csv; csvSha256 = Get-Hash $csv; log = $listLog; logSha256 = Get-Hash $listLog }
+    }
+    foreach ($map in $maps) { if (-not $foundMaps.Contains($map)) { throw "Archived cooked map missing: $map" } }
+    $record.verifiedCookedMaps = $maps
     $gameExecutables = @($archiveFiles | Where-Object { $_.FullName -match '[\\/]Binaries[\\/]Win64[\\/]ShatteredFrontier\.exe$' })
     if ($gameExecutables.Count -ne 1) { throw 'Expected exactly one direct archived Game executable.' }
     $record.gameExecutable = $gameExecutables[0].FullName

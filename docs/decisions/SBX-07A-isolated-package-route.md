@@ -1,6 +1,6 @@
 # SBX-07A: isolated Windows standalone package route
 
-Status: implementation in progress, 2026-10-18; independent packet and runner review completed; launch-isolation and Stage-provenance corrections incorporated. First package compile failure is recorded in [checkpoint evidence](../evidence/construction-sandbox-package-pilot.md); no successful package/runtime acceptance is claimed. This packet defines the bounded route before SBX-07 art and multiplayer acceptance.
+Status: build/container verification passed, execution blocked, 2026-10-18. Independent packet/runner reviews and corrections incorporated. [Evidence](../evidence/construction-sandbox-package-pilot.md) records the successful fresh package and managed Defender ASR execution block; no packaged runtime acceptance is claimed. Stop package reruns pending policy-owner resolution and resume ready gameplay work.
 
 ## Target and boundary
 
@@ -45,4 +45,6 @@ Evidence must include source/run/engine identities, command vectors, input and o
 
 ## Handoff
 
-Next: complete Game/editor verification of the save-fixture compile boundary, retry in a new copied-project run, then execute the independently reviewed packaged input harness. Coordinate ownership before remote/shared implementation. No gameplay configuration tuning, new runtime dependencies or production closure is part of this packet.
+The installed engine defaults to Zen/IoStore, so verification lists archived `.utoc` contents with UnrealPak, checks exact map export rows and retains CSV/log hashes. `Build-ConstructionSandbox.ps1 -VerifyOnly -RunRoot <completed-run>` requires recorded UAT exit0, matching original inputs/engine/copied configuration, and preserves the prior summary before rechecking outputs. It invokes no build/cook and is for correcting/collecting evidence, not retrying a blocked executable.
+
+Next: ready gameplay/server integration through the supported editor, with packaged execution left blocked. Coordinate ownership before remote/shared implementation. No gameplay configuration tuning, new runtime dependencies or production closure is part of this packet.
