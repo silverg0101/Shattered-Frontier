@@ -1,0 +1,366 @@
+00:01.797  blend            | Read blend: "C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\SecondaryChains-v003\Mount-SecondaryChains.blend"
+CLIP equine.walk_loop {"passed": true, "checks": {}, "metrics": {"max_contact_m": 6.75e-05, "max_slip_m": 4.23e-05, "min_sole_height_m": -6.75e-05, "max_target_error_m": 6.86e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.182178, "body_edge_p99_rel": 0.3188504, "body_edge_max_abs_m": 0.020056, "seam_gap_m": 0.0, "loop_error_m": 1e-07, "max_bone_length_abs_m": 6e-07}}
+CLIP equine.trot_loop {"passed": true, "checks": {}, "metrics": {"max_contact_m": 6.65e-05, "max_slip_m": 6.78e-05, "min_sole_height_m": -6.65e-05, "max_target_error_m": 0.000101, "max_bone_length_rel": 1.41e-05, "min_full_height_m": -0.251965, "body_edge_p99_rel": 0.3491232, "body_edge_max_abs_m": 0.0232963, "seam_gap_m": 0.0, "loop_error_m": 2e-07, "max_bone_length_abs_m": 5e-07}}
+CLIP equine.canter_loop {"passed": true, "checks": {}, "metrics": {"max_contact_m": 7.64e-05, "max_slip_m": 3.98e-05, "min_sole_height_m": -7.64e-05, "max_target_error_m": 0.0001212, "max_bone_length_rel": 1.42e-05, "min_full_height_m": -0.3720131, "body_edge_p99_rel": 0.4209123, "body_edge_max_abs_m": 0.0273744, "seam_gap_m": 0.0, "loop_error_m": 1e-07, "max_bone_length_abs_m": 5e-07}}
+CLIP equine.gallop_loop {"passed": true, "checks": {}, "metrics": {"max_contact_m": 6.76e-05, "max_slip_m": 5.49e-05, "min_sole_height_m": -6.76e-05, "max_target_error_m": 0.000119, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.3960538, "body_edge_p99_rel": 0.5319269, "body_edge_max_abs_m": 0.0273377, "seam_gap_m": 0.0, "loop_error_m": 1e-07, "max_bone_length_abs_m": 6e-07}}
+CLIP equine.combat_move_loop.m {"passed": true, "checks": {}, "metrics": {"max_contact_m": 7.64e-05, "max_slip_m": 3.98e-05, "min_sole_height_m": -7.64e-05, "max_target_error_m": 0.0001212, "max_bone_length_rel": 1.42e-05, "min_full_height_m": -0.3720131, "body_edge_p99_rel": 0.4333921, "body_edge_max_abs_m": 0.0273744, "seam_gap_m": 0.0, "loop_error_m": 2e-07, "max_bone_length_abs_m": 5e-07}}
+CLIP voidreign.sig_a.rift_charge_run {"passed": true, "checks": {}, "metrics": {"max_contact_m": 6.76e-05, "max_slip_m": 5.49e-05, "min_sole_height_m": -6.76e-05, "max_target_error_m": 0.000119, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.3960538, "body_edge_p99_rel": 0.5154598, "body_edge_max_abs_m": 0.0273377, "seam_gap_m": 0.0, "loop_error_m": 1e-07, "max_bone_length_abs_m": 6e-07}}
+CLIP equine.idle_loop {"passed": true, "checks": {}, "metrics": {"max_contact_m": 5.21e-05, "max_slip_m": 2.8e-05, "min_sole_height_m": -5.21e-05, "max_target_error_m": 5.22e-05, "max_bone_length_rel": 1.35e-05, "min_full_height_m": -0.0936336, "body_edge_p99_rel": 0.1599126, "body_edge_max_abs_m": 0.008734, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 1e-07}}
+CLIP equine.idle_loop.m {"passed": true, "checks": {}, "metrics": {"max_contact_m": 5.21e-05, "max_slip_m": 2.8e-05, "min_sole_height_m": -5.21e-05, "max_target_error_m": 5.22e-05, "max_bone_length_rel": 1.35e-05, "min_full_height_m": -0.0936336, "body_edge_p99_rel": 0.1580752, "body_edge_max_abs_m": 0.008734, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 1e-07}}
+CLIP equine.combat_idle_loop {"passed": true, "checks": {}, "metrics": {"max_contact_m": 6.28e-05, "max_slip_m": 4.78e-05, "min_sole_height_m": -6.28e-05, "max_target_error_m": 6.3e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.1391318, "body_edge_p99_rel": 0.2378412, "body_edge_max_abs_m": 0.018208, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 4e-07}}
+CLIP equine.combat_idle_loop.m {"passed": true, "checks": {}, "metrics": {"max_contact_m": 6.23e-05, "max_slip_m": 4.74e-05, "min_sole_height_m": -6.23e-05, "max_target_error_m": 6.26e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.1344917, "body_edge_p99_rel": 0.2264305, "body_edge_max_abs_m": 0.0120357, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 4e-07}}
+CLIP voidreign.atk.basic {"passed": true, "checks": {}, "metrics": {"max_contact_m": 6e-07, "max_slip_m": 1.1e-06, "min_sole_height_m": -3.88e-05, "max_target_error_m": 7.03e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.2458503, "body_edge_p99_rel": 0.3249448, "body_edge_max_abs_m": 0.0220634, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 4e-07}}
+CLIP equine.react.hit_front {"passed": true, "checks": {}, "metrics": {"max_contact_m": 4.1e-05, "max_slip_m": 4.14e-05, "min_sole_height_m": -4.1e-05, "max_target_error_m": 4.13e-05, "max_bone_length_rel": 1.34e-05, "min_full_height_m": -0.2011256, "body_edge_p99_rel": 0.2570051, "body_edge_max_abs_m": 0.0114463, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 3e-07}}
+CLIP equine.defeat {"passed": true, "checks": {}, "metrics": {"max_contact_m": 0.0, "max_slip_m": 0.0, "min_sole_height_m": -0.0001613, "max_target_error_m": 0.0001863, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.8595058, "body_edge_p99_rel": 0.8320708, "body_edge_max_abs_m": 0.0436492, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 7e-07}}
+CLIP equine.defeat_hold_loop {"passed": true, "checks": {}, "metrics": {"max_contact_m": 0.0, "max_slip_m": 0.0, "min_sole_height_m": -8.55e-05, "max_target_error_m": 0.0001344, "max_bone_length_rel": 1.34e-05, "min_full_height_m": -0.867462, "body_edge_p99_rel": 0.8575907, "body_edge_max_abs_m": 0.0440533, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 5e-07}}
+CLIP voidreign.wild.exhausted_loop {"passed": true, "checks": {}, "metrics": {"max_contact_m": 8e-05, "max_slip_m": 5.81e-05, "min_sole_height_m": -8e-05, "max_target_error_m": 8.04e-05, "max_bone_length_rel": 1.3e-05, "min_full_height_m": -0.1337384, "body_edge_p99_rel": 0.3657391, "body_edge_max_abs_m": 0.0171282, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 4e-07}}
+CLIP capture.bind_loop {"passed": true, "checks": {}, "metrics": {"max_contact_m": 5.55e-05, "max_slip_m": 2.94e-05, "min_sole_height_m": -5.55e-05, "max_target_error_m": 5.56e-05, "max_bone_length_rel": 1.36e-05, "min_full_height_m": -0.115375, "body_edge_p99_rel": 0.2040481, "body_edge_max_abs_m": 0.0097667, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 5e-07}}
+CLIP capture.secured {"passed": true, "checks": {}, "metrics": {"max_contact_m": 3.88e-05, "max_slip_m": 0.0, "min_sole_height_m": -3.88e-05, "max_target_error_m": 3.9e-05, "max_bone_length_rel": 1.34e-05, "min_full_height_m": -0.0896337, "body_edge_p99_rel": 0.2640098, "body_edge_max_abs_m": 0.010522, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 2e-07}}
+CLIP capture.break {"passed": true, "checks": {}, "metrics": {"max_contact_m": 8e-07, "max_slip_m": 1e-06, "min_sole_height_m": -3.88e-05, "max_target_error_m": 9.88e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.4167098, "body_edge_p99_rel": 0.3488107, "body_edge_max_abs_m": 0.0268575, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 5e-07}}
+CLIP train.saddle {"passed": true, "checks": {}, "metrics": {"max_contact_m": 5.11e-05, "max_slip_m": 3.21e-05, "min_sole_height_m": -5.11e-05, "max_target_error_m": 5.14e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.1058228, "body_edge_p99_rel": 0.1826764, "body_edge_max_abs_m": 0.0094578, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 6e-07}}
+CLIP deploy.arrive {"passed": true, "checks": {}, "metrics": {"max_contact_m": 7.94e-05, "max_slip_m": 5.68e-05, "min_sole_height_m": -7.94e-05, "max_target_error_m": 7.98e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.1818042, "body_edge_p99_rel": 0.4268981, "body_edge_max_abs_m": 0.0207927, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 4e-07}}
+CLIP store.depart {"passed": true, "checks": {}, "metrics": {"max_contact_m": 8.39e-05, "max_slip_m": 6.16e-05, "min_sole_height_m": -8.39e-05, "max_target_error_m": 8.45e-05, "max_bone_length_rel": 1.34e-05, "min_full_height_m": -0.2696338, "body_edge_p99_rel": 0.5016896, "body_edge_max_abs_m": 0.0214336, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 3e-07}}
+CLIP voidreign.rear_throw {"passed": true, "checks": {}, "metrics": {"max_contact_m": 9e-07, "max_slip_m": 1.3e-06, "min_sole_height_m": -3.88e-05, "max_target_error_m": 0.0001014, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.6052641, "body_edge_p99_rel": 0.5065616, "body_edge_max_abs_m": 0.0330077, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 5e-07}}
+CLIP voidreign.sig_a.rift_windup {"passed": false, "checks": {"secondary_step": false}, "metrics": {"max_contact_m": 1e-06, "max_slip_m": 1.4e-06, "min_sole_height_m": -3.88e-05, "max_target_error_m": 0.0001008, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.4935704, "body_edge_p99_rel": 0.3805221, "body_edge_max_abs_m": 0.0296808, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 5e-07}}
+CLIP voidreign.sig_a.rift_impact {"passed": true, "checks": {}, "metrics": {"max_contact_m": 0.0, "max_slip_m": 0.0, "min_sole_height_m": -5.63e-05, "max_target_error_m": 5.65e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.2407926, "body_edge_p99_rel": 0.311902, "body_edge_max_abs_m": 0.0140114, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 4e-07}}
+CLIP voidreign.sig_a.recall_enter {"passed": true, "checks": {}, "metrics": {"max_contact_m": 0.0001022, "max_slip_m": 6.08e-05, "min_sole_height_m": -0.0001022, "max_target_error_m": 0.0001023, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.3696337, "body_edge_p99_rel": 0.491607, "body_edge_max_abs_m": 0.0255367, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 6e-07}}
+CLIP voidreign.sig_a.recall_exit {"passed": true, "checks": {}, "metrics": {"max_contact_m": 0.0001049, "max_slip_m": 7.66e-05, "min_sole_height_m": -0.0001049, "max_target_error_m": 0.0001057, "max_bone_length_rel": 1.34e-05, "min_full_height_m": -0.3696337, "body_edge_p99_rel": 0.5180752, "body_edge_max_abs_m": 0.0258175, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 4e-07}}
+CLIP equine.turn_l_walk {"passed": true, "checks": {}, "metrics": {"max_contact_m": 6.66e-05, "max_slip_m": 4.1e-05, "min_sole_height_m": -6.66e-05, "max_target_error_m": 9.41e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.1943089, "body_edge_p99_rel": 0.3153558, "body_edge_max_abs_m": 0.0200435, "seam_gap_m": 0.0, "loop_error_m": 2e-07, "max_bone_length_abs_m": 6e-07}}
+CLIP equine.turn_r_walk {"passed": true, "checks": {}, "metrics": {"max_contact_m": 5.89e-05, "max_slip_m": 3.14e-05, "min_sole_height_m": -5.89e-05, "max_target_error_m": 8.13e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.182178, "body_edge_p99_rel": 0.3367068, "body_edge_max_abs_m": 0.0198683, "seam_gap_m": 0.0, "loop_error_m": 2e-07, "max_bone_length_abs_m": 6e-07}}
+CLIP equine.turn_l_run {"passed": true, "checks": {}, "metrics": {"max_contact_m": 7.63e-05, "max_slip_m": 4.5e-05, "min_sole_height_m": -7.63e-05, "max_target_error_m": 0.0001316, "max_bone_length_rel": 1.38e-05, "min_full_height_m": -0.3339763, "body_edge_p99_rel": 0.4111228, "body_edge_max_abs_m": 0.0253504, "seam_gap_m": 0.0, "loop_error_m": 3e-07, "max_bone_length_abs_m": 6e-07}}
+CLIP equine.turn_r_run {"passed": true, "checks": {}, "metrics": {"max_contact_m": 6.79e-05, "max_slip_m": 3.99e-05, "min_sole_height_m": -6.79e-05, "max_target_error_m": 9.13e-05, "max_bone_length_rel": 1.42e-05, "min_full_height_m": -0.4095596, "body_edge_p99_rel": 0.4398921, "body_edge_max_abs_m": 0.0294059, "seam_gap_m": 0.0, "loop_error_m": 2e-07, "max_bone_length_abs_m": 7e-07}}
+CLIP equine.turn_l_inplace {"passed": true, "checks": {}, "metrics": {"max_contact_m": 6.85e-05, "max_slip_m": 5.09e-05, "min_sole_height_m": -6.85e-05, "max_target_error_m": 7.89e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.1583294, "body_edge_p99_rel": 0.2797191, "body_edge_max_abs_m": 0.0196856, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 4e-07}}
+CLIP equine.turn_r_inplace {"passed": true, "checks": {}, "metrics": {"max_contact_m": 6.71e-05, "max_slip_m": 3.32e-05, "min_sole_height_m": -6.71e-05, "max_target_error_m": 8.27e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.1583294, "body_edge_p99_rel": 0.2736747, "body_edge_max_abs_m": 0.0205492, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 4e-07}}
+CLIP equine.turn_l180_inplace {"passed": true, "checks": {}, "metrics": {"max_contact_m": 6.83e-05, "max_slip_m": 5.02e-05, "min_sole_height_m": -6.83e-05, "max_target_error_m": 7.45e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.1583304, "body_edge_p99_rel": 0.3157663, "body_edge_max_abs_m": 0.0215556, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 4e-07}}
+CLIP equine.turn_r180_inplace {"passed": true, "checks": {}, "metrics": {"max_contact_m": 5.72e-05, "max_slip_m": 4.62e-05, "min_sole_height_m": -5.72e-05, "max_target_error_m": 6.93e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.1583304, "body_edge_p99_rel": 0.341353, "body_edge_max_abs_m": 0.0219564, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 4e-07}}
+CLIP equine.start_walk {"passed": true, "checks": {}, "metrics": {"max_contact_m": 5.12e-05, "max_slip_m": 3.73e-05, "min_sole_height_m": -5.12e-05, "max_target_error_m": 6.22e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.1558269, "body_edge_p99_rel": 0.3107682, "body_edge_max_abs_m": 0.0154129, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 5e-07}}
+CLIP equine.stop_walk {"passed": true, "checks": {}, "metrics": {"max_contact_m": 6.69e-05, "max_slip_m": 4.48e-05, "min_sole_height_m": -6.69e-05, "max_target_error_m": 6.75e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.1646589, "body_edge_p99_rel": 0.3010454, "body_edge_max_abs_m": 0.0199292, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 5e-07}}
+CLIP equine.start_run {"passed": true, "checks": {}, "metrics": {"max_contact_m": 5.71e-05, "max_slip_m": 3.68e-05, "min_sole_height_m": -5.71e-05, "max_target_error_m": 0.0001059, "max_bone_length_rel": 1.41e-05, "min_full_height_m": -0.3240855, "body_edge_p99_rel": 0.4042839, "body_edge_max_abs_m": 0.0260067, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 6e-07}}
+CLIP equine.stop_run {"passed": true, "checks": {}, "metrics": {"max_contact_m": 6.66e-05, "max_slip_m": 5.76e-05, "min_sole_height_m": -6.66e-05, "max_target_error_m": 9.14e-05, "max_bone_length_rel": 1.4e-05, "min_full_height_m": -0.3652668, "body_edge_p99_rel": 0.4193061, "body_edge_max_abs_m": 0.0277958, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 5e-07}}
+CLIP equine.react.hit_back {"passed": true, "checks": {}, "metrics": {"max_contact_m": 5.67e-05, "max_slip_m": 2.91e-05, "min_sole_height_m": -5.67e-05, "max_target_error_m": 5.7e-05, "max_bone_length_rel": 1.49e-05, "min_full_height_m": -0.206408, "body_edge_p99_rel": 0.1958243, "body_edge_max_abs_m": 0.0148062, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 1e-06}}
+CLIP equine.react.hit.m {"passed": true, "checks": {}, "metrics": {"max_contact_m": 4.69e-05, "max_slip_m": 4.69e-05, "min_sole_height_m": -4.69e-05, "max_target_error_m": 4.7e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.1238102, "body_edge_p99_rel": 0.192945, "body_edge_max_abs_m": 0.007802, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 4e-07}}
+CLIP equine.atk.basic_rear {"passed": true, "checks": {}, "metrics": {"max_contact_m": 8.64e-05, "max_slip_m": 7.34e-05, "min_sole_height_m": -0.0040282, "max_target_error_m": 8.7e-05, "max_bone_length_rel": 1.58e-05, "min_full_height_m": -0.1658553, "body_edge_p99_rel": 0.2989758, "body_edge_max_abs_m": 0.0178351, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 1.4e-06}}
+CLIP equine.react.stun_loop {"passed": true, "checks": {}, "metrics": {"max_contact_m": 6.13e-05, "max_slip_m": 3.1e-05, "min_sole_height_m": -6.13e-05, "max_target_error_m": 6.17e-05, "max_bone_length_rel": 1.36e-05, "min_full_height_m": -0.1553749, "body_edge_p99_rel": 0.2925262, "body_edge_max_abs_m": 0.0130855, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 5e-07}}
+CLIP equine.react.knockdown {"passed": true, "checks": {}, "metrics": {"max_contact_m": 0.0, "max_slip_m": 0.0, "min_sole_height_m": -0.000176, "max_target_error_m": 0.0001856, "max_bone_length_rel": 1.36e-05, "min_full_height_m": -0.8595058, "body_edge_p99_rel": 0.8278951, "body_edge_max_abs_m": 0.0437259, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 7e-07}}
+CLIP equine.react.getup {"passed": true, "checks": {}, "metrics": {"max_contact_m": 0.0, "max_slip_m": 0.0, "min_sole_height_m": -0.0001383, "max_target_error_m": 0.0001853, "max_bone_length_rel": 1.36e-05, "min_full_height_m": -0.9000812, "body_edge_p99_rel": 0.8456103, "body_edge_max_abs_m": 0.0437963, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 7e-07}}
+CLIP injured_idle_loop {"passed": true, "checks": {}, "metrics": {"max_contact_m": 5.52e-05, "max_slip_m": 4.02e-05, "min_sole_height_m": -5.52e-05, "max_target_error_m": 5.54e-05, "max_bone_length_rel": 1.34e-05, "min_full_height_m": -0.1275899, "body_edge_p99_rel": 0.2478282, "body_edge_max_abs_m": 0.0121028, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 2e-07}}
+CLIP recovery.rest_loop {"passed": true, "checks": {}, "metrics": {"max_contact_m": 0.0, "max_slip_m": 0.0, "min_sole_height_m": -8.32e-05, "max_target_error_m": 0.0001322, "max_bone_length_rel": 1.34e-05, "min_full_height_m": -0.8654729, "body_edge_p99_rel": 0.7372805, "body_edge_max_abs_m": 0.043989, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 4e-07}}
+CLIP recovery.rise {"passed": true, "checks": {}, "metrics": {"max_contact_m": 0.0, "max_slip_m": 0.0, "min_sole_height_m": -0.0001296, "max_target_error_m": 0.0001719, "max_bone_length_rel": 1.38e-05, "min_full_height_m": -0.9000812, "body_edge_p99_rel": 0.7311462, "body_edge_max_abs_m": 0.0437963, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 8e-07}}
+CLIP train.approach {"passed": true, "checks": {}, "metrics": {"max_contact_m": 4.67e-05, "max_slip_m": 3.05e-05, "min_sole_height_m": -4.67e-05, "max_target_error_m": 4.68e-05, "max_bone_length_rel": 1.34e-05, "min_full_height_m": -0.1096338, "body_edge_p99_rel": 0.235955, "body_edge_max_abs_m": 0.0107988, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 2e-07}}
+CLIP train.hold_loop {"passed": true, "checks": {}, "metrics": {"max_contact_m": 5.34e-05, "max_slip_m": 2.76e-05, "min_sole_height_m": -5.34e-05, "max_target_error_m": 5.36e-05, "max_bone_length_rel": 1.34e-05, "min_full_height_m": -0.0926174, "body_edge_p99_rel": 0.1832759, "body_edge_max_abs_m": 0.0096638, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 2e-07}}
+CLIP equine.sig_b.rally {"passed": false, "checks": {"secondary_step": false}, "metrics": {"max_contact_m": 8e-07, "max_slip_m": 1.1e-06, "min_sole_height_m": -3.88e-05, "max_target_error_m": 9.27e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.3545329, "body_edge_p99_rel": 0.3878531, "body_edge_max_abs_m": 0.0266121, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 4e-07}}
+CLIP equine.idle_fidget {"passed": true, "checks": {}, "metrics": {"max_contact_m": 4e-07, "max_slip_m": 0.0, "min_sole_height_m": -3.88e-05, "max_target_error_m": 6.54e-05, "max_bone_length_rel": 1.34e-05, "min_full_height_m": -0.0896337, "body_edge_p99_rel": 0.1872799, "body_edge_max_abs_m": 0.0129352, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 1e-07}}
+CLIP equine.cmd.acknowledge {"passed": true, "checks": {}, "metrics": {"max_contact_m": 3.88e-05, "max_slip_m": 0.0, "min_sole_height_m": -3.88e-05, "max_target_error_m": 3.9e-05, "max_bone_length_rel": 1.34e-05, "min_full_height_m": -0.0896337, "body_edge_p99_rel": 0.1786539, "body_edge_max_abs_m": 0.008602, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 1e-07}}
+CLIP equine.jump {"passed": true, "checks": {}, "metrics": {"max_contact_m": 0.0, "max_slip_m": 0.0, "min_sole_height_m": -3.89e-05, "max_target_error_m": 0.0001204, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.3658503, "body_edge_p99_rel": 0.420404, "body_edge_max_abs_m": 0.0288123, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 4e-07}}
+CLIP equine.fall_loop {"passed": true, "checks": {}, "metrics": {"max_contact_m": 0.0, "max_slip_m": 0.0, "min_sole_height_m": 0.549995, "max_target_error_m": 0.0001006, "max_bone_length_rel": 1.34e-05, "min_full_height_m": 0.2103663, "body_edge_p99_rel": 0.4275373, "body_edge_max_abs_m": 0.0276006, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 4e-07}}
+CLIP equine.land {"passed": true, "checks": {}, "metrics": {"max_contact_m": 0.0, "max_slip_m": 0.0, "min_sole_height_m": -6.78e-05, "max_target_error_m": 0.0001006, "max_bone_length_rel": 1.34e-05, "min_full_height_m": -0.2096337, "body_edge_p99_rel": 0.4150725, "body_edge_max_abs_m": 0.0276006, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 4e-07}}
+CLIP equine.react.brace {"passed": true, "checks": {}, "metrics": {"max_contact_m": 5.88e-05, "max_slip_m": 5.47e-05, "min_sole_height_m": -5.88e-05, "max_target_error_m": 5.9e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.1018041, "body_edge_p99_rel": 0.2555424, "body_edge_max_abs_m": 0.015838, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 4e-07}}
+CLIP equine.up70.charge_through {"passed": true, "checks": {}, "metrics": {"max_contact_m": 6.81e-05, "max_slip_m": 6.62e-05, "min_sole_height_m": -6.81e-05, "max_target_error_m": 0.0001212, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.4354959, "body_edge_p99_rel": 0.5454473, "body_edge_max_abs_m": 0.0282658, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 7e-07}}
+CLIP equine.passive.gathering_stride.overlay {"passed": true, "checks": {}, "metrics": {"max_contact_m": 3.88e-05, "max_slip_m": 0.0, "min_sole_height_m": -3.88e-05, "max_target_error_m": 3.9e-05, "max_bone_length_rel": 1.58e-05, "min_full_height_m": -0.386357, "body_edge_p99_rel": 0.1727074, "body_edge_max_abs_m": 0.0083056, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 1.4e-06}}
+CLIP equine.passive.flight_instinct.trigger {"passed": true, "checks": {}, "metrics": {"max_contact_m": 3.88e-05, "max_slip_m": 3.9e-05, "min_sole_height_m": -3.88e-05, "max_target_error_m": 3.9e-05, "max_bone_length_rel": 1.37e-05, "min_full_height_m": -0.1997547, "body_edge_p99_rel": 0.2727703, "body_edge_max_abs_m": 0.0129508, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 3e-07}}
+CLIP voidreign.up70.rift_collapse.flare {"passed": true, "checks": {}, "metrics": {"max_contact_m": 3.88e-05, "max_slip_m": 0.0, "min_sole_height_m": -3.88e-05, "max_target_error_m": 3.9e-05, "max_bone_length_rel": 1.34e-05, "min_full_height_m": -0.0896337, "body_edge_p99_rel": 0.2173221, "body_edge_max_abs_m": 0.0098595, "seam_gap_m": 0.0, "loop_error_m": 0.0, "max_bone_length_abs_m": 1e-07}}
+03:09.656  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.walk_loop-001.png'
+03:10.515  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.walk_loop-011.png'
+03:11.390  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.walk_loop-022.png'
+03:12.297  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.walk_loop-033.png'
+BAKE equine.walk_loop 2.795917266905306e-05
+03:13.187  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.trot_loop-001.png'
+03:14.062  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.trot_loop-007.png'
+03:14.937  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.trot_loop-014.png'
+03:15.797  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.trot_loop-021.png'
+BAKE equine.trot_loop 2.724242656747499e-05
+03:16.719  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.canter_loop-001.png'
+03:17.594  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.canter_loop-006.png'
+03:18.453  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.canter_loop-012.png'
+03:19.312  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.canter_loop-018.png'
+BAKE equine.canter_loop 2.678097889781231e-05
+03:20.187  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.gallop_loop-001.png'
+03:21.062  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.gallop_loop-004.png'
+03:21.906  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.gallop_loop-009.png'
+03:22.750  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.gallop_loop-014.png'
+BAKE equine.gallop_loop 2.7303617653990534e-05
+03:23.656  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.combat_move_loop.m-001.png'
+03:24.515  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.combat_move_loop.m-006.png'
+03:25.390  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.combat_move_loop.m-012.png'
+03:26.265  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.combat_move_loop.m-018.png'
+BAKE equine.combat_move_loop.m 2.678097889781231e-05
+03:27.140  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.rift_charge_run-001.png'
+03:28.000  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.rift_charge_run-004.png'
+03:28.828  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.rift_charge_run-009.png'
+03:29.703  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.rift_charge_run-014.png'
+BAKE voidreign.sig_a.rift_charge_run 2.7303617653990534e-05
+03:30.640  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.idle_loop-001.png'
+03:31.531  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.idle_loop-040.png'
+03:32.359  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.idle_loop-080.png'
+03:33.219  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.idle_loop-120.png'
+BAKE equine.idle_loop 2.7776313200045102e-05
+03:34.125  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.idle_loop.m-001.png'
+03:35.000  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.idle_loop.m-040.png'
+03:35.859  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.idle_loop.m-080.png'
+03:36.703  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.idle_loop.m-120.png'
+BAKE equine.idle_loop.m 2.7776313200045102e-05
+03:37.625  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.combat_idle_loop-001.png'
+03:38.453  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.combat_idle_loop-020.png'
+03:39.312  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.combat_idle_loop-040.png'
+03:40.172  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.combat_idle_loop-060.png'
+BAKE equine.combat_idle_loop 2.7540733485831172e-05
+03:41.031  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.combat_idle_loop.m-001.png'
+03:41.890  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.combat_idle_loop.m-020.png'
+03:42.734  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.combat_idle_loop.m-040.png'
+03:43.578  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.combat_idle_loop.m-060.png'
+BAKE equine.combat_idle_loop.m 2.7661629513851947e-05
+03:44.453  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.atk.basic-001.png'
+03:45.297  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.atk.basic-012.png'
+03:46.172  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.atk.basic-024.png'
+03:47.015  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.atk.basic-036.png'
+BAKE voidreign.atk.basic 2.7420310869180778e-05
+03:47.875  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.hit_front-001.png'
+03:48.734  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.hit_front-006.png'
+03:49.594  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.hit_front-012.png'
+03:50.437  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.hit_front-018.png'
+BAKE equine.react.hit_front 2.781200576405578e-05
+03:51.312  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.defeat-001.png'
+03:52.125  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.defeat-020.png'
+03:52.969  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.defeat-040.png'
+03:53.750  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.defeat-060.png'
+BAKE equine.defeat 2.6548818900952993e-05
+03:54.594  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.defeat_hold_loop-001.png'
+03:55.406  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.defeat_hold_loop-020.png'
+03:56.219  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.defeat_hold_loop-040.png'
+03:57.031  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.defeat_hold_loop-060.png'
+BAKE equine.defeat_hold_loop 2.1155887256017094e-05
+03:57.922  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.wild.exhausted_loop-001.png'
+03:58.750  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.wild.exhausted_loop-030.png'
+03:59.562  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.wild.exhausted_loop-060.png'
+04:00.469  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.wild.exhausted_loop-090.png'
+BAKE voidreign.wild.exhausted_loop 2.782167231724852e-05
+04:01.359  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\capture.bind_loop-001.png'
+04:02.219  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\capture.bind_loop-020.png'
+04:03.078  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\capture.bind_loop-040.png'
+04:03.890  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\capture.bind_loop-060.png'
+BAKE capture.bind_loop 2.7955297802786814e-05
+04:04.797  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\capture.secured-001.png'
+04:05.640  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\capture.secured-015.png'
+04:06.531  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\capture.secured-030.png'
+04:07.359  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\capture.secured-045.png'
+BAKE capture.secured 2.7478987321747647e-05
+04:08.234  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\capture.break-001.png'
+04:09.094  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\capture.break-013.png'
+04:09.937  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\capture.break-026.png'
+04:10.781  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\capture.break-040.png'
+BAKE capture.break 2.7597289824451565e-05
+04:11.656  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\train.saddle-001.png'
+04:12.515  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\train.saddle-020.png'
+04:13.328  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\train.saddle-040.png'
+04:14.187  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\train.saddle-060.png'
+BAKE train.saddle 2.765768051243498e-05
+04:15.062  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\deploy.arrive-001.png'
+04:15.937  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\deploy.arrive-015.png'
+04:16.781  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\deploy.arrive-030.png'
+04:17.640  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\deploy.arrive-045.png'
+BAKE deploy.arrive 2.78382159127297e-05
+04:18.547  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\store.depart-001.png'
+04:19.390  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\store.depart-015.png'
+04:20.250  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\store.depart-030.png'
+04:21.094  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\store.depart-045.png'
+BAKE store.depart 2.765719674507168e-05
+04:21.922  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.rear_throw-001.png'
+04:22.750  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.rear_throw-016.png'
+04:23.594  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.rear_throw-033.png'
+04:24.453  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.rear_throw-050.png'
+BAKE voidreign.rear_throw 2.7538106129767436e-05
+04:25.344  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.rift_windup-001.png'
+04:26.172  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.rift_windup-010.png'
+04:27.000  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.rift_windup-020.png'
+04:27.844  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.rift_windup-030.png'
+BAKE voidreign.sig_a.rift_windup 2.8015056778721714e-05
+04:28.734  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.rift_impact-001.png'
+04:29.609  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.rift_impact-008.png'
+04:30.469  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.rift_impact-016.png'
+04:31.359  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.rift_impact-024.png'
+BAKE voidreign.sig_a.rift_impact 2.759815705332413e-05
+04:32.265  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.recall_enter-001.png'
+04:33.109  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.recall_enter-008.png'
+04:33.969  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.recall_enter-016.png'
+04:34.765  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.recall_enter-024.png'
+BAKE voidreign.sig_a.recall_enter 2.6406153527828608e-05
+04:35.640  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.recall_exit-001.png'
+04:36.515  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.recall_exit-010.png'
+04:37.390  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.recall_exit-020.png'
+04:38.250  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.sig_a.recall_exit-030.png'
+BAKE voidreign.sig_a.recall_exit 2.753824346692949e-05
+04:39.140  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_l_walk-001.png'
+04:40.000  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_l_walk-011.png'
+04:40.890  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_l_walk-022.png'
+04:41.765  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_l_walk-033.png'
+BAKE equine.turn_l_walk 2.7718329646631472e-05
+04:42.656  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_r_walk-001.png'
+04:43.531  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_r_walk-011.png'
+04:44.390  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_r_walk-022.png'
+04:45.281  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_r_walk-033.png'
+BAKE equine.turn_r_walk 2.801496413305309e-05
+04:46.172  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_l_run-001.png'
+04:47.031  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_l_run-006.png'
+04:47.922  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_l_run-012.png'
+04:48.781  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_l_run-018.png'
+BAKE equine.turn_l_run 2.7365493769588943e-05
+04:49.687  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_r_run-001.png'
+04:50.547  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_r_run-006.png'
+04:51.390  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_r_run-012.png'
+04:52.281  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_r_run-018.png'
+BAKE equine.turn_r_run 2.6373989518351067e-05
+04:53.156  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_l_inplace-001.png'
+04:54.000  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_l_inplace-022.png'
+04:54.875  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_l_inplace-044.png'
+04:55.719  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_l_inplace-066.png'
+BAKE equine.turn_l_inplace 2.789763183181901e-05
+04:56.609  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_r_inplace-001.png'
+04:57.469  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_r_inplace-022.png'
+04:58.328  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_r_inplace-044.png'
+04:59.219  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_r_inplace-066.png'
+BAKE equine.turn_r_inplace 2.789578817637355e-05
+05:00.094  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_l180_inplace-001.png'
+05:00.969  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_l180_inplace-033.png'
+05:01.828  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_l180_inplace-066.png'
+05:02.672  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_l180_inplace-099.png'
+BAKE equine.turn_l180_inplace 2.8139198787725568e-05
+05:03.562  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_r180_inplace-001.png'
+05:04.437  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_r180_inplace-033.png'
+05:05.265  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_r180_inplace-066.png'
+05:06.140  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.turn_r180_inplace-099.png'
+BAKE equine.turn_r180_inplace 2.8077061445017805e-05
+05:07.031  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.start_walk-001.png'
+05:07.906  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.start_walk-022.png'
+05:08.781  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.start_walk-044.png'
+05:09.656  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.start_walk-066.png'
+BAKE equine.start_walk 2.7478987321747647e-05
+05:10.594  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.stop_walk-001.png'
+05:11.469  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.stop_walk-022.png'
+05:12.344  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.stop_walk-044.png'
+05:13.187  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.stop_walk-066.png'
+BAKE equine.stop_walk 2.801550683380486e-05
+05:14.062  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.start_run-001.png'
+05:14.922  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.start_run-012.png'
+05:15.781  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.start_run-024.png'
+05:16.640  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.start_run-036.png'
+BAKE equine.start_run 2.7478987321747647e-05
+05:17.547  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.stop_run-001.png'
+05:18.406  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.stop_run-012.png'
+05:19.281  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.stop_run-024.png'
+05:20.140  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.stop_run-036.png'
+BAKE equine.stop_run 2.7241830772983033e-05
+05:21.031  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.hit_back-001.png'
+05:21.875  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.hit_back-006.png'
+05:22.703  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.hit_back-012.png'
+05:23.547  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.hit_back-018.png'
+BAKE equine.react.hit_back 2.938682122935536e-05
+05:24.453  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.hit.m-001.png'
+05:25.312  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.hit.m-005.png'
+05:26.172  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.hit.m-010.png'
+05:27.015  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.hit.m-016.png'
+BAKE equine.react.hit.m 2.7836070727062494e-05
+05:27.890  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.atk.basic_rear-001.png'
+05:28.750  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.atk.basic_rear-010.png'
+05:29.594  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.atk.basic_rear-021.png'
+05:30.469  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.atk.basic_rear-032.png'
+BAKE equine.atk.basic_rear 3.199128365309903e-05
+05:31.359  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.stun_loop-001.png'
+05:32.203  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.stun_loop-020.png'
+05:33.078  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.stun_loop-040.png'
+05:33.922  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.stun_loop-060.png'
+BAKE equine.react.stun_loop 2.7895660366812366e-05
+05:34.765  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.knockdown-001.png'
+05:35.625  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.knockdown-013.png'
+05:36.469  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.knockdown-026.png'
+05:37.297  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.knockdown-040.png'
+BAKE equine.react.knockdown 2.4718603777936037e-05
+05:38.140  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.getup-001.png'
+05:38.969  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.getup-015.png'
+05:39.828  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.getup-030.png'
+05:40.703  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.getup-045.png'
+BAKE equine.react.getup 2.7419133757367693e-05
+05:41.594  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\injured_idle_loop-001.png'
+05:42.469  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\injured_idle_loop-030.png'
+05:43.312  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\injured_idle_loop-060.png'
+05:44.187  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\injured_idle_loop-090.png'
+BAKE injured_idle_loop 2.7717275857130564e-05
+05:45.000  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\recovery.rest_loop-001.png'
+05:45.812  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\recovery.rest_loop-030.png'
+05:46.656  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\recovery.rest_loop-060.png'
+05:47.469  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\recovery.rest_loop-090.png'
+BAKE recovery.rest_loop 2.1211916926637276e-05
+05:48.312  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\recovery.rise-001.png'
+05:49.156  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\recovery.rise-020.png'
+05:50.000  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\recovery.rise-040.png'
+05:50.875  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\recovery.rise-060.png'
+BAKE recovery.rise 2.7656950507359738e-05
+05:51.750  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\train.approach-001.png'
+05:52.609  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\train.approach-013.png'
+05:53.469  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\train.approach-026.png'
+05:54.328  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\train.approach-040.png'
+BAKE train.approach 2.7776004804687775e-05
+05:55.187  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\train.hold_loop-001.png'
+05:56.031  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\train.hold_loop-020.png'
+05:56.906  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\train.hold_loop-040.png'
+05:57.797  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\train.hold_loop-060.png'
+BAKE train.hold_loop 2.7776315148234392e-05
+05:58.687  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.sig_b.rally-001.png'
+05:59.515  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.sig_b.rally-012.png'
+06:00.406  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.sig_b.rally-024.png'
+06:01.250  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.sig_b.rally-036.png'
+BAKE equine.sig_b.rally 2.79549673806964e-05
+06:02.172  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.idle_fidget-001.png'
+06:03.031  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.idle_fidget-020.png'
+06:03.875  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.idle_fidget-040.png'
+06:04.765  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.idle_fidget-060.png'
+BAKE equine.idle_fidget 2.7478987321747647e-05
+06:05.625  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.cmd.acknowledge-001.png'
+06:06.500  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.cmd.acknowledge-008.png'
+06:07.375  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.cmd.acknowledge-016.png'
+06:08.234  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.cmd.acknowledge-024.png'
+BAKE equine.cmd.acknowledge 2.7478987321747647e-05
+06:09.125  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.jump-001.png'
+06:09.969  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.jump-010.png'
+06:10.844  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.jump-020.png'
+06:11.703  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.jump-030.png'
+BAKE equine.jump 2.771761741343128e-05
+06:12.578  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.fall_loop-001.png'
+06:13.437  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.fall_loop-006.png'
+06:14.297  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.fall_loop-013.png'
+06:15.156  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.fall_loop-020.png'
+BAKE equine.fall_loop 2.759777230402692e-05
+06:16.078  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.land-001.png'
+06:16.922  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.land-008.png'
+06:17.781  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.land-016.png'
+06:18.656  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.land-024.png'
+BAKE equine.land 2.7657102294274806e-05
+06:19.531  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.brace-001.png'
+06:20.422  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.brace-004.png'
+06:21.312  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.brace-009.png'
+06:22.172  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.react.brace-014.png'
+BAKE equine.react.brace 2.7597747911003468e-05
+06:23.078  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.up70.charge_through-001.png'
+06:23.906  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.up70.charge_through-009.png'
+06:24.765  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.up70.charge_through-018.png'
+06:25.672  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.up70.charge_through-028.png'
+BAKE equine.up70.charge_through 2.7356639633277734e-05
+06:26.531  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.passive.gathering_stride.overlay-001.png'
+06:27.422  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.passive.gathering_stride.overlay-010.png'
+06:28.281  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.passive.gathering_stride.overlay-020.png'
+06:29.125  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.passive.gathering_stride.overlay-030.png'
+BAKE equine.passive.gathering_stride.overlay 2.8801580752768942e-05
+06:30.000  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.passive.flight_instinct.trigger-001.png'
+06:30.875  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.passive.flight_instinct.trigger-008.png'
+06:31.750  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.passive.flight_instinct.trigger-016.png'
+06:32.625  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\equine.passive.flight_instinct.trigger-024.png'
+BAKE equine.passive.flight_instinct.trigger 2.7657650488451843e-05
+06:33.500  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.up70.rift_collapse.flare-001.png'
+06:34.375  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.up70.rift_collapse.flare-008.png'
+06:35.234  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.up70.rift_collapse.flare-016.png'
+06:36.094  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\Voidreign\QualityCompletion-20261018\ClipLibrary-v004\voidreign.up70.rift_collapse.flare-024.png'
+BAKE voidreign.up70.rift_collapse.flare 2.7478987321747647e-05
+Info: Saved as "Voidreign-ClipLibrary.blend"
+DONE 58 / 60
+Blender 5.1.1 (hash b70da489d7f4 built 2026-04-14 01:37:22)
+
+Blender quit

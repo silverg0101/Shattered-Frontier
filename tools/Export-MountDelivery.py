@@ -44,6 +44,51 @@ for pb in rig.pose.bones:
 for m in list(obj.modifiers):
     if not (m.type == 'ARMATURE' and m.object == rig): obj.modifiers.remove(m)
 assert len(obj.modifiers) == 1
+rebind = {}
+if cfg.get('rebind'):
+    # Skin repair. Loose pieces with no bone weight (the source parked them on a non-bone group, so they hang still
+    # while the horse moves) follow the nearest body skin rigidly; other unweighted vertices copy their nearest
+    # weighted body neighbour. (Pruning far-off bone weights per vertex was tried: it split strands and stretched more.)
+    from mathutils.kdtree import KDTree
+    me = obj.data; nv = len(me.vertices)
+    co = np.empty(nv * 3); me.vertices.foreach_get('co', co); co = co.reshape(-1, 3)
+    # Pieces by connectivity with coincident vertices welded: the source splits its skin at every UV seam.
+    _, wid = np.unique(np.round(co / 1e-5).astype(np.int64), axis=0, return_inverse=True); wid = wid.ravel()
+    par = np.arange(wid.max() + 1)
+    def find(i):
+        while par[i] != i: par[i] = par[par[i]]; i = par[i]
+        return i
+    ev = np.empty(len(me.edges) * 2, dtype=np.int64); me.edges.foreach_get('vertices', ev)
+    for x, y in wid[ev].reshape(-1, 2):
+        rx, ry = find(x), find(y)
+        if rx != ry: par[rx] = ry
+    isl = np.array([find(i) for i in range(len(par))])[wid]; body = np.bincount(isl).argmax()
+    names = [b.name for b in rig.data.bones]; bi = {n: i for i, n in enumerate(names)}
+    gidx = {g.index: bi[g.name] for g in obj.vertex_groups if g.name in bi}
+    W = np.zeros((nv, len(names)))
+    for v in me.vertices:
+        for g in v.groups:
+            if g.group in gidx: W[v.index, gidx[g.group]] = g.weight
+    before = W.copy(); empty = W.max(1) == 0
+    good = np.nonzero((isl == body) & ~empty)[0]; kd = KDTree(len(good))
+    for k, i in enumerate(good): kd.insert(co[i], k)
+    kd.balance()
+    loose = np.unique(isl[empty & (isl != body)])
+    for piece in loose:
+        vs = np.nonzero(isl == piece)[0]; hit = min((kd.find(co[i]) for i in vs), key=lambda h: h[2])
+        W[vs] = W[good[hit[1]]]
+    rest = np.nonzero((W.max(1) == 0))[0]
+    for i in rest: W[i] = W[good[kd.find(co[i])[1]]]
+    changed = np.nonzero(np.abs(W - before).max(1) > 0)[0]
+    W[changed] /= W[changed].sum(1, keepdims=True)
+    groups = {n: obj.vertex_groups.get(n) or obj.vertex_groups.new(name=n) for n in names}
+    ids = [int(i) for i in changed]
+    for vg in groups.values(): vg.remove(ids)
+    for i in changed:
+        for j in np.nonzero(W[i])[0]: groups[names[j]].add([int(i)], float(W[i, j]), 'REPLACE')
+    rebind = dict(changed_verts=len(ids), rigid_pieces=len(loose), filled_verts=len(rest),
+                  pieces=int(len(np.unique(isl))), body_verts=int((isl == body).sum()))
+    print('REBIND', json.dumps(rebind), flush=True)
 source_triangles = len(obj.data.polygons)
 if cfg.get('target_triangles') and source_triangles > cfg['target_triangles']:
     # Game LOD0 budget: collapse decimation (interpolates UVs and vertex weights), applied ahead of the armature.
@@ -57,6 +102,27 @@ if cfg.get('target_triangles') and source_triangles > cfg['target_triangles']:
     for f in bm.faces:  # duplicate triangles (same three vertices) are merged by FBX readers
         k = frozenset(v.index for v in f.verts); dupes.append(f) if k in seen else seen.add(k)
     bmesh.ops.delete(bm, geom=dupes, context='FACES_ONLY'); bm.to_mesh(obj.data); bm.free(); obj.data.update()
+if cfg.get('smooth_weights_repeat'):
+    # Strands whose neighbouring vertices follow different bones stretch under motion: smooth the bone weights
+    # (2 passes cut >3x-stretched edges about 4x; more passes made it worse), then give vertices that coincide at the
+    # source's UV-seam splits their mean weights, or the seams crack open (measured up to 127 mm without this).
+    vl.objects.active = obj; obj.select_set(True); bpy.ops.object.mode_set(mode='WEIGHT_PAINT')
+    bpy.ops.object.vertex_group_smooth(group_select_mode='BONE_DEFORM', factor=0.5, repeat=cfg['smooth_weights_repeat'])
+    bpy.ops.object.vertex_group_normalize_all(group_select_mode='BONE_DEFORM', lock_active=False)
+    bpy.ops.object.mode_set(mode='OBJECT')
+    me = obj.data; nv = len(me.vertices); co = np.empty(nv * 3); me.vertices.foreach_get('co', co)
+    _, inv, cnt = np.unique(np.round(co.reshape(-1, 3) / 1e-6).astype(np.int64), axis=0, return_inverse=True, return_counts=True)
+    inv = inv.ravel(); tw = np.nonzero(cnt[inv] > 1)[0]
+    vgs = [g for g in obj.vertex_groups if g.name in rig.data.bones]; gi = {g.index: k for k, g in enumerate(vgs)}
+    W = np.zeros((nv, len(vgs)))
+    for v in me.vertices:
+        for g in v.groups:
+            if g.group in gi: W[v.index, gi[g.group]] = g.weight
+    M = np.zeros((inv.max() + 1, len(vgs))); np.add.at(M, inv, W); M /= cnt[:, None]
+    for g in vgs: g.remove([int(i) for i in tw])
+    for i in tw:
+        for k in np.nonzero(M[inv[i]] > 1e-4)[0]: vgs[k].add([int(i)], float(M[inv[i], k]), 'REPLACE')
+    rebind['smoothed_repeat'] = cfg['smooth_weights_repeat']; rebind['seam_synced_verts'] = len(tw)
 bone_names = {b.name for b in rig.data.bones}
 removed_groups = [vg.name for vg in obj.vertex_groups if vg.name not in bone_names]
 for n in removed_groups: obj.vertex_groups.remove(obj.vertex_groups[n])
@@ -148,7 +214,7 @@ checks = dict(counts=got['polygons'] == counts['polygons'] and got['bones'] == c
 report = dict(schema_version=1, status='delivery-export-verified' if all(checks.values()) else 'delivery-export-needs-review', cpu_only=True,
               input_sha256=cfg['input_sha256'], tool_sha256=sha(__file__), profile_sha256=sha(profile), fbx_sha256=sha(fbx), source_blend_sha256=sha(src_blend),
               source_counts=counts, source_triangles_before_budget=source_triangles, reimport_counts=got, takes=takes, excluded_failed_clips=[c['id'] for c in lib['clips'] if c['id'] not in takes],
-              take_names_in_fbx=take_of, reimport_mid_frame_bone_error_m=err, checks=checks, removed_vertex_groups=len(removed_groups),
+              take_names_in_fbx=take_of, reimport_mid_frame_bone_error_m=err, checks=checks, removed_vertex_groups=len(removed_groups), rebind=rebind,
               dielectric_override_materials=overridden, root_bone=cfg['root_bone'], forward_axis='Blender -Y (exporter default axes)',
               limitations=['Reimport is Blender FBX round trip, not Unreal import acceptance.', 'Single high-poly LOD0; engine LODs not authored.',
                            'Dielectric override replaces an invalid uniform metallic map; no per-class PBR masks.'])

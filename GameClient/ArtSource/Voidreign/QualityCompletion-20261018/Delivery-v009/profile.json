@@ -1,0 +1,36 @@
+{
+ "schema_version": 1,
+ "asset_name": "SK_Voidreign",
+ "library": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ClipLibrary-v004/Voidreign-ClipLibrary.blend",
+ "clips_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ClipLibrary-v004/clips.json",
+ "object": "geometry_0",
+ "root_bone": "root",
+ "root_bone_length_m": 0.3,
+ "dielectric_override": 0.0,
+ "reimport_tolerance_m": 0.001,
+ "permissions": "User-authorized production delivery 2026-10-19; materials attempt 3/3 = dielectric override of invalid uniform metallic map.",
+ "input_sha256": {
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ClipLibrary-v004/Voidreign-ClipLibrary.blend": "19a45b2832d85ead0ee527d39e956d699cf215522bf954f8bedd96ca671f385b",
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ClipLibrary-v004/clips.json": "0b59305bee0b3c8455ed06dd0b15ddba018ce97f0ddf99190ace534650ed26b4"
+ },
+ "extra_bones": [
+  {
+   "name": "RiderSeat",
+   "parent": "PRI.body.spine",
+   "head_world_m": [
+    0.0,
+    0.07500000298023224,
+    1.663394808769226
+   ],
+   "length_m": 0.15
+  }
+ ],
+ "target_triangles": 100000,
+ "include_failed": [
+  "voidreign.sig_a.rift_windup",
+  "equine.sig_b.rally"
+ ],
+ "include_failed_reason": "secondary_step 25.6-26.1 deg vs 25 deg limit during fast rears whose keyed head motion is 7-10 deg/frame; accepted hair whip (v003 had 157 deg flips).",
+ "rebind": true,
+ "smooth_weights_repeat": 2
+}

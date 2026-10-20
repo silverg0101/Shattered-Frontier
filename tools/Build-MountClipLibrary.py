@@ -145,8 +145,8 @@ def simulate_chains(clip, n, baked, rigw):
         m = Matrix(rigw[fr])
         for _ in range(k): m = off @ m
         return m
-    inertia = sec.get('world_inertia', 1.)
-    stats = dict(max_tip_lag_m=0., min_joint_height_m=1e9, loop_seam_m=0.)
+    inertia = sec.get('world_inertia', 1.); max_bend = math.radians(sec.get('max_bend_deg', 180.))
+    stats = dict(max_tip_lag_m=0., min_joint_height_m=1e9, loop_seam_m=0., max_step_deg=0.)
     for chain in sec['chains']:
         bones = [rig.pose.bones[b] for b in chain]; L = [b.bone.length for b in bones]
         def targets(fr, k):
@@ -166,7 +166,9 @@ def simulate_chains(clip, n, baked, rigw):
                     v = (x[j] - xp[j]) * (1 - sec['damping']); xp[j] = x[j].copy()
                     x[j] = x[j] + v + Vector((0, 0, sec['gravity_mps2'])) * dt * dt + (tg[j] - x[j]) * sec['stiffness']
                 for j in range(1, len(x)):
-                    x[j] = x[j - 1] + (x[j] - x[j - 1]).normalized() * L[j - 1]
+                    d = (x[j] - x[j - 1]).normalized(); t = (tg[j] - tg[j - 1]).normalized(); dev = d.angle(t, 0.)
+                    if dev > max_bend: d = t.slerp(d, max_bend / dev, t)  # bounded swing off the keyed pose: no whips or flips
+                    x[j] = x[j - 1] + d * L[j - 1]
                     if x[j].z < sec['ground_z_m']:
                         x[j].z = sec['ground_z_m']; x[j] = x[j - 1] + (x[j] - x[j - 1]).normalized() * L[j - 1]
             if step >= rec_from:
@@ -181,13 +183,23 @@ def simulate_chains(clip, n, baked, rigw):
         if clip['loop']:
             wi, ri = world(1, passes[-1]).inverted(), recw[1].inverted()
             seam = [wi @ a - ri @ b for a, b in zip(x, rec[1])]
+        prev = None
         for fr in order:
             Winv = recw[fr].inverted(); par = baked[fr][bones[0].parent.name][0]; pts = [Winv @ v for v in rec[fr]]
             if seam: pts = [v - s * ((fr - 1) / n) for v, s in zip(pts, seam)]
+            dirs = [(pts[i + 1] - pts[i]).normalized() for i in range(len(bones))]
+            keyed = {k: baked[fr][k][0] for k in [bones[0].parent.name] + [b.name for b in bones]}
+            kd = [keyed[b.name].col[1].xyz.normalized() for b in bones]
+            if prev:
+                stats['max_step_deg'] = max(stats['max_step_deg'], max(math.degrees(a.angle(b, 0.)) for a, b in zip(prev[0], dirs)))
+                stats['max_keyed_step_deg'] = max(stats.get('max_keyed_step_deg', 0.), max(math.degrees(a.angle(b, 0.)) for a, b in zip(prev[1], kd)))
+            prev = (dirs, kd)
             for i, b in enumerate(bones):
-                restm = b.parent.bone.matrix_local.inverted() @ b.bone.matrix_local; Mr = par @ restm
-                rot = Mr.to_quaternion(); q = (rot @ Vector((0, 1, 0))).rotation_difference(pts[i + 1] - pts[i])
+                # Swing from the keyed bone direction (close to the simulated one), not rest: rest can face away and flip the twist.
+                Mr = par @ (keyed[b.parent.name].inverted() @ keyed[b.name])
+                rot = Mr.to_quaternion(); q = (rot @ Vector((0, 1, 0))).rotation_difference(dirs[i])
                 Mn = Matrix.Translation(Mr.translation) @ (q @ rot).to_matrix().to_4x4()
+                restm = b.parent.bone.matrix_local.inverted() @ b.bone.matrix_local
                 loc, r, _ = (restm.inverted() @ par.inverted() @ Mn).decompose()
                 baked[fr][b.name] = (Mn, loc, r); par = Mn
     return {k: round(v, 6) for k, v in stats.items()}
@@ -332,6 +344,10 @@ for clip in cfg['clips']:
         baked[fr] = row
         rigw[fr] = rig.matrix_world.copy()
     sim_stats = simulate_chains(clip, n, baked, rigw)
+    checks['secondary_step'] = sim_stats.get('max_step_deg', 0.) <= lim.get('secondary_step_deg', 180.)
+    for fr in range(2, n + 1):  # keep each bone's quaternion in one hemisphere so keys never interpolate through a flip
+        for b, (m, loc, r) in baked[fr].items():
+            if r.dot(baked[fr - 1][b][2]) < 0: baked[fr][b] = (m, loc, -r)
     action = bpy.data.actions.new(clip['id']); action.use_fake_user = True
     slot = action.slots.new(id_type='OBJECT', name=rig.name); strip = action.layers.new('Baked').strips.new(type='KEYFRAME')
     bag = strip.channelbag(slot, ensure=True)
