@@ -2,6 +2,8 @@
 
 Status: proposed 2026-10-19; Silverbrook is the first user ([zone plan](greenlands-silverbrook-zone-plan.md), "Pipeline work"). This is the reusable method for turning a settlement design board into a playable area, then dressing whole regions automatically and fine-tuning them by hand. Every step must be repeatable from committed scripts and assets.
 
+**How to run it:** the [settlement build runbook](settlement-build-runbook.md) gives the commands, pass checks, troubleshooting and commit checklist, using Silverbrook as the worked example.
+
 ## Inputs and authority
 
 | Input | Owns |
