@@ -80,8 +80,8 @@ def building_list(L):
     buildings += [('Wall section', f"{W['segment_length']} × {W['thickness']} × {W['height']}", 'Defence', 'Modular', 'Silverbrook definition §10; layout `wall`'),
                   ('Gatehouse', f"{W['gate_gap']} m opening", 'Defence', 'Modular', 'Silverbrook definition §10; layout `gates`'),
                   ('Wall tower', ' × '.join(str(v) for v in W['tower']), 'Defence', 'Modular', 'Silverbrook definition §10; layout `wall.tower`')]
-    # Owner-supplied street furniture: the concepts give a 4 m post with a 1 m lantern arm.
-    buildings += [('Street lamp', '1.5 × 1.5 × 4.2', 'Street lighting', 'Prop', 'Owner concept images `Street Lamp-1..4.png` (4 m post, 1 m arm)')]
+    # Owner-supplied street furniture: the concepts are drawn 4 to 5 m tall and up to 1.5 m wide.
+    buildings += [('Street lamp', '1.5 × 1.5 × 5', 'Street lighting', 'Prop', 'Owner concept images `Street Lamp-1..4.png` (4 m post, 1 m arm)')]
     return buildings
 
 
