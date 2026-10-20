@@ -134,6 +134,53 @@ Residents notice players and react. Each reaction is driven by state the server 
 - **Roaming guards:** `tune.townsfolk.guards_per_100_houses` (default 3) guards walk patrol loops generated from the town's lanes. They cover the market and gates by day and the inn and main streets at night. Gate guards stand fixed posts. Guards are always server NPCs.
 - **Killed residents** are removed from ambient simulation and come back at their home at the next dawn (`tune.townsfolk.respawn_at = dawn`). They drop no loot beyond what Itemization assigns the `townsfolk` profile (default none).
 
+### 5.6 Gossip
+
+Residents talk about what players have done in and around their town.
+
+- **Deeds.** The zone-server records a **deed** when something notable happens nearby. The sources are systems that already emit events:
+  - A quest completed in the town or for its people (Quest).
+  - A dynamic event won or lost, such as a raid on the mill (World Director).
+  - A boss or notable monster killed in the region.
+  - A crime witnessed (§5.5).
+  - A building finished (Construction).
+
+  Each deed carries the kind, the place, the player character as subject, a tone (`heroic`, `criminal`, `odd`) and a heat value.
+- **Rumours** are server-owned town state (§5.1). Each town keeps its hottest `tune.townsfolk.rumour_max` (default 12), each lasting `tune.townsfolk.rumour_ttl_game_days` (default 3 game days, three real hours). They replicate as compact records (`rumour_id`, kind, place, subject character ID, tone, created time), which is a few hundred bytes per town.
+- **Spread.** A rumour starts with residents of the district where it happened. Each game hour it reaches more residents through shared workplaces, markets and the inn: a deterministic share per link, `tune.townsfolk.rumour_spread_per_hour` (default 0.25). Every client therefore agrees on who has heard it.
+- **Saying it.**
+  - Residents who know a rumour use it in neighbour chats (§6, chat Smart Objects) and in the barks they give when a player passes or talks to them.
+  - When the **subject** of a rumour comes near, residents who know it react by tone: nods and thanks for `heroic`, wary looks and stepping away for `criminal`, staring for `odd`.
+  - The annoyed bark (§5.4) becomes a rumour line for that player, such as "You're the one who cleared the old mill. ...Still busy, though."
+- **No names in voice.** Spoken lines never say a player's name; they say what the player did. Subtitles may add the character name. Lines are built from templates with slots (place, monster, building), filled from voiced slot recordings (§5.7).
+- **Reputation.** Rumours are flavour. Faction standing and any lasting reputation belong to the Factions part, which may read deeds but isn't changed by gossip itself.
+- **Theft and pickpocketing** come later, with a new skill feature. The crime rules (§5.5) will treat them like attacks once that feature defines them.
+
+### 5.7 Voices (proposed; owner decision pending)
+
+What Unreal Engine 5.8 offers, checked against the installed engine (2026-10-20):
+- The built-in **Text To Speech** plugin is an experimental accessibility feature (screen announcements). Its voice is robotic and it isn't built for server targets, so it can't voice characters.
+- **MetaHuman Audio Driven Animation** (5.6 and later) turns a recorded line into facial animation, with a mood setting (happy, sad, fear, anger and others).
+- **Streaming Audio Driven Animation** is a beta plugin in 5.8 that does the same on the device at runtime.
+
+So the engine handles lip sync well, but the voices themselves have to come from a separate text-to-speech model.
+
+Proposed pipeline:
+1. **Pre-generate every line at build time.** Never generate voices at runtime, neither on the server nor through a cloud service. Runtime generation adds an outage dependency, latency, per-player cost and abuse risk.
+2. **Line catalog as data.** Barks, reactions and gossip templates live in a typed line catalog with tone and emotion tags. Gossip templates have slots (`{place}`, `{monster}`, `{building}`) and never a player name. Each slot value is rendered once per voice, and the game joins the template and slot clips. If the joins sound wrong, render whole lines for the combinations used.
+3. **Models with licences that allow shipping:**
+
+   | Model | Use |
+   | --- | --- |
+   | Kokoro-82M (Apache-2.0 code and weights) | The bulk of barks and gossip; fast on CPU |
+   | Chatterbox (MIT) | Fear, anger and quest lines, which need emotion control; GPU |
+   | F5-TTS, Coqui XTTS | Ruled out: weights are non-commercial |
+   | Piper | Ruled out for the shipped pipeline: GPL-3.0, with per-voice licences |
+
+4. **Voice profiles.** 12–20 synthetic voice archetypes (age, gender, class, accent), each assigned to residents by census seed. Small pitch and formant variation per resident. No real person's voice is cloned, which keeps the project clear of the SAG-AFTRA 2025 Interactive Media Agreement's digital-replica rules. A legal review is still due before release.
+5. **Lip sync.** Bake face curves per clip offline with MetaHuman Audio Driven Animation, with the mood taken from the line's emotion tag. This costs nothing at runtime, which suits hundreds of residents. Streaming Audio Driven Animation is an option only for a few hero NPCs.
+6. **Provenance.** Each clip records the model, version, voice profile and licence, in the same way as art provenance.
+
 ## 6. Simulation stack (client)
 
 Unreal Engine 5.8 provides each piece of this; the status flags were read from the installed plugins. Each sits behind one project subsystem (`UTownLifeSubsystem`), so the experimental parts can be swapped or patched without touching content.
@@ -177,6 +224,9 @@ These are tuning keys in shipped configuration, with safe bounds and a scalabili
 | `tune.townsfolk.calm_s` | 20 | Seconds after sheathing before residents calm down |
 | `tune.townsfolk.flee_health_pct` | 35 | Health below which a resident fighting back breaks off and flees |
 | `tune.townsfolk.guards_per_100_houses` | 3 | Roaming guards per 100 dwellings, not counting gate posts |
+| `tune.townsfolk.rumour_max` | 12 | Rumours a town keeps at once |
+| `tune.townsfolk.rumour_ttl_game_days` | 3 | Game days a rumour lasts |
+| `tune.townsfolk.rumour_spread_per_hour` | 0.25 | Share of linked residents who hear a rumour each game hour |
 
 The defaults are guesses until the prototype (§9) measures them. Epic publishes only qualitative crowd numbers. One measured report settled at about 800 fully simulated agents, so we profile before we commit to targets.
 
@@ -220,7 +270,9 @@ The census validator checks:
 - **Night life:** only a few people are out at night, heading to or from the inn or to work (§4).
 - **Talking:** players can talk to any resident, but usually get an annoyed response. Real dialogue happens only when the resident is part of a quest (§5.4).
 
+- **Gossip:** residents gossip about players' deeds (§5.6).
+- **Pickpocketing and theft:** deferred to a future skill feature (§5.6).
+
 ## 12. Open questions
 
-- Should residents gossip about the player's deeds (crimes, heroics) through Factions or reputation?
-- Theft and pickpocketing: are they in scope, and does the Economy part own the stolen-goods rules?
+- Voices: approve the proposed pipeline in §5.7, which is Kokoro and Chatterbox pre-generated at build time, with lip sync baked by MetaHuman Audio Driven Animation. Before committing to it, check Kokoro's British-accent voices and Chatterbox's weights licence against their primary sources.
