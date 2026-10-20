@@ -77,6 +77,9 @@ def scan_master():
     # Displacement is not exposed as a MaterialProperty in Python, so drive everything through attributes.
     attrs=node(m,u.MaterialExpressionMakeMaterialAttributes,100,0)
     link(base,'',attrs,'BaseColor');link(rough,'R',attrs,'Roughness');link(nl,'',attrs,'Normal');link(disp,'',attrs,'Displacement')
+    # Poly Haven model sets pack metalness into the Rough map's G; terrain-style scans leave MetalAmount at 0.
+    ma=node(m,u.MaterialExpressionScalarParameter,-300,200,parameter_name='MetalAmount',default_value=0)
+    met=node(m,u.MaterialExpressionMultiply,-100,200);link(rough,'G',met,'A');link(ma,'',met,'B');link(met,'',attrs,'Metallic')
     m.set_editor_property('use_material_attributes',True);out(attrs,'',u.MaterialProperty.MP_MATERIAL_ATTRIBUTES)
     m.set_editor_property('enable_tessellation',True)
     scale=m.get_editor_property('displacement_scaling');scale.set_editor_property('magnitude',DISPLACEMENT_CM);scale.set_editor_property('center',.5);m.set_editor_property('displacement_scaling',scale)
@@ -103,6 +106,7 @@ def instance(row):
         for p,ch in (('Diffuse','Diffuse'),('Roughness','Rough'),('Normal','nor_gl'),('Height','Displacement')):mel.set_material_instance_texture_parameter_value(mi,p,texture(row['scan'],ch))
         mel.set_material_instance_vector_parameter_value(mi,'DarkTint',LC(row['dark']));mel.set_material_instance_scalar_parameter_value(mi,'NormalStrength',row['normal'])
         mel.set_material_instance_scalar_parameter_value(mi,'LichenAmount',1 if row['lichen'] else 0)
+        mel.set_material_instance_scalar_parameter_value(mi,'MetalAmount',1 if row.get('metal') else 0)
         if row['lichen']:mel.set_material_instance_texture_parameter_value(mi,'Lichen',texture(row['lichen'],'Diffuse'))
     else:
         mel.set_material_instance_parent(mi,masters['solid'])

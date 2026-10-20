@@ -82,6 +82,7 @@ def building_list(L):
                   ('Wall tower', ' × '.join(str(v) for v in W['tower']), 'Defence', 'Modular', 'Silverbrook definition §10; layout `wall.tower`')]
     # Owner-supplied street furniture: the concepts are drawn 4 to 5 m tall and up to 1.5 m wide.
     buildings += [('Street lamp', '1.5 × 1.5 × 5', 'Street lighting', 'Prop', 'Owner concept images `Street Lamp-1..4.png` (4 m post, 1 m arm)')]
+    buildings += [(n, '6 × 3.5 × 5', 'Market trade', 'Prop', f'Owner concept image `{n.title()}.png` (4 m stall, banner and lantern arms beyond)') for n in ('Armor vendor', 'Weapons vendor')]
     return buildings
 
 

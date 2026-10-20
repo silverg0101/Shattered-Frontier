@@ -30,8 +30,10 @@ def _image(asset,channel):
     if channel!='Diffuse':image.colorspace_settings.name='Non-Color'
     return image
 
-def scan(name,asset,dark=(.42,.36,.28),lichen=None,normal=1.0,damp=True,aged=0):
-    """aged: baseline R darkening (weathered timber, sun-faded paint) on every face."""
+def scan(name,asset,dark=(.42,.36,.28),lichen=None,normal=1.0,damp=True,aged=0,metal=False):
+    """aged: baseline R darkening (weathered timber, sun-faded paint) on every face.
+    metal: the Rough map carries metalness in G (Poly Haven model sets from acquire_models.py)."""
+    if name in MATS:return MATS[name]
     m=bpy.data.materials.new(name);m.use_nodes=True;m.use_backface_culling=True;nt=m.node_tree;n=nt.nodes;link=nt.links.new;p=n.get('Principled BSDF')
     uv=n.new('ShaderNodeUVMap');uv.uv_map='UVMap'
     def tex(channel):
@@ -47,11 +49,39 @@ def scan(name,asset,dark=(.42,.36,.28),lichen=None,normal=1.0,damp=True,aged=0):
         mask=n.new('ShaderNodeMapRange');mask.inputs['From Min'].default_value=.03;mask.inputs['From Max'].default_value=.08;link(bw.outputs['Val'],mask.inputs['Value'])
         mul=n.new('ShaderNodeMath');mul.operation='MULTIPLY';link(mask.outputs['Result'],mul.inputs[0]);link(sep.outputs['Green'],mul.inputs[1])
         colour=_mix(nt,mul.outputs['Value'],colour,_mix(nt,1,lt.outputs['Color'],(1.0,.6,.2,1),'MULTIPLY'))
-    link(colour,p.inputs['Base Color']);link(rough.outputs['Color'],p.inputs['Roughness'])
+    link(colour,p.inputs['Base Color'])
+    rs=n.new('ShaderNodeSeparateColor');link(rough.outputs['Color'],rs.inputs['Color']);link(rs.outputs['Red'],p.inputs['Roughness'])
+    if metal:link(rs.outputs['Green'],p.inputs['Metallic'])
     nm=n.new('ShaderNodeNormalMap');nm.uv_map='UVMap';nm.inputs['Strength'].default_value=normal;link(nor.outputs['Color'],nm.inputs['Color']);link(nm.outputs['Normal'],p.inputs['Normal'])
-    MATS[name]=m;SCALE[name]=SIZE[asset];AGED[name]=aged;ROWS.append(dict(name=name,scan=asset,dark=list(dark),lichen=lichen,normal=normal))
+    MATS[name]=m;SCALE[name]=SIZE[asset];AGED[name]=aged;ROWS.append(dict(name=name,scan=asset,dark=list(dark),lichen=lichen,normal=normal,metal=metal))
     if damp:DAMP.add(name)
     return m
+
+_MODELS={}
+def model(col,mid,matrix,aged=0,name=None):
+    """Place a Poly Haven model (acquire_models.py) into col with matrix (location/rotation/scale).
+    Keeps the model's UVs and smooth normals; each texture set becomes scan material SB_PH_<set> (metal-aware)."""
+    if mid not in _MODELS:
+        before=set(bpy.data.objects);bpy.ops.import_scene.gltf(filepath=str(KIT/'Models'/mid/f'{mid}.gltf'))
+        new=[o for o in bpy.data.objects if o not in before];meshes=[o for o in new if o.type=='MESH'];data=[]
+        for o in meshes:
+            me=o.data.copy();me.transform(o.matrix_world)
+            for i,m in enumerate(me.materials):
+                img=next((nd.image for nd in m.node_tree.nodes if nd.type=='TEX_IMAGE' and nd.image and '_diff' in nd.image.name),None) if m and m.use_nodes else None
+                tset=Path(img.filepath or img.name).stem.split('_diff')[0] if img else None
+                me.materials[i]=scan('SB_PH_'+tset,'ph_'+tset,damp=False,metal=True) if tset else solid('SB_PH_Plain',(.3,.3,.3),.6)
+            if 'WorldUV' not in me.uv_layers:me.uv_layers.new(name='WorldUV')
+            me.uv_layers[0].name='UVMap'
+            data.append(me)
+        for o in new:bpy.data.objects.remove(o,do_unlink=True)
+        _MODELS[mid]=data
+    objs=[]
+    for k,me in enumerate(_MODELS[mid]):
+        m=me.copy()
+        if 'Weathering' not in m.color_attributes:m.color_attributes.new('Weathering','FLOAT_COLOR','CORNER')
+        m.color_attributes['Weathering'].data.foreach_set('color',[aged,0,0,1]*len(m.loops))
+        o=bpy.data.objects.new(f'{name or mid}_{k}',m);o.matrix_world=Matrix(matrix);col.objects.link(o);objs.append(o)
+    return objs
 
 def solid(name,colour,rough=.6,metal=0,emission=None,strength=0):
     m=bpy.data.materials.new(name);m.use_nodes=True;m.use_backface_culling=True;p=m.node_tree.nodes.get('Principled BSDF')

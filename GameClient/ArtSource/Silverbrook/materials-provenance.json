@@ -412,6 +412,682 @@
     ]
   },
   {
+    "asset": "ph_Barrel_02",
+    "page": "https://polyhaven.com/a/Barrel_02",
+    "license": "CC0-1.0",
+    "authors": {
+      "Jorge Camacho": "All"
+    },
+    "model": "Models/Barrel_02/Barrel_02.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_Barrel_02_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_Barrel_02_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_Barrel_02_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_Barrel_02_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_Lantern_01_brass",
+    "page": "https://polyhaven.com/a/Lantern_01",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rajil Jose Macatangay": "All"
+    },
+    "model": "Models/Lantern_01/Lantern_01.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_Lantern_01_brass_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_Lantern_01_brass_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_Lantern_01_brass_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_Lantern_01_brass_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_antique_estoc",
+    "page": "https://polyhaven.com/a/antique_estoc",
+    "license": "CC0-1.0",
+    "authors": {
+      "James Ray Cock": "Texturing",
+      "Ulan Cabanilla": "modeling"
+    },
+    "model": "Models/antique_estoc/antique_estoc.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_antique_estoc_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_antique_estoc_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_antique_estoc_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_antique_estoc_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_barrel_03",
+    "page": "https://polyhaven.com/a/barrel_03",
+    "license": "CC0-1.0",
+    "authors": {
+      "Serhii Khromov": "All"
+    },
+    "model": "Models/barrel_03/barrel_03.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_barrel_03_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_barrel_03_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_barrel_03_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_barrel_03_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_hatchet",
+    "page": "https://polyhaven.com/a/hatchet",
+    "license": "CC0-1.0",
+    "authors": {
+      "James Ray Cock": "Texturing",
+      "Ulan Cabanilla": "modeling"
+    },
+    "model": "Models/hatchet/hatchet.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_hatchet_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_hatchet_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_hatchet_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_hatchet_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_kite_shield_body",
+    "page": "https://polyhaven.com/a/kite_shield",
+    "license": "CC0-1.0",
+    "authors": {
+      "Ulan Cabanilla": "All"
+    },
+    "model": "Models/kite_shield/kite_shield.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_kite_shield_body_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_kite_shield_body_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_kite_shield_body_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_kite_shield_body_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_kite_shield_clamps_trim",
+    "page": "https://polyhaven.com/a/kite_shield",
+    "license": "CC0-1.0",
+    "authors": {
+      "Ulan Cabanilla": "All"
+    },
+    "model": "Models/kite_shield/kite_shield.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_kite_shield_clamps_trim_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_kite_shield_clamps_trim_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_kite_shield_clamps_trim_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_kite_shield_clamps_trim_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_ornate_medieval_dagger",
+    "page": "https://polyhaven.com/a/ornate_medieval_dagger",
+    "license": "CC0-1.0",
+    "authors": {
+      "Sofia Pahaoja": "All"
+    },
+    "model": "Models/ornate_medieval_dagger/ornate_medieval_dagger.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_ornate_medieval_dagger_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_ornate_medieval_dagger_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_ornate_medieval_dagger_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_ornate_medieval_dagger_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_ornate_medieval_mace",
+    "page": "https://polyhaven.com/a/ornate_medieval_mace",
+    "license": "CC0-1.0",
+    "authors": {
+      "Ulan Cabanilla": "All"
+    },
+    "model": "Models/ornate_medieval_mace/ornate_medieval_mace.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_ornate_medieval_mace_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_ornate_medieval_mace_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_ornate_medieval_mace_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_ornate_medieval_mace_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_ornate_war_hammer",
+    "page": "https://polyhaven.com/a/ornate_war_hammer",
+    "license": "CC0-1.0",
+    "authors": {
+      "James Ray Cock": "Texturing",
+      "Ulan Cabanilla": "modeling"
+    },
+    "model": "Models/ornate_war_hammer/ornate_war_hammer.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_ornate_war_hammer_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_ornate_war_hammer_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_ornate_war_hammer_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_ornate_war_hammer_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_wine_barrel_01",
+    "page": "https://polyhaven.com/a/wine_barrel_01",
+    "license": "CC0-1.0",
+    "authors": {
+      "James Ray Cock": "All"
+    },
+    "model": "Models/wine_barrel_01/wine_barrel_01.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_wine_barrel_01_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_wine_barrel_01_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_wine_barrel_01_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_wine_barrel_01_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_wooden_axe",
+    "page": "https://polyhaven.com/a/wooden_axe",
+    "license": "CC0-1.0",
+    "authors": {
+      "Ulan Cabanilla": "All"
+    },
+    "model": "Models/wooden_axe/wooden_axe.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_wooden_axe_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_axe_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_axe_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_axe_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_wooden_axe_02",
+    "page": "https://polyhaven.com/a/wooden_axe_02",
+    "license": "CC0-1.0",
+    "authors": {
+      "Ulan Cabanilla": "All"
+    },
+    "model": "Models/wooden_axe_02/wooden_axe_02.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_wooden_axe_02_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_axe_02_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_axe_02_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_axe_02_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_wooden_axe_03",
+    "page": "https://polyhaven.com/a/wooden_axe_03",
+    "license": "CC0-1.0",
+    "authors": {
+      "Ulan Cabanilla": "All"
+    },
+    "model": "Models/wooden_axe_03/wooden_axe_03.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_wooden_axe_03_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_axe_03_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_axe_03_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_axe_03_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_wooden_barrels_01_barrel01",
+    "page": "https://polyhaven.com/a/wooden_barrels_01",
+    "license": "CC0-1.0",
+    "authors": {
+      "James Ray Cock": "All"
+    },
+    "model": "Models/wooden_barrels_01/wooden_barrels_01.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_wooden_barrels_01_barrel01_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_barrels_01_barrel01_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_barrels_01_barrel01_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_barrels_01_barrel01_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_wooden_barrels_01_barrel02",
+    "page": "https://polyhaven.com/a/wooden_barrels_01",
+    "license": "CC0-1.0",
+    "authors": {
+      "James Ray Cock": "All"
+    },
+    "model": "Models/wooden_barrels_01/wooden_barrels_01.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_wooden_barrels_01_barrel02_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_barrels_01_barrel02_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_barrels_01_barrel02_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_barrels_01_barrel02_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_wooden_barrels_01_pieces",
+    "page": "https://polyhaven.com/a/wooden_barrels_01",
+    "license": "CC0-1.0",
+    "authors": {
+      "James Ray Cock": "All"
+    },
+    "model": "Models/wooden_barrels_01/wooden_barrels_01.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_wooden_barrels_01_pieces_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_barrels_01_pieces_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_barrels_01_pieces_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_barrels_01_pieces_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_wooden_bucket_01",
+    "page": "https://polyhaven.com/a/wooden_bucket_01",
+    "license": "CC0-1.0",
+    "authors": {
+      "James Ray Cock": "All"
+    },
+    "model": "Models/wooden_bucket_01/wooden_bucket_01.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_wooden_bucket_01_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_bucket_01_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_bucket_01_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_bucket_01_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_wooden_bucket_02",
+    "page": "https://polyhaven.com/a/wooden_bucket_02",
+    "license": "CC0-1.0",
+    "authors": {
+      "James Ray Cock": "All"
+    },
+    "model": "Models/wooden_bucket_02/wooden_bucket_02.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_wooden_bucket_02_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_bucket_02_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_bucket_02_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_bucket_02_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_wooden_crate_01",
+    "page": "https://polyhaven.com/a/wooden_crate_01",
+    "license": "CC0-1.0",
+    "authors": {
+      "James Ray Cock": "All"
+    },
+    "model": "Models/wooden_crate_01/wooden_crate_01.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_wooden_crate_01_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_crate_01_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_crate_01_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_crate_01_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_wooden_crate_02",
+    "page": "https://polyhaven.com/a/wooden_crate_02",
+    "license": "CC0-1.0",
+    "authors": {
+      "James Ray Cock": "modeling",
+      "Jurita Burger": "graphic design"
+    },
+    "model": "Models/wooden_crate_02/wooden_crate_02.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_wooden_crate_02_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_crate_02_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_crate_02_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_crate_02_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_wooden_handle_saber",
+    "page": "https://polyhaven.com/a/wooden_handle_saber",
+    "license": "CC0-1.0",
+    "authors": {
+      "Ulan Cabanilla": "All"
+    },
+    "model": "Models/wooden_handle_saber/wooden_handle_saber.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_wooden_handle_saber_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_handle_saber_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_handle_saber_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_handle_saber_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_wooden_lantern_01",
+    "page": "https://polyhaven.com/a/wooden_lantern_01",
+    "license": "CC0-1.0",
+    "authors": {
+      "James Ray Cock": "All"
+    },
+    "model": "Models/wooden_lantern_01/wooden_lantern_01.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_wooden_lantern_01_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_lantern_01_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_lantern_01_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_lantern_01_Displacement.jpg"
+      }
+    ]
+  },
+  {
+    "asset": "ph_wooden_lantern_01_glass",
+    "page": "https://polyhaven.com/a/wooden_lantern_01",
+    "license": "CC0-1.0",
+    "authors": {
+      "James Ray Cock": "All"
+    },
+    "model": "Models/wooden_lantern_01/wooden_lantern_01.gltf",
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "note": "model texture set: UVs come from the model; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/ph_wooden_lantern_01_glass_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_lantern_01_glass_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_lantern_01_glass_Rough.jpg"
+      },
+      {
+        "file": "Textures/ph_wooden_lantern_01_glass_Displacement.jpg"
+      }
+    ]
+  },
+  {
     "asset": "reed_roof_04",
     "page": "https://polyhaven.com/a/reed_roof_04",
     "license": "CC0-1.0",
