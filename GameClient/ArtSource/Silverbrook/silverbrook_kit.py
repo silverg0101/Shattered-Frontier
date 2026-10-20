@@ -11,10 +11,10 @@ from pathlib import Path
 from mathutils import Vector,Matrix
 KIT=Path(__file__).resolve().parent;TEX=KIT/'Textures'
 SIZE={r['asset']:r['physical_size_metres'][0] for r in json.loads((KIT/'materials-provenance.json').read_text())}
-UP=Vector((0,0,1));rng=random.Random(0);MATS={};SCALE={};DAMP=set();AGED={};ROWS=[]  # ROWS: engine-neutral material table for the UE library
+UP=Vector((0,0,1));rng=random.Random(0);DOORS=[];MATS={};SCALE={};DAMP=set();AGED={};ROWS=[]  # ROWS: engine-neutral material table for the UE library
 
 def reset(seed):
-    bpy.ops.wm.read_factory_settings(use_empty=True);rng.seed(seed);MATS.clear();SCALE.clear();DAMP.clear();AGED.clear();ROWS.clear()
+    bpy.ops.wm.read_factory_settings(use_empty=True);rng.seed(seed);DOORS.clear();MATS.clear();SCALE.clear();DAMP.clear();AGED.clear();ROWS.clear()
     scene=bpy.context.scene;scene.unit_settings.system='METRIC';scene.unit_settings.scale_length=1;return scene
 
 def _sock(node,ident):return next(s for s in [*node.inputs,*node.outputs] if s.identifier==ident)
@@ -86,16 +86,32 @@ def model(col,mid,matrix,aged=0,name=None):
 def export_parts(parts,out,mesh_prefix):
     """Moving parts (wheels, gate leaves, doors) as their own FBX, origin at the pivot, for separate Unreal meshes.
     parts: [(obj, name, pivot, axis, motion, travel)] in final model space; motion 'rotate' (continuous), 'swing'
-    (travel = degrees about axis to close) or 'slide' (travel = metres along axis to close).
+    (travel = degrees about axis) or 'slide' (travel = metres along axis); the optional 7th item names the modelled
+    state ('open' or 'closed') and travel leads to the other one.
     Returns manifest rows; the caller leaves these objects out of the main FBX."""
-    rows=[]
-    for obj,name,pivot,axis,motion,travel in parts:
+    rows=[];keep=[o for o in bpy.data.objects if o.select_get()];active=bpy.context.view_layer.objects.active
+    for obj,name,pivot,axis,motion,travel,*state in parts:
         tmp=bpy.data.objects.new(obj.name+'_Part',obj.data.copy());tmp.data.transform(Matrix.Translation(-Vector(pivot)));obj.users_collection[0].objects.link(tmp)
         for o in bpy.data.objects:o.select_set(o is tmp)
         bpy.context.view_layer.objects.active=tmp;path=f'{out}_{name}.fbx'
         bpy.ops.export_scene.fbx(filepath=path,use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
         me=tmp.data;bpy.data.objects.remove(tmp);bpy.data.meshes.remove(me)
-        rows.append(dict(name=name,fbx=Path(path).name,unreal_mesh=f'{mesh_prefix}_{name}',pivot_m=[round(v,4) for v in pivot],axis=list(axis),motion=motion,travel=travel))
+        rows.append(dict(name=name,fbx=Path(path).name,unreal_mesh=f'{mesh_prefix}_{name}',pivot_m=[round(v,4) for v in pivot],axis=list(axis),motion=motion,travel=travel,modelled=(state or [None])[0]))
+    for o in bpy.data.objects:o.select_set(o in keep)
+    bpy.context.view_layer.objects.active=active
+    return rows
+
+def split_doors(out,mesh_prefix):
+    """Export every kit.door leaf as a part (modelled closed; opens 90 deg inward about its left hinge) and deselect it.
+    Call right before the main FBX export; returns the manifest rows."""
+    parts=[]
+    for k,d in enumerate(DOORS,1):
+        obj=bpy.data.objects[d['geo'].name];vs=[obj.matrix_world@v.co for v in obj.data.vertices];r,o=d['r'],d['o']
+        # Hinge: the leaf's bottom corner at the -r jamb on its inner (-o) face; frame axes are orthonormal.
+        pivot=r*min(v.dot(r) for v in vs)+o*min(v.dot(o) for v in vs)+UP*min(v.z for v in vs)
+        parts.append((obj,f'Door{k}',pivot,(0,0,1),'swing',90 if UP.cross(r).dot(o)<0 else -90,'closed'))  # opens inward (-o)
+    rows=export_parts(parts,out,mesh_prefix)
+    for obj,*_ in parts:obj.select_set(False)
     return rows
 
 def solid(name,colour,rough=.6,metal=0,emission=None,strength=0):
@@ -244,13 +260,16 @@ def window(G,M,c,o,w,h,shutters=True,planter=False,wall_th=.3,band=None):
 def door(G,M,c,o,w,spring,stone_rects,wall_th=.3,band=None):
     """Round-headed ledged plank door in a dressed-stone surround (jamb quoins + voussoirs)."""
     P,R=frame(c,o);rad=w/2
+    # The leaf (boards, straps, ring) is its own mesh so it can open: hinge on the left jamb seen from outside.
+    D=Geo(f"{G['detail'].name}_Door{len(DOORS)+1}",G['detail'].col);G[D.name]=D
     outline=[P(-rad,-.2,0),P(rad,-.2,0)]+[P(rad*math.cos(t),-.2,spring+rad*math.sin(t)) for t in np.linspace(0,math.pi,17)]
-    G['detail'].prism(outline,o,.07,M['door'])
+    D.prism(outline,o,.07,M['door'])
     for z in (.35,spring-.1):
-        G['detail'].box(P(-rad*.15,-.15,z),(w*.8,.012,.05),M['iron'],.004,R)
+        D.box(P(-rad*.15,-.15,z),(w*.8,.012,.05),M['iron'],.004,R)
     for k in range(10):
-        t=math.tau*k/10;G['detail'].box(P(rad*.55+.06*math.cos(t),-.13,1.0+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
-    G['detail'].box(P(rad*.55,-.155,1.06),(.07,.01,.07),M['iron'],.004,R)
+        t=math.tau*k/10;D.box(P(rad*.55+.06*math.cos(t),-.13,1.0+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
+    D.box(P(rad*.55,-.155,1.06),(.07,.01,.07),M['iron'],.004,R)
+    DOORS.append(dict(geo=D,r=(R@Vector((1,0,0))).normalized(),o=Vector(o).normalized(),width=w))
     z=0;i=0
     while z<spring-.05:
         hgt=min(.31,spring-z);qw=.30 if i%2 else .44

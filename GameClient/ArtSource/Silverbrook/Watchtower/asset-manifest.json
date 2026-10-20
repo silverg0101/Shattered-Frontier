@@ -35,14 +35,20 @@
       ]
     },
     "SM_SBWatchtower_Details": {
-      "triangles": 7036,
+      "triangles": 6760,
       "materials": [
-        "SB_DoorBoards",
         "SB_ForgedIron",
         "SB_LanternGlow",
         "SB_Watchtower_Flame",
         "SB_Watchtower_Banner",
         "SB_Watchtower_Gilt"
+      ]
+    },
+    "SM_SBWatchtower_Details_Door1": {
+      "triangles": 276,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
       ]
     }
   },
@@ -167,6 +173,26 @@
   ],
   "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
   "unreal_mesh": "SM_SilverbrookWatchtower",
+  "parts": [
+    {
+      "name": "Door1",
+      "fbx": "SilverbrookWatchtower_Door1.fbx",
+      "unreal_mesh": "SM_SilverbrookWatchtower_Door1",
+      "pivot_m": [
+        -0.475,
+        -1.465,
+        0.17
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    }
+  ],
   "slot_m": [
     8,
     8,

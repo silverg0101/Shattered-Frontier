@@ -12,7 +12,7 @@ import unreal as u,json,math,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent;LIB='/Game/Frontier/Environment/Greenlands/Silverbrook'
 WALKABLE={'StoneBridge','RiversideDocks','FishermansWharf','WallSection','Gatehouse','WallTower'}  # complex-as-simple collision
-DISPLACEMENT_CM=3.0  # full 0..1 height range of a scan; real mortar joints and slate laps are 1-3 cm deep
+DISPLACEMENT_CM=6.0  # full 0..1 height range of a scan; 3 cm read as flat in the editor (only step edges moved)
 tools=u.AssetToolsHelpers.get_asset_tools();mel=u.MaterialEditingLibrary;eal=u.EditorAssetLibrary;sme=u.get_editor_subsystem(u.StaticMeshEditorSubsystem)
 assert sme,'Full editor required'
 packages=[a for a in sys.argv[1:] if (ROOT/a/'asset-manifest.json').exists()] or sorted(p.parent.name for p in ROOT.glob('*/asset-manifest.json'))
@@ -155,7 +155,7 @@ for pkg,man in manifests.items():
     for part in man.get('parts',[]):
         _,pr=import_mesh(ROOT/pkg/part['fbx'],part['unreal_mesh'],'box')
         pr.update(name=part['name'],motion=part['motion'],pivot_cm=ue(part['pivot_m']),axis=ue(part['axis'],1),
-                  travel=(-part['travel'] if part['motion']=='swing' else part['travel']),travel_unit={'swing':'deg','slide':'m'}.get(part['motion']))
+                  travel=(-part['travel'] if part['motion']=='swing' else part['travel']),travel_unit={'swing':'deg','slide':'m'}.get(part['motion']),modelled=part.get('modelled'))
         parts.append(pr)
     if parts:rep['parts']=parts
     report[pkg]=rep

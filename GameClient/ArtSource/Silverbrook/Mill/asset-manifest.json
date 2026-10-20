@@ -247,7 +247,8 @@
         0
       ],
       "motion": "rotate",
-      "travel": null
+      "travel": null,
+      "modelled": "turning"
     }
   ],
   "slot_m": [

@@ -34,7 +34,7 @@
       ]
     },
     "SM_SBCottage2_Details": {
-      "triangles": 10596,
+      "triangles": 10320,
       "materials": [
         "SB_ChimneyPot",
         "SB_LitGlass",
@@ -42,8 +42,14 @@
         "SB_Cottage2_Shutter",
         "SB_ForgedIron",
         "SB_PlanterSoil",
-        "SB_DoorBoards",
         "SB_LanternGlow"
+      ]
+    },
+    "SM_SBCottage2_Details_Door1": {
+      "triangles": 276,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
       ]
     }
   },
@@ -192,6 +198,26 @@
   ],
   "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
   "unreal_mesh": "SM_SilverbrookCottage2",
+  "parts": [
+    {
+      "name": "Door1",
+      "fbx": "SilverbrookCottage2_Door1.fbx",
+      "unreal_mesh": "SM_SilverbrookCottage2_Door1",
+      "pivot_m": [
+        -0.5175,
+        -1.6502,
+        0.42
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    }
+  ],
   "slot_m": [
     8,
     6,

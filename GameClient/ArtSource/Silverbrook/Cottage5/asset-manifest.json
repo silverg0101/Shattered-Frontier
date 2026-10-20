@@ -37,7 +37,7 @@
       ]
     },
     "SM_SBCottage5_Details": {
-      "triangles": 9968,
+      "triangles": 9692,
       "materials": [
         "SB_LitGlass",
         "SB_LeadCame",
@@ -45,8 +45,14 @@
         "SB_PaintedShutter",
         "SB_ForgedIron",
         "SB_PlanterSoil",
-        "SB_DoorBoards",
         "SB_LanternGlow"
+      ]
+    },
+    "SM_SBCottage5_Details_Door1": {
+      "triangles": 276,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
       ]
     }
   },
@@ -61,7 +67,8 @@
         0.28
       ],
       "lichen": "lichen_rock",
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_Cottage5_Fieldstone",
@@ -72,7 +79,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_Cottage5_Plinth",
@@ -83,7 +91,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_Ashlar",
@@ -94,7 +103,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_Cottage5_RustTile",
@@ -105,7 +115,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_OakTimber",
@@ -116,7 +127,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_DoorBoards",
@@ -127,7 +139,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_PaintedShutter",
@@ -138,7 +151,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_ForgedIron",
@@ -223,6 +237,26 @@
   ],
   "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
   "unreal_mesh": "SM_SilverbrookCottage5",
+  "parts": [
+    {
+      "name": "Door1",
+      "fbx": "SilverbrookCottage5_Door1.fbx",
+      "unreal_mesh": "SM_SilverbrookCottage5_Door1",
+      "pivot_m": [
+        -0.6824,
+        -1.6226,
+        0.3
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    }
+  ],
   "slot_m": [
     8,
     6,

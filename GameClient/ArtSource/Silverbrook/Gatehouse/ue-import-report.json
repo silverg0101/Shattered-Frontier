@@ -50,7 +50,8 @@
         1
       ],
       "travel": 90,
-      "travel_unit": "deg"
+      "travel_unit": "deg",
+      "modelled": "open"
     },
     {
       "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookGatehouse_GateR",
@@ -81,7 +82,8 @@
         1
       ],
       "travel": -90,
-      "travel_unit": "deg"
+      "travel_unit": "deg",
+      "modelled": "open"
     },
     {
       "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookGatehouse_Portcullis",
@@ -112,7 +114,8 @@
         -1
       ],
       "travel": 4.0,
-      "travel_unit": "m"
+      "travel_unit": "m",
+      "modelled": "open"
     }
   ]
 }

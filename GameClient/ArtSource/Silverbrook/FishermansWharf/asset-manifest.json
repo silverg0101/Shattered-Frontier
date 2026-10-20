@@ -66,17 +66,24 @@
       ]
     },
     "SM_SBFishermansWharf_Details": {
-      "triangles": 6112,
+      "triangles": 5836,
       "materials": [
-        "SB_DoorBoards",
-        "SB_ForgedIron",
         "SB_LitGlass",
         "SB_LeadCame",
         "SB_FishermansWharf_Banner",
         "SB_FishermansWharf_Gilt",
+        "SB_ForgedIron",
         "SB_LanternGlow",
         "SB_ChimneyPot",
+        "SB_DoorBoards",
         "SB_FishermansWharf_Canvas"
+      ]
+    },
+    "SM_SBFishermansWharf_Details_Door1": {
+      "triangles": 276,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
       ]
     }
   },
@@ -91,7 +98,8 @@
         0.28
       ],
       "lichen": "lichen_rock",
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_Ashlar",
@@ -102,7 +110,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_OakTimber",
@@ -113,7 +122,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_DoorBoards",
@@ -124,7 +134,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_FishermansWharf_Boards",
@@ -135,7 +146,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_FishermansWharf_Deck",
@@ -146,7 +158,8 @@
         0.27
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_FishermansWharf_Canvas",
@@ -157,7 +170,8 @@
         0.62
       ],
       "lichen": null,
-      "normal": 0.6
+      "normal": 0.6,
+      "metal": false
     },
     {
       "name": "SB_FishermansWharf_Banner",
@@ -168,7 +182,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_ForgedIron",
@@ -253,6 +268,26 @@
   ],
   "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
   "unreal_mesh": "SM_SilverbrookFishermansWharf",
+  "parts": [
+    {
+      "name": "Door1",
+      "fbx": "SilverbrookFishermansWharf_Door1.fbx",
+      "unreal_mesh": "SM_SilverbrookFishermansWharf_Door1",
+      "pivot_m": [
+        -2.8,
+        2.39,
+        0.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    }
+  ],
   "slot_m": [
     20,
     8,

@@ -9,7 +9,7 @@
   "nanite": true,
   "collision": "convex",
   "convex_hulls": 11,
-  "nanite_fallback_triangles": 6724,
+  "nanite_fallback_triangles": 6694,
   "lightmap": {
     "uv": 2,
     "resolution": 256
@@ -19,5 +19,39 @@
     8,
     9
   ],
-  "fits": true
+  "fits": true,
+  "parts": [
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookWatchtower_Door1",
+      "size_m": [
+        0.95,
+        0.11,
+        1.77
+      ],
+      "slots": 2,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 256,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 32
+      },
+      "name": "Door1",
+      "motion": "swing",
+      "pivot_cm": [
+        -47.5,
+        146.5,
+        17.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "travel": -90,
+      "travel_unit": "deg",
+      "modelled": "closed"
+    }
+  ]
 }

@@ -15,6 +15,8 @@ import unreal as u
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT.parent / 'Silverbrook'))
+import importlib, place_parts; importlib.reload(place_parts)  # noqa: E402  (fresh part reports in an open editor)
 import importlib, validate_layout, validate_region, region_heightfield, heightfield, dress_zone, pcg_dressing  # an open editor
 for _m in (validate_layout, validate_region, region_heightfield, heightfield, dress_zone, pcg_dressing):        # keeps modules between
     importlib.reload(_m)                                                                                         # runs; take the files' state
@@ -108,6 +110,7 @@ def model(label, kind, x, y, yaw, folder):
         a = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(x * 100, y * 100, hi * 100), u.Rotator(roll=0, pitch=0, yaw=yaw))
         a.static_mesh_component.set_static_mesh(mesh)
         a.set_actor_label(label); a.set_folder_path(folder)
+        place_parts.attach(a)  # doors, gate leaves and the mill wheel are separate moving meshes
         if kind == 'townhouse' and 'street' not in foundation:
             foundation['street'] = (x, y, yaw - 180, hi)  # first townhouse: the street camera looks at its front
         foundation['max_step'] = max(foundation['max_step'], round(hi - lo, 2))

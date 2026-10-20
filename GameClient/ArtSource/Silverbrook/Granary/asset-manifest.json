@@ -43,12 +43,19 @@
       ]
     },
     "SM_SBGranary_Details": {
-      "triangles": 2500,
+      "triangles": 2224,
       "materials": [
         "SB_ForgedIron",
         "SB_DoorBoards",
         "SB_LanternGlow",
         "SB_Granary_Rope"
+      ]
+    },
+    "SM_SBGranary_Details_Door1": {
+      "triangles": 276,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
       ]
     }
   },
@@ -169,6 +176,26 @@
   ],
   "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
   "unreal_mesh": "SM_SilverbrookGranary",
+  "parts": [
+    {
+      "name": "Door1",
+      "fbx": "SilverbrookGranary_Door1.fbx",
+      "unreal_mesh": "SM_SilverbrookGranary_Door1",
+      "pivot_m": [
+        -0.7594,
+        -2.585,
+        0.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    }
+  ],
   "slot_m": [
     8,
     8,

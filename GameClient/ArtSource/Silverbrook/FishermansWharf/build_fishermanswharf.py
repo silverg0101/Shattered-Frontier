@@ -272,6 +272,7 @@ for o in bpy.data.objects:o.select_set(o in objs)
 bpy.context.view_layer.objects.active=objs[0]
 # Textures stay in ../Textures (FBX references them relatively); embedding 2k scans makes a huge GLB.
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')
+DOORS=kit.split_doors(str(OUT),'SM_SilverbrookFishermansWharf')  # door leaves: own meshes, hinged
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
 pre=bpy.data.collections.new('Preview');scene.collection.children.link(pre)
 def preview(name,verts,faces,mat):
@@ -299,7 +300,7 @@ manifest=dict(asset='SilverbrookFishermansWharf',reference=dict(file='Fishermans
               walkable_m=[19.9,round(DY1-DY0+.1,2)],ray_checks=n,note='continuous plank deck; buildings stand on it; checked by downward ray casts on a 0.2 m grid'),
     slot_height_note='layout wharf slot is 20 x 8 x 1 (deck only); the concept has an 8 m shop, crane and chimney above the deck, and the piles reach the bed 3.5 m below the bank, so the slot height is 11.5 m',
     meshes={o.name:dict(triangles=sum(len(p.vertices)-2 for p in o.data.polygons),materials=[m.name for m in o.data.materials]) for o in objs},triangles=tris,
-    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookFishermansWharf',slot_m=list(SLOT),
+    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookFishermansWharf',parts=DOORS,slot_m=list(SLOT),
     asset_id='BLD-GreenlandsFishermansWharf-01',outputs=['SilverbrookFishermansWharf.blend','SilverbrookFishermansWharf.glb','SilverbrookFishermansWharf.fbx'])
 (HERE/'asset-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print('FISHERMANSWHARF_BUILT',manifest['bounds_m'],manifest['z_range_m'],tris)

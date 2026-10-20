@@ -272,7 +272,8 @@
         1
       ],
       "motion": "swing",
-      "travel": -90
+      "travel": -90,
+      "modelled": "open"
     },
     {
       "name": "GateR",
@@ -289,7 +290,8 @@
         1
       ],
       "motion": "swing",
-      "travel": 90
+      "travel": 90,
+      "modelled": "open"
     },
     {
       "name": "Portcullis",
@@ -306,7 +308,8 @@
         -1
       ],
       "motion": "slide",
-      "travel": 4.0
+      "travel": 4.0,
+      "modelled": "open"
     }
   ],
   "slot_m": [

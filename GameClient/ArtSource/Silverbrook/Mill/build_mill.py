@@ -298,7 +298,7 @@ assert all(h-l<=s+1e-3 for l,h,s in zip(lo,hi,SLOT)),f'exceeds slot {SLOT}: {[ro
 OUT=HERE/'SilverbrookMill'
 wheel=next(o for o in objs if o.name=='SM_SBMill_Wheel')
 # The wheel turns about its axle (X): its own mesh with the origin on the axle; the main FBX leaves it out.
-PARTS=kit.export_parts([(wheel,'Wheel',Vector((WX,0,AZ))+OFF,(1,0,0),'rotate',None)],str(OUT),'SM_SilverbrookMill')
+PARTS=kit.export_parts([(wheel,'Wheel',Vector((WX,0,AZ))+OFF,(1,0,0),'rotate',None,'turning')],str(OUT),'SM_SilverbrookMill')
 for o in bpy.data.objects:o.select_set(o in objs)
 bpy.context.view_layer.objects.active=objs[0]
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')

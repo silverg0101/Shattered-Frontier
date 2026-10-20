@@ -5,18 +5,53 @@
     12.07,
     17.68
   ],
+  "slots": 14,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 54686,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 512
+  },
   "slot_m": [
     16,
     13,
     18
   ],
   "fits": true,
-  "slots": 14,
-  "nanite": true,
-  "convex_hulls": 12,
-  "nanite_fallback_triangles": 54851,
-  "lightmap": {
-    "uv": 2,
-    "resolution": 512
-  }
+  "parts": [
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookAdventurersGuild_Door1",
+      "size_m": [
+        2.4,
+        0.11,
+        3.7
+      ],
+      "slots": 2,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 252,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 64
+      },
+      "name": "Door1",
+      "motion": "swing",
+      "pivot_cm": [
+        -160.39,
+        490.2,
+        45.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "travel": -90,
+      "travel_unit": "deg",
+      "modelled": "closed"
+    }
+  ]
 }

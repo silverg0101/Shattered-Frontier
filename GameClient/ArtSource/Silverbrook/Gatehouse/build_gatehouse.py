@@ -296,8 +296,8 @@ bpy.context.view_layer.objects.active=objs[0]
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')
 # Gate leaves swing on their pintles (closing: 90 deg toward the passage centre); the portcullis drops 4 m to the ground.
 ob={o.name:o for o in objs};HX=AW/2-.02
-PARTS=kit.export_parts([(ob['SM_SBGatehouse_GateL'],'GateL',(-HX,HY,0),(0,0,1),'swing',-90),(ob['SM_SBGatehouse_GateR'],'GateR',(HX,HY,0),(0,0,1),'swing',90),
-    (ob['SM_SBGatehouse_Portcullis'],'Portcullis',(0,PY,PZ-.25),(0,0,-1),'slide',round(PZ-.25,3))],str(OUT),'SM_SilverbrookGatehouse')
+PARTS=kit.export_parts([(ob['SM_SBGatehouse_GateL'],'GateL',(-HX,HY,0),(0,0,1),'swing',-90,'open'),(ob['SM_SBGatehouse_GateR'],'GateR',(HX,HY,0),(0,0,1),'swing',90,'open'),
+    (ob['SM_SBGatehouse_Portcullis'],'Portcullis',(0,PY,PZ-.25),(0,0,-1),'slide',round(PZ-.25,3),'open')],str(OUT),'SM_SilverbrookGatehouse')
 for o in bpy.data.objects:o.select_set(o in objs and o.name not in ('SM_SBGatehouse_GateL','SM_SBGatehouse_GateR','SM_SBGatehouse_Portcullis'))
 bpy.context.view_layer.objects.active=objs[0]
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)

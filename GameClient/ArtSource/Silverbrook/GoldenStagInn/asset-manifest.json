@@ -40,18 +40,31 @@
       ]
     },
     "SM_SBGoldenStagInn_Details": {
-      "triangles": 23444,
+      "triangles": 22892,
       "materials": [
         "SB_ForgedIron",
         "SB_LitGlass",
         "SB_LeadCame",
         "SB_ChimneyPot",
         "SB_PlanterSoil",
-        "SB_DoorBoards",
         "SB_GoldenStagInn_Banner",
         "SB_GoldenStagInn_Gilt",
         "SB_GoldenStagInn_SignBoard",
         "SB_LanternGlow"
+      ]
+    },
+    "SM_SBGoldenStagInn_Details_Door1": {
+      "triangles": 276,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBGoldenStagInn_Details_Door2": {
+      "triangles": 276,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
       ]
     }
   },
@@ -66,7 +79,8 @@
         0.28
       ],
       "lichen": "lichen_rock",
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_Ashlar",
@@ -77,7 +91,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_LimePlaster",
@@ -88,7 +103,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_OakTimber",
@@ -99,7 +115,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_DoorBoards",
@@ -110,7 +127,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_GoldenStagInn_SignBoard",
@@ -121,7 +139,8 @@
         0.11
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_GoldenStagInn_Banner",
@@ -132,7 +151,8 @@
         0.12
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_ForgedIron",
@@ -229,6 +249,44 @@
   ],
   "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
   "unreal_mesh": "SM_SilverbrookGoldenStagInn",
+  "parts": [
+    {
+      "name": "Door1",
+      "fbx": "SilverbrookGoldenStagInn_Door1.fbx",
+      "unreal_mesh": "SM_SilverbrookGoldenStagInn_Door1",
+      "pivot_m": [
+        -1.2403,
+        -3.5737,
+        0.45
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    },
+    {
+      "name": "Door2",
+      "fbx": "SilverbrookGoldenStagInn_Door2.fbx",
+      "unreal_mesh": "SM_SilverbrookGoldenStagInn_Door2",
+      "pivot_m": [
+        5.6247,
+        -2.9087,
+        0.15
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    }
+  ],
   "slot_m": [
     14,
     12,
