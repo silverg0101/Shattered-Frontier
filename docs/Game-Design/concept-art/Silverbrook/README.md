@@ -18,8 +18,8 @@ Owner-supplied concept images for the Silverbrook buildings. One image is one de
 | [Cottage-4.png](Cottage-4.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | `GameClient/ArtSource/Silverbrook/Cottage4` | delivered |
 | [Cottage-5.png](Cottage-5.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | `GameClient/ArtSource/Silverbrook/Cottage5` | delivered |
 | [Cottage-6.png](Cottage-6.png) | Cottage | BLD-GreenlandsCottage-01 | 8 × 6 × 6 | `GameClient/ArtSource/Silverbrook/Cottage6` | delivered |
-| [Stables.png](Stables.png) | Stables | BLD-GreenlandsStables-01 | 12 × 8 × 7 | `GameClient/ArtSource/Silverbrook/Stables` | modelling |
-| [Workshop.png](Workshop.png) | Workshop | BLD-GreenlandsWorkshop-01 | 8 × 6 × 6 | — | waiting for a model |
+| [Stables.png](Stables.png) | Stables | BLD-GreenlandsStables-01 | 12 × 8 × 7 | `GameClient/ArtSource/Silverbrook/Stables` | delivered |
+| [Workshop.png](Workshop.png) | Workshop | BLD-GreenlandsWorkshop-01 | 8 × 6 × 6 | `GameClient/ArtSource/Silverbrook/Workshop` | modelling |
 | [Farmhouse.png](Farmhouse.png) | Farmhouse | BLD-GreenlandsFarmhouse-01 | 12 × 8 × 7 | `GameClient/ArtSource/Silverbrook/Farmhouse` | delivered |
 | [Townhouse-1.png](Townhouse-1.png) | Townhouse | BLD-GreenlandsTownhouse-01 | 8 × 7 × 9 | `GameClient/ArtSource/Silverbrook/Townhouse1` | delivered |
 | [Townhouse-2.png](Townhouse-2.png) | Townhouse | BLD-GreenlandsTownhouse-01 | 8 × 7 × 9 | `GameClient/ArtSource/Silverbrook/Townhouse2` | delivered |
