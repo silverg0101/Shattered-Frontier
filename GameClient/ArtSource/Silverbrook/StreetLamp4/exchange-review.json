@@ -1,0 +1,69 @@
+{
+  "source": {
+    "meshes": 3,
+    "triangles": 36206,
+    "size_m": [
+      1.3,
+      1.3,
+      5.0
+    ],
+    "materials": [
+      "SB_ForgedIron",
+      "SB_LeadCame",
+      "SB_OakTimber",
+      "SB_StreetLamp4_Bronze",
+      "SB_StreetLamp4_Glow",
+      "SB_StreetLamp4_Stone"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 6
+  },
+  "glb": {
+    "meshes": 3,
+    "triangles": 36206,
+    "size_m": [
+      1.3,
+      1.3,
+      5.0
+    ],
+    "materials": [
+      "SB_ForgedIron",
+      "SB_LeadCame",
+      "SB_OakTimber",
+      "SB_StreetLamp4_Bronze",
+      "SB_StreetLamp4_Glow",
+      "SB_StreetLamp4_Stone"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 3,
+    "triangles": 36206,
+    "size_m": [
+      1.3,
+      1.3,
+      5.0
+    ],
+    "materials": [
+      "SB_ForgedIron",
+      "SB_LeadCame",
+      "SB_OakTimber",
+      "SB_StreetLamp4_Bronze",
+      "SB_StreetLamp4_Glow",
+      "SB_StreetLamp4_Stone"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 4
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookStreetLamp4",
+  "size_m": [
+    1.3,
+    1.3,
+    5.0
+  ],
+  "slot_m": [
+    1.5,
+    1.5,
+    5.0
+  ],
+  "fits": true,
+  "slots": 6,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 9,
+  "nanite_fallback_triangles": 9622,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 128
+  }
+}

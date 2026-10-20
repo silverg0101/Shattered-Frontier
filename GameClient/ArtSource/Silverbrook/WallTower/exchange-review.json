@@ -1,0 +1,75 @@
+{
+  "source": {
+    "meshes": 4,
+    "triangles": 13088,
+    "size_m": [
+      8.0,
+      8.0,
+      12.0
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_OakTimber",
+      "SB_WallSection_LoopVoid",
+      "SB_WallSection_Masonry",
+      "SB_WallSection_Paving",
+      "SB_WallTower_Banner",
+      "SB_WallTower_Gilt"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 15
+  },
+  "glb": {
+    "meshes": 4,
+    "triangles": 13088,
+    "size_m": [
+      8.0,
+      8.0,
+      12.0
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_OakTimber",
+      "SB_WallSection_LoopVoid",
+      "SB_WallSection_Masonry",
+      "SB_WallSection_Paving",
+      "SB_WallTower_Banner",
+      "SB_WallTower_Gilt"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 4,
+    "triangles": 13088,
+    "size_m": [
+      8.0,
+      8.0,
+      12.0
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_OakTimber",
+      "SB_WallSection_LoopVoid",
+      "SB_WallSection_Masonry",
+      "SB_WallSection_Paving",
+      "SB_WallTower_Banner",
+      "SB_WallTower_Gilt"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 10
+  }
+}
