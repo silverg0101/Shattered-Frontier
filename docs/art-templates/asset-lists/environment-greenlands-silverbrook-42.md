@@ -18,7 +18,6 @@
 | VEG-GreenlandsLeafNeedleLitter-01 | Vegetation / Fallen pine needles and brown leaves, as decals or small meshes | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `leaf_needle_litter` | P2; 0 of 3 variants owned | unassigned / planned | proposed / — | concept sheet and asset view (Qwen Image), then model (Pixal3D or Blender); 3 variant(s) |
 | VEG-GreenlandsMossPatch-01 | Vegetation / Flat moss mats on ground and rock tops | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `moss_patch` | P2; 0 of 3 variants owned | unassigned / planned | proposed / — | concept sheet and asset view (Qwen Image), then model (Pixal3D or Blender); 3 variant(s) |
 | VEG-GreenlandsSaplingBroadleaf-01 | Vegetation / 1-3 m saplings in clearings and at forest edges; doubles as GAT-01 tree growth stage | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `sapling_broadleaf` | P2; 0 of 3 variants owned | unassigned / planned | proposed / — | concept sheet and asset view (Qwen Image), then model (Pixal3D or Blender); 3 variant(s) |
-| BLD-GreenlandsFarmhouse-01 | Building / Farmhouse — Food production | Silverbrook definition §8 (7 × 12 m, height × width) | P2; modular; Greenlands half-timbered style (definition §3) | Blender session / in-progress | owner-supplied / — | modelling in `GameClient/ArtSource/Silverbrook/Farmhouse`; 1 variant(s) still to land; closes when its meshes are in the biome library and the look profile's `buildings` map |
 | BLD-GreenlandsFishermansWharf-01 | Building / Fisherman's wharf | Silverbrook layout `building_types.wharf` (20 × 8 × 1 m, width × depth × height; graybox) | P2; modular; Greenlands half-timbered style (definition §3) | Blender session / image-complete | owner-supplied / — | model from the owner-supplied concept in the Blender session; do not generate new concept images |
 | BLD-GreenlandsGatehouse-01 | Building / Gatehouse — Defence | Silverbrook definition §10; layout `gates` | P2; modular; Greenlands half-timbered style (definition §3) | Blender session / image-complete | owner-supplied / — | model from the owner-supplied concept in the Blender session; do not generate new concept images |
 | BLD-GreenlandsGranary-01 | Building / Granary | Silverbrook layout `building_types.granary` (8 × 8 × 10 m, width × depth × height; graybox) | P2; modular; Greenlands half-timbered style (definition §3) | Blender session / image-complete | owner-supplied / — | model from the owner-supplied concept in the Blender session; do not generate new concept images |
@@ -66,9 +65,6 @@ Flat moss mats on ground and rock tops One asset family for the `moss_patch` rol
 ### VEG-GreenlandsSaplingBroadleaf-01
 1-3 m saplings in clearings and at forest edges; doubles as GAT-01 tree growth stage One asset family for the `sapling_broadleaf` role, placed by `dress_zone.py` where: clearings. Needs 3 variant(s) that share a silhouette family; separate meshes, no baked-in ground or neighbours. Required images: concept sheet and clean asset view. Unknowns: exact triangle budget and LODs, set when the model pipeline picks it up.
 
-### BLD-GreenlandsFarmhouse-01
-Farmhouse — Food production, at Silverbrook definition §8 (7 × 12 m, height × width). Greenlands half-timbered style per definition §3: timber, stone foundations, plaster walls and slate roofs; civic buildings in dressed stone. One building or modular piece only; no street, terrain or props baked in. Concept: `docs/Game-Design/concept-art/Silverbrook/Farmhouse.png`. Unknowns: interior scope and whether it splits into a modular kit, decided before modelling.
-
 ### BLD-GreenlandsFishermansWharf-01
 Fisherman's wharf, at Silverbrook layout `building_types.wharf` (20 × 8 × 1 m, width × depth × height; graybox). Greenlands half-timbered style per definition §3: timber, stone foundations, plaster walls and slate roofs; civic buildings in dressed stone. One building or modular piece only; no street, terrain or props baked in. Concept: `docs/Game-Design/concept-art/Silverbrook/Fishermans Wharf.png`. Unknowns: interior scope and whether it splits into a modular kit, decided before modelling.
 
@@ -104,4 +100,4 @@ Rounded rocky hill/dome silhouettes for distance; northern mountains belong to T
 
 ## Progress
 
-- 2026-10-19: 12 planned, 3 modelling in the Blender session, 8 with an owner-supplied concept waiting for a model.
+- 2026-10-19: 12 planned, 2 modelling in the Blender session, 8 with an owner-supplied concept waiting for a model.

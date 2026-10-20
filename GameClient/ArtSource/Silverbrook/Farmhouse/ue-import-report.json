@@ -1,0 +1,22 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookFarmhouse",
+  "size_m": [
+    11.81,
+    7.05,
+    6.89
+  ],
+  "slot_m": [
+    12,
+    8,
+    7
+  ],
+  "fits": true,
+  "slots": 12,
+  "nanite": true,
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 26433,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 256
+  }
+}
