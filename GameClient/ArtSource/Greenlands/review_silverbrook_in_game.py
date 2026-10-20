@@ -69,16 +69,16 @@ def tick(delta):
             walk_started = now; state['start_cm'] = [round(p.x), round(p.y), round(p.z)]
             shot('Silverbrook-Arrival-InGame.png'); last.update(pos=(p.x, p.y), at=now)
             return
-        if shots['aerial'] is not None:  # after the walk: each ReviewCamera_* in turn, 4 s to settle, then a capture
+        if shots['aerial'] is not None:  # after the walk: each ReviewCamera_* in turn, 3 s to settle, then a capture
             cams = sorted(u.GameplayStatics.get_all_actors_of_class(world, u.CameraActor), key=lambda c: c.get_actor_label())
-            step = int((now - shots['aerial']) // 4)
-            if step > shots['taken'] and shots['taken'] < len(cams):
-                cam = cams[shots['taken']]
-                shot(f"Silverbrook-{cam.get_actor_label().replace('ReviewCamera_', '')}-InGame.png")
-                shots['taken'] += 1
-                if shots['taken'] < len(cams):
-                    pc.set_view_target_with_blend(cams[shots['taken']], 0)
-            elif shots['taken'] == len(cams) and step > len(cams) + 1:
+            phase = int((now - shots['aerial']) // 3); i = phase // 2  # even phase: switch to camera i; odd: capture it
+            if i < len(cams) and i == shots['taken']:  # HighResShot writes a frame later, so never switch in the same tick
+                if phase % 2 == 0:
+                    pc.set_view_target_with_blend(cams[i], 0)
+                else:
+                    shot(f"Silverbrook-{cams[i].get_actor_label().replace('ReviewCamera_', '')}-InGame.png")
+                    shots['taken'] += 1
+            elif shots['taken'] == len(cams) and phase > 2 * len(cams) + 1:
                 finish()
             return
         frames.append(delta * 1000)
@@ -101,9 +101,7 @@ def tick(delta):
             ordered = sorted(frames)
             state['frame_ms'] = dict(median=round(ordered[len(ordered) // 2], 1), p95=round(ordered[int(len(ordered) * 0.95)], 1), frames=len(ordered))
             state['final_pawn_cm'] = [round(p.x), round(p.y), round(p.z)]
-            cams = sorted(u.GameplayStatics.get_all_actors_of_class(world, u.CameraActor), key=lambda c: c.get_actor_label())
-            pc.set_view_target_with_blend(cams[0], 0)  # ReviewCamera_* placed by build_silverbrook.py
-            shots['aerial'] = now
+            shots['aerial'] = now  # then each ReviewCamera_* placed by build_silverbrook.py
     except Exception as error:
         state['error'] = str(error); finish()
 

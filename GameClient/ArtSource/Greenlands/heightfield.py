@@ -63,8 +63,9 @@ def _smoothstep(t):
 
 
 class Heightfield:
-    def __init__(self, L, pads=(), spacing=5.0, region=None):
+    def __init__(self, L, pads=(), spacing=5.0, region=None, foundations=()):
         """pads: (x, y, radius) footprints to flatten, e.g. the builder's placed buildings.
+        foundations: (x, y, w, d, yaw) building footprints levelled last, after roads and water.
         region: local(x, y) height of the region terrain in this zone's frame; the zone blends to it at its edges."""
         self.region = region
         self.L, self.step = L, spacing
@@ -85,6 +86,9 @@ class Heightfield:
             self._basin(b)
         for w in waters(L):
             self._channel(w)
+        claimed = bytearray(self.nx * self.ny)
+        for f in foundations:
+            self._foundation(*f, claimed)
 
     # --- grid access -------------------------------------------------------
     def at(self, x, y):
@@ -175,6 +179,7 @@ class Heightfield:
         """Grade-limited centreline heights, then a flat bed with blended shoulders. Roads go down in order;
         a finished bed is locked, and a later road is pinned to it where they cross. Returns profiles for checks."""
         profiles, locked = {}, bytearray(self.nx * self.ny)
+        self.road_bed = locked
         cell = lambda p: int(round((p[1] - self.y0) / self.step)) * self.nx + int(round((p[0] - self.x0) / self.step))
         for tier in ('primary', 'secondary', 'trail'):
             hw = max(self.L['roads'][f'{tier}_width'] / 2, self.step)  # the grid can't hold a narrower bed
@@ -239,6 +244,24 @@ class Heightfield:
         for k, cx, cy in self._cells(x, y, r + SHOULDER):
             d = math.hypot(cx - x, cy - y)
             self.h[k] += (z - self.h[k]) * (1 - _smoothstep((d - r) / SHOULDER))
+
+    def _foundation(self, x, y, w, d, yaw, claimed):
+        """Level every grid cell that the footprint's bilinear heights read (footprint plus one cell) to the
+        height at its centre. Road beds and cells an earlier building claimed keep their height."""
+        z, c, s = self.at(x, y), math.cos(math.radians(yaw)), math.sin(math.radians(yaw))
+        for k, cx, cy in self._cells(x, y, math.hypot(w, d) / 2 + self.step):
+            lx, ly = (cx - x) * c + (cy - y) * s, -(cx - x) * s + (cy - y) * c
+            if abs(lx) < w / 2 + self.step and abs(ly) < d / 2 + self.step and not self.road_bed[k] and not claimed[k]:
+                self.h[k] = z
+                claimed[k] = 1
+
+    def footprint(self, x, y, w, d, yaw, step=1.0):
+        """(lowest, highest) ground under a footprint, sampled every `step` m."""
+        c, s = math.cos(math.radians(yaw)), math.sin(math.radians(yaw))
+        nx, ny = max(1, math.ceil(w / step)), max(1, math.ceil(d / step))
+        zs = [self.at(x + c * ox - s * oy, y + s * ox + c * oy)
+              for ox in (w * (i / nx - 0.5) for i in range(nx + 1)) for oy in (d * (j / ny - 0.5) for j in range(ny + 1))]
+        return min(zs), max(zs)
 
     def half_width(self, w):
         return max(w['width'] / 2, self.step)  # the grid can't hold a narrower channel

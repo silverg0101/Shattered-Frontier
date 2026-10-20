@@ -9,7 +9,7 @@ Everything is planned first, then spawned onto the terrain once its pads are kno
 east is +X. Script any zone-only change here; the map is regenerated, not hand-edited.
 See docs/greenlands-silverbrook-zone-plan.md.
 """
-import json, math, random, sys
+import json, math, random, sys, zlib
 from pathlib import Path
 import unreal as u
 
@@ -33,6 +33,15 @@ COLOURS = {'Ground': (0.16, 0.30, 0.11), 'Road': (0.55, 0.45, 0.30), 'Trail': (0
            'House': (0.62, 0.42, 0.28), 'Plot': (0.88, 0.76, 0.18), 'Field': (0.42, 0.48, 0.14),
            'Marker': (0.75, 0.10, 0.08), 'Rock': (0.36, 0.37, 0.40)}
 TYPES = L['building_types']
+PROFILE = json.loads((ROOT / 'greenlands-look-profile.json').read_text(encoding='utf-8'))
+# Layout building type -> look-profile building; its delivered meshes ('have') replace the graybox box.
+KIND_BUILDING = {'town_hall': 'Town Hall', 'adventurers_guild': "Adventurers' Guild", 'inn': 'The Golden Stag Inn',
+                 'blacksmith': 'Blacksmith', 'temple': 'Temple of the Dawn', 'market_stall': 'Market stall',
+                 'watchtower': 'Watchtower', 'stables': 'Stables', 'workshop': 'Workshop', 'farmhouse': 'Farmhouse',
+                 'cottage': 'Cottage', 'townhouse': 'Townhouse', 'elite_house': 'Northridge house'}
+_have = {k: PROFILE['buildings'].get(b, {}).get('have', []) for k, b in KIND_BUILDING.items()}
+_meshes = pcg_dressing._meshes({n for names in _have.values() for n in names})
+VARIANTS = {k: [_meshes[n] for n in names] for k, names in _have.items() if names}
 HALF = L['zone_half_extent']
 actors = u.get_editor_subsystem(u.EditorActorSubsystem)
 counts = {}
@@ -83,6 +92,38 @@ def _box(label, x, y, w, d, h, mat, z0, yaw, collide, folder, ground, pitch=0.0)
     return a
 
 
+def model(label, kind, x, y, yaw, folder):
+    """Queue a delivered building mesh, chosen by a stable hash of the label. `yaw` turns the front toward -Y; the
+    Blender packages face -Y, which the FBX import flips to +Y, so the actor turns a further 180 degrees.
+    The terrain is levelled under it (Heightfield foundations); where a 5 m grid can't hold it level, the building
+    stands on the highest ground under its footprint and a stone plinth fills down to below the lowest."""
+    def spawn(yaw=yaw + 180):
+        mesh = VARIANTS[kind][zlib.crc32(label.encode()) % len(VARIANTS[kind])]
+        b = mesh.get_bounding_box()
+        w, d = (b.max.x - b.min.x) / 100, (b.max.y - b.min.y) / 100
+        ox, oy = (b.max.x + b.min.x) / 200, (b.max.y + b.min.y) / 200
+        c, s = math.cos(math.radians(yaw)), math.sin(math.radians(yaw))
+        px, py = x + c * ox - s * oy, y + s * ox + c * oy
+        lo, hi = HF.footprint(px, py, w, d, yaw)
+        a = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(x * 100, y * 100, hi * 100), u.Rotator(roll=0, pitch=0, yaw=yaw))
+        a.static_mesh_component.set_static_mesh(mesh)
+        a.set_actor_label(label); a.set_folder_path(folder)
+        if kind == 'townhouse' and 'street' not in foundation:
+            foundation['street'] = (x, y, yaw - 180, hi)  # first townhouse: the street camera looks at its front
+        foundation['max_step'] = max(foundation['max_step'], round(hi - lo, 2))
+        if hi - lo > 0.05:
+            _box(f'{label}_Plinth', px, py, w, d, hi - lo + 0.3, 'Wall', lo - 0.3, yaw, True, folder, None)
+            foundation['plinths'] += 1
+    pending.append(spawn)
+    counts[folder] = counts.get(folder, 0) + 1
+    counts['Models'] = counts.get('Models', 0) + 1
+
+
+def facing(x, y, tx, ty):
+    """Yaw that turns a model's front (-Y) from (x, y) toward (tx, ty)."""
+    return math.degrees(math.atan2(ty - y, tx - x)) + 90
+
+
 def strip(label, points, width, mat, h, folder, z_at, collide=False, piece=10.0):
     """Queue thin boxes along a polyline in pieces of at most `piece` m, pitched to follow z_at(i, t)."""
     for i, (p, q) in enumerate(zip(points, points[1:])):
@@ -126,6 +167,12 @@ def seg_dist(p, a, b):
     return math.dist(p, (ax + t * dx, ay + t * dy))
 
 
+def nearest(p, a, b):
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    t = max(0.0, min(1.0, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / (dx * dx + dy * dy)))
+    return (a[0] + t * dx, a[1] + t * dy)
+
+
 def line_dist(p, pts):
     return min(seg_dist(p, a, b) for a, b in zip(pts, pts[1:]))
 
@@ -159,6 +206,8 @@ for name, g in L['gates'].items():
     t = math.atan2(g[1] / B, g[0] / A)
     gate_points[name] = (A * math.cos(t), B * math.sin(t))
 placed = []  # (x, y, radius)
+footprints = []  # (x, y, w, d, yaw) of every building on land, levelled last in the terrain
+foundation = dict(max_step=0.0, plinths=0)  # ground height range under the delivered buildings
 flats = []  # (x, y, radius) open areas to level: plaza, fields, yard, ruins
 blocked = []  # required places that overlap a road, the river, the wall or a building
 
@@ -199,7 +248,12 @@ def building(label_text, kind, x, y, yaw, mat, folder, require=True):
         blocked.append(f'{label_text} at {x:.0f},{y:.0f}')
     if ok:
         placed.append((x, y, math.hypot(w, d) / 2))
-        box(label_text, x, y, w, d, h, mat, yaw=yaw, folder=folder)
+        if kind not in ('docks', 'wharf'):
+            footprints.append((x, y, w, d, yaw))
+        if kind in VARIANTS:
+            model(label_text, kind, x, y, yaw, folder)
+        else:
+            box(label_text, x, y, w, d, h, mat, yaw=yaw, folder=folder)
     return ok
 
 
@@ -303,7 +357,9 @@ for place in L['places']:
         continue
     x, y = place.get('at', (0, 0))
     if kind in TYPES:
-        building(tag, kind, x, y, place.get('yaw', 0), 'Civic', 'Places')
+        road = min(((name, pts) for name, pts, _, tier in ROADS if tier != 'trail'), key=lambda r: line_dist((x, y), r[1]))[1]
+        near = min((nearest((x, y), a, b) for a, b in zip(road, road[1:])), key=lambda q: math.dist(q, (x, y)))
+        building(tag, kind, x, y, place.get('yaw') or facing(x, y, *near), 'Civic', 'Places')
         if kind == 'mill':
             building(f'{tag}_Granary', 'granary', x + 17, y - 6, 0, 'Civic', 'Places')
     elif kind == 'plaza':
@@ -358,8 +414,8 @@ def frontage(kind):
             yaw = math.degrees(math.atan2(uy, ux))
             t = r
             while t < seg - r:
-                for side in (-1, 1):
-                    yield a[0] + ux * t - side * uy * off, a[1] + uy * t + side * ux * off, yaw
+                for side in (-1, 1):  # +Y of the lot faces away from the road, so the model's front (-Y) faces it
+                    yield a[0] + ux * t - side * uy * off, a[1] + uy * t + side * ux * off, yaw if side == 1 else yaw + 180
                 t += 2 * r + 2.5
 
 
@@ -380,7 +436,7 @@ for name, dist in L['districts'].items():
         x, y = rng.uniform(min(xs), max(xs)), rng.uniform(min(ys), max(ys))
         if not in_polygon((x, y), poly) or inside((x, y)) != dist['inside_wall']:
             continue
-        yaw = round(math.degrees(math.atan2(cy - y, cx - x)) / 15) * 15
+        yaw = round(facing(x, y, cx, cy) / 15) * 15
         made += building(tag(), kind, x, y, yaw, 'House', f'Districts/{name}', require=False)
     fill_report[name] = f"{made}/{dist['count']} ({rows} in rows)"
     label(name, cx, cy, 30, 10)
@@ -393,7 +449,7 @@ label('Arrival', ax, ay, 8, 3)
 
 # Terrain: shaped from the layout's elevation with every building, plot and open area levelled.
 REGION, DATUM, SEA = zone_region('silverbrook-town-layout.json')  # region first: edges and backdrop come from it
-HF = Heightfield(L, pads=placed + flats, region=REGION)
+HF = Heightfield(L, pads=placed + flats, region=REGION, foundations=footprints)
 terrain_problems, terrain_stats = check_terrain(L, HF)
 assert not terrain_problems, f'Terrain checks failed: {terrain_problems}'
 if u.EditorAssetLibrary.does_asset_exist(TERRAIN):
@@ -458,10 +514,17 @@ cam_e = actors.spawn_actor_from_class(u.CameraActor, u.Vector(ex * 100, ey * 100
 cam_e.set_actor_label('ReviewCamera_Eastwood')
 cam_e.camera_component.set_editor_property('field_of_view', 75)
 
+# Street camera 14 m in front of the first townhouse, looking back at its door.
+hx, hy, hyaw, hz = foundation.pop('street')
+fx_, fy_ = math.sin(math.radians(hyaw)), -math.cos(math.radians(hyaw))  # the front (-Y) direction
+cam_s = actors.spawn_actor_from_class(u.CameraActor, u.Vector((hx + 14 * fx_) * 100, (hy + 14 * fy_) * 100, (hz + 5) * 100),
+                                      u.Rotator(roll=0, pitch=-10, yaw=math.degrees(math.atan2(-fy_, -fx_))))
+cam_s.set_actor_label('ReviewCamera_Street')
+cam_s.camera_component.set_editor_property('field_of_view', 75)
+
 assert len(bridges) >= 3, f'Expected at least 3 bridges, built {len(bridges)}'
 
 # Dressing (pipeline stage 3): rules from the look profile decide placements; a PCG graph spawns them.
-PROFILE = json.loads((ROOT / 'greenlands-look-profile.json').read_text(encoding='utf-8'))
 DRESS_DISTRICTS = list(L['districts'])  # each district's 'dress' block scales the look profile's densities
 dressing = {}
 for district in DRESS_DISTRICTS:
@@ -476,4 +539,4 @@ for district in DRESS_DISTRICTS:
     dressing[district] = dict(version=result['version'], instances=expected, hash=dress_zone.transforms_hash(result),
                               candidates=len(cands), gaps=result['gaps'])
 assert u.EditorLoadingAndSavingUtils.save_map(world, ZONE), 'Could not save the zone map'
-u.log(f'SILVERBROOK_BUILT Map={ZONE} Datum={DATUM} Bridges={len(bridges)} Fill={fill_report} Terrain={terrain_stats} Dressing={dressing} Counts={counts}')
+u.log(f'SILVERBROOK_BUILT Map={ZONE} Datum={DATUM} Bridges={len(bridges)} Fill={fill_report} Terrain={terrain_stats} Foundations={foundation} Dressing={dressing} Counts={counts}')
