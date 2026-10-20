@@ -1,0 +1,22 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookMill",
+  "size_m": [
+    11.5,
+    6.99,
+    8.93
+  ],
+  "slot_m": [
+    12,
+    10,
+    9
+  ],
+  "fits": true,
+  "slots": 13,
+  "nanite": true,
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 27110,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 256
+  }
+}

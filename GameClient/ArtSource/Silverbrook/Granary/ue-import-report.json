@@ -1,0 +1,22 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookGranary",
+  "size_m": [
+    7.84,
+    7.62,
+    9.74
+  ],
+  "slot_m": [
+    8,
+    8,
+    10
+  ],
+  "fits": true,
+  "slots": 9,
+  "nanite": true,
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 28434,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 256
+  }
+}

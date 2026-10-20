@@ -8,6 +8,8 @@
   },
   "buildings": {
     "_about": "Biome building library for the missing-asset report, keyed by settlement building name (definition section 8 or layout type). 'have': delivered meshes in the settlement's design, one main mesh per variant; a building needs as many variants as it has owner-supplied concept images (at least one). 'stand_ins': older project meshes that fill the slot in the graybox until then; they never close a row. Licensed Fab or Megascans meshes don't count.",
+    "Granary": {"have": ["SM_SilverbrookGranary"]},
+    "Mill": {"have": ["SM_SilverbrookMill"]},
     "Wall section": {"have": ["SM_SilverbrookWallSection"]},
     "Stables": {"have": ["SM_SilverbrookStables"]},
     "Farmhouse": {"have": ["SM_SilverbrookFarmhouse"]},

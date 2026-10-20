@@ -33,8 +33,8 @@ Owner-supplied concept images for the Silverbrook buildings. One image is one de
 | [Northridge House-4.png](Northridge%20House-4.png) | Northridge house | BLD-GreenlandsNorthridgeHouse-01 | 12 × 10 × 10 | `GameClient/ArtSource/Silverbrook/NorthridgeHouse4` | delivered |
 | [Northridge House-5.png](Northridge%20House-5.png) | Northridge house | BLD-GreenlandsNorthridgeHouse-01 | 12 × 10 × 10 | `GameClient/ArtSource/Silverbrook/NorthridgeHouse5` | delivered |
 | [Northridge House-6.png](Northridge%20House-6.png) | Northridge house | BLD-GreenlandsNorthridgeHouse-01 | 12 × 10 × 10 | `GameClient/ArtSource/Silverbrook/NorthridgeHouse6` | delivered |
-| [Mill.png](Mill.png) | Mill | BLD-GreenlandsMill-01 | 12 × 10 × 9 | `GameClient/ArtSource/Silverbrook/Mill` | modelling |
-| [Granary.png](Granary.png) | Granary | BLD-GreenlandsGranary-01 | 8 × 8 × 10 | `GameClient/ArtSource/Silverbrook/Granary` | modelling |
+| [Mill.png](Mill.png) | Mill | BLD-GreenlandsMill-01 | 12 × 10 × 9 | `GameClient/ArtSource/Silverbrook/Mill` | delivered |
+| [Granary.png](Granary.png) | Granary | BLD-GreenlandsGranary-01 | 8 × 8 × 10 | `GameClient/ArtSource/Silverbrook/Granary` | delivered |
 | [Fishermans Wharf.png](Fishermans%20Wharf.png) | Fisherman's wharf | BLD-GreenlandsFishermansWharf-01 | 20 × 8 × 1 | `GameClient/ArtSource/Silverbrook/FishermansWharf` | modelling |
 | [Riverside Docks.png](Riverside%20Docks.png) | Riverside docks | BLD-GreenlandsRiversideDocks-01 | 30 × 10 × 1 | `GameClient/ArtSource/Silverbrook/RiversideDocks` | modelling |
 | [Wall Section.png](Wall%20Section.png) | Wall section | BLD-GreenlandsWallSection-01 | 20 × 3 × 8 | `GameClient/ArtSource/Silverbrook/WallSection` | delivered |

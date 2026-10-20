@@ -1,0 +1,176 @@
+{
+  "asset": "SilverbrookGranary",
+  "asset_id": "BLD-GreenlandsGranary-01",
+  "reference": {
+    "file": "Granary-reference.png",
+    "sha256": "48197f61ff926b240318e9905b5f336d6890eb3e442b4d89ad39284e1cc17a0c"
+  },
+  "blender": "5.1.1",
+  "generator": "build_granary.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    7.839,
+    7.62,
+    9.74
+  ],
+  "meshes": {
+    "SM_SBGranary_Masonry": {
+      "triangles": 1852,
+      "materials": [
+        "SB_Granary_Rubble",
+        "SB_Ashlar"
+      ]
+    },
+    "SM_SBGranary_Plaster": {
+      "triangles": 496,
+      "materials": [
+        "SB_LimePlaster"
+      ]
+    },
+    "SM_SBGranary_Timber": {
+      "triangles": 8420,
+      "materials": [
+        "SB_OakTimber",
+        "SB_DoorBoards"
+      ]
+    },
+    "SM_SBGranary_Roof": {
+      "triangles": 57488,
+      "materials": [
+        "SB_Slate",
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBGranary_Details": {
+      "triangles": 2500,
+      "materials": [
+        "SB_ForgedIron",
+        "SB_DoorBoards",
+        "SB_LanternGlow",
+        "SB_Granary_Rope"
+      ]
+    }
+  },
+  "triangles": 70756,
+  "materials": [
+    {
+      "name": "SB_Slate",
+      "scan": "grey_roof_tiles_02",
+      "dark": [
+        0.2,
+        0.22,
+        0.28
+      ],
+      "lichen": "lichen_rock",
+      "normal": 1.0
+    },
+    {
+      "name": "SB_Ashlar",
+      "scan": "stone_wall_04",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_Granary_Rubble",
+      "scan": "rock_wall_08",
+      "dark": [
+        0.4,
+        0.4,
+        0.42
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_LimePlaster",
+      "scan": "patterned_clay_plaster",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_DoorBoards",
+      "scan": "old_planks_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LanternGlow",
+      "colour": [
+        0.3,
+        0.2,
+        0.1
+      ],
+      "roughness": 0.3,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.38,
+        0.08
+      ],
+      "strength": 5
+    },
+    {
+      "name": "SB_Granary_Rope",
+      "colour": [
+        0.3,
+        0.22,
+        0.13
+      ],
+      "roughness": 0.9,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookGranary",
+  "slot_m": [
+    8,
+    8,
+    10
+  ],
+  "outputs": [
+    "SilverbrookGranary.blend",
+    "SilverbrookGranary.glb",
+    "SilverbrookGranary.fbx"
+  ]
+}

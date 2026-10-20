@@ -1,0 +1,237 @@
+{
+  "asset": "SilverbrookMill",
+  "reference": {
+    "file": "Mill-reference.png",
+    "sha256": "3588deb907aa073b608f511ed9f20f088cb777576b968135d1ab6ee7fecb68e5"
+  },
+  "blender": "5.1.1",
+  "generator": "build_mill.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    11.5,
+    6.988,
+    8.925
+  ],
+  "meshes": {
+    "SM_SBMill_Masonry": {
+      "triangles": 1060,
+      "materials": [
+        "SB_Mill_Ashlar"
+      ]
+    },
+    "SM_SBMill_Plaster": {
+      "triangles": 508,
+      "materials": [
+        "SB_LimePlaster"
+      ]
+    },
+    "SM_SBMill_Timber": {
+      "triangles": 5516,
+      "materials": [
+        "SB_OakTimber",
+        "SB_DoorBoards"
+      ]
+    },
+    "SM_SBMill_Roof": {
+      "triangles": 55252,
+      "materials": [
+        "SB_Slate",
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBMill_Details": {
+      "triangles": 14764,
+      "materials": [
+        "SB_ForgedIron",
+        "SB_DoorBoards",
+        "SB_Mill_Rope",
+        "SB_Mill_Shutter",
+        "SB_LitGlass",
+        "SB_LeadCame",
+        "SB_ChimneyPot",
+        "SB_PlanterSoil",
+        "SB_LanternGlow"
+      ]
+    },
+    "SM_SBMill_Wheel": {
+      "triangles": 3248,
+      "materials": [
+        "SB_OakTimber",
+        "SB_ForgedIron"
+      ]
+    }
+  },
+  "triangles": 80348,
+  "materials": [
+    {
+      "name": "SB_Slate",
+      "scan": "grey_roof_tiles_02",
+      "dark": [
+        0.2,
+        0.22,
+        0.28
+      ],
+      "lichen": "lichen_rock",
+      "normal": 1.0
+    },
+    {
+      "name": "SB_LimePlaster",
+      "scan": "patterned_clay_plaster",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_DoorBoards",
+      "scan": "old_planks_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_Mill_Ashlar",
+      "scan": "sandstone_blocks_05",
+      "dark": [
+        0.45,
+        0.4,
+        0.33
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_Mill_Shutter",
+      "scan": "old_planks_02",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_Mill_Rope",
+      "scan": "hessian_380",
+      "dark": [
+        0.45,
+        0.36,
+        0.22
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LeadCame",
+      "colour": [
+        0.05,
+        0.05,
+        0.05
+      ],
+      "roughness": 0.45,
+      "metallic": 0.8,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LitGlass",
+      "colour": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "roughness": 0.15,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.5,
+        0.14
+      ],
+      "strength": 3
+    },
+    {
+      "name": "SB_LanternGlow",
+      "colour": [
+        0.3,
+        0.2,
+        0.1
+      ],
+      "roughness": 0.3,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.38,
+        0.08
+      ],
+      "strength": 5
+    },
+    {
+      "name": "SB_PlanterSoil",
+      "colour": [
+        0.06,
+        0.04,
+        0.025
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_ChimneyPot",
+      "colour": [
+        0.2,
+        0.085,
+        0.05
+      ],
+      "roughness": 0.75,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookMill",
+  "slot_m": [
+    12,
+    10,
+    9
+  ],
+  "outputs": [
+    "SilverbrookMill.blend",
+    "SilverbrookMill.glb",
+    "SilverbrookMill.fbx"
+  ]
+}
