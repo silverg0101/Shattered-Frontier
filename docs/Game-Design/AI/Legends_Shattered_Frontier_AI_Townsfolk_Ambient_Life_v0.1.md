@@ -263,6 +263,33 @@ The census validator checks:
 
 1. **Census only.** Generate `silverbrook-census.json` from the layout. Validate it and print a summary (residents per district, jobs filled, markets, average links). No engine work. *Exit:* validator passes, and the same seed gives the same file. **Done 2026-10-20:** `GameClient/ArtSource/Greenlands/townsfolk_census.py` reads `silverbrook-buildings.json` (written by the zone builder) and the layout's `townsfolk` block (household ranges, job slots per building type, district archetype weights). It gives 1,085 residents in 312 households, 89 of 98 job slots filled, 7 markets, 7.8 neighbours per household and 2.0 friends per resident, and the same version on every run. Residents whose trade has no slot left become labourers. The lane-reachability check waits for step 2's lanes.
 2. **One district, 50 residents.** Enable MassCrowd, ZoneGraph, StateTree and Smart Objects. Generate lanes and door, stall and chat objects for Riverside and the Market Square. Run day blocks on an accelerated clock, with placeholder characters. *Exit:* residents leave home in the morning, work, shop and go home at night. A capture sequence shows it, and the frame cost is measured.
+
+   **First slice done (2026-10-20), development opt-in.**
+
+   *Engine and lanes.*
+   - The project enables MassGameplay, MassAI, MassCrowd, ZoneGraph, StateTree, GameplayStateTree and SmartObjects.
+   - `townsfolk_lanes.py` lays ZoneGraph footways, using the 'Footway' lane profile (one lane each way, `Config/DefaultPlugins.ini`). They run along Riverside's streets and up South Street to the Market Square: 6 street pieces, 2 junction polygons, 30 lanes.
+   - The zone builder lays the footways on every rebuild.
+
+   *Census.* Hours come from `ArtSource/Townsfolk/townsfolk-archetypes.json`.
+
+   *Runtime* (`Townsfolk/SFTownsfolk.*`), active only with `-TownsfolkPrototype` on `Greenlands_Silverbrook`, never on a dedicated server:
+   - It spawns 50 Riverside census residents as Mass entities.
+   - A Mass processor picks each resident's goal (home, work or a market errand) from the census hours and a seeded daily roll.
+   - It plans a shortest lane route. A resident may cross to the opposite lane, because ZoneGraph's own A* follows outgoing links only and has no U-turns.
+   - It walks the route on the terrain, and hides a resident indoors once home.
+   - `USFTownsfolkSettings` declares the resident cap, prototype day length, start hour, walking speed and district.
+
+   *Evidence* (`review_townsfolk_in_game.py`, 6-minute prototype day; captures `Townsfolk-*h.png`):
+   - Outdoors by game hour: 6:00 3, 8:00 13, 10:00 25, 12:00 10, 17:00 and after 0.
+   - Processor cost: 0.01–0.06 ms a frame.
+   - Routes: 4 of 175 fall back to a straight walk. These are workplaces such as the docks and mill, which the footways don't reach yet.
+
+   *Not done yet:*
+   - Placeholder cylinders as actors, not MassRepresentation.
+   - Mass steering and avoidance, Smart Objects (doors, stalls, benches).
+   - StateTree-driven blocks (schedule logic is a processor for now).
+   - Lanes beyond Riverside, social and night blocks, server town state.
 3. **Looks and scale.** Use MetaHuman Crowds kits and the near, mid and far representations, then town-wide residents at default caps. *Exit:* frame cost within `tune.townsfolk.frame_budget_ms` on the target spec, and no visible pops at tier changes.
 4. **Town state and hand-off.** The server clock (60-minute day), market open or closed, danger cells, and the attack and quest hand-offs. *Exit:* two clients see the same market state and crowd intent; a handed-off resident replicates and returns.
 5. **Reactions, crime and guards.** Fear at drawn weapons, annoyed barks, residents fighting back, roaming guards on patrol loops, witnessed crime making the player an offender, respawn at dawn. *Exit:* attacking a resident in view of a guard makes the player an offender and the guard engages; an unwitnessed attack in a back street gets reported only if a resident reaches a guard.

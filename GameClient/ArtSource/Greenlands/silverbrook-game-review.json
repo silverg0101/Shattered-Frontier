@@ -15,7 +15,7 @@
         41,
         527
       ],
-      "seconds": 71.8,
+      "seconds": 71.3,
       "z_cm": 658
     },
     {
@@ -23,7 +23,7 @@
         30,
         350
       ],
-      "seconds": 97.0,
+      "seconds": 96.6,
       "z_cm": 644
     },
     {
@@ -31,7 +31,7 @@
         20,
         205
       ],
-      "seconds": 117.8,
+      "seconds": 117.3,
       "z_cm": 852
     },
     {
@@ -39,7 +39,7 @@
         20,
         100
       ],
-      "seconds": 132.8,
+      "seconds": 132.3,
       "z_cm": 1540
     },
     {
@@ -47,7 +47,7 @@
         0,
         -30
       ],
-      "seconds": 151.6,
+      "seconds": 151.1,
       "z_cm": 1192
     },
     {
@@ -55,7 +55,7 @@
         12,
         -258
       ],
-      "seconds": 184.2,
+      "seconds": 183.7,
       "z_cm": 1763
     },
     {
@@ -63,17 +63,17 @@
         22,
         -529
       ],
-      "seconds": 222.9,
+      "seconds": 222.5,
       "z_cm": 3616
     }
   ],
   "stuck_events": 0,
   "walk_completed": true,
-  "walk_seconds": 222.9,
+  "walk_seconds": 222.5,
   "frame_ms": {
-    "median": 3.9,
-    "p95": 9.3,
-    "frames": 46378
+    "median": 3.7,
+    "p95": 5.8,
+    "frames": 55712
   },
   "final_pawn_cm": [
     2189,
@@ -93,6 +93,6 @@
     "climbed_out": true,
     "out_after_s": 6.0
   },
-  "elapsed_seconds": 269.8,
+  "elapsed_seconds": 269.0,
   "passed": true
 }
