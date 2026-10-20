@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropFirewoodStack",
+  "size_m": [
+    1.98,
+    1.1,
+    1.6
+  ],
+  "slots": 6,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 1,
+  "nanite_fallback_triangles": 5376,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 32
+  },
+  "slot_m": [
+    2.0,
+    1.1,
+    1.6
+  ],
+  "fits": true
+}

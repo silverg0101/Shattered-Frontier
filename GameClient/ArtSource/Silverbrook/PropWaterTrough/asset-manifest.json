@@ -1,0 +1,112 @@
+{
+  "asset": "SilverbrookPropWaterTrough",
+  "reference": {
+    "file": "PropWaterTrough-reference.png",
+    "sha256": "5b607b0c36590331c74f606d0de9146963f17e72262a1c584388ffdc12f68d38",
+    "source": "docs/Game-Design/concept-art/Silverbrook/Street Props.png",
+    "crop_px": [
+      245,
+      705,
+      455,
+      835
+    ]
+  },
+  "blender": "5.1.1",
+  "generator": "build_propwatertrough.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    2.123,
+    0.931,
+    0.721
+  ],
+  "meshes": {
+    "SM_SBPropWaterTrough_Granite": {
+      "triangles": 476,
+      "materials": [
+        "SB_PropWaterTrough_Granite"
+      ]
+    },
+    "SM_SBPropWaterTrough_Moss": {
+      "triangles": 1120,
+      "materials": [
+        "SB_PropWaterTrough_Moss"
+      ]
+    },
+    "SM_SBPropWaterTrough_Water": {
+      "triangles": 160,
+      "materials": [
+        "SB_PropWaterTrough_Water"
+      ]
+    }
+  },
+  "triangles": 1756,
+  "materials": [
+    {
+      "name": "SB_PropWaterTrough_Granite",
+      "scan": "rock_wall_08",
+      "dark": [
+        0.8,
+        0.82,
+        0.85
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_PropWaterTrough_Moss",
+      "scan": "mossy_rock",
+      "dark": [
+        0.5,
+        0.55,
+        0.35
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_PropWaterTrough_Water",
+      "colour": [
+        0.035,
+        0.06,
+        0.05
+      ],
+      "roughness": 0.04,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookPropWaterTrough",
+  "slot_m": [
+    2.2,
+    1.0,
+    0.8
+  ],
+  "placement": {
+    "footprint_m": [
+      2.2,
+      1.0
+    ],
+    "front": "-Y",
+    "ground_contact": true,
+    "near": [
+      "stables",
+      "farmhouse",
+      "square",
+      "inn",
+      "blacksmith",
+      "market",
+      "road"
+    ],
+    "clearance_m": 1.0
+  },
+  "outputs": [
+    "SilverbrookPropWaterTrough.blend",
+    "SilverbrookPropWaterTrough.glb",
+    "SilverbrookPropWaterTrough.fbx"
+  ]
+}

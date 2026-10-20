@@ -1,0 +1,66 @@
+{
+  "source": {
+    "meshes": 5,
+    "triangles": 1082,
+    "size_m": [
+      1.26,
+      1.036,
+      1.194
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_OakTimber",
+      "SB_PropGrindstone_Sandstone",
+      "SB_PropGrindstone_Water"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 9
+  },
+  "glb": {
+    "meshes": 5,
+    "triangles": 1082,
+    "size_m": [
+      1.26,
+      1.036,
+      1.194
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_OakTimber",
+      "SB_PropGrindstone_Sandstone",
+      "SB_PropGrindstone_Water"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 5,
+    "triangles": 1082,
+    "size_m": [
+      1.26,
+      1.036,
+      1.194
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_OakTimber",
+      "SB_PropGrindstone_Sandstone",
+      "SB_PropGrindstone_Water"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 3
+  }
+}

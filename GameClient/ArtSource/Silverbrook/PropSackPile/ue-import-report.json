@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropSackPile",
+  "size_m": [
+    1.58,
+    1.07,
+    1.02
+  ],
+  "slots": 3,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 3935,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 32
+  },
+  "slot_m": [
+    1.6,
+    1.1,
+    1.1
+  ],
+  "fits": true
+}

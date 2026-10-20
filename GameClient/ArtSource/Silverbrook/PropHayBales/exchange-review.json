@@ -1,0 +1,57 @@
+{
+  "source": {
+    "meshes": 3,
+    "triangles": 4716,
+    "size_m": [
+      2.084,
+      0.79,
+      1.26
+    ],
+    "materials": [
+      "SB_PropHayBales_Straw",
+      "SB_PropHayBales_Twine"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 3
+  },
+  "glb": {
+    "meshes": 3,
+    "triangles": 4716,
+    "size_m": [
+      2.084,
+      0.79,
+      1.26
+    ],
+    "materials": [
+      "SB_PropHayBales_Straw",
+      "SB_PropHayBales_Twine"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 3,
+    "triangles": 4716,
+    "size_m": [
+      2.084,
+      0.79,
+      1.26
+    ],
+    "materials": [
+      "SB_PropHayBales_Straw",
+      "SB_PropHayBales_Twine"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 1
+  }
+}

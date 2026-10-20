@@ -1,0 +1,86 @@
+{
+  "asset": "SilverbrookPropBench",
+  "reference": {
+    "file": "PropBench-reference.png",
+    "sha256": "9b3390a0ad9a45522bc13e96bd2365c03ba855fb3a97e3948502f6483ff2ec39",
+    "source": "docs/Game-Design/concept-art/Silverbrook/Street Props.png (cropped to this prop)",
+    "source_sha256": "761624e298905ddd5c6834505f7040301027505ddeac478586157da7d7bb7c2a"
+  },
+  "blender": "5.1.1",
+  "generator": "build_propbench.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    1.8,
+    0.349,
+    0.501
+  ],
+  "meshes": {
+    "SM_SBPropBench_Timber": {
+      "triangles": 392,
+      "materials": [
+        "SB_OakTimber",
+        "SB_PropBench_EndGrain"
+      ]
+    }
+  },
+  "triangles": 392,
+  "materials": [
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_PropBench_EndGrain",
+      "scan": "sb_endgrain",
+      "dark": [
+        0.62,
+        0.58,
+        0.52
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookPropBench",
+  "parts": [],
+  "slot_m": [
+    1.8,
+    0.4,
+    0.5
+  ],
+  "placement": {
+    "footprint_m": [
+      1.8,
+      0.3
+    ],
+    "front": "-Y",
+    "ground_contact": true,
+    "near": [
+      "square",
+      "inn",
+      "stables",
+      "farmhouse",
+      "cottage",
+      "market",
+      "road",
+      "temple"
+    ],
+    "clearance_m": 0.6
+  },
+  "outputs": [
+    "SilverbrookPropBench.blend",
+    "SilverbrookPropBench.glb",
+    "SilverbrookPropBench.fbx"
+  ]
+}

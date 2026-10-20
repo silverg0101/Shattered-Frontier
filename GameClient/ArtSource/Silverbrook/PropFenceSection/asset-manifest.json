@@ -1,0 +1,95 @@
+{
+  "asset": "SilverbrookPropFenceSection",
+  "reference": {
+    "file": "PropFenceSection-reference.png",
+    "sha256": "ea69587ad32bf1e92f00062c66616c5595acba78fb1f2417a81a069ddaf0cd4a",
+    "source": "docs/Game-Design/concept-art/Silverbrook/Street Props.png (cropped to this prop)",
+    "source_sha256": "761624e298905ddd5c6834505f7040301027505ddeac478586157da7d7bb7c2a"
+  },
+  "blender": "5.1.1",
+  "generator": "build_propfencesection.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    3.001,
+    0.262,
+    1.2
+  ],
+  "meshes": {
+    "SM_SBPropFenceSection_Timber": {
+      "triangles": 316,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBPropFenceSection_Rope": {
+      "triangles": 4608,
+      "materials": [
+        "SB_PropFenceSection_Rope"
+      ]
+    }
+  },
+  "triangles": 4924,
+  "materials": [
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_PropFenceSection_Rope",
+      "scan": "hessian_380",
+      "dark": [
+        0.3,
+        0.4,
+        0.52
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookPropFenceSection",
+  "parts": [],
+  "slot_m": [
+    3.0,
+    0.3,
+    1.2
+  ],
+  "placement": {
+    "footprint_m": [
+      3.0,
+      0.3
+    ],
+    "front": "-Y",
+    "ground_contact": true,
+    "near": [
+      "farmhouse",
+      "stables",
+      "cottage",
+      "granary",
+      "road",
+      "square"
+    ],
+    "clearance_m": 0.4
+  },
+  "outputs": [
+    "SilverbrookPropFenceSection.blend",
+    "SilverbrookPropFenceSection.glb",
+    "SilverbrookPropFenceSection.fbx"
+  ],
+  "tiling": {
+    "axis": "X",
+    "length_m": 3.0,
+    "note": "bounds width: place sections 3.0 m apart to butt end posts; or overlap by one post width (0.14 m) to share a post",
+    "end_post_width_m": 0.14
+  }
+}

@@ -1,0 +1,284 @@
+{
+  "asset": "SilverbrookPropMarketGoods",
+  "reference": {
+    "file": "PropMarketGoods-reference.png",
+    "sha256": "e5d4354926e39ec16ff638d5810317570719fea64ecdb88a6570a14e6dfd853f",
+    "source": "docs/Game-Design/concept-art/Silverbrook/Street Props.png (cropped)"
+  },
+  "blender": "5.1.1",
+  "generator": "build_propmarketgoods.py",
+  "method": "procedural original geometry",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    2.586,
+    1.793,
+    1.36
+  ],
+  "meshes": {
+    "SM_SBMarketGoods_Sacks": {
+      "triangles": 3600,
+      "materials": [
+        "SB_PropMarketGoods_Hessian",
+        "SB_PropMarketGoods_Rope"
+      ]
+    },
+    "SM_SBMarketGoods_Produce": {
+      "triangles": 1920,
+      "materials": [
+        "SB_PropMarketGoods_Apple",
+        "SB_PropMarketGoods_Tomato",
+        "SB_PropMarketGoods_Cabbage"
+      ]
+    },
+    "SM_SBMarketGoods_Jugs": {
+      "triangles": 320,
+      "materials": [
+        "SB_PropMarketGoods_Stoneware",
+        "SB_PropMarketGoods_BottleGlass"
+      ]
+    },
+    "wine_barrel_01_0": {
+      "triangles": 10204,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "wine_barrel_01_1": {
+      "triangles": 224,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "wine_barrel_01_2": {
+      "triangles": 168,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "wine_barrel_01_3": {
+      "triangles": 224,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "wooden_barrels_01_1": {
+      "triangles": 11278,
+      "materials": [
+        "SB_PH_wooden_barrels_01_barrel02"
+      ]
+    },
+    "wooden_crate_01_0": {
+      "triangles": 5508,
+      "materials": [
+        "SB_PH_wooden_crate_01"
+      ]
+    },
+    "wooden_crate_02_0": {
+      "triangles": 4492,
+      "materials": [
+        "SB_PH_wooden_crate_02"
+      ]
+    }
+  },
+  "triangles": 37938,
+  "materials": [
+    {
+      "name": "SB_PropMarketGoods_Hessian",
+      "scan": "hessian_380",
+      "dark": [
+        0.42,
+        0.32,
+        0.2
+      ],
+      "lichen": null,
+      "normal": 1.6,
+      "metal": false
+    },
+    {
+      "name": "SB_PropMarketGoods_Rope",
+      "scan": "hessian_380",
+      "dark": [
+        0.3,
+        0.2,
+        0.1
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_PropMarketGoods_Tomato",
+      "colour": [
+        0.5,
+        0.04,
+        0.02
+      ],
+      "roughness": 0.4,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_PropMarketGoods_Stoneware",
+      "colour": [
+        0.22,
+        0.13,
+        0.07
+      ],
+      "roughness": 0.45,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_PropMarketGoods_BottleGlass",
+      "colour": [
+        0.05,
+        0.12,
+        0.12
+      ],
+      "roughness": 0.15,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_PropMarketGoods_Apple",
+      "colour": [
+        0.3,
+        0.03,
+        0.02
+      ],
+      "roughness": 0.35,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_PropMarketGoods_Cabbage",
+      "colour": [
+        0.1,
+        0.22,
+        0.05
+      ],
+      "roughness": 0.6,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_PropMarketGoods_Turnip",
+      "colour": [
+        0.55,
+        0.42,
+        0.5
+      ],
+      "roughness": 0.5,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_PH_wine_barrel_01",
+      "scan": "ph_wine_barrel_01",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": true
+    },
+    {
+      "name": "SB_PH_wooden_barrels_01_barrel01",
+      "scan": "ph_wooden_barrels_01_barrel01",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": true
+    },
+    {
+      "name": "SB_PH_wooden_barrels_01_barrel02",
+      "scan": "ph_wooden_barrels_01_barrel02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": true
+    },
+    {
+      "name": "SB_PH_wooden_barrels_01_pieces",
+      "scan": "ph_wooden_barrels_01_pieces",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": true
+    },
+    {
+      "name": "SB_PH_wooden_crate_01",
+      "scan": "ph_wooden_crate_01",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": true
+    },
+    {
+      "name": "SB_PH_wooden_crate_02",
+      "scan": "ph_wooden_crate_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": true
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans and models)",
+  "unreal_mesh": "SM_SilverbrookPropMarketGoods",
+  "parts": [],
+  "slot_m": [
+    2.6,
+    1.8,
+    1.4
+  ],
+  "placement": {
+    "footprint_m": [
+      2.6,
+      1.8
+    ],
+    "front": "-Y",
+    "ground_contact": true,
+    "near": [
+      "market",
+      "square",
+      "granary",
+      "townhouse",
+      "inn",
+      "road"
+    ],
+    "clearance_m": 1.0
+  },
+  "outputs": [
+    "SilverbrookPropMarketGoods.blend",
+    "SilverbrookPropMarketGoods.glb",
+    "SilverbrookPropMarketGoods.fbx"
+  ]
+}

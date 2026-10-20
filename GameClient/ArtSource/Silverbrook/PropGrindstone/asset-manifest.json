@@ -1,0 +1,142 @@
+{
+  "asset": "SilverbrookPropGrindstone",
+  "reference": {
+    "file": "PropGrindstone-reference.png",
+    "sha256": "260839538d71a07e056720875e986a337aa2593d144471f2b14ce6a9bc312b28",
+    "source": "docs/Game-Design/concept-art/Silverbrook/Street Props.png (cropped)"
+  },
+  "blender": "5.1.1",
+  "generator": "build_propgrindstone.py",
+  "method": "procedural original geometry",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    1.26,
+    1.036,
+    1.194
+  ],
+  "meshes": {
+    "SM_SBGrindstone_Frame": {
+      "triangles": 372,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBGrindstone_Trough": {
+      "triangles": 140,
+      "materials": [
+        "SB_DoorBoards"
+      ]
+    },
+    "SM_SBGrindstone_Wheel": {
+      "triangles": 288,
+      "materials": [
+        "SB_PropGrindstone_Sandstone"
+      ]
+    },
+    "SM_SBGrindstone_Iron": {
+      "triangles": 280,
+      "materials": [
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBGrindstone_Water": {
+      "triangles": 2,
+      "materials": [
+        "SB_PropGrindstone_Water"
+      ]
+    }
+  },
+  "triangles": 1082,
+  "materials": [
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_DoorBoards",
+      "scan": "old_planks_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_PropGrindstone_Sandstone",
+      "scan": "sandstone_blocks_05",
+      "dark": [
+        0.36,
+        0.33,
+        0.3
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_PropGrindstone_Water",
+      "colour": [
+        0.03,
+        0.05,
+        0.05
+      ],
+      "roughness": 0.04,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans and models)",
+  "unreal_mesh": "SM_SilverbrookPropGrindstone",
+  "parts": [],
+  "slot_m": [
+    1.3,
+    1.1,
+    1.2
+  ],
+  "placement": {
+    "footprint_m": [
+      1.3,
+      1.1
+    ],
+    "front": "-Y",
+    "ground_contact": true,
+    "near": [
+      "blacksmith",
+      "workshop",
+      "weapons vendor",
+      "armor vendor",
+      "farmhouse",
+      "market"
+    ],
+    "clearance_m": 1.5
+  },
+  "outputs": [
+    "SilverbrookPropGrindstone.blend",
+    "SilverbrookPropGrindstone.glb",
+    "SilverbrookPropGrindstone.fbx"
+  ]
+}

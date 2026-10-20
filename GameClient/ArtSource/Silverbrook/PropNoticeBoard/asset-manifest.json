@@ -1,0 +1,180 @@
+{
+  "asset": "SilverbrookPropNoticeBoard",
+  "asset_id": "PROP-SilverbrookNoticeBoard-01",
+  "variant": 1,
+  "reference": {
+    "file": "PropNoticeBoard-reference.png",
+    "sha256": "761624e298905ddd5c6834505f7040301027505ddeac478586157da7d7bb7c2a",
+    "note": "whole Street Props concept sheet; this prop is one item"
+  },
+  "blender": "5.1.1",
+  "generator": "build_propnoticeboard.py",
+  "method": "procedural original geometry interpreting the Street Props concept sheet",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    1.85,
+    1.0,
+    2.451
+  ],
+  "meshes": {
+    "SM_SBPropNoticeBoard_Stone": {
+      "triangles": 0,
+      "materials": []
+    },
+    "SM_SBPropNoticeBoard_Timber": {
+      "triangles": 644,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBPropNoticeBoard_Board": {
+      "triangles": 28,
+      "materials": [
+        "SB_DoorBoards"
+      ]
+    },
+    "SM_SBPropNoticeBoard_Roof": {
+      "triangles": 84,
+      "materials": [
+        "SB_Slate"
+      ]
+    },
+    "SM_SBPropNoticeBoard_Details": {
+      "triangles": 1726,
+      "materials": [
+        "SB_PropNoticeBoard_Ink",
+        "SB_PropNoticeBoard_Parchment",
+        "SB_ForgedIron",
+        "SB_PropNoticeBoard_Wax"
+      ]
+    }
+  },
+  "triangles": 2482,
+  "materials": [
+    {
+      "name": "SB_Ashlar",
+      "scan": "stone_wall_04",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_Slate",
+      "scan": "grey_roof_tiles_02",
+      "dark": [
+        0.2,
+        0.22,
+        0.28
+      ],
+      "lichen": "lichen_rock",
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_DoorBoards",
+      "scan": "old_planks_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_PropNoticeBoard_Parchment",
+      "colour": [
+        0.5,
+        0.4,
+        0.25
+      ],
+      "roughness": 0.9,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_PropNoticeBoard_Ink",
+      "colour": [
+        0.035,
+        0.027,
+        0.02
+      ],
+      "roughness": 0.8,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_PropNoticeBoard_Wax",
+      "colour": [
+        0.3,
+        0.03,
+        0.02
+      ],
+      "roughness": 0.45,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans and models)",
+  "unreal_mesh": "SM_SilverbrookPropNoticeBoard",
+  "slot_m": [
+    1.9,
+    1.0,
+    2.5
+  ],
+  "placement": {
+    "footprint_m": [
+      1.9,
+      1.0
+    ],
+    "front": "-Y",
+    "ground_contact": true,
+    "near": [
+      "square",
+      "market",
+      "road",
+      "guild",
+      "townhall",
+      "gatehouse"
+    ],
+    "clearance_m": 1.5
+  },
+  "outputs": [
+    "SilverbrookPropNoticeBoard.blend",
+    "SilverbrookPropNoticeBoard.glb",
+    "SilverbrookPropNoticeBoard.fbx"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropBench",
+  "size_m": [
+    1.8,
+    0.35,
+    0.5
+  ],
+  "slots": 2,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 10,
+  "nanite_fallback_triangles": 294,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 32
+  },
+  "slot_m": [
+    1.8,
+    0.4,
+    0.5
+  ],
+  "fits": true
+}

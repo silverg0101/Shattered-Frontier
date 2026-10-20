@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropSignpost",
+  "size_m": [
+    1.09,
+    0.36,
+    2.78
+  ],
+  "slots": 4,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 7,
+  "nanite_fallback_triangles": 392,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 64
+  },
+  "slot_m": [
+    1.1,
+    0.4,
+    2.8
+  ],
+  "fits": true
+}

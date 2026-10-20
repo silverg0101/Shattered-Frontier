@@ -1,0 +1,107 @@
+{
+  "asset": "SilverbrookPropSackPile",
+  "asset_id": "PropSackPile",
+  "variant": 1,
+  "reference": {
+    "file": "PropSackPile-reference.png",
+    "sha256": "761624e298905ddd5c6834505f7040301027505ddeac478586157da7d7bb7c2a",
+    "note": "owner sheet Street Props.png, item: SackPile"
+  },
+  "blender": "5.1.1",
+  "generator": "build_propsackpile.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    1.584,
+    1.069,
+    1.024
+  ],
+  "meshes": {
+    "SM_SBSackPile_Sacks": {
+      "triangles": 7280,
+      "materials": [
+        "SB_PropSackPile_Hessian"
+      ]
+    },
+    "SM_SBSackPile_Cord": {
+      "triangles": 3360,
+      "materials": [
+        "SB_PropSackPile_Cord"
+      ]
+    },
+    "SM_SBSackPile_Pallet": {
+      "triangles": 224,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    }
+  },
+  "triangles": 10864,
+  "materials": [
+    {
+      "name": "SB_PropSackPile_Hessian",
+      "scan": "hessian_380",
+      "dark": [
+        0.5,
+        0.47,
+        0.42
+      ],
+      "lichen": null,
+      "normal": 2.5,
+      "metal": false
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_PropSackPile_Cord",
+      "colour": [
+        0.17,
+        0.12,
+        0.065
+      ],
+      "roughness": 0.9,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans and models)",
+  "unreal_mesh": "SM_SilverbrookPropSackPile",
+  "slot_m": [
+    1.6,
+    1.1,
+    1.1
+  ],
+  "placement": {
+    "footprint_m": [
+      1.6,
+      1.1
+    ],
+    "front": "-Y",
+    "ground_contact": true,
+    "near": [
+      "granary",
+      "farmhouse",
+      "market",
+      "mill",
+      "stables",
+      "square"
+    ],
+    "clearance_m": 1.1
+  },
+  "outputs": [
+    "SilverbrookPropSackPile.blend",
+    "SilverbrookPropSackPile.glb",
+    "SilverbrookPropSackPile.fbx"
+  ]
+}

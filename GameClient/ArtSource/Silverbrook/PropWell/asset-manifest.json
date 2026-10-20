@@ -1,0 +1,175 @@
+{
+  "asset": "SilverbrookPropWell",
+  "asset_id": "PROP-SilverbrookWell-01",
+  "variant": 1,
+  "reference": {
+    "file": "PropWell-reference.png",
+    "sha256": "761624e298905ddd5c6834505f7040301027505ddeac478586157da7d7bb7c2a",
+    "note": "whole Street Props concept sheet; this prop is one item"
+  },
+  "blender": "5.1.1",
+  "generator": "build_propwell.py",
+  "method": "procedural original geometry interpreting the Street Props concept sheet",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    1.975,
+    1.975,
+    2.985
+  ],
+  "meshes": {
+    "SM_SBPropWell_PH_Bucket_0": {
+      "triangles": 4484,
+      "materials": [
+        "SB_PH_wooden_bucket_01"
+      ]
+    },
+    "SM_SBPropWell_PH_Bucket_1": {
+      "triangles": 632,
+      "materials": [
+        "SB_PH_wooden_bucket_01"
+      ]
+    },
+    "SM_SBPropWell_Stone": {
+      "triangles": 852,
+      "materials": [
+        "SB_PropWell_Rubble"
+      ]
+    },
+    "SM_SBPropWell_Timber": {
+      "triangles": 814,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBPropWell_Roof": {
+      "triangles": 144,
+      "materials": [
+        "SB_Slate"
+      ]
+    },
+    "SM_SBPropWell_Details": {
+      "triangles": 1102,
+      "materials": [
+        "SB_PropWell_Water",
+        "SB_ForgedIron",
+        "SB_PropWell_Rope"
+      ]
+    }
+  },
+  "triangles": 8028,
+  "materials": [
+    {
+      "name": "SB_PropWell_Rubble",
+      "scan": "stone_wall_04",
+      "dark": [
+        0.55,
+        0.58,
+        0.64
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_Slate",
+      "scan": "grey_roof_tiles_02",
+      "dark": [
+        0.2,
+        0.22,
+        0.28
+      ],
+      "lichen": "lichen_rock",
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_PropWell_Rope",
+      "colour": [
+        0.3,
+        0.22,
+        0.12
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_PropWell_Water",
+      "colour": [
+        0.01,
+        0.015,
+        0.02
+      ],
+      "roughness": 0.05,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_PH_wooden_bucket_01",
+      "scan": "ph_wooden_bucket_01",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": true
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans and models)",
+  "unreal_mesh": "SM_SilverbrookPropWell",
+  "slot_m": [
+    2.0,
+    2.0,
+    3.0
+  ],
+  "placement": {
+    "footprint_m": [
+      2.0,
+      2.0
+    ],
+    "front": "-Y",
+    "ground_contact": true,
+    "near": [
+      "square",
+      "market",
+      "farmhouse",
+      "cottage",
+      "stables",
+      "road"
+    ],
+    "clearance_m": 2.0
+  },
+  "outputs": [
+    "SilverbrookPropWell.blend",
+    "SilverbrookPropWell.glb",
+    "SilverbrookPropWell.fbx"
+  ]
+}

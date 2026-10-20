@@ -1,0 +1,107 @@
+{
+  "asset": "SilverbrookPropHitchingPost",
+  "asset_id": "PropHitchingPost",
+  "variant": 1,
+  "reference": {
+    "file": "PropHitchingPost-reference.png",
+    "sha256": "761624e298905ddd5c6834505f7040301027505ddeac478586157da7d7bb7c2a",
+    "note": "owner sheet Street Props.png, item: HitchingPost"
+  },
+  "blender": "5.1.1",
+  "generator": "build_prophitchingpost.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    2.495,
+    0.791,
+    1.1
+  ],
+  "meshes": {
+    "SM_SBHitchingPost_Timber": {
+      "triangles": 84,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBHitchingPost_Stone": {
+      "triangles": 112,
+      "materials": [
+        "SB_Ashlar"
+      ]
+    },
+    "SM_SBHitchingPost_Iron": {
+      "triangles": 808,
+      "materials": [
+        "SB_ForgedIron"
+      ]
+    }
+  },
+  "triangles": 1004,
+  "materials": [
+    {
+      "name": "SB_Ashlar",
+      "scan": "stone_wall_04",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans and models)",
+  "unreal_mesh": "SM_SilverbrookPropHitchingPost",
+  "slot_m": [
+    2.5,
+    0.8,
+    1.1
+  ],
+  "placement": {
+    "footprint_m": [
+      2.5,
+      0.8
+    ],
+    "front": "-Y",
+    "ground_contact": true,
+    "near": [
+      "stables",
+      "farmhouse",
+      "square",
+      "blacksmith",
+      "market",
+      "road"
+    ],
+    "clearance_m": 1.6
+  },
+  "outputs": [
+    "SilverbrookPropHitchingPost.blend",
+    "SilverbrookPropHitchingPost.glb",
+    "SilverbrookPropHitchingPost.fbx"
+  ]
+}

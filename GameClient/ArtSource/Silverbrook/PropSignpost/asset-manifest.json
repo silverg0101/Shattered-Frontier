@@ -1,0 +1,119 @@
+{
+  "asset": "SilverbrookPropSignpost",
+  "asset_id": "PROP-SilverbrookSignpost-01",
+  "variant": 1,
+  "reference": {
+    "file": "PropSignpost-reference.png",
+    "sha256": "761624e298905ddd5c6834505f7040301027505ddeac478586157da7d7bb7c2a",
+    "note": "whole Street Props concept sheet; this prop is one item"
+  },
+  "blender": "5.1.1",
+  "generator": "build_propsignpost.py",
+  "method": "procedural original geometry interpreting the Street Props concept sheet",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    1.092,
+    0.36,
+    2.78
+  ],
+  "meshes": {
+    "SM_SBPropSignpost_Stone": {
+      "triangles": 56,
+      "materials": [
+        "SB_Ashlar"
+      ]
+    },
+    "SM_SBPropSignpost_Timber": {
+      "triangles": 98,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBPropSignpost_Details": {
+      "triangles": 828,
+      "materials": [
+        "SB_ForgedIron",
+        "SB_PropSignpost_Carving"
+      ]
+    }
+  },
+  "triangles": 982,
+  "materials": [
+    {
+      "name": "SB_Ashlar",
+      "scan": "stone_wall_04",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_PropSignpost_Carving",
+      "colour": [
+        0.07,
+        0.045,
+        0.028
+      ],
+      "roughness": 0.85,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans and models)",
+  "unreal_mesh": "SM_SilverbrookPropSignpost",
+  "slot_m": [
+    1.1,
+    0.4,
+    2.8
+  ],
+  "placement": {
+    "footprint_m": [
+      1.1,
+      0.4
+    ],
+    "front": "-Y",
+    "ground_contact": true,
+    "near": [
+      "road",
+      "square",
+      "crossroads",
+      "gatehouse",
+      "market"
+    ],
+    "clearance_m": 1.2
+  },
+  "outputs": [
+    "SilverbrookPropSignpost.blend",
+    "SilverbrookPropSignpost.glb",
+    "SilverbrookPropSignpost.fbx"
+  ]
+}

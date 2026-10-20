@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropHayBales",
+  "size_m": [
+    2.08,
+    0.79,
+    1.26
+  ],
+  "slots": 2,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 9,
+  "nanite_fallback_triangles": 1030,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 64
+  },
+  "slot_m": [
+    2.1,
+    0.8,
+    1.3
+  ],
+  "fits": true
+}

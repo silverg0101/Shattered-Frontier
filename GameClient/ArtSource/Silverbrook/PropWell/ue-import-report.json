@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropWell",
+  "size_m": [
+    1.98,
+    1.98,
+    2.99
+  ],
+  "slots": 7,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 2134,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 64
+  },
+  "slot_m": [
+    2.0,
+    2.0,
+    3.0
+  ],
+  "fits": true
+}

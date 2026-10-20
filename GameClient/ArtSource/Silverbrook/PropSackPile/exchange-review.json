@@ -1,0 +1,60 @@
+{
+  "source": {
+    "meshes": 3,
+    "triangles": 10864,
+    "size_m": [
+      1.584,
+      1.069,
+      1.024
+    ],
+    "materials": [
+      "SB_OakTimber",
+      "SB_PropSackPile_Cord",
+      "SB_PropSackPile_Hessian"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 6
+  },
+  "glb": {
+    "meshes": 3,
+    "triangles": 10864,
+    "size_m": [
+      1.584,
+      1.069,
+      1.024
+    ],
+    "materials": [
+      "SB_OakTimber",
+      "SB_PropSackPile_Cord",
+      "SB_PropSackPile_Hessian"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 3,
+    "triangles": 10864,
+    "size_m": [
+      1.584,
+      1.069,
+      1.024
+    ],
+    "materials": [
+      "SB_OakTimber",
+      "SB_PropSackPile_Cord",
+      "SB_PropSackPile_Hessian"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 2
+  }
+}

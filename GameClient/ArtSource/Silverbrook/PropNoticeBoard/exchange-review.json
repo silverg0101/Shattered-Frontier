@@ -1,0 +1,72 @@
+{
+  "source": {
+    "meshes": 5,
+    "triangles": 2482,
+    "size_m": [
+      1.85,
+      1.0,
+      2.451
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_OakTimber",
+      "SB_PropNoticeBoard_Ink",
+      "SB_PropNoticeBoard_Parchment",
+      "SB_PropNoticeBoard_Wax",
+      "SB_Slate"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 13
+  },
+  "glb": {
+    "meshes": 4,
+    "triangles": 2482,
+    "size_m": [
+      1.85,
+      1.0,
+      2.451
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_OakTimber",
+      "SB_PropNoticeBoard_Ink",
+      "SB_PropNoticeBoard_Parchment",
+      "SB_PropNoticeBoard_Wax",
+      "SB_Slate"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 5,
+    "triangles": 2482,
+    "size_m": [
+      1.85,
+      1.0,
+      2.451
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_OakTimber",
+      "SB_PropNoticeBoard_Ink",
+      "SB_PropNoticeBoard_Parchment",
+      "SB_PropNoticeBoard_Wax",
+      "SB_Slate"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 3
+  }
+}

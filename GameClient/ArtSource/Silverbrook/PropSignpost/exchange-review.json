@@ -1,0 +1,63 @@
+{
+  "source": {
+    "meshes": 3,
+    "triangles": 982,
+    "size_m": [
+      1.092,
+      0.36,
+      2.78
+    ],
+    "materials": [
+      "SB_Ashlar",
+      "SB_ForgedIron",
+      "SB_OakTimber",
+      "SB_PropSignpost_Carving"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 6
+  },
+  "glb": {
+    "meshes": 3,
+    "triangles": 982,
+    "size_m": [
+      1.092,
+      0.36,
+      2.78
+    ],
+    "materials": [
+      "SB_Ashlar",
+      "SB_ForgedIron",
+      "SB_OakTimber",
+      "SB_PropSignpost_Carving"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 3,
+    "triangles": 982,
+    "size_m": [
+      1.092,
+      0.36,
+      2.78
+    ],
+    "materials": [
+      "SB_Ashlar",
+      "SB_ForgedIron",
+      "SB_OakTimber",
+      "SB_PropSignpost_Carving"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 2
+  }
+}

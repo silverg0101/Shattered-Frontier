@@ -1,5 +1,39 @@
 [
   {
+    "asset": "bark_brown_02",
+    "page": "https://polyhaven.com/a/bark_brown_02",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_size_metres": [
+      0.9999990463256836,
+      0.999998927116394
+    ],
+    "files": [
+      {
+        "file": "Textures/bark_brown_02_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/bark_brown_02/bark_brown_02_diff_2k.jpg",
+        "md5": "11a2a6039bb5b93f12dcf1689838545b"
+      },
+      {
+        "file": "Textures/bark_brown_02_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/bark_brown_02/bark_brown_02_nor_gl_2k.jpg",
+        "md5": "39db6c4574fb58de1ad164442e9d6287"
+      },
+      {
+        "file": "Textures/bark_brown_02_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/bark_brown_02/bark_brown_02_rough_2k.jpg",
+        "md5": "1c17004a7262d26d3867198a8fd0e8c1"
+      },
+      {
+        "file": "Textures/bark_brown_02_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/bark_brown_02/bark_brown_02_disp_2k.jpg",
+        "md5": "03119b2b95dc7e8e8821cbccc2d1e5e4"
+      }
+    ]
+  },
+  {
     "asset": "blue_painted_planks",
     "page": "https://polyhaven.com/a/blue_painted_planks",
     "license": "CC0-1.0",
@@ -445,6 +479,74 @@
         "file": "Textures/medieval_red_brick_Displacement.jpg",
         "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/medieval_red_brick/medieval_red_brick_disp_2k.jpg",
         "md5": "fa292f2380d538200106093f6e6ad4de"
+      }
+    ]
+  },
+  {
+    "asset": "mossy_rock",
+    "page": "https://polyhaven.com/a/mossy_rock",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_size_metres": [
+      3.0,
+      3.0
+    ],
+    "files": [
+      {
+        "file": "Textures/mossy_rock_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_diff_2k.jpg",
+        "md5": "8e55bbeeef1db0d2d0cae85515812c46"
+      },
+      {
+        "file": "Textures/mossy_rock_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_nor_gl_2k.jpg",
+        "md5": "e6b611c8a6f8e3276e7f5491c8e66a0f"
+      },
+      {
+        "file": "Textures/mossy_rock_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_rough_2k.jpg",
+        "md5": "0b4bbecd6af36e343d05ed11914bb18f"
+      },
+      {
+        "file": "Textures/mossy_rock_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_disp_2k.jpg",
+        "md5": "d22857010ae3d07e42c5548126cf386c"
+      }
+    ]
+  },
+  {
+    "asset": "oak_wood_planks",
+    "page": "https://polyhaven.com/a/oak_wood_planks",
+    "license": "CC0-1.0",
+    "authors": {
+      "Dimitrios Savva": "All"
+    },
+    "physical_size_metres": [
+      1.2000000476837158,
+      1.2000000476837158
+    ],
+    "files": [
+      {
+        "file": "Textures/oak_wood_planks_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/oak_wood_planks/oak_wood_planks_diff_2k.jpg",
+        "md5": "740160778f1c4b78bac74d96fe3c06ea"
+      },
+      {
+        "file": "Textures/oak_wood_planks_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/oak_wood_planks/oak_wood_planks_nor_gl_2k.jpg",
+        "md5": "7291b28d1aa5e0002d93b4d419268e98"
+      },
+      {
+        "file": "Textures/oak_wood_planks_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/oak_wood_planks/oak_wood_planks_rough_2k.jpg",
+        "md5": "d7533fb12d5c296917ff6fb169bb282b"
+      },
+      {
+        "file": "Textures/oak_wood_planks_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/oak_wood_planks/oak_wood_planks_disp_2k.jpg",
+        "md5": "1da57e424d76a699b4da86b206a8d36e"
       }
     ]
   },
@@ -1796,6 +1898,29 @@
         "file": "Textures/wood_planks_grey_Displacement.jpg",
         "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/wood_planks_grey/wood_planks_grey_disp_2k.jpg",
         "md5": "06b87ab938a91f2423f65648ae53face"
+      }
+    ]
+  },
+  {
+    "asset": "sb_endgrain",
+    "license": "self-made (procedural, PropFirewoodStack/make_endgrain.py)",
+    "physical_size_metres": [
+      0.25,
+      0.25
+    ],
+    "note": "procedural weathered oak end grain, rings centred on the tile; Rough is roughness only",
+    "files": [
+      {
+        "file": "Textures/sb_endgrain_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/sb_endgrain_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/sb_endgrain_Rough.jpg"
+      },
+      {
+        "file": "Textures/sb_endgrain_Displacement.jpg"
       }
     ]
   }

@@ -1,0 +1,103 @@
+{
+  "source": {
+    "meshes": 10,
+    "triangles": 37938,
+    "size_m": [
+      2.586,
+      1.741,
+      1.352
+    ],
+    "materials": [
+      "SB_PH_wine_barrel_01",
+      "SB_PH_wooden_barrels_01_barrel02",
+      "SB_PH_wooden_crate_01",
+      "SB_PH_wooden_crate_02",
+      "SB_PropMarketGoods_Apple",
+      "SB_PropMarketGoods_BottleGlass",
+      "SB_PropMarketGoods_Cabbage",
+      "SB_PropMarketGoods_Hessian",
+      "SB_PropMarketGoods_Rope",
+      "SB_PropMarketGoods_Stoneware",
+      "SB_PropMarketGoods_Tomato"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [
+      "wine_barrel_01_diff",
+      "wine_barrel_01_metal-wine_barrel_01_rough",
+      "wine_barrel_01_nor_gl",
+      "wooden_barrels_01_barrel01_diff",
+      "wooden_barrels_01_barrel01_metal-wooden_barrels_01_barrel01_rough",
+      "wooden_barrels_01_barrel01_nor_gl",
+      "wooden_barrels_01_barrel02_diff",
+      "wooden_barrels_01_barrel02_metal-wooden_barrels_01_barrel02_rough",
+      "wooden_barrels_01_barrel02_nor_gl",
+      "wooden_barrels_01_pieces_diff",
+      "wooden_barrels_01_pieces_metal-wooden_barrels_01_pieces_rough",
+      "wooden_barrels_01_pieces_nor_gl",
+      "wooden_crate_01_diff",
+      "wooden_crate_01_metal-wooden_crate_01_rough",
+      "wooden_crate_01_nor_gl",
+      "wooden_crate_02_diff",
+      "wooden_crate_02_metal-wooden_crate_02_rough",
+      "wooden_crate_02_nor_gl"
+    ],
+    "images": 39
+  },
+  "glb": {
+    "meshes": 10,
+    "triangles": 37938,
+    "size_m": [
+      2.586,
+      1.741,
+      1.352
+    ],
+    "materials": [
+      "SB_PH_wine_barrel_01",
+      "SB_PH_wooden_barrels_01_barrel02",
+      "SB_PH_wooden_crate_01",
+      "SB_PH_wooden_crate_02",
+      "SB_PropMarketGoods_Apple",
+      "SB_PropMarketGoods_BottleGlass",
+      "SB_PropMarketGoods_Cabbage",
+      "SB_PropMarketGoods_Hessian",
+      "SB_PropMarketGoods_Rope",
+      "SB_PropMarketGoods_Stoneware",
+      "SB_PropMarketGoods_Tomato"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 10,
+    "triangles": 37938,
+    "size_m": [
+      2.586,
+      1.741,
+      1.352
+    ],
+    "materials": [
+      "SB_PH_wine_barrel_01",
+      "SB_PH_wooden_barrels_01_barrel02",
+      "SB_PH_wooden_crate_01",
+      "SB_PH_wooden_crate_02",
+      "SB_PropMarketGoods_Apple",
+      "SB_PropMarketGoods_BottleGlass",
+      "SB_PropMarketGoods_Cabbage",
+      "SB_PropMarketGoods_Hessian",
+      "SB_PropMarketGoods_Rope",
+      "SB_PropMarketGoods_Stoneware",
+      "SB_PropMarketGoods_Tomato"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 5
+  }
+}

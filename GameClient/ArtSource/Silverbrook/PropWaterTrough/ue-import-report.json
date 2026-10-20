@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropWaterTrough",
+  "size_m": [
+    2.12,
+    0.93,
+    0.72
+  ],
+  "slots": 3,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 1,
+  "nanite_fallback_triangles": 956,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 64
+  },
+  "slot_m": [
+    2.2,
+    1.0,
+    0.8
+  ],
+  "fits": true
+}

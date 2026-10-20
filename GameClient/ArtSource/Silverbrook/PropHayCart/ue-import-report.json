@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropHayCart",
+  "size_m": [
+    2.11,
+    3.52,
+    2.11
+  ],
+  "slots": 3,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 3954,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 64
+  },
+  "slot_m": [
+    2.2,
+    3.6,
+    2.2
+  ],
+  "fits": true
+}

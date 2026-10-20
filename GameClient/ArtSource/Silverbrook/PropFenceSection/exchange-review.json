@@ -1,0 +1,57 @@
+{
+  "source": {
+    "meshes": 2,
+    "triangles": 4924,
+    "size_m": [
+      3.001,
+      0.262,
+      1.2
+    ],
+    "materials": [
+      "SB_OakTimber",
+      "SB_PropFenceSection_Rope"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 6
+  },
+  "glb": {
+    "meshes": 2,
+    "triangles": 4924,
+    "size_m": [
+      3.001,
+      0.262,
+      1.2
+    ],
+    "materials": [
+      "SB_OakTimber",
+      "SB_PropFenceSection_Rope"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 2,
+    "triangles": 4924,
+    "size_m": [
+      3.001,
+      0.262,
+      1.2
+    ],
+    "materials": [
+      "SB_OakTimber",
+      "SB_PropFenceSection_Rope"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 2
+  }
+}

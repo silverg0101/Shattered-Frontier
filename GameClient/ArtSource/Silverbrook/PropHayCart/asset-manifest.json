@@ -1,0 +1,118 @@
+{
+  "asset": "SilverbrookPropHayCart",
+  "reference": {
+    "file": "PropHayCart-reference.png",
+    "sha256": "bf89d6fb0dfddde35636655164f58842d5b918ea79d23586a6994035eb8f7c3a",
+    "source": "docs/Game-Design/concept-art/Silverbrook/Street Props.png",
+    "crop_px": [
+      860,
+      270,
+      1110,
+      520
+    ]
+  },
+  "blender": "5.1.1",
+  "generator": "build_prophaycart.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    2.115,
+    3.519,
+    2.106
+  ],
+  "meshes": {
+    "SM_SBPropHayCart_Timber": {
+      "triangles": 2772,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBPropHayCart_Iron": {
+      "triangles": 3144,
+      "materials": [
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBPropHayCart_Hay": {
+      "triangles": 936,
+      "materials": [
+        "SB_PropHayCart_Straw"
+      ]
+    },
+    "SM_SBPropHayCart_Stalks": {
+      "triangles": 3948,
+      "materials": [
+        "SB_PropHayCart_Straw"
+      ]
+    }
+  },
+  "triangles": 10800,
+  "materials": [
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_PropHayCart_Straw",
+      "scan": "reed_roof_04",
+      "dark": [
+        0.55,
+        0.45,
+        0.3
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookPropHayCart",
+  "slot_m": [
+    2.2,
+    3.6,
+    2.2
+  ],
+  "placement": {
+    "footprint_m": [
+      2.2,
+      3.6
+    ],
+    "front": "-Y",
+    "ground_contact": true,
+    "near": [
+      "stables",
+      "farmhouse",
+      "granary",
+      "mill",
+      "road",
+      "market",
+      "cottage"
+    ],
+    "clearance_m": 2.6
+  },
+  "outputs": [
+    "SilverbrookPropHayCart.blend",
+    "SilverbrookPropHayCart.glb",
+    "SilverbrookPropHayCart.fbx"
+  ]
+}

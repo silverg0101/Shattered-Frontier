@@ -1,0 +1,161 @@
+{
+  "asset": "SilverbrookPropRainBarrel",
+  "asset_id": "PropRainBarrel",
+  "variant": 1,
+  "reference": {
+    "file": "PropRainBarrel-reference.png",
+    "sha256": "761624e298905ddd5c6834505f7040301027505ddeac478586157da7d7bb7c2a",
+    "note": "owner sheet Street Props.png, item: RainBarrel"
+  },
+  "blender": "5.1.1",
+  "generator": "build_proprainbarrel.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    0.794,
+    0.94,
+    1.4
+  ],
+  "meshes": {
+    "SM_SBRainBarrel_PH_Barrel_0": {
+      "triangles": 10204,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "SM_SBRainBarrel_PH_Barrel_1": {
+      "triangles": 224,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "SM_SBRainBarrel_PH_Barrel_2": {
+      "triangles": 168,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "SM_SBRainBarrel_PH_Barrel_3": {
+      "triangles": 224,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "SM_SBRainBarrel_Timber": {
+      "triangles": 196,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBRainBarrel_Stones": {
+      "triangles": 112,
+      "materials": [
+        "SB_Ashlar"
+      ]
+    },
+    "SM_SBRainBarrel_Iron": {
+      "triangles": 196,
+      "materials": [
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBRainBarrel_Water": {
+      "triangles": 22,
+      "materials": [
+        "SB_PropRainBarrel_Water"
+      ]
+    }
+  },
+  "triangles": 11346,
+  "materials": [
+    {
+      "name": "SB_Ashlar",
+      "scan": "stone_wall_04",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_PropRainBarrel_Water",
+      "colour": [
+        0.012,
+        0.02,
+        0.025
+      ],
+      "roughness": 0.04,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_PH_wine_barrel_01",
+      "scan": "ph_wine_barrel_01",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": true
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans and models)",
+  "unreal_mesh": "SM_SilverbrookPropRainBarrel",
+  "slot_m": [
+    0.8,
+    1.0,
+    1.4
+  ],
+  "placement": {
+    "footprint_m": [
+      0.8,
+      1.0
+    ],
+    "front": "-Y",
+    "ground_contact": true,
+    "near": [
+      "cottage",
+      "farmhouse",
+      "stables",
+      "blacksmith",
+      "market",
+      "road"
+    ],
+    "clearance_m": 0.9
+  },
+  "outputs": [
+    "SilverbrookPropRainBarrel.blend",
+    "SilverbrookPropRainBarrel.glb",
+    "SilverbrookPropRainBarrel.fbx"
+  ]
+}

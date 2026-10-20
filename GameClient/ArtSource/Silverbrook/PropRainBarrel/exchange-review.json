@@ -1,0 +1,70 @@
+{
+  "source": {
+    "meshes": 8,
+    "triangles": 11346,
+    "size_m": [
+      0.794,
+      0.94,
+      1.4
+    ],
+    "materials": [
+      "SB_Ashlar",
+      "SB_ForgedIron",
+      "SB_OakTimber",
+      "SB_PH_wine_barrel_01",
+      "SB_PropRainBarrel_Water"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [
+      "wine_barrel_01_diff",
+      "wine_barrel_01_metal-wine_barrel_01_rough",
+      "wine_barrel_01_nor_gl"
+    ],
+    "images": 12
+  },
+  "glb": {
+    "meshes": 8,
+    "triangles": 11346,
+    "size_m": [
+      0.794,
+      0.94,
+      1.4
+    ],
+    "materials": [
+      "SB_Ashlar",
+      "SB_ForgedIron",
+      "SB_OakTimber",
+      "SB_PH_wine_barrel_01",
+      "SB_PropRainBarrel_Water"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 8,
+    "triangles": 11346,
+    "size_m": [
+      0.794,
+      0.94,
+      1.4
+    ],
+    "materials": [
+      "SB_Ashlar",
+      "SB_ForgedIron",
+      "SB_OakTimber",
+      "SB_PH_wine_barrel_01",
+      "SB_PropRainBarrel_Water"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 3
+  }
+}

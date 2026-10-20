@@ -1,0 +1,112 @@
+{
+  "asset": "SilverbrookPropWheelbarrow",
+  "reference": {
+    "file": "PropWheelbarrow-reference.png",
+    "sha256": "00799514a83a5a6eed64defafd9ba08e9660aba4099d7978fa26bdbb5ca7fe78",
+    "source": "docs/Game-Design/concept-art/Silverbrook/Street Props.png (cropped)"
+  },
+  "blender": "5.1.1",
+  "generator": "build_propwheelbarrow.py",
+  "method": "procedural original geometry",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    0.557,
+    1.531,
+    0.686
+  ],
+  "meshes": {
+    "SM_SBWheelbarrow_Frame": {
+      "triangles": 196,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBWheelbarrow_Tray": {
+      "triangles": 196,
+      "materials": [
+        "SB_PropWheelbarrow_Boards"
+      ]
+    },
+    "SM_SBWheelbarrow_Wheel": {
+      "triangles": 604,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBWheelbarrow_Iron": {
+      "triangles": 812,
+      "materials": [
+        "SB_ForgedIron"
+      ]
+    }
+  },
+  "triangles": 1808,
+  "materials": [
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_PropWheelbarrow_Boards",
+      "scan": "old_planks_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans and models)",
+  "unreal_mesh": "SM_SilverbrookPropWheelbarrow",
+  "parts": [],
+  "slot_m": [
+    0.6,
+    1.6,
+    0.7
+  ],
+  "placement": {
+    "footprint_m": [
+      0.6,
+      1.6
+    ],
+    "front": "-Y",
+    "ground_contact": true,
+    "near": [
+      "farmhouse",
+      "stables",
+      "granary",
+      "market",
+      "cottage",
+      "blacksmith"
+    ],
+    "clearance_m": 1.2
+  },
+  "outputs": [
+    "SilverbrookPropWheelbarrow.blend",
+    "SilverbrookPropWheelbarrow.glb",
+    "SilverbrookPropWheelbarrow.fbx"
+  ]
+}

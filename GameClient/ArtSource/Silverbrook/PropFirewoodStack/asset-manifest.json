@@ -1,0 +1,152 @@
+{
+  "asset": "SilverbrookPropFirewoodStack",
+  "reference": {
+    "file": "PropFirewoodStack-reference.png",
+    "sha256": "ceed634631777155e6a11d53519fe1722d187147511e09db10dd2a5e2bf60673",
+    "source": "docs/Game-Design/concept-art/Silverbrook/Street Props.png (cropped to this prop)",
+    "source_sha256": "761624e298905ddd5c6834505f7040301027505ddeac478586157da7d7bb7c2a"
+  },
+  "blender": "5.1.1",
+  "generator": "build_propfirewoodstack.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    1.98,
+    1.1,
+    1.6
+  ],
+  "meshes": {
+    "SM_SBPropFirewoodStack_Footing": {
+      "triangles": 336,
+      "materials": [
+        "SB_Ashlar"
+      ]
+    },
+    "SM_SBPropFirewoodStack_Logs": {
+      "triangles": 3944,
+      "materials": [
+        "SB_PropFirewoodStack_Bark",
+        "SB_PropFirewoodStack_EndGrain",
+        "SB_PropFirewoodStack_SplitOak"
+      ]
+    },
+    "SM_SBPropFirewoodStack_Timber": {
+      "triangles": 644,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBPropFirewoodStack_Cover": {
+      "triangles": 1444,
+      "materials": [
+        "SB_Slate",
+        "SB_OakTimber"
+      ]
+    }
+  },
+  "triangles": 6368,
+  "materials": [
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_Slate",
+      "scan": "grey_roof_tiles_02",
+      "dark": [
+        0.2,
+        0.22,
+        0.28
+      ],
+      "lichen": "lichen_rock",
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_PropFirewoodStack_Bark",
+      "scan": "bark_brown_02",
+      "dark": [
+        0.45,
+        0.4,
+        0.35
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_PropFirewoodStack_SplitOak",
+      "scan": "oak_wood_planks",
+      "dark": [
+        0.62,
+        0.57,
+        0.5
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_PropFirewoodStack_EndGrain",
+      "scan": "sb_endgrain",
+      "dark": [
+        0.62,
+        0.58,
+        0.52
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_Ashlar",
+      "scan": "stone_wall_04",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookPropFirewoodStack",
+  "parts": [],
+  "slot_m": [
+    2.0,
+    1.1,
+    1.6
+  ],
+  "placement": {
+    "footprint_m": [
+      2.0,
+      1.0
+    ],
+    "front": "-Y",
+    "ground_contact": true,
+    "near": [
+      "cottage",
+      "farmhouse",
+      "blacksmith",
+      "stables",
+      "mill",
+      "workshop"
+    ],
+    "clearance_m": 0.8
+  },
+  "outputs": [
+    "SilverbrookPropFirewoodStack.blend",
+    "SilverbrookPropFirewoodStack.glb",
+    "SilverbrookPropFirewoodStack.fbx"
+  ]
+}

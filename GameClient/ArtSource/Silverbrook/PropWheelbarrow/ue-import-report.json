@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropWheelbarrow",
+  "size_m": [
+    0.56,
+    1.53,
+    0.69
+  ],
+  "slots": 3,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 1030,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 32
+  },
+  "slot_m": [
+    0.6,
+    1.6,
+    0.7
+  ],
+  "fits": true
+}

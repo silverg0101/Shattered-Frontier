@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropFenceSection",
+  "size_m": [
+    3.0,
+    0.26,
+    1.2
+  ],
+  "slots": 2,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 2214,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 64
+  },
+  "slot_m": [
+    3.0,
+    0.3,
+    1.2
+  ],
+  "fits": true
+}
