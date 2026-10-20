@@ -186,6 +186,8 @@
     "blacksmith": [14, 12, 14],
     "temple": [14, 24, 20],
     "market_stall": [4, 4, 4],
+    "armor_vendor": [6, 3.5, 5],
+    "weapons_vendor": [6, 3.5, 5],
     "watchtower": [8, 8, 9],
     "stables": [12, 8, 7],
     "workshop": [8, 6, 6],
@@ -331,6 +333,7 @@
     }
   ],
   "market_stalls": 8,
+  "market_vendors": ["armor_vendor", "weapons_vendor"],
   "street_lamps": {"_about": "Lamps along primary and secondary streets inside the wall, alternating sides; spacing along the street and verge from the road edge to the post, in metres; clear keeps them off gates, bridges and junctions.", "tiers": ["primary", "secondary"], "spacing": 22, "verge": 0.8, "clear": 10},
   "construction_plots": {
     "size": 20,

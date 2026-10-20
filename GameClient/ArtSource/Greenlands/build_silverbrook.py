@@ -40,9 +40,14 @@ PROFILE = json.loads((ROOT / 'greenlands-look-profile.json').read_text(encoding=
 KIND_BUILDING = {'town_hall': 'Town Hall', 'adventurers_guild': "Adventurers' Guild", 'inn': 'The Golden Stag Inn',
                  'blacksmith': 'Blacksmith', 'temple': 'Temple of the Dawn', 'market_stall': 'Market stall',
                  'watchtower': 'Watchtower', 'stables': 'Stables', 'workshop': 'Workshop', 'farmhouse': 'Farmhouse',
-                 'cottage': 'Cottage', 'townhouse': 'Townhouse', 'elite_house': 'Northridge house'}
+                 'cottage': 'Cottage', 'townhouse': 'Townhouse', 'elite_house': 'Northridge house', 'mill': 'Mill',
+                 'granary': 'Granary', 'wharf': "Fisherman's wharf", 'docks': 'Riverside docks',
+                 'armor_vendor': 'Armor vendor', 'weapons_vendor': 'Weapons vendor'}
+WALL_PIECES = {'section': 'Wall section', 'tower': 'Wall tower', 'gatehouse': 'Gatehouse'}
 _have = {k: PROFILE['buildings'].get(b, {}).get('have', []) for k, b in KIND_BUILDING.items()}
-_meshes = pcg_dressing._meshes({n for names in _have.values() for n in names})
+_walls = {k: PROFILE['buildings'].get(b, {}).get('have', [])[:1] for k, b in WALL_PIECES.items()}
+_meshes = pcg_dressing._meshes({n for names in list(_have.values()) + list(_walls.values()) for n in names})
+WALL_MESH = {k: _meshes[names[0]] for k, names in _walls.items() if names}
 VARIANTS = {k: [_meshes[n] for n in names] for k, names in _have.items() if names}
 HALF = L['zone_half_extent']
 actors = u.get_editor_subsystem(u.EditorActorSubsystem)
@@ -94,11 +99,46 @@ def _box(label, x, y, w, d, h, mat, z0, yaw, collide, folder, ground, pitch=0.0)
     return a
 
 
-def model(label, kind, x, y, yaw, folder):
+def piece(label, mesh, x, y, yaw, z, folder):
+    """Spawn a delivered mesh with its origin at (x, y, z) metres and attach its moving parts. `yaw` is the actor's own."""
+    a = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(x * 100, y * 100, z * 100), u.Rotator(roll=0, pitch=0, yaw=yaw))
+    a.static_mesh_component.set_static_mesh(mesh)
+    a.set_actor_label(label); a.set_folder_path(folder)
+    place_parts.attach(a)  # doors, gate leaves, portcullis and the mill wheel are separate moving meshes
+    return a
+
+
+def outward(x, y, along, across):
+    """(lowest ground under an along x across footprint at (x, y), actor yaw facing out of the wall). The wall
+    packages face -Y, which the FBX import flips to +Y, so the actor's +Y points out of town."""
+    nx, ny = x / A ** 2, y / B ** 2; n = math.hypot(nx, ny)
+    yaw = math.degrees(math.atan2(-nx / n, ny / n))
+    return HF.footprint(x, y, along, across, yaw)[0], yaw
+
+
+def nearest_water(p):
+    """(nearest point on any river, brook or basin edge, its water level)."""
+    best = None
+    for w in WATERS:
+        for i, (a, b) in enumerate(zip(w['points'], w['points'][1:])):
+            q = nearest(p, a, b)
+            if best is None or math.dist(p, q) < best[0]:
+                best = (math.dist(p, q), q, water_level(w, i, math.dist(a, q) / (math.dist(a, b) or 1)))
+    for bs in BASINS:
+        ring = bs['polygon'] + bs['polygon'][:1]
+        for a, b in zip(ring, ring[1:]):
+            q = nearest(p, a, b)
+            if best is None or math.dist(p, q) < best[0]:
+                best = (math.dist(p, q), q, bs['level'])
+    return best[1], best[2]
+
+
+def model(label, kind, x, y, yaw, folder, z=None):
     """Queue a delivered building mesh, chosen by a stable hash of the label. `yaw` turns the front toward -Y; the
     Blender packages face -Y, which the FBX import flips to +Y, so the actor turns a further 180 degrees.
     The terrain is levelled under it (Heightfield foundations); where a 5 m grid can't hold it level, the building
-    stands on the highest ground under its footprint and a stone plinth fills down to below the lowest."""
+    stands on the highest ground under its footprint and a stone plinth fills down to below the lowest.
+    z: an absolute origin height (the wharf and docks stand at bank level over the water, with no plinth)."""
     def spawn(yaw=yaw + 180):
         mesh = VARIANTS[kind][zlib.crc32(label.encode()) % len(VARIANTS[kind])]
         b = mesh.get_bounding_box()
@@ -106,11 +146,8 @@ def model(label, kind, x, y, yaw, folder):
         ox, oy = (b.max.x + b.min.x) / 200, (b.max.y + b.min.y) / 200
         c, s = math.cos(math.radians(yaw)), math.sin(math.radians(yaw))
         px, py = x + c * ox - s * oy, y + s * ox + c * oy
-        lo, hi = HF.footprint(px, py, w, d, yaw)
-        a = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(x * 100, y * 100, hi * 100), u.Rotator(roll=0, pitch=0, yaw=yaw))
-        a.static_mesh_component.set_static_mesh(mesh)
-        a.set_actor_label(label); a.set_folder_path(folder)
-        place_parts.attach(a)  # doors, gate leaves and the mill wheel are separate moving meshes
+        lo, hi = (z, z) if z is not None else HF.footprint(px, py, w, d, yaw)
+        piece(label, mesh, x, y, yaw, hi, folder)
         if kind == 'townhouse' and 'street' not in foundation:
             foundation['street'] = (x, y, yaw - 180, hi)  # first townhouse: the street camera looks at its front
         foundation['max_step'] = max(foundation['max_step'], round(hi - lo, 2))
@@ -253,7 +290,11 @@ def building(label_text, kind, x, y, yaw, mat, folder, require=True):
         placed.append((x, y, math.hypot(w, d) / 2))
         if kind not in ('docks', 'wharf'):
             footprints.append((x, y, w, d, yaw))
-        if kind in VARIANTS:
+        if kind in ('docks', 'wharf') and kind in VARIANTS:
+            # Front (the water side) to the nearest water; origin at bank level, 1.5 m above the water (heightfield.py).
+            q, level = nearest_water((x, y))
+            model(label_text, kind, x, y, facing(x, y, *q), folder, z=level + 1.5)
+        elif kind in VARIANTS:
             model(label_text, kind, x, y, yaw, folder)
         else:
             box(label_text, x, y, w, d, h, mat, yaw=yaw, folder=folder)
@@ -338,8 +379,13 @@ for name, g in gate_points.items():
     t = math.atan2(g[1] / B, g[0] / A)
     tx, ty = -A * math.sin(t), B * math.cos(t); n = math.hypot(tx, ty); tx, ty = tx / n, ty / n
     off = W['gate_gap'] / 2 + tower[0] / 2
-    for side in (-1, 1):
-        box(f'{name.replace(" ", "")}_Tower{side:+d}', g[0] + side * off * tx, g[1] + side * off * ty, *tower, 'Wall', folder='Wall')
+    if 'gatehouse' in WALL_MESH:  # gate block and both towers in one piece, origin on the road at the gate
+        pending.append(lambda n=name, g=g: piece(f'{n.replace(" ", "")}_Gatehouse', WALL_MESH['gatehouse'], g[0], g[1],
+                                                 outward(*g, 2 * off + tower[0], tower[1])[1], HF.at(*g), 'Wall'))
+        counts['Wall'] = counts.get('Wall', 0) + 1
+    else:
+        for side in (-1, 1):
+            box(f'{name.replace(" ", "")}_Tower{side:+d}', g[0] + side * off * tx, g[1] + side * off * ty, *tower, 'Wall', folder='Wall')
     placed.append((g[0], g[1], off + tower[0]))
 step, next_tower = W['segment_length'], W['tower_spacing'] / 2
 s, idx = 0.0, 0
@@ -355,10 +401,25 @@ while s < total - step:
     near_water = water_gap(mid) < step / 2 + 2
     if not near_gate and not near_water:
         yaw = math.degrees(math.atan2(q[1] - p[1], q[0] - p[0]))
-        box(f'Wall_{int(s):04d}', mid[0], mid[1], step + 0.5, W['thickness'], W['height'], 'Wall', yaw=yaw, folder='Wall')
-        if s >= next_tower:
-            box(f'WallTower_{int(s):04d}', mid[0], mid[1], *tower, 'Wall', yaw=yaw, folder='Wall')
+        is_tower = s >= next_tower
+        if is_tower:
             next_tower = s + W['tower_spacing']
+        if 'section' in WALL_MESH:  # 20 m segment along X, resting on its lowest ground so no end floats
+            def spawn_wall(m=mid, k=int(s)):
+                z, yaw_ = outward(*m, step, W['thickness'])
+                piece(f'Wall_{k:04d}', WALL_MESH['section'], m[0], m[1], yaw_, z, 'Wall')
+            pending.append(spawn_wall)
+            counts['Wall'] = counts.get('Wall', 0) + 1
+        else:
+            box(f'Wall_{int(s):04d}', mid[0], mid[1], step + 0.5, W['thickness'], W['height'], 'Wall', yaw=yaw, folder='Wall')
+        if is_tower and 'tower' in WALL_MESH:
+            def spawn_tower(m=mid, k=int(s)):
+                z, yaw_ = outward(*m, *tower[:2])
+                piece(f'WallTower_{k:04d}', WALL_MESH['tower'], m[0], m[1], yaw_, z, 'Wall')
+            pending.append(spawn_tower)
+            counts['Wall'] = counts.get('Wall', 0) + 1
+        elif is_tower:
+            box(f'WallTower_{int(s):04d}', mid[0], mid[1], *tower, 'Wall', yaw=yaw, folder='Wall')
     s += step
 
 # Key places.
@@ -381,12 +442,15 @@ for place in L['places']:
         placed.append((x, y, 6))  # keep the centre open; stalls ring the edge
         flats.append((x, y, math.hypot(w, d) / 2))
         stalls = 0
+        vendors = L.get('market_vendors', [])  # the first ring places go to the named vendors, the rest to stalls
         for k in range(32):
             if stalls == L['market_stalls']:
                 break
             ang = 2 * math.pi * k / 32
             sx, sy = x + (w / 2 - 4) * math.cos(ang), y + (d / 2 - 4) * math.sin(ang)
-            stalls += building(f'MarketStall_{stalls:02d}', 'market_stall', sx, sy, 0, 'House', 'Places', require=False)
+            kind_ = vendors[stalls] if stalls < len(vendors) else 'market_stall'
+            tag_ = ''.join(v.title() for v in kind_.split('_')) if stalls < len(vendors) else f'MarketStall_{stalls:02d}'
+            stalls += building(tag_, kind_, sx, sy, facing(sx, sy, x, y), 'House', 'Places', require=False)
     elif kind in ('fields', 'yard'):
         w, d = place['size']
         box(tag, x, y, w, d, 0.1, 'Field' if kind == 'fields' else 'Plot', collide=False, folder='Places', ground='centre')
