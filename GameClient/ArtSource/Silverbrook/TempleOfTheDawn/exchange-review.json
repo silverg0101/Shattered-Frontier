@@ -1,0 +1,87 @@
+{
+  "source": {
+    "meshes": 4,
+    "triangles": 254748,
+    "size_m": [
+      12.3,
+      21.6,
+      19.94
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LitGlass",
+      "SB_TempleOfTheDawn_Ashlar",
+      "SB_TempleOfTheDawn_Banner",
+      "SB_TempleOfTheDawn_BlueGlass",
+      "SB_TempleOfTheDawn_Bronze",
+      "SB_TempleOfTheDawn_Dressed",
+      "SB_TempleOfTheDawn_Gilt",
+      "SB_TempleOfTheDawn_Slate"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 15
+  },
+  "glb": {
+    "meshes": 4,
+    "triangles": 254748,
+    "size_m": [
+      12.3,
+      21.6,
+      19.94
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LitGlass",
+      "SB_TempleOfTheDawn_Ashlar",
+      "SB_TempleOfTheDawn_Banner",
+      "SB_TempleOfTheDawn_BlueGlass",
+      "SB_TempleOfTheDawn_Bronze",
+      "SB_TempleOfTheDawn_Dressed",
+      "SB_TempleOfTheDawn_Gilt",
+      "SB_TempleOfTheDawn_Slate"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 4,
+    "triangles": 254748,
+    "size_m": [
+      12.3,
+      21.6,
+      19.94
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LitGlass",
+      "SB_TempleOfTheDawn_Ashlar",
+      "SB_TempleOfTheDawn_Banner",
+      "SB_TempleOfTheDawn_BlueGlass",
+      "SB_TempleOfTheDawn_Bronze",
+      "SB_TempleOfTheDawn_Dressed",
+      "SB_TempleOfTheDawn_Gilt",
+      "SB_TempleOfTheDawn_Slate"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 10
+  }
+}

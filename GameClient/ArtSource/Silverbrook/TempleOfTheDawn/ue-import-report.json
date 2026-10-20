@@ -1,0 +1,22 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookTempleOfTheDawn",
+  "size_m": [
+    12.3,
+    21.6,
+    19.94
+  ],
+  "slot_m": [
+    14,
+    24,
+    20
+  ],
+  "fits": true,
+  "slots": 12,
+  "nanite": true,
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 62068,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 512
+  }
+}

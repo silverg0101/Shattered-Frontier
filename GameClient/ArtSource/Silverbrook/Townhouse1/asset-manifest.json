@@ -1,0 +1,265 @@
+{
+  "asset": "SilverbrookTownhouse1",
+  "asset_id": "BLD-GreenlandsTownhouse-01",
+  "variant": 1,
+  "reference": {
+    "file": "Townhouse1-reference.png",
+    "sha256": "2f727afa23c9aba0ac1ce78bf63a5187a43a17250e6c3a6ecb4b45a4368cf4fe"
+  },
+  "blender": "5.1.1",
+  "generator": "build_townhouse1.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    7.08,
+    7.0,
+    8.97
+  ],
+  "meshes": {
+    "SM_SBTownhouse1_Masonry": {
+      "triangles": 1068,
+      "materials": [
+        "SB_Townhouse1_Ashlar"
+      ]
+    },
+    "SM_SBTownhouse1_Plaster": {
+      "triangles": 668,
+      "materials": [
+        "SB_LimePlaster"
+      ]
+    },
+    "SM_SBTownhouse1_Timber": {
+      "triangles": 6048,
+      "materials": [
+        "SB_OakTimber",
+        "SB_DoorBoards"
+      ]
+    },
+    "SM_SBTownhouse1_Roof": {
+      "triangles": 44412,
+      "materials": [
+        "SB_Slate",
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBTownhouse1_Details": {
+      "triangles": 18456,
+      "materials": [
+        "SB_ForgedIron",
+        "SB_LitGlass",
+        "SB_LeadCame",
+        "SB_ChimneyPot",
+        "SB_LanternGlow",
+        "SB_PlanterSoil",
+        "SB_Townhouse1_Banner",
+        "SB_Townhouse1_Gilt"
+      ]
+    },
+    "SM_SBTownhouse1_Details_Door1": {
+      "triangles": 276,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
+      ]
+    }
+  },
+  "triangles": 70928,
+  "materials": [
+    {
+      "name": "SB_Slate",
+      "scan": "grey_roof_tiles_02",
+      "dark": [
+        0.2,
+        0.22,
+        0.28
+      ],
+      "lichen": "lichen_rock",
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_Townhouse1_Ashlar",
+      "scan": "sandstone_blocks_05",
+      "dark": [
+        0.45,
+        0.4,
+        0.33
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_LimePlaster",
+      "scan": "patterned_clay_plaster",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_DoorBoards",
+      "scan": "old_planks_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_Townhouse1_Banner",
+      "scan": "denim_fabric_03",
+      "dark": [
+        0.1,
+        0.12,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LeadCame",
+      "colour": [
+        0.05,
+        0.05,
+        0.05
+      ],
+      "roughness": 0.45,
+      "metallic": 0.8,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LitGlass",
+      "colour": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "roughness": 0.15,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.5,
+        0.14
+      ],
+      "strength": 3
+    },
+    {
+      "name": "SB_LanternGlow",
+      "colour": [
+        0.3,
+        0.2,
+        0.1
+      ],
+      "roughness": 0.3,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.38,
+        0.08
+      ],
+      "strength": 5
+    },
+    {
+      "name": "SB_PlanterSoil",
+      "colour": [
+        0.06,
+        0.04,
+        0.025
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_ChimneyPot",
+      "colour": [
+        0.2,
+        0.085,
+        0.05
+      ],
+      "roughness": 0.75,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_Townhouse1_Gilt",
+      "colour": [
+        0.8,
+        0.55,
+        0.18
+      ],
+      "roughness": 0.35,
+      "metallic": 1.0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookTownhouse1",
+  "parts": [
+    {
+      "name": "Door1",
+      "fbx": "SilverbrookTownhouse1_Door1.fbx",
+      "unreal_mesh": "SM_SilverbrookTownhouse1_Door1",
+      "pivot_m": [
+        -1.59,
+        -2.445,
+        0.3
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    }
+  ],
+  "slot_m": [
+    8,
+    7,
+    9
+  ],
+  "outputs": [
+    "SilverbrookTownhouse1.blend",
+    "SilverbrookTownhouse1.glb",
+    "SilverbrookTownhouse1.fbx"
+  ]
+}

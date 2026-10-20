@@ -1,0 +1,218 @@
+{
+  "asset": "SilverbrookTownHall",
+  "reference": {
+    "file": "TownHall-reference.png",
+    "sha256": "c01cb514fa341a30b0ee3ec682f0831bbd24716fc587706c2e8b719e8f769033"
+  },
+  "blender": "5.1.1",
+  "generator": "build_townhall.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    22.0,
+    14.309,
+    27.95
+  ],
+  "meshes": {
+    "SM_SBTownHall_Masonry": {
+      "triangles": 28836,
+      "materials": [
+        "SB_TownHall_Ashlar"
+      ]
+    },
+    "SM_SBTownHall_Plaster": {
+      "triangles": 64,
+      "materials": [
+        "SB_LimePlaster"
+      ]
+    },
+    "SM_SBTownHall_Timber": {
+      "triangles": 756,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBTownHall_Roof": {
+      "triangles": 191572,
+      "materials": [
+        "SB_Slate",
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBTownHall_Details": {
+      "triangles": 14776,
+      "materials": [
+        "SB_LitGlass",
+        "SB_LeadCame",
+        "SB_ForgedIron",
+        "SB_TownHall_Gilt",
+        "SB_TownHall_Ashlar",
+        "SB_DoorBoards",
+        "SB_LanternGlow",
+        "SB_TownHall_Banner",
+        "SB_TownHall_Bronze"
+      ]
+    }
+  },
+  "triangles": 236004,
+  "materials": [
+    {
+      "name": "SB_Slate",
+      "scan": "grey_roof_tiles_02",
+      "dark": [
+        0.2,
+        0.22,
+        0.28
+      ],
+      "lichen": "lichen_rock",
+      "normal": 1.0
+    },
+    {
+      "name": "SB_TownHall_Ashlar",
+      "scan": "sandstone_blocks_08",
+      "dark": [
+        0.4,
+        0.36,
+        0.3
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_LimePlaster",
+      "scan": "patterned_clay_plaster",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_DoorBoards",
+      "scan": "old_planks_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_TownHall_Banner",
+      "scan": "denim_fabric_04",
+      "dark": [
+        0.1,
+        0.14,
+        0.32
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LeadCame",
+      "colour": [
+        0.05,
+        0.05,
+        0.05
+      ],
+      "roughness": 0.45,
+      "metallic": 0.8,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LitGlass",
+      "colour": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "roughness": 0.15,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.5,
+        0.14
+      ],
+      "strength": 3
+    },
+    {
+      "name": "SB_LanternGlow",
+      "colour": [
+        0.3,
+        0.2,
+        0.1
+      ],
+      "roughness": 0.3,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.38,
+        0.08
+      ],
+      "strength": 5
+    },
+    {
+      "name": "SB_TownHall_Gilt",
+      "colour": [
+        0.8,
+        0.55,
+        0.22
+      ],
+      "roughness": 0.32,
+      "metallic": 1,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_TownHall_Bronze",
+      "colour": [
+        0.36,
+        0.22,
+        0.11
+      ],
+      "roughness": 0.4,
+      "metallic": 1,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookTownHall",
+  "slot_m": [
+    22,
+    18,
+    28
+  ],
+  "outputs": [
+    "SilverbrookTownHall.blend",
+    "SilverbrookTownHall.glb",
+    "SilverbrookTownHall.fbx"
+  ]
+}

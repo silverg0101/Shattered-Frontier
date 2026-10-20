@@ -1,0 +1,87 @@
+{
+  "source": {
+    "meshes": 4,
+    "triangles": 86118,
+    "size_m": [
+      11.553,
+      7.254,
+      9.95
+    ],
+    "materials": [
+      "SB_ChimneyPot",
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LitGlass",
+      "SB_NorthridgeHouse5_Ashlar",
+      "SB_NorthridgeHouse5_Banner",
+      "SB_NorthridgeHouse5_Gilt",
+      "SB_NorthridgeHouse5_Slate",
+      "SB_OakTimber",
+      "SB_PlanterSoil"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 16
+  },
+  "glb": {
+    "meshes": 4,
+    "triangles": 86118,
+    "size_m": [
+      11.553,
+      7.254,
+      9.95
+    ],
+    "materials": [
+      "SB_ChimneyPot",
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LitGlass",
+      "SB_NorthridgeHouse5_Ashlar",
+      "SB_NorthridgeHouse5_Banner",
+      "SB_NorthridgeHouse5_Gilt",
+      "SB_NorthridgeHouse5_Slate",
+      "SB_OakTimber",
+      "SB_PlanterSoil"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 4,
+    "triangles": 86118,
+    "size_m": [
+      11.553,
+      7.254,
+      9.95
+    ],
+    "materials": [
+      "SB_ChimneyPot",
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LitGlass",
+      "SB_NorthridgeHouse5_Ashlar",
+      "SB_NorthridgeHouse5_Banner",
+      "SB_NorthridgeHouse5_Gilt",
+      "SB_NorthridgeHouse5_Slate",
+      "SB_OakTimber",
+      "SB_PlanterSoil"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 10
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookGatehouse",
+  "size_m": [
+    26.0,
+    8.0,
+    11.98
+  ],
+  "slots": 13,
+  "nanite": true,
+  "collision": "complex",
+  "convex_hulls": 0,
+  "nanite_fallback_triangles": 18738,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 512
+  },
+  "slot_m": [
+    26,
+    8,
+    12
+  ],
+  "fits": true,
+  "parts": [
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookGatehouse_GateL",
+      "size_m": [
+        0.21,
+        2.44,
+        2.95
+      ],
+      "slots": 2,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 462,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 64
+      },
+      "name": "GateL",
+      "motion": "swing",
+      "pivot_cm": [
+        -248.0,
+        120.0,
+        0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "travel": 90,
+      "travel_unit": "deg",
+      "modelled": "open"
+    },
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookGatehouse_GateR",
+      "size_m": [
+        0.21,
+        2.44,
+        2.95
+      ],
+      "slots": 2,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 462,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 64
+      },
+      "name": "GateR",
+      "motion": "swing",
+      "pivot_cm": [
+        248.0,
+        120.0,
+        0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "travel": -90,
+      "travel_unit": "deg",
+      "modelled": "open"
+    },
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookGatehouse_Portcullis",
+      "size_m": [
+        5.3,
+        0.18,
+        2.2
+      ],
+      "slots": 1,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 266,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 128
+      },
+      "name": "Portcullis",
+      "motion": "slide",
+      "pivot_cm": [
+        0,
+        220.0,
+        400.0
+      ],
+      "axis": [
+        0,
+        0,
+        -1
+      ],
+      "travel": 4.0,
+      "travel_unit": "m",
+      "modelled": "open"
+    }
+  ]
+}

@@ -1,0 +1,347 @@
+{
+  "asset": "SilverbrookGatehouse",
+  "asset_id": "BLD-GreenlandsGatehouse-01",
+  "reference": {
+    "file": "Gatehouse-reference.png",
+    "sha256": "76f1d4b6d222f38ec415ef7380987510ec4a9448106af7eab770721ebc95ede1"
+  },
+  "blender": "5.1.1",
+  "generator": "build_gatehouse.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    26.0,
+    8.0,
+    11.98
+  ],
+  "meshes": {
+    "SM_SBGatehouse_Masonry": {
+      "triangles": 1892,
+      "materials": [
+        "SB_WallSection_Masonry"
+      ]
+    },
+    "SM_SBGatehouse_Dressed": {
+      "triangles": 11960,
+      "materials": [
+        "SB_WallSection_Masonry",
+        "SB_WallSection_LoopVoid"
+      ]
+    },
+    "SM_SBGatehouse_Walk": {
+      "triangles": 108,
+      "materials": [
+        "SB_WallSection_Paving"
+      ]
+    },
+    "SM_SBGatehouse_Roof": {
+      "triangles": 43520,
+      "materials": [
+        "SB_Slate",
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBGatehouse_Timber": {
+      "triangles": 616,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBGatehouse_Plaster": {
+      "triangles": 160,
+      "materials": [
+        "SB_LimePlaster"
+      ]
+    },
+    "SM_SBGatehouse_Details": {
+      "triangles": 3924,
+      "materials": [
+        "SB_WallSection_Masonry",
+        "SB_ForgedIron",
+        "SB_LanternGlow",
+        "SB_DoorBoards",
+        "SB_LitGlass",
+        "SB_LeadCame",
+        "SB_Gatehouse_Banner",
+        "SB_Gatehouse_Gilt"
+      ]
+    },
+    "SM_SBGatehouse_GateL": {
+      "triangles": 832,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBGatehouse_GateR": {
+      "triangles": 832,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBGatehouse_Portcullis": {
+      "triangles": 508,
+      "materials": [
+        "SB_ForgedIron"
+      ]
+    }
+  },
+  "triangles": 64352,
+  "materials": [
+    {
+      "name": "SB_WallSection_Masonry",
+      "scan": "rough_block_wall",
+      "dark": [
+        0.7,
+        0.74,
+        0.86
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_WallSection_Paving",
+      "scan": "medieval_blocks_03",
+      "dark": [
+        0.55,
+        0.58,
+        0.62
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_WallSection_LoopVoid",
+      "colour": [
+        0.012,
+        0.012,
+        0.014
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_Slate",
+      "scan": "grey_roof_tiles_02",
+      "dark": [
+        0.2,
+        0.22,
+        0.28
+      ],
+      "lichen": "lichen_rock",
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_LimePlaster",
+      "scan": "patterned_clay_plaster",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_DoorBoards",
+      "scan": "old_planks_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LeadCame",
+      "colour": [
+        0.05,
+        0.05,
+        0.05
+      ],
+      "roughness": 0.45,
+      "metallic": 0.8,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LitGlass",
+      "colour": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "roughness": 0.15,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.5,
+        0.14
+      ],
+      "strength": 3
+    },
+    {
+      "name": "SB_LanternGlow",
+      "colour": [
+        0.3,
+        0.2,
+        0.1
+      ],
+      "roughness": 0.3,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.38,
+        0.08
+      ],
+      "strength": 5
+    },
+    {
+      "name": "SB_Gatehouse_Banner",
+      "scan": "denim_fabric_03",
+      "dark": [
+        0.12,
+        0.14,
+        0.3
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_Gatehouse_Gilt",
+      "colour": [
+        0.8,
+        0.55,
+        0.18
+      ],
+      "roughness": 0.35,
+      "metallic": 1.0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookGatehouse",
+  "parts": [
+    {
+      "name": "GateL",
+      "fbx": "SilverbrookGatehouse_GateL.fbx",
+      "unreal_mesh": "SM_SilverbrookGatehouse_GateL",
+      "pivot_m": [
+        -2.48,
+        -1.2,
+        0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": -90,
+      "modelled": "open"
+    },
+    {
+      "name": "GateR",
+      "fbx": "SilverbrookGatehouse_GateR.fbx",
+      "unreal_mesh": "SM_SilverbrookGatehouse_GateR",
+      "pivot_m": [
+        2.48,
+        -1.2,
+        0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "open"
+    },
+    {
+      "name": "Portcullis",
+      "fbx": "SilverbrookGatehouse_Portcullis.fbx",
+      "unreal_mesh": "SM_SilverbrookGatehouse_Portcullis",
+      "pivot_m": [
+        0,
+        -2.2,
+        4.0
+      ],
+      "axis": [
+        0,
+        0,
+        -1
+      ],
+      "motion": "slide",
+      "travel": 4.0,
+      "modelled": "open"
+    }
+  ],
+  "slot_m": [
+    26,
+    8,
+    12
+  ],
+  "slot_source": "Greenlands/silverbrook-town-layout.json wall.gate_gap (10) + 2 x wall.tower (8 x 8 x 12)",
+  "wall_joint": {
+    "wall_end_faces_x": [
+      -13.0,
+      13.0
+    ],
+    "walk_top_z": 5.4,
+    "walk_y": [
+      -0.45,
+      1.15
+    ],
+    "walk_door": "closed, sill at walk_top_z, y -0.15..0.85",
+    "masonry_uv_repeat_m": 3.3333
+  },
+  "passage": {
+    "clear_width_m": 4.4,
+    "clear_height_m": 3.9,
+    "arch_width_m": 5.0,
+    "arch_crown_m": 5.5,
+    "portcullis_tips_m": 4.0,
+    "gates": "open, swung back against the passage walls"
+  },
+  "outputs": [
+    "SilverbrookGatehouse.blend",
+    "SilverbrookGatehouse.glb",
+    "SilverbrookGatehouse.fbx"
+  ]
+}

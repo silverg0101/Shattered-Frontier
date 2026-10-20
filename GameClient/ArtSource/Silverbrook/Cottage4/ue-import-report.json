@@ -1,0 +1,57 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookCottage4",
+  "size_m": [
+    7.91,
+    5.91,
+    5.98
+  ],
+  "slots": 12,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 9336,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 128
+  },
+  "slot_m": [
+    8,
+    6,
+    6
+  ],
+  "fits": true,
+  "parts": [
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookCottage4_Door1",
+      "size_m": [
+        1.0,
+        0.11,
+        1.95
+      ],
+      "slots": 2,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 256,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 32
+      },
+      "name": "Door1",
+      "motion": "swing",
+      "pivot_cm": [
+        -49.81,
+        179.8,
+        30.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "travel": -90,
+      "travel_unit": "deg",
+      "modelled": "closed"
+    }
+  ]
+}

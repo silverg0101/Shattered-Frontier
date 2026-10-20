@@ -1,0 +1,78 @@
+{
+  "source": {
+    "meshes": 5,
+    "triangles": 70756,
+    "size_m": [
+      7.839,
+      7.62,
+      9.74
+    ],
+    "materials": [
+      "SB_Ashlar",
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_Granary_Rope",
+      "SB_Granary_Rubble",
+      "SB_LanternGlow",
+      "SB_LimePlaster",
+      "SB_OakTimber",
+      "SB_Slate"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 19
+  },
+  "glb": {
+    "meshes": 5,
+    "triangles": 70756,
+    "size_m": [
+      7.839,
+      7.62,
+      9.74
+    ],
+    "materials": [
+      "SB_Ashlar",
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_Granary_Rope",
+      "SB_Granary_Rubble",
+      "SB_LanternGlow",
+      "SB_LimePlaster",
+      "SB_OakTimber",
+      "SB_Slate"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 5,
+    "triangles": 70756,
+    "size_m": [
+      7.839,
+      7.62,
+      9.74
+    ],
+    "materials": [
+      "SB_Ashlar",
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_Granary_Rope",
+      "SB_Granary_Rubble",
+      "SB_LanternGlow",
+      "SB_LimePlaster",
+      "SB_OakTimber",
+      "SB_Slate"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 6
+  }
+}

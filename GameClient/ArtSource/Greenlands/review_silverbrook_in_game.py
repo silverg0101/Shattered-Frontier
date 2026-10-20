@@ -4,7 +4,7 @@ Launch: UnrealEditor.exe <uproject> /Game/Frontier/Maps/Greenlands/Greenlands_Si
         -game -RenderOffscreen -ExecutePythonScript=<this file>
 Follows review_route in silverbrook-town-layout.json: arrival, South Gate, Silverbrook
 Bridge, Market Square, North Street bridge, North Gate. Writes silverbrook-game-review.json
-and two captures beside this script.
+and captures (arrival plus one per ReviewCamera_*) beside this script.
 """
 import json, math, time
 from pathlib import Path
@@ -24,7 +24,8 @@ state = dict(scope='Project pawn walks arrival to North Gate through the graybox
              start_cm=None, target=1, reached=[], stuck_events=0)
 started = time.monotonic(); walk_started = None; handle = None; frame = 0
 last = dict(pos=None, at=0.0)
-shots = dict(arrival=False, aerial=None)  # 'arrival' marks the aerial shot as taken
+frames = []  # frame times in ms during the walk (offscreen, 1280x720; for comparisons, not a budget)
+shots = dict(aerial=None, taken=0)  # aerial: when the walk ended; taken: review cameras captured so far
 
 
 def shot(name):
@@ -41,6 +42,21 @@ def finish():
     u.SystemLibrary.execute_console_command(world, 'quit')
 
 
+def stuck_report(p, ahead):
+    """What the pawn is doing and what its own capsule meets 2 m ahead, for diagnosing a stall."""
+    move, capsule = pawn.character_movement, pawn.capsule_component
+    r, hh = capsule.get_scaled_capsule_radius(), capsule.get_scaled_capsule_half_height()
+    types = [getattr(u.ObjectTypeQuery, f'OBJECT_TYPE_QUERY{i}') for i in range(1, 7)]
+    hits = u.SystemLibrary.capsule_trace_multi_for_objects(world, p, p + ahead * 200, r, hh, types, True, [pawn],
+                                                           u.DrawDebugTrace.NONE, True) or []
+    floor = move.current_floor.hit_result.to_tuple() if move.current_floor else None
+    return dict(velocity_cm_s=round(pawn.get_velocity().length()), mode=str(move.movement_mode),
+                capsule=[round(r), round(hh)], floor=floor[9].get_actor_label() if floor and floor[9] else None,
+                sweep=[dict(actor=h.to_tuple()[9].get_actor_label() if h.to_tuple()[9] else None,
+                            impact_cm=[round(h.to_tuple()[5].x), round(h.to_tuple()[5].y), round(h.to_tuple()[5].z)],
+                            blocking=h.to_tuple()[0]) for h in hits])
+
+
 def tick(delta):
     global walk_started, frame
     frame += 1
@@ -53,13 +69,19 @@ def tick(delta):
             walk_started = now; state['start_cm'] = [round(p.x), round(p.y), round(p.z)]
             shot('Silverbrook-Arrival-InGame.png'); last.update(pos=(p.x, p.y), at=now)
             return
-        if shots['aerial'] is not None:
-            waited = now - shots['aerial']
-            if waited > 4 and not shots['arrival']:
-                shot('Silverbrook-Aerial-InGame.png'); shots['arrival'] = True
-            elif waited > 7:
+        if shots['aerial'] is not None:  # after the walk: each ReviewCamera_* in turn, 3 s to settle, then a capture
+            cams = sorted(u.GameplayStatics.get_all_actors_of_class(world, u.CameraActor), key=lambda c: c.get_actor_label())
+            phase = int((now - shots['aerial']) // 3); i = phase // 2  # even phase: switch to camera i; odd: capture it
+            if i < len(cams) and i == shots['taken']:  # HighResShot writes a frame later, so never switch in the same tick
+                if phase % 2 == 0:
+                    pc.set_view_target_with_blend(cams[i], 0)
+                else:
+                    shot(f"Silverbrook-{cams[i].get_actor_label().replace('ReviewCamera_', '')}-InGame.png")
+                    shots['taken'] += 1
+            elif shots['taken'] == len(cams) and phase > 2 * len(cams) + 1:
                 finish()
             return
+        frames.append(delta * 1000)
         x, y = ROUTE[state['target']]
         dx, dy = x * 100 - p.x, y * 100 - p.y; d = math.hypot(dx, dy)
         if d < 300:
@@ -70,14 +92,16 @@ def tick(delta):
         if now - last['at'] > 3:
             if math.dist(last['pos'], (p.x, p.y)) < 200:
                 state['stuck_events'] += 1; state.setdefault('stuck_at_cm', []).append([round(p.x), round(p.y)])
+                if 'stuck_report' not in state:
+                    state['stuck_report'] = stuck_report(p, u.Vector(dx / d, dy / d, 0))
             last.update(pos=(p.x, p.y), at=now)
         if state['target'] == len(ROUTE) or now - walk_started > 420 or state['stuck_events'] >= 3:
             state['walk_completed'] = state['target'] == len(ROUTE)
             state['walk_seconds'] = round(now - walk_started, 1)
+            ordered = sorted(frames)
+            state['frame_ms'] = dict(median=round(ordered[len(ordered) // 2], 1), p95=round(ordered[int(len(ordered) * 0.95)], 1), frames=len(ordered))
             state['final_pawn_cm'] = [round(p.x), round(p.y), round(p.z)]
-            cam = u.GameplayStatics.get_all_actors_of_class(world, u.CameraActor)[0]  # ReviewCamera_Aerial, placed by build_silverbrook.py
-            pc.set_view_target_with_blend(cam, 0)
-            shots['aerial'] = now
+            shots['aerial'] = now  # then each ReviewCamera_* placed by build_silverbrook.py
     except Exception as error:
         state['error'] = str(error); finish()
 

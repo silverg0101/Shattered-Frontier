@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookWallSection",
+  "size_m": [
+    20.0,
+    3.0,
+    8.0
+  ],
+  "slot_m": [
+    20,
+    3,
+    8
+  ],
+  "fits": true,
+  "slots": 3,
+  "nanite": true,
+  "collision": "complex",
+  "convex_hulls": 0,
+  "nanite_fallback_triangles": 5206,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 512
+  }
+}

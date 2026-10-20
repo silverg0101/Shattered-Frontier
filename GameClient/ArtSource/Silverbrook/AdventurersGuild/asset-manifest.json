@@ -1,0 +1,277 @@
+{
+  "asset": "SilverbrookAdventurersGuild",
+  "reference": {
+    "file": "AdventurersGuild-reference.png",
+    "sha256": "91f9aba2c7a1f3c6a9e82dc946dcb5f00d74e51323f53733af3ebadfc19815ab"
+  },
+  "blender": "5.1.1",
+  "generator": "build_adventurersguild.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    15.608,
+    12.074,
+    17.68
+  ],
+  "meshes": {
+    "SM_SBAdventurersGuild_Masonry": {
+      "triangles": 3476,
+      "materials": [
+        "SB_Ashlar"
+      ]
+    },
+    "SM_SBAdventurersGuild_Plaster": {
+      "triangles": 1192,
+      "materials": [
+        "SB_LimePlaster"
+      ]
+    },
+    "SM_SBAdventurersGuild_Timber": {
+      "triangles": 6556,
+      "materials": [
+        "SB_OakTimber",
+        "SB_DoorBoards"
+      ]
+    },
+    "SM_SBAdventurersGuild_Roof": {
+      "triangles": 155018,
+      "materials": [
+        "SB_Slate",
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBAdventurersGuild_Details": {
+      "triangles": 29804,
+      "materials": [
+        "SB_ForgedIron",
+        "SB_LitGlass",
+        "SB_LeadCame",
+        "SB_ChimneyPot",
+        "SB_AdventurersGuild_Gilt",
+        "SB_DoorBoards",
+        "SB_PlanterSoil",
+        "SB_AdventurersGuild_Banner",
+        "SB_LanternGlow",
+        "SB_AdventurersGuild_Parchment"
+      ]
+    },
+    "SM_SBAdventurersGuild_Details_Door1": {
+      "triangles": 276,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
+      ]
+    }
+  },
+  "triangles": 196322,
+  "materials": [
+    {
+      "name": "SB_Slate",
+      "scan": "grey_roof_tiles_02",
+      "dark": [
+        0.2,
+        0.22,
+        0.28
+      ],
+      "lichen": "lichen_rock",
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_Ashlar",
+      "scan": "stone_wall_04",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_LimePlaster",
+      "scan": "patterned_clay_plaster",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_DoorBoards",
+      "scan": "old_planks_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_AdventurersGuild_Banner",
+      "scan": "denim_fabric_03",
+      "dark": [
+        0.16,
+        0.19,
+        0.34
+      ],
+      "lichen": null,
+      "normal": 0.6,
+      "metal": false
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LeadCame",
+      "colour": [
+        0.05,
+        0.05,
+        0.05
+      ],
+      "roughness": 0.45,
+      "metallic": 0.8,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LitGlass",
+      "colour": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "roughness": 0.15,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.5,
+        0.14
+      ],
+      "strength": 3
+    },
+    {
+      "name": "SB_LanternGlow",
+      "colour": [
+        0.3,
+        0.2,
+        0.1
+      ],
+      "roughness": 0.3,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.38,
+        0.08
+      ],
+      "strength": 5
+    },
+    {
+      "name": "SB_PlanterSoil",
+      "colour": [
+        0.06,
+        0.04,
+        0.025
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_ChimneyPot",
+      "colour": [
+        0.2,
+        0.085,
+        0.05
+      ],
+      "roughness": 0.75,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_AdventurersGuild_Gilt",
+      "colour": [
+        0.55,
+        0.37,
+        0.12
+      ],
+      "roughness": 0.35,
+      "metallic": 1,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_AdventurersGuild_Parchment",
+      "colour": [
+        0.62,
+        0.55,
+        0.4
+      ],
+      "roughness": 0.85,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookAdventurersGuild",
+  "parts": [
+    {
+      "name": "Door1",
+      "fbx": "SilverbrookAdventurersGuild_Door1.fbx",
+      "unreal_mesh": "SM_SilverbrookAdventurersGuild_Door1",
+      "pivot_m": [
+        -1.6039,
+        -4.902,
+        0.45
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    }
+  ],
+  "slot_m": [
+    16,
+    13,
+    18
+  ],
+  "outputs": [
+    "SilverbrookAdventurersGuild.blend",
+    "SilverbrookAdventurersGuild.glb",
+    "SilverbrookAdventurersGuild.fbx"
+  ]
+}

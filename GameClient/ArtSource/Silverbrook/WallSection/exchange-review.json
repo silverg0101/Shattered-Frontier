@@ -1,0 +1,60 @@
+{
+  "source": {
+    "meshes": 3,
+    "triangles": 9380,
+    "size_m": [
+      20.0,
+      3.0,
+      8.0
+    ],
+    "materials": [
+      "SB_WallSection_LoopVoid",
+      "SB_WallSection_Masonry",
+      "SB_WallSection_Paving"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 6
+  },
+  "glb": {
+    "meshes": 3,
+    "triangles": 9380,
+    "size_m": [
+      20.0,
+      3.0,
+      8.0
+    ],
+    "materials": [
+      "SB_WallSection_LoopVoid",
+      "SB_WallSection_Masonry",
+      "SB_WallSection_Paving"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 3,
+    "triangles": 9380,
+    "size_m": [
+      20.0,
+      3.0,
+      8.0
+    ],
+    "materials": [
+      "SB_WallSection_LoopVoid",
+      "SB_WallSection_Masonry",
+      "SB_WallSection_Paving"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 4
+  }
+}

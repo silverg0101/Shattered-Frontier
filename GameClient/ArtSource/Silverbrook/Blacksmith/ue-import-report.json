@@ -1,0 +1,57 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookBlacksmith",
+  "size_m": [
+    12.39,
+    9.06,
+    13.39
+  ],
+  "slots": 15,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 27823,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 256
+  },
+  "slot_m": [
+    14,
+    12,
+    14
+  ],
+  "fits": true,
+  "parts": [
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookBlacksmith_Door1",
+      "size_m": [
+        1.1,
+        0.11,
+        2.75
+      ],
+      "slots": 2,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 256,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 64
+      },
+      "name": "Door1",
+      "motion": "swing",
+      "pivot_cm": [
+        115.45,
+        332.26,
+        20.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "travel": -90,
+      "travel_unit": "deg",
+      "modelled": "closed"
+    }
+  ]
+}

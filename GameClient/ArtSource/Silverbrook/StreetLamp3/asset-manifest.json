@@ -1,0 +1,149 @@
+{
+  "asset": "SilverbrookStreetLamp3",
+  "asset_id": "BLD-GreenlandsStreetLamp-01",
+  "variant": 3,
+  "reference": {
+    "file": "StreetLamp3-reference.png",
+    "sha256": "7196300772cad3c1ef6c34aa0e081f03cd4c8619037fcfd5c210b9fb6559ec3d"
+  },
+  "blender": "5.1.1",
+  "generator": "build_streetlamp3.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    1.445,
+    0.72,
+    4.11
+  ],
+  "meshes": {
+    "SM_SBStreetLamp3_Masonry": {
+      "triangles": 308,
+      "materials": [
+        "SB_Ashlar"
+      ]
+    },
+    "SM_SBStreetLamp3_Timber": {
+      "triangles": 224,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBStreetLamp3_Details": {
+      "triangles": 5984,
+      "materials": [
+        "SB_ForgedIron",
+        "SB_StreetLamp3_Rope",
+        "SB_StreetLamp3_Glow",
+        "SB_StreetLamp3_Banner",
+        "SB_StreetLamp3_Gilt"
+      ]
+    }
+  },
+  "triangles": 6516,
+  "materials": [
+    {
+      "name": "SB_Ashlar",
+      "scan": "stone_wall_04",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_StreetLamp3_Rope",
+      "scan": "hessian_380",
+      "dark": [
+        0.34,
+        0.24,
+        0.13
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_StreetLamp3_Banner",
+      "scan": "denim_fabric_03",
+      "dark": [
+        0.1,
+        0.12,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_StreetLamp3_Gilt",
+      "colour": [
+        0.8,
+        0.55,
+        0.18
+      ],
+      "roughness": 0.35,
+      "metallic": 1.0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_StreetLamp3_Glow",
+      "colour": [
+        0.3,
+        0.2,
+        0.1
+      ],
+      "roughness": 0.3,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.36,
+        0.07
+      ],
+      "strength": 3
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookStreetLamp3",
+  "slot_m": [
+    1.5,
+    1.5,
+    4.2
+  ],
+  "light_socket_m": [
+    [
+      -0.558,
+      0.0,
+      2.43
+    ]
+  ],
+  "light_material": "SB_StreetLamp3_Glow",
+  "outputs": [
+    "SilverbrookStreetLamp3.blend",
+    "SilverbrookStreetLamp3.glb",
+    "SilverbrookStreetLamp3.fbx"
+  ]
+}

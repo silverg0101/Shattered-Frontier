@@ -1,0 +1,97 @@
+{
+  "asset": "SilverbrookWallSection",
+  "reference": {
+    "file": "WallSection-reference.png",
+    "sha256": "d15f51e380e9d229978e3e56c363588907e8e8354429b1a5162bead678658196"
+  },
+  "blender": "5.1.1",
+  "generator": "build_wallsection.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    20.0,
+    3.0,
+    8.0
+  ],
+  "meshes": {
+    "SM_SBWallSection_Masonry": {
+      "triangles": 1776,
+      "materials": [
+        "SB_WallSection_Masonry"
+      ]
+    },
+    "SM_SBWallSection_Dressed": {
+      "triangles": 7592,
+      "materials": [
+        "SB_WallSection_Masonry",
+        "SB_WallSection_LoopVoid"
+      ]
+    },
+    "SM_SBWallSection_Walk": {
+      "triangles": 12,
+      "materials": [
+        "SB_WallSection_Paving"
+      ]
+    }
+  },
+  "triangles": 9380,
+  "materials": [
+    {
+      "name": "SB_WallSection_Masonry",
+      "scan": "rough_block_wall",
+      "dark": [
+        0.7,
+        0.74,
+        0.86
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_WallSection_Paving",
+      "scan": "medieval_blocks_03",
+      "dark": [
+        0.55,
+        0.58,
+        0.62
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_WallSection_LoopVoid",
+      "colour": [
+        0.012,
+        0.012,
+        0.014
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookWallSection",
+  "slot_m": [
+    20,
+    3,
+    8
+  ],
+  "tiling": {
+    "axis": "X",
+    "segment_length_m": 20,
+    "end_faces": "identical sections at x=+-10",
+    "walk_top_z": 5.3999999999999995,
+    "walk_y": [
+      -0.45,
+      1.15
+    ],
+    "masonry_uv_repeat_m": 3.3333
+  },
+  "outputs": [
+    "SilverbrookWallSection.blend",
+    "SilverbrookWallSection.glb",
+    "SilverbrookWallSection.fbx"
+  ]
+}

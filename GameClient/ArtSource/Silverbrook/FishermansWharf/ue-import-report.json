@@ -1,0 +1,57 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookFishermansWharf",
+  "size_m": [
+    20.0,
+    7.95,
+    11.5
+  ],
+  "slots": 14,
+  "nanite": true,
+  "collision": "complex",
+  "convex_hulls": 0,
+  "nanite_fallback_triangles": 30526,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 512
+  },
+  "slot_m": [
+    20,
+    8,
+    11.5
+  ],
+  "fits": true,
+  "parts": [
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookFishermansWharf_Door1",
+      "size_m": [
+        1.0,
+        0.11,
+        2.2
+      ],
+      "slots": 2,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 256,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 64
+      },
+      "name": "Door1",
+      "motion": "swing",
+      "pivot_cm": [
+        -280.0,
+        -239.0,
+        0.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "travel": -90,
+      "travel_unit": "deg",
+      "modelled": "closed"
+    }
+  ]
+}

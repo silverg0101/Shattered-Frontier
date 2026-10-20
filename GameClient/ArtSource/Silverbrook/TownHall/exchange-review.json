@@ -1,0 +1,87 @@
+{
+  "source": {
+    "meshes": 5,
+    "triangles": 236004,
+    "size_m": [
+      22.0,
+      14.309,
+      27.95
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LimePlaster",
+      "SB_LitGlass",
+      "SB_OakTimber",
+      "SB_Slate",
+      "SB_TownHall_Ashlar",
+      "SB_TownHall_Banner",
+      "SB_TownHall_Bronze",
+      "SB_TownHall_Gilt"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 19
+  },
+  "glb": {
+    "meshes": 5,
+    "triangles": 236004,
+    "size_m": [
+      22.0,
+      14.309,
+      27.95
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LimePlaster",
+      "SB_LitGlass",
+      "SB_OakTimber",
+      "SB_Slate",
+      "SB_TownHall_Ashlar",
+      "SB_TownHall_Banner",
+      "SB_TownHall_Bronze",
+      "SB_TownHall_Gilt"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 5,
+    "triangles": 236004,
+    "size_m": [
+      22.0,
+      14.309,
+      27.95
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LimePlaster",
+      "SB_LitGlass",
+      "SB_OakTimber",
+      "SB_Slate",
+      "SB_TownHall_Ashlar",
+      "SB_TownHall_Banner",
+      "SB_TownHall_Bronze",
+      "SB_TownHall_Gilt"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 12
+  }
+}

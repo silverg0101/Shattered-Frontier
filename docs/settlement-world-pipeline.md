@@ -6,7 +6,8 @@ Status: proposed 2026-10-19; Silverbrook is the first user ([zone plan](greenlan
 
 | Input | Owns |
 | --- | --- |
-| Settlement definition (`docs/Game-Design/Regions/…Settlement_<Name>…md`) | Every number and name. Wins all conflicts. |
+| Region definition and region map (`docs/Game-Design/Regions/…Region_<Name>…md`) | Where each settlement and zone sits, plus coast, mountains, main rivers and the roads between settlements. A zone may add detail inside its bounds but never contradicts the region. |
+| Settlement definition (`docs/Game-Design/Regions/…Settlement_<Name>…md`) | Every number and name inside the settlement. Wins all conflicts within the zone. |
 | Design board ([standard](Game-Design/World-Simulation/Legends_Shattered_Frontier_Settlement_Design_Board_Standard_v1.0.md)) | Visual direction only. Layout is traced from it, then reconciled to the definition. |
 | [Zone Definition Standard](Game-Design/World-Simulation/Legends_Shattered_Frontier_World_Zone_Definition_Standard_v0.1.md) | Z-checklist, budgets, compass axes (north −Y, east +X) |
 | [DEC-03](decisions/DEC-03-terrain.md) | Voxel density is the terrain authority. The client surface/mesh adapter is still open (see [TER-01](decisions/TER-01-mesh-terrain-fit-check.md)). |
@@ -15,13 +16,22 @@ Status: proposed 2026-10-19; Silverbrook is the first user ([zone plan](greenlan
 
 ## Target: the agent zone workflow
 
-The owner supplies a design board and one or more look references. Agent sessions turn them into a dressed, elevated, playable zone, plus a list of assets that are still missing. Each step is a separate session-sized task with a committed output and a check, so any step can be rerun without redoing the others.
+The owner supplies a region map, then per settlement a design board and one or more look references. Agent sessions turn them into a dressed, elevated, playable zone, plus a list of assets that are still missing. Each step is a separate session-sized task with a committed output and a check, so any step can be rerun without redoing the others.
+
+**Hard rule: region first.** No zone layout, terrain or build may start until its region has a layout that passes its validator. The region layout fixes everything a zone inherits from its surroundings:
+- where the zone sits;
+- its ground height along every edge;
+- where rivers and roads enter and leave it;
+- what lies beyond it, such as coast, mountains or neighbouring zones.
+
+A zone's backdrop is the region terrain beyond the zone's edge. Never invent it per zone.
 
 | Step | Agent work | Committed output | Check |
 | --- | --- | --- | --- |
-| 1. Read the board | Trace the board into layout data, using its scale bar, and reconcile it to the settlement definition. Includes elevation: high ground, ridges, cliffs, water levels and waterfall drops. | Layout JSON (Stage 1) | Layout validator |
+| 0. Lay out the region | Trace the region map into region layout data at the owner-confirmed scale. First instance: `GameClient/ArtSource/Greenlands/greenlands-region-layout.json`, checked by `validate_region.py`. `region_heightfield.py` writes `greenlands-region-heightfield-preview.png`, and its `zone_edges()` lists a tile's edge heights plus the rivers and roads that cross its edge. Include coastline and sea level, mountain ranges with heights, the main rivers from source to mouth with water levels and falls, lakes, settlements with their zone footprints, the roads between settlements, and biome areas. From that, build one coarse region heightfield. | `<region>-region-layout.json` and the region heightfield script | Region validator: rivers run downhill to the sea, settlements and zones sit on land and don't overlap, roads connect the settlements named in the region definition, and every zone's edge heights and its river and road entry and exit points can be read from it |
+| 1. Read the board | Trace the board into layout data, using its scale bar, and reconcile it to the settlement definition. Read the whole board, not only the town plan: the town map, the isometric view and every panel together describe one area. Capture the relief at the centre (such as a raised district), the land around the town, and the backdrop (mountains, cliffs and waterfalls), as well as the streets and buildings. These tie into each other: streets climb the high ground, the river cuts through the relief, and the backdrop frames the views. Includes elevation: high ground, ridges, cliffs, water levels, waterfall drops and the backdrop's heights and distances. | Layout JSON (Stage 1) | Layout validator |
 | 2. Read the look | Turn each look reference into a look profile: asset roles per layer (canopy, understory, ground cover, rocks, litter, surface, backdrop), with variants, shares and placement rules. Record which project assets already fill each role. | `<biome>-look-profile.json` | Profile schema check; owner review of the role list |
-| 3. Shape the land | Generate the terrain from the layout's elevation data: rolling macro forms, high ground, valleys cut for rivers, flattened road and building beds, cliffs and outcrop zones. Not flat. | Terrain source plus build script (Stage 2; the surface type depends on [TER-01](decisions/TER-01-mesh-terrain-fit-check.md)) | Height samples at landmarks, roads within grade, rivers below banks |
+| 3. Shape the land | Generate the terrain from the layout's elevation data: rolling macro forms, high ground, valleys cut for rivers, flattened road and building beds, cliffs and outcrop zones. Also the backdrop beyond the zone edge (mountains and far hills), so no view ends at the edge of the world. Not flat: the relief must read at the board's scale from the arrival point. | Terrain source plus build script (Stage 2; the surface type depends on [TER-01](decisions/TER-01-mesh-terrain-fit-check.md)) | Height samples at landmarks, roads within grade, rivers below banks |
 | 4. Build the town | Splines, district volumes and landmark blockouts on the shaped terrain | Zone map via the builder (Stage 2) | One-line summary; arrival capture |
 | 5. Dress it | Layered PCG driven by the look profile's slope, height, shade and distance rules: macro rocks and bedrock on steep ground, canopy by height and moisture, understory, ground cover, litter. | PCG graphs plus saved output (Stage 3) | Regenerate-and-compare; capture compared against the look reference |
 | 6. List what's missing | Compare look-profile roles and the settlement's building library against the biome library | Missing-asset batch (Stage 4) | Every gap row traces back to a role or building |
@@ -48,6 +58,7 @@ The layout file is one JSON per settlement, `GameClient/ArtSource/<Biome>/<settl
 - **Polygons:** districts.
 - **Points:** landmarks (number, name, footprint, height from the board elevations) and gates.
 - **Elevation:** elevation markers (height in metres at named points), ridge and valley lines, cliff lines, water surface levels, waterfall drops, and areas to flatten for buildings and plots. The terrain build (workflow step 3) reads these.
+- **Backdrop:** the peaks and ranges seen beyond the zone, with direction, distance and height. Take these from the board's isometric view and backgrounds. They are part of the area, not decoration added later.
 - **Bounds:** zone bounds.
 - **Other:** plots, arrival and a review route.
 
@@ -79,10 +90,15 @@ It creates:
 The aim is that the owner can dress a region from the layout file in minutes, then fine-tune it.
 
 **Graphs:**
-- **Plugin and location:** enable Unreal's PCG plugin, which is not enabled today. Graphs live under `/Game/Frontier/PCG/`, one per biome or district type (forest, meadow, farmland, riverbank, town verge).
+- **Plugin and location:** PCG is enabled by default in UE 5.8 (`EnabledByDefault` in `PCG.uplugin`), so the project needs no plugin entry. Graphs live under `/Game/Frontier/PCG/`.
+- **Rules and spawning (decided 2026-10-19, first instance Silverbrook Eastwood):** the placement rules run in standard-library Python, and PCG spawns and tunes the result:
+  - `dress_zone.py` reads each role's `place` block in the look profile: density, spacing, slope, height above the valley floor, sun or shade, clearance and scale. It runs on the zone heightfield and the builder's building footprints. It places canopy first, so the lower layers can tell sun from shade.
+  - `pcg_dressing.py` writes `PCG_<Zone>_<District>`. Per mesh, the graph runs Create Points (world space) → Difference against volumes tagged `PCG_Exclude` → Static Mesh Spawner. Ground cover has no collision.
+  - **Why this split:** rules such as height above the valley floor need the zone heightfield anyway. In Python they are testable and deterministic without the editor, and PCG still gives instanced output and the owner's exclusion volumes.
+  - **Missing meshes:** a role with no mesh uses a fallback role's meshes and is listed as a gap for Stage 4.
 - **Inputs:** the terrain surface, the layout splines (roads, river and walls act as exclusions), the district volumes and the biome look profile.
 - **Layers:** each graph places layers in the profile's order: rocks and bedrock first, then canopy, understory, ground cover and litter. Each layer samples slope, height above the valley floor, shade under canopy and distance to roads or water, following the profile's rules. Shares and variant counts come from the profile, so a new look reference changes the data, not the graph.
-- **Output:** World Partition–partitioned generation that outputs instanced static meshes.
+- **Output:** instanced static meshes, one component per mesh, generated in the editor and saved with the map (generation trigger: on demand). Partitioned generation needs a World Partition map; the zone maps aren't World Partition yet.
 - **Meshes:** use only meshes that already exist in the project.
 
 **Not chosen: the Procedural Foliage Tool** ([Epic docs](https://dev.epicgames.com/documentation/unreal-engine/procedural-foliage-tool-in-unreal-engine?lang=en-US)).
@@ -119,10 +135,15 @@ The gameplay-candidates file is produced but not used yet. Harvestable plant ass
 **Player terrain edits (DEC-03):** write a design note on how decoration instances inside an edited voxel chunk are removed at runtime. This is a design note only; nothing is implemented.
 
 **Exit:**
-- The regenerate-and-compare check passes.
-- One district is dressed end to end, with in-game captures.
-- Frame time and instance count are compared against the per-actor scatter in `dress_region.py`.
-- The checklist below is filled in.
+- The regenerate-and-compare check passes. **Met 2026-10-19:**
+  - Two full rebuilds gave content version `eastwood-1019-1-0b79e48657` and transforms hash `d61a51ba9795`.
+  - `dress_zone.py` also asserts that the same version gives the same output and that a new seed changes it.
+  - `pcg_dressing.py` checks that PCG generated exactly the decided instance count, 22,036.
+- One district is dressed end to end, with in-game captures. **Met 2026-10-19:** Silverbrook Eastwood, `Silverbrook-Eastwood-InGame.png`, with 1,055 gameplay candidates.
+- Frame time and instance count are compared against the per-actor scatter in `dress_region.py`. **Half met:**
+  - The Silverbrook walk records frame time: a 2.2 ms median and 3.0 ms p95, offscreen at 1280 × 720.
+  - The art-review map hasn't been measured the same way yet.
+- The checklist below is filled in. **Not yet.** Also open: confirming that 5.8's per-instance edits survive regeneration (fine-tuning step 2).
 
 ### How to dress a new region
 
@@ -147,7 +168,9 @@ It writes one batch file under `docs/art-templates/asset-lists/`, in the existin
 
 **Licensing:** licensed Fab or Megascans assets never fill a role in the report. They are read-only and may not be restorable on every machine.
 
-**Exit:** the report for the Greenlands look profile names the current gaps: tall pines, young broadleaf, saplings, large moss boulders, bedrock slabs, cobble scatter, litter, forest-floor and bedrock materials, broad-leaf herbs, moss patches and backdrop domes. Re-running it after an asset lands removes that row.
+**First instance (2026-10-19):** `GameClient/ArtSource/Greenlands/missing_assets.py` writes [environment-greenlands-silverbrook-42](art-templates/asset-lists/environment-greenlands-silverbrook-42.md) and its catalog row. It has 30 rows: 12 environment gaps and 18 Silverbrook buildings. The building library is the look profile's `buildings` map; today it covers the cottage, workshop and market stall. Buildings are rated on their own scale: unique landmarks, townhouses and cottages are P1, and the rest are P2. The script asserts that the gaps named below are present.
+
+**Exit (met 2026-10-19):** the report for the Greenlands look profile names the current gaps: tall pines, young broadleaf, saplings, large moss boulders, bedrock slabs, cobble scatter, litter, forest-floor and bedrock materials, broad-leaf herbs, moss patches and backdrop domes. Re-running it after an asset lands removes that row.
 
 ## Deferred
 

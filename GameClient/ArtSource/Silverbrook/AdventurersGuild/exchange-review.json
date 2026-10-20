@@ -1,0 +1,93 @@
+{
+  "source": {
+    "meshes": 5,
+    "triangles": 196322,
+    "size_m": [
+      15.608,
+      12.074,
+      17.68
+    ],
+    "materials": [
+      "SB_AdventurersGuild_Banner",
+      "SB_AdventurersGuild_Gilt",
+      "SB_AdventurersGuild_Parchment",
+      "SB_Ashlar",
+      "SB_ChimneyPot",
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LimePlaster",
+      "SB_LitGlass",
+      "SB_OakTimber",
+      "SB_PlanterSoil",
+      "SB_Slate"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 19
+  },
+  "glb": {
+    "meshes": 5,
+    "triangles": 196322,
+    "size_m": [
+      15.608,
+      12.074,
+      17.68
+    ],
+    "materials": [
+      "SB_AdventurersGuild_Banner",
+      "SB_AdventurersGuild_Gilt",
+      "SB_AdventurersGuild_Parchment",
+      "SB_Ashlar",
+      "SB_ChimneyPot",
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LimePlaster",
+      "SB_LitGlass",
+      "SB_OakTimber",
+      "SB_PlanterSoil",
+      "SB_Slate"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 5,
+    "triangles": 196322,
+    "size_m": [
+      15.608,
+      12.074,
+      17.68
+    ],
+    "materials": [
+      "SB_AdventurersGuild_Banner",
+      "SB_AdventurersGuild_Gilt",
+      "SB_AdventurersGuild_Parchment",
+      "SB_Ashlar",
+      "SB_ChimneyPot",
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LimePlaster",
+      "SB_LitGlass",
+      "SB_OakTimber",
+      "SB_PlanterSoil",
+      "SB_Slate"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 12
+  }
+}

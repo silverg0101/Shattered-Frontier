@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookWallTower",
+  "size_m": [
+    8.0,
+    8.0,
+    12.0
+  ],
+  "slot_m": [
+    8,
+    8,
+    12
+  ],
+  "fits": true,
+  "slots": 8,
+  "nanite": true,
+  "collision": "complex",
+  "convex_hulls": 0,
+  "nanite_fallback_triangles": 6840,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 256
+  }
+}

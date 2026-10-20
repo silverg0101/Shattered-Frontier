@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookStables",
+  "size_m": [
+    10.96,
+    7.63,
+    6.97
+  ],
+  "slots": 10,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 29735,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 256
+  },
+  "slot_m": [
+    12,
+    8,
+    7
+  ],
+  "fits": true
+}

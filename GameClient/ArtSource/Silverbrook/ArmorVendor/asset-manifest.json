@@ -1,0 +1,619 @@
+{
+  "asset": "SilverbrookArmorVendor",
+  "asset_id": "BLD-GreenlandsArmorVendor-01",
+  "reference": {
+    "file": "ArmorVendor-reference.png",
+    "sha256": "976cd1fe7a2da47da6e2c367908b9abfde6074166de76a5541ed1908ba8ff774"
+  },
+  "blender": "5.1.1",
+  "generator": "build_armorvendor.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction) plus CC0 Poly Haven prop models",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    5.517,
+    2.429,
+    4.35
+  ],
+  "meshes": {
+    "SM_SBArmorVendor_Timber": {
+      "triangles": 3226,
+      "materials": [
+        "SB_OakTimber",
+        "SB_ArmorVendor_PaintedPlanks"
+      ]
+    },
+    "SM_SBArmorVendor_Cloth": {
+      "triangles": 30384,
+      "materials": [
+        "SB_ArmorVendor_AwningBlue",
+        "SB_ArmorVendor_AwningCream",
+        "SB_ArmorVendor_Banner",
+        "SB_ArmorVendor_Fur"
+      ]
+    },
+    "SM_SBArmorVendor_Armour": {
+      "triangles": 118122,
+      "materials": [
+        "SB_ArmorVendor_Steel",
+        "SB_ArmorVendor_MailShadow",
+        "SB_ArmorVendor_Mail",
+        "SB_ArmorVendor_SteelWorn"
+      ]
+    },
+    "SM_SBArmorVendor_Details": {
+      "triangles": 24194,
+      "materials": [
+        "SB_ForgedIron",
+        "SB_ArmorVendor_Rope",
+        "SB_ArmorVendor_Gilt",
+        "SB_ArmorVendor_Brass",
+        "SB_ArmorVendor_Leather",
+        "SB_ArmorVendor_Steel",
+        "SB_ArmorVendor_SteelWorn",
+        "SB_OakTimber",
+        "SB_ArmorVendor_Glow"
+      ]
+    },
+    "wooden_crate_01_0": {
+      "triangles": 5508,
+      "materials": [
+        "SB_PH_wooden_crate_01"
+      ]
+    },
+    "wooden_crate_01_1": {
+      "triangles": 376,
+      "materials": [
+        "SB_PH_wooden_crate_01"
+      ]
+    },
+    "wooden_crate_01_2": {
+      "triangles": 692,
+      "materials": [
+        "SB_PH_wooden_crate_01"
+      ]
+    },
+    "wooden_bucket_01_0": {
+      "triangles": 4484,
+      "materials": [
+        "SB_PH_wooden_bucket_01"
+      ]
+    },
+    "wooden_bucket_01_1": {
+      "triangles": 632,
+      "materials": [
+        "SB_PH_wooden_bucket_01"
+      ]
+    },
+    "wooden_handle_saber_0": {
+      "triangles": 4031,
+      "materials": [
+        "SB_PH_wooden_handle_saber"
+      ]
+    },
+    "ornate_medieval_dagger_0": {
+      "triangles": 4228,
+      "materials": [
+        "SB_PH_ornate_medieval_dagger"
+      ]
+    },
+    "ornate_medieval_dagger_1": {
+      "triangles": 2062,
+      "materials": [
+        "SB_PH_ornate_medieval_dagger"
+      ]
+    },
+    "wooden_crate_02_0": {
+      "triangles": 4492,
+      "materials": [
+        "SB_PH_wooden_crate_02"
+      ]
+    },
+    "wooden_crate_02_1": {
+      "triangles": 684,
+      "materials": [
+        "SB_PH_wooden_crate_02"
+      ]
+    },
+    "wooden_crate_01_0.001": {
+      "triangles": 5508,
+      "materials": [
+        "SB_PH_wooden_crate_01"
+      ]
+    },
+    "wooden_crate_01_1.001": {
+      "triangles": 376,
+      "materials": [
+        "SB_PH_wooden_crate_01"
+      ]
+    },
+    "wooden_crate_01_2.001": {
+      "triangles": 692,
+      "materials": [
+        "SB_PH_wooden_crate_01"
+      ]
+    },
+    "ornate_medieval_dagger_0.001": {
+      "triangles": 4228,
+      "materials": [
+        "SB_PH_ornate_medieval_dagger"
+      ]
+    },
+    "ornate_medieval_dagger_1.001": {
+      "triangles": 2062,
+      "materials": [
+        "SB_PH_ornate_medieval_dagger"
+      ]
+    },
+    "wooden_axe_02_0": {
+      "triangles": 2218,
+      "materials": [
+        "SB_PH_wooden_axe_02"
+      ]
+    },
+    "ornate_war_hammer_0": {
+      "triangles": 5192,
+      "materials": [
+        "SB_PH_ornate_war_hammer"
+      ]
+    },
+    "ornate_medieval_mace_0": {
+      "triangles": 14762,
+      "materials": [
+        "SB_PH_ornate_medieval_mace"
+      ]
+    },
+    "wine_barrel_01_0": {
+      "triangles": 10204,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "wine_barrel_01_1": {
+      "triangles": 224,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "wine_barrel_01_2": {
+      "triangles": 168,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "wine_barrel_01_3": {
+      "triangles": 224,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "wine_barrel_01_0.001": {
+      "triangles": 10204,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "wine_barrel_01_1.001": {
+      "triangles": 224,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "wine_barrel_01_2.001": {
+      "triangles": 168,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "wine_barrel_01_3.001": {
+      "triangles": 224,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "wine_barrel_01_0.002": {
+      "triangles": 10204,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "wine_barrel_01_1.002": {
+      "triangles": 224,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "wine_barrel_01_2.002": {
+      "triangles": 168,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "wine_barrel_01_3.002": {
+      "triangles": 224,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "wine_barrel_01_0.003": {
+      "triangles": 10204,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "wine_barrel_01_1.003": {
+      "triangles": 224,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "wine_barrel_01_2.003": {
+      "triangles": 168,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "wine_barrel_01_3.003": {
+      "triangles": 224,
+      "materials": [
+        "SB_PH_wine_barrel_01"
+      ]
+    },
+    "antique_estoc_0": {
+      "triangles": 8246,
+      "materials": [
+        "SB_PH_antique_estoc"
+      ]
+    }
+  },
+  "triangles": 289679,
+  "materials": [
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ArmorVendor_AwningBlue",
+      "scan": "denim_fabric_04",
+      "dark": [
+        0.3,
+        0.33,
+        0.45
+      ],
+      "lichen": null,
+      "normal": 0.7,
+      "metal": false
+    },
+    {
+      "name": "SB_ArmorVendor_AwningCream",
+      "scan": "terlenka",
+      "dark": [
+        0.58,
+        0.48,
+        0.26
+      ],
+      "lichen": null,
+      "normal": 0.8,
+      "metal": false
+    },
+    {
+      "name": "SB_ArmorVendor_Banner",
+      "scan": "denim_fabric_03",
+      "dark": [
+        0.16,
+        0.19,
+        0.32
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ArmorVendor_Rope",
+      "scan": "hessian_380",
+      "dark": [
+        0.36,
+        0.27,
+        0.16
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ArmorVendor_Leather",
+      "scan": "brown_leather",
+      "dark": [
+        0.45,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ArmorVendor_Fur",
+      "scan": "curly_teddy_natural",
+      "dark": [
+        0.09,
+        0.085,
+        0.08
+      ],
+      "lichen": null,
+      "normal": 2.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ArmorVendor_PaintedPlanks",
+      "scan": "blue_painted_planks",
+      "dark": [
+        0.2,
+        0.22,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ArmorVendor_Steel",
+      "colour": [
+        0.42,
+        0.44,
+        0.47
+      ],
+      "roughness": 0.34,
+      "metallic": 1.0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_ArmorVendor_SteelWorn",
+      "colour": [
+        0.25,
+        0.25,
+        0.26
+      ],
+      "roughness": 0.5,
+      "metallic": 1.0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_ArmorVendor_Mail",
+      "colour": [
+        0.26,
+        0.26,
+        0.27
+      ],
+      "roughness": 0.5,
+      "metallic": 0.8,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_ArmorVendor_MailShadow",
+      "colour": [
+        0.12,
+        0.12,
+        0.125
+      ],
+      "roughness": 0.58,
+      "metallic": 0.7,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_ArmorVendor_Brass",
+      "colour": [
+        0.72,
+        0.5,
+        0.2
+      ],
+      "roughness": 0.38,
+      "metallic": 1.0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_ArmorVendor_Gilt",
+      "colour": [
+        0.8,
+        0.56,
+        0.2
+      ],
+      "roughness": 0.45,
+      "metallic": 0.8,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_ArmorVendor_Glow",
+      "colour": [
+        0.3,
+        0.16,
+        0.05
+      ],
+      "roughness": 0.25,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.45,
+        0.12
+      ],
+      "strength": 3.0
+    },
+    {
+      "name": "SB_PH_wooden_crate_01",
+      "scan": "ph_wooden_crate_01",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": true
+    },
+    {
+      "name": "SB_PH_wooden_bucket_01",
+      "scan": "ph_wooden_bucket_01",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": true
+    },
+    {
+      "name": "SB_PH_wooden_handle_saber",
+      "scan": "ph_wooden_handle_saber",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": true
+    },
+    {
+      "name": "SB_PH_ornate_medieval_dagger",
+      "scan": "ph_ornate_medieval_dagger",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": true
+    },
+    {
+      "name": "SB_PH_wooden_crate_02",
+      "scan": "ph_wooden_crate_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": true
+    },
+    {
+      "name": "SB_PH_wooden_axe_02",
+      "scan": "ph_wooden_axe_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": true
+    },
+    {
+      "name": "SB_PH_ornate_war_hammer",
+      "scan": "ph_ornate_war_hammer",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": true
+    },
+    {
+      "name": "SB_PH_ornate_medieval_mace",
+      "scan": "ph_ornate_medieval_mace",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": true
+    },
+    {
+      "name": "SB_PH_wine_barrel_01",
+      "scan": "ph_wine_barrel_01",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": true
+    },
+    {
+      "name": "SB_PH_antique_estoc",
+      "scan": "ph_antique_estoc",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": true
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans and models)",
+  "polyhaven_models": [
+    "antique_estoc",
+    "ornate_medieval_dagger",
+    "ornate_medieval_mace",
+    "ornate_war_hammer",
+    "wine_barrel_01",
+    "wooden_axe_02",
+    "wooden_bucket_01",
+    "wooden_crate_01",
+    "wooden_crate_02",
+    "wooden_handle_saber"
+  ],
+  "unreal_mesh": "SM_SilverbrookArmorVendor",
+  "slot_m": [
+    6,
+    3.5,
+    5
+  ],
+  "light_socket_m": [
+    [
+      2.562,
+      -0.529,
+      2.745
+    ]
+  ],
+  "light_material": "SB_ArmorVendor_Glow",
+  "outputs": [
+    "SilverbrookArmorVendor.blend",
+    "SilverbrookArmorVendor.glb",
+    "SilverbrookArmorVendor.fbx"
+  ]
+}

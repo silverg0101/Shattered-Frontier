@@ -1,0 +1,302 @@
+{
+  "asset": "SilverbrookFishermansWharf",
+  "reference": {
+    "file": "FishermansWharf-reference.png",
+    "sha256": "bf1f21bb8099ba47e57fec00b6f0d78f84e26de9e6ad825d148868441c89cecb"
+  },
+  "blender": "5.1.1",
+  "generator": "build_fishermanswharf.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y (water side), origin at ground centre = deck centre at riverbank level",
+  "bounds_m": [
+    20.0,
+    7.95,
+    11.5
+  ],
+  "z_range_m": [
+    -3.5,
+    8.0
+  ],
+  "deck": {
+    "top_z_m": 0.0,
+    "bank_z_m": 0.0,
+    "water_z_m": -1.5,
+    "bed_z_m": -3.5,
+    "height_above_water_m": 1.5,
+    "land_edge": "+Y (meets the bank flush, no step)",
+    "water_edge": "-Y (fascia, mooring posts, two ladders to the water)",
+    "walkable_m": [
+      19.9,
+      7.75
+    ],
+    "ray_checks": 3762,
+    "note": "continuous plank deck; buildings stand on it; checked by downward ray casts on a 0.2 m grid"
+  },
+  "slot_height_note": "layout wharf slot is 20 x 8 x 1 (deck only); the concept has an 8 m shop, crane and chimney above the deck, and the piles reach the bed 3.5 m below the bank, so the slot height is 11.5 m",
+  "meshes": {
+    "SM_SBFishermansWharf_Masonry": {
+      "triangles": 888,
+      "materials": [
+        "SB_Ashlar"
+      ]
+    },
+    "SM_SBFishermansWharf_Boards": {
+      "triangles": 308,
+      "materials": [
+        "SB_FishermansWharf_Boards"
+      ]
+    },
+    "SM_SBFishermansWharf_Timber": {
+      "triangles": 5348,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBFishermansWharf_Deck": {
+      "triangles": 2240,
+      "materials": [
+        "SB_FishermansWharf_Deck"
+      ]
+    },
+    "SM_SBFishermansWharf_Roof": {
+      "triangles": 69144,
+      "materials": [
+        "SB_Slate",
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBFishermansWharf_Details": {
+      "triangles": 5836,
+      "materials": [
+        "SB_LitGlass",
+        "SB_LeadCame",
+        "SB_FishermansWharf_Banner",
+        "SB_FishermansWharf_Gilt",
+        "SB_ForgedIron",
+        "SB_LanternGlow",
+        "SB_ChimneyPot",
+        "SB_DoorBoards",
+        "SB_FishermansWharf_Canvas"
+      ]
+    },
+    "SM_SBFishermansWharf_Details_Door1": {
+      "triangles": 276,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
+      ]
+    }
+  },
+  "triangles": 84040,
+  "materials": [
+    {
+      "name": "SB_Slate",
+      "scan": "grey_roof_tiles_02",
+      "dark": [
+        0.2,
+        0.22,
+        0.28
+      ],
+      "lichen": "lichen_rock",
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_Ashlar",
+      "scan": "stone_wall_04",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_DoorBoards",
+      "scan": "old_planks_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_FishermansWharf_Boards",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.3,
+        0.29,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_FishermansWharf_Deck",
+      "scan": "wood_planks_grey",
+      "dark": [
+        0.3,
+        0.29,
+        0.27
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_FishermansWharf_Canvas",
+      "scan": "cotton_jersey",
+      "dark": [
+        0.85,
+        0.82,
+        0.62
+      ],
+      "lichen": null,
+      "normal": 0.6,
+      "metal": false
+    },
+    {
+      "name": "SB_FishermansWharf_Banner",
+      "scan": "denim_fabric_03",
+      "dark": [
+        0.1,
+        0.12,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LeadCame",
+      "colour": [
+        0.05,
+        0.05,
+        0.05
+      ],
+      "roughness": 0.45,
+      "metallic": 0.8,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LitGlass",
+      "colour": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "roughness": 0.15,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.5,
+        0.14
+      ],
+      "strength": 3
+    },
+    {
+      "name": "SB_LanternGlow",
+      "colour": [
+        0.3,
+        0.2,
+        0.1
+      ],
+      "roughness": 0.3,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.38,
+        0.08
+      ],
+      "strength": 5
+    },
+    {
+      "name": "SB_ChimneyPot",
+      "colour": [
+        0.2,
+        0.085,
+        0.05
+      ],
+      "roughness": 0.75,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_FishermansWharf_Gilt",
+      "colour": [
+        0.8,
+        0.55,
+        0.18
+      ],
+      "roughness": 0.35,
+      "metallic": 1.0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookFishermansWharf",
+  "parts": [
+    {
+      "name": "Door1",
+      "fbx": "SilverbrookFishermansWharf_Door1.fbx",
+      "unreal_mesh": "SM_SilverbrookFishermansWharf_Door1",
+      "pivot_m": [
+        -2.8,
+        2.39,
+        0.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    }
+  ],
+  "slot_m": [
+    20,
+    8,
+    11.5
+  ],
+  "asset_id": "BLD-GreenlandsFishermansWharf-01",
+  "outputs": [
+    "SilverbrookFishermansWharf.blend",
+    "SilverbrookFishermansWharf.glb",
+    "SilverbrookFishermansWharf.fbx"
+  ]
+}

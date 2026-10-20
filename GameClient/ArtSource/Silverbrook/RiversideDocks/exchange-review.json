@@ -1,0 +1,75 @@
+{
+  "source": {
+    "meshes": 5,
+    "triangles": 22528,
+    "size_m": [
+      30.0,
+      10.0,
+      9.419
+    ],
+    "materials": [
+      "SB_ForgedIron",
+      "SB_OakTimber",
+      "SB_RiversideDocks_Banner",
+      "SB_RiversideDocks_Decking",
+      "SB_RiversideDocks_Gilt",
+      "SB_RiversideDocks_Masonry",
+      "SB_RiversideDocks_Paving",
+      "SB_RiversideDocks_Rope"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 15
+  },
+  "glb": {
+    "meshes": 5,
+    "triangles": 22528,
+    "size_m": [
+      30.0,
+      10.0,
+      9.419
+    ],
+    "materials": [
+      "SB_ForgedIron",
+      "SB_OakTimber",
+      "SB_RiversideDocks_Banner",
+      "SB_RiversideDocks_Decking",
+      "SB_RiversideDocks_Gilt",
+      "SB_RiversideDocks_Masonry",
+      "SB_RiversideDocks_Paving",
+      "SB_RiversideDocks_Rope"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 5,
+    "triangles": 22528,
+    "size_m": [
+      30.0,
+      10.0,
+      9.419
+    ],
+    "materials": [
+      "SB_ForgedIron",
+      "SB_OakTimber",
+      "SB_RiversideDocks_Banner",
+      "SB_RiversideDocks_Decking",
+      "SB_RiversideDocks_Gilt",
+      "SB_RiversideDocks_Masonry",
+      "SB_RiversideDocks_Paving",
+      "SB_RiversideDocks_Rope"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 10
+  }
+}
