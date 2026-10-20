@@ -22,13 +22,24 @@ SHADE = 6.0        # m from a canopy trunk counts as shade
 SOLID = 2.5        # m kept between any two trees or rocks, whatever their role
 SOLID_LAYERS = ('canopy', 'rocks')
 ORDER = ('canopy', 'rocks', 'understory', 'ground_cover', 'litter')
+# Keep the shipped Silverbrook distribution when decoupling placement RNG from
+# content_version. New layouts use the explicit layout seed and district name.
+SHIPPED = {
+    # (legacy RNG seed, transform hash). Keep existing candidate IDs when transforms match.
+    (1019, 'Northridge'): ('northridge-1019-1-8eb710c87a', '57862b8cef95'),
+    (1019, 'The Commons'): ('the_commons-1019-1-b4f08fb645', '6d2e636bb32b'),
+    (1019, 'Riverside'): ('riverside-1019-1-d78654a13d', '93d124f5f086'),
+    (1019, 'Westfields'): ('westfields-1019-1-27e683c3b2', '19b5d972fcc8'),
+    (1019, 'Eastwood'): ('eastwood-1019-1-3a26e33f1b', '47193802f220'),
+}
 
 
-def content_version(L, P, seed, district):
-    """Seed + rules version + hash of what decides placement: the layout and each role's layer, meshes and place rules.
-    Other look-profile edits (descriptions, the building library) leave it unchanged."""
-    placement = [(l['role'], l['layer'], l['have'], l.get('place')) for l in P['layers']]
-    h = hashlib.sha1(json.dumps([L, placement, seed, district, RULES_VERSION], sort_keys=True).encode()).hexdigest()
+def content_version(seed, district, roles):
+    """Identify the generated placement, so unrelated layout edits cannot change candidate IDs."""
+    h = hashlib.sha1(json.dumps(roles, sort_keys=True).encode()).hexdigest()
+    shipped = SHIPPED.get((seed, district))
+    if shipped and h.startswith(shipped[1]):
+        return shipped[0]
     return f'{district.lower().replace(" ", "_")}-{seed}-{RULES_VERSION}-{h[:10]}'
 
 
@@ -87,7 +98,6 @@ class Site:
 def dress(L, P, hf, placed, district, seed):
     """Returns {version, roles: {role: [dict(mesh, x, y, z, yaw, scale)]}, gaps, area_ha}."""
     site = Site(L, hf, placed, district)
-    version = content_version(L, P, seed, district)
     roles = {l['role']: l for l in P['layers']}
     out, gaps, canopy = {}, {}, []
     area_ha = sum(site.inside) * CELL * CELL / 10000
@@ -111,7 +121,8 @@ def dress(L, P, hf, placed, district, seed):
             per_ha = rule['per_ha'] * L['districts'][district].get('dress', {}).get(layer, 1.0)
             if per_ha <= 0:
                 continue
-            rng = random.Random(f'{version}:{role}')
+            placement_seed = SHIPPED.get((seed, district), (f'{seed}:{district}:{RULES_VERSION}',))[0]
+            rng = random.Random(f'{placement_seed}:{role}')
             target = round(per_ha * area_ha)
             cell = math.sqrt(10000 / per_ha)
             spacing, placed_here, grid = rule['spacing'], [], {}
@@ -155,7 +166,8 @@ def dress(L, P, hf, placed, district, seed):
                 for t in placed_here:
                     bucket.setdefault((int(t['x'] // SHADE), int(t['y'] // SHADE)), []).append((t['x'], t['y']))
             out[role] = placed_here
-    return dict(version=version, district=district, area_ha=round(area_ha, 2), roles=out, gaps=gaps)
+    return dict(version=content_version(seed, district, out), district=district,
+                area_ha=round(area_ha, 2), roles=out, gaps=gaps)
 
 
 def candidates(result, P):
@@ -209,6 +221,9 @@ if __name__ == '__main__':
     a = dress(L, P, hf, [], district, L['seed'])
     b = dress(L, P, hf, [], district, L['seed'])
     assert transforms_hash(a) == transforms_hash(b), 'same content version must give identical output'
+    unrelated = dict(L, arrival=dict(L['arrival'], at=[0, 0]))
+    c = dress(unrelated, P, hf, [], district, L['seed'])
+    assert c['version'] == a['version'] and c['roles'] == a['roles'], 'arrival edits must not reseed dressing'
     other = dress(L, P, hf, [], district, L['seed'] + 1)
     assert transforms_hash(other) != transforms_hash(a), 'a new seed must change the output'
     cands = candidates(a, P)

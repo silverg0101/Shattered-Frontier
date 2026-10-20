@@ -101,7 +101,7 @@ The first command deletes and regenerates the map and logs `SILVERBROOK_BUILT �
 | --- | --- | --- |
 | PCG dressing | Runs inside the builder; `pcg_dressing.py` saves. Each district's `dress` block scales look-profile densities (forest 1, town canopy 0.08, gardens 0.2, fields 0.12). | `DRESSING_SAVED`, counts equal expected; ~83k instances. Writes `<town>-<district>-candidates.json` (harvestable trees and rocks). |
 | Missing assets | `python missing_assets.py` | Rewrites the batch list under `docs/art-templates/asset-lists/`. Hand the P1 rows to the Assets (Blender) session. |
-| Zone record | `python zone_record.py` | `ZONE_RECORD_OK`: respawn points, level areas, gathering groups (N ≥ 2K), NPC groups beyond clearances. Writes `content/world/zones/<zone>.json`. Re-run after every rebuild, since candidates change. |
+| Zone record | `python zone_record.py` | `ZONE_RECORD_OK`: respawn points, level areas, gathering groups (N ≥ 2K), NPC groups beyond clearances. Writes `content/world/zones/<zone>.json`. Re-run after every rebuild; unchanged dressing keeps this file identical. |
 | Census | `python townsfolk_census.py` | `CENSUS_OK <version>` with the same version on a re-run; residents per district, jobs filled. Writes `<town>-census.json`. Needs the roster from a rebuild. |
 | World content | `BackendServices/WorldContent.Tool` validates every zone JSON (see the dependency map row). | No violations. |
 
@@ -160,6 +160,7 @@ UnrealEditor.exe <uproject> <map> -game -RenderOffscreen -unattended -nosound -w
 | Gathering nodes don't appear | Not admitted: needs a dedicated server, the construction game mode URL, both flags, and an admitted map path | Run as in §4; add the new map to admission (§8) | `GATHERING_PILOT_READY Source=ZoneRecord Nodes=N` |
 | Two clients pick different nodes | Net relevancy: default cull 150 m | Nodes cull at 500 m; the scenario picks the oak nearest the origin and the rock nearest that oak | `-Silverbrook` test passes |
 | Node inside a dressing tree; harvest denied | PCG instance overlaps the node; line of sight blocked | Node removes instances rooted within 1 m | Harvest commits |
+| Candidates or zone record churn on every rebuild | Dressing RNG used the content version, which hashed the whole layout; an unrelated layout edit reseeded every district | Seed roles from the district and layout seed (preserving shipped Silverbrook streams); derive the content version from generated transforms | With unchanged inputs, two rebuilds give byte-identical candidate files and zone record; `DRESSING_SAVED` counts match |
 | Compile error in a file you didn't touch (`redefinition`) | Unity build: two files share an anonymous-namespace name, exposed when your edits change the blobs | Rename the clashing name at the root | Build succeeds |
 | Linker: `Z_Construct_UScriptStruct_FMassFragment` unresolved | Mass core types live in the `MassCore` module | Add `MassCore` to Build.cs | Build succeeds |
 | `Fragment type is not trivially copyable` | `TArray` or `FString` in a Mass fragment | Keep arrays in a subsystem, indexed by entity | Build succeeds |
