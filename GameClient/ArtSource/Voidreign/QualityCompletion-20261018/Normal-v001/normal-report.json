@@ -1,0 +1,27 @@
+{
+ "schema_version": 1,
+ "status": "normal-baked-needs-visual-review",
+ "cpu_only": true,
+ "input_sha256": {
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Delivery-v007/SK_Voidreign.blend": "474821749367509d96a92fe5aaab3b659ec419498d08c9ab11ab87c0e103e98d",
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Delivery-v006/SK_Voidreign.blend": "325a8ed16f00803e8ecf9680cba8ba65c311735f5b6b70379adc98a04bc98ae3"
+ },
+ "tool_sha256": "fd69c974460bdc236bf9c3ed7464e0c2ebce4129dce0593243895713f8e52f5a",
+ "profile_sha256": "c3d2c90bbaa3cf2e75cabef8b6c84018518fee3e23ad86bff094d337384eb323",
+ "normal_sha256": "2e0ae4cd8486434fe14c2f390b54a27c7594de9d86ac91f4b4bf8d8ea7cbc68e",
+ "resolution": 2048,
+ "flat_texel_fraction": 0.3399233818054199,
+ "mean_rgb": [
+  0.5006999969482422,
+  0.4993000030517578,
+  0.7099000215530396
+ ],
+ "review": [
+  "review-before.png",
+  "review-after.png"
+ ],
+ "limitations": [
+  "Selected-to-active over thin stacked sheets can pick the wrong layer within the ray distance.",
+  "Flat texels include empty atlas space."
+ ]
+}

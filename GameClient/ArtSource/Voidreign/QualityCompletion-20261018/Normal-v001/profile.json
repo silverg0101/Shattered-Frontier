@@ -1,0 +1,31 @@
+{
+ "schema_version": 1,
+ "low_blend": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Delivery-v007/SK_Voidreign.blend",
+ "high_blend": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Delivery-v006/SK_Voidreign.blend",
+ "object": "SK_Voidreign",
+ "uv_layer": "UVMap",
+ "resolution": 2048,
+ "cage_extrusion_m": 0.01,
+ "max_ray_distance_m": 0.02,
+ "margin_px": 8,
+ "camera_m": [
+  3.2,
+  -1.6,
+  1.7
+ ],
+ "camera_rot_deg": [
+  82,
+  0,
+  62
+ ],
+ "camera_lens_mm": 50,
+ "review_samples": 24,
+ "review_resolution": [
+  1000,
+  700
+ ],
+ "input_sha256": {
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Delivery-v007/SK_Voidreign.blend": "474821749367509d96a92fe5aaab3b659ec419498d08c9ab11ab87c0e103e98d",
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Delivery-v006/SK_Voidreign.blend": "325a8ed16f00803e8ecf9680cba8ba65c311735f5b6b70379adc98a04bc98ae3"
+ }
+}

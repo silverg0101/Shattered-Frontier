@@ -1,0 +1,1 @@
+{"status":"rejected","reason":"Selected-to-active normal bake from the 297k mesh onto the 100k LOD0 adds dark blotches and faceting on the stacked double-sided hair sheets (review-before-after.png, right). The 100k mesh already matches full detail visually (Delivery-v007/compare-full-vs-100k.png), so the material keeps no normal input."}
