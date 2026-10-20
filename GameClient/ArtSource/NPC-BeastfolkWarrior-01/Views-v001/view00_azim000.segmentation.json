@@ -1,0 +1,22 @@
+{
+  "source": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/NPC-BeastfolkWarrior-01/Views-v001/cells/view00_azim000.png",
+  "source_sha256": "d37e40e3e908c1481d003268645edd0f3738ebaf67871bd052aec36f77f07169",
+  "output": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/NPC-BeastfolkWarrior-01/Views-v001/view00_azim000.png",
+  "output_sha256": "3d8619e3459697ef68aed8e04ae84899c88ec09338a17b55cb5921c3a3f69def",
+  "mask_preview": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/NPC-BeastfolkWarrior-01/Views-v001/view00_azim000.mask.png",
+  "mask_preview_sha256": "c3ba54d1854ba24f7d16db8978fdf2426426402a6c62be3cf00f17faef3812fd",
+  "dimensions_px": [
+    500,
+    500
+  ],
+  "method": "border-connected fixed-range RGB flood fill; Gaussian alpha edge 0.8px",
+  "tolerance_rgb": 12,
+  "foreground_fraction": 0.332264,
+  "foreground_bounds_px": [
+    46,
+    6,
+    449,
+    487
+  ],
+  "review_status": "needs-review"
+}

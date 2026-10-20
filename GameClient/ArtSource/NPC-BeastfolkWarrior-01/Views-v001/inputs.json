@@ -1,0 +1,11 @@
+{
+  "inputs": [
+    {
+      "path": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/NPC-BeastfolkWarrior-01/turnaround-sheet-v001.webp",
+      "sha256": "72b952b7aa9604164a8147584be37ddd4174ea255a7fc5fc956b129867bb2326"
+    }
+  ],
+  "view_px": 500,
+  "transforms_source": "/home/grego/sf-asset-lab/sources/Pixal3D/assets/mv_images/example/transforms.json",
+  "review_status": "needs-review"
+}
