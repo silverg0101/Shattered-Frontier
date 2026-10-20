@@ -1,0 +1,22 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookWatchtower",
+  "size_m": [
+    5.9,
+    4.9,
+    8.96
+  ],
+  "slot_m": [
+    8,
+    8,
+    9
+  ],
+  "fits": true,
+  "slots": 9,
+  "nanite": true,
+  "convex_hulls": 11,
+  "nanite_fallback_triangles": 6708,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 256
+  }
+}

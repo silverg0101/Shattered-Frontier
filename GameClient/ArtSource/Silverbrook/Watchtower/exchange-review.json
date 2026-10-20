@@ -1,0 +1,78 @@
+{
+  "source": {
+    "meshes": 4,
+    "triangles": 19628,
+    "size_m": [
+      5.9,
+      4.9,
+      8.96
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_OakTimber",
+      "SB_Watchtower_Banner",
+      "SB_Watchtower_Flame",
+      "SB_Watchtower_Gilt",
+      "SB_Watchtower_Shingle",
+      "SB_Watchtower_Stone"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 15
+  },
+  "glb": {
+    "meshes": 4,
+    "triangles": 19628,
+    "size_m": [
+      5.9,
+      4.9,
+      8.96
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_OakTimber",
+      "SB_Watchtower_Banner",
+      "SB_Watchtower_Flame",
+      "SB_Watchtower_Gilt",
+      "SB_Watchtower_Shingle",
+      "SB_Watchtower_Stone"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 4,
+    "triangles": 19628,
+    "size_m": [
+      5.9,
+      4.9,
+      8.96
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_LanternGlow",
+      "SB_OakTimber",
+      "SB_Watchtower_Banner",
+      "SB_Watchtower_Flame",
+      "SB_Watchtower_Gilt",
+      "SB_Watchtower_Shingle",
+      "SB_Watchtower_Stone"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 10
+  }
+}

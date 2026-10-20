@@ -1,5 +1,6 @@
 {
   "_about": "Greenlands mixed-forest look profile, read from docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp. Each role is a kind of asset the PCG graphs place and the asset-gap report checks. 'have' lists project meshes that fill the role today (paths under /Game/Frontier/Environment/Greenlands unless noted). Licensed Fab assets are read-only and are not counted toward a role here. Counts and shares are proposed targets, not tuning. Placement rules use terrain slope (degrees), height above local valley floor and road/river distance.",
+    "Watchtower": {"have": ["SM_SilverbrookWatchtower"]},
     "Northridge house": {"have": ["SM_SilverbrookNorthridgeHouse5"]},
     "Northridge house": {"have": ["SM_SilverbrookNorthridgeHouse4"]},
     "Northridge house": {"have": ["SM_SilverbrookNorthridgeHouse3"]},
