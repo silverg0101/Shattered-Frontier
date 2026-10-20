@@ -44,5 +44,5 @@ Owner-supplied concept images for the Silverbrook buildings. One image is one de
 | [Street Lamp-2.png](Street%20Lamp-2.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | `GameClient/ArtSource/Silverbrook/StreetLamp2` | delivered |
 | [Street Lamp-3.png](Street%20Lamp-3.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | `GameClient/ArtSource/Silverbrook/StreetLamp3` | delivered |
 | [Street Lamp-4.png](Street%20Lamp-4.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | `GameClient/ArtSource/Silverbrook/StreetLamp4` | delivered |
-| [Armor Vendor.png](Armor%20Vendor.png) | Armor vendor | BLD-GreenlandsArmorVendor-01 | — | `GameClient/ArtSource/Silverbrook/ArmorVendor` | modelling |
+| [Armor Vendor.png](Armor%20Vendor.png) | Armor vendor | BLD-GreenlandsArmorVendor-01 | — | `GameClient/ArtSource/Silverbrook/ArmorVendor` | delivered |
 | [Weapons Vendor.png](Weapons%20Vendor.png) | Weapons vendor | BLD-GreenlandsWeaponsVendor-01 | — | `GameClient/ArtSource/Silverbrook/WeaponsVendor` | delivered |
