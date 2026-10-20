@@ -11,6 +11,7 @@ No level is touched; the town builder places the meshes.
 import unreal as u,json,math,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent;LIB='/Game/Frontier/Environment/Greenlands/Silverbrook'
+WALKABLE={'StoneBridge','RiversideDocks','FishermansWharf','WallSection','Gatehouse','WallTower'}  # complex-as-simple collision
 DISPLACEMENT_CM=3.0  # full 0..1 height range of a scan; real mortar joints and slate laps are 1-3 cm deep
 tools=u.AssetToolsHelpers.get_asset_tools();mel=u.MaterialEditingLibrary;eal=u.EditorAssetLibrary;sme=u.get_editor_subsystem(u.StaticMeshEditorSubsystem)
 assert sme,'Full editor required'
@@ -122,7 +123,12 @@ for pkg,man in manifests.items():
     for i,slot in enumerate(mesh.static_materials):
         mi=instances.get(str(slot.material_slot_name));assert mi,f'{name}: unmapped slot {slot.material_slot_name}';mesh.set_material(i,mi)
     nanite=mesh.get_editor_property('nanite_settings');nanite.set_editor_property('enabled',True);mesh.set_editor_property('nanite_settings',nanite)
-    sme.remove_collisions(mesh);assert sme.set_convex_decomposition_collisions(mesh,12,16,100000),name
+    sme.remove_collisions(mesh)
+    bs_=mesh.get_editor_property('body_setup')
+    if pkg in WALKABLE:  # decks, wall-walks and arches: convex hulls would fill the spaces people walk through
+        bs_.set_editor_property('collision_trace_flag',u.CollisionTraceFlag.CTF_USE_COMPLEX_AS_SIMPLE)
+    else:
+        bs_.set_editor_property('collision_trace_flag',u.CollisionTraceFlag.CTF_USE_DEFAULT);assert sme.set_convex_decomposition_collisions(mesh,12,16,100000),name
     b=mesh.get_bounding_box();size=[round((b.max.x-b.min.x)/100,2),round((b.max.y-b.min.y)/100,2),round((b.max.z-b.min.z)/100,2)]
     # Baked lighting (the project has no dynamic GI): lightmap UVs go to channel 2 because UV1 carries the lichen WorldUV.
     bs=sme.get_lod_build_settings(mesh,0);bs.generate_lightmap_u_vs=True;bs.src_lightmap_index=0;bs.dst_lightmap_index=2
@@ -130,7 +136,7 @@ for pkg,man in manifests.items():
     mesh.set_editor_property('light_map_coordinate_index',2);mesh.set_editor_property('light_map_resolution',res)
     eal.save_loaded_asset(mesh)
     report[pkg]=dict(mesh=f'{LIB}/Meshes/{name}',size_m=size,slot_m=man['slot_m'],fits=all(s<=t+.01 for s,t in zip(size,man['slot_m'])),slots=len(mesh.static_materials),
-        nanite=mesh.get_editor_property('nanite_settings').get_editor_property('enabled'),convex_hulls=mesh.get_editor_property('body_setup').get_editor_property('agg_geom').get_editor_property('convex_elems').__len__(),
+        nanite=mesh.get_editor_property('nanite_settings').get_editor_property('enabled'),collision='complex' if pkg in WALKABLE else 'convex',convex_hulls=mesh.get_editor_property('body_setup').get_editor_property('agg_geom').get_editor_property('convex_elems').__len__(),
         nanite_fallback_triangles=mesh.get_num_triangles(0),lightmap=dict(uv=mesh.get_editor_property('light_map_coordinate_index'),resolution=res))
     (ROOT/pkg/'ue-import-report.json').write_text(json.dumps(report[pkg],indent=2)+'\n')
 print('SILVERBROOK_IMPORT',json.dumps(report))
