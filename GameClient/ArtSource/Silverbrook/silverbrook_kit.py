@@ -101,7 +101,7 @@ class Geo:
         local=[Vector((x,y,z)) for z in (-sz/2,sz/2) for x,y in corners];world=[(rot@p if rot is not None else p)+Vector(centre) for p in local]
         k=len(corners);faces=[list(reversed(range(k))),list(range(k,2*k))]+[[i,(i+1)%k,(i+1)%k+k,i+k] for i in range(k)]
         off=(rng.random()*5,rng.random()*5);mirrored=rot is not None and rot.determinant()<0  # e.g. frame() bases
-        vol=0
+        vol=0;c=Vector(centre)  # volume about the centre: absolute coordinates lose precision far from the origin
         for idx in faces:
             normal=(local[idx[1]]-local[idx[0]]).cross(local[idx[2]]-local[idx[0]]);dom=max(range(3),key=lambda a:abs(normal[a]));axes=[a for a in range(3) if a!=dom];uv=None
             if rect:
@@ -111,7 +111,7 @@ class Geo:
                 uv=[(local[i][long]/s+off[0],band[0]+(local[i][other]/size[other]+.5)*(band[1]-band[0]) if band else local[i][other]/s+off[1]) for i in idx]
             if mirrored:idx,uv=idx[::-1],(uv[::-1] if uv else uv)   # keep outward winding under a reflection
             self.poly([world[i] for i in idx],mat,uv,w,swap=swap)
-            vol+=sum(world[idx[0]].dot(world[idx[j]].cross(world[idx[j+1]])) for j in range(1,len(idx)-1))
+            vol+=sum((world[idx[0]]-c).dot((world[idx[j]]-c).cross(world[idx[j+1]]-c)) for j in range(1,len(idx)-1))
         assert vol>0,'inside-out box'  # Unreal culls back faces; Blender would hide this
     def beam(self,a,b,width,depth=None,mat=None,**kw):
         a,b=Vector(a),Vector(b);rot=(b-a).to_track_quat('Z','Y').to_matrix();kw.setdefault('grain',True);self.box((a+b)/2,(width,depth or width,(b-a).length),mat,.012,rot,**kw)
