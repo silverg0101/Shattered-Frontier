@@ -15,7 +15,7 @@
         41,
         527
       ],
-      "seconds": 70.3,
+      "seconds": 70.0,
       "z_cm": 658
     },
     {
@@ -23,7 +23,7 @@
         30,
         350
       ],
-      "seconds": 95.5,
+      "seconds": 95.2,
       "z_cm": 277
     },
     {
@@ -31,7 +31,7 @@
         20,
         205
       ],
-      "seconds": 116.3,
+      "seconds": 116.0,
       "z_cm": 852
     },
     {
@@ -39,7 +39,7 @@
         20,
         100
       ],
-      "seconds": 131.3,
+      "seconds": 131.0,
       "z_cm": 1540
     },
     {
@@ -47,7 +47,7 @@
         0,
         -30
       ],
-      "seconds": 150.1,
+      "seconds": 149.8,
       "z_cm": 1192
     },
     {
@@ -55,7 +55,7 @@
         12,
         -258
       ],
-      "seconds": 182.7,
+      "seconds": 182.4,
       "z_cm": 1767
     },
     {
@@ -63,23 +63,23 @@
         22,
         -529
       ],
-      "seconds": 221.5,
+      "seconds": 221.2,
       "z_cm": 3616
     }
   ],
   "stuck_events": 0,
   "walk_completed": true,
-  "walk_seconds": 221.5,
+  "walk_seconds": 221.2,
   "frame_ms": {
-    "median": 6.4,
-    "p95": 11.5,
-    "frames": 31157
+    "median": 4.5,
+    "p95": 5.5,
+    "frames": 49798
   },
   "final_pawn_cm": [
     2189,
-    -52600,
+    -52602,
     3616
   ],
-  "elapsed_seconds": 246.3,
+  "elapsed_seconds": 251.5,
   "passed": true
 }

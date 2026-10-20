@@ -290,6 +290,8 @@ for name, pts, width, tier in ROADS:
     strip(name.replace(' ', ''), pts, width, 'Trail' if tier == 'trail' else 'Road', 0.3, f'Roads/{tier.title()}', on_ground(pts))
 
 # Bridges where primary or secondary roads cross the river or a brook.
+_bridge = PROFILE['buildings'].get('Stone bridge', {}).get('have', [])
+STONE_BRIDGE = pcg_dressing._meshes({_bridge[0]})[_bridge[0]] if _bridge else None
 bridges = []
 for name, pts, width, tier in ROADS:
     if tier == 'trail':
@@ -316,6 +318,14 @@ for name, pts, width, tier in ROADS:
                         ends.append((s, HF.at(h[0] + side * cs * s, h[1] + side * sn * s)))
                     (s0, z0), (s1, z1) = ends
                     run, mid = s0 + s1, (s1 - s0) / 2
+                    if is_main and STONE_BRIDGE and run <= 30 and abs(z1 - z0) < 0.3:
+                        # The delivered stone bridge: a 30 m span along its X, origin mid-span at bank level, deck flush with
+                        # the bank at both ends. Used only where the measured crossing fits the span and both banks are level.
+                        a_ = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector((h[0] + cs * mid) * 100, (h[1] + sn * mid) * 100,
+                                                           (z0 + z1) / 2 * 100), u.Rotator(roll=0, pitch=0, yaw=yaw))
+                        a_.static_mesh_component.set_static_mesh(STONE_BRIDGE)
+                        a_.set_actor_label('SilverbrookBridge'); a_.set_folder_path('Bridges')
+                        return
                     _box('SilverbrookBridge' if is_main else f'Bridge_{n.replace(" ", "")}', h[0] + cs * mid, h[1] + sn * mid,
                          run + 2, w, 0.3, 'Wall', (z0 + z1) / 2 - 0.25, yaw, True, 'Bridges', None,
                          math.degrees(math.atan2(z1 - z0, run)))
@@ -562,6 +572,13 @@ cam_s = actors.spawn_actor_from_class(u.CameraActor, u.Vector((hx + 14 * fx_) * 
                                       u.Rotator(roll=0, pitch=-10, yaw=math.degrees(math.atan2(-fy_, -fx_))))
 cam_s.set_actor_label('ReviewCamera_Street')
 cam_s.camera_component.set_editor_property('field_of_view', 75)
+
+# Bridge camera on the river 35 m to the side of the Silverbrook Bridge, looking at its arches.
+bx_, by_ = L['places'][18]['at']
+cam_b = actors.spawn_actor_from_class(u.CameraActor, u.Vector((bx_ + 35) * 100, (by_ - 8) * 100, (HF.at(bx_, by_) + 3) * 100),
+                                      u.Rotator(roll=0, pitch=-2, yaw=math.degrees(math.atan2(8, -35))))
+cam_b.set_actor_label('ReviewCamera_Bridge')
+cam_b.camera_component.set_editor_property('field_of_view', 75)
 
 assert len(bridges) >= 3, f'Expected at least 3 bridges, built {len(bridges)}'
 
