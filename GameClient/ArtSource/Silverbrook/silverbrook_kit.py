@@ -83,6 +83,21 @@ def model(col,mid,matrix,aged=0,name=None):
         o=bpy.data.objects.new(f'{name or mid}_{k}',m);o.matrix_world=Matrix(matrix);col.objects.link(o);objs.append(o)
     return objs
 
+def export_parts(parts,out,mesh_prefix):
+    """Moving parts (wheels, gate leaves, doors) as their own FBX, origin at the pivot, for separate Unreal meshes.
+    parts: [(obj, name, pivot, axis, motion, travel)] in final model space; motion 'rotate' (continuous), 'swing'
+    (travel = degrees about axis to close) or 'slide' (travel = metres along axis to close).
+    Returns manifest rows; the caller leaves these objects out of the main FBX."""
+    rows=[]
+    for obj,name,pivot,axis,motion,travel in parts:
+        tmp=bpy.data.objects.new(obj.name+'_Part',obj.data.copy());tmp.data.transform(Matrix.Translation(-Vector(pivot)));obj.users_collection[0].objects.link(tmp)
+        for o in bpy.data.objects:o.select_set(o is tmp)
+        bpy.context.view_layer.objects.active=tmp;path=f'{out}_{name}.fbx'
+        bpy.ops.export_scene.fbx(filepath=path,use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
+        me=tmp.data;bpy.data.objects.remove(tmp);bpy.data.meshes.remove(me)
+        rows.append(dict(name=name,fbx=Path(path).name,unreal_mesh=f'{mesh_prefix}_{name}',pivot_m=[round(v,4) for v in pivot],axis=list(axis),motion=motion,travel=travel))
+    return rows
+
 def solid(name,colour,rough=.6,metal=0,emission=None,strength=0):
     m=bpy.data.materials.new(name);m.use_nodes=True;m.use_backface_culling=True;p=m.node_tree.nodes.get('Principled BSDF')
     p.inputs['Base Color'].default_value=(*colour,1);p.inputs['Roughness'].default_value=rough;p.inputs['Metallic'].default_value=metal

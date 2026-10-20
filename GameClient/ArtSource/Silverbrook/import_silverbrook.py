@@ -115,11 +115,9 @@ def instance(row):
         if row['emission']:mel.set_material_instance_vector_parameter_value(mi,'Emission',LC(row['emission']));mel.set_material_instance_scalar_parameter_value(mi,'EmissionStrength',row['strength'])
     eal.save_loaded_asset(mi);return mi
 
-report={}
-for pkg,man in manifests.items():
-    for row in man['materials']:
-        if row['name'] not in instances:instances[row['name']]=instance(row)
-    name=man['unreal_mesh'];task=u.AssetImportTask();task.filename=str(ROOT/pkg/(man['asset']+'.fbx'));task.destination_path=LIB+'/Meshes';task.destination_name=name
+def import_mesh(fbx,name,collision):
+    """One FBX -> Nanite static mesh with palette MIs, lightmap UVs and the given simple collision ('complex', 'convex' or 'box')."""
+    task=u.AssetImportTask();task.filename=str(fbx);task.destination_path=LIB+'/Meshes';task.destination_name=name
     task.automated=True;task.save=True;task.replace_existing=True
     opts=u.FbxImportUI();opts.import_materials=False;opts.import_textures=False;opts.import_as_skeletal=False
     d=opts.static_mesh_import_data;d.combine_meshes=True;d.auto_generate_collision=False;d.generate_lightmap_u_vs=False;d.vertex_color_import_option=u.VertexColorImportOption.REPLACE
@@ -129,18 +127,37 @@ for pkg,man in manifests.items():
     nanite=mesh.get_editor_property('nanite_settings');nanite.set_editor_property('enabled',True);mesh.set_editor_property('nanite_settings',nanite)
     sme.remove_collisions(mesh)
     bs_=mesh.get_editor_property('body_setup')
-    if pkg in WALKABLE:  # decks, wall-walks and arches: convex hulls would fill the spaces people walk through
+    if collision=='complex':  # decks, wall-walks and arches: convex hulls would fill the spaces people walk through
         bs_.set_editor_property('collision_trace_flag',u.CollisionTraceFlag.CTF_USE_COMPLEX_AS_SIMPLE)
     else:
-        bs_.set_editor_property('collision_trace_flag',u.CollisionTraceFlag.CTF_USE_DEFAULT);assert sme.set_convex_decomposition_collisions(mesh,12,16,100000),name
+        bs_.set_editor_property('collision_trace_flag',u.CollisionTraceFlag.CTF_USE_DEFAULT)
+        if collision=='box':assert sme.add_simple_collisions(mesh,u.ScriptCollisionShapeType.BOX)>=0,name  # gate leaves, doors, wheels
+        else:assert sme.set_convex_decomposition_collisions(mesh,12,16,100000),name
     b=mesh.get_bounding_box();size=[round((b.max.x-b.min.x)/100,2),round((b.max.y-b.min.y)/100,2),round((b.max.z-b.min.z)/100,2)]
     # Baked lighting (the project has no dynamic GI): lightmap UVs go to channel 2 because UV1 carries the lichen WorldUV.
     bs=sme.get_lod_build_settings(mesh,0);bs.generate_lightmap_u_vs=True;bs.src_lightmap_index=0;bs.dst_lightmap_index=2
     res=min(1024,2**math.ceil(math.log2(max(size)*16)));bs.min_lightmap_resolution=res;sme.set_lod_build_settings(mesh,0,bs)
     mesh.set_editor_property('light_map_coordinate_index',2);mesh.set_editor_property('light_map_resolution',res)
     eal.save_loaded_asset(mesh)
-    report[pkg]=dict(mesh=f'{LIB}/Meshes/{name}',size_m=size,slot_m=man['slot_m'],fits=all(s<=t+.01 for s,t in zip(size,man['slot_m'])),slots=len(mesh.static_materials),
-        nanite=mesh.get_editor_property('nanite_settings').get_editor_property('enabled'),collision='complex' if pkg in WALKABLE else 'convex',convex_hulls=mesh.get_editor_property('body_setup').get_editor_property('agg_geom').get_editor_property('convex_elems').__len__(),
+    return mesh,dict(mesh=f'{LIB}/Meshes/{name}',size_m=size,slots=len(mesh.static_materials),
+        nanite=mesh.get_editor_property('nanite_settings').get_editor_property('enabled'),collision=collision,convex_hulls=len(bs_.get_editor_property('agg_geom').get_editor_property('convex_elems')),
         nanite_fallback_triangles=mesh.get_num_triangles(0),lightmap=dict(uv=mesh.get_editor_property('light_map_coordinate_index'),resolution=res))
-    (ROOT/pkg/'ue-import-report.json').write_text(json.dumps(report[pkg],indent=2)+'\n')
+
+ue=lambda v,k=100:[round(v[0]*k,2),round(-v[1]*k,2),round(v[2]*k,2)]  # Blender -Y front arrives as Unreal +Y (FBX handedness)
+report={}
+for pkg,man in manifests.items():
+    for row in man['materials']:
+        if row['name'] not in instances:instances[row['name']]=instance(row)
+    mesh,rep=import_mesh(ROOT/pkg/(man['asset']+'.fbx'),man['unreal_mesh'],'complex' if pkg in WALKABLE else 'convex')
+    rep.update(slot_m=man['slot_m'],fits=all(s<=t+.01 for s,t in zip(rep['size_m'],man['slot_m'])))
+    # Moving parts: own mesh, origin at the pivot. Unreal values: the mirror flips Y and the sense of swings about Z.
+    parts=[]
+    for part in man.get('parts',[]):
+        _,pr=import_mesh(ROOT/pkg/part['fbx'],part['unreal_mesh'],'box')
+        pr.update(name=part['name'],motion=part['motion'],pivot_cm=ue(part['pivot_m']),axis=ue(part['axis'],1),
+                  travel=(-part['travel'] if part['motion']=='swing' else part['travel']),travel_unit={'swing':'deg','slide':'m'}.get(part['motion']))
+        parts.append(pr)
+    if parts:rep['parts']=parts
+    report[pkg]=rep
+    (ROOT/pkg/'ue-import-report.json').write_text(json.dumps(rep,indent=2)+'\n')
 print('SILVERBROOK_IMPORT',json.dumps(report))
