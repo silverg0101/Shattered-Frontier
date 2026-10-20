@@ -18,8 +18,7 @@
 | VEG-GreenlandsLeafNeedleLitter-01 | Vegetation / Fallen pine needles and brown leaves, as decals or small meshes | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `leaf_needle_litter` | P2; 0 of 3 variants owned | unassigned / planned | proposed / — | concept sheet and asset view (Qwen Image), then model (Pixal3D or Blender); 3 variant(s) |
 | VEG-GreenlandsMossPatch-01 | Vegetation / Flat moss mats on ground and rock tops | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `moss_patch` | P2; 0 of 3 variants owned | unassigned / planned | proposed / — | concept sheet and asset view (Qwen Image), then model (Pixal3D or Blender); 3 variant(s) |
 | VEG-GreenlandsSaplingBroadleaf-01 | Vegetation / 1-3 m saplings in clearings and at forest edges; doubles as GAT-01 tree growth stage | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `sapling_broadleaf` | P2; 0 of 3 variants owned | unassigned / planned | proposed / — | concept sheet and asset view (Qwen Image), then model (Pixal3D or Blender); 3 variant(s) |
-| BLD-GreenlandsGatehouse-01 | Building / Gatehouse — Defence | Silverbrook definition §10; layout `gates` | P2; modular; Greenlands half-timbered style (definition §3) | Blender session / image-complete | owner-supplied / — | model from the owner-supplied concept in the Blender session; do not generate new concept images |
-| BLD-GreenlandsStreetLamp-01 | Building / Street lamp — Street lighting | Owner concept images `Street Lamp-1..4.png` (4 m post, 1 m arm) | P2; prop; Greenlands half-timbered style (definition §3); 0 of 4 variants owned | Blender session / image-complete | owner-supplied / — | model from the owner-supplied concept in the Blender session; do not generate new concept images |
+| BLD-GreenlandsStreetLamp-01 | Building / Street lamp — Street lighting | Owner concept images `Street Lamp-1..4.png` (4 m post, 1 m arm) | P2; prop; Greenlands half-timbered style (definition §3); 0 of 4 variants owned | Blender session / in-progress | owner-supplied / — | modelling in `GameClient/ArtSource/Silverbrook/StreetLamp1`, `GameClient/ArtSource/Silverbrook/StreetLamp3`; 4 variant(s) still to land; closes when its meshes are in the biome library and the look profile's `buildings` map |
 | BLD-GreenlandsWallTower-01 | Building / Wall tower — Defence | Silverbrook definition §10; layout `wall.tower` | P2; modular; Greenlands half-timbered style (definition §3) | Blender session / image-complete | owner-supplied / — | model from the owner-supplied concept in the Blender session; do not generate new concept images |
 | TERR-GreenlandsGraniteDomeFar-01 | Terrain / backdrop / Rounded rocky hill/dome silhouettes for distance; northern mountains belong to TER-01 backdrop | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `granite_dome_far` | P3; 0 of 2 variants owned | unassigned / planned | proposed / — | concept sheet and asset view (Qwen Image), then model (Pixal3D or Blender); 2 variant(s) |
 
@@ -58,9 +57,6 @@ Flat moss mats on ground and rock tops One asset family for the `moss_patch` rol
 ### VEG-GreenlandsSaplingBroadleaf-01
 1-3 m saplings in clearings and at forest edges; doubles as GAT-01 tree growth stage One asset family for the `sapling_broadleaf` role, placed by `dress_zone.py` where: clearings. Needs 3 variant(s) that share a silhouette family; separate meshes, no baked-in ground or neighbours. Required images: concept sheet and clean asset view. Unknowns: exact triangle budget and LODs, set when the model pipeline picks it up.
 
-### BLD-GreenlandsGatehouse-01
-Gatehouse — Defence, at Silverbrook definition §10; layout `gates`. Greenlands half-timbered style per definition §3: timber, stone foundations, plaster walls and slate roofs; civic buildings in dressed stone. One building or modular piece only; no street, terrain or props baked in. Concept: `docs/Game-Design/concept-art/Silverbrook/Gatehouse.png`. Unknowns: interior scope and whether it splits into a modular kit, decided before modelling.
-
 ### BLD-GreenlandsStreetLamp-01
 Street lamp — Street lighting, at Owner concept images `Street Lamp-1..4.png` (4 m post, 1 m arm). Greenlands half-timbered style per definition §3: timber, stone foundations, plaster walls and slate roofs; civic buildings in dressed stone. One building or modular piece only; no street, terrain or props baked in. Concept: `docs/Game-Design/concept-art/Silverbrook/Street Lamp-1.png`, `docs/Game-Design/concept-art/Silverbrook/Street Lamp-2.png`, `docs/Game-Design/concept-art/Silverbrook/Street Lamp-3.png`, `docs/Game-Design/concept-art/Silverbrook/Street Lamp-4.png`. Unknowns: interior scope and whether it splits into a modular kit, decided before modelling.
 
@@ -72,4 +68,4 @@ Rounded rocky hill/dome silhouettes for distance; northern mountains belong to T
 
 ## Progress
 
-- 2026-10-19: 12 planned, 0 modelling in the Blender session, 3 with an owner-supplied concept waiting for a model.
+- 2026-10-19: 12 planned, 1 modelling in the Blender session, 1 with an owner-supplied concept waiting for a model.

@@ -1,0 +1,90 @@
+{
+  "source": {
+    "meshes": 7,
+    "triangles": 64352,
+    "size_m": [
+      26.0,
+      8.0,
+      11.98
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_Gatehouse_Banner",
+      "SB_Gatehouse_Gilt",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LimePlaster",
+      "SB_LitGlass",
+      "SB_OakTimber",
+      "SB_Slate",
+      "SB_WallSection_LoopVoid",
+      "SB_WallSection_Masonry",
+      "SB_WallSection_Paving"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 28
+  },
+  "glb": {
+    "meshes": 7,
+    "triangles": 64352,
+    "size_m": [
+      26.0,
+      8.0,
+      11.98
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_Gatehouse_Banner",
+      "SB_Gatehouse_Gilt",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LimePlaster",
+      "SB_LitGlass",
+      "SB_OakTimber",
+      "SB_Slate",
+      "SB_WallSection_LoopVoid",
+      "SB_WallSection_Masonry",
+      "SB_WallSection_Paving"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 7,
+    "triangles": 64352,
+    "size_m": [
+      26.0,
+      8.0,
+      11.98
+    ],
+    "materials": [
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_Gatehouse_Banner",
+      "SB_Gatehouse_Gilt",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LimePlaster",
+      "SB_LitGlass",
+      "SB_OakTimber",
+      "SB_Slate",
+      "SB_WallSection_LoopVoid",
+      "SB_WallSection_Masonry",
+      "SB_WallSection_Paving"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 14
+  }
+}

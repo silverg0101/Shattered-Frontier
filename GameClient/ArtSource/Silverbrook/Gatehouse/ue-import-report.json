@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookGatehouse",
+  "size_m": [
+    26.0,
+    8.0,
+    11.98
+  ],
+  "slot_m": [
+    26,
+    8,
+    12
+  ],
+  "fits": true,
+  "slots": 13,
+  "nanite": true,
+  "collision": "complex",
+  "convex_hulls": 0,
+  "nanite_fallback_triangles": 19309,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 512
+  }
+}

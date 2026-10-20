@@ -38,9 +38,9 @@ Owner-supplied concept images for the Silverbrook buildings. One image is one de
 | [Fishermans Wharf.png](Fishermans%20Wharf.png) | Fisherman's wharf | BLD-GreenlandsFishermansWharf-01 | 20 × 8 × 1 | `GameClient/ArtSource/Silverbrook/FishermansWharf` | delivered |
 | [Riverside Docks.png](Riverside%20Docks.png) | Riverside docks | BLD-GreenlandsRiversideDocks-01 | 30 × 10 × 1 | `GameClient/ArtSource/Silverbrook/RiversideDocks` | delivered |
 | [Wall Section.png](Wall%20Section.png) | Wall section | BLD-GreenlandsWallSection-01 | 20 × 3 × 8 | `GameClient/ArtSource/Silverbrook/WallSection` | delivered |
-| [Gatehouse.png](Gatehouse.png) | Gatehouse | BLD-GreenlandsGatehouse-01 | 10 m opening, towers 8 × 8 × 12 | — | waiting for a model |
+| [Gatehouse.png](Gatehouse.png) | Gatehouse | BLD-GreenlandsGatehouse-01 | 10 m opening, towers 8 × 8 × 12 | `GameClient/ArtSource/Silverbrook/Gatehouse` | delivered |
 | [Wall Tower.png](Wall%20Tower.png) | Wall tower | BLD-GreenlandsWallTower-01 | 8 × 8 × 12 | — | waiting for a model |
-| [Street Lamp-1.png](Street%20Lamp-1.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | — | waiting for a model |
+| [Street Lamp-1.png](Street%20Lamp-1.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | `GameClient/ArtSource/Silverbrook/StreetLamp1` | modelling |
 | [Street Lamp-2.png](Street%20Lamp-2.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | — | waiting for a model |
-| [Street Lamp-3.png](Street%20Lamp-3.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | — | waiting for a model |
+| [Street Lamp-3.png](Street%20Lamp-3.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | `GameClient/ArtSource/Silverbrook/StreetLamp3` | modelling |
 | [Street Lamp-4.png](Street%20Lamp-4.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | — | waiting for a model |
