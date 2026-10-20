@@ -1,5 +1,5 @@
 {
-  "scope": "Project pawn walks arrival to North Gate through the graybox; no AI, combat, gathering or performance acceptance",
+  "scope": "Project pawn walks arrival to North Gate through the graybox, then swims in the river and climbs out; no AI, combat, gathering or performance acceptance",
   "game_mode": "SFE1GameMode",
   "pawn": "SFE1Character",
   "e1_fixtures": 0,
@@ -39,15 +39,15 @@
         20,
         100
       ],
-      "seconds": 131.4,
-      "z_cm": 1541
+      "seconds": 131.3,
+      "z_cm": 1540
     },
     {
       "xy_metres": [
         0,
         -30
       ],
-      "seconds": 150.2,
+      "seconds": 150.1,
       "z_cm": 1192
     },
     {
@@ -55,8 +55,8 @@
         12,
         -258
       ],
-      "seconds": 182.8,
-      "z_cm": 1769
+      "seconds": 182.7,
+      "z_cm": 1766
     },
     {
       "xy_metres": [
@@ -71,15 +71,28 @@
   "walk_completed": true,
   "walk_seconds": 221.5,
   "frame_ms": {
-    "median": 4.9,
-    "p95": 12.3,
-    "frames": 37687
+    "median": 3.9,
+    "p95": 5.8,
+    "frames": 54477
   },
   "final_pawn_cm": [
     2189,
-    -52601,
+    -52602,
     3616
   ],
-  "elapsed_seconds": 251.9,
+  "swim": {
+    "at_metres": [
+      -430,
+      -461
+    ],
+    "surface_cm": 1800,
+    "dropped_cm": 1700,
+    "swimming_after_4s": true,
+    "rise_cm": 88,
+    "centre_below_surface_cm": 12,
+    "climbed_out": true,
+    "out_after_s": 6.0
+  },
+  "elapsed_seconds": 262.0,
   "passed": true
 }

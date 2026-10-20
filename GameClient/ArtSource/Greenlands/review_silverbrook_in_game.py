@@ -18,7 +18,7 @@ pc = u.GameplayStatics.get_player_controller(world, 0)
 pawn = u.GameplayStatics.get_player_character(world, 0)
 mode = u.GameplayStatics.get_game_mode(world)
 fixture_class = u.load_class(None, '/Script/ShatteredFrontier.SFE1InteractionTarget')
-state = dict(scope='Project pawn walks arrival to North Gate through the graybox; no AI, combat, gathering or performance acceptance',
+state = dict(scope='Project pawn walks arrival to North Gate through the graybox, then swims in the river and climbs out; no AI, combat, gathering or performance acceptance',
              game_mode=mode.get_class().get_name() if mode else None, pawn=pawn.get_class().get_name() if pawn else None,
              e1_fixtures=len(u.GameplayStatics.get_all_actors_of_class(world, fixture_class)),
              start_cm=None, target=1, reached=[], stuck_events=0)
@@ -26,6 +26,24 @@ started = time.monotonic(); walk_started = None; handle = None; frame = 0
 last = dict(pos=None, at=0.0)
 frames = []  # frame times in ms during the walk (offscreen, 1280x720; for comparisons, not a budget)
 shots = dict(aerial=None, taken=0)  # aerial: when the walk ended; taken: review cameras captured so far
+swim = dict(started=None)  # after the walk: dropped under the river, the pawn must swim, then climb out on a bank
+
+
+def swim_spot():
+    """The first river segment midpoint within 700 m of the centre and 40 m from every road and from the wall: (x, y, water level, bank direction)."""
+    river, levels = LAYOUT['river']['points'], LAYOUT['elevation']['river_levels']
+    roads = [pts for tier in ('primary', 'secondary', 'trail') for pts in LAYOUT['roads'][tier].values()]
+    W = LAYOUT['wall']
+    def seg(p, a, b):
+        dx, dy = b[0] - a[0], b[1] - a[1]
+        t = max(0.0, min(1.0, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / ((dx * dx + dy * dy) or 1)))
+        return math.dist(p, (a[0] + dx * t, a[1] + dy * t))
+    for i, (a, b) in enumerate(zip(river, river[1:])):
+        m = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
+        wall = abs(math.hypot(m[0] / W['semi_axis_x'], m[1] / W['semi_axis_y']) - 1) * W['semi_axis_x']
+        if wall > 40 and math.hypot(*m) < 700 and all(seg(m, q, r) > 40 for pts in roads for q, r in zip(pts, pts[1:])):
+            n = math.dist(a, b)
+            return m[0], m[1], (levels[i] + levels[i + 1]) / 2, (-(b[1] - a[1]) / n, (b[0] - a[0]) / n)
 
 
 def shot(name):
@@ -35,6 +53,7 @@ def shot(name):
 def finish():
     state['elapsed_seconds'] = round(time.monotonic() - started, 1)
     state['passed'] = (state.get('walk_completed') is True and state['e1_fixtures'] == 0
+                       and state.get('swim', {}).get('swimming_after_4s') is True and state['swim'].get('climbed_out') is True
                        and state['game_mode'] == 'SFE1GameMode' and state['pawn'] == 'SFE1Character')
     (ROOT / 'silverbrook-game-review.json').write_text(json.dumps(state, indent=2))
     u.log(f"SILVERBROOK_REVIEW passed={state['passed']} reached={len(state['reached'])}/{len(ROUTE) - 1}")
@@ -69,6 +88,18 @@ def tick(delta):
             walk_started = now; state['start_cm'] = [round(p.x), round(p.y), round(p.z)]
             shot('Silverbrook-Arrival-InGame.png'); last.update(pos=(p.x, p.y), at=now)
             return
+        if swim['started'] is not None and shots['aerial'] is None:
+            t = now - swim['started']; mode_ = str(pawn.character_movement.movement_mode)
+            if t > 4 and 'swimming_after_4s' not in state['swim']:
+                state['swim'].update(swimming_after_4s='SWIMMING' in mode_, rise_cm=round(p.z - swim['z0']),
+                                     centre_below_surface_cm=round(state['swim']['surface_cm'] - p.z))
+            if t > 4:
+                bx, by = swim['bank']; pawn.add_movement_input(u.Vector(bx, by, 0), 1, False)
+                if 'WALKING' in mode_:
+                    state['swim'].update(climbed_out=True, out_after_s=round(t - 4, 1)); shots['aerial'] = now
+                elif t > 20:
+                    state['swim'].update(climbed_out=False, mode=mode_); shots['aerial'] = now
+            return
         if shots['aerial'] is not None:  # after the walk: each ReviewCamera_* in turn, 3 s to settle, then a capture
             cams = sorted(u.GameplayStatics.get_all_actors_of_class(world, u.CameraActor), key=lambda c: c.get_actor_label())
             phase = int((now - shots['aerial']) // 3); i = phase // 2  # even phase: switch to camera i; odd: capture it
@@ -101,7 +132,11 @@ def tick(delta):
             ordered = sorted(frames)
             state['frame_ms'] = dict(median=round(ordered[len(ordered) // 2], 1), p95=round(ordered[int(len(ordered) * 0.95)], 1), frames=len(ordered))
             state['final_pawn_cm'] = [round(p.x), round(p.y), round(p.z)]
-            shots['aerial'] = now  # then each ReviewCamera_* placed by build_silverbrook.py
+            sx, sy, level, bank = swim_spot()  # then the swim check, then each ReviewCamera_* placed by build_silverbrook.py
+            z0 = (level - 1.0) * 100  # the capsule (about 0.9 m half height) clears the 2 m deep bed
+            pawn.set_actor_location(u.Vector(sx * 100, sy * 100, z0), False, True)
+            swim.update(started=now, z0=z0, bank=bank)
+            state['swim'] = dict(at_metres=[round(sx), round(sy)], surface_cm=round(level * 100), dropped_cm=round(z0))
     except Exception as error:
         state['error'] = str(error); finish()
 

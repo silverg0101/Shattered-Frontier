@@ -334,6 +334,29 @@
   ],
   "market_stalls": 8,
   "market_vendors": ["armor_vendor", "weapons_vendor"],
+  "townsfolk": {
+    "_about": "Town census inputs (AI Townsfolk doc, section 3; townsfolk_census.py). households: [min, max] residents per dwelling type. jobs: job slots per building type as {archetype: slots}; 'gate' slots are per gate. district_archetypes: weights for a working adult's archetype in each district. roaming_guards_per_100_dwellings mirrors tune.townsfolk.guards_per_100_houses and neighbour_radius_m mirrors tune.townsfolk.neighbour_radius_m.",
+    "households": {"cottage": [1, 3], "townhouse": [2, 5], "elite_house": [3, 6], "farmhouse": [3, 6]},
+    "jobs": {
+      "mill": {"miller": 3}, "granary": {"labourer": 2}, "wharf": {"fisher": 6}, "docks": {"dock_hand": 8},
+      "blacksmith": {"smith": 3}, "market_stall": {"stall_keeper": 1}, "armor_vendor": {"stall_keeper": 1}, "weapons_vendor": {"stall_keeper": 1},
+      "inn": {"innkeeper": 1, "server": 4}, "temple": {"priest": 3}, "town_hall": {"clerk": 4}, "stables": {"stablehand": 3},
+      "adventurers_guild": {"clerk": 2}, "watchtower": {"guard": 2}, "farmhouse": {"farmer": 2}, "workshop": {"crafter": 2},
+      "gate": {"guard": 4}
+    },
+    "district_archetypes": {
+      "Northridge": {"noble": 5, "clerk": 2, "priest": 1, "guard": 1, "labourer": 1},
+      "The Commons": {"labourer": 4, "stall_keeper": 3, "smith": 1, "server": 2, "clerk": 1, "guard": 2, "crafter": 2, "stablehand": 1},
+      "Riverside": {"fisher": 4, "dock_hand": 4, "miller": 2, "labourer": 2, "server": 1},
+      "Westfields": {"farmer": 6, "stablehand": 1, "labourer": 1},
+      "Eastwood": {"forager": 3, "woodcutter": 3, "labourer": 1, "crafter": 1}
+    },
+    "unfixed_work": ["labourer", "forager", "woodcutter", "noble"],
+    "roaming_guards_per_100_dwellings": 3,
+    "neighbour_radius_m": 40,
+    "child_share": 0.3,
+    "elder_share": 0.15
+  },
   "street_lamps": {"_about": "Lamps along primary and secondary streets inside the wall, alternating sides; spacing along the street and verge from the road edge to the post, in metres; clear keeps them off gates, bridges and junctions.", "tiers": ["primary", "secondary"], "spacing": 22, "verge": 0.8, "clear": 10},
   "construction_plots": {
     "size": 20,

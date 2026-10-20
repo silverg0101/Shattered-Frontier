@@ -1,0 +1,2975 @@
+{
+ "_about": "Every building the builder placed (label, layout type, metres, yaw); read by townsfolk_census.py.",
+ "buildings": [
+  {
+   "label": "01_TownHall",
+   "kind": "town_hall",
+   "at": [
+    55,
+    -390
+   ],
+   "yaw": 272.1
+  },
+  {
+   "label": "02_AdventurersGuild",
+   "kind": "adventurers_guild",
+   "at": [
+    -60,
+    -75
+   ],
+   "yaw": 197.5
+  },
+  {
+   "label": "03_TheGoldenStagInn",
+   "kind": "inn",
+   "at": [
+    65,
+    -75
+   ],
+   "yaw": 159.7
+  },
+  {
+   "label": "04_Blacksmith",
+   "kind": "blacksmith",
+   "at": [
+    -60,
+    25
+   ],
+   "yaw": 212.0
+  },
+  {
+   "label": "ArmorVendor",
+   "kind": "armor_vendor",
+   "at": [
+    25.5,
+    -25.9
+   ],
+   "yaw": 279.1
+  },
+  {
+   "label": "WeaponsVendor",
+   "kind": "weapons_vendor",
+   "at": [
+    18.4,
+    -15.2
+   ],
+   "yaw": 308.9
+  },
+  {
+   "label": "MarketStall_02",
+   "kind": "market_stall",
+   "at": [
+    -9.9,
+    -10.6
+   ],
+   "yaw": 27.2
+  },
+  {
+   "label": "MarketStall_03",
+   "kind": "market_stall",
+   "at": [
+    -18.4,
+    -15.2
+   ],
+   "yaw": 51.1
+  },
+  {
+   "label": "MarketStall_04",
+   "kind": "market_stall",
+   "at": [
+    -24.0,
+    -22.0
+   ],
+   "yaw": 71.5
+  },
+  {
+   "label": "MarketStall_05",
+   "kind": "market_stall",
+   "at": [
+    -14.4,
+    -47.5
+   ],
+   "yaw": 140.4
+  },
+  {
+   "label": "MarketStall_06",
+   "kind": "market_stall",
+   "at": [
+    9.9,
+    -49.4
+   ],
+   "yaw": 207.2
+  },
+  {
+   "label": "06_Stables",
+   "kind": "stables",
+   "at": [
+    -500,
+    100
+   ],
+   "yaw": 106.6
+  },
+  {
+   "label": "07_TempleoftheDawn",
+   "kind": "temple",
+   "at": [
+    -95,
+    -340
+   ],
+   "yaw": 201.3
+  },
+  {
+   "label": "08_MillAndGranary",
+   "kind": "mill",
+   "at": [
+    -110,
+    300
+   ],
+   "yaw": 297.3
+  },
+  {
+   "label": "08_MillAndGranary_Granary",
+   "kind": "granary",
+   "at": [
+    -93,
+    294
+   ],
+   "yaw": 0
+  },
+  {
+   "label": "09_FishermansWharf",
+   "kind": "wharf",
+   "at": [
+    95,
+    300
+   ],
+   "yaw": 266.1
+  },
+  {
+   "label": "15_Watchtower",
+   "kind": "watchtower",
+   "at": [
+    -330,
+    -520
+   ],
+   "yaw": 136.5
+  },
+  {
+   "label": "20_RiversideDocks",
+   "kind": "docks",
+   "at": [
+    110,
+    470
+   ],
+   "yaw": 37
+  },
+  {
+   "label": "Northridge_elite_house_000",
+   "kind": "elite_house",
+   "at": [
+    -3.4,
+    -237.6
+   ],
+   "yaw": 93.0
+  },
+  {
+   "label": "Northridge_elite_house_001",
+   "kind": "elite_house",
+   "at": [
+    25.2,
+    -236.1
+   ],
+   "yaw": 273.0
+  },
+  {
+   "label": "Northridge_elite_house_002",
+   "kind": "elite_house",
+   "at": [
+    -2.0,
+    -266.3
+   ],
+   "yaw": 92.1
+  },
+  {
+   "label": "Northridge_elite_house_003",
+   "kind": "elite_house",
+   "at": [
+    26.6,
+    -265.3
+   ],
+   "yaw": 272.1
+  },
+  {
+   "label": "Northridge_elite_house_004",
+   "kind": "elite_house",
+   "at": [
+    -0.7,
+    -302.5
+   ],
+   "yaw": 92.1
+  },
+  {
+   "label": "Northridge_elite_house_005",
+   "kind": "elite_house",
+   "at": [
+    27.9,
+    -301.5
+   ],
+   "yaw": 272.1
+  },
+  {
+   "label": "Northridge_elite_house_006",
+   "kind": "elite_house",
+   "at": [
+    -0.0,
+    -320.7
+   ],
+   "yaw": 92.1
+  },
+  {
+   "label": "Northridge_elite_house_007",
+   "kind": "elite_house",
+   "at": [
+    28.6,
+    -319.6
+   ],
+   "yaw": 272.1
+  },
+  {
+   "label": "Northridge_elite_house_008",
+   "kind": "elite_house",
+   "at": [
+    0.7,
+    -338.8
+   ],
+   "yaw": 92.1
+  },
+  {
+   "label": "Northridge_elite_house_009",
+   "kind": "elite_house",
+   "at": [
+    29.3,
+    -337.7
+   ],
+   "yaw": 272.1
+  },
+  {
+   "label": "Northridge_elite_house_010",
+   "kind": "elite_house",
+   "at": [
+    1.3,
+    -356.9
+   ],
+   "yaw": 92.1
+  },
+  {
+   "label": "Northridge_elite_house_011",
+   "kind": "elite_house",
+   "at": [
+    29.9,
+    -355.8
+   ],
+   "yaw": 272.1
+  },
+  {
+   "label": "Northridge_elite_house_012",
+   "kind": "elite_house",
+   "at": [
+    2.0,
+    -375.0
+   ],
+   "yaw": 92.1
+  },
+  {
+   "label": "Northridge_elite_house_013",
+   "kind": "elite_house",
+   "at": [
+    30.6,
+    -373.9
+   ],
+   "yaw": 272.1
+  },
+  {
+   "label": "Northridge_elite_house_014",
+   "kind": "elite_house",
+   "at": [
+    2.7,
+    -393.1
+   ],
+   "yaw": 92.1
+  },
+  {
+   "label": "Northridge_elite_house_015",
+   "kind": "elite_house",
+   "at": [
+    3.3,
+    -411.2
+   ],
+   "yaw": 92.1
+  },
+  {
+   "label": "Northridge_elite_house_016",
+   "kind": "elite_house",
+   "at": [
+    31.9,
+    -410.1
+   ],
+   "yaw": 272.1
+  },
+  {
+   "label": "Northridge_elite_house_017",
+   "kind": "elite_house",
+   "at": [
+    4.0,
+    -429.3
+   ],
+   "yaw": 92.1
+  },
+  {
+   "label": "Northridge_elite_house_018",
+   "kind": "elite_house",
+   "at": [
+    32.6,
+    -428.3
+   ],
+   "yaw": 272.1
+  },
+  {
+   "label": "Northridge_elite_house_019",
+   "kind": "elite_house",
+   "at": [
+    4.7,
+    -447.4
+   ],
+   "yaw": 92.1
+  },
+  {
+   "label": "Northridge_elite_house_020",
+   "kind": "elite_house",
+   "at": [
+    33.3,
+    -446.4
+   ],
+   "yaw": 272.1
+  },
+  {
+   "label": "Northridge_elite_house_021",
+   "kind": "elite_house",
+   "at": [
+    5.3,
+    -465.5
+   ],
+   "yaw": 92.1
+  },
+  {
+   "label": "Northridge_elite_house_022",
+   "kind": "elite_house",
+   "at": [
+    33.9,
+    -464.5
+   ],
+   "yaw": 272.1
+  },
+  {
+   "label": "Northridge_elite_house_023",
+   "kind": "elite_house",
+   "at": [
+    230.3,
+    -369.1
+   ],
+   "yaw": 285.1
+  },
+  {
+   "label": "Northridge_elite_house_024",
+   "kind": "elite_house",
+   "at": [
+    205.6,
+    -375.8
+   ],
+   "yaw": 105.1
+  },
+  {
+   "label": "Northridge_elite_house_025",
+   "kind": "elite_house",
+   "at": [
+    217.8,
+    -339.8
+   ],
+   "yaw": 309.8
+  },
+  {
+   "label": "Northridge_elite_house_026",
+   "kind": "elite_house",
+   "at": [
+    198.2,
+    -356.2
+   ],
+   "yaw": 129.8
+  },
+  {
+   "label": "Northridge_elite_house_027",
+   "kind": "elite_house",
+   "at": [
+    193.5,
+    -315.0
+   ],
+   "yaw": 326.7
+  },
+  {
+   "label": "Northridge_elite_house_028",
+   "kind": "elite_house",
+   "at": [
+    179.4,
+    -336.4
+   ],
+   "yaw": 146.7
+  },
+  {
+   "label": "Northridge_elite_house_029",
+   "kind": "elite_house",
+   "at": [
+    178.3,
+    -305.1
+   ],
+   "yaw": 326.7
+  },
+  {
+   "label": "Northridge_elite_house_030",
+   "kind": "elite_house",
+   "at": [
+    164.3,
+    -326.5
+   ],
+   "yaw": 146.7
+  },
+  {
+   "label": "Northridge_elite_house_031",
+   "kind": "elite_house",
+   "at": [
+    158.4,
+    -294.2
+   ],
+   "yaw": 338.7
+  },
+  {
+   "label": "Northridge_elite_house_032",
+   "kind": "elite_house",
+   "at": [
+    141.5,
+    -287.6
+   ],
+   "yaw": 338.7
+  },
+  {
+   "label": "Northridge_elite_house_033",
+   "kind": "elite_house",
+   "at": [
+    132.2,
+    -311.5
+   ],
+   "yaw": 158.7
+  },
+  {
+   "label": "Northridge_elite_house_034",
+   "kind": "elite_house",
+   "at": [
+    115.0,
+    -278.9
+   ],
+   "yaw": 348.2
+  },
+  {
+   "label": "Northridge_elite_house_035",
+   "kind": "elite_house",
+   "at": [
+    109.7,
+    -303.9
+   ],
+   "yaw": 168.2
+  },
+  {
+   "label": "Northridge_elite_house_036",
+   "kind": "elite_house",
+   "at": [
+    97.2,
+    -275.2
+   ],
+   "yaw": 348.2
+  },
+  {
+   "label": "Northridge_elite_house_037",
+   "kind": "elite_house",
+   "at": [
+    92.0,
+    -300.3
+   ],
+   "yaw": 168.2
+  },
+  {
+   "label": "Northridge_elite_house_038",
+   "kind": "elite_house",
+   "at": [
+    64.9,
+    -269.8
+   ],
+   "yaw": 356.7
+  },
+  {
+   "label": "Northridge_elite_house_039",
+   "kind": "elite_house",
+   "at": [
+    63.5,
+    -295.3
+   ],
+   "yaw": 176.7
+  },
+  {
+   "label": "Northridge_elite_house_040",
+   "kind": "elite_house",
+   "at": [
+    46.9,
+    -268.7
+   ],
+   "yaw": 356.7
+  },
+  {
+   "label": "Northridge_elite_house_041",
+   "kind": "elite_house",
+   "at": [
+    45.4,
+    -294.3
+   ],
+   "yaw": 176.7
+  },
+  {
+   "label": "Northridge_elite_house_042",
+   "kind": "elite_house",
+   "at": [
+    -24.7,
+    -269.7
+   ],
+   "yaw": 3.3
+  },
+  {
+   "label": "Northridge_elite_house_043",
+   "kind": "elite_house",
+   "at": [
+    -23.2,
+    -295.3
+   ],
+   "yaw": 183.3
+  },
+  {
+   "label": "Northridge_elite_house_044",
+   "kind": "elite_house",
+   "at": [
+    -42.3,
+    -272.1
+   ],
+   "yaw": 11.8
+  },
+  {
+   "label": "Northridge_elite_house_045",
+   "kind": "elite_house",
+   "at": [
+    -60.0,
+    -275.7
+   ],
+   "yaw": 11.8
+  },
+  {
+   "label": "Northridge_elite_house_046",
+   "kind": "elite_house",
+   "at": [
+    -54.8,
+    -300.8
+   ],
+   "yaw": 191.8
+  },
+  {
+   "label": "Northridge_elite_house_047",
+   "kind": "elite_house",
+   "at": [
+    -91.9,
+    -283.9
+   ],
+   "yaw": 21.3
+  },
+  {
+   "label": "Northridge_elite_house_048",
+   "kind": "elite_house",
+   "at": [
+    -82.6,
+    -307.8
+   ],
+   "yaw": 201.3
+  },
+  {
+   "label": "Northridge_elite_house_049",
+   "kind": "elite_house",
+   "at": [
+    -108.8,
+    -290.5
+   ],
+   "yaw": 21.3
+  },
+  {
+   "label": "Northridge_elite_house_050",
+   "kind": "elite_house",
+   "at": [
+    -99.5,
+    -314.4
+   ],
+   "yaw": 201.3
+  },
+  {
+   "label": "Northridge_elite_house_051",
+   "kind": "elite_house",
+   "at": [
+    -134.6,
+    -302.6
+   ],
+   "yaw": 33.3
+  },
+  {
+   "label": "Northridge_elite_house_052",
+   "kind": "elite_house",
+   "at": [
+    -120.5,
+    -324.0
+   ],
+   "yaw": 213.3
+  },
+  {
+   "label": "Northridge_elite_house_053",
+   "kind": "elite_house",
+   "at": [
+    -149.7,
+    -312.5
+   ],
+   "yaw": 33.3
+  },
+  {
+   "label": "Northridge_elite_house_054",
+   "kind": "elite_house",
+   "at": [
+    -135.7,
+    -333.9
+   ],
+   "yaw": 213.3
+  },
+  {
+   "label": "Northridge_elite_house_055",
+   "kind": "elite_house",
+   "at": [
+    -167.8,
+    -327.8
+   ],
+   "yaw": 50.2
+  },
+  {
+   "label": "Northridge_elite_house_056",
+   "kind": "elite_house",
+   "at": [
+    -187.4,
+    -358.2
+   ],
+   "yaw": 74.9
+  },
+  {
+   "label": "Northridge_elite_house_057",
+   "kind": "elite_house",
+   "at": [
+    -162.7,
+    -364.9
+   ],
+   "yaw": 254.9
+  },
+  {
+   "label": "Northridge_elite_house_058",
+   "kind": "elite_house",
+   "at": [
+    -190.3,
+    -390.9
+   ],
+   "yaw": 105.1
+  },
+  {
+   "label": "Northridge_elite_house_059",
+   "kind": "elite_house",
+   "at": [
+    -165.6,
+    -384.2
+   ],
+   "yaw": 285.1
+  },
+  {
+   "label": "TheCommons_townhouse_000",
+   "kind": "townhouse",
+   "at": [
+    -10.1,
+    -62.2
+   ],
+   "yaw": 93.0
+  },
+  {
+   "label": "TheCommons_townhouse_001",
+   "kind": "townhouse",
+   "at": [
+    13.5,
+    -60.9
+   ],
+   "yaw": 273.0
+  },
+  {
+   "label": "TheCommons_townhouse_002",
+   "kind": "townhouse",
+   "at": [
+    -9.4,
+    -75.3
+   ],
+   "yaw": 93.0
+  },
+  {
+   "label": "TheCommons_townhouse_003",
+   "kind": "townhouse",
+   "at": [
+    14.1,
+    -74.0
+   ],
+   "yaw": 273.0
+  },
+  {
+   "label": "TheCommons_townhouse_004",
+   "kind": "townhouse",
+   "at": [
+    -8.8,
+    -88.4
+   ],
+   "yaw": 93.0
+  },
+  {
+   "label": "TheCommons_townhouse_005",
+   "kind": "townhouse",
+   "at": [
+    14.8,
+    -87.1
+   ],
+   "yaw": 273.0
+  },
+  {
+   "label": "TheCommons_townhouse_006",
+   "kind": "townhouse",
+   "at": [
+    -8.1,
+    -101.5
+   ],
+   "yaw": 93.0
+  },
+  {
+   "label": "TheCommons_townhouse_007",
+   "kind": "townhouse",
+   "at": [
+    15.5,
+    -100.2
+   ],
+   "yaw": 273.0
+  },
+  {
+   "label": "TheCommons_townhouse_008",
+   "kind": "townhouse",
+   "at": [
+    16.2,
+    -113.4
+   ],
+   "yaw": 273.0
+  },
+  {
+   "label": "TheCommons_townhouse_009",
+   "kind": "townhouse",
+   "at": [
+    -6.0,
+    -140.8
+   ],
+   "yaw": 93.0
+  },
+  {
+   "label": "TheCommons_townhouse_010",
+   "kind": "townhouse",
+   "at": [
+    17.6,
+    -139.6
+   ],
+   "yaw": 273.0
+  },
+  {
+   "label": "TheCommons_townhouse_011",
+   "kind": "townhouse",
+   "at": [
+    -5.3,
+    -153.9
+   ],
+   "yaw": 93.0
+  },
+  {
+   "label": "TheCommons_townhouse_012",
+   "kind": "townhouse",
+   "at": [
+    18.3,
+    -152.7
+   ],
+   "yaw": 273.0
+  },
+  {
+   "label": "TheCommons_townhouse_013",
+   "kind": "townhouse",
+   "at": [
+    -33.7,
+    -28.2
+   ],
+   "yaw": 17.5
+  },
+  {
+   "label": "TheCommons_townhouse_014",
+   "kind": "townhouse",
+   "at": [
+    -26.5,
+    -50.8
+   ],
+   "yaw": 197.5
+  },
+  {
+   "label": "TheCommons_townhouse_015",
+   "kind": "townhouse",
+   "at": [
+    -46.2,
+    -32.2
+   ],
+   "yaw": 17.5
+  },
+  {
+   "label": "TheCommons_townhouse_016",
+   "kind": "townhouse",
+   "at": [
+    -39.1,
+    -54.7
+   ],
+   "yaw": 197.5
+  },
+  {
+   "label": "TheCommons_townhouse_017",
+   "kind": "townhouse",
+   "at": [
+    -58.7,
+    -36.2
+   ],
+   "yaw": 17.5
+  },
+  {
+   "label": "TheCommons_townhouse_018",
+   "kind": "townhouse",
+   "at": [
+    -51.6,
+    -58.7
+   ],
+   "yaw": 197.5
+  },
+  {
+   "label": "TheCommons_townhouse_019",
+   "kind": "townhouse",
+   "at": [
+    -71.2,
+    -40.1
+   ],
+   "yaw": 17.5
+  },
+  {
+   "label": "TheCommons_townhouse_020",
+   "kind": "townhouse",
+   "at": [
+    -83.7,
+    -44.1
+   ],
+   "yaw": 17.5
+  },
+  {
+   "label": "TheCommons_townhouse_021",
+   "kind": "townhouse",
+   "at": [
+    -76.6,
+    -66.6
+   ],
+   "yaw": 197.5
+  },
+  {
+   "label": "TheCommons_townhouse_022",
+   "kind": "townhouse",
+   "at": [
+    -96.3,
+    -48.0
+   ],
+   "yaw": 17.5
+  },
+  {
+   "label": "TheCommons_townhouse_023",
+   "kind": "townhouse",
+   "at": [
+    -89.2,
+    -70.6
+   ],
+   "yaw": 197.5
+  },
+  {
+   "label": "TheCommons_townhouse_024",
+   "kind": "townhouse",
+   "at": [
+    -121.3,
+    -55.9
+   ],
+   "yaw": 17.5
+  },
+  {
+   "label": "TheCommons_townhouse_025",
+   "kind": "townhouse",
+   "at": [
+    -114.2,
+    -78.5
+   ],
+   "yaw": 197.5
+  },
+  {
+   "label": "TheCommons_townhouse_026",
+   "kind": "townhouse",
+   "at": [
+    -133.8,
+    -59.9
+   ],
+   "yaw": 17.5
+  },
+  {
+   "label": "TheCommons_townhouse_027",
+   "kind": "townhouse",
+   "at": [
+    -126.7,
+    -82.4
+   ],
+   "yaw": 197.5
+  },
+  {
+   "label": "TheCommons_townhouse_028",
+   "kind": "townhouse",
+   "at": [
+    -146.3,
+    -63.8
+   ],
+   "yaw": 17.5
+  },
+  {
+   "label": "TheCommons_townhouse_029",
+   "kind": "townhouse",
+   "at": [
+    -139.2,
+    -86.4
+   ],
+   "yaw": 197.5
+  },
+  {
+   "label": "TheCommons_townhouse_030",
+   "kind": "townhouse",
+   "at": [
+    -158.9,
+    -67.8
+   ],
+   "yaw": 17.5
+  },
+  {
+   "label": "TheCommons_townhouse_031",
+   "kind": "townhouse",
+   "at": [
+    -183.9,
+    -75.7
+   ],
+   "yaw": 17.5
+  },
+  {
+   "label": "TheCommons_townhouse_032",
+   "kind": "townhouse",
+   "at": [
+    -176.8,
+    -98.2
+   ],
+   "yaw": 197.5
+  },
+  {
+   "label": "TheCommons_townhouse_033",
+   "kind": "townhouse",
+   "at": [
+    -196.4,
+    -79.7
+   ],
+   "yaw": 17.5
+  },
+  {
+   "label": "TheCommons_townhouse_034",
+   "kind": "townhouse",
+   "at": [
+    -189.3,
+    -102.2
+   ],
+   "yaw": 197.5
+  },
+  {
+   "label": "TheCommons_townhouse_035",
+   "kind": "townhouse",
+   "at": [
+    -209.0,
+    -83.6
+   ],
+   "yaw": 17.5
+  },
+  {
+   "label": "TheCommons_townhouse_036",
+   "kind": "townhouse",
+   "at": [
+    -201.8,
+    -106.2
+   ],
+   "yaw": 197.5
+  },
+  {
+   "label": "TheCommons_townhouse_037",
+   "kind": "townhouse",
+   "at": [
+    -221.5,
+    -87.6
+   ],
+   "yaw": 17.5
+  },
+  {
+   "label": "TheCommons_townhouse_038",
+   "kind": "townhouse",
+   "at": [
+    -214.4,
+    -110.1
+   ],
+   "yaw": 197.5
+  },
+  {
+   "label": "TheCommons_townhouse_039",
+   "kind": "townhouse",
+   "at": [
+    -234.0,
+    -91.5
+   ],
+   "yaw": 17.5
+  },
+  {
+   "label": "TheCommons_townhouse_040",
+   "kind": "townhouse",
+   "at": [
+    -226.9,
+    -114.1
+   ],
+   "yaw": 197.5
+  },
+  {
+   "label": "TheCommons_townhouse_041",
+   "kind": "townhouse",
+   "at": [
+    -246.5,
+    -95.5
+   ],
+   "yaw": 17.5
+  },
+  {
+   "label": "TheCommons_townhouse_042",
+   "kind": "townhouse",
+   "at": [
+    -239.4,
+    -118.0
+   ],
+   "yaw": 197.5
+  },
+  {
+   "label": "TheCommons_townhouse_043",
+   "kind": "townhouse",
+   "at": [
+    -259.0,
+    -99.4
+   ],
+   "yaw": 17.5
+  },
+  {
+   "label": "TheCommons_townhouse_044",
+   "kind": "townhouse",
+   "at": [
+    25.5,
+    -52.0
+   ],
+   "yaw": 159.7
+  },
+  {
+   "label": "TheCommons_townhouse_045",
+   "kind": "townhouse",
+   "at": [
+    37.8,
+    -56.6
+   ],
+   "yaw": 159.7
+  },
+  {
+   "label": "TheCommons_townhouse_046",
+   "kind": "townhouse",
+   "at": [
+    46.0,
+    -34.4
+   ],
+   "yaw": 339.7
+  },
+  {
+   "label": "TheCommons_townhouse_047",
+   "kind": "townhouse",
+   "at": [
+    50.2,
+    -61.1
+   ],
+   "yaw": 159.7
+  },
+  {
+   "label": "TheCommons_townhouse_048",
+   "kind": "townhouse",
+   "at": [
+    58.3,
+    -39.0
+   ],
+   "yaw": 339.7
+  },
+  {
+   "label": "TheCommons_townhouse_049",
+   "kind": "townhouse",
+   "at": [
+    70.7,
+    -43.5
+   ],
+   "yaw": 339.7
+  },
+  {
+   "label": "TheCommons_townhouse_050",
+   "kind": "townhouse",
+   "at": [
+    83.0,
+    -48.1
+   ],
+   "yaw": 339.7
+  },
+  {
+   "label": "TheCommons_townhouse_051",
+   "kind": "townhouse",
+   "at": [
+    87.1,
+    -74.8
+   ],
+   "yaw": 159.7
+  },
+  {
+   "label": "TheCommons_townhouse_052",
+   "kind": "townhouse",
+   "at": [
+    95.3,
+    -52.6
+   ],
+   "yaw": 339.7
+  },
+  {
+   "label": "TheCommons_townhouse_053",
+   "kind": "townhouse",
+   "at": [
+    111.7,
+    -83.9
+   ],
+   "yaw": 159.7
+  },
+  {
+   "label": "TheCommons_townhouse_054",
+   "kind": "townhouse",
+   "at": [
+    119.9,
+    -61.7
+   ],
+   "yaw": 339.7
+  },
+  {
+   "label": "TheCommons_townhouse_055",
+   "kind": "townhouse",
+   "at": [
+    124.1,
+    -88.4
+   ],
+   "yaw": 159.7
+  },
+  {
+   "label": "TheCommons_townhouse_056",
+   "kind": "townhouse",
+   "at": [
+    132.2,
+    -66.3
+   ],
+   "yaw": 339.7
+  },
+  {
+   "label": "TheCommons_townhouse_057",
+   "kind": "townhouse",
+   "at": [
+    136.4,
+    -93.0
+   ],
+   "yaw": 159.7
+  },
+  {
+   "label": "TheCommons_townhouse_058",
+   "kind": "townhouse",
+   "at": [
+    144.6,
+    -70.8
+   ],
+   "yaw": 339.7
+  },
+  {
+   "label": "TheCommons_townhouse_059",
+   "kind": "townhouse",
+   "at": [
+    148.7,
+    -97.5
+   ],
+   "yaw": 159.7
+  },
+  {
+   "label": "TheCommons_townhouse_060",
+   "kind": "townhouse",
+   "at": [
+    156.9,
+    -75.4
+   ],
+   "yaw": 339.7
+  },
+  {
+   "label": "TheCommons_townhouse_061",
+   "kind": "townhouse",
+   "at": [
+    161.0,
+    -102.1
+   ],
+   "yaw": 159.7
+  },
+  {
+   "label": "TheCommons_townhouse_062",
+   "kind": "townhouse",
+   "at": [
+    169.2,
+    -79.9
+   ],
+   "yaw": 339.7
+  },
+  {
+   "label": "TheCommons_townhouse_063",
+   "kind": "townhouse",
+   "at": [
+    173.3,
+    -106.6
+   ],
+   "yaw": 159.7
+  },
+  {
+   "label": "TheCommons_townhouse_064",
+   "kind": "townhouse",
+   "at": [
+    181.5,
+    -84.5
+   ],
+   "yaw": 339.7
+  },
+  {
+   "label": "TheCommons_townhouse_065",
+   "kind": "townhouse",
+   "at": [
+    198.0,
+    -115.7
+   ],
+   "yaw": 159.7
+  },
+  {
+   "label": "TheCommons_townhouse_066",
+   "kind": "townhouse",
+   "at": [
+    210.3,
+    -120.3
+   ],
+   "yaw": 159.7
+  },
+  {
+   "label": "TheCommons_townhouse_067",
+   "kind": "townhouse",
+   "at": [
+    218.5,
+    -98.1
+   ],
+   "yaw": 339.7
+  },
+  {
+   "label": "TheCommons_townhouse_068",
+   "kind": "townhouse",
+   "at": [
+    222.6,
+    -124.8
+   ],
+   "yaw": 159.7
+  },
+  {
+   "label": "TheCommons_townhouse_069",
+   "kind": "townhouse",
+   "at": [
+    230.8,
+    -102.7
+   ],
+   "yaw": 339.7
+  },
+  {
+   "label": "TheCommons_townhouse_070",
+   "kind": "townhouse",
+   "at": [
+    234.9,
+    -129.4
+   ],
+   "yaw": 159.7
+  },
+  {
+   "label": "TheCommons_townhouse_071",
+   "kind": "townhouse",
+   "at": [
+    243.1,
+    -107.2
+   ],
+   "yaw": 339.7
+  },
+  {
+   "label": "TheCommons_townhouse_072",
+   "kind": "townhouse",
+   "at": [
+    16.5,
+    -0.6
+   ],
+   "yaw": 261.3
+  },
+  {
+   "label": "TheCommons_townhouse_073",
+   "kind": "townhouse",
+   "at": [
+    -6.9,
+    3.0
+   ],
+   "yaw": 81.3
+  },
+  {
+   "label": "TheCommons_townhouse_074",
+   "kind": "townhouse",
+   "at": [
+    18.5,
+    12.4
+   ],
+   "yaw": 261.3
+  },
+  {
+   "label": "TheCommons_townhouse_075",
+   "kind": "townhouse",
+   "at": [
+    -4.9,
+    16.0
+   ],
+   "yaw": 81.3
+  },
+  {
+   "label": "TheCommons_townhouse_076",
+   "kind": "townhouse",
+   "at": [
+    20.5,
+    25.4
+   ],
+   "yaw": 261.3
+  },
+  {
+   "label": "TheCommons_townhouse_077",
+   "kind": "townhouse",
+   "at": [
+    -2.9,
+    29.0
+   ],
+   "yaw": 81.3
+  },
+  {
+   "label": "TheCommons_townhouse_078",
+   "kind": "townhouse",
+   "at": [
+    22.5,
+    38.3
+   ],
+   "yaw": 261.3
+  },
+  {
+   "label": "TheCommons_townhouse_079",
+   "kind": "townhouse",
+   "at": [
+    -0.9,
+    41.9
+   ],
+   "yaw": 81.3
+  },
+  {
+   "label": "TheCommons_townhouse_080",
+   "kind": "townhouse",
+   "at": [
+    24.5,
+    51.3
+   ],
+   "yaw": 261.3
+  },
+  {
+   "label": "TheCommons_townhouse_081",
+   "kind": "townhouse",
+   "at": [
+    1.1,
+    54.9
+   ],
+   "yaw": 81.3
+  },
+  {
+   "label": "TheCommons_townhouse_082",
+   "kind": "townhouse",
+   "at": [
+    28.5,
+    77.3
+   ],
+   "yaw": 261.3
+  },
+  {
+   "label": "TheCommons_townhouse_083",
+   "kind": "townhouse",
+   "at": [
+    5.1,
+    80.9
+   ],
+   "yaw": 81.3
+  },
+  {
+   "label": "TheCommons_townhouse_084",
+   "kind": "townhouse",
+   "at": [
+    30.5,
+    90.3
+   ],
+   "yaw": 261.3
+  },
+  {
+   "label": "TheCommons_townhouse_085",
+   "kind": "townhouse",
+   "at": [
+    7.1,
+    93.8
+   ],
+   "yaw": 81.3
+  },
+  {
+   "label": "TheCommons_townhouse_086",
+   "kind": "townhouse",
+   "at": [
+    31.8,
+    105.3
+   ],
+   "yaw": 270.0
+  },
+  {
+   "label": "TheCommons_townhouse_087",
+   "kind": "townhouse",
+   "at": [
+    31.8,
+    118.4
+   ],
+   "yaw": 270.0
+  },
+  {
+   "label": "TheCommons_townhouse_088",
+   "kind": "townhouse",
+   "at": [
+    8.2,
+    118.4
+   ],
+   "yaw": 90.0
+  },
+  {
+   "label": "TheCommons_townhouse_089",
+   "kind": "townhouse",
+   "at": [
+    31.8,
+    144.7
+   ],
+   "yaw": 270.0
+  },
+  {
+   "label": "TheCommons_townhouse_090",
+   "kind": "townhouse",
+   "at": [
+    8.2,
+    144.7
+   ],
+   "yaw": 90.0
+  },
+  {
+   "label": "TheCommons_townhouse_091",
+   "kind": "townhouse",
+   "at": [
+    124.3,
+    -23.1
+   ],
+   "yaw": 279.1
+  },
+  {
+   "label": "TheCommons_townhouse_092",
+   "kind": "townhouse",
+   "at": [
+    104.0,
+    -26.4
+   ],
+   "yaw": 99.1
+  },
+  {
+   "label": "TheCommons_townhouse_093",
+   "kind": "townhouse",
+   "at": [
+    122.3,
+    -10.2
+   ],
+   "yaw": 279.1
+  },
+  {
+   "label": "TheCommons_townhouse_094",
+   "kind": "townhouse",
+   "at": [
+    101.9,
+    -13.4
+   ],
+   "yaw": 99.1
+  },
+  {
+   "label": "TheCommons_townhouse_095",
+   "kind": "townhouse",
+   "at": [
+    117.8,
+    4.4
+   ],
+   "yaw": 296.6
+  },
+  {
+   "label": "TheCommons_townhouse_096",
+   "kind": "townhouse",
+   "at": [
+    112.0,
+    16.1
+   ],
+   "yaw": 296.6
+  },
+  {
+   "label": "TheCommons_townhouse_097",
+   "kind": "townhouse",
+   "at": [
+    93.5,
+    6.9
+   ],
+   "yaw": 116.6
+  },
+  {
+   "label": "TheCommons_townhouse_098",
+   "kind": "townhouse",
+   "at": [
+    103.8,
+    28.0
+   ],
+   "yaw": 313.5
+  },
+  {
+   "label": "TheCommons_townhouse_099",
+   "kind": "townhouse",
+   "at": [
+    94.8,
+    37.5
+   ],
+   "yaw": 313.5
+  },
+  {
+   "label": "TheCommons_townhouse_100",
+   "kind": "townhouse",
+   "at": [
+    79.8,
+    23.3
+   ],
+   "yaw": 133.5
+  },
+  {
+   "label": "TheCommons_townhouse_101",
+   "kind": "townhouse",
+   "at": [
+    82.2,
+    48.5
+   ],
+   "yaw": 326.9
+  },
+  {
+   "label": "TheCommons_townhouse_102",
+   "kind": "townhouse",
+   "at": [
+    71.2,
+    55.7
+   ],
+   "yaw": 326.9
+  },
+  {
+   "label": "TheCommons_townhouse_103",
+   "kind": "townhouse",
+   "at": [
+    59.9,
+    38.4
+   ],
+   "yaw": 146.9
+  },
+  {
+   "label": "TheCommons_townhouse_104",
+   "kind": "townhouse",
+   "at": [
+    56.5,
+    63.5
+   ],
+   "yaw": 340.3
+  },
+  {
+   "label": "TheCommons_townhouse_105",
+   "kind": "townhouse",
+   "at": [
+    44.1,
+    67.9
+   ],
+   "yaw": 340.3
+  },
+  {
+   "label": "TheCommons_townhouse_106",
+   "kind": "townhouse",
+   "at": [
+    37.2,
+    48.5
+   ],
+   "yaw": 160.3
+  },
+  {
+   "label": "TheCommons_townhouse_107",
+   "kind": "townhouse",
+   "at": [
+    -6.3,
+    74.7
+   ],
+   "yaw": 5.7
+  },
+  {
+   "label": "TheCommons_townhouse_108",
+   "kind": "townhouse",
+   "at": [
+    -19.4,
+    73.4
+   ],
+   "yaw": 5.7
+  },
+  {
+   "label": "TheCommons_townhouse_109",
+   "kind": "townhouse",
+   "at": [
+    -17.3,
+    52.9
+   ],
+   "yaw": 185.7
+  },
+  {
+   "label": "TheCommons_townhouse_110",
+   "kind": "townhouse",
+   "at": [
+    -38.6,
+    69.8
+   ],
+   "yaw": 20.3
+  },
+  {
+   "label": "TheCommons_townhouse_111",
+   "kind": "townhouse",
+   "at": [
+    -31.4,
+    50.5
+   ],
+   "yaw": 200.3
+  },
+  {
+   "label": "TheCommons_townhouse_112",
+   "kind": "townhouse",
+   "at": [
+    -50.9,
+    65.3
+   ],
+   "yaw": 20.3
+  },
+  {
+   "label": "TheCommons_townhouse_113",
+   "kind": "townhouse",
+   "at": [
+    -43.7,
+    45.9
+   ],
+   "yaw": 200.3
+  },
+  {
+   "label": "TheCommons_townhouse_114",
+   "kind": "townhouse",
+   "at": [
+    -67.0,
+    57.9
+   ],
+   "yaw": 32.0
+  },
+  {
+   "label": "TheCommons_townhouse_115",
+   "kind": "townhouse",
+   "at": [
+    -78.1,
+    51.0
+   ],
+   "yaw": 32.0
+  },
+  {
+   "label": "TheCommons_townhouse_116",
+   "kind": "townhouse",
+   "at": [
+    -92.1,
+    40.3
+   ],
+   "yaw": 46.5
+  },
+  {
+   "label": "TheCommons_townhouse_117",
+   "kind": "townhouse",
+   "at": [
+    -77.2,
+    26.0
+   ],
+   "yaw": 226.5
+  },
+  {
+   "label": "TheCommons_townhouse_118",
+   "kind": "townhouse",
+   "at": [
+    -101.2,
+    30.7
+   ],
+   "yaw": 46.5
+  },
+  {
+   "label": "TheCommons_townhouse_119",
+   "kind": "townhouse",
+   "at": [
+    -86.2,
+    16.5
+   ],
+   "yaw": 226.5
+  },
+  {
+   "label": "TheCommons_townhouse_120",
+   "kind": "townhouse",
+   "at": [
+    -111.6,
+    16.9
+   ],
+   "yaw": 63.4
+  },
+  {
+   "label": "TheCommons_townhouse_121",
+   "kind": "townhouse",
+   "at": [
+    -117.5,
+    5.1
+   ],
+   "yaw": 63.4
+  },
+  {
+   "label": "TheCommons_townhouse_122",
+   "kind": "townhouse",
+   "at": [
+    -99.0,
+    -4.1
+   ],
+   "yaw": 243.4
+  },
+  {
+   "label": "TheCommons_townhouse_123",
+   "kind": "townhouse",
+   "at": [
+    -122.0,
+    -8.6
+   ],
+   "yaw": 80.9
+  },
+  {
+   "label": "TheCommons_townhouse_124",
+   "kind": "townhouse",
+   "at": [
+    -124.1,
+    -21.6
+   ],
+   "yaw": 80.9
+  },
+  {
+   "label": "TheCommons_townhouse_125",
+   "kind": "townhouse",
+   "at": [
+    -103.7,
+    -24.8
+   ],
+   "yaw": 260.9
+  },
+  {
+   "label": "TheCommons_townhouse_126",
+   "kind": "townhouse",
+   "at": [
+    -124.3,
+    -36.9
+   ],
+   "yaw": 99.1
+  },
+  {
+   "label": "TheCommons_townhouse_127",
+   "kind": "townhouse",
+   "at": [
+    -103.5,
+    -89.1
+   ],
+   "yaw": 135.0
+  },
+  {
+   "label": "TheCommons_townhouse_128",
+   "kind": "townhouse",
+   "at": [
+    -94.3,
+    -98.3
+   ],
+   "yaw": 135.0
+  },
+  {
+   "label": "TheCommons_townhouse_129",
+   "kind": "townhouse",
+   "at": [
+    -79.7,
+    -83.7
+   ],
+   "yaw": 315.0
+  },
+  {
+   "label": "TheCommons_townhouse_130",
+   "kind": "townhouse",
+   "at": [
+    -82.2,
+    -108.5
+   ],
+   "yaw": 146.9
+  },
+  {
+   "label": "TheCommons_townhouse_131",
+   "kind": "townhouse",
+   "at": [
+    -71.2,
+    -115.7
+   ],
+   "yaw": 146.9
+  },
+  {
+   "label": "TheCommons_townhouse_132",
+   "kind": "townhouse",
+   "at": [
+    -59.9,
+    -98.4
+   ],
+   "yaw": 326.9
+  },
+  {
+   "label": "TheCommons_townhouse_133",
+   "kind": "townhouse",
+   "at": [
+    -56.5,
+    -123.5
+   ],
+   "yaw": 160.3
+  },
+  {
+   "label": "TheCommons_townhouse_134",
+   "kind": "townhouse",
+   "at": [
+    -44.1,
+    -127.9
+   ],
+   "yaw": 160.3
+  },
+  {
+   "label": "TheCommons_townhouse_135",
+   "kind": "townhouse",
+   "at": [
+    -37.2,
+    -108.5
+   ],
+   "yaw": 340.3
+  },
+  {
+   "label": "TheCommons_townhouse_136",
+   "kind": "townhouse",
+   "at": [
+    -25.7,
+    -132.8
+   ],
+   "yaw": 174.3
+  },
+  {
+   "label": "TheCommons_townhouse_137",
+   "kind": "townhouse",
+   "at": [
+    -23.7,
+    -112.3
+   ],
+   "yaw": 354.3
+  },
+  {
+   "label": "TheCommons_townhouse_138",
+   "kind": "townhouse",
+   "at": [
+    38.5,
+    -129.9
+   ],
+   "yaw": 199.7
+  },
+  {
+   "label": "TheCommons_townhouse_139",
+   "kind": "townhouse",
+   "at": [
+    31.5,
+    -110.5
+   ],
+   "yaw": 19.7
+  },
+  {
+   "label": "TheCommons_townhouse_140",
+   "kind": "townhouse",
+   "at": [
+    50.8,
+    -125.5
+   ],
+   "yaw": 199.7
+  },
+  {
+   "label": "TheCommons_townhouse_141",
+   "kind": "townhouse",
+   "at": [
+    43.9,
+    -106.1
+   ],
+   "yaw": 19.7
+  },
+  {
+   "label": "TheCommons_townhouse_142",
+   "kind": "townhouse",
+   "at": [
+    68.1,
+    -117.7
+   ],
+   "yaw": 213.1
+  },
+  {
+   "label": "TheCommons_townhouse_143",
+   "kind": "townhouse",
+   "at": [
+    56.8,
+    -100.5
+   ],
+   "yaw": 33.1
+  },
+  {
+   "label": "TheCommons_townhouse_144",
+   "kind": "townhouse",
+   "at": [
+    79.1,
+    -110.6
+   ],
+   "yaw": 213.1
+  },
+  {
+   "label": "TheCommons_townhouse_145",
+   "kind": "townhouse",
+   "at": [
+    67.8,
+    -93.3
+   ],
+   "yaw": 33.1
+  },
+  {
+   "label": "TheCommons_townhouse_146",
+   "kind": "townhouse",
+   "at": [
+    92.1,
+    -100.5
+   ],
+   "yaw": 225.0
+  },
+  {
+   "label": "TheCommons_townhouse_147",
+   "kind": "townhouse",
+   "at": [
+    101.3,
+    -91.3
+   ],
+   "yaw": 225.0
+  },
+  {
+   "label": "TheCommons_townhouse_148",
+   "kind": "townhouse",
+   "at": [
+    124.1,
+    -38.4
+   ],
+   "yaw": 260.9
+  },
+  {
+   "label": "TheCommons_townhouse_149",
+   "kind": "townhouse",
+   "at": [
+    236.2,
+    -13.0
+   ],
+   "yaw": 279.9
+  },
+  {
+   "label": "Riverside_townhouse_000",
+   "kind": "townhouse",
+   "at": [
+    32.2,
+    209.5
+   ],
+   "yaw": 266.1
+  },
+  {
+   "label": "Riverside_townhouse_001",
+   "kind": "townhouse",
+   "at": [
+    8.6,
+    211.1
+   ],
+   "yaw": 86.1
+  },
+  {
+   "label": "Riverside_townhouse_002",
+   "kind": "townhouse",
+   "at": [
+    33.1,
+    222.6
+   ],
+   "yaw": 266.1
+  },
+  {
+   "label": "Riverside_townhouse_003",
+   "kind": "townhouse",
+   "at": [
+    9.5,
+    224.2
+   ],
+   "yaw": 86.1
+  },
+  {
+   "label": "Riverside_townhouse_004",
+   "kind": "townhouse",
+   "at": [
+    34.0,
+    235.7
+   ],
+   "yaw": 266.1
+  },
+  {
+   "label": "Riverside_townhouse_005",
+   "kind": "townhouse",
+   "at": [
+    10.4,
+    237.3
+   ],
+   "yaw": 86.1
+  },
+  {
+   "label": "Riverside_townhouse_006",
+   "kind": "townhouse",
+   "at": [
+    34.9,
+    248.8
+   ],
+   "yaw": 266.1
+  },
+  {
+   "label": "Riverside_townhouse_007",
+   "kind": "townhouse",
+   "at": [
+    11.3,
+    250.4
+   ],
+   "yaw": 86.1
+  },
+  {
+   "label": "Riverside_townhouse_008",
+   "kind": "townhouse",
+   "at": [
+    35.8,
+    261.9
+   ],
+   "yaw": 266.1
+  },
+  {
+   "label": "Riverside_townhouse_009",
+   "kind": "townhouse",
+   "at": [
+    12.2,
+    263.5
+   ],
+   "yaw": 86.1
+  },
+  {
+   "label": "Riverside_townhouse_010",
+   "kind": "townhouse",
+   "at": [
+    36.7,
+    275.0
+   ],
+   "yaw": 266.1
+  },
+  {
+   "label": "Riverside_townhouse_011",
+   "kind": "townhouse",
+   "at": [
+    13.1,
+    276.6
+   ],
+   "yaw": 86.1
+  },
+  {
+   "label": "Riverside_townhouse_012",
+   "kind": "townhouse",
+   "at": [
+    37.6,
+    288.1
+   ],
+   "yaw": 266.1
+  },
+  {
+   "label": "Riverside_townhouse_013",
+   "kind": "townhouse",
+   "at": [
+    14.0,
+    289.7
+   ],
+   "yaw": 86.1
+  },
+  {
+   "label": "Riverside_townhouse_014",
+   "kind": "townhouse",
+   "at": [
+    38.5,
+    301.2
+   ],
+   "yaw": 266.1
+  },
+  {
+   "label": "Riverside_townhouse_015",
+   "kind": "townhouse",
+   "at": [
+    14.9,
+    302.8
+   ],
+   "yaw": 86.1
+  },
+  {
+   "label": "Riverside_townhouse_016",
+   "kind": "townhouse",
+   "at": [
+    39.4,
+    314.3
+   ],
+   "yaw": 266.1
+  },
+  {
+   "label": "Riverside_townhouse_017",
+   "kind": "townhouse",
+   "at": [
+    15.8,
+    315.9
+   ],
+   "yaw": 86.1
+  },
+  {
+   "label": "Riverside_townhouse_018",
+   "kind": "townhouse",
+   "at": [
+    40.3,
+    327.4
+   ],
+   "yaw": 266.1
+  },
+  {
+   "label": "Riverside_townhouse_019",
+   "kind": "townhouse",
+   "at": [
+    20.2,
+    382.2
+   ],
+   "yaw": 86.4
+  },
+  {
+   "label": "Riverside_townhouse_020",
+   "kind": "townhouse",
+   "at": [
+    44.6,
+    393.9
+   ],
+   "yaw": 266.4
+  },
+  {
+   "label": "Riverside_townhouse_021",
+   "kind": "townhouse",
+   "at": [
+    21.0,
+    395.4
+   ],
+   "yaw": 86.4
+  },
+  {
+   "label": "Riverside_townhouse_022",
+   "kind": "townhouse",
+   "at": [
+    45.4,
+    407.0
+   ],
+   "yaw": 266.4
+  },
+  {
+   "label": "Riverside_townhouse_023",
+   "kind": "townhouse",
+   "at": [
+    21.8,
+    408.5
+   ],
+   "yaw": 86.4
+  },
+  {
+   "label": "Riverside_townhouse_024",
+   "kind": "townhouse",
+   "at": [
+    22.6,
+    421.6
+   ],
+   "yaw": 86.4
+  },
+  {
+   "label": "Riverside_townhouse_025",
+   "kind": "townhouse",
+   "at": [
+    47.0,
+    433.2
+   ],
+   "yaw": 266.4
+  },
+  {
+   "label": "Riverside_townhouse_026",
+   "kind": "townhouse",
+   "at": [
+    23.4,
+    434.7
+   ],
+   "yaw": 86.4
+  },
+  {
+   "label": "Riverside_townhouse_027",
+   "kind": "townhouse",
+   "at": [
+    47.8,
+    446.3
+   ],
+   "yaw": 266.4
+  },
+  {
+   "label": "Riverside_townhouse_028",
+   "kind": "townhouse",
+   "at": [
+    24.2,
+    447.8
+   ],
+   "yaw": 86.4
+  },
+  {
+   "label": "Riverside_townhouse_029",
+   "kind": "townhouse",
+   "at": [
+    48.6,
+    459.4
+   ],
+   "yaw": 266.4
+  },
+  {
+   "label": "Riverside_townhouse_030",
+   "kind": "townhouse",
+   "at": [
+    25.1,
+    460.9
+   ],
+   "yaw": 86.4
+  },
+  {
+   "label": "Riverside_townhouse_031",
+   "kind": "townhouse",
+   "at": [
+    49.5,
+    472.5
+   ],
+   "yaw": 266.4
+  },
+  {
+   "label": "Riverside_townhouse_032",
+   "kind": "townhouse",
+   "at": [
+    25.9,
+    474.0
+   ],
+   "yaw": 86.4
+  },
+  {
+   "label": "Riverside_townhouse_033",
+   "kind": "townhouse",
+   "at": [
+    50.3,
+    485.6
+   ],
+   "yaw": 266.4
+  },
+  {
+   "label": "Riverside_townhouse_034",
+   "kind": "townhouse",
+   "at": [
+    26.7,
+    487.1
+   ],
+   "yaw": 86.4
+  },
+  {
+   "label": "Riverside_townhouse_035",
+   "kind": "townhouse",
+   "at": [
+    61.8,
+    416.2
+   ],
+   "yaw": 198.7
+  },
+  {
+   "label": "Riverside_townhouse_036",
+   "kind": "townhouse",
+   "at": [
+    74.2,
+    420.4
+   ],
+   "yaw": 198.7
+  },
+  {
+   "label": "Riverside_townhouse_037",
+   "kind": "townhouse",
+   "at": [
+    67.6,
+    439.9
+   ],
+   "yaw": 18.7
+  },
+  {
+   "label": "Riverside_townhouse_038",
+   "kind": "townhouse",
+   "at": [
+    80.0,
+    444.1
+   ],
+   "yaw": 18.7
+  },
+  {
+   "label": "Riverside_townhouse_039",
+   "kind": "townhouse",
+   "at": [
+    93.5,
+    499.1
+   ],
+   "yaw": 350.3
+  },
+  {
+   "label": "Riverside_townhouse_040",
+   "kind": "townhouse",
+   "at": [
+    80.6,
+    501.3
+   ],
+   "yaw": 350.3
+  },
+  {
+   "label": "Riverside_townhouse_041",
+   "kind": "townhouse",
+   "at": [
+    77.1,
+    481.0
+   ],
+   "yaw": 170.3
+  },
+  {
+   "label": "Riverside_townhouse_042",
+   "kind": "townhouse",
+   "at": [
+    67.6,
+    503.5
+   ],
+   "yaw": 350.3
+  },
+  {
+   "label": "Riverside_townhouse_043",
+   "kind": "townhouse",
+   "at": [
+    64.1,
+    483.2
+   ],
+   "yaw": 170.3
+  },
+  {
+   "label": "Riverside_townhouse_044",
+   "kind": "townhouse",
+   "at": [
+    54.7,
+    505.7
+   ],
+   "yaw": 350.3
+  },
+  {
+   "label": "Riverside_townhouse_045",
+   "kind": "townhouse",
+   "at": [
+    15.9,
+    512.4
+   ],
+   "yaw": 350.3
+  },
+  {
+   "label": "Riverside_townhouse_046",
+   "kind": "townhouse",
+   "at": [
+    12.4,
+    492.1
+   ],
+   "yaw": 170.3
+  },
+  {
+   "label": "Riverside_townhouse_047",
+   "kind": "townhouse",
+   "at": [
+    -5.4,
+    493.9
+   ],
+   "yaw": 190.4
+  },
+  {
+   "label": "Riverside_townhouse_048",
+   "kind": "townhouse",
+   "at": [
+    -18.3,
+    491.5
+   ],
+   "yaw": 190.4
+  },
+  {
+   "label": "Riverside_townhouse_049",
+   "kind": "townhouse",
+   "at": [
+    -31.2,
+    489.2
+   ],
+   "yaw": 190.4
+  },
+  {
+   "label": "Riverside_townhouse_050",
+   "kind": "townhouse",
+   "at": [
+    -44.1,
+    486.8
+   ],
+   "yaw": 190.4
+  },
+  {
+   "label": "Riverside_townhouse_051",
+   "kind": "townhouse",
+   "at": [
+    -57.0,
+    484.4
+   ],
+   "yaw": 190.4
+  },
+  {
+   "label": "Riverside_townhouse_052",
+   "kind": "townhouse",
+   "at": [
+    -69.9,
+    482.0
+   ],
+   "yaw": 190.4
+  },
+  {
+   "label": "Riverside_townhouse_053",
+   "kind": "townhouse",
+   "at": [
+    -82.8,
+    479.7
+   ],
+   "yaw": 190.4
+  },
+  {
+   "label": "Riverside_townhouse_054",
+   "kind": "townhouse",
+   "at": [
+    -99.5,
+    475.4
+   ],
+   "yaw": 209.9
+  },
+  {
+   "label": "Riverside_townhouse_055",
+   "kind": "townhouse",
+   "at": [
+    -121.1,
+    486.7
+   ],
+   "yaw": 29.9
+  },
+  {
+   "label": "Riverside_townhouse_056",
+   "kind": "townhouse",
+   "at": [
+    -110.8,
+    468.9
+   ],
+   "yaw": 209.9
+  },
+  {
+   "label": "Riverside_townhouse_057",
+   "kind": "townhouse",
+   "at": [
+    -122.2,
+    462.3
+   ],
+   "yaw": 209.9
+  },
+  {
+   "label": "Riverside_townhouse_058",
+   "kind": "townhouse",
+   "at": [
+    -133.6,
+    455.7
+   ],
+   "yaw": 209.9
+  },
+  {
+   "label": "Riverside_townhouse_059",
+   "kind": "townhouse",
+   "at": [
+    -145.0,
+    449.2
+   ],
+   "yaw": 209.9
+  },
+  {
+   "label": "Westfields_farmhouse_000",
+   "kind": "farmhouse",
+   "at": [
+    -466.9,
+    -80.5
+   ],
+   "yaw": 132.8
+  },
+  {
+   "label": "Westfields_farmhouse_001",
+   "kind": "farmhouse",
+   "at": [
+    -458.2,
+    -49.4
+   ],
+   "yaw": 312.8
+  },
+  {
+   "label": "Westfields_farmhouse_002",
+   "kind": "farmhouse",
+   "at": [
+    -478.4,
+    -68.0
+   ],
+   "yaw": 132.8
+  },
+  {
+   "label": "Westfields_farmhouse_003",
+   "kind": "farmhouse",
+   "at": [
+    -469.7,
+    -37.0
+   ],
+   "yaw": 312.8
+  },
+  {
+   "label": "Westfields_farmhouse_004",
+   "kind": "farmhouse",
+   "at": [
+    -489.9,
+    -55.6
+   ],
+   "yaw": 132.8
+  },
+  {
+   "label": "Westfields_farmhouse_005",
+   "kind": "farmhouse",
+   "at": [
+    -481.2,
+    -24.6
+   ],
+   "yaw": 312.8
+  },
+  {
+   "label": "Westfields_farmhouse_006",
+   "kind": "farmhouse",
+   "at": [
+    -501.4,
+    -43.2
+   ],
+   "yaw": 132.8
+  },
+  {
+   "label": "Westfields_farmhouse_007",
+   "kind": "farmhouse",
+   "at": [
+    -492.7,
+    -12.1
+   ],
+   "yaw": 312.8
+  },
+  {
+   "label": "Westfields_farmhouse_008",
+   "kind": "farmhouse",
+   "at": [
+    -512.8,
+    -30.8
+   ],
+   "yaw": 132.8
+  },
+  {
+   "label": "Westfields_farmhouse_009",
+   "kind": "farmhouse",
+   "at": [
+    -504.2,
+    0.3
+   ],
+   "yaw": 312.8
+  },
+  {
+   "label": "Westfields_farmhouse_010",
+   "kind": "farmhouse",
+   "at": [
+    -524.3,
+    -18.3
+   ],
+   "yaw": 132.8
+  },
+  {
+   "label": "Westfields_farmhouse_011",
+   "kind": "farmhouse",
+   "at": [
+    -515.7,
+    12.7
+   ],
+   "yaw": 312.8
+  },
+  {
+   "label": "Eastwood_cottage_000",
+   "kind": "cottage",
+   "at": [
+    418.4,
+    -130.4
+   ],
+   "yaw": 235.5
+  },
+  {
+   "label": "Eastwood_cottage_001",
+   "kind": "cottage",
+   "at": [
+    425.5,
+    -120.1
+   ],
+   "yaw": 235.5
+  },
+  {
+   "label": "Eastwood_cottage_002",
+   "kind": "cottage",
+   "at": [
+    432.6,
+    -109.8
+   ],
+   "yaw": 235.5
+  },
+  {
+   "label": "Eastwood_cottage_003",
+   "kind": "cottage",
+   "at": [
+    416.1,
+    -98.4
+   ],
+   "yaw": 55.5
+  },
+  {
+   "label": "Eastwood_cottage_004",
+   "kind": "cottage",
+   "at": [
+    439.7,
+    -99.5
+   ],
+   "yaw": 235.5
+  },
+  {
+   "label": "Eastwood_cottage_005",
+   "kind": "cottage",
+   "at": [
+    423.2,
+    -88.1
+   ],
+   "yaw": 55.5
+  },
+  {
+   "label": "Eastwood_cottage_006",
+   "kind": "cottage",
+   "at": [
+    446.8,
+    -89.2
+   ],
+   "yaw": 235.5
+  },
+  {
+   "label": "Eastwood_cottage_007",
+   "kind": "cottage",
+   "at": [
+    430.3,
+    -77.8
+   ],
+   "yaw": 55.5
+  },
+  {
+   "label": "Eastwood_cottage_008",
+   "kind": "cottage",
+   "at": [
+    453.9,
+    -78.9
+   ],
+   "yaw": 235.5
+  },
+  {
+   "label": "Eastwood_cottage_009",
+   "kind": "cottage",
+   "at": [
+    437.4,
+    -67.5
+   ],
+   "yaw": 55.5
+  },
+  {
+   "label": "Eastwood_cottage_010",
+   "kind": "cottage",
+   "at": [
+    460.9,
+    -68.6
+   ],
+   "yaw": 235.5
+  },
+  {
+   "label": "Eastwood_cottage_011",
+   "kind": "cottage",
+   "at": [
+    444.5,
+    -57.2
+   ],
+   "yaw": 55.5
+  },
+  {
+   "label": "Eastwood_cottage_012",
+   "kind": "cottage",
+   "at": [
+    468.0,
+    -58.3
+   ],
+   "yaw": 235.5
+  },
+  {
+   "label": "Eastwood_cottage_013",
+   "kind": "cottage",
+   "at": [
+    451.6,
+    -47.0
+   ],
+   "yaw": 55.5
+  },
+  {
+   "label": "Eastwood_cottage_014",
+   "kind": "cottage",
+   "at": [
+    475.1,
+    -48.0
+   ],
+   "yaw": 235.5
+  },
+  {
+   "label": "Eastwood_cottage_015",
+   "kind": "cottage",
+   "at": [
+    458.7,
+    -36.7
+   ],
+   "yaw": 55.5
+  },
+  {
+   "label": "Eastwood_cottage_016",
+   "kind": "cottage",
+   "at": [
+    482.2,
+    -37.7
+   ],
+   "yaw": 235.5
+  },
+  {
+   "label": "Eastwood_cottage_017",
+   "kind": "cottage",
+   "at": [
+    465.7,
+    -26.4
+   ],
+   "yaw": 55.5
+  },
+  {
+   "label": "Eastwood_cottage_018",
+   "kind": "cottage",
+   "at": [
+    489.3,
+    -27.4
+   ],
+   "yaw": 235.5
+  },
+  {
+   "label": "Eastwood_cottage_019",
+   "kind": "cottage",
+   "at": [
+    472.8,
+    -16.1
+   ],
+   "yaw": 55.5
+  },
+  {
+   "label": "Eastwood_cottage_020",
+   "kind": "cottage",
+   "at": [
+    496.4,
+    -17.1
+   ],
+   "yaw": 235.5
+  },
+  {
+   "label": "Eastwood_cottage_021",
+   "kind": "cottage",
+   "at": [
+    479.9,
+    -5.8
+   ],
+   "yaw": 55.5
+  },
+  {
+   "label": "Eastwood_cottage_022",
+   "kind": "cottage",
+   "at": [
+    503.5,
+    -6.8
+   ],
+   "yaw": 235.5
+  },
+  {
+   "label": "Eastwood_cottage_023",
+   "kind": "cottage",
+   "at": [
+    487.0,
+    4.5
+   ],
+   "yaw": 55.5
+  },
+  {
+   "label": "Eastwood_cottage_024",
+   "kind": "cottage",
+   "at": [
+    510.6,
+    3.5
+   ],
+   "yaw": 235.5
+  },
+  {
+   "label": "Eastwood_cottage_025",
+   "kind": "cottage",
+   "at": [
+    494.1,
+    14.8
+   ],
+   "yaw": 55.5
+  },
+  {
+   "label": "Eastwood_cottage_026",
+   "kind": "cottage",
+   "at": [
+    517.7,
+    13.8
+   ],
+   "yaw": 235.5
+  },
+  {
+   "label": "Eastwood_cottage_027",
+   "kind": "cottage",
+   "at": [
+    501.2,
+    25.1
+   ],
+   "yaw": 55.5
+  },
+  {
+   "label": "Eastwood_cottage_028",
+   "kind": "cottage",
+   "at": [
+    524.7,
+    24.1
+   ],
+   "yaw": 235.5
+  },
+  {
+   "label": "Eastwood_cottage_029",
+   "kind": "cottage",
+   "at": [
+    508.3,
+    35.4
+   ],
+   "yaw": 55.5
+  }
+ ]
+}

@@ -78,15 +78,15 @@ The builder refuses to start while the editor has unsaved maps or assets. Some m
 ## Gaps
 
 1. **Terrain edges (Z2).** Closed 2026-10-19: the zone edge matches the region (edge error 0.0 m). The region roads run through the zone's road exits, and the Eastfall Brook comes in from the region.
-2. **Water.** The river has no collision or swimming, so the wall has open gaps where the river crosses it. The gap by the South Gate runs about 90 m, because the river and the gate exclusions overlap.
+2. **Water.** 2026-10-20: every water surface (river, brooks, basins, sea) has a water `PhysicsVolume` 8 m deep with its top on the surface, so the pawn swims. The wall now continues across the water on the channel bed (towers skip the water), which closes the river gaps. The in-game review drops the pawn 1 m under the river: it swims, floats with its centre 12 cm below the surface at the engine's default buoyancy, and climbs out onto the bank in 6 s. There is no water-gate art yet: the wall simply crosses the river.
 3. **Mountain backdrop.** Closed 2026-10-19: it is the region terrain. Rivers in the backdrop are carved but have no water surface yet.
-4. **Resources (Z8).** No gathering areas or spawn groups.
-5. **Wildlife and enemies (Z9).** No boar territories, wolf dens, bandit camps or ambient animals. Combat does not exist yet.
-6. **Areas and safety (Z4, Z5).** Districts exist as layout data only. There are no `level_area` polygons and no protected or no-edit volumes for the walled town.
-7. **Respawn (Z2).** There is one player start and no respawn points.
-8. **Zone data.** There are no `content/world/regions/greenlands` or `content/world/zones/greenlands_silverbrook` records.
+4. **Resources (Z8).** 2026-10-20: the [zone record](../content/world/zones/greenlands_silverbrook.json) has wood and stone `spawn_groups` for Westfields and Eastwood, built from the dressing candidates outside the wall (`zone_record.py`). Nothing spawns them yet: the gathering pilot runs only in the construction sandbox game mode with `-GatheringPilot`, and the production node runtime does not exist.
+5. **Wildlife and enemies (Z9).** 2026-10-20: the zone record places boar at the farm and forest edges, and wolves and a bandit camp beyond the 750 m playable radius (the camp at the end of the Forest Trail, not at the reserved Ruins). Combat, NPC health and AI do not exist yet, so nothing spawns.
+6. **Areas and safety (Z4, Z5).** 2026-10-20: the zone record has level areas (countryside 3, town 1, boar 2, bandits 5, wolves 6) and marks the walled town `protected` and `no_edit`. No server system enforces them yet.
+7. **Respawn (Z2).** 2026-10-20: the zone record has a default spawn and six respawn points (arrival, inside each gate, the market square). The map keeps its one arrival player start; there is no death or respawn code yet.
+8. **Zone data.** 2026-10-20: `content/world/zones/greenlands_silverbrook.json` (zone index 1). The `content/world/regions/greenlands` record is still missing.
 9. **Size.** The 2.5 km tile is fixed by the region grid. The countryside beyond the town is still empty.
-10. **Defaults.** `GameDefaultMap` and `ServerDefaultMap` still point at `Greenlands_E1`. Switch them once the zone passes its checks.
+10. **Defaults.** Closed 2026-10-20: `GameDefaultMap` and `ServerDefaultMap` load this map, and it is cooked. `Greenlands_E1` stays cooked for its tests, which name their map explicitly.
 11. **Editable terrain.** The ground is a static mesh, not the editable voxel terrain of DEC-03.
 12. **Route walk.** Closed 2026-10-19. The road, river and other no-collision pieces kept their default collision profile, which is reapplied on load, so the pawn caught on the lip where two tilted road pieces meet. The builder now sets the NoCollision profile itself.
 13. **Unassigned walled ground.** Parts of the walled town west and east of The Commons belong to no district, so they stay empty.

@@ -99,6 +99,20 @@ def _box(label, x, y, w, d, h, mat, z0, yaw, collide, folder, ground, pitch=0.0)
     return a
 
 
+WATER_DEPTH = 8.0  # m of swimmable volume below a water surface; channels are 2 m deep (heightfield.CHANNEL_DEPTH)
+
+
+def _water(label, x, y, w, d, top, yaw=0.0, pitch=0.0):
+    """A water PhysicsVolume with its top at the surface: the pawn swims while its centre is inside it."""
+    a = actors.spawn_actor_from_class(u.PhysicsVolume, u.Vector(x * 100, y * 100, (top - WATER_DEPTH / 2) * 100),
+                                      u.Rotator(roll=0, pitch=pitch, yaw=yaw))
+    a.set_actor_scale3d(u.Vector(w / 2, d / 2, WATER_DEPTH / 2))  # the spawned brush is a 2 m cube
+    a.set_editor_property('water_volume', True)
+    a.set_actor_label(f'{label}_Swim'); a.set_folder_path('Water/Swim')
+    counts['Swim'] = counts.get('Swim', 0) + 1
+    return a
+
+
 def piece(label, mesh, x, y, yaw, z, folder):
     """Spawn a delivered mesh with its origin at (x, y, z) metres and attach its moving parts. `yaw` is the actor's own."""
     a = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(x * 100, y * 100, z * 100), u.Rotator(roll=0, pitch=0, yaw=yaw))
@@ -164,8 +178,9 @@ def facing(x, y, tx, ty):
     return math.degrees(math.atan2(ty - y, tx - x)) + 90
 
 
-def strip(label, points, width, mat, h, folder, z_at, collide=False, piece=10.0):
-    """Queue thin boxes along a polyline in pieces of at most `piece` m, pitched to follow z_at(i, t)."""
+def strip(label, points, width, mat, h, folder, z_at, collide=False, piece=10.0, swim=False):
+    """Queue thin boxes along a polyline in pieces of at most `piece` m, pitched to follow z_at(i, t).
+    swim: also put a water volume under each piece, its top on the surface."""
     for i, (p, q) in enumerate(zip(points, points[1:])):
         length = math.dist(p, q); n = max(1, math.ceil(length / piece))
         yaw = math.degrees(math.atan2(q[1] - p[1], q[0] - p[0]))
@@ -175,8 +190,10 @@ def strip(label, points, width, mat, h, folder, z_at, collide=False, piece=10.0)
             def spawn(i=i, p=p, q=q, k=k, t0=t0, t1=t1, yaw=yaw, length=length):
                 za, zb = z_at(i, max(t0, 0.0)), z_at(i, min(t1, 1.0))
                 run = (t1 - t0) * length; tm = (t0 + t1) / 2
-                _box(f'{label}_{i:02d}_{k:02d}', p[0] + (q[0] - p[0]) * tm, p[1] + (q[1] - p[1]) * tm, run, width, h, mat,
-                     (za + zb) / 2 - h / 2, yaw, collide, folder, None, math.degrees(math.atan2(zb - za, run)))
+                cx, cy, pitch = p[0] + (q[0] - p[0]) * tm, p[1] + (q[1] - p[1]) * tm, math.degrees(math.atan2(zb - za, run))
+                _box(f'{label}_{i:02d}_{k:02d}', cx, cy, run, width, h, mat, (za + zb) / 2 - h / 2, yaw, collide, folder, None, pitch)
+                if swim:
+                    _water(f'{label}_{i:02d}_{k:02d}', cx, cy, run, width, (za + zb) / 2, yaw, pitch)
             pending.append(spawn)
             counts[folder] = counts.get(folder, 0) + 1
 
@@ -250,6 +267,7 @@ footprints = []  # (x, y, w, d, yaw) of every building on land, levelled last in
 foundation = dict(max_step=0.0, plinths=0)  # ground height range under the delivered buildings
 flats = []  # (x, y, radius) open areas to level: plaza, fields, yard, ruins
 blocked = []  # required places that overlap a road, the river, the wall or a building
+roster = []  # every building placed: the town census (townsfolk_census.py) reads it
 
 
 def wall_dist(p):
@@ -288,6 +306,7 @@ def building(label_text, kind, x, y, yaw, mat, folder, require=True):
         blocked.append(f'{label_text} at {x:.0f},{y:.0f}')
     if ok:
         placed.append((x, y, math.hypot(w, d) / 2))
+        roster.append(dict(label=label_text, kind=kind, at=[round(x, 1), round(y, 1)], yaw=round(yaw % 360, 1)))
         if kind not in ('docks', 'wharf'):
             footprints.append((x, y, w, d, yaw))
         if kind in ('docks', 'wharf') and kind in VARIANTS:
@@ -322,11 +341,12 @@ sky.light_component.set_editor_property('real_time_capture', True)
 actors.spawn_actor_from_class(u.ExponentialHeightFog, u.Vector(0, 0, 0))
 
 for w in WATERS:
-    strip(w['name'].replace(' ', ''), w['points'], w['width'], 'River', 0.1, 'Water', lambda i, t, w=w: water_level(w, i, t))
+    strip(w['name'].replace(' ', ''), w['points'], w['width'], 'River', 0.1, 'Water', lambda i, t, w=w: water_level(w, i, t), swim=True)
 for b in BASINS:  # one flat surface at the basin level; the shore terrain hides what lies outside the polygon
     xs, ys = [q[0] for q in b['polygon']], [q[1] for q in b['polygon']]
-    box(b['name'].replace(' ', ''), (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2, max(xs) - min(xs), max(ys) - min(ys),
-        0.1, 'River', z0=b['level'] - 0.1, collide=False, folder='Water', ground=None)
+    bx0, by0, bw, bd = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2, max(xs) - min(xs), max(ys) - min(ys)
+    box(b['name'].replace(' ', ''), bx0, by0, bw, bd, 0.1, 'River', z0=b['level'] - 0.1, collide=False, folder='Water', ground=None)
+    pending.append(lambda n=b['name'].replace(' ', ''), g=(bx0, by0, bw, bd, b['level']): _water(n, *g))  # shore above the level stays dry
 for name, pts, width, tier in ROADS:
     strip(name.replace(' ', ''), pts, width, 'Trail' if tier == 'trail' else 'Road', 0.3, f'Roads/{tier.title()}', on_ground(pts))
 
@@ -398,10 +418,11 @@ while s < total - step:
     p, q = ellipse[idx][1], ellipse[j][1]
     mid = ((p[0] + q[0]) / 2, (p[1] + q[1]) / 2)
     near_gate = min(math.dist(mid, g) for g in gate_points.values()) < W['gate_gap'] / 2 + tower[0] + step / 2
-    near_water = water_gap(mid) < step / 2 + 2
-    if not near_gate and not near_water:
+    if water_gap(mid) < step / 2 + 2:  # the wall crosses the water on the channel bed, so swimmers can't get in
+        counts['WallOverWater'] = counts.get('WallOverWater', 0) + 1
+    if not near_gate:
         yaw = math.degrees(math.atan2(q[1] - p[1], q[0] - p[0]))
-        is_tower = s >= next_tower
+        is_tower = s >= next_tower and water_gap(mid) > tower[0]
         if is_tower:
             next_tower = s + W['tower_spacing']
         if 'section' in WALL_MESH:  # 20 m segment along X, resting on its lowest ground so no end floats
@@ -611,6 +632,7 @@ mountains.static_mesh_component.set_material(0, M['Rock'])
 mountains.static_mesh_component.set_collision_profile_name('NoCollision')
 mountains.set_actor_label('Backdrop'); mountains.set_folder_path('Ground')
 _box('Sea', 0, 0, 2 * ext, 2 * ext, 0.1, 'River', SEA - 0.1, 0, False, 'Water', None)
+_water('Sea', 0, 0, 2 * ext, 2 * ext, SEA)
 
 for spawn in pending:
     spawn()
@@ -660,5 +682,8 @@ for district in DRESS_DISTRICTS:
     _, expected = pcg_dressing.build(result, {l['role']: l['layer'] for l in PROFILE['layers']}, 'Silverbrook')
     dressing[district] = dict(version=result['version'], instances=expected, hash=dress_zone.transforms_hash(result),
                               candidates=len(cands), gaps=result['gaps'])
+(ROOT / 'silverbrook-buildings.json').write_text(json.dumps(dict(
+    _about='Every building the builder placed (label, layout type, metres, yaw); read by townsfolk_census.py.',
+    buildings=roster), indent=1) + chr(10), encoding='utf-8', newline=chr(10))
 assert u.EditorLoadingAndSavingUtils.save_map(world, ZONE), 'Could not save the zone map'
 u.log(f'SILVERBROOK_BUILT Map={ZONE} Datum={DATUM} Bridges={len(bridges)} Fill={fill_report} Terrain={terrain_stats} Foundations={foundation} Dressing={dressing} Counts={counts}')
