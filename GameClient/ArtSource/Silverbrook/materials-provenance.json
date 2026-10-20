@@ -34,6 +34,40 @@
     ]
   },
   {
+    "asset": "brown_leather",
+    "page": "https://polyhaven.com/a/brown_leather",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_size_metres": [
+      0.4000000059604645,
+      0.40000003576278687
+    ],
+    "files": [
+      {
+        "file": "Textures/brown_leather_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/brown_leather/brown_leather_albedo_2k.jpg",
+        "md5": "1bd381c43817743a2affdd1ce2d193c7"
+      },
+      {
+        "file": "Textures/brown_leather_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/brown_leather/brown_leather_nor_gl_2k.jpg",
+        "md5": "6e86bbaf5e995c4154b76a1e4b0f4f1c"
+      },
+      {
+        "file": "Textures/brown_leather_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/brown_leather/brown_leather_rough_2k.jpg",
+        "md5": "95b48a5c95b02d87dadee46c26f1cfb5"
+      },
+      {
+        "file": "Textures/brown_leather_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/brown_leather/brown_leather_disp_2k.jpg",
+        "md5": "b385c7ec27f2cc9e9b1df077e41dbb01"
+      }
+    ]
+  },
+  {
     "asset": "cotton_jersey",
     "page": "https://polyhaven.com/a/cotton_jersey",
     "license": "CC0-1.0",
@@ -65,6 +99,41 @@
         "file": "Textures/cotton_jersey_Displacement.jpg",
         "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/cotton_jersey/cotton_jersey_disp_2k.jpg",
         "md5": "acd2cd8f9e619f4c6c8027c3affae75f"
+      }
+    ]
+  },
+  {
+    "asset": "curly_teddy_natural",
+    "page": "https://polyhaven.com/a/curly_teddy_natural",
+    "license": "CC0-1.0",
+    "authors": {
+      "colormass": "Photography",
+      "Rico Cilliers": "Processing"
+    },
+    "physical_size_metres": [
+      0.335804452696631,
+      0.33090004324913025
+    ],
+    "files": [
+      {
+        "file": "Textures/curly_teddy_natural_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/curly_teddy_natural/curly_teddy_natural_diff_2k.jpg",
+        "md5": "e773ba1903e343cdd9d95db0de063d4a"
+      },
+      {
+        "file": "Textures/curly_teddy_natural_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/curly_teddy_natural/curly_teddy_natural_nor_gl_2k.jpg",
+        "md5": "180a2c7e6b0253474657e735ca66a532"
+      },
+      {
+        "file": "Textures/curly_teddy_natural_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/curly_teddy_natural/curly_teddy_natural_rough_2k.jpg",
+        "md5": "2b7ca2ac8c003d66ceb89a66cfd4ec17"
+      },
+      {
+        "file": "Textures/curly_teddy_natural_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/curly_teddy_natural/curly_teddy_natural_disp_2k.jpg",
+        "md5": "29b2c83aeb3f431a7eabfc068a556831"
       }
     ]
   },
@@ -238,6 +307,42 @@
         "file": "Textures/hessian_380_Displacement.jpg",
         "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/hessian_380/hessian_380_disp_2k.jpg",
         "md5": "79eb064b7df3051c00367955c5596036"
+      }
+    ]
+  },
+  {
+    "asset": "japanese_stone_wall",
+    "page": "https://polyhaven.com/a/japanese_stone_wall",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rico Cilliers": "Tiling",
+      "Charlotte Baglioni": "Photography",
+      "Dario Barresi": "Processing"
+    },
+    "physical_size_metres": [
+      1.8999998569488525,
+      1.8999998569488525
+    ],
+    "files": [
+      {
+        "file": "Textures/japanese_stone_wall_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/japanese_stone_wall/japanese_stone_wall_diff_2k.jpg",
+        "md5": "2f5ec4c7871a1c629b8b55026c0aa9bf"
+      },
+      {
+        "file": "Textures/japanese_stone_wall_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/japanese_stone_wall/japanese_stone_wall_nor_gl_2k.jpg",
+        "md5": "4c153f8fbcbf5d9d3fa84a83c05d5c7b"
+      },
+      {
+        "file": "Textures/japanese_stone_wall_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/japanese_stone_wall/japanese_stone_wall_rough_2k.jpg",
+        "md5": "6c286d2f41b5e48a9479703a0030b2e6"
+      },
+      {
+        "file": "Textures/japanese_stone_wall_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/japanese_stone_wall/japanese_stone_wall_disp_2k.jpg",
+        "md5": "0bd7532a29118dfa120cf2afce640a7e"
       }
     ]
   },
@@ -1361,6 +1466,40 @@
     ]
   },
   {
+    "asset": "seaworn_stone_tiles",
+    "page": "https://polyhaven.com/a/seaworn_stone_tiles",
+    "license": "CC0-1.0",
+    "authors": {
+      "Dimitrios Savva": "All"
+    },
+    "physical_size_metres": [
+      2.0,
+      2.0
+    ],
+    "files": [
+      {
+        "file": "Textures/seaworn_stone_tiles_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/seaworn_stone_tiles/seaworn_stone_tiles_diff_2k.jpg",
+        "md5": "385f603afa4638393ff5a676ffbfe696"
+      },
+      {
+        "file": "Textures/seaworn_stone_tiles_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/seaworn_stone_tiles/seaworn_stone_tiles_nor_gl_2k.jpg",
+        "md5": "95233ce77462ecb92429696073074dbf"
+      },
+      {
+        "file": "Textures/seaworn_stone_tiles_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/seaworn_stone_tiles/seaworn_stone_tiles_rough_2k.jpg",
+        "md5": "563a06f1e9e04a5dbba923ebaf9734b1"
+      },
+      {
+        "file": "Textures/seaworn_stone_tiles_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/seaworn_stone_tiles/seaworn_stone_tiles_disp_2k.jpg",
+        "md5": "7d1276342725144f6634eed5f0a06dea"
+      }
+    ]
+  },
+  {
     "asset": "stone_brick_wall_001",
     "page": "https://polyhaven.com/a/stone_brick_wall_001",
     "license": "CC0-1.0",
@@ -1531,6 +1670,40 @@
         "file": "Textures/weathered_brown_planks_Displacement.jpg",
         "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/weathered_brown_planks/weathered_brown_planks_disp_2k.jpg",
         "md5": "18c5f810bb461bf82ed1f54b135a91c1"
+      }
+    ]
+  },
+  {
+    "asset": "white_sandstone_blocks_02",
+    "page": "https://polyhaven.com/a/white_sandstone_blocks_02",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_size_metres": [
+      2.0,
+      2.0
+    ],
+    "files": [
+      {
+        "file": "Textures/white_sandstone_blocks_02_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/white_sandstone_blocks_02/white_sandstone_blocks_02_diff_2k.jpg",
+        "md5": "141a8964984195586d2d6fac4ee34fef"
+      },
+      {
+        "file": "Textures/white_sandstone_blocks_02_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/white_sandstone_blocks_02/white_sandstone_blocks_02_nor_gl_2k.jpg",
+        "md5": "aa73e395015c04dfe452405b8be5d337"
+      },
+      {
+        "file": "Textures/white_sandstone_blocks_02_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/white_sandstone_blocks_02/white_sandstone_blocks_02_rough_2k.jpg",
+        "md5": "8ab4fe8a2e489ea63f835a0d6bc5ecdf"
+      },
+      {
+        "file": "Textures/white_sandstone_blocks_02_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/white_sandstone_blocks_02/white_sandstone_blocks_02_disp_2k.jpg",
+        "md5": "902f2c3a9f18458821890a64a6fd63b2"
       }
     ]
   },

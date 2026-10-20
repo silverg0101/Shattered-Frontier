@@ -17,7 +17,7 @@
     "SM_SBStables_Masonry": {
       "triangles": 2192,
       "materials": [
-        "SB_Ashlar"
+        "SB_Stables_Stone"
       ]
     },
     "SM_SBStables_Plaster": {
@@ -62,18 +62,20 @@
         0.28
       ],
       "lichen": "lichen_rock",
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
-      "name": "SB_Ashlar",
-      "scan": "stone_wall_04",
+      "name": "SB_Stables_Stone",
+      "scan": "white_sandstone_blocks_02",
       "dark": [
-        0.42,
-        0.36,
-        0.28
+        0.25,
+        0.22,
+        0.18
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_LimePlaster",
@@ -84,7 +86,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_OakTimber",
@@ -95,7 +98,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_DoorBoards",
@@ -106,7 +110,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_ForgedIron",

@@ -18,7 +18,7 @@ REF=HERE.parents[3]/'docs/Game-Design/concept-art/Silverbrook/Watchtower.png'
 asset=bpy.data.collections.new('SilverbrookWatchtower');scene.collection.children.link(asset)
 
 M=dict(
-    stone=kit.scan('SB_Watchtower_Stone','rough_block_wall',dark=(.36,.36,.30)),
+    stone=kit.scan('SB_Watchtower_Stone','seaworn_stone_tiles',dark=(.40,.41,.43)),
     shingle=kit.scan('SB_Watchtower_Shingle','wood_planks_grey',dark=(.32,.30,.28),damp=False,aged=.25),
     timber=kit.scan('SB_OakTimber','weathered_brown_planks',dark=(.32,.30,.28),aged=.6),
     door=kit.scan('SB_DoorBoards','old_planks_02',aged=.15),
@@ -28,7 +28,7 @@ M=dict(
     flame=kit.solid('SB_Watchtower_Flame',(.40,.10,.02),.4,0,(1.0,.20,.02),1.6),
     gilt=kit.solid('SB_Watchtower_Gilt',(.80,.55,.18),.35,1.0))
 M['ashlar']=M['stone']
-STONES=kit.patches('rough_block_wall',(.05,.035),dark=.65,frac=.02,std=.3)
+STONES=kit.patches('seaworn_stone_tiles',(.05,.035),dark=.65,frac=.02,std=.3)
 SHINGLES=kit.patches('wood_planks_grey',(.06,.12),dark=.55,frac=.02,std=.3)
 BANDS=kit.bands('weathered_brown_planks')
 def band():return kit.rng.choice(BANDS)

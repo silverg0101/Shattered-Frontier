@@ -22,7 +22,7 @@ asset=bpy.data.collections.new('SilverbrookGranary');scene.collection.children.l
 M=dict(
     slate=kit.scan('SB_Slate','grey_roof_tiles_02',dark=(.20,.22,.28),lichen='lichen_rock',damp=False),
     stone=kit.scan('SB_Ashlar','stone_wall_04'),
-    rubble=kit.scan('SB_Granary_Rubble','rock_wall_08',dark=(.40,.40,.42)),
+    rubble=kit.scan('SB_Granary_Rubble','japanese_stone_wall',dark=(.30,.33,.40),aged=.8),
     plaster=kit.scan('SB_LimePlaster','patterned_clay_plaster'),
     timber=kit.scan('SB_OakTimber','weathered_brown_planks',dark=(.32,.30,.28),aged=.6),
     door=kit.scan('SB_DoorBoards','old_planks_02',aged=.15),

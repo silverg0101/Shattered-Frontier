@@ -20,7 +20,7 @@ asset=bpy.data.collections.new('SilverbrookStables');scene.collection.children.l
 
 M=dict(
     slate=kit.scan('SB_Slate','grey_roof_tiles_02',dark=(.20,.22,.28),lichen='lichen_rock',damp=False),
-    stone=kit.scan('SB_Ashlar','stone_wall_04'),
+    stone=kit.scan('SB_Stables_Stone','white_sandstone_blocks_02',dark=(.25,.22,.18),aged=.7),
     plaster=kit.scan('SB_LimePlaster','patterned_clay_plaster'),
     timber=kit.scan('SB_OakTimber','weathered_brown_planks',dark=(.32,.30,.28),aged=.6),
     door=kit.scan('SB_DoorBoards','old_planks_02',aged=.15),
@@ -31,7 +31,7 @@ M=dict(
     pot=kit.solid('SB_ChimneyPot',(.20,.085,.05),.75))
 M['ashlar']=M['stone'];M['planks']=M['timber']
 SLATES=kit.patches('grey_roof_tiles_02',(.07,.045))
-STONES=kit.patches('stone_wall_04',(.05,.035),dark=.7,frac=.01,std=.22,bright=1.05)
+STONES=kit.patches('white_sandstone_blocks_02',(.05,.035),dark=.7,frac=.01,std=.22,bright=1.05)
 BANDS=kit.bands('weathered_brown_planks')
 def band():return kit.rng.choice(BANDS)
 

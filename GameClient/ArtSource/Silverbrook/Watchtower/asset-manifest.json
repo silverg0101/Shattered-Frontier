@@ -50,14 +50,15 @@
   "materials": [
     {
       "name": "SB_Watchtower_Stone",
-      "scan": "rough_block_wall",
+      "scan": "seaworn_stone_tiles",
       "dark": [
-        0.36,
-        0.36,
-        0.3
+        0.4,
+        0.41,
+        0.43
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_Watchtower_Shingle",
@@ -68,7 +69,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_OakTimber",
@@ -79,7 +81,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_DoorBoards",
@@ -90,7 +93,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_Watchtower_Banner",
@@ -101,7 +105,8 @@
         0.3
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_ForgedIron",

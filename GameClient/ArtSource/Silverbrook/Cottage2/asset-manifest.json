@@ -58,18 +58,20 @@
         0.28
       ],
       "lichen": "lichen_rock",
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_Cottage2_Rubble",
-      "scan": "rustic_stone_wall",
+      "scan": "stone_wall",
       "dark": [
         0.42,
         0.36,
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_OakTimber",
@@ -80,7 +82,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_DoorBoards",
@@ -91,7 +94,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_Cottage2_Shutter",
@@ -102,7 +106,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_ForgedIron",

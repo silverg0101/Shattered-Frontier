@@ -46,6 +46,7 @@ def rect():return kit.rng.choice(STONES)
 w0=lambda:(kit.rng.uniform(.05,.3),0)
 G=dict(stone=Geo('SM_SBGatehouse_Masonry',asset),dressed=Geo('SM_SBGatehouse_Dressed',asset),walk=Geo('SM_SBGatehouse_Walk',asset),
        roof=Geo('SM_SBGatehouse_Roof',asset),timber=Geo('SM_SBGatehouse_Timber',asset),plaster=Geo('SM_SBGatehouse_Plaster',asset),detail=Geo('SM_SBGatehouse_Details',asset))
+G.update(gateL=Geo('SM_SBGatehouse_GateL',asset),gateR=Geo('SM_SBGatehouse_GateR',asset),port=Geo('SM_SBGatehouse_Portcullis',asset))  # moving parts
 
 # ---- measured layout (metres) -------------------------------------------------
 TW,TD,TH=LAYOUT['tower']; GAP=LAYOUT['gate_gap']
@@ -158,24 +159,25 @@ stag((0,-BY-.26,6.0),(1,0,0),(0,0,1),(0,-1,0),.7,M['stone'])
 # ---- open gates and raised portcullis (static) -----------------------------------------
 HY,LW,LH,LT=-1.2,2.45,2.95,.12            # hinge line, leaf width/height/thickness
 for s in (-1,1):
+    GL=G['gateL' if s<0 else 'gateR']    # each leaf is its own mesh: it swings on its pintles
     xo=s*(AW/2-.02);xi=xo-s*LT;xc=(xo+xi)/2;nb=10;bw=LW/nb    # leaf swung back flat against the passage wall
-    for i in range(nb):G['detail'].box((xc,HY+(i+.5)*bw,LH/2),(LT,bw-.008,LH),M['door'],.006)
-    G['detail'].box((xc,HY+LW/2,LH/2),(LT-.04,LW-.03,LH-.02),M['door'],0)
+    for i in range(nb):GL.box((xc,HY+(i+.5)*bw,LH/2),(LT,bw-.008,LH),M['door'],.006)
+    GL.box((xc,HY+LW/2,LH/2),(LT-.04,LW-.03,LH-.02),M['door'],0)
     xf=xi-s*.025                                                # ledges, brace and iron on the passage face
     for z in (.45,1.5,2.55):
-        G['detail'].box((xf,HY+LW/2,z),(.05,LW-.1,.18),M['door'],.006,grain=True)
-        G['detail'].box((xf-s*.031,HY+LW/2,z),(.012,LW-.06,.07),M['iron'],.003)
-        for y in (HY+.15,HY+LW-.15):G['detail'].box((xf-s*.04,y,z),(.01,.05,.05),M['iron'],.003)
-    for z0,z1 in ((.55,1.4),(1.6,2.45)):G['detail'].beam((xf,HY+.15,z0),(xf,HY+LW-.15,z1),.05,.14,M['door'])
+        GL.box((xf,HY+LW/2,z),(.05,LW-.1,.18),M['door'],.006,grain=True)
+        GL.box((xf-s*.031,HY+LW/2,z),(.012,LW-.06,.07),M['iron'],.003)
+        for y in (HY+.15,HY+LW-.15):GL.box((xf-s*.04,y,z),(.01,.05,.05),M['iron'],.003)
+    for z0,z1 in ((.55,1.4),(1.6,2.45)):GL.beam((xf,HY+.15,z0),(xf,HY+LW-.15,z1),.05,.14,M['door'])
     for z in (.45,2.55):G['detail'].box((s*(AW/2-.04),HY-.04,z),(.09,.1,.14),M['iron'],.004)   # pintles into the wall
     r0=Vector((xf-s*.06,HY+LW-.45,1.2))
-    for k in range(10):t=math.tau*k/10;G['detail'].box(r0+Vector((0,.07*math.cos(t),.07*math.sin(t))),(.014,.014,.045),M['iron'],0,Matrix.Rotation(t,3,'X'))
-    G['detail'].box(r0+Vector((s*.01,0,.08)),(.02,.08,.08),M['iron'],.004)
+    for k in range(10):t=math.tau*k/10;GL.box(r0+Vector((0,.07*math.cos(t),.07*math.sin(t))),(.014,.014,.045),M['iron'],0,Matrix.Rotation(t,3,'X'))
+    GL.box(r0+Vector((s*.01,0,.08)),(.02,.08,.08),M['iron'],.004)
 PY,PZ=-2.2,4.25                            # portcullis groove, raised bottom rail (spike tips 4.0 m)
 for k in range(11):
-    x=-2.25+k*.45;G['detail'].box((x,PY,(PZ+6.2)/2),(.1,.1,6.2-PZ),M['iron'],.006)
-    G['detail'].prism([(x-.06,PY,PZ),(x+.06,PY,PZ),(x,PY,PZ-.25)],(0,1,0),.08,M['iron'])
-for z in (4.4,4.85,5.3,5.75):G['detail'].box((0,PY+.09,z),(5.3,.08,.1),M['iron'],.006)
+    x=-2.25+k*.45;G['port'].box((x,PY,(PZ+6.2)/2),(.1,.1,6.2-PZ),M['iron'],.006)
+    G['port'].prism([(x-.06,PY,PZ),(x+.06,PY,PZ),(x,PY,PZ-.25)],(0,1,0),.08,M['iron'])
+for z in (4.4,4.85,5.3,5.75):G['port'].box((0,PY+.09,z),(5.3,.08,.1),M['iron'],.006)
 for s in (-1,1):lantern(G,M,(s*3.45,-BY-.42,3.75),arm=((s*3.45,-BY-.03,3.75),(0,-1,0)))
 # ---- towers --------------------------------------------------------------------------
 def lichen(p):return kit.rng.uniform(.5,1) if kit.rng.random()<.35+.3*max(0,1-(p.z-EAVE)/2) else 0
@@ -292,6 +294,12 @@ OUT=HERE/'SilverbrookGatehouse'
 for o in bpy.data.objects:o.select_set(o in objs)
 bpy.context.view_layer.objects.active=objs[0]
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')
+# Gate leaves swing on their pintles (closing: 90 deg toward the passage centre); the portcullis drops 4 m to the ground.
+ob={o.name:o for o in objs};HX=AW/2-.02
+PARTS=kit.export_parts([(ob['SM_SBGatehouse_GateL'],'GateL',(-HX,HY,0),(0,0,1),'swing',-90),(ob['SM_SBGatehouse_GateR'],'GateR',(HX,HY,0),(0,0,1),'swing',90),
+    (ob['SM_SBGatehouse_Portcullis'],'Portcullis',(0,PY,PZ-.25),(0,0,-1),'slide',round(PZ-.25,3))],str(OUT),'SM_SilverbrookGatehouse')
+for o in bpy.data.objects:o.select_set(o in objs and o.name not in ('SM_SBGatehouse_GateL','SM_SBGatehouse_GateR','SM_SBGatehouse_Portcullis'))
+bpy.context.view_layer.objects.active=objs[0]
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
 pre=bpy.data.collections.new('Preview');scene.collection.children.link(pre)
 # Preview only: the neighbouring WallSection segments butted against both towers.
@@ -317,7 +325,7 @@ manifest=dict(asset='SilverbrookGatehouse',asset_id='BLD-GreenlandsGatehouse-01'
     blender=bpy.app.version_string,generator='build_gatehouse.py',method='procedural original geometry (concept interpretation, not image reconstruction)',
     units='metres, Z up, front -Y, origin ground centre',bounds_m=[round(h-l,3) for l,h in zip(lo,hi)],
     meshes={o.name:dict(triangles=sum(len(p.vertices)-2 for p in o.data.polygons),materials=[m.name for m in o.data.materials]) for o in objs},triangles=tris,
-    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookGatehouse',slot_m=list(SLOT),
+    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookGatehouse',parts=PARTS,slot_m=list(SLOT),
     slot_source='Greenlands/silverbrook-town-layout.json wall.gate_gap (10) + 2 x wall.tower (8 x 8 x 12)',
     wall_joint=dict(wall_end_faces_x=[-XO,XO],walk_top_z=WALK_Z,walk_y=list(WALK_Y),walk_door='closed, sill at walk_top_z, y %.2f..%.2f'%(sum(WALK_Y)/2-.5,sum(WALK_Y)/2+.5),masonry_uv_repeat_m=round(20/6,4)),
     passage=dict(clear_width_m=2*CLEAR,clear_height_m=3.9,arch_width_m=AW,arch_crown_m=AS+AW/2,portcullis_tips_m=PZ-.25,gates='open, swung back against the passage walls'),

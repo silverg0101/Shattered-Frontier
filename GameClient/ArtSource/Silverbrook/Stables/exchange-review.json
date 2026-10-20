@@ -8,7 +8,6 @@
       6.97
     ],
     "materials": [
-      "SB_Ashlar",
       "SB_ChimneyPot",
       "SB_DoorBoards",
       "SB_ForgedIron",
@@ -17,7 +16,8 @@
       "SB_LimePlaster",
       "SB_LitGlass",
       "SB_OakTimber",
-      "SB_Slate"
+      "SB_Slate",
+      "SB_Stables_Stone"
     ],
     "colour_attributes": [
       "Weathering"
@@ -34,7 +34,6 @@
       6.97
     ],
     "materials": [
-      "SB_Ashlar",
       "SB_ChimneyPot",
       "SB_DoorBoards",
       "SB_ForgedIron",
@@ -43,7 +42,8 @@
       "SB_LimePlaster",
       "SB_LitGlass",
       "SB_OakTimber",
-      "SB_Slate"
+      "SB_Slate",
+      "SB_Stables_Stone"
     ],
     "colour_attributes": [
       "Color",
@@ -61,7 +61,6 @@
       6.97
     ],
     "materials": [
-      "SB_Ashlar",
       "SB_ChimneyPot",
       "SB_DoorBoards",
       "SB_ForgedIron",
@@ -70,12 +69,13 @@
       "SB_LimePlaster",
       "SB_LitGlass",
       "SB_OakTimber",
-      "SB_Slate"
+      "SB_Slate",
+      "SB_Stables_Stone"
     ],
     "colour_attributes": [
       "Weathering"
     ],
     "images_missing": [],
-    "images": 10
+    "images": 5
   }
 }

@@ -24,7 +24,7 @@ All surfaces use CC0 Poly Haven scans at their measured physical size. Sources a
 
 | Surface | Material | Scan |
 |---|---|---|
-| Walls, gables, stack, steps, door surround | `SB_Cottage2_Rubble` | `rustic_stone_wall` (new); the quoins, voussoirs and stack caps sample single stones |
+| Walls, gables, stack, steps, door surround | `SB_Cottage2_Rubble` | `stone_wall` (pale rounded fieldstone with light mortar, as Cottage 5); the quoins, voussoirs and stack caps sample single stones |
 | Slates, hood, ridge caps | `SB_Slate` | `grey_roof_tiles_02` plus ochre `lichen_rock`, as in Cottage 1 |
 | Timber framing, bargeboards, dormer, window boxes, roof boarding | `SB_OakTimber` | `weathered_brown_planks` |
 | Door | `SB_DoorBoards` | `old_planks_02` |
@@ -36,6 +36,6 @@ Iron (including the diamond insets), lead came, lit glass, lantern glow, soil an
 
 - **Unreal:** not imported yet. `../import_silverbrook.py` would bring it in as `SM_SilverbrookCottage2`. There is no interior, and the door is closed.
 - **Overlapping geometry:** individual slates overlap where the range roof, dormer and stack meet the wing roof. Hidden slates are culled one by one, but the meshes are not watertight.
-- **Stone tone:** the scan is warmer, more ochre, than the concept's pale cream rubble.
+- **Stone tone:** the walls sample mean RGB (142, 127, 109) against the concept stone (133, 112, 89): slightly greyer and lighter than the concept, and the scanned stones are smaller than its cushion stones.
 - **Shader round-trip and GLB textures:** the same as Cottage 1. The exports carry UVs, `UVMap`/`WorldUV`, the material slots and `Weathering`. The GLB has no images; the FBX references `../Textures` relatively, and the review asserts that those references resolve.
 - **Not modelled:** the concept's set dressing (ivy, flowers in the window boxes, potted plants, shrubs, fence, barrel) belongs to settlement dressing.

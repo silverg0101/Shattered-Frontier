@@ -291,13 +291,18 @@ G['detail'].box((X0-.28,-2.45,4.88),(.16,.16,.14),M['iron'],.006)
 # ---- export, preview scene, manifest ---------------------------------------------
 objs=[g.object() for g in G.values()]
 lo=[min((o.matrix_world@Vector(c))[k] for o in objs for c in o.bound_box) for k in range(3)];hi=[max((o.matrix_world@Vector(c))[k] for o in objs for c in o.bound_box) for k in range(3)]
-for o in objs:o.data.transform(Matrix.Translation((-(lo[0]+hi[0])/2,-(lo[1]+hi[1])/2,0)))
+OFF=Vector((-(lo[0]+hi[0])/2,-(lo[1]+hi[1])/2,0))
+for o in objs:o.data.transform(Matrix.Translation(OFF))
 assert abs(lo[2])<1e-3,f'model must stand on z=0, min z {lo[2]}'
 assert all(h-l<=s+1e-3 for l,h,s in zip(lo,hi,SLOT)),f'exceeds slot {SLOT}: {[round(h-l,3) for l,h in zip(lo,hi)]}'
 OUT=HERE/'SilverbrookMill'
+wheel=next(o for o in objs if o.name=='SM_SBMill_Wheel')
+# The wheel turns about its axle (X): its own mesh with the origin on the axle; the main FBX leaves it out.
+PARTS=kit.export_parts([(wheel,'Wheel',Vector((WX,0,AZ))+OFF,(1,0,0),'rotate',None)],str(OUT),'SM_SilverbrookMill')
 for o in bpy.data.objects:o.select_set(o in objs)
 bpy.context.view_layer.objects.active=objs[0]
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')
+wheel.select_set(False)
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
 pre=bpy.data.collections.new('Preview');scene.collection.children.link(pre)
 ground=bpy.data.meshes.new('Ground');ground.from_pydata([(-30,-30,0),(30,-30,0),(30,30,0),(-30,30,0)],[],[(0,1,2,3)]);g=bpy.data.objects.new('Ground',ground);pre.objects.link(g);g.data.materials.append(kit.solid('Preview_Ground',(.11,.12,.07),.95))
@@ -318,6 +323,6 @@ manifest=dict(asset='SilverbrookMill',reference=dict(file='Mill-reference.png',s
     blender=bpy.app.version_string,generator='build_mill.py',method='procedural original geometry (concept interpretation, not image reconstruction)',
     units='metres, Z up, front -Y, origin ground centre',bounds_m=[round(v,3) for v in maxs-mins],
     meshes={o.name:dict(triangles=sum(len(p.vertices)-2 for p in o.data.polygons),materials=[m.name for m in o.data.materials]) for o in objs},triangles=tris,
-    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookMill',slot_m=list(SLOT),outputs=['SilverbrookMill.blend','SilverbrookMill.glb','SilverbrookMill.fbx'])
+    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookMill',parts=PARTS,slot_m=list(SLOT),outputs=['SilverbrookMill.blend','SilverbrookMill.glb','SilverbrookMill.fbx'])
 (HERE/'asset-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print('MILL_BUILT',manifest['bounds_m'],tris)

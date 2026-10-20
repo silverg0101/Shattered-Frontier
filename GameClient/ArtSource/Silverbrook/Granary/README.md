@@ -25,7 +25,7 @@ All surfaces use CC0 Poly Haven scans at their measured physical size. Sources a
 | Surface | Material | Scan |
 |---|---|---|
 | Slates and ridge caps | `SB_Slate` | `grey_roof_tiles_02`, one slate interior per modelled slate; lichen from `lichen_rock` |
-| Undercroft rubble walls | `SB_Granary_Rubble` | `rock_wall_08` (dark grey irregular rubble) |
+| Undercroft rubble walls | `SB_Granary_Rubble` | `japanese_stone_wall` (squared grey blocks, tight joints, like the concept's coursed rubble), darkened toward blue-grey by a baseline `Weathering` R of 0.8 with tint (0.30, 0.33, 0.40), so Unreal's M_SB_Scan applies the same darkening. Lit front rubble renders about RGB (90, 87, 85) against the concept's (87, 76, 65), which sits under a sepia paper cast |
 | Quoins, piers, door surround | `SB_Ashlar` | `stone_wall_04`, single pale stones |
 | Loft and gable panels | `SB_LimePlaster` | `patterned_clay_plaster` |
 | Framing, louvres, dormers, stair strings | `SB_OakTimber` | `weathered_brown_planks`, each beam confined to one plank's grain band |

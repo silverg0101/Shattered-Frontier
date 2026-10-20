@@ -5,18 +5,19 @@
     7.63,
     6.97
   ],
+  "slots": 10,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 29735,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 256
+  },
   "slot_m": [
     12,
     8,
     7
   ],
-  "fits": true,
-  "slots": 10,
-  "nanite": true,
-  "convex_hulls": 12,
-  "nanite_fallback_triangles": 29720,
-  "lightmap": {
-    "uv": 2,
-    "resolution": 256
-  }
+  "fits": true
 }

@@ -54,16 +54,36 @@
       ]
     },
     "SM_SBGatehouse_Details": {
-      "triangles": 6096,
+      "triangles": 3924,
       "materials": [
         "SB_WallSection_Masonry",
-        "SB_DoorBoards",
         "SB_ForgedIron",
         "SB_LanternGlow",
+        "SB_DoorBoards",
         "SB_LitGlass",
         "SB_LeadCame",
         "SB_Gatehouse_Banner",
         "SB_Gatehouse_Gilt"
+      ]
+    },
+    "SM_SBGatehouse_GateL": {
+      "triangles": 832,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBGatehouse_GateR": {
+      "triangles": 832,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBGatehouse_Portcullis": {
+      "triangles": 508,
+      "materials": [
+        "SB_ForgedIron"
       ]
     }
   },
@@ -78,7 +98,8 @@
         0.86
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_WallSection_Paving",
@@ -89,7 +110,8 @@
         0.62
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_WallSection_LoopVoid",
@@ -112,7 +134,8 @@
         0.28
       ],
       "lichen": "lichen_rock",
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_LimePlaster",
@@ -123,7 +146,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_OakTimber",
@@ -134,7 +158,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_DoorBoards",
@@ -145,7 +170,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_ForgedIron",
@@ -212,7 +238,8 @@
         0.3
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_Gatehouse_Gilt",
@@ -229,6 +256,59 @@
   ],
   "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
   "unreal_mesh": "SM_SilverbrookGatehouse",
+  "parts": [
+    {
+      "name": "GateL",
+      "fbx": "SilverbrookGatehouse_GateL.fbx",
+      "unreal_mesh": "SM_SilverbrookGatehouse_GateL",
+      "pivot_m": [
+        -2.48,
+        -1.2,
+        0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": -90
+    },
+    {
+      "name": "GateR",
+      "fbx": "SilverbrookGatehouse_GateR.fbx",
+      "unreal_mesh": "SM_SilverbrookGatehouse_GateR",
+      "pivot_m": [
+        2.48,
+        -1.2,
+        0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90
+    },
+    {
+      "name": "Portcullis",
+      "fbx": "SilverbrookGatehouse_Portcullis.fbx",
+      "unreal_mesh": "SM_SilverbrookGatehouse_Portcullis",
+      "pivot_m": [
+        0,
+        -2.2,
+        4.0
+      ],
+      "axis": [
+        0,
+        0,
+        -1
+      ],
+      "motion": "slide",
+      "travel": 4.0
+    }
+  ],
   "slot_m": [
     26,
     8,

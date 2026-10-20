@@ -20,12 +20,12 @@ The builder writes `SilverbrookStables.{blend,fbx,glb}` and `asset-manifest.json
 
 ## Materials
 
-All surfaces use CC0 Poly Haven scans at their measured physical size. Sources and hashes are in `../materials-provenance.json`; the maps are in `../Textures`. `../silverbrook_kit.py` owns the mapping. No new scans were needed, and every material reuses Cottage 1's names and arguments.
+All surfaces use CC0 Poly Haven scans at their measured physical size. Sources and hashes are in `../materials-provenance.json`; the maps are in `../Textures`. `../silverbrook_kit.py` owns the mapping. Every material except the stone reuses Cottage 1's names and arguments. The concept's squared pale-grey stone with pale mortar needed its own `SB_Stables_Stone` (shared `SB_Ashlar` reads darker, with dark joints): `white_sandstone_blocks_02` toned by `Weathering` R with `aged=.7`, `dark=(.25,.22,.18)`, the same rule `M_SB_Scan` applies in Unreal. Sampled stone mean in `Stables-Front.png` is RGB 0.53/0.47/0.40 against the concept's 0.54/0.45/0.37. The uniform `aged` floor hides the damp gradient at the wall foot.
 
 | Surface | Scan | Material |
 |---|---|---|
 | Slates | `grey_roof_tiles_02`, one slate interior per modelled slate, with lichen from `lichen_rock` | `SB_Slate` |
-| Walls, stack, post bases, voussoirs | `stone_wall_04`; voussoirs, bases and the stack cap sample single stones | `SB_Ashlar` |
+| Walls, stack, post bases, voussoirs | `white_sandstone_blocks_02`; voussoirs, bases and the stack cap sample single stones | `SB_Stables_Stone` |
 | Gable infill and cheeks | `patterned_clay_plaster` | `SB_LimePlaster` |
 | Frame, dormers, fascias, finials | `weathered_brown_planks`, each beam confined to one plank's grain band | `SB_OakTimber` |
 | Carriage doors, gates, niche and loft boards | `old_planks_02` | `SB_DoorBoards` |

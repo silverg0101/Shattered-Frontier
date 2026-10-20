@@ -26,17 +26,17 @@ The builder writes `SilverbrookWatchtower.{blend,fbx,glb}` and `asset-manifest.j
 
 | Surface | Material | Scan |
 |---|---|---|
-| Walls, buttresses, parapet, turrets, quoins, slit surrounds, step | `SB_Watchtower_Stone` | `rough_block_wall`; dressed stones sample single blocks |
+| Walls, buttresses, parapet, turrets, quoins, slit surrounds, step | `SB_Watchtower_Stone` | `seaworn_stone_tiles` (coursed squared rough-faced blocks), cool grey `dark` tint; dressed stones sample single blocks |
 | Roof shingles | `SB_Watchtower_Shingle` | `wood_planks_grey`, one plank interior per shingle |
 | Hoarding, lookout, roof boarding, arms | `SB_OakTimber` | `weathered_brown_planks` (Cottage1 args) |
 | Door, deck | `SB_DoorBoards` | `old_planks_02` (Cottage1 args) |
 | Banners, pennant | `SB_Watchtower_Banner` | `denim_fabric_03`, darkened navy |
 
-These are plain parametric materials: `SB_ForgedIron` and `SB_LanternGlow` (Cottage1 args), `SB_Watchtower_Flame` and `SB_Watchtower_Gilt`. No new scans were downloaded. Sources are listed in `../materials-provenance.json`.
+These are plain parametric materials: `SB_ForgedIron` and `SB_LanternGlow` (Cottage1 args), `SB_Watchtower_Flame` and `SB_Watchtower_Gilt`. `seaworn_stone_tiles` was added to the palette with `acquire_materials.py`. Sources are listed in `../materials-provenance.json`.
 
 ## Limits
 
-- **Stone colour:** `rough_block_wall` is the closest coursed rough-block scan, but it reads warmer and tanner than the concept's pale grey stone. No moss or ivy is modelled.
+- **Stone colour:** `seaworn_stone_tiles` replaces the warm, irregular `rough_block_wall`. Its regular courses match the concept's squared stone. Weathering R is left at 0 except the damp band at the foot, so Unreal's `M_SB_Scan` (Diffuse lerped to Diffuse x DarkTint by R) shows the scan as rendered here. Sampled sunlit wall in `Watchtower-Front.png` is about (0.57, 0.52, 0.46) sRGB. The concept's stone is about (0.54, 0.47, 0.41), warmed by the parchment. No moss or ivy is modelled.
 - **Not modelled:** iron plates on the ring beam, the slit in the middle merlon, and the concept's set dressing (rocks, shrubs, ivy).
 - **Flat cloth:** the banners and pennant are flat; there is no cloth sim or wave.
 - **Shader round-trip:** this is the same as Cottage1. The exports carry UVs, `UVMap`/`WorldUV`, material slots and `Weathering` vertex colours, and the GLB is exported without images. The review checks that the FBX texture references resolve.

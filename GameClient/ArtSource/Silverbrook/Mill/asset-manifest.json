@@ -73,7 +73,8 @@
         0.28
       ],
       "lichen": "lichen_rock",
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_LimePlaster",
@@ -84,7 +85,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_OakTimber",
@@ -95,7 +97,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_DoorBoards",
@@ -106,7 +109,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_Mill_Ashlar",
@@ -117,7 +121,8 @@
         0.33
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_Mill_Shutter",
@@ -128,7 +133,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_Mill_Rope",
@@ -139,7 +145,8 @@
         0.22
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_ForgedIron",
@@ -224,6 +231,25 @@
   ],
   "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
   "unreal_mesh": "SM_SilverbrookMill",
+  "parts": [
+    {
+      "name": "Wheel",
+      "fbx": "SilverbrookMill_Wheel.fbx",
+      "unreal_mesh": "SM_SilverbrookMill_Wheel",
+      "pivot_m": [
+        4.65,
+        0.514,
+        1.7
+      ],
+      "axis": [
+        1,
+        0,
+        0
+      ],
+      "motion": "rotate",
+      "travel": null
+    }
+  ],
   "slot_m": [
     12,
     10,

@@ -5,18 +5,52 @@
     6.99,
     8.93
   ],
+  "slots": 13,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 25713,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 256
+  },
   "slot_m": [
     12,
     10,
     9
   ],
   "fits": true,
-  "slots": 13,
-  "nanite": true,
-  "convex_hulls": 12,
-  "nanite_fallback_triangles": 27110,
-  "lightmap": {
-    "uv": 2,
-    "resolution": 256
-  }
+  "parts": [
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookMill_Wheel",
+      "size_m": [
+        3.35,
+        3.23,
+        3.23
+      ],
+      "slots": 2,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 1662,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 64
+      },
+      "name": "Wheel",
+      "motion": "rotate",
+      "pivot_cm": [
+        465.0,
+        -51.4,
+        170.0
+      ],
+      "axis": [
+        1,
+        0,
+        0
+      ],
+      "travel": null,
+      "travel_unit": null
+    }
+  ]
 }
