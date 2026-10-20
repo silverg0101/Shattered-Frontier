@@ -213,10 +213,12 @@ roundel((0,BF,0),(0,-1,0),0,13.95,.42)
 # portal: tympanum glass over a transom, plank leaves, three archivolt orders on jamb shafts
 lancet((0,BF,0),(0,-1,0),0,DW,DS,DS,th=.6,lights=2,sill=False,hood=False)
 S.box(P(0,-.3,DS),(DW,.3,.16),M['stone'],.012,R,rect=stone())
-for s in (-1,1):
-    D.box(P(s*DW/4,-.3,(.75+DS-.08)/2),(DW/2-.01,.1,DS-.08-.75),M['door'],.006,R)
-    for z in (1.3,2.4,3.3):D.box(P(s*DW*.3,-.235,z),(DW*.36,.02,.07),M['iron'],.004,R)
-    D.box(P(s*.22,-.22,2.0),(.05,.03,.18),M['iron'],.004,R)
+for s in (-1,1):                # one mesh per leaf so each opens; hinges on the outer jambs
+    L=Geo(f'SM_SBTownHall_Door{len(kit.DOORS)+1}',asset);G[L.name]=L
+    kit.DOORS.append(dict(geo=L,r=Vector((-s,0,0)),o=Vector((0,-1,0)),width=DW/2))   # r points from the hinge jamb to the meeting line
+    L.box(P(s*DW/4,-.3,(.75+DS-.08)/2),(DW/2-.01,.1,DS-.08-.75),M['door'],.006,R)
+    for z in (1.3,2.4,3.3):L.box(P(s*DW*.3,-.235,z),(DW*.36,.02,.07),M['iron'],.004,R)
+    L.box(P(s*.22,-.22,2.0),(.05,.03,.18),M['iron'],.004,R)
 for k,off in enumerate((.12,.36,.6)):ring(P,R,(0,-1,0),0,DW,DS,off,.22,.04+.07*k,.12,jamb=.75,n=11)
 for i,(hw,fy) in enumerate(((2.7,-8.2),(2.65,-7.8),(2.6,-7.4))):S.box((0,(fy+BF+.6)/2,.125*(i+1)),(2*hw,BF+.6-fy,.25*(i+1)),M['stone'],.012)
 for s in (-1,1):
@@ -286,6 +288,13 @@ OUT=HERE/'SilverbrookTownHall'
 for o in bpy.data.objects:o.select_set(o in objs)
 bpy.context.view_layer.objects.active=objs[0]
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')
+DOORS=kit.split_doors(str(OUT),'SM_SilverbrookTownHall')  # door leaves: own meshes, hinged; deselected for the main FBX
+# Door leaves are their own meshes hinged at the jamb; check each opens inward (+Y, away from the street) above its sill.
+for d,row in zip(kit.DOORS,DOORS):
+    ob_=bpy.data.objects[d['geo'].name];vs=[ob_.matrix_world@v.co for v in ob_.data.vertices]
+    pv=Vector(row['pivot_m']);rot=Matrix.Rotation(math.radians(row['travel']),3,'Z');op=[pv+rot@(v-pv) for v in vs]
+    dy=sum(v.y for v in op)/len(op)-sum(v.y for v in vs)/len(vs);print('DOOR_SWING',row['name'],row['pivot_m'],row['travel'],round(dy,3))
+    assert dy>.3 and min(v.z for v in op)>pv.z-1e-3,f"{row['name']} does not swing inward"
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
 pre=bpy.data.collections.new('Preview');scene.collection.children.link(pre)
 ground=bpy.data.meshes.new('Ground');ground.from_pydata([(-60,-60,0),(60,-60,0),(60,60,0),(-60,60,0)],[],[(0,1,2,3)]);g=bpy.data.objects.new('Ground',ground);pre.objects.link(g);g.data.materials.append(kit.solid('Preview_Ground',(.11,.12,.07),.95))
@@ -306,6 +315,6 @@ manifest=dict(asset='SilverbrookTownHall',reference=dict(file='TownHall-referenc
     blender=bpy.app.version_string,generator='build_townhall.py',method='procedural original geometry (concept interpretation, not image reconstruction)',
     units='metres, Z up, front -Y, origin ground centre',bounds_m=[round(v,3) for v in maxs-mins],
     meshes={o.name:dict(triangles=sum(len(p.vertices)-2 for p in o.data.polygons),materials=[m.name for m in o.data.materials]) for o in objs},triangles=tris,
-    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookTownHall',slot_m=list(SLOT),outputs=['SilverbrookTownHall.blend','SilverbrookTownHall.glb','SilverbrookTownHall.fbx'])
+    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookTownHall',parts=DOORS,slot_m=list(SLOT),outputs=['SilverbrookTownHall.blend','SilverbrookTownHall.glb','SilverbrookTownHall.fbx'])
 (HERE/'asset-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print('TOWNHALL_BUILT',manifest['bounds_m'],tris)

@@ -170,13 +170,15 @@ window(G,M,(XG,-D2-.02,GWZ),(0,-1,0),GWW,GWH,planter=True,band=band())
 def plank_door(c,w,spring):
     """Round-headed ledged plank door in a timber jamb-and-arch surround (the concept has no stone dressing)."""
     P,R=frame(c,(0,-1,0));rad=w/2
-    G['detail'].prism([P(-rad,-.2,0),P(rad,-.2,0)]+[P(rad*math.cos(t),-.2,spring+rad*math.sin(t)) for t in kit.np.linspace(0,math.pi,17)],(0,-1,0),.07,M['door'])
+    # The leaf (boards, straps, ring) is its own mesh so it can open; kit.split_doors hinges it on the left jamb (-R x).
+    D=G['door1']=Geo('SM_SBCottage3_Door1',asset);kit.DOORS.append(dict(geo=D,r=R@Vector((1,0,0)),o=Vector((0,-1,0))))
+    D.prism([P(-rad,-.2,0),P(rad,-.2,0)]+[P(rad*math.cos(t),-.2,spring+rad*math.sin(t)) for t in kit.np.linspace(0,math.pi,17)],(0,-1,0),.07,M['door'])
     for z in (.3,spring-.12):
-        G['detail'].box(P(-rad*.1,-.15,z),(w*.85,.012,.06),M['iron'],.004,R)
-        G['detail'].prism([P(rad*.32,-.144,z-.06),P(rad*.32,-.144,z+.06),P(rad*.5,-.144,z)],(0,-1,0),.012,M['iron'])
+        D.box(P(-rad*.1,-.15,z),(w*.85,.012,.06),M['iron'],.004,R)
+        D.prism([P(rad*.32,-.144,z-.06),P(rad*.32,-.144,z+.06),P(rad*.5,-.144,z)],(0,-1,0),.012,M['iron'])
     for k in range(10):
-        t=math.tau*k/10;G['detail'].box(P(rad*.55+.06*math.cos(t),-.13,.95+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
-    G['detail'].box(P(rad*.55,-.155,1.01),(.07,.01,.07),M['iron'],.004,R)
+        t=math.tau*k/10;D.box(P(rad*.55+.06*math.cos(t),-.13,.95+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
+    D.box(P(rad*.55,-.155,1.01),(.07,.01,.07),M['iron'],.004,R)
     for side in (-1,1):G['timber'].box(P(side*(rad+.06),-.1,spring/2),(.16,.3,spring),M['timber'],.012,R,grain=True,band=band())
     n=5;depth=.16
     for k in range(n):
@@ -213,6 +215,7 @@ for o in bpy.data.objects:o.select_set(o in objs)
 bpy.context.view_layer.objects.active=objs[0]
 # Textures stay in ../Textures (FBX references them relatively); embedding 2k scans makes a 60 MB GLB.
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')
+DOORS=kit.split_doors(str(OUT),'SM_SilverbrookCottage3')  # door leaf: own mesh, hinged, left out of the main FBX
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
 pre=bpy.data.collections.new('Preview');scene.collection.children.link(pre)
 ground=bpy.data.meshes.new('Ground');ground.from_pydata([(-30,-30,0),(30,-30,0),(30,30,0),(-30,30,0)],[],[(0,1,2,3)]);g=bpy.data.objects.new('Ground',ground);pre.objects.link(g);g.data.materials.append(kit.solid('Preview_Ground',(.11,.12,.07),.95))
@@ -233,6 +236,6 @@ manifest=dict(asset='SilverbrookCottage3',reference=dict(file='Cottage3-referenc
     blender=bpy.app.version_string,generator='build_cottage3.py',method='procedural original geometry (concept interpretation, not image reconstruction)',
     units='metres, Z up, front -Y, origin ground centre',bounds_m=[round(v,3) for v in maxs-mins],
     meshes={o.name:dict(triangles=sum(len(p.vertices)-2 for p in o.data.polygons),materials=[m.name for m in o.data.materials]) for o in objs},triangles=tris,
-    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookCottage3',slot_m=list(SLOT),outputs=['SilverbrookCottage3.blend','SilverbrookCottage3.glb','SilverbrookCottage3.fbx'])
+    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookCottage3',parts=DOORS,slot_m=list(SLOT),outputs=['SilverbrookCottage3.blend','SilverbrookCottage3.glb','SilverbrookCottage3.fbx'])
 (HERE/'asset-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print('COTTAGE3_BUILT',manifest['bounds_m'],tris)

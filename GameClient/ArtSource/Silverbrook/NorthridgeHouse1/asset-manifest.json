@@ -35,7 +35,7 @@
       ]
     },
     "SM_SBNorthridgeHouse1_Timber": {
-      "triangles": 4864,
+      "triangles": 4836,
       "materials": [
         "SB_OakTimber"
       ]
@@ -48,21 +48,36 @@
       ]
     },
     "SM_SBNorthridgeHouse1_Details": {
-      "triangles": 23204,
+      "triangles": 22724,
       "materials": [
         "SB_ForgedIron",
         "SB_LitGlass",
         "SB_LeadCame",
         "SB_ChimneyPot",
         "SB_PlanterSoil",
-        "SB_DoorBoards",
         "SB_LanternGlow",
         "SB_NorthridgeHouse1_Banner",
         "SB_NorthridgeHouse1_Gilt"
       ]
+    },
+    "SM_SBNorthridgeHouse1_Door1": {
+      "triangles": 272,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_OakTimber",
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBNorthridgeHouse1_Door2": {
+      "triangles": 272,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_OakTimber",
+        "SB_ForgedIron"
+      ]
     }
   },
-  "triangles": 101544,
+  "triangles": 101580,
   "materials": [
     {
       "name": "SB_Slate",
@@ -73,7 +88,8 @@
         0.28
       ],
       "lichen": "lichen_rock",
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_NorthridgeHouse1_Ashlar",
@@ -84,7 +100,8 @@
         0.33
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_NorthridgeHouse1_Dressed",
@@ -95,7 +112,8 @@
         0.33
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_LimePlaster",
@@ -106,7 +124,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_OakTimber",
@@ -117,7 +136,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_DoorBoards",
@@ -128,7 +148,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_NorthridgeHouse1_Banner",
@@ -139,7 +160,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_ForgedIron",
@@ -236,6 +258,44 @@
   ],
   "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
   "unreal_mesh": "SM_SilverbrookNorthridgeHouse1",
+  "parts": [
+    {
+      "name": "Door1",
+      "fbx": "SilverbrookNorthridgeHouse1_Door1.fbx",
+      "unreal_mesh": "SM_SilverbrookNorthridgeHouse1_Door1",
+      "pivot_m": [
+        -0.6066,
+        -2.42,
+        0.45
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    },
+    {
+      "name": "Door2",
+      "fbx": "SilverbrookNorthridgeHouse1_Door2.fbx",
+      "unreal_mesh": "SM_SilverbrookNorthridgeHouse1_Door2",
+      "pivot_m": [
+        0.5334,
+        -2.42,
+        0.45
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": -90,
+      "modelled": "closed"
+    }
+  ],
   "slot_m": [
     12,
     10,

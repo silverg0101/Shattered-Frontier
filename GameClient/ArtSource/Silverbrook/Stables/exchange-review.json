@@ -1,6 +1,6 @@
 {
   "source": {
-    "meshes": 5,
+    "meshes": 7,
     "triangles": 78742,
     "size_m": [
       10.956,
@@ -26,7 +26,7 @@
     "images": 16
   },
   "glb": {
-    "meshes": 5,
+    "meshes": 7,
     "triangles": 78742,
     "size_m": [
       10.956,
@@ -54,7 +54,7 @@
   },
   "fbx": {
     "meshes": 5,
-    "triangles": 78742,
+    "triangles": 78182,
     "size_m": [
       10.956,
       7.628,

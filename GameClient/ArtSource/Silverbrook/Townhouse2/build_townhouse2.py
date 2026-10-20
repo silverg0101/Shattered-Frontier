@@ -137,11 +137,13 @@ def pointed_door(c,o,w,spring,wall_th=.3,depth=.22):
     P,R=frame(c,o);r=w/2;o_=Vector(o).normalized();apex=spring+w*math.sqrt(3)/2
     def arc(side,n):return [(-side*r+side*w*math.cos(t),spring+w*math.sin(t)) for t in np.linspace(0,math.pi/3,n)]
     right,left=arc(1,9),arc(-1,9)
-    G['detail'].prism([P(a,-.2,z) for a,z in [(-r,0),(r,0)]+right+left[::-1][1:]],o,.07,M['door'])
-    for z in (.35,spring-.05):G['detail'].box(P(-r*.15,-.16,z),(w*.8,.012,.05),M['iron'],.004,R)
-    G['detail'].box(P(r*.55,-.16,1.0),(.07,.012,.07),M['iron'],.004,R)
+    L=Geo(f'SM_SBTownhouse2_Door{len(kit.DOORS)+1}',asset);G[L.name]=L   # the leaf opens: hinge on the left jamb seen from outside
+    kit.DOORS.append(dict(geo=L,r=(R@Vector((1,0,0))).normalized(),o=o_,width=w))
+    L.prism([P(a,-.2,z) for a,z in [(-r,0),(r,0)]+right+left[::-1][1:]],o,.07,M['door'])
+    for z in (.35,spring-.05):L.box(P(-r*.15,-.16,z),(w*.8,.012,.05),M['iron'],.004,R)
+    L.box(P(r*.55,-.16,1.0),(.07,.012,.07),M['iron'],.004,R)
     for k in range(10):
-        t=math.tau*k/10;G['detail'].box(P(r*.55+.06*math.cos(t),-.148,.92+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
+        t=math.tau*k/10;L.box(P(r*.55+.06*math.cos(t),-.148,.92+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
     for pts in (right,left):
         for (a0,z0),(a1,z1) in zip(pts,pts[1:]):
             quad=[(a0,z0),(a1,z1)]+([] if apex-z1<.005 else [(a1,apex)])+[(a0,apex)]
@@ -284,6 +286,13 @@ OUT=HERE/'SilverbrookTownhouse2'
 for o in bpy.data.objects:o.select_set(o in objs)
 bpy.context.view_layer.objects.active=objs[0]
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')
+DOORS=kit.split_doors(str(OUT),'SM_SilverbrookTownhouse2')  # door leaves: own meshes, hinged; deselected for the main FBX
+# Door leaves are their own meshes hinged at the jamb; check each opens inward (+Y, away from the street) above its sill.
+for d,row in zip(kit.DOORS,DOORS):
+    ob_=bpy.data.objects[d['geo'].name];vs=[ob_.matrix_world@v.co for v in ob_.data.vertices]
+    pv=Vector(row['pivot_m']);rot=Matrix.Rotation(math.radians(row['travel']),3,'Z');op=[pv+rot@(v-pv) for v in vs]
+    dy=sum(v.y for v in op)/len(op)-sum(v.y for v in vs)/len(vs);print('DOOR_SWING',row['name'],row['pivot_m'],row['travel'],round(dy,3))
+    assert dy>.3 and min(v.z for v in op)>pv.z-1e-3,f"{row['name']} does not swing inward"
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
 pre=bpy.data.collections.new('Preview');scene.collection.children.link(pre)
 ground=bpy.data.meshes.new('Ground');ground.from_pydata([(-30,-30,0),(30,-30,0),(30,30,0),(-30,30,0)],[],[(0,1,2,3)]);g=bpy.data.objects.new('Ground',ground);pre.objects.link(g);g.data.materials.append(kit.solid('Preview_Ground',(.11,.12,.07),.95))
@@ -304,6 +313,6 @@ manifest=dict(asset='SilverbrookTownhouse2',reference=dict(file='Townhouse2-refe
     blender=bpy.app.version_string,generator='build_townhouse2.py',method='procedural original geometry (concept interpretation, not image reconstruction)',
     units='metres, Z up, front -Y, origin ground centre',bounds_m=[round(v,3) for v in maxs-mins],
     meshes={o.name:dict(triangles=sum(len(p.vertices)-2 for p in o.data.polygons),materials=[m.name for m in o.data.materials]) for o in objs},triangles=tris,
-    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookTownhouse2',slot_m=list(SLOT),outputs=['SilverbrookTownhouse2.blend','SilverbrookTownhouse2.glb','SilverbrookTownhouse2.fbx'])
+    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookTownhouse2',parts=DOORS,slot_m=list(SLOT),outputs=['SilverbrookTownhouse2.blend','SilverbrookTownhouse2.glb','SilverbrookTownhouse2.fbx'])
 (HERE/'asset-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print('TOWNHOUSE2_BUILT',manifest['bounds_m'],tris)

@@ -44,6 +44,8 @@ def rect():return kit.rng.choice(DRESSED)
 G=dict(stone=Geo('SM_SBNorthridgeHouse1_Masonry',asset),trim=Geo('SM_SBNorthridgeHouse1_Trim',asset),plaster=Geo('SM_SBNorthridgeHouse1_Plaster',asset),
        timber=Geo('SM_SBNorthridgeHouse1_Timber',asset),roof=Geo('SM_SBNorthridgeHouse1_Roof',asset),detail=Geo('SM_SBNorthridgeHouse1_Details',asset))
 S,T,D=G['stone'],G['trim'],G['detail']
+for k in (1,2):G[f'door{k}']=Geo(f'SM_SBNorthridgeHouse1_Door{k}',asset)   # door leaves: own meshes so they open
+DL=[G['door1'],G['door2']]
 # ---- measured layout (metres; elevation read at ~85 px/m across, ~92 px/m up, roofs and spire compressed to 10 m) ----
 SLOT=(12,10,10)                # town-layout slot w x d x h (concept README 'Fits')
 EAVE,RIDGE=5.65,8.5            # every eave and every ridge
@@ -371,15 +373,17 @@ for k in range(4):                                # quatrefoil roundel in the po
 for off,d,size in ((.09,.06,.13),(.24,.05,.15)):  # two dressed orders round the door
     ring(P,arch_pts(0,DWID,SPR,off),d,size)
     for s in (-1,1):ring(P,[(s*(DWID/2+off),STEP),(s*(DWID/2+off),SPR)],d,size)
-door_pts=[(-DWID/2-.02,STEP),(DWID/2+.02,STEP)]+arch_pts(0,DWID,SPR,.02)
-D.prism([P(x,-PT+.12,z) for x,z in door_pts],(0,-1,0),.08,M['door'])
-G['timber'].box(P(0,-PT+.17,(STEP+SPR+DWID*.866)/2-.02),(.05,.03,SPR+DWID*.866-STEP-.04),M['timber'],.004,R,grain=True,band=band())
+LD=-PT+.045                                       # leaf centre depth: inner face 5 mm short of the wall's inner face, so the pointed head swings clear of the soffit
+half=[(0,STEP),(DWID/2-.005,STEP)]+arch_pts(0,DWID,SPR,-.005)[:9]   # right spring -> apex, 5 mm inside the jamb so it swings clear; mirrored for the left leaf
+for L,s in zip(DL,(-1,1)):L.prism([P(s*x,LD,z) for x,z in half],(0,-1,0),.08,M['door'])
+b=band()                                          # meeting strip: one half on each leaf so either opens alone
+for L,s in zip(DL,(-1,1)):L.box(P(s*.0125,LD+.05,(STEP+SPR+DWID*.866)/2-.02),(.025,.03,SPR+DWID*.866-STEP-.04),M['timber'],.004,R,grain=True,band=b)
 for z in (STEP+.35,SPR-.15):
-    for s in (-1,1):D.box(P(s*.32,-PT+.17,z),(.5,.012,.06),M['iron'],.004,R)
+    for s in (-1,1):DL[s>0].box(P(s*.32,LD+.05,z),(.5,.012,.06),M['iron'],.004,R)
 for s in (-1,1):
     for k in range(10):
-        t=math.tau*k/10;D.box(P(s*.14+.06*math.cos(t),-PT+.18,1.2+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
-    D.box(P(s*.14,-PT+.17,1.26),(.07,.01,.07),M['iron'],.004,R)
+        t=math.tau*k/10;DL[s>0].box(P(s*.14+.06*math.cos(t),LD+.06,1.2+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
+    DL[s>0].box(P(s*.14,LD+.05,1.26),(.07,.01,.07),M['iron'],.004,R)
 for k in range(3):S.box((0,PY-.35*(k+1)/2,(3-k)*.15/2),(2.3+.2*k,.35*(k+1),(3-k)*.15),M['stone'],.015)
 for s in (-1,1):lantern(G,M,(s*1.06,PY-.42,2.45),arm=((s*1.06,PY-.09,2.45),(0,-1,0)))
 # ---- round tower with conical slate spire ------------------------------------------------------------
@@ -435,6 +439,21 @@ OUT=HERE/'SilverbrookNorthridgeHouse1'
 for o in bpy.data.objects:o.select_set(o in objs)
 bpy.context.view_layer.objects.active=objs[0]
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')
+# Door leaves: own meshes, hinged at the outer jamb on the inner (+Y) face; each opens 90 deg inward (+Y, into the house).
+from mathutils.bvhtree import BVHTree
+def bvh(o,vs=None):return BVHTree.FromPolygons(vs or [o.matrix_world@v.co for v in o.data.vertices],[p.vertices[:] for p in o.data.polygons])
+LEAVES=[]
+for k,s in ((1,-1),(2,1)):                         # Door1 left leaf, Door2 right leaf (seen from the street)
+    leaf=bpy.data.objects[f'SM_SBNorthridgeHouse1_Door{k}'];vs=[leaf.matrix_world@v.co for v in leaf.data.vertices];tr=-90*s
+    piv=Vector((s*max(s*v.x for v in vs),max(v.y for v in vs),min(v.z for v in vs)));rot=Matrix.Rotation(math.radians(tr),3,'Z')
+    sw=[piv+rot@(v-piv) for v in vs]
+    assert min(v.y for v in sw)>piv.y-1e-3 and max(v.y for v in sw)>piv.y+.4,f'Door{k} does not swing inward'
+    hits={o.name:len({b for _,b in bvh(leaf,sw).overlap(bvh(o))}-{b for _,b in bvh(leaf,vs).overlap(bvh(o))}) for o in objs if 'Door' not in o.name}
+    print(f'DOOR{k}_SWING pivot',[round(c,3) for c in piv],'travel',tr,'open y %.3f..%.3f'%(min(v.y for v in sw),max(v.y for v in sw)),'new contacts',{n:c for n,c in hits.items() if c})
+    assert not any(hits.values()),f'Door{k} swings through {hits}'
+    LEAVES.append((leaf,f'Door{k}',tuple(piv),(0,0,1),'swing',tr,'closed'))
+PARTS=kit.export_parts(LEAVES,str(OUT),'SM_SilverbrookNorthridgeHouse1')
+for leaf,*_ in LEAVES:leaf.select_set(False)
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
 pre=bpy.data.collections.new('Preview');scene.collection.children.link(pre)
 ground=bpy.data.meshes.new('Ground');ground.from_pydata([(-30,-30,0),(30,-30,0),(30,30,0),(-30,30,0)],[],[(0,1,2,3)]);g=bpy.data.objects.new('Ground',ground);pre.objects.link(g);g.data.materials.append(kit.solid('Preview_Ground',(.11,.12,.07),.95))
@@ -455,6 +474,6 @@ manifest=dict(asset='SilverbrookNorthridgeHouse1',asset_id='BLD-GreenlandsNorthr
     blender=bpy.app.version_string,generator='build_northridgehouse1.py',method='procedural original geometry (concept interpretation, not image reconstruction)',
     units='metres, Z up, front -Y, origin ground centre',bounds_m=[round(v,3) for v in maxs-mins],
     meshes={o.name:dict(triangles=sum(len(p.vertices)-2 for p in o.data.polygons),materials=[m.name for m in o.data.materials]) for o in objs},triangles=tris,
-    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookNorthridgeHouse1',slot_m=list(SLOT),outputs=['SilverbrookNorthridgeHouse1.blend','SilverbrookNorthridgeHouse1.glb','SilverbrookNorthridgeHouse1.fbx'])
+    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookNorthridgeHouse1',parts=PARTS,slot_m=list(SLOT),outputs=['SilverbrookNorthridgeHouse1.blend','SilverbrookNorthridgeHouse1.glb','SilverbrookNorthridgeHouse1.fbx'])
 (HERE/'asset-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print('NORTHRIDGEHOUSE1_BUILT',manifest['bounds_m'],tris)

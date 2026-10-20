@@ -1,6 +1,6 @@
 {
   "source": {
-    "meshes": 4,
+    "meshes": 6,
     "triangles": 13088,
     "size_m": [
       8.0,
@@ -24,7 +24,7 @@
     "images": 15
   },
   "glb": {
-    "meshes": 4,
+    "meshes": 6,
     "triangles": 13088,
     "size_m": [
       8.0,
@@ -50,14 +50,13 @@
   },
   "fbx": {
     "meshes": 4,
-    "triangles": 13088,
+    "triangles": 12536,
     "size_m": [
       8.0,
       8.0,
       12.0
     ],
     "materials": [
-      "SB_DoorBoards",
       "SB_ForgedIron",
       "SB_OakTimber",
       "SB_WallSection_LoopVoid",
@@ -70,6 +69,6 @@
       "Weathering"
     ],
     "images_missing": [],
-    "images": 10
+    "images": 4
   }
 }

@@ -278,12 +278,13 @@ for s in (-1,1):
 Pd,Rd=frame((PX,FY,0),FRONT)
 lancet((PX,FY,0),FRONT,0,DWD,DSP+.07,DSP+.07,lights=2,sill=False,hood=False)
 S.box(Pd(0,-TH/2,DSP),(DWD,TH,.14),M['stone'],.012,Rd,rect=stone())
+LEAF={-1:Geo('SM_SBNorthridgeHouse5_Door1',asset),1:Geo('SM_SBNorthridgeHouse5_Door2',asset)};G.update(door1=LEAF[-1],door2=LEAF[1])  # each leaf opens at runtime
 for s in (-1,1):
-    D.box(Pd(s*DWD/4,-.12,(.3+DSP-.07)/2),(DWD/2-.01,.08,DSP-.07-.3),M['door'],.006,Rd)
-    for z in (.75,1.45,2.0):D.box(Pd(s*DWD*.27,-.075,z),(DWD*.4,.015,.06),M['iron'],.004,Rd)
+    L=LEAF[s];L.box(Pd(s*DWD/4,-.12,(.3+DSP-.07)/2),(DWD/2-.01,.08,DSP-.07-.3),M['door'],.006,Rd)
+    for z in (.75,1.45,2.0):L.box(Pd(s*DWD*.27,-.075,z),(DWD*.4,.015,.06),M['iron'],.004,Rd)
     for k in range(10):
-        t=math.tau*k/10;D.box(Pd(s*.15+.06*math.cos(t),-.07,1.15+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,Rd@Matrix.Rotation(-t,3,'Y'))
-    D.box(Pd(s*.15,-.075,1.21),(.06,.012,.06),M['iron'],.004,Rd)
+        t=math.tau*k/10;L.box(Pd(s*.15+.06*math.cos(t),-.07,1.15+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,Rd@Matrix.Rotation(-t,3,'Y'))
+    L.box(Pd(s*.15,-.075,1.21),(.06,.012,.06),M['iron'],.004,Rd)
 S.box((PX,FY-.5-.25,.15),(2.2,.5,.3),M['stone'],.012)        # step (top = door sill 0.3)
 S.box((PX,FY-.5-.25-.35,.075),(2.5,.3,.15),M['stone'],.012)  # lower step
 # banners on iron brackets
@@ -320,11 +321,22 @@ lo=[min((o.matrix_world@Vector(c))[k] for o in objs for c in o.bound_box) for k 
 for o in objs:o.data.transform(Matrix.Translation((-(lo[0]+hi[0])/2,-(lo[1]+hi[1])/2,0)))
 assert abs(lo[2])<1e-3,f'ground not at z=0: {lo[2]}'
 assert all(h-l<=s+1e-3 for l,h,s in zip(lo,hi,SLOT)),f'exceeds slot {SLOT}: {[round(h-l,3) for l,h in zip(lo,hi)]}'
+def leaf_part(obj,name,s):
+    """Front (-Y) door leaf hinged on its s side (-1 left, +1 right): pivot at the bottom of that edge on the inner
+    (+Y) face; travel opens it inward. Checked by swinging it: it must end inside the building, clear of the jamb."""
+    vs=[obj.matrix_world@v.co for v in obj.data.vertices];hx=(min if s<0 else max)(v.x for v in vs)
+    pv=Vector((hx,max(v.y for v in vs),min(v.z for v in vs)));travel=90 if s<0 else -90
+    sw=[pv+Matrix.Rotation(math.radians(travel),3,'Z')@(v-pv) for v in vs]
+    assert min(v.y for v in sw)>pv.y-1e-3 and min(s*(pv.x-v.x) for v in sw)>-1e-3,f'{name} does not swing inward'
+    print('DOOR_SWING',name,[round(c,3) for c in pv],travel,'open depth',round(max(v.y for v in sw)-pv.y,3))
+    return (obj,name,tuple(pv),(0,0,1),'swing',travel,'closed')
 OUT=HERE/NAME
 for o in bpy.data.objects:o.select_set(o in objs)
 bpy.context.view_layer.objects.active=objs[0]
 # Textures stay in ../Textures (FBX references them relatively); embedding 2k scans makes a huge GLB.
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')
+PARTS=kit.export_parts([leaf_part(bpy.data.objects[G['door1'].name],'Door1',-1),leaf_part(bpy.data.objects[G['door2'].name],'Door2',1)],str(OUT),'SM_SilverbrookNorthridgeHouse5')
+for o in (bpy.data.objects[G['door1'].name],bpy.data.objects[G['door2'].name]):o.select_set(False)   # leaves ship as their own meshes, not in the house FBX
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
 pre=bpy.data.collections.new('Preview');scene.collection.children.link(pre)
 ground=bpy.data.meshes.new('Ground');ground.from_pydata([(-40,-40,0),(40,-40,0),(40,40,0),(-40,40,0)],[],[(0,1,2,3)]);g=bpy.data.objects.new('Ground',ground);pre.objects.link(g);g.data.materials.append(kit.solid('Preview_Ground',(.11,.12,.07),.95))
@@ -345,6 +357,6 @@ manifest=dict(asset=NAME,town_asset='BLD-GreenlandsNorthridgeHouse-01',variant=5
     blender=bpy.app.version_string,generator='build_northridgehouse5.py',method='procedural original geometry (concept interpretation, not image reconstruction)',
     units='metres, Z up, front -Y, origin ground centre',bounds_m=[round(v,3) for v in maxs-mins],
     meshes={o.name:dict(triangles=sum(len(p.vertices)-2 for p in o.data.polygons),materials=[m.name for m in o.data.materials]) for o in objs},triangles=tris,
-    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_'+NAME,slot_m=list(SLOT),outputs=[NAME+'.blend',NAME+'.glb',NAME+'.fbx'])
+    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_'+NAME,parts=PARTS,slot_m=list(SLOT),outputs=[NAME+'.blend',NAME+'.glb',NAME+'.fbx'])
 (HERE/'asset-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print('NORTHRIDGEHOUSE5_BUILT',manifest['bounds_m'],tris)

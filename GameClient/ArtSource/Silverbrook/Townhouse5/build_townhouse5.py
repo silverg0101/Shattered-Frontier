@@ -71,7 +71,7 @@ def capped(a,b,n):
 def post(x,y,z0,z1,o,s=.2):G['timber'].box((x,y,(z0+z1)/2),(s if o=='y' else .12,.12 if o=='y' else s,z1-z0),M['timber'],.012,grain=True,band=band())
 def rail(a,b,s=.16):G['timber'].beam(a,b,.12,s,M['timber'],band=band())
 
-def cames(P,ac,pw,h,d,z0=0):
+def cames(P,ac,pw,h,d,z0=0,geo=None):
     """Diamond quarries: two families of lead cames clipped to one pane (as kit.window)."""
     lo,hi=ac-pw/2,ac+pw/2;slope=1.7;step=.10*slope
     for sign in (1,-1):
@@ -85,7 +85,7 @@ def cames(P,ac,pw,h,d,z0=0):
                 if lo<a<hi:pts.append((a,z))
             if len(pts)>=2:
                 (a0,za),(a1,zb)=pts[0],pts[1]
-                if math.hypot(a1-a0,zb-za)>.02:G['detail'].beam(P(a0,d,z0+za),P(a1,d,z0+zb),.009,.012,M['lead'],grain=False)
+                if math.hypot(a1-a0,zb-za)>.02:(geo or G['detail']).beam(P(a0,d,z0+za),P(a1,d,z0+zb),.009,.012,M['lead'],grain=False)
 def lights(c,o,w,h,n,planter=False,wall_th=.3):
     """kit.window generalised to n leaded lights (no shutters: the concept has none).
     c: bottom centre of the glazed area on the outer wall face."""
@@ -170,12 +170,13 @@ for side in (-1,1):
     for (a0,z0),(a1,z1) in zip(arc,arc[1:]):
         pts=[(a0,z0),(a1,z1),(a1,APEX),(a0,APEX)] if APEX-z1>1e-4 else [(a0,z0),(a1,z1),(a0,APEX)]
         G['stone'].prism([P(side*a,-.15,z) for a,z in pts],(0,-1,0),.3,M['stone'])
+D=Geo('SM_SBTownhouse5_Door1',asset);G['door1']=D;kit.DOORS.append(dict(geo=D,r=R@Vector((1,0,0)),o=Vector((0,-1,0))))
 leaf=[(-r+.005,0),(r-.005,0)]+[(a-.005,z) for a,z in arc]+[(-a+.005,z) for a,z in reversed(arc[:-1])]
-G['detail'].prism([P(a,-.2,z) for a,z in leaf],(0,-1,0),.07,M['door'])
-for z in (.35,SPRING-.15):G['detail'].box(P(-r*.15,-.15,z),(DOORW*.8,.012,.05),M['iron'],.004,R)
+D.prism([P(a,-.2,z) for a,z in leaf],(0,-1,0),.07,M['door'])
+for z in (.35,SPRING-.15):D.box(P(-r*.15,-.15,z),(DOORW*.8,.012,.05),M['iron'],.004,R)
 for k in range(10):
-    t=math.tau*k/10;G['detail'].box(P(r*.55+.06*math.cos(t),-.13,1.0+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
-G['detail'].box(P(r*.55,-.155,1.06),(.07,.01,.07),M['iron'],.004,R)
+    t=math.tau*k/10;D.box(P(r*.55+.06*math.cos(t),-.13,1.0+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
+D.box(P(r*.55,-.155,1.06),(.07,.01,.07),M['iron'],.004,R)
 z=0;i=0
 while z<SPRING-.05:
     hgt=min(.3,SPRING-z);qw=.28 if i%2 else .4
@@ -190,11 +191,12 @@ for side in (-1,1):
 for k in range(3):G['stone'].box((XDOOR,-D2-.15-.3*k,(3-k)*.065),(1.3,.3,(3-k)*.13),M['stone'],.015)
 # shop door: plank lower leaf, leaded upper light
 P,R=frame((SHOP,-D2,SHOPZ),(0,-1,0));lw=SHOPW-.02
-G['detail'].box(P(0,-.2,.55),(lw,.07,1.1),M['door'],.006,R)
-for a in (-(lw/2-.04),lw/2-.04):G['timber'].box(P(a,-.2,1.53),(.08,.07,.86),M['timber'],.006,R,grain=True,band=band())
-G['timber'].box(P(0,-.2,2.0),(lw,.07,.1),M['timber'],.006,R,grain=True,band=band())
-G['detail'].box(P(0,-.2,1.53),(lw-.16,.01,.86),M['glass'],0,R);cames(P,0,lw-.16,.86,-.18,1.1)
-G['detail'].box(P(.22,-.15,1.0),(.05,.03,.12),M['iron'],.004,R)
+D=Geo('SM_SBTownhouse5_Door2',asset);G['door2']=D;kit.DOORS.append(dict(geo=D,r=R@Vector((1,0,0)),o=Vector((0,-1,0))))   # whole leaf: planks, stiles, rail, light
+D.box(P(0,-.2,.55),(lw,.07,1.1),M['door'],.006,R)
+for a in (-(lw/2-.04),lw/2-.04):D.box(P(a,-.2,1.53),(.08,.07,.86),M['timber'],.006,R,grain=True,band=band())
+D.box(P(0,-.2,2.0),(lw,.07,.1),M['timber'],.006,R,grain=True,band=band())
+D.box(P(0,-.2,1.53),(lw-.16,.01,.86),M['glass'],0,R);cames(P,0,lw-.16,.86,-.18,1.1,D)
+D.box(P(.22,-.15,1.0),(.05,.03,.12),M['iron'],.004,R)
 G['stone'].box((SHOP,-D2-.17,.075),(.95,.34,.15),M['stone'],.015)
 # shop front timber: fascia and posts flanking the glazing
 G['timber'].box((1.2,-D2-.03,2.33),(3.3,.1,.16),M['timber'],.012,grain=True,band=band())
@@ -330,6 +332,13 @@ OUT=HERE/'SilverbrookTownhouse5'
 for o in bpy.data.objects:o.select_set(o in objs)
 bpy.context.view_layer.objects.active=objs[0]
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')
+PARTS=kit.split_doors(str(OUT),'SM_SilverbrookTownhouse5')
+# Door leaves: own meshes hinged on the -r jamb, opening 90 deg inward; check the swing ends inside the building.
+for d,row in zip(kit.DOORS,PARTS):
+    ob_=bpy.data.objects[d['geo'].name];pv=Vector(row['pivot_m']);rz=Matrix.Rotation(math.radians(row['travel']),3,'Z');o_h=Vector((d['o'].x,d['o'].y,0)).normalized()
+    vs=[pv+rz@(ob_.matrix_world@v.co-pv) for v in ob_.data.vertices];c_=sum(vs,Vector())/len(vs)
+    assert (c_-pv).dot(o_h)<-.3 and max((v-pv).dot(o_h) for v in vs)<.02,f"{row['name']} does not swing inward"
+    print('DOOR_SWING',row['name'],row['pivot_m'],row['travel'],'open centre inward %.2f m'%-(c_-pv).dot(o_h))
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
 pre=bpy.data.collections.new('Preview');scene.collection.children.link(pre)
 ground=bpy.data.meshes.new('Ground');ground.from_pydata([(-30,-30,0),(30,-30,0),(30,30,0),(-30,30,0)],[],[(0,1,2,3)]);g=bpy.data.objects.new('Ground',ground);pre.objects.link(g);g.data.materials.append(kit.solid('Preview_Ground',(.11,.12,.07),.95))
@@ -350,6 +359,6 @@ manifest=dict(asset='SilverbrookTownhouse5',reference=dict(file='Townhouse5-refe
     blender=bpy.app.version_string,generator='build_townhouse5.py',method='procedural original geometry (concept interpretation, not image reconstruction)',
     units='metres, Z up, front -Y, origin ground centre',bounds_m=[round(v,3) for v in maxs-mins],
     meshes={o.name:dict(triangles=sum(len(p.vertices)-2 for p in o.data.polygons),materials=[m.name for m in o.data.materials]) for o in objs},triangles=tris,
-    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookTownhouse5',slot_m=list(SLOT),outputs=['SilverbrookTownhouse5.blend','SilverbrookTownhouse5.glb','SilverbrookTownhouse5.fbx'])
+    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookTownhouse5',parts=PARTS,slot_m=list(SLOT),outputs=['SilverbrookTownhouse5.blend','SilverbrookTownhouse5.glb','SilverbrookTownhouse5.fbx'])
 (HERE/'asset-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print('TOWNHOUSE5_BUILT',manifest['bounds_m'],tris)

@@ -40,7 +40,7 @@
       ]
     },
     "SM_SBStables_Details": {
-      "triangles": 6760,
+      "triangles": 6200,
       "materials": [
         "SB_LitGlass",
         "SB_ChimneyPot",
@@ -48,6 +48,20 @@
         "SB_ForgedIron",
         "SB_LanternGlow",
         "SB_LeadCame"
+      ]
+    },
+    "SM_SBStables_Door1": {
+      "triangles": 280,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBStables_Door2": {
+      "triangles": 280,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
       ]
     }
   },
@@ -184,6 +198,44 @@
   ],
   "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
   "unreal_mesh": "SM_SilverbrookStables",
+  "parts": [
+    {
+      "name": "Door1",
+      "fbx": "SilverbrookStables_Door1.fbx",
+      "unreal_mesh": "SM_SilverbrookStables_Door1",
+      "pivot_m": [
+        -1.32,
+        -2.8442,
+        0.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    },
+    {
+      "name": "Door2",
+      "fbx": "SilverbrookStables_Door2.fbx",
+      "unreal_mesh": "SM_SilverbrookStables_Door2",
+      "pivot_m": [
+        1.32,
+        -2.8442,
+        0.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": -90,
+      "modelled": "closed"
+    }
+  ],
   "slot_m": [
     12,
     8,

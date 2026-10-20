@@ -93,15 +93,17 @@ def slit(a,z0,z1):return (a-.06,a+.06,z0,z1,True)
 def door_hole(a,w,z0,h):return (a-w/2-.2,a+w/2+.2,z0,z0+h+.3,False)
 def door(c,o,a,w,z0,h):
     """Ledged plank door set .17 m back in a flush dressed surround (jambs + lintel fill the hole)."""
-    P,R=kit.frame(c,o)
+    P,R=kit.frame(c,o);D=Geo(f'SM_SBGatehouse_Door{len(DOORS)+1}',asset);G[D.name]=D   # each leaf is its own mesh
+    DOORS.append(dict(geo=D,r=kit.UP.cross(Vector(o).normalized()),o=Vector(o).normalized()))
     for s in (-1,1):
         zz=z0;i=0
         while zz<z0+h-.01:
             hh=min(.42 if i%2 else .55,z0+h-zz);G['dressed'].box(P(a+s*(w/2+.1),-SK/2,zz+hh/2),(.2,SK,hh),M['stone'],.012,R,rect=rect(),w=w0());zz+=hh;i+=1
     G['dressed'].box(P(a,-SK/2,z0+h+.15),(w+.4,SK,.3),M['stone'],.012,R,rect=rect(),w=w0())
-    G['detail'].box(P(a,-.2,z0+h/2),(w,.06,h),M['door'],.004,R)
-    for z in (z0+.35,z0+h-.4):G['detail'].box(P(a-w*.08,-.164,z),(w*.8,.012,.06),M['iron'],.003,R)
-    G['detail'].box(P(a+w*.32,-.16,z0+1.0),(.07,.02,.07),M['iron'],.004,R)
+    D.box(P(a,-.2,z0+h/2),(w,.06,h),M['door'],.004,R)
+    for z in (z0+.35,z0+h-.4):D.box(P(a-w*.08,-.164,z),(w*.8,.012,.06),M['iron'],.003,R)
+    D.box(P(a+w*.32,-.16,z0+1.0),(.07,.02,.07),M['iron'],.004,R)
+DOORS=[]
 
 # ---- gate block: vaulted passage, dressed arch rings ------------------------------------
 wall(G['stone'],M['stone'],(0,-BY,0),(0,-1,0),GAP/2+.1,GW,[(0,AW,0,AS+AW/2)],th=2*BY,arch=(0,AW,AS))
@@ -296,9 +298,19 @@ bpy.context.view_layer.objects.active=objs[0]
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')
 # Gate leaves swing on their pintles (closing: 90 deg toward the passage centre); the portcullis drops 4 m to the ground.
 ob={o.name:o for o in objs};HX=AW/2-.02
+# Tower doors (town-side ground doors, wall-walk doors): hinge at the leaf's -r edge, bottom, inner face; open 90 deg inward (-o).
+DOOR_PARTS=[]
+for k,d in enumerate(DOORS,1):
+    obj=ob[d['geo'].name];vs=[obj.matrix_world@v.co for v in obj.data.vertices];r,o=d['r'],d['o']
+    pivot=r*min(v.dot(r) for v in vs)+o*min(v.dot(o) for v in vs)+kit.UP*min(v.z for v in vs)
+    travel=90 if kit.UP.cross(r).dot(o)<0 else -90
+    q=Matrix.Rotation(math.radians(travel),3,'Z');sw=[pivot+q@(v-pivot) for v in vs]
+    assert max(v.dot(o) for v in sw)<=pivot.dot(o)+.07 and min(v.dot(o) for v in sw)<pivot.dot(o)-.9 and min(v.dot(r) for v in sw)>=pivot.dot(r)-1e-3,f'Door{k} does not swing inward'
+    print('GATEHOUSE_DOOR',k,[round(x,3) for x in pivot],travel,'open leaf reaches',round(pivot.dot(o)-min(v.dot(o) for v in sw),3),'m inside')
+    DOOR_PARTS.append((obj,f'Door{k}',tuple(round(x,4) for x in pivot),(0,0,1),'swing',travel,'closed'))
 PARTS=kit.export_parts([(ob['SM_SBGatehouse_GateL'],'GateL',(-HX,HY,0),(0,0,1),'swing',-90,'open'),(ob['SM_SBGatehouse_GateR'],'GateR',(HX,HY,0),(0,0,1),'swing',90,'open'),
-    (ob['SM_SBGatehouse_Portcullis'],'Portcullis',(0,PY,PZ-.25),(0,0,-1),'slide',round(PZ-.25,3),'open')],str(OUT),'SM_SilverbrookGatehouse')
-for o in bpy.data.objects:o.select_set(o in objs and o.name not in ('SM_SBGatehouse_GateL','SM_SBGatehouse_GateR','SM_SBGatehouse_Portcullis'))
+    (ob['SM_SBGatehouse_Portcullis'],'Portcullis',(0,PY,PZ-.25),(0,0,-1),'slide',round(PZ-.25,3),'open')]+DOOR_PARTS,str(OUT),'SM_SilverbrookGatehouse')
+for o in bpy.data.objects:o.select_set(o in objs and o.name not in ('SM_SBGatehouse_GateL','SM_SBGatehouse_GateR','SM_SBGatehouse_Portcullis',*[d['geo'].name for d in DOORS]))
 bpy.context.view_layer.objects.active=objs[0]
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
 pre=bpy.data.collections.new('Preview');scene.collection.children.link(pre)

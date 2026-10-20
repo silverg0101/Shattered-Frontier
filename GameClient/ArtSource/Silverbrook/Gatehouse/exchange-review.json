@@ -1,6 +1,6 @@
 {
   "source": {
-    "meshes": 7,
+    "meshes": 14,
     "triangles": 64352,
     "size_m": [
       26.0,
@@ -29,7 +29,7 @@
     "images": 28
   },
   "glb": {
-    "meshes": 7,
+    "meshes": 14,
     "triangles": 64352,
     "size_m": [
       26.0,
@@ -60,14 +60,13 @@
   },
   "fbx": {
     "meshes": 7,
-    "triangles": 64352,
+    "triangles": 61732,
     "size_m": [
       26.0,
       8.0,
       11.98
     ],
     "materials": [
-      "SB_DoorBoards",
       "SB_ForgedIron",
       "SB_Gatehouse_Banner",
       "SB_Gatehouse_Gilt",
@@ -85,6 +84,6 @@
       "Weathering"
     ],
     "images_missing": [],
-    "images": 14
+    "images": 6
   }
 }

@@ -195,10 +195,11 @@ for k in DIAG:slit(k,0,2.65,3.85)
 # ---- doors where the wall-walk meets the side faces -------------------------------------------------------------
 def door(k,a):
     P,R,n=fframe(k,WALK+PAVE);w,sp=1.0,1.5;rad=w/2
-    G['detail'].prism([P(a-rad,.02,-.01),P(a+rad,.02,-.01)]+[P(a+rad*math.cos(t),.02,sp+rad*math.sin(t)) for t in arc(16)],n,.06,M['door'])
-    for z in (.35,sp-.1):G['detail'].box(P(a-rad*.15,.057,z),(w*.8,.012,.05),M['iron'],.004,R)
-    for i in range(10):t=math.tau*i/10;G['detail'].box(P(a+rad*.55+.06*math.cos(t),.06,1.0+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
-    G['detail'].box(P(a+rad*.55,.055,1.06),(.07,.01,.07),M['iron'],.004,R)
+    D=Geo(f'SM_SBWallTower_Door{len(kit.DOORS)+1}',asset);G[D.name]=D;kit.DOORS.append(dict(geo=D,r=R.col[0].normalized(),o=Vector((n.x,n.y,0)).normalized()))
+    D.prism([P(a-rad,.02,-.01),P(a+rad,.02,-.01)]+[P(a+rad*math.cos(t),.02,sp+rad*math.sin(t)) for t in arc(16)],n,.06,M['door'])
+    for z in (.35,sp-.1):D.box(P(a-rad*.15,.057,z),(w*.8,.012,.05),M['iron'],.004,R)
+    for i in range(10):t=math.tau*i/10;D.box(P(a+rad*.55+.06*math.cos(t),.06,1.0+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
+    D.box(P(a+rad*.55,.055,1.06),(.07,.01,.07),M['iron'],.004,R)
     z=-.02;i=0
     while z<sp-.05:
         hgt=min(.31,sp-z);qw=.2 if i%2 else .28
@@ -274,6 +275,13 @@ OUT=HERE/'SilverbrookWallTower'
 for o in bpy.data.objects:o.select_set(o in objs)
 bpy.context.view_layer.objects.active=objs[0]
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')
+PARTS=kit.split_doors(str(OUT),'SM_SilverbrookWallTower')
+# Door leaves: own meshes hinged on the -r jamb, opening 90 deg inward; check the swing ends inside the building.
+for d,row in zip(kit.DOORS,PARTS):
+    ob_=bpy.data.objects[d['geo'].name];pv=Vector(row['pivot_m']);rz=Matrix.Rotation(math.radians(row['travel']),3,'Z');o_h=Vector((d['o'].x,d['o'].y,0)).normalized()
+    vs=[pv+rz@(ob_.matrix_world@v.co-pv) for v in ob_.data.vertices];c_=sum(vs,Vector())/len(vs)
+    assert (c_-pv).dot(o_h)<-.3 and max((v-pv).dot(o_h) for v in vs)<.02,f"{row['name']} does not swing inward"
+    print('DOOR_SWING',row['name'],row['pivot_m'],row['travel'],'open centre inward %.2f m'%-(c_-pv).dot(o_h))
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
 # ---- preview: a WallSection segment butted on each side ------------------------------------------------------------
 pre=bpy.data.collections.new('Preview');scene.collection.children.link(pre)
@@ -298,7 +306,7 @@ manifest=dict(asset='SilverbrookWallTower',asset_id='BLD-GreenlandsWallTower-01'
     blender=bpy.app.version_string,generator='build_walltower.py',method='procedural original geometry (concept interpretation, not image reconstruction)',
     units='metres, Z up, front -Y, origin ground centre',bounds_m=[round(h-l,3) for l,h in zip(lo,hi)],
     meshes={o.name:dict(triangles=sum(len(p.vertices)-2 for p in o.data.polygons),materials=[m.name for m in o.data.materials]) for o in objs},triangles=tris,
-    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookWallTower',slot_m=list(SLOT),
+    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookWallTower',parts=PARTS,slot_m=list(SLOT),
     wall_joint=dict(axis='X',joint_planes_x=[-J,J],end_section='identical to SilverbrookWallSection end section (asserted)',walk_top_z=WALK+PAVE,walk_y=[PB,RB],door_threshold_z=WALK+PAVE,masonry_uv_repeat_m=round(S,4)),
     outputs=['SilverbrookWallTower.blend','SilverbrookWallTower.glb','SilverbrookWallTower.fbx'])
 (HERE/'asset-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')

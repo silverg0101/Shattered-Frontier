@@ -314,13 +314,15 @@ DOOR=(0,1.5,.75,2.45);WIN=(0,1.0,4.6,5.25)
 P,R=pwall((0,CF,0),(0,-1,0),XC,CP,[DOOR,WIN])
 lancet((0,CF,0),(0,-1,0),*WIN,lights=4)
 arc=arcpts(1.5,2.45);top=arc[-1][1]
-D.prism([P(-.745,-.2,.75),P(.745,-.2,.75)]+[P(x*.995,-.2,z) for x,z in arc]+[P(-x*.995,-.2,z) for x,z in arc[::-1][1:]],(0,-1,0),.07,M['door'])
-D.box(P(0,-.155,(.75+top)/2),(.04,.02,top-.8),M['iron'],0,R)
+# double door: each leaf is its own mesh (opened at runtime); the cover strip rides on the right leaf
+LEAF={-1:Geo('SM_SBNorthridgeHouse4_Door1',asset),1:Geo('SM_SBNorthridgeHouse4_Door2',asset)};G.update(door1=LEAF[-1],door2=LEAF[1])
 for sd in (-1,1):
-    for z in (1.15,2.2):D.box(P(sd*.4,-.15,z),(.56,.012,.05),M['iron'],.004,R)
+    L=LEAF[sd];L.prism([P(sd*.745,-.2,.75),P(0,-.2,.75)]+[P(sd*x*.995,-.2,z) for x,z in arc[::-1]],(0,-1,0),.07,M['door'])
+    for z in (1.15,2.2):L.box(P(sd*.4,-.15,z),(.56,.012,.05),M['iron'],.004,R)
     for k in range(10):
-        t=math.tau*k/10;D.box(P(sd*.16+.06*math.cos(t),-.13,1.65+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
-    D.box(P(sd*.16,-.155,1.71),(.07,.01,.07),M['iron'],.004,R)
+        t=math.tau*k/10;L.box(P(sd*.16+.06*math.cos(t),-.13,1.65+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
+    L.box(P(sd*.16,-.155,1.71),(.07,.01,.07),M['iron'],.004,R)
+LEAF[1].box(P(0,-.155,(.75+top)/2),(.04,.02,top-.8),M['iron'],0,R)
 pwall((0,CB,0),(0,1,0),XC,CP,[(0,.8,1.2,2.4),(0,.8,4.6,5.5)])
 lancet((0,CB,0),(0,1,0),0,.8,1.2,2.4);lancet((0,CB,0),(0,1,0),0,.8,4.6,5.5)
 S.box((0,CB+.04,.22),(2*XC,.1,.44),M['stone'],.01)
@@ -359,10 +361,21 @@ lo=[min((o.matrix_world@Vector(c))[k] for o in objs for c in o.bound_box) for k 
 for o in objs:o.data.transform(Matrix.Translation((-(lo[0]+hi[0])/2,-(lo[1]+hi[1])/2,0)))
 assert abs(lo[2])<1e-3,f'not grounded: {lo[2]}'
 assert all(h-l<=s+1e-3 for l,h,s in zip(lo,hi,SLOT)),f'exceeds slot {SLOT}: {[round(h-l,3) for l,h in zip(lo,hi)]}'
+def leaf_part(obj,name,s):
+    """Front (-Y) door leaf hinged on its s side (-1 left, +1 right): pivot at the bottom of that edge on the inner
+    (+Y) face; travel opens it inward. Checked by swinging it: it must end inside the building, clear of the jamb."""
+    vs=[obj.matrix_world@v.co for v in obj.data.vertices];hx=(min if s<0 else max)(v.x for v in vs)
+    pv=Vector((hx,max(v.y for v in vs),min(v.z for v in vs)));travel=90 if s<0 else -90
+    sw=[pv+Matrix.Rotation(math.radians(travel),3,'Z')@(v-pv) for v in vs]
+    assert min(v.y for v in sw)>pv.y-1e-3 and min(s*(pv.x-v.x) for v in sw)>-1e-3,f'{name} does not swing inward'
+    print('DOOR_SWING',name,[round(c,3) for c in pv],travel,'open depth',round(max(v.y for v in sw)-pv.y,3))
+    return (obj,name,tuple(pv),(0,0,1),'swing',travel,'closed')
 OUT=HERE/'SilverbrookNorthridgeHouse4'
 for o in bpy.data.objects:o.select_set(o in objs)
 bpy.context.view_layer.objects.active=objs[0]
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')
+PARTS=kit.export_parts([leaf_part(bpy.data.objects[G['door1'].name],'Door1',-1),leaf_part(bpy.data.objects[G['door2'].name],'Door2',1)],str(OUT),'SM_SilverbrookNorthridgeHouse4')
+for o in (bpy.data.objects[G['door1'].name],bpy.data.objects[G['door2'].name]):o.select_set(False)   # leaves ship as their own meshes, not in the house FBX
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
 pre=bpy.data.collections.new('Preview');scene.collection.children.link(pre)
 ground=bpy.data.meshes.new('Ground');ground.from_pydata([(-40,-40,0),(40,-40,0),(40,40,0),(-40,40,0)],[],[(0,1,2,3)]);g=bpy.data.objects.new('Ground',ground);pre.objects.link(g);g.data.materials.append(kit.solid('Preview_Ground',(.11,.12,.07),.95))
@@ -383,6 +396,6 @@ manifest=dict(asset='SilverbrookNorthridgeHouse4',town_asset='BLD-GreenlandsNort
     blender=bpy.app.version_string,generator='build_northridgehouse4.py',method='procedural original geometry (concept interpretation, not image reconstruction)',
     units='metres, Z up, front -Y, origin ground centre',bounds_m=[round(v,3) for v in maxs-mins],
     meshes={o.name:dict(triangles=sum(len(p.vertices)-2 for p in o.data.polygons),materials=[m.name for m in o.data.materials]) for o in objs},triangles=tris,
-    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookNorthridgeHouse4',slot_m=list(SLOT),outputs=['SilverbrookNorthridgeHouse4.blend','SilverbrookNorthridgeHouse4.glb','SilverbrookNorthridgeHouse4.fbx'])
+    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookNorthridgeHouse4',parts=PARTS,slot_m=list(SLOT),outputs=['SilverbrookNorthridgeHouse4.blend','SilverbrookNorthridgeHouse4.glb','SilverbrookNorthridgeHouse4.fbx'])
 (HERE/'asset-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print('NORTHRIDGEHOUSE4_BUILT',manifest['bounds_m'],tris)

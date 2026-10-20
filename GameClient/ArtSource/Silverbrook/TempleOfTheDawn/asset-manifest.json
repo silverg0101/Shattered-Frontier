@@ -33,21 +33,34 @@
       ]
     },
     "SM_SBTempleOfTheDawn_Details": {
-      "triangles": 13616,
+      "triangles": 13052,
       "materials": [
         "SB_TempleOfTheDawn_BlueGlass",
         "SB_TempleOfTheDawn_Gilt",
         "SB_LitGlass",
         "SB_LeadCame",
-        "SB_DoorBoards",
         "SB_ForgedIron",
         "SB_LanternGlow",
         "SB_TempleOfTheDawn_Banner",
         "SB_TempleOfTheDawn_Bronze"
       ]
+    },
+    "SM_SBTempleOfTheDawn_Door1": {
+      "triangles": 300,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBTempleOfTheDawn_Door2": {
+      "triangles": 300,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
+      ]
     }
   },
-  "triangles": 254748,
+  "triangles": 254784,
   "materials": [
     {
       "name": "SB_TempleOfTheDawn_Slate",
@@ -58,7 +71,8 @@
         0.27
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_TempleOfTheDawn_Ashlar",
@@ -69,7 +83,8 @@
         0.33
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_TempleOfTheDawn_Dressed",
@@ -80,7 +95,8 @@
         0.33
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_TempleOfTheDawn_Banner",
@@ -91,7 +107,8 @@
         0.42
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_DoorBoards",
@@ -102,7 +119,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_ForgedIron",
@@ -203,6 +221,44 @@
   ],
   "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
   "unreal_mesh": "SM_SilverbrookTempleOfTheDawn",
+  "parts": [
+    {
+      "name": "Door1",
+      "fbx": "SilverbrookTempleOfTheDawn_Door1.fbx",
+      "unreal_mesh": "SM_SilverbrookTempleOfTheDawn_Door1",
+      "pivot_m": [
+        -0.87,
+        -8.41,
+        0.6
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    },
+    {
+      "name": "Door2",
+      "fbx": "SilverbrookTempleOfTheDawn_Door2.fbx",
+      "unreal_mesh": "SM_SilverbrookTempleOfTheDawn_Door2",
+      "pivot_m": [
+        0.87,
+        -8.41,
+        0.6
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": -90,
+      "modelled": "closed"
+    }
+  ],
   "slot_m": [
     14,
     24,

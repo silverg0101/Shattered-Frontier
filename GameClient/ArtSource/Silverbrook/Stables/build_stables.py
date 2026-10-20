@@ -175,14 +175,18 @@ for a in STALLS:
         G['detail'].box(P(a+side*.04,-.08,.62),(.04,.02,.12),M['iron'],.003,R)   # latch
 # ---- carriage doors -----------------------------------------------------------------
 P,R=kit.frame(*FRONT);Rad,z0,phi=seg(CH,CS,CC)
+# Each leaf is its own mesh so it can open; kit.split_doors hinges it on its outer jamb (r points away from the hinge).
+LEAF={}
+for k,side in enumerate((-1,1),1):
+    LEAF[side]=G[f'door{k}']=Geo(f'SM_SBStables_Door{k}',asset);kit.DOORS.append(dict(geo=LEAF[side],r=Vector((-side,0,0)),o=Vector(FRONT[1])))
 for side in (-1,1):
     arc=[P(side*(Rad+.02)*math.cos(t),-.1,z0+(Rad+.02)*math.sin(t)) for t in np.linspace(math.pi/2,phi,10)]
-    G['detail'].prism([P(side*(CH+.02),-.1,0),P(side*.005,-.1,0),P(side*.005,-.1,CC+.02)]+arc[1:]+[P(side*(CH+.02),-.1,CS)],(0,1,0),.08,M['door'],w=(0,0))
+    LEAF[side].prism([P(side*(CH+.02),-.1,0),P(side*.005,-.1,0),P(side*.005,-.1,CC+.02)]+arc[1:]+[P(side*(CH+.02),-.1,CS)],(0,1,0),.08,M['door'],w=(0,0))
 for side in (-1,1):
-    for z in (.3,1.05,1.75):G['detail'].box(P(side*(CH-.55),-.055,z),(1.05,.014,.07),M['iron'],.004,R)
+    for z in (.3,1.05,1.75):LEAF[side].box(P(side*(CH-.55),-.055,z),(1.05,.014,.07),M['iron'],.004,R)
     for k in range(10):
-        t=math.tau*k/10;G['detail'].box(P(side*.14+.07*math.cos(t),-.03,1.05+.07*math.sin(t)),(.045,.016,.016),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
-    G['detail'].box(P(side*.14,-.05,1.12),(.07,.012,.07),M['iron'],.004,R)
+        t=math.tau*k/10;LEAF[side].box(P(side*.14+.07*math.cos(t),-.03,1.05+.07*math.sin(t)),(.045,.016,.016),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
+    LEAF[side].box(P(side*.14,-.05,1.12),(.07,.012,.07),M['iron'],.004,R)
 # ---- timber frame -------------------------------------------------------------------
 def post(x,y,z0,z1,along_x):G['timber'].box((x,y,(z0+z1)/2),(.22 if along_x else .16,.16 if along_x else .22,z1-z0),M['timber'],.012,grain=True,band=band())
 def rail(a,b,s=.16):G['timber'].beam(a,b,.14,s,M['timber'],band=band())
@@ -244,6 +248,7 @@ OUT=HERE/'SilverbrookStables'
 for o in bpy.data.objects:o.select_set(o in objs)
 bpy.context.view_layer.objects.active=objs[0]
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')
+DOORS=kit.split_doors(str(OUT),'SM_SilverbrookStables')  # carriage door leaves: own meshes, hinged, left out of the main FBX
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
 pre=bpy.data.collections.new('Preview');scene.collection.children.link(pre)
 ground=bpy.data.meshes.new('Ground');ground.from_pydata([(-30,-30,0),(30,-30,0),(30,30,0),(-30,30,0)],[],[(0,1,2,3)]);g=bpy.data.objects.new('Ground',ground);pre.objects.link(g);g.data.materials.append(kit.solid('Preview_Ground',(.11,.12,.07),.95))
@@ -264,6 +269,6 @@ manifest=dict(asset='SilverbrookStables',reference=dict(file='Stables-reference.
     blender=bpy.app.version_string,generator='build_stables.py',method='procedural original geometry (concept interpretation, not image reconstruction)',
     units='metres, Z up, front -Y, origin ground centre',bounds_m=[round(v,3) for v in maxs-mins],
     meshes={o.name:dict(triangles=sum(len(p.vertices)-2 for p in o.data.polygons),materials=[m.name for m in o.data.materials]) for o in objs},triangles=tris,
-    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookStables',slot_m=list(SLOT),outputs=['SilverbrookStables.blend','SilverbrookStables.glb','SilverbrookStables.fbx'])
+    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookStables',parts=DOORS,slot_m=list(SLOT),outputs=['SilverbrookStables.blend','SilverbrookStables.glb','SilverbrookStables.fbx'])
 (HERE/'asset-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print('STABLES_BUILT',manifest['bounds_m'],tris)

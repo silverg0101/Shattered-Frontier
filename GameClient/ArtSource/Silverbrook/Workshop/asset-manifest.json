@@ -41,7 +41,7 @@
       ]
     },
     "SM_SBWorkshop_Details": {
-      "triangles": 7496,
+      "triangles": 6996,
       "materials": [
         "SB_LitGlass",
         "SB_LeadCame",
@@ -51,6 +51,20 @@
         "SB_DoorBoards",
         "SB_OakTimber",
         "SB_LanternGlow"
+      ]
+    },
+    "SM_SBWorkshop_Door1": {
+      "triangles": 264,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBWorkshop_Door2": {
+      "triangles": 236,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
       ]
     }
   },
@@ -65,7 +79,8 @@
         0.28
       ],
       "lichen": "lichen_rock",
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_Workshop_Rubble",
@@ -76,7 +91,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_Workshop_BlockStone",
@@ -87,7 +103,8 @@
         0.3
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_LimePlaster",
@@ -98,7 +115,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_OakTimber",
@@ -109,7 +127,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_DoorBoards",
@@ -120,7 +139,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_Workshop_Shutter",
@@ -131,7 +151,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_ForgedIron",
@@ -204,6 +225,44 @@
   ],
   "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
   "unreal_mesh": "SM_SilverbrookWorkshop",
+  "parts": [
+    {
+      "name": "Door1",
+      "fbx": "SilverbrookWorkshop_Door1.fbx",
+      "unreal_mesh": "SM_SilverbrookWorkshop_Door1",
+      "pivot_m": [
+        -2.355,
+        -2.0735,
+        0.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    },
+    {
+      "name": "Door2",
+      "fbx": "SilverbrookWorkshop_Door2.fbx",
+      "unreal_mesh": "SM_SilverbrookWorkshop_Door2",
+      "pivot_m": [
+        -0.085,
+        -2.0735,
+        0.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": -90,
+      "modelled": "closed"
+    }
+  ],
   "slot_m": [
     8,
     6,

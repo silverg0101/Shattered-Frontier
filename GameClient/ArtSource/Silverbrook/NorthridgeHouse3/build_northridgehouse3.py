@@ -262,13 +262,16 @@ for s in (-1,1):
     lantern(G,M,(GX+s*1.05,PY0-.42,2.2),arm=((GX+s*1.05,PY0-.09,2.2),(0,-1,0)))
 for (hx,y0,y1,h) in ((1.15,-3.45,-4.75,.48),(1.2,-4.75,-5.05,.32),(1.25,-5.05,-5.35,.16)):T.box((GX,(y0+y1)/2,h/2),(2*hx,y0-y1,h),M['trim'],.012)
 # door: pointed ledged double leaf in the bay wall, iron straps and ring pulls
-Pd,Rd=frame((GX,BF,0),(0,-1,0));w,sp=DOOR[1],DOOR[3];pts=arcpts(w,sp);top=pts[-1][1]
-for s in (-1,1):
-    leaf=[(0,.48),(s*w/2,.48),(s*w/2,sp)]+[(s*x,z) for x,z in pts[1:-1]]+[(0,top)]
-    D.prism([Pd(x+s*.005,-.2,z) for x,z in leaf],(0,-1,0),.07,M['door'])
-    for z in (.85,1.75):D.box(Pd(s*w*.27,-.155,z),(w*.42,.014,.06),M['iron'],.004,Rd)
-    for k in range(10):t=math.tau*k/10;D.box(Pd(s*.13+.055*math.cos(t),-.15,1.25+.055*math.sin(t)),(.035,.012,.012),M['iron'],0,Rd@Matrix.Rotation(t,3,'Y'))
-    D.box(Pd(s*.13,-.158,1.31),(.06,.008,.06),M['iron'],.004,Rd)
+# Each leaf is its own mesh so it can open: inner face 5 mm proud of the wall's inner face and 5 mm inside the jamb,
+# so the pointed head swings into the house clear of the soffit.
+Pd,Rd=frame((GX,BF,0),(0,-1,0));w,sp=DOOR[1],DOOR[3];pts=arcpts(w,sp,-.005);LD=-.4+.03
+for k,s in ((1,-1),(2,1)):
+    L=G[f'door{k}']=Geo(f'SM_SBNorthridgeHouse3_Door{k}',asset)
+    leaf=[(.005,.48),(w/2-.005,.48)]+[p for p in pts if p[0]>.005]+[(.005,pts[-1][1])]
+    L.prism([Pd(s*x,LD,z) for x,z in leaf],(0,-1,0),.07,M['door'])
+    for z in (.85,1.75):L.box(Pd(s*w*.27,LD+.045,z),(w*.42,.014,.06),M['iron'],.004,Rd)
+    for j in range(10):t=math.tau*j/10;L.box(Pd(s*.13+.055*math.cos(t),LD+.05,1.25+.055*math.sin(t)),(.035,.012,.012),M['iron'],0,Rd@Matrix.Rotation(t,3,'Y'))
+    L.box(Pd(s*.13,LD+.042,1.31),(.06,.008,.06),M['iron'],.004,Rd)
 # ---- round corner tower with slate cone ----------------------------------------------
 lathe(S,(TX,TY,0),[(0,0),(TRAD,0),(TRAD,TTOP),(0,TTOP)],M['stone'],24)
 lathe(T,(TX,TY,0),[(TRAD-.02,TTOP-.1),(TRAD+.13,TTOP),(TRAD+.13,TTOP+.3),(0,TTOP+.3)],M['trim'],24,False)
@@ -368,6 +371,21 @@ for o in bpy.data.objects:o.select_set(o in objs)
 bpy.context.view_layer.objects.active=objs[0]
 # Textures stay in ../Textures (FBX references them relatively); embedding 2k scans makes a 60 MB GLB.
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')
+# Door leaves: own meshes, hinged at the outer jamb on the inner (+Y) face; each opens 90 deg inward (+Y, into the house).
+from mathutils.bvhtree import BVHTree
+def bvh(o,vs=None):return BVHTree.FromPolygons(vs or [o.matrix_world@v.co for v in o.data.vertices],[p.vertices[:] for p in o.data.polygons])
+LEAVES=[]
+for k,s in ((1,-1),(2,1)):                         # Door1 left leaf, Door2 right leaf (seen from the street)
+    leaf=bpy.data.objects[f'SM_SBNorthridgeHouse3_Door{k}'];vs=[leaf.matrix_world@v.co for v in leaf.data.vertices];tr=-90*s
+    piv=Vector((s*max(s*v.x for v in vs),max(v.y for v in vs),min(v.z for v in vs)));rot=Matrix.Rotation(math.radians(tr),3,'Z')
+    sw=[piv+rot@(v-piv) for v in vs]
+    assert min(v.y for v in sw)>piv.y-1e-3 and max(v.y for v in sw)>piv.y+.4,f'Door{k} does not swing inward'
+    hits={o.name:len({b for _,b in bvh(leaf,sw).overlap(bvh(o))}-{b for _,b in bvh(leaf,vs).overlap(bvh(o))}) for o in objs if 'Door' not in o.name}
+    print(f'DOOR{k}_SWING pivot',[round(c,3) for c in piv],'travel',tr,'open y %.3f..%.3f'%(min(v.y for v in sw),max(v.y for v in sw)),'new contacts',{n:c for n,c in hits.items() if c})
+    assert not any(hits.values()),f'Door{k} swings through {hits}'
+    LEAVES.append((leaf,f'Door{k}',tuple(piv),(0,0,1),'swing',tr,'closed'))
+PARTS=kit.export_parts(LEAVES,str(OUT),'SM_SilverbrookNorthridgeHouse3')
+for leaf,*_ in LEAVES:leaf.select_set(False)
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
 pre=bpy.data.collections.new('Preview');scene.collection.children.link(pre)
 ground=bpy.data.meshes.new('Ground');ground.from_pydata([(-40,-40,0),(40,-40,0),(40,40,0),(-40,40,0)],[],[(0,1,2,3)]);g=bpy.data.objects.new('Ground',ground);pre.objects.link(g);g.data.materials.append(kit.solid('Preview_Ground',(.11,.12,.07),.95))
@@ -386,6 +404,6 @@ manifest=dict(asset='SilverbrookNorthridgeHouse3',reference=dict(file='Northridg
     blender=bpy.app.version_string,generator='build_northridgehouse3.py',method='procedural original geometry (concept interpretation, not image reconstruction)',
     units='metres, Z up, front -Y, origin ground centre',bounds_m=[round(v,3) for v in maxs-mins],
     meshes={o.name:dict(triangles=sum(len(p.vertices)-2 for p in o.data.polygons),materials=[m.name for m in o.data.materials]) for o in objs},triangles=tris,
-    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookNorthridgeHouse3',slot_m=list(SLOT),outputs=['SilverbrookNorthridgeHouse3.blend','SilverbrookNorthridgeHouse3.glb','SilverbrookNorthridgeHouse3.fbx'])
+    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookNorthridgeHouse3',parts=PARTS,slot_m=list(SLOT),outputs=['SilverbrookNorthridgeHouse3.blend','SilverbrookNorthridgeHouse3.glb','SilverbrookNorthridgeHouse3.fbx'])
 (HERE/'asset-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print('NORTHRIDGEHOUSE3_BUILT',manifest['bounds_m'],tris,{o.name:sum(len(p.vertices)-2 for p in o.data.polygons) for o in objs})

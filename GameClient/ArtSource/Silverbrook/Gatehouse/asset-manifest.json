@@ -54,12 +54,11 @@
       ]
     },
     "SM_SBGatehouse_Details": {
-      "triangles": 3924,
+      "triangles": 3476,
       "materials": [
         "SB_WallSection_Masonry",
         "SB_ForgedIron",
         "SB_LanternGlow",
-        "SB_DoorBoards",
         "SB_LitGlass",
         "SB_LeadCame",
         "SB_Gatehouse_Banner",
@@ -83,6 +82,34 @@
     "SM_SBGatehouse_Portcullis": {
       "triangles": 508,
       "materials": [
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBGatehouse_Door1": {
+      "triangles": 112,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBGatehouse_Door2": {
+      "triangles": 112,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBGatehouse_Door3": {
+      "triangles": 112,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBGatehouse_Door4": {
+      "triangles": 112,
+      "materials": [
+        "SB_DoorBoards",
         "SB_ForgedIron"
       ]
     }
@@ -310,6 +337,78 @@
       "motion": "slide",
       "travel": 4.0,
       "modelled": "open"
+    },
+    {
+      "name": "Door1",
+      "fbx": "SilverbrookGatehouse_Door1.fbx",
+      "unreal_mesh": "SM_SilverbrookGatehouse_Door1",
+      "pivot_m": [
+        -8.45,
+        3.27,
+        0.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    },
+    {
+      "name": "Door2",
+      "fbx": "SilverbrookGatehouse_Door2.fbx",
+      "unreal_mesh": "SM_SilverbrookGatehouse_Door2",
+      "pivot_m": [
+        -12.77,
+        0.85,
+        5.4
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    },
+    {
+      "name": "Door3",
+      "fbx": "SilverbrookGatehouse_Door3.fbx",
+      "unreal_mesh": "SM_SilverbrookGatehouse_Door3",
+      "pivot_m": [
+        9.55,
+        3.27,
+        0.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    },
+    {
+      "name": "Door4",
+      "fbx": "SilverbrookGatehouse_Door4.fbx",
+      "unreal_mesh": "SM_SilverbrookGatehouse_Door4",
+      "pivot_m": [
+        12.77,
+        -0.15,
+        5.4
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
     }
   ],
   "slot_m": [

@@ -1,7 +1,7 @@
 {
   "source": {
-    "meshes": 5,
-    "triangles": 117368,
+    "meshes": 7,
+    "triangles": 117376,
     "size_m": [
       10.933,
       7.351,
@@ -29,8 +29,8 @@
     "images": 18
   },
   "glb": {
-    "meshes": 5,
-    "triangles": 117368,
+    "meshes": 7,
+    "triangles": 117376,
     "size_m": [
       10.933,
       7.351,
@@ -60,14 +60,13 @@
   },
   "fbx": {
     "meshes": 5,
-    "triangles": 117368,
+    "triangles": 116804,
     "size_m": [
       10.933,
       7.351,
       9.633
     ],
     "materials": [
-      "SB_DoorBoards",
       "SB_ForgedIron",
       "SB_LanternGlow",
       "SB_LeadCame",
@@ -85,6 +84,6 @@
       "Weathering"
     ],
     "images_missing": [],
-    "images": 12
+    "images": 5
   }
 }

@@ -40,17 +40,23 @@
       ]
     },
     "SM_SBTownhouse2_Details": {
-      "triangles": 20236,
+      "triangles": 19960,
       "materials": [
         "SB_ForgedIron",
         "SB_LitGlass",
         "SB_LeadCame",
         "SB_ChimneyPot",
-        "SB_DoorBoards",
         "SB_PlanterSoil",
         "SB_LanternGlow",
         "SB_Townhouse2_Banner",
         "SB_Townhouse2_Gilt"
+      ]
+    },
+    "SM_SBTownhouse2_Door1": {
+      "triangles": 276,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
       ]
     }
   },
@@ -65,7 +71,8 @@
         0.28
       ],
       "lichen": "lichen_rock",
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_Townhouse2_Ashlar",
@@ -76,7 +83,8 @@
         0.33
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_LimePlaster",
@@ -87,7 +95,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_OakTimber",
@@ -98,7 +107,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_DoorBoards",
@@ -109,7 +119,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_Townhouse2_Banner",
@@ -120,7 +131,8 @@
         0.34
       ],
       "lichen": null,
-      "normal": 0.6
+      "normal": 0.6,
+      "metal": false
     },
     {
       "name": "SB_ForgedIron",
@@ -217,6 +229,26 @@
   ],
   "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
   "unreal_mesh": "SM_SilverbrookTownhouse2",
+  "parts": [
+    {
+      "name": "Door1",
+      "fbx": "SilverbrookTownhouse2_Door1.fbx",
+      "unreal_mesh": "SM_SilverbrookTownhouse2_Door1",
+      "pivot_m": [
+        -1.4523,
+        -2.0228,
+        0.45
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    }
+  ],
   "slot_m": [
     8,
     7,

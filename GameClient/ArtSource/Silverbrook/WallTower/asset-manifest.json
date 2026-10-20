@@ -35,13 +35,26 @@
       ]
     },
     "SM_SBWallTower_Details": {
-      "triangles": 4032,
+      "triangles": 3480,
       "materials": [
-        "SB_DoorBoards",
-        "SB_ForgedIron",
         "SB_OakTimber",
+        "SB_ForgedIron",
         "SB_WallTower_Banner",
         "SB_WallTower_Gilt"
+      ]
+    },
+    "SM_SBWallTower_Door1": {
+      "triangles": 276,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBWallTower_Door2": {
+      "triangles": 276,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
       ]
     }
   },
@@ -56,7 +69,8 @@
         0.86
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_WallSection_Paving",
@@ -67,7 +81,8 @@
         0.62
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_WallSection_LoopVoid",
@@ -90,7 +105,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_DoorBoards",
@@ -101,7 +117,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_ForgedIron",
@@ -124,7 +141,8 @@
         0.3
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_WallTower_Gilt",
@@ -141,6 +159,44 @@
   ],
   "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
   "unreal_mesh": "SM_SilverbrookWallTower",
+  "parts": [
+    {
+      "name": "Door1",
+      "fbx": "SilverbrookWallTower_Door1.fbx",
+      "unreal_mesh": "SM_SilverbrookWallTower_Door1",
+      "pivot_m": [
+        3.2377,
+        -0.15,
+        5.3897
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    },
+    {
+      "name": "Door2",
+      "fbx": "SilverbrookWallTower_Door2.fbx",
+      "unreal_mesh": "SM_SilverbrookWallTower_Door2",
+      "pivot_m": [
+        -3.2377,
+        0.85,
+        5.3897
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    }
+  ],
   "slot_m": [
     8,
     8,

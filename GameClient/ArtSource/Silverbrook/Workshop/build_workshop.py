@@ -167,13 +167,16 @@ window(G,M,(XG,-D2-.02,GWZ),(0,-1,0),GWW,GWH,shutters=False,band=band())
 # workshop bay: two closed ledged-and-braced board leaves, recessed in the opening
 yd=-D2+.12;mid=(BAY[0]+BAY[1])/2
 for a0,a1,s in ((BAY[0],mid,-1),(mid,BAY[1],1)):   # leaves meet the reveals and each other: no see-through gaps
-    c=(a0+a1)/2;lw=a1-a0
-    G['detail'].box((c,yd,BAY[2]/2),(lw,.06,BAY[2]),M['door'],0)
-    for z in (.32,1.07,1.82):G['detail'].box((c,yd-.05,z),(lw-.08,.04,.14),M['door'],.006)
-    for z0,z1 in ((.4,1.0),(1.15,1.75)):G['detail'].beam((c+s*(lw/2-.12),yd-.05,z0),(c-s*(lw/2-.12),yd-.05,z1),.12,.04,M['door'],grain=False)
-    for z in (.32,1.82):G['detail'].box((c+s*(lw/2-.3),yd-.076,z),(.56,.012,.05),M['iron'],.003)   # strap hinges from the outer edge
-    G['detail'].box(((a1-.1) if s<0 else (a0+.1),yd-.085,1.05),(.05,.03,.12),M['iron'],.004)        # handle plates
-G['detail'].box((mid,yd-.045,BAY[2]/2),(.07,.03,BAY[2]-.04),M['door'],.006)   # cover batten on the meeting stiles
+    c=(a0+a1)/2;lw=a1-a0;k=len(kit.DOORS)+1
+    # Each leaf is its own mesh so it can open; kit.split_doors hinges it on its outer reveal (r points away from the hinge).
+    D=G[f'door{k}']=Geo(f'SM_SBWorkshop_Door{k}',asset);kit.DOORS.append(dict(geo=D,r=Vector((-s,0,0)),o=Vector((0,-1,0))))
+    if k==1:Batten=D
+    D.box((c,yd,BAY[2]/2),(lw,.06,BAY[2]),M['door'],0)
+    for z in (.32,1.07,1.82):D.box((c,yd-.05,z),(lw-.08,.04,.14),M['door'],.006)
+    for z0,z1 in ((.4,1.0),(1.15,1.75)):D.beam((c+s*(lw/2-.12),yd-.05,z0),(c-s*(lw/2-.12),yd-.05,z1),.12,.04,M['door'],grain=False)
+    for z in (.32,1.82):D.box((c+s*(lw/2-.3),yd-.076,z),(.56,.012,.05),M['iron'],.003)   # strap hinges from the outer edge
+    D.box(((a1-.1) if s<0 else (a0+.1),yd-.085,1.05),(.05,.03,.12),M['iron'],.004)        # handle plates
+Batten.box((mid,yd-.045,BAY[2]/2),(.07,.03,BAY[2]-.04),M['door'],.006)   # cover batten on the meeting stiles, fixed to the left leaf (right leaf opens first)
 # ---- lean-to on the right ----------------------------------------------------------
 LX0,LX1,LZ0,LZ1,LY=W2,3.82,2.42,1.86,1.55;KL=(LZ0-LZ1)/(LX1-LX0)
 def lean_z(x):return LZ1+(LX1-x)*KL
@@ -211,6 +214,7 @@ OUT=HERE/'SilverbrookWorkshop'
 for o in bpy.data.objects:o.select_set(o in objs)
 bpy.context.view_layer.objects.active=objs[0]
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')
+DOORS=kit.split_doors(str(OUT),'SM_SilverbrookWorkshop')  # bay door leaves: own meshes, hinged, left out of the main FBX
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
 pre=bpy.data.collections.new('Preview');scene.collection.children.link(pre)
 ground=bpy.data.meshes.new('Ground');ground.from_pydata([(-30,-30,0),(30,-30,0),(30,30,0),(-30,30,0)],[],[(0,1,2,3)]);g=bpy.data.objects.new('Ground',ground);pre.objects.link(g);g.data.materials.append(kit.solid('Preview_Ground',(.11,.12,.07),.95))
@@ -231,6 +235,6 @@ manifest=dict(asset='SilverbrookWorkshop',reference=dict(file='Workshop-referenc
     blender=bpy.app.version_string,generator='build_workshop.py',method='procedural original geometry (concept interpretation, not image reconstruction)',
     units='metres, Z up, front -Y, origin ground centre',bounds_m=[round(v,3) for v in maxs-mins],
     meshes={o.name:dict(triangles=sum(len(p.vertices)-2 for p in o.data.polygons),materials=[m.name for m in o.data.materials]) for o in objs},triangles=tris,
-    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookWorkshop',slot_m=list(SLOT),outputs=['SilverbrookWorkshop.blend','SilverbrookWorkshop.glb','SilverbrookWorkshop.fbx'])
+    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookWorkshop',parts=DOORS,slot_m=list(SLOT),outputs=['SilverbrookWorkshop.blend','SilverbrookWorkshop.glb','SilverbrookWorkshop.fbx'])
 (HERE/'asset-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print('WORKSHOP_BUILT',manifest['bounds_m'],tris)

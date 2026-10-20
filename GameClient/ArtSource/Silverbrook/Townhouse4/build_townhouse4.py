@@ -175,18 +175,19 @@ while z<DS-.05:
     hgt=min(.36,DS-z);qw=.32 if i%2 else .46
     for s in (-1,1):G['stone'].box(P(s*(DW/2-.012+qw/2),-.15,z+hgt/2),(qw,.4,hgt-.012),M['ashlar'],.012,R,rect=kit.rng.choice(STONES))
     z+=hgt;i+=1
+D=Geo('SM_SBTownhouse4_Door1',asset);G['door1']=D;kit.DOORS.append(dict(geo=D,r=R@Vector((1,0,0)),o=o_))   # leaf, straps, ring, vision light
 leaf=[(-DW/2,0),(DW/2,0)]+[(DW/2-DW*(1-math.cos(t)),DS+DW*math.sin(t)) for t in np.linspace(0,math.pi/3,9)]+[(-DW/2+DW*(1-math.cos(t)),DS+DW*math.sin(t)) for t in np.linspace(math.pi/3,0,9)[1:]]
-G['detail'].prism([P(a,-.2,z) for a,z in leaf],o_,.07,M['door'])
+D.prism([P(a,-.2,z) for a,z in leaf],o_,.07,M['door'])
 for zz in (.42,1.45):
-    G['detail'].box(P(-DW*.12,-.162,zz),(DW*.72,.012,.06),M['iron'],.004,R)
-    G['detail'].box(P(-DW/2+.05,-.162,zz),(.1,.014,.14),M['iron'],.004,R)
-    G['detail'].box(P(DW*.24,-.162,zz),(.06,.014,.12),M['iron'],.004,R)
+    D.box(P(-DW*.12,-.162,zz),(DW*.72,.012,.06),M['iron'],.004,R)
+    D.box(P(-DW/2+.05,-.162,zz),(.1,.014,.14),M['iron'],.004,R)
+    D.box(P(DW*.24,-.162,zz),(.06,.014,.12),M['iron'],.004,R)
 for k in range(10):
-    t=math.tau*k/10;G['detail'].box(P(DW*.27+.06*math.cos(t),-.158,.95+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
-G['detail'].box(P(DW*.27,-.162,1.01),(.07,.012,.07),M['iron'],.004,R)
+    t=math.tau*k/10;D.box(P(DW*.27+.06*math.cos(t),-.158,.95+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
+D.box(P(DW*.27,-.162,1.01),(.07,.012,.07),M['iron'],.004,R)
 pane=[(-.09,1.75),(.09,1.75),(.09,1.98),(0,2.1),(-.09,1.98)]
-G['detail'].prism([P(a,-.162,z) for a,z in pane],o_,.012,M['glass'])
-for a0,z0,a1,z1 in ((0,1.75,0,2.1),(-.09,1.9,.09,1.9)):G['detail'].beam(P(a0,-.153,z0),P(a1,-.153,z1),.012,.01,M['lead'],grain=False)
+D.prism([P(a,-.162,z) for a,z in pane],o_,.012,M['glass'])
+for a0,z0,a1,z1 in ((0,1.75,0,2.1),(-.09,1.9,.09,1.9)):D.beam(P(a0,-.153,z0),P(a1,-.153,z1),.012,.01,M['lead'],grain=False)
 # three steps, each a separate course so no side faces are coplanar
 for k,(wd,go) in enumerate(((1.75,.84),(1.62,.56),(1.5,.28))):
     G['stone'].box((XD,SF-go/2+.01,.15*k+.075),(wd,go+.02,.15),M['ashlar'],.012)
@@ -303,6 +304,13 @@ OUT=HERE/NAME
 for o in bpy.data.objects:o.select_set(o in objs)
 bpy.context.view_layer.objects.active=objs[0]
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')
+PARTS=kit.split_doors(str(OUT),'SM_SilverbrookTownhouse4')
+# Door leaves: own meshes hinged on the -r jamb, opening 90 deg inward; check the swing ends inside the building.
+for d,row in zip(kit.DOORS,PARTS):
+    ob_=bpy.data.objects[d['geo'].name];pv=Vector(row['pivot_m']);rz=Matrix.Rotation(math.radians(row['travel']),3,'Z');o_h=Vector((d['o'].x,d['o'].y,0)).normalized()
+    vs=[pv+rz@(ob_.matrix_world@v.co-pv) for v in ob_.data.vertices];c_=sum(vs,Vector())/len(vs)
+    assert (c_-pv).dot(o_h)<-.3 and max((v-pv).dot(o_h) for v in vs)<.02,f"{row['name']} does not swing inward"
+    print('DOOR_SWING',row['name'],row['pivot_m'],row['travel'],'open centre inward %.2f m'%-(c_-pv).dot(o_h))
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
 pre=bpy.data.collections.new('Preview');scene.collection.children.link(pre)
 ground=bpy.data.meshes.new('Ground');ground.from_pydata([(-30,-30,0),(30,-30,0),(30,30,0),(-30,30,0)],[],[(0,1,2,3)]);g=bpy.data.objects.new('Ground',ground);pre.objects.link(g);g.data.materials.append(kit.solid('Preview_Ground',(.11,.12,.07),.95))
@@ -323,6 +331,6 @@ manifest=dict(asset=NAME,reference=dict(file='Townhouse4-reference.png',sha256=h
     blender=bpy.app.version_string,generator='build_townhouse4.py',method='procedural original geometry (concept interpretation, not image reconstruction)',
     units='metres, Z up, front -Y, origin ground centre',bounds_m=[round(v,3) for v in maxs-mins],
     meshes={o.name:dict(triangles=sum(len(p.vertices)-2 for p in o.data.polygons),materials=[m.name for m in o.data.materials]) for o in objs},triangles=tris,
-    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookTownhouse4',slot_m=list(SLOT),outputs=[f'{NAME}.blend',f'{NAME}.glb',f'{NAME}.fbx'])
+    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookTownhouse4',parts=PARTS,slot_m=list(SLOT),outputs=[f'{NAME}.blend',f'{NAME}.glb',f'{NAME}.fbx'])
 (HERE/'asset-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print('TOWNHOUSE4_BUILT',manifest['bounds_m'],tris)

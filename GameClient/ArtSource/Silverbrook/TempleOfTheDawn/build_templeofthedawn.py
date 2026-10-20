@@ -187,14 +187,18 @@ for s in (-1,1):                # porch corner pinnacles
     G['trim'].box((s*(PH-.12),PY0+.12,PE+.2),(.26,.26,.4),M['trim'],.01,rect=rect());spire(s*(PH-.12),PY0+.12,PE+.4,PE+1.25,.16,4);finial(s*(PH-.12),PY0+.12,PE+1.2,.6)
 # door: pointed ledged double leaf, iron straps and rings, dressed hood ring
 Pd,Rd=frame((0,YF,0),(0,-1,0));a,w,lo,sp=DOOR;hw=pointed(w,sp)
-G['detail'].prism([Pd(x,-.35,z) for x,z in [(-w/2-.02,lo),(w/2+.02,lo)]+arch_pts(a,w,sp,.02)],(0,-1,0),.08,M['door'])
-G['detail'].box(Pd(0,-.305,(lo+sp+w*.86)/2-.02),(.05,.012,sp+w*.86-lo-.06),M['iron'],.003,Rd)
-for z in (1.0,2.2,3.3):
-    for s in (-1,1):G['detail'].box(Pd(s*hw(z)/2,-.303,z),(hw(z)-.1,.012,.06),M['iron'],.003,Rd)
+# One mesh per leaf so each opens; hinges on the outer jambs, leaves meet on the centre line.
+arc=arch_pts(a,w,sp,.02);half=len(arc)//2   # right spring -> apex (index half) -> left spring
 for s in (-1,1):
+    L=Geo(f'SM_SBTempleOfTheDawn_Door{len(kit.DOORS)+1}',asset);G[L.name]=L
+    kit.DOORS.append(dict(geo=L,r=Vector((-s,0,0)),o=Vector((0,-1,0)),width=w/2))   # r points from the hinge jamb to the meeting line
+    outline=[(-w/2-.02,lo),(a,lo)]+arc[half:] if s<0 else [(a,lo),(w/2+.02,lo)]+arc[:half+1]
+    L.prism([Pd(x,-.35,z) for x,z in outline],(0,-1,0),.08,M['door'])
+    L.box(Pd(s*.0125,-.305,(lo+sp+w*.86)/2-.02),(.025,.012,sp+w*.86-lo-.06),M['iron'],.003,Rd)   # meeting strap, half per leaf
+    for z in (1.0,2.2,3.3):L.box(Pd(s*hw(z)/2,-.303,z),(hw(z)-.1,.012,.06),M['iron'],.003,Rd)
     for k in range(10):
-        t=math.tau*k/10;G['detail'].box(Pd(s*.18+.06*math.cos(t),-.29,1.55+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,Rd@Matrix.Rotation(t,3,'Y'))
-    G['detail'].box(Pd(s*.18,-.302,1.61),(.07,.01,.07),M['iron'],.004,Rd)
+        t=math.tau*k/10;L.box(Pd(s*.18+.06*math.cos(t),-.29,1.55+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,Rd@Matrix.Rotation(t,3,'Y'))
+    L.box(Pd(s*.18,-.302,1.61),(.07,.01,.07),M['iron'],.004,Rd)
 ring(G['trim'],Pd,arch_pts(a,w,sp,.1),.04,.13,M['trim'],rect=rect())
 lantern(G,M,(0,-9.7,PS+PW*.866-.02))
 # landing steps and lantern pedestals
@@ -282,6 +286,13 @@ OUT=HERE/'SilverbrookTempleOfTheDawn'
 for o in bpy.data.objects:o.select_set(o in objs)
 bpy.context.view_layer.objects.active=objs[0]
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')
+DOORS=kit.split_doors(str(OUT),'SM_SilverbrookTempleOfTheDawn')  # door leaves: own meshes, hinged; deselected for the main FBX
+# Door leaves are their own meshes hinged at the jamb; check each opens inward (+Y, away from the street) above its sill.
+for d,row in zip(kit.DOORS,DOORS):
+    ob_=bpy.data.objects[d['geo'].name];vs=[ob_.matrix_world@v.co for v in ob_.data.vertices]
+    pv=Vector(row['pivot_m']);rot=Matrix.Rotation(math.radians(row['travel']),3,'Z');op=[pv+rot@(v-pv) for v in vs]
+    dy=sum(v.y for v in op)/len(op)-sum(v.y for v in vs)/len(vs);print('DOOR_SWING',row['name'],row['pivot_m'],row['travel'],round(dy,3))
+    assert dy>.3 and min(v.z for v in op)>pv.z-1e-3,f"{row['name']} does not swing inward"
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
 pre=bpy.data.collections.new('Preview');scene.collection.children.link(pre)
 ground=bpy.data.meshes.new('Ground');ground.from_pydata([(-60,-60,0),(60,-60,0),(60,60,0),(-60,60,0)],[],[(0,1,2,3)]);g=bpy.data.objects.new('Ground',ground);pre.objects.link(g);g.data.materials.append(kit.solid('Preview_Ground',(.11,.12,.07),.95))
@@ -302,6 +313,6 @@ manifest=dict(asset='SilverbrookTempleOfTheDawn',reference=dict(file='TempleOfTh
     blender=bpy.app.version_string,generator='build_templeofthedawn.py',method='procedural original geometry (concept interpretation, not image reconstruction)',
     units='metres, Z up, front -Y, origin ground centre',bounds_m=[round(v,3) for v in maxs-mins],
     meshes={o.name:dict(triangles=sum(len(p.vertices)-2 for p in o.data.polygons),materials=[m.name for m in o.data.materials]) for o in objs},triangles=tris,
-    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookTempleOfTheDawn',slot_m=list(SLOT),outputs=['SilverbrookTempleOfTheDawn.blend','SilverbrookTempleOfTheDawn.glb','SilverbrookTempleOfTheDawn.fbx'])
+    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookTempleOfTheDawn',parts=DOORS,slot_m=list(SLOT),outputs=['SilverbrookTempleOfTheDawn.blend','SilverbrookTempleOfTheDawn.glb','SilverbrookTempleOfTheDawn.fbx'])
 (HERE/'asset-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print('TEMPLE_BUILT',manifest['bounds_m'],tris)

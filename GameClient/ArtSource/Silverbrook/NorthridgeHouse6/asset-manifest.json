@@ -40,7 +40,7 @@
       ]
     },
     "SM_SBNorthridgeHouse6_Details": {
-      "triangles": 27484,
+      "triangles": 26920,
       "materials": [
         "SB_ForgedIron",
         "SB_LitGlass",
@@ -49,12 +49,25 @@
         "SB_NorthridgeHouse6_Banner",
         "SB_NorthridgeHouse6_Gilt",
         "SB_PlanterSoil",
-        "SB_DoorBoards",
         "SB_LanternGlow"
+      ]
+    },
+    "SM_SBNorthridgeHouse6_Door1": {
+      "triangles": 272,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBNorthridgeHouse6_Door2": {
+      "triangles": 300,
+      "materials": [
+        "SB_DoorBoards",
+        "SB_ForgedIron"
       ]
     }
   },
-  "triangles": 117368,
+  "triangles": 117376,
   "materials": [
     {
       "name": "SB_NorthridgeHouse6_Slate",
@@ -65,7 +78,8 @@
         0.27
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_NorthridgeHouse6_Ashlar",
@@ -76,7 +90,8 @@
         0.33
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_NorthridgeHouse6_Dressed",
@@ -87,7 +102,8 @@
         0.33
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_OakTimber",
@@ -98,7 +114,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_DoorBoards",
@@ -109,7 +126,8 @@
         0.28
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_NorthridgeHouse6_Banner",
@@ -120,7 +138,8 @@
         0.3
       ],
       "lichen": null,
-      "normal": 1.0
+      "normal": 1.0,
+      "metal": false
     },
     {
       "name": "SB_ForgedIron",
@@ -217,6 +236,44 @@
   ],
   "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
   "unreal_mesh": "SM_SilverbrookNorthridgeHouse6",
+  "parts": [
+    {
+      "name": "Door1",
+      "fbx": "SilverbrookNorthridgeHouse6_Door1.fbx",
+      "unreal_mesh": "SM_SilverbrookNorthridgeHouse6_Door1",
+      "pivot_m": [
+        -0.2804,
+        -2.0155,
+        0.3
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": 90,
+      "modelled": "closed"
+    },
+    {
+      "name": "Door2",
+      "fbx": "SilverbrookNorthridgeHouse6_Door2.fbx",
+      "unreal_mesh": "SM_SilverbrookNorthridgeHouse6_Door2",
+      "pivot_m": [
+        0.9596,
+        -2.0155,
+        0.3
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "swing",
+      "travel": -90,
+      "modelled": "closed"
+    }
+  ],
   "slot_m": [
     12,
     10,
