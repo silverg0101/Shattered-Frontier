@@ -1,0 +1,50 @@
+[
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_BroadleafYoung_00",
+    "size_m": [
+      5.68,
+      6.31,
+      9.88
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 1,
+    "triangles": 7648
+  },
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_BroadleafYoung_01",
+    "size_m": [
+      6.92,
+      5.85,
+      10.2
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 2,
+    "triangles": 7322
+  },
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_BroadleafYoung_02",
+    "size_m": [
+      7.73,
+      7.18,
+      9.6
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 3,
+    "triangles": 5761
+  },
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_BroadleafYoung_03",
+    "size_m": [
+      6.89,
+      6.35,
+      10.58
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 1,
+    "triangles": 7643
+  }
+]

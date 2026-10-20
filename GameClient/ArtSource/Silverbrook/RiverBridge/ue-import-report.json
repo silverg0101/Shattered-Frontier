@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookRiverBridge",
+  "size_m": [
+    22.0,
+    7.4,
+    6.59
+  ],
+  "slots": 3,
+  "nanite": true,
+  "collision": "complex",
+  "convex_hulls": 0,
+  "nanite_fallback_triangles": 9372,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 512
+  },
+  "slot_m": [
+    22,
+    7.6,
+    7
+  ],
+  "fits": true
+}

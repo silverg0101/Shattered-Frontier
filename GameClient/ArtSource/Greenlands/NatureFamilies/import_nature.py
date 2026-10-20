@@ -56,7 +56,7 @@ def master(name,two_sided,leaf):
         for t in (base,nor,arm):link(uv,'',t,'UVs')
         tint=node(m,u.MaterialExpressionVectorParameter,-800,y-100,parameter_name='Tint'+p,default_value=u.LinearColor(1,1,1,1))
         tm=node(m,u.MaterialExpressionMultiply,-650,y);link(base,'RGB',tm,'A');link(tint,'',tm,'B')
-        one=node(m,u.MaterialExpressionConstant,-800,y-200,r=1.0);ds=node(m,u.MaterialExpressionDesaturation,-500,y-100);link(tm,'',ds,'Input');link(one,'',ds,'Fraction')
+        one=node(m,u.MaterialExpressionConstant,-800,y-200,r=1.0);ds=node(m,u.MaterialExpressionDesaturation,-500,y-100);link(tm,'',ds,'');link(one,'',ds,'Fraction')
         sat=sc('Sat'+p,1,-500,y+50);col=node(m,u.MaterialExpressionLinearInterpolate,-350,y);link(ds,'',col,'A');link(tm,'',col,'B');link(sat,'',col,'Alpha')
         packed=sc('ArmPacked'+p,1,-700,y+600);rough=node(m,u.MaterialExpressionLinearInterpolate,-350,y+500);link(arm,'R',rough,'A');link(arm,'G',rough,'B');link(packed,'',rough,'Alpha')
         return col,nor,rough,uv
@@ -110,6 +110,7 @@ def import_mesh(fbx,name,rock,instances):
     ns=mesh.get_editor_property('nanite_settings');ns.set_editor_property('enabled',True)
     try:ns.set_editor_property('fallback_percent_triangles',.03 if not rock else .1)  # trees are 300k+: keep the non-Nanite fallback tiny
     except Exception:pass
+    if not rock:ns.set_editor_property('shape_preservation',u.NaniteShapePreservation.PRESERVE_AREA)  # foliage: keeps leaf/needle area as Nanite simplifies, else crowns go bare at range
     mesh.set_editor_property('nanite_settings',ns);bs=mesh.get_editor_property('body_setup');bs.set_editor_property('collision_trace_flag',u.CollisionTraceFlag.CTF_USE_DEFAULT)
     if rock:
         sme.remove_collisions(mesh);assert sme.set_convex_decomposition_collisions(mesh,12,16,100000)>=0,name
@@ -121,9 +122,14 @@ def import_mesh(fbx,name,rock,instances):
 
 
 report={}
-for fam in FAMILIES:
-    man=json.loads((ROOT/fam/'asset-manifest.json').read_text());rock=fam in ('BoulderLargeMoss','BedrockSlab');inst={}
-    for s in man['materials']:inst[s['name']]=instance(s,'leaf' if s.get('alpha') else ('rock' if rock else 'wood'))
-    rep=[import_mesh(ROOT/fam/r['fbx'],r['mesh'],rock,inst) for r in man['variants']];report[fam]=rep
-    (ROOT/fam/'ue-import-report.json').write_text(json.dumps(rep,indent=2)+'\n')
+# Interchange's FBX path drops UCX_ collision, so the legacy FBX importer runs for this script and the flag is restored after.
+W=u.get_editor_subsystem(u.UnrealEditorSubsystem).get_editor_world();CV='Interchange.FeatureFlags.Import.FBX'
+was=u.SystemLibrary.get_console_variable_bool_value(CV);u.SystemLibrary.execute_console_command(W,f'{CV} 0')
+try:
+    for fam in FAMILIES:
+        man=json.loads((ROOT/fam/'asset-manifest.json').read_text());rock=fam in ('BoulderLargeMoss','BedrockSlab');inst={}
+        for s in man['materials']:inst[s['name']]=instance(s,'leaf' if s.get('alpha') else ('rock' if rock else 'wood'))
+        rep=[import_mesh(ROOT/fam/r['fbx'],r['mesh'],rock,inst) for r in man['variants']];report[fam]=rep
+        (ROOT/fam/'ue-import-report.json').write_text(json.dumps(rep,indent=2)+'\n')
+finally:u.SystemLibrary.execute_console_command(W,f'{CV} {int(was)}')
 print('NATURE_IMPORT',json.dumps(report))

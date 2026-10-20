@@ -1,0 +1,50 @@
+[
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_BedrockSlab_00",
+    "size_m": [
+      2.74,
+      2.39,
+      0.44
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 12,
+    "triangles": 4179
+  },
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_BedrockSlab_01",
+    "size_m": [
+      3.26,
+      2.47,
+      0.52
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 12,
+    "triangles": 4803
+  },
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_BedrockSlab_02",
+    "size_m": [
+      2.75,
+      1.98,
+      0.45
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 12,
+    "triangles": 3898
+  },
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_BedrockSlab_03",
+    "size_m": [
+      2.91,
+      2.41,
+      0.51
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 12,
+    "triangles": 4730
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_PineTall_00",
+    "size_m": [
+      9.36,
+      10.19,
+      23.87
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 1,
+    "triangles": 6510
+  },
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_PineTall_01",
+    "size_m": [
+      10.9,
+      10.53,
+      23.94
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 1,
+    "triangles": 8335
+  },
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_PineTall_02",
+    "size_m": [
+      11.56,
+      10.95,
+      22.7
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 1,
+    "triangles": 9344
+  },
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_PineTall_03",
+    "size_m": [
+      9.5,
+      10.04,
+      23.19
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 1,
+    "triangles": 7487
+  }
+]
