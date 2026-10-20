@@ -637,7 +637,8 @@ Values are defaults published as tuning keys in `config-service`; the key is aut
 | `DR_WINDOW_S` / `CC_REDUCTION_CAP` | 18 s / 0.40 | `tune.combat.*` | Combat |
 | `COMBAT_EXIT_S` | 5 s | `tune.combat.combat_exit_s` | Combat |
 | `TAUNT_THREAT_MULT` / `TAUNT_FORCE_S` | 1.10 / 3 s (taunt sets threat to `top × 1.10`) | `tune.combat.taunt_threat_mult`, `tune.combat.taunt_force_s` | Combat |
-| `DAY_LENGTH_MIN` | 240 (one in-game day) | `tune.world.day_length_minutes` | World |
+| `DAY_LENGTH_MIN` | 60 (one full in-game day, real minutes) | `tune.world.day_length_minutes` | World |
+| `NIGHT_LENGTH_MIN` | 15 (real minutes of night within the day) | `tune.world.night_length_minutes` | World |
 | `ZONE_CAPACITY_SOFT` / `ZONE_CAPACITY_HARD` | 200 / 250 players | `tune.world.zone_capacity_soft`, `tune.world.zone_capacity_hard` | World |
 | `BASE_RUN_SPEED` / `V_CAP_FOOT` / `V_CAP_MOUNTED` / `V_CAP_ABSOLUTE` | 7.0 / 12.0 / 20.0 / 20.0 m/s | `tune.world.*` | World (read by Security movement validation) |
 | `TERRAIN_MAX_VOLUME_M3` | 100 m³ per edit | `tune.world.terrain_max_volume_m3` | World |

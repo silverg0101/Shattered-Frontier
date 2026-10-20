@@ -457,19 +457,25 @@ Closes skeleton open issue 4. A **layer** is an additional `zone-server` process
 ## World clock
 
 - **Server time.** All hosts sync with chrony to regional NTP. A max offset of 5 ms is enforced by the node agent: a node above it is cordoned. `server_ms` (Unix ms) is the time used for token expiry, movement `Δt_s` and event `occurred_at`. Heartbeats carry `server_time_ms`. world-service flags any process more than 50 ms off its own clock (`ops.alert.fired`).
-- **Game time.** Derived, never accumulated, so it cannot drift:
+- **Game time.** Game time is derived from real time, never accumulated, so it cannot drift. It runs at two rates: the lit part of the day (dawn, day and dusk) takes `DAY_LENGTH_MIN − NIGHT_LENGTH_MIN` real minutes, and night takes `NIGHT_LENGTH_MIN`. Night therefore passes faster than daylight.
 
 ```text
-game_seconds = (utc_ms − realm_epoch_ms) / 1000 × (86400 / (DAY_LENGTH_MIN × 60))
-DAY_LENGTH_MIN = 240  (one game day = 4 real hours; tune.world.day_length_minutes)
-realm_epoch_ms = realm launch midnight UTC (config)
-game_day_index = floor(game_seconds / 86400)
-time_of_day_s  = game_seconds mod 86400
+DAY_LENGTH_MIN   = 60   (one full game day = 1 real hour; tune.world.day_length_minutes)
+NIGHT_LENGTH_MIN = 15   (real minutes of night in that hour; tune.world.night_length_minutes)
+b0, b1, b2, b3   = tune.world.day_phase_bounds        (dawn, day, dusk, night start; game seconds)
+D = DAY_LENGTH_MIN × 60        N = NIGHT_LENGTH_MIN × 60        Lr = D − N        (real seconds)
+G_lit = b3 − b0                G_night = 86400 − G_lit                            (game seconds)
+realm_epoch_ms = realm launch, at dawn (config)
+elapsed_s      = (utc_ms − realm_epoch_ms) / 1000
+game_day_index = floor(elapsed_s / D)               (counts dawns)
+r              = elapsed_s mod D
+time_of_day_s  = b0 + r × G_lit / Lr                      if r < Lr
+               = (b3 + (r − Lr) × G_night / N) mod 86400  otherwise
 ```
 
-- `GetWorldClock` returns `{realm_epoch_ms, day_length_minutes, world_time_ms, game_day_index, time_of_day_s}`. Zone-servers compute it locally from these values and resync on `config.tuning.published`. Clients get the same values at login; they are cosmetic (lighting) and never used for validation.
+- `GetWorldClock` returns `{realm_epoch_ms, day_length_minutes, night_length_minutes, world_time_ms, game_day_index, time_of_day_s}`. Zone-servers compute it locally from these values and resync on `config.tuning.published`. Clients get the same values at login; they are cosmetic (lighting) and never used for validation.
 - Seasons and resets are owned by LiveOps (Registry, Resets); World does not define them.
-- Changing `tune.world.day_length_minutes` is allowed only in a maintenance window. The realm epoch is re-based so that the current `time_of_day_s` is preserved: `realm_epoch_ms' = utc_now − (game_seconds_now / f')`, where `f' = 86400 / (DAY_LENGTH_MIN' × 60)`. Lighting therefore does not jump.
+- Changing `tune.world.day_length_minutes`, `tune.world.night_length_minutes` or `tune.world.day_phase_bounds` is allowed only in a maintenance window. The realm epoch is re-based so that the current `game_day_index` and `time_of_day_s` are kept: invert the formula above with the new values to get `r'`, then `realm_epoch_ms' = utc_now − (game_day_index × D' + r') × 1000`. Lighting therefore does not jump. Bounds: `day_length_minutes` 20–480, `night_length_minutes` 5 up to half of `day_length_minutes`.
 
 ```proto
 message GetWorldClockRequest { string realm_id = 1; }
@@ -477,23 +483,26 @@ message WorldClock {
   int64 realm_epoch_ms = 1; uint32 day_length_minutes = 2; int64 world_time_ms = 3;
   int64 game_day_index = 4; uint32 time_of_day_s = 5; string day_phase = 6;  // proposed field
   int64 next_phase_at_ms = 7;                                                 // proposed field
+  uint32 night_length_minutes = 8;                                            // proposed field
 }
 ```
 
 ### Day and night
 
-Proposed enum `day_phase`: `dawn`, `day`, `dusk`, `night`. With the default 240-minute day, 1 game hour = 10 real minutes.
+Proposed enum `day_phase`: `dawn`, `day`, `dusk`, `night`. With the defaults (a 60-minute day with 15 minutes of night), one game hour lasts about 2.8 real minutes in daylight and about 1.9 at night.
 
 | `day_phase` | Game time | Real duration | Gameplay hooks |
 | --- | --- | --- | --- |
-| `dawn` | 05:00–07:00 | 20 min | Spawn tables may switch; lighting only otherwise |
-| `day` | 07:00–19:00 | 120 min | Default spawn tables |
-| `dusk` | 19:00–21:00 | 20 min | As dawn |
-| `night` | 21:00–05:00 | 80 min | `phase_filter = night` spawns (undead, nocturnal wildlife); NPC visibility multiplier 0.7 for AI perception; world bosses with a night filter |
+| `dawn` | 05:00–07:00 | 5.6 min | Spawn tables may switch; lighting only otherwise |
+| `day` | 07:00–19:00 | 33.75 min | Default spawn tables |
+| `dusk` | 19:00–21:00 | 5.6 min | As dawn |
+| `night` | 21:00–05:00 | 15 min | `phase_filter = night` spawns (undead, nocturnal wildlife); NPC visibility multiplier 0.7 for AI perception; world bosses with a night filter |
+
+A one-hour cycle means every play session sees several dawns and nights, so no regular play time is stuck in the dark.
 
 Phase boundaries come from `tune.world.day_phase_bounds` (default `[18000, 25200, 68400, 75600]` seconds of game time).
 
-**Worked example.** Realm `eu-1` has `realm_epoch_ms` = 2026-11-01T00:00:00.000Z. At 2026-11-01T13:25:00.000Z, 48,300 real seconds have elapsed. The factor is 86400 / (240 × 60) = 6, so `game_seconds` = 289,800, `game_day_index` = 3 and `time_of_day_s` = 289,800 − 259,200 = 30,600 (08:30) → `day`. The next phase (`dusk` at 68,400) is 37,800 game seconds away = 6,300 real seconds, at 15:10:00Z.
+**Worked example.** Realm `eu-1` has `realm_epoch_ms` = 2026-11-01T00:00:00.000Z, at dawn. At 2026-11-01T13:25:00.000Z, 48,300 real seconds have elapsed. D = 3,600 and Lr = 2,700, so `game_day_index` = 13 and r = 1,500. That is under Lr, so `time_of_day_s` = 18,000 + 1,500 × 57,600 / 2,700 = 50,000 (13:53:20) → `day`. The next phase (`dusk` at 68,400) is 18,400 game seconds away = 862.5 real seconds, at 13:39:22.5Z.
 
 ---
 

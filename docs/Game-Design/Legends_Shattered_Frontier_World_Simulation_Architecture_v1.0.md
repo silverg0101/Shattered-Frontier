@@ -251,7 +251,7 @@ Merge status (2026-10-17): additions from this edition are merged into the Share
 | Enums | `world_action_kind` | `weather_override`, `spawn_entities`, `despawn_entities`, `terrain_revert`, `edit_window` | World actions. |
 | Enums | `world_action_state` | `pending`, `active`, `expired`, `cancelled`, `failed` | World actions. |
 | Events | `world.realm.state_changed`, `world.weather.changed`, `world.terrain.modified` | world-service, `domain.world` | Realm ops, Building wear and quest triggers, terrain lineage. |
-| Constants | `DAY_LENGTH_MIN` 240 (`tune.world.day_length_minutes`); `ZONE_CAPACITY_SOFT` 200 / `ZONE_CAPACITY_HARD` 250 (`tune.world.zone_capacity_soft/hard`); `V_CAP_FOOT` 12.0, `V_CAP_MOUNTED` 20.0, `V_CAP_ABSOLUTE` 20.0 m/s; `BASE_RUN_SPEED` 7.0 m/s; `TERRAIN_MAX_VOLUME_M3` 100 | World | Cross-domain readers: Security, Analytics, Construction, Combat. |
+| Constants | `DAY_LENGTH_MIN` 60 (`tune.world.day_length_minutes`); `NIGHT_LENGTH_MIN` 15 (`tune.world.night_length_minutes`); `ZONE_CAPACITY_SOFT` 200 / `ZONE_CAPACITY_HARD` 250 (`tune.world.zone_capacity_soft/hard`); `V_CAP_FOOT` 12.0, `V_CAP_MOUNTED` 20.0, `V_CAP_ABSOLUTE` 20.0 m/s; `BASE_RUN_SPEED` 7.0 m/s; `TERRAIN_MAX_VOLUME_M3` 100 | World | Cross-domain readers: Security, Analytics, Construction, Combat. |
 | Tuning keys | `tune.world.*` as listed in Parts 1–3 | World | config-service registration. |
 | Feature flags | `ff.world.layering_enabled`, `ff.world.terrain_edits_enabled`, `ff.world.terrain_healing_enabled`, `ff.world.dynamic_respawn_enabled`, `ff.world.world_boss_schedule_enabled` | World | Kill switches for risky subsystems. |
 | Metrics | the `m_` names in Analytics hooks | World | Analytics registration. |
