@@ -331,6 +331,7 @@
     }
   ],
   "market_stalls": 8,
+  "street_lamps": {"_about": "Lamps along primary and secondary streets inside the wall, alternating sides; spacing along the street and verge from the road edge to the post, in metres; clear keeps them off gates, bridges and junctions.", "tiers": ["primary", "secondary"], "spacing": 22, "verge": 0.8, "clear": 10},
   "construction_plots": {
     "size": 20,
     "centres": [[430, 215], [470, 215], [510, 220]]

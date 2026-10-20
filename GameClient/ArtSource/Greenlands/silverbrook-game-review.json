@@ -63,23 +63,23 @@
         22,
         -529
       ],
-      "seconds": 221.4,
+      "seconds": 221.5,
       "z_cm": 3616
     }
   ],
   "stuck_events": 0,
   "walk_completed": true,
-  "walk_seconds": 221.4,
+  "walk_seconds": 221.5,
   "frame_ms": {
-    "median": 5.6,
-    "p95": 10.8,
-    "frames": 33507
+    "median": 6.4,
+    "p95": 11.5,
+    "frames": 31157
   },
   "final_pawn_cm": [
     2189,
-    -52603,
+    -52600,
     3616
   ],
-  "elapsed_seconds": 246.1,
+  "elapsed_seconds": 246.3,
   "passed": true
 }

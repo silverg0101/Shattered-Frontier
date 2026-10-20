@@ -441,6 +441,44 @@ for name, dist in L['districts'].items():
     fill_report[name] = f"{made}/{dist['count']} ({rows} in rows)"
     label(name, cx, cy, 30, 10)
 
+# Street lamps: the arm (model +X) reaches over the road from a post on the verge, every `spacing` m, alternating sides.
+_lamp_names = sorted(PROFILE['buildings'].get('Street lamp', {}).get('have', []))
+LAMPS = [m for _, m in sorted(pcg_dressing._meshes(set(_lamp_names)).items())] if _lamp_names else []
+lamps = []
+SL = L['street_lamps']
+for name, pts, width, tier in ROADS:
+    if tier not in SL['tiers'] or not LAMPS:
+        continue
+    side, s_ = 1, SL['spacing'] / 2
+    for a, b in zip(pts, pts[1:]):
+        seg = math.dist(a, b); ux, uy = (b[0] - a[0]) / seg, (b[1] - a[1]) / seg
+        while s_ < seg:
+            c = (a[0] + ux * s_, a[1] + uy * s_)
+            off = width / 2 + SL['verge']
+            post = (c[0] - side * uy * off, c[1] + side * ux * off)
+            ok = (inside(post) and wall_dist(post) > SL['clear'] and water_gap(post) > 3
+                  and all(math.dist(post, q) > SL['clear'] for q in bridges + list(gate_points.values()))
+                  and all(line_dist(post, p2) > w2 / 2 + SL['clear'] for n2, p2, w2, _ in ROADS if n2 != name)
+                  and all(math.dist(post, q[:2]) > q[2] + 1 for q in placed)
+                  and all(math.dist(post, q) > 4 for q in lamps))
+            if ok:
+                lamps.append(post)
+                yaw = math.degrees(math.atan2(-side * ux, side * uy))  # +X from the post toward the road centre
+                label_ = f'StreetLamp_{len(lamps):03d}'
+                mesh = LAMPS[zlib.crc32(label_.encode()) % len(LAMPS)]
+                def spawn_lamp(post=post, yaw=yaw, label_=label_, mesh=mesh):
+                    c_, s2 = math.cos(math.radians(yaw)), math.sin(math.radians(yaw))
+                    x, y = post[0] + 0.38 * c_, post[1] + 0.38 * s2  # origin sits 0.38 m roadward of the post
+                    a_ = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(x * 100, y * 100, (HF.at(*post) - 0.05) * 100),
+                                                       u.Rotator(roll=0, pitch=0, yaw=yaw))
+                    a_.static_mesh_component.set_static_mesh(mesh)
+                    a_.set_actor_label(label_); a_.set_folder_path('StreetLamps')
+                pending.append(spawn_lamp)
+                counts['StreetLamps'] = counts.get('StreetLamps', 0) + 1
+            side = -side
+            s_ += SL['spacing']
+        s_ -= seg
+
 # Arrival.
 ax, ay = L['arrival']['at']; fx, fy = L['arrival']['face']
 yaw = math.degrees(math.atan2(fy - ay, fx - ax))
