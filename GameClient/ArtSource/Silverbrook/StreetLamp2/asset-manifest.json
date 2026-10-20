@@ -1,0 +1,103 @@
+{
+  "asset": "SilverbrookStreetLamp2",
+  "asset_id": "BLD-GreenlandsStreetLamp-01",
+  "variant": 2,
+  "reference": {
+    "file": "StreetLamp2-reference.png",
+    "sha256": "220636f55d6ff827422799f6cac2cd1ec41652df5043c07b8bbae322679d3841"
+  },
+  "blender": "5.1.1",
+  "generator": "build_streetlamp2.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    1.492,
+    0.64,
+    4.49
+  ],
+  "meshes": {
+    "SM_SBStreetLamp2_Iron": {
+      "triangles": 16644,
+      "materials": [
+        "SB_ForgedIron",
+        "SB_StreetLamp2_Bronze"
+      ]
+    },
+    "SM_SBStreetLamp2_Lanterns": {
+      "triangles": 7296,
+      "materials": [
+        "SB_ForgedIron",
+        "SB_StreetLamp2_Bronze",
+        "SB_StreetLamp2_Glow"
+      ]
+    }
+  },
+  "triangles": 23940,
+  "materials": [
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_StreetLamp2_Bronze",
+      "colour": [
+        0.3,
+        0.19,
+        0.07
+      ],
+      "roughness": 0.45,
+      "metallic": 1.0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_StreetLamp2_Glow",
+      "colour": [
+        0.6,
+        0.3,
+        0.06
+      ],
+      "roughness": 0.2,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.42,
+        0.08
+      ],
+      "strength": 2.5
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookStreetLamp2",
+  "slot_m": [
+    1.5,
+    1.5,
+    4.5
+  ],
+  "light_socket_m": [
+    [
+      0.564,
+      0.0,
+      3.03
+    ],
+    [
+      -0.564,
+      0.0,
+      3.03
+    ]
+  ],
+  "light_material": "SB_StreetLamp2_Glow",
+  "outputs": [
+    "SilverbrookStreetLamp2.blend",
+    "SilverbrookStreetLamp2.glb",
+    "SilverbrookStreetLamp2.fbx"
+  ]
+}

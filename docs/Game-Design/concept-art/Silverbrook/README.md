@@ -43,4 +43,4 @@ Owner-supplied concept images for the Silverbrook buildings. One image is one de
 | [Street Lamp-1.png](Street%20Lamp-1.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | `GameClient/ArtSource/Silverbrook/StreetLamp1` | modelling |
 | [Street Lamp-2.png](Street%20Lamp-2.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | `GameClient/ArtSource/Silverbrook/StreetLamp2` | modelling |
 | [Street Lamp-3.png](Street%20Lamp-3.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | `GameClient/ArtSource/Silverbrook/StreetLamp3` | modelling |
-| [Street Lamp-4.png](Street%20Lamp-4.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | — | waiting for a model |
+| [Street Lamp-4.png](Street%20Lamp-4.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | `GameClient/ArtSource/Silverbrook/StreetLamp4` | modelling |
