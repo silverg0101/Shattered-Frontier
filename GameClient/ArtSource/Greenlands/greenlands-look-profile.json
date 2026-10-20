@@ -8,7 +8,7 @@
   },
   "buildings": {
     "_about": "Biome building library for the missing-asset report, keyed by settlement building name (definition section 8 or layout type). 'have': delivered meshes in the settlement's design, one main mesh per variant; a building needs as many variants as it has owner-supplied concept images (at least one). 'stand_ins': older project meshes that fill the slot in the graybox until then; they never close a row. Licensed Fab or Megascans meshes don't count.",
-    "Street lamp": {"have": ["SM_SilverbrookStreetLamp1"]},
+    "Street lamp": {"have": ["SM_SilverbrookStreetLamp1", "SM_SilverbrookStreetLamp3"]},
     "Gatehouse": {"have": ["SM_SilverbrookGatehouse"]},
     "Fisherman's wharf": {"have": ["SM_SilverbrookFishermansWharf"]},
     "Riverside docks": {"have": ["SM_SilverbrookRiversideDocks"]},
