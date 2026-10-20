@@ -1,77 +1,21 @@
 {
-  "scope": "Project pawn walks arrival to North Gate through the graybox, then swims in the river and climbs out; no AI, combat, gathering or performance acceptance",
+  "scope": "Project pawn walks the review route from the arrival through the graybox, then swims in the river and climbs out; no AI, combat, gathering or performance acceptance",
   "game_mode": "SFE1GameMode",
   "pawn": "SFE1Character",
   "e1_fixtures": 0,
   "start_cm": [
-    42000,
-    84000,
-    618
+    0,
+    -3000,
+    1199
   ],
-  "target": 10,
+  "target": 11,
   "reached": [
-    {
-      "xy_metres": [
-        219,
-        651
-      ],
-      "seconds": 39.3,
-      "z_cm": 602
-    },
-    {
-      "xy_metres": [
-        181,
-        661
-      ],
-      "seconds": 44.8,
-      "z_cm": 485
-    },
-    {
-      "xy_metres": [
-        41,
-        527
-      ],
-      "seconds": 72.4,
-      "z_cm": 658
-    },
-    {
-      "xy_metres": [
-        30,
-        350
-      ],
-      "seconds": 97.7,
-      "z_cm": 772
-    },
-    {
-      "xy_metres": [
-        20,
-        205
-      ],
-      "seconds": 118.4,
-      "z_cm": 852
-    },
-    {
-      "xy_metres": [
-        20,
-        100
-      ],
-      "seconds": 133.4,
-      "z_cm": 1540
-    },
-    {
-      "xy_metres": [
-        0,
-        -30
-      ],
-      "seconds": 152.2,
-      "z_cm": 1192
-    },
     {
       "xy_metres": [
         12,
         -258
       ],
-      "seconds": 184.8,
+      "seconds": 32.4,
       "z_cm": 1763
     },
     {
@@ -79,22 +23,86 @@
         22,
         -529
       ],
-      "seconds": 223.6,
+      "seconds": 71.2,
       "z_cm": 3616
+    },
+    {
+      "xy_metres": [
+        12,
+        -258
+      ],
+      "seconds": 109.4,
+      "z_cm": 1813
+    },
+    {
+      "xy_metres": [
+        0,
+        -30
+      ],
+      "seconds": 142.0,
+      "z_cm": 1212
+    },
+    {
+      "xy_metres": [
+        20,
+        100
+      ],
+      "seconds": 160.8,
+      "z_cm": 1561
+    },
+    {
+      "xy_metres": [
+        20,
+        205
+      ],
+      "seconds": 175.8,
+      "z_cm": 698
+    },
+    {
+      "xy_metres": [
+        30,
+        350
+      ],
+      "seconds": 196.5,
+      "z_cm": 635
+    },
+    {
+      "xy_metres": [
+        41,
+        527
+      ],
+      "seconds": 221.9,
+      "z_cm": 658
+    },
+    {
+      "xy_metres": [
+        181,
+        661
+      ],
+      "seconds": 249.6,
+      "z_cm": 529
+    },
+    {
+      "xy_metres": [
+        219,
+        651
+      ],
+      "seconds": 255.1,
+      "z_cm": 560
     }
   ],
   "stuck_events": 0,
   "walk_completed": true,
-  "walk_seconds": 223.6,
+  "walk_seconds": 255.1,
   "frame_ms": {
     "median": 3.9,
-    "p95": 5.2,
-    "frames": 56049
+    "p95": 5.3,
+    "frames": 64077
   },
   "final_pawn_cm": [
-    2189,
-    -52602,
-    3616
+    21610,
+    65162,
+    560
   ],
   "swim": {
     "at_metres": [
@@ -104,11 +112,11 @@
     "surface_cm": 1800,
     "dropped_cm": 1700,
     "swimming_after_4s": true,
-    "rise_cm": 88,
-    "centre_below_surface_cm": 12,
+    "rise_cm": 75,
+    "centre_below_surface_cm": 25,
     "climbed_out": true,
-    "out_after_s": 6.1
+    "out_after_s": 6.3
   },
-  "elapsed_seconds": 270.3,
+  "elapsed_seconds": 302.2,
   "passed": true
 }

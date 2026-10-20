@@ -2,9 +2,9 @@
 
 Launch: UnrealEditor.exe <uproject> /Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook
         -game -RenderOffscreen -ExecutePythonScript=<this file>
-Follows review_route in silverbrook-town-layout.json: arrival, South Gate, Silverbrook
-Bridge, Market Square, North Street bridge, North Gate. Writes silverbrook-game-review.json
-and captures (arrival plus one per ReviewCamera_*) beside this script.
+Follows review_route in silverbrook-town-layout.json from the arrival in the Market Square: north to the North Gate,
+back through the square, south over the Silverbrook Bridge to the South Gate, then across the Valemere Road bridge. Writes
+silverbrook-game-review.json and captures (arrival plus one per ReviewCamera_*) beside this script.
 """
 import json, math, time
 from pathlib import Path
@@ -18,7 +18,7 @@ pc = u.GameplayStatics.get_player_controller(world, 0)
 pawn = u.GameplayStatics.get_player_character(world, 0)
 mode = u.GameplayStatics.get_game_mode(world)
 fixture_class = u.load_class(None, '/Script/ShatteredFrontier.SFE1InteractionTarget')
-state = dict(scope='Project pawn walks arrival to North Gate through the graybox, then swims in the river and climbs out; no AI, combat, gathering or performance acceptance',
+state = dict(scope='Project pawn walks the review route from the arrival through the graybox, then swims in the river and climbs out; no AI, combat, gathering or performance acceptance',
              game_mode=mode.get_class().get_name() if mode else None, pawn=pawn.get_class().get_name() if pawn else None,
              e1_fixtures=len(u.GameplayStatics.get_all_actors_of_class(world, fixture_class)),
              start_cm=None, target=1, reached=[], stuck_events=0)
