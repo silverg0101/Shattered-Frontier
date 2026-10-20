@@ -3,13 +3,13 @@
   "size_m": [
     16.73,
     5.23,
-    4.0
+    10.0
   ],
   "slots": 2,
   "nanite": true,
   "collision": "complex",
   "convex_hulls": 0,
-  "nanite_fallback_triangles": 4395,
+  "nanite_fallback_triangles": 12198,
   "lightmap": {
     "uv": 2,
     "resolution": 512
@@ -17,7 +17,7 @@
   "slot_m": [
     17,
     5.4,
-    4.2
+    10.2
   ],
   "fits": true
 }
