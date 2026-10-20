@@ -146,6 +146,8 @@ UnrealEditor.exe <uproject> <map> -game -RenderOffscreen -unattended -nosound -w
 | The editor opens an old map after a crash | `EditorStartupMap` is the art review map; nothing is lost | Open the zone map | `PROBE world` |
 | `No open ShatteredFrontier editor answered` | Editor closed, busy compiling shaders, or remote execution off | Wait and retry; relaunch; enable remote execution. Don't write ping files from PowerShell (BOM). | Probe answers |
 | Builder: `Save or discard these first` | Unsaved packages in the editor | Ask their owners, then `--discard-unsaved` | `PROBE dirty []` |
+| A bridge pier stops in mid-air above the water | Mesh masonry too shallow for built-up banks over a deep channel | Bridge and abutment stone runs to z=-10 m; anything below the bed hides in the terrain | Crossing capture |
+| Walk review stalls swimming at a bridge pier | The review pawn walks straight lines; a crossing at an angle sends it off the bank into the river, and a full-depth pier blocks the swimmer | Put the bridge ends in `review_route`, so the walk follows the road across the deck | Walk passes |
 | A pale slab under a bridge's arches | Road strip pieces continue across the river at deck height | Builder skips road pieces whose centre is over water | Crossing capture |
 | Floating flat plates in the flowers | A placeholder mesh (`SM_Wildflowers`) fills a role | Remove it from the look-profile role; cluster the real flowers | Street capture |
 | Front doors face away from the street | FBX import flips −Y to +Y | Actor yaw = target yaw + 180 | `ReviewCamera_Street` shows a door |

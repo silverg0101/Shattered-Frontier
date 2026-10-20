@@ -8,14 +8,30 @@
     84000,
     618
   ],
-  "target": 8,
+  "target": 10,
   "reached": [
+    {
+      "xy_metres": [
+        219,
+        651
+      ],
+      "seconds": 39.3,
+      "z_cm": 602
+    },
+    {
+      "xy_metres": [
+        181,
+        661
+      ],
+      "seconds": 44.8,
+      "z_cm": 485
+    },
     {
       "xy_metres": [
         41,
         527
       ],
-      "seconds": 71.8,
+      "seconds": 72.4,
       "z_cm": 658
     },
     {
@@ -23,15 +39,15 @@
         30,
         350
       ],
-      "seconds": 97.1,
-      "z_cm": 773
+      "seconds": 97.7,
+      "z_cm": 772
     },
     {
       "xy_metres": [
         20,
         205
       ],
-      "seconds": 117.9,
+      "seconds": 118.4,
       "z_cm": 852
     },
     {
@@ -39,7 +55,7 @@
         20,
         100
       ],
-      "seconds": 132.9,
+      "seconds": 133.4,
       "z_cm": 1540
     },
     {
@@ -47,7 +63,7 @@
         0,
         -30
       ],
-      "seconds": 151.7,
+      "seconds": 152.2,
       "z_cm": 1192
     },
     {
@@ -55,7 +71,7 @@
         12,
         -258
       ],
-      "seconds": 184.3,
+      "seconds": 184.8,
       "z_cm": 1763
     },
     {
@@ -63,17 +79,17 @@
         22,
         -529
       ],
-      "seconds": 223.0,
+      "seconds": 223.6,
       "z_cm": 3616
     }
   ],
   "stuck_events": 0,
   "walk_completed": true,
-  "walk_seconds": 223.0,
+  "walk_seconds": 223.6,
   "frame_ms": {
-    "median": 3.8,
-    "p95": 5.0,
-    "frames": 57662
+    "median": 3.9,
+    "p95": 5.2,
+    "frames": 56049
   },
   "final_pawn_cm": [
     2189,
@@ -93,6 +109,6 @@
     "climbed_out": true,
     "out_after_s": 6.1
   },
-  "elapsed_seconds": 269.5,
+  "elapsed_seconds": 270.3,
   "passed": true
 }
