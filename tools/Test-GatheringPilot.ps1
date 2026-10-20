@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
     [switch]$Refining,
+    [switch]$Silverbrook,  # the Silverbrook zone with nodes from its zone record (no refinery stations there)
     [string]$EngineRoot = 'C:\Program Files\Epic Games\UE_5.8',
     [ValidateRange(12000,65000)][int]$Port = 17811,
     [ValidateRange(30,150)][int]$TimeoutSeconds = 90
@@ -44,13 +45,17 @@ function Wait-Exit([Diagnostics.Process]$Process,[string]$Name) {
     if ($Process.ExitCode -ne 0) { throw "$Name exited $($Process.ExitCode)." }
 }
 try {
-    $url='/Game/Frontier/Maps/Greenlands_ConstructionSandbox?game=/Script/ShatteredFrontier.SFConstructionNetworkGameMode'
-    $server=Start-Owned 'server' $url @('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox','-GatheringPilot')
+    if ($Silverbrook -and $Refining) { throw 'Silverbrook has no refinery stations; run -Refining in the sandbox.' }
+    $map=if ($Silverbrook) { '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' } else { '/Game/Frontier/Maps/Greenlands_ConstructionSandbox' }
+    $url=$map+'?game=/Script/ShatteredFrontier.SFConstructionNetworkGameMode'
+    $serverFlags=@('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox','-GatheringPilot')
+    if ($Silverbrook) { $serverFlags+='-GatheringPilotScenario' }  # the server puts each test pawn beside its node
+    $server=Start-Owned 'server' $url $serverFlags
     Wait-Log $server 'server' 'GATHERING_PILOT_READY'
     $scenarioFlag=if ($Refining) { '-GatheringRefiningScenario' } else { '-GatheringPilotScenario' }
     $first=Start-Owned 'first' ('127.0.0.1:'+$Port) @('-game',$scenarioFlag)
     $second=Start-Owned 'second' ('127.0.0.1:'+$Port) @('-game',$scenarioFlag)
-    Wait-Exit $first 'first'; Wait-Exit $second 'second'
+    Wait-Exit $second 'second'; Wait-Exit $first 'first'  # the observer finishes last; its log says why a pair stalls
     $clientText=@()
     foreach ($name in @('first','second')) {
         $text=Get-Content -LiteralPath (Join-Path $root ($name+'.log')) -Raw
@@ -69,6 +74,8 @@ try {
             [regex]::Matches($serverText,'GATHERING_PILOT_OUTCOME Operation=2 Result=15').Count -ne 2) { throw 'Refinement outputs or exactly-once commits are incomplete.' }
     }
     $results.refining=[bool]$Refining
+    $results.map=$map
+    if ($Silverbrook -and $serverText -notmatch 'GATHERING_PILOT_READY Source=ZoneRecord Nodes=([1-9]\d*)') { throw 'Silverbrook nodes did not come from the zone record.' }
     $results.status='Passed'
 } catch { $results.status='Failed'; $results.error=$_.Exception.Message; throw }
 finally {

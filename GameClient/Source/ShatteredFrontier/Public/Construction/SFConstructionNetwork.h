@@ -125,12 +125,15 @@ public:
     virtual void PostLogin(APlayerController* NewPlayer) override;
     virtual void RestartPlayer(AController* NewPlayer) override;
     bool IsAdmitted() const;
+    bool IsZoneGatheringWorld() const;
     bool IsBuilder(const ASFConstructionNetworkController* Controller) const;
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     void SpawnFiniteDoorObstruction(const FIntVector& Origin, uint8 Yaw);
     void DiscardFiniteDoorObstruction();
 #endif
 private:
+    int32 SpawnZoneGatheringNodes();
+    void PlaceForZoneScenario(APawn* Pawn, bool bPrimary) const;
     TWeakObjectPtr<ASFConstructionNetworkController> Builder;
     bool bBuilderAssigned = false;
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST

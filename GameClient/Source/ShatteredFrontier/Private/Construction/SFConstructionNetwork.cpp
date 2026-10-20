@@ -43,6 +43,10 @@
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
 #include "Misc/Paths.h"
+#include "Misc/FileHelper.h"
+#include "Dom/JsonObject.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
 #include "UnrealClient.h"
 #include "Net/UnrealNetwork.h"
 #include "PhysicsEngine/BodySetup.h"
@@ -717,11 +721,74 @@ ASFConstructionNetworkGameMode::ASFConstructionNetworkGameMode()
     PlayerControllerClass = ASFConstructionNetworkController::StaticClass();
 }
 
+bool ASFConstructionNetworkGameMode::IsZoneGatheringWorld() const
+{
+    // Development opt-in: the gathering pilot in the Silverbrook zone, with nodes from its zone record.
+    return GetWorld() && GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
+}
+
+void ASFConstructionNetworkGameMode::PlaceForZoneScenario(APawn* Pawn, bool bPrimary) const
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    // The finite network scenario only: put each test pawn 2 m from its node.
+    if (!Pawn || !FParse::Param(FCommandLine::Get(),TEXT("GatheringPilotScenario"))) { return; }
+    // Same choice as the client scenario: the oak nearest the origin, and the rock nearest that oak.
+    const ASFGatheringPilotNode* Oak=nullptr; const ASFGatheringPilotNode* Rock=nullptr;
+    for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It; ++It)
+    { if (It->Kind==ESFGatheringPilotKind::Oak && (!Oak || It->GetActorLocation().Size2D()<Oak->GetActorLocation().Size2D())) { Oak=*It; } }
+    for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It && Oak; ++It)
+    {
+        if (It->Kind==ESFGatheringPilotKind::Iron && (!Rock || FVector::Dist2D(It->GetActorLocation(),Oak->GetActorLocation())<FVector::Dist2D(Rock->GetActorLocation(),Oak->GetActorLocation())))
+        { Rock=*It; }
+    }
+    const ASFGatheringPilotNode* Target=bPrimary ? Oak : Rock;
+    if (!Target) { return; }
+    const FVector Node=Target->GetActorLocation(); const FVector Away=(-Node*FVector(1,1,0)).GetSafeNormal();
+    Pawn->SetActorLocation(Node+Away*200+FVector(0,0,80),false,nullptr,ETeleportType::TeleportPhysics);
+#endif
+}
+
+int32 ASFConstructionNetworkGameMode::SpawnZoneGatheringNodes()
+{
+    // The zone record's gathering spawn groups: active_count points per group, chosen by a stable seed.
+    // ponytail: session-only pilot nodes with fixed points; World spawn slots (rotation, respawn timing) replace this.
+    const FString Path=FPaths::Combine(FPaths::ProjectDir(),TEXT("../content/world/zones/greenlands_silverbrook.json"));
+    FString Text; TSharedPtr<FJsonObject> Zone;
+    if (!FFileHelper::LoadFileToString(Text,*Path) || !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Zone) || !Zone.IsValid())
+    { UE_LOG(LogTemp,Error,TEXT("GATHERING_PILOT_ZONE_RECORD_MISSING %s"),*Path); return 0; }
+    int32 Spawned=0;
+    for (const TSharedPtr<FJsonValue>& GroupValue : Zone->GetArrayField(TEXT("spawn_groups")))
+    {
+        const TSharedPtr<FJsonObject> Group=GroupValue->AsObject();
+        if (Group->GetStringField(TEXT("spawn_kind"))!=TEXT("gathering_node")) { continue; }
+        const FString Id=Group->GetStringField(TEXT("group_id"));
+        // Wood groups use the oak node; stone groups use the rock node, which still yields iron ore (no stone item yet).
+        const ESFGatheringPilotKind Kind=Id.EndsWith(TEXT("_wood")) ? ESFGatheringPilotKind::Oak : ESFGatheringPilotKind::Iron;
+        TArray<TSharedPtr<FJsonValue>> Points=Group->GetArrayField(TEXT("points"));
+        FRandomStream Stream(GetTypeHash(Id));
+        for (int32 I=Points.Num()-1; I>0; --I) { Points.Swap(I,Stream.RandRange(0,I)); }
+        const int32 Active=FMath::Min(int32(Group->GetNumberField(TEXT("active_count"))),Points.Num());
+        for (int32 I=0; I<Active; ++I)
+        {
+            const TArray<TSharedPtr<FJsonValue>>& At=Points[I]->AsObject()->GetArrayField(TEXT("position"));
+            if (At.Num()<3) { continue; }
+            // Metres to centimetres; the node origin sits 70 cm above the ground, as in the sandbox fixture.
+            const FTransform Where(FRotator(0,Points[I]->AsObject()->GetNumberField(TEXT("facing")),0),
+                FVector(At[0]->AsNumber()*100,At[1]->AsNumber()*100,At[2]->AsNumber()*100+70));
+            auto* Node=GetWorld()->SpawnActorDeferred<ASFGatheringPilotNode>(ASFGatheringPilotNode::StaticClass(),Where);
+            if (!Node) { continue; }
+            Node->Kind=Kind; Node->FinishSpawning(Where); ++Spawned;
+        }
+    }
+    return Spawned;
+}
+
 bool ASFConstructionNetworkGameMode::IsAdmitted() const
 {
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     return HasAuthority() && !IsActorBeingDestroyed() && GetClass() == StaticClass() && GetWorld() && GetNetMode() == NM_DedicatedServer
-        && GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands_ConstructionSandbox")
+        && (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands_ConstructionSandbox")
+            || (IsZoneGatheringWorld() && USFGatheringPilotComponent::IsPilotRequested()))
         && FParse::Param(FCommandLine::Get(),TEXT("ConstructionNetworkSandbox"));
 #else
     return false;
@@ -740,6 +807,12 @@ void ASFConstructionNetworkGameMode::StartPlay()
         FString Error;
         if (!GetDefault<USFGatheringPilotSettings>()->Validate(Error))
         { UE_LOG(LogTemp,Error,TEXT("GATHERING_PILOT_CONFIGURATION_FAILED %s"),*Error); return; }
+        if (IsZoneGatheringWorld())
+        {
+            const int32 Nodes=SpawnZoneGatheringNodes();
+            UE_LOG(LogTemp,Display,TEXT("GATHERING_PILOT_READY Source=ZoneRecord Nodes=%d SessionOnly=1"),Nodes);
+            return;
+        }
         const FVector Positions[4]={FVector(0,-350,70),FVector(0,-650,70),FVector(-400,-600,40),FVector(400,-600,40)};
         for (int32 I=0; I<4; ++I)
         {
@@ -761,7 +834,8 @@ void ASFConstructionNetworkGameMode::PostLogin(APlayerController* NewPlayer)
     bBuilderAssigned = true;
     if (bAssignBuilder) { Builder = Controller; }
     Controller->AssignRole(bAssignBuilder);
-    if (APawn* Pawn = Controller->GetPawn()) { Pawn->SetActorLocation(FVector(bAssignBuilder ? -200 : 200,-400,96)); }
+    if (APawn* Pawn = Controller->GetPawn(); Pawn && !IsZoneGatheringWorld()) { Pawn->SetActorLocation(FVector(bAssignBuilder ? -200 : 200,-400,96)); }
+    if (IsZoneGatheringWorld()) { PlaceForZoneScenario(Controller->GetPawn(), bAssignBuilder); }
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_ROLE Builder=%d"),bAssignBuilder);
     if (auto* State = FindState(GetWorld())) { State->AdmitPair(); }
 }
@@ -770,8 +844,9 @@ void ASFConstructionNetworkGameMode::RestartPlayer(AController* NewPlayer)
 {
     Super::RestartPlayer(NewPlayer);
     const auto* Controller = Cast<ASFConstructionNetworkController>(NewPlayer);
-    if (IsAdmitted() && Controller && Controller->GetPawn())
+    if (IsAdmitted() && !IsZoneGatheringWorld() && Controller && Controller->GetPawn())
     { Controller->GetPawn()->SetActorLocation(FVector(IsBuilder(Controller) ? -200 : 200,-400,96)); }
+    if (IsAdmitted() && IsZoneGatheringWorld() && Controller) { PlaceForZoneScenario(Controller->GetPawn(), IsBuilder(Controller)); }
 }
 
 bool ASFConstructionNetworkGameMode::IsBuilder(const ASFConstructionNetworkController* Controller) const

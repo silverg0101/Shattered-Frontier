@@ -8,7 +8,7 @@
 
 namespace
 {
-constexpr float Step = 1.f / 30.f;
+constexpr float FrameStep = 1.f / 30.f;
 
 int32 VfxCount(const AActor* Actor)
 {
@@ -23,8 +23,8 @@ float RunAction(ASFVoidreignCharacter* Horse, const FVector& Start, float MaxSec
     float Time = 0.f;
     while (Horse->IsPerformingAction() && Time < MaxSeconds)
     {
-        Horse->Tick(Step);
-        Time += Step;
+        Horse->Tick(FrameStep);
+        Time += FrameStep;
         MaxDistance = FMath::Max(MaxDistance, FVector::Dist2D(Start, Horse->GetActorLocation()));
         PeakVfx = FMath::Max(PeakVfx, VfxCount(Horse));
     }
@@ -61,7 +61,7 @@ bool FSFVoidreignPresentationTest::RunTest(const FString& Parameters)
     TestTrue(TEXT("Attack starts"), Horse->IsPerformingAction());
     const float AttackTime = RunAction(Horse, Start, 5.f, Reach, PeakVfx);
     TestFalse(TEXT("Attack finishes"), Horse->IsPerformingAction());
-    TestTrue(TEXT("Attack lasts its clip"), FMath::IsNearlyEqual(AttackTime, Horse->MountAttack->GetPlayLength(), 2 * Step));
+    TestTrue(TEXT("Attack lasts its clip"), FMath::IsNearlyEqual(AttackTime, Horse->MountAttack->GetPlayLength(), 2 * FrameStep));
     TestTrue(TEXT("Attack spawns its hit spark"), PeakVfx > BaseVfx);
     TestTrue(TEXT("Attack stays in place"), Reach < 1.f);
 

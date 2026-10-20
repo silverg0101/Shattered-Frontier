@@ -26,6 +26,26 @@ Runtime: `Source/ShatteredFrontier/{Public,Private}/Gathering/SFGatheringPilot.*
 
 After adding the free plugin to the Fab library, install its UE 5.8 version through Launcher on a new machine. Build the editor before running the asset generator. Existing project-authored assets travel through Git; vendor code/binaries do not. Use the isolated construction map/game-mode URL from the laptop handoff plus server flags `-ConstructionNetworkSandbox -GatheringPilot`; clients join its loopback address normally. This does not change startup maps or connect the LAN service.
 
+## Silverbrook zone run (owner opt-in, 2026-10-20)
+
+The same development pilot also runs in `/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook`. The server needs that map with `?game=/Script/ShatteredFrontier.SFConstructionNetworkGameMode` and `-ConstructionNetworkSandbox -GatheringPilot`; without `-GatheringPilot` the zone is not admitted.
+
+How it differs from the sandbox:
+- **Node source.** Instead of the four fixed fixtures, the server reads the zone record's gathering `spawn_groups` (`content/world/zones/greenlands_silverbrook.json`). It spawns `active_count` points per group, chosen by a seed from the group id: 14 nodes, wood as oak and stone as the rock node.
+- **Stone yields ore.** Rock nodes still yield `item/iron_ore`, because there is no stone item yet.
+- **No refinery.** There are no sawmill or forge stations in the zone.
+- **Dressing cleared.** Each node removes the dressing tree or rock rooted within 1 m of it, on the server and on every client. The dressing art and collision therefore never overlap a node, and line-of-sight checks don't hit them.
+- **Replication range.** Nodes replicate out to 500 m, so the spot never looks empty at dressing distances.
+- **Player starts.** Players keep the map's arrival start. Construction controls come along, as in the sandbox.
+
+What it still lacks:
+- World slot rotation, respawn at other points and persistence.
+- Packaged builds: the record is read from the source tree.
+
+Evidence:
+- `tools/Test-GatheringPilot.ps1 -Silverbrook` passed (2026-10-20). Each client harvested its node: wood for the primary, ore for the observer. Each saw only its own bag, and the replayed operation granted nothing.
+- The sandbox gathering and `-Refining` runs and `ShatteredFrontier.Gathering.Pilot` still pass.
+
 ## Evidence and next step
 
 Final editor build04 passed in 39.29 s. Focused authority report02 passed 1/1 clean, including loss-of-admission cancellation. The two-client run `Artifacts/ConstructionSandbox/gathering-network-20261018-230502-852/` passed: primary bag wood1/ore0; observer bag wood0/ore1; each client sees exactly one inventory; both nodes reach revision1; server commits exactly two grants. Replaying operation1 grants nothing extra. Both clients exited0 and owned server cleanup completed. Review found no remaining actionable authority/lifecycle issues after finite-coordinate and world-admission corrections.

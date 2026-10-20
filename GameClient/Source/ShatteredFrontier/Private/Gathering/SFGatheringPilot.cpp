@@ -2,6 +2,8 @@
 #include "Gathering/SFHarvestFallingTree.h"
 #include "Construction/SFConstructionNetwork.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/InstancedStaticMeshComponent.h"
+#include "UObject/UObjectIterator.h"
 #include "Components/TextRenderComponent.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/World.h"
@@ -89,6 +91,9 @@ bool USFGatheringPilotSettings::Validate(FString& Error) const
 ASFGatheringPilotNode::ASFGatheringPilotNode()
 {
     bReplicates=true;
+    // A zone node replaces the dressing tree or rock on its spot, so it must stay visible as far as that dressing would.
+    // ponytail: fixed 500 m; World cell relevancy replaces it.
+    SetNetCullDistanceSquared(FMath::Square(50000.0));
     Mesh=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ResourceMesh")); SetRootComponent(Mesh);
     static ConstructorHelpers::FObjectFinder<UStaticMesh> Shape(TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
     static ConstructorHelpers::FObjectFinder<UStaticMesh> Cube(TEXT("/Engine/BasicShapes/Cube.Cube"));
@@ -109,6 +114,23 @@ void ASFGatheringPilotNode::BeginPlay()
     {
         State.Capacity=IsRefinery() ? 0 : Settings->ChargesPerNode;
         State.Charges=State.Capacity; CapturedRespawnSeconds=Settings->RespawnSeconds;
+    }
+    if (!IsRefinery())
+    {
+        // A zone node stands on a dressing candidate: remove the dressing tree or rock rooted there, so the node's own art
+        // and collision are the only ones in place (the server's line-of-sight check and every client alike).
+        const FVector At=GetActorLocation()-FVector(0,0,70); const FSphere Near(At,400);
+        for (TObjectIterator<UInstancedStaticMeshComponent> It; It; ++It)
+        {
+            if (It->GetWorld()!=GetWorld() || !It->Bounds.GetSphere().Intersects(Near)) { continue; }
+            TArray<int32> Rooted;
+            for (const int32 I : It->GetInstancesOverlappingSphere(At,100,true))
+            {
+                FTransform T; It->GetInstanceTransform(I,T,true);
+                if (FVector::Dist2D(T.GetLocation(),At)<100) { Rooted.Add(I); }
+            }
+            if (!Rooted.IsEmpty()) { It->RemoveInstances(Rooted); }
+        }
     }
     OnRep_State();
 }
@@ -732,18 +754,25 @@ void USFGatheringPilotComponent::TickFiniteNetworkScenario()
     {
         switch (It->Kind)
         {
-        case ESFGatheringPilotKind::Oak: Wood=*It; break;
-        case ESFGatheringPilotKind::Iron: Ore=*It; break;
+        // A zone world has many nodes: every client and the server use the one nearest the world origin.
+        case ESFGatheringPilotKind::Oak: if (!Wood || It->GetActorLocation().Size2D()<Wood->GetActorLocation().Size2D()) { Wood=*It; } break;
+        case ESFGatheringPilotKind::Iron: break;  // chosen below: the rock nearest the chosen oak
         case ESFGatheringPilotKind::Sawmill: Sawmill=*It; break;
         case ESFGatheringPilotKind::Forge: Forge=*It; break;
         }
+    }
+    for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It && Wood; ++It)
+    {
+        if (It->Kind==ESFGatheringPilotKind::Iron && (!Ore || FVector::Dist2D(It->GetActorLocation(),Wood->GetActorLocation())<FVector::Dist2D(Ore->GetActorLocation(),Wood->GetActorLocation())))
+        { Ore=*It; }
     }
     if (bRefiningScenario && (!Sawmill || !Forge)) { return; }
     if (!Wood || !Ore || Wood->GetState().Charges<0 || Ore->GetState().Charges<0) { return; }
     const double Now=GetWorld()->GetTimeSeconds();
     if (ScenarioStarted==0) { ScenarioStarted=Now; }
     if (Now-ScenarioStarted>40)
-    { UE_LOG(LogTemp,Error,TEXT("GATHERING_PILOT_SCENARIO_FAILED Timeout=1 Step=%d Phase=%d Result=%d"),ScenarioStep,int32(Feedback.Phase),int32(Feedback.Result)); FPlatformMisc::RequestExitWithStatus(false,1); return; }
+    { UE_LOG(LogTemp,Error,TEXT("GATHERING_PILOT_SCENARIO_FAILED Timeout=1 Step=%d Phase=%d Result=%d Primary=%d Pawn=%s Wood=%s Ore=%s"),ScenarioStep,int32(Feedback.Phase),int32(Feedback.Result),
+        bPrimaryRole,*PC->GetPawn()->GetActorLocation().ToCompactString(),*Wood->GetActorLocation().ToCompactString(),*Ore->GetActorLocation().ToCompactString()); FPlatformMisc::RequestExitWithStatus(false,1); return; }
     auto* Inventory=GetOwner()->FindComponentByClass<UInventoryComponent>();
     if (!Inventory) { return; }
     const auto Quantity=[&](ESFGatheringPilotKind Kind)
