@@ -1466,6 +1466,29 @@
     ]
   },
   {
+    "asset": "sb_chainmail",
+    "license": "self-made (procedural, build_armorvendor.py)",
+    "physical_size_metres": [
+      0.15,
+      0.15
+    ],
+    "note": "procedural tileable chain mail, ring scale ~8 mm; Rough packs roughness (R) and metalness (G)",
+    "files": [
+      {
+        "file": "Textures/sb_chainmail_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/sb_chainmail_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/sb_chainmail_Rough.jpg"
+      },
+      {
+        "file": "Textures/sb_chainmail_Displacement.jpg"
+      }
+    ]
+  },
+  {
     "asset": "seaworn_stone_tiles",
     "page": "https://polyhaven.com/a/seaworn_stone_tiles",
     "license": "CC0-1.0",

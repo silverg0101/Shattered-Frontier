@@ -8,13 +8,48 @@ three plate harnesses on stands, tiered helmets, a mail hauberk, gauntlets, vamb
 belts, a stag counter drape, fur pelts, two shields, a polearm rack, barrels and crates.
 Armour is modelled here (closed thin shells); props come from CC0 Poly Haven models (kit.model).
 """
-import sys,math,json,hashlib,shutil,random
+import sys,math,json,hashlib,shutil,random,os,time
 from pathlib import Path
 HERE=Path(__file__).resolve().parent;sys.path.insert(0,str(HERE.parent))
+import bpy,bmesh,numpy as np
+
+def make_chainmail(side=1024,nx=16):
+    """Tileable procedural chain mail (self-made): offset lattice of interlocking, alternately tilted rings.
+    Writes sb_chainmail_{Diffuse,nor_gl,Rough,Displacement}.jpg (Rough = roughness R, metalness G) and the provenance row, only if missing."""
+    tex=HERE.parent/'Textures';files=[f'sb_chainmail_{c}.jpg' for c in ('Diffuse','nor_gl','Rough','Displacement')]
+    if all((tex/f).exists() for f in files):return
+    p=side/nx;y,x=np.mgrid[0:side,0:side].astype(np.float32);h=np.zeros((side,side),np.float32);R,r=.47*p,.105*p
+    for i in range(nx):
+        for j in range(nx):
+            for k,(cx,cy) in enumerate(((i*p,j*p),((i+.5)*p,(j+.5)*p))):
+                dx=(x-cx+side/2)%side-side/2;dy=(y-cy+side/2)%side-side/2;d=np.hypot(dx,dy)
+                hh=np.sqrt(np.clip(1-((d-R)/r)**2,0,1))*(d<R+r)   # wire cross-section
+                tilt=(dx/R)*(.9*r)*(1 if k else -1)*(1 if (i+j)%2 else -1)   # neighbouring rings lean opposite ways, so they pass over/under
+                h=np.maximum(h,np.where(hh>0,hh*r+tilt,0))
+    h=h/max(h.max(),1e-6)
+    gy,gx=np.gradient(h);n=np.dstack([-gx*14,-gy*14,np.ones_like(h)]);n/=np.linalg.norm(n,axis=2,keepdims=True)   # row index grows with v (up): OpenGL green-up
+    ao=np.clip(h*1.6,0,1)**.7;lum=.08+.5*ao+.18*np.clip(h-.7,0,1)
+    diff=np.dstack([lum*.93,lum*.95,lum*1.0]);rough=.62-.3*ao;metal=np.where(h>.02,1.0,.2)
+    def save(a,name):
+        a=np.dstack([a,np.ones((side,side),np.float32)]) if a.shape[2]==3 else a
+        im=bpy.data.images.new(name,side,side,alpha=False);im.colorspace_settings.name='Non-Color';im.pixels.foreach_set(a.astype(np.float32).ravel())
+        im.filepath_raw=str(tex/name);im.file_format='JPEG';bpy.context.scene.render.image_settings.quality=95;im.save();bpy.data.images.remove(im)
+    save(diff,files[0]);save(n*.5+.5,files[1]);save(np.dstack([rough,metal,np.zeros_like(h)]),files[2]);save(np.dstack([h,h,h]),files[3])
+    prov=HERE.parent/'materials-provenance.json';lock=prov.with_suffix('.lock')   # same exclusive lock file as acquire_materials.py
+    for _ in range(600):
+        try:fd=os.open(lock,os.O_CREAT|os.O_EXCL);break
+        except FileExistsError:time.sleep(.1)
+    else:raise SystemExit(f'{lock} held for 60 s; delete it if no download is running')
+    try:
+        rows={r['asset']:r for r in json.loads(prov.read_text())}
+        rows['sb_chainmail']=dict(asset='sb_chainmail',license='self-made (procedural, build_armorvendor.py)',physical_size_metres=[.15,.15],
+            note='procedural tileable chain mail, ring scale ~8 mm; Rough packs roughness (R) and metalness (G)',files=[dict(file='Textures/'+f) for f in files])
+        prov.write_text(json.dumps(sorted(rows.values(),key=lambda r:r['asset']),indent=2)+'\n')
+    finally:os.close(fd);os.remove(lock)
+make_chainmail()
 import silverbrook_kit as kit
 from silverbrook_kit import Geo,Vector
 from mathutils import Matrix
-import bpy,bmesh
 scene=kit.reset(4601)
 REF=HERE.parents[3]/'docs/Game-Design/concept-art/Silverbrook/Armor Vendor.png'
 asset=bpy.data.collections.new('SilverbrookArmorVendor');scene.collection.children.link(asset)
@@ -26,16 +61,17 @@ M=dict(
     banner=kit.scan('SB_ArmorVendor_Banner','denim_fabric_03',dark=(.16,.19,.32),damp=False,aged=.45),
     rope=kit.scan('SB_ArmorVendor_Rope','hessian_380',dark=(.36,.27,.16),damp=False,aged=.6),
     leather=kit.scan('SB_ArmorVendor_Leather','brown_leather',dark=(.45,.36,.28),damp=False,aged=.15),
-    fur=kit.scan('SB_ArmorVendor_Fur','curly_teddy_natural',dark=(.09,.085,.08),normal=2.0,damp=False,aged=.85),
+    fur=kit.scan('SB_ArmorVendor_Fur','curly_teddy_natural',dark=(.44,.15,0),normal=2.0,damp=False,aged=.8),
+    furtan=kit.scan('SB_ArmorVendor_FurTan','curly_teddy_natural',dark=(.55,.30,.06),normal=2.0,damp=False,aged=.8),
     painted=kit.scan('SB_ArmorVendor_PaintedPlanks','blue_painted_planks',dark=(.20,.22,.28),damp=False,aged=.6),
     steel=kit.solid('SB_ArmorVendor_Steel',(.42,.44,.47),.34,1.0),
     worn=kit.solid('SB_ArmorVendor_SteelWorn',(.25,.25,.26),.5,1.0),
-    mail=kit.solid('SB_ArmorVendor_Mail',(.26,.26,.27),.5,.8),
-    maildark=kit.solid('SB_ArmorVendor_MailShadow',(.12,.12,.125),.58,.7),
+    mail=kit.scan('SB_ArmorVendor_Mail','sb_chainmail',normal=1.0,metal=True,damp=False),
     brass=kit.solid('SB_ArmorVendor_Brass',(.72,.50,.20),.38,1.0),
     gilt=kit.solid('SB_ArmorVendor_Gilt',(.80,.56,.20),.45,.8),
     iron=kit.solid('SB_ForgedIron',(.03,.026,.022),.6,.9),
     glow=kit.solid('SB_ArmorVendor_Glow',(.30,.16,.05),.25,0,(1.0,.45,.12),3.0))
+kit.SCALE['SB_ArmorVendor_Fur']=kit.SCALE['SB_ArmorVendor_FurTan']=.22   # slightly finer curls than the 0.34 m scan
 BANDS=kit.bands('weathered_brown_planks')
 def band():return kit.rng.choice(BANDS)
 G=dict(timber=Geo('SM_SBArmorVendor_Timber',asset),cloth=Geo('SM_SBArmorVendor_Cloth',asset),armour=Geo('SM_SBArmorVendor_Armour',asset),detail=Geo('SM_SBArmorVendor_Details',asset))
@@ -161,8 +197,6 @@ def fleur(geo,pl,s,mat,d0,th=.003):
     flat(geo,pl,S([(-.035,-.02),(.035,-.02),(0,-.14)]),mat,d(),th)
 
 # ---- armour -------------------------------------------------------------------------
-def MAIL(i,j):return .005*(j%2)+.0015*((i+j)%2)   # ring rows: alternate courses stand proud
-def MAILM(i,j):return M['mail'] if (i+j)%2 else M['maildark']   # ring and gap alternate, so mail reads without a normal map
 RX=[(0,.15),(.12,.17),(.26,.195),(.36,.205),(.42,.2),(.46,.17),(.5,.11),(.53,.075)]
 RYF=[(0,.11),(.12,.14),(.26,.16),(.36,.15),(.42,.13),(.46,.11),(.5,.08),(.53,.065)]
 RYB=[(0,.095),(.12,.105),(.26,.12),(.36,.12),(.42,.11),(.46,.095),(.5,.072),(.53,.065)]
@@ -187,8 +221,8 @@ def pauldron(Mx,side,mat,J=(.19,0,.4),arm=None):
     if arm:   # upper arm below the pauldron: plate rerebrace or mail sleeve
         p0=J+aa*.06;fa=Vector((side*.05,-.25,-1)).normalized();el=p0+aa*.27
         if arm=='mail':
-            prof=[(0,.058),(.27,.056),(.3,.054)];lathe(A,Mx@p0,R3@aa,prof,MAILM,30,.004,ref=R3@o,disp=MAIL)
-            lathe(A,Mx@el,R3@fa,[(0,.054),(.24,.046),(.26,.04),(.28,.0015)],MAILM,26,.004,ref=R3@o,disp=MAIL)
+            prof=[(0,.058),(.27,.056),(.3,.054)];lathe(A,Mx@p0,R3@aa,prof,M['mail'],30,.004,ref=R3@o)
+            lathe(A,Mx@el,R3@fa,[(0,.054),(.24,.046),(.26,.04),(.28,.0015)],M['mail'],26,.004,ref=R3@o)
         else:
             lathe(A,Mx@p0,R3@aa,[(0,.055),(.22,.05),(.3,.052)],mat,16,.004,ref=R3@o)
             lathe(A,Mx@el,R3@fa,[(0,.05),(.22,.042),(.25,.044),(.27,.0015)],mat,16,.004,ref=R3@o)    # vambrace
@@ -221,7 +255,7 @@ def cuirass(x,y,yaw=0,st=None,skirt='cloth',strap=False,arms='plate',helm='great
             cols.append([T(th,-.12-L*j/6,.02+.03*j/6) for j in range(7)])
         slab(C,cols,M['banner'],.004)
     elif skirt=='mail':
-        surf(A,lambda u,v:T(u*tau,-.12-.27*v,.022+.05*v),84,22,MAILM,.004,wrap=True,disp=MAIL)
+        surf(A,lambda u,v:T(u*tau,-.12-.27*v,.022+.05*v),84,22,M['mail'],.004,wrap=True)
     # leather belt with a brass buckle
     surf(D,lambda u,v:T(u*tau,-.015+.045*v,.02),36,1,M['leather'],.005,wrap=True)
     p=T(0,.007,.026);n=outward(T,0,.007);D.box(p,(.05,.008,.055),M['brass'],.003,Mx.to_3x3())
@@ -315,10 +349,10 @@ def hauberk(x,y,z0):
     HY=[(-.75,.17),(-.45,.14),(-.12,.125),(.08,.14),(.22,.13),(.29,.115),(.34,.085),(.38,.062)]
     def F(u,v):
         th=u*tau;z=-.75+1.13*v;return Mx@Vector((math.sin(th)*tab(HX,z),-math.cos(th)*tab(HY,z),SH-.38+z))
-    surf(A,F,96,[j/76 for j in range(77)],MAILM,.004,wrap=True,disp=MAIL)
+    surf(A,F,96,[j/76 for j in range(77)],M['mail'],.004,wrap=True)
     for s in (-1,1):
         J=Vector((s*.21,0,SH-.1));aa=Vector((s*.62,0,-1)).normalized()
-        lathe(A,Mx@(J+aa*.03),aa,[(0,.08),(.2,.088),(.34,.1)],MAILM,40,.004,ref=Vector((s,0,0)),disp=MAIL)
+        lathe(A,Mx@(J+aa*.03),aa,[(0,.08),(.2,.088),(.34,.1)],M['mail'],40,.004,ref=Vector((s,0,0)))
         pauldron(Mx@Matrix.Translation((0,0,SH-.43-.07)),s,M['worn'],J=(.2,0,.43))
     surf(D,lambda u,v:Mx@Vector((math.sin(u*tau)*.214,-math.cos(u*tau)*.138,SH-.38-.02+.05*v)),40,1,M['leather'],.006,wrap=True)
     D.box(xf(Mx,(0,-.146,SH-.375)),(.055,.01,.06),M['brass'],.003)
@@ -426,14 +460,18 @@ for x0,x1 in ((DX0+.03,DC),(DC,DX1-.03)):strip(D,pl,x0,dhem(x0)+.03,x1,dhem(x1)+
 for k in range(66):   # gilt fringe along the hem
     x=DX0+.01+(DX1-DX0-.02)*k/65;z=dhem(x);strip(D,pl,x,z+.012,x+.002*math.sin(k),z-.045,.007,.005,M['gilt'],.001+.0003*(k%2),.002)
 # ---- fur pelts over the counter edge -------------------------------------------------
-def pelt(x0,x1,seed,legs=(.18,.82)):
-    r=random.Random(seed);n=int((x1-x0)/.012)+1;P=[]
+def pelt(x0,x1,seed,lobes,mat):
+    """Pelt lying on the counter, draped over its front edge: body hangs short, lobes (centre t, half-width t, extra drop m) are the neck and legs."""
+    r=random.Random(seed);n=int((x1-x0)/.01)+1;P=[];ph=r.uniform(0,6)
     for i in range(n):
-        t=i/(n-1);x=x0+(x1-x0)*t;L=.22+sum(.13*math.exp(-((t-c)/.05)**2) for c in legs)+r.uniform(-.05,.05)
-        top=[Vector((x+.015*math.sin(9*t+k),y,CT+.0075)) for k,y in enumerate((-.4,-.5,-.58,CY0-.002))]
-        P.append(top+[Vector((x,CY0-.013,CT-.022))]+[Vector((x+.01*math.sin(z*25+i*.7),CY0-.016-.012*k/7,CT-.022-L*k/7)) for k,z in ((k,CT-L*k/7) for k in range(1,8))])
-    slab(C,P,M['fur'],.014,disp=lambda i,j:r.uniform(0,.018),w=(.3,0))
-pelt(-1.12,-.66,3);pelt(.72,1.46,4,(.15,.5,.86))
+        t=i/(n-1);x=x0+(x1-x0)*t;edge=min(1,t/.05,(1-t)/.05)**.5   # rounded ends
+        L=(.2+.02*math.sin(11*t+ph))*edge+sum(h*math.sqrt(max(0,1-((t-c)/w)**2)) for c,w,h in lobes)+.01*math.sin(37*t+ph)+r.uniform(-.018,.018)*(i%2)   # ragged fur tips
+        fold=.012*math.sin(17*t+ph)
+        top=[Vector((x+.015*math.sin(9*t+k),y,CT+.0075+.012*math.sin(13*t+k+ph)*(k>0))) for k,y in enumerate((-.42,-.52,-.6,CY0-.004))]
+        P.append(top+[Vector((x,CY0-.014,CT-.024))]+[Vector((x+.01*math.sin(k*2.1+i*.7),CY0-.02-.01*k/7+fold*math.sin(k),CT-.024-L*k/7)) for k in range(1,8)])
+    slab(C,P,mat,.014,disp=lambda i,j:r.uniform(0,.03),w=(.3,0))
+pelt(-1.12,-.62,3,[(.08,.1,.2),(.3,.075,.2),(.68,.075,.2),(.93,.05,.12)],M['fur'])
+pelt(.72,1.46,4,[(.07,.08,.17),(.27,.07,.2),(.74,.07,.2),(.93,.05,.1)],M['furtan'])
 # ---- armour on the counter ---------------------------------------------------------
 cuirass(-1.42,-.2,.06,skirt='cloth',arms='mail',helm='great')
 cuirass(-.78,-.1,0,skirt='mail',arms='plate',helm='bascinet',tassets=2)

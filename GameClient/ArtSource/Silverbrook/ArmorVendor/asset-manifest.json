@@ -23,19 +23,19 @@
       ]
     },
     "SM_SBArmorVendor_Cloth": {
-      "triangles": 30384,
+      "triangles": 31584,
       "materials": [
         "SB_ArmorVendor_AwningBlue",
         "SB_ArmorVendor_AwningCream",
         "SB_ArmorVendor_Banner",
-        "SB_ArmorVendor_Fur"
+        "SB_ArmorVendor_Fur",
+        "SB_ArmorVendor_FurTan"
       ]
     },
     "SM_SBArmorVendor_Armour": {
       "triangles": 118122,
       "materials": [
         "SB_ArmorVendor_Steel",
-        "SB_ArmorVendor_MailShadow",
         "SB_ArmorVendor_Mail",
         "SB_ArmorVendor_SteelWorn"
       ]
@@ -265,7 +265,7 @@
       ]
     }
   },
-  "triangles": 289679,
+  "triangles": 290879,
   "materials": [
     {
       "name": "SB_OakTimber",
@@ -343,9 +343,21 @@
       "name": "SB_ArmorVendor_Fur",
       "scan": "curly_teddy_natural",
       "dark": [
-        0.09,
-        0.085,
-        0.08
+        0.44,
+        0.15,
+        0
+      ],
+      "lichen": null,
+      "normal": 2.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ArmorVendor_FurTan",
+      "scan": "curly_teddy_natural",
+      "dark": [
+        0.55,
+        0.3,
+        0.06
       ],
       "lichen": null,
       "normal": 2.0,
@@ -389,27 +401,15 @@
     },
     {
       "name": "SB_ArmorVendor_Mail",
-      "colour": [
-        0.26,
-        0.26,
-        0.27
+      "scan": "sb_chainmail",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
       ],
-      "roughness": 0.5,
-      "metallic": 0.8,
-      "emission": null,
-      "strength": 0
-    },
-    {
-      "name": "SB_ArmorVendor_MailShadow",
-      "colour": [
-        0.12,
-        0.12,
-        0.125
-      ],
-      "roughness": 0.58,
-      "metallic": 0.7,
-      "emission": null,
-      "strength": 0
+      "lichen": null,
+      "normal": 1.0,
+      "metal": true
     },
     {
       "name": "SB_ArmorVendor_Brass",
