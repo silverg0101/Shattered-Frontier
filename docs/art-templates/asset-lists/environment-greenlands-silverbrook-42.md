@@ -25,7 +25,6 @@
 | BLD-GreenlandsRiversideDocks-01 | Building / Riverside docks | Silverbrook layout `building_types.docks` (30 × 10 × 1 m, width × depth × height; graybox) | P2; modular; Greenlands half-timbered style (definition §3) | Blender session / image-complete | owner-supplied / — | model from the owner-supplied concept in the Blender session; do not generate new concept images |
 | BLD-GreenlandsWallSection-01 | Building / Wall section — Defence | Silverbrook definition §10; layout `wall` | P2; modular; Greenlands half-timbered style (definition §3) | Blender session / image-complete | owner-supplied / — | model from the owner-supplied concept in the Blender session; do not generate new concept images |
 | BLD-GreenlandsWallTower-01 | Building / Wall tower — Defence | Silverbrook definition §10; layout `wall.tower` | P2; modular; Greenlands half-timbered style (definition §3) | Blender session / image-complete | owner-supplied / — | model from the owner-supplied concept in the Blender session; do not generate new concept images |
-| BLD-GreenlandsWorkshop-01 | Building / Workshop — Crafting and professions | Silverbrook definition §8 (6 × 8 m, height × width) | P2; modular; Greenlands half-timbered style (definition §3); stands in today: `SM_GreenlandsWorkshop_Structure` | Blender session / in-progress | owner-supplied / — | modelling in `GameClient/ArtSource/Silverbrook/Workshop`; 1 variant(s) still to land; closes when its meshes are in the biome library and the look profile's `buildings` map |
 | TERR-GreenlandsGraniteDomeFar-01 | Terrain / backdrop / Rounded rocky hill/dome silhouettes for distance; northern mountains belong to TER-01 backdrop | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `granite_dome_far` | P3; 0 of 2 variants owned | unassigned / planned | proposed / — | concept sheet and asset view (Qwen Image), then model (Pixal3D or Blender); 2 variant(s) |
 
 ## Briefs and component boundaries
@@ -84,12 +83,9 @@ Wall section — Defence, at Silverbrook definition §10; layout `wall`. Greenla
 ### BLD-GreenlandsWallTower-01
 Wall tower — Defence, at Silverbrook definition §10; layout `wall.tower`. Greenlands half-timbered style per definition §3: timber, stone foundations, plaster walls and slate roofs; civic buildings in dressed stone. One building or modular piece only; no street, terrain or props baked in. Concept: `docs/Game-Design/concept-art/Silverbrook/Wall Tower.png`. Unknowns: interior scope and whether it splits into a modular kit, decided before modelling.
 
-### BLD-GreenlandsWorkshop-01
-Workshop — Crafting and professions, at Silverbrook definition §8 (6 × 8 m, height × width). Greenlands half-timbered style per definition §3: timber, stone foundations, plaster walls and slate roofs; civic buildings in dressed stone. One building or modular piece only; no street, terrain or props baked in. Concept: `docs/Game-Design/concept-art/Silverbrook/Workshop.png`. Unknowns: interior scope and whether it splits into a modular kit, decided before modelling.
-
 ### TERR-GreenlandsGraniteDomeFar-01
 Rounded rocky hill/dome silhouettes for distance; northern mountains belong to TER-01 backdrop One asset family for the `granite_dome_far` role, placed by `dress_zone.py` where: beyond the playable radius. Needs 2 variant(s) that share a silhouette family; separate meshes, no baked-in ground or neighbours. Required images: concept sheet and clean asset view. Unknowns: exact triangle budget and LODs, set when the model pipeline picks it up.
 
 ## Progress
 
-- 2026-10-19: 12 planned, 1 modelling in the Blender session, 7 with an owner-supplied concept waiting for a model.
+- 2026-10-19: 12 planned, 0 modelling in the Blender session, 7 with an owner-supplied concept waiting for a model.
