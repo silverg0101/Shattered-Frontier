@@ -4,7 +4,7 @@
 Local frame: X runs along the river bank (across the bridge width), -Y faces the river, Z up.
 Origin: centre of the top edge on the bank side (y=0, z=0 = bank / deck-end ground level).
 The front wall's top (coping) is at z=0; wingwalls splay back from its ends and step down with the earth.
-Built for 2-4 m banks: stone runs 4 m below the top edge (terrain hides the excess), earth fill is capped just
+Built for 2-4 m banks: stone runs 10 m below the top edge (terrain hides the excess), earth fill is capped just
 under z=0 so it never fights the road surface.
 """
 import sys,math,json
@@ -27,8 +27,8 @@ def rect():return kit.rng.choice(PATCH)
 G=dict(wall=Geo('SM_SBBridgeAbutment_Stone',asset),earth=Geo('SM_SBBridgeAbutment_Earth',asset))
 W,E=G['wall'],G['earth']
 # ---- layout (metres) ----------------------------------------------------------------------------
-SLOT=(17,5.4,4.2)
-H=4.0                     # stone depth below the top edge
+SLOT=(17,5.4,10.2)
+H=10.0                    # stone depth below the top edge (low-cut banks; terrain hides the rest)
 FY,FT=-5.1,.7             # front face y; front wall thickness
 FX=3.45                   # front wall half-length
 COPE=.14                  # coping thickness

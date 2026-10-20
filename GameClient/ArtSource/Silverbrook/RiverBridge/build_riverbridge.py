@@ -29,10 +29,10 @@ def rect():return kit.rng.choice(DRESSED)
 G=dict(stone=Geo('SM_SBRiverBridge_Masonry',asset),dressed=Geo('SM_SBRiverBridge_Dressed',asset),deck=Geo('SM_SBRiverBridge_Deck',asset))
 S,Dg=G['stone'],G['dressed']
 # ---- layout (metres) -----------------------------------------------------------------------
-SLOT=(22,7.6,7)
+SLOT=(22,7.6,12.7)
 L=11;HW=2.7;PIN=2.25           # half length; body and parapet-inner half widths (5.4 over all, 4.5 walkable)
 DC=1.6                         # deck crown above the end-of-deck ground level (x=0, over the pier)
-WATER,BED,SPRING=-1.5,-4.0,-1.2
+WATER,BED,SPRING=-1.5,-10.0,-1.2   # BED: masonry foot; built-up banks put the water 4+ m below the deck ends, terrain hides the rest
 HALF=4.0;RISE=1.5;PIERX=1.0    # arch half-span, rise; pier half-thickness -> arches span |x| in [1,9]
 R=(HALF**2+RISE**2)/(2*RISE);ZC=SPRING+RISE-R;CUT=1.0   # arch radius; arch centre height; cutwater projection
 def zd(x):

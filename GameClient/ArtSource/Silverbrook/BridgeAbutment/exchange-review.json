@@ -1,11 +1,11 @@
 {
   "source": {
     "meshes": 2,
-    "triangles": 10292,
+    "triangles": 28464,
     "size_m": [
       16.728,
       5.225,
-      4.0
+      10.0
     ],
     "materials": [
       "SB_RiverAbutment_Dressed",
@@ -19,11 +19,11 @@
   },
   "glb": {
     "meshes": 2,
-    "triangles": 10292,
+    "triangles": 28464,
     "size_m": [
       16.728,
       5.225,
-      4.0
+      10.0
     ],
     "materials": [
       "SB_RiverAbutment_Dressed",
@@ -38,11 +38,11 @@
   },
   "fbx": {
     "meshes": 2,
-    "triangles": 10292,
+    "triangles": 28464,
     "size_m": [
       16.728,
       5.225,
-      4.0
+      10.0
     ],
     "materials": [
       "SB_RiverAbutment_Dressed",
