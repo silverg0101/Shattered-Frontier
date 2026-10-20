@@ -1,0 +1,110 @@
+{
+  "asset": "SilverbrookStreetLamp1",
+  "asset_id": "BLD-GreenlandsStreetLamp-01",
+  "variant": 1,
+  "reference": {
+    "file": "StreetLamp1-reference.png",
+    "sha256": "93b64804e39e282141841b8f62c9382a28f5ac04877c476bc186505070fb1625"
+  },
+  "blender": "5.1.1",
+  "generator": "build_streetlamp1.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    1.44,
+    0.68,
+    4.16
+  ],
+  "meshes": {
+    "SM_SBStreetLamp1_Plinth": {
+      "triangles": 124,
+      "materials": [
+        "SB_StreetLamp1_Plinth"
+      ]
+    },
+    "SM_SBStreetLamp1_Timber": {
+      "triangles": 376,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBStreetLamp1_Details": {
+      "triangles": 6668,
+      "materials": [
+        "SB_ForgedIron",
+        "SB_StreetLamp1_Glow"
+      ]
+    }
+  },
+  "triangles": 7168,
+  "materials": [
+    {
+      "name": "SB_StreetLamp1_Plinth",
+      "scan": "rough_block_wall",
+      "dark": [
+        0.36,
+        0.38,
+        0.3
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_StreetLamp1_Glow",
+      "colour": [
+        0.45,
+        0.22,
+        0.05
+      ],
+      "roughness": 0.25,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.4,
+        0.08
+      ],
+      "strength": 2.5
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookStreetLamp1",
+  "slot_m": [
+    1.5,
+    1.5,
+    4.2
+  ],
+  "light_socket_m": [
+    0.45,
+    0.0,
+    2.55
+  ],
+  "light_material": "SB_StreetLamp1_Glow",
+  "outputs": [
+    "SilverbrookStreetLamp1.blend",
+    "SilverbrookStreetLamp1.glb",
+    "SilverbrookStreetLamp1.fbx"
+  ]
+}

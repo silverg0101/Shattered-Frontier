@@ -41,6 +41,6 @@ Owner-supplied concept images for the Silverbrook buildings. One image is one de
 | [Gatehouse.png](Gatehouse.png) | Gatehouse | BLD-GreenlandsGatehouse-01 | 10 m opening, towers 8 × 8 × 12 | `GameClient/ArtSource/Silverbrook/Gatehouse` | delivered |
 | [Wall Tower.png](Wall%20Tower.png) | Wall tower | BLD-GreenlandsWallTower-01 | 8 × 8 × 12 | — | waiting for a model |
 | [Street Lamp-1.png](Street%20Lamp-1.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | `GameClient/ArtSource/Silverbrook/StreetLamp1` | modelling |
-| [Street Lamp-2.png](Street%20Lamp-2.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | — | waiting for a model |
+| [Street Lamp-2.png](Street%20Lamp-2.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | `GameClient/ArtSource/Silverbrook/StreetLamp2` | modelling |
 | [Street Lamp-3.png](Street%20Lamp-3.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | `GameClient/ArtSource/Silverbrook/StreetLamp3` | modelling |
 | [Street Lamp-4.png](Street%20Lamp-4.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | — | waiting for a model |
