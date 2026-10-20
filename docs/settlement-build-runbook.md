@@ -86,9 +86,9 @@ The first command deletes and regenerates the map and logs `SILVERBROOK_BUILT �
 | Doors, gates, wheels | `place_parts.attach(actor)` on every spawn (Assets session's script) | 521 moving parts |
 | Street props | `place_props.place_all()` after buildings and lamps | 131 props |
 | Street lamps | Along primary and secondary streets inside the wall, alternating sides, clear of gates, bridges and junctions | 275 lamps |
-| Wall | 20 m `Wall section`s on their lowest ground. Gatehouses face out of town. **The wall continues across water on the channel bed,** so swimmers can't get in; towers skip water. | 164 pieces, 13 over water |
+| Wall | 20 m `Wall section`s on their lowest ground. Gatehouses face out of town. **The wall continues across water on the channel bed:** those pieces are `Water gate`s, whose grated arches let the river through but block swimmers. Towers skip water. | 164 pieces, 13 water gates |
 | Water | Visual strips plus a water `PhysicsVolume` under every river and brook piece, basin and the sea. Each is 8 m deep with its top on the surface. | 491 volumes |
-| Crossings | Narrowed river and built-up rock abutments under graybox decks. The delivered bridge mesh is used where the measured span fits it. | 7 graybox decks at 19–25 m, plus the stone Silverbrook Bridge |
+| Crossings | Narrowed river, banks built up to the road. The main crossing uses the stone bridge. Others use the river bridge kit: a 22 m deck stretched 0.85–1.15 along X and pitched to both banks, with an abutment 3 m past each deck end at that end's height (yaw ±90 plus the FBX flip). Riprap boulders only where no kit fits. Road strips stop over water, or they show under the arches. | 7 kit bridges at 19–25 m, plus the stone Silverbrook Bridge |
 | Townsfolk footways | `townsfolk_lanes.build_in_editor(*plan(L), ground=HF.at)`: ZoneGraph shapes, then a graph rebuild | 30 lanes |
 | Roster | `<town>-buildings.json`: every building's label, type, position and yaw, for the census | 312 dwellings and more |
 | Review cameras | `ReviewCamera_Aerial`, `_Eastwood`, `_Street`, `_Bridge` and similar | 5 captures |
@@ -146,6 +146,7 @@ UnrealEditor.exe <uproject> <map> -game -RenderOffscreen -unattended -nosound -w
 | The editor opens an old map after a crash | `EditorStartupMap` is the art review map; nothing is lost | Open the zone map | `PROBE world` |
 | `No open ShatteredFrontier editor answered` | Editor closed, busy compiling shaders, or remote execution off | Wait and retry; relaunch; enable remote execution. Don't write ping files from PowerShell (BOM). | Probe answers |
 | Builder: `Save or discard these first` | Unsaved packages in the editor | Ask their owners, then `--discard-unsaved` | `PROBE dirty []` |
+| A pale slab under a bridge's arches | Road strip pieces continue across the river at deck height | Builder skips road pieces whose centre is over water | Crossing capture |
 | Floating flat plates in the flowers | A placeholder mesh (`SM_Wildflowers`) fills a role | Remove it from the look-profile role; cluster the real flowers | Street capture |
 | Front doors face away from the street | FBX import flips −Y to +Y | Actor yaw = target yaw + 180 | `ReviewCamera_Street` shows a door |
 | Pawn stalls on a road | Pieces kept the default collision profile, so lips catch | Builder sets the `NoCollision` profile | Walk: 0 stuck events |

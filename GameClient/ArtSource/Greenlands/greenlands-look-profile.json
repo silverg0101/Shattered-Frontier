@@ -21,6 +21,9 @@
     "Stables": {"have": ["SM_SilverbrookStables"]},
     "Farmhouse": {"have": ["SM_SilverbrookFarmhouse"]},
     "Stone bridge": {"have": ["SM_SilverbrookStoneBridge"]},
+    "River bridge": {"have": ["SM_SilverbrookRiverBridge"], "_about": "22 m two-arch road bridge for 19-25 m crossings (X scale 0.85-1.15); origin mid-span at deck-end ground"},
+    "Bridge abutment": {"have": ["SM_SilverbrookBridgeAbutment"], "_about": "stone wingwalls and earth ramp; origin top edge centre, 3 m past each deck end"},
+    "Water gate": {"have": ["SM_SilverbrookWaterGate"], "_about": "Wall section slot with grated arches, for wall pieces over water"},
     "Watchtower": {"have": ["SM_SilverbrookWatchtower"]},
     "Northridge house": {"have": ["SM_SilverbrookNorthridgeHouse1", "SM_SilverbrookNorthridgeHouse2", "SM_SilverbrookNorthridgeHouse3", "SM_SilverbrookNorthridgeHouse4", "SM_SilverbrookNorthridgeHouse5", "SM_SilverbrookNorthridgeHouse6"]},
     "Townhouse": {"have": ["SM_SilverbrookTownhouse1", "SM_SilverbrookTownhouse2", "SM_SilverbrookTownhouse3", "SM_SilverbrookTownhouse4", "SM_SilverbrookTownhouse5", "SM_SilverbrookTownhouse6"]},
@@ -41,7 +44,7 @@
       "variants": 4,
       "share": 0.55,
       "where": "slopes and ridges",
-      "have": [],
+      "have": ["SM_PineTall_00", "SM_PineTall_01", "SM_PineTall_02", "SM_PineTall_03"],
       "place": {"per_ha": 45, "spacing": 7, "slope": [0, 35], "valley": [4, 999], "light": "any", "clear": 4, "scale": [0.95, 1.4], "fallback": "tree_oak", "harvest": "wood"}
     },
     {
@@ -51,7 +54,7 @@
       "variants": 4,
       "share": 0.35,
       "where": "hollows, clearings, stream sides",
-      "have": [],
+      "have": ["SM_BroadleafYoung_00", "SM_BroadleafYoung_01", "SM_BroadleafYoung_02", "SM_BroadleafYoung_03"],
       "place": {"per_ha": 30, "spacing": 6, "slope": [0, 25], "valley": [0, 8], "light": "any", "clear": 3, "scale": [0.6, 0.85], "fallback": "tree_oak", "harvest": "wood"}
     },
     {
@@ -104,7 +107,7 @@
       "variants": 4,
       "share": 0.0,
       "where": "slopes and forest floor",
-      "have": [],
+      "have": ["SM_BoulderLargeMoss_00", "SM_BoulderLargeMoss_01", "SM_BoulderLargeMoss_02", "SM_BoulderLargeMoss_03"],
       "place": {"per_ha": 6, "spacing": 8, "slope": [8, 90], "valley": [0, 999], "light": "any", "clear": 3, "scale": [1.0, 1.6], "sink": 0.25, "fallback": "rock_medium", "harvest": "stone"}
     },
     {
@@ -114,7 +117,7 @@
       "variants": 4,
       "share": 0.0,
       "where": "slope above 30 degrees, rises",
-      "have": [],
+      "have": ["SM_BedrockSlab_00", "SM_BedrockSlab_01", "SM_BedrockSlab_02", "SM_BedrockSlab_03"],
       "place": {"per_ha": 40, "spacing": 5, "slope": [30, 90], "valley": [0, 999], "light": "any", "clear": 3, "scale": [1.5, 2.6], "sink": 0.35, "fallback": "rock_medium"}
     },
     {

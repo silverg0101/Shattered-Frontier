@@ -45,7 +45,7 @@ KIND_BUILDING = {'town_hall': 'Town Hall', 'adventurers_guild': "Adventurers' Gu
                  'cottage': 'Cottage', 'townhouse': 'Townhouse', 'elite_house': 'Northridge house', 'mill': 'Mill',
                  'granary': 'Granary', 'wharf': "Fisherman's wharf", 'docks': 'Riverside docks',
                  'armor_vendor': 'Armor vendor', 'weapons_vendor': 'Weapons vendor'}
-WALL_PIECES = {'section': 'Wall section', 'tower': 'Wall tower', 'gatehouse': 'Gatehouse'}
+WALL_PIECES = {'section': 'Wall section', 'tower': 'Wall tower', 'gatehouse': 'Gatehouse', 'watergate': 'Water gate'}
 _have = {k: PROFILE['buildings'].get(b, {}).get('have', []) for k, b in KIND_BUILDING.items()}
 _walls = {k: PROFILE['buildings'].get(b, {}).get('have', [])[:1] for k, b in WALL_PIECES.items()}
 _meshes = pcg_dressing._meshes({n for names in list(_have.values()) + list(_walls.values()) for n in names})
@@ -180,9 +180,9 @@ def facing(x, y, tx, ty):
     return math.degrees(math.atan2(ty - y, tx - x)) + 90
 
 
-def strip(label, points, width, mat, h, folder, z_at, collide=False, piece=10.0, swim=False):
+def strip(label, points, width, mat, h, folder, z_at, collide=False, piece=10.0, swim=False, skip=None):
     """Queue thin boxes along a polyline in pieces of at most `piece` m, pitched to follow z_at(i, t).
-    swim: also put a water volume under each piece, its top on the surface.
+    swim: also put a water volume under each piece, its top on the surface. skip(x, y): leave out the piece centred there.
     width: metres, or a function (point) -> metres; a piece takes the wider of its two ends."""
     for i, (p, q) in enumerate(zip(points, points[1:])):
         length = math.dist(p, q); n = max(1, math.ceil(length / piece))
@@ -196,6 +196,8 @@ def strip(label, points, width, mat, h, folder, z_at, collide=False, piece=10.0,
                 za, zb = z_at(i, max(t0, 0.0)), z_at(i, min(t1, 1.0))
                 run = (t1 - t0) * length; tm = (t0 + t1) / 2
                 cx, cy, pitch = p[0] + (q[0] - p[0]) * tm, p[1] + (q[1] - p[1]) * tm, math.degrees(math.atan2(zb - za, run))
+                if skip and skip(cx, cy):
+                    return
                 _box(f'{label}_{i:02d}_{k:02d}', cx, cy, run, wd, h, mat, (za + zb) / 2 - h / 2, yaw, collide, folder, None, pitch)
                 if swim:
                     _water(f'{label}_{i:02d}_{k:02d}', cx, cy, run, wd, (za + zb) / 2, yaw, pitch)
@@ -350,11 +352,20 @@ for b in BASINS:  # one flat surface at the basin level; the shore terrain hides
     box(b['name'].replace(' ', ''), bx0, by0, bw, bd, 0.1, 'River', z0=b['level'] - 0.1, collide=False, folder='Water', ground=None)
     pending.append(lambda n=b['name'].replace(' ', ''), g=(bx0, by0, bw, bd, b['level']): _water(n, *g))  # shore above the level stays dry
 for name, pts, width, tier in ROADS:
-    strip(name.replace(' ', ''), pts, width, 'Trail' if tier == 'trail' else 'Road', 0.3, f'Roads/{tier.title()}', on_road(name, pts))
+    strip(name.replace(' ', ''), pts, width, 'Trail' if tier == 'trail' else 'Road', 0.3, f'Roads/{tier.title()}', on_road(name, pts),
+          skip=lambda x, y: water_gap((x, y)) < 0)  # over the water the bridge deck is the road; a strip would show under its arches
 
 # Bridges where primary or secondary roads cross the river or a brook.
 _bridge = PROFILE['buildings'].get('Stone bridge', {}).get('have', [])
 STONE_BRIDGE = pcg_dressing._meshes({_bridge[0]})[_bridge[0]] if _bridge else None
+# The river bridge kit for graybox crossings: a 22 m deck (X scale 0.85-1.15) and a stone abutment for each bank.
+_kit = {k: PROFILE['buildings'].get(b, {}).get('have', [])[:1] for k, b in (('deck', 'River bridge'), ('abutment', 'Bridge abutment'))}
+RIVER_BRIDGE = {k: pcg_dressing._meshes(set(v))[v[0]] for k, v in _kit.items() if v} if all(_kit.values()) else {}
+KIT_SPAN, KIT_SCALE, KIT_ABUT = 22.0, (0.85, 1.15), 3.0  # metres; scale range along X; abutment origin past each deck end
+kit_placed = set()  # crossings whose deck is the kit: their banks get abutments, not riprap
+# Abutment yaw from the bridge yaw, per bank (-1: the deck's -X end). The package faces the river with -Y, which the FBX
+# import flips to +Y, so each bank turns +Y back toward the deck.
+ABUT_YAW = {-1: -90.0, 1: 90.0}
 BOULDERS = list(pcg_dressing._meshes({f'SM_Boulder_0{i}' for i in range(3)}).values())
 CROSSING = L['river']['crossing']
 ROAD_OF = {name: (pts, width) for name, pts, width, _ in ROADS}
@@ -393,6 +404,24 @@ for cx_ in crossings(L):
             a_.static_mesh_component.set_static_mesh(STONE_BRIDGE)
             a_.set_actor_label('SilverbrookBridge'); a_.set_folder_path('Bridges')
             return
+        if not is_main and RIVER_BRIDGE and KIT_SCALE[0] <= run / KIT_SPAN <= KIT_SCALE[1]:
+            # Deck: origin mid-span at deck-end ground (z=0 at both ends, camber above), stretched along X to the run,
+            # and pitched to meet both banks as the graybox deck was. Wider roads widen it (4.5 m walkable).
+            sx, pitch = run / KIT_SPAN, math.degrees(math.atan2(z1 - z0, run))
+            a_ = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector((h[0] + cs * mid) * 100, (h[1] + sn * mid) * 100,
+                                               (z0 + z1) / 2 * 100), u.Rotator(roll=0, pitch=pitch, yaw=yaw))
+            a_.static_mesh_component.set_static_mesh(RIVER_BRIDGE['deck']); a_.set_actor_scale3d(u.Vector(sx, max(1.0, w / 4.5), 1))
+            a_.set_actor_label(f'Bridge_{n.replace(" ", "")}'); a_.set_folder_path('Bridges')
+            for side, zend in ((-1, z0), (1, z1)):
+                # Abutment origin: top edge centre, 3 m past the deck end, at that end's height; its river face toward the deck.
+                d = side * (KIT_SPAN / 2 * sx + KIT_ABUT) + mid
+                b_ = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector((h[0] + cs * d) * 100, (h[1] + sn * d) * 100, zend * 100),
+                                                   u.Rotator(roll=0, pitch=0, yaw=yaw + ABUT_YAW[side]))
+                b_.static_mesh_component.set_static_mesh(RIVER_BRIDGE['abutment'])
+                b_.set_actor_label(f'Abutment_{n.replace(" ", "")}_{"AB"[side > 0]}'); b_.set_folder_path('Bridges')
+            kit_placed.add(n); counts['BridgeKit'] = counts.get('BridgeKit', 0) + 1
+            counts['BridgeSpans'] = counts.get('BridgeSpans', []) + [run]
+            return
         _box('SilverbrookBridge' if is_main else f'Bridge_{n.replace(" ", "")}', h[0] + cs * mid, h[1] + sn * mid,
              run + 2, w, 0.3, 'Wall', (z0 + z1) / 2 - 0.25, yaw, True, 'Bridges', None,
              math.degrees(math.atan2(z1 - z0, run)))
@@ -400,6 +429,8 @@ for cx_ in crossings(L):
 
     def spawn_riprap(c=cx_, w=max(L['river']['bridge_width'], ROAD_OF[name][1])):
         """Boulders along both built-up banks of a narrowed crossing, clear of the road and deck."""
+        if c['road'] in kit_placed:
+            return  # the kit's abutments already build up these banks
         wtr = next(x for x in WATERS if x['name'] == c['water'])
         tx, ty = math.cos(math.radians(c['water_yaw'])), math.sin(math.radians(c['water_yaw']))
         rng = random.Random(f'{c["road"]}{c["water"]}')
@@ -459,9 +490,12 @@ while s < total - step:
         if is_tower:
             next_tower = s + W['tower_spacing']
         if 'section' in WALL_MESH:  # 20 m segment along X, resting on its lowest ground so no end floats
-            def spawn_wall(m=mid, k=int(s)):
+            over_water = water_gap(mid) < step / 2 + 2 and 'watergate' in WALL_MESH
+
+            def spawn_wall(m=mid, k=int(s), gate=over_water):
+                # Over water, the water gate takes the section's slot: grated arches on the channel bed let the river through.
                 z, yaw_ = outward(*m, step, W['thickness'])
-                piece(f'Wall_{k:04d}', WALL_MESH['section'], m[0], m[1], yaw_, z, 'Wall')
+                piece(f'WaterGate_{k:04d}' if gate else f'Wall_{k:04d}', WALL_MESH['watergate' if gate else 'section'], m[0], m[1], yaw_, z, 'Wall')
             pending.append(spawn_wall)
             counts['Wall'] = counts.get('Wall', 0) + 1
         else:
