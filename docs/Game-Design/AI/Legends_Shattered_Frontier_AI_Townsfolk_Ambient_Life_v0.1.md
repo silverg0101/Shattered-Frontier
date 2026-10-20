@@ -285,11 +285,21 @@ The census validator checks:
    - Processor cost: 0.01–0.06 ms a frame.
    - Routes: 4 of 175 fall back to a straight walk. These are workplaces such as the docks and mill, which the footways don't reach yet.
 
-   *Not done yet:*
-   - Placeholder cylinders as actors, not MassRepresentation.
-   - Mass steering and avoidance, Smart Objects (doors, stalls, benches).
-   - StateTree-driven blocks (schedule logic is a processor for now).
-   - Lanes beyond Riverside, social and night blocks, server town state.
+   *Since done (step 3 first slice, below):* lanes across the town, MassRepresentation bodies, avoidance.
+
+   *Not done yet:* Smart Objects (doors, stalls, benches); StateTree-driven blocks (schedule logic is a processor for now); social and night blocks; server town state.
+
+   **Step 3 first slice (2026-10-20), development opt-in as above.**
+   - *Footways across the town.* `townsfolk_lanes.py` lays every street inside the wall or a district polygon (the farms past the wall too): 56 pieces, 30 junctions, 368 lanes, 8.8 km. Points every 5 m take the heightfield's height; over water they run straight from bank to bank, as the bridge decks do. Every home is within 15 m of a footway. Five workplaces have no road (wharf, stables, mill and granary, watchtower), so their workers stop at the nearest footway.
+   - *Junction fix.* Junction arms point back along their streets (`SpawnFootway` takes the junction centre). Pointing them at the arms' centroid had split the network: 64 of 679 routes failed, against 2 now.
+   - *Residents.* 200 by default (`ResidentCap`), taken evenly from the whole census (`District` empty). Routes use Dijkstra with a heap. Each resident stands 1–3 m out from its stall or workplace, from a seeded offset, so errands don't stack on one point.
+   - *Bodies.* MassRepresentation, through MassCrowd's visualization trait (only MassCrowd's LOD and visualization processors are registered by default; entities carry `FMassCrowdTag`). It spawns `ASFTownsfolkBody`, the UE4 mannequin playing `ThirdPersonWalk` or `ThirdPersonIdle`, within 150 m: up to 40 at High LOD and 80 at Medium. Nobody is drawn beyond 150 m. MetaHuman Crowds kits and far instances replace this later.
+   - *Avoidance.* A sidestep up to `SidestepMaxMetres` (1.5 m) to the right of the route: away from anyone within 1.2 m and from the player within 2 m, and keeping right of anyone coming the other way. It never changes the route itself.
+   - *Evidence* (6-minute day, `Townsfolk-*h.png`):
+     - Outdoors: 84 at 10:00, 1 at night (a worker still at work).
+     - Routes: 2 of 679 failed, both on one dead-end street whose junction arm at (34, 420) m doesn't link.
+     - Processor cost: 0.05–0.19 ms a frame, after a 12 ms first frame that plans the first 200 routes.
+     - Close passes (pairs under 0.6 m, summed over frames): the standing spread cut them from 906 to 240 in a day; sidesteps took that to 233 at the review's 10× clock. Walkers there move at 14 m/s, too fast for a sidestep to react. A real-speed measurement is still due.
 3. **Looks and scale.** Use MetaHuman Crowds kits and the near, mid and far representations, then town-wide residents at default caps. *Exit:* frame cost within `tune.townsfolk.frame_budget_ms` on the target spec, and no visible pops at tier changes.
 4. **Town state and hand-off.** The server clock (60-minute day), market open or closed, danger cells, and the attack and quest hand-offs. *Exit:* two clients see the same market state and crowd intent; a handed-off resident replicates and returns.
 5. **Reactions, crime and guards.** Fear at drawn weapons, annoyed barks, residents fighting back, roaming guards on patrol loops, witnessed crime making the player an offender, respawn at dawn. *Exit:* attacking a resident in view of a guard makes the player an offender and the guard engages; an unwitnessed attack in a back street gets reported only if a resident reaches a guard.

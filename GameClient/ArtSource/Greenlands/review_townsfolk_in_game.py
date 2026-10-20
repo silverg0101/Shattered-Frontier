@@ -1,10 +1,11 @@
-"""Watch the townsfolk prototype (AI Townsfolk doc, section 9 step 2) over the Market Square, at the north end of South Street.
+"""Watch the townsfolk prototype (AI Townsfolk doc, section 9 steps 2-3) over the Market Square, at the north end of South Street.
 
 Launch in -game with -TownsfolkPrototype and a fast prototype clock, for example:
   UnrealEditor.exe <uproject> /Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook -game -TownsfolkPrototype
       "-ini:Game:[/Script/ShatteredFrontier.SFTownsfolkSettings]:GameDayMinutes=6" -ExecCmds="py <this file>"
 Captures Townsfolk-<hour>h.png at the game hours below, then quits. The TOWNSFOLK_HOUR log lines say where everyone
-is meant to be each hour, with route counts and the processor's cost.
+is meant to be each hour, who is outdoors, pairs closer than 0.6 m summed over frames (ClosePairFrames), route counts and the processor's cost.
+Add "-ini:Game:[/Script/ShatteredFrontier.SFTownsfolkSettings]:SidestepMaxMetres=0" to compare without sidesteps.
 """
 import time
 from pathlib import Path
@@ -40,13 +41,11 @@ def tick(delta):
     if state['shots'] < len(HOURS) and hour >= HOURS[state['shots']]:
         name = f"Townsfolk-{HOURS[state['shots']]:04.1f}h.png".replace('.', '_', 1)
         # Frame the outdoor residents nearest the square from 9 m away, when anyone is out.
-        out = [b for b in u.GameplayStatics.get_all_actors_of_class(world, u.StaticMeshActor)
-               if not b.get_editor_property('hidden') and b.static_mesh_component.static_mesh and b.static_mesh_component.static_mesh.get_name() == 'Cylinder']
+        out = u.SFTownsfolkLaneLibrary.outdoor_residents(world)
         if out:
-            b = min(out, key=lambda b: b.get_actor_location().length())
-            l = b.get_actor_location()
+            l = min(out, key=lambda p: p.length())
             cam.set_actor_location_and_rotation(u.Vector(l.x + 600, l.y + 600, l.z + 400), u.Rotator(roll=0, pitch=-20, yaw=-135), False, True)
-        u.log(f'TOWNSFOLK_REVIEW {len(out)} placeholder bodies visible')
+        u.log(f'TOWNSFOLK_REVIEW {len(out)} residents outdoors')
         u.SystemLibrary.execute_console_command(world, 'HighResShot 1280x720 filename=' + str(ROOT / name).replace('\\', '/'))
         u.log(f'TOWNSFOLK_REVIEW capture {name} at game hour {hour:.2f}')
         state['shots'] += 1

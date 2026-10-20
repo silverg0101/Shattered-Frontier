@@ -89,7 +89,7 @@ The first command deletes and regenerates the map and logs `SILVERBROOK_BUILT �
 | Wall | 20 m `Wall section`s on their lowest ground. Gatehouses face out of town. **The wall continues across water on the channel bed:** those pieces are `Water gate`s, whose grated arches let the river through but block swimmers. Towers skip water. | 164 pieces, 13 water gates |
 | Water | Visual strips plus a water `PhysicsVolume` under every river and brook piece, basin and the sea. Each is 8 m deep with its top on the surface. | 491 volumes |
 | Crossings | Narrowed river, banks built up to the road. The main crossing uses the stone bridge. Others use the river bridge kit: a 22 m deck stretched 0.85–1.15 along X and pitched to both banks, with an abutment 3 m past each deck end at that end's height (yaw ±90 plus the FBX flip). Riprap boulders only where no kit fits. Road strips stop over water, or they show under the arches. | 7 kit bridges at 19–25 m, plus the stone Silverbrook Bridge |
-| Townsfolk footways | `townsfolk_lanes.build_in_editor(*plan(L), ground=HF.at)`: ZoneGraph shapes, then a graph rebuild | 30 lanes |
+| Townsfolk footways | `townsfolk_lanes.build_in_editor(*plan(L), ground=HF.at, wet=…)`: every street inside the wall or a district, points every 5 m, heights straight from bank to bank over water; ZoneGraph shapes, then a graph rebuild | 56 pieces, 30 junctions, 368 lanes |
 | Roster | `<town>-buildings.json`: every building's label, type, position and yaw, for the census | 312 dwellings and more |
 | Review cameras | `ReviewCamera_Aerial`, `_Eastwood`, `_Street`, `_Bridge` and similar | 5 captures |
 
@@ -116,12 +116,13 @@ The validator rejects hostile points in water, inside the wall, or within 80 m o
 
 **Gathering pilot.** Start a dedicated server on `<map>?game=/Script/ShatteredFrontier.SFConstructionNetworkGameMode` with `-ConstructionNetworkSandbox -GatheringPilot`. Nodes come from the zone record's gathering groups (`active_count` per group): wood is oak, stone is rough stone. Each node removes the dressing instances rooted within 1 m of it and replicates out to 500 m. Check with `tools/Test-GatheringPilot.ps1 -Silverbrook`: `Passed`, each client harvests its node, and a replay grants nothing.
 
-**Townsfolk prototype.** Pass `-TownsfolkPrototype` on the map in `-game`. 50 census residents of `USFTownsfolkSettings.District` walk their day on the footways. Check with `review_townsfolk_in_game.py` on a 6-minute day (`"-ini:Game:[/Script/ShatteredFrontier.SFTownsfolkSettings]:GameDayMinutes=6"`). The `TOWNSFOLK_HOUR` lines must show:
-- residents outdoors rising in the morning and falling to 0 at night;
-- `RouteFailures` small;
-- `ProcessorMs` well under the 1.5 ms town budget.
+**Townsfolk prototype.** Pass `-TownsfolkPrototype` on the map in `-game` (the editor's Play In Editor needs the switch on the editor's own command line). `ResidentCap` census residents (200), taken evenly from the whole town (`District` empty), walk their day on the footways as mannequins. Check with `review_townsfolk_in_game.py` on a 6-minute day (`"-ini:Game:[/Script/ShatteredFrontier.SFTownsfolkSettings]:GameDayMinutes=6"`). The `TOWNSFOLK_HOUR` lines must show:
+- residents outdoors rising in the morning and falling to about 0 at night;
+- `RouteFailures` small, and every `TOWNSFOLK_ROUTE_FAILED` line explained;
+- `ProcessorMs` well under the 1.5 ms town budget;
+- mannequins on the streets in the close captures.
 
-Silverbrook: 25 outdoors at 10:00, 0 from 17:00, 4 of 175 routes failed, 0.01–0.06 ms.
+Silverbrook: 84 outdoors at 10:00, 1 at night (a worker still at work), 2 of 679 routes failed, 0.05–0.19 ms after a 12 ms first frame. The two failures share one dead-end street east of the junction at (34, 420) m, whose junction arm doesn't link.
 
 **Default map.** When the zone passes its checks, point `GameDefaultMap` and `ServerDefaultMap` at it in `DefaultEngine.ini`, and add it to `MapsToCook` in `DefaultGame.ini`. Stage the ini byte-exact (§0). E1 tests name their map, so they don't depend on the default.
 
@@ -165,7 +166,10 @@ UnrealEditor.exe <uproject> <map> -game -RenderOffscreen -unattended -nosound -w
 | ZoneGraph builds 0 lanes | Lane profile missing: ZoneGraph settings are `config=Plugins` | Put `[/Script/ZoneGraph.ZoneGraphSettings]` in `Config/DefaultPlugins.ini`, not DefaultEngine.ini | `TOWNSFOLK_LANES … lanes>0` |
 | Residents at Z=0, invisible | Footway ground traces ran in the same tick as loading or building, before collision existed (or not tracing complex) | Builder passes heightfield heights; standalone runs only on the loaded map, tracing complex | `TOWNSFOLK_HOUR … one at … Z>0` |
 | ZoneShape points offset | `SpawnActor<AZoneShape>(location)` ignores the location | Spawn at the origin with world-space points | Lanes on the streets |
-| Runtime instanced bodies don't render | Instanced-mesh updates at runtime | Placeholder actors now, MassRepresentation in step 3 | `TOWNSFOLK_REVIEW N … visible` and a close capture |
+| MassRepresentation bodies never appear (no error) | The base LOD collector, visualization LOD and visualization processors don't auto-register | Use `UMassCrowdVisualizationTrait` and give entities `FMassCrowdTag`: MassCrowd's subclasses are the registered ones | Bodies in a close capture |
+| `AddTrait` is not a member of `UMassEntityConfigAsset` (game target only) | `AddTrait(Class)` is editor-only | `NewObject` the trait and `GetMutableConfig().AddTrait(*Trait)` | The game target builds |
+| Footway network splits; `TOWNSFOLK_ROUTE_FAILED unreachable` | Junction arms pointed at the arms' centroid, so at bends and T-junctions they missed ZoneGraph's snap angle | `SpawnFootway` takes the junction centre; arms point back along their streets | `RouteFailures` near 0 |
+| Residents stacked on one spot at a stall | Every errand ended on the same point | Seeded 1–3 m standing offset around non-home goals | `ClosePairFrames` falls |
 | Residents stranded or `RouteFailures` high | ZoneGraph A* follows outgoing links only (no U-turns); destination far from footways | Own Dijkstra allows crossing to the opposite lane; extend footways to the destination | Low `RouteFailures` |
 | Streets don't join at a T | Street ends drawn metres short | `townsfolk_lanes.py` snaps ends within 12 m | `LANES_PLAN_OK` junction count |
 | Other sessions' work reverted | `git pull --autostash` with locked files | Never use it; restore from the stash hash | `git status` matches |
@@ -186,7 +190,7 @@ These are fixed values today. Turn them into per-zone data (zone id → map path
 | --- | --- |
 | `build_silverbrook.py` | Zone map path, layout file, `KIND_BUILDING`, `WALL_PIECES`, review camera spots |
 | `zone_record.py` | Output path, `HOSTILE` table (group centres and radii) |
-| `townsfolk_census.py`, `townsfolk_lanes.py` | Layout and output names; `DISTRICT` and the square radius |
+| `townsfolk_census.py`, `townsfolk_lanes.py` | Layout and output names |
 | `Construction/SFConstructionNetwork.cpp` | `IsZoneGatheringWorld()` map path; `SpawnZoneGatheringNodes()` record path |
 | `Townsfolk/SFTownsfolk.cpp` | `ZoneMap` path and census path (district is already a setting) |
 | `review_silverbrook_in_game.py`, `review_townsfolk_in_game.py` | Map path, camera labels |

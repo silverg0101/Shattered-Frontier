@@ -763,6 +763,6 @@ for district in DRESS_DISTRICTS:
     _about='Every building the builder placed (label, layout type, metres, yaw); read by townsfolk_census.py.',
     buildings=roster), indent=1) + chr(10), encoding='utf-8', newline=chr(10))
 u.log(f'SILVERBROOK_PROPS {place_props.place_all()}')  # wells, carts, benches... beside buildings; reruns replace them
-u.log(f'SILVERBROOK_TOWNSFOLK_LANES {townsfolk_lanes.build_in_editor(*townsfolk_lanes.plan(L), ground=HF.at)}')  # footways for the townsfolk prototype
+u.log(f'SILVERBROOK_TOWNSFOLK_LANES {townsfolk_lanes.build_in_editor(*townsfolk_lanes.plan(L), ground=HF.at, wet=lambda x, y: water_gap((x, y)) < 0)}')  # footways for the townsfolk prototype
 assert u.EditorLoadingAndSavingUtils.save_map(world, ZONE), 'Could not save the zone map'
 u.log(f'SILVERBROOK_BUILT Map={ZONE} Datum={DATUM} Bridges={len(bridges)} Fill={fill_report} Terrain={terrain_stats} Foundations={foundation} Dressing={dressing} Counts={counts}')

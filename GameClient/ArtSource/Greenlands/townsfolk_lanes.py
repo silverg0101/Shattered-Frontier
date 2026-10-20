@@ -1,13 +1,14 @@
-"""Footway lanes for the townsfolk prototype (AI Townsfolk doc, section 9 step 2): ZoneGraph shapes along the streets of
-Riverside and from there up South Street to the Market Square.
+"""Footway lanes for the townsfolk prototype (AI Townsfolk doc, section 9 step 3): ZoneGraph shapes along every street
+inside the town wall that joins the Market Square.
 
     python townsfolk_lanes.py                          # any Python 3: plans the network, prints LANES_PLAN_OK
     python tools/Run-InEditor.py GameClient/ArtSource/Greenlands/townsfolk_lanes.py   # in the open editor, on the zone map
 
 plan() splits the selected streets wherever they meet, so every junction is a node. In the editor, each street piece
 becomes a spline ZoneShape with the 'Footway' lane profile (one lane each way, DefaultEngine.ini), and each junction a
-polygon ZoneShape whose arms meet those splines. Then the ZoneGraph is rebuilt and the map saved. Ground heights come
-from a line trace in SFTownsfolkLaneLibrary. Reruns replace the earlier lanes (folder Townsfolk/Lanes).
+polygon ZoneShape whose arms meet those splines. Then the ZoneGraph is rebuilt and the map saved. The zone builder passes
+ground heights (and which points are over water, where heights run straight from bank to bank along the bridge deck);
+a standalone run traces them in SFTownsfolkLaneLibrary. Reruns replace the earlier lanes (folder Townsfolk/Lanes).
 """
 import json, math, sys
 from pathlib import Path
@@ -15,11 +16,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 from heightfield import in_polygon  # noqa: E402
-
 JUNCTION_R = 4.0   # m from a junction centre to its polygon arms
-SQUARE_R = 90.0    # m around the Market Square that the network covers
-DISTRICT = 'Riverside'
 SNAP = 12.0        # m: a street end this close to another street joins it
+SPACING = 5.0      # m between shape points, the heightfield's grid step
 
 
 def _cross(a, b, c, d):
@@ -43,17 +42,18 @@ def _nearest(p, a, b):
 
 def plan(L):
     """(edges, junctions): edges are point lists in metres between nodes; junctions are (centre, [arm directions])."""
-    poly = L['districts'][DISTRICT]['polygon']
+    W = L['wall']
     sq = next(p['at'] for p in L['places'] if p['type'] == 'plaza')
-    keep = lambda m: in_polygon(m, poly) or math.dist(m, sq) < SQUARE_R
+    keep = lambda m: (((m[0] - W['centre'][0]) / W['semi_axis_x']) ** 2 + ((m[1] - W['centre'][1]) / W['semi_axis_y']) ** 2 < 1
+                      or any(in_polygon(m, d['polygon']) for d in L['districts'].values()))  # the farms past the wall too
     lines = []
-    for tier in ('primary', 'secondary'):
+    for tier in ('primary', 'secondary', 'trail'):
         for name, pts in L['roads'][tier].items():
             run = []
             pts = [tuple(x) for x in pts]
             for a, b in zip(pts, pts[1:]):
                 m = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
-                if keep(m) or name == 'South Street':
+                if keep(m):
                     run = run or [a]
                     run.append(b)
                 elif run:
@@ -136,6 +136,25 @@ def plan(L):
     return edges, junctions
 
 
+def heights(e, ground, wet):
+    """Points every SPACING m along edge e as (x, y, z metres). Over water, z runs straight between the dry points either
+    side, as the bridge decks do (they pitch from bank to bank)."""
+    pts = [e[0]]
+    for a, b in zip(e, e[1:]):
+        n = max(1, round(math.dist(a, b) / SPACING))
+        pts += [(a[0] + (b[0] - a[0]) * k / n, a[1] + (b[1] - a[1]) * k / n) for k in range(1, n + 1)]
+    z = [None if wet(*p) else ground(*p) for p in pts]
+    dry = [i for i, v in enumerate(z) if v is not None]
+    if not dry:
+        return None
+    for i, v in enumerate(z):
+        if v is None:
+            lo = max((d for d in dry if d < i), default=None); hi = min((d for d in dry if d > i), default=None)
+            lo, hi = lo if lo is not None else hi, hi if hi is not None else lo
+            z[i] = z[lo] + (z[hi] - z[lo]) * ((i - lo) / (hi - lo) if hi != lo else 0)
+    return [(x, y, h) for (x, y), h in zip(pts, z)]
+
+
 def check(edges, junctions):
     out = []
     if len(edges) < 5:
@@ -146,8 +165,9 @@ def check(edges, junctions):
     return out
 
 
-def build_in_editor(edges, junctions, ground=None):
-    """ground(x, y) -> metres: heights from the zone builder's heightfield. Without it, run on the saved map and trace."""
+def build_in_editor(edges, junctions, ground=None, wet=lambda x, y: False):
+    """ground(x, y) -> metres: heights from the zone builder's heightfield; wet(x, y): over water (a bridge carries the
+    street). Without ground, run on the saved map and trace."""
     import unreal as u
     z = (lambda x, y: ground(x, y) * 100 + 10) if ground else (lambda x, y: 0)
     zone = '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook'
@@ -162,11 +182,12 @@ def build_in_editor(edges, junctions, ground=None):
     world = u.get_editor_subsystem(u.UnrealEditorSubsystem).get_editor_world()
     lib = u.SFTownsfolkLaneLibrary
     for i, e in enumerate(edges):
-        lib.spawn_footway(world, [u.Vector(x * 100, y * 100, z(x, y)) for x, y in e], False, f'Footway_{i:03d}')
+        pts = heights(e, ground, wet) if ground else [(x, y, None) for x, y in e]
+        lib.spawn_footway(world, [u.Vector(x * 100, y * 100, h * 100 + 10 if ground else 0) for x, y, h in pts or []], False, f'Footway_{i:03d}', u.Vector())
     for i, (c, dirs) in enumerate(junctions):
         dirs = sorted(dirs, key=lambda d: math.atan2(d[1], d[0]))  # polygon points go round the junction
         arms = [u.Vector((c[0] + dx * JUNCTION_R) * 100, (c[1] + dy * JUNCTION_R) * 100, z(c[0] + dx * JUNCTION_R, c[1] + dy * JUNCTION_R)) for dx, dy in dirs]
-        lib.spawn_footway(world, arms, True, f'Junction_{i:03d}')
+        lib.spawn_footway(world, arms, True, f'Junction_{i:03d}', u.Vector(c[0] * 100, c[1] * 100, sum(a.z for a in arms) / len(arms)))
     lanes = lib.rebuild_zone_graph(world)
     u.log(f'TOWNSFOLK_LANES pieces={len(edges)} junctions={len(junctions)} lanes={lanes}')
     assert lanes > 0, 'ZoneGraph built no lanes'
@@ -186,6 +207,9 @@ if __name__ == '__main__':
     try:
         import unreal  # noqa: F401
     except ImportError:
+        # Over water the height runs straight between the last dry points, x=5 (z 2.33) and x=25 (z 3.67), whatever the bed.
+        h = heights([(0, 0), (30, 0)], lambda x, y: 2 + x / 15 if not 10 <= x <= 20 else -8, lambda x, y: 10 <= x <= 20)
+        assert len(h) == 7 and abs(h[3][2] - 3.0) < 1e-6, h
         print(f'LANES_PLAN_OK {len(edges)} street pieces, {len(junctions)} junctions, '
               f'{sum(math.dist(a, b) for e in edges for a, b in zip(e, e[1:])):.0f} m of footway')
     else:
