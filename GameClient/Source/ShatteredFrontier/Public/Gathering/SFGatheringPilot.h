@@ -62,7 +62,7 @@ public:
 };
 
 UENUM(BlueprintType)
-enum class ESFGatheringPilotKind : uint8 { Oak, Iron, Sawmill, Forge };
+enum class ESFGatheringPilotKind : uint8 { Oak, Iron, Sawmill, Forge, Stone };  // Stone last: the sandbox spawns kinds 0-3 by index
 
 class ASFHarvestFallingTree;
 

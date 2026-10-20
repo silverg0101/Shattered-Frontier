@@ -738,7 +738,7 @@ void ASFConstructionNetworkGameMode::PlaceForZoneScenario(APawn* Pawn, bool bPri
     { if (It->Kind==ESFGatheringPilotKind::Oak && (!Oak || It->GetActorLocation().Size2D()<Oak->GetActorLocation().Size2D())) { Oak=*It; } }
     for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It && Oak; ++It)
     {
-        if (It->Kind==ESFGatheringPilotKind::Iron && (!Rock || FVector::Dist2D(It->GetActorLocation(),Oak->GetActorLocation())<FVector::Dist2D(Rock->GetActorLocation(),Oak->GetActorLocation())))
+        if (It->Kind==ESFGatheringPilotKind::Stone && (!Rock || FVector::Dist2D(It->GetActorLocation(),Oak->GetActorLocation())<FVector::Dist2D(Rock->GetActorLocation(),Oak->GetActorLocation())))
         { Rock=*It; }
     }
     const ASFGatheringPilotNode* Target=bPrimary ? Oak : Rock;
@@ -762,8 +762,8 @@ int32 ASFConstructionNetworkGameMode::SpawnZoneGatheringNodes()
         const TSharedPtr<FJsonObject> Group=GroupValue->AsObject();
         if (Group->GetStringField(TEXT("spawn_kind"))!=TEXT("gathering_node")) { continue; }
         const FString Id=Group->GetStringField(TEXT("group_id"));
-        // Wood groups use the oak node; stone groups use the rock node, which still yields iron ore (no stone item yet).
-        const ESFGatheringPilotKind Kind=Id.EndsWith(TEXT("_wood")) ? ESFGatheringPilotKind::Oak : ESFGatheringPilotKind::Iron;
+        // Wood groups are oak nodes; stone groups are rock nodes yielding rough stone.
+        const ESFGatheringPilotKind Kind=Id.EndsWith(TEXT("_wood")) ? ESFGatheringPilotKind::Oak : ESFGatheringPilotKind::Stone;
         TArray<TSharedPtr<FJsonValue>> Points=Group->GetArrayField(TEXT("points"));
         FRandomStream Stream(GetTypeHash(Id));
         for (int32 I=Points.Num()-1; I>0; --I) { Points.Swap(I,Stream.RandRange(0,I)); }

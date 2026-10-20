@@ -32,7 +32,7 @@ The same development pilot also runs in `/Game/Frontier/Maps/Greenlands/Greenlan
 
 How it differs from the sandbox:
 - **Node source.** Instead of the four fixed fixtures, the server reads the zone record's gathering `spawn_groups` (`content/world/zones/greenlands_silverbrook.json`). It spawns `active_count` points per group, chosen by a seed from the group id: 14 nodes, wood as oak and stone as the rock node.
-- **Stone yields ore.** Rock nodes still yield `item/iron_ore`, because there is no stone item yet.
+- **Stone.** Zone stone groups spawn the `Stone` kind: the rock art and a pickaxe, mining practice, and `item/rough_stone`, the tier-one mining stone in Crafting Gathering. `tools/Create-GatheringPilotItems.py` now creates only missing definitions and never overwrites. The sandbox keeps its iron node.
 - **No refinery.** There are no sawmill or forge stations in the zone.
 - **Dressing cleared.** Each node removes the dressing tree or rock rooted within 1 m of it, on the server and on every client. The dressing art and collision therefore never overlap a node, and line-of-sight checks don't hit them.
 - **Replication range.** Nodes replicate out to 500 m, so the spot never looks empty at dressing distances.

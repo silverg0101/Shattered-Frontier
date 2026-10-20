@@ -34,6 +34,7 @@ namespace
         case ESFGatheringPilotKind::Iron: return TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronOre.DA_IronOre");
         case ESFGatheringPilotKind::Sawmill: return TEXT("/Game/Frontier/Gameplay/Pilot/DA_RoughTimber.DA_RoughTimber");
         case ESFGatheringPilotKind::Forge: return TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronIngot.DA_IronIngot");
+        case ESFGatheringPilotKind::Stone: return TEXT("/Game/Frontier/Gameplay/Pilot/DA_RoughStone.DA_RoughStone");
         default: return TEXT("");
         }
     }
@@ -196,6 +197,7 @@ FSFGatheringResourceProfile ASFGatheringPilotNode::GetAuthoredResourceProfile() 
     FSFGatheringResourceProfile Profile;
     if (Kind==ESFGatheringPilotKind::Oak) { Profile.ResourceId=TEXT("resource/oak_log"); Profile.Skill=ESFGatheringSkill::Logging; }
     else if (Kind==ESFGatheringPilotKind::Iron) { Profile.ResourceId=TEXT("resource/iron_ore"); Profile.Skill=ESFGatheringSkill::Mining; }
+    else if (Kind==ESFGatheringPilotKind::Stone) { Profile.ResourceId=TEXT("resource/rough_stone"); Profile.Skill=ESFGatheringSkill::Mining; }
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
     if (TestProfileTier.IsSet()) { Profile.Tier=TestProfileTier.GetValue(); }
 #endif
@@ -208,6 +210,7 @@ FString ASFGatheringPilotNode::GetResourceName() const
     {
     case ESFGatheringPilotKind::Oak: return TEXT("Oak logs");
     case ESFGatheringPilotKind::Iron: return TEXT("Iron ore");
+    case ESFGatheringPilotKind::Stone: return TEXT("Rough stone");
     case ESFGatheringPilotKind::Sawmill: return TEXT("Rough timber (sawmill)");
     case ESFGatheringPilotKind::Forge: return TEXT("Iron ingot (forge)");
     default: return TEXT("Unavailable");
@@ -756,17 +759,18 @@ void USFGatheringPilotComponent::TickFiniteNetworkScenario()
         {
         // A zone world has many nodes: every client and the server use the one nearest the world origin.
         case ESFGatheringPilotKind::Oak: if (!Wood || It->GetActorLocation().Size2D()<Wood->GetActorLocation().Size2D()) { Wood=*It; } break;
-        case ESFGatheringPilotKind::Iron: break;  // chosen below: the rock nearest the chosen oak
+        case ESFGatheringPilotKind::Iron: case ESFGatheringPilotKind::Stone: break;  // chosen below: the rock nearest the chosen oak
         case ESFGatheringPilotKind::Sawmill: Sawmill=*It; break;
         case ESFGatheringPilotKind::Forge: Forge=*It; break;
         }
     }
     for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It && Wood; ++It)
     {
-        if (It->Kind==ESFGatheringPilotKind::Iron && (!Ore || FVector::Dist2D(It->GetActorLocation(),Wood->GetActorLocation())<FVector::Dist2D(Ore->GetActorLocation(),Wood->GetActorLocation())))
+        if ((It->Kind==ESFGatheringPilotKind::Iron || It->Kind==ESFGatheringPilotKind::Stone) && (!Ore || FVector::Dist2D(It->GetActorLocation(),Wood->GetActorLocation())<FVector::Dist2D(Ore->GetActorLocation(),Wood->GetActorLocation())))
         { Ore=*It; }
     }
     if (bRefiningScenario && (!Sawmill || !Forge)) { return; }
+    const ESFGatheringPilotKind Mined=Ore ? Ore->Kind : ESFGatheringPilotKind::Iron;  // iron ore in the sandbox, rough stone in a zone
     if (!Wood || !Ore || Wood->GetState().Charges<0 || Ore->GetState().Charges<0) { return; }
     const double Now=GetWorld()->GetTimeSeconds();
     if (ScenarioStarted==0) { ScenarioStarted=Now; }
@@ -784,7 +788,7 @@ void USFGatheringPilotComponent::TickFiniteNetworkScenario()
     };
     if (ScenarioStep==0)
     {
-        const auto Required=bPrimaryRole ? ESFGatheringPilotKind::Oak : ESFGatheringPilotKind::Iron;
+        const auto Required=bPrimaryRole ? ESFGatheringPilotKind::Oak : Mined;
         if (!HasRequiredTool(Required))
         {
             if (!bScenarioToolRequested) { bScenarioToolRequested=TryEquipTool(bPrimaryRole); }
@@ -802,7 +806,7 @@ void USFGatheringPilotComponent::TickFiniteNetworkScenario()
         if (bPrimaryRole) { if (Interact(Wood)) { ScenarioStep=1; } }
         else if (Wood->GetState().Revision==1)
         {
-            if (Quantity(ESFGatheringPilotKind::Oak)!=0 || Quantity(ESFGatheringPilotKind::Iron)!=0 || Skills.PracticeCount!=0 || Skills.GainCount!=0)
+            if (Quantity(ESFGatheringPilotKind::Oak)!=0 || Quantity(Mined)!=0 || Skills.PracticeCount!=0 || Skills.GainCount!=0)
             { UE_LOG(LogTemp,Error,TEXT("GATHERING_PILOT_SCENARIO_FAILED ForeignGrant=1")); FPlatformMisc::RequestExitWithStatus(false,1); return; }
             UE_LOG(LogTemp,Display,TEXT("GATHERING_PILOT_OBSERVER_PRIVATE_EMPTY Wood=0 Ore=0 Practice=0 Gains=0"));
             if (Interact(Ore)) { ScenarioStep=1; }
@@ -810,7 +814,7 @@ void USFGatheringPilotComponent::TickFiniteNetworkScenario()
     }
     else if (ScenarioStep==1 && Feedback.Phase==ESFGatheringPilotPhase::Committed
         && Skills.PracticeCount==1
-        && Quantity(bPrimaryRole ? ESFGatheringPilotKind::Oak : ESFGatheringPilotKind::Iron)==CapturedSettings->UnitsPerCharge)
+        && Quantity(bPrimaryRole ? ESFGatheringPilotKind::Oak : Mined)==CapturedSettings->UnitsPerCharge)
     {
         if (bPrimaryRole)
         {
@@ -835,7 +839,7 @@ void USFGatheringPilotComponent::TickFiniteNetworkScenario()
                 { UE_LOG(LogTemp,Error,TEXT("GATHERING_PILOT_SCENARIO_FAILED ForeignProgression=1")); FPlatformMisc::RequestExitWithStatus(false,1); return; }
             }
         }
-        const int64 WoodCount=Quantity(ESFGatheringPilotKind::Oak), OreCount=Quantity(ESFGatheringPilotKind::Iron);
+        const int64 WoodCount=Quantity(ESFGatheringPilotKind::Oak), OreCount=Quantity(Mined);
         if (VisibleInventories!=1 || WoodCount!=(bPrimaryRole ? CapturedSettings->UnitsPerCharge : 0)
             || OreCount!=(bPrimaryRole ? 0 : CapturedSettings->UnitsPerCharge)||Skills.PracticeCount!=1||Skills.GainCount>1
             ||Skills.Get(bPrimaryRole ? ESFGatheringSkill::Mining : ESFGatheringSkill::Logging)!=0
@@ -856,7 +860,7 @@ void USFGatheringPilotComponent::TickFiniteNetworkScenario()
     else if (ScenarioStep==4 && Sawmill->GetState().Revision==1 && Forge->GetState().Revision==1 && Now-ScenarioReplayedAt>=1)
     {
         const int64 Timber=Quantity(ESFGatheringPilotKind::Sawmill), Ingots=Quantity(ESFGatheringPilotKind::Forge);
-        if (Skills.PracticeCount!=1||Quantity(ESFGatheringPilotKind::Oak)!=0 || Quantity(ESFGatheringPilotKind::Iron)!=0
+        if (Skills.PracticeCount!=1||Quantity(ESFGatheringPilotKind::Oak)!=0 || Quantity(Mined)!=0
             || Timber!=(bPrimaryRole ? CapturedSettings->TimberOutputUnits : 0) || Ingots!=(bPrimaryRole ? 0 : CapturedSettings->IngotOutputUnits))
         { UE_LOG(LogTemp,Error,TEXT("GATHERING_PILOT_SCENARIO_FAILED RecipeOutputs=1")); FPlatformMisc::RequestExitWithStatus(false,1); return; }
         UE_LOG(LogTemp,Display,TEXT("REFINING_PILOT_CLIENT_DONE Primary=%d Wood=0 Ore=0 Timber=%lld Ingots=%lld SawmillRevision=1 ForgeRevision=1"),bPrimaryRole,Timber,Ingots);
