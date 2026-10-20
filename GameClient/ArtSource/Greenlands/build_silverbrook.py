@@ -22,7 +22,7 @@ import importlib, validate_layout, validate_region, region_heightfield, heightfi
 for _m in (validate_layout, validate_region, region_heightfield, heightfield, dress_zone, pcg_dressing):        # keeps modules between
     importlib.reload(_m)                                                                                         # runs; take the files' state
 from validate_layout import validate, waters
-from heightfield import Heightfield, backdrop, check as check_terrain, in_polygon, water_level, zone_region
+from heightfield import Heightfield, backdrop, check as check_terrain, crossings, in_polygon, water_level, zone_region
 L = json.loads((ROOT / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))
 _problems = validate(L)
 assert not _problems, f'Layout is invalid; run validate_layout.py: {_problems}'
@@ -181,20 +181,23 @@ def facing(x, y, tx, ty):
 
 def strip(label, points, width, mat, h, folder, z_at, collide=False, piece=10.0, swim=False):
     """Queue thin boxes along a polyline in pieces of at most `piece` m, pitched to follow z_at(i, t).
-    swim: also put a water volume under each piece, its top on the surface."""
+    swim: also put a water volume under each piece, its top on the surface.
+    width: metres, or a function (point) -> metres; a piece takes the wider of its two ends."""
     for i, (p, q) in enumerate(zip(points, points[1:])):
         length = math.dist(p, q); n = max(1, math.ceil(length / piece))
         yaw = math.degrees(math.atan2(q[1] - p[1], q[0] - p[0]))
         for k in range(n):
-            t0 = k / n - (width / 2 / length if k == 0 else 0)  # segment ends overlap so corners stay closed
-            t1 = (k + 1) / n + (width / 2 / length if k == n - 1 else 0)
-            def spawn(i=i, p=p, q=q, k=k, t0=t0, t1=t1, yaw=yaw, length=length):
+            def spawn(i=i, p=p, q=q, k=k, n=n, yaw=yaw, length=length):
+                at = lambda t: (p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t)
+                wd = max(width(at(k / n)), width(at((k + 1) / n))) if callable(width) else width
+                t0 = k / n - (wd / 2 / length if k == 0 else 0)  # segment ends overlap so corners stay closed
+                t1 = (k + 1) / n + (wd / 2 / length if k == n - 1 else 0)
                 za, zb = z_at(i, max(t0, 0.0)), z_at(i, min(t1, 1.0))
                 run = (t1 - t0) * length; tm = (t0 + t1) / 2
                 cx, cy, pitch = p[0] + (q[0] - p[0]) * tm, p[1] + (q[1] - p[1]) * tm, math.degrees(math.atan2(zb - za, run))
-                _box(f'{label}_{i:02d}_{k:02d}', cx, cy, run, width, h, mat, (za + zb) / 2 - h / 2, yaw, collide, folder, None, pitch)
+                _box(f'{label}_{i:02d}_{k:02d}', cx, cy, run, wd, h, mat, (za + zb) / 2 - h / 2, yaw, collide, folder, None, pitch)
                 if swim:
-                    _water(f'{label}_{i:02d}_{k:02d}', cx, cy, run, width, (za + zb) / 2, yaw, pitch)
+                    _water(f'{label}_{i:02d}_{k:02d}', cx, cy, run, wd, (za + zb) / 2, yaw, pitch)
             pending.append(spawn)
             counts[folder] = counts.get(folder, 0) + 1
 
@@ -233,17 +236,6 @@ def nearest(p, a, b):
 
 def line_dist(p, pts):
     return min(seg_dist(p, a, b) for a, b in zip(pts, pts[1:]))
-
-
-def crossing(a, b, c, d):
-    """Intersection point of segments ab and cd, or None."""
-    r = (b[0] - a[0], b[1] - a[1]); s = (d[0] - c[0], d[1] - c[1])
-    den = r[0] * s[1] - r[1] * s[0]
-    if abs(den) < 1e-9:
-        return None
-    t = ((c[0] - a[0]) * s[1] - (c[1] - a[1]) * s[0]) / den
-    v = ((c[0] - a[0]) * r[1] - (c[1] - a[1]) * r[0]) / den
-    return (a[0] + t * r[0], a[1] + t * r[1]) if 0 <= t <= 1 and 0 <= v <= 1 else None
 
 
 # --- layout geometry -------------------------------------------------------
@@ -342,7 +334,9 @@ sky.light_component.set_editor_property('real_time_capture', True)
 actors.spawn_actor_from_class(u.ExponentialHeightFog, u.Vector(0, 0, 0))
 
 for w in WATERS:
-    strip(w['name'].replace(' ', ''), w['points'], w['width'], 'River', 0.1, 'Water', lambda i, t, w=w: water_level(w, i, t), swim=True)
+    # Narrowed at graybox crossings (heightfield half_width); a piece's wider end runs under the built-up bank.
+    strip(w['name'].replace(' ', ''), w['points'], lambda p, w=w: 2 * HF.half_width(w, p), 'River', 0.1, 'Water',
+          lambda i, t, w=w: water_level(w, i, t), swim=True)
 for b in BASINS:  # one flat surface at the basin level; the shore terrain hides what lies outside the polygon
     xs, ys = [q[0] for q in b['polygon']], [q[1] for q in b['polygon']]
     bx0, by0, bw, bd = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2, max(xs) - min(xs), max(ys) - min(ys)
@@ -354,45 +348,68 @@ for name, pts, width, tier in ROADS:
 # Bridges where primary or secondary roads cross the river or a brook.
 _bridge = PROFILE['buildings'].get('Stone bridge', {}).get('have', [])
 STONE_BRIDGE = pcg_dressing._meshes({_bridge[0]})[_bridge[0]] if _bridge else None
+BOULDERS = list(pcg_dressing._meshes({f'SM_Boulder_0{i}' for i in range(3)}).values())
+CROSSING = L['river']['crossing']
+ROAD_OF = {name: (pts, width) for name, pts, width, _ in ROADS}
 bridges = []
-for name, pts, width, tier in ROADS:
-    if tier == 'trail':
-        continue
-    for a, b in zip(pts, pts[1:]):
-        for wtr, (c, d) in ((w, cd) for w in WATERS for cd in zip(w['points'], w['points'][1:])):
-            hit = crossing(a, b, c, d)
-            if hit and all(math.dist(hit, q) > 5 for q in bridges):
-                bridges.append(hit)
-                yaw = math.degrees(math.atan2(b[1] - a[1], b[0] - a[0]))
-                is_main = math.dist(hit, L['places'][18]['at']) < 40
-                level = water_level(wtr, wtr['points'].index(c), math.dist(c, hit) / math.dist(c, d))
-                cs, sn = math.cos(math.radians(yaw)), math.sin(math.radians(yaw))
+for cx_ in crossings(L):
+    hit, name, yaw, level, is_main = cx_['at'], cx_['road'], cx_['yaw'], cx_['level'], cx_['main']
+    bridges.append(hit)
+    cs, sn = math.cos(math.radians(yaw)), math.sin(math.radians(yaw))
 
-                def spawn_bridge(n=name, h=hit, yaw=yaw, cs=cs, sn=sn, level=level, is_main=is_main,
-                                 w=max(L['river']['bridge_width'], width)):
-                    # Each end reaches dry ground (roads cross the river at an angle), and the deck
-                    # tilts to meet the ground at both ends, so the walk never meets a step.
-                    ends = []
-                    for side in (-1, 1):
-                        s = L['river']['bridge_length'] / 2
-                        while s < 60 and HF.at(h[0] + side * cs * s, h[1] + side * sn * s) < level + 1:
-                            s += 1
-                        ends.append((s, HF.at(h[0] + side * cs * s, h[1] + side * sn * s)))
-                    (s0, z0), (s1, z1) = ends
-                    run, mid = s0 + s1, (s1 - s0) / 2
-                    if is_main and STONE_BRIDGE and run <= 30 and abs(z1 - z0) < 0.3:
-                        # The delivered stone bridge: a 30 m span along its X, origin mid-span at bank level, deck flush with
-                        # the bank at both ends. Used only where the measured crossing fits the span and both banks are level.
-                        a_ = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector((h[0] + cs * mid) * 100, (h[1] + sn * mid) * 100,
-                                                           (z0 + z1) / 2 * 100), u.Rotator(roll=0, pitch=0, yaw=yaw))
-                        a_.static_mesh_component.set_static_mesh(STONE_BRIDGE)
-                        a_.set_actor_label('SilverbrookBridge'); a_.set_folder_path('Bridges')
-                        return
-                    _box('SilverbrookBridge' if is_main else f'Bridge_{n.replace(" ", "")}', h[0] + cs * mid, h[1] + sn * mid,
-                         run + 2, w, 0.3, 'Wall', (z0 + z1) / 2 - 0.25, yaw, True, 'Bridges', None,
-                         math.degrees(math.atan2(z1 - z0, run)))
-                pending.append(spawn_bridge)
-                counts['Bridges'] = counts.get('Bridges', 0) + 1
+    def spawn_bridge(n=name, h=hit, yaw=yaw, cs=cs, sn=sn, level=level, is_main=is_main,
+                     w=max(L['river']['bridge_width'], ROAD_OF[name][1])):
+        # Each end reaches dry ground (roads cross the river at an angle), and the deck
+        # tilts to meet the ground at both ends, so the walk never meets a step. Graybox crossings
+        # are narrowed with built-up banks (heightfield), so their decks start the search near the water.
+        ends = []
+        for side in (-1, 1):
+            s = L['river']['bridge_length'] / 2 if is_main else 2
+            while s < 60 and HF.at(h[0] + side * cs * s, h[1] + side * sn * s) < level + 1:
+                s += 1
+            ends.append((s, HF.at(h[0] + side * cs * s, h[1] + side * sn * s)))
+        (s0, z0), (s1, z1) = ends
+        run, mid = s0 + s1, (s1 - s0) / 2
+        if is_main and STONE_BRIDGE and run <= 30 and abs(z1 - z0) < 0.3:
+            # The delivered stone bridge: a 30 m span along its X, origin mid-span at bank level, deck flush with
+            # the bank at both ends. Used only where the measured crossing fits the span and both banks are level.
+            a_ = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector((h[0] + cs * mid) * 100, (h[1] + sn * mid) * 100,
+                                               (z0 + z1) / 2 * 100), u.Rotator(roll=0, pitch=0, yaw=yaw))
+            a_.static_mesh_component.set_static_mesh(STONE_BRIDGE)
+            a_.set_actor_label('SilverbrookBridge'); a_.set_folder_path('Bridges')
+            return
+        _box('SilverbrookBridge' if is_main else f'Bridge_{n.replace(" ", "")}', h[0] + cs * mid, h[1] + sn * mid,
+             run + 2, w, 0.3, 'Wall', (z0 + z1) / 2 - 0.25, yaw, True, 'Bridges', None,
+             math.degrees(math.atan2(z1 - z0, run)))
+        counts['BridgeSpans'] = counts.get('BridgeSpans', []) + [run]
+
+    def spawn_riprap(c=cx_, w=max(L['river']['bridge_width'], ROAD_OF[name][1])):
+        """Boulders along both built-up banks of a narrowed crossing, clear of the road and deck."""
+        wtr = next(x for x in WATERS if x['name'] == c['water'])
+        tx, ty = math.cos(math.radians(c['water_yaw'])), math.sin(math.radians(c['water_yaw']))
+        rng = random.Random(f'{c["road"]}{c["water"]}')
+        k = -CROSSING['core']
+        while k <= CROSSING['core']:
+            for side in (-1, 1):
+                p = (c['at'][0] + tx * k, c['at'][1] + ty * k)
+                off = HF.half_width(wtr, p) + 0.5
+                q = (p[0] - side * ty * off, p[1] + side * tx * off)
+                if line_dist(q, ROAD_OF[c['road']][0]) < w / 2 + 1.5:
+                    continue
+                mesh = rng.choice(BOULDERS)
+                bb = mesh.get_bounding_box(); size = max(bb.max.x - bb.min.x, bb.max.y - bb.min.y, 1) / 100
+                a_ = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(q[0] * 100, q[1] * 100, (HF.at(*q) - 0.4) * 100),
+                                                   u.Rotator(roll=0, pitch=0, yaw=rng.uniform(0, 360)))
+                a_.static_mesh_component.set_static_mesh(mesh)
+                a_.set_actor_scale3d(u.Vector(*[rng.uniform(2.0, 3.2) / size] * 3))
+                counts['Riprap'] = counts.get('Riprap', 0) + 1
+                a_.set_actor_label(f'Riprap_{c["road"].replace(" ", "")}_{counts["Riprap"]:03d}')
+                a_.set_folder_path('Bridges/Riprap')
+            k += 3.5
+    pending.append(spawn_bridge)
+    if not is_main:
+        pending.append(spawn_riprap)
+    counts['Bridges'] = counts.get('Bridges', 0) + 1
 
 # Wall, gate towers and wall towers.
 tower = W['tower']

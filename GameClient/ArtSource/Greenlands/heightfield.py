@@ -57,6 +57,37 @@ def _dist(p, pts):
     return best
 
 
+def _crossing(a, b, c, d):
+    """Intersection point of segments ab and cd, or None."""
+    r = (b[0] - a[0], b[1] - a[1]); s = (d[0] - c[0], d[1] - c[1])
+    den = r[0] * s[1] - r[1] * s[0]
+    if abs(den) < 1e-9:
+        return None
+    t = ((c[0] - a[0]) * s[1] - (c[1] - a[1]) * s[0]) / den
+    v = ((c[0] - a[0]) * r[1] - (c[1] - a[1]) * r[0]) / den
+    return (a[0] + t * r[0], a[1] + t * r[1]) if 0 <= t <= 1 and 0 <= v <= 1 else None
+
+
+def crossings(L):
+    """Where primary and secondary roads cross water, one per spot: dicts with at, road, yaw (road heading in
+    degrees), water, level, angle (degrees between road and water, 0-90) and main (the main bridge place)."""
+    main = next(p['at'] for p in L['places'] if p['key'] == L['requirements']['main_bridge_key'])
+    out = []
+    for tier in ('primary', 'secondary'):
+        for name, pts in L['roads'][tier].items():
+            for a, b in zip(pts, pts[1:]):
+                for w in waters(L):
+                    for i, (c, d) in enumerate(zip(w['points'], w['points'][1:])):
+                        hit = _crossing(a, b, c, d)
+                        if hit and all(math.dist(hit, q['at']) > 5 for q in out):
+                            ra, wa = math.atan2(b[1] - a[1], b[0] - a[0]), math.atan2(d[1] - c[1], d[0] - c[0])
+                            out.append(dict(at=hit, road=name, yaw=math.degrees(ra), water=w['name'], water_yaw=math.degrees(wa),
+                                            level=water_level(w, i, math.dist(c, hit) / math.dist(c, d)),
+                                            angle=math.degrees(math.asin(abs(math.sin(ra - wa)))),
+                                            main=math.dist(hit, main) < 40))
+    return out
+
+
 def _smoothstep(t):
     t = max(0.0, min(1.0, t))
     return t * t * (3 - 2 * t)
@@ -84,6 +115,8 @@ class Heightfield:
         self.basins = [b['polygon'] for b in L.get('basins', [])]
         for b in L.get('basins', []):
             self._basin(b)
+        self.crossing = L['river'].get('crossing')
+        self.crossings = [c for c in crossings(L) if not c['main']] if self.crossing else []
         for w in waters(L):
             self._channel(w)
         claimed = bytearray(self.nx * self.ny)
@@ -263,24 +296,36 @@ class Heightfield:
               for ox in (w * (i / nx - 0.5) for i in range(nx + 1)) for oy in (d * (j / ny - 0.5) for j in range(ny + 1))]
         return min(zs), max(zs)
 
-    def half_width(self, w):
-        return max(w['width'] / 2, self.step)  # the grid can't hold a narrower channel
+    def near_crossing(self, w, p):
+        """1 within the core of a graybox road crossing on water w, easing to 0 over the blend."""
+        C = self.crossing
+        dc = min((math.dist(p, c['at']) for c in self.crossings if c['water'] == w['name']), default=1e9)
+        return 1 - _smoothstep((dc - C['core']) / C['blend']) if C else 0.0
+
+    def half_width(self, w, p=None):
+        """Channel half-width; at p, narrowed toward the crossing width near a graybox road crossing."""
+        hw = w['width'] / 2
+        if p is not None and self.crossing:
+            hw -= (hw - min(hw, self.crossing['width'] / 2)) * self.near_crossing(w, p)
+        return max(hw, self.step)  # the grid can't hold a narrower channel
 
     def _channel(self, w):
-        """Carve a channel below water; banks rise away from the edge and never sit below the water."""
-        hw = self.half_width(w)
-        edge = min(4, hw / 2)
-        samples = [(p, water_level(w, i, t)) for p, i, t in _samples(w['points'], 2.5)]
-        for k, (d, level) in self._nearest(samples, hw + 40).items():
+        """Carve a channel below water; banks rise away from the edge and never sit below the water.
+        Near a graybox road crossing the channel narrows and its banks are built up steeply to bank height."""
+        samples = [(p, (water_level(w, i, t), self.half_width(w, p), self.near_crossing(w, p)))
+                   for p, i, t in _samples(w['points'], 2.5)]
+        for k, (d, (level, hw, near)) in self._nearest(samples, self.half_width(w) + 40).items():
+            edge = min(4, hw / 2)
             if d <= hw - edge:
                 bed = level - CHANNEL_DEPTH
             elif d <= hw:
                 bed = level - CHANNEL_DEPTH + (CHANNEL_DEPTH + 0.3) * (d - hw + edge) / edge
             else:
-                bed = level + 0.3 + (d - hw) * BANK_SLOPE
+                bed = level + 0.3 + (d - hw) * (BANK_SLOPE + (self.crossing['bank_slope'] - BANK_SLOPE) * near if near else BANK_SLOPE)
                 x, y = self.x0 + k % self.nx * self.step, self.y0 + k // self.nx * self.step
                 if not any(in_polygon((x, y), b) for b in self.basins):
-                    self.h[k] = max(self.h[k], level + 0.3)  # banks always hold the water
+                    # banks always hold the water; built-up crossing banks reach bank height
+                    self.h[k] = max(self.h[k], min(bed, level + 0.3 + (WATER_BANK - 0.3) * near))
             self.h[k] = min(self.h[k], bed)
 
     def _basin(self, b):
@@ -365,6 +410,14 @@ def check(L, hf):
             if g > limit + 0.02:
                 problems.append(f'{name} grade {g:.2f} at {p[0]:.0f},{p[1]:.0f}')
                 break
+    spans = []  # graybox crossings: the narrowed channel leaves built-up ground at both ends of a short deck
+    for c in hf.crossings:
+        s = (hf.crossing['width'] / 2 + 3) / math.sin(math.radians(max(c['angle'], 20)))
+        cs, sn = math.cos(math.radians(c['yaw'])), math.sin(math.radians(c['yaw']))
+        spans.append(round(2 * s))
+        for side in (-1, 1):
+            if hf.at(c['at'][0] + side * s * cs, c['at'][1] + side * s * sn) < c['level'] + 1:
+                problems.append(f'{c["road"]} crossing bank below the deck {side * s:+.0f} m from {c["at"][0]:.0f},{c["at"][1]:.0f}')
     edge_err = 0.0
     if hf.region:  # the zone edge meets the region terrain, away from carved water and road beds
         H = L['zone_half_extent']
@@ -380,7 +433,7 @@ def check(L, hf):
                 break
     lo, hi = min(hf.h), max(hf.h)
     return problems, {'markers_max_error': round(max(abs(e) for e in errs.values()), 1),
-                      'road_max_grade': round(worst, 3), 'edge_max_error': round(edge_err, 2),
+                      'road_max_grade': round(worst, 3), 'edge_max_error': round(edge_err, 2), 'crossing_spans': spans,
                       'height_range': [round(lo, 1), round(hi, 1)]}
 
 

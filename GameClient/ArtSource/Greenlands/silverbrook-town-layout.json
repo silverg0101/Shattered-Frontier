@@ -24,7 +24,8 @@
     "width": 24,
     "points": [[-1250, -1150], [-583, -534], [-484, -506], [-376, -416], [-304, -353], [-223, -272], [-133, -218], [-43, -196], [47, -200], [137, -205], [209, -187], [272, -137], [308, -66], [299, 6], [263, 70], [200, 124], [119, 160], [29, 182], [-43, 196], [-70, 241], [-43, 313], [47, 367], [137, 439], [173, 556], [209, 691], [300, 1250]],
     "bridge_length": 30,
-    "bridge_width": 7
+    "bridge_width": 7,
+    "crossing": {"_about": "Graybox road crossings (not the main stone bridge): the channel narrows to width within core m of the crossing and eases back over blend m; its banks are built up to bank height at bank_slope (m rise per m) and lined with rock. Consumed by heightfield.py and build_silverbrook.py.", "width": 12, "core": 15, "blend": 25, "bank_slope": 2.0}
   },
   "roads": {
     "primary_width": 8,
