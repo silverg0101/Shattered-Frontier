@@ -217,6 +217,18 @@
       "metallic": 1.0,
       "emission": null,
       "strength": 0
+    },
+    {
+      "name": "SB_EntryRoom",
+      "colour": [
+        0.05,
+        0.045,
+        0.04
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
     }
   ],
   "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
@@ -227,8 +239,8 @@
       "fbx": "SilverbrookNorthridgeHouse4_Door1.fbx",
       "unreal_mesh": "SM_SilverbrookNorthridgeHouse4_Door1",
       "pivot_m": [
-        -0.7462,
-        -1.95,
+        -0.74,
+        -1.885,
         0.75
       ],
       "axis": [
@@ -245,8 +257,8 @@
       "fbx": "SilverbrookNorthridgeHouse4_Door2.fbx",
       "unreal_mesh": "SM_SilverbrookNorthridgeHouse4_Door2",
       "pivot_m": [
-        0.7462,
-        -1.95,
+        0.74,
+        -1.885,
         0.75
       ],
       "axis": [

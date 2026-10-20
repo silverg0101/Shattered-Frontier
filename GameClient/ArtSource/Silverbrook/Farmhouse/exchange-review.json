@@ -1,7 +1,7 @@
 {
   "source": {
-    "meshes": 5,
-    "triangles": 74276,
+    "meshes": 7,
+    "triangles": 74286,
     "size_m": [
       11.812,
       7.045,
@@ -10,6 +10,7 @@
     "materials": [
       "SB_ChimneyPot",
       "SB_DoorBoards",
+      "SB_EntryRoom",
       "SB_Farmhouse_Rubble",
       "SB_Farmhouse_Shutter",
       "SB_ForgedIron",
@@ -28,7 +29,7 @@
     "images": 16
   },
   "glb": {
-    "meshes": 5,
+    "meshes": 6,
     "triangles": 74276,
     "size_m": [
       11.812,
@@ -57,8 +58,8 @@
     "images": 0
   },
   "fbx": {
-    "meshes": 5,
-    "triangles": 74276,
+    "meshes": 6,
+    "triangles": 74010,
     "size_m": [
       11.812,
       7.045,
@@ -67,6 +68,7 @@
     "materials": [
       "SB_ChimneyPot",
       "SB_DoorBoards",
+      "SB_EntryRoom",
       "SB_Farmhouse_Rubble",
       "SB_Farmhouse_Shutter",
       "SB_ForgedIron",
@@ -82,6 +84,6 @@
       "Weathering"
     ],
     "images_missing": [],
-    "images": 10
+    "images": 5
   }
 }

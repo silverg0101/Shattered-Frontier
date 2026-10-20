@@ -264,6 +264,18 @@
       "metallic": 1.0,
       "emission": null,
       "strength": 0
+    },
+    {
+      "name": "SB_EntryRoom",
+      "colour": [
+        0.05,
+        0.045,
+        0.04
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
     }
   ],
   "sources": "../materials-provenance.json (CC0 Poly Haven scans)",

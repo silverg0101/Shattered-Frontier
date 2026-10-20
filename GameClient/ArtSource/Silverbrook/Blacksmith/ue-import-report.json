@@ -5,11 +5,11 @@
     9.06,
     13.39
   ],
-  "slots": 15,
+  "slots": 16,
   "nanite": true,
   "collision": "convex",
   "convex_hulls": 12,
-  "nanite_fallback_triangles": 27823,
+  "nanite_fallback_triangles": 27839,
   "lightmap": {
     "uv": 2,
     "resolution": 256

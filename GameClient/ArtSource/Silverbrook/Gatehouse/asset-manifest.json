@@ -16,7 +16,7 @@
   ],
   "meshes": {
     "SM_SBGatehouse_Masonry": {
-      "triangles": 1892,
+      "triangles": 2036,
       "materials": [
         "SB_WallSection_Masonry"
       ]
@@ -35,7 +35,7 @@
       ]
     },
     "SM_SBGatehouse_Roof": {
-      "triangles": 43520,
+      "triangles": 43464,
       "materials": [
         "SB_Slate",
         "SB_OakTimber"
@@ -114,7 +114,7 @@
       ]
     }
   },
-  "triangles": 64352,
+  "triangles": 64440,
   "materials": [
     {
       "name": "SB_WallSection_Masonry",
@@ -277,6 +277,18 @@
       ],
       "roughness": 0.35,
       "metallic": 1.0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_EntryRoom",
+      "colour": [
+        0.05,
+        0.045,
+        0.04
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
       "emission": null,
       "strength": 0
     }

@@ -1,7 +1,7 @@
 {
   "source": {
-    "meshes": 5,
-    "triangles": 70928,
+    "meshes": 7,
+    "triangles": 70938,
     "size_m": [
       7.08,
       7.0,
@@ -10,6 +10,7 @@
     "materials": [
       "SB_ChimneyPot",
       "SB_DoorBoards",
+      "SB_EntryRoom",
       "SB_ForgedIron",
       "SB_LanternGlow",
       "SB_LeadCame",
@@ -29,7 +30,7 @@
     "images": 19
   },
   "glb": {
-    "meshes": 5,
+    "meshes": 6,
     "triangles": 70928,
     "size_m": [
       7.08,
@@ -59,8 +60,8 @@
     "images": 0
   },
   "fbx": {
-    "meshes": 5,
-    "triangles": 70928,
+    "meshes": 6,
+    "triangles": 70662,
     "size_m": [
       7.08,
       7.0,
@@ -69,6 +70,7 @@
     "materials": [
       "SB_ChimneyPot",
       "SB_DoorBoards",
+      "SB_EntryRoom",
       "SB_ForgedIron",
       "SB_LanternGlow",
       "SB_LeadCame",
@@ -85,6 +87,6 @@
       "Weathering"
     ],
     "images_missing": [],
-    "images": 12
+    "images": 6
   }
 }

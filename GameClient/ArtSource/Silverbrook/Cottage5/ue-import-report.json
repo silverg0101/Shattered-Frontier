@@ -9,7 +9,7 @@
   "nanite": true,
   "collision": "convex",
   "convex_hulls": 12,
-  "nanite_fallback_triangles": 17982,
+  "nanite_fallback_triangles": 17994,
   "lightmap": {
     "uv": 2,
     "resolution": 128

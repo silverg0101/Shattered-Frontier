@@ -305,9 +305,9 @@ rail((XG-fit(6.96,GR,KG),y,6.9),(XG+fit(6.96,GR,KG),y,6.9),.12);post(XG,y,6.96,G
 hw=pointed(DOOR,DS)
 # each leaf is its own mesh (opened at runtime); the cover strip rides on the right leaf
 LEAF={-1:Geo6('SM_SBNorthridgeHouse6_Door1',asset),1:Geo6('SM_SBNorthridgeHouse6_Door2',asset)};G.update(door1=LEAF[-1],door2=LEAF[1])
-ap=arch_pts(0,DOOR,DS,.02);ai=len(ap)//2   # right spring -> apex (index ai, on the axis) -> left spring
+ap=arch_pts(0,DOOR,DS,-.01);ai=len(ap)//2   # 1 cm inside the opening: right spring -> apex (index ai, on the axis) -> left spring
 for s in (-1,1):
-    LEAF[s].prism([P(x,-.2,z) for x,z in [(s*(DOOR/2+.02),STEP),(0,STEP)]+(ap[ai:] if s<0 else ap[ai::-1])],(0,-1,0),.08,M['door'])
+    LEAF[s].prism([P(x,-.2,z) for x,z in [(s*(DOOR/2-.01),STEP),(0,STEP)]+(ap[ai:] if s<0 else ap[ai::-1])],(0,-1,0),.08,M['door'])
 LEAF[1].box(P(0,-.155,(STEP+DS+DOOR*.866)/2),(.04,.012,DS+DOOR*.866-STEP-.06),M['iron'],.003,R)
 for z in (.75,1.5,2.25):
     for s in (-1,1):LEAF[s].box(P(s*hw(z)/2,-.153,z),(hw(z)-.1,.012,.06),M['iron'],.003,R)
@@ -315,6 +315,16 @@ for s in (-1,1):
     for k in range(10):
         t=math.tau*k/10;LEAF[s].box(P(s*.16+.06*math.cos(t),-.14,1.25+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
     LEAF[s].box(P(s*.16,-.152,1.31),(.07,.01,.07),M['iron'],.004,R)
+# Leaves hang flush with the inner wall face (pivots follow), so the opening leaf swings clear of the arch head.
+sh=Vector((0,YG+TH-max(v.y for L in LEAF.values() for v in L.v),0))
+for L in LEAF.values():L.v=[v+sh for v in L.v]
+for s in (-1,1):   # sample each leaf's swing: no vertex may enter the wall slab outside the opening (or below the sill);
+    # the wall courses chord the arch, standing up to ~4 mm inside it, hence the 5 mm allowance
+    vs=LEAF[s].v;pv=Vector(((min if s<0 else max)(v.x for v in vs),max(v.y for v in vs),min(v.z for v in vs)))
+    for k in range(19):
+        q=Matrix.Rotation(math.radians((90 if s<0 else -90)*k/18),3,'Z')
+        bad=[p for p in (pv+q@(v-pv) for v in vs) if YG+1e-3<p.y<YG+TH-1e-3 and (p.z<STEP-1e-3 or abs(p.x-XG)>hw(p.z)-.005)]
+        assert not bad,f'Door leaf {s} enters the arch masonry at {k*5} deg: {bad[0]}'
 ring(G['trim'],P,arch_pts(0,DOOR,DS,.1),.04,.13,M['trim'],rect=rect())
 for s in (-1,1):ring(G['trim'],P,[(s*(DOOR/2+.1),STEP),(s*(DOOR/2+.1),DS)],.04,.13,M['trim'],rect=rect())
 # corner piers of the central gable with pinnacles and lanterns

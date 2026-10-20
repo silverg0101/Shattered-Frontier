@@ -1,7 +1,7 @@
 {
   "source": {
-    "meshes": 14,
-    "triangles": 64352,
+    "meshes": 15,
+    "triangles": 64480,
     "size_m": [
       26.0,
       8.0,
@@ -9,6 +9,7 @@
     ],
     "materials": [
       "SB_DoorBoards",
+      "SB_EntryRoom",
       "SB_ForgedIron",
       "SB_Gatehouse_Banner",
       "SB_Gatehouse_Gilt",
@@ -30,7 +31,7 @@
   },
   "glb": {
     "meshes": 14,
-    "triangles": 64352,
+    "triangles": 64440,
     "size_m": [
       26.0,
       8.0,
@@ -60,7 +61,7 @@
   },
   "fbx": {
     "meshes": 7,
-    "triangles": 61732,
+    "triangles": 61820,
     "size_m": [
       26.0,
       8.0,

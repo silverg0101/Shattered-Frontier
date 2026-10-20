@@ -9,7 +9,7 @@
   "nanite": true,
   "collision": "convex",
   "convex_hulls": 12,
-  "nanite_fallback_triangles": 32864,
+  "nanite_fallback_triangles": 33020,
   "lightmap": {
     "uv": 2,
     "resolution": 256
@@ -24,9 +24,9 @@
     {
       "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookNorthridgeHouse4_Door1",
       "size_m": [
-        0.75,
+        0.74,
         0.11,
-        2.76
+        2.75
       ],
       "slots": 2,
       "nanite": true,
@@ -40,8 +40,8 @@
       "name": "Door1",
       "motion": "swing",
       "pivot_cm": [
-        -74.62,
-        195.0,
+        -74.0,
+        188.5,
         75.0
       ],
       "axis": [
@@ -56,9 +56,9 @@
     {
       "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookNorthridgeHouse4_Door2",
       "size_m": [
-        0.77,
+        0.76,
         0.11,
-        2.76
+        2.75
       ],
       "slots": 2,
       "nanite": true,
@@ -72,8 +72,8 @@
       "name": "Door2",
       "motion": "swing",
       "pivot_cm": [
-        74.62,
-        195.0,
+        74.0,
+        188.5,
         75.0
       ],
       "axis": [

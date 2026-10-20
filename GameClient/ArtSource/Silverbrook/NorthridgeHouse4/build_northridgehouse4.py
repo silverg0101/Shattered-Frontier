@@ -317,12 +317,23 @@ arc=arcpts(1.5,2.45);top=arc[-1][1]
 # double door: each leaf is its own mesh (opened at runtime); the cover strip rides on the right leaf
 LEAF={-1:Geo('SM_SBNorthridgeHouse4_Door1',asset),1:Geo('SM_SBNorthridgeHouse4_Door2',asset)};G.update(door1=LEAF[-1],door2=LEAF[1])
 for sd in (-1,1):
-    L=LEAF[sd];L.prism([P(sd*.745,-.2,.75),P(0,-.2,.75)]+[P(sd*x*.995,-.2,z) for x,z in arc[::-1]],(0,-1,0),.07,M['door'])
+    L=LEAF[sd];L.prism([P(sd*.74,-.2,.75),P(0,-.2,.75)]+[P(sd*x,-.2,z) for x,z in arcpts(1.5,2.45,-.01)[::-1]],(0,-1,0),.07,M['door'])   # 1 cm inside the opening
     for z in (1.15,2.2):L.box(P(sd*.4,-.15,z),(.56,.012,.05),M['iron'],.004,R)
     for k in range(10):
         t=math.tau*k/10;L.box(P(sd*.16+.06*math.cos(t),-.13,1.65+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))
     L.box(P(sd*.16,-.155,1.71),(.07,.01,.07),M['iron'],.004,R)
 LEAF[1].box(P(0,-.155,(.75+top)/2),(.04,.02,top-.8),M['iron'],0,R)
+# Leaves hang flush with the inner wall face (pivots follow), so the opening leaf swings clear of the arch head.
+sh=Vector((0,CF+.3-max(v.y for L in LEAF.values() for v in L.v),0))
+for L in LEAF.values():L.v=[v+sh for v in L.v]
+def door_hw(z):   # clear half-width of the doorway at z: jambs, then the chorded spandrels, masonry above the apex
+    return .75 if z<=arc[0][1] else float(np.interp(z,[p[1] for p in arc],[p[0] for p in arc])) if z<=top else -1
+for sd in (-1,1):   # sample each leaf's swing: no vertex may enter the wall slab outside the opening (or below the sill)
+    vs=LEAF[sd].v;pv=Vector(((min if sd<0 else max)(v.x for v in vs),max(v.y for v in vs),min(v.z for v in vs)))
+    for k in range(19):
+        q=Matrix.Rotation(math.radians((90 if sd<0 else -90)*k/18),3,'Z')
+        bad=[p for p in (pv+q@(v-pv) for v in vs) if CF+1e-3<p.y<CF+.3-1e-3 and (p.z<.75-1e-3 or abs(p.x)>door_hw(p.z)+1e-3)]
+        assert not bad,f'Door leaf {sd} enters the arch masonry at {k*5} deg: {bad[0]}'
 pwall((0,CB,0),(0,1,0),XC,CP,[(0,.8,1.2,2.4),(0,.8,4.6,5.5)])
 lancet((0,CB,0),(0,1,0),0,.8,1.2,2.4);lancet((0,CB,0),(0,1,0),0,.8,4.6,5.5)
 S.box((0,CB+.04,.22),(2*XC,.1,.44),M['stone'],.01)

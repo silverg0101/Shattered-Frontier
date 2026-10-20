@@ -88,6 +88,19 @@ def skin(c,o,half,z0,z1,holes,th=SK):
             z=max(z,s1)
     for h in holes:
         if h[4]:G['dressed'].box(P((h[0]+h[1])/2,-th,(h[2]+h[3])/2),(h[1]-h[0]+.02,.04,h[3]-h[2]+.02),M['void'],0,R)
+def carved(geo,box,voids,mat):
+    """Solid box (x0,x1,y0,y1,z0,z1) less axis-aligned voids, as non-overlapping boxes (all faces outward)."""
+    boxes=[list(box)]
+    for v in voids:
+        out=[]
+        for b in boxes:
+            if any(b[2*k+1]<=v[2*k] or b[2*k]>=v[2*k+1] for k in range(3)):out.append(b);continue
+            for k in range(3):     # peel off the slabs below / above the void on each axis in turn
+                if b[2*k]<v[2*k]:out.append(b[:2*k+1]+[v[2*k]]+b[2*k+2:]);b=b[:2*k]+[v[2*k]]+b[2*k+1:]
+                if b[2*k+1]>v[2*k+1]:out.append(b[:2*k]+[v[2*k+1]]+b[2*k+1:]);b=b[:2*k+1]+[v[2*k+1]]+b[2*k+2:]
+        boxes=out
+    for b in boxes:B(geo,*b,mat,0)
+VD=1.6                         # vestibule depth behind each tower door (> leaf width + .2 m; holds the kit's 1.4 m entry room)
 
 def slit(a,z0,z1):return (a-.06,a+.06,z0,z1,True)
 def door_hole(a,w,z0,h):return (a-w/2-.2,a+w/2+.2,z0,z0+h+.3,False)
@@ -103,7 +116,7 @@ def door(c,o,a,w,z0,h):
     D.box(P(a,-.2,z0+h/2),(w,.06,h),M['door'],.004,R)
     for z in (z0+.35,z0+h-.4):D.box(P(a-w*.08,-.164,z),(w*.8,.012,.06),M['iron'],.003,R)
     D.box(P(a+w*.32,-.16,z0+1.0),(.07,.02,.07),M['iron'],.004,R)
-DOORS=[]
+DOORS=[];VESTIBULES=[]
 
 # ---- gate block: vaulted passage, dressed arch rings ------------------------------------
 wall(G['stone'],M['stone'],(0,-BY,0),(0,-1,0),GAP/2+.1,GW,[(0,AW,0,AS+AW/2)],th=2*BY,arch=(0,AW,AS))
@@ -192,7 +205,11 @@ def fleur(c,s):
 def tower(s):
     cx=s*CX;xi,xo=cx-s*TW/2,cx+s*TW/2;H=TW/2
     # core, front/rear/outer skins with slits and doors, flat inner side against the gate block
-    B(G['stone'],min(xi,cx+s*(H-SK)),max(xi,cx+s*(H-SK)),-SY+SK,SY-SK,0,SHAFT,M['stone'],0)
+    # The core is hollow behind both doors: a vestibule as wide and high as the door's skin hole, VD deep,
+    # so the opened leaf and the kit's entry room sit in open space.
+    WY=sum(WALK_Y)/2
+    VOIDS=[(cx-.75,cx+.75,SY-SK-VD,SY-SK,0,2.6),(*sorted((s*(XO-SK),s*(XO-SK-VD))),WY-.7,WY+.7,WALK_Z,SHAFT)]  # town-side door, wall-walk door
+    carved(G['stone'],(min(xi,cx+s*(H-SK)),max(xi,cx+s*(H-SK)),-SY+SK,SY-SK,0,SHAFT),VOIDS,M['stone']);VESTIBULES.extend(VOIDS)
     sl=[slit(a,z0,z0+1.1) for a in (-2.2,2.2) for z0 in (1.8,4.6)]
     skin((cx,-SY,0),(0,-1,0),H,0,SHAFT,sl)
     skin((cx,SY,0),(0,1,0),H,0,SHAFT,sl+[door_hole(0,1.1,0,2.3)]);door((cx,SY,0),(0,1,0),0,1.1,0,2.3)
@@ -290,6 +307,10 @@ assert all(h-l<=s+1e-3 for l,h,s in zip(lo,hi,SLOT)) and abs(lo[0]+XO)<1e-4 and 
 # Gate passage open: nothing inside a 4.4 m wide x 3.9 m high clear way through the whole depth.
 CLEAR=2.2
 assert not [p for p in pts if abs(p.x)<CLEAR and .01<p.z<3.9 and abs(p.y)<TD/2],'gate passage obstructed'
+# Tower-door vestibules are open: no masonry vertex inside one (the opened leaves are checked below).
+def inside(p,v,e=.01):return all(v[2*k]+e<p[k]<v[2*k+1]-e for k in range(3))
+LEAVES={d['geo'].name for d in DOORS}
+assert not [p for o in objs if o.name not in LEAVES for v in o.data.vertices for p in [o.matrix_world@v.co] if any(inside(p,b) for b in VESTIBULES)],'masonry inside a door vestibule'
 # Wall joint: the outer faces are the slot ends (asserted above); the walk-door threshold is level with the wall-walk.
 assert any(abs(p.z-WALK_Z)<1e-4 and abs(abs(p.x)-XO)<1e-4 for p in G['stone'].v),'no threshold at the wall-walk height'
 OUT=HERE/'SilverbrookGatehouse'
@@ -306,6 +327,8 @@ for k,d in enumerate(DOORS,1):
     travel=90 if kit.UP.cross(r).dot(o)<0 else -90
     q=Matrix.Rotation(math.radians(travel),3,'Z');sw=[pivot+q@(v-pivot) for v in vs]
     assert max(v.dot(o) for v in sw)<=pivot.dot(o)+.07 and min(v.dot(o) for v in sw)<pivot.dot(o)-.9 and min(v.dot(r) for v in sw)>=pivot.dot(r)-1e-3,f'Door{k} does not swing inward'
+    # past the skin (leaf inner face .07 m in front of the skin's inner face) the open leaf lies in its vestibule
+    assert all(any(inside(p,b,-1e-3) for b in VESTIBULES) for p in sw if (p-pivot).dot(o)<-.07-1e-3),f'Door{k} opens into masonry'
     print('GATEHOUSE_DOOR',k,[round(x,3) for x in pivot],travel,'open leaf reaches',round(pivot.dot(o)-min(v.dot(o) for v in sw),3),'m inside')
     DOOR_PARTS.append((obj,f'Door{k}',tuple(round(x,4) for x in pivot),(0,0,1),'swing',travel,'closed'))
 PARTS=kit.export_parts([(ob['SM_SBGatehouse_GateL'],'GateL',(-HX,HY,0),(0,0,1),'swing',-90,'open'),(ob['SM_SBGatehouse_GateR'],'GateR',(HX,HY,0),(0,0,1),'swing',90,'open'),

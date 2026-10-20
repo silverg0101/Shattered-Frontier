@@ -12,7 +12,7 @@ import unreal as u,json,math,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent;LIB='/Game/Frontier/Environment/Greenlands/Silverbrook'
 WALKABLE={'StoneBridge','RiversideDocks','FishermansWharf','WallSection','Gatehouse','WallTower'}  # complex-as-simple collision
-DISPLACEMENT_CM=6.0  # full 0..1 height range of a scan; 3 cm read as flat in the editor (only step edges moved)
+DISPLACEMENT_CM=0  # off: displacing kit boxes opens seams at hard edges (6 cm review, Cottage1/review); normal maps carry the depth
 tools=u.AssetToolsHelpers.get_asset_tools();mel=u.MaterialEditingLibrary;eal=u.EditorAssetLibrary;sme=u.get_editor_subsystem(u.StaticMeshEditorSubsystem)
 assert sme,'Full editor required'
 packages=[a for a in sys.argv[1:] if (ROOT/a/'asset-manifest.json').exists()] or sorted(p.parent.name for p in ROOT.glob('*/asset-manifest.json'))
@@ -81,7 +81,7 @@ def scan_master():
     ma=node(m,u.MaterialExpressionScalarParameter,-300,200,parameter_name='MetalAmount',default_value=0)
     met=node(m,u.MaterialExpressionMultiply,-100,200);link(rough,'G',met,'A');link(ma,'',met,'B');link(met,'',attrs,'Metallic')
     m.set_editor_property('use_material_attributes',True);out(attrs,'',u.MaterialProperty.MP_MATERIAL_ATTRIBUTES)
-    m.set_editor_property('enable_tessellation',True)
+    m.set_editor_property('enable_tessellation',DISPLACEMENT_CM>0)
     scale=m.get_editor_property('displacement_scaling');scale.set_editor_property('magnitude',DISPLACEMENT_CM);scale.set_editor_property('center',.5);m.set_editor_property('displacement_scaling',scale)
     mel.recompile_material(m);eal.save_loaded_asset(m);return m
 

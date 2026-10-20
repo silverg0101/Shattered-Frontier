@@ -8,8 +8,8 @@
   "slots": 12,
   "nanite": true,
   "collision": "convex",
-  "convex_hulls": 12,
-  "nanite_fallback_triangles": 28424,
+  "convex_hulls": 11,
+  "nanite_fallback_triangles": 28507,
   "lightmap": {
     "uv": 2,
     "resolution": 256

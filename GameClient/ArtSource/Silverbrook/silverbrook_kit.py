@@ -97,9 +97,62 @@ def export_parts(parts,out,mesh_prefix):
         bpy.ops.export_scene.fbx(filepath=path,use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
         me=tmp.data;bpy.data.objects.remove(tmp);bpy.data.meshes.remove(me)
         rows.append(dict(name=name,fbx=Path(path).name,unreal_mesh=f'{mesh_prefix}_{name}',pivot_m=[round(v,4) for v in pivot],axis=list(axis),motion=motion,travel=travel,modelled=(state or [None])[0]))
-    for o in bpy.data.objects:o.select_set(o in keep)
+    room=_vestibules(parts,mesh_prefix)
+    for o in bpy.data.objects:o.select_set(o in keep or o is room)
     bpy.context.view_layer.objects.active=active
     return rows
+
+def _slab_axis(xy):
+    """Long horizontal axis of a thin slab (door leaf): the edge direction of its minimum-width bounding rectangle.
+    Straps and rings sticking out of one face can't tilt it the way a principal axis or farthest vertex does."""
+    pts=sorted(set((round(x,5),round(y,5)) for x,y in xy));hull=[]
+    for seq in (pts,pts[::-1]):  # monotone chain
+        part=[]
+        for p in seq:
+            while len(part)>1 and (part[-1][0]-part[-2][0])*(p[1]-part[-2][1])-(part[-1][1]-part[-2][1])*(p[0]-part[-2][0])<=0:part.pop()
+            part.append(p)
+        hull+=part[:-1]
+    best=None
+    for (ax,ay),(bx,by) in zip(hull,hull[1:]+hull[:1]):
+        d=Vector((bx-ax,by-ay,0))
+        if d.length<1e-6:continue
+        d.normalize();nrm=Vector((-d.y,d.x,0));w=max(nrm.x*x+nrm.y*y for x,y in hull)-min(nrm.x*x+nrm.y*y for x,y in hull)
+        if best is None or w<best[0]:best=(w,d)
+    return best[1]
+
+def _vestibules(parts,mesh_prefix,depth=1.4):
+    """A dark entry room behind every closed door, so an opened door shows an interior instead of the hollow shell.
+    Coplanar neighbouring leaves (double doors) share one room. Returns the object (exported with the main mesh) or None."""
+    groups=[]
+    for obj,name,pivot,axis,motion,travel,*state in parts:
+        if motion!='swing' or (state or [None])[0]!='closed':continue
+        pivot=Vector(pivot);vs=[obj.matrix_world@v.co for v in obj.data.vertices]
+        u=_slab_axis([(v.x,v.y) for v in vs]);u=u if sum(v.x-pivot.x for v in vs)*u.x+sum(v.y-pivot.y for v in vs)*u.y>0 else -u  # hinge -> free edge
+        n=(Matrix.Rotation(math.radians(travel),3,'Z')@u).normalized();t=n.cross(UP)   # n: inward (where the leaf swings)
+        g=next((g for g in groups if g['n'].dot(n)>.99 and abs(g['d']-pivot.dot(n))<.15 and abs(g['z0']-pivot.z)<.15),None)  # same doorway
+        if not g:g=dict(n=n,t=t,d=pivot.dot(n),z0=pivot.z,z1=pivot.z,s=[]);groups.append(g)
+        g['z1']=max(g['z1'],max(v.z for v in vs));g['s'].append((min(v.dot(t) for v in vs),max(v.dot(t) for v in vs)))
+    if not groups:return None
+    G=Geo(mesh_prefix.replace('SM_Silverbrook','SM_SB')+'_EntryRooms',parts[0][0].users_collection[0]);mat=solid('SB_EntryRoom',(.05,.045,.04),.95)
+    def quad(pts,want):
+        pts=[Vector(p) for p in pts]
+        if (pts[1]-pts[0]).cross(pts[2]-pts[0]).dot(want)<0:pts.reverse()
+        G.poly(pts,mat)
+    for g in groups:
+        spans=sorted(g['s']);merged=[list(spans[0])]
+        for a,b in spans[1:]:
+            if a<=merged[-1][1]+.1:merged[-1][1]=max(merged[-1][1],b)
+            else:merged.append([a,b])
+        n,t=g['n'],g['t']
+        for a,b in merged:
+            a,b=a+.01,b-.01;d0,d1=g['d']+.01,g['d']+max(depth,b-a+.1);z0,z1=g['z0']+.002,g['z1']
+            P=lambda s_,d_,z_,t=t,n=n:Vector((t.x*s_+n.x*d_,t.y*s_+n.y*d_,z_))
+            quad([P(a,d1,z0),P(b,d1,z0),P(b,d1,z1),P(a,d1,z1)],-n)        # back wall faces the door
+            quad([P(a,d0,z0),P(a,d1,z0),P(a,d1,z1),P(a,d0,z1)],t)         # side walls face inward
+            quad([P(b,d0,z0),P(b,d1,z0),P(b,d1,z1),P(b,d0,z1)],-t)
+            quad([P(a,d0,z0),P(b,d0,z0),P(b,d1,z0),P(a,d1,z0)],UP)        # floor
+            quad([P(a,d0,z1),P(b,d0,z1),P(b,d1,z1),P(a,d1,z1)],-UP)       # ceiling
+    return G.object()
 
 def split_doors(out,mesh_prefix):
     """Export every kit.door leaf as a part (modelled closed; opens 90 deg inward about its left hinge) and deselect it.
@@ -115,6 +168,7 @@ def split_doors(out,mesh_prefix):
     return rows
 
 def solid(name,colour,rough=.6,metal=0,emission=None,strength=0):
+    if name in MATS:return MATS[name]
     m=bpy.data.materials.new(name);m.use_nodes=True;m.use_backface_culling=True;p=m.node_tree.nodes.get('Principled BSDF')
     p.inputs['Base Color'].default_value=(*colour,1);p.inputs['Roughness'].default_value=rough;p.inputs['Metallic'].default_value=metal
     if emission:p.inputs['Emission Color'].default_value=(*emission,1);p.inputs['Emission Strength'].default_value=strength

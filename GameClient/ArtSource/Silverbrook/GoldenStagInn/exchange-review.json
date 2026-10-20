@@ -1,7 +1,7 @@
 {
   "source": {
-    "meshes": 5,
-    "triangles": 168828,
+    "meshes": 8,
+    "triangles": 168848,
     "size_m": [
       13.681,
       10.077,
@@ -11,6 +11,7 @@
       "SB_Ashlar",
       "SB_ChimneyPot",
       "SB_DoorBoards",
+      "SB_EntryRoom",
       "SB_ForgedIron",
       "SB_GoldenStagInn_Banner",
       "SB_GoldenStagInn_Gilt",
@@ -30,7 +31,7 @@
     "images": 19
   },
   "glb": {
-    "meshes": 5,
+    "meshes": 7,
     "triangles": 168828,
     "size_m": [
       13.681,
@@ -61,8 +62,8 @@
     "images": 0
   },
   "fbx": {
-    "meshes": 5,
-    "triangles": 168828,
+    "meshes": 6,
+    "triangles": 168296,
     "size_m": [
       13.681,
       10.077,
@@ -71,7 +72,7 @@
     "materials": [
       "SB_Ashlar",
       "SB_ChimneyPot",
-      "SB_DoorBoards",
+      "SB_EntryRoom",
       "SB_ForgedIron",
       "SB_GoldenStagInn_Banner",
       "SB_GoldenStagInn_Gilt",
@@ -88,6 +89,6 @@
       "Weathering"
     ],
     "images_missing": [],
-    "images": 12
+    "images": 6
   }
 }

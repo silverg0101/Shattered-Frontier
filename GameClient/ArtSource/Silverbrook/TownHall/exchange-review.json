@@ -1,7 +1,7 @@
 {
   "source": {
-    "meshes": 7,
-    "triangles": 236004,
+    "meshes": 8,
+    "triangles": 236014,
     "size_m": [
       22.0,
       14.309,
@@ -9,6 +9,7 @@
     ],
     "materials": [
       "SB_DoorBoards",
+      "SB_EntryRoom",
       "SB_ForgedIron",
       "SB_LanternGlow",
       "SB_LeadCame",
@@ -57,14 +58,15 @@
     "images": 0
   },
   "fbx": {
-    "meshes": 5,
-    "triangles": 235724,
+    "meshes": 6,
+    "triangles": 235734,
     "size_m": [
       22.0,
       14.309,
       27.95
     ],
     "materials": [
+      "SB_EntryRoom",
       "SB_ForgedIron",
       "SB_LanternGlow",
       "SB_LeadCame",

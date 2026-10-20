@@ -164,7 +164,27 @@ def arc(n):return [math.pi*i/n for i in range(n+1)]
 # ---- plinth, shaft, string course ---------------------------------------------------------------------------------
 loft(G['stone'],.58,0,.06,2.12,M['stone'])                     # battered plinth: 8 m across at the ground
 blocks(2.08,2.28,ds(2.28)+.13,ds(2.28)-.30)                     # plinth cap
-loft(G['stone'],ds(2.25),2.25,ds(ZT+.05),ZT+.05,M['stone'])     # shaft
+# shaft: solid below and above the wall-walk doors; between, octagon pieces around a vestibule behind each side
+# door (leaf width + .1 m a side, from just under the leaf, which dips .01 below the sill, to above the arch, VX
+# in from the centre), so the opened leaf and the kit's entry room sit in open space
+VZ,VX,VY=(WALK+PAVE-.02,7.55),1.75,((PB+RB)/2-.6,(PB+RB)/2+.6)
+loft(G['stone'],ds(2.25),2.25,ds(VZ[0]),VZ[0],M['stone']);loft(G['stone'],ds(VZ[1]),VZ[1],ds(ZT+.05),ZT+.05,M['stone'])
+def clip(poly,ax,v,sg):
+    """Convex polygon clipped to the half-space sg*(p[ax]-v) >= 0."""
+    out=[]
+    for a,b in zip(poly,poly[1:]+poly[:1]):
+        da,db=sg*(a[ax]-v),sg*(b[ax]-v)
+        if da>=0:out.append(a)
+        if da*db<0:out.append(a.lerp(b,da/(da-db)))
+    return out
+for cell in ([(0,VX,-1),(0,-VX,1)],*[[(0,s*VX,s),(1,y,t)] for s in (1,-1) for y,t in ((VY[0],-1),(VY[1],1))]):
+    a,b=[octo(ds(z),z) for z in VZ]
+    for hp in cell:a,b=clip(a,*hp),clip(b,*hp)
+    assert len(a)==len(b),'vestibule cell changes shape over its height'
+    polys=[b,a[::-1]];uvs=[None,None]
+    for k in range(len(a)):
+        j=(k+1)%len(a);t=(a[j]-a[k]).normalized();q=[a[k],a[j],b[j],b[k]];polys.append(q);uvs.append([(p.dot(t)/S,p.z/S) for p in q])
+    closed(G['stone'],polys,M['stone'],uvs)
 blocks(*ZM,ds(5.37)+.10,ds(5.37)-.30,[0,2,3,4,6,7])             # string course (the wall joints take the sides)
 for k in (FRONT,REAR,*DIAG):                                    # small corbels under it
     P,R,_=fframe(k,4.95)
@@ -271,6 +291,10 @@ for s,rng_ in JOINTS.items():   # the joint's outer face is exactly WallSection'
     mine=end_set([p for k,(a,b) in rng_.items() for p in G[k].v[a:b]],s*J);assert mine==wall_end and len(mine)>20,f'joint {s} differs from WallSection end'
 walk=[p for a,b in [JOINTS[s]['walk'] for s in (1,-1)] for p in G['walk'].v[a:b] if abs(p.z-WALK-PAVE)<1e-4]
 assert max(p.x for p in walk)==J and min(p.x for p in walk)==-J and min(abs(p.x) for p in walk)<octo(ds(WALK))[1].x-.3,'wall-walk does not reach the tower doors'
+# Door vestibules are open behind the face layer (jambs and voussoirs reach .1 m in): no masonry vertex inside.
+def face_x(z):return H0+ds(z)
+def in_vestibule(p,e=.01):return abs(p.x)>VX+e and VY[0]+e<p.y<VY[1]-e and VZ[0]+e<p.z<VZ[1]-e
+assert not [p for k,g in G.items() if not k.startswith('SM_SBWallTower_Door') for p in g.v if in_vestibule(p) and abs(p.x)<face_x(p.z)-.12],'masonry inside a door vestibule'
 OUT=HERE/'SilverbrookWallTower'
 for o in bpy.data.objects:o.select_set(o in objs)
 bpy.context.view_layer.objects.active=objs[0]
@@ -281,6 +305,7 @@ for d,row in zip(kit.DOORS,PARTS):
     ob_=bpy.data.objects[d['geo'].name];pv=Vector(row['pivot_m']);rz=Matrix.Rotation(math.radians(row['travel']),3,'Z');o_h=Vector((d['o'].x,d['o'].y,0)).normalized()
     vs=[pv+rz@(ob_.matrix_world@v.co-pv) for v in ob_.data.vertices];c_=sum(vs,Vector())/len(vs)
     assert (c_-pv).dot(o_h)<-.3 and max((v-pv).dot(o_h) for v in vs)<.02,f"{row['name']} does not swing inward"
+    assert all(in_vestibule(v,-1e-3) for v in vs if abs(v.x)<face_x(v.z)-.12),f"{row['name']} opens into masonry"
     print('DOOR_SWING',row['name'],row['pivot_m'],row['travel'],'open centre inward %.2f m'%-(c_-pv).dot(o_h))
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
 # ---- preview: a WallSection segment butted on each side ------------------------------------------------------------

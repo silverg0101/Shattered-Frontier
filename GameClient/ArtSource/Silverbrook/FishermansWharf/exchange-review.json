@@ -1,7 +1,7 @@
 {
   "source": {
-    "meshes": 6,
-    "triangles": 84040,
+    "meshes": 8,
+    "triangles": 84050,
     "size_m": [
       20.0,
       7.95,
@@ -11,6 +11,7 @@
       "SB_Ashlar",
       "SB_ChimneyPot",
       "SB_DoorBoards",
+      "SB_EntryRoom",
       "SB_FishermansWharf_Banner",
       "SB_FishermansWharf_Boards",
       "SB_FishermansWharf_Canvas",
@@ -30,7 +31,7 @@
     "images": 22
   },
   "glb": {
-    "meshes": 6,
+    "meshes": 7,
     "triangles": 84040,
     "size_m": [
       20.0,
@@ -61,8 +62,8 @@
     "images": 0
   },
   "fbx": {
-    "meshes": 6,
-    "triangles": 84040,
+    "meshes": 7,
+    "triangles": 83774,
     "size_m": [
       20.0,
       7.95,
@@ -72,6 +73,7 @@
       "SB_Ashlar",
       "SB_ChimneyPot",
       "SB_DoorBoards",
+      "SB_EntryRoom",
       "SB_FishermansWharf_Banner",
       "SB_FishermansWharf_Boards",
       "SB_FishermansWharf_Canvas",
@@ -88,6 +90,6 @@
       "Weathering"
     ],
     "images_missing": [],
-    "images": 14
+    "images": 7
   }
 }
