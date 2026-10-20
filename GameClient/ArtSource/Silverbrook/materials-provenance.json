@@ -1604,6 +1604,41 @@
     ]
   },
   {
+    "asset": "terlenka",
+    "page": "https://polyhaven.com/a/terlenka",
+    "license": "CC0-1.0",
+    "authors": {
+      "colormass": "Photography",
+      "Rico Cilliers": "Processing"
+    },
+    "physical_size_metres": [
+      0.26570814767607126,
+      0.2662999927997589
+    ],
+    "files": [
+      {
+        "file": "Textures/terlenka_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/terlenka/terlenka_diff_2k.jpg",
+        "md5": "e700ed70868589a6e48d7044eb480b67"
+      },
+      {
+        "file": "Textures/terlenka_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/terlenka/terlenka_nor_gl_2k.jpg",
+        "md5": "9a9f7171e2b848610c30ead1a79a8f05"
+      },
+      {
+        "file": "Textures/terlenka_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/terlenka/terlenka_rough_2k.jpg",
+        "md5": "ed2a0c2bbf67a99134a7e8d91165afd2"
+      },
+      {
+        "file": "Textures/terlenka_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/terlenka/terlenka_disp_2k.jpg",
+        "md5": "b18ae79bd6552dda28bf78e54161be1b"
+      }
+    ]
+  },
+  {
     "asset": "velour_velvet",
     "page": "https://polyhaven.com/a/velour_velvet",
     "license": "CC0-1.0",

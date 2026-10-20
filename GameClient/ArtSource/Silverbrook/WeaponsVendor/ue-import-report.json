@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookWeaponsVendor",
+  "size_m": [
+    5.81,
+    2.51,
+    4.6
+  ],
+  "slots": 23,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 11685,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 128
+  },
+  "slot_m": [
+    6,
+    3.5,
+    5
+  ],
+  "fits": true
+}
