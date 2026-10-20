@@ -23,7 +23,7 @@
         30,
         350
       ],
-      "seconds": 95.2,
+      "seconds": 95.3,
       "z_cm": 277
     },
     {
@@ -32,7 +32,7 @@
         205
       ],
       "seconds": 116.0,
-      "z_cm": 854
+      "z_cm": 855
     },
     {
       "xy_metres": [
@@ -63,17 +63,17 @@
         22,
         -529
       ],
-      "seconds": 221.1,
+      "seconds": 221.2,
       "z_cm": 3616
     }
   ],
   "stuck_events": 0,
   "walk_completed": true,
-  "walk_seconds": 221.1,
+  "walk_seconds": 221.2,
   "frame_ms": {
-    "median": 2.3,
-    "p95": 5.4,
-    "frames": 81212
+    "median": 3.7,
+    "p95": 5.1,
+    "frames": 57995
   },
   "final_pawn_cm": [
     2189,

@@ -1,0 +1,556 @@
+{
+ "_about": "Gameplay candidates (harvestable trees and stone) from dress_zone.py; produced but not used yet (pipeline stage 3).",
+ "version": "the_commons-1019-1-9be1cdc9ed",
+ "candidates": [
+  {
+   "id": "40282b2d2dd57dd0",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    238.01,
+    -75.45,
+    16.23
+   ]
+  },
+  {
+   "id": "903c4ba8bc894aa6",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    168.74,
+    -65.25,
+    17.79
+   ]
+  },
+  {
+   "id": "b8abf049f0cc065c",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    267.94,
+    -63.37,
+    14.46
+   ]
+  },
+  {
+   "id": "1a16c19a0d51dc78",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    -201.37,
+    -174.83,
+    18.68
+   ]
+  },
+  {
+   "id": "ea11e347420b4e96",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    134.61,
+    -133.75,
+    17.93
+   ]
+  },
+  {
+   "id": "9f6f483c1adb700f",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    -90.48,
+    124.42,
+    15.09
+   ]
+  },
+  {
+   "id": "96e4e97d541b987b",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    201.97,
+    68.59,
+    12.55
+   ]
+  },
+  {
+   "id": "8710a89c16916f2f",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    -195.69,
+    68.73,
+    19.0
+   ]
+  },
+  {
+   "id": "57b6633e506e1380",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    86.91,
+    75.44,
+    15.13
+   ]
+  },
+  {
+   "id": "cf103f31bba5235d",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    165.17,
+    -15.97,
+    16.55
+   ]
+  },
+  {
+   "id": "279ddb87a708cc0e",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    -267.18,
+    -54.22,
+    20.47
+   ]
+  },
+  {
+   "id": "e635fba7581d1ceb",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    -72.94,
+    -16.12,
+    15.28
+   ]
+  },
+  {
+   "id": "ebb3eb47811461c0",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    -27.9,
+    110.22,
+    15.52
+   ]
+  },
+  {
+   "id": "63b858dbbb76d289",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    -220.94,
+    -76.16,
+    19.97
+   ]
+  },
+  {
+   "id": "e10989407642a5a6",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    -56.68,
+    71.96,
+    16.77
+   ]
+  },
+  {
+   "id": "9149f29d1606fb20",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    190.26,
+    -128.63,
+    16.84
+   ]
+  },
+  {
+   "id": "62cf56a83d869d23",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    56.55,
+    -140.71,
+    18.53
+   ]
+  },
+  {
+   "id": "1b595a07dda80a57",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    76.7,
+    5.28,
+    15.84
+   ]
+  },
+  {
+   "id": "edb0b60ecec7837e",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    182.57,
+    53.26,
+    14.65
+   ]
+  },
+  {
+   "id": "1c3e3a31be3f8f31",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    258.37,
+    -85.33,
+    15.27
+   ]
+  },
+  {
+   "id": "9acec8976bf31217",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    -155.75,
+    -124.83,
+    18.09
+   ]
+  },
+  {
+   "id": "c2dbb104e71146fb",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    100.34,
+    52.83,
+    15.63
+   ]
+  },
+  {
+   "id": "789c31bc66604094",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    -105.85,
+    -115.88,
+    18.17
+   ]
+  },
+  {
+   "id": "0b99afd530107c0d",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    -166.06,
+    89.04,
+    17.77
+   ]
+  },
+  {
+   "id": "4f2efeb057dd7a93",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    -252.16,
+    -14.17,
+    20.01
+   ]
+  },
+  {
+   "id": "5564d689573a23dd",
+   "role": "tree_pine_tall",
+   "resource": "wood",
+   "at": [
+    124.7,
+    75.43,
+    15.09
+   ]
+  },
+  {
+   "id": "fbc27e6cf841feb6",
+   "role": "tree_broadleaf_young",
+   "resource": "wood",
+   "at": [
+    -193.66,
+    -54.48,
+    19.1
+   ]
+  },
+  {
+   "id": "931b292330245a3c",
+   "role": "tree_broadleaf_young",
+   "resource": "wood",
+   "at": [
+    -21.27,
+    2.7,
+    11.09
+   ]
+  },
+  {
+   "id": "92387ef7e4d9feb1",
+   "role": "tree_broadleaf_young",
+   "resource": "wood",
+   "at": [
+    -268.1,
+    -39.29,
+    20.4
+   ]
+  },
+  {
+   "id": "a85a315270df5cc6",
+   "role": "tree_oak",
+   "resource": "wood",
+   "at": [
+    -45.32,
+    1.94,
+    14.15
+   ]
+  },
+  {
+   "id": "fb8b458f973dae3b",
+   "role": "tree_oak",
+   "resource": "wood",
+   "at": [
+    97.71,
+    107.19,
+    13.1
+   ]
+  },
+  {
+   "id": "749c835a8e7c3d0b",
+   "role": "tree_oak",
+   "resource": "wood",
+   "at": [
+    -104.12,
+    -159.76,
+    17.23
+   ]
+  },
+  {
+   "id": "75e731c0397f5d44",
+   "role": "tree_oak",
+   "resource": "wood",
+   "at": [
+    -150.34,
+    -93.04,
+    17.91
+   ]
+  },
+  {
+   "id": "8e27ca773bbc6b38",
+   "role": "boulder_large_moss",
+   "resource": "stone",
+   "at": [
+    71.77,
+    -173.91,
+    15.76
+   ]
+  },
+  {
+   "id": "d66d3e0c35dc791c",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    -64.96,
+    77.63,
+    16.98
+   ]
+  },
+  {
+   "id": "59b4c3029612b38a",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    -62.57,
+    78.59,
+    16.92
+   ]
+  },
+  {
+   "id": "10682b5918f92c28",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    117.36,
+    28.19,
+    15.76
+   ]
+  },
+  {
+   "id": "555857197d8a2d63",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    118.13,
+    30.7,
+    15.76
+   ]
+  },
+  {
+   "id": "4a6a481b1753381f",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    -41.63,
+    -158.25,
+    16.57
+   ]
+  },
+  {
+   "id": "b8c02c2404f96a47",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    51.23,
+    -175.69,
+    14.79
+   ]
+  },
+  {
+   "id": "09bf861ed05589c4",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    67.97,
+    120.56,
+    12.18
+   ]
+  },
+  {
+   "id": "24b2fef9b0b458f9",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    213.15,
+    -26.45,
+    16.96
+   ]
+  },
+  {
+   "id": "20dfca30e4d18aa8",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    -24.5,
+    68.39,
+    16.39
+   ]
+  },
+  {
+   "id": "89344be42fa617ae",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    -184.85,
+    80.76,
+    18.58
+   ]
+  },
+  {
+   "id": "39973c02203c411c",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    -182.42,
+    77.8,
+    18.51
+   ]
+  },
+  {
+   "id": "c95c6dd01f80e93c",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    -187.44,
+    81.23,
+    18.68
+   ]
+  },
+  {
+   "id": "e3fb87c754504bb5",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    88.66,
+    -132.44,
+    18.37
+   ]
+  },
+  {
+   "id": "86cb9b24b8e25a96",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    89.66,
+    -129.78,
+    18.43
+   ]
+  },
+  {
+   "id": "d4d09500148637bb",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    90.65,
+    -135.3,
+    18.33
+   ]
+  },
+  {
+   "id": "664fcd435779e9e3",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    -147.79,
+    15.51,
+    18.5
+   ]
+  },
+  {
+   "id": "cb43870c57b7b109",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    -145.98,
+    13.73,
+    18.45
+   ]
+  },
+  {
+   "id": "3bbb41e5f491556a",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    51.45,
+    43.03,
+    15.61
+   ]
+  },
+  {
+   "id": "23c98ca184104ae9",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    53.1,
+    45.46,
+    15.57
+   ]
+  },
+  {
+   "id": "e140e962eba8c24e",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    -195.34,
+    -22.69,
+    19.18
+   ]
+  },
+  {
+   "id": "c81e65306246c376",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    192.07,
+    31.6,
+    15.53
+   ]
+  }
+ ]
+}

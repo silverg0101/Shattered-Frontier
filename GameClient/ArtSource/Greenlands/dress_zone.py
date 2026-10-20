@@ -5,7 +5,8 @@ PCG graph that spawns it as instanced meshes. Usage:
     python dress_zone.py [district]      # default Eastwood; checks the rules and determinism, prints DRESS_OK
 Each role's 'place' block in the look profile sets density, spacing, slope, height above the valley floor, sun or
 shade, clearance from roads, water and buildings, scale and sink. Canopy goes first, so the layers below can tell
-shade from sun. Roles with no mesh borrow a fallback role's meshes and are reported as gaps.
+shade from sun. Roles with no mesh borrow a fallback role's meshes and are reported as gaps. A district's 'dress' block
+in the layout scales each layer's density (forest 1 by default; town streets and fields far less).
 """
 import hashlib, json, math, random, sys
 from pathlib import Path
@@ -107,9 +108,12 @@ def dress(L, P, hf, placed, district, seed):
                 gaps[role] = rule.get('fallback') or 'none'
             if not meshes:
                 continue
+            per_ha = rule['per_ha'] * L['districts'][district].get('dress', {}).get(layer, 1.0)
+            if per_ha <= 0:
+                continue
             rng = random.Random(f'{version}:{role}')
-            target = round(rule['per_ha'] * area_ha)
-            cell = math.sqrt(10000 / rule['per_ha'])
+            target = round(per_ha * area_ha)
+            cell = math.sqrt(10000 / per_ha)
             spacing, placed_here, grid = rule['spacing'], [], {}
 
             def free(x, y):

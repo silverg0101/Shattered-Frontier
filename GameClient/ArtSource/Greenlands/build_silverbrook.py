@@ -462,14 +462,14 @@ assert len(bridges) >= 3, f'Expected at least 3 bridges, built {len(bridges)}'
 
 # Dressing (pipeline stage 3): rules from the look profile decide placements; a PCG graph spawns them.
 PROFILE = json.loads((ROOT / 'greenlands-look-profile.json').read_text(encoding='utf-8'))
-DRESS_DISTRICTS = ['Eastwood']  # first district end to end; add districts as their look is approved
+DRESS_DISTRICTS = list(L['districts'])  # each district's 'dress' block scales the look profile's densities
 dressing = {}
 for district in DRESS_DISTRICTS:
     result = dress_zone.dress(L, PROFILE, HF, placed, district, L['seed'])
     cands = dress_zone.candidates(result, PROFILE)
     dress_problems = dress_zone.check(L, result, cands, placed)
     assert not dress_problems, f'{district} dressing failed its checks: {dress_problems}'
-    (ROOT / f'silverbrook-{district.lower()}-candidates.json').write_text(json.dumps(dict(
+    (ROOT / f"silverbrook-{district.lower().replace(' ', '-')}-candidates.json").write_text(json.dumps(dict(
         _about='Gameplay candidates (harvestable trees and stone) from dress_zone.py; produced but not used yet (pipeline stage 3).',
         version=result['version'], candidates=cands), indent=1) + chr(10), encoding='utf-8')
     _, expected = pcg_dressing.build(result, {l['role']: l['layer'] for l in PROFILE['layers']}, 'Silverbrook')
