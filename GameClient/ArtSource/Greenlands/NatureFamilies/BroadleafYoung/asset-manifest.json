@@ -1,0 +1,302 @@
+{
+  "family": "BroadleafYoung",
+  "asset_id": "VEG-GreenlandsBroadleafYoung-01",
+  "look_profile_role": "tree_broadleaf_young",
+  "variant_count": 4,
+  "blender": "5.1.1",
+  "generator": "build_broadleafyoung.py",
+  "units": "metres, Z up, front -Y, origin base centre, no ground in any mesh",
+  "budget_triangles_per_variant": 300000,
+  "triangles": [
+    246370,
+    279055,
+    290156,
+    271144
+  ],
+  "placement_scale_note": "look profile place.scale is [0.6, 0.85]: meshes are 9-10.5 m tall at 1.0, so placed trees span 5.5-9 m (spec 6-10 m); sink 0",
+  "unreal_meshes": [
+    "SM_BroadleafYoung_00",
+    "SM_BroadleafYoung_01",
+    "SM_BroadleafYoung_02",
+    "SM_BroadleafYoung_03"
+  ],
+  "nanite": true,
+  "materials": [
+    {
+      "name": "MI_BroadleafYoung_Bark",
+      "base": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_Diffuse.jpg",
+      "normal": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_nor_gl.jpg",
+      "rough": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_Rough.jpg",
+      "tint": [
+        2.7,
+        2.7,
+        2.65
+      ],
+      "sat": 0.04,
+      "blend": {
+        "base": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_Diffuse.jpg",
+        "normal": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_nor_gl.jpg",
+        "rough": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_Rough.jpg",
+        "tint": [
+          0.05,
+          0.045,
+          0.04
+        ],
+        "sat": 0.5,
+        "amount": 1.0,
+        "contrast": 0.2
+      }
+    },
+    {
+      "name": "MI_BroadleafYoung_Leaf",
+      "base": "Sources/tree_small_02/textures/tree_small_02_leaves_diff_2k.jpg",
+      "normal": "Sources/tree_small_02/textures/tree_small_02_leaves_nor_gl_2k.jpg",
+      "arm": "Sources/tree_small_02/textures/tree_small_02_leaves_arm_2k.jpg",
+      "alpha": "Sources/tree_small_02/textures/tree_small_02_leaves_alpha_2k.png",
+      "tint": [
+        1.5,
+        1.6,
+        0.8
+      ],
+      "sat": 1.05,
+      "two_sided": true,
+      "alpha_mode": "MASKED"
+    }
+  ],
+  "variants": [
+    {
+      "mesh": "SM_BroadleafYoung_00",
+      "seed": 11,
+      "stems": 1,
+      "wood_triangles": 9854,
+      "leaf_triangles": 236516,
+      "leaf_scale": 5.0,
+      "materials": [
+        "MI_BroadleafYoung_Bark",
+        "MI_BroadleafYoung_Leaf"
+      ],
+      "triangles": 246370,
+      "vertices": 207898,
+      "size_m": [
+        5.678,
+        6.312,
+        9.882
+      ],
+      "fbx": "SM_BroadleafYoung_00.fbx",
+      "fbx_sha256": "aaba0ba935bed8382c11951dd754dc0f9f5e72fc3eba0196d8fa8d1546ed0a26",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": [
+        "UCX_SM_BroadleafYoung_00_00"
+      ]
+    },
+    {
+      "mesh": "SM_BroadleafYoung_01",
+      "seed": 23,
+      "stems": 2,
+      "wood_triangles": 19036,
+      "leaf_triangles": 260019,
+      "leaf_scale": 4.8,
+      "materials": [
+        "MI_BroadleafYoung_Bark",
+        "MI_BroadleafYoung_Leaf"
+      ],
+      "triangles": 279055,
+      "vertices": 233608,
+      "size_m": [
+        6.918,
+        5.851,
+        10.205
+      ],
+      "fbx": "SM_BroadleafYoung_01.fbx",
+      "fbx_sha256": "f621129292a8ef3415b86b07dcb4a606be3dbd1013a0cd4bf9b21e80861ab179",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": [
+        "UCX_SM_BroadleafYoung_01_00",
+        "UCX_SM_BroadleafYoung_01_01"
+      ]
+    },
+    {
+      "mesh": "SM_BroadleafYoung_02",
+      "seed": 37,
+      "stems": 3,
+      "wood_triangles": 30086,
+      "leaf_triangles": 260070,
+      "leaf_scale": 4.6,
+      "materials": [
+        "MI_BroadleafYoung_Bark",
+        "MI_BroadleafYoung_Leaf"
+      ],
+      "triangles": 290156,
+      "vertices": 240362,
+      "size_m": [
+        7.725,
+        7.176,
+        9.604
+      ],
+      "fbx": "SM_BroadleafYoung_02.fbx",
+      "fbx_sha256": "69c63e96b5bb50c3e0cbc5610b08f5a02443336c5dd91f47b79479b5029eaaea",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": [
+        "UCX_SM_BroadleafYoung_02_00",
+        "UCX_SM_BroadleafYoung_02_01",
+        "UCX_SM_BroadleafYoung_02_02"
+      ]
+    },
+    {
+      "mesh": "SM_BroadleafYoung_03",
+      "seed": 41,
+      "stems": 1,
+      "wood_triangles": 11064,
+      "leaf_triangles": 260080,
+      "leaf_scale": 5.2,
+      "materials": [
+        "MI_BroadleafYoung_Bark",
+        "MI_BroadleafYoung_Leaf"
+      ],
+      "triangles": 271144,
+      "vertices": 228980,
+      "size_m": [
+        6.887,
+        6.352,
+        10.577
+      ],
+      "fbx": "SM_BroadleafYoung_03.fbx",
+      "fbx_sha256": "12aa9f0c8f1c7a49287b34d9a77cc715801b275ab877a7f232fd541f730d4e77",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": [
+        "UCX_SM_BroadleafYoung_03_00"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "asset": "japanese_hackberry_bark",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/japanese_hackberry_bark",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Charlotte Baglioni": "All"
+      },
+      "physical_size_mm": [
+        1888.9999389648438,
+        1888.9999389648438
+      ],
+      "files": [
+        {
+          "file": "japanese_hackberry_bark/japanese_hackberry_bark_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/japanese_hackberry_bark/japanese_hackberry_bark_diff_2k.jpg",
+          "md5": "d913ed01faea2f776d46d49e041db940",
+          "bytes": 4735539
+        },
+        {
+          "file": "japanese_hackberry_bark/japanese_hackberry_bark_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/japanese_hackberry_bark/japanese_hackberry_bark_nor_gl_2k.jpg",
+          "md5": "b3e48bc69fae37a4cca41b04cb6d7182",
+          "bytes": 5172589
+        },
+        {
+          "file": "japanese_hackberry_bark/japanese_hackberry_bark_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/japanese_hackberry_bark/japanese_hackberry_bark_rough_2k.jpg",
+          "md5": "ffb7651ccb8d5b16a3f71ce30466cf42",
+          "bytes": 1963198
+        },
+        {
+          "file": "japanese_hackberry_bark/japanese_hackberry_bark_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/japanese_hackberry_bark/japanese_hackberry_bark_disp_2k.jpg",
+          "md5": "6e95d79f129f50a09e6225e5ebef37d1",
+          "bytes": 1397510
+        }
+      ]
+    },
+    {
+      "asset": "tree_small_02",
+      "kind": "model",
+      "page": "https://polyhaven.com/a/tree_small_02",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Rico Cilliers": "All"
+      },
+      "physical_size_mm": [
+        2921.434998512268,
+        4292.873501777649,
+        4649.933725595474
+      ],
+      "files": [
+        {
+          "file": "tree_small_02/tree_small_02.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/tree_small_02/tree_small_02_2k.gltf",
+          "md5": "7b77f2ca02edf5d7964ca3514e66c6b7",
+          "bytes": 9075
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_branch_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_branch_nor_gl_2k.jpg",
+          "md5": "12286d5b329b4fb4203fc155a01b0a04",
+          "bytes": 1781975
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_branch_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_branch_diff_2k.jpg",
+          "md5": "5ba327fc166360fcbb44f2eb04fbd8d8",
+          "bytes": 1425692
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_branch_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_branch_arm_2k.jpg",
+          "md5": "d6a0921ec6dbeaaf22a4b91d68fe16d1",
+          "bytes": 1147503
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_leaves_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_leaves_nor_gl_2k.jpg",
+          "md5": "ab509e55b5d763f68195e0eb257bb5e3",
+          "bytes": 2395771
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_leaves_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_leaves_diff_2k.jpg",
+          "md5": "021ddc0cf1d94b99716a106cede576c7",
+          "bytes": 961870
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_leaves_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_leaves_arm_2k.jpg",
+          "md5": "4b88d67947fe214f2afc65beb83bee02",
+          "bytes": 2191542
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_nor_gl_2k.jpg",
+          "md5": "064c3e1d08f010c732e7af6395a66769",
+          "bytes": 4555311
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_diff_2k.jpg",
+          "md5": "ff4d82640b7e0daaec0b71bfc1cef76c",
+          "bytes": 3170612
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_arm_2k.jpg",
+          "md5": "038ad0c1968be6802b20d084cdf30603",
+          "bytes": 2586815
+        },
+        {
+          "file": "tree_small_02/tree_small_02.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/tree_small_02/tree_small_02.bin",
+          "md5": "7a7019a87e6fe0d7475c0fa2e08d8962",
+          "bytes": 95102324
+        }
+      ]
+    }
+  ],
+  "renders": [
+    "BroadleafYoung-Variants.png",
+    "BroadleafYoung-Detail-Crown.png",
+    "BroadleafYoung-Detail-Trunk.png"
+  ],
+  "concept_reference": "docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp"
+}

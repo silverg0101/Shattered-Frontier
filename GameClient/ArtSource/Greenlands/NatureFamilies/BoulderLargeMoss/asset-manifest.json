@@ -1,0 +1,469 @@
+{
+  "family": "BoulderLargeMoss",
+  "asset_id": "ROCK-GreenlandsBoulderLargeMoss-01",
+  "look_profile_role": "boulder_large_moss",
+  "variant_count": 4,
+  "blender": "5.1.1",
+  "generator": "build_boulderlargemoss.py",
+  "units": "metres, Z up, front -Y, origin base centre, no ground in any mesh",
+  "budget_triangles_per_variant": 40000,
+  "triangles": [
+    40000,
+    40000,
+    39999,
+    39999
+  ],
+  "placement_scale_note": "look profile place.scale is [1.0, 1.6]: meshes are 1.6-2.6 m long at 1.0, so placed boulders span 1.6-4.2 m (spec 1.5-4 m); sink 0.25",
+  "unreal_meshes": [
+    "SM_BoulderLargeMoss_00",
+    "SM_BoulderLargeMoss_01",
+    "SM_BoulderLargeMoss_02",
+    "SM_BoulderLargeMoss_03"
+  ],
+  "nanite": true,
+  "materials": [
+    {
+      "name": "MI_BoulderLargeMoss_00",
+      "base": "Sources/boulder_01/textures/boulder_01_diff_2k.jpg",
+      "normal": "Sources/boulder_01/textures/boulder_01_nor_gl_2k.jpg",
+      "arm": "Sources/boulder_01/textures/boulder_01_arm_2k.jpg",
+      "tint": [
+        0.66,
+        0.68,
+        0.7
+      ],
+      "sat": 0.25,
+      "normal_strength": 1.0,
+      "blend": {
+        "base": "Sources/mossy_rock/mossy_rock_Diffuse.jpg",
+        "normal": "Sources/mossy_rock/mossy_rock_nor_gl.jpg",
+        "rough": "Sources/mossy_rock/mossy_rock_Rough.jpg",
+        "uv_scale": [
+          4,
+          4
+        ],
+        "tint": [
+          0.3,
+          0.5,
+          0.13
+        ],
+        "sat": 1.1,
+        "amount": 1.0,
+        "contrast": 0.4
+      }
+    },
+    {
+      "name": "MI_BoulderLargeMoss_01",
+      "base": "Sources/namaqualand_boulder_06/textures/namaqualand_boulder_06_diff_2k.jpg",
+      "normal": "Sources/namaqualand_boulder_06/textures/namaqualand_boulder_06_nor_gl_2k.jpg",
+      "arm": "Sources/namaqualand_boulder_06/textures/namaqualand_boulder_06_arm_2k.jpg",
+      "tint": [
+        0.6,
+        0.62,
+        0.65
+      ],
+      "sat": 0.2,
+      "normal_strength": 1.0,
+      "blend": {
+        "base": "Sources/mossy_rock/mossy_rock_Diffuse.jpg",
+        "normal": "Sources/mossy_rock/mossy_rock_nor_gl.jpg",
+        "rough": "Sources/mossy_rock/mossy_rock_Rough.jpg",
+        "uv_scale": [
+          4,
+          4
+        ],
+        "tint": [
+          0.3,
+          0.5,
+          0.13
+        ],
+        "sat": 1.1,
+        "amount": 1.0,
+        "contrast": 0.4
+      }
+    },
+    {
+      "name": "MI_BoulderLargeMoss_02",
+      "base": "Sources/namaqualand_boulder_03/textures/namaqualand_boulder_03_diff_2k.jpg",
+      "normal": "Sources/namaqualand_boulder_03/textures/namaqualand_boulder_03_nor_gl_2k.jpg",
+      "arm": "Sources/namaqualand_boulder_03/textures/namaqualand_boulder_03_arm_2k.jpg",
+      "tint": [
+        0.62,
+        0.64,
+        0.67
+      ],
+      "sat": 0.22,
+      "normal_strength": 1.0,
+      "blend": {
+        "base": "Sources/mossy_rock/mossy_rock_Diffuse.jpg",
+        "normal": "Sources/mossy_rock/mossy_rock_nor_gl.jpg",
+        "rough": "Sources/mossy_rock/mossy_rock_Rough.jpg",
+        "uv_scale": [
+          4,
+          4
+        ],
+        "tint": [
+          0.3,
+          0.5,
+          0.13
+        ],
+        "sat": 1.1,
+        "amount": 1.0,
+        "contrast": 0.4
+      }
+    },
+    {
+      "name": "MI_BoulderLargeMoss_03",
+      "base": "Sources/namaqualand_boulder_04/textures/namaqualand_boulder_04_diff_2k.jpg",
+      "normal": "Sources/namaqualand_boulder_04/textures/namaqualand_boulder_04_nor_gl_2k.jpg",
+      "arm": "Sources/namaqualand_boulder_04/textures/namaqualand_boulder_04_arm_2k.jpg",
+      "tint": [
+        0.6,
+        0.62,
+        0.66
+      ],
+      "sat": 0.2,
+      "normal_strength": 1.0,
+      "blend": {
+        "base": "Sources/mossy_rock/mossy_rock_Diffuse.jpg",
+        "normal": "Sources/mossy_rock/mossy_rock_nor_gl.jpg",
+        "rough": "Sources/mossy_rock/mossy_rock_Rough.jpg",
+        "uv_scale": [
+          4,
+          4
+        ],
+        "tint": [
+          0.3,
+          0.5,
+          0.13
+        ],
+        "sat": 1.1,
+        "amount": 1.0,
+        "contrast": 0.4
+      }
+    }
+  ],
+  "variants": [
+    {
+      "mesh": "SM_BoulderLargeMoss_00",
+      "source": "boulder_01",
+      "scale": 1.25,
+      "mirror": false,
+      "yaw": 20,
+      "levelled_plane": false,
+      "outline_half_m": null,
+      "material": "MI_BoulderLargeMoss_00",
+      "moss_mean": 0.279,
+      "triangles": 40000,
+      "vertices": 44589,
+      "size_m": [
+        1.757,
+        2.03,
+        1.257
+      ],
+      "fbx": "SM_BoulderLargeMoss_00.fbx",
+      "fbx_sha256": "b161b230c1805c6f3cdd1e25c1f84d3c6f0b2f123a8df16f01c3c08cfd961a04",
+      "origin": "base centre (footprint centre, lowest point z=0)"
+    },
+    {
+      "mesh": "SM_BoulderLargeMoss_01",
+      "source": "namaqualand_boulder_06",
+      "scale": 2.0,
+      "mirror": false,
+      "yaw": -15,
+      "levelled_plane": false,
+      "outline_half_m": null,
+      "material": "MI_BoulderLargeMoss_01",
+      "moss_mean": 0.205,
+      "triangles": 40000,
+      "vertices": 21660,
+      "size_m": [
+        1.572,
+        2.299,
+        1.302
+      ],
+      "fbx": "SM_BoulderLargeMoss_01.fbx",
+      "fbx_sha256": "9f3c7ff8790fec68361bb24ac60eded26d5c169d3a045056045fb04d39d6595b",
+      "origin": "base centre (footprint centre, lowest point z=0)"
+    },
+    {
+      "mesh": "SM_BoulderLargeMoss_02",
+      "source": "namaqualand_boulder_03",
+      "scale": 0.8,
+      "mirror": false,
+      "yaw": 70,
+      "levelled_plane": false,
+      "outline_half_m": null,
+      "material": "MI_BoulderLargeMoss_02",
+      "moss_mean": 0.232,
+      "triangles": 39999,
+      "vertices": 20736,
+      "size_m": [
+        2.348,
+        1.923,
+        1.178
+      ],
+      "fbx": "SM_BoulderLargeMoss_02.fbx",
+      "fbx_sha256": "25e4b8d6686e3f3d170b9e994895b408e8d23d9672573c6a893aef767f69f9c6",
+      "origin": "base centre (footprint centre, lowest point z=0)"
+    },
+    {
+      "mesh": "SM_BoulderLargeMoss_03",
+      "source": "namaqualand_boulder_04",
+      "scale": 0.85,
+      "mirror": true,
+      "yaw": 130,
+      "levelled_plane": false,
+      "outline_half_m": null,
+      "material": "MI_BoulderLargeMoss_03",
+      "moss_mean": 0.159,
+      "triangles": 39999,
+      "vertices": 20617,
+      "size_m": [
+        2.302,
+        1.716,
+        1.615
+      ],
+      "fbx": "SM_BoulderLargeMoss_03.fbx",
+      "fbx_sha256": "217a38c7876cece6f25384018bbe5418632bc3d52b8a01450939c0ee3f48dbef",
+      "origin": "base centre (footprint centre, lowest point z=0)"
+    }
+  ],
+  "sources": [
+    {
+      "asset": "boulder_01",
+      "kind": "model",
+      "page": "https://polyhaven.com/a/boulder_01",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Rico Cilliers": "All"
+      },
+      "physical_size_mm": [
+        1272.6830840110779,
+        1830.7338953018188,
+        1003.8918256759644
+      ],
+      "files": [
+        {
+          "file": "boulder_01/boulder_01.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/boulder_01/boulder_01_2k.gltf",
+          "md5": "3ef4b3c88c898e12b096eeb40f1edbb9",
+          "bytes": 2773
+        },
+        {
+          "file": "boulder_01/textures/boulder_01_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/boulder_01/boulder_01_nor_gl_2k.jpg",
+          "md5": "73ee1783fca7605fd454f0af3e5b85fa",
+          "bytes": 4649207
+        },
+        {
+          "file": "boulder_01/textures/boulder_01_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/boulder_01/boulder_01_diff_2k.jpg",
+          "md5": "63571077317c9a2d1db95894e0268a07",
+          "bytes": 3672483
+        },
+        {
+          "file": "boulder_01/boulder_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/boulder_01/boulder_01.bin",
+          "md5": "27a19fa031d8b4c3a09261f19c444dc5",
+          "bytes": 2938808
+        },
+        {
+          "file": "boulder_01/textures/boulder_01_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/boulder_01/boulder_01_arm_2k.jpg",
+          "md5": "94c796dfd73f72b11e557cb2c05ff51e",
+          "bytes": 2273068
+        }
+      ]
+    },
+    {
+      "asset": "mossy_rock",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/mossy_rock",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Rob Tuytel": "All"
+      },
+      "physical_size_mm": [
+        3000,
+        3000
+      ],
+      "files": [
+        {
+          "file": "mossy_rock/mossy_rock_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_diff_2k.jpg",
+          "md5": "8e55bbeeef1db0d2d0cae85515812c46",
+          "bytes": 4535360
+        },
+        {
+          "file": "mossy_rock/mossy_rock_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_nor_gl_2k.jpg",
+          "md5": "e6b611c8a6f8e3276e7f5491c8e66a0f",
+          "bytes": 4033031
+        },
+        {
+          "file": "mossy_rock/mossy_rock_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_rough_2k.jpg",
+          "md5": "0b4bbecd6af36e343d05ed11914bb18f",
+          "bytes": 3205806
+        },
+        {
+          "file": "mossy_rock/mossy_rock_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_disp_2k.jpg",
+          "md5": "d22857010ae3d07e42c5548126cf386c",
+          "bytes": 644550
+        }
+      ]
+    },
+    {
+      "asset": "namaqualand_boulder_03",
+      "kind": "model",
+      "page": "https://polyhaven.com/a/namaqualand_boulder_03",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Jenelle van Heerden": "modeling",
+        "Dario Barresi": "Photography"
+      },
+      "physical_size_mm": [
+        2407.663106918335,
+        3065.406084060669,
+        1473.654329776764
+      ],
+      "files": [
+        {
+          "file": "namaqualand_boulder_03/namaqualand_boulder_03.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/namaqualand_boulder_03/namaqualand_boulder_03_2k.gltf",
+          "md5": "51e9fe01b1b5420b955488ba907497c8",
+          "bytes": 2823
+        },
+        {
+          "file": "namaqualand_boulder_03/textures/namaqualand_boulder_03_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_03/namaqualand_boulder_03_arm_2k.jpg",
+          "md5": "3c5421ec927e1f25d62c75ae69474402",
+          "bytes": 2441884
+        },
+        {
+          "file": "namaqualand_boulder_03/namaqualand_boulder_03.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/namaqualand_boulder_03/namaqualand_boulder_03.bin",
+          "md5": "ded61ea310a66144546eac2a891b6dba",
+          "bytes": 1450268
+        },
+        {
+          "file": "namaqualand_boulder_03/textures/namaqualand_boulder_03_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_03/namaqualand_boulder_03_nor_gl_2k.jpg",
+          "md5": "28de2b985022f5329bc5ff47b8648e20",
+          "bytes": 2919390
+        },
+        {
+          "file": "namaqualand_boulder_03/textures/namaqualand_boulder_03_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_03/namaqualand_boulder_03_diff_2k.jpg",
+          "md5": "15932af831e44b675c18c3ef54398dc8",
+          "bytes": 3341422
+        }
+      ]
+    },
+    {
+      "asset": "namaqualand_boulder_04",
+      "kind": "model",
+      "page": "https://polyhaven.com/a/namaqualand_boulder_04",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Jenelle van Heerden": "All"
+      },
+      "physical_size_mm": [
+        2523.1549739837646,
+        2500.7030963897705,
+        1904.316272586584
+      ],
+      "files": [
+        {
+          "file": "namaqualand_boulder_04/namaqualand_boulder_04.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/namaqualand_boulder_04/namaqualand_boulder_04_2k.gltf",
+          "md5": "ea9a944e115a14b01a56d010d0b25e62",
+          "bytes": 2818
+        },
+        {
+          "file": "namaqualand_boulder_04/textures/namaqualand_boulder_04_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_04/namaqualand_boulder_04_nor_gl_2k.jpg",
+          "md5": "889dbf0a767d24e54ac47b98a6beab73",
+          "bytes": 3152936
+        },
+        {
+          "file": "namaqualand_boulder_04/textures/namaqualand_boulder_04_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_04/namaqualand_boulder_04_arm_2k.jpg",
+          "md5": "96359f20e2193209100c7ae3a8e41720",
+          "bytes": 2312195
+        },
+        {
+          "file": "namaqualand_boulder_04/textures/namaqualand_boulder_04_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_04/namaqualand_boulder_04_diff_2k.jpg",
+          "md5": "9de0d9fe68a7567c23a40600cd0c1d04",
+          "bytes": 3338065
+        },
+        {
+          "file": "namaqualand_boulder_04/namaqualand_boulder_04.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/namaqualand_boulder_04/namaqualand_boulder_04.bin",
+          "md5": "bd83376dfe39432568dc13a8fb738953",
+          "bytes": 1319676
+        }
+      ]
+    },
+    {
+      "asset": "namaqualand_boulder_06",
+      "kind": "model",
+      "page": "https://polyhaven.com/a/namaqualand_boulder_06",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Greg Zaal": "Photography",
+        "Jenelle van Heerden": "modeling"
+      },
+      "physical_size_mm": [
+        675.0632524490356,
+        1213.3429050445557,
+        651.8799550831318
+      ],
+      "files": [
+        {
+          "file": "namaqualand_boulder_06/namaqualand_boulder_06.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/namaqualand_boulder_06/namaqualand_boulder_06_2k.gltf",
+          "md5": "2e782a3c6f9e84d5204d85b034cab502",
+          "bytes": 2880
+        },
+        {
+          "file": "namaqualand_boulder_06/textures/namaqualand_boulder_06_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_06/namaqualand_boulder_06_nor_gl_2k.jpg",
+          "md5": "a44dff0ded5430f4d19a94d850d3a4af",
+          "bytes": 4366385
+        },
+        {
+          "file": "namaqualand_boulder_06/textures/namaqualand_boulder_06_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_06/namaqualand_boulder_06_diff_2k.jpg",
+          "md5": "fb5a616f9ee20a2a3cd9b92198673058",
+          "bytes": 3735726
+        },
+        {
+          "file": "namaqualand_boulder_06/textures/namaqualand_boulder_06_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_boulder_06/namaqualand_boulder_06_arm_2k.jpg",
+          "md5": "25da5def4ce1325cb46c10ab824da32a",
+          "bytes": 2673250
+        },
+        {
+          "file": "namaqualand_boulder_06/namaqualand_boulder_06.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/namaqualand_boulder_06/namaqualand_boulder_06.bin",
+          "md5": "1643b528fa072dc3bf5bc5ad6add1933",
+          "bytes": 2463356
+        }
+      ]
+    }
+  ],
+  "renders": [
+    "BoulderLargeMoss-Variants.png",
+    "BoulderLargeMoss-Variants-Top.png"
+  ],
+  "concept_reference": "docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp"
+}

@@ -102,6 +102,74 @@
     ]
   },
   {
+    "asset": "cobblestone_floor_01",
+    "page": "https://polyhaven.com/a/cobblestone_floor_01",
+    "license": "CC0-1.0",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "physical_size_metres": [
+      1.0,
+      1.0
+    ],
+    "files": [
+      {
+        "file": "Textures/cobblestone_floor_01_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/cobblestone_floor_01/cobblestone_floor_01_diff_2k.jpg",
+        "md5": "1fdc25d978835a51d3f57176a1c5bf82"
+      },
+      {
+        "file": "Textures/cobblestone_floor_01_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/cobblestone_floor_01/cobblestone_floor_01_nor_gl_2k.jpg",
+        "md5": "a789293a3d4ddace71bbe1729acbd538"
+      },
+      {
+        "file": "Textures/cobblestone_floor_01_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/cobblestone_floor_01/cobblestone_floor_01_rough_2k.jpg",
+        "md5": "54a17fd0a67e8658164c3a376242d5ca"
+      },
+      {
+        "file": "Textures/cobblestone_floor_01_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/cobblestone_floor_01/cobblestone_floor_01_disp_2k.jpg",
+        "md5": "1882cbe9f93a57c842d52fc1e4fccd49"
+      }
+    ]
+  },
+  {
+    "asset": "cobblestone_pavement",
+    "page": "https://polyhaven.com/a/cobblestone_pavement",
+    "license": "CC0-1.0",
+    "authors": {
+      "Charlotte Baglioni": "All"
+    },
+    "physical_size_metres": [
+      2.5,
+      2.5
+    ],
+    "files": [
+      {
+        "file": "Textures/cobblestone_pavement_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/cobblestone_pavement/cobblestone_pavement_diff_2k.jpg",
+        "md5": "7e1a36a54633669eb8a0f53dfee3683c"
+      },
+      {
+        "file": "Textures/cobblestone_pavement_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/cobblestone_pavement/cobblestone_pavement_nor_gl_2k.jpg",
+        "md5": "f42cf901d5d00d9c14b309b32266f0f2"
+      },
+      {
+        "file": "Textures/cobblestone_pavement_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/cobblestone_pavement/cobblestone_pavement_rough_2k.jpg",
+        "md5": "ef16056a7684cb577dc1bcb3b0aad1cd"
+      },
+      {
+        "file": "Textures/cobblestone_pavement_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/cobblestone_pavement/cobblestone_pavement_disp_2k.jpg",
+        "md5": "ef9bd2c2d6d8a435b7e352c9d4b79e67"
+      }
+    ]
+  },
+  {
     "asset": "cotton_jersey",
     "page": "https://polyhaven.com/a/cotton_jersey",
     "license": "CC0-1.0",
@@ -377,6 +445,40 @@
         "file": "Textures/japanese_stone_wall_Displacement.jpg",
         "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/japanese_stone_wall/japanese_stone_wall_disp_2k.jpg",
         "md5": "0bd7532a29118dfa120cf2afce640a7e"
+      }
+    ]
+  },
+  {
+    "asset": "leafy_grass",
+    "page": "https://polyhaven.com/a/leafy_grass",
+    "license": "CC0-1.0",
+    "authors": {
+      "Charlotte Baglioni": "All"
+    },
+    "physical_size_metres": [
+      2.0,
+      2.0
+    ],
+    "files": [
+      {
+        "file": "Textures/leafy_grass_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/leafy_grass/leafy_grass_diff_2k.jpg",
+        "md5": "8014f4dace676a62ed71b3dd76119dae"
+      },
+      {
+        "file": "Textures/leafy_grass_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/leafy_grass/leafy_grass_nor_gl_2k.jpg",
+        "md5": "ea5e91abe01dc5e5d7028c68c3bc9194"
+      },
+      {
+        "file": "Textures/leafy_grass_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/leafy_grass/leafy_grass_rough_2k.jpg",
+        "md5": "b5c551ed91162aab5afbfb03b73ae3f5"
+      },
+      {
+        "file": "Textures/leafy_grass_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/leafy_grass/leafy_grass_disp_2k.jpg",
+        "md5": "9c0a5f6c375be590bda0c28e2c1dfa2a"
       }
     ]
   },
@@ -1591,6 +1693,29 @@
     ]
   },
   {
+    "asset": "sb_endgrain",
+    "license": "self-made (procedural, PropFirewoodStack/make_endgrain.py)",
+    "physical_size_metres": [
+      0.25,
+      0.25
+    ],
+    "note": "procedural weathered oak end grain, rings centred on the tile; Rough is roughness only",
+    "files": [
+      {
+        "file": "Textures/sb_endgrain_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/sb_endgrain_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/sb_endgrain_Rough.jpg"
+      },
+      {
+        "file": "Textures/sb_endgrain_Displacement.jpg"
+      }
+    ]
+  },
+  {
     "asset": "seaworn_stone_tiles",
     "page": "https://polyhaven.com/a/seaworn_stone_tiles",
     "license": "CC0-1.0",
@@ -1898,29 +2023,6 @@
         "file": "Textures/wood_planks_grey_Displacement.jpg",
         "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/wood_planks_grey/wood_planks_grey_disp_2k.jpg",
         "md5": "06b87ab938a91f2423f65648ae53face"
-      }
-    ]
-  },
-  {
-    "asset": "sb_endgrain",
-    "license": "self-made (procedural, PropFirewoodStack/make_endgrain.py)",
-    "physical_size_metres": [
-      0.25,
-      0.25
-    ],
-    "note": "procedural weathered oak end grain, rings centred on the tile; Rough is roughness only",
-    "files": [
-      {
-        "file": "Textures/sb_endgrain_Diffuse.jpg"
-      },
-      {
-        "file": "Textures/sb_endgrain_nor_gl.jpg"
-      },
-      {
-        "file": "Textures/sb_endgrain_Rough.jpg"
-      },
-      {
-        "file": "Textures/sb_endgrain_Displacement.jpg"
       }
     ]
   }

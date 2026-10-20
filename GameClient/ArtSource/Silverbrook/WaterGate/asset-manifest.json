@@ -1,0 +1,143 @@
+{
+  "asset": "SilverbrookWaterGate",
+  "reference": null,
+  "note": "designed to match Silverbrook Wall section; no owner concept",
+  "blender": "5.1.1",
+  "generator": "build_watergate.py",
+  "method": "procedural original geometry matching ../WallSection",
+  "units": "metres, Z up, front -Y (outside of the wall), origin ground (channel bed) centre",
+  "bounds_m": [
+    20.0,
+    3.0,
+    8.0
+  ],
+  "meshes": {
+    "SM_SBWaterGate_Masonry": {
+      "triangles": 1724,
+      "materials": [
+        "SB_WallSection_Masonry"
+      ]
+    },
+    "SM_SBWaterGate_Dressed": {
+      "triangles": 8360,
+      "materials": [
+        "SB_WallSection_Masonry",
+        "SB_WallSection_LoopVoid"
+      ]
+    },
+    "SM_SBWaterGate_Walk": {
+      "triangles": 12,
+      "materials": [
+        "SB_WallSection_Paving"
+      ]
+    },
+    "SM_SBWaterGate_Grate": {
+      "triangles": 504,
+      "materials": [
+        "SB_ForgedIron"
+      ]
+    }
+  },
+  "triangles": 10600,
+  "materials": [
+    {
+      "name": "SB_WallSection_Masonry",
+      "scan": "rough_block_wall",
+      "dark": [
+        0.7,
+        0.74,
+        0.86
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_WallSection_Paving",
+      "scan": "medieval_blocks_03",
+      "dark": [
+        0.55,
+        0.58,
+        0.62
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_WallSection_LoopVoid",
+      "colour": [
+        0.012,
+        0.012,
+        0.014
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookWaterGate",
+  "slot_m": [
+    20,
+    3,
+    8
+  ],
+  "tiling": {
+    "axis": "X",
+    "segment_length_m": 20,
+    "end_faces": "identical sections at x=+-10, same as WallSection",
+    "walk_top_z": 5.3999999999999995,
+    "walk_y": [
+      -0.45,
+      1.15
+    ],
+    "masonry_uv_repeat_m": 3.3333
+  },
+  "water": {
+    "bed_z": 0.0,
+    "assumed_water_surface_z": 2.0,
+    "openings": [
+      {
+        "centre_x": -6.666666666666667,
+        "width_barrel_m": 3.2,
+        "width_face_m": 3.7,
+        "spring_z": 1.8,
+        "crown_z": 4.0
+      },
+      {
+        "centre_x": 6.666666666666667,
+        "width_barrel_m": 3.2,
+        "width_face_m": 3.7,
+        "spring_z": 1.8,
+        "crown_z": 4.0
+      }
+    ],
+    "grate": {
+      "mesh": "SM_SBWaterGate_Grate",
+      "plane_y": 0.4,
+      "bar_pitch_m": 0.2,
+      "bar_section_m": 0.06,
+      "max_clear_gap_m": 0.14,
+      "collision": "complex as simple (solid bars in the main export)"
+    }
+  },
+  "outputs": [
+    "SilverbrookWaterGate.blend",
+    "SilverbrookWaterGate.glb",
+    "SilverbrookWaterGate.fbx"
+  ]
+}

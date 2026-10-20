@@ -1,0 +1,60 @@
+{
+  "source": {
+    "meshes": 3,
+    "triangles": 16658,
+    "size_m": [
+      22.0,
+      7.4,
+      6.592
+    ],
+    "materials": [
+      "SB_RiverBridge_Dressed",
+      "SB_RiverBridge_Masonry",
+      "SB_RiverBridge_Paving"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 9
+  },
+  "glb": {
+    "meshes": 3,
+    "triangles": 16658,
+    "size_m": [
+      22.0,
+      7.4,
+      6.592
+    ],
+    "materials": [
+      "SB_RiverBridge_Dressed",
+      "SB_RiverBridge_Masonry",
+      "SB_RiverBridge_Paving"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 3,
+    "triangles": 16658,
+    "size_m": [
+      22.0,
+      7.4,
+      6.592
+    ],
+    "materials": [
+      "SB_RiverBridge_Dressed",
+      "SB_RiverBridge_Masonry",
+      "SB_RiverBridge_Paving"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 3
+  }
+}

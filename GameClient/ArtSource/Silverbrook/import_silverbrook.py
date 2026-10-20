@@ -11,7 +11,7 @@ No level is touched; the town builder places the meshes.
 import unreal as u,json,math,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent;LIB='/Game/Frontier/Environment/Greenlands/Silverbrook'
-WALKABLE={'StoneBridge','RiversideDocks','FishermansWharf','WallSection','Gatehouse','WallTower'}  # complex-as-simple collision
+WALKABLE={'StoneBridge','RiversideDocks','FishermansWharf','WallSection','Gatehouse','WallTower','RiverBridge','BridgeAbutment','WaterGate'}  # complex-as-simple collision (WaterGate: the grate bars block swimmers)
 DISPLACEMENT_CM=0  # off: displacing kit boxes opens seams at hard edges (6 cm review, Cottage1/review); normal maps carry the depth
 tools=u.AssetToolsHelpers.get_asset_tools();mel=u.MaterialEditingLibrary;eal=u.EditorAssetLibrary;sme=u.get_editor_subsystem(u.StaticMeshEditorSubsystem)
 assert sme,'Full editor required'

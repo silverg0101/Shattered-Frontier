@@ -1,0 +1,88 @@
+{
+  "asset": "SilverbrookBridgeAbutment",
+  "reference": null,
+  "note": "designed to fit Silverbrook crossings; no owner concept",
+  "context_screenshot": "GameClient/ArtSource/Greenlands/Silverbrook-Crossing-InGame.png",
+  "blender": "5.1.1",
+  "generator": "build_bridgeabutment.py",
+  "method": "procedural original geometry",
+  "units": "metres, Z up, X along the bank (across the bridge), -Y faces the river, origin at the centre of the top edge on the bank side (y=0, z=0)",
+  "bounds_m": [
+    16.728,
+    5.225,
+    4.0
+  ],
+  "z_range_m": [
+    -4.0,
+    0.0
+  ],
+  "y_range_m": [
+    -5.225,
+    0.0
+  ],
+  "pairing": {
+    "bridge": "SM_SilverbrookRiverBridge",
+    "front_face_y_m": -5.1,
+    "stone_top_z_m": 0.0,
+    "earth_top_z_m": -0.05,
+    "origin_at_bridge_x_m": [
+      14.0,
+      -14.0
+    ],
+    "note": "bridge-local X=+14 for the +X bank (this mesh yawed so its local +Y points to bridge +X, i.e. -90 deg about Z); X=-14 for the -X bank (+90 deg about Z). Front face then lies at bridge |x|=8.9, 0.1 m riverward of the arch springers at |x|=9. Both banks share z=0."
+  },
+  "meshes": {
+    "SM_SBBridgeAbutment_Stone": {
+      "triangles": 10164,
+      "materials": [
+        "SB_RiverAbutment_Dressed"
+      ]
+    },
+    "SM_SBBridgeAbutment_Earth": {
+      "triangles": 128,
+      "materials": [
+        "SB_RiverAbutment_Grass"
+      ]
+    }
+  },
+  "triangles": 10292,
+  "materials": [
+    {
+      "name": "SB_RiverAbutment_Dressed",
+      "scan": "medieval_blocks_03",
+      "dark": [
+        0.62,
+        0.74,
+        1.0
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_RiverAbutment_Grass",
+      "scan": "leafy_grass",
+      "dark": [
+        0.55,
+        0.9,
+        0.4
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookBridgeAbutment",
+  "slot_m": [
+    17,
+    5.4,
+    4.2
+  ],
+  "asset_id": "BLD-SilverbrookBridgeAbutment-01",
+  "outputs": [
+    "SilverbrookBridgeAbutment.blend",
+    "SilverbrookBridgeAbutment.glb",
+    "SilverbrookBridgeAbutment.fbx"
+  ]
+}

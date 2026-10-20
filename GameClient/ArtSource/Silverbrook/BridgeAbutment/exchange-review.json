@@ -1,0 +1,57 @@
+{
+  "source": {
+    "meshes": 2,
+    "triangles": 10292,
+    "size_m": [
+      16.728,
+      5.225,
+      4.0
+    ],
+    "materials": [
+      "SB_RiverAbutment_Dressed",
+      "SB_RiverAbutment_Grass"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 6
+  },
+  "glb": {
+    "meshes": 2,
+    "triangles": 10292,
+    "size_m": [
+      16.728,
+      5.225,
+      4.0
+    ],
+    "materials": [
+      "SB_RiverAbutment_Dressed",
+      "SB_RiverAbutment_Grass"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 2,
+    "triangles": 10292,
+    "size_m": [
+      16.728,
+      5.225,
+      4.0
+    ],
+    "materials": [
+      "SB_RiverAbutment_Dressed",
+      "SB_RiverAbutment_Grass"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 2
+  }
+}

@@ -1,0 +1,668 @@
+{
+  "family": "PineTall",
+  "asset_id": "VEG-GreenlandsPineTall-01",
+  "look_profile_role": "tree_pine_tall",
+  "variant_count": 4,
+  "blender": "5.1.1",
+  "generator": "build_pinetall.py",
+  "units": "metres, Z up, front -Y, origin base centre, no ground in any mesh",
+  "budget_triangles_per_variant": 328000,
+  "triangles": [
+    306085,
+    320666,
+    328659,
+    327890
+  ],
+  "placement_scale_note": "look profile place.scale is [0.95, 1.4]: meshes are 23-24 m tall at 1.0, so placed pines span 22-34 m (spec 20-30 m); sink 0",
+  "unreal_meshes": [
+    "SM_PineTall_00",
+    "SM_PineTall_01",
+    "SM_PineTall_02",
+    "SM_PineTall_03"
+  ],
+  "nanite": true,
+  "materials": [
+    {
+      "name": "MI_PineTall_Trunk_00",
+      "base": "Sources/pine_tree_01/textures/pine_tree_01_trunk_a_diff_2k.jpg",
+      "normal": "Sources/pine_tree_01/textures/pine_tree_01_trunk_a_nor_gl_2k.jpg",
+      "arm": "Sources/pine_tree_01/textures/pine_tree_01_trunk_a_arm_2k.jpg",
+      "two_sided": true,
+      "alpha_mode": "OPAQUE",
+      "tint": [
+        1.7,
+        1.7,
+        1.75
+      ],
+      "sat": 0.3,
+      "blend": {
+        "base": "Sources/pine_bark/pine_bark_Diffuse.jpg",
+        "normal": "Sources/pine_bark/pine_bark_nor_gl.jpg",
+        "rough": "Sources/pine_bark/pine_bark_Rough.jpg",
+        "uv_scale": [
+          2,
+          6
+        ],
+        "tint": [
+          1.25,
+          0.9,
+          0.75
+        ],
+        "sat": 1.1,
+        "amount": 1.0,
+        "contrast": 0.5
+      }
+    },
+    {
+      "name": "MI_PineTall_Branch_00",
+      "base": "Sources/pine_tree_01/textures/pine_tree_01_bark_diff_2k.jpg",
+      "normal": "Sources/pine_tree_01/textures/pine_tree_01_bark_nor_gl_2k.jpg",
+      "arm": "Sources/pine_tree_01/textures/pine_tree_01_bark_arm_2k.jpg",
+      "two_sided": true,
+      "alpha_mode": "OPAQUE",
+      "uv_scale": [
+        1.2000000476837158,
+        0.09999993443489075
+      ],
+      "uv_offset": [
+        0,
+        0.9000000655651093
+      ]
+    },
+    {
+      "name": "MI_PineTall_Twig_00",
+      "base": "Sources/pine_tree_01/textures/pine_tree_01_twig_diff_2k.jpg",
+      "normal": "Sources/pine_tree_01/textures/pine_tree_01_twig_nor_gl_2k.jpg",
+      "arm": "Sources/pine_tree_01/textures/pine_tree_01_twig_arm_2k.jpg",
+      "two_sided": true,
+      "alpha_mode": "OPAQUE",
+      "tint": [
+        0.78,
+        0.85,
+        0.72
+      ]
+    },
+    {
+      "name": "MI_PineTall_Dead_00",
+      "base": "Sources/pine_tree_01/textures/pine_tree_01_bark_diff_2k.jpg",
+      "normal": "Sources/pine_tree_01/textures/pine_tree_01_bark_nor_gl_2k.jpg",
+      "arm": "Sources/pine_tree_01/textures/pine_tree_01_bark_arm_2k.jpg",
+      "two_sided": true,
+      "alpha_mode": "OPAQUE"
+    },
+    {
+      "name": "MI_PineTall_Trunk_01",
+      "base": "Sources/pine_tree_01/textures/pine_tree_01_bark_diff_2k.jpg",
+      "normal": "Sources/pine_tree_01/textures/pine_tree_01_bark_nor_gl_2k.jpg",
+      "arm": "Sources/pine_tree_01/textures/pine_tree_01_bark_arm_2k.jpg",
+      "two_sided": true,
+      "alpha_mode": "OPAQUE",
+      "uv_scale": [
+        1.399999976158142,
+        1.399999976158142
+      ],
+      "uv_offset": [
+        0,
+        -0.3999999761581421
+      ],
+      "tint": [
+        1.7,
+        1.7,
+        1.75
+      ],
+      "sat": 0.3,
+      "blend": {
+        "base": "Sources/pine_bark/pine_bark_Diffuse.jpg",
+        "normal": "Sources/pine_bark/pine_bark_nor_gl.jpg",
+        "rough": "Sources/pine_bark/pine_bark_Rough.jpg",
+        "uv_scale": [
+          2,
+          6
+        ],
+        "tint": [
+          1.25,
+          0.9,
+          0.75
+        ],
+        "sat": 1.1,
+        "amount": 1.0,
+        "contrast": 0.5
+      }
+    },
+    {
+      "name": "MI_PineTall_Branch_01",
+      "base": "Sources/pine_tree_01/textures/pine_tree_01_bark_diff_2k.jpg",
+      "normal": "Sources/pine_tree_01/textures/pine_tree_01_bark_nor_gl_2k.jpg",
+      "arm": "Sources/pine_tree_01/textures/pine_tree_01_bark_arm_2k.jpg",
+      "two_sided": true,
+      "alpha_mode": "OPAQUE",
+      "uv_scale": [
+        1.2000000476837158,
+        0.09999993443489075
+      ],
+      "uv_offset": [
+        0,
+        0.9000000655651093
+      ]
+    },
+    {
+      "name": "MI_PineTall_Twig_01",
+      "base": "Sources/pine_tree_01/textures/pine_tree_01_twig_diff_2k.jpg",
+      "normal": "Sources/pine_tree_01/textures/pine_tree_01_twig_nor_gl_2k.jpg",
+      "arm": "Sources/pine_tree_01/textures/pine_tree_01_twig_arm_2k.jpg",
+      "two_sided": true,
+      "alpha_mode": "OPAQUE",
+      "tint": [
+        0.78,
+        0.85,
+        0.72
+      ]
+    },
+    {
+      "name": "MI_PineTall_Dead_01",
+      "base": "Sources/pine_tree_01/textures/pine_tree_01_bark_diff_2k.jpg",
+      "normal": "Sources/pine_tree_01/textures/pine_tree_01_bark_nor_gl_2k.jpg",
+      "arm": "Sources/pine_tree_01/textures/pine_tree_01_bark_arm_2k.jpg",
+      "two_sided": true,
+      "alpha_mode": "OPAQUE"
+    },
+    {
+      "name": "MI_PineTall_Trunk_02",
+      "base": "Sources/pine_tree_01/textures/pine_tree_01_trunk_b_diff_2k.jpg",
+      "normal": "Sources/pine_tree_01/textures/pine_tree_01_trunk_b_nor_gl_2k.jpg",
+      "arm": "Sources/pine_tree_01/textures/pine_tree_01_trunk_b_arm_2k.jpg",
+      "two_sided": true,
+      "alpha_mode": "OPAQUE",
+      "tint": [
+        1.7,
+        1.7,
+        1.75
+      ],
+      "sat": 0.3,
+      "blend": {
+        "base": "Sources/pine_bark/pine_bark_Diffuse.jpg",
+        "normal": "Sources/pine_bark/pine_bark_nor_gl.jpg",
+        "rough": "Sources/pine_bark/pine_bark_Rough.jpg",
+        "uv_scale": [
+          2,
+          6
+        ],
+        "tint": [
+          1.25,
+          0.9,
+          0.75
+        ],
+        "sat": 1.1,
+        "amount": 1.0,
+        "contrast": 0.5
+      }
+    },
+    {
+      "name": "MI_PineTall_Branch_02",
+      "base": "Sources/pine_tree_01/textures/pine_tree_01_bark_diff_2k.jpg",
+      "normal": "Sources/pine_tree_01/textures/pine_tree_01_bark_nor_gl_2k.jpg",
+      "arm": "Sources/pine_tree_01/textures/pine_tree_01_bark_arm_2k.jpg",
+      "two_sided": true,
+      "alpha_mode": "OPAQUE",
+      "uv_scale": [
+        1.2000000476837158,
+        0.09999993443489075
+      ],
+      "uv_offset": [
+        0,
+        0.9000000655651093
+      ]
+    },
+    {
+      "name": "MI_PineTall_Twig_02",
+      "base": "Sources/pine_tree_01/textures/pine_tree_01_twig_diff_2k.jpg",
+      "normal": "Sources/pine_tree_01/textures/pine_tree_01_twig_nor_gl_2k.jpg",
+      "arm": "Sources/pine_tree_01/textures/pine_tree_01_twig_arm_2k.jpg",
+      "two_sided": true,
+      "alpha_mode": "OPAQUE",
+      "tint": [
+        0.78,
+        0.85,
+        0.72
+      ]
+    },
+    {
+      "name": "MI_PineTall_Dead_02",
+      "base": "Sources/pine_tree_01/textures/pine_tree_01_bark_diff_2k.jpg",
+      "normal": "Sources/pine_tree_01/textures/pine_tree_01_bark_nor_gl_2k.jpg",
+      "arm": "Sources/pine_tree_01/textures/pine_tree_01_bark_arm_2k.jpg",
+      "two_sided": true,
+      "alpha_mode": "OPAQUE"
+    },
+    {
+      "name": "MI_PineTall_Trunk_03",
+      "base": "Sources/pine_sapling_medium/textures/pine_sapling_medium_bark_diff_2k.jpg",
+      "normal": "Sources/pine_sapling_medium/textures/pine_sapling_medium_bark_nor_gl_2k.jpg",
+      "arm": "Sources/pine_sapling_medium/textures/pine_sapling_medium_bark_arm_2k.jpg",
+      "two_sided": true,
+      "alpha_mode": "OPAQUE",
+      "uv_scale": [
+        1.2000000476837158,
+        0.09999993443489075
+      ],
+      "uv_offset": [
+        0,
+        0.9000000655651093
+      ],
+      "tint": [
+        1.7,
+        1.7,
+        1.75
+      ],
+      "sat": 0.3,
+      "blend": {
+        "base": "Sources/pine_bark/pine_bark_Diffuse.jpg",
+        "normal": "Sources/pine_bark/pine_bark_nor_gl.jpg",
+        "rough": "Sources/pine_bark/pine_bark_Rough.jpg",
+        "uv_scale": [
+          2,
+          6
+        ],
+        "tint": [
+          1.25,
+          0.9,
+          0.75
+        ],
+        "sat": 1.1,
+        "amount": 1.0,
+        "contrast": 0.5
+      }
+    },
+    {
+      "name": "MI_PineTall_Branch_03",
+      "base": "Sources/pine_sapling_medium/textures/pine_sapling_medium_bark_diff_2k.jpg",
+      "normal": "Sources/pine_sapling_medium/textures/pine_sapling_medium_bark_nor_gl_2k.jpg",
+      "arm": "Sources/pine_sapling_medium/textures/pine_sapling_medium_bark_arm_2k.jpg",
+      "two_sided": true,
+      "alpha_mode": "OPAQUE",
+      "uv_scale": [
+        1.2000000476837158,
+        0.09999993443489075
+      ],
+      "uv_offset": [
+        0,
+        0.9000000655651093
+      ]
+    },
+    {
+      "name": "MI_PineTall_Twig_03",
+      "base": "Sources/pine_sapling_medium/textures/pine_sapling_medium_twig_diff_2k.jpg",
+      "normal": "Sources/pine_sapling_medium/textures/pine_sapling_medium_twig_nor_gl_2k.jpg",
+      "arm": "Sources/pine_sapling_medium/textures/pine_sapling_medium_twig_arm_2k.jpg",
+      "two_sided": true,
+      "alpha_mode": "OPAQUE",
+      "tint": [
+        0.78,
+        0.85,
+        0.72
+      ]
+    },
+    {
+      "name": "MI_PineTall_Dead_03",
+      "base": "Sources/pine_sapling_medium/textures/pine_sapling_medium_bark_diff_2k.jpg",
+      "normal": "Sources/pine_sapling_medium/textures/pine_sapling_medium_bark_nor_gl_2k.jpg",
+      "arm": "Sources/pine_sapling_medium/textures/pine_sapling_medium_bark_arm_2k.jpg",
+      "two_sided": true,
+      "alpha_mode": "OPAQUE"
+    }
+  ],
+  "variants": [
+    {
+      "mesh": "SM_PineTall_00",
+      "source": "pine_tree_01",
+      "source_object": "pine_tree_01_a_LOD0",
+      "scale": [
+        1.18,
+        1.18,
+        1.18
+      ],
+      "mirror": false,
+      "yaw": 0,
+      "spray_growth": 4.6,
+      "materials": [
+        "MI_PineTall_Trunk_00",
+        "MI_PineTall_Branch_00",
+        "MI_PineTall_Twig_00",
+        "MI_PineTall_Dead_00"
+      ],
+      "sprays_source": 409530,
+      "sprays_kept": 17964,
+      "triangles": 306085,
+      "vertices": 302779,
+      "size_m": [
+        9.358,
+        10.187,
+        23.867
+      ],
+      "fbx": "SM_PineTall_00.fbx",
+      "fbx_sha256": "c7bdcfa0e8b21089da42f49caac034e6629a656cfe9085cbde1650152cbb7071",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": [
+        "UCX_SM_PineTall_00_00"
+      ]
+    },
+    {
+      "mesh": "SM_PineTall_01",
+      "source": "pine_tree_01",
+      "source_object": "pine_tree_01_c_LOD0",
+      "scale": [
+        1.32,
+        1.32,
+        1.38
+      ],
+      "mirror": true,
+      "yaw": 80,
+      "spray_growth": 4.5,
+      "materials": [
+        "MI_PineTall_Trunk_01",
+        "MI_PineTall_Branch_01",
+        "MI_PineTall_Twig_01",
+        "MI_PineTall_Dead_01"
+      ],
+      "sprays_source": 354839,
+      "sprays_kept": 17966,
+      "triangles": 320666,
+      "vertices": 309758,
+      "size_m": [
+        10.902,
+        10.528,
+        23.94
+      ],
+      "fbx": "SM_PineTall_01.fbx",
+      "fbx_sha256": "24cea42d37aa53e936fb8c9951cc8b593c473c01030d3e3453ef757ea14b75bc",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": [
+        "UCX_SM_PineTall_01_00"
+      ]
+    },
+    {
+      "mesh": "SM_PineTall_02",
+      "source": "pine_tree_01",
+      "source_object": "pine_tree_01_b_LOD0",
+      "scale": [
+        1.45,
+        1.45,
+        1.55
+      ],
+      "mirror": false,
+      "yaw": 200,
+      "spray_growth": 4.3,
+      "materials": [
+        "MI_PineTall_Trunk_02",
+        "MI_PineTall_Branch_02",
+        "MI_PineTall_Twig_02",
+        "MI_PineTall_Dead_02"
+      ],
+      "sprays_source": 247690,
+      "sprays_kept": 17961,
+      "triangles": 328659,
+      "vertices": 313993,
+      "size_m": [
+        11.563,
+        10.947,
+        22.702
+      ],
+      "fbx": "SM_PineTall_02.fbx",
+      "fbx_sha256": "b14f97ae351f6e0861e650fb67aa51c03ab8a4faa015e28162bec1e232402d3a",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": [
+        "UCX_SM_PineTall_02_00"
+      ]
+    },
+    {
+      "mesh": "SM_PineTall_03",
+      "source": "pine_sapling_medium",
+      "source_object": "pine_sapling_medium_a_LOD0",
+      "scale": [
+        2.0,
+        2.0,
+        2.05
+      ],
+      "mirror": true,
+      "yaw": 300,
+      "spray_growth": 2.9,
+      "materials": [
+        "MI_PineTall_Trunk_03",
+        "MI_PineTall_Branch_03",
+        "MI_PineTall_Twig_03",
+        "MI_PineTall_Dead_03"
+      ],
+      "sprays_source": 157702,
+      "sprays_kept": 17860,
+      "triangles": 327890,
+      "vertices": 312240,
+      "size_m": [
+        9.5,
+        10.038,
+        23.187
+      ],
+      "fbx": "SM_PineTall_03.fbx",
+      "fbx_sha256": "a5468464912d80ea8a4894ad3834a0c43bc987b50f37b16185f69e0bf22ce011",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": [
+        "UCX_SM_PineTall_03_00"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "asset": "pine_bark",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/pine_bark",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Dimitrios Savva": "All"
+      },
+      "physical_size_mm": [
+        1999.9996423721313,
+        1999.9996423721313
+      ],
+      "files": [
+        {
+          "file": "pine_bark/pine_bark_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/pine_bark/pine_bark_diff_2k.jpg",
+          "md5": "d10980446d36a65a73081cf61bc84992",
+          "bytes": 3167561
+        },
+        {
+          "file": "pine_bark/pine_bark_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/pine_bark/pine_bark_nor_gl_2k.jpg",
+          "md5": "ee1de039967165665060653a0e12e571",
+          "bytes": 4637035
+        },
+        {
+          "file": "pine_bark/pine_bark_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/pine_bark/pine_bark_rough_2k.jpg",
+          "md5": "9ea974ea3e298b30ee3b7a21ec05b566",
+          "bytes": 2085022
+        },
+        {
+          "file": "pine_bark/pine_bark_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/pine_bark/pine_bark_disp_2k.jpg",
+          "md5": "4f46a23fd05aed2f2c5ab948abb1e589",
+          "bytes": 1259109
+        }
+      ]
+    },
+    {
+      "asset": "pine_sapling_medium",
+      "kind": "model",
+      "page": "https://polyhaven.com/a/pine_sapling_medium",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Rob Tuytel": "photography",
+        "Rico Cilliers": "modeling"
+      },
+      "physical_size_mm": [
+        22793.24197769165,
+        5462.29362487793,
+        11513.279110193253
+      ],
+      "files": [
+        {
+          "file": "pine_sapling_medium/pine_sapling_medium.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/pine_sapling_medium/pine_sapling_medium_2k.gltf",
+          "md5": "c95b4accc0d287735e7e5c1886e2ca5a",
+          "bytes": 16365
+        },
+        {
+          "file": "pine_sapling_medium/textures/pine_sapling_medium_bark_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_sapling_medium/pine_sapling_medium_bark_nor_gl_2k.jpg",
+          "md5": "da6eb7bc3c4eafea4e8ed696f7891a73",
+          "bytes": 3373886
+        },
+        {
+          "file": "pine_sapling_medium/textures/pine_sapling_medium_bark_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_sapling_medium/pine_sapling_medium_bark_diff_2k.jpg",
+          "md5": "f420cb9ca2e845cd988f3bcf03c41a85",
+          "bytes": 2700448
+        },
+        {
+          "file": "pine_sapling_medium/textures/pine_sapling_medium_bark_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_sapling_medium/pine_sapling_medium_bark_arm_2k.jpg",
+          "md5": "218f22567f42e7918afc25c7e3450be8",
+          "bytes": 2941366
+        },
+        {
+          "file": "pine_sapling_medium/textures/pine_sapling_medium_twig_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_sapling_medium/pine_sapling_medium_twig_nor_gl_2k.jpg",
+          "md5": "843dd3359c958c7a8bfd60f55fb4fb80",
+          "bytes": 2924424
+        },
+        {
+          "file": "pine_sapling_medium/textures/pine_sapling_medium_twig_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_sapling_medium/pine_sapling_medium_twig_diff_2k.jpg",
+          "md5": "45d577b1b780711976147d66234a1f4c",
+          "bytes": 1623201
+        },
+        {
+          "file": "pine_sapling_medium/textures/pine_sapling_medium_twig_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_sapling_medium/pine_sapling_medium_twig_arm_2k.jpg",
+          "md5": "d9110a0de287f6abacb7abe4c50ae9b3",
+          "bytes": 1524195
+        },
+        {
+          "file": "pine_sapling_medium/pine_sapling_medium.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/pine_sapling_medium/pine_sapling_medium.bin",
+          "md5": "6222913e58a2c08f79ed66e8b882f8ac",
+          "bytes": 263481032
+        }
+      ]
+    },
+    {
+      "asset": "pine_tree_01",
+      "kind": "model",
+      "page": "https://polyhaven.com/a/pine_tree_01",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Rob Tuytel": "photography",
+        "Rico Cilliers": "modeling"
+      },
+      "physical_size_mm": [
+        26719.930171966553,
+        1300.55171251297,
+        17577.758572995663
+      ],
+      "files": [
+        {
+          "file": "pine_tree_01/pine_tree_01.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/pine_tree_01/pine_tree_01_2k.gltf",
+          "md5": "001c1a0eb6748333f000d3fa0db5e278",
+          "bytes": 30596
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_bark_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_bark_nor_gl_2k.jpg",
+          "md5": "da6eb7bc3c4eafea4e8ed696f7891a73",
+          "bytes": 3373886
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_bark_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_bark_diff_2k.jpg",
+          "md5": "f420cb9ca2e845cd988f3bcf03c41a85",
+          "bytes": 2700448
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_bark_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_bark_arm_2k.jpg",
+          "md5": "218f22567f42e7918afc25c7e3450be8",
+          "bytes": 2941366
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_trunk_a_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_trunk_a_nor_gl_2k.jpg",
+          "md5": "97ce92fcba67201ace1c4ed3d6e154f6",
+          "bytes": 3642074
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_trunk_a_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_trunk_a_diff_2k.jpg",
+          "md5": "44fd71883c0e29551243c8937c47b65c",
+          "bytes": 3028704
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_trunk_a_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_trunk_a_arm_2k.jpg",
+          "md5": "c27af4b3374a4f36780b316b3a10bfd5",
+          "bytes": 2974686
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_twig_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_twig_nor_gl_2k.jpg",
+          "md5": "843dd3359c958c7a8bfd60f55fb4fb80",
+          "bytes": 2924424
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_twig_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_twig_diff_2k.jpg",
+          "md5": "45d577b1b780711976147d66234a1f4c",
+          "bytes": 1623201
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_twig_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_twig_arm_2k.jpg",
+          "md5": "d9110a0de287f6abacb7abe4c50ae9b3",
+          "bytes": 1524195
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_trunk_b_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_trunk_b_nor_gl_2k.jpg",
+          "md5": "007dee669d056d81043ed0d171a731c2",
+          "bytes": 3269280
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_trunk_b_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_trunk_b_diff_2k.jpg",
+          "md5": "cba156ed09519ca12bea8c7ff90585ee",
+          "bytes": 2548347
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_trunk_b_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_trunk_b_arm_2k.jpg",
+          "md5": "36a7440fbb145fc68e99c1b6a5f20047",
+          "bytes": 2718246
+        },
+        {
+          "file": "pine_tree_01/pine_tree_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/pine_tree_01/pine_tree_01.bin",
+          "md5": "3079e56cc48c57d8ba530d005e86bae6",
+          "bytes": 948849556
+        }
+      ]
+    }
+  ],
+  "renders": [
+    "PineTall-Variants.png",
+    "PineTall-Detail-Trunk.png",
+    "PineTall-Detail-Crown.png"
+  ],
+  "concept_reference": "docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp"
+}

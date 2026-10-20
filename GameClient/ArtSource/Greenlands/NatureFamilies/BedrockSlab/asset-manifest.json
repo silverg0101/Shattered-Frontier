@@ -1,0 +1,415 @@
+{
+  "family": "BedrockSlab",
+  "asset_id": "ROCK-GreenlandsBedrockSlab-01",
+  "look_profile_role": "bedrock_slab",
+  "variant_count": 4,
+  "blender": "5.1.1",
+  "generator": "build_bedrockslab.py",
+  "units": "metres, Z up, front -Y, origin base centre, no ground in any mesh",
+  "budget_triangles_per_variant": 30000,
+  "triangles": [
+    10324,
+    12789,
+    9406,
+    11873
+  ],
+  "placement_scale_note": "look profile place.scale is [1.5, 2.6]: meshes are 2.4-3.4 m across at 1.0, so placed slabs span 3.6-8.8 m (spec 3-8 m); sink 0.35",
+  "unreal_meshes": [
+    "SM_BedrockSlab_00",
+    "SM_BedrockSlab_01",
+    "SM_BedrockSlab_02",
+    "SM_BedrockSlab_03"
+  ],
+  "nanite": true,
+  "materials": [
+    {
+      "name": "MI_BedrockSlab_00",
+      "base": "Sources/marble_rock_01/marble_rock_01_Diffuse.jpg",
+      "normal": "Sources/marble_rock_01/marble_rock_01_nor_gl.jpg",
+      "rough": "Sources/marble_rock_01/marble_rock_01_Rough.jpg",
+      "tint": [
+        0.42,
+        0.43,
+        0.45
+      ],
+      "sat": 0.3,
+      "normal_strength": 1.0,
+      "blend": {
+        "base": "Sources/mossy_rock/mossy_rock_Diffuse.jpg",
+        "normal": "Sources/mossy_rock/mossy_rock_nor_gl.jpg",
+        "rough": "Sources/mossy_rock/mossy_rock_Rough.jpg",
+        "uv_scale": [
+          0.6,
+          0.6
+        ],
+        "tint": [
+          0.24,
+          0.4,
+          0.11
+        ],
+        "sat": 1.0,
+        "amount": 0.9,
+        "contrast": 0.35
+      }
+    },
+    {
+      "name": "MI_BedrockSlab_01",
+      "base": "Sources/rock_08/rock_08_Diffuse.jpg",
+      "normal": "Sources/rock_08/rock_08_nor_gl.jpg",
+      "rough": "Sources/rock_08/rock_08_Rough.jpg",
+      "tint": [
+        0.5,
+        0.5,
+        0.52
+      ],
+      "sat": 0.35,
+      "normal_strength": 1.0,
+      "blend": {
+        "base": "Sources/mossy_rock/mossy_rock_Diffuse.jpg",
+        "normal": "Sources/mossy_rock/mossy_rock_nor_gl.jpg",
+        "rough": "Sources/mossy_rock/mossy_rock_Rough.jpg",
+        "uv_scale": [
+          0.6,
+          0.6
+        ],
+        "tint": [
+          0.24,
+          0.4,
+          0.11
+        ],
+        "sat": 1.0,
+        "amount": 0.9,
+        "contrast": 0.35
+      }
+    },
+    {
+      "name": "MI_BedrockSlab_02",
+      "base": "Sources/marble_rock_01/marble_rock_01_Diffuse.jpg",
+      "normal": "Sources/marble_rock_01/marble_rock_01_nor_gl.jpg",
+      "rough": "Sources/marble_rock_01/marble_rock_01_Rough.jpg",
+      "tint": [
+        0.36,
+        0.37,
+        0.4
+      ],
+      "sat": 0.25,
+      "normal_strength": 1.0,
+      "blend": {
+        "base": "Sources/mossy_rock/mossy_rock_Diffuse.jpg",
+        "normal": "Sources/mossy_rock/mossy_rock_nor_gl.jpg",
+        "rough": "Sources/mossy_rock/mossy_rock_Rough.jpg",
+        "uv_scale": [
+          0.6,
+          0.6
+        ],
+        "tint": [
+          0.24,
+          0.4,
+          0.11
+        ],
+        "sat": 1.0,
+        "amount": 0.9,
+        "contrast": 0.35
+      }
+    },
+    {
+      "name": "MI_BedrockSlab_03",
+      "base": "Sources/rock_surface/rock_surface_Diffuse.jpg",
+      "normal": "Sources/rock_surface/rock_surface_nor_gl.jpg",
+      "rough": "Sources/rock_surface/rock_surface_Rough.jpg",
+      "tint": [
+        0.52,
+        0.52,
+        0.54
+      ],
+      "sat": 0.25,
+      "normal_strength": 1.0,
+      "blend": {
+        "base": "Sources/mossy_rock/mossy_rock_Diffuse.jpg",
+        "normal": "Sources/mossy_rock/mossy_rock_nor_gl.jpg",
+        "rough": "Sources/mossy_rock/mossy_rock_Rough.jpg",
+        "uv_scale": [
+          0.6,
+          0.6
+        ],
+        "tint": [
+          0.24,
+          0.4,
+          0.11
+        ],
+        "sat": 1.0,
+        "amount": 0.9,
+        "contrast": 0.35
+      }
+    }
+  ],
+  "variants": [
+    {
+      "mesh": "SM_BedrockSlab_00",
+      "source": "marble_rock_01",
+      "scale": 1.0,
+      "generator": "slab() height grid",
+      "seed": 3,
+      "outline_half_m": [
+        1.55,
+        1.15
+      ],
+      "plates": 7,
+      "thickness_m": 0.3,
+      "material": "MI_BedrockSlab_00",
+      "moss_mean": 0.183,
+      "triangles": 10324,
+      "vertices": 5336,
+      "size_m": [
+        2.741,
+        2.389,
+        0.438
+      ],
+      "fbx": "SM_BedrockSlab_00.fbx",
+      "fbx_sha256": "663a74caaeace3c88d55c49a96d04a3f3462aeaa2cfa26e50562cd39020c54a7",
+      "origin": "base centre (footprint centre, lowest point z=0)"
+    },
+    {
+      "mesh": "SM_BedrockSlab_01",
+      "source": "rock_08",
+      "scale": 1.0,
+      "generator": "slab() height grid",
+      "seed": 21,
+      "outline_half_m": [
+        1.45,
+        1.25
+      ],
+      "plates": 8,
+      "thickness_m": 0.4,
+      "material": "MI_BedrockSlab_01",
+      "moss_mean": 0.215,
+      "triangles": 12789,
+      "vertices": 6591,
+      "size_m": [
+        3.256,
+        2.473,
+        0.519
+      ],
+      "fbx": "SM_BedrockSlab_01.fbx",
+      "fbx_sha256": "8acf5f0d0e513c36573446adb9c2dc456d674396ed8b380d9ad91ed0325c7023",
+      "origin": "base centre (footprint centre, lowest point z=0)"
+    },
+    {
+      "mesh": "SM_BedrockSlab_02",
+      "source": "marble_rock_01",
+      "scale": 1.0,
+      "generator": "slab() height grid",
+      "seed": 8,
+      "outline_half_m": [
+        1.65,
+        1.05
+      ],
+      "plates": 6,
+      "thickness_m": 0.28,
+      "material": "MI_BedrockSlab_02",
+      "moss_mean": 0.215,
+      "triangles": 9406,
+      "vertices": 4865,
+      "size_m": [
+        2.746,
+        1.982,
+        0.454
+      ],
+      "fbx": "SM_BedrockSlab_02.fbx",
+      "fbx_sha256": "89a0eb3ec4b65e38c010f3003fc39185de5af6725a50c08078eb3775834c9338",
+      "origin": "base centre (footprint centre, lowest point z=0)"
+    },
+    {
+      "mesh": "SM_BedrockSlab_03",
+      "source": "rock_surface",
+      "scale": 1.0,
+      "generator": "slab() height grid",
+      "seed": 14,
+      "outline_half_m": [
+        1.5,
+        1.2
+      ],
+      "plates": 9,
+      "thickness_m": 0.36,
+      "material": "MI_BedrockSlab_03",
+      "moss_mean": 0.217,
+      "triangles": 11873,
+      "vertices": 6126,
+      "size_m": [
+        2.909,
+        2.413,
+        0.512
+      ],
+      "fbx": "SM_BedrockSlab_03.fbx",
+      "fbx_sha256": "f3f389c5892f6279cc3f0fc1019112740cb7c563424f4e8b30a3e4cd3d1d428d",
+      "origin": "base centre (footprint centre, lowest point z=0)"
+    }
+  ],
+  "sources": [
+    {
+      "asset": "marble_rock_01",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/marble_rock_01",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Amal Kumar": "All"
+      },
+      "physical_size_mm": [
+        2002.079963684082,
+        2002.0811557769775
+      ],
+      "files": [
+        {
+          "file": "marble_rock_01/marble_rock_01_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/marble_rock_01/marble_rock_01_diff_2k.jpg",
+          "md5": "ba866248dbc753afec0e93120407412c",
+          "bytes": 3625410
+        },
+        {
+          "file": "marble_rock_01/marble_rock_01_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/marble_rock_01/marble_rock_01_nor_gl_2k.jpg",
+          "md5": "4635a79bb7bb5c861fd480cde983cfa7",
+          "bytes": 3471019
+        },
+        {
+          "file": "marble_rock_01/marble_rock_01_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/marble_rock_01/marble_rock_01_rough_2k.jpg",
+          "md5": "24ed3988d606f317078d9b08c2909ade",
+          "bytes": 2103662
+        },
+        {
+          "file": "marble_rock_01/marble_rock_01_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/marble_rock_01/marble_rock_01_disp_2k.jpg",
+          "md5": "5bb8d196d06dd98343063c5e14687b53",
+          "bytes": 654407
+        }
+      ]
+    },
+    {
+      "asset": "mossy_rock",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/mossy_rock",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Rob Tuytel": "All"
+      },
+      "physical_size_mm": [
+        3000,
+        3000
+      ],
+      "files": [
+        {
+          "file": "mossy_rock/mossy_rock_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_diff_2k.jpg",
+          "md5": "8e55bbeeef1db0d2d0cae85515812c46",
+          "bytes": 4535360
+        },
+        {
+          "file": "mossy_rock/mossy_rock_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_nor_gl_2k.jpg",
+          "md5": "e6b611c8a6f8e3276e7f5491c8e66a0f",
+          "bytes": 4033031
+        },
+        {
+          "file": "mossy_rock/mossy_rock_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_rough_2k.jpg",
+          "md5": "0b4bbecd6af36e343d05ed11914bb18f",
+          "bytes": 3205806
+        },
+        {
+          "file": "mossy_rock/mossy_rock_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_disp_2k.jpg",
+          "md5": "d22857010ae3d07e42c5548126cf386c",
+          "bytes": 644550
+        }
+      ]
+    },
+    {
+      "asset": "rock_08",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/rock_08",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Rob Tuytel": "All"
+      },
+      "physical_size_mm": [
+        1500,
+        1500
+      ],
+      "files": [
+        {
+          "file": "rock_08/rock_08_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_08/rock_08_diff_2k.jpg",
+          "md5": "39e2cc33265a24439ed6b12096971f49",
+          "bytes": 2633011
+        },
+        {
+          "file": "rock_08/rock_08_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_08/rock_08_nor_gl_2k.jpg",
+          "md5": "df59e1c184c092d8d9c1b818995f9646",
+          "bytes": 3406692
+        },
+        {
+          "file": "rock_08/rock_08_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_08/rock_08_rough_2k.jpg",
+          "md5": "527dbf400e08953f74bfcda8839bf7dd",
+          "bytes": 1242781
+        },
+        {
+          "file": "rock_08/rock_08_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_08/rock_08_disp_2k.jpg",
+          "md5": "5e074b9ec8212cc42479c7119f6c2d13",
+          "bytes": 531552
+        }
+      ]
+    },
+    {
+      "asset": "rock_surface",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/rock_surface",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Amal Kumar": "All"
+      },
+      "physical_size_mm": [
+        2000,
+        2000
+      ],
+      "files": [
+        {
+          "file": "rock_surface/rock_surface_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_surface/rock_surface_diff_2k.jpg",
+          "md5": "2d4912a91f73f08ed11734c044cd83b6",
+          "bytes": 3750802
+        },
+        {
+          "file": "rock_surface/rock_surface_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_surface/rock_surface_nor_gl_2k.jpg",
+          "md5": "6a7a2005834232c854cf907b22e67e42",
+          "bytes": 4709620
+        },
+        {
+          "file": "rock_surface/rock_surface_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_surface/rock_surface_rough_2k.jpg",
+          "md5": "14f6c59dd2948ac97c0fdb3a346064c0",
+          "bytes": 2442707
+        },
+        {
+          "file": "rock_surface/rock_surface_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_surface/rock_surface_disp_2k.jpg",
+          "md5": "21b0d5b5eace8cb55bee42adcc64703d",
+          "bytes": 1291413
+        }
+      ]
+    }
+  ],
+  "renders": [
+    "BedrockSlab-Variants.png",
+    "BedrockSlab-Variants-Top.png"
+  ],
+  "concept_reference": "docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp"
+}

@@ -1,0 +1,6 @@
+Sources/*/*.bin
+Sources/*/*.gltf
+Sources/*/files.json
+Sources/*/info.json
+*.blend1
+__pycache__/
