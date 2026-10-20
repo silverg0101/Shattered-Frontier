@@ -1,5 +1,8 @@
 using ShatteredFrontier.WorldContent;
 
+if (args.Length >= 4 && args[0] == "combat-pilot")
+    return CombatPilotBridge.Run(args[1..]);
+
 if (args.Length != 1)
 {
     Console.Error.WriteLine("Usage: WorldContent.Tool <content/world/zones directory>");
