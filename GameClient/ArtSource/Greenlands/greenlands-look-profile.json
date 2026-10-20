@@ -12,7 +12,7 @@
     "Farmhouse": {"have": ["SM_SilverbrookFarmhouse"]},
     "Stone bridge": {"have": ["SM_SilverbrookStoneBridge"]},
     "Watchtower": {"have": ["SM_SilverbrookWatchtower"]},
-    "Northridge house": {"have": ["SM_SilverbrookNorthridgeHouse1", "SM_SilverbrookNorthridgeHouse2", "SM_SilverbrookNorthridgeHouse3", "SM_SilverbrookNorthridgeHouse4", "SM_SilverbrookNorthridgeHouse5"]},
+    "Northridge house": {"have": ["SM_SilverbrookNorthridgeHouse1", "SM_SilverbrookNorthridgeHouse2", "SM_SilverbrookNorthridgeHouse3", "SM_SilverbrookNorthridgeHouse4", "SM_SilverbrookNorthridgeHouse5", "SM_SilverbrookNorthridgeHouse6"]},
     "Townhouse": {"have": ["SM_SilverbrookTownhouse1", "SM_SilverbrookTownhouse2", "SM_SilverbrookTownhouse3", "SM_SilverbrookTownhouse4", "SM_SilverbrookTownhouse5", "SM_SilverbrookTownhouse6"]},
     "Temple of the Dawn": {"have": ["SM_SilverbrookTempleOfTheDawn"]},
     "Adventurers' Guild": {"have": ["SM_SilverbrookAdventurersGuild"]},

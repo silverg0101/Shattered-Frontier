@@ -1,0 +1,230 @@
+{
+  "asset": "SilverbrookNorthridgeHouse6",
+  "reference": {
+    "file": "NorthridgeHouse6-reference.png",
+    "sha256": "a149f0a1f649407b73226a7a7d3054a893ff87f25939011bdb4521e60da0872c"
+  },
+  "blender": "5.1.1",
+  "generator": "build_northridgehouse6.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre",
+  "bounds_m": [
+    10.933,
+    7.351,
+    9.632
+  ],
+  "meshes": {
+    "SM_SBNorthridgeHouse6_Masonry": {
+      "triangles": 7164,
+      "materials": [
+        "SB_NorthridgeHouse6_Ashlar"
+      ]
+    },
+    "SM_SBNorthridgeHouse6_Dressed": {
+      "triangles": 17536,
+      "materials": [
+        "SB_NorthridgeHouse6_Dressed"
+      ]
+    },
+    "SM_SBNorthridgeHouse6_Timber": {
+      "triangles": 3044,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBNorthridgeHouse6_Roof": {
+      "triangles": 62140,
+      "materials": [
+        "SB_NorthridgeHouse6_Slate",
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBNorthridgeHouse6_Details": {
+      "triangles": 27484,
+      "materials": [
+        "SB_ForgedIron",
+        "SB_LitGlass",
+        "SB_LeadCame",
+        "SB_NorthridgeHouse6_Copper",
+        "SB_NorthridgeHouse6_Banner",
+        "SB_NorthridgeHouse6_Gilt",
+        "SB_PlanterSoil",
+        "SB_DoorBoards",
+        "SB_LanternGlow"
+      ]
+    }
+  },
+  "triangles": 117368,
+  "materials": [
+    {
+      "name": "SB_NorthridgeHouse6_Slate",
+      "scan": "grey_roof_tiles_02",
+      "dark": [
+        0.08,
+        0.11,
+        0.27
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_NorthridgeHouse6_Ashlar",
+      "scan": "sandstone_blocks_05",
+      "dark": [
+        0.45,
+        0.4,
+        0.33
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_NorthridgeHouse6_Dressed",
+      "scan": "sandstone_blocks_08",
+      "dark": [
+        0.45,
+        0.4,
+        0.33
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_DoorBoards",
+      "scan": "old_planks_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_NorthridgeHouse6_Banner",
+      "scan": "denim_fabric_03",
+      "dark": [
+        0.12,
+        0.14,
+        0.3
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LeadCame",
+      "colour": [
+        0.05,
+        0.05,
+        0.05
+      ],
+      "roughness": 0.45,
+      "metallic": 0.8,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_LitGlass",
+      "colour": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "roughness": 0.15,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.5,
+        0.14
+      ],
+      "strength": 3
+    },
+    {
+      "name": "SB_LanternGlow",
+      "colour": [
+        0.3,
+        0.2,
+        0.1
+      ],
+      "roughness": 0.3,
+      "metallic": 0,
+      "emission": [
+        1.0,
+        0.38,
+        0.08
+      ],
+      "strength": 5
+    },
+    {
+      "name": "SB_PlanterSoil",
+      "colour": [
+        0.06,
+        0.04,
+        0.025
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_NorthridgeHouse6_Copper",
+      "colour": [
+        0.5,
+        0.24,
+        0.12
+      ],
+      "roughness": 0.45,
+      "metallic": 1.0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_NorthridgeHouse6_Gilt",
+      "colour": [
+        0.8,
+        0.55,
+        0.18
+      ],
+      "roughness": 0.35,
+      "metallic": 1.0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookNorthridgeHouse6",
+  "slot_m": [
+    12,
+    10,
+    10
+  ],
+  "outputs": [
+    "SilverbrookNorthridgeHouse6.blend",
+    "SilverbrookNorthridgeHouse6.glb",
+    "SilverbrookNorthridgeHouse6.fbx"
+  ]
+}
