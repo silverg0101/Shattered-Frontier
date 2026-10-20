@@ -9,7 +9,7 @@
   "nanite": true,
   "collision": "complex",
   "convex_hulls": 0,
-  "nanite_fallback_triangles": 18738,
+  "nanite_fallback_triangles": 18674,
   "lightmap": {
     "uv": 2,
     "resolution": 512
@@ -116,6 +116,134 @@
       "travel": 4.0,
       "travel_unit": "m",
       "modelled": "open"
+    },
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookGatehouse_Door1",
+      "size_m": [
+        1.1,
+        0.08,
+        2.3
+      ],
+      "slots": 2,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 112,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 64
+      },
+      "name": "Door1",
+      "motion": "swing",
+      "pivot_cm": [
+        -845.0,
+        -327.0,
+        0.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "travel": -90,
+      "travel_unit": "deg",
+      "modelled": "closed"
+    },
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookGatehouse_Door2",
+      "size_m": [
+        0.08,
+        1.0,
+        1.9
+      ],
+      "slots": 2,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 112,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 32
+      },
+      "name": "Door2",
+      "motion": "swing",
+      "pivot_cm": [
+        -1277.0,
+        -85.0,
+        540.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "travel": -90,
+      "travel_unit": "deg",
+      "modelled": "closed"
+    },
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookGatehouse_Door3",
+      "size_m": [
+        1.1,
+        0.08,
+        2.3
+      ],
+      "slots": 2,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 112,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 64
+      },
+      "name": "Door3",
+      "motion": "swing",
+      "pivot_cm": [
+        955.0,
+        -327.0,
+        0.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "travel": -90,
+      "travel_unit": "deg",
+      "modelled": "closed"
+    },
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookGatehouse_Door4",
+      "size_m": [
+        0.08,
+        1.0,
+        1.9
+      ],
+      "slots": 2,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 112,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 32
+      },
+      "name": "Door4",
+      "motion": "swing",
+      "pivot_cm": [
+        1277.0,
+        15.0,
+        540.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "travel": -90,
+      "travel_unit": "deg",
+      "modelled": "closed"
     }
   ]
 }

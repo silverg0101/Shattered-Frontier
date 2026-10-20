@@ -5,18 +5,85 @@
     21.6,
     19.94
   ],
+  "slots": 12,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 78736,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 512
+  },
   "slot_m": [
     14,
     24,
     20
   ],
   "fits": true,
-  "slots": 12,
-  "nanite": true,
-  "convex_hulls": 12,
-  "nanite_fallback_triangles": 62068,
-  "lightmap": {
-    "uv": 2,
-    "resolution": 512
-  }
+  "parts": [
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookTempleOfTheDawn_Door1",
+      "size_m": [
+        0.87,
+        0.11,
+        4.33
+      ],
+      "slots": 2,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 256,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 128
+      },
+      "name": "Door1",
+      "motion": "swing",
+      "pivot_cm": [
+        -87.0,
+        841.0,
+        60.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "travel": -90,
+      "travel_unit": "deg",
+      "modelled": "closed"
+    },
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookTempleOfTheDawn_Door2",
+      "size_m": [
+        0.87,
+        0.11,
+        4.33
+      ],
+      "slots": 2,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 256,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 128
+      },
+      "name": "Door2",
+      "motion": "swing",
+      "pivot_cm": [
+        87.0,
+        841.0,
+        60.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "travel": 90,
+      "travel_unit": "deg",
+      "modelled": "closed"
+    }
+  ]
 }

@@ -24,13 +24,25 @@ remote.start()
 try:
     deadline = time.time() + 5
     nodes = []
-    while not nodes and time.time() < deadline:
+    first = None
+    while time.time() < deadline and not (first and time.time() > first + 1.5):  # several instances may answer
         nodes = [n for n in remote.remote_nodes if n.get('project_name') == 'ShatteredFrontier']
+        first = first or (nodes and time.time())
         time.sleep(0.2)
     if not nodes:
         print('No open ShatteredFrontier editor answered. Open the project and enable Python remote execution.')
         sys.exit(2)
-    remote.open_command_connection(nodes[0]['node_id'])
+    # A -game/-RenderOffscreen run of the project also answers; pick the instance that has an editor world.
+    for node in nodes:
+        remote.open_command_connection(node['node_id'])
+        probe = remote.run_command("bool(__import__('unreal').get_editor_subsystem(__import__('unreal').UnrealEditorSubsystem))",
+                                   unattended=True, exec_mode=rx.MODE_EVAL_STATEMENT)
+        if probe.get('success') and probe.get('result') == 'True':
+            break
+        remote.close_command_connection()
+    else:
+        print('Only non-editor ShatteredFrontier instances answered (a -game run?). Open the editor.')
+        sys.exit(2)
     command = ' '.join([f'"{script.as_posix()}"'] + [f'"{a}"' for a in args[1:]])
     result = remote.run_command(command, unattended=True, exec_mode=rx.MODE_EXEC_FILE)
     for entry in result.get('output', []):

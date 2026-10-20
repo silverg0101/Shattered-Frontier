@@ -5,18 +5,85 @@
     5.49,
     5.94
   ],
+  "slots": 12,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 15856,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 128
+  },
   "slot_m": [
     8,
     6,
     6
   ],
   "fits": true,
-  "slots": 12,
-  "nanite": true,
-  "convex_hulls": 12,
-  "nanite_fallback_triangles": 16022,
-  "lightmap": {
-    "uv": 2,
-    "resolution": 128
-  }
+  "parts": [
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookWorkshop_Door1",
+      "size_m": [
+        1.17,
+        0.14,
+        2.15
+      ],
+      "slots": 2,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 256,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 64
+      },
+      "name": "Door1",
+      "motion": "swing",
+      "pivot_cm": [
+        -235.5,
+        207.35,
+        0.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "travel": -90,
+      "travel_unit": "deg",
+      "modelled": "closed"
+    },
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookWorkshop_Door2",
+      "size_m": [
+        1.14,
+        0.14,
+        2.15
+      ],
+      "slots": 2,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 236,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 64
+      },
+      "name": "Door2",
+      "motion": "swing",
+      "pivot_cm": [
+        -8.5,
+        207.35,
+        0.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "travel": 90,
+      "travel_unit": "deg",
+      "modelled": "closed"
+    }
+  ]
 }

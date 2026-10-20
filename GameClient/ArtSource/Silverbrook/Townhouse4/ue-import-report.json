@@ -5,18 +5,53 @@
     6.93,
     8.88
   ],
+  "slots": 14,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 9,
+  "nanite_fallback_triangles": 18286,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 256
+  },
   "slot_m": [
     8,
     7,
     9
   ],
   "fits": true,
-  "slots": 14,
-  "nanite": true,
-  "convex_hulls": 9,
-  "nanite_fallback_triangles": 18312,
-  "lightmap": {
-    "uv": 2,
-    "resolution": 256
-  }
+  "parts": [
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookTownhouse4_Door1",
+      "size_m": [
+        0.9,
+        0.09,
+        2.55
+      ],
+      "slots": 4,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 274,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 64
+      },
+      "name": "Door1",
+      "motion": "swing",
+      "pivot_cm": [
+        -157.22,
+        201.46,
+        45.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "travel": -90,
+      "travel_unit": "deg",
+      "modelled": "closed"
+    }
+  ]
 }
