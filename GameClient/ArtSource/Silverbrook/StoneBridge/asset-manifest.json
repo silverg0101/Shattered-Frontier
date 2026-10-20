@@ -1,0 +1,143 @@
+{
+  "asset": "SilverbrookStoneBridge",
+  "reference": {
+    "file": "StoneBridge-reference.png",
+    "sha256": "13c6615176e67faf282c336807170d3e9fda377a21b17af57dbe5f8544acbe04"
+  },
+  "blender": "5.1.1",
+  "generator": "build_stonebridge.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, span along X, front -Y, origin at the centre of the span at riverbank ground level",
+  "bounds_m": [
+    30.0,
+    6.98,
+    9.744
+  ],
+  "z_range_m": [
+    -3.5,
+    6.244
+  ],
+  "deck": {
+    "runs": "along X (span); parapet faces -Y/+Y",
+    "length_m": 30,
+    "walkable_width_m": 5.8,
+    "ends_z_m": 0.0,
+    "crown_z_m": 3.6,
+    "max_grade": 0.324,
+    "water_z_m": -1.5,
+    "bed_z_m": -3.5,
+    "profile": "z = 3.6*(0.5*(1-u^2)+0.25*(1+cos(pi*u))), u=|x|/15"
+  },
+  "meshes": {
+    "SM_SBStoneBridge_Masonry": {
+      "triangles": 3448,
+      "materials": [
+        "SB_StoneBridge_Masonry"
+      ]
+    },
+    "SM_SBStoneBridge_Dressed": {
+      "triangles": 16424,
+      "materials": [
+        "SB_StoneBridge_Dressed"
+      ]
+    },
+    "SM_SBStoneBridge_Deck": {
+      "triangles": 964,
+      "materials": [
+        "SB_StoneBridge_Paving"
+      ]
+    },
+    "SM_SBStoneBridge_Details": {
+      "triangles": 2992,
+      "materials": [
+        "SB_ForgedIron",
+        "SB_StoneBridge_Banner",
+        "SB_StoneBridge_Gilt"
+      ]
+    }
+  },
+  "triangles": 23828,
+  "materials": [
+    {
+      "name": "SB_StoneBridge_Masonry",
+      "scan": "stone_brick_wall_001",
+      "dark": [
+        0.55,
+        0.68,
+        1.0
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_StoneBridge_Dressed",
+      "scan": "medieval_blocks_03",
+      "dark": [
+        0.62,
+        0.74,
+        1.0
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_StoneBridge_Paving",
+      "scan": "medieval_blocks_03",
+      "dark": [
+        0.55,
+        0.64,
+        0.85
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_StoneBridge_Banner",
+      "scan": "denim_fabric_03",
+      "dark": [
+        0.1,
+        0.12,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_StoneBridge_Gilt",
+      "colour": [
+        0.8,
+        0.55,
+        0.18
+      ],
+      "roughness": 0.35,
+      "metallic": 1.0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookStoneBridge",
+  "slot_m": [
+    30,
+    7,
+    10
+  ],
+  "asset_id": "BLD-GreenlandsStoneBridge-01",
+  "outputs": [
+    "SilverbrookStoneBridge.blend",
+    "SilverbrookStoneBridge.glb",
+    "SilverbrookStoneBridge.fbx"
+  ]
+}

@@ -8,6 +8,7 @@
   },
   "buildings": {
     "_about": "Biome building library for the missing-asset report, keyed by settlement building name (definition section 8 or layout type). 'have': delivered meshes in the settlement's design, one main mesh per variant; a building needs as many variants as it has owner-supplied concept images (at least one). 'stand_ins': older project meshes that fill the slot in the graybox until then; they never close a row. Licensed Fab or Megascans meshes don't count.",
+    "Stone bridge": {"have": ["SM_SilverbrookStoneBridge"]},
     "Watchtower": {"have": ["SM_SilverbrookWatchtower"]},
     "Northridge house": {"have": ["SM_SilverbrookNorthridgeHouse1", "SM_SilverbrookNorthridgeHouse2", "SM_SilverbrookNorthridgeHouse3", "SM_SilverbrookNorthridgeHouse4", "SM_SilverbrookNorthridgeHouse5"]},
     "Townhouse": {"have": ["SM_SilverbrookTownhouse1", "SM_SilverbrookTownhouse2", "SM_SilverbrookTownhouse3", "SM_SilverbrookTownhouse4", "SM_SilverbrookTownhouse5", "SM_SilverbrookTownhouse6"]},

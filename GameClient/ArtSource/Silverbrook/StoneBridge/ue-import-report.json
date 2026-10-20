@@ -1,0 +1,22 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookStoneBridge",
+  "size_m": [
+    30.0,
+    6.98,
+    9.74
+  ],
+  "slot_m": [
+    30,
+    7,
+    10
+  ],
+  "fits": true,
+  "slots": 6,
+  "nanite": true,
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 9634,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 512
+  }
+}
