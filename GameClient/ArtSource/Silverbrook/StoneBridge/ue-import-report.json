@@ -13,7 +13,8 @@
   "fits": true,
   "slots": 6,
   "nanite": true,
-  "convex_hulls": 12,
+  "collision": "complex",
+  "convex_hulls": 0,
   "nanite_fallback_triangles": 9634,
   "lightmap": {
     "uv": 2,

@@ -1,0 +1,209 @@
+{
+  "asset": "SilverbrookRiversideDocks",
+  "reference": {
+    "file": "RiversideDocks-reference.png",
+    "sha256": "6f2df64fd6ce1f9ab9d58fd62472722c2362b907ad58a6b11e52f57b1c72073a"
+  },
+  "blender": "5.1.1",
+  "generator": "build_riversidedocks.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y (water side), origin at the slot centre at riverbank ground level",
+  "bounds_m": [
+    30.0,
+    10.0,
+    9.419
+  ],
+  "z_range_m": [
+    -3.5,
+    5.919
+  ],
+  "deck": {
+    "walking_z_m": 0.5,
+    "above_bank_m": 0.5,
+    "above_water_m": 2.0,
+    "bank_z_m": 0.0,
+    "water_z_m": -1.5,
+    "bed_z_m": -3.5,
+    "water_side": "-Y",
+    "timber_deck_y_m": [
+      -4.95,
+      -1.2
+    ],
+    "stone_quay_y_m": [
+      -1.2,
+      3.5
+    ],
+    "rear_ramp": {
+      "y_m": [
+        3.5,
+        5.0
+      ],
+      "z_m": [
+        0.5,
+        0.0
+      ],
+      "grade": 0.333
+    },
+    "water_stairs": {
+      "x_m": [
+        -14.6,
+        -10.8
+      ],
+      "y_m": [
+        -5.0,
+        -3.8
+      ],
+      "steps": 10,
+      "rise_m": 0.18,
+      "going_m": 0.38,
+      "bottom_tread_z_m": -1.3
+    },
+    "walk_samples": 4683,
+    "check": "downward rays on a 0.25 m grid; every hit at the walking height within 0.04 m"
+  },
+  "height_decision": "layout gives 1 m (the deck); crane post top 6 m above the water as drawn, jib head 7.4 m, so the slot height is 10 m from the pile footings (z=-3.5) to the jib head",
+  "meshes": {
+    "SM_SBRiversideDocks_Masonry": {
+      "triangles": 184,
+      "materials": [
+        "SB_RiversideDocks_Masonry",
+        "SB_RiversideDocks_Paving"
+      ]
+    },
+    "SM_SBRiversideDocks_Deck": {
+      "triangles": 5052,
+      "materials": [
+        "SB_RiversideDocks_Paving",
+        "SB_RiversideDocks_Decking"
+      ]
+    },
+    "SM_SBRiversideDocks_Timber": {
+      "triangles": 2156,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBRiversideDocks_Crane": {
+      "triangles": 1964,
+      "materials": [
+        "SB_OakTimber",
+        "SB_RiversideDocks_Rope"
+      ]
+    },
+    "SM_SBRiversideDocks_Details": {
+      "triangles": 13172,
+      "materials": [
+        "SB_ForgedIron",
+        "SB_RiversideDocks_Rope",
+        "SB_RiversideDocks_Banner",
+        "SB_RiversideDocks_Gilt"
+      ]
+    }
+  },
+  "triangles": 22528,
+  "materials": [
+    {
+      "name": "SB_RiversideDocks_Masonry",
+      "scan": "rough_block_wall",
+      "dark": [
+        0.62,
+        0.7,
+        0.85
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_RiversideDocks_Paving",
+      "scan": "medieval_blocks_03",
+      "dark": [
+        0.62,
+        0.7,
+        0.85
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_RiversideDocks_Decking",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_RiversideDocks_Rope",
+      "scan": "hessian_380",
+      "dark": [
+        0.42,
+        0.33,
+        0.24
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_RiversideDocks_Banner",
+      "scan": "denim_fabric_03",
+      "dark": [
+        0.1,
+        0.12,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_RiversideDocks_Gilt",
+      "colour": [
+        0.8,
+        0.55,
+        0.18
+      ],
+      "roughness": 0.35,
+      "metallic": 1.0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
+  "unreal_mesh": "SM_SilverbrookRiversideDocks",
+  "slot_m": [
+    30,
+    10,
+    10
+  ],
+  "asset_id": "BLD-GreenlandsRiversideDocks-01",
+  "outputs": [
+    "SilverbrookRiversideDocks.blend",
+    "SilverbrookRiversideDocks.glb",
+    "SilverbrookRiversideDocks.fbx"
+  ]
+}

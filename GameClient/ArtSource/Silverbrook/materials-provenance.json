@@ -34,6 +34,41 @@
     ]
   },
   {
+    "asset": "cotton_jersey",
+    "page": "https://polyhaven.com/a/cotton_jersey",
+    "license": "CC0-1.0",
+    "authors": {
+      "colormass": "Photography",
+      "Rico Cilliers": "Processing"
+    },
+    "physical_size_metres": [
+      0.2636027473872483,
+      0.2637999951839447
+    ],
+    "files": [
+      {
+        "file": "Textures/cotton_jersey_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/cotton_jersey/cotton_jersey_diff_2k.jpg",
+        "md5": "911fa5b8031c69d7051489f813b170ac"
+      },
+      {
+        "file": "Textures/cotton_jersey_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/cotton_jersey/cotton_jersey_nor_gl_2k.jpg",
+        "md5": "6252598a3fdc5d229ed9aa50e77be587"
+      },
+      {
+        "file": "Textures/cotton_jersey_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/cotton_jersey/cotton_jersey_rough_2k.jpg",
+        "md5": "e157b42a81932afa6a3f9386e446df47"
+      },
+      {
+        "file": "Textures/cotton_jersey_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/cotton_jersey/cotton_jersey_disp_2k.jpg",
+        "md5": "acd2cd8f9e619f4c6c8027c3affae75f"
+      }
+    ]
+  },
+  {
     "asset": "denim_fabric_03",
     "page": "https://polyhaven.com/a/denim_fabric_03",
     "license": "CC0-1.0",
