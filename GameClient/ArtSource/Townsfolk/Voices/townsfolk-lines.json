@@ -1,0 +1,37 @@
+{
+  "_about": "Townsfolk line catalog for generate_voice_lines.py (AI Townsfolk doc, section 5.7). Lines say what to speak and in which tone; 'emotions' turns each tone into Chatterbox settings and the lip-sync mood; 'profiles' are synthetic voice archetypes. Slots ({place}) list the values to render; every combination becomes its own clip, so prosody stays natural. No line may name a player.",
+  "model": {"engine": "chatterbox", "repo": "ResembleAI/chatterbox", "licence": "MIT; output carries Resemble's Perth watermark", "sample_rate": 24000},
+  "references": {
+    "_about": "Each profile clones a synthetic reference clip spoken by a Kokoro-82M (Apache-2.0) British voice, never a real person's recording.",
+    "repo": "hexgrad/Kokoro-82M",
+    "lang_code": "b",
+    "text": "Morning comes slow to Silverbrook. The river runs high this time of year, and the mill wheel turns from first light until the bells ring for supper."
+  },
+  "emotions": {
+    "_about": "tone -> Chatterbox exaggeration (0.25-2; 0.5 is neutral), cfg_weight (lower is slower and more deliberate), and the MetaHuman Audio Driven Animation mood used when lip sync is baked.",
+    "neutral": {"exaggeration": 0.5, "cfg_weight": 0.5, "mood": "neutral"},
+    "annoyed": {"exaggeration": 0.65, "cfg_weight": 0.4, "mood": "anger", "mood_intensity": 0.4},
+    "fear": {"exaggeration": 0.9, "cfg_weight": 0.3, "mood": "fear"},
+    "anger": {"exaggeration": 0.85, "cfg_weight": 0.35, "mood": "anger"},
+    "warm": {"exaggeration": 0.6, "cfg_weight": 0.45, "mood": "happy", "mood_intensity": 0.5},
+    "wary": {"exaggeration": 0.55, "cfg_weight": 0.35, "mood": "fear", "mood_intensity": 0.3}
+  },
+  "profiles": [
+    {"id": "market_woman", "roles": ["resident"], "reference_voice": "bf_emma", "exaggeration_offset": 0.0, "desc": "Young woman at the market"},
+    {"id": "noble_lady", "roles": ["resident"], "reference_voice": "bf_isabella", "exaggeration_offset": -0.1, "desc": "Northridge lady; measured and cool"},
+    {"id": "old_labourer", "roles": ["resident"], "reference_voice": "bm_george", "exaggeration_offset": -0.05, "desc": "Older working man; tired and dry"},
+    {"id": "dock_hand", "roles": ["resident"], "reference_voice": "bm_lewis", "exaggeration_offset": 0.1, "desc": "Gruff dock hand; quick temper"},
+    {"id": "town_guard", "roles": ["guard"], "reference_voice": "bm_fable", "exaggeration_offset": 0.05, "desc": "Town guard; firm and carrying"}
+  ],
+  "lines": [
+    {"id": "annoyed_busy", "roles": ["resident"], "tone": "annoyed", "text": "Busy. Find someone else to bother."},
+    {"id": "annoyed_mind", "roles": ["resident"], "tone": "annoyed", "text": "Mind yourself, stranger. Some of us have work to do."},
+    {"id": "fear_weapon", "roles": ["resident"], "tone": "fear", "text": "Put that away! Please, I've done nothing!"},
+    {"id": "gossip_heroic", "roles": ["resident"], "tone": "neutral", "text": "Heard someone cleared the bandits out of {place}. Brave fool, whoever it was.", "slots": {"place": ["the old mill", "the north road"]}},
+    {"id": "subject_heroic", "roles": ["resident"], "tone": "warm", "text": "You're the one from {place}, aren't you? Well. Still busy, though.", "slots": {"place": ["the old mill"]}},
+    {"id": "subject_criminal", "roles": ["resident"], "tone": "wary", "text": "I know what you did. Stay away from me.", "slots": {}},
+    {"id": "chat_prices", "roles": ["resident"], "tone": "neutral", "text": "Fish prices at the wharf are a crime, I tell you. A crime."},
+    {"id": "guard_halt", "roles": ["guard"], "tone": "anger", "text": "Halt! You there, stop where you are!"},
+    {"id": "guard_peace", "roles": ["guard"], "tone": "neutral", "text": "Keep the peace in Silverbrook, traveller."}
+  ]
+}

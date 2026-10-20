@@ -156,7 +156,7 @@ Residents talk about what players have done in and around their town.
 - **Reputation.** Rumours are flavour. Faction standing and any lasting reputation belong to the Factions part, which may read deeds but isn't changed by gossip itself.
 - **Theft and pickpocketing** come later, with a new skill feature. The crime rules (§5.5) will treat them like attacks once that feature defines them.
 
-### 5.7 Voices (proposed; owner decision pending)
+### 5.7 Voices (owner decision 2026-10-20: Chatterbox, generated at build time)
 
 What Unreal Engine 5.8 offers, checked against the installed engine (2026-10-20):
 - The built-in **Text To Speech** plugin is an experimental accessibility feature (screen announcements). Its voice is robotic and it isn't built for server targets, so it can't voice characters.
@@ -165,21 +165,32 @@ What Unreal Engine 5.8 offers, checked against the installed engine (2026-10-20)
 
 So the engine handles lip sync well, but the voices themselves have to come from a separate text-to-speech model.
 
-Proposed pipeline:
-1. **Pre-generate every line at build time.** Never generate voices at runtime, neither on the server nor through a cloud service. Runtime generation adds an outage dependency, latency, per-player cost and abuse risk.
-2. **Line catalog as data.** Barks, reactions and gossip templates live in a typed line catalog with tone and emotion tags. Gossip templates have slots (`{place}`, `{monster}`, `{building}`) and never a player name. Each slot value is rendered once per voice, and the game joins the template and slot clips. If the joins sound wrong, render whole lines for the combinations used.
-3. **Models with licences that allow shipping:**
+**Where voices are made.** Voices are made neither on the server nor on the game client. Every line is generated at build time on a development machine and ships as an audio asset. The server only says which line to play (line, tone, slot values), and the client plays the matching clip. Runtime generation would add an outage dependency, latency, per-player cost and abuse risk, and it would rule out baked lip sync.
 
-   | Model | Use |
-   | --- | --- |
-   | Kokoro-82M (Apache-2.0 code and weights) | The bulk of barks and gossip; fast on CPU |
-   | Chatterbox (MIT) | Fear, anger and quest lines, which need emotion control; GPU |
-   | F5-TTS, Coqui XTTS | Ruled out: weights are non-commercial |
-   | Piper | Ruled out for the shipped pipeline: GPL-3.0, with per-voice licences |
+**Pipeline** (`GameClient/ArtSource/Townsfolk/Voices/`):
+1. **Line catalog** (`townsfolk-lines.json`).
+   - Lines with roles, a tone, and text templates with slots (`{place}`, `{monster}`, `{building}`), never a player name.
+   - Every combination of slot values is rendered as its own clip, so prosody stays natural.
+2. **Emotion table** in the same file. Each tone maps to Chatterbox's `exaggeration` and `cfg_weight` and to the MetaHuman lip-sync mood. Adding a line takes only its tone; the pipeline sets the emotion.
+3. **Voice profiles.**
+   - Synthetic archetypes: the trial has 5, the target is 12–20.
+   - Each profile clones a reference clip spoken by a Kokoro-82M British voice (Apache-2.0), never a real person's recording. This keeps the project clear of the SAG-AFTRA 2025 Interactive Media Agreement's digital-replica rules. A legal review is still due before release.
+   - Each profile has an exaggeration offset, and residents are assigned to profiles by census seed.
+4. **Generator** (`generate_voice_lines.py`).
+   - Validates the catalog, then renders with Chatterbox (MIT; output carries Resemble's inaudible Perth watermark) on the GPU.
+   - Only new or changed clips are rendered (content hash), with a seed taken from the hash so re-runs are repeatable.
+   - Trims silence, and checks length against the words spoken and for clipping. A failing clip is retried once, then flagged.
+   - Writes `Lines/manifest.json` with provenance per clip (model, version, reference, settings, mood) and `Lines/index.html` for listening.
+5. **Lip sync** (next step). Import the clips into Unreal and bake face curves per clip offline with MetaHuman Audio Driven Animation, using the mood from the manifest. This costs nothing at runtime.
 
-4. **Voice profiles.** 12–20 synthetic voice archetypes (age, gender, class, accent), each assigned to residents by census seed. Small pitch and formant variation per resident. No real person's voice is cloned, which keeps the project clear of the SAG-AFTRA 2025 Interactive Media Agreement's digital-replica rules. A legal review is still due before release.
-5. **Lip sync.** Bake face curves per clip offline with MetaHuman Audio Driven Animation, with the mood taken from the line's emotion tag. This costs nothing at runtime, which suits hundreds of residents. Streaming Audio Driven Animation is an option only for a few hero NPCs.
-6. **Provenance.** Each clip records the model, version, voice profile and licence, in the same way as art provenance.
+**Licence checks** (primary sources, 2026-10-20):
+- Kokoro-82M is Apache-2.0. It has 8 British voices (4 female, 4 male), most graded C or D by the author; `bf_emma` is the best at B−. That's too few to use directly, so the voices serve as clone references.
+- Chatterbox is MIT, in its repo licence and Hugging Face card.
+
+**Considered and not chosen:**
+- Kyutai **Pocket TTS** (MIT code, CC-BY-4.0 weights; CPU, about 6× real time). Its built-in voices are real speakers (VCTK under CC-BY-4.0, a CC-BY voice actor, CC0 donations), its voice cloning is gated, and it has no emotion control. It remains an option for on-client speech of truly dynamic lines.
+- F5-TTS and Coqui XTTS (non-commercial weights).
+- Piper (GPL-3.0, with per-voice licences).
 
 ## 6. Simulation stack (client)
 
@@ -272,7 +283,8 @@ The census validator checks:
 
 - **Gossip:** residents gossip about players' deeds (§5.6).
 - **Pickpocketing and theft:** deferred to a future skill feature (§5.6).
+- **Voices:** Chatterbox, with every line generated at build time and emotion set automatically from each line's tone (§5.7).
 
 ## 12. Open questions
 
-- Voices: approve the proposed pipeline in §5.7, which is Kokoro and Chatterbox pre-generated at build time, with lip sync baked by MetaHuman Audio Driven Animation. Before committing to it, check Kokoro's British-accent voices and Chatterbox's weights licence against their primary sources.
+- Voices: listen to the trial set (`Lines/index.html`) and settle the 12–20 voice archetypes.
