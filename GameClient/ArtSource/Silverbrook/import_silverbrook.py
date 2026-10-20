@@ -20,7 +20,10 @@ manifests={p:json.loads((ROOT/p/'asset-manifest.json').read_text()) for p in pac
 def texture(asset,channel):
     path=f'{LIB}/Textures/T_SB_{asset}_{channel}'
     if not eal.does_asset_exist(path):
-        task=u.AssetImportTask();task.filename=str(ROOT/'Textures'/f'{asset}_{channel}.jpg');task.destination_path=LIB+'/Textures';task.destination_name=f'T_SB_{asset}_{channel}';task.automated=True;task.save=True;tools.import_asset_tasks([task])
+        task=u.AssetImportTask();task.filename=str(ROOT/'Textures'/f'{asset}_{channel}.jpg');task.destination_path=LIB+'/Textures';task.destination_name=f'T_SB_{asset}_{channel}';task.automated=True;task.save=True
+        if channel=='nor_gl':  # declared up front, so UE's normal-map auto-detection (and its toast) never runs
+            f=u.TextureFactory();f.set_editor_property('compression_settings',u.TextureCompressionSettings.TC_NORMALMAP);f.set_editor_property('lod_group',u.TextureGroup.TEXTUREGROUP_WORLD_NORMAL_MAP);task.factory=f
+        tools.import_asset_tasks([task])
         t=u.load_asset(path);t.set_editor_property('srgb',channel=='Diffuse')
         if channel=='Displacement':t.set_editor_property('compression_settings',u.TextureCompressionSettings.TC_GRAYSCALE)
         elif channel=='nor_gl':t.set_editor_property('compression_settings',u.TextureCompressionSettings.TC_NORMALMAP);t.set_editor_property('flip_green_channel',True)  # OpenGL -> DirectX
