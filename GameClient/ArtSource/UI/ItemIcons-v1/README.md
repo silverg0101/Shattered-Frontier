@@ -26,4 +26,8 @@ The eight missing items received new generated art. Seven existing `UI/Icons-v1`
 
 ## Validation
 
-Pillow verified all 30 files are correctly sized RGBA PNGs with both transparent and opaque pixels and a nonempty subject; a contact-sheet review checked centering and slot readability. No runtime test applies to this art-only packet.
+Run `py validate_icons.py` in this folder to verify all 30 RGBA exports, including an outside flood-fill assertion that no icon has enclosed transparent pixels, and rebuild `icons-on-slate.png`. The contact sheet shows every 256 px icon on the HUD's `#17232A` slate. No runtime test applies to this art-only packet.
+
+## Matting repair
+
+`boar_hide`, `iron_axe`, `iron_ingot`, `iron_nails`, `iron_ore`, `iron_pickaxe`, `oak_log`, and `rough_timber` were regenerated against pure magenta chroma, keyed from border-connected background, despilled, feathered by about 1 px, and exported at both sizes. Interior alpha holes were filled from the outside mask; `hide_strips_64.png` also needed a small resize-hole fill. The original art remains in `UI/Icons-v1` for provenance. The repaired 256 px icons have no visible magenta spill on slate. This is an art-source packet; editor import and HUD binding are still pending.
