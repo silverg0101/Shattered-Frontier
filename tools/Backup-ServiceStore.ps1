@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory)][ValidateSet('InventoryLedger','CharacterState','Housing','Exchange')][string]$Store,
+    [Parameter(Mandatory)][ValidateSet('InventoryLedger','CharacterState','Housing','Exchange','TerrainDelta')][string]$Store,
     [Parameter(Mandatory)][string]$OutputDirectory,
     [Parameter(Mandatory)][ValidatePattern('^127\.0\.0\.1$')][string]$HostName,
     [Parameter(Mandatory)][ValidateRange(1,65535)][int]$Port,
@@ -23,8 +23,9 @@ $tables = switch ($Store) {
     CharacterState { @('character_state.schema_version','character_state.progression','character_state.quests','character_state.source_receipts','character_state.reward_receipts','character_state.positions') }
     Housing { @('housing.schema_version','housing.claims','housing.claim_operations','housing.claim_structure_revisions','housing.placements','housing.claim_geometry','housing.removals','inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts') }
     Exchange { @('exchange.schema_version','exchange.wallets','exchange.wallet_entries','exchange.operations','exchange.listings','exchange.settlements') }
+    TerrainDelta { @('terrain_delta.schema_version','terrain_delta.regions','terrain_delta.operations') }
 }
-$schemas = if ($Store -eq 'Housing') { @('housing','inventory') } elseif ($Store -eq 'CharacterState') { @('character_state') } elseif ($Store -eq 'Exchange') { @('exchange') } else { @('inventory') }
+$schemas = if ($Store -eq 'Housing') { @('housing','inventory') } elseif ($Store -eq 'CharacterState') { @('character_state') } elseif ($Store -eq 'Exchange') { @('exchange') } elseif ($Store -eq 'TerrainDelta') { @('terrain_delta') } else { @('inventory') }
 function Query([string]$sql) {
     $value = & (Join-Path $pg 'psql.exe') -X -A -t -v ON_ERROR_STOP=1 -h $HostName -p $Port -U $Username -d $Database -c $sql 2>&1
     if ($LASTEXITCODE -ne 0) { throw "Backup query failed: $value" }

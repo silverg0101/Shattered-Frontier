@@ -68,7 +68,8 @@ function TableSnapshot([string]$Database) {
     $tables = @('inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts',
         'character_state.schema_version','character_state.progression','character_state.quests','character_state.source_receipts','character_state.reward_receipts','character_state.positions',
         'housing.schema_version','housing.claims','housing.claim_operations','housing.claim_structure_revisions','housing.placements','housing.claim_geometry','housing.removals',
-        'exchange.schema_version','exchange.wallets','exchange.wallet_entries','exchange.operations','exchange.listings','exchange.settlements')
+        'exchange.schema_version','exchange.wallets','exchange.wallet_entries','exchange.operations','exchange.listings','exchange.settlements',
+        'terrain_delta.schema_version','terrain_delta.regions','terrain_delta.operations')
     $snapshot = [ordered]@{}
     foreach ($table in $tables) {
         $snapshot[$table] = (Sql "SELECT count(*),md5(coalesce(string_agg(row_to_json(t)::text, '|' ORDER BY row_to_json(t)::text),'')) FROM $table t" $Database).Trim()
@@ -136,7 +137,7 @@ try {
     Cluster start
     [void](Sql "CREATE ROLE gameplay_owner NOLOGIN; CREATE ROLE gameplay_svc LOGIN PASSWORD '$servicePassword'; CREATE DATABASE gameplay_$run;")
     [void](Sql "REVOKE ALL ON DATABASE gameplay_$run FROM PUBLIC; GRANT CONNECT ON DATABASE gameplay_$run TO gameplay_svc; GRANT CREATE ON DATABASE gameplay_$run TO gameplay_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC;" "gameplay_$run")
-    $schemas = @('InventoryLedger.Postgres','CharacterState.Postgres','Housing.Postgres','Exchange.Postgres') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_/Schema.sql") -Raw }
+    $schemas = @('InventoryLedger.Postgres','CharacterState.Postgres','Housing.Postgres','Exchange.Postgres','TerrainDelta.Postgres') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_/Schema.sql") -Raw }
     $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Gameplay.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Geometry.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Position.sql') -Raw
@@ -349,26 +350,27 @@ try {
     $currentStep = 'receipt and conservation checks'
     $db = "gameplay_$run"
     $acknowledged = Assert-Receipts $db $receiptFile
+    [void](Sql "INSERT INTO terrain_delta.regions(zone_id,cell_x,cell_y,revision) VALUES ('greenlands_silverbrook',71,19,1); INSERT INTO terrain_delta.operations(operation_id,fingerprint,zone_id,cell_x,cell_y,revision,character_id,claim_id,anchor_x,anchor_y,anchor_z,kind,magnitude,tombstone) VALUES ('terrain/rehearsal','terrain/rehearsal','greenlands_silverbrook',71,19,1,'chr_rehearsal','claim_rehearsal',1,2,3,'Dig',1,false)" "gameplay_$run")
     $backupAcknowledgements = @(Get-Content -LiteralPath $receiptFile).Count
     $bad = (Sql "SELECT (SELECT count(*) FROM inventory.entries WHERE quantity < 0) + (SELECT count(*) FROM exchange.wallets WHERE balance < 0 OR reserved < 0 OR reserved > balance) + (SELECT count(*) FROM housing.placements p WHERE state='Committed' AND NOT EXISTS (SELECT 1 FROM inventory.operation_receipts r WHERE r.operation_id=p.operation_id || '/consume')) + (SELECT count(*) FROM exchange.settlements s WHERE state='committed' AND kind='listing' AND NOT EXISTS (SELECT 1 FROM exchange.listings l WHERE l.id=s.subject_id AND l.state='sold'))" $db).Trim()
     if ($bad -ne '0') { throw "Cross-store conservation violations: $bad" }
     Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(30000) | Out-Null; $hostProcess.Refresh()
     $hostProcess = $null
-    $currentStep = 'consistent four-store backup'
-    $versions = @{inventory=1;character_state=3;housing=5;exchange=3}
+    $currentStep = 'consistent five-store backup'
+    $versions = @{inventory=1;character_state=3;housing=5;exchange=3;terrain_delta=1}
     foreach ($schema in $versions.Keys) {
         if ((Sql "SELECT version FROM $schema.schema_version WHERE singleton=true" $db).Trim() -ne [string]$versions[$schema]) { throw "Unsupported source schema: $schema" }
     }
     $before = TableSnapshot $db
-    $dump = Join-Path $EvidenceRoot 'four-stores.dump'
-    [void](Invoke-Checked (Join-Path $pg 'pg_dump.exe') @('-Fc','--no-owner','--no-acl','--schema=inventory','--schema=character_state','--schema=housing','--schema=exchange','-h','127.0.0.1','-p',"$port",'-U','fixture_admin','-d',$db,'-f',$dump) @{ PGPASSWORD=$adminPassword })
+    $dump = Join-Path $EvidenceRoot 'five-stores.dump'
+    [void](Invoke-Checked (Join-Path $pg 'pg_dump.exe') @('-Fc','--no-owner','--no-acl','--schema=inventory','--schema=character_state','--schema=housing','--schema=exchange','--schema=terrain_delta','-h','127.0.0.1','-p',"$port",'-U','fixture_admin','-d',$db,'-f',$dump) @{ PGPASSWORD=$adminPassword })
     $after = TableSnapshot $db
     if (($before | ConvertTo-Json -Compress) -cne ($after | ConvertTo-Json -Compress)) { throw 'Source changed during backup.' }
     $backupHash = (Get-FileHash $dump -Algorithm SHA256).Hash.ToLowerInvariant()
     $before | ConvertTo-Json | Set-Content (Join-Path $EvidenceRoot 'backup-point.json')
     $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-rehearsal-after-backup') @{ GAMEPLAY_LEDGER_CONNECTION=$connection; GAMEPLAY_EXCHANGE_CONNECTION=$connection; GAMEPLAY_HOST_PORT="$hostPort"; SF_GAMEPLAY_TOKEN=$token }))
     if ((TableSnapshot $db)['exchange.wallet_entries'] -ceq $before['exchange.wallet_entries']) { throw 'Post-backup write did not change source.' }
-    $currentStep = 'fresh owned four-store restore'
+    $currentStep = 'fresh owned five-store restore'
     $restoreData = Join-Path $private 'restore-data'
     $restorePortListener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $restorePortListener.Start(); $restorePort = $restorePortListener.LocalEndpoint.Port; $restorePortListener.Stop()
     $pwfile = Join-Path $private 'restore-password'; [IO.File]::WriteAllText($pwfile,$adminPassword)
@@ -390,6 +392,24 @@ try {
     foreach ($schema in $versions.Keys) {
         $restoreConnection = "Host=127.0.0.1;Port=$restorePort;Database=$restoredDb;Username=fixture_admin;Password=$adminPassword;Pooling=false;Timeout=2;Command Timeout=5"
         $schemaEnvironment = @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$restoreConnection; GAMEPLAY_CHARACTER_CONNECTION=$restoreConnection; GAMEPLAY_HOUSING_CONNECTION=$restoreConnection; GAMEPLAY_EXCHANGE_CONNECTION=$restoreConnection; SF_GAMEPLAY_TOKEN=$token; REHEARSAL_SCHEMA=$schema }
+        if ($schema -eq 'terrain_delta') {
+            $savedPgPassword = $env:PGPASSWORD
+            $env:PGPASSWORD = $adminPassword
+            try {
+                & (Join-Path $repo 'tools/Backup-ServiceStore.ps1') -Store TerrainDelta -OutputDirectory (Join-Path $EvidenceRoot 'terrain-delta-verified') -HostName '127.0.0.1' -Port $restorePort -Database $restoredDb -Username fixture_admin | Out-Null
+                [void](Sql 'UPDATE terrain_delta.schema_version SET version=2 WHERE singleton=true' $restoredDb)
+                $rejected = $false
+                try {
+                    & (Join-Path $repo 'tools/Backup-ServiceStore.ps1') -Store TerrainDelta -OutputDirectory (Join-Path $EvidenceRoot 'terrain-delta-newer') -HostName '127.0.0.1' -Port $restorePort -Database $restoredDb -Username fixture_admin | Out-Null
+                } catch {
+                    if ($_.Exception.Message -notmatch 'Unsupported source schema version') { throw }
+                    $rejected = $true
+                }
+                if (-not $rejected) { throw 'TerrainDelta newer schema was accepted.' }
+                [void](Sql 'UPDATE terrain_delta.schema_version SET version=1 WHERE singleton=true' $restoredDb)
+            } finally { $env:PGPASSWORD = $savedPgPassword }
+            continue
+        }
         [void](Invoke-Checked $dotnet @($hostDll,'fixture-rehearsal-schema-baseline') $schemaEnvironment)
         $nextVersion = [int]$versions[$schema] + 1
         [void](Sql "UPDATE $schema.schema_version SET version=$nextVersion WHERE singleton=true" $restoredDb)
@@ -398,7 +418,7 @@ try {
     }
     $port = $sourcePort
     $results.Add("PASS $backupAcknowledgements client acknowledgements ($acknowledged distinct receipts) survived crash and restore; $(@(Get-Content -LiteralPath $receiptFile).Count - $backupAcknowledgements) post-backup acknowledgements absent")
-    $results.Add('PASS one four-schema backup, later write excluded, table digests match, newer schema refused per store')
+    $results.Add('PASS one five-schema backup, later write excluded, table digests match, newer schema refused per store')
     $results | Set-Content (Join-Path $EvidenceRoot 'results.txt')
 }
 catch {

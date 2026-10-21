@@ -1,5 +1,7 @@
 # H2 backend foundation
 
+TerrainDelta backup and restore use `tools/Backup-ServiceStore.ps1` and `tools/Restore-ServiceStore.ps1` with the version 1 `terrain_delta` schema. The restore checks row counts and canonical row digests for `schema_version`, `regions`, and `operations`; `tools/Test-RestoreRehearsal.ps1` seeds an edit and verifies five-schema backup-point parity and newer-schema refusal.
+
 The package-free [WorldContent](WorldContent/README.md) project adds zone JSON validation and an in-memory deterministic World spawn-slot model. Its CLI and focused tests have separate package locks; neither is part of the historical three-project dependency verifier.
 
 The user selected C#/.NET 10, separate domain services and restricted runtime roles on 2026-10-18. This slice delivers build locks, a dependency probe and a synthetic Building migration fixture. World/Inventory services, gameplay schemas, command adapters and production deployment are not implemented. See [PER-01-B](../docs/decisions/PER-01-B-implementation-readiness.md) and the [fixture contract](../docs/decisions/PER-01-migration-fixture-contract.md).
