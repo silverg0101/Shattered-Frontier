@@ -77,6 +77,22 @@ switch (phase)
         release.Set(); Task.WaitAll(workers);
         ready.Dispose(); release.Dispose();
         Check(wins == 1,"Same-cell contention had more than one winner.");
+        foreach (var suffix in new[] { "a", "b" })
+            housing.ReserveClaim("claim/parallel-"+suffix,"parallel-"+suffix,"clm_parallel_"+suffix,
+                "chr_parallel_"+suffix,suffix=="a"?1000:2000,1000,10,1,0,40,5,now);
+        using (var start = new ManualResetEventSlim())
+        {
+            var separate = new[] { "a", "b" }.Select(suffix => Task.Run(() =>
+            {
+                start.Wait();
+                return new PostgresHousingStore(connection).Begin(Request("parallel-claim-"+suffix,30,0) with
+                    { ClaimId="clm_parallel_"+suffix, ActorId="chr_parallel_"+suffix, ExpectedContainerRevision=5 },now);
+            })).ToArray();
+            start.Set(); Task.WaitAll(separate);
+            Check(separate.All(t => t.Result.State == "Pending"),"Separate claims place concurrently.");
+            foreach (var placement in separate)
+                Check(housing.Reconcile(placement.Result.OperationId,ledgerStore).State == "Compensated","Parallel claim cleanup failed.");
+        }
         var timed = new HousingClaim("clm_time","chr_owner","Active",0,0,now.AddMinutes(-1),null,null,new Dictionary<string,int>());
         housing.SaveClaim("claim/time","time",timed,-1);
         var timedRequest = Request("timed",20,0) with { ClaimId="clm_time", ExpectedContainerRevision=5 };

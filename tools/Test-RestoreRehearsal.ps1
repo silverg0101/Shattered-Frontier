@@ -143,7 +143,7 @@ try {
     $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Position.sql') -Raw
     [void](Sql ("SET ROLE gameplay_owner;`n" + ($schemas -join "`n")) "gameplay_$run")
     [void](Sql 'GRANT USAGE ON SCHEMA inventory,character_state,housing,exchange TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA character_state TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA housing TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA exchange TO gameplay_svc;' "gameplay_$run")
-    $connection = "Host=127.0.0.1;Port=$port;Database=gameplay_$run;Username=gameplay_svc;Password=$servicePassword;Pooling=false;Timeout=2;Command Timeout=5;Include Error Detail=false"
+    $connection = "Host=127.0.0.1;Port=$port;Database=gameplay_$run;Username=gameplay_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $hostPort = $listener.LocalEndpoint.Port; $listener.Stop()
     $rng = [Security.Cryptography.RandomNumberGenerator]::Create(); $rng.GetBytes($bytes); $token = [BitConverter]::ToString($bytes).Replace('-',''); $rng.Dispose()
     $env:GAMEPLAY_HOST_PORT = "$hostPort"
@@ -205,7 +205,8 @@ try {
     $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-fault-seed') @{
         GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
     }))
-    $hostProcess.WaitForExit(30000) | Out-Null; $hostProcess.Refresh()
+    $hostProcess.WaitForExit(30000) | Out-Null
+    $hostProcess.Refresh()
     if (-not $hostProcess.HasExited) { throw 'Fault host did not exit.' }
     Cluster stop
     Cluster start
@@ -390,7 +391,7 @@ try {
     $restoredAcknowledged = Assert-Receipts $restoredDb $receiptFile $backupAcknowledgements
     if ($restoredAcknowledged -ne $acknowledged) { throw 'Restored acknowledgement count differs from recovery.' }
     foreach ($schema in $versions.Keys) {
-        $restoreConnection = "Host=127.0.0.1;Port=$restorePort;Database=$restoredDb;Username=fixture_admin;Password=$adminPassword;Pooling=false;Timeout=2;Command Timeout=5"
+        $restoreConnection = "Host=127.0.0.1;Port=$restorePort;Database=$restoredDb;Username=fixture_admin;Password=$adminPassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5"
         $schemaEnvironment = @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$restoreConnection; GAMEPLAY_CHARACTER_CONNECTION=$restoreConnection; GAMEPLAY_HOUSING_CONNECTION=$restoreConnection; GAMEPLAY_EXCHANGE_CONNECTION=$restoreConnection; SF_GAMEPLAY_TOKEN=$token; REHEARSAL_SCHEMA=$schema }
         if ($schema -eq 'terrain_delta') {
             $savedPgPassword = $env:PGPASSWORD

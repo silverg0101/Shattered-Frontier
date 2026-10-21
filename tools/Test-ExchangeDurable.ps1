@@ -80,8 +80,8 @@ try {
     [void](Sql "REVOKE ALL ON DATABASE exchange_$run FROM PUBLIC; GRANT CONNECT ON DATABASE exchange_$run TO exchange_svc,fixture_ledger; GRANT CREATE ON DATABASE exchange_$run TO exchange_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC; CREATE SCHEMA inventory AUTHORIZATION exchange_owner; CREATE SCHEMA exchange AUTHORIZATION exchange_owner;" "exchange_$run")
     [void](Sql ("SET ROLE exchange_owner;`n" + (Get-Content $inventorySchema -Raw) + "`n" + (Get-Content $schema -Raw)) "exchange_$run")
     [void](Sql 'GRANT USAGE ON SCHEMA exchange TO exchange_svc; GRANT SELECT ON exchange.schema_version TO exchange_svc; GRANT SELECT,INSERT,UPDATE ON exchange.wallets,exchange.wallet_entries,exchange.operations,exchange.listings,exchange.settlements TO exchange_svc; GRANT USAGE ON SCHEMA inventory TO fixture_ledger; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO fixture_ledger;' "exchange_$run")
-    $connection = "Host=127.0.0.1;Port=$port;Database=exchange_$run;Username=exchange_svc;Password=$servicePassword;Pooling=false;Timeout=2;Command Timeout=5;Include Error Detail=false"
-    $ledgerConnection = "Host=127.0.0.1;Port=$port;Database=exchange_$run;Username=fixture_ledger;Password=$ledgerPassword;Pooling=false;Timeout=2;Command Timeout=5;Include Error Detail=false"
+    $connection = "Host=127.0.0.1;Port=$port;Database=exchange_$run;Username=exchange_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
+    $ledgerConnection = "Host=127.0.0.1;Port=$port;Database=exchange_$run;Username=fixture_ledger;Password=$ledgerPassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $results = [Collections.Generic.List[string]]::new()
     foreach ($phase in @('seed','restart','recover','tombstone','tombstone-recover','concurrent','outage')) {
         if ($phase -eq 'restart' -or $phase -eq 'recover' -or $phase -eq 'tombstone-recover' -or $phase -eq 'outage') { Cluster stop }

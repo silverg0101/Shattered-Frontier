@@ -17,14 +17,10 @@ public sealed class PostgresInventoryLedgerStore(string connectionString) : IInv
             using var connection = new NpgsqlConnection(connectionString);
             connection.Open();
             using var db = connection.BeginTransaction();
-            // A transaction-scoped lock serializes the existing whole-state callback across processes.
-            // It also makes operation-ID replay win before any stale revision check.
-            Command(connection, db, "SELECT pg_advisory_xact_lock(519761, 1)").ExecuteNonQuery();
             CheckSchema(connection, db);
             var state = Load(connection, db);
-            var before = state.Copy();
             var result = transaction(state);
-            Save(connection, db, before, state);
+            Save(connection, db, state);
             db.Commit();
             return result;
         }
@@ -58,33 +54,50 @@ public sealed class PostgresInventoryLedgerStore(string connectionString) : IInv
 
     private static LedgerState Load(NpgsqlConnection connection, NpgsqlTransaction db)
     {
-        var state = new LedgerState();
-        using (var cmd = Command(connection, db, "SELECT id,owner_kind,owner_id,kind,capacity,revision FROM inventory.containers"))
-        using (var reader = cmd.ExecuteReader())
-            while (reader.Read())
+        ContainerRecord? Container(string id)
+        {
+            using var cmd = Command(connection, db, "SELECT id,owner_kind,owner_id,kind,capacity,revision FROM inventory.containers WHERE id=$1 FOR UPDATE");
+            cmd.Parameters.AddWithValue(id);
+            ContainerRecord record;
+            using (var reader = cmd.ExecuteReader())
             {
+                if (!reader.Read()) return null;
                 var spec = new ContainerSpec(reader.GetString(0), (OwnerKind)reader.GetInt32(1), reader.GetString(2), (ContainerKind)reader.GetInt32(3), reader.GetInt32(4));
-                state.Containers.Add(spec.Id, new ContainerRecord(spec) { Revision = reader.GetInt64(5) });
+                record = new ContainerRecord(spec) { Revision = reader.GetInt64(5) };
             }
-        using (var cmd = Command(connection, db, "SELECT container_id,definition_id,quantity FROM inventory.entries"))
-        using (var reader = cmd.ExecuteReader())
-            while (reader.Read()) state.Containers[reader.GetString(0)].Quantities.Add(reader.GetString(1), reader.GetInt64(2));
-        // ponytail: Load is O(total operations) per call; upgrade to receipt lookup by operation ID plus retention.
-        using (var cmd = Command(connection, db, "SELECT operation_id,fingerprint,receipt::text FROM inventory.operation_receipts"))
-        using (var reader = cmd.ExecuteReader())
-            while (reader.Read())
-            {
-                var receipt = JsonSerializer.Deserialize<LedgerReceipt>(reader.GetString(2)) ?? throw new InvalidOperationException("Invalid stored receipt.");
-                state.Operations.Add(reader.GetString(0), new StoredOperation(reader.GetString(1), receipt));
-            }
-        return state;
+            using var entries = Command(connection, db, "SELECT definition_id,quantity FROM inventory.entries WHERE container_id=$1");
+            entries.Parameters.AddWithValue(id);
+            using var rows = entries.ExecuteReader();
+            while (rows.Read()) record.Quantities.Add(rows.GetString(0), rows.GetInt64(1));
+            return record;
+        }
+        IEnumerable<string> AllIds()
+        {
+            var ids = new List<string>();
+            using var cmd = Command(connection, db, "SELECT id FROM inventory.containers ORDER BY id");
+            using var rows = cmd.ExecuteReader();
+            while (rows.Read()) ids.Add(rows.GetString(0));
+            return ids;
+        }
+        StoredOperation? Operation(string key)
+        {
+            using (var advisory = Command(connection, db, "SELECT pg_advisory_xact_lock(519761, hashtext($1))"))
+            { advisory.Parameters.AddWithValue(key); advisory.ExecuteNonQuery(); }
+            using var cmd = Command(connection, db, "SELECT fingerprint,receipt::text FROM inventory.operation_receipts WHERE operation_id=$1");
+            cmd.Parameters.AddWithValue(key);
+            using var reader = cmd.ExecuteReader();
+            if (!reader.Read()) return null;
+            var receipt = JsonSerializer.Deserialize<LedgerReceipt>(reader.GetString(1)) ?? throw new InvalidOperationException("Invalid stored receipt.");
+            return new StoredOperation(reader.GetString(0), receipt);
+        }
+        return new LedgerState(Container, AllIds, Operation);
     }
 
-    private static void Save(NpgsqlConnection connection, NpgsqlTransaction db, LedgerState before, LedgerState after)
+    private static void Save(NpgsqlConnection connection, NpgsqlTransaction db, LedgerState after)
     {
-        foreach (var (id, record) in after.Containers)
+        foreach (var (id, record) in after.Containers.Loaded)
         {
-            if (!before.Containers.TryGetValue(id, out var old))
+            if (!after.Containers.TryGetOriginal(id, out var old))
             {
                 using var insert = Command(connection, db, "INSERT INTO inventory.containers(id,owner_kind,owner_id,kind,capacity,revision) VALUES ($1,$2,$3,$4,$5,$6)");
                 insert.Parameters.AddWithValue(id); insert.Parameters.AddWithValue((int)record.Spec.OwnerKind);
@@ -109,8 +122,7 @@ public sealed class PostgresInventoryLedgerStore(string connectionString) : IInv
                 }
             }
         }
-        foreach (var (id, operation) in after.Operations)
-            if (!before.Operations.ContainsKey(id))
+        foreach (var (id, operation) in after.Operations.Added)
             {
                 using var receipt = Command(connection, db, "INSERT INTO inventory.operation_receipts(operation_id,fingerprint,receipt) VALUES ($1,$2,$3::jsonb)");
                 receipt.Parameters.AddWithValue(id); receipt.Parameters.AddWithValue(operation.Fingerprint);

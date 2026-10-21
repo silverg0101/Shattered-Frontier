@@ -16,14 +16,14 @@ internal sealed class QuestRewardPayout(PostgresCharacterStateStore state, Postg
             string.Join("|", items.OrderBy(i => i.DefinitionId, StringComparer.Ordinal).Select(i => $"{i.DefinitionId}:{i.Quantity}"));
         var receipt = ledgerStore.Execute(s =>
         {
-            if (!s.Containers.TryGetValue(intent.ContainerId, out var container) ||
-                container.Spec.OwnerKind != OwnerKind.Character || container.Spec.OwnerId != intent.CharacterId)
-                throw new GameplayRejectedException("Reward backpack missing or owner changed.", StatusCode.FailedPrecondition);
             if (s.Operations.TryGetValue(operationId, out var prior))
             {
                 if (prior.Fingerprint != fingerprint) throw new InvalidOperationException("Reward operation conflicts with intent.");
                 return prior.Receipt;
             }
+            if (!s.Containers.TryGetValue(intent.ContainerId, out var container) ||
+                container.Spec.OwnerKind != OwnerKind.Character || container.Spec.OwnerId != intent.CharacterId)
+                throw new GameplayRejectedException("Reward backpack missing or owner changed.", StatusCode.FailedPrecondition);
             long total;
             try
             {

@@ -21,7 +21,7 @@ public sealed record EscrowDelivery(string FromId, long FromRevision, string ToI
 public sealed class LedgerRejectedException(string message) : InvalidOperationException(message);
 
 // The adapter must commit the complete working state (including the receipt) durably before Execute returns.
-// A failed callback must publish nothing. Execute must serialize concurrent writers across service instances.
+// A failed callback must publish nothing. Concurrent writes to the same operation or container serialize.
 public interface IInventoryLedgerStore
 {
     T Execute<T>(Func<LedgerState, T> transaction);
@@ -29,15 +29,79 @@ public interface IInventoryLedgerStore
 
 public sealed class LedgerState
 {
-    public Dictionary<string, ContainerRecord> Containers { get; } = new(StringComparer.Ordinal);
-    public Dictionary<string, StoredOperation> Operations { get; } = new(StringComparer.Ordinal);
+    public ContainerIndex Containers { get; }
+    public OperationIndex Operations { get; }
+
+    public LedgerState(Func<string, ContainerRecord?>? containerMiss = null, Func<IEnumerable<string>>? allContainerIds = null,
+        Func<string, StoredOperation?>? operationMiss = null)
+    {
+        Containers = new ContainerIndex(containerMiss, allContainerIds);
+        Operations = new OperationIndex(operationMiss);
+    }
 
     public LedgerState Copy()
     {
         var copy = new LedgerState();
-        foreach (var (id, record) in Containers) copy.Containers.Add(id, record.Copy());
-        foreach (var (id, operation) in Operations) copy.Operations.Add(id, operation);
+        foreach (var (id, record) in Containers.Loaded) copy.Containers.Add(id, record.Copy());
+        foreach (var (id, operation) in Operations.Loaded) copy.Operations.Add(id, operation);
         return copy;
+    }
+}
+
+public sealed class OperationIndex(Func<string, StoredOperation?>? miss = null)
+{
+    private readonly Dictionary<string, StoredOperation> cache = new(StringComparer.Ordinal);
+    private readonly List<KeyValuePair<string, StoredOperation>> added = [];
+    public IEnumerable<KeyValuePair<string, StoredOperation>> Loaded => cache;
+    public IEnumerable<KeyValuePair<string, StoredOperation>> Added => added;
+    public bool TryGetValue(string key, out StoredOperation value)
+    {
+        if (cache.TryGetValue(key, out value!)) return true;
+        var found = miss?.Invoke(key);
+        if (found is null) return false;
+        cache.Add(key, found);
+        value = found;
+        return true;
+    }
+    public bool ContainsKey(string key) => TryGetValue(key, out _);
+    public void Add(string key, StoredOperation value)
+    {
+        if (ContainsKey(key)) throw new ArgumentException("Duplicate operation ID.", nameof(key));
+        cache.Add(key, value);
+        added.Add(new(key, value));
+    }
+}
+
+public sealed class ContainerIndex(Func<string, ContainerRecord?>? miss = null, Func<IEnumerable<string>>? allIds = null)
+{
+    private readonly Dictionary<string, ContainerRecord> cache = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, ContainerRecord> original = new(StringComparer.Ordinal);
+    public IEnumerable<KeyValuePair<string, ContainerRecord>> Loaded => cache;
+    public bool TryGetOriginal(string id, out ContainerRecord value) => original.TryGetValue(id, out value!);
+    public bool TryGetValue(string id, out ContainerRecord value)
+    {
+        if (cache.TryGetValue(id, out value!)) return true;
+        var found = miss?.Invoke(id);
+        if (found is null) return false;
+        cache.Add(id, found);
+        original.Add(id, found.Copy());
+        value = found;
+        return true;
+    }
+    public void Add(string id, ContainerRecord value)
+    {
+        if (TryGetValue(id, out _)) throw new ArgumentException("Duplicate container ID.", nameof(id));
+        cache.Add(id, value);
+    }
+    public ContainerRecord this[string id] => TryGetValue(id, out var value) ? value : throw new KeyNotFoundException(id);
+    public IEnumerable<ContainerRecord> Values
+    {
+        get
+        {
+            if (allIds is not null)
+                foreach (var id in allIds().OrderBy(x => x, StringComparer.Ordinal)) TryGetValue(id, out _);
+            return cache.Values;
+        }
     }
 }
 
@@ -97,11 +161,13 @@ public sealed class InventoryLedger(IInventoryLedgerStore store)
                     throw new LedgerRejectedException("Conflicting expected revisions.");
                 expected[move.FromId] = move.FromRevision;
                 expected[move.ToId] = move.ToRevision;
-                if (move.FromId == move.ToId || Get(state, move.FromId).Spec.Kind != ContainerKind.Escrow ||
-                    Get(state, move.ToId).Spec.Kind == ContainerKind.Escrow)
-                    throw new LedgerRejectedException("Delivery requires escrow source and ordinary destination.");
+                if (move.FromId == move.ToId) throw new LedgerRejectedException("Delivery requires distinct containers.");
             }
-            var records = expected.ToDictionary(p => p.Key, p => Get(state, p.Key), StringComparer.Ordinal);
+            var records = expected.Keys.OrderBy(x => x, StringComparer.Ordinal)
+                .ToDictionary(id => id, id => Get(state, id), StringComparer.Ordinal);
+            foreach (var move in deliveries)
+                if (records[move.FromId].Spec.Kind != ContainerKind.Escrow || records[move.ToId].Spec.Kind == ContainerKind.Escrow)
+                    throw new LedgerRejectedException("Delivery requires escrow source and ordinary destination.");
             foreach (var (id, revision) in expected)
                 if (records[id].Revision != revision) throw new LedgerRejectedException("Stale container revision.");
             var changes = new List<QuantityChange>();
@@ -202,6 +268,7 @@ public sealed class InventoryLedger(IInventoryLedgerStore store)
                 if (prior.Fingerprint != fingerprint) throw new LedgerRejectedException("Conflicting operation ID reuse.");
                 return prior.Receipt;
             }
+            foreach (var id in ids.OrderBy(x => x, StringComparer.Ordinal)) Get(state, id);
             var records = ids.Select(id => Get(state, id)).ToArray();
             for (var i = 0; i < ids.Length; i++)
                 if (records[i].Revision != revisions[i]) throw new LedgerRejectedException("Stale container revision.");

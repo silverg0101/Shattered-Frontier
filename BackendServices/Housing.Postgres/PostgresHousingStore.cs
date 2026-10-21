@@ -78,8 +78,6 @@ public sealed class PostgresHousingStore(string connectionString)
             else c.Open();
             using var t = CallContext.Value is { } beginCall
                 ? c.BeginTransactionAsync(beginCall.Token).GetAwaiter().GetResult() : c.BeginTransaction();
-            // ponytail: This global lock serializes all claims; upgrade to a per-claim key using hashtext(claim_id).
-            using (var advisory = Cmd(c, t, "SELECT pg_advisory_xact_lock(519761, 2)")) advisory.ExecuteNonQuery();
             try
             {
                 using var check = Cmd(c, t, "SELECT version FROM housing.schema_version WHERE singleton=true FOR SHARE");
@@ -116,12 +114,18 @@ public sealed class PostgresHousingStore(string connectionString)
         if (check.ExecuteScalar() is not int version || version != 5)
             throw new HousingSchemaCompatibilityException("Housing gameplay schema version 5 required.");
     }
+    private static void LockStructure(NpgsqlConnection c, NpgsqlTransaction t, string claimId)
+    {
+        using var cmd = Cmd(c,t,"SELECT revision FROM housing.claim_structure_revisions WHERE claim_id=$1 FOR UPDATE",claimId);
+        if (cmd.ExecuteScalar() is not long) throw new HousingRejectedException("Claim structure revision missing.");
+    }
 
     public HousingClaim ReserveClaim(string operationId, string fingerprint, string claimId, string ownerId,
         double centerX, double centerY, int sideMetres, int prepaidDays, long expectedWorldRevision,
         int maxSideMetres, int spacingMetres, DateTimeOffset now) => Run((c,t) =>
     {
         RequireGameplaySchema(c,t);
+        using (var advisory = Cmd(c,t,"SELECT pg_advisory_xact_lock(519761,20)")) advisory.ExecuteNonQuery();
         using (var replay = Cmd(c,t,"SELECT fingerprint,receipt::text FROM housing.claim_operations WHERE operation_id=$1",operationId))
         using (var r = replay.ExecuteReader()) if (r.Read())
         {
@@ -194,6 +198,7 @@ public sealed class PostgresHousingStore(string connectionString)
         RequireGameplaySchema(c,t);
         if (!ValidGeometry(request.ShapeKey, request.OrientationIndex))
             throw new HousingRejectedException("Invalid construction geometry identity.", HousingRejectionCode.InvalidArgument);
+        LockStructure(c,t,request.ClaimId);
         var existing = ReadPlacement(c,t,request.OperationId);
         if (existing is not null)
         {
@@ -207,7 +212,7 @@ public sealed class PostgresHousingStore(string connectionString)
             claim.PermissionRevision != request.ExpectedPermissionRevision ||
             (claim.OwnerId != request.ActorId && (!claim.Grants.TryGetValue(request.ActorId,out var rights) || (rights & 1)==0)))
             throw new HousingRejectedException("Build permission denied or stale.", HousingRejectionCode.PermissionDenied);
-        using (var revision = Cmd(c,t,"SELECT revision FROM housing.claim_structure_revisions WHERE claim_id=$1",request.ClaimId))
+        using (var revision = Cmd(c,t,"SELECT revision FROM housing.claim_structure_revisions WHERE claim_id=$1 FOR UPDATE",request.ClaimId))
             if (revision.ExecuteScalar() is not long value || value != request.ExpectedStructureRevision)
                 throw new HousingRejectedException("Stale structure revision.");
         using var insert = Cmd(c,t,"INSERT INTO housing.placements (operation_id,fingerprint,claim_id,actor_id,structure_id,cell_x,cell_y,cell_z,content_id,material_id,material_quantity,container_id,expected_container_revision,state,revision,consume_receipt,shape_key,orientation_index) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,'Pending',$14,NULL,$15,$16)",
@@ -254,6 +259,8 @@ public sealed class PostgresHousingStore(string connectionString)
         Run((c,t) =>
         {
             var pending = ReadPlacement(c,t,operationId) ?? throw new HousingRejectedException("Placement missing.");
+            LockStructure(c,t,pending.ClaimId);
+            pending = ReadPlacement(c,t,operationId) ?? throw new HousingRejectedException("Placement missing.");
             if (pending.State != "Pending") return pending;
             // A missing receipt is fenced in the same ledger transaction as the read.
             StoredOperation operation;
@@ -297,6 +304,7 @@ public sealed class PostgresHousingStore(string connectionString)
     public HousingRemoval BeginRemove(HousingRemoveRequest request, DateTimeOffset now) => Run((c,t) =>
     {
         RequireGameplaySchema(c,t);
+        LockStructure(c,t,request.ClaimId);
         using (var replay = Cmd(c,t,"SELECT fingerprint FROM housing.removals WHERE operation_id=$1",request.OperationId))
         {
             var prior = replay.ExecuteScalar() as string;
@@ -314,7 +322,7 @@ public sealed class PostgresHousingStore(string connectionString)
             claim.PermissionRevision != request.ExpectedPermissionRevision ||
             (claim.OwnerId != request.ActorId && (!claim.Grants.TryGetValue(request.ActorId,out var rights) || (rights & 1)==0)))
             throw new HousingRejectedException("Build permission denied or stale.", HousingRejectionCode.PermissionDenied);
-        using (var rev = Cmd(c,t,"SELECT revision FROM housing.claim_structure_revisions WHERE claim_id=$1",request.ClaimId))
+        using (var rev = Cmd(c,t,"SELECT revision FROM housing.claim_structure_revisions WHERE claim_id=$1 FOR UPDATE",request.ClaimId))
             if (rev.ExecuteScalar() is not long value || value != request.ExpectedStructureRevision)
                 throw new HousingRejectedException("Stale structure revision.");
         string placementId;
@@ -362,6 +370,8 @@ public sealed class PostgresHousingStore(string connectionString)
     {
         RequireGameplaySchema(c,t);
         var pending = ReadRemoval(c,t,operationId) ?? throw new HousingRejectedException("Removal missing.");
+        LockStructure(c,t,pending.Placement.ClaimId);
+        pending = ReadRemoval(c,t,operationId) ?? throw new HousingRejectedException("Removal missing.");
         if (pending.State != "Pending") return pending;
         LedgerReceipt? refundReceipt = null;
         if (pending.RefundQuantity > 0)

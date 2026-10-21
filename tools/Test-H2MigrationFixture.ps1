@@ -81,7 +81,7 @@ function Start-Runner([string]$Label, [string]$Mode = 'migrate', [string]$Manife
     if ($HookDir) { $argsForRunner += @('--hook-dir', $HookDir) }
     if ($ConnectionPort -eq 0) { $ConnectionPort = $port }
     if (-not $TargetDatabase) { $TargetDatabase = $db }
-    $conn = "Host=$TargetHost;Port=$ConnectionPort;Database=$TargetDatabase;Username=mig_building;Password=$($secrets.mig_building);Pooling=false;Multiplexing=false;Timeout=5;Application Name=h2mig-$Label"
+    $conn = "Host=$TargetHost;Port=$ConnectionPort;Database=$TargetDatabase;Username=mig_building;Password=$($secrets.mig_building);Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Multiplexing=false;Timeout=5;Application Name=h2mig-$Label"
     return Start-Tool $Dotnet $argsForRunner @{ H2MIG_CONNECTION_STRING = $conn }
 }
 function Run-Runner([string]$Label, [string]$Mode = 'migrate', [string]$ManifestPath = $Manifest, [string]$ExpectedId = $fixtureId.ToString()) {

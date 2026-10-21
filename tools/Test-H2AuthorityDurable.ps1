@@ -125,8 +125,8 @@ GRANT USAGE ON SCHEMA fixture_control TO $svcRole,$roRole;
 GRANT EXECUTE ON FUNCTION fixture_control.system_identifier() TO $svcRole,$roRole;
 "@
         [void](Require (Sql $grants $database) 'grant restricted runtime/read roles')
-        $config[$owner] = "Host=127.0.0.1;Port=$port;Database=$database;Username=$svcRole;Password=$($secrets[$svcRole]);Pooling=false;Timeout=5;Command Timeout=10;Application Name=h2-authority-$owner;Include Error Detail=false"
-        $config["${owner}ReadOnly"] = "Host=127.0.0.1;Port=$port;Database=$database;Username=$roRole;Password=$($secrets[$roRole]);Pooling=false;Timeout=5;Command Timeout=10;Include Error Detail=false"
+        $config[$owner] = "Host=127.0.0.1;Port=$port;Database=$database;Username=$svcRole;Password=$($secrets[$svcRole]);Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=5;Command Timeout=10;Application Name=h2-authority-$owner;Include Error Detail=false"
+        $config["${owner}ReadOnly"] = "Host=127.0.0.1;Port=$port;Database=$database;Username=$roRole;Password=$($secrets[$roRole]);Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=5;Command Timeout=10;Include Error Detail=false"
         foreach ($check in @(@('runtime DDL denied',$svcRole,'CREATE TABLE fixture.forbidden(id int);'),@('identity marker protected',$svcRole,"UPDATE fixture.identity SET fixture_id='$fixtureId';"),@('readonly DML denied',$roRole,"DELETE FROM fixture.identity;"),@('runtime cannot assume owner',$svcRole,"SET ROLE $ownRole;"))) {
             $denial = Sql $check[2] $database $check[1]
             $pass = $denial.exit -ne 0 -and $denial.stderr -match 'permission denied|must be able to SET ROLE'

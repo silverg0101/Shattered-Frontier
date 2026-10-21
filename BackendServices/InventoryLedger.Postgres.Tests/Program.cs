@@ -42,6 +42,41 @@ switch (args[0])
         ready.Dispose();
         start.Dispose();
         Check(tasks.Count(t => t.Result) == 1 && ledger.Read(id).Revision == 3 && ledger.Read(id).Quantities[item] == 3, "one concurrent revision winner");
+        var parallelStore = new PostgresInventoryLedgerStore(connection);
+        var left = "ctn_parallel_left";
+        var right = "ctn_parallel_right";
+        ledger.CreateContainer(new(left,OwnerKind.Character,"chr_durable",ContainerKind.Backpack,100));
+        ledger.CreateContainer(new(right,OwnerKind.Character,"chr_durable",ContainerKind.Backpack,100));
+        var singleWatch = System.Diagnostics.Stopwatch.StartNew();
+        parallelStore.Execute(s => { s.Containers.TryGetValue(left,out _); Thread.Sleep(350); return 0; });
+        singleWatch.Stop();
+        using (var bothInside = new Barrier(2))
+        {
+            var parallelWatch = System.Diagnostics.Stopwatch.StartNew();
+            var simultaneous = new[] { left, right }.Select(container => Task.Run(() => parallelStore.Execute(s =>
+            {
+                Check(s.Containers.TryGetValue(container,out _), "parallel container exists");
+                var entered = bothInside.SignalAndWait(TimeSpan.FromSeconds(3));
+                Thread.Sleep(350);
+                return entered;
+            }))).ToArray();
+            Task.WaitAll(simultaneous);
+            parallelWatch.Stop();
+            Check(simultaneous.All(t => t.Result) && parallelWatch.Elapsed < 2*singleWatch.Elapsed,
+                "distinct containers execute concurrently");
+        }
+        var sameOp = new[] { 0, 1 }.Select(_ => Task.Run(() => ledger.Grant("parallel-same-op",left,0,item,1,"fixture","parallel"))).ToArray();
+        Task.WaitAll(sameOp);
+        Check(sameOp[0].Result.OperationId == sameOp[1].Result.OperationId &&
+            sameOp[0].Result.Revisions.SequenceEqual(sameOp[1].Result.Revisions) && ledger.Read(left).Revision == 1,
+            "same operation replays after one commit");
+        ledger.Grant("parallel-right-seed",right,0,item,1,"fixture","parallel");
+        var opposing = new[] {
+            Task.Run(() => { try { ledger.Transfer("parallel-left-to-right",left,1,right,1,item,1); return true; } catch (LedgerRejectedException) { return false; } }),
+            Task.Run(() => { try { ledger.Transfer("parallel-right-to-left",right,1,left,1,item,1); return true; } catch (LedgerRejectedException) { return false; } })
+        };
+        Task.WaitAll(opposing);
+        Check(opposing.Count(t => t.Result) == 1, "opposite transfers finish without deadlock");
         break;
     case "outage":
         try { ledger.Grant("outage-1", id, 3, item, 1, "fixture", "fixture-2"); throw new Exception("outage accepted mutation"); }

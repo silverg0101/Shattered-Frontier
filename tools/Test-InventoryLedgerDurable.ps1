@@ -78,7 +78,7 @@ try {
     [void](Sql "REVOKE ALL ON DATABASE ledger_$run FROM PUBLIC; GRANT CONNECT ON DATABASE ledger_$run TO ledger_svc; GRANT CREATE ON DATABASE ledger_$run TO ledger_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC; CREATE SCHEMA inventory AUTHORIZATION ledger_owner;" "ledger_$run")
     [void](Sql ("SET ROLE ledger_owner;`n" + (Get-Content $schema -Raw)) "ledger_$run")
     [void](Sql 'GRANT USAGE ON SCHEMA inventory TO ledger_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO ledger_svc;' "ledger_$run")
-    $connection = "Host=127.0.0.1;Port=$port;Database=ledger_$run;Username=ledger_svc;Password=$servicePassword;Pooling=false;Timeout=2;Command Timeout=5;Include Error Detail=false"
+    $connection = "Host=127.0.0.1;Port=$port;Database=ledger_$run;Username=ledger_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $results = [Collections.Generic.List[string]]::new()
     foreach ($phase in @('seed','restart','concurrent','outage','recover','classification')) {
         if ($phase -eq 'restart' -or $phase -eq 'outage') { Cluster stop }
@@ -96,7 +96,7 @@ try {
     catch { if ($_.Exception.Message -notmatch 'SHA256 mismatch') { throw }; $results.Add('PASS flipped-byte backup refused before restore') }
     $results.Add((Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-BackupDirectory',$backup,'-InstanceRoot',$restoredInstance)))
     $restored = Get-Content (Join-Path $restoredInstance 'connection.json') -Raw | ConvertFrom-Json
-    $restoredConnection = "Host=127.0.0.1;Port=$($restored.port);Database=$($restored.database);Username=ledger_svc;Password=$($restored.password);Pooling=false;Timeout=2;Command Timeout=5;Include Error Detail=false"
+    $restoredConnection = "Host=127.0.0.1;Port=$($restored.port);Database=$($restored.database);Username=ledger_svc;Password=$($restored.password);Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $results.Add((Invoke-Checked $dotnet @($dll,'restored') @{ INVENTORY_LEDGER_CONNECTION=$restoredConnection }))
     [void](Sql 'UPDATE inventory.schema_version SET version=2' "ledger_$run")
     $results.Add((Invoke-Checked $dotnet @($dll,'newer-schema') @{ INVENTORY_LEDGER_CONNECTION=$connection }))

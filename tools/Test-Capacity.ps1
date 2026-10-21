@@ -67,13 +67,11 @@ try {
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $port = $listener.LocalEndpoint.Port; $listener.Stop()
     @{run=$run;data=$data;port=$port} | ConvertTo-Json | Set-Content (Join-Path $private 'owner.json')
     $projects = @((Join-Path $repo 'BackendServices/CapacityHarness/CapacityHarness.csproj'))
-    $prebuiltHost = Join-Path $repo 'BackendServices/Gameplay.Host/bin/Release/net10.0/Gameplay.Host.dll'
     foreach ($project in $projects) {
         $currentStep = "restore $project"
         [void](Invoke-Checked $dotnet @('restore',$project,'--locked-mode','--packages',(Join-Path $repo 'Artifacts/Persistence/Toolchains/nuget'),'--verbosity','quiet'))
         $currentStep = "build $project"
-        $buildArgs = @('build',$project,'--no-restore','--configuration','Release','--verbosity','quiet')
-        if (Test-Path -LiteralPath $prebuiltHost) { $buildArgs += '-p:BuildProjectReferences=false' }
+        $buildArgs = @('build',$project,'--no-restore','--configuration','Release','--verbosity','quiet',"-p:BaseOutputPath=$(Join-Path $private 'build')/")
         [void](Invoke-Checked $dotnet $buildArgs)
     }
     $pwfile = Join-Path $private 'admin-password'; [IO.File]::WriteAllText($pwfile,$adminPassword)
@@ -86,9 +84,11 @@ try {
     [void](Sql "REVOKE ALL ON DATABASE gameplay_$run FROM PUBLIC; GRANT CONNECT ON DATABASE gameplay_$run TO gameplay_svc; GRANT CREATE ON DATABASE gameplay_$run TO gameplay_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC;" "gameplay_$run")
     $schemas = @('InventoryLedger.Postgres','CharacterState.Postgres','Housing.Postgres','Exchange.Postgres') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_/Schema.sql") -Raw }
     $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Gameplay.sql') -Raw
+    $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Geometry.sql') -Raw
+    $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Position.sql') -Raw
     [void](Sql ("SET ROLE gameplay_owner;`n" + ($schemas -join "`n")) "gameplay_$run")
     [void](Sql 'GRANT USAGE ON SCHEMA inventory,character_state,housing,exchange TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA character_state TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA housing TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA exchange TO gameplay_svc;' "gameplay_$run")
-    $connection = "Host=127.0.0.1;Port=$port;Database=gameplay_$run;Username=gameplay_svc;Password=$servicePassword;Pooling=false;Timeout=2;Command Timeout=5;Include Error Detail=false"
+    $connection = "Host=127.0.0.1;Port=$port;Database=gameplay_$run;Username=gameplay_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $hostPort = $listener.LocalEndpoint.Port; $listener.Stop()
     $rng = [Security.Cryptography.RandomNumberGenerator]::Create(); $rng.GetBytes($bytes); $token = [BitConverter]::ToString($bytes).Replace('-',''); $rng.Dispose()
     $env:GAMEPLAY_HOST_PORT = "$hostPort"
@@ -100,7 +100,7 @@ try {
     Copy-Item -LiteralPath (Join-Path $repo 'content') -Destination $fixtureContent -Recurse
     $env:GAMEPLAY_CONTENT_ROOT = $fixtureContent
     $env:SF_GAMEPLAY_TOKEN = $token
-    $hostDll = Join-Path $repo 'BackendServices/Gameplay.Host/bin/Release/net10.0/Gameplay.Host.dll'
+    $hostDll = Join-Path $private 'build/Release/net10.0/Gameplay.Host.dll'
     $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host.out') -RedirectStandardError (Join-Path $private 'host.err')
     $ready = $false
     for ($i=0; $i -lt 100; $i++) {
@@ -110,7 +110,7 @@ try {
     }
     if (-not $ready) { throw 'Gameplay host readiness timeout.' }
     $currentStep = 'journey seed'
-    $journeyDll = Join-Path $repo 'BackendServices/CapacityHarness/bin/Release/net10.0/CapacityHarness.dll'
+    $journeyDll = Join-Path $private 'build/Release/net10.0/CapacityHarness.dll'
     [void](Invoke-Checked $dotnet @($journeyDll,'journey') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token })
     $tiers = if ($Only10) { @(10) } else { @(10,25) }
     if ($Include50 -or $Include100) { $tiers += 50 }
@@ -119,7 +119,7 @@ try {
     foreach ($tier in $tiers) {
         $currentStep = "capacity $tier"
         $outFile = Join-Path $EvidenceRoot "gate-$tier.json"
-        $result = Invoke-Checked $dotnet @((Join-Path $repo 'BackendServices/CapacityHarness/bin/Release/net10.0/CapacityHarness.dll'),'--participants',"$tier",'--warmup-seconds',"$WarmupSeconds",'--seconds',"$MeasuredSeconds",'--think-ms',"$ThinkMilliseconds") @{
+        $result = Invoke-Checked $dotnet @($journeyDll,'--participants',"$tier",'--warmup-seconds',"$WarmupSeconds",'--seconds',"$MeasuredSeconds",'--think-ms',"$ThinkMilliseconds") @{
             GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token; CAPACITY_OUTPUT=$outFile
         } (($WarmupSeconds + $MeasuredSeconds + 120) * 1000) $true
         if (-not (Test-Path -LiteralPath $outFile)) { throw "Capacity child did not write $outFile`: $result" }
@@ -142,7 +142,7 @@ try {
     }
     $report += @('', 'Milestone comparison: durable action p95 <=250 ms at 50 ms RTT, unexpected failures <1%, 15 minutes after warmup, and zero integrity violations. The network RTT condition is unmet, so latency is informational. The 100 participant gate also requires a two-hour soak.','', 'Integrity SQL checks:')
     foreach ($gate in $gateResults) { $report += "- $($gate.participants) participants: $($gate.audit.checks | ConvertTo-Json -Compress)" }
-    $evidence = Join-Path $repo "docs/evidence/capacity-backend-$(Get-Date -Format 'yyyy-MM-dd').md"
+    $evidence = Join-Path $EvidenceRoot 'report.md'
     $report | Set-Content $evidence
     Write-Host "Evidence: $evidence"
     if (@($gateResults | Where-Object { -not $_.audit.passed }).Count -gt 0) { $failure = 'Capacity integrity audit failed; see evidence.' }

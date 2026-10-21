@@ -38,3 +38,30 @@ The 14 failures at 25 participants were `UNAVAILABLE` on seven market list and s
 Integrity SQL checks:
 - 10 participants: {"duplicate ledger operation ids":0,"duplicate housing/exchange/quest operation ids":0,"inventory receipt quantity mismatches":0,"housing debit mismatches":0,"housing refund mismatches":0,"exchange listing movement mismatches":0,"quest reward mismatches":0,"missing completed quest coverage":0,"wallet entry sum mismatches":0}
 - 25 participants: {"duplicate ledger operation ids":0,"duplicate housing/exchange/quest operation ids":0,"inventory receipt quantity mismatches":0,"housing debit mismatches":0,"housing refund mismatches":0,"exchange listing movement mismatches":0,"quest reward mismatches":0,"missing completed quest coverage":0,"wallet entry sum mismatches":0}
+
+## After backend capacity partitioning
+
+Fresh evidence root: Artifacts/Persistence/GameplayHosts/capacity-619596ee62ad43cd823a0da9afe1ee12. The host was built in the run-private output folder. Both tiers used the baseline workload, 30 s warmup, 900 s measurement, 1000 ms think time, and simulated 50 ms client delay.
+
+| Participants | RPC | Calls before / after | p95 ms before / after | Errors before / after | Accepted/s before / after |
+| ---: | --- | ---: | ---: | ---: | ---: |
+| 10 | Crafting.Craft | 1525 / 3169 | 1199.05 / 63.27 | 0 / 0 | 8.68 / 17.45 |
+| 10 | Exchange.CancelListing | 269 / 743 | 1322.58 / 77.96 | 0 / 0 | 8.68 / 17.45 |
+| 10 | Exchange.ListItem | 269 / 743 | 1317.89 / 75.99 | 0 / 0 | 8.68 / 17.45 |
+| 10 | Exchange.Wallet | 269 / 743 | 264.06 / 63.11 | 0 / 0 | 8.68 / 17.45 |
+| 10 | Housing.Place | 563 / 1564 | 1501.97 / 76.27 | 0 / 0 | 8.68 / 17.45 |
+| 10 | Housing.Remove | 563 / 1564 | 1134.41 / 78.69 | 0 / 0 | 8.68 / 17.45 |
+| 10 | Progression.ApplyReceipt | 2604 / 4754 | 344 / 63.16 | 0 / 0 | 8.68 / 17.45 |
+| 10 | Progression.GetCharacterState | 674 / 842 | 559.69 / 63.16 | 0 / 0 | 8.68 / 17.45 |
+| 10 | Rewards.GrantDefeatReward | 1079 / 1585 | 715.43 / 63.23 | 0 / 0 | 8.68 / 17.45 |
+| 25 | Crafting.Craft | 1245 / 7932 | 4621.99 / 65.14 | 0 / 0 | 7.15 / 44.57 |
+| 25 | Exchange.CancelListing | 184 / 2246 | 7341.83 / 77.87 | 7 / 0 | 7.15 / 44.57 |
+| 25 | Exchange.ListItem | 190 / 2246 | 8251.6 / 76.01 | 7 / 0 | 7.15 / 44.57 |
+| 25 | Exchange.Wallet | 177 / 2247 | 3594.95 / 63.17 | 0 / 0 | 7.15 / 44.57 |
+| 25 | Housing.Place | 378 / 3931 | 7264.76 / 76.02 | 0 / 0 | 7.15 / 44.57 |
+| 25 | Housing.Remove | 378 / 3931 | 4839.01 / 78.31 | 0 / 0 | 7.15 / 44.57 |
+| 25 | Progression.ApplyReceipt | 2240 / 11909 | 1765.56 / 65.22 | 0 / 0 | 7.15 / 44.57 |
+| 25 | Progression.GetCharacterState | 659 / 1693 | 3010.53 / 63.39 | 0 / 0 | 7.15 / 44.57 |
+| 25 | Rewards.GrantDefeatReward | 1000 / 3977 | 4026.27 / 63.78 | 0 / 0 | 7.15 / 44.57 |
+
+Both after tiers had zero unavailable calls and passed every SQL integrity check. Worst durable RPC p95 fell from 1501.97 to 78.69 ms at 10 participants and from 8251.6 to 78.31 ms at 25 participants. This is backend loopback evidence with simulated client delay; actual 50 ms network RTT and the 50/100 participant gates remain unmeasured.
