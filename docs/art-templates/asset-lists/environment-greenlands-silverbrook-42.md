@@ -7,10 +7,6 @@
 
 | Asset ID | Category / main concept | Source path / heading | Priority / dependencies | Owner / job state | Concept / clean-view status | Selected package / next action |
 |---|---|---|---|---|---|---|
-| ROCK-GreenlandsBedrockSlab-01 | Rock / Flat, fractured granite slabs emerging from soil, 3-8 m | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `bedrock_slab` | P1; 0 of 4 variants owned; stands in today: `rock_medium` meshes | unassigned / planned | proposed / — | concept sheet and asset view (Qwen Image), then model (Pixal3D or Blender); 4 variant(s) |
-| ROCK-GreenlandsBoulderLargeMoss-01 | Rock / Granite boulders 1.5-4 m, rounded, moss on top faces | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `boulder_large_moss` | P1; 0 of 4 variants owned; GAT-01 `rise`: mature mesh only; stands in today: `rock_medium` meshes | unassigned / planned | proposed / — | concept sheet and asset view (Qwen Image), then model (Pixal3D or Blender); 4 variant(s) |
-| VEG-GreenlandsBroadleafYoung-01 | Vegetation / Birch/alder-like young broadleaf, 6-10 m, light green, slender trunks | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `tree_broadleaf_young` | P1; 0 of 4 variants owned; GAT-01 `swap`: sapling, young and mature meshes; stands in today: `tree_oak` meshes | unassigned / planned | proposed / — | concept sheet and asset view (Qwen Image), then model (Pixal3D or Blender); 4 variant(s) |
-| VEG-GreenlandsPineTall-01 | Vegetation / Scots-pine-like: straight 20-30 m trunk, grey lower bark turning orange-brown above, high flat crown | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `tree_pine_tall` | P1; 0 of 4 variants owned; GAT-01 `swap`: sapling, young and mature meshes; stands in today: `tree_oak` meshes | unassigned / planned | proposed / — | concept sheet and asset view (Qwen Image), then model (Pixal3D or Blender); 4 variant(s) |
 | MAT-GreenlandsMaterialBedrock-01 | Terrain material / Weathered granite with lichen, for steep terrain | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `material_bedrock` | P2; 0 of 1 variants owned | unassigned / planned | proposed / — | reference board and material study, then a project material |
 | MAT-GreenlandsMaterialForestFloor-01 | Terrain material / Rocky soil with litter, blended by slope with grass and rock materials | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `material_forest_floor` | P2; 0 of 1 variants owned | unassigned / planned | proposed / — | reference board and material study, then a project material |
 | ROCK-GreenlandsCobblePebbleScatter-01 | Rock / Cobbles and pebbles 5-30 cm, grey-blue granite | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `cobble_pebble_scatter` | P2; 0 of 6 variants owned | unassigned / planned | proposed / — | concept sheet and asset view (Qwen Image), then model (Pixal3D or Blender); 6 variant(s) |
@@ -21,18 +17,6 @@
 | TERR-GreenlandsGraniteDomeFar-01 | Terrain / backdrop / Rounded rocky hill/dome silhouettes for distance; northern mountains belong to TER-01 backdrop | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `granite_dome_far` | P3; 0 of 2 variants owned | unassigned / planned | proposed / — | concept sheet and asset view (Qwen Image), then model (Pixal3D or Blender); 2 variant(s) |
 
 ## Briefs and component boundaries
-
-### ROCK-GreenlandsBedrockSlab-01
-Flat, fractured granite slabs emerging from soil, 3-8 m One asset family for the `bedrock_slab` role, placed by `dress_zone.py` where: slope above 30 degrees, rises. Needs 4 variant(s) that share a silhouette family; separate meshes, no baked-in ground or neighbours. Required images: concept sheet and clean asset view. Unknowns: exact triangle budget and LODs, set when the model pipeline picks it up.
-
-### ROCK-GreenlandsBoulderLargeMoss-01
-Granite boulders 1.5-4 m, rounded, moss on top faces One asset family for the `boulder_large_moss` role, placed by `dress_zone.py` where: slopes and forest floor. Needs 4 variant(s) that share a silhouette family; separate meshes, no baked-in ground or neighbours. Required images: concept sheet and clean asset view. Unknowns: exact triangle budget and LODs, set when the model pipeline picks it up.
-
-### VEG-GreenlandsBroadleafYoung-01
-Birch/alder-like young broadleaf, 6-10 m, light green, slender trunks One asset family for the `tree_broadleaf_young` role, placed by `dress_zone.py` where: hollows, clearings, stream sides. Needs 4 variant(s) that share a silhouette family; separate meshes, no baked-in ground or neighbours. Required images: concept sheet and clean asset view. Unknowns: exact triangle budget and LODs, set when the model pipeline picks it up.
-
-### VEG-GreenlandsPineTall-01
-Scots-pine-like: straight 20-30 m trunk, grey lower bark turning orange-brown above, high flat crown One asset family for the `tree_pine_tall` role, placed by `dress_zone.py` where: slopes and ridges. Needs 4 variant(s) that share a silhouette family; separate meshes, no baked-in ground or neighbours. Required images: concept sheet and clean asset view. Unknowns: exact triangle budget and LODs, set when the model pipeline picks it up.
 
 ### MAT-GreenlandsMaterialBedrock-01
 Weathered granite with lichen, for steep terrain One asset family for the `material_bedrock` role, placed by `dress_zone.py` where: terrain material, slope above 30 degrees. Needs 1 variant(s) that share a silhouette family; separate meshes, no baked-in ground or neighbours. Required images: concept sheet and clean asset view. Unknowns: exact triangle budget and LODs, set when the model pipeline picks it up.
@@ -60,4 +44,4 @@ Rounded rocky hill/dome silhouettes for distance; northern mountains belong to T
 
 ## Progress
 
-- 2026-10-19: 12 planned, 0 modelling in the Blender session, 0 with an owner-supplied concept waiting for a model.
+- 2026-10-19: 8 planned, 0 modelling in the Blender session, 0 with an owner-supplied concept waiting for a model.

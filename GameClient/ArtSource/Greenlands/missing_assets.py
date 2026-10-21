@@ -234,7 +234,8 @@ def catalog_row(rows):
 
 if __name__ == '__main__':
     rows = gaps()
-    expected = ['PineTall', 'BroadleafYoung', 'SaplingBroadleaf', 'BoulderLargeMoss', 'BedrockSlab', 'CobblePebbleScatter',
+    # PineTall, BroadleafYoung, BoulderLargeMoss, BedrockSlab: delivered (ArtSource/Greenlands/NatureFamilies)
+    expected = ['SaplingBroadleaf', 'CobblePebbleScatter',
                 'LeafNeedleLitter', 'MaterialForestFloor', 'MaterialBedrock', 'HerbBroadleaf', 'MossPatch', 'GraniteDomeFar']
     ids = ' '.join(r['id'] for r in rows)
     missing = [e for e in expected if e not in ids]
