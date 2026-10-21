@@ -94,7 +94,7 @@ public:
         ChildSlot
         [
             SNew(SOverlay)
-            + SOverlay::Slot()[ SNew(SImage).Image(&BackgroundBrush) ]
+            + SOverlay::Slot()[ SNew(SScaleBox).Stretch(EStretch::ScaleToFill)[ SNew(SBox).WidthOverride(1920.f).HeightOverride(1080.f)[ SNew(SImage).Image(&BackgroundBrush) ] ] ]  // fixed 16:9 child: crops (never squashes) on other aspects
             + SOverlay::Slot()[ SNew(SImage).Image(&VignetteBrush) ]
             + SOverlay::Slot()
             [
