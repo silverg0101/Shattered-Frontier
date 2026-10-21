@@ -12,8 +12,11 @@ class SHATTEREDFRONTIER_API USFLoadingScreenSettings : public UDeveloperSettings
     GENERATED_BODY()
 
 public:
-    UPROPERTY(Config, EditAnywhere, Category="Loading Screen", meta=(AllowedClasses="/Script/Engine.Texture2D", ToolTip="Background art, imported by GameClient/ArtSource/LoadingScreen/Import-LoadingScreen.py. Missing art shows the plain HUD slate colour."))
-    FSoftObjectPath SplashTexture = FSoftObjectPath(TEXT("/Game/Frontier/UI/LoadingScreen/T_Splash_Greenlands_Silverbrook.T_Splash_Greenlands_Silverbrook"));
+    UPROPERTY(Config, EditAnywhere, Category="Loading Screen", meta=(AllowedClasses="/Script/Engine.Texture2D", ToolTip="Full-bleed background art without UI, imported by GameClient/ArtSource/UI/LoadingScreen-v5/Import-LoadingScreen-v5.py. Missing art shows the plain HUD slate colour."))
+    FSoftObjectPath SplashTexture = FSoftObjectPath(TEXT("/Game/Frontier/UI/LoadingScreen/T_LS_Background.T_LS_Background"));
+
+    UPROPERTY(Config, EditAnywhere, Category="Loading Screen", meta=(ToolTip="Zone title shown under the emblem, 1 to 40 characters."))
+    FString ZoneTitle = TEXT("Silverbrook");
 
     UPROPERTY(Config, EditAnywhere, Category="Loading Screen", meta=(ClampMin="0.0", ClampMax="30.0", Units="s", ToolTip="Shortest time the screen stays up, so fast loads do not flash. Shipped default 2 s."))
     float MinimumDisplaySeconds = 2.0f;
@@ -28,6 +31,6 @@ public:
     static TArray<FString> DefaultTips();
 
     // Copy with ranges enforced; tips outside the length bounds are dropped, and the shipped tips replace an empty list.
-    struct FValues { FSoftObjectPath Splash; float MinimumDisplaySeconds; float TipSeconds; TArray<FString> Tips; };
+    struct FValues { FString ZoneTitle; FSoftObjectPath Splash; float MinimumDisplaySeconds; float TipSeconds; TArray<FString> Tips; };
     FValues Sanitised() const;
 };

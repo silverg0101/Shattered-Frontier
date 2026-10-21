@@ -8,34 +8,55 @@
 #include "RHI.h"
 #include "UObject/UObjectGlobals.h"
 #include "Widgets/Images/SImage.h"
-#include "Widgets/Images/SThrobber.h"
-#include "Widgets/Layout/SBorder.h"
 #include "Widgets/Layout/SBox.h"
+#include "Widgets/SCanvas.h"
 #include "Widgets/Layout/SScaleBox.h"
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/SOverlay.h"
 #include "Widgets/Text/STextBlock.h"
 
+// Layout follows docs/Game-Design/concept-art/UI/v5/9-loading-screen.png in a 1920x1080 design space (scaled to fit):
+// stag emblem in a brass diamond, 72 px Cinzel zone title, engraved rule, tip line, 620x14 brass bar, 40 px ring spinner.
 namespace
 {
 FDelegateHandle LoadingScreenPreLoadHandle;
-TStrongObjectPtr<UTexture2D> LoadingScreenSplashTexture;
-TStrongObjectPtr<UFont> LoadingScreenSerifFont;
+TArray<TStrongObjectPtr<UTexture2D>> LoadingScreenTextures;
+TMap<FString, TStrongObjectPtr<UFont>> LoadingScreenFonts;
 
-FSlateFontInfo LoadingScreenSerifOrDefault(int32 Size)
+UTexture2D* LoadingScreenLoadTexture(const FSoftObjectPath& Path)
 {
-    if (!LoadingScreenSerifFont.IsValid())
+    UTexture2D* Texture = Cast<UTexture2D>(Path.TryLoad());
+    if (Texture) { LoadingScreenTextures.Emplace(Texture); }
+    else { UE_LOG(LogTemp, Warning, TEXT("Loading screen art %s is missing."), *Path.ToString()); }
+    return Texture;
+}
+
+FSlateBrush LoadingScreenBrush(const TCHAR* Name)
+{
+    FSlateBrush Brush;
+    UTexture2D* Texture = LoadingScreenLoadTexture(FSoftObjectPath(FString::Printf(TEXT("/Game/Frontier/UI/LoadingScreen/%s.%s"), Name, Name)));
+    if (!Texture) { Brush.DrawAs = ESlateBrushDrawType::NoDrawType; return Brush; }
+    Brush.SetResourceObject(Texture);
+    Brush.ImageSize = FVector2D(Texture->GetSizeX(), Texture->GetSizeY());
+    return Brush;
+}
+
+// Font face asset wrapped in a runtime composite font; default engine font when the face is not imported.
+FSlateFontInfo LoadingScreenFont(const TCHAR* FaceName, int32 Size)
+{
+    TStrongObjectPtr<UFont>& Cached = LoadingScreenFonts.FindOrAdd(FaceName);
+    if (!Cached.IsValid())
     {
-        if (UFontFace* Face = LoadObject<UFontFace>(nullptr, TEXT("/Game/Frontier/UI/Fonts/FontFace_Cinzel.FontFace_Cinzel")))
+        if (UFontFace* Face = LoadObject<UFontFace>(nullptr, *FString::Printf(TEXT("/Game/Frontier/UI/Fonts/%s.%s"), FaceName, FaceName)))
         {
             UFont* Font = NewObject<UFont>(GetTransientPackage());
             Font->FontCacheType = EFontCacheType::Runtime;
             Font->CompositeFont.DefaultTypeface.Fonts.Add_GetRef(FTypefaceEntry(TEXT("Regular"))).Font = FFontData(Face);
-            LoadingScreenSerifFont.Reset(Font);
+            Cached.Reset(Font);
         }
     }
-    return LoadingScreenSerifFont.IsValid() ? FSlateFontInfo(LoadingScreenSerifFont.Get(), Size, TEXT("Regular")) : FCoreStyle::GetDefaultFontStyle("Bold", Size);
+    return Cached.IsValid() ? FSlateFontInfo(Cached.Get(), Size, TEXT("Regular")) : FCoreStyle::GetDefaultFontStyle("Regular", Size);
 }
 
 // Slate widget tree for the loading thread: no UMG, no UObject access after construction.
@@ -45,93 +66,96 @@ public:
     SLATE_BEGIN_ARGS(SSFLoadingScreen) {}
     SLATE_END_ARGS()
 
-    void Construct(const FArguments&, const USFLoadingScreenSettings::FValues& Settings, UTexture2D* Splash)
+    void Construct(const FArguments&, const USFLoadingScreenSettings::FValues& Settings)
     {
         Tips = Settings.Tips;
         TipSeconds = Settings.TipSeconds;
         FirstTip = FMath::RandRange(0, Tips.Num() - 1);
         StartTime = FPlatformTime::Seconds();
 
+        UTexture2D* Splash = LoadingScreenLoadTexture(Settings.Splash);
         if (Splash)
         {
-            SplashBrush.SetResourceObject(Splash);
-            SplashBrush.ImageSize = FVector2D(Splash->GetSizeX(), Splash->GetSizeY());
+            BackgroundBrush.SetResourceObject(Splash);
+            BackgroundBrush.ImageSize = FVector2D(Splash->GetSizeX(), Splash->GetSizeY());
         }
-        else { SplashBrush = SFHudStyle::Frame(SFHudStyle::Hex(TEXT("0E171C")), FLinearColor::Transparent, 0.f); }
-        PanelBrush = SFHudStyle::KitOrFrame(TEXT("panel_frame"), SFHudStyle::Slate(0.82f), SFHudStyle::Brass());
-        const FSFHudKitElement* PanelArt = SFHudStyle::Kit(TEXT("panel_frame"));
-        const float Inset = PanelArt ? PanelArt->InsetPixels : 8.f;
-        DividerBrush = SFHudStyle::KitOrFrame(TEXT("divider"), SFHudStyle::Brass(), SFHudStyle::Brass(), 0.f);
-        const FLinearColor Shadow(0.f, 0.f, 0.f, 0.8f);
+        else { BackgroundBrush = SFHudStyle::Frame(SFHudStyle::Hex(TEXT("0E171C")), FLinearColor::Transparent, 0.f); }
+        EmblemBrush = LoadingScreenBrush(TEXT("T_LS_Emblem"));
+        RuleBrush = LoadingScreenBrush(TEXT("T_LS_Rule"));
+        BarFrameBrush = LoadingScreenBrush(TEXT("T_LS_BarFrame"));
+        BarFrameBrush.DrawAs = ESlateBrushDrawType::Box;  // 3-slice: keep the diamond end caps undistorted
+        BarFrameBrush.Margin = FMargin(0.06f, 0.f, 0.06f, 0.f);
+        BarFillBrush =LoadingScreenBrush(TEXT("T_LS_BarFill"));
+        SpinnerBrush = LoadingScreenBrush(TEXT("T_LS_Spinner"));
+        const FLinearColor Shadow(0.f, 0.f, 0.f, 0.7f);
+        constexpr float BarWidth = 620.f, BarHeight = 14.f, BarInset = 3.f;
 
         ChildSlot
         [
             SNew(SOverlay)
-            + SOverlay::Slot()[ SNew(SScaleBox).Stretch(EStretch::ScaleToFill)[ SNew(SImage).Image(&SplashBrush) ] ]
-            // Title in the dark upper-left of the art.
-            + SOverlay::Slot().HAlign(HAlign_Left).VAlign(VAlign_Top).Padding(FMargin(72.f, 56.f))
+            + SOverlay::Slot()[ SNew(SScaleBox).Stretch(EStretch::ScaleToFill)[ SNew(SImage).Image(&BackgroundBrush) ] ]
+            + SOverlay::Slot()
             [
-                SNew(SBox).WidthOverride(560.f)
+                SNew(SScaleBox).Stretch(EStretch::ScaleToFit)
                 [
-                    SNew(SVerticalBox)
-                    + SVerticalBox::Slot().AutoHeight()
-                    [ SNew(STextBlock).Text(NSLOCTEXT("SF", "LoadTitle", "LEGENDS")).Font(LoadingScreenSerifOrDefault(64)).ColorAndOpacity(SFHudStyle::Ivory()).ShadowOffset(FVector2D(2, 2)).ShadowColorAndOpacity(Shadow) ]
-                    + SVerticalBox::Slot().AutoHeight().Padding(0.f, 2.f, 0.f, 8.f)
-                    [ SNew(STextBlock).Text(NSLOCTEXT("SF", "LoadSubtitle", "SHATTERED FRONTIER")).Font(LoadingScreenSerifOrDefault(26)).ColorAndOpacity(SFHudStyle::Brass()).ShadowOffset(FVector2D(1, 1)).ShadowColorAndOpacity(Shadow) ]
-                    + SVerticalBox::Slot().AutoHeight()
-                    [ SNew(SBox).HeightOverride(16.f)[ SNew(SImage).Image(&DividerBrush) ] ]
-                ]
-            ]
-            // Tip and indicator in the dark lower band.
-            + SOverlay::Slot().HAlign(HAlign_Fill).VAlign(VAlign_Bottom).Padding(FMargin(72.f, 0.f, 72.f, 40.f))
-            [
-                SNew(SBorder).BorderImage(&PanelBrush).Padding(FMargin(Inset + 18.f, Inset + 8.f))
-                [
-                    SNew(SHorizontalBox)
-                    + SHorizontalBox::Slot().FillWidth(1.f).VAlign(VAlign_Center)
+                    SNew(SBox).WidthOverride(1920.f).HeightOverride(1080.f)
                     [
-                        SNew(STextBlock).Text(this, &SSFLoadingScreen::CurrentTip).Font(FCoreStyle::GetDefaultFontStyle("Regular", 20)).ColorAndOpacity(SFHudStyle::Ivory()).AutoWrapText(true)
+                        SNew(SCanvas)
+                        + SCanvas::Slot().Position(FVector2D(960.f - 110.f, 452.f - 110.f)).Size(FVector2D(220.f, 220.f))
+                        [ SNew(SImage).Image(&EmblemBrush) ]
+                        + SCanvas::Slot().Position(FVector2D(0.f, 560.f)).Size(FVector2D(1920.f, 100.f))
+                        [ SNew(STextBlock).Text(FText::FromString(Settings.ZoneTitle)).Font(LoadingScreenFont(TEXT("FontFace_Cinzel"), 72)).Justification(ETextJustify::Center).ColorAndOpacity(SFHudStyle::Ivory()).ShadowOffset(FVector2D(2, 2)).ShadowColorAndOpacity(Shadow) ]
+                        + SCanvas::Slot().Position(FVector2D(960.f - 253.f, 697.f - 24.f)).Size(FVector2D(506.f, 48.f))
+                        [ SNew(SImage).Image(&RuleBrush) ]
+                        + SCanvas::Slot().Position(FVector2D(160.f, 862.f)).Size(FVector2D(1600.f, 42.f))
+                        [ SNew(STextBlock).Text(this, &SSFLoadingScreen::CurrentTip).Font(LoadingScreenFont(TEXT("FontFace_EBGaramondRegular"), 24)).Justification(ETextJustify::Center).ColorAndOpacity(SFHudStyle::Ivory()).ShadowOffset(FVector2D(1, 1)).ShadowColorAndOpacity(Shadow) ]
+                        + SCanvas::Slot().Position(FVector2D(960.f - BarWidth / 2.f, 931.f - BarHeight / 2.f)).Size(FVector2D(BarWidth, BarHeight))
+                        [ SNew(SImage).Image(&BarFrameBrush) ]
+                        + SCanvas::Slot().Position(FVector2D(960.f - BarWidth / 2.f + BarInset, 931.f - BarHeight / 2.f + BarInset)).Size(FVector2D(BarWidth - 2.f * BarInset, BarHeight - 2.f * BarInset))
+                        [ SNew(SBox).HAlign(HAlign_Left).WidthOverride(this, &SSFLoadingScreen::FillWidth)[ SNew(SImage).Image(&BarFillBrush) ] ]
+                        + SCanvas::Slot().Position(FVector2D(960.f - 20.f, 989.f - 20.f)).Size(FVector2D(40.f, 40.f))
+                        [ SNew(SImage).Image(&SpinnerBrush).RenderTransformPivot(FVector2D(0.5f, 0.5f)).RenderTransform(this, &SSFLoadingScreen::SpinnerTransform) ]
                     ]
-                    + SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(24.f, 0.f, 0.f, 0.f)
-                    [
-                        SNew(SBox).WidthOverride(28.f).HeightOverride(28.f)
-                        [ SNew(SCircularThrobber).NumPieces(8).Radius(12.f).ColorAndOpacity(SFHudStyle::Brass()) ]
-                    ]
-                    + SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(10.f, 0.f, 0.f, 0.f)
-                    [ SNew(STextBlock).Text(NSLOCTEXT("SF", "Loading", "LOADING")).Font(LoadingScreenSerifOrDefault(16)).ColorAndOpacity(SFHudStyle::Brass()) ]
                 ]
             ]
         ];
     }
 
 private:
+    double Elapsed() const { return FPlatformTime::Seconds() - StartTime; }
+
     FText CurrentTip() const
     {
-        const int32 Step = TipSeconds > 0.f ? static_cast<int32>((FPlatformTime::Seconds() - StartTime) / TipSeconds) : 0;
+        const int32 Step = TipSeconds > 0.f ? static_cast<int32>(Elapsed() / TipSeconds) : 0;
         return FText::FromString(Tips[(FirstTip + Step) % Tips.Num()]);
     }
+
+    // MoviePlayer reports no load progress to the widget: ease towards 92 % so the bar always moves and never claims done early.
+    FOptionalSize FillWidth() const { return FOptionalSize(static_cast<float>(0.92 * (1.0 - FMath::Exp(-Elapsed() / 6.0))) * (620.f - 6.f)); }
+
+    TOptional<FSlateRenderTransform> SpinnerTransform() const { return FSlateRenderTransform(FQuat2D(FMath::DegreesToRadians(static_cast<float>(FMath::Fmod(Elapsed() * 270.0, 360.0))))); }
 
     TArray<FString> Tips;
     float TipSeconds = 6.f;
     int32 FirstTip = 0;
     double StartTime = 0.0;
-    FSlateBrush SplashBrush, PanelBrush, DividerBrush;
+    FSlateBrush BackgroundBrush, EmblemBrush, RuleBrush, BarFrameBrush, BarFillBrush, SpinnerBrush;
 };
 
 void LoadingScreenOnPreLoadMap(const FString&)
 {
     if (!GetMoviePlayer()) { return; }
     const USFLoadingScreenSettings::FValues Values = GetDefault<USFLoadingScreenSettings>()->Sanitised();
-    LoadingScreenSplashTexture.Reset(Cast<UTexture2D>(Values.Splash.TryLoad()));
-    if (!LoadingScreenSplashTexture.IsValid()) { UE_LOG(LogTemp, Warning, TEXT("Loading screen art %s is missing; using the slate fallback."), *Values.Splash.ToString()); }
-    LoadingScreenSerifOrDefault(12);
+    LoadingScreenTextures.Reset();
+    LoadingScreenFont(TEXT("FontFace_Cinzel"), 12);
+    LoadingScreenFont(TEXT("FontFace_EBGaramondRegular"), 12);
 
     FLoadingScreenAttributes Attributes;
     Attributes.bAutoCompleteWhenLoadingCompletes = true;
     Attributes.bMoviesAreSkippable = false;
     Attributes.bWaitForManualStop = false;
     Attributes.MinimumLoadingScreenDisplayTime = Values.MinimumDisplaySeconds;
-    Attributes.WidgetLoadingScreen = SNew(SSFLoadingScreen, Values, LoadingScreenSplashTexture.Get());
+    Attributes.WidgetLoadingScreen = SNew(SSFLoadingScreen, Values);
     GetMoviePlayer()->SetupLoadingScreen(Attributes);
 }
 }
@@ -145,6 +169,6 @@ void SFLoadingScreen::Register()
 void SFLoadingScreen::Unregister()
 {
     if (LoadingScreenPreLoadHandle.IsValid()) { FCoreUObjectDelegates::PreLoadMap.Remove(LoadingScreenPreLoadHandle); LoadingScreenPreLoadHandle.Reset(); }
-    LoadingScreenSplashTexture.Reset();
-    LoadingScreenSerifFont.Reset();
+    LoadingScreenTextures.Reset();
+    LoadingScreenFonts.Reset();
 }
