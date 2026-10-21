@@ -29,6 +29,7 @@ public sealed record HousingRemoveRequest(string OperationId, string Fingerprint
     long ExpectedContainerRevision, int RefundPercent);
 public sealed record HousingRemoval(string OperationId, string Fingerprint, HousingPlacement Placement,
     string State, long Revision, long RefundQuantity, long ExpectedContainerRevision, LedgerReceipt? RefundReceipt);
+public sealed record HousingStructureSnapshot(long Revision, IReadOnlyList<HousingPlacement> Structures);
 
 // Each housing call commits its receipt and revision in one transaction. The external inventory
 // debit is identified by operation_id + "/consume"; recovery only trusts a durable ledger receipt.
@@ -223,6 +224,19 @@ public sealed class PostgresHousingStore(string connectionString)
         using (var cmd = Cmd(c,t,"SELECT operation_id FROM housing.placements WHERE claim_id=$1 AND state='Committed' ORDER BY revision",claimId))
         using (var r = cmd.ExecuteReader()) while (r.Read()) ids.Add(r.GetString(0));
         return (IReadOnlyList<HousingPlacement>)ids.Select(id => ReadPlacement(c,t,id)!).ToArray();
+    });
+
+    public HousingStructureSnapshot StructureSnapshot(string claimId) => Run((c,t) =>
+    {
+        RequireGameplaySchema(c,t);
+        if (ReadClaim(c,t,claimId) is null) throw new HousingRejectedException("Claim missing.");
+        long revision;
+        using (var cmd = Cmd(c,t,"SELECT revision FROM housing.claim_structure_revisions WHERE claim_id=$1",claimId))
+            revision = cmd.ExecuteScalar() is long value ? value : throw new HousingRejectedException("Claim structure revision missing.");
+        var ids = new List<string>();
+        using (var cmd = Cmd(c,t,"SELECT operation_id FROM housing.placements WHERE claim_id=$1 AND state='Committed' ORDER BY revision",claimId))
+        using (var r = cmd.ExecuteReader()) while (r.Read()) ids.Add(r.GetString(0));
+        return new HousingStructureSnapshot(revision, ids.Select(id => ReadPlacement(c,t,id)!).ToArray());
     });
 
     public HousingPlacement Reconcile(string operationId, IInventoryLedgerStore ledgerStore) =>

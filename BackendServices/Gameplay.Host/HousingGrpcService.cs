@@ -35,6 +35,49 @@ internal sealed class HousingGrpcService(PostgresHousingStore store, ProtectedZo
         GrpcRun.Call(context, () => ToPb(store.Claim(request.ClaimId) ??
             throw new InvalidOperationException("Claim missing.")));
 
+    public override Task<Pb.ListStructuresReply> ListStructures(Pb.ListStructuresRequest request, ServerCallContext context) =>
+        GrpcRun.Call(context, () =>
+        {
+            var snapshot = store.StructureSnapshot(request.ClaimId);
+            var reply = new Pb.ListStructuresReply { StructureRevision = snapshot.Revision };
+            reply.Structures.AddRange(snapshot.Structures.Select(s => new Pb.Structure
+            {
+                StructureId = s.StructureId, Cell = new Pb.StructureCell { X = s.Cell.X, Y = s.Cell.Y, Z = s.Cell.Z },
+                ContentId = s.ContentId, Revision = s.Revision
+            }));
+            return reply;
+        });
+
+    public override Task<Pb.ClaimReply> Grant(Pb.GrantRequest request, ServerCallContext context) =>
+        GrpcRun.Call(context, () =>
+        {
+            var fingerprint = Fingerprint(Encoding.UTF8.GetBytes("housing/grant/v1:").Concat(request.ToByteArray()).ToArray());
+            var replay = store.ReplayClaim(request.OperationId, fingerprint);
+            if (replay is not null) return ToPb(replay);
+            const ClaimRight all = ClaimRight.Build | ClaimRight.OpenDoors | ClaimRight.UseContainers;
+            if (string.IsNullOrWhiteSpace(request.OperationId) || request.OperationId.Length > 128 ||
+                string.IsNullOrWhiteSpace(request.ClaimId) || string.IsNullOrWhiteSpace(request.ActorId) ||
+                request.ExpectedPermissionRevision < 0 || request.Rights < 0 ||
+                (request.Rights & ~(int)all) != 0)
+                throw new ArgumentException("Invalid grant request.");
+            var claim = store.Claim(request.ClaimId) ?? throw new HousingRejectedException("Claim missing.");
+            if (claim.OwnerId != request.ActorId)
+                throw new HousingRejectedException("Only the claim owner may grant.", HousingRejectionCode.PermissionDenied);
+            if (string.IsNullOrWhiteSpace(request.TargetId) || request.TargetId == request.ActorId)
+                throw new ArgumentException("Invalid grant target.");
+            if (claim.PermissionRevision != request.ExpectedPermissionRevision)
+                throw new HousingRejectedException("Stale permission revision.", HousingRejectionCode.FailedPrecondition);
+            if (claim.State is "Archived" or "Reclaimed")
+                throw new HousingRejectedException("Claim is not active.");
+            var grants = new Dictionary<string, int>(claim.Grants, StringComparer.Ordinal);
+            if (request.Rights == 0) grants.Remove(request.TargetId);
+            else grants[request.TargetId] = request.Rights;
+            var saved = store.SaveClaim(request.OperationId, fingerprint,
+                claim with { Revision = checked(claim.Revision + 1), PermissionRevision = checked(claim.PermissionRevision + 1), Grants = grants },
+                claim.Revision);
+            return ToPb(saved);
+        });
+
     public override Task<Pb.PlacementReply> Place(Pb.PlaceRequest request, ServerCallContext context) =>
         GrpcRun.Call(context, () =>
         {

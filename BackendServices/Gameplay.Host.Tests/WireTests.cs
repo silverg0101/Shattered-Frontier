@@ -78,6 +78,16 @@ if (mode.EndsWith("-replay", StringComparison.Ordinal))
             ExpectedStructureRevision = 1, ExpectedContainerRevision = 2, RemovalKind = "undo" }, headers,
             deadline: Deadline());
         Check(claim.State == "Active" && removed.State == "Removed", "Housing restart replay failed.");
+        var structures = client.ListStructures(new HousingPb.ListStructuresRequest { ClaimId = "clm_test" }, headers, deadline: Deadline());
+        Check(structures.StructureRevision >= 2 && structures.Structures.Count == 0, "Housing restart structure list failed.");
+        var grantStructures = client.ListStructures(new HousingPb.ListStructuresRequest { ClaimId = "clm_grants" }, headers, deadline: Deadline());
+        Check(grantStructures.StructureRevision == 1 && grantStructures.Structures.Count == 1 &&
+            grantStructures.Structures[0].StructureId == "str_target_wall", "Granted target structure lost after restart.");
+        var grant = client.Grant(new HousingPb.GrantRequest { OperationId = "grant/test", ClaimId = "clm_grants",
+            ActorId = "chr_grants", TargetId = "chr_target", Rights = 1, ExpectedPermissionRevision = 0 }, headers, deadline: Deadline());
+        Check(grant.PermissionRevision == 1 &&
+            client.GetClaim(new HousingPb.GetClaimRequest { ClaimId = "clm_grants" }, headers, deadline: Deadline()).PermissionRevision == 2,
+            "Housing grant receipt or revoke state lost after restart.");
     }
     Console.WriteLine($"PASS {mode} durable replay");
     return;
@@ -250,6 +260,11 @@ else if (mode == "housing")
         "Placement replay differs.");
     Check(ledger.Read("ctn_housing").Quantities.GetValueOrDefault("item/wall_material_bundle") == 0,
         "Placement duplicated debit.");
+    var listed = client.ListStructures(new HousingPb.ListStructuresRequest { ClaimId = "clm_test" }, headers, deadline: Deadline());
+    Check(listed.StructureRevision == 1 && listed.Structures.Count == 1 &&
+        listed.Structures[0].StructureId == "str_test_wall" && listed.Structures[0].Cell.X == 0 &&
+        listed.Structures[0].ContentId == "piece/wall" && listed.Structures[0].Revision == 1,
+        "Committed structure list differs.");
     request.OperationId = "claim/invalid"; request.ClaimId = "bad_id";
     Code(() => client.ClaimPlot(request, headers, deadline: Deadline()), StatusCode.FailedPrecondition);
     var remove = new HousingPb.RemoveRequest { OperationId = "remove/test", ClaimId = "clm_test",
@@ -261,6 +276,33 @@ else if (mode == "housing")
         "Removal replay differs.");
     Check(ledger.Read("ctn_housing").Quantities.GetValueOrDefault("item/wall_material_bundle") == 1,
         "Removal refund differs.");
+    listed = client.ListStructures(new HousingPb.ListStructuresRequest { ClaimId = "clm_test" }, headers, deadline: Deadline());
+    Check(listed.StructureRevision == 2 && listed.Structures.Count == 0, "Removed structure remained listed.");
+    client.ClaimPlot(new HousingPb.ClaimPlotRequest { OperationId = "claim/grants", ClaimId = "clm_grants",
+        OwnerId = "chr_grants", CenterX = 1200, CenterY = 1200, SideMetres = 40, PrepaidDays = 1 }, headers, deadline: Deadline());
+    ledger.CreateContainer(new ContainerSpec("ctn_target", OwnerKind.Character, "chr_target", ContainerKind.Backpack, 100));
+    ledger.Grant("seed/target", "ctn_target", 0, "item/wall_material_bundle", 2, "fixture", "seed/target");
+    var grantRequest = new HousingPb.GrantRequest { OperationId = "grant/test", ClaimId = "clm_grants",
+        ActorId = "chr_grants", TargetId = "chr_target", Rights = 1, ExpectedPermissionRevision = 0 };
+    var deniedGrant = grantRequest.Clone(); deniedGrant.OperationId = "grant/denied"; deniedGrant.ActorId = "chr_intruder";
+    Code(() => client.Grant(deniedGrant, headers, deadline: Deadline()), StatusCode.PermissionDenied);
+    var grantReply = client.Grant(grantRequest, headers, deadline: Deadline());
+    Check(grantReply.PermissionRevision == 1 && grantReply.Revision == 1 &&
+        client.Grant(grantRequest, headers, deadline: Deadline()).Equals(grantReply), "Grant replay differs.");
+    var staleGrant = grantRequest.Clone(); staleGrant.OperationId = "grant/stale";
+    Code(() => client.Grant(staleGrant, headers, deadline: Deadline()), StatusCode.FailedPrecondition);
+    var targetPlace = new HousingPb.PlaceRequest { OperationId = "place/target", ClaimId = "clm_grants",
+        ActorId = "chr_target", ExpectedPermissionRevision = 1, ExpectedStructureRevision = 0,
+        StructureId = "str_target_wall", ContentId = "piece/wall", MaterialId = "item/wall_material_bundle",
+        MaterialQuantity = 1, ContainerId = "ctn_target", ExpectedContainerRevision = 1, CellX = 1, CellY = 2, CellZ = 3 };
+    Check(client.Place(targetPlace, headers, deadline: Deadline()).StructureRevision == 1,
+        "Target could not place with build right.");
+    var revoke = grantRequest.Clone(); revoke.OperationId = "grant/revoke"; revoke.Rights = 0; revoke.ExpectedPermissionRevision = 1;
+    Check(client.Grant(revoke, headers, deadline: Deadline()).PermissionRevision == 2, "Revoke failed.");
+    targetPlace.OperationId = "place/target-denied"; targetPlace.StructureId = "str_target_denied";
+    targetPlace.ExpectedPermissionRevision = 2; targetPlace.ExpectedStructureRevision = 1;
+    targetPlace.ExpectedContainerRevision = 2; targetPlace.CellX = 2;
+    Code(() => client.Place(targetPlace, headers, deadline: Deadline()), StatusCode.PermissionDenied);
 }
 else throw new Exception("Unknown test mode.");
 Console.WriteLine($"PASS {mode} wire auth, deadline, status, replay");

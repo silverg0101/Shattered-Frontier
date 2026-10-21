@@ -7,6 +7,28 @@ service Housing {
   rpc Place(PlaceRequest) returns (PlacementReply);
   rpc Remove(RemoveRequest) returns (PlacementReply);
   rpc GetClaim(GetClaimRequest) returns (ClaimReply);
+  rpc ListStructures(ListStructuresRequest) returns (ListStructuresReply);
+  rpc Grant(GrantRequest) returns (ClaimReply);
+}
+message ListStructuresRequest { string claim_id = 1; }
+message StructureCell { int32 x = 1; int32 y = 2; int32 z = 3; }
+message Structure {
+  string structure_id = 1;
+  StructureCell cell = 2;
+  string content_id = 3;
+  int64 revision = 4;
+}
+message ListStructuresReply {
+  repeated Structure structures = 1;
+  int64 structure_revision = 2;
+}
+message GrantRequest {
+  string operation_id = 1;
+  string claim_id = 2;
+  string actor_id = 3;
+  string target_id = 4;
+  int32 rights = 5;
+  int64 expected_permission_revision = 6;
 }
 message ClaimPlotRequest {
   string operation_id = 1;

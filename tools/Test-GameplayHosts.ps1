@@ -67,11 +67,12 @@ try {
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $port = $listener.LocalEndpoint.Port; $listener.Stop()
     @{run=$run;data=$data;port=$port} | ConvertTo-Json | Set-Content (Join-Path $private 'owner.json')
     $projects = @('Rewards','Progression','Housing') | ForEach-Object { Join-Path $repo "BackendServices/Gameplay.Host.Tests/$_/$_.Host.Tests.csproj" }
+    $buildOutput = (Join-Path $private 'build') + [IO.Path]::DirectorySeparatorChar
     foreach ($project in $projects) {
         $currentStep = "restore $project"
         [void](Invoke-Checked $dotnet @('restore',$project,'--locked-mode','--packages',(Join-Path $repo 'Artifacts/Persistence/Toolchains/nuget'),'--verbosity','quiet'))
         $currentStep = "build $project"
-        [void](Invoke-Checked $dotnet @('build',$project,'--no-restore','--configuration','Release','--verbosity','quiet'))
+        [void](Invoke-Checked $dotnet @('build',$project,'--no-restore','--configuration','Release','--verbosity','quiet',"-p:OutDir=$buildOutput"))
     }
     $pwfile = Join-Path $private 'admin-password'; [IO.File]::WriteAllText($pwfile,$adminPassword)
     [void](Invoke-Checked (Join-Path $pg 'initdb.exe') @('-D',$data,'-U','fixture_admin','--pwfile',$pwfile,'--auth','scram-sha-256','--encoding','UTF8','--no-locale'))
@@ -97,7 +98,7 @@ try {
     Copy-Item -LiteralPath (Join-Path $repo 'content') -Destination $fixtureContent -Recurse
     $env:GAMEPLAY_CONTENT_ROOT = $fixtureContent
     $env:SF_GAMEPLAY_TOKEN = $token
-    $hostDll = Join-Path $repo 'BackendServices/Gameplay.Host/bin/Release/net10.0/Gameplay.Host.dll'
+    $hostDll = Join-Path $buildOutput 'Gameplay.Host.dll'
     $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host.out') -RedirectStandardError (Join-Path $private 'host.err')
     $ready = $false
     for ($i=0; $i -lt 100; $i++) {
@@ -109,18 +110,21 @@ try {
     $results = [Collections.Generic.List[string]]::new()
     foreach ($name in @('Rewards','Progression','Housing')) {
         $currentStep = "wire $name"
-        $dll = Join-Path $repo "BackendServices/Gameplay.Host.Tests/$name/bin/Release/net10.0/$name.Host.Tests.dll"
+        $dll = Join-Path $buildOutput "$name.Host.Tests.dll"
         $results.Add((Invoke-Checked $dotnet @($dll,$name.ToLowerInvariant()) @{
             GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
         }))
     }
-    $journeyDll = Join-Path $repo 'BackendServices/Gameplay.Host.Tests/Progression/bin/Release/net10.0/Progression.Host.Tests.dll'
+    $journeyDll = Join-Path $buildOutput 'Progression.Host.Tests.dll'
     $currentStep = 'journey'
     $results.Add((Invoke-Checked $dotnet @($journeyDll,'journey') @{
         GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection;
         GAMEPLAY_CONTENT_ROOT=(Join-Path $repo 'content'); SF_GAMEPLAY_TOKEN=$token
     }))
     Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+    $currentStep = 'housing restart persistence'
+    Cluster stop
+    Cluster start
     $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-restart.out') -RedirectStandardError (Join-Path $private 'host-restart.err')
     $ready = $false
     for ($i=0; $i -lt 100; $i++) {
@@ -130,7 +134,7 @@ try {
     }
     if (-not $ready) { throw 'Gameplay host restart timeout.' }
     foreach ($name in @('Rewards','Progression','Housing')) {
-        $dll = Join-Path $repo "BackendServices/Gameplay.Host.Tests/$name/bin/Release/net10.0/$name.Host.Tests.dll"
+        $dll = Join-Path $buildOutput "$name.Host.Tests.dll"
         $results.Add((Invoke-Checked $dotnet @($dll,($name.ToLowerInvariant() + '-replay')) @{
             GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
         }))
@@ -283,7 +287,7 @@ try {
     $results.Add('PASS exchange sweeper committed one sale after host kill and immediate PostgreSQL restart')
     Cluster stop
     foreach ($name in @('Rewards','Progression','Housing')) {
-        $dll = Join-Path $repo "BackendServices/Gameplay.Host.Tests/$name/bin/Release/net10.0/$name.Host.Tests.dll"
+        $dll = Join-Path $buildOutput "$name.Host.Tests.dll"
         $results.Add((Invoke-Checked $dotnet @($dll,($name.ToLowerInvariant() + '-outage')) @{
             GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
         }))
