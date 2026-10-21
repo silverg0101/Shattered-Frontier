@@ -191,6 +191,8 @@ public:
     bool IsSkillLockReady(ESFGatheringSkill Skill) const;
     bool IsSkillLockChangePending(ESFGatheringSkill Skill) const { return SkillLockPending.IsValidIndex(int32(Skill))&&SkillLockPending[int32(Skill)]; }
     FString GetStatusText(const FVector& Start, const FVector& Direction) const;
+    // Read-only view of the owner-replicated inventory: one (display name, quantity) per occupied slot or equipped tool.
+    TArray<TPair<FText,int32>> GetInventoryItems() const;
     static bool IsPilotRequested();
     void AssignPilotRole(bool bPrimary);
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST

@@ -452,6 +452,30 @@ bool USFGatheringPilotComponent::TryEquipTool(bool bAxe)
     return false;
 }
 
+TArray<TPair<FText,int32>> USFGatheringPilotComponent::GetInventoryItems() const
+{
+    TArray<TPair<FText,int32>> Items;
+#if SF_WITH_MINIMAL_INVENTORY
+    const auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+    if (!Inventory) { return Items; }
+    auto Add=[&Items](const TSoftObjectPtr<UInventoryItemDefinition>& Item,int32 Quantity,const TCHAR* Suffix)
+    {
+        if (Quantity<=0 || Item.IsNull()) { return; }
+        const UInventoryItemDefinition* Definition=Item.LoadSynchronous();
+        const FString Name=Definition && !Definition->DisplayName.IsEmpty() ? Definition->DisplayName.ToString() : Item.GetAssetName();
+        Items.Emplace(FText::FromString(Name+Suffix),Quantity);
+    };
+    for (int32 I=0; I<FMath::Clamp(Inventory->NumSlots,0,64); ++I)
+    {
+        TSoftObjectPtr<UInventoryItemDefinition> Item; int32 Quantity=0;
+        if (Inventory->GetSlot(I,Item,Quantity)) { Add(Item,Quantity,TEXT("")); }
+    }
+    TSoftObjectPtr<UInventoryItemDefinition> Equipped; int32 Quantity=0;
+    if (Inventory->GetEquippedItem(TEXT("tool"),Equipped,Quantity)) { Add(Equipped,Quantity,TEXT(" (equipped)")); }
+#endif
+    return Items;
+}
+
 void USFGatheringPilotComponent::EquipAxe() { TryEquipTool(true); }
 void USFGatheringPilotComponent::EquipPickaxe() { TryEquipTool(false); }
 

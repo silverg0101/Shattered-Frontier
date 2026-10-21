@@ -5,6 +5,7 @@
 #include "SFE1PlayerController.generated.h"
 
 class ASFE1InteractionTarget;
+class USFInventoryPanel;
 
 UENUM()
 enum class ESFE1InteractionResult : uint8
@@ -21,7 +22,9 @@ public:
     ASFE1PlayerController();
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
+    virtual void SetupInputComponent() override;
     void InteractWithSelectedTarget();
+    void ToggleInventoryPanel();
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     // Observes entry before local request coalescing, so input-routing tests can
     // detect duplicate pawn dispatch even when cooldown hides another request.
@@ -39,6 +42,7 @@ private:
     ESFE1InteractionResult ProcessInteraction(AActor* Target, uint32 ExpectedRevision);
     void RefreshLocalFeedback();
 
+    UPROPERTY(Transient) TObjectPtr<USFInventoryPanel> InventoryPanel;
     TWeakObjectPtr<ASFE1InteractionTarget> SelectedTarget;
     uint32 SelectedRevision = 0;
     double LastAcceptedServerSeconds = -1.0e30;

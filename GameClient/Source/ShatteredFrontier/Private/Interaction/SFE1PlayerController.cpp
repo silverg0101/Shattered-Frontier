@@ -1,6 +1,9 @@
 #include "Interaction/SFE1PlayerController.h"
 #include "Interaction/SFE1InteractionTarget.h"
 #include "Framework/SFE1Settings.h"
+#include "Gathering/SFGatheringPilot.h"
+#include "Inventory/SFInventoryPanel.h"
+#include "Components/InputComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
@@ -187,6 +190,31 @@ void ASFE1PlayerController::RefreshLocalFeedback()
                 && (!bShowResult || LastResult == ESFE1InteractionResult::Accepted)
                 ? FColor::Green : FColor::Yellow, Message);
     }
+}
+
+void ASFE1PlayerController::SetupInputComponent()
+{
+    Super::SetupInputComponent();
+    InputComponent->BindKey(EKeys::I, IE_Pressed, this, &ASFE1PlayerController::ToggleInventoryPanel);
+}
+
+void ASFE1PlayerController::ToggleInventoryPanel()
+{
+    USFGatheringPilotComponent* Pilot = FindComponentByClass<USFGatheringPilotComponent>();
+    if (!IsLocalController() || !Pilot || !Pilot->IsEnabled()) { return; }
+    if (!InventoryPanel)
+    {
+        InventoryPanel = CreateWidget<USFInventoryPanel>(this, USFInventoryPanel::StaticClass());
+        if (!InventoryPanel) { return; }
+        InventoryPanel->Configure(Pilot);
+        InventoryPanel->AddToViewport(20);
+        InventoryPanel->SetDesiredSizeInViewport(FVector2D(320, 360));
+        InventoryPanel->SetPositionInViewport(FVector2D(16, 220));
+        InventoryPanel->SetVisibility(ESlateVisibility::Collapsed);
+    }
+    // Display only: hit-test invisible so it never takes clicks from world controls.
+    InventoryPanel->SetVisibility(InventoryPanel->GetVisibility() == ESlateVisibility::Collapsed
+        ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
 }
 
 void ASFE1PlayerController::InteractWithSelectedTarget()
