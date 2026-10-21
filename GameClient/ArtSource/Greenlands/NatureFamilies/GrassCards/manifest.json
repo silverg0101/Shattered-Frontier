@@ -1,6 +1,6 @@
 {
   "schema": "gfx02-grass-cards-v1",
-  "source": "Poly Haven CC0",
+  "source": "concept-derived procedural blade artwork; Poly Haven CC0 clump dimensions",
   "atlas_px": [
     2048,
     1024
@@ -9,6 +9,7 @@
     512,
     512
   ],
+  "bake": "straight alpha, nearest-colour dilation into transparent texels, 3x supersample",
   "cards": [
     {
       "slot": 0,
@@ -32,7 +33,10 @@
         36,
         12,
         4
-      ]
+      ],
+      "bake": "concept_palette_dense_blades_straight_alpha_dilated",
+      "blade_count": 160,
+      "dry_blade_count": 4
     },
     {
       "slot": 1,
@@ -56,7 +60,10 @@
         36,
         12,
         4
-      ]
+      ],
+      "bake": "concept_palette_dense_blades_straight_alpha_dilated",
+      "blade_count": 152,
+      "dry_blade_count": 5
     },
     {
       "slot": 2,
@@ -67,7 +74,7 @@
       "dimensions_metres": [
         0.16595670580863953,
         0.18989211320877075,
-        0.09989527612924576
+        0.24
       ],
       "screen_sizes": [
         1.0,
@@ -80,6 +87,14 @@
         36,
         12,
         4
+      ],
+      "bake": "concept_palette_dense_blades_straight_alpha_dilated",
+      "blade_count": 176,
+      "dry_blade_count": 3,
+      "source_dimensions_metres": [
+        0.16595670580863953,
+        0.18989211320877075,
+        0.09989527612924576
       ]
     },
     {
@@ -91,7 +106,7 @@
       "dimensions_metres": [
         0.1848401129245758,
         0.1623130440711975,
-        0.14042668044567108
+        0.23
       ],
       "screen_sizes": [
         1.0,
@@ -104,6 +119,14 @@
         36,
         12,
         4
+      ],
+      "bake": "concept_palette_dense_blades_straight_alpha_dilated",
+      "blade_count": 168,
+      "dry_blade_count": 6,
+      "source_dimensions_metres": [
+        0.1848401129245758,
+        0.1623130440711975,
+        0.14042668044567108
       ]
     },
     {
@@ -128,7 +151,10 @@
         36,
         12,
         4
-      ]
+      ],
+      "bake": "concept_palette_dense_blades_straight_alpha_dilated",
+      "blade_count": 192,
+      "dry_blade_count": 14
     },
     {
       "slot": 5,
@@ -152,7 +178,10 @@
         36,
         12,
         4
-      ]
+      ],
+      "bake": "concept_palette_dense_blades_straight_alpha_dilated",
+      "blade_count": 184,
+      "dry_blade_count": 18
     }
   ]
 }

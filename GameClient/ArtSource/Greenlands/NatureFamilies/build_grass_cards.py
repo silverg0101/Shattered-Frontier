@@ -1,118 +1,23 @@
-"""Build GFX-02 J0 grass card atlases, three FBX LODs per card and a review render.
+"""Build GFX-02 J0 grass card atlases, three FBX LODs per card and a review sheet.
 
 Run with Blender 5.1: blender -b --factory-startup -P build_grass_cards.py
+The art pass uses Python 3.12 with Pillow, NumPy and SciPy via `py -3.12`.
 The FBX files have separate _LOD0/_LOD1/_LOD2 suffixes for Unreal's manual LOD import.
 """
 import json
 import math
+import random
+import subprocess
+import sys
 from pathlib import Path
 
-import bpy
-import numpy as np
-from mathutils import Vector
+if '--art-only' not in sys.argv:
+    import bpy
 
 HERE = Path(__file__).resolve().parent
 OUT = HERE / 'GrassCards'
 OUT.mkdir(exist_ok=True)
-SOURCES = HERE / 'Sources'
 ATLAS_W, ATLAS_H, TILE = 2048, 1024, 512
-
-
-def flat_material(source, normal=False):
-    material = source.copy()
-    material.name = source.name + ('_NormalPass' if normal else '_DiffusePass')
-    material.use_nodes = True
-    tree = material.node_tree
-    output = next(n for n in tree.nodes if n.type == 'OUTPUT_MATERIAL')
-    principled = next((n for n in tree.nodes if n.type == 'BSDF_PRINCIPLED'), None)
-    color_link = principled.inputs['Base Color'].links[0].from_socket if principled and principled.inputs['Base Color'].is_linked else None
-    alpha_link = principled.inputs['Alpha'].links[0].from_socket if principled and principled.inputs['Alpha'].is_linked else None
-    alpha_value = principled.inputs['Alpha'].default_value if principled else 1.0
-    emission = tree.nodes.new('ShaderNodeEmission')
-    if normal:
-        geometry = tree.nodes.new('ShaderNodeNewGeometry')
-        remap = tree.nodes.new('ShaderNodeVectorMath')
-        remap.operation = 'MULTIPLY_ADD'
-        remap.inputs[1].default_value = (0.5, 0.5, 0.5)
-        remap.inputs[2].default_value = (0.5, 0.5, 0.5)
-        tree.links.new(geometry.outputs['Normal'], remap.inputs[0])
-        tree.links.new(remap.outputs['Vector'], emission.inputs['Color'])
-    elif color_link:
-        tree.links.new(color_link, emission.inputs['Color'])
-    elif principled:
-        emission.inputs['Color'].default_value = principled.inputs['Base Color'].default_value
-    transparent = tree.nodes.new('ShaderNodeBsdfTransparent')
-    mix = tree.nodes.new('ShaderNodeMixShader')
-    tree.links.new(transparent.outputs[0], mix.inputs[1])
-    tree.links.new(emission.outputs[0], mix.inputs[2])
-    if alpha_link:
-        tree.links.new(alpha_link, mix.inputs[0])
-    else:
-        mix.inputs[0].default_value = alpha_value
-    tree.links.new(mix.outputs[0], output.inputs['Surface'])
-    material.surface_render_method = 'DITHERED'
-    material.use_transparency_overlap = False
-    return material
-
-
-def load_clumps():
-    selected = []
-    for asset in ('grass_medium_01', 'grass_medium_02'):
-        bpy.ops.wm.read_factory_settings(use_empty=True)
-        bpy.ops.import_scene.gltf(filepath=str(SOURCES / asset / (asset + '.gltf')))
-        objects = [o for o in bpy.context.scene.objects if o.type == 'MESH']
-        for obj in objects:
-            obj.data.calc_loop_triangles()
-        if asset == 'grass_medium_01':
-            chosen = sorted((o for o in objects if 300 <= len(o.data.loop_triangles) <= 1600),
-                            key=lambda o: len(o.data.loop_triangles))[:4]
-            assert len(chosen) == 4, 'Expected four curated grass_medium_01 clumps'
-        else:
-            chosen = sorted(objects, key=lambda o: o.dimensions.x * o.dimensions.y * o.dimensions.z,
-                            reverse=True)[:2]
-            assert len(chosen) == 2, 'Expected two grass_medium_02 clumps'
-        # Render now: a factory reset on the next asset removes these objects.
-        for obj in chosen:
-            yield asset, obj
-
-
-def render_tile(obj, normal, path):
-    scene = bpy.context.scene
-    materials = list(obj.data.materials)
-    for slot, original in enumerate(materials):
-        obj.data.materials[slot] = flat_material(original, normal) if original else None
-    for other in scene.objects:
-        if other.type == 'MESH':
-            other.hide_render = other != obj
-    scene.render.engine = 'BLENDER_EEVEE'
-    scene.render.resolution_x = scene.render.resolution_y = TILE
-    scene.render.resolution_percentage = 100
-    scene.render.film_transparent = True
-    scene.render.image_settings.file_format = 'PNG'
-    scene.render.image_settings.color_mode = 'RGBA'
-    scene.render.image_settings.color_depth = '8'
-    scene.view_settings.view_transform = 'Standard'
-    scene.view_settings.look = 'Medium High Contrast'
-    scene.view_settings.exposure = 0
-    scene.view_settings.gamma = 1
-    bounds = [obj.matrix_world @ Vector(corner) for corner in obj.bound_box]
-    lo = Vector(tuple(min(v[i] for v in bounds) for i in range(3)))
-    hi = Vector(tuple(max(v[i] for v in bounds) for i in range(3)))
-    center = (lo + hi) * 0.5
-    camera_data = bpy.data.cameras.new('CardCamera')
-    camera = bpy.data.objects.new('CardCamera', camera_data)
-    scene.collection.objects.link(camera)
-    camera.location = center + Vector((0, -max(2.0, obj.dimensions.y * 4), 0))
-    camera.rotation_euler = (center - camera.location).to_track_quat('-Z', 'Y').to_euler()
-    camera_data.type = 'ORTHO'
-    camera_data.ortho_scale = max(hi.x - lo.x, hi.z - lo.z) * 1.08
-    scene.camera = camera
-    scene.render.filepath = str(path)
-    bpy.ops.render.render(write_still=True)
-    bpy.data.objects.remove(camera, do_unlink=True)
-    for slot, original in enumerate(materials):
-        obj.data.materials[slot] = original
-    return [float(v) for v in hi - lo]
 
 
 def card_mesh(name, width, height, slot, level):
@@ -155,24 +60,6 @@ def card_mesh(name, width, height, slot, level):
     return obj, len(faces)
 
 
-def save_atlas(paths, name):
-    pixels = np.zeros((ATLAS_H, ATLAS_W, 4), dtype=np.float32)
-    for slot, path in enumerate(paths):
-        image = bpy.data.images.load(str(path), check_existing=False)
-        assert tuple(image.size) == (TILE, TILE)
-        tile = np.empty(TILE * TILE * 4, dtype=np.float32)
-        image.pixels.foreach_get(tile)
-        y, x = divmod(slot, 4)
-        pixels[y*TILE:(y+1)*TILE, x*TILE:(x+1)*TILE] = tile.reshape(TILE, TILE, 4)
-        bpy.data.images.remove(image)
-    atlas = bpy.data.images.new(name, width=ATLAS_W, height=ATLAS_H, alpha=True)
-    atlas.pixels.foreach_set(pixels.ravel())
-    atlas.filepath_raw = str(OUT / (name + '.png'))
-    atlas.file_format = 'PNG'
-    atlas.save()
-    return atlas
-
-
 def export_cards(records):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     for record in records:
@@ -193,75 +80,168 @@ def export_cards(records):
         assert record['lod_triangles'] == [36, 12, 4]
 
 
-def render_sheet(records, atlas):
-    bpy.ops.wm.read_factory_settings(use_empty=True)
-    atlas = bpy.data.images.load(str(OUT / 'T_GN_GrassCards_D.png'))
-    material = bpy.data.materials.new('GrassCardReview')
-    material.use_nodes = True
-    material.surface_render_method = 'DITHERED'
-    tree = material.node_tree
-    tree.nodes.clear()
-    texture = tree.nodes.new('ShaderNodeTexImage')
-    texture.image = atlas
-    emission = tree.nodes.new('ShaderNodeEmission')
-    transparent = tree.nodes.new('ShaderNodeBsdfTransparent')
-    mix = tree.nodes.new('ShaderNodeMixShader')
-    output = tree.nodes.new('ShaderNodeOutputMaterial')
-    tree.links.new(texture.outputs['Color'], emission.inputs['Color'])
-    tree.links.new(texture.outputs['Alpha'], mix.inputs[0])
-    tree.links.new(transparent.outputs[0], mix.inputs[1])
-    tree.links.new(emission.outputs[0], mix.inputs[2])
-    tree.links.new(mix.outputs[0], output.inputs['Surface'])
-    for record in records:
-        slot = record['slot']
-        width = max(record['dimensions_metres'][:2])
-        height = record['dimensions_metres'][2]
-        obj, _ = card_mesh(record['mesh'], width, height, slot, 0)
-        obj.scale = (4, 4, 4)
-        obj.location = ((slot % 3 - 1) * 2.2, 0, (1 - slot // 3) * 1.8)
-        obj.data.materials.append(material)
-    scene = bpy.context.scene
-    scene.render.engine = 'BLENDER_EEVEE'
-    scene.render.resolution_x = 1920
-    scene.render.resolution_y = 1080
-    scene.render.resolution_percentage = 100
-    scene.render.film_transparent = False
-    scene.world = bpy.data.worlds.new('ReviewWorld')
-    scene.world.color = (0.12, 0.12, 0.12)
-    scene.render.image_settings.file_format = 'PNG'
-    scene.render.image_settings.color_mode = 'RGB'
-    camera_data = bpy.data.cameras.new('ReviewCamera')
-    camera = bpy.data.objects.new('ReviewCamera', camera_data)
-    scene.collection.objects.link(camera)
-    camera.location = (0, -12, 1.8)
-    camera.rotation_euler = (Vector((0, 0, 1.8)) - camera.location).to_track_quat('-Z', 'Y').to_euler()
-    camera_data.type = 'ORTHO'
-    camera_data.ortho_scale = 6.5
-    scene.camera = camera
-    scene.render.filepath = str(OUT / 'six-cards-live.png')
-    bpy.ops.render.render(write_still=True)
+def make_art():
+    """Bake dense concept-colour blades, straight alpha, and comparison sheet."""
+    import numpy as np
+    from PIL import Image, ImageDraw, ImageFont
+    from scipy.ndimage import distance_transform_edt
+
+    root = HERE.parents[3]
+    greens = [(35, 62, 27), (48, 77, 30), (65, 92, 37), (83, 111, 43),
+              (103, 126, 52), (121, 139, 64), (142, 154, 79)]
+    dry_colors = [(145, 139, 83), (163, 151, 91), (180, 166, 108)]
+    counts = [160, 152, 176, 168, 192, 184]
+    dry_counts = [4, 5, 3, 6, 14, 18]
+    heights = [0.286, 0.236, 0.240, 0.230, 0.403, 0.260]
+    scale = 3
+
+    def dilate(image, normal=False):
+        pixels = np.asarray(image, dtype=np.uint8).copy()
+        _, nearest = distance_transform_edt(pixels[:, :, 3] < 16, return_indices=True)
+        pixels[:, :, :3] = pixels[nearest[0], nearest[1], :3]
+        if normal:
+            pixels[:, :, :3] = (128, 128, 247)
+        return Image.fromarray(pixels, 'RGBA')
+
+    tiles, normals = [], []
+    for slot in range(6):
+        rng = random.Random(20261021 + slot * 97)
+        image = Image.new('RGBA', (TILE * scale, TILE * scale))
+        normal = Image.new('RGBA', image.size)
+        draw, normal_draw = ImageDraw.Draw(image), ImageDraw.Draw(normal)
+        dry_indices = set(rng.sample(range(counts[slot]), dry_counts[slot]))
+        for i in range(counts[slot]):
+            x0 = (256 + rng.uniform(-55, 55)) * scale
+            y0 = (468 + rng.uniform(-10, 10)) * scale
+            h = rng.uniform(175, 375) * scale
+            if slot in (2, 3):
+                h *= 0.75
+            if i < counts[slot] * 0.18:
+                h *= 0.72
+            reach = rng.uniform(-150, 150) * scale
+            reach += (x0 / scale - 256) * rng.uniform(0.2, 0.5) * scale
+            curve = rng.uniform(-25, 25) * scale
+            width = rng.uniform(2.7, 6.5) * scale
+            is_dry = i in dry_indices
+            if is_dry:
+                width *= 0.7
+            left, right = [], []
+            for j in range(12):
+                t = j / 11
+                x = x0 + reach * t*t + curve * math.sin(math.pi*t)
+                y = y0 - h*t
+                w = width * (1-t)**0.72 * (0.72 + 0.22*math.sin(math.pi*t))
+                left.append((round(x-w), round(y)))
+                right.append((round(x+w), round(y)))
+            color = rng.choice(dry_colors if is_dry else greens)
+            tint = [0.94, 1.01, 0.97, 1.04, 0.94, 1.0][slot]
+            color = tuple(min(255, round(c*tint)) for c in color)
+            shape = left + right[::-1]
+            draw.polygon(shape, fill=color + (255,))
+            if not is_dry and i > counts[slot]*0.2:
+                lit = tuple(min(255, round(c*1.12)) for c in color)
+                draw.line(left[2:10], fill=lit + (255,), width=2)
+            nx = max(-0.28, min(0.28, reach/max(h, 1)*0.2))
+            normal_draw.polygon(shape, fill=(round(128+127*nx), 128, 247, 255))
+        if slot == 5:
+            for j in range(3):
+                x, y = (235+j*23)*scale, (115+j*18)*scale
+                draw.ellipse((x-3*scale, y-8*scale, x+3*scale, y+8*scale),
+                             fill=(115, 135, 63, 255))
+                normal_draw.ellipse((x-3*scale, y-8*scale, x+3*scale, y+8*scale),
+                                    fill=(128, 128, 247, 255))
+        tile = dilate(image.resize((TILE, TILE), Image.Resampling.BOX))
+        norm_tile = dilate(normal.resize((TILE, TILE), Image.Resampling.BOX), True)
+        norm_tile.putalpha(tile.getchannel('A'))
+        tile.save(OUT / f'tile_{slot:02d}_D.png')
+        norm_tile.save(OUT / f'tile_{slot:02d}_N.png')
+        tiles.append(tile)
+        normals.append(norm_tile)
+
+    for name, collection in (('T_GN_GrassCards_D', tiles), ('T_GN_GrassCards_N', normals)):
+        atlas = Image.new('RGBA', (ATLAS_W, ATLAS_H))
+        for slot, tile in enumerate(collection):
+            atlas.paste(tile, ((slot % 4)*TILE, (slot // 4)*TILE))
+        dilate(atlas, name.endswith('_N')).save(OUT / (name + '.png'))
+    diffuse = np.asarray(Image.open(OUT / 'T_GN_GrassCards_D.png'))
+    normal = np.asarray(Image.open(OUT / 'T_GN_GrassCards_N.png'))
+    assert np.array_equal(diffuse[:, :, 3], normal[:, :, 3])
+    mip = diffuse.astype(np.float32)
+    while True:
+        assert mip[:, :, :3].min() >= 20, 'Black/dark RGB in grass-card mip'
+        if mip.shape[0] == mip.shape[1] == 1:
+            break
+        if mip.shape[0] > 1:
+            mip = mip.reshape(mip.shape[0]//2, 2, mip.shape[1]//2, 2, 4).mean(axis=(1, 3))
+        else:
+            mip = mip.mean(axis=1, keepdims=True)
+
+    # Four full-width rows: all six at native tile resolution and at a 3 m
+    # 1080p/60-degree-FOV projected size, on each requested ground colour.
+    label_w, cell, header = 650, TILE, 90
+    sheet_w = label_w + 6*cell
+    sheet = Image.new('RGB', (sheet_w, header + 4*cell), (33, 38, 31))
+    pen = ImageDraw.Draw(sheet)
+    font = ImageFont.truetype('C:/Windows/Fonts/arial.ttf', 24)
+    small = ImageFont.truetype('C:/Windows/Fonts/arial.ttf', 19)
+    pen.text((20, 18), 'GFX-02 J0  |  six meadow cards', fill='white', font=font)
+    for slot in range(6):
+        x = label_w + slot*cell
+        pen.text((x+16, 18), f'{slot:02d}  |  {counts[slot]} blades', fill='white', font=font)
+        pen.text((x+16, 52), f'{dry_counts[slot]/counts[slot]:.0%} dry',
+                 fill=(210, 225, 197), font=small)
+    rows = [('mid-grey', '1:1', (115, 117, 114)),
+            ('mid-grey', '3 m', (115, 117, 114)),
+            ('grass-green', '1:1', (74, 100, 49)),
+            ('grass-green', '3 m', (74, 100, 49))]
+    for row, (ground, distance, background) in enumerate(rows):
+        y = header + row*cell
+        pen.rectangle((label_w, y, sheet_w, y+cell), fill=background)
+        pen.text((20, y+20), f'{ground}  |  {distance}', fill='white', font=font)
+        for slot, tile in enumerate(tiles):
+            x = label_w + slot*cell
+            if distance == '1:1':
+                shown = tile
+            else:
+                px = max(32, round(1080*heights[slot]/
+                                   (2*3*math.tan(math.radians(30)))))
+                shown = tile.resize((px, px), Image.Resampling.LANCZOS)
+            sheet.paste(shown, (x+(cell-shown.width)//2, y+cell-shown.height), shown)
+            pen.line((x, y, x, y+cell), fill=(65, 70, 62), width=2)
+        pen.line((label_w, y, sheet_w, y), fill=(42, 48, 39), width=2)
+    concept = Image.open(root / 'docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp')
+    concept = concept.convert('RGB').crop((0, 350, 1050, 850))
+    sheet.paste(concept.resize((610, 290)), (20, header+65))
+    pen.text((20, header+360), 'Greenlands forest concept', fill='white', font=small)
+    hud = Image.open(root / 'docs/Game-Design/concept-art/UI/v5/gameplay-hud.png').convert('RGB')
+    sheet.paste(hud.resize((610, 343)), (20, header+cell+66))
+    pen.text((20, header+cell+420), 'gameplay HUD concept', fill='white', font=small)
+    pen.text((20, header+2*cell+100), '1:1 = native 512 px tile', fill='white', font=small)
+    pen.text((20, header+2*cell+133), '3 m = 1080p, 60 deg FOV', fill='white', font=small)
+    sheet.save(OUT / 'six-cards-live.png')
+    sheet.save(root / 'docs/evidence/graphics/2026-10-21-gfx02-J0/six-grass-cards-compare.jpg',
+               quality=92)
 
 
 def main():
-    records, diffuse, normals = [], [], []
-    for asset, obj in load_clumps():
-        slot = len(records)
-        obj.data.calc_loop_triangles()
-        dims = render_tile(obj, False, OUT / ('tile_%02d_D.png' % slot))
-        render_tile(obj, True, OUT / ('tile_%02d_N.png' % slot))
-        records.append(dict(slot=slot, mesh='SM_GN_GrassCard_%02d' % slot, source_asset=asset,
-                            source_object=obj.name, source_triangles=len(obj.data.loop_triangles),
-                            dimensions_metres=dims, screen_sizes=[1.0, 0.35, 0.12],
-                            nanite=False, collision=False))
-        diffuse.append(OUT / ('tile_%02d_D.png' % slot))
-        normals.append(OUT / ('tile_%02d_N.png' % slot))
-    assert len(records) == 6
-    atlas = save_atlas(diffuse, 'T_GN_GrassCards_D')
-    save_atlas(normals, 'T_GN_GrassCards_N')
+    if '--art-only' in sys.argv:
+        make_art()
+        return
+    subprocess.run(['py', '-3.12', str(Path(__file__)), '--art-only'], check=True)
+    records = json.loads((OUT / 'manifest.json').read_text())['cards']
+    for slot, height in ((2, 0.240), (3, 0.230)):
+        records[slot].setdefault('source_dimensions_metres', records[slot]['dimensions_metres'].copy())
+        records[slot]['dimensions_metres'][2] = height
     export_cards(records)
-    render_sheet(records, atlas)
+    for record in records:
+        slot = record['slot']
+        record['bake'] = 'concept_palette_dense_blades_straight_alpha_dilated'
+        record['blade_count'] = [160, 152, 176, 168, 192, 184][slot]
+        record['dry_blade_count'] = [4, 5, 3, 6, 14, 18][slot]
     (OUT / 'manifest.json').write_text(json.dumps(dict(schema='gfx02-grass-cards-v1',
-        source='Poly Haven CC0', atlas_px=[ATLAS_W, ATLAS_H], tile_px=[TILE, TILE],
+        source='concept-derived procedural blade artwork; Poly Haven CC0 clump dimensions',
+        atlas_px=[ATLAS_W, ATLAS_H], tile_px=[TILE, TILE],
+        bake='straight alpha, nearest-colour dilation into transparent texels, 3x supersample',
         cards=records), indent=2) + '\n')
     print('GFX02_J0_CARDS', len(records), 'ATLAS', ATLAS_W, ATLAS_H,
           'LODS', [r['lod_triangles'] for r in records], flush=True)
