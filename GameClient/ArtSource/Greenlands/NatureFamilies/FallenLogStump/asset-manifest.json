@@ -1,0 +1,241 @@
+{
+  "family": "FallenLogStump",
+  "asset_id": "VEG-GreenlandsFallenLogStump-01",
+  "look_profile_role": "fallen_log_stump",
+  "variant_count": 3,
+  "blender": "5.1.1",
+  "generator": "build_fallen_log_stump.py",
+  "units": "metres, Z up, front -Y, origin at ground contact; buried base below z=0",
+  "budget_triangles_per_variant": 40000,
+  "triangles": [
+    4624,
+    4624,
+    5256
+  ],
+  "placement_scale_note": "Two fallen logs 5.1 and 6.35 m long, plus rooted stump; buried base below z=0.",
+  "unreal_meshes": [
+    "SM_FallenLogStump_00",
+    "SM_FallenLogStump_01",
+    "SM_FallenLogStump_02"
+  ],
+  "nanite": true,
+  "materials": [
+    {
+      "name": "MI_FallenLogStump_Bark",
+      "base": "Sources/pine_bark/pine_bark_Diffuse.jpg",
+      "normal": "Sources/pine_bark/pine_bark_nor_gl.jpg",
+      "rough": "Sources/pine_bark/pine_bark_Rough.jpg",
+      "uv_scale": [
+        1.3,
+        1.3
+      ],
+      "tint": [
+        0.72,
+        0.69,
+        0.61
+      ],
+      "sat": 0.72,
+      "blend": {
+        "base": "Sources/mossy_rock/mossy_rock_Diffuse.jpg",
+        "normal": "Sources/mossy_rock/mossy_rock_nor_gl.jpg",
+        "rough": "Sources/mossy_rock/mossy_rock_Rough.jpg",
+        "uv_scale": [
+          3,
+          3
+        ],
+        "tint": [
+          0.37,
+          0.48,
+          0.19
+        ],
+        "sat": 0.9,
+        "amount": 0.75,
+        "contrast": 0.2
+      }
+    },
+    {
+      "name": "MI_FallenLogStump_BrokenWood",
+      "base": "Sources/pine_bark/pine_bark_Diffuse.jpg",
+      "normal": "Sources/pine_bark/pine_bark_nor_gl.jpg",
+      "rough": "Sources/pine_bark/pine_bark_Rough.jpg",
+      "tint": [
+        2.8,
+        1.95,
+        1.15
+      ],
+      "sat": 0.65
+    },
+    {
+      "name": "MI_FallenLogStump_EndGrain",
+      "base": "Sources/pine_bark/pine_bark_Diffuse.jpg",
+      "normal": "Sources/pine_bark/pine_bark_nor_gl.jpg",
+      "rough": "Sources/pine_bark/pine_bark_Rough.jpg",
+      "tint": [
+        1.75,
+        1.18,
+        0.72
+      ],
+      "sat": 0.55
+    }
+  ],
+  "variants": [
+    {
+      "mesh": "SM_FallenLogStump_00",
+      "kind": "fallen_log",
+      "seed": 19,
+      "burial_m": 0.217,
+      "moss_mean": 0.071,
+      "materials": [
+        "MI_FallenLogStump_Bark",
+        "MI_FallenLogStump_BrokenWood",
+        "MI_FallenLogStump_EndGrain"
+      ],
+      "triangles": 4624,
+      "vertices": 2350,
+      "size_m": [
+        5.1,
+        1.947,
+        1.346
+      ],
+      "fbx": "SM_FallenLogStump_00.fbx",
+      "fbx_sha256": "3f23dd03164940183ae41e3296e720d0693437a2d5bcdeabe756869d798b90bc",
+      "origin": "ground contact, footprint centre; base below z=0",
+      "collision_ucx": []
+    },
+    {
+      "mesh": "SM_FallenLogStump_01",
+      "kind": "fallen_log",
+      "seed": 41,
+      "burial_m": 0.17,
+      "moss_mean": 0.069,
+      "materials": [
+        "MI_FallenLogStump_Bark",
+        "MI_FallenLogStump_BrokenWood",
+        "MI_FallenLogStump_EndGrain"
+      ],
+      "triangles": 4624,
+      "vertices": 2350,
+      "size_m": [
+        6.35,
+        1.487,
+        1.116
+      ],
+      "fbx": "SM_FallenLogStump_01.fbx",
+      "fbx_sha256": "a2ef7c14364624ae1b607777063251135dcf726903bf6bf03056ab1af88bcefa",
+      "origin": "ground contact, footprint centre; base below z=0",
+      "collision_ucx": []
+    },
+    {
+      "mesh": "SM_FallenLogStump_02",
+      "kind": "rooted_stump",
+      "seed": 73,
+      "burial_m": 0.254,
+      "moss_mean": 0.053,
+      "materials": [
+        "MI_FallenLogStump_Bark",
+        "MI_FallenLogStump_BrokenWood",
+        "MI_FallenLogStump_EndGrain"
+      ],
+      "triangles": 5256,
+      "vertices": 2729,
+      "size_m": [
+        2.419,
+        1.945,
+        1.339
+      ],
+      "fbx": "SM_FallenLogStump_02.fbx",
+      "fbx_sha256": "e6e7f306715a0dce16729681eed9b4cf5d3f31820331424313cf0a83ec2289a0",
+      "origin": "ground contact, footprint centre; base below z=0",
+      "collision_ucx": []
+    }
+  ],
+  "sources": [
+    {
+      "asset": "mossy_rock",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/mossy_rock",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Rob Tuytel": "All"
+      },
+      "physical_size_mm": [
+        3000,
+        3000
+      ],
+      "files": [
+        {
+          "file": "mossy_rock/mossy_rock_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_diff_2k.jpg",
+          "md5": "8e55bbeeef1db0d2d0cae85515812c46",
+          "bytes": 4535360
+        },
+        {
+          "file": "mossy_rock/mossy_rock_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_nor_gl_2k.jpg",
+          "md5": "e6b611c8a6f8e3276e7f5491c8e66a0f",
+          "bytes": 4033031
+        },
+        {
+          "file": "mossy_rock/mossy_rock_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_rough_2k.jpg",
+          "md5": "0b4bbecd6af36e343d05ed11914bb18f",
+          "bytes": 3205806
+        },
+        {
+          "file": "mossy_rock/mossy_rock_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_disp_2k.jpg",
+          "md5": "d22857010ae3d07e42c5548126cf386c",
+          "bytes": 644550
+        }
+      ]
+    },
+    {
+      "asset": "pine_bark",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/pine_bark",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Dimitrios Savva": "All"
+      },
+      "physical_size_mm": [
+        1999.9996423721313,
+        1999.9996423721313
+      ],
+      "files": [
+        {
+          "file": "pine_bark/pine_bark_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/pine_bark/pine_bark_diff_2k.jpg",
+          "md5": "d10980446d36a65a73081cf61bc84992",
+          "bytes": 3167561
+        },
+        {
+          "file": "pine_bark/pine_bark_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/pine_bark/pine_bark_nor_gl_2k.jpg",
+          "md5": "ee1de039967165665060653a0e12e571",
+          "bytes": 4637035
+        },
+        {
+          "file": "pine_bark/pine_bark_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/pine_bark/pine_bark_rough_2k.jpg",
+          "md5": "9ea974ea3e298b30ee3b7a21ec05b566",
+          "bytes": 2085022
+        },
+        {
+          "file": "pine_bark/pine_bark_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/pine_bark/pine_bark_disp_2k.jpg",
+          "md5": "4f46a23fd05aed2f2c5ab948abb1e589",
+          "bytes": 1259109
+        }
+      ]
+    }
+  ],
+  "renders": [
+    "FallenLogStump-Variants.png",
+    "FallenLogStump-Variants-Top.png",
+    "FallenLogStump-Detail-3m.png",
+    "FallenLogStump-Stump-3m.png"
+  ],
+  "concept_reference": "docs/Game-Design/concept-art/UI/v5/gameplay-hud.png"
+}

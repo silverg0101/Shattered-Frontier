@@ -8,6 +8,8 @@
 | Asset ID | Category / main concept | Source path / heading | Priority / dependencies | Owner / job state | Concept / clean-view status | Selected package / next action |
 |---|---|---|---|---|---|---|
 | VEG-GreenlandsShrubBroadleaf-01 | Vegetation / Waist-to-head-high broadleaf shrubs (hazel/bramble-like) clustered at wood edges, roadsides and under trees; the target frame's mid layer | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `shrub_broadleaf` | P2; 0 of 3 variants owned | unassigned / planned | proposed / — | concept sheet and asset view (Qwen Image), then model (Pixal3D or Blender); 3 variant(s) |
+| ROCK-GreenlandsBoulderMossy-01 | Rock / Three weathered granite boulders, 1.2–3 m, with world-up moss and buried bases | `docs/Game-Design/concept-art/UI/v5/gameplay-hud.png`; `GameClient/ArtSource/Greenlands/NatureFamilies/BoulderMossy/` | P2; 3 of 3 variants built | Blender / modelled | render lineup and 3 m view | CC0 Poly Haven scan geometry and textures; pending Unreal import and placement |
+| VEG-GreenlandsFallenLogStump-01 | Deadwood / Two broken, mossy fallen logs and one exposed-root stump | `docs/Game-Design/concept-art/UI/v5/gameplay-hud.png`; `GameClient/ArtSource/Greenlands/NatureFamilies/FallenLogStump/` | P2; 3 of 3 variants built | Blender / modelled | render lineup and 3 m view | Procedural Blender geometry, CC0 Poly Haven bark/moss textures; pending Unreal import and placement |
 
 ## Briefs and component boundaries
 
@@ -17,3 +19,4 @@ Waist-to-head-high broadleaf shrubs (hazel/bramble-like) clustered at wood edges
 ## Progress
 
 - 2026-10-19: 1 planned, 0 modelling in the Blender session, 0 with an owner-supplied concept waiting for a model.
+- 2026-10-21: BoulderMossy and FallenLogStump families built with three FBX variants, Blender sources, manifests and scale renders each; Unreal import and placement remain open.
