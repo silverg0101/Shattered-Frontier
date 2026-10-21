@@ -84,3 +84,54 @@ All four tiers met the measured backend target of p95 <=250 ms with zero errors 
 PowerShell 7.6.7 ran both authority fixtures with the pinned .NET 10.0.402 SDK and run-private build output. `Test-H2AuthorityModel.ps1` passed 22/22 cases and 120 bounded schedules (`Artifacts/Persistence/AuthorityModel/codex-lock-c744f1e1d0674d71a8ed27add6191537`).
 
 `Test-H2AuthorityDurable.ps1` failed twice on fresh, isolated PostgreSQL clusters and ports. The first run (`Artifacts/Persistence/AuthorityDurable/codex-lock-a8f3ca2279d5467eb9798dd7832deaed`) passed 21/22 groups; `F06_retained_upstream_socket_partition` reported `CONTROL_FILE_TIMEOUT`. The repeat (`Artifacts/Persistence/AuthorityDurable/codex-lock-36aae8b4a3004ff98f2f4c5a429e7ff1`) passed 20/22; F06 repeated, and `F05_takeover_coordinator_CAS_completion_and_outbox` reported `DECIDE_EXPECTED_OK_GOT_DEADLINE_EXPIRED`. Each run passed 15/15 role assertions, completed one PostgreSQL restart, stopped its cluster, and removed its private storage. F06 also failed with pooling disabled in the first run, so the evidence does not isolate the pooling change in 237ecb3 as its cause. No authority behavior fix was made; the durable group remains failed.
+
+## Fixed-rate backend knee search
+
+Machine: i7-14700K, 20 physical cores/28 logical processors, 64 GiB RAM, Windows single-box loopback, .NET 10.0.402, PostgreSQL 18.6. Backend-only result; no real network RTT, Unreal client/server, or production capacity claim. The run-private harness copy schedules one cycle per participant per 1,000 ms (40/20/20/10/10 role mix), with 30 s warmup and 60 s measurement. Each RPC sample includes an artificial 25 ms delay before and after the call. All builds and host processes used private output below their evidence roots.
+
+At 25 participants, the per-RPC breakdown in `capacity-94098826ecb949ca88b3ab5fe737b717/gate-25-step1.json` was:
+
+| RPC | p50/p95/p99 ms |
+| --- | ---: |
+| Crafting.Craft | 62.35 / 65.87 / 76.99 |
+| Exchange.CancelListing | 62.81 / 78.26 / 85.05 |
+| Exchange.ListItem | 63.18 / 76.05 / 86.71 |
+| Exchange.Wallet | 62.22 / 63.27 / 69.76 |
+| Housing.Place | 62.54 / 81.21 / 125.32 |
+| Housing.Remove | 64.38 / 81.62 / 96.93 |
+| Progression.ApplyReceipt | 60.05 / 67.56 / 78.53 |
+| Progression.GetCharacterState | 62.13 / 63.92 / 77.85 |
+| Rewards.GrantDefeatReward | 62.62 / 77.16 / 84.63 |
+
+The flat ~78 ms earlier result is primarily a **fixed harness floor**: `Record` starts its stopwatch before the two 25 ms delays, while the 1,000 ms think time is outside it. The remaining roughly 10-30 ms includes local RPC and store work. Channels are created before the measured loops except the reconnect lane, whose fresh channel is created inside its measured RPC. Npgsql uses warm pools; no evidence here isolates connect time or commit fsync as the dominant floor. At 25, host/PostgreSQL CPU averaged 0.5%/0.6% of all 28 logical processors and sampled waits were `ClientRead`, not a contention signature. With fixed cycle scheduling, p95 rises by 200 participants, as expected when load starts to matter.
+
+| Participants | Accepted RPC/s | Worst durable p95 ms | Errors | Audit | Host CPU % | PG CPU % | Peak DB connections | Top sampled waits |
+| ---: | ---: | ---: | ---: | --- | ---: | ---: | ---: | --- |
+| 25 | 51.00 | 81.62 | 0 | pass | 0.5 | 0.6 | 34 | ClientRead |
+| 50 | 100.00 | 84.46 | 0 | pass | 0.7 | 1.1 | 57 | ClientRead |
+| 100 | 200.12 | 93.37 | 0 | pass | 0.9 | 1.7 | 68 | ClientRead |
+| 200 | 400.58 | 141.51 | 0 | pass | 1.8 | 3.7 | 96 | ClientRead; WALWrite |
+| 200, fresh repeat | 400.45 | 93.15 | 0 | pass | 2.1 | 4.1 | 85 | ClientRead; WalWrite; BufferContent |
+| 212, fresh | 298.20 | 2155.92 | 340 | pass | 1.8 | 3.3 | 98 | ClientRead; WALWrite; BufferContent |
+| 250, fresh | 448.70 | 1029.95 | 60 | pass | 2.2 | 1.3 | 86 | ClientRead; WALWrite |
+| 400 | 137.07 | 7575.32 | 6075 | pass | 1.0 | 0.0 | 98 | ClientRead; WALWrite |
+
+Evidence roots: geometric ramp `capacity-94098826ecb949ca88b3ab5fe737b717`; fresh repeats at 200 `capacity-9042c8f0e5d24f63b2b4cd6d41b641b3`, 212 `capacity-c5a23bf400e440d984fd1ea42b1670d6`, and 250 `capacity-be203da26ffb452686ea93da4710f0d`, all under `Artifacts/Persistence/GameplayHosts/`. Each has `gate-*.json`, `resource-*.json`, and `report.md`. A 225-participant fresh setup failed with store `Unavailable` before measurement and is excluded from the table. Descending tiers after the 400 overload suffered carryover failures; fresh-root repeats establish the bracket. The isolated-step ramp controller was exercised separately with short 2 s/3 s windows; those percentiles are not used for the knee.
+
+The exploratory runs bracketed 200 passing to 212 failing (6%). Their descending tiers reused a PostgreSQL cluster after overload, which contaminated later measurements. The limiting resource indicated by these runs is the fixture's PostgreSQL connection ceiling: observed connections reached 96-98 near failure, against the cluster's 100-connection default, while whole-machine CPU remained low. A prior high-tier attempt recorded PostgreSQL `FATAL: remaining connection slots are reserved for roles with the SUPERUSER attribute`. WAL and buffer waits also appeared near failure.
+
+### Final isolated-step search
+
+`tools/Test-Capacity.ps1 -Ramp -WarmupSeconds 30 -MeasuredSeconds 60 -ThinkMilliseconds 1000` completed with a fresh PostgreSQL cluster and private host/output for every step. Combined report: `Artifacts/Persistence/GameplayHosts/capacity-ramp-17e5386e06b6412283719093aed3a3ef/report.md`; it links every child evidence root. The geometric steps stopped at the first failure, then binary search reached an 8% interval.
+
+| Participants | Accepted RPC/s | Worst durable p95 ms | Errors | Audit | Host/PG CPU % | Peak DB connections | Top sampled waits | Result |
+| ---: | ---: | ---: | ---: | --- | ---: | ---: | --- | --- |
+| 25 | 51.10 | 78.32 | 0 | pass | 0.3/0.4 | 25 | ClientRead | pass |
+| 50 | 100.10 | 83.49 | 0 | pass | 0.6/1.0 | 61 | ClientRead | pass |
+| 100 | 200.00 | 90.41 | 0 | pass | 0.9/1.6 | 70 | ClientRead, WalWrite | pass |
+| 200 | 339.83 | 1798.79 | 103 | pass | 1.6/3.3 | 97 | ClientRead, WalWrite | fail |
+| 150 | 301.07 | 92.73 | 0 | pass | 1.7/3.2 | 95 | ClientRead, WALWrite | pass |
+| 175 | 304.52 | 1683.29 | 56 | pass | 1.8/3.6 | 94 | ClientRead, VacuumDelay | fail |
+| 162 | 74.62 | 7446.18 | 1182 | fail | 0.8/n.a. | 96 | ClientRead, transactionid | fail |
+
+**Final-run knee: 150 participants pass; 162 fail (8% bracket).** A separate fresh 200-participant probe passed at 93.15 ms with zero errors, so this single-box threshold is variable; 150 is the conservative result of the final isolated search, and 200 is the highest observed pass. The limiting resource is PostgreSQL connection capacity near its default 100-connection ceiling, with occasional WAL and transaction waits; whole-machine CPU did not saturate. PostgreSQL CPU at 162 is omitted because backend PID churn invalidated that sample; the sampler now tracks per-PID deltas. These 60 s steps are development evidence, not the 15-minute milestone gate or two-hour soak. No store logic or production pool setting changed.

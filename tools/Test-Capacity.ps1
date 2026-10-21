@@ -1,10 +1,48 @@
 ﻿[CmdletBinding()]
-param([switch]$Include50,[switch]$Include100,[switch]$Only10,[switch]$Only25,[int]$WarmupSeconds=30,[int]$MeasuredSeconds=900,[int]$ThinkMilliseconds=1000)
+param([switch]$Include50,[switch]$Include100,[switch]$Only10,[switch]$Only25,[switch]$Ramp,[ValidateRange(0,300)][int]$WarmupSeconds=30,[ValidateRange(1,7200)][int]$MeasuredSeconds=900,[ValidateRange(100,5000)][int]$ThinkMilliseconds=1000,[ValidateRange(25,800)][int]$RampCap=800,[ValidateRange(0,800)][int]$RampSingleParticipants=0)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+if ($RampSingleParticipants -ne 0 -and (-not $Ramp -or $RampSingleParticipants -lt 25)) { throw 'RampSingleParticipants requires -Ramp and a value from 25 to 800.' }
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 & (Join-Path $repo 'tools/Assert-InventoryOutboxMigration.ps1') -MigrationPath (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') | Out-Null
 $allowed = [IO.Path]::GetFullPath((Join-Path $repo 'Artifacts/Persistence/GameplayHosts'))
+if ($Ramp -and $RampSingleParticipants -eq 0) {
+    $searchRoot = Join-Path $allowed ('capacity-ramp-' + [guid]::NewGuid().ToString('N'))
+    [void](New-Item -ItemType Directory -Path $searchRoot)
+    $queue = @(25,50,100,200,400,800) | Where-Object { $_ -le $RampCap }
+    $steps = @(); $lastPass = 0; $firstFail = 0; $stepNumber = 0
+    while ($queue.Count -gt 0) {
+        $tier = $queue[0]; $queue = @($queue | Select-Object -Skip 1); $stepNumber++
+        $stdout = Join-Path $searchRoot "step-$stepNumber.out"; $stderr = Join-Path $searchRoot "step-$stepNumber.err"
+        $child = Start-Process -FilePath (Join-Path $PSHOME 'pwsh.exe') -ArgumentList @('-NoProfile','-File',$PSCommandPath,'-Ramp','-RampSingleParticipants',"$tier",'-WarmupSeconds',"$WarmupSeconds",'-MeasuredSeconds',"$MeasuredSeconds",'-ThinkMilliseconds',"$ThinkMilliseconds") -PassThru -Wait -WindowStyle Hidden -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+        $output = Get-Content $stdout -Raw
+        if ($output -match '(?m)^Evidence: (.+)$') {
+            $childRoot = $Matches[1].Trim() | Split-Path -Parent
+            $gate = Get-Content (Join-Path $childRoot "gate-$tier-step1.json") -Raw | ConvertFrom-Json
+            $resource = Get-Content (Join-Path $childRoot "resource-$tier-step1.json") -Raw | ConvertFrom-Json
+            $errors = ($gate.rpcs | Measure-Object errors -Sum).Sum
+            $pass = $resource.pass -and $gate.audit.passed -and $errors -eq 0
+            $steps += [pscustomobject]@{ participants=$tier; throughput=[math]::Round($gate.acceptedPerSecond,2); p95=$resource.worstP95Ms; errors=$errors; audit=$gate.audit.passed; hostCpu=[math]::Round($resource.hostCpuPct,1); postgresCpu=[math]::Round($resource.postgresCpuPct,1); connections=$resource.connections; waits=$resource.topWaits; pass=$pass; root=$childRoot }
+            Write-Host "step=$stepNumber participants=$tier p95=$($resource.worstP95Ms) errors=$errors audit=$($gate.audit.passed) pass=$pass throughput=$([math]::Round($gate.acceptedPerSecond,2))/s"
+        } else {
+            $pass = $false
+            $steps += [pscustomobject]@{ participants=$tier; throughput='n/a'; p95='n/a'; errors='setup failure'; audit='not run'; hostCpu='n/a'; postgresCpu='n/a'; connections='n/a'; waits='see stderr'; pass=$false; root=$stderr }
+            Write-Host "step=$stepNumber participants=$tier setup failed; see $stderr"
+        }
+        if ($pass) { $lastPass = $tier } else { $firstFail = $tier }
+        if ($firstFail -gt 0) {
+            if ($lastPass -gt 0 -and ($firstFail - $lastPass) / $lastPass -gt 0.1) { $queue = @([int][math]::Floor(($lastPass + $firstFail)/2)) }
+            else { $queue = @() }
+        }
+    }
+    $summary = @('# Isolated backend capacity ramp','',"Fixed target: one cycle per participant per $ThinkMilliseconds ms; warmup $WarmupSeconds s; measurement $MeasuredSeconds s. Each step has a fresh PostgreSQL cluster, database, host, and run-private output.",'','| Participants | Accepted/s | Worst durable p95 ms | Errors | Audit | Host CPU % | PostgreSQL CPU % | Peak DB connections | Top waits | Pass | Evidence |','| ---: | ---: | ---: | ---: | --- | ---: | ---: | ---: | --- | --- | --- |')
+    foreach ($row in $steps) { $summary += "| $($row.participants) | $($row.throughput) | $($row.p95) | $($row.errors) | $($row.audit) | $($row.hostCpu) | $($row.postgresCpu) | $($row.connections) | $($row.waits) | $($row.pass) | $($row.root) |" }
+    $interval = if ($firstFail -eq 0) { 'not reached' } elseif ($lastPass -eq 0) { 'below first tier' } else { "$([math]::Round(100*($firstFail-$lastPass)/$lastPass,1))%" }
+    $summary += "`nLargest observed passing tier: $lastPass; first failing tier: $firstFail; interval $interval."
+    $summary | Set-Content (Join-Path $searchRoot 'report.md')
+    Write-Host "Evidence: $(Join-Path $searchRoot 'report.md')"
+    exit 0
+}
 $EvidenceRoot = [IO.Path]::GetFullPath((Join-Path $allowed ('capacity-' + [guid]::NewGuid().ToString('N'))))
 if (-not $EvidenceRoot.StartsWith($allowed + [IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase) -or (Test-Path -LiteralPath $EvidenceRoot)) { throw 'Supply a fresh GameplayHosts evidence child.' }
 $pins = Get-Content (Join-Path $repo 'BackendServices/toolchain-lock.json') -Raw | ConvertFrom-Json
@@ -68,6 +106,25 @@ try {
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $port = $listener.LocalEndpoint.Port; $listener.Stop()
     @{run=$run;data=$data;port=$port} | ConvertTo-Json | Set-Content (Join-Path $private 'owner.json')
     $projects = @((Join-Path $repo 'BackendServices/CapacityHarness/CapacityHarness.csproj'))
+    if ($Ramp) {
+        # The release harness admits at most 100; widen only this run-private copy.
+        $overlay = Join-Path $private 'capacity-overlay'
+        [void](New-Item -ItemType Directory -Path $overlay)
+        $source = (Get-Content (Join-Path $repo 'BackendServices/CapacityHarness/Program.cs') -Raw).Replace('"--participants", 10, 1, 100','"--participants", 10, 1, 800')
+        $source = $source.Replace('var rng = new Random(unchecked(seed * 397 ^ index));', '')
+        $source = $source.Replace('var x = (east ? 1150 : -1150) + (east ? -1 : 1) * (slot % 5) * 55;', 'var globalSlot = int.Parse(Environment.GetEnvironmentVariable("CAPACITY_CLAIM_OFFSET") ?? "0") + slot; var physicalSlot = globalSlot + (globalSlot >= 172 ? 2 : 0) + (globalSlot >= 212 ? 2 : 0); var x = -1150 + (physicalSlot % 42) * 55;')
+        $source = $source.Replace('var y = (north ? 1100 : -1100) + (north ? -1 : 1) * (slot / 5) * 55;', 'var band = physicalSlot / 42; var y = band < 10 ? -1150 + band * 55 : 655 + (band - 10) * 55;')
+        $source = $source.Replace('var cycle = 0;', 'var cycle = 0; var nextCycleAt = DateTimeOffset.UtcNow;')
+        $source = $source.Replace('await Task.Delay(think + rng.Next(-think / 4, think / 4 + 1));', 'nextCycleAt = nextCycleAt.AddMilliseconds(think); await Task.Delay(Math.Max(0, (int)(nextCycleAt - DateTimeOffset.UtcNow).TotalMilliseconds));')
+        [IO.File]::WriteAllText((Join-Path $overlay 'Program.cs'),$source)
+        Copy-Item (Join-Path $repo 'BackendServices/CapacityHarness/JourneySeed.cs') $overlay
+        Copy-Item (Join-Path $repo 'BackendServices/CapacityHarness/packages.lock.json') $overlay
+        $hostProject = Join-Path $repo 'BackendServices/Gameplay.Host/Gameplay.Host.csproj'
+        Copy-Item (Join-Path $repo 'BackendServices/Directory.Build.props') $overlay
+        Copy-Item (Join-Path $repo 'BackendServices/Directory.Packages.props') $overlay
+        [IO.File]::WriteAllText((Join-Path $overlay 'CapacityHarness.csproj'),"<Project Sdk=`"Microsoft.NET.Sdk`"><PropertyGroup><OutputType>Exe</OutputType></PropertyGroup><ItemGroup><ProjectReference Include=`"$hostProject`" /><PackageReference Include=`"Grpc.Net.Client`" /></ItemGroup></Project>")
+        $projects = @(Join-Path $overlay 'CapacityHarness.csproj')
+    }
     foreach ($project in $projects) {
         $currentStep = "restore $project"
         [void](Invoke-Checked $dotnet @('restore',$project,'--locked-mode','--packages',(Join-Path $repo 'Artifacts/Persistence/Toolchains/nuget'),'--verbosity','quiet'))
@@ -114,26 +171,83 @@ try {
     $currentStep = 'journey seed'
     $journeyDll = Join-Path $private 'build/Release/net10.0/CapacityHarness.dll'
     [void](Invoke-Checked $dotnet @($journeyDll,'journey') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token })
-    $tiers = if ($Only25) { @(25) } elseif ($Only10) { @(10) } else { @(10,25) }
+    $tiers = if ($RampSingleParticipants) { @($RampSingleParticipants) } elseif ($Ramp) { @(25,50,100,200,400,800) | Where-Object { $_ -le $RampCap } } elseif ($Only10) { @(10) } elseif ($Only25) { @(25) } else { @(10,25) }
     $tiers = @($tiers)
-    if ($Include50 -or $Include100) { $tiers += 50 }
-    if ($Include100) { $tiers += 100 }
+    if (-not $Ramp -and ($Include50 -or $Include100)) { $tiers += 50 }
+    if (-not $Ramp -and $Include100) { $tiers += 100 }
     $gateResults = @()
-    foreach ($tier in $tiers) {
+    $step = 0; $lastPass = 0; $firstFail = 0; $claimOffset = 0
+    while ($tiers.Count -gt 0) {
+        $tier = $tiers[0]; $tiers = @($tiers | Select-Object -Skip 1)
+        $step++
         $currentStep = "capacity $tier"
-        $outFile = Join-Path $EvidenceRoot "gate-$tier.json"
-        $result = Invoke-Checked $dotnet @($journeyDll,'--participants',"$tier",'--warmup-seconds',"$WarmupSeconds",'--seconds',"$MeasuredSeconds",'--think-ms',"$ThinkMilliseconds") @{
-            GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token; CAPACITY_OUTPUT=$outFile
-        } (($WarmupSeconds + $MeasuredSeconds + 120) * 1000) $true
+        $outFile = Join-Path $EvidenceRoot "gate-$tier-step$step.json"
+        $seed = 20261021 + $step
+        $env:CAPACITY_OUTPUT = $outFile
+        $env:GAMEPLAY_HOST_PORT = "$hostPort"
+        $env:GAMEPLAY_LEDGER_CONNECTION = $connection
+        $env:SF_GAMEPLAY_TOKEN = $token
+        if ($Ramp) { $env:CAPACITY_CLAIM_OFFSET = "$claimOffset" }
+        $stdout = Join-Path $EvidenceRoot "gate-$tier-step$step.out"
+        $stderr = Join-Path $EvidenceRoot "gate-$tier-step$step.err"
+        $child = Start-Process -FilePath $dotnet -ArgumentList @($journeyDll,'--participants',"$tier",'--warmup-seconds',"$WarmupSeconds",'--seconds',"$MeasuredSeconds",'--think-ms',"$ThinkMilliseconds",'--seed',"$seed") -PassThru -WindowStyle Hidden -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+        $samples = @(); $startedAt = Get-Date; $priorAt = $startedAt; $priorHostCpu = $hostProcess.TotalProcessorTime.TotalSeconds; $priorPgCpu = @{}
+        try {
+            while (-not $child.HasExited) {
+                Start-Sleep -Seconds 5
+                if (((Get-Date) - $startedAt).TotalSeconds -gt ($WarmupSeconds + $MeasuredSeconds + 120)) { Stop-Process -Id $child.Id -Force; throw "Capacity child timeout at $tier" }
+                $stats = Sql "SELECT json_build_object('connections',(SELECT count(*) FROM pg_stat_activity WHERE datname=current_database()),'waits',coalesce((SELECT json_object_agg(wait,n) FROM (SELECT concat(wait_event_type,':',wait_event) wait,count(*) n FROM pg_stat_activity WHERE datname=current_database() AND wait_event IS NOT NULL GROUP BY 1) w),'{}'::json))" "gameplay_$run"
+                $db = $stats | ConvertFrom-Json
+                $pgIds = @((Sql "SELECT pid FROM pg_stat_activity WHERE datname=current_database()" "gameplay_$run") -split '\r?\n' | ForEach-Object { if ($_ -match '^\d+$') { [int]$_ } })
+                $pgCpuDelta = 0.0; $currentPgCpu = @{}
+                foreach ($pgId in $pgIds) { $p = Get-Process -Id $pgId -ErrorAction SilentlyContinue; if ($p) { $cpu = $p.TotalProcessorTime.TotalSeconds; if ($priorPgCpu.ContainsKey($pgId)) { $pgCpuDelta += [math]::Max(0,$cpu-$priorPgCpu[$pgId]) }; $currentPgCpu[$pgId] = $cpu } }
+                $hostProcess.Refresh(); $now = Get-Date; $elapsed = ($now - $priorAt).TotalSeconds
+                $hostCpu = $hostProcess.TotalProcessorTime.TotalSeconds
+                $samples += [pscustomobject]@{ hostCpuPct=[math]::Round(100*($hostCpu-$priorHostCpu)/$elapsed/[Environment]::ProcessorCount,1); postgresCpuPct=[math]::Round(100*$pgCpuDelta/$elapsed/[Environment]::ProcessorCount,1); connections=$db.connections; waits=$db.waits }
+                $priorAt=$now; $priorHostCpu=$hostCpu; $priorPgCpu=$currentPgCpu
+            }
+            $child.WaitForExit()
+        } finally { if (-not $child.HasExited) { Stop-Process -Id $child.Id -Force }; Remove-Item Env:CAPACITY_OUTPUT -ErrorAction SilentlyContinue }
+        $result = Get-Content $stdout -Raw
         if (-not (Test-Path -LiteralPath $outFile)) { throw "Capacity child did not write $outFile`: $result" }
-        $gateResults += Get-Content $outFile -Raw | ConvertFrom-Json
+        $gate = Get-Content $outFile -Raw | ConvertFrom-Json
+        $durable = @($gate.rpcs | Where-Object { $_.rpc -notin @('Progression.GetCharacterState','Exchange.Wallet','cycle') })
+        $maxP95 = ($durable | Measure-Object -Property p95Ms -Maximum).Maximum
+        $errors = ($gate.rpcs | Measure-Object -Property errors -Sum).Sum
+        $pass = $gate.audit.passed -and $errors -eq 0 -and $maxP95 -le 250 -and $child.ExitCode -eq 0
+        $waits = @{}; foreach ($sample in $samples) { if ($sample.waits) { foreach ($name in $sample.waits.PSObject.Properties.Name) { $waits[$name] = [int]$waits[$name] + [int]$sample.waits.$name } } }
+        $topWaits = @($waits.GetEnumerator() | Sort-Object Value -Descending | Select-Object -First 3 | ForEach-Object { "$($_.Key)=$($_.Value)" }) -join ', '
+        $gate | Add-Member -NotePropertyName resource -NotePropertyValue ([pscustomobject]@{ hostCpuPct=(@($samples | Measure-Object hostCpuPct -Average)[0].Average); postgresCpuPct=(@($samples | Measure-Object postgresCpuPct -Average)[0].Average); connections=(@($samples | Measure-Object connections -Maximum)[0].Maximum); topWaits=$topWaits; pass=$pass; worstP95Ms=$maxP95 })
+        $gate.resource | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $EvidenceRoot "resource-$tier-step$step.json")
+        $gateResults += $gate
+        if ($Ramp) { $claimOffset += [int]($gate.roles.'build') }
         Write-Host $result
-        if (-not $gateResults[-1].audit.passed) { break }
+        Write-Host "step=$step participants=$tier p95=$maxP95 errors=$errors pass=$pass throughput=$([math]::Round($gate.acceptedPerSecond,2))/s"
+        if ($Ramp) {
+            if ($pass) { $lastPass = $tier } else { $firstFail = $tier }
+            if ($firstFail -gt 0) {
+                if ($lastPass -gt 0 -and ($firstFail - $lastPass) / $lastPass -gt 0.1) { $tiers = @([int][math]::Floor(($lastPass + $firstFail)/2)) }
+                else { $tiers = @() }
+            }
+        } elseif (-not $gate.audit.passed) { break }
+        if ($Ramp -and $tiers.Count -gt 0) {
+            Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+            $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private "host-$step.out") -RedirectStandardError (Join-Path $private "host-$step.err")
+            $ready = $false
+            for ($i=0; $i -lt 100; $i++) { if ($hostProcess.HasExited) { throw 'Gameplay host exited before ready.' }; if ((Test-Path (Join-Path $private "host-$step.out")) -and (Get-Content (Join-Path $private "host-$step.out") -Raw) -match 'GAMEPLAY_HOST_READY') { $ready=$true; break }; Start-Sleep -Milliseconds 100 }
+            if (-not $ready) { throw 'Gameplay host restart readiness timeout.' }
+        }
     }
     $spec = Get-CimInstance Win32_ComputerSystem
     $cpu = Get-CimInstance Win32_Processor | Select-Object -First 1
-    $report = @("# Backend capacity evidence - $(Get-Date -Format 'yyyy-MM-dd')",'',"Machine: $($cpu.Name); $($spec.TotalPhysicalMemory / 1GB -as [int]) GiB RAM; Windows $([Environment]::OSVersion.Version); .NET 10.0.402; PostgreSQL 18.6; loopback.",'',"Workload: $($tiers -join ', ') participants; 40% gather/craft, 20% build/edit, 20% fight/quest, 10% trade/market, 10% reconnect. Warmup $WarmupSeconds s; measured $MeasuredSeconds s per tier; deterministic seed 20261021; $ThinkMilliseconds ms think time; 25 ms delay before and after each RPC to simulate 50 ms RTT. Target density: one character per participant, one backpack each, one claim per builder and one escrow per trader. No shared contested scene.",'','Backend only: no Unreal dedicated server, graphics, movement, network replication, or real-client load. The 50 ms delay is simulated on loopback, not measured network RTT; these results cannot establish the full MVP capacity gate.','', '| Participants | RPC | Calls | p50 ms | p95 ms | p99 ms | Errors | Error rate | Unavailable | Unavailable rate | Accepted/s | Integrity |','| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |')
+    $report = @("# Backend capacity evidence - $(Get-Date -Format 'yyyy-MM-dd')",'',"Machine: $($cpu.Name); $($spec.TotalPhysicalMemory / 1GB -as [int]) GiB RAM; Windows $([Environment]::OSVersion.Version); .NET 10.0.402; PostgreSQL 18.6; loopback.",'',"Workload: $((@($gateResults | ForEach-Object participants)) -join ', ') participants; 40% gather/craft, 20% build/edit, 20% fight/quest, 10% trade/market, 10% reconnect. Warmup $WarmupSeconds s; measured $MeasuredSeconds s per tier; deterministic per-step seeds from 20261021; $ThinkMilliseconds ms think time; 25 ms delay before and after each RPC to simulate 50 ms RTT. Target density: one character per participant, one backpack each, one claim per builder and one escrow per trader. No shared contested scene.",'','Backend only: no Unreal dedicated server, graphics, movement, network replication, or real-client load. The 50 ms delay is simulated on loopback, not measured network RTT; these results cannot establish the full MVP capacity gate.','', '| Participants | RPC | Calls | p50 ms | p95 ms | p99 ms | Errors | Error rate | Unavailable | Unavailable rate | Accepted/s | Integrity |','| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |')
     foreach ($gate in $gateResults) { foreach ($rpc in $gate.rpcs) { $report += "| $($gate.participants) | $($rpc.rpc) | $($rpc.calls) | $($rpc.p50Ms) | $($rpc.p95Ms) | $($rpc.p99Ms) | $($rpc.errors) | $($rpc.errorRate) | $($rpc.unavailable) | $($rpc.unavailableRate) | $([math]::Round($gate.acceptedPerSecond,2)) | $($gate.audit.passed) |" } }
+    if ($Ramp) {
+        $report += @('', '| Participants | Accepted/s | Worst durable p95 ms | Errors | Audit | Host CPU % | PostgreSQL CPU % | Peak DB connections | Top wait samples | Pass |', '| ---: | ---: | ---: | ---: | --- | ---: | ---: | ---: | --- | --- |')
+        foreach ($gate in $gateResults) { $e = ($gate.rpcs | Measure-Object errors -Sum).Sum; $res = $gate.resource; $report += "| $($gate.participants) | $([math]::Round($gate.acceptedPerSecond,2)) | $($res.worstP95Ms) | $e | $($gate.audit.passed) | $([math]::Round($res.hostCpuPct,1)) | $([math]::Round($res.postgresCpuPct,1)) | $($res.connections) | $($res.topWaits) | $($res.pass) |" }
+        if ($RampSingleParticipants) { $report += "`nIsolated probe at $RampSingleParticipants participants; this report alone does not establish a knee." }
+        else { $report += "`nKnee: largest observed passing tier $lastPass participants; first failing tier $firstFail; ramp cap $RampCap. A zero first-failing tier means the knee was not reached." }
+    }
     $report += @('', 'Per-tier observed role allocation and backend result:')
     foreach ($gate in $gateResults) {
         $durable = @($gate.rpcs | Where-Object { $_.rpc -notin @('Progression.GetCharacterState','Exchange.Wallet','cycle') })
@@ -159,7 +273,7 @@ catch {
     }
 }
 finally {
-    foreach ($key in @('SF_GAMEPLAY_TOKEN','GAMEPLAY_LEDGER_CONNECTION','GAMEPLAY_CHARACTER_CONNECTION','GAMEPLAY_HOUSING_CONNECTION','GAMEPLAY_EXCHANGE_CONNECTION','GAMEPLAY_CONTENT_ROOT','GAMEPLAY_HOST_PORT')) { Remove-Item "Env:$key" -ErrorAction SilentlyContinue }
+    foreach ($key in @('SF_GAMEPLAY_TOKEN','GAMEPLAY_LEDGER_CONNECTION','GAMEPLAY_CHARACTER_CONNECTION','GAMEPLAY_HOUSING_CONNECTION','GAMEPLAY_EXCHANGE_CONNECTION','GAMEPLAY_CONTENT_ROOT','GAMEPLAY_HOST_PORT','CAPACITY_CLAIM_OFFSET','CAPACITY_OUTPUT')) { Remove-Item "Env:$key" -ErrorAction SilentlyContinue }
     if ($hostProcess -and -not $hostProcess.HasExited) { Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null }
     if (Test-Path (Join-Path $private 'owner.json')) {
         Assert-Owned
