@@ -15,7 +15,7 @@ $run = [guid]::NewGuid().ToString('N'); $private = Join-Path $EvidenceRoot 'priv
 $rng = [Security.Cryptography.RandomNumberGenerator]::Create(); $bytes = [byte[]]::new(32)
 $rng.GetBytes($bytes); $adminPassword = [BitConverter]::ToString($bytes).Replace('-','')
 $rng.GetBytes($bytes); $servicePassword = [BitConverter]::ToString($bytes).Replace('-',''); $rng.Dispose()
-$port = 0; $started = $false; $attempted = $false; $removed = $false; $failure = ''; $token = ''; $hostProcess = $null; $currentStep = 'setup'
+$port = 0; $started = $false; $attempted = $false; $removed = $false; $failure = ''; $token = ''; $hostProcess = $null; $hostProcess2 = $null; $currentStep = 'setup'
 function Invoke-Checked([string]$Executable,[string[]]$Arguments,[hashtable]$Environment = @{}) {
     $info = [Diagnostics.ProcessStartInfo]::new(); $info.FileName = $Executable; $info.UseShellExecute = $false; $info.CreateNoWindow = $true
     $info.RedirectStandardOutput = $true; $info.RedirectStandardError = $true
@@ -163,6 +163,43 @@ try {
             GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
         }))
     }
+    $currentStep = 'abandoned placement'
+    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+    $env:SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT = 'place/abandon'
+    $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-place-fault.out') -RedirectStandardError (Join-Path $private 'host-place-fault.err')
+    for ($i=0; $i -lt 100; $i++) { if ((Test-Path (Join-Path $private 'host-place-fault.out')) -and (Get-Content (Join-Path $private 'host-place-fault.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
+    $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-place-abandon') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+    $hostProcess.WaitForExit(10000) | Out-Null
+    if (-not $hostProcess.HasExited) { throw 'Placement fault host did not exit.' }
+    Remove-Item Env:SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT
+    $currentStep = 'abandoned reward'
+    $env:SF_GAMEPLAY_FAULT_AFTER_QUEST_GRANT = 'quest:chr_quest_abandon:quest/frontier_founder:defeat_boar:reward/frontier_founder_completion'
+    $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-quest-fault.out') -RedirectStandardError (Join-Path $private 'host-quest-fault.err')
+    for ($i=0; $i -lt 100; $i++) { if ((Test-Path (Join-Path $private 'host-quest-fault.out')) -and (Get-Content (Join-Path $private 'host-quest-fault.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
+    $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-quest-abandon') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+    $hostProcess.WaitForExit(10000) | Out-Null
+    if (-not $hostProcess.HasExited) { throw 'Reward fault host did not exit.' }
+    Cluster stop
+    Cluster start
+    Remove-Item Env:SF_GAMEPLAY_FAULT_AFTER_QUEST_GRANT
+    $currentStep = 'dual-host sweep'
+    $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-sweep-a.out') -RedirectStandardError (Join-Path $private 'host-sweep-a.err')
+    $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $hostPort2 = $listener.LocalEndpoint.Port; $listener.Stop()
+    $env:GAMEPLAY_HOST_PORT = "$hostPort2"
+    $hostProcess2 = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-sweep-b.out') -RedirectStandardError (Join-Path $private 'host-sweep-b.err')
+    $env:GAMEPLAY_HOST_PORT = "$hostPort"
+    Start-Sleep -Seconds 9
+    if ($hostProcess.HasExited -or $hostProcess2.HasExited) { throw 'Sweep host exited.' }
+    $placement = Sql "SELECT state FROM housing.placements WHERE operation_id='place/abandon'" "gameplay_$run"
+    $rewardState = Sql "SELECT state FROM character_state.reward_receipts WHERE character_id='chr_quest_abandon'" "gameplay_$run"
+    $rewardQuantity = Sql "SELECT quantity FROM inventory.entries WHERE container_id='ctn_quest_abandon' AND definition_id='item/frontier_founder_completion_bundle'" "gameplay_$run"
+    if ($placement -ne 'Compensated' -or $rewardState -ne 'Complete' -or $rewardQuantity -ne '1') { throw "Sweep failed: placement=$placement reward=$rewardState quantity=$rewardQuantity" }
+    $sweepLogs = @((Get-Content (Join-Path $private 'host-sweep-a.out') | Where-Object { $_ -match '^GAMEPLAY_SWEEP (placement place/abandon|reward quest:chr_quest_abandon:)' }))
+    $sweepLogs += @(Get-Content (Join-Path $private 'host-sweep-b.out') | Where-Object { $_ -match '^GAMEPLAY_SWEEP (placement place/abandon|reward quest:chr_quest_abandon:)' })
+    $sweepLogs += @(Get-Content (Join-Path $private 'host-quest-fault.out') | Where-Object { $_ -match '^GAMEPLAY_SWEEP placement place/abandon' })
+    if ($sweepLogs.Count -ne 2) { throw "Expected one sweep resolution per abandoned intent, got $($sweepLogs.Count)." }
+    $results.Add('PASS dual-host sweeper resolved abandoned placement and reward once after PostgreSQL restart')
+    Stop-Process -Id $hostProcess2.Id -Force; $hostProcess2.WaitForExit(10000) | Out-Null; $hostProcess2 = $null
     Cluster stop
     foreach ($name in @('Rewards','Progression','Housing')) {
         $dll = Join-Path $repo "BackendServices/Gameplay.Host.Tests/$name/bin/Release/net10.0/$name.Host.Tests.dll"
@@ -183,11 +220,12 @@ catch {
     }
 }
 finally {
-    foreach ($key in @('SF_GAMEPLAY_TOKEN','SF_GAMEPLAY_FAULT_AFTER_REMOVE_GRANT','GAMEPLAY_LEDGER_CONNECTION','GAMEPLAY_CHARACTER_CONNECTION','GAMEPLAY_HOUSING_CONNECTION')) {
+    foreach ($key in @('SF_GAMEPLAY_TOKEN','SF_GAMEPLAY_FAULT_AFTER_REMOVE_GRANT','SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT','SF_GAMEPLAY_FAULT_AFTER_QUEST_GRANT','GAMEPLAY_LEDGER_CONNECTION','GAMEPLAY_CHARACTER_CONNECTION','GAMEPLAY_HOUSING_CONNECTION')) {
         Remove-Item "Env:$key" -ErrorAction SilentlyContinue
     }
     try {
         if ($hostProcess -and -not $hostProcess.HasExited) { Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null }
+        if ($hostProcess2 -and -not $hostProcess2.HasExited) { Stop-Process -Id $hostProcess2.Id -Force; $hostProcess2.WaitForExit(10000) | Out-Null }
         if (Test-Path (Join-Path $private 'owner.json')) {
             Assert-Owned
             if ($started -or ($attempted -and (Test-Path (Join-Path $data 'postmaster.pid')))) { try { [void](Invoke-Checked (Join-Path $pg 'pg_ctl.exe') @('-D',$data,'-m','immediate','-w','-t','30','stop')) } catch { if ($failure -eq '') { $failure = $_.Exception.Message } } }
@@ -199,3 +237,4 @@ finally {
 }
 if ($failure -ne '') { throw $failure }
 Get-Content (Join-Path $EvidenceRoot 'results.txt')
+

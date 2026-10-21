@@ -67,6 +67,8 @@ internal sealed class HousingGrpcService(PostgresHousingStore store, ProtectedZo
                 request.ContainerId, request.ExpectedContainerRevision), DateTimeOffset.UtcNow);
             if (pending.State == "Pending")
             {
+                if (Environment.GetEnvironmentVariable("SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT") == request.OperationId)
+                    Environment.FailFast("Injected post-placement-intent host fault.");
                 try
                 {
                     ledger.Consume(request.OperationId + "/consume", request.ContainerId,

@@ -46,18 +46,21 @@ builder.Services.AddSingleton(ledgerStore);
 builder.Services.AddSingleton(new DomLedger(ledgerStore));
 builder.Services.AddSingleton(new BoarRewardService(new DomLedger(ledgerStore), boar));
 builder.Services.AddSingleton(new PostgresCharacterStateStore(characterConnection));
+builder.Services.AddSingleton<QuestRewardPayout>();
+builder.Services.AddSingleton(new GameplayRecoverySettings());
+builder.Services.AddHostedService<GameplayRecoveryService>();
 builder.Services.AddSingleton(new PostgresHousingStore(housingConnection));
 builder.Services.AddSingleton(quest);
 builder.Services.AddSingleton(zone);
 builder.Services.AddSingleton(new ClaimSettings());
 builder.Services.AddSingleton(recipes);
+builder.Services.AddSingleton(new CraftAttemptService(recipes, new DomLedger(ledgerStore)));
 builder.Services.AddGrpc(o => o.Interceptors.Add<AuthInterceptor>());
 var app = builder.Build();
-// A restart closes any interrupted refund decision before serving new housing calls.
-new PostgresHousingStore(housingConnection).RecoverPendingRemovals(ledgerStore);
 app.MapGrpcService<RewardGrpcService>();
 app.MapGrpcService<ProgressionGrpcService>();
 app.MapGrpcService<HousingGrpcService>();
+app.MapGrpcService<CraftingGrpcService>();
 app.Lifetime.ApplicationStarted.Register(() => Console.Out.WriteLine($"GAMEPLAY_HOST_READY port={port}"));
 app.Run();
 
@@ -94,6 +97,7 @@ internal static class GrpcRun
         }
         catch (RpcException) { throw; }
         catch (GameplayRejectedException ex) { throw new RpcException(new Status(ex.Code, ex.Message)); }
+        catch (CraftContentException ex) { throw new RpcException(new Status(StatusCode.InvalidArgument, ex.Message)); }
         catch (ShatteredFrontier.InventoryLedger.LedgerRejectedException ex) { throw Reject(ex.Message); }
         catch (CharacterStoreRejectedException ex) { throw Reject(ex.Message); }
         catch (HousingRejectedException ex) { throw new RpcException(new Status(ex.Code switch

@@ -4,7 +4,8 @@ using ShatteredFrontier.Progression;
 using ShatteredFrontier.QuestContent;
 using Pb = ShatteredFrontier.Progression.V1;
 
-internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, QuestDefinition quest) : Pb.Progression.ProgressionBase
+internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, QuestDefinition quest, QuestRewardPayout payout,
+    ShatteredFrontier.InventoryLedger.Postgres.PostgresInventoryLedgerStore ledgerStore) : Pb.Progression.ProgressionBase
 {
     public override Task<Pb.ApplyReceiptReply> ApplyReceipt(Pb.ApplyReceiptRequest request, ServerCallContext context) =>
         GrpcRun.Call(context, () =>
@@ -47,16 +48,29 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
             {
                 var q = request.Quest;
                 if (q.QuestId != quest.Id) throw new ArgumentException("Unknown quest.");
+                var containers = ledgerStore.Execute(s => s.Containers.Values
+                    .Where(c => c.Spec.OwnerKind == ShatteredFrontier.InventoryLedger.OwnerKind.Character &&
+                        c.Spec.OwnerId == request.CharacterId && c.Spec.Kind == ShatteredFrontier.InventoryLedger.ContainerKind.Backpack)
+                    .Select(c => c.Spec.Id).ToArray());
+                if (containers.Length != 1)
+                    throw new GameplayRejectedException("Character must have exactly one reward backpack.", StatusCode.FailedPrecondition);
+                var rewardContainerId = containers[0];
                 var occurred = DateTimeOffset.FromUnixTimeMilliseconds(q.OccurredAtUnixMs);
                 store.AcceptQuest(quest, request.CharacterId, occurred);
                 var eventReceipt = new ObjectiveEvent(request.SourceReceiptId, request.CharacterId, q.QuestId,
                     q.StepId, q.Kind, q.TargetId, string.IsNullOrEmpty(q.NodeId) ? null : q.NodeId, q.Quantity, occurred);
-                var result = store.ApplyQuest(quest, eventReceipt, request.ExpectedQuestRevision);
+                var result = store.ApplyQuest(quest, eventReceipt, request.ExpectedQuestRevision, rewardContainerId);
                 reply.QuestAccepted = result.Result.Accepted;
                 reply.ActiveStepId = result.Result.ActiveStepId ?? "";
                 reply.QuestCompleted = result.Result.Completed;
                 reply.QuestRevision = result.Revision;
                 reply.RewardBundleIds.AddRange(result.Result.Grants.Select(g => g.BundleId));
+                foreach (var grant in result.Result.Grants)
+                {
+                    if (store.Reward(grant.OperationId)?.ContainerId != rewardContainerId)
+                        throw new GameplayRejectedException("Reward container conflicts with original receipt.", StatusCode.AlreadyExists);
+                    payout.Resolve(grant.OperationId);
+                }
             }
             return reply;
         });

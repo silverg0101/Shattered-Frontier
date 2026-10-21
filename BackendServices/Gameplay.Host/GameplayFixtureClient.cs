@@ -3,6 +3,7 @@ using Grpc.Net.Client;
 using ShatteredFrontier.InventoryLedger;
 using ShatteredFrontier.InventoryLedger.Postgres;
 using Pb = ShatteredFrontier.Housing.V1;
+using ProgressPb = ShatteredFrontier.Progression.V1;
 
 // Exercised only by the owned Test-GameplayHosts fixture against its disposable cluster.
 internal static class GameplayFixtureClient
@@ -63,7 +64,55 @@ internal static class GameplayFixtureClient
                 Check(placeWon != removeWon && Quantity() == (removeWon ? 1 : 0), "Concurrent place/remove broke conservation.");
                 Console.WriteLine("PASS stale revision retry and concurrent place/remove");
                 break;
+            case "fixture-place-abandon":
+                ledger.CreateContainer(new ContainerSpec("ctn_abandon", OwnerKind.Character, "chr_abandon", ContainerKind.Backpack, 100));
+                ledger.Grant("seed/abandon", "ctn_abandon", 0, "item/wall_material_bundle", 1, "fixture", "seed/abandon");
+                client.ClaimPlot(new Pb.ClaimPlotRequest { OperationId = "claim/abandon", ClaimId = "clm_abandon",
+                    OwnerId = "chr_abandon", CenterX = 700, CenterY = 700, SideMetres = 40, PrepaidDays = 1 },
+                    headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                try
+                {
+                    client.Place(new Pb.PlaceRequest { OperationId = "place/abandon", ClaimId = "clm_abandon",
+                        ActorId = "chr_abandon", StructureId = "str_abandon", ContentId = "piece/wall",
+                        MaterialId = "item/wall_material_bundle", MaterialQuantity = 1,
+                        ContainerId = "ctn_abandon", ExpectedContainerRevision = 1 },
+                        headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                    throw new Exception("Placement fault did not fire.");
+                }
+                catch (RpcException) { }
+                Console.WriteLine("PASS abandoned placement reserved");
+                break;
+            case "fixture-quest-abandon":
+                ledger.CreateContainer(new ContainerSpec("ctn_quest_abandon", OwnerKind.Character, "chr_quest_abandon", ContainerKind.Backpack, 100));
+                var progress = new ProgressPb.Progression.ProgressionClient(channel);
+                var steps = new (string Step, string Kind, string Target, string Node)[] {
+                    ("harvest_oak","gather","item/oak_log","gathering_node/oak_tree"),
+                    ("mine_iron","gather","item/iron_ore",""),
+                    ("refine_materials","craft","item/rough_timber",""),
+                    ("refine_materials","craft","item/iron_ingot",""),
+                    ("place_wall","build","structure_tag/wall",""),
+                    ("defeat_boar","defeat","npc/boar","") };
+                for (var i = 0; i < steps.Length; i++)
+                {
+                    var step = steps[i];
+                    var request = new ProgressPb.ApplyReceiptRequest { SourceReceiptId = $"quest-abandon/{i}",
+                        Kind = "quest", CharacterId = "chr_quest_abandon",
+                        ExpectedQuestRevision = i,
+                        Quest = new ProgressPb.QuestEvidence { QuestId = "quest/frontier_founder",
+                            StepId = step.Step, Kind = step.Kind, TargetId = step.Target, NodeId = step.Node,
+                            Quantity = 1, OccurredAtUnixMs = 1792540800000 + i * 1000 } };
+                    try
+                    {
+                        var result = progress.ApplyReceipt(request, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                        if (i == steps.Length - 1) throw new Exception("Quest fault did not fire.");
+                        Check(result.QuestAccepted, "Quest setup step rejected.");
+                    }
+                    catch (RpcException) when (i == steps.Length - 1) { }
+                }
+                Console.WriteLine("PASS abandoned reward grant committed");
+                break;
             default: throw new ArgumentException("Unknown fixture mode.");
         }
     }
 }
+

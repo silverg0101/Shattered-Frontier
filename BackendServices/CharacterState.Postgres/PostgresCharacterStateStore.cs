@@ -125,7 +125,7 @@ public sealed class PostgresCharacterStateStore(string connectionString)
         });
     }
 
-    public VersionedResult<ProgressResult> ApplyQuest(QuestDefinition quest, ObjectiveEvent evidence, long expectedRevision)
+    public VersionedResult<ProgressResult> ApplyQuest(QuestDefinition quest, ObjectiveEvent evidence, long expectedRevision, string rewardContainerId = "")
     {
         if (string.IsNullOrWhiteSpace(evidence.OperationId) || string.IsNullOrWhiteSpace(evidence.CharacterId) || evidence.QuestId != quest.Id)
             throw new ArgumentException("Quest evidence identity invalid.");
@@ -152,7 +152,7 @@ public sealed class PostgresCharacterStateStore(string connectionString)
                 if (update.ExecuteNonQuery() != 1) throw new CharacterStoreRejectedException("Stale quest revision.");
                 foreach (var grant in result.Grants)
                 {
-                    using var receipt = Command(c, t, "INSERT INTO character_state.reward_receipts VALUES ($1,$2,$3,$4,$5)", grant.OperationId, grant.CharacterId, grant.QuestId, grant.StepId, grant.BundleId);
+                    using var receipt = Command(c, t, "INSERT INTO character_state.reward_receipts(operation_id,character_id,quest_id,step_id,bundle_id,container_id) VALUES ($1,$2,$3,$4,$5,$6)", grant.OperationId, grant.CharacterId, grant.QuestId, grant.StepId, grant.BundleId, rewardContainerId);
                     receipt.ExecuteNonQuery();
                 }
                 revision++;
@@ -161,4 +161,29 @@ public sealed class PostgresCharacterStateStore(string connectionString)
             return new VersionedResult<ProgressResult>(revision, result);
         });
     }
+
+    public IReadOnlyList<RewardIntent> PendingRewards(DateTimeOffset olderThan) => Transaction((c,t) =>
+    {
+        var result = new List<RewardIntent>();
+        using var cmd = Command(c,t,"SELECT operation_id,character_id,quest_id,step_id,bundle_id,container_id FROM character_state.reward_receipts WHERE state='Pending' AND container_id<>'' AND created_at <= $1 ORDER BY created_at LIMIT 100",olderThan);
+        using var r = cmd.ExecuteReader();
+        while (r.Read()) result.Add(new(r.GetString(0),r.GetString(1),r.GetString(2),r.GetString(3),r.GetString(4),r.GetString(5)));
+        return (IReadOnlyList<RewardIntent>)result;
+    });
+
+    public RewardIntent? Reward(string operationId) => Transaction((c,t) =>
+    {
+        using var cmd = Command(c,t,"SELECT operation_id,character_id,quest_id,step_id,bundle_id,container_id FROM character_state.reward_receipts WHERE operation_id=$1",operationId);
+        using var r = cmd.ExecuteReader();
+        return r.Read() ? new RewardIntent(r.GetString(0),r.GetString(1),r.GetString(2),r.GetString(3),r.GetString(4),r.GetString(5)) : null;
+    });
+
+    public void CompleteReward(string operationId) => Transaction((c,t) =>
+    {
+        using var cmd = Command(c,t,"UPDATE character_state.reward_receipts SET state='Complete' WHERE operation_id=$1",operationId);
+        if (cmd.ExecuteNonQuery()!=1) throw new CharacterStoreRejectedException("Reward intent missing.");
+        return true;
+    });
 }
+
+public sealed record RewardIntent(string OperationId,string CharacterId,string QuestId,string StepId,string BundleId,string ContainerId);

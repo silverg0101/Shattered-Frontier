@@ -35,7 +35,7 @@ if (mode.EndsWith("-outage", StringComparison.Ordinal))
         }, headers, deadline: Deadline()), StatusCode.Unavailable);
     else if (mode == "progression-outage")
         Code(() => new ProgressPb.Progression.ProgressionClient(channel).GetCharacterState(
-            new ProgressPb.GetCharacterStateRequest { CharacterId = "char_progression" }, headers,
+            new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_progression" }, headers,
             deadline: Deadline()), StatusCode.Unavailable);
     else if (mode == "housing-outage")
         Code(() => new HousingPb.Housing.HousingClient(channel).GetClaim(
@@ -59,7 +59,7 @@ if (mode.EndsWith("-replay", StringComparison.Ordinal))
     {
         var result = new ProgressPb.Progression.ProgressionClient(channel).ApplyReceipt(new ProgressPb.ApplyReceiptRequest
         {
-            SourceReceiptId = "harvest/test-oak", Kind = "gather", CharacterId = "char_progression",
+            SourceReceiptId = "harvest/test-oak", Kind = "gather", CharacterId = "chr_progression",
             Payload = new ProgressPb.ActionPayload { SkillId = "skill/logging", Difficulty = 1, ActionSeconds = 6, Success = true },
             Quest = new ProgressPb.QuestEvidence { QuestId = "quest/frontier_founder", StepId = "harvest_oak", Kind = "gather",
                 TargetId = "item/oak_log", NodeId = "gathering_node/oak_tree", Quantity = 1,
@@ -120,17 +120,30 @@ if (mode == "journey")
     Check(Apply("harvest/journey-ore", "gather", "skill/mining", "mine_iron", "gather",
         "item/iron_ore").ActiveStepId == "refine_materials", "Ore step failed.");
     Console.WriteLine("JOURNEY harvested");
-    var recipes = RecipeCatalog.LoadFiles([Path.Combine(Environment.GetEnvironmentVariable("GAMEPLAY_CONTENT_ROOT")!,
-        "crafting", "recipes_greenlands_starter.json")]);
-    var crafting = new CraftAttemptService(recipes, ledger);
-    long revision = ledger.Read("ctn_journey").Revision;
-    crafting.Execute(new CraftAttempt("craft/journey-timber", "ctn_journey", revision++, "recipe/rough_timber", "sawmill", 2));
+    var crafting = new ShatteredFrontier.Crafting.V1.Crafting.CraftingClient(channel);
+    void Craft(string op, string recipe, int count)
+    {
+        var request = new ShatteredFrontier.Crafting.V1.CraftRequest { OperationId = op,
+            CharacterId = "chr_journey", ContainerId = "ctn_journey", RecipeId = recipe,
+            Count = count, ExpectedContainerRevision = ledger.Read("ctn_journey").Revision };
+        var first = crafting.Craft(request, headers, deadline: Deadline());
+        Check(first.Equals(crafting.Craft(request, headers, deadline: Deadline())), "Craft replay changed.");
+        if (op == "craft/journey-timber")
+        {
+            request.Count++;
+            Code(() => crafting.Craft(request, headers, deadline: Deadline()), StatusCode.AlreadyExists);
+            request.Count--;
+            request.CharacterId = "chr_other";
+            Code(() => crafting.Craft(request, headers, deadline: Deadline()), StatusCode.PermissionDenied);
+        }
+    }
+    Craft("craft/journey-timber", "recipe/rough_timber", 2);
     Apply("craft/journey-timber", "craft", "skill/smithing", "refine_materials", "craft", "item/rough_timber");
-    crafting.Execute(new CraftAttempt("craft/journey-ingot", "ctn_journey", revision++, "recipe/iron_ingot", "forge", 2));
+    Craft("craft/journey-ingot", "recipe/iron_ingot", 2);
     Check(Apply("craft/journey-ingot", "craft", "skill/smithing", "refine_materials", "craft",
         "item/iron_ingot").ActiveStepId == "place_wall", "Craft step failed.");
-    crafting.Execute(new CraftAttempt("craft/journey-nails", "ctn_journey", revision++, "recipe/iron_nails", "forge", 1));
-    crafting.Execute(new CraftAttempt("craft/journey-wall", "ctn_journey", revision++, "recipe/wall_material_bundle", "workbench", 1));
+    Craft("craft/journey-nails", "recipe/iron_nails", 1);
+    Craft("craft/journey-wall", "recipe/wall_material_bundle", 1);
     Console.WriteLine("JOURNEY crafted");
     var claim = housing.ClaimPlot(new HousingPb.ClaimPlotRequest { OperationId = "claim/journey", ClaimId = "clm_journey",
         OwnerId = "chr_journey", CenterX = -900, CenterY = -900, SideMetres = 40, PrepaidDays = 1,
@@ -153,6 +166,8 @@ if (mode == "journey")
     var final = Apply("defeat/journey-boar", "defeat", "", "defeat_boar", "defeat", "npc/boar");
     Check(final.QuestCompleted && final.RewardBundleIds.Contains("reward/frontier_founder_completion"),
         "Journey completion failed.");
+    Check(ledger.Read("ctn_journey").Quantities.GetValueOrDefault("item/frontier_founder_completion_bundle") == 1,
+        "Quest reward was not paid exactly once.");
     Console.WriteLine("PASS journey harvest, craft, place, boar reward, quest completion and replay");
     return;
 }
@@ -181,10 +196,12 @@ if (mode == "rewards")
 }
 else if (mode == "progression")
 {
+    new InventoryLedger(new PostgresInventoryLedgerStore(connection)).CreateContainer(
+        new ContainerSpec("ctn_progression", OwnerKind.Character, "chr_progression", ContainerKind.Backpack, 100));
     var client = new ProgressPb.Progression.ProgressionClient(channel);
     var request = new ProgressPb.ApplyReceiptRequest
     {
-        SourceReceiptId = "harvest/test-oak", Kind = "gather", CharacterId = "char_progression",
+        SourceReceiptId = "harvest/test-oak", Kind = "gather", CharacterId = "chr_progression",
         Payload = new ProgressPb.ActionPayload { SkillId = "skill/logging", Difficulty = 1, ActionSeconds = 6, Success = true },
         Quest = new ProgressPb.QuestEvidence { QuestId = "quest/frontier_founder", StepId = "harvest_oak", Kind = "gather",
             TargetId = "item/oak_log", NodeId = "gathering_node/oak_tree", Quantity = 1,
@@ -195,7 +212,7 @@ else if (mode == "progression")
     var first = client.ApplyReceipt(request, headers, deadline: Deadline());
     var replay = client.ApplyReceipt(request, headers, deadline: Deadline());
     Check(first.Equals(replay) && first.QuestAccepted && first.ActiveStepId == "mine_iron", "Progression or quest replay differs.");
-    var state = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "char_progression" }, headers, deadline: Deadline());
+    var state = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_progression" }, headers, deadline: Deadline());
     Check(state.QuestRevision == 1 && state.ActiveStepId == "mine_iron", "Quest state missing.");
     request.SourceReceiptId = "harvest/stale";
     Code(() => client.ApplyReceipt(request, headers, deadline: Deadline()), StatusCode.FailedPrecondition);
@@ -241,3 +258,5 @@ else if (mode == "housing")
 }
 else throw new Exception("Unknown test mode.");
 Console.WriteLine($"PASS {mode} wire auth, deadline, status, replay");
+
+
