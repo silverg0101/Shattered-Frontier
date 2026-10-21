@@ -6,11 +6,12 @@ Follows review_route in silverbrook-town-layout.json from the arrival in the Mar
 back through the square, south over the Silverbrook Bridge to the South Gate, then across the Valemere Road bridge. Writes
 silverbrook-game-review.json and captures (arrival plus one per ReviewCamera_*) beside this script.
 """
-import json, math, time
+import json, math, time, sys
 from pathlib import Path
 import unreal as u
 
 ROOT = Path(__file__).resolve().parent
+EVIDENCE = ROOT.parents[2] / 'docs/evidence/graphics/2026-10-21-before'
 LAYOUT = json.loads((ROOT / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))
 ROUTE = LAYOUT['review_route']
 world = u.load_asset('/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook')
@@ -141,4 +142,64 @@ def tick(delta):
         state['error'] = str(error); finish()
 
 
-handle = u.register_slate_post_tick_callback(tick)
+def reference_capture():
+    """GFX-01 fixed views in the built editor target's -game world."""
+    bookmarks = json.loads((ROOT / 'silverbrook-reference-bookmarks.json').read_text(encoding='utf-8'))
+    EVIDENCE.mkdir(parents=True, exist_ok=True)
+    camera = next(c for c in u.GameplayStatics.get_all_actors_of_class(world, u.CameraActor)
+                  if c.get_actor_label() == 'ReviewCamera_Aerial')
+    sun = u.GameplayStatics.get_all_actors_of_class(world, u.DirectionalLight)[0]
+    sun.set_actor_rotation(u.Rotator(pitch=-40, yaw=-60, roll=0), False)
+    for command in ('r.EyeAdaptationQuality 0', 'r.DefaultFeature.AutoExposure 0',
+                    'r.MotionBlurQuality 0', 'r.ScreenPercentage 100', 'r.ExposureOffset 0',
+                    'ShowFlag.TextRender 0'):
+        u.SystemLibrary.execute_console_command(world, command)
+    pawn.character_movement.disable_movement()
+    capture = dict(frame=0, index=0)
+
+    def ground_z(x, y):
+        start, end = u.Vector(x * 100, y * 100, 100000), u.Vector(x * 100, y * 100, -100000)
+        hit = u.SystemLibrary.line_trace_single(world, start, end, u.TraceTypeQuery.TRACE_TYPE_QUERY1,
+                                                 False, [pawn], u.DrawDebugTrace.NONE, True)
+        return hit.to_tuple()[4].z if hit else 0
+
+    def reference_tick(_delta):
+        capture['frame'] += 1
+        if capture['frame'] < 90:
+            return
+        local = (capture['frame'] - 90) % 150
+        view = bookmarks['views'][capture['index']]
+        if local == 0:
+            x, y = view['xy_m']; tx, ty = view['look_xy_m']
+            z = ground_z(x, y) + view['eye_height_m'] * 100
+            target_z = ground_z(tx, ty) + view['look_height_m'] * 100
+            yaw = math.degrees(math.atan2(ty - y, tx - x))
+            pitch = math.degrees(math.atan2(target_z - z, math.hypot(tx - x, ty - y) * 100))
+            camera.set_actor_location(u.Vector(x * 100, y * 100, z), False, False)
+            camera.set_actor_rotation(u.Rotator(pitch=pitch, yaw=yaw, roll=0), False)
+            camera.camera_component.set_field_of_view(view['fov_deg'])
+            pc.set_view_target_with_blend(camera, 0)
+            pawn.set_actor_hidden_in_game(not view.get('over_shoulder', False))
+            if view.get('over_shoulder', False):
+                forward = u.Vector(math.cos(math.radians(yaw)), math.sin(math.radians(yaw)), 0)
+                right = u.Vector(-forward.y, forward.x, 0)
+                pawn.set_actor_location(u.Vector(x * 100, y * 100, ground_z(x, y) + 100) + forward * 500 + right * 150,
+                                        False, True)
+        if local == 125:
+            name = view['name'] + '.png'
+            u.SystemLibrary.execute_console_command(world, 'HighResShot 2560x1440 filename=' +
+                                                     str(EVIDENCE / name).replace('\\', '/'))
+            u.log('GFX01_CAPTURE ' + name)
+        if local == 149:
+            capture['index'] += 1
+            if capture['index'] == len(bookmarks['views']):
+                u.unregister_slate_post_tick_callback(capture['handle'])
+                u.SystemLibrary.execute_console_command(world, 'quit')
+
+    capture['handle'] = u.register_slate_post_tick_callback(reference_tick)
+
+
+if '-GfxReferenceCapture' in u.SystemLibrary.get_command_line() or '-GfxReferenceCapture' in sys.argv:
+    reference_capture()
+else:
+    handle = u.register_slate_post_tick_callback(tick)
