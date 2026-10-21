@@ -3,6 +3,8 @@ using Grpc.Net.Client;
 using ShatteredFrontier.InventoryLedger;
 using ShatteredFrontier.InventoryLedger.Postgres;
 using ShatteredFrontier.Exchange.Postgres;
+using ShatteredFrontier.CharacterState.Postgres;
+using ShatteredFrontier.Housing.Postgres;
 using Pb = ShatteredFrontier.Housing.V1;
 using ProgressPb = ShatteredFrontier.Progression.V1;
 using ExchangePb = ShatteredFrontier.Exchange.V1;
@@ -35,6 +37,30 @@ internal static class GameplayFixtureClient
         static void Check(bool ok, string message) { if (!ok) throw new Exception(message); }
         switch (mode)
         {
+            case "fixture-rehearsal-schema-baseline":
+            case "fixture-rehearsal-schema-newer":
+                var schema = Required("REHEARSAL_SCHEMA");
+                var newer = mode.EndsWith("newer", StringComparison.Ordinal);
+                void CheckSchema(Action read, Type exceptionType)
+                {
+                    try { read(); if (newer) throw new Exception($"{schema} newer schema accepted."); }
+                    catch (Exception ex) when (newer && ex.GetType() == exceptionType) { }
+                }
+                switch (schema)
+                {
+                    case "inventory": CheckSchema(() => ledger.Read("ctn_journey"), typeof(LedgerSchemaCompatibilityException)); break;
+                    case "character_state": CheckSchema(() => new PostgresCharacterStateStore(Required("GAMEPLAY_CHARACTER_CONNECTION")).ReadProgression("chr_journey"), typeof(CharacterSchemaCompatibilityException)); break;
+                    case "housing": CheckSchema(() => new PostgresHousingStore(Required("GAMEPLAY_HOUSING_CONNECTION")).Claim("clm_journey"), typeof(HousingSchemaCompatibilityException)); break;
+                    case "exchange": CheckSchema(() => new PostgresExchangeStore(Required("GAMEPLAY_EXCHANGE_CONNECTION")).Wallet("chr_exchange_a"), typeof(ExchangeSchemaCompatibilityException)); break;
+                    default: throw new Exception("Unknown rehearsal schema.");
+                }
+                Console.WriteLine($"PASS {schema} schema {(newer ? "newer refused" : "current accepted")}");
+                break;
+            case "fixture-rehearsal-after-backup":
+                new PostgresExchangeStore(Required("GAMEPLAY_EXCHANGE_CONNECTION"))
+                    .Credit("rehearsal/post-backup-credit", "chr_exchange_a", 1, "starter_kit");
+                Console.WriteLine("PASS post-backup wallet write");
+                break;
             case "fixture-exchange-seed":
                 var exchangeStore = new PostgresExchangeStore(Required("GAMEPLAY_EXCHANGE_CONNECTION"));
                 foreach (var actor in new[] { "chr_exchange_seller", "chr_exchange_a", "chr_exchange_b" })
