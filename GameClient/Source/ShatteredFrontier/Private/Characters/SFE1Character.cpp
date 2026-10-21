@@ -87,7 +87,10 @@ void ASFE1Character::TickCombatScenario()
         if (It->Health() > 0 && D < Distance) { Nearest = *It; Distance = D; }
     }
     if (!Nearest || !Controller || PilotHealth <= 0) { return; }
-    Controller->SetControlRotation((Nearest->GetActorLocation() - GetActorLocation()).Rotation());
+    const FVector ToBoar = (Nearest->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
+    // The server judges facing from the control rotation replicated with movement, so aim on one tick and swing once it has arrived.
+    if (FVector::DotProduct(Controller->GetControlRotation().Vector().GetSafeNormal2D(), ToBoar) < 0.9)
+    { Controller->SetControlRotation(ToBoar.Rotation()); return; }
     PilotAttack();
     ++CombatScenarioAttackCount;
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_CLIENT_ATTACK Index=%d"), CombatScenarioAttackCount);
