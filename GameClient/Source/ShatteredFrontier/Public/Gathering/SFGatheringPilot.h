@@ -15,6 +15,8 @@ class UStaticMesh;
 class UStaticMeshComponent;
 class UTextRenderComponent;
 class USFGatheringPilotComponent;
+class FSFInventoryLedgerClient;
+struct FSFLedgerResponse;
 
 // Development values: reviewed release authors, next world start, no live/console overrides.
 UCLASS(Config=Game, DefaultConfig, meta=(DisplayName="Gathering Pilot (Release Only)"))
@@ -127,6 +129,7 @@ private:
     friend class FSFHarvestFellingAuthorityTest;
     friend class FSFGatheringPilotSurfaceProtocolTest;
     friend class FSFGatheringPilotProgressionTest;
+    friend class FSFGatheringPilotLedgerTest;
     UFUNCTION() void OnRep_State();
     void Release(USFGatheringPilotComponent* Interactor);
     void BeginRecovery();
@@ -146,7 +149,7 @@ private:
 };
 
 UENUM()
-enum class ESFGatheringPilotPhase : uint8 { Idle, Harvesting, Committed, Rejected, Canceled };
+enum class ESFGatheringPilotPhase : uint8 { Idle, Harvesting, Committed, Rejected, Canceled, Committing };  // Committing: awaiting the InventoryLedger receipt
 UENUM()
 enum class ESFGatheringPilotResult : uint8
 {
@@ -222,6 +225,7 @@ private:
     friend class FSFHarvestFellingAuthorityTest;
     friend class FSFGatheringPilotSurfaceProtocolTest;
     friend class FSFGatheringPilotProgressionTest;
+    friend class FSFGatheringPilotLedgerTest;
     UFUNCTION(Server, Reliable) void ServerGatheringAction(ASFGatheringPilotNode* Node, uint32 Revision, uint32 Operation);
     UFUNCTION(Server, Reliable) void ServerGatheringActionAtSurface(ASFGatheringPilotNode* Node, uint32 Revision, uint32 Operation,FVector_NetQuantize10 RequestedPoint);
     void ProcessGatheringAction(ASFGatheringPilotNode* Node,uint32 Revision,uint32 Operation,bool bSurface,const FVector& RequestedPoint);
@@ -243,6 +247,14 @@ private:
     bool TryEquipTool(bool bAxe);
     FString GetToolName() const;
     bool IsAuthoritativePilotWorld() const;
+    void CompleteHarvest(bool bRefining);
+    void BeginLedgerCommit();
+    void OnLedgerGrant(const FSFLedgerResponse& Response);
+    void RefreshLedgerRevision();
+    TSharedPtr<FSFInventoryLedgerClient> Ledger;  // set only when USFInventoryLedgerSettings::bEnabled
+    FString LedgerContainerId;
+    FString PendingLedgerOperation;  // "gather/<guid>", reused on every retry until a terminal outcome
+    int64 LedgerRevision = -1;       // cached container revision; -1 until EnsureContainer/GET answers
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
     bool bTestWorldAdmission = false;
 #endif

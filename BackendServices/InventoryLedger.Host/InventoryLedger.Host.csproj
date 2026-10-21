@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="../InventoryLedger/InventoryLedger.csproj" />
+    <ProjectReference Include="../InventoryLedger.Postgres/InventoryLedger.Postgres.csproj" />
+    <PackageReference Include="Grpc.AspNetCore" />
+    <PackageReference Include="Grpc.Net.Client" />
+    <Protobuf Include="../../proto/sf/inventory/v1/ledger.proto" ProtoRoot="../../proto" GrpcServices="Both" />
+  </ItemGroup>
+</Project>

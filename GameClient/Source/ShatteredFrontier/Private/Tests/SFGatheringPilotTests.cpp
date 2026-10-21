@@ -2,6 +2,8 @@
 #include "Misc/AutomationTest.h"
 #include "Tests/AutomationCommon.h"
 #include "Gathering/SFGatheringPilot.h"
+#include "Inventory/SFInventoryLedgerClient.h"
+#include "Containers/Ticker.h"
 #include "Construction/SFConstructionNetwork.h"
 #include "Characters/SFE1Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -339,6 +341,118 @@ bool FSFGatheringPilotSurfaceProtocolTest::RunTest(const FString& Parameters)
     TestFalse(TEXT("Cooldown below declared bound fails configuration"),Component->CapturedSettings->Validate(Error));
     Component->CapturedSettings->GeometryAttemptCooldownSeconds=2.01f;
     TestFalse(TEXT("Cooldown above declared bound fails configuration"),Component->CapturedSettings->Validate(Error));
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFGatheringPilotLedgerTest,
+    "ShatteredFrontier.Gathering.Pilot.Ledger",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFGatheringPilotLedgerTest::RunTest(const FString& Parameters)
+{
+    AddInfo(TEXT("Stubbed InventoryLedger transport (INT-03 section 4); the gRPC host path is tools/Test-GatheringPilot.ps1 -Ledger."));
+    // In-memory stand-in for InventoryLedger.Host: revision compare-and-set plus idempotent receipts.
+    struct FFakeLedger
+    {
+        int64 Revision=0; int32 Commits=0; bool bDropFirstGrantReply=false; bool bAllUnavailable=false; bool bHold=false;
+        TMap<FString,int64> Receipts; TArray<FSFLedgerRequest> Requests; TArray<TFunction<void(const FSFLedgerResponse&)>> Held;
+        FSFLedgerResponse Reply(const FSFLedgerRequest& Request)
+        {
+            FSFLedgerResponse Out; Out.GrpcCode=0; Out.Status=ESFLedgerStatus::Ok; Out.Revision=Revision;
+            if (bAllUnavailable) { Out.Status=ESFLedgerStatus::Unavailable; Out.GrpcCode=14; return Out; }
+            if (Request.Rpc!=ESFLedgerRpc::Grant) { return Out; }
+            if (const int64* Prior=Receipts.Find(Request.OperationId)) { Out.Revision=*Prior; Out.GrantedDelta=Request.Quantity; return Out; }
+            if (Request.ExpectedRevision!=Revision) { Out.Status=ESFLedgerStatus::Stale; Out.GrpcCode=10; return Out; }
+            Receipts.Add(Request.OperationId,++Revision); ++Commits; Out.Revision=Revision; Out.GrantedDelta=Request.Quantity;
+            if (bDropFirstGrantReply) { bDropFirstGrantReply=false; Out=FSFLedgerResponse(); }  // committed, reply lost
+            return Out;
+        }
+    };
+    TSharedRef<FFakeLedger> Fake=MakeShared<FFakeLedger>();
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) { return false; }
+    auto* World=Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
+    auto* PC=World->SpawnActor<ASFConstructionNetworkController>();
+    FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    auto* Pawn=World->SpawnActor<ASFE1Character>(FVector(0,0,100),FRotator::ZeroRotator,Spawn);
+    auto* Wood=World->SpawnActor<ASFGatheringPilotNode>(FVector(200,0,100),FRotator::ZeroRotator,Spawn);
+    if (!PC || !Pawn || !Wood) { return false; }
+    PC->Possess(Pawn); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
+    auto* Gather=PC->FindComponentByClass<USFGatheringPilotComponent>();
+    auto* Bag=PC->FindComponentByClass<UInventoryComponent>(); if (!Gather || !Bag) { return false; }
+    Gather->CapturedSettings=DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(),Gather);
+    Gather->CapturedSettings->HarvestSeconds=0.5f; Gather->bTestWorldAdmission=true; Gather->bEnabled=true;
+    if (!TestTrue(TEXT("Starter tools and axe"),Gather->InitializeStarterTools() && Gather->TryEquipTool(true))) { return false; }
+    Wood->State.Charges=3;
+
+    auto* Settings=DuplicateObject<USFInventoryLedgerSettings>(GetDefault<USFInventoryLedgerSettings>(),GetTransientPackage());
+    TestFalse(TEXT("Ledger is off by default"),Settings->bEnabled);
+    Settings->bEnabled=true; Settings->MaxAttempts=3;
+    FString Error; Settings->Endpoint=TEXT("10.0.0.5:50071");
+    TestFalse(TEXT("Non-loopback endpoint fails validation"),Settings->Validate(Error));
+    Settings->Endpoint=TEXT("127.0.0.1:50071");
+    FSFInventoryLedgerClient::SetSendOverrideForTests([Fake](const FSFLedgerRequest& Request,float,TFunction<void(const FSFLedgerResponse&)> Done)
+    {
+        Fake->Requests.Add(Request);
+        if (Fake->bHold) { Fake->Held.Add(MoveTemp(Done)); return; }
+        Done(Fake->Reply(Request));
+    });
+    Gather->Ledger=FSFInventoryLedgerClient::Create(*Settings);
+    FSFInventoryLedgerClient::SetSendOverrideForTests(nullptr);
+    if (!TestTrue(TEXT("Stubbed client created"),Gather->Ledger.IsValid())) { return false; }
+
+    const TSoftObjectPtr<UInventoryItemDefinition> WoodItem(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_OakLog.DA_OakLog")));
+    const auto Tick=[&Fixture](int32 Count) { for (int32 I=0; I<Count; ++I) { Fixture.TickTestWorld(0.05f); FTSTicker::GetCoreTicker().Tick(0.3f); } };
+    const auto Grants=[Fake](const FString& Op) { int32 N=0; for (const auto& R : Fake->Requests) { N+=R.Rpc==ESFLedgerRpc::Grant && R.OperationId==Op; } return N; };
+
+    Gather->ServerGatheringAction_Implementation(Wood,0,1); Tick(12);
+    TestEqual(TEXT("Receipt grants"),Gather->Feedback.Result,ESFGatheringPilotResult::Granted);
+    TestEqual(TEXT("Projection shows the committed unit"),UInventoryTransactionLibrary::GetItemQuantity(Bag,WoodItem),int64(1));
+    TestTrue(TEXT("Charge consumed once after the receipt"),Wood->State.Charges==2 && Wood->State.Revision==1 && !Wood->State.bBusy);
+    if (!TestTrue(TEXT("EnsureContainer then Grant"),Fake->Requests.Num()==2 && Fake->Requests[0].Rpc==ESFLedgerRpc::EnsureContainer)) { return false; }
+    const FSFLedgerRequest First=Fake->Requests[1];
+    TestTrue(TEXT("Server-generated operation id"),First.OperationId.StartsWith(TEXT("gather/")) && First.OperationId.Len()==43);
+    TestEqual(TEXT("Causation is container:client operation"),First.CausationId,FString(TEXT("ctn_dev_local:1")));
+    TestTrue(TEXT("Grant payload"),First.ContainerId==TEXT("ctn_dev_local") && First.ExpectedRevision==0 && First.DefinitionId==TEXT("item/pilot_oak_log")
+        && First.Quantity==1 && First.Source==TEXT("gathering"));
+    TestEqual(TEXT("Container capacity from typed settings"),Fake->Requests[0].Capacity,Gather->CapturedSettings->InventorySlots*Gather->CapturedSettings->MaterialStackUnits);
+
+    Fake->bDropFirstGrantReply=true;
+    Gather->ServerGatheringAction_Implementation(Wood,1,2); Tick(14);
+    const FString Second=Fake->Requests.Last().OperationId;
+    TestEqual(TEXT("Lost reply is retried with the same operation id"),Grants(Second),2);
+    TestEqual(TEXT("Exactly one ledger commit per harvest"),Fake->Commits,2);
+    TestEqual(TEXT("Retry projects one unit"),UInventoryTransactionLibrary::GetItemQuantity(Bag,WoodItem),int64(2));
+    TestNotEqual(TEXT("Each harvest has its own operation id"),Second,First.OperationId);
+
+    Fake->bHold=true;
+    Gather->ServerGatheringAction_Implementation(Wood,2,3); Tick(12);
+    TestEqual(TEXT("Awaiting receipt"),Gather->Feedback.Phase,ESFGatheringPilotPhase::Committing);
+    TestTrue(TEXT("Node stays locked while committing"),Wood->State.bBusy && Wood->State.Charges==1);
+    Gather->ServerGatheringAction_Implementation(Wood,2,4);
+    TestEqual(TEXT("No new action while committing"),Gather->Feedback.Operation,uint32(3));
+    Fake->bHold=false; Fake->bAllUnavailable=true;
+    if (!TestEqual(TEXT("One attempt in flight"),Fake->Held.Num(),1)) { return false; }
+    const FString Third=Fake->Requests.Last().OperationId;
+    FSFLedgerResponse Down; Fake->Held[0](Down); Fake->Held.Reset(); Tick(10);
+    TestEqual(TEXT("Exhausted retries reject as unavailable"),Gather->Feedback.Result,ESFGatheringPilotResult::Unavailable);
+    TestEqual(TEXT("MaxAttempts bounds retries"),Grants(Third),3);
+    TestTrue(TEXT("Unavailable keeps charge and revision and releases lock"),Wood->State.Charges==1 && Wood->State.Revision==2 && !Wood->State.bBusy);
+    TestEqual(TEXT("Nothing projected"),UInventoryTransactionLibrary::GetItemQuantity(Bag,WoodItem),int64(2));
+
+    Fake->bAllUnavailable=false; Gather->LedgerRevision=Fake->Revision; Fake->Revision+=5;  // another writer moved the container
+    Gather->ServerGatheringAction_Implementation(Wood,2,4); Tick(12);
+    TestEqual(TEXT("Stale revision rejects"),Gather->Feedback.Result,ESFGatheringPilotResult::Stale);
+    TestTrue(TEXT("Stale re-reads the container"),Fake->Requests.Last().Rpc==ESFLedgerRpc::GetContainer && Gather->LedgerRevision==Fake->Revision);
+    TestTrue(TEXT("Stale keeps the charge"),Wood->State.Charges==1 && !Wood->State.bBusy);
+
+    Fake->bHold=true;
+    Gather->ServerGatheringAction_Implementation(Wood,2,5); Tick(12);
+    if (!TestEqual(TEXT("Disconnect case reaches committing"),Fake->Held.Num(),1)) { return false; }
+    PC->Destroy();
+    TestFalse(TEXT("Disconnect releases the node lock"),Wood->State.bBusy);
+    FSFLedgerResponse Late=Fake->Reply(Fake->Requests.Last()); Fake->Held[0](Late);
+    TestEqual(TEXT("Ledger resolved the outcome after the owner left"),Fake->Commits,3);
     return true;
 }
 #endif

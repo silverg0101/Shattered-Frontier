@@ -3,7 +3,7 @@
   "EngineAssociation": "5.8",
   "Category": "Games",
   "Description": "Shattered Frontier E1 movement fixture; Linux dedicated-server target for steam-server.",
-  "Modules": [{ "Name": "ShatteredFrontier", "Type": "Runtime", "LoadingPhase": "Default" }],
+  "Modules": [{ "Name": "ShatteredFrontier", "Type": "Runtime", "LoadingPhase": "Default" }, { "Name": "ShatteredFrontierBackend", "Type": "ServerOnly", "LoadingPhase": "Default" }],
   "Plugins": [
     { "Name": "ProceduralMeshComponent", "Enabled": true },
     { "Name": "MinimalInventoryRuntime", "Enabled": true, "PlatformAllowList": ["Win64"] },

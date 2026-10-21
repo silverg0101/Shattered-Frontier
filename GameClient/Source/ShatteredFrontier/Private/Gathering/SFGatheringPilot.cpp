@@ -1,5 +1,8 @@
 #include "Gathering/SFGatheringPilot.h"
 #include "Gathering/SFHarvestFallingTree.h"
+#include "Inventory/SFInventoryLedgerClient.h"
+#include "Engine/NetConnection.h"
+#include "Misc/Guid.h"
 #include "Construction/SFConstructionNetwork.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
@@ -36,6 +39,17 @@ namespace
         case ESFGatheringPilotKind::Sawmill: return TEXT("/Game/Frontier/Gameplay/Pilot/DA_RoughTimber.DA_RoughTimber");
         case ESFGatheringPilotKind::Forge: return TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronIngot.DA_IronIngot");
         case ESFGatheringPilotKind::Stone: return TEXT("/Game/Frontier/Gameplay/Pilot/DA_RoughStone.DA_RoughStone");
+        default: return TEXT("");
+        }
+    }
+    // InventoryLedger definition ids for the raw materials; refined outputs stay session-only (INT-03 6.4).
+    const TCHAR* LedgerItemId(ESFGatheringPilotKind Kind)
+    {
+        switch (Kind)
+        {
+        case ESFGatheringPilotKind::Oak: return TEXT("item/pilot_oak_log");
+        case ESFGatheringPilotKind::Iron: return TEXT("item/pilot_iron_ore");
+        case ESFGatheringPilotKind::Stone: return TEXT("item/pilot_rough_stone");
         default: return TEXT("");
         }
     }
@@ -279,6 +293,12 @@ void USFGatheringPilotComponent::BeginPlay()
         {
             bEnabled=false;
             UE_LOG(LogTemp,Error,TEXT("GATHERING_PILOT_STARTER_TOOLS_FAILED No partial loadout granted; check released tool assets and bag capacity."));
+        }
+        const auto* LedgerSettings=GetDefault<USFInventoryLedgerSettings>();
+        if (bEnabled && LedgerSettings->bEnabled)
+        {
+            Ledger=FSFInventoryLedgerClient::Create(*LedgerSettings);
+            if (!Ledger) { bEnabled=false; }  // fail closed: an enabled ledger never falls back to session-only grants
         }
     }
 #if SF_WITH_MINIMAL_INVENTORY
@@ -560,7 +580,8 @@ void USFGatheringPilotComponent::ProcessGatheringAction(ASFGatheringPilotNode* N
         else { GetOwner()->ForceNetUpdate(); } // Replay returns the current original outcome, never a second grant.
         return;
     }
-    if (Feedback.Operation==MAX_uint32 || Operation!=Feedback.Operation+1 || Feedback.Phase==ESFGatheringPilotPhase::Harvesting)
+    if (Feedback.Operation==MAX_uint32 || Operation!=Feedback.Operation+1 || Feedback.Phase==ESFGatheringPilotPhase::Harvesting
+        || Feedback.Phase==ESFGatheringPilotPhase::Committing)
     { ClientKeyConflict(Operation); return; }
     Feedback.Operation=Operation; Feedback.Node=Node; Feedback.EndsAtServerSeconds=0; Feedback.bSkillGained=false;
     Feedback.RequiredSkill=0; Feedback.CurrentSkill=0;
@@ -661,11 +682,26 @@ void USFGatheringPilotComponent::TickComponent(float Delta, ELevelTick Type, FAc
     }
     if (Result!=ESFGatheringPilotResult::None) { Finish(ESFGatheringPilotPhase::Canceled,Result); return; }
     if (GetWorld()->GetTimeSeconds()<Feedback.EndsAtServerSeconds) { return; }
+    const bool bRefining=ActiveKind==ESFGatheringPilotKind::Sawmill || ActiveKind==ESFGatheringPilotKind::Forge;
+    if (Ledger && !bRefining)
+    {
+        // The ledger is the truth for raw materials: check the projection still fits, then hold the node lock
+        // until the receipt (or a terminal failure) arrives. Charges are consumed only after the receipt.
+        Result=ApplyInventory(ActiveKind,false);
+        if (Result!=ESFGatheringPilotResult::None) { Finish(ESFGatheringPilotPhase::Rejected,Result); return; }
+        Feedback.Phase=ESFGatheringPilotPhase::Committing; GetOwner()->ForceNetUpdate();
+        BeginLedgerCommit();
+        return;
+    }
     Result=ApplyInventory(ActiveKind,true);
     if (Result!=ESFGatheringPilotResult::None) { Finish(ESFGatheringPilotPhase::Rejected,Result); return; }
+    CompleteHarvest(bRefining);
+}
+
+void USFGatheringPilotComponent::CompleteHarvest(bool bRefining)
+{
     // Synchronous game-thread pilot: no fallible reward mutation remains after the inventory commit.
     // Optional cosmetic felling cannot roll back or repeat the granted material.
-    const bool bRefining=ActiveKind==ESFGatheringPilotKind::Sawmill || ActiveKind==ESFGatheringPilotKind::Forge;
     if (!bRefining)
     {
         if (CapturedProgressionSettings&&!ActiveResourceProfile.ResourceId.IsNone())
@@ -685,6 +721,95 @@ void USFGatheringPilotComponent::TickComponent(float Delta, ELevelTick Type, FAc
     Finish(ESFGatheringPilotPhase::Committed,bRefining ? ESFGatheringPilotResult::Refined : ESFGatheringPilotResult::Granted);
 }
 
+void USFGatheringPilotComponent::BeginLedgerCommit()
+{
+    if (LedgerContainerId.IsEmpty())
+    {
+        // Development key per server connection (INT-03 6.3); character identity arrives with DEC-04.
+        const auto* PC=Cast<APlayerController>(GetOwner());
+        const UNetConnection* Connection=PC ? PC->GetNetConnection() : nullptr;
+        LedgerContainerId=Connection ? FString::Printf(TEXT("ctn_dev_%u"),Connection->GetConnectionHandle().GetParentConnectionId()) : FString(TEXT("ctn_dev_local"));
+    }
+    if (PendingLedgerOperation.IsEmpty())
+    { PendingLedgerOperation=TEXT("gather/")+FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower); }
+    TWeakObjectPtr<USFGatheringPilotComponent> Weak(this);
+    const FString Operation=PendingLedgerOperation;
+    if (LedgerRevision<0)
+    {
+        FSFLedgerRequest Ensure; Ensure.Rpc=ESFLedgerRpc::EnsureContainer; Ensure.ContainerId=LedgerContainerId;
+        Ensure.OwnerId=TEXT("chr_dev_")+LedgerContainerId.RightChop(8);
+        Ensure.Capacity=CapturedSettings->InventorySlots*CapturedSettings->MaterialStackUnits;
+        Ledger->Call(Ensure,[Weak,Operation](const FSFLedgerResponse& Response)
+        {
+            USFGatheringPilotComponent* Self=Weak.Get();
+            if (!Self || Self->Feedback.Phase!=ESFGatheringPilotPhase::Committing)
+            { UE_LOG(LogTemp,Display,TEXT("GATHERING_LEDGER_REPLY_DROPPED Op=%s Rpc=EnsureContainer"),*Operation); return; }
+            if (Response.Status!=ESFLedgerStatus::Ok) { Self->OnLedgerGrant(Response); return; }
+            Self->LedgerRevision=Response.Revision; Self->BeginLedgerCommit();
+        });
+        return;
+    }
+    FSFLedgerRequest Grant; Grant.Rpc=ESFLedgerRpc::Grant; Grant.OperationId=Operation; Grant.ContainerId=LedgerContainerId;
+    Grant.ExpectedRevision=LedgerRevision; Grant.DefinitionId=LedgerItemId(ActiveKind); Grant.Quantity=CapturedSettings->UnitsPerCharge;
+    Grant.Source=TEXT("gathering"); Grant.CausationId=FString::Printf(TEXT("%s:%u"),*LedgerContainerId,Feedback.Operation);
+    Ledger->Call(Grant,[Weak,Operation](const FSFLedgerResponse& Response)
+    {
+        USFGatheringPilotComponent* Self=Weak.Get();
+        // A disconnected owner's outcome is still resolved by the ledger; only the reply is dropped.
+        if (!Self || Self->Feedback.Phase!=ESFGatheringPilotPhase::Committing || Self->PendingLedgerOperation!=Operation)
+        { UE_LOG(LogTemp,Display,TEXT("GATHERING_LEDGER_REPLY_DROPPED Op=%s Code=%d"),*Operation,Response.GrpcCode); return; }
+        Self->OnLedgerGrant(Response);
+    });
+}
+
+void USFGatheringPilotComponent::OnLedgerGrant(const FSFLedgerResponse& Response)
+{
+    const FString Operation=PendingLedgerOperation;
+    PendingLedgerOperation.Reset();
+    // Node state is logged before any charge is consumed: a failed commit must show it unchanged.
+    UE_LOG(LogTemp,Display,TEXT("GATHERING_LEDGER_OUTCOME Op=%s Container=%s Code=%d Revision=%lld Delta=%lld NodeRevision=%d Charges=%d"),*Operation,*LedgerContainerId,
+        Response.GrpcCode,Response.Revision,Response.GrantedDelta,IsValid(Feedback.Node) ? int32(Feedback.Node->State.Revision) : -1,IsValid(Feedback.Node) ? Feedback.Node->State.Charges : -1);
+    if (Response.Status==ESFLedgerStatus::Stale) { RefreshLedgerRevision(); Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::Stale); return; }
+    if (Response.Status!=ESFLedgerStatus::Ok)
+    {
+        // ponytail: an exhausted retry may still have committed; the next GET exposes it. Reconciling that
+        // quantity into the session inventory belongs with the GatheringNodes integration slice.
+        LedgerRevision=-1;
+        Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::Unavailable);
+        return;
+    }
+    LedgerRevision=Response.Revision;
+#if !UE_BUILD_SHIPPING
+    if (FParse::Param(FCommandLine::Get(),TEXT("GatheringLedgerExitAfterCommit")))
+    {
+        UE_LOG(LogTemp,Display,TEXT("GATHERING_LEDGER_EXIT_AFTER_COMMIT Op=%s"),*Operation); GLog->Flush();
+        FPlatformMisc::RequestExitWithStatus(true,0);
+        return;
+    }
+#endif
+    if (ApplyInventory(ActiveKind,true)!=ESFGatheringPilotResult::None)
+    {
+        UE_LOG(LogTemp,Error,TEXT("GATHERING_LEDGER_PROJECTION_MISMATCH Op=%s Container=%s"),*Operation,*LedgerContainerId);
+        RefreshLedgerRevision();
+    }
+    if (!IsValid(Feedback.Node)) { SFQuestPilotEvents::OnGathered().Broadcast(Cast<APlayerController>(GetOwner()),ActiveKind); Finish(ESFGatheringPilotPhase::Committed,ESFGatheringPilotResult::Granted); return; }
+    CompleteHarvest(false);
+}
+
+void USFGatheringPilotComponent::RefreshLedgerRevision()
+{
+    FSFLedgerRequest Get; Get.Rpc=ESFLedgerRpc::GetContainer; Get.ContainerId=LedgerContainerId;
+    LedgerRevision=-1;
+    Ledger->Call(Get,[Weak=TWeakObjectPtr<USFGatheringPilotComponent>(this)](const FSFLedgerResponse& Response)
+    {
+        USFGatheringPilotComponent* Self=Weak.Get();
+        if (!Self || Response.Status!=ESFLedgerStatus::Ok) { return; }
+        Self->LedgerRevision=Response.Revision;
+        for (const auto& Entry : Response.Quantities)
+        { UE_LOG(LogTemp,Display,TEXT("GATHERING_LEDGER_VIEW Container=%s Revision=%lld Item=%s Quantity=%lld"),*Self->LedgerContainerId,Response.Revision,*Entry.Key,Entry.Value); }
+    });
+}
+
 ASFGatheringPilotNode* USFGatheringPilotComponent::FindNode(const FVector& Start, const FVector& Direction) const
 {
     if (!bEnabled || Start.ContainsNaN() || Direction.ContainsNaN() || !Direction.IsNormalized()) { return nullptr; }
@@ -699,6 +824,7 @@ bool USFGatheringPilotComponent::InteractFromRay(const FVector& Start, const FVe
 {
     if (!bEnabled) { return false; }
     if (Feedback.Phase==ESFGatheringPilotPhase::Harvesting) { CancelLocalHarvest(); return true; }
+    if (Feedback.Phase==ESFGatheringPilotPhase::Committing) { return true; }  // the server is saving; nothing to cancel
     if (WaitingOperation!=0)
     {
         if (bWaitingHadSurface) { ServerGatheringActionAtSurface(WaitingNode.Get(),WaitingRevision,WaitingOperation,WaitingSurface); }
@@ -745,6 +871,7 @@ FString USFGatheringPilotComponent::GetStatusText(const FVector& Start, const FV
     FString Action=ResultText(bKeyConflict ? ESFGatheringPilotResult::KeyConflict : Feedback.Result);
     if (Feedback.bSkillGained&&!bKeyConflict) { Action+=FString::Printf(TEXT(" %s +1 (%d)."),FSFGatheringProgressionSession::SkillName(Feedback.Skill),Feedback.CurrentSkill); }
     if (WaitingOperation!=0) { Action=TEXT("Pending: waiting for server. E retries the same request."); }
+    else if (Feedback.Phase==ESFGatheringPilotPhase::Committing) { Action=TEXT("Saving to your inventory..."); }
     else if (Feedback.Phase==ESFGatheringPilotPhase::Harvesting)
     {
         const auto* GS=GetWorld()->GetGameState(); const double Now=GS ? GS->GetServerWorldTimeSeconds() : GetWorld()->GetTimeSeconds();

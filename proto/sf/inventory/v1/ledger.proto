@@ -1,0 +1,102 @@
+// Contract between the Unreal server and InventoryLedger.Host (INT-03). Mirrors the C# records in
+// BackendServices/InventoryLedger/InventoryLedger.cs. Generated code is never hand-edited.
+//
+// Status mapping: OK; ABORTED for a stale expected revision (re-read, then decide); ALREADY_EXISTS for a
+// container id with a different spec or a reused operation id with a different request; FAILED_PRECONDITION
+// for every other ledger rejection; UNAVAILABLE when the store is down (retry the same operation id).
+syntax = "proto3";
+
+package sf.inventory.v1;
+
+option csharp_namespace = "ShatteredFrontier.InventoryLedger.V1";
+
+service InventoryLedger {
+  // Creates the container, or returns it unchanged when the same spec already exists.
+  rpc EnsureContainer(EnsureContainerRequest) returns (ContainerView);
+  rpc GetContainer(GetContainerRequest) returns (ContainerView);
+  // Idempotent on operation_id: a retry returns the original receipt.
+  rpc Grant(GrantRequest) returns (LedgerReceipt);
+}
+
+enum OwnerKind {
+  OWNER_KIND_UNSPECIFIED = 0;
+  OWNER_KIND_CHARACTER = 1;
+  OWNER_KIND_ACCOUNT = 2;
+  OWNER_KIND_GUILD = 3;
+  OWNER_KIND_SYSTEM = 4;
+}
+
+enum ContainerKind {
+  CONTAINER_KIND_UNSPECIFIED = 0;
+  CONTAINER_KIND_EQUIPMENT = 1;
+  CONTAINER_KIND_BACKPACK = 2;
+  CONTAINER_KIND_BAG = 3;
+  CONTAINER_KIND_BANK = 4;
+  CONTAINER_KIND_ACCOUNT_BANK = 5;
+  CONTAINER_KIND_GUILD_BANK = 6;
+  CONTAINER_KIND_MAILBOX = 7;
+  CONTAINER_KIND_ESCROW = 8;
+  CONTAINER_KIND_BUYBACK = 9;
+  CONTAINER_KIND_CONSTRUCTION_CACHE = 10;
+  CONTAINER_KIND_CONSTRUCTION_RECOVERY = 11;
+}
+
+enum LedgerAction {
+  LEDGER_ACTION_UNSPECIFIED = 0;
+  LEDGER_ACTION_GRANT = 1;
+  LEDGER_ACTION_CONSUME = 2;
+  LEDGER_ACTION_TRANSFER = 3;
+  LEDGER_ACTION_CONVERT = 4;
+  LEDGER_ACTION_EXCHANGE = 5;
+}
+
+message ContainerSpec {
+  string id = 1;
+  OwnerKind owner_kind = 2;
+  string owner_id = 3;
+  ContainerKind kind = 4;
+  int32 capacity = 5;
+}
+
+message ContainerView {
+  ContainerSpec spec = 1;
+  int64 revision = 2;
+  map<string, int64> quantities = 3;
+}
+
+message RevisionChange {
+  string container_id = 1;
+  int64 before = 2;
+  int64 after = 3;
+}
+
+message QuantityChange {
+  string container_id = 1;
+  string definition_id = 2;
+  int64 delta = 3;
+}
+
+message LedgerReceipt {
+  string operation_id = 1;
+  LedgerAction action = 2;
+  repeated RevisionChange revisions = 3;
+  repeated QuantityChange changes = 4;
+}
+
+message EnsureContainerRequest {
+  ContainerSpec spec = 1;
+}
+
+message GetContainerRequest {
+  string container_id = 1;
+}
+
+message GrantRequest {
+  string operation_id = 1;
+  string container_id = 2;
+  int64 expected_revision = 3;
+  string definition_id = 4;
+  int64 quantity = 5;
+  string source = 6;
+  string causation_id = 7;
+}
