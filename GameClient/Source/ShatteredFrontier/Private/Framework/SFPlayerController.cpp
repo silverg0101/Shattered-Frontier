@@ -11,6 +11,8 @@
 #include "Services/SFGameplayServicesClient.h"
 #include "Exchange/SFExchangeWidgets.h"
 #include "Exchange/SFFakeExchange.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
 #include "Components/InputComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
@@ -271,11 +273,16 @@ void FillViewport(APlayerController* Controller, UUserWidget* Widget)
     Widget->SetPositionInViewport(FVector2D::ZeroVector, false);
 }
 
-// The live client service when the server gave this controller an exchange component, else the in-memory fake.
+// The live client service when the server gave this controller an exchange component; the in-memory fake only on
+// request (-ExchangeFake, development builds), never silently; otherwise none and the screen stays closed.
 TSharedPtr<ISFExchangeService> ExchangeServiceFor(APlayerController* Controller)
 {
     if (USFExchangeComponent* Live = Controller->FindComponentByClass<USFExchangeComponent>()) { return MakeShared<FSFExchangeClientService>(Live); }
-    return MakeShared<FSFFakeExchange>();
+#if !UE_BUILD_SHIPPING
+    if (FParse::Param(FCommandLine::Get(), TEXT("ExchangeFake"))) { return MakeShared<FSFFakeExchange>(); }
+#endif
+    UE_LOG(LogTemp, Display, TEXT("EXCHANGE_UNAVAILABLE No exchange service on this controller"));
+    return nullptr;
 }
 }
 
@@ -285,6 +292,7 @@ void ASFPlayerController::ToggleTradeDemo()
     if (!TradeWindow)
     {
         DemoExchange = DemoExchange ? DemoExchange : ExchangeServiceFor(this);
+        if (!DemoExchange) { return; }
         const double Now = GetWorld()->GetTimeSeconds();
         DemoTrade = MakeShared<FSFTradeViewModel>(*DemoExchange, FSFFakeExchange::DemoTrade(Now + 108.0), true);
         DemoTrade->AddMyItem({TEXT("item/oak_log"), TEXT("Oak Log"), 24});
@@ -306,6 +314,7 @@ void ASFPlayerController::ToggleMarketDemo()
     if (!MarketBoard)
     {
         DemoExchange = DemoExchange ? DemoExchange : ExchangeServiceFor(this);
+        if (!DemoExchange) { return; }
         DemoMarket = MakeShared<FSFMarketViewModel>(*DemoExchange);
         DemoMarket->SetListings(FSFFakeExchange::DemoListings());
         MarketBoard = CreateWidget<USFMarketBoard>(this, USFMarketBoard::StaticClass());

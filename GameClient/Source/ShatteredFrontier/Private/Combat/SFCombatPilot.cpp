@@ -272,10 +272,10 @@ bool ASFGameMode::LoadZoneRecord()
 
 void ASFGameMode::StartCombat()
 {
+    // GM-01: on wherever the zone record has boar groups (Silverbrook), on any authority (dedicated, listen, standalone).
+    bPilotActive = GetNetMode() != NM_Client &&
+        GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-    bPilotActive = GetNetMode() == NM_DedicatedServer &&
-        GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook") &&
-        FParse::Param(FCommandLine::Get(), TEXT("CombatPilot"));
     bScenario = bPilotActive && FParse::Param(FCommandLine::Get(), TEXT("CombatPilotScenario"));
 #endif
     if (!bPilotActive) { return; }

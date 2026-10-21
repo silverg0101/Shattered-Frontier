@@ -21,7 +21,7 @@ $null = New-Item -ItemType Directory -Path $root
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
 $result = [ordered]@{ status='Running'; scope='Development loopback fixture: Win64 editor -server + editor clients, owned PostgreSQL, InventoryLedger.Host + Gameplay.Host, guarded dev identities'; runs=@() }
 $fx = @{}
-$silverbrook = '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook?game=/Script/ShatteredFrontier.SFGameMode'
+$silverbrook = '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook'
 function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
     $log = Join-Path $root ($Name+'.log'); $user = Join-Path $root ($Name+'-user')
     $null = New-Item -ItemType Directory -Path $user
@@ -67,7 +67,7 @@ try {
         Start-Sleep -Milliseconds 200
     }
     $ledgerIni = '-ini:Game:[/Script/ShatteredFrontier.SFInventoryLedgerSettings]'; $servicesIni = '-ini:Game:[/Script/ShatteredFrontier.SFGameplayServicesSettings]'
-    $serverFlags = @('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox','-GatheringPilot','-CombatPilot','-QuestPilot','-QuestFullScenario','-SFDevIdentity',
+    $serverFlags = @('-server',('-port='+$Port),'-multihome=127.0.0.1','-QuestFullScenario','-SFDevIdentity',
         ($ledgerIni+':bEnabled=True'),($ledgerIni+':Endpoint=127.0.0.1:'+$fx.hostPort),($servicesIni+':bEnabled=True'),($servicesIni+':Endpoint=127.0.0.1:'+$gameplayPort),
         ($servicesIni+':bRestoreOnConnect=True'),($servicesIni+':PositionSaveIntervalSeconds=5'))
     $serverEnv = @{ SF_INVENTORY_LEDGER_TOKEN=$fx.token; SF_GAMEPLAY_TOKEN=$gameplayToken }

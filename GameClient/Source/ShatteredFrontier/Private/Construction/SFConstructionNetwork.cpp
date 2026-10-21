@@ -492,6 +492,13 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateEditContext(AS
         || !IsValid(Controller) || Controller->IsActorBeingDestroyed() || !Controller->HasAuthority() || Controller->GetWorld() != GetWorld()) { return ESFConstructionNetworkResult::InvalidContext; }
     // A claim's build rights belong to Housing (owner or grant); the sandbox keeps its first-admitted builder.
     if (ClaimId.IsEmpty() && !Mode->IsBuilder(Controller)) { return ESFConstructionNetworkResult::PermissionDenied; }
+    // Without Housing a claim cannot be checked: only the development fallback (bAllowUnclaimedBuilding, never in
+    // shipping) lets anyone build on the plot.
+    bool bUnclaimedFallback=false;
+#if !UE_BUILD_SHIPPING
+    bUnclaimedFallback=GetDefault<USFConstructionSandboxSettings>()->bAllowUnclaimedBuilding;
+#endif
+    if (!ClaimId.IsEmpty() && !Mode->IsHousingActive() && !bUnclaimedFallback) { return ESFConstructionNetworkResult::ServiceUnavailable; }
     const APawn* Pawn = Controller->GetPawn();
     if (!IsValid(Pawn) || !Pawn->HasAuthority() || Pawn->GetController() != Controller || Pawn->GetOwner() != Controller
         || Pawn->GetWorld() != GetWorld() || Pawn->IsActorBeingDestroyed()) { return ESFConstructionNetworkResult::InvalidContext; }
@@ -807,7 +814,7 @@ void ASFGameMode::DiscardFiniteDoorObstruction()
 
 bool ASFGameMode::IsZoneGatheringWorld() const
 {
-    // Development opt-in: the gathering pilot in the Silverbrook zone, with nodes from its zone record.
+    // The zone with a record (gathering nodes, build plots): Silverbrook.
     return GetWorld() && GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
 }
 
@@ -1118,14 +1125,11 @@ void ASFGameMode::CommitHousing(ASFPlayerController* Controller, const FString& 
 
 bool ASFGameMode::IsAdmitted() const
 {
-#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-    return HasAuthority() && !IsActorBeingDestroyed() && GetClass() == StaticClass() && GetWorld() && GetNetMode() == NM_DedicatedServer
-        && (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands_ConstructionSandbox")
-            || (IsZoneGatheringWorld() && USFGatheringPilotComponent::IsPilotRequested()))
-        && FParse::Param(FCommandLine::Get(),TEXT("ConstructionNetworkSandbox"));
-#else
-    return false;
-#endif
+    // GM-01: on wherever the world has construction content (the sandbox map, a zone with build plots), on any authority,
+    // so dedicated, listen, standalone and PIE all build. Typed bNetworkConstructionEnabled turns it off.
+    return HasAuthority() && !IsActorBeingDestroyed() && GetClass() == StaticClass() && GetWorld() && GetNetMode() != NM_Client
+        && GetDefault<USFConstructionSandboxSettings>()->bNetworkConstructionEnabled
+        && (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands_ConstructionSandbox") || IsZoneGatheringWorld());
 }
 
 void ASFGameMode::StartConstruction()
@@ -1154,9 +1158,17 @@ void ASFGameMode::StartConstruction()
         if (IsZoneGatheringWorld())
         {
             const int32 Nodes=SpawnZoneGatheringNodes();
-            UE_LOG(LogTemp,Display,TEXT("GATHERING_PILOT_READY Source=ZoneRecord Nodes=%d SessionOnly=1"),Nodes);
+            int32 Stations=0;
+            for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It; ++It) { Stations+=It->IsRefinery(); }
+            UE_LOG(LogTemp,Display,TEXT("GATHERING_PILOT_READY Source=ZoneRecord Nodes=%d Stations=%d SessionOnly=1"),Nodes,Stations);
             return;
         }
+        // The sandbox map has no zone record; its four nodes are a development test fixture.
+        bool bFixtureNodes=false;
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+        bFixtureNodes=FParse::Param(FCommandLine::Get(),TEXT("GatheringFixtureNodes"));
+#endif
+        if (!bFixtureNodes) { return; }
         const FVector Positions[4]={FVector(0,-350,70),FVector(0,-650,70),FVector(-400,-600,40),FVector(400,-600,40)};
         for (int32 I=0; I<4; ++I)
         {
@@ -1243,7 +1255,7 @@ void ASFPlayerController::BeginPlay()
 
 void ASFPlayerController::InitializeLocalControls()
 {
-    if (!IsLocalController() || GetNetMode()!=NM_Client) { return; }
+    if (!IsLocalController()) { return; }
     if (!bOwnsLookSuppression) { SetIgnoreLookInput(true); bOwnsLookSuppression=true; }
     if (!Palette && GetLocalPlayer() && GetLocalPlayer()->ViewportClient)
     {
@@ -1266,7 +1278,7 @@ void ASFPlayerController::InitializeLocalControls()
 
 void ASFPlayerController::EnsureGatheringSkillsPanel()
 {
-    if (GatheringSkillsPanel || !IsLocalController() || GetNetMode()!=NM_Client || !GetLocalPlayer()
+    if (GatheringSkillsPanel || !IsLocalController() || !GetLocalPlayer()
         || !GetLocalPlayer()->ViewportClient || !GatheringPilot || !GatheringPilot->IsEnabled()) { return; }
     GatheringSkillsPanel=CreateWidget<USFGatheringSkillsPanel>(this,USFGatheringSkillsPanel::StaticClass());
     if (!GatheringSkillsPanel) { return; }
@@ -1515,11 +1527,8 @@ void ASFPlayerController::SetupInputComponent()
     Bind(TEXT("IA_Escape"),ETriggerEvent::Started,&ASFPlayerController::HandleEscape);
     Bind(TEXT("IA_MouseLook"),ETriggerEvent::Started,&ASFPlayerController::BeginCameraLook);
     Bind(TEXT("IA_MouseLook"),ETriggerEvent::Completed,&ASFPlayerController::EndCameraLook);
-    if (FParse::Param(FCommandLine::Get(),TEXT("ExchangeUiDemo")))
-    {
-        Bind(TEXT("IA_Trade"),ETriggerEvent::Started,&ASFPlayerController::ToggleTradeDemo);
-        Bind(TEXT("IA_Market"),ETriggerEvent::Started,&ASFPlayerController::ToggleMarketDemo);
-    }
+    Bind(TEXT("IA_Trade"),ETriggerEvent::Started,&ASFPlayerController::ToggleTradeDemo);
+    Bind(TEXT("IA_Market"),ETriggerEvent::Started,&ASFPlayerController::ToggleMarketDemo);
     // IMC_Build (the character layers it on while build mode is active; it consumes these keys from IMC_Player).
     Bind(TEXT("IA_BuildPlace"),ETriggerEvent::Started,&ASFPlayerController::PlaceFromView);
     Bind(TEXT("IA_BuildDemolish"),ETriggerEvent::Started,&ASFPlayerController::ToggleDemolition);
@@ -1637,7 +1646,7 @@ void ASFPlayerController::RefreshPlacementPreview(bool bDrawOutline)
     if (!CanUseConstructionControls()) { PreviewStatus=TEXT("Hold RMB to look; release to build."); return; }
     if (!State && GetPawn() && TActorIterator<ASFConstructionNetworkState>(GetWorld()))
     { PreviewStatus=TEXT("Stand on a build plot to build. K claims the plot you stand on."); return; }  // claims exist, none here
-    if (!IsLocalController() || GetNetMode()!=NM_Client || !GetPawn() || !bRoleAssigned || !State
+    if (!IsLocalController() || !GetPawn() || !bRoleAssigned || !State
         || State->GetReachCentimetres()<=0 || State->GetMaximumMembers()<=0)
     { PreviewStatus=TEXT("Waiting for server construction state..."); return; }
     if (!bBuilderRole) { PreviewStatus=TEXT("Observer: watch the builder's placements."); RemovalStatus=TEXT("Observer: removal unavailable."); return; }

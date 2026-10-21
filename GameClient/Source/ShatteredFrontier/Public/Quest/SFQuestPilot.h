@@ -67,6 +67,8 @@ class SHATTEREDFRONTIER_API USFQuestPilotSettings : public UDeveloperSettings
 {
     GENERATED_BODY()
 public:
+    UPROPERTY(Config, EditAnywhere, Category="Quest", meta=(ToolTip="GM-01: run the quest in its zone (Silverbrook). Default on; next world start."))
+    bool bEnabled = true;
     UPROPERTY(Config, EditAnywhere, Category="Rewards", meta=(ToolTip="Pilot item definition paid for reward/frontier_founder_completion. Release authors; next world start."))
     FString CompletionRewardItemPath = TEXT("/Game/Frontier/Gameplay/Pilot/DA_BoarHide.DA_BoarHide");
     UPROPERTY(Config, EditAnywhere, Category="Rewards", meta=(ClampMin="1", ClampMax="20"))

@@ -46,7 +46,7 @@ public:
     UFUNCTION(Exec) void SFClaimPlot();
     void InteractWithSelectedTarget();
     void ToggleInventoryPanel();
-    // Development screens for the trading UI (-ExchangeUiDemo): F6 trade window, F7 market board, both on a fake exchange.
+    // Trading UI: F6 trade window, F7 market board, on the live exchange (the fake only with -ExchangeFake).
     void ToggleTradeDemo();
     void ToggleMarketDemo();
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST

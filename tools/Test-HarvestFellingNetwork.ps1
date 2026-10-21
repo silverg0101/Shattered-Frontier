@@ -59,7 +59,7 @@ function Read-Success([string]$Name) {
 }
 try {
     $url='/Game/Frontier/Maps/Greenlands_ConstructionSandbox?game=/Script/ShatteredFrontier.SFGameMode'
-    $server=Start-Owned 'server' $url @('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox','-GatheringPilot','-ini:Game:[/Script/ShatteredFrontier.SFHarvestTreeFallSettings]:bEnablePreparedOakFelling=True')
+    $server=Start-Owned 'server' $url @('-server',('-port='+$Port),'-multihome=127.0.0.1','-GatheringFixtureNodes','-ini:Game:[/Script/ShatteredFrontier.SFHarvestTreeFallSettings]:bEnablePreparedOakFelling=True')
     Wait-Log $server 'server' 'GATHERING_PILOT_READY'
     $first=Start-Owned 'first' ('127.0.0.1:'+$Port) @('-game','-HarvestTreeFellingNetworkScenario')
     $second=Start-Owned 'second' ('127.0.0.1:'+$Port) @('-game','-HarvestTreeFellingNetworkScenario')

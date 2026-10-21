@@ -276,11 +276,7 @@ USFGatheringPilotComponent::USFGatheringPilotComponent()
 
 bool USFGatheringPilotComponent::IsPilotRequested()
 {
-#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-    return FParse::Param(FCommandLine::Get(),TEXT("GatheringPilot"));
-#else
-    return false;
-#endif
+    return GetDefault<USFGatheringPilotSettings>()->bEnabled;  // GM-01: typed config, no launch flag
 }
 
 void USFGatheringPilotComponent::BeginPlay()

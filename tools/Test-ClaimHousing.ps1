@@ -21,7 +21,7 @@ $null = New-Item -ItemType Directory -Path $root
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
 $result = [ordered]@{ status='Running'; scope='Development loopback fixture: Win64 editor -server + editor clients, owned PostgreSQL, InventoryLedger.Host + Gameplay.Host, guarded dev identities'; runs=@() }
 $fx = @{}
-$silverbrook = '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook?game=/Script/ShatteredFrontier.SFGameMode'
+$silverbrook = '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook'
 $claim = 'clm_greenlands_silverbrook_1'
 function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
     $log = Join-Path $root ($Name+'.log'); $user = Join-Path $root ($Name+'-user')
@@ -71,7 +71,7 @@ try {
         if ($r.ExitCode -ne 0 -or $r.Stdout -notmatch 'INVENTORY_LEDGER_SEEDED') { throw "Seeding $($seed[0]) failed: $($r.Stdout)" }
     }
     $ledgerIni = '-ini:Game:[/Script/ShatteredFrontier.SFInventoryLedgerSettings]'; $servicesIni = '-ini:Game:[/Script/ShatteredFrontier.SFGameplayServicesSettings]'
-    $serverFlags = @('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox','-GatheringPilot','-SFDevIdentity','-ClaimScenario',
+    $serverFlags = @('-server',('-port='+$Port),'-multihome=127.0.0.1','-SFDevIdentity','-ClaimScenario',
         ($ledgerIni+':bEnabled=True'),($ledgerIni+':Endpoint=127.0.0.1:'+$fx.hostPort),($servicesIni+':bEnabled=True'),($servicesIni+':Endpoint=127.0.0.1:'+$gameplayPort))
     $serverEnv = @{ SF_INVENTORY_LEDGER_TOKEN=$fx.token; SF_GAMEPLAY_TOKEN=$gameplayToken }
 

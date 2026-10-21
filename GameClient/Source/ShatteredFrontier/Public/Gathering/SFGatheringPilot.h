@@ -26,6 +26,8 @@ class SHATTEREDFRONTIER_API USFGatheringPilotSettings : public UDeveloperSetting
 {
     GENERATED_BODY()
 public:
+    UPROPERTY(Config, EditAnywhere, Category="Pilot", meta=(ToolTip="GM-01: gathering wherever the world has nodes (zone record, or the sandbox test fixture). Default on; next world start."))
+    bool bEnabled = true;
     UPROPERTY(Config, EditAnywhere, Category="Harvest", meta=(ClampMin="0.5", ClampMax="30", Units="s"))
     float HarvestSeconds = 3;
     UPROPERTY(Config, EditAnywhere, Category="Harvest", meta=(ClampMin="0.1", ClampMax="2", Units="s", ToolTip="Minimum time between localized geometry preflight attempts per controller. Release authors; next world start."))

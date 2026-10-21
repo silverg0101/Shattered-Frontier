@@ -110,8 +110,9 @@ function Assert-LedgerPhase([string]$ServerText) {
 try {
     if ($Silverbrook -and $Refining) { throw 'Silverbrook has no refinery stations; run -Refining in the sandbox.' }
     $map=if ($Silverbrook) { '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' } else { '/Game/Frontier/Maps/Greenlands_ConstructionSandbox' }
-    $url=$map+'?game=/Script/ShatteredFrontier.SFGameMode'
-    $serverFlags=@('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox','-GatheringPilot')
+    $url=if ($Silverbrook) { $map } else { $map+'?game=/Script/ShatteredFrontier.SFGameMode' }
+    $serverFlags=@('-server',('-port='+$Port),'-multihome=127.0.0.1')
+    if (-not $Silverbrook) { $serverFlags+='-GatheringFixtureNodes' }  # the sandbox map has no zone record
     if ($Silverbrook) { $serverFlags+='-GatheringPilotScenario' }  # the server puts each test pawn beside its node
     $serverEnv=@{}
     if ($Ledger) {
@@ -198,6 +199,9 @@ try {
     $results.refining=[bool]$Refining
     $results.map=$map
     if ($Silverbrook -and $serverText -notmatch 'GATHERING_PILOT_READY Source=ZoneRecord Nodes=([1-9]\d*)') { throw 'Silverbrook nodes did not come from the zone record.' }
+    # GM-01: with no launch flags the world still spawns its stations: the sandbox fixture's sawmill and forge, Silverbrook's three.
+    if ($Silverbrook -and $serverText -notmatch 'GATHERING_PILOT_READY Source=ZoneRecord Nodes=\d+ Stations=3 ') { throw 'Silverbrook spawned no refinery stations.' }
+    if (-not $Silverbrook -and $serverText -notmatch 'GATHERING_PILOT_READY Resources=2 Stations=2 ') { throw 'The sandbox fixture spawned no refinery stations.' }
     if ($Ledger) { Assert-LedgerPhase $serverText }
     $results.status='Passed'
 } catch { $results.status='Failed'; $results.error=$_.Exception.Message; throw }

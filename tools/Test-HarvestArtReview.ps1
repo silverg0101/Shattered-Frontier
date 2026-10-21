@@ -31,7 +31,7 @@ function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
     return $process
 }
 try {
-    $server=Start-Owned 'server' '/Game/Frontier/Maps/Greenlands_ConstructionSandbox?game=/Script/ShatteredFrontier.SFGameMode' @('-server','-NullRHI',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox','-GatheringPilot')
+    $server=Start-Owned 'server' '/Game/Frontier/Maps/Greenlands_ConstructionSandbox?game=/Script/ShatteredFrontier.SFGameMode' @('-server','-NullRHI',('-port='+$Port),'-multihome=127.0.0.1','-GatheringFixtureNodes')
     while (-not ((Test-Path -LiteralPath (Join-Path $root 'server.log')) -and (Select-String -LiteralPath (Join-Path $root 'server.log') -Pattern 'GATHERING_PILOT_READY' -Quiet))) {
         if ($server.HasExited -or $clock.Elapsed.TotalSeconds -ge $TimeoutSeconds) { throw 'Owned server failed to become ready within the total deadline.' }
         Start-Sleep -Milliseconds 200

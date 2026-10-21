@@ -8,7 +8,7 @@ param(
     [ValidateRange(0.05,2)][double]$HourToleranceSeconds = 0.5
 )
 # Townsfolk step 4 (AI Townsfolk doc section 9): a dedicated server on Greenlands_Silverbrook owns the town state; two
-# NullRHI clients with -TownsfolkPrototype simulate residents on NM_Client. Passes when both clients agree on the hour
+# NullRHI clients simulate residents on NM_Client. Passes when both clients agree on the hour
 # (within HourToleranceSeconds of real time) and on market state, both see the server's danger cell, and residents claim
 # Smart Objects on each client. The server runs a fast day (DayMinutes) from 10:00 with markets closing at 12:00, so the
 # samples span an open and a closed market. Hand-off: the first client walks to a resident standing still and swings at
@@ -75,8 +75,8 @@ try {
         ($settings+'GameDayMinutes='+$DayMinutes),($settings+'StartHour=10'),($settings+'MarketCloseHour=12'),($settings+'DangerSeconds=1800'),
         ($settings+'HandoffReleaseMetres=10'),($settings+'HandoffQuietSeconds=8'),'-TownsfolkDangerX=20','-TownsfolkDangerY=-20')
     Wait-Log $server 'server' 'TOWNSFOLK_STATE_CHANGE[^\r\n]*Cell='
-    $first=Start-Owned 'first' ('127.0.0.1:'+$Port) @('-game','-TownsfolkPrototype','-TownsfolkHandoffScenario')
-    $second=Start-Owned 'second' ('127.0.0.1:'+$Port) @('-game','-TownsfolkPrototype')
+    $first=Start-Owned 'first' ('127.0.0.1:'+$Port) @('-game','-TownsfolkHandoffScenario')
+    $second=Start-Owned 'second' ('127.0.0.1:'+$Port) @('-game')
     Wait-Log $first 'first' 'TOWNSFOLK_STATE Net=3'
     Wait-Log $second 'second' 'TOWNSFOLK_STATE Net=3'
     $sampleStart=[DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()/1000.0+5  # skip the first seconds while server time syncs

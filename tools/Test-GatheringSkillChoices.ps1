@@ -50,7 +50,7 @@ function Wait-Exit([Diagnostics.Process]$Process,[string]$Name) {
 }
 try {
     $url='/Game/Frontier/Maps/Greenlands_ConstructionSandbox?game=/Script/ShatteredFrontier.SFGameMode'
-    $server=Start-Owned 'server' $url @('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox','-GatheringPilot','-GatheringSkillChoicesTrace')
+    $server=Start-Owned 'server' $url @('-server',('-port='+$Port),'-multihome=127.0.0.1','-GatheringFixtureNodes','-GatheringSkillChoicesTrace')
     Wait-Ready $server
     $first=Start-Owned 'first' ('127.0.0.1:'+$Port) @('-game','-GatheringSkillChoicesScenario') $capturePath
     $second=Start-Owned 'second' ('127.0.0.1:'+$Port) @('-game','-GatheringSkillChoicesScenario')

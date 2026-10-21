@@ -709,12 +709,7 @@ void USFQuestTrackerHud::Present(const FSFQuestView& View)
 
 bool USFQuestPilotSubsystem::IsRequested()
 {
-#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-    return FParse::Param(FCommandLine::Get(), TEXT("QuestPilot"))
-        && (FParse::Param(FCommandLine::Get(), TEXT("GatheringPilot")) || FParse::Param(FCommandLine::Get(), TEXT("CombatPilot")));
-#else
-    return false;
-#endif
+    return GetDefault<USFQuestPilotSettings>()->bEnabled;  // GM-01: typed config, no launch flag
 }
 
 void USFQuestPilotSubsystem::Initialize(FSubsystemCollectionBase& Collection)

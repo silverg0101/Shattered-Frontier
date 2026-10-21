@@ -1,8 +1,8 @@
 """Diagnose the player shadow trail (stale VSM pages) on a network client, in the owner's setup.
 
 Server: UnrealEditor.exe <uproject> "/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook?game=/Script/ShatteredFrontier.SFGameMode"
-        -server -port=<p> -multihome=127.0.0.1 -ConstructionNetworkSandbox -GatheringPilot
-Client: UnrealEditor.exe <uproject> 127.0.0.1:<p> -game -windowed -ResX=1920 -ResY=1080 -ExchangeUiDemo
+        -server -port=<p> -multihome=127.0.0.1
+Client: UnrealEditor.exe <uproject> 127.0.0.1:<p> -game -windowed -ResX=1920 -ResY=1080
         "-ExecCmds=py <this file> <evidence folder>"
 Lists every shadow-casting primitive within 6 m of the local pawn and every ASFE1Character in the client world,
 then twice walks the pawn forward for about 6 s and looks back along the path: once with the VSM cache on

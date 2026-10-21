@@ -712,7 +712,7 @@ void USFTownsfolkSubsystem::OnWorldBeginPlay(UWorld& World)
         PostLoginHandle=FGameModeEvents::GameModePostLoginEvent.AddUObject(this,&USFTownsfolkSubsystem::OnPostLogin);
     }
 #if !UE_BUILD_SHIPPING
-    if (!FParse::Param(FCommandLine::Get(),TEXT("TownsfolkPrototype")) || World.GetNetMode()==NM_DedicatedServer) { return; }
+    if (!Settings->bEnabled || World.GetNetMode()==NM_DedicatedServer) { return; }
     if (!LoadCensus(Error) || !LoadLooks(Error)) { UE_LOG(LogTemp,Error,TEXT("TOWNSFOLK_DISABLED %s"),*Error); return; }
     bCensus=true; bScenario=FParse::Param(FCommandLine::Get(),TEXT("TownsfolkHandoffScenario"));
     WalkSpeedMetres=Settings->WalkSpeedMetresPerSecond;

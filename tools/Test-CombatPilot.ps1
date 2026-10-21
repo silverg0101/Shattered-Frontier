@@ -43,8 +43,8 @@ function Wait-Log([Diagnostics.Process]$Process,[string]$Name,[string]$Pattern) 
     throw "Timed out waiting for $Name ($Pattern)."
 }
 try {
-    $url = $result.map + '?game=/Script/ShatteredFrontier.SFGameMode'
-    $server = Start-Owned 'server' $url @('-server',('-port='+$Port),'-multihome=127.0.0.1','-CombatPilot','-CombatPilotScenario')
+    $url = $result.map
+    $server = Start-Owned 'server' $url @('-server',('-port='+$Port),'-multihome=127.0.0.1','-CombatPilotScenario')
     Wait-Log $server 'server' 'COMBAT_PILOT_READY Boars=10'
     $client = Start-Owned 'client' ('127.0.0.1:'+$Port) @('-game','-CombatPilotScenario')
     Wait-Log $client 'client' 'COMBAT_PILOT_CLIENT_ATTACK Index=3'

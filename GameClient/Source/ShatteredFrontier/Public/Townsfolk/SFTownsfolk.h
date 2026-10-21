@@ -26,7 +26,7 @@ class ASFTownsfolkNpc;
 
 // Townsfolk prototype, AI Townsfolk doc section 9 steps 2-3: census residents walking their day on ZoneGraph footways
 // across the town, drawn by MassRepresentation, stepping aside for each other and the player.
-// Development opt-in (-TownsfolkPrototype) on Greenlands_Silverbrook; client-simulated, never on a dedicated server, which
+// On by typed config (bEnabled) in Greenlands_Silverbrook; client-simulated, never on a dedicated server, which
 // owns only the replicated town state (step 4).
 
 /** A body for one or more census archetypes: its own skeletal mesh with the walk and idle clips made for that skeleton.
@@ -62,6 +62,9 @@ class SHATTEREDFRONTIER_API USFTownsfolkSettings : public UDeveloperSettings
 {
     GENERATED_BODY()
 public:
+    UPROPERTY(Config, EditAnywhere, Category="Prototype", meta=(ToolTip="GM-01: simulate residents on clients in Silverbrook. Default on; next world start."))
+    bool bEnabled = true;
+
     UPROPERTY(Config, EditAnywhere, Category="Prototype", meta=(ClampMin="1", ClampMax="300"))
     int32 ResidentCap = 50;
 

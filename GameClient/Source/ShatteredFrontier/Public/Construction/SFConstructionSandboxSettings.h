@@ -34,5 +34,11 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Development build controls", meta=(ClampMin="0.05", ClampMax="5", Units="s", ToolTip="Retry interval after failed collapse projection staging. Default 0.25 seconds; reviewed release authors only; next sandbox start. Never extends support-loss deadlines."))
     float CollapseRetrySeconds = 0.25f;
 
+    UPROPERTY(Config, EditAnywhere, Category="Network construction", meta=(ToolTip="GM-01: building wherever the world has construction content (the sandbox map, zone build plots). Default on; release review; next world start."))
+    bool bNetworkConstructionEnabled = true;
+
+    UPROPERTY(Config, EditAnywhere, Category="Network construction", meta=(ToolTip="Development builds only (compiled out of shipping): with no Gameplay.Host Housing, anyone may build on a zone build plot without a claim. Default on; next world start."))
+    bool bAllowUnclaimedBuilding = true;
+
     bool Validate(FString& Error) const;
 };

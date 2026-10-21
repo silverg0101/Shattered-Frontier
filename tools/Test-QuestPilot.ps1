@@ -46,11 +46,9 @@ function Wait-Log([Diagnostics.Process]$Process,[string]$Name,[string]$Pattern) 
 function Read-Log([string]$Name) { Get-Content -LiteralPath (Join-Path $root ($Name+'.log')) -Raw }
 try {
     if ($Leg -in 'Gathering','Unified') {
-        # Unified: SFGameMode hosts gathering, construction and combat together (one Silverbrook world).
-        $mode = 'SFGameMode'
-        $flags = @('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox','-GatheringPilot','-GatheringPilotScenario','-QuestPilot')
-        if ($Leg -eq 'Unified') { $flags += '-CombatPilot' }
-        $server = Start-Owned 'server' ($silverbrook + '?game=/Script/ShatteredFrontier.' + $mode) $flags
+        # Unified: the one game mode hosts gathering, construction and combat together (one Silverbrook world).
+        $flags = @('-server',('-port='+$Port),'-multihome=127.0.0.1','-GatheringPilotScenario')
+        $server = Start-Owned 'server' $silverbrook $flags
         Wait-Log $server 'server' 'QUEST_PILOT_READY Quest=quest/frontier_founder Steps=5'
         if ($Leg -eq 'Unified') {
             Wait-Log $server 'server' 'COMBAT_PILOT_READY Boars=10'
@@ -70,7 +68,7 @@ try {
     } elseif ($Leg -eq 'Plain') {
         # Regression: a plain Silverbrook gathering client with every service setting off gets construction state for
         # every claim plot and an enabled gathering pilot (what the inventory key needs), as before claims existed.
-        $server = Start-Owned 'server' ($silverbrook + '?game=/Script/ShatteredFrontier.SFGameMode') @('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox','-GatheringPilot')
+        $server = Start-Owned 'server' $silverbrook @('-server',('-port='+$Port),'-multihome=127.0.0.1')
         Wait-Log $server 'server' 'GATHERING_PILOT_READY Source=ZoneRecord'
         $client = Start-Owned 'client' ('127.0.0.1:'+$Port) @('-game','-PlainClientCheck')
         Wait-Log $client 'client' 'PLAIN_CLIENT_READY States=3 Ready=3 GatheringEnabled=1 InventoryKeyAllowed=1'
@@ -79,7 +77,7 @@ try {
         # -Services: harvests, crafts, the wall, the boar reward and quest progress commit through InventoryLedger.Host and
         # Gameplay.Host on an owned PostgreSQL (INT-04); the wall then costs a crafted wall bundle, so the client adds the
         # economy steps. The hosts start down: the first harvest must be refused and leave the node unchanged.
-        $flags = @('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox','-GatheringPilot','-CombatPilot','-QuestPilot','-QuestFullScenario')
+        $flags = @('-server',('-port='+$Port),'-multihome=127.0.0.1','-QuestFullScenario')
         $clientFlags = @('-game','-QuestFullScenario')
         $serverEnv = @{}
         if ($Services) {
@@ -98,7 +96,7 @@ try {
             $clientFlags += '-QuestFullEconomy'
             $serverEnv = @{ SF_INVENTORY_LEDGER_TOKEN=$fx.token; SF_GAMEPLAY_TOKEN=$gameplayToken }
         }
-        $url = $silverbrook + '?game=/Script/ShatteredFrontier.SFGameMode'
+        $url = $silverbrook
         if ($Services) { Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server' $url $flags } } else { $server = Start-Owned 'server' $url $flags }
         Wait-Log $server 'server' 'QUEST_PILOT_READY Quest=quest/frontier_founder Steps=5'
         Wait-Log $server 'server' 'COMBAT_PILOT_READY Boars=10'
@@ -155,8 +153,8 @@ try {
             $result.ledger = $view.Line; $result.durableCounts = $counts.Trim()
         }
     } else {
-        $url = $silverbrook + '?game=/Script/ShatteredFrontier.SFGameMode'
-        $server = Start-Owned 'server' $url @('-server',('-port='+$Port),'-multihome=127.0.0.1','-CombatPilot','-CombatPilotScenario','-QuestPilot','-QuestPilotStartStep=defeat_boar')
+        $url = $silverbrook
+        $server = Start-Owned 'server' $url @('-server',('-port='+$Port),'-multihome=127.0.0.1','-CombatPilotScenario','-QuestPilotStartStep=defeat_boar')
         Wait-Log $server 'server' 'QUEST_PILOT_READY Quest=quest/frontier_founder Steps=5'
         $client = Start-Owned 'client' ('127.0.0.1:'+$Port) @('-game','-CombatPilotScenario')
         Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=defeat Target=npc/boar Op=boar:boar_farm_edge:0:\d+ Result=0'

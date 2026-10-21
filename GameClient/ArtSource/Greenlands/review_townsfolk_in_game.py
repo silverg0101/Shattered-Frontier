@@ -1,7 +1,7 @@
 """Watch the townsfolk prototype (AI Townsfolk doc, section 9 steps 2-3) over the Market Square, at the north end of South Street.
 
-Launch in -game with -TownsfolkPrototype and a fast prototype clock, for example:
-  UnrealEditor.exe <uproject> /Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook -game -TownsfolkPrototype
+Launch in -game (residents are on by USFTownsfolkSettings::bEnabled) with a fast prototype clock, for example:
+  UnrealEditor.exe <uproject> /Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook -game
       "-ini:Game:[/Script/ShatteredFrontier.SFTownsfolkSettings]:GameDayMinutes=6" -ExecCmds="py <this file>"
 Captures Townsfolk-<hour>h.png at the game hours below, then quits. The TOWNSFOLK_HOUR log lines say where everyone
 is meant to be each hour, who is outdoors, pairs closer than 0.6 m summed over frames (ClosePairFrames), route counts and the processor's cost.
