@@ -8,6 +8,7 @@
 #include "MassEntityTypes.h"
 #include "MassProcessor.h"
 #include "SmartObjectRuntime.h"
+#include "SmartObjectSubsystem.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "SFTownsfolk.generated.h"
 
@@ -19,7 +20,8 @@ class USkeletalMeshComponent;
 
 // Townsfolk prototype, AI Townsfolk doc section 9 steps 2-3: census residents walking their day on ZoneGraph footways
 // across the town, drawn by MassRepresentation, stepping aside for each other and the player.
-// Development opt-in (-TownsfolkPrototype) on Greenlands_Silverbrook; client-simulated, never on a dedicated server.
+// Development opt-in (-TownsfolkPrototype) on Greenlands_Silverbrook; client-simulated, never on a dedicated server, which
+// owns only the replicated town state (step 4).
 
 /** A body for one or more census archetypes: its own skeletal mesh with the walk and idle clips made for that skeleton.
   * Archetypes with no entry keep the UE4 mannequin. Mesh paths are content assets; YawOffset turns the mesh to face +X. */
@@ -93,6 +95,18 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Smart Objects", meta=(ClampMin="5.0", ClampMax="100.0", Units="m", ToolTip="How far from a market a bench may be and still be chosen for its errand."))
     float BenchSearchMetres = 40.0f;
 
+    UPROPERTY(Config, EditAnywhere, Category="Town state", meta=(ClampMin="0.0", ClampMax="24.0", ToolTip="Game hour the server opens the markets; residents skip errands to a closed market."))
+    float MarketOpenHour = 7.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Town state", meta=(ClampMin="0.0", ClampMax="24.0", ToolTip="Game hour the server closes the markets."))
+    float MarketCloseHour = 19.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Town state", meta=(ClampMin="10.0", ClampMax="200.0", Units="m", ToolTip="Side of a danger cell; residents avoid work or errands inside a dangerous cell."))
+    float DangerCellMetres = 50.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Town state", meta=(ClampMin="5.0", ClampMax="1800.0", Units="s", ToolTip="Real seconds a danger cell stays dangerous after the server marks it."))
+    float DangerSeconds = 120.0f;
+
     bool Validate(FString& OutError) const;
 };
 
@@ -119,9 +133,63 @@ struct FSFTownsfolkResident
     bool bHasWork=false;
     TArray<FVector> Markets;
     TArray<FString> MarketLabels;  // parallel to Markets: the stall each is
+    TArray<int32> MarketBits;  // parallel to Markets: its index in the census markets, the bit in ASFTownState's open mask
     float Wake=6, WorkStart=8, WorkEnd=16, Sleep=22, ErrandChance=0.5f;
     uint32 Seed=0;
-    ESFTownsfolkGoal GoalAt(float Hour, int32 Day, int32& OutMarket) const;
+    /** An errand to a market closed in OpenMarkets stays home. */
+    ESFTownsfolkGoal GoalAt(float Hour, int32 Day, int32& OutMarket, uint32 OpenMarkets=~0u) const;
+};
+
+USTRUCT()
+struct FSFTownDangerCell
+{
+    GENERATED_BODY()
+    UPROPERTY() FIntPoint Cell=FIntPoint::ZeroValue;
+    UPROPERTY() double Until=0;  // server world seconds
+};
+
+/** Server-owned town state (AI Townsfolk doc section 5.1), replicated to every client: the town clock, which markets are
+  * open and the danger cells. A few bytes per change and nothing per resident; clients derive the hour from the
+  * GameState's synced server time, so the clock costs no traffic once it starts. Spawned by USFTownsfolkSubsystem on the
+  * authority of Greenlands_Silverbrook. */
+UCLASS(NotBlueprintable)
+class SHATTEREDFRONTIER_API ASFTownState : public AActor
+{
+    GENERATED_BODY()
+public:
+    ASFTownState();
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+    virtual void BeginPlay() override;
+    virtual void Tick(float DeltaSeconds) override;
+    /** Authority: starts the clock and market hours from validated settings. */
+    void Start(const USFTownsfolkSettings& Settings);
+    float Hour(int32& OutDay) const;
+    float DayMinutes() const { return SecondsPerGameHour*24.0f/60.0f; }
+    uint32 OpenMask() const { return uint32(OpenMarkets); }
+    bool IsDanger(const FVector& At) const;
+    int32 DangerCount() const;
+    /** Authority: the cell around At (cm) is dangerous for the settings' DangerSeconds. */
+    void MarkDanger(const FVector& At);
+private:
+    double ServerSeconds() const;
+    UPROPERTY(Replicated) float StartHour=6;
+    UPROPERTY(Replicated) double StartServerSeconds=0;
+    UPROPERTY(Replicated) float SecondsPerGameHour=150;
+    UPROPERTY(Replicated) float DangerCellCm=5000;
+    UPROPERTY(Replicated) int32 OpenMarkets=0;  // bit per census market; all open or all closed by the hours today
+    UPROPERTY(Replicated) TArray<FSFTownDangerCell> Danger;
+    float OpenHour=7, CloseHour=19, DangerSeconds=120;
+};
+
+/** The SmartObject subsystem on NM_Client, where the engine creates none (it holds server-authoritative Smart Objects).
+  * Client-simulated residents (doc section 5.2) create their ambient door, stall and bench objects here and claim them
+  * locally; those claims are cosmetic and never gameplay. Server and standalone worlds keep the engine's own subsystem. */
+UCLASS()
+class SHATTEREDFRONTIER_API USFClientSmartObjectSubsystem : public USmartObjectSubsystem
+{
+    GENERATED_BODY()
+public:
+    virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
 };
 
 USTRUCT()
@@ -194,8 +262,13 @@ public:
     virtual void OnWorldBeginPlay(UWorld& World) override;
 
     bool IsActive() const { return bActive; }
-    float GameHour(int32& OutDay) const;
-    float WalkSpeedCm() const { return WalkSpeedCmPerSecond; }
+    /** Residents wait for the replicated town state; the clock and walking speed come from it. */
+    bool HasState() const { return State!=nullptr; }
+    void SetState(ASFTownState* InState) { State=InState; }
+    float GameHour(int32& OutDay) const { return State->Hour(OutDay); }
+    float WalkSpeedCm() const { return WalkSpeedMetres*100.0f*FMath::Max(1.0f,60.0f/State->DayMinutes()); }
+    /** The resident's goal with the town state applied: closed markets and danger cells send them home. */
+    ESFTownsfolkGoal GoalFor(int32 Resident, float Hour, int32 Day, int32& OutMarket) const;
     const FSFTownsfolkResident& Resident(int32 Index) const { return Residents[Index]; }
     TArray<FVector>& Route(int32 Index) { return Routes[Index]; }
     const FSFTownsfolkResolvedLook* LookFor(FName Archetype) const { return Looks.Find(Archetype); }
@@ -240,12 +313,14 @@ private:
     TArray<FVector> Shown, Facing; TArray<bool> Outdoors;  // last frame's, per resident
     TMap<FIntPoint,TArray<int32>> Cells;  // outdoor residents by 2 m cell, rebuilt each frame
     FVector Player=FVector(TNumericLimits<float>::Max());
-    double StartSeconds=0, LastReport=-1, FrameMs=0; int64 Frames=0;
+    double LastReport=-1, FrameMs=0; int64 Frames=0;
     mutable int32 Routes_Planned=0, Routes_Failed=0;
     int64 ClosePairs=0;  // pairs of outdoor residents under 0.6 m apart, summed over frames since the last report
     double ClosePairSeconds=0;  // the same, each frame weighted by its length: comparable across frame rates
     float LastDelta=0.016f;
-    float StartHour=6, SecondsPerGameHour=150, WalkSpeedCmPerSecond=140, SidestepMaxCm=150;
+    double LastSample=0;  // real seconds of the last TOWNSFOLK_STATE line
+    float WalkSpeedMetres=1.4f, SidestepMaxCm=150;
+    UPROPERTY() TObjectPtr<ASFTownState> State;
     UPROPERTY() TObjectPtr<UMassEntityConfigAsset> Config;
 };
 

@@ -287,7 +287,7 @@ The census validator checks:
 
    *Since done (step 3 first slice, below):* lanes across the town, MassRepresentation bodies, avoidance.
 
-   *Smart Objects (2026-10-21):* `townsfolk_smartobjects.py` writes `silverbrook-smartobjects.json` (a door per building, a stall per market stall and vendor, the placed benches); the runtime creates them with `USmartObjectSubsystem::CreateSmartObject` and residents claim and release slots with seeded choices (home and some workplaces through doors, errands at a stall slot or a bench). **Step-4 blocker:** `USmartObjectSubsystem` is not created on `NM_Client`, and production clients are `NM_Client` with client-simulated residents, so this works in standalone and listen play only. Options: a client-local claim registry mirroring the definitions, or a project subclass that creates the subsystem on clients.
+   *Smart Objects (2026-10-21):* `townsfolk_smartobjects.py` writes `silverbrook-smartobjects.json` (a door per building, a stall per market stall and vendor, the placed benches); the runtime creates them with `USmartObjectSubsystem::CreateSmartObject` and residents claim and release slots with seeded choices (home and some workplaces through doors, errands at a stall slot or a bench). **Step-4 blocker:** `USmartObjectSubsystem` is not created on `NM_Client`, and production clients are `NM_Client` with client-simulated residents, so this works in standalone and listen play only. Options: a client-local claim registry mirroring the definitions, or a project subclass that creates the subsystem on clients. *Resolved in step 4 (below): the project subclass.*
 
    *Not done yet:* StateTree-driven blocks (schedule logic is a processor for now); social and night blocks; server town state.
 
@@ -311,6 +311,27 @@ The census validator checks:
 
 3. **Looks and scale.** Use MetaHuman Crowds kits and the near, mid and far representations, then town-wide residents at default caps. *Exit:* frame cost within `tune.townsfolk.frame_budget_ms` on the target spec, and no visible pops at tier changes.
 4. **Town state and hand-off.** The server clock (60-minute day), market open or closed, danger cells, and the attack and quest hand-offs. *Exit:* two clients see the same market state and crowd intent; a handed-off resident replicates and returns.
+
+   **Step 4 first slice (2026-10-21): town state and Smart Objects on `NM_Client`.** The hand-offs are not done.
+   - *NM_Client fix: a project subclass of the SmartObject subsystem.* `USFClientSmartObjectSubsystem` derives from `USmartObjectSubsystem` and is created only on `NM_Client`, where the engine's own refuses to run. Server and standalone worlds keep the engine's subsystem, so a world never has both, and `GetSubsystem<USmartObjectSubsystem>()` finds whichever exists. The townsfolk code stays as it is.
+     - *Why not a client-local registry:* it would copy what the engine already does (slot transforms, claim and release, tags, and later StateTree and Mass Smart Object behaviours) and drift from section 6's stack.
+     - *Why the subclass is safe:* the engine overrides only `ShouldCreateSubsystem` (exported). On a client the engine subsystem skips just its precondition checks (`IsRunningOnServer`).
+     - *The rule:* client claims are cosmetic. A client claim never decides gameplay, and a server-owned Smart Object is never claimed on a client.
+   - *Server town state (section 5.1).* `ASFTownState` is spawned by the authority (dedicated, listen or standalone) on Greenlands_Silverbrook and replicated to every client: always relevant, sent on change. It carries:
+     - the clock (start hour, start server second, seconds per game hour from `GameDayMinutes`, 60 by default);
+     - an open-market bitmask, one bit per census market, set from `MarketOpenHour` and `MarketCloseHour` (7 and 19);
+     - danger cells (`DangerCellMetres`, `DangerSeconds`), which the authority adds with `MarkDanger`.
+
+     Clients compute the hour from the GameState's synced server time, so the clock sends nothing once it starts. Residents skip errands to a closed market and avoid work or errands in a danger cell. The walking speed follows the replicated day. The settings are in `USFTownsfolkSettings`, category *Town state*.
+   - *Verify.* `tools/Test-TownsfolkNetwork.ps1` runs a dedicated server (4-minute day, danger cell at (20, -20) m) and two NullRHI clients with `-TownsfolkPrototype`.
+   - *Evidence:* passed (`Artifacts/Townsfolk/network-20261021-075747-561`, server start 17:00).
+     - Both clients start 200 residents on `NM_Client` with `SFClientSmartObjectSubsystem`; 321 doors, 7 stalls and 14 benches; 9 claims each over the evening.
+     - An earlier morning run (start 6:00) had 16 door, 8 stall and 4 bench claims in the hour to 8:00. That run failed only because it saw no closed market.
+     - Hours: 119 paired samples; the worst gap was 0.059 s of real time (tolerance 0.5 s).
+     - Markets: 116 samples agree, 3 within 1.5 s of a server change were skipped; the markets closed at 19:00.
+     - Danger: both clients saw the one cell for the whole run.
+     - Processor cost per client: 0.026 ms a frame on average, 0.039 ms at most, after an 8 ms first frame. It is low because most residents are home at night.
+   - *Next:* the attack and quest hand-offs (section 2, section 5.3), with the hand-off set in the town state.
 5. **Reactions, crime and guards.** Fear at drawn weapons, annoyed barks, residents fighting back, roaming guards on patrol loops, witnessed crime making the player an offender, respawn at dawn. *Exit:* attacking a resident in view of a guard makes the player an offender and the guard engages; an unwitnessed attack in a back street gets reported only if a resident reaches a guard.
 
 ## 10. Risks

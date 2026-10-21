@@ -7,6 +7,7 @@
 #include "Engine/StaticMesh.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/GameStateBase.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
 #include "HAL/PlatformTime.h"
@@ -22,7 +23,9 @@
 #include "MassLODTrait.h"
 #include "MassSpawnerSubsystem.h"
 #include "Misc/CommandLine.h"
+#include "Misc/DateTime.h"
 #include "Misc/FileHelper.h"
+#include "Net/UnrealNetwork.h"
 #include "Misc/Parse.h"
 #include "Misc/Paths.h"
 #include "Serialization/JsonReader.h"
@@ -68,7 +71,9 @@ bool USFTownsfolkSettings::Validate(FString& OutError) const
         && StartHour>=0 && StartHour<24 && WalkSpeedMetresPerSecond>=0.5f && WalkSpeedMetresPerSecond<=3
         && SidestepMaxMetres>=0 && SidestepMaxMetres<=2 && SidestepRadiusMetres>=0.5f && SidestepRadiusMetres<=2
         && SidestepSpeedShare>=0.1f && SidestepSpeedShare<=2 && DoorDwellSeconds>=0.2f && DoorDwellSeconds<=10
-        && WorkIndoorShare>=0 && WorkIndoorShare<=1 && BenchShare>=0 && BenchShare<=1 && BenchSearchMetres>=5 && BenchSearchMetres<=100;
+        && WorkIndoorShare>=0 && WorkIndoorShare<=1 && BenchShare>=0 && BenchShare<=1 && BenchSearchMetres>=5 && BenchSearchMetres<=100
+        && MarketOpenHour>=0 && MarketOpenHour<=24 && MarketCloseHour>=0 && MarketCloseHour<=24
+        && DangerCellMetres>=10 && DangerCellMetres<=200 && DangerSeconds>=5 && DangerSeconds<=1800;
     bool bLooksOk=true;
     for (const FSFTownsfolkLook& L:Looks)
     { bLooksOk=bLooksOk && !L.Archetypes.IsEmpty() && !L.Mesh.IsNull() && !L.Walk.IsNull() && !L.Idle.IsNull()
@@ -77,7 +82,7 @@ bool USFTownsfolkSettings::Validate(FString& OutError) const
     return bOk && bLooksOk;
 }
 
-ESFTownsfolkGoal FSFTownsfolkResident::GoalAt(float Hour, int32 Day, int32& OutMarket) const
+ESFTownsfolkGoal FSFTownsfolkResident::GoalAt(float Hour, int32 Day, int32& OutMarket, uint32 OpenMarkets) const
 {
     // One market errand on some days: after work for workers, mid-morning for everyone else (doc section 4 day blocks).
     OutMarket=INDEX_NONE;
@@ -85,8 +90,98 @@ ESFTownsfolkGoal FSFTownsfolkResident::GoalAt(float Hour, int32 Day, int32& OutM
     if (bHasWork && Hour>=WorkStart && Hour<WorkEnd) { return ESFTownsfolkGoal::Work; }
     const float ErrandAt=bHasWork ? WorkEnd : Wake+1.0f+3.0f*Hash01(Seed,Day*7+1);
     if (!Markets.IsEmpty() && Hash01(Seed,Day)<ErrandChance && Hour>=ErrandAt && Hour<ErrandAt+1.0f)
-    { OutMarket=int32(HashCombine(Seed,Day)%uint32(Markets.Num())); return ESFTownsfolkGoal::Market; }
+    {
+        OutMarket=int32(HashCombine(Seed,Day)%uint32(Markets.Num()));
+        if (OpenMarkets>>(MarketBits[OutMarket]&31)&1) { return ESFTownsfolkGoal::Market; }
+        OutMarket=INDEX_NONE;  // closed: no errand today
+    }
     return ESFTownsfolkGoal::Home;
+}
+
+ASFTownState::ASFTownState()
+{
+    bReplicates=true; bAlwaysRelevant=true; SetNetUpdateFrequency(2.0f);  // changes force an update; the clock never sends
+    PrimaryActorTick.bCanEverTick=true; PrimaryActorTick.TickInterval=0.25f;
+}
+
+void ASFTownState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    DOREPLIFETIME(ASFTownState,StartHour); DOREPLIFETIME(ASFTownState,StartServerSeconds); DOREPLIFETIME(ASFTownState,SecondsPerGameHour);
+    DOREPLIFETIME(ASFTownState,DangerCellCm); DOREPLIFETIME(ASFTownState,OpenMarkets); DOREPLIFETIME(ASFTownState,Danger);
+}
+
+void ASFTownState::BeginPlay()
+{
+    Super::BeginPlay();
+    SetActorTickEnabled(HasAuthority());  // clients only read
+    if (USFTownsfolkSubsystem* Town=GetWorld()->GetSubsystem<USFTownsfolkSubsystem>()) { Town->SetState(this); }
+}
+
+void ASFTownState::Start(const USFTownsfolkSettings& Settings)
+{
+    StartHour=Settings.StartHour; StartServerSeconds=ServerSeconds(); SecondsPerGameHour=Settings.GameDayMinutes*60.0f/24.0f;
+    DangerCellCm=Settings.DangerCellMetres*100.0f; OpenHour=Settings.MarketOpenHour; CloseHour=Settings.MarketCloseHour; DangerSeconds=Settings.DangerSeconds;
+    Tick(0);
+}
+
+double ASFTownState::ServerSeconds() const
+{
+    const AGameStateBase* GS=GetWorld()->GetGameState();
+    return GS ? GS->GetServerWorldTimeSeconds() : GetWorld()->GetTimeSeconds();
+}
+
+float ASFTownState::Hour(int32& OutDay) const
+{
+    const double Hours=StartHour+(ServerSeconds()-StartServerSeconds)/SecondsPerGameHour;
+    OutDay=int32(Hours/24.0);
+    return float(FMath::Fmod(Hours,24.0));
+}
+
+void ASFTownState::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+    int32 Day=0; const float H=Hour(Day);
+    const bool bOpen=OpenHour<=CloseHour ? H>=OpenHour && H<CloseHour : H>=OpenHour || H<CloseHour;  // a close past midnight wraps
+    const int32 Open=bOpen ? -1 : 0;
+    const double Now=ServerSeconds();
+    const int32 Expired=Danger.RemoveAll([Now](const FSFTownDangerCell& C){ return C.Until<=Now; });
+    if (Open!=OpenMarkets || Expired)
+    {
+        OpenMarkets=Open; ForceNetUpdate();
+        UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_STATE_CHANGE Utc=%.3f Day=%d Hour=%.3f OpenMarkets=%d Danger=%d"),FDateTime::UtcNow().ToUnixTimestampDecimal(),Day,H,OpenMarkets,Danger.Num());
+    }
+}
+
+bool ASFTownState::IsDanger(const FVector& At) const
+{
+    if (Danger.IsEmpty()) { return false; }
+    const FIntPoint C(FMath::FloorToInt32(At.X/DangerCellCm),FMath::FloorToInt32(At.Y/DangerCellCm)); const double Now=ServerSeconds();
+    return Danger.ContainsByPredicate([&](const FSFTownDangerCell& D){ return D.Cell==C && D.Until>Now; });
+}
+
+int32 ASFTownState::DangerCount() const
+{
+    const double Now=ServerSeconds(); int32 N=0;
+    for (const FSFTownDangerCell& D:Danger) { N+=D.Until>Now; }
+    return N;
+}
+
+void ASFTownState::MarkDanger(const FVector& At)
+{
+    check(HasAuthority());
+    const FIntPoint C(FMath::FloorToInt32(At.X/DangerCellCm),FMath::FloorToInt32(At.Y/DangerCellCm)); const double Until=ServerSeconds()+DangerSeconds;
+    if (FSFTownDangerCell* D=Danger.FindByPredicate([&C](const FSFTownDangerCell& E){ return E.Cell==C; })) { D->Until=Until; }
+    else { FSFTownDangerCell Added; Added.Cell=C; Added.Until=Until; Danger.Add(Added); }
+    ForceNetUpdate();
+    UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_STATE_CHANGE Utc=%.3f Danger=%d Cell=%d,%d"),FDateTime::UtcNow().ToUnixTimestampDecimal(),Danger.Num(),C.X,C.Y);
+}
+
+bool USFClientSmartObjectSubsystem::ShouldCreateSubsystem(UObject* Outer) const
+{
+    // The engine's subsystem refuses NM_Client; this one takes only that case, so a world never has both.
+    const UWorld* World=Cast<UWorld>(Outer);
+    return World && World->IsNetMode(NM_Client) && UWorldSubsystem::ShouldCreateSubsystem(Outer);
 }
 
 void USFTownsfolkTrait::BuildTemplate(FMassEntityTemplateBuildContext& BuildContext, const UWorld& World) const
@@ -148,7 +243,7 @@ void USFTownsfolkProcessor::ConfigureQueries(const TSharedRef<FMassEntityManager
 void USFTownsfolkProcessor::Execute(FMassEntityManager& EntityManager, FMassExecutionContext& Context)
 {
     USFTownsfolkSubsystem* Town=Context.GetWorld() ? Context.GetWorld()->GetSubsystem<USFTownsfolkSubsystem>() : nullptr;
-    if (!Town || !Town->IsActive()) { return; }
+    if (!Town || !Town->IsActive() || !Town->HasState()) { return; }
     const double Started=FPlatformTime::Seconds();
     int32 Day=0; const float Hour=Town->GameHour(Day);
     const float Dt=Context.GetDeltaTimeSeconds(), Step=Town->WalkSpeedCm()*Dt;
@@ -162,7 +257,7 @@ void USFTownsfolkProcessor::Execute(FMassEntityManager& EntityManager, FMassExec
         {
             FSFTownsfolkResidentFragment& W=Walkers[It]; FTransform& T=Transforms[It].GetMutableTransform();
             const FSFTownsfolkResident& R=Town->Resident(W.Resident); TArray<FVector>& Route=Town->Route(W.Resident);
-            int32 Market=INDEX_NONE; const ESFTownsfolkGoal Goal=R.GoalAt(Hour,Day,Market);
+            int32 Market=INDEX_NONE; const ESFTownsfolkGoal Goal=Town->GoalFor(W.Resident,Hour,Day,Market);
             if (Goal!=W.Goal || Market!=W.Market)
             {
                 Town->ReleaseStand(W.Resident);  // up from the bench, away from the stall
@@ -238,11 +333,13 @@ bool USFTownsfolkSubsystem::ShouldCreateSubsystem(UObject* Outer) const
     return World && (World->WorldType==EWorldType::Game || World->WorldType==EWorldType::PIE);
 }
 
-float USFTownsfolkSubsystem::GameHour(int32& OutDay) const
+ESFTownsfolkGoal USFTownsfolkSubsystem::GoalFor(int32 Resident, float Hour, int32 Day, int32& OutMarket) const
 {
-    const double Hours=StartHour+(GetWorld()->GetTimeSeconds()-StartSeconds)/SecondsPerGameHour;
-    OutDay=int32(Hours/24.0);
-    return float(FMath::Fmod(Hours,24.0));
+    const FSFTownsfolkResident& R=Residents[Resident];
+    const ESFTownsfolkGoal Goal=R.GoalAt(Hour,Day,OutMarket,State->OpenMask());
+    const FVector& To=Goal==ESFTownsfolkGoal::Work ? R.Work : Goal==ESFTownsfolkGoal::Market ? R.Markets[OutMarket] : R.Home;
+    if (Goal!=ESFTownsfolkGoal::Home && State->IsDanger(To)) { OutMarket=INDEX_NONE; return ESFTownsfolkGoal::Home; }  // ponytail: by destination only; fleeing from where they stand comes with section 5.4 reactions
+    return Goal;
 }
 
 bool USFTownsfolkSubsystem::LoadCensus(FString& OutError)
@@ -252,11 +349,12 @@ bool USFTownsfolkSubsystem::LoadCensus(FString& OutError)
     FString Text; TSharedPtr<FJsonObject> Census;
     if (!FFileHelper::LoadFileToString(Text,*Path) || !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Census) || !Census.IsValid())
     { OutError=FString::Printf(TEXT("Census missing or unreadable: %s"),*Path); return false; }
-    TMap<FString,FVector> Homes, Works, Markets; TMap<FString,FString> WorkLabels;
+    TMap<FString,FVector> Homes, Works, Markets; TMap<FString,FString> WorkLabels; TMap<FString,int32> MarketBit;
     for (const auto& V:Census->GetArrayField(TEXT("households"))) { Homes.Add(V->AsObject()->GetStringField(TEXT("id")),Metres(V->AsObject()->GetArrayField(TEXT("at")))); }
     for (const auto& V:Census->GetArrayField(TEXT("workplaces")))
     { Works.Add(V->AsObject()->GetStringField(TEXT("id")),Metres(V->AsObject()->GetArrayField(TEXT("at")))); WorkLabels.Add(V->AsObject()->GetStringField(TEXT("id")),V->AsObject()->GetStringField(TEXT("label"))); }
-    for (const auto& V:Census->GetArrayField(TEXT("markets"))) { Markets.Add(V->AsObject()->GetStringField(TEXT("label")),Metres(V->AsObject()->GetArrayField(TEXT("at")))); }
+    for (const auto& V:Census->GetArrayField(TEXT("markets")))
+    { MarketBit.Add(V->AsObject()->GetStringField(TEXT("label")),MarketBit.Num()); Markets.Add(V->AsObject()->GetStringField(TEXT("label")),Metres(V->AsObject()->GetArrayField(TEXT("at")))); }
     TArray<TSharedPtr<FJsonObject>> Pool;
     for (const auto& V:Census->GetArrayField(TEXT("residents")))
     { if (Settings->District.IsEmpty() || V->AsObject()->GetStringField(TEXT("district"))==Settings->District) { Pool.Add(V->AsObject()); } }
@@ -271,7 +369,7 @@ bool USFTownsfolkSubsystem::LoadCensus(FString& OutError)
         FString Work;
         if (O->TryGetStringField(TEXT("workplace"),Work) && Works.Contains(Work) && Hours->HasField(TEXT("work_start")))
         { R.bHasWork=true; R.Work=Works[Work]; R.WorkLabel=WorkLabels.FindRef(Work); R.WorkStart=Hours->GetNumberField(TEXT("work_start")); R.WorkEnd=Hours->GetNumberField(TEXT("work_end")); }
-        for (const auto& M:O->GetArrayField(TEXT("markets"))) { if (const FVector* At=Markets.Find(M->AsString())) { R.Markets.Add(*At); R.MarketLabels.Add(M->AsString()); } }
+        for (const auto& M:O->GetArrayField(TEXT("markets"))) { if (const FVector* At=Markets.Find(M->AsString())) { R.Markets.Add(*At); R.MarketLabels.Add(M->AsString()); R.MarketBits.Add(MarketBit[M->AsString()]); } }
         Residents.Add(R);
     }
     if (Residents.IsEmpty()) { OutError=FString::Printf(TEXT("No census residents in '%s'"),*Settings->District); return false; }
@@ -397,7 +495,7 @@ float USFTownsfolkSubsystem::Sidestep(int32 I, float Side, float DeltaSeconds) c
     for (int32 X=-1; X<=1; ++X) { for (int32 Y=-1; Y<=1; ++Y)
     { if (const TArray<int32>* In=Cells.Find(C+FIntPoint(X,Y))) { for (const int32 J:*In) { if (J!=I) { Away(Shown[J],Facing[J],SidestepRadiusCm,1,I<J ? 1.0f : -1.0f); } } } } }
     Away(Player,FVector::ZeroVector,200,2,1);
-    const float Rate=WalkSpeedCmPerSecond*DeltaSeconds;
+    const float Rate=WalkSpeedCm()*DeltaSeconds;
     Side=FMath::Abs(Push)>0.01f ? Side+FMath::Clamp(Push,-1.0f,1.0f)*SidestepSpeedShare*Rate : FMath::FInterpConstantTo(Side,0,1,0.3f*Rate);
     return FMath::Clamp(Side,-SidestepMaxCm,SidestepMaxCm);
 }
@@ -418,11 +516,18 @@ void USFTownsfolkSubsystem::NoteFrame(double Milliseconds)
 {
     FrameMs+=Milliseconds; ++Frames;
     int32 Day=0; const float Hour=GameHour(Day); const double Now=Day*24.0+Hour;
+    const double Real=FPlatformTime::Seconds();
+    if (Real-LastSample>=1.0)
+    {   // Once a real second, stamped with the machine's clock, so runs on one machine can compare their hours and markets.
+        LastSample=Real;
+        UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_STATE Net=%d Utc=%.3f Day=%d Hour=%.4f OpenMarkets=%d Danger=%d"),int32(GetWorld()->GetNetMode()),
+            FDateTime::UtcNow().ToUnixTimestampDecimal(),Day,Hour,int32(State->OpenMask()),State->DangerCount());
+    }
     if (LastReport>=0 && Now-LastReport<1.0) { return; }
     LastReport=FMath::FloorToDouble(Now);
     // Once per game hour: where everyone is meant to be, who is outdoors, close passes, and the processor's cost.
     int32 Counts[4]={0,0,0,0};
-    for (const FSFTownsfolkResident& R:Residents) { int32 M; ++Counts[int32(R.GoalAt(Hour,Day,M))]; }
+    for (int32 I=0; I<Residents.Num(); ++I) { int32 M; ++Counts[int32(GoalFor(I,Hour,Day,M))]; }
     const TArray<FVector> Out=OutdoorPositions();
     UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_HOUR Day=%d Hour=%.1f Home=%d Work=%d Market=%d Outdoors=%d (one at %s) ClosePairFrames=%lld ClosePairSeconds=%.1f Routes=%d RouteFailures=%d ProcessorMs=%.3f DoorClaims=%d StallClaims=%d BenchClaims=%d ClaimFailures=%d"),
         Day,Hour,Counts[1],Counts[2],Counts[3],Out.Num(),Out.IsEmpty() ? TEXT("-") : *Out[0].ToCompactString(),ClosePairs,ClosePairSeconds,Routes_Planned,Routes_Failed,Frames ? FrameMs/Frames : 0.0,
@@ -550,15 +655,23 @@ void USFTownsfolkSubsystem::PlanStop(int32 Resident, ESFTownsfolkGoal Goal, int3
 void USFTownsfolkSubsystem::OnWorldBeginPlay(UWorld& World)
 {
     Super::OnWorldBeginPlay(World);
-#if !UE_BUILD_SHIPPING
-    if (!FParse::Param(FCommandLine::Get(),TEXT("TownsfolkPrototype")) || World.GetNetMode()==NM_DedicatedServer
-        || World.GetOutermost()->GetName()!=ZoneMap) { return; }
+    if (World.GetOutermost()->GetName()!=ZoneMap) { return; }
     const USFTownsfolkSettings* Settings=GetDefault<USFTownsfolkSettings>();
     FString Error;
-    if (!Settings->Validate(Error) || !LoadCensus(Error) || !LoadLooks(Error)) { UE_LOG(LogTemp,Error,TEXT("TOWNSFOLK_DISABLED %s"),*Error); return; }
-    StartHour=Settings->StartHour; StartSeconds=World.GetTimeSeconds();
-    SecondsPerGameHour=Settings->GameDayMinutes*60.0f/24.0f;
-    WalkSpeedCmPerSecond=Settings->WalkSpeedMetresPerSecond*100.0f*FMath::Max(1.0f,60.0f/Settings->GameDayMinutes);
+    if (!Settings->Validate(Error)) { UE_LOG(LogTemp,Error,TEXT("TOWNSFOLK_DISABLED %s"),*Error); return; }
+    if (World.GetNetMode()!=NM_Client)
+    {   // The authority owns the town state; clients receive it by replication.
+        ASFTownState* Town=World.SpawnActor<ASFTownState>();
+        Town->Start(*Settings);
+#if !UE_BUILD_SHIPPING
+        float X=0, Y=0;  // development check: -TownsfolkDangerX= -TownsfolkDangerY= (metres) mark one danger cell at start
+        if (FParse::Value(FCommandLine::Get(),TEXT("TownsfolkDangerX="),X) && FParse::Value(FCommandLine::Get(),TEXT("TownsfolkDangerY="),Y)) { Town->MarkDanger(FVector(X,Y,0)*100); }
+#endif
+    }
+#if !UE_BUILD_SHIPPING
+    if (!FParse::Param(FCommandLine::Get(),TEXT("TownsfolkPrototype")) || World.GetNetMode()==NM_DedicatedServer) { return; }
+    if (!LoadCensus(Error) || !LoadLooks(Error)) { UE_LOG(LogTemp,Error,TEXT("TOWNSFOLK_DISABLED %s"),*Error); return; }
+    WalkSpeedMetres=Settings->WalkSpeedMetresPerSecond;
     SidestepMaxCm=Settings->SidestepMaxMetres*100.0f; SidestepRadiusCm=Settings->SidestepRadiusMetres*100.0f; SidestepSpeedShare=Settings->SidestepSpeedShare;
     DoorDwellSeconds=Settings->DoorDwellSeconds; WorkIndoorShare=Settings->WorkIndoorShare; BenchShare=Settings->BenchShare; BenchSearchCm=Settings->BenchSearchMetres*100.0f;
 
@@ -593,8 +706,9 @@ void USFTownsfolkSubsystem::OnWorldBeginPlay(UWorld& World)
         W.Resident=I; W.OnRoute=Route.Last(); Shown[I]=Route.Last();
     }
     bActive=true;
-    UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_READY Residents=%d District=%s DayMinutes=%.1f"),Residents.Num(),
-        Settings->District.IsEmpty() ? TEXT("(whole town)") : *Settings->District,Settings->GameDayMinutes);
+    UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_READY Residents=%d District=%s Net=%d SmartObjects=%s"),Residents.Num(),
+        Settings->District.IsEmpty() ? TEXT("(whole town)") : *Settings->District,int32(World.GetNetMode()),
+        World.GetSubsystem<USmartObjectSubsystem>() ? *World.GetSubsystem<USmartObjectSubsystem>()->GetClass()->GetName() : TEXT("none"));
 #endif
 }
 
