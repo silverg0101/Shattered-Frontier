@@ -13,6 +13,9 @@
 #include "Engine/FontFace.h"
 #include "Fonts/CompositeFont.h"
 #include "Engine/Texture2D.h"
+#if WITH_EDITOR
+#include "TextureCompiler.h"
+#endif
 #include "Framework/SFHudButton.h"
 #include "Framework/SFHudKit.h"
 #include "Styling/CoreStyle.h"
@@ -42,7 +45,19 @@ inline const FSFHudKitElement* Kit(const TCHAR* Name)
 {
     const USFHudKit* Data = USFHudKit::Get();
     const FSFHudKitElement* Element = Data ? Data->Elements.Find(FName(Name)) : nullptr;
+#if WITH_EDITOR
+    // In editor binaries a texture can still be compiling asynchronously when a widget is built, and its size reads as the 32x32
+    // placeholder; finish it so brushes never capture the placeholder.
+    if (Element && Element->Texture && Element->Texture->IsCompiling()) { UTexture* Pending = Element->Texture; FTextureCompilingManager::Get().FinishCompilation({Pending}); }
+#endif
     return Element && Element->Texture ? Element : nullptr;
+}
+
+// Layout size of a kit piece: its declared 1080p design size, else the texture size scaled by DrawScale.
+inline FVector2D KitDesignSize(const FSFHudKitElement& Element)
+{
+    if (Element.DesignSize.X > 0.0 && Element.DesignSize.Y > 0.0) { return Element.DesignSize; }
+    return FVector2D(Element.Texture->GetSizeX(), Element.Texture->GetSizeY()) * Element.DrawScale;
 }
 
 inline FSlateBrush KitBrush(const FSFHudKitElement& Element)
@@ -54,7 +69,7 @@ inline FSlateBrush KitBrush(const FSFHudKitElement& Element)
     Brush.DrawAs = bSliced ? ESlateBrushDrawType::Box : ESlateBrushDrawType::Image;
     Brush.Margin = Element.Margin;
     Brush.SetResourceObject(Element.Texture);
-    Brush.ImageSize = FVector2D(Element.Texture->GetSizeX(), Element.Texture->GetSizeY()) * Element.DrawScale;
+    Brush.ImageSize = KitDesignSize(Element);
     Brush.TintColor = FSlateColor(FLinearColor::White);
     return Brush;
 }
@@ -109,8 +124,9 @@ inline FSFFramedBar MakeFramedBar(UWidgetTree* Tree, const TCHAR* Base, float De
     const FSFHudKitElement* Fill = Kit(*FString::Printf(TEXT("%s_fill"), Base));
     if (!Frame || !Fill) { return Bar; }
     constexpr float InsetLeft = 21.f, InsetTop = 6.5f, InsetRight = 359.f, InsetBottom = 25.5f;  // 1x px: kit.json's 2x fill_inset_rect_px halved
-    const float Scale = DesignWidth / static_cast<float>(Frame->Texture->GetSizeX());  // texture px -> design px
-    const float FrameHeight = static_cast<float>(Frame->Texture->GetSizeY()) * Scale;
+    const FVector2D FrameDesign = KitDesignSize(*Frame);  // declared design size, never the imported texture's own dimensions
+    const float Scale = DesignWidth / static_cast<float>(FrameDesign.X);  // design px of the art -> px at DesignWidth
+    const float FrameHeight = static_cast<float>(FrameDesign.Y) * Scale;
     Bar.FillWidth = (InsetRight - InsetLeft) * Scale;
     const float FillHeight = (InsetBottom - InsetTop) * Scale;
 
@@ -161,7 +177,7 @@ inline UBorder* KitPanel(UWidgetTree* Tree, const TCHAR* Name, float Alpha, cons
         Border->SetBrush(KitBrush(*Element));
         Border->SetBrushColor(FLinearColor(1.f, 1.f, 1.f, Alpha));
         // Clear the art horizontally by InsetPixels; vertically by at most half the art's top margin, so short pieces (fields, tabs, buttons) keep room for text.
-        const float InsetY = FMath::Min(Element->InsetPixels, static_cast<float>(Element->Margin.Top * Element->Texture->GetSizeY()) * 0.5f);
+        const float InsetY = FMath::Min(Element->InsetPixels, static_cast<float>(Element->Margin.Top * KitDesignSize(*Element).Y) * 0.5f);
         Border->SetPadding(FMargin(Padding.Left + Element->InsetPixels, Padding.Top + InsetY, Padding.Right + Element->InsetPixels, Padding.Bottom + InsetY));
     }
     else
@@ -271,8 +287,9 @@ inline USizeBox* KitImage(UWidgetTree* Tree, const TCHAR* Name, float Width = 0.
     if (const FSFHudKitElement* Element = Kit(Name))
     {
         Image->SetBrush(KitBrush(*Element));
-        Box->SetWidthOverride(Width > 0.f ? Width : Element->Texture->GetSizeX());
-        Box->SetHeightOverride(Height > 0.f ? Height : (Width > 0.f ? Width : Element->Texture->GetSizeY()));
+        const FVector2D Design = KitDesignSize(*Element);
+        Box->SetWidthOverride(Width > 0.f ? Width : static_cast<float>(Design.X));
+        Box->SetHeightOverride(Height > 0.f ? Height : (Width > 0.f ? Width : static_cast<float>(Design.Y)));
     }
     else if (Width > 0.f) { Box->SetWidthOverride(Width); Box->SetHeightOverride(Height > 0.f ? Height : Width); }
     Box->SetContent(Image);
@@ -299,9 +316,9 @@ inline FSFHudButton Button(UWidgetTree* Tree, const FString& Label, EButtonKind 
     Style.Disabled = KitOrFrame(Kit(TEXT("button_disabled")) && !bPrimary ? TEXT("button_disabled") : Normal, Fill, Hex(TEXT("3A4348")), 3.f);
     Style.NormalPadding = FMargin(0.f); Style.PressedPadding = FMargin(0.f);
     Control->SetStyle(Style);
-    UTextBlock* Caption = Text(Tree, Label, 24, Ivory());
+    // Primary buttons carry dark ink (#2A1E10) on the brass, as in the concepts; secondary buttons use ivory.
+    UTextBlock* Caption = Text(Tree, Label, 24, bPrimary ? Hex(TEXT("2A1E10")) : Ivory(), bPrimary);
     Caption->SetJustification(ETextJustify::Center);
-    if (bPrimary) { Caption->SetShadowOffset(FVector2D(1.f, 1.f)); Caption->SetShadowColorAndOpacity(Hex(TEXT("2A1E10"))); }
     UBorder* Pad = Tree->ConstructWidget<UBorder>(UBorder::StaticClass());
     Pad->SetBrush(FSlateNoResource()); Pad->SetPadding(FMargin(24.f, 0.f)); Pad->SetVerticalAlignment(VAlign_Center); Pad->SetHorizontalAlignment(HAlign_Center);
     Pad->SetContent(Caption);

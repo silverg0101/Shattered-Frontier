@@ -227,7 +227,7 @@ void USFHudLayout::SetPrompts(ESFPromptContext Context)
         const FString PieceName = Lower == TEXT("lmb") || Lower == TEXT("rmb") ? FString::Printf(TEXT("mouse_%s"), *Lower) : FString::Printf(TEXT("keycap_%s"), *Lower);
         const FSFHudKitElement* PieceArt = Kit(*PieceName);
         const float PieceScale = Context == ESFPromptContext::Build ? 0.7f : 1.f;  // the build action bar is a slim single line
-        UWidget* Key = PieceArt ? static_cast<UWidget*>(KitImage(WidgetTree, *PieceName, PieceArt->Texture->GetSizeX() * PieceScale, PieceArt->Texture->GetSizeY() * PieceScale)) : static_cast<UWidget*>(Text(WidgetTree, Segment.Key, 20, Ivory(), true));
+        UWidget* Key = PieceArt ? static_cast<UWidget*>(KitImage(WidgetTree, *PieceName, KitDesignSize(*PieceArt).X * PieceScale, KitDesignSize(*PieceArt).Y * PieceScale)) : static_cast<UWidget*>(Text(WidgetTree, Segment.Key, 20, Ivory(), true));
         PromptRow->AddChildToHorizontalBox(Key)->SetVerticalAlignment(VAlign_Center);
         UHorizontalBoxSlot* ActionSlot = PromptRow->AddChildToHorizontalBox(Text(WidgetTree, Segment.Action, Context == ESFPromptContext::Build ? 18 : 24, Ivory()));
         ActionSlot->SetVerticalAlignment(VAlign_Center); ActionSlot->SetPadding(FMargin(8.f, 0.f, 0.f, 0.f));

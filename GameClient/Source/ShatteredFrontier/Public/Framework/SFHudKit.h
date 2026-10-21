@@ -16,6 +16,9 @@ struct FSFHudKitElement
     UPROPERTY(EditAnywhere) float InsetPixels = 0.f;
     // Design-size scale of the texture: Kit-v5 art is authored at 2x the 1080p UI size, so its DrawScale is 0.5.
     UPROPERTY(EditAnywhere) float DrawScale = 1.f;
+    // The 1080p design size (kit.json intended_1080p_px, written by tools/Import-HudKit.py). Layout reads this, never the imported
+    // texture's own dimensions, so a re-import, resample or art swap cannot change how big a piece draws. Zero = use the texture size.
+    UPROPERTY(EditAnywhere) FVector2D DesignSize = FVector2D::ZeroVector;
 };
 
 // /Game/Frontier/UI/Kit/DA_HudKit, written by tools/Import-HudKit.py from GameClient/ArtSource/UI/HUD-Kit-v1/kit.json.

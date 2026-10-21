@@ -78,6 +78,8 @@ void USFInventoryPanel::NativeOnInitialized()
         UBorder* SlotFrame = KitPanel(WidgetTree, TEXT("slot_equipment_normal"), 1.f, Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), FMargin(0.f), 3.f);
         UImage* Ghost = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
         if (const FSFHudKitElement* Art = SFHudStyle::Kit(GhostName)) { Ghost->SetBrush(SFHudStyle::KitBrush(*Art)); Ghost->SetDesiredSizeOverride(FVector2D(48.f, 48.f)); }
+        // Equipment ghosts and the paperdoll are 2x scene art without a declared design size: draw them stretched into fixed boxes.
+        { FSlateBrush Stretch = Ghost->GetBrush(); Stretch.ImageSize = FVector2D(48.f, 48.f); Ghost->SetBrush(Stretch); }
         UOverlay* Stack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
         UOverlaySlot* GhostSlot = Stack->AddChildToOverlay(Ghost);
         GhostSlot->SetHorizontalAlignment(HAlign_Center); GhostSlot->SetVerticalAlignment(VAlign_Center);
@@ -93,7 +95,9 @@ void USFInventoryPanel::NativeOnInitialized()
     Equipment->AddChildToHorizontalBox(LeftColumn)->SetVerticalAlignment(VAlign_Top);
     UImage* Paperdoll = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
     if (const FSFHudKitElement* Doll = SFHudStyle::Kit(TEXT("paperdoll_adventurer"))) { Paperdoll->SetBrush(SFHudStyle::KitBrush(*Doll)); Paperdoll->SetDesiredSizeOverride(FVector2D(190.f, 342.f)); }
-    UHorizontalBoxSlot* DollSlot = Equipment->AddChildToHorizontalBox(Paperdoll);
+    USizeBox* DollBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());  // a fixed box: the image fills it, so the art cannot size the row
+    DollBox->SetWidthOverride(190.f); DollBox->SetHeightOverride(342.f); DollBox->SetContent(Paperdoll);
+    UHorizontalBoxSlot* DollSlot = Equipment->AddChildToHorizontalBox(DollBox);
     DollSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); DollSlot->SetHorizontalAlignment(HAlign_Center); DollSlot->SetVerticalAlignment(VAlign_Center);
     UVerticalBox* RightColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     RightColumn->AddChildToVerticalBox(EquipmentSlot(TEXT("ghost_main_hand"), &MainHandFrame, &MainHandIcon))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));

@@ -127,6 +127,10 @@ if os.path.isfile(os.path.join(V5, 'kit.json')):
         element.set_editor_property('margin', unreal.Margin(left / width, top / height, right / width, bottom / height))
         element.set_editor_property('inset_pixels', float(left))
         element.set_editor_property('draw_scale', 1.0)
+        # Layout reads the declared 1080p design size, never the imported texture's own dimensions (SFHudStyle::KitDesignSize).
+        design = piece.get('intended_1080p_px')
+        if design:
+            element.set_editor_property('design_size', unreal.Vector2D(float(design[0]), float(design[1])))
         table[name] = element
         done.append('v5:' + name)
     for alias, target in ALIASES.items():
