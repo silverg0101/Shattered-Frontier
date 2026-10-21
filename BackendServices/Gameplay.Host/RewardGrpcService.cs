@@ -9,9 +9,14 @@ internal sealed class RewardGrpcService(BoarRewardService rewards) : Pb.Rewards.
         {
             if (request.TableId != "loot/greenlands_silverbrook_boar")
                 throw new ArgumentException("Unknown reward table.");
-            var outcome = rewards.Grant(new DefeatEvent(request.DefeatEventId, request.KillerCharacterId,
-                request.RecipientCharacterId, request.ContainerId, request.ExpectedContainerRevision,
-                request.KillerInProtectedTown, request.BoarInProtectedTown));
+            RewardOutcome outcome;
+            try
+            {
+                outcome = rewards.Grant(new DefeatEvent(request.DefeatEventId, request.KillerCharacterId,
+                    request.RecipientCharacterId, request.ContainerId, request.ExpectedContainerRevision,
+                    request.KillerInProtectedTown, request.BoarInProtectedTown));
+            }
+            catch (InvalidOperationException ex) { throw new GameplayRejectedException(ex.Message, StatusCode.AlreadyExists); }
             var change = outcome.Receipt?.Changes.SingleOrDefault();
             return new Pb.RewardReceipt
             {

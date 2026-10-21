@@ -19,11 +19,13 @@ CREATE UNIQUE INDEX placements_live_cell ON housing.placements (claim_id,cell_x,
 CREATE TABLE housing.removals (
   operation_id text PRIMARY KEY,
   fingerprint text NOT NULL,
-  placement_operation_id text NOT NULL UNIQUE REFERENCES housing.placements(operation_id),
-  state text NOT NULL CHECK (state IN ('Pending','Committed')),
+  placement_operation_id text NOT NULL REFERENCES housing.placements(operation_id),
+  state text NOT NULL CHECK (state IN ('Pending','Committed','Compensated')),
   revision bigint NOT NULL CHECK (revision >= 0),
   refund_quantity bigint NOT NULL CHECK (refund_quantity >= 0),
   expected_container_revision bigint NOT NULL CHECK (expected_container_revision >= 0),
   refund_receipt jsonb
 );
+CREATE UNIQUE INDEX removals_live_placement ON housing.removals (placement_operation_id)
+  WHERE state IN ('Pending','Committed');
 UPDATE housing.schema_version SET version=4 WHERE singleton=true AND version=3;

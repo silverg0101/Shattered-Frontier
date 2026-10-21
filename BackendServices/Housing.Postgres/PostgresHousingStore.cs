@@ -7,7 +7,12 @@ namespace ShatteredFrontier.Housing.Postgres;
 
 public sealed class HousingUnavailableException(string message, Exception inner) : Exception(message, inner);
 public sealed class HousingSchemaCompatibilityException(string message) : Exception(message);
-public sealed class HousingRejectedException(string message) : InvalidOperationException(message);
+public enum HousingRejectionCode { InvalidArgument, AlreadyExists, PermissionDenied, FailedPrecondition }
+public enum HousingRefundRounding { UpToWholeUnit }
+public sealed class HousingRejectedException(string message, HousingRejectionCode code = HousingRejectionCode.FailedPrecondition) : InvalidOperationException(message)
+{
+    public HousingRejectionCode Code { get; } = code;
+}
 
 public sealed record HousingClaim(string Id, string OwnerId, string State, long Revision, long PermissionRevision,
     DateTimeOffset FundedUntil, DateTimeOffset? GraceEnds, DateTimeOffset? NoticeEnds,
@@ -29,10 +34,29 @@ public sealed record HousingRemoval(string OperationId, string Fingerprint, Hous
 // debit is identified by operation_id + "/consume"; recovery only trusts a durable ledger receipt.
 public sealed class PostgresHousingStore(string connectionString)
 {
+    public const HousingRefundRounding RefundRounding = HousingRefundRounding.UpToWholeUnit;
+    private sealed record CallState(CancellationToken Token, DateTime Deadline, List<IDisposable> Registrations);
+    private static readonly AsyncLocal<CallState?> CallContext = new();
+    public static IDisposable UseCallContext(CancellationToken token, DateTime deadline)
+    {
+        var previous = CallContext.Value;
+        var state = new CallState(token, deadline, []);
+        CallContext.Value = state;
+        return new CallScope(() => { foreach (var registration in state.Registrations) registration.Dispose(); CallContext.Value = previous; });
+    }
+    private sealed class CallScope(Action dispose) : IDisposable { public void Dispose() => dispose(); }
     private static NpgsqlCommand Cmd(NpgsqlConnection c, NpgsqlTransaction t, string sql, params object[] args)
     {
         var cmd = new NpgsqlCommand(sql, c, t);
         foreach (var arg in args) cmd.Parameters.AddWithValue(arg);
+        if (CallContext.Value is { } call)
+        {
+            var remaining = call.Deadline - DateTime.UtcNow;
+            call.Token.ThrowIfCancellationRequested();
+            if (remaining <= TimeSpan.Zero) throw new OperationCanceledException(call.Token);
+            cmd.CommandTimeout = Math.Max(1, (int)Math.Ceiling(remaining.TotalSeconds));
+            call.Registrations.Add(call.Token.Register(() => { try { cmd.Cancel(); } catch (Exception ex) when (ex is ObjectDisposedException or InvalidOperationException) { } }));
+        }
         return cmd;
     }
 
@@ -40,8 +64,11 @@ public sealed class PostgresHousingStore(string connectionString)
     {
         try
         {
-            using var c = new NpgsqlConnection(connectionString); c.Open();
-            using var t = c.BeginTransaction();
+            using var c = new NpgsqlConnection(connectionString);
+            if (CallContext.Value is { } call) c.OpenAsync(call.Token).GetAwaiter().GetResult();
+            else c.Open();
+            using var t = CallContext.Value is { } beginCall
+                ? c.BeginTransactionAsync(beginCall.Token).GetAwaiter().GetResult() : c.BeginTransaction();
             // ponytail: This global lock serializes all claims; upgrade to a per-claim key using hashtext(claim_id).
             using (var advisory = Cmd(c, t, "SELECT pg_advisory_xact_lock(519761, 2)")) advisory.ExecuteNonQuery();
             try
@@ -52,10 +79,14 @@ public sealed class PostgresHousingStore(string connectionString)
             }
             catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501")
             { throw new HousingSchemaCompatibilityException("Housing schema marker missing or inaccessible."); }
-            var result = action(c, t); t.Commit(); return result;
+            var result = action(c, t);
+            if (CallContext.Value is { } commitCall) t.CommitAsync(commitCall.Token).GetAwaiter().GetResult();
+            else t.Commit();
+            return result;
         }
         catch (PostgresException ex) when (ex.SqlState.StartsWith("22", StringComparison.Ordinal) || ex.SqlState.StartsWith("23", StringComparison.Ordinal))
-        { throw new HousingRejectedException($"Housing operation rejected ({ex.SqlState})."); }
+        { throw new HousingRejectedException($"Housing operation rejected ({ex.SqlState}).", ex.SqlState == "23505" ? HousingRejectionCode.AlreadyExists : HousingRejectionCode.InvalidArgument); }
+        catch (OperationCanceledException) { throw; }
         catch (Exception ex) when (ex is NpgsqlException or TimeoutException or System.IO.IOException)
         { throw new HousingUnavailableException("Housing store unavailable; retry the same operation ID.", ex); }
     }
@@ -67,7 +98,7 @@ public sealed class PostgresHousingStore(string connectionString)
         using var cmd = Cmd(c,t,"SELECT fingerprint,receipt::text FROM housing.claim_operations WHERE operation_id=$1",operationId);
         using var r = cmd.ExecuteReader();
         if (!r.Read()) return null;
-        if (r.GetString(0) != fingerprint) throw new HousingRejectedException("Operation ID conflict.");
+        if (r.GetString(0) != fingerprint) throw new HousingRejectedException("Operation ID conflict.", HousingRejectionCode.AlreadyExists);
         return JsonSerializer.Deserialize<HousingClaim>(r.GetString(1)) ?? throw new HousingRejectedException("Invalid claim receipt.");
     });
     private static void RequireGameplaySchema(NpgsqlConnection c, NpgsqlTransaction t)
@@ -85,7 +116,7 @@ public sealed class PostgresHousingStore(string connectionString)
         using (var replay = Cmd(c,t,"SELECT fingerprint,receipt::text FROM housing.claim_operations WHERE operation_id=$1",operationId))
         using (var r = replay.ExecuteReader()) if (r.Read())
         {
-            if (r.GetString(0) != fingerprint) throw new HousingRejectedException("Operation ID conflict.");
+            if (r.GetString(0) != fingerprint) throw new HousingRejectedException("Operation ID conflict.", HousingRejectionCode.AlreadyExists);
             return JsonSerializer.Deserialize<HousingClaim>(r.GetString(1)) ?? throw new HousingRejectedException("Invalid claim receipt.");
         }
         if (string.IsNullOrWhiteSpace(operationId) || operationId.Length > 128 ||
@@ -93,17 +124,15 @@ public sealed class PostgresHousingStore(string connectionString)
             !double.IsFinite(centerX) || !double.IsFinite(centerY) ||
             sideMetres is < 10 or > 40 || sideMetres > maxSideMetres || spacingMetres is < 5 or > 20 || prepaidDays is < 1 or > 30)
             throw new HousingRejectedException("Invalid claim request.");
-        using (var rev = Cmd(c,t,"SELECT count(*) FROM housing.claim_geometry"))
-            if (rev.ExecuteScalar() is not long count || count != expectedWorldRevision)
-                throw new HousingRejectedException("Stale world revision.");
+        // Admission is serialized by the housing advisory lock; the legacy wire field is ignored.
         using (var entitlement = Cmd(c,t,"SELECT count(*) FROM housing.claims WHERE owner_id=$1 AND state NOT IN ('Archived','Reclaimed')",ownerId))
             if (entitlement.ExecuteScalar() is long count && count != 0)
-                throw new HousingRejectedException("Claim entitlement already used.");
+                throw new HousingRejectedException("Claim entitlement already used.", HousingRejectionCode.AlreadyExists);
         using (var overlap = Cmd(c,t,"SELECT g.center_x,g.center_y,g.side_metres FROM housing.claim_geometry g JOIN housing.claims c ON c.id=g.claim_id WHERE c.state NOT IN ('Archived','Reclaimed')"))
         using (var r = overlap.ExecuteReader()) while (r.Read())
             if (Math.Abs(r.GetDouble(0)-centerX) < (r.GetInt32(2)+sideMetres)/2.0+spacingMetres &&
                 Math.Abs(r.GetDouble(1)-centerY) < (r.GetInt32(2)+sideMetres)/2.0+spacingMetres)
-                throw new HousingRejectedException("Claim spacing conflict.");
+                throw new HousingRejectedException("Claim spacing conflict.", HousingRejectionCode.PermissionDenied);
         var claim = new HousingClaim(claimId,ownerId,"Active",0,0,now.AddDays(prepaidDays),null,null,new Dictionary<string,int>());
         using (var insert = Cmd(c,t,"INSERT INTO housing.claims VALUES ($1,$2,'Active',0,0,$3,NULL,NULL,'{}'::jsonb)",claimId,ownerId,claim.FundedUntil)) insert.ExecuteNonQuery();
         using (var geometry = Cmd(c,t,"INSERT INTO housing.claim_geometry VALUES ($1,$2,$3,$4)",claimId,centerX,centerY,sideMetres)) geometry.ExecuteNonQuery();
@@ -127,7 +156,7 @@ public sealed class PostgresHousingStore(string connectionString)
         using (var r = replay.ExecuteReader())
             if (r.Read())
             {
-                if (r.GetString(0) != fingerprint || r.GetString(1) != next.Id) throw new HousingRejectedException("Operation ID conflict.");
+                if (r.GetString(0) != fingerprint || r.GetString(1) != next.Id) throw new HousingRejectedException("Operation ID conflict.", HousingRejectionCode.AlreadyExists);
                 return JsonSerializer.Deserialize<HousingClaim>(r.GetString(2)) ?? throw new HousingRejectedException("Invalid claim receipt.");
             }
         if (expectedRevision == -1)
@@ -156,7 +185,7 @@ public sealed class PostgresHousingStore(string connectionString)
         var existing = ReadPlacement(c,t,request.OperationId);
         if (existing is not null)
         {
-            if (existing.Fingerprint != request.Fingerprint) throw new HousingRejectedException("Operation ID conflict.");
+            if (existing.Fingerprint != request.Fingerprint) throw new HousingRejectedException("Operation ID conflict.", HousingRejectionCode.AlreadyExists);
             return existing;
         }
         if (string.IsNullOrWhiteSpace(request.OperationId) || request.MaterialQuantity <= 0 || request.ExpectedContainerRevision < 0)
@@ -165,7 +194,7 @@ public sealed class PostgresHousingStore(string connectionString)
         if ((claim.State is not ("Active" or "Grace")) || (claim.State == "Active" && now >= claim.FundedUntil) ||
             claim.PermissionRevision != request.ExpectedPermissionRevision ||
             (claim.OwnerId != request.ActorId && (!claim.Grants.TryGetValue(request.ActorId,out var rights) || (rights & 1)==0)))
-            throw new HousingRejectedException("Build permission denied or stale.");
+            throw new HousingRejectedException("Build permission denied or stale.", HousingRejectionCode.PermissionDenied);
         using (var revision = Cmd(c,t,"SELECT revision FROM housing.claim_structure_revisions WHERE claim_id=$1",request.ClaimId))
             if (revision.ExecuteScalar() is not long value || value != request.ExpectedStructureRevision)
                 throw new HousingRejectedException("Stale structure revision.");
@@ -248,7 +277,7 @@ public sealed class PostgresHousingStore(string connectionString)
             var prior = replay.ExecuteScalar() as string;
             if (prior is not null)
             {
-                if (prior != request.Fingerprint) throw new HousingRejectedException("Operation ID conflict.");
+                if (prior != request.Fingerprint) throw new HousingRejectedException("Operation ID conflict.", HousingRejectionCode.AlreadyExists);
                 return ReadRemoval(c,t,request.OperationId)!;
             }
         }
@@ -259,7 +288,7 @@ public sealed class PostgresHousingStore(string connectionString)
         if (claim.State is not ("Active" or "Grace") || (claim.State == "Active" && now >= claim.FundedUntil) ||
             claim.PermissionRevision != request.ExpectedPermissionRevision ||
             (claim.OwnerId != request.ActorId && (!claim.Grants.TryGetValue(request.ActorId,out var rights) || (rights & 1)==0)))
-            throw new HousingRejectedException("Build permission denied or stale.");
+            throw new HousingRejectedException("Build permission denied or stale.", HousingRejectionCode.PermissionDenied);
         using (var rev = Cmd(c,t,"SELECT revision FROM housing.claim_structure_revisions WHERE claim_id=$1",request.ClaimId))
             if (rev.ExecuteScalar() is not long value || value != request.ExpectedStructureRevision)
                 throw new HousingRejectedException("Stale structure revision.");
@@ -268,8 +297,9 @@ public sealed class PostgresHousingStore(string connectionString)
             placementId = lookup.ExecuteScalar() as string ?? throw new HousingRejectedException("Structure missing.");
         var placement = ReadPlacement(c,t,placementId)!;
         if (placement.ActorId != request.ActorId)
-            throw new HousingRejectedException("Only the contributor may remove this structure.");
-        var refund = checked(placement.MaterialQuantity * request.RefundPercent / 100);
+            throw new HousingRejectedException("Only the contributor may remove this structure.", HousingRejectionCode.PermissionDenied);
+        // Positive fractional bundle refunds round up to one integer unit.
+        var refund = checked((placement.MaterialQuantity * request.RefundPercent + 99) / 100);
         using (var insert = Cmd(c,t,"INSERT INTO housing.removals VALUES ($1,$2,$3,'Pending',$4,$5,$6,NULL)",
             request.OperationId,request.Fingerprint,placementId,request.ExpectedStructureRevision,refund,request.ExpectedContainerRevision)) insert.ExecuteNonQuery();
         return ReadRemoval(c,t,request.OperationId)!;
@@ -289,20 +319,53 @@ public sealed class PostgresHousingStore(string connectionString)
         return new(id,fingerprint,ReadPlacement(c,t,placementId)!,state,revision,refund,expected,receipt);
     }
 
+    public void RecoverPendingRemovals(IInventoryLedgerStore ledgerStore)
+    {
+        var ids = Run((c,t) =>
+        {
+            RequireGameplaySchema(c,t);
+            var pending = new List<string>();
+            using var cmd = Cmd(c,t,"SELECT operation_id FROM housing.removals WHERE state='Pending' ORDER BY operation_id");
+            using var r = cmd.ExecuteReader();
+            while (r.Read()) pending.Add(r.GetString(0));
+            return pending;
+        });
+        foreach (var id in ids) CompleteRemove(id, ledgerStore);
+    }
+
     public HousingRemoval CompleteRemove(string operationId, IInventoryLedgerStore ledgerStore) => Run((c,t) =>
     {
         RequireGameplaySchema(c,t);
         var pending = ReadRemoval(c,t,operationId) ?? throw new HousingRejectedException("Removal missing.");
-        if (pending.State == "Committed") return pending;
+        if (pending.State != "Pending") return pending;
         LedgerReceipt? refundReceipt = null;
         if (pending.RefundQuantity > 0)
         {
+            StoredOperation operation;
             try
             {
-                refundReceipt = ledgerStore.Execute(s => s.Operations.TryGetValue(operationId + "/refund",out var op) ? op.Receipt : null);
+                operation = ledgerStore.Execute(s =>
+                {
+                    var key = operationId + "/refund";
+                    if (s.Operations.TryGetValue(key,out var existing)) return existing;
+                    var marker = new StoredOperation("housing/compensated",new LedgerReceipt(key,LedgerAction.Grant,[],[]));
+                    s.Operations.Add(key,marker);
+                    return marker;
+                });
             }
             catch (LedgerStoreUnavailableException ex) { throw new HousingUnavailableException("Inventory store unavailable; retry removal.",ex); }
-            if (refundReceipt is null) throw new HousingRejectedException("Refund receipt pending.");
+            catch (LedgerRejectedException ex) { throw new HousingRejectedException($"Inventory reconciliation rejected: {ex.Message}"); }
+            refundReceipt = operation.Receipt;
+            var compensated = operation.Fingerprint == "housing/compensated" &&
+                refundReceipt.OperationId == operationId + "/refund" && refundReceipt.Action == LedgerAction.Grant &&
+                refundReceipt.Revisions.Count == 0 && refundReceipt.Changes.Count == 0;
+            if (compensated)
+            {
+                using var canceled = Cmd(c,t,"UPDATE housing.removals SET state='Compensated' WHERE operation_id=$1 AND state='Pending'",operationId);
+                if (canceled.ExecuteNonQuery()!=1) throw new HousingRejectedException("Removal already decided.");
+                return ReadRemoval(c,t,operationId)!;
+            }
+            if (operation.Fingerprint == "housing/compensated") throw new HousingRejectedException("Invalid refund tombstone.");
             if (refundReceipt.OperationId != operationId + "/refund" || refundReceipt.Action != LedgerAction.Grant ||
                 refundReceipt.Revisions.Count != 1 || refundReceipt.Revisions[0].ContainerId != pending.Placement.ContainerId ||
                 refundReceipt.Revisions[0].Before != pending.ExpectedContainerRevision ||

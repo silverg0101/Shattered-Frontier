@@ -17,6 +17,12 @@ using DomLedger = ShatteredFrontier.InventoryLedger.InventoryLedger;
 static string Required(string name) => Environment.GetEnvironmentVariable(name) is { Length: > 0 } value
     ? value : throw new InvalidOperationException($"{name} is required.");
 
+if (args.Length == 1 && args[0].StartsWith("fixture-", StringComparison.Ordinal))
+{
+    GameplayFixtureClient.Run(args[0]);
+    return;
+}
+
 var portText = Required("GAMEPLAY_HOST_PORT");
 if (!int.TryParse(portText, out var port) || port is < 1 or > 65535)
     throw new InvalidOperationException("GAMEPLAY_HOST_PORT must be 1-65535.");
@@ -47,6 +53,8 @@ builder.Services.AddSingleton(new ClaimSettings());
 builder.Services.AddSingleton(recipes);
 builder.Services.AddGrpc(o => o.Interceptors.Add<AuthInterceptor>());
 var app = builder.Build();
+// A restart closes any interrupted refund decision before serving new housing calls.
+new PostgresHousingStore(housingConnection).RecoverPendingRemovals(ledgerStore);
 app.MapGrpcService<RewardGrpcService>();
 app.MapGrpcService<ProgressionGrpcService>();
 app.MapGrpcService<HousingGrpcService>();
@@ -54,6 +62,10 @@ app.Lifetime.ApplicationStarted.Register(() => Console.Out.WriteLine($"GAMEPLAY_
 app.Run();
 
 internal sealed record AuthOptions(byte[] Expected);
+internal sealed class GameplayRejectedException(string message, StatusCode code) : InvalidOperationException(message)
+{
+    public StatusCode Code { get; } = code;
+}
 internal sealed class AuthInterceptor(AuthOptions options) : Interceptor
 {
     public override Task<TResponse> UnaryServerHandler<TRequest, TResponse>(TRequest request, ServerCallContext context,
@@ -76,15 +88,22 @@ internal static class GrpcRun
             throw new RpcException(new Status(StatusCode.DeadlineExceeded, "Deadline exceeded."));
         try
         {
+            using var housingCall = PostgresHousingStore.UseCallContext(context.CancellationToken, context.Deadline);
             var result = work();
-            if (context.CancellationToken.IsCancellationRequested || context.Deadline <= DateTime.UtcNow)
-                throw new RpcException(new Status(StatusCode.DeadlineExceeded, "Deadline exceeded."));
             return Task.FromResult(result);
         }
         catch (RpcException) { throw; }
+        catch (GameplayRejectedException ex) { throw new RpcException(new Status(ex.Code, ex.Message)); }
         catch (ShatteredFrontier.InventoryLedger.LedgerRejectedException ex) { throw Reject(ex.Message); }
         catch (CharacterStoreRejectedException ex) { throw Reject(ex.Message); }
-        catch (HousingRejectedException ex) { throw Reject(ex.Message); }
+        catch (HousingRejectedException ex) { throw new RpcException(new Status(ex.Code switch
+        {
+            HousingRejectionCode.InvalidArgument => StatusCode.InvalidArgument,
+            HousingRejectionCode.AlreadyExists => StatusCode.AlreadyExists,
+            HousingRejectionCode.PermissionDenied => StatusCode.PermissionDenied,
+            _ => StatusCode.FailedPrecondition
+        }, ex.Message)); }
+        catch (OperationCanceledException) { throw new RpcException(new Status(StatusCode.DeadlineExceeded, "Deadline exceeded.")); }
         catch (ShatteredFrontier.InventoryLedger.Postgres.LedgerStoreUnavailableException) { throw Unavailable(); }
         catch (LedgerSchemaCompatibilityException) { throw Unavailable(); }
         catch (CharacterStoreUnavailableException) { throw Unavailable(); }
@@ -95,7 +114,5 @@ internal static class GrpcRun
         catch (InvalidOperationException ex) { throw Reject(ex.Message); }
     }
     private static RpcException Unavailable() => new(new Status(StatusCode.Unavailable, "Store unavailable; retry the same operation ID."));
-    private static RpcException Reject(string message) => new(new Status(
-        message.Contains("conflict", StringComparison.OrdinalIgnoreCase) || message.Contains("reused", StringComparison.OrdinalIgnoreCase)
-            ? StatusCode.AlreadyExists : StatusCode.FailedPrecondition, message));
+    private static RpcException Reject(string message) => new(new Status(StatusCode.FailedPrecondition, message));
 }

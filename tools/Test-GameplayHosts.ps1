@@ -132,6 +132,37 @@ try {
             GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
         }))
     }
+    $currentStep = 'post-refund crash'
+    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+    $env:SF_GAMEPLAY_FAULT_AFTER_REMOVE_GRANT = 'remove/fault'
+    $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-fault.out') -RedirectStandardError (Join-Path $private 'host-fault.err')
+    for ($i=0; $i -lt 100; $i++) {
+        if ($hostProcess.HasExited) { throw 'Fault host exited before ready.' }
+        if ((Test-Path (Join-Path $private 'host-fault.out')) -and (Get-Content (Join-Path $private 'host-fault.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }
+        Start-Sleep -Milliseconds 100
+    }
+    $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-fault-seed') @{
+        GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
+    }))
+    $hostProcess.WaitForExit(10000) | Out-Null
+    if (-not $hostProcess.HasExited) { throw 'Fault host did not exit.' }
+    Cluster stop
+    Cluster start
+    Remove-Item Env:SF_GAMEPLAY_FAULT_AFTER_REMOVE_GRANT -ErrorAction SilentlyContinue
+    $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-recovered.out') -RedirectStandardError (Join-Path $private 'host-recovered.err')
+    $ready = $false
+    for ($i=0; $i -lt 100; $i++) {
+        if ($hostProcess.HasExited) { throw 'Recovery host exited before ready.' }
+        if ((Test-Path (Join-Path $private 'host-recovered.out')) -and (Get-Content (Join-Path $private 'host-recovered.out') -Raw) -match 'GAMEPLAY_HOST_READY') { $ready = $true; break }
+        Start-Sleep -Milliseconds 100
+    }
+    if (-not $ready) { throw 'Recovery host readiness timeout.' }
+    $currentStep = 'refund recovery and contention'
+    foreach ($mode in @('fixture-fault-replay','fixture-stale-concurrent')) {
+        $results.Add((Invoke-Checked $dotnet @($hostDll,$mode) @{
+            GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
+        }))
+    }
     Cluster stop
     foreach ($name in @('Rewards','Progression','Housing')) {
         $dll = Join-Path $repo "BackendServices/Gameplay.Host.Tests/$name/bin/Release/net10.0/$name.Host.Tests.dll"
@@ -144,8 +175,17 @@ try {
 catch {
     $failure = ($currentStep + ': ' + $_.Exception.Message).Replace($adminPassword,'[REDACTED]').Replace($servicePassword,'[REDACTED]')
     if ($token.Length -gt 0) { $failure = $failure.Replace($token,'[REDACTED]') }
+    $hostError = Join-Path $private 'host.err'
+    if (Test-Path $hostError) {
+        $tail = ((Get-Content $hostError -Tail 12) -join ' ').Replace($adminPassword,'[REDACTED]').Replace($servicePassword,'[REDACTED]')
+        if ($token.Length -gt 0) { $tail = $tail.Replace($token,'[REDACTED]') }
+        $failure += " Host: $tail"
+    }
 }
 finally {
+    foreach ($key in @('SF_GAMEPLAY_TOKEN','SF_GAMEPLAY_FAULT_AFTER_REMOVE_GRANT','GAMEPLAY_LEDGER_CONNECTION','GAMEPLAY_CHARACTER_CONNECTION','GAMEPLAY_HOUSING_CONNECTION')) {
+        Remove-Item "Env:$key" -ErrorAction SilentlyContinue
+    }
     try {
         if ($hostProcess -and -not $hostProcess.HasExited) { Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null }
         if (Test-Path (Join-Path $private 'owner.json')) {
