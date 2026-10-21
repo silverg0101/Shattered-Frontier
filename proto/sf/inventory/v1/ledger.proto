@@ -99,4 +99,14 @@ message GrantRequest {
   int64 quantity = 5;
   string source = 6;
   string causation_id = 7;
+  // Immutable progression/quest request committed with this grant, when supplied.
+  FollowUpIntent follow_up_intent = 8;
+}
+
+message FollowUpIntent {
+  // Version 1 is the protobuf serialization of sf.progression.v1.ApplyReceiptRequest.
+  uint32 payload_version = 1;
+  bytes payload = 2;
+  // Lowercase SHA-256 hex of payload.
+  string payload_digest = 3;
 }

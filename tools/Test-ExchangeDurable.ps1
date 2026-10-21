@@ -13,6 +13,7 @@ $project = Join-Path $repo 'BackendServices/Exchange.Postgres.Tests/Exchange.Pos
 $schema = Join-Path $repo 'BackendServices/Exchange.Postgres/Schema.sql'
 $dll = Join-Path $EvidenceRoot 'private/build/Exchange.Postgres.Tests.dll'
 $inventorySchema = Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.sql'
+& (Join-Path $repo 'tools/Assert-InventoryOutboxMigration.ps1') -MigrationPath (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') | Out-Null
 $backupTool = Join-Path $repo 'tools/Backup-ServiceStore.ps1'; $restoreTool = Join-Path $repo 'tools/Restore-ServiceStore.ps1'
 $backup = Join-Path $EvidenceRoot 'backup'; $restoredInstance = Join-Path $EvidenceRoot 'restored-instance'
 foreach ($path in @($dotnet,$project,$schema,(Join-Path $pg 'postgres.exe'),(Join-Path $pg 'initdb.exe'),(Join-Path $pg 'pg_ctl.exe'),(Join-Path $pg 'psql.exe'))) { if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Required file missing: $path" } }
@@ -79,7 +80,7 @@ try {
     Cluster start
     [void](Sql "CREATE ROLE exchange_owner NOLOGIN; CREATE ROLE exchange_svc LOGIN PASSWORD '$servicePassword'; CREATE ROLE fixture_ledger LOGIN PASSWORD '$ledgerPassword'; CREATE DATABASE exchange_$run;")
     [void](Sql "REVOKE ALL ON DATABASE exchange_$run FROM PUBLIC; GRANT CONNECT ON DATABASE exchange_$run TO exchange_svc,fixture_ledger; GRANT CREATE ON DATABASE exchange_$run TO exchange_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC; CREATE SCHEMA inventory AUTHORIZATION exchange_owner; CREATE SCHEMA exchange AUTHORIZATION exchange_owner;" "exchange_$run")
-    [void](Sql ("SET ROLE exchange_owner;`n" + (Get-Content $inventorySchema -Raw) + "`n" + (Get-Content $schema -Raw)) "exchange_$run")
+    [void](Sql ("SET ROLE exchange_owner;`n" + (Get-Content $inventorySchema -Raw) + "`n" + (Get-Content (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') -Raw) + "`n" + (Get-Content $schema -Raw)) "exchange_$run")
     [void](Sql 'GRANT USAGE ON SCHEMA exchange TO exchange_svc; GRANT SELECT ON exchange.schema_version TO exchange_svc; GRANT SELECT,INSERT,UPDATE ON exchange.wallets,exchange.wallet_entries,exchange.operations,exchange.listings,exchange.settlements TO exchange_svc; GRANT USAGE ON SCHEMA inventory TO fixture_ledger; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO fixture_ledger;' "exchange_$run")
     $connection = "Host=127.0.0.1;Port=$port;Database=exchange_$run;Username=exchange_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $ledgerConnection = "Host=127.0.0.1;Port=$port;Database=exchange_$run;Username=fixture_ledger;Password=$ledgerPassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"

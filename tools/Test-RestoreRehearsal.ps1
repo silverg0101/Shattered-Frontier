@@ -3,6 +3,7 @@ param([Parameter(Mandatory)][string]$EvidenceRoot)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+& (Join-Path $repo 'tools/Assert-InventoryOutboxMigration.ps1') -MigrationPath (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') | Out-Null
 $allowed = [IO.Path]::GetFullPath((Join-Path $repo 'Artifacts/Persistence/RestoreRehearsal'))
 $EvidenceRoot = [IO.Path]::GetFullPath($EvidenceRoot)
 if (-not $EvidenceRoot.StartsWith($allowed + [IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase) -or (Test-Path -LiteralPath $EvidenceRoot)) { throw 'Supply a fresh RestoreRehearsal evidence child.' }
@@ -65,7 +66,7 @@ function Cluster([string]$Action) {
     else { [void](Invoke-Checked (Join-Path $pg 'pg_ctl.exe') @('-D',$data,'-m','immediate','-w','-t','30','stop')); $script:started = $false }
 }
 function TableSnapshot([string]$Database) {
-    $tables = @('inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts',
+    $tables = @('inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts','inventory.receipt_outbox',
         'character_state.schema_version','character_state.progression','character_state.quests','character_state.source_receipts','character_state.reward_receipts','character_state.positions',
         'housing.schema_version','housing.claims','housing.claim_operations','housing.claim_structure_revisions','housing.placements','housing.claim_geometry','housing.removals',
         'exchange.schema_version','exchange.wallets','exchange.wallet_entries','exchange.operations','exchange.listings','exchange.settlements',
@@ -138,6 +139,7 @@ try {
     [void](Sql "CREATE ROLE gameplay_owner NOLOGIN; CREATE ROLE gameplay_svc LOGIN PASSWORD '$servicePassword'; CREATE DATABASE gameplay_$run;")
     [void](Sql "REVOKE ALL ON DATABASE gameplay_$run FROM PUBLIC; GRANT CONNECT ON DATABASE gameplay_$run TO gameplay_svc; GRANT CREATE ON DATABASE gameplay_$run TO gameplay_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC;" "gameplay_$run")
     $schemas = @('InventoryLedger.Postgres','CharacterState.Postgres','Housing.Postgres','Exchange.Postgres','TerrainDelta.Postgres') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_/Schema.sql") -Raw }
+    $schemas += Get-Content (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Gameplay.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Geometry.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Position.sql') -Raw
@@ -358,7 +360,7 @@ try {
     Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(30000) | Out-Null; $hostProcess.Refresh()
     $hostProcess = $null
     $currentStep = 'consistent five-store backup'
-    $versions = @{inventory=1;character_state=3;housing=5;exchange=3;terrain_delta=1}
+    $versions = @{inventory=2;character_state=3;housing=5;exchange=3;terrain_delta=1}
     foreach ($schema in $versions.Keys) {
         if ((Sql "SELECT version FROM $schema.schema_version WHERE singleton=true" $db).Trim() -ne [string]$versions[$schema]) { throw "Unsupported source schema: $schema" }
     }

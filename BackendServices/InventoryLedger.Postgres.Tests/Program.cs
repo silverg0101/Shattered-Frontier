@@ -1,5 +1,7 @@
 using ShatteredFrontier.InventoryLedger;
 using ShatteredFrontier.InventoryLedger.Postgres;
+using System.Security.Cryptography;
+using System.Text;
 
 static void Check(bool ok, string name)
 {
@@ -112,6 +114,28 @@ switch (args[0])
         }
         catch (LedgerRejectedException) { Console.WriteLine("PASS SQL class 23 is non-retryable"); }
         Check(ledger.Read(id).Revision == 4, "constraint rejection rolls back");
+        break;
+    case "outbox-order":
+        var outboxStore = new PostgresInventoryLedgerStore(connection);
+        var outboxLedger = new InventoryLedger(outboxStore);
+        outboxLedger.CreateContainer(new("ctn_outbox", OwnerKind.Character, "chr_outbox", ContainerKind.Backpack, 100));
+        for (var i = 1; i <= 3; i++)
+        {
+            var op = $"outbox-{i}";
+            var payload = Encoding.UTF8.GetBytes(op);
+            var intent = new PostgresInventoryLedgerStore.FollowUpIntent(op, "chr_outbox", 1, payload,
+                Convert.ToHexStringLower(SHA256.HashData(payload)));
+            outboxStore.WithGrantIntent(op, intent, () => outboxLedger.Grant(op, "ctn_outbox", i - 1, item, 1, "fixture", op));
+        }
+        var first = outboxStore.ClaimOutbox("worker-a", 32, 12);
+        Check(first.Count == 1 && first[0].OperationId == "outbox-1", "first character receipt claimed alone");
+        Check(outboxStore.ClaimOutbox("worker-b", 32, 12).Count == 0, "leased earlier receipt blocks later receipt");
+        outboxStore.CompleteOutbox("outbox-1", "worker-a");
+        var second = outboxStore.ClaimOutbox("worker-a", 32, 12);
+        Check(second.Count == 1 && second[0].OperationId == "outbox-2", "next receipt follows delivery");
+        outboxStore.FailOutbox("outbox-2", "worker-a", "INVALID_ARGUMENT", true, 12);
+        Check(outboxStore.ClaimOutbox("worker-b", 32, 12).Count == 0 && outboxStore.OutboxCounts() == (1, 1),
+            "parked receipt blocks later character work");
         break;
     case "post-backup-write":
         ledger.Grant("after-backup", id, 4, item, 2, "fixture", "fixture-3");

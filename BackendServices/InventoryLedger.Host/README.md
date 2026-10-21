@@ -2,6 +2,8 @@
 
 Development host for the INT-03 gathering slice: serves `proto/sf/inventory/v1/ledger.proto` (`EnsureContainer`, `GetContainer`, `Grant`) over cleartext HTTP/2 on `127.0.0.1` only, backed by `PostgresInventoryLedgerStore`. It adds no package pins beyond the central `Grpc.AspNetCore`. This is a development fixture, not the DEC-04 session protocol; there is no TLS and no production authentication.
 
+INT-06: `GrantRequest.follow_up_intent` optionally supplies version 1 of the exact serialized `sf.progression.v1.ApplyReceiptRequest` and its lowercase SHA-256 digest. The host validates source operation and character identity before Grant; the store commits the bytes and digest with the grant receipt. Identical replay returns the original receipt; changed or omitted intent on replay is rejected. Legacy grants without an intent still work. Run `tools/Assert-InventoryOutboxMigration.ps1` before applying `Schema.Outbox.sql` to an existing version-1 database.
+
 Environment (read at start; a bad value refuses to start with exit code 2):
 
 - `INVENTORY_LEDGER_PORT`: required, 1-65535.

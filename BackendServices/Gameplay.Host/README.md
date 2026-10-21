@@ -1,6 +1,8 @@
 # Gameplay gRPC host (INT-04 preparation)
 
-INT-06 receipt outbox decision: the originating ledger transaction must receive the complete, immutable progression and quest intent before it commits a grant. The present gather `GrantRequest` does not carry that intent, so this host cannot safely recover a killed-server gather from ledger data alone. See `docs/decisions/INT-06-durable-receipt-outbox.md` for the proposed inventory schema, relay and bounded operating controls. No outbox is active in this host yet.
+INT-06 backend: InventoryLedger.Grant accepts an optional immutable ApplyReceiptRequest intent. The originating grant and intent commit together; this host relays pending intents on startup and a bounded poll, with leases, per-character ordering, retry and parking. The gather call site in Unreal has not been updated, so player-path recovery is pending. See `docs/decisions/INT-06-durable-receipt-outbox.md` for the exact Unreal step and remaining LiveOps control integration.
+
+Run `Gameplay.Host.dll outbox-status` with `GAMEPLAY_LEDGER_CONNECTION` to inspect pending/parked counts and effective shipped controls. The host logs the same values each poll. Batch size 32 rows (1–256), poll interval 2 seconds (1–60), and max attempts 12 (1–100) are declared in `ReceiptOutboxControls`; shared config publication and GM/web presentation remain outside this development host. The `SF_GAMEPLAY_FAULT_BEFORE_OUTBOX_SEND` operation ID is only a disposable fixture crash hook.
 
 One ASP.NET Core HTTP/2 process serves five versioned protobuf services: Rewards, Progression (including quest evidence), Housing, Crafting, and Exchange. It binds only `127.0.0.1:$GAMEPLAY_HOST_PORT`. Every RPC requires a deadline and `authorization: Bearer $SF_GAMEPLAY_TOKEN`; the fixture generates a new token for each run. This development credential is not the DEC-04 session protocol. The host uses only centrally pinned packages and has its own lock file.
 

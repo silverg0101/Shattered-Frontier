@@ -1,8 +1,9 @@
 ﻿[CmdletBinding()]
-param([switch]$Include50,[switch]$Include100,[switch]$Only10,[int]$WarmupSeconds=30,[int]$MeasuredSeconds=900,[int]$ThinkMilliseconds=1000)
+param([switch]$Include50,[switch]$Include100,[switch]$Only10,[switch]$Only25,[int]$WarmupSeconds=30,[int]$MeasuredSeconds=900,[int]$ThinkMilliseconds=1000)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+& (Join-Path $repo 'tools/Assert-InventoryOutboxMigration.ps1') -MigrationPath (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') | Out-Null
 $allowed = [IO.Path]::GetFullPath((Join-Path $repo 'Artifacts/Persistence/GameplayHosts'))
 $EvidenceRoot = [IO.Path]::GetFullPath((Join-Path $allowed ('capacity-' + [guid]::NewGuid().ToString('N'))))
 if (-not $EvidenceRoot.StartsWith($allowed + [IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase) -or (Test-Path -LiteralPath $EvidenceRoot)) { throw 'Supply a fresh GameplayHosts evidence child.' }
@@ -83,6 +84,7 @@ try {
     [void](Sql "CREATE ROLE gameplay_owner NOLOGIN; CREATE ROLE gameplay_svc LOGIN PASSWORD '$servicePassword'; CREATE DATABASE gameplay_$run;")
     [void](Sql "REVOKE ALL ON DATABASE gameplay_$run FROM PUBLIC; GRANT CONNECT ON DATABASE gameplay_$run TO gameplay_svc; GRANT CREATE ON DATABASE gameplay_$run TO gameplay_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC;" "gameplay_$run")
     $schemas = @('InventoryLedger.Postgres','CharacterState.Postgres','Housing.Postgres','Exchange.Postgres') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_/Schema.sql") -Raw }
+    $schemas += Get-Content (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Gameplay.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Geometry.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Position.sql') -Raw
@@ -112,7 +114,8 @@ try {
     $currentStep = 'journey seed'
     $journeyDll = Join-Path $private 'build/Release/net10.0/CapacityHarness.dll'
     [void](Invoke-Checked $dotnet @($journeyDll,'journey') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token })
-    $tiers = if ($Only10) { @(10) } else { @(10,25) }
+    $tiers = if ($Only25) { @(25) } elseif ($Only10) { @(10) } else { @(10,25) }
+    $tiers = @($tiers)
     if ($Include50 -or $Include100) { $tiers += 50 }
     if ($Include100) { $tiers += 100 }
     $gateResults = @()

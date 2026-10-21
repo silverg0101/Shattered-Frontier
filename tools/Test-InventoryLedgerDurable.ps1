@@ -11,6 +11,7 @@ $dotnet = Join-Path $repo 'Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotn
 $pg = Join-Path $repo 'Artifacts/Persistence/Toolchains/postgresql-18.6/pgsql/bin'
 $project = Join-Path $repo 'BackendServices/InventoryLedger.Postgres.Tests/InventoryLedger.Postgres.Tests.csproj'
 $schema = Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.sql'
+& (Join-Path $repo 'tools/Assert-InventoryOutboxMigration.ps1') -MigrationPath (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') | Out-Null
 $dll = Join-Path $EvidenceRoot 'private/build/InventoryLedger.Postgres.Tests.dll'
 $backupTool = Join-Path $repo 'tools/Backup-InventoryLedger.ps1'; $restoreTool = Join-Path $repo 'tools/Restore-InventoryLedger.ps1'
 $backup = Join-Path $EvidenceRoot 'backup'; $restoredInstance = Join-Path $EvidenceRoot 'restored-instance'
@@ -77,11 +78,11 @@ try {
     Cluster start
     [void](Sql "CREATE ROLE ledger_owner NOLOGIN; CREATE ROLE ledger_svc LOGIN PASSWORD '$servicePassword'; CREATE DATABASE ledger_$run;")
     [void](Sql "REVOKE ALL ON DATABASE ledger_$run FROM PUBLIC; GRANT CONNECT ON DATABASE ledger_$run TO ledger_svc; GRANT CREATE ON DATABASE ledger_$run TO ledger_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC; CREATE SCHEMA inventory AUTHORIZATION ledger_owner;" "ledger_$run")
-    [void](Sql ("SET ROLE ledger_owner;`n" + (Get-Content $schema -Raw)) "ledger_$run")
+    [void](Sql ("SET ROLE ledger_owner;`n" + (Get-Content $schema -Raw) + "`n" + (Get-Content (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') -Raw)) "ledger_$run")
     [void](Sql 'GRANT USAGE ON SCHEMA inventory TO ledger_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO ledger_svc;' "ledger_$run")
     $connection = "Host=127.0.0.1;Port=$port;Database=ledger_$run;Username=ledger_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $results = [Collections.Generic.List[string]]::new()
-    foreach ($phase in @('seed','restart','concurrent','outage','recover','classification')) {
+    foreach ($phase in @('seed','restart','concurrent','outage','recover','classification','outbox-order')) {
         if ($phase -eq 'restart' -or $phase -eq 'outage') { Cluster stop }
         if ($phase -eq 'restart' -or $phase -eq 'concurrent' -or $phase -eq 'recover') { if (-not $started) { Cluster start } }
         $results.Add((Invoke-Checked $dotnet @($dll,$phase) @{ INVENTORY_LEDGER_CONNECTION=$connection }))
@@ -99,10 +100,10 @@ try {
     $restored = Get-Content (Join-Path $restoredInstance 'connection.json') -Raw | ConvertFrom-Json
     $restoredConnection = "Host=127.0.0.1;Port=$($restored.port);Database=$($restored.database);Username=ledger_svc;Password=$($restored.password);Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $results.Add((Invoke-Checked $dotnet @($dll,'restored') @{ INVENTORY_LEDGER_CONNECTION=$restoredConnection }))
-    [void](Sql 'UPDATE inventory.schema_version SET version=2' "ledger_$run")
+    [void](Sql 'UPDATE inventory.schema_version SET version=3' "ledger_$run")
     $results.Add((Invoke-Checked $dotnet @($dll,'newer-schema') @{ INVENTORY_LEDGER_CONNECTION=$connection }))
     $markerVersion = Sql 'SELECT version FROM inventory.schema_version WHERE singleton=true' "ledger_$run"
-    if ($markerVersion.Trim() -ne '2') { throw 'Newer schema marker changed unexpectedly.' }
+    if ($markerVersion.Trim() -ne '3') { throw 'Newer schema marker changed unexpectedly.' }
     $results | Set-Content (Join-Path $EvidenceRoot 'results.txt')
 }
 catch { $failure = $_.Exception.Message.Replace($adminPassword,'[REDACTED]').Replace($servicePassword,'[REDACTED]') }

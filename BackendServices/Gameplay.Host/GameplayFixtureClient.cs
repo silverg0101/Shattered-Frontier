@@ -3,6 +3,7 @@ using Grpc.Net.Client;
 using Grpc.Core.Interceptors;
 using Google.Protobuf;
 using System.Text.Json;
+using System.Security.Cryptography;
 using ShatteredFrontier.InventoryLedger;
 using ShatteredFrontier.InventoryLedger.Postgres;
 using ShatteredFrontier.Exchange.Postgres;
@@ -11,6 +12,7 @@ using ShatteredFrontier.Housing.Postgres;
 using Pb = ShatteredFrontier.Housing.V1;
 using ProgressPb = ShatteredFrontier.Progression.V1;
 using ExchangePb = ShatteredFrontier.Exchange.V1;
+using InventoryPb = ShatteredFrontier.InventoryLedger.V1;
 
 // Exercised only by the owned Test-GameplayHosts fixture against its disposable cluster.
 internal static class GameplayFixtureClient
@@ -70,6 +72,49 @@ internal static class GameplayFixtureClient
         static void Check(bool ok, string message) { if (!ok) throw new Exception(message); }
         switch (mode)
         {
+            case "fixture-outbox-seed":
+            case "fixture-outbox-replay":
+            case "fixture-outbox-conflict":
+            case "fixture-outbox-omit":
+            {
+                using var inventoryChannel = GrpcChannel.ForAddress($"http://127.0.0.1:{Required("GAMEPLAY_LEDGER_PORT")}");
+                var inventory = new InventoryPb.InventoryLedger.InventoryLedgerClient(inventoryChannel);
+                var character = "chr_int06";
+                var container = inventory.EnsureContainer(new InventoryPb.EnsureContainerRequest { Spec = new InventoryPb.ContainerSpec {
+                    Id = "ctn_int06", OwnerKind = InventoryPb.OwnerKind.Character, OwnerId = character,
+                    Kind = InventoryPb.ContainerKind.Backpack, Capacity = 100 } }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                var request = new ProgressPb.ApplyReceiptRequest { SourceReceiptId = "int06/gather/1", CharacterId = character,
+                    Kind = "gather", Payload = new ProgressPb.ActionPayload { SkillId = "skill/logging", Difficulty = 1,
+                        ActionSeconds = mode == "fixture-outbox-conflict" ? 7 : 6, Success = true },
+                    Quest = new ProgressPb.QuestEvidence { QuestId = "quest/frontier_founder", StepId = "harvest_oak",
+                        Kind = "gather", TargetId = "item/oak_log", NodeId = "gathering_node/oak_tree",
+                        Quantity = 1, OccurredAtUnixMs = 1792540800000 } };
+                var bytes = request.ToByteArray();
+                var grant = new InventoryPb.GrantRequest { OperationId = request.SourceReceiptId, ContainerId = "ctn_int06",
+                    ExpectedRevision = mode == "fixture-outbox-seed" ? container.Revision : 0,
+                    DefinitionId = "item/oak_log", Quantity = 1, Source = "fixture", CausationId = "int06/gather/1",
+                    FollowUpIntent = new InventoryPb.FollowUpIntent { PayloadVersion = 1,
+                        Payload = ByteString.CopyFrom(bytes), PayloadDigest = Convert.ToHexStringLower(SHA256.HashData(bytes)) } };
+                if (mode == "fixture-outbox-omit") grant.FollowUpIntent = null;
+                try
+                {
+                    var receipt = inventory.Grant(grant, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                    Check(mode is not ("fixture-outbox-conflict" or "fixture-outbox-omit") && receipt.OperationId == grant.OperationId, "Outbox grant result mismatch.");
+                }
+                catch (RpcException ex) when (mode is "fixture-outbox-conflict" or "fixture-outbox-omit" && ex.StatusCode == StatusCode.AlreadyExists) { }
+                Console.WriteLine("PASS " + mode);
+                break;
+            }
+            case "fixture-outbox-check":
+            {
+                var state = new ProgressPb.Progression.ProgressionClient(invoker).GetCharacterState(
+                    new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_int06" }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                Check(state.LifetimeXp > 0 && state.ActiveStepId == "mine_iron",
+                    $"Outbox effect mismatch: xp={state.LifetimeXp} step={state.ActiveStepId}");
+                Check(new PostgresInventoryLedgerStore(Required("GAMEPLAY_LEDGER_CONNECTION")).OutboxCounts() == (0, 0), "Outbox not drained.");
+                Console.WriteLine($"PASS INT-06 XP={state.LifetimeXp} quest oak=1");
+                break;
+            }
             case "fixture-rehearsal-schema-baseline":
             case "fixture-rehearsal-schema-newer":
                 var schema = Required("REHEARSAL_SCHEMA");

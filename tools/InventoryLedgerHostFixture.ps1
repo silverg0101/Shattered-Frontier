@@ -36,13 +36,14 @@ function Invoke-LedgerSql([hashtable]$Fx,[string]$Query,[string]$Database = 'pos
 
 # Provisions PostgreSQL and builds the host, filling the caller-owned $Fx hashtable so cleanup works after a partial failure.
 function New-LedgerFixture([hashtable]$Fx,[string]$RepoRoot,[string]$EvidenceRoot) {
+    & (Join-Path $RepoRoot 'tools/Assert-InventoryOutboxMigration.ps1') -MigrationPath (Join-Path $RepoRoot 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') | Out-Null
     $Fx.repo=$RepoRoot; $Fx.evidence=$EvidenceRoot; $Fx.started=$false; $Fx.hostProcess=$null; $Fx.hostPort=0; $Fx.secrets=@()
     $pins = Get-Content (Join-Path $RepoRoot 'BackendServices/toolchain-lock.json') -Raw | ConvertFrom-Json
     $Fx.dotnet = Join-Path $RepoRoot 'Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotnet.exe'
     $Fx.nuget = Join-Path $RepoRoot 'Artifacts/Persistence/Toolchains/nuget'
     $Fx.pg = Join-Path $RepoRoot 'Artifacts/Persistence/Toolchains/postgresql-18.6/pgsql/bin'
     $Fx.project = Join-Path $RepoRoot 'BackendServices/InventoryLedger.Host/InventoryLedger.Host.csproj'
-    $Fx.dll = Join-Path $RepoRoot 'BackendServices/InventoryLedger.Host/bin/Release/net10.0/InventoryLedger.Host.dll'
+    $Fx.dll = Join-Path $EvidenceRoot 'private/host-build/InventoryLedger.Host.dll'
     $schema = Join-Path $RepoRoot 'BackendServices/InventoryLedger.Postgres/Schema.sql'
     foreach ($path in @($Fx.dotnet,$Fx.project,$schema,(Join-Path $Fx.pg 'postgres.exe'),(Join-Path $Fx.pg 'initdb.exe'),(Join-Path $Fx.pg 'pg_ctl.exe'),(Join-Path $Fx.pg 'psql.exe'))) { if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Required file missing: $path" } }
     if ((Get-FileHash $Fx.dotnet -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pins.sdk.executableSha256 -or (Get-FileHash (Join-Path $Fx.pg 'postgres.exe') -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pins.postgres.executableSha256) { throw 'Pinned toolchain mismatch.' }
@@ -58,7 +59,7 @@ function New-LedgerFixture([hashtable]$Fx,[string]$RepoRoot,[string]$EvidenceRoo
     $Fx.pgPort = Get-FreeTcpPort
     # Build once with the pinned SDK (locked restore, Release).
     [void](Invoke-FxOk $Fx $Fx.dotnet @('restore',$Fx.project,'--locked-mode','--packages',$Fx.nuget,'--verbosity','quiet'))
-    [void](Invoke-FxOk $Fx $Fx.dotnet @('build',$Fx.project,'--no-restore','--configuration','Release','--verbosity','quiet'))
+    [void](Invoke-FxOk $Fx $Fx.dotnet @('build',$Fx.project,'--no-restore','--configuration','Release','--verbosity','quiet',"-p:OutDir=$(Join-Path $EvidenceRoot 'private/host-build')/"))
     if (-not (Test-Path -LiteralPath $Fx.dll)) { throw 'Host build produced no dll.' }
     $pwfile = Join-Path $Fx.base 'admin-password'; [IO.File]::WriteAllText($pwfile,$Fx.adminPassword)
     [void](Invoke-FxOk $Fx (Join-Path $Fx.pg 'initdb.exe') @('-D',$Fx.data,'-U','fixture_admin','--pwfile',$pwfile,'--auth','scram-sha-256','--encoding','UTF8','--no-locale'))
@@ -70,7 +71,7 @@ function New-LedgerFixture([hashtable]$Fx,[string]$RepoRoot,[string]$EvidenceRoo
     $Fx.started = $true
     [void](Invoke-LedgerSql $Fx "CREATE ROLE ledger_owner NOLOGIN; CREATE ROLE ledger_svc LOGIN PASSWORD '$($Fx.servicePassword)'; CREATE DATABASE $($Fx.db);")
     [void](Invoke-LedgerSql $Fx "REVOKE ALL ON DATABASE $($Fx.db) FROM PUBLIC; GRANT CONNECT ON DATABASE $($Fx.db) TO ledger_svc; GRANT CREATE ON DATABASE $($Fx.db) TO ledger_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC; CREATE SCHEMA inventory AUTHORIZATION ledger_owner;" $Fx.db)
-    [void](Invoke-LedgerSql $Fx ("SET ROLE ledger_owner;`n" + (Get-Content $schema -Raw)) $Fx.db)
+    [void](Invoke-LedgerSql $Fx ("SET ROLE ledger_owner;`n" + (Get-Content $schema -Raw) + "`n" + (Get-Content (Join-Path $RepoRoot 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') -Raw)) $Fx.db)
     [void](Invoke-LedgerSql $Fx 'GRANT USAGE ON SCHEMA inventory TO ledger_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO ledger_svc;' $Fx.db)
     $Fx.connection = "Host=127.0.0.1;Port=$($Fx.pgPort);Database=$($Fx.db);Username=ledger_svc;Password=$($Fx.servicePassword);Pooling=false;Timeout=2;Command Timeout=5;Include Error Detail=false"
     return

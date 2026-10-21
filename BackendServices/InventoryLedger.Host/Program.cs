@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using ShatteredFrontier.InventoryLedger.Postgres;
 using Dom = ShatteredFrontier.InventoryLedger;
 using Pb = ShatteredFrontier.InventoryLedger.V1;
+using ProgressPb = ShatteredFrontier.Progression.V1;
 
 static string Env(string name) => Environment.GetEnvironmentVariable(name) ?? "";
 static void Refuse(string message) { Console.Error.WriteLine("INVENTORY_LEDGER_HOST_REFUSED " + message); Environment.Exit(2); }
@@ -68,7 +69,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseSetting(WebHostDefaults.ServerUrlsKey, "");
 builder.WebHost.ConfigureKestrel(o => o.Listen(IPAddress.Loopback, port, l => l.Protocols = HttpProtocols.Http2));
 builder.Logging.SetMinimumLevel(LogLevel.Warning);
-builder.Services.AddSingleton(new Dom.InventoryLedger(new PostgresInventoryLedgerStore(connection)));
+builder.Services.AddSingleton(new PostgresInventoryLedgerStore(connection));
+builder.Services.AddSingleton(sp => new Dom.InventoryLedger(sp.GetRequiredService<PostgresInventoryLedgerStore>()));
 builder.Services.AddSingleton(new LedgerOptions(Encoding.UTF8.GetBytes("Bearer " + token), fault == "drop_first_reply"));
 builder.Services.AddGrpc(o => o.Interceptors.Add<TokenInterceptor>());
 
@@ -92,7 +94,7 @@ sealed class TokenInterceptor(LedgerOptions options) : Interceptor
     }
 }
 
-sealed class LedgerService(Dom.InventoryLedger ledger, LedgerOptions options) : Pb.InventoryLedger.InventoryLedgerBase
+sealed class LedgerService(Dom.InventoryLedger ledger, PostgresInventoryLedgerStore store, LedgerOptions options) : Pb.InventoryLedger.InventoryLedgerBase
 {
     private static int firstGrantSeen; // the service is created per call
 
@@ -113,7 +115,25 @@ sealed class LedgerService(Dom.InventoryLedger ledger, LedgerOptions options) : 
         {
             return Run(context, () =>
             {
-                var receipt = ToPb(ledger.Grant(r.OperationId, r.ContainerId, r.ExpectedRevision, r.DefinitionId, r.Quantity, r.Source, r.CausationId));
+                PostgresInventoryLedgerStore.FollowUpIntent? intent = null;
+                if (r.FollowUpIntent is { } supplied)
+                {
+                    byte[] bytes = supplied.Payload.ToByteArray();
+                    if (supplied.PayloadVersion != 1 || bytes.Length is < 1 or > 65536 ||
+                        supplied.PayloadDigest != Convert.ToHexStringLower(SHA256.HashData(bytes)))
+                        throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid follow-up version or digest."));
+                    ProgressPb.ApplyReceiptRequest parsed;
+                    try { parsed = ProgressPb.ApplyReceiptRequest.Parser.ParseFrom(bytes); }
+                    catch (Google.Protobuf.InvalidProtocolBufferException) { throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid follow-up payload.")); }
+                    var container = ledger.Read(r.ContainerId);
+                    if (container.Spec.OwnerKind != Dom.OwnerKind.Character || parsed.CharacterId != container.Spec.OwnerId ||
+                        parsed.SourceReceiptId != r.OperationId || parsed.Kind != "gather" || parsed.Payload is null ||
+                        parsed.Quest is null || parsed.Quest.OccurredAtUnixMs <= 0)
+                        throw new RpcException(new Status(StatusCode.InvalidArgument, "Follow-up identity or payload mismatch."));
+                    intent = new(r.OperationId, parsed.CharacterId, (int)supplied.PayloadVersion, bytes, supplied.PayloadDigest);
+                }
+                var receipt = ToPb(store.WithGrantIntent(r.OperationId, intent, () => ledger.Grant(
+                    r.OperationId, r.ContainerId, r.ExpectedRevision, r.DefinitionId, r.Quantity, r.Source, r.CausationId)));
                 if (options.DropFirstReply && Interlocked.Exchange(ref firstGrantSeen, 1) == 0)
                 {
                     Console.Out.WriteLine($"INVENTORY_LEDGER_FAULT_INJECTED op={r.OperationId}");
@@ -152,7 +172,7 @@ sealed class LedgerService(Dom.InventoryLedger ledger, LedgerOptions options) : 
             var code = ex.Message switch
             {
                 "Stale container revision." => StatusCode.Aborted,
-                "Container ID already has a different specification." or "Conflicting operation ID reuse." => StatusCode.AlreadyExists,
+                "Container ID already has a different specification." or "Conflicting operation ID reuse." or "Conflicting follow-up intent." => StatusCode.AlreadyExists,
                 "Unknown container." => StatusCode.NotFound,
                 _ => StatusCode.FailedPrecondition,
             };

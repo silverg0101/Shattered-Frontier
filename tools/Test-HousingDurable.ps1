@@ -3,6 +3,7 @@ param([Parameter(Mandatory)][string]$EvidenceRoot)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+& (Join-Path $repo 'tools/Assert-InventoryOutboxMigration.ps1') -MigrationPath (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') | Out-Null
 $allowed = [IO.Path]::GetFullPath((Join-Path $repo 'Artifacts/Persistence/HousingDurable'))
 $EvidenceRoot = [IO.Path]::GetFullPath($EvidenceRoot)
 if (-not $EvidenceRoot.StartsWith($allowed + [IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase) -or (Test-Path -LiteralPath $EvidenceRoot)) { throw 'Supply a fresh HousingDurable evidence child.' }
@@ -76,7 +77,7 @@ try {
     Cluster start
     [void](Sql "CREATE ROLE housing_owner NOLOGIN; CREATE ROLE housing_svc LOGIN PASSWORD '$servicePassword'; CREATE DATABASE housing_$run;")
     [void](Sql "REVOKE ALL ON DATABASE housing_$run FROM PUBLIC; GRANT CONNECT ON DATABASE housing_$run TO housing_svc; GRANT CREATE ON DATABASE housing_$run TO housing_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC; CREATE SCHEMA housing AUTHORIZATION housing_owner; CREATE SCHEMA inventory AUTHORIZATION housing_owner;" "housing_$run")
-    [void](Sql ("SET ROLE housing_owner;`n" + (Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.sql') -Raw) + "`n" + (Get-Content (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.sql') -Raw) + "`n" + (Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Gameplay.sql') -Raw) + "`n" + (Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Geometry.sql') -Raw)) "housing_$run")
+    [void](Sql ("SET ROLE housing_owner;`n" + (Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.sql') -Raw) + "`n" + (Get-Content (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.sql') -Raw) + "`n" + (Get-Content (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') -Raw) + "`n" + (Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Gameplay.sql') -Raw) + "`n" + (Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Geometry.sql') -Raw)) "housing_$run")
     [void](Sql 'GRANT USAGE ON SCHEMA housing,inventory TO housing_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA housing TO housing_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO housing_svc;' "housing_$run")
     $connection = "Host=127.0.0.1;Port=$port;Database=housing_$run;Username=housing_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $results = [Collections.Generic.List[string]]::new()

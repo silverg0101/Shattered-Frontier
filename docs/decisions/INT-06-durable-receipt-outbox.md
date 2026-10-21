@@ -1,6 +1,6 @@
 # INT-06: Durable follow-up receipt outbox (backend-first design)
 
-Status: specified; implementation and acceptance are pending.
+Status: backend and additive producer contract implemented; Unreal integration and player-path acceptance remain pending.
 
 ## Boundary
 
@@ -22,4 +22,10 @@ If the origin transaction rolls back, neither item nor intent exists. If the hos
 
 ## Integration gate
 
-The current `GrantRequest` has only item, source and causation fields. Unreal constructs the skill payload, quest step, node and occurrence time **after** the grant reply. The backend cannot reconstruct those exact inputs from the committed ledger row. INT-06 therefore requires a producer contract carrying the immutable follow-up intent to the ledger **before** grant commit, plus a matching Unreal call-site change. A backend-only relay or a post-commit enqueue would leave the reported kill window open. Until that contract is allowed, the existing gather path does not satisfy this decision; a synthetic backend fixture cannot establish player-path acceptance.
+The previous `GrantRequest` had only item, source and causation fields. Unreal currently constructs the skill payload, quest step, node and occurrence time **after** the grant reply. The backend cannot reconstruct those exact inputs from the committed ledger row. Owner approval now allows the additive producer contract: `GrantRequest.follow_up_intent` carries the immutable request before grant commit. The matching Unreal call-site change below is still required. The existing gather path does not yet satisfy this decision; a synthetic backend fixture cannot establish player-path acceptance.
+
+## Unreal step
+
+In the dedicated-server gather completion path, construct `sf.progression.v1.ApplyReceiptRequest` **before** calling `InventoryLedger.Grant`. Populate its existing `source_receipt_id` with the exact ledger `operation_id`, `character_id` with the backpack owner, `kind="gather"`, and the same action payload, quest ID/step/objective, node ID, quantity, occurrence timestamp, and expected progression/quest revisions currently sent after the grant. Serialize that complete request once to protobuf bytes. Set `GrantRequest.follow_up_intent.payload_version=1`, `payload` to those unmodified bytes, and `payload_digest` to lowercase SHA-256 hex of the bytes. Preserve the operation ID, bytes, digest, and expected container revision across every retry; never regenerate a timestamp or evidence on retry. Treat a successful Grant as an item commit with pending follow-up delivery; do not issue a separate client-side `ApplyReceipt` for that grant. On an old ledger host that cannot accept the field, fail closed for this path rather than grant without the required intent. Build the Unreal server-only gRPC module in its build window and verify a server kill immediately after Grant commit, restart, one inventory grant, one XP source receipt, and one quest objective advance.
+
+Backend wire compatibility: Grant without `follow_up_intent` remains supported for older producers. It does not establish INT-06 recovery for those producers. Backend fixtures exercise the new producer wire path but do not replace the Unreal acceptance step.

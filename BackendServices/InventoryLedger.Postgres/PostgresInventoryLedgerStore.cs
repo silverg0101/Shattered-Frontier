@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Security.Cryptography;
 using Npgsql;
 using ShatteredFrontier.InventoryLedger;
 
@@ -10,6 +11,75 @@ public sealed class LedgerSchemaCompatibilityException(string message) : Excepti
 // Schema.sql is installed by the migration identity. Runtime needs DML only.
 public sealed class PostgresInventoryLedgerStore(string connectionString) : IInventoryLedgerStore
 {
+    private sealed record GrantContext(string OperationId, FollowUpIntent? Intent);
+    private static readonly AsyncLocal<GrantContext?> CurrentGrant = new();
+    public sealed record FollowUpIntent(string OperationId, string CharacterId, int Version, byte[] Payload, string Digest);
+    public sealed record OutboxDelivery(string OperationId, string CharacterId, byte[] Payload, string Digest, int Attempts);
+    public (int Pending, int Parked) OutboxCounts()
+    {
+        using var connection = new NpgsqlConnection(connectionString); connection.Open();
+        using var db = connection.BeginTransaction(); CheckSchema(connection, db);
+        using var cmd = Command(connection, db, "SELECT count(*) FILTER (WHERE parked_at IS NULL), count(*) FILTER (WHERE parked_at IS NOT NULL) FROM inventory.receipt_outbox WHERE delivered_at IS NULL");
+        using var row = cmd.ExecuteReader(); row.Read();
+        return (checked((int)row.GetInt64(0)), checked((int)row.GetInt64(1)));
+    }
+    public IReadOnlyList<OutboxDelivery> ClaimOutbox(string owner, int batchSize, int maxAttempts)
+    {
+        using var connection = new NpgsqlConnection(connectionString); connection.Open();
+        using var db = connection.BeginTransaction(); CheckSchema(connection, db);
+        using (var exhausted = Command(connection, db, "UPDATE inventory.receipt_outbox SET parked_at=now(),lease_owner=NULL,lease_until=NULL,last_error_code='ATTEMPTS_EXHAUSTED' WHERE delivered_at IS NULL AND parked_at IS NULL AND attempts >= $1 AND (lease_until IS NULL OR lease_until < now())"))
+        { exhausted.Parameters.AddWithValue(maxAttempts); exhausted.ExecuteNonQuery(); }
+        using var cmd = Command(connection, db, """
+            WITH due AS (
+              SELECT o.source_operation_id,o.destination FROM inventory.receipt_outbox o
+              WHERE o.delivered_at IS NULL AND o.parked_at IS NULL AND o.attempts < $3 AND o.next_attempt_at <= now()
+                AND (o.lease_until IS NULL OR o.lease_until < now())
+                AND NOT EXISTS (SELECT 1 FROM inventory.receipt_outbox earlier
+                  WHERE earlier.character_id=o.character_id AND earlier.delivered_at IS NULL
+                    AND earlier.character_order < o.character_order)
+              ORDER BY o.created_at,o.source_operation_id LIMIT $1 FOR UPDATE OF o SKIP LOCKED
+            )
+            UPDATE inventory.receipt_outbox o SET lease_owner=$2,lease_until=now()+interval '30 seconds',attempts=o.attempts+1
+            FROM due WHERE o.source_operation_id=due.source_operation_id AND o.destination=due.destination
+            RETURNING o.source_operation_id,o.character_id,o.payload,o.payload_digest,o.attempts
+            """);
+        cmd.Parameters.AddWithValue(batchSize); cmd.Parameters.AddWithValue(owner); cmd.Parameters.AddWithValue(maxAttempts);
+        var deliveries = new List<OutboxDelivery>();
+        using (var rows = cmd.ExecuteReader()) while (rows.Read())
+            deliveries.Add(new(rows.GetString(0), rows.GetString(1), rows.GetFieldValue<byte[]>(2), rows.GetString(3), rows.GetInt32(4)));
+        db.Commit(); return deliveries;
+    }
+    public void CompleteOutbox(string operationId, string owner)
+    {
+        using var connection = new NpgsqlConnection(connectionString); connection.Open();
+        using var db = connection.BeginTransaction(); CheckSchema(connection, db);
+        using var cmd = Command(connection, db, "UPDATE inventory.receipt_outbox SET delivered_at=now(),lease_owner=NULL,lease_until=NULL,last_error_code=NULL WHERE source_operation_id=$1 AND destination='progression' AND lease_owner=$2 AND lease_until > now() AND delivered_at IS NULL");
+        cmd.Parameters.AddWithValue(operationId); cmd.Parameters.AddWithValue(owner);
+        if (cmd.ExecuteNonQuery() != 1) throw new InvalidOperationException("Outbox lease expired before completion.");
+        db.Commit();
+    }
+    public void FailOutbox(string operationId, string owner, string errorCode, bool permanent, int maxAttempts)
+    {
+        using var connection = new NpgsqlConnection(connectionString); connection.Open();
+        using var db = connection.BeginTransaction(); CheckSchema(connection, db);
+        using var cmd = Command(connection, db, """
+            UPDATE inventory.receipt_outbox SET lease_owner=NULL,lease_until=NULL,last_error_code=$3,
+              parked_at=CASE WHEN $4 OR attempts >= $5 THEN now() ELSE NULL END,
+              next_attempt_at=now()+make_interval(secs => least(300, power(2, least(attempts,8))::integer))
+                + (random()*interval '1 second')
+            WHERE source_operation_id=$1 AND destination='progression' AND lease_owner=$2 AND delivered_at IS NULL
+            """);
+        cmd.Parameters.AddWithValue(operationId); cmd.Parameters.AddWithValue(owner);
+        cmd.Parameters.AddWithValue(errorCode); cmd.Parameters.AddWithValue(permanent); cmd.Parameters.AddWithValue(maxAttempts);
+        cmd.ExecuteNonQuery(); db.Commit();
+    }
+    public T WithGrantIntent<T>(string operationId, FollowUpIntent? intent, Func<T> grant)
+    {
+        if (CurrentGrant.Value is not null) throw new InvalidOperationException("Nested grant intent.");
+        CurrentGrant.Value = new(operationId, intent);
+        try { return grant(); }
+        finally { CurrentGrant.Value = null; }
+    }
     public IReadOnlyList<ContainerSpec> FindContainers(OwnerKind ownerKind, string ownerId, ContainerKind kind)
     {
         try
@@ -41,7 +111,7 @@ public sealed class PostgresInventoryLedgerStore(string connectionString) : IInv
             CheckSchema(connection, db);
             var state = Load(connection, db);
             var result = transaction(state);
-            Save(connection, db, state);
+            Save(connection, db, state, CurrentGrant.Value);
             db.Commit();
             return result;
         }
@@ -62,12 +132,16 @@ public sealed class PostgresInventoryLedgerStore(string connectionString) : IInv
     {
         try
         {
-            using var cmd = Command(connection, db, "SELECT version FROM inventory.schema_version WHERE singleton = true FOR SHARE");
-            var version = cmd.ExecuteScalar();
-            if (version is not int value || value != 1)
-                throw new LedgerSchemaCompatibilityException($"Unsupported inventory schema version: {version ?? "missing"}.");
+            using var cmd = Command(connection, db, "SELECT version,migration_checksum FROM inventory.schema_version WHERE singleton = true FOR SHARE");
+            using var row = cmd.ExecuteReader();
+            if (!row.Read() || row.GetInt32(0) != 2 || row.GetString(1) != "66ae3e7c362f9062575bc97da4fa5e50d48548e10928b2f74b13f1f12c7bd8fb")
+                throw new LedgerSchemaCompatibilityException("Unsupported inventory schema marker.");
+            row.Close();
+            using var table = Command(connection, db, "SELECT to_regclass('inventory.receipt_outbox') IS NOT NULL");
+            if (table.ExecuteScalar() is not true)
+                throw new LedgerSchemaCompatibilityException("Inventory receipt outbox is missing.");
         }
-        catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501")
+        catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501" or "42703")
         {
             throw new LedgerSchemaCompatibilityException("Inventory schema marker is missing or inaccessible.");
         }
@@ -116,8 +190,35 @@ public sealed class PostgresInventoryLedgerStore(string connectionString) : IInv
         return new LedgerState(Container, AllIds, Operation);
     }
 
-    private static void Save(NpgsqlConnection connection, NpgsqlTransaction db, LedgerState after)
+    private static void Save(NpgsqlConnection connection, NpgsqlTransaction db, LedgerState after, GrantContext? grant)
     {
+        var intent = grant?.Intent;
+        if (grant is not null && intent is null && after.Operations.TryGetValue(grant.OperationId, out _))
+        {
+            using var present = Command(connection, db, "SELECT 1 FROM inventory.receipt_outbox WHERE source_operation_id=$1 AND destination='progression'");
+            present.Parameters.AddWithValue(grant.OperationId);
+            if (present.ExecuteScalar() is not null) throw new LedgerRejectedException("Conflicting follow-up intent.");
+        }
+        if (intent is not null)
+        {
+            if (!after.Operations.TryGetValue(intent.OperationId, out var operation) || operation.Receipt.Action != LedgerAction.Grant ||
+                intent.Version != 1 || intent.Payload.Length is < 1 or > 65536 ||
+                !CryptographicOperations.FixedTimeEquals(System.Text.Encoding.ASCII.GetBytes(Convert.ToHexStringLower(SHA256.HashData(intent.Payload))),
+                    System.Text.Encoding.ASCII.GetBytes(intent.Digest)))
+                throw new LedgerRejectedException("Invalid follow-up intent.");
+            using var existing = Command(connection, db, "SELECT character_id,payload_version,payload,payload_digest FROM inventory.receipt_outbox WHERE source_operation_id=$1 AND destination='progression'");
+            existing.Parameters.AddWithValue(intent.OperationId);
+            using var row = existing.ExecuteReader();
+            if (row.Read())
+            {
+                if (row.GetString(0) != intent.CharacterId || row.GetInt32(1) != intent.Version ||
+                    !row.GetFieldValue<byte[]>(2).AsSpan().SequenceEqual(intent.Payload) || row.GetString(3) != intent.Digest)
+                    throw new LedgerRejectedException("Conflicting follow-up intent.");
+            }
+            else if (!after.Operations.Added.Any(x => x.Key == intent.OperationId))
+                throw new LedgerRejectedException("Conflicting follow-up intent.");
+            row.Close();
+        }
         foreach (var (id, record) in after.Containers.Loaded)
         {
             if (!after.Containers.TryGetOriginal(id, out var old))
@@ -151,5 +252,14 @@ public sealed class PostgresInventoryLedgerStore(string connectionString) : IInv
                 receipt.Parameters.AddWithValue(id); receipt.Parameters.AddWithValue(operation.Fingerprint);
                 receipt.Parameters.AddWithValue(JsonSerializer.Serialize(operation.Receipt)); receipt.ExecuteNonQuery();
             }
+        if (intent is not null && after.Operations.Added.Any(x => x.Key == intent.OperationId))
+        {
+            using (var characterLock = Command(connection, db, "SELECT pg_advisory_xact_lock(519763, hashtext($1))"))
+            { characterLock.Parameters.AddWithValue(intent.CharacterId); characterLock.ExecuteNonQuery(); }
+            using var cmd = Command(connection, db, "INSERT INTO inventory.receipt_outbox(source_operation_id,destination,character_id,character_order,payload_version,payload,payload_digest) SELECT $1,'progression',$2,coalesce(max(character_order),0)+1,$3,$4,$5 FROM inventory.receipt_outbox WHERE character_id=$2");
+            cmd.Parameters.AddWithValue(intent.OperationId); cmd.Parameters.AddWithValue(intent.CharacterId);
+            cmd.Parameters.AddWithValue(intent.Version); cmd.Parameters.AddWithValue(intent.Payload); cmd.Parameters.AddWithValue(intent.Digest);
+            cmd.ExecuteNonQuery();
+        }
     }
 }

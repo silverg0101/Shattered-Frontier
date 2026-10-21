@@ -18,6 +18,14 @@ using DomLedger = ShatteredFrontier.InventoryLedger.InventoryLedger;
 static string Required(string name) => Environment.GetEnvironmentVariable(name) is { Length: > 0 } value
     ? value : throw new InvalidOperationException($"{name} is required.");
 
+if (args is ["outbox-status"])
+{
+    var controls = new ReceiptOutboxControls(); controls.Validate();
+    var (pending, parked) = new PostgresInventoryLedgerStore(Required("GAMEPLAY_LEDGER_CONNECTION")).OutboxCounts();
+    Console.WriteLine($"RECEIPT_OUTBOX pending={pending} parked={parked} batch={controls.BatchSize} poll_seconds={controls.PollInterval.TotalSeconds} max_attempts={controls.MaxAttempts}");
+    return;
+}
+
 if (args.Length == 1 && args[0].StartsWith("fixture-geometry-", StringComparison.Ordinal))
 {
     HousingGeometryFixture.Run(args[0]);
@@ -56,6 +64,8 @@ builder.Services.AddSingleton(new PostgresCharacterStateStore(characterConnectio
 builder.Services.AddSingleton<QuestRewardPayout>();
 builder.Services.AddSingleton(new GameplayRecoverySettings());
 builder.Services.AddHostedService<GameplayRecoveryService>();
+builder.Services.AddSingleton(new ReceiptOutboxControls());
+builder.Services.AddHostedService<ReceiptOutboxRelay>();
 builder.Services.AddSingleton(new PostgresHousingStore(housingConnection));
 builder.Services.AddSingleton(new PostgresExchangeStore(exchangeConnection));
 builder.Services.AddSingleton(quest);

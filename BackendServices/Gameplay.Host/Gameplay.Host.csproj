@@ -16,5 +16,6 @@
     <Protobuf Include="../../proto/sf/housing/v1/housing.proto" ProtoRoot="../../proto" GrpcServices="Both" />
     <Protobuf Include="../../proto/sf/crafting/v1/crafting.proto" ProtoRoot="../../proto" GrpcServices="Both" />
     <Protobuf Include="../../proto/sf/exchange/v1/exchange.proto" ProtoRoot="../../proto" GrpcServices="Both" />
+    <Protobuf Include="../../proto/sf/inventory/v1/ledger.proto" ProtoRoot="../../proto" GrpcServices="Client" />
   </ItemGroup>
 </Project>

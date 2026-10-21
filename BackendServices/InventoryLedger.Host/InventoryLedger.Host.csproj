@@ -5,5 +5,6 @@
     <PackageReference Include="Grpc.AspNetCore" />
     <PackageReference Include="Grpc.Net.Client" />
     <Protobuf Include="../../proto/sf/inventory/v1/ledger.proto" ProtoRoot="../../proto" GrpcServices="Both" />
+    <Protobuf Include="../../proto/sf/progression/v1/progression.proto" ProtoRoot="../../proto" GrpcServices="None" />
   </ItemGroup>
 </Project>

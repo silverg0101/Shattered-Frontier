@@ -3,6 +3,7 @@ param([Parameter(Mandatory)][string]$EvidenceRoot)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+& (Join-Path $repo 'tools/Assert-InventoryOutboxMigration.ps1') -MigrationPath (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') | Out-Null
 $allowed = [IO.Path]::GetFullPath((Join-Path $repo 'Artifacts/Persistence/GameplayHosts'))
 $EvidenceRoot = [IO.Path]::GetFullPath($EvidenceRoot)
 if (-not $EvidenceRoot.StartsWith($allowed + [IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase) -or (Test-Path -LiteralPath $EvidenceRoot)) { throw 'Supply a fresh GameplayHosts evidence child.' }
@@ -84,6 +85,7 @@ try {
     [void](Sql "CREATE ROLE gameplay_owner NOLOGIN; CREATE ROLE gameplay_svc LOGIN PASSWORD '$servicePassword'; CREATE DATABASE gameplay_$run;")
     [void](Sql "REVOKE ALL ON DATABASE gameplay_$run FROM PUBLIC; GRANT CONNECT ON DATABASE gameplay_$run TO gameplay_svc; GRANT CREATE ON DATABASE gameplay_$run TO gameplay_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC;" "gameplay_$run")
     $schemas = @('InventoryLedger.Postgres','CharacterState.Postgres','Housing.Postgres','Exchange.Postgres') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_/Schema.sql") -Raw }
+    $schemas += Get-Content (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Gameplay.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Geometry.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Position.sql') -Raw
@@ -296,6 +298,40 @@ try {
     if ($saleState -ne 'committed' -or $saleReceipts -ne '1') { throw "Exchange recovery not exact: $saleState/$saleReceipts" }
     $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-exchange-replay') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; GAMEPLAY_EXCHANGE_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
     $results.Add('PASS exchange sweeper committed one sale after host kill and immediate PostgreSQL restart')
+    $currentStep = 'INT-06 outbox fault/restart'
+    $ledgerProject = Join-Path $repo 'BackendServices/InventoryLedger.Host/InventoryLedger.Host.csproj'
+    [void](Invoke-Checked $dotnet @('restore',$ledgerProject,'--locked-mode','--packages',(Join-Path $repo 'Artifacts/Persistence/Toolchains/nuget'),'--verbosity','quiet'))
+    $ledgerOutput = (Join-Path $private 'ledger-build') + [IO.Path]::DirectorySeparatorChar
+    [void](Invoke-Checked $dotnet @('build',$ledgerProject,'--no-restore','--configuration','Release','--verbosity','quiet',"-p:OutDir=$ledgerOutput"))
+    $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $ledgerPort = $listener.LocalEndpoint.Port; $listener.Stop()
+    $env:INVENTORY_LEDGER_PORT = "$ledgerPort"; $env:INVENTORY_LEDGER_CONNECTION = $connection
+    $env:SF_INVENTORY_LEDGER_TOKEN = $token; $env:GAMEPLAY_LEDGER_PORT = "$ledgerPort"
+    $ledgerHost = Start-Process -FilePath $dotnet -ArgumentList @((Join-Path $ledgerOutput 'InventoryLedger.Host.dll')) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'ledger-host.out') -RedirectStandardError (Join-Path $private 'ledger-host.err')
+    for ($i=0; $i -lt 100; $i++) { if ($ledgerHost.HasExited) { throw 'Ledger host exited.' }; if ((Test-Path (Join-Path $private 'ledger-host.out')) -and (Get-Content (Join-Path $private 'ledger-host.out') -Raw) -match 'INVENTORY_LEDGER_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
+    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+    $env:SF_GAMEPLAY_FAULT_BEFORE_OUTBOX_SEND = 'int06/gather/1'
+    $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-outbox-fault.out') -RedirectStandardError (Join-Path $private 'host-outbox-fault.err')
+    for ($i=0; $i -lt 100; $i++) { if ($hostProcess.HasExited) { throw 'Outbox fault host exited before ready.' }; if ((Test-Path (Join-Path $private 'host-outbox-fault.out')) -and (Get-Content (Join-Path $private 'host-outbox-fault.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
+    $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-outbox-seed') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_PORT="$ledgerPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+    $hostProcess.WaitForExit(15000) | Out-Null
+    if (-not $hostProcess.HasExited) { throw 'Outbox fault did not kill host before send.' }
+    $before = Sql "SELECT count(*) FROM character_state.source_receipts WHERE operation_id='int06/gather/1'" "gameplay_$run"
+    if ($before -ne '0') { throw 'Outbox sent before fault.' }
+    Remove-Item Env:SF_GAMEPLAY_FAULT_BEFORE_OUTBOX_SEND
+    $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-outbox-restart.out') -RedirectStandardError (Join-Path $private 'host-outbox-restart.err')
+    for ($i=0; $i -lt 100; $i++) { if ($hostProcess.HasExited) { throw 'Outbox recovery host exited.' }; if ((Test-Path (Join-Path $private 'host-outbox-restart.out')) -and (Get-Content (Join-Path $private 'host-outbox-restart.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
+    $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-outbox-replay') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_PORT="$ledgerPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+    $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-outbox-conflict') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_PORT="$ledgerPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+    $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-outbox-omit') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_PORT="$ledgerPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+    for ($i=0; $i -lt 400; $i++) { if ((Sql "SELECT count(*) FROM inventory.receipt_outbox WHERE source_operation_id='int06/gather/1' AND delivered_at IS NOT NULL" "gameplay_$run") -eq '1') { break }; Start-Sleep -Milliseconds 100 }
+    $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-outbox-check') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+    $status = Invoke-Checked $dotnet @($hostDll,'outbox-status') @{ GAMEPLAY_LEDGER_CONNECTION=$connection }
+    if ($status -notmatch 'pending=0 parked=0 batch=32 poll_seconds=2 max_attempts=12') { throw 'Outbox operator counts or controls incorrect.' }
+    $results.Add('PASS INT-06 operator counts and effective defaults')
+    $effects = Sql "SELECT count(*) FROM character_state.source_receipts WHERE operation_id='int06/gather/1'" "gameplay_$run"
+    if ($effects -ne '2') { throw "Outbox produced $effects progression/quest receipts." }
+    $results.Add('PASS INT-06 committed intent survived host kill, exact once progression receipt')
+    Stop-Process -Id $ledgerHost.Id -Force; $ledgerHost.WaitForExit(10000) | Out-Null
     Cluster stop
     foreach ($name in @('Rewards','Progression','Housing')) {
         $dll = Join-Path $buildOutput "$name.Host.Tests.dll"
@@ -316,12 +352,13 @@ catch {
     }
 }
 finally {
-    foreach ($key in @('SF_GAMEPLAY_TOKEN','SF_GAMEPLAY_FAULT_AFTER_REMOVE_GRANT','SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT','SF_GAMEPLAY_FAULT_AFTER_QUEST_GRANT','SF_GAMEPLAY_FAULT_AFTER_LISTING_ESCROW','GAMEPLAY_LEDGER_CONNECTION','GAMEPLAY_CHARACTER_CONNECTION','GAMEPLAY_HOUSING_CONNECTION')) {
+    foreach ($key in @('SF_GAMEPLAY_TOKEN','SF_GAMEPLAY_FAULT_AFTER_REMOVE_GRANT','SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT','SF_GAMEPLAY_FAULT_AFTER_QUEST_GRANT','SF_GAMEPLAY_FAULT_AFTER_LISTING_ESCROW','SF_GAMEPLAY_FAULT_BEFORE_OUTBOX_SEND','GAMEPLAY_LEDGER_CONNECTION','GAMEPLAY_LEDGER_PORT','INVENTORY_LEDGER_PORT','INVENTORY_LEDGER_CONNECTION','SF_INVENTORY_LEDGER_TOKEN','GAMEPLAY_CHARACTER_CONNECTION','GAMEPLAY_HOUSING_CONNECTION')) {
         Remove-Item "Env:$key" -ErrorAction SilentlyContinue
     }
     try {
         if ($hostProcess -and -not $hostProcess.HasExited) { Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null }
         if ($hostProcess2 -and -not $hostProcess2.HasExited) { Stop-Process -Id $hostProcess2.Id -Force; $hostProcess2.WaitForExit(10000) | Out-Null }
+        if ($ledgerHost -and -not $ledgerHost.HasExited) { Stop-Process -Id $ledgerHost.Id -Force; $ledgerHost.WaitForExit(10000) | Out-Null }
         if (Test-Path (Join-Path $private 'owner.json')) {
             Assert-Owned
             if ($started -or ($attempted -and (Test-Path (Join-Path $data 'postmaster.pid')))) { try { [void](Invoke-Checked (Join-Path $pg 'pg_ctl.exe') @('-D',$data,'-m','immediate','-w','-t','30','stop')) } catch { if ($failure -eq '') { $failure = $_.Exception.Message } } }
