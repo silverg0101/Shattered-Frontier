@@ -1,5 +1,7 @@
 # Gameplay gRPC host (INT-04 preparation)
 
+INT-06 receipt outbox decision: the originating ledger transaction must receive the complete, immutable progression and quest intent before it commits a grant. The present gather `GrantRequest` does not carry that intent, so this host cannot safely recover a killed-server gather from ledger data alone. See `docs/decisions/INT-06-durable-receipt-outbox.md` for the proposed inventory schema, relay and bounded operating controls. No outbox is active in this host yet.
+
 One ASP.NET Core HTTP/2 process serves five versioned protobuf services: Rewards, Progression (including quest evidence), Housing, Crafting, and Exchange. It binds only `127.0.0.1:$GAMEPLAY_HOST_PORT`. Every RPC requires a deadline and `authorization: Bearer $SF_GAMEPLAY_TOKEN`; the fixture generates a new token for each run. This development credential is not the DEC-04 session protocol. The host uses only centrally pinned packages and has its own lock file.
 
 Required environment: `GAMEPLAY_HOST_PORT` (1..65535), `SF_GAMEPLAY_TOKEN`, `GAMEPLAY_LEDGER_CONNECTION`, `GAMEPLAY_CHARACTER_CONNECTION`, `GAMEPLAY_HOUSING_CONNECTION`, `GAMEPLAY_EXCHANGE_CONNECTION`, and `GAMEPLAY_CONTENT_ROOT` (parent of `loot/`, `quests/`, `crafting/`, and `world/`). Connection strings may point to the same PostgreSQL database with the four owned schemas. Run from the repository root with the pinned SDK:
