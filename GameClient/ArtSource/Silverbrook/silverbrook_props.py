@@ -173,10 +173,12 @@ def _inside(L,c,x,y):
     return (x/(w['semi_axis_x']-m))**2+(y/(w['semi_axis_y']-m))**2<1
 
 def dress_roads(c):
-    mi=build_road_material(c);A=_actors();n=0
-    for a in A.get_all_level_actors():
-        if isinstance(a,u.StaticMeshActor) and any(str(a.get_folder_path()).startswith(f'Roads/{t}') for t in c['road']['tiers']):
-            a.static_mesh_component.set_material(0,mi);n+=1
+    A=_actors()  # WP3 builds roads into the terrain; strip actors only exist in older maps
+    strips=[a for a in A.get_all_level_actors() if isinstance(a,u.StaticMeshActor) and any(str(a.get_folder_path()).startswith(f'Roads/{t}') for t in c['road']['tiers'])]
+    n=0
+    if strips:
+        mi=build_road_material(c)
+        for a in strips:a.static_mesh_component.set_material(0,mi);n+=1
     print('ROAD_STRIPS_COBBLED',n);return n
 
 def _obstacles(A):
