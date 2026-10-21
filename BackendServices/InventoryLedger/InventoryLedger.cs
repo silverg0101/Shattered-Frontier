@@ -5,7 +5,7 @@ namespace ShatteredFrontier.InventoryLedger;
 
 public enum ContainerKind { Equipment, Backpack, Bag, Bank, AccountBank, GuildBank, Mailbox, Escrow, Buyback, ConstructionCache, ConstructionRecovery }
 public enum OwnerKind { Character, Account, Guild, System }
-public enum LedgerAction { Grant, Consume, Transfer, Convert, Exchange }
+public enum LedgerAction { Grant, Consume, Transfer, Convert }
 
 public sealed record ContainerSpec(string Id, OwnerKind OwnerKind, string OwnerId, ContainerKind Kind, int Capacity);
 public sealed record ContainerView(ContainerSpec Spec, long Revision, IReadOnlyDictionary<string, long> Quantities);
@@ -14,7 +14,6 @@ public sealed record QuantityChange(string ContainerId, string DefinitionId, lon
 public sealed record LedgerReceipt(string OperationId, LedgerAction Action, IReadOnlyList<RevisionChange> Revisions,
     IReadOnlyList<QuantityChange> Changes);
 public sealed record ItemQuantity(string DefinitionId, long Quantity);
-public sealed record EscrowDelivery(string FromId, long FromRevision, string ToId, long ToRevision, string DefinitionId, long Quantity);
 
 public sealed class LedgerRejectedException(string message) : InvalidOperationException(message);
 
@@ -73,64 +72,6 @@ public sealed class InMemoryInventoryLedgerStore : IInventoryLedgerStore
 
 public sealed class InventoryLedger(IInventoryLedgerStore store)
 {
-    // Trusted settlement hook: all escrow deliveries commit as one inventory operation.
-    public LedgerReceipt DeliverEscrowBatch(string operationId, IReadOnlyList<EscrowDelivery> deliveries)
-    {
-        Require(operationId);
-        if (deliveries.Count == 0) throw new LedgerRejectedException("Empty escrow delivery.");
-        foreach (var move in deliveries) ValidateItems([new ItemQuantity(move.DefinitionId, move.Quantity)]);
-        var fingerprint = JsonSerializer.Serialize(deliveries);
-        return store.Execute(state =>
-        {
-            if (state.Operations.TryGetValue(operationId, out var prior))
-            {
-                if (prior.Fingerprint != fingerprint) throw new LedgerRejectedException("Conflicting operation ID reuse.");
-                return prior.Receipt;
-            }
-            var expected = new Dictionary<string, long>(StringComparer.Ordinal);
-            foreach (var move in deliveries)
-            {
-                if (expected.TryGetValue(move.FromId, out var from) && from != move.FromRevision ||
-                    expected.TryGetValue(move.ToId, out var to) && to != move.ToRevision)
-                    throw new LedgerRejectedException("Conflicting expected revisions.");
-                expected[move.FromId] = move.FromRevision;
-                expected[move.ToId] = move.ToRevision;
-                if (move.FromId == move.ToId || Get(state, move.FromId).Spec.Kind != ContainerKind.Escrow ||
-                    Get(state, move.ToId).Spec.Kind == ContainerKind.Escrow)
-                    throw new LedgerRejectedException("Delivery requires escrow source and ordinary destination.");
-            }
-            var records = expected.ToDictionary(p => p.Key, p => Get(state, p.Key), StringComparer.Ordinal);
-            foreach (var (id, revision) in expected)
-                if (records[id].Revision != revision) throw new LedgerRejectedException("Stale container revision.");
-            var changes = new List<QuantityChange>();
-            foreach (var move in deliveries)
-            {
-                var src = records[move.FromId]; var dst = records[move.ToId];
-                var available = src.Quantities.GetValueOrDefault(move.DefinitionId);
-                if (available < move.Quantity) throw new LedgerRejectedException("Insufficient escrow quantity.");
-                var remaining = available - move.Quantity;
-                if (remaining == 0) src.Quantities.Remove(move.DefinitionId); else src.Quantities[move.DefinitionId] = remaining;
-                long next;
-                try { next = checked(dst.Quantities.GetValueOrDefault(move.DefinitionId) + move.Quantity); }
-                catch (OverflowException) { throw new LedgerRejectedException("Quantity overflow."); }
-                dst.Quantities[move.DefinitionId] = next;
-                changes.Add(new(move.FromId, move.DefinitionId, -move.Quantity));
-                changes.Add(new(move.ToId, move.DefinitionId, move.Quantity));
-            }
-            foreach (var record in records.Values)
-            {
-                long total;
-                try { total = record.Quantities.Values.Aggregate(0L, (a, b) => checked(a + b)); }
-                catch (OverflowException) { throw new LedgerRejectedException("Capacity overflow."); }
-                if (total > record.Spec.Capacity) throw new LedgerRejectedException("Container capacity exceeded.");
-            }
-            var revisions = records.Select(p => new RevisionChange(p.Key, p.Value.Revision, checked(p.Value.Revision + 1))).ToArray();
-            foreach (var record in records.Values) record.Revision++;
-            var receipt = new LedgerReceipt(operationId, LedgerAction.Exchange, Array.AsReadOnly(revisions), changes.AsReadOnly());
-            state.Operations.Add(operationId, new StoredOperation(fingerprint, receipt));
-            return receipt;
-        });
-    }
     public ContainerView CreateContainer(ContainerSpec spec)
     {
         ValidateSpec(spec);
