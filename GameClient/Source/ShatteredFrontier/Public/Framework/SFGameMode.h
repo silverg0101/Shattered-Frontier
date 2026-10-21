@@ -3,7 +3,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "SFGameMode.generated.h"
 
-class ASFConstructionNetworkController;
+class ASFPlayerController;
 class ASFConstructionNetworkState;
 class ASFE1Character;
 class ASFPilotBoar;
@@ -29,16 +29,16 @@ public:
     // Construction (SFConstructionNetwork.cpp)
     bool IsAdmitted() const;
     bool IsZoneGatheringWorld() const;
-    bool IsBuilder(const ASFConstructionNetworkController* Controller) const;
+    bool IsBuilder(const ASFPlayerController* Controller) const;
     // Zone-world development claim (BLD-02); false in the sandbox. Centre in zone metres, as ClaimTerritory takes it.
     // BLD-02 A2: one claim state per zone build plot (area purpose "claims"), owned through Housing; none in the sandbox.
     bool IsHousingActive() const;
     ASFConstructionNetworkState* FindClaimState(const FString& ClaimId) const;
     // Housing.ClaimPlot for the controller's character; Claimed when it already owns the plot.
-    void ClaimPlot(ASFConstructionNetworkController* Controller, const FString& ClaimId, TFunction<void(ESFConstructionNetworkResult)> Done);
+    void ClaimPlot(ASFPlayerController* Controller, const FString& ClaimId, TFunction<void(ESFConstructionNetworkResult)> Done);
     // Housing.Grant of build rights on the controller's claim to another character.
-    void GrantBuild(ASFConstructionNetworkController* Controller, const FString& ClaimId, const FString& TargetCharacterId, TFunction<void(ESFConstructionNetworkResult)> Done);
-    void CommitHousing(ASFConstructionNetworkController* Controller, const FString& ClaimId, FIntVector Cell, bool bRemove, int32 Shape, int32 Rotation, TFunction<void(ESFConstructionNetworkResult Result, const FString& Operation)> Done);
+    void GrantBuild(ASFPlayerController* Controller, const FString& ClaimId, const FString& TargetCharacterId, TFunction<void(ESFConstructionNetworkResult)> Done);
+    void CommitHousing(ASFPlayerController* Controller, const FString& ClaimId, FIntVector Cell, bool bRemove, int32 Shape, int32 Rotation, TFunction<void(ESFConstructionNetworkResult Result, const FString& Operation)> Done);
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     void SpawnFiniteDoorObstruction(const FIntVector& Origin, uint8 Yaw);
     void DiscardFiniteDoorObstruction();
@@ -84,7 +84,7 @@ private:
     FClaimPlot* FindPlot(const FString& ClaimId);
     FTimerHandle ClaimLoadTimer;
     void PlaceForZoneScenario(APawn* Pawn, bool bPrimary) const;
-    TWeakObjectPtr<ASFConstructionNetworkController> Builder;
+    TWeakObjectPtr<ASFPlayerController> Builder;
     bool bBuilderAssigned = false;
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     TWeakObjectPtr<AActor> FiniteDoorObstruction;

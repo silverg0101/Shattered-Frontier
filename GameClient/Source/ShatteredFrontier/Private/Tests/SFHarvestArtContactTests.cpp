@@ -1,5 +1,6 @@
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR && SF_WITH_MINIMAL_INVENTORY
 #include "Misc/AutomationTest.h"
+#include "Framework/SFPlayerController.h"
 #include "Tests/AutomationCommon.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Construction/SFConstructionNetwork.h"
@@ -26,7 +27,7 @@ bool FSFGatheringPilotArtContactTest::RunTest(const FString& Parameters)
         if (!Fixture.CreateTestWorld(EWorldType::GameRPC)||!Fixture.BeginPlayInTestWorld()) { return false; }
         auto* World=Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
         FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-        auto* PC=World->SpawnActor<ASFConstructionNetworkController>();
+        auto* PC=World->SpawnActor<ASFPlayerController>();
         auto* Pawn=World->SpawnActor<ASFE1Character>(FVector(0,0,100),FRotator::ZeroRotator,Spawn);
         auto* Node=World->SpawnActorDeferred<ASFGatheringPilotNode>(ASFGatheringPilotNode::StaticClass(),FTransform(FVector(200,0,70)));
         if (!PC||!Pawn||!Node) { return false; }

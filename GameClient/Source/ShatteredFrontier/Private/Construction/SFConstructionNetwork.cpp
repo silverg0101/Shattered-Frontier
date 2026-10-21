@@ -1,4 +1,9 @@
 #include "Construction/SFConstructionNetwork.h"
+#include "Framework/SFPlayerController.h"
+#include "Framework/SFHudLayout.h"
+#include "Inventory/SFInventoryPanel.h"
+#include "EnhancedInputComponent.h"
+#include "InputAction.h"
 #include "Combat/SFCombatPilot.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Gathering/SFGatheringSkillsPanel.h"
@@ -479,7 +484,7 @@ void ASFConstructionNetworkState::OnRep_Snapshot()
     else { bProjectionReady=false; UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_PROJECTION_FAILED")); }
 }
 
-ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateEditContext(ASFConstructionNetworkController* Controller, uint64 ExpectedRevision, const APawn*& OutPawn, const AActor*& OutFoundation) const
+ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateEditContext(ASFPlayerController* Controller, uint64 ExpectedRevision, const APawn*& OutPawn, const AActor*& OutFoundation) const
 {
     OutPawn=nullptr; OutFoundation=nullptr;
     const auto* Mode = GetWorld() ? GetWorld()->GetAuthGameMode<ASFGameMode>() : nullptr;
@@ -568,7 +573,7 @@ bool ASFConstructionNetworkState::IsLineSupportedForPreview(FIntVector Start, FI
     return SupportsMembers(Members,Snapshot.Doors);
 }
 
-ESFConstructionNetworkResult ASFConstructionNetworkState::PlaceLine(ASFConstructionNetworkController* Controller, FIntVector Start, FIntVector End, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation)
+ESFConstructionNetworkResult ASFConstructionNetworkState::PlaceLine(ASFPlayerController* Controller, FIntVector Start, FIntVector End, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation)
 {
     const APawn* Pawn=nullptr; const AActor* Foundation=nullptr;
     const auto Admission=ValidateEditContext(Controller,ExpectedRevision,Pawn,Foundation);
@@ -592,7 +597,7 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::PlaceLine(ASFConstruct
     return ESFConstructionNetworkResult::Accepted;
 }
 
-ESFConstructionNetworkResult ASFConstructionNetworkState::Edit(ASFConstructionNetworkController* Controller, FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation, bool bCommit)
+ESFConstructionNetworkResult ASFConstructionNetworkState::Edit(ASFPlayerController* Controller, FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation, bool bCommit)
 {
     const APawn* Pawn=nullptr; const AActor* Foundation=nullptr;
     const auto Admission=ValidateEditContext(Controller,ExpectedRevision,Pawn,Foundation);
@@ -617,7 +622,7 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::Edit(ASFConstructionNe
     return bRemove ? ESFConstructionNetworkResult::Removed : ESFConstructionNetworkResult::Accepted;
 }
 
-ESFConstructionNetworkResult ASFConstructionNetworkState::PlaceDoor(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision, uint8 Yaw)
+ESFConstructionNetworkResult ASFConstructionNetworkState::PlaceDoor(ASFPlayerController* Controller, FIntVector Origin, uint64 ExpectedRevision, uint8 Yaw)
 {
     const APawn* Pawn=nullptr; const AActor* Foundation=nullptr;
     const auto Admission=ValidateEditContext(Controller,ExpectedRevision,Pawn,Foundation);
@@ -693,7 +698,7 @@ bool ASFConstructionNetworkState::FindDoorAlongRay(const APawn* Pawn, const FVec
     OutOrigin=Best; return true;
 }
 
-ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateDoorTarget(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision, int32& OutIndex) const
+ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateDoorTarget(ASFPlayerController* Controller, FIntVector Origin, uint64 ExpectedRevision, int32& OutIndex) const
 {
     const APawn* Pawn=nullptr; const AActor* Foundation=nullptr;
     const auto Admission=ValidateEditContext(Controller,ExpectedRevision,Pawn,Foundation);
@@ -724,7 +729,7 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateDoorTarget(ASF
     return ESFConstructionNetworkResult::Accepted;
 }
 
-ESFConstructionNetworkResult ASFConstructionNetworkState::RemoveDoor(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision)
+ESFConstructionNetworkResult ASFConstructionNetworkState::RemoveDoor(ASFPlayerController* Controller, FIntVector Origin, uint64 ExpectedRevision)
 {
     int32 Index=INDEX_NONE;
     const auto Admission=ValidateDoorTarget(Controller,Origin,ExpectedRevision,Index);
@@ -739,7 +744,7 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::RemoveDoor(ASFConstruc
     return ESFConstructionNetworkResult::DoorRemoved;
 }
 
-ESFConstructionNetworkResult ASFConstructionNetworkState::ToggleDoor(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision)
+ESFConstructionNetworkResult ASFConstructionNetworkState::ToggleDoor(ASFPlayerController* Controller, FIntVector Origin, uint64 ExpectedRevision)
 {
     int32 Index=INDEX_NONE;
     const auto Admission=ValidateDoorTarget(Controller,Origin,ExpectedRevision,Index);
@@ -1008,7 +1013,7 @@ void ASFGameMode::LoadClaims()
     { GetWorldTimerManager().SetTimer(ClaimLoadTimer,FTimerDelegate::CreateUObject(this,&ASFGameMode::LoadClaims),3.0f,false); }
 }
 
-void ASFGameMode::ClaimPlot(ASFConstructionNetworkController* Controller, const FString& ClaimId, TFunction<void(ESFConstructionNetworkResult)> Done)
+void ASFGameMode::ClaimPlot(ASFPlayerController* Controller, const FString& ClaimId, TFunction<void(ESFConstructionNetworkResult)> Done)
 {
     USFBackpackComponent* Pack=USFBackpackComponent::FindOrCreate(Controller);
     FClaimPlot* Plot=FindPlot(ClaimId);
@@ -1028,7 +1033,7 @@ void ASFGameMode::ClaimPlot(ASFConstructionNetworkController* Controller, const 
     });
 }
 
-void ASFGameMode::GrantBuild(ASFConstructionNetworkController* Controller, const FString& ClaimId, const FString& TargetCharacterId, TFunction<void(ESFConstructionNetworkResult)> Done)
+void ASFGameMode::GrantBuild(ASFPlayerController* Controller, const FString& ClaimId, const FString& TargetCharacterId, TFunction<void(ESFConstructionNetworkResult)> Done)
 {
     USFBackpackComponent* Pack=USFBackpackComponent::FindOrCreate(Controller);
     FClaimPlot* Plot=FindPlot(ClaimId);
@@ -1048,11 +1053,11 @@ void ASFGameMode::GrantBuild(ASFConstructionNetworkController* Controller, const
     });
 }
 
-void ASFGameMode::CommitHousing(ASFConstructionNetworkController* Controller, const FString& ClaimId, FIntVector Cell, bool bRemove, int32 Shape, int32 Rotation,
+void ASFGameMode::CommitHousing(ASFPlayerController* Controller, const FString& ClaimId, FIntVector Cell, bool bRemove, int32 Shape, int32 Rotation,
     TFunction<void(ESFConstructionNetworkResult Result, const FString& Operation)> Done)
 {
     TWeakObjectPtr<ASFGameMode> Weak(this);
-    TWeakObjectPtr<ASFConstructionNetworkController> WeakController(Controller);
+    TWeakObjectPtr<ASFPlayerController> WeakController(Controller);
     FClaimPlot* Target=FindPlot(ClaimId);
     if (!Target || !Target->bLoaded) { Done(ESFConstructionNetworkResult::ServiceUnavailable,FString()); return; }
     // The first placement on an unclaimed plot claims it for the builder; on someone else's claim the service decides.
@@ -1166,7 +1171,7 @@ void ASFGameMode::StartConstruction()
 
 void ASFGameMode::PostLoginConstruction(APlayerController* NewPlayer)
 {
-    auto* Controller = Cast<ASFConstructionNetworkController>(NewPlayer);
+    auto* Controller = Cast<ASFPlayerController>(NewPlayer);
     if (!IsAdmitted() || !Controller) { return; }
     const bool bAssignBuilder = !bBuilderAssigned;
     bBuilderAssigned = true;
@@ -1181,18 +1186,18 @@ void ASFGameMode::PostLoginConstruction(APlayerController* NewPlayer)
 
 void ASFGameMode::RestartConstruction(AController* NewPlayer)
 {
-    const auto* Controller = Cast<ASFConstructionNetworkController>(NewPlayer);
+    const auto* Controller = Cast<ASFPlayerController>(NewPlayer);
     if (IsAdmitted() && !IsZoneGatheringWorld() && Controller && Controller->GetPawn())
     { Controller->GetPawn()->SetActorLocation(FVector(IsBuilder(Controller) ? -200 : 200,-400,96)); }
     if (IsAdmitted() && IsZoneGatheringWorld() && Controller) { PlaceForZoneScenario(Controller->GetPawn(), IsBuilder(Controller)); }
 }
 
-bool ASFGameMode::IsBuilder(const ASFConstructionNetworkController* Controller) const
+bool ASFGameMode::IsBuilder(const ASFPlayerController* Controller) const
 {
     return IsAdmitted() && Builder.Get() == Controller;
 }
 
-void ASFConstructionNetworkController::AssignRole(bool bBuilder)
+void ASFPlayerController::AssignRole(bool bBuilder)
 {
     if (!HasAuthority()) { return; }
     bBuilderRole = bBuilder; bRoleAssigned = true;
@@ -1200,8 +1205,9 @@ void ASFConstructionNetworkController::AssignRole(bool bBuilder)
     ForceNetUpdate();
 }
 
-ASFConstructionNetworkController::ASFConstructionNetworkController()
+ASFPlayerController::ASFPlayerController()
 {
+    PrimaryActorTick.bCanEverTick=true;
     SelectedRotation=uint8(SFConstructionGeometry::IdentityRotation());
     GatheringPilot=CreateDefaultSubobject<USFGatheringPilotComponent>(TEXT("GatheringPilot"));
 #if SF_WITH_MINIMAL_INVENTORY
@@ -1218,23 +1224,24 @@ ASFConstructionNetworkController::ASFConstructionNetworkController()
 #endif
 }
 
-void ASFConstructionNetworkController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void ASFPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-    DOREPLIFETIME_CONDITION(ASFConstructionNetworkController,bRoleAssigned,COND_OwnerOnly);
-    DOREPLIFETIME_CONDITION(ASFConstructionNetworkController,bBuilderRole,COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(ASFPlayerController,bRoleAssigned,COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(ASFPlayerController,bBuilderRole,COND_OwnerOnly);
 }
 
-void ASFConstructionNetworkController::BeginPlay()
+void ASFPlayerController::BeginPlay()
 {
     Super::BeginPlay();
+    BeginPlayInteraction();
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     bScenarioCursor=FParse::Param(FCommandLine::Get(),TEXT("ConstructionNetworkScenario"));
 #endif
     InitializeLocalControls();
 }
 
-void ASFConstructionNetworkController::InitializeLocalControls()
+void ASFPlayerController::InitializeLocalControls()
 {
     if (!IsLocalController() || GetNetMode()!=NM_Client) { return; }
     if (!bOwnsLookSuppression) { SetIgnoreLookInput(true); bOwnsLookSuppression=true; }
@@ -1243,21 +1250,21 @@ void ASFConstructionNetworkController::InitializeLocalControls()
         Palette=CreateWidget<USFConstructionSandboxPalette>(this,USFConstructionSandboxPalette::StaticClass());
         if (Palette)
         {
-            Palette->ConfigureNetworkPresentation(); Palette->OnAction.BindUObject(this,&ASFConstructionNetworkController::PaletteAction);
-            Palette->AddToViewport(); LayoutPalette();
+            Palette->ConfigureNetworkPresentation(); Palette->OnAction.BindUObject(this,&ASFPlayerController::PaletteAction);
+            Palette->AddToViewport(); Palette->SetBuildModeActive(bBuildMode); LayoutPalette();
         }
         bool bRegisterFocus=true;
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
         bRegisterFocus=!bScenarioCursor;
 #endif
         if (bRegisterFocus && !ActivationHandle.IsValid() && FSlateApplication::IsInitialized())
-        { ActivationHandle=FSlateApplication::Get().OnApplicationActivationStateChanged().AddUObject(this,&ASFConstructionNetworkController::ApplicationActivationChanged); }
+        { ActivationHandle=FSlateApplication::Get().OnApplicationActivationStateChanged().AddUObject(this,&ASFPlayerController::ApplicationActivationChanged); }
     }
     EnsureGatheringSkillsPanel();
     ApplyCursorMode();
 }
 
-void ASFConstructionNetworkController::EnsureGatheringSkillsPanel()
+void ASFPlayerController::EnsureGatheringSkillsPanel()
 {
     if (GatheringSkillsPanel || !IsLocalController() || GetNetMode()!=NM_Client || !GetLocalPlayer()
         || !GetLocalPlayer()->ViewportClient || !GatheringPilot || !GatheringPilot->IsEnabled()) { return; }
@@ -1269,7 +1276,7 @@ void ASFConstructionNetworkController::EnsureGatheringSkillsPanel()
     GatheringSkillsPanel->SetVisibility(ESlateVisibility::Collapsed);
 }
 
-void ASFConstructionNetworkController::ToggleGatheringSkillsPanel()
+void ASFPlayerController::ToggleGatheringSkillsPanel()
 {
     EnsureGatheringSkillsPanel();
     if (!GatheringSkillsPanel || !GatheringPilot || !GatheringPilot->IsEnabled() || bCameraLookHeld) { return; }
@@ -1278,14 +1285,36 @@ void ASFConstructionNetworkController::ToggleGatheringSkillsPanel()
     if (bOpen) { SkillsPanelViewportSize=FIntPoint::ZeroValue; }
 }
 
-void ASFConstructionNetworkController::HandleEscape()
+void ASFPlayerController::HandleEscape()
 {
     if (GatheringSkillsPanel && GatheringSkillsPanel->GetVisibility()==ESlateVisibility::Visible)
     { GatheringSkillsPanel->SetVisibility(ESlateVisibility::Collapsed); return; }
+    // Build mode: the first Esc cancels a pending line start, the next leaves build mode.
+    if (bBuildMode && !bHasLineSeed) { SetBuildMode(false); return; }
     CancelCursorAction();
 }
 
-void ASFConstructionNetworkController::LayoutPalette()
+void ASFPlayerController::ToggleBuildMode()
+{
+    // Only where something can be built: a construction state has replicated (the sandbox map or a zone build plot).
+    if (!IsLocalController() || !HostsBuildMode() || (!bBuildMode && !TActorIterator<ASFConstructionNetworkState>(GetWorld()))) { return; }
+    SetBuildMode(!bBuildMode);
+}
+
+void ASFPlayerController::SetBuildMode(bool bActive)
+{
+    if (!bActive) { CancelLine(); bDemolitionMode=false; bHasPlacementPreview=false; bHasRemovalPreview=false; bHasDoorTarget=false; }
+    bBuildMode=bActive;
+    if (Palette)
+    {
+        if (bActive) { PaletteViewportSize=FIntPoint::ZeroValue; }  // LayoutPalette measures the content again
+        Palette->SetBuildModeActive(bActive && !(InventoryPanel && InventoryPanel->GetVisibility()==ESlateVisibility::Visible));
+    }
+    if (HudLayout) { HudLayout->SetBuildModeActive(bActive); }
+    UE_LOG(LogTemp,Display,TEXT("BUILD_MODE Enabled=%d"),bActive);
+}
+
+void ASFPlayerController::LayoutPalette()
 {
     if (!Palette) { return; }
     int32 Width=0,Height=0; GetViewportSize(Width,Height);
@@ -1293,24 +1322,20 @@ void ASFConstructionNetworkController::LayoutPalette()
     if (Width<=0 || Height<=0 || !FMath::IsFinite(Scale) || Scale<=0) { return; }
     if (PaletteViewportSize==FIntPoint(Width,Height) && FMath::IsNearlyEqual(PaletteViewportScale,Scale)) { return; }
     PaletteViewportSize=FIntPoint(Width,Height); PaletteViewportScale=Scale;
-    // Size to the palette's content (tiles, cost row and buttons), capped by the viewport; never a fixed height that clips it.
-    Palette->ForceLayoutPrepass();
-    const float ContentHeight=FMath::Max(200.f,float(Palette->GetDesiredSize().Y));
-    // hud-layout-v4: the build catalogue docks in the left column (2-26% x 8-72%); the right column stays free for minimap, quests and toasts.
-    Palette->SetDesiredSizeInViewport(FVector2D(FMath::Clamp(0.24f*float(Width),300.f,440.f),FMath::Min(ContentHeight,0.64f*float(Height))));
-    Palette->SetRenderTransformPivot(FVector2D::ZeroVector);
-    Palette->SetRenderScale(FVector2D(1.0f/Scale));
-    Palette->SetPositionInViewport(FVector2D(0.02f*float(Width),0.08f*float(Height)));
+    // UI v5: the palette's canvas root fills the viewport and places the catalogue by percent anchors itself.
+    Palette->SetDesiredSizeInViewport(FVector2D(Width/Scale,Height/Scale));
+    Palette->SetPositionInViewport(FVector2D::ZeroVector,false);
 }
 
-void ASFConstructionNetworkController::ClientRestart_Implementation(APawn* NewPawn)
+void ASFPlayerController::ClientRestart_Implementation(APawn* NewPawn)
 {
     Super::ClientRestart_Implementation(NewPawn);
+    if (!HostsBuildMode()) { return; }
     bOwnsLookSuppression=false; bCameraLookHeld=false; CancelLine();
     InitializeLocalControls();
 }
 
-void ASFConstructionNetworkController::OnNetCleanup(UNetConnection* Connection)
+void ASFPlayerController::OnNetCleanup(UNetConnection* Connection)
 {
     auto* Session = FindComponentByClass<USFCharacterSessionComponent>();
     if (!Session || !Session->BeginDrain()) { Super::OnNetCleanup(Connection); return; }
@@ -1321,7 +1346,7 @@ void ASFConstructionNetworkController::OnNetCleanup(UNetConnection* Connection)
     Player = nullptr; NetConnection = nullptr;
 }
 
-void ASFConstructionNetworkController::EndPlay(const EEndPlayReason::Type Reason)
+void ASFPlayerController::EndPlay(const EEndPlayReason::Type Reason)
 {
     if (ActivationHandle.IsValid() && FSlateApplication::IsInitialized())
     { FSlateApplication::Get().OnApplicationActivationStateChanged().Remove(ActivationHandle); }
@@ -1331,7 +1356,7 @@ void ASFConstructionNetworkController::EndPlay(const EEndPlayReason::Type Reason
     Super::EndPlay(Reason);
 }
 
-bool ASFConstructionNetworkController::CanUseConstructionControls() const
+bool ASFPlayerController::CanUseConstructionControls() const
 {
     if (!bApplicationActive || bCameraLookHeld) { return false; }
     if (bDispatchingPaletteAction) { return true; }
@@ -1342,7 +1367,7 @@ bool ASFConstructionNetworkController::CanUseConstructionControls() const
     return !Palette || !Palette->IsPointerOverPalette();
 }
 
-void ASFConstructionNetworkController::ApplyCursorMode()
+void ASFPlayerController::ApplyCursorMode()
 {
     bShowMouseCursor=!bCameraLookHeld;
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
@@ -1355,7 +1380,7 @@ void ASFConstructionNetworkController::ApplyCursorMode()
     { FInputModeGameAndUI Mode; Mode.SetHideCursorDuringCapture(false); Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock); SetInputMode(Mode); }
 }
 
-void ASFConstructionNetworkController::BeginCameraLook()
+void ASFPlayerController::BeginCameraLook()
 {
     if (!CanUseConstructionControls()) { return; }
     bHasPlacementPreview=false; bHasRemovalPreview=false; bHasDoorTarget=false; SampledRevision=MAX_uint64;
@@ -1364,7 +1389,7 @@ void ASFConstructionNetworkController::BeginCameraLook()
     ApplyCursorMode();
 }
 
-void ASFConstructionNetworkController::EndCameraLook()
+void ASFPlayerController::EndCameraLook()
 {
     if (!bCameraLookHeld) { return; }
     bCameraLookHeld=false;
@@ -1373,7 +1398,7 @@ void ASFConstructionNetworkController::EndCameraLook()
     ApplyCursorMode();
 }
 
-void ASFConstructionNetworkController::ApplicationActivationChanged(bool bActive)
+void ASFPlayerController::ApplicationActivationChanged(bool bActive)
 {
     bApplicationActive=bActive;
     if (!bActive)
@@ -1385,7 +1410,7 @@ void ASFConstructionNetworkController::ApplicationActivationChanged(bool bActive
     }
 }
 
-bool ASFConstructionNetworkController::GetConstructionRay(FVector& Start, FVector& Direction) const
+bool ASFPlayerController::GetConstructionRay(FVector& Start, FVector& Direction) const
 {
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (bScenarioCursor)
@@ -1396,7 +1421,7 @@ bool ASFConstructionNetworkController::GetConstructionRay(FVector& Start, FVecto
         && DeprojectScreenPositionToWorld(X,Y,Start,Direction) && !Start.ContainsNaN() && !Direction.ContainsNaN() && Direction.IsNormalized();
 }
 
-bool ASFConstructionNetworkController::PrepareCursorAction()
+bool ASFPlayerController::PrepareCursorAction()
 {
     if (!CanUseConstructionControls()) { return false; }
     auto* State=ActiveState();
@@ -1405,7 +1430,7 @@ bool ASFConstructionNetworkController::PrepareCursorAction()
     RefreshPlacementPreview(false); return State!=nullptr;
 }
 
-void ASFConstructionNetworkController::ToggleDemolition()
+void ASFPlayerController::ToggleDemolition()
 {
     if (!CanUseConstructionControls()) { return; }
     CancelLine(); bDemolitionMode=!bDemolitionMode;
@@ -1413,19 +1438,19 @@ void ASFConstructionNetworkController::ToggleDemolition()
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_DEMOLITION_MODE Enabled=%d"),bDemolitionMode);
 }
 
-void ASFConstructionNetworkController::TogglePlacementPlane()
+void ASFPlayerController::TogglePlacementPlane()
 { if (CanUseConstructionControls()) { CancelLine(); bDemolitionMode=false; bLayerPlacement=!bLayerPlacement; } }
-void ASFConstructionNetworkController::LayerDown()
+void ASFPlayerController::LayerDown()
 { if (CanUseConstructionControls()) { CancelLine(); bDemolitionMode=false; bLayerPlacement=true; PlacementLayer=FMath::Max(0,PlacementLayer-1); } }
-void ASFConstructionNetworkController::LayerUp()
+void ASFPlayerController::LayerUp()
 { if (CanUseConstructionControls()) { CancelLine(); bDemolitionMode=false; bLayerPlacement=true; PlacementLayer=FMath::Min(19,PlacementLayer+1); } }
 
-FString ASFConstructionNetworkController::GetPlaneStatusText() const
+FString ASFPlayerController::GetPlaneStatusText() const
 {
     return bLayerPlacement ? FString::Printf(TEXT("Layer %d (%.1f m)"),PlacementLayer,PlacementLayer*SFConstructionGeometry::CellCentimetres/100.0) : TEXT("Surface");
 }
 
-bool ASFConstructionNetworkController::GetLayerPoint(const FVector& Start, const FVector& Direction, double RayLength, const FHitResult* Hit, FVector& OutPoint) const
+bool ASFPlayerController::GetLayerPoint(const FVector& Start, const FVector& Direction, double RayLength, const FHitResult* Hit, FVector& OutPoint) const
 {
     if (PlacementLayer<0 || PlacementLayer>19 || Start.ContainsNaN() || Direction.ContainsNaN() || !Direction.IsNormalized()
         || !FMath::IsFinite(RayLength) || RayLength<=0 || FMath::Abs(Direction.Z)<=1.e-8) { return false; }
@@ -1439,11 +1464,11 @@ bool ASFConstructionNetworkController::GetLayerPoint(const FVector& Start, const
     OutPoint=Point; return true;
 }
 
-void ASFConstructionNetworkController::CancelCursorAction()
+void ASFPlayerController::CancelCursorAction()
 {
     if (GatheringPilot) { GatheringPilot->CancelLocalHarvest(); } if (CanUseConstructionControls()) { CancelLine(); LastPlacementStatus=TEXT("Line start canceled."); } }
 
-void ASFConstructionNetworkController::PaletteAction(ESFConstructionPaletteAction Action)
+void ASFPlayerController::PaletteAction(ESFConstructionPaletteAction Action)
 {
     if (!bApplicationActive || bCameraLookHeld) { return; }
     TGuardValue<bool> Dispatch(bDispatchingPaletteAction,true);
@@ -1466,57 +1491,72 @@ void ASFConstructionNetworkController::PaletteAction(ESFConstructionPaletteActio
     }
 }
 
-void ASFConstructionNetworkController::SetupInputComponent()
+void ASFPlayerController::SetupInputComponent()
 {
     Super::SetupInputComponent();
-    InputComponent->BindKey(EKeys::B,IE_Pressed,this,&ASFConstructionNetworkController::PlaceFromView);
-    InputComponent->BindKey(EKeys::LeftMouseButton,IE_Pressed,this,&ASFConstructionNetworkController::PlaceFromView);
-    InputComponent->BindKey(EKeys::RightMouseButton,IE_Pressed,this,&ASFConstructionNetworkController::BeginCameraLook);
-    InputComponent->BindKey(EKeys::RightMouseButton,IE_Released,this,&ASFConstructionNetworkController::EndCameraLook);
-    InputComponent->BindKey(EKeys::X,IE_Pressed,this,&ASFConstructionNetworkController::ToggleDemolition);
-    InputComponent->BindKey(EKeys::Delete,IE_Pressed,this,&ASFConstructionNetworkController::ToggleDemolition);
-    InputComponent->BindKey(EKeys::One,IE_Pressed,this,&ASFConstructionNetworkController::SelectCube);
-    InputComponent->BindKey(EKeys::Two,IE_Pressed,this,&ASFConstructionNetworkController::SelectSlab);
-    InputComponent->BindKey(EKeys::Three,IE_Pressed,this,&ASFConstructionNetworkController::SelectSlope);
-    InputComponent->BindKey(EKeys::Four,IE_Pressed,this,&ASFConstructionNetworkController::SelectDoor);
-    InputComponent->BindKey(EKeys::Five,IE_Pressed,this,&ASFConstructionNetworkController::EquipGatheringAxe);
-    InputComponent->BindKey(EKeys::Six,IE_Pressed,this,&ASFConstructionNetworkController::EquipGatheringPickaxe);
-    InputComponent->BindKey(EKeys::C,IE_Pressed,this,&ASFConstructionNetworkController::CycleGatheringRecipe);
-    InputComponent->BindKey(EKeys::K,IE_Pressed,this,&ASFConstructionNetworkController::ClaimPlotFromView);
-    // Controller consumes E before the inherited pawn's probe binding.
-    InputComponent->BindKey(EKeys::E,IE_Pressed,this,&ASFConstructionNetworkController::ToggleDoorFromView);
-    InputComponent->BindKey(EKeys::F,IE_Pressed,this,&ASFConstructionNetworkController::ToggleDoorFromView);  // CTL-01: F is Interact/Harvest
-    InputComponent->BindKey(EKeys::L,IE_Pressed,this,&ASFConstructionNetworkController::ToggleLineMode);
-    InputComponent->BindKey(EKeys::P,IE_Pressed,this,&ASFConstructionNetworkController::TogglePlacementPlane);
-    InputComponent->BindKey(EKeys::PageDown,IE_Pressed,this,&ASFConstructionNetworkController::LayerDown);
-    InputComponent->BindKey(EKeys::PageUp,IE_Pressed,this,&ASFConstructionNetworkController::LayerUp);
-    InputComponent->BindKey(EKeys::Escape,IE_Pressed,this,&ASFConstructionNetworkController::HandleEscape);
-    InputComponent->BindKey(EKeys::M,IE_Pressed,this,&ASFConstructionNetworkController::ToggleGatheringSkillsPanel);
-    InputComponent->BindKey(EKeys::R,IE_Pressed,this,&ASFConstructionNetworkController::RotatePiece);
+    // The standalone sandbox fixture binds its own legacy keys (ASFConstructionSandboxController::SetupInputComponent).
+    if (!HostsBuildMode()) { return; }
+    auto* Input=Cast<UEnhancedInputComponent>(InputComponent);
+    if (!Input) { UE_LOG(LogTemp,Error,TEXT("GM-01 controls need the Enhanced Input component (DefaultInput.ini)")); return; }
+    const auto Bind=[this,Input](const TCHAR* Name,ETriggerEvent Event,void (ASFPlayerController::*Handler)())
+    {
+        if (const UInputAction* Action=LoadObject<UInputAction>(nullptr,*FString::Printf(TEXT("/Game/Frontier/Input/%s.%s"),Name,Name)))
+        { Input->BindAction(Action,Event,this,Handler); }
+        else { UE_LOG(LogTemp,Error,TEXT("GM-01 input action %s missing; run tools/Create-PlayerInputAssets.py"),Name); }
+    };
+    // IMC_Player (always on; CTL-01 key map). The camera itself is polled by ASFE1Character.
+    Bind(TEXT("IA_BuildMode"),ETriggerEvent::Started,&ASFPlayerController::ToggleBuildMode);
+    Bind(TEXT("IA_Inventory"),ETriggerEvent::Started,&ASFPlayerController::ToggleInventoryPanel);
+    Bind(TEXT("IA_Skills"),ETriggerEvent::Started,&ASFPlayerController::ToggleGatheringSkillsPanel);
+    Bind(TEXT("IA_EquipAxe"),ETriggerEvent::Started,&ASFPlayerController::EquipGatheringAxe);
+    Bind(TEXT("IA_EquipPickaxe"),ETriggerEvent::Started,&ASFPlayerController::EquipGatheringPickaxe);
+    Bind(TEXT("IA_CycleRecipe"),ETriggerEvent::Started,&ASFPlayerController::CycleGatheringRecipe);
+    Bind(TEXT("IA_ClaimPlot"),ETriggerEvent::Started,&ASFPlayerController::ClaimPlotFromView);
+    Bind(TEXT("IA_Escape"),ETriggerEvent::Started,&ASFPlayerController::HandleEscape);
+    Bind(TEXT("IA_MouseLook"),ETriggerEvent::Started,&ASFPlayerController::BeginCameraLook);
+    Bind(TEXT("IA_MouseLook"),ETriggerEvent::Completed,&ASFPlayerController::EndCameraLook);
+    if (FParse::Param(FCommandLine::Get(),TEXT("ExchangeUiDemo")))
+    {
+        Bind(TEXT("IA_Trade"),ETriggerEvent::Started,&ASFPlayerController::ToggleTradeDemo);
+        Bind(TEXT("IA_Market"),ETriggerEvent::Started,&ASFPlayerController::ToggleMarketDemo);
+    }
+    // IMC_Build (the character layers it on while build mode is active; it consumes these keys from IMC_Player).
+    Bind(TEXT("IA_BuildPlace"),ETriggerEvent::Started,&ASFPlayerController::PlaceFromView);
+    Bind(TEXT("IA_BuildDemolish"),ETriggerEvent::Started,&ASFPlayerController::ToggleDemolition);
+    Bind(TEXT("IA_BuildShape1"),ETriggerEvent::Started,&ASFPlayerController::SelectCube);
+    Bind(TEXT("IA_BuildShape2"),ETriggerEvent::Started,&ASFPlayerController::SelectSlab);
+    Bind(TEXT("IA_BuildShape3"),ETriggerEvent::Started,&ASFPlayerController::SelectSlope);
+    Bind(TEXT("IA_BuildShape4"),ETriggerEvent::Started,&ASFPlayerController::SelectDoor);
+    Bind(TEXT("IA_BuildRotate"),ETriggerEvent::Started,&ASFPlayerController::RotatePiece);
+    Bind(TEXT("IA_BuildLine"),ETriggerEvent::Started,&ASFPlayerController::ToggleLineMode);
+    Bind(TEXT("IA_BuildPlane"),ETriggerEvent::Started,&ASFPlayerController::TogglePlacementPlane);
+    Bind(TEXT("IA_BuildLayerUp"),ETriggerEvent::Started,&ASFPlayerController::LayerUp);
+    Bind(TEXT("IA_BuildLayerDown"),ETriggerEvent::Started,&ASFPlayerController::LayerDown);
+    Bind(TEXT("IA_BuildDoor"),ETriggerEvent::Started,&ASFPlayerController::ToggleDoorFromView);
 }
 
-void ASFConstructionNetworkController::EquipGatheringAxe()
+void ASFPlayerController::EquipGatheringAxe()
 { if (CanUseConstructionControls() && GatheringPilot) { GatheringPilot->EquipAxe(); } }
-void ASFConstructionNetworkController::EquipGatheringPickaxe()
+void ASFPlayerController::EquipGatheringPickaxe()
 { if (CanUseConstructionControls() && GatheringPilot) { GatheringPilot->EquipPickaxe(); } }
-void ASFConstructionNetworkController::CycleGatheringRecipe()
+void ASFPlayerController::CycleGatheringRecipe()
 {
     FVector Start, Direction;
     if (CanUseConstructionControls() && GatheringPilot && GetConstructionRay(Start,Direction)) { GatheringPilot->CycleRecipeFromRay(Start,Direction); }
 }
 
-void ASFConstructionNetworkController::SelectCube() { SelectShape(0); }
-void ASFConstructionNetworkController::SelectSlab() { SelectShape(1); }
-void ASFConstructionNetworkController::SelectSlope() { SelectShape(2); }
-void ASFConstructionNetworkController::SelectDoor()
+void ASFPlayerController::SelectCube() { SelectShape(0); }
+void ASFPlayerController::SelectSlab() { SelectShape(1); }
+void ASFPlayerController::SelectSlope() { SelectShape(2); }
+void ASFPlayerController::SelectDoor()
 { if (!CanUseConstructionControls()) { return; } CancelLine(); bDemolitionMode=false; bLineMode=false; bDoorSelected=true; SelectedYaw=0; UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_DOOR_SELECTION Yaw=0")); }
-void ASFConstructionNetworkController::SelectShape(uint8 Shape)
+void ASFPlayerController::SelectShape(uint8 Shape)
 {
     if (!CanUseConstructionControls()) { return; }
     CancelLine(); bDemolitionMode=false; bDoorSelected=false; SelectedShape=Shape; SelectedYaw=0; SelectedRotation=uint8(SFConstructionGeometry::IdentityRotation());
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_SELECTION Shape=%u Yaw=%u Rotation=%u"),SelectedShape,SelectedYaw,SelectedRotation);
 }
-void ASFConstructionNetworkController::RotatePiece()
+void ASFPlayerController::RotatePiece()
 {
     if (!CanUseConstructionControls()) { return; }
     CancelLine();
@@ -1531,12 +1571,12 @@ void ASFConstructionNetworkController::RotatePiece()
     }
 }
 
-void ASFConstructionNetworkController::CancelLine()
+void ASFPlayerController::CancelLine()
 {
     bHasLineSeed=false; LineCache.Revision=MAX_uint64;
 }
 
-void ASFConstructionNetworkController::ToggleLineMode()
+void ASFPlayerController::ToggleLineMode()
 {
     if (!CanUseConstructionControls()) { return; }
     CancelLine(); bDemolitionMode=false; bLineMode=!bLineMode;
@@ -1544,10 +1584,10 @@ void ASFConstructionNetworkController::ToggleLineMode()
     LastPlacementStatus=bLineMode ? TEXT("Line mode: choose start, then end. Escape cancels start.") : TEXT("Single-piece mode.");
 }
 
-void ASFConstructionNetworkController::AcknowledgePossession(APawn* P)
+void ASFPlayerController::AcknowledgePossession(APawn* P)
 {
     Super::AcknowledgePossession(P);
-    if (!IsLocalController() || !P) { return; }
+    if (!IsLocalController() || !P || !HostsBuildMode()) { return; }
     // Keep the local placeholder body from hiding the build target. Other
     // players still see it, and its capsule/authority remain unchanged.
     TInlineComponentArray<UStaticMeshComponent*> Meshes;
@@ -1555,7 +1595,7 @@ void ASFConstructionNetworkController::AcknowledgePossession(APawn* P)
     for (auto* Mesh : Meshes) { Mesh->SetOwnerNoSee(true); }
 }
 
-void ASFConstructionNetworkController::PlaceFromView()
+void ASFPlayerController::PlaceFromView()
 {
     if (!CanUseConstructionControls()) { return; }
     if (bDemolitionMode) { RemoveFromView(); return; }
@@ -1586,7 +1626,7 @@ void ASFConstructionNetworkController::PlaceFromView()
     ServerPlace(PreviewCell,State->GetSnapshot().Revision,SelectedShape,SelectedRotation,ActiveClaimId());
 }
 
-void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline)
+void ASFPlayerController::RefreshPlacementPreview(bool bDrawOutline)
 {
     bHasPlacementPreview=false;
     bHasRemovalPreview=false;
@@ -1733,7 +1773,7 @@ void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline
     }
 }
 
-void ASFConstructionNetworkController::RemoveFromView()
+void ASFPlayerController::RemoveFromView()
 {
     if (!PrepareCursorAction()) { return; }
     auto* State=ActiveState();
@@ -1750,7 +1790,7 @@ void ASFConstructionNetworkController::RemoveFromView()
     ServerRemove(RemovalCell,State->GetSnapshot().Revision,ActiveClaimId());
 }
 
-void ASFConstructionNetworkController::ServerPlaceLine_Implementation(FIntVector Start, FIntVector End, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation, const FString& ClaimId)
+void ASFPlayerController::ServerPlaceLine_Implementation(FIntVector Start, FIntVector End, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation, const FString& ClaimId)
 {
     auto* State=ResolveState(GetWorld(),ClaimId);
     auto Result=ESFConstructionNetworkResult::InvalidContext;
@@ -1764,13 +1804,13 @@ void ASFConstructionNetworkController::ServerPlaceLine_Implementation(FIntVector
     ClientPlacementResult(Result,Revision);
 }
 
-void ASFConstructionNetworkController::ServerPlace_Implementation(FIntVector Cell, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation, const FString& ClaimId)
+void ASFPlayerController::ServerPlace_Implementation(FIntVector Cell, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation, const FString& ClaimId)
 { ProcessEdit(Cell,ExpectedRevision,false,Shape,Rotation,ClaimId); }
 
-void ASFConstructionNetworkController::ServerRemove_Implementation(FIntVector Cell, uint64 ExpectedRevision, const FString& ClaimId)
+void ASFPlayerController::ServerRemove_Implementation(FIntVector Cell, uint64 ExpectedRevision, const FString& ClaimId)
 { ProcessEdit(Cell,ExpectedRevision,true,0,0,ClaimId); }
 
-void ASFConstructionNetworkController::ToggleDoorFromView()
+void ASFPlayerController::ToggleDoorFromView()
 {
     if (!CanUseConstructionControls()) { return; }
     FVector GatherStart, GatherDirection;
@@ -1783,7 +1823,7 @@ void ASFConstructionNetworkController::ToggleDoorFromView()
     ServerToggleDoor(TargetDoorOrigin,State->GetSnapshot().Revision,ActiveClaimId());
 }
 
-void ASFConstructionNetworkController::ServerRemoveDoor_Implementation(FIntVector Origin, uint64 ExpectedRevision, const FString& ClaimId)
+void ASFPlayerController::ServerRemoveDoor_Implementation(FIntVector Origin, uint64 ExpectedRevision, const FString& ClaimId)
 {
     auto* State=ResolveState(GetWorld(),ClaimId);
     auto Result=ESFConstructionNetworkResult::InvalidContext;
@@ -1794,7 +1834,7 @@ void ASFConstructionNetworkController::ServerRemoveDoor_Implementation(FIntVecto
     ClientPlacementResult(Result,Revision);
 }
 
-void ASFConstructionNetworkController::ServerToggleDoor_Implementation(FIntVector Origin, uint64 ExpectedRevision, const FString& ClaimId)
+void ASFPlayerController::ServerToggleDoor_Implementation(FIntVector Origin, uint64 ExpectedRevision, const FString& ClaimId)
 {
     auto* State=ResolveState(GetWorld(),ClaimId);
     auto Result=ESFConstructionNetworkResult::InvalidContext;
@@ -1805,7 +1845,7 @@ void ASFConstructionNetworkController::ServerToggleDoor_Implementation(FIntVecto
     ClientPlacementResult(Result,Revision);
 }
 
-void ASFConstructionNetworkController::ServerPlaceDoor_Implementation(FIntVector Origin, uint64 ExpectedRevision, uint8 Yaw, const FString& ClaimId)
+void ASFPlayerController::ServerPlaceDoor_Implementation(FIntVector Origin, uint64 ExpectedRevision, uint8 Yaw, const FString& ClaimId)
 {
     auto* State=ResolveState(GetWorld(),ClaimId);
     auto Result=ESFConstructionNetworkResult::InvalidContext;
@@ -1816,7 +1856,7 @@ void ASFConstructionNetworkController::ServerPlaceDoor_Implementation(FIntVector
     ClientPlacementResult(Result,Revision);
 }
 
-void ASFConstructionNetworkController::ProcessEdit(FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation, const FString& ClaimId)
+void ASFPlayerController::ProcessEdit(FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation, const FString& ClaimId)
 {
     auto* State = ResolveState(GetWorld(),ClaimId);
     auto* Mode = GetWorld() ? GetWorld()->GetAuthGameMode<ASFGameMode>() : nullptr;
@@ -1831,9 +1871,9 @@ void ASFConstructionNetworkController::ProcessEdit(FIntVector Cell, uint64 Expec
         if (Result == (bRemove ? ESFConstructionNetworkResult::Removed : ESFConstructionNetworkResult::Accepted))
         {
             bHousingPending = true;
-            Mode->CommitHousing(this,ClaimId,Cell,bRemove,Shape,Rotation,[Weak=TWeakObjectPtr<ASFConstructionNetworkController>(this),ClaimId,Cell,bRemove,Shape,Rotation](ESFConstructionNetworkResult Housing,const FString& Operation)
+            Mode->CommitHousing(this,ClaimId,Cell,bRemove,Shape,Rotation,[Weak=TWeakObjectPtr<ASFPlayerController>(this),ClaimId,Cell,bRemove,Shape,Rotation](ESFConstructionNetworkResult Housing,const FString& Operation)
             {
-                ASFConstructionNetworkController* Self = Weak.Get();
+                ASFPlayerController* Self = Weak.Get();
                 auto* Current = Self ? ResolveState(Self->GetWorld(),ClaimId) : nullptr;
                 const bool bCommitted = Housing == ESFConstructionNetworkResult::Accepted;
                 if (!Self || !Current) { return; }
@@ -1865,7 +1905,7 @@ void ASFConstructionNetworkController::ProcessEdit(FIntVector Cell, uint64 Expec
     ClientPlacementResult(Result,Revision);
 }
 
-void ASFConstructionNetworkController::ClientPlacementResult_Implementation(ESFConstructionNetworkResult Result, uint64 Revision)
+void ASFPlayerController::ClientPlacementResult_Implementation(ESFConstructionNetworkResult Result, uint64 Revision)
 {
     LastPlacementStatus=PlacementResultText(Result);
     LastResultCode=Result; ++ResultSerial;
@@ -1911,9 +1951,11 @@ void ASFConstructionNetworkController::ClientPlacementResult_Implementation(ESFC
 #endif
 }
 
-void ASFConstructionNetworkController::Tick(float DeltaSeconds)
+void ASFPlayerController::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+    TickInteraction();
+    if (!HostsBuildMode()) { return; }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     TickClaimScenario();
     // Plain-client regression check (Test-QuestPilot.ps1 -Leg Plain): construction state replicated, and the gathering
@@ -1951,13 +1993,14 @@ void ASFConstructionNetworkController::Tick(float DeltaSeconds)
             }
         }
         if (GEngine) { GEngine->RemoveOnScreenDebugMessage(uint64(GetUniqueID())); }
-        RefreshPlacementPreview(true);
-        if (Palette)
+        // Previews and outlines only in build mode; outside it LMB, E and F belong to IMC_Player (attack, strafe, interact).
+        if (bBuildMode) { RefreshPlacementPreview(true); }
+        else { bHasPlacementPreview=false; bHasRemovalPreview=false; bHasDoorTarget=false; }
+        if (Palette && bBuildMode)
         {
             LayoutPalette();
-            const FString Status=FString::Printf(TEXT("%s | %s (%u deg)\nMode: %s | %s\n%s\n%s\nLast: %s"),bBuilderRole ? TEXT("Builder") : TEXT("Observer"),
-                bDoorSelected ? TEXT("Door") : SelectedShape==0 ? TEXT("Cube") : SelectedShape==1 ? TEXT("Slab") : TEXT("Slope"),SelectedYaw*90,
-                bDemolitionMode ? TEXT("Demolish") : bLineMode ? TEXT("Line") : TEXT("Single"),*GetPlaneStatusText(),*PreviewStatus,*RemovalStatus,*LastPlacementStatus);
+            // The player-facing line only; the full status block stays in the sf.HudDebugText overlay (GetBuildStatusText).
+            const FString Status=PreviewStatus.IsEmpty() ? FString(TEXT("Select a piece, then place it.")) : PreviewStatus;
             if (Status!=CachedPaletteStatus) { Palette->SetStatusText(FText::FromString(Status)); CachedPaletteStatus=Status; }
         }
     }
@@ -1966,10 +2009,10 @@ void ASFConstructionNetworkController::Tick(float DeltaSeconds)
 #endif
 }
 
-FString ASFConstructionNetworkController::GetBuildStatusText() const
+FString ASFPlayerController::GetBuildStatusText() const
 {
     const auto* State=ActiveState();
-    return FString::Printf(TEXT("CONSTRUCTION | %s | DEV: UNLIMITED STOCK\nClick / B: apply    RMB hold: look    X / Delete: demolition    E: door    WASD: move\n1 Cube | 2 Half slab | 3 Slope | 4 Door | R Rotate | Selected: %s (%u deg) | L: %s | P: %s | Esc: cancel\n%s\n%s\nLast action: %s\nMembers: %d / %d | Doors: %d / %d | Reach: %.1f m\nAmber: place | Orange: demolish | Cyan: door | Red: blocked estimate | Server checks edits."),
+    return FString::Printf(TEXT("CONSTRUCTION | %s | DEV: UNLIMITED STOCK\nB: build mode    Click: apply    RMB hold: look    X / Delete: demolition    E: door    WASD: move\n1 Cube | 2 Half slab | 3 Slope | 4 Door | R Rotate | Selected: %s (%u deg) | L: %s | P: %s | Esc: cancel\n%s\n%s\nLast action: %s\nMembers: %d / %d | Doors: %d / %d | Reach: %.1f m\nAmber: place | Orange: demolish | Cyan: door | Red: blocked estimate | Server checks edits."),
         !bRoleAssigned ? TEXT("CONNECTING") : bBuilderRole ? TEXT("BUILDER") : TEXT("OBSERVER"),
         bDoorSelected ? TEXT("Door") : SelectedShape==0 ? TEXT("Cube") : SelectedShape==1 ? TEXT("Half slab") : TEXT("Slope"),SelectedYaw*90,bDemolitionMode ? TEXT("Demolish") : bLineMode ? TEXT("Line") : TEXT("Single"),*GetPlaneStatusText(),
         *PreviewStatus,*RemovalStatus,*LastPlacementStatus,State ? State->GetSnapshot().Members.Num() : 0,
@@ -1983,7 +2026,7 @@ void ASFConstructionNetworkHUD::DrawHUD()
 {
     Super::DrawHUD();
     if (CVarSFHudDebugText.GetValueOnGameThread() == 0) { return; }
-    const auto* Controller=Cast<ASFConstructionNetworkController>(GetOwningPlayerController());
+    const auto* Controller=Cast<ASFPlayerController>(GetOwningPlayerController());
     if (!Controller || !Canvas || !GEngine) { return; }
     const float Scale=FMath::Clamp(Canvas->ClipX/1280.f,0.5f,1.5f);
     DrawRect(FLinearColor(0.02f,0.03f,0.04f,0.88f),16*Scale,Canvas->ClipY-202*Scale,FMath::Min(1040*Scale,Canvas->ClipX-32*Scale),186*Scale);
@@ -2003,9 +2046,18 @@ void ASFConstructionNetworkHUD::DrawHUD()
 }
 
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-void ASFConstructionNetworkController::TickFiniteScenario()
+void ASFPlayerController::ScenarioTap(const FKey& Key)
+{
+    // Pressed now, released on the next tick, so Enhanced Input sees a whole press and fires Started.
+    InputKey(FInputKeyEventArgs::CreateSimulated(Key,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
+    ScenarioHeldKeys.Add(Key);
+}
+
+void ASFPlayerController::TickFiniteScenario()
 {
     if (!IsLocalController() || GetNetMode()!=NM_Client || !FParse::Param(FCommandLine::Get(),TEXT("ConstructionNetworkScenario"))) { return; }
+    for (const FKey& Key : ScenarioHeldKeys) { InputKey(FInputKeyEventArgs::CreateSimulated(Key,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0))); }
+    ScenarioHeldKeys.Reset();
     auto* State = ActiveState();
     if (!bRoleAssigned || !GetPawn() || !State || !State->IsPairReady()) { return; }
     const FVector Position = GetPawn()->GetActorLocation();
@@ -2014,6 +2066,15 @@ void ASFConstructionNetworkController::TickFiniteScenario()
     if (!bBuilderRole && ScenarioStep==0)
     { SetControlRotation((FVector(-150,-175,50)-PlayerCameraManager->GetCameraLocation()).Rotation()); }
     if (FPlatformTime::Seconds()-ScenarioStarted>45) { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_SCENARIO_FAILED Timeout=1")); FPlatformMisc::RequestExitWithStatus(false,1); return; }
+    // GM-01: the build keys live in IMC_Build, so press B first (again every 30 frames: a press before the character has
+    // added IMC_Player is lost), then give the character two frames to layer IMC_Build on.
+    if (!bBuildMode)
+    {
+        if (ScenarioBuildModeFrames++%30==0)
+        { UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_SCENARIO_BUILD_KEY Attempt=%d"),ScenarioBuildModeFrames/30+1); ScenarioTap(EKeys::B); }
+        return;
+    }
+    if (ScenarioBuildModeSettle<2) { ++ScenarioBuildModeSettle; return; }
     if (ScenarioStep==100)
     {
         if (!FScreenshotRequest::IsScreenshotRequested() && FPaths::FileExists(ScenarioScreenshotPath))
@@ -2136,10 +2197,8 @@ void ASFConstructionNetworkController::TickFiniteScenario()
             if (bShowMouseCursor || IsLookInputIgnored())
             { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_SCENARIO_FAILED CameraCapture=1")); FPlatformMisc::RequestExitWithStatus(false,1); return; }
             ScenarioCursorCheck=2;
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::LeftMouseButton,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::LeftMouseButton,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::X,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::X,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0))); return;
+            ScenarioTap(EKeys::LeftMouseButton);
+            ScenarioTap(EKeys::X); return;
         }
         if (ScenarioCursorCheck==2)
         {
@@ -2163,8 +2222,7 @@ void ASFConstructionNetworkController::TickFiniteScenario()
         SetControlRotation((FVector(-175,-175,0)-PlayerCameraManager->GetCameraLocation()).Rotation());
         if (!bHasPlacementPreview || PreviewCell!=FIntVector(-4,-4,0)) { return; }
         ScenarioStep=3;
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));
+        ScenarioTap(EKeys::LeftMouseButton);  // GM-01: B toggles build mode; LMB places
     }
     else if (bBuilderRole && ScenarioStep==4 && State->HasCurrentCollision())
     { ScenarioStep=5; ServerPlace(FIntVector(-4,-4,2),1,0,uint8(SFConstructionGeometry::IdentityRotation()),ActiveClaimId()); }
@@ -2193,13 +2251,11 @@ void ASFConstructionNetworkController::TickFiniteScenario()
         { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_SCENARIO_FAILED SupportedTopPreview=1")); FPlatformMisc::RequestExitWithStatus(false,1); return; }
         if (!bDemolitionMode)
         {
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::X,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::X,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0))); return;
+            ScenarioTap(EKeys::X); return;
         }
         UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_SUPPORT_PREVIEW SupportedTopAllowed=1 Revision=3"));
         ScenarioStep=15;
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::LeftMouseButton,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::LeftMouseButton,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));
+        ScenarioTap(EKeys::LeftMouseButton);
     }
     else if (bBuilderRole && ScenarioStep==16 && State->GetSnapshot().Revision==4 && State->HasCurrentCollision())
     { ScenarioStep=17; ServerRemove(FIntVector(-4,-4,1),4,ActiveClaimId()); }
@@ -2230,44 +2286,37 @@ void ASFConstructionNetworkController::TickFiniteScenario()
         SetControlRotation((FVector(-175,-175,0)-PlayerCameraManager->GetCameraLocation()).Rotation());
         if (SelectedShape!=1)
         {
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::Two,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::Two,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0))); return;
+            ScenarioTap(EKeys::Two); return;
         }
         if (!bHasPlacementPreview || PreviewCell!=FIntVector(-4,-4,0)) { return; }
         ScenarioStep=29;
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));
+        ScenarioTap(EKeys::LeftMouseButton);  // GM-01: B toggles build mode; LMB places
     }
     else if (bBuilderRole && ScenarioStep==30 && State->GetSnapshot().Revision==7 && State->HasCurrentCollision())
     {
         SetControlRotation((FVector(-175,-200,12.5)-PlayerCameraManager->GetCameraLocation()).Rotation());
         if (SelectedShape!=2)
         {
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::Three,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::Three,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0))); return;
+            ScenarioTap(EKeys::Three); return;
         }
         if (SelectedYaw!=1)
         {
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::R,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::R,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0))); return;
+            ScenarioTap(EKeys::R); return;
         }
         if (!bHasPlacementPreview || PreviewCell!=FIntVector(-4,-5,0) || !bHasRemovalPreview || RemovalCell!=FIntVector(-4,-4,0)) { return; }
         ScenarioStep=31;
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));
+        ScenarioTap(EKeys::LeftMouseButton);  // GM-01: B toggles build mode; LMB places
     }
     else if (bBuilderRole && ScenarioStep==34)
     {
         SetControlRotation((FVector(125,25,0)-PlayerCameraManager->GetCameraLocation()).Rotation());
         if (!bDoorSelected)
         {
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::Four,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::Four,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0))); return;
+            ScenarioTap(EKeys::Four); return;
         }
         if (!bHasPlacementPreview || PreviewCell!=FIntVector(2,0,0)) { return; }
         ScenarioStep=35;
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));
+        ScenarioTap(EKeys::LeftMouseButton);  // GM-01: B toggles build mode; LMB places
     }
     else if (bBuilderRole && ScenarioStep==36 && State->GetSnapshot().Revision==9 && State->HasCurrentCollision())
     { ScenarioStep=37; ServerPlace(FIntVector(2,-1,0),9,0,uint8(SFConstructionGeometry::IdentityRotation()),ActiveClaimId()); }
@@ -2280,22 +2329,19 @@ void ASFConstructionNetworkController::TickFiniteScenario()
         FString Barrier;
         if (!FParse::Value(FCommandLine::Get(),TEXT("ConstructionNetworkRemovalBarrier="),Barrier) || !FPaths::FileExists(Barrier+TEXT(".door-closed")) || !bHasDoorTarget || TargetDoorOrigin!=FIntVector(2,0,0)) { return; }
         ScenarioStep=43;
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::E,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::E,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));
+        ScenarioTap(EKeys::E);
     }
     else if (bBuilderRole && ScenarioStep==44 && bScenarioDoorOpenReported)
     {
         FString Barrier;
         if (!FParse::Value(FCommandLine::Get(),TEXT("ConstructionNetworkRemovalBarrier="),Barrier) || !FPaths::FileExists(Barrier+TEXT(".door-open")) || !bHasDoorTarget) { return; }
         ScenarioStep=45;
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::E,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::E,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));
+        ScenarioTap(EKeys::E);
     }
     else if (bBuilderRole && ScenarioStep==46 && bHasDoorTarget)
     {
         ScenarioStep=47;
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::E,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::E,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));
+        ScenarioTap(EKeys::E);
     }
     else if (bBuilderRole && ScenarioStep==48 && bScenarioDoorRemoveReported)
     {
@@ -2303,12 +2349,10 @@ void ASFConstructionNetworkController::TickFiniteScenario()
         if (!FParse::Value(FCommandLine::Get(),TEXT("ConstructionNetworkRemovalBarrier="),Barrier) || !FPaths::FileExists(Barrier+TEXT(".door-remove")) || !bHasDoorTarget || TargetDoorOrigin!=FIntVector(2,0,0)) { return; }
         if (!bDemolitionMode)
         {
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::X,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::X,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0))); return;
+            ScenarioTap(EKeys::X); return;
         }
         ScenarioStep=49;
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::LeftMouseButton,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::LeftMouseButton,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));
+        ScenarioTap(EKeys::LeftMouseButton);
     }
     else if (bBuilderRole && ScenarioStep==50 && bScenarioLineReadyReported)
     {
@@ -2324,13 +2368,11 @@ void ASFConstructionNetworkController::TickFiniteScenario()
     {
         if (bDoorSelected || SelectedShape!=0)
         {
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::One,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::One,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0))); return;
+            ScenarioTap(EKeys::One); return;
         }
         if (!bLineMode)
         {
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::L,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::L,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0))); return;
+            ScenarioTap(EKeys::L); return;
         }
         if (bScenarioLineSeedQueued && !bHasLineSeed) { return; }
         if (bScenarioLineSeedQueued && !bScenarioLineSeedReported)
@@ -2349,8 +2391,7 @@ void ASFConstructionNetworkController::TickFiniteScenario()
             if (!LineCache.bSupported || LineCache.End!=FIntVector(7,-4,0)) { return; }
             ScenarioStep=57;
         }
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));
+        ScenarioTap(EKeys::LeftMouseButton);  // GM-01: B toggles build mode; LMB places
         if (bSeedOnly) { bScenarioLineSeedQueued=true; }
     }
     else if (bBuilderRole && ScenarioStep==58 && bScenarioLayerReadyReported)
@@ -2359,18 +2400,15 @@ void ASFConstructionNetworkController::TickFiniteScenario()
         if (!FParse::Value(FCommandLine::Get(),TEXT("ConstructionNetworkRemovalBarrier="),Barrier) || !FPaths::FileExists(Barrier+TEXT(".layer"))) { return; }
         if (SelectedShape!=1)
         {
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::Two,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::Two,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0))); return;
+            ScenarioTap(EKeys::Two); return;
         }
         if (!bLayerPlacement)
         {
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::P,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::P,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0))); return;
+            ScenarioTap(EKeys::P); return;
         }
         if (PlacementLayer!=1)
         {
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::PageUp,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-            InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::PageUp,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0))); return;
+            ScenarioTap(EKeys::PageUp); return;
         }
         if (bScenarioLayerSeedQueued && !bHasLineSeed) { return; }
         if (bScenarioLayerSeedQueued && !bScenarioLayerSeedReported)
@@ -2385,8 +2423,7 @@ void ASFConstructionNetworkController::TickFiniteScenario()
         const bool bSeedOnly=!bHasLineSeed;
         if (!bSeedOnly)
         { if (!LineCache.bSupported || LineCache.End!=FIntVector(7,-4,1)) { return; } ScenarioStep=59; }
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
-        InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Released,0.f,1,FInputDeviceId::CreateFromInternalId(0)));
+        ScenarioTap(EKeys::LeftMouseButton);  // GM-01: B toggles build mode; LMB places
         if (bSeedOnly) { bScenarioLayerSeedQueued=true; }
     }
 }
@@ -2407,15 +2444,15 @@ FString ASFGameMode::InitNewPlayer(APlayerController* NewPlayerController, const
     return Result;
 }
 
-ASFConstructionNetworkState* ASFConstructionNetworkController::ActiveState() const { return FindStateFor(GetWorld(),GetPawn()); }
+ASFConstructionNetworkState* ASFPlayerController::ActiveState() const { return FindStateFor(GetWorld(),GetPawn()); }
 
-FString ASFConstructionNetworkController::ActiveClaimId() const
+FString ASFPlayerController::ActiveClaimId() const
 {
     const ASFConstructionNetworkState* State=ActiveState();
     return State ? State->GetClaimId() : FString();
 }
 
-void ASFConstructionNetworkController::ClaimPlotFromView()
+void ASFPlayerController::ClaimPlotFromView()
 {
     const FString ClaimId=ActiveClaimId();
     if (ClaimId.IsEmpty()) { LastPlacementStatus=TEXT("Stand on a build plot to claim it."); return; }
@@ -2423,35 +2460,35 @@ void ASFConstructionNetworkController::ClaimPlotFromView()
     ServerClaimPlot(ClaimId);
 }
 
-void ASFConstructionNetworkController::SFClaimPlot() { ClaimPlotFromView(); }
+void ASFPlayerController::SFClaimPlot() { ClaimPlotFromView(); }
 
-void ASFConstructionNetworkController::SFGrantBuild(const FString& DevName)
+void ASFPlayerController::SFGrantBuild(const FString& DevName)
 {
     const FString ClaimId=ActiveClaimId();
     if (ClaimId.IsEmpty() || !USFBackpackComponent::IsValidDevName(DevName)) { LastPlacementStatus=TEXT("Stand on your plot and name a dev character."); return; }
     ServerGrantBuild(ClaimId,TEXT("chr_dev_")+DevName);
 }
 
-void ASFConstructionNetworkController::ServerClaimPlot_Implementation(const FString& ClaimId)
+void ASFPlayerController::ServerClaimPlot_Implementation(const FString& ClaimId)
 {
     auto* Mode=GetWorld()->GetAuthGameMode<ASFGameMode>();
     if (!Mode) { return; }
-    Mode->ClaimPlot(this,ClaimId,[Weak=TWeakObjectPtr<ASFConstructionNetworkController>(this),ClaimId](ESFConstructionNetworkResult Result)
+    Mode->ClaimPlot(this,ClaimId,[Weak=TWeakObjectPtr<ASFPlayerController>(this),ClaimId](ESFConstructionNetworkResult Result)
     {
-        ASFConstructionNetworkController* Self=Weak.Get();
+        ASFPlayerController* Self=Weak.Get();
         if (!Self) { return; }
         UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_CLAIM_RESULT Claim=%s Result=%d"),*ClaimId,int32(Result));
         Self->ClientPlacementResult(Result,0);
     });
 }
 
-void ASFConstructionNetworkController::ServerGrantBuild_Implementation(const FString& ClaimId, const FString& TargetCharacterId)
+void ASFPlayerController::ServerGrantBuild_Implementation(const FString& ClaimId, const FString& TargetCharacterId)
 {
     auto* Mode=GetWorld()->GetAuthGameMode<ASFGameMode>();
     if (!Mode) { return; }
-    Mode->GrantBuild(this,ClaimId,TargetCharacterId,[Weak=TWeakObjectPtr<ASFConstructionNetworkController>(this),ClaimId,TargetCharacterId](ESFConstructionNetworkResult Result)
+    Mode->GrantBuild(this,ClaimId,TargetCharacterId,[Weak=TWeakObjectPtr<ASFPlayerController>(this),ClaimId,TargetCharacterId](ESFConstructionNetworkResult Result)
     {
-        ASFConstructionNetworkController* Self=Weak.Get();
+        ASFPlayerController* Self=Weak.Get();
         if (!Self) { return; }
         UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_GRANT_RESULT Claim=%s Target=%s Result=%d"),*ClaimId,*TargetCharacterId,int32(Result));
         Self->ClientPlacementResult(Result,0);
@@ -2459,7 +2496,7 @@ void ASFConstructionNetworkController::ServerGrantBuild_Implementation(const FSt
 }
 
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-void ASFConstructionNetworkController::TickClaimScenario()
+void ASFPlayerController::TickClaimScenario()
 {
     // Development runner for claims and housing persistence (tools/Test-ClaimHousing.ps1). Every action is the normal
     // RPC; the server places the pawns on the first plot. Each step waits for the server's reply to the one before.

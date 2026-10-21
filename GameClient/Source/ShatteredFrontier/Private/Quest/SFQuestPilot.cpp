@@ -1,4 +1,5 @@
 #include "Quest/SFQuestPilot.h"
+#include "Framework/SFPlayerController.h"
 
 #include "Quest/SFQuestPilotEvents.h"
 #include "Blueprint/WidgetTree.h"
@@ -588,7 +589,7 @@ void USFQuestPilotComponent::TickFullClient(double Now)
 
     if (Next.Action == EFullAction::Build)
     {
-        auto* Builder = Cast<ASFConstructionNetworkController>(PC);
+        auto* Builder = Cast<ASFPlayerController>(PC);
         const ASFConstructionNetworkState* Claim = FindClaim(GetWorld());
         if (!Builder || !Claim) { return; }
         if (FVector::Dist2D(Pawn->GetActorLocation(), Claim->GetAnchorOffsetCm() + FVector(25, 25, 25)) > 300) { return; }  // not on the pad yet

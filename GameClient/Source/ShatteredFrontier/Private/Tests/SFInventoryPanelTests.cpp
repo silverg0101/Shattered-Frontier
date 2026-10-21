@@ -1,4 +1,5 @@
 #include "Inventory/SFInventoryPanel.h"
+#include "Framework/SFPlayerController.h"
 
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
 #include "Misc/AutomationTest.h"
@@ -78,7 +79,7 @@ bool FSFInventoryPanelAccessorTest::RunTest(const FString& Parameters)
     FTestWorldWrapper Fixture;
     if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) { return false; }
     UWorld* World=Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
-    auto* PC=World->SpawnActor<ASFConstructionNetworkController>();
+    auto* PC=World->SpawnActor<ASFPlayerController>();
     auto* Gather=PC ? PC->FindComponentByClass<USFGatheringPilotComponent>() : nullptr;
     auto* Bag=PC ? PC->FindComponentByClass<UInventoryComponent>() : nullptr;
     if (!TestNotNull(TEXT("Pilot"),Gather) || !TestNotNull(TEXT("Inventory"),Bag)) { return false; }

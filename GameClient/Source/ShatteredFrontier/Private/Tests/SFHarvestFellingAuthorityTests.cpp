@@ -1,5 +1,6 @@
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR && SF_WITH_MINIMAL_INVENTORY
 #include "Misc/AutomationTest.h"
+#include "Framework/SFPlayerController.h"
 #include "Tests/AutomationCommon.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Gathering/SFHarvestFallingTree.h"
@@ -34,7 +35,7 @@ bool FSFHarvestFellingAuthorityTest::RunTest(const FString& Parameters)
     Floor->SetStaticMesh(LoadObject<UStaticMesh>(nullptr,TEXT("/Engine/BasicShapes/Cube.Cube")));
     Floor->SetMobility(EComponentMobility::Static); Floor->SetCollisionProfileName(TEXT("BlockAll"));
     Floor->SetWorldLocation(FVector(0,0,-50)); Floor->SetWorldScale3D(FVector(100,100,1)); Floor->RegisterComponent();
-    auto* PC=World->SpawnActor<ASFConstructionNetworkController>();
+    auto* PC=World->SpawnActor<ASFPlayerController>();
     auto* Pawn=World->SpawnActor<ASFE1Character>(FVector(0,0,100),FRotator::ZeroRotator,Spawn);
     auto* Node=World->SpawnActorDeferred<ASFGatheringPilotNode>(ASFGatheringPilotNode::StaticClass(),FTransform(FVector(200,0,70)));
     if (!PC||!Pawn||!Node) { return false; }

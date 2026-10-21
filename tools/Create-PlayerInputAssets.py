@@ -27,11 +27,33 @@ ACTIONS = {
     'IA_Walk': (T.BOOLEAN, ['LeftControl', 'RightControl']),
     'IA_WalkToggle': (T.BOOLEAN, ['Divide']),
     'IA_Interact': (T.BOOLEAN, ['F', 'Gamepad_FaceButton_Right']),
+    # GM-01: always-on controller actions (ASFPlayerController::SetupInputComponent binds them).
+    'IA_BuildMode': (T.BOOLEAN, ['B']),
+    'IA_Inventory': (T.BOOLEAN, ['I']),
+    'IA_Skills': (T.BOOLEAN, ['M']),
+    'IA_EquipAxe': (T.BOOLEAN, ['Five']),
+    'IA_EquipPickaxe': (T.BOOLEAN, ['Six']),
+    'IA_CycleRecipe': (T.BOOLEAN, ['C']),
+    'IA_ClaimPlot': (T.BOOLEAN, ['K']),
+    'IA_Escape': (T.BOOLEAN, ['Escape']),
+    'IA_Trade': (T.BOOLEAN, ['F6']),
+    'IA_Market': (T.BOOLEAN, ['F7']),
 }
-# Build mode (construction controllers): reserves the keys whose build actions win over IMC_Player. Added at a
-# higher priority, it consumes them so the player context does not also strafe, orbit or interact on them.
+# Build mode (GM-01, B): added at a higher priority while build mode lasts, so these keys place, demolish and toggle
+# doors instead of orbiting (LMB), strafing (E) or interacting (F). Never maps the wheel, so zoom works in build mode.
 BUILD_ACTIONS = {
-    "IA_BuildReserved": (T.BOOLEAN, ["E", "F", "LeftMouseButton"]),
+    'IA_BuildPlace': (T.BOOLEAN, ['LeftMouseButton']),
+    'IA_BuildDemolish': (T.BOOLEAN, ['X', 'Delete']),
+    'IA_BuildShape1': (T.BOOLEAN, ['One']),
+    'IA_BuildShape2': (T.BOOLEAN, ['Two']),
+    'IA_BuildShape3': (T.BOOLEAN, ['Three']),
+    'IA_BuildShape4': (T.BOOLEAN, ['Four']),
+    'IA_BuildRotate': (T.BOOLEAN, ['R']),
+    'IA_BuildLine': (T.BOOLEAN, ['L']),
+    'IA_BuildPlane': (T.BOOLEAN, ['P']),
+    'IA_BuildLayerUp': (T.BOOLEAN, ['PageUp']),
+    'IA_BuildLayerDown': (T.BOOLEAN, ['PageDown']),
+    'IA_BuildDoor': (T.BOOLEAN, ['E', 'F']),
 }
 tools = unreal.AssetToolsHelpers.get_asset_tools()
 lib = unreal.EditorAssetLibrary
@@ -57,4 +79,7 @@ def build_context(context_name, actions):
 
 build_context("IMC_Player", ACTIONS)
 build_context("IMC_Build", BUILD_ACTIONS)
+# The WP7 stand-in replaced by the build actions above.
+if lib.does_asset_exist(f'{ROOT}/IA_BuildReserved'):
+    lib.delete_asset(f'{ROOT}/IA_BuildReserved')
 unreal.log(f'PLAYER_INPUT_ASSETS actions={len(ACTIONS)} mappings={sum(len(k) for _, k in ACTIONS.values())} root={ROOT}')

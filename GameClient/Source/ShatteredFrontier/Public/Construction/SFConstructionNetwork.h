@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Framework/SFGameMode.h"
-#include "Interaction/SFE1PlayerController.h"
 #include "GameFramework/HUD.h"
 #include "SFConstructionNetwork.generated.h"
 
@@ -11,7 +10,7 @@ class UStaticMeshComponent;
 class UProceduralMeshComponent;
 class UPrimitiveComponent;
 class UStaticMesh;
-class ASFConstructionNetworkController;
+class ASFPlayerController;
 class USFConstructionSandboxPalette;
 class USFGatheringSkillsPanel;
 enum class ESFConstructionPaletteAction : uint8;
@@ -77,11 +76,11 @@ public:
     virtual void BeginPlay() override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     // bCommit=false runs every admission check without changing anything (a housing commit then follows).
-    ESFConstructionNetworkResult Edit(ASFConstructionNetworkController* Controller, FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation, bool bCommit=true);
-    ESFConstructionNetworkResult PlaceLine(ASFConstructionNetworkController* Controller, FIntVector Start, FIntVector End, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation);
-    ESFConstructionNetworkResult PlaceDoor(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision, uint8 Yaw);
-    ESFConstructionNetworkResult ToggleDoor(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision);
-    ESFConstructionNetworkResult RemoveDoor(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision);
+    ESFConstructionNetworkResult Edit(ASFPlayerController* Controller, FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation, bool bCommit=true);
+    ESFConstructionNetworkResult PlaceLine(ASFPlayerController* Controller, FIntVector Start, FIntVector End, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation);
+    ESFConstructionNetworkResult PlaceDoor(ASFPlayerController* Controller, FIntVector Origin, uint64 ExpectedRevision, uint8 Yaw);
+    ESFConstructionNetworkResult ToggleDoor(ASFPlayerController* Controller, FIntVector Origin, uint64 ExpectedRevision);
+    ESFConstructionNetworkResult RemoveDoor(ASFPlayerController* Controller, FIntVector Origin, uint64 ExpectedRevision);
     const FSFConstructionNetworkSnapshot& GetSnapshot() const { return Snapshot; }
     bool HasCurrentCollision() const;
     FString GetContentDigest() const;
@@ -112,8 +111,8 @@ public:
     // is projected (hard reject). Pieces come back as identity cubes until piece content is persisted (BLD-01).
     bool RestoreFromHousing(const TArray<FSFConstructionNetworkRestoredPiece>& Pieces);
 private:
-    ESFConstructionNetworkResult ValidateEditContext(ASFConstructionNetworkController* Controller, uint64 ExpectedRevision, const APawn*& OutPawn, const AActor*& OutFoundation) const;
-    ESFConstructionNetworkResult ValidateDoorTarget(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision, int32& OutIndex) const;
+    ESFConstructionNetworkResult ValidateEditContext(ASFPlayerController* Controller, uint64 ExpectedRevision, const APawn*& OutPawn, const AActor*& OutFoundation) const;
+    ESFConstructionNetworkResult ValidateDoorTarget(ASFPlayerController* Controller, FIntVector Origin, uint64 ExpectedRevision, int32& OutIndex) const;
     ESFConstructionNetworkResult ValidateMemberCell(const APawn* Pawn, const AActor* Foundation, FIntVector Cell, bool bRemove, uint8 Shape, uint8 Rotation) const;
     bool Activate(const FSFConstructionNetworkSnapshot& Candidate);
     UFUNCTION() void OnRep_Snapshot();
@@ -133,171 +132,6 @@ private:
     UPROPERTY(Replicated) FIntVector AnchorCell = FIntVector::ZeroValue;
     UPROPERTY(Replicated) FString ClaimId;
     uint64 ProjectionRevision = 0;
-};
-
-UCLASS(NotBlueprintable)
-class SHATTEREDFRONTIER_API ASFConstructionNetworkController : public ASFE1PlayerController
-{
-    GENERATED_BODY()
-public:
-    ASFConstructionNetworkController();
-    virtual void BeginPlay() override;
-    virtual void EndPlay(const EEndPlayReason::Type Reason) override;
-    // INT-05: with in-flight commits, a closed connection detaches the controller instead of destroying it (linkdead drain).
-    virtual void OnNetCleanup(UNetConnection* Connection) override;
-    virtual void ClientRestart_Implementation(APawn* NewPawn) override;
-    virtual void SetupInputComponent() override;
-    virtual void AcknowledgePossession(APawn* P) override;
-    virtual void Tick(float DeltaSeconds) override;
-    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-    void AssignRole(bool bBuilder);
-    FString GetBuildStatusText() const;
-    // Console (development): grant chr_dev_<name> build rights on the plot the pawn stands in, or claim that plot.
-    UFUNCTION(Exec) void SFGrantBuild(const FString& DevName);
-    UFUNCTION(Exec) void SFClaimPlot();
-private:
-    friend class USFQuestPilotComponent;  // dev scenario driver sends the same placement RPC the cursor does
-    UPROPERTY(VisibleAnywhere) TObjectPtr<USFGatheringPilotComponent> GatheringPilot;
-    UPROPERTY() TObjectPtr<UActorComponent> PilotInventory;
-    void InitializeLocalControls();
-    void ApplyCursorMode();
-    void LayoutPalette();
-    void EnsureGatheringSkillsPanel();
-    void ToggleGatheringSkillsPanel();
-    void HandleEscape();
-    void BeginCameraLook();
-    void EndCameraLook();
-    void ApplicationActivationChanged(bool bActive);
-    bool CanUseConstructionControls() const;
-    bool GetConstructionRay(FVector& Start, FVector& Direction) const;
-    bool PrepareCursorAction();
-    void ToggleDemolition();
-    void TogglePlacementPlane();
-    void LayerDown();
-    void LayerUp();
-    FString GetPlaneStatusText() const;
-    bool GetLayerPoint(const FVector& Start, const FVector& Direction, double RayLength, const FHitResult* Hit, FVector& OutPoint) const;
-    void CancelCursorAction();
-    void PaletteAction(ESFConstructionPaletteAction Action);
-    void PlaceFromView();
-    void RemoveFromView();
-    void ToggleDoorFromView();
-    void EquipGatheringAxe();
-    void EquipGatheringPickaxe();
-    void CycleGatheringRecipe();
-    void ClaimPlotFromView();  // K: claim the build plot the pawn stands in
-    // BLD-02 A2: claim a plot and grant build rights through Housing; the server checks everything with the service.
-    UFUNCTION(Server, Reliable) void ServerClaimPlot(const FString& ClaimId);
-    UFUNCTION(Server, Reliable) void ServerGrantBuild(const FString& ClaimId, const FString& TargetCharacterId);
-#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-    void TickClaimScenario();  // -ClaimScenario=owner|owner_restart|guest (tools/Test-ClaimHousing.ps1)
-    int32 ClaimScenarioStep = 0;
-    bool bPlainCheckLogged = false;
-    uint32 ClaimScenarioSentSerial = 0;
-    double ClaimScenarioNextAt = 0;
-#endif
-    ESFConstructionNetworkResult LastResultCode = ESFConstructionNetworkResult::InvalidContext;
-    uint32 ResultSerial = 0;  // counts ClientPlacementResult replies
-    void RefreshPlacementPreview(bool bDrawOutline);
-    void ProcessEdit(FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation, const FString& ClaimId);
-    // BLD-02 A2: the claim state the pawn stands in (the only state in the sandbox); "" when none.
-    class ASFConstructionNetworkState* ActiveState() const;
-    FString ActiveClaimId() const;
-    void SelectCube();
-    void SelectSlab();
-    void SelectSlope();
-    void SelectDoor();
-    void RotatePiece();
-    void ToggleLineMode();
-    void CancelLine();
-    void SelectShape(uint8 Shape);
-    UFUNCTION(Server, Reliable) void ServerPlaceLine(FIntVector Start, FIntVector End, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation, const FString& ClaimId);
-    UFUNCTION(Server, Reliable) void ServerPlace(FIntVector Cell, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation, const FString& ClaimId);
-    UFUNCTION(Server, Reliable) void ServerRemove(FIntVector Cell, uint64 ExpectedRevision, const FString& ClaimId);
-    UFUNCTION(Server, Reliable) void ServerPlaceDoor(FIntVector Origin, uint64 ExpectedRevision, uint8 Yaw, const FString& ClaimId);
-    UFUNCTION(Server, Reliable) void ServerRemoveDoor(FIntVector Origin, uint64 ExpectedRevision, const FString& ClaimId);
-    UFUNCTION(Server, Reliable) void ServerToggleDoor(FIntVector Origin, uint64 ExpectedRevision, const FString& ClaimId);
-    UFUNCTION(Client, Reliable) void ClientPlacementResult(ESFConstructionNetworkResult Result, uint64 Revision);
-    UPROPERTY(Replicated) bool bRoleAssigned = false;
-    UPROPERTY(Replicated) bool bBuilderRole = false; // Advisory; permission is derived again on server.
-    uint64 LastRequestFrame = MAX_uint64;
-    bool bHousingPending = false;  // INT-04: one housing commit at a time per builder
-    bool bHasPlacementPreview = false;
-    FIntVector PreviewCell = FIntVector::ZeroValue;
-    bool bHasRemovalPreview = false;
-    FIntVector RemovalCell = FIntVector::ZeroValue;
-    FString PreviewStatus = TEXT("Connecting to construction state...");
-    FString LastPlacementStatus = TEXT("No placement requested.");
-    uint8 SelectedShape = 0;
-    uint8 SelectedRotation = 0;
-    uint8 SelectedYaw = 0;
-    UPROPERTY(Transient) TObjectPtr<USFConstructionSandboxPalette> Palette;
-    UPROPERTY(Transient) TObjectPtr<USFGatheringSkillsPanel> GatheringSkillsPanel;
-    FIntPoint SkillsPanelViewportSize = FIntPoint::ZeroValue;
-    float SkillsPanelViewportScale = 0;
-    bool bCameraLookHeld = false;
-    bool bOwnsLookSuppression = false;
-    bool bApplicationActive = true;
-    bool bDispatchingPaletteAction = false;
-    FDelegateHandle ActivationHandle;
-    uint64 SampledRevision = MAX_uint64;
-    FString CachedPaletteStatus;
-    FIntPoint PaletteViewportSize = FIntPoint::ZeroValue;
-    float PaletteViewportScale = 0;
-    bool bLayerPlacement = false;
-    int32 PlacementLayer = 0; // Local selection on the released Z0..19 construction lattice.
-    bool bDemolitionMode = false;
-    bool bDoorSelected = false;
-    bool bLineMode = false;
-    bool bHasLineSeed = false;
-    FIntVector LineStart = FIntVector::ZeroValue;
-    uint64 LineRevision = 0;
-    struct FLinePreviewCache
-    {
-        TWeakObjectPtr<ASFConstructionNetworkState> State;
-        uint64 Revision = MAX_uint64;
-        FIntVector Start = FIntVector::ZeroValue, End = FIntVector::ZeroValue;
-        uint8 Shape = 255, Rotation = 255;
-        bool bSupported = false;
-    } LineCache;
-    bool bHasDoorTarget = false;
-    FIntVector TargetDoorOrigin = FIntVector::ZeroValue;
-    struct FSupportCache
-    {
-        TWeakObjectPtr<ASFConstructionNetworkState> State;
-        uint64 Revision = MAX_uint64;
-        FIntVector PlacementCell = FIntVector::ZeroValue;
-        FIntVector RemovalCell = FIntVector::ZeroValue;
-        uint8 Shape = 255, Rotation = 255;
-        bool bHasRemoval = false;
-        bool bPlacementAllowed = false, bRemovalAllowed = false;
-    } SupportCache;
-    FString RemovalStatus = TEXT("Aim at a placed piece to remove it.");
-#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-    friend class FSFConstructionNetworkCursorTest;
-    bool bScenarioCursor = false;
-    bool bSyntheticPointerOverPalette = false;
-    void TickFiniteScenario();
-    int32 ScenarioCursorCheck = 0;
-    int32 ScenarioStep = 0;
-    double ScenarioStarted = 0;
-    FString ScenarioScreenshotPath;
-    bool bScenarioLayerReadyReported = false;
-    bool bScenarioLayerSeedQueued = false;
-    bool bScenarioLayerSeedReported = false;
-    bool bScenarioLineSeedQueued = false;
-    bool bScenarioLineSeedReported = false;
-    bool bScenarioLineReadyReported = false;
-    bool bScenarioEmptyReported = false;
-    bool bScenarioDoorCameraAimed = false;
-    bool bScenarioDoorCapsuleClosedReported = false;
-    bool bScenarioDoorCapsuleOpenReported = false;
-    bool bScenarioDoorRemoveReported = false;
-    bool bScenarioDoorClosedReported = false;
-    bool bScenarioDoorOpenReported = false;
-    bool bScenarioDoorOpenCaptureStarted = false;
-    FString ScenarioDoorOpenPath;
-#endif
 };
 
 UCLASS(NotBlueprintable)

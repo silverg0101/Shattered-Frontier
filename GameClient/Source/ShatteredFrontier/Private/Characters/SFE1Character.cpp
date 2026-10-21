@@ -14,7 +14,7 @@
 #include "Framework/SFE1Settings.h"
 #include "Combat/SFCombatPilot.h"
 #include "Combat/SFCrowdControlComponent.h"
-#include "Interaction/SFE1PlayerController.h"
+#include "Framework/SFPlayerController.h"
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -26,8 +26,6 @@
 #include "Misc/Parse.h"
 #include "TimerManager.h"
 #include "Townsfolk/SFTownsfolk.h"
-#include "Kismet/KismetMaterialLibrary.h"
-#include "Materials/MaterialParameterCollection.h"
 #include "Construction/SFConstructionNetwork.h"
 #include "Construction/SFConstructionSandboxController.h"
 
@@ -54,11 +52,8 @@ ASFE1Character::ASFE1Character()
     // replicated CharacterMovement velocity and falling state, so remote proxies animate with no extra replication.
     GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight()), FRotator(0, -90, 0));
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    // The UE4 mannequin's physics-asset bounds miss the striding feet by about 38 cm, and virtual shadow maps invalidate
-    // only the pages under a primitive's bounds, so stale leg shadows trailed behind a running player (measured with
-    // ArtSource/PlayerCharacter/repro_shadow_trail.py). Twice the bounds cover the stride.
-    // ponytail: fixed scale for this body; drop it when the MetaHuman body (with its own physics asset) replaces it.
-    GetMesh()->SetBoundsScale(2.0f);
+    // Skinned body: always invalidate its virtual shadow map pages, so no stale shadow pieces stay behind it.
+    GetMesh()->ShadowCacheInvalidationBehavior = EShadowCacheInvalidationBehavior::Always;
     if (!IsRunningDedicatedServer())
     {
         static ConstructorHelpers::FObjectFinder<USkeletalMesh> Body(TEXT("/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
@@ -133,7 +128,7 @@ namespace SFE1CameraControls
 bool ASFE1Character::UsesCameraControls() const
 {
     // Every player controller; IMC_Build is layered on while build mode is active (TickCameraControls).
-    return Cast<ASFE1PlayerController>(Controller) != nullptr;
+    return Cast<ASFPlayerController>(Controller) != nullptr;
 }
 
 void ASFE1Character::ApplyControlScheme()
@@ -200,16 +195,6 @@ void ASFE1Character::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     if (IsLocallyControlled() && PlayerMapping && UsesCameraControls()) { TickCameraControls(DeltaSeconds); }
-    // Foliage and ground cover bend away from the local player through MPC_Interaction (WP4 owns the asset; absent is fine).
-    if (IsLocallyControlled())
-    {
-        if (!bInteractionMpcLoaded)
-        {
-            bInteractionMpcLoaded = true;
-            InteractionMpc = LoadObject<UMaterialParameterCollection>(nullptr, TEXT("/Game/Frontier/Materials/MPC_Interaction.MPC_Interaction"), nullptr, LOAD_NoWarn | LOAD_Quiet);
-        }
-        if (InteractionMpc) { UKismetMaterialLibrary::SetVectorParameterValue(this, InteractionMpc, TEXT("PlayerPosition"), FLinearColor(GetActorLocation())); }
-    }
 }
 
 void ASFE1Character::TickCameraControls(float Dt)
@@ -230,11 +215,10 @@ void ASFE1Character::TickCameraControls(float Dt)
     const auto Pressed = [&](EAction A) { return IsHeld(A) && !(HeldBefore & (1u << A)); };
     const auto Released = [&](EAction A) { return !IsHeld(A) && (HeldBefore & (1u << A)) != 0; };
 
-    // Build mode (CTL-01): the construction sandbox controller, or the network controller once a construction state has
-    // replicated. Its legacy E/F (interact, harvest, door) and LMB (place) win, so IMC_Build reserves those keys at a
-    // higher priority and consumes them from IMC_Player only while build mode lasts.
-    const bool bBuildMode = PC->IsA<ASFConstructionSandboxController>()
-        || (PC->IsA<ASFConstructionNetworkController>() && TActorIterator<ASFConstructionNetworkState>(GetWorld()));
+    // Build mode (GM-01): toggled with B on the player controller; the standalone sandbox fixture is always in it.
+    // IMC_Build carries the build actions at a higher priority and consumes their keys from IMC_Player while it lasts.
+    const ASFPlayerController* Player = Cast<ASFPlayerController>(PC);
+    const bool bBuildMode = PC->IsA<ASFConstructionSandboxController>() || (Player && Player->IsBuildModeActive());
     if (bBuildMode != bBuildMappingActive)
     {
         bBuildMappingActive = bBuildMode;
@@ -389,7 +373,7 @@ void ASFE1Character::ServerPilotAttack_Implementation()
 
 void ASFE1Character::Interact()
 {
-    if (ASFE1PlayerController* PlayerController = Cast<ASFE1PlayerController>(Controller))
+    if (ASFPlayerController* PlayerController = Cast<ASFPlayerController>(Controller))
     {
         PlayerController->InteractWithSelectedTarget();
     }

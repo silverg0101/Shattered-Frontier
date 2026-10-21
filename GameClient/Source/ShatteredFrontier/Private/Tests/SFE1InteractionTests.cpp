@@ -3,7 +3,7 @@
 #include "Misc/AutomationTest.h"
 #include "Tests/AutomationCommon.h"
 #include "Interaction/SFE1InteractionTarget.h"
-#include "Interaction/SFE1PlayerController.h"
+#include "Framework/SFPlayerController.h"
 #include "Characters/SFE1Character.h"
 #include "Framework/SFE1Settings.h"
 #include "Components/BoxComponent.h"
@@ -28,7 +28,7 @@ bool FSFE1InteractionAuthorityTest::RunTest(const FString& Parameters)
     World->GetWorldSettings()->NotifyBeginPlay();
     FActorSpawnParameters Spawn;
     Spawn.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    ASFE1PlayerController* Controller = World->SpawnActor<ASFE1PlayerController>();
+    ASFPlayerController* Controller = World->SpawnActor<ASFPlayerController>();
     ASFE1Character* Pawn = World->SpawnActor<ASFE1Character>(FVector(0, 0, 100), FRotator::ZeroRotator, Spawn);
     ASFE1InteractionTarget* Target = World->SpawnActor<ASFE1InteractionTarget>(FVector(200, 0, 100), FRotator::ZeroRotator, Spawn);
     if (!TestNotNull(TEXT("Controller spawned"), Controller) || !TestNotNull(TEXT("Pawn spawned"), Pawn)

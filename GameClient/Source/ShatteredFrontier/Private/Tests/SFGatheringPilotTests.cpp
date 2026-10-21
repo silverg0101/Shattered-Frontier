@@ -1,5 +1,6 @@
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR && SF_WITH_MINIMAL_INVENTORY
 #include "Misc/AutomationTest.h"
+#include "Framework/SFPlayerController.h"
 #include "Tests/AutomationCommon.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Inventory/SFInventoryLedgerClient.h"
@@ -26,8 +27,8 @@ bool FSFGatheringPilotAuthorityTest::RunTest(const FString& Parameters)
     FTestWorldWrapper Fixture;
     if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) { return false; }
     auto* World=Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
-    auto* PC=World->SpawnActor<ASFConstructionNetworkController>();
-    auto* Other=World->SpawnActor<ASFConstructionNetworkController>();
+    auto* PC=World->SpawnActor<ASFPlayerController>();
+    auto* Other=World->SpawnActor<ASFPlayerController>();
     FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     auto* Pawn=World->SpawnActor<ASFE1Character>(FVector(0,0,100),FRotator::ZeroRotator,Spawn);
     auto* OtherPawn=World->SpawnActor<ASFE1Character>(FVector(0,100,100),FRotator::ZeroRotator,Spawn);
@@ -175,7 +176,7 @@ bool FSFGatheringPilotToolTest::RunTest(const FString& Parameters)
     FTestWorldWrapper Fixture;
     if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) { return false; }
     auto* World=Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
-    auto* PC=World->SpawnActor<ASFConstructionNetworkController>();
+    auto* PC=World->SpawnActor<ASFPlayerController>();
     FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     auto* Pawn=World->SpawnActor<ASFE1Character>(FVector(0,0,100),FRotator::ZeroRotator,Spawn);
     auto* Wood=World->SpawnActor<ASFGatheringPilotNode>(FVector(200,0,100),FRotator::ZeroRotator,Spawn);
@@ -218,7 +219,7 @@ bool FSFGatheringPilotToolTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Equipped tool permits exactly one final harvest"),Wood->State.Revision,uint32(1));
     TestEqual(TEXT("Successful harvest outcome"),Gather->Feedback.Result,ESFGatheringPilotResult::Granted);
 
-    auto* SmallPC=World->SpawnActor<ASFConstructionNetworkController>(); if (!SmallPC) { return false; }
+    auto* SmallPC=World->SpawnActor<ASFPlayerController>(); if (!SmallPC) { return false; }
     auto* SmallGather=SmallPC->FindComponentByClass<USFGatheringPilotComponent>();
     auto* SmallBag=SmallPC->FindComponentByClass<UInventoryComponent>(); if (!SmallGather || !SmallBag) { return false; }
     SmallGather->CapturedSettings=DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(),SmallGather);
@@ -246,7 +247,7 @@ bool FSFGatheringPilotLifecycleTest::RunTest(const FString& Parameters)
     if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) { return false; }
     auto* World=Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
     FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    auto* PC=World->SpawnActor<ASFConstructionNetworkController>();
+    auto* PC=World->SpawnActor<ASFPlayerController>();
     auto* Pawn=World->SpawnActor<ASFE1Character>(FVector(0,0,100),FRotator::ZeroRotator,Spawn);
     auto* Wood=World->SpawnActor<ASFGatheringPilotNode>(FVector(200,0,100),FRotator::ZeroRotator,Spawn);
     if (!PC || !Pawn || !Wood) { return false; }
@@ -373,7 +374,7 @@ bool FSFGatheringPilotLedgerTest::RunTest(const FString& Parameters)
     FTestWorldWrapper Fixture;
     if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) { return false; }
     auto* World=Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
-    auto* PC=World->SpawnActor<ASFConstructionNetworkController>();
+    auto* PC=World->SpawnActor<ASFPlayerController>();
     FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     auto* Pawn=World->SpawnActor<ASFE1Character>(FVector(0,0,100),FRotator::ZeroRotator,Spawn);
     auto* Wood=World->SpawnActor<ASFGatheringPilotNode>(FVector(200,0,100),FRotator::ZeroRotator,Spawn);

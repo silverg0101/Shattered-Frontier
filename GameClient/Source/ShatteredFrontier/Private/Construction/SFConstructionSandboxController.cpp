@@ -38,12 +38,12 @@ void ASFConstructionSandboxController::BeginPlay()
 #endif
     if (GetLocalPlayer() && GetLocalPlayer()->ViewportClient)
     {
-        Palette = CreateWidget<USFConstructionSandboxPalette>(this,USFConstructionSandboxPalette::StaticClass());
-        if (Palette)
+        SandboxPalette = CreateWidget<USFConstructionSandboxPalette>(this,USFConstructionSandboxPalette::StaticClass());
+        if (SandboxPalette)
         {
-            Palette->OnAction.BindUObject(this,&ThisClass::PaletteAction);
-            Palette->AddToViewport(); Palette->SetPositionInViewport(FVector2D(16,16));
-            Palette->SetDesiredSizeInViewport(FVector2D(320,560));
+            SandboxPalette->OnAction.BindUObject(this,&ThisClass::PaletteAction);
+            SandboxPalette->AddToViewport(); SandboxPalette->SetPositionInViewport(FVector2D(16,16));
+            SandboxPalette->SetDesiredSizeInViewport(FVector2D(320,560));
         }
         if (FSlateApplication::IsInitialized())
         { ActivationHandle = FSlateApplication::Get().OnApplicationActivationStateChanged().AddUObject(this,&ThisClass::ApplicationActivationChanged); }
@@ -55,7 +55,7 @@ void ASFConstructionSandboxController::EndPlay(const EEndPlayReason::Type Reason
 {
     if (ActivationHandle.IsValid() && FSlateApplication::IsInitialized())
     { FSlateApplication::Get().OnApplicationActivationStateChanged().Remove(ActivationHandle); }
-    if (Palette) { Palette->OnAction.Unbind(); Palette->RemoveFromParent(); Palette = nullptr; }
+    if (SandboxPalette) { SandboxPalette->OnAction.Unbind(); SandboxPalette->RemoveFromParent(); SandboxPalette = nullptr; }
     if (bOwnsLookSuppression) { SetIgnoreLookInput(false); bOwnsLookSuppression = false; }
     Super::EndPlay(Reason);
 }
@@ -79,7 +79,7 @@ bool ASFConstructionSandboxController::CanUseConstructionControls() const
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (bScenarioCursor) { return !bSyntheticPointerOverPalette; }
 #endif
-    return !Palette || !Palette->IsPointerOverPalette();
+    return !SandboxPalette || !SandboxPalette->IsPointerOverPalette();
 }
 
 bool ASFConstructionSandboxController::GetConstructionRay(FVector& Start, FVector& Direction) const
@@ -590,6 +590,6 @@ void ASFConstructionSandboxController::UpdateConstructionPreview()
         bDoorSelected ? TEXT("Ordinary door") : Shapes[Shape],bDemolitionMode ? TEXT("DEMOLISH") : bLineMode ? TEXT("LINE") : TEXT("SINGLE"),
         bDoorSelected ? DoorYaw+1 : Rotation+1,bDoorSelected ? 4 : 24,bLayerPlacement ? TEXT("Horizontal layer") : TEXT("Surface snap"),PlacementLayer,PlacementLayer*0.5,
         State->GetMemberCount(),State->GetDoorCount(),State->GetMaximumLineCells(),*Advisory,*State->GetInstabilitySummary(),*RemovalPrompt,*LastResult);
-    if (Palette) { Palette->SetStatusText(FText::FromString(Status)); }
+    if (SandboxPalette) { SandboxPalette->SetStatusText(FText::FromString(Status)); }
     else if (GEngine) { GEngine->AddOnScreenDebugMessage(static_cast<uint64>(GetUniqueID())+(1ull<<32),0.1f,FColor::Cyan,Status); }
 }

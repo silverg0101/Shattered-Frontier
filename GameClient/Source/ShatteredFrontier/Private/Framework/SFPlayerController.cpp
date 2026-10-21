@@ -1,4 +1,5 @@
-#include "Interaction/SFE1PlayerController.h"
+#include "Framework/SFPlayerController.h"
+#include "Construction/SFConstructionSandboxPalette.h"
 #include "Interaction/SFE1InteractionTarget.h"
 #include "Framework/SFE1Settings.h"
 #include "Gathering/SFGatheringPilot.h"
@@ -25,7 +26,7 @@ bool IsFinitePosition(const FVector& Position)
     return FMath::IsFinite(Position.X) && FMath::IsFinite(Position.Y) && FMath::IsFinite(Position.Z);
 }
 
-const TCHAR* ResultText(ESFE1InteractionResult Result)
+const TCHAR* InteractionResultText(ESFE1InteractionResult Result)
 {
     switch (Result)
     {
@@ -41,14 +42,8 @@ const TCHAR* ResultText(ESFE1InteractionResult Result)
 }
 }
 
-ASFE1PlayerController::ASFE1PlayerController()
+void ASFPlayerController::BeginPlayInteraction()
 {
-    PrimaryActorTick.bCanEverTick = true;
-}
-
-void ASFE1PlayerController::BeginPlay()
-{
-    Super::BeginPlay();
     struct FStartupRules { float RangeCm; float CooldownSeconds; };
     static const FStartupRules Rules = []()
     {
@@ -71,7 +66,7 @@ void ASFE1PlayerController::BeginPlay()
 #endif
 }
 
-ESFE1InteractionResult ASFE1PlayerController::ValidateTarget(AActor* ProposedTarget, uint32 ExpectedRevision) const
+ESFE1InteractionResult ASFPlayerController::ValidateTarget(AActor* ProposedTarget, uint32 ExpectedRevision) const
 {
     const APawn* ControlledPawn = GetPawn();
     if (!bSettingsCaptured || !IsValid(ControlledPawn) || ControlledPawn->IsActorBeingDestroyed()
@@ -107,7 +102,7 @@ ESFE1InteractionResult ASFE1PlayerController::ValidateTarget(AActor* ProposedTar
     return ESFE1InteractionResult::Accepted;
 }
 
-ESFE1InteractionResult ASFE1PlayerController::ProcessInteraction(AActor* Target, uint32 ExpectedRevision)
+ESFE1InteractionResult ASFPlayerController::ProcessInteraction(AActor* Target, uint32 ExpectedRevision)
 {
     if (!HasAuthority() || IsActorBeingDestroyed()) { return ESFE1InteractionResult::InvalidController; }
     const ESFE1InteractionResult Validation = ValidateTarget(Target, ExpectedRevision);
@@ -124,7 +119,7 @@ ESFE1InteractionResult ASFE1PlayerController::ProcessInteraction(AActor* Target,
     return ESFE1InteractionResult::Accepted;
 }
 
-void ASFE1PlayerController::ServerRequestInteraction_Implementation(AActor* Target, uint32 ExpectedRevision)
+void ASFPlayerController::ServerRequestInteraction_Implementation(AActor* Target, uint32 ExpectedRevision)
 {
     const ESFE1InteractionResult Result = ProcessInteraction(Target, ExpectedRevision);
     const APlayerState* CurrentPlayer = GetPawn() ? GetPawn()->GetPlayerState() : nullptr;
@@ -138,18 +133,17 @@ void ASFE1PlayerController::ServerRequestInteraction_Implementation(AActor* Targ
     ClientInteractionResult(Result, Remaining);
 }
 
-void ASFE1PlayerController::ClientInteractionResult_Implementation(ESFE1InteractionResult Result, float ServerCooldownRemainingSeconds)
+void ASFPlayerController::ClientInteractionResult_Implementation(ESFE1InteractionResult Result, float ServerCooldownRemainingSeconds)
 {
     LastResult = Result;
     LocalFeedback.ReceiveServerResult(GetWorld()->GetTimeSeconds(), ServerCooldownRemainingSeconds);
     ResultVisibleUntilSeconds = GetWorld()->GetTimeSeconds() + 2.0;
     // One bounded line per explicit input, useful in separate client logs; no tick logging.
-    UE_LOG(LogTemp, Display, TEXT("E1_INTERACTION_RESULT Result=%d %s"), static_cast<int32>(Result), ResultText(Result));
+    UE_LOG(LogTemp, Display, TEXT("E1_INTERACTION_RESULT Result=%d %s"), static_cast<int32>(Result), InteractionResultText(Result));
 }
 
-void ASFE1PlayerController::Tick(float DeltaSeconds)
+void ASFPlayerController::TickInteraction()
 {
-    Super::Tick(DeltaSeconds);
     if (IsLocalController() && !GatheringHud)
     {
         // The pilot component arrives after BeginPlay, so install the gathering HUD on first sight of an enabled pilot.
@@ -175,7 +169,7 @@ void ASFE1PlayerController::Tick(float DeltaSeconds)
     }
 }
 
-void ASFE1PlayerController::RefreshLocalFeedback()
+void ASFPlayerController::RefreshLocalFeedback()
 {
     SelectedTarget.Reset();
     double NearestDistanceSquared = TNumericLimits<double>::Max();
@@ -206,8 +200,8 @@ void ASFE1PlayerController::RefreshLocalFeedback()
         break;
     case ESFE1LocalInteractionState::Coalescing: Message = TEXT("Unavailable: input settling"); break;
     default:
-        Message = bShowResult ? ResultText(LastResult)
-            : Advisory == ESFE1InteractionResult::Accepted ? TEXT("E: Available (server revalidates)") : ResultText(Advisory);
+        Message = bShowResult ? InteractionResultText(LastResult)
+            : Advisory == ESFE1InteractionResult::Accepted ? TEXT("E: Available (server revalidates)") : InteractionResultText(Advisory);
         break;
     }
     if (GEngine)
@@ -219,18 +213,7 @@ void ASFE1PlayerController::RefreshLocalFeedback()
     }
 }
 
-void ASFE1PlayerController::SetupInputComponent()
-{
-    Super::SetupInputComponent();
-    InputComponent->BindKey(EKeys::I, IE_Pressed, this, &ASFE1PlayerController::ToggleInventoryPanel);
-    if (FParse::Param(FCommandLine::Get(), TEXT("ExchangeUiDemo")))
-    {
-        InputComponent->BindKey(EKeys::F6, IE_Pressed, this, &ASFE1PlayerController::ToggleTradeDemo);
-        InputComponent->BindKey(EKeys::F7, IE_Pressed, this, &ASFE1PlayerController::ToggleMarketDemo);
-    }
-}
-
-void ASFE1PlayerController::ToggleInventoryPanel()
+void ASFPlayerController::ToggleInventoryPanel()
 {
     USFGatheringPilotComponent* Pilot = FindComponentByClass<USFGatheringPilotComponent>();
     if (!IsLocalController() || !Pilot || !Pilot->IsEnabled()) { return; }
@@ -240,16 +223,24 @@ void ASFE1PlayerController::ToggleInventoryPanel()
         if (!InventoryPanel) { return; }
         InventoryPanel->Configure(Pilot);
         InventoryPanel->AddToViewport(20);
-        InventoryPanel->SetDesiredSizeInViewport(FVector2D(480, 560));
-        { int32 Width = 0, Height = 0; GetViewportSize(Width, Height); InventoryPanel->SetPositionInViewport(FVector2D(0.06f * Width, 0.07f * Height)); }  // hud-layout-v4: 6% x 7%
         InventoryPanel->SetVisibility(ESlateVisibility::Collapsed);
     }
-    // Visible (hit-testable) so the category tabs and item tooltips work; it only covers its own 480 x 560 area.
-    InventoryPanel->SetVisibility(InventoryPanel->GetVisibility() == ESlateVisibility::Collapsed
-        ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    // Visible (hit-testable) so the category tabs and item tooltips work; it only covers its own slot.
+    const bool bOpen = InventoryPanel->GetVisibility() == ESlateVisibility::Collapsed;
+    if (bOpen)
+    {
+        // UI v5: fill the viewport; the canvas root places the 576 x 886 panel at 4% x 3% itself.
+        int32 Width = 0, Height = 0; GetViewportSize(Width, Height);
+        const float Scale = FMath::Max(0.01f, UWidgetLayoutLibrary::GetViewportScale(this));
+        InventoryPanel->SetDesiredSizeInViewport(FVector2D(Width / Scale, Height / Scale));
+        InventoryPanel->SetPositionInViewport(FVector2D::ZeroVector, false);
+    }
+    InventoryPanel->SetVisibility(bOpen ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    // The build catalogue shares the left column: hidden while the inventory is open, back with build mode on close.
+    if (Palette) { Palette->SetBuildModeActive(!bOpen && bBuildMode); }
 }
 
-void ASFE1PlayerController::InteractWithSelectedTarget()
+void ASFPlayerController::InteractWithSelectedTarget()
 {
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (InteractionInputAttempts != MAX_uint64) { ++InteractionInputAttempts; }
@@ -288,7 +279,7 @@ TSharedPtr<ISFExchangeService> ExchangeServiceFor(APlayerController* Controller)
 }
 }
 
-void ASFE1PlayerController::ToggleTradeDemo()
+void ASFPlayerController::ToggleTradeDemo()
 {
     if (!IsLocalController()) { return; }
     if (!TradeWindow)
@@ -306,10 +297,10 @@ void ASFE1PlayerController::ToggleTradeDemo()
         TradeWindow->SetVisibility(ESlateVisibility::Collapsed);
     }
     TradeWindow->SetVisibility(TradeWindow->GetVisibility() == ESlateVisibility::Collapsed ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
-    PlaceCentered(this, TradeWindow);  // centre window, 26-74% x 14-78%
+    FillViewport(this, TradeWindow);  // modal root: dims the scene and places the window at 26-74% x 14-78% itself
 }
 
-void ASFE1PlayerController::ToggleMarketDemo()
+void ASFPlayerController::ToggleMarketDemo()
 {
     if (!IsLocalController()) { return; }
     if (!MarketBoard)

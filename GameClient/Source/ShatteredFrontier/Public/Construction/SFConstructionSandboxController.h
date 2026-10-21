@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Interaction/SFE1PlayerController.h"
+#include "Framework/SFPlayerController.h"
 #include "Construction/SFConstructionSandboxState.h"
 #include "Construction/SFConstructionSaveStore.h"
 #include "SFConstructionSandboxController.generated.h"
@@ -10,7 +10,7 @@ enum class ESFConstructionPaletteAction : uint8;
 
 // Input exists only on this opt-in controller; inherited movement/jump/E remain.
 UCLASS(NotBlueprintable)
-class SHATTEREDFRONTIER_API ASFConstructionSandboxController : public ASFE1PlayerController
+class SHATTEREDFRONTIER_API ASFConstructionSandboxController : public ASFPlayerController
 {
     GENERATED_BODY()
 public:
@@ -32,6 +32,9 @@ public:
     const TArray<FIntVector>& GetLineGhostCells() const { return LineGhostCells; }
     bool IsLinePreviewAllowed() const { return bLinePreviewAllowed; }
     const FString& GetLinePreviewReason() const { return LinePreviewReason; }
+protected:
+    // GM-01: this standalone fixture keeps its own build keys, palette and cursor.
+    virtual bool HostsBuildMode() const override { return false; }
 private:
     friend class ASFConstructionSandboxState;
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
@@ -103,7 +106,7 @@ private:
     FSFConstructionLineIntent LinePreviewIntent;
     TArray<FIntVector> LineGhostCells;
     FString LinePreviewReason;
-    UPROPERTY(Transient) TObjectPtr<USFConstructionSandboxPalette> Palette;
+    UPROPERTY(Transient) TObjectPtr<USFConstructionSandboxPalette> SandboxPalette;
     FDelegateHandle ActivationHandle;
     bool bCameraLookHeld = false;
     bool bOwnsLookSuppression = false;

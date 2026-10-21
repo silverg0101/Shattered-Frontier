@@ -4,7 +4,7 @@
 #include "Characters/SFE1Character.h"
 #include "Framework/SFE1Settings.h"
 #include "Interaction/SFE1InteractionTarget.h"
-#include "Interaction/SFE1PlayerController.h"
+#include "Framework/SFPlayerController.h"
 #include "Engine/World.h"
 #include "Engine/NetDriver.h"
 #include "EngineUtils.h"
@@ -51,7 +51,7 @@ struct FScenario
     double PawnCacheStationarySince = -1.0;
 };
 
-bool ProbePawnCache(const TSharedRef<FScenario>& State, ASFE1PlayerController* Controller, ASFE1Character* OwnPawn)
+bool ProbePawnCache(const TSharedRef<FScenario>& State, ASFPlayerController* Controller, ASFE1Character* OwnPawn)
 {
     if (State->bPawnCacheAttempted) { return true; }
     UWorld* World = State->World.Get();
@@ -257,7 +257,7 @@ void Step(const TSharedRef<FScenario>& State)
     }
     int32 CharacterCount = 0;
     ASFE1Character* OwnedPawn = nullptr;
-    ASFE1PlayerController* LocalController = nullptr;
+    ASFPlayerController* LocalController = nullptr;
     for (TActorIterator<ASFE1Character> It(World); It; ++It)
     {
         ASFE1Character* Pawn = *It;
@@ -267,7 +267,7 @@ void Step(const TSharedRef<FScenario>& State)
         ++CharacterCount;
         if (Pawn->IsLocallyControlled())
         {
-            ASFE1PlayerController* Controller = Cast<ASFE1PlayerController>(Pawn->GetController());
+            ASFPlayerController* Controller = Cast<ASFPlayerController>(Pawn->GetController());
             if (Controller && Controller->IsLocalController())
             {
                 OwnedPawn = Pawn;

@@ -7,7 +7,6 @@
 class UCameraComponent;
 class UInputAction;
 class UInputMappingContext;
-class UMaterialParameterCollection;
 class USFCrowdControlComponent;
 class USFQuestPilotComponent;
 class USpringArmComponent;
@@ -50,7 +49,7 @@ private:
     void Interact();
 
     // CTL-01 WoW-style camera and movement (docs/decisions/CTL-01-player-camera-controls.md) under every
-    // ASFE1PlayerController; in the construction controllers their build keys (IMC_Build) take priority.
+    // ASFPlayerController; in build mode (B) the build keys in IMC_Build take priority.
     struct FSFMouseButtonState { bool bDown = false; bool bDragging = false; double DownAt = 0; FVector2D DownCursor = FVector2D::ZeroVector; };
     bool UsesCameraControls() const;
     void ApplyControlScheme();
@@ -58,8 +57,6 @@ private:
     void SetMouseCaptured(bool bCaptured);
     UPROPERTY(Transient) TObjectPtr<UInputMappingContext> PlayerMapping;
     UPROPERTY(Transient) TObjectPtr<UInputMappingContext> BuildMapping;
-    UPROPERTY(Transient) TObjectPtr<UMaterialParameterCollection> InteractionMpc;
-    bool bInteractionMpcLoaded = false;
     UPROPERTY(Transient) TArray<TObjectPtr<UInputAction>> PlayerActions;
     FSFMouseButtonState OrbitButton, MouseLookButton;
     FRotator CameraRotation = FRotator::ZeroRotator;

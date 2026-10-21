@@ -1,6 +1,7 @@
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
 
 #include "Misc/AutomationTest.h"
+#include "Framework/SFPlayerController.h"
 #include "Construction/SFConstructionNetwork.h"
 #include "Construction/SFConstructionGeometry.h"
 #include "Serialization/BitReader.h"
@@ -68,7 +69,7 @@ bool FSFConstructionNetworkCursorTest::RunTest(const FString& Parameters)
     FTestWorldWrapper Fixture;
     if (!Fixture.CreateTestWorld(EWorldType::Game)) { return false; }
     auto* World=Fixture.GetTestWorld();
-    auto* Controller=World->SpawnActorDeferred<ASFConstructionNetworkController>(ASFConstructionNetworkController::StaticClass(),FTransform::Identity);
+    auto* Controller=World->SpawnActorDeferred<ASFPlayerController>(ASFPlayerController::StaticClass(),FTransform::Identity);
     if (!Controller) { return false; }
     Controller->SetAsLocalPlayerController(); Controller->FinishSpawning(FTransform::Identity);
     Controller->bScenarioCursor=true;

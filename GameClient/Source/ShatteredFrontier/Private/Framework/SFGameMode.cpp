@@ -1,4 +1,5 @@
 #include "Framework/SFGameMode.h"
+#include "Framework/SFPlayerController.h"
 #include "Construction/SFConstructionNetwork.h"
 #include "Characters/SFE1Character.h"
 #include "Interaction/SFE1InteractionTarget.h"
@@ -11,7 +12,7 @@
 ASFGameMode::ASFGameMode()
 {
     DefaultPawnClass = ASFE1Character::StaticClass();
-    PlayerControllerClass = ASFConstructionNetworkController::StaticClass();
+    PlayerControllerClass = ASFPlayerController::StaticClass();
     HUDClass = ASFConstructionNetworkHUD::StaticClass();
     // The combat slot bridge is the only per-tick work; 1 Hz is enough for it.
     PrimaryActorTick.bCanEverTick = true;
