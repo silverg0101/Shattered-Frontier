@@ -2,7 +2,7 @@
 
 Silverbrook enables construction, gathering, combat, quests and client townsfolk through typed settings. Launch `Greenlands_Silverbrook -server -log` and connect with `127.0.0.1 -game -log`; no pilot flags or game-mode URL override are needed. B toggles build mode. `-ExchangeFake` and `-GatheringFixtureNodes` are non-shipping fixtures. The [gathering pilot](../docs/gameplay-gathering-pilot.md) uses the free Minimal Inventory Runtime 2.0.0 engine plugin on Win64 (install from Fab on a new machine). F harvests oak/iron or refines at the sawmill/forge over a timed channel; 5/6 equip the starter axe/pickaxe. Focused authority and `tools/Test-GatheringPilot.ps1` evidence are linked there.
 
-Tab selects the nearest attackable boar or handed-off townsfolk NPC within `USFCombatPilotSettings::MeleeRangeMetres`, then cycles by distance. The selected swing uses that actor and the server checks reach; the frame shows its HP. Combat creatures without a health and hit path are excluded.
+Tab selects the nearest visible hostile in a 120-degree camera-yaw cone within 30 m, then cycles a distance-ordered snapshot. It refreshes on wrap or after 1.5 s without Tab. The server owns the framed target; it drops beyond 45 m, on death, leash reset or zone/pawn change, while lost visibility alone retains it. Melee still reaches 2.8 m, and an out-of-reach selected swing shows "Out of range" without consuming a cooldown. These are bounded `Pilot Targeting` defaults; the server validates range while the client owns the camera cone and visibility filter. Combat creatures without a health and hit path are excluded.
 
 ## Isolated construction placement pilot
 

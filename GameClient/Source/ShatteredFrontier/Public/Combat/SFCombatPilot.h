@@ -41,6 +41,16 @@ public:
     float BoarMeleeCooldownSeconds = 1.6f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="1.0", ClampMax="5.0", Units="m"))
     float MeleeRangeMetres = 2.8f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Targeting", meta=(ClampMin="10", ClampMax="60", Units="m"))
+    float TabTargetRangeMetres = 30.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Targeting", meta=(ClampMin="10", ClampMax="100", Units="m"))
+    float TabTargetDropRangeMetres = 45.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Targeting", meta=(ClampMin="60", ClampMax="360", Units="deg"))
+    float TabTargetConeDegrees = 120.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Targeting")
+    bool bTabTargetRequireLineOfSight = true;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Targeting", meta=(ClampMin="0.5", ClampMax="5", Units="s"))
+    float TabTargetCycleResetSeconds = 1.5f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="1.0", ClampMax="15.0", Units="s"))
     float PlayerRespawnDelaySeconds = 4.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="4.0", ClampMax="18.0", Units="m"))
@@ -82,6 +92,7 @@ public:
     /** One id per spawned boar, so its death rewards once. */
     FString DeathId() const { return FString::Printf(TEXT("%s:%d:%d"), *SpawnGroup, Slot, SpawnSerial); }
     int32 Health() const { return CurrentHealth; }
+    bool IsLeashing() const { return bReturning; }
 private:
     UFUNCTION() void OnRep_Health();
     UPROPERTY(ReplicatedUsing=OnRep_Health) int32 CurrentHealth = 0;

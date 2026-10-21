@@ -47,6 +47,9 @@ public:
     void InteractWithSelectedTarget();
     void SelectNextCombatTarget();
     AActor* GetSelectedCombatTarget() const;
+    UFUNCTION(Server, Reliable) void ServerSelectCombatTarget(AActor* Target);
+    UFUNCTION(Client, Unreliable) void ClientPilotHit(const FString& Message);
+    FString GetPilotMessage() const;
     void ToggleInventoryPanel();
     // Trading UI: F6 trade window, F7 market board, on the live exchange (the fake only with -ExchangeFake).
     void ToggleTradeDemo();
@@ -228,8 +231,11 @@ private:
     TSharedPtr<FSFTradeViewModel> DemoTrade;
     TSharedPtr<FSFMarketViewModel> DemoMarket;
     TWeakObjectPtr<ASFE1InteractionTarget> SelectedTarget;
-    TWeakObjectPtr<AActor> SelectedCombatTarget;
-    void RefreshCombatTarget();
+    TArray<TWeakObjectPtr<AActor>> TabTargetSnapshot;
+    int32 NextTabTargetIndex = 0;
+    double LastTabAt = -1.0e30;
+    FString PilotMessage;
+    double PilotMessageUntil = 0.0;
     uint32 SelectedRevision = 0;
     double LastAcceptedServerSeconds = -1.0e30;
     double NextLocalRefreshSeconds = 0.0;

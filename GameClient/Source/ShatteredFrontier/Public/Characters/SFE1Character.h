@@ -26,11 +26,14 @@ public:
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     void CombatSetHealth(int32 Value);
     int32 CombatHealth() const { return PilotHealth; }
+    AActor* GetCombatTarget() const { return CombatTarget; }
+    void SetCombatTarget(AActor* Target);
     UPROPERTY(VisibleAnywhere) TObjectPtr<USFCrowdControlComponent> CrowdControl;
 
 private:
     friend class USFQuestPilotComponent;  // dev scenario driver swings through the same PilotAttack as the key
     UPROPERTY(Replicated) int32 PilotHealth = 0;  // shown by the vitals HUD (SFE1VitalsHud), not in the world
+    UPROPERTY(Replicated) TObjectPtr<AActor> CombatTarget;
     FTimerHandle CombatScenarioTimer;
     int32 CombatScenarioAttackCount = 0;
     void TickCombatScenario();

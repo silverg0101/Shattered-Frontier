@@ -150,7 +150,6 @@ void ASFPlayerController::ClientInteractionResult_Implementation(ESFE1Interactio
 
 void ASFPlayerController::TickInteraction()
 {
-    if (IsLocalController()) { RefreshCombatTarget(); }
     if (IsLocalController() && !GatheringHud)
     {
         // The pilot component arrives after BeginPlay, so install the gathering HUD on first sight of an enabled pilot.
@@ -203,40 +202,74 @@ bool IsLiveCombatTarget(const AActor* Actor)
 
 AActor* ASFPlayerController::GetSelectedCombatTarget() const
 {
-    AActor* Target = SelectedCombatTarget.Get();
-    const APawn* Pawn = GetPawn();
-    const double RangeCm = GetDefault<USFCombatPilotSettings>()->MeleeRangeMetres * 100.0;
-    return Pawn && IsLiveCombatTarget(Target) && Target->GetWorld() == GetWorld()
-        && FVector::Dist2D(Pawn->GetActorLocation(), Target->GetActorLocation()) <= RangeCm ? Target : nullptr;
+    const ASFE1Character* Character = Cast<ASFE1Character>(GetPawn());
+    return Character ? Character->GetCombatTarget() : nullptr;
 }
 
-void ASFPlayerController::RefreshCombatTarget()
-{
-    if (!GetSelectedCombatTarget()) { SelectedCombatTarget.Reset(); }
-}
+FString ASFPlayerController::GetPilotMessage() const
+{ return GetWorld() && GetWorld()->GetTimeSeconds() < PilotMessageUntil ? PilotMessage : FString(); }
+
+void ASFPlayerController::ClientPilotHit_Implementation(const FString& Message)
+{ PilotMessage = Message; PilotMessageUntil = GetWorld()->GetTimeSeconds() + 1.0; }
 
 void ASFPlayerController::SelectNextCombatTarget()
 {
-    if (!IsLocalController() || !GetPawn() || !GetWorld()) { SelectedCombatTarget.Reset(); return; }
-    RefreshCombatTarget();
+    if (!IsLocalController() || !GetPawn() || !GetWorld()) { return; }
+    const USFCombatPilotSettings* Settings = GetDefault<USFCombatPilotSettings>();
+    const double Now = GetWorld()->GetTimeSeconds();
+    const bool bRefresh = FSFTabTargetSelection::ShouldRefresh(Now, LastTabAt,
+        Settings->TabTargetCycleResetSeconds, NextTabTargetIndex, TabTargetSnapshot.Num());
     TArray<FSFTabTargetCandidate> Candidates;
     TMap<int32, AActor*> Actors;
     const FVector From = GetPawn()->GetActorLocation();
-    const double RangeCm = GetDefault<USFCombatPilotSettings>()->MeleeRangeMetres * 100.0;
+    FVector CameraLocation; FRotator CameraRotation;
+    GetPlayerViewPoint(CameraLocation, CameraRotation);
+    const FVector CameraYaw = FRotator(0, CameraRotation.Yaw, 0).Vector();
+    auto AddCandidate = [&](AActor* Actor)
+    {
+        if (!IsLiveCombatTarget(Actor)) { return; }
+        const FVector Delta = Actor->GetActorLocation() - From;
+        const double Distance = Delta.Size2D();
+        if (Distance > Settings->TabTargetRangeMetres * 100.0) { return; }
+        bool bVisible = true;
+        if (Settings->bTabTargetRequireLineOfSight)
+        {
+            FHitResult Hit; FCollisionQueryParams Query(SCENE_QUERY_STAT(TabTargetVisibility), false, GetPawn());
+            const FVector Centre = Actor->GetActorLocation();
+            bVisible = !GetWorld()->LineTraceSingleByChannel(Hit, CameraLocation, Centre, ECC_Visibility, Query) || Hit.GetActor() == Actor;
+        }
+        Candidates.Add({Actor->GetUniqueID(), Distance, FVector::DotProduct(CameraYaw, Delta.GetSafeNormal2D()), bVisible});
+        Actors.Add(Actor->GetUniqueID(), Actor);
+    };
     for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
-    {
-        if (!IsLiveCombatTarget(*It)) { continue; }
-        const double Distance = FVector::Dist2D(From, It->GetActorLocation());
-        Candidates.Add({It->GetUniqueID(), Distance}); Actors.Add(It->GetUniqueID(), *It);
-    }
+    { AddCandidate(*It); }
     for (TActorIterator<ASFTownsfolkNpc> It(GetWorld()); It; ++It)
+    { AddCandidate(*It); }
+    if (bRefresh)
     {
-        if (!IsLiveCombatTarget(*It)) { continue; }
-        const double Distance = FVector::Dist2D(From, It->GetActorLocation());
-        Candidates.Add({It->GetUniqueID(), Distance}); Actors.Add(It->GetUniqueID(), *It);
+        TabTargetSnapshot.Reset(); NextTabTargetIndex = 0;
+        for (int32 Id : FSFTabTargetSelection::Snapshot(Candidates, Settings->TabTargetRangeMetres * 100.0,
+            Settings->TabTargetConeDegrees, Settings->bTabTargetRequireLineOfSight))
+        { TabTargetSnapshot.Add(Actors.FindRef(Id)); }
     }
-    const int32 CurrentId = SelectedCombatTarget.IsValid() ? SelectedCombatTarget->GetUniqueID() : INDEX_NONE;
-    SelectedCombatTarget = Actors.FindRef(FSFTabTargetSelection::Next(Candidates, CurrentId, RangeCm));
+    AActor* Next = nullptr;
+    while (NextTabTargetIndex < TabTargetSnapshot.Num() && !Next)
+    {
+        AActor* Candidate = TabTargetSnapshot[NextTabTargetIndex++].Get();
+        if (IsLiveCombatTarget(Candidate) && FVector::Dist2D(From, Candidate->GetActorLocation()) <= Settings->TabTargetRangeMetres * 100.0)
+        { Next = Candidate; }
+    }
+    LastTabAt = Now;
+    if (Next && Next != GetSelectedCombatTarget()) { ServerSelectCombatTarget(Next); }
+}
+
+void ASFPlayerController::ServerSelectCombatTarget_Implementation(AActor* Target)
+{
+    ASFE1Character* Character = Cast<ASFE1Character>(GetPawn());
+    if (!Character || Character->CombatHealth() <= 0 || !IsLiveCombatTarget(Target) || Target->GetWorld() != GetWorld()) { return; }
+    if (FVector::Dist2D(Character->GetActorLocation(), Target->GetActorLocation()) >
+        GetDefault<USFCombatPilotSettings>()->TabTargetRangeMetres * 100.0) { return; }
+    Character->SetCombatTarget(Target);
 }
 
 void ASFPlayerController::RefreshLocalFeedback()

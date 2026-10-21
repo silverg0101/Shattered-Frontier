@@ -1342,6 +1342,7 @@ void ASFPlayerController::LayoutPalette()
 void ASFPlayerController::ClientRestart_Implementation(APawn* NewPawn)
 {
     Super::ClientRestart_Implementation(NewPawn);
+    TabTargetSnapshot.Reset(); NextTabTargetIndex = 0; LastTabAt = -1.0e30;
     if (!HostsBuildMode()) { return; }
     bOwnsLookSuppression=false; bCameraLookHeld=false; CancelLine();
     InitializeLocalControls();

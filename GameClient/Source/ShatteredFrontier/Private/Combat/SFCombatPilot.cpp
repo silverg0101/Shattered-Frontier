@@ -2,6 +2,7 @@
 #include "Framework/SFGameMode.h"
 #include "Combat/SFCombatPilotRewards.h"
 #include "Characters/SFE1Character.h"
+#include "Framework/SFPlayerController.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/TextRenderComponent.h"
@@ -75,6 +76,10 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
         !FMath::IsWithinInclusive(PlayerMeleeCooldownSeconds, 0.3f, 5.0f) ||
         !FMath::IsWithinInclusive(BoarMeleeCooldownSeconds, 0.5f, 5.0f) ||
         !FMath::IsWithinInclusive(MeleeRangeMetres, 1.0f, 5.0f) ||
+        !FMath::IsWithinInclusive(TabTargetRangeMetres, 10.0f, 60.0f) ||
+        !FMath::IsWithinInclusive(TabTargetDropRangeMetres, TabTargetRangeMetres, 100.0f) ||
+        !FMath::IsWithinInclusive(TabTargetConeDegrees, 60.0f, 360.0f) ||
+        !FMath::IsWithinInclusive(TabTargetCycleResetSeconds, 0.5f, 5.0f) ||
         !FMath::IsWithinInclusive(PlayerRespawnDelaySeconds, 1.0f, 15.0f) ||
         !FMath::IsWithinInclusive(BoarAggroRadiusMetres, 4.0f, 18.0f) ||
         !FMath::IsWithinInclusive(BoarNearNoticeRadiusMetres, 1.0f, 10.0f) ||
@@ -140,6 +145,7 @@ void ASFPilotBoar::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage)
     Target = Attacker;
     bReturning = false;
     CurrentHealth = SFCombatPilotRules::RemainingHealth(CurrentHealth, Damage);
+    if (!Attacker->GetCombatTarget() && CurrentHealth > 0) { Attacker->SetCombatTarget(this); }
     OnRep_Health(); ForceNetUpdate();
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_HIT Group=%s Slot=%d HP=%d"), *SpawnGroup, Slot, CurrentHealth);
     if (CurrentHealth == 0 && PilotMode.IsValid()) { PilotMode->BoarDied(this, Attacker); }
@@ -365,6 +371,12 @@ void ASFGameMode::SpawnSlot(const FString& Group, int32 Slot, int32 Cycle, const
 void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarget)
 {
     if (!bPilotActive || !CapturedSettings->bCombatAvailable || !IsValid(Attacker) || Attacker->CombatHealth() <= 0 || IsSafe(Attacker->GetActorLocation())) { return; }
+    SelectedTarget = Attacker->GetCombatTarget();
+    if (SelectedTarget && FVector::Dist2D(Attacker->GetActorLocation(), SelectedTarget->GetActorLocation()) > CapturedSettings->MeleeRangeMetres * 100.0)
+    {
+        if (ASFPlayerController* PC = Cast<ASFPlayerController>(Attacker->GetController())) { PC->ClientPilotHit(TEXT("Out of range")); }
+        return;
+    }
     const double Now = GetWorld()->GetTimeSeconds();
     if (Now < PlayerNextSwing.FindRef(Attacker)) { return; }
     ASFPilotBoar* Best = nullptr; double BestDistance = CapturedSettings->MeleeRangeMetres * 100;
@@ -394,6 +406,8 @@ void ASFGameMode::TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim)
         IsSafe(Victim->GetActorLocation()) ||
         FVector::Dist2D(Boar->GetActorLocation(), Victim->GetActorLocation()) > CapturedSettings->MeleeRangeMetres*100) return;
     Victim->CombatSetHealth(SFCombatPilotRules::RemainingHealth(Victim->CombatHealth(), CapturedSettings->BoarMeleeDamage));
+    if (ASFPlayerController* PC = Cast<ASFPlayerController>(Victim->GetController())) { PC->ClientPilotHit(TEXT("Hit")); }
+    if (!Victim->GetCombatTarget() && Victim->CombatHealth() > 0) { Victim->SetCombatTarget(Boar); }
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_PLAYER_HIT HP=%d"), Victim->CombatHealth());
     if (Victim->CombatHealth() == 0)
     {

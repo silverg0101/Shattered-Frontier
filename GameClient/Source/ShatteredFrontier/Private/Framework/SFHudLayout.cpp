@@ -283,7 +283,9 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     if (CombatTarget)
     {
         TargetName->SetText(FText::FromString(Name));
-        TargetCharges->SetText(FText::FromString(FString::Printf(TEXT("%d / %d HP"), Health, MaxHealth)));
+        const ASFPlayerController* Player = Cast<ASFPlayerController>(Controller);
+        const FString Message = Player ? Player->GetPilotMessage() : FString();
+        TargetCharges->SetText(FText::FromString(Message.IsEmpty() ? FString::Printf(TEXT("%d / %d HP"), Health, MaxHealth) : Message));
         if (TargetBar) { TargetBar->SetVisibility(ESlateVisibility::HitTestInvisible); }
         if (TargetFillClip) { TargetFillClip->SetWidthOverride(TargetFillWidth * ChargeFraction(Health, MaxHealth)); }
     }

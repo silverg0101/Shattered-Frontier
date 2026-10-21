@@ -12,6 +12,7 @@
 #include "InputMappingContext.h"
 #include "Framework/SFE1Settings.h"
 #include "Combat/SFCombatPilot.h"
+#include "Combat/SFTabTargetSelection.h"
 #include "Combat/SFCrowdControlComponent.h"
 #include "Framework/SFPlayerController.h"
 #include "Engine/World.h"
@@ -186,6 +187,17 @@ void ASFE1Character::SetMouseCaptured(bool bCaptured)
 void ASFE1Character::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+    if (HasAuthority() && CombatTarget)
+    {
+        const ASFPilotBoar* Boar = Cast<ASFPilotBoar>(CombatTarget);
+        const ASFTownsfolkNpc* Npc = Cast<ASFTownsfolkNpc>(CombatTarget);
+        if (PilotHealth <= 0 || !IsValid(CombatTarget) || CombatTarget->GetWorld() != GetWorld()
+            || (Boar && (Boar->Health() <= 0 || Boar->IsLeashing()))
+            || (Npc && Npc->Health() <= 0)
+            || FSFTabTargetSelection::ShouldDrop(FVector::Dist2D(GetActorLocation(), CombatTarget->GetActorLocation()),
+                GetDefault<USFCombatPilotSettings>()->TabTargetDropRangeMetres * 100.0))
+        { SetCombatTarget(nullptr); }
+    }
     if (IsLocallyControlled() && PlayerMapping && UsesCameraControls()) { TickCameraControls(DeltaSeconds); }
 }
 
@@ -335,11 +347,17 @@ void ASFE1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ASFE1Character, PilotHealth);
+    DOREPLIFETIME_CONDITION(ASFE1Character, CombatTarget, COND_OwnerOnly);
+}
+
+void ASFE1Character::SetCombatTarget(AActor* Target)
+{
+    if (HasAuthority() && CombatTarget != Target) { CombatTarget = Target; ForceNetUpdate(); }
 }
 
 void ASFE1Character::CombatSetHealth(int32 Value)
 {
-    if (HasAuthority()) { PilotHealth = Value; ForceNetUpdate(); }
+    if (HasAuthority()) { PilotHealth = Value; if (Value <= 0) { SetCombatTarget(nullptr); } ForceNetUpdate(); }
 }
 
 void ASFE1Character::PilotAttack()

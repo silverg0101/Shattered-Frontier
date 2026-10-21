@@ -2,6 +2,7 @@
 #include "Algo/Sort.h"
 #include "Animation/AnimSequence.h"
 #include "Characters/SFE1Character.h"
+#include "Framework/SFPlayerController.h"
 #include "Combat/SFCombatPilot.h"
 #include "Combat/SFCrowdControlComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -892,6 +893,8 @@ void ASFTownsfolkNpc::ReceiveHit(const AActor* Attacker, int32 Damage)
     if (!HasAuthority() || CurrentHealth<=0 || !IsValid(Attacker) || Damage<=0) { return; }
     const USFTownsfolkSettings* S=GetDefault<USFTownsfolkSettings>();
     CurrentHealth=SFCombatPilotRules::RemainingHealth(CurrentHealth,Damage); ForceNetUpdate();
+    if (CurrentHealth > 0)
+    { if (ASFE1Character* Player = Cast<ASFE1Character>(Attacker); Player && !Player->GetCombatTarget()) { Player->SetCombatTarget(this); } }
     LastActiveSeconds=GetWorld()->GetTimeSeconds(); FleeFrom=Attacker->GetActorLocation(); FleeUntil=LastActiveSeconds+S->FleeSeconds;
     USFTownsfolkSubsystem* Town=GetWorld()->GetSubsystem<USFTownsfolkSubsystem>();
     if (ASFTownState* State=Town ? Town->TownState() : nullptr)
@@ -1038,8 +1041,11 @@ void USFTownsfolkSubsystem::HandleNpcAttack(APlayerController* PC, ASFTownsfolkN
 {
     APawn* Pawn=PC ? PC->GetPawn() : nullptr;
     if (!Pawn || !IsValid(Npc) || Npc->Health()<=0) { return; }
+    if (bSelected && Cast<ASFE1Character>(Pawn) && Cast<ASFE1Character>(Pawn)->GetCombatTarget() != Npc) { return; }
     const USFCombatPilotSettings* Combat=GetDefault<USFCombatPilotSettings>(); const double Now=GetWorld()->GetTimeSeconds();
     const FVector D=Npc->GetActorLocation()-Pawn->GetActorLocation();
+    if (bSelected && D.Size2D() > Combat->MeleeRangeMetres*100.0)
+    { if (ASFPlayerController* Player = Cast<ASFPlayerController>(PC)) { Player->ClientPilotHit(TEXT("Out of range")); } return; }
     if (!SFCombatPilotRules::CanMelee(D.Size2D(),bSelected ? 1.0 : FVector::DotProduct(PC->GetControlRotation().Vector().GetSafeNormal2D(),D.GetSafeNormal2D()),
         Now,NextSwing.FindRef(PC),Combat->MeleeRangeMetres*100.0)) { return; }
     NextSwing.Add(PC,Now+Combat->PlayerMeleeCooldownSeconds);
