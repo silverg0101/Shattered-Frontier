@@ -8,11 +8,11 @@
   "units": "metres, Z up, front -Y, origin base centre, no ground in any mesh",
   "budget_triangles_per_variant": 60000,
   "triangles": [
-    51347,
-    50737,
-    50442
+    32356,
+    32018,
+    32684
   ],
-  "placement_scale_note": "At scale 1: rounded multi-stem shrubs 1.08-1.78 m tall, 1.34-2.16 m wide; foliage reaches base.",
+  "placement_scale_note": "At scale 1: irregular open shrubs 1.10-1.70 m tall and 1.74-2.52 m wide; tapered bare base.",
   "unreal_meshes": [
     "SM_ShrubBroadleaf_00",
     "SM_ShrubBroadleaf_01",
@@ -26,21 +26,21 @@
       "normal": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_nor_gl.jpg",
       "rough": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_Rough.jpg",
       "tint": [
-        2.5,
-        2.5,
-        2.4
+        0.55,
+        0.49,
+        0.41
       ],
-      "sat": 0.1,
+      "sat": 0.65,
       "blend": {
         "base": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_Diffuse.jpg",
         "normal": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_nor_gl.jpg",
         "rough": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_Rough.jpg",
         "tint": [
+          0.16,
           0.12,
-          0.09,
-          0.06
+          0.08
         ],
-        "sat": 0.6,
+        "sat": 0.7,
         "amount": 1.0,
         "contrast": 0.2
       }
@@ -52,36 +52,49 @@
       "arm": "Sources/tree_small_02/textures/tree_small_02_leaves_arm_2k.jpg",
       "alpha": "Sources/tree_small_02/textures/tree_small_02_leaves_alpha_2k.png",
       "tint": [
-        1.35,
-        1.6,
-        0.7
+        1.22,
+        1.38,
+        0.8
       ],
-      "sat": 1.05,
+      "sat": 0.91,
       "two_sided": true,
-      "alpha_mode": "MASKED"
+      "alpha_mode": "MASKED",
+      "blend": {
+        "base": "Sources/tree_small_02/textures/tree_small_02_leaves_diff_2k.jpg",
+        "normal": "Sources/tree_small_02/textures/tree_small_02_leaves_nor_gl_2k.jpg",
+        "arm": "Sources/tree_small_02/textures/tree_small_02_leaves_arm_2k.jpg",
+        "tint": [
+          0.56,
+          0.68,
+          0.43
+        ],
+        "sat": 0.68,
+        "amount": 1.0,
+        "contrast": 0.48
+      }
     }
   ],
   "variants": [
     {
       "mesh": "SM_ShrubBroadleaf_00",
       "seed": 31,
-      "stems": 11,
-      "wood_triangles": 3344,
-      "leaf_triangles": 48003,
-      "leaf_cluster_size_m": 0.235,
+      "lobe_count": 7,
+      "stems": 21,
+      "wood_triangles": 2338,
+      "leaf_triangles": 30018,
       "materials": [
         "MI_ShrubBroadleaf_Bark",
         "MI_ShrubBroadleaf_Leaf"
       ],
-      "triangles": 51347,
-      "vertices": 42955,
+      "triangles": 32356,
+      "vertices": 26814,
       "size_m": [
-        2.16,
-        1.98,
-        1.78
+        2.52,
+        2.02,
+        1.7
       ],
       "fbx": "SM_ShrubBroadleaf_00.fbx",
-      "fbx_sha256": "432353c73159f5160bf97864a4c6592ac200b39e2e35c54a5d7111a3e240fedc",
+      "fbx_sha256": "248a0759e5b258f9d07670fddbf90aa2a0cdc702e357578fe393e46dc20706bf",
       "origin": "base centre (footprint centre, lowest point z=0)",
       "collision_ucx": [
         "UCX_SM_ShrubBroadleaf_00_00"
@@ -90,23 +103,23 @@
     {
       "mesh": "SM_ShrubBroadleaf_01",
       "seed": 47,
-      "stems": 9,
-      "wood_triangles": 2736,
-      "leaf_triangles": 48001,
-      "leaf_cluster_size_m": 0.22,
+      "lobe_count": 6,
+      "stems": 18,
+      "wood_triangles": 2004,
+      "leaf_triangles": 30014,
       "materials": [
         "MI_ShrubBroadleaf_Bark",
         "MI_ShrubBroadleaf_Leaf"
       ],
-      "triangles": 50737,
-      "vertices": 42817,
+      "triangles": 32018,
+      "vertices": 26790,
       "size_m": [
-        1.76,
-        1.84,
-        1.43
+        2.14,
+        1.78,
+        1.42
       ],
       "fbx": "SM_ShrubBroadleaf_01.fbx",
-      "fbx_sha256": "22017d04999952f8220470fc20578ac6c5cb77b2930dc15bde0f61380fbe845b",
+      "fbx_sha256": "8b5ccb52738b51312c878a31138a7aeeef4f3c20bc9465ef80542e89ef0c61f3",
       "origin": "base centre (footprint centre, lowest point z=0)",
       "collision_ucx": [
         "UCX_SM_ShrubBroadleaf_01_00"
@@ -115,23 +128,23 @@
     {
       "mesh": "SM_ShrubBroadleaf_02",
       "seed": 73,
-      "stems": 8,
-      "wood_triangles": 2432,
-      "leaf_triangles": 48010,
-      "leaf_cluster_size_m": 0.19,
+      "lobe_count": 8,
+      "stems": 24,
+      "wood_triangles": 2672,
+      "leaf_triangles": 30012,
       "materials": [
         "MI_ShrubBroadleaf_Bark",
         "MI_ShrubBroadleaf_Leaf"
       ],
-      "triangles": 50442,
-      "vertices": 42544,
+      "triangles": 32684,
+      "vertices": 27238,
       "size_m": [
-        1.34,
-        1.44,
-        1.08
+        1.74,
+        1.5,
+        1.1
       ],
       "fbx": "SM_ShrubBroadleaf_02.fbx",
-      "fbx_sha256": "d468a96e05ee9cd2d85d247d57841f975cfaf5bd87083bebc5bc7ac3006a0b92",
+      "fbx_sha256": "85df1377351bb1ee83cf9a1522226c34e72809c759860543c2f57d0c3baf1441",
       "origin": "base centre (footprint centre, lowest point z=0)",
       "collision_ucx": [
         "UCX_SM_ShrubBroadleaf_02_00"
@@ -264,7 +277,8 @@
     }
   ],
   "renders": [
-    "ShrubBroadleaf-Variants.png"
+    "ShrubBroadleaf-Variants.png",
+    "ShrubBroadleaf-Detail-3m.png"
   ],
   "concept_reference": "docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp"
 }
