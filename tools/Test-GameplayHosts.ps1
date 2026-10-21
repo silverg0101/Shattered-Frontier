@@ -81,10 +81,10 @@ try {
     Cluster start
     [void](Sql "CREATE ROLE gameplay_owner NOLOGIN; CREATE ROLE gameplay_svc LOGIN PASSWORD '$servicePassword'; CREATE DATABASE gameplay_$run;")
     [void](Sql "REVOKE ALL ON DATABASE gameplay_$run FROM PUBLIC; GRANT CONNECT ON DATABASE gameplay_$run TO gameplay_svc; GRANT CREATE ON DATABASE gameplay_$run TO gameplay_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC;" "gameplay_$run")
-    $schemas = @('InventoryLedger.Postgres','CharacterState.Postgres','Housing.Postgres') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_/Schema.sql") -Raw }
+    $schemas = @('InventoryLedger.Postgres','CharacterState.Postgres','Housing.Postgres','Exchange.Postgres') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_/Schema.sql") -Raw }
     $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Gameplay.sql') -Raw
     [void](Sql ("SET ROLE gameplay_owner;`n" + ($schemas -join "`n")) "gameplay_$run")
-    [void](Sql 'GRANT USAGE ON SCHEMA inventory,character_state,housing TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA character_state TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA housing TO gameplay_svc;' "gameplay_$run")
+    [void](Sql 'GRANT USAGE ON SCHEMA inventory,character_state,housing,exchange TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA character_state TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA housing TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA exchange TO gameplay_svc;' "gameplay_$run")
     $connection = "Host=127.0.0.1;Port=$port;Database=gameplay_$run;Username=gameplay_svc;Password=$servicePassword;Pooling=false;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $hostPort = $listener.LocalEndpoint.Port; $listener.Stop()
     $rng = [Security.Cryptography.RandomNumberGenerator]::Create(); $rng.GetBytes($bytes); $token = [BitConverter]::ToString($bytes).Replace('-',''); $rng.Dispose()
@@ -92,7 +92,10 @@ try {
     $env:GAMEPLAY_LEDGER_CONNECTION = $connection
     $env:GAMEPLAY_CHARACTER_CONNECTION = $connection
     $env:GAMEPLAY_HOUSING_CONNECTION = $connection
-    $env:GAMEPLAY_CONTENT_ROOT = Join-Path $repo 'content'
+    $env:GAMEPLAY_EXCHANGE_CONNECTION = $connection
+    $fixtureContent = Join-Path $private 'content'
+    Copy-Item -LiteralPath (Join-Path $repo 'content') -Destination $fixtureContent -Recurse
+    $env:GAMEPLAY_CONTENT_ROOT = $fixtureContent
     $env:SF_GAMEPLAY_TOKEN = $token
     $hostDll = Join-Path $repo 'BackendServices/Gameplay.Host/bin/Release/net10.0/Gameplay.Host.dll'
     $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host.out') -RedirectStandardError (Join-Path $private 'host.err')
@@ -168,13 +171,22 @@ try {
     $pending = Sql "SELECT state FROM character_state.reward_receipts WHERE character_id='chr_quest_full'" "gameplay_$run"
     $premature = Sql "SELECT count(*) FROM inventory.operation_receipts WHERE operation_id LIKE 'quest:chr_quest_full:%'" "gameplay_$run"
     if ($pending -ne 'Pending' -or $premature -ne '0') { throw "Full backpack did not preserve pending intent: $pending/$premature" }
+    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+    $questFile = Join-Path $fixtureContent 'quests/greenlands_frontier_founder.json'
+    $questOriginal = Get-Content -LiteralPath $questFile -Raw
+    $questChanged = $questOriginal.Replace('"revision": 1','"revision": 2').Replace('"definition_id": "item/rough_timber", "quantity": 4','"definition_id": "item/rough_timber", "quantity": 9')
+    if ($questChanged -eq $questOriginal) { throw 'Fixture quest content did not change.' }
+    [IO.File]::WriteAllText($questFile,$questChanged)
+    $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-changed-content.out') -RedirectStandardError (Join-Path $private 'host-changed-content.err')
+    for ($i=0; $i -lt 100; $i++) { if ($hostProcess.HasExited) { throw 'Changed-content host exited.' }; if ((Test-Path (Join-Path $private 'host-changed-content.out')) -and (Get-Content (Join-Path $private 'host-changed-content.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
     $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-quest-free') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
     Start-Sleep -Seconds 9
     $fullState = Sql "SELECT state FROM character_state.reward_receipts WHERE character_id='chr_quest_full'" "gameplay_$run"
     $fullLines = Sql "SELECT string_agg(definition_id || ':' || quantity, ',' ORDER BY definition_id) FROM inventory.entries WHERE container_id='ctn_quest_full'" "gameplay_$run"
     $fullOps = Sql "SELECT count(*) FROM inventory.operation_receipts WHERE operation_id LIKE 'quest:chr_quest_full:%'" "gameplay_$run"
     if ($fullState -ne 'Complete' -or $fullLines -ne 'item/iron_nails:8,item/rough_timber:4,item/starter_tool_repair_kit:1' -or $fullOps -ne '1') { throw "Full backpack recovery failed: $fullState/$fullLines/$fullOps" }
-    $results.Add('PASS full backpack intent stayed pending and granted exact item lines after space freed')
+    $results.Add('PASS reward intent granted original item snapshot after content revision and lines changed')
+    [IO.File]::WriteAllText($questFile,$questOriginal)
     $currentStep = 'abandoned placement'
     Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
     $env:SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT = 'place/abandon'
@@ -213,6 +225,35 @@ try {
     if ($sweepLogs.Count -ne 2) { throw "Expected one sweep resolution per abandoned intent, got $($sweepLogs.Count)." }
     $results.Add('PASS dual-host sweeper resolved abandoned placement and reward once after PostgreSQL restart')
     Stop-Process -Id $hostProcess2.Id -Force; $hostProcess2.WaitForExit(10000) | Out-Null; $hostProcess2 = $null
+    $currentStep = 'exchange wire trade and market'
+    foreach ($mode in @('fixture-exchange-seed','fixture-exchange-trade','fixture-exchange-market','fixture-exchange-cancel','fixture-exchange-expire-seed')) {
+        $results.Add((Invoke-Checked $dotnet @($hostDll,$mode) @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; GAMEPLAY_EXCHANGE_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+    }
+    [void](Sql "UPDATE exchange.settlements SET created_at=now()-interval '6 minutes' WHERE operation_id='exchange/offer-expire'" "gameplay_$run")
+    $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-exchange-expire-check') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; GAMEPLAY_EXCHANGE_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+    Start-Sleep -Seconds 7
+    $expiredState = Sql "SELECT state FROM exchange.settlements WHERE operation_id='exchange/offer-expire'" "gameplay_$run"
+    $returnedOre = Sql "SELECT COALESCE((SELECT quantity FROM inventory.entries WHERE container_id='ctn_expire_escrow' AND definition_id='item/iron_ore'),0)" "gameplay_$run"
+    if ($expiredState -ne 'cancelled' -or $returnedOre -ne '0') { throw "Trade deadline cancellation failed: $expiredState/$returnedOre" }
+    $results.Add('PASS trade offer deadline cancelled and returned escrow')
+    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+    $env:SF_GAMEPLAY_FAULT_AFTER_EXCHANGE_DELIVERY = 'exchange/buy-fault'
+    $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-exchange-fault.out') -RedirectStandardError (Join-Path $private 'host-exchange-fault.err')
+    for ($i=0; $i -lt 100; $i++) { if ($hostProcess.HasExited) { throw 'Exchange fault host exited before ready.' }; if ((Test-Path (Join-Path $private 'host-exchange-fault.out')) -and (Get-Content (Join-Path $private 'host-exchange-fault.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
+    $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-exchange-fault') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; GAMEPLAY_EXCHANGE_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+    $hostProcess.WaitForExit(10000) | Out-Null
+    if (-not $hostProcess.HasExited) { throw 'Exchange fault host did not exit.' }
+    Cluster stop
+    Cluster start
+    Remove-Item Env:SF_GAMEPLAY_FAULT_AFTER_EXCHANGE_DELIVERY
+    $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-exchange-recovered.out') -RedirectStandardError (Join-Path $private 'host-exchange-recovered.err')
+    for ($i=0; $i -lt 100; $i++) { if ($hostProcess.HasExited) { throw 'Exchange recovery host exited.' }; if ((Test-Path (Join-Path $private 'host-exchange-recovered.out')) -and (Get-Content (Join-Path $private 'host-exchange-recovered.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
+    Start-Sleep -Seconds 9
+    $saleState = Sql "SELECT state FROM exchange.settlements WHERE operation_id='exchange/buy-fault'" "gameplay_$run"
+    $saleReceipts = Sql "SELECT count(*) FROM inventory.operation_receipts WHERE operation_id='exchange/buy-fault/settle'" "gameplay_$run"
+    if ($saleState -ne 'committed' -or $saleReceipts -ne '1') { throw "Exchange recovery not exact: $saleState/$saleReceipts" }
+    $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-exchange-replay') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; GAMEPLAY_EXCHANGE_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+    $results.Add('PASS exchange sweeper committed one sale after host kill and immediate PostgreSQL restart')
     Cluster stop
     foreach ($name in @('Rewards','Progression','Housing')) {
         $dll = Join-Path $repo "BackendServices/Gameplay.Host.Tests/$name/bin/Release/net10.0/$name.Host.Tests.dll"

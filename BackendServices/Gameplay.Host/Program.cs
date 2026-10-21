@@ -11,6 +11,7 @@ using ShatteredFrontier.QuestContent;
 using ShatteredFrontier.Rewards;
 using ShatteredFrontier.Progression;
 using ShatteredFrontier.CraftingContent;
+using ShatteredFrontier.Exchange.Postgres;
 using ClaimTerritory;
 using DomLedger = ShatteredFrontier.InventoryLedger.InventoryLedger;
 
@@ -29,6 +30,7 @@ if (!int.TryParse(portText, out var port) || port is < 1 or > 65535)
 var ledgerConnection = Required("GAMEPLAY_LEDGER_CONNECTION");
 var characterConnection = Required("GAMEPLAY_CHARACTER_CONNECTION");
 var housingConnection = Required("GAMEPLAY_HOUSING_CONNECTION");
+var exchangeConnection = Required("GAMEPLAY_EXCHANGE_CONNECTION");
 var token = Required("SF_GAMEPLAY_TOKEN");
 var contentRoot = Required("GAMEPLAY_CONTENT_ROOT");
 var boar = LootCatalog.LoadFiles([Path.Combine(contentRoot, "loot", "greenlands_starter.json")])["loot/greenlands_silverbrook_boar"];
@@ -50,6 +52,7 @@ builder.Services.AddSingleton<QuestRewardPayout>();
 builder.Services.AddSingleton(new GameplayRecoverySettings());
 builder.Services.AddHostedService<GameplayRecoveryService>();
 builder.Services.AddSingleton(new PostgresHousingStore(housingConnection));
+builder.Services.AddSingleton(new PostgresExchangeStore(exchangeConnection));
 builder.Services.AddSingleton(quest);
 builder.Services.AddSingleton(zone);
 builder.Services.AddSingleton(new ClaimSettings());
@@ -61,6 +64,7 @@ app.MapGrpcService<RewardGrpcService>();
 app.MapGrpcService<ProgressionGrpcService>();
 app.MapGrpcService<HousingGrpcService>();
 app.MapGrpcService<CraftingGrpcService>();
+app.MapGrpcService<ExchangeGrpcService>();
 app.Lifetime.ApplicationStarted.Register(() => Console.Out.WriteLine($"GAMEPLAY_HOST_READY port={port}"));
 app.Run();
 
@@ -114,6 +118,11 @@ internal static class GrpcRun
         catch (CharacterSchemaCompatibilityException) { throw Unavailable(); }
         catch (HousingUnavailableException) { throw Unavailable(); }
         catch (HousingSchemaCompatibilityException) { throw Unavailable(); }
+        catch (ExchangeUnavailableException) { throw Unavailable(); }
+        catch (ExchangeSchemaCompatibilityException) { throw Unavailable(); }
+        catch (Npgsql.NpgsqlException) { throw Unavailable(); }
+        catch (ExchangeRejectedException ex) { throw new RpcException(new Status(
+            ex.Message == "Operation ID conflict." ? StatusCode.AlreadyExists : StatusCode.FailedPrecondition, ex.Message)); }
         catch (Exception ex) when (ex is ArgumentException or RewardContentException) { throw new RpcException(new Status(StatusCode.InvalidArgument, ex.Message)); }
         catch (InvalidOperationException ex) { throw Reject(ex.Message); }
     }

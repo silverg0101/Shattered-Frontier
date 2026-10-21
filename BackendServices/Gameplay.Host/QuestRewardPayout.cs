@@ -4,15 +4,14 @@ using ShatteredFrontier.InventoryLedger;
 using ShatteredFrontier.InventoryLedger.Postgres;
 using ShatteredFrontier.QuestContent;
 
-internal sealed class QuestRewardPayout(PostgresCharacterStateStore state, PostgresInventoryLedgerStore ledgerStore, QuestDefinition quest)
+internal sealed class QuestRewardPayout(PostgresCharacterStateStore state, PostgresInventoryLedgerStore ledgerStore)
 {
     public IReadOnlyList<ItemQuantity> Resolve(string operationId)
     {
         var intent = state.Reward(operationId) ?? throw new InvalidOperationException("Reward intent missing.");
         if (string.IsNullOrWhiteSpace(intent.ContainerId)) throw new InvalidOperationException("Reward container missing.");
-        var reward = quest.Steps.Single(s => s.Id == intent.StepId).Rewards.Single(r => r.BundleId == intent.BundleId);
-        var items = reward.Items.Select(i => new ItemQuantity(i.DefinitionId, i.Quantity)).ToArray();
-        if (items.Length == 0) throw new InvalidOperationException("Reward items missing.");
+        var items = intent.Items.Select(i => new ItemQuantity(i.DefinitionId, i.Quantity)).ToArray();
+        if (items.Length == 0 || items.Any(i => string.IsNullOrWhiteSpace(i.DefinitionId) || i.Quantity <= 0)) throw new InvalidOperationException("Reward snapshot invalid.");
         var fingerprint = "quest-reward-v1|" + intent.ContainerId + "|" +
             string.Join("|", items.OrderBy(i => i.DefinitionId, StringComparer.Ordinal).Select(i => $"{i.DefinitionId}:{i.Quantity}"));
         var receipt = ledgerStore.Execute(s =>

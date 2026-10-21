@@ -182,11 +182,26 @@
           "InventoryLedger": "[1.0.0, )"
         }
       },
+      "exchange": {
+        "type": "Project",
+        "dependencies": {
+          "InventoryLedger": "[1.0.0, )"
+        }
+      },
+      "exchange.postgres": {
+        "type": "Project",
+        "dependencies": {
+          "Exchange": "[1.0.0, )",
+          "InventoryLedger.Postgres": "[1.0.0, )",
+          "Npgsql": "[10.0.3, 10.0.3]"
+        }
+      },
       "gameplay.host": {
         "type": "Project",
         "dependencies": {
           "CharacterState.Postgres": "[1.0.0, )",
           "ClaimTerritory": "[1.0.0, )",
+          "Exchange.Postgres": "[1.0.0, )",
           "Grpc.AspNetCore": "[2.84.0, 2.84.0]",
           "Grpc.Net.Client": "[2.84.0, 2.84.0]",
           "Housing.Postgres": "[1.0.0, )",
@@ -200,7 +215,6 @@
       "housing.postgres": {
         "type": "Project",
         "dependencies": {
-          "ClaimTerritory": "[1.0.0, )",
           "InventoryLedger": "[1.0.0, )",
           "InventoryLedger.Postgres": "[1.0.0, )",
           "Npgsql": "[10.0.3, 10.0.3]"

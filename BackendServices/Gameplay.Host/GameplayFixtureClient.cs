@@ -2,8 +2,10 @@ using Grpc.Core;
 using Grpc.Net.Client;
 using ShatteredFrontier.InventoryLedger;
 using ShatteredFrontier.InventoryLedger.Postgres;
+using ShatteredFrontier.Exchange.Postgres;
 using Pb = ShatteredFrontier.Housing.V1;
 using ProgressPb = ShatteredFrontier.Progression.V1;
+using ExchangePb = ShatteredFrontier.Exchange.V1;
 
 // Exercised only by the owned Test-GameplayHosts fixture against its disposable cluster.
 internal static class GameplayFixtureClient
@@ -33,6 +35,118 @@ internal static class GameplayFixtureClient
         static void Check(bool ok, string message) { if (!ok) throw new Exception(message); }
         switch (mode)
         {
+            case "fixture-exchange-seed":
+                var exchangeStore = new PostgresExchangeStore(Required("GAMEPLAY_EXCHANGE_CONNECTION"));
+                foreach (var actor in new[] { "chr_exchange_seller", "chr_exchange_a", "chr_exchange_b" })
+                    ledger.CreateContainer(new ContainerSpec("ctn_" + actor, OwnerKind.Character, actor, ContainerKind.Backpack, 100));
+                ledger.CreateContainer(new ContainerSpec("ctn_trade_escrow", OwnerKind.Character, "chr_exchange_seller", ContainerKind.Escrow, 100));
+                ledger.CreateContainer(new ContainerSpec("ctn_list_escrow", OwnerKind.Character, "chr_exchange_seller", ContainerKind.Escrow, 100));
+                ledger.CreateContainer(new ContainerSpec("ctn_fault_escrow", OwnerKind.Character, "chr_exchange_seller", ContainerKind.Escrow, 100));
+                ledger.CreateContainer(new ContainerSpec("ctn_cancel_escrow", OwnerKind.Character, "chr_exchange_seller", ContainerKind.Escrow, 100));
+                ledger.CreateContainer(new ContainerSpec("ctn_expire_escrow", OwnerKind.Character, "chr_exchange_seller", ContainerKind.Escrow, 100));
+                ledger.Grant("exchange/seed", "ctn_chr_exchange_seller", 0, "item/iron_ore", 5, "fixture", "exchange/seed");
+                ledger.Transfer("exchange/trade-escrow", "ctn_chr_exchange_seller", 1, "ctn_trade_escrow", 0, "item/iron_ore", 1);
+                exchangeStore.Credit("exchange/credit-a", "chr_exchange_a", 100, "starter_kit");
+                exchangeStore.Credit("exchange/credit-b", "chr_exchange_b", 100, "starter_kit");
+                Console.WriteLine("PASS exchange wallets and inventory seeded");
+                break;
+            case "fixture-exchange-trade":
+                var tradeClient = new ExchangePb.Exchange.ExchangeClient(channel);
+                var offer = tradeClient.OfferTrade(new ExchangePb.TradeOfferRequest { OperationId = "exchange/offer", TradeId = "trd_wire",
+                    PartyA = "chr_exchange_seller", PartyB = "chr_exchange_a", GoldB = 10,
+                    Deliveries = { new ExchangePb.ItemDelivery { EscrowId = "ctn_trade_escrow", DestinationId = "ctn_chr_exchange_a", ItemId = "item/iron_ore", Quantity = 1 } } }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                Check(offer.State == "pending", "Trade offer was not pending.");
+                var accepted = tradeClient.AcceptTrade(new ExchangePb.TradeActionRequest { OperationId = "exchange/accept", OfferOperationId = "exchange/offer",
+                    TradeId = "trd_wire", ActorId = "chr_exchange_a" }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                Check(accepted.State == "committed" && ledger.Read("ctn_chr_exchange_a").Quantities.GetValueOrDefault("item/iron_ore") == 1,
+                    "Trade did not deliver exactly once.");
+                Check(tradeClient.Wallet(new ExchangePb.WalletRequest { OwnerId = "chr_exchange_a" }, headers, deadline: DateTime.UtcNow.AddSeconds(10)).Balance == 90 &&
+                    tradeClient.Wallet(new ExchangePb.WalletRequest { OwnerId = "chr_exchange_seller" }, headers, deadline: DateTime.UtcNow.AddSeconds(10)).Balance == 10,
+                    "Trade wallet transfer incorrect.");
+                Console.WriteLine("PASS two-character trade over gRPC");
+                break;
+            case "fixture-exchange-market":
+                var market = new ExchangePb.Exchange.ExchangeClient(channel);
+                var listed = market.ListItem(new ExchangePb.ListItemRequest { OperationId = "exchange/list", ListingId = "lst_wire",
+                    SellerId = "chr_exchange_seller", SourceContainerId = "ctn_chr_exchange_seller", EscrowContainerId = "ctn_list_escrow",
+                    ItemId = "item/iron_ore", Quantity = 1, UnitPrice = 20, CreatedAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                Check(listed.State == "active", "Listing not active.");
+                var start = new ManualResetEventSlim();
+                var buys = new[] { "a", "b" }.Select(buyer => Task.Run(() =>
+                {
+                    start.Wait();
+                    try { return market.BuyListing(new ExchangePb.BuyListingRequest { OperationId = "exchange/buy-" + buyer, ListingId = "lst_wire",
+                        BuyerId = "chr_exchange_" + buyer, DestinationContainerId = "ctn_chr_exchange_" + buyer,
+                        ExpectedRevision = 0, ExpectedUnitPrice = 20 }, headers, deadline: DateTime.UtcNow.AddSeconds(10)).State == "committed"; }
+                    catch (RpcException ex) when (ex.StatusCode == StatusCode.FailedPrecondition) { return false; }
+                })).ToArray();
+                start.Set(); Task.WaitAll(buys);
+                Check(buys.Count(t => t.Result) == 1 &&
+                    ledger.Read("ctn_chr_exchange_a").Quantities.GetValueOrDefault("item/iron_ore") +
+                    ledger.Read("ctn_chr_exchange_b").Quantities.GetValueOrDefault("item/iron_ore") == 2, "Concurrent buyers did not yield one sale.");
+                Console.WriteLine("PASS two concurrent buyers yielded one sale");
+                break;
+            case "fixture-exchange-cancel":
+                var cancelClient = new ExchangePb.Exchange.ExchangeClient(channel);
+                var sellerBag = ledger.Read("ctn_chr_exchange_seller");
+                ledger.Transfer("exchange/cancel-escrow", sellerBag.Spec.Id, sellerBag.Revision, "ctn_cancel_escrow", 0, "item/iron_ore", 1);
+                cancelClient.OfferTrade(new ExchangePb.TradeOfferRequest { OperationId = "exchange/offer-cancel", TradeId = "trd_cancel",
+                    PartyA = "chr_exchange_seller", PartyB = "chr_exchange_b", GoldB = 5,
+                    Deliveries = { new ExchangePb.ItemDelivery { EscrowId = "ctn_cancel_escrow", DestinationId = "ctn_chr_exchange_b", ItemId = "item/iron_ore", Quantity = 1 } } }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                var cancelled = cancelClient.CancelTrade(new ExchangePb.TradeActionRequest { OperationId = "exchange/cancel-trade",
+                    OfferOperationId = "exchange/offer-cancel", TradeId = "trd_cancel", ActorId = "chr_exchange_seller" }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                Check(cancelled.State == "cancelled" && ledger.Read("ctn_cancel_escrow").Quantities.GetValueOrDefault("item/iron_ore") == 0,
+                    "Trade cancellation did not return escrow.");
+                cancelClient.ListItem(new ExchangePb.ListItemRequest { OperationId = "exchange/list-cancel", ListingId = "lst_cancel_wire",
+                    SellerId = "chr_exchange_seller", SourceContainerId = "ctn_chr_exchange_seller", EscrowContainerId = "ctn_cancel_escrow",
+                    ItemId = "item/iron_ore", Quantity = 1, UnitPrice = 20, CreatedAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                var unlisted = cancelClient.CancelListing(new ExchangePb.ListingActionRequest { OperationId = "exchange/cancel-list",
+                    ListingId = "lst_cancel_wire", SellerId = "chr_exchange_seller" }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                Check(unlisted.State == "cancelled" && ledger.Read("ctn_cancel_escrow").Quantities.GetValueOrDefault("item/iron_ore") == 0,
+                    "Listing cancellation did not return escrow.");
+                Console.WriteLine("PASS trade and listing cancellation returned escrow");
+                break;
+            case "fixture-exchange-expire-seed":
+                var expireClient = new ExchangePb.Exchange.ExchangeClient(channel);
+                var bagView = ledger.Read("ctn_chr_exchange_seller");
+                ledger.Transfer("exchange/expire-escrow", bagView.Spec.Id, bagView.Revision, "ctn_expire_escrow", 0, "item/iron_ore", 1);
+                expireClient.OfferTrade(new ExchangePb.TradeOfferRequest { OperationId = "exchange/offer-expire", TradeId = "trd_expire",
+                    PartyA = "chr_exchange_seller", PartyB = "chr_exchange_b", GoldB = 5,
+                    Deliveries = { new ExchangePb.ItemDelivery { EscrowId = "ctn_expire_escrow", DestinationId = "ctn_chr_exchange_b", ItemId = "item/iron_ore", Quantity = 1 } } }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                Console.WriteLine("PASS expiring trade offer created");
+                break;
+            case "fixture-exchange-expire-check":
+                var expiredClient = new ExchangePb.Exchange.ExchangeClient(channel);
+                try
+                {
+                    var expired = expiredClient.AcceptTrade(new ExchangePb.TradeActionRequest { OperationId = "exchange/accept-expired",
+                        OfferOperationId = "exchange/offer-expire", TradeId = "trd_expire", ActorId = "chr_exchange_b" },
+                        headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                    Check(expired.State == "cancelled" && !expired.Committed, "Expired trade was accepted.");
+                }
+                catch (RpcException ex) when (ex.StatusCode == StatusCode.FailedPrecondition) { }
+                Console.WriteLine("PASS expired trade offer rejected at accept");
+                break;
+            case "fixture-exchange-fault":
+                var faultMarket = new ExchangePb.Exchange.ExchangeClient(channel);
+                faultMarket.ListItem(new ExchangePb.ListItemRequest { OperationId = "exchange/list-fault", ListingId = "lst_fault",
+                    SellerId = "chr_exchange_seller", SourceContainerId = "ctn_chr_exchange_seller", EscrowContainerId = "ctn_fault_escrow",
+                    ItemId = "item/iron_ore", Quantity = 1, UnitPrice = 20, CreatedAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                try { faultMarket.BuyListing(new ExchangePb.BuyListingRequest { OperationId = "exchange/buy-fault", ListingId = "lst_fault",
+                    BuyerId = "chr_exchange_b", DestinationContainerId = "ctn_chr_exchange_b", ExpectedRevision = 0, ExpectedUnitPrice = 20 },
+                    headers, deadline: DateTime.UtcNow.AddSeconds(10)); throw new Exception("Exchange fault did not fire."); }
+                catch (RpcException) { }
+                Console.WriteLine("PASS exchange host killed after delivery");
+                break;
+            case "fixture-exchange-replay":
+                var replayMarket = new ExchangePb.Exchange.ExchangeClient(channel);
+                var sale = replayMarket.BuyListing(new ExchangePb.BuyListingRequest { OperationId = "exchange/buy-fault", ListingId = "lst_fault",
+                    BuyerId = "chr_exchange_b", DestinationContainerId = "ctn_chr_exchange_b", ExpectedRevision = 0, ExpectedUnitPrice = 20 },
+                    headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                Check(sale.State == "committed" && ledger.Read("ctn_chr_exchange_b").Quantities.GetValueOrDefault("item/iron_ore") >= 1,
+                    "Exchange settlement did not recover.");
+                Console.WriteLine("PASS exchange crash recovered one sale");
+                break;
             case "fixture-fault-seed":
                 var placed = Place("place/fault", "str_fault", 2);
                 Check(placed.State == "Committed" && placed.StructureRevision == 3, "Fault placement failed.");

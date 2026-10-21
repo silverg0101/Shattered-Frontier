@@ -1,0 +1,34 @@
+syntax = "proto3";
+package sf.exchange.v1;
+option csharp_namespace = "ShatteredFrontier.Exchange.V1";
+
+service Exchange {
+  rpc Wallet (WalletRequest) returns (WalletReply);
+  rpc OfferTrade (TradeOfferRequest) returns (ExchangeReply);
+  rpc AcceptTrade (TradeActionRequest) returns (ExchangeReply);
+  rpc CancelTrade (TradeActionRequest) returns (ExchangeReply);
+  rpc ListItem (ListItemRequest) returns (ExchangeReply);
+  rpc BuyListing (BuyListingRequest) returns (ExchangeReply);
+  rpc CancelListing (ListingActionRequest) returns (ExchangeReply);
+}
+message WalletRequest { string owner_id = 1; }
+message WalletReply { int64 balance = 1; int64 reserved = 2; int64 available = 3; int64 revision = 4; }
+message ItemDelivery { string escrow_id = 1; string destination_id = 2; string item_id = 3; int64 quantity = 4; }
+message TradeOfferRequest {
+  string operation_id = 1; string trade_id = 2; string party_a = 3; string party_b = 4;
+  int64 gold_a = 5; int64 gold_b = 6; repeated ItemDelivery deliveries = 7;
+}
+message TradeActionRequest { string operation_id = 1; string trade_id = 2; string actor_id = 3; string offer_operation_id = 4; }
+message ListItemRequest {
+  string operation_id = 1; string listing_id = 2; string seller_id = 3;
+  string source_container_id = 4; string escrow_container_id = 5;
+  string item_id = 6; int64 quantity = 7; int64 unit_price = 8; int64 listing_fee = 9;
+  int64 created_at_unix_ms = 10;
+}
+message BuyListingRequest {
+  string operation_id = 1; string listing_id = 2; string buyer_id = 3;
+  string destination_container_id = 4; int64 expected_revision = 5;
+  int64 expected_unit_price = 6; int64 transaction_fee = 7;
+}
+message ListingActionRequest { string operation_id = 1; string listing_id = 2; string seller_id = 3; }
+message ExchangeReply { string operation_id = 1; string subject_id = 2; string state = 3; bool committed = 4; int64 amount = 5; int64 fee = 6; }

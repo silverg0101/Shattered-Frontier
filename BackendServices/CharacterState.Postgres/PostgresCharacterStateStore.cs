@@ -49,7 +49,7 @@ public sealed class PostgresCharacterStateStore(string connectionString)
             {
                 using var marker = Command(c, t, "SELECT version,migration_id,compatible_build_min,compatible_build_max FROM character_state.schema_version WHERE singleton=true FOR SHARE");
                 using var row = marker.ExecuteReader();
-                if (!row.Read() || row.GetInt32(0) != 1 || row.GetString(1) != "character-state-001" || row.GetInt32(2) > 1 || row.GetInt32(3) < 1)
+                if (!row.Read() || row.GetInt32(0) != 2 || row.GetString(1) != "character-state-002" || row.GetInt32(2) > 2 || row.GetInt32(3) < 2)
                     throw new CharacterSchemaCompatibilityException("Unsupported character state schema version.");
             }
             catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501")
@@ -152,7 +152,10 @@ public sealed class PostgresCharacterStateStore(string connectionString)
                 if (update.ExecuteNonQuery() != 1) throw new CharacterStoreRejectedException("Stale quest revision.");
                 foreach (var grant in result.Grants)
                 {
-                    using var receipt = Command(c, t, "INSERT INTO character_state.reward_receipts(operation_id,character_id,quest_id,step_id,bundle_id,container_id) VALUES ($1,$2,$3,$4,$5,$6)", grant.OperationId, grant.CharacterId, grant.QuestId, grant.StepId, grant.BundleId, rewardContainerId);
+                    var bundle = quest.Steps.Single(s => s.Id == grant.StepId).Rewards.Single(r => r.BundleId == grant.BundleId);
+                    if (bundle.Items.Any(i => string.IsNullOrWhiteSpace(i.DefinitionId) || i.Quantity <= 0))
+                        throw new CharacterStoreRejectedException("Invalid reward item snapshot.");
+                    using var receipt = Command(c, t, "INSERT INTO character_state.reward_receipts(operation_id,character_id,quest_id,step_id,bundle_id,container_id,content_revision,item_lines) VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb)", grant.OperationId, grant.CharacterId, grant.QuestId, grant.StepId, grant.BundleId, rewardContainerId, quest.Revision, JsonSerializer.Serialize(bundle.Items));
                     receipt.ExecuteNonQuery();
                 }
                 revision++;
@@ -165,18 +168,21 @@ public sealed class PostgresCharacterStateStore(string connectionString)
     public IReadOnlyList<RewardIntent> PendingRewards(DateTimeOffset olderThan) => Transaction((c,t) =>
     {
         var result = new List<RewardIntent>();
-        using var cmd = Command(c,t,"SELECT operation_id,character_id,quest_id,step_id,bundle_id,container_id FROM character_state.reward_receipts WHERE state='Pending' AND container_id<>'' AND created_at <= $1 ORDER BY created_at LIMIT 100",olderThan);
+        using var cmd = Command(c,t,"SELECT operation_id,character_id,quest_id,step_id,bundle_id,container_id,content_revision,item_lines::text FROM character_state.reward_receipts WHERE state='Pending' AND container_id<>'' AND created_at <= $1 ORDER BY created_at LIMIT 100",olderThan);
         using var r = cmd.ExecuteReader();
-        while (r.Read()) result.Add(new(r.GetString(0),r.GetString(1),r.GetString(2),r.GetString(3),r.GetString(4),r.GetString(5)));
+        while (r.Read()) result.Add(ReadReward(r));
         return (IReadOnlyList<RewardIntent>)result;
     });
 
     public RewardIntent? Reward(string operationId) => Transaction((c,t) =>
     {
-        using var cmd = Command(c,t,"SELECT operation_id,character_id,quest_id,step_id,bundle_id,container_id FROM character_state.reward_receipts WHERE operation_id=$1",operationId);
+        using var cmd = Command(c,t,"SELECT operation_id,character_id,quest_id,step_id,bundle_id,container_id,content_revision,item_lines::text FROM character_state.reward_receipts WHERE operation_id=$1",operationId);
         using var r = cmd.ExecuteReader();
-        return r.Read() ? new RewardIntent(r.GetString(0),r.GetString(1),r.GetString(2),r.GetString(3),r.GetString(4),r.GetString(5)) : null;
+        return r.Read() ? ReadReward(r) : null;
     });
+
+    private static RewardIntent ReadReward(NpgsqlDataReader r) => new(r.GetString(0), r.GetString(1), r.GetString(2), r.GetString(3), r.GetString(4), r.GetString(5), r.GetInt32(6),
+        JsonSerializer.Deserialize<QuestRewardItem[]>(r.GetString(7)) ?? throw new CharacterStoreRejectedException("Invalid stored reward snapshot."));
 
     public void CompleteReward(string operationId) => Transaction((c,t) =>
     {
@@ -186,4 +192,4 @@ public sealed class PostgresCharacterStateStore(string connectionString)
     });
 }
 
-public sealed record RewardIntent(string OperationId,string CharacterId,string QuestId,string StepId,string BundleId,string ContainerId);
+public sealed record RewardIntent(string OperationId,string CharacterId,string QuestId,string StepId,string BundleId,string ContainerId,int ContentRevision,IReadOnlyList<QuestRewardItem> Items);
