@@ -57,6 +57,7 @@ def build_material(a, rig, root, mesh, imported):
         tm.set_editor_property('sampler_type', unreal.MaterialSamplerType.SAMPLERTYPE_MASKS)
         mel.connect_material_property(tm, 'G', unreal.MaterialProperty.MP_ROUGHNESS)
         mel.connect_material_property(tm, 'B', unreal.MaterialProperty.MP_METALLIC)
+    mel.set_material_usage(mat, unreal.MaterialUsage.MATUSAGE_SKELETAL_MESH)  # else the default material renders in game
     mel.recompile_material(mat)
     # Struct elements of an Unreal array come back as copies: build new entries rather than editing them in place.
     mesh.set_editor_property('materials', [unreal.SkeletalMaterial(material_interface=mat, material_slot_name=m.get_editor_property('material_slot_name'))
