@@ -26,8 +26,17 @@
       "inventoryledger": {
         "type": "Project"
       },
+      "progression": {
+        "type": "Project"
+      },
       "questcontent": {
         "type": "Project"
+      },
+      "rewards": {
+        "type": "Project",
+        "dependencies": {
+          "InventoryLedger": "[1.0.0, )"
+        }
       },
       "worldcontent": {
         "type": "Project"

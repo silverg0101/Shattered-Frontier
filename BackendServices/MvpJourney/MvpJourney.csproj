@@ -5,4 +5,6 @@
   <ProjectReference Include="../QuestContent/QuestContent.csproj" />
   <ProjectReference Include="../Exchange/Exchange.csproj" />
   <ProjectReference Include="../ClaimTerritory/ClaimTerritory.csproj" />
+  <ProjectReference Include="../Progression/Progression.csproj" />
+  <ProjectReference Include="../Rewards/Rewards.csproj" />
 </ItemGroup></Project>

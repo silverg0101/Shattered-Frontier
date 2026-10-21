@@ -34,11 +34,22 @@
           "Exchange": "[1.0.0, )",
           "GatheringNodes": "[1.0.0, )",
           "InventoryLedger": "[1.0.0, )",
-          "QuestContent": "[1.0.0, )"
+          "Progression": "[1.0.0, )",
+          "QuestContent": "[1.0.0, )",
+          "Rewards": "[1.0.0, )"
         }
+      },
+      "progression": {
+        "type": "Project"
       },
       "questcontent": {
         "type": "Project"
+      },
+      "rewards": {
+        "type": "Project",
+        "dependencies": {
+          "InventoryLedger": "[1.0.0, )"
+        }
       },
       "worldcontent": {
         "type": "Project"

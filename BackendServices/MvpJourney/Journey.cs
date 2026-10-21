@@ -4,13 +4,26 @@ using ShatteredFrontier.Exchange;
 using ShatteredFrontier.GatheringNodes;
 using ShatteredFrontier.InventoryLedger;
 using ShatteredFrontier.QuestContent;
+using ShatteredFrontier.Progression;
+using ShatteredFrontier.Rewards;
 using ShatteredFrontier.WorldContent;
 using InventoryService = ShatteredFrontier.InventoryLedger.InventoryLedger;
 
 namespace ShatteredFrontier.MvpJourney;
 
 public sealed record JourneyResult(string OperationId, LedgerReceipt? Items = null, ProgressResult? Progress = null,
-    ClaimTerritory.Receipt? Claim = null, ExchangeReceipt? Trade = null);
+    ClaimTerritory.Receipt? Claim = null, ExchangeReceipt? Trade = null,
+    IReadOnlyList<ProgressionResult>? SkillResults = null);
+
+// Release-authored mapping until action difficulty and duration arrive in trusted producer receipts.
+public sealed record JourneyPracticeSettings(int Difficulty = 25, double ActionSeconds = 6, int BoarLevel = 1)
+{
+    public void Validate()
+    {
+        if (Difficulty is < 0 or > 1100 || !double.IsFinite(ActionSeconds) || ActionSeconds is < 1 or > 60 || BoarLevel is < 1 or > 200)
+            throw new ArgumentOutOfRangeException(nameof(JourneyPracticeSettings));
+    }
+}
 
 // Process-local adapter. The gate covers command replay, model calls and reward delivery.
 public sealed class Journey
@@ -20,6 +33,12 @@ public sealed class Journey
     private readonly TimeProvider clock;
     private readonly QuestDefinition quest;
     private readonly RecipeCatalog recipes;
+    private readonly BoarRewardService rewards;
+    private readonly JourneyPracticeSettings practice;
+    private readonly Func<double> progressionRoll;
+    private readonly Dictionary<string, CharacterProgression> characters = new(StringComparer.Ordinal);
+    public IReadOnlyDictionary<string, CharacterProgression> Characters => characters;
+    public LootTable BoarLoot { get; }
     public InventoryService Items { get; }
     public GatheringNodeService Nodes { get; }
     public QuestProgression Quests { get; }
@@ -27,14 +46,20 @@ public sealed class Journey
     public ExchangeService Exchange { get; }
 
     public Journey(string zonePath, string questPath, IEnumerable<string> recipePaths, TimeProvider clock,
-        IEnumerable<NodeDefinition> nodeDefinitions, string nodeSeed)
+        IEnumerable<NodeDefinition> nodeDefinitions, string nodeSeed, string lootPath,
+        Func<double>? progressionRoll = null, JourneyPracticeSettings? practice = null)
     {
         this.clock = clock;
+        this.progressionRoll = progressionRoll ?? Random.Shared.NextDouble;
+        this.practice = practice ?? new();
+        this.practice.Validate();
         var zone = ZoneLoader.Load(zonePath);
         quest = QuestLoader.Load(questPath);
         if (quest.ZoneId != zone.Id) throw new ArgumentException("Quest and zone IDs differ.");
         recipes = RecipeCatalog.LoadFiles(recipePaths);
         Items = new InventoryService(new InMemoryInventoryLedgerStore());
+        BoarLoot = LootCatalog.LoadFiles([lootPath])["loot/greenlands_silverbrook_boar"];
+        rewards = new BoarRewardService(Items, BoarLoot);
         Nodes = new GatheringNodeService(zone, nodeDefinitions, clock, nodeSeed);
         Quests = new QuestProgression(quest);
         Claims = new ClaimService(ProtectedZone.Load(zonePath), clock, _ => false);
@@ -48,6 +73,7 @@ public sealed class Journey
             Items.CreateContainer(new(Bag(characterId), OwnerKind.Character, characterId, ContainerKind.Backpack, capacity));
             Items.CreateContainer(new(Escrow(characterId), OwnerKind.Character, characterId, ContainerKind.Escrow, capacity));
             Quests.Accept(characterId, clock.GetUtcNow());
+            characters.Add(characterId, new CharacterProgression(characterId, clock, progressionRoll));
         }
     }
 
@@ -83,6 +109,10 @@ public sealed class Journey
         return progress;
     }
 
+    private ProgressionResult Practice(string receiptId, string character, ReceiptKind kind, string skillId, ulong context = 0) =>
+        characters[character].Apply(new(receiptId, character, kind, true, skillId, practice.Difficulty,
+            practice.ActionSeconds, context));
+
     public JourneyResult Harvest(string op, string character, string nodeId, int generation) =>
         Run(op, $"harvest|{character}|{nodeId}|{generation}", () =>
         {
@@ -91,9 +121,13 @@ public sealed class Journey
             var item = harvested.ResourceId!;
             var bag = Bag(character);
             var receipt = Items.Grant(op + ":items", bag, Items.Read(bag).Revision, item, harvested.Quantity, "gathering", op);
-            var definition = Nodes.Snapshot().Single(n => n.Id == nodeId).DefinitionId;
+            var node = Nodes.Snapshot().Single(n => n.Id == nodeId);
+            var definition = node.DefinitionId;
             var granted = receipt.Changes.Single(c => c.ContainerId == bag && c.DefinitionId == item && c.Delta > 0);
-            return new(op, receipt, Evidence(op, character, "gather", item, definition, checked((int)granted.Delta)));
+            var skill = node.Kind == ResourceKind.Wood ? ProgressionRules.Logging : ProgressionRules.Mining;
+            var gain = Practice(receipt.OperationId, character, ReceiptKind.GatheringHarvest, skill);
+            return new(op, receipt, Evidence(op, character, "gather", item, definition, checked((int)granted.Delta)),
+                SkillResults: [gain]);
         });
 
     public JourneyResult Craft(string op, string character, string recipeId, int count = 1) =>
@@ -104,10 +138,15 @@ public sealed class Journey
             var receipt = new CraftAttemptService(recipes, Items).Execute(new(op + ":items", bag,
                 Items.Read(bag).Revision, recipeId, recipe.Station, count));
             ProgressResult? progress = null;
+            var gains = new List<ProgressionResult>();
             foreach (var output in receipt.Changes.Where(c => c.ContainerId == bag && c.Delta > 0))
+            {
+                gains.Add(Practice(receipt.OperationId + ":" + output.DefinitionId, character, ReceiptKind.CraftConvert,
+                    ProgressionRules.Smithing));
                 progress = Evidence(op + ":" + output.DefinitionId, character, "craft", output.DefinitionId, null,
                     checked((int)output.Delta)) ?? progress;
-            return new(op, receipt, progress);
+            }
+            return new(op, receipt, progress, SkillResults: gains);
         });
 
     public JourneyResult Claim(string op, string character, string claimId, Point center) =>
@@ -126,7 +165,17 @@ public sealed class Journey
 
     // Simulated authoritative combat receipt for this in-process test slice.
     public JourneyResult DefeatBoar(string op, string character) =>
-        Run(op, $"boar|{character}", () => new(op, Progress: Evidence(op, character, "defeat", "npc/boar", null, 1)));
+        Run(op, $"boar|{character}", () =>
+        {
+            var bag = Bag(character);
+            var reward = rewards.Grant(new(op, character, character, bag, Items.Read(bag).Revision, false, false));
+            if (reward.Decision != RewardDecision.Granted || reward.Receipt is null)
+                throw new InvalidOperationException("Simulated credited boar defeat was ineligible.");
+            var gain = characters[character].Apply(new(op, character, ReceiptKind.EnemyDefeat, true,
+                EnemyLevel: practice.BoarLevel));
+            return new(op, reward.Receipt, Evidence(op, character, "defeat", "npc/boar", null, 1),
+                SkillResults: [gain]);
+        });
 
     public JourneyResult TradeOpen(string op, string tradeId, TradeOffer a, TradeOffer b) =>
         Run(op, $"open|{tradeId}|{a}|{b}", () => new(op, Trade: Exchange.OpenTrade(op, tradeId, a, b)));
