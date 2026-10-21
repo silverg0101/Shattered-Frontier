@@ -28,6 +28,7 @@ def config():
             c[key or k] = e['value']
     assert c['domes.radius_min_m'] <= c['domes.radius_max_m'] and c['domes.scale_min'] <= c['domes.scale_max']
     assert c['ring.inner_radius_m'] < c['ring.outer_radius_m']
+    assert c['land.forest_limit_m'] < c['land.snow_start_m']
     return c
 
 
@@ -136,43 +137,149 @@ def place(c):
     spawn(ring, 'MountainRing', u.Vector(0, 0, 0), 0, 1.0)
     rnd = random.Random(int(c['seed']))
     domes = [u.load_asset(f'{NATURE}/Meshes/SM_GraniteDomeFar_0{i}') for i in (0, 1)]
+    dome_mi = dome_material(u)
+    for d_ in domes:
+        for i in range(len(d_.static_materials)):
+            d_.set_material(i, dome_mi)
+        eal.save_loaded_asset(d_)
     n = int(c['domes.count'])
     for i in range(n):
         ang = (i + rnd.uniform(-0.3, 0.3)) / n * 2 * math.pi
         rad = rnd.uniform(c['domes.radius_min_m'], c['domes.radius_max_m'])
         s = rnd.uniform(c['domes.scale_min'], c['domes.scale_max'])
         x, y = rad * math.cos(ang) * 100, rad * math.sin(ang) * 100
-        z = ground_z(u, world, x, y)
         mesh = domes[i % 2]
-        h = mesh.get_bounding_box().max.z * s
-        spawn(mesh, f'GraniteDomeFar_{i:02d}', u.Vector(x, y, z - h * c['domes.sink_fraction']), rnd.uniform(0, 360), s)
-    for a in eas.get_all_level_actors():  # the white graybox range
+        bb = mesh.get_bounding_box()
+        h = bb.max.z * s
+        # the dome rim is flat at z=0: bury it below the LOWEST ground under its whole footprint (a single trace can land on a tree or roof)
+        reach = 0.5 * max(bb.max.x - bb.min.x, bb.max.y - bb.min.y) * s
+        zs = [ground_z(u, world, x + reach * k * math.cos(t), y + reach * k * math.sin(t)) for k in (0, 0.5, 1.0) for t in [j * math.pi / 4 for j in range(8)]]
+        z = min(zs) - h * c['domes.sink_fraction']
+        spawn(mesh, f'GraniteDomeFar_{i:02d}', u.Vector(x, y, z), rnd.uniform(0, 360), s)
+    land = land_material(u, c)  # the region terrain beyond the zone is the ground every peak stands on: keep it, textured, never hidden
+    for a in eas.get_all_level_actors():
         if a.get_actor_label() == 'Backdrop' and a.get_folder_path() == 'Ground':
-            a.set_actor_hidden_in_game(True)
-            a.set_is_temporarily_hidden_in_editor(True)
+            a.static_mesh_component.set_material(0, land)
+            a.set_actor_hidden_in_game(False)
+            a.set_is_temporarily_hidden_in_editor(False)
     assert levels.save_current_level()
     print('BACKDROP_PLACED', n, 'domes + ring')
 
 
-def mountain_material(u):
-    """M_Backdrop_Mountain: baked vertex-colour albedo (rock, forest, snow by height and slope) times rock_08 detail; rebuilt each run."""
-    mel, tools, path = u.MaterialEditingLibrary, u.AssetToolsHelpers.get_asset_tools(), f'{NATURE}/Materials/M_Backdrop_Mountain'
-    m = u.load_asset(path) or tools.create_asset('M_Backdrop_Mountain', f'{NATURE}/Materials', u.Material, u.MaterialFactoryNew())
+def _builder(u, name):
+    mel, tools, path = u.MaterialEditingLibrary, u.AssetToolsHelpers.get_asset_tools(), f'{NATURE}/Materials/{name}'
+    m = u.load_asset(path) or tools.create_asset(name, f'{NATURE}/Materials', u.Material, u.MaterialFactoryNew())
     mel.delete_all_material_expressions(m)
     node = lambda cls, x, y, **kw: (lambda e: ([e.set_editor_property(k, v) for k, v in kw.items()], e)[1])(mel.create_material_expression(m, cls, x, y))
-    tc = node(u.MaterialExpressionTextureCoordinate, -900, 0, u_tiling=24.0, v_tiling=24.0)
-    tex = node(u.MaterialExpressionTextureSample, -650, 0, texture=u.load_asset(f'{NATURE}/Textures/T_GN_rock_08_Diffuse'))
-    vc = node(u.MaterialExpressionVertexColor, -650, 250)
-    gain = node(u.MaterialExpressionMultiply, -450, 0, const_b=1.8)  # detail centred near 1
-    col = node(u.MaterialExpressionMultiply, -250, 100)
-    rough = node(u.MaterialExpressionConstant, -250, 300, r=0.92)
-    for a, o, b, i in ((tc, '', tex, 'UVs'), (tex, 'RGB', gain, 'A'), (vc, '', col, 'A'), (gain, '', col, 'B')):
-        assert mel.connect_material_expressions(a, o, b, i), (a, b)
+
+    def link(a, o, b, i):
+        assert mel.connect_material_expressions(a, o, b, i), (a, o, b, i)
+    return m, mel, node, link
+
+
+def _finish(u, m, mel, col, rough=0.95):
+    r = mel.create_material_expression(m, u.MaterialExpressionConstant, -250, 420)
+    r.set_editor_property('r', rough)
     mel.connect_material_property(col, '', u.MaterialProperty.MP_BASE_COLOR)
-    mel.connect_material_property(rough, '', u.MaterialProperty.MP_ROUGHNESS)
+    mel.connect_material_property(r, '', u.MaterialProperty.MP_ROUGHNESS)
     mel.recompile_material(m)
     u.EditorAssetLibrary.save_loaded_asset(m)
     return m
+
+
+def _soft_detail(u, node, link, tiling):
+    """rock_08 at low contrast, lerp(1, tex * 1.8, 0.3): distant ground reads as soft colour, not one big noisy texture."""
+    tc = node(u.MaterialExpressionTextureCoordinate, -1300, 0, u_tiling=tiling, v_tiling=tiling)
+    tex = node(u.MaterialExpressionTextureSample, -1100, 0, texture=u.load_asset(f'{NATURE}/Textures/T_GN_rock_08_Diffuse'))
+    gain = node(u.MaterialExpressionMultiply, -900, 0, const_b=1.8)
+    one = node(u.MaterialExpressionConstant, -900, 150, r=1.0)
+    amt = node(u.MaterialExpressionConstant, -900, 300, r=0.3)
+    det = node(u.MaterialExpressionLinearInterpolate, -700, 100)
+    for a, o, b, i in ((tc, '', tex, 'UVs'), (tex, 'RGB', gain, 'A'), (one, '', det, 'A'), (gain, '', det, 'B'), (amt, '', det, 'Alpha')):
+        link(a, o, b, i)
+    return det
+
+
+def _tone(u, node, link, x, rgb_rock, rgb_pine, rgb_snow, pine_w, snow_w):
+    cr = node(u.MaterialExpressionConstant3Vector, x, -300, constant=u.LinearColor(*rgb_rock, 1))
+    cp = node(u.MaterialExpressionConstant3Vector, x, -150, constant=u.LinearColor(*rgb_pine, 1))
+    cs = node(u.MaterialExpressionConstant3Vector, x, 0, constant=u.LinearColor(*rgb_snow, 1))
+    l1 = node(u.MaterialExpressionLinearInterpolate, x + 200, -250)
+    l2 = node(u.MaterialExpressionLinearInterpolate, x + 400, -150)
+    for a, o, b, i in ((cr, '', l1, 'A'), (cp, '', l1, 'B'), (pine_w, '', l1, 'Alpha'), (l1, '', l2, 'A'), (cs, '', l2, 'B'), (snow_w, '', l2, 'Alpha')):
+        link(a, o, b, i)
+    return l2
+
+
+def mountain_material(u):
+    """M_Backdrop_Mountain (the ring): baked vertex-colour albedo times a soft rock_08 detail."""
+    m, mel, node, link = _builder(u, 'M_Backdrop_Mountain')
+    det = _soft_detail(u, node, link, 10.0)
+    vc = node(u.MaterialExpressionVertexColor, -700, 300)
+    col = node(u.MaterialExpressionMultiply, -450, 100)
+    link(vc, '', col, 'A')
+    link(det, '', col, 'B')
+    return _finish(u, m, mel, col)
+
+
+def dome_material(u):
+    """M_Backdrop_Dome (granite domes): forest from vertex colour R on the low flanks, rock above, snow by height above the actor origin; soft detail."""
+    m, mel, node, link = _builder(u, 'M_Backdrop_Dome')
+    det = _soft_detail(u, node, link, 3.0)
+    vc = node(u.MaterialExpressionVertexColor, -700, 300)
+    wp, op = node(u.MaterialExpressionWorldPosition, -1300, 700), node(u.MaterialExpressionObjectPositionWS, -1300, 850)
+    rel = node(u.MaterialExpressionSubtract, -1100, 750)
+    link(wp, '', rel, 'A')
+    link(op, '', rel, 'B')
+    zc = node(u.MaterialExpressionComponentMask, -950, 750, b=True, r=False, g=False, a=False)
+    link(rel, '', zc, '')
+    snow0 = node(u.MaterialExpressionSubtract, -800, 750, const_b=14000.0)  # snow from ~140 m above the dome origin
+    link(zc, '', snow0, 'A')
+    snowr = node(u.MaterialExpressionMultiply, -650, 750, const_b=1 / 8000.0)
+    link(snow0, '', snowr, 'A')
+    snow = node(u.MaterialExpressionSaturate, -500, 750)
+    link(snowr, '', snow, '')
+    forest = node(u.MaterialExpressionComponentMask, -500, 300, r=True, g=False, b=False, a=False)
+    link(vc, '', forest, '')
+    tone = _tone(u, node, link, -450, (0.30, 0.28, 0.26), (0.09, 0.14, 0.07), (0.88, 0.90, 0.93), forest, snow)
+    col = node(u.MaterialExpressionMultiply, 100, 100)
+    link(tone, '', col, 'A')
+    link(det, '', col, 'B')
+    return _finish(u, m, mel, col)
+
+
+def land_material(u, c):
+    """M_Backdrop_Land (region terrain beyond the zone): forest on gentle low ground, rock on slopes, snow high; from world height and normal."""
+    m, mel, node, link = _builder(u, 'M_Backdrop_Land')
+    det = _soft_detail(u, node, link, 120.0)
+    wz = node(u.MaterialExpressionComponentMask, -1000, 700, b=True, r=False, g=False, a=False)
+    link(node(u.MaterialExpressionWorldPosition, -1200, 700), '', wz, '')
+    nz = node(u.MaterialExpressionComponentMask, -1000, 900, b=True, r=False, g=False, a=False)
+    link(node(u.MaterialExpressionVertexNormalWS, -1200, 900), '', nz, '')
+
+    def ramp(src, lo, hi, y, x=-800):
+        sub = node(u.MaterialExpressionSubtract, x, y, const_b=lo)
+        mul = node(u.MaterialExpressionMultiply, x + 150, y, const_b=1.0 / (hi - lo))
+        sat = node(u.MaterialExpressionSaturate, x + 300, y)
+        link(src, '', sub, 'A')
+        link(sub, '', mul, 'A')
+        link(mul, '', sat, '')
+        return sat
+    fl = c['land.forest_limit_m'] * 100
+    flat = ramp(nz, 0.72, 0.9, 900)  # gentle slope
+    low = ramp(wz, fl, fl + 25000, 700)  # 0 below the limit, 1 above it
+    inv = node(u.MaterialExpressionOneMinus, -450, 700)
+    link(low, '', inv, '')
+    pine = node(u.MaterialExpressionMultiply, -300, 800)
+    link(flat, '', pine, 'A')
+    link(inv, '', pine, 'B')
+    sh = c['land.snow_start_m'] * 100
+    snow = ramp(wz, sh, sh + 30000, 1100)
+    tone = _tone(u, node, link, -250, (0.30, 0.28, 0.26), (0.09, 0.14, 0.07), (0.88, 0.90, 0.93), pine, snow)
+    col = node(u.MaterialExpressionMultiply, 300, 100)
+    link(tone, '', col, 'A')
+    link(det, '', col, 'B')
+    return _finish(u, m, mel, col)
 
 
 def ground_z(u, world, x, y):
