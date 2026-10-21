@@ -47,6 +47,7 @@ readonly PREFIX=$(lock linuxTls prefix)
 common=(-S "$SRC" -G Ninja -DCMAKE_TOOLCHAIN_FILE="$REPO/tools/grpc-linux-toolchain.cmake" -DCMAKE_BUILD_TYPE=Release
     -DCMAKE_CXX_STANDARD=17 -DABSL_PROPAGATE_CXX_STD=ON -DBUILD_SHARED_LIBS=OFF
     -DgRPC_INSTALL=ON -DgRPC_BUILD_TESTS=OFF -DgRPC_DOWNLOAD_ARCHIVES=OFF -DgRPC_BUILD_CODEGEN=OFF
+    -DBUILD_TESTING=OFF -DRE2_BUILD_TESTING=OFF -DCARES_BUILD_TESTS=OFF -Dutf8_range_ENABLE_TESTS=OFF
     -Dprotobuf_BUILD_PROTOC_BINARIES=OFF -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_WITH_ZLIB=OFF
     -DgRPC_ABSL_PROVIDER=module -DgRPC_PROTOBUF_PROVIDER=module -DgRPC_RE2_PROVIDER=module -DgRPC_CARES_PROVIDER=module
     -DgRPC_SSL_PROVIDER=module -DgRPC_ZLIB_PROVIDER=package
@@ -56,22 +57,22 @@ common=(-S "$SRC" -G Ninja -DCMAKE_TOOLCHAIN_FILE="$REPO/tools/grpc-linux-toolch
 cmake "${common[@]}" -B "$WORK/build-pass1" >/dev/null
 cmake --build "$WORK/build-pass1" --target ssl crypto
 readonly SYMBOLS="$WORK/boringssl-symbols.txt" PREFIX_INCLUDE="$WORK/prefix-include"
-(cd "$SRC/third_party/boringssl-with-bazel/util" && go run read_symbols.go -out "$SYMBOLS" \
+(cd "$SRC/third_party/boringssl-with-bazel/util" && go run read_symbols.go -obj-file-format elf -out "$SYMBOLS" \
     "$WORK/build-pass1/third_party/boringssl-with-bazel/libcrypto.a" "$WORK/build-pass1/third_party/boringssl-with-bazel/libssl.a")
 # gRPC's own TLS code includes <openssl/*.h> too, so every target sees the prefix headers, not only BoringSSL's.
+mkdir -p "$PREFIX_INCLUDE"
 (cd "$SRC/third_party/boringssl-with-bazel/util" && go run make_prefix_headers.go -out "$PREFIX_INCLUDE" "$SYMBOLS")
 
 # Pass 2: everything, with BoringSSL symbols renamed to sfbssl_* so they cannot clash with engine OpenSSL.
 rm -rf "$WORK/build" "$INSTALL"
-cmake "${common[@]}" -B "$WORK/build" -DCMAKE_INSTALL_PREFIX="$INSTALL" \
-    -DBORINGSSL_PREFIX="$PREFIX" -DBORINGSSL_PREFIX_SYMBOLS="$SYMBOLS" \
-    -DCMAKE_C_FLAGS="-DBORINGSSL_PREFIX=$PREFIX -I$PREFIX_INCLUDE" -DCMAKE_CXX_FLAGS="-DBORINGSSL_PREFIX=$PREFIX -I$PREFIX_INCLUDE" \
-    -DCMAKE_ASM_FLAGS="-DBORINGSSL_PREFIX=$PREFIX -I$PREFIX_INCLUDE" >/dev/null
+# The toolchain file reads SF_LINUX_EXTRA_FLAGS; CMAKE_<LANG>_FLAGS here would drop its libc++ flags.
+SF_LINUX_EXTRA_FLAGS="-DBORINGSSL_PREFIX=$PREFIX -I$PREFIX_INCLUDE" cmake "${common[@]}" -B "$WORK/build" -DCMAKE_INSTALL_PREFIX="$INSTALL" \
+    -DBORINGSSL_PREFIX="$PREFIX" -DBORINGSSL_PREFIX_SYMBOLS="$SYMBOLS" -DGO_EXECUTABLE="$(command -v go)" >/dev/null
 cmake --build "$WORK/build"
 cmake --install "$WORK/build" >/dev/null
 
 # Fail closed if any OpenSSL-named symbol escaped the prefix.
-nm="$SF_LINUX_SDK_ROOT/bin/llvm-nm"
+nm="$SF_LINUX_SDK_ROOT/bin/x86_64-unknown-linux-gnu-nm"
 if "$nm" -g --defined-only "$INSTALL/lib/libssl.a" "$INSTALL/lib/libcrypto.a" 2>/dev/null | awk '$2 ~ /[TDBR]/ {print $3}' | grep -E '^(SSL|EVP|X509|BIO|ERR|CRYPTO)_' | head -1 | grep -q .; then
     echo 'Unprefixed BoringSSL symbols found in the install' >&2; exit 1
 fi

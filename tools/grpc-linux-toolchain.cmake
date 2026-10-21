@@ -20,8 +20,11 @@ set(CMAKE_C_COMPILER_TARGET x86_64-unknown-linux-gnu)
 set(CMAKE_CXX_COMPILER_TARGET x86_64-unknown-linux-gnu)
 set(CMAKE_ASM_COMPILER_TARGET x86_64-unknown-linux-gnu)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(_sf_common "-fPIC -fvisibility=hidden -ffunction-sections -fdata-sections")
+# SF_LINUX_EXTRA_FLAGS carries pass-specific defines (BoringSSL prefix). Passing CMAKE_<LANG>_FLAGS on the
+# command line would replace these init flags and silently drop libc++, so callers must use this instead.
+set(_sf_common "-fPIC -fvisibility=hidden -ffunction-sections -fdata-sections $ENV{SF_LINUX_EXTRA_FLAGS}")
 set(CMAKE_C_FLAGS_INIT "${_sf_common}")
+set(CMAKE_ASM_FLAGS_INIT "${_sf_common}")
 set(CMAKE_CXX_FLAGS_INIT "${_sf_common} -fvisibility-inlines-hidden -nostdinc++ -isystem ${SF_LINUX_SDK_ROOT}/include/c++/v1")
 # Only host-run build tools link here; UE links the shipped static libraries itself.
 set(_sf_libcxx "-fuse-ld=lld -nostdlib++ ${SF_LINUX_SDK_ROOT}/lib64/libc++.a ${SF_LINUX_SDK_ROOT}/lib64/libc++abi.a -lpthread -ldl -lm")

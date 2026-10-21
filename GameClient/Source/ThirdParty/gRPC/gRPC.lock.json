@@ -25,8 +25,12 @@
     "ninja": { "url": "https://github.com/ninja-build/ninja/releases/download/v1.11.1/ninja-linux.zip", "sha256": "b901ba96e486dce377f9a070ed4ef3f79deb45f4ffe2938f8e7ddc69cfb3df77" },
     "go": { "url": "https://go.dev/dl/go1.24.13.linux-amd64.tar.gz", "sha256": "1fc94b57134d51669c72173ad5d49fd62afb0f1db9bf3f798fd98ee423f8d730" }
   },
+  "windowsCrossTools": {
+    "go": { "url": "https://go.dev/dl/go1.24.13.windows-amd64.zip", "sha256": "40b16bc8f00540a2cb02dff4de72b73e966fdd8d65f95e33d8e4080b48a2459a" }
+  },
   "msvc": { "vsVersionRange": "[17.0,18.0)", "toolset": "14.44" },
-  "linuxToolchain": { "sdk": "v26_clang-20.1.8-rockylinux8", "triple": "x86_64-unknown-linux-gnu" },
+  "linuxToolchain": { "sdk": "v26_clang-20.1.8-rockylinux8", "triple": "x86_64-unknown-linux-gnu",
+    "windowsInstaller": { "url": "https://cdn.unrealengine.com/CrossToolchain_Linux/v26_clang-20.1.8-rockylinux8.exe", "sha256": "02dee9f48cc65c5abbc9cc429271115f1cce68ebcef632db42ba4b5c9dbe2088", "hashSource": "observed on download 2026-10-21; Epic publishes no checksum" } },
   "tls": { "provider": "EngineOpenSSL", "version": "1.1.1t" },
   "linuxTls": { "provider": "PrefixedBoringSSL", "prefix": "sfbssl" },
   "zlib": { "provider": "Engine", "version": "1.3" },

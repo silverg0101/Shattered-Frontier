@@ -39,7 +39,11 @@ Status: proposed 2026-10-21 (Fable plan review). Owner decision 2026-10-21: the 
   5. Build the Server target (2 CPU / 8 GiB, so many hours on the first engine compile): `ssh -t steam@192.168.50.133 'sudo /srv/shattered-frontier/runtime/native/run-native-job.sh server-build'`
   6. Stage and image the build, following the existing release procedure in `docs/e1-linux-server-build.md` (`run-native-job.sh stage`, then the release image build).
   7. Run the proof: `ssh -t steam@192.168.50.133 'sudo /srv/shattered-frontier/runtime/native/run-ledger-roundtrip.sh <release-image> /home/steam/LedgerHostPublish /srv/shattered-frontier/native-build-5.8.3/project/BackendServices/InventoryLedger.Postgres/Schema.sql'`. Success is the line `SF_LEDGER_ROUNDTRIP_PASSED`.
-- **Route (A), Windows cross-build:** re-provision the source engine and the v26 SDK. `tools/grpc-linux-toolchain.cmake` already handles a Windows host. A small Windows driver (the Windows CMake, Ninja and Go from the lock, plus the same two-pass steps as `build-grpc-linux.sh`) gets written only if the owner picks (A). Steps 6 and 7 are unchanged.
+- **Route (A) chosen by the owner (2026-10-21).** Pins for this route:
+  - The v26 Windows-hosted SDK installer (SHA-256 `02dee9f4`, observed on download because Epic publishes none), extracted with 7-Zip into `C:\UnrealToolchains`.
+  - Go 1.24.13 for Windows (`40b16bc8`), for BoringSSL's prefix tools.
+
+  The Windows driver is `tools/Build-GrpcThirdParty.ps1 -Platform Linux -EngineRoot C:\UnrealSource\UE_5.8.3 -LinuxMultiArchRoot C:\UnrealToolchains\v26_clang-20.1.8-rockylinux8`. Steps 6 and 7 of the runbook are unchanged.
 
 ## INT-04 prep: service hosts
 
