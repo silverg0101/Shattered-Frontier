@@ -196,6 +196,8 @@ public:
     ASFConstructionNetworkController();
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type Reason) override;
+    // INT-05: with in-flight commits, a closed connection detaches the controller instead of destroying it (linkdead drain).
+    virtual void OnNetCleanup(UNetConnection* Connection) override;
     virtual void ClientRestart_Implementation(APawn* NewPawn) override;
     virtual void SetupInputComponent() override;
     virtual void AcknowledgePossession(APawn* P) override;

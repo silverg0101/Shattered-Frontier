@@ -198,6 +198,8 @@ public:
     static FString StationName(ESFGatheringPilotKind Kind);
     bool IsEnabled() const { return bEnabled; }
     const FSFGatheringSkillSnapshot& GetSkillSnapshot() const { return Skills; }
+    // Server, INT-05 restore: Progression skill values ("skill/<name>", tenths) replace the session values.
+    void RestoreSkills(const TMap<FString, int32>& ServiceSkills);
     // Read-only views for the gathering HUD (ring, toast, recipe panel).
     const FSFGatheringPilotFeedback& GetFeedback() const { return Feedback; }
     ASFGatheringPilotNode* FindAimedNode(const FVector& Start, const FVector& Direction) const { return FindNode(Start, Direction); }

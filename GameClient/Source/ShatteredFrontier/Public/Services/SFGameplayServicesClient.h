@@ -20,10 +20,16 @@ public:
     float TimeoutSeconds = 3;
     UPROPERTY(Config, EditAnywhere, Category="Services", meta=(ClampMin="1", ClampMax="5", ToolTip="Attempts per operation, all with the same operation id."))
     int32 MaxAttempts = 3;
+    UPROPERTY(Config, EditAnywhere, Category="Reconnect", meta=(ToolTip="INT-05: restore a dev character's backpack, skills, quest step and position on connect, and drain a disconnected controller's in-flight commits. Needs Enabled and the guarded dev identity. Release authors; next world start."))
+    bool bRestoreOnConnect = false;
+    UPROPERTY(Config, EditAnywhere, Category="Reconnect", meta=(ClampMin="5", ClampMax="600", Units="s", ToolTip="Server saves a moved character's position this often (and once at logout)."))
+    float PositionSaveIntervalSeconds = 30;
+    UPROPERTY(Config, EditAnywhere, Category="Reconnect", meta=(ClampMin="5", ClampMax="120", Units="s", ToolTip="Longest a disconnected controller stays in the world while its in-flight commits resolve."))
+    float LinkdeadDrainSeconds = 30;
     bool Validate(FString& Error) const;
 };
 
-enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant };
+enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition };
 // Ok; Rejected = a typed gameplay refusal (FAILED_PRECONDITION, PERMISSION_DENIED, ALREADY_EXISTS, INVALID_ARGUMENT, ...);
 // Unavailable = UNAVAILABLE / DEADLINE_EXCEEDED / CANCELLED, retried with the same operation id.
 enum class ESFGameplayStatus : uint8 { Ok, Rejected, Unavailable };
@@ -53,6 +59,7 @@ struct FSFGameplayRequest
     FIntVector Cell = FIntVector::ZeroValue;
     FString GranteeId; int32 Rights = 0;  // Grant: the grantee and its ClaimRight bits (1 = build)
     FString ShapeKey; int32 OrientationIndex = 0;  // Place: BLD-01 geometry identity
+    FString ZoneId; FVector Position = FVector::ZeroVector; float Yaw = 0; int64 ExpectedPositionRevision = 0;  // SavePosition
     // Crafting
     FString RecipeId; int32 Count = 1;
 };
@@ -71,6 +78,8 @@ struct FSFGameplayResponse
     int64 ProgressionRevision = 0, QuestRevision = 0;
     FString ActiveStepId; TArray<FString> RewardBundleIds; TMap<FString, int32> Skills;
     TMap<FString, int64> GrantedItems;  // the quest payout lines committed with this receipt
+    TMap<FString, int32> ObjectiveCounts;  // GetCharacterState: the active step's counts by objective key
+    bool bHasPosition = false; FString ZoneId; FVector Position = FVector::ZeroVector; float Yaw = 0; int64 PositionRevision = 0;
     // Housing
     FString State, StructureId, OwnerId; int64 StructureRevision = 0, Revision = 0, PermissionRevision = 0;
     struct FStructure { FString StructureId, ContentId; FIntVector Cell = FIntVector::ZeroValue; int64 Revision = 0; FString ShapeKey; int32 OrientationIndex = 0; };

@@ -88,6 +88,9 @@ public:
     const FSFQuestProgress& GetProgress() const { return Progress; }
     int32 PendingRewardCount() const { return PendingRewards.Num(); }
     const FSFQuestView& GetView() const { return View; }
+    /** Server, INT-05 restore: the Progression quest state replaces session progress (rewards stay with the services). */
+    void Restore(const FString& ActiveStepId, bool bCompleted, const TMap<FString,int32>& Counts, int64 InProgressionRevision, int64 InQuestRevision);
+    bool HasPendingServiceWork() const { return bServiceBusy || !ServiceQueue.IsEmpty(); }
 private:
     void RebuildView();
     void TryDeliverRewards();

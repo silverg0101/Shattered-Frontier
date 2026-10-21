@@ -143,9 +143,10 @@ void USFBackpackComponent::Refresh(TFunction<void(bool)> Done)
     });
 }
 
-void USFBackpackComponent::Reconcile()
+void USFBackpackComponent::Reconcile(TFunction<void(bool)> Done)
 {
     FSFBackpackMutation Read; Read.Label = TEXT("reconcile"); Read.OperationId = TEXT("read");
+    if (Done) { Read.Finished = [Done = MoveTemp(Done)](ESFBackpackOutcome Outcome) { Done(Outcome == ESFBackpackOutcome::Committed); }; }
     Read.Run = [Weak = TWeakObjectPtr<USFBackpackComponent>(this)](const FString&, int64, TFunction<void(ESFBackpackOutcome, int64)> Report)
     {
         USFBackpackComponent* Self = Weak.Get();

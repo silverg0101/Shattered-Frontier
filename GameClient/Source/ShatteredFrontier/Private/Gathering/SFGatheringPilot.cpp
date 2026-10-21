@@ -23,6 +23,7 @@
 #include "Quest/SFQuestPilotEvents.h"
 #include "Gathering/SFStationRecipes.h"
 #include "Services/SFBackpackComponent.h"
+#include "Services/SFCharacterSession.h"
 #include "Services/SFGameplayServicesClient.h"
 #include "UObject/ConstructorHelpers.h"
 #if SF_WITH_MINIMAL_INVENTORY
@@ -596,6 +597,7 @@ void USFGatheringPilotComponent::ProcessGatheringAction(ASFGatheringPilotNode* N
     { ClientKeyConflict(Operation); return; }
     Feedback.Operation=Operation; Feedback.Node=Node; Feedback.EndsAtServerSeconds=0; Feedback.bSkillGained=false;
     Feedback.RequiredSkill=0; Feedback.CurrentSkill=0;
+    if (USFCharacterSessionComponent::IsRestoring(GetOwner())) { Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::Unavailable); return; }
     ESFGatheringSkill ResourceSkill; ESFGatheringMaterialTier ResourceTier;
     if (IsValid(Node)&&Node->GetResourceProfile(ResourceSkill,ResourceTier))
     {
@@ -796,6 +798,17 @@ void USFGatheringPilotComponent::BeginLedgerCommit()
         Self->OnLedgerGrant(Response);
     };
     Pack->Enqueue(MoveTemp(Mutation));
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    // INT-05 reconnect runner: drop this player's connection once, with the ledger grant in flight (Committing).
+    static bool bDropped=false;
+    auto* Controller=Cast<APlayerController>(GetOwner());
+    if (!bDropped && FParse::Param(FCommandLine::Get(),TEXT("SFDropDuringCommit")) && Controller && Controller->GetNetConnection())
+    {
+        bDropped=true;
+        UE_LOG(LogTemp,Display,TEXT("RECONNECT_DROP_DURING_COMMIT Op=%s Container=%s"),*Operation,*Pack->GetContainerId());
+        Controller->GetNetConnection()->Close();
+    }
+#endif
 }
 
 void USFGatheringPilotComponent::OnLedgerGrant(const FSFLedgerResponse& Response)
@@ -924,6 +937,16 @@ bool USFGatheringPilotComponent::CycleRecipeFromRay(const FVector& Start, const 
     if (!Node || !Node->IsRefinery()) { return false; }
     CycleStationRecipe(Node->Kind);
     return true;
+}
+
+void USFGatheringPilotComponent::RestoreSkills(const TMap<FString,int32>& ServiceSkills)
+{
+    for (int32 Index=0; Index<Skills.Values.Num(); ++Index)
+    {
+        const FString Key=TEXT("skill/")+FString(FSFGatheringProgressionSession::SkillName(ESFGatheringSkill(Index))).ToLower();
+        if (const int32* Value=ServiceSkills.Find(Key)) { Skills.Values[Index]=FMath::Clamp(*Value,0,900); }
+    }
+    GetOwner()->ForceNetUpdate();
 }
 
 void USFGatheringPilotComponent::ServerSelectRecipe_Implementation(ESFGatheringPilotKind Station, const FString& RecipeId)

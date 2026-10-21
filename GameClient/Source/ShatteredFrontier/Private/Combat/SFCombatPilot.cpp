@@ -21,6 +21,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Quest/SFQuestPilotEvents.h"
 #include "Services/SFBackpackComponent.h"
+#include "Services/SFCharacterSession.h"
 #include "Services/SFGameplayServicesClient.h"
 
 namespace
@@ -163,7 +164,8 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
             auto* Candidate = Cast<ASFE1Character>(It->Get()->GetPawn());
             const FVector Toward = Candidate ? Candidate->GetActorLocation()-GetActorLocation() : FVector::ZeroVector;
             const double Distance = Toward.Size2D();
-            if (IsValid(Candidate) && Candidate->CombatHealth() > 0 &&
+            // A linkdead (draining) character stays visible but is never chosen as prey (INT-05).
+            if (IsValid(Candidate) && Candidate->CombatHealth() > 0 && !USFCharacterSessionComponent::IsLinkdead(It->Get()) &&
                 !Mode->IsSafe(Candidate->GetActorLocation()) &&
                 Mode->IsInsideTerritory(Candidate->GetActorLocation(), Territory) &&
                 Distance <= Mode->Settings()->BoarAggroRadiusMetres*100 &&

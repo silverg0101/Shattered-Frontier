@@ -27,6 +27,7 @@ namespace v1 {
 static const char* Progression_method_names[] = {
   "/sf.progression.v1.Progression/ApplyReceipt",
   "/sf.progression.v1.Progression/GetCharacterState",
+  "/sf.progression.v1.Progression/SavePosition",
 };
 
 std::unique_ptr< Progression::Stub> Progression::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -38,6 +39,7 @@ std::unique_ptr< Progression::Stub> Progression::NewStub(const std::shared_ptr< 
 Progression::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
   : channel_(channel), rpcmethod_ApplyReceipt_(Progression_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_GetCharacterState_(Progression_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_SavePosition_(Progression_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status Progression::Stub::ApplyReceipt(::grpc::ClientContext* context, const ::sf::progression::v1::ApplyReceiptRequest& request, ::sf::progression::v1::ApplyReceiptReply* response) {
@@ -86,6 +88,29 @@ void Progression::Stub::async::GetCharacterState(::grpc::ClientContext* context,
   return result;
 }
 
+::grpc::Status Progression::Stub::SavePosition(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest& request, ::sf::progression::v1::SavePositionReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::progression::v1::SavePositionRequest, ::sf::progression::v1::SavePositionReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_SavePosition_, context, request, response);
+}
+
+void Progression::Stub::async::SavePosition(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest* request, ::sf::progression::v1::SavePositionReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::progression::v1::SavePositionRequest, ::sf::progression::v1::SavePositionReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_SavePosition_, context, request, response, std::move(f));
+}
+
+void Progression::Stub::async::SavePosition(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest* request, ::sf::progression::v1::SavePositionReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_SavePosition_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>* Progression::Stub::PrepareAsyncSavePositionRaw(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::progression::v1::SavePositionReply, ::sf::progression::v1::SavePositionRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_SavePosition_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>* Progression::Stub::AsyncSavePositionRaw(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncSavePositionRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 Progression::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Progression_method_names[0],
@@ -107,6 +132,16 @@ Progression::Service::Service() {
              ::sf::progression::v1::CharacterStateReply* resp) {
                return service->GetCharacterState(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Progression_method_names[2],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Progression::Service, ::sf::progression::v1::SavePositionRequest, ::sf::progression::v1::SavePositionReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Progression::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::progression::v1::SavePositionRequest* req,
+             ::sf::progression::v1::SavePositionReply* resp) {
+               return service->SavePosition(ctx, req, resp);
+             }, this)));
 }
 
 Progression::Service::~Service() {
@@ -120,6 +155,13 @@ Progression::Service::~Service() {
 }
 
 ::grpc::Status Progression::Service::GetCharacterState(::grpc::ServerContext* context, const ::sf::progression::v1::GetCharacterStateRequest* request, ::sf::progression::v1::CharacterStateReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Progression::Service::SavePosition(::grpc::ServerContext* context, const ::sf::progression::v1::SavePositionRequest* request, ::sf::progression::v1::SavePositionReply* response) {
   (void) context;
   (void) request;
   (void) response;

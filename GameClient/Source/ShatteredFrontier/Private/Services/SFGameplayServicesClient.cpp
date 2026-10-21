@@ -14,6 +14,8 @@ bool USFGameplayServicesSettings::Validate(FString& Error) const
     { Error = TEXT("Endpoint must be 127.0.0.1:<port> in the development topology."); return false; }
     if (!FMath::IsFinite(TimeoutSeconds) || TimeoutSeconds < 1 || TimeoutSeconds > 30) { Error = TEXT("TimeoutSeconds must be 1-30."); return false; }
     if (MaxAttempts < 1 || MaxAttempts > 5) { Error = TEXT("MaxAttempts must be 1-5."); return false; }
+    if (!FMath::IsFinite(PositionSaveIntervalSeconds) || PositionSaveIntervalSeconds < 5 || PositionSaveIntervalSeconds > 600) { Error = TEXT("PositionSaveIntervalSeconds must be 5-600."); return false; }
+    if (!FMath::IsFinite(LinkdeadDrainSeconds) || LinkdeadDrainSeconds < 5 || LinkdeadDrainSeconds > 120) { Error = TEXT("LinkdeadDrainSeconds must be 5-120."); return false; }
     return true;
 }
 

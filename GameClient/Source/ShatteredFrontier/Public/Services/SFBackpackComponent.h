@@ -42,8 +42,11 @@ public:
     // Applies committed ledger deltas to the session bag projection, by definition id. Unknown items are logged.
     void ApplyToBag(const TMap<FString, int64>& Deltas) const;
     bool IsBusy() const { return bBusy; }
-    // Queued read: rebuilds the bag projection from the ledger view (after a payout or refund whose items the reply omits).
-    void Reconcile();
+    bool IsIdle() const { return !bBusy && Queue.IsEmpty(); }
+    bool HasDevIdentity() const { return !DevName.IsEmpty(); }
+    // Queued read: rebuilds the bag projection from the ledger view (after a payout or refund whose items the reply omits,
+    // and on an INT-05 restore). Done, when given, reports whether the read succeeded.
+    void Reconcile(TFunction<void(bool)> Done = nullptr);
 #if WITH_DEV_AUTOMATION_TESTS
     // Test hook: a backpack over a stubbed ledger client, without the settings lookup.
     static USFBackpackComponent* CreateForTests(APlayerController* Controller, TSharedPtr<FSFInventoryLedgerClient> InLedger);

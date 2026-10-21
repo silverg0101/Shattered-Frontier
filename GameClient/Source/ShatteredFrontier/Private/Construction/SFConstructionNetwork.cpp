@@ -57,6 +57,7 @@
 #include "Quest/SFQuestPilotEvents.h"
 #include "Gathering/SFStationRecipes.h"
 #include "Services/SFBackpackComponent.h"
+#include "Services/SFCharacterSession.h"
 #include "Services/SFGameplayServicesClient.h"
 
 namespace
@@ -1176,6 +1177,7 @@ void ASFConstructionNetworkGameMode::PostLogin(APlayerController* NewPlayer)
     if (APawn* Pawn = Controller->GetPawn(); Pawn && !IsZoneGatheringWorld()) { Pawn->SetActorLocation(FVector(bAssignBuilder ? -200 : 200,-400,96)); }
     if (IsZoneGatheringWorld()) { PlaceForZoneScenario(Controller->GetPawn(), bAssignBuilder); }
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_ROLE Builder=%d"),bAssignBuilder);
+    USFCharacterSessionComponent::AttachIfEnabled(Controller);
     for (TActorIterator<ASFConstructionNetworkState> It(GetWorld()); It; ++It) { It->AdmitPair(); }
 }
 
@@ -1308,6 +1310,17 @@ void ASFConstructionNetworkController::ClientRestart_Implementation(APawn* NewPa
     Super::ClientRestart_Implementation(NewPawn);
     bOwnsLookSuppression=false; bCameraLookHeld=false; CancelLine();
     InitializeLocalControls();
+}
+
+void ASFConstructionNetworkController::OnNetCleanup(UNetConnection* Connection)
+{
+    auto* Session = FindComponentByClass<USFCharacterSessionComponent>();
+    if (!Session || !Session->BeginDrain()) { Super::OnNetCleanup(Connection); return; }
+    // The engine's cleanup without the Destroy: the connection is going away, the controller and pawn stay until the
+    // session sees every pending outcome resolved (or LinkdeadDrainSeconds), then it destroys the controller.
+    if (UWorld* World = GetWorld()) { World->DestroySwappedPC(Connection); }
+    if (Player && Player->PlayerController == this) { Player->PlayerController = nullptr; }
+    Player = nullptr; NetConnection = nullptr;
 }
 
 void ASFConstructionNetworkController::EndPlay(const EEndPlayReason::Type Reason)
@@ -1814,7 +1827,8 @@ void ASFConstructionNetworkController::ProcessEdit(FIntVector Cell, uint64 Expec
         // INT-04: check everything locally, commit through Housing (which pays from the backpack), then apply the
         // already-validated edit. Unavailable or refused leaves the claim and the world unchanged.
         LastRequestFrame = GFrameCounter;
-        Result = bHousingPending ? ESFConstructionNetworkResult::Stale : State->Edit(this,Cell,ExpectedRevision,bRemove,Shape,Rotation,false);
+        Result = USFCharacterSessionComponent::IsRestoring(this) ? ESFConstructionNetworkResult::ServiceUnavailable
+            : bHousingPending ? ESFConstructionNetworkResult::Stale : State->Edit(this,Cell,ExpectedRevision,bRemove,Shape,Rotation,false);
         if (Result == (bRemove ? ESFConstructionNetworkResult::Removed : ESFConstructionNetworkResult::Accepted))
         {
             bHousingPending = true;

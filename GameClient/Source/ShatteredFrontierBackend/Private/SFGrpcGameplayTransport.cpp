@@ -159,8 +159,23 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
             Out.ProgressionRevision = R.progression_revision(); Out.Level = R.level(); Out.QuestRevision = R.quest_revision();
             Out.ActiveStepId = FromUtf8(R.active_step_id()); Out.bQuestCompleted = R.quest_completed();
             for (const auto& Skill : R.skills()) { Out.Skills.Add(FromUtf8(Skill.first), Skill.second); }
+            for (const auto& Count : R.objective_counts()) { Out.ObjectiveCounts.Add(FromUtf8(Count.first), Count.second); }
+            Out.PositionRevision = R.position_revision(); Out.bHasPosition = R.has_position();
+            if (Out.bHasPosition)
+            { Out.ZoneId = FromUtf8(R.position().zone_id()); Out.Position = FVector(R.position().x(), R.position().y(), R.position().z()); Out.Yaw = R.position().yaw(); }
         };
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Progression->AsyncGetCharacterState(C, M, &Channel->Queue); });
+        break;
+    }
+    case ESFGameplayRpc::SavePosition:
+    {
+        sf::progression::v1::SavePositionRequest M;
+        M.set_character_id(Utf8(Q.CharacterId)); M.set_expected_position_revision(Q.ExpectedPositionRevision);
+        auto* P = M.mutable_position();
+        P->set_zone_id(Utf8(Q.ZoneId)); P->set_x(Q.Position.X); P->set_y(Q.Position.Y); P->set_z(Q.Position.Z); P->set_yaw(Q.Yaw);
+        auto* Call = new TCall<sf::progression::v1::SavePositionReply>();
+        Call->Copy = [](const sf::progression::v1::SavePositionReply& R, FSFGameplayResponse& Out) { Out.PositionRevision = R.position_revision(); };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Progression->AsyncSavePosition(C, M, &Channel->Queue); });
         break;
     }
     case ESFGameplayRpc::ClaimPlot:
@@ -239,6 +254,13 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
             for (const auto& Change : R.changes()) { Out.Changes.FindOrAdd(FromUtf8(Change.definition_id())) += Change.delta(); }
         };
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Crafting->AsyncCraft(C, M, &Channel->Queue); });
+        break;
+    }
+    default:
+    {
+        // An RPC this transport does not carry yet answers Unimplemented at once instead of never.
+        FSFGameplayResponse Missing; Missing.Status = ESFGameplayStatus::Rejected; Missing.GrpcCode = 12; Missing.Message = TEXT("RPC not carried by this transport.");
+        AsyncTask(ENamedThreads::GameThread, [Done = MoveTemp(Done), Missing]() { Done(Missing); });
         break;
     }
     }

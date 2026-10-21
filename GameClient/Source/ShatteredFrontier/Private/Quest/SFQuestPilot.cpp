@@ -13,6 +13,7 @@
 #include "Components/VerticalBoxSlot.h"
 #include "Characters/SFE1Character.h"
 #include "Services/SFBackpackComponent.h"
+#include "Services/SFCharacterSession.h"
 #include "Services/SFGameplayServicesClient.h"
 #include "Gathering/SFStationRecipes.h"
 #include "Combat/SFCombatPilot.h"
@@ -322,6 +323,19 @@ void USFQuestPilotComponent::PumpServices()
     });
 }
 
+void USFQuestPilotComponent::Restore(const FString& ActiveStepId, bool bCompleted, const TMap<FString,int32>& Counts, int64 InProgressionRevision, int64 InQuestRevision)
+{
+    if (!Quest) { return; }
+    const int32 Found = Quest->Steps.IndexOfByPredicate([&](const FSFQuestStep& Step) { return Step.Id == ActiveStepId; });
+    Progress = FSFQuestProgress();
+    Progress.StepIndex = bCompleted ? Quest->Steps.Num() : FMath::Max(Found, 0);
+    if (!bCompleted && Found != INDEX_NONE) { Progress.Counts = Counts; }
+    for (int32 Index = 0; Index < Progress.StepIndex; ++Index) { Progress.GrantedSteps.Add(Quest->Steps[Index].Id); }
+    ProgressionRevision = InProgressionRevision; QuestRevision = InQuestRevision;
+    UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_RESTORED Quest=%s Step=%d Active=%s Counts=%d Completed=%d"), *Quest->Id, Progress.StepIndex, *ActiveStepId, Progress.Counts.Num(), bCompleted);
+    RebuildView();
+}
+
 void USFQuestPilotComponent::RebuildView()
 {
     if (!Quest) { return; }
@@ -415,6 +429,13 @@ namespace
     }
 
     // Economy mode (gameplay services on): a wall costs a wall bundle, so walk back from the bundle recipe to what the bag lacks.
+    FString BagLine(const AActor* Owner)
+    {
+        return FString::Printf(TEXT("oak=%lld timber=%lld ore=%lld ingot=%lld nails=%lld bundle=%lld"), BagQuantity(Owner, TEXT("item/oak_log")),
+            BagQuantity(Owner, TEXT("item/rough_timber")), BagQuantity(Owner, TEXT("item/iron_ore")), BagQuantity(Owner, TEXT("item/iron_ingot")),
+            BagQuantity(Owner, TEXT("item/iron_nails")), BagQuantity(Owner, TEXT("item/wall_material_bundle")));
+    }
+
     FFullTarget WallEconomy(const AActor* Owner)
     {
         const FSFStationRecipe* Bundle = SFStationRecipes::Find(TEXT("recipe/wall_material_bundle"));
@@ -485,7 +506,8 @@ void USFQuestPilotComponent::TickFullServer()
     const auto* PC = Cast<APlayerController>(GetOwner());
     APawn* Pawn = PC ? PC->GetPawn() : nullptr;
     const FSFQuestObjective* Objective = Quest ? NextObjective(*Quest, Progress) : nullptr;
-    if (!Pawn || !Objective) { return; }
+    // A restoring character keeps its restored position; the fixture places it once progress is known.
+    if (!Pawn || !Objective || USFCharacterSessionComponent::IsRestoring(PC)) { return; }
     // Nodes: the one nearest the world origin (oak, iron) or the only station; the claim pad for the wall; the nearest boar.
     const FFullTarget Next = Resolve(Objective->Kind, Objective->TargetId, PC, USFBackpackComponent::Services().IsValid());
     FVector Target = FVector::ZeroVector, Where = FVector::ZeroVector;
@@ -512,12 +534,16 @@ void USFQuestPilotComponent::TickFullServer()
         Where = Target + FVector(-175, -125, 95);
     }
     else { return; }
+    // Players sharing a target stand side by side, not inside each other (two-client reconnect runner).
+    int32 Index = 0;
+    for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It && It->Get() != PC; ++It) { ++Index; }
+    Where += FVector::CrossProduct((Target - Where).GetSafeNormal2D(), FVector::UpVector) * (Index % 3) * 110.0;
     const FString Key = Quest->Steps[Progress.StepIndex].Id + TEXT("/") + Objective->Key + TEXT("/") + Next.Describe();
     if (Key == FullTeleportKey && FVector::Dist2D(Pawn->GetActorLocation(), Target) < 600) { return; }
     // Re-place after a respawn or a boar that wandered off; otherwise once per target.
     Pawn->SetActorLocation(Where, false, nullptr, ETeleportType::TeleportPhysics);
     FullTeleportKey = Key;
-    UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_PLACED Objective=%s"), *Key);
+    UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_PLACED Objective=%s Bag=%s"), *Key, *BagLine(PC));
 #endif
 }
 
@@ -540,7 +566,7 @@ void USFQuestPilotComponent::TickFullClient(double Now)
     const FFullTarget Next = Resolve(Kind, Target, PC, FParse::Param(FCommandLine::Get(), TEXT("QuestFullEconomy")));
     const FString Key = View.Step + TEXT("/") + Line->Label + TEXT("/") + Next.Describe();
     if (Key != FullAttemptKey)
-    { FullAttemptKey = Key; FullEquipAt = 0; FullStableSince = 0; FullAttemptAt = 0; FullLastSwingAt = 0; FullAttempts = 0; }
+    { UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_TARGET Objective=%s Bag=%s"), *Key, *BagLine(PC)); FullAttemptKey = Key; FullEquipAt = 0; FullStableSince = 0; FullAttemptAt = 0; FullLastSwingAt = 0; FullAttempts = 0; }
     const auto Fail = [&](const TCHAR* Why)
     { UE_LOG(LogTemp, Error, TEXT("QUEST_FULL_FAILED Objective=%s Why=%s"), *Key, Why); FPlatformMisc::RequestExitWithStatus(false, 1); };
     // An attempt that produced nothing (for example a host-down refusal) is retried; a few in a row fail the run.
