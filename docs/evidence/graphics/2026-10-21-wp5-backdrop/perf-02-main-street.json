@@ -1,0 +1,9 @@
+{
+  "view": "02-main-street",
+  "frames": 600,
+  "median_ms": 6.84,
+  "p95_ms": 8.83,
+  "worst_ms": 125.0,
+  "fps_median": 146.1,
+  "fps_p95": 113.3
+}

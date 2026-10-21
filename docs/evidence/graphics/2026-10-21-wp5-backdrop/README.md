@@ -1,0 +1,11 @@
+# WP5 backdrop review — 2026-10-21
+
+Ran commit `0b1ea09`'s `GameClient/ArtSource/backdrop.py` in a personally launched UE 5.8.3 editor on `/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook` through `py -3 tools/Run-InEditor.py GameClient/ArtSource/backdrop.py`. It reported `BACKDROP_PLACED 9 domes + ring` and saved the map. The ring was reimported; the script assigned the distant mountain, dome, and region-land materials. `SM_MountainRing.fbx` was already built by `0b1ea09` and was not regenerated.
+
+Captures are 1920×1080 real `-game` screenshots from `capture_game.py`, with the main-street bookmark at (22, 330) m, west/east/south zone edges at (±1100, 0)/(0, 1100) m, and high ground at (900, -900) m. Eye height is 1.7 m above terrain. A 100 m terrain-grid trace, requiring gentle nearby height change, found (900, -900) m at 114 m to be the highest sampled walkable point. The two `side-by-side-*` images place the concept on the left and the live main-street image on the right. The first uses `docs/Game-Design/concept-art/UI/v5/gameplay-hud.png`; the second crops the distant range from `docs/Game-Design/concept-art/Designer (6).png` used for the Greenlands/GFX-01 visual direction.
+
+**Verdict: fails the requested visual acceptance.** A blue band remains visible beneath the distant mountains from the west and south edges (`edge-contact.jpg`), so the bases do not read as fully grounded. The near domes and ring are extremely pale, with hard low-poly facets instead of the concept's darker, detailed forest/rock slopes and restrained snow caps. The main-street view also lacks the concept's dense treeline and layered haze. East edge and high-ground views show continuous foreground terrain, but do not clear the west/south gap. The scene cannot honestly be called the same design yet.
+
+The repo's `perf_bookmark_game.py` recorded 600 frames at 2560×1440 on the main-street bookmark after a 6 s warmup: median **6.84 ms**, p95 **8.83 ms**, worst **125.0 ms** (`perf-02-main-street.json`). This is a local run, not a GPU-only cost of WP5.
+
+The shared checkout already had staged and unstaged changes to the Silverbrook map before this run; the run's new map state is therefore a composite of WP5 placement and pre-existing work. No C++ compile, build, or headless map commandlet was run.
