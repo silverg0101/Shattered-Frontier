@@ -122,7 +122,7 @@ def apply(save=False):
     cloud.set_editor_property('tracing_max_distance', cfg['clouds.tracing_max_distance_km'])
     mat = u.load_asset(CLOUD_MATERIAL)
     assert mat, f'Engine cloud material missing: {CLOUD_MATERIAL}'
-    cloud.set_editor_property('material', mat)
+    cloud.set_editor_property('material', mat)  # the engine's own instance gives soft cumulus; overriding its parent parameters removed the clouds
 
     pp = _one(u.PostProcessVolume, LABEL_PP)
     pp.set_editor_property('unbound', True)
