@@ -13,7 +13,7 @@ import unreal
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'GameClient', 'ArtSource'))
 KIT = os.path.join(ROOT, 'UI', 'HUD-Kit-v1')
-FONT_FILE = os.path.join(ROOT, 'Fonts', 'Cinzel', 'Cinzel[wght].ttf')
+FONT_FILE = os.path.join(ROOT, 'Fonts', 'Cinzel', 'Cinzel-Bold.ttf')
 TEXTURE_PATH = '/Game/Frontier/UI/Kit'
 FONT_PATH = '/Game/Frontier/UI/Fonts'
 
@@ -45,38 +45,16 @@ if os.path.isfile(FONT_FILE) and not os.environ.get('SF_SKIP_FONT'):  # font imp
     tasks.append(font_task)
 tools.import_asset_tasks(tasks)
 
-# Composite runtime font that wraps the imported face (UMG text needs a UFont, not a bare face).
-title_font = None
-face = library.load_asset(FONT_PATH + '/FontFace_Cinzel')
-if face is not None:
-    try:
-        font_path = FONT_PATH + '/Font_HudSerif'
-        if library.does_asset_exist(font_path):
-            library.delete_asset(font_path)
-        font = tools.create_asset('Font_HudSerif', FONT_PATH, unreal.Font, unreal.FontFactory())
-        font.set_editor_property('font_cache_type', unreal.FontCacheType.RUNTIME)
-        composite = font.get_editor_property('composite_font')
-        typeface = composite.get_editor_property('default_typeface')
-        data = unreal.FontData()
-        data.set_editor_property('font_face_asset', face)
-        entry = unreal.TypefaceEntry()
-        entry.set_editor_property('name', 'Regular')
-        entry.set_editor_property('font', data)
-        typeface.set_editor_property('fonts', [entry])
-        composite.set_editor_property('default_typeface', typeface)
-        font.set_editor_property('composite_font', composite)
-        library.save_loaded_asset(font)
-        title_font = font
-    except Exception as error:  # the kit still works with the default bold face
-        unreal.log_warning('HUD_KIT_FONT_SKIPPED ' + str(error))
+# Heading() in SFHudStyle loads this face by path; Python cannot build a composite UFont, and Slate accepts a bare UFontFace.
+title_font = library.load_asset(FONT_PATH + '/FontFace_Cinzel')
+if title_font is not None:
+    library.save_loaded_asset(title_font)
 
 kit_class = unreal.load_class(None, '/Script/ShatteredFrontier.SFHudKit')
 if kit_class is None:
     raise RuntimeError('Build SFHudKit before importing the kit.')
 kit_path = TEXTURE_PATH + '/DA_HudKit'
-if library.does_asset_exist(kit_path):
-    library.delete_asset(kit_path)
-kit = tools.create_asset('DA_HudKit', TEXTURE_PATH, kit_class, unreal.DataAssetFactory())
+kit = library.load_asset(kit_path) if library.does_asset_exist(kit_path) else tools.create_asset('DA_HudKit', TEXTURE_PATH, kit_class, unreal.DataAssetFactory())
 if kit is None:
     raise RuntimeError('Could not create ' + kit_path)
 
@@ -100,8 +78,6 @@ for e in elements:
     table[e['name']] = element
     done.append(e['name'])
 kit.set_editor_property('elements', table)
-if title_font is not None:
-    kit.set_editor_property('title_font', title_font)
 if not library.save_loaded_asset(kit):
     raise RuntimeError('Could not save ' + kit_path)
 

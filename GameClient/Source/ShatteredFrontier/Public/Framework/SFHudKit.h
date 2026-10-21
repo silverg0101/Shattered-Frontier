@@ -24,8 +24,6 @@ class SHATTEREDFRONTIER_API USFHudKit : public UDataAsset
     GENERATED_BODY()
 public:
     UPROPERTY(EditAnywhere) TMap<FName, FSFHudKitElement> Elements;
-    // Composite serif font for titles (Cinzel, OFL); null falls back to the default bold face.
-    UPROPERTY(EditAnywhere) TObjectPtr<UObject> TitleFont;
 
     static const USFHudKit* Get();
 };

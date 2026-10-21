@@ -1,4 +1,4 @@
-Cinzel (variable weight, default instance Regular)
-Source: https://github.com/google/fonts/tree/main/ofl/cinzel  (Cinzel Project Authors, NDISCOVER/Cinzel)
+Cinzel Bold (static TTF; the variable font renders as tofu in Unreal)
+Source: https://github.com/NDISCOVER/Cinzel/tree/master/fonts/ttf (Cinzel Project Authors)
 License: SIL Open Font License 1.1 (OFL.txt in this folder). Free to use, embed and redistribute with the game.
 Use: serif face for HUD titles and panel headings (HUD-v1 style guide). Imported by tools/Import-HudKit.py as /Game/Frontier/UI/Fonts.

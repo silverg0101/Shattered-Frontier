@@ -97,13 +97,13 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
         UBorder* Frame = Panel(WidgetTree, FLinearColor::Transparent, Hex(TEXT("3A4348")), FMargin(6.f), 3.f);  // selection frame drawn by SelectTile
         UVerticalBox* Stack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
         USizeBox* IconBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        IconBox->SetWidthOverride(64.f); IconBox->SetHeightOverride(64.f);
+        IconBox->SetWidthOverride(56.f); IconBox->SetHeightOverride(56.f);
         UImage* Icon = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
         if (UTexture2D* Texture = LoadObject<UTexture2D>(nullptr, *FString::Printf(TEXT("/Game/Frontier/UI/Icons/T_Icon_%s.T_Icon_%s"), TileIcons[Tile], TileIcons[Tile])))
         { Icon->SetBrushFromTexture(Texture, false); }
         IconBox->SetContent(Icon);
         Stack->AddChildToVerticalBox(IconBox)->SetHorizontalAlignment(HAlign_Center);
-        UTextBlock* Label = Text(WidgetTree, TileLabel(Tile), 13, Ivory(), true);
+        UTextBlock* Label = Text(WidgetTree, TileLabel(Tile), 11, Ivory(), true);
         Label->SetJustification(ETextJustify::Center);
         UVerticalBoxSlot* LabelSlot = Stack->AddChildToVerticalBox(Label);
         LabelSlot->SetHorizontalAlignment(HAlign_Center); LabelSlot->SetPadding(FMargin(0.f, 4.f, 0.f, 0.f));
@@ -111,7 +111,7 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
         Button->SetContent(Frame);
         Bind(Button, TileHandlers[Tile]);
         TileFrames.Add(Frame);
-        Catalogue->AddChildToUniformGrid(Button, Tile / 2, Tile % 2);
+        Catalogue->AddChildToUniformGrid(Button, 0, Tile);  // one row of four fits the palette width
     }
     Contents->AddChildToVerticalBox(Catalogue)->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
     SelectTile(SelectedTile);

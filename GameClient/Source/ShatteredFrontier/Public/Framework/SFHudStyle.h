@@ -4,9 +4,13 @@
 #include "Components/Border.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Engine/Font.h"
+#include "Engine/FontFace.h"
+#include "Fonts/CompositeFont.h"
 #include "Engine/Texture2D.h"
 #include "Framework/SFHudKit.h"
 #include "Styling/CoreStyle.h"
+#include "UObject/StrongObjectPtr.h"
 
 // Look from docs/Game-Design/concept-art/UI/HUD-v1/README.md: slate-navy panels, brass outlines, ivory text.
 // The Codex-generated kit (USFHudKit, /Game/Frontier/UI/Kit) supplies 9-slice art for frames, tabs, slots, bars and
@@ -125,11 +129,18 @@ inline UTextBlock* Text(UWidgetTree* Tree, const FString& Value, int32 Size, con
 inline UTextBlock* Heading(UWidgetTree* Tree, const FString& Value, int32 Size, const FLinearColor& Color)
 {
     UTextBlock* Label = Text(Tree, Value, Size, Color, true);
-    if (const USFHudKit* Data = USFHudKit::Get(); Data && Data->TitleFont)
+    // Cinzel face imported by tools/Import-HudKit.py, wrapped once in a runtime composite font; default bold face when missing.
+    static TStrongObjectPtr<UFont> Serif = []()
     {
-        FSlateFontInfo Font(Data->TitleFont, Size);
-        Label->SetFont(Font);
-    }
+        UFontFace* Face = LoadObject<UFontFace>(nullptr, TEXT("/Game/Frontier/UI/Fonts/FontFace_Cinzel.FontFace_Cinzel"));
+        if (!Face) { return TStrongObjectPtr<UFont>(); }
+        UFont* Font = NewObject<UFont>(GetTransientPackage());
+        Font->FontCacheType = EFontCacheType::Runtime;
+        FTypefaceEntry& Entry = Font->CompositeFont.DefaultTypeface.Fonts.Add_GetRef(FTypefaceEntry(TEXT("Regular")));
+        Entry.Font = FFontData(Face);
+        return TStrongObjectPtr<UFont>(Font);
+    }();
+    if (Serif.IsValid()) { Label->SetFont(FSlateFontInfo(Serif.Get(), Size, TEXT("Regular"))); }
     return Label;
 }
 }
