@@ -78,9 +78,9 @@
     "modal_frame": {
       "file": "modal_frame.png",
       "nine_slice_px": [
-        36,
         28,
-        36,
+        28,
+        28,
         28
       ],
       "intended_1080p_px": [
@@ -192,10 +192,10 @@
     "detail_card_frame": {
       "file": "detail_card_frame.png",
       "nine_slice_px": [
-        36,
-        28,
-        36,
-        28
+        24,
+        24,
+        24,
+        24
       ],
       "intended_1080p_px": [
         290,
@@ -505,10 +505,10 @@
     "button_primary_brass": {
       "file": "button_primary_brass.png",
       "nine_slice_px": [
-        40,
         28,
-        40,
-        28
+        20,
+        28,
+        20
       ],
       "intended_1080p_px": [
         300,

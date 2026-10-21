@@ -2,6 +2,8 @@
 
 Production art at 2× 1920×1080 UI design size. `kit.json` is the authoritative size, 9-slice and usage manifest. PNGs are straight RGBA; 9-slice margins are stored in output pixels. Use 3-slice semantics for the hex-ended bars and buttons. Text, counts, input mapping and bar percentages remain runtime data. `structural-source.png` is the gpt-image atlas used by `build_structures.py`; `preview.py` rebuilds the contact sheet and a 1920×1080 gameplay HUD study. Run both with Python 3.12 and Pillow from the repository root.
 
+The remaining modal, detail card, primary button, hold ring, minimap ring and footer use `slim/build_remaining.py` for deterministic thin-line geometry at their original 2× sizes. Its approved concept crops and rendered outputs are compared in `Artifacts/slim2-vs-concept.png`. The hold ring supplies the empty track; runtime progress remains separate. The minimap mask remains the map aperture.
+
 The structural cut ends at atlas y=248, outside the panel's lower alpha fringe. `build_structures.py` resizes in premultiplied RGBA, erodes the source alpha fringe by one pixel, clamps near-transparent backdrop alpha, and clears RGB under zero alpha. It preserves output dimensions and existing `kit.json` margins. After rebuilding structures and bar layers, run `py -3 GameClient/ArtSource/UI/Kit-v5/scan_borders.py`; it fails on visible chroma-key red/green speckles in the outer six pixels of every PNG. Rebuild both previews with `preview.py`.
 
 ## Dynamic bar layers
