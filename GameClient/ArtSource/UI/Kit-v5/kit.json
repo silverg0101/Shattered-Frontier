@@ -21,10 +21,10 @@
     "window_frame": {
       "file": "window_frame.png",
       "nine_slice_px": [
-        36,
-        28,
-        36,
-        28
+        40,
+        40,
+        40,
+        40
       ],
       "intended_1080p_px": [
         512,
@@ -39,10 +39,10 @@
     "panel_frame": {
       "file": "panel_frame.png",
       "nine_slice_px": [
-        36,
-        28,
-        36,
-        28
+        32,
+        32,
+        32,
+        32
       ],
       "intended_1080p_px": [
         512,
@@ -95,10 +95,10 @@
     "target_frame": {
       "file": "target_frame.png",
       "nine_slice_px": [
-        36,
         28,
-        36,
-        28
+        24,
+        28,
+        24
       ],
       "intended_1080p_px": [
         410,
@@ -122,10 +122,10 @@
     "quest_tracker_frame": {
       "file": "quest_tracker_frame.png",
       "nine_slice_px": [
-        36,
-        28,
-        36,
-        28
+        24,
+        24,
+        24,
+        24
       ],
       "intended_1080p_px": [
         280,
@@ -149,10 +149,10 @@
     "toast_frame": {
       "file": "toast_frame.png",
       "nine_slice_px": [
-        54,
-        28,
-        36,
-        28
+        24,
+        24,
+        24,
+        24
       ],
       "intended_1080p_px": [
         280,
@@ -209,10 +209,10 @@
     "search_field": {
       "file": "search_field.png",
       "nine_slice_px": [
-        36,
-        18,
-        36,
-        18
+        22,
+        20,
+        22,
+        20
       ],
       "intended_1080p_px": [
         260,
@@ -228,9 +228,9 @@
     "dropdown_field": {
       "file": "dropdown_field.png",
       "nine_slice_px": [
-        36,
+        22,
         20,
-        36,
+        22,
         20
       ],
       "intended_1080p_px": [
@@ -326,10 +326,10 @@
     "recipe_row": {
       "file": "recipe_row.png",
       "nine_slice_px": [
-        36,
-        28,
-        36,
-        28
+        22,
+        20,
+        22,
+        20
       ],
       "intended_1080p_px": [
         320,
@@ -390,10 +390,10 @@
     "button_normal": {
       "file": "button_normal.png",
       "nine_slice_px": [
-        40,
-        28,
-        40,
-        28
+        24,
+        24,
+        24,
+        24
       ],
       "intended_1080p_px": [
         300,
@@ -562,10 +562,10 @@
     "tab_normal": {
       "file": "tab_normal.png",
       "nine_slice_px": [
-        36,
         22,
-        36,
-        22
+        20,
+        22,
+        20
       ],
       "intended_1080p_px": [
         190,
@@ -590,10 +590,10 @@
     "tab_selected": {
       "file": "tab_selected.png",
       "nine_slice_px": [
-        36,
         22,
-        36,
-        22
+        20,
+        22,
+        20
       ],
       "intended_1080p_px": [
         190,
@@ -683,10 +683,10 @@
     "slot_hotbar_normal": {
       "file": "slot_hotbar_normal.png",
       "nine_slice_px": [
-        35,
-        35,
-        35,
-        35
+        24,
+        24,
+        24,
+        24
       ],
       "intended_1080p_px": [
         88,
@@ -710,10 +710,10 @@
     "slot_hotbar_selected": {
       "file": "slot_hotbar_selected.png",
       "nine_slice_px": [
-        35,
-        35,
-        35,
-        35
+        24,
+        24,
+        24,
+        24
       ],
       "intended_1080p_px": [
         88,
@@ -737,10 +737,10 @@
     "slot_catalogue_normal": {
       "file": "slot_catalogue_normal.png",
       "nine_slice_px": [
-        36,
-        36,
-        36,
-        36
+        24,
+        24,
+        24,
+        24
       ],
       "intended_1080p_px": [
         100,
@@ -753,10 +753,10 @@
     "slot_catalogue_selected": {
       "file": "slot_catalogue_selected.png",
       "nine_slice_px": [
-        36,
-        36,
-        36,
-        36
+        24,
+        24,
+        24,
+        24
       ],
       "intended_1080p_px": [
         100,
@@ -824,14 +824,14 @@
     "bar_hp_frame": {
       "file": "bar_hp_frame.png",
       "nine_slice_px": [
-        54,
+        40,
         0,
-        54,
+        40,
         0
       ],
       "three_slice_px": [
-        54,
-        54
+        40,
+        40
       ],
       "fill_inset_rect_px": [
         42,
@@ -890,14 +890,14 @@
     "bar_hp_back": {
       "file": "bar_hp_back.png",
       "nine_slice_px": [
-        54,
+        40,
         0,
-        54,
+        40,
         0
       ],
       "three_slice_px": [
-        54,
-        54
+        40,
+        40
       ],
       "intended_1080p_px": [
         380,
@@ -950,14 +950,14 @@
     "bar_stamina_frame": {
       "file": "bar_stamina_frame.png",
       "nine_slice_px": [
-        54,
+        40,
         0,
-        54,
+        40,
         0
       ],
       "three_slice_px": [
-        54,
-        54
+        40,
+        40
       ],
       "fill_inset_rect_px": [
         42,
@@ -1016,14 +1016,14 @@
     "bar_stamina_back": {
       "file": "bar_stamina_back.png",
       "nine_slice_px": [
-        54,
+        40,
         0,
-        54,
+        40,
         0
       ],
       "three_slice_px": [
-        54,
-        54
+        40,
+        40
       ],
       "intended_1080p_px": [
         380,
@@ -1067,14 +1067,14 @@
     "bar_xp_frame": {
       "file": "bar_xp_frame.png",
       "nine_slice_px": [
-        54,
+        40,
         0,
-        54,
+        40,
         0
       ],
       "three_slice_px": [
-        54,
-        54
+        40,
+        40
       ],
       "fill_inset_rect_px": [
         42,
@@ -1115,14 +1115,14 @@
     "bar_xp_back": {
       "file": "bar_xp_back.png",
       "nine_slice_px": [
-        54,
+        40,
         0,
-        54,
+        40,
         0
       ],
       "three_slice_px": [
-        54,
-        54
+        40,
+        40
       ],
       "intended_1080p_px": [
         380,
@@ -1155,14 +1155,14 @@
     "bar_channel_frame": {
       "file": "bar_channel_frame.png",
       "nine_slice_px": [
-        54,
+        40,
         0,
-        54,
+        40,
         0
       ],
       "three_slice_px": [
-        54,
-        54
+        40,
+        40
       ],
       "fill_inset_rect_px": [
         42,
@@ -1199,14 +1199,14 @@
     "bar_channel_back": {
       "file": "bar_channel_back.png",
       "nine_slice_px": [
-        54,
+        40,
         0,
-        54,
+        40,
         0
       ],
       "three_slice_px": [
-        54,
-        54
+        40,
+        40
       ],
       "intended_1080p_px": [
         380,
@@ -1326,10 +1326,10 @@
     "minimap_footer": {
       "file": "minimap_footer.png",
       "nine_slice_px": [
-        36,
-        16,
-        36,
-        16
+        20,
+        18,
+        20,
+        18
       ],
       "intended_1080p_px": [
         180,
@@ -3380,10 +3380,10 @@
     "queue_row": {
       "file": "queue_row.png",
       "nine_slice_px": [
-        36,
-        24,
-        36,
-        24
+        22,
+        20,
+        22,
+        20
       ],
       "intended_1080p_px": [
         320,
