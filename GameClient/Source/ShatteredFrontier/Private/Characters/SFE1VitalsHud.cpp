@@ -291,7 +291,8 @@ void USFE1VitalsHudSubsystem::Tick(float DeltaTime)
     if (!Pawn) { return; }
     const double Now = World->GetTimeSeconds();
     Model.Observe(Pawn->CombatHealth(), Now);
-    if (!Model.bActive) { return; }
+    // Always on for the local E1 pawn (the master HUD's vitals). Before combat health first replicates (no combat pilot
+    // here), nothing can have hurt the player, so the bar reads full.
     if (!Hud)
     {
         Hud = CreateWidget<USFE1VitalsHud>(PC, USFE1VitalsHud::StaticClass());
@@ -331,7 +332,9 @@ void USFE1VitalsHudSubsystem::Tick(float DeltaTime)
         }
     }
     else if (!Model.IsDefeated() && DefeatGrade) { DefeatGrade->Destroy(); DefeatGrade = nullptr; }
-    Hud->Present(Model, Settings->PlayerHealth, FSFE1VitalsModel::RemainingSeconds(Model.DefeatedAt, Now, Settings->PlayerRespawnDelaySeconds), Defeat);
+    FSFE1VitalsModel Shown = Model;
+    if (!Model.bActive) { Shown.Health = Settings->PlayerHealth; }
+    Hud->Present(Shown, Settings->PlayerHealth, FSFE1VitalsModel::RemainingSeconds(Model.DefeatedAt, Now, Settings->PlayerRespawnDelaySeconds), Defeat);
 }
 
 void USFE1VitalsHudSubsystem::Deinitialize()

@@ -25,6 +25,11 @@ CROPS = {  # piece: (concept, (left, top, right, bottom))
     'recipe_row': ('crafting-station', (571, 320, 832, 375)),
     'queue_row': ('crafting-station', (575, 667, 1278, 712)),
     'window_frame': ('defeated', (467, 167, 1198, 713)),
+    'modal_frame': ('market-board', (216, 94, 1456, 790)),
+    'detail_card_frame': ('market-board', (1096, 252, 1430, 768)),
+    'button_primary_brass': ('market-board', (1116, 680, 1412, 748)),
+    'hold_confirm_ring': ('market-board', (1120, 684, 1200, 748)),
+    'minimap_ring': ('gameplay-hud', (1402, 16, 1650, 250)),
 }
 (HERE / 'refs').mkdir(exist_ok=True)
 for piece, (concept, box) in CROPS.items():

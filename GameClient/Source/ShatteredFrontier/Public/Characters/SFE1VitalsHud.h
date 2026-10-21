@@ -66,7 +66,7 @@ private:
     bool bDefeatShown = false;
 };
 
-// Creates the HUD for the local player once its ASFE1Character first reports health; no RPCs.
+// Creates the HUD for the local player as soon as it possesses an ASFE1Character (full health until combat health replicates); no RPCs.
 UCLASS()
 class SHATTEREDFRONTIER_API USFE1VitalsHudSubsystem : public UTickableWorldSubsystem
 {

@@ -20,8 +20,9 @@ MARGINS = {  # 9-slice margins in 2x px for the slim art (the old values covered
     'button_normal': [24, 24, 24, 24], 'tab_normal': [22, 20, 22, 20], 'tab_selected': [22, 20, 22, 20],
     'search_field': [22, 20, 22, 20], 'dropdown_field': [22, 20, 22, 20], 'recipe_row': [22, 20, 22, 20],
     'queue_row': [22, 20, 22, 20], 'minimap_footer': [20, 18, 20, 18],
+    'modal_frame': [40, 40, 40, 40], 'detail_card_frame': [28, 28, 28, 28], 'button_primary_brass': [32, 24, 32, 24],
 }
-OPAQUE = {'bar_hp_fill', 'bar_stamina_fill', 'bar_xp_fill', 'keycap_f'}
+OPAQUE = {'bar_hp_fill', 'bar_stamina_fill', 'bar_xp_fill', 'keycap_f', 'button_primary_brass', 'hold_confirm_ring', 'minimap_ring'}
 BAR_RECT = (42, 13, 718, 51)  # left, top, right (exclusive), bottom (exclusive) in the 760x64 frame
 TROUGH = (14, 22, 27)
 
@@ -124,7 +125,7 @@ def main(only):
         out = image.resize(size, Image.LANCZOS)
         if piece not in OPAQUE:
             out = translucent(out)
-        if piece not in OPAQUE or piece == 'keycap_f':
+        if not piece.endswith('_fill'):
             out = clean_edges(out)
         out.save(KIT / data['pieces'][piece]['file'])
         if piece == 'bar_xp_fill':
