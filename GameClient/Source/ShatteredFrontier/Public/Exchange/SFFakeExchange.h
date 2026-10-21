@@ -12,12 +12,12 @@ public:
     int32 Offers = 0, Accepts = 0, Cancels = 0, Lists = 0, Buys = 0;
     int64 LastBuyFee = 0, LastListFee = 0;
     FSFWalletView GetWallet() override { return Wallet; }
-    bool OfferTrade(const FSFTradeSnapshot&) override { ++Offers; return bCommit; }
-    bool AcceptTrade(const FString&) override { ++Accepts; return bCommit; }
-    bool CancelTrade(const FString&) override { ++Cancels; return true; }
-    bool ListItem(const FString&, int32, int64, int64 Fee) override { ++Lists; LastListFee = Fee; Wallet.Available -= Fee; return bCommit; }
-    bool BuyListing(const FSFListing& L, int64 Fee) override { ++Buys; LastBuyFee = Fee; Wallet.Available -= L.UnitPrice * L.Quantity + Fee; return bCommit; }
-    bool CancelListing(const FString&) override { return true; }
+    void OfferTrade(const FSFTradeSnapshot&, FDone Done) override { ++Offers; Done(bCommit); }
+    void AcceptTrade(const FString&, FDone Done) override { ++Accepts; Done(bCommit); }
+    void CancelTrade(const FString&, FDone Done) override { ++Cancels; Done(true); }
+    void ListItem(const FString&, int32, int64, int64 Fee, FDone Done) override { ++Lists; LastListFee = Fee; if (bCommit) { Wallet.Available -= Fee; } Done(bCommit); }
+    void BuyListing(const FSFListing& L, int64 Fee, FDone Done) override { ++Buys; LastBuyFee = Fee; if (bCommit) { Wallet.Available -= L.UnitPrice * L.Quantity + Fee; } Done(bCommit); }
+    void CancelListing(const FString&, FDone Done) override { Done(true); }
 
     // Demo content in the concept's shape (HUD-v1/hud-trade.png and hud-market.png).
     static FSFTradeSnapshot DemoTrade(double ExpiresAtSeconds)

@@ -54,8 +54,7 @@ void USFE1VitalsHud::NativeOnInitialized()
     // Bottom-left crest plate: left 2-27% of the width, bottom 4-14% (HUD-v1 layout).
     UBorder* Plate = Panel(WidgetTree, Slate(0.9f), Brass(), FMargin(10.f, 8.f), 4.f);
     UCanvasPanelSlot* PlateSlot = Canvas->AddChildToCanvas(Plate);
-    PlateSlot->SetAnchors(FAnchors(0.f, 1.f)); PlateSlot->SetAlignment(FVector2D(0.f, 1.f));
-    PlateSlot->SetPosition(FVector2D(32.f, -32.f)); PlateSlot->SetSize(FVector2D(400.f, 68.f));
+    PlateSlot->SetAnchors(FAnchors(0.02f, 0.86f, 0.27f, 0.96f)); PlateSlot->SetOffsets(FMargin(0.f));  // hud-layout-v4: 2-27% x 86-96%
     UHorizontalBox* Row = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     Plate->SetContent(Row);
 

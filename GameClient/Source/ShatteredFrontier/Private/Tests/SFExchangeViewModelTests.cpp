@@ -73,7 +73,8 @@ bool FSFExchangeTradeStatesTest::RunTest(const FString& Parameters)
     FSFFakeExchange Rejecting; Rejecting.bCommit=false;
     FSFTradeViewModel Refused(Rejecting,ExchangeTestTrade(),true);
     Refused.AddMyItem({TEXT("item/oak_log"),TEXT("Oak Log"),1});
-    TestFalse(TEXT("A rejected offer does not lock"),Refused.Lock() || Refused.Snapshot().Mine.bLocked);
+    Refused.Lock();
+    TestFalse(TEXT("A rejected offer does not lock"),Refused.Snapshot().Mine.bLocked || Refused.IsPending());
 
     FSFFakeExchange Counter;
     FSFTradeViewModel Partner(Counter,ExchangeTestTrade(),false);
@@ -136,6 +137,60 @@ bool FSFExchangeMarketTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Listing fee preview"),Market.ListingFee(),(int64)6);
     TestFalse(TEXT("Cannot list without the fee"),Market.CanList(5));
     TestTrue(TEXT("List commits"),Market.ListSelected(TEXT("item/oak_log"),100) && Exchange.Lists==1 && Exchange.LastListFee==6);
+    return true;
+}
+
+namespace
+{
+// Completes only when told to, like the server round trip.
+class FSFDeferredExchange : public ISFExchangeService
+{
+public:
+    TArray<FDone> Waiting;
+    FSFWalletView GetWallet() override { return {1240, 0, 1240}; }
+    void OfferTrade(const FSFTradeSnapshot&, FDone Done) override { Waiting.Add(MoveTemp(Done)); }
+    void AcceptTrade(const FString&, FDone Done) override { Waiting.Add(MoveTemp(Done)); }
+    void CancelTrade(const FString&, FDone Done) override { Done(true); }
+    void ListItem(const FString&, int32, int64, int64, FDone Done) override { Waiting.Add(MoveTemp(Done)); }
+    void BuyListing(const FSFListing&, int64, FDone Done) override { Waiting.Add(MoveTemp(Done)); }
+    void CancelListing(const FString&, FDone Done) override { Done(true); }
+};
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFExchangeAsyncTest,
+    "ShatteredFrontier.Exchange.ViewModel.Async",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+
+bool FSFExchangeAsyncTest::RunTest(const FString& Parameters)
+{
+    FSFDeferredExchange Exchange;
+    {
+        FSFTradeViewModel Model(Exchange,ExchangeTestTrade(),true);
+        Model.AddMyItem({TEXT("item/oak_log"),TEXT("Oak Log"),1});
+        TestTrue(TEXT("Lock is dispatched"),Model.Lock());
+        TestTrue(TEXT("It is pending, not yet locked"),Model.IsPending() && !Model.Snapshot().Mine.bLocked);
+        TestFalse(TEXT("A second lock while pending is refused"),Model.Lock() || Model.CanLock());
+        Exchange.Waiting[0](true);
+        TestTrue(TEXT("The server result locks"),!Model.IsPending() && Model.Snapshot().Mine.bLocked);
+        Model.OnPartnerLocked(true);
+        TestTrue(TEXT("Accept is dispatched"),Model.Accept() && Model.IsPending() && Model.Snapshot().State==ESFTradeState::Open);
+        Exchange.Waiting[1](false);
+        TestTrue(TEXT("A rejected accept leaves the trade open and ready"),Model.Snapshot().State==ESFTradeState::Open && !Model.IsPending() && Model.CanAccept());
+    }
+    // A result arriving after the view-model is gone must not touch it.
+    {
+        FSFDeferredExchange Gone;
+        { FSFTradeViewModel Model(Gone,ExchangeTestTrade(),true); Model.AddMyItem({TEXT("item/oak_log"),TEXT("Oak Log"),1}); Model.Lock(); }
+        Gone.Waiting[0](true);  // would crash if the callback still used the destroyed model
+        TestTrue(TEXT("Late result is ignored"),true);
+    }
+    FSFMarketViewModel Market(Exchange);
+    Market.SetListings({ExchangeTestListing(TEXT("a"),TEXT("Oak Log"),ESFInventoryTab::Materials,2,5)});
+    const FSFListing Oak=Market.Visible()[0];
+    TestTrue(TEXT("Buy dispatches"),Market.Buy(Oak));
+    TestFalse(TEXT("A second buy while one is in flight is refused"),Market.Buy(Oak));
+    TestEqual(TEXT("The listing stays until the server commits"),Market.Visible().Num(),1);
+    Exchange.Waiting.Last()(true);
+    TestEqual(TEXT("It leaves the board once committed"),Market.Visible().Num(),0);
     return true;
 }
 #endif

@@ -6,6 +6,8 @@
 #include "Components/EditableTextBox.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
+#include "Components/Overlay.h"
+#include "Components/OverlaySlot.h"
 #include "Components/ScrollBox.h"
 #include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
@@ -175,7 +177,15 @@ void USFMarketBoard::NativeOnInitialized()
     using namespace SFHudStyle;
 
     UBorder* Frame = Panel(WidgetTree, Slate(0.94f), Brass(), FMargin(20.f, 16.f), 6.f);
-    WidgetTree->RootWidget = Frame;
+    // Modal board (HUD-v1 layout v4): the scene is dimmed, the board sits centred and may cover the right column.
+    UOverlay* ModalRoot = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
+    WidgetTree->RootWidget = ModalRoot;
+    UBorder* Dim = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+    Dim->SetBrush(FSlateColorBrush(FLinearColor(0.f, 0.f, 0.f, 0.55f)));
+    UOverlaySlot* DimSlot = ModalRoot->AddChildToOverlay(Dim);
+    DimSlot->SetHorizontalAlignment(HAlign_Fill); DimSlot->SetVerticalAlignment(VAlign_Fill);  // overlay slots default to top-left
+    UOverlaySlot* BoardSlot = ModalRoot->AddChildToOverlay(Frame);
+    BoardSlot->SetHorizontalAlignment(HAlign_Center); BoardSlot->SetVerticalAlignment(VAlign_Center);
     UVerticalBox* Contents = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     Frame->SetContent(Contents);
     Contents->AddChildToVerticalBox(Heading(WidgetTree, TEXT("Market Board"), 26, Ivory()))->SetPadding(FMargin(2.f, 0.f, 2.f, 8.f));
@@ -275,9 +285,9 @@ void USFMarketBoard::Rebuild()
             Line->AddChildToHorizontalBox(Box)->SetVerticalAlignment(VAlign_Center);
         };
         Cell(L.ItemName, 150.f, true, Ivory());
-        Cell(FString::Printf(TEXT("x%d"), L.Quantity), 55.f, false, Ivory());
-        Cell(L.SellerName, 110.f, false, Hex(TEXT("A9A593")));
-        Cell(FString::Printf(TEXT("%s g"), *SFGold::Format(L.UnitPrice)), 80.f, true, Model->CanBuy(L) ? Ivory() : Crimson());
+        Cell(FString::Printf(TEXT("x%d"), L.Quantity), 45.f, false, Ivory());
+        Cell(L.SellerName, 80.f, false, Hex(TEXT("A9A593")));
+        Cell(Model->CanBuy(L) ? FString::Printf(TEXT("%s g"), *SFGold::Format(L.UnitPrice)) : FString::Printf(TEXT("%s g - short"), *SFGold::Format(L.UnitPrice)), 110.f, true, Model->CanBuy(L) ? Ivory() : Crimson());
         UBorder* Buy = ExchangeMakeButton(WidgetTree, TEXT("Buy"));
         Buy->SetRenderOpacity(Model->CanBuy(L) ? 1.f : 0.45f);
         Line->AddChildToHorizontalBox(Buy)->SetVerticalAlignment(VAlign_Center);

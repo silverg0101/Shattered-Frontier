@@ -28,6 +28,7 @@ enum class ESFTradeState : uint8 { Open, Completed, Cancelled, Expired };
 struct FSFTradeSide
 {
     FString PlayerName;
+    FString CharacterId;  // the party id sent to the server; display names are never identities
     TArray<FSFTradeStack> Items;
     int64 Gold = 0;
     bool bLocked = false;
@@ -59,18 +60,20 @@ struct FSFMarketFilter
     ESFMarketSort Sort = ESFMarketSort::PriceAscending;
 };
 
-// Everything the UI may ask of the Exchange backend. Each call returns true when the server committed it.
+// Everything the UI may ask of the Exchange backend. Each intent completes through Done(bCommitted): inline for the fake,
+// later for the server round trip (USFExchangeComponent). GetWallet is the cached, replicated balance.
 class SHATTEREDFRONTIER_API ISFExchangeService
 {
 public:
+    using FDone = TFunction<void(bool bCommitted)>;
     virtual ~ISFExchangeService() = default;
     virtual FSFWalletView GetWallet() = 0;
-    virtual bool OfferTrade(const FSFTradeSnapshot& Offer) = 0;
-    virtual bool AcceptTrade(const FString& TradeId) = 0;
-    virtual bool CancelTrade(const FString& TradeId) = 0;
-    virtual bool ListItem(const FString& ItemId, int32 Quantity, int64 UnitPrice, int64 ListingFee) = 0;
-    virtual bool BuyListing(const FSFListing& Listing, int64 TransactionFee) = 0;
-    virtual bool CancelListing(const FString& ListingId) = 0;
+    virtual void OfferTrade(const FSFTradeSnapshot& Offer, FDone Done) = 0;
+    virtual void AcceptTrade(const FString& TradeId, FDone Done) = 0;
+    virtual void CancelTrade(const FString& TradeId, FDone Done) = 0;
+    virtual void ListItem(const FString& ItemId, int32 Quantity, int64 UnitPrice, int64 ListingFee, FDone Done) = 0;
+    virtual void BuyListing(const FSFListing& Listing, int64 TransactionFee, FDone Done) = 0;
+    virtual void CancelListing(const FString& ListingId, FDone Done) = 0;
 };
 
 // Direct trade window state. Editing your side after locking is refused; editing either side unlocks both, so a partner
@@ -89,6 +92,7 @@ public:
     bool AddMyItem(const FSFTradeStack& Stack);
     bool RemoveMyItem(int32 Index);
 
+    bool IsPending() const { return bPending; }  // an intent is in flight; locks and accepts wait for its result
     bool CanLock() const;
     bool Lock();
     bool CanAccept() const;
@@ -112,6 +116,8 @@ private:
     bool bInitiator;
     FString GoldText;
     bool bGoldValid = true;
+    bool bPending = false;
+    TSharedPtr<bool> Alive = MakeShared<bool>(true);  // async results check this before touching the model
 };
 
 // Market board state: filtered, searched and sorted listings, affordability, buying and a listing draft.
@@ -146,4 +152,6 @@ private:
     FSFMarketFilter FilterState;
     int32 SellQuantity = 0;
     int64 SellPrice = 0;
+    bool bBuying = false;
+    TSharedPtr<bool> Alive = MakeShared<bool>(true);
 };

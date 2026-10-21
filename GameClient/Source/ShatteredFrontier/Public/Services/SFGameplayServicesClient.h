@@ -22,6 +22,10 @@ public:
     int32 MaxAttempts = 3;
     UPROPERTY(Config, EditAnywhere, Category="Reconnect", meta=(ToolTip="INT-05: restore a dev character's backpack, skills, quest step and position on connect, and drain a disconnected controller's in-flight commits. Needs Enabled and the guarded dev identity. Release authors; next world start."))
     bool bRestoreOnConnect = false;
+    UPROPERTY(Config, EditAnywhere, Category="Exchange", meta=(ToolTip="Route the trading UI (direct trades, market listings, wallet) through Gameplay.Host Exchange. Off keeps the fake demo service. Release authors; next world start."))
+    bool bExchangeEnabled = false;
+    UPROPERTY(Config, EditAnywhere, Category="Exchange", meta=(ClampMin="0", ClampMax="2000", ToolTip="Market fee in basis points (1 bp = 0.01%), computed by the server (the client only previews it). Release authors; next world start."))
+    int32 ExchangeFeeBasisPoints = 500;
     UPROPERTY(Config, EditAnywhere, Category="Reconnect", meta=(ClampMin="5", ClampMax="600", Units="s", ToolTip="Server saves a moved character's position this often (and once at logout)."))
     float PositionSaveIntervalSeconds = 30;
     UPROPERTY(Config, EditAnywhere, Category="Reconnect", meta=(ClampMin="5", ClampMax="120", Units="s", ToolTip="Longest a disconnected controller stays in the world while its in-flight commits resolve."))
@@ -29,7 +33,23 @@ public:
     bool Validate(FString& Error) const;
 };
 
-enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition };
+enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition,
+    // Exchange (proto/sf/exchange/v1), carried by the Backend transport over the same Gameplay.Host channel.
+    ExchangeWallet, OfferTrade, AcceptTrade, CancelTrade, ListItem, BuyListing, CancelListing };
+
+// Exchange request fields (each RPC reads only its own). Amounts are whole gold, as in the proto.
+struct FSFExchangeDelivery { FString EscrowId, DestinationId, ItemId; int64 Quantity = 0; };
+struct FSFExchangeRequest
+{
+    FString TradeId, PartyA, PartyB, OfferOperationId;
+    int64 GoldA = 0, GoldB = 0;
+    TArray<FSFExchangeDelivery> Deliveries;
+    FString ListingId, SellerId, SourceContainerId, EscrowContainerId, ItemId;
+    int64 Quantity = 0, UnitPrice = 0, Fee = 0, CreatedAtUnixMs = 0;
+    FString DestinationContainerId;  // BuyListing
+    int64 ExpectedRevision = 0, ExpectedUnitPrice = 0;
+};
+struct FSFExchangeResponse { int64 Balance = 0, Reserved = 0, Available = 0, WalletRevision = 0, Amount = 0, Fee = 0; FString SubjectId, State; bool bCommitted = false; };
 // Ok; Rejected = a typed gameplay refusal (FAILED_PRECONDITION, PERMISSION_DENIED, ALREADY_EXISTS, INVALID_ARGUMENT, ...);
 // Unavailable = UNAVAILABLE / DEADLINE_EXCEEDED / CANCELLED, retried with the same operation id.
 enum class ESFGameplayStatus : uint8 { Ok, Rejected, Unavailable };
@@ -62,6 +82,7 @@ struct FSFGameplayRequest
     FString ZoneId; FVector Position = FVector::ZeroVector; float Yaw = 0; int64 ExpectedPositionRevision = 0;  // SavePosition
     // Crafting
     FString RecipeId; int32 Count = 1;
+    FSFExchangeRequest Exchange;
 };
 
 struct FSFGameplayResponse
@@ -86,6 +107,7 @@ struct FSFGameplayResponse
     TArray<FStructure> Structures;  // ListStructures; StructureRevision then holds the claim's structure revision
     // Crafting
     TMap<FString, int64> Changes;
+    FSFExchangeResponse Exchange;
 };
 
 using FSFGameplaySend = TFunction<void(const FSFGameplayRequest&, float DeadlineSeconds, TFunction<void(const FSFGameplayResponse&)>)>;

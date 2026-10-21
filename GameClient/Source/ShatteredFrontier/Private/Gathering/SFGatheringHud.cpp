@@ -50,6 +50,7 @@ FSFRecipeView USFGatheringHud::RecipeFor(const FSFStationRecipe& Recipe, const F
     View.OutputLabel = SFStationRecipes::ItemDisplayName(Recipe.Outputs[0].DefinitionId);
     View.InputItemPath = SFStationRecipes::ItemAssetPath(Recipe.Inputs[0].DefinitionId);
     View.OutputItemPath = SFStationRecipes::ItemAssetPath(Recipe.Outputs[0].DefinitionId);
+    for (const FSFItemStack& Input : Recipe.Inputs) { View.Inputs.Emplace(SFStationRecipes::ItemDisplayName(Input.DefinitionId), static_cast<int32>(Input.Quantity)); }
     View.InputCount = static_cast<int32>(Recipe.Inputs[0].Quantity);
     View.OutputCount = static_cast<int32>(Recipe.Outputs[0].Quantity);
     return View;
@@ -71,17 +72,23 @@ void USFGatheringHud::NativeOnInitialized()
         return Slot;
     };
 
-    // Skill-gain toasts, top right.
+    // Toast stack, 84-99% x 42-62% (hud-layout-v4.md): newest on top, max 3, kit toast card with an icon well on the left.
     UVerticalBox* ToastBox = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     for (int32 I = 0; I < FSFToastQueue::MaxVisible; ++I)
     {
-        UBorder* Frame = KitPanel(WidgetTree, TEXT("button_normal"), 0.95f, Slate(0.92f), Brass(), FMargin(8.f, 0.f), 3.f);
+        UBorder* Frame = KitPanel(WidgetTree, TEXT("toast_card"), 1.f, Slate(0.92f), Brass(), FMargin(64.f, 4.f, 10.f, 4.f), 3.f);
+        UVerticalBox* Lines = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+        Lines->AddChildToVerticalBox(Text(WidgetTree, TEXT("Skill gain"), 12, Brass()));
         UTextBlock* Label = Text(WidgetTree, TEXT(""), 16, Ivory(), true);
-        Frame->SetContent(Label); Frame->SetVisibility(ESlateVisibility::Collapsed);
-        ToastBox->AddChildToVerticalBox(Frame)->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
+        Lines->AddChildToVerticalBox(Label);
+        Frame->SetContent(Lines); Frame->SetVisibility(ESlateVisibility::Collapsed);
+        USizeBox* CardSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        CardSize->SetHeightOverride(54.f); CardSize->SetContent(Frame);
+        ToastBox->AddChildToVerticalBox(CardSize)->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
         ToastFrames.Add(Frame); ToastTexts.Add(Label);
     }
-    Place(ToastBox, FAnchors(1.f, 0.f, 1.f, 0.f), FVector2D(1.f, 0.f), FVector2D(-24.f, 16.f));
+    UCanvasPanelSlot* ToastSlot = Root->AddChildToCanvas(ToastBox);
+    ToastSlot->SetAnchors(FAnchors(0.84f, 0.42f, 0.99f, 0.62f)); ToastSlot->SetOffsets(FMargin(0.f));
 
     // Progress ring labels; the ring itself is painted in NativePaint.
     RingPercent = Text(WidgetTree, TEXT(""), 15, Ivory(), true);
@@ -115,6 +122,9 @@ void USFGatheringHud::NativeOnInitialized()
     UHorizontalBoxSlot* ArrowSlot = Row->AddChildToHorizontalBox(Text(WidgetTree, TEXT("->"), 24, Brass(), true));
     ArrowSlot->SetVerticalAlignment(VAlign_Center); ArrowSlot->SetPadding(FMargin(6.f, 0.f, 14.f, 0.f));
     AddStack(RecipeOutIcon, RecipeOutText);
+    // Have / need per input, with a tick or cross glyph and words: never colour alone (hud-layout-v4.md).
+    NeedRows = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+    RecipeBox->AddChildToVerticalBox(NeedRows)->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
     RecipeFooter = Text(WidgetTree, TEXT(""), 13, Hex(TEXT("A9A593")));
     RecipeBox->AddChildToVerticalBox(RecipeFooter);
     Place(RecipeFrame, FAnchors(0.5f, 1.f, 0.5f, 1.f), FVector2D(0.5f, 1.f), FVector2D(0.f, -230.f));
@@ -129,7 +139,31 @@ void USFGatheringHud::ShowRecipe(const FSFRecipeView& Recipe)
     RecipeTitle->SetText(FText::FromString(Recipe.Title));
     RecipeInText->SetText(FText::FromString(FString::Printf(TEXT("x%d"), Recipe.InputCount)));
     RecipeOutText->SetText(FText::FromString(FString::Printf(TEXT("x%d"), Recipe.OutputCount)));
-    RecipeFooter->SetText(FText::FromString(FString::Printf(TEXT("%s  ->  %s  |  %.1f s  |  E: refine"), *Recipe.InputLabel, *Recipe.OutputLabel, Recipe.Seconds)));
+    RecipeFooter->SetText(FText::FromString(FString::Printf(TEXT("%s  ->  %s  |  %.1f s"), *Recipe.InputLabel, *Recipe.OutputLabel, Recipe.Seconds)));
+    NeedRows->ClearChildren(); NeedNames.Reset(); NeedAmounts.Reset(); NeedHaveTexts.Reset(); NeedGlyphs.Reset(); NeedUnderlines.Reset();
+    using namespace SFHudStyle;
+    for (const TPair<FString, int32>& Input : Recipe.Inputs)
+    {
+        UHorizontalBox* Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+        UHorizontalBoxSlot* NameSlot = Line->AddChildToHorizontalBox(Text(WidgetTree, Input.Key, 15, Ivory()));
+        NameSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); NameSlot->SetVerticalAlignment(VAlign_Center);
+        // The short number gets a crimson underline in addition to the glyph and the "short" wording.
+        UVerticalBox* HaveColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+        UTextBlock* Have = Text(WidgetTree, TEXT(""), 15, Ivory(), true);
+        HaveColumn->AddChildToVerticalBox(Have);
+        UBorder* Underline = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+        Underline->SetBrush(Frame(Crimson(), Crimson(), 0.f)); Underline->SetVisibility(ESlateVisibility::Hidden);
+        USizeBox* UnderlineSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        UnderlineSize->SetHeightOverride(2.f); UnderlineSize->SetContent(Underline);
+        HaveColumn->AddChildToVerticalBox(UnderlineSize);
+        UHorizontalBoxSlot* HaveSlot = Line->AddChildToHorizontalBox(HaveColumn);
+        HaveSlot->SetVerticalAlignment(VAlign_Center); HaveSlot->SetPadding(FMargin(14.f, 0.f, 8.f, 0.f));
+        UImage* Glyph = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
+        Glyph->SetDesiredSizeOverride(FVector2D(22.f, 22.f));
+        Line->AddChildToHorizontalBox(Glyph)->SetVerticalAlignment(VAlign_Center);
+        NeedRows->AddChildToVerticalBox(Line)->SetPadding(FMargin(0.f, 1.f));
+        NeedNames.Add(Input.Key); NeedAmounts.Add(Input.Value); NeedHaveTexts.Add(Have); NeedGlyphs.Add(Glyph); NeedUnderlines.Add(Underline);
+    }
 #if SF_WITH_MINIMAL_INVENTORY
     auto SetIcon = [](UImage* Image, const FString& Path)
     {
@@ -138,6 +172,24 @@ void USFGatheringHud::ShowRecipe(const FSFRecipeView& Recipe)
     };
     SetIcon(RecipeInIcon, Recipe.InputItemPath); SetIcon(RecipeOutIcon, Recipe.OutputItemPath);
 #endif
+}
+
+void USFGatheringHud::UpdateNeeds()
+{
+    if (!Pilot || NeedNames.IsEmpty()) { return; }
+    using namespace SFHudStyle;
+    const TArray<TPair<FText,int32>> Items = Pilot->GetInventoryItems();
+    for (int32 I = 0; I < NeedNames.Num(); ++I)
+    {
+        int32 Have = 0;
+        for (const TPair<FText,int32>& Item : Items) { const FString Name = Item.Key.ToString(); if (Name == NeedNames[I]) { Have += Item.Value; } }
+        const bool bMet = NeedMet(Have, NeedAmounts[I]);
+        NeedHaveTexts[I]->SetText(FText::FromString(NeedText(Have, NeedAmounts[I]) + (bMet ? FString() : TEXT("  short"))));
+        NeedHaveTexts[I]->SetColorAndOpacity(FSlateColor(bMet ? Ivory() : Crimson()));
+        NeedUnderlines[I]->SetVisibility(bMet ? ESlateVisibility::Hidden : ESlateVisibility::HitTestInvisible);
+        if (const FSFHudKitElement* Glyph = Kit(bMet ? TEXT("status_tick") : TEXT("status_cross")))
+        { if (NeedGlyphs[I]->GetBrush().GetResourceObject() != Glyph->Texture) { NeedGlyphs[I]->SetBrush(KitBrush(*Glyph)); } }
+    }
 }
 
 void USFGatheringHud::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -162,6 +214,7 @@ void USFGatheringHud::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     {
         const bool bShown = Visible.IsValidIndex(I);
         ToastFrames[I]->SetVisibility(bShown ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+        if (UWidget* Card = ToastFrames[I]->GetParent()) { Card->SetVisibility(bShown ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed); }  // the fixed-height wrapper
         if (bShown) { ToastTexts[I]->SetText(FText::FromString(Visible[I])); }
     }
 
@@ -205,6 +258,7 @@ void USFGatheringHud::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
         }
     }
     ShowRecipe(Recipe);
+    UpdateNeeds();
 }
 
 int32 USFGatheringHud::NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect,

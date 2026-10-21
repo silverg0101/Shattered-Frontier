@@ -5,10 +5,11 @@
 #include "SFE1PlayerController.generated.h"
 
 class ASFE1InteractionTarget;
-class FSFFakeExchange;
+class ISFExchangeService;
 class FSFMarketViewModel;
 class FSFTradeViewModel;
 class USFGatheringHud;
+class USFHudLayout;
 class USFMarketBoard;
 class USFTradeWindow;
 class USFInventoryPanel;
@@ -53,9 +54,10 @@ private:
 
     UPROPERTY(Transient) TObjectPtr<USFInventoryPanel> InventoryPanel;
     UPROPERTY(Transient) TObjectPtr<USFGatheringHud> GatheringHud;
+    UPROPERTY(Transient) TObjectPtr<USFHudLayout> HudLayout;
     UPROPERTY(Transient) TObjectPtr<USFTradeWindow> TradeWindow;
     UPROPERTY(Transient) TObjectPtr<USFMarketBoard> MarketBoard;
-    TSharedPtr<FSFFakeExchange> DemoExchange;
+    TSharedPtr<ISFExchangeService> DemoExchange;  // the fake, or the live client service when this controller has an exchange component
     TSharedPtr<FSFTradeViewModel> DemoTrade;
     TSharedPtr<FSFMarketViewModel> DemoMarket;
     TWeakObjectPtr<ASFE1InteractionTarget> SelectedTarget;

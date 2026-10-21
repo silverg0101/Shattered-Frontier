@@ -661,8 +661,7 @@ void USFQuestTrackerHud::NativeOnInitialized()
     USizeBox* Box = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
     Box->SetWidthOverride(280.f);
     UCanvasPanelSlot* TrackerSlot = Canvas->AddChildToCanvas(Box);
-    TrackerSlot->SetAnchors(FAnchors(1.f, 0.25f)); TrackerSlot->SetAlignment(FVector2D(1.f, 0.f));
-    TrackerSlot->SetPosition(FVector2D(-24.f, 0.f)); TrackerSlot->SetAutoSize(true);
+    TrackerSlot->SetAnchors(FAnchors(0.84f, 0.25f, 0.99f, 0.40f)); TrackerSlot->SetOffsets(FMargin(0.f));  // hud-layout-v4: 84-99% x 25-40%
     UBorder* Plate = Panel(WidgetTree, Slate(0.88f), Brass(), FMargin(12.f, 9.f), 4.f);
     Box->SetContent(Plate);
     UVerticalBox* Stack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());

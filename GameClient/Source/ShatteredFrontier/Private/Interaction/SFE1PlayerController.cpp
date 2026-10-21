@@ -2,8 +2,12 @@
 #include "Interaction/SFE1InteractionTarget.h"
 #include "Framework/SFE1Settings.h"
 #include "Gathering/SFGatheringPilot.h"
+#include "Framework/SFHudLayout.h"
 #include "Gathering/SFGatheringHud.h"
 #include "Inventory/SFInventoryPanel.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
+#include "Exchange/SFExchangeComponent.h"
+#include "Services/SFGameplayServicesClient.h"
 #include "Exchange/SFExchangeWidgets.h"
 #include "Exchange/SFFakeExchange.h"
 #include "Components/InputComponent.h"
@@ -60,6 +64,8 @@ void ASFE1PlayerController::BeginPlay()
     InteractionRangeCm = Rules.RangeCm;
     AcceptedCooldownSeconds = Rules.CooldownSeconds;
     bSettingsCaptured = true;
+    // The trading UI reaches Gameplay.Host Exchange through this server-side component, created only when the typed setting is on.
+    if (HasAuthority() && GetDefault<USFGameplayServicesSettings>()->bExchangeEnabled) { USFExchangeComponent::FindOrCreate(this); }
 #if WITH_DEV_AUTOMATION_TESTS
     StartE1NetworkScenario(GetWorld());
 #endif
@@ -154,6 +160,13 @@ void ASFE1PlayerController::Tick(float DeltaSeconds)
             GatheringHud->AddToViewport(10);
             GatheringHud->SetVisibility(ESlateVisibility::HitTestInvisible);
         }
+        // Hotbar, prompt bar, target frame and minimap frame (hud-layout-v4.md), installed with the gathering HUD.
+        if (Pilot && Pilot->IsEnabled() && !HudLayout && (HudLayout = CreateWidget<USFHudLayout>(this, USFHudLayout::StaticClass())))
+        {
+            HudLayout->Configure(Pilot);
+            HudLayout->AddToViewport(9);
+            HudLayout->SetVisibility(ESlateVisibility::HitTestInvisible);
+        }
     }
     if (IsLocalController() && GetWorld()->GetTimeSeconds() >= NextLocalRefreshSeconds)
     {
@@ -228,7 +241,7 @@ void ASFE1PlayerController::ToggleInventoryPanel()
         InventoryPanel->Configure(Pilot);
         InventoryPanel->AddToViewport(20);
         InventoryPanel->SetDesiredSizeInViewport(FVector2D(480, 560));
-        InventoryPanel->SetPositionInViewport(FVector2D(92, 70));
+        { int32 Width = 0, Height = 0; GetViewportSize(Width, Height); InventoryPanel->SetPositionInViewport(FVector2D(0.06f * Width, 0.07f * Height)); }  // hud-layout-v4: 6% x 7%
         InventoryPanel->SetVisibility(ESlateVisibility::Collapsed);
     }
     // Visible (hit-testable) so the category tabs and item tooltips work; it only covers its own 480 x 560 area.
@@ -247,12 +260,40 @@ void ASFE1PlayerController::InteractWithSelectedTarget()
     ServerRequestInteraction(SelectedTarget.Get(), SelectedRevision);
 }
 
+namespace
+{
+// hud-layout-v4 placement by viewport fractions; SetAnchorsInViewport did not take effect for these widgets.
+void PlaceCentered(APlayerController* Controller, UUserWidget* Widget)
+{
+    int32 Width = 0, Height = 0; Controller->GetViewportSize(Width, Height);
+    const float Scale = FMath::Max(0.01f, UWidgetLayoutLibrary::GetViewportScale(Controller));
+    Widget->ForceLayoutPrepass();
+    const FVector2D Desired = Widget->GetDesiredSize();
+    Widget->SetPositionInViewport(FVector2D((Width - Desired.X * Scale) * 0.5f, (Height - Desired.Y * Scale) * 0.5f), true);
+}
+
+void FillViewport(APlayerController* Controller, UUserWidget* Widget)
+{
+    int32 Width = 0, Height = 0; Controller->GetViewportSize(Width, Height);
+    const float Scale = FMath::Max(0.01f, UWidgetLayoutLibrary::GetViewportScale(Controller));
+    Widget->SetDesiredSizeInViewport(FVector2D(Width / Scale, Height / Scale));
+    Widget->SetPositionInViewport(FVector2D::ZeroVector, false);
+}
+
+// The live client service when the server gave this controller an exchange component, else the in-memory fake.
+TSharedPtr<ISFExchangeService> ExchangeServiceFor(APlayerController* Controller)
+{
+    if (USFExchangeComponent* Live = Controller->FindComponentByClass<USFExchangeComponent>()) { return MakeShared<FSFExchangeClientService>(Live); }
+    return MakeShared<FSFFakeExchange>();
+}
+}
+
 void ASFE1PlayerController::ToggleTradeDemo()
 {
     if (!IsLocalController()) { return; }
     if (!TradeWindow)
     {
-        DemoExchange = DemoExchange ? DemoExchange : MakeShared<FSFFakeExchange>();
+        DemoExchange = DemoExchange ? DemoExchange : ExchangeServiceFor(this);
         const double Now = GetWorld()->GetTimeSeconds();
         DemoTrade = MakeShared<FSFTradeViewModel>(*DemoExchange, FSFFakeExchange::DemoTrade(Now + 108.0), true);
         DemoTrade->AddMyItem({TEXT("item/oak_log"), TEXT("Oak Log"), 24});
@@ -262,10 +303,10 @@ void ASFE1PlayerController::ToggleTradeDemo()
         if (!TradeWindow) { return; }
         TradeWindow->Bind(DemoTrade);
         TradeWindow->AddToViewport(30);
-        TradeWindow->SetPositionInViewport(FVector2D(260, 120));
         TradeWindow->SetVisibility(ESlateVisibility::Collapsed);
     }
     TradeWindow->SetVisibility(TradeWindow->GetVisibility() == ESlateVisibility::Collapsed ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    PlaceCentered(this, TradeWindow);  // centre window, 26-74% x 14-78%
 }
 
 void ASFE1PlayerController::ToggleMarketDemo()
@@ -273,7 +314,7 @@ void ASFE1PlayerController::ToggleMarketDemo()
     if (!IsLocalController()) { return; }
     if (!MarketBoard)
     {
-        DemoExchange = DemoExchange ? DemoExchange : MakeShared<FSFFakeExchange>();
+        DemoExchange = DemoExchange ? DemoExchange : ExchangeServiceFor(this);
         DemoMarket = MakeShared<FSFMarketViewModel>(*DemoExchange);
         DemoMarket->SetListings(FSFFakeExchange::DemoListings());
         MarketBoard = CreateWidget<USFMarketBoard>(this, USFMarketBoard::StaticClass());
@@ -281,8 +322,8 @@ void ASFE1PlayerController::ToggleMarketDemo()
         MarketBoard->Bind(DemoMarket);
         MarketBoard->SetSellItem(TEXT("item/oak_log"), TEXT("Oak Log"), 24);
         MarketBoard->AddToViewport(30);
-        MarketBoard->SetPositionInViewport(FVector2D(120, 80));
         MarketBoard->SetVisibility(ESlateVisibility::Collapsed);
     }
     MarketBoard->SetVisibility(MarketBoard->GetVisibility() == ESlateVisibility::Collapsed ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    FillViewport(this, MarketBoard);  // modal: the board dims the whole scene and centres itself
 }

@@ -1299,10 +1299,11 @@ void ASFConstructionNetworkController::LayoutPalette()
     // Size to the palette's content (tiles, cost row and buttons), capped by the viewport; never a fixed height that clips it.
     Palette->ForceLayoutPrepass();
     const float ContentHeight=FMath::Max(200.f,float(Palette->GetDesiredSize().Y));
-    Palette->SetDesiredSizeInViewport(FVector2D(320,FMath::Min(ContentHeight,float(Height)-32.f)));
+    // hud-layout-v4: the build catalogue docks in the left column (2-26% x 8-72%); the right column stays free for minimap, quests and toasts.
+    Palette->SetDesiredSizeInViewport(FVector2D(FMath::Clamp(0.24f*float(Width),300.f,440.f),FMath::Min(ContentHeight,0.64f*float(Height))));
     Palette->SetRenderTransformPivot(FVector2D::ZeroVector);
     Palette->SetRenderScale(FVector2D(1.0f/Scale));
-    Palette->SetPositionInViewport(FVector2D(FMath::Max(16,Width-336),16));
+    Palette->SetPositionInViewport(FVector2D(0.02f*float(Width),0.08f*float(Height)));
 }
 
 void ASFConstructionNetworkController::ClientRestart_Implementation(APawn* NewPawn)
@@ -1977,9 +1978,13 @@ FString ASFConstructionNetworkController::GetBuildStatusText() const
         State ? State->GetMaximumMembers() : 0,State ? State->GetSnapshot().Doors.Num() : 0,State ? State->GetMaximumDoors() : 0,State ? State->GetReachCentimetres()/100.0 : 0.0);
 }
 
+// The v4 HUD (SFHudLayout, the palette, the quest tracker and the gathering HUD) replaces these development text boxes.
+static TAutoConsoleVariable<int32> CVarSFHudDebugText(TEXT("sf.HudDebugText"), 0, TEXT("1 draws the legacy construction and gathering debug text over the HUD."), ECVF_Default);
+
 void ASFConstructionNetworkHUD::DrawHUD()
 {
     Super::DrawHUD();
+    if (CVarSFHudDebugText.GetValueOnGameThread() == 0) { return; }
     const auto* Controller=Cast<ASFConstructionNetworkController>(GetOwningPlayerController());
     if (!Controller || !Canvas || !GEngine) { return; }
     const float Scale=FMath::Clamp(Canvas->ClipX/1280.f,0.5f,1.5f);

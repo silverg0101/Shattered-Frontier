@@ -70,34 +70,48 @@ bool FSFTradeViewModel::RemoveMyItem(int32 Index)
 
 bool FSFTradeViewModel::CanLock() const
 {
-    return Trade.State == ESFTradeState::Open && !Trade.Mine.bLocked && bGoldValid && (Trade.Mine.Gold > 0 || !Trade.Mine.Items.IsEmpty() || Trade.Theirs.Gold > 0 || !Trade.Theirs.Items.IsEmpty());
+    return Trade.State == ESFTradeState::Open && !Trade.Mine.bLocked && !bPending && bGoldValid && (Trade.Mine.Gold > 0 || !Trade.Mine.Items.IsEmpty() || Trade.Theirs.Gold > 0 || !Trade.Theirs.Items.IsEmpty());
 }
 
 bool FSFTradeViewModel::Lock()
 {
     if (!CanLock()) { return false; }
-    // The initiator's lock is the backend OfferTrade; the partner's lock is local readiness until they accept.
-    if (bInitiator && !Service.OfferTrade(Trade)) { return false; }
-    Trade.Mine.bLocked = true;
+    if (!bInitiator) { Trade.Mine.bLocked = true; return true; }  // the partner's lock is local readiness until they accept
+    // The initiator's lock is the backend OfferTrade; it takes effect when the server commits.
+    bPending = true;
+    const TWeakPtr<bool> Token = Alive;
+    Service.OfferTrade(Trade, [this, Token](bool bCommitted)
+    {
+        if (!Token.IsValid()) { return; }
+        bPending = false;
+        if (bCommitted && Trade.State == ESFTradeState::Open) { Trade.Mine.bLocked = true; }
+    });
     return true;
 }
 
 bool FSFTradeViewModel::CanAccept() const
 {
-    return Trade.State == ESFTradeState::Open && Trade.Mine.bLocked && Trade.Theirs.bLocked;
+    return Trade.State == ESFTradeState::Open && !bPending && Trade.Mine.bLocked && Trade.Theirs.bLocked;
 }
 
 bool FSFTradeViewModel::Accept()
 {
-    if (!CanAccept() || !Service.AcceptTrade(Trade.TradeId)) { return false; }
-    Trade.State = ESFTradeState::Completed;
+    if (!CanAccept()) { return false; }
+    bPending = true;
+    const TWeakPtr<bool> Token = Alive;
+    Service.AcceptTrade(Trade.TradeId, [this, Token](bool bCommitted)
+    {
+        if (!Token.IsValid()) { return; }
+        bPending = false;
+        if (bCommitted && Trade.State == ESFTradeState::Open) { Trade.State = ESFTradeState::Completed; }
+    });
     return true;
 }
 
 bool FSFTradeViewModel::Cancel()
 {
     if (Trade.State != ESFTradeState::Open) { return false; }
-    Service.CancelTrade(Trade.TradeId);
+    Service.CancelTrade(Trade.TradeId, [](bool) {});  // best effort; the window closes either way
     Trade.State = ESFTradeState::Cancelled;
     UnlockBoth();
     return true;
@@ -166,9 +180,17 @@ bool FSFMarketViewModel::CanBuy(const FSFListing& Listing) const
 
 bool FSFMarketViewModel::Buy(const FSFListing& Listing)
 {
-    if (!CanBuy(Listing) || !Service.BuyListing(Listing, BuyFee(Listing))) { return false; }
-    WalletState = Service.GetWallet();
-    Listings.RemoveAll([&Listing](const FSFListing& L) { return L.ListingId == Listing.ListingId; });
+    if (!CanBuy(Listing) || bBuying) { return false; }
+    bBuying = true;
+    const TWeakPtr<bool> Token = Alive; const FString ListingId = Listing.ListingId;
+    Service.BuyListing(Listing, BuyFee(Listing), [this, Token, ListingId](bool bCommitted)
+    {
+        if (!Token.IsValid()) { return; }
+        bBuying = false;
+        if (!bCommitted) { return; }
+        WalletState = Service.GetWallet();
+        Listings.RemoveAll([&ListingId](const FSFListing& L) { return L.ListingId == ListingId; });
+    });
     return true;
 }
 
@@ -190,7 +212,11 @@ bool FSFMarketViewModel::SetSellPriceText(const FString& Text)
 
 bool FSFMarketViewModel::ListSelected(const FString& ItemId, int64 AvailableToPayFee)
 {
-    if (!CanList(AvailableToPayFee) || !Service.ListItem(ItemId, SellQuantity, SellPrice, ListingFee())) { return false; }
-    WalletState = Service.GetWallet();
+    if (!CanList(AvailableToPayFee)) { return false; }
+    const TWeakPtr<bool> Token = Alive;
+    Service.ListItem(ItemId, SellQuantity, SellPrice, ListingFee(), [this, Token](bool bCommitted)
+    {
+        if (Token.IsValid() && bCommitted) { WalletState = Service.GetWallet(); }
+    });
     return true;
 }
