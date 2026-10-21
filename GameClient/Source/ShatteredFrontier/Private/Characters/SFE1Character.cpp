@@ -18,6 +18,7 @@
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
 #include "TimerManager.h"
+#include "Townsfolk/SFTownsfolk.h"
 
 ASFE1Character::ASFE1Character()
 {
@@ -131,7 +132,10 @@ void ASFE1Character::OnRep_PilotHealth()
 
 void ASFE1Character::PilotAttack()
 {
-    if (IsLocallyControlled() && PilotHealth > 0) { ServerPilotAttack(); }
+    if (!IsLocallyControlled()) { return; }
+    // A townsfolk resident in reach takes the swing (hand-off); otherwise it goes to the combat pilot.
+    if (USFTownsfolkSubsystem* Town = GetWorld()->GetSubsystem<USFTownsfolkSubsystem>(); Town && Town->LocalAttack(this)) { return; }
+    if (PilotHealth > 0) { ServerPilotAttack(); }
 }
 
 void ASFE1Character::ServerPilotAttack_Implementation()

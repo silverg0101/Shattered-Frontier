@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DeveloperSettings.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/Character.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "MassEntityTraitBase.h"
 #include "MassEntityTypes.h"
@@ -17,6 +18,11 @@ class USmartObjectDefinition;
 class USkeletalMesh;
 class UMassEntityConfigAsset;
 class USkeletalMeshComponent;
+class ASFE1Character;
+class AGameModeBase;
+class APlayerController;
+class USFCrowdControlComponent;
+class ASFTownsfolkNpc;
 
 // Townsfolk prototype, AI Townsfolk doc section 9 steps 2-3: census residents walking their day on ZoneGraph footways
 // across the town, drawn by MassRepresentation, stepping aside for each other and the player.
@@ -107,6 +113,27 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Town state", meta=(ClampMin="5.0", ClampMax="1800.0", Units="s", ToolTip="Real seconds a danger cell stays dangerous after the server marks it."))
     float DangerSeconds = 120.0f;
 
+    UPROPERTY(Config, EditAnywhere, Category="Hand-off", meta=(ClampMin="2.0", ClampMax="40.0", Units="m", ToolTip="tune.townsfolk.handoff_tolerance_m: how far a client's seen position may be from the resident's scheduled route before the server drops the request."))
+    float HandoffToleranceMetres = 12.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Hand-off", meta=(ClampMin="2.0", ClampMax="100.0", Units="m", ToolTip="tune.townsfolk.handoff_release_m: a handed-off resident returns to its schedule only with no player this close."))
+    float HandoffReleaseMetres = 30.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Hand-off", meta=(ClampMin="2.0", ClampMax="120.0", Units="s", ToolTip="Real seconds without a hit before an attacked resident's hand-off may end."))
+    float HandoffQuietSeconds = 10.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Hand-off", meta=(ClampMin="1", ClampMax="64", ToolTip="Most residents handed off at once in the zone."))
+    int32 MaxHandoffs = 16;
+
+    UPROPERTY(Config, EditAnywhere, Category="Hand-off", meta=(ClampMin="1", ClampMax="500", ToolTip="Health of a handed-off resident (pilot scale: player melee does 20)."))
+    int32 ResidentHealth = 40;
+
+    UPROPERTY(Config, EditAnywhere, Category="Hand-off", meta=(ClampMin="1.0", ClampMax="30.0", Units="s", ToolTip="Real seconds an attacked resident runs from the attacker after each hit (section 5.4)."))
+    float FleeSeconds = 6.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Hand-off", meta=(ClampMin="1.0", ClampMax="10.0", Units="m/s"))
+    float FleeSpeedMetresPerSecond = 4.5f;
+
     bool Validate(FString& OutError) const;
 };
 
@@ -179,6 +206,54 @@ private:
     UPROPERTY(Replicated) int32 OpenMarkets=0;  // bit per census market; all open or all closed by the hours today
     UPROPERTY(Replicated) TArray<FSFTownDangerCell> Danger;
     float OpenHour=7, CloseHour=19, DangerSeconds=120;
+};
+
+/** A handed-off resident (doc section 2): a server-authoritative actor replicated to every client while gameplay needs that
+  * resident (an attack, or a quest step). Each client hides its own Mass copy while this exists and resumes it from here
+  * when the server releases it. An attacked resident flees (section 5.4); fighting back is step 5. Moves kinematically
+  * like the combat pilot's boar. */
+UCLASS(NotBlueprintable)
+class SHATTEREDFRONTIER_API ASFTownsfolkNpc : public ACharacter
+{
+    GENERATED_BODY()
+public:
+    ASFTownsfolkNpc();
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+    virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type Reason) override;
+    virtual void Tick(float DeltaSeconds) override;
+    /** Authority, before BeginPlay. */
+    void Init(const FString& Id, FName InArchetype, int32 Serial, int32 Health, bool bQuest);
+    /** Authority: takes the hit and runs from the attacker; at 0 health the resident is gone until the next dawn. */
+    void ReceiveHit(const AActor* Attacker, int32 Damage);
+    const FString& Id() const { return ResidentId; }
+    int32 Serial() const { return HandoffSerial; }
+    int32 Health() const { return CurrentHealth; }
+    bool bQuestHeld=false;  // authority: held until the quest releases it
+    double LastActiveSeconds=0;  // authority: last hit or hand-off
+    int32 DeathDay=-1;  // authority: game day it died on
+    UPROPERTY(VisibleAnywhere) TObjectPtr<USFCrowdControlComponent> CrowdControl;
+private:
+    UPROPERTY(Replicated) FString ResidentId;
+    UPROPERTY(Replicated) FName Archetype;
+    UPROPERTY(Replicated) int32 HandoffSerial=0;
+    UPROPERTY(Replicated) int32 CurrentHealth=0;
+    FVector FleeFrom=FVector::ZeroVector; double FleeUntil=0;
+    FVector LastAt=FVector::ZeroVector; int8 Playing=-1; bool bLookApplied=false;
+    UPROPERTY() TObjectPtr<UAnimSequence> Walk;
+    UPROPERTY() TObjectPtr<UAnimSequence> Idle;
+};
+
+/** Added by the server to each player controller: the client's requests to attack a resident (doc section 5.3). */
+UCLASS()
+class SHATTEREDFRONTIER_API USFTownsfolkHandoffComponent : public UActorComponent
+{
+    GENERATED_BODY()
+public:
+    USFTownsfolkHandoffComponent();
+    /** The client sees resident ResidentId at SeenAt (cm) and swings at it; the server checks it against the schedule. */
+    UFUNCTION(Server, Reliable) void ServerAttackResident(const FString& ResidentId, FVector_NetQuantize SeenAt);
+    UFUNCTION(Server, Reliable) void ServerAttackNpc(ASFTownsfolkNpc* Npc);
 };
 
 /** The SmartObject subsystem on NM_Client, where the engine creates none (it holds server-authoritative Smart Objects).
@@ -260,11 +335,13 @@ class SHATTEREDFRONTIER_API USFTownsfolkSubsystem : public UWorldSubsystem
 public:
     virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
     virtual void OnWorldBeginPlay(UWorld& World) override;
+    virtual void Deinitialize() override;
 
     bool IsActive() const { return bActive; }
     /** Residents wait for the replicated town state; the clock and walking speed come from it. */
     bool HasState() const { return State!=nullptr; }
     void SetState(ASFTownState* InState) { State=InState; }
+    ASFTownState* TownState() const { return State; }
     float GameHour(int32& OutDay) const { return State->Hour(OutDay); }
     float WalkSpeedCm() const { return WalkSpeedMetres*100.0f*FMath::Max(1.0f,60.0f/State->DayMinutes()); }
     /** The resident's goal with the town state applied: closed markets and danger cells send them home. */
@@ -291,8 +368,41 @@ public:
     void NoteFrame(double Milliseconds);
     TArray<FVector> OutdoorPositions() const;
 
+    // Hand-off (doc sections 2 and 5.3).
+    /** Client: the local player swung (the pilot attack key). Hits a handed-off resident in reach, or asks the server to
+      * hand off the outdoor resident in front; false when no resident is in reach, so the swing goes to the combat pilot. */
+    bool LocalAttack(ASFE1Character* Attacker);
+    /** Server: a client's attack on a resident it sees at SeenAt; dropped and logged unless it fits the schedule. */
+    void HandleAttackRequest(APlayerController* PC, const FString& ResidentId, const FVector& SeenAt);
+    void HandleNpcAttack(APlayerController* PC, ASFTownsfolkNpc* Npc);
+    /** Server, quest hook: hands off the resident of Archetype (census role) whose scheduled stop is nearest Near, held
+      * until ReleaseQuestHandoff. Null when none is free. */
+    ASFTownsfolkNpc* RequestQuestHandoff(FName Archetype, const FVector& Near);
+    void ReleaseQuestHandoff(ASFTownsfolkNpc* Npc);
+    /** Every machine: a hand-off actor began or ended play here. */
+    void NoteNpc(ASFTownsfolkNpc* Npc, bool bPresent);
+    /** Server: the interaction is over and no player is near (an attack), or the dead resident's dawn has come. */
+    bool ReleaseDue(const ASFTownsfolkNpc& Npc) const;
+    bool IsHandedOff(int32 Resident) const { return Npcs.Contains(Resident); }
+    /** Processor: where a released resident picks up its schedule; true once per release. */
+    bool TakeResume(int32 Resident, FVector& OutAt) { return Resume.RemoveAndCopyValue(Resident,OutAt); }
+
 private:
     bool LoadCensus(FString& OutError);
+    void OnPostLogin(AGameModeBase* Mode, APlayerController* PC);
+    /** Server: is Seen within the hand-off tolerance of the resident's route from its last stop to its current one? */
+    bool OnSchedule(int32 Resident, const FVector& Seen) const;
+    FVector StopFor(int32 Resident, ESFTownsfolkGoal Goal, int32 Market) const;
+    ASFTownsfolkNpc* SpawnNpc(int32 Resident, const FVector& At, bool bQuest);
+    void TickScenario();
+    TMap<int32,TWeakObjectPtr<ASFTownsfolkNpc>> Npcs;  // handed-off residents, by index
+    TMap<int32,FVector> Resume;
+    TMap<FString,int32> Ids;
+    TMap<TWeakObjectPtr<APlayerController>,double> NextSwing;
+    TArray<int32> Still;  // frames each resident has stood still, for the scenario's pick
+    int32 HandoffSerial=0, ScenarioTarget=INDEX_NONE, LastReturned=INDEX_NONE;
+    double ScenarioStart=-1, LastReturnedAt=0; bool bScenario=false, bScenarioSent=false, bCensus=false;
+    FDelegateHandle PostLoginHandle;
     bool LoadLooks(FString& OutError);
     /** Creates the Smart Objects from silverbrook-smartobjects.json once the SmartObject subsystem is running. */
     void EnsureSpots();

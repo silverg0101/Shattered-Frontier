@@ -10,7 +10,10 @@ param(
 # Townsfolk step 4 (AI Townsfolk doc section 9): a dedicated server on Greenlands_Silverbrook owns the town state; two
 # NullRHI clients with -TownsfolkPrototype simulate residents on NM_Client. Passes when both clients agree on the hour
 # (within HourToleranceSeconds of real time) and on market state, both see the server's danger cell, and residents claim
-# Smart Objects on each client. The server runs a fast day (DayMinutes) so the samples span an open and a closed market.
+# Smart Objects on each client. The server runs a fast day (DayMinutes) from 10:00 with markets closing at 12:00, so the
+# samples span an open and a closed market. Hand-off: the first client walks to a resident standing still and swings at
+# it; both clients must see the same server actor (resident id and serial) with their own Mass copy hidden, and both
+# must resume the resident on its schedule from the actor's last position once the server releases it.
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $root = Join-Path $repoRoot ('Artifacts\Townsfolk\network-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
@@ -25,8 +28,8 @@ $clock = [Diagnostics.Stopwatch]::StartNew()
 $settings = '-ini:Game:[/Script/ShatteredFrontier.SFTownsfolkSettings]:'
 $results = [ordered]@{
     status='Running'
-    scope='Mechanism only: dedicated editor server town state (clock, markets, one danger cell) replicated to two NullRHI NM_Client clients simulating residents. No rendering, looks or hand-off.'
-    serverOverrides="GameDayMinutes=$DayMinutes StartHour=17 DangerSeconds=1800, danger cell at (20,-20) m; clients keep shipped settings"
+    scope='Mechanism only: dedicated editor server town state (clock, markets, one danger cell) replicated to two NullRHI NM_Client clients simulating residents. Attack hand-off and release (flee only). No rendering, looks, fighting back or quest hand-off.'
+    serverOverrides="GameDayMinutes=$DayMinutes StartHour=10 MarketCloseHour=12 DangerSeconds=1800 HandoffReleaseMetres=10 HandoffQuietSeconds=8, danger cell at (20,-20) m; clients keep shipped settings"
     timeoutSeconds=$TimeoutSeconds
     runs=@()
 }
@@ -69,9 +72,10 @@ function Read-Samples([string]$Text) {
 }
 try {
     $server=Start-Owned 'server' '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' @('-server',('-port='+$Port),'-multihome=127.0.0.1',
-        ($settings+'GameDayMinutes='+$DayMinutes),($settings+'StartHour=17'),($settings+'DangerSeconds=1800'),'-TownsfolkDangerX=20','-TownsfolkDangerY=-20')
+        ($settings+'GameDayMinutes='+$DayMinutes),($settings+'StartHour=10'),($settings+'MarketCloseHour=12'),($settings+'DangerSeconds=1800'),
+        ($settings+'HandoffReleaseMetres=10'),($settings+'HandoffQuietSeconds=8'),'-TownsfolkDangerX=20','-TownsfolkDangerY=-20')
     Wait-Log $server 'server' 'TOWNSFOLK_STATE_CHANGE[^\r\n]*Cell='
-    $first=Start-Owned 'first' ('127.0.0.1:'+$Port) @('-game','-TownsfolkPrototype')
+    $first=Start-Owned 'first' ('127.0.0.1:'+$Port) @('-game','-TownsfolkPrototype','-TownsfolkHandoffScenario')
     $second=Start-Owned 'second' ('127.0.0.1:'+$Port) @('-game','-TownsfolkPrototype')
     Wait-Log $first 'first' 'TOWNSFOLK_STATE Net=3'
     Wait-Log $second 'second' 'TOWNSFOLK_STATE Net=3'
@@ -99,11 +103,34 @@ try {
         if ($claims -eq 0) { throw "$name residents claimed no Smart Object slots." }
         $samples=@(Read-Samples $text | Where-Object { $_.Utc -ge $sampleStart })
         if ($samples.Count -lt $SampleSeconds/2) { throw "$name logged too few state samples ($($samples.Count))." }
-        if (@($samples | Where-Object Danger -ne 1).Count) { throw "$name did not see exactly one danger cell throughout." }
+        if (@($samples | Where-Object Danger -lt 1).Count) { throw "$name lost the server's danger cell." }  # the attack adds its own
         $clients[$name]=[ordered]@{ residents=$residents; spots=$spots; claims=$claims; hoursReported=$hours.Count
             processorMsMean=[math]::Round(($ms | Measure-Object -Average).Average,3); processorMsMax=($ms | Measure-Object -Maximum).Maximum
-            samples=$samples }
+            samples=$samples; text=$text }
     }
+    # Hand-off: one attack, one server actor, seen by both clients with no second copy, then released and resumed.
+    if ($serverText -match 'TOWNSFOLK_HANDOFF_DENIED[^\r\n]*') { throw "Server denied a hand-off: $($Matches[0])" }
+    if ($serverText -notmatch 'TOWNSFOLK_HANDOFF Id=(\S+) Serial=(\d+) Reason=attack') { throw 'Server made no attack hand-off.' }
+    $handId=$Matches[1]; $serial=$Matches[2]
+    if ($serverText -notmatch ('TOWNSFOLK_HANDOFF_HIT Id='+[regex]::Escape($handId)+' Serial='+$serial+' Health=(\d+)')) { throw 'Server applied no hit.' }
+    $health=[int]$Matches[1]
+    if ($serverText -notmatch ('TOWNSFOLK_HANDOFF_RELEASE Id='+[regex]::Escape($handId)+' Serial='+$serial)) { throw 'Server never released the resident.' }
+    $returns=@()
+    foreach ($name in 'first','second') {
+        $text=$clients[$name].text; $id=[regex]::Escape($handId)
+        if ($text -notmatch ('TOWNSFOLK_HANDOFF_SEEN Net=3 Id='+$id+' Serial='+$serial)) { throw "$name never saw the hand-off actor." }
+        $views=@([regex]::Matches($text,'TOWNSFOLK_HANDOFF_VIEW Id='+$id+' Serial='+$serial+' Health=\d+ Hidden=\d MassOutdoors=(\d)'))
+        if ($views.Count -eq 0) { throw "$name logged no view of the hand-off actor." }
+        if (@($views | Where-Object { $_.Groups[1].Value -ne '0' }).Count) { throw "$name showed the resident twice (Mass copy outdoors during the hand-off)." }
+        if ($text -notmatch ('TOWNSFOLK_HANDOFF_RETURN Net=3 Id='+$id+' Serial='+$serial+' At=V\(X=([-\d.]+), Y=([-\d.]+)')) { throw "$name never returned the resident." }
+        $returns+=,@([double]$Matches[1],[double]$Matches[2])
+        $after=@([regex]::Matches($text,'TOWNSFOLK_HANDOFF_AFTER Id='+$id+' Outdoors=(\d) HandedOff=(\d)'))
+        if (-not @($after | Where-Object { $_.Groups[1].Value -eq '1' -and $_.Groups[2].Value -eq '0' }).Count) { throw "$name did not show the resident back on its schedule." }
+        $clients[$name].handoffViews=$views.Count
+    }
+    $gap=[math]::Sqrt([math]::Pow($returns[0][0]-$returns[1][0],2)+[math]::Pow($returns[0][1]-$returns[1][1],2))
+    if ($gap -gt 100) { throw "Clients' last positions of the actor differ by $([math]::Round($gap)) cm." }
+    $results.handoff=[ordered]@{ resident=$handId; serial=[int]$serial; healthAfterHit=$health; returnGapCm=[math]::Round($gap,1) }
     # Hour: each of first's samples against second's hour interpolated at the same machine time.
     $a=$clients.first.samples; $b=$clients.second.samples; $worst=0.0; $compared=0; $marketCompared=0; $marketSkipped=0; $seen=@{}
     foreach ($s in $a) {
@@ -120,7 +147,7 @@ try {
     if ($compared -lt $SampleSeconds/2) { throw "Too few overlapping samples ($compared)." }
     if ($worst -gt $HourToleranceSeconds) { throw "Clients' hours differ by $([math]::Round($worst,3)) s of real time (tolerance $HourToleranceSeconds)." }
     if ($seen.Count -lt 2) { throw 'Samples did not cover both an open and a closed market.' }
-    foreach ($name in 'first','second') { $clients[$name].Remove('samples') }
+    foreach ($name in 'first','second') { $clients[$name].Remove('samples'); $clients[$name].Remove('text') }
     $results.clients=$clients
     $results.hour=[ordered]@{ compared=$compared; worstRealSeconds=[math]::Round($worst,3); toleranceSeconds=$HourToleranceSeconds }
     $results.market=[ordered]@{ compared=$marketCompared; skippedNearChange=$marketSkipped; serverChanges=$changes.Count }

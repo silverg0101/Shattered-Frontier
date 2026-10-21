@@ -36,6 +36,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
+#include "Townsfolk/SFTownsfolk.h"
 #if SF_WITH_MINIMAL_INVENTORY
 #include "InventoryComponent.h"
 #include "InventoryItemDefinition.h"
@@ -381,6 +382,12 @@ void USFQuestPilotComponent::TickComponent(float Delta, ELevelTick Type, FActorC
 {
     Super::TickComponent(Delta, Type, Function);
     if (GetOwner() && GetOwner()->HasAuthority() && !PendingRewards.IsEmpty()) { TryDeliverRewards(); }
+#if !UE_BUILD_SHIPPING
+    // Stub objective kind "talk_resident", off unless -QuestResidentStub: the first quest player holds one census labourer
+    // through the townsfolk hand-off (AI Townsfolk doc section 9 step 4). No content uses the kind yet.
+    static bool bResidentStub = FParse::Param(FCommandLine::Get(), TEXT("QuestResidentStub"));
+    if (bResidentStub && GetOwner() && GetOwner()->HasAuthority()) { if (USFTownsfolkSubsystem* Town = GetWorld()->GetSubsystem<USFTownsfolkSubsystem>(); Town && Town->RequestQuestHandoff(TEXT("labourer"), GetOwner()->GetActorLocation())) { bResidentStub = false; } }
+#endif
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (!FParse::Param(FCommandLine::Get(), TEXT("QuestFullScenario"))) { return; }
     if (GetOwner() && GetOwner()->HasAuthority()) { TickFullServer(); }

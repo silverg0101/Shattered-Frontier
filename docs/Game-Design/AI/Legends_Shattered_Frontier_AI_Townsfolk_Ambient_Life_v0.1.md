@@ -331,7 +331,30 @@ The census validator checks:
      - Markets: 116 samples agree, 3 within 1.5 s of a server change were skipped; the markets closed at 19:00.
      - Danger: both clients saw the one cell for the whole run.
      - Processor cost per client: 0.026 ms a frame on average, 0.039 ms at most, after an 8 ms first frame. It is low because most residents are home at night.
-   - *Next:* the attack and quest hand-offs (section 2, section 5.3), with the hand-off set in the town state.
+   **Step 4 second slice (2026-10-21): the attack hand-off, and a quest hook.**
+   - *Attack.* The pilot attack key (`ASFE1Character::PilotAttack`) gives the swing to a townsfolk resident in reach first; otherwise it goes to the combat pilot. The client sends the resident's id and seen position through `USFTownsfolkHandoffComponent`, which the server adds to each player controller.
+   - *Server check (section 5.3).* The server accepts the request only when all of these hold:
+     - the census knows the resident and it isn't already handed off;
+     - the attacker is within melee reach of the seen position;
+     - the seen position is within `HandoffToleranceMetres` (12 m) of the footway route from the resident's previous stop to its current one, or within the bench radius of an errand's market.
+
+     Anything else is dropped and logged as `TOWNSFOLK_HANDOFF_DENIED`. Exact positions can't be matched: each client's doors, slots and sidesteps are its own.
+   - *The NPC.* The server spawns `ASFTownsfolkNpc` at the seen position. It is a replicated, always-relevant character that moves like the pilot boar, with `ResidentHealth` (40) and the combat pilot's crowd-control component.
+     - Each hit uses the combat pilot's melee rules and damage, marks a danger cell, and makes the resident flee for `FleeSeconds` (section 5.4). Fighting back and guards are step 5.
+     - At 0 health the resident is hidden until the next dawn.
+     - The replicated NPC actors are the set of handed-off residents (section 5.1), so the town state needs no list of them.
+   - *Clients.* While the NPC exists, each client hides its Mass copy and frees that copy's Smart Object slots. When the server releases the NPC (`HandoffQuietSeconds` without a hit and no player within `HandoffReleaseMetres`, 30 m), each client resumes the resident's schedule from the NPC's last position, so it doesn't jump back.
+     - The requesting client sees no pop.
+     - Another client's copy may have drifted a few metres, so it sees a small jump. A fade is for the MetaHuman Crowds looks.
+   - *Quest hook.* `USFTownsfolkSubsystem::RequestQuestHandoff(Archetype, Near)` hands off the free resident of that census role whose current stop is nearest, and holds it until `ReleaseQuestHandoff`.
+   - *Verify.* `tools/Test-TownsfolkNetwork.ps1` runs `-TownsfolkHandoffScenario` on the first client: it walks to a resident standing still and swings at it. The server starts at 10:00 with markets closing at 12:00, and releases after 8 s within 10 m.
+   - *Evidence:* passed with no engine ensures (`Artifacts/Townsfolk/network-20261021-092433-621`).
+     - Hand-off: resident `hh_18dfffc9_0`, serial 1, hit to 20 health. It fled and the server released it 8 s later.
+     - Both clients saw the same actor in 8 views each, with the Mass copy hidden in all of them. Both resumed the resident at the same point (0 cm apart), and it was back outdoors afterwards.
+     - Hours: worst gap 0.015 s. Markets: 116 samples agree; the close is at 12:00.
+     - Smart Object claims: 130 and 126. Processor: 0.052 ms a frame on average, 0.088 ms at most.
+     - The quest pilot has a stub behind `-QuestResidentStub`: the first quest player holds one census labourer through `RequestQuestHandoff`. No content uses it yet and no runner covers it.
+   - *Next:* a real "talk_resident" objective in quest content, with its release; then step 5 (fighting back, guards, crime).
 5. **Reactions, crime and guards.** Fear at drawn weapons, annoyed barks, residents fighting back, roaming guards on patrol loops, witnessed crime making the player an offender, respawn at dawn. *Exit:* attacking a resident in view of a guard makes the player an offender and the guard engages; an unwitnessed attack in a back street gets reported only if a resident reaches a guard.
 
 ## 10. Risks
