@@ -18,6 +18,7 @@ FILES = {
     'T_LS_BarFrame': 'processed/ls_bar_frame.png',
     'T_LS_BarFill': 'processed/ls_bar_fill.png',
     'T_LS_Spinner': 'processed/ls_spinner.png',
+    'T_LS_Vignette': 'source/ls_vignette.png',
 }
 
 tasks = []

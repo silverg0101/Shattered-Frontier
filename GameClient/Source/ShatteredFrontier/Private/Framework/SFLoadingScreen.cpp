@@ -17,7 +17,7 @@
 #include "Widgets/Text/STextBlock.h"
 
 // Layout follows docs/Game-Design/concept-art/UI/v5/9-loading-screen.png in a 1920x1080 design space (scaled to fit):
-// stag emblem in a brass diamond, 72 px Cinzel zone title, engraved rule, tip line, 620x14 brass bar, 40 px ring spinner.
+// stag emblem in a brass diamond, mixed-case EB Garamond zone title, engraved rule, tip line, 620x14 brass bar, 40 px ring spinner.
 namespace
 {
 FDelegateHandle LoadingScreenPreLoadHandle;
@@ -80,6 +80,7 @@ public:
             BackgroundBrush.ImageSize = FVector2D(Splash->GetSizeX(), Splash->GetSizeY());
         }
         else { BackgroundBrush = SFHudStyle::Frame(SFHudStyle::Hex(TEXT("0E171C")), FLinearColor::Transparent, 0.f); }
+        VignetteBrush = LoadingScreenBrush(TEXT("T_LS_Vignette"));
         EmblemBrush = LoadingScreenBrush(TEXT("T_LS_Emblem"));
         RuleBrush = LoadingScreenBrush(TEXT("T_LS_Rule"));
         BarFrameBrush = LoadingScreenBrush(TEXT("T_LS_BarFrame"));
@@ -87,13 +88,14 @@ public:
         BarFrameBrush.Margin = FMargin(0.06f, 0.f, 0.06f, 0.f);
         BarFillBrush =LoadingScreenBrush(TEXT("T_LS_BarFill"));
         SpinnerBrush = LoadingScreenBrush(TEXT("T_LS_Spinner"));
-        const FLinearColor Shadow(0.f, 0.f, 0.f, 0.7f);
+        const FLinearColor Shadow(0.f, 0.f, 0.f, 0.9f);
         constexpr float BarWidth = 620.f, BarHeight = 14.f, BarInset = 3.f;
 
         ChildSlot
         [
             SNew(SOverlay)
             + SOverlay::Slot()[ SNew(SScaleBox).Stretch(EStretch::ScaleToFill)[ SNew(SImage).Image(&BackgroundBrush) ] ]
+            + SOverlay::Slot()[ SNew(SImage).Image(&VignetteBrush) ]
             + SOverlay::Slot()
             [
                 SNew(SScaleBox).Stretch(EStretch::ScaleToFit)
@@ -104,11 +106,11 @@ public:
                         + SCanvas::Slot().Position(FVector2D(960.f - 110.f, 452.f - 110.f)).Size(FVector2D(220.f, 220.f))
                         [ SNew(SImage).Image(&EmblemBrush) ]
                         + SCanvas::Slot().Position(FVector2D(0.f, 560.f)).Size(FVector2D(1920.f, 100.f))
-                        [ SNew(STextBlock).Text(FText::FromString(Settings.ZoneTitle)).Font(LoadingScreenFont(TEXT("FontFace_Cinzel"), 72)).Justification(ETextJustify::Center).ColorAndOpacity(SFHudStyle::Ivory()).ShadowOffset(FVector2D(2, 2)).ShadowColorAndOpacity(Shadow) ]
+                        [ SNew(STextBlock).Text(FText::FromString(Settings.ZoneTitle)).Font(LoadingScreenFont(TEXT("FontFace_EBGaramondRegular"), 84)).Justification(ETextJustify::Center).ColorAndOpacity(SFHudStyle::Ivory()).ShadowOffset(FVector2D(3, 3)).ShadowColorAndOpacity(Shadow) ]
                         + SCanvas::Slot().Position(FVector2D(960.f - 253.f, 697.f - 24.f)).Size(FVector2D(506.f, 48.f))
                         [ SNew(SImage).Image(&RuleBrush) ]
                         + SCanvas::Slot().Position(FVector2D(160.f, 862.f)).Size(FVector2D(1600.f, 42.f))
-                        [ SNew(STextBlock).Text(this, &SSFLoadingScreen::CurrentTip).Font(LoadingScreenFont(TEXT("FontFace_EBGaramondRegular"), 24)).Justification(ETextJustify::Center).ColorAndOpacity(SFHudStyle::Ivory()).ShadowOffset(FVector2D(1, 1)).ShadowColorAndOpacity(Shadow) ]
+                        [ SNew(STextBlock).Text(this, &SSFLoadingScreen::CurrentTip).Font(LoadingScreenFont(TEXT("FontFace_EBGaramondRegular"), 24)).Justification(ETextJustify::Center).ColorAndOpacity(SFHudStyle::Ivory()).ShadowOffset(FVector2D(2, 2)).ShadowColorAndOpacity(Shadow) ]
                         + SCanvas::Slot().Position(FVector2D(960.f - BarWidth / 2.f, 931.f - BarHeight / 2.f)).Size(FVector2D(BarWidth, BarHeight))
                         [ SNew(SImage).Image(&BarFrameBrush) ]
                         + SCanvas::Slot().Position(FVector2D(960.f - BarWidth / 2.f + BarInset, 931.f - BarHeight / 2.f + BarInset)).Size(FVector2D(BarWidth - 2.f * BarInset, BarHeight - 2.f * BarInset))
@@ -139,7 +141,7 @@ private:
     float TipSeconds = 6.f;
     int32 FirstTip = 0;
     double StartTime = 0.0;
-    FSlateBrush BackgroundBrush, EmblemBrush, RuleBrush, BarFrameBrush, BarFillBrush, SpinnerBrush;
+    FSlateBrush BackgroundBrush, VignetteBrush, EmblemBrush, RuleBrush, BarFrameBrush, BarFillBrush, SpinnerBrush;
 };
 
 void LoadingScreenOnPreLoadMap(const FString&)
@@ -147,7 +149,6 @@ void LoadingScreenOnPreLoadMap(const FString&)
     if (!GetMoviePlayer()) { return; }
     const USFLoadingScreenSettings::FValues Values = GetDefault<USFLoadingScreenSettings>()->Sanitised();
     LoadingScreenTextures.Reset();
-    LoadingScreenFont(TEXT("FontFace_Cinzel"), 12);
     LoadingScreenFont(TEXT("FontFace_EBGaramondRegular"), 12);
 
     FLoadingScreenAttributes Attributes;
