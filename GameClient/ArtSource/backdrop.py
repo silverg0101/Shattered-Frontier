@@ -166,7 +166,7 @@ def mountain_material(u):
     gain = node(u.MaterialExpressionMultiply, -450, 0, const_b=1.8)  # detail centred near 1
     col = node(u.MaterialExpressionMultiply, -250, 100)
     rough = node(u.MaterialExpressionConstant, -250, 300, r=0.92)
-    for a, o, b, i in ((tc, '', tex, 'UVs'), (tex, 'RGB', gain, 'A'), (vc, 'RGB', col, 'A'), (gain, '', col, 'B')):
+    for a, o, b, i in ((tc, '', tex, 'UVs'), (tex, 'RGB', gain, 'A'), (vc, '', col, 'A'), (gain, '', col, 'B')):
         assert mel.connect_material_expressions(a, o, b, i), (a, b)
     mel.connect_material_property(col, '', u.MaterialProperty.MP_BASE_COLOR)
     mel.connect_material_property(rough, '', u.MaterialProperty.MP_ROUGHNESS)
