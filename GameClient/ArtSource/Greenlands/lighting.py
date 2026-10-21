@@ -38,7 +38,7 @@ def _png(path, w, h, rgb):
 
 
 def write_lut_png(cfg, path):
-    """32 tiles of 32x32 across (1024x32): R runs along x within a tile, G down y, B across tiles - the layout UE reads."""
+    """32 tiles of 32x32 across (1024x32): R along x within a tile, G down y, B across tiles - the layout UE reads."""
     n, sh, hi, lift = cfg['lut']['size'], cfg['lut_grade.shadow_tint_rgb'], cfg['lut_grade.highlight_tint_rgb'], cfg['lut_grade.toe_lift']
     px = bytearray()
     for g in range(n):
@@ -65,6 +65,8 @@ def import_lut(cfg):
     tex.set_editor_property('mip_gen_settings', u.TextureMipGenSettings.TMGS_NO_MIPMAPS)
     tex.set_editor_property('compression_settings', u.TextureCompressionSettings.TC_VECTOR_DISPLACEMENTMAP)
     tex.set_editor_property('srgb', False)
+    tex.set_editor_property('address_x', u.TextureAddress.TA_CLAMP)
+    tex.set_editor_property('address_y', u.TextureAddress.TA_CLAMP)
     u.EditorAssetLibrary.save_loaded_asset(tex)
     return tex
 
@@ -106,13 +108,12 @@ def apply(save=False):
     sk.set_editor_property('intensity', cfg['sun.sky_light_intensity'])
 
     atm = _one(u.SkyAtmosphere).get_component_by_class(u.SkyAtmosphereComponent)
-    atm.set_editor_property('aerial_perspective_distance_scale', cfg['aerial_perspective.distance_scale'])
+    atm.set_editor_property('aerial_pespective_view_distance_scale', cfg['aerial_perspective.distance_scale'])
     atm.set_editor_property('aerial_perspective_start_depth', cfg['aerial_perspective.start_depth_m'] / 1000.0)  # km
 
     fog = _one(u.ExponentialHeightFog).component
     for k, v in dict(fog_density=cfg['fog.density'], fog_height_falloff=cfg['fog.height_falloff'], start_distance=cfg['fog.start_distance_m'] * 100,
-                     fog_max_opacity=cfg['fog.max_opacity'], volumetric_fog=bool(cfg['fog.volumetric']),
-                     fog_inscattering_color=u.LinearColor(*cfg['fog.inscattering_colour'], 1)).items():
+                     fog_max_opacity=cfg['fog.max_opacity'], enable_volumetric_fog=bool(cfg['fog.volumetric'])).items():
         fog.set_editor_property(k, v)
 
     cloud = _one(u.VolumetricCloud, LABEL_CLOUD).get_component_by_class(u.VolumetricCloudComponent)
@@ -131,7 +132,7 @@ def apply(save=False):
     _override(ps, auto_exposure_method=u.AutoExposureMethod.AEM_HISTOGRAM, auto_exposure_min_brightness=cfg['post.exposure_min_ev100'],
               auto_exposure_max_brightness=cfg['post.exposure_max_ev100'], auto_exposure_bias=cfg['post.exposure_bias_ev'],
               lumen_final_gather_quality=cfg['post.lumen_final_gather_quality'], lumen_scene_lighting_quality=cfg['post.lumen_scene_lighting_quality'],
-              color_grading_lut=lut, color_grading_lut_intensity=cfg['post.lut_intensity'],
+              color_grading_lut=lut, color_grading_intensity=cfg['post.lut_intensity'],
               color_saturation=s(cfg['post.grade_saturation']), color_contrast=s(cfg['post.grade_contrast']))
     pp.set_editor_property('settings', ps)
 
