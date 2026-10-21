@@ -29,6 +29,7 @@ public:
     AActor* GetCombatTarget() const { return CombatTarget; }
     void SetCombatTarget(AActor* Target);
     // Local dialogue UI calls this on open/close; never sent to the server.
+    UFUNCTION(BlueprintCallable, Category="Camera|Combat Framing")
     void SetDialogueFramingTarget(AActor* Speaker);
     UPROPERTY(VisibleAnywhere) TObjectPtr<USFCrowdControlComponent> CrowdControl;
 
