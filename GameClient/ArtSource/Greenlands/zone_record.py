@@ -3,7 +3,8 @@ dressing candidates. Standard library only:  python zone_record.py   prints ZONE
 
 Covers Zone Definition Standard rows Z1, Z2 (default spawn and respawn points), Z4 (level areas), Z5 (the walled
 town is protected and no-edit; water volumes), Z8 (gathering spawn groups from silverbrook-*-candidates.json) and
-Z9 (boar, wolf and bandit groups placed per Settlement Silverbrook section 11). Field names follow the World
+Z9 (boar, wolf and bandit groups placed per Settlement Silverbrook section 11). Layout iron_veins designate
+outdoor rock candidates as iron ore while keeping their dressing point IDs. Field names follow the World
 Simulation zone record and its spawn group table. Positions are zone-local metres in Unreal axes (north is -Y);
 NPC points carry x, y only and are dropped onto the ground when they spawn. Re-run after a rebuild, since the
 candidates change with it.
@@ -19,7 +20,7 @@ from heightfield import in_polygon  # noqa: E402
 
 NODE = {'tree_pine_tall': 'gathering_node/pine_tree', 'tree_oak': 'gathering_node/oak_tree',
         'tree_broadleaf_young': 'gathering_node/young_broadleaf', 'rock_medium': 'gathering_node/stone_outcrop',
-        'boulder_large_moss': 'gathering_node/mossy_boulder'}
+        'boulder_large_moss': 'gathering_node/mossy_boulder', 'iron_vein': 'gathering_node/iron_vein'}
 SLOTS_PER_KM2 = 40  # common tier, World Simulation "Balancing targets"
 PLAYABLE_RADIUS = 750  # Settlement Silverbrook, rings
 HOSTILE_CLEARANCE = 80  # m from the wall, build plots, the arrival point and respawn points
@@ -91,7 +92,17 @@ def build(L, candidates):
     groups = []
     for district, cands in candidates.items():
         poly = L['districts'][district]['polygon']
-        outside = [c for c in cands if not in_wall(L, c['at']) and NODE.get(c['role'])]
+        iron_ids = L.get('iron_veins', {}).get(district, [])
+        if len(iron_ids) != len(set(iron_ids)):
+            raise ValueError(f'{district}: duplicate iron vein candidate IDs')
+        by_id = {c['id']: c for c in cands}
+        missing = set(iron_ids) - by_id.keys()
+        if missing:
+            raise ValueError(f'{district}: missing iron vein candidates {sorted(missing)}')
+        if any(by_id[i]['role'] != 'rock_medium' or in_wall(L, by_id[i]['at']) for i in iron_ids):
+            raise ValueError(f'{district}: iron veins must be outdoor rock candidates')
+        outside = [dict(c, role='iron_vein', resource='iron_ore') if c['id'] in iron_ids else c
+                   for c in cands if not in_wall(L, c['at']) and NODE.get(c['role'])]
         for resource in sorted({c['resource'] for c in outside}):
             pts = [c for c in outside if c['resource'] == resource]
             weights = {}

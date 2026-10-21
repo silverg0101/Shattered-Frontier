@@ -2899,6 +2899,123 @@
    "layer_policy": "all_layers"
   },
   {
+   "group_id": "eastwood_iron_ore",
+   "spawn_kind": "gathering_node",
+   "definitions": [
+    {
+     "definition_id": "gathering_node/iron_vein",
+     "weight": 8
+    }
+   ],
+   "points": [
+    {
+     "point_id": "15039301c267b7d6",
+     "position": [
+      599.64,
+      131.43,
+      38.28
+     ],
+     "facing": 0.0
+    },
+    {
+     "point_id": "4ab1da0b40cd12be",
+     "position": [
+      666.33,
+      -1.86,
+      43.37
+     ],
+     "facing": 0.0
+    },
+    {
+     "point_id": "dcccdfe2d833824f",
+     "position": [
+      653.77,
+      248.4,
+      33.24
+     ],
+     "facing": 0.0
+    },
+    {
+     "point_id": "50248970109fdbd1",
+     "position": [
+      528.76,
+      204.47,
+      30.99
+     ],
+     "facing": 0.0
+    },
+    {
+     "point_id": "b02cbb65cbed58d3",
+     "position": [
+      438.41,
+      78.05,
+      25.3
+     ],
+     "facing": 0.0
+    },
+    {
+     "point_id": "5aac183cee0d23ee",
+     "position": [
+      583.39,
+      -274.67,
+      45.86
+     ],
+     "facing": 0.0
+    },
+    {
+     "point_id": "75a2c204ae2b37e6",
+     "position": [
+      605.79,
+      289.05,
+      26.86
+     ],
+     "facing": 0.0
+    },
+    {
+     "point_id": "fd6db3a7920ae0b6",
+     "position": [
+      472.23,
+      -110.43,
+      31.04
+     ],
+     "facing": 0.0
+    }
+   ],
+   "active_count": 2,
+   "area": [
+    [
+     420,
+     -260
+    ],
+    [
+     640,
+     -320
+    ],
+    [
+     760,
+     -60
+    ],
+    [
+     720,
+     250
+    ],
+    [
+     560,
+     330
+    ],
+    [
+     430,
+     240
+    ],
+    [
+     410,
+     40
+    ]
+   ],
+   "phase_filter": "any",
+   "layer_policy": "all_layers"
+  },
+  {
    "group_id": "eastwood_stone",
    "spawn_kind": "gathering_node",
    "definitions": [
@@ -2908,7 +3025,7 @@
     },
     {
      "definition_id": "gathering_node/stone_outcrop",
-     "weight": 249
+     "weight": 241
     }
    ],
    "points": [
@@ -3174,29 +3291,11 @@
      "facing": 0.0
     },
     {
-     "point_id": "15039301c267b7d6",
-     "position": [
-      599.64,
-      131.43,
-      38.28
-     ],
-     "facing": 0.0
-    },
-    {
      "point_id": "ae135fb4d465b329",
      "position": [
       597.41,
       133.93,
       38.39
-     ],
-     "facing": 0.0
-    },
-    {
-     "point_id": "4ab1da0b40cd12be",
-     "position": [
-      666.33,
-      -1.86,
-      43.37
      ],
      "facing": 0.0
     },
@@ -3210,29 +3309,11 @@
      "facing": 0.0
     },
     {
-     "point_id": "dcccdfe2d833824f",
-     "position": [
-      653.77,
-      248.4,
-      33.24
-     ],
-     "facing": 0.0
-    },
-    {
      "point_id": "3afc4bd04268264e",
      "position": [
       656.76,
       248.31,
       33.47
-     ],
-     "facing": 0.0
-    },
-    {
-     "point_id": "50248970109fdbd1",
-     "position": [
-      528.76,
-      204.47,
-      30.99
      ],
      "facing": 0.0
     },
@@ -3246,29 +3327,11 @@
      "facing": 0.0
     },
     {
-     "point_id": "b02cbb65cbed58d3",
-     "position": [
-      438.41,
-      78.05,
-      25.3
-     ],
-     "facing": 0.0
-    },
-    {
      "point_id": "267c565e453d5d0e",
      "position": [
       441.32,
       76.12,
       25.49
-     ],
-     "facing": 0.0
-    },
-    {
-     "point_id": "5aac183cee0d23ee",
-     "position": [
-      583.39,
-      -274.67,
-      45.86
      ],
      "facing": 0.0
     },
@@ -3282,29 +3345,11 @@
      "facing": 0.0
     },
     {
-     "point_id": "75a2c204ae2b37e6",
-     "position": [
-      605.79,
-      289.05,
-      26.86
-     ],
-     "facing": 0.0
-    },
-    {
      "point_id": "6c6b5402fe82b9fd",
      "position": [
       602.99,
       288.7,
       26.93
-     ],
-     "facing": 0.0
-    },
-    {
-     "point_id": "fd6db3a7920ae0b6",
-     "position": [
-      472.23,
-      -110.43,
-      31.04
      ],
      "facing": 0.0
     },

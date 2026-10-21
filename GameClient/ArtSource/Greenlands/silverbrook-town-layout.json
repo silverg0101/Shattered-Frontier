@@ -2,6 +2,10 @@
   "_about": "Silverbrook graybox layout in metres. North is -Y, east is +X; origin is the town centre. Read from the whole of docs/Game-Design/concept-art/Silverbrook-Design-Board-v1.webp (town map, isometric view and panels) at 1.8 m per board pixel: streets, river loop and harbour, relief, falls and the mountain backdrop together. Sizes follow settlement definition section 8; depth and unlisted sizes are graybox assumptions. Consumed by validate_layout.py, heightfield.py, build_silverbrook.py and review_silverbrook_in_game.py.",
   "zone_half_extent": 1250,
   "seed": 1019,
+  "iron_veins": {
+    "_about": "Eastwood rock dressing candidates designated as iron ore veins. Candidate IDs are stable for this dressing version; regenerate the zone record after dressing changes and review missing IDs.",
+    "Eastwood": ["15039301c267b7d6", "4ab1da0b40cd12be", "dcccdfe2d833824f", "50248970109fdbd1", "b02cbb65cbed58d3", "5aac183cee0d23ee", "75a2c204ae2b37e6", "fd6db3a7920ae0b6"]
+  },
   "wall": {
     "centre": [0, 0],
     "semi_axis_x": 400,
