@@ -4,7 +4,7 @@
  "input": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\NPC-BeastfolkWarrior-01\\PixalMV-v001\\BeastfolkWarrior.glb",
  "input_sha256": "e5aa2e0acb5459fcc398ee2bac66508b022f6a84b415825949e28ec2ead00ac4",
  "skeleton": "/Game/Mannequin/Character/Mesh/SK_Mannequin_Skeleton.SK_Mannequin_Skeleton",
- "tool_sha256": "51080353ac09b78bc090084952c9102a388538258ddb2def4f93d0ca4dc7bee6",
+ "tool_sha256": "61a461ddfee8343d017609c5700f37f4c115be28bda708f621fa6e82e0f042bb",
  "height_m": 1.85,
  "source_triangles": 286373,
  "triangles": 50000,
@@ -34,7 +34,7 @@
   "foot_r": 4777,
   "ball_r": 1232
  },
- "fbx_sha256": "6f997e019e7973b03554aa4eb248575f56969f79b27d7c80245178989ffaed50",
+ "fbx_sha256": "82775dfc258506a03436d37b2827275b9f745c9b52aed8af4c2e6c5f27bb1e97",
  "landmarks_m": {
   "armpit": 1.1649,
   "torso_half_width": 0.2771,

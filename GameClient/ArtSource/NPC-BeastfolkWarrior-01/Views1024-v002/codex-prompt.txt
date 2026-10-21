@@ -1,0 +1,20 @@
+Generate four SEPARATE images of the same character for 3D model generation, using your image generation tool. The attached images are references: the first is the character concept, the second is an approved turnaround of the same design. Use them only for the character design; do not copy the concept's pose, lighting, background or weapon.
+
+Make each image separately, in this order, and save each one as a PNG at exactly these paths (relative to the current directory):
+1. GameClient/ArtSource/NPC-BeastfolkWarrior-01/Views1024-v002/raw/front.png - FRONT view: the character faces the camera straight on.
+2. GameClient/ArtSource/NPC-BeastfolkWarrior-01/Views1024-v002/raw/left.png - LEFT SIDE profile: the character's left side faces the camera; the character faces image-left.
+3. GameClient/ArtSource/NPC-BeastfolkWarrior-01/Views1024-v002/raw/back.png - BACK view: the character faces directly away from the camera.
+4. GameClient/ArtSource/NPC-BeastfolkWarrior-01/Views1024-v002/raw/right.png - RIGHT SIDE profile: the character's right side faces the camera; the character faces image-right.
+
+Rules for ALL four images:
+- Each image is a single 1024x1024 square with one figure. Not a sheet, not a grid, no collage.
+- Exactly the same character, design, colors, proportions, pose and scale in every image, as if a camera orbits a statue.
+- Full body, centered, filling about 90% of the image height, feet at the same height in every image, small margin on all sides.
+- Pose: neutral A-pose, standing straight, arms angled 40 degrees away from the body, hands open with fingers slightly apart, legs straight and shoulder-width apart, nothing touching or overlapping.
+- Design: stocky beastfolk warrior, shaggy brown fur, lion-ape face with fangs, pointed pink ears, thick mane, clawed hands and feet; dark leather coat to mid-thigh with two crossed chest straps and a round buckle, wide belt, steel pauldron on the character's LEFT shoulder only, steel bracers on both forearms, leather pouch on the character's RIGHT hip, strap around each shin.
+- No weapons, no held props, no capes or loose cloth hanging away from the body.
+- Orthographic camera at chest height, no perspective distortion.
+- Flat, even, neutral studio lighting; no cast shadows, no rim light, no ground shadow, no floor.
+- Plain pure white background. No text, labels or borders.
+
+Do nothing else: do not edit, create or delete any other file. When all four files exist, print their paths and pixel sizes.

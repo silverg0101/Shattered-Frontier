@@ -277,6 +277,7 @@ bpy.data.objects.remove(proxy); bpy.data.objects.remove(wrig)
 
 # Clips: per-frame world rotation deltas from the source skeleton, applied over the fitted rest.
 k_hip = z_hip / mz('thigh_l')
+scene.render.fps, scene.render.fps_base = 30, 1.0  # mannequin clips are 30 fps; keys land on whole frames
 rig.animation_data_create(); catalog = []
 for clip in a.clips:
     before = set(scene.objects)
@@ -313,7 +314,9 @@ for clip in a.clips:
                 fc.keyframe_points.foreach_set('co', [v for fr in range(n_fr) for v in (fr + 1, vals[n][idx][fr][i])])
     catalog.append(dict(id=name, source=str(Path(clip).resolve()), source_sha256=sha(clip), frames=n_fr))
     for o in new: bpy.data.objects.remove(o)
-    if src_action.users == 0: bpy.data.actions.remove(src_action)
+# Source takes carry object keys (the mannequin's 0.01 armature scale); exporting all actions would bake them in.
+for act in [x for x in bpy.data.actions if x.name not in {c['id'] for c in catalog}]:
+    bpy.data.actions.remove(act)
 
 # Review renders: rest with joint markers, then front and side at two frames of each clip.
 mod = body.modifiers.new('Armature', 'ARMATURE'); mod.object = rig
@@ -352,8 +355,11 @@ to_centimetres([rig, body], [bpy.data.actions[c['id']] for c in catalog])
 mod = body.modifiers.new('Armature', 'ARMATURE'); mod.object = rig
 select([body, rig], rig); bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
 fbx = out / f'{a.name}.fbx'
+(out / 'textures').mkdir()  # Interchange cannot read Blender-embedded images; reference files beside the FBX
+for img in [i for i in bpy.data.images if i.size[0]]:
+    img.filepath_raw = str(out / 'textures' / f'{a.name}_{img.name}.png'); img.file_format = 'PNG'; img.save()
 bpy.ops.export_scene.fbx(filepath=str(fbx), use_selection=True, object_types={'ARMATURE', 'MESH'}, add_leaf_bones=False,
-                         mesh_smooth_type='FACE', path_mode='COPY', embed_textures=True, bake_anim=bool(catalog),
+                         mesh_smooth_type='FACE', path_mode='RELATIVE', embed_textures=False, bake_anim=bool(catalog),
                          bake_anim_use_all_actions=True, bake_anim_use_nla_strips=False, bake_anim_force_startend_keying=True,
                          bake_anim_simplify_factor=0.0, use_armature_deform_only=False)
 report = dict(schema_version=1, status='rig-needs-review', input=str(Path(a.input).resolve()), input_sha256=sha(a.input),

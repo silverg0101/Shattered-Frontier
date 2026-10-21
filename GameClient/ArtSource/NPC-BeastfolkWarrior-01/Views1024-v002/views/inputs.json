@@ -1,0 +1,23 @@
+{
+  "inputs": [
+    {
+      "path": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/NPC-BeastfolkWarrior-01/Views1024-v002/raw/front.png",
+      "sha256": "7fe02b2d0eae798c7f08255bdafb3704cbe537ff4b3e2c0471adc7a26c4abfc7"
+    },
+    {
+      "path": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/NPC-BeastfolkWarrior-01/Views1024-v002/raw/left.png",
+      "sha256": "9425bbfa741cee6212c32974aa60e85c5c81087b655e7fb9567e9fbf758c38e3"
+    },
+    {
+      "path": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/NPC-BeastfolkWarrior-01/Views1024-v002/raw/back.png",
+      "sha256": "32e91e20e70a770e824c3e1638a67394f97478684fcf14dc6f012b17d8ea164f"
+    },
+    {
+      "path": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/NPC-BeastfolkWarrior-01/Views1024-v002/raw/right.png",
+      "sha256": "c4f563ca34b998beec2d40b2d66805cd119c3b23e3c3ffb4e4146685fcbdb7db"
+    }
+  ],
+  "view_px": 1024,
+  "transforms_source": "/home/grego/sf-asset-lab/sources/Pixal3D/assets/mv_images/example/transforms.json",
+  "review_status": "needs-review"
+}
