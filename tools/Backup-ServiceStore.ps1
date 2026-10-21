@@ -41,7 +41,7 @@ function Snapshot {
 }
 foreach ($schema in $schemas) {
     $version = (Query "SELECT version FROM $schema.schema_version WHERE singleton=true").Trim()
-    $expectedVersion = if ($schema -eq 'housing' -or $schema -eq 'exchange') { '3' } else { '1' }
+    $expectedVersion = if ($schema -eq 'housing' -or $schema -eq 'exchange') { '3' } elseif ($schema -eq 'character_state') { '2' } else { '1' }
     if ($version -ne $expectedVersion) { throw "Unsupported source schema version: $schema=$version" }
 }
 if ($Store -eq 'Housing') {
@@ -49,7 +49,7 @@ if ($Store -eq 'Housing') {
     if ($stale -ne '0') { throw 'Housing pending placement exceeds recovery window.' }
 }
 if ($Store -eq 'Exchange') {
-    $stale = (Query "SELECT count(*) FROM exchange.settlements WHERE state='pending' AND created_at < clock_timestamp() - make_interval(secs => $PendingSettlementRecoveryWindowSeconds)").Trim()
+    $stale = (Query "SELECT (SELECT count(*) FROM exchange.settlements WHERE state='pending' AND created_at < clock_timestamp() - make_interval(secs => $PendingSettlementRecoveryWindowSeconds)) + (SELECT count(*) FROM exchange.operations WHERE receipt->>'Code'='pending' AND fingerprint::jsonb->>'Command'='listing-intent' AND (fingerprint::jsonb->>'CreatedAt')::timestamptz < clock_timestamp() - make_interval(secs => $PendingSettlementRecoveryWindowSeconds))").Trim()
     if ($stale -ne '0') { throw 'Exchange pending settlement exceeds recovery window.' }
 }
 $before = Snapshot
@@ -61,7 +61,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'pg_dump failed.' }
     $after = Snapshot
     if (($before | ConvertTo-Json -Depth 5 -Compress) -cne ($after | ConvertTo-Json -Depth 5 -Compress)) { throw 'Source changed during backup; quiesce writes and retry.' }
-    @{ format=2; store=$Store; schemaVersion=$(if ($Store -in @('Housing','Exchange')) { 3 } else { 1 }); dumpSha256=(Get-FileHash $dump -Algorithm SHA256).Hash.ToLowerInvariant(); tables=$before } |
+    @{ format=2; store=$Store; schemaVersion=$(if ($Store -in @('Housing','Exchange')) { 3 } elseif ($Store -eq 'CharacterState') { 2 } else { 1 }); dumpSha256=(Get-FileHash $dump -Algorithm SHA256).Hash.ToLowerInvariant(); tables=$before } |
         ConvertTo-Json -Depth 6 | Set-Content (Join-Path $OutputDirectory 'manifest.json')
     Write-Output "$Store backup complete: $OutputDirectory"
 } catch {

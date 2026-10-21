@@ -12,6 +12,8 @@ public sealed class ExchangeRejectedException(string message) : InvalidOperation
 public sealed record DurableListing(string Id, string SellerId, string SellerContainerId, string EscrowId, string ItemId, long Quantity, long Price, long Fee, DateTimeOffset ExpiresAt, string State, long Revision);
 public sealed record DurableSettlement(string OperationId, string Kind, string SubjectId, string? PayerId, string? PayeeId,
     long Amount, long Fee, IReadOnlyList<EscrowDelivery> Deliveries, string State, ExchangeReceipt Receipt);
+public sealed record ListingIntent(string Command, string Id, string Seller, string SellerContainer, string Escrow,
+    string Item, long Quantity, long Price, long Fee, DateTimeOffset Now, long DurationHours, DateTimeOffset CreatedAt);
 
 public sealed class PostgresExchangeStore(string connectionString)
 {
@@ -150,6 +152,81 @@ public sealed class PostgresExchangeStore(string connectionString)
         Post(c,t,op,seller,-listingFee,"sink","market_listing_fee");
         using(var insert=Cmd(c,t,"INSERT INTO exchange.listings(id,seller_id,seller_container_id,escrow_id,item_id,quantity,price,fee,expires_at,state) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'active')",id,seller,sellerContainer,escrow,item,quantity,price,listingFee,expires)) insert.ExecuteNonQuery();
         var receipt=new ExchangeReceipt(op,true,"ok",id,0,listingFee); Save(c,t,op,fingerprint,receipt); return receipt;
+    });
+    public ExchangeReceipt BeginListing(string op,string id,string seller,string sellerContainer,string escrow,string item,long quantity,long price,long fee,DateTimeOffset now,ExchangeSettings? settings=null) => Run((c,t)=>
+    {
+        RequireId(op);
+        var duration=(long)(settings??new ExchangeSettings()).Get("tune.economy.market_listing_durations_hours");
+        // CreatedAt is assigned once. A replay compares the immutable request fields below.
+        using(var find=Cmd(c,t,"SELECT fingerprint,receipt::text FROM exchange.operations WHERE operation_id=$1",op))
+        using(var reader=find.ExecuteReader()) if(reader.Read())
+        {
+            var prior=JsonSerializer.Deserialize<ListingIntent>(reader.GetString(0));
+            if(prior is null || prior.Command!="listing-intent" || prior.Id!=id || prior.Seller!=seller || prior.SellerContainer!=sellerContainer ||
+                prior.Escrow!=escrow || prior.Item!=item || prior.Quantity!=quantity || prior.Price!=price || prior.Fee!=fee || prior.DurationHours!=duration)
+                throw new ExchangeRejectedException("Operation ID conflict.");
+            return JsonSerializer.Deserialize<ExchangeReceipt>(reader.GetString(1))!;
+        }
+        long total; try { total=checked(quantity*price); } catch(OverflowException) { throw new ExchangeRejectedException("Price overflow."); }
+        if(!id.StartsWith("lst_",StringComparison.Ordinal) || !seller.StartsWith("chr_",StringComparison.Ordinal) || string.IsNullOrWhiteSpace(sellerContainer) ||
+            sellerContainer==escrow || quantity<=0 || price<=0 || fee<0 || fee>total) throw new ExchangeRejectedException("Invalid listing.");
+        try { _=now.AddHours(duration); } catch(ArgumentOutOfRangeException) { throw new ExchangeRejectedException("Invalid listing time."); }
+        if(ReadListing(c,t,id) is not null) throw new ExchangeRejectedException("Listing exists.");
+        using(var occupied=Cmd(c,t,"SELECT 1 FROM exchange.operations WHERE receipt->>'SubjectId'=$1 AND receipt->>'Code'='pending' AND fingerprint::jsonb->>'Command'='listing-intent' LIMIT 1",id))
+            if(occupied.ExecuteScalar() is not null) throw new ExchangeRejectedException("Listing intent exists.");
+        if(fee>0) Post(c,t,op,seller,0,"reserve","market_listing_hold",fee);
+        var intent=new ListingIntent("listing-intent",id,seller,sellerContainer,escrow,item,quantity,price,fee,now,duration,DateTimeOffset.UtcNow);
+        var receipt=new ExchangeReceipt(op,true,"pending",id,0,fee);
+        Save(c,t,op,JsonSerializer.Serialize(intent),receipt);
+        return receipt;
+    });
+    public IReadOnlyList<string> PendingListings(DateTimeOffset cutoff)=>Run((c,t)=>
+    {
+        var ids=new List<string>();
+        using var cmd=Cmd(c,t,"SELECT operation_id FROM exchange.operations WHERE receipt->>'Code'='pending' AND fingerprint::jsonb->>'Command'='listing-intent' AND (fingerprint::jsonb->>'CreatedAt')::timestamptz<=$1 ORDER BY operation_id LIMIT 100",cutoff);
+        using var reader=cmd.ExecuteReader(); while(reader.Read()) ids.Add(reader.GetString(0)); return (IReadOnlyList<string>)ids;
+    });
+    public ExchangeReceipt ReconcileListing(string op,IInventoryLedgerStore ledgerStore)=>Run((c,t)=>
+    {
+        using var find=Cmd(c,t,"SELECT fingerprint,receipt::text FROM exchange.operations WHERE operation_id=$1",op);
+        string fingerprint; ExchangeReceipt prior;
+        using(var reader=find.ExecuteReader())
+        {
+            if(!reader.Read()) throw new ExchangeRejectedException("Listing intent missing.");
+            fingerprint=reader.GetString(0); prior=JsonSerializer.Deserialize<ExchangeReceipt>(reader.GetString(1))!;
+        }
+        var intent=JsonSerializer.Deserialize<ListingIntent>(fingerprint);
+        if(intent?.Command!="listing-intent") throw new ExchangeRejectedException("Listing intent mismatch.");
+        if(prior.Code!="pending") return prior;
+        StoredOperation operation;
+        try
+        {
+            operation=ledgerStore.Execute(s=>
+            {
+                var key=op+"/escrow";
+                if(s.Operations.TryGetValue(key,out var existing)) return existing;
+                var marker=new StoredOperation("exchange/listing-compensated",new LedgerReceipt(key,LedgerAction.Transfer,[],[]));
+                s.Operations.Add(key,marker); return marker;
+            });
+        }
+        catch(LedgerStoreUnavailableException ex) { throw new ExchangeUnavailableException("Inventory store unavailable; retry listing reconciliation.",ex); }
+        var receipt=operation.Receipt;
+        var compensated=operation.Fingerprint=="exchange/listing-compensated" && receipt.OperationId==op+"/escrow" &&
+            receipt.Action==LedgerAction.Transfer && receipt.Revisions.Count==0 && receipt.Changes.Count==0;
+        if(!compensated && (receipt.OperationId!=op+"/escrow" || receipt.Action!=LedgerAction.Transfer ||
+            !receipt.Changes.SequenceEqual(new[]{new QuantityChange(intent.SellerContainer,intent.Item,-intent.Quantity),new QuantityChange(intent.Escrow,intent.Item,intent.Quantity)})))
+            throw new ExchangeRejectedException("Inventory listing escrow receipt mismatch.");
+        if(intent.Fee>0) Post(c,t,op,intent.Seller,compensated?0:-intent.Fee,compensated?"reserve":"sink",
+            compensated?"market_listing_release":"market_listing_fee",-intent.Fee);
+        if(!compensated)
+        {
+            using var insert=Cmd(c,t,"INSERT INTO exchange.listings(id,seller_id,seller_container_id,escrow_id,item_id,quantity,price,fee,expires_at,state) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'active')",
+                intent.Id,intent.Seller,intent.SellerContainer,intent.Escrow,intent.Item,intent.Quantity,intent.Price,intent.Fee,intent.Now.AddHours(intent.DurationHours));
+            insert.ExecuteNonQuery();
+        }
+        var result=new ExchangeReceipt(op,!compensated,compensated?"compensated":"ok",intent.Id,0,compensated?0:intent.Fee);
+        using var update=Cmd(c,t,"UPDATE exchange.operations SET receipt=$1::jsonb WHERE operation_id=$2",JsonSerializer.Serialize(result),op);
+        update.ExecuteNonQuery(); return result;
     });
     private static DurableSettlement? ReadSettlement(NpgsqlConnection c,NpgsqlTransaction t,string op)
     {

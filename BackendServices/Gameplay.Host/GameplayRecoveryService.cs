@@ -91,6 +91,11 @@ internal sealed class GameplayRecoveryService(GameplayRecoverySettings settings,
                 var result = exchange.Reconcile(id, ledger);
                 Console.Out.WriteLine($"GAMEPLAY_SWEEP exchange {id} {result.State}");
             }
+            foreach (var id in exchange.PendingListings(cutoff))
+            {
+                var result = exchange.ReconcileListing(id, ledger);
+                Console.Out.WriteLine($"GAMEPLAY_SWEEP listing-intent {id} {result.Code}");
+            }
             var expiredTrades = new List<string>();
             using (var cmd = new NpgsqlCommand("SELECT operation_id FROM exchange.settlements WHERE kind='trade' AND state='pending' AND created_at <= $1 ORDER BY created_at LIMIT 100", connection))
             {

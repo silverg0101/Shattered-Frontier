@@ -57,7 +57,7 @@ if (-not $BackupDirectory) { throw 'Supply BackupDirectory.' }
 $BackupDirectory = [IO.Path]::GetFullPath($BackupDirectory)
 $manifest = Get-Content (Join-Path $BackupDirectory 'manifest.json') -Raw | ConvertFrom-Json
 $dump = Join-Path $BackupDirectory "$($Store.ToLowerInvariant()).dump"
-if ($manifest.format -ne 2 -or $manifest.store -cne $Store -or $manifest.schemaVersion -ne $(if ($Store -in @('Housing','Exchange')) { 3 } else { 1 }) -or $manifest.dumpSha256 -notmatch '^[a-f0-9]{64}$' -or
+if ($manifest.format -ne 2 -or $manifest.store -cne $Store -or $manifest.schemaVersion -ne $(if ($Store -in @('Housing','Exchange')) { 3 } elseif ($Store -eq 'CharacterState') { 2 } else { 1 }) -or $manifest.dumpSha256 -notmatch '^[a-f0-9]{64}$' -or
     (Get-FileHash $dump -Algorithm SHA256).Hash.ToLowerInvariant() -cne $manifest.dumpSha256) { throw 'Backup manifest or SHA256 mismatch.' }
 $tables = switch ($Store) {
     InventoryLedger { @('inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts') }
@@ -109,7 +109,7 @@ try {
         $grant = if ($Store -eq 'Exchange') { "GRANT SELECT ON $schema.schema_version TO $serviceRole; GRANT SELECT,INSERT,UPDATE ON exchange.wallets,exchange.wallet_entries,exchange.operations,exchange.listings,exchange.settlements TO $serviceRole" } else { "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA $schema TO $serviceRole" }
         [void](Sql "GRANT USAGE ON SCHEMA $schema TO $serviceRole; $grant" $database)
         $version = (Sql "SELECT version FROM $schema.schema_version WHERE singleton=true" $database).Trim()
-        $expectedVersion = if ($schema -eq 'housing' -or $schema -eq 'exchange') { '3' } else { '1' }
+        $expectedVersion = if ($schema -eq 'housing' -or $schema -eq 'exchange') { '3' } elseif ($schema -eq 'character_state') { '2' } else { '1' }
         if ($version -ne $expectedVersion) { throw 'Restored schema version mismatch.' }
     }
     foreach ($table in $tables) {
@@ -166,6 +166,8 @@ SELECT count(*) FROM (
  UNION ALL
  SELECT 1 FROM character_state.reward_receipts r WHERE NOT EXISTS
   (SELECT 1 FROM character_state.quests q WHERE q.character_id=r.character_id AND q.quest_id=r.quest_id)
+  OR (r.state='Pending' AND (r.content_revision <= 0 OR jsonb_typeof(r.item_lines) IS DISTINCT FROM 'array'
+   OR jsonb_array_length(r.item_lines)=0))
 ) invalid
 '@ $database
         if ($bad.Trim() -ne '0') { throw 'Restored character consistency check failed.' }
@@ -200,6 +202,10 @@ SELECT count(*) FROM (
  UNION ALL
  SELECT 1 FROM exchange.settlements s WHERE s.state='pending' AND
   s.created_at < clock_timestamp() - make_interval(secs => $PendingSettlementRecoveryWindowSeconds)
+ UNION ALL
+ SELECT 1 FROM exchange.operations o WHERE o.fingerprint::jsonb->>'Command'='listing-intent' AND (
+  (o.receipt->>'Code'='pending' AND (o.fingerprint::jsonb->>'CreatedAt')::timestamptz < clock_timestamp() - make_interval(secs => $PendingSettlementRecoveryWindowSeconds)) OR
+  (o.receipt->>'Code'='ok' AND NOT EXISTS (SELECT 1 FROM exchange.listings l WHERE l.id=o.receipt->>'SubjectId')))
  UNION ALL
  SELECT 1 FROM exchange.settlements s WHERE s.kind='listing' AND s.state='committed' AND (
   NOT EXISTS (SELECT 1 FROM exchange.listings l WHERE l.id=s.subject_id AND l.state='sold') OR

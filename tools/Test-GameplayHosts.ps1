@@ -237,6 +237,33 @@ try {
     if ($expiredState -ne 'cancelled' -or $returnedOre -ne '0') { throw "Trade deadline cancellation failed: $expiredState/$returnedOre" }
     $results.Add('PASS trade offer deadline cancelled and returned escrow')
     Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+    $currentStep = 'listing escrow crash recovery'
+    $env:SF_GAMEPLAY_FAULT_AFTER_LISTING_ESCROW = 'exchange/list-fault'
+    $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-list-fault.out') -RedirectStandardError (Join-Path $private 'host-list-fault.err')
+    for ($i=0; $i -lt 100; $i++) { if ($hostProcess.HasExited) { throw 'Listing fault host exited before ready.' }; if ((Test-Path (Join-Path $private 'host-list-fault.out')) -and (Get-Content (Join-Path $private 'host-list-fault.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
+    try { [void](Invoke-Checked $dotnet @($hostDll,'fixture-exchange-fault') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; GAMEPLAY_EXCHANGE_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }); throw 'Listing fault did not fire.' }
+    catch { if ($_.Exception.Message -match 'Listing fault did not fire') { throw } }
+    $hostProcess.WaitForExit(10000) | Out-Null
+    if (-not $hostProcess.HasExited) { throw 'Listing fault host did not exit.' }
+    Cluster stop
+    Cluster start
+    Remove-Item Env:SF_GAMEPLAY_FAULT_AFTER_LISTING_ESCROW
+    $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-list-recovered.out') -RedirectStandardError (Join-Path $private 'host-list-recovered.err')
+    for ($i=0; $i -lt 100; $i++) { if ($hostProcess.HasExited) { throw 'Listing recovery host exited.' }; if ((Test-Path (Join-Path $private 'host-list-recovered.out')) -and (Get-Content (Join-Path $private 'host-list-recovered.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
+    Start-Sleep -Seconds 9
+    $listingState = Sql "SELECT state FROM exchange.listings WHERE id='lst_fault'" "gameplay_$run"
+    $escrowReceipt = Sql "SELECT count(*) FROM inventory.operation_receipts WHERE operation_id='exchange/list-fault/escrow' AND receipt->>'Action'='2'" "gameplay_$run"
+    if ($listingState -ne 'active' -or $escrowReceipt -ne '1') { throw "Listing escrow recovery failed: $listingState/$escrowReceipt" }
+    $results.Add('PASS listing escrow crash and immediate PostgreSQL restart created one active listing')
+    $missingIntent = @{ Command='listing-intent'; Id='lst_missing'; Seller='chr_exchange_seller'; SellerContainer='ctn_chr_exchange_seller'; Escrow='ctn_fault_escrow'; Item='item/iron_ore'; Quantity=1; Price=20; Fee=0; Now=[DateTimeOffset]::UtcNow.ToString('o'); DurationHours=48; CreatedAt=[DateTimeOffset]::UtcNow.AddSeconds(-20).ToString('o') } | ConvertTo-Json -Compress
+    $missingReceipt = @{ OperationId='exchange/list-missing'; Accepted=$true; Code='pending'; SubjectId='lst_missing'; Amount=0; Fee=0 } | ConvertTo-Json -Compress
+    [void](Sql "INSERT INTO exchange.operations VALUES ('exchange/list-missing','$missingIntent','$missingReceipt'::jsonb)" "gameplay_$run")
+    Start-Sleep -Seconds 5
+    $missingState = Sql "SELECT receipt->>'Code' FROM exchange.operations WHERE operation_id='exchange/list-missing'" "gameplay_$run"
+    $tombstone = Sql "SELECT count(*) FROM inventory.operation_receipts WHERE operation_id='exchange/list-missing/escrow' AND fingerprint='exchange/listing-compensated'" "gameplay_$run"
+    if ($missingState -ne 'compensated' -or $tombstone -ne '1') { throw "Missing listing escrow was not fenced: $missingState/$tombstone" }
+    $results.Add('PASS absent listing escrow tombstoned at transfer operation key')
+    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
     $env:SF_GAMEPLAY_FAULT_AFTER_EXCHANGE_DELIVERY = 'exchange/buy-fault'
     $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-exchange-fault.out') -RedirectStandardError (Join-Path $private 'host-exchange-fault.err')
     for ($i=0; $i -lt 100; $i++) { if ($hostProcess.HasExited) { throw 'Exchange fault host exited before ready.' }; if ((Test-Path (Join-Path $private 'host-exchange-fault.out')) -and (Get-Content (Join-Path $private 'host-exchange-fault.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
@@ -274,7 +301,7 @@ catch {
     }
 }
 finally {
-    foreach ($key in @('SF_GAMEPLAY_TOKEN','SF_GAMEPLAY_FAULT_AFTER_REMOVE_GRANT','SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT','SF_GAMEPLAY_FAULT_AFTER_QUEST_GRANT','GAMEPLAY_LEDGER_CONNECTION','GAMEPLAY_CHARACTER_CONNECTION','GAMEPLAY_HOUSING_CONNECTION')) {
+    foreach ($key in @('SF_GAMEPLAY_TOKEN','SF_GAMEPLAY_FAULT_AFTER_REMOVE_GRANT','SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT','SF_GAMEPLAY_FAULT_AFTER_QUEST_GRANT','SF_GAMEPLAY_FAULT_AFTER_LISTING_ESCROW','GAMEPLAY_LEDGER_CONNECTION','GAMEPLAY_CHARACTER_CONNECTION','GAMEPLAY_HOUSING_CONNECTION')) {
         Remove-Item "Env:$key" -ErrorAction SilentlyContinue
     }
     try {

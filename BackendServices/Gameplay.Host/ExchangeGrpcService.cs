@@ -105,10 +105,17 @@ internal sealed class ExchangeGrpcService(PostgresExchangeStore exchange, Postgr
         var source = Owned(request.SourceContainerId, request.SellerId);
         var escrow = Owned(request.EscrowContainerId, request.SellerId, ContainerKind.Escrow);
         Require(request.Quantity > 0 && request.UnitPrice > 0 && request.SourceContainerId != request.EscrowContainerId, "Invalid listing item.");
-        Ledger.Transfer(request.OperationId + "/escrow", source.Spec.Id, source.Revision, escrow.Spec.Id, escrow.Revision, request.ItemId, request.Quantity);
-        var receipt = exchange.CreateListing(request.OperationId, request.ListingId, request.SellerId, source.Spec.Id, escrow.Spec.Id,
+        var intent = exchange.BeginListing(request.OperationId, request.ListingId, request.SellerId, source.Spec.Id, escrow.Spec.Id,
             request.ItemId, request.Quantity, request.UnitPrice, request.ListingFee, DateTimeOffset.FromUnixTimeMilliseconds(request.CreatedAtUnixMs));
-        return Reply(receipt, "active");
+        if (intent.Code == "pending")
+        {
+            try { Ledger.Transfer(request.OperationId + "/escrow", source.Spec.Id, source.Revision, escrow.Spec.Id, escrow.Revision, request.ItemId, request.Quantity); }
+            catch (LedgerRejectedException) { /* Reconciliation fences an absent or conflicting transfer. */ }
+            if (Environment.GetEnvironmentVariable("SF_GAMEPLAY_FAULT_AFTER_LISTING_ESCROW") == request.OperationId)
+                Environment.FailFast("Injected post-listing escrow fault.");
+        }
+        var receipt = exchange.ReconcileListing(request.OperationId, inventoryStore);
+        return Reply(receipt, receipt.Accepted ? "active" : "compensated");
     });
     public override Task<Pb.ExchangeReply> BuyListing(Pb.BuyListingRequest request, ServerCallContext context) => GrpcRun.Call(context, () =>
     {
