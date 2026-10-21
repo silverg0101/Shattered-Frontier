@@ -1,0 +1,37 @@
+{
+  "_about": "GFX-01 WP6 typed town dressing for Silverbrook. Each tuning entry is {value, min, max, unit}; silverbrook_props.py refuses a value outside its bounds. Design-time: takes effect the next time the script runs (the town builder calls it). Placement algorithms live in the script; only these values are data. Assets under /Game/Frontier are shipped; `fab` paths are the licensed Fab Medieval Village content, referenced by path only and skipped when the project does not mount them.",
+  "road": {
+    "tile_m": {"value": 2.4, "min": 0.5, "max": 8, "unit": "metres per cobble texture repeat"},
+    "shoulder_fraction": {"value": 0.22, "min": 0.05, "max": 0.45, "unit": "fraction of road half-width dithered into the verge"},
+    "edge_noise": {"value": 0.35, "min": 0, "max": 0.8, "unit": "fraction, breaks the shoulder line up"},
+    "cobble_tint": {"value": [0.85, 0.82, 0.78], "min": 0.3, "max": 1.3, "unit": "linear RGB multiplier"},
+    "shoulder_colour": {"value": [0.16, 0.13, 0.07], "min": 0, "max": 1, "unit": "linear RGB, packed earth at the road edge"},
+    "tiers": ["Primary", "Secondary"]
+  },
+  "windows": {
+    "glow_begins_sun_elevation_deg": {"value": 4, "min": -10, "max": 20, "unit": "degrees of sun elevation; lit below this"},
+    "glow_full_sun_elevation_deg": {"value": -4, "min": -30, "max": 10, "unit": "degrees of sun elevation; fully lit below this"},
+    "name_patterns": ["LitGlass", "Window", "Lantern", "Lamp"]
+  },
+  "verge": {
+    "step_m": {"value": 1.6, "min": 0.5, "max": 6, "unit": "metres along the street"},
+    "offset_m": {"value": 0.5, "min": 0, "max": 3, "unit": "metres from the road edge outward"},
+    "band_m": {"value": 1.4, "min": 0.2, "max": 4, "unit": "metres of random spread outward"},
+    "scale": {"value": [0.7, 1.3], "min": 0.3, "max": 2.5, "unit": "uniform scale range"},
+    "cull_end_m": {"value": 90, "min": 20, "max": 400, "unit": "metres"},
+    "meshes": ["SM_HerbBroadleaf_00", "SM_HerbBroadleaf_01", "SM_HerbBroadleaf_02", "SM_CobblePebbleScatter_00", "SM_CobblePebbleScatter_01", "SM_MossPatch_00", "SM_MossPatch_01"]
+  },
+  "wall_margin_m": {"value": 30, "min": 5, "max": 100, "unit": "metres kept clear inside the wall ellipse"},
+  "props": [
+    {"id": "fence", "asset": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropFenceSection", "spacing_m": 18, "offset_m": 2.2, "tiers": ["Secondary"], "face": "along", "max_count": 24, "clear_m": 1.0},
+    {"id": "cart", "asset": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropHayCart", "spacing_m": 70, "offset_m": 2.6, "tiers": ["Primary", "Secondary"], "face": "along", "max_count": 6, "clear_m": 1.5},
+    {"id": "wheelbarrow", "asset": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropWheelbarrow", "spacing_m": 90, "offset_m": 2.0, "tiers": ["Secondary"], "face": "random", "max_count": 5, "clear_m": 1.0},
+    {"id": "barrel_planter", "asset": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropRainBarrel", "spacing_m": 40, "offset_m": 1.6, "tiers": ["Primary", "Secondary"], "face": "road", "max_count": 14, "clear_m": 0.8},
+    {"id": "stall", "asset": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookMarketStall", "spacing_m": 85, "offset_m": 4.5, "tiers": ["Primary"], "face": "road", "max_count": 6, "clear_m": 2.0},
+    {"id": "tree_broadleaf", "asset": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_BroadleafYoung_00", "spacing_m": 45, "offset_m": 5.0, "tiers": ["Primary", "Secondary"], "face": "random", "scale": [0.9, 1.3], "max_count": 18, "clear_m": 3.0},
+    {"id": "tree_sapling", "asset": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_SaplingBroadleaf_01", "spacing_m": 30, "offset_m": 3.6, "tiers": ["Secondary"], "face": "random", "scale": [0.9, 1.4], "max_count": 18, "clear_m": 2.0},
+    {"id": "banner", "fab": "/Game/MedievalVillage/Meshes/Flag/SKM_FlagA", "asset": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropSignpost", "spacing_m": 60, "offset_m": 1.9, "tiers": ["Primary"], "face": "road", "max_count": 8, "clear_m": 1.0},
+    {"id": "lantern_fab", "fab": "/Game/MedievalVillage/Meshes/Lantern/SM_ManMade_Lantern_01", "optional_only": true, "spacing_m": 55, "offset_m": 1.3, "tiers": ["Secondary"], "face": "road", "max_count": 12, "clear_m": 0.6}
+  ],
+  "_notes": "Street lamps are placed by build_silverbrook.py (layout `street_lamps`), not here. A rule with `fab` uses that path when mounted, else `asset`; `optional_only` rules are skipped unless the fab asset exists."
+}
