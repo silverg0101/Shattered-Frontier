@@ -3,8 +3,8 @@
 
 namespace
 {
-    TFunction<FSFGameplaySend(const FString&)>& TransportFactory() { static TFunction<FSFGameplaySend(const FString&)> Factory; return Factory; }
-    FSFGameplaySend& SendOverride() { static FSFGameplaySend Send; return Send; }
+    TFunction<FSFGameplaySend(const FString&)>& ServicesTransportFactory() { static TFunction<FSFGameplaySend(const FString&)> Factory; return Factory; }
+    FSFGameplaySend& ServicesSendOverride() { static FSFGameplaySend Send; return Send; }
 }
 
 bool USFGameplayServicesSettings::Validate(FString& Error) const
@@ -19,15 +19,15 @@ bool USFGameplayServicesSettings::Validate(FString& Error) const
     return true;
 }
 
-void FSFGameplayServicesClient::SetTransportFactory(TFunction<FSFGameplaySend(const FString&)> Factory) { TransportFactory() = MoveTemp(Factory); }
-void FSFGameplayServicesClient::SetSendOverrideForTests(FSFGameplaySend Send) { SendOverride() = MoveTemp(Send); }
+void FSFGameplayServicesClient::SetTransportFactory(TFunction<FSFGameplaySend(const FString&)> Factory) { ServicesTransportFactory() = MoveTemp(Factory); }
+void FSFGameplayServicesClient::SetSendOverrideForTests(FSFGameplaySend Send) { ServicesSendOverride() = MoveTemp(Send); }
 
 TSharedPtr<FSFGameplayServicesClient> FSFGameplayServicesClient::Create(const USFGameplayServicesSettings& Settings)
 {
     if (!Settings.bEnabled) { return nullptr; }
     FString Error;
     if (!Settings.Validate(Error)) { UE_LOG(LogTemp, Error, TEXT("GAMEPLAY_SERVICES_CONFIGURATION_FAILED %s"), *Error); return nullptr; }
-    FSFGameplaySend Send = SendOverride() ? SendOverride() : TransportFactory() ? TransportFactory()(Settings.Endpoint) : FSFGameplaySend();
+    FSFGameplaySend Send = ServicesSendOverride() ? ServicesSendOverride() : ServicesTransportFactory() ? ServicesTransportFactory()(Settings.Endpoint) : FSFGameplaySend();
     if (!Send) { UE_LOG(LogTemp, Error, TEXT("GAMEPLAY_SERVICES_TRANSPORT_MISSING The server-only backend module is not loaded.")); return nullptr; }
     return MakeShareable(new FSFGameplayServicesClient(MoveTemp(Send), Settings.TimeoutSeconds, Settings.MaxAttempts));
 }

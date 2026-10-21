@@ -50,7 +50,7 @@ namespace
 {
     constexpr int32 MaxObjectiveCount = 500;  // QuestTuning default; same bounds as the backend model
 
-    bool ValidId(const FString& Id, const TCHAR* Prefix)
+    bool QuestValidId(const FString& Id, const TCHAR* Prefix)
     {
         FString Head, Tail;
         if (!Id.Split(TEXT("/"), &Head, &Tail) || Head != Prefix || Tail.IsEmpty()) { return false; }
@@ -92,8 +92,8 @@ bool FSFQuestDefinition::Parse(const FString& Json, FSFQuestDefinition& Out, FSt
     double Rev = 0;
     Root->TryGetStringField(TEXT("id"), Q.Id); Root->TryGetStringField(TEXT("zone_id"), Q.ZoneId); Root->TryGetNumberField(TEXT("revision"), Rev);
     Q.Revision = int32(Rev);
-    if (!ValidId(Q.Id, TEXT("quest")) || Q.Revision < 1) { Error = TEXT("quest id/revision invalid"); return false; }
-    if (!ValidId(Q.ZoneId, TEXT("zone"))) { Error = TEXT("zone_id invalid"); return false; }
+    if (!QuestValidId(Q.Id, TEXT("quest")) || Q.Revision < 1) { Error = TEXT("quest id/revision invalid"); return false; }
+    if (!QuestValidId(Q.ZoneId, TEXT("zone"))) { Error = TEXT("zone_id invalid"); return false; }
     const TArray<TSharedPtr<FJsonValue>>* Steps = nullptr;
     if (!Root->TryGetArrayField(TEXT("steps"), Steps) || Steps->Num() < 1 || Steps->Num() > 20) { Error = TEXT("steps count invalid"); return false; }
     TSet<FString> Seen;
@@ -128,8 +128,8 @@ bool FSFQuestDefinition::Parse(const FString& Json, FSFQuestDefinition& Out, FSt
                 : Obj.Kind == TEXT("defeat") ? TEXT("npc") : Obj.Kind == TEXT("build") ? TEXT("structure_tag") : TEXT("");
             const bool bDuplicate = Step.Objectives.ContainsByPredicate([&](const FSFQuestObjective& E) { return E.Key == Obj.Key; });
             if (!ValidSlug(Obj.Key) || bDuplicate) { Error = FString::Printf(TEXT("step %s: objective key invalid/duplicate"), *Step.Id); return false; }
-            if (!*Prefix || !ValidId(Obj.TargetId, Prefix)) { Error = FString::Printf(TEXT("step %s/%s: kind/target invalid"), *Step.Id, *Obj.Key); return false; }
-            if (Obj.bHasNode && (Obj.Kind != TEXT("gather") || !ValidId(Obj.NodeId, TEXT("gathering_node")))) { Error = FString::Printf(TEXT("step %s/%s: node_id invalid"), *Step.Id, *Obj.Key); return false; }
+            if (!*Prefix || !QuestValidId(Obj.TargetId, Prefix)) { Error = FString::Printf(TEXT("step %s/%s: kind/target invalid"), *Step.Id, *Obj.Key); return false; }
+            if (Obj.bHasNode && (Obj.Kind != TEXT("gather") || !QuestValidId(Obj.NodeId, TEXT("gathering_node")))) { Error = FString::Printf(TEXT("step %s/%s: node_id invalid"), *Step.Id, *Obj.Key); return false; }
             if (Obj.Count < 1 || Obj.Count > MaxObjectiveCount) { Error = FString::Printf(TEXT("step %s/%s: count out of range"), *Step.Id, *Obj.Key); return false; }
             Step.Objectives.Add(Obj);
         }
@@ -139,7 +139,7 @@ bool FSFQuestDefinition::Parse(const FString& Json, FSFQuestDefinition& Out, FSt
             for (const auto& RV : *Rewards)
             {
                 FString Bundle; const TSharedPtr<FJsonObject> R = RV ? RV->AsObject() : nullptr;
-                if (!R || !R->TryGetStringField(TEXT("bundle_id"), Bundle) || !ValidId(Bundle, TEXT("reward")) || Step.Rewards.Contains(Bundle))
+                if (!R || !R->TryGetStringField(TEXT("bundle_id"), Bundle) || !QuestValidId(Bundle, TEXT("reward")) || Step.Rewards.Contains(Bundle))
                 { Error = FString::Printf(TEXT("step %s: rewards invalid/duplicate"), *Step.Id); return false; }
                 Step.Rewards.Add(Bundle);
             }
