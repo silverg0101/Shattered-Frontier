@@ -6,6 +6,7 @@
 
 class UCameraComponent;
 class USFCrowdControlComponent;
+class USFQuestPilotComponent;
 class USpringArmComponent;
 class UStaticMeshComponent;
 class UTextRenderComponent;
@@ -25,6 +26,7 @@ public:
     UPROPERTY(VisibleAnywhere) TObjectPtr<USFCrowdControlComponent> CrowdControl;
 
 private:
+    friend class USFQuestPilotComponent;  // dev scenario driver swings through the same PilotAttack as the key
     UPROPERTY(ReplicatedUsing=OnRep_PilotHealth) int32 PilotHealth = 0;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UTextRenderComponent> CombatHealthLabel;
     UFUNCTION() void OnRep_PilotHealth();

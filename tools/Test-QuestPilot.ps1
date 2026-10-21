@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     # Gathering: two clients harvest in Silverbrook; Combat: one client kills a boar (quest started at the boar step).
-    [Parameter(Mandatory)][ValidateSet('Gathering','Combat','Unified')][string]$Leg,
+    [Parameter(Mandatory)][ValidateSet('Gathering','Combat','Unified','Full')][string]$Leg,
     [string]$EngineRoot = 'C:\Program Files\Epic Games\UE_5.8',
     [ValidateRange(12000,65000)][int]$Port = 17871,
     [ValidateRange(60,600)][int]$TimeoutSeconds = 240
@@ -62,6 +62,26 @@ try {
             Start-Sleep -Milliseconds 300
         }
         if ($moved.Count -ne 1) { throw "Expected exactly one client tracker at step 2, got $($moved.Count)." }
+    } elseif ($Leg -eq 'Full') {
+        # One client walks the chain through its normal entry points (the server only places the pawn beside each
+        # target). place_wall is passed by the named dev fixture: construction is sandbox-only until it is terrain-anchored.
+        $flags = @('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox','-GatheringPilot','-CombatPilot','-QuestPilot','-QuestFullScenario')
+        $server = Start-Owned 'server' ($silverbrook + '?game=/Script/ShatteredFrontier.SFCombatPilotGameMode') $flags
+        Wait-Log $server 'server' 'QUEST_PILOT_READY Quest=quest/frontier_founder Steps=5'
+        Wait-Log $server 'server' 'COMBAT_PILOT_READY Boars=10'
+        $client = Start-Owned 'client' ('127.0.0.1:'+$Port) @('-game','-QuestFullScenario')
+        Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=gather Target=item/oak_log .* Result=0 Step=1 '
+        Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=gather Target=item/iron_ore .* Result=0 Step=2 '
+        Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=craft Target=item/rough_timber .* Result=0 Step=2 '
+        Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=craft Target=item/iron_ingot .* Result=0 Step=3 '
+        Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=build Target=structure_tag/wall .* Result=0 Step=4 '  # a real anchored placement on the Silverbrook claim pad
+        Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=defeat Target=npc/boar .* Result=0 '
+        Wait-Log $server 'server' 'QUEST_PILOT_COMPLETE Quest=quest/frontier_founder'
+        Wait-Log $server 'server' 'QUEST_PILOT_REWARD Bundle=reward/frontier_founder_completion'
+        Wait-Log $client 'client' 'QUEST_FULL_DONE'
+        Start-Sleep -Seconds 3
+        if ([regex]::Matches((Read-Log 'server'),'QUEST_PILOT_REWARD Bundle=').Count -ne 1) { throw 'Chain reward was not granted exactly once.' }
+        if ((Read-Log 'client') -match 'QUEST_FULL_FAILED') { throw 'Client driver reported a failure.' }
     } else {
         $url = $silverbrook + '?game=/Script/ShatteredFrontier.SFCombatPilotGameMode'
         $server = Start-Owned 'server' $url @('-server',('-port='+$Port),'-multihome=127.0.0.1','-CombatPilot','-CombatPilotScenario','-QuestPilot','-QuestPilotStartStep=defeat_boar')

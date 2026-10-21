@@ -6,6 +6,7 @@
 #include "SFConstructionNetwork.generated.h"
 
 class USFGatheringPilotComponent;
+class USFQuestPilotComponent;
 class UStaticMeshComponent;
 class UProceduralMeshComponent;
 class UPrimitiveComponent;
@@ -93,6 +94,13 @@ public:
     bool IsLineSupportedForPreview(FIntVector Start, FIntVector End, uint8 Shape, uint8 Rotation) const;
     int32 GetMaximumLineCells() const { return MaximumLineCells; }
     int32 GetMaximumDoors() const { return MaximumDoors; }
+    // BLD-02: the claim's world anchor. Cells stay claim-local; this actor sits at the anchor, so every projected
+    // component translates with it, and world queries add GetAnchorOffsetCm().
+    FIntVector GetAnchorCell() const { return AnchorCell; }
+    FVector GetAnchorOffsetCm() const;
+    bool HasExpectedTransform() const;
+    // Server only, before the first edit; an anchor never changes while the claim has members.
+    bool ConfigureAnchor(const FIntVector& Cell);
 private:
     ESFConstructionNetworkResult ValidateEditContext(ASFConstructionNetworkController* Controller, uint64 ExpectedRevision, const APawn*& OutPawn, const AActor*& OutFoundation) const;
     ESFConstructionNetworkResult ValidateDoorTarget(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision, int32& OutIndex) const;
@@ -112,6 +120,7 @@ private:
     UPROPERTY(Replicated) int32 MaximumMembers = 0;
     UPROPERTY(Replicated) int32 MaximumDoors = 0;
     UPROPERTY(Replicated) int32 MaximumLineCells = 0;
+    UPROPERTY(Replicated) FIntVector AnchorCell = FIntVector::ZeroValue;
     uint64 ProjectionRevision = 0;
 };
 
@@ -133,6 +142,7 @@ public:
 #endif
 private:
     int32 SpawnZoneGatheringNodes();
+    bool PrepareDevClaim(FIntVector& OutAnchor);  // Silverbrook development claim: a level pad at the origin
     void PlaceForZoneScenario(APawn* Pawn, bool bPrimary) const;
     TWeakObjectPtr<ASFConstructionNetworkController> Builder;
     bool bBuilderAssigned = false;
@@ -158,6 +168,7 @@ public:
     void AssignRole(bool bBuilder);
     FString GetBuildStatusText() const;
 private:
+    friend class USFQuestPilotComponent;  // dev scenario driver sends the same placement RPC the cursor does
     UPROPERTY(VisibleAnywhere) TObjectPtr<USFGatheringPilotComponent> GatheringPilot;
     UPROPERTY() TObjectPtr<UActorComponent> PilotInventory;
     void InitializeLocalControls();

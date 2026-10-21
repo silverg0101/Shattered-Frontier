@@ -11,7 +11,17 @@
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
+#include "Characters/SFE1Character.h"
+#include "Combat/SFCombatPilot.h"
+#include "Construction/SFConstructionGeometry.h"
+#include "Construction/SFConstructionNetwork.h"
 #include "Dom/JsonObject.h"
+#include "EngineUtils.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "InputCoreTypes.h"
+#include "InputKeyEventArgs.h"
+#include "HAL/PlatformTime.h"
 #include "Engine/World.h"
 #include "Framework/SFHudStyle.h"
 #include "GameFramework/PlayerController.h"
@@ -172,7 +182,7 @@ USFQuestPilotComponent::USFQuestPilotComponent()
 {
     SetIsReplicatedByDefault(true);
     PrimaryComponentTick.bCanEverTick = true;
-    PrimaryComponentTick.TickInterval = 1.f;
+    PrimaryComponentTick.TickInterval = 0.25f;
 }
 
 void USFQuestPilotComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -256,6 +266,188 @@ void USFQuestPilotComponent::TickComponent(float Delta, ELevelTick Type, FActorC
 {
     Super::TickComponent(Delta, Type, Function);
     if (GetOwner() && GetOwner()->HasAuthority() && !PendingRewards.IsEmpty()) { TryDeliverRewards(); }
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (!FParse::Param(FCommandLine::Get(), TEXT("QuestFullScenario"))) { return; }
+    if (GetOwner() && GetOwner()->HasAuthority()) { TickFullServer(); }
+    else { TickFullClient(GetWorld()->GetTimeSeconds()); }
+#endif
+}
+
+// ---- Full-chain scenario (development): the server only places the pawn beside the next target, like the
+// other scenarios; every action itself is made by the client through its normal entry points and judged by the server.
+
+namespace
+{
+    // First unmet objective of the current step, by the stable content ids.
+    const FSFQuestObjective* NextObjective(const FSFQuestDefinition& Quest, const FSFQuestProgress& Progress)
+    {
+        if (Progress.IsComplete(Quest)) { return nullptr; }
+        for (const FSFQuestObjective& O : Quest.Steps[Progress.StepIndex].Objectives)
+        { if (Progress.Counts.FindRef(O.Key) < O.Count) { return &O; } }
+        return nullptr;
+    }
+
+    bool NodeKindFor(const FString& Kind, const FString& Target, ESFGatheringPilotKind& Out)
+    {
+        if (Kind == TEXT("gather") && Target == TEXT("item/oak_log")) { Out = ESFGatheringPilotKind::Oak; return true; }
+        if (Kind == TEXT("gather") && Target == TEXT("item/iron_ore")) { Out = ESFGatheringPilotKind::Iron; return true; }
+        if (Kind == TEXT("craft") && Target == TEXT("item/rough_timber")) { Out = ESFGatheringPilotKind::Sawmill; return true; }
+        if (Kind == TEXT("craft") && Target == TEXT("item/iron_ingot")) { Out = ESFGatheringPilotKind::Forge; return true; }
+        return false;
+    }
+
+    ASFGatheringPilotNode* NearestNode(UWorld* World, ESFGatheringPilotKind Kind, const FVector& To)
+    {
+        ASFGatheringPilotNode* Best = nullptr;
+        for (TActorIterator<ASFGatheringPilotNode> It(World); It; ++It)
+        { if (It->Kind == Kind && (!Best || FVector::Dist2D(It->GetActorLocation(), To) < FVector::Dist2D(Best->GetActorLocation(), To))) { Best = *It; } }
+        return Best;
+    }
+
+    ASFPilotBoar* NearestBoar(UWorld* World, const FVector& To)
+    {
+        ASFPilotBoar* Best = nullptr;
+        for (TActorIterator<ASFPilotBoar> It(World); It; ++It)
+        { if (It->Health() > 0 && (!Best || FVector::Dist2D(It->GetActorLocation(), To) < FVector::Dist2D(Best->GetActorLocation(), To))) { Best = *It; } }
+        return Best;
+    }
+}
+
+void USFQuestPilotComponent::TickFullServer()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    const auto* PC = Cast<APlayerController>(GetOwner());
+    APawn* Pawn = PC ? PC->GetPawn() : nullptr;
+    const FSFQuestObjective* Objective = Quest ? NextObjective(*Quest, Progress) : nullptr;
+    if (!Pawn || !Objective) { return; }
+    // Gather and node steps: the node nearest the world origin (oak, iron) or the only station; boar: the nearest live boar.
+    FVector Target = FVector::ZeroVector; ESFGatheringPilotKind Kind = ESFGatheringPilotKind::Oak;
+    if (NodeKindFor(Objective->Kind, Objective->TargetId, Kind))
+    {
+        const auto* Node = NearestNode(GetWorld(), Kind, FVector::ZeroVector);
+        if (!Node) { return; }
+        Target = Node->GetActorLocation();
+    }
+    else if (Objective->Kind == TEXT("defeat"))
+    {
+        const auto* Boar = NearestBoar(GetWorld(), Pawn->GetActorLocation());
+        if (!Boar) { return; }
+        Target = Boar->GetActorLocation();
+    }
+    else if (Objective->Kind == TEXT("build"))
+    {
+        // The dev claim pad: stand on it beside the first cell (BLD-02 anchored construction).
+        const ASFConstructionNetworkState* Claim = nullptr;
+        for (TActorIterator<ASFConstructionNetworkState> It(GetWorld()); It; ++It) { Claim = *It; }
+        if (!Claim || Claim->GetAnchorCell() == FIntVector::ZeroValue) { return; }
+        Target = Claim->GetAnchorOffsetCm() + FVector(25, 25, 25);
+    }
+    else { return; }
+    const FString Key = Quest->Steps[Progress.StepIndex].Id + TEXT("/") + Objective->Key;
+    if (Key == FullTeleportKey && FVector::Dist2D(Pawn->GetActorLocation(), Target) < 600) { return; }
+    // Re-place after a respawn or a boar that wandered off; otherwise once per objective.
+    const FVector Where = Objective->Kind == TEXT("build") ? Target + FVector(-175, -125, 95)
+        : Target + (-Target * FVector(1, 1, 0)).GetSafeNormal() * 200 + FVector(0, 0, 80);
+    Pawn->SetActorLocation(Where, false, nullptr, ETeleportType::TeleportPhysics);
+    FullTeleportKey = Key;
+    UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_PLACED Objective=%s"), *Key);
+#endif
+}
+
+void USFQuestPilotComponent::TickFullClient(double Now)
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    auto* PC = Cast<APlayerController>(GetOwner());
+    APawn* Pawn = PC ? PC->GetPawn() : nullptr;
+    if (!PC || !PC->IsLocalController() || !Pawn || View.Title.IsEmpty() || bFullDone) { return; }
+    if (View.bComplete)
+    { bFullDone = true; UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_DONE Steps=%d"), View.StepTotal); return; }
+    const FSFQuestLine* Next = View.Lines.FindByPredicate([](const FSFQuestLine& L) { return L.Count < L.Target; });
+    if (!Next) { return; }  // e.g. the wall step before the dev skip lands
+    const FString Key = View.Step + TEXT("/") + Next->Label;
+    if (Key != FullAttemptKey)
+    { FullAttemptKey = Key; FullEquipAt = 0; FullStableSince = 0; FullAttemptAt = 0; FullLastSwingAt = 0; }
+    const auto Fail = [&](const TCHAR* Why)
+    { UE_LOG(LogTemp, Error, TEXT("QUEST_FULL_FAILED Objective=%s Why=%s"), *Key, Why); FPlatformMisc::RequestExitWithStatus(false, 1); };
+
+    if (Next->Label == TEXT("Build Wall"))
+    {
+        auto* Builder = Cast<ASFConstructionNetworkController>(PC);
+        const ASFConstructionNetworkState* Claim = nullptr;
+        for (TActorIterator<ASFConstructionNetworkState> It(GetWorld()); It; ++It) { Claim = *It; }
+        if (!Builder || !Claim || Claim->GetAnchorCell() == FIntVector::ZeroValue) { return; }
+        if (FVector::Dist2D(Pawn->GetActorLocation(), Claim->GetAnchorOffsetCm() + FVector(25, 25, 25)) > 300) { return; }  // not on the pad yet
+        const auto* Character = Cast<ACharacter>(Pawn);
+        if (!Character || !Character->GetCharacterMovement()->IsMovingOnGround() || !Character->GetVelocity().IsNearlyZero(1.0)
+            || FVector::DistSquared(Pawn->GetActorLocation(), FullLastPosition) > 1.0)
+        { FullStableSince = 0; FullLastPosition = Pawn->GetActorLocation(); return; }
+        if (FullStableSince == 0) { FullStableSince = Now; }
+        if (Now - FullStableSince < 1.0) { return; }
+        if (FullAttemptAt == 0)
+        {
+            // The same placement RPC the cursor sends: shape 0 (cube) on the first claim cell.
+            FullAttemptAt = Now;
+            Builder->ServerPlace(FIntVector(0, 0, 0), Claim->GetSnapshot().Revision, 0, uint8(SFConstructionGeometry::IdentityRotation()));
+            UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_ACTION Objective=%s Input=ServerPlace"), *Key);
+        }
+        else if (Now - FullAttemptAt > 20) { Fail(TEXT("wall was not accepted in time")); }
+        return;
+    }
+    if (Next->Label == TEXT("Defeat Boar"))
+    {
+        auto* Boar = NearestBoar(GetWorld(), Pawn->GetActorLocation());
+        if (!Boar || FVector::Dist2D(Pawn->GetActorLocation(), Boar->GetActorLocation()) > 500) { return; }
+        const FVector ToBoar = (Boar->GetActorLocation() - Pawn->GetActorLocation()).GetSafeNormal2D();
+        // The server judges facing from the replicated control rotation: aim on one tick, swing once it has arrived.
+        if (FVector::DotProduct(PC->GetControlRotation().Vector().GetSafeNormal2D(), ToBoar) < 0.9) { PC->SetControlRotation(ToBoar.Rotation()); return; }
+        if (FullAttemptAt == 0) { FullAttemptAt = Now; }
+        if (Now - FullAttemptAt > 90) { Fail(TEXT("boar not defeated in time")); return; }
+        if (Now - FullLastSwingAt >= 1.0)
+        {
+            FullLastSwingAt = Now;
+            // PilotAttack is what the left mouse button invokes (and the combat scenario calls); it sends the server RPC.
+            if (auto* Fighter = Cast<ASFE1Character>(Pawn)) { Fighter->PilotAttack(); }
+            UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_ACTION Objective=%s Input=PilotAttack Boar=%.0fcm"), *Key,
+                FVector::Dist2D(Pawn->GetActorLocation(), Boar->GetActorLocation()));
+        }
+        return;
+    }
+
+    ESFGatheringPilotKind Kind = ESFGatheringPilotKind::Oak;
+    if (Next->Label == TEXT("Gather Oak Log")) { Kind = ESFGatheringPilotKind::Oak; }
+    else if (Next->Label == TEXT("Gather Iron Ore")) { Kind = ESFGatheringPilotKind::Iron; }
+    else if (Next->Label == TEXT("Craft Rough Timber")) { Kind = ESFGatheringPilotKind::Sawmill; }
+    else if (Next->Label == TEXT("Craft Iron Ingot")) { Kind = ESFGatheringPilotKind::Forge; }
+    else { return; }
+    auto* Gathering = PC->FindComponentByClass<USFGatheringPilotComponent>();
+    ASFGatheringPilotNode* Node = NearestNode(GetWorld(), Kind, Pawn->GetActorLocation());
+    if (!Gathering || !Gathering->IsEnabled() || !Node || FVector::Dist2D(Pawn->GetActorLocation(), Node->GetActorLocation()) > 350) { return; }
+    if (!Node->IsRefinery() && Node->GetState().Charges <= 0) { return; }  // initial replication of the node
+    if (Kind == ESFGatheringPilotKind::Oak || Kind == ESFGatheringPilotKind::Iron)
+    {
+        if (FullEquipAt == 0)
+        {
+            if (Kind == ESFGatheringPilotKind::Oak) { Gathering->EquipAxe(); } else { Gathering->EquipPickaxe(); }
+            FullEquipAt = Now;
+        }
+        if (Now - FullEquipAt < 2.0) { return; }  // the equip RPC and replication
+    }
+    const auto* Character = Cast<ACharacter>(Pawn);
+    if (!Character || !Character->GetCharacterMovement()->IsMovingOnGround() || !Character->GetVelocity().IsNearlyZero(1.0)
+        || FVector::DistSquared(Pawn->GetActorLocation(), FullLastPosition) > 1.0)
+    { FullStableSince = 0; FullLastPosition = Pawn->GetActorLocation(); return; }
+    if (FullStableSince == 0) { FullStableSince = Now; }
+    if (Now - FullStableSince < 1.0) { return; }
+    if (FullAttemptAt == 0)
+    {
+        // One interaction per objective: a second one during the channel would cancel it.
+        const FVector Eye = Pawn->GetPawnViewLocation();
+        Gathering->InteractFromRay(Eye, (Node->GetActorLocation() - Eye).GetSafeNormal());
+        FullAttemptAt = Now;
+        UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_ACTION Objective=%s Input=InteractFromRay"), *Key);
+    }
+    else if (Now - FullAttemptAt > 20) { Fail(TEXT("objective did not complete in time")); }
+#endif
 }
 
 // ---------------------------------------------------------------- tracker widget

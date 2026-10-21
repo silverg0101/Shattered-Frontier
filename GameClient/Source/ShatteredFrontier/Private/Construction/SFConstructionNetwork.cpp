@@ -7,6 +7,7 @@
 #endif
 #include "SFConstructionNetworkProjection.h"
 #include "ProceduralMeshComponent.h"
+#include "Construction/SFConstructionAnchor.h"
 #include "Construction/SFConstructionGeometry.h"
 #include "Construction/SFConstructionLine.h"
 #include "Construction/SFConstructionSandboxPalette.h"
@@ -21,6 +22,7 @@
 #include "Construction/SFConstructionSandboxDoorProjection.h"
 #include "Construction/SFConstructionClearance.h"
 #include "Engine/StaticMesh.h"
+#include "Engine/StaticMeshActor.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Components/InputComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -210,6 +212,23 @@ void ASFConstructionNetworkState::GetLifetimeReplicatedProps(TArray<FLifetimePro
     DOREPLIFETIME(ASFConstructionNetworkState, MaximumMembers);
     DOREPLIFETIME(ASFConstructionNetworkState, MaximumDoors);
     DOREPLIFETIME(ASFConstructionNetworkState, MaximumLineCells);
+    DOREPLIFETIME(ASFConstructionNetworkState, AnchorCell);
+}
+
+FVector ASFConstructionNetworkState::GetAnchorOffsetCm() const { return SFConstructionAnchor::OffsetCm(AnchorCell); }
+
+bool ASFConstructionNetworkState::HasExpectedTransform() const
+{
+    return SFConstructionAnchor::IsValid(AnchorCell)
+        && GetActorTransform().Equals(FTransform(FQuat::Identity,GetAnchorOffsetCm(),FVector::OneVector));
+}
+
+bool ASFConstructionNetworkState::ConfigureAnchor(const FIntVector& Cell)
+{
+    // Immutable once members exist: re-anchoring would silently move every placed piece.
+    if (!HasAuthority() || !SFConstructionAnchor::IsValid(Cell) || !Snapshot.Members.IsEmpty() || !Snapshot.Doors.IsEmpty()) { return false; }
+    AnchorCell=Cell;
+    return true;
 }
 
 void ASFConstructionNetworkState::AdmitPair()
@@ -222,7 +241,7 @@ void ASFConstructionNetworkState::AdmitPair()
 bool ASFConstructionNetworkState::Activate(const FSFConstructionNetworkSnapshot& Candidate)
 {
     if (Candidate.Revision<=ProjectionRevision || Candidate.Members.Num()>4096 || Candidate.Doors.Num()>64 || (Candidate.Revision==0 && (!Candidate.Members.IsEmpty() || !Candidate.Doors.IsEmpty()))
-        || !GetActorTransform().Equals(FTransform::Identity)) { return false; }
+        || !HasExpectedTransform()) { return false; }
     TSet<FIntVector> Addresses;
     for (const auto& M : Candidate.Members)
     {
@@ -296,7 +315,7 @@ bool ASFConstructionNetworkState::Activate(const FSFConstructionNetworkSnapshot&
 bool ASFConstructionNetworkState::HasCurrentCollision() const
 {
     if (!bProjectionReady || Snapshot.Revision==0 || ProjectionRevision!=Snapshot.Revision || Meshes.Num()!=Snapshot.Members.Num()
-        || ProjectedMembers.Num()!=Snapshot.Members.Num() || DoorProjections.Num()!=Snapshot.Doors.Num() || ProjectedDoors.Num()!=Snapshot.Doors.Num() || !GetActorTransform().Equals(FTransform::Identity)) { return false; }
+        || ProjectedMembers.Num()!=Snapshot.Members.Num() || DoorProjections.Num()!=Snapshot.Doors.Num() || ProjectedDoors.Num()!=Snapshot.Doors.Num() || !HasExpectedTransform()) { return false; }
     TInlineComponentArray<UPrimitiveComponent*> Primitives; GetComponents(Primitives);
     if (Primitives.Num()!=Meshes.Num()+Snapshot.Doors.Num()*5) { return false; }
     for (const auto& M : Snapshot.Members)
@@ -309,7 +328,7 @@ bool ASFConstructionNetworkState::HasCurrentCollision() const
         if (!SFConstructionGeometry::Build(M.Shape,M.Rotation,Solid)) { return false; }
         FVector Inside=FVector::ZeroVector;
         for (const auto& V : Solid.Vertices) { Inside+=V; }
-        Inside=FVector(M.Cell)*50.0+Inside/Solid.Vertices.Num();
+        Inside=FVector(M.Cell)*50.0+Inside/Solid.Vertices.Num()+GetAnchorOffsetCm();
         FHitResult Hit;
         FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionNetworkProjection),false);
         if (!Mesh->LineTraceComponent(Hit,Inside+FVector(0,0,100),Inside,Query) || Hit.GetComponent()!=Mesh) { return false; }
@@ -351,7 +370,7 @@ bool ASFConstructionNetworkState::OwnsDoorProjection(const FSFConstructionNetwor
 
 bool ASFConstructionNetworkState::IsSupportAllowedForPreview(FIntVector Cell, uint8 Shape, uint8 Rotation, bool bRemove) const
 {
-    if (!IsInGameThread() || Cell.X < -20 || Cell.X >= 20 || Cell.Y < -20 || Cell.Y >= 20 || Cell.Z < 0 || Cell.Z >= 20
+    if (!IsInGameThread() || !SFConstructionAnchor::Contains(Cell)
         || Shape>=SFConstructionGeometry::ShapeCount || Rotation>=SFConstructionGeometry::RotationCount) { return false; }
     auto Candidate=Snapshot;
     const int32 Index=Candidate.Find(Cell);
@@ -414,7 +433,7 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateEditContext(AS
     if (Snapshot.Revision==MAX_uint64) { return ESFConstructionNetworkResult::InvalidContext; }
     if (Snapshot.Revision > 0 && !HasCurrentCollision()) { return ESFConstructionNetworkResult::ProjectionFailed; }
     const AActor* Foundation = nullptr;
-    if (!SFConstructionSandboxFoundation::MatchesKnownPlaneGeometry(GetWorld(),&Foundation)) { return ESFConstructionNetworkResult::InvalidContext; }
+    if (!SFConstructionSandboxFoundation::MatchesKnownPlaneGeometry(GetWorld(),&Foundation,GetAnchorOffsetCm())) { return ESFConstructionNetworkResult::InvalidContext; }
     OutPawn=Pawn; OutFoundation=Foundation;
     return ESFConstructionNetworkResult::Accepted;
 }
@@ -422,7 +441,7 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateEditContext(AS
 ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateMemberCell(const APawn* Pawn, const AActor* Foundation, FIntVector Cell, bool bRemove, uint8 Shape, uint8 Rotation) const
 {
     if (!bRemove && (Shape>=SFConstructionGeometry::ShapeCount || Rotation>=SFConstructionGeometry::RotationCount)) { return ESFConstructionNetworkResult::InvalidPiece; }
-    if (Cell.X < -20 || Cell.X >= 20 || Cell.Y < -20 || Cell.Y >= 20 || Cell.Z < 0 || Cell.Z >= 20) { return ESFConstructionNetworkResult::InvalidCell; }
+    if (!SFConstructionAnchor::Contains(Cell)) { return ESFConstructionNetworkResult::InvalidCell; }
     if (bRemove && Snapshot.Find(Cell)==INDEX_NONE) { return ESFConstructionNetworkResult::NotFound; }
     if (!bRemove && Snapshot.Find(Cell)!=INDEX_NONE) { return ESFConstructionNetworkResult::Occupied; }
     if (!bRemove && Snapshot.Members.Num() >= MaximumMembers) { return ESFConstructionNetworkResult::LimitReached; }
@@ -439,7 +458,7 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateMemberCell(con
             }
         }
     }
-    const FVector Centre = FVector(Cell)*50.0+FVector(25);
+    const FVector Centre = FVector(Cell)*50.0+FVector(25)+GetAnchorOffsetCm();
     if (Pawn->GetActorLocation().ContainsNaN() || FVector::DistSquared(Pawn->GetActorLocation(),Centre) > FMath::Square(ReachCentimetres)) { return ESFConstructionNetworkResult::OutOfReach; }
     FVector Eyes; FRotator EyeRotation;
     Pawn->GetActorEyesViewPoint(Eyes,EyeRotation);
@@ -454,7 +473,7 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateMemberCell(con
         if (!SFConstructionGeometry::Build(Existing.Shape,Existing.Rotation,Solid)) { return ESFConstructionNetworkResult::InvalidPiece; }
         SightTarget=FVector::ZeroVector;
         for (const auto& V : Solid.Vertices) { SightTarget+=V; }
-        SightTarget=FVector(Cell)*50.0+SightTarget/Solid.Vertices.Num();
+        SightTarget=FVector(Cell)*50.0+SightTarget/Solid.Vertices.Num()+GetAnchorOffsetCm();
     }
     const bool bHit=GetWorld()->LineTraceSingleByChannel(Hit,Eyes,SightTarget,ECC_Visibility,Query);
     if (bRemove ? (!bHit || Hit.GetComponent()!=Meshes.FindRef(Cell)) : bHit) { return ESFConstructionNetworkResult::Occluded; }
@@ -541,6 +560,8 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::PlaceDoor(ASFConstruct
     const APawn* Pawn=nullptr; const AActor* Foundation=nullptr;
     const auto Admission=ValidateEditContext(Controller,ExpectedRevision,Pawn,Foundation);
     if (Admission!=ESFConstructionNetworkResult::Accepted) { return Admission; }
+    // ponytail: door envelopes, motion and approach volumes are claim-local; anchored claims need them translated first.
+    if (AnchorCell!=FIntVector::ZeroValue) { return ESFConstructionNetworkResult::InvalidContext; }
     if (Snapshot.FindDoor(Origin)!=INDEX_NONE) { return ESFConstructionNetworkResult::Occupied; }
     if (Snapshot.Doors.Num()>=MaximumDoors) { return ESFConstructionNetworkResult::LimitReached; }
     FSFConstructionDoorProjectionProfile Profile;
@@ -803,6 +824,30 @@ int32 ASFConstructionNetworkGameMode::SpawnZoneGatheringNodes()
     return Spawned;
 }
 
+bool ASFConstructionNetworkGameMode::PrepareDevClaim(FIntVector& OutAnchor)
+{
+    // ponytail: development claim hard-coded to the 20 x 20 m plot at the world origin, with a level pad above everything
+    // found there so no terrain or prop overlaps a cell. ClaimTerritory supplies the plot and its level once wired in.
+    double Highest=-TNumericLimits<double>::Max(); int32 Hits=0;
+    for (int32 X=-10; X<=10; ++X) for (int32 Y=-10; Y<=10; ++Y)
+    {
+        FHitResult Hit; const FVector At(X*100.0,Y*100.0,0);
+        if (GetWorld()->LineTraceSingleByChannel(Hit,At+FVector(0,0,50000),At-FVector(0,0,50000),ECC_WorldStatic)) { Highest=FMath::Max(Highest,Hit.ImpactPoint.Z); ++Hits; }
+    }
+    if (Hits==0) { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_CLAIM_FAILED NoGroundAtOrigin=1")); return false; }
+    OutAnchor=FIntVector(0,0,FMath::CeilToInt(Highest/SFConstructionGeometry::CellCentimetres)+1);
+    const FVector Offset=SFConstructionAnchor::OffsetCm(OutAnchor);
+    FActorSpawnParameters SlabSpawn; SlabSpawn.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;  // the exact transform is the fixture contract
+    auto* Slab=GetWorld()->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(),FTransform(FQuat::Identity,FVector(0,0,-50)+Offset,FVector(20,20,1)),SlabSpawn);
+    if (!Slab) { return false; }
+    Slab->SetMobility(EComponentMobility::Movable);
+    Slab->GetStaticMeshComponent()->SetStaticMesh(LoadObject<UStaticMesh>(nullptr,TEXT("/Engine/BasicShapes/Cube.Cube")));
+    Slab->GetStaticMeshComponent()->SetIsReplicated(true);
+    Slab->SetReplicates(true);
+    Slab->Tags.Add(TEXT("SFConstructionSandboxFoundationV1"));
+    return true;
+}
+
 bool ASFConstructionNetworkGameMode::IsAdmitted() const
 {
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
@@ -819,8 +864,17 @@ void ASFConstructionNetworkGameMode::StartPlay()
 {
     Super::StartPlay();
     if (!IsAdmitted()) { UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_DISABLED")); return; }
-    const auto* State = GetWorld()->SpawnActor<ASFConstructionNetworkState>();
+    // The sandbox keeps the identity anchor and its map-placed foundation; a zone gets a dev claim pad (BLD-02).
+    FIntVector Anchor=FIntVector::ZeroValue;
+    const bool bClaim=IsZoneGatheringWorld() && PrepareDevClaim(Anchor);
+    if (!bClaim) { Anchor=FIntVector::ZeroValue; }
+    const FTransform StateAt(FQuat::Identity,SFConstructionAnchor::OffsetCm(Anchor),FVector::OneVector);
+    auto* State = GetWorld()->SpawnActorDeferred<ASFConstructionNetworkState>(ASFConstructionNetworkState::StaticClass(),StateAt);
     if (!State) { UE_LOG(LogTemp,Fatal,TEXT("Construction network fixture state could not spawn")); }
+    State->ConfigureAnchor(Anchor);
+    State->FinishSpawning(StateAt);
+    if (bClaim)
+    { UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_CLAIM Anchor=%s OffsetCm=%s"),*Anchor.ToString(),*SFConstructionAnchor::OffsetCm(Anchor).ToCompactString()); }
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_READY UnlimitedDevelopmentStock=1 Shapes=CubeSlabSlope Support=RoughTimber Persistence=0"));
     if (USFGatheringPilotComponent::IsPilotRequested())
     {
@@ -1096,7 +1150,8 @@ bool ASFConstructionNetworkController::GetLayerPoint(const FVector& Start, const
 {
     if (PlacementLayer<0 || PlacementLayer>19 || Start.ContainsNaN() || Direction.ContainsNaN() || !Direction.IsNormalized()
         || !FMath::IsFinite(RayLength) || RayLength<=0 || FMath::Abs(Direction.Z)<=1.e-8) { return false; }
-    const double Height=PlacementLayer*SFConstructionGeometry::CellCentimetres;
+    const auto* AnchorState=FindState(GetWorld());
+    const double Height=PlacementLayer*SFConstructionGeometry::CellCentimetres+(AnchorState ? AnchorState->GetAnchorOffsetCm().Z : 0.0);
     const double T=(Height-Start.Z)/Direction.Z;
     if (!FMath::IsFinite(T) || T<0 || T>RayLength || (Hit && (!FMath::IsFinite(Hit->Distance) || Hit->Distance<T-1.e-3))) { return false; }
     FVector Point=Start+Direction*T; Point.Z=Height;
@@ -1261,6 +1316,7 @@ void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline
     FVector Start,Direction;
     if (!GetConstructionRay(Start,Direction)) { PreviewStatus=TEXT("Move the cursor into the world to aim."); return; }
     SampledRevision=State->GetSnapshot().Revision;
+    const FVector Off=State->GetAnchorOffsetCm();
     FHitResult Hit;
     FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionNetworkView),false,GetPawn());
     // Camera offset plus half a cell diagonal covers the server's pawn-centre reach sphere.
@@ -1291,7 +1347,7 @@ void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline
         if (!bHit) { PreviewStatus=TEXT("Aim at the ground or a block face within reach."); return; }
         Point=Hit.ImpactPoint+Hit.ImpactNormal*0.1;
     }
-    PreviewCell=FIntVector(FMath::FloorToInt(Point.X/50),FMath::FloorToInt(Point.Y/50),FMath::FloorToInt(Point.Z/50));
+    PreviewCell=FIntVector(FMath::FloorToInt((Point.X-Off.X)/50),FMath::FloorToInt((Point.Y-Off.Y)/50),FMath::FloorToInt((Point.Z-Off.Z)/50));
     bHasRemovalPreview=bHit && Hit.GetActor()==State && State->GetCellForComponent(Hit.GetComponent(),RemovalCell);
     if (bHasRemovalPreview && (!bLayerPlacement || bDemolitionMode))
     {
@@ -1340,11 +1396,11 @@ void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline
             FSFConstructionSolid Solid;
             if (SFConstructionGeometry::Build(SelectedShape,SelectedRotation,Solid))
             for (const auto& Cell : Cells) for (const auto& Face : Solid.Faces) for (int32 I=0; I<Face.Num(); ++I)
-            { DrawDebugLine(GetWorld(),FVector(Cell)*50+Solid.Vertices[Face[I]],FVector(Cell)*50+Solid.Vertices[Face[(I+1)%Face.Num()]],LineCache.bSupported ? FColor(255,190,60) : FColor::Red,false,-1.f,0,2.f); }
+            { DrawDebugLine(GetWorld(),Off+FVector(Cell)*50+Solid.Vertices[Face[I]],Off+FVector(Cell)*50+Solid.Vertices[Face[(I+1)%Face.Num()]],LineCache.bSupported ? FColor(255,190,60) : FColor::Red,false,-1.f,0,2.f); }
         }
         return;
     }
-    const FVector Centre=FVector(PreviewCell)*50.0+FVector(25);
+    const FVector Centre=Off+FVector(PreviewCell)*50.0+FVector(25);
     if (SupportCache.State.Get()!=State || SupportCache.Revision!=State->GetSnapshot().Revision || SupportCache.PlacementCell!=PreviewCell
         || SupportCache.Shape!=SelectedShape || SupportCache.Rotation!=SelectedRotation || SupportCache.bHasRemoval!=bHasRemovalPreview
         || (bHasRemovalPreview && SupportCache.RemovalCell!=RemovalCell))
@@ -1363,11 +1419,11 @@ void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline
         bHasPlacementPreview=false;
         PreviewStatus=!bHasRemovalPreview ? TEXT("DEMOLISH: aim at a placed piece or doorway.") : SupportCache.bRemovalAllowed ? TEXT("DEMOLISH: click to request removal.") : TEXT("Cannot remove: supporting other pieces.");
         if (bHasRemovalPreview && bDrawOutline)
-        { DrawDebugBox(GetWorld(),FVector(RemovalCell)*50.0+FVector(25),FVector(25),SupportCache.bRemovalAllowed ? FColor::Orange : FColor::Red,false,-1.f,0,2.f); }
+        { DrawDebugBox(GetWorld(),Off+FVector(RemovalCell)*50.0+FVector(25),FVector(25),SupportCache.bRemovalAllowed ? FColor::Orange : FColor::Red,false,-1.f,0,2.f); }
         return;
     }
     const TCHAR* BlockReason=nullptr;
-    if (PreviewCell.X < -20 || PreviewCell.X >= 20 || PreviewCell.Y < -20 || PreviewCell.Y >= 20 || PreviewCell.Z < 0 || PreviewCell.Z >= 20)
+    if (!SFConstructionAnchor::Contains(PreviewCell))
     { BlockReason=PlacementResultText(ESFConstructionNetworkResult::InvalidCell); }
     else if (FVector::DistSquared(GetPawn()->GetActorLocation(),Centre)>FMath::Square(State->GetReachCentimetres()))
     { BlockReason=PlacementResultText(ESFConstructionNetworkResult::OutOfReach); }
@@ -1382,7 +1438,7 @@ void ASFConstructionNetworkController::RefreshPlacementPreview(bool bDrawOutline
         if (SFConstructionGeometry::Build(SelectedShape,SelectedRotation,Solid))
         {
             for (const auto& Face : Solid.Faces) for (int32 I=0; I<Face.Num(); ++I)
-            { DrawDebugLine(GetWorld(),FVector(PreviewCell)*50+Solid.Vertices[Face[I]],FVector(PreviewCell)*50+Solid.Vertices[Face[(I+1)%Face.Num()]],BlockReason ? FColor::Red : FColor(255,190,60),false,-1.f,0,2.f); }
+            { DrawDebugLine(GetWorld(),Off+FVector(PreviewCell)*50+Solid.Vertices[Face[I]],Off+FVector(PreviewCell)*50+Solid.Vertices[Face[(I+1)%Face.Num()]],BlockReason ? FColor::Red : FColor(255,190,60),false,-1.f,0,2.f); }
         }
     }
 }

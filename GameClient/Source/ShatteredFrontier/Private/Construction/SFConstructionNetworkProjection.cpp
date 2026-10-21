@@ -47,7 +47,7 @@ UProceduralMeshComponent* SFConstructionNetworkProjection::Stage(ASFConstruction
 {
     FSFConstructionSolid Solid;
     if (!IsInGameThread() || !IsValid(Owner) || Owner->GetClass()!=ASFConstructionNetworkState::StaticClass()
-        || !Owner->GetActorTransform().Equals(FTransform::Identity)
+        || !Owner->HasExpectedTransform()
         || !SFConstructionGeometry::Build(Member.Shape,Member.Rotation,Solid)) { return nullptr; }
     auto* Mesh=NewObject<UProceduralMeshComponent>(Owner);
     Mesh->SetupAttachment(Owner->GetRootComponent());
@@ -90,7 +90,7 @@ bool SFConstructionNetworkProjection::Matches(const UProceduralMeshComponent* Me
         || Mesh->bUseComplexAsSimpleCollision || Mesh->GetGenerateOverlapEvents()
         || Mesh->GetCollisionEnabled()!=ECollisionEnabled::QueryAndPhysics || Mesh->GetCollisionObjectType()!=ECC_WorldStatic
         || Mesh->GetCollisionResponseToChannels()!=FCollisionResponseContainer(ECR_Block)
-        || !Mesh->GetComponentLocation().Equals(FVector(Member.Cell)*SFConstructionGeometry::CellCentimetres)
+        || !Mesh->GetOwner() || !Mesh->GetComponentLocation().Equals(Mesh->GetOwner()->GetActorLocation()+FVector(Member.Cell)*SFConstructionGeometry::CellCentimetres)
         || !Mesh->GetComponentScale().Equals(FVector::OneVector) || !Mesh->GetComponentQuat().Equals(FQuat::Identity)
         || !SFConstructionGeometry::Build(Member.Shape,Member.Rotation,Solid)) { return false; }
     const auto* Body=const_cast<UProceduralMeshComponent*>(Mesh)->GetBodySetup();
@@ -112,7 +112,7 @@ bool SFConstructionNetworkProjection::StageDoor(ASFConstructionNetworkState* Own
 {
     FSFConstructionDoorProjectionProfile Profile;
     if (!IsInGameThread() || !IsValid(Owner) || Owner->GetClass()!=ASFConstructionNetworkState::StaticClass()
-        || !Owner->GetActorTransform().Equals(FTransform::Identity) || !CanonicalBoxAsset(Asset)
+        || !Owner->HasExpectedTransform() || !CanonicalBoxAsset(Asset)
         || !ASFConstructionSandboxDoorProjection::BuildProfile(Door.Origin,Door.Yaw,Door.bOpen,Profile)) { return false; }
     FSFConstructionNetworkDoorProjection Candidate;
     for (const auto& B : Profile.Boxes)
@@ -139,7 +139,7 @@ bool SFConstructionNetworkProjection::StageDoor(ASFConstructionNetworkState* Own
 bool SFConstructionNetworkProjection::MatchesDoor(const ASFConstructionNetworkState* Owner, const FSFConstructionNetworkDoor& Door, const FSFConstructionNetworkDoorProjection& Projection)
 {
     FSFConstructionDoorProjectionProfile Profile;
-    if (!IsInGameThread() || !IsValid(Owner) || !Owner->GetActorTransform().Equals(FTransform::Identity)
+    if (!IsInGameThread() || !IsValid(Owner) || !Owner->HasExpectedTransform()
         || !ASFConstructionSandboxDoorProjection::BuildProfile(Door.Origin,Door.Yaw,Door.bOpen,Profile) || Projection.Boxes.Num()!=Profile.Boxes.Num()) { return false; }
     for (int32 I=0; I<Profile.Boxes.Num(); ++I)
     {

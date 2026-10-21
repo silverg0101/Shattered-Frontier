@@ -94,6 +94,14 @@ private:
     FSFQuestProgress Progress;
     TArray<FString> PendingRewards;  // due but not yet in the bag; retried until delivered, then dropped
     UPROPERTY(Replicated) FSFQuestView View;
+    // Development fixtures, off unless their command-line flags are given (see Test-QuestPilot.ps1 -Leg Full).
+    void TickFullServer();
+    void TickFullClient(double Now);
+    FString FullTeleportKey;
+    FString FullAttemptKey;
+    double FullEquipAt = 0, FullStableSince = 0, FullAttemptAt = 0, FullLastSwingAt = 0;
+    FVector FullLastPosition = FVector::ZeroVector;
+    bool bFullDone = false;
 };
 
 // Tracker panel: right 84-99%, top 25-39% (HUD-v1). Title, step, objective rows with counts, tick when done.

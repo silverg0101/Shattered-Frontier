@@ -14,7 +14,7 @@ bool SFConstructionSandboxFoundation::HasKnownPlane(const UWorld* World)
     return MatchesKnownPlaneGeometry(World);
 }
 
-bool SFConstructionSandboxFoundation::MatchesKnownPlaneGeometry(const UWorld* World, const AActor** OutFoundation)
+bool SFConstructionSandboxFoundation::MatchesKnownPlaneGeometry(const UWorld* World, const AActor** OutFoundation, const FVector& AnchorOffsetCm)
 {
     if (OutFoundation) { *OutFoundation = nullptr; }
     if (!World) { return false; }
@@ -26,7 +26,7 @@ bool SFConstructionSandboxFoundation::MatchesKnownPlaneGeometry(const UWorld* Wo
         const auto* Mesh = It->GetStaticMeshComponent();
         if (It->IsActorBeingDestroyed() || !Mesh || Mesh != It->GetRootComponent() || !Mesh->GetStaticMesh()
             || Mesh->GetStaticMesh()->GetPathName() != TEXT("/Engine/BasicShapes/Cube.Cube")
-            || !It->GetActorLocation().Equals(FVector(0,0,-50))
+            || !It->GetActorLocation().Equals(FVector(0,0,-50)+AnchorOffsetCm)
             || !It->GetActorScale3D().Equals(FVector(20,20,1))
             || !It->GetActorQuat().Equals(FQuat::Identity)
             || !Mesh->GetComponentTransform().Equals(It->GetActorTransform())
