@@ -110,6 +110,7 @@ Claude Code: `CLAUDE.md` imports `AGENTS.md`; `.mcp.json` (`unreal-editor`, `htt
 
 | Reference | Summary | Read when |
 | --- | --- | --- |
+| GFX-01 renderer quality | `GameClient/Config/DefaultEngine.ini`, `DefaultScalability.ini`, and `DefaultDeviceProfiles.ini` define Windows Standard and Compatibility/Enhanced client tiers; [tier contract](decisions/GFX-01-graphics-quality-plan.md#wp1-windows-graphics-tiers). Renderer CVars have no dedicated-server rendering cost. | Changing renderer defaults, graphics tiers, or WP1 capture. |
 | [Backend](Game-Design/Legends_Shattered_Frontier_Backend_Architecture_v1.0.md) | UE server/service boundaries, auth-service ownership split, server-only content packs, account deletion/privacy workflow (`privacy_request_state`), `auth.*`/`character.*` payloads incl. `login_failure_reason`, persistence, scaling, recovery, deployment. Parts in `Game-Design/Backend/`. | Planning service boundaries or Unreal backend integration; use the domain documents below for detail. |
 | [Network](Game-Design/Legends_Shattered_Frontier_Network_Architecture_v1.0.md) | Gameplay transport, gateways, regional routing, interest management, replication, and network security. | Changing multiplayer networking, replication, zone connectivity, or network diagnostics. |
 | [Database](Game-Design/Legends_Shattered_Frontier_Database_Architecture_v1.0.md) | PostgreSQL, Redis, object storage, data domains, backups, replication, and recovery targets. | Designing durable storage, caches, migrations, backups, or recovery. |

@@ -37,6 +37,17 @@ HLOD and World Partition are deferred, since Silverbrook is a single 600 m map. 
 | 7 Character | `ArtSource/PlayerCharacter/`, `SFE1Character.*` | A clothed, rigged character replaces the cube |
 | 8 Evidence | `review_silverbrook_in_game.py`, `docs/evidence/graphics/` | Bookmarks and before/after pairs |
 
+## WP1 Windows graphics tiers
+
+`DefaultDeviceProfiles.ini` ships Standard. Each preset sets `sg.AntiAliasingQuality`, `sg.GlobalIlluminationQuality`, `sg.ReflectionQuality`, `sg.ShadowQuality` and `sg.ResolutionQuality` together; the first four are integer group levels 0–3, and resolution is a screen percentage (67–100%, 1% steps). Preset CVars apply to client rendering; ray-tracing shader/permutation changes may require restart. A player-facing tier selector is not part of WP1. These are local, release-bound presentation settings, not LiveOps or server balance controls.
+
+| Tier | Groups AA / GI / reflection / shadow | Resolution | Rendering |
+|---|---|---:|---|
+| Compatibility | 0 / 0 / 0 / 0 | 67% | SSGI, screen-space reflections, CSM, TAA; hardware RT off |
+| Standard (shipped Windows default) | 2 / 2 / 2 / 2 | 75% | Software Lumen High, VSM, TSR; hardware RT off |
+| Enhanced | 3 / 3 / 3 / 3 | 100% | Hardware RT Lumen, VSM High, TSR |
+
+The declared presets are these three complete tuples; Standard is the shipped Windows fallback for systems where Enhanced hardware RT is unavailable. Screen percentage is bounded to 67–100%; group bounds are 0–3. Dedicated-server and NullRHI processes do not create a renderer, so these renderer CVars add no server rendering cost. WP8 reference captures force eye adaptation off and screen percentage 100 for image comparison, so they do not validate the default exposure or resolution setting. WP2 owns per-map Force No Precomputed Lighting.
 ## Risks
 - **Performance:** Lumen plus VSM plus dense Nanite foliage is where 1440p/60 breaks. Clamp the wind distance, and measure p95 on the RTX 3060 baseline machine.
 - **Dedicated server:** cosmetic PCG and foliage must not load there. Tag it and strip it on `NM_DedicatedServer`, then check with `memreport`.
