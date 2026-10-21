@@ -9,6 +9,7 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
+#include "Components/Image.h"
 #include "Components/Overlay.h"
 #include "Components/OverlaySlot.h"
 #include "Components/ProgressBar.h"
@@ -61,9 +62,18 @@ void USFE1VitalsHud::NativeOnInitialized()
     // Heraldic crest stand-in: a brass-edged diamond. Real stag art is not part of this change.
     USizeBox* CrestBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
     CrestBox->SetWidthOverride(34.f); CrestBox->SetHeightOverride(34.f);
-    UBorder* Crest = Panel(WidgetTree, Hex(TEXT("0E171C"), 1.f), Brass(), FMargin(0.f), 3.f);
-    Crest->SetRenderTransformAngle(45.f);
-    CrestBox->SetContent(Crest);
+    if (const FSFHudKitElement* CrestArt = Kit(TEXT("crest_plate")))
+    {
+        UImage* CrestImage = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
+        CrestImage->SetBrush(KitBrush(*CrestArt));
+        CrestBox->SetContent(CrestImage);
+    }
+    else
+    {
+        UBorder* Crest = Panel(WidgetTree, Hex(TEXT("0E171C"), 1.f), Brass(), FMargin(0.f), 3.f);
+        Crest->SetRenderTransformAngle(45.f);
+        CrestBox->SetContent(Crest);
+    }
     UHorizontalBoxSlot* CrestSlot = Row->AddChildToHorizontalBox(CrestBox);
     CrestSlot->SetVerticalAlignment(VAlign_Center); CrestSlot->SetPadding(FMargin(6.f, 0.f, 18.f, 0.f));
 
@@ -98,7 +108,7 @@ void USFE1VitalsHud::NativeOnInitialized()
     Card->SetContent(Stack);
     auto AddCentred = [Stack](UWidget* Child, const FMargin& Pad)
     { UVerticalBoxSlot* S = Stack->AddChildToVerticalBox(Child); S->SetHorizontalAlignment(HAlign_Center); S->SetPadding(Pad); };
-    AddCentred(Text(WidgetTree, TEXT("Defeated"), 36, Ivory(), true), FMargin(0.f, 0.f, 0.f, 6.f));
+    AddCentred(Heading(WidgetTree, TEXT("Defeated"), 36, Ivory()), FMargin(0.f, 0.f, 0.f, 6.f));
     USizeBox* Rule = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
     Rule->SetHeightOverride(1.f); Rule->SetContent(Panel(WidgetTree, Brass(), Brass(), FMargin(0.f), 0.f));
     UVerticalBoxSlot* RuleSlot = Stack->AddChildToVerticalBox(Rule); RuleSlot->SetPadding(FMargin(0.f, 4.f, 0.f, 10.f));

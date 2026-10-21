@@ -47,12 +47,18 @@ class SHATTEREDFRONTIER_API USFConstructionSandboxPalette : public UUserWidget
 public:
     FSFConstructionPaletteActionDelegate OnAction;
 
+    // Catalogue tiles in display order; the palette's shape actions map onto them (Cube = Wall, Slab = Foundation, Slope = Roof).
+    static constexpr int32 TileCount = 4;
+    static int32 TileForAction(ESFConstructionPaletteAction Action);  // INDEX_NONE for non-shape actions
+    static const TCHAR* TileLabel(int32 Tile);
+
     void ConfigureNetworkPresentation();
     void SetStatusText(const FText& InStatusText);
     bool IsPointerOverPalette() const;
 
 protected:
     virtual void NativeOnInitialized() override;
+    virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
     virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
     virtual FReply NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
@@ -75,6 +81,10 @@ private:
     UFUNCTION() void HandleLoad();
 
     void Dispatch(ESFConstructionPaletteAction Action);
+    void SelectTile(int32 Tile);
+
+    UPROPERTY(Transient) TArray<TObjectPtr<UBorder>> TileFrames;
+    int32 SelectedTile = 1;  // Wall: the default Cube shape
 
     UPROPERTY(Transient)
     TObjectPtr<UBorder> PalettePanel;

@@ -42,7 +42,7 @@ void USFInventoryPanel::NativeOnInitialized()
     Crest->SetRenderTransformAngle(45.f); CrestBox->SetContent(Crest);
     UHorizontalBoxSlot* CrestSlot = Title->AddChildToHorizontalBox(CrestBox);
     CrestSlot->SetVerticalAlignment(VAlign_Center); CrestSlot->SetPadding(FMargin(4.f, 0.f, 16.f, 0.f));
-    Title->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Inventory"), 28, Ivory(), true))->SetVerticalAlignment(VAlign_Center);
+    Title->AddChildToHorizontalBox(Heading(WidgetTree, TEXT("Inventory"), 28, Ivory()))->SetVerticalAlignment(VAlign_Center);
     UHorizontalBoxSlot* HintSlot = Title->AddChildToHorizontalBox(Text(WidgetTree, TEXT("I to close"), 12, Hex(TEXT("A9A593"))));
     HintSlot->SetHorizontalAlignment(HAlign_Right); HintSlot->SetVerticalAlignment(VAlign_Center); HintSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
     AddRow(Title, FMargin(0.f, 0.f, 0.f, 10.f));
@@ -51,7 +51,7 @@ void USFInventoryPanel::NativeOnInitialized()
     UHorizontalBox* Tabs = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     for (int32 TabIndex = 0; TabIndex < TabCount; ++TabIndex)
     {
-        UBorder* Tab = Panel(WidgetTree, Slate(), Brass(), FMargin(18.f, 6.f), 3.f);
+        UBorder* Tab = KitPanel(WidgetTree, TEXT("tab_normal"), 1.f, Slate(), Brass(), FMargin(12.f, 2.f), 3.f);
         Tab->SetContent(Text(WidgetTree, TabLabel(static_cast<ESFInventoryTab>(TabIndex)), 14, Ivory(), true));
         Tabs->AddChildToHorizontalBox(Tab)->SetPadding(FMargin(0.f, 0.f, 6.f, 0.f));
         TabBorders.Add(Tab);
@@ -66,7 +66,7 @@ void USFInventoryPanel::NativeOnInitialized()
     {
         USizeBox* Cell = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
         Cell->SetWidthOverride(78.f); Cell->SetHeightOverride(78.f);
-        Cell->SetContent(Panel(WidgetTree, Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), FMargin(4.f), 3.f));
+        Cell->SetContent(KitPanel(WidgetTree, TEXT("slot_empty"), 1.f, Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), FMargin(0.f), 3.f));
         UBorder* CellFrame = Cast<UBorder>(Cell->GetContent());
         UOverlay* Stack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
         CellFrame->SetContent(Stack);
@@ -76,7 +76,7 @@ void USFInventoryPanel::NativeOnInitialized()
         IconSlot->SetHorizontalAlignment(HAlign_Fill); IconSlot->SetVerticalAlignment(VAlign_Fill);
         SlotIcons.Add(Icon); SlotFrames.Add(CellFrame);
         // Hover tooltip: a styled panel the engine shows at the cursor; filled in Refresh.
-        UBorder* Tip = Panel(WidgetTree, Slate(0.96f), Brass(), FMargin(12.f, 10.f), 3.f);
+        UBorder* Tip = KitPanel(WidgetTree, TEXT("tooltip_frame"), 0.98f, Slate(0.96f), Brass(), FMargin(8.f, 6.f), 3.f);
         SlotTips.Add(Tip);
         UVerticalBox* TipBox = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
         USizeBox* TipWidth = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
@@ -248,7 +248,7 @@ void USFInventoryPanel::StyleTabs()
     for (int32 Index = 0; Index < TabBorders.Num(); ++Index)
     {
         const bool bActive = Index == static_cast<int32>(ActiveTab);
-        TabBorders[Index]->SetBrush(Frame(bActive ? Hex(TEXT("2B3B2C"), 1.f) : Hex(TEXT("0E171C"), 0.85f), bActive ? Brass() : Hex(TEXT("3A4348")), 3.f));
+        TabBorders[Index]->SetBrush(KitOrFrame(bActive ? TEXT("tab_selected") : TEXT("tab_normal"), bActive ? Hex(TEXT("2B3B2C"), 1.f) : Hex(TEXT("0E171C"), 0.85f), bActive ? Brass() : Hex(TEXT("3A4348")), 3.f));
     }
 }
 

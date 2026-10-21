@@ -5,6 +5,7 @@
 #include "SFE1PlayerController.generated.h"
 
 class ASFE1InteractionTarget;
+class USFGatheringHud;
 class USFInventoryPanel;
 
 UENUM()
@@ -43,6 +44,7 @@ private:
     void RefreshLocalFeedback();
 
     UPROPERTY(Transient) TObjectPtr<USFInventoryPanel> InventoryPanel;
+    UPROPERTY(Transient) TObjectPtr<USFGatheringHud> GatheringHud;
     TWeakObjectPtr<ASFE1InteractionTarget> SelectedTarget;
     uint32 SelectedRevision = 0;
     double LastAcceptedServerSeconds = -1.0e30;

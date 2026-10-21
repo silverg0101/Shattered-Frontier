@@ -2,6 +2,7 @@
 #include "Interaction/SFE1InteractionTarget.h"
 #include "Framework/SFE1Settings.h"
 #include "Gathering/SFGatheringPilot.h"
+#include "Gathering/SFGatheringHud.h"
 #include "Inventory/SFInventoryPanel.h"
 #include "Components/InputComponent.h"
 #include "Engine/Engine.h"
@@ -141,6 +142,17 @@ void ASFE1PlayerController::ClientInteractionResult_Implementation(ESFE1Interact
 void ASFE1PlayerController::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+    if (IsLocalController() && !GatheringHud)
+    {
+        // The pilot component arrives after BeginPlay, so install the gathering HUD on first sight of an enabled pilot.
+        USFGatheringPilotComponent* Pilot = FindComponentByClass<USFGatheringPilotComponent>();
+        if (Pilot && Pilot->IsEnabled() && (GatheringHud = CreateWidget<USFGatheringHud>(this, USFGatheringHud::StaticClass())))
+        {
+            GatheringHud->Configure(Pilot);
+            GatheringHud->AddToViewport(10);
+            GatheringHud->SetVisibility(ESlateVisibility::HitTestInvisible);
+        }
+    }
     if (IsLocalController() && GetWorld()->GetTimeSeconds() >= NextLocalRefreshSeconds)
     {
         NextLocalRefreshSeconds = GetWorld()->GetTimeSeconds() + 0.1;
