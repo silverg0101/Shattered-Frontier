@@ -66,6 +66,19 @@ Fresh evidence root: Artifacts/Persistence/GameplayHosts/capacity-619596ee62ad43
 
 Both after tiers had zero unavailable calls and passed every SQL integrity check. Worst durable RPC p95 fell from 1501.97 to 78.69 ms at 10 participants and from 8251.6 to 78.31 ms at 25 participants. This is backend loopback evidence with simulated client delay; actual 50 ms network RTT and the 50/100 participant gates remain unmeasured.
 
+## Step 7: CharacterState fix and higher participant tiers
+
+Fresh evidence: `Artifacts/Persistence/GameplayHosts/capacity-52cfad1603b54e47945bf24440fa05cd/` (`gate-10.json`, `gate-25.json`, `gate-50.json`, `gate-100.json`, `report.md`). `tools/Test-Capacity.ps1 -Include100` used run-private host and harness output, 30 s warmup and 900 s measurement per tier, 1000 ms think time, and simulated 50 ms client delay. The runner includes 10 before 25, 50, and 100.
+
+| Participants | Accepted/s before | Accepted/s after | Worst durable RPC p95 ms before | Worst durable RPC p95 ms after | Errors before / after | Integrity after |
+| ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| 10 | 17.45 | 17.43 | 78.69 | 79.12 | 0 / 0 | pass |
+| 25 | 44.57 | 44.46 | 78.31 | 80.06 | 0 / 0 | pass |
+| 50 | unmeasured | 87.72 | unmeasured | 78.14 | unmeasured / 0 | pass |
+| 100 | unmeasured | 175.63 | unmeasured | 77.80 | unmeasured / 0 | pass |
+
+All four tiers met the measured backend target of p95 <=250 ms with zero errors and zero SQL integrity violations. The maximum at 100 was Housing.Remove. No store lock or pool setting change was needed. This remains backend loopback evidence: actual 50 ms network RTT, Unreal gameplay clients, and the 100-participant two-hour soak remain unmeasured.
+
 ## H2 authority fixture follow-up
 
 PowerShell 7.6.7 ran both authority fixtures with the pinned .NET 10.0.402 SDK and run-private build output. `Test-H2AuthorityModel.ps1` passed 22/22 cases and 120 bounded schedules (`Artifacts/Persistence/AuthorityModel/codex-lock-c744f1e1d0674d71a8ed27add6191537`).

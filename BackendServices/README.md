@@ -1,5 +1,7 @@
 # H2 backend foundation
 
+Capacity step 7 uses `tools/Test-Capacity.ps1 -Include100` with its default 30 s warmup and 900 s measurement. The runner includes a fresh 10-participant control before 25, 50, and 100; it builds the host and harness into each run's private evidence folder. See `docs/evidence/capacity-backend-2026-10-21.md` for measured backend results and the remaining network/client/soak limits.
+
 TerrainDelta backup and restore use `tools/Backup-ServiceStore.ps1` and `tools/Restore-ServiceStore.ps1` with the version 1 `terrain_delta` schema. The restore checks row counts and canonical row digests for `schema_version`, `regions`, and `operations`; `tools/Test-RestoreRehearsal.ps1` seeds an edit and verifies five-schema backup-point parity and newer-schema refusal.
 
 The package-free [WorldContent](WorldContent/README.md) project adds zone JSON validation and an in-memory deterministic World spawn-slot model. Its CLI and focused tests have separate package locks; neither is part of the historical three-project dependency verifier.
