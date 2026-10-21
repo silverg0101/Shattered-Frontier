@@ -1,6 +1,14 @@
 # INT-03: First UE server → backend slice (gathering grant through InventoryLedger)
 
-Status: proposed 2026-10-21 (Fable plan review); owner decisions in section 6 pending.
+Status: proposed 2026-10-21 (Fable plan review). Owner decision 2026-10-21: the transport is **gRPC**, chosen on performance and best practice: protobuf binary encoding, HTTP/2 multiplexing, deadlines and cancellation, streaming, and one typed contract per PER-01. Ease of setup was not a criterion. This supersedes the HTTP/JSON transport in sections 2, 3 and 6.1. Step 0 below comes first. The other defaults (6.2–6.7) stand.
+
+## 0. gRPC prerequisite (first)
+
+- **Shared contract:** `proto/sf/inventory/v1/ledger.proto` is the single contract. Its messages mirror `LedgerReceipt`/`ContainerView` and it defines the RPCs `EnsureContainer`, `GetContainer` and `Grant`. Generated code is never hand-edited.
+- **Backend:** `InventoryLedger.Host` uses ASP.NET Core gRPC (`Grpc.AspNetCore`, using versions already in `Directory.Packages.props` where possible; any new pin is locked and verified). Status mapping: OK, `FAILED_PRECONDITION`/`ALREADY_EXISTS` for rejections, `UNAVAILABLE` for the store. Every call has a deadline.
+- **Unreal:** a ThirdParty module `GameClient/Source/ThirdParty/gRPC` holds a pinned gRPC C++ release, with protobuf, abseil and the TLS dependency built from source. The build script and its hashes are committed; binaries go in ignored `Artifacts/` or are fetched by a verified script. It covers Win64 Editor/Server and records the Linux x86_64 server route (`tools/Build-LinuxServer.ps1`). Generated C++ stubs live in a server-only module, `ShatteredFrontierBackend`, and are never compiled into the client target.
+- **Async on the game thread:** calls run on a gRPC completion-queue thread. Results are marshalled back to the game thread, and `TickComponent` never blocks.
+- **Acceptance for step 0:** a `Ping`/`EnsureContainer` round trip from an automation test in the dedicated server to the host on loopback, a deadline-exceeded case, and a clean Development editor build plus a Server target build with the module.
 
 ## 1. Slice
 
