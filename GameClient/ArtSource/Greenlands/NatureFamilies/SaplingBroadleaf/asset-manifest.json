@@ -4,15 +4,15 @@
   "look_profile_role": "sapling_broadleaf",
   "variant_count": 3,
   "blender": "5.1.1",
-  "generator": "build_saplingbroadleaf.py",
+  "generator": "build_sapling.py",
   "units": "metres, Z up, front -Y, origin base centre, no ground in any mesh",
   "budget_triangles_per_variant": 60000,
   "triangles": [
-    43612,
-    43323,
-    43165
+    52421,
+    52331,
+    52241
   ],
-  "placement_scale_note": "look profile place.scale assumed [0.7, 1.1]: meshes are 1.6-2.8 m tall at 1.0 (spec 1-3 m); sink 0; doubles as GAT-01 growth stage",
+  "placement_scale_note": "At scale 1: leafy single-trunk saplings 1.61-2.76 m tall; no ground.",
   "unreal_meshes": [
     "SM_SaplingBroadleaf_00",
     "SM_SaplingBroadleaf_01",
@@ -26,21 +26,21 @@
       "normal": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_nor_gl.jpg",
       "rough": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_Rough.jpg",
       "tint": [
-        2.5,
-        2.5,
-        2.4
+        0.63,
+        0.56,
+        0.44
       ],
-      "sat": 0.1,
+      "sat": 0.7,
       "blend": {
         "base": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_Diffuse.jpg",
         "normal": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_nor_gl.jpg",
         "rough": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_Rough.jpg",
         "tint": [
+          0.17,
           0.12,
-          0.09,
-          0.06
+          0.08
         ],
-        "sat": 0.6,
+        "sat": 0.72,
         "amount": 1.0,
         "contrast": 0.2
       }
@@ -52,13 +52,26 @@
       "arm": "Sources/tree_small_02/textures/tree_small_02_leaves_arm_2k.jpg",
       "alpha": "Sources/tree_small_02/textures/tree_small_02_leaves_alpha_2k.png",
       "tint": [
-        1.35,
-        1.6,
-        0.7
+        1.19,
+        1.39,
+        0.79
       ],
-      "sat": 1.05,
+      "sat": 0.91,
       "two_sided": true,
-      "alpha_mode": "MASKED"
+      "alpha_mode": "MASKED",
+      "blend": {
+        "base": "Sources/tree_small_02/textures/tree_small_02_leaves_diff_2k.jpg",
+        "normal": "Sources/tree_small_02/textures/tree_small_02_leaves_nor_gl_2k.jpg",
+        "arm": "Sources/tree_small_02/textures/tree_small_02_leaves_arm_2k.jpg",
+        "tint": [
+          0.52,
+          0.66,
+          0.41
+        ],
+        "sat": 0.7,
+        "amount": 0.67,
+        "contrast": 0.43
+      }
     }
   ],
   "variants": [
@@ -66,22 +79,22 @@
       "mesh": "SM_SaplingBroadleaf_00",
       "seed": 5,
       "stems": 1,
-      "wood_triangles": 3518,
-      "leaf_triangles": 40094,
-      "leaf_scale": 1.25,
+      "branches": 11,
+      "wood_triangles": 1406,
+      "leaf_triangles": 51015,
       "materials": [
         "MI_SaplingBroadleaf_Bark",
         "MI_SaplingBroadleaf_Leaf"
       ],
-      "triangles": 43612,
-      "vertices": 36214,
+      "triangles": 52421,
+      "vertices": 46411,
       "size_m": [
-        1.877,
-        1.853,
-        3.285
+        1.717,
+        1.458,
+        2.76
       ],
       "fbx": "SM_SaplingBroadleaf_00.fbx",
-      "fbx_sha256": "b5203c3eed12fc30898cc4e7586fbc78555c7d8956bcf5e15409da339d41e0b3",
+      "fbx_sha256": "fe727cfca542e3024bc2618642ba3c48643fbcc938cbec77f74b8c18058e188b",
       "origin": "base centre (footprint centre, lowest point z=0)",
       "collision_ucx": [
         "UCX_SM_SaplingBroadleaf_00_00"
@@ -91,22 +104,22 @@
       "mesh": "SM_SaplingBroadleaf_01",
       "seed": 8,
       "stems": 1,
-      "wood_triangles": 3242,
-      "leaf_triangles": 40081,
-      "leaf_scale": 1.2,
+      "branches": 10,
+      "wood_triangles": 1316,
+      "leaf_triangles": 51015,
       "materials": [
         "MI_SaplingBroadleaf_Bark",
         "MI_SaplingBroadleaf_Leaf"
       ],
-      "triangles": 43323,
-      "vertices": 35930,
+      "triangles": 52331,
+      "vertices": 46361,
       "size_m": [
-        1.769,
-        1.673,
-        2.503
+        1.228,
+        1.405,
+        2.19
       ],
       "fbx": "SM_SaplingBroadleaf_01.fbx",
-      "fbx_sha256": "9f14f8a3efd8034cc10322f5f1ecb395b8fe413302eda94e6e7014f787b99298",
+      "fbx_sha256": "76ff90b508d8f0a87edccbb61d05e755add8efaff40d7895197cefdafa385408",
       "origin": "base centre (footprint centre, lowest point z=0)",
       "collision_ucx": [
         "UCX_SM_SaplingBroadleaf_01_00"
@@ -116,22 +129,22 @@
       "mesh": "SM_SaplingBroadleaf_02",
       "seed": 12,
       "stems": 1,
-      "wood_triangles": 3114,
-      "leaf_triangles": 40051,
-      "leaf_scale": 1.15,
+      "branches": 9,
+      "wood_triangles": 1226,
+      "leaf_triangles": 51015,
       "materials": [
         "MI_SaplingBroadleaf_Bark",
         "MI_SaplingBroadleaf_Leaf"
       ],
-      "triangles": 43165,
-      "vertices": 35986,
+      "triangles": 52241,
+      "vertices": 46311,
       "size_m": [
-        1.9,
-        1.713,
-        2.221
+        1.086,
+        1.085,
+        1.61
       ],
       "fbx": "SM_SaplingBroadleaf_02.fbx",
-      "fbx_sha256": "f26ead3debc5af772c6ebe8bbed1dc0fdd1c86dbfcf785ae7d7f60f63a9a427a",
+      "fbx_sha256": "ede03558dd8670a5d53d26c3be92a6e27374eaf352e1a7c2484bccee8da92437",
       "origin": "base centre (footprint centre, lowest point z=0)",
       "collision_ucx": [
         "UCX_SM_SaplingBroadleaf_02_00"
@@ -264,7 +277,8 @@
     }
   ],
   "renders": [
-    "SaplingBroadleaf-Variants.png"
+    "SaplingBroadleaf-Variants.png",
+    "SaplingBroadleaf-Detail-3m.png"
   ],
   "concept_reference": "docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp"
 }
