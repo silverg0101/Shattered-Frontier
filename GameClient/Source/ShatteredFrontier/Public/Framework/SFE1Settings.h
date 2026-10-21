@@ -78,6 +78,36 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Camera", meta=(ClampMin="0.5", ClampMax="10.0", ToolTip="Follow swing speed (FInterpTo, per second)."))
     float CameraFollowInterpSpeed = 3.0f;
 
+    // CTL-02 client presentation. Release authors only; validated at process startup.
+    UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ToolTip="Shipped master switch; player preference can also disable framing."))
+    bool bCombatFramingEnabled = true;
+    UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ClampMin="100", ClampMax="1200", Units="cm"))
+    float CombatFramingMaxZoomCm = 450.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ClampMin="0.1", ClampMax="3", Units="s", ToolTip="Blend in duration; blend out takes twice as long."))
+    float CombatFramingBlendSeconds = 0.6f;
+    UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ClampMin="0", ClampMax="10", Units="s"))
+    float CombatFramingSteerHoldSeconds = 1.5f;
+    UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ClampMin="0", ClampMax="120", Units="cm"))
+    float CombatShoulderOffsetCm = 55.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ClampMin="-60", ClampMax="60", Units="cm"))
+    float CombatShoulderHeightCm = -15.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ClampMin="0", ClampMax="45", Units="deg"))
+    float CombatFramingDeadzoneDegrees = 8.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ClampMin="0.5", ClampMax="10", ToolTip="Yaw and pitch interpolation speed in inverse seconds."))
+    float CombatFramingYawSpeed = 2.5f;
+    UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ClampMin="-20", ClampMax="20", Units="deg"))
+    float CombatPitchBiasDegrees = -5.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ClampMin="0", ClampMax="3", Units="s"))
+    float CombatOcclusionGraceSeconds = 0.5f;
+    UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ClampMin="0.02", ClampMax="0.5", Units="s"))
+    float CombatOcclusionProbeSeconds = 0.1f;
+    UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ClampMin="1.2", ClampMax="16", ToolTip="Lens f-number during combat framing."))
+    float CombatDofFstop = 2.8f;
+    UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ClampMin="0", ClampMax="1", ToolTip="Maximum depth-of-field post-process blend weight."))
+    float CombatDofStrength = 1.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ClampMin="18", ClampMax="50", Units="mm"))
+    float CombatDofSensorWidthMm = 36.0f;
+
     UPROPERTY(Config, EditAnywhere, Category="Movement", meta=(ToolTip="A/D strafe instead of turning when RMB is not held."))
     bool bStrafeWithAD = false;
 

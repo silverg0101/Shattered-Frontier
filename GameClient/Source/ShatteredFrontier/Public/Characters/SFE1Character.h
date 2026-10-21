@@ -28,6 +28,8 @@ public:
     int32 CombatHealth() const { return PilotHealth; }
     AActor* GetCombatTarget() const { return CombatTarget; }
     void SetCombatTarget(AActor* Target);
+    // Local dialogue UI calls this on open/close; never sent to the server.
+    void SetDialogueFramingTarget(AActor* Speaker);
     UPROPERTY(VisibleAnywhere) TObjectPtr<USFCrowdControlComponent> CrowdControl;
 
 private:
@@ -60,6 +62,16 @@ private:
     UPROPERTY(Transient) TArray<TObjectPtr<UInputAction>> PlayerActions;
     FSFMouseButtonState OrbitButton, MouseLookButton;
     FRotator CameraRotation = FRotator::ZeroRotator;
+    TWeakObjectPtr<AActor> DialogueFramingTarget;
+    TWeakObjectPtr<AActor> LastFramingTarget;
+    float CombatFramingBlend = 0.0f;
+    float CombatFocusDistanceCm = 0.0f;
+    float CombatDofBlend = 0.0f;
+    double LastFramingSteerAt = -100.0;
+    double LastFramingProbeAt = -100.0;
+    double FramingOccludedSince = -1.0;
+    bool bFramingEngaged = false;
+    bool bFramingVisible = true;
     float LastControlYaw = 0, LastControlPitch = 0, DesiredArmCm = 0;
     uint32 HeldLastTick = 0;
     bool bFirstPerson = false, bAutorun = false, bWalkToggled = false, bMouseCaptured = false, bBuildMappingActive = false;

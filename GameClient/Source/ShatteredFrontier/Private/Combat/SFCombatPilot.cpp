@@ -380,7 +380,7 @@ void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarg
     const double Now = GetWorld()->GetTimeSeconds();
     if (Now < PlayerNextSwing.FindRef(Attacker)) { return; }
     ASFPilotBoar* Best = nullptr; double BestDistance = CapturedSettings->MeleeRangeMetres * 100;
-    const FVector Facing = Attacker->GetControlRotation().Vector().GetSafeNormal2D();
+    const FVector Facing = Attacker->GetActorForwardVector().GetSafeNormal2D();
     for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
     {
         if (!IsValid(*It) || It->IsActorBeingDestroyed() || It->Health() <= 0 || IsSafe(It->GetActorLocation())

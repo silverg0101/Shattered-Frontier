@@ -11,13 +11,17 @@
 #include "InputAction.h"
 #include "InputMappingContext.h"
 #include "Framework/SFE1Settings.h"
+#include "Framework/SFGameUserSettings.h"
+#include "Characters/SFCombatFramingLogic.h"
 #include "Combat/SFCombatPilot.h"
 #include "Combat/SFTabTargetSelection.h"
 #include "Combat/SFCrowdControlComponent.h"
 #include "Framework/SFPlayerController.h"
 #include "Engine/World.h"
+#include "Engine/Engine.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/GameUserSettings.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
 #include "InputCoreTypes.h"
@@ -169,6 +173,12 @@ void ASFE1Character::PawnClientRestart()
     LastControlYaw = CameraRotation.Yaw;
     LastControlPitch = 0.0f;
     DesiredArmCm = Settings->CameraBoomLengthCm;
+    CombatFramingBlend = 0.0f;
+    CombatDofBlend = 0.0f;
+    bFramingEngaged = false;
+    LastFramingTarget.Reset();
+    CameraBoom->SocketOffset = FVector::ZeroVector;
+    FollowCamera->PostProcessBlendWeight = 0.0f;
     SetMouseCaptured(false);
 }
 
@@ -320,6 +330,70 @@ void ASFE1Character::TickCameraControls(float Dt)
     if (GetMesh()->bOwnerNoSee != bHideBody) { GetMesh()->SetOwnerNoSee(bHideBody); }
     CameraBoom->bEnableCameraLag = S->CameraLagSpeed > 0.0f && !bFirstPerson;
 
+    // CTL-02: all camera changes are local. The owner-only CombatTarget is also the selected Tab target.
+    const USFGameUserSettings* Preferences = GEngine ? Cast<USFGameUserSettings>(GEngine->GetGameUserSettings()) : nullptr;
+    AActor* FrameTarget = IsValid(DialogueFramingTarget.Get()) ? DialogueFramingTarget.Get() : CombatTarget.Get();
+    if (!IsValid(FrameTarget) || FrameTarget->IsActorBeingDestroyed() || FrameTarget->GetWorld() != GetWorld()) { FrameTarget = nullptr; }
+    const bool bWanted = SFCombatFramingLogic::ShouldEngage(bFramingEngaged, FrameTarget != nullptr,
+        S->bCombatFramingEnabled && (!Preferences || Preferences->bCombatFraming), bFirstPerson,
+        DesiredArmCm, S->CombatFramingMaxZoomCm);
+    if (FrameTarget && FrameTarget != LastFramingTarget.Get())
+    {
+        // Keep the shoulder continuous; the new yaw and focus ease from their current values.
+        FramingOccludedSince = -1.0;
+        LastFramingProbeAt = -100.0;
+    }
+    LastFramingTarget = FrameTarget;
+    bFramingEngaged = bWanted;
+    CombatFramingBlend = SFCombatFramingLogic::AdvanceBlend(CombatFramingBlend, bWanted, Dt, S->CombatFramingBlendSeconds);
+    const float Side = Preferences && Preferences->CombatShoulderSide == ESFCombatShoulderSide::Left ? -1.0f : 1.0f;
+    CameraBoom->SocketOffset = FVector(0.0f, Side * S->CombatShoulderOffsetCm,
+        S->CombatShoulderHeightCm) * CombatFramingBlend;
+
+    const bool bSteering = OrbitButton.bDown || MouseLookButton.bDown || !Stick.IsNearlyZero(0.05f);
+    if (bSteering) { LastFramingSteerAt = Now; }
+    if (FrameTarget && bWanted && Now - LastFramingProbeAt >= S->CombatOcclusionProbeSeconds)
+    {
+        LastFramingProbeAt = Now;
+        FHitResult Hit;
+        FCollisionQueryParams Query(SCENE_QUERY_STAT(CombatFramingVisibility), false, this);
+        const FVector Centre = FrameTarget->GetActorLocation();
+        const bool bBlocked = GetWorld()->LineTraceSingleByChannel(Hit, FollowCamera->GetComponentLocation(), Centre,
+            ECC_Visibility, Query) && Hit.GetActor() != FrameTarget;
+        bFramingVisible = !bBlocked;
+        if (bBlocked && FramingOccludedSince < 0.0) { FramingOccludedSince = Now; }
+        if (!bBlocked) { FramingOccludedSince = -1.0; }
+    }
+    const bool bOccluded = !bFramingVisible && FramingOccludedSince >= 0.0
+        && Now - FramingOccludedSince > S->CombatOcclusionGraceSeconds;
+    if (FrameTarget && bWanted && !bOccluded && !bSteering
+        && Now - LastFramingSteerAt >= S->CombatFramingSteerHoldSeconds)
+    {
+        const FRotator ToTarget = (FrameTarget->GetActorLocation() - CameraBoom->GetComponentLocation()).Rotation();
+        CameraRotation.Yaw = SFCombatFramingLogic::AssistAxis(CameraRotation.Yaw, ToTarget.Yaw,
+            S->CombatFramingDeadzoneDegrees, S->CombatFramingYawSpeed, CombatFramingBlend, Dt);
+        const float DesiredPitch = FMath::Clamp(FRotator::NormalizeAxis(ToTarget.Pitch) + S->CombatPitchBiasDegrees,
+            S->CameraPitchMinDegrees, S->CameraPitchMaxDegrees);
+        CameraRotation.Pitch = FMath::Clamp(SFCombatFramingLogic::AssistAxis(CameraRotation.Pitch, DesiredPitch,
+            S->CombatFramingDeadzoneDegrees, S->CombatFramingYawSpeed, CombatFramingBlend, Dt),
+            S->CameraPitchMinDegrees, S->CameraPitchMaxDegrees);
+    }
+    // Physical DoF has one focal plane: the target is sharp, while the near shoulder is mildly soft.
+    const FVector FocusPoint = FrameTarget && !bOccluded ? FrameTarget->GetActorLocation() : GetActorLocation();
+    const float DesiredFocusCm = FVector::Distance(FollowCamera->GetComponentLocation(), FocusPoint);
+    CombatFocusDistanceCm = CombatFocusDistanceCm <= 0.0f ? DesiredFocusCm
+        : FMath::FInterpTo(CombatFocusDistanceCm, DesiredFocusCm, Dt, 1.0f / S->CombatFramingBlendSeconds);
+    FollowCamera->PostProcessSettings.bOverride_DepthOfFieldFocalDistance = true;
+    FollowCamera->PostProcessSettings.bOverride_DepthOfFieldFstop = true;
+    FollowCamera->PostProcessSettings.bOverride_DepthOfFieldSensorWidth = true;
+    FollowCamera->PostProcessSettings.DepthOfFieldFocalDistance = CombatFocusDistanceCm;
+    FollowCamera->PostProcessSettings.DepthOfFieldFstop = S->CombatDofFstop;
+    FollowCamera->PostProcessSettings.DepthOfFieldSensorWidth = S->CombatDofSensorWidthMm;
+    const float DesiredDofBlend = Preferences && !Preferences->bCombatDepthOfField ? 0.0f
+        : CombatFramingBlend * S->CombatDofStrength * (bOccluded ? 0.0f : 1.0f);
+    CombatDofBlend = FMath::FInterpTo(CombatDofBlend, DesiredDofBlend, Dt, 1.0f / S->CombatFramingBlendSeconds);
+    FollowCamera->PostProcessBlendWeight = CombatDofBlend;
+
     CameraRotation.Yaw = FRotator::NormalizeAxis(CameraRotation.Yaw);
     CameraBoom->SetWorldRotation(FRotator(CameraRotation.Pitch, CameraRotation.Yaw, 0.0f));
     Control.Yaw = FRotator::NormalizeAxis(Control.Yaw);
@@ -353,6 +427,11 @@ void ASFE1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 void ASFE1Character::SetCombatTarget(AActor* Target)
 {
     if (HasAuthority() && CombatTarget != Target) { CombatTarget = Target; ForceNetUpdate(); }
+}
+
+void ASFE1Character::SetDialogueFramingTarget(AActor* Speaker)
+{
+    if (IsLocallyControlled()) { DialogueFramingTarget = Speaker; }
 }
 
 void ASFE1Character::CombatSetHealth(int32 Value)
