@@ -94,7 +94,7 @@ public:
         ChildSlot
         [
             SNew(SOverlay)
-            + SOverlay::Slot()[ SNew(SScaleBox).Stretch(EStretch::ScaleToFill)[ SNew(SImage).Image(&BackgroundBrush) ] ]
+            + SOverlay::Slot()[ SNew(SImage).Image(&BackgroundBrush) ]
             + SOverlay::Slot()[ SNew(SImage).Image(&VignetteBrush) ]
             + SOverlay::Slot()
             [
@@ -105,7 +105,7 @@ public:
                         SNew(SCanvas)
                         + SCanvas::Slot().Position(FVector2D(960.f - 110.f, 452.f - 110.f)).Size(FVector2D(220.f, 220.f))
                         [ SNew(SImage).Image(&EmblemBrush) ]
-                        + SCanvas::Slot().Position(FVector2D(0.f, 560.f)).Size(FVector2D(1920.f, 100.f))
+                        + SCanvas::Slot().Position(FVector2D(0.f, 548.f)).Size(FVector2D(1920.f, 140.f))
                         [ SNew(STextBlock).Text(FText::FromString(Settings.ZoneTitle)).Font(LoadingScreenFont(TEXT("FontFace_EBGaramondRegular"), 84)).Justification(ETextJustify::Center).ColorAndOpacity(SFHudStyle::Ivory()).ShadowOffset(FVector2D(3, 3)).ShadowColorAndOpacity(Shadow) ]
                         + SCanvas::Slot().Position(FVector2D(960.f - 253.f, 697.f - 24.f)).Size(FVector2D(506.f, 48.f))
                         [ SNew(SImage).Image(&RuleBrush) ]

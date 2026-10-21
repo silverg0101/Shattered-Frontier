@@ -8,10 +8,10 @@ public static class LsVignette {
     for (int y = 0; y < h; y++) for (int x = 0; x < w; x++) {
       float u = (x + .5f) / w, v = (y + .5f) / h;
       float dx = (u - .5f) / .5f, dy = (v - .5f) / .5f;
-      float edge = .5f * S(.55f, 1.25f, (float)System.Math.Sqrt(dx * dx + dy * dy));
+      float edge = .25f * S(.55f, 1.25f, (float)System.Math.Sqrt(dx * dx + dy * dy));
       float ex = (u - .5f) / .32f, ey = (v - .56f) / .32f;                          // behind emblem + title + rule
-      float centre = .5f * (1f - S(.35f, 1f, (float)System.Math.Sqrt(ex * ex + ey * ey)));
-      float band = .72f * S(.68f, .86f, v);                                          // tip, bar, spinner
+      float centre = .45f * (1f - S(.35f, 1f, (float)System.Math.Sqrt(ex * ex + ey * ey)));
+      float band = .6f * S(.68f, .86f, v);                                          // tip, bar, spinner
       float a = 1f - (1f - edge) * (1f - centre) * (1f - band);
       int i = y * stride + x * 4; px[i] = 0; px[i + 1] = 0; px[i + 2] = 0; px[i + 3] = (byte)(a * 255f + .5f);
     }
