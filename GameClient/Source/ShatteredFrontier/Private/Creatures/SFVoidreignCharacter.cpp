@@ -1,5 +1,6 @@
 #include "Creatures/SFVoidreignCharacter.h"
 
+#include "Combat/SFCrowdControlComponent.h"
 #include "Creatures/SFCompanionMilestones.h"
 
 #include "Animation/AnimInstance.h"
@@ -53,6 +54,7 @@ ESFRiftRecallReject SFRiftRecallRules::Validate(bool bHasAnchor, double Now, dou
 ASFVoidreignCharacter::ASFVoidreignCharacter()
 {
     PrimaryActorTick.bCanEverTick = true;
+    CrowdControl = CreateDefaultSubobject<USFCrowdControlComponent>(TEXT("CrowdControl"));
     RiderMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("RiderMesh"));
     RiderMesh->SetupAttachment(GetMesh(), RiderSeatBone);
     RiderMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -166,9 +168,9 @@ void ASFVoidreignCharacter::TryRiftRecall()
     const UCapsuleComponent* Capsule = GetCapsuleComponent();
     const FCollisionShape Shape = FCollisionShape::MakeCapsule(Capsule->GetScaledCapsuleRadius() * 0.9f, Capsule->GetScaledCapsuleHalfHeight() * 0.9f);
     const bool bClear = !GetWorld()->SweepTestByChannel(Here, There, FQuat::Identity, ECC_Pawn, Shape, Params);
-    // ponytail: no crowd-control state exists on mounts yet; wire rooted/stunned/feared/incapacitated here when it does.
+    // ponytail: only stun/root are crowd control so far; add fear/incapacitate to IsImmobilised when those categories exist.
     LastReject = SFRiftRecallRules::Validate(Phase == ESFVoidreignPhase::Hold, PhaseTime - HeldSeconds, WindowSeconds, FVector::Dist(Here, There),
-        AnchorMaxCm, bLineOfSight, bClear ? 1.0 : 0.0, false);
+        AnchorMaxCm, bLineOfSight, bClear ? 1.0 : 0.0, CrowdControl->IsImmobilised());
     if (LastReject != ESFRiftRecallReject::None) return;  // anchor kept until the window expires
     RiderLockoutSeconds = GetDefault<USFVoidreignSettings>()->RiftRiderLockoutMs / 1000.f;
     RiderLockedUntil = TNumericLimits<double>::Max();  // until arrival plus the lockout
@@ -265,6 +267,7 @@ void ASFVoidreignCharacter::Tick(float DeltaSeconds)
     {
         bCollapsePending = false;
         MulticastRiftCollapse(CollapsePoint);
+        USFCrowdControlComponent::ApplyInRadius(GetWorld(), CollapsePoint, SFRiftRecallRules::CollapseRadiusCm, this, ESFCrowdControl::Snare, CollapseSnareBp, CollapseSnareMs);
         OnRiftCollapse.Broadcast(CollapsePoint, SFRiftRecallRules::CollapseRadiusCm, CollapseSnareBp, CollapseSnareMs);
     }
 

@@ -5,6 +5,7 @@
 #include "SFE1Character.generated.h"
 
 class UCameraComponent;
+class USFCrowdControlComponent;
 class USpringArmComponent;
 class UStaticMeshComponent;
 class UTextRenderComponent;
@@ -21,6 +22,7 @@ public:
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     void CombatSetHealth(int32 Value);
     int32 CombatHealth() const { return PilotHealth; }
+    UPROPERTY(VisibleAnywhere) TObjectPtr<USFCrowdControlComponent> CrowdControl;
 
 private:
     UPROPERTY(ReplicatedUsing=OnRep_PilotHealth) int32 PilotHealth = 0;

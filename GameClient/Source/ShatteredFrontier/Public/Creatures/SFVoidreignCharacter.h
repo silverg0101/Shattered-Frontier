@@ -5,6 +5,7 @@
 #include "SFVoidreignCharacter.generated.h"
 
 class UAnimSequence;
+class USFCrowdControlComponent;
 class UBlendSpace;
 class UMaterialInstanceDynamic;
 class UMaterialInterface;
@@ -64,7 +65,7 @@ namespace SFRiftRecallRules
         double AnchorMaxCm, bool bLineOfSight, double PathRatio, bool bIncapacitated);
 }
 
-/** Rift Collapse implosion: bind the crowd-control system here to snare targets in range (DR applies there). */
+/** Rift Collapse implosion, broadcast after the snare is applied to USFCrowdControlComponent holders in range (DR applies there). */
 DECLARE_MULTICAST_DELEGATE_FourParams(FSFRiftCollapseDelegate, const FVector& /*Point*/, float /*RadiusCm*/, int32 /*SnareBp*/, int32 /*SnareMs*/);
 
 /** Ability phase; replicated so every client plays the matching clip and effects (OnRep_Phase). */
@@ -107,6 +108,7 @@ public:
     bool IsHoldingAnchor() const { return bHolding; }
     FSFRiftCollapseDelegate OnRiftCollapse;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Voidreign") TObjectPtr<USFCrowdControlComponent> CrowdControl;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Voidreign|Rider") TObjectPtr<USkeletalMeshComponent> RiderMesh;
     /** Rider seat blend space on the rider skeleton, X = mount ground speed (cm/s). */
     UPROPERTY(EditAnywhere, Category = "Voidreign|Rider") TObjectPtr<UBlendSpace> RiderLocomotion;

@@ -6,6 +6,7 @@
 #include "Components/TextRenderComponent.h"
 #include "Framework/SFE1Settings.h"
 #include "Combat/SFCombatPilot.h"
+#include "Combat/SFCrowdControlComponent.h"
 #include "Interaction/SFE1PlayerController.h"
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -36,6 +37,7 @@ ASFE1Character::ASFE1Character()
     GetCharacterMovement()->MaxStepHeight = Settings->StepHeightMetres * 100.0f;
     GetCharacterMovement()->AirControl = 0.0f;
 
+    CrowdControl = CreateDefaultSubobject<USFCrowdControlComponent>(TEXT("CrowdControl"));
     FixtureBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FixtureBody"));
     FixtureBody->SetupAttachment(GetCapsuleComponent());
     FixtureBody->SetCollisionEnabled(ECollisionEnabled::NoCollision);
