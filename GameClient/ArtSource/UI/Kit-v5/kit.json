@@ -13,13 +13,17 @@
     "crimson": "#A34842",
     "amber": "#B69A55"
   },
+  "fonts": {
+    "text_serif": "GameClient/ArtSource/Fonts/EBGaramond/EBGaramond-Regular.ttf",
+    "sans_numerals": "GameClient/ArtSource/Fonts/SourceSans3/SourceSans3-Regular.ttf"
+  },
   "pieces": {
     "window_frame": {
       "file": "window_frame.png",
       "nine_slice_px": [
+        36,
         28,
-        28,
-        28,
+        36,
         28
       ],
       "intended_1080p_px": [
@@ -35,9 +39,9 @@
     "panel_frame": {
       "file": "panel_frame.png",
       "nine_slice_px": [
+        36,
         28,
-        28,
-        28,
+        36,
         28
       ],
       "intended_1080p_px": [
@@ -58,10 +62,10 @@
     "tooltip_frame": {
       "file": "tooltip_frame.png",
       "nine_slice_px": [
-        24,
-        24,
-        24,
-        24
+        36,
+        28,
+        36,
+        28
       ],
       "intended_1080p_px": [
         320,
@@ -74,9 +78,9 @@
     "modal_frame": {
       "file": "modal_frame.png",
       "nine_slice_px": [
+        36,
         28,
-        28,
-        28,
+        36,
         28
       ],
       "intended_1080p_px": [
@@ -91,10 +95,10 @@
     "target_frame": {
       "file": "target_frame.png",
       "nine_slice_px": [
-        32,
-        20,
-        32,
-        20
+        36,
+        28,
+        36,
+        28
       ],
       "intended_1080p_px": [
         410,
@@ -118,10 +122,10 @@
     "quest_tracker_frame": {
       "file": "quest_tracker_frame.png",
       "nine_slice_px": [
-        24,
-        24,
-        24,
-        24
+        36,
+        28,
+        36,
+        28
       ],
       "intended_1080p_px": [
         280,
@@ -146,9 +150,9 @@
       "file": "toast_frame.png",
       "nine_slice_px": [
         54,
-        18,
-        20,
-        18
+        28,
+        36,
+        28
       ],
       "intended_1080p_px": [
         280,
@@ -172,10 +176,10 @@
     "news_frame": {
       "file": "news_frame.png",
       "nine_slice_px": [
-        24,
-        24,
-        24,
-        24
+        36,
+        28,
+        36,
+        28
       ],
       "intended_1080p_px": [
         320,
@@ -188,10 +192,10 @@
     "detail_card_frame": {
       "file": "detail_card_frame.png",
       "nine_slice_px": [
-        24,
-        24,
-        24,
-        24
+        36,
+        28,
+        36,
+        28
       ],
       "intended_1080p_px": [
         290,
@@ -205,10 +209,10 @@
     "search_field": {
       "file": "search_field.png",
       "nine_slice_px": [
-        16,
-        12,
-        16,
-        12
+        36,
+        18,
+        36,
+        18
       ],
       "intended_1080p_px": [
         260,
@@ -224,10 +228,10 @@
     "dropdown_field": {
       "file": "dropdown_field.png",
       "nine_slice_px": [
-        16,
-        12,
-        16,
-        12
+        36,
+        20,
+        36,
+        20
       ],
       "intended_1080p_px": [
         220,
@@ -241,10 +245,10 @@
     "realm_plate": {
       "file": "realm_plate.png",
       "nine_slice_px": [
-        20,
-        14,
-        20,
-        14
+        36,
+        21,
+        36,
+        21
       ],
       "intended_1080p_px": [
         240,
@@ -259,9 +263,9 @@
       "file": "title_banner.png",
       "nine_slice_px": [
         36,
-        20,
+        28,
         36,
-        20
+        28
       ],
       "intended_1080p_px": [
         440,
@@ -274,10 +278,10 @@
     "legend_frame": {
       "file": "legend_frame.png",
       "nine_slice_px": [
-        24,
-        24,
-        24,
-        24
+        36,
+        28,
+        36,
+        28
       ],
       "intended_1080p_px": [
         240,
@@ -306,10 +310,10 @@
     "character_row": {
       "file": "character_row.png",
       "nine_slice_px": [
-        22,
-        22,
-        22,
-        22
+        36,
+        28,
+        36,
+        28
       ],
       "intended_1080p_px": [
         420,
@@ -322,10 +326,10 @@
     "recipe_row": {
       "file": "recipe_row.png",
       "nine_slice_px": [
-        20,
-        14,
-        20,
-        14
+        36,
+        28,
+        36,
+        28
       ],
       "intended_1080p_px": [
         320,
@@ -338,10 +342,10 @@
     "quest_row": {
       "file": "quest_row.png",
       "nine_slice_px": [
-        20,
-        14,
-        20,
-        14
+        36,
+        28,
+        36,
+        28
       ],
       "intended_1080p_px": [
         360,
@@ -386,10 +390,10 @@
     "button_normal": {
       "file": "button_normal.png",
       "nine_slice_px": [
-        24,
-        20,
-        24,
-        20
+        40,
+        28,
+        40,
+        28
       ],
       "intended_1080p_px": [
         300,
@@ -415,10 +419,10 @@
     "button_hover": {
       "file": "button_hover.png",
       "nine_slice_px": [
-        24,
-        20,
-        24,
-        20
+        40,
+        28,
+        40,
+        28
       ],
       "intended_1080p_px": [
         300,
@@ -444,10 +448,10 @@
     "button_pressed": {
       "file": "button_pressed.png",
       "nine_slice_px": [
-        24,
-        20,
-        24,
-        20
+        40,
+        28,
+        40,
+        28
       ],
       "intended_1080p_px": [
         300,
@@ -473,10 +477,10 @@
     "button_disabled": {
       "file": "button_disabled.png",
       "nine_slice_px": [
-        24,
-        20,
-        24,
-        20
+        40,
+        28,
+        40,
+        28
       ],
       "intended_1080p_px": [
         300,
@@ -501,10 +505,10 @@
     "button_primary_brass": {
       "file": "button_primary_brass.png",
       "nine_slice_px": [
-        24,
-        20,
-        24,
-        20
+        40,
+        28,
+        40,
+        28
       ],
       "intended_1080p_px": [
         300,
@@ -530,10 +534,10 @@
     "button_destructive": {
       "file": "button_destructive.png",
       "nine_slice_px": [
-        24,
-        20,
-        24,
-        20
+        40,
+        28,
+        40,
+        28
       ],
       "intended_1080p_px": [
         300,
@@ -558,10 +562,10 @@
     "tab_normal": {
       "file": "tab_normal.png",
       "nine_slice_px": [
-        16,
-        12,
-        16,
-        12
+        36,
+        22,
+        36,
+        22
       ],
       "intended_1080p_px": [
         190,
@@ -586,10 +590,10 @@
     "tab_selected": {
       "file": "tab_selected.png",
       "nine_slice_px": [
-        16,
-        12,
-        16,
-        12
+        36,
+        22,
+        36,
+        22
       ],
       "intended_1080p_px": [
         190,
@@ -614,10 +618,10 @@
     "slot_bag_normal": {
       "file": "slot_bag_normal.png",
       "nine_slice_px": [
-        16,
-        16,
-        16,
-        16
+        25,
+        25,
+        25,
+        25
       ],
       "intended_1080p_px": [
         64,
@@ -631,10 +635,10 @@
     "slot_bag_selected": {
       "file": "slot_bag_selected.png",
       "nine_slice_px": [
-        16,
-        16,
-        16,
-        16
+        25,
+        25,
+        25,
+        25
       ],
       "intended_1080p_px": [
         64,
@@ -647,10 +651,10 @@
     "slot_equipment_normal": {
       "file": "slot_equipment_normal.png",
       "nine_slice_px": [
-        16,
-        16,
-        16,
-        16
+        28,
+        28,
+        28,
+        28
       ],
       "intended_1080p_px": [
         72,
@@ -663,10 +667,10 @@
     "slot_equipment_selected": {
       "file": "slot_equipment_selected.png",
       "nine_slice_px": [
-        16,
-        16,
-        16,
-        16
+        28,
+        28,
+        28,
+        28
       ],
       "intended_1080p_px": [
         72,
@@ -679,10 +683,10 @@
     "slot_hotbar_normal": {
       "file": "slot_hotbar_normal.png",
       "nine_slice_px": [
-        16,
-        16,
-        16,
-        16
+        35,
+        35,
+        35,
+        35
       ],
       "intended_1080p_px": [
         88,
@@ -706,10 +710,10 @@
     "slot_hotbar_selected": {
       "file": "slot_hotbar_selected.png",
       "nine_slice_px": [
-        16,
-        16,
-        16,
-        16
+        35,
+        35,
+        35,
+        35
       ],
       "intended_1080p_px": [
         88,
@@ -733,10 +737,10 @@
     "slot_catalogue_normal": {
       "file": "slot_catalogue_normal.png",
       "nine_slice_px": [
-        16,
-        16,
-        16,
-        16
+        36,
+        36,
+        36,
+        36
       ],
       "intended_1080p_px": [
         100,
@@ -749,10 +753,10 @@
     "slot_catalogue_selected": {
       "file": "slot_catalogue_selected.png",
       "nine_slice_px": [
-        16,
-        16,
-        16,
-        16
+        36,
+        36,
+        36,
+        36
       ],
       "intended_1080p_px": [
         100,
@@ -792,10 +796,10 @@
     "bar_hp": {
       "file": "bar_hp.png",
       "nine_slice_px": [
-        30,
-        10,
-        30,
-        10
+        54,
+        12,
+        54,
+        12
       ],
       "intended_1080p_px": [
         380,
@@ -820,10 +824,10 @@
     "bar_stamina": {
       "file": "bar_stamina.png",
       "nine_slice_px": [
-        30,
-        10,
-        30,
-        10
+        54,
+        12,
+        54,
+        12
       ],
       "intended_1080p_px": [
         380,
@@ -848,10 +852,10 @@
     "bar_xp": {
       "file": "bar_xp.png",
       "nine_slice_px": [
-        30,
-        10,
-        30,
-        10
+        54,
+        12,
+        54,
+        12
       ],
       "intended_1080p_px": [
         380,
@@ -867,10 +871,10 @@
     "bar_channel": {
       "file": "bar_channel.png",
       "nine_slice_px": [
-        30,
-        10,
-        30,
-        10
+        54,
+        12,
+        54,
+        12
       ],
       "intended_1080p_px": [
         380,
@@ -990,10 +994,10 @@
     "minimap_footer": {
       "file": "minimap_footer.png",
       "nine_slice_px": [
+        36,
         16,
-        12,
-        16,
-        12
+        36,
+        16
       ],
       "intended_1080p_px": [
         180,
@@ -1122,10 +1126,10 @@
     "slider_track": {
       "file": "slider_track.png",
       "nine_slice_px": [
-        14,
-        8,
-        14,
-        8
+        36,
+        6,
+        36,
+        6
       ],
       "intended_1080p_px": [
         300,
@@ -1156,10 +1160,10 @@
     "toggle_segment": {
       "file": "toggle_segment.png",
       "nine_slice_px": [
-        14,
-        8,
-        14,
-        8
+        36,
+        18,
+        36,
+        18
       ],
       "intended_1080p_px": [
         90,
@@ -1172,10 +1176,10 @@
     "stepper_field": {
       "file": "stepper_field.png",
       "nine_slice_px": [
-        14,
-        8,
-        14,
-        8
+        36,
+        19,
+        36,
+        19
       ],
       "intended_1080p_px": [
         110,
@@ -1188,10 +1192,10 @@
     "progress_plate": {
       "file": "progress_plate.png",
       "nine_slice_px": [
-        14,
-        8,
-        14,
-        8
+        36,
+        17,
+        36,
+        17
       ],
       "intended_1080p_px": [
         84,
@@ -2993,10 +2997,10 @@
     "portrait_well": {
       "file": "portrait_well.png",
       "nine_slice_px": [
-        20,
-        20,
-        20,
-        20
+        36,
+        28,
+        36,
+        28
       ],
       "intended_1080p_px": [
         96,
@@ -3012,10 +3016,10 @@
     "respawn_image_well": {
       "file": "respawn_image_well.png",
       "nine_slice_px": [
-        20,
-        20,
-        20,
-        20
+        36,
+        28,
+        36,
+        28
       ],
       "intended_1080p_px": [
         280,
@@ -3028,10 +3032,10 @@
     "map_label_plate": {
       "file": "map_label_plate.png",
       "nine_slice_px": [
-        12,
-        12,
-        12,
-        12
+        36,
+        19,
+        36,
+        19
       ],
       "intended_1080p_px": [
         180,
@@ -3044,10 +3048,10 @@
     "queue_row": {
       "file": "queue_row.png",
       "nine_slice_px": [
-        20,
-        20,
-        20,
-        20
+        36,
+        24,
+        36,
+        24
       ],
       "intended_1080p_px": [
         320,
@@ -3060,10 +3064,10 @@
     "preset_card": {
       "file": "preset_card.png",
       "nine_slice_px": [
-        20,
-        20,
-        20,
-        20
+        36,
+        28,
+        36,
+        28
       ],
       "intended_1080p_px": [
         160,
@@ -3076,10 +3080,10 @@
     "action_bar": {
       "file": "action_bar.png",
       "nine_slice_px": [
-        20,
-        20,
-        20,
-        20
+        48,
+        32,
+        48,
+        32
       ],
       "intended_1080p_px": [
         400,
