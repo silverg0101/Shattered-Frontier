@@ -83,42 +83,42 @@ def step(delta):
     if f == 260: shot('02-walking.png')
     if f == 299: u.SystemLibrary.execute_console_command(world, 'StopFPSChart')
     # Shadow-trail check: orbit 180 degrees and look back along the walked path (stale VSM pages would show there).
-    if 300 <= f < 322:
-        inject('Orbit', 1.0)
-        if f >= 312: inject('Look', (72.0, -4.0))
-    if f == 326: shot('02b-path-behind.png')
+    if 300 <= f < 360:
+        inject("Orbit", 1.0)
+        if f >= 330: inject("Look", (24.0, -1.0))
+    if f == 364: shot("02b-path-behind.png")
     # RMB mouselook: pawn and camera turn together.
-    if f == 330: m['rmb'] = yaws()
-    if 330 <= f < 380:
+    if f == 390: m['rmb'] = yaws()
+    if 390 <= f < 440:
         inject('MouseLook', 1.0)
-        if f >= 350: inject('Look', (15.0, 0.0))
-    if f == 390:
+        if f >= 410: inject('Look', (15.0, 0.0))
+    if f == 450:
         (p0, c0), (p1, c1) = m['rmb'], yaws()
         state['checks']['rmb_mouselook'] = dict(pawn_turn=round(turned(p0, p1), 1), camera_turn=round(turned(c0, c1), 1),
                                                 camera_vs_pawn=round(turned(p1, c1), 1),
                                                 passed=turned(p0, p1) > 30 and turned(p1, c1) < 5)
     # LMB orbit: only the camera turns.
-    if f == 400: m['lmb'] = yaws()
-    if 400 <= f < 450:
+    if f == 460: m['lmb'] = yaws()
+    if 460 <= f < 510:
         inject('Orbit', 1.0)
-        if f >= 420: inject('Look', (15.0, 0.0))
-    if f == 460:
+        if f >= 480: inject('Look', (15.0, 0.0))
+    if f == 520:
         (p0, c0), (p1, c1) = m['lmb'], yaws()
         state['checks']['lmb_orbit'] = dict(pawn_turn=round(turned(p0, p1), 1), camera_turn=round(turned(c0, c1), 1),
                                             passed=turned(p0, p1) < 1 and turned(c0, c1) > 30)
     # Wheel in to first person, one notch out to the nearest third-person zoom, then all the way out.
-    if 470 <= f < 500: inject('Zoom', 1.0)
-    if f == 560:
+    if 530 <= f < 560: inject('Zoom', 1.0)
+    if f == 620:
         state['checks']['first_person'] = dict(arm_cm=round(boom.target_arm_length, 1), body_hidden=bool(mesh.get_editor_property('owner_no_see')),
                                                passed=boom.target_arm_length < 10 and bool(mesh.get_editor_property('owner_no_see')))
         shot('03-first-person.png')
-    if f == 580: inject('Zoom', -1.0)
-    if f == 660: shot('04-near-zoom.png')
-    if 680 <= f < 720: inject('Zoom', -1.0)
-    if f == 820:
+    if f == 640: inject('Zoom', -1.0)
+    if f == 720: shot('04-near-zoom.png')
+    if 740 <= f < 780: inject('Zoom', -1.0)
+    if f == 880:
         state['checks']['far_zoom'] = dict(arm_cm=round(boom.target_arm_length, 1), passed=boom.target_arm_length > 1000)
         shot('05-far-zoom.png')
-    if f == 860:
+    if f == 920:
         ms = sorted(state['frames_ms'])
         state['frame_ms_mean'] = round(sum(ms) / len(ms), 2) if ms else None
         state['frame_ms_p95'] = ms[int(len(ms) * 0.95)] if ms else None
