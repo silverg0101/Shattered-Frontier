@@ -1,4 +1,6 @@
-# Adventurer-01 (player body, GFX-01 WP7 step 2)
+# Adventurer-01 (player body, GFX-01 WP7 step 2) — REJECTED
+
+Rejected by the owner on 2026-10-21: the image-to-3D mesh breaks down up close. Nothing loads it any more; see [../README.md](../README.md) for the MetaHuman plan. The notes below record what was built.
 
 A clothed frontier adventurer: linen shirt, laced leather jerkin, two belts, a satchel on the right hip with its strap over the left shoulder, a hip pouch, bracers and buckled knee boots. This is a **stopgap on the UE4 `SK_Mannequin` skeleton**; CHR-01 decision 4 moves player characters to the UE5/MetaHuman-compatible skeleton.
 
