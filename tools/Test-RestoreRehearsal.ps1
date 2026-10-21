@@ -17,12 +17,15 @@ $rng.GetBytes($bytes); $adminPassword = [BitConverter]::ToString($bytes).Replace
 $rng.GetBytes($bytes); $servicePassword = [BitConverter]::ToString($bytes).Replace('-',''); $rng.Dispose()
 $port = 0; $started = $false; $attempted = $false; $removed = $false; $failure = ''; $token = ''; $hostProcess = $null; $hostProcess2 = $null; $currentStep = 'setup'
 $restoreData = Join-Path $private 'restore-data'; $restoreStarted = $false; $primaryPort = 0
+$receiptFile = Join-Path $EvidenceRoot 'client-receipts.jsonl'
+$hostDll = ''
 function Invoke-Checked([string]$Executable,[string[]]$Arguments,[hashtable]$Environment = @{}) {
     $info = [Diagnostics.ProcessStartInfo]::new(); $info.FileName = $Executable; $info.UseShellExecute = $false; $info.CreateNoWindow = $true
     $info.RedirectStandardOutput = $true; $info.RedirectStandardError = $true
     $info.Arguments = (($Arguments | ForEach-Object { '"' + $_.Replace('"','\"') + '"' }) -join ' ')
     foreach ($key in @($info.EnvironmentVariables.Keys)) { if ($key -match '^PG|^GAMEPLAY_') { $info.EnvironmentVariables.Remove($key) } }
     foreach ($key in $Environment.Keys) { $info.EnvironmentVariables[$key] = $Environment[$key] }
+    if ($Arguments.Count -gt 0 -and $Arguments[0] -eq $hostDll -and $Arguments.Count -gt 1 -and $Arguments[1] -like 'fixture-*') { $info.EnvironmentVariables['REHEARSAL_RECEIPT_LEDGER'] = $receiptFile }
     $child = [Diagnostics.Process]::new(); $child.StartInfo = $info; [void]$child.Start()
     $out = $child.StandardOutput.ReadToEndAsync(); $err = $child.StandardError.ReadToEndAsync()
     if (-not $child.WaitForExit(180000)) {
@@ -64,7 +67,7 @@ function Cluster([string]$Action) {
 function TableSnapshot([string]$Database) {
     $tables = @('inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts',
         'character_state.schema_version','character_state.progression','character_state.quests','character_state.source_receipts','character_state.reward_receipts',
-        'housing.schema_version','housing.claims','housing.claim_operations','housing.claim_structure_revisions','housing.placements',
+        'housing.schema_version','housing.claims','housing.claim_operations','housing.claim_structure_revisions','housing.placements','housing.claim_geometry','housing.removals',
         'exchange.schema_version','exchange.wallets','exchange.wallet_entries','exchange.operations','exchange.listings','exchange.settlements')
     $snapshot = [ordered]@{}
     foreach ($table in $tables) {
@@ -72,18 +75,44 @@ function TableSnapshot([string]$Database) {
     }
     return $snapshot
 }
-function Assert-Receipts([string]$Database,[string]$ReceiptFile) {
-    $receipts = @(Get-Content -LiteralPath $ReceiptFile | Where-Object { $_ -match '^RECEIPT ' } | ForEach-Object { ($_ -split ' ')[1..2] -join ' ' })
-    if ($receipts.Count -eq 0 -or @($receipts | Select-Object -Unique).Count -ne $receipts.Count) { throw 'Client receipt log is empty or has duplicate IDs.' }
-    foreach ($receipt in $receipts) {
-        $table,$id = $receipt -split ' ',2
-        if ($id -notmatch '^[a-zA-Z0-9_:/.-]+$') { throw "Invalid receipt ID: $id" }
-        $target = switch ($table) { inventory {'inventory.operation_receipts'} character_state {'character_state.source_receipts'} housing {'housing.placements'} exchange {'exchange.operations'} exchange_settlement {'exchange.settlements'} default { throw "Invalid receipt store: $table" } }
+function Assert-Receipts([string]$Database,[string]$ReceiptFile,[int]$BackupCount = -1) {
+    $receipts = @(Get-Content -LiteralPath $ReceiptFile | ForEach-Object { $_ | ConvertFrom-Json })
+    if ($receipts.Count -eq 0 -or ($BackupCount -ge 0 -and $receipts.Count -le $BackupCount)) { throw 'Client receipt ledger is empty or lacks a post-backup acknowledgement.' }
+    $seen = @{}
+    for ($i = 0; $i -lt $receipts.Count; $i++) {
+        $receipt = $receipts[$i]
+        $id = [string]$receipt.operationId
+        if ($id -notmatch '^[a-zA-Z0-9_:/.-]+$' -or $receipt.receiptId -notmatch '^[a-zA-Z0-9_:/.-]+$' -or -not $receipt.acknowledgedAtUtc -or -not $receipt.rpc) { throw "Invalid client receipt ledger row $i." }
+        if ($BackupCount -ge 0 -and $i -ge $BackupCount) { continue }
+        $target = switch ([string]$receipt.rpc) {
+            ApplyReceipt {'character_state.source_receipts'} ClaimPlot {'housing.claim_operations'}
+            Place {'housing.placements'} Remove {'housing.removals'}
+            AcceptTrade {'exchange.settlements'}
+            { $_ -in @('OfferTrade','ListItem','BuyListing','CancelTrade','CancelListing') } {'exchange.operations'}
+            'Exchange.Credit' {'exchange.wallet_entries'}
+            default { throw "Unmapped receipt RPC: $($receipt.rpc)" }
+        }
+        if ($receipt.rpc -eq 'AcceptTrade') { $id = [string]$receipt.receiptId }
+        $key = "$target/$id"
+        if ($seen.ContainsKey($key)) { continue }
+        $seen[$key] = $true
         $count = (Sql "SELECT count(*) FROM $target WHERE operation_id='$id'" $Database).Trim()
-        $expectedCount = if ($table -eq 'character_state' -and $id -like 'harvest/journey-*') { 2 } else { 1 }
-        if ([long]$count -ne $expectedCount) { throw "Acknowledged receipt $receipt has $count stored copies; expected $expectedCount." }
+        if ($target -eq 'character_state.source_receipts') {
+            $duplicates = (Sql "SELECT count(*) FROM (SELECT domain FROM $target WHERE operation_id='$id' GROUP BY domain HAVING count(*)<>1) d" $Database).Trim()
+            if ($duplicates -ne '0' -or [long]$count -lt 1 -or [long]$count -gt 2) { throw "Acknowledged progression receipt $id is inconsistent." }
+        } elseif ([long]$count -ne 1) { throw "Acknowledged receipt $key has $count stored copies; expected one." }
+        if ($target -in @('housing.claim_operations','housing.placements','housing.removals') -and $receipt.revision -ne '') {
+            $storedRevision = (Sql "SELECT revision FROM $target WHERE operation_id='$id'" $Database).Trim()
+            if ($storedRevision -ne [string]$receipt.revision) { throw "Acknowledged revision for $key differs from stored revision." }
+        }
     }
-    return $receipts.Count
+    if ($BackupCount -ge 0) {
+        foreach ($receipt in $receipts[$BackupCount..($receipts.Count-1)]) {
+            $id = [string]$receipt.operationId
+            if ((Sql "SELECT count(*) FROM exchange.wallet_entries WHERE operation_id='$id'" $Database).Trim() -ne '0') { throw "Post-backup receipt $id appeared in restore." }
+        }
+    }
+    return $seen.Count
 }
 try {
     [void](New-Item -ItemType Directory -Path $private -Force)
@@ -314,18 +343,11 @@ try {
             GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
         }))
     }
-    # The wire clients above return only after checking each acknowledged response.
-    # Keep their stable operation IDs outside PostgreSQL so WAL replay can be checked.
-    $receiptFile = Join-Path $EvidenceRoot 'client-receipts.txt'
-    @('inventory harvest/journey-oak','inventory harvest/journey-ore','inventory craft/journey-timber',
-      'inventory craft/journey-ingot','inventory craft/journey-nails','inventory craft/journey-wall',
-      'character_state harvest/journey-oak','character_state harvest/journey-ore',
-      'housing place/journey-wall','exchange exchange/offer','exchange_settlement exchange/offer','exchange exchange/list') |
-        ForEach-Object { "RECEIPT $_" } | Set-Content $receiptFile
     Cluster start
     $currentStep = 'receipt and conservation checks'
     $db = "gameplay_$run"
     $acknowledged = Assert-Receipts $db $receiptFile
+    $backupAcknowledgements = @(Get-Content -LiteralPath $receiptFile).Count
     $bad = (Sql "SELECT (SELECT count(*) FROM inventory.entries WHERE quantity < 0) + (SELECT count(*) FROM exchange.wallets WHERE balance < 0 OR reserved < 0 OR reserved > balance) + (SELECT count(*) FROM housing.placements p WHERE state='Committed' AND NOT EXISTS (SELECT 1 FROM inventory.operation_receipts r WHERE r.operation_id=p.operation_id || '/consume')) + (SELECT count(*) FROM exchange.settlements s WHERE state='committed' AND kind='listing' AND NOT EXISTS (SELECT 1 FROM exchange.listings l WHERE l.id=s.subject_id AND l.state='sold'))" $db).Trim()
     if ($bad -ne '0') { throw "Cross-store conservation violations: $bad" }
     Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
@@ -361,7 +383,8 @@ try {
     if ((Get-FileHash $dump -Algorithm SHA256).Hash.ToLowerInvariant() -cne $backupHash) { throw 'Dump hash changed.' }
     $restored = TableSnapshot $restoredDb
     if (($before | ConvertTo-Json -Compress) -cne ($restored | ConvertTo-Json -Compress)) { throw 'Restored state differs from backup point.' }
-    [void](Assert-Receipts $restoredDb $receiptFile)
+    $restoredAcknowledged = Assert-Receipts $restoredDb $receiptFile $backupAcknowledgements
+    if ($restoredAcknowledged -ne $acknowledged) { throw 'Restored acknowledgement count differs from recovery.' }
     foreach ($schema in $versions.Keys) {
         $restoreConnection = "Host=127.0.0.1;Port=$restorePort;Database=$restoredDb;Username=fixture_admin;Password=$adminPassword;Pooling=false;Timeout=2;Command Timeout=5"
         $schemaEnvironment = @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$restoreConnection; GAMEPLAY_CHARACTER_CONNECTION=$restoreConnection; GAMEPLAY_HOUSING_CONNECTION=$restoreConnection; GAMEPLAY_EXCHANGE_CONNECTION=$restoreConnection; SF_GAMEPLAY_TOKEN=$token; REHEARSAL_SCHEMA=$schema }
@@ -372,7 +395,7 @@ try {
         [void](Sql "UPDATE $schema.schema_version SET version=$($versions[$schema]) WHERE singleton=true" $restoredDb)
     }
     $port = $sourcePort
-    $results.Add("PASS $acknowledged client-acknowledged operations survived crash and restore")
+    $results.Add("PASS $backupAcknowledgements client acknowledgements ($acknowledged distinct receipts) survived crash and restore; $(@(Get-Content -LiteralPath $receiptFile).Count - $backupAcknowledgements) post-backup acknowledgements absent")
     $results.Add('PASS one four-schema backup, later write excluded, table digests match, newer schema refused per store')
     $results | Set-Content (Join-Path $EvidenceRoot 'results.txt')
 }

@@ -75,7 +75,7 @@ try {
     Cluster start
     [void](Sql "CREATE ROLE housing_owner NOLOGIN; CREATE ROLE housing_svc LOGIN PASSWORD '$servicePassword'; CREATE DATABASE housing_$run;")
     [void](Sql "REVOKE ALL ON DATABASE housing_$run FROM PUBLIC; GRANT CONNECT ON DATABASE housing_$run TO housing_svc; GRANT CREATE ON DATABASE housing_$run TO housing_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC; CREATE SCHEMA housing AUTHORIZATION housing_owner; CREATE SCHEMA inventory AUTHORIZATION housing_owner;" "housing_$run")
-    [void](Sql ("SET ROLE housing_owner;`n" + (Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.sql') -Raw) + "`n" + (Get-Content (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.sql') -Raw)) "housing_$run")
+    [void](Sql ("SET ROLE housing_owner;`n" + (Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.sql') -Raw) + "`n" + (Get-Content (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.sql') -Raw) + "`n" + (Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Gameplay.sql') -Raw) + "`n" + (Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Geometry.sql') -Raw)) "housing_$run")
     [void](Sql 'GRANT USAGE ON SCHEMA housing,inventory TO housing_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA housing TO housing_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO housing_svc;' "housing_$run")
     $connection = "Host=127.0.0.1;Port=$port;Database=housing_$run;Username=housing_svc;Password=$servicePassword;Pooling=false;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $results = [Collections.Generic.List[string]]::new()
@@ -86,13 +86,18 @@ try {
     Cluster stop
     $results.Add((Invoke-Checked $dotnet @($dll,'outage') @{ HOUSING_CONNECTION=$connection }))
     Cluster start
+    [void](Sql "INSERT INTO housing.claim_geometry VALUES ('clm_test',0,0,40),('clm_time',100,100,40)" "housing_$run")
+    [void](Sql "INSERT INTO housing.removals VALUES ('remove/window','fixture','one','Pending',4,1,5,NULL); UPDATE housing.placements SET created_at=clock_timestamp()-interval '2 hours' WHERE operation_id='one'" "housing_$run")
+    try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','Housing','-OutputDirectory',$backup,'-HostName','127.0.0.1','-Port',"$port",'-Database',"housing_$run",'-Username','housing_svc') @{ PGPASSWORD=$servicePassword }); throw 'Aged pending removal was accepted.' }
+    catch { if ($_.Exception.Message -notmatch 'exceeds recovery window') { throw }; $results.Add('PASS aged pending removal refused') }
+    [void](Sql "UPDATE housing.placements SET created_at=clock_timestamp() WHERE operation_id='one'" "housing_$run")
     # The contention fixture leaves one pending reservation to exercise the recovery window.
     if ((Sql "SELECT count(*) FROM housing.placements WHERE state='Pending' AND created_at IS NOT NULL" "housing_$run").Trim() -ne '1') { throw 'Expected one timestamped pending placement.' }
     [void](Sql "UPDATE housing.placements SET created_at=clock_timestamp()-interval '2 hours' WHERE state='Pending'" "housing_$run")
     try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','Housing','-OutputDirectory',$backup,'-HostName','127.0.0.1','-Port',"$port",'-Database',"housing_$run",'-Username','housing_svc') @{ PGPASSWORD=$servicePassword }); throw 'Aged pending placement was accepted.' }
     catch { if ($_.Exception.Message -notmatch 'exceeds recovery window') { throw }; $results.Add('PASS aged pending placement refused') }
     [void](Sql "UPDATE housing.placements SET created_at=clock_timestamp()-interval '120 seconds' WHERE state='Pending'" "housing_$run")
-    if ((Sql 'SELECT version FROM housing.schema_version WHERE singleton=true' "housing_$run").Trim() -ne '3') { throw 'Housing schema changed before backup.' }
+    if ((Sql 'SELECT version FROM housing.schema_version WHERE singleton=true' "housing_$run").Trim() -ne '5') { throw 'Housing schema changed before backup.' }
     $results.Add((Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','Housing','-OutputDirectory',$backup,'-HostName','127.0.0.1','-Port',"$port",'-Database',"housing_$run",'-Username','housing_svc') @{ PGPASSWORD=$servicePassword }))
     $backupRevision = (Sql "SELECT revision FROM housing.claims WHERE id='clm_test'" "housing_$run").Trim()
     [void](Sql "UPDATE housing.claims SET revision=revision+1 WHERE id='clm_test'" "housing_$run")
@@ -111,8 +116,10 @@ try {
     $restoredRevision = (Invoke-Checked (Join-Path $pg 'psql.exe') @('-X','-A','-t','-h','127.0.0.1','-p',"$($restored.port)",'-U',$restored.username,'-d',$restored.database,'-c',"SELECT revision FROM housing.claims WHERE id='clm_test'") @{ PGPASSWORD=$restored.password }).Trim()
     if ($restoredRevision -ne $backupRevision) { throw 'Restored housing revision differs from backup point.' }
     $results.Add('PASS restored housing state equals backup point')
-    [void](Sql 'UPDATE housing.schema_version SET version=5' "housing_$run")
+    [void](Sql 'UPDATE housing.schema_version SET version=6' "housing_$run")
     $results.Add((Invoke-Checked $dotnet @($dll,'newer') @{ HOUSING_CONNECTION=$connection }))
+    try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','Housing','-OutputDirectory',(Join-Path $EvidenceRoot 'newer-backup'),'-HostName','127.0.0.1','-Port',"$port",'-Database',"housing_$run",'-Username','housing_svc') @{ PGPASSWORD=$servicePassword }); throw 'Newer Housing schema backup was accepted.' }
+    catch { if ($_.Exception.Message -notmatch 'Unsupported source schema version') { throw }; $results.Add('PASS newer Housing schema backup refused') }
     $results | Set-Content (Join-Path $EvidenceRoot 'results.txt')
 }
 catch { $failure = $_.Exception.Message.Replace($adminPassword,'[REDACTED]').Replace($servicePassword,'[REDACTED]') }

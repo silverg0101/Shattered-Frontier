@@ -57,12 +57,12 @@ if (-not $BackupDirectory) { throw 'Supply BackupDirectory.' }
 $BackupDirectory = [IO.Path]::GetFullPath($BackupDirectory)
 $manifest = Get-Content (Join-Path $BackupDirectory 'manifest.json') -Raw | ConvertFrom-Json
 $dump = Join-Path $BackupDirectory "$($Store.ToLowerInvariant()).dump"
-if ($manifest.format -ne 2 -or $manifest.store -cne $Store -or $manifest.schemaVersion -ne $(if ($Store -in @('Housing','Exchange')) { 3 } elseif ($Store -eq 'CharacterState') { 2 } else { 1 }) -or $manifest.dumpSha256 -notmatch '^[a-f0-9]{64}$' -or
+if ($manifest.format -ne 2 -or $manifest.store -cne $Store -or $manifest.schemaVersion -ne $(if ($Store -eq 'Housing') { 5 } elseif ($Store -eq 'Exchange') { 3 } elseif ($Store -eq 'CharacterState') { 2 } else { 1 }) -or $manifest.dumpSha256 -notmatch '^[a-f0-9]{64}$' -or
     (Get-FileHash $dump -Algorithm SHA256).Hash.ToLowerInvariant() -cne $manifest.dumpSha256) { throw 'Backup manifest or SHA256 mismatch.' }
 $tables = switch ($Store) {
     InventoryLedger { @('inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts') }
     CharacterState { @('character_state.schema_version','character_state.progression','character_state.quests','character_state.source_receipts','character_state.reward_receipts') }
-    Housing { @('housing.schema_version','housing.claims','housing.claim_operations','housing.claim_structure_revisions','housing.placements','inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts') }
+    Housing { @('housing.schema_version','housing.claims','housing.claim_operations','housing.claim_structure_revisions','housing.placements','housing.claim_geometry','housing.removals','inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts') }
     Exchange { @('exchange.schema_version','exchange.wallets','exchange.wallet_entries','exchange.operations','exchange.listings','exchange.settlements') }
 }
 $schemas = if ($Store -eq 'Housing') { @('housing','inventory') } elseif ($Store -eq 'CharacterState') { @('character_state') } elseif ($Store -eq 'Exchange') { @('exchange') } else { @('inventory') }
@@ -109,7 +109,7 @@ try {
         $grant = if ($Store -eq 'Exchange') { "GRANT SELECT ON $schema.schema_version TO $serviceRole; GRANT SELECT,INSERT,UPDATE ON exchange.wallets,exchange.wallet_entries,exchange.operations,exchange.listings,exchange.settlements TO $serviceRole" } else { "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA $schema TO $serviceRole" }
         [void](Sql "GRANT USAGE ON SCHEMA $schema TO $serviceRole; $grant" $database)
         $version = (Sql "SELECT version FROM $schema.schema_version WHERE singleton=true" $database).Trim()
-        $expectedVersion = if ($schema -eq 'housing' -or $schema -eq 'exchange') { '3' } elseif ($schema -eq 'character_state') { '2' } else { '1' }
+        $expectedVersion = if ($schema -eq 'housing') { '5' } elseif ($schema -eq 'exchange') { '3' } elseif ($schema -eq 'character_state') { '2' } else { '1' }
         if ($version -ne $expectedVersion) { throw 'Restored schema version mismatch.' }
     }
     foreach ($table in $tables) {
@@ -175,6 +175,9 @@ SELECT count(*) FROM (
     if ($Store -eq 'Housing') {
         $bad = Sql @"
 SELECT count(*) FROM (
+ SELECT 1 FROM housing.placements p WHERE p.shape_key !~ '^[a-z0-9._-]+$' OR
+  length(p.shape_key) NOT BETWEEN 1 AND 128 OR p.orientation_index NOT BETWEEN 0 AND 23
+ UNION ALL
  SELECT 1 FROM housing.placements p WHERE p.state='Pending' AND
   p.created_at < clock_timestamp() - make_interval(secs => $PendingPlacementRecoveryWindowSeconds)
  UNION ALL
@@ -187,8 +190,24 @@ SELECT count(*) FROM (
   NOT EXISTS (SELECT 1 FROM inventory.operation_receipts r WHERE r.operation_id=p.operation_id || '/consume'
     AND r.receipt=p.consume_receipt))
  UNION ALL
+ SELECT 1 FROM housing.claims c WHERE NOT EXISTS (SELECT 1 FROM housing.claim_geometry g WHERE g.claim_id=c.id)
+ UNION ALL
  SELECT 1 FROM housing.placements a JOIN housing.placements b ON a.claim_id=b.claim_id AND
   a.cell_x=b.cell_x AND a.cell_y=b.cell_y AND a.cell_z=b.cell_z AND a.operation_id < b.operation_id
+  WHERE a.state IN ('Pending','Committed') AND b.state IN ('Pending','Committed')
+ UNION ALL
+ SELECT 1 FROM housing.removals r JOIN housing.placements p ON p.operation_id=r.placement_operation_id WHERE
+  (r.state='Pending' AND p.created_at < clock_timestamp() - make_interval(secs => $PendingPlacementRecoveryWindowSeconds)) OR
+  (r.state='Committed' AND (p.state<>'Removed' OR (r.refund_quantity=0 AND r.refund_receipt IS NOT NULL) OR (r.refund_quantity>0 AND (
+    r.refund_receipt IS NULL OR r.refund_receipt->>'OperationId' IS DISTINCT FROM r.operation_id || '/refund' OR
+    r.refund_receipt->>'Action' IS DISTINCT FROM '0' OR
+    NOT EXISTS (SELECT 1 FROM jsonb_array_elements(r.refund_receipt->'Changes') c WHERE
+      c->>'ContainerId'=p.container_id AND c->>'DefinitionId'=p.material_id AND (c->>'Delta')::bigint=r.refund_quantity) OR
+    NOT EXISTS (SELECT 1 FROM inventory.operation_receipts ir WHERE ir.operation_id=r.operation_id || '/refund' AND ir.receipt=r.refund_receipt))))) OR
+  (r.state='Compensated' AND (p.state<>'Committed' OR r.refund_receipt IS NOT NULL OR r.refund_quantity=0 OR
+    NOT EXISTS (SELECT 1 FROM inventory.operation_receipts ir WHERE ir.operation_id=r.operation_id || '/refund' AND
+      ir.fingerprint='housing/compensated' AND ir.receipt->>'OperationId'=ir.operation_id AND
+      ir.receipt->>'Action'='0' AND ir.receipt->'Changes'='[]'::jsonb AND ir.receipt->'Revisions'='[]'::jsonb)))
 ) invalid
 "@ $database
         if ($bad.Trim() -ne '0') { throw 'Restored housing consistency check failed.' }

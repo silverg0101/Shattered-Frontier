@@ -1,5 +1,8 @@
 using Grpc.Core;
 using Grpc.Net.Client;
+using Grpc.Core.Interceptors;
+using Google.Protobuf;
+using System.Text.Json;
 using ShatteredFrontier.InventoryLedger;
 using ShatteredFrontier.InventoryLedger.Postgres;
 using ShatteredFrontier.Exchange.Postgres;
@@ -12,26 +15,56 @@ using ExchangePb = ShatteredFrontier.Exchange.V1;
 // Exercised only by the owned Test-GameplayHosts fixture against its disposable cluster.
 internal static class GameplayFixtureClient
 {
+    private sealed class ReceiptLedger(string path) : Interceptor
+    {
+        private static readonly object Gate = new();
+        public override TResponse BlockingUnaryCall<TRequest, TResponse>(TRequest request, ClientInterceptorContext<TRequest, TResponse> context, BlockingUnaryCallContinuation<TRequest, TResponse> continuation)
+        {
+            var response = continuation(request, context);
+            Record(request, response, context.Method.Name);
+            return response;
+        }
+        private void Record<TRequest, TResponse>(TRequest request, TResponse response, string rpc)
+        {
+            if (request is not IMessage input || response is not IMessage output) return;
+            string Field(IMessage message, string name) => message.Descriptor.FindFieldByName(name) is { } field ? field.Accessor.GetValue(message)?.ToString() ?? "" : "";
+            var operation = Field(input, "operation_id");
+            if (operation.Length == 0) operation = Field(input, "source_receipt_id");
+            if (operation.Length == 0) return;
+            var revision = Field(output, "structure_revision");
+            if (revision.Length == 0) revision = Field(output, "quest_revision");
+            if (revision.Length == 0) revision = Field(output, "container_revision");
+            if (revision.Length == 0) revision = Field(output, "revision");
+            var receiptId = Field(output, "operation_id");
+            if (receiptId.Length == 0) receiptId = operation;
+            var line = JsonSerializer.Serialize(new { operationId = operation, rpc, receiptId, revision, acknowledgedAtUtc = DateTimeOffset.UtcNow });
+            lock (Gate) File.AppendAllText(path, line + Environment.NewLine);
+        }
+    }
     public static void Run(string mode)
     {
         static string Required(string key) => Environment.GetEnvironmentVariable(key) ?? throw new Exception($"{key} required");
         using var channel = GrpcChannel.ForAddress($"http://127.0.0.1:{Required("GAMEPLAY_HOST_PORT")}");
-        var client = new Pb.Housing.HousingClient(channel);
+        var invoker = Environment.GetEnvironmentVariable("REHEARSAL_RECEIPT_LEDGER") is { Length: > 0 } path
+            ? channel.Intercept(new ReceiptLedger(path)) : channel.CreateCallInvoker();
+        var client = new Pb.Housing.HousingClient(invoker);
         var headers = new Metadata { { "authorization", "Bearer " + Required("SF_GAMEPLAY_TOKEN") } };
         var ledger = new InventoryLedger(new PostgresInventoryLedgerStore(Required("GAMEPLAY_LEDGER_CONNECTION")));
         long Revision() => ledger.Read("ctn_housing").Revision;
         long Quantity() => ledger.Read("ctn_housing").Quantities.GetValueOrDefault("item/wall_material_bundle");
+        long StructureRevision() => new PostgresHousingStore(Required("GAMEPLAY_LEDGER_CONNECTION")).StructureSnapshot("clm_test").Revision;
+        long PermissionRevision() => new PostgresHousingStore(Required("GAMEPLAY_LEDGER_CONNECTION")).Claim("clm_test")!.PermissionRevision;
         Pb.PlacementReply Place(string op, string structure, long structureRevision, long? containerRevision = null)
         {
             var request = new Pb.PlaceRequest { OperationId=op, ClaimId="clm_test", ActorId="chr_housing",
-                ExpectedPermissionRevision=0, ExpectedStructureRevision=structureRevision, StructureId=structure,
+                ExpectedPermissionRevision=PermissionRevision(), ExpectedStructureRevision=structureRevision, StructureId=structure,
                 ContentId="piece/wall", MaterialId="item/wall_material_bundle", MaterialQuantity=1,
                 ContainerId="ctn_housing", ExpectedContainerRevision=containerRevision ?? Revision(), CellX=checked((int)structureRevision+10) };
             return client.Place(request, headers, deadline: DateTime.UtcNow.AddSeconds(10));
         }
         Pb.PlacementReply Remove(string op, string structure, long structureRevision, long containerRevision) =>
             client.Remove(new Pb.RemoveRequest { OperationId=op, ClaimId="clm_test", ActorId="chr_housing",
-                StructureId=structure, ExpectedPermissionRevision=0, ExpectedStructureRevision=structureRevision,
+                StructureId=structure, ExpectedPermissionRevision=PermissionRevision(), ExpectedStructureRevision=structureRevision,
                 ExpectedContainerRevision=containerRevision, RemovalKind="undo" },
                 headers, deadline: DateTime.UtcNow.AddSeconds(10));
         static void Check(bool ok, string message) { if (!ok) throw new Exception(message); }
@@ -59,6 +92,9 @@ internal static class GameplayFixtureClient
             case "fixture-rehearsal-after-backup":
                 new PostgresExchangeStore(Required("GAMEPLAY_EXCHANGE_CONNECTION"))
                     .Credit("rehearsal/post-backup-credit", "chr_exchange_a", 1, "starter_kit");
+                File.AppendAllText(Required("REHEARSAL_RECEIPT_LEDGER"), JsonSerializer.Serialize(new {
+                    operationId = "rehearsal/post-backup-credit", rpc = "Exchange.Credit", receiptId = "rehearsal/post-backup-credit",
+                    revision = "", acknowledgedAtUtc = DateTimeOffset.UtcNow }) + Environment.NewLine);
                 Console.WriteLine("PASS post-backup wallet write");
                 break;
             case "fixture-exchange-seed":
@@ -77,7 +113,7 @@ internal static class GameplayFixtureClient
                 Console.WriteLine("PASS exchange wallets and inventory seeded");
                 break;
             case "fixture-exchange-trade":
-                var tradeClient = new ExchangePb.Exchange.ExchangeClient(channel);
+                var tradeClient = new ExchangePb.Exchange.ExchangeClient(invoker);
                 var offer = tradeClient.OfferTrade(new ExchangePb.TradeOfferRequest { OperationId = "exchange/offer", TradeId = "trd_wire",
                     PartyA = "chr_exchange_seller", PartyB = "chr_exchange_a", GoldB = 10,
                     Deliveries = { new ExchangePb.ItemDelivery { EscrowId = "ctn_trade_escrow", DestinationId = "ctn_chr_exchange_a", ItemId = "item/iron_ore", Quantity = 1 } } }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
@@ -92,7 +128,7 @@ internal static class GameplayFixtureClient
                 Console.WriteLine("PASS two-character trade over gRPC");
                 break;
             case "fixture-exchange-market":
-                var market = new ExchangePb.Exchange.ExchangeClient(channel);
+                var market = new ExchangePb.Exchange.ExchangeClient(invoker);
                 var listed = market.ListItem(new ExchangePb.ListItemRequest { OperationId = "exchange/list", ListingId = "lst_wire",
                     SellerId = "chr_exchange_seller", SourceContainerId = "ctn_chr_exchange_seller", EscrowContainerId = "ctn_list_escrow",
                     ItemId = "item/iron_ore", Quantity = 1, UnitPrice = 20, CreatedAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
@@ -113,7 +149,7 @@ internal static class GameplayFixtureClient
                 Console.WriteLine("PASS two concurrent buyers yielded one sale");
                 break;
             case "fixture-exchange-cancel":
-                var cancelClient = new ExchangePb.Exchange.ExchangeClient(channel);
+                var cancelClient = new ExchangePb.Exchange.ExchangeClient(invoker);
                 var sellerBag = ledger.Read("ctn_chr_exchange_seller");
                 ledger.Transfer("exchange/cancel-escrow", sellerBag.Spec.Id, sellerBag.Revision, "ctn_cancel_escrow", 0, "item/iron_ore", 1);
                 cancelClient.OfferTrade(new ExchangePb.TradeOfferRequest { OperationId = "exchange/offer-cancel", TradeId = "trd_cancel",
@@ -133,7 +169,7 @@ internal static class GameplayFixtureClient
                 Console.WriteLine("PASS trade and listing cancellation returned escrow");
                 break;
             case "fixture-exchange-expire-seed":
-                var expireClient = new ExchangePb.Exchange.ExchangeClient(channel);
+                var expireClient = new ExchangePb.Exchange.ExchangeClient(invoker);
                 var bagView = ledger.Read("ctn_chr_exchange_seller");
                 ledger.Transfer("exchange/expire-escrow", bagView.Spec.Id, bagView.Revision, "ctn_expire_escrow", 0, "item/iron_ore", 1);
                 expireClient.OfferTrade(new ExchangePb.TradeOfferRequest { OperationId = "exchange/offer-expire", TradeId = "trd_expire",
@@ -142,7 +178,7 @@ internal static class GameplayFixtureClient
                 Console.WriteLine("PASS expiring trade offer created");
                 break;
             case "fixture-exchange-expire-check":
-                var expiredClient = new ExchangePb.Exchange.ExchangeClient(channel);
+                var expiredClient = new ExchangePb.Exchange.ExchangeClient(invoker);
                 try
                 {
                     var expired = expiredClient.AcceptTrade(new ExchangePb.TradeActionRequest { OperationId = "exchange/accept-expired",
@@ -154,7 +190,7 @@ internal static class GameplayFixtureClient
                 Console.WriteLine("PASS expired trade offer rejected at accept");
                 break;
             case "fixture-exchange-fault":
-                var faultMarket = new ExchangePb.Exchange.ExchangeClient(channel);
+                var faultMarket = new ExchangePb.Exchange.ExchangeClient(invoker);
                 faultMarket.ListItem(new ExchangePb.ListItemRequest { OperationId = "exchange/list-fault", ListingId = "lst_fault",
                     SellerId = "chr_exchange_seller", SourceContainerId = "ctn_chr_exchange_seller", EscrowContainerId = "ctn_fault_escrow",
                     ItemId = "item/iron_ore", Quantity = 1, UnitPrice = 20, CreatedAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
@@ -165,7 +201,7 @@ internal static class GameplayFixtureClient
                 Console.WriteLine("PASS exchange host killed after delivery");
                 break;
             case "fixture-exchange-replay":
-                var replayMarket = new ExchangePb.Exchange.ExchangeClient(channel);
+                var replayMarket = new ExchangePb.Exchange.ExchangeClient(invoker);
                 var sale = replayMarket.BuyListing(new ExchangePb.BuyListingRequest { OperationId = "exchange/buy-fault", ListingId = "lst_fault",
                     BuyerId = "chr_exchange_b", DestinationContainerId = "ctn_chr_exchange_b", ExpectedRevision = 0, ExpectedUnitPrice = 20 },
                     headers, deadline: DateTime.UtcNow.AddSeconds(10));
@@ -174,20 +210,24 @@ internal static class GameplayFixtureClient
                 Console.WriteLine("PASS exchange crash recovered one sale");
                 break;
             case "fixture-fault-seed":
-                var placed = Place("place/fault", "str_fault", 2);
-                Check(placed.State == "Committed" && placed.StructureRevision == 3, "Fault placement failed.");
-                try { Remove("remove/fault", "str_fault", 3, Revision()); throw new Exception("Host fault did not fire."); }
+                var priorStructureRevision = StructureRevision();
+                var placed = Place("place/fault", "str_fault", priorStructureRevision);
+                Check(placed.State == "Committed" && placed.StructureRevision == priorStructureRevision + 1, "Fault placement failed.");
+                try { Remove("remove/fault", "str_fault", placed.StructureRevision, Revision()); throw new Exception("Host fault did not fire."); }
                 catch (RpcException) { }
                 Console.WriteLine("PASS injected host fault after refund");
                 break;
             case "fixture-fault-replay":
-                var replay = Remove("remove/fault", "str_fault", 3, 4);
-                Check(replay.State == "Removed" && replay.StructureRevision == 4 && Quantity() == 1,
+                var placeAcknowledgement = File.ReadLines(Required("REHEARSAL_RECEIPT_LEDGER"))
+                    .Select(line => JsonDocument.Parse(line)).First(doc => doc.RootElement.GetProperty("operationId").GetString() == "place/fault");
+                var originalStructureRevision = long.Parse(placeAcknowledgement.RootElement.GetProperty("revision").GetString()!);
+                var replay = Remove("remove/fault", "str_fault", originalStructureRevision, Revision()-1);
+                Check(replay.State == "Removed" && replay.StructureRevision == StructureRevision() && Quantity() == 1,
                     "Post-crash refund recovery duplicated or lost a result.");
                 Console.WriteLine("PASS post-crash refund replay");
                 break;
             case "fixture-stale-concurrent":
-                var stalePiece = Place("place/stale", "str_stale", 4);
+                var stalePiece = Place("place/stale", "str_stale", StructureRevision());
                 var actual = Revision();
                 var stale = Remove("remove/stale", "str_stale", stalePiece.StructureRevision, actual-1);
                 Check(stale.State == "Compensated" && Quantity() == 0, "Stale refund was not compensated.");
@@ -230,7 +270,7 @@ internal static class GameplayFixtureClient
                 var characterId = "chr_quest_" + suffix;
                 ledger.CreateContainer(new ContainerSpec(containerId, OwnerKind.Character, characterId, ContainerKind.Backpack, full ? 13 : 100));
                 if (full) ledger.Grant("quest-full/fill", containerId, 0, "item/oak_log", 1, "fixture", "quest-full/fill");
-                var progress = new ProgressPb.Progression.ProgressionClient(channel);
+                var progress = new ProgressPb.Progression.ProgressionClient(invoker);
                 var steps = new (string Step, string Kind, string Target, string Node)[] {
                     ("harvest_oak","gather","item/oak_log","gathering_node/oak_tree"),
                     ("mine_iron","gather","item/iron_ore",""),

@@ -21,7 +21,7 @@ if (Test-Path -LiteralPath $OutputDirectory) { throw 'Backup destination must be
 $tables = switch ($Store) {
     InventoryLedger { @('inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts') }
     CharacterState { @('character_state.schema_version','character_state.progression','character_state.quests','character_state.source_receipts','character_state.reward_receipts') }
-    Housing { @('housing.schema_version','housing.claims','housing.claim_operations','housing.claim_structure_revisions','housing.placements','inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts') }
+    Housing { @('housing.schema_version','housing.claims','housing.claim_operations','housing.claim_structure_revisions','housing.placements','housing.claim_geometry','housing.removals','inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts') }
     Exchange { @('exchange.schema_version','exchange.wallets','exchange.wallet_entries','exchange.operations','exchange.listings','exchange.settlements') }
 }
 $schemas = if ($Store -eq 'Housing') { @('housing','inventory') } elseif ($Store -eq 'CharacterState') { @('character_state') } elseif ($Store -eq 'Exchange') { @('exchange') } else { @('inventory') }
@@ -41,12 +41,12 @@ function Snapshot {
 }
 foreach ($schema in $schemas) {
     $version = (Query "SELECT version FROM $schema.schema_version WHERE singleton=true").Trim()
-    $expectedVersion = if ($schema -eq 'housing' -or $schema -eq 'exchange') { '3' } elseif ($schema -eq 'character_state') { '2' } else { '1' }
+    $expectedVersion = if ($schema -eq 'housing') { '5' } elseif ($schema -eq 'exchange') { '3' } elseif ($schema -eq 'character_state') { '2' } else { '1' }
     if ($version -ne $expectedVersion) { throw "Unsupported source schema version: $schema=$version" }
 }
 if ($Store -eq 'Housing') {
-    $stale = (Query "SELECT count(*) FROM housing.placements WHERE state='Pending' AND created_at < clock_timestamp() - make_interval(secs => $PendingPlacementRecoveryWindowSeconds)").Trim()
-    if ($stale -ne '0') { throw 'Housing pending placement exceeds recovery window.' }
+    $stale = (Query "SELECT (SELECT count(*) FROM housing.placements WHERE state='Pending' AND created_at < clock_timestamp() - make_interval(secs => $PendingPlacementRecoveryWindowSeconds)) + (SELECT count(*) FROM housing.removals r JOIN housing.placements p ON p.operation_id=r.placement_operation_id WHERE r.state='Pending' AND p.created_at < clock_timestamp() - make_interval(secs => $PendingPlacementRecoveryWindowSeconds))").Trim()
+    if ($stale -ne '0') { throw 'Housing pending action exceeds recovery window.' }
 }
 if ($Store -eq 'Exchange') {
     $stale = (Query "SELECT (SELECT count(*) FROM exchange.settlements WHERE state='pending' AND created_at < clock_timestamp() - make_interval(secs => $PendingSettlementRecoveryWindowSeconds)) + (SELECT count(*) FROM exchange.operations WHERE receipt->>'Code'='pending' AND fingerprint::jsonb->>'Command'='listing-intent' AND (fingerprint::jsonb->>'CreatedAt')::timestamptz < clock_timestamp() - make_interval(secs => $PendingSettlementRecoveryWindowSeconds))").Trim()
@@ -61,7 +61,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'pg_dump failed.' }
     $after = Snapshot
     if (($before | ConvertTo-Json -Depth 5 -Compress) -cne ($after | ConvertTo-Json -Depth 5 -Compress)) { throw 'Source changed during backup; quiesce writes and retry.' }
-    @{ format=2; store=$Store; schemaVersion=$(if ($Store -in @('Housing','Exchange')) { 3 } elseif ($Store -eq 'CharacterState') { 2 } else { 1 }); dumpSha256=(Get-FileHash $dump -Algorithm SHA256).Hash.ToLowerInvariant(); tables=$before } |
+    @{ format=2; store=$Store; schemaVersion=$(if ($Store -eq 'Housing') { 5 } elseif ($Store -eq 'Exchange') { 3 } elseif ($Store -eq 'CharacterState') { 2 } else { 1 }); dumpSha256=(Get-FileHash $dump -Algorithm SHA256).Hash.ToLowerInvariant(); tables=$before } |
         ConvertTo-Json -Depth 6 | Set-Content (Join-Path $OutputDirectory 'manifest.json')
     Write-Output "$Store backup complete: $OutputDirectory"
 } catch {
