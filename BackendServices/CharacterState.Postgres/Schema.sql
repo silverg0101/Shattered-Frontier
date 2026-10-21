@@ -1,0 +1,7 @@
+CREATE SCHEMA character_state;
+CREATE TABLE character_state.schema_version (singleton boolean PRIMARY KEY DEFAULT true CHECK (singleton), version integer NOT NULL CHECK (version > 0), migration_id text NOT NULL, compatible_build_min integer NOT NULL, compatible_build_max integer NOT NULL CHECK (compatible_build_max >= compatible_build_min), applied_at timestamptz NOT NULL DEFAULT now());
+INSERT INTO character_state.schema_version(singleton,version,migration_id,compatible_build_min,compatible_build_max) VALUES (true, 1, 'character-state-001', 1, 1);
+CREATE TABLE character_state.progression (character_id text PRIMARY KEY, revision bigint NOT NULL CHECK (revision >= 0), state jsonb NOT NULL);
+CREATE TABLE character_state.quests (character_id text NOT NULL, quest_id text NOT NULL, content_revision integer NOT NULL CHECK (content_revision > 0), revision bigint NOT NULL CHECK (revision >= 0), state jsonb NOT NULL, PRIMARY KEY(character_id,quest_id));
+CREATE TABLE character_state.source_receipts (domain text NOT NULL CHECK (domain IN ('progression','quest')), character_id text NOT NULL, operation_id text NOT NULL, fingerprint text NOT NULL, result jsonb NOT NULL, PRIMARY KEY(domain,character_id,operation_id));
+CREATE TABLE character_state.reward_receipts (operation_id text PRIMARY KEY, character_id text NOT NULL, quest_id text NOT NULL, step_id text NOT NULL, bundle_id text NOT NULL);

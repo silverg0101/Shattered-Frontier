@@ -5,6 +5,8 @@ public sealed record ObjectiveEvent(string OperationId, string CharacterId, stri
 public sealed record RewardGrant(string OperationId, string CharacterId, string QuestId, string StepId, string BundleId);
 public sealed record ProgressResult(bool Accepted, string Reason, string? ActiveStepId, bool Completed,
     IReadOnlyList<RewardGrant> Grants);
+public sealed record QuestProgressSnapshot(DateTimeOffset AcceptedAt, DateTimeOffset LastOccurredAt, int StepIndex,
+    Dictionary<string, int> Counts, string[] Operations, string[] GrantedSteps);
 
 public sealed class QuestProgression
 {
@@ -26,6 +28,22 @@ public sealed class QuestProgression
         var issues = QuestValidator.Validate(quest);
         if (issues.Count != 0) throw new ArgumentException(string.Join("; ", issues), nameof(quest));
         _quest = quest;
+    }
+
+    public QuestProgressSnapshot? Snapshot(string characterId) => _characters.TryGetValue(characterId, out var state)
+        ? new(state.AcceptedAt, state.LastOccurredAt, state.StepIndex, new(state.Counts, StringComparer.Ordinal),
+            [.. state.Operations], [.. state.GrantedSteps]) : null;
+
+    public void Restore(string characterId, QuestProgressSnapshot snapshot)
+    {
+        if (string.IsNullOrWhiteSpace(characterId) || snapshot.StepIndex < 0 || snapshot.StepIndex > _quest.Steps.Count ||
+            snapshot.LastOccurredAt < snapshot.AcceptedAt || !Accept(characterId, snapshot.AcceptedAt))
+            throw new ArgumentException("Invalid quest progress snapshot", nameof(snapshot));
+        var state = _characters[characterId];
+        state.LastOccurredAt = snapshot.LastOccurredAt; state.StepIndex = snapshot.StepIndex;
+        foreach (var (key, count) in snapshot.Counts) state.Counts.Add(key, count);
+        foreach (var id in snapshot.Operations) state.Operations.Add(id);
+        foreach (var id in snapshot.GrantedSteps) state.GrantedSteps.Add(id);
     }
 
     public bool Accept(string characterId, DateTimeOffset acceptedAt) =>

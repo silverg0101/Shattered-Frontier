@@ -1,6 +1,6 @@
 # Quest content starter chain
 
-`QuestContent` loads and validates authored `content/quests/*.json` with stable quest, step and objective IDs. The in-memory model accepts authoritative objective evidence supplied by a future server adapter. It rejects pre-accept, out-of-order, wrong-step and replayed operations, clamps progress, and emits deterministic reward grant **intents** once per character, quest and step. The caller must durably persist progress/inbox and deliver the intent through `reward-service` using `OperationId`; this slice has no network adapter or actual item/currency grant.
+`QuestContent` loads and validates authored `content/quests/*.json` with stable quest, step and objective IDs. The in-memory model accepts authoritative objective evidence supplied by a future server adapter. It rejects pre-accept, out-of-order, wrong-step and replayed operations, clamps progress, and emits deterministic reward grant **intents** once per character, quest and step. `CharacterState.Postgres` persists progress and reward intents through this model. The caller must deliver the intent through `reward-service` using `OperationId`; this slice has no network adapter or actual item/currency grant.
 
 From the repository root, use the pinned SDK:
 

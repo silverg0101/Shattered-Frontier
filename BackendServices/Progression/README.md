@@ -6,4 +6,4 @@ Package-free in-memory model for accepted gathering harvest, craft conversion, a
 
 Run `& Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotnet.exe run --project BackendServices/Progression.Tests --locked-mode` from the repository root.
 
-This slice has no durable ledger, cross-process replay store, producer authentication, skill locks/donors, specialization, rested/diversity modifiers, timing/risk anti-macro signals, or production service adapter. Enemy defeat uses base eligible kill XP with tier, level difference, and party scaling; trusted producers must validate combat eligibility before acceptance.
+`CharacterState.Postgres` persists snapshots, effective settings and source receipts through this model. This slice has no producer authentication, skill locks/donors, specialization, rested/diversity modifiers, timing/risk anti-macro signals, or production service adapter. Enemy defeat uses base eligible kill XP with tier, level difference, and party scaling; trusted producers must validate combat eligibility before acceptance.

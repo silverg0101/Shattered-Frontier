@@ -44,6 +44,10 @@ public sealed record ActionReceipt(string ReceiptId, string CharacterId, Receipt
     string? SkillId = null, int Difficulty = 0, double ActionSeconds = 6, ulong ContextHash = 0,
     bool Success = true, int EnemyLevel = 1, double EnemyTierMultiplier = 1, int EligiblePartySize = 1);
 public sealed record ProgressionResult(bool Applied, int SkillGain, int XpGain, int Level, double GainChance);
+public sealed record ProgressionSnapshot(long LifetimeXp, Dictionary<string, int> Skills, ProgressionSettings Settings, string[] Receipts,
+    Dictionary<string, long[]> ActiveMinutes, PracticeSnapshot[] Practices, GainSnapshot[] Gains);
+public sealed record PracticeSnapshot(DateTimeOffset At, string Skill, ulong Context);
+public sealed record GainSnapshot(DateTimeOffset At, string Skill);
 
 public sealed class CharacterProgression
 {
@@ -62,10 +66,10 @@ public sealed class CharacterProgression
     public IReadOnlyDictionary<string, int> Skills => skills;
 
     public CharacterProgression(string characterId, TimeProvider clock, Func<double> roll, ProgressionSettings? settings = null,
-        IReadOnlyDictionary<string, int>? initialSkills = null, long initialXp = 0)
+        IReadOnlyDictionary<string, int>? initialSkills = null, long initialXp = 0, ProgressionSnapshot? snapshot = null)
     {
         if (string.IsNullOrWhiteSpace(characterId) || clock is null || roll is null || initialXp < 0) throw new ArgumentException("Invalid progression initialization");
-        CharacterId = characterId; this.clock = clock; this.roll = roll; this.settings = settings ?? new(); this.settings.Validate();
+        CharacterId = characterId; this.clock = clock; this.roll = roll; this.settings = snapshot?.Settings ?? settings ?? new(); this.settings.Validate();
         if (initialSkills is not null)
             foreach (var (id, value) in initialSkills)
             {
@@ -74,7 +78,19 @@ public sealed class CharacterProgression
             }
         LifetimeXp = initialXp;
         while (Level < ProgressionRules.LevelCap && LifetimeXp >= TotalFor(Level + 1)) Level++;
+        if (snapshot is not null)
+        {
+            foreach (var id in snapshot.Receipts) receipts.Add(id);
+            foreach (var (id, minutes) in snapshot.ActiveMinutes) activeMinutes.Add(id, new HashSet<long>(minutes));
+            practices.AddRange(snapshot.Practices.Select(p => (p.At, p.Skill, p.Context)));
+            gains.AddRange(snapshot.Gains.Select(g => (g.At, g.Skill)));
+        }
     }
+
+    public ProgressionSnapshot Snapshot() => new(LifetimeXp, new(skills, StringComparer.Ordinal), settings, [.. receipts],
+        activeMinutes.ToDictionary(p => p.Key, p => p.Value.ToArray(), StringComparer.Ordinal),
+        practices.Select(p => new PracticeSnapshot(p.At, p.Skill, p.Context)).ToArray(),
+        gains.Select(g => new GainSnapshot(g.At, g.Skill)).ToArray());
 
     public static long TotalFor(int level)
     {
