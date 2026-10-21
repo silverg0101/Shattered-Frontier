@@ -125,6 +125,14 @@ def build(cfg=None):
         _texture(name)
     color = u.LinearColor(*cfg['flame_colour'], 1)
 
+    # The imported window master is opaque, hiding every interior flame card.
+    glass = _material('M_LampGlass', blend=u.BlendMode.BLEND_TRANSLUCENT)
+    tint = _node(glass, u.MaterialExpressionConstant3Vector, constant=color)
+    _output(_mul(glass, tint, _constant(glass, cfg['glass_emission_strength'])),
+            u.MaterialProperty.MP_EMISSIVE_COLOR)
+    _output(_constant(glass, .22), u.MaterialProperty.MP_OPACITY)
+    _save(glass)
+
     flame = _material('M_LampFlame', blend=u.BlendMode.BLEND_ADDITIVE)
     image = _sample(flame, 'T_LampFlame')
     tint = _node(flame, u.MaterialExpressionConstant3Vector, constant=color)
@@ -145,16 +153,6 @@ def build(cfg=None):
     _output(_mul(smoke, _alpha(smoke, image), _constant(smoke, cfg['smoke_opacity'])), u.MaterialProperty.MP_OPACITY)
     _save(smoke)
 
-    ember = _material('M_LampEmber', blend=u.BlendMode.BLEND_ADDITIVE)
-    image = _sample(ember, 'T_LampGlow')
-    pulse = _mul(ember, _add(ember, _sin(ember, _time(ember, .11, .31)), _constant(ember, 1)),
-                 _constant(ember, .5))
-    rare = _node(ember, u.MaterialExpressionPower, const_exponent=16.0)
-    _link(pulse, rare, 'Base')
-    _output(_mul(ember, _mul(ember, _alpha(ember, image), rare), _node(ember, u.MaterialExpressionConstant3Vector,
-                                  constant=u.LinearColor(2.5, .42, .05, 1))), u.MaterialProperty.MP_EMISSIVE_COLOR)
-    _save(ember)
-
     firefly = _material('M_LampFirefly', blend=u.BlendMode.BLEND_ADDITIVE)
     image = _sample(firefly, 'T_LampGlow')
     rnd = _node(firefly, u.MaterialExpressionPerInstanceRandom)
@@ -163,11 +161,18 @@ def build(cfg=None):
     blink = _mul(firefly, _add(firefly, blink, _constant(firefly, 1)), _constant(firefly, .5))
     gated = _node(firefly, u.MaterialExpressionPower, const_exponent=12.0)
     _link(blink, gated, 'Base')
-    _output(_mul(firefly, _mul(firefly, _alpha(firefly, image), gated), _node(firefly, u.MaterialExpressionConstant3Vector,
-             constant=u.LinearColor(.34, 1.0, .27, 1))), u.MaterialProperty.MP_EMISSIVE_COLOR)
-    drift_x = _mul(firefly, _sin(firefly, _add(firefly, _time(firefly, .07), phase)), _constant(firefly, 35))
-    drift_y = _mul(firefly, _sin(firefly, _add(firefly, _time(firefly, .093), phase)), _constant(firefly, 28))
-    drift_z = _mul(firefly, _sin(firefly, _add(firefly, _time(firefly, .052), phase)), _constant(firefly, 16))
+    sun = _node(firefly, u.MaterialExpressionSkyAtmosphereLightDirection, light_index=0)
+    height = _node(firefly, u.MaterialExpressionComponentMask, r=False, g=False, b=True, a=False)
+    _link(sun, height, '')
+    darkness = _node(firefly, u.MaterialExpressionSaturate)
+    _link(_mul(firefly, _add(firefly, _constant(firefly, .07), _mul(firefly, height, _constant(firefly, -1))),
+                       _constant(firefly, 8)), darkness, '')
+    dot = _mul(firefly, _mul(firefly, _alpha(firefly, image), gated), darkness)
+    _output(_mul(firefly, dot, _node(firefly, u.MaterialExpressionConstant3Vector,
+             constant=u.LinearColor(.7, 1.0, .32, 1))), u.MaterialProperty.MP_EMISSIVE_COLOR)
+    drift_x = _mul(firefly, _sin(firefly, _add(firefly, _time(firefly, .07), phase)), _constant(firefly, 20))
+    drift_y = _mul(firefly, _sin(firefly, _add(firefly, _time(firefly, .093), phase)), _constant(firefly, 20))
+    drift_z = _mul(firefly, _sin(firefly, _add(firefly, _time(firefly, .052), phase)), _constant(firefly, 10))
     xy = _node(firefly, u.MaterialExpressionAppendVector)
     _link(drift_x, xy, 'A'); _link(drift_y, xy, 'B')
     xyz = _node(firefly, u.MaterialExpressionAppendVector)
@@ -177,4 +182,4 @@ def build(cfg=None):
     light = _material('M_LampLightFunction', domain=u.MaterialDomain.MD_LIGHT_FUNCTION)
     _output(_flicker(light, cfg), u.MaterialProperty.MP_EMISSIVE_COLOR); _save(light)
     return {name: u.load_asset(DEST + '/' + name) for name in
-            ('M_LampFlame', 'M_LampHalo', 'M_LampSmoke', 'M_LampEmber', 'M_LampFirefly', 'M_LampLightFunction')}
+            ('M_LampGlass', 'M_LampFlame', 'M_LampHalo', 'M_LampSmoke', 'M_LampFirefly', 'M_LampLightFunction')}

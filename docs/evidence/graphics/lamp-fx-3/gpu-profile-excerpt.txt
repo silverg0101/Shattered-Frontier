@@ -1,0 +1,16 @@
+[2026.10.21-21.54.26:331][483]LogPython: LAMPFX3_GPU_SAMPLE on-1
+[2026.10.21-21.54.26:371][484]LogRHI: Display: GPU Profile for Frame 624 - Graphics pipeline 0 - GPU 0
+[2026.10.21-21.54.26:371][484]LogRHI: Display:     - Frame Time                    : 9.03ms
+[2026.10.21-21.54.26:371][484]LogRHI: Display:     ┃     0 │      0 │      0 │      0 │ 0.0% ┊          │ 0.002 ms ┃   472 │    599 │ 1231375 │ 1947540 │ 100.0% ┊ ████████ │ 8.280 ms ┃ <root>                                                                                                                                               ┃
+[2026.10.21-21.54.31:173][870]LogPython: LAMPFX3_GPU_SAMPLE off-1
+[2026.10.21-21.54.31:210][871]LogRHI: Display: GPU Profile for Frame 1011 - Graphics pipeline 0 - GPU 0
+[2026.10.21-21.54.31:210][871]LogRHI: Display:     - Frame Time                    : 8.71ms
+[2026.10.21-21.54.31:210][871]LogRHI: Display:     ┃     0 │      0 │      0 │      0 │  0.0% ┊          │ 0.002 ms ┃  2490 │    561 │ 1761433 │ 2231055 │ 100.0% ┊ ████████ │ 7.896 ms ┃ <root>                                                                                                                                               ┃
+[2026.10.21-21.54.35:529][242]LogPython: LAMPFX3_GPU_SAMPLE on-2
+[2026.10.21-21.54.35:564][243]LogRHI: Display: GPU Profile for Frame 1383 - Graphics pipeline 0 - GPU 0
+[2026.10.21-21.54.35:564][243]LogRHI: Display:     - Frame Time                    : 8.68ms
+[2026.10.21-21.54.35:564][243]LogRHI: Display:     ┃     0 │      0 │      0 │      0 │  0.0% ┊          │ 0.001 ms ┃  2535 │    614 │ 1256179 │ 2003282 │ 100.0% ┊ ████████ │ 7.478 ms ┃ <root>                                                                                                                                               ┃
+[2026.10.21-21.54.40:046][625]LogPython: LAMPFX3_GPU_SAMPLE off-2
+[2026.10.21-21.54.40:081][626]LogRHI: Display: GPU Profile for Frame 1766 - Graphics pipeline 0 - GPU 0
+[2026.10.21-21.54.40:081][626]LogRHI: Display:     - Frame Time                    : 8.76ms
+[2026.10.21-21.54.40:081][626]LogRHI: Display:     ┃     0 │      0 │      0 │      0 │  0.0% ┊          │ 0.002 ms ┃  2578 │    603 │ 1286377 │ 2070685 │ 100.0% ┊ ████████ │ 7.235 ms ┃ <root>                                                                                                                                               ┃

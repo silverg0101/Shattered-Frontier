@@ -93,7 +93,8 @@ def _point_light(subsystem, position, cfg, material, label, u):
     light.set_editor_property('intensity_units', u.LightUnits.LUMENS)
     light.set_editor_property('intensity', cfg['light_intensity'])
     light.set_editor_property('attenuation_radius', cfg['light_radius'] * 100)
-    light.set_editor_property('light_color', u.Color(255, 171, 87, 255))
+    # UE Python positional Color arguments map to BGRA; name channels to avoid a cyan lamp.
+    light.set_editor_property('light_color', u.Color(r=255, g=150, b=65, a=255))
     light.set_editor_property('cast_shadows', False)
     light.set_editor_property('light_function_material', material)
     light.set_editor_property('max_draw_distance', 2500.0)
@@ -129,6 +130,35 @@ def apply(world=None, save=False):
     import build_materials
     importlib.reload(build_materials)
     mats = build_materials.build(cfg)
+    # FBX glass was gated by the sun and the shared .9 metallic iron reflected the blue sky.
+    # Restrict the correction to the four street-lamp mesh families.
+    mel = u.MaterialEditingLibrary
+    iron = u.load_asset('/Game/Frontier/VFX/StreetLamp/MI_LampIron')
+    if not iron:
+        source_iron = u.load_asset('/Game/Frontier/Environment/Greenlands/Silverbrook/Materials/MI_SB_ForgedIron')
+        iron = u.AssetToolsHelpers.get_asset_tools().duplicate_asset('MI_LampIron', DEST, source_iron)
+    assert iron
+    mel.set_material_instance_scalar_parameter_value(iron, 'Metallic', .25)
+    mel.set_material_instance_scalar_parameter_value(iron, 'Roughness', .78)
+    assert u.EditorAssetLibrary.save_loaded_asset(iron)
+    for actor in actors:
+        if not actor.get_actor_label().startswith('StreetLamp_'):
+            continue
+        for mesh_component in actor.get_components_by_class(u.StaticMeshComponent):
+            mesh = mesh_component.get_editor_property('static_mesh')
+            if not mesh or not mesh.get_name().startswith('SM_SilverbrookStreetLamp'):
+                continue
+            # Nanite rejects translucent glass on a mixed-material mesh.
+            mesh_component.set_editor_property('disallow_nanite', True)
+            for slot in range(mesh_component.get_num_materials()):
+                material = mesh_component.get_material(slot)
+                if not material:
+                    continue
+                name = material.get_name()
+                if name == 'MI_SB_ForgedIron' or name == 'MI_LampIron':
+                    mesh_component.set_material(slot, iron)
+                elif name.endswith('_Glow') or name == 'M_LampGlass':
+                    mesh_component.set_material(slot, mats['M_LampGlass'])
     plane = u.load_asset('/Engine/BasicShapes/Plane')
     assert plane, 'Engine Plane mesh unavailable'
     # Build all assets and discover all targets before replacing prior owned actors.
@@ -139,19 +169,19 @@ def apply(world=None, save=False):
     host.set_actor_label(PREFIX + 'Cards')
     host.set_folder_path('VFX/StreetLamp')
     cards = {key: _component(host, key, plane, mats['M_Lamp' + key], u)
-             for key in ('Flame', 'Halo', 'Smoke', 'Ember', 'Firefly') if key != 'Firefly'}
+             for key in ('Flame', 'Halo', 'Smoke')}
     cards['Fireflies'] = _component(host, 'Fireflies', plane, mats['M_LampFirefly'], u)
     counts = {'sockets': 0, 'lights': 0, 'fireflies': 0}
     for label, index, pos in targets:
         key = f'{label}:{index}'
         yaw = _stable_fraction(key + ':yaw') * 180
         vertical = u.Rotator(pitch=90, yaw=yaw, roll=0)
-        high = u.Vector(pos.x, pos.y, pos.z + 20)
-        _instance(cards['Flame'], pos, vertical, u.Vector(.12, .24, 1), u)
-        _instance(cards['Halo'], pos, vertical, u.Vector(.48, .48, 1), u)
-        _instance(cards['Halo'], pos, u.Rotator(pitch=90, yaw=yaw + 90, roll=0), u.Vector(.48, .48, 1), u)
-        _instance(cards['Smoke'], high, vertical, u.Vector(.22, .55, 1), u)
-        _instance(cards['Ember'], high, vertical, u.Vector(.035, .035, 1), u)
+        high = u.Vector(pos.x, pos.y, pos.z + 45)
+        _instance(cards['Flame'], pos, vertical, u.Vector(.10, .22, 1), u)
+        _instance(cards['Flame'], pos, u.Rotator(pitch=90, yaw=yaw + 90, roll=0), u.Vector(.10, .22, 1), u)
+        _instance(cards['Halo'], pos, vertical, u.Vector(.26, .26, 1), u)
+        _instance(cards['Halo'], pos, u.Rotator(pitch=90, yaw=yaw + 90, roll=0), u.Vector(.26, .26, 1), u)
+        _instance(cards['Smoke'], high, vertical, u.Vector(.16, .25, 1), u)
         _point_light(subsystem, pos, cfg, mats['M_LampLightFunction'],
                      PREFIX + f'Light_{label}_{index}', u)
         counts['sockets'] += 1; counts['lights'] += 1
@@ -159,10 +189,11 @@ def apply(world=None, save=False):
             count = 1 + int(_stable_fraction(key + ':count') * cfg['firefly_count'])
             for i in range(count):
                 angle = _stable_fraction(key + f':a{i}') * 2 * math.pi
-                radius = 40 + 70 * _stable_fraction(key + f':r{i}')
+                radius = 130 + 130 * _stable_fraction(key + f':r{i}')
                 fly = u.Vector(pos.x + radius * math.cos(angle), pos.y + radius * math.sin(angle),
                                pos.z - 40 + 70 * _stable_fraction(key + f':z{i}'))
-                _instance(cards['Fireflies'], fly, vertical, u.Vector(.055, .055, 1), u)
+                _instance(cards['Fireflies'], fly, vertical, u.Vector(.018, .018, 1), u)
+                _instance(cards['Fireflies'], fly, u.Rotator(pitch=90, yaw=yaw + 90, roll=0), u.Vector(.018, .018, 1), u)
                 counts['fireflies'] += 1
     if save:
         assert u.get_editor_subsystem(u.LevelEditorSubsystem).save_current_level()

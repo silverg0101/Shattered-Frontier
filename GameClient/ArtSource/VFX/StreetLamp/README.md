@@ -4,12 +4,11 @@
 
 | Effect | Implementation |
 | --- | --- |
-| Flame and emissive glass | Procedural Pillow flame texture on a two-sided additive card at each socket, with a two-frequency material-time flicker. The original mesh glass remains amber. |
-| Warm light | 220 lumen movable point light, 2.8 m attenuation, no shadows, 25 m draw cap. Light-function material uses the same flicker speed and amount. |
-| Halo | Two crossing soft additive cards; bloom comes from the existing Silverbrook post process. |
-| Smoke | One soft alpha card 20 cm above each glass center; slow panning. |
-| Ember | One tiny additive card per lamp with a short pulse about every 9 seconds. |
-| Fireflies | A deterministic subset of lamps (28% default), 1–3 instanced sprite quads each; per-instance random blinking and slow WPO drift. HISM ends at 25 m. |
+| Flame and glass | Two crossing additive flame cards at each socket, with two-frequency flicker, inside translucent amber glass on street lamps. |
+| Warm light | 900 lumen movable point light, 4 m attenuation, no shadows, 25 m draw cap. Named RGB arguments prevent UE Python's positional BGRA mapping from turning it blue. |
+| Halo | Two crossing 26 cm soft amber cards inside each glass chamber. |
+| Smoke | One faint 16 × 25 cm alpha card 45 cm above each glass center. |
+| Fireflies | At 28% of lamps, 1–3 tiny soft dots 1.3–2.6 m away, sun-elevation gated to dusk/night; no ribbons or velocity alignment. HISM ends at 25 m. |
 
 The material graph and shared HISM cards avoid Niagara Python graph editing. All graphics are client cosmetic and have no Python tick or replication. On a dedicated server there is no rendering, but the baked map actors may still load; server actor exclusion needs a client-only runtime class in a later integration. No shadows are cast, including at close range. Small attenuation provides the ground pool.
 
@@ -34,11 +33,11 @@ Open the ShatteredFrontier full editor, enable Python remote execution, and open
 py -3 tools/Run-InEditor.py GameClient/ArtSource/Greenlands/lamp_fx.py --save
 ```
 
-This imports/rebuilds only `/Game/Frontier/VFX/StreetLamp/` assets, replaces `FX_StreetLamp_*` actors in the open Silverbrook map, saves the map, and prints `LAMP_FX` counts. The UE 5.8 editor run completed with 938 sockets/lights and 539 firefly cards. The builder's exact hook also completed with the same counts. The Python component transform and HISM component creation now use UE 5.8 exposed APIs.
+This imports/rebuilds only `/Game/Frontier/VFX/StreetLamp/` assets, replaces `FX_StreetLamp_*` actors in the open Silverbrook map, saves the map, and prints `LAMP_FX` counts. The UE 5.8 editor run completed with 938 sockets/lights. The Python component transform and HISM component creation use UE 5.8 exposed APIs. Street-lamp components disable Nanite because Nanite does not render the translucent glass material.
 
 Review captures and concept/live pairs are in `docs/evidence/graphics/lamp-fx/`: 1920x1080 dusk, day and night views of a street lamp, a townhouse lantern area and a street with several lamps. Temporary sun, sky and exposure overrides were used only in `-game`; they were not saved. The final 1440p `stat gpu` street view measured Graphics Queue Total 5.38 ms on and 5.17 ms off (about **0.21 ms** delta, under the 0.5 ms budget) on an RX 7900 XTX. This is an on/off snapshot, not a distribution across multiple routes. The brightness value was raised within its declared bound from 90 to 220 lumens, then the assets and map were rebuilt and the captures and GPU pair repeated.
 
-**Visual verdict: not a concept match.** The street lamp's source glass still reads blue instead of amber, the flame and flicker are not discernible, the building lantern is obscured by the townhouse banner in the selected close view, and night remains too dark even with a temporary exposure override. Smoke and firefly subtlety, temporal popping and z-fighting cannot be accepted from still frames; no clear issue was visible in the captured frames. Actor/card counts confirm that the VFX is present in the game map, but they do not prove every lamp looks correct.
+**Pass 2 verdict: not a concept match.** The cold light came from a positional `unreal.Color` call: intended `(r=255, g=150, b=65)` became `(r=65, g=150, b=255)`. Pass 3 correction and new evidence are in `docs/evidence/graphics/lamp-fx-3/`.
 
 Builder-owner hook after `for spawn in pending:` finishes (the builder owns its file):
 

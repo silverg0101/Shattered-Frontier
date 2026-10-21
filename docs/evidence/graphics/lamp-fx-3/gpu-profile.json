@@ -1,0 +1,31 @@
+{
+  "resolution": [
+    2560,
+    1440
+  ],
+  "samples": [
+    {
+      "name": "on-1",
+      "frame_ms": 9.03,
+      "root_ms": 8.28
+    },
+    {
+      "name": "off-1",
+      "frame_ms": 8.71,
+      "root_ms": 7.896
+    },
+    {
+      "name": "on-2",
+      "frame_ms": 8.68,
+      "root_ms": 7.478
+    },
+    {
+      "name": "off-2",
+      "frame_ms": 8.76,
+      "root_ms": 7.235
+    }
+  ],
+  "mean_frame_delta_ms": 0.12,
+  "mean_graphics_root_delta_ms": 0.313,
+  "scope": "One road-facing game view; alternated on/off twice, four single-frame ProfileGPU captures. Off hides FX_StreetLamp point lights and card components; source glass remains."
+}
