@@ -6,14 +6,18 @@ Launch in -game with -TownsfolkPrototype and a fast prototype clock, for example
 Captures Townsfolk-<hour>h.png at the game hours below, then quits. The TOWNSFOLK_HOUR log lines say where everyone
 is meant to be each hour, who is outdoors, pairs closer than 0.6 m summed over frames (ClosePairFrames), route counts and the processor's cost.
 Add "-ini:Game:[/Script/ShatteredFrontier.SFTownsfolkSettings]:SidestepMaxMetres=0" to compare without sidesteps.
+Real walking speed (1x): GameDayMinutes=60 with StartHour=7, and set the environment variables TOWNSFOLK_DAY_MINUTES=60,
+TOWNSFOLK_START_HOUR=7 and TOWNSFOLK_HOURS=8,9,10,11 so the captures follow that clock (about 11 minutes).
 """
-import time
+import os, time
 from pathlib import Path
 import unreal as u
 
 ROOT = Path(__file__).resolve().parent
-DAY_MINUTES, START_HOUR = 6.0, 6.0      # must match the -ini override and StartHour
-HOURS = [7.5, 8.5, 10.0, 11.5, 23.0]     # leaving for work and errands, at the market, walking home, night
+DAY_MINUTES = float(os.environ.get('TOWNSFOLK_DAY_MINUTES', 6.0))   # must match the -ini overrides GameDayMinutes and StartHour
+START_HOUR = float(os.environ.get('TOWNSFOLK_START_HOUR', 6.0))
+# leaving for work and errands, at the market, walking home, night
+HOURS = [float(h) for h in os.environ.get('TOWNSFOLK_HOURS', '7.5,8.5,10.0,11.5,23.0').split(',')]
 world = u.load_asset('/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook')
 pc = u.GameplayStatics.get_player_controller(world, 0)
 state = dict(frame=0, started=None, shots=0)

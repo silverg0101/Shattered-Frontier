@@ -7,10 +7,12 @@
 #include "MassEntityTraitBase.h"
 #include "MassEntityTypes.h"
 #include "MassProcessor.h"
+#include "SmartObjectRuntime.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "SFTownsfolk.generated.h"
 
 class UAnimSequence;
+class USmartObjectDefinition;
 class USkeletalMesh;
 class UMassEntityConfigAsset;
 class USkeletalMeshComponent;
@@ -73,10 +75,39 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Prototype", meta=(ClampMin="0.0", ClampMax="2.0", Units="m", ToolTip="Furthest a resident steps aside from the footway to pass someone."))
     float SidestepMaxMetres = 1.5f;
 
+    UPROPERTY(Config, EditAnywhere, Category="Prototype", meta=(ClampMin="0.5", ClampMax="2.0", Units="m", ToolTip="Distance inside which a resident steps away from another (the neighbour grid reaches 2 m)."))
+    float SidestepRadiusMetres = 1.2f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Prototype", meta=(ClampMin="0.1", ClampMax="2.0", ToolTip="Sideways speed of a full sidestep as a share of walking speed."))
+    float SidestepSpeedShare = 0.6f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Smart Objects", meta=(ClampMin="0.2", ClampMax="10.0", Units="s", ToolTip="Real seconds a resident holds a door's slot while going in or coming out."))
+    float DoorDwellSeconds = 1.5f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Smart Objects", meta=(ClampMin="0.0", ClampMax="1.0", ToolTip="Share of workers (by a seeded daily roll) who go inside their workplace through its door; the rest stand outside it."))
+    float WorkIndoorShare = 0.5f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Smart Objects", meta=(ClampMin="0.0", ClampMax="1.0", ToolTip="Share of market errands (by a seeded daily roll) spent sitting on a bench near the market instead of standing at its stall."))
+    float BenchShare = 0.3f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Smart Objects", meta=(ClampMin="5.0", ClampMax="100.0", Units="m", ToolTip="How far from a market a bench may be and still be chosen for its errand."))
+    float BenchSearchMetres = 40.0f;
+
     bool Validate(FString& OutError) const;
 };
 
 enum class ESFTownsfolkGoal : uint8 { None, Home, Work, Market };
+
+/** Kinds of Smart Object residents claim: a building door (enter or leave), a market stall (stand), a bench (sit). */
+enum class ESFTownsfolkSpot : uint8 { Door, Stall, Bench };
+
+/** One Smart Object from silverbrook-smartobjects.json; At is its origin in cm, Facing the way it faces in degrees. */
+struct FSFTownsfolkSpot
+{
+    FSmartObjectHandle Handle;
+    FVector At=FVector::ZeroVector;
+    float Facing=0;
+};
 
 /** One census resident's day, from silverbrook-census.json. Hours are game hours. */
 struct FSFTownsfolkResident
@@ -84,8 +115,10 @@ struct FSFTownsfolkResident
     FString Id;
     FName Archetype;
     FVector Home=FVector::ZeroVector, Work=FVector::ZeroVector;
+    FString HomeLabel, WorkLabel;  // the buildings whose doors they use
     bool bHasWork=false;
     TArray<FVector> Markets;
+    TArray<FString> MarketLabels;  // parallel to Markets: the stall each is
     float Wake=6, WorkStart=8, WorkEnd=16, Sleep=22, ErrandChance=0.5f;
     uint32 Seed=0;
     ESFTownsfolkGoal GoalAt(float Hour, int32 Day, int32& OutMarket) const;
@@ -100,6 +133,12 @@ struct FSFTownsfolkResidentFragment : public FMassFragment
     int32 Market=INDEX_NONE;
     int32 Next=0;  // next point of this resident's route (USFTownsfolkSubsystem::Route)
     bool bInside=true;
+    ESFTownsfolkGoal InsideGoal=ESFTownsfolkGoal::Home;  // which building (home or work) they are in while bInside
+    uint8 Phase=0;  // 0 on the move or standing, 1 inside waiting for the door, 2 coming out of it, 3 going in
+    bool bEnter=false;  // the route ends at a door they go through
+    bool bFace=false;  // they stand facing FaceYaw at the end of the route (a stall or bench)
+    float Wait=0;  // real seconds left in a door phase
+    float FaceYaw=0;
     FVector OnRoute=FVector::ZeroVector;  // where the route has got to; the shown transform adds the sidestep
     FVector Forward=FVector::ForwardVector;
     float Side=0;  // cm to the right of the route
@@ -160,19 +199,40 @@ public:
     const FSFTownsfolkResident& Resident(int32 Index) const { return Residents[Index]; }
     TArray<FVector>& Route(int32 Index) { return Routes[Index]; }
     const FSFTownsfolkResolvedLook* LookFor(FName Archetype) const { return Looks.Find(Archetype); }
-    bool PlanRoute(const FVector& From, const FVector& To, TArray<FVector>& OutRoute) const;
+    /** bExact walks all the way to To; otherwise the route stops at most 4 m off the footway. */
+    bool PlanRoute(const FVector& From, const FVector& To, TArray<FVector>& OutRoute, bool bExact=false) const;
+    /** Where a resident goes for a goal, with seeded choices: through a door, to a stall slot or a bench slot (claimed here,
+      * held until ReleaseStand). Sets the fragment's bEnter, bFace and FaceYaw. Falls back to the census point (bScatter). */
+    void PlanStop(int32 Resident, ESFTownsfolkGoal Goal, int32 Market, int32 Day, FSFTownsfolkResidentFragment& W, FVector& OutTo, bool& bOutExact, bool& bOutScatter);
+    const FSFTownsfolkSpot* DoorFor(int32 Resident, ESFTownsfolkGoal Building) const;
+    /** Claims a free slot of the door; OutAt in cm and OutYaw the slot's facing (toward the door). */
+    bool ClaimDoor(int32 Resident, const FSFTownsfolkSpot& Door, FVector& OutAt, float& OutYaw);
+    void ReleaseDoor(int32 Resident);
+    void ReleaseStand(int32 Resident);
+    float DoorDwell() const { return DoorDwellSeconds; }
     /** Records where a resident is shown this frame, for the next frame's sidesteps and the review. */
     void Note(int32 Index, const FVector& At, const FVector& Forward, bool bOutdoors);
     /** How far right of its route (cm) a resident should step this frame to pass the others and the player. */
     float Sidestep(int32 Index, float Side, float DeltaSeconds) const;
-    void BeginFrame();
+    void BeginFrame(float DeltaSeconds);
     void NoteFrame(double Milliseconds);
     TArray<FVector> OutdoorPositions() const;
 
 private:
     bool LoadCensus(FString& OutError);
     bool LoadLooks(FString& OutError);
+    /** Creates the Smart Objects from silverbrook-smartobjects.json once the SmartObject subsystem is running. */
+    void EnsureSpots();
+    bool Claim(int32 Resident, ESFTownsfolkSpot Kind, const FSFTownsfolkSpot& Spot, FVector& OutAt, float& OutYaw);
+    USmartObjectDefinition* MakeDefinition(const TArray<FVector>& Offsets, float YawDegrees);
     TMap<FName,FSFTownsfolkResolvedLook> Looks;
+    bool bSpotsTried=false, bSpots=false;
+    UPROPERTY() TArray<TObjectPtr<USmartObjectDefinition>> SpotDefinitions;  // door, stall, bench
+    TMap<FString,FSFTownsfolkSpot> Doors, Stalls;  // by building / market label
+    TArray<FSFTownsfolkSpot> Benches;
+    TArray<FSmartObjectClaimHandle> DoorHolds, StandHolds;  // per resident: at most one door and one stall or bench
+    int32 DoorClaims=0, StallClaims=0, BenchClaims=0, ClaimFailures=0;  // since the last report
+    float DoorDwellSeconds=1.5f, WorkIndoorShare=0.5f, BenchShare=0.3f, BenchSearchCm=4000, SidestepRadiusCm=120, SidestepSpeedShare=0.6f;
     UPROPERTY() TArray<TObjectPtr<UObject>> LookAssets;
     bool bActive=false;
     TArray<FSFTownsfolkResident> Residents;
@@ -183,6 +243,8 @@ private:
     double StartSeconds=0, LastReport=-1, FrameMs=0; int64 Frames=0;
     mutable int32 Routes_Planned=0, Routes_Failed=0;
     int64 ClosePairs=0;  // pairs of outdoor residents under 0.6 m apart, summed over frames since the last report
+    double ClosePairSeconds=0;  // the same, each frame weighted by its length: comparable across frame rates
+    float LastDelta=0.016f;
     float StartHour=6, SecondsPerGameHour=150, WalkSpeedCmPerSecond=140, SidestepMaxCm=150;
     UPROPERTY() TObjectPtr<UMassEntityConfigAsset> Config;
 };
@@ -202,6 +264,10 @@ public:
     /** Rebuilds the ZoneGraph data in the editor world; returns the lane count. */
     UFUNCTION(BlueprintCallable, Category="Townsfolk", meta=(WorldContext="WorldContext"))
     static int32 RebuildZoneGraph(UObject* WorldContext);
+
+    /** Lanes reachable over any lane link from the lane nearest At (cm); with the network's total in OutTotal. */
+    UFUNCTION(BlueprintCallable, Category="Townsfolk", meta=(WorldContext="WorldContext"))
+    static int32 ReachableLanes(UObject* WorldContext, FVector At, int32& OutTotal);
 
     /** World positions (cm) of the prototype's residents who are outdoors; empty when it isn't running. */
     UFUNCTION(BlueprintCallable, Category="Townsfolk", meta=(WorldContext="WorldContext"))

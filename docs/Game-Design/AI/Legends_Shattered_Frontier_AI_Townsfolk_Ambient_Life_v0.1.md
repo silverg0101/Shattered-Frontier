@@ -287,7 +287,9 @@ The census validator checks:
 
    *Since done (step 3 first slice, below):* lanes across the town, MassRepresentation bodies, avoidance.
 
-   *Not done yet:* Smart Objects (doors, stalls, benches); StateTree-driven blocks (schedule logic is a processor for now); social and night blocks; server town state.
+   *Smart Objects (2026-10-21):* `townsfolk_smartobjects.py` writes `silverbrook-smartobjects.json` (a door per building, a stall per market stall and vendor, the placed benches); the runtime creates them with `USmartObjectSubsystem::CreateSmartObject` and residents claim and release slots with seeded choices (home and some workplaces through doors, errands at a stall slot or a bench). **Step-4 blocker:** `USmartObjectSubsystem` is not created on `NM_Client`, and production clients are `NM_Client` with client-simulated residents, so this works in standalone and listen play only. Options: a client-local claim registry mirroring the definitions, or a project subclass that creates the subsystem on clients.
+
+   *Not done yet:* StateTree-driven blocks (schedule logic is a processor for now); social and night blocks; server town state.
 
    **Step 3 first slice (2026-10-20), development opt-in as above.**
    - *Footways across the town.* `townsfolk_lanes.py` lays every street inside the wall or a district polygon (the farms past the wall too): 56 pieces, 30 junctions, 368 lanes, 8.8 km. Points every 5 m take the heightfield's height; over water they run straight from bank to bank, as the bridge decks do. Every home is within 15 m of a footway. Five workplaces have no road (wharf, stables, mill and granary, watchtower), so their workers stop at the nearest footway.
@@ -300,6 +302,10 @@ The census validator checks:
      - Routes: 2 of 679 failed, both on one dead-end street whose junction arm at (34, 420) m doesn't link.
      - Processor cost: 0.05–0.19 ms a frame, after a 12 ms first frame that plans the first 200 routes.
      - Close passes (pairs under 0.6 m, summed over frames): the standing spread cut them from 906 to 240 in a day; sidesteps took that to 233 at the review's 10× clock. Walkers there move at 14 m/s, too fast for a sidestep to react. A real-speed measurement is still due.
+   **Step 3 second slice (2026-10-21), development opt-in.**
+   - *Smart Objects.* 321 doors, 7 stalls and 14 benches. In a 6-minute day (before the junction fix) residents made 65 door claims in the busiest hour, stall claims peaked at 19 an hour, with 25 `ClaimFailures` in the busiest hour (a stall's 3 slots all taken; those residents stand around it as before). `BenchClaims` stayed 0 in that run because the bench file was written afterwards (14 benches now); a run with benches is still due. Outdoors peaked at 83 at 10:00 (was 84), 1 at night; processor 0.06-0.22 ms a frame.
+   - *Junction fix.* The dead end was the east arm at (34, 420) m. A street snapped onto another ended 2.5 cm off the rounded junction node, so its spline end and the polygon arm did not link (ZoneGraph's connection tolerance is tighter than that). `townsfolk_lanes.plan()` now builds both from the node. The saved map's arm was moved to the spline end: `SFTownsfolkLaneLibrary.ReachableLanes` gives 368 of 368 lanes from both the dead-end street and the main street (was 2 of 368). A review run to confirm `RouteFailures=0` and the real-speed close-pass before/after (1x, `SidestepMaxMetres=0` against the default) are still due.
+
 3. **Looks and scale.** Use MetaHuman Crowds kits and the near, mid and far representations, then town-wide residents at default caps. *Exit:* frame cost within `tune.townsfolk.frame_budget_ms` on the target spec, and no visible pops at tier changes.
 4. **Town state and hand-off.** The server clock (60-minute day), market open or closed, danger cells, and the attack and quest hand-offs. *Exit:* two clients see the same market state and crowd intent; a handed-off resident replicates and returns.
 5. **Reactions, crime and guards.** Fear at drawn weapons, annoyed barks, residents fighting back, roaming guards on patrol loops, witnessed crime making the player an offender, respawn at dawn. *Exit:* attacking a resident in view of a guard makes the player an offender and the guard engages; an unwitnessed attack in a back street gets reported only if a resident reaches a guard.

@@ -103,7 +103,8 @@ def plan(L):
     ends = {}
     for e in pieces:
         for p, q in ((e[0], e[1]), (e[-1], e[-2])):
-            ends.setdefault(key(p), []).append((q[0] - p[0], q[1] - p[1]))
+            k = key(p)  # from the node, not the raw end: a street snapped onto another ends a few cm off the rounded node
+            ends.setdefault(k, []).append((q[0] - k[0], q[1] - k[1]))
     junctions = []
     for k, dirs in ends.items():
         if len(dirs) >= 2:
@@ -129,7 +130,7 @@ def plan(L):
         e = list(e)
         for idx, nxt in ((0, 1), (-1, -2)):
             if key(e[idx]) in jset:
-                p, q = e[idx], e[nxt]; d = math.dist(p, q) or 1
+                p, q = key(e[idx]), e[nxt]; d = math.dist(p, q) or 1  # arms are built from the same node, so spline end and polygon arm coincide
                 e[idx] = (p[0] + (q[0] - p[0]) / d * JUNCTION_R, p[1] + (q[1] - p[1]) / d * JUNCTION_R)
         if math.dist(e[0], e[-1]) > 1.0:
             edges.append(e)
