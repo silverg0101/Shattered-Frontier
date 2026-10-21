@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../ClaimTerritory/ClaimTerritory.csproj" />
+    <ProjectReference Include="../InventoryLedger/InventoryLedger.csproj" />
+    <ProjectReference Include="../CraftingContent/CraftingContent.csproj" />
+  </ItemGroup>
+</Project>
