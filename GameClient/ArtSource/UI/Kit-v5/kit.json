@@ -1,0 +1,3127 @@
+{
+  "schema_version": 1,
+  "canvas_1080p": [
+    1920,
+    1080
+  ],
+  "asset_scale": 2,
+  "palette": {
+    "slate": "#17232A",
+    "brass": "#A98A55",
+    "ivory": "#E8E1CE",
+    "moss": "#688267",
+    "crimson": "#A34842",
+    "amber": "#B69A55"
+  },
+  "pieces": {
+    "window_frame": {
+      "file": "window_frame.png",
+      "nine_slice_px": [
+        28,
+        28,
+        28,
+        28
+      ],
+      "intended_1080p_px": [
+        512,
+        420
+      ],
+      "screens": [
+        "trade",
+        "defeated",
+        "10-npc-dialogue"
+      ]
+    },
+    "panel_frame": {
+      "file": "panel_frame.png",
+      "nine_slice_px": [
+        28,
+        28,
+        28,
+        28
+      ],
+      "intended_1080p_px": [
+        512,
+        320
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings"
+      ]
+    },
+    "tooltip_frame": {
+      "file": "tooltip_frame.png",
+      "nine_slice_px": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "intended_1080p_px": [
+        320,
+        180
+      ],
+      "screens": [
+        "inventory"
+      ]
+    },
+    "modal_frame": {
+      "file": "modal_frame.png",
+      "nine_slice_px": [
+        28,
+        28,
+        28,
+        28
+      ],
+      "intended_1080p_px": [
+        640,
+        500
+      ],
+      "screens": [
+        "market-board",
+        "14-settings"
+      ]
+    },
+    "target_frame": {
+      "file": "target_frame.png",
+      "nine_slice_px": [
+        32,
+        20,
+        32,
+        20
+      ],
+      "intended_1080p_px": [
+        410,
+        70
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "quest_tracker_frame": {
+      "file": "quest_tracker_frame.png",
+      "nine_slice_px": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "intended_1080p_px": [
+        280,
+        154
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "toast_frame": {
+      "file": "toast_frame.png",
+      "nine_slice_px": [
+        54,
+        18,
+        20,
+        18
+      ],
+      "intended_1080p_px": [
+        280,
+        66
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "news_frame": {
+      "file": "news_frame.png",
+      "nine_slice_px": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "intended_1080p_px": [
+        320,
+        220
+      ],
+      "screens": [
+        "11-title-menu"
+      ]
+    },
+    "detail_card_frame": {
+      "file": "detail_card_frame.png",
+      "nine_slice_px": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "intended_1080p_px": [
+        290,
+        330
+      ],
+      "screens": [
+        "market-board",
+        "10-npc-dialogue"
+      ]
+    },
+    "search_field": {
+      "file": "search_field.png",
+      "nine_slice_px": [
+        16,
+        12,
+        16,
+        12
+      ],
+      "intended_1080p_px": [
+        260,
+        36
+      ],
+      "screens": [
+        "build-mode",
+        "inventory",
+        "crafting-station",
+        "market-board"
+      ]
+    },
+    "dropdown_field": {
+      "file": "dropdown_field.png",
+      "nine_slice_px": [
+        16,
+        12,
+        16,
+        12
+      ],
+      "intended_1080p_px": [
+        220,
+        40
+      ],
+      "screens": [
+        "build-mode",
+        "inventory"
+      ]
+    },
+    "realm_plate": {
+      "file": "realm_plate.png",
+      "nine_slice_px": [
+        20,
+        14,
+        20,
+        14
+      ],
+      "intended_1080p_px": [
+        240,
+        42
+      ],
+      "screens": [
+        "11-title-menu",
+        "12-character-select"
+      ]
+    },
+    "title_banner": {
+      "file": "title_banner.png",
+      "nine_slice_px": [
+        36,
+        20,
+        36,
+        20
+      ],
+      "intended_1080p_px": [
+        440,
+        72
+      ],
+      "screens": [
+        "15-world-map"
+      ]
+    },
+    "legend_frame": {
+      "file": "legend_frame.png",
+      "nine_slice_px": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "intended_1080p_px": [
+        240,
+        220
+      ],
+      "screens": [
+        "15-world-map"
+      ]
+    },
+    "journal_book_frame": {
+      "file": "journal_book_frame.png",
+      "nine_slice_px": [
+        42,
+        34,
+        42,
+        34
+      ],
+      "intended_1080p_px": [
+        850,
+        580
+      ],
+      "screens": [
+        "16-quest-journal"
+      ]
+    },
+    "character_row": {
+      "file": "character_row.png",
+      "nine_slice_px": [
+        22,
+        22,
+        22,
+        22
+      ],
+      "intended_1080p_px": [
+        420,
+        116
+      ],
+      "screens": [
+        "12-character-select"
+      ]
+    },
+    "recipe_row": {
+      "file": "recipe_row.png",
+      "nine_slice_px": [
+        20,
+        14,
+        20,
+        14
+      ],
+      "intended_1080p_px": [
+        320,
+        56
+      ],
+      "screens": [
+        "crafting-station"
+      ]
+    },
+    "quest_row": {
+      "file": "quest_row.png",
+      "nine_slice_px": [
+        20,
+        14,
+        20,
+        14
+      ],
+      "intended_1080p_px": [
+        360,
+        56
+      ],
+      "screens": [
+        "16-quest-journal"
+      ]
+    },
+    "status_plate": {
+      "file": "status_plate.png",
+      "nine_slice_px": [
+        18,
+        14,
+        18,
+        14
+      ],
+      "intended_1080p_px": [
+        240,
+        46
+      ],
+      "screens": [
+        "trade"
+      ]
+    },
+    "corner_overlay": {
+      "file": "corner_overlay.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        24,
+        24
+      ],
+      "screens": [
+        "build-mode"
+      ]
+    },
+    "button_normal": {
+      "file": "button_normal.png",
+      "nine_slice_px": [
+        24,
+        20,
+        24,
+        20
+      ],
+      "intended_1080p_px": [
+        300,
+        56
+      ],
+      "screens": [
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "11-title-menu",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "button_hover": {
+      "file": "button_hover.png",
+      "nine_slice_px": [
+        24,
+        20,
+        24,
+        20
+      ],
+      "intended_1080p_px": [
+        300,
+        56
+      ],
+      "screens": [
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "11-title-menu",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "button_pressed": {
+      "file": "button_pressed.png",
+      "nine_slice_px": [
+        24,
+        20,
+        24,
+        20
+      ],
+      "intended_1080p_px": [
+        300,
+        56
+      ],
+      "screens": [
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "11-title-menu",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "button_disabled": {
+      "file": "button_disabled.png",
+      "nine_slice_px": [
+        24,
+        20,
+        24,
+        20
+      ],
+      "intended_1080p_px": [
+        300,
+        56
+      ],
+      "screens": [
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "button_primary_brass": {
+      "file": "button_primary_brass.png",
+      "nine_slice_px": [
+        24,
+        20,
+        24,
+        20
+      ],
+      "intended_1080p_px": [
+        300,
+        56
+      ],
+      "screens": [
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "11-title-menu",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "button_destructive": {
+      "file": "button_destructive.png",
+      "nine_slice_px": [
+        24,
+        20,
+        24,
+        20
+      ],
+      "intended_1080p_px": [
+        300,
+        56
+      ],
+      "screens": [
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "tab_normal": {
+      "file": "tab_normal.png",
+      "nine_slice_px": [
+        16,
+        12,
+        16,
+        12
+      ],
+      "intended_1080p_px": [
+        190,
+        44
+      ],
+      "screens": [
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "tab_selected": {
+      "file": "tab_selected.png",
+      "nine_slice_px": [
+        16,
+        12,
+        16,
+        12
+      ],
+      "intended_1080p_px": [
+        190,
+        44
+      ],
+      "screens": [
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "slot_bag_normal": {
+      "file": "slot_bag_normal.png",
+      "nine_slice_px": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "inventory",
+        "trade"
+      ]
+    },
+    "slot_bag_selected": {
+      "file": "slot_bag_selected.png",
+      "nine_slice_px": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "inventory"
+      ]
+    },
+    "slot_equipment_normal": {
+      "file": "slot_equipment_normal.png",
+      "nine_slice_px": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "intended_1080p_px": [
+        72,
+        72
+      ],
+      "screens": [
+        "inventory"
+      ]
+    },
+    "slot_equipment_selected": {
+      "file": "slot_equipment_selected.png",
+      "nine_slice_px": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "intended_1080p_px": [
+        72,
+        72
+      ],
+      "screens": [
+        "inventory"
+      ]
+    },
+    "slot_hotbar_normal": {
+      "file": "slot_hotbar_normal.png",
+      "nine_slice_px": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "intended_1080p_px": [
+        88,
+        88
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "slot_hotbar_selected": {
+      "file": "slot_hotbar_selected.png",
+      "nine_slice_px": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "intended_1080p_px": [
+        88,
+        88
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "slot_catalogue_normal": {
+      "file": "slot_catalogue_normal.png",
+      "nine_slice_px": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "intended_1080p_px": [
+        100,
+        100
+      ],
+      "screens": [
+        "build-mode"
+      ]
+    },
+    "slot_catalogue_selected": {
+      "file": "slot_catalogue_selected.png",
+      "nine_slice_px": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "intended_1080p_px": [
+        100,
+        100
+      ],
+      "screens": [
+        "build-mode"
+      ]
+    },
+    "hex_level_badge": {
+      "file": "hex_level_badge.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        116,
+        116
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "bar_hp": {
+      "file": "bar_hp.png",
+      "nine_slice_px": [
+        30,
+        10,
+        30,
+        10
+      ],
+      "intended_1080p_px": [
+        380,
+        32
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ],
+      "notes": "3-slice: preserve the 30 px hex ends; crop or UV-scale fill with progress."
+    },
+    "bar_stamina": {
+      "file": "bar_stamina.png",
+      "nine_slice_px": [
+        30,
+        10,
+        30,
+        10
+      ],
+      "intended_1080p_px": [
+        380,
+        32
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ],
+      "notes": "3-slice: preserve the 30 px hex ends; crop or UV-scale fill with progress."
+    },
+    "bar_xp": {
+      "file": "bar_xp.png",
+      "nine_slice_px": [
+        30,
+        10,
+        30,
+        10
+      ],
+      "intended_1080p_px": [
+        380,
+        32
+      ],
+      "screens": [
+        "gathering",
+        "crafting-station",
+        "9-loading-screen"
+      ],
+      "notes": "3-slice: preserve the 30 px hex ends; crop or UV-scale fill with progress."
+    },
+    "bar_channel": {
+      "file": "bar_channel.png",
+      "nine_slice_px": [
+        30,
+        10,
+        30,
+        10
+      ],
+      "intended_1080p_px": [
+        380,
+        32
+      ],
+      "screens": [
+        "crafting-station"
+      ],
+      "notes": "3-slice: preserve the 30 px hex ends; crop or UV-scale fill with progress."
+    },
+    "hold_confirm_ring": {
+      "file": "hold_confirm_ring.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        36,
+        36
+      ],
+      "screens": [
+        "trade",
+        "market-board",
+        "defeated",
+        "16-quest-journal"
+      ]
+    },
+    "gathering_channel_ring": {
+      "file": "gathering_channel_ring.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        84,
+        84
+      ],
+      "screens": [
+        "gathering"
+      ]
+    },
+    "loading_spinner": {
+      "file": "loading_spinner.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        40
+      ],
+      "screens": [
+        "9-loading-screen"
+      ]
+    },
+    "minimap_ring": {
+      "file": "minimap_ring.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        250,
+        250
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "minimap_mask": {
+      "file": "minimap_mask.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        250,
+        250
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ],
+      "notes": "Use as alpha mask; map texture provided by minimap render."
+    },
+    "minimap_footer": {
+      "file": "minimap_footer.png",
+      "nine_slice_px": [
+        16,
+        12,
+        16,
+        12
+      ],
+      "intended_1080p_px": [
+        180,
+        32
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "divider": {
+      "file": "divider.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        420,
+        8
+      ],
+      "screens": [
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "9-loading-screen",
+        "10-npc-dialogue",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "section_rule": {
+      "file": "section_rule.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        260,
+        8
+      ],
+      "screens": [
+        "16-quest-journal"
+      ]
+    },
+    "cost_short_underline": {
+      "file": "cost_short_underline.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        48,
+        2
+      ],
+      "screens": [
+        "build-mode"
+      ]
+    },
+    "checkbox": {
+      "file": "checkbox.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        18,
+        18
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "objective_checkbox": {
+      "file": "objective_checkbox.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        24,
+        24
+      ],
+      "screens": [
+        "10-npc-dialogue",
+        "16-quest-journal"
+      ]
+    },
+    "slider_track": {
+      "file": "slider_track.png",
+      "nine_slice_px": [
+        14,
+        8,
+        14,
+        8
+      ],
+      "intended_1080p_px": [
+        300,
+        12
+      ],
+      "screens": [
+        "13-character-creator",
+        "14-settings"
+      ]
+    },
+    "slider_thumb": {
+      "file": "slider_thumb.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        28,
+        28
+      ],
+      "screens": [
+        "13-character-creator",
+        "14-settings"
+      ]
+    },
+    "toggle_segment": {
+      "file": "toggle_segment.png",
+      "nine_slice_px": [
+        14,
+        8,
+        14,
+        8
+      ],
+      "intended_1080p_px": [
+        90,
+        36
+      ],
+      "screens": [
+        "14-settings"
+      ]
+    },
+    "stepper_field": {
+      "file": "stepper_field.png",
+      "nine_slice_px": [
+        14,
+        8,
+        14,
+        8
+      ],
+      "intended_1080p_px": [
+        110,
+        38
+      ],
+      "screens": [
+        "crafting-station"
+      ]
+    },
+    "progress_plate": {
+      "file": "progress_plate.png",
+      "nine_slice_px": [
+        14,
+        8,
+        14,
+        8
+      ],
+      "intended_1080p_px": [
+        84,
+        34
+      ],
+      "screens": [
+        "gathering",
+        "13-character-creator"
+      ]
+    },
+    "keycap_f": {
+      "file": "keycap_f.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        36
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "keycap_e": {
+      "file": "keycap_e.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        36
+      ],
+      "screens": [
+        "14-settings"
+      ]
+    },
+    "keycap_esc": {
+      "file": "keycap_esc.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        60,
+        36
+      ],
+      "screens": [
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "keycap_1": {
+      "file": "keycap_1.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        36
+      ],
+      "screens": [
+        "10-npc-dialogue"
+      ]
+    },
+    "keycap_2": {
+      "file": "keycap_2.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        36
+      ],
+      "screens": [
+        "10-npc-dialogue"
+      ]
+    },
+    "keycap_3": {
+      "file": "keycap_3.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        36
+      ],
+      "screens": [
+        "10-npc-dialogue"
+      ]
+    },
+    "keycap_4": {
+      "file": "keycap_4.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        36
+      ],
+      "screens": [
+        "10-npc-dialogue"
+      ]
+    },
+    "keycap_w": {
+      "file": "keycap_w.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        36
+      ],
+      "screens": [
+        "14-settings"
+      ]
+    },
+    "keycap_a": {
+      "file": "keycap_a.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        36
+      ],
+      "screens": [
+        "14-settings"
+      ]
+    },
+    "keycap_s": {
+      "file": "keycap_s.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        36
+      ],
+      "screens": [
+        "14-settings"
+      ]
+    },
+    "keycap_d": {
+      "file": "keycap_d.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        36
+      ],
+      "screens": [
+        "14-settings"
+      ]
+    },
+    "keycap_m": {
+      "file": "keycap_m.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        36
+      ],
+      "screens": [
+        "14-settings"
+      ]
+    },
+    "keycap_lb": {
+      "file": "keycap_lb.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        60,
+        26
+      ],
+      "screens": [
+        "build-mode",
+        "market-board",
+        "13-character-creator",
+        "14-settings",
+        "16-quest-journal"
+      ]
+    },
+    "keycap_rb": {
+      "file": "keycap_rb.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        60,
+        26
+      ],
+      "screens": [
+        "build-mode",
+        "market-board",
+        "13-character-creator",
+        "14-settings",
+        "16-quest-journal"
+      ]
+    },
+    "keycap_x": {
+      "file": "keycap_x.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        36
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "9-loading-screen",
+        "10-npc-dialogue",
+        "11-title-menu",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "keycap_y": {
+      "file": "keycap_y.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        36
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "9-loading-screen",
+        "10-npc-dialogue",
+        "11-title-menu",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "keycap_b": {
+      "file": "keycap_b.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        36
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "9-loading-screen",
+        "10-npc-dialogue",
+        "11-title-menu",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "keycap_rs": {
+      "file": "keycap_rs.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        60,
+        36
+      ],
+      "screens": [
+        "13-character-creator",
+        "15-world-map"
+      ]
+    },
+    "keycap_lt": {
+      "file": "keycap_lt.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        60,
+        26
+      ],
+      "screens": [
+        "15-world-map"
+      ]
+    },
+    "keycap_rt": {
+      "file": "keycap_rt.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        60,
+        26
+      ],
+      "screens": [
+        "15-world-map"
+      ]
+    },
+    "close_x": {
+      "file": "close_x.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        40
+      ],
+      "screens": [
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "status_tick": {
+      "file": "status_tick.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        28,
+        28
+      ],
+      "screens": [
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "11-title-menu",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "status_cross": {
+      "file": "status_cross.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        28,
+        28
+      ],
+      "screens": [
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "warning": {
+      "file": "warning.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        28,
+        28
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "player_arrow": {
+      "file": "player_arrow.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        28,
+        28
+      ],
+      "screens": [
+        "15-world-map"
+      ]
+    },
+    "quest_diamond": {
+      "file": "quest_diamond.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        28,
+        28
+      ],
+      "screens": [
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "plus": {
+      "file": "plus.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        28,
+        28
+      ],
+      "screens": [
+        "crafting-station",
+        "15-world-map"
+      ]
+    },
+    "minus": {
+      "file": "minus.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        28,
+        28
+      ],
+      "screens": [
+        "crafting-station",
+        "15-world-map"
+      ]
+    },
+    "row_chevron": {
+      "file": "row_chevron.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        28,
+        28
+      ],
+      "screens": [
+        "16-quest-journal"
+      ]
+    },
+    "icon_sword": {
+      "file": "icon_sword.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_bandage": {
+      "file": "icon_bandage.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_healing_potion": {
+      "file": "icon_healing_potion.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_campfire": {
+      "file": "icon_campfire.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_coin_stack": {
+      "file": "icon_coin_stack.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "trade",
+        "market-board",
+        "10-npc-dialogue",
+        "16-quest-journal"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_xp_roundel": {
+      "file": "icon_xp_roundel.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "10-npc-dialogue",
+        "16-quest-journal"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_closed_padlock": {
+      "file": "icon_closed_padlock.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "trade"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_open_padlock": {
+      "file": "icon_open_padlock.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "trade"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_stag_emblem": {
+      "file": "icon_stag_emblem.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "9-loading-screen",
+        "10-npc-dialogue",
+        "12-character-select",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_woodcutting_axes": {
+      "file": "icon_woodcutting_axes.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "gameplay-hud",
+        "gathering"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_oak_log": {
+      "file": "icon_oak_log.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "gameplay-hud",
+        "gathering"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_iron_ore": {
+      "file": "icon_iron_ore.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "gathering",
+        "market-board"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_river_herb": {
+      "file": "icon_river_herb.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "inventory",
+        "gathering",
+        "trade",
+        "market-board"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_trout": {
+      "file": "icon_trout.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "inventory",
+        "gathering"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_wolf_pelt": {
+      "file": "icon_wolf_pelt.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "inventory",
+        "trade"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_venison": {
+      "file": "icon_venison.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "inventory",
+        "trade"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_mooncap": {
+      "file": "icon_mooncap.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "inventory",
+        "trade"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_oak_planks": {
+      "file": "icon_oak_planks.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "crafting-station",
+        "trade",
+        "market-board"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_timber_beam": {
+      "file": "icon_timber_beam.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "crafting-station"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_wooden_pegs": {
+      "file": "icon_wooden_pegs.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "crafting-station"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_timber_board": {
+      "file": "icon_timber_board.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "crafting-station"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_iron_nails": {
+      "file": "icon_iron_nails.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "crafting-station",
+        "trade"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_shield": {
+      "file": "icon_shield.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "inventory"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_leather_bag": {
+      "file": "icon_leather_bag.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "gameplay-hud",
+        "inventory"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_structures": {
+      "file": "icon_structures.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "build-mode"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_decor": {
+      "file": "icon_decor.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "build-mode"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_terrain": {
+      "file": "icon_terrain.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "build-mode"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_favourites": {
+      "file": "icon_favourites.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "build-mode"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_recipe_scroll": {
+      "file": "icon_recipe_scroll.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "9-loading-screen",
+        "10-npc-dialogue",
+        "11-title-menu",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_map_marker": {
+      "file": "icon_map_marker.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "9-loading-screen",
+        "10-npc-dialogue",
+        "11-title-menu",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_warning_diamond": {
+      "file": "icon_warning_diamond.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "9-loading-screen",
+        "10-npc-dialogue",
+        "11-title-menu",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_clock_roundel": {
+      "file": "icon_clock_roundel.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "defeated"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_plus_roundel": {
+      "file": "icon_plus_roundel.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "12-character-select"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_search": {
+      "file": "icon_search.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "9-loading-screen",
+        "10-npc-dialogue",
+        "11-title-menu",
+        "12-character-select",
+        "13-character-creator",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_sort_arrow": {
+      "file": "icon_sort_arrow.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "market-board"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_right_stick": {
+      "file": "icon_right_stick.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        64
+      ],
+      "screens": [
+        "13-character-creator"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_timber_wall": {
+      "file": "icon_timber_wall.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        100,
+        100
+      ],
+      "screens": [
+        "build-mode"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_stone_wall": {
+      "file": "icon_stone_wall.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        100,
+        100
+      ],
+      "screens": [
+        "build-mode"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_timber_floor": {
+      "file": "icon_timber_floor.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        100,
+        100
+      ],
+      "screens": [
+        "build-mode"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_timber_roof": {
+      "file": "icon_timber_roof.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        100,
+        100
+      ],
+      "screens": [
+        "build-mode"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_wooden_door": {
+      "file": "icon_wooden_door.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        100,
+        100
+      ],
+      "screens": [
+        "build-mode"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_window_frame_icon": {
+      "file": "icon_window_frame_icon.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        100,
+        100
+      ],
+      "screens": [
+        "build-mode"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_timber_stairs": {
+      "file": "icon_timber_stairs.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        100,
+        100
+      ],
+      "screens": [
+        "build-mode"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_foundation_posts": {
+      "file": "icon_foundation_posts.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        100,
+        100
+      ],
+      "screens": [
+        "build-mode"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_stone_campfire": {
+      "file": "icon_stone_campfire.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        100,
+        100
+      ],
+      "screens": [
+        "build-mode"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_storage_chest": {
+      "file": "icon_storage_chest.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        100,
+        100
+      ],
+      "screens": [
+        "build-mode"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_workbench": {
+      "file": "icon_workbench.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        100,
+        100
+      ],
+      "screens": [
+        "build-mode"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_timber_fence": {
+      "file": "icon_timber_fence.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        100,
+        100
+      ],
+      "screens": [
+        "build-mode"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_leather_boots": {
+      "file": "icon_leather_boots.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        100,
+        100
+      ],
+      "screens": [
+        "inventory"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_leather_gloves": {
+      "file": "icon_leather_gloves.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        100,
+        100
+      ],
+      "screens": [
+        "inventory"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_iron_helmet": {
+      "file": "icon_iron_helmet.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        100,
+        100
+      ],
+      "screens": [
+        "inventory"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_bread": {
+      "file": "icon_bread.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        100,
+        100
+      ],
+      "screens": [
+        "inventory"
+      ],
+      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "gamepad_a": {
+      "file": "gamepad_a.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        40
+      ],
+      "screens": [
+        "build-mode",
+        "12-character-select",
+        "13-character-creator"
+      ]
+    },
+    "gamepad_b": {
+      "file": "gamepad_b.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        40
+      ],
+      "screens": [
+        "build-mode",
+        "trade",
+        "12-character-select",
+        "13-character-creator"
+      ]
+    },
+    "gamepad_x": {
+      "file": "gamepad_x.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        40
+      ],
+      "screens": [
+        "build-mode"
+      ]
+    },
+    "gamepad_y": {
+      "file": "gamepad_y.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        40,
+        40
+      ],
+      "screens": [
+        "build-mode"
+      ]
+    },
+    "compass_n": {
+      "file": "compass_n.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        20,
+        24
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "compass_e": {
+      "file": "compass_e.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        20,
+        24
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "compass_s": {
+      "file": "compass_s.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        20,
+        24
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "compass_w": {
+      "file": "compass_w.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        20,
+        24
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ]
+    },
+    "portrait_well": {
+      "file": "portrait_well.png",
+      "nine_slice_px": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "intended_1080p_px": [
+        96,
+        96
+      ],
+      "screens": [
+        "inventory",
+        "10-npc-dialogue",
+        "12-character-select",
+        "13-character-creator"
+      ]
+    },
+    "respawn_image_well": {
+      "file": "respawn_image_well.png",
+      "nine_slice_px": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "intended_1080p_px": [
+        280,
+        170
+      ],
+      "screens": [
+        "defeated"
+      ]
+    },
+    "map_label_plate": {
+      "file": "map_label_plate.png",
+      "nine_slice_px": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "intended_1080p_px": [
+        180,
+        38
+      ],
+      "screens": [
+        "15-world-map"
+      ]
+    },
+    "queue_row": {
+      "file": "queue_row.png",
+      "nine_slice_px": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "intended_1080p_px": [
+        320,
+        48
+      ],
+      "screens": [
+        "crafting-station"
+      ]
+    },
+    "preset_card": {
+      "file": "preset_card.png",
+      "nine_slice_px": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "intended_1080p_px": [
+        160,
+        210
+      ],
+      "screens": [
+        "13-character-creator"
+      ]
+    },
+    "action_bar": {
+      "file": "action_bar.png",
+      "nine_slice_px": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "intended_1080p_px": [
+        400,
+        52
+      ],
+      "screens": [
+        "build-mode"
+      ]
+    },
+    "journal_hinge": {
+      "file": "journal_hinge.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        900,
+        580
+      ],
+      "screens": [
+        "16-quest-journal"
+      ]
+    },
+    "title_logo": {
+      "file": "title_logo.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        500,
+        160
+      ],
+      "screens": [
+        "9-loading-screen",
+        "11-title-menu"
+      ],
+      "notes": "Stag and wordmark only; no laurel sprigs."
+    }
+  }
+}
