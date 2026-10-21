@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "bounds_m": {
+    "z_min": 0.54,
+    "z_full_min": 0.63,
+    "z_full_max": 0.91,
+    "z_max": 1.0,
+    "abs_x_full": 0.27,
+    "abs_x_max": 0.42,
+    "abs_y_min": 0.075,
+    "abs_y_full": 0.13
+  },
+  "thigh_weight_at_hem": 0.18
+}

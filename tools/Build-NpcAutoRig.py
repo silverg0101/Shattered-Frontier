@@ -32,6 +32,7 @@ p.add_argument('--height', type=float, default=1.8, help='Target standing height
 p.add_argument('--triangles', type=int, default=50000, help='Decimation target for the skinned mesh')
 p.add_argument('--yaw-deg', type=float, default=180.0, help='Rotation that makes the input face -Y (Blender front)')
 p.add_argument('--name', default='Npc', help='Asset basename')
+p.add_argument('--coat-profile', help='JSON profile for bounded coat/skirt weight correction after proxy transfer')
 a = p.parse_args(sys.argv[sys.argv.index('--') + 1:])
 out = Path(a.output).resolve(); assert not out.exists(), out; out.mkdir(parents=True)
 skel = json.loads(Path(a.skeleton).read_text())
@@ -265,6 +266,60 @@ if len(missing):
     nearest = np.argmin(np.array(dists), axis=0)
     for idx, si in zip(missing, nearest):
         body.vertex_groups.get(segs[si][0]).add([int(idx)], 1.0, 'REPLACE')
+
+# A generated coat can inherit calf/hand weights from the nearest proxy surface. The optional,
+# asset-specific profile confines correction to its outer lower-torso envelope. Feather all
+# boundaries so the existing heat weights meet the corrected weights without a hard seam.
+coat_result = None
+if a.coat_profile:
+    profile = json.loads(Path(a.coat_profile).read_text())
+    assert profile.get('schema_version') == 1 and profile.get('units') == 'metres'
+    bounds = profile['bounds_m']
+    for key in ('z_min', 'z_full_min', 'z_full_max', 'z_max', 'abs_x_full', 'abs_x_max', 'abs_y_min', 'abs_y_full'):
+        assert isinstance(bounds[key], (int, float)) and math.isfinite(bounds[key]), key
+    assert 0 <= bounds['z_min'] < bounds['z_full_min'] < bounds['z_full_max'] < bounds['z_max'] <= H
+    assert 0 < bounds['abs_x_full'] < bounds['abs_x_max'] <= H / 2
+    assert 0 <= bounds['abs_y_min'] < bounds['abs_y_full'] <= H / 2
+    thigh_at_hem = profile['thigh_weight_at_hem']
+    assert isinstance(thigh_at_hem, (int, float)) and 0 <= thigh_at_hem <= 0.5
+
+    def smooth(x):
+        x = max(0.0, min(1.0, x))
+        return x * x * (3.0 - 2.0 * x)
+
+    names = {g.index: g.name for g in body.vertex_groups}
+    corrected = 0; removed_noncoat_weight = 0.0
+    for vertex in body.data.vertices:
+        x, y, z = vertex.co
+        az, ax, ay = abs(z), abs(x), abs(y)
+        influence = (smooth((az - bounds['z_min']) / (bounds['z_full_min'] - bounds['z_min']))
+                     * smooth((bounds['z_max'] - az) / (bounds['z_max'] - bounds['z_full_max']))
+                     * smooth((bounds['abs_x_max'] - ax) / (bounds['abs_x_max'] - bounds['abs_x_full']))
+                     * smooth((ay - bounds['abs_y_min']) / (bounds['abs_y_full'] - bounds['abs_y_min'])))
+        if influence < 1e-4:
+            continue
+        original = {names[g.group]: g.weight for g in vertex.groups if g.weight > 0}
+        total_weight = sum(original.values())
+        if total_weight < 1e-6:
+            continue
+        original = {name: weight / total_weight for name, weight in original.items()}
+        hem = smooth((bounds['z_full_max'] - z) / (bounds['z_full_max'] - bounds['z_full_min']))
+        thigh = thigh_at_hem * hem
+        spine = 0.35 * (1.0 - hem)
+        target = {'pelvis': 1.0 - thigh - spine, 'spine_01': spine,
+                  'thigh_l' if x >= 0 else 'thigh_r': thigh}
+        removed_noncoat_weight += influence * sum(weight for name, weight in original.items() if name not in target)
+        for name in set(original) | set(target):
+            weight = (1.0 - influence) * original.get(name, 0.0) + influence * target.get(name, 0.0)
+            group = body.vertex_groups.get(name)
+            if weight > 1e-5:
+                group.add([vertex.index], weight, 'REPLACE')
+            elif group and name in original:
+                group.remove([vertex.index])
+        corrected += 1
+    coat_result = dict(profile_sha256=sha(a.coat_profile), vertices_blended=corrected,
+                       noncoat_weight_removed=round(removed_noncoat_weight, 2))
+    assert corrected > 0, 'Coat profile selected no vertices'
 select([body]); bpy.ops.object.vertex_group_limit_total(limit=4); bpy.ops.object.vertex_group_normalize_all(lock_active=False)
 counts = {g.name: 0 for g in body.vertex_groups}
 for v in body.data.vertices:
@@ -366,6 +421,7 @@ report = dict(schema_version=1, status='rig-needs-review', input=str(Path(a.inpu
               skeleton=skel['skeleton'], tool_sha256=sha(__file__), height_m=H, source_triangles=source_tris,
               triangles=len(body.data.polygons), unweighted_vertices_fixed=int(len(missing)), empty_deform_groups=empty_groups,
               vertices_per_group=counts, fbx_sha256=sha(fbx),
+              coat_correction=coat_result,
               landmarks_m=dict(armpit=round(z_arm, 4), torso_half_width=round(half_w, 4), center_gap=round(center_gap, 4), hip=round(z_hip, 4)),
               joints_m={n: [round(x, 4) for x in J[n]] for n in CHAIN}, clips=catalog, review_images=images,
               limitations=['Joint landmarks are slice heuristics; review the rest-joints render before use.',
