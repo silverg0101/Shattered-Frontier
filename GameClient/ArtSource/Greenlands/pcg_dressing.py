@@ -17,6 +17,8 @@ COSMETIC_LAYERS = NO_COLLISION_LAYERS  # client-only: tagged so a dedicated serv
 COSMETIC_TAG = 'SF_ClientOnlyCosmetic'
 CULL_M = {'ground_cover': 50, 'understory': 50, 'litter': 25}  # default end-cull metres per layer; a role's place.cull_m overrides
 CULL_BOUNDS = (10, 200)
+NO_SHADOW_LAYERS = ('ground_cover', 'litter')
+TILT = 0.6  # 0 = upright, 1 = follow the terrain normal
 WPO_DISABLE_CM = 3000  # leaf wind (M_GN_Leaf) switches off beyond 30 m on every instance: VSM cost grows with WPO
 
 
@@ -34,11 +36,39 @@ def build(result, layers, zone):
     """result: dress_zone.dress() output; layers: {role: layer name}. Trees and rocks go in the district's gameplay
     volume (the server keeps their collision); cosmetic layers go in a second, client-only volume.
     Returns (gameplay volume actor, expected instance count over both)."""
-    split = {c: dict(result, roles={r: v for r, v in result['roles'].items() if (layers[r] in COSMETIC_LAYERS) == c}) for c in (False, True)}
+    cosmetic = lambda r: layers[r] in COSMETIC_LAYERS and r not in result.get('collide', ())  # a role with collision (saplings) stays on the server
+    split = {c: dict(result, roles={r: v for r, v in result['roles'].items() if cosmetic(r) == c}) for c in (False, True)}
     vol, expected = _build(split[False], layers, zone, False)
     if split[True]['roles']:
         expected += _build(split[True], layers, zone, True)[1]
     return vol, expected
+
+
+def _terrain():
+    """The final terrain mesh actor, found by its mesh, so placement is projected onto what the player walks on."""
+    world = u.EditorLevelLibrary.get_editor_world()
+    for a in u.GameplayStatics.get_all_actors_of_class(world, u.StaticMeshActor):
+        m = a.static_mesh_component.static_mesh
+        if m and m.get_name() == 'SM_Silverbrook_Terrain':
+            return world, a
+    raise AssertionError('SM_Silverbrook_Terrain is not in the open map')
+
+
+def ray(world, terrain, x, y, top, bottom):
+    """(impact point, impact normal) where a vertical ray (cm) first meets the terrain mesh, or None; buildings, trunks and earlier dressing are ignored."""
+    r = u.SystemLibrary.line_trace_multi(world, u.Vector(x, y, top), u.Vector(x, y, bottom), u.TraceTypeQuery.TRACE_TYPE_QUERY1, True, [], u.DrawDebugTrace.NONE, True)
+    hits = r[1] if isinstance(r, tuple) else r
+    return next(((h.to_tuple()[5], h.to_tuple()[7]) for h in hits or () if h.to_tuple()[9] == terrain), None)
+
+
+def _snap(group):
+    """(z metres, up normal) of the terrain under each placement, by a ray from 15 m above to 15 m below its decided height."""
+    world, terrain = _terrain()
+    out = []
+    for t in group:
+        hit = ray(world, terrain, t['x'] * 100, t['y'] * 100, (t['z'] + 15) * 100, (t['z'] - 15) * 100)
+        out.append((hit[0].z / 100, hit[1]) if hit else (t['z'], u.Vector(0, 0, 1)))
+    return out
 
 
 def _cull_cm(result, layers, role):
@@ -76,11 +106,14 @@ def _build(result, layers, zone, cosmetic):
         mesh = meshes[mesh_name]
         b = mesh.get_bounding_box(); height = (b.max.z - b.min.z) / 100
         points = []
-        for n, t in enumerate(group):
+        ground = _snap(group)
+        for n, (t, (gz, normal)) in enumerate(zip(group, ground)):
             p = u.PCGPoint()
-            z = t['z'] - t['sink'] * height * t['scale']
+            z = gz - t['sink'] * height * t['scale'] - t['sink_cm'] / 100
+            tilt = u.Vector(normal.x * TILT, normal.y * TILT, 1 - TILT + normal.z * TILT) if layer in NO_COLLISION_LAYERS else u.Vector(0, 0, 1)  # small cover leans with the ground
+            rot = u.MathLibrary.compose_rotators(u.Rotator(roll=0, pitch=0, yaw=t['yaw']), u.MathLibrary.make_rot_from_z(tilt))
             p.set_editor_property('transform', u.Transform(location=u.Vector(t['x'] * 100, t['y'] * 100, z * 100),
-                                                         rotation=u.Rotator(roll=0, pitch=0, yaw=t['yaw']),
+                                                         rotation=rot,
                                                          scale=u.Vector(t['scale'], t['scale'], t['scale'])))
             p.set_editor_property('density', 1.0)
             p.set_editor_property('seed', n + 1)
@@ -96,7 +129,7 @@ def _build(result, layers, zone, cosmetic):
         entry = u.PCGMeshSelectorWeightedEntry()
         desc = entry.get_editor_property('descriptor')
         desc.set_editor_property('static_mesh', mesh)
-        if layer in NO_COLLISION_LAYERS:
+        if cosmetic:
             body = desc.get_editor_property('body_instance')
             body.set_editor_property('collision_profile_name', 'NoCollision')
             desc.set_editor_property('body_instance', body)
@@ -104,6 +137,8 @@ def _build(result, layers, zone, cosmetic):
             desc.set_editor_property('instance_end_cull_distance', int(cull))
             desc.set_editor_property('instance_start_cull_distance', int(cull * 0.8))  # dither out over the last fifth
         desc.set_editor_property('world_position_offset_disable_distance', WPO_DISABLE_CM)
+        if layer in NO_SHADOW_LAYERS:
+            desc.set_editor_property('cast_shadow', False)  # tiny cover: no VSM cost, and no shadow left behind when its instance is culled
         entry.set_editor_property('descriptor', desc)
         entry.set_editor_property('weight', 1)
         sp.get_editor_property('mesh_selector_parameters').set_editor_property('mesh_entries', [entry])

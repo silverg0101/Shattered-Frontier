@@ -20,6 +20,7 @@ RULES_VERSION = 1  # bump when a rule here changes meaning; part of the content 
 CELL = 2.5         # m, raster for clearances, slope and valley height
 SHADE = 6.0        # m from a canopy trunk counts as shade
 CULL_BOUNDS = (10, 200)  # m, bounds on a role's place.cull_m (pcg_dressing.py applies it as the instance end-cull distance)
+PAVED_MARGIN = 3.0  # m kept clear around a plaza rectangle
 SOLID = 2.5        # m kept between any two trees or rocks, whatever their role
 SOLID_LAYERS = ('canopy', 'rocks')
 ORDER = ('canopy', 'rocks', 'understory', 'ground_cover', 'litter')
@@ -65,6 +66,7 @@ class Site:
         close = lambda pts: _dist(((min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2), pts) < max(max(xs) - min(xs), max(ys) - min(ys))
         near_roads = [(pts, hw) for pts, hw in lines[:n_roads] if close(pts)]
         near_other = [(pts, hw) for pts, hw in lines[n_roads:] if close(pts)]
+        plazas = [(p['at'][0], p['at'][1], p['size'][0] / 2 + PAVED_MARGIN, p['size'][1] / 2 + PAVED_MARGIN) for p in L['places'] if p['type'] == 'plaza']  # paved: nothing grows here
         plots = L['construction_plots']
         pads = list(placed) + [(x, y, plots['size'] * 0.71) for x, y in plots['centres']]  # plots stay clear even before they are built
         floor = self._floor(hf, xs, ys)
@@ -78,6 +80,8 @@ class Site:
                 self.road[k] = min([_dist((x, y), pts) - hw for pts, hw in near_roads] + [99.0])
                 c = min([self.road[k], *[_dist((x, y), pts) - hw for pts, hw in near_other]] + [99.0])
                 c = min([c] + [math.hypot(x - px, y - py) - r for px, py, r in pads if abs(x - px) < 40 and abs(y - py) < 40])
+                if any(abs(x - px) < hx and abs(y - py) < hy for px, py, hx, hy in plazas):
+                    c = -1.0
                 if any(in_polygon((x, y), b['polygon']) for b in L.get('basins', [])):
                     c = -1.0
                 self.clear[k] = c
@@ -124,6 +128,8 @@ def dress(L, P, hf, placed, district, seed):
                 gaps[role] = rule.get('fallback') or 'none'
             if not meshes:
                 continue
+            if rule.get('outside_town') and L['districts'][district].get('inside_wall'):
+                continue  # woody plants are kept out of the walled town: no tree or shrub in a street, yard or market
             per_ha = rule['per_ha'] * L['districts'][district].get('dress', {}).get(layer, 1.0)
             if per_ha <= 0:
                 continue
@@ -164,7 +170,7 @@ def dress(L, P, hf, placed, district, seed):
                         continue
                     scale = rng.uniform(*rule['scale'])
                     placed_here.append(dict(mesh=meshes[rng.randrange(len(meshes))], x=round(x, 2), y=round(y, 2),
-                                            z=round(hf.at(x, y), 2), yaw=round(rng.uniform(0, 360), 1), scale=round(scale, 3),
+                                            z=round(hf.at(x, y), 2), sink_cm=rule.get('sink_cm', 0.0), yaw=round(rng.uniform(0, 360), 1), scale=round(scale, 3),
                                             sink=rule.get('sink', 0.0)))
                     if spacing:
                         grid.setdefault((int(x // spacing), int(y // spacing)), []).append((x, y))
@@ -174,8 +180,9 @@ def dress(L, P, hf, placed, district, seed):
                 for t in placed_here:
                     bucket.setdefault((int(t['x'] // SHADE), int(t['y'] // SHADE)), []).append((t['x'], t['y']))
             out[role] = placed_here
+    collide = sorted(r for r in out if roles[r]['place'].get('collision'))  # kept in the gameplay volume with their mesh collision (trunks)
     cull = {r: min(max(roles[r]['place']['cull_m'], CULL_BOUNDS[0]), CULL_BOUNDS[1]) for r in out if 'cull_m' in roles[r]['place']}
-    return dict(version=content_version(seed, district, out), district=district, cull=cull,
+    return dict(version=content_version(seed, district, out), district=district, cull=cull, collide=collide,
                 area_ha=round(area_ha, 2), roles=out, gaps=gaps)
 
 
