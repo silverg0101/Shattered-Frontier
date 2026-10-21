@@ -42,7 +42,7 @@ public sealed class PostgresHousingStore(string connectionString)
             try
             {
                 using var check = Cmd(c, t, "SELECT version FROM housing.schema_version WHERE singleton=true FOR SHARE");
-                if (check.ExecuteScalar() is not int version || version != 2)
+                if (check.ExecuteScalar() is not int version || version != 3)
                     throw new HousingSchemaCompatibilityException("Unsupported housing schema version.");
             }
             catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501")
@@ -114,7 +114,7 @@ public sealed class PostgresHousingStore(string connectionString)
         using (var revision = Cmd(c,t,"SELECT revision FROM housing.claim_structure_revisions WHERE claim_id=$1",request.ClaimId))
             if (revision.ExecuteScalar() is not long value || value != request.ExpectedStructureRevision)
                 throw new HousingRejectedException("Stale structure revision.");
-        using var insert = Cmd(c,t,"INSERT INTO housing.placements VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,'Pending',$14,NULL)",
+        using var insert = Cmd(c,t,"INSERT INTO housing.placements (operation_id,fingerprint,claim_id,actor_id,structure_id,cell_x,cell_y,cell_z,content_id,material_id,material_quantity,container_id,expected_container_revision,state,revision,consume_receipt) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,'Pending',$14,NULL)",
             request.OperationId,request.Fingerprint,request.ClaimId,request.ActorId,request.StructureId,
             request.Cell.X,request.Cell.Y,request.Cell.Z,request.ContentId,request.MaterialId,request.MaterialQuantity,
             request.ContainerId,request.ExpectedContainerRevision,request.ExpectedStructureRevision);

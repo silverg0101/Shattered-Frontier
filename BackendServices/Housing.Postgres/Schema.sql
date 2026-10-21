@@ -1,6 +1,6 @@
 CREATE SCHEMA IF NOT EXISTS housing;
 CREATE TABLE housing.schema_version (singleton boolean PRIMARY KEY DEFAULT true CHECK (singleton), version integer NOT NULL CHECK (version > 0));
-INSERT INTO housing.schema_version(singleton,version) VALUES (true,2);
+INSERT INTO housing.schema_version(singleton,version) VALUES (true,3);
 CREATE TABLE housing.claims (
  id text PRIMARY KEY, owner_id text NOT NULL, state text NOT NULL CHECK (state IN ('Active','Grace','Delinquent','Notice','Archived','Reclaimed')),
  revision bigint NOT NULL CHECK (revision >= 0), permission_revision bigint NOT NULL CHECK (permission_revision >= 0),
@@ -16,5 +16,6 @@ CREATE TABLE housing.placements (
  container_id text NOT NULL, expected_container_revision bigint NOT NULL CHECK (expected_container_revision >= 0),
  state text NOT NULL CHECK (state IN ('Pending','Committed','Compensated')),
  revision bigint NOT NULL CHECK (revision >= 0), consume_receipt jsonb,
+ created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
  UNIQUE (claim_id,cell_x,cell_y,cell_z)
 );

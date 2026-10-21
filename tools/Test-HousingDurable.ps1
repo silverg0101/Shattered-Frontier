@@ -86,11 +86,13 @@ try {
     Cluster stop
     $results.Add((Invoke-Checked $dotnet @($dll,'outage') @{ HOUSING_CONNECTION=$connection }))
     Cluster start
-    # The fixture leaves one uncharged reservation after contention. A fenced worker
-    # would reconcile it; the synthetic fixture closes it before a backup point.
-    [void](Sql "UPDATE housing.placements SET state='Compensated' WHERE state='Pending' AND operation_id IN ('left','right')" "housing_$run")
-    if ((Sql "SELECT count(*) FROM housing.placements WHERE state='Pending'" "housing_$run").Trim() -ne '0') { throw 'Unresolved fixture placement.' }
-    if ((Sql 'SELECT version FROM housing.schema_version WHERE singleton=true' "housing_$run").Trim() -ne '2') { throw 'Housing schema changed before backup.' }
+    # The contention fixture leaves one pending reservation to exercise the recovery window.
+    if ((Sql "SELECT count(*) FROM housing.placements WHERE state='Pending' AND created_at IS NOT NULL" "housing_$run").Trim() -ne '1') { throw 'Expected one timestamped pending placement.' }
+    [void](Sql "UPDATE housing.placements SET created_at=clock_timestamp()-interval '2 hours' WHERE state='Pending'" "housing_$run")
+    try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','Housing','-OutputDirectory',$backup,'-HostName','127.0.0.1','-Port',"$port",'-Database',"housing_$run",'-Username','housing_svc') @{ PGPASSWORD=$servicePassword }); throw 'Aged pending placement was accepted.' }
+    catch { if ($_.Exception.Message -notmatch 'exceeds recovery window') { throw }; $results.Add('PASS aged pending placement refused') }
+    [void](Sql "UPDATE housing.placements SET created_at=clock_timestamp()-interval '120 seconds' WHERE state='Pending'" "housing_$run")
+    if ((Sql 'SELECT version FROM housing.schema_version WHERE singleton=true' "housing_$run").Trim() -ne '3') { throw 'Housing schema changed before backup.' }
     $results.Add((Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','Housing','-OutputDirectory',$backup,'-HostName','127.0.0.1','-Port',"$port",'-Database',"housing_$run",'-Username','housing_svc') @{ PGPASSWORD=$servicePassword }))
     $backupRevision = (Sql "SELECT revision FROM housing.claims WHERE id='clm_test'" "housing_$run").Trim()
     [void](Sql "UPDATE housing.claims SET revision=revision+1 WHERE id='clm_test'" "housing_$run")
@@ -102,12 +104,14 @@ try {
     try { [void]$stream.Seek(64,[IO.SeekOrigin]::Begin); $byte=$stream.ReadByte(); [void]$stream.Seek(64,[IO.SeekOrigin]::Begin); $stream.WriteByte([byte]($byte -bxor 1)) } finally { $stream.Dispose() }
     try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-Store','Housing','-BackupDirectory',$corrupt,'-InstanceRoot',$restoredInstance)); throw 'Corrupt backup was accepted.' }
     catch { if ($_.Exception.Message -notmatch 'SHA256 mismatch') { throw }; $results.Add('PASS flipped-byte backup refused') }
+    try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-Store','Housing','-BackupDirectory',$backup,'-InstanceRoot',$restoredInstance,'-PendingPlacementRecoveryWindowSeconds','60')); throw 'Aged restored placement was accepted.' }
+    catch { if ($_.Exception.Message -notmatch 'Restored housing consistency check failed') { throw }; $results.Add('PASS aged restored placement refused') }
     $results.Add((Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-Store','Housing','-BackupDirectory',$backup,'-InstanceRoot',$restoredInstance)))
     $restored = Get-Content (Join-Path $restoredInstance 'connection.json') -Raw | ConvertFrom-Json
     $restoredRevision = (Invoke-Checked (Join-Path $pg 'psql.exe') @('-X','-A','-t','-h','127.0.0.1','-p',"$($restored.port)",'-U',$restored.username,'-d',$restored.database,'-c',"SELECT revision FROM housing.claims WHERE id='clm_test'") @{ PGPASSWORD=$restored.password }).Trim()
     if ($restoredRevision -ne $backupRevision) { throw 'Restored housing revision differs from backup point.' }
     $results.Add('PASS restored housing state equals backup point')
-    [void](Sql 'UPDATE housing.schema_version SET version=3' "housing_$run")
+    [void](Sql 'UPDATE housing.schema_version SET version=4' "housing_$run")
     $results.Add((Invoke-Checked $dotnet @($dll,'newer') @{ HOUSING_CONNECTION=$connection }))
     $results | Set-Content (Join-Path $EvidenceRoot 'results.txt')
 }
