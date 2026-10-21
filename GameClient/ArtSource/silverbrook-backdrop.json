@@ -1,0 +1,20 @@
+{
+  "_about": "GFX-01 WP5 typed backdrop values for backdrop.py. Each entry is {value, min, max, unit}; out-of-bounds values abort. Effective on the next backdrop.py run (Blender build, then editor import/place).",
+  "seed": {"value": 7, "min": 0, "max": 9999, "unit": "integer"},
+  "domes": {
+    "count": {"value": 9, "min": 0, "max": 24, "unit": "meshes"},
+    "radius_min_m": {"value": 700, "min": 500, "max": 3000, "unit": "metres from map origin"},
+    "radius_max_m": {"value": 1500, "min": 500, "max": 3000, "unit": "metres from map origin"},
+    "scale_min": {"value": 1.4, "min": 0.5, "max": 8, "unit": "multiplier"},
+    "scale_max": {"value": 3.0, "min": 0.5, "max": 8, "unit": "multiplier"},
+    "sink_fraction": {"value": 0.04, "min": 0, "max": 0.2, "unit": "fraction of dome height buried"}
+  },
+  "ring": {
+    "inner_radius_m": {"value": 1700, "min": 1000, "max": 6000, "unit": "metres"},
+    "outer_radius_m": {"value": 5200, "min": 2000, "max": 12000, "unit": "metres"},
+    "peak_height_m": {"value": 900, "min": 100, "max": 3000, "unit": "metres"},
+    "inner_drop_m": {"value": 120, "min": 0, "max": 500, "unit": "metres below ground at the inner edge"},
+    "snow_line_fraction": {"value": 0.8, "min": 0.3, "max": 1, "unit": "fraction of peak height"},
+    "uv_metres_per_tile": {"value": 400, "min": 50, "max": 2000, "unit": "metres"}
+  }
+}
