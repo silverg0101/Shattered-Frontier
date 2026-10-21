@@ -48,7 +48,7 @@ function New-LedgerFixture([hashtable]$Fx,[string]$RepoRoot,[string]$EvidenceRoo
     foreach ($path in @($Fx.dotnet,$Fx.project,$schema,(Join-Path $Fx.pg 'postgres.exe'),(Join-Path $Fx.pg 'initdb.exe'),(Join-Path $Fx.pg 'pg_ctl.exe'),(Join-Path $Fx.pg 'psql.exe'))) { if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Required file missing: $path" } }
     if ((Get-FileHash $Fx.dotnet -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pins.sdk.executableSha256 -or (Get-FileHash (Join-Path $Fx.pg 'postgres.exe') -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pins.postgres.executableSha256) { throw 'Pinned toolchain mismatch.' }
     $Fx.run = [guid]::NewGuid().ToString('N')
-    $Fx.base = Join-Path $RepoRoot ('Artifacts/Persistence/GatheringLedger/' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
+    $Fx.base = Join-Path $EvidenceRoot 'private/ledger-pg'
     $Fx.private = $Fx.base; $Fx.data = Join-Path $Fx.base 'data'
     $Fx.adminPassword = New-HexSecret; $Fx.servicePassword = New-HexSecret; $Fx.token = New-HexSecret
     $Fx.secrets = @($Fx.adminPassword,$Fx.servicePassword,$Fx.token)
@@ -141,7 +141,10 @@ function Remove-LedgerFixture([hashtable]$Fx) {
             & (Join-Path $Fx.pg 'pg_ctl.exe') -D $Fx.data status *> $null
             if ($LASTEXITCODE -eq 0) { [void](Invoke-FxOk $Fx (Join-Path $Fx.pg 'pg_ctl.exe') @('-D',$Fx.data,'-m','immediate','-w','-t','30','stop')) }
         }
-        $allowed = [IO.Path]::GetFullPath((Join-Path $Fx.repo 'Artifacts/Persistence/GatheringLedger')) + [IO.Path]::DirectorySeparatorChar
+        $evidence = [IO.Path]::GetFullPath($Fx.evidence).TrimEnd([IO.Path]::DirectorySeparatorChar)
+        $artifacts = [IO.Path]::GetFullPath((Join-Path $Fx.repo 'Artifacts')).TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
+        if (-not ($evidence + [IO.Path]::DirectorySeparatorChar).StartsWith($artifacts,[StringComparison]::OrdinalIgnoreCase)) { throw 'Evidence root is outside Artifacts.' }
+        $allowed = $evidence + [IO.Path]::DirectorySeparatorChar
         $full = [IO.Path]::GetFullPath($Fx.base)
         if (-not $full.StartsWith($allowed,[StringComparison]::OrdinalIgnoreCase)) { throw 'Owned path mismatch.' }
         if (@(Get-ChildItem -LiteralPath $full -Recurse -Attributes ReparsePoint -ErrorAction SilentlyContinue).Count) { throw 'Owned tree contains a reparse point.' }

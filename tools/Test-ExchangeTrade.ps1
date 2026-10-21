@@ -39,6 +39,7 @@ function Wait-Log([Diagnostics.Process]$Process,[string]$Name,[string]$Pattern) 
     $watch = [Diagnostics.Stopwatch]::StartNew(); $log = Join-Path $root ($Name+'.log')
     while ($watch.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
         if ((Test-Path -LiteralPath $log) -and (Select-String -LiteralPath $log -Pattern $Pattern -Quiet)) { return }
+        if ($Pattern -like 'EXCHANGE_SCENARIO_DONE*' -and (Test-Path -LiteralPath $log) -and (Select-String -LiteralPath $log -Pattern 'EXCHANGE_SCENARIO_FAILED' -Quiet)) { throw 'Scenario reported a failure.' }
         if ($Process.HasExited) { throw "$Name exited before $Pattern." }
         Start-Sleep -Milliseconds 300
     }
@@ -81,11 +82,16 @@ try {
     Wait-Log $server 'server' 'EXCHANGE_SCENARIO_START'
     $start = [regex]::Match((Read-Log 'server'),'EXCHANGE_SCENARIO_START A=(\S+) ABag=(\S+) B=(\S+) BBag=(\S+)')
     if (-not $start.Success) { throw 'Scenario did not announce both players.' }
-    $a = $start.Groups[1].Value; $aBag = $start.Groups[2].Value; $b = $start.Groups[3].Value; $bBag = $start.Groups[4].Value
-    # Fixture: gold for B, the goods in A's backpack, and the escrow containers beside both backpacks.
+    $a = $start.Groups[1].Value; $b = $start.Groups[3].Value
+    if ($a -notmatch '^chr_dev_[a-z0-9_]+$' -or $b -notmatch '^chr_dev_[a-z0-9_]+$' -or $a -eq $b) { throw 'Scenario announced invalid character identities.' }
+    # BindIdentity may rebuild its FString while UE_LOG evaluates the bag arguments; derive the stable dev IDs from the characters.
+    $aBag = 'ctn_dev_' + $a.Substring(8); $bBag = 'ctn_dev_' + $b.Substring(8)
+    # The fixture creates character-owned backpacks first, then trade escrow with the same owner and capacity.
+    # Listing escrow is created by Gameplay.Host on first listing use. Capacity 160 is the shipped 8 slots x 20 units.
     [void](Invoke-LedgerSql $fx ("INSERT INTO exchange.wallets(owner_id,balance) VALUES ('$a',0),('$b',100) ON CONFLICT DO NOTHING; " +
-        "INSERT INTO inventory.containers(id,owner_kind,owner_id,kind,capacity) SELECT id||':escrow',owner_kind,owner_id,kind,capacity FROM inventory.containers WHERE id IN ('$aBag','$bBag') ON CONFLICT DO NOTHING; " +
-        "INSERT INTO inventory.entries(container_id,definition_id,quantity) VALUES ('$aBag','item/oak_log',2),('$aBag','item/iron_ore',1) ON CONFLICT DO NOTHING;") $fx.db)
+        "INSERT INTO inventory.containers(id,owner_kind,owner_id,kind,capacity) VALUES ('$aBag',0,'$a',1,160),('$bBag',0,'$b',1,160) ON CONFLICT DO NOTHING; " +
+        "INSERT INTO inventory.containers(id,owner_kind,owner_id,kind,capacity) SELECT id||':escrow',owner_kind,owner_id,7,capacity FROM inventory.containers WHERE id IN ('$aBag','$bBag') ON CONFLICT DO NOTHING; " +
+        "INSERT INTO inventory.entries(container_id,definition_id,quantity) VALUES ('$($aBag):escrow','item/oak_log',2),('$aBag','item/iron_ore',1) ON CONFLICT DO NOTHING;") $fx.db)
     Set-Content -LiteralPath $gate -Value 'go'
     Wait-Log $server 'server' 'EXCHANGE_SCENARIO_DONE Trade=1 Listing=1 ReplayUnchanged=1'
     if ((Read-Log 'server') -match 'EXCHANGE_SCENARIO_FAILED') { throw 'Scenario reported a failure.' }
