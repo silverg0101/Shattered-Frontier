@@ -1,0 +1,4 @@
+﻿NpcBench_LOD-Far n=4501 FrameTime 2.86/3.64 GPUTime 1.94/2.20 GameThreadTime 2.53/3.52 RenderThreadTime 2.76/3.31 Prepass 0.01/0.01 Basepass 0.07/0.07 ShadowDepths 0.09/0.09
+NpcBench_LOD-Near n=4501 FrameTime 2.88/3.53 GPUTime 2.03/2.31 GameThreadTime 2.47/3.35 RenderThreadTime 2.83/3.36 Prepass 0.01/0.01 Basepass 0.10/0.10 ShadowDepths 0.10/0.11
+NpcBench_Nanite-Far n=4501 FrameTime 3.70/4.96 GPUTime 2.49/2.96 GameThreadTime 2.65/3.50 RenderThreadTime 3.69/4.94 Prepass 0.01/0.01 Basepass 0.07/0.07 ShadowDepths 0.39/0.67
+NpcBench_Nanite-Near n=4501 FrameTime 3.51/4.21 GPUTime 2.52/2.78 GameThreadTime 2.59/3.28 RenderThreadTime 3.50/4.19 Prepass 0.01/0.01 Basepass 0.09/0.10 ShadowDepths 0.39/0.60

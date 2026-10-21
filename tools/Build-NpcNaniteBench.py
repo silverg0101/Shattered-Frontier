@@ -3,9 +3,8 @@
     UnrealEditor-Cmd.exe <project>.uproject -run=pythonscript -nullrhi -unattended -nosplash
         -script="<project>/tools/Build-NpcNaniteBench.py --name BeastfolkWarrior --version V2"
 
-Writes /Game/Frontier/Tests/NpcBench_LOD (SK_<name>, engine LODs) and NpcBench_Nanite (SK_<name>_Nanite): a floor, sun,
-sky light and 100 looping walk-clip copies in a 10x10 grid, plus PlayerStarts tagged Near (grid edge) and Far (~70 m back).
-Run a map with ?game=/Script/Engine.GameModeBase?Portal=Near|Far (see docs/evidence/npc-nanite-bench.md).
+Writes /Game/Frontier/Tests/NpcBench_{LOD,Nanite}_{Near,Far} (SK_<name> with engine LODs / SK_<name>_Nanite): a floor, sun,
+sky light and 100 looping walk-clip copies in a 10x10 grid, a PlayerStart tagged Near or Far, and a fixed camera 6 m (Near) or 70 m (Far) from the grid edge.
 """
 import argparse, random, shlex, sys
 import unreal
@@ -14,7 +13,7 @@ GRID, SPACING = 10, 150.0
 
 
 def args():
-    p = argparse.ArgumentParser(); p.add_argument('--name', default='BeastfolkWarrior'); p.add_argument('--version', default='V2')
+    p = argparse.ArgumentParser(); p.add_argument('--name', default='BeastfolkWarrior'); p.add_argument('--version', default='V3')
     argv = sys.argv[1:]
     if not argv:
         toks = shlex.split(unreal.SystemLibrary.get_command_line(), posix=False)
@@ -23,7 +22,7 @@ def args():
     return p.parse_known_args(argv)[0]
 
 
-def build(map_path, mesh, anim):
+def build(map_path, mesh, anim, dist):
     actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
     if unreal.EditorAssetLibrary.does_asset_exist(map_path): unreal.EditorAssetLibrary.delete_asset(map_path)
     unreal.EditorLoadingAndSavingUtils.new_blank_map(False)
@@ -46,10 +45,11 @@ def build(map_path, mesh, anim):
         c.set_animation(anim)
         c.set_editor_property('animation_data', unreal.SingleAnimationPlayData(anim_to_play=anim, saved_looping=True, saved_playing=True,
                                                                               saved_position=rng.uniform(0, 1), saved_play_rate=1.0))
-    # Mesh origin is at the feet (~1.85 m tall). Near: 6 m from the grid edge; Far: 70 m back. Both face +X, the grid.
-    for tag, dist in (('Near', 600.0), ('Far', 7000.0)):
-        ps = actors.spawn_actor_from_class(unreal.PlayerStart, unreal.Vector(-half - dist, 0, 120), unreal.Rotator(roll=0, pitch=0, yaw=0))
-        ps.set_actor_label('PlayerStart_' + tag); ps.set_editor_property('player_start_tag', tag)
+    # Camera fixed at dist from the grid edge, facing +X (PlayerStarts tagged Near/Far kept for Portal runs; the camera view target wins).
+    ps = actors.spawn_actor_from_class(unreal.PlayerStart, unreal.Vector(-half - dist, 0, 120), unreal.Rotator(roll=0, pitch=0, yaw=0))
+    ps.set_actor_label('PlayerStart_Near' if dist < 2000 else 'PlayerStart_Far'); ps.set_editor_property('player_start_tag', 'Near' if dist < 2000 else 'Far')
+    cam = actors.spawn_actor_from_class(unreal.CameraActor, unreal.Vector(-half - dist, 0, 160), unreal.Rotator(roll=0, pitch=-2 if dist < 2000 else -1, yaw=0))
+    cam.set_actor_label('BenchCamera'); cam.set_editor_property('auto_activate_for_player', unreal.AutoReceiveInput.PLAYER0)
     if not unreal.EditorLoadingAndSavingUtils.save_map(unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world(), map_path):
         raise RuntimeError('Could not save ' + map_path)
     unreal.log('NPC_BENCH_MAP ' + map_path)
@@ -62,7 +62,7 @@ def main():
     for suffix, sk in (('LOD', f'SK_{a.name}'), ('Nanite', f'SK_{a.name}_Nanite')):
         mesh = unreal.load_asset(f'{root}/Mesh/{sk}')
         if not mesh or not anim: raise RuntimeError('Missing mesh or walk clip under ' + root)
-        build(f'/Game/Frontier/Tests/NpcBench_{suffix}', mesh, anim)
+        for where, dist in (('Near', 600.0), ('Far', 7000.0)): build(f'/Game/Frontier/Tests/NpcBench_{suffix}_{where}', mesh, anim, dist)
 
 
 main()
