@@ -1,0 +1,2 @@
+EB Garamond (static Regular/Bold), Georg Duffner and Octavio Pardo, SIL OFL 1.1 (OFL.txt). Source: https://github.com/octaviopardo/EBGaramond12/tree/master/fonts/ttf
+Use: HUD text serif (labels, rows, quest lines).

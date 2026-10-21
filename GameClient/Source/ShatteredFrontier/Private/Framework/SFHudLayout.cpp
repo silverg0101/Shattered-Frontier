@@ -106,13 +106,13 @@ void USFHudLayout::NativeOnInitialized()
     HudPlace(Root, PromptFrame, 0.32f, 0.79f, 0.68f, 0.85f);
 
     // Target frame, 38-62% x 4-11%: the aimed gathering node and its charges.
-    TargetFrame = KitPanel(WidgetTree, TEXT("title_bar"), 0.95f, Slate(0.9f), Brass(), FMargin(18.f, 6.f), 3.f);
+    TargetFrame = KitPanel(WidgetTree, TEXT("target_frame"), 0.95f, Slate(0.9f), Brass(), FMargin(18.f, 6.f), 3.f);
     UVerticalBox* TargetBox = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     TargetFrame->SetContent(TargetBox);
     UHorizontalBox* TargetTop = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     TargetName = Heading(WidgetTree, TEXT(""), 18, Ivory());
     TargetTop->AddChildToHorizontalBox(TargetName)->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-    TargetCharges = Text(WidgetTree, TEXT(""), 14, Ivory(), true);
+    TargetCharges = Num(WidgetTree, TEXT(""), 15, Ivory());
     TargetTop->AddChildToHorizontalBox(TargetCharges);
     TargetBox->AddChildToVerticalBox(TargetTop);
     USizeBox* BarBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
@@ -134,7 +134,7 @@ void USFHudLayout::NativeOnInitialized()
     UBorder* Fill = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
     Fill->SetBrush(Frame(Hex(TEXT("0E171C"), 0.8f), FLinearColor(0.f, 0.f, 0.f, 0.f), 1000.f));
     Disc->AddChildToOverlay(Fill);
-    if (const FSFHudKitElement* RingArt = Kit(TEXT("ring_frame")))
+    if (const FSFHudKitElement* RingArt = Kit(TEXT("minimap_ring")))
     {
         UImage* Ring = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
         Ring->SetBrush(KitBrush(*RingArt));
@@ -150,7 +150,7 @@ void USFHudLayout::NativeOnInitialized()
     UOverlaySlot* MarkerSlot = Disc->AddChildToOverlay(MarkerBox);
     MarkerSlot->SetHorizontalAlignment(HAlign_Center); MarkerSlot->SetVerticalAlignment(VAlign_Center);
     MapColumn->AddChildToVerticalBox(DiscBox);
-    UBorder* ZoneFrame = KitPanel(WidgetTree, TEXT("tooltip_frame"), 0.9f, Slate(0.85f), Brass(), FMargin(10.f, 2.f), 3.f);
+    UBorder* ZoneFrame = KitPanel(WidgetTree, TEXT("minimap_footer"), 0.9f, Slate(0.85f), Brass(), FMargin(10.f, 2.f), 3.f);
     ZoneText = Text(WidgetTree, ZoneFromMapName(UGameplayStatics::GetCurrentLevelName(this, true)), 14, Ivory());
     ZoneText->SetJustification(ETextJustify::Center);
     ZoneFrame->SetContent(ZoneText);
@@ -165,14 +165,14 @@ void USFHudLayout::BuildHotbar(UCanvasPanel* Root)
     UHorizontalBox* Row = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     for (const FSFHotbarSlot& HotSlot : HotbarSlots())
     {
-        UBorder* Cell = KitPanel(WidgetTree, TEXT("slot_empty"), 1.f, Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), FMargin(2.f), 3.f);
+        UBorder* Cell = KitPanel(WidgetTree, TEXT("slot_hotbar_normal"), 1.f, Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), FMargin(2.f), 3.f);
         UOverlay* Stack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
         Cell->SetContent(Stack);
         UImage* Icon = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
         if (UTexture2D* Texture = HudIcon(HotSlot.IconStem)) { Icon->SetBrushFromTexture(Texture, false); }
         UOverlaySlot* IconSlot = Stack->AddChildToOverlay(Icon);
         IconSlot->SetHorizontalAlignment(HAlign_Fill); IconSlot->SetVerticalAlignment(VAlign_Fill); IconSlot->SetPadding(FMargin(6.f));
-        UTextBlock* Key = Text(WidgetTree, FString::FromInt(HotSlot.Key), 14, Ivory(), true);
+        UTextBlock* Key = Num(WidgetTree, FString::FromInt(HotSlot.Key), 16, Ivory());
         UOverlaySlot* KeySlot = Stack->AddChildToOverlay(Key);
         KeySlot->SetHorizontalAlignment(HAlign_Left); KeySlot->SetVerticalAlignment(VAlign_Top); KeySlot->SetPadding(FMargin(4.f, 1.f, 0.f, 0.f));
         Row->AddChildToHorizontalBox(Cell)->SetPadding(FMargin(3.f));
@@ -245,7 +245,7 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     {
         ShownActiveKey = ActiveKey;
         for (int32 Index = 0; Index < SlotFrames.Num(); ++Index)
-        { SlotFrames[Index]->SetBrush(KitOrFrame(Index + 1 == ActiveKey ? TEXT("slot_selected") : TEXT("slot_empty"), Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), 3.f)); }
+        { SlotFrames[Index]->SetBrush(KitOrFrame(Index + 1 == ActiveKey ? TEXT("slot_hotbar_selected") : TEXT("slot_hotbar_normal"), Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), 3.f)); }
     }
 
     FVector Start, Direction;

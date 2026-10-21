@@ -34,7 +34,7 @@ class SHATTEREDFRONTIER_API USFInventoryPanel : public UUserWidget
 {
     GENERATED_BODY()
 public:
-    static constexpr int32 GridColumns = 5;
+    static constexpr int32 GridColumns = 8;
     static constexpr int32 GridRows = 5;
     static constexpr int32 TabCount = 4;
 
@@ -60,11 +60,14 @@ protected:
 private:
     void Refresh();
     void StyleTabs();
+    void RefreshMainHand(const TArray<FSFInventoryEntry>& All);
     TArray<FSFInventoryEntry> CollectEntries() const;
 
     ESFInventoryTab ActiveTab = ESFInventoryTab::All;
     UPROPERTY(Transient) TObjectPtr<USFGatheringPilotComponent> Pilot;
     UPROPERTY(Transient) TArray<TObjectPtr<UBorder>> TabBorders;
+    UPROPERTY(Transient) TObjectPtr<UBorder> MainHandFrame;
+    UPROPERTY(Transient) TObjectPtr<UImage> MainHandIcon;
     UPROPERTY(Transient) TArray<TObjectPtr<UBorder>> SlotFrames;
     UPROPERTY(Transient) TArray<TObjectPtr<UBorder>> SlotTips;
     UPROPERTY(Transient) TArray<TObjectPtr<UImage>> SlotIcons;

@@ -47,6 +47,39 @@ void USFInventoryPanel::NativeOnInitialized()
     HintSlot->SetHorizontalAlignment(HAlign_Right); HintSlot->SetVerticalAlignment(VAlign_Center); HintSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
     AddRow(Title, FMargin(0.f, 0.f, 0.f, 10.f));
 
+    // Equipment (v5 inventory.png): five armour slots left, the paperdoll centre, four slots right. Empty slots show their ghost
+    // icon; only the main hand is live today (the equipped tool). ponytail: no armour system yet, so the others stay empty.
+    auto EquipmentSlot = [this](const TCHAR* GhostName, TObjectPtr<UBorder>* OutFrame, TObjectPtr<UImage>* OutIcon)
+    {
+        USizeBox* Box = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        Box->SetWidthOverride(72.f); Box->SetHeightOverride(72.f);
+        UBorder* SlotFrame = KitPanel(WidgetTree, TEXT("slot_equipment_normal"), 1.f, Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), FMargin(0.f), 3.f);
+        UImage* Ghost = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
+        if (const FSFHudKitElement* Art = SFHudStyle::Kit(GhostName)) { Ghost->SetBrush(SFHudStyle::KitBrush(*Art)); Ghost->SetDesiredSizeOverride(FVector2D(48.f, 48.f)); }
+        UOverlay* Stack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
+        UOverlaySlot* GhostSlot = Stack->AddChildToOverlay(Ghost);
+        GhostSlot->SetHorizontalAlignment(HAlign_Center); GhostSlot->SetVerticalAlignment(VAlign_Center);
+        SlotFrame->SetContent(Stack); Box->SetContent(SlotFrame);
+        if (OutFrame) { *OutFrame = SlotFrame; }
+        if (OutIcon) { *OutIcon = Ghost; }
+        return Box;
+    };
+    UHorizontalBox* Equipment = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+    UVerticalBox* LeftColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+    for (const TCHAR* Ghost : {TEXT("ghost_head"), TEXT("ghost_chest"), TEXT("ghost_hands"), TEXT("ghost_legs"), TEXT("ghost_feet")})
+    { LeftColumn->AddChildToVerticalBox(EquipmentSlot(Ghost, nullptr, nullptr))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f)); }
+    Equipment->AddChildToHorizontalBox(LeftColumn)->SetVerticalAlignment(VAlign_Top);
+    UImage* Paperdoll = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
+    if (const FSFHudKitElement* Doll = SFHudStyle::Kit(TEXT("paperdoll_adventurer"))) { Paperdoll->SetBrush(SFHudStyle::KitBrush(*Doll)); Paperdoll->SetDesiredSizeOverride(FVector2D(220.f, 396.f)); }
+    UHorizontalBoxSlot* DollSlot = Equipment->AddChildToHorizontalBox(Paperdoll);
+    DollSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); DollSlot->SetHorizontalAlignment(HAlign_Center); DollSlot->SetVerticalAlignment(VAlign_Center);
+    UVerticalBox* RightColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+    RightColumn->AddChildToVerticalBox(EquipmentSlot(TEXT("ghost_main_hand"), &MainHandFrame, &MainHandIcon))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
+    for (const TCHAR* Ghost : {TEXT("ghost_off_hand"), TEXT("ghost_neck"), TEXT("ghost_ring")})
+    { RightColumn->AddChildToVerticalBox(EquipmentSlot(Ghost, nullptr, nullptr))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f)); }
+    Equipment->AddChildToHorizontalBox(RightColumn)->SetVerticalAlignment(VAlign_Top);
+    AddRow(Equipment, FMargin(0.f, 0.f, 0.f, 8.f));
+
     // Category tabs; clicks are hit-tested in NativeOnMouseButtonDown.
     UHorizontalBox* Tabs = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     for (int32 TabIndex = 0; TabIndex < TabCount; ++TabIndex)
@@ -65,7 +98,7 @@ void USFInventoryPanel::NativeOnInitialized()
     for (int32 Index = 0; Index < GridColumns * GridRows; ++Index)
     {
         USizeBox* Cell = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        Cell->SetWidthOverride(78.f); Cell->SetHeightOverride(78.f);
+        Cell->SetWidthOverride(64.f); Cell->SetHeightOverride(64.f);
         Cell->SetContent(KitPanel(WidgetTree, TEXT("slot_empty"), 1.f, Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), FMargin(0.f), 3.f));
         UBorder* CellFrame = Cast<UBorder>(Cell->GetContent());
         UOverlay* Stack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
@@ -96,7 +129,7 @@ void USFInventoryPanel::NativeOnInitialized()
         Name->SetAutoWrapText(true); Name->SetJustification(ETextJustify::Center);
         UOverlaySlot* NameSlot = Stack->AddChildToOverlay(Name);
         NameSlot->SetHorizontalAlignment(HAlign_Fill); NameSlot->SetVerticalAlignment(VAlign_Center);
-        UTextBlock* Count = Text(WidgetTree, TEXT(""), 15, Ivory(), true);
+        UTextBlock* Count = Num(WidgetTree, TEXT(""), 16, Ivory());
         UOverlaySlot* CountSlot = Stack->AddChildToOverlay(Count);
         CountSlot->SetHorizontalAlignment(HAlign_Right); CountSlot->SetVerticalAlignment(VAlign_Bottom);
         SlotNames.Add(Name); SlotCounts.Add(Count);
@@ -162,6 +195,7 @@ void USFInventoryPanel::Refresh()
 {
     if (!Pilot || SlotNames.Num() != GridColumns * GridRows || GetVisibility()==ESlateVisibility::Collapsed) { return; }
     const TArray<FSFInventoryEntry> All = CollectEntries();
+    if (MainHandIcon) { RefreshMainHand(All); }
     const TArray<FSFInventoryEntry> Items = FilterByTab(All, ActiveTab);
     for (int32 Index = 0; Index < SlotNames.Num(); ++Index)
     {
@@ -202,8 +236,8 @@ FString USFInventoryPanel::TabLabel(ESFInventoryTab Tab)
     switch (Tab)
     {
     case ESFInventoryTab::Materials: return TEXT("Materials");
-    case ESFInventoryTab::Gear: return TEXT("Gear");
-    case ESFInventoryTab::Consumables: return TEXT("Consumables");
+    case ESFInventoryTab::Gear: return TEXT("Tools");  // v5 tab names
+    case ESFInventoryTab::Consumables: return TEXT("Food");
     default: return TEXT("All");
     }
 }
@@ -313,4 +347,21 @@ TArray<FSFInventoryEntry> USFInventoryPanel::CollectEntries() const
     if (Inventory->GetEquippedItem(TEXT("tool"), Equipped, Quantity)) { Add(Equipped, Quantity, true); }
 #endif
     return BuildEntries(Items);
+}
+
+// The main-hand slot shows the equipped tool (selected frame, item icon) or its ghost when nothing is equipped.
+void USFInventoryPanel::RefreshMainHand(const TArray<FSFInventoryEntry>& All)
+{
+    const FSFInventoryEntry* Equipped = All.FindByPredicate([](const FSFInventoryEntry& E) { return E.bEquipped; });
+    UTexture2D* Icon = Equipped ? Equipped->Icon.LoadSynchronous() : nullptr;
+    if (Icon)
+    {
+        if (MainHandIcon->GetBrush().GetResourceObject() != Icon) { MainHandIcon->SetBrushFromTexture(Icon, false); MainHandIcon->SetDesiredSizeOverride(FVector2D(56.f, 56.f)); }
+        MainHandFrame->SetBrush(SFHudStyle::KitOrFrame(TEXT("slot_equipment_selected"), SFHudStyle::Hex(TEXT("2B3B2C"), 1.f), SFHudStyle::Brass(), 3.f));
+    }
+    else if (const FSFHudKitElement* Ghost = SFHudStyle::Kit(TEXT("ghost_main_hand")))
+    {
+        if (MainHandIcon->GetBrush().GetResourceObject() != Ghost->Texture) { MainHandIcon->SetBrush(SFHudStyle::KitBrush(*Ghost)); MainHandIcon->SetDesiredSizeOverride(FVector2D(48.f, 48.f)); }
+        MainHandFrame->SetBrush(SFHudStyle::KitOrFrame(TEXT("slot_equipment_normal"), SFHudStyle::Hex(TEXT("0E171C"), 0.85f), SFHudStyle::Hex(TEXT("3A4348")), 3.f));
+    }
 }

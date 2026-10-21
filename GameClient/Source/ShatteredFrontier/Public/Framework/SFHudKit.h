@@ -14,6 +14,8 @@ struct FSFHudKitElement
     UPROPERTY(EditAnywhere) TObjectPtr<UTexture2D> Texture;
     UPROPERTY(EditAnywhere) FMargin Margin;
     UPROPERTY(EditAnywhere) float InsetPixels = 0.f;
+    // Design-size scale of the texture: Kit-v5 art is authored at 2x the 1080p UI size, so its DrawScale is 0.5.
+    UPROPERTY(EditAnywhere) float DrawScale = 1.f;
 };
 
 // /Game/Frontier/UI/Kit/DA_HudKit, written by tools/Import-HudKit.py from GameClient/ArtSource/UI/HUD-Kit-v1/kit.json.

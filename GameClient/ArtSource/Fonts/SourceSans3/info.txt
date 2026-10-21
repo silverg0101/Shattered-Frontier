@@ -1,0 +1,2 @@
+Source Sans 3 (static Regular/Bold), Adobe, SIL OFL 1.1 (LICENSE.md). Source: https://github.com/adobe-fonts/source-sans (release/TTF)
+Use: HUD numerals (counts, have/need, bar values).

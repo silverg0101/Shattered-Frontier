@@ -2,7 +2,11 @@
 
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
+#include "Components/Image.h"
+#include "Components/Overlay.h"
+#include "Components/OverlaySlot.h"
 #include "Components/ProgressBar.h"
+#include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
 #include "Engine/Font.h"
 #include "Engine/FontFace.h"
@@ -45,7 +49,7 @@ inline FSlateBrush KitBrush(const FSFHudKitElement& Element)
     Brush.DrawAs = ESlateBrushDrawType::Box;
     Brush.Margin = Element.Margin;
     Brush.SetResourceObject(Element.Texture);
-    Brush.ImageSize = FVector2D(Element.Texture->GetSizeX(), Element.Texture->GetSizeY());
+    Brush.ImageSize = FVector2D(Element.Texture->GetSizeX(), Element.Texture->GetSizeY()) * Element.DrawScale;
     Brush.TintColor = FSlateColor(FLinearColor::White);
     return Brush;
 }
@@ -79,6 +83,59 @@ inline void StyleBar(UProgressBar* Bar, const FLinearColor& Fill)
     Style.FillImage = FillArt ? KitBrush(*FillArt) : Frame(FLinearColor::White, FLinearColor(0.f, 0.f, 0.f, 0.f), 2.f);
     Bar->SetWidgetStyle(Style);
     Bar->SetFillColorAndOpacity(FillArt ? FLinearColor::White : Fill);
+}
+
+// A Kit-v5 framed bar (<Base>_back, <Base>_fill, <Base>_frame: hp, stamina, xp or channel): back under, fill clipped to
+// Fraction * the frame's fill width, frame over. The fill rectangle inside the frame is recorded in Kit-v5/kit.json as
+// fill_inset_rect_px = [42, 13, 718, 51] at 2x for all four bars; the fill art tiles horizontally.
+struct FSFFramedBar
+{
+    UWidget* Root = nullptr;
+    USizeBox* FillClip = nullptr;
+    float FillWidth = 0.f;  // design px at Fraction 1
+    void SetFraction(float Fraction) const { if (FillClip) { FillClip->SetWidthOverride(FillWidth * FMath::Clamp(Fraction, 0.f, 1.f)); } }
+};
+
+// Null Root when the kit pieces are missing (the caller keeps its UProgressBar fallback). DesignWidth scales the whole bar.
+inline FSFFramedBar MakeFramedBar(UWidgetTree* Tree, const TCHAR* Base, float DesignWidth)
+{
+    FSFFramedBar Bar;
+    const FSFHudKitElement* Frame = Kit(*FString::Printf(TEXT("%s_frame"), Base));
+    const FSFHudKitElement* Fill = Kit(*FString::Printf(TEXT("%s_fill"), Base));
+    if (!Frame || !Fill) { return Bar; }
+    constexpr float InsetLeft = 42.f, InsetTop = 13.f, InsetRight = 718.f, InsetBottom = 51.f;  // 2x px, from kit.json
+    const float Scale = DesignWidth / static_cast<float>(Frame->Texture->GetSizeX());  // texture px -> design px
+    const float FrameHeight = static_cast<float>(Frame->Texture->GetSizeY()) * Scale;
+    Bar.FillWidth = (InsetRight - InsetLeft) * Scale;
+    const float FillHeight = (InsetBottom - InsetTop) * Scale;
+
+    USizeBox* Box = Tree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+    Box->SetWidthOverride(DesignWidth); Box->SetHeightOverride(FrameHeight);
+    UOverlay* Stack = Tree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
+    Box->SetContent(Stack);
+    if (const FSFHudKitElement* Back = Kit(*FString::Printf(TEXT("%s_back"), Base)))
+    {
+        UImage* BackImage = Tree->ConstructWidget<UImage>(UImage::StaticClass());
+        BackImage->SetBrush(KitBrush(*Back));
+        UOverlaySlot* BackSlot = Stack->AddChildToOverlay(BackImage);
+        BackSlot->SetHorizontalAlignment(HAlign_Fill); BackSlot->SetVerticalAlignment(VAlign_Fill);
+    }
+    Bar.FillClip = Tree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+    Bar.FillClip->SetHeightOverride(FillHeight); Bar.FillClip->SetWidthOverride(Bar.FillWidth);
+    Bar.FillClip->SetClipping(EWidgetClipping::ClipToBounds);  // shows the left part of the fill, never squashes it
+    UImage* FillImage = Tree->ConstructWidget<UImage>(UImage::StaticClass());
+    FillImage->SetBrush(KitBrush(*Fill));
+    FillImage->SetDesiredSizeOverride(FVector2D(Bar.FillWidth, FillHeight));
+    Bar.FillClip->SetContent(FillImage);
+    UOverlaySlot* FillSlot = Stack->AddChildToOverlay(Bar.FillClip);
+    FillSlot->SetHorizontalAlignment(HAlign_Left); FillSlot->SetVerticalAlignment(VAlign_Center);
+    FillSlot->SetPadding(FMargin(InsetLeft * Scale, 0.f, 0.f, 0.f));
+    UImage* FrameImage = Tree->ConstructWidget<UImage>(UImage::StaticClass());
+    FrameImage->SetBrush(KitBrush(*Frame));
+    UOverlaySlot* FrameSlot = Stack->AddChildToOverlay(FrameImage);
+    FrameSlot->SetHorizontalAlignment(HAlign_Fill); FrameSlot->SetVerticalAlignment(VAlign_Fill);
+    Bar.Root = Box;
+    return Bar;
 }
 
 // Border using a named kit element (alpha of Fill is kept as the overall opacity); procedural fallback otherwise.
@@ -116,12 +173,52 @@ inline UBorder* Panel(UWidgetTree* Tree, const FLinearColor& Fill, const FLinear
     return Border;
 }
 
+// A runtime composite font with Regular and Bold entries from two imported faces (tools/Import-HudKit.py), or null when
+// the regular face is missing. Python cannot build a composite UFont, so the families are assembled here once per process.
+inline UFont* LoadFontFamily(const TCHAR* RegularAsset, const TCHAR* BoldAsset)
+{
+    UFontFace* Regular = LoadObject<UFontFace>(nullptr, *FString::Printf(TEXT("/Game/Frontier/UI/Fonts/%s.%s"), RegularAsset, RegularAsset));
+    UFontFace* Bold = LoadObject<UFontFace>(nullptr, *FString::Printf(TEXT("/Game/Frontier/UI/Fonts/%s.%s"), BoldAsset, BoldAsset));
+    if (!Regular) { return nullptr; }
+    UFont* Font = NewObject<UFont>(GetTransientPackage());
+    Font->FontCacheType = EFontCacheType::Runtime;
+    FTypefaceEntry& RegularEntry = Font->CompositeFont.DefaultTypeface.Fonts.Add_GetRef(FTypefaceEntry(TEXT("Regular")));
+    RegularEntry.Font = FFontData(Regular);
+    if (Bold) { FTypefaceEntry& BoldEntry = Font->CompositeFont.DefaultTypeface.Fonts.Add_GetRef(FTypefaceEntry(TEXT("Bold"))); BoldEntry.Font = FFontData(Bold); }
+    return Font;
+}
+
+// HUD-v1 v5 type roles: EB Garamond for text, Source Sans 3 for numerals, Cinzel (Heading) for display titles.
+// Each falls back to the engine sans when its font is not imported.
+inline FSlateFontInfo RoleFont(UFont* Family, int32 Size, bool bBold)
+{
+    return Family ? FSlateFontInfo(Family, Size, bBold ? TEXT("Bold") : TEXT("Regular")) : FCoreStyle::GetDefaultFontStyle(bBold ? "Bold" : "Regular", Size);
+}
+inline UFont* TextFamily()
+{
+    static TStrongObjectPtr<UFont> Family(LoadFontFamily(TEXT("FontFace_EBGaramondRegular"), TEXT("FontFace_EBGaramondBold")));
+    return Family.Get();
+}
+inline UFont* NumeralFamily()
+{
+    static TStrongObjectPtr<UFont> Family(LoadFontFamily(TEXT("FontFace_SourceSansRegular"), TEXT("FontFace_SourceSansBold")));
+    return Family.Get();
+}
+
 inline UTextBlock* Text(UWidgetTree* Tree, const FString& Value, int32 Size, const FLinearColor& Color, bool bBold = false)
 {
     UTextBlock* Label = Tree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
     Label->SetText(FText::FromString(Value));
-    Label->SetFont(FCoreStyle::GetDefaultFontStyle(bBold ? "Bold" : "Regular", Size));
+    Label->SetFont(RoleFont(TextFamily(), Size, bBold));
     Label->SetColorAndOpacity(FSlateColor(Color));
+    return Label;
+}
+
+// Counts, have / need and bar values.
+inline UTextBlock* Num(UWidgetTree* Tree, const FString& Value, int32 Size, const FLinearColor& Color, bool bBold = true)
+{
+    UTextBlock* Label = Text(Tree, Value, Size, Color, bBold);
+    Label->SetFont(RoleFont(NumeralFamily(), Size, bBold));
     return Label;
 }
 

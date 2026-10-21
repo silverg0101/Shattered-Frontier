@@ -51,12 +51,12 @@ bool FSFInventoryPanelTabsTest::RunTest(const FString& Parameters)
     if (TestEqual(TEXT("Gear tab"),Gear.Num(),1)) { TestEqual(TEXT("Gear is the axe"),Gear[0].Name.ToString(),FString(TEXT("Iron axe"))); }
     TestEqual(TEXT("Materials tab"),USFInventoryPanel::FilterByTab(Entries,ESFInventoryTab::Materials).Num(),1);
     TestEqual(TEXT("Consumables tab"),USFInventoryPanel::FilterByTab(Entries,ESFInventoryTab::Consumables).Num(),1);
-    TestEqual(TEXT("Tab label"),USFInventoryPanel::TabLabel(ESFInventoryTab::Consumables),FString(TEXT("Consumables")));
+    TestEqual(TEXT("Tab label"),USFInventoryPanel::TabLabel(ESFInventoryTab::Consumables),FString(TEXT("Food")));
 
     const FSFInventoryTooltip Tip=USFInventoryPanel::BuildTooltip(Gear[0]);
     TestEqual(TEXT("Tooltip name"),Tip.Title,FString(TEXT("Iron axe")));
     TestEqual(TEXT("Tooltip description"),Tip.Description,FString(TEXT("Desc")));
-    TestEqual(TEXT("Tooltip category, rarity and state"),Tip.TypeLine,FString(TEXT("Gear  -  Common  -  Equipped")));
+    TestEqual(TEXT("Tooltip category, rarity and state"),Tip.TypeLine,FString(TEXT("Tools  -  Common  -  Equipped")));
     TestEqual(TEXT("Tooltip weight"),Tip.WeightLine,FString(TEXT("Weight  1.5 kg")));
     return true;
 }
