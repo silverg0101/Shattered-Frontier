@@ -59,19 +59,23 @@ def _mesh_sockets(actor, sockets, u):
             # Component local transform covers per-building mesh offsets; static mesh actors are the common case.
             for xyz in sockets[mesh.get_name()]:
                 local = u.Vector(*(v * 100 for v in xyz))
-                found.append(component.get_world_transform().transform_position(local))
+                found.append(u.MathLibrary.transform_location(component.get_world_transform(), local))
     return found
 
 
 def _component(actor, name, mesh, material, u):
-    component = u.new_object(u.HierarchicalInstancedStaticMeshComponent, outer=actor, name=name)
+    subobjects = u.get_engine_subsystem(u.SubobjectDataSubsystem)
+    actor_handle = subobjects.k2_gather_subobject_data_for_instance(actor)[0]
+    handle, failure = subobjects.add_new_subobject(u.AddNewSubobjectParams(
+        parent_handle=actor_handle, new_class=u.HierarchicalInstancedStaticMeshComponent))
+    assert u.SubobjectDataBlueprintFunctionLibrary.is_handle_valid(handle), failure
+    component = u.SubobjectDataBlueprintFunctionLibrary.get_associated_object(
+        u.SubobjectDataBlueprintFunctionLibrary.get_data(handle))
     component.set_static_mesh(mesh)
     component.set_material(0, material)
     component.set_editor_property('cast_shadow', False)
     component.set_editor_property('instance_start_cull_distance', 0)
     component.set_editor_property('instance_end_cull_distance', 2500 if name == 'Fireflies' else 1800)
-    actor.add_instance_component(component)
-    component.register_component()
     return component
 
 
@@ -134,11 +138,6 @@ def apply(world=None, save=False):
     host = subsystem.spawn_actor_from_class(u.Actor, u.Vector(0, 0, 0))
     host.set_actor_label(PREFIX + 'Cards')
     host.set_folder_path('VFX/StreetLamp')
-    if not host.get_editor_property('root_component'):
-        root = u.new_object(u.SceneComponent, outer=host, name='LampFxRoot')
-        host.add_instance_component(root)
-        host.set_root_component(root)
-        root.register_component()
     cards = {key: _component(host, key, plane, mats['M_Lamp' + key], u)
              for key in ('Flame', 'Halo', 'Smoke', 'Ember', 'Firefly') if key != 'Firefly'}
     cards['Fireflies'] = _component(host, 'Fireflies', plane, mats['M_LampFirefly'], u)

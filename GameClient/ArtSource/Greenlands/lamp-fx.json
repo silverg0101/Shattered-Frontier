@@ -1,7 +1,7 @@
 {
   "_meta": {"owner": "GFX-01 Silverbrook", "scope": "client cosmetic, Silverbrook", "version": 1, "permission": "art release owner", "apply_time": "next map build / compatible client release", "approval": "content review", "visibility": "client", "rollback": "restore prior asset/config release; inspect editor actor counts and GPU timing"},
   "flame_colour": {"type": "linear_rgb", "label": "Flame colour", "help": "Amber flame and lamp-glass glow", "value": [1.0, 0.38, 0.08], "default": [1.0, 0.38, 0.08], "fallback": [1.0, 0.38, 0.08], "min": 0.0, "max": 2.0, "step": 0.01, "unit": "linear RGB"},
-  "light_intensity": {"type": "float", "label": "Lamp brightness", "help": "Point-light output from one glass chamber", "value": 90.0, "default": 90.0, "fallback": 90.0, "min": 0.0, "max": 250.0, "step": 1.0, "unit": "lumens"},
+  "light_intensity": {"type": "float", "label": "Lamp brightness", "help": "Point-light output from one glass chamber", "value": 220.0, "default": 90.0, "fallback": 90.0, "min": 0.0, "max": 250.0, "step": 1.0, "unit": "lumens"},
   "light_radius": {"type": "float", "label": "Lamp reach", "help": "Maximum warm light reach", "value": 2.8, "default": 2.8, "fallback": 2.8, "min": 0.5, "max": 4.0, "step": 0.1, "unit": "metres"},
   "flicker_speed": {"type": "float", "label": "Flicker speed", "help": "Gentle flame and light modulation", "value": 1.7, "default": 1.7, "fallback": 1.7, "min": 0.2, "max": 4.0, "step": 0.1, "unit": "cycles per second"},
   "flicker_amount": {"type": "float", "label": "Flicker depth", "help": "Fractional brightness variation", "value": 0.12, "default": 0.12, "fallback": 0.12, "min": 0.0, "max": 0.25, "step": 0.01, "unit": "fraction"},

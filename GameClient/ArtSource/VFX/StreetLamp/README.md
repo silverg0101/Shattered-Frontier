@@ -1,17 +1,17 @@
 # Silverbrook street-lamp VFX (GFX-01)
 
-`lamp_fx.py` finds every placed Silverbrook mesh whose committed `lamp-sockets.json` has lantern glass and creates one warm, shadowless point light per glass chamber. The socket map is generated from dedicated `*LanternGlow` / `*_Glow` material islands in the source GLBs, including baked building lanterns. Four street-lamp manifests were used to check the coordinates (largest difference 3 mm). Source art and the town builder are untouched.
+`lamp_fx.py` finds every placed Silverbrook mesh whose committed `lamp-sockets.json` has lantern glass and creates one warm, shadowless point light per glass chamber. The socket map is generated from dedicated `*LanternGlow` / `*_Glow` material islands in the source GLBs, including baked building lanterns. Four street-lamp manifests were used to check the coordinates (largest difference 3 mm). The builder calls the VFX hook after it places the town.
 
 | Effect | Implementation |
 | --- | --- |
 | Flame and emissive glass | Procedural Pillow flame texture on a two-sided additive card at each socket, with a two-frequency material-time flicker. The original mesh glass remains amber. |
-| Warm light | 90 lumen movable point light, 2.8 m attenuation, no shadows, 25 m draw cap. Light-function material uses the same flicker speed and amount. |
+| Warm light | 220 lumen movable point light, 2.8 m attenuation, no shadows, 25 m draw cap. Light-function material uses the same flicker speed and amount. |
 | Halo | Two crossing soft additive cards; bloom comes from the existing Silverbrook post process. |
 | Smoke | One soft alpha card 20 cm above each glass center; slow panning. |
 | Ember | One tiny additive card per lamp with a short pulse about every 9 seconds. |
 | Fireflies | A deterministic subset of lamps (28% default), 1–3 instanced sprite quads each; per-instance random blinking and slow WPO drift. HISM ends at 25 m. |
 
-The material graph and shared HISM cards avoid Niagara Python graph editing. All graphics are client cosmetic and have no Python tick or replication. On a dedicated server there is no rendering, but the baked map actors may still load; server actor exclusion needs a client-only runtime class in a later integration. The 0.5 ms GPU target at 1440p and in-game look remain for the editor lane to measure and tune. No shadows are cast, including at close range. Small attenuation provides the ground pool.
+The material graph and shared HISM cards avoid Niagara Python graph editing. All graphics are client cosmetic and have no Python tick or replication. On a dedicated server there is no rendering, but the baked map actors may still load; server actor exclusion needs a client-only runtime class in a later integration. No shadows are cast, including at close range. Small attenuation provides the ground pool.
 
 `Greenlands/lamp-fx.json` is the shipped, typed, bounded art config. It has labels, help, units, defaults, fallback, owner, permission, scope, apply time and rollback metadata. These are release-bound client visuals, not an editable server console. The `time-of-day` enum is reserved for GFX WP6 and deliberately refuses to build until the runtime signal exists. Current default is `always`.
 
@@ -34,7 +34,11 @@ Open the ShatteredFrontier full editor, enable Python remote execution, and open
 py -3 tools/Run-InEditor.py GameClient/ArtSource/Greenlands/lamp_fx.py --save
 ```
 
-This imports/rebuilds only `/Game/Frontier/VFX/StreetLamp/` assets, replaces `FX_StreetLamp_*` actors in the open Silverbrook map, saves the map, and prints `LAMP_FX` counts. Inspect a Lamp 2 with its two glass chambers and a building lantern, review dusk/day/night captures, and measure the 1440p GPU delta against the 0.5 ms budget. Adjust only bounded JSON values and rerun. The editor run and tuning are **not done in this handoff**.
+This imports/rebuilds only `/Game/Frontier/VFX/StreetLamp/` assets, replaces `FX_StreetLamp_*` actors in the open Silverbrook map, saves the map, and prints `LAMP_FX` counts. The UE 5.8 editor run completed with 938 sockets/lights and 539 firefly cards. The builder's exact hook also completed with the same counts. The Python component transform and HISM component creation now use UE 5.8 exposed APIs.
+
+Review captures and concept/live pairs are in `docs/evidence/graphics/lamp-fx/`: 1920x1080 dusk, day and night views of a street lamp, a townhouse lantern area and a street with several lamps. Temporary sun, sky and exposure overrides were used only in `-game`; they were not saved. The final 1440p `stat gpu` street view measured Graphics Queue Total 5.38 ms on and 5.17 ms off (about **0.21 ms** delta, under the 0.5 ms budget) on an RX 7900 XTX. This is an on/off snapshot, not a distribution across multiple routes. The brightness value was raised within its declared bound from 90 to 220 lumens, then the assets and map were rebuilt and the captures and GPU pair repeated.
+
+**Visual verdict: not a concept match.** The street lamp's source glass still reads blue instead of amber, the flame and flicker are not discernible, the building lantern is obscured by the townhouse banner in the selected close view, and night remains too dark even with a temporary exposure override. Smoke and firefly subtlety, temporal popping and z-fighting cannot be accepted from still frames; no clear issue was visible in the captured frames. Actor/card counts confirm that the VFX is present in the game map, but they do not prove every lamp looks correct.
 
 Builder-owner hook after `for spawn in pending:` finishes (the builder owns its file):
 

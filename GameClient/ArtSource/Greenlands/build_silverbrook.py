@@ -886,7 +886,6 @@ import silverbrook_props; importlib.reload(silverbrook_props); silverbrook_props
 _cam = u.Vector(ax * 100 - 35 * 100 * math.cos(math.radians(yaw)), ay * 100 - 35 * 100 * math.sin(math.radians(yaw)), (surface_z(ax, ay) + 30) * 100)
 u.get_editor_subsystem(u.UnrealEditorSubsystem).set_level_viewport_camera_info(_cam, u.Rotator(roll=0, pitch=-25, yaw=yaw))
 assert u.EditorLoadingAndSavingUtils.save_map(world, ZONE), 'Could not save the zone map'
-# lamp_fx hook disabled: lamp_fx.py:62 Transform has no transform_position (UE 5.8 API); Codex pass to fix, then re-enable
-# import lamp_fx; importlib.reload(lamp_fx); lamp_fx.apply()  # Codex street-lamp FX; idempotent, replaces FX_StreetLamp_*
+import lamp_fx; importlib.reload(lamp_fx); lamp_fx.apply()  # Street-lamp FX; idempotent, replaces FX_StreetLamp_*
 import backdrop as backdrop_ring; importlib.reload(backdrop_ring); backdrop_ring.place(backdrop_ring.config())  # WP5: needs the saved map; hides the white Backdrop above and saves again
 u.log(f'SILVERBROOK_BUILT Map={ZONE} Datum={DATUM} Bridges={len(bridges)} Fill={fill_report} Terrain={terrain_stats} Foundations={foundation} Dressing={dressing} Counts={counts}')
