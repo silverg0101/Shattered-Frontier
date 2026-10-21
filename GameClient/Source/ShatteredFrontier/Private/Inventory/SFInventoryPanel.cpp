@@ -181,7 +181,9 @@ void USFInventoryPanel::Refresh()
         TipDescriptions[Index]->SetVisibility(Tip.Description.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
         TipTypes[Index]->SetText(FText::FromString(Tip.TypeLine));
         TipWeights[Index]->SetText(FText::FromString(Tip.WeightLine));
-        SlotFrames[Index]->SetToolTip(bFilled ? SlotTips[Index].Get() : nullptr);
+        // Setting a tooltip rebuilds its Slate wrapper, so only touch it when the slot fills or empties.
+        UWidget* WantedTip = bFilled ? SlotTips[Index].Get() : nullptr;
+        if (SlotFrames[Index]->GetToolTip() != WantedTip) { SlotFrames[Index]->SetToolTip(WantedTip); }
     }
     EmptyText->SetText(FText::FromString(All.IsEmpty() ? TEXT("Your pack is empty.") : TEXT("Nothing in this tab.")));
     EmptyText->SetVisibility(Items.IsEmpty() ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
