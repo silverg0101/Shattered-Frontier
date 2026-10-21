@@ -1,0 +1,16 @@
+# Gameplay gRPC host (INT-04 preparation)
+
+One ASP.NET Core HTTP/2 process serves three versioned protobuf services: Rewards, Progression (including quest evidence), and Housing. It binds only `127.0.0.1:$GAMEPLAY_HOST_PORT`. Every RPC requires a deadline and `authorization: Bearer $SF_GAMEPLAY_TOKEN`; the fixture generates a new token for each run. This development credential is not the DEC-04 session protocol. The host uses only centrally pinned packages and has its own lock file.
+
+Required environment: `GAMEPLAY_HOST_PORT` (1..65535), `SF_GAMEPLAY_TOKEN`, `GAMEPLAY_LEDGER_CONNECTION`, `GAMEPLAY_CHARACTER_CONNECTION`, `GAMEPLAY_HOUSING_CONNECTION`, and `GAMEPLAY_CONTENT_ROOT` (parent of `loot/`, `quests/`, `crafting/`, and `world/`). Connection strings may point to the same PostgreSQL database with the three owned schemas. Run from the repository root with the pinned SDK:
+
+```powershell
+& Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotnet.exe run --project BackendServices/Gameplay.Host --locked-mode
+& tools/Test-GameplayHosts.ps1 -EvidenceRoot "$PWD/Artifacts/Persistence/GameplayHosts/review-01"
+```
+
+The housing gameplay migration `BackendServices/Housing.Postgres/Schema.Gameplay.sql` follows the existing version 3 schema, requires an empty claim set, and advances the marker to version 4. Existing claims need a geometry backfill before that migration. The store owns plot geometry, admission serialization, placement debit reconciliation, removal reservations, refund receipt matching, and operation replay. Claim size and spacing use `ClaimSettings`; removal refunds use `PlacementRefundSettings`. Their shipped defaults, safe bounds, units, permission and effective-time rules remain in the domain declarations and shared configuration workflow. This host reads one default snapshot per operation; it does not add a console override.
+
+Status codes: `OK` for accepted/replayed results, `ALREADY_EXISTS` for operation ID conflicts, `FAILED_PRECONDITION` for gameplay and revision rejections, `UNAVAILABLE` for store/schema outages, `INVALID_ARGUMENT` for malformed requests, `UNAUTHENTICATED` for token failure, and `DEADLINE_EXCEEDED` for an expired call. A client retries the identical source or operation ID after an ambiguous outcome. Each service has a separate executable wire test project under `Gameplay.Host.Tests/`.
+
+The fixture provisions an owned disposable PostgreSQL cluster, runs all three services through gRPC, restarts the host, repeats durable receipts, stops PostgreSQL, and checks outage mapping. Its journey seeds harvest grants and performs content-validated crafting with the existing backend libraries; progression, quest, claim, placement, and reward calls travel through gRPC. A dedicated crafting gRPC contract is still needed for an entirely remote harvest-to-craft chain. Progression and quest are two durable receipt transactions, so a retry repairs a failure between them. Quest completion returns the reward bundle ID but does not pay that bundle into inventory. Reward eligibility facts are supplied by the trusted server; denied defeat decisions are only cached for this host lifetime.

@@ -41,6 +41,10 @@ Status: proposed 2026-10-21 (Fable plan review). Owner decision 2026-10-21: the 
   7. Run the proof: `ssh -t steam@192.168.50.133 'sudo /srv/shattered-frontier/runtime/native/run-ledger-roundtrip.sh <release-image> /home/steam/LedgerHostPublish /srv/shattered-frontier/native-build-5.8.3/project/BackendServices/InventoryLedger.Postgres/Schema.sql'`. Success is the line `SF_LEDGER_ROUNDTRIP_PASSED`.
 - **Route (A), Windows cross-build:** re-provision the source engine and the v26 SDK. `tools/grpc-linux-toolchain.cmake` already handles a Windows host. A small Windows driver (the Windows CMake, Ninja and Go from the lock, plus the same two-pass steps as `build-grpc-linux.sh`) gets written only if the owner picks (A). Steps 6 and 7 are unchanged.
 
+## INT-04 prep: service hosts
+
+The .NET side cohosts Rewards, Progression/quest, and Housing as separate gRPC services with separate `sf/<domain>/v1` protos in one `Gameplay.Host` process. It follows the INT-03 loopback HTTP/2, per-run bearer-token, deadline, and status conventions, while each domain retains its own durable store. `Housing.Postgres/Schema.Gameplay.sql` adds plot geometry and removal receipts to the version 3 store for this slice. The owned `Test-GameplayHosts.ps1` fixture exercises the three wire services, durable replay after host restart, and store outage mapping. Its harvest and crafting setup currently uses backend libraries because InventoryLedger.Host exposes no craft RPC; a fully remote crafting route remains a later contract. No Unreal integration is implied.
+
 ## 1. Slice
 
 Persist one gathering harvest grant through InventoryLedger (PostgreSQL). The grant is acknowledged before the node charge is consumed, and the owner's panel shows the committed quantity.

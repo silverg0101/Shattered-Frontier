@@ -1,0 +1,161 @@
+[CmdletBinding()]
+param([Parameter(Mandatory)][string]$EvidenceRoot)
+$ErrorActionPreference = 'Stop'
+Set-StrictMode -Version Latest
+$repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+$allowed = [IO.Path]::GetFullPath((Join-Path $repo 'Artifacts/Persistence/GameplayHosts'))
+$EvidenceRoot = [IO.Path]::GetFullPath($EvidenceRoot)
+if (-not $EvidenceRoot.StartsWith($allowed + [IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase) -or (Test-Path -LiteralPath $EvidenceRoot)) { throw 'Supply a fresh GameplayHosts evidence child.' }
+$pins = Get-Content (Join-Path $repo 'BackendServices/toolchain-lock.json') -Raw | ConvertFrom-Json
+$dotnet = Join-Path $repo 'Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotnet.exe'
+$pg = Join-Path $repo 'Artifacts/Persistence/Toolchains/postgresql-18.6/pgsql/bin'
+foreach ($path in @( $dotnet,(Join-Path $pg 'postgres.exe'),(Join-Path $pg 'initdb.exe'),(Join-Path $pg 'pg_ctl.exe'),(Join-Path $pg 'psql.exe'))) { if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Required file missing: $path" } }
+if ((Get-FileHash $dotnet -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pins.sdk.executableSha256 -or (Get-FileHash (Join-Path $pg 'postgres.exe') -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pins.postgres.executableSha256) { throw 'Pinned toolchain mismatch.' }
+$run = [guid]::NewGuid().ToString('N'); $private = Join-Path $EvidenceRoot 'private'; $data = Join-Path $private 'data'
+$rng = [Security.Cryptography.RandomNumberGenerator]::Create(); $bytes = [byte[]]::new(32)
+$rng.GetBytes($bytes); $adminPassword = [BitConverter]::ToString($bytes).Replace('-','')
+$rng.GetBytes($bytes); $servicePassword = [BitConverter]::ToString($bytes).Replace('-',''); $rng.Dispose()
+$port = 0; $started = $false; $attempted = $false; $removed = $false; $failure = ''; $token = ''; $hostProcess = $null; $currentStep = 'setup'
+function Invoke-Checked([string]$Executable,[string[]]$Arguments,[hashtable]$Environment = @{}) {
+    $info = [Diagnostics.ProcessStartInfo]::new(); $info.FileName = $Executable; $info.UseShellExecute = $false; $info.CreateNoWindow = $true
+    $info.RedirectStandardOutput = $true; $info.RedirectStandardError = $true
+    $info.Arguments = (($Arguments | ForEach-Object { '"' + $_.Replace('"','\"') + '"' }) -join ' ')
+    foreach ($key in @($info.EnvironmentVariables.Keys)) { if ($key -match '^PG|^GAMEPLAY_') { $info.EnvironmentVariables.Remove($key) } }
+    foreach ($key in $Environment.Keys) { $info.EnvironmentVariables[$key] = $Environment[$key] }
+    $child = [Diagnostics.Process]::new(); $child.StartInfo = $info; [void]$child.Start()
+    $out = $child.StandardOutput.ReadToEndAsync(); $err = $child.StandardError.ReadToEndAsync()
+    if (-not $child.WaitForExit(180000)) {
+        $child.Kill(); $child.WaitForExit(5000) | Out-Null
+        $partial = if ($out.Wait(1000)) { $out.Result } else { '' }
+        $partial = $partial.Replace($adminPassword,'[REDACTED]').Replace($servicePassword,'[REDACTED]')
+        throw "Owned child timeout: $partial"
+    }
+    $stdout = if ($out.Wait(1000)) { $out.Result } else { '[output pipe held]' }
+    $stderr = if ($err.Wait(1000)) { $err.Result } else { '[error pipe held]' }
+    foreach ($secret in @($adminPassword,$servicePassword)) { $stdout = $stdout.Replace($secret,'[REDACTED]'); $stderr = $stderr.Replace($secret,'[REDACTED]') }
+    if ($child.ExitCode -ne 0) { throw "$Executable exited $($child.ExitCode): $stderr $stdout" }
+    return $stdout.Trim()
+}
+function Sql([string]$Query,[string]$Database='postgres') {
+    $file = Join-Path $private ('sql-' + [guid]::NewGuid().ToString('N') + '.sql')
+    [IO.File]::WriteAllText($file,$Query)
+    try { return Invoke-Checked (Join-Path $pg 'psql.exe') @('-X','-q','-A','-t','-h','127.0.0.1','-p',"$port",'-U','fixture_admin','-d',$Database,'-v','ON_ERROR_STOP=1','-f',$file) @{ PGPASSWORD=$adminPassword; PGCONNECT_TIMEOUT='5' } }
+    finally { Remove-Item -LiteralPath $file -Force }
+}
+function Assert-Owned {
+    if ([IO.Path]::GetFullPath($private) -ne [IO.Path]::GetFullPath((Join-Path $EvidenceRoot 'private')) -or -not $EvidenceRoot.StartsWith($allowed + [IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase)) { throw 'Owned path mismatch.' }
+    $marker = Get-Content (Join-Path $private 'owner.json') -Raw | ConvertFrom-Json
+    if ($marker.run -ne $run -or $marker.data -ne $data -or $marker.port -ne $port) { throw 'Owned marker mismatch.' }
+    foreach ($path in @($EvidenceRoot,$private,$data)) { if ((Test-Path $path) -and ((Get-Item $path).Attributes -band [IO.FileAttributes]::ReparsePoint)) { throw 'Owned path is a reparse point.' } }
+    $pidFile = Join-Path $data 'postmaster.pid'
+    if (Test-Path $pidFile) {
+        $lines = @(Get-Content $pidFile -TotalCount 4)
+        if ($lines.Count -lt 4 -or [IO.Path]::GetFullPath($lines[1]) -ne $data -or [int]$lines[3] -ne $port) { throw 'Postmaster identity mismatch.' }
+        $process = Get-CimInstance Win32_Process -Filter "ProcessId=$($lines[0])"
+        if ($process -and ([IO.Path]::GetFullPath($process.ExecutablePath) -ne [IO.Path]::GetFullPath((Join-Path $pg 'postgres.exe')) -or $process.CommandLine.Replace('/','\') -notlike "*$data*")) { throw 'Postmaster process mismatch.' }
+    }
+}
+function Cluster([string]$Action) {
+    Assert-Owned
+    if ($Action -eq 'start') { $script:attempted = $true; [void](Invoke-Checked (Join-Path $pg 'pg_ctl.exe') @('-D',$data,'-l',(Join-Path $private 'postgres.log'),'-w','-t','30','start')); $script:started = $true; Assert-Owned }
+    else { [void](Invoke-Checked (Join-Path $pg 'pg_ctl.exe') @('-D',$data,'-m','immediate','-w','-t','30','stop')); $script:started = $false }
+}
+try {
+    [void](New-Item -ItemType Directory -Path $private -Force)
+    $account = [Security.Principal.WindowsIdentity]::GetCurrent().Name
+    [void](Invoke-Checked 'icacls.exe' @($private,'/inheritance:r','/grant:r',"${account}:(OI)(CI)F"))
+    $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $port = $listener.LocalEndpoint.Port; $listener.Stop()
+    @{run=$run;data=$data;port=$port} | ConvertTo-Json | Set-Content (Join-Path $private 'owner.json')
+    $projects = @('Rewards','Progression','Housing') | ForEach-Object { Join-Path $repo "BackendServices/Gameplay.Host.Tests/$_/$_.Host.Tests.csproj" }
+    foreach ($project in $projects) {
+        $currentStep = "restore $project"
+        [void](Invoke-Checked $dotnet @('restore',$project,'--locked-mode','--packages',(Join-Path $repo 'Artifacts/Persistence/Toolchains/nuget'),'--verbosity','quiet'))
+        $currentStep = "build $project"
+        [void](Invoke-Checked $dotnet @('build',$project,'--no-restore','--configuration','Release','--verbosity','quiet'))
+    }
+    $pwfile = Join-Path $private 'admin-password'; [IO.File]::WriteAllText($pwfile,$adminPassword)
+    [void](Invoke-Checked (Join-Path $pg 'initdb.exe') @('-D',$data,'-U','fixture_admin','--pwfile',$pwfile,'--auth','scram-sha-256','--encoding','UTF8','--no-locale'))
+    Remove-Item -LiteralPath $pwfile -Force
+    [IO.File]::AppendAllText((Join-Path $data 'postgresql.conf'),"`nlisten_addresses='127.0.0.1'`nport=$port`nfsync=on`nsynchronous_commit=on`nfull_page_writes=on`n")
+    [IO.File]::WriteAllLines((Join-Path $data 'pg_hba.conf'),@('host all fixture_admin 127.0.0.1/32 scram-sha-256',"host gameplay_$run gameplay_svc 127.0.0.1/32 scram-sha-256",'host all all 127.0.0.1/32 reject','host all all ::1/128 reject'))
+    Cluster start
+    [void](Sql "CREATE ROLE gameplay_owner NOLOGIN; CREATE ROLE gameplay_svc LOGIN PASSWORD '$servicePassword'; CREATE DATABASE gameplay_$run;")
+    [void](Sql "REVOKE ALL ON DATABASE gameplay_$run FROM PUBLIC; GRANT CONNECT ON DATABASE gameplay_$run TO gameplay_svc; GRANT CREATE ON DATABASE gameplay_$run TO gameplay_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC;" "gameplay_$run")
+    $schemas = @('InventoryLedger.Postgres','CharacterState.Postgres','Housing.Postgres') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_/Schema.sql") -Raw }
+    $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Gameplay.sql') -Raw
+    [void](Sql ("SET ROLE gameplay_owner;`n" + ($schemas -join "`n")) "gameplay_$run")
+    [void](Sql 'GRANT USAGE ON SCHEMA inventory,character_state,housing TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA character_state TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA housing TO gameplay_svc;' "gameplay_$run")
+    $connection = "Host=127.0.0.1;Port=$port;Database=gameplay_$run;Username=gameplay_svc;Password=$servicePassword;Pooling=false;Timeout=2;Command Timeout=5;Include Error Detail=false"
+    $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $hostPort = $listener.LocalEndpoint.Port; $listener.Stop()
+    $rng = [Security.Cryptography.RandomNumberGenerator]::Create(); $rng.GetBytes($bytes); $token = [BitConverter]::ToString($bytes).Replace('-',''); $rng.Dispose()
+    $env:GAMEPLAY_HOST_PORT = "$hostPort"
+    $env:GAMEPLAY_LEDGER_CONNECTION = $connection
+    $env:GAMEPLAY_CHARACTER_CONNECTION = $connection
+    $env:GAMEPLAY_HOUSING_CONNECTION = $connection
+    $env:GAMEPLAY_CONTENT_ROOT = Join-Path $repo 'content'
+    $env:SF_GAMEPLAY_TOKEN = $token
+    $hostDll = Join-Path $repo 'BackendServices/Gameplay.Host/bin/Release/net10.0/Gameplay.Host.dll'
+    $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host.out') -RedirectStandardError (Join-Path $private 'host.err')
+    $ready = $false
+    for ($i=0; $i -lt 100; $i++) {
+        if ($hostProcess.HasExited) { throw 'Gameplay host exited before ready.' }
+        if ((Test-Path (Join-Path $private 'host.out')) -and (Get-Content (Join-Path $private 'host.out') -Raw) -match 'GAMEPLAY_HOST_READY') { $ready = $true; break }
+        Start-Sleep -Milliseconds 100
+    }
+    if (-not $ready) { throw 'Gameplay host readiness timeout.' }
+    $results = [Collections.Generic.List[string]]::new()
+    foreach ($name in @('Rewards','Progression','Housing')) {
+        $currentStep = "wire $name"
+        $dll = Join-Path $repo "BackendServices/Gameplay.Host.Tests/$name/bin/Release/net10.0/$name.Host.Tests.dll"
+        $results.Add((Invoke-Checked $dotnet @($dll,$name.ToLowerInvariant()) @{
+            GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
+        }))
+    }
+    $journeyDll = Join-Path $repo 'BackendServices/Gameplay.Host.Tests/Progression/bin/Release/net10.0/Progression.Host.Tests.dll'
+    $currentStep = 'journey'
+    $results.Add((Invoke-Checked $dotnet @($journeyDll,'journey') @{
+        GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection;
+        GAMEPLAY_CONTENT_ROOT=(Join-Path $repo 'content'); SF_GAMEPLAY_TOKEN=$token
+    }))
+    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+    $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-restart.out') -RedirectStandardError (Join-Path $private 'host-restart.err')
+    $ready = $false
+    for ($i=0; $i -lt 100; $i++) {
+        if ($hostProcess.HasExited) { throw 'Gameplay host exited after restart.' }
+        if ((Test-Path (Join-Path $private 'host-restart.out')) -and (Get-Content (Join-Path $private 'host-restart.out') -Raw) -match 'GAMEPLAY_HOST_READY') { $ready = $true; break }
+        Start-Sleep -Milliseconds 100
+    }
+    if (-not $ready) { throw 'Gameplay host restart timeout.' }
+    foreach ($name in @('Rewards','Progression','Housing')) {
+        $dll = Join-Path $repo "BackendServices/Gameplay.Host.Tests/$name/bin/Release/net10.0/$name.Host.Tests.dll"
+        $results.Add((Invoke-Checked $dotnet @($dll,($name.ToLowerInvariant() + '-replay')) @{
+            GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
+        }))
+    }
+    Cluster stop
+    foreach ($name in @('Rewards','Progression','Housing')) {
+        $dll = Join-Path $repo "BackendServices/Gameplay.Host.Tests/$name/bin/Release/net10.0/$name.Host.Tests.dll"
+        $results.Add((Invoke-Checked $dotnet @($dll,($name.ToLowerInvariant() + '-outage')) @{
+            GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
+        }))
+    }
+    $results | Set-Content (Join-Path $EvidenceRoot 'results.txt')
+}
+catch {
+    $failure = ($currentStep + ': ' + $_.Exception.Message).Replace($adminPassword,'[REDACTED]').Replace($servicePassword,'[REDACTED]')
+    if ($token.Length -gt 0) { $failure = $failure.Replace($token,'[REDACTED]') }
+}
+finally {
+    try {
+        if ($hostProcess -and -not $hostProcess.HasExited) { Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null }
+        if (Test-Path (Join-Path $private 'owner.json')) {
+            Assert-Owned
+            if ($started -or ($attempted -and (Test-Path (Join-Path $data 'postmaster.pid')))) { try { [void](Invoke-Checked (Join-Path $pg 'pg_ctl.exe') @('-D',$data,'-m','immediate','-w','-t','30','stop')) } catch { if ($failure -eq '') { $failure = $_.Exception.Message } } }
+            Assert-Owned
+            Remove-Item -LiteralPath $private -Recurse -Force; $removed = $true
+        }
+    } catch { if ($failure -eq '') { $failure = $_.Exception.Message } }
+    @{status=$(if ($failure -eq '') {'pass'} else {'fail'}); privateStorageRemoved=$removed; error=$failure} | ConvertTo-Json | Set-Content (Join-Path $EvidenceRoot 'harness.json')
+}
+if ($failure -ne '') { throw $failure }
+Get-Content (Join-Path $EvidenceRoot 'results.txt')

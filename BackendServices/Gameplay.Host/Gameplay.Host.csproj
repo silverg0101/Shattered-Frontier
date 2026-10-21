@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="../Rewards/Rewards.csproj" />
+    <ProjectReference Include="../Progression/Progression.csproj" />
+    <ProjectReference Include="../QuestContent/QuestContent.csproj" />
+    <ProjectReference Include="../CharacterState.Postgres/CharacterState.Postgres.csproj" />
+    <ProjectReference Include="../ClaimTerritory/ClaimTerritory.csproj" />
+    <ProjectReference Include="../Placement/Placement.csproj" />
+    <ProjectReference Include="../Housing.Postgres/Housing.Postgres.csproj" />
+    <ProjectReference Include="../InventoryLedger.Postgres/InventoryLedger.Postgres.csproj" />
+    <PackageReference Include="Grpc.AspNetCore" />
+    <PackageReference Include="Grpc.Net.Client" />
+    <Protobuf Include="../../proto/sf/rewards/v1/rewards.proto" ProtoRoot="../../proto" GrpcServices="Both" />
+    <Protobuf Include="../../proto/sf/progression/v1/progression.proto" ProtoRoot="../../proto" GrpcServices="Both" />
+    <Protobuf Include="../../proto/sf/housing/v1/housing.proto" ProtoRoot="../../proto" GrpcServices="Both" />
+  </ItemGroup>
+</Project>

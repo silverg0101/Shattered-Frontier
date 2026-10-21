@@ -56,13 +56,13 @@ public sealed class ProtectedZone
             b[0].GetDouble(), b[1].GetDouble(), polygons);
     }
 
-    internal bool ContainsSquare(Point center, int side)
+    public bool ContainsSquare(Point center, int side)
     {
         var h = side / 2.0;
         return center.X - h >= MinX && center.X + h <= MaxX && center.Y - h >= MinY && center.Y + h <= MaxY;
     }
 
-    internal bool HitsProtected(Point center, int side)
+    public bool HitsProtected(Point center, int side)
     {
         var h = side / 2.0;
         var square = new[] { new Point(center.X-h, center.Y-h), new Point(center.X+h, center.Y-h),

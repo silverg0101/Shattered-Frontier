@@ -1,0 +1,62 @@
+syntax = "proto3";
+package sf.housing.v1;
+option csharp_namespace = "ShatteredFrontier.Housing.V1";
+
+service Housing {
+  rpc ClaimPlot(ClaimPlotRequest) returns (ClaimReply);
+  rpc Place(PlaceRequest) returns (PlacementReply);
+  rpc Remove(RemoveRequest) returns (PlacementReply);
+  rpc GetClaim(GetClaimRequest) returns (ClaimReply);
+}
+message ClaimPlotRequest {
+  string operation_id = 1;
+  string claim_id = 2;
+  string owner_id = 3;
+  double center_x = 4;
+  double center_y = 5;
+  int32 side_metres = 6;
+  int32 prepaid_days = 7;
+  int64 expected_world_revision = 8;
+}
+message GetClaimRequest { string claim_id = 1; }
+message ClaimReply {
+  string claim_id = 1;
+  string owner_id = 2;
+  string state = 3;
+  int64 revision = 4;
+  int64 permission_revision = 5;
+  int64 funded_until_unix_ms = 6;
+}
+message PlaceRequest {
+  string operation_id = 1;
+  string claim_id = 2;
+  string actor_id = 3;
+  int64 expected_permission_revision = 4;
+  int64 expected_structure_revision = 5;
+  string structure_id = 6;
+  int32 cell_x = 7;
+  int32 cell_y = 8;
+  int32 cell_z = 9;
+  string content_id = 10;
+  string material_id = 11;
+  int64 material_quantity = 12;
+  string container_id = 13;
+  int64 expected_container_revision = 14;
+}
+message RemoveRequest {
+  string operation_id = 1;
+  string claim_id = 2;
+  string actor_id = 3;
+  string structure_id = 4;
+  int64 expected_permission_revision = 5;
+  int64 expected_structure_revision = 6;
+  int64 expected_container_revision = 7;
+  string removal_kind = 8;
+}
+message PlacementReply {
+  string operation_id = 1;
+  string state = 2;
+  string structure_id = 3;
+  int64 structure_revision = 4;
+  string consume_operation_id = 5;
+}

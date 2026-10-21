@@ -1,0 +1,59 @@
+syntax = "proto3";
+package sf.progression.v1;
+option csharp_namespace = "ShatteredFrontier.Progression.V1";
+
+service Progression {
+  rpc ApplyReceipt(ApplyReceiptRequest) returns (ApplyReceiptReply);
+  rpc GetCharacterState(GetCharacterStateRequest) returns (CharacterStateReply);
+}
+
+message ApplyReceiptRequest {
+  string source_receipt_id = 1;
+  string kind = 2;
+  string character_id = 3;
+  int64 expected_progression_revision = 4;
+  int64 expected_quest_revision = 5;
+  ActionPayload payload = 6;
+  QuestEvidence quest = 7;
+}
+message ActionPayload {
+  string skill_id = 1;
+  int32 difficulty = 2;
+  double action_seconds = 3;
+  uint64 context_hash = 4;
+  bool success = 5;
+  int32 enemy_level = 6;
+  double enemy_tier_multiplier = 7;
+  int32 eligible_party_size = 8;
+}
+message QuestEvidence {
+  string quest_id = 1;
+  string step_id = 2;
+  string kind = 3;
+  string target_id = 4;
+  string node_id = 5;
+  int32 quantity = 6;
+  int64 occurred_at_unix_ms = 7;
+}
+message ApplyReceiptReply {
+  bool progression_applied = 1;
+  int32 skill_gain = 2;
+  int32 xp_gain = 3;
+  int32 level = 4;
+  int64 progression_revision = 5;
+  bool quest_accepted = 6;
+  string active_step_id = 7;
+  bool quest_completed = 8;
+  int64 quest_revision = 9;
+  repeated string reward_bundle_ids = 10;
+}
+message GetCharacterStateRequest { string character_id = 1; }
+message CharacterStateReply {
+  int64 progression_revision = 1;
+  int64 lifetime_xp = 2;
+  int32 level = 3;
+  map<string, int32> skills = 4;
+  int64 quest_revision = 5;
+  string active_step_id = 6;
+  bool quest_completed = 7;
+}
