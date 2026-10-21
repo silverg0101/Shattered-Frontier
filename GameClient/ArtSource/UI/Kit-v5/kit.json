@@ -869,7 +869,7 @@
       ],
       "intended_1080p_px": [
         64,
-        38
+        19
       ],
       "screens": [
         "gameplay-hud",
@@ -995,7 +995,7 @@
       ],
       "intended_1080p_px": [
         64,
-        38
+        19
       ],
       "screens": [
         "gameplay-hud",
@@ -1103,7 +1103,7 @@
       ],
       "intended_1080p_px": [
         64,
-        38
+        19
       ],
       "screens": [
         "gathering",
@@ -1189,7 +1189,7 @@
       ],
       "intended_1080p_px": [
         64,
-        38
+        19
       ],
       "screens": [
         "crafting-station"
@@ -3774,8 +3774,8 @@
         0
       ],
       "intended_1080p_px": [
-        1280,
-        720
+        640,
+        360
       ],
       "screens": [
         "gameplay-hud",
@@ -3793,8 +3793,8 @@
         0
       ],
       "intended_1080p_px": [
-        1280,
-        720
+        640,
+        360
       ],
       "screens": [
         "15-world-map"

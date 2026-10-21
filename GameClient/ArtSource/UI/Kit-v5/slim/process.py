@@ -51,6 +51,21 @@ def translucent(image):
     return image
 
 
+def clean_edges(image, band=6):
+    """Drop chroma red/green keying fringe from the outer band (the rule scan_borders.py checks)."""
+    px = image.load()
+    for y in range(image.height):
+        for x in range(image.width):
+            if band <= x < image.width - band and band <= y < image.height - band:
+                continue
+            r, g, b, a = px[x, y]
+            if a < 8:
+                px[x, y] = (0, 0, 0, 0)  # near-transparent resample fringe carries keyed colour
+            elif ((r >= 80 and g * 10 <= r and b * 10 <= r) or (g >= 80 and r * 10 <= g and b * 10 <= g) or min(r, b) - g > 40):
+                px[x, y] = (r, g, b, 0)
+    return image
+
+
 def hollow_span(alpha, fixed, along_x):
     """Transparent run through the centre along one axis: (first, last) index."""
     size = alpha.width if along_x else alpha.height
@@ -96,6 +111,7 @@ def main(only):
         image = keyed(source)
         if piece == 'bar_hp_frame':
             frame, back = bar_frame(image)
+            frame, back = clean_edges(frame), clean_edges(back)
             for bar in ('bar_hp', 'bar_stamina', 'bar_xp', 'bar_channel'):
                 frame.save(KIT / (bar + '_frame.png')); back.save(KIT / (bar + '_back.png'))
                 data['pieces'][bar + '_frame']['nine_slice_px'] = [40, 0, 40, 0]
@@ -108,12 +124,18 @@ def main(only):
         out = image.resize(size, Image.LANCZOS)
         if piece not in OPAQUE:
             out = translucent(out)
+        if piece not in OPAQUE or piece == 'keycap_f':
+            out = clean_edges(out)
         out.save(KIT / data['pieces'][piece]['file'])
         if piece == 'bar_xp_fill':
             out.save(KIT / data['pieces']['bar_channel_fill']['file'])
         if piece in MARGINS:
             data['pieces'][piece]['nine_slice_px'] = MARGINS[piece]
         print(piece, image.size, '->', size)
+    for name, piece_data in data['pieces'].items():  # the importer resamples every PNG to half size (1080p design px)
+        if (KIT / piece_data['file']).is_file():
+            width, height = Image.open(KIT / piece_data['file']).size
+            piece_data['intended_1080p_px'] = [width // 2, height // 2]
     kit_json.write_bytes((json.dumps(data, indent=2, ensure_ascii=False) + chr(10)).replace(chr(10), chr(13) + chr(10)).encode('utf-8'))  # the file's own CRLF format
 
 
