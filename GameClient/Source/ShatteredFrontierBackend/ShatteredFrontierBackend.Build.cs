@@ -9,7 +9,6 @@ public class ShatteredFrontierBackend : ModuleRules
         // Generated protobuf code and gRPC headers stay out of shared PCHs and unity blobs.
         PCHUsage = PCHUsageMode.NoPCHs;
         bUseUnity = false;
-        bUseRTTI = true;  // libprotobuf is built with RTTI
         PrivateIncludePaths.Add(System.IO.Path.Combine(ModuleDirectory, "Private", "Generated"));
         PrivateDependencyModuleNames.AddRange(new[] { "Core", "CoreUObject", "Engine", "Sockets", "Networking", "ShatteredFrontier", "gRPC" });
     }

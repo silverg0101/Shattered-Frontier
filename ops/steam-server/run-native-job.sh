@@ -80,6 +80,18 @@ PY
         additionalGiB=5
         network=none
         ;;
+    inputs-import)
+        # Route (A): extract an Export-NativeLinuxInputs.py archive (UE_5.8.3/, project/, cook/ roots) as
+        # sfbuild into $WORK, after its SHA-256 matches the one printed by the exporter on Windows.
+        readonly archive="$RUNTIME/inbox/native-inputs.tar.gz"
+        [[ -f "$archive" && ! -L "$archive" && $(stat -c %u "$archive") == 0 && "${2:-}" =~ ^[0-9a-f]{64}$ ]] \
+            || { echo "inputs-import needs a root-owned $archive and its expected SHA-256" >&2; exit 1; }
+        [[ $(sha256sum "$archive" | cut -d' ' -f1) == "$2" ]] || { echo 'inputs-import archive hash mismatch' >&2; exit 1; }
+        extraMounts=(--mount "type=bind,src=$archive,dst=/inbox/native-inputs.tar.gz,readonly")
+        command=(tar -xzf /inbox/native-inputs.tar.gz -C /work --no-same-owner)
+        additionalGiB=10
+        network=none
+        ;;
     grpc-linux)
         # INT-03 0b: pinned gRPC + prefixed BoringSSL with the engine's v26 clang/libc++ (network: pinned downloads).
         command=(bash /work/project/tools/build-grpc-linux.sh /work/UE_5.8.3 /work/project /work/grpc)
@@ -92,7 +104,7 @@ PY
         additionalGiB=40
         network=none
         ;;
-    *) echo 'Usage: run-native-job.sh setup|uat-help|stage|client-stage|project-import|grpc-linux|server-build' >&2; exit 1 ;;
+    *) echo 'Usage: run-native-job.sh setup|uat-help|stage|client-stage|project-import|inputs-import <sha256>|grpc-linux|server-build' >&2; exit 1 ;;
 esac
 # Fixed ceilings preserve the existing Windrose workload. They are build policy,
 # not public/GM runtime controls; changing them requires a reviewed script release.
