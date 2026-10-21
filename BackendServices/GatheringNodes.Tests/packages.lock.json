@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net10.0": {
+      "gatheringnodes": {
+        "type": "Project",
+        "dependencies": {
+          "WorldContent": "[1.0.0, )"
+        }
+      },
+      "worldcontent": {
+        "type": "Project"
+      }
+    }
+  }
+}
