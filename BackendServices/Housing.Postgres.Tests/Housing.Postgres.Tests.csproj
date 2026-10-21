@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Housing.Postgres/Housing.Postgres.csproj" />
+    <ProjectReference Include="../InventoryLedger.Postgres/InventoryLedger.Postgres.csproj" />
+  </ItemGroup>
+</Project>
