@@ -10,6 +10,7 @@ class UHorizontalBox;
 class UImage;
 class UProgressBar;
 class USizeBox;
+class UWidget;
 class UTextBlock;
 class USFGatheringPilotComponent;
 
@@ -30,6 +31,8 @@ class SHATTEREDFRONTIER_API USFHudLayout : public UUserWidget
     GENERATED_BODY()
 public:
     void Configure(USFGatheringPilotComponent* InPilot) { Pilot = InPilot; }
+    // Build mode shows the build action bar ("LMB Place - R Rotate - X Remove - Esc Cancel"); outside it no build prompt shows.
+    void SetBuildModeActive(bool bActive) { bBuildMode = bActive; }
 
     static constexpr int32 HotbarCount = 6;
     // Keys 1-6 as bound today: 1 Wall, 2 Foundation, 3 Roof, 4 Door (construction shapes) and 5 axe, 6 pickaxe (gathering tools).
@@ -57,10 +60,15 @@ private:
     UPROPERTY(Transient) TArray<TObjectPtr<UBorder>> SlotFrames;
     UPROPERTY(Transient) TObjectPtr<UBorder> PromptFrame;
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> PromptRow;
+    UPROPERTY(Transient) TObjectPtr<UWidget> PromptBox;
     UPROPERTY(Transient) TObjectPtr<UBorder> TargetFrame;
+    UPROPERTY(Transient) TObjectPtr<UWidget> TargetBoxRoot;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> TargetName;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> TargetCharges;
-    UPROPERTY(Transient) TObjectPtr<UProgressBar> TargetBar;
+    UPROPERTY(Transient) TObjectPtr<UWidget> TargetBar;
+    UPROPERTY(Transient) TObjectPtr<USizeBox> TargetFillClip;
+    float TargetFillWidth = 0.f;
+    bool bBuildMode = false;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> ZoneText;
     UPROPERTY(Transient) TObjectPtr<USizeBox> DiscBox;
 

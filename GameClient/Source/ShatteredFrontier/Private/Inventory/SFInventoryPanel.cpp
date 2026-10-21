@@ -29,7 +29,9 @@ void USFInventoryPanel::NativeOnInitialized()
     using namespace SFHudStyle;
 
     UBorder* Frame = Panel(WidgetTree, Slate(0.92f), Brass(), FMargin(24.f, 20.f), 6.f);
-    WidgetTree->RootWidget = Frame;
+    USizeBox* RootSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());  // 576 wide (x 4-34% of 1080p); the controller sizes the slot to match
+    RootSize->SetWidthOverride(576.f); RootSize->SetContent(Frame);
+    WidgetTree->RootWidget = RootSize;
     UVerticalBox* Contents = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     Frame->SetContent(Contents);
     auto AddRow = [Contents](UWidget* Child, const FMargin& Pad) { Contents->AddChildToVerticalBox(Child)->SetPadding(Pad); };
@@ -42,9 +44,9 @@ void USFInventoryPanel::NativeOnInitialized()
     Crest->SetRenderTransformAngle(45.f); CrestBox->SetContent(Crest);
     UHorizontalBoxSlot* CrestSlot = Title->AddChildToHorizontalBox(CrestBox);
     CrestSlot->SetVerticalAlignment(VAlign_Center); CrestSlot->SetPadding(FMargin(4.f, 0.f, 16.f, 0.f));
-    Title->AddChildToHorizontalBox(Heading(WidgetTree, TEXT("Inventory"), 28, Ivory()))->SetVerticalAlignment(VAlign_Center);
-    UHorizontalBoxSlot* HintSlot = Title->AddChildToHorizontalBox(Text(WidgetTree, TEXT("I to close"), 12, Hex(TEXT("A9A593"))));
-    HintSlot->SetHorizontalAlignment(HAlign_Right); HintSlot->SetVerticalAlignment(VAlign_Center); HintSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+    Title->AddChildToHorizontalBox(Heading(WidgetTree, TEXT("Inventory"), 36, Ivory()))->SetVerticalAlignment(VAlign_Center);
+    UHorizontalBoxSlot* CloseSlot = Title->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("close_x"), 40.f));  // I or Esc closes
+    CloseSlot->SetHorizontalAlignment(HAlign_Right); CloseSlot->SetVerticalAlignment(VAlign_Center); CloseSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
     AddRow(Title, FMargin(0.f, 0.f, 0.f, 10.f));
 
     // Equipment (v5 inventory.png): five armour slots left, the paperdoll centre, four slots right. Empty slots show their ghost
@@ -84,9 +86,13 @@ void USFInventoryPanel::NativeOnInitialized()
     UHorizontalBox* Tabs = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     for (int32 TabIndex = 0; TabIndex < TabCount; ++TabIndex)
     {
-        UBorder* Tab = KitPanel(WidgetTree, TEXT("tab_normal"), 1.f, Slate(), Brass(), FMargin(12.f, 2.f), 3.f);
-        Tab->SetContent(Text(WidgetTree, TabLabel(static_cast<ESFInventoryTab>(TabIndex)), 14, Ivory(), true));
-        Tabs->AddChildToHorizontalBox(Tab)->SetPadding(FMargin(0.f, 0.f, 6.f, 0.f));
+        UBorder* Tab = KitPanel(WidgetTree, TEXT("tab_normal"), 1.f, Slate(), Brass(), FMargin(0.f), 3.f);
+        UTextBlock* TabText = Text(WidgetTree, TabLabel(static_cast<ESFInventoryTab>(TabIndex)), 18, Ivory());
+        TabText->SetJustification(ETextJustify::Center);
+        Tab->SetVerticalAlignment(VAlign_Center); Tab->SetContent(TabText);
+        USizeBox* TabSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        TabSize->SetWidthOverride(100.f); TabSize->SetHeightOverride(44.f); TabSize->SetContent(Tab);
+        Tabs->AddChildToHorizontalBox(TabSize)->SetPadding(FMargin(0.f, 0.f, 8.f, 0.f));
         TabBorders.Add(Tab);
     }
     StyleTabs();
@@ -94,12 +100,12 @@ void USFInventoryPanel::NativeOnInitialized()
 
     // 5 x 5 slot grid. ponytail: fixed 25 cells, no scrolling; pilot capacity is 8 slots, raise rows if that grows.
     UUniformGridPanel* Grid = WidgetTree->ConstructWidget<UUniformGridPanel>(UUniformGridPanel::StaticClass());
-    Grid->SetSlotPadding(FMargin(3.f));
+    Grid->SetSlotPadding(FMargin(1.f));
     for (int32 Index = 0; Index < GridColumns * GridRows; ++Index)
     {
         USizeBox* Cell = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
         Cell->SetWidthOverride(64.f); Cell->SetHeightOverride(64.f);
-        Cell->SetContent(KitPanel(WidgetTree, TEXT("slot_empty"), 1.f, Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), FMargin(0.f), 3.f));
+        Cell->SetContent(KitPanel(WidgetTree, TEXT("slot_bag_normal"), 1.f, Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), FMargin(0.f), 3.f));
         UBorder* CellFrame = Cast<UBorder>(Cell->GetContent());
         UOverlay* Stack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
         CellFrame->SetContent(Stack);
@@ -113,7 +119,7 @@ void USFInventoryPanel::NativeOnInitialized()
         SlotTips.Add(Tip);
         UVerticalBox* TipBox = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
         USizeBox* TipWidth = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        TipWidth->SetWidthOverride(240.f); TipWidth->SetContent(TipBox); Tip->SetContent(TipWidth);
+        TipWidth->SetWidthOverride(360.f); TipWidth->SetContent(TipBox); Tip->SetContent(TipWidth);
         auto AddTip = [&](TArray<TObjectPtr<UTextBlock>>& Into, int32 Size, const FLinearColor& Color, bool bBold, const FMargin& Pad)
         {
             UTextBlock* Line = Text(WidgetTree, TEXT(""), Size, Color, bBold);
@@ -121,40 +127,27 @@ void USFInventoryPanel::NativeOnInitialized()
             TipBox->AddChildToVerticalBox(Line)->SetPadding(Pad);
             Into.Add(Line);
         };
-        AddTip(TipTitles, 18, Ivory(), true, FMargin(0.f, 0.f, 0.f, 4.f));
-        AddTip(TipDescriptions, 12, Ivory(), false, FMargin(0.f, 0.f, 0.f, 6.f));
-        AddTip(TipTypes, 12, Brass(), false, FMargin(0.f, 0.f, 0.f, 2.f));
-        AddTip(TipWeights, 12, Hex(TEXT("A9A593")), false, FMargin(0.f));
-        UTextBlock* Name = Text(WidgetTree, TEXT(""), 11, Ivory());
+        AddTip(TipTitles, 26, Ivory(), true, FMargin(0.f, 0.f, 0.f, 4.f));
+        AddTip(TipDescriptions, 18, Ivory(), false, FMargin(0.f, 0.f, 0.f, 6.f));
+        AddTip(TipTypes, 18, Brass(), false, FMargin(0.f, 0.f, 0.f, 2.f));
+        AddTip(TipWeights, 18, Hex(TEXT("A9A593")), false, FMargin(0.f));
+        UTextBlock* Name = Text(WidgetTree, TEXT(""), 16, Ivory());
         Name->SetAutoWrapText(true); Name->SetJustification(ETextJustify::Center);
         UOverlaySlot* NameSlot = Stack->AddChildToOverlay(Name);
         NameSlot->SetHorizontalAlignment(HAlign_Fill); NameSlot->SetVerticalAlignment(VAlign_Center);
-        UTextBlock* Count = Num(WidgetTree, TEXT(""), 16, Ivory());
+        UTextBlock* Count = Num(WidgetTree, TEXT(""), 18, Ivory());
         UOverlaySlot* CountSlot = Stack->AddChildToOverlay(Count);
         CountSlot->SetHorizontalAlignment(HAlign_Right); CountSlot->SetVerticalAlignment(VAlign_Bottom);
         SlotNames.Add(Name); SlotCounts.Add(Count);
         Grid->AddChildToUniformGrid(Cell, Index / GridColumns, Index % GridColumns);
     }
     AddRow(Grid, FMargin(0.f, 0.f, 0.f, 6.f));
-    EmptyText = Text(WidgetTree, TEXT("Your pack is empty."), 13, Hex(TEXT("A9A593")));
+    EmptyText = Text(WidgetTree, TEXT("Your pack is empty."), 18, Hex(TEXT("A9A593")));
     AddRow(EmptyText, FMargin(4.f, 0.f, 0.f, 6.f));
 
-    // Footer: weight readout, moss bar and percentage.
-    UHorizontalBox* Footer = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    WeightText = Text(WidgetTree, TEXT(""), 14, Ivory());
-    UHorizontalBoxSlot* WeightSlot = Footer->AddChildToHorizontalBox(WeightText);
-    WeightSlot->SetVerticalAlignment(VAlign_Center); WeightSlot->SetPadding(FMargin(0.f, 0.f, 14.f, 0.f));
-    USizeBox* BarBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    BarBox->SetHeightOverride(10.f);
-    WeightBar = WidgetTree->ConstructWidget<UProgressBar>(UProgressBar::StaticClass());
-    StyleBar(WeightBar, Moss());
-    BarBox->SetContent(WeightBar);
-    UHorizontalBoxSlot* BarSlot = Footer->AddChildToHorizontalBox(BarBox);
-    BarSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); BarSlot->SetVerticalAlignment(VAlign_Center);
-    WeightPercent = Text(WidgetTree, TEXT(""), 14, Ivory());
-    UHorizontalBoxSlot* PercentSlot = Footer->AddChildToHorizontalBox(WeightPercent);
-    PercentSlot->SetVerticalAlignment(VAlign_Center); PercentSlot->SetPadding(FMargin(14.f, 0.f, 0.f, 0.f));
-    AddRow(Footer, FMargin(0.f, 6.f, 0.f, 0.f));
+    // Footer: weight readout (the gold readout joins it when the pilot exposes a wallet).
+    WeightText = Text(WidgetTree, TEXT(""), 18, Ivory());
+    AddRow(WeightText, FMargin(4.f, 6.f, 0.f, 0.f));
     Refresh();
 }
 
@@ -224,10 +217,7 @@ void USFInventoryPanel::Refresh()
     float Total = 0.f, Max = 0.f;
     if (Pilot->GetInventoryWeight(Total, Max))
     {
-        const float Fraction = Max > 0.f ? FMath::Clamp(Total / Max, 0.f, 1.f) : 0.f;
-        WeightText->SetText(FText::FromString(Max > 0.f ? FString::Printf(TEXT("Weight  %.1f / %.0f kg"), Total, Max) : FString::Printf(TEXT("Weight  %.1f kg"), Total)));
-        WeightBar->SetPercent(Fraction);
-        WeightPercent->SetText(FText::FromString(Max > 0.f ? FString::Printf(TEXT("%d%%"), FMath::RoundToInt(Fraction * 100.f)) : FString()));
+        WeightText->SetText(FText::FromString(Max > 0.f ? FString::Printf(TEXT("Weight %.1f / %.0f kg"), Total, Max) : FString::Printf(TEXT("Weight %.1f kg"), Total)));
     }
 }
 

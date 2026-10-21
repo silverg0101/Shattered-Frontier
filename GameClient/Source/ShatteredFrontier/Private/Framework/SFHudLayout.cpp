@@ -71,20 +71,13 @@ UTexture2D* HudIcon(const FString& Stem)
     return LoadObject<UTexture2D>(nullptr, *FString::Printf(TEXT("/Game/Frontier/UI/Icons/T_Icon_%s.T_Icon_%s"), *Stem, *Stem));
 }
 
-UCanvasPanelSlot* HudPlace(UCanvasPanel* Root, UWidget* Child, float X0, float Y0, float X1, float Y1)
+// A fixed-size element pinned to a point of the viewport (percent anchors, alignment picks which corner of the widget sits there).
+UCanvasPanelSlot* HudAnchor(UCanvasPanel* Root, UWidget* Child, float AnchorX, float AnchorY, float AlignX, float AlignY)
 {
-    // Percent rectangle of the viewport: anchors carry the layout, offsets stay zero (hud-layout-v4.md).
     UCanvasPanelSlot* Slot = Root->AddChildToCanvas(Child);
-    Slot->SetAnchors(FAnchors(X0, Y0, X1, Y1)); Slot->SetOffsets(FMargin(0.f));
+    Slot->SetAnchors(FAnchors(AnchorX, AnchorY)); Slot->SetAlignment(FVector2D(AlignX, AlignY));
+    Slot->SetAutoSize(true); Slot->SetOffsets(FMargin(0.f));
     return Slot;
-}
-
-UImage* HudGlyph(UWidgetTree* Tree, const TCHAR* KitName, float Size)
-{
-    UImage* Image = Tree->ConstructWidget<UImage>(UImage::StaticClass());
-    if (const FSFHudKitElement* Element = SFHudStyle::Kit(KitName)) { Image->SetBrush(SFHudStyle::KitBrush(*Element)); }
-    Image->SetDesiredSizeOverride(FVector2D(Size, Size));
-    return Image;
 }
 }
 
@@ -98,96 +91,103 @@ void USFHudLayout::NativeOnInitialized()
     WidgetTree->RootWidget = Root;
     BuildHotbar(Root);
 
-    // Prompt bar, 32-68% x 79-85%.
-    PromptFrame = KitPanel(WidgetTree, TEXT("tooltip_frame"), 0.95f, Slate(0.9f), Brass(), FMargin(14.f, 4.f), 3.f);
+    // Prompt bar: auto width, 52 tall, bottom edge at 85% (action_bar in build mode, button_normal plate otherwise).
+    PromptFrame = KitPanel(WidgetTree, TEXT("button_normal"), 1.f, Slate(0.9f), Brass(), FMargin(8.f, 0.f), 3.f);
     PromptRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+    PromptFrame->SetVerticalAlignment(VAlign_Center);
     PromptFrame->SetContent(PromptRow);
-    PromptFrame->SetVisibility(ESlateVisibility::Collapsed);
-    HudPlace(Root, PromptFrame, 0.32f, 0.79f, 0.68f, 0.85f);
+    USizeBox* PromptSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+    PromptSize->SetHeightOverride(52.f); PromptSize->SetContent(PromptFrame);
+    PromptSize->SetVisibility(ESlateVisibility::Collapsed);
+    PromptBox = PromptSize;
+    HudAnchor(Root, PromptSize, 0.5f, 0.85f, 0.5f, 1.f);
 
-    // Target frame, 38-62% x 4-11%: the aimed gathering node and its charges.
-    TargetFrame = KitPanel(WidgetTree, TEXT("target_frame"), 0.95f, Slate(0.9f), Brass(), FMargin(18.f, 6.f), 3.f);
+    // Target frame: 410 x 70 at top centre (y 4%); name 24, charges as a 300 px framed hp bar with a numeral.
+    TargetFrame = KitPanel(WidgetTree, TEXT("target_frame"), 1.f, Slate(0.9f), Brass(), FMargin(8.f, 0.f), 3.f);
+    TargetFrame->SetVerticalAlignment(VAlign_Center);
     UVerticalBox* TargetBox = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     TargetFrame->SetContent(TargetBox);
     UHorizontalBox* TargetTop = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    TargetName = Heading(WidgetTree, TEXT(""), 18, Ivory());
+    TargetName = Heading(WidgetTree, TEXT(""), 24, Ivory());
     TargetTop->AddChildToHorizontalBox(TargetName)->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-    TargetCharges = Num(WidgetTree, TEXT(""), 15, Ivory());
-    TargetTop->AddChildToHorizontalBox(TargetCharges);
+    TargetCharges = Num(WidgetTree, TEXT(""), 18, Ivory());
+    TargetTop->AddChildToHorizontalBox(TargetCharges)->SetVerticalAlignment(VAlign_Center);
     TargetBox->AddChildToVerticalBox(TargetTop);
-    USizeBox* BarBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    BarBox->SetHeightOverride(10.f);
-    TargetBar = WidgetTree->ConstructWidget<UProgressBar>(UProgressBar::StaticClass());
-    StyleBar(TargetBar, Moss());
-    BarBox->SetContent(TargetBar);
-    TargetBox->AddChildToVerticalBox(BarBox)->SetPadding(FMargin(0.f, 3.f, 0.f, 0.f));
-    TargetFrame->SetVisibility(ESlateVisibility::Collapsed);
-    HudPlace(Root, TargetFrame, 0.38f, 0.04f, 0.62f, 0.11f);
+    const FSFFramedBar Bar = MakeFramedBar(WidgetTree, TEXT("bar_hp"), 300.f);
+    if (Bar.Root)
+    {
+        TargetFillClip = Bar.FillClip; TargetFillWidth = Bar.FillWidth;
+        TargetBar = Bar.Root;
+        TargetBox->AddChildToVerticalBox(Bar.Root)->SetHorizontalAlignment(HAlign_Center);
+    }
+    USizeBox* TargetSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+    TargetSize->SetWidthOverride(410.f); TargetSize->SetHeightOverride(70.f); TargetSize->SetContent(TargetFrame);
+    TargetSize->SetVisibility(ESlateVisibility::Collapsed);
+    TargetBoxRoot = TargetSize;
+    HudAnchor(Root, TargetSize, 0.5f, 0.04f, 0.5f, 0.f);
 
-    // Minimap frame, 84-99% x 2-24%: a round frame with N up and the zone beneath. No map is rendered into it yet.
+    // Minimap: a fixed 250 px disc at the right edge (x 99%, y 2%); the ring art bakes in the N cap. No map is rendered into it yet.
     UVerticalBox* MapColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    UCanvasPanelSlot* MapSlot = Root->AddChildToCanvas(MapColumn);
-    MapSlot->SetAnchors(FAnchors(0.99f, 0.02f)); MapSlot->SetAlignment(FVector2D(1.f, 0.f)); MapSlot->SetAutoSize(true);
+    HudAnchor(Root, MapColumn, 0.99f, 0.02f, 1.f, 0.f);
     DiscBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
     UOverlay* Disc = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
     DiscBox->SetContent(Disc);
     UBorder* Fill = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
     Fill->SetBrush(Frame(Hex(TEXT("0E171C"), 0.8f), FLinearColor(0.f, 0.f, 0.f, 0.f), 1000.f));
-    Disc->AddChildToOverlay(Fill);
+    UOverlaySlot* FillSlot = Disc->AddChildToOverlay(Fill);
+    FillSlot->SetHorizontalAlignment(HAlign_Fill); FillSlot->SetVerticalAlignment(VAlign_Fill);
     if (const FSFHudKitElement* RingArt = Kit(TEXT("minimap_ring")))
     {
         UImage* Ring = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
         Ring->SetBrush(KitBrush(*RingArt));
-        Disc->AddChildToOverlay(Ring);
+        UOverlaySlot* RingSlot = Disc->AddChildToOverlay(Ring);
+        RingSlot->SetHorizontalAlignment(HAlign_Fill); RingSlot->SetVerticalAlignment(VAlign_Fill);
     }
-    UTextBlock* North = Text(WidgetTree, TEXT("N"), 14, Ivory(), true);
-    UOverlaySlot* NorthSlot = Disc->AddChildToOverlay(North);
-    NorthSlot->SetHorizontalAlignment(HAlign_Center); NorthSlot->SetVerticalAlignment(VAlign_Top); NorthSlot->SetPadding(FMargin(0.f, 10.f, 0.f, 0.f));
-    UBorder* Marker = Panel(WidgetTree, Brass(), Ivory(), FMargin(0.f), 1.f);
-    USizeBox* MarkerBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    MarkerBox->SetWidthOverride(9.f); MarkerBox->SetHeightOverride(9.f); MarkerBox->SetContent(Marker);
-    MarkerBox->SetRenderTransformAngle(45.f);
-    UOverlaySlot* MarkerSlot = Disc->AddChildToOverlay(MarkerBox);
+    UOverlaySlot* MarkerSlot = Disc->AddChildToOverlay(KitImage(WidgetTree, TEXT("player_arrow"), 18.f));
     MarkerSlot->SetHorizontalAlignment(HAlign_Center); MarkerSlot->SetVerticalAlignment(VAlign_Center);
     MapColumn->AddChildToVerticalBox(DiscBox);
-    UBorder* ZoneFrame = KitPanel(WidgetTree, TEXT("minimap_footer"), 0.9f, Slate(0.85f), Brass(), FMargin(10.f, 2.f), 3.f);
-    ZoneText = Text(WidgetTree, ZoneFromMapName(UGameplayStatics::GetCurrentLevelName(this, true)), 14, Ivory());
+    UBorder* ZoneFrame = KitPanel(WidgetTree, TEXT("minimap_footer"), 1.f, Slate(0.85f), Brass(), FMargin(4.f, 0.f), 3.f);
+    ZoneText = Text(WidgetTree, ZoneFromMapName(UGameplayStatics::GetCurrentLevelName(this, true)), 18, Ivory());
     ZoneText->SetJustification(ETextJustify::Center);
-    ZoneFrame->SetContent(ZoneText);
-    UVerticalBoxSlot* ZoneSlot = MapColumn->AddChildToVerticalBox(ZoneFrame);
+    ZoneFrame->SetVerticalAlignment(VAlign_Center); ZoneFrame->SetContent(ZoneText);
+    USizeBox* ZoneSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+    ZoneSize->SetWidthOverride(180.f); ZoneSize->SetHeightOverride(32.f); ZoneSize->SetContent(ZoneFrame);
+    UVerticalBoxSlot* ZoneSlot = MapColumn->AddChildToVerticalBox(ZoneSize);
     ZoneSlot->SetHorizontalAlignment(HAlign_Center); ZoneSlot->SetPadding(FMargin(0.f, 4.f, 0.f, 0.f));
     PlaceMinimap(FVector2D(1920.0, 1080.0));
 }
 
+// Hotbar: six 88 px slot_hotbar cells, 12 px gap (6 px each side), 588 wide, bottom edge at 96%, centred. Icon 64, key numeral top-left.
 void USFHudLayout::BuildHotbar(UCanvasPanel* Root)
 {
     using namespace SFHudStyle;
     UHorizontalBox* Row = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     for (const FSFHotbarSlot& HotSlot : HotbarSlots())
     {
-        UBorder* Cell = KitPanel(WidgetTree, TEXT("slot_hotbar_normal"), 1.f, Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), FMargin(2.f), 3.f);
+        UBorder* Cell = KitPanel(WidgetTree, TEXT("slot_hotbar_normal"), 1.f, Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), FMargin(0.f), 3.f);
         UOverlay* Stack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
         Cell->SetContent(Stack);
         UImage* Icon = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
         if (UTexture2D* Texture = HudIcon(HotSlot.IconStem)) { Icon->SetBrushFromTexture(Texture, false); }
-        UOverlaySlot* IconSlot = Stack->AddChildToOverlay(Icon);
-        IconSlot->SetHorizontalAlignment(HAlign_Fill); IconSlot->SetVerticalAlignment(VAlign_Fill); IconSlot->SetPadding(FMargin(6.f));
-        UTextBlock* Key = Num(WidgetTree, FString::FromInt(HotSlot.Key), 16, Ivory());
+        USizeBox* IconSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        IconSize->SetWidthOverride(64.f); IconSize->SetHeightOverride(64.f); IconSize->SetContent(Icon);
+        UOverlaySlot* IconSlot = Stack->AddChildToOverlay(IconSize);
+        IconSlot->SetHorizontalAlignment(HAlign_Center); IconSlot->SetVerticalAlignment(VAlign_Center);
+        UTextBlock* Key = Num(WidgetTree, FString::FromInt(HotSlot.Key), 18, Ivory());
         UOverlaySlot* KeySlot = Stack->AddChildToOverlay(Key);
-        KeySlot->SetHorizontalAlignment(HAlign_Left); KeySlot->SetVerticalAlignment(VAlign_Top); KeySlot->SetPadding(FMargin(4.f, 1.f, 0.f, 0.f));
-        Row->AddChildToHorizontalBox(Cell)->SetPadding(FMargin(3.f));
-        UHorizontalBoxSlot* BoxSlot = Cast<UHorizontalBoxSlot>(Cell->Slot);
-        if (BoxSlot) { BoxSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); }
+        KeySlot->SetHorizontalAlignment(HAlign_Left); KeySlot->SetVerticalAlignment(VAlign_Top); KeySlot->SetPadding(FMargin(8.f, 4.f, 0.f, 0.f));
+        USizeBox* CellSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        CellSize->SetWidthOverride(88.f); CellSize->SetHeightOverride(88.f); CellSize->SetContent(Cell);
+        Row->AddChildToHorizontalBox(CellSize)->SetPadding(FMargin(6.f, 0.f));
         SlotFrames.Add(Cell);
     }
-    HudPlace(Root, Row, 0.33f, 0.86f, 0.67f, 0.96f);
+    HudAnchor(Root, Row, 0.5f, 0.96f, 0.5f, 1.f);
 }
 
 void USFHudLayout::PlaceMinimap(const FVector2D& ViewportSize)
 {
     ShownViewport = ViewportSize;
-    const float Side = FMath::Clamp(0.19f * static_cast<float>(ViewportSize.Y), 120.f, 360.f);
-    if (DiscBox) { DiscBox->SetWidthOverride(Side); DiscBox->SetHeightOverride(Side); }
+    if (DiscBox) { DiscBox->SetWidthOverride(250.f); DiscBox->SetHeightOverride(250.f); }
 }
 
 FString USFHudLayout::InteractKeyLabel() const
@@ -211,22 +211,18 @@ void USFHudLayout::SetPrompts(ESFPromptContext Context)
         const FString Interact = InteractKeyLabel();
         if (!Interact.IsEmpty()) { for (FSFPromptSegment& Segment : Segments) { Segment.Key = Interact; } }
     }
-    PromptFrame->SetVisibility(Segments.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
+    PromptBox->SetVisibility(Segments.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
+    PromptFrame->SetBrush(KitOrFrame(Context == ESFPromptContext::Build ? TEXT("action_bar") : TEXT("button_normal"), Slate(0.9f), Brass(), 3.f));
     for (int32 Index = 0; Index < Segments.Num(); ++Index)
     {
         const FSFPromptSegment& Segment = Segments[Index];
-        if (Index > 0) { PromptRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("  -  "), 14, Brass(), true))->SetVerticalAlignment(VAlign_Center); }
-        UWidget* Key = nullptr;
-        if (Segment.Key == TEXT("LMB")) { Key = HudGlyph(WidgetTree, TEXT("mouse_lmb"), 26.f); }
-        else if (Segment.Key == TEXT("RMB")) { Key = HudGlyph(WidgetTree, TEXT("mouse_rmb"), 26.f); }
-        else
-        {
-            UBorder* Cap = KitPanel(WidgetTree, TEXT("keycap_blank"), 1.f, Hex(TEXT("0E171C"), 0.9f), Brass(), FMargin(8.f, 1.f), 3.f);
-            Cap->SetContent(Text(WidgetTree, Segment.Key, 14, Ivory(), true));
-            Key = Cap;
-        }
+        if (Index > 0) { PromptRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("·"), 20, Brass(), true))->SetPadding(FMargin(12.f, 0.f)); }
+        // keycap_<key> / mouse_<button> kit pieces; an unlisted key falls back to a plain bold label.
+        const FString Lower = Segment.Key.ToLower();
+        const FString PieceName = Lower == TEXT("lmb") || Lower == TEXT("rmb") ? FString::Printf(TEXT("mouse_%s"), *Lower) : FString::Printf(TEXT("keycap_%s"), *Lower);
+        UWidget* Key = Kit(*PieceName) ? static_cast<UWidget*>(KitImage(WidgetTree, *PieceName)) : static_cast<UWidget*>(Text(WidgetTree, Segment.Key, 20, Ivory(), true));
         PromptRow->AddChildToHorizontalBox(Key)->SetVerticalAlignment(VAlign_Center);
-        UHorizontalBoxSlot* ActionSlot = PromptRow->AddChildToHorizontalBox(Text(WidgetTree, Segment.Action, 15, Ivory(), true));
+        UHorizontalBoxSlot* ActionSlot = PromptRow->AddChildToHorizontalBox(Text(WidgetTree, Segment.Action, 24, Ivory()));
         ActionSlot->SetVerticalAlignment(VAlign_Center); ActionSlot->SetPadding(FMargin(8.f, 0.f, 0.f, 0.f));
     }
 }
@@ -251,21 +247,21 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     FVector Start, Direction;
     if (!Controller->DeprojectMousePositionToWorld(Start, Direction)) { FRotator Rotation; Controller->GetPlayerViewPoint(Start, Rotation); Direction = Rotation.Vector(); }
     const ASFGatheringPilotNode* Node = Pilot->FindAimedNode(Start, Direction);
-    ESFPromptContext Context = Cast<ASFConstructionNetworkController>(Controller) ? ESFPromptContext::Build : ESFPromptContext::None;
+    ESFPromptContext Context = bBuildMode ? ESFPromptContext::Build : ESFPromptContext::None;
     if (Node)
     {
         Context = Node->IsRefinery() ? ESFPromptContext::Refine : ESFPromptContext::Harvest;
-        TargetFrame->SetVisibility(ESlateVisibility::HitTestInvisible);
+        TargetBoxRoot->SetVisibility(ESlateVisibility::HitTestInvisible);
         TargetName->SetText(FText::FromString(Node->GetResourceName()));
-        if (Node->IsRefinery()) { TargetCharges->SetText(FText::GetEmpty()); TargetBar->SetVisibility(ESlateVisibility::Collapsed); }
+        if (Node->IsRefinery()) { TargetCharges->SetText(FText::GetEmpty()); if (TargetBar) { TargetBar->SetVisibility(ESlateVisibility::Collapsed); } }
         else
         {
             const int32 Max = GetDefault<USFGatheringPilotSettings>()->ChargesPerNode, Charges = Node->GetState().Charges;
             TargetCharges->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), Charges, Max)));
-            TargetBar->SetVisibility(ESlateVisibility::HitTestInvisible);
-            TargetBar->SetPercent(ChargeFraction(Charges, Max));
+            if (TargetBar) { TargetBar->SetVisibility(ESlateVisibility::HitTestInvisible); }
+            if (TargetFillClip) { TargetFillClip->SetWidthOverride(TargetFillWidth * ChargeFraction(Charges, Max)); }
         }
     }
-    else { TargetFrame->SetVisibility(ESlateVisibility::Collapsed); }
+    else { TargetBoxRoot->SetVisibility(ESlateVisibility::Collapsed); }
     if (Context != ShownPrompt) { SetPrompts(Context); }
 }

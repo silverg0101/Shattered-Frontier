@@ -2,6 +2,7 @@
 
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
+#include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/Overlay.h"
 #include "Components/OverlaySlot.h"
@@ -12,6 +13,7 @@
 #include "Engine/FontFace.h"
 #include "Fonts/CompositeFont.h"
 #include "Engine/Texture2D.h"
+#include "Framework/SFHudButton.h"
 #include "Framework/SFHudKit.h"
 #include "Styling/CoreStyle.h"
 #include "UObject/StrongObjectPtr.h"
@@ -46,7 +48,10 @@ inline const FSFHudKitElement* Kit(const TCHAR* Name)
 inline FSlateBrush KitBrush(const FSFHudKitElement& Element)
 {
     FSlateBrush Brush;
-    Brush.DrawAs = ESlateBrushDrawType::Box;
+    // Kit-v5 textures are imported at their 1080p design size, so ImageSize is the draw size and Slate's corner math is correct.
+    // Pieces without 9-slice margins (badges, rings, keycaps, icons) are plain images.
+    const bool bSliced = Element.Margin.Left > 0.f || Element.Margin.Top > 0.f || Element.Margin.Right > 0.f || Element.Margin.Bottom > 0.f;
+    Brush.DrawAs = bSliced ? ESlateBrushDrawType::Box : ESlateBrushDrawType::Image;
     Brush.Margin = Element.Margin;
     Brush.SetResourceObject(Element.Texture);
     Brush.ImageSize = FVector2D(Element.Texture->GetSizeX(), Element.Texture->GetSizeY()) * Element.DrawScale;
@@ -103,7 +108,7 @@ inline FSFFramedBar MakeFramedBar(UWidgetTree* Tree, const TCHAR* Base, float De
     const FSFHudKitElement* Frame = Kit(*FString::Printf(TEXT("%s_frame"), Base));
     const FSFHudKitElement* Fill = Kit(*FString::Printf(TEXT("%s_fill"), Base));
     if (!Frame || !Fill) { return Bar; }
-    constexpr float InsetLeft = 42.f, InsetTop = 13.f, InsetRight = 718.f, InsetBottom = 51.f;  // 2x px, from kit.json
+    constexpr float InsetLeft = 21.f, InsetTop = 6.5f, InsetRight = 359.f, InsetBottom = 25.5f;  // 1x px: kit.json's 2x fill_inset_rect_px halved
     const float Scale = DesignWidth / static_cast<float>(Frame->Texture->GetSizeX());  // texture px -> design px
     const float FrameHeight = static_cast<float>(Frame->Texture->GetSizeY()) * Scale;
     Bar.FillWidth = (InsetRight - InsetLeft) * Scale;
@@ -123,10 +128,19 @@ inline FSFFramedBar MakeFramedBar(UWidgetTree* Tree, const TCHAR* Base, float De
     Bar.FillClip = Tree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
     Bar.FillClip->SetHeightOverride(FillHeight); Bar.FillClip->SetWidthOverride(Bar.FillWidth);
     Bar.FillClip->SetClipping(EWidgetClipping::ClipToBounds);  // shows the left part of the fill, never squashes it
+    // The clip box shrinks with the fraction, but the fill keeps its full size inside it (an overlay slot aligned left does not
+    // stretch its child), so the box crops the art instead of squashing it. The fill is a small tile drawn stretched as a plain image.
     UImage* FillImage = Tree->ConstructWidget<UImage>(UImage::StaticClass());
-    FillImage->SetBrush(KitBrush(*Fill));
-    FillImage->SetDesiredSizeOverride(FVector2D(Bar.FillWidth, FillHeight));
-    Bar.FillClip->SetContent(FillImage);
+    FSlateBrush FillBrush = KitBrush(*Fill);
+    FillBrush.DrawAs = ESlateBrushDrawType::Image; FillBrush.Tiling = ESlateBrushTileType::NoTile;
+    FillBrush.ImageSize = FVector2D(Bar.FillWidth, FillHeight);
+    FillImage->SetBrush(FillBrush);
+    USizeBox* FillFull = Tree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+    FillFull->SetWidthOverride(Bar.FillWidth); FillFull->SetHeightOverride(FillHeight); FillFull->SetContent(FillImage);
+    UOverlay* FillHolder = Tree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
+    UOverlaySlot* FullSlot = FillHolder->AddChildToOverlay(FillFull);
+    FullSlot->SetHorizontalAlignment(HAlign_Left); FullSlot->SetVerticalAlignment(VAlign_Top);
+    Bar.FillClip->SetContent(FillHolder);
     UOverlaySlot* FillSlot = Stack->AddChildToOverlay(Bar.FillClip);
     FillSlot->SetHorizontalAlignment(HAlign_Left); FillSlot->SetVerticalAlignment(VAlign_Center);
     FillSlot->SetPadding(FMargin(InsetLeft * Scale, 0.f, 0.f, 0.f));
@@ -222,8 +236,14 @@ inline UTextBlock* Num(UWidgetTree* Tree, const FString& Value, int32 Size, cons
     return Label;
 }
 
-// Panel and screen titles in the kit's serif face (Cinzel); plain bold sans when the font is not imported.
+// Panel, window and section titles: mixed-case EB Garamond Bold (the approved v5 concepts; sizes 48 window, 36 panel, 26 section).
 inline UTextBlock* Heading(UWidgetTree* Tree, const FString& Value, int32 Size, const FLinearColor& Color)
+{
+    return Text(Tree, Value, Size, Color, true);
+}
+
+// Cinzel display capitals, kept for the loading-screen zone title and "Defeated" only.
+inline UTextBlock* DisplayHeading(UWidgetTree* Tree, const FString& Value, int32 Size, const FLinearColor& Color)
 {
     UTextBlock* Label = Text(Tree, Value, Size, Color, true);
     // Cinzel face imported by tools/Import-HudKit.py, wrapped once in a runtime composite font; default bold face when missing.
@@ -239,5 +259,55 @@ inline UTextBlock* Heading(UWidgetTree* Tree, const FString& Value, int32 Size, 
     }();
     if (Serif.IsValid()) { Label->SetFont(FSlateFontInfo(Serif.Get(), Size, TEXT("Regular"))); }
     return Label;
+}
+
+// A kit piece drawn at its own pixel size (Image) or at W x H; empty when the piece is missing.
+inline USizeBox* KitImage(UWidgetTree* Tree, const TCHAR* Name, float Width = 0.f, float Height = 0.f)
+{
+    USizeBox* Box = Tree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+    UImage* Image = Tree->ConstructWidget<UImage>(UImage::StaticClass());
+    if (const FSFHudKitElement* Element = Kit(Name))
+    {
+        Image->SetBrush(KitBrush(*Element));
+        Box->SetWidthOverride(Width > 0.f ? Width : Element->Texture->GetSizeX());
+        Box->SetHeightOverride(Height > 0.f ? Height : (Width > 0.f ? Width : Element->Texture->GetSizeY()));
+    }
+    else if (Width > 0.f) { Box->SetWidthOverride(Width); Box->SetHeightOverride(Height > 0.f ? Height : Width); }
+    Box->SetContent(Image);
+    return Box;
+}
+
+enum class EButtonKind : uint8 { Secondary, Primary, Destructive };
+struct FSFHudButton { USizeBox* Root = nullptr; UButton* Button = nullptr; UTextBlock* Label = nullptr; };
+
+// The one text button (IMPLEMENTATION-FIX G3): 56 tall, at least MinWidth wide, 24 px side padding, EB Garamond 24 label.
+// Secondary = button_normal/hover/pressed/disabled, Primary = button_primary_brass, Destructive = button_destructive.
+// Bind OnClicked on .Button; hit-testing and hover come with it. Frames are never button backgrounds.
+inline FSFHudButton Button(UWidgetTree* Tree, const FString& Label, EButtonKind Kind = EButtonKind::Secondary, float MinWidth = 160.f)
+{
+    FSFHudButton Result;
+    UButton* Control = Tree->ConstructWidget<USFHudButton>(USFHudButton::StaticClass());
+    const bool bPrimary = Kind == EButtonKind::Primary;
+    const TCHAR* Normal = bPrimary ? TEXT("button_primary_brass") : Kind == EButtonKind::Destructive ? TEXT("button_destructive") : TEXT("button_normal");
+    const FLinearColor Fill = bPrimary ? Brass() : Hex(TEXT("0E171C"), 0.85f);
+    FButtonStyle Style = Control->GetStyle();
+    Style.Normal = KitOrFrame(Normal, Fill, Hex(TEXT("3A4348")), 3.f);
+    Style.Hovered = KitOrFrame(Kit(TEXT("button_hover")) && !bPrimary ? TEXT("button_hover") : Normal, Fill, Brass(), 3.f);
+    Style.Pressed = KitOrFrame(Kit(TEXT("button_pressed")) && !bPrimary ? TEXT("button_pressed") : Normal, Hex(TEXT("2B3B2C")), Brass(), 3.f);
+    Style.Disabled = KitOrFrame(Kit(TEXT("button_disabled")) && !bPrimary ? TEXT("button_disabled") : Normal, Fill, Hex(TEXT("3A4348")), 3.f);
+    Style.NormalPadding = FMargin(0.f); Style.PressedPadding = FMargin(0.f);
+    Control->SetStyle(Style);
+    UTextBlock* Caption = Text(Tree, Label, 24, Ivory());
+    Caption->SetJustification(ETextJustify::Center);
+    if (bPrimary) { Caption->SetShadowOffset(FVector2D(1.f, 1.f)); Caption->SetShadowColorAndOpacity(Hex(TEXT("2A1E10"))); }
+    UBorder* Pad = Tree->ConstructWidget<UBorder>(UBorder::StaticClass());
+    Pad->SetBrush(FSlateNoResource()); Pad->SetPadding(FMargin(24.f, 0.f)); Pad->SetVerticalAlignment(VAlign_Center); Pad->SetHorizontalAlignment(HAlign_Center);
+    Pad->SetContent(Caption);
+    Control->SetContent(Pad);
+    USizeBox* Box = Tree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+    Box->SetMinDesiredWidth(MinWidth); Box->SetHeightOverride(56.f);
+    Box->SetContent(Control);
+    Result.Root = Box; Result.Button = Control; Result.Label = Caption;
+    return Result;
 }
 }

@@ -4,6 +4,7 @@
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
 #include "Components/Button.h"
+#include "Components/EditableTextBox.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
 #include "Components/Image.h"
@@ -12,8 +13,6 @@
 #include "Components/UniformGridPanel.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
-#include "Components/ScrollBox.h"
-#include "Engine/Texture2D.h"
 #include "GameFramework/PlayerController.h"
 #include "Input/Reply.h"
 #include "Layout/Geometry.h"
@@ -21,20 +20,6 @@
 USFConstructionPaletteButton::USFConstructionPaletteButton(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)
 { InitIsFocusable(false); }
-
-namespace
-{
-// Flat HUD-v1 button: slate fill with a brass edge on hover, so tiles and rows share one look.
-void StyleButton(UButton* Button, const FLinearColor& Fill, const FLinearColor& HoverEdge)
-{
-    FButtonStyle Style = Button->GetStyle();
-    Style.Normal = SFHudStyle::KitOrFrame(TEXT("button_normal"), Fill, SFHudStyle::Hex(TEXT("3A4348")), 3.f);
-    Style.Hovered = SFHudStyle::KitOrFrame(TEXT("button_hover"), Fill, HoverEdge, 3.f);
-    Style.Pressed = SFHudStyle::KitOrFrame(TEXT("button_pressed"), SFHudStyle::Hex(TEXT("2B3B2C"), 1.f), HoverEdge, 3.f);
-    Style.NormalPadding = FMargin(0.f); Style.PressedPadding = FMargin(0.f);
-    Button->SetStyle(Style);
-}
-}
 
 int32 USFConstructionSandboxPalette::TileForAction(ESFConstructionPaletteAction Action)
 {
@@ -54,108 +39,166 @@ const TCHAR* USFConstructionSandboxPalette::TileLabel(int32 Tile)
     return Labels[FMath::Clamp(Tile, 0, TileCount - 1)];
 }
 
+// Build Catalogue (docs/Game-Design/concept-art/UI/v5/build-mode.png, IMPLEMENTATION-FIX table 2): a 480 px panel frame,
+// title, search, Voxel Objects / Blueprints tabs, category rail beside a 3-column piece grid, material row and required
+// materials. The mode and layer actions live on keys (L, X, R, P, PgUp/PgDn); only the four real pieces are populated.
 void USFConstructionSandboxPalette::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
     using namespace SFHudStyle;
 
     SetIsFocusable(false);
-    CachedStatusText = FText::FromString(TEXT("Ready. Select a piece and placement mode."));
+    CachedStatusText = FText::FromString(TEXT("Valid placement"));
+    const FLinearColor Dim = Hex(TEXT("A9A593"));
+    const FLinearColor Well = Hex(TEXT("0E171C"), 0.85f);
 
     UVerticalBox* Contents = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("PaletteContents"));
-    PalettePanel = Panel(WidgetTree, Slate(0.92f), Brass(), FMargin(16.f, 14.f), 6.f);
+    PalettePanel = KitPanel(WidgetTree, TEXT("panel_frame"), 1.f, Slate(0.94f), Brass(), FMargin(6.f), 6.f);
     PalettePanel->SetVisibility(ESlateVisibility::Visible);
-    UScrollBox* Scroll = WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass(),TEXT("PaletteScroll"));
-    Scroll->AddChild(Contents); PalettePanel->SetContent(Scroll);
-    WidgetTree->RootWidget = PalettePanel;
+    PalettePanel->SetContent(Contents);
+    USizeBox* Root = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+    Root->SetWidthOverride(480.f); Root->SetContent(PalettePanel);
+    WidgetTree->RootWidget = Root;
 
-    UTextBlock* Heading = SFHudStyle::Heading(WidgetTree, TEXT("Building"), 24, Ivory());
-    Contents->AddChildToVerticalBox(Heading)->SetPadding(FMargin(2.f, 0.f, 2.f, 2.f));
-    Contents->AddChildToVerticalBox(Text(WidgetTree, TEXT("Development palette"), 12, Hex(TEXT("A9A593"))))->SetPadding(FMargin(2.f, 0.f, 2.f, 10.f));
+    // Title row, with the 2 px rule under it.
+    UHorizontalBox* Title = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+    Title->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("icon_structures"), 28.f))->SetVerticalAlignment(VAlign_Center);
+    Title->AddChildToHorizontalBox(Heading(WidgetTree, TEXT("Build Catalogue"), 36, Ivory()))->SetPadding(FMargin(12.f, 0.f, 0.f, 0.f));
+    Contents->AddChildToVerticalBox(Title)->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
+    USizeBox* Rule = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+    Rule->SetHeightOverride(2.f); Rule->SetContent(KitPanel(WidgetTree, TEXT("divider"), 1.f, Brass(), Brass(), FMargin(0.f), 0.f));
+    Contents->AddChildToVerticalBox(Rule)->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
 
-    auto AddLabel = [this](UButton* Button, const FString& Text)
+    // Search: filters the piece grid by name.
+    UEditableTextBox* Search = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
+    Search->SetHintText(FText::FromString(TEXT("Search objects")));
+    FEditableTextBoxStyle SearchStyle = Search->WidgetStyle;
+    const FSlateBrush Field = KitOrFrame(TEXT("search_field"), Well, Hex(TEXT("3A4348")), 3.f);
+    SearchStyle.BackgroundImageNormal = Field; SearchStyle.BackgroundImageHovered = Field; SearchStyle.BackgroundImageFocused = Field; SearchStyle.BackgroundImageReadOnly = Field;
+    SearchStyle.ForegroundColor = FSlateColor(Ivory()); SearchStyle.FocusedForegroundColor = FSlateColor(Ivory());
+    SearchStyle.TextStyle.Font = RoleFont(TextFamily(), 18, false);
+    SearchStyle.Padding = FMargin(44.f, 4.f, 12.f, 4.f);
+    Search->WidgetStyle = SearchStyle;
+    FScriptDelegate SearchChanged; SearchChanged.BindUFunction(this, TEXT("HandleSearchChanged")); Search->OnTextChanged.Add(SearchChanged);
+    UOverlay* SearchStack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
+    USizeBox* SearchSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+    SearchSize->SetHeightOverride(40.f); SearchSize->SetContent(Search);
+    SearchStack->AddChildToOverlay(SearchSize);
+    UWidget* SearchGlyph = KitImage(WidgetTree, TEXT("icon_search"), 20.f);
+    SearchGlyph->SetVisibility(ESlateVisibility::HitTestInvisible);
+    UOverlaySlot* GlyphSlot = SearchStack->AddChildToOverlay(SearchGlyph);
+    GlyphSlot->SetHorizontalAlignment(HAlign_Left); GlyphSlot->SetVerticalAlignment(VAlign_Center); GlyphSlot->SetPadding(FMargin(14.f, 0.f, 0.f, 0.f));
+    Contents->AddChildToVerticalBox(SearchStack)->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
+
+    // Voxel Objects / Blueprints tabs (Blueprints stays disabled until blueprints exist).
+    UHorizontalBox* Tabs = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+    for (int32 Index = 0; Index < 2; ++Index)
     {
-        UTextBlock* Label = SFHudStyle::Text(WidgetTree, Text, 13, SFHudStyle::Ivory());
+        UBorder* Tab = KitPanel(WidgetTree, Index == 0 ? TEXT("tab_selected") : TEXT("tab_normal"), 1.f, Well, Hex(TEXT("3A4348")), FMargin(4.f, 0.f), 3.f);
+        UTextBlock* Label = Text(WidgetTree, Index == 0 ? TEXT("Voxel Objects") : TEXT("Blueprints"), 20, Index == 0 ? Ivory() : Dim, Index == 0);
         Label->SetJustification(ETextJustify::Center);
-        UBorder* Pad = SFHudStyle::Panel(WidgetTree, FLinearColor::Transparent, FLinearColor::Transparent, FMargin(8.f, 5.f), 0.f);
-        Pad->SetContent(Label); Button->SetContent(Pad);
-    };
+        Tab->SetVerticalAlignment(VAlign_Center); Tab->SetContent(Label); Tab->SetVisibility(ESlateVisibility::HitTestInvisible);
+        USizeBox* TabSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        TabSize->SetWidthOverride(210.f); TabSize->SetHeightOverride(44.f); TabSize->SetContent(Tab);
+        Tabs->AddChildToHorizontalBox(TabSize)->SetPadding(FMargin(Index == 0 ? 0.f : 12.f, 0.f, 0.f, 0.f));
+    }
+    Contents->AddChildToVerticalBox(Tabs)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+
     auto Bind = [this](UButton* Button, const FName& Handler)
     {
         FScriptDelegate ClickHandler; ClickHandler.BindUFunction(this, Handler); Button->OnClicked.Add(ClickHandler);
     };
 
-    // Catalogue: four tiles, icon above label. Slab = Foundation, Cube = Wall, Slope = Roof.
+    // Body: category rail (80 px tiles, Structures is the only populated category) beside the piece grid.
+    UHorizontalBox* Body = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+    UVerticalBox* Rail = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+    static const TCHAR* const RailIcons[4] = {TEXT("icon_structures"), TEXT("icon_decor"), TEXT("icon_terrain"), TEXT("icon_favourites")};
+    static const TCHAR* const RailLabels[4] = {TEXT("Structures"), TEXT("Decor"), TEXT("Terrain"), TEXT("Favourites")};
+    for (int32 Category = 0; Category < 4; ++Category)
+    {
+        UBorder* Entry = KitPanel(WidgetTree, Category == 0 ? TEXT("tab_selected") : TEXT("tab_normal"), 1.f, Well, Hex(TEXT("3A4348")), FMargin(0.f), 3.f);
+        UVerticalBox* Stack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+        Stack->AddChildToVerticalBox(KitImage(WidgetTree, RailIcons[Category], 36.f))->SetHorizontalAlignment(HAlign_Center);
+        UTextBlock* Label = Text(WidgetTree, RailLabels[Category], 16, Category == 0 ? Ivory() : Dim);
+        Label->SetJustification(ETextJustify::Center);
+        Stack->AddChildToVerticalBox(Label)->SetHorizontalAlignment(HAlign_Center);
+        Entry->SetVerticalAlignment(VAlign_Center); Entry->SetContent(Stack); Entry->SetVisibility(ESlateVisibility::HitTestInvisible);
+        USizeBox* RailBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        RailBox->SetWidthOverride(80.f); RailBox->SetHeightOverride(80.f); RailBox->SetContent(Entry);
+        Rail->AddChildToVerticalBox(RailBox)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    }
+    Body->AddChildToHorizontalBox(Rail)->SetPadding(FMargin(0.f, 0.f, 12.f, 0.f));
+
+    // Piece grid: 3 columns of 100 px slots, 12 px gap, thumbnail above the caption. Slab = Foundation, Cube = Wall, Slope = Roof.
     static const TCHAR* const TileHandlers[TileCount] = {TEXT("HandleSlab"), TEXT("HandleCube"), TEXT("HandleDoor"), TEXT("HandleSlope")};
-    static const TCHAR* const TileIcons[TileCount] = {TEXT("build_foundation"), TEXT("build_wall"), TEXT("build_door"), TEXT("build_roof")};
+    static const TCHAR* const TileIcons[TileCount] = {TEXT("icon_timber_floor"), TEXT("icon_timber_wall"), TEXT("icon_wooden_door"), TEXT("icon_timber_roof")};
     UUniformGridPanel* Catalogue = WidgetTree->ConstructWidget<UUniformGridPanel>(UUniformGridPanel::StaticClass());
-    Catalogue->SetSlotPadding(FMargin(3.f));
+    Catalogue->SetSlotPadding(FMargin(6.f)); Catalogue->SetMinDesiredSlotWidth(100.f); Catalogue->SetMinDesiredSlotHeight(100.f);
     for (int32 Tile = 0; Tile < TileCount; ++Tile)
     {
         UButton* Button = WidgetTree->ConstructWidget<USFConstructionPaletteButton>(USFConstructionPaletteButton::StaticClass(), TileHandlers[Tile]);
-        StyleButton(Button, Hex(TEXT("0E171C"), 0.85f), Brass());
-        UBorder* Frame = Panel(WidgetTree, FLinearColor::Transparent, Hex(TEXT("3A4348")), FMargin(6.f), 3.f);  // selection frame drawn by SelectTile
+        FButtonStyle Flat = Button->GetStyle();
+        Flat.Normal = Flat.Hovered = Flat.Pressed = FSlateNoResource();
+        Flat.NormalPadding = FMargin(0.f); Flat.PressedPadding = FMargin(0.f);
+        Button->SetStyle(Flat);
+        UBorder* Frame = KitPanel(WidgetTree, TEXT("slot_catalogue_normal"), 1.f, Well, Hex(TEXT("3A4348")), FMargin(0.f), 3.f);  // selection state drawn by SelectTile
         UVerticalBox* Stack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-        USizeBox* IconBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        IconBox->SetWidthOverride(56.f); IconBox->SetHeightOverride(56.f);
-        UImage* Icon = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
-        if (UTexture2D* Texture = LoadObject<UTexture2D>(nullptr, *FString::Printf(TEXT("/Game/Frontier/UI/Icons/T_Icon_%s.T_Icon_%s"), TileIcons[Tile], TileIcons[Tile])))
-        { Icon->SetBrushFromTexture(Texture, false); }
-        IconBox->SetContent(Icon);
-        Stack->AddChildToVerticalBox(IconBox)->SetHorizontalAlignment(HAlign_Center);
-        UTextBlock* Label = Text(WidgetTree, TileLabel(Tile), 11, Ivory(), true);
+        Stack->AddChildToVerticalBox(KitImage(WidgetTree, TileIcons[Tile], 64.f))->SetHorizontalAlignment(HAlign_Center);
+        UTextBlock* Label = Text(WidgetTree, TileLabel(Tile), 16, Ivory());
         Label->SetJustification(ETextJustify::Center);
-        UVerticalBoxSlot* LabelSlot = Stack->AddChildToVerticalBox(Label);
-        LabelSlot->SetHorizontalAlignment(HAlign_Center); LabelSlot->SetPadding(FMargin(0.f, 4.f, 0.f, 0.f));
-        Frame->SetContent(Stack); Frame->SetVisibility(ESlateVisibility::HitTestInvisible);
+        Stack->AddChildToVerticalBox(Label)->SetHorizontalAlignment(HAlign_Center);
+        Frame->SetVerticalAlignment(VAlign_Center); Frame->SetContent(Stack); Frame->SetVisibility(ESlateVisibility::HitTestInvisible);
         Button->SetContent(Frame);
         Bind(Button, TileHandlers[Tile]);
-        TileFrames.Add(Frame);
-        Catalogue->AddChildToUniformGrid(Button, 0, Tile);  // one row of four fits the palette width
+        TileFrames.Add(Frame); TileButtons.Add(Button);
+        Catalogue->AddChildToUniformGrid(Button, Tile / 3, Tile % 3);
     }
-    Contents->AddChildToVerticalBox(Catalogue)->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
+    Body->AddChildToHorizontalBox(Catalogue)->SetVerticalAlignment(VAlign_Top);
+    Contents->AddChildToVerticalBox(Body)->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
     SelectTile(SelectedTile);
 
-    // Placement cost readout. ponytail: no cost model exists yet (dev stock is unlimited); wire real "have / need" rows here when it does.
-    UBorder* Cost = Panel(WidgetTree, Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), FMargin(10.f, 6.f), 3.f);
+    // Material row. ponytail: one material until a materials model exists.
+    UBorder* Material = KitPanel(WidgetTree, TEXT("dropdown_field"), 1.f, Well, Hex(TEXT("3A4348")), FMargin(8.f, 0.f), 3.f);
+    UHorizontalBox* MaterialRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+    MaterialRow->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("icon_timber_board"), 28.f))->SetVerticalAlignment(VAlign_Center);
+    MaterialRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Material:"), 18, Brass()))->SetPadding(FMargin(12.f, 0.f, 8.f, 0.f));
+    UHorizontalBoxSlot* NameSlot = MaterialRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Rough Timber"), 18, Ivory()));
+    NameSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+    MaterialRow->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("row_chevron"), 18.f))->SetVerticalAlignment(VAlign_Center);
+    Material->SetVerticalAlignment(VAlign_Center); Material->SetContent(MaterialRow); Material->SetVisibility(ESlateVisibility::HitTestInvisible);
+    USizeBox* MaterialSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+    MaterialSize->SetHeightOverride(40.f); MaterialSize->SetContent(Material);
+    Contents->AddChildToVerticalBox(MaterialSize)->SetPadding(FMargin(0.f, 6.f, 0.f, 10.f));
+
+    // Required materials. ponytail: no cost model exists yet (dev stock is unlimited); replace the row with have / need rows when it does.
+    UBorder* Cost = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+    Cost->SetBrush(Frame(Well, Hex(TEXT("3A4348")), 3.f)); Cost->SetPadding(FMargin(14.f, 10.f));
+    UVerticalBox* CostStack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+    CostStack->AddChildToVerticalBox(Text(WidgetTree, TEXT("Required Materials"), 20, Ivory()))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
     UHorizontalBox* CostRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    CostRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Cost"), 13, Brass(), true))->SetPadding(FMargin(0.f, 0.f, 14.f, 0.f));
-    CostRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("None - unlimited dev stock"), 13, Ivory()));
-    Cost->SetContent(CostRow);
-    Contents->AddChildToVerticalBox(Cost)->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
-
-    auto AddActionRow = [&](std::initializer_list<TPair<FString, FName>> Actions)
-    {
-        UHorizontalBox* Row = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-        Contents->AddChildToVerticalBox(Row)->SetPadding(FMargin(0.f, 2.f));
-        for (const TPair<FString, FName>& Action : Actions)
-        {
-            UButton* Button = WidgetTree->ConstructWidget<USFConstructionPaletteButton>(USFConstructionPaletteButton::StaticClass(), Action.Value);
-            StyleButton(Button, Hex(TEXT("0E171C"), 0.85f), Brass());
-            AddLabel(Button, Action.Key);
-            Bind(Button, Action.Value);
-            Row->AddChildToHorizontalBox(Button)->SetPadding(FMargin(2.f));
-        }
-    };
-
-    AddActionRow({{TEXT("Single"), TEXT("HandleSingle")}, {TEXT("Line"), TEXT("HandleLine")},
-        {TEXT("Demolish"), TEXT("HandleDemolish")}});
-    AddActionRow({{TEXT("Rotate"), TEXT("HandleRotate")}, {TEXT("Surface"), TEXT("HandleSurface")},
-        {TEXT("Layer"), TEXT("HandleLayer")}});
-    AddActionRow({{TEXT("Layer -"), TEXT("HandleLayerDown")}, {TEXT("Layer +"), TEXT("HandleLayerUp")}});
-    AddActionRow({{TEXT("Confirm"), TEXT("HandleConfirm")}, {TEXT("Cancel"), TEXT("HandleCancel")}});
-    AddActionRow({{TEXT("F5  Save"), TEXT("HandleSave")}, {TEXT("F9  Load"), TEXT("HandleLoad")}});
-
-    StatusTextBlock = Text(WidgetTree, TEXT(""), 13, Ivory());
+    UHorizontalBoxSlot* CostName = CostRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Unlimited dev stock"), 18, Ivory()));
+    CostName->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+    CostRow->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("status_tick"), 18.f))->SetVerticalAlignment(VAlign_Center);
+    CostStack->AddChildToVerticalBox(CostRow)->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
+    UHorizontalBox* StatusRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+    StatusRow->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("status_tick"), 18.f))->SetVerticalAlignment(VAlign_Center);
+    StatusTextBlock = Text(WidgetTree, TEXT(""), 18, Ivory());
     StatusTextBlock->SetText(CachedStatusText);
     StatusTextBlock->SetAutoWrapText(true);
-    Contents->AddChildToVerticalBox(StatusTextBlock)->SetPadding(FMargin(3.f, 10.f, 3.f, 3.f));
+    StatusRow->AddChildToHorizontalBox(StatusTextBlock)->SetPadding(FMargin(12.f, 0.f, 0.f, 0.f));
+    CostStack->AddChildToVerticalBox(StatusRow);
+    Cost->SetContent(CostStack);
+    Contents->AddChildToVerticalBox(Cost);
+}
 
-    UTextBlock* Hints = Text(WidgetTree, TEXT(""), 12, Hex(TEXT("A9A593")));
-    HintsTextBlock=Hints;
-    Hints->SetText(FText::FromString(TEXT("Unlimited dev stock | isolated plot\nRMB hold: look in either mode\nDemolish: LMB delete\nX / Delete: mode | R rotate | Esc cancel")));
-    Hints->SetAutoWrapText(true);
-    Contents->AddChildToVerticalBox(Hints)->SetPadding(FMargin(3.f, 2.f, 3.f, 1.f));
+void USFConstructionSandboxPalette::HandleSearchChanged(const FText& Text)
+{
+    const FString Query = Text.ToString().TrimStartAndEnd();
+    for (int32 Tile = 0; Tile < TileButtons.Num(); ++Tile)
+    {
+        const bool bShown = Query.IsEmpty() || FString(TileLabel(Tile)).Contains(Query, ESearchCase::IgnoreCase);
+        TileButtons[Tile]->SetVisibility(bShown ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    }
 }
 
 void USFConstructionSandboxPalette::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -177,7 +220,8 @@ void USFConstructionSandboxPalette::SelectTile(int32 Tile)
     for (int32 Index = 0; Index < TileFrames.Num(); ++Index)
     {
         const bool bSelected = Index == SelectedTile;
-        TileFrames[Index]->SetBrush(SFHudStyle::Frame(bSelected ? SFHudStyle::Hex(TEXT("2B3B2C"), 1.f) : FLinearColor::Transparent,
+        TileFrames[Index]->SetBrush(SFHudStyle::KitOrFrame(bSelected ? TEXT("slot_catalogue_selected") : TEXT("slot_catalogue_normal"),
+            bSelected ? SFHudStyle::Hex(TEXT("2B3B2C"), 1.f) : SFHudStyle::Hex(TEXT("0E171C"), 0.85f),
             bSelected ? SFHudStyle::Brass() : SFHudStyle::Hex(TEXT("3A4348")), 3.f));
     }
 }
@@ -188,8 +232,11 @@ void USFConstructionSandboxPalette::ConfigureNetworkPresentation()
     // and authority; the standalone palette keeps its complete default layout.
     for (const FName Name : {FName(TEXT("HandleConfirm")),FName(TEXT("HandleSave")),FName(TEXT("HandleLoad"))})
     { if (auto* Button=WidgetTree->FindWidget(Name)) { Button->SetVisibility(ESlateVisibility::Collapsed); } }
-    if (HintsTextBlock)
-    { HintsTextBlock->SetText(FText::FromString(TEXT("RMB hold: look | E: door\nX / Delete: demolition mode\nLMB: place or demolish | L: line\nR: rotate | Escape: cancel start\nP: surface/layer | PgUp/PgDn: level\nUnlimited dev stock"))); }
+}
+
+void USFConstructionSandboxPalette::SetBuildModeActive(bool bActive)
+{
+    SetVisibility(bActive ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 }
 
 void USFConstructionSandboxPalette::SetStatusText(const FText& InStatusText)

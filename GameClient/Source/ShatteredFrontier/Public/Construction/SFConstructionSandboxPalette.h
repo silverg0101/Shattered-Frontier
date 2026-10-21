@@ -53,6 +53,8 @@ public:
     static const TCHAR* TileLabel(int32 Tile);
 
     void ConfigureNetworkPresentation();
+    // Build mode on = catalogue visible, off = collapsed (it starts collapsed). The controller calls this when build mode toggles.
+    void SetBuildModeActive(bool bActive);
     void SetStatusText(const FText& InStatusText);
     bool IsPointerOverPalette() const;
 
@@ -83,7 +85,9 @@ private:
     void Dispatch(ESFConstructionPaletteAction Action);
     void SelectTile(int32 Tile);
 
+    UFUNCTION() void HandleSearchChanged(const FText& Text);
     UPROPERTY(Transient) TArray<TObjectPtr<UBorder>> TileFrames;
+    UPROPERTY(Transient) TArray<TObjectPtr<UButton>> TileButtons;
     int32 SelectedTile = 1;  // Wall: the default Cube shape
 
     UPROPERTY(Transient)

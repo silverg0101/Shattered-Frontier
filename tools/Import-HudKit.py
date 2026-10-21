@@ -97,7 +97,9 @@ if os.path.isfile(os.path.join(V5, 'kit.json')):
     pieces = json.load(open(os.path.join(V5, 'kit.json')))['pieces']
     tasks_v5 = []
     for name, piece in pieces.items():
-        source = os.path.join(V5, piece['file'])
+        source = os.path.join(V5, 'processed', piece['file'])  # the 1x resample from tools/Process-KitV5.py: Slate draws box corners at the texture's real pixels
+        if not os.path.isfile(source):
+            source = os.path.join(V5, piece['file'])
         if not os.path.isfile(source):
             continue
         task = unreal.AssetImportTask()
@@ -119,12 +121,12 @@ if os.path.isfile(os.path.join(V5, 'kit.json')):
         texture.set_editor_property('never_stream', True)
         library.save_loaded_asset(texture)
         width, height = float(texture.blueprint_get_size_x()), float(texture.blueprint_get_size_y())
-        left, top, right, bottom = piece.get('nine_slice_px') or [0, 0, 0, 0]
+        left, top, right, bottom = [v / 2.0 for v in (piece.get('nine_slice_px') or [0, 0, 0, 0])]  # kit.json margins are 2x px, the texture is 1x
         element = unreal.SFHudKitElement()
         element.set_editor_property('texture', texture)
         element.set_editor_property('margin', unreal.Margin(left / width, top / height, right / width, bottom / height))
-        element.set_editor_property('inset_pixels', float(left) * 0.5)
-        element.set_editor_property('draw_scale', 0.5)
+        element.set_editor_property('inset_pixels', float(left))
+        element.set_editor_property('draw_scale', 1.0)
         table[name] = element
         done.append('v5:' + name)
     for alias, target in ALIASES.items():
