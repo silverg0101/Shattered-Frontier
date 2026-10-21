@@ -7,6 +7,7 @@
 class UCameraComponent;
 class UInputAction;
 class UInputMappingContext;
+class UMaterialParameterCollection;
 class USFCrowdControlComponent;
 class USFQuestPilotComponent;
 class USpringArmComponent;
@@ -57,6 +58,8 @@ private:
     void SetMouseCaptured(bool bCaptured);
     UPROPERTY(Transient) TObjectPtr<UInputMappingContext> PlayerMapping;
     UPROPERTY(Transient) TObjectPtr<UInputMappingContext> BuildMapping;
+    UPROPERTY(Transient) TObjectPtr<UMaterialParameterCollection> InteractionMpc;
+    bool bInteractionMpcLoaded = false;
     UPROPERTY(Transient) TArray<TObjectPtr<UInputAction>> PlayerActions;
     FSFMouseButtonState OrbitButton, MouseLookButton;
     FRotator CameraRotation = FRotator::ZeroRotator;

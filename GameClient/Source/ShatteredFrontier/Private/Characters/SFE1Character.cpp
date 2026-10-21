@@ -26,6 +26,8 @@
 #include "Misc/Parse.h"
 #include "TimerManager.h"
 #include "Townsfolk/SFTownsfolk.h"
+#include "Kismet/KismetMaterialLibrary.h"
+#include "Materials/MaterialParameterCollection.h"
 #include "Construction/SFConstructionNetwork.h"
 #include "Construction/SFConstructionSandboxController.h"
 
@@ -52,8 +54,11 @@ ASFE1Character::ASFE1Character()
     // replicated CharacterMovement velocity and falling state, so remote proxies animate with no extra replication.
     GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight()), FRotator(0, -90, 0));
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    // Skinned body: always invalidate its virtual shadow map pages, so no stale shadow pieces stay behind it.
-    GetMesh()->ShadowCacheInvalidationBehavior = EShadowCacheInvalidationBehavior::Always;
+    // The UE4 mannequin's physics-asset bounds miss the striding feet by about 38 cm, and virtual shadow maps invalidate
+    // only the pages under a primitive's bounds, so stale leg shadows trailed behind a running player (measured with
+    // ArtSource/PlayerCharacter/repro_shadow_trail.py). Twice the bounds cover the stride.
+    // ponytail: fixed scale for this body; drop it when the MetaHuman body (with its own physics asset) replaces it.
+    GetMesh()->SetBoundsScale(2.0f);
     if (!IsRunningDedicatedServer())
     {
         static ConstructorHelpers::FObjectFinder<USkeletalMesh> Body(TEXT("/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
@@ -195,6 +200,16 @@ void ASFE1Character::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     if (IsLocallyControlled() && PlayerMapping && UsesCameraControls()) { TickCameraControls(DeltaSeconds); }
+    // Foliage and ground cover bend away from the local player through MPC_Interaction (WP4 owns the asset; absent is fine).
+    if (IsLocallyControlled())
+    {
+        if (!bInteractionMpcLoaded)
+        {
+            bInteractionMpcLoaded = true;
+            InteractionMpc = LoadObject<UMaterialParameterCollection>(nullptr, TEXT("/Game/Frontier/Materials/MPC_Interaction.MPC_Interaction"), nullptr, LOAD_NoWarn | LOAD_Quiet);
+        }
+        if (InteractionMpc) { UKismetMaterialLibrary::SetVectorParameterValue(this, InteractionMpc, TEXT("PlayerPosition"), FLinearColor(GetActorLocation())); }
+    }
 }
 
 void ASFE1Character::TickCameraControls(float Dt)
