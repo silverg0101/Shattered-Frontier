@@ -112,6 +112,8 @@ public:
     virtual void EndPlay(const EEndPlayReason::Type Reason) override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out) const override;
     FString GetResourceName() const;
+    // The prompt verb for this node: "Chop" (logging), "Mine", "Fish", "Gather" otherwise.
+    FString ActionVerb() const;
     bool GetResourceProfile(ESFGatheringSkill& Skill,ESFGatheringMaterialTier& Tier) const;
     FSFGatheringResourceProfile GetAuthoredResourceProfile() const;
     bool IsRefinery() const { return Kind==ESFGatheringPilotKind::Sawmill || Kind==ESFGatheringPilotKind::Forge || Kind==ESFGatheringPilotKind::Workbench; }

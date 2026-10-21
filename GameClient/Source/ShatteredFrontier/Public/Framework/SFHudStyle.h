@@ -19,6 +19,7 @@
 #include "Framework/SFHudButton.h"
 #include "Framework/SFHudKit.h"
 #include "Styling/CoreStyle.h"
+#include "Rendering/DrawElements.h"
 #include "UObject/StrongObjectPtr.h"
 
 // Look from docs/Game-Design/concept-art/UI/HUD-v1/README.md: slate-navy panels, brass outlines, ivory text.
@@ -169,7 +170,7 @@ inline FSFFramedBar MakeFramedBar(UWidgetTree* Tree, const TCHAR* Base, float De
 }
 
 // Border using a named kit element (alpha of Fill is kept as the overall opacity); procedural fallback otherwise.
-inline UBorder* KitPanel(UWidgetTree* Tree, const TCHAR* Name, float Alpha, const FLinearColor& Fallback, const FLinearColor& Edge, const FMargin& Padding, float Radius = 3.f)
+inline UBorder* KitPanel(UWidgetTree* Tree, const TCHAR* Name, float Alpha, const FLinearColor& Fallback, const FLinearColor& Edge, const FMargin& Padding, float Radius = 3.f, bool bInset = true)
 {
     UBorder* Border = Tree->ConstructWidget<UBorder>(UBorder::StaticClass());
     if (const FSFHudKitElement* Element = Kit(Name))
@@ -177,8 +178,10 @@ inline UBorder* KitPanel(UWidgetTree* Tree, const TCHAR* Name, float Alpha, cons
         Border->SetBrush(KitBrush(*Element));
         Border->SetBrushColor(FLinearColor(1.f, 1.f, 1.f, Alpha));
         // Clear the art horizontally by InsetPixels; vertically by at most half the art's top margin, so short pieces (fields, tabs, buttons) keep room for text.
-        const float InsetY = FMath::Min(Element->InsetPixels, static_cast<float>(Element->Margin.Top * KitDesignSize(*Element).Y) * 0.5f);
-        Border->SetPadding(FMargin(Padding.Left + Element->InsetPixels, Padding.Top + InsetY, Padding.Right + Element->InsetPixels, Padding.Bottom + InsetY));
+        // bInset = false skips the clearance for small pieces (slots, rail tiles) whose caller lays out its own content area.
+        const float InsetX = bInset ? Element->InsetPixels : 0.f;
+        const float InsetY = bInset ? FMath::Min(Element->InsetPixels, static_cast<float>(Element->Margin.Top * KitDesignSize(*Element).Y) * 0.5f) : 0.f;
+        Border->SetPadding(FMargin(Padding.Left + InsetX, Padding.Top + InsetY, Padding.Right + InsetX, Padding.Bottom + InsetY));
     }
     else
     {
@@ -328,5 +331,46 @@ inline FSFHudButton Button(UWidgetTree* Tree, const FString& Label, EButtonKind 
     Box->SetContent(Control);
     Result.Root = Box; Result.Button = Control; Result.Label = Caption;
     return Result;
+}
+
+// The hold-to-confirm button (family rule 8): a Primary button with the 36 px hold ring at x 20 inside its left end and the label
+// clear of it. Place .Face in the layout (it holds the button and the ring); bind OnPressed/OnReleased on .Button, and call
+// PaintHoldArc from the owning widget's NativePaint with the hold fraction.
+struct FSFHudHoldButton : FSFHudButton { UWidget* Face = nullptr; UImage* Ring = nullptr; };
+
+inline FSFHudHoldButton HoldButton(UWidgetTree* Tree, const FString& Label, float MinWidth)
+{
+    FSFHudHoldButton Result;
+    static_cast<FSFHudButton&>(Result) = Button(Tree, Label, EButtonKind::Primary, MinWidth);
+    if (UBorder* Pad = Cast<UBorder>(Result.Label->GetParent())) { Pad->SetPadding(FMargin(72.f, 0.f, 24.f, 0.f)); }
+    UOverlay* Face = Tree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
+    Face->AddChildToOverlay(Result.Root);
+    USizeBox* RingBox = KitImage(Tree, TEXT("hold_confirm_ring"), 36.f);
+    RingBox->SetVisibility(ESlateVisibility::HitTestInvisible);
+    Result.Ring = Cast<UImage>(RingBox->GetContent());
+    UOverlaySlot* RingSlot = Face->AddChildToOverlay(RingBox);
+    RingSlot->SetHorizontalAlignment(HAlign_Left); RingSlot->SetVerticalAlignment(VAlign_Center); RingSlot->SetPadding(FMargin(20.f, 0.f, 0.f, 0.f));
+    Result.Face = Face;
+    return Result;
+}
+
+// Moss arc inside the hold ring, clockwise from 12 o'clock, drawn in the ring image's own geometry so DPI and layout scale match the
+// art. Returns the layer to continue from. Call from NativePaint after Super.
+inline int32 PaintHoldArc(FSlateWindowElementList& OutDrawElements, int32 LayerId, const UImage* Ring, float Fraction)
+{
+    if (!Ring || Fraction <= 0.f) { return LayerId; }
+    const FGeometry& RingGeometry = Ring->GetCachedGeometry();
+    const FVector2f Center = FVector2f(RingGeometry.GetLocalSize()) * 0.5f;
+    const float Radius = 0.36f * RingGeometry.GetLocalSize().X;
+    const float Clamped = FMath::Clamp(Fraction, 0.01f, 1.f);
+    const int32 Count = FMath::Max(1, FMath::CeilToInt(64 * Clamped));
+    TArray<FVector2f> Points;
+    for (int32 Index = 0; Index <= Count; ++Index)
+    {
+        const float Angle = -HALF_PI + TWO_PI * Clamped * Index / Count;
+        Points.Add(Center + FVector2f(FMath::Cos(Angle), FMath::Sin(Angle)) * Radius);
+    }
+    FSlateDrawElement::MakeLines(OutDrawElements, LayerId + 1, RingGeometry.ToPaintGeometry(), Points, ESlateDrawEffect::None, Hex(TEXT("7FA07A")), true, 5.f);
+    return LayerId + 1;
 }
 }

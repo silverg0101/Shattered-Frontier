@@ -2012,7 +2012,10 @@ void ASFPlayerController::Tick(float DeltaSeconds)
             LayoutPalette();
             // The player-facing line only; the full status block stays in the sf.HudDebugText overlay (GetBuildStatusText).
             const FString Status=PreviewStatus.IsEmpty() ? FString(TEXT("Select a piece, then place it.")) : PreviewStatus;
-            if (Status!=CachedPaletteStatus) { Palette->SetStatusText(FText::FromString(Status)); CachedPaletteStatus=Status; }
+            // The panel shows only the validity word; the full line (target cell, reach) goes to the log and sf.HudDebugText.
+            const FString Shown=bHasPlacementPreview ? FString(TEXT("Valid placement")) : FString(TEXT("Invalid placement"));
+            if (Status!=CachedPaletteStatus) { UE_LOG(LogTemp,Verbose,TEXT("BUILD_PREVIEW %s"),*Status); CachedPaletteStatus=Status; }
+            if (Shown!=CachedPaletteShown) { Palette->SetStatusText(FText::FromString(Shown)); Palette->SetPlacementValid(bHasPlacementPreview); CachedPaletteShown=Shown; }
         }
     }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST

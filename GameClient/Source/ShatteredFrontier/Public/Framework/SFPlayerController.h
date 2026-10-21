@@ -61,6 +61,7 @@ public:
 #endif
     // B toggles build mode where a construction state exists; the character layers IMC_Build on while it lasts.
     bool IsBuildModeActive() const { return bBuildMode; }
+    bool IsStationPanelOpen() const;  // the crafting-station panel is on screen
     void ToggleBuildMode();
 protected:
     // The standalone construction sandbox subclass owns its own build input, palette and cursor; it returns false.
@@ -152,6 +153,7 @@ private:
     FDelegateHandle ActivationHandle;
     uint64 SampledRevision = MAX_uint64;
     FString CachedPaletteStatus;
+    FString CachedPaletteShown;
     FIntPoint PaletteViewportSize = FIntPoint::ZeroValue;
     float PaletteViewportScale = 0;
     bool bLayerPlacement = false;
@@ -250,5 +252,6 @@ private:
     void BeginPlayInteraction();
     void TickInteraction();
     void SetBuildMode(bool bActive);
+    void CloseSidePanelsForModal();
     bool bBuildMode = false;
 };

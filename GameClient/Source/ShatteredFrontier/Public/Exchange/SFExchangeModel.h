@@ -49,6 +49,7 @@ struct FSFListing
     int32 Quantity = 0;
     int64 UnitPrice = 0;
     int64 Revision = 0;
+    int32 TimeLeftSeconds = 0;  // remaining listing time when the row was built; 0 = unknown
 };
 
 enum class ESFMarketSort : uint8 { PriceAscending, PriceDescending, Name };
@@ -133,6 +134,13 @@ public:
     static TArray<FSFListing> Apply(const TArray<FSFListing>& All, const FSFMarketFilter& Filter);
 
     const FSFWalletView& GetWallet() const { return WalletState; }
+    // "11h 28m" / "42m" from the listing's remaining time; "-" when unknown.
+    static FString TimeLeft(const FSFListing& Listing)
+    {
+        if (Listing.TimeLeftSeconds <= 0) { return TEXT("-"); }
+        const int32 Hours = Listing.TimeLeftSeconds / 3600, Minutes = (Listing.TimeLeftSeconds % 3600) / 60;
+        return Hours > 0 ? FString::Printf(TEXT("%dh %dm"), Hours, Minutes) : FString::Printf(TEXT("%dm"), Minutes);
+    }
     int64 BuyFee(const FSFListing& Listing) const { return SFGold::FeeFor(Listing.UnitPrice * Listing.Quantity, FeeBasisPoints); }
     bool CanBuy(const FSFListing& Listing) const;
     bool Buy(const FSFListing& Listing);

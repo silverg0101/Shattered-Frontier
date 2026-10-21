@@ -26,6 +26,8 @@
 #include "InputAction.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "EngineUtils.h"
+#include "Quest/SFQuestPilot.h"
 
 TArray<FSFHotbarSlot> USFHudLayout::HotbarSlots()
 {
@@ -135,10 +137,22 @@ void USFHudLayout::NativeOnInitialized()
     DiscBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
     UOverlay* Disc = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
     DiscBox->SetContent(Disc);
+    // Dark backing disc, with the baked Greenlands map clipped to the circle by a fully rounded image brush.
+    // ponytail: the map art is static (no player tracking or rotation); a scene-capture render target replaces it later.
     UBorder* Fill = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
-    Fill->SetBrush(Frame(Hex(TEXT("0E171C"), 0.8f), FLinearColor(0.f, 0.f, 0.f, 0.f), 1000.f));
+    Fill->SetBrush(Frame(Hex(TEXT("0E171C"), 0.92f), FLinearColor(0.f, 0.f, 0.f, 0.f), 125.f));
     UOverlaySlot* FillSlot = Disc->AddChildToOverlay(Fill);
     FillSlot->SetHorizontalAlignment(HAlign_Fill); FillSlot->SetVerticalAlignment(VAlign_Fill);
+    if (const FSFHudKitElement* MapArt = Kit(TEXT("greenlands_map_base")))
+    {
+        UImage* MapImage = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
+        FSlateBrush MapBrush; MapBrush.SetResourceObject(MapArt->Texture); MapBrush.ImageSize = FVector2D(250.f, 250.f);
+        MapBrush.DrawAs = ESlateBrushDrawType::RoundedBox;
+        MapBrush.OutlineSettings.RoundingType = ESlateBrushRoundingType::FixedRadius; MapBrush.OutlineSettings.CornerRadii = FVector4(125.f, 125.f, 125.f, 125.f);
+        MapImage->SetBrush(MapBrush);
+        UOverlaySlot* MapSlot = Disc->AddChildToOverlay(MapImage);
+        MapSlot->SetHorizontalAlignment(HAlign_Fill); MapSlot->SetVerticalAlignment(VAlign_Fill); MapSlot->SetPadding(FMargin(10.f));
+    }
     if (const FSFHudKitElement* RingArt = Kit(TEXT("minimap_ring")))
     {
         UImage* Ring = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
@@ -213,6 +227,7 @@ void USFHudLayout::SetPrompts(ESFPromptContext Context)
     ShownPrompt = Context;
     PromptRow->ClearChildren();
     TArray<FSFPromptSegment> Segments = PromptsFor(Context);
+    if (Context == ESFPromptContext::Harvest && !HarvestVerb.IsEmpty()) { for (FSFPromptSegment& Segment : Segments) { Segment.Action = HarvestVerb; } }
     if (Context == ESFPromptContext::Harvest || Context == ESFPromptContext::Refine)
     {
         const FString Interact = InteractKeyLabel();
@@ -229,7 +244,7 @@ void USFHudLayout::SetPrompts(ESFPromptContext Context)
         const FString Lower = Segment.Key.ToLower();
         const FString PieceName = Lower == TEXT("lmb") || Lower == TEXT("rmb") ? FString::Printf(TEXT("mouse_%s"), *Lower) : FString::Printf(TEXT("keycap_%s"), *Lower);
         const FSFHudKitElement* PieceArt = Kit(*PieceName);
-        const float PieceScale = Context == ESFPromptContext::Build ? 0.7f : 1.f;  // the build action bar is a slim single line
+        const float PieceScale = Context == ESFPromptContext::Build ? 0.75f : 1.f;  // the build action bar is a slim single line
         UWidget* Key = PieceArt ? static_cast<UWidget*>(KitImage(WidgetTree, *PieceName, KitDesignSize(*PieceArt).X * PieceScale, KitDesignSize(*PieceArt).Y * PieceScale)) : static_cast<UWidget*>(Text(WidgetTree, Segment.Key, 20, Ivory(), true));
         PromptRow->AddChildToHorizontalBox(Key)->SetVerticalAlignment(VAlign_Center);
         UHorizontalBoxSlot* ActionSlot = PromptRow->AddChildToHorizontalBox(Text(WidgetTree, Segment.Action, Context == ESFPromptContext::Build ? 18 : 24, Ivory()));
@@ -271,7 +286,11 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     if (Node)
     {
         Context = Node->IsRefinery() ? ESFPromptContext::Refine : ESFPromptContext::Harvest;
+        HarvestVerb = Node->IsRefinery() ? FString() : Node->ActionVerb();
     }
+    // While the station panel is open it carries its own title and Craft key: no prompt bar and no target frame over it.
+    const bool bStation = Cast<ASFPlayerController>(Controller) && Cast<ASFPlayerController>(Controller)->IsStationPanelOpen();
+    if (bStation) { Context = ESFPromptContext::None; }
     AActor* CombatTarget = Cast<ASFPlayerController>(Controller) ? Cast<ASFPlayerController>(Controller)->GetSelectedCombatTarget() : nullptr;
     int32 Health = 0, MaxHealth = 0;
     FString Name;
@@ -279,7 +298,7 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     { Health = Boar->Health(); MaxHealth = GetDefault<USFCombatPilotSettings>()->BoarHealth; Name = TEXT("Boar"); }
     else if (const ASFTownsfolkNpc* Npc = Cast<ASFTownsfolkNpc>(CombatTarget))
     { Health = Npc->Health(); MaxHealth = GetDefault<USFTownsfolkSettings>()->ResidentHealth; Name = Npc->Id(); }
-    TargetBoxRoot->SetVisibility(CombatTarget ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+    TargetBoxRoot->SetVisibility(CombatTarget && !bStation ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
     if (CombatTarget)
     {
         TargetName->SetText(FText::FromString(Name));
@@ -289,5 +308,24 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
         if (TargetBar) { TargetBar->SetVisibility(ESlateVisibility::HitTestInvisible); }
         if (TargetFillClip) { TargetFillClip->SetWidthOverride(TargetFillWidth * ChargeFraction(Health, MaxHealth)); }
     }
-    if (Context != ShownPrompt) { SetPrompts(Context); }
+    if (Context != ShownPrompt || (Context == ESFPromptContext::Harvest && HarvestVerb != ShownVerb)) { ShownVerb = HarvestVerb; SetPrompts(Context); }
+
+    // Minimap footer: "<zone> · <n> m" while a gather objective is active (distance to the nearest gathering node), else the zone.
+    // ponytail: quest objectives name a node id that the node actors do not expose, so the nearest node stands in for the tracked one.
+    const double Now = GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0;
+    if (ZoneText && Now >= NextFooterSeconds)
+    {
+        NextFooterSeconds = Now + 1.0;
+        if (ZoneName.IsEmpty()) { ZoneName = ZoneFromMapName(UGameplayStatics::GetCurrentLevelName(this, true)); }
+        FString Footer = ZoneName;
+        const USFQuestPilotComponent* Quest = Controller->FindComponentByClass<USFQuestPilotComponent>();
+        if (Quest && Quest->ActiveObjectiveKind() == TEXT("gather") && Controller->GetPawn())
+        {
+            double Nearest = TNumericLimits<double>::Max();
+            for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It; ++It)
+            { if (!It->IsRefinery()) { Nearest = FMath::Min(Nearest, FVector::Dist2D(It->GetActorLocation(), Controller->GetPawn()->GetActorLocation())); } }
+            if (Nearest < TNumericLimits<double>::Max()) { Footer = FString::Printf(TEXT("%s 00B7 %d m"), *ZoneName, FMath::RoundToInt(Nearest / 100.0)); }
+        }
+        ZoneText->SetText(FText::FromString(Footer));
+    }
 }

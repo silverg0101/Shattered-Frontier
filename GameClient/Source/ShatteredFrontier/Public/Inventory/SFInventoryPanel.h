@@ -8,6 +8,7 @@ class UImage;
 class UInventoryItemDefinition;
 class UProgressBar;
 class UTextBlock;
+class UWidget;
 class UTexture2D;
 class USFGatheringPilotComponent;
 
@@ -69,14 +70,21 @@ private:
     UPROPERTY(Transient) TObjectPtr<UBorder> MainHandFrame;
     UPROPERTY(Transient) TObjectPtr<UImage> MainHandIcon;
     UPROPERTY(Transient) TArray<TObjectPtr<UBorder>> SlotFrames;
-    UPROPERTY(Transient) TArray<TObjectPtr<UBorder>> SlotTips;
     UPROPERTY(Transient) TArray<TObjectPtr<UImage>> SlotIcons;
     UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> SlotNames;
     UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> SlotCounts;
-    UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> TipTitles;
-    UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> TipDescriptions;
-    UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> TipTypes;
-    UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> TipWeights;
+    // One panel-owned tooltip (tooltip_frame) shown beside the panel for the hovered bag slot.
+    TArray<FSFInventoryEntry> ShownItems;  // the filtered entries the grid currently shows, by slot index
+    UPROPERTY(Transient) TObjectPtr<UBorder> TooltipPanel;
+    UPROPERTY(Transient) TObjectPtr<UImage> TipIcon;
+    UPROPERTY(Transient) TObjectPtr<UTextBlock> TipTitle;
+    UPROPERTY(Transient) TObjectPtr<UTextBlock> TipType;
+    UPROPERTY(Transient) TObjectPtr<UTextBlock> TipQuantity;
+    UPROPERTY(Transient) TObjectPtr<UTextBlock> TipWeight;
+    UPROPERTY(Transient) TObjectPtr<UTextBlock> TipDescription;
+    UPROPERTY(Transient) TObjectPtr<UTextBlock> GoldText;
+    UPROPERTY(Transient) TObjectPtr<UWidget> GoldRow;
+    void UpdateTooltip();
     UPROPERTY(Transient) TObjectPtr<UTextBlock> EmptyText;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> WeightText;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> WeightPercent;

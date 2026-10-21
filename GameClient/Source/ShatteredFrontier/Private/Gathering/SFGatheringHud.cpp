@@ -113,7 +113,7 @@ void USFGatheringHud::NativeOnInitialized()
     // Station panel at x33-78% y9-82% (crafting-station.png): 859 x 792 at 1080p.
     StationPanel = CreateWidget<USFStationPanel>(this, USFStationPanel::StaticClass());
     UCanvasPanelSlot* StationSlot = Root->AddChildToCanvas(StationPanel);
-    StationSlot->SetAnchors(FAnchors(0.554f, 0.091f)); StationSlot->SetAlignment(FVector2D(0.5f, 0.f)); StationSlot->SetSize(FVector2D(859.f, 792.f));
+    StationSlot->SetAnchors(FAnchors(0.555f, 0.08f)); StationSlot->SetAlignment(FVector2D(0.5f, 0.f)); StationSlot->SetSize(FVector2D(864.f, 770.f));
     StationPanel->SetVisibility(ESlateVisibility::Collapsed);
 }
 
@@ -211,4 +211,9 @@ int32 USFGatheringHud::NativePaint(const FPaintArgs& Args, const FGeometry& Allo
         LayerId += 3;
     }
     return Super::NativePaint(Args, AllottedGeometry, MyCullingRect, OutDrawElements, LayerId + 1, InWidgetStyle, bParentEnabled);
+}
+
+bool USFGatheringHud::IsStationShown() const
+{
+    return StationPanel && StationPanel->GetVisibility() != ESlateVisibility::Collapsed;
 }

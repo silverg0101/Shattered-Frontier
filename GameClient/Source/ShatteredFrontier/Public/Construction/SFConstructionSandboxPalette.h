@@ -5,6 +5,7 @@
 #include "SFConstructionSandboxPalette.generated.h"
 
 class UBorder;
+class UImage;
 class UTextBlock;
 
 // UButton's focus initializer is protected and intended for constructors.
@@ -56,6 +57,8 @@ public:
     // Build mode on = catalogue visible, off = collapsed (it starts collapsed). The controller calls this when build mode toggles.
     void SetBuildModeActive(bool bActive);
     void SetStatusText(const FText& InStatusText);
+    // Swaps the status glyph: tick for a valid placement, cross otherwise (the status line itself is "Valid placement" or "Invalid placement").
+    void SetPlacementValid(bool bValid);
     bool IsPointerOverPalette() const;
 
 protected:
@@ -96,6 +99,7 @@ private:
     UPROPERTY(Transient)
     TObjectPtr<UTextBlock> StatusTextBlock;
 
+    UPROPERTY(Transient) TObjectPtr<UImage> StatusGlyph;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> HintsTextBlock;
     FText CachedStatusText;
 };

@@ -29,6 +29,8 @@ public:
 protected:
     virtual void NativeOnInitialized() override;
     virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+    virtual int32 NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect,
+        FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const override;
 
 private:
     // Widgets are owned by the WidgetTree, which outlives these pointers.
@@ -38,6 +40,8 @@ private:
         TArray<UImage*> Icons;
         TArray<UTextBlock*> Counts;
         TArray<UTextBlock*> Names;
+        TArray<UWidget*> Crosses;  // faint cross shown in empty slots
+        bool bMine = false;
         FString Signature;
     };
 
@@ -62,9 +66,11 @@ private:
     UPROPERTY(Transient) TObjectPtr<UButton> LockButton;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> LockLabel;
     UPROPERTY(Transient) TObjectPtr<UBorder> LockPlate;
+    UPROPERTY(Transient) TObjectPtr<UWidget> LockTick;
     UPROPERTY(Transient) TObjectPtr<UButton> CancelButton;
     UPROPERTY(Transient) TObjectPtr<UButton> AcceptButton;
-    UPROPERTY(Transient) TObjectPtr<USizeBox> AcceptProgress;
+    UPROPERTY(Transient) TObjectPtr<UImage> AcceptRing;
+    float HoldFraction = 0.f;
 };
 
 // Market board (docs/Game-Design/concept-art/UI/v5/market-board.png): Browse / My Listings / Sell tabs, a category rail, a
@@ -84,6 +90,8 @@ protected:
     virtual void NativeOnInitialized() override;
     virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
     virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+    virtual int32 NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect,
+        FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const override;
 
 private:
     UFUNCTION() void HandleSearchChanged(const FText& Text);
@@ -102,6 +110,7 @@ private:
     FString SellItemId, SellItemName;
     int32 SellMaxQuantity = 0;
     int32 ActiveTab = 0;  // 0 Browse, 1 My Listings (disabled), 2 Sell
+    int32 ActiveRail = 0;  // 0 All Items, 1 Weapons, 2 Materials, 3 Consumables, 4 Tools
     FString RowSignature, SelectedListingId;
     double HoldStarted = -1.0;
     TArray<FString> RowListingIds;
@@ -123,6 +132,7 @@ private:
     UPROPERTY(Transient) TObjectPtr<UTextBlock> DetailFee;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> DetailWallet;
     UPROPERTY(Transient) TObjectPtr<UButton> BuyButton;
-    UPROPERTY(Transient) TObjectPtr<USizeBox> BuyProgress;
+    UPROPERTY(Transient) TObjectPtr<UImage> BuyRing;
+    float HoldFraction = 0.f;
     UPROPERTY(Transient) TObjectPtr<UButton> ListButton;
 };

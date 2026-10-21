@@ -84,7 +84,7 @@ namespace
     }
 
     FString Verb(const FString& Kind)
-    { return Kind == TEXT("gather") ? TEXT("Gather") : Kind == TEXT("craft") ? TEXT("Craft") : Kind == TEXT("build") ? TEXT("Build") : TEXT("Defeat"); }
+    { return Kind == TEXT("gather") ? TEXT("Gather") : Kind == TEXT("craft") ? TEXT("Craft") : Kind == TEXT("build") ? TEXT("Build") : Kind == TEXT("talk_resident") ? TEXT("Talk to") : TEXT("Defeat"); }
 }
 
 bool FSFQuestDefinition::Parse(const FString& Json, FSFQuestDefinition& Out, FString& Error)
@@ -128,7 +128,8 @@ bool FSFQuestDefinition::Parse(const FString& Json, FSFQuestDefinition& Out, FSt
             O->TryGetNumberField(TEXT("count"), Count); Obj.Count = int32(Count);
             Obj.bHasNode = O->TryGetStringField(TEXT("node_id"), Obj.NodeId);
             const TCHAR* Prefix = Obj.Kind == TEXT("gather") || Obj.Kind == TEXT("craft") ? TEXT("item")
-                : Obj.Kind == TEXT("defeat") ? TEXT("npc") : Obj.Kind == TEXT("build") ? TEXT("structure_tag") : TEXT("");
+                : Obj.Kind == TEXT("defeat") ? TEXT("npc") : Obj.Kind == TEXT("build") ? TEXT("structure_tag")
+                : Obj.Kind == TEXT("talk_resident") ? TEXT("resident_role") : TEXT("");
             const bool bDuplicate = Step.Objectives.ContainsByPredicate([&](const FSFQuestObjective& E) { return E.Key == Obj.Key; });
             if (!ValidSlug(Obj.Key) || bDuplicate) { Error = FString::Printf(TEXT("step %s: objective key invalid/duplicate"), *Step.Id); return false; }
             if (!*Prefix || !QuestValidId(Obj.TargetId, Prefix)) { Error = FString::Printf(TEXT("step %s/%s: kind/target invalid"), *Step.Id, *Obj.Key); return false; }
@@ -380,16 +381,46 @@ void USFQuestPilotComponent::TryDeliverRewards()
 #endif
 }
 
+void USFQuestPilotComponent::TickTalk()
+{
+    // AI Townsfolk doc section 9 step 4: the server hands off a resident of the objective's census role near the player
+    // and holds it; reaching it counts the objective and lets it return to its day once the player moves on.
+    const APlayerController* PC = Cast<APlayerController>(GetOwner());
+    const APawn* Pawn = PC ? PC->GetPawn() : nullptr;
+    USFTownsfolkSubsystem* Town = GetWorld()->GetSubsystem<USFTownsfolkSubsystem>();
+    if (!Pawn || !Town || Progress.IsComplete(*Quest)) { return; }
+    const FSFQuestObjective* Talk = Quest->Steps[Progress.StepIndex].Objectives.FindByPredicate([this](const FSFQuestObjective& O)
+    { return O.Kind == TEXT("talk_resident") && Progress.Counts.FindRef(O.Key) < O.Count; });
+    if (!Talk) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (!Talker.IsValid())
+    {
+        if (Now < NextTalkRequest) { return; }
+        NextTalkRequest = Now + 5;  // none of that role free: ask again shortly
+        FString Role; Talk->TargetId.Split(TEXT("/"), nullptr, &Role);
+        Talker = Town->RequestQuestHandoff(FName(*Role), Pawn->GetActorLocation());
+        if (Talker.IsValid()) { UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_TALK_HELD Role=%s Id=%s Serial=%d"), *Role, *Talker->Id(), Talker->Serial()); }
+        return;
+    }
+    if (FVector::Dist2D(Talker->GetActorLocation(), Pawn->GetActorLocation()) > GetDefault<USFQuestPilotSettings>()->TalkRangeMetres * 100.0f) { return; }
+    const FString Target = Talk->TargetId, Operation = FString::Printf(TEXT("talk:%s:%d"), *Talker->Id(), Talker->Serial());
+    Town->ReleaseQuestHandoff(Talker.Get()); Talker.Reset();
+    Observe(TEXT("talk_resident"), Target, FString(), Operation);
+}
+
+void USFQuestPilotComponent::EndPlay(const EEndPlayReason::Type Reason)
+{
+    // A player leaving mid-objective lets go of its share of the held resident.
+    if (USFTownsfolkSubsystem* Town = GetWorld() ? GetWorld()->GetSubsystem<USFTownsfolkSubsystem>() : nullptr; Town && Talker.IsValid()) { Town->ReleaseQuestHandoff(Talker.Get()); }
+    Talker.Reset();
+    Super::EndPlay(Reason);
+}
+
 void USFQuestPilotComponent::TickComponent(float Delta, ELevelTick Type, FActorComponentTickFunction* Function)
 {
     Super::TickComponent(Delta, Type, Function);
     if (GetOwner() && GetOwner()->HasAuthority() && !PendingRewards.IsEmpty()) { TryDeliverRewards(); }
-#if !UE_BUILD_SHIPPING
-    // Stub objective kind "talk_resident", off unless -QuestResidentStub: the first quest player holds one census labourer
-    // through the townsfolk hand-off (AI Townsfolk doc section 9 step 4). No content uses the kind yet.
-    static bool bResidentStub = FParse::Param(FCommandLine::Get(), TEXT("QuestResidentStub"));
-    if (bResidentStub && GetOwner() && GetOwner()->HasAuthority()) { if (USFTownsfolkSubsystem* Town = GetWorld()->GetSubsystem<USFTownsfolkSubsystem>(); Town && Town->RequestQuestHandoff(TEXT("labourer"), GetOwner()->GetActorLocation())) { bResidentStub = false; } }
-#endif
+    if (GetOwner() && GetOwner()->HasAuthority() && Quest) { TickTalk(); }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (!FParse::Param(FCommandLine::Get(), TEXT("QuestFullScenario"))) { return; }
     if (GetOwner() && GetOwner()->HasAuthority()) { TickFullServer(); }
@@ -719,7 +750,9 @@ void USFQuestPilotSubsystem::Initialize(FSubsystemCollectionBase& Collection)
     if (!World || World->GetNetMode() == NM_Client || !IsRequested()
         || World->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")) { return; }
     FSFQuestDefinition Def; FString Error;
-    const FString Path = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectDir(), TEXT("../content/quests/greenlands_frontier_founder.json")));
+    const FString File = GetDefault<USFQuestPilotSettings>()->QuestFile;
+    if (File.IsEmpty() || File.Contains(TEXT("/")) || File.Contains(TEXT("\\")) || File.Contains(TEXT(".."))) { UE_LOG(LogTemp, Error, TEXT("QUEST_PILOT_DISABLED QuestFile must be a file name in content/quests")); return; }
+    const FString Path = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectDir(), TEXT("../content/quests"), File));
     if (!FSFQuestDefinition::Load(Path, Def, Error) || Def.ZoneId != TEXT("zone/greenlands_silverbrook"))
     { UE_LOG(LogTemp, Error, TEXT("QUEST_PILOT_DISABLED %s"), Error.IsEmpty() ? TEXT("zone mismatch") : *Error); return; }
     Quest = MakeShared<FSFQuestDefinition>(MoveTemp(Def));
@@ -784,4 +817,12 @@ void USFQuestPilotSubsystem::Tick(float DeltaTime)
         Hud->SetVisibility(ESlateVisibility::HitTestInvisible);
     }
     Hud->Present(Component->GetView());
+}
+
+FString USFQuestPilotComponent::ActiveObjectiveKind() const
+{
+    if (!Quest || Progress.IsComplete(*Quest)) { return FString(); }
+    for (const FSFQuestObjective& Objective : Quest->Steps[Progress.StepIndex].Objectives)
+    { if (Progress.Counts.FindRef(Objective.Key) < Objective.Count) { return Objective.Kind; } }
+    return FString();
 }

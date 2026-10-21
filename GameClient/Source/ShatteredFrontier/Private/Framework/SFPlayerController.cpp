@@ -165,8 +165,8 @@ void ASFPlayerController::TickInteraction()
     if (IsLocalController() && !HudLayout)
     {
         USFGatheringPilotComponent* Pilot = FindComponentByClass<USFGatheringPilotComponent>();
-        const ASFE1Character* Character = Cast<ASFE1Character>(GetPawn());
-        if ((Pilot && Pilot->IsEnabled()) || (Character && Character->CombatHealth() > 0))
+        const ASFE1Character* E1Character = Cast<ASFE1Character>(GetPawn());
+        if ((Pilot && Pilot->IsEnabled()) || (E1Character && E1Character->CombatHealth() > 0))
         {
             HudLayout = CreateWidget<USFHudLayout>(this, USFHudLayout::StaticClass());
             if (HudLayout)
@@ -202,8 +202,8 @@ bool IsLiveCombatTarget(const AActor* Actor)
 
 AActor* ASFPlayerController::GetSelectedCombatTarget() const
 {
-    const ASFE1Character* Character = Cast<ASFE1Character>(GetPawn());
-    return Character ? Character->GetCombatTarget() : nullptr;
+    const ASFE1Character* E1Character = Cast<ASFE1Character>(GetPawn());
+    return E1Character ? E1Character->GetCombatTarget() : nullptr;
 }
 
 FString ASFPlayerController::GetPilotMessage() const
@@ -238,8 +238,8 @@ void ASFPlayerController::SelectNextCombatTarget()
             const FVector Centre = Actor->GetActorLocation();
             bVisible = !GetWorld()->LineTraceSingleByChannel(Hit, CameraLocation, Centre, ECC_Visibility, Query) || Hit.GetActor() == Actor;
         }
-        Candidates.Add({Actor->GetUniqueID(), Distance, FVector::DotProduct(CameraYaw, Delta.GetSafeNormal2D()), bVisible});
-        Actors.Add(Actor->GetUniqueID(), Actor);
+        Candidates.Add({static_cast<int32>(Actor->GetUniqueID()), Distance, FVector::DotProduct(CameraYaw, Delta.GetSafeNormal2D()), bVisible});
+        Actors.Add(static_cast<int32>(Actor->GetUniqueID()), Actor);
     };
     for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
     { AddCandidate(*It); }
@@ -265,11 +265,11 @@ void ASFPlayerController::SelectNextCombatTarget()
 
 void ASFPlayerController::ServerSelectCombatTarget_Implementation(AActor* Target)
 {
-    ASFE1Character* Character = Cast<ASFE1Character>(GetPawn());
-    if (!Character || Character->CombatHealth() <= 0 || !IsLiveCombatTarget(Target) || Target->GetWorld() != GetWorld()) { return; }
-    if (FVector::Dist2D(Character->GetActorLocation(), Target->GetActorLocation()) >
+    ASFE1Character* E1Character = Cast<ASFE1Character>(GetPawn());
+    if (!E1Character || E1Character->CombatHealth() <= 0 || !IsLiveCombatTarget(Target) || Target->GetWorld() != GetWorld()) { return; }
+    if (FVector::Dist2D(E1Character->GetActorLocation(), Target->GetActorLocation()) >
         GetDefault<USFCombatPilotSettings>()->TabTargetRangeMetres * 100.0) { return; }
-    Character->SetCombatTarget(Target);
+    E1Character->SetCombatTarget(Target);
 }
 
 void ASFPlayerController::RefreshLocalFeedback()
@@ -387,6 +387,13 @@ TSharedPtr<ISFExchangeService> ExchangeServiceFor(APlayerController* Controller)
 }
 }
 
+// A modal (trade, market) opens over the dimmed HUD only: the inventory and the build catalogue close first.
+void ASFPlayerController::CloseSidePanelsForModal()
+{
+    if (InventoryPanel) { InventoryPanel->SetVisibility(ESlateVisibility::Collapsed); }
+    if (Palette) { Palette->SetBuildModeActive(false); }
+}
+
 void ASFPlayerController::ToggleTradeDemo()
 {
     if (!IsLocalController()) { return; }
@@ -405,7 +412,9 @@ void ASFPlayerController::ToggleTradeDemo()
         TradeWindow->AddToViewport(30);
         TradeWindow->SetVisibility(ESlateVisibility::Collapsed);
     }
-    TradeWindow->SetVisibility(TradeWindow->GetVisibility() == ESlateVisibility::Collapsed ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    const bool bOpeningTrade = TradeWindow->GetVisibility() == ESlateVisibility::Collapsed;
+    if (bOpeningTrade) { CloseSidePanelsForModal(); }
+    TradeWindow->SetVisibility(bOpeningTrade ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
     FillViewport(this, TradeWindow);  // modal root: dims the scene and places the window at 26-74% x 14-78% itself
 }
 
@@ -425,6 +434,13 @@ void ASFPlayerController::ToggleMarketDemo()
         MarketBoard->AddToViewport(30);
         MarketBoard->SetVisibility(ESlateVisibility::Collapsed);
     }
-    MarketBoard->SetVisibility(MarketBoard->GetVisibility() == ESlateVisibility::Collapsed ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    const bool bOpeningMarket = MarketBoard->GetVisibility() == ESlateVisibility::Collapsed;
+    if (bOpeningMarket) { CloseSidePanelsForModal(); }
+    MarketBoard->SetVisibility(bOpeningMarket ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
     FillViewport(this, MarketBoard);  // modal: the board dims the whole scene and centres itself
+}
+
+bool ASFPlayerController::IsStationPanelOpen() const
+{
+    return GatheringHud && GatheringHud->IsStationShown();
 }

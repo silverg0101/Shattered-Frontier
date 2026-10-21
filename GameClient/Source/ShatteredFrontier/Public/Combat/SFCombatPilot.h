@@ -29,6 +29,9 @@ public:
     bool bSilverbrookHostileSpawning = true;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="20", ClampMax="500"))
     int32 PlayerHealth = 80;
+    // Shown on the vitals stamina bar until a stamina stat is bound (the bar draws full).
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="10", ClampMax="500", DisplayName="Player stamina (display)"))
+    int32 PlayerStamina = 150;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="10", ClampMax="500"))
     int32 BoarHealth = 60;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="1", ClampMax="100"))

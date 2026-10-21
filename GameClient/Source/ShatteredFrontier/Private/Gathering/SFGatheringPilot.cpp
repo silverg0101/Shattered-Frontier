@@ -1194,3 +1194,16 @@ void USFGatheringPilotComponent::TickFiniteNetworkScenario()
 #endif
 }
 #endif
+
+FString ASFGatheringPilotNode::ActionVerb() const
+{
+    ESFGatheringSkill Skill; ESFGatheringMaterialTier Tier;
+    if (!GetResourceProfile(Skill, Tier)) { return TEXT("Gather"); }
+    switch (Skill)
+    {
+    case ESFGatheringSkill::Logging: return TEXT("Chop");
+    case ESFGatheringSkill::Mining: return TEXT("Mine");
+    case ESFGatheringSkill::Fishing: return TEXT("Fish");
+    default: return TEXT("Gather");
+    }
+}

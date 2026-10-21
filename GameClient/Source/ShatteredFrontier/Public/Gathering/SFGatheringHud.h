@@ -54,6 +54,12 @@ private:
     UPROPERTY(Transient) TObjectPtr<UTextBlock> RingLabel;
     UPROPERTY(Transient) TObjectPtr<USFStationPanel> StationPanel;
 
+public:
+    // True while the crafting-station panel is on screen (the target frame and prompt bar step aside for it).
+    bool IsStationShown() const;
+
+private:
+
     FSlateBrush RingBrush;  // Kit-v5 gathering_channel_ring, valid when bHasRingBrush
     FSlateBrush RingBack;
     bool bHasRingBrush = false;

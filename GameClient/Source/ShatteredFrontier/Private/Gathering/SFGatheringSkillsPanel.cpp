@@ -22,8 +22,8 @@ const ESFGatheringSkill USFGatheringSkillsPanel::Rows[USFGatheringSkillsPanel::R
 
 namespace
 {
-// Panel 522 x 670 at x 2.7%, y 6% of a 1080p screen (gathering.png).
-const FVector2D SkillsPanelSize(522.f, 700.f);
+// Panel 480 x 756 at x 2%, y 7% of a 1080p screen (gathering.png).
+const FVector2D SkillsPanelSize(480.f, 756.f);
 
 struct FSkillRowArt { const TCHAR* Icon; const TCHAR* NextIcon; const TCHAR* Material; };
 FSkillRowArt SkillRowArt(ESFGatheringSkill Skill)
@@ -142,7 +142,7 @@ void USFGatheringSkillsPanel::NativeOnInitialized()
 
         UHorizontalBox* BarLine = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
         // Kit-v5 framed moss XP bar; the styled UProgressBar when the kit is missing.
-        XpBars[Row] = MakeFramedBar(WidgetTree, TEXT("bar_xp"), 200.f);
+        XpBars[Row] = MakeFramedBar(WidgetTree, TEXT("bar_xp"), 300.f);
         USizeBox* BarBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
         if (XpBars[Row].Root) { BarBox->SetContent(XpBars[Row].Root); }
         else
@@ -187,7 +187,7 @@ void USFGatheringSkillsPanel::NativeTick(const FGeometry& MyGeometry, float InDe
     if (Viewport.X > 0 && Viewport.Y > 0)
     {
         SetDesiredSizeInViewport(SkillsPanelSize);
-        SetPositionInViewport(FVector2D(0.027 * Viewport.X, 0.06 * Viewport.Y));
+        SetPositionInViewport(FVector2D(0.02 * Viewport.X, 0.07 * Viewport.Y));
     }
     Refresh();
 }

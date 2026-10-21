@@ -39,7 +39,12 @@ UTexture2D* ItemTexture(const FString& ItemId)
 void SetItemImage(UImage* Image, const FString& ItemId, float Size)
 {
     UTexture2D* Texture = ItemId.IsEmpty() ? nullptr : ItemTexture(ItemId);
-    if (Texture) { Image->SetBrushFromTexture(Texture, false); Image->SetDesiredSizeOverride(FVector2D(Size, Size)); }
+    if (Texture)
+    {
+        // The brush carries the draw size (kit icons are 2x textures), so the image is never drawn at the texture's own size.
+        FSlateBrush Brush; Brush.SetResourceObject(Texture); Brush.ImageSize = FVector2D(Size, Size);
+        Image->SetBrush(Brush);
+    }
     Image->SetVisibility(Texture ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
 }
 
@@ -87,22 +92,6 @@ UButton* MakeCloseButton(UWidgetTree* Tree, USizeBox** OutBox)
     return Close;
 }
 
-// A button with a thin progress strip along its bottom edge for hold-to-confirm; Progress is the strip's width box.
-UWidget* WithHoldStrip(UWidgetTree* Tree, const FSFHudButton& Button, float Width, TObjectPtr<USizeBox>& OutProgress)
-{
-    UOverlay* Stack = Tree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
-    Stack->AddChildToOverlay(Button.Root);
-    OutProgress = Tree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    OutProgress->SetHeightOverride(5.f); OutProgress->SetWidthOverride(0.f);
-    UBorder* Strip = Tree->ConstructWidget<UBorder>(UBorder::StaticClass());
-    Strip->SetBrush(FSlateColorBrush(Ivory()));
-    OutProgress->SetContent(Strip); OutProgress->SetVisibility(ESlateVisibility::HitTestInvisible);
-    UOverlaySlot* StripSlot = Stack->AddChildToOverlay(OutProgress);
-    StripSlot->SetHorizontalAlignment(HAlign_Left); StripSlot->SetVerticalAlignment(VAlign_Bottom); StripSlot->SetPadding(FMargin(10.f, 0.f, 0.f, 6.f));
-    (void)Width;
-    return Stack;
-}
-
 double NowSeconds(const UWorld* World)
 {
     const AGameStateBase* GS = World ? World->GetGameState() : nullptr;
@@ -119,13 +108,13 @@ void USFTradeWindow::BuildSide(UVerticalBox* Column, FSideWidgets& Side, bool bM
     UOverlay* Portrait = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
     UOverlaySlot* WellSlot = Portrait->AddChildToOverlay(KitImage(WidgetTree, TEXT("portrait_well"), 72.f));
     WellSlot->SetHorizontalAlignment(HAlign_Center); WellSlot->SetVerticalAlignment(VAlign_Center);
-    UOverlaySlot* FaceSlot = Portrait->AddChildToOverlay(KitImage(WidgetTree, bMine ? TEXT("icon_stag_emblem") : TEXT("portrait_villager"), 64.f));
+    UOverlaySlot* FaceSlot = Portrait->AddChildToOverlay(KitImage(WidgetTree, bMine ? TEXT("portrait_millwarden_oswin") : TEXT("portrait_villager"), 64.f));
     FaceSlot->SetHorizontalAlignment(HAlign_Center); FaceSlot->SetVerticalAlignment(VAlign_Center);
     Head->AddChildToHorizontalBox(Portrait);
     Side.Name = Heading(WidgetTree, TEXT(""), 26, Ivory());
     Head->AddChildToHorizontalBox(Side.Name)->SetPadding(FMargin(14.f, 0.f, 0.f, 0.f));
     Cast<UHorizontalBoxSlot>(Side.Name->Slot)->SetVerticalAlignment(VAlign_Center);
-    Column->AddChildToVerticalBox(Head)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    Column->AddChildToVerticalBox(Head)->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
 
     // 4 x 3 offer grid: 64 px bag slots, 12 px gap, icon with the count bottom-right.
     UUniformGridPanel* Grid = WidgetTree->ConstructWidget<UUniformGridPanel>(UUniformGridPanel::StaticClass());
@@ -139,42 +128,61 @@ void USFTradeWindow::BuildSide(UVerticalBox* Column, FSideWidgets& Side, bool bM
         Icon->SetVisibility(ESlateVisibility::Collapsed);
         UOverlaySlot* IconSlot = Stack->AddChildToOverlay(Icon);
         IconSlot->SetHorizontalAlignment(HAlign_Center); IconSlot->SetVerticalAlignment(VAlign_Center);
-        UTextBlock* ItemName = Text(WidgetTree, TEXT(""), 16, Ivory());
-        ItemName->SetJustification(ETextJustify::Center); ItemName->SetAutoWrapText(true);
-        UOverlaySlot* NameSlot = Stack->AddChildToOverlay(ItemName);
-        NameSlot->SetHorizontalAlignment(HAlign_Fill); NameSlot->SetVerticalAlignment(VAlign_Center);
+        // Empty slots show a faint diagonal cross (the concept's empty cell).
+        USizeBox* Cross = KitImage(WidgetTree, TEXT("status_cross"), 28.f);
+        Cross->SetRenderOpacity(0.18f); Cross->SetVisibility(ESlateVisibility::HitTestInvisible);
+        UOverlaySlot* CrossSlot = Stack->AddChildToOverlay(Cross);
+        CrossSlot->SetHorizontalAlignment(HAlign_Center); CrossSlot->SetVerticalAlignment(VAlign_Center);
         UTextBlock* Count = Num(WidgetTree, TEXT(""), 18, Ivory());
+        Count->SetShadowOffset(FVector2D(1.f, 1.f)); Count->SetShadowColorAndOpacity(Hex(TEXT("0E171C")));
         UOverlaySlot* CountSlot = Stack->AddChildToOverlay(Count);
-        CountSlot->SetHorizontalAlignment(HAlign_Right); CountSlot->SetVerticalAlignment(VAlign_Bottom); CountSlot->SetPadding(FMargin(0.f, 0.f, 4.f, 2.f));
+        CountSlot->SetHorizontalAlignment(HAlign_Right); CountSlot->SetVerticalAlignment(VAlign_Bottom); CountSlot->SetPadding(FMargin(0.f, 0.f, 6.f, 4.f));
         USizeBox* Cell = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
         Cell->SetWidthOverride(64.f); Cell->SetHeightOverride(64.f); Cell->SetContent(Frame);
-        Grid->AddChildToUniformGrid(Cell, Index / 4, Index % 4);
-        Side.Icons.Add(Icon); Side.Counts.Add(Count); Side.Names.Add(ItemName);
+        // Item name under the first row of slots (16 px, one line, ellipsis); rows 2-3 carry no name line.
+        UTextBlock* ItemName = Text(WidgetTree, TEXT(""), 16, Ivory());
+        ItemName->SetJustification(ETextJustify::Center); ItemName->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
+        USizeBox* NameBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        NameBox->SetWidthOverride(76.f); NameBox->SetHeightOverride(Index < 4 ? 20.f : 0.f); NameBox->SetContent(ItemName);
+        UVerticalBox* CellColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+        CellColumn->AddChildToVerticalBox(Cell)->SetHorizontalAlignment(HAlign_Center);
+        CellColumn->AddChildToVerticalBox(NameBox)->SetHorizontalAlignment(HAlign_Center);
+        Grid->AddChildToUniformGrid(CellColumn, Index / 4, Index % 4);
+        Side.Icons.Add(Icon); Side.Counts.Add(Count); Side.Names.Add(ItemName); Side.Crosses.Add(Cross);
     }
-    Column->AddChildToVerticalBox(Grid)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    Side.bMine = bMine;
+    Column->AddChildToVerticalBox(Grid)->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
 
-    // Gold offered: editable for mine, static for theirs.
+    // Gold offered: one 300 x 44 plate, label left, coin and value right; editable for mine, static for theirs.
+    UBorder* GoldPlate = KitPanel(WidgetTree, TEXT("search_field"), 1.f, Well(), Hex(TEXT("3A4348")), FMargin(14.f, 0.f), 3.f);
+    GoldPlate->SetVerticalAlignment(VAlign_Center);
     UHorizontalBox* GoldRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    UHorizontalBoxSlot* LabelSlot = GoldRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Gold Offered"), 18, Dim()));
-    LabelSlot->SetVerticalAlignment(VAlign_Center); LabelSlot->SetPadding(FMargin(0.f, 0.f, 12.f, 0.f));
-    GoldRow->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("icon_coin_stack"), 24.f))->SetVerticalAlignment(VAlign_Center);
-    USizeBox* GoldSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    GoldSize->SetWidthOverride(150.f); GoldSize->SetHeightOverride(44.f);
+    UHorizontalBoxSlot* LabelSlot = GoldRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Gold Offered"), 18, Ivory()));
+    LabelSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); LabelSlot->SetVerticalAlignment(VAlign_Center);
+    GoldRow->AddChildToHorizontalBox(KitImage(WidgetTree, Kit(TEXT("icon_coin")) ? TEXT("icon_coin") : TEXT("icon_coin_stack"), 24.f))->SetVerticalAlignment(VAlign_Center);
+    USizeBox* ValueBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+    ValueBox->SetWidthOverride(90.f);
     if (bMine)
     {
         GoldBox = MakeField(WidgetTree, TEXT("0"), ETextJustify::Right);
+        FEditableTextBoxStyle BareStyle = GoldBox->WidgetStyle;  // the plate draws the field art; the box itself is bare
+        BareStyle.BackgroundImageNormal = BareStyle.BackgroundImageHovered = BareStyle.BackgroundImageFocused = BareStyle.BackgroundImageReadOnly = FSlateNoResource();
+        BareStyle.Padding = FMargin(4.f, 0.f);
+        GoldBox->WidgetStyle = BareStyle;
         FScriptDelegate Changed; Changed.BindUFunction(this, TEXT("HandleGoldChanged")); GoldBox->OnTextChanged.Add(Changed);
-        GoldSize->SetContent(GoldBox);
+        ValueBox->SetContent(GoldBox);
     }
     else
     {
         TheirGold = Num(WidgetTree, TEXT("0"), 20, Ivory());
-        UBorder* Plate = KitPanel(WidgetTree, TEXT("search_field"), 1.f, Well(), Hex(TEXT("3A4348")), FMargin(0.f, 0.f, 14.f, 0.f), 3.f);
-        Plate->SetVerticalAlignment(VAlign_Center); Plate->SetHorizontalAlignment(HAlign_Right); Plate->SetContent(TheirGold);
-        GoldSize->SetContent(Plate);
+        TheirGold->SetJustification(ETextJustify::Right);
+        ValueBox->SetContent(TheirGold);
     }
-    GoldRow->AddChildToHorizontalBox(GoldSize)->SetPadding(FMargin(8.f, 0.f, 0.f, 0.f));
-    Column->AddChildToVerticalBox(GoldRow)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    GoldRow->AddChildToHorizontalBox(ValueBox)->SetVerticalAlignment(VAlign_Center);
+    GoldPlate->SetContent(GoldRow);
+    USizeBox* GoldSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+    GoldSize->SetWidthOverride(300.f); GoldSize->SetHeightOverride(44.f); GoldSize->SetContent(GoldPlate);
+    Column->AddChildToVerticalBox(GoldSize)->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
 
     if (bMine)
     {
@@ -183,7 +191,14 @@ void USFTradeWindow::BuildSide(UVerticalBox* Column, FSideWidgets& Side, bool bM
         LockButton = Lock.Button; LockLabel = Lock.Label;
         FScriptDelegate Clicked; Clicked.BindUFunction(this, TEXT("HandleLock")); LockButton->OnClicked.Add(Clicked);
         LockPlate = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
-        LockPlate->SetBrush(FSlateNoResource()); LockPlate->SetContent(Lock.Root);
+        LockPlate->SetBrush(FSlateNoResource());
+        UOverlay* LockStack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
+        LockStack->AddChildToOverlay(Lock.Root);
+        LockTick = KitImage(WidgetTree, TEXT("status_tick"), 28.f);  // shown while the offer is locked
+        LockTick->SetVisibility(ESlateVisibility::Collapsed);
+        UOverlaySlot* TickSlot = LockStack->AddChildToOverlay(LockTick);
+        TickSlot->SetHorizontalAlignment(HAlign_Left); TickSlot->SetVerticalAlignment(VAlign_Center); TickSlot->SetPadding(FMargin(22.f, 0.f, 0.f, 0.f));
+        LockPlate->SetContent(LockStack);
         Column->AddChildToVerticalBox(LockPlate);
     }
     else
@@ -218,13 +233,18 @@ void USFTradeWindow::NativeOnInitialized()
 
     // Title with the close button at the right.
     UOverlay* Title = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
-    UOverlaySlot* TitleSlot = Title->AddChildToOverlay(Heading(WidgetTree, TEXT("Direct Trade"), 48, Ivory()));
+    // "Direct Trade" with a 60 x 8 divider flourish each side.
+    UHorizontalBox* TitleRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+    TitleRow->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("divider"), 60.f, 8.f))->SetVerticalAlignment(VAlign_Center);
+    TitleRow->AddChildToHorizontalBox(Heading(WidgetTree, TEXT("Direct Trade"), 48, Ivory()))->SetPadding(FMargin(16.f, 0.f));
+    TitleRow->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("divider"), 60.f, 8.f))->SetVerticalAlignment(VAlign_Center);
+    UOverlaySlot* TitleSlot = Title->AddChildToOverlay(TitleRow);
     TitleSlot->SetHorizontalAlignment(HAlign_Center); TitleSlot->SetVerticalAlignment(VAlign_Center);
     UButton* Close = MakeCloseButton(WidgetTree, nullptr);
     FScriptDelegate CloseClicked; CloseClicked.BindUFunction(this, TEXT("HandleClose")); Close->OnClicked.Add(CloseClicked);
     UOverlaySlot* CloseSlot = Title->AddChildToOverlay(Close);
     CloseSlot->SetHorizontalAlignment(HAlign_Right); CloseSlot->SetVerticalAlignment(VAlign_Top);
-    Contents->AddChildToVerticalBox(Title)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    Contents->AddChildToVerticalBox(Title)->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
 
     // Two plain columns split by a vertical rule.
     UHorizontalBox* Columns = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
@@ -252,20 +272,28 @@ void USFTradeWindow::NativeOnInitialized()
     UVerticalBox* CancelColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     const FSFHudButton Cancel = Button(WidgetTree, TEXT("Cancel Trade"), EButtonKind::Secondary, 300.f);
     CancelButton = Cancel.Button;
+    Cancel.Label->SetJustification(ETextJustify::Left);  // the Esc cap sits at the left; the label starts 72 px in
+    if (UBorder* CancelPad = Cast<UBorder>(Cancel.Label->GetParent())) { CancelPad->SetPadding(FMargin(72.f, 0.f, 24.f, 0.f)); }
     FScriptDelegate CancelClicked; CancelClicked.BindUFunction(this, TEXT("HandleCancel")); CancelButton->OnClicked.Add(CancelClicked);
-    CancelColumn->AddChildToVerticalBox(Cancel.Root);
+    UOverlay* CancelStack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
+    CancelStack->AddChildToOverlay(Cancel.Root);
+    UWidget* EscCap = KitImage(WidgetTree, TEXT("keycap_esc"));  // Esc cancels, as in the concept
+    EscCap->SetVisibility(ESlateVisibility::HitTestInvisible);
+    UOverlaySlot* EscSlot = CancelStack->AddChildToOverlay(EscCap);
+    EscSlot->SetHorizontalAlignment(HAlign_Left); EscSlot->SetVerticalAlignment(VAlign_Center); EscSlot->SetPadding(FMargin(16.f, 0.f, 0.f, 0.f));
+    CancelColumn->AddChildToVerticalBox(CancelStack);
     Countdown = Text(WidgetTree, TEXT(""), 16, Dim());
     CancelColumn->AddChildToVerticalBox(Countdown)->SetPadding(FMargin(4.f, 4.f, 0.f, 0.f));
     UHorizontalBoxSlot* CancelSlot = Footer->AddChildToHorizontalBox(CancelColumn);
     CancelSlot->SetPadding(FMargin(20.f, 0.f, 0.f, 0.f));
     UHorizontalBoxSlot* Spacer = Footer->AddChildToHorizontalBox(WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass()));
     Spacer->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-    const FSFHudButton Accept = Button(WidgetTree, TEXT("Hold to Accept Trade"), EButtonKind::Primary, 420.f);
-    AcceptButton = Accept.Button;
+    const FSFHudHoldButton Accept = HoldButton(WidgetTree, TEXT("Hold to Accept Trade"), 420.f);
+    AcceptButton = Accept.Button; AcceptRing = Accept.Ring;
     FScriptDelegate Pressed; Pressed.BindUFunction(this, TEXT("HandleAcceptPressed")); AcceptButton->OnPressed.Add(Pressed);
     FScriptDelegate Released; Released.BindUFunction(this, TEXT("HandleAcceptReleased")); AcceptButton->OnReleased.Add(Released);
-    Footer->AddChildToHorizontalBox(WithHoldStrip(WidgetTree, Accept, 420.f, AcceptProgress))->SetPadding(FMargin(0.f, 0.f, 20.f, 0.f));
-    Contents->AddChildToVerticalBox(Footer)->SetPadding(FMargin(0.f, 10.f, 0.f, 4.f));
+    Footer->AddChildToHorizontalBox(Accept.Face)->SetPadding(FMargin(0.f, 0.f, 20.f, 0.f));
+    Contents->AddChildToVerticalBox(Footer)->SetPadding(FMargin(0.f, 6.f, 0.f, 0.f));
 }
 
 void USFTradeWindow::HandleGoldChanged(const FText& Text)
@@ -280,11 +308,11 @@ void USFTradeWindow::HandleLock() { if (Model.IsValid()) { Model->Lock(); } }
 void USFTradeWindow::HandleCancel() { if (Model.IsValid()) { Model->Cancel(); } }
 void USFTradeWindow::HandleClose() { SetVisibility(ESlateVisibility::Collapsed); }
 void USFTradeWindow::HandleAcceptPressed() { if (Model.IsValid() && Model->CanAccept()) { HoldStarted = NowSeconds(GetWorld()); } }
-void USFTradeWindow::HandleAcceptReleased() { HoldStarted = -1.0; if (AcceptProgress) { AcceptProgress->SetWidthOverride(0.f); } }
+void USFTradeWindow::HandleAcceptReleased() { HoldStarted = -1.0; HoldFraction = 0.f; }
 
 void USFTradeWindow::FillSide(const FSFTradeSide& Source, FSideWidgets& Side)
 {
-    Side.Name->SetText(FText::FromString(Source.PlayerName));
+    Side.Name->SetText(FText::FromString(Side.bMine ? FString(TEXT("You")) : Source.PlayerName));
     FString Current = Source.PlayerName;
     for (const FSFTradeStack& Stack : Source.Items) { Current += FString::Printf(TEXT("|%s:%d"), *Stack.ItemId, Stack.Count); }
     if (Current == Side.Signature) { return; }
@@ -293,9 +321,9 @@ void USFTradeWindow::FillSide(const FSFTradeSide& Source, FSideWidgets& Side)
     {
         const bool bFilled = Source.Items.IsValidIndex(Index);
         SetItemImage(Side.Icons[Index], bFilled ? Source.Items[Index].ItemId : FString(), 48.f);
-        const bool bArt = Side.Icons[Index]->GetVisibility() != ESlateVisibility::Collapsed;
-        Side.Names[Index]->SetText(bFilled && !bArt ? FText::FromString(Source.Items[Index].Name) : FText::GetEmpty());
+        Side.Names[Index]->SetText(bFilled ? FText::FromString(Source.Items[Index].Name) : FText::GetEmpty());
         Side.Counts[Index]->SetText(bFilled ? FText::AsNumber(Source.Items[Index].Count) : FText::GetEmpty());
+        Side.Crosses[Index]->SetVisibility(bFilled ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
     }
 }
 
@@ -313,6 +341,7 @@ void USFTradeWindow::Refresh()
     Countdown->SetText(FText::FromString(Trade.State == ESFTradeState::Open ? FString::Printf(TEXT("Expires %s"), *FSFTradeViewModel::FormatCountdown(Model->RemainingSeconds(Now))) : FString(FSFTradeViewModel::StatusLine(Trade.Mine, Trade.State))));
     // Offer Locked toggle: moss tint and a tick while locked, the hint underneath says how to undo.
     LockLabel->SetText(FText::FromString(Trade.Mine.bLocked ? TEXT("Offer Locked") : TEXT("Lock Offer")));
+    LockTick->SetVisibility(Trade.Mine.bLocked ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
     LockPlate->SetBrush(Trade.Mine.bLocked ? FSlateBrush(Frame(Hex(TEXT("2B3B2C"), 0.9f), Moss(), 3.f)) : FSlateBrush(FSlateNoResource()));
     LockButton->SetIsEnabled(Trade.State == ESFTradeState::Open && (Model->CanLock() || Trade.Mine.bLocked));
     // Partner status.
@@ -330,12 +359,29 @@ void USFTradeWindow::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     if (HoldStarted >= 0.0 && Model.IsValid())
     {
         const double Fraction = FMath::Clamp((NowSeconds(GetWorld()) - HoldStarted) / HoldSeconds, 0.0, 1.0);
-        AcceptProgress->SetWidthOverride(static_cast<float>(Fraction) * 400.f);
-        if (Fraction >= 1.0) { HoldStarted = -1.0; AcceptProgress->SetWidthOverride(0.f); Model->Accept(); }
+        HoldFraction = static_cast<float>(Fraction);
+        if (Fraction >= 1.0) { HoldStarted = -1.0; HoldFraction = 0.f; Model->Accept(); }
     }
 }
 
+int32 USFTradeWindow::NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect,
+    FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const
+{
+    LayerId = Super::NativePaint(Args, AllottedGeometry, MyCullingRect, OutDrawElements, LayerId, InWidgetStyle, bParentEnabled);
+    return SFHudStyle::PaintHoldArc(OutDrawElements, LayerId, AcceptRing, HoldFraction);
+}
+
 // ---- Market board ----
+
+namespace
+{
+// Rail row -> inventory tab filter: All Items, Weapons, Materials, Consumables, Tools.
+ESFInventoryTab RailTab(int32 Row)
+{
+    static const ESFInventoryTab Tabs[5] = {ESFInventoryTab::All, ESFInventoryTab::Gear, ESFInventoryTab::Materials, ESFInventoryTab::Consumables, ESFInventoryTab::Gear};
+    return Tabs[FMath::Clamp(Row, 0, 4)];
+}
+}
 
 void USFMarketBoard::NativeOnInitialized()
 {
@@ -376,14 +422,18 @@ void USFMarketBoard::NativeOnInitialized()
         Tabs->AddChildToHorizontalBox(TabSize)->SetPadding(FMargin(Index == 0 ? 0.f : 12.f, 0.f, 0.f, 0.f));
         TopTabs.Add(Tab);
     }
-    Contents->AddChildToVerticalBox(Tabs)->SetPadding(FMargin(20.f, 0.f, 0.f, 14.f));
+    Contents->AddChildToVerticalBox(Tabs)->SetPadding(FMargin(20.f, 0.f, 20.f, 0.f));
+    USizeBox* TabRule = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());  // 1 px brass rule along the tab strip's bottom edge
+    TabRule->SetHeightOverride(1.f); TabRule->SetContent(KitPanel(WidgetTree, TEXT("divider"), 1.f, Brass(), Brass(), FMargin(0.f), 0.f));
+    Contents->AddChildToVerticalBox(TabRule)->SetPadding(FMargin(20.f, 0.f, 20.f, 14.f));
 
     // Browse pane: category rail | search + table | detail card.
     UHorizontalBox* Browse = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     UVerticalBox* Rail = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    static const TCHAR* const RailNames[4] = {TEXT("All Items"), TEXT("Materials"), TEXT("Tools"), TEXT("Consumables")};  // ESFInventoryTab order
-    static const TCHAR* const RailIcons[4] = {TEXT("icon_structures"), TEXT("icon_oak_log"), TEXT("icon_woodcutting_axes"), TEXT("icon_bread")};
-    for (int32 Index = 0; Index < 4; ++Index)
+    // Five rows as in the concept. ponytail: items carry no weapon flag yet, so Weapons and Tools both filter Gear (see RailTab).
+    static const TCHAR* const RailNames[5] = {TEXT("All Items"), TEXT("Weapons"), TEXT("Materials"), TEXT("Consumables"), TEXT("Tools")};
+    static const TCHAR* const RailIcons[5] = {TEXT("icon_structures"), TEXT("icon_sword"), TEXT("icon_oak_log"), TEXT("icon_bread"), TEXT("icon_woodcutting_axes")};
+    for (int32 Index = 0; Index < 5; ++Index)
     {
         UBorder* Row = KitPanel(WidgetTree, TEXT("tab_normal"), 1.f, Well(), Hex(TEXT("3A4348")), FMargin(8.f, 0.f), 3.f);
         UHorizontalBox* Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
@@ -400,22 +450,34 @@ void USFMarketBoard::NativeOnInitialized()
     UVerticalBox* Middle = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     UEditableTextBox* Search = MakeField(WidgetTree, TEXT("Search listings"), ETextJustify::Left);
     FScriptDelegate SearchChanged; SearchChanged.BindUFunction(this, TEXT("HandleSearchChanged")); Search->OnTextChanged.Add(SearchChanged);
+    FEditableTextBoxStyle SearchStyle = Search->WidgetStyle; SearchStyle.Padding = FMargin(44.f, 4.f, 14.f, 4.f);  // room for the magnifier
+    Search->WidgetStyle = SearchStyle;
+    UOverlay* SearchStack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
+    SearchStack->AddChildToOverlay(Search);
+    USizeBox* SearchGlyph = KitImage(WidgetTree, TEXT("icon_search"), 20.f);
+    SearchGlyph->SetVisibility(ESlateVisibility::HitTestInvisible);
+    UOverlaySlot* GlyphSlot = SearchStack->AddChildToOverlay(SearchGlyph);
+    GlyphSlot->SetHorizontalAlignment(HAlign_Left); GlyphSlot->SetVerticalAlignment(VAlign_Center); GlyphSlot->SetPadding(FMargin(14.f, 0.f, 0.f, 0.f));
     USizeBox* SearchSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    SearchSize->SetWidthOverride(720.f); SearchSize->SetHeightOverride(44.f); SearchSize->SetContent(Search);
+    SearchSize->SetWidthOverride(720.f); SearchSize->SetHeightOverride(44.f); SearchSize->SetContent(SearchStack);
     Middle->AddChildToVerticalBox(SearchSize)->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
     // Table header: Item and Unit Price sort.
     UHorizontalBox* Head = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     auto HeadCell = [&](const TCHAR* Label, float Width, UBorder** Out)
     {
         UBorder* Cell = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
-        Cell->SetBrush(FSlateNoResource()); Cell->SetContent(Text(WidgetTree, Label, 18, Dim()));
+        Cell->SetBrush(Frame(FLinearColor::Transparent, Hex(TEXT("3A4348")), 0.f)); Cell->SetPadding(FMargin(10.f, 0.f));  // 1 px rule between header cells
+        UHorizontalBox* CellRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+        CellRow->AddChildToHorizontalBox(Text(WidgetTree, Label, 18, Dim()));
+        if (FCString::Strcmp(Label, TEXT("Item")) == 0) { CellRow->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("icon_sort_arrow"), 14.f))->SetPadding(FMargin(8.f, 0.f, 0.f, 0.f)); }
+        Cell->SetContent(CellRow);
         USizeBox* Box = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
         Box->SetWidthOverride(Width); Box->SetContent(Cell);
         Head->AddChildToHorizontalBox(Box);
         if (Out) { *Out = Cell; }
     };
     UBorder* ItemHead = nullptr; UBorder* PriceHead = nullptr;
-    HeadCell(TEXT("Item"), 280.f, &ItemHead); HeadCell(TEXT("Qty"), 90.f, nullptr); HeadCell(TEXT("Unit Price"), 170.f, &PriceHead); HeadCell(TEXT("Seller"), 180.f, nullptr);
+    HeadCell(TEXT("Item"), 250.f, &ItemHead); HeadCell(TEXT("Qty"), 90.f, nullptr); HeadCell(TEXT("Unit Price"), 130.f, &PriceHead); HeadCell(TEXT("Seller"), 110.f, nullptr); HeadCell(TEXT("Time Left"), 140.f, nullptr);
     HeaderItem = ItemHead; HeaderPrice = PriceHead;
     Middle->AddChildToVerticalBox(Head)->SetPadding(FMargin(8.f, 0.f, 0.f, 4.f));
     USizeBox* ListSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
@@ -439,25 +501,26 @@ void USFMarketBoard::NativeOnInitialized()
     CardBox->AddChildToVerticalBox(WellSize)->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
     DetailName = Heading(WidgetTree, TEXT("Select a listing"), 26, Ivory());
     CardBox->AddChildToVerticalBox(DetailName)->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
-    auto DetailRow = [&](const TCHAR* Label, UTextBlock*& Value)
+    auto DetailRow = [&](const TCHAR* Label, UTextBlock*& Value, bool bCoin = false)
     {
         UHorizontalBox* Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
         UHorizontalBoxSlot* LabelSlot = Line->AddChildToHorizontalBox(Text(WidgetTree, Label, 18, Dim()));
         LabelSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+        if (bCoin) { Line->AddChildToHorizontalBox(KitImage(WidgetTree, Kit(TEXT("icon_coin")) ? TEXT("icon_coin") : TEXT("icon_coin_stack"), 20.f))->SetVerticalAlignment(VAlign_Center); }
         Value = Num(WidgetTree, TEXT(""), 18, Ivory());
         Line->AddChildToHorizontalBox(Value);
         CardBox->AddChildToVerticalBox(Line)->SetPadding(FMargin(0.f, 2.f));
     };
     UTextBlock* QtyValue = nullptr; UTextBlock* PriceValue = nullptr; UTextBlock* SellerValue = nullptr; UTextBlock* FeeValue = nullptr; UTextBlock* WalletValue = nullptr;
-    DetailRow(TEXT("Quantity"), QtyValue); DetailRow(TEXT("Unit price"), PriceValue); DetailRow(TEXT("Seller"), SellerValue);
+    DetailRow(TEXT("Quantity"), QtyValue); DetailRow(TEXT("Unit price"), PriceValue, true); DetailRow(TEXT("Seller"), SellerValue);
     CardBox->AddChildToVerticalBox(KitPanel(WidgetTree, TEXT("divider"), 1.f, Brass(), Brass(), FMargin(0.f), 0.f))->SetPadding(FMargin(0.f, 6.f));
-    DetailRow(TEXT("Market fee"), FeeValue); DetailRow(TEXT("You have"), WalletValue);
+    DetailRow(TEXT("Market fee"), FeeValue, true); DetailRow(TEXT("You have"), WalletValue);
     DetailQty = QtyValue; DetailPrice = PriceValue; DetailSeller = SellerValue; DetailFee = FeeValue; DetailWallet = WalletValue;
-    const FSFHudButton Buy = Button(WidgetTree, TEXT("Hold to Buy"), EButtonKind::Primary, 300.f);
-    BuyButton = Buy.Button;
+    const FSFHudHoldButton Buy = HoldButton(WidgetTree, TEXT("Hold to Buy"), 300.f);
+    BuyButton = Buy.Button; BuyRing = Buy.Ring;
     FScriptDelegate Pressed; Pressed.BindUFunction(this, TEXT("HandleBuyPressed")); BuyButton->OnPressed.Add(Pressed);
     FScriptDelegate Released; Released.BindUFunction(this, TEXT("HandleBuyReleased")); BuyButton->OnReleased.Add(Released);
-    CardBox->AddChildToVerticalBox(WithHoldStrip(WidgetTree, Buy, 300.f, BuyProgress))->SetPadding(FMargin(0.f, 14.f, 0.f, 0.f));
+    CardBox->AddChildToVerticalBox(Buy.Face)->SetPadding(FMargin(0.f, 14.f, 0.f, 0.f));
     USizeBox* CardSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
     CardSize->SetWidthOverride(340.f); CardSize->SetContent(Card);
     Browse->AddChildToHorizontalBox(CardSize)->SetPadding(FMargin(24.f, 0.f, 0.f, 0.f));
@@ -500,7 +563,6 @@ void USFMarketBoard::SetSellItem(const FString& ItemId, const FString& Name, int
 
 void USFMarketBoard::Style()
 {
-    const int32 ActiveRail = Model.IsValid() ? static_cast<int32>(Model->Filter().Tab) : 0;
     for (int32 Index = 0; Index < TopTabs.Num(); ++Index)
     { TopTabs[Index]->SetBrush(KitOrFrame(Index == ActiveTab ? TEXT("tab_selected") : TEXT("tab_normal"), Well(), Brass(), 3.f)); TopTabs[Index]->SetRenderOpacity(Index == 1 ? 0.45f : 1.f); }
     for (int32 Index = 0; Index < RailRows.Num(); ++Index)
@@ -522,7 +584,7 @@ void USFMarketBoard::HandleBuyPressed()
     const FSFListing* Listing = Selected(Visible);
     if (Listing && Model->CanBuy(*Listing)) { HoldStarted = NowSeconds(GetWorld()); }
 }
-void USFMarketBoard::HandleBuyReleased() { HoldStarted = -1.0; if (BuyProgress) { BuyProgress->SetWidthOverride(0.f); } }
+void USFMarketBoard::HandleBuyReleased() { HoldStarted = -1.0; HoldFraction = 0.f; }
 
 const FSFListing* USFMarketBoard::Selected(const TArray<FSFListing>& Visible) const
 {
@@ -543,9 +605,9 @@ void USFMarketBoard::Rebuild()
     DetailName->SetText(FText::FromString(Chosen ? Chosen->ItemName : FString(TEXT("Select a listing"))));
     SetItemImage(DetailIcon, Chosen ? Chosen->ItemId : FString(), 128.f);
     DetailQty->SetText(Chosen ? FText::AsNumber(Chosen->Quantity) : FText::GetEmpty());
-    DetailPrice->SetText(FText::FromString(Chosen ? FString::Printf(TEXT("%s g"), *SFGold::Format(Chosen->UnitPrice)) : FString()));
+    DetailPrice->SetText(FText::FromString(Chosen ? FString::Printf(TEXT("%s gold"), *SFGold::Format(Chosen->UnitPrice)) : FString()));
     DetailSeller->SetText(FText::FromString(Chosen ? Chosen->SellerName : FString()));
-    DetailFee->SetText(FText::FromString(Chosen ? FString::Printf(TEXT("%s g"), *SFGold::Format(Model->BuyFee(*Chosen))) : FString()));
+    DetailFee->SetText(FText::FromString(Chosen ? FString::Printf(TEXT("%s gold"), *SFGold::Format(Model->BuyFee(*Chosen))) : FString()));
     DetailWallet->SetText(FText::FromString(FString::Printf(TEXT("%s g"), *SFGold::Format(Model->GetWallet().Available))));
     BuyButton->SetIsEnabled(Chosen && Model->CanBuy(*Chosen));
     if (Signature == RowSignature) { return; }
@@ -555,7 +617,7 @@ void USFMarketBoard::Rebuild()
     {
         const bool bChosen = L.ListingId == SelectedListingId;
         UBorder* Row = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
-        Row->SetBrush(bChosen ? KitOrFrame(TEXT("tab_selected"), Hex(TEXT("2B3B2C"), 1.f), Brass(), 3.f) : FSlateBrush(FSlateColorBrush(Hex(TEXT("17232A"), 0.6f))));
+        Row->SetBrush(bChosen ? KitOrFrame(TEXT("tab_selected"), Hex(TEXT("2B3B2C"), 1.f), Brass(), 3.f) : FSlateBrush(Frame(Hex(TEXT("17232A"), 0.6f), Hex(TEXT("3A4348")), 0.f)));  // 1 px rule between rows
         Row->SetPadding(FMargin(8.f, 0.f));
         UHorizontalBox* Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
         Row->SetVerticalAlignment(VAlign_Center); Row->SetContent(Line);
@@ -572,13 +634,14 @@ void USFMarketBoard::Rebuild()
         IconBox->SetWidthOverride(40.f); IconBox->SetHeightOverride(40.f); IconBox->SetContent(Icon);
         ItemCell->AddChildToHorizontalBox(IconBox);
         ItemCell->AddChildToHorizontalBox(Text(WidgetTree, L.ItemName, 20, Ivory()))->SetPadding(FMargin(10.f, 0.f, 0.f, 0.f));
-        Cell(ItemCell, 280.f);
+        Cell(ItemCell, 250.f);
         Cell(Num(WidgetTree, FString::FromInt(L.Quantity), 18, Ivory()), 90.f);
         UHorizontalBox* PriceCell = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-        PriceCell->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("icon_coin_stack"), 18.f))->SetVerticalAlignment(VAlign_Center);
+        PriceCell->AddChildToHorizontalBox(KitImage(WidgetTree, Kit(TEXT("icon_coin")) ? TEXT("icon_coin") : TEXT("icon_coin_stack"), 20.f))->SetVerticalAlignment(VAlign_Center);
         PriceCell->AddChildToHorizontalBox(Num(WidgetTree, SFGold::Format(L.UnitPrice), 18, Model->CanBuy(L) ? Ivory() : Crimson()))->SetPadding(FMargin(8.f, 0.f, 0.f, 0.f));
-        Cell(PriceCell, 170.f);
-        Cell(Text(WidgetTree, L.SellerName, 18, Ivory()), 180.f);
+        Cell(PriceCell, 130.f);
+        Cell(Text(WidgetTree, L.SellerName, 18, Ivory()), 110.f);
+        Cell(Text(WidgetTree, FSFMarketViewModel::TimeLeft(L), 18, Ivory()), 140.f);
         USizeBox* RowSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
         RowSize->SetHeightOverride(56.f); RowSize->SetContent(Row);
         Rows->AddChildToVerticalBox(RowSize)->SetPadding(FMargin(0.f, 0.f, 0.f, 1.f));
@@ -593,14 +656,21 @@ void USFMarketBoard::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     if (HoldStarted >= 0.0 && Model.IsValid())
     {
         const double Fraction = FMath::Clamp((NowSeconds(GetWorld()) - HoldStarted) / HoldSeconds, 0.0, 1.0);
-        BuyProgress->SetWidthOverride(static_cast<float>(Fraction) * 280.f);
+        HoldFraction = static_cast<float>(Fraction);
         if (Fraction >= 1.0)
         {
-            HoldStarted = -1.0; BuyProgress->SetWidthOverride(0.f);
+            HoldStarted = -1.0; HoldFraction = 0.f;
             const TArray<FSFListing> Visible = Model->Visible();
             if (const FSFListing* Listing = Selected(Visible)) { Model->Buy(*Listing); RowSignature.Reset(); }
         }
     }
+}
+
+int32 USFMarketBoard::NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect,
+    FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const
+{
+    LayerId = Super::NativePaint(Args, AllottedGeometry, MyCullingRect, OutDrawElements, LayerId, InWidgetStyle, bParentEnabled);
+    return SFHudStyle::PaintHoldArc(OutDrawElements, LayerId, BuyRing, HoldFraction);
 }
 
 FReply USFMarketBoard::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -611,7 +681,7 @@ FReply USFMarketBoard::NativeOnMouseButtonDown(const FGeometry& InGeometry, cons
     for (int32 Index = 0; Index < TopTabs.Num(); ++Index)
     { if (Over(TopTabs[Index]) && Index != 1) { ShowTab(Index); return FReply::Handled(); } }
     for (int32 Index = 0; Index < RailRows.Num(); ++Index)
-    { if (Over(RailRows[Index])) { Model->Filter().Tab = static_cast<ESFInventoryTab>(Index); RowSignature.Reset(); return FReply::Handled(); } }
+    { if (Over(RailRows[Index])) { ActiveRail = Index; Model->Filter().Tab = RailTab(Index); RowSignature.Reset(); return FReply::Handled(); } }
     if (Over(HeaderItem)) { Model->Filter().Sort = ESFMarketSort::Name; RowSignature.Reset(); return FReply::Handled(); }
     if (Over(HeaderPrice))
     {

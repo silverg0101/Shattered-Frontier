@@ -89,7 +89,7 @@ public:
         BarFillBrush =LoadingScreenBrush(TEXT("T_LS_BarFill"));
         SpinnerBrush = LoadingScreenBrush(TEXT("T_LS_Spinner"));
         const FLinearColor Shadow(0.f, 0.f, 0.f, 0.9f);
-        constexpr float BarWidth = 620.f, BarHeight = 22.f, BarInset = 4.f;
+        constexpr float BarWidth = 620.f, BarHeight = 14.f, BarInset = 2.f;
 
         ChildSlot
         [
@@ -103,15 +103,15 @@ public:
                     SNew(SBox).WidthOverride(1920.f).HeightOverride(1080.f)
                     [
                         SNew(SCanvas)
-                        + SCanvas::Slot().Position(FVector2D(960.f - 138.f, 432.f - 138.f)).Size(FVector2D(276.f, 276.f))
+                        + SCanvas::Slot().Position(FVector2D(960.f - 110.f, 430.f - 110.f)).Size(FVector2D(220.f, 220.f))
                         [ SNew(SImage).Image(&EmblemBrush) ]
                         + SCanvas::Slot().Position(FVector2D(0.f, 580.f)).Size(FVector2D(1920.f, 140.f))
-                        [ SNew(STextBlock).Text(FText::FromString(Settings.ZoneTitle)).Font(LoadingScreenFont(TEXT("FontFace_EBGaramondRegular"), 84)).Justification(ETextJustify::Center).ColorAndOpacity(SFHudStyle::Ivory()).ShadowOffset(FVector2D(3, 3)).ShadowColorAndOpacity(Shadow) ]
-                        + SCanvas::Slot().Position(FVector2D(960.f - 253.f, 722.f - 24.f)).Size(FVector2D(506.f, 48.f))
+                        [ SNew(STextBlock).Text(FText::FromString(Settings.ZoneTitle)).Font(LoadingScreenFont(TEXT("FontFace_EBGaramondRegular"), 72)).Justification(ETextJustify::Center).ColorAndOpacity(SFHudStyle::Ivory()).ShadowOffset(FVector2D(3, 3)).ShadowColorAndOpacity(Shadow) ]
+                        + SCanvas::Slot().Position(FVector2D(960.f - 280.f, 722.f - 24.f)).Size(FVector2D(560.f, 48.f))
                         [ SNew(SImage).Image(&RuleBrush) ]
                         + SCanvas::Slot().Position(FVector2D(160.f, 862.f)).Size(FVector2D(1600.f, 42.f))
                         [ SNew(STextBlock).Text(this, &SSFLoadingScreen::CurrentTip).Font(LoadingScreenFont(TEXT("FontFace_EBGaramondRegular"), 24)).Justification(ETextJustify::Center).ColorAndOpacity(SFHudStyle::Ivory()).ShadowOffset(FVector2D(2, 2)).ShadowColorAndOpacity(Shadow) ]
-                        + SCanvas::Slot().Position(FVector2D(960.f - BarWidth / 2.f, 931.f - BarHeight / 2.f)).Size(FVector2D(BarWidth, BarHeight))
+                        + SCanvas::Slot().Position(FVector2D(960.f - (BarWidth + 48.f) / 2.f, 931.f - (BarHeight + 20.f) / 2.f)).Size(FVector2D(BarWidth + 48.f, BarHeight + 20.f))  // the end caps and the top diamond draw outside the trough
                         [ SNew(SImage).Image(&BarFrameBrush) ]
                         + SCanvas::Slot().Position(FVector2D(960.f - BarWidth / 2.f + BarInset, 931.f - BarHeight / 2.f + BarInset)).Size(FVector2D(BarWidth - 2.f * BarInset, BarHeight - 2.f * BarInset))
                         [ SNew(SBox).HAlign(HAlign_Left).WidthOverride(this, &SSFLoadingScreen::FillWidth)[ SNew(SImage).Image(&BarFillBrush) ] ]
@@ -133,7 +133,7 @@ private:
     }
 
     // MoviePlayer reports no load progress to the widget: ease towards 92 % so the bar always moves and never claims done early.
-    FOptionalSize FillWidth() const { return FOptionalSize(static_cast<float>(0.92 * (1.0 - FMath::Exp(-Elapsed() / 6.0))) * (620.f - 8.f)); }
+    FOptionalSize FillWidth() const { return FOptionalSize(static_cast<float>(0.92 * (1.0 - FMath::Exp(-Elapsed() / 2.5))) * (620.f - 8.f)); }
 
     TOptional<FSlateRenderTransform> SpinnerTransform() const { return FSlateRenderTransform(FQuat2D(FMath::DegreesToRadians(static_cast<float>(FMath::Fmod(Elapsed() * 270.0, 360.0))))); }
 

@@ -74,6 +74,9 @@ private:
     UPROPERTY(Transient) TObjectPtr<USizeBox> DiscBox;
 
     ESFPromptContext ShownPrompt = ESFPromptContext::None;
+    FString HarvestVerb, ShownVerb;  // the aimed node's verb ("Chop", "Mine", ...) for the Harvest prompt
+    FString ZoneName;
+    double NextFooterSeconds = 0.0;
     int32 ShownActiveKey = -1;
     FVector2D ShownViewport = FVector2D::ZeroVector;
 };

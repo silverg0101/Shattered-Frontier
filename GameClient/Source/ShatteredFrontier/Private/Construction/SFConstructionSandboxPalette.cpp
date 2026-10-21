@@ -67,7 +67,7 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
     USizeBox* PanelSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
     PanelSize->SetWidthOverride(480.f); PanelSize->SetContent(PalettePanel);
     UCanvasPanelSlot* PanelSlot = Root->AddChildToCanvas(PanelSize);
-    PanelSlot->SetAnchors(FAnchors(0.02f, 0.04f)); PanelSlot->SetAlignment(FVector2D(0.f, 0.f)); PanelSlot->SetAutoSize(true); PanelSlot->SetOffsets(FMargin(0.f));
+    PanelSlot->SetAnchors(FAnchors(0.02f, 0.03f)); PanelSlot->SetAlignment(FVector2D(0.f, 0.f)); PanelSlot->SetAutoSize(true); PanelSlot->SetOffsets(FMargin(0.f));
 
     // Title row, with the 2 px rule under it.
     UHorizontalBox* Title = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
@@ -126,10 +126,11 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
     static const TCHAR* const RailLabels[4] = {TEXT("Structures"), TEXT("Decor"), TEXT("Terrain"), TEXT("Favourites")};
     for (int32 Category = 0; Category < 4; ++Category)
     {
-        UBorder* Entry = KitPanel(WidgetTree, Category == 0 ? TEXT("tab_selected") : TEXT("tab_normal"), 1.f, Well, Hex(TEXT("3A4348")), FMargin(0.f), 3.f);
+        UBorder* Entry = KitPanel(WidgetTree, Category == 0 ? TEXT("tab_selected") : TEXT("tab_normal"), 1.f, Well, Hex(TEXT("3A4348")), FMargin(0.f), 3.f, false);
         UVerticalBox* Stack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-        Stack->AddChildToVerticalBox(KitImage(WidgetTree, RailIcons[Category], 36.f))->SetHorizontalAlignment(HAlign_Center);
+        Stack->AddChildToVerticalBox(KitImage(WidgetTree, RailIcons[Category], 32.f))->SetHorizontalAlignment(HAlign_Center);
         UTextBlock* Label = Text(WidgetTree, RailLabels[Category], 16, Category == 0 ? Ivory() : Dim);
+        Label->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
         Label->SetJustification(ETextJustify::Center);
         Stack->AddChildToVerticalBox(Label)->SetHorizontalAlignment(HAlign_Center);
         Entry->SetVerticalAlignment(VAlign_Center); Entry->SetContent(Stack); Entry->SetVisibility(ESlateVisibility::HitTestInvisible);
@@ -151,10 +152,11 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
         Flat.Normal = Flat.Hovered = Flat.Pressed = FSlateNoResource();
         Flat.NormalPadding = FMargin(0.f); Flat.PressedPadding = FMargin(0.f);
         Button->SetStyle(Flat);
-        UBorder* Frame = KitPanel(WidgetTree, TEXT("slot_catalogue_normal"), 1.f, Well, Hex(TEXT("3A4348")), FMargin(0.f), 3.f);  // selection state drawn by SelectTile
+        UBorder* Frame = KitPanel(WidgetTree, TEXT("slot_catalogue_normal"), 1.f, Well, Hex(TEXT("3A4348")), FMargin(4.f, 6.f, 4.f, 4.f), 3.f, false);  // selection state drawn by SelectTile
         UVerticalBox* Stack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-        Stack->AddChildToVerticalBox(KitImage(WidgetTree, TileIcons[Tile], 70.f))->SetHorizontalAlignment(HAlign_Center);
+        Stack->AddChildToVerticalBox(KitImage(WidgetTree, TileIcons[Tile], 56.f))->SetHorizontalAlignment(HAlign_Center);
         UTextBlock* Label = Text(WidgetTree, TileLabel(Tile), 16, Ivory());
+        Label->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
         Label->SetJustification(ETextJustify::Center);
         Stack->AddChildToVerticalBox(Label)->SetHorizontalAlignment(HAlign_Center);
         Frame->SetVerticalAlignment(VAlign_Center); Frame->SetHorizontalAlignment(HAlign_Center); Frame->SetContent(Stack); Frame->SetVisibility(ESlateVisibility::HitTestInvisible);
@@ -170,7 +172,7 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
     {
         USizeBox* EmptyBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
         EmptyBox->SetWidthOverride(100.f); EmptyBox->SetHeightOverride(100.f);
-        EmptyBox->SetContent(KitPanel(WidgetTree, TEXT("slot_catalogue_normal"), 0.6f, Well, Hex(TEXT("3A4348")), FMargin(0.f), 3.f));
+        EmptyBox->SetContent(KitPanel(WidgetTree, TEXT("slot_catalogue_normal"), 0.6f, Well, Hex(TEXT("3A4348")), FMargin(0.f), 3.f, false));
         Catalogue->AddChildToUniformGrid(EmptyBox, Cell / 3, Cell % 3);
     }
     Body->AddChildToHorizontalBox(Catalogue)->SetVerticalAlignment(VAlign_Top);
@@ -184,7 +186,7 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
     MaterialRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Material:"), 18, Brass()))->SetPadding(FMargin(12.f, 0.f, 8.f, 0.f));
     UHorizontalBoxSlot* NameSlot = MaterialRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Rough Timber"), 18, Ivory()));
     NameSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-    MaterialRow->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("row_chevron"), 18.f))->SetVerticalAlignment(VAlign_Center);
+    MaterialRow->AddChildToHorizontalBox(KitImage(WidgetTree, Kit(TEXT("dropdown_arrow")) ? TEXT("dropdown_arrow") : TEXT("row_chevron"), 20.f))->SetVerticalAlignment(VAlign_Center);
     Material->SetVerticalAlignment(VAlign_Center); Material->SetContent(MaterialRow); Material->SetVisibility(ESlateVisibility::HitTestInvisible);
     USizeBox* MaterialSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
     MaterialSize->SetHeightOverride(40.f); MaterialSize->SetContent(Material);
@@ -201,10 +203,11 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
     CostRow->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("status_tick"), 18.f))->SetVerticalAlignment(VAlign_Center);
     CostStack->AddChildToVerticalBox(CostRow)->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
     UHorizontalBox* StatusRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    StatusRow->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("status_tick"), 18.f))->SetVerticalAlignment(VAlign_Center);
+    USizeBox* GlyphBox = KitImage(WidgetTree, TEXT("status_tick"), 18.f);
+    StatusGlyph = Cast<UImage>(GlyphBox->GetContent());
+    StatusRow->AddChildToHorizontalBox(GlyphBox)->SetVerticalAlignment(VAlign_Center);
     StatusTextBlock = Text(WidgetTree, TEXT(""), 18, Ivory());
     StatusTextBlock->SetText(CachedStatusText);
-    StatusTextBlock->SetAutoWrapText(true);
     UHorizontalBoxSlot* StatusSlot = StatusRow->AddChildToHorizontalBox(StatusTextBlock);
     StatusSlot->SetPadding(FMargin(12.f, 0.f, 0.f, 0.f)); StatusSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
     CostStack->AddChildToVerticalBox(StatusRow);
@@ -258,6 +261,11 @@ void USFConstructionSandboxPalette::ConfigureNetworkPresentation()
 void USFConstructionSandboxPalette::SetBuildModeActive(bool bActive)
 {
     SetVisibility(bActive ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);  // the viewport-filling canvas must not catch world clicks
+}
+
+void USFConstructionSandboxPalette::SetPlacementValid(bool bValid)
+{
+    if (const FSFHudKitElement* Glyph = SFHudStyle::Kit(bValid ? TEXT("status_tick") : TEXT("status_cross"))) { if (StatusGlyph) { StatusGlyph->SetBrush(SFHudStyle::KitBrush(*Glyph)); } }
 }
 
 void USFConstructionSandboxPalette::SetStatusText(const FText& InStatusText)

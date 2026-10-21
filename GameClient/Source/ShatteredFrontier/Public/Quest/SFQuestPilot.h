@@ -73,6 +73,10 @@ public:
     FString CompletionRewardItemPath = TEXT("/Game/Frontier/Gameplay/Pilot/DA_BoarHide.DA_BoarHide");
     UPROPERTY(Config, EditAnywhere, Category="Rewards", meta=(ClampMin="1", ClampMax="20"))
     int32 CompletionRewardUnits = 3;
+    UPROPERTY(Config, EditAnywhere, Category="Quest", meta=(ToolTip="Quest record the pilot runs, a file name in content/quests. Release authors; next world start."))
+    FString QuestFile = TEXT("greenlands_frontier_founder.json");
+    UPROPERTY(Config, EditAnywhere, Category="Quest", meta=(ClampMin="1.0", ClampMax="10.0", Units="m", ToolTip="How close the player walks to a talk_resident objective's resident to count it."))
+    float TalkRangeMetres = 3.0f;
 };
 
 /** On a player controller. Server owns progress; owning client receives View. */
@@ -84,12 +88,15 @@ public:
     USFQuestPilotComponent();
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out) const override;
     virtual void TickComponent(float Delta, ELevelTick Type, FActorComponentTickFunction* Function) override;
+    virtual void EndPlay(const EEndPlayReason::Type Reason) override;
     /** Server only. */
     void Init(TSharedPtr<const FSFQuestDefinition> InQuest);
     bool Observe(const FString& Kind, const FString& TargetId, const FString& NodeId, const FString& OperationId);
     // Capture the active server quest step and revisions before an INT-06 gather grant.
     bool CaptureGatherReceipt(struct FSFGameplayRequest& Receipt, const FString& TargetId, const FString& NodeId);
     const FSFQuestProgress& GetProgress() const { return Progress; }
+    // Kind of the first unfinished objective of the active step ("gather", "craft", ...), or empty when none.
+    FString ActiveObjectiveKind() const;
     int32 PendingRewardCount() const { return PendingRewards.Num(); }
     const FSFQuestView& GetView() const { return View; }
     /** Server, INT-05 restore: the Progression quest state replaces session progress (rewards stay with the services). */
@@ -98,6 +105,10 @@ public:
 private:
     void RebuildView();
     void TryDeliverRewards();
+    /** talk_resident: hold the active step's resident through the townsfolk hand-off; count it when the player reaches it. */
+    void TickTalk();
+    TWeakObjectPtr<class ASFTownsfolkNpc> Talker;
+    double NextTalkRequest = 0;
     TSharedPtr<const FSFQuestDefinition> Quest;
     FSFQuestProgress Progress;
     TArray<FString> PendingRewards;  // due but not yet in the bag; retried until delivered, then dropped

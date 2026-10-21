@@ -54,6 +54,7 @@ protected:
 private:
     UPROPERTY(Transient) TObjectPtr<UProgressBar> Bar;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> HealthText;
+    UPROPERTY(Transient) TObjectPtr<UTextBlock> StaminaText;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> CountdownText;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> CauseText;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> PointText;
