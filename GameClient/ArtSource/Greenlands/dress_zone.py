@@ -76,6 +76,10 @@ class Site:
                 x, y = self.x0 + i * CELL, self.y0 + j * CELL
                 if not in_polygon((x, y), self.poly):
                     continue
+                if any(in_polygon((x, y), p) for p in L['districts'][district].get('exclude_polygons', ())):
+                    continue
+                if L['districts'][district].get('outside_wall') and ((x - L['wall']['centre'][0]) / (L['wall']['semi_axis_x'] + 5)) ** 2 + ((y - L['wall']['centre'][1]) / (L['wall']['semi_axis_y'] + 5)) ** 2 <= 1:
+                    continue
                 self.inside[k] = 1
                 self.road[k] = min([_dist((x, y), pts) - hw for pts, hw in near_roads] + [99.0])
                 c = min([self.road[k], *[_dist((x, y), pts) - hw for pts, hw in near_other]] + [99.0])

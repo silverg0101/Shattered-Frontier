@@ -130,12 +130,12 @@ if __name__ == '__main__':
             continue  # rocks and trunks must not bend
         done[path] = add_push(m, fn)
     # shrub and sapling leaves: the shared leaf master's blend darkened the shrub (vertex colour into both base and tint); drop it and use the bright young-leaf tint
-    for name, tint in (('MI_ShrubBroadleaf_Leaf', (1.35, 1.55, 0.75)), ('MI_SaplingBroadleaf_Leaf', (1.35, 1.6, 0.7))):
+    for name, tint, sat in (('MI_ShrubBroadleaf_Leaf', (1.08, 1.18, 0.78), 0.8), ('MI_SaplingBroadleaf_Leaf', (1.35, 1.6, 0.7), 1.05)):
         mi = u.load_asset(f'{NATURE}/{name}')
         mel.set_material_instance_scalar_parameter_value(mi, 'UseBlend', 0.0)
         for p in ('TintA', 'TintB'):
             mel.set_material_instance_vector_parameter_value(mi, p, u.LinearColor(*tint, 1.0))
         for p in ('SatA', 'SatB'):
-            mel.set_material_instance_scalar_parameter_value(mi, p, 1.05)
+            mel.set_material_instance_scalar_parameter_value(mi, p, sat)
         eal.save_loaded_asset(mi)
     u.log('FOLIAGE_INTERACTION ' + json.dumps(done))

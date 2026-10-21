@@ -863,6 +863,13 @@ assert len(bridges) >= 3, f'Expected at least 3 bridges, built {len(bridges)}'
 
 # Dressing (pipeline stage 3): rules from the look profile decide placements; a PCG graph spawns them.
 DRESS_DISTRICTS = list(L['districts'])  # each district's 'dress' block scales the look profile's densities
+# The southern approach, river banks and outside wall verges extend past every named district.
+# Reuse the same clearance rules, but exclude named districts and the walled town so this layer never doubles them.
+L['districts']['Outer South'] = dict(
+    polygon=[[-380, 505], [430, 505], [470, 870], [-420, 870]],
+    exclude_polygons=[d['polygon'] for d in L['districts'].values()], outside_wall=True,
+    inside_wall=False, dress=dict(canopy=.22, rocks=.35, understory=.75, ground_cover=.55, litter=.6))
+DRESS_DISTRICTS.append('Outer South')
 dressing = {}
 for district in DRESS_DISTRICTS:
     result = dress_zone.dress(L, PROFILE, HF, placed, district, L['seed'])
