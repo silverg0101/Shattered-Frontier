@@ -23,8 +23,9 @@ ICONS = (
     ('iron_pickaxe', 'DA_IronPickaxe', None),
 )
 
+BUILD_ICONS = ('build_foundation', 'build_wall', 'build_door', 'build_roof')  # construction catalogue tiles; no item definition
 tasks = []
-for stem, _, _ in ICONS:
+for stem in [icon[0] for icon in ICONS] + list(BUILD_ICONS):
     source = os.path.normpath(os.path.join(SOURCE_DIR, stem + '.png'))
     if not os.path.isfile(source):
         raise RuntimeError('Missing icon source ' + source)
@@ -57,5 +58,17 @@ for stem, item_name, description in ICONS:
     if not library.save_loaded_asset(texture) or not library.save_loaded_asset(item):
         raise RuntimeError('Could not save ' + stem)
     done.append(item_name)
+
+for stem in BUILD_ICONS:
+    texture = library.load_asset(ICON_PATH + '/T_Icon_' + stem)
+    if texture is None:
+        raise RuntimeError('Import failed for ' + stem)
+    texture.set_editor_property('lod_group', unreal.TextureGroup.TEXTUREGROUP_UI)
+    texture.set_editor_property('mip_gen_settings', unreal.TextureMipGenSettings.TMGS_NO_MIPMAPS)
+    texture.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_EDITOR_ICON)
+    texture.set_editor_property('never_stream', True)
+    if not library.save_loaded_asset(texture):
+        raise RuntimeError('Could not save ' + stem)
+    done.append('T_Icon_' + stem)
 
 unreal.log('PILOT_ITEM_ICONS_IMPORTED ' + ', '.join(done))

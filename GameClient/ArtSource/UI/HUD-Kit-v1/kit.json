@@ -1,0 +1,22 @@
+{
+  "note": "Per element: processed size in px, 9-slice margins [left, top, right, bottom] in processed px, inset = extra content padding px. tools/Import-HudKit.py normalises margins for Slate.",
+  "elements": [
+    { "name": "panel_frame",     "width": 512, "height": 320, "margin": [40, 40, 40, 40], "inset": 14 },
+    { "name": "title_bar",       "width": 512, "height": 96,  "margin": [80, 24, 80, 24], "inset": 10 },
+    { "name": "tab_normal",      "width": 256, "height": 64,  "margin": [16, 16, 16, 16], "inset": 6 },
+    { "name": "tab_selected",    "width": 256, "height": 64,  "margin": [20, 20, 20, 20], "inset": 6 },
+    { "name": "button_normal",   "width": 256, "height": 88,  "margin": [24, 24, 24, 24], "inset": 6 },
+    { "name": "button_hover",    "width": 256, "height": 88,  "margin": [24, 24, 24, 24], "inset": 6 },
+    { "name": "button_pressed",  "width": 256, "height": 88,  "margin": [24, 24, 24, 24], "inset": 6 },
+    { "name": "slot_empty",      "width": 128, "height": 128, "margin": [24, 24, 24, 24], "inset": 4 },
+    { "name": "slot_selected",   "width": 128, "height": 128, "margin": [24, 24, 24, 24], "inset": 4 },
+    { "name": "bar_frame",       "width": 512, "height": 64,  "margin": [28, 20, 28, 20], "inset": 0 },
+    { "name": "bar_fill_health", "width": 256, "height": 32,  "margin": [4, 4, 4, 4],     "inset": 0 },
+    { "name": "bar_fill_stamina","width": 256, "height": 32,  "margin": [4, 4, 4, 4],     "inset": 0 },
+    { "name": "bar_fill_moss",   "width": 256, "height": 32,  "margin": [4, 4, 4, 4],     "inset": 0 },
+    { "name": "crest_plate",     "width": 128, "height": 128, "margin": [0, 0, 0, 0],     "inset": 0 },
+    { "name": "ring_frame",      "width": 256, "height": 256, "margin": [0, 0, 0, 0],     "inset": 0 },
+    { "name": "tooltip_frame",   "width": 256, "height": 128, "margin": [24, 24, 24, 24], "inset": 8 },
+    { "name": "divider",         "width": 512, "height": 32,  "margin": [0, 0, 0, 0],     "inset": 0 }
+  ]
+}

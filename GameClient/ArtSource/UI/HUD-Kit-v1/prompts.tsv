@@ -1,0 +1,17 @@
+panel_frame	A large rectangular panel frame filling most of the canvas: dark slate interior, thin aged-brass border with chamfered corners and small corner studs, a fine inner brass line, subtle engraved corner linework. Plain flat interior.
+title_bar	A wide horizontal title bar plate, about 5 times wider than tall: dark slate with thin aged-brass trim along top and bottom, notched chamfered ends, plain flat centre area left empty for text.
+tab_normal	A small rectangular tab button, wider than tall: dark slate, thin muted grey-brass border, slightly chamfered top corners, plain flat interior. Unselected state.
+tab_selected	A small rectangular tab button, wider than tall, selected state: moss-green tinted dark slate (#2B3B2C), bright aged-brass border, slightly chamfered top corners, plain flat interior.
+button_normal	A rectangular button plate, about 3 times wider than tall: dark slate with thin aged-brass border and chamfered corners, plain flat interior. Normal state.
+button_hover	A rectangular button plate, about 3 times wider than tall: slightly lighter slate with a brighter polished brass border and chamfered corners, plain flat interior. Hover state.
+button_pressed	A rectangular button plate, about 3 times wider than tall: moss-green tinted dark slate (#2B3B2C) pressed look with a dim brass border and chamfered corners, plain flat interior. Pressed state.
+slot_empty	A square inventory item slot: very dark navy recessed interior, thin dark grey-brass inner border, tiny chamfered corners, plain flat interior. Empty state.
+slot_selected	A square inventory item slot, selected: very dark navy recessed interior with a bright aged-brass border and a faint warm glow just inside the border, tiny chamfered corners, plain flat interior.
+bar_frame	A long horizontal bar frame, about 8 times wider than tall: aged-brass trim with chamfered ends around a dark flat empty trough, no fill inside, interior left plain dark slate.
+bar_fill_health	A long horizontal fill strip, about 8 times wider than tall, flat deep crimson (#A34842) with a subtle vertical gradient and a thin lighter highlight along the top, no border, no outline, straight clean ends.
+bar_fill_stamina	A long horizontal fill strip, about 8 times wider than tall, flat muted amber (#B69A55) with a subtle vertical gradient and a thin lighter highlight along the top, no border, no outline, straight clean ends.
+bar_fill_moss	A long horizontal fill strip, about 8 times wider than tall, flat moss green (#688267) with a subtle vertical gradient and a thin lighter highlight along the top, no border, no outline, straight clean ends.
+crest_plate	A small diamond-shaped heraldic plate with a thin aged-brass rim and dark slate interior, with a pale ivory stag head silhouette with antlers as the emblem in the centre. Compact, symmetric.
+ring_frame	A circular progress ring frame, front view: an outer aged-brass rim and an inner brass rim with a dark slate empty track between them, and an empty open centre. Perfect circle, centred, symmetric.
+tooltip_frame	A small rectangular tooltip frame: darker slate interior, thin aged-brass border, chamfered corners, tiny corner notches, plain flat interior.
+divider	A thin horizontal ornamental divider line about 12 times wider than tall: a fine aged-brass line with a small diamond ornament in the centre and tapered ends.
