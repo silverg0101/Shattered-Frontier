@@ -42,3 +42,19 @@ ESFMilestoneReject SFCompanionMilestones::Select(FSFMilestoneState& State, const
     State.LastOperation = Operation;
     return ESFMilestoneReject::None;
 }
+
+FName SFCompanionMilestones::ReasonCode(ESFMilestoneReject Reject)
+{
+    switch (Reject)
+    {
+    case ESFMilestoneReject::None: return FName(TEXT("ok"));
+    case ESFMilestoneReject::UnknownMilestone: return FName(TEXT("unknown_milestone"));
+    case ESFMilestoneReject::LevelTooLow: return FName(TEXT("level_too_low"));
+    case ESFMilestoneReject::NotInPool: return FName(TEXT("not_in_pool"));
+    case ESFMilestoneReject::NotUnlocked: return FName(TEXT("not_unlocked"));
+    case ESFMilestoneReject::NotAtRestArea: return FName(TEXT("not_at_rest_area"));
+    case ESFMilestoneReject::InCombat: return FName(TEXT("in_combat"));
+    case ESFMilestoneReject::CompanionBusy: return FName(TEXT("companion_busy"));
+    }
+    return FName(TEXT("unknown"));
+}

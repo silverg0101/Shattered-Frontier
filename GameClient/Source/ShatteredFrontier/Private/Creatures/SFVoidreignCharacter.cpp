@@ -1,5 +1,7 @@
 #include "Creatures/SFVoidreignCharacter.h"
 
+#include "Creatures/SFCompanionMilestones.h"
+
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimSequence.h"
 #include "Animation/AnimSingleNodeInstance.h"
@@ -26,8 +28,13 @@ bool USFVoidreignSettings::Validate(FString& Error) const
 {
     const bool bOk = RiftRecallWindowMs >= 1500 && RiftRecallWindowMs <= 4000 && RiftRecallWindowMs % 250 == 0 &&
         FMath::IsWithinInclusive(RiftAnchorMaxMetres, 8.f, 15.f) && FMath::IsNearlyEqual(FMath::Fmod(RiftAnchorMaxMetres, 0.5f), 0.f) &&
-        RiftRiderLockoutMs >= 250 && RiftRiderLockoutMs <= 1000 && RiftRiderLockoutMs % 50 == 0;
-    if (!bOk) Error = TEXT("Rift Recall settings outside their published bounds or steps");
+        RiftRiderLockoutMs >= 250 && RiftRiderLockoutMs <= 1000 && RiftRiderLockoutMs % 50 == 0 &&
+        RiftCollapseDelayMs >= 500 && RiftCollapseDelayMs <= 1500 && RiftCollapseDelayMs % 100 == 0 &&
+        RiftCollapseSnareBp >= 1500 && RiftCollapseSnareBp <= 4000 && RiftCollapseSnareBp % 100 == 0 &&
+        RiftCollapseSnareMs >= 1000 && RiftCollapseSnareMs <= 3000 && RiftCollapseSnareMs % 250 == 0 &&
+        LongShadowWindowMs >= 3000 && LongShadowWindowMs <= 5000 && LongShadowWindowMs % 250 == 0 &&
+        LongShadowHoldMs >= 1000 && LongShadowHoldMs <= 3000 && LongShadowHoldMs % 250 == 0;
+    if (!bOk) Error = TEXT("Rift Recall / level-70 option settings outside their published bounds or steps");
     return bOk;
 }
 
@@ -93,13 +100,44 @@ void ASFVoidreignCharacter::PlayRiftRecall()
 {
     if (!HasAuthority() || Phase != ESFVoidreignPhase::None) return;
     const USFVoidreignSettings* Settings = GetDefault<USFVoidreignSettings>();
-    WindowSeconds = Settings->RiftRecallWindowMs / 1000.f;
+    const bool bLongShadow = RiftOption == SFCompanionMilestones::LongShadow;
+    WindowSeconds = (bLongShadow ? Settings->LongShadowWindowMs : Settings->RiftRecallWindowMs) / 1000.f;
+    HoldMaxSeconds = bLongShadow ? Settings->LongShadowHoldMs / 1000.f : 0.f;
+    HeldSeconds = 0.f;
+    bHolding = false;
+    bCollapseArmed = RiftOption == SFCompanionMilestones::RiftCollapse;
+    CollapseDelaySeconds = Settings->RiftCollapseDelayMs / 1000.f;
+    CollapseSnareBp = Settings->RiftCollapseSnareBp;
+    CollapseSnareMs = Settings->RiftCollapseSnareMs;
     AnchorMaxCm = Settings->RiftAnchorMaxMetres * 100.f;
     LastReject = ESFRiftRecallReject::None;
     GetCharacterMovement()->DisableMovement();
     Anchor = GetActorTransform();
     AnchorLocation = Anchor.GetLocation();
     EnterPhase(ESFVoidreignPhase::Windup);
+}
+
+void ASFVoidreignCharacter::SetRiftOption(FName Option)
+{
+    if (!HasAuthority()) return;
+    RiftOption = (Option == SFCompanionMilestones::LongShadow || Option == SFCompanionMilestones::RiftCollapse) ? Option : NAME_None;
+}
+
+void ASFVoidreignCharacter::HoldRiftAnchor(bool bHold)
+{
+    if (HasAuthority()) ServerHoldRiftAnchor_Implementation(bHold);
+    else ServerHoldRiftAnchor(bHold);
+}
+
+void ASFVoidreignCharacter::ServerHoldRiftAnchor_Implementation(bool bHold)
+{
+    // Only Long Shadow has a hold budget, only while the window is open; the budget is spent once per charge.
+    bHolding = bHold && Phase == ESFVoidreignPhase::Hold && HeldSeconds < HoldMaxSeconds;
+}
+
+void ASFVoidreignCharacter::MulticastRiftCollapse_Implementation(FVector_NetQuantize Point)
+{
+    SpawnVfx(VfxRiftCollapse, FVector(Point) - FVector(0, 0, GetSimpleCollisionHalfHeight() - 3.f), 3.f, 0.8f, false);
 }
 
 void ASFVoidreignCharacter::RequestRiftRecall()
@@ -129,11 +167,18 @@ void ASFVoidreignCharacter::TryRiftRecall()
     const FCollisionShape Shape = FCollisionShape::MakeCapsule(Capsule->GetScaledCapsuleRadius() * 0.9f, Capsule->GetScaledCapsuleHalfHeight() * 0.9f);
     const bool bClear = !GetWorld()->SweepTestByChannel(Here, There, FQuat::Identity, ECC_Pawn, Shape, Params);
     // ponytail: no crowd-control state exists on mounts yet; wire rooted/stunned/feared/incapacitated here when it does.
-    LastReject = SFRiftRecallRules::Validate(Phase == ESFVoidreignPhase::Hold, PhaseTime, WindowSeconds, FVector::Dist(Here, There),
+    LastReject = SFRiftRecallRules::Validate(Phase == ESFVoidreignPhase::Hold, PhaseTime - HeldSeconds, WindowSeconds, FVector::Dist(Here, There),
         AnchorMaxCm, bLineOfSight, bClear ? 1.0 : 0.0, false);
     if (LastReject != ESFRiftRecallReject::None) return;  // anchor kept until the window expires
     RiderLockoutSeconds = GetDefault<USFVoidreignSettings>()->RiftRiderLockoutMs / 1000.f;
     RiderLockedUntil = TNumericLimits<double>::Max();  // until arrival plus the lockout
+    bHolding = false;
+    if (bCollapseArmed)  // the rift at the impact point implodes later; the snare itself is the CC system's (OnRiftCollapse)
+    {
+        bCollapsePending = true;
+        CollapseTimer = CollapseDelaySeconds;
+        CollapsePoint = Here;
+    }
     EnterPhase(ESFVoidreignPhase::RecallEnter);
 }
 
@@ -216,6 +261,13 @@ void ASFVoidreignCharacter::Tick(float DeltaSeconds)
     LocalTime += DeltaSeconds;
     TickVfx(DeltaSeconds);
 
+    if (bCollapsePending && HasAuthority() && (CollapseTimer -= DeltaSeconds) <= 0.f)
+    {
+        bCollapsePending = false;
+        MulticastRiftCollapse(CollapsePoint);
+        OnRiftCollapse.Broadcast(CollapsePoint, SFRiftRecallRules::CollapseRadiusCm, CollapseSnareBp, CollapseSnareMs);
+    }
+
     if (Phase == ESFVoidreignPhase::None)
     {
         if (UAnimSingleNodeInstance* Rider = RiderMesh->GetSingleNodeInstance())
@@ -279,8 +331,9 @@ void ASFVoidreignCharacter::Tick(float DeltaSeconds)
         if (PhaseTime >= ClipLength(RiftImpact)) EnterPhase(ESFVoidreignPhase::Hold);
         break;
     case ESFVoidreignPhase::Hold:  // return window: the recall is the player's re-press (RequestRiftRecall)
+        if (bHolding && (HeldSeconds += DeltaSeconds) >= HoldMaxSeconds) { HeldSeconds = HoldMaxSeconds; bHolding = false; }
         if (DemoAbilityInterval > 0.f && PhaseTime >= RecallDelay) TryRiftRecall();
-        if (Phase == ESFVoidreignPhase::Hold && PhaseTime > WindowSeconds) EndAction();  // no recall: the anchor is lost
+        if (Phase == ESFVoidreignPhase::Hold && PhaseTime - HeldSeconds > WindowSeconds) EndAction();  // no recall: the anchor is lost
         break;
     case ESFVoidreignPhase::RecallEnter:
         if (PhaseTime >= ClipLength(RecallEnter))

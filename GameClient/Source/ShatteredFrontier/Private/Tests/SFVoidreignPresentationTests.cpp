@@ -2,6 +2,8 @@
 #include "Misc/AutomationTest.h"
 #include "Tests/AutomationCommon.h"
 #include "Creatures/SFVoidreignCharacter.h"
+#include "Creatures/SFCompanionStateComponent.h"
+#include "Creatures/SFRestAreaVolume.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -138,6 +140,14 @@ bool FSFRiftRecallRulesTest::RunTest(const FString& Parameters)
     TestFalse(TEXT("distance above 15 m is invalid"), Settings->Validate(Error));
     Settings->RiftAnchorMaxMetres = 15.f; Settings->RiftRiderLockoutMs = 1050;
     TestFalse(TEXT("lockout above 1000 ms is invalid"), Settings->Validate(Error));
+    Settings->RiftRiderLockoutMs = 500; Settings->LongShadowWindowMs = 5250;
+    TestFalse(TEXT("Long Shadow window above 5000 ms is invalid"), Settings->Validate(Error));
+    Settings->LongShadowWindowMs = 4500; Settings->RiftCollapseSnareBp = 3050;
+    TestFalse(TEXT("Rift Collapse snare off its 100 bp step is invalid"), Settings->Validate(Error));
+    Settings->RiftCollapseSnareBp = 3000; Settings->LongShadowHoldMs = 500;
+    TestFalse(TEXT("Long Shadow hold below 1000 ms is invalid"), Settings->Validate(Error));
+    Settings->LongShadowHoldMs = 2000;
+    TestTrue(TEXT("restored defaults are valid"), Settings->Validate(Error));
     return true;
 }
 
@@ -260,6 +270,108 @@ bool FSFVoidreignReplicationTest::RunTest(const FString& Parameters)
     Late->AnchorLocation = Horse->AnchorLocation;
     Late->OnRep_Phase();
     TestNotNull(TEXT("Late joiner sees the anchor"), Late->AnchorVfx.Get());
+    return true;
+}
+
+namespace
+{
+/** Picks a level-70 option through the real rest-area gate, as a player standing in a rest area would. */
+bool ChooseRiftOption(FAutomationTestBase& Test, FVoidreignWorld& World, FName Option)
+{
+    UWorld* W = World.Fixture.GetTestWorld();
+    W->SpawnActor<ASFRestAreaVolume>(World.Horse->GetActorLocation(), FRotator::ZeroRotator);
+    USFCompanionStateComponent* State = NewObject<USFCompanionStateComponent>(World.Horse);
+    State->RegisterComponent();
+    State->Family = TEXT("voidreign");
+    State->CompanionLevel = 70;
+    State->Unlocked = { Option };
+    State->Companion = World.Horse;
+    return Test.TestEqual(TEXT("choice accepted at the rest area"), (int32)State->SelectMilestone(FGuid::NewGuid(), 70, Option), (int32)ESFMilestoneReject::None);
+}
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFLongShadowTest, "ShatteredFrontier.Creatures.Voidreign.LongShadow",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSFLongShadowTest::RunTest(const FString& Parameters)
+{
+    FVoidreignWorld World;
+    if (!World.Create(*this, FVector(0, 0, 200))) return false;
+    ASFVoidreignCharacter* Horse = World.Horse;
+    const USFVoidreignSettings* Settings = GetDefault<USFVoidreignSettings>();
+    auto WindowLength = [&](bool bHold)
+    {
+        Horse->PlayRiftRecall();
+        RunUntil(Horse, 10.f, [Horse] { return Horse->IsRecallWindowOpen(); });
+        if (bHold) Horse->HoldRiftAnchor(true);
+        return RunUntil(Horse, 20.f, [Horse] { return !Horse->IsPerformingAction(); });
+    };
+
+    // Without the option the hold is refused and the window is the base one.
+    Horse->PlayRiftRecall();
+    RunUntil(Horse, 10.f, [Horse] { return Horse->IsRecallWindowOpen(); });
+    Horse->HoldRiftAnchor(true);
+    TestFalse(TEXT("No hold without Long Shadow"), Horse->IsHoldingAnchor());
+    RunUntil(Horse, 20.f, [Horse] { return !Horse->IsPerformingAction(); });
+
+    if (!ChooseRiftOption(*this, World, SFCompanionMilestones::LongShadow)) return false;
+    TestTrue(TEXT("Return window extended to long_shadow_window_ms"),
+        FMath::IsNearlyEqual(WindowLength(false), Settings->LongShadowWindowMs / 1000.f, 2 * FrameStep));
+    const float Held = WindowLength(true);
+    TestTrue(TEXT("Hold pauses the window for at most long_shadow_hold_ms"),
+        FMath::IsNearlyEqual(Held, (Settings->LongShadowWindowMs + Settings->LongShadowHoldMs) / 1000.f, 2 * FrameStep));
+    TestFalse(TEXT("Hold budget spent"), Horse->IsHoldingAnchor());
+
+    // A held anchor still obeys the normal validation: recall is accepted from the held window.
+    const FVector Anchor = Horse->GetActorLocation();
+    Horse->PlayRiftRecall();
+    RunUntil(Horse, 10.f, [Horse] { return Horse->IsRecallWindowOpen(); });
+    Horse->HoldRiftAnchor(true);
+    RunUntil(Horse, Settings->LongShadowWindowMs / 1000.f + 1.f, [] { return false; });
+    TestTrue(TEXT("Window still open past the base window while held"), Horse->IsRecallWindowOpen());
+    Horse->RequestRiftRecall();
+    TestEqual(TEXT("Delayed return accepted"), (int32)Horse->LastRecallReject(), (int32)ESFRiftRecallReject::None);
+    RunUntil(Horse, 15.f, [Horse] { return !Horse->IsPerformingAction(); });
+    TestTrue(TEXT("Returned to the held anchor"), FVector::Dist(Anchor, Horse->GetActorLocation()) < 1.f);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFRiftCollapseTest, "ShatteredFrontier.Creatures.Voidreign.RiftCollapse",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSFRiftCollapseTest::RunTest(const FString& Parameters)
+{
+    FVoidreignWorld World;
+    if (!World.Create(*this, FVector(0, 0, 200))) return false;
+    ASFVoidreignCharacter* Horse = World.Horse;
+    const USFVoidreignSettings* Settings = GetDefault<USFVoidreignSettings>();
+    if (!ChooseRiftOption(*this, World, SFCompanionMilestones::RiftCollapse)) return false;
+
+    int32 Fired = 0, SnareBp = 0, SnareMs = 0;
+    float Radius = 0.f;
+    FVector Point = FVector::ZeroVector;
+    Horse->OnRiftCollapse.AddLambda([&](const FVector& At, float R, int32 Bp, int32 Ms) { ++Fired; Point = At; Radius = R; SnareBp = Bp; SnareMs = Ms; });
+
+    // No successful recall, no collapse.
+    Horse->PlayRiftRecall();
+    RunUntil(Horse, 20.f, [Horse] { return !Horse->IsPerformingAction(); });
+    RunUntil(Horse, 3.f, [] { return false; });
+    TestEqual(TEXT("Expired window collapses nothing"), Fired, 0);
+
+    // Recall: the rift at the impact point implodes rift_collapse_delay_ms later, once.
+    Horse->PlayRiftRecall();
+    RunUntil(Horse, 10.f, [Horse] { return Horse->IsRecallWindowOpen(); });
+    const FVector Impact = Horse->GetActorLocation();
+    Horse->RequestRiftRecall();
+    TestEqual(TEXT("Recall accepted"), (int32)Horse->LastRecallReject(), (int32)ESFRiftRecallReject::None);
+    const float Delay = RunUntil(Horse, 5.f, [&Fired] { return Fired > 0; });
+    TestEqual(TEXT("Collapse fired once"), Fired, 1);
+    TestTrue(TEXT("Collapse comes rift_collapse_delay_ms after the recall"), FMath::IsNearlyEqual(Delay, Settings->RiftCollapseDelayMs / 1000.f, 2 * FrameStep));
+    TestTrue(TEXT("Collapse is at the impact point"), FVector::Dist(Point, Impact) < 1.f);
+    TestEqual(TEXT("Snare strength"), SnareBp, Settings->RiftCollapseSnareBp);
+    TestEqual(TEXT("Snare time"), SnareMs, Settings->RiftCollapseSnareMs);
+    TestEqual(TEXT("Snare radius is the release-bound one"), Radius, SFRiftRecallRules::CollapseRadiusCm);
+    RunUntil(Horse, 15.f, [Horse] { return !Horse->IsPerformingAction(); });
+    RunUntil(Horse, 3.f, [] { return false; });
+    TestEqual(TEXT("No second collapse"), Fired, 1);
     return true;
 }
 #endif

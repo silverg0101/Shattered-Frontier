@@ -7,7 +7,7 @@ using namespace UE::Geometry;
 
 namespace
 {
-bool Finite(const FVector3d& P)
+bool FiniteLocal(const FVector3d& P)
 {
     return FMath::IsFinite(P.X) && FMath::IsFinite(P.Y) && FMath::IsFinite(P.Z)
         && FMath::Abs(P.X) <= 1000000.0 && FMath::Abs(P.Y) <= 1000000.0 && FMath::Abs(P.Z) <= 1000000.0;
@@ -19,14 +19,14 @@ bool SafeMesh(const FDynamicMesh3& Mesh)
         || Mesh.MaxTriangleID() > SFHarvestLocalizedGeometry::MaxTriangles * 4
         || Mesh.MaxVertexID() > SFHarvestLocalizedGeometry::MaxTriangles * 4
         || !Mesh.IsClosed()) { return false; }
-    for (const int32 V : Mesh.VertexIndicesItr()) { if (!Finite(Mesh.GetVertex(V))) { return false; } }
+    for (const int32 V : Mesh.VertexIndicesItr()) { if (!FiniteLocal(Mesh.GetVertex(V))) { return false; } }
     if (Mesh.HasAttributes())
     {
         const auto* Attributes = Mesh.Attributes();
         if (const auto* Normals = Attributes->PrimaryNormals())
         {
             for (const int32 E : Normals->ElementIndicesItr())
-            { if (!Finite(FVector3d(Normals->GetElement(E)))) { return false; } }
+            { if (!FiniteLocal(FVector3d(Normals->GetElement(E)))) { return false; } }
         }
         for (int32 Layer=0; Layer<Attributes->NumUVLayers(); ++Layer)
         {
@@ -90,7 +90,7 @@ bool SFHarvestLocalizedGeometry::Subtract(const FDynamicMesh3& Source, const FCu
     FDynamicMesh3& Out, FString* Failure)
 {
     const auto Reject = [Failure](const TCHAR* Why) { if (Failure) { *Failure = Why; } return false; };
-    if (!Finite(Cut.Center) || !Finite(Cut.OutwardNormal)
+    if (!FiniteLocal(Cut.Center) || !FiniteLocal(Cut.OutwardNormal)
         || !FMath::IsFinite(Cut.Radius) || !FMath::IsFinite(Cut.Depth)
         || Cut.Radius < 0.1 || Cut.Depth < 0.1 || Cut.Radius > MaxCutDimensionCm || Cut.Depth > MaxCutDimensionCm
         || Cut.OutwardNormal.SquaredLength() < 0.5 || Cut.OutwardNormal.SquaredLength() > 1.5
@@ -208,12 +208,12 @@ bool SFHarvestLocalizedGeometry::Subtract(const FDynamicMesh3& Source, const FCu
             // only after the public topology-only check succeeds (-1 unknown).
             const int32 AttributeValidity=!Staged.HasAttributes()?1:(bTopologyValid?(bFullValid?1:0):-1);
             int32 NonfiniteVertices=0,NonfiniteNormals=0,NonfiniteUVs=0;
-            for (const int32 ID : Staged.VertexIndicesItr()) { if (!Finite(Staged.GetVertex(ID))) { ++NonfiniteVertices; } }
+            for (const int32 ID : Staged.VertexIndicesItr()) { if (!FiniteLocal(Staged.GetVertex(ID))) { ++NonfiniteVertices; } }
             if (Staged.HasAttributes())
             {
                 const auto* A=Staged.Attributes();
                 if (const auto* Normals=A->PrimaryNormals())
-                { for (const int32 ID : Normals->ElementIndicesItr()) { if (!Finite(FVector3d(Normals->GetElement(ID)))) { ++NonfiniteNormals; } } }
+                { for (const int32 ID : Normals->ElementIndicesItr()) { if (!FiniteLocal(FVector3d(Normals->GetElement(ID)))) { ++NonfiniteNormals; } } }
                 for (int32 Layer=0;Layer<A->NumUVLayers();++Layer)
                 {
                     const auto* UV=A->GetUVLayer(Layer);
@@ -261,8 +261,8 @@ bool TrySplitTree(const FDynamicMesh3& Source,const FTreeSplit& Split,
 {
     const auto Reject=[Failure](const TCHAR* Why) { if (Failure) { *Failure=Why; } return false; };
     const FCut& Cut=Split.FinalCut;
-    if (&OutStump==&OutUpperCollar||!SafeMesh(Source)||!Finite(Cut.Center)||!Finite(Cut.OutwardNormal)
-        ||!Finite(Split.FallDirection)||Cut.Shape!=ECutterShape::TreeNotch
+    if (&OutStump==&OutUpperCollar||!SafeMesh(Source)||!FiniteLocal(Cut.Center)||!FiniteLocal(Cut.OutwardNormal)
+        ||!FiniteLocal(Split.FallDirection)||Cut.Shape!=ECutterShape::TreeNotch
         ||!FMath::IsFinite(Cut.Radius)||!FMath::IsFinite(Cut.Depth)||Cut.Radius<0.1||Cut.Depth<0.1
         ||Cut.Radius>MaxCutDimensionCm||Cut.Depth>MaxCutDimensionCm
         ||Cut.OutwardNormal.SquaredLength()<0.5||Cut.OutwardNormal.SquaredLength()>1.5)

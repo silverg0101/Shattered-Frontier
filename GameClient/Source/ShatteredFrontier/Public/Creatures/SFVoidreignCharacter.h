@@ -36,6 +36,17 @@ public:
     float RiftAnchorMaxMetres = 15.f;
     UPROPERTY(Config, EditAnywhere, Category="Rift Recall", meta=(DisplayName="Rider pause after rift return", ClampMin="250", ClampMax="1000", Delta="50", Units="ms"))
     int32 RiftRiderLockoutMs = 500;
+    // Level-70 options (`tune.combat.companion_rift_collapse_*`, `_long_shadow_*`; Abilities and Animation 4e).
+    UPROPERTY(Config, EditAnywhere, Category="Rift Collapse", meta=(DisplayName="Rift Collapse delay", ClampMin="500", ClampMax="1500", Delta="100", Units="ms"))
+    int32 RiftCollapseDelayMs = 1000;
+    UPROPERTY(Config, EditAnywhere, Category="Rift Collapse", meta=(DisplayName="Rift Collapse snare (bp)", ClampMin="1500", ClampMax="4000", Delta="100"))
+    int32 RiftCollapseSnareBp = 3000;
+    UPROPERTY(Config, EditAnywhere, Category="Rift Collapse", meta=(DisplayName="Rift Collapse snare time", ClampMin="1000", ClampMax="3000", Delta="250", Units="ms"))
+    int32 RiftCollapseSnareMs = 2000;
+    UPROPERTY(Config, EditAnywhere, Category="Long Shadow", meta=(DisplayName="Long Shadow window", ClampMin="3000", ClampMax="5000", Delta="250", Units="ms"))
+    int32 LongShadowWindowMs = 4500;
+    UPROPERTY(Config, EditAnywhere, Category="Long Shadow", meta=(DisplayName="Long Shadow hold", ClampMin="1000", ClampMax="3000", Delta="250", Units="ms"))
+    int32 LongShadowHoldMs = 2000;
     bool Validate(FString& Error) const;
 };
 
@@ -46,10 +57,15 @@ namespace SFRiftRecallRules
 {
     /** Release-bound security rule (not tuning): the return path may be at most this much longer than the straight line. */
     constexpr double MaxPathRatio = 1.5;
+    /** Release-bound (not tuning): Rift Collapse snares targets within this radius of the rift. */
+    constexpr float CollapseRadiusCm = 500.f;
     /** PathRatio <= 0 means no path could be established. */
     SHATTEREDFRONTIER_API ESFRiftRecallReject Validate(bool bHasAnchor, double Now, double WindowEnd, double DistanceCm,
         double AnchorMaxCm, bool bLineOfSight, double PathRatio, bool bIncapacitated);
 }
+
+/** Rift Collapse implosion: bind the crowd-control system here to snare targets in range (DR applies there). */
+DECLARE_MULTICAST_DELEGATE_FourParams(FSFRiftCollapseDelegate, const FVector& /*Point*/, float /*RadiusCm*/, int32 /*SnareBp*/, int32 /*SnareMs*/);
 
 /** Ability phase; replicated so every client plays the matching clip and effects (OnRep_Phase). */
 UENUM()
@@ -83,6 +99,13 @@ public:
     /** Rider abilities are refused from recall start until arrival plus the rider lockout. */
     UFUNCTION(BlueprintPure, Category = "Voidreign") bool IsRiderLockedOut() const;
     ESFRiftRecallReject LastRecallReject() const { return LastReject; }
+    /** Server: the owner's active level-70 option (SFCompanionMilestones::LongShadow / RiftCollapse, else none).
+     *  Adopted at the next Rift Charge, never mid-effect. */
+    void SetRiftOption(FName Option);
+    /** Long Shadow: while the return window is open, hold the anchor (pausing the window) up to the hold limit. */
+    UFUNCTION(BlueprintCallable, Category = "Voidreign") void HoldRiftAnchor(bool bHold);
+    bool IsHoldingAnchor() const { return bHolding; }
+    FSFRiftCollapseDelegate OnRiftCollapse;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Voidreign|Rider") TObjectPtr<USkeletalMeshComponent> RiderMesh;
     /** Rider seat blend space on the rider skeleton, X = mount ground speed (cm/s). */
@@ -123,6 +146,8 @@ private:
     friend class FSFVoidreignReplicationTest;
 
     UFUNCTION(Server, Reliable) void ServerRiftRecall();
+    UFUNCTION(Server, Reliable) void ServerHoldRiftAnchor(bool bHold);
+    UFUNCTION(NetMulticast, Unreliable) void MulticastRiftCollapse(FVector_NetQuantize Point);
     /** Client: the server's phase arrived; play its clips and effects. */
     UFUNCTION() void OnRep_Phase();
     void TryRiftRecall();
@@ -151,6 +176,13 @@ private:
     float WindowSeconds = 3.f;
     float AnchorMaxCm = 1500.f;
     float RiderLockoutSeconds = 0.5f;
+    FName RiftOption;
+    float HoldMaxSeconds = 0.f, HeldSeconds = 0.f;  // Long Shadow
+    bool bHolding = false;
+    bool bCollapseArmed = false, bCollapsePending = false;  // Rift Collapse
+    float CollapseDelaySeconds = 1.f, CollapseTimer = 0.f;
+    int32 CollapseSnareBp = 3000, CollapseSnareMs = 2000;
+    FVector CollapsePoint = FVector::ZeroVector;
     double LocalTime = 0.0;  // actor clock (advances with Tick, so tests can step it)
     double RiderLockedUntil = -1.0;
     ESFRiftRecallReject LastReject = ESFRiftRecallReject::None;

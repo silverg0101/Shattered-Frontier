@@ -21,6 +21,9 @@ sky = actors.spawn_actor_from_class(unreal.SkyLight, unreal.Vector(0, 0, 800)); 
 sky.light_component.set_editor_property('real_time_capture', True)  # ambient from the atmosphere
 horse = actors.spawn_actor_from_class(unreal.load_asset('/Game/Frontier/Creatures/Voidreign/V1/BP_Voidreign').generated_class(), unreal.Vector(0, 0, 150))
 horse.set_editor_property('DemoAbilityInterval', 3.0); horse.set_actor_label('Voidreign')
+# Rest area around the horse's start: the companion milestone choice is accepted inside it and refused outside (SFRestAreaVolume).
+rest = actors.spawn_actor_from_class(unreal.SFRestAreaVolume, unreal.Vector(0, 0, 150))
+rest.set_editor_property('half_extent_metres', unreal.Vector(10, 10, 3)); rest.set_actor_label('RestArea')
 actors.spawn_actor_from_class(unreal.PlayerStart, unreal.Vector(-1500, -2500, 150)).set_actor_label('PlayerStart')  # player pawn clear of the horse
 # Close side view of the horse at rest; the Rift charge leaves frame and the recall brings it back.
 cam = actors.spawn_actor_from_class(unreal.CameraActor, unreal.Vector(0, -700, 220), unreal.Rotator(roll=0, pitch=-8, yaw=90))

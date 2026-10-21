@@ -41,6 +41,9 @@ namespace SFCompanionMilestones
     SHATTEREDFRONTIER_API ESFMilestoneReject Select(FSFMilestoneState& State, const FGuid& Operation, FName Family,
         int32 CompanionLevel, int32 Milestone, FName Option, const TSet<FName>& Unlocked, const FSFMilestoneEvidence& Evidence);
 
+    /** Stable snake_case refusal code for the UI and logs ("ok" on success). */
+    SHATTEREDFRONTIER_API FName ReasonCode(ESFMilestoneReject Reject);
+
     const FName LongShadow(TEXT("voidreign.up70.long_shadow"));
     const FName RiftCollapse(TEXT("voidreign.up70.rift_collapse"));
 }
