@@ -12,6 +12,7 @@ readonly buildGid=$(id -g sfbuild)
 [[ "$buildUid" -ge 100 && "$buildUid" -lt 60000 && "$buildGid" -ge 100 && "$buildGid" -lt 60000 \
    && "$buildUid" != "$(id -u sfserver)" && "$buildGid" != "$(id -g sfserver)" ]] || exit 1
 network=bridge
+extraMounts=()
 case "${1:-}" in
     setup)
         command=(bash ./Setup.sh --force --threads=2 --no-cache --exclude=Mac --exclude=Android --exclude=TVOS --exclude=VisionOS --exclude=LinuxArm64)
@@ -69,7 +70,29 @@ PY
         additionalGiB=20
         network=none
         ;;
-    *) echo 'Usage: run-native-job.sh setup|uat-help|stage|client-stage' >&2; exit 1 ;;
+    project-import)
+        # INT-03 0b: overlay a `git archive` of the repository onto /work/project. Ignored outputs
+        # (Artifacts/, Binaries/, Intermediate/) are kept, so the gRPC install survives re-imports.
+        readonly inbox="$RUNTIME/inbox/sf-project.tar"
+        [[ -f "$inbox" && ! -L "$inbox" && $(stat -c %u "$inbox") == 0 ]] || { echo "project-import needs a root-owned $inbox" >&2; exit 1; }
+        extraMounts=(--mount "type=bind,src=$inbox,dst=/inbox/sf-project.tar,readonly")
+        command=(tar -xf /inbox/sf-project.tar -C /work/project --no-same-owner --no-same-permissions)
+        additionalGiB=5
+        network=none
+        ;;
+    grpc-linux)
+        # INT-03 0b: pinned gRPC + prefixed BoringSSL with the engine's v26 clang/libc++ (network: pinned downloads).
+        command=(bash /work/project/tools/build-grpc-linux.sh /work/UE_5.8.3 /work/project /work/grpc)
+        additionalGiB=15
+        ;;
+    server-build)
+        [[ -f "$WORK/project/Artifacts/ThirdParty/gRPC/install/Linux/manifest.json" ]] || { echo 'Run grpc-linux first' >&2; exit 1; }
+        command=(bash Engine/Build/BatchFiles/RunUBT.sh ShatteredFrontierServer Linux Development
+            -Project=/work/project/GameClient/ShatteredFrontier.uproject -WaitMutex)
+        additionalGiB=40
+        network=none
+        ;;
+    *) echo 'Usage: run-native-job.sh setup|uat-help|stage|client-stage|project-import|grpc-linux|server-build' >&2; exit 1 ;;
 esac
 # Fixed ceilings preserve the existing Windrose workload. They are build policy,
 # not public/GM runtime controls; changing them requires a reviewed script release.
@@ -84,7 +107,7 @@ job="sf-native-${1}-$(date -u +%Y%m%d-%H%M%S)-$$"
 docker run --detach --name "$job" --label sf.native-build=ue583 \
     --cpus=2 --memory=8g --memory-swap=8g --pids-limit=512 --cap-drop=ALL \
     --security-opt=no-new-privileges --read-only --tmpfs /tmp:rw,nosuid,nodev,size=1g \
-    --user "$buildUid:$buildGid" --mount "type=bind,src=$WORK,dst=/work" \
+    --user "$buildUid:$buildGid" --mount "type=bind,src=$WORK,dst=/work" "${extraMounts[@]}" \
     --network="$network" --log-driver=json-file --log-opt max-size=10m --log-opt max-file=3 \
     "$IMAGE" "${command[@]}"
 printf 'SF_NATIVE_JOB_STARTED Name=%s Mode=%s UID=%s CPU=2 MemoryGiB=8\n' "$job" "$1" "$buildUid"

@@ -1,0 +1,33 @@
+# CMake toolchain for gRPC Linux x86_64 static libraries that link into UE 5.8 Linux targets.
+# Mirrors UBT's LinuxToolChain: UE's v26 clang SDK as sysroot, bundled libc++ (-nostdinc++ plus the
+# SDK's include/c++/v1), position-independent code and hidden visibility. Works on a Linux host or a
+# Windows cross host. Set SF_LINUX_SDK_ROOT to the SDK's x86_64-unknown-linux-gnu directory.
+set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_PROCESSOR x86_64)
+set(SF_LINUX_SDK_ROOT "$ENV{SF_LINUX_SDK_ROOT}")
+if(NOT IS_DIRECTORY "${SF_LINUX_SDK_ROOT}/include/c++/v1")
+  message(FATAL_ERROR "SF_LINUX_SDK_ROOT must be UE's <sdk>/x86_64-unknown-linux-gnu directory")
+endif()
+if(CMAKE_HOST_WIN32)
+  set(_sf_exe ".exe")
+endif()
+set(CMAKE_SYSROOT "${SF_LINUX_SDK_ROOT}")
+set(CMAKE_C_COMPILER "${SF_LINUX_SDK_ROOT}/bin/clang${_sf_exe}")
+set(CMAKE_CXX_COMPILER "${SF_LINUX_SDK_ROOT}/bin/clang++${_sf_exe}")
+set(CMAKE_AR "${SF_LINUX_SDK_ROOT}/bin/llvm-ar${_sf_exe}")
+set(CMAKE_RANLIB "${SF_LINUX_SDK_ROOT}/bin/llvm-ranlib${_sf_exe}")
+set(CMAKE_C_COMPILER_TARGET x86_64-unknown-linux-gnu)
+set(CMAKE_CXX_COMPILER_TARGET x86_64-unknown-linux-gnu)
+set(CMAKE_ASM_COMPILER_TARGET x86_64-unknown-linux-gnu)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(_sf_common "-fPIC -fvisibility=hidden -ffunction-sections -fdata-sections")
+set(CMAKE_C_FLAGS_INIT "${_sf_common}")
+set(CMAKE_CXX_FLAGS_INIT "${_sf_common} -fvisibility-inlines-hidden -nostdinc++ -isystem ${SF_LINUX_SDK_ROOT}/include/c++/v1")
+# Only host-run build tools link here; UE links the shipped static libraries itself.
+set(_sf_libcxx "-fuse-ld=lld -nostdlib++ ${SF_LINUX_SDK_ROOT}/lib64/libc++.a ${SF_LINUX_SDK_ROOT}/lib64/libc++abi.a -lpthread -ldl -lm")
+set(CMAKE_EXE_LINKER_FLAGS_INIT "${_sf_libcxx}")
+set(CMAKE_SHARED_LINKER_FLAGS_INIT "${_sf_libcxx}")
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)

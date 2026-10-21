@@ -4,3 +4,4 @@
 /BackendServices/** text eol=lf
 /GameClient/ArtSource/GreenlandsWaystone/*.txt text eol=lf
 /GameClient/ArtSource/GreenlandsWaystone/*.json text eol=lf
+/tools/build-grpc-linux.sh text eol=lf

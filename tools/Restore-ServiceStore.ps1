@@ -3,8 +3,7 @@ param(
     [Parameter(Mandatory)][ValidateSet('InventoryLedger','CharacterState','Housing')][string]$Store,
     [string]$BackupDirectory,
     [Parameter(Mandatory)][string]$InstanceRoot,
-    [switch]$Cleanup,
-    [ValidateRange(60,86400)][int]$PendingPlacementRecoveryWindowSeconds = 3600
+    [switch]$Cleanup
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -56,7 +55,7 @@ if (-not $BackupDirectory) { throw 'Supply BackupDirectory.' }
 $BackupDirectory = [IO.Path]::GetFullPath($BackupDirectory)
 $manifest = Get-Content (Join-Path $BackupDirectory 'manifest.json') -Raw | ConvertFrom-Json
 $dump = Join-Path $BackupDirectory "$($Store.ToLowerInvariant()).dump"
-if ($manifest.format -ne 2 -or $manifest.store -cne $Store -or $manifest.schemaVersion -ne $(if ($Store -eq 'Housing') { 3 } else { 1 }) -or $manifest.dumpSha256 -notmatch '^[a-f0-9]{64}$' -or
+if ($manifest.format -ne 2 -or $manifest.store -cne $Store -or $manifest.schemaVersion -ne $(if ($Store -eq 'Housing') { 2 } else { 1 }) -or $manifest.dumpSha256 -notmatch '^[a-f0-9]{64}$' -or
     (Get-FileHash $dump -Algorithm SHA256).Hash.ToLowerInvariant() -cne $manifest.dumpSha256) { throw 'Backup manifest or SHA256 mismatch.' }
 $tables = switch ($Store) {
     InventoryLedger { @('inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts') }
@@ -106,7 +105,7 @@ try {
     foreach ($schema in $schemas) {
         [void](Sql "GRANT USAGE ON SCHEMA $schema TO $serviceRole; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA $schema TO $serviceRole" $database)
         $version = (Sql "SELECT version FROM $schema.schema_version WHERE singleton=true" $database).Trim()
-        $expectedVersion = if ($schema -eq 'housing') { '3' } else { '1' }
+        $expectedVersion = if ($schema -eq 'housing') { '2' } else { '1' }
         if ($version -ne $expectedVersion) { throw 'Restored schema version mismatch.' }
     }
     foreach ($table in $tables) {
@@ -168,10 +167,9 @@ SELECT count(*) FROM (
         if ($bad.Trim() -ne '0') { throw 'Restored character consistency check failed.' }
     }
     if ($Store -eq 'Housing') {
-        $bad = Sql @"
+        $bad = Sql @'
 SELECT count(*) FROM (
- SELECT 1 FROM housing.placements p WHERE p.state='Pending' AND
-  p.created_at < clock_timestamp() - make_interval(secs => $PendingPlacementRecoveryWindowSeconds)
+ SELECT 1 FROM housing.placements p WHERE p.state='Pending'
  UNION ALL
  SELECT 1 FROM housing.placements p WHERE p.state='Committed' AND (
   p.consume_receipt IS NULL OR p.consume_receipt->>'OperationId' IS DISTINCT FROM p.operation_id || '/consume' OR
@@ -185,7 +183,7 @@ SELECT count(*) FROM (
  SELECT 1 FROM housing.placements a JOIN housing.placements b ON a.claim_id=b.claim_id AND
   a.cell_x=b.cell_x AND a.cell_y=b.cell_y AND a.cell_z=b.cell_z AND a.operation_id < b.operation_id
 ) invalid
-"@ $database
+'@ $database
         if ($bad.Trim() -ne '0') { throw 'Restored housing consistency check failed.' }
     }
     @{host='127.0.0.1';port=$port;database=$database;username=$serviceRole;password=$servicePassword} |
