@@ -49,14 +49,19 @@ try {
     $client = Start-Owned 'client' ('127.0.0.1:'+$Port) @('-game','-CombatPilotScenario')
     Wait-Log $client 'client' 'COMBAT_PILOT_CLIENT_ATTACK Index=3'
     Wait-Log $server 'server' 'COMBAT_PILOT_BOAR_DEAD Group=boar_farm_edge Slot=0'
+    # Shipped HidesPerBoar is 2: the killer's bag gets them once, and the owning client sees them.
+    Wait-Log $server 'server' 'COMBAT_PILOT_REWARD Death=boar_farm_edge:0:\d+ Hides=2 Granted=1 Total=2'
+    Wait-Log $client 'client' 'COMBAT_PILOT_CLIENT_HIDES Count=2'
     Wait-Log $server 'server' 'COMBAT_PILOT_PLAYER_DEAD'
     Wait-Log $server 'server' 'COMBAT_PILOT_PLAYER_RESPAWN X=-35970 Y=-14180 HP=80'
-    Wait-Log $server 'server' 'COMBAT_PILOT_SAFE_CHECK Protected=1 PlayerHP=80 BoarHP=60 Passed=1'
+    Wait-Log $server 'server' 'COMBAT_PILOT_SAFE_CHECK Protected=1 PlayerHP=80 BoarHP=60 Reward=0 Passed=1'
     Wait-Log $server 'server' 'COMBAT_PILOT_BOAR_SPAWN Group=boar_farm_edge Slot=0 Cycle=1'
     $serverText = Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw
     $clientText = Get-Content -LiteralPath (Join-Path $root 'client.log') -Raw
     if ([regex]::Matches($serverText,'COMBAT_PILOT_BOAR_HIT Group=boar_farm_edge Slot=0').Count -ne 3 -or
         [regex]::Matches($clientText,'COMBAT_PILOT_CLIENT_ATTACK Index=').Count -ne 3 -or
+        [regex]::Matches($serverText,'COMBAT_PILOT_REWARD .* Granted=1').Count -ne 1 -or
+        [regex]::Matches($clientText,'COMBAT_PILOT_CLIENT_HIDES Count=[1-9]').Count -ne 1 -or
         $serverText -match 'COMBAT_PILOT_SLOT_ERROR|Fatal error:|Assertion failed:') { throw 'Combat evidence incomplete or server failed.' }
     if ($server.HasExited -or $client.HasExited) { throw 'A network process exited before the final respawn barrier.' }
     $result.status='Passed'

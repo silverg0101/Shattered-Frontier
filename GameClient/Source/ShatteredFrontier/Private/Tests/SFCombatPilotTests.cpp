@@ -1,5 +1,7 @@
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
 #include "Combat/SFCombatPilot.h"
+#include "Combat/SFCombatPilotRewards.h"
+#include "GameFramework/PlayerController.h"
 #include "Misc/AutomationTest.h"
 #include "Tests/AutomationCommon.h"
 #include "Engine/World.h"
@@ -28,6 +30,38 @@ bool FSFCombatPilotRulesTest::RunTest(const FString& Parameters)
     TestTrue(TEXT("Town polygon contains its centre"), Mode->IsInsideTerritory(FVector::ZeroVector, Town));
     TestTrue(TEXT("Town boundary is protected"), Mode->IsInsideTerritory(FVector(400,0,0), Town));
     TestFalse(TEXT("Town boundary excludes countryside"), Mode->IsInsideTerritory(FVector(500,0,0), Town));
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFCombatPilotRewardTest,
+    "ShatteredFrontier.Combat.Pilot.Reward",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFCombatPilotRewardTest::RunTest(const FString& Parameters)
+{
+    const int32 PerBoar = GetDefault<USFCombatPilotSettings>()->HidesPerBoar;
+    TSet<FString> Granted;
+    TestEqual(TEXT("First death rewards"), SFCombatPilotRewards::HidesFor(Granted, TEXT("boar_farm_edge:0:1"), false, PerBoar), PerBoar);
+    TestEqual(TEXT("Duplicate death event rewards nothing"), SFCombatPilotRewards::HidesFor(Granted, TEXT("boar_farm_edge:0:1"), false, PerBoar), 0);
+    TestEqual(TEXT("Respawned boar is a new death"), SFCombatPilotRewards::HidesFor(Granted, TEXT("boar_farm_edge:0:2"), false, PerBoar), PerBoar);
+    TestEqual(TEXT("Protected-town kill rewards nothing"), SFCombatPilotRewards::HidesFor(Granted, TEXT("boar_farm_edge:1:3"), true, PerBoar), 0);
+    TestEqual(TEXT("...and stays spent once the boar leaves town"), SFCombatPilotRewards::HidesFor(Granted, TEXT("boar_farm_edge:1:3"), false, PerBoar), 0);
+
+#if SF_WITH_MINIMAL_INVENTORY
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) return false;
+    auto* Controller = Fixture.GetTestWorld()->SpawnActor<APlayerController>();
+    if (!Controller) return false;
+    SFCombatPilotRewards::AddPilotBag(Controller);
+    TSet<FString> Deaths;
+    for (int32 Event = 0; Event < 2; ++Event)  // the same death reported twice
+    {
+        const int32 Hides = SFCombatPilotRewards::HidesFor(Deaths, TEXT("boar_forest_edge:2:7"), false, PerBoar);
+        if (Hides > 0) { TestTrue(TEXT("Hides fit the pilot bag"), SFCombatPilotRewards::GrantHides(Controller, Hides)); }
+    }
+    TestEqual(TEXT("Bag holds one death's hides"), SFCombatPilotRewards::CountHides(Controller), PerBoar);
+    TestFalse(TEXT("No bag, no grant"), SFCombatPilotRewards::GrantHides(nullptr, PerBoar));
+#endif
     return true;
 }
 #endif

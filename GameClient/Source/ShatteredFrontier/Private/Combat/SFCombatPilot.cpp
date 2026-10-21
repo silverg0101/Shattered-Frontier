@@ -1,4 +1,5 @@
 #include "Combat/SFCombatPilot.h"
+#include "Combat/SFCombatPilotRewards.h"
 #include "Characters/SFE1Character.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -79,7 +80,8 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
         !FMath::IsWithinInclusive(BoarWanderSpeedMetresPerSecond, 0.5f, 5.0f) ||
         !FMath::IsWithinInclusive(BoarChaseSpeedMetresPerSecond, 1.0f, 10.0f) ||
         !FMath::IsWithinInclusive(BoarWanderMinSeconds, 1.0f, 10.0f) ||
-        !FMath::IsWithinInclusive(BoarWanderMaxSeconds, BoarWanderMinSeconds, 20.0f))
+        !FMath::IsWithinInclusive(BoarWanderMaxSeconds, BoarWanderMinSeconds, 20.0f) ||
+        HidesPerBoar < 1 || HidesPerBoar > 5)
     { Error = TEXT("Combat pilot balance is outside declared bounds"); return false; }
     return true;
 }
@@ -114,10 +116,10 @@ void ASFPilotBoar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 }
 
 void ASFPilotBoar::Initialize(ASFCombatPilotGameMode* OwnerMode, const FString& Group, int32 InSlot,
-    const TArray<FVector2D>& Area, int32 Health)
+    const TArray<FVector2D>& Area, int32 Health, int32 Serial)
 {
     check(HasAuthority());
-    PilotMode = OwnerMode; SpawnGroup = Group; Slot = InSlot; Territory = Area;
+    PilotMode = OwnerMode; SpawnGroup = Group; Slot = InSlot; Territory = Area; SpawnSerial = Serial;
     Anchor = GetActorLocation(); CurrentHealth = Health; OnRep_Health();
 }
 
@@ -135,7 +137,7 @@ void ASFPilotBoar::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage)
     CurrentHealth = SFCombatPilotRules::RemainingHealth(CurrentHealth, Damage);
     OnRep_Health(); ForceNetUpdate();
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_HIT Group=%s Slot=%d HP=%d"), *SpawnGroup, Slot, CurrentHealth);
-    if (CurrentHealth == 0 && PilotMode.IsValid()) { PilotMode->BoarDied(this); }
+    if (CurrentHealth == 0 && PilotMode.IsValid()) { PilotMode->BoarDied(this, Attacker); }
 }
 
 void ASFPilotBoar::Tick(float DeltaSeconds)
@@ -292,6 +294,7 @@ void ASFCombatPilotGameMode::StartPlay()
 void ASFCombatPilotGameMode::PostLogin(APlayerController* NewPlayer)
 {
     Super::PostLogin(NewPlayer);
+    if (bPilotActive) { SFCombatPilotRewards::AddPilotBag(NewPlayer); }
     if (!bPilotActive || !bScenario || GetNumPlayers() != 1) { return; }
     const TWeakObjectPtr<APlayerController> Weak(NewPlayer);
     FTimerHandle Timer;
@@ -358,7 +361,7 @@ void ASFCombatPilotGameMode::SpawnSlot(const FString& Group, int32 Slot, int32 C
     FActorSpawnParameters Params; Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
     auto* Boar = GetWorld()->SpawnActor<ASFPilotBoar>(Where, FRotator(0,Facing,0), Params);
     if (!Boar) { return; }
-    Boar->Initialize(this, Group, Slot, Groups[Group].Polygon, CapturedSettings->BoarHealth);
+    Boar->Initialize(this, Group, Slot, Groups[Group].Polygon, CapturedSettings->BoarHealth, ++NextBoarSerial);
     ActiveBoars.Add(Key, Boar);
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_SPAWN Group=%s Slot=%d Cycle=%d Point=%s"), *Group, Slot, Cycle, *PointId);
 }
@@ -426,24 +429,39 @@ void ASFCombatPilotGameMode::RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player
         if (FixturePlayer && FixtureBoar)
         {
             FixturePlayer->CombatSetHealth(CapturedSettings->PlayerHealth);
-            FixtureBoar->Initialize(this, TEXT("boar_farm_edge"), -1, Groups[TEXT("boar_farm_edge")].Polygon, CapturedSettings->BoarHealth);
+            FixtureBoar->Initialize(this, TEXT("boar_farm_edge"), -1, Groups[TEXT("boar_farm_edge")].Polygon, CapturedSettings->BoarHealth, ++NextBoarSerial);
             const int32 Before = FixturePlayer->CombatHealth();
             TryBoarAttack(FixtureBoar, FixturePlayer);
             TryPlayerAttack(FixturePlayer);
-            UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_SAFE_CHECK Protected=%d PlayerHP=%d BoarHP=%d Passed=%d"),
-                IsSafe(Town), FixturePlayer->CombatHealth(), FixtureBoar->Health(),
-                IsSafe(Town) && Before == FixturePlayer->CombatHealth() && FixtureBoar->Health() == CapturedSettings->BoarHealth);
+            // A kill credited inside the town (a replayed or forged death) grants nothing.
+            const int32 TownReward = RewardKill(FixtureBoar->DeathId(), Town, Player.Get());
+            UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_SAFE_CHECK Protected=%d PlayerHP=%d BoarHP=%d Reward=%d Passed=%d"),
+                IsSafe(Town), FixturePlayer->CombatHealth(), FixtureBoar->Health(), TownReward,
+                IsSafe(Town) && Before == FixturePlayer->CombatHealth() && FixtureBoar->Health() == CapturedSettings->BoarHealth && TownReward == 0);
         }
         if (FixtureBoar) { FixtureBoar->Destroy(); }
         if (FixturePlayer) { FixturePlayer->Destroy(); }
     }
 }
 
-void ASFCombatPilotGameMode::BoarDied(ASFPilotBoar* Boar)
+int32 ASFCombatPilotGameMode::RewardKill(const FString& DeathId, const FVector& BoarAt, ASFE1Character* Killer)
+{
+    if (!CapturedSettings || !HasAuthority()) { return 0; }
+    const bool bProtected = IsSafe(BoarAt) || !IsValid(Killer) || IsSafe(Killer->GetActorLocation());
+    const int32 Hides = SFCombatPilotRewards::HidesFor(RewardedDeaths, DeathId, bProtected, CapturedSettings->HidesPerBoar);
+    AActor* Bag = IsValid(Killer) ? Killer->GetController() : nullptr;
+    const bool bGranted = Hides > 0 && SFCombatPilotRewards::GrantHides(Bag, Hides);
+    UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_REWARD Death=%s Hides=%d Granted=%d Total=%d"),
+        *DeathId, Hides, bGranted, SFCombatPilotRewards::CountHides(Bag));
+    return bGranted ? Hides : 0;
+}
+
+void ASFCombatPilotGameMode::BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer)
 {
     if (!bPilotActive || !IsValid(Boar)) { return; }
     const FString Key = FString::Printf(TEXT("%s:%d"), *Boar->GroupId(), Boar->SlotIndex());
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_DEAD Group=%s Slot=%d"), *Boar->GroupId(), Boar->SlotIndex());
+    RewardKill(Boar->DeathId(), Boar->GetActorLocation(), Killer);
     bSlotBridgeHealthy = RunWorldSlots(TEXT("defeat"), Boar->GroupId(), Boar->SlotIndex());
     ActiveBoars.Remove(Key);
     Boar->Destroy();

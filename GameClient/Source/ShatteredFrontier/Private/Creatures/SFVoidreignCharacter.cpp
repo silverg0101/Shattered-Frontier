@@ -3,9 +3,11 @@
 #include "Animation/AnimSequence.h"
 #include "Animation/AnimSingleNodeInstance.h"
 #include "Animation/BlendSpace.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Engine/World.h"
 #include "Materials/MaterialInstanceDynamic.h"
 
 namespace
@@ -15,6 +17,27 @@ namespace
     constexpr float TrailInterval = 0.12f;
     constexpr float HornForward = 200.f;  // horn tip ahead of the capsule centre, cm
     constexpr float HornUp = 95.f;
+}
+
+bool USFVoidreignSettings::Validate(FString& Error) const
+{
+    const bool bOk = RiftRecallWindowMs >= 1500 && RiftRecallWindowMs <= 4000 && RiftRecallWindowMs % 250 == 0 &&
+        FMath::IsWithinInclusive(RiftAnchorMaxMetres, 8.f, 15.f) && FMath::IsNearlyEqual(FMath::Fmod(RiftAnchorMaxMetres, 0.5f), 0.f) &&
+        RiftRiderLockoutMs >= 250 && RiftRiderLockoutMs <= 1000 && RiftRiderLockoutMs % 50 == 0;
+    if (!bOk) Error = TEXT("Rift Recall settings outside their published bounds or steps");
+    return bOk;
+}
+
+ESFRiftRecallReject SFRiftRecallRules::Validate(bool bHasAnchor, double Now, double WindowEnd, double DistanceCm,
+    double AnchorMaxCm, bool bLineOfSight, double PathRatio, bool bIncapacitated)
+{
+    if (!bHasAnchor) return ESFRiftRecallReject::NoAnchor;
+    if (Now > WindowEnd) return ESFRiftRecallReject::WindowClosed;
+    if (bIncapacitated) return ESFRiftRecallReject::Incapacitated;
+    if (DistanceCm > AnchorMaxCm) return ESFRiftRecallReject::TooFar;
+    if (!bLineOfSight) return ESFRiftRecallReject::NoLineOfSight;
+    if (PathRatio <= 0.0 || PathRatio > MaxPathRatio) return ESFRiftRecallReject::PathBlocked;
+    return ESFRiftRecallReject::None;
 }
 
 ASFVoidreignCharacter::ASFVoidreignCharacter()
@@ -49,7 +72,7 @@ void ASFVoidreignCharacter::PlayRider(UAnimSequence* Clip)
 
 void ASFVoidreignCharacter::PlayBasicAttack()
 {
-    if (Phase != EPhase::None) return;
+    if (!HasAuthority() || Phase != EPhase::None) return;
     GetCharacterMovement()->DisableMovement();
     PlayMount(MountAttack, false);
     PlayRider(RiderAttack);
@@ -58,7 +81,11 @@ void ASFVoidreignCharacter::PlayBasicAttack()
 
 void ASFVoidreignCharacter::PlayRiftRecall()
 {
-    if (Phase != EPhase::None) return;
+    if (!HasAuthority() || Phase != EPhase::None) return;
+    const USFVoidreignSettings* Settings = GetDefault<USFVoidreignSettings>();
+    WindowSeconds = Settings->RiftRecallWindowMs / 1000.f;
+    AnchorMaxCm = Settings->RiftAnchorMaxMetres * 100.f;
+    LastReject = ESFRiftRecallReject::None;
     GetCharacterMovement()->DisableMovement();
     Anchor = GetActorTransform();
     const FVector Ground = GetActorLocation() - FVector(0, 0, GetSimpleCollisionHalfHeight());
@@ -68,6 +95,43 @@ void ASFVoidreignCharacter::PlayRiftRecall()
     PlayMount(RiftWindup, false);
     PlayRider(RiderBrace);
     EnterPhase(EPhase::Windup);
+}
+
+void ASFVoidreignCharacter::RequestRiftRecall()
+{
+    if (HasAuthority()) TryRiftRecall();
+    else ServerRiftRecall();
+}
+
+void ASFVoidreignCharacter::ServerRiftRecall_Implementation()
+{
+    TryRiftRecall();
+}
+
+bool ASFVoidreignCharacter::IsRiderLockedOut() const
+{
+    return LocalTime < RiderLockedUntil;
+}
+
+void ASFVoidreignCharacter::TryRiftRecall()
+{
+    const FVector Here = GetActorLocation(), There = Anchor.GetLocation();
+    FCollisionQueryParams Params(TEXT("RiftRecall"), false, this);
+    const bool bLineOfSight = !GetWorld()->LineTraceTestByChannel(Here, There, ECC_Visibility, Params);
+    // ponytail: straight capsule sweep only. A clear sweep is a 1.0 path; a blocked one is refused because the
+    // 1.5x detour cannot be proven without navigation data. Use a nav path once mount maps carry navmesh.
+    const UCapsuleComponent* Capsule = GetCapsuleComponent();
+    const FCollisionShape Shape = FCollisionShape::MakeCapsule(Capsule->GetScaledCapsuleRadius() * 0.9f, Capsule->GetScaledCapsuleHalfHeight() * 0.9f);
+    const bool bClear = !GetWorld()->SweepTestByChannel(Here, There, FQuat::Identity, ECC_Pawn, Shape, Params);
+    // ponytail: no crowd-control state exists on mounts yet; wire rooted/stunned/feared/incapacitated here when it does.
+    LastReject = SFRiftRecallRules::Validate(Phase == EPhase::Hold, PhaseTime, WindowSeconds, FVector::Dist(Here, There),
+        AnchorMaxCm, bLineOfSight, bClear ? 1.0 : 0.0, false);
+    if (LastReject != ESFRiftRecallReject::None) return;  // anchor kept until the window expires
+    RiderLockoutSeconds = GetDefault<USFVoidreignSettings>()->RiftRiderLockoutMs / 1000.f;
+    RiderLockedUntil = TNumericLimits<double>::Max();  // until arrival plus the lockout
+    PlayMount(RecallEnter, false);
+    PlayRider(RiderRecallHold);
+    EnterPhase(EPhase::RecallEnter);
 }
 
 void ASFVoidreignCharacter::EnterPhase(EPhase NewPhase)
@@ -88,6 +152,7 @@ void ASFVoidreignCharacter::EndAction()
 void ASFVoidreignCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+    LocalTime += DeltaSeconds;
     TickVfx(DeltaSeconds);
 
     if (Phase == EPhase::None)
@@ -149,12 +214,16 @@ void ASFVoidreignCharacter::Tick(float DeltaSeconds)
     case EPhase::Impact:
         if (PhaseTime >= ClipLength(RiftImpact)) EnterPhase(EPhase::Hold);
         break;
-    case EPhase::Hold:
-        if (PhaseTime >= RecallDelay)
+    case EPhase::Hold:  // return window: the recall is the player's re-press (RequestRiftRecall)
+        if (DemoAbilityInterval > 0.f && PhaseTime >= RecallDelay) TryRiftRecall();
+        if (Phase == EPhase::Hold && PhaseTime > WindowSeconds)  // no recall: the anchor is lost
         {
-            PlayMount(RecallEnter, false);
-            PlayRider(RiderRecallHold);
-            EnterPhase(EPhase::RecallEnter);
+            for (FSFVoidreignVfx& Effect : Vfx)
+            {
+                if (Effect.Component == AnchorVfx) { Effect.bPersistent = false; Effect.Duration = Effect.Age + 0.4f; }
+            }
+            AnchorVfx = nullptr;
+            EndAction();
         }
         break;
     case EPhase::RecallEnter:
@@ -169,6 +238,7 @@ void ASFVoidreignCharacter::Tick(float DeltaSeconds)
             }
             AnchorVfx = nullptr;
             PlayMount(RecallExit, false);
+            RiderLockedUntil = LocalTime + RiderLockoutSeconds;
             EnterPhase(EPhase::RecallExit);
         }
         break;

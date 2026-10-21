@@ -61,6 +61,8 @@ public:
     float BoarWanderMinSeconds = 3.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="1.0", ClampMax="20.0", Units="s"))
     float BoarWanderMaxSeconds = 6.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Rewards", meta=(ClampMin="1", ClampMax="5", ToolTip="Boar hides granted to the killer, once per boar death outside protected areas. Adopted at the next zone start."))
+    int32 HidesPerBoar = 2;
     bool Validate(FString& Error) const;
 };
 
@@ -73,10 +75,12 @@ public:
     virtual void Tick(float DeltaSeconds) override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     void Initialize(class ASFCombatPilotGameMode* OwnerMode, const FString& Group, int32 Slot,
-        const TArray<FVector2D>& Area, int32 Health);
+        const TArray<FVector2D>& Area, int32 Health, int32 Serial);
     void ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage);
     const FString& GroupId() const { return SpawnGroup; }
     int32 SlotIndex() const { return Slot; }
+    /** One id per spawned boar, so its death rewards once. */
+    FString DeathId() const { return FString::Printf(TEXT("%s:%d:%d"), *SpawnGroup, Slot, SpawnSerial); }
     int32 Health() const { return CurrentHealth; }
 private:
     UFUNCTION() void OnRep_Health();
@@ -87,6 +91,7 @@ private:
     TWeakObjectPtr<ASFE1Character> Target;
     FString SpawnGroup;
     int32 Slot = INDEX_NONE;
+    int32 SpawnSerial = 0;
     TArray<FVector2D> Territory;
     FVector Anchor = FVector::ZeroVector;
     FVector WanderDestination = FVector::ZeroVector;
@@ -107,7 +112,9 @@ public:
     virtual void Tick(float DeltaSeconds) override;
     void TryPlayerAttack(ASFE1Character* Attacker);
     void TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim);
-    void BoarDied(ASFPilotBoar* Boar);
+    void BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer);
+    /** Grants the killer's hides for this death, at most once; returns the number granted. */
+    int32 RewardKill(const FString& DeathId, const FVector& BoarAt, ASFE1Character* Killer);
     bool IsSafe(const FVector& Location) const;
     bool IsInsideTerritory(const FVector& Location, const TArray<FVector2D>& Polygon) const;
     bool IsActive() const { return bPilotActive; }
@@ -124,6 +131,8 @@ private:
     TArray<FVector> RespawnPoints;
     TMap<FString,TWeakObjectPtr<ASFPilotBoar>> ActiveBoars;
     TMap<TWeakObjectPtr<ASFE1Character>,double> PlayerNextSwing;
+    TSet<FString> RewardedDeaths;
+    int32 NextBoarSerial = 0;
     FString SlotStatePath;
     const USFCombatPilotSettings* CapturedSettings = nullptr;
     bool bPilotActive = false;

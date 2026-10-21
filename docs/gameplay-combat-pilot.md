@@ -10,7 +10,16 @@ with `-CombatPilot`. Join with a client and use left mouse button for a basic me
 
 The server reads `boar_farm_edge` and `boar_forest_edge` from the generated Silverbrook zone record, requires `npc/boar` and the authored level-two areas, and asks `BackendServices/WorldContent` to select the five active slots in each group. `WorldContent.Tool combat-pilot` is a narrow local bridge to the existing validator, seeded slot selection, point cooldown, hostile-slot state, and common-NPC respawn calculation. On each defeat it records the slot transition, and subsequent polls respawn the boar at a WorldContent-selected point. The state file in `GameClient/Saved/CombatPilot/` is session-only and reset when the pilot server starts. The default common-NPC respawn is 300 seconds with WorldContent's declared jitter.
 
-`USFCombatPilotSettings` declares the master combat-availability and Silverbrook hostile-spawning booleans, with shipped `true` defaults. It also declares bounded pilot health, damage, reach, cooldown, boar perception/leash/wander values and player respawn timing. They are release-authored `Config=Game` values captured at zone start; there are no console balance overrides. The shared configuration publication service and live effective-time transitions are still future integration. The owner should accept the pilot before broadening availability. The combat math, equipment, threat, rewards, persistence, and published `npc/boar` definition in the full design are not implemented by this development slice.
+`USFCombatPilotSettings` declares the master combat-availability and Silverbrook hostile-spawning booleans, with shipped `true` defaults. It also declares bounded pilot health, damage, reach, cooldown, boar perception/leash/wander values and player respawn timing. They are release-authored `Config=Game` values captured at zone start; there are no console balance overrides. The shared configuration publication service and live effective-time transitions are still future integration. The owner should accept the pilot before broadening availability. The combat math, equipment, threat, loot tables, persistence, and published `npc/boar` definition in the full design are not implemented by this development slice.
+
+## Defeat reward
+
+A boar killed outside the protected town gives its killer `HidesPerBoar` boar hides (bounded 1–5, shipped 2, `Config=Game`, adopted at zone start). The item is `item/boar_hide` (`/Game/Frontier/Gameplay/Pilot/DA_BoarHide`, made by `tools/Create-CombatPilotItems.py`). The server grants them once per death:
+- Each spawned boar has a death id: group, slot and a spawn serial.
+- `Combat/SFCombatPilotRewards` records every death id it sees. A repeated death event, or one credited inside the protected town (boar or killer), grants nothing and stays spent.
+- The grant is one MinimalInventoryRuntime transaction into a private pilot bag, which the game mode adds to each player controller at login (the gathering pilot's bag settings; Win64 development builds only). A full bag grants nothing and logs `Granted=0`.
+
+The server logs `COMBAT_PILOT_REWARD Death=… Hides=… Granted=… Total=…`. The owning client logs `COMBAT_PILOT_CLIENT_HIDES Count=…` whenever its replicated bag's hide count changes. There's no inventory UI in this pilot.
 
 ## Focused checks
 
@@ -21,7 +30,11 @@ Build the backend bridge and editor module after checking editor dirty packages 
 & 'C:\Program Files\Epic Games\UE_5.8\Engine\Build\BatchFiles\Build.bat' ShatteredFrontierEditor Win64 Development '-Project=C:\Projects\Shattered-Frontier\GameClient\ShatteredFrontier.uproject' -WaitMutex -NoHotReloadFromIDE
 ```
 
-Run only `ShatteredFrontier.Combat.Pilot.Rules` for the focused automation case. `tools/Test-CombatPilot.ps1` owns one loopback dedicated server and one client, uses the client's local attack RPC, and waits for the boar kill, WorldContent slot-cycle respawn, player death and nearest-point respawn, and a protected-town denial check. The scenario flags are test fixtures, not player commands. Its default timeout covers the 300-second common NPC respawn. Logs and results are ignored under `Artifacts/CombatPilot/`.
+Run only `ShatteredFrontier.Combat.Pilot.Rules` and `ShatteredFrontier.Combat.Pilot.Reward` for the focused automation cases. The Reward test covers first, duplicate, respawned and protected deaths, and a real pilot bag holding one death's hides. `tools/Test-CombatPilot.ps1` owns one loopback dedicated server and one client, uses the client's local attack RPC, and waits for:
+- the boar kill, a single reward grant, and the client's bag showing the hides;
+- WorldContent slot-cycle respawn;
+- player death and nearest-point respawn;
+- a protected-town denial check, which includes a town-credited kill granting nothing. The scenario flags are test fixtures, not player commands. Its default timeout covers the 300-second common NPC respawn. Logs and results are ignored under `Artifacts/CombatPilot/`.
 
 ## Evidence
 
