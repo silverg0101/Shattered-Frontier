@@ -1,4 +1,5 @@
 #include "Construction/SFConstructionNetwork.h"
+#include "Combat/SFCombatPilot.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Gathering/SFGatheringSkillsPanel.h"
 #if SF_WITH_MINIMAL_INVENTORY
@@ -739,7 +740,7 @@ void ASFConstructionNetworkGameMode::PlaceForZoneScenario(APawn* Pawn, bool bPri
     { if (It->Kind==ESFGatheringPilotKind::Oak && (!Oak || It->GetActorLocation().Size2D()<Oak->GetActorLocation().Size2D())) { Oak=*It; } }
     for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It && Oak; ++It)
     {
-        if (It->Kind==ESFGatheringPilotKind::Stone && (!Rock || FVector::Dist2D(It->GetActorLocation(),Oak->GetActorLocation())<FVector::Dist2D(Rock->GetActorLocation(),Oak->GetActorLocation())))
+        if ((It->Kind==ESFGatheringPilotKind::Stone || It->Kind==ESFGatheringPilotKind::Iron) && (!Rock || FVector::Dist2D(It->GetActorLocation(),Oak->GetActorLocation())<FVector::Dist2D(Rock->GetActorLocation(),Oak->GetActorLocation())))
         { Rock=*It; }
     }
     const ASFGatheringPilotNode* Target=bPrimary ? Oak : Rock;
@@ -763,8 +764,9 @@ int32 ASFConstructionNetworkGameMode::SpawnZoneGatheringNodes()
         const TSharedPtr<FJsonObject> Group=GroupValue->AsObject();
         if (Group->GetStringField(TEXT("spawn_kind"))!=TEXT("gathering_node")) { continue; }
         const FString Id=Group->GetStringField(TEXT("group_id"));
-        // Wood groups are oak nodes; stone groups are rock nodes yielding rough stone.
-        const ESFGatheringPilotKind Kind=Id.EndsWith(TEXT("_wood")) ? ESFGatheringPilotKind::Oak : ESFGatheringPilotKind::Stone;
+        // Wood groups are oak nodes, iron ore groups are iron veins, stone groups are rock nodes yielding rough stone.
+        const ESFGatheringPilotKind Kind=Id.EndsWith(TEXT("_wood")) ? ESFGatheringPilotKind::Oak
+            : Id.EndsWith(TEXT("_iron_ore")) ? ESFGatheringPilotKind::Iron : ESFGatheringPilotKind::Stone;
         TArray<TSharedPtr<FJsonValue>> Points=Group->GetArrayField(TEXT("points"));
         FRandomStream Stream(GetTypeHash(Id));
         for (int32 I=Points.Num()-1; I>0; --I) { Points.Swap(I,Stream.RandRange(0,I)); }
@@ -781,13 +783,30 @@ int32 ASFConstructionNetworkGameMode::SpawnZoneGatheringNodes()
             Node->Kind=Kind; Node->FinishSpawning(Where); ++Spawned;
         }
     }
+    // ponytail: the zone record has no refinery content yet; one sawmill and one forge stand east of the arrival point.
+    const TArray<TSharedPtr<FJsonValue>>* Respawns=nullptr;
+    if (Zone->TryGetArrayField(TEXT("respawn_points"),Respawns) && Respawns->Num()>0)
+    {
+        const TArray<TSharedPtr<FJsonValue>>& Arrival=(*Respawns)[0]->AsObject()->GetArrayField(TEXT("position"));
+        for (int32 I=0; Arrival.Num()>=2 && I<2; ++I)
+        {
+            FVector At(Arrival[0]->AsNumber()*100+500,Arrival[1]->AsNumber()*100+I*400,0);
+            FHitResult Hit;
+            if (GetWorld()->LineTraceSingleByChannel(Hit,At+FVector(0,0,20000),At-FVector(0,0,20000),ECC_WorldStatic)) { At.Z=Hit.ImpactPoint.Z; }
+            const FTransform Where(FRotator(0,180,0),At+FVector(0,0,40));
+            auto* Station=GetWorld()->SpawnActorDeferred<ASFGatheringPilotNode>(ASFGatheringPilotNode::StaticClass(),Where);
+            if (!Station) { continue; }
+            Station->Kind=I==0 ? ESFGatheringPilotKind::Sawmill : ESFGatheringPilotKind::Forge;
+            Station->FinishSpawning(Where); ++Spawned;
+        }
+    }
     return Spawned;
 }
 
 bool ASFConstructionNetworkGameMode::IsAdmitted() const
 {
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-    return HasAuthority() && !IsActorBeingDestroyed() && GetClass() == StaticClass() && GetWorld() && GetNetMode() == NM_DedicatedServer
+    return HasAuthority() && !IsActorBeingDestroyed() && (GetClass() == StaticClass() || GetClass() == ASFCombatPilotGameMode::StaticClass()) && GetWorld() && GetNetMode() == NM_DedicatedServer
         && (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands_ConstructionSandbox")
             || (IsZoneGatheringWorld() && USFGatheringPilotComponent::IsPilotRequested()))
         && FParse::Param(FCommandLine::Get(),TEXT("ConstructionNetworkSandbox"));

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/DeveloperSettings.h"
+#include "Construction/SFConstructionNetwork.h"
 #include "Framework/SFE1GameMode.h"
 #include "GameFramework/Character.h"
 #include "SFCombatPilot.generated.h"
@@ -101,7 +102,9 @@ private:
 };
 
 UCLASS(NotBlueprintable)
-class SHATTEREDFRONTIER_API ASFCombatPilotGameMode : public ASFE1GameMode
+// ponytail: inherits the construction/gathering mode so one Silverbrook world runs every pilot (quest chain).
+// Upgrade path: one Silverbrook mode that composes feature components instead of inheriting them.
+class SHATTEREDFRONTIER_API ASFCombatPilotGameMode : public ASFConstructionNetworkGameMode
 {
     GENERATED_BODY()
 public:

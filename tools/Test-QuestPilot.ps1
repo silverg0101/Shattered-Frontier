@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     # Gathering: two clients harvest in Silverbrook; Combat: one client kills a boar (quest started at the boar step).
-    [Parameter(Mandatory)][ValidateSet('Gathering','Combat')][string]$Leg,
+    [Parameter(Mandatory)][ValidateSet('Gathering','Combat','Unified')][string]$Leg,
     [string]$EngineRoot = 'C:\Program Files\Epic Games\UE_5.8',
     [ValidateRange(12000,65000)][int]$Port = 17871,
     [ValidateRange(60,600)][int]$TimeoutSeconds = 240
@@ -40,14 +40,21 @@ function Wait-Log([Diagnostics.Process]$Process,[string]$Name,[string]$Pattern) 
 }
 function Read-Log([string]$Name) { Get-Content -LiteralPath (Join-Path $root ($Name+'.log')) -Raw }
 try {
-    if ($Leg -eq 'Gathering') {
-        $url = $silverbrook + '?game=/Script/ShatteredFrontier.SFConstructionNetworkGameMode'
-        $server = Start-Owned 'server' $url @('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox','-GatheringPilot','-GatheringPilotScenario','-QuestPilot')
+    if ($Leg -in 'Gathering','Unified') {
+        # Unified: the combat game mode hosts gathering, construction and combat together (one Silverbrook world).
+        $mode = if ($Leg -eq 'Unified') { 'SFCombatPilotGameMode' } else { 'SFConstructionNetworkGameMode' }
+        $flags = @('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox','-GatheringPilot','-GatheringPilotScenario','-QuestPilot')
+        if ($Leg -eq 'Unified') { $flags += '-CombatPilot' }
+        $server = Start-Owned 'server' ($silverbrook + '?game=/Script/ShatteredFrontier.' + $mode) $flags
         Wait-Log $server 'server' 'QUEST_PILOT_READY Quest=quest/frontier_founder Steps=5'
+        if ($Leg -eq 'Unified') {
+            Wait-Log $server 'server' 'COMBAT_PILOT_READY Boars=10'
+            Wait-Log $server 'server' 'GATHERING_PILOT_READY Source=ZoneRecord Nodes=[1-9]'
+        }
         $first = Start-Owned 'first' ('127.0.0.1:'+$Port) @('-game','-GatheringPilotScenario')
         $second = Start-Owned 'second' ('127.0.0.1:'+$Port) @('-game','-GatheringPilotScenario')
         Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=gather Target=item/oak_log .* Result=0 Step=1 '
-        Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=gather Target=item/iron_ore .* Result=3 Step=0 '  # out of order: ignored, never credited
+        Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=gather Target=item/iron_ore .* Result=2 Step=0 '  # out of order: ignored, never credited
         # Only the owner of the oak harvest sees its tracker move on; the other client's view must stay at step 1.
         $watch = [Diagnostics.Stopwatch]::StartNew(); $moved = @()
         while ($watch.Elapsed.TotalSeconds -lt $TimeoutSeconds -and $moved.Count -lt 1) {
