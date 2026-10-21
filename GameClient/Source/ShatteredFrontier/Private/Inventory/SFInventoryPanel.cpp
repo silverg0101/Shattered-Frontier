@@ -6,6 +6,7 @@
 #include "Components/Border.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
+#include "Components/Image.h"
 #include "Components/Overlay.h"
 #include "Components/OverlaySlot.h"
 #include "Components/ProgressBar.h"
@@ -15,6 +16,11 @@
 #include "Components/UniformGridSlot.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
+#include "Engine/Texture2D.h"
+#if SF_WITH_MINIMAL_INVENTORY
+#include "InventoryComponent.h"
+#include "InventoryItemDefinition.h"
+#endif
 
 void USFInventoryPanel::NativeOnInitialized()
 {
@@ -41,11 +47,16 @@ void USFInventoryPanel::NativeOnInitialized()
     HintSlot->SetHorizontalAlignment(HAlign_Right); HintSlot->SetVerticalAlignment(VAlign_Center); HintSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
     AddRow(Title, FMargin(0.f, 0.f, 0.f, 10.f));
 
-    // One "All" tab; category tabs need item categories the pilot items do not have yet.
+    // Category tabs; clicks are hit-tested in NativeOnMouseButtonDown.
     UHorizontalBox* Tabs = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    UBorder* AllTab = Panel(WidgetTree, Hex(TEXT("2B3B2C"), 1.f), Brass(), FMargin(22.f, 6.f), 3.f);
-    AllTab->SetContent(Text(WidgetTree, TEXT("All"), 14, Ivory(), true));
-    Tabs->AddChildToHorizontalBox(AllTab);
+    for (int32 TabIndex = 0; TabIndex < TabCount; ++TabIndex)
+    {
+        UBorder* Tab = Panel(WidgetTree, Slate(), Brass(), FMargin(18.f, 6.f), 3.f);
+        Tab->SetContent(Text(WidgetTree, TabLabel(static_cast<ESFInventoryTab>(TabIndex)), 14, Ivory(), true));
+        Tabs->AddChildToHorizontalBox(Tab)->SetPadding(FMargin(0.f, 0.f, 6.f, 0.f));
+        TabBorders.Add(Tab);
+    }
+    StyleTabs();
     AddRow(Tabs, FMargin(0.f, 0.f, 0.f, 12.f));
 
     // 5 x 5 slot grid. ponytail: fixed 25 cells, no scrolling; pilot capacity is 8 slots, raise rows if that grows.
@@ -59,6 +70,28 @@ void USFInventoryPanel::NativeOnInitialized()
         UBorder* CellFrame = Cast<UBorder>(Cell->GetContent());
         UOverlay* Stack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
         CellFrame->SetContent(Stack);
+        UImage* Icon = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
+        Icon->SetVisibility(ESlateVisibility::Collapsed);
+        UOverlaySlot* IconSlot = Stack->AddChildToOverlay(Icon);
+        IconSlot->SetHorizontalAlignment(HAlign_Fill); IconSlot->SetVerticalAlignment(VAlign_Fill);
+        SlotIcons.Add(Icon); SlotFrames.Add(CellFrame);
+        // Hover tooltip: a styled panel the engine shows at the cursor; filled in Refresh.
+        UBorder* Tip = Panel(WidgetTree, Slate(0.96f), Brass(), FMargin(12.f, 10.f), 3.f);
+        SlotTips.Add(Tip);
+        UVerticalBox* TipBox = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+        USizeBox* TipWidth = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        TipWidth->SetWidthOverride(240.f); TipWidth->SetContent(TipBox); Tip->SetContent(TipWidth);
+        auto AddTip = [&](TArray<TObjectPtr<UTextBlock>>& Into, int32 Size, const FLinearColor& Color, bool bBold, const FMargin& Pad)
+        {
+            UTextBlock* Line = Text(WidgetTree, TEXT(""), Size, Color, bBold);
+            Line->SetAutoWrapText(true);
+            TipBox->AddChildToVerticalBox(Line)->SetPadding(Pad);
+            Into.Add(Line);
+        };
+        AddTip(TipTitles, 18, Ivory(), true, FMargin(0.f, 0.f, 0.f, 4.f));
+        AddTip(TipDescriptions, 12, Ivory(), false, FMargin(0.f, 0.f, 0.f, 6.f));
+        AddTip(TipTypes, 12, Brass(), false, FMargin(0.f, 0.f, 0.f, 2.f));
+        AddTip(TipWeights, 12, Hex(TEXT("A9A593")), false, FMargin(0.f));
         UTextBlock* Name = Text(WidgetTree, TEXT(""), 11, Ivory());
         Name->SetAutoWrapText(true); Name->SetJustification(ETextJustify::Center);
         UOverlaySlot* NameSlot = Stack->AddChildToOverlay(Name);
@@ -128,13 +161,29 @@ FString USFInventoryPanel::FormatRows(const TArray<TPair<FText,int32>>& InRows)
 void USFInventoryPanel::Refresh()
 {
     if (!Pilot || SlotNames.Num() != GridColumns * GridRows || GetVisibility()==ESlateVisibility::Collapsed) { return; }
-    const TArray<TPair<FText,int32>> Items = BuildRows(Pilot->GetInventoryItems());
+    const TArray<FSFInventoryEntry> All = CollectEntries();
+    const TArray<FSFInventoryEntry> Items = FilterByTab(All, ActiveTab);
     for (int32 Index = 0; Index < SlotNames.Num(); ++Index)
     {
         const bool bFilled = Items.IsValidIndex(Index);
-        SlotNames[Index]->SetText(bFilled ? Items[Index].Key : FText::GetEmpty());
-        SlotCounts[Index]->SetText(bFilled ? FText::AsNumber(Items[Index].Value) : FText::GetEmpty());
+        UTexture2D* Icon = bFilled ? Items[Index].Icon.LoadSynchronous() : nullptr;
+        if (SlotIcons[Index]->GetBrush().GetResourceObject() != Icon)
+        {
+            if (Icon) { SlotIcons[Index]->SetBrushFromTexture(Icon, false); }
+            SlotIcons[Index]->SetVisibility(Icon ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+        }
+        // The name label is the fallback for items without an icon; the tooltip always carries the name.
+        SlotNames[Index]->SetText(bFilled && !Icon ? Items[Index].Name : FText::GetEmpty());
+        SlotCounts[Index]->SetText(bFilled ? FText::AsNumber(Items[Index].Count) : FText::GetEmpty());
+        const FSFInventoryTooltip Tip = bFilled ? BuildTooltip(Items[Index]) : FSFInventoryTooltip();
+        TipTitles[Index]->SetText(FText::FromString(Tip.Title));
+        TipDescriptions[Index]->SetText(FText::FromString(Tip.Description));
+        TipDescriptions[Index]->SetVisibility(Tip.Description.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
+        TipTypes[Index]->SetText(FText::FromString(Tip.TypeLine));
+        TipWeights[Index]->SetText(FText::FromString(Tip.WeightLine));
+        SlotFrames[Index]->SetToolTip(bFilled ? SlotTips[Index].Get() : nullptr);
     }
+    EmptyText->SetText(FText::FromString(All.IsEmpty() ? TEXT("Your pack is empty.") : TEXT("Nothing in this tab.")));
     EmptyText->SetVisibility(Items.IsEmpty() ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
     float Total = 0.f, Max = 0.f;
     if (Pilot->GetInventoryWeight(Total, Max))
@@ -144,4 +193,122 @@ void USFInventoryPanel::Refresh()
         WeightBar->SetPercent(Fraction);
         WeightPercent->SetText(FText::FromString(Max > 0.f ? FString::Printf(TEXT("%d%%"), FMath::RoundToInt(Fraction * 100.f)) : FString()));
     }
+}
+
+FString USFInventoryPanel::TabLabel(ESFInventoryTab Tab)
+{
+    switch (Tab)
+    {
+    case ESFInventoryTab::Materials: return TEXT("Materials");
+    case ESFInventoryTab::Gear: return TEXT("Gear");
+    case ESFInventoryTab::Consumables: return TEXT("Consumables");
+    default: return TEXT("All");
+    }
+}
+
+TArray<FSFInventoryEntry> USFInventoryPanel::BuildEntries(const TArray<FSFInventoryEntry>& Items)
+{
+    TArray<FSFInventoryEntry> Out;
+    for (const FSFInventoryEntry& Item : Items)
+    {
+        if (Item.Count <= 0 || Item.Name.IsEmpty()) { continue; }
+        FSFInventoryEntry* Same = Out.FindByPredicate([&Item](const FSFInventoryEntry& E) { return E.bEquipped == Item.bEquipped && E.Name.ToString() == Item.Name.ToString(); });
+        if (Same) { Same->Count += Item.Count; } else { Out.Add(Item); }
+    }
+    Out.Sort([](const FSFInventoryEntry& A, const FSFInventoryEntry& B)
+    {
+        const int32 Compare = A.Name.ToString().Compare(B.Name.ToString());
+        return Compare != 0 ? Compare < 0 : A.bEquipped < B.bEquipped;
+    });
+    return Out;
+}
+
+TArray<FSFInventoryEntry> USFInventoryPanel::FilterByTab(const TArray<FSFInventoryEntry>& Items, ESFInventoryTab Tab)
+{
+    return Items.FilterByPredicate([Tab](const FSFInventoryEntry& E) { return Tab == ESFInventoryTab::All || E.Category == Tab; });
+}
+
+FSFInventoryTooltip USFInventoryPanel::BuildTooltip(const FSFInventoryEntry& Entry)
+{
+    FSFInventoryTooltip Tip;
+    if (Entry.Count <= 0) { return Tip; }
+    Tip.Title = Entry.Name.ToString();
+    Tip.Description = Entry.Description.ToString();
+    // ponytail: the plugin item definition has no rarity field, so every item reads Common until a game-side definition adds one.
+    Tip.TypeLine = FString::Printf(TEXT("%s  -  Common%s"), *TabLabel(Entry.Category), Entry.bEquipped ? TEXT("  -  Equipped") : TEXT(""));
+    Tip.WeightLine = FString::Printf(TEXT("Weight  %.1f kg"), Entry.UnitWeight);
+    return Tip;
+}
+
+void USFInventoryPanel::StyleTabs()
+{
+    using namespace SFHudStyle;
+    for (int32 Index = 0; Index < TabBorders.Num(); ++Index)
+    {
+        const bool bActive = Index == static_cast<int32>(ActiveTab);
+        TabBorders[Index]->SetBrush(Frame(bActive ? Hex(TEXT("2B3B2C"), 1.f) : Hex(TEXT("0E171C"), 0.85f), bActive ? Brass() : Hex(TEXT("3A4348")), 3.f));
+    }
+}
+
+FReply USFInventoryPanel::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+    if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
+    {
+        for (int32 Index = 0; Index < TabBorders.Num(); ++Index)
+        {
+            if (TabBorders[Index]->GetCachedGeometry().IsUnderLocation(InMouseEvent.GetScreenSpacePosition()))
+            {
+                ActiveTab = static_cast<ESFInventoryTab>(Index);
+                StyleTabs(); Refresh();
+                return FReply::Handled();
+            }
+        }
+    }
+    return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+}
+
+#if SF_WITH_MINIMAL_INVENTORY
+ESFInventoryTab USFInventoryPanel::CategoryOf(const UInventoryItemDefinition& Definition)
+{
+    switch (Definition.UseType)
+    {
+    case EInventoryItemUseType::Equip: return ESFInventoryTab::Gear;
+    case EInventoryItemUseType::Usable: case EInventoryItemUseType::Eat: case EInventoryItemUseType::Consume: return ESFInventoryTab::Consumables;
+    default: return ESFInventoryTab::Materials;
+    }
+}
+
+FSFInventoryEntry USFInventoryPanel::MakeEntry(const UInventoryItemDefinition& Definition, const FString& FallbackName, int32 Count, bool bEquipped)
+{
+    FSFInventoryEntry Entry;
+    Entry.Name = Definition.DisplayName.IsEmpty() ? FText::FromString(FallbackName) : Definition.DisplayName;
+    Entry.Count = Count; Entry.bEquipped = bEquipped;
+    Entry.Category = CategoryOf(Definition);
+    Entry.Description = Definition.Description;
+    Entry.UnitWeight = Definition.Weight;
+    Entry.Icon = Definition.Icon;
+    return Entry;
+}
+#endif
+
+TArray<FSFInventoryEntry> USFInventoryPanel::CollectEntries() const
+{
+    TArray<FSFInventoryEntry> Items;
+#if SF_WITH_MINIMAL_INVENTORY
+    const auto* Inventory = Pilot && Pilot->GetOwner() ? Pilot->GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+    if (!Inventory) { return Items; }
+    auto Add = [&Items](const TSoftObjectPtr<UInventoryItemDefinition>& Item, int32 Quantity, bool bEquipped)
+    {
+        if (Quantity <= 0 || Item.IsNull()) { return; }
+        if (const UInventoryItemDefinition* Definition = Item.LoadSynchronous()) { Items.Add(MakeEntry(*Definition, Item.GetAssetName(), Quantity, bEquipped)); }
+    };
+    for (int32 I = 0; I < FMath::Clamp(Inventory->NumSlots, 0, 64); ++I)
+    {
+        TSoftObjectPtr<UInventoryItemDefinition> Item; int32 Quantity = 0;
+        if (Inventory->GetSlot(I, Item, Quantity)) { Add(Item, Quantity, false); }
+    }
+    TSoftObjectPtr<UInventoryItemDefinition> Equipped; int32 Quantity = 0;
+    if (Inventory->GetEquippedItem(TEXT("tool"), Equipped, Quantity)) { Add(Equipped, Quantity, true); }
+#endif
+    return BuildEntries(Items);
 }

@@ -212,9 +212,9 @@ void ASFE1PlayerController::ToggleInventoryPanel()
         InventoryPanel->SetPositionInViewport(FVector2D(92, 70));
         InventoryPanel->SetVisibility(ESlateVisibility::Collapsed);
     }
-    // Display only: hit-test invisible so it never takes clicks from world controls.
+    // Visible (hit-testable) so the category tabs and item tooltips work; it only covers its own 480 x 560 area.
     InventoryPanel->SetVisibility(InventoryPanel->GetVisibility() == ESlateVisibility::Collapsed
-        ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+        ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 }
 
 void ASFE1PlayerController::InteractWithSelectedTarget()
