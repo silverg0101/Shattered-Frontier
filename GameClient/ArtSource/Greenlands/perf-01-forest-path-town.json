@@ -1,0 +1,9 @@
+{
+  "view": "01-forest-path-town",
+  "frames": 600,
+  "median_ms": 8.36,
+  "p95_ms": 9.65,
+  "worst_ms": 10.54,
+  "fps_median": 119.6,
+  "fps_p95": 103.6
+}
