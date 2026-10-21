@@ -1,0 +1,323 @@
+{
+  "family": "CobblePebbleScatter",
+  "asset_id": "ROCK-GreenlandsCobblePebbleScatter-01",
+  "look_profile_role": "cobble_pebble_scatter",
+  "variant_count": 6,
+  "blender": "5.1.1",
+  "generator": "build_cobblepebblescatter.py",
+  "units": "metres, Z up, front -Y, origin base centre, no ground in any mesh",
+  "budget_triangles_per_variant": 30000,
+  "triangles": [
+    6400,
+    8960,
+    5120,
+    11520,
+    7680,
+    10240
+  ],
+  "placement_scale_note": "look profile place.scale is [0.8, 1.3]: stones 10-30 cm each, clusters 0.6-0.8 m across at scale 1.0; sink 0.02",
+  "unreal_meshes": [
+    "SM_CobblePebbleScatter_00",
+    "SM_CobblePebbleScatter_01",
+    "SM_CobblePebbleScatter_02",
+    "SM_CobblePebbleScatter_03",
+    "SM_CobblePebbleScatter_04",
+    "SM_CobblePebbleScatter_05"
+  ],
+  "nanite": true,
+  "materials": [
+    {
+      "name": "MI_CobblePebbleScatter_00",
+      "base": "Sources/rock_08/rock_08_Diffuse.jpg",
+      "normal": "Sources/rock_08/rock_08_nor_gl.jpg",
+      "rough": "Sources/rock_08/rock_08_Rough.jpg",
+      "tint": [
+        0.46,
+        0.5,
+        0.56
+      ],
+      "sat": 0.35,
+      "normal_strength": 1.0
+    },
+    {
+      "name": "MI_CobblePebbleScatter_01",
+      "base": "Sources/rock_surface/rock_surface_Diffuse.jpg",
+      "normal": "Sources/rock_surface/rock_surface_nor_gl.jpg",
+      "rough": "Sources/rock_surface/rock_surface_Rough.jpg",
+      "tint": [
+        0.4,
+        0.44,
+        0.5
+      ],
+      "sat": 0.3,
+      "normal_strength": 1.0
+    },
+    {
+      "name": "MI_CobblePebbleScatter_02",
+      "base": "Sources/rock_surface/rock_surface_Diffuse.jpg",
+      "normal": "Sources/rock_surface/rock_surface_nor_gl.jpg",
+      "rough": "Sources/rock_surface/rock_surface_Rough.jpg",
+      "tint": [
+        0.5,
+        0.53,
+        0.58
+      ],
+      "sat": 0.3,
+      "normal_strength": 1.0
+    },
+    {
+      "name": "MI_CobblePebbleScatter_03",
+      "base": "Sources/rock_08/rock_08_Diffuse.jpg",
+      "normal": "Sources/rock_08/rock_08_nor_gl.jpg",
+      "rough": "Sources/rock_08/rock_08_Rough.jpg",
+      "tint": [
+        0.38,
+        0.42,
+        0.48
+      ],
+      "sat": 0.3,
+      "normal_strength": 1.0
+    },
+    {
+      "name": "MI_CobblePebbleScatter_04",
+      "base": "Sources/rock_08/rock_08_Diffuse.jpg",
+      "normal": "Sources/rock_08/rock_08_nor_gl.jpg",
+      "rough": "Sources/rock_08/rock_08_Rough.jpg",
+      "tint": [
+        0.5,
+        0.52,
+        0.58
+      ],
+      "sat": 0.3,
+      "normal_strength": 1.0
+    },
+    {
+      "name": "MI_CobblePebbleScatter_05",
+      "base": "Sources/rock_surface/rock_surface_Diffuse.jpg",
+      "normal": "Sources/rock_surface/rock_surface_nor_gl.jpg",
+      "rough": "Sources/rock_surface/rock_surface_Rough.jpg",
+      "tint": [
+        0.42,
+        0.46,
+        0.52
+      ],
+      "sat": 0.25,
+      "normal_strength": 1.0
+    }
+  ],
+  "variants": [
+    {
+      "mesh": "SM_CobblePebbleScatter_00",
+      "source": "rock_08",
+      "scale": 1.0,
+      "generator": "stone() noisy icosphere clusters",
+      "seed": 2,
+      "stones": 5,
+      "cluster_radius_m": 0.3,
+      "material": "MI_CobblePebbleScatter_00",
+      "triangles": 6400,
+      "vertices": 3210,
+      "size_m": [
+        0.551,
+        0.371,
+        0.146
+      ],
+      "fbx": "SM_CobblePebbleScatter_00.fbx",
+      "fbx_sha256": "665cfdd021f6b25ddef051f3412a988feefe28e03a67d5c84bf72e37b75bfd6a",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": []
+    },
+    {
+      "mesh": "SM_CobblePebbleScatter_01",
+      "source": "rock_surface",
+      "scale": 1.0,
+      "generator": "stone() noisy icosphere clusters",
+      "seed": 5,
+      "stones": 7,
+      "cluster_radius_m": 0.34,
+      "material": "MI_CobblePebbleScatter_01",
+      "triangles": 8960,
+      "vertices": 4494,
+      "size_m": [
+        0.743,
+        0.684,
+        0.149
+      ],
+      "fbx": "SM_CobblePebbleScatter_01.fbx",
+      "fbx_sha256": "bc684622b71506ca1d9d8fd60440399ef28249f092a433c1c9c3e35da54236f1",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": []
+    },
+    {
+      "mesh": "SM_CobblePebbleScatter_02",
+      "source": "rock_surface",
+      "scale": 1.0,
+      "generator": "stone() noisy icosphere clusters",
+      "seed": 9,
+      "stones": 4,
+      "cluster_radius_m": 0.28,
+      "material": "MI_CobblePebbleScatter_02",
+      "triangles": 5120,
+      "vertices": 2568,
+      "size_m": [
+        0.43,
+        0.672,
+        0.12
+      ],
+      "fbx": "SM_CobblePebbleScatter_02.fbx",
+      "fbx_sha256": "1eb6c10d69c8634d3692a39ecd7e6f4411529c7a0266b60517eb37c7ddcf3b15",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": []
+    },
+    {
+      "mesh": "SM_CobblePebbleScatter_03",
+      "source": "rock_08",
+      "scale": 1.0,
+      "generator": "stone() noisy icosphere clusters",
+      "seed": 13,
+      "stones": 9,
+      "cluster_radius_m": 0.38,
+      "material": "MI_CobblePebbleScatter_03",
+      "triangles": 11520,
+      "vertices": 5778,
+      "size_m": [
+        0.871,
+        0.892,
+        0.168
+      ],
+      "fbx": "SM_CobblePebbleScatter_03.fbx",
+      "fbx_sha256": "076e939e0ae1a34fba50fe8226dc770ae5c992e2bd0ca2dbb39a5b2c129c9c6d",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": []
+    },
+    {
+      "mesh": "SM_CobblePebbleScatter_04",
+      "source": "rock_08",
+      "scale": 1.0,
+      "generator": "stone() noisy icosphere clusters",
+      "seed": 17,
+      "stones": 6,
+      "cluster_radius_m": 0.32,
+      "material": "MI_CobblePebbleScatter_04",
+      "triangles": 7680,
+      "vertices": 3852,
+      "size_m": [
+        0.508,
+        0.432,
+        0.115
+      ],
+      "fbx": "SM_CobblePebbleScatter_04.fbx",
+      "fbx_sha256": "1391255598863aec707bbb22d9ad917e7f24f29ed1c266188987b7d723e8a6fa",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": []
+    },
+    {
+      "mesh": "SM_CobblePebbleScatter_05",
+      "source": "rock_surface",
+      "scale": 1.0,
+      "generator": "stone() noisy icosphere clusters",
+      "seed": 23,
+      "stones": 8,
+      "cluster_radius_m": 0.36,
+      "material": "MI_CobblePebbleScatter_05",
+      "triangles": 10240,
+      "vertices": 5136,
+      "size_m": [
+        0.778,
+        0.671,
+        0.121
+      ],
+      "fbx": "SM_CobblePebbleScatter_05.fbx",
+      "fbx_sha256": "02e97dda979dd29ef23584f91fe97fe69f7252dbbb54462fa6c9e3adad92c8d3",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": []
+    }
+  ],
+  "sources": [
+    {
+      "asset": "rock_08",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/rock_08",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Rob Tuytel": "All"
+      },
+      "physical_size_mm": [
+        1500,
+        1500
+      ],
+      "files": [
+        {
+          "file": "rock_08/rock_08_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_08/rock_08_diff_2k.jpg",
+          "md5": "39e2cc33265a24439ed6b12096971f49",
+          "bytes": 2633011
+        },
+        {
+          "file": "rock_08/rock_08_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_08/rock_08_nor_gl_2k.jpg",
+          "md5": "df59e1c184c092d8d9c1b818995f9646",
+          "bytes": 3406692
+        },
+        {
+          "file": "rock_08/rock_08_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_08/rock_08_rough_2k.jpg",
+          "md5": "527dbf400e08953f74bfcda8839bf7dd",
+          "bytes": 1242781
+        },
+        {
+          "file": "rock_08/rock_08_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_08/rock_08_disp_2k.jpg",
+          "md5": "5e074b9ec8212cc42479c7119f6c2d13",
+          "bytes": 531552
+        }
+      ]
+    },
+    {
+      "asset": "rock_surface",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/rock_surface",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Amal Kumar": "All"
+      },
+      "physical_size_mm": [
+        2000,
+        2000
+      ],
+      "files": [
+        {
+          "file": "rock_surface/rock_surface_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_surface/rock_surface_diff_2k.jpg",
+          "md5": "2d4912a91f73f08ed11734c044cd83b6",
+          "bytes": 3750802
+        },
+        {
+          "file": "rock_surface/rock_surface_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_surface/rock_surface_nor_gl_2k.jpg",
+          "md5": "6a7a2005834232c854cf907b22e67e42",
+          "bytes": 4709620
+        },
+        {
+          "file": "rock_surface/rock_surface_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_surface/rock_surface_rough_2k.jpg",
+          "md5": "14f6c59dd2948ac97c0fdb3a346064c0",
+          "bytes": 2442707
+        },
+        {
+          "file": "rock_surface/rock_surface_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_surface/rock_surface_disp_2k.jpg",
+          "md5": "21b0d5b5eace8cb55bee42adcc64703d",
+          "bytes": 1291413
+        }
+      ]
+    }
+  ],
+  "renders": [
+    "CobblePebbleScatter-Variants.png",
+    "CobblePebbleScatter-Detail.png"
+  ],
+  "concept_reference": "docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp"
+}

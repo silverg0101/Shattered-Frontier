@@ -1,0 +1,226 @@
+{
+  "family": "GraniteDomeFar",
+  "asset_id": "TERR-GreenlandsGraniteDomeFar-01",
+  "look_profile_role": "granite_dome_far",
+  "variant_count": 2,
+  "blender": "5.1.1",
+  "generator": "build_granitedomefar.py",
+  "units": "metres, Z up, front -Y, origin base centre, no ground in any mesh",
+  "budget_triangles_per_variant": 45000,
+  "triangles": [
+    44999,
+    45000
+  ],
+  "placement_scale_note": "backdrop only, beyond the playable radius; place 1.5-4 km out at scale 3-8 as needed (silhouette family); no collision; rim is at z=0",
+  "unreal_meshes": [
+    "SM_GraniteDomeFar_00",
+    "SM_GraniteDomeFar_01"
+  ],
+  "nanite": true,
+  "materials": [
+    {
+      "name": "MI_GraniteDomeFar_00",
+      "base": "Sources/rock_08/rock_08_Diffuse.jpg",
+      "normal": "Sources/rock_08/rock_08_nor_gl.jpg",
+      "rough": "Sources/rock_08/rock_08_Rough.jpg",
+      "tint": [
+        0.5,
+        0.52,
+        0.56
+      ],
+      "sat": 0.3,
+      "uv_scale": [
+        1,
+        1
+      ],
+      "normal_strength": 1.0,
+      "blend": {
+        "base": "Sources/forest_ground_04/forest_ground_04_Diffuse.jpg",
+        "normal": "Sources/forest_ground_04/forest_ground_04_nor_gl.jpg",
+        "rough": "Sources/forest_ground_04/forest_ground_04_Rough.jpg",
+        "tint": [
+          0.22,
+          0.32,
+          0.16
+        ],
+        "sat": 1.1,
+        "uv_scale": [
+          1,
+          1
+        ],
+        "amount": 1.0,
+        "contrast": 0.2
+      }
+    },
+    {
+      "name": "MI_GraniteDomeFar_01",
+      "base": "Sources/rock_08/rock_08_Diffuse.jpg",
+      "normal": "Sources/rock_08/rock_08_nor_gl.jpg",
+      "rough": "Sources/rock_08/rock_08_Rough.jpg",
+      "tint": [
+        0.5,
+        0.52,
+        0.56
+      ],
+      "sat": 0.3,
+      "uv_scale": [
+        1,
+        1
+      ],
+      "normal_strength": 1.0,
+      "blend": {
+        "base": "Sources/forest_ground_04/forest_ground_04_Diffuse.jpg",
+        "normal": "Sources/forest_ground_04/forest_ground_04_nor_gl.jpg",
+        "rough": "Sources/forest_ground_04/forest_ground_04_Rough.jpg",
+        "tint": [
+          0.22,
+          0.32,
+          0.16
+        ],
+        "sat": 1.1,
+        "uv_scale": [
+          1,
+          1
+        ],
+        "amount": 1.0,
+        "contrast": 0.2
+      }
+    }
+  ],
+  "variants": [
+    {
+      "mesh": "SM_GraniteDomeFar_00",
+      "generator": "dome() radial heightfield",
+      "seed": 4,
+      "half_extents_m": [
+        210,
+        165
+      ],
+      "height_m": 115,
+      "forest_mean": 0.468,
+      "material": "MI_GraniteDomeFar_00",
+      "triangles": 44999,
+      "vertices": 22910,
+      "size_m": [
+        419.19,
+        363.005,
+        114.375
+      ],
+      "fbx": "SM_GraniteDomeFar_00.fbx",
+      "fbx_sha256": "e5e790820866b303fe3d701d8a38d1ac270c6e7ceaed7c36ec9be8426e632d67",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": []
+    },
+    {
+      "mesh": "SM_GraniteDomeFar_01",
+      "generator": "dome() radial heightfield",
+      "seed": 9,
+      "half_extents_m": [
+        180,
+        150
+      ],
+      "height_m": 92,
+      "forest_mean": 0.625,
+      "material": "MI_GraniteDomeFar_01",
+      "triangles": 45000,
+      "vertices": 22905,
+      "size_m": [
+        345.545,
+        330.009,
+        104.276
+      ],
+      "fbx": "SM_GraniteDomeFar_01.fbx",
+      "fbx_sha256": "b716f717028825eb1befd1e84c365169e6e5863c0e4de3a171cc5725b0ab60f7",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": []
+    }
+  ],
+  "sources": [
+    {
+      "asset": "forest_ground_04",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/forest_ground_04",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Rob Tuytel": "Photography, Processing",
+        "Rico Cilliers": "Minor adjustment"
+      },
+      "physical_size_mm": [
+        3150.0000953674316,
+        3150.0000953674316
+      ],
+      "files": [
+        {
+          "file": "forest_ground_04/forest_ground_04_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/forest_ground_04/forest_ground_04_diff_2k.jpg",
+          "md5": "f6ce9c8af4316c2627a4b3fbab8ad944",
+          "bytes": 4529321
+        },
+        {
+          "file": "forest_ground_04/forest_ground_04_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/forest_ground_04/forest_ground_04_nor_gl_2k.jpg",
+          "md5": "5fa9256955e7bfa40a0269b4965ce646",
+          "bytes": 5288849
+        },
+        {
+          "file": "forest_ground_04/forest_ground_04_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/forest_ground_04/forest_ground_04_rough_2k.jpg",
+          "md5": "81daa9a1d8b35dd9ffdff3aa7a74fbd9",
+          "bytes": 2509805
+        },
+        {
+          "file": "forest_ground_04/forest_ground_04_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/forest_ground_04/forest_ground_04_disp_2k.jpg",
+          "md5": "2d342b36619dc1a4e4afcd3bfc256dfe",
+          "bytes": 696276
+        }
+      ]
+    },
+    {
+      "asset": "rock_08",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/rock_08",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Rob Tuytel": "All"
+      },
+      "physical_size_mm": [
+        1500,
+        1500
+      ],
+      "files": [
+        {
+          "file": "rock_08/rock_08_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_08/rock_08_diff_2k.jpg",
+          "md5": "39e2cc33265a24439ed6b12096971f49",
+          "bytes": 2633011
+        },
+        {
+          "file": "rock_08/rock_08_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_08/rock_08_nor_gl_2k.jpg",
+          "md5": "df59e1c184c092d8d9c1b818995f9646",
+          "bytes": 3406692
+        },
+        {
+          "file": "rock_08/rock_08_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_08/rock_08_rough_2k.jpg",
+          "md5": "527dbf400e08953f74bfcda8839bf7dd",
+          "bytes": 1242781
+        },
+        {
+          "file": "rock_08/rock_08_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_08/rock_08_disp_2k.jpg",
+          "md5": "5e074b9ec8212cc42479c7119f6c2d13",
+          "bytes": 531552
+        }
+      ]
+    }
+  ],
+  "renders": [
+    "GraniteDomeFar-Variants.png",
+    "GraniteDomeFar-Variants-Top.png"
+  ],
+  "concept_reference": "docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp"
+}

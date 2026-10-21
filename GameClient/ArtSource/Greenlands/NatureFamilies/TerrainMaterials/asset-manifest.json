@@ -1,0 +1,246 @@
+{
+  "family": "TerrainMaterials",
+  "asset_ids": [
+    "MAT-GreenlandsMaterialForestFloor-01",
+    "MAT-GreenlandsMaterialBedrock-01"
+  ],
+  "roles": [
+    "material_forest_floor",
+    "material_bedrock"
+  ],
+  "blender": "5.1.1",
+  "generator": "build_terrain.py",
+  "unreal_materials": [
+    "MI_GN_ForestFloor",
+    "MI_GN_Bedrock"
+  ],
+  "note": "world-aligned (XY) tiling: UV = world cm / (tile_m*100); layer B weight = smoothstep-free linear ramp of mask texture R between low and high. Bedrock also steepens with slope in the engine master.",
+  "materials": [
+    {
+      "name": "MI_GN_ForestFloor",
+      "tile_m": 2.0,
+      "tint": [
+        0.78,
+        0.74,
+        0.7
+      ],
+      "sat": 0.9,
+      "base": "Sources/forest_ground_04/forest_ground_04_Diffuse.jpg",
+      "normal": "Sources/forest_ground_04/forest_ground_04_nor_gl.jpg",
+      "rough": "Sources/forest_ground_04/forest_ground_04_Rough.jpg",
+      "blend": {
+        "tile_m": 1.5,
+        "base": "Sources/mossy_rock/mossy_rock_Diffuse.jpg",
+        "normal": "Sources/mossy_rock/mossy_rock_nor_gl.jpg",
+        "rough": "Sources/mossy_rock/mossy_rock_Rough.jpg",
+        "tint": [
+          0.34,
+          0.46,
+          0.2
+        ],
+        "sat": 0.8,
+        "mask": "Sources/forest_ground_04/forest_ground_04_Displacement.jpg",
+        "mask_tile_m": 9.0,
+        "low_pct": 84,
+        "high_pct": 97,
+        "low": 0.4,
+        "high": 0.431
+      }
+    },
+    {
+      "name": "MI_GN_Bedrock",
+      "tile_m": 2.0,
+      "tint": [
+        0.5,
+        0.52,
+        0.56
+      ],
+      "sat": 0.3,
+      "base": "Sources/marble_rock_01/marble_rock_01_Diffuse.jpg",
+      "normal": "Sources/marble_rock_01/marble_rock_01_nor_gl.jpg",
+      "rough": "Sources/marble_rock_01/marble_rock_01_Rough.jpg",
+      "blend": {
+        "tile_m": 1.2,
+        "base": "Sources/mossy_rock/mossy_rock_Diffuse.jpg",
+        "normal": "Sources/mossy_rock/mossy_rock_nor_gl.jpg",
+        "rough": "Sources/mossy_rock/mossy_rock_Rough.jpg",
+        "tint": [
+          0.45,
+          0.58,
+          0.36
+        ],
+        "sat": 0.45,
+        "mask": "Sources/rock_surface/rock_surface_Displacement.jpg",
+        "mask_tile_m": 7.0,
+        "low_pct": 70,
+        "high_pct": 92,
+        "low": 0.624,
+        "high": 0.706
+      }
+    }
+  ],
+  "sources": [
+    {
+      "asset": "forest_ground_04",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/forest_ground_04",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Rob Tuytel": "Photography, Processing",
+        "Rico Cilliers": "Minor adjustment"
+      },
+      "physical_size_mm": [
+        3150.0000953674316,
+        3150.0000953674316
+      ],
+      "files": [
+        {
+          "file": "forest_ground_04/forest_ground_04_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/forest_ground_04/forest_ground_04_diff_2k.jpg",
+          "md5": "f6ce9c8af4316c2627a4b3fbab8ad944",
+          "bytes": 4529321
+        },
+        {
+          "file": "forest_ground_04/forest_ground_04_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/forest_ground_04/forest_ground_04_nor_gl_2k.jpg",
+          "md5": "5fa9256955e7bfa40a0269b4965ce646",
+          "bytes": 5288849
+        },
+        {
+          "file": "forest_ground_04/forest_ground_04_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/forest_ground_04/forest_ground_04_rough_2k.jpg",
+          "md5": "81daa9a1d8b35dd9ffdff3aa7a74fbd9",
+          "bytes": 2509805
+        },
+        {
+          "file": "forest_ground_04/forest_ground_04_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/forest_ground_04/forest_ground_04_disp_2k.jpg",
+          "md5": "2d342b36619dc1a4e4afcd3bfc256dfe",
+          "bytes": 696276
+        }
+      ]
+    },
+    {
+      "asset": "rock_surface",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/rock_surface",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Amal Kumar": "All"
+      },
+      "physical_size_mm": [
+        2000,
+        2000
+      ],
+      "files": [
+        {
+          "file": "rock_surface/rock_surface_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_surface/rock_surface_diff_2k.jpg",
+          "md5": "2d4912a91f73f08ed11734c044cd83b6",
+          "bytes": 3750802
+        },
+        {
+          "file": "rock_surface/rock_surface_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_surface/rock_surface_nor_gl_2k.jpg",
+          "md5": "6a7a2005834232c854cf907b22e67e42",
+          "bytes": 4709620
+        },
+        {
+          "file": "rock_surface/rock_surface_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_surface/rock_surface_rough_2k.jpg",
+          "md5": "14f6c59dd2948ac97c0fdb3a346064c0",
+          "bytes": 2442707
+        },
+        {
+          "file": "rock_surface/rock_surface_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rock_surface/rock_surface_disp_2k.jpg",
+          "md5": "21b0d5b5eace8cb55bee42adcc64703d",
+          "bytes": 1291413
+        }
+      ]
+    },
+    {
+      "asset": "mossy_rock",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/mossy_rock",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Rob Tuytel": "All"
+      },
+      "physical_size_mm": [
+        3000,
+        3000
+      ],
+      "files": [
+        {
+          "file": "mossy_rock/mossy_rock_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_diff_2k.jpg",
+          "md5": "8e55bbeeef1db0d2d0cae85515812c46",
+          "bytes": 4535360
+        },
+        {
+          "file": "mossy_rock/mossy_rock_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_nor_gl_2k.jpg",
+          "md5": "e6b611c8a6f8e3276e7f5491c8e66a0f",
+          "bytes": 4033031
+        },
+        {
+          "file": "mossy_rock/mossy_rock_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_rough_2k.jpg",
+          "md5": "0b4bbecd6af36e343d05ed11914bb18f",
+          "bytes": 3205806
+        },
+        {
+          "file": "mossy_rock/mossy_rock_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_disp_2k.jpg",
+          "md5": "d22857010ae3d07e42c5548126cf386c",
+          "bytes": 644550
+        }
+      ]
+    },
+    {
+      "asset": "marble_rock_01",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/marble_rock_01",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Amal Kumar": "All"
+      },
+      "physical_size_mm": [
+        2002.079963684082,
+        2002.0811557769775
+      ],
+      "files": [
+        {
+          "file": "marble_rock_01/marble_rock_01_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/marble_rock_01/marble_rock_01_diff_2k.jpg",
+          "md5": "ba866248dbc753afec0e93120407412c",
+          "bytes": 3625410
+        },
+        {
+          "file": "marble_rock_01/marble_rock_01_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/marble_rock_01/marble_rock_01_nor_gl_2k.jpg",
+          "md5": "4635a79bb7bb5c861fd480cde983cfa7",
+          "bytes": 3471019
+        },
+        {
+          "file": "marble_rock_01/marble_rock_01_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/marble_rock_01/marble_rock_01_rough_2k.jpg",
+          "md5": "24ed3988d606f317078d9b08c2909ade",
+          "bytes": 2103662
+        },
+        {
+          "file": "marble_rock_01/marble_rock_01_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/marble_rock_01/marble_rock_01_disp_2k.jpg",
+          "md5": "5bb8d196d06dd98343063c5e14687b53",
+          "bytes": 654407
+        }
+      ]
+    }
+  ],
+  "concept_reference": "docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp"
+}

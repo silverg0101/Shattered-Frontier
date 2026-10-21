@@ -12,7 +12,9 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parent;LIB='/Game/Frontier/Environment/Greenlands/Nature'
 tools=u.AssetToolsHelpers.get_asset_tools();mel=u.MaterialEditingLibrary;eal=u.EditorAssetLibrary;sme=u.get_editor_subsystem(u.StaticMeshEditorSubsystem)
 assert sme,'Full editor required'
-FAMILIES=[a for a in sys.argv[1:] if (ROOT/a/'asset-manifest.json').exists()] or ['BoulderLargeMoss','BedrockSlab','BroadleafYoung','PineTall']
+FAMILIES=[a for a in sys.argv[1:] if (ROOT/a/'asset-manifest.json').exists()] or ['BoulderLargeMoss','BedrockSlab','BroadleafYoung','PineTall','CobblePebbleScatter','MossPatch','LeafNeedleLitter','HerbBroadleaf','SaplingBroadleaf','GraniteDomeFar']
+COL={'BoulderLargeMoss':'convex','BedrockSlab':'convex','CobblePebbleScatter':'convex','BroadleafYoung':'ucx','PineTall':'ucx','SaplingBroadleaf':'ucx'}   # other families: no collision
+ROCKISH=('BoulderLargeMoss','BedrockSlab','CobblePebbleScatter','MossPatch','GraniteDomeFar')   # opaque one-sided master, Nanite fallback 10%
 TEX={}
 
 
@@ -40,7 +42,8 @@ def link(a,out,b,inp):assert mel.connect_material_expressions(a,out,b,inp),(a,ou
 
 def master(name,two_sided,leaf):
     path=f'{LIB}/Materials/{name}'
-    m=u.load_asset(path) if eal.does_asset_exist(path) else tools.create_asset(name,LIB+'/Materials',u.Material,u.MaterialFactoryNew())
+    if eal.does_asset_exist(path):return u.load_asset(path)   # masters are built once; delete the asset to rebuild after changing this function
+    m=tools.create_asset(name,LIB+'/Materials',u.Material,u.MaterialFactoryNew())
     mel.delete_all_material_expressions(m);m.set_editor_property('two_sided',two_sided);m.set_editor_property('used_with_instanced_static_meshes',True)
     S=u.MaterialSamplerType;tc=node(m,u.MaterialExpressionTextureCoordinate,-1800,0)
     sc=lambda n,d,x,y:node(m,u.MaterialExpressionScalarParameter,x,y,parameter_name=n,default_value=d)
@@ -100,7 +103,7 @@ def instance(spec,kind):
     eal.save_loaded_asset(mi);return mi
 
 
-def import_mesh(fbx,name,rock,instances):
+def import_mesh(fbx,name,rock,instances,col):
     task=u.AssetImportTask();task.filename=str(fbx);task.destination_path=LIB+'/Meshes';task.destination_name=name;task.automated=True;task.save=True;task.replace_existing=True
     o=u.FbxImportUI();o.import_materials=False;o.import_textures=False;o.import_as_skeletal=False
     d=o.static_mesh_import_data;d.combine_meshes=True;d.auto_generate_collision=False;d.generate_lightmap_u_vs=True;d.vertex_color_import_option=u.VertexColorImportOption.REPLACE
@@ -112,8 +115,10 @@ def import_mesh(fbx,name,rock,instances):
     except Exception:pass
     if not rock:ns.set_editor_property('shape_preservation',u.NaniteShapePreservation.PRESERVE_AREA)  # foliage: keeps leaf/needle area as Nanite simplifies, else crowns go bare at range
     mesh.set_editor_property('nanite_settings',ns);bs=mesh.get_editor_property('body_setup');bs.set_editor_property('collision_trace_flag',u.CollisionTraceFlag.CTF_USE_DEFAULT)
-    if rock:
+    if col=='convex':
         sme.remove_collisions(mesh);assert sme.set_convex_decomposition_collisions(mesh,12,16,100000)>=0,name
+    elif col=='none':
+        sme.remove_collisions(mesh)
     else:   # trunk-only convex prisms come from the FBX (UCX_<mesh>_NN); the canopy has no collision
         assert len(bs.get_editor_property('agg_geom').get_editor_property('convex_elems'))>=1,f'{name}: trunk UCX collision missing from the FBX'
     eal.save_loaded_asset(mesh);b=mesh.get_bounding_box()
@@ -127,9 +132,9 @@ W=u.get_editor_subsystem(u.UnrealEditorSubsystem).get_editor_world();CV='Interch
 was=u.SystemLibrary.get_console_variable_bool_value(CV);u.SystemLibrary.execute_console_command(W,f'{CV} 0')
 try:
     for fam in FAMILIES:
-        man=json.loads((ROOT/fam/'asset-manifest.json').read_text());rock=fam in ('BoulderLargeMoss','BedrockSlab');inst={}
-        for s in man['materials']:inst[s['name']]=instance(s,'leaf' if s.get('alpha') else ('rock' if rock else 'wood'))
-        rep=[import_mesh(ROOT/fam/r['fbx'],r['mesh'],rock,inst) for r in man['variants']];report[fam]=rep
+        man=json.loads((ROOT/fam/'asset-manifest.json').read_text());rock=fam in ROCKISH;inst={}
+        for s in man['materials']:inst[s['name']]=instance(s,'leaf' if s.get('alpha') else ('rock' if rock or 'Flower' in s['name'] else 'wood'))
+        rep=[import_mesh(ROOT/fam/r['fbx'],r['mesh'],rock,inst,COL.get(fam,'none')) for r in man['variants']];report[fam]=rep
         (ROOT/fam/'ue-import-report.json').write_text(json.dumps(rep,indent=2)+'\n')
 finally:u.SystemLibrary.execute_console_command(W,f'{CV} {int(was)}')
 print('NATURE_IMPORT',json.dumps(report))

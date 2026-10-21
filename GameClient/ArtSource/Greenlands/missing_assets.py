@@ -37,7 +37,7 @@ LAYOUT_TYPES = {'townhouse': 'Townhouse', 'elite_house': 'Northridge house', 'mi
 
 def library_index():
     """Mesh name -> path relative to the biome folder, for every static mesh in the biome library."""
-    return {p.stem: p.relative_to(LIBRARY).as_posix() for p in LIBRARY.rglob('SM_*.uasset')}
+    return {p.stem: p.relative_to(LIBRARY).as_posix() for pat in ('SM_*.uasset', 'MI_GN_*.uasset') for p in LIBRARY.rglob(pat)}
 
 
 def licensed(path):
@@ -234,9 +234,8 @@ def catalog_row(rows):
 
 if __name__ == '__main__':
     rows = gaps()
-    # PineTall, BroadleafYoung, BoulderLargeMoss, BedrockSlab: delivered (ArtSource/Greenlands/NatureFamilies)
-    expected = ['SaplingBroadleaf', 'CobblePebbleScatter',
-                'LeafNeedleLitter', 'MaterialForestFloor', 'MaterialBedrock', 'HerbBroadleaf', 'MossPatch', 'GraniteDomeFar']
+    # All Greenlands nature rows are delivered (ArtSource/Greenlands/NatureFamilies); no known gaps remain
+    expected = []
     ids = ' '.join(r['id'] for r in rows)
     missing = [e for e in expected if e not in ids]
     assert not missing, f'pipeline stage 4 exit: these known gaps are missing from the report: {missing}'

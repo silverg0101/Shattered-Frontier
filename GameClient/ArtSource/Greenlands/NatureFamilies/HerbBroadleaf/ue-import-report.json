@@ -1,0 +1,38 @@
+[
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_HerbBroadleaf_00",
+    "size_m": [
+      0.41,
+      0.26,
+      0.28
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 0,
+    "triangles": 798
+  },
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_HerbBroadleaf_01",
+    "size_m": [
+      0.3,
+      0.24,
+      0.27
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 0,
+    "triangles": 678
+  },
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_HerbBroadleaf_02",
+    "size_m": [
+      0.38,
+      0.39,
+      0.3
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 0,
+    "triangles": 878
+  }
+]

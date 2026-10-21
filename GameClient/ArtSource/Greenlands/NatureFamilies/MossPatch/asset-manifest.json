@@ -1,0 +1,178 @@
+{
+  "family": "MossPatch",
+  "asset_id": "VEG-GreenlandsMossPatch-01",
+  "look_profile_role": "moss_patch",
+  "variant_count": 3,
+  "blender": "5.1.1",
+  "generator": "build_mosspatch.py",
+  "units": "metres, Z up, front -Y, origin base centre, no ground in any mesh",
+  "budget_triangles_per_variant": 20000,
+  "triangles": [
+    2971,
+    4855,
+    4774
+  ],
+  "placement_scale_note": "look profile place.scale assumed [0.8, 1.6]: mats are 0.5-0.9 m across at 1.0, so placed 0.4-1.4 m; sink 0.005; mats are flat, drape them on rock tops with the dressing",
+  "unreal_meshes": [
+    "SM_MossPatch_00",
+    "SM_MossPatch_01",
+    "SM_MossPatch_02"
+  ],
+  "nanite": true,
+  "materials": [
+    {
+      "name": "MI_MossPatch_00",
+      "base": "Sources/mossy_rock/mossy_rock_Diffuse.jpg",
+      "normal": "Sources/mossy_rock/mossy_rock_nor_gl.jpg",
+      "rough": "Sources/mossy_rock/mossy_rock_Rough.jpg",
+      "tint": [
+        0.5,
+        0.85,
+        0.3
+      ],
+      "sat": 0.95,
+      "normal_strength": 1.0
+    },
+    {
+      "name": "MI_MossPatch_01",
+      "base": "Sources/mossy_rock/mossy_rock_Diffuse.jpg",
+      "normal": "Sources/mossy_rock/mossy_rock_nor_gl.jpg",
+      "rough": "Sources/mossy_rock/mossy_rock_Rough.jpg",
+      "tint": [
+        0.42,
+        0.78,
+        0.26
+      ],
+      "sat": 0.95,
+      "normal_strength": 1.0
+    },
+    {
+      "name": "MI_MossPatch_02",
+      "base": "Sources/mossy_rock/mossy_rock_Diffuse.jpg",
+      "normal": "Sources/mossy_rock/mossy_rock_nor_gl.jpg",
+      "rough": "Sources/mossy_rock/mossy_rock_Rough.jpg",
+      "tint": [
+        0.55,
+        0.82,
+        0.34
+      ],
+      "sat": 0.95,
+      "normal_strength": 1.0
+    }
+  ],
+  "variants": [
+    {
+      "mesh": "SM_MossPatch_00",
+      "generator": "mat_mesh() height grid",
+      "seed": 3,
+      "outline_half_m": [
+        0.3,
+        0.24
+      ],
+      "height_m": 0.07,
+      "material": "MI_MossPatch_00",
+      "triangles": 2971,
+      "vertices": 1578,
+      "size_m": [
+        0.609,
+        0.47,
+        0.071
+      ],
+      "fbx": "SM_MossPatch_00.fbx",
+      "fbx_sha256": "702a131d90d136e6cc84ae3675236e30d1ae5771b0afa09257d22c681bfcb15b",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": []
+    },
+    {
+      "mesh": "SM_MossPatch_01",
+      "generator": "mat_mesh() height grid",
+      "seed": 7,
+      "outline_half_m": [
+        0.42,
+        0.32
+      ],
+      "height_m": 0.045,
+      "material": "MI_MossPatch_01",
+      "triangles": 4855,
+      "vertices": 2549,
+      "size_m": [
+        0.795,
+        0.561,
+        0.046
+      ],
+      "fbx": "SM_MossPatch_01.fbx",
+      "fbx_sha256": "a659172fca705ea6947d09ae10252bc9c592b4288c1a78d8f5846cf7155f47b3",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": []
+    },
+    {
+      "mesh": "SM_MossPatch_02",
+      "generator": "mat_mesh() height grid",
+      "seed": 11,
+      "outline_half_m": [
+        0.36,
+        0.36
+      ],
+      "height_m": 0.06,
+      "material": "MI_MossPatch_02",
+      "triangles": 4774,
+      "vertices": 2507,
+      "size_m": [
+        0.736,
+        0.663,
+        0.06
+      ],
+      "fbx": "SM_MossPatch_02.fbx",
+      "fbx_sha256": "52b050f1f42557337a0a1391132d2f6540bb152db8cb7e157aea7574a5355b7e",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": []
+    }
+  ],
+  "sources": [
+    {
+      "asset": "mossy_rock",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/mossy_rock",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Rob Tuytel": "All"
+      },
+      "physical_size_mm": [
+        3000,
+        3000
+      ],
+      "files": [
+        {
+          "file": "mossy_rock/mossy_rock_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_diff_2k.jpg",
+          "md5": "8e55bbeeef1db0d2d0cae85515812c46",
+          "bytes": 4535360
+        },
+        {
+          "file": "mossy_rock/mossy_rock_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_nor_gl_2k.jpg",
+          "md5": "e6b611c8a6f8e3276e7f5491c8e66a0f",
+          "bytes": 4033031
+        },
+        {
+          "file": "mossy_rock/mossy_rock_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_rough_2k.jpg",
+          "md5": "0b4bbecd6af36e343d05ed11914bb18f",
+          "bytes": 3205806
+        },
+        {
+          "file": "mossy_rock/mossy_rock_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/mossy_rock/mossy_rock_disp_2k.jpg",
+          "md5": "d22857010ae3d07e42c5548126cf386c",
+          "bytes": 644550
+        }
+      ]
+    }
+  ],
+  "renders": [
+    "MossPatch-Variants.png",
+    "MossPatch-Detail.png"
+  ],
+  "concept_reference": "docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp"
+}

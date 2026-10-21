@@ -1,0 +1,352 @@
+{
+  "family": "LeafNeedleLitter",
+  "asset_id": "VEG-GreenlandsLeafNeedleLitter-01",
+  "look_profile_role": "leaf_needle_litter",
+  "variant_count": 3,
+  "blender": "5.1.1",
+  "generator": "build_leafneedlelitter.py",
+  "units": "metres, Z up, front -Y, origin base centre, no ground in any mesh",
+  "budget_triangles_per_variant": 40000,
+  "triangles": [
+    1627,
+    1631,
+    1597
+  ],
+  "placement_scale_note": "look profile place.scale assumed [0.8, 1.6]: patches 0.5-0.6 m across at 1.0; sink 0; thin enough to lay straight on terrain",
+  "unreal_meshes": [
+    "SM_LeafNeedleLitter_00",
+    "SM_LeafNeedleLitter_01",
+    "SM_LeafNeedleLitter_02"
+  ],
+  "nanite": true,
+  "materials": [
+    {
+      "name": "MI_LeafNeedleLitter_Needle",
+      "base": "Sources/pine_tree_01/textures/pine_tree_01_bark_diff_2k.jpg",
+      "normal": "Sources/pine_tree_01/textures/pine_tree_01_bark_nor_gl_2k.jpg",
+      "arm": "Sources/pine_tree_01/textures/pine_tree_01_bark_arm_2k.jpg",
+      "tint": [
+        2.1,
+        1.35,
+        0.65
+      ],
+      "sat": 0.9,
+      "two_sided": true
+    },
+    {
+      "name": "MI_LeafNeedleLitter_Leaf",
+      "base": "Sources/tree_small_02/textures/tree_small_02_leaves_diff_2k.jpg",
+      "normal": "Sources/tree_small_02/textures/tree_small_02_leaves_nor_gl_2k.jpg",
+      "arm": "Sources/tree_small_02/textures/tree_small_02_leaves_arm_2k.jpg",
+      "alpha": "Sources/tree_small_02/textures/tree_small_02_leaves_alpha_2k.png",
+      "tint": [
+        3.0,
+        0.5,
+        0.12
+      ],
+      "sat": 0.75,
+      "two_sided": true,
+      "alpha_mode": "MASKED"
+    }
+  ],
+  "variants": [
+    {
+      "mesh": "SM_LeafNeedleLitter_00",
+      "seed": 3,
+      "needles": 520,
+      "leaves": 26,
+      "radius_m": 0.27,
+      "materials": [
+        "MI_LeafNeedleLitter_Needle",
+        "MI_LeafNeedleLitter_Leaf"
+      ],
+      "triangles": 1627,
+      "vertices": 2582,
+      "size_m": [
+        0.59,
+        0.565,
+        0.034
+      ],
+      "fbx": "SM_LeafNeedleLitter_00.fbx",
+      "fbx_sha256": "280fc5b1753aa6123e4042c8b0c0b4079375d5033254f51a6700a32ccd1e20ef",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": []
+    },
+    {
+      "mesh": "SM_LeafNeedleLitter_01",
+      "seed": 6,
+      "needles": 380,
+      "leaves": 40,
+      "radius_m": 0.3,
+      "materials": [
+        "MI_LeafNeedleLitter_Needle",
+        "MI_LeafNeedleLitter_Leaf"
+      ],
+      "triangles": 1631,
+      "vertices": 2268,
+      "size_m": [
+        0.602,
+        0.613,
+        0.035
+      ],
+      "fbx": "SM_LeafNeedleLitter_01.fbx",
+      "fbx_sha256": "ff50405055400a87e9ee377b0ad663d10226165332f4eb0643a6d8e89b1e638d",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": []
+    },
+    {
+      "mesh": "SM_LeafNeedleLitter_02",
+      "seed": 9,
+      "needles": 650,
+      "leaves": 14,
+      "radius_m": 0.25,
+      "materials": [
+        "MI_LeafNeedleLitter_Needle",
+        "MI_LeafNeedleLitter_Leaf"
+      ],
+      "triangles": 1597,
+      "vertices": 2858,
+      "size_m": [
+        0.517,
+        0.544,
+        0.038
+      ],
+      "fbx": "SM_LeafNeedleLitter_02.fbx",
+      "fbx_sha256": "10f2d48d4d4c2c4285078805cd3f8204dd9c818d9f146bc9200a1025e4127118",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": []
+    }
+  ],
+  "sources": [
+    {
+      "asset": "pine_bark",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/pine_bark",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Dimitrios Savva": "All"
+      },
+      "physical_size_mm": [
+        1999.9996423721313,
+        1999.9996423721313
+      ],
+      "files": [
+        {
+          "file": "pine_bark/pine_bark_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/pine_bark/pine_bark_diff_2k.jpg",
+          "md5": "d10980446d36a65a73081cf61bc84992",
+          "bytes": 3167561
+        },
+        {
+          "file": "pine_bark/pine_bark_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/pine_bark/pine_bark_nor_gl_2k.jpg",
+          "md5": "ee1de039967165665060653a0e12e571",
+          "bytes": 4637035
+        },
+        {
+          "file": "pine_bark/pine_bark_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/pine_bark/pine_bark_rough_2k.jpg",
+          "md5": "9ea974ea3e298b30ee3b7a21ec05b566",
+          "bytes": 2085022
+        },
+        {
+          "file": "pine_bark/pine_bark_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/pine_bark/pine_bark_disp_2k.jpg",
+          "md5": "4f46a23fd05aed2f2c5ab948abb1e589",
+          "bytes": 1259109
+        }
+      ]
+    },
+    {
+      "asset": "pine_tree_01",
+      "kind": "model",
+      "page": "https://polyhaven.com/a/pine_tree_01",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Rob Tuytel": "photography",
+        "Rico Cilliers": "modeling"
+      },
+      "physical_size_mm": [
+        26719.930171966553,
+        1300.55171251297,
+        17577.758572995663
+      ],
+      "files": [
+        {
+          "file": "pine_tree_01/pine_tree_01.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/pine_tree_01/pine_tree_01_2k.gltf",
+          "md5": "001c1a0eb6748333f000d3fa0db5e278",
+          "bytes": 30596
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_bark_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_bark_nor_gl_2k.jpg",
+          "md5": "da6eb7bc3c4eafea4e8ed696f7891a73",
+          "bytes": 3373886
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_bark_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_bark_diff_2k.jpg",
+          "md5": "f420cb9ca2e845cd988f3bcf03c41a85",
+          "bytes": 2700448
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_bark_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_bark_arm_2k.jpg",
+          "md5": "218f22567f42e7918afc25c7e3450be8",
+          "bytes": 2941366
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_trunk_a_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_trunk_a_nor_gl_2k.jpg",
+          "md5": "97ce92fcba67201ace1c4ed3d6e154f6",
+          "bytes": 3642074
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_trunk_a_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_trunk_a_diff_2k.jpg",
+          "md5": "44fd71883c0e29551243c8937c47b65c",
+          "bytes": 3028704
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_trunk_a_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_trunk_a_arm_2k.jpg",
+          "md5": "c27af4b3374a4f36780b316b3a10bfd5",
+          "bytes": 2974686
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_twig_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_twig_nor_gl_2k.jpg",
+          "md5": "843dd3359c958c7a8bfd60f55fb4fb80",
+          "bytes": 2924424
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_twig_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_twig_diff_2k.jpg",
+          "md5": "45d577b1b780711976147d66234a1f4c",
+          "bytes": 1623201
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_twig_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_twig_arm_2k.jpg",
+          "md5": "d9110a0de287f6abacb7abe4c50ae9b3",
+          "bytes": 1524195
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_trunk_b_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_trunk_b_nor_gl_2k.jpg",
+          "md5": "007dee669d056d81043ed0d171a731c2",
+          "bytes": 3269280
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_trunk_b_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_trunk_b_diff_2k.jpg",
+          "md5": "cba156ed09519ca12bea8c7ff90585ee",
+          "bytes": 2548347
+        },
+        {
+          "file": "pine_tree_01/textures/pine_tree_01_trunk_b_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/pine_tree_01/pine_tree_01_trunk_b_arm_2k.jpg",
+          "md5": "36a7440fbb145fc68e99c1b6a5f20047",
+          "bytes": 2718246
+        },
+        {
+          "file": "pine_tree_01/pine_tree_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/pine_tree_01/pine_tree_01.bin",
+          "md5": "3079e56cc48c57d8ba530d005e86bae6",
+          "bytes": 948849556
+        }
+      ]
+    },
+    {
+      "asset": "tree_small_02",
+      "kind": "model",
+      "page": "https://polyhaven.com/a/tree_small_02",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Rico Cilliers": "All"
+      },
+      "physical_size_mm": [
+        2921.434998512268,
+        4292.873501777649,
+        4649.933725595474
+      ],
+      "files": [
+        {
+          "file": "tree_small_02/tree_small_02.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/tree_small_02/tree_small_02_2k.gltf",
+          "md5": "7b77f2ca02edf5d7964ca3514e66c6b7",
+          "bytes": 9075
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_branch_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_branch_nor_gl_2k.jpg",
+          "md5": "12286d5b329b4fb4203fc155a01b0a04",
+          "bytes": 1781975
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_branch_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_branch_diff_2k.jpg",
+          "md5": "5ba327fc166360fcbb44f2eb04fbd8d8",
+          "bytes": 1425692
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_branch_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_branch_arm_2k.jpg",
+          "md5": "d6a0921ec6dbeaaf22a4b91d68fe16d1",
+          "bytes": 1147503
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_leaves_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_leaves_nor_gl_2k.jpg",
+          "md5": "ab509e55b5d763f68195e0eb257bb5e3",
+          "bytes": 2395771
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_leaves_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_leaves_diff_2k.jpg",
+          "md5": "021ddc0cf1d94b99716a106cede576c7",
+          "bytes": 961870
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_leaves_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_leaves_arm_2k.jpg",
+          "md5": "4b88d67947fe214f2afc65beb83bee02",
+          "bytes": 2191542
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_nor_gl_2k.jpg",
+          "md5": "064c3e1d08f010c732e7af6395a66769",
+          "bytes": 4555311
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_diff_2k.jpg",
+          "md5": "ff4d82640b7e0daaec0b71bfc1cef76c",
+          "bytes": 3170612
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_arm_2k.jpg",
+          "md5": "038ad0c1968be6802b20d084cdf30603",
+          "bytes": 2586815
+        },
+        {
+          "file": "tree_small_02/tree_small_02.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/tree_small_02/tree_small_02.bin",
+          "md5": "7a7019a87e6fe0d7475c0fa2e08d8962",
+          "bytes": 95102324
+        }
+      ]
+    }
+  ],
+  "renders": [
+    "LeafNeedleLitter-Variants.png",
+    "LeafNeedleLitter-Detail.png"
+  ],
+  "concept_reference": "docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp"
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_GraniteDomeFar_00",
+    "size_m": [
+      419.19,
+      363.01,
+      114.37
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 0,
+    "triangles": 1213
+  },
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_GraniteDomeFar_01",
+    "size_m": [
+      345.55,
+      330.01,
+      104.28
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 0,
+    "triangles": 1005
+  }
+]

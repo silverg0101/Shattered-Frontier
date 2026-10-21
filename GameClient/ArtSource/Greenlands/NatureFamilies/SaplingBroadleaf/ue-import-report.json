@@ -1,0 +1,38 @@
+[
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_SaplingBroadleaf_00",
+    "size_m": [
+      1.88,
+      1.85,
+      3.28
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 1,
+    "triangles": 1910
+  },
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_SaplingBroadleaf_01",
+    "size_m": [
+      1.77,
+      1.67,
+      2.5
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 1,
+    "triangles": 1619
+  },
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_SaplingBroadleaf_02",
+    "size_m": [
+      1.9,
+      1.71,
+      2.22
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 1,
+    "triangles": 1928
+  }
+]

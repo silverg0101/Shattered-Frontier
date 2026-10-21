@@ -1,0 +1,74 @@
+[
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_CobblePebbleScatter_00",
+    "size_m": [
+      0.55,
+      0.37,
+      0.15
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 6,
+    "triangles": 1442
+  },
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_CobblePebbleScatter_01",
+    "size_m": [
+      0.74,
+      0.68,
+      0.15
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 8,
+    "triangles": 1426
+  },
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_CobblePebbleScatter_02",
+    "size_m": [
+      0.43,
+      0.67,
+      0.12
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 8,
+    "triangles": 1172
+  },
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_CobblePebbleScatter_03",
+    "size_m": [
+      0.87,
+      0.89,
+      0.17
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 9,
+    "triangles": 1990
+  },
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_CobblePebbleScatter_04",
+    "size_m": [
+      0.51,
+      0.43,
+      0.11
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 7,
+    "triangles": 1718
+  },
+  {
+    "mesh": "/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_CobblePebbleScatter_05",
+    "size_m": [
+      0.78,
+      0.67,
+      0.12
+    ],
+    "min_z_cm": 0.0,
+    "nanite": true,
+    "convex_hulls": 9,
+    "triangles": 1574
+  }
+]
