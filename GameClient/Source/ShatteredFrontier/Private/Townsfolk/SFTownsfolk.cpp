@@ -894,7 +894,7 @@ void ASFTownsfolkNpc::ReceiveHit(const AActor* Attacker, int32 Damage)
     const USFTownsfolkSettings* S=GetDefault<USFTownsfolkSettings>();
     CurrentHealth=SFCombatPilotRules::RemainingHealth(CurrentHealth,Damage); ForceNetUpdate();
     if (CurrentHealth > 0)
-    { if (ASFE1Character* Player = Cast<ASFE1Character>(Attacker); Player && !Player->GetCombatTarget()) { Player->SetCombatTarget(this); } }
+    { if (ASFE1Character* Player = Cast<ASFE1Character>(const_cast<AActor*>(Attacker)); Player && !Player->GetCombatTarget()) { Player->SetCombatTarget(this); } }
     LastActiveSeconds=GetWorld()->GetTimeSeconds(); FleeFrom=Attacker->GetActorLocation(); FleeUntil=LastActiveSeconds+S->FleeSeconds;
     USFTownsfolkSubsystem* Town=GetWorld()->GetSubsystem<USFTownsfolkSubsystem>();
     if (ASFTownState* State=Town ? Town->TownState() : nullptr)
