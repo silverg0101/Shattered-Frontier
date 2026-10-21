@@ -78,6 +78,7 @@ Untouched: the InventoryLedger and Postgres code, Schema.sql, MvpJourney, `SFInv
 | Plugin projection fails after a 200 | The ledger is the truth. Log `GATHERING_LEDGER_PROJECTION_MISMATCH` and rebuild the panel from a `GET`. |
 | UE server dies between commit and replication | The receipt persists. Nothing is refunded or granted again. Node charges reset, which is an accepted gap until GatheringNodes is integrated. |
 | Client disconnects during `Committing` | The server resolves the outcome and drops the reply. |
+| Known limit (accepted 2026-10-21): recovery after host-down | Construction mode gives the primary role to the first client admitted per server lifetime. So the `-HostDown` runner proves recovery on a fresh server against the same ledger, not by reconnecting to the server that saw the outage. Lifting this needs a per-connection role reset in `SFConstructionNetwork`, outside INT-03. |
 
 ## 5. Acceptance
 
