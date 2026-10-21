@@ -113,12 +113,28 @@ def ground():
     # slope weight: vertex colour R (0 flat .. 1 steep) pushed around by the macro noise, then sharpened
     vr = g.mask(node(m, u.MaterialExpressionVertexColor, -600, 5000), True, False, False, -400, 5000)
     mnoise, bright = g.macro(xy, 0.3, -600, 5300)
+    # patchy forest floor: large-scale noise swaps green moss cast for dry leaf-litter brown, so open ground is not one olive sheet
+    dry = node(m, u.MaterialExpressionSaturate, 0, 5600); link(g.mul(g.op(u.MaterialExpressionSubtract, mnoise, node(m, u.MaterialExpressionConstant, -300, 5600, r=0.3), -150, 5600), g.sc('DryContrast', 3, -150, 5700), 0, 5700), '', dry, '')
+    forest = g.mul(forest, g.lerp(g.vec('GreenCast', (0.8, 1.05, 0.6), 0, 5800), g.vec('DryCast', (1.35, 1.0, 0.75), 0, 5900), dry, 150, 5800), 300, 5600)
     jitter = g.mul(g.op(u.MaterialExpressionSubtract, mnoise, node(m, u.MaterialExpressionConstant, -300, 5400, r=0.5), -150, 5300), g.sc('SlopeNoise', 0.5, -150, 5400), 0, 5300)
     half = node(m, u.MaterialExpressionConstant, 0, 5000, r=0.5)
     sh = g.mul(g.op(u.MaterialExpressionAdd, g.op(u.MaterialExpressionSubtract, vr, half, 150, 5000), jitter, 300, 5000), g.sc('SlopeSharp', 4, 150, 5100), 450, 5000)
     s = node(m, u.MaterialExpressionSaturate, 600, 5000); link(g.op(u.MaterialExpressionAdd, sh, half, 600, 5100), '', s, '')
     col = g.mul(g.lerp(forest, bc, s, 900, 0), bright, 1100, 0)
     nrm = g.lerp(fn, bn, s, 900, 250, '', 'RGB'); rgh = g.lerp(fr, br, s, 900, 500)
+    # roads and trails grown into the ground: vertex colour G (cobbled roads) / B (trails) is a distance field that is 0.5 at the road edge;
+    # a fine noise moves the threshold so the edge is worn and ragged instead of a seam
+    SB = '/Game/Frontier/Environment/Greenlands/Silverbrook/Textures/T_SB_cobblestone_pavement_'
+    rc, rn, rr, _ = layer('R', SB + 'Diffuse', SB + 'nor_gl', SB + 'Rough', 240, (1, 1, 1), 6000)
+    tc, tn, tr, _ = layer('T', f'{ARR}/grass_path_3_Diffuse', f'{ARR}/grass_path_3_nor_dx', f'{ARR}/grass_path_3_Rough', 250, (0.95, 0.9, 0.8), 8000)
+    vcn = node(m, u.MaterialExpressionVertexColor, -600, 9000)
+    edge = g.mask(g.smp('EdgeNoise', tex(T + 'forest_ground_04_Displacement'), S.SAMPLERTYPE_MASKS, g.uv(xy, g.sc('EdgeTileCm', 350, -1800, 9300), -1650, 9300), -1100, 9300), True, False, False, -800, 9300)
+    wob = g.mul(g.op(u.MaterialExpressionSubtract, edge, half, -600, 9300), g.sc('EdgeAmp', 0.9, -600, 9400), -400, 9300)
+    for ch, (c_, n_, r_) in ((('G', 0, 1, 0), (rc, rn, rr)), (('B', 0, 0, 1), (tc, tn, tr))):
+        v = g.mask(vcn, *[bool(b) for b in ch[1:]], -400, 9000)
+        w_ = node(m, u.MaterialExpressionSaturate, 400, 9000)
+        link(g.op(u.MaterialExpressionAdd, g.mul(g.op(u.MaterialExpressionAdd, g.op(u.MaterialExpressionSubtract, v, half, -200, 9000), wob, 0, 9000), g.sc('EdgeSharp', 5, 0, 9100), 200, 9000), half, 300, 9000), '', w_, '')
+        col = g.lerp(col, c_, w_, 1300, 0); nrm = g.lerp(nrm, n_, w_, 1300, 250, '', 'RGB'); rgh = g.lerp(rgh, r_, w_, 1300, 500)
     mel.connect_material_property(col, '', u.MaterialProperty.MP_BASE_COLOR); mel.connect_material_property(nrm, '', u.MaterialProperty.MP_NORMAL)
     mel.connect_material_property(rgh, '', u.MaterialProperty.MP_ROUGHNESS)
     mel.recompile_material(m); eal.save_loaded_asset(m)
@@ -164,6 +180,8 @@ def river():
     mel.connect_material_property(scatter, '', u.MaterialProperty.MP_BASE_COLOR); mel.connect_material_property(nrm, '', u.MaterialProperty.MP_NORMAL)
     mel.connect_material_property(g.sc('Roughness', 0.08, -400, 150), '', u.MaterialProperty.MP_ROUGHNESS)
     mel.connect_material_property(g.sc('Specular', 0.5, -400, 220), '', u.MaterialProperty.MP_SPECULAR)
+    for e in mel.get_material_expressions(m):  # delete_all_material_expressions leaves output nodes behind; an unlinked one fails the compile
+        if isinstance(e, u.MaterialExpressionSingleLayerWaterMaterialOutput): mel.delete_material_expression(m, e)
     out = node(m, u.MaterialExpressionSingleLayerWaterMaterialOutput, 300, 0)
     link(g.vec('ScatteringCoefficients', (0.01, 0.04, 0.03), 0, 0), '', out, 'ScatteringCoefficients')
     link(g.vec('AbsorptionCoefficients', (0.25, 0.08, 0.06), 0, 100), '', out, 'AbsorptionCoefficients')

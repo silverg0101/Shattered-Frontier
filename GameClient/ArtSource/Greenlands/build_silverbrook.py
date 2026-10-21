@@ -25,7 +25,7 @@ import importlib, validate_layout, validate_region, region_heightfield, heightfi
 for _m in (validate_layout, validate_region, region_heightfield, heightfield, dress_zone, pcg_dressing):        # keeps modules between
     importlib.reload(_m)                                                                                         # runs; take the files' state
 from validate_layout import validate, waters
-from heightfield import Heightfield, backdrop, check as check_terrain, crossings, in_polygon, water_level, zone_region
+from heightfield import _samples as _hf_samples, Heightfield, backdrop, check as check_terrain, crossings, in_polygon, water_level, zone_region
 L = json.loads((ROOT / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))
 _problems = validate(L)
 assert not _problems, f'Layout is invalid; run validate_layout.py: {_problems}'
@@ -354,11 +354,7 @@ for b in BASINS:  # one flat surface at the basin level; the shore terrain hides
     bx0, by0, bw, bd = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2, max(xs) - min(xs), max(ys) - min(ys)
     box(b['name'].replace(' ', ''), bx0, by0, bw, bd, 0.1, 'River', z0=b['level'] - 0.1, collide=False, folder='Water', ground=None)
     pending.append(lambda n=b['name'].replace(' ', ''), g=(bx0, by0, bw, bd, b['level']): _water(n, *g))  # shore above the level stays dry
-for name, pts, width, tier in ROADS:
-    # Walkable: the 0.3 m slab is centred 0.10 m under the ground, so its top is a 5 cm curb the capsule steps over, and it blocks.
-    strip(name.replace(' ', ''), pts, width, 'Trail' if tier == 'trail' else 'Road', 0.3, f'Roads/{tier.title()}',
-          lambda i, t, z=on_road(name, pts): z(i, t) - 0.10, collide=True,
-          skip=lambda x, y: water_gap((x, y)) < 0)  # over the water the bridge deck is the road; a strip would show under its arches
+# Roads and trails are not geometry: the carved heightfield is the surface and M_GN_Ground paints them (terrain vertex colours G, B below).
 
 # Bridges where primary or secondary roads cross the river or a brook.
 _bridge = PROFILE['buildings'].get('Stone bridge', {}).get('have', [])
@@ -678,8 +674,31 @@ def rockiness(v, h=2.5):
     return min(1.0, max(0.0, (deg - SLOPE_FLAT_DEG) / (SLOPE_ROCK_DEG - SLOPE_FLAT_DEG)))
 
 
+ROAD_RAMP = 2 * HF.step  # m over which the road field falls from 1 to 0, centred on the road edge (0.5 at the edge)
+
+
+def road_field(tier_filter):
+    """cell -> 0..1 field, 0.5 exactly at the road edge, for the roads whose tier is in tier_filter; none over water."""
+    best = {}
+    for name, pts, width, tier in ROADS:
+        if tier not in tier_filter:
+            continue
+        samples = [(p, width / 2) for p, _, _ in _hf_samples(pts, 1.0) if water_gap(p) > 0]
+        for k, (d, hw) in HF._nearest(samples, width / 2 + ROAD_RAMP / 2).items():
+            best[k] = max(best.get(k, 0.0), min(1.0, max(0.0, 0.5 + (hw - d) / ROAD_RAMP)))
+    return best
+
+
+ROAD_G, ROAD_B = road_field(('primary', 'secondary')), road_field(('trail',))
+
+
+def colour(v):
+    k = round((v.y / 100 - HF.y0) / HF.step) * HF.nx + round((v.x / 100 - HF.x0) / HF.step)
+    return u.LinearColor(rockiness(v), ROAD_G.get(k, 0.0), ROAD_B.get(k, 0.0), 1)
+
+
 u.GeometryScript_VertexColors.set_mesh_per_vertex_colors(
-    mesh, u.GeometryScript_List.convert_array_to_color_list([u.LinearColor(rockiness(v), 0, 0, 1) for v in
+    mesh, u.GeometryScript_List.convert_array_to_color_list([colour(v) for v in
                                                               u.GeometryScript_List.convert_vector_list_to_array(grid)]))
 opts = u.GeometryScriptCreateNewStaticMeshAssetOptions()
 opts.set_editor_property('enable_recompute_normals', True)
@@ -720,7 +739,16 @@ _water('Sea', 0, 0, 2 * ext, 2 * ext, SEA)
 
 for spawn in pending:
     spawn()
-actors.spawn_actor_from_class(u.PlayerStart, u.Vector(ax * 100, ay * 100, (HF.at(ax, ay) + 1.2) * 100),
+def surface_z(x, y):
+    """Height (m) of the final collision surface under (x, y): a downward trace through the spawned terrain."""
+    hit = u.SystemLibrary.line_trace_single(world, u.Vector(x * 100, y * 100, 3e5), u.Vector(x * 100, y * 100, -3e5),
+                                            u.TraceTypeQuery.TRACE_TYPE_QUERY1, False, [], u.DrawDebugTrace.NONE, True)
+    assert hit, f'No ground under ({x}, {y}); the terrain has no collision'
+    return hit.to_tuple()[4].z / 100
+
+
+# The one PlayerStart: the market square, facing up the main street, standing on the final ground (capsule half height 1.0 m + 10 cm).
+actors.spawn_actor_from_class(u.PlayerStart, u.Vector(ax * 100, ay * 100, (surface_z(ax, ay) + 1.1) * 100),
                               u.Rotator(roll=0, pitch=0, yaw=yaw)).set_actor_label('Arrival_PlayerStart')
 
 # Aerial review camera, looking north-west over the town from beyond the South Gate.
@@ -783,6 +811,11 @@ u.log(f'SILVERBROOK_PROPS {place_props.place_all()}')  # wells, carts, benches..
 u.log(f'SILVERBROOK_TOWNSFOLK_LANES {townsfolk_lanes.build_in_editor(*townsfolk_lanes.plan(L), ground=HF.at, wet=lambda x, y: water_gap((x, y)) < 0)}')  # footways for the townsfolk prototype
 u.log(f'SILVERBROOK_TOWNSFOLK_SMARTOBJECTS {townsfolk_smartobjects.build_in_editor(L)}')  # doors, stalls and benches residents claim
 import silverbrook_props; importlib.reload(silverbrook_props); silverbrook_props.dress_all()  # WP6: re-materials Roads/Primary and Roads/Secondary by folder path, adds verges and props
+# The editor opens over the market square, 30 m up and 35 m back, looking up the main street (the map keeps its viewport on save).
+_cam = u.Vector(ax * 100 - 35 * 100 * math.cos(math.radians(yaw)), ay * 100 - 35 * 100 * math.sin(math.radians(yaw)), (surface_z(ax, ay) + 30) * 100)
+u.get_editor_subsystem(u.UnrealEditorSubsystem).set_level_viewport_camera_info(_cam, u.Rotator(roll=0, pitch=-25, yaw=yaw))
 assert u.EditorLoadingAndSavingUtils.save_map(world, ZONE), 'Could not save the zone map'
+# lamp_fx hook disabled: lamp_fx.py:62 Transform has no transform_position (UE 5.8 API); Codex pass to fix, then re-enable
+# import lamp_fx; importlib.reload(lamp_fx); lamp_fx.apply()  # Codex street-lamp FX; idempotent, replaces FX_StreetLamp_*
 import backdrop as backdrop_ring; importlib.reload(backdrop_ring); backdrop_ring.place(backdrop_ring.config())  # WP5: needs the saved map; hides the white Backdrop above and saves again
 u.log(f'SILVERBROOK_BUILT Map={ZONE} Datum={DATUM} Bridges={len(bridges)} Fill={fill_report} Terrain={terrain_stats} Foundations={foundation} Dressing={dressing} Counts={counts}')

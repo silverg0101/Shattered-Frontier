@@ -34,7 +34,10 @@ try:
         sys.exit(2)
     # A -game/-RenderOffscreen run of the project also answers; pick the instance that has an editor world.
     for node in nodes:
-        remote.open_command_connection(node['node_id'])
+        try:
+            remote.open_command_connection(node['node_id'])
+        except RuntimeError:  # a -game run that answered the discovery ping but refuses commands
+            continue
         probe = remote.run_command("bool(__import__('unreal').get_editor_subsystem(__import__('unreal').UnrealEditorSubsystem))",
                                    unattended=True, exec_mode=rx.MODE_EVAL_STATEMENT)
         if probe.get('success') and probe.get('result') == 'True':
