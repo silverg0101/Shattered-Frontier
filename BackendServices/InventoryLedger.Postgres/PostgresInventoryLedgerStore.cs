@@ -27,6 +27,10 @@ public sealed class PostgresInventoryLedgerStore(string connectionString) : IInv
             return result;
         }
         catch (LedgerRejectedException) { throw; }
+        catch (PostgresException ex) when (ex.SqlState.StartsWith("22", StringComparison.Ordinal) || ex.SqlState.StartsWith("23", StringComparison.Ordinal))
+        {
+            throw new LedgerRejectedException($"Inventory store rejected the operation ({ex.SqlState}).");
+        }
         catch (Exception ex) when (ex is NpgsqlException or TimeoutException or System.IO.IOException)
         {
             throw new LedgerStoreUnavailableException("Inventory store unavailable; retry the operation ID.", ex);
@@ -48,6 +52,7 @@ public sealed class PostgresInventoryLedgerStore(string connectionString) : IInv
         using (var cmd = Command(connection, db, "SELECT container_id,definition_id,quantity FROM inventory.entries"))
         using (var reader = cmd.ExecuteReader())
             while (reader.Read()) state.Containers[reader.GetString(0)].Quantities.Add(reader.GetString(1), reader.GetInt64(2));
+        // ponytail: Load is O(total operations) per call; upgrade to receipt lookup by operation ID plus retention.
         using (var cmd = Command(connection, db, "SELECT operation_id,fingerprint,receipt::text FROM inventory.operation_receipts"))
         using (var reader = cmd.ExecuteReader())
             while (reader.Read())

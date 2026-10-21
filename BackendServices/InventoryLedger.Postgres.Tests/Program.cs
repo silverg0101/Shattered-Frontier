@@ -6,7 +6,7 @@ static void Check(bool ok, string name)
     if (!ok) throw new Exception(name);
     Console.WriteLine("PASS " + name);
 }
-var connection = args[1];
+var connection = Environment.GetEnvironmentVariable("INVENTORY_LEDGER_CONNECTION") ?? throw new InvalidOperationException("Missing fixture connection.");
 var ledger = new InventoryLedger(new PostgresInventoryLedgerStore(connection));
 const string id = "ctn_durable";
 const string item = "item/ore";
@@ -27,12 +27,20 @@ switch (args[0])
         break;
     case "concurrent":
         Check(ledger.Read(id).Quantities[item] == 4 && ledger.Read(id).Quantities[bar] == 1, "convert survives process and database restart");
+        var ready = new CountdownEvent(2);
+        var start = new ManualResetEventSlim(false);
         var tasks = new[] { "race-a", "race-b" }.Select(op => Task.Run(() =>
         {
+            ready.Signal();
+            start.Wait();
             try { return ledger.Consume(op, id, 2, item, 1, "fixture") is not null; }
             catch (LedgerRejectedException) { return false; }
         })).ToArray();
+        if (!ready.Wait(TimeSpan.FromSeconds(10))) throw new Exception("Concurrent workers did not become ready.");
+        start.Set();
         Task.WaitAll(tasks);
+        ready.Dispose();
+        start.Dispose();
         Check(tasks.Count(t => t.Result) == 1 && ledger.Read(id).Revision == 3 && ledger.Read(id).Quantities[item] == 3, "one concurrent revision winner");
         break;
     case "outage":
@@ -43,6 +51,21 @@ switch (args[0])
         Check(ledger.Read(id).Revision == 3 && ledger.Read(id).Quantities[item] == 3, "outage left no mutation");
         var recovered = ledger.Grant("outage-1", id, 3, item, 1, "fixture", "fixture-2");
         Check(recovered.Revisions[0].After == 4 && ledger.Read(id).Quantities[item] == 4, "same operation recovers");
+        break;
+    case "classification":
+        var store = new PostgresInventoryLedgerStore(connection);
+        try
+        {
+            store.Execute(state =>
+            {
+                var invalid = new ContainerSpec("ctn_invalid", OwnerKind.Character, "chr_durable", ContainerKind.Backpack, 0);
+                state.Containers.Add(invalid.Id, new ContainerRecord(invalid));
+                return true;
+            });
+            throw new Exception("constraint violation was accepted");
+        }
+        catch (LedgerRejectedException) { Console.WriteLine("PASS SQL class 23 is non-retryable"); }
+        Check(ledger.Read(id).Revision == 4, "constraint rejection rolls back");
         break;
     default: throw new ArgumentException("Unknown test phase.");
 }

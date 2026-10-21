@@ -56,7 +56,7 @@ function Assert-Owned {
 function Cluster([string]$Action) {
     Assert-Owned
     if ($Action -eq 'start') { $script:attempted = $true; [void](Invoke-Checked (Join-Path $pg 'pg_ctl.exe') @('-D',$data,'-l',(Join-Path $private 'postgres.log'),'-w','-t','30','start')); $script:started = $true; Assert-Owned }
-    else { [void](Invoke-Checked (Join-Path $pg 'pg_ctl.exe') @('-D',$data,'-m','fast','-w','-t','30','stop')); $script:started = $false }
+    else { [void](Invoke-Checked (Join-Path $pg 'pg_ctl.exe') @('-D',$data,'-m','immediate','-w','-t','30','stop')); $script:started = $false }
 }
 try {
     [void](New-Item -ItemType Directory -Path $private -Force)
@@ -78,10 +78,10 @@ try {
     [void](Sql 'GRANT USAGE ON SCHEMA inventory TO ledger_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO ledger_svc;' "ledger_$run")
     $connection = "Host=127.0.0.1;Port=$port;Database=ledger_$run;Username=ledger_svc;Password=$servicePassword;Pooling=false;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $results = [Collections.Generic.List[string]]::new()
-    foreach ($phase in @('seed','restart','concurrent','outage','recover')) {
+    foreach ($phase in @('seed','restart','concurrent','outage','recover','classification')) {
         if ($phase -eq 'restart' -or $phase -eq 'outage') { Cluster stop }
         if ($phase -eq 'restart' -or $phase -eq 'concurrent' -or $phase -eq 'recover') { if (-not $started) { Cluster start } }
-        $results.Add((Invoke-Checked $dotnet @($dll,$phase,$connection)))
+        $results.Add((Invoke-Checked $dotnet @($dll,$phase) @{ INVENTORY_LEDGER_CONNECTION=$connection }))
     }
     $results | Set-Content (Join-Path $EvidenceRoot 'results.txt')
 }

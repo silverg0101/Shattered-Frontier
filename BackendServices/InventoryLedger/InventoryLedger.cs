@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Text;
 using System.Text.Json;
 
 namespace ShatteredFrontier.InventoryLedger;
@@ -173,13 +175,26 @@ public sealed class InventoryLedger(IInventoryLedgerStore store)
             throw new LedgerRejectedException("A recipe needs inputs and outputs.");
         ValidateItems(inputs);
         ValidateItems(outputs);
-        var fingerprint = JsonSerializer.Serialize(new
+        var canonical = new StringBuilder("v1|");
+        void Field(string value) => canonical.Append(value.Length.ToString(CultureInfo.InvariantCulture)).Append(':').Append(value).Append('|');
+        Field(((int)action).ToString(CultureInfo.InvariantCulture));
+        Field(ids.Length.ToString(CultureInfo.InvariantCulture));
+        foreach (var id in ids) Field(id);
+        foreach (var revision in revisions) Field(revision.ToString(CultureInfo.InvariantCulture));
+        void Items(IReadOnlyList<ItemQuantity> values)
         {
-            action, ids, revisions,
-            inputs = inputs.OrderBy(x => x.DefinitionId, StringComparer.Ordinal).ToArray(),
-            outputs = outputs.OrderBy(x => x.DefinitionId, StringComparer.Ordinal).ToArray(),
-            context, causationId
-        });
+            Field(values.Count.ToString(CultureInfo.InvariantCulture));
+            foreach (var value in values.OrderBy(x => x.DefinitionId, StringComparer.Ordinal))
+            {
+                Field(value.DefinitionId);
+                Field(value.Quantity.ToString(CultureInfo.InvariantCulture));
+            }
+        }
+        Items(inputs);
+        Items(outputs);
+        Field(context);
+        Field(causationId);
+        var fingerprint = canonical.ToString();
         return store.Execute(state =>
         {
             if (state.Operations.TryGetValue(operationId, out var prior))
