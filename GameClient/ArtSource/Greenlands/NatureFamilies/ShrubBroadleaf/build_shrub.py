@@ -42,7 +42,7 @@ leaf_spec = dict(name='MI_ShrubBroadleaf_Leaf',
     blend=dict(base='Sources/tree_small_02/textures/tree_small_02_leaves_diff_2k.jpg',
                normal='Sources/tree_small_02/textures/tree_small_02_leaves_nor_gl_2k.jpg',
                arm='Sources/tree_small_02/textures/tree_small_02_leaves_arm_2k.jpg',
-               tint=[.56,.68,.43], sat=.68, amount=1.0, contrast=.48))
+               tint=[.56,.68,.43], sat=.68, amount=.62, contrast=.48))
 h = 'Sources/japanese_hackberry_bark/japanese_hackberry_bark'
 bark_spec = dict(name='MI_ShrubBroadleaf_Bark', base=h+'_Diffuse.jpg',
     normal=h+'_nor_gl.jpg', rough=h+'_Rough.jpg', tint=[.55,.49,.41], sat=.65,
@@ -57,51 +57,83 @@ def centres(vc):
 
 
 def make_wood(vc,rng):
-    """Curved tapered bark tubes terminate inside their own foliage lobe."""
-    tubes = []
-    for i,(center,radius) in enumerate(centres(vc)):
-        angle = math.atan2(center[1],center[0])
-        base = np.array([rng.uniform(.025,.075)*math.cos(angle),
-                         rng.uniform(.025,.075)*math.sin(angle),.014])
-        end = center - np.array([0,0,radius[2]*.27])
-        t = np.linspace(0,1,22)
-        p = base[None,:]*(1-t[:,None]**1.35)+end[None,:]*t[:,None]**1.35
-        p[:,2] += .12*vc['height']*np.sin(math.pi*t)
-        p[:,0] += .035*np.sin(2*math.pi*t+i)*t*(1-t)
-        p[:,1] += .027*np.cos(2*math.pi*t+i)*t*(1-t)
-        tubes.append((p,.017*(1-t)**.9+.0025,7))
-        for j in range(2):
-            origin = p[int((.43+j*.20)*21)]
-            target = center+rng.uniform(-.33,.33,3)*radius
-            target[2] = max(target[2],origin[2]+.035)
-            q = np.array([origin,.5*(origin+target)+[0,0,.045],target])
-            tubes.append((q,np.array([.006,.004,.0018]),5))
-    return tubes
+    """A dispersed thicket of thin canes, low suckers, and leafy side shoots."""
+    tubes, anchors = [], []
+    lobes = centres(vc)
+    stem_count = 23 + vc['seed'] % 5
+    for i in range(stem_count):
+        angle = 2*math.pi*(i+.35*rng.random())/stem_count
+        base_radius = rng.uniform(.075,.24)
+        base = np.array([base_radius*math.cos(angle),
+                         base_radius*math.sin(angle),.012])
+        short = i % 4 == 0
+        if short:
+            reach = rng.uniform(.58,.85)
+            end = np.array([reach*vc['width']*.5*math.cos(angle),
+                            reach*vc['depth']*.5*math.sin(angle),
+                            rng.uniform(.23,.48)*vc['height']])
+        else:
+            center,radius = lobes[i % len(lobes)]
+            end = center+rng.uniform(-.42,.42,3)*radius
+            end[2] = np.clip(end[2],.52*vc['height'],.93*vc['height'])
+        t = np.linspace(0,1,16)
+        p = base[None,:]*(1-t[:,None]**1.2)+end[None,:]*t[:,None]**1.2
+        p[:,2] += .035*vc['height']*np.sin(math.pi*t)
+        p[:,0] += .025*np.sin(2*math.pi*t+i)*t*(1-t)
+        p[:,1] += .022*np.cos(2*math.pi*t+i)*t*(1-t)
+        thick = rng.uniform(.006,.013) if not short else rng.uniform(.0035,.006)
+        tubes.append((p,thick*(1-t)**.8+.0015,5))
+        # Every cane carries foliage below the crown; short shoots fill its foot.
+        anchors.extend(p[2::2])
+        anchors.extend([p[-1]]*4)
+        for j in range(3 if not short else 2):
+            at = int((.17+j*.25)*15)
+            origin = p[at]
+            outward = origin[:2]/max(np.linalg.norm(origin[:2]),.05)
+            side = rng.normal(size=2)
+            side /= max(np.linalg.norm(side),1e-6)
+            tip = origin.copy()
+            tip[:2] += (.10+.12*rng.random())*(.7*outward+.3*side)
+            tip[2] += rng.uniform(-.075,.11)*vc['height']
+            tip[2] = max(.07*vc['height'],tip[2])
+            q = np.array([origin,(origin+tip)*.5+[0,0,.025],tip])
+            tubes.append((q,np.array([.0035,.0025,.001]),4))
+            anchors.extend([tip]*2)
+    return tubes,np.array(anchors)
 
 
-def make_foliage(vc,lib,rng):
-    """Leaf pieces occupy distinct uneven lobes with sparse interiors."""
+def make_foliage(vc,lib,rng,anchors):
+    """Leaf pieces follow canes and form a drooping, irregular ground skirt."""
     V,T,UV,C = [],[],[],[]
     offset = tri_count = 0
     lobes = centres(vc)
     weights = np.array([np.prod(r)**.65 for _,r in lobes])
     weights /= weights.sum()
-    while tri_count < 30000:
-        k = rng.choice(len(lobes),p=weights)
-        center,radius = lobes[k]
-        direction = rng.normal(size=3)
-        direction /= np.linalg.norm(direction)
-        shell = rng.uniform(.40,1.04)**.38
-        pos = center+direction*radius*np.array([.77,.78,.86])*shell
-        pos[2] -= .18*vc['height']*max(0,abs(pos[0])/(.5*vc['width'])-.55)
-        if pos[2] < .19*vc['height']:
-            continue
+    while tri_count < 53000:
+        mode = rng.random()
+        if mode < .62:
+            pos = anchors[rng.integers(len(anchors))].copy()
+            pos += rng.normal(size=3)*[.075,.075,.038*vc['height']]
+        elif mode < .87:
+            angle = rng.uniform(0,2*math.pi)
+            reach = rng.uniform(.54,.96)
+            pos = np.array([.5*vc['width']*reach*math.cos(angle),
+                            .5*vc['depth']*reach*math.sin(angle),
+                            vc['height']*rng.uniform(.055,.43)])
+        else:
+            k = rng.choice(len(lobes),p=weights)
+            center,radius = lobes[k]
+            direction = rng.normal(size=3)
+            direction /= np.linalg.norm(direction)
+            pos = center+direction*radius*rng.uniform(.25,.9)
+        pos[2] = max(.045*vc['height'],pos[2])
         lv,lt,uv = lib[rng.integers(len(lib))]
         size = rng.uniform(.075,.120)*vc['height']
         p = (lv@G.rot(rng).T)*(size/max(np.ptp(lv,axis=0).max(),1e-6))+pos
         V.append(p); T.append(lt+offset); UV.append(uv)
-        interior = np.clip((.95-shell)*.9+(.64-pos[2]/vc['height'])*.35
-                           +rng.uniform(-.13,.13),0,1)
+        radial = np.hypot(pos[0]/(.5*vc['width']),pos[1]/(.5*vc['depth']))
+        interior = np.clip((1-radial)*.48+(.65-pos[2]/vc['height'])*.48
+                           +rng.uniform(-.10,.10),0,1)
         C.append(np.full(len(p),interior,np.float32))
         offset += len(p); tri_count += len(lt)
     return np.vstack(V).astype(np.float32),np.vstack(T),np.concatenate(UV).astype(np.float32),np.concatenate(C)
@@ -117,13 +149,13 @@ for index,vc in enumerate(VARIANTS):
     rng = np.random.default_rng(vc['seed'])
     wood_v,wood_t,wood_uv,wood_r = [],[],[],[]
     offset = 0
-    tubes = make_wood(vc,rng)
+    tubes,anchors = make_wood(vc,rng)
     for j,(p,radius,sides) in enumerate(tubes):
         v,t,uv,red = G.tube(p,radius,sides,mark_phase=vc['seed']+j*.17)
         wood_v.append(v); wood_t.append(t+offset); wood_uv.append(uv); wood_r.append(red)
         offset += len(v)
     wv,wt = np.vstack(wood_v),np.vstack(wood_t)
-    fv,ft,fuv,shade = make_foliage(vc,lib,rng)
+    fv,ft,fuv,shade = make_foliage(vc,lib,rng,anchors)
     verts = np.vstack((wv,fv))
     tris = np.vstack((wt,ft+len(wv)))
     uv = np.concatenate((*wood_uv,fuv))
@@ -143,13 +175,14 @@ for index,vc in enumerate(VARIANTS):
     obj['ucx'] = [hull.name]
     objects.append(obj)
     rows.append(dict(mesh=name,seed=vc['seed'],lobe_count=len(vc['lobes']),
-                     stems=len(tubes),wood_triangles=int(len(wt)),
+                     stems=23+vc['seed']%5,shoots=len(tubes)-23-vc['seed']%5,
+                     wood_triangles=int(len(wt)),
                      leaf_triangles=int(len(ft)),
                      materials=[bark_spec['name'],leaf_spec['name']]))
 
 cfg = dict(family='ShrubBroadleaf',dir=str(HERE),prefix='SM_ShrubBroadleaf',
     asset_id='VEG-GreenlandsShrubBroadleaf-01',role='shrub_broadleaf',budget=60000,
-    scale_note='At scale 1: irregular open shrubs 1.10-1.70 m tall and 1.74-2.52 m wide; tapered bare base.',
+    scale_note='At scale 1: leafy mound shrubs 1.10-1.70 m tall and 1.74-2.52 m wide; foliage to ground.',
     gap=.65,res=(2000,1000),ortho=2.6,nanite=True,human_x=-.9,human_y=0,
     extra_sources=['tree_small_02','japanese_hackberry_bark'])
 rock_family.finish(cfg,objects,rows,[bark_spec,leaf_spec],
