@@ -7,9 +7,13 @@
 
 | Asset ID | Category / main concept | Source path / heading | Priority / dependencies | Owner / job state | Concept / clean-view status | Selected package / next action |
 |---|---|---|---|---|---|---|
+| VEG-GreenlandsShrubBroadleaf-01 | Vegetation / Waist-to-head-high broadleaf shrubs (hazel/bramble-like) clustered at wood edges, roadsides and under trees; the target frame's mid layer | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `shrub_broadleaf` | P2; 0 of 3 variants owned; stands in today: `sapling_broadleaf` meshes | unassigned / planned | proposed / — | concept sheet and asset view (Qwen Image), then model (Pixal3D or Blender); 3 variant(s) |
 
 ## Briefs and component boundaries
 
+### VEG-GreenlandsShrubBroadleaf-01
+Waist-to-head-high broadleaf shrubs (hazel/bramble-like) clustered at wood edges, roadsides and under trees; the target frame's mid layer One asset family for the `shrub_broadleaf` role, placed by `dress_zone.py` where: wood edges, roadsides, under canopy. Needs 3 variant(s) that share a silhouette family; separate meshes, no baked-in ground or neighbours. Required images: concept sheet and clean asset view. Unknowns: exact triangle budget and LODs, set when the model pipeline picks it up.
+
 ## Progress
 
-- 2026-10-19: 0 planned, 0 modelling in the Blender session, 0 with an owner-supplied concept waiting for a model.
+- 2026-10-19: 1 planned, 0 modelling in the Blender session, 0 with an owner-supplied concept waiting for a model.
