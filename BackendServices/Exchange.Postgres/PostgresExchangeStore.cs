@@ -9,7 +9,7 @@ namespace ShatteredFrontier.Exchange.Postgres;
 public sealed class ExchangeUnavailableException(string message, Exception inner) : Exception(message, inner);
 public sealed class ExchangeSchemaCompatibilityException(string message) : Exception(message);
 public sealed class ExchangeRejectedException(string message) : InvalidOperationException(message);
-public sealed record DurableListing(string Id, string SellerId, string EscrowId, string ItemId, long Quantity, long Price, long Fee, string State, long Revision);
+public sealed record DurableListing(string Id, string SellerId, string SellerContainerId, string EscrowId, string ItemId, long Quantity, long Price, long Fee, DateTimeOffset ExpiresAt, string State, long Revision);
 public sealed record DurableSettlement(string OperationId, string Kind, string SubjectId, string? PayerId, string? PayeeId,
     long Amount, long Fee, IReadOnlyList<EscrowDelivery> Deliveries, string State, ExchangeReceipt Receipt);
 
@@ -31,8 +31,8 @@ public sealed class PostgresExchangeStore(string connectionString)
             using (var advisory = Cmd(c,t,"SELECT pg_advisory_xact_lock(519761,3)")) advisory.ExecuteNonQuery();
             try
             {
-                using var check = Cmd(c,t,"SELECT version FROM exchange.schema_version WHERE singleton=true FOR SHARE");
-                if (check.ExecuteScalar() is not int version || version != 1) throw new ExchangeSchemaCompatibilityException("Unsupported exchange schema version.");
+                using var check = Cmd(c,t,"SELECT version FROM exchange.schema_version WHERE singleton=true");
+                if (check.ExecuteScalar() is not int version || version != 2) throw new ExchangeSchemaCompatibilityException("Unsupported exchange schema version.");
             }
             catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501")
             { throw new ExchangeSchemaCompatibilityException("Exchange schema marker missing or inaccessible."); }
@@ -89,17 +89,66 @@ public sealed class PostgresExchangeStore(string connectionString)
     });
     private static DurableListing? ReadListing(NpgsqlConnection c,NpgsqlTransaction t,string id)
     {
-        using var cmd=Cmd(c,t,"SELECT id,seller_id,escrow_id,item_id,quantity,price,fee,state,revision FROM exchange.listings WHERE id=$1",id);
-        using var r=cmd.ExecuteReader(); return r.Read()?new(r.GetString(0),r.GetString(1),r.GetString(2),r.GetString(3),r.GetInt64(4),r.GetInt64(5),r.GetInt64(6),r.GetString(7),r.GetInt64(8)):null;
+        using var cmd=Cmd(c,t,"SELECT id,seller_id,seller_container_id,escrow_id,item_id,quantity,price,fee,expires_at,state,revision FROM exchange.listings WHERE id=$1",id);
+        using var r=cmd.ExecuteReader(); return r.Read()?new(r.GetString(0),r.GetString(1),r.GetString(2),r.GetString(3),r.GetString(4),r.GetInt64(5),r.GetInt64(6),r.GetInt64(7),r.GetFieldValue<DateTimeOffset>(8),r.GetString(9),r.GetInt64(10)):null;
     }
     public DurableListing? Listing(string id)=>Run((c,t)=>ReadListing(c,t,id));
-    public ExchangeReceipt CreateListing(string op,string id,string seller,string escrow,string item,long quantity,long price,long listingFee) => Run((c,t)=>
+    private static void ReturnItems(string op,IReadOnlyList<EscrowDelivery> moves,IInventoryLedgerStore store)
     {
-        RequireId(op); var fingerprint=JsonSerializer.Serialize(new { command="list",id,seller,escrow,item,quantity,price,listingFee });
+        if(moves.Count==0) return;
+        var key=op+"/return";
+        try
+        {
+            var existing=store.Execute(s=>s.Operations.TryGetValue(key,out var prior)?prior:null);
+            LedgerReceipt receipt;
+            if(existing is null)
+            {
+                var ledger=new ShatteredFrontier.InventoryLedger.InventoryLedger(store);
+                var current=moves.Select(x=>x with { FromRevision=ledger.Read(x.FromId).Revision, ToRevision=ledger.Read(x.ToId).Revision }).ToArray();
+                receipt=ledger.DeliverEscrowBatch(key,current);
+            }
+            else receipt=existing.Receipt;
+            var changes=moves.SelectMany(x=>new[]{new QuantityChange(x.FromId,x.DefinitionId,-x.Quantity),new QuantityChange(x.ToId,x.DefinitionId,x.Quantity)}).ToArray();
+            if(receipt.OperationId!=key || receipt.Action!=LedgerAction.Exchange || !receipt.Changes.SequenceEqual(changes))
+                throw new ExchangeRejectedException("Inventory return receipt mismatch.");
+        }
+        catch(LedgerStoreUnavailableException ex) { throw new ExchangeUnavailableException("Inventory store unavailable; retry return.",ex); }
+        catch(LedgerRejectedException ex) { throw new ExchangeRejectedException($"Inventory return rejected: {ex.Message}"); }
+    }
+    private ExchangeReceipt EndListing(string op,string id,string? seller,DateTimeOffset? now,IInventoryLedgerStore store) => Run((c,t)=>
+    {
+        RequireId(op); var fingerprint=JsonSerializer.Serialize(new { command=now is null?"cancel-listing":"expire-listing",id,seller,now });
         if(Replay(c,t,op,fingerprint) is { } prior) return prior;
-        if(!id.StartsWith("lst_",StringComparison.Ordinal) || !seller.StartsWith("chr_",StringComparison.Ordinal) || quantity<=0 || price<=0 || listingFee<0 || listingFee>checked(quantity*price)) throw new ExchangeRejectedException("Invalid listing.");
+        var listing=ReadListing(c,t,id) ?? throw new ExchangeRejectedException("Listing missing.");
+        if(listing.State!="active" || (seller is not null && seller!=listing.SellerId) || (now is not null && now<listing.ExpiresAt))
+            throw new ExchangeRejectedException("Listing not cancellable.");
+        ReturnItems(op,[new(listing.EscrowId,0,listing.SellerContainerId,0,listing.ItemId,listing.Quantity)],store);
+        var state=now is null?"cancelled":"expired";
+        using(var update=Cmd(c,t,"UPDATE exchange.listings SET state=$1,revision=revision+1 WHERE id=$2 AND state='active'",state,id))
+            if(update.ExecuteNonQuery()!=1) throw new ExchangeRejectedException("Listing changed.");
+        var receipt=new ExchangeReceipt(op,true,"ok",id); Save(c,t,op,fingerprint,receipt); return receipt;
+    });
+    public ExchangeReceipt CancelListing(string op,string id,string seller,IInventoryLedgerStore store)=>EndListing(op,id,seller,null,store);
+    public IReadOnlyList<ExchangeReceipt> ExpireListings(DateTimeOffset now,IInventoryLedgerStore store)
+    {
+        var ids=Run((c,t)=>
+        {
+            var result=new List<string>();
+            using var cmd=Cmd(c,t,"SELECT id FROM exchange.listings WHERE state='active' AND expires_at<=$1 ORDER BY id",now);
+            using var r=cmd.ExecuteReader(); while(r.Read()) result.Add(r.GetString(0)); return result;
+        });
+        return ids.Select(id=>EndListing("expire/"+id,id,null,now,store)).ToArray();
+    }
+    public ExchangeReceipt CreateListing(string op,string id,string seller,string sellerContainer,string escrow,string item,long quantity,long price,long listingFee,DateTimeOffset now,ExchangeSettings? settings=null) => Run((c,t)=>
+    {
+        RequireId(op); var duration=(long)(settings??new ExchangeSettings()).Get("tune.economy.market_listing_durations_hours");
+        var fingerprint=JsonSerializer.Serialize(new { command="list",id,seller,sellerContainer,escrow,item,quantity,price,listingFee,now,duration });
+        if(Replay(c,t,op,fingerprint) is { } prior) return prior;
+        long total; try { total=checked(quantity*price); } catch(OverflowException) { throw new ExchangeRejectedException("Price overflow."); }
+        if(!id.StartsWith("lst_",StringComparison.Ordinal) || !seller.StartsWith("chr_",StringComparison.Ordinal) || string.IsNullOrWhiteSpace(sellerContainer) || sellerContainer==escrow || quantity<=0 || price<=0 || listingFee<0 || listingFee>total) throw new ExchangeRejectedException("Invalid listing.");
+        DateTimeOffset expires; try { expires=now.AddHours(duration); } catch(ArgumentOutOfRangeException) { throw new ExchangeRejectedException("Invalid listing time."); }
         Post(c,t,op,seller,-listingFee,"sink","market_listing_fee");
-        using(var insert=Cmd(c,t,"INSERT INTO exchange.listings(id,seller_id,escrow_id,item_id,quantity,price,fee,state) VALUES ($1,$2,$3,$4,$5,$6,$7,'active')",id,seller,escrow,item,quantity,price,listingFee)) insert.ExecuteNonQuery();
+        using(var insert=Cmd(c,t,"INSERT INTO exchange.listings(id,seller_id,seller_container_id,escrow_id,item_id,quantity,price,fee,expires_at,state) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'active')",id,seller,sellerContainer,escrow,item,quantity,price,listingFee,expires)) insert.ExecuteNonQuery();
         var receipt=new ExchangeReceipt(op,true,"ok",id,0,listingFee); Save(c,t,op,fingerprint,receipt); return receipt;
     });
     private static DurableSettlement? ReadSettlement(NpgsqlConnection c,NpgsqlTransaction t,string op)
@@ -114,7 +163,8 @@ public sealed class PostgresExchangeStore(string connectionString)
     {
         if(Replay(c,t,op,fingerprint) is not null)
             return ReadSettlement(c,t,op) ?? throw new ExchangeRejectedException("Missing settlement receipt.");
-        if(deliveries.Count==0 || amount<0 || fee<0 || fee>amount || (payer is null)!=(payee is null)) throw new ExchangeRejectedException("Invalid settlement.");
+        if(deliveries.Count==0 || amount<0 || fee<0 || fee>amount || (payer is null)!=(payee is null) || (payer is null && (amount!=0 || fee!=0))) throw new ExchangeRejectedException("Invalid settlement.");
+        if(payee is not null && ReadWallet(c,t,payee).Balance>long.MaxValue-amount) throw new ExchangeRejectedException("Payee wallet overflow.");
         if(payer is not null) Post(c,t,op,payer,0,"reserve","settlement_hold",amount);
         var receipt=new ExchangeReceipt(op,true,"pending",subject,amount,fee);
         using(var insert=Cmd(c,t,"INSERT INTO exchange.settlements VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,'pending',$10::jsonb)",op,fingerprint,kind,subject,(object?)payer??DBNull.Value,(object?)payee??DBNull.Value,amount,fee,JsonSerializer.Serialize(deliveries),JsonSerializer.Serialize(receipt))) insert.ExecuteNonQuery();
@@ -127,12 +177,46 @@ public sealed class PostgresExchangeStore(string connectionString)
         if(!tradeId.StartsWith("trd_",StringComparison.Ordinal) || payer==payee && payer is not null) throw new ExchangeRejectedException("Invalid trade.");
         return Begin(c,t,op,fingerprint,"trade",tradeId,payer,payee,amount,0,deliveries);
     });
+    // The coordinator supplies both offers; their difference is the only wallet transfer for the trade.
+    public DurableSettlement BeginTrade(string op,string tradeId,string partyA,string partyB,long goldA,long goldB,IReadOnlyList<EscrowDelivery> deliveries)
+    {
+        if(goldA<0 || goldB<0 || partyA==partyB) throw new ExchangeRejectedException("Invalid trade offers.");
+        return goldA>=goldB
+            ? BeginTrade(op,tradeId,goldA==goldB?null:partyA,goldA==goldB?null:partyB,goldA-goldB,deliveries)
+            : BeginTrade(op,tradeId,partyB,partyA,goldB-goldA,deliveries);
+    }
+    public ExchangeReceipt CancelTrade(string op,string tradeId,string actor,IReadOnlyList<EscrowDelivery> returns,IInventoryLedgerStore store)=>Run((c,t)=>
+    {
+        RequireId(op); var fingerprint=JsonSerializer.Serialize(new { command="cancel-trade",tradeId,actor,returns });
+        if(Replay(c,t,op,fingerprint) is { } prior) return prior;
+        using var find=Cmd(c,t,"SELECT operation_id FROM exchange.settlements WHERE kind='trade' AND subject_id=$1 AND state IN ('pending','compensated')",tradeId);
+        var settleOp=find.ExecuteScalar() as string ?? throw new ExchangeRejectedException("Trade not cancellable.");
+        var pending=ReadSettlement(c,t,settleOp)!;
+        if(pending.State=="pending")
+        {
+            var key=settleOp+"/settle";
+            StoredOperation marker;
+            try { marker=store.Execute(s=>
+            {
+                if(s.Operations.TryGetValue(key,out var old)) return old;
+                var value=new StoredOperation("exchange/compensated",new LedgerReceipt(key,LedgerAction.Exchange,[],[]));
+                s.Operations.Add(key,value); return value;
+            }); }
+            catch(LedgerStoreUnavailableException ex) { throw new ExchangeUnavailableException("Inventory store unavailable; retry cancel.",ex); }
+            if(marker.Fingerprint!="exchange/compensated" || marker.Receipt.OperationId!=key) throw new ExchangeRejectedException("Trade already delivered.");
+        }
+        ReturnItems(op,returns,store);
+        if(pending.State=="pending" && pending.PayerId is { } payer) Post(c,t,op,payer,0,"reserve","settlement_release",-pending.Amount);
+        using(var update=Cmd(c,t,"UPDATE exchange.settlements SET state='cancelled' WHERE operation_id=$1 AND state IN ('pending','compensated')",settleOp))
+            if(update.ExecuteNonQuery()!=1) throw new ExchangeRejectedException("Trade changed.");
+        var receipt=new ExchangeReceipt(op,true,"ok",tradeId); Save(c,t,op,fingerprint,receipt); return receipt;
+    });
     public DurableSettlement BeginPurchase(string op,string listingId,string buyer,long expectedRevision,long expectedPrice,long transactionFee,IReadOnlyList<EscrowDelivery> deliveries)=>Run((c,t)=>
     {
         RequireId(op); var fingerprint=JsonSerializer.Serialize(new { command="buy",listingId,buyer,expectedRevision,expectedPrice,transactionFee,deliveries });
         if(Replay(c,t,op,fingerprint) is not null) return ReadSettlement(c,t,op)!;
         var listing=ReadListing(c,t,listingId) ?? throw new ExchangeRejectedException("Listing missing.");
-        if(listing.State!="active" || listing.Revision!=expectedRevision || listing.Price!=expectedPrice || listing.SellerId==buyer ||
+        if(listing.State!="active" || listing.Revision!=expectedRevision || listing.Price!=expectedPrice || listing.SellerId==buyer || DateTimeOffset.UtcNow>=listing.ExpiresAt ||
             deliveries.Count!=1 || deliveries[0].FromId!=listing.EscrowId || deliveries[0].DefinitionId!=listing.ItemId || deliveries[0].Quantity!=listing.Quantity)
             throw new ExchangeRejectedException("Listing unavailable or delivery mismatch.");
         long total; try { total=checked(listing.Price*listing.Quantity); } catch(OverflowException) { throw new ExchangeRejectedException("Price overflow."); }
@@ -165,11 +249,8 @@ public sealed class PostgresExchangeStore(string connectionString)
         if(!compensated)
         {
             var expected=pending.Deliveries.SelectMany(x=>new[]{new QuantityChange(x.FromId,x.DefinitionId,-x.Quantity),new QuantityChange(x.ToId,x.DefinitionId,x.Quantity)}).ToArray();
-            var revisions=pending.Deliveries.SelectMany(x=>new[]{new KeyValuePair<string,long>(x.FromId,x.FromRevision),new KeyValuePair<string,long>(x.ToId,x.ToRevision)})
-                .DistinctBy(x=>x.Key).ToDictionary(x=>x.Key,x=>x.Value,StringComparer.Ordinal);
             if(delivery.OperationId!=op+"/settle" || delivery.Action!=LedgerAction.Exchange ||
-                delivery.Changes.Count!=expected.Length || !delivery.Changes.SequenceEqual(expected) ||
-                delivery.Revisions.Count!=revisions.Count || delivery.Revisions.Any(x=>!revisions.TryGetValue(x.ContainerId,out var before) || x.Before!=before || x.After!=before+1))
+                delivery.Changes.Count!=expected.Length || !delivery.Changes.SequenceEqual(expected))
                 throw new ExchangeRejectedException("Inventory settlement receipt mismatch.");
         }
         var committed=!compensated;

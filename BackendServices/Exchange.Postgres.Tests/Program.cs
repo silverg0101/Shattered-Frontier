@@ -8,8 +8,9 @@ static void Check(bool condition, string message)
     Console.WriteLine("PASS " + message);
 }
 var connection = Environment.GetEnvironmentVariable("EXCHANGE_CONNECTION") ?? throw new Exception("Missing fixture connection.");
+var inventoryConnection = Environment.GetEnvironmentVariable("INVENTORY_CONNECTION") ?? throw new Exception("Missing inventory fixture connection.");
 var exchange = new PostgresExchangeStore(connection);
-var ledgerStore = new PostgresInventoryLedgerStore(connection);
+var ledgerStore = new PostgresInventoryLedgerStore(inventoryConnection);
 var ledger = new InventoryLedger(ledgerStore);
 static EscrowDelivery Move(string from, long fromRev, string to, long toRev) => new(from, fromRev, to, toRev, "item/ore", 1);
 switch (args[0])
@@ -18,13 +19,34 @@ switch (args[0])
         exchange.Credit("credit-seller", "chr_seller", 20, "starter_kit");
         exchange.Credit("credit-a", "chr_a", 100, "starter_kit");
         exchange.Credit("credit-b", "chr_b", 100, "starter_kit");
-        foreach (var id in new[] { "ctn_esc_trade", "ctn_esc_market", "ctn_esc_late", "ctn_bag_a", "ctn_bag_b", "ctn_bag_seller" })
+        foreach (var id in new[] { "ctn_esc_trade", "ctn_esc_market", "ctn_esc_late", "ctn_esc_tomb", "ctn_esc_abort", "ctn_esc_cancel", "ctn_esc_expire", "ctn_bag_a", "ctn_bag_b", "ctn_bag_seller" })
             ledger.CreateContainer(new(id, OwnerKind.Character, "chr_seller", id.StartsWith("ctn_esc_") ? ContainerKind.Escrow : ContainerKind.Backpack, 20));
         ledger.Grant("fund-trade", "ctn_esc_trade", 0, "item/ore", 1, "fixture", "trade");
         ledger.Grant("fund-market", "ctn_esc_market", 0, "item/ore", 1, "fixture", "market");
         ledger.Grant("fund-late", "ctn_esc_late", 0, "item/ore", 1, "fixture", "late");
-        exchange.CreateListing("list", "lst_one", "chr_seller", "ctn_esc_market", "item/ore", 1, 30, 2);
+        ledger.Grant("fund-tomb", "ctn_esc_tomb", 0, "item/ore", 1, "fixture", "tomb");
+        ledger.Grant("fund-abort", "ctn_esc_abort", 0, "item/ore", 1, "fixture", "abort");
+        ledger.Grant("fund-cancel", "ctn_esc_cancel", 0, "item/ore", 1, "fixture", "cancel");
+        ledger.Grant("fund-expire", "ctn_esc_expire", 0, "item/ore", 1, "fixture", "expire");
+        exchange.CreateListing("list", "lst_one", "chr_seller", "ctn_bag_seller", "ctn_esc_market", "item/ore", 1, 30, 2,DateTimeOffset.UtcNow);
         Check(exchange.Wallet("chr_seller").Balance == 18 && exchange.Listing("lst_one")?.State == "active", "wallet and listing acknowledged");
+        break;
+    case "tombstone":
+        exchange.BeginTrade("tomb","trd_tomb","chr_a","chr_seller",4,[Move("ctn_esc_tomb",1,"ctn_bag_seller",1)]);
+        ledgerStore.Execute(s=>
+        {
+            s.Operations.Add("tomb/settle",new StoredOperation("exchange/compensated",new LedgerReceipt("tomb/settle",LedgerAction.Exchange,[],[])));
+            return true;
+        });
+        Console.WriteLine("PASS tombstone committed before immediate stop");
+        break;
+    case "tombstone-recover":
+        Check(exchange.Settlement("tomb")?.State=="pending" && exchange.Wallet("chr_a").Reserved==4,"tombstone crash left Exchange pending");
+        Check(exchange.Reconcile("tomb",ledgerStore).State=="compensated" && exchange.Wallet("chr_a").Reserved==0,"tombstone recovery releases once");
+        exchange.BeginTrade("abort","trd_abort","chr_a","chr_seller",3,[Move("ctn_esc_abort",1,"ctn_bag_seller",1)]);
+        Check(exchange.CancelTrade("abort-cancel","trd_abort","chr_a",[Move("ctn_esc_abort",1,"ctn_bag_a",1)],ledgerStore).Accepted &&
+            exchange.Wallet("chr_a").Reserved==0 && exchange.Settlement("abort")?.State=="cancelled","pending trade cancel releases hold and returns item");
+        Check(exchange.CancelTrade("abort-cancel","trd_abort","chr_a",[Move("ctn_esc_abort",1,"ctn_bag_a",1)],ledgerStore).Accepted,"pending trade cancel replays");
         break;
     case "restart":
         Check(exchange.Wallet("chr_seller").Balance == 18 && exchange.Listing("lst_one")?.State == "active", "wallet and listing survive immediate stop");
@@ -50,6 +72,15 @@ switch (args[0])
         try { ledger.DeliverEscrowBatch("late/settle", [late]); throw new Exception("Late delivery accepted."); }
         catch (LedgerRejectedException) { Console.WriteLine("PASS retry after compensation rejected by ledger fingerprint"); }
         Check(exchange.Wallet("chr_a").Balance == 90 && ledger.Read("ctn_esc_late").Quantities["item/ore"] == 1, "compensation left both sides unchanged");
+        Check(exchange.CancelTrade("cancel-late","trd_late","chr_a",[Move("ctn_esc_late",1,"ctn_bag_a",0)],ledgerStore).Accepted &&
+            exchange.CancelTrade("cancel-late","trd_late","chr_a",[Move("ctn_esc_late",1,"ctn_bag_a",0)],ledgerStore).Accepted,
+            "trade cancellation returns escrow and replays");
+        Check(ledger.Read("ctn_bag_a").Quantities["item/ore"]==1 && exchange.Wallet("chr_a").Reserved==0,"cancelled trade has one return and no hold");
+        ledger.Grant("fund-net", "ctn_esc_late", 2, "item/ore", 1, "fixture", "net");
+        var net=exchange.BeginTrade("net","trd_net","chr_a","chr_b",12,7,[Move("ctn_esc_late",3,"ctn_bag_b",0)]);
+        Check(net.PayerId=="chr_a" && net.PayeeId=="chr_b" && net.Amount==5,"bidirectional gold offers net to one transfer");
+        ledger.DeliverEscrowBatch("net/settle",[Move("ctn_esc_late",3,"ctn_bag_b",0)]);
+        Check(exchange.Reconcile("net",ledgerStore).State=="committed","netted trade settles");
         break;
     case "concurrent":
         var ready = new CountdownEvent(2);
@@ -66,11 +97,29 @@ switch (args[0])
         Check(tasks.Count(x => x.Result) == 1 && exchange.Listing("lst_one")?.State == "pending", "one concurrent buyer reserves listing");
         var winner = tasks[0].Result ? "buy-a" : "buy-b";
         var pending = exchange.Settlement(winner)!;
-        ledger.DeliverEscrowBatch(winner + "/settle", pending.Deliveries);
-        Check(exchange.Reconcile(winner, ledgerStore).State == "committed" && exchange.Listing("lst_one")?.State == "sold", "sale delivered once");
+        var destination=pending.Deliveries[0].ToId;
+        ledger.Grant("advance-revision",destination,ledger.Read(destination).Revision,"item/ore",1,"fixture","advance");
+        var fresh=Move("ctn_esc_market",ledger.Read("ctn_esc_market").Revision,pending.Deliveries[0].ToId,ledger.Read(pending.Deliveries[0].ToId).Revision);
+        ledger.DeliverEscrowBatch(winner + "/settle", [fresh]);
+        Check(exchange.Reconcile(winner, ledgerStore).State == "committed" && exchange.Listing("lst_one")?.State == "sold", "re-read revision receipt reconciles sale once");
         Check(exchange.Reconcile(winner, ledgerStore).Receipt == exchange.Settlement(winner)!.Receipt, "purchase retry returns same receipt");
         var total = exchange.Wallet("chr_a").Balance + exchange.Wallet("chr_b").Balance + exchange.Wallet("chr_seller").Balance;
         Check(total == 215 && exchange.Wallet("chr_seller").Balance == 55, "listing and transaction fees conserved as five copper sinks");
+        Check(exchange.Entries("chr_seller").Where(x=>x.FlowClass=="sink").Sum(x=>-x.Delta)==5,"entries account for both fee sinks");
+        exchange.CreateListing("list-cancel","lst_cancel","chr_seller","ctn_bag_seller","ctn_esc_cancel","item/ore",1,5,0,DateTimeOffset.UtcNow);
+        Check(exchange.CancelListing("cancel","lst_cancel","chr_seller",ledgerStore).Accepted && exchange.CancelListing("cancel","lst_cancel","chr_seller",ledgerStore).Accepted && exchange.Listing("lst_cancel")?.State=="cancelled","listing cancel returns and replays");
+        exchange.CreateListing("list-expire","lst_expire","chr_seller","ctn_bag_seller","ctn_esc_expire","item/ore",1,5,0,DateTimeOffset.UtcNow);
+        Check(exchange.ExpireListings(DateTimeOffset.UtcNow.AddDays(3),ledgerStore).Count==1 && exchange.Listing("lst_expire")?.State=="expired","expired listing returns escrow once");
+        Check(exchange.ExpireListings(DateTimeOffset.UtcNow.AddDays(3),ledgerStore).Count==0,"expiry sweep replay does not refund twice");
+        try { exchange.CreateListing("overflow-list","lst_overflow","chr_seller","ctn_bag_seller","ctn_esc_cancel","item/ore",long.MaxValue,2,0,DateTimeOffset.UtcNow); throw new Exception("Overflow accepted."); }
+        catch(ExchangeRejectedException) { Console.WriteLine("PASS listing price overflow rejected"); }
+        try { exchange.BeginTrade("bad-item","trd_bad",null,null,1,[Move("ctn_esc_cancel",1,"ctn_bag_a",0)]); throw new Exception("Item-only money accepted."); }
+        catch(ExchangeRejectedException) { Console.WriteLine("PASS item-only amount requires zero"); }
+        exchange.Credit("rich","chr_rich",long.MaxValue,"gm_grant");
+        try { exchange.BeginTrade("overflow-payee","trd_overflow","chr_a","chr_rich",1,[Move("ctn_esc_cancel",2,"ctn_bag_b",2)]); throw new Exception("Payee overflow accepted."); }
+        catch(ExchangeRejectedException) { Console.WriteLine("PASS payee overflow refused before delivery"); }
+        try { exchange.CancelListing("cancel-sold","lst_one","chr_seller",ledgerStore); throw new Exception("Sold listing cancelled."); }
+        catch(ExchangeRejectedException) { Console.WriteLine("PASS cancellation after sale rejected"); }
         break;
     case "outage":
         try { exchange.Wallet("chr_a"); throw new Exception("Outage accepted."); }

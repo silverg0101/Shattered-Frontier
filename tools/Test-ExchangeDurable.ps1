@@ -19,6 +19,7 @@ $run = [guid]::NewGuid().ToString('N'); $private = Join-Path $EvidenceRoot 'priv
 $rng = [Security.Cryptography.RandomNumberGenerator]::Create()
 $bytes = [byte[]]::new(32); $rng.GetBytes($bytes); $adminPassword = [BitConverter]::ToString($bytes).Replace('-','')
 $rng.GetBytes($bytes); $servicePassword = [BitConverter]::ToString($bytes).Replace('-',''); $rng.Dispose()
+$rng = [Security.Cryptography.RandomNumberGenerator]::Create(); $rng.GetBytes($bytes); $ledgerPassword = [BitConverter]::ToString($bytes).Replace('-',''); $rng.Dispose()
 $started = $false; $attempted = $false; $removed = $false; $failure = ''; $port = 0
 function Invoke-Checked([string]$Executable,[string[]]$Arguments,[hashtable]$Environment = @{}) {
     $info = [Diagnostics.ProcessStartInfo]::new(); $info.FileName = $Executable; $info.UseShellExecute = $false; $info.CreateNoWindow = $true
@@ -31,7 +32,7 @@ function Invoke-Checked([string]$Executable,[string[]]$Arguments,[hashtable]$Env
     if (-not $child.WaitForExit(90000)) { $child.Kill(); throw 'Owned child timeout.' }
     $stdout = if ($out.Wait(1000)) { $out.Result } else { '[server retained output pipe]' }
     $stderr = if ($err.Wait(1000)) { $err.Result } else { '[server retained error pipe]' }
-    foreach ($secret in @($adminPassword,$servicePassword)) { $stdout = $stdout.Replace($secret,'[REDACTED]'); $stderr = $stderr.Replace($secret,'[REDACTED]') }
+    foreach ($secret in @($adminPassword,$servicePassword,$ledgerPassword)) { $stdout = $stdout.Replace($secret,'[REDACTED]'); $stderr = $stderr.Replace($secret,'[REDACTED]') }
     if ($child.ExitCode -ne 0) { throw "$Executable exited $($child.ExitCode): $stderr $stdout" }
     return $stdout.Trim()
 }
@@ -71,27 +72,28 @@ try {
     [void](Invoke-Checked (Join-Path $pg 'initdb.exe') @('-D',$data,'-U','fixture_admin','--pwfile',$pwfile,'--auth','scram-sha-256','--encoding','UTF8','--no-locale'))
     Remove-Item -LiteralPath $pwfile -Force
     [IO.File]::AppendAllText((Join-Path $data 'postgresql.conf'),"`nlisten_addresses='127.0.0.1'`nport=$port`nfsync=on`nsynchronous_commit=on`nfull_page_writes=on`n")
-    [IO.File]::WriteAllLines((Join-Path $data 'pg_hba.conf'),@('host all fixture_admin 127.0.0.1/32 scram-sha-256',"host exchange_$run exchange_svc 127.0.0.1/32 scram-sha-256",'host all all 127.0.0.1/32 reject','host all all ::1/128 reject'))
+    [IO.File]::WriteAllLines((Join-Path $data 'pg_hba.conf'),@('host all fixture_admin 127.0.0.1/32 scram-sha-256',"host exchange_$run exchange_svc 127.0.0.1/32 scram-sha-256","host exchange_$run fixture_ledger 127.0.0.1/32 scram-sha-256",'host all all 127.0.0.1/32 reject','host all all ::1/128 reject'))
     Cluster start
-    [void](Sql "CREATE ROLE exchange_owner NOLOGIN; CREATE ROLE exchange_svc LOGIN PASSWORD '$servicePassword'; CREATE DATABASE exchange_$run;")
-    [void](Sql "REVOKE ALL ON DATABASE exchange_$run FROM PUBLIC; GRANT CONNECT ON DATABASE exchange_$run TO exchange_svc; GRANT CREATE ON DATABASE exchange_$run TO exchange_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC; CREATE SCHEMA inventory AUTHORIZATION exchange_owner; CREATE SCHEMA exchange AUTHORIZATION exchange_owner;" "exchange_$run")
+    [void](Sql "CREATE ROLE exchange_owner NOLOGIN; CREATE ROLE exchange_svc LOGIN PASSWORD '$servicePassword'; CREATE ROLE fixture_ledger LOGIN PASSWORD '$ledgerPassword'; CREATE DATABASE exchange_$run;")
+    [void](Sql "REVOKE ALL ON DATABASE exchange_$run FROM PUBLIC; GRANT CONNECT ON DATABASE exchange_$run TO exchange_svc,fixture_ledger; GRANT CREATE ON DATABASE exchange_$run TO exchange_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC; CREATE SCHEMA inventory AUTHORIZATION exchange_owner; CREATE SCHEMA exchange AUTHORIZATION exchange_owner;" "exchange_$run")
     [void](Sql ("SET ROLE exchange_owner;`n" + (Get-Content $inventorySchema -Raw) + "`n" + (Get-Content $schema -Raw)) "exchange_$run")
-    [void](Sql 'GRANT USAGE ON SCHEMA inventory,exchange TO exchange_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory,exchange TO exchange_svc;' "exchange_$run")
+    [void](Sql 'GRANT USAGE ON SCHEMA exchange TO exchange_svc; GRANT SELECT ON exchange.schema_version TO exchange_svc; GRANT SELECT,INSERT,UPDATE ON exchange.wallets,exchange.wallet_entries,exchange.operations,exchange.listings,exchange.settlements TO exchange_svc; GRANT USAGE ON SCHEMA inventory TO fixture_ledger; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO fixture_ledger;' "exchange_$run")
     $connection = "Host=127.0.0.1;Port=$port;Database=exchange_$run;Username=exchange_svc;Password=$servicePassword;Pooling=false;Timeout=2;Command Timeout=5;Include Error Detail=false"
+    $ledgerConnection = "Host=127.0.0.1;Port=$port;Database=exchange_$run;Username=fixture_ledger;Password=$ledgerPassword;Pooling=false;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $results = [Collections.Generic.List[string]]::new()
-    foreach ($phase in @('seed','restart','recover','concurrent','outage')) {
-        if ($phase -eq 'restart' -or $phase -eq 'recover' -or $phase -eq 'outage') { Cluster stop }
-        if ($phase -eq 'restart' -or $phase -eq 'recover') { Cluster start }
-        $results.Add((Invoke-Checked $dotnet @($dll,$phase) @{ EXCHANGE_CONNECTION=$connection }))
+    foreach ($phase in @('seed','restart','recover','tombstone','tombstone-recover','concurrent','outage')) {
+        if ($phase -eq 'restart' -or $phase -eq 'recover' -or $phase -eq 'tombstone-recover' -or $phase -eq 'outage') { Cluster stop }
+        if ($phase -eq 'restart' -or $phase -eq 'recover' -or $phase -eq 'tombstone-recover') { Cluster start }
+        $results.Add((Invoke-Checked $dotnet @($dll,$phase) @{ EXCHANGE_CONNECTION=$connection; INVENTORY_CONNECTION=$ledgerConnection }))
     }
     Cluster start
-    [void](Sql 'UPDATE exchange.schema_version SET version=2' "exchange_$run")
-    $results.Add((Invoke-Checked $dotnet @($dll,'newer-schema') @{ EXCHANGE_CONNECTION=$connection }))
+    [void](Sql 'UPDATE exchange.schema_version SET version=3' "exchange_$run")
+    $results.Add((Invoke-Checked $dotnet @($dll,'newer-schema') @{ EXCHANGE_CONNECTION=$connection; INVENTORY_CONNECTION=$ledgerConnection }))
     $markerVersion = Sql 'SELECT version FROM exchange.schema_version WHERE singleton=true' "exchange_$run"
-    if ($markerVersion.Trim() -ne '2') { throw 'Newer schema marker changed unexpectedly.' }
+    if ($markerVersion.Trim() -ne '3') { throw 'Newer schema marker changed unexpectedly.' }
     $results | Set-Content (Join-Path $EvidenceRoot 'results.txt')
 }
-catch { $failure = $_.Exception.Message.Replace($adminPassword,'[REDACTED]').Replace($servicePassword,'[REDACTED]') }
+catch { $failure = $_.Exception.Message.Replace($adminPassword,'[REDACTED]').Replace($servicePassword,'[REDACTED]').Replace($ledgerPassword,'[REDACTED]') }
 finally {
     try {
         if (Test-Path (Join-Path $private 'owner.json')) {
