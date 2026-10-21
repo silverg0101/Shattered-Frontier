@@ -1,0 +1,270 @@
+{
+  "family": "ShrubBroadleaf",
+  "asset_id": "VEG-GreenlandsShrubBroadleaf-01",
+  "look_profile_role": "shrub_broadleaf",
+  "variant_count": 3,
+  "blender": "5.1.1",
+  "generator": "build_shrub.py",
+  "units": "metres, Z up, front -Y, origin base centre, no ground in any mesh",
+  "budget_triangles_per_variant": 60000,
+  "triangles": [
+    51347,
+    50737,
+    50442
+  ],
+  "placement_scale_note": "At scale 1: rounded multi-stem shrubs 1.08-1.78 m tall, 1.34-2.16 m wide; foliage reaches base.",
+  "unreal_meshes": [
+    "SM_ShrubBroadleaf_00",
+    "SM_ShrubBroadleaf_01",
+    "SM_ShrubBroadleaf_02"
+  ],
+  "nanite": true,
+  "materials": [
+    {
+      "name": "MI_ShrubBroadleaf_Bark",
+      "base": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_Diffuse.jpg",
+      "normal": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_nor_gl.jpg",
+      "rough": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_Rough.jpg",
+      "tint": [
+        2.5,
+        2.5,
+        2.4
+      ],
+      "sat": 0.1,
+      "blend": {
+        "base": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_Diffuse.jpg",
+        "normal": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_nor_gl.jpg",
+        "rough": "Sources/japanese_hackberry_bark/japanese_hackberry_bark_Rough.jpg",
+        "tint": [
+          0.12,
+          0.09,
+          0.06
+        ],
+        "sat": 0.6,
+        "amount": 1.0,
+        "contrast": 0.2
+      }
+    },
+    {
+      "name": "MI_ShrubBroadleaf_Leaf",
+      "base": "Sources/tree_small_02/textures/tree_small_02_leaves_diff_2k.jpg",
+      "normal": "Sources/tree_small_02/textures/tree_small_02_leaves_nor_gl_2k.jpg",
+      "arm": "Sources/tree_small_02/textures/tree_small_02_leaves_arm_2k.jpg",
+      "alpha": "Sources/tree_small_02/textures/tree_small_02_leaves_alpha_2k.png",
+      "tint": [
+        1.35,
+        1.6,
+        0.7
+      ],
+      "sat": 1.05,
+      "two_sided": true,
+      "alpha_mode": "MASKED"
+    }
+  ],
+  "variants": [
+    {
+      "mesh": "SM_ShrubBroadleaf_00",
+      "seed": 31,
+      "stems": 11,
+      "wood_triangles": 3344,
+      "leaf_triangles": 48003,
+      "leaf_cluster_size_m": 0.235,
+      "materials": [
+        "MI_ShrubBroadleaf_Bark",
+        "MI_ShrubBroadleaf_Leaf"
+      ],
+      "triangles": 51347,
+      "vertices": 42955,
+      "size_m": [
+        2.16,
+        1.98,
+        1.78
+      ],
+      "fbx": "SM_ShrubBroadleaf_00.fbx",
+      "fbx_sha256": "432353c73159f5160bf97864a4c6592ac200b39e2e35c54a5d7111a3e240fedc",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": [
+        "UCX_SM_ShrubBroadleaf_00_00"
+      ]
+    },
+    {
+      "mesh": "SM_ShrubBroadleaf_01",
+      "seed": 47,
+      "stems": 9,
+      "wood_triangles": 2736,
+      "leaf_triangles": 48001,
+      "leaf_cluster_size_m": 0.22,
+      "materials": [
+        "MI_ShrubBroadleaf_Bark",
+        "MI_ShrubBroadleaf_Leaf"
+      ],
+      "triangles": 50737,
+      "vertices": 42817,
+      "size_m": [
+        1.76,
+        1.84,
+        1.43
+      ],
+      "fbx": "SM_ShrubBroadleaf_01.fbx",
+      "fbx_sha256": "22017d04999952f8220470fc20578ac6c5cb77b2930dc15bde0f61380fbe845b",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": [
+        "UCX_SM_ShrubBroadleaf_01_00"
+      ]
+    },
+    {
+      "mesh": "SM_ShrubBroadleaf_02",
+      "seed": 73,
+      "stems": 8,
+      "wood_triangles": 2432,
+      "leaf_triangles": 48010,
+      "leaf_cluster_size_m": 0.19,
+      "materials": [
+        "MI_ShrubBroadleaf_Bark",
+        "MI_ShrubBroadleaf_Leaf"
+      ],
+      "triangles": 50442,
+      "vertices": 42544,
+      "size_m": [
+        1.34,
+        1.44,
+        1.08
+      ],
+      "fbx": "SM_ShrubBroadleaf_02.fbx",
+      "fbx_sha256": "d468a96e05ee9cd2d85d247d57841f975cfaf5bd87083bebc5bc7ac3006a0b92",
+      "origin": "base centre (footprint centre, lowest point z=0)",
+      "collision_ucx": [
+        "UCX_SM_ShrubBroadleaf_02_00"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "asset": "japanese_hackberry_bark",
+      "kind": "scan",
+      "page": "https://polyhaven.com/a/japanese_hackberry_bark",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Charlotte Baglioni": "All"
+      },
+      "physical_size_mm": [
+        1888.9999389648438,
+        1888.9999389648438
+      ],
+      "files": [
+        {
+          "file": "japanese_hackberry_bark/japanese_hackberry_bark_Diffuse.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/japanese_hackberry_bark/japanese_hackberry_bark_diff_2k.jpg",
+          "md5": "d913ed01faea2f776d46d49e041db940",
+          "bytes": 4735539
+        },
+        {
+          "file": "japanese_hackberry_bark/japanese_hackberry_bark_nor_gl.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/japanese_hackberry_bark/japanese_hackberry_bark_nor_gl_2k.jpg",
+          "md5": "b3e48bc69fae37a4cca41b04cb6d7182",
+          "bytes": 5172589
+        },
+        {
+          "file": "japanese_hackberry_bark/japanese_hackberry_bark_Rough.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/japanese_hackberry_bark/japanese_hackberry_bark_rough_2k.jpg",
+          "md5": "ffb7651ccb8d5b16a3f71ce30466cf42",
+          "bytes": 1963198
+        },
+        {
+          "file": "japanese_hackberry_bark/japanese_hackberry_bark_Displacement.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/japanese_hackberry_bark/japanese_hackberry_bark_disp_2k.jpg",
+          "md5": "6e95d79f129f50a09e6225e5ebef37d1",
+          "bytes": 1397510
+        }
+      ]
+    },
+    {
+      "asset": "tree_small_02",
+      "kind": "model",
+      "page": "https://polyhaven.com/a/tree_small_02",
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "author": {
+        "Rico Cilliers": "All"
+      },
+      "physical_size_mm": [
+        2921.434998512268,
+        4292.873501777649,
+        4649.933725595474
+      ],
+      "files": [
+        {
+          "file": "tree_small_02/tree_small_02.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/tree_small_02/tree_small_02_2k.gltf",
+          "md5": "7b77f2ca02edf5d7964ca3514e66c6b7",
+          "bytes": 9075
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_branch_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_branch_nor_gl_2k.jpg",
+          "md5": "12286d5b329b4fb4203fc155a01b0a04",
+          "bytes": 1781975
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_branch_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_branch_diff_2k.jpg",
+          "md5": "5ba327fc166360fcbb44f2eb04fbd8d8",
+          "bytes": 1425692
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_branch_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_branch_arm_2k.jpg",
+          "md5": "d6a0921ec6dbeaaf22a4b91d68fe16d1",
+          "bytes": 1147503
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_leaves_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_leaves_nor_gl_2k.jpg",
+          "md5": "ab509e55b5d763f68195e0eb257bb5e3",
+          "bytes": 2395771
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_leaves_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_leaves_diff_2k.jpg",
+          "md5": "021ddc0cf1d94b99716a106cede576c7",
+          "bytes": 961870
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_leaves_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_leaves_arm_2k.jpg",
+          "md5": "4b88d67947fe214f2afc65beb83bee02",
+          "bytes": 2191542
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_nor_gl_2k.jpg",
+          "md5": "064c3e1d08f010c732e7af6395a66769",
+          "bytes": 4555311
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_diff_2k.jpg",
+          "md5": "ff4d82640b7e0daaec0b71bfc1cef76c",
+          "bytes": 3170612
+        },
+        {
+          "file": "tree_small_02/textures/tree_small_02_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/tree_small_02/tree_small_02_arm_2k.jpg",
+          "md5": "038ad0c1968be6802b20d084cdf30603",
+          "bytes": 2586815
+        },
+        {
+          "file": "tree_small_02/tree_small_02.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/tree_small_02/tree_small_02.bin",
+          "md5": "7a7019a87e6fe0d7475c0fa2e08d8962",
+          "bytes": 95102324
+        }
+      ]
+    }
+  ],
+  "renders": [
+    "ShrubBroadleaf-Variants.png"
+  ],
+  "concept_reference": "docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp"
+}
