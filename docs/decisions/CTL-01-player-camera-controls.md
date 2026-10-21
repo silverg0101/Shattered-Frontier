@@ -31,12 +31,12 @@ HUD prompts should label keys from this table. The source of truth is `IMC_Playe
 | Interact / Harvest | F | Face right (B) |
 | Run forward | LMB + RMB | — |
 
-**Build mode:** active under `ASFConstructionSandboxController`, or under `ASFConstructionNetworkController` while a replicated `ASFConstructionNetworkState` exists (the server runs with `-ConstructionNetworkSandbox`). `ASFE1Character` then layers `IMC_Build` (`IA_BuildReserved`: E, F, LMB) over `IMC_Player` at a higher priority, so those keys stay with the construction legacy bindings: LMB places, E/F interact, harvest or toggle doors. R rotates the piece, and Esc cancels the placement. LMB orbit, E strafe and F interact from `IMC_Player` are suspended until build mode ends. RMB look, wheel zoom, movement and autorun keep working.
+**Build mode:** press B under `ASFPlayerController` to add `IMC_Build` above `IMC_Player`; press B again to leave. LMB places, E/F toggle a targeted door, R rotates the piece, and Esc cancels placement or leaves build mode. The build actions consume their keys, so LMB orbit, E strafe and F interact from `IMC_Player` pause while build mode is active. RMB look, wheel zoom, movement and autorun keep working. The standalone `ASFConstructionSandboxController` keeps its development fixture controls.
 
 ## Design
 - Facing is the control yaw. `bUseControllerRotationYaw` is set on both the server and the owning client, so `ServerMove` carries it and the server turns the pawn. The camera boom uses an absolute, client-only rotation. Walking scales the analog movement input, so `CharacterMovement` replicates it without a new RPC. Simulated proxies need nothing new.
 - Enhanced Input is enabled with `EnhancedPlayerInput` and `EnhancedInputComponent` as the default classes. `tools/Create-PlayerInputAssets.py` creates `/Game/Frontier/Input/IMC_Player` and one `IA_*` per action, so bindings are rebindable assets. Negative directions are separate actions, so the context needs no modifiers. `ASFE1Character` polls their values each tick.
-- The scheme applies under every `ASFE1PlayerController`, including the construction controllers (GM-01 makes the network controller everyone's). Build mode is evaluated each tick, as described above. A `SetControlRotation` from elsewhere (scenario or combat aim) moves the camera to that yaw and pitch.
+- The scheme applies under the shared `ASFPlayerController` (GM-01). Build mode is evaluated each tick, as described above. A `SetControlRotation` from elsewhere (scenario or combat aim) moves the camera to that yaw and pitch.
 - Every tuning value is typed config in `USFE1Settings` (Camera and Movement categories), with bounds checked by `Validate` at startup.
 
 ## Evidence
