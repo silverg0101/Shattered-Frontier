@@ -232,7 +232,8 @@ public:
     const FString& Id() const { return ResidentId; }
     int32 Serial() const { return HandoffSerial; }
     int32 Health() const { return CurrentHealth; }
-    bool bQuestHeld=false;  // authority: held until the quest releases it
+    int32 QuestHolds=0;  // authority: quest players holding it (they share one resident); released at 0
+    FName ArchetypeName() const { return Archetype; }
     double LastActiveSeconds=0;  // authority: last hit or hand-off
     int32 DeathDay=-1;  // authority: game day it died on
     UPROPERTY(VisibleAnywhere) TObjectPtr<USFCrowdControlComponent> CrowdControl;
@@ -399,13 +400,17 @@ private:
     FVector StopFor(int32 Resident, ESFTownsfolkGoal Goal, int32 Market) const;
     ASFTownsfolkNpc* SpawnNpc(int32 Resident, const FVector& At, bool bQuest);
     void TickScenario();
+    void TickQuestScenario();
     TMap<int32,TWeakObjectPtr<ASFTownsfolkNpc>> Npcs;  // handed-off residents, by index
     TMap<int32,FVector> Resume;
     TMap<FString,int32> Ids;
     TMap<TWeakObjectPtr<APlayerController>,double> NextSwing;
     TArray<int32> Still;  // frames each resident has stood still, for the scenario's pick
     int32 HandoffSerial=0, ScenarioTarget=INDEX_NONE, LastReturned=INDEX_NONE;
+    FVector ScenarioHome=FVector::ZeroVector;
+    TArray<FVector> ScenarioPath; int32 ScenarioPathNext=0, ScenarioPathFor=INDEX_NONE; double ScenarioPathAt=0;
     double ScenarioStart=-1, LastReturnedAt=0; bool bScenario=false, bScenarioSent=false, bCensus=false;
+    bool bQuestScenario=false; uint8 QuestScenarioPhase=0; FVector QuestScenarioHome=FVector::ZeroVector; double QuestScenarioAt=0;
     FDelegateHandle PostLoginHandle;
     bool LoadLooks(FString& OutError);
     /** Creates the Smart Objects from silverbrook-smartobjects.json once the SmartObject subsystem is running. */

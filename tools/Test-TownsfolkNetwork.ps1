@@ -5,7 +5,10 @@ param(
     [ValidateRange(60,600)][int]$TimeoutSeconds = 360,
     [ValidateRange(30,300)][int]$SampleSeconds = 120,
     [ValidateRange(1,30)][double]$DayMinutes = 4,
-    [ValidateRange(0.05,2)][double]$HourToleranceSeconds = 0.5
+    [ValidateRange(0.05,2)][double]$HourToleranceSeconds = 0.5,
+    # Attack: the first client swings at a resident. Quest: the server runs the quest pilot on
+    # content/quests/silverbrook_introductions.json (talk_resident) and the first client walks to the held resident.
+    [ValidateSet('Attack','Quest')][string]$Leg = 'Attack'
 )
 # Townsfolk step 4 (AI Townsfolk doc section 9): a dedicated server on Greenlands_Silverbrook owns the town state; two
 # NullRHI clients simulate residents on NM_Client. Passes when both clients agree on the hour
@@ -16,7 +19,7 @@ param(
 # must resume the resident on its schedule from the actor's last position once the server releases it.
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
-$root = Join-Path $repoRoot ('Artifacts\Townsfolk\network-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
+$root = Join-Path $repoRoot ('Artifacts\Townsfolk\network-' + $Leg.ToLower() + '-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
 $editor = Join-Path $EngineRoot 'Engine\Binaries\Win64\UnrealEditor-Cmd.exe'
 $project = Join-Path $repoRoot 'GameClient\ShatteredFrontier.uproject'
 if (-not (Test-Path -LiteralPath $editor -PathType Leaf)) { throw 'Installed editor is missing.' }
@@ -28,6 +31,7 @@ $clock = [Diagnostics.Stopwatch]::StartNew()
 $settings = '-ini:Game:[/Script/ShatteredFrontier.SFTownsfolkSettings]:'
 $results = [ordered]@{
     status='Running'
+    leg=$Leg
     scope='Mechanism only: dedicated editor server town state (clock, markets, one danger cell) replicated to two NullRHI NM_Client clients simulating residents. Attack hand-off and release (flee only). No rendering, looks, fighting back or quest hand-off.'
     serverOverrides="GameDayMinutes=$DayMinutes StartHour=10 MarketCloseHour=12 DangerSeconds=1800 HandoffReleaseMetres=10 HandoffQuietSeconds=8, danger cell at (20,-20) m; clients keep shipped settings"
     timeoutSeconds=$TimeoutSeconds
@@ -71,12 +75,20 @@ function Read-Samples([string]$Text) {
     }
 }
 try {
-    $server=Start-Owned 'server' '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' @('-server',('-port='+$Port),'-multihome=127.0.0.1',
+    $map='/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook'
+    $serverFlags=@('-server',('-port='+$Port),'-multihome=127.0.0.1',
         ($settings+'GameDayMinutes='+$DayMinutes),($settings+'StartHour=10'),($settings+'MarketCloseHour=12'),($settings+'DangerSeconds=1800'),
         ($settings+'HandoffReleaseMetres=10'),($settings+'HandoffQuietSeconds=8'),'-TownsfolkDangerX=20','-TownsfolkDangerY=-20')
+    if ($Leg -eq 'Quest') {
+        # The quest pilot is on in Silverbrook (GM-01); only the quest it runs changes.
+        $serverFlags+=@('-ini:Game:[/Script/ShatteredFrontier.SFQuestPilotSettings]:QuestFile=silverbrook_introductions.json')
+    }
+    $server=Start-Owned 'server' $map $serverFlags
     Wait-Log $server 'server' 'TOWNSFOLK_STATE_CHANGE[^\r\n]*Cell='
-    $first=Start-Owned 'first' ('127.0.0.1:'+$Port) @('-game','-TownsfolkHandoffScenario')
-    $second=Start-Owned 'second' ('127.0.0.1:'+$Port) @('-game')
+    if ($Leg -eq 'Quest') { Wait-Log $server 'server' 'QUEST_PILOT_READY Quest=quest/silverbrook_introductions' }
+    $first=Start-Owned 'first' ('127.0.0.1:'+$Port) @('-game',$(if ($Leg -eq 'Quest') { '-TownsfolkQuestScenario' } else { '-TownsfolkHandoffScenario' }))
+    # Quest: every player gets the quest and shares the one held resident, so both walk to it and back.
+    $second=Start-Owned 'second' ('127.0.0.1:'+$Port) @(@('-game')+$(if ($Leg -eq 'Quest') { @('-TownsfolkQuestScenario') } else { @() }))
     Wait-Log $first 'first' 'TOWNSFOLK_STATE Net=3'
     Wait-Log $second 'second' 'TOWNSFOLK_STATE Net=3'
     $sampleStart=[DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()/1000.0+5  # skip the first seconds while server time syncs
@@ -108,12 +120,22 @@ try {
             processorMsMean=[math]::Round(($ms | Measure-Object -Average).Average,3); processorMsMax=($ms | Measure-Object -Maximum).Maximum
             samples=$samples; text=$text }
     }
-    # Hand-off: one attack, one server actor, seen by both clients with no second copy, then released and resumed.
+    # Hand-off: one server actor (an attack, or the quest's held resident), seen by both clients with no second copy,
+    # then released and resumed.
     if ($serverText -match 'TOWNSFOLK_HANDOFF_DENIED[^\r\n]*') { throw "Server denied a hand-off: $($Matches[0])" }
-    if ($serverText -notmatch 'TOWNSFOLK_HANDOFF Id=(\S+) Serial=(\d+) Reason=attack') { throw 'Server made no attack hand-off.' }
-    $handId=$Matches[1]; $serial=$Matches[2]
-    if ($serverText -notmatch ('TOWNSFOLK_HANDOFF_HIT Id='+[regex]::Escape($handId)+' Serial='+$serial+' Health=(\d+)')) { throw 'Server applied no hit.' }
-    $health=[int]$Matches[1]
+    $reason=if ($Leg -eq 'Quest') { 'quest' } else { 'attack' }
+    if ($serverText -notmatch ('TOWNSFOLK_HANDOFF Id=(\S+) Serial=(\d+) Reason='+$reason)) { throw "Server made no $reason hand-off." }
+    $handId=$Matches[1]; $serial=$Matches[2]; $health=$null
+    if ($Leg -eq 'Attack') {
+        if ($serverText -notmatch ('TOWNSFOLK_HANDOFF_HIT Id='+[regex]::Escape($handId)+' Serial='+$serial+' Health=(\d+)')) { throw 'Server applied no hit.' }
+        $health=[int]$Matches[1]
+    } else {
+        # The quest: held for the objective, counted when the player reached it, quest complete, then let go.
+        if ($serverText -notmatch ('QUEST_PILOT_TALK_HELD Role=stall_keeper Id='+[regex]::Escape($handId)+' Serial='+$serial)) { throw 'Quest pilot did not hold the resident.' }
+        if ($serverText -notmatch ('QUEST_PILOT_EVENT Kind=talk_resident Target=resident_role/stall_keeper Op=talk:'+[regex]::Escape($handId)+':'+$serial+' Result=0')) { throw 'talk_resident objective was not accepted.' }
+        if ($serverText -notmatch 'QUEST_PILOT_COMPLETE Quest=quest/silverbrook_introductions') { throw 'Quest did not complete.' }
+        if ($clients.first.text -notmatch 'TOWNSFOLK_QUEST_SCENARIO_REACHED') { throw 'Client never reached the held resident.' }
+    }
     if ($serverText -notmatch ('TOWNSFOLK_HANDOFF_RELEASE Id='+[regex]::Escape($handId)+' Serial='+$serial)) { throw 'Server never released the resident.' }
     $returns=@()
     foreach ($name in 'first','second') {
@@ -130,7 +152,7 @@ try {
     }
     $gap=[math]::Sqrt([math]::Pow($returns[0][0]-$returns[1][0],2)+[math]::Pow($returns[0][1]-$returns[1][1],2))
     if ($gap -gt 100) { throw "Clients' last positions of the actor differ by $([math]::Round($gap)) cm." }
-    $results.handoff=[ordered]@{ resident=$handId; serial=[int]$serial; healthAfterHit=$health; returnGapCm=[math]::Round($gap,1) }
+    $results.handoff=[ordered]@{ reason=$reason; resident=$handId; serial=[int]$serial; healthAfterHit=$health; returnGapCm=[math]::Round($gap,1) }
     # Hour: each of first's samples against second's hour interpolated at the same machine time.
     $a=$clients.first.samples; $b=$clients.second.samples; $worst=0.0; $compared=0; $marketCompared=0; $marketSkipped=0; $seen=@{}
     foreach ($s in $a) {

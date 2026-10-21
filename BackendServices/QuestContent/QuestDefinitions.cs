@@ -62,7 +62,9 @@ public static class QuestValidator
     private static readonly Regex ContentId = new("^[a-z_]+/[a-z0-9_]+$", RegexOptions.CultureInvariant);
     private static readonly Regex Slug = new("^[a-z][a-z0-9_]*$", RegexOptions.CultureInvariant);
 
-    public static IReadOnlyList<string> Validate(QuestDefinition quest, QuestTuning? tuning = null, IReadOnlySet<string>? knownItems = null)
+    /// <summary>knownRoles: townsfolk census archetypes a talk_resident objective may name (resident_role/&lt;archetype&gt;).</summary>
+    public static IReadOnlyList<string> Validate(QuestDefinition quest, QuestTuning? tuning = null, IReadOnlySet<string>? knownItems = null,
+        IReadOnlySet<string>? knownRoles = null)
     {
         tuning ??= new QuestTuning();
         tuning.Validate();
@@ -83,8 +85,10 @@ public static class QuestValidator
             {
                 if (obj is null) { issues.Add($"step {step.Id}: objective null"); continue; }
                 if (!Slug.IsMatch(obj.Key ?? "") || !keys.Add(obj.Key ?? "")) issues.Add($"step {step.Id}: objective key invalid/duplicate");
-                var prefix = obj.Kind switch { "gather" or "craft" => "item", "defeat" => "npc", "build" => "structure_tag", _ => "" };
+                var prefix = obj.Kind switch { "gather" or "craft" => "item", "defeat" => "npc", "build" => "structure_tag", "talk_resident" => "resident_role", _ => "" };
                 if (prefix.Length == 0 || !ValidId(obj.TargetId, prefix)) issues.Add($"step {step.Id}/{obj.Key}: kind/target invalid");
+                else if (obj.Kind == "talk_resident" && knownRoles is not null && !knownRoles.Contains(obj.TargetId[(prefix.Length + 1)..]))
+                    issues.Add($"step {step.Id}/{obj.Key}: unknown resident role");
                 if (obj.NodeId is not null && (obj.Kind != "gather" || !ValidId(obj.NodeId, "gathering_node"))) issues.Add($"step {step.Id}/{obj.Key}: node_id invalid");
                 if (obj.Count < 1 || obj.Count > tuning.MaxObjectiveCount) issues.Add($"step {step.Id}/{obj.Key}: count outside 1..{tuning.MaxObjectiveCount}");
             }
@@ -102,13 +106,14 @@ public static class QuestValidator
         return issues;
     }
 
-    public static IReadOnlyList<string> ValidateAll(IReadOnlyList<(string Path, QuestDefinition Quest)> files, IReadOnlySet<string>? knownItems = null)
+    public static IReadOnlyList<string> ValidateAll(IReadOnlyList<(string Path, QuestDefinition Quest)> files, IReadOnlySet<string>? knownItems = null,
+        IReadOnlySet<string>? knownRoles = null)
     {
         var issues = new List<string>();
         var ids = new HashSet<string>(StringComparer.Ordinal);
         foreach (var (path, quest) in files)
         {
-            issues.AddRange(Validate(quest, knownItems: knownItems).Select(i => $"{path}: {i}"));
+            issues.AddRange(Validate(quest, knownItems: knownItems, knownRoles: knownRoles).Select(i => $"{path}: {i}"));
             if (!ids.Add(quest.Id)) issues.Add($"{path}: duplicate quest id {quest.Id}");
         }
         return issues;

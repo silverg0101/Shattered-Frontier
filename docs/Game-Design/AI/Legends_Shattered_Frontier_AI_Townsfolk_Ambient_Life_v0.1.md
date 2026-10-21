@@ -353,8 +353,25 @@ The census validator checks:
      - Both clients saw the same actor in 8 views each, with the Mass copy hidden in all of them. Both resumed the resident at the same point (0 cm apart), and it was back outdoors afterwards.
      - Hours: worst gap 0.015 s. Markets: 116 samples agree; the close is at 12:00.
      - Smart Object claims: 130 and 126. Processor: 0.052 ms a frame on average, 0.088 ms at most.
-     - The quest pilot has a stub behind `-QuestResidentStub`: the first quest player holds one census labourer through `RequestQuestHandoff`. No content uses it yet and no runner covers it.
-   - *Next:* a real "talk_resident" objective in quest content, with its release; then step 5 (fighting back, guards, crime).
+     - The `-QuestResidentStub` flag has since been replaced by the `talk_resident` objective below.
+   **Step 4 third slice (2026-10-21): the `talk_resident` quest objective.**
+   - *Content.* A `talk_resident` objective targets `resident_role/<archetype>`. `BackendServices/QuestContent` validates the kind and its prefix; `QuestContent.Tool` checks the role against `ArtSource/Townsfolk/townsfolk-archetypes.json`, so a quest can't name a role the census never produces. `content/quests/silverbrook_introductions.json` is a one-step quest: meet a stall keeper.
+   - *Unreal quest pilot.* The pilot parses the kind ("Talk to" in the tracker) and reads its quest from the typed `QuestFile` setting (default the founder chain).
+     - While a `talk_resident` objective is active, the server asks `RequestQuestHandoff` for a resident of that role near the player, and asks again every 5 s while none is free.
+     - The player walking within `TalkRangeMetres` (3 m) counts the objective with operation id `talk:<resident>:<serial>`, and the pilot calls `ReleaseQuestHandoff`.
+     - The resident goes back to its day once no player is within `HandoffReleaseMetres`.
+     - With gameplay services on, Gameplay.Host still runs only the founder chain, so this quest is local-pilot only.
+   - *Shared holds.* Every player gets the quest, so players on the same objective share the one held resident (`QuestHolds`, logged `TOWNSFOLK_HANDOFF_SHARED`). It goes back to its day only when each has counted it, or left, and no player is near.
+   - *Verify.* `tools/Test-TownsfolkNetwork.ps1 -Leg Quest` sets `QuestFile=silverbrook_introductions.json` on the server; both clients run `-TownsfolkQuestScenario`, walking to the held resident and away. The leg passes on held, shared, accepted, complete and released, with the same no-duplicate and return checks as the attack leg (`-Leg Attack`, the default).
+   - *Test drivers under GM-01.* Players now spawn together at the zone's `arrival` point, so the attack driver:
+     - picks a worker at least 40 m from it, because a 27 m flee could otherwise stop inside the idle player's release radius;
+     - follows the footway route there, because a straight line from arrival stalls on houses;
+     - re-picks its target every frame.
+   - *Evidence* (both legs pass with no engine ensures; `Test-QuestPilot.ps1 -Leg Full` also passes, so the founder chain is unaffected):
+     - Quest leg (`Artifacts/Townsfolk/network-quest-20261021-181353-405`): both players shared the held resident and completed the quest. The resident was released, and both clients returned it 0 cm apart with the Mass copy hidden in every view. Hours were 0.014 s apart; claims 107 and 104; processor 0.050 ms a frame.
+     - Attack leg (`network-attack-20261021-181119-173`): a hit to 20 health, then release, with a return gap of 0 cm. Hours were 0.011 s apart; processor 0.055 ms a frame.
+     - Founder chain: `Artifacts/QuestPilot/full-20261021-181120-131`.
+   - *Next:* step 5 (fighting back, guards, crime).
 5. **Reactions, crime and guards.** Fear at drawn weapons, annoyed barks, residents fighting back, roaming guards on patrol loops, witnessed crime making the player an offender, respawn at dawn. *Exit:* attacking a resident in view of a guard makes the player an offender and the guard engages; an unwitnessed attack in a back street gets reported only if a resident reaches a guard.
 
 ## 10. Risks

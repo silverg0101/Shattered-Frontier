@@ -1,0 +1,13 @@
+{
+  "id": "quest/silverbrook_introductions",
+  "revision": 1,
+  "zone_id": "zone/greenlands_silverbrook",
+  "steps": [
+    {
+      "id": "meet_stall_keeper",
+      "prerequisites": [],
+      "objectives": [ { "key": "stall_keeper", "kind": "talk_resident", "target_id": "resident_role/stall_keeper", "count": 1 } ],
+      "rewards": []
+    }
+  ]
+}

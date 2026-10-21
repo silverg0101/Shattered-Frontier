@@ -30,6 +30,12 @@ Broken("zero reward quantity", q => q.Steps[4].Rewards[0].Items[0].Quantity = 0,
 var unknownReward = Copy(); unknownReward.Steps[4].Rewards[0].Items[0].DefinitionId = "item/invented";
 Check(QuestValidator.Validate(unknownReward, knownItems: new HashSet<string> { "item/rough_timber", "item/iron_nails", "item/starter_tool_repair_kit" }).Any(i => i.Contains("unknown", StringComparison.Ordinal)), "unknown reward item rejected");
 Check(QuestValidator.ValidateAll([("a", quest), ("b", quest)]).Any(i => i.Contains("duplicate quest id", StringComparison.Ordinal)), "duplicate record");
+var talk = Copy(); talk.Steps[0].Objectives[0] = new QuestObjective { Key = "meet", Kind = "talk_resident", TargetId = "resident_role/stall_keeper", Count = 1 };
+var roles = new HashSet<string> { "stall_keeper" };
+Check(QuestValidator.Validate(talk, knownRoles: roles).Count == 0, "talk_resident with a census role validates");
+Check(QuestValidator.Validate(talk, knownRoles: new HashSet<string> { "smith" }).Any(i => i.Contains("unknown resident role", StringComparison.Ordinal)), "unknown resident role rejected");
+talk.Steps[0].Objectives[0].TargetId = "npc/stall_keeper";
+Check(QuestValidator.Validate(talk, knownRoles: roles).Any(i => i.Contains("kind/target", StringComparison.Ordinal)), "talk_resident needs a resident_role target");
 
 var model = new QuestProgression(quest);
 var t = DateTimeOffset.Parse("2026-10-21T12:00:00Z");

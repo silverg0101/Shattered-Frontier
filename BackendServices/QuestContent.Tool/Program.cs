@@ -28,7 +28,13 @@ try
             else Collect(property.Value);
         }
     }
-    var issues = QuestValidator.ValidateAll(files, knownItems);
+    // Resident roles are the townsfolk census archetypes (talk_resident objectives); the file's other keys are settings.
+    var archetypes = Path.Combine(Directory.GetParent(content)?.FullName ?? "", "GameClient", "ArtSource", "Townsfolk", "townsfolk-archetypes.json");
+    using var archetypeDocument = System.Text.Json.JsonDocument.Parse(File.ReadAllText(archetypes));
+    var knownRoles = archetypeDocument.RootElement.EnumerateObject()
+        .Where(p => p.Value.ValueKind == System.Text.Json.JsonValueKind.Object && p.Name != "default")
+        .Select(p => p.Name).ToHashSet(StringComparer.Ordinal);
+    var issues = QuestValidator.ValidateAll(files, knownItems, knownRoles);
     foreach (var issue in issues) Console.Error.WriteLine(issue);
     if (issues.Count != 0) return 1;
     Console.WriteLine($"Validated {files.Count} quest record(s).");

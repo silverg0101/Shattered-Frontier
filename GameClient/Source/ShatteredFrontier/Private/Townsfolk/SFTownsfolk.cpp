@@ -716,6 +716,7 @@ void USFTownsfolkSubsystem::OnWorldBeginPlay(UWorld& World)
     if (!Settings->bEnabled || World.GetNetMode()==NM_DedicatedServer) { return; }
     if (!LoadCensus(Error) || !LoadLooks(Error)) { UE_LOG(LogTemp,Error,TEXT("TOWNSFOLK_DISABLED %s"),*Error); return; }
     bCensus=true; bScenario=FParse::Param(FCommandLine::Get(),TEXT("TownsfolkHandoffScenario"));
+    bQuestScenario=FParse::Param(FCommandLine::Get(),TEXT("TownsfolkQuestScenario"));
     WalkSpeedMetres=Settings->WalkSpeedMetresPerSecond;
     SidestepMaxCm=Settings->SidestepMaxMetres*100.0f; SidestepRadiusCm=Settings->SidestepRadiusMetres*100.0f; SidestepSpeedShare=Settings->SidestepSpeedShare;
     DoorDwellSeconds=Settings->DoorDwellSeconds; WorkIndoorShare=Settings->WorkIndoorShare; BenchShare=Settings->BenchShare; BenchSearchCm=Settings->BenchSearchMetres*100.0f;
@@ -871,7 +872,7 @@ void ASFTownsfolkNpc::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 void ASFTownsfolkNpc::Init(const FString& Id, FName InArchetype, int32 Serial, int32 Health, bool bQuest)
 {
-    ResidentId=Id; Archetype=InArchetype; HandoffSerial=Serial; CurrentHealth=Health; bQuestHeld=bQuest;
+    ResidentId=Id; Archetype=InArchetype; HandoffSerial=Serial; CurrentHealth=Health; QuestHolds=bQuest ? 1 : 0;
     LastActiveSeconds=GetWorld()->GetTimeSeconds();
 }
 
@@ -1045,7 +1046,7 @@ void USFTownsfolkSubsystem::HandleNpcAttack(APlayerController* PC, ASFTownsfolkN
     const USFCombatPilotSettings* Combat=GetDefault<USFCombatPilotSettings>(); const double Now=GetWorld()->GetTimeSeconds();
     const FVector D=Npc->GetActorLocation()-Pawn->GetActorLocation();
     if (bSelected && D.Size2D() > Combat->MeleeRangeMetres*100.0)
-    { if (ASFPlayerController* Player = Cast<ASFPlayerController>(PC)) { Player->ClientPilotHit(TEXT("Out of range")); } return; }
+    { if (ASFPlayerController* PilotPC = Cast<ASFPlayerController>(PC)) { PilotPC->ClientPilotHit(TEXT("Out of range")); } return; }
     if (!SFCombatPilotRules::CanMelee(D.Size2D(),bSelected ? 1.0 : FVector::DotProduct(PC->GetControlRotation().Vector().GetSafeNormal2D(),D.GetSafeNormal2D()),
         Now,NextSwing.FindRef(PC),Combat->MeleeRangeMetres*100.0)) { return; }
     NextSwing.Add(PC,Now+Combat->PlayerMeleeCooldownSeconds);
@@ -1055,6 +1056,16 @@ void USFTownsfolkSubsystem::HandleNpcAttack(APlayerController* PC, ASFTownsfolkN
 ASFTownsfolkNpc* USFTownsfolkSubsystem::RequestQuestHandoff(FName Archetype, const FVector& Near)
 {
     if (!bCensus || !State) { return nullptr; }
+    for (const TPair<int32,TWeakObjectPtr<ASFTownsfolkNpc>>& P:Npcs)
+    {   // Players on the same objective share the resident already held for it.
+        ASFTownsfolkNpc* Held=P.Value.Get();
+        if (Held && Held->QuestHolds>0 && Held->Health()>0 && Held->ArchetypeName()==Archetype)
+        {
+            ++Held->QuestHolds;
+            UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_HANDOFF_SHARED Id=%s Serial=%d Holds=%d"),*Held->Id(),Held->Serial(),Held->QuestHolds);
+            return Held;
+        }
+    }
     int32 Day=0; const float Hour=State->Hour(Day);
     int32 Best=INDEX_NONE, BestMarket=INDEX_NONE; ESFTownsfolkGoal BestGoal=ESFTownsfolkGoal::Home; double BestD=TNumericLimits<double>::Max();
     for (int32 I=0; I<Residents.Num(); ++I)
@@ -1075,7 +1086,7 @@ ASFTownsfolkNpc* USFTownsfolkSubsystem::RequestQuestHandoff(FName Archetype, con
 void USFTownsfolkSubsystem::ReleaseQuestHandoff(ASFTownsfolkNpc* Npc)
 {
     // The quest is done with it; it returns once no player is near (ReleaseDue).
-    if (IsValid(Npc)) { Npc->bQuestHeld=false; Npc->LastActiveSeconds=-1e9; }
+    if (IsValid(Npc) && Npc->QuestHolds>0 && --Npc->QuestHolds==0) { Npc->LastActiveSeconds=-1e9; }
 }
 
 void USFTownsfolkSubsystem::NoteNpc(ASFTownsfolkNpc* Npc, bool bPresent)
@@ -1097,7 +1108,7 @@ void USFTownsfolkSubsystem::NoteNpc(ASFTownsfolkNpc* Npc, bool bPresent)
 
 bool USFTownsfolkSubsystem::ReleaseDue(const ASFTownsfolkNpc& Npc) const
 {
-    if (Npc.bQuestHeld || !State) { return false; }
+    if (Npc.QuestHolds>0 || !State) { return false; }
     if (Npc.Health()<=0)
     {   // Dead: back at the next dawn (doc section 5.5).
         int32 Day=0; const float Hour=State->Hour(Day);
@@ -1145,29 +1156,78 @@ void USFTownsfolkSubsystem::TickScenario()
 {
     // Development check (-TownsfolkHandoffScenario, one client): walk the player to a resident standing still and
     // swing through the same LocalAttack the attack key uses.
+    if (bQuestScenario) { TickQuestScenario(); }
     if (!bScenario || bScenarioSent) { return; }
     APlayerController* PC=GetWorld()->GetFirstPlayerController();
     ASFE1Character* Me=PC ? Cast<ASFE1Character>(PC->GetPawn()) : nullptr;
     if (!Me || !PC->FindComponentByClass<USFTownsfolkHandoffComponent>()) { return; }
     const double Now=FPlatformTime::Seconds();
-    if (ScenarioStart<0) { ScenarioStart=Now; }
+    if (ScenarioStart<0) { ScenarioStart=Now; ScenarioHome=Me->GetActorLocation(); }
     if (Now-ScenarioStart<5) { return; }  // let the crowd leave home first
     if (Now-ScenarioStart>90) { UE_LOG(LogTemp,Error,TEXT("TOWNSFOLK_HANDOFF_SCENARIO_FAILED no resident reached")); bScenarioSent=true; return; }
-    if (ScenarioTarget==INDEX_NONE || !Outdoors[ScenarioTarget])
-    {   // A worker standing at work with two game hours of shift left: still there when the player arrives.
-        ScenarioTarget=INDEX_NONE; double BestD=TNumericLimits<double>::Max();
+    {   // Re-picked each frame: the nearest worker standing at work with two game hours of shift left (still there when the
+        // player arrives). Keeping the first pick sent the player across town after one that qualified early. The current
+        // target stays eligible while it shifts aside for the approaching player.
+        const int32 Was=ScenarioTarget; ScenarioTarget=INDEX_NONE; double BestD=TNumericLimits<double>::Max();
         int32 Day=0; const float Hour=GameHour(Day);
         for (int32 I=0; I<Residents.Num(); ++I)
         {
             int32 M=INDEX_NONE; const double D=FVector::Dist2D(Shown[I],Me->GetActorLocation());
-            if (Outdoors[I] && Still[I]>=30 && D<BestD && GoalFor(I,Hour,Day,M)==ESFTownsfolkGoal::Work && Residents[I].WorkEnd-Hour>=2) { BestD=D; ScenarioTarget=I; }
+            // At least 40 m from where the players spawn: a flee covers at most 27 m, so the resident can't stop inside
+            // the release radius of the other player still standing there.
+            if (Outdoors[I] && (Still[I]>=30 || I==Was) && D<BestD && FVector::Dist2D(Shown[I],ScenarioHome)>=4000 && GoalFor(I,Hour,Day,M)==ESFTownsfolkGoal::Work && Residents[I].WorkEnd-Hour>=2) { BestD=D; ScenarioTarget=I; }
         }
         if (ScenarioTarget==INDEX_NONE) { return; }
-        UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_HANDOFF_SCENARIO_TARGET Id=%s Distance=%.0f"),*Residents[ScenarioTarget].Id,BestD);
+        if (ScenarioTarget!=Was) { UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_HANDOFF_SCENARIO_TARGET Id=%s Distance=%.0f"),*Residents[ScenarioTarget].Id,BestD); }
     }
     const FVector D=(Shown[ScenarioTarget]-Me->GetActorLocation())*FVector(1,1,0);
+    if (D.Size()>150)
+    {   // Along the footways, not straight through the houses: a straight line from the arrival point stalls on walls.
+        if (ScenarioTarget!=ScenarioPathFor || Now-ScenarioPathAt>5)
+        { PlanRoute(Me->GetActorLocation(),Shown[ScenarioTarget],ScenarioPath,true); ScenarioPathNext=0; ScenarioPathAt=Now; ScenarioPathFor=ScenarioTarget; }
+        while (ScenarioPathNext<ScenarioPath.Num()-1 && FVector::Dist2D(ScenarioPath[ScenarioPathNext],Me->GetActorLocation())<150) { ++ScenarioPathNext; }
+        const FVector Step=((ScenarioPath.IsValidIndex(ScenarioPathNext) ? ScenarioPath[ScenarioPathNext] : Shown[ScenarioTarget])-Me->GetActorLocation())*FVector(1,1,0);
+        PC->SetControlRotation(Step.Rotation()); Me->AddMovementInput(Step.GetSafeNormal(),1.0f);
+        return;
+    }
     PC->SetControlRotation(D.Rotation());
-    if (D.Size()>150) { Me->AddMovementInput(D.GetSafeNormal(),1.0f); return; }
     bScenarioSent=LocalAttack(Me);
     UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_HANDOFF_SCENARIO_ATTACK Id=%s Sent=%d"),*Residents[ScenarioTarget].Id,bScenarioSent);
+}
+
+void USFTownsfolkSubsystem::TickQuestScenario()
+{
+    // Development check (-TownsfolkQuestScenario, one client, server -QuestPilot on a talk_resident quest): walk to the
+    // resident the server holds for the quest, stand by it, then walk back so nobody is near and it can be released.
+    APlayerController* PC=GetWorld()->GetFirstPlayerController();
+    APawn* Me=PC ? PC->GetPawn() : nullptr;
+    if (!Me || QuestScenarioPhase==4) { return; }
+    const double Now=FPlatformTime::Seconds();
+    if (QuestScenarioPhase==0) { QuestScenarioHome=Me->GetActorLocation(); QuestScenarioAt=Now; QuestScenarioPhase=1; }
+    FVector To=QuestScenarioHome;
+    if (QuestScenarioPhase<=2)
+    {
+        const ASFTownsfolkNpc* Held=nullptr;
+        for (const TPair<int32,TWeakObjectPtr<ASFTownsfolkNpc>>& P:Npcs) { if (P.Value.IsValid()) { Held=P.Value.Get(); } }
+        if (QuestScenarioPhase==1)
+        {
+            if (!Held) { if (Now-QuestScenarioAt>90) { UE_LOG(LogTemp,Error,TEXT("TOWNSFOLK_QUEST_SCENARIO_FAILED no resident held")); QuestScenarioPhase=4; } return; }
+            To=Held->GetActorLocation();
+            if (FVector::Dist2D(To,Me->GetActorLocation())<320)  // about the 3 m talk range; two players converging on it block each other
+            { QuestScenarioPhase=2; QuestScenarioAt=Now; UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_QUEST_SCENARIO_REACHED Id=%s Serial=%d"),*Held->Id(),Held->Serial()); }
+        }
+        if (QuestScenarioPhase==2 && Now-QuestScenarioAt<3)
+        { if (Held) { To=Held->GetActorLocation(); } }  // keep pressing in for 3 s, so the server's 3 m check counts it
+        else if (QuestScenarioPhase==2)
+        {   // Walk back, at least 20 m from the resident so the release can happen.
+            QuestScenarioPhase=3;
+            const FVector Away=Held ? (QuestScenarioHome-Held->GetActorLocation())*FVector(1,1,0) : FVector(1e6,0,0);
+            if (Held && Away.Size()<2000) { QuestScenarioHome=Held->GetActorLocation()+(Away.IsNearlyZero() ? FVector::ForwardVector : Away.GetSafeNormal())*2000; }
+            To=QuestScenarioHome;
+        }
+    }
+    if (QuestScenarioPhase==3 && FVector::Dist2D(To,Me->GetActorLocation())<150) { QuestScenarioPhase=4; UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_QUEST_SCENARIO_BACK")); return; }
+    const FVector D=(To-Me->GetActorLocation())*FVector(1,1,0);
+    PC->SetControlRotation(D.Rotation());
+    Me->AddMovementInput(D.GetSafeNormal(),1.0f);
 }
