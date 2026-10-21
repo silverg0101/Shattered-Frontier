@@ -4,6 +4,8 @@
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
 #include "Components/Button.h"
+#include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
 #include "Components/EditableTextBox.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
@@ -56,9 +58,14 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
     PalettePanel = KitPanel(WidgetTree, TEXT("panel_frame"), 1.f, Slate(0.94f), Brass(), FMargin(6.f), 6.f);
     PalettePanel->SetVisibility(ESlateVisibility::Visible);
     PalettePanel->SetContent(Contents);
-    USizeBox* Root = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    Root->SetWidthOverride(480.f); Root->SetContent(PalettePanel);
+    // The root is a full-viewport canvas (the controller fills the viewport with it) so the panel is placed by percent anchors:
+    // 480 px wide, left edge at 2%, top at 4%. The canvas itself is never hit-tested, so clicks outside the panel reach the world.
+    UCanvasPanel* Root = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass());
     WidgetTree->RootWidget = Root;
+    USizeBox* PanelSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+    PanelSize->SetWidthOverride(480.f); PanelSize->SetContent(PalettePanel);
+    UCanvasPanelSlot* PanelSlot = Root->AddChildToCanvas(PanelSize);
+    PanelSlot->SetAnchors(FAnchors(0.02f, 0.04f)); PanelSlot->SetAlignment(FVector2D(0.f, 0.f)); PanelSlot->SetAutoSize(true); PanelSlot->SetOffsets(FMargin(0.f));
 
     // Title row, with the 2 px rule under it.
     UHorizontalBox* Title = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
@@ -236,7 +243,7 @@ void USFConstructionSandboxPalette::ConfigureNetworkPresentation()
 
 void USFConstructionSandboxPalette::SetBuildModeActive(bool bActive)
 {
-    SetVisibility(bActive ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    SetVisibility(bActive ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);  // the viewport-filling canvas must not catch world clicks
 }
 
 void USFConstructionSandboxPalette::SetStatusText(const FText& InStatusText)

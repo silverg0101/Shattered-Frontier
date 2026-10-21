@@ -4,6 +4,8 @@
 #include "Framework/SFHudStyle.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
+#include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
 #include "Components/Image.h"
@@ -28,10 +30,12 @@ void USFInventoryPanel::NativeOnInitialized()
     SetIsFocusable(false);
     using namespace SFHudStyle;
 
-    UBorder* Frame = Panel(WidgetTree, Slate(0.92f), Brass(), FMargin(24.f, 20.f), 6.f);
-    USizeBox* RootSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());  // 576 wide (x 4-34% of 1080p); the controller sizes the slot to match
-    RootSize->SetWidthOverride(576.f); RootSize->SetContent(Frame);
-    WidgetTree->RootWidget = RootSize;
+    UBorder* Frame = Panel(WidgetTree, Slate(0.92f), Brass(), FMargin(14.f, 8.f), 6.f);
+    // Full-viewport canvas root (the controller fills the viewport with it); the panel sits at x 4-34%, y 3-85% = 576 x 886 at 1080p.
+    UCanvasPanel* Root = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass());
+    WidgetTree->RootWidget = Root;
+    UCanvasPanelSlot* PanelSlot = Root->AddChildToCanvas(Frame);
+    PanelSlot->SetAnchors(FAnchors(0.04f, 0.03f, 0.34f, 0.85f)); PanelSlot->SetOffsets(FMargin(0.f));
     UVerticalBox* Contents = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     Frame->SetContent(Contents);
     auto AddRow = [Contents](UWidget* Child, const FMargin& Pad) { Contents->AddChildToVerticalBox(Child)->SetPadding(Pad); };
@@ -48,6 +52,22 @@ void USFInventoryPanel::NativeOnInitialized()
     UHorizontalBoxSlot* CloseSlot = Title->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("close_x"), 40.f));  // I or Esc closes
     CloseSlot->SetHorizontalAlignment(HAlign_Right); CloseSlot->SetVerticalAlignment(VAlign_Center); CloseSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
     AddRow(Title, FMargin(0.f, 0.f, 0.f, 10.f));
+
+    // Category tabs; clicks are hit-tested in NativeOnMouseButtonDown.
+    UHorizontalBox* Tabs = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+    for (int32 TabIndex = 0; TabIndex < TabCount; ++TabIndex)
+    {
+        UBorder* Tab = KitPanel(WidgetTree, TEXT("tab_normal"), 1.f, Slate(), Brass(), FMargin(0.f), 3.f);
+        UTextBlock* TabText = Text(WidgetTree, TabLabel(static_cast<ESFInventoryTab>(TabIndex)), 18, Ivory());
+        TabText->SetJustification(ETextJustify::Center);
+        Tab->SetVerticalAlignment(VAlign_Center); Tab->SetContent(TabText);
+        USizeBox* TabSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        TabSize->SetWidthOverride(100.f); TabSize->SetHeightOverride(44.f); TabSize->SetContent(Tab);
+        Tabs->AddChildToHorizontalBox(TabSize)->SetPadding(FMargin(0.f, 0.f, 8.f, 0.f));
+        TabBorders.Add(Tab);
+    }
+    StyleTabs();
+    AddRow(Tabs, FMargin(0.f, 0.f, 0.f, 12.f));
 
     // Equipment (v5 inventory.png): five armour slots left, the paperdoll centre, four slots right. Empty slots show their ghost
     // icon; only the main hand is live today (the equipped tool). ponytail: no armour system yet, so the others stay empty.
@@ -81,22 +101,6 @@ void USFInventoryPanel::NativeOnInitialized()
     { RightColumn->AddChildToVerticalBox(EquipmentSlot(Ghost, nullptr, nullptr))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f)); }
     Equipment->AddChildToHorizontalBox(RightColumn)->SetVerticalAlignment(VAlign_Top);
     AddRow(Equipment, FMargin(0.f, 0.f, 0.f, 8.f));
-
-    // Category tabs; clicks are hit-tested in NativeOnMouseButtonDown.
-    UHorizontalBox* Tabs = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    for (int32 TabIndex = 0; TabIndex < TabCount; ++TabIndex)
-    {
-        UBorder* Tab = KitPanel(WidgetTree, TEXT("tab_normal"), 1.f, Slate(), Brass(), FMargin(0.f), 3.f);
-        UTextBlock* TabText = Text(WidgetTree, TabLabel(static_cast<ESFInventoryTab>(TabIndex)), 18, Ivory());
-        TabText->SetJustification(ETextJustify::Center);
-        Tab->SetVerticalAlignment(VAlign_Center); Tab->SetContent(TabText);
-        USizeBox* TabSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        TabSize->SetWidthOverride(100.f); TabSize->SetHeightOverride(44.f); TabSize->SetContent(Tab);
-        Tabs->AddChildToHorizontalBox(TabSize)->SetPadding(FMargin(0.f, 0.f, 8.f, 0.f));
-        TabBorders.Add(Tab);
-    }
-    StyleTabs();
-    AddRow(Tabs, FMargin(0.f, 0.f, 0.f, 12.f));
 
     // 5 x 5 slot grid. ponytail: fixed 25 cells, no scrolling; pilot capacity is 8 slots, raise rows if that grows.
     UUniformGridPanel* Grid = WidgetTree->ConstructWidget<UUniformGridPanel>(UUniformGridPanel::StaticClass());
@@ -143,11 +147,14 @@ void USFInventoryPanel::NativeOnInitialized()
     }
     AddRow(Grid, FMargin(0.f, 0.f, 0.f, 6.f));
     EmptyText = Text(WidgetTree, TEXT("Your pack is empty."), 18, Hex(TEXT("A9A593")));
-    AddRow(EmptyText, FMargin(4.f, 0.f, 0.f, 6.f));
 
-    // Footer: weight readout (the gold readout joins it when the pilot exposes a wallet).
+    // Footer: weight readout left, empty-tab hint right (the gold readout joins when the pilot exposes a wallet).
+    UHorizontalBox* Footer = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     WeightText = Text(WidgetTree, TEXT(""), 18, Ivory());
-    AddRow(WeightText, FMargin(4.f, 6.f, 0.f, 0.f));
+    Footer->AddChildToHorizontalBox(WeightText);
+    UHorizontalBoxSlot* HintSlot = Footer->AddChildToHorizontalBox(EmptyText);
+    HintSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); HintSlot->SetHorizontalAlignment(HAlign_Right);
+    AddRow(Footer, FMargin(4.f, 4.f, 4.f, 0.f));
     Refresh();
 }
 

@@ -160,7 +160,9 @@ inline UBorder* KitPanel(UWidgetTree* Tree, const TCHAR* Name, float Alpha, cons
     {
         Border->SetBrush(KitBrush(*Element));
         Border->SetBrushColor(FLinearColor(1.f, 1.f, 1.f, Alpha));
-        Border->SetPadding(FMargin(Padding.Left + Element->InsetPixels, Padding.Top + Element->InsetPixels, Padding.Right + Element->InsetPixels, Padding.Bottom + Element->InsetPixels));
+        // Clear the art horizontally by InsetPixels; vertically by at most half the art's top margin, so short pieces (fields, tabs, buttons) keep room for text.
+        const float InsetY = FMath::Min(Element->InsetPixels, static_cast<float>(Element->Margin.Top * Element->Texture->GetSizeY()) * 0.5f);
+        Border->SetPadding(FMargin(Padding.Left + Element->InsetPixels, Padding.Top + InsetY, Padding.Right + Element->InsetPixels, Padding.Bottom + InsetY));
     }
     else
     {
