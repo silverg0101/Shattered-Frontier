@@ -2,6 +2,7 @@
 
 #include "Engine/DeveloperSettings.h"
 #include "Templates/Function.h"
+#include "Services/SFGameplayServicesClient.h"
 #include "SFInventoryLedgerClient.generated.h"
 
 // INT-03 development connection from the UE server to InventoryLedger.Host. The contract is
@@ -42,6 +43,9 @@ struct FSFLedgerRequest
     int64 Quantity = 0;
     FString Source;
     FString CausationId;
+    // INT-06: complete, immutable ApplyReceiptRequest bytes, captured before Grant.
+    TArray<uint8> FollowUpPayload;
+    FString FollowUpDigest;
 };
 
 struct FSFLedgerResponse
@@ -62,6 +66,9 @@ using FSFLedgerSend = TFunction<void(const FSFLedgerRequest&, float DeadlineSeco
 class SHATTEREDFRONTIER_API FSFInventoryLedgerClient : public TSharedFromThis<FSFInventoryLedgerClient>
 {
 public:
+    using FFollowUpSerializer = TFunction<bool(const FSFGameplayRequest&, TArray<uint8>&, FString&)>;
+    static void SetFollowUpSerializer(FFollowUpSerializer Serializer);
+    static bool SerializeFollowUp(const FSFGameplayRequest& Receipt, TArray<uint8>& Payload, FString& Digest);
     // The server-only backend module installs a factory that builds a send function for an endpoint.
     static void SetTransportFactory(TFunction<FSFLedgerSend(const FString& Endpoint)> Factory);
     // Test hook: replaces the transport for clients created afterwards. Pass nullptr to restore.

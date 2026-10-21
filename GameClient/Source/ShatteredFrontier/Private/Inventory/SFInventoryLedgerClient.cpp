@@ -5,6 +5,13 @@ namespace
 {
     TFunction<FSFLedgerSend(const FString&)>& TransportFactory() { static TFunction<FSFLedgerSend(const FString&)> Factory; return Factory; }
     FSFLedgerSend& SendOverride() { static FSFLedgerSend Send; return Send; }
+    FSFInventoryLedgerClient::FFollowUpSerializer& FollowUpSerializer() { static FSFInventoryLedgerClient::FFollowUpSerializer Serializer; return Serializer; }
+}
+
+void FSFInventoryLedgerClient::SetFollowUpSerializer(FFollowUpSerializer Serializer) { FollowUpSerializer() = MoveTemp(Serializer); }
+bool FSFInventoryLedgerClient::SerializeFollowUp(const FSFGameplayRequest& Receipt, TArray<uint8>& Payload, FString& Digest)
+{
+    return FollowUpSerializer() && FollowUpSerializer()(Receipt, Payload, Digest) && !Payload.IsEmpty() && !Digest.IsEmpty();
 }
 
 bool USFInventoryLedgerSettings::Validate(FString& Error) const

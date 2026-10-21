@@ -8,6 +8,7 @@
 #include "Sockets.h"
 #include "SocketSubsystem.h"
 #include "SFGrpcLedgerTransport.h"
+#include "SFGrantFollowUp.h"
 #include "SFGrpcGameplayTransport.h"
 
 namespace
@@ -56,6 +57,7 @@ class FShatteredFrontierBackendModule : public IModuleInterface
 public:
     virtual void StartupModule() override
     {
+        FSFInventoryLedgerClient::SetFollowUpSerializer(SFSerializeGatherFollowUp);
         FSFInventoryLedgerClient::SetTransportFactory([this](const FString& Endpoint) -> FSFLedgerSend
         {
             TSharedPtr<FSFGrpcLedgerTransport>& Transport = Transports.FindOrAdd(Endpoint);
@@ -89,6 +91,7 @@ public:
     virtual void ShutdownModule() override
     {
         FSFInventoryLedgerClient::SetTransportFactory(nullptr);
+        FSFInventoryLedgerClient::SetFollowUpSerializer(nullptr);
         FSFGameplayServicesClient::SetTransportFactory(nullptr);
         GameplayTransports.Empty();
         Transports.Empty();

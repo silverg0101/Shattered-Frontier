@@ -1,6 +1,6 @@
 # INT-06: Durable follow-up receipt outbox (backend-first design)
 
-Status: backend and additive producer contract implemented; Unreal integration and player-path acceptance remain pending.
+Status: backend producer contract and Unreal gather call site implemented; shared Unreal compile and player-path kill/restart acceptance remain pending. Old-host capability acknowledgement and restore-fenced relay remain integration gates.
 
 2026-10-21 backend follow-up: the package-free Gameplay.Host operator CLI now exposes pending/parked counts and `outbox-requeue <source-operation-id>`. Requeue accepts only an unleased parked row, retains its original bytes, digest, ID and order, and resets attempts for another delivery. The isolated durable fixture checks that earlier parked character work blocks later work until repair. This is a development operations path using a supplied ledger database credential; production operator identity/audit and the shared GM/web workflow are not implemented here. The three typed controls remain release declarations and shipped defaults; there is no config-service or admin-portal implementation in this checkout to draft, approve and publish them. The relay still lacks an externally surviving B-04 enrollment proof, so it must not be considered restore-fenced or production ready. A restored database cannot self-attest its incarnation; this remains a hard integration gate.
 
@@ -24,7 +24,7 @@ If the origin transaction rolls back, neither item nor intent exists. If the hos
 
 ## Integration gate
 
-The previous `GrantRequest` had only item, source and causation fields. Unreal currently constructs the skill payload, quest step, node and occurrence time **after** the grant reply. The backend cannot reconstruct those exact inputs from the committed ledger row. Owner approval now allows the additive producer contract: `GrantRequest.follow_up_intent` carries the immutable request before grant commit. The matching Unreal call-site change below is still required. The existing gather path does not yet satisfy this decision; a synthetic backend fixture cannot establish player-path acceptance.
+The previous `GrantRequest` had only item, source and causation fields. The Unreal gather path now captures the server quest step, skill payload, node, occurrence time and revisions before queuing the grant, serializes the immutable request once, and sends it in `GrantRequest.follow_up_intent`. It no longer issues a separate gather `ApplyReceipt` after the grant. The shared Unreal build and player-path kill/restart check still need to establish acceptance; a synthetic backend fixture cannot do so. A protobuf field alone cannot prove an older host persisted the intent, because older hosts can ignore unknown fields; a host capability acknowledgement is still required to satisfy the old-host fail-closed gate.
 
 ## Unreal step
 

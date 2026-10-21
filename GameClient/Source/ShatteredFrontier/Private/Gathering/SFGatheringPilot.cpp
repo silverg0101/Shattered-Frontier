@@ -21,6 +21,7 @@
 #include "Misc/Parse.h"
 #include "Net/UnrealNetwork.h"
 #include "Quest/SFQuestPilotEvents.h"
+#include "Quest/SFQuestPilot.h"
 #include "Gathering/SFStationRecipes.h"
 #include "Services/SFBackpackComponent.h"
 #include "Services/SFCharacterSession.h"
@@ -722,7 +723,7 @@ void USFGatheringPilotComponent::CompleteHarvest(bool bRefining)
     // Optional cosmetic felling cannot roll back or repeat the granted material.
     if (!bRefining)
     {
-        if (CapturedProgressionSettings&&!ActiveResourceProfile.ResourceId.IsNone())
+        if (!Backpack.IsValid() && CapturedProgressionSettings&&!ActiveResourceProfile.ResourceId.IsNone())
         {
             const int64 GainsBefore=Skills.GainCount;
             ProgressionSession.Practice(Skills,ActiveResourceProfile.Skill,FSFGatheringProgressionSession::Difficulty(ActiveResourceProfile.Tier),ActivePracticeDurationSeconds,
@@ -736,8 +737,11 @@ void USFGatheringPilotComponent::CompleteHarvest(bool bRefining)
     }
     ++Feedback.Node->State.Revision;
     const FSFStationRecipe* Recipe=bRefining ? ActiveStationRecipe(ActiveKind) : nullptr;
-    SFQuestPilotEvents::OnGathered().Broadcast(Cast<APlayerController>(GetOwner()),ActiveKind,
-        Recipe ? Recipe->Outputs[0].DefinitionId : FString(LedgerItemId(ActiveKind)),CommittedOperation);
+    if (bRefining || !Backpack.IsValid())
+    {
+        SFQuestPilotEvents::OnGathered().Broadcast(Cast<APlayerController>(GetOwner()),ActiveKind,
+            Recipe ? Recipe->Outputs[0].DefinitionId : FString(LedgerItemId(ActiveKind)),CommittedOperation);
+    }
     CommittedOperation.Reset();
     Finish(ESFGatheringPilotPhase::Committed,bRefining ? ESFGatheringPilotResult::Refined : ESFGatheringPilotResult::Granted);
 }
@@ -767,15 +771,27 @@ void USFGatheringPilotComponent::BeginLedgerCommit()
     const FString Operation=PendingLedgerOperation, Item=LedgerItemId(ActiveKind);
     const int64 Quantity=CapturedSettings->UnitsPerCharge;
     const FString Causation=FString::Printf(TEXT("%s:%u"),*Pack->GetContainerId(),Feedback.Operation);
+    FSFGameplayRequest FollowUp; FollowUp.Rpc=ESFGameplayRpc::ApplyReceipt;
+    FollowUp.OperationId=Operation; FollowUp.Kind=TEXT("gather"); FollowUp.CharacterId=Pack->GetCharacterId();
+    const FString NodeId=ActiveKind==ESFGatheringPilotKind::Oak ? TEXT("gathering_node/oak_tree") : TEXT("gathering_node/iron_vein");
+    USFQuestPilotComponent* Quest=Cast<APlayerController>(GetOwner())->FindComponentByClass<USFQuestPilotComponent>();
+    TArray<uint8> IntentBytes; FString IntentDigest;
+    if (!Quest || !Quest->CaptureGatherReceipt(FollowUp,Item,NodeId)
+        || !FSFInventoryLedgerClient::SerializeFollowUp(FollowUp,IntentBytes,IntentDigest))
+    {
+        UE_LOG(LogTemp,Error,TEXT("GATHERING_FOLLOW_UP_CAPTURE_FAILED Op=%s"),*Operation);
+        OnLedgerGrant(FSFLedgerResponse()); return;
+    }
     TWeakObjectPtr<USFGatheringPilotComponent> Weak(this);
-    FSFBackpackMutation Mutation; Mutation.Label=TEXT("gather"); Mutation.OperationId=Operation;
-    Mutation.Run=[Weak,Item,Quantity,Causation](const FString& Op,int64 Expected,TFunction<void(ESFBackpackOutcome,int64)> Report)
+    FSFBackpackMutation Mutation; Mutation.Label=TEXT("gather"); Mutation.OperationId=Operation; Mutation.bRetryStale=false;
+    Mutation.Run=[Weak,Item,Quantity,Causation,IntentBytes,IntentDigest](const FString& Op,int64 Expected,TFunction<void(ESFBackpackOutcome,int64)> Report)
     {
         USFGatheringPilotComponent* Self=Weak.Get(); USFBackpackComponent* Owner=Self ? Self->Backpack.Get() : nullptr;
         if (!Owner) { Report(ESFBackpackOutcome::Unavailable,-1); return; }
         FSFLedgerRequest Grant; Grant.Rpc=ESFLedgerRpc::Grant; Grant.OperationId=Op; Grant.ContainerId=Owner->GetContainerId();
         Grant.ExpectedRevision=Expected; Grant.DefinitionId=Item; Grant.Quantity=Quantity;
         Grant.Source=TEXT("gathering"); Grant.CausationId=Causation;
+        Grant.FollowUpPayload=IntentBytes; Grant.FollowUpDigest=IntentDigest;
         Owner->GetLedger()->Call(Grant,[Weak,Report](const FSFLedgerResponse& Response)
         {
             if (USFGatheringPilotComponent* Again=Weak.Get()) { Again->LastLedgerResponse=MakeShared<FSFLedgerResponse>(Response); }
@@ -836,7 +852,6 @@ void USFGatheringPilotComponent::OnLedgerGrant(const FSFLedgerResponse& Response
     CommittedOperation=Operation;
     if (!IsValid(Feedback.Node))
     {
-        SFQuestPilotEvents::OnGathered().Broadcast(Cast<APlayerController>(GetOwner()),ActiveKind,FString(LedgerItemId(ActiveKind)),CommittedOperation);
         Finish(ESFGatheringPilotPhase::Committed,ESFGatheringPilotResult::Granted); return;
     }
     CompleteHarvest(false);

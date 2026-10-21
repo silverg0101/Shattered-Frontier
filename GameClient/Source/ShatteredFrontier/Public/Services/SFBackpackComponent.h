@@ -15,6 +15,7 @@ struct FSFBackpackMutation
 {
     FString Label;
     FString OperationId;
+    bool bRetryStale = true; // INT-06 grants retain their source ID, payload and expected revision.
     TFunction<void(const FString& OperationId, int64 ExpectedRevision, TFunction<void(ESFBackpackOutcome, int64)> Report)> Run;
     TFunction<void(ESFBackpackOutcome)> Finished;
 };

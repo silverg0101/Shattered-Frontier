@@ -87,6 +87,8 @@ public:
     /** Server only. */
     void Init(TSharedPtr<const FSFQuestDefinition> InQuest);
     bool Observe(const FString& Kind, const FString& TargetId, const FString& NodeId, const FString& OperationId);
+    // Capture the active server quest step and revisions before an INT-06 gather grant.
+    bool CaptureGatherReceipt(struct FSFGameplayRequest& Receipt, const FString& TargetId, const FString& NodeId);
     const FSFQuestProgress& GetProgress() const { return Progress; }
     int32 PendingRewardCount() const { return PendingRewards.Num(); }
     const FSFQuestView& GetView() const { return View; }

@@ -102,7 +102,7 @@ void USFBackpackComponent::Execute(int32 Attempt)
     {
         USFBackpackComponent* Self = Weak.Get();
         if (!Self || Self->Queue.IsEmpty()) { return; }
-        if (Outcome == ESFBackpackOutcome::Stale && Attempt == 0)
+        if (Outcome == ESFBackpackOutcome::Stale && Attempt == 0 && Self->Queue[0].bRetryStale)
         {
             Self->Revision = -1;
             Self->Refresh([Weak](bool bOk)

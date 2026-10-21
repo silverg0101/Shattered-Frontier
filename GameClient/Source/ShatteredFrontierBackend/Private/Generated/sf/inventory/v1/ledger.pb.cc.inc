@@ -47,6 +47,8 @@ PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2finventory_2fv1_2fledger_2eproto, /* tracker*/ nullptr,},
         // ::sf::inventory::v1::GrantRequest
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2finventory_2fv1_2fledger_2eproto, /* tracker*/ nullptr,},
+        // ::sf::inventory::v1::FollowUpIntent
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2finventory_2fv1_2fledger_2eproto, /* tracker*/ nullptr,},
 };
 }  // namespace
 #endif
@@ -378,207 +380,6 @@ const ::_pbi::ClassData* QuantityChange_get_class_data() {
 }
 }  // namespace
 #endif  // PROTOBUF_CUSTOM_VTABLE
-class GrantRequest::_Internal {
- public:
-  using HasBits = decltype(::std::declval<GrantRequest>()._impl_._has_bits_);
-  static constexpr ::int32_t kHasBitsOffset =
-      8 * PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_._has_bits_);
-};
-
-constexpr GrantRequest::ParseTableT_ GrantRequest::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
-  return ParseTableT_{
-    {
-      PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_._has_bits_),
-      0, // no _extensions_
-      7, 56,  // max_field_number, fast_idx_mask
-      offsetof(ParseTableT_, field_lookup_table),
-      4294967168,  // skipmap
-      offsetof(ParseTableT_, field_entries),
-      7,  // num_field_entries
-      0,  // num_aux_entries
-      offsetof(ParseTableT_, field_names),  // no aux_entries
-      class_data,
-      nullptr,  // post_loop_handler
-      ::_pbi::TcParser::GenericFallback,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::sf::inventory::v1::GrantRequest>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
-    }, {{
-      {::_pbi::TcParser::MiniParse, {}},
-      // string operation_id = 1;
-      {::_pbi::TcParser::FastUS1,
-       {10, 0, 0,
-        PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.operation_id_)}},
-      // string container_id = 2;
-      {::_pbi::TcParser::FastUS1,
-       {18, 1, 0,
-        PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.container_id_)}},
-      // int64 expected_revision = 3;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(GrantRequest, _impl_.expected_revision_), 5>(),
-       {24, 5, 0,
-        PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.expected_revision_)}},
-      // string definition_id = 4;
-      {::_pbi::TcParser::FastUS1,
-       {34, 2, 0,
-        PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.definition_id_)}},
-      // int64 quantity = 5;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(GrantRequest, _impl_.quantity_), 6>(),
-       {40, 6, 0,
-        PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.quantity_)}},
-      // string source = 6;
-      {::_pbi::TcParser::FastUS1,
-       {50, 3, 0,
-        PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.source_)}},
-      // string causation_id = 7;
-      {::_pbi::TcParser::FastUS1,
-       {58, 4, 0,
-        PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.causation_id_)}},
-    }}, {{
-      65535, 65535
-    }}, {{
-      // string operation_id = 1;
-      {PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.operation_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-      // string container_id = 2;
-      {PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.container_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-      // int64 expected_revision = 3;
-      {PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.expected_revision_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
-      // string definition_id = 4;
-      {PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.definition_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-      // int64 quantity = 5;
-      {PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.quantity_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
-      // string source = 6;
-      {PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.source_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-      // string causation_id = 7;
-      {PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.causation_id_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    }},
-    // no aux_entries
-    {{
-      "\34\14\14\0\15\0\6\14"
-      "sf.inventory.v1.GrantRequest"
-      "operation_id"
-      "container_id"
-      "definition_id"
-      "source"
-      "causation_id"
-    }},
-  };
-}
-
-
-inline constexpr GrantRequest::Impl_::Impl_(
-    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
-    ::_pbi::ConstantInitialized) noexcept
-      : _cached_size_{0},
-        operation_id_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
-        container_id_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
-        definition_id_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
-        source_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
-        causation_id_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
-        expected_revision_{::int64_t{0}},
-        quantity_{::int64_t{0}} {}
-
-template <typename>
-constexpr GrantRequest::GrantRequest(::_pbi::ConstantInitialized,
-                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
-    : ::google::protobuf::Message(
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-          class_data
-#endif  // PROTOBUF_CUSTOM_VTABLE
-          ),
-      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
-}
-inline void* PROTOBUF_NONNULL GrantRequest::PlacementNew_(
-    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
-    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
-  return ::new (mem) GrantRequest(arena);
-}
-constexpr auto GrantRequest::InternalNewImpl_() {
-  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(GrantRequest), alignof(GrantRequest));
-}
-constexpr auto GrantRequest::InternalGenerateClassData_(
-    const MessageLite& prototype,
-    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
-  return ::google::protobuf::internal::ClassDataFull{
-      ::google::protobuf::internal::ClassData{
-          &prototype,
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-          &_table_.header,
-#else
-          tc_table,
-#endif
-          nullptr,  // IsInitialized
-          &GrantRequest::MergeImpl,
-          ::google::protobuf::Message::GetNewImpl<GrantRequest>(),
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-          &GrantRequest::SharedDtor,
-          ::google::protobuf::Message::GetClearImpl<GrantRequest>(), &GrantRequest::ByteSizeLong,
-              &GrantRequest::_InternalSerialize,
-#endif  // PROTOBUF_CUSTOM_VTABLE
-          PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_._cached_size_),
-          false,
-      },
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[8],
-#else   // !PROTOBUF_MESSAGE_GLOBALS
-      &::_pbi::kDescriptorMethods,
-      &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
-      nullptr,  // tracker
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-  };
-}
-struct GrantRequestGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
-  constexpr GrantRequestGlobalsTypeInternal()
-      :
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-        _default(::_pbi::ConstantInitialized{},
-                 GrantRequest_class_data_.base())
-#else   // !PROTOBUF_MESSAGE_GLOBALS
-        MessageGlobalsBase(GrantRequest::InternalGenerateClassData_(
-            _default, &GrantRequest_globals_._table.header)),
-        _default(::_pbi::ConstantInitialized{}, GetClassData()),
-        _table(::_pbi::PrivateAccess::GenerateParseTable<GrantRequest>(
-            GetClassData()))
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-  {
-  }
-  ~GrantRequestGlobalsTypeInternal() {}
-  union {
-    alignas(::_pbi::kMaxMessageAlignment) GrantRequest _default;
-  };
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-  decltype(::_pbi::PrivateAccess::GenerateParseTable<GrantRequest>(
-      ::std::declval<const ::_pbi::ClassData*>())) _table;
-#endif
-};
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-static_assert(PROTOBUF_FIELD_OFFSET(GrantRequestGlobalsTypeInternal, _default) ==
-              ::_pbi::MessageGlobalsBase::OffsetToDefault());
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
-    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST GrantRequestGlobalsTypeInternal GrantRequest_globals_
-        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-namespace {
-const ::_pbi::ClassData* GrantRequest_get_class_data() {
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-  return GrantRequest_globals_.GetClassData();
-#else
-  return GrantRequest_class_data_.base();
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-}
-}  // namespace
-#endif  // PROTOBUF_CUSTOM_VTABLE
 class GetContainerRequest::_Internal {
  public:
   using HasBits = decltype(::std::declval<GetContainerRequest>()._impl_._has_bits_);
@@ -721,6 +522,169 @@ const ::_pbi::ClassData* GetContainerRequest_get_class_data() {
   return GetContainerRequest_globals_.GetClassData();
 #else
   return GetContainerRequest_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
+class FollowUpIntent::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<FollowUpIntent>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(FollowUpIntent, _impl_._has_bits_);
+};
+
+constexpr FollowUpIntent::ParseTableT_ FollowUpIntent::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(FollowUpIntent, _impl_._has_bits_),
+      0, // no _extensions_
+      3, 24,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967288,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      3,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::inventory::v1::FollowUpIntent>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      {::_pbi::TcParser::MiniParse, {}},
+      // uint32 payload_version = 1;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(FollowUpIntent, _impl_.payload_version_), 2>(),
+       {8, 2, 0,
+        PROTOBUF_FIELD_OFFSET(FollowUpIntent, _impl_.payload_version_)}},
+      // bytes payload = 2;
+      {::_pbi::TcParser::FastBS1,
+       {18, 0, 0,
+        PROTOBUF_FIELD_OFFSET(FollowUpIntent, _impl_.payload_)}},
+      // string payload_digest = 3;
+      {::_pbi::TcParser::FastUS1,
+       {26, 1, 0,
+        PROTOBUF_FIELD_OFFSET(FollowUpIntent, _impl_.payload_digest_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // uint32 payload_version = 1;
+      {PROTOBUF_FIELD_OFFSET(FollowUpIntent, _impl_.payload_version_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+      // bytes payload = 2;
+      {PROTOBUF_FIELD_OFFSET(FollowUpIntent, _impl_.payload_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kBytes | ::_fl::kRepAString)},
+      // string payload_digest = 3;
+      {PROTOBUF_FIELD_OFFSET(FollowUpIntent, _impl_.payload_digest_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    }},
+    // no aux_entries
+    {{
+      "\36\0\0\16\0\0\0\0"
+      "sf.inventory.v1.FollowUpIntent"
+      "payload_digest"
+    }},
+  };
+}
+
+
+inline constexpr FollowUpIntent::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        payload_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        payload_digest_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        payload_version_{0u} {}
+
+template <typename>
+constexpr FollowUpIntent::FollowUpIntent(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL FollowUpIntent::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) FollowUpIntent(arena);
+}
+constexpr auto FollowUpIntent::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(FollowUpIntent), alignof(FollowUpIntent));
+}
+constexpr auto FollowUpIntent::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &FollowUpIntent::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<FollowUpIntent>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &FollowUpIntent::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<FollowUpIntent>(), &FollowUpIntent::ByteSizeLong,
+              &FollowUpIntent::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(FollowUpIntent, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[9],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct FollowUpIntentGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr FollowUpIntentGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 FollowUpIntent_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(FollowUpIntent::InternalGenerateClassData_(
+            _default, &FollowUpIntent_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<FollowUpIntent>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~FollowUpIntentGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) FollowUpIntent _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<FollowUpIntent>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(FollowUpIntentGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST FollowUpIntentGlobalsTypeInternal FollowUpIntent_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* FollowUpIntent_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return FollowUpIntent_globals_.GetClassData();
+#else
+  return FollowUpIntent_class_data_.base();
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 }
 }  // namespace
@@ -1227,6 +1191,219 @@ const ::_pbi::ClassData* LedgerReceipt_get_class_data() {
 }
 }  // namespace
 #endif  // PROTOBUF_CUSTOM_VTABLE
+class GrantRequest::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<GrantRequest>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_._has_bits_);
+};
+
+constexpr GrantRequest::ParseTableT_ GrantRequest::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_._has_bits_),
+      0, // no _extensions_
+      8, 56,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967040,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      8,  // num_field_entries
+      1,  // num_aux_entries
+      offsetof(ParseTableT_, aux_entries),
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::inventory::v1::GrantRequest>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      // .sf.inventory.v1.FollowUpIntent follow_up_intent = 8;
+      {::_pbi::TcParser::FastMtS1,
+       {66, 5, 0,
+        PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.follow_up_intent_)}},
+      // string operation_id = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.operation_id_)}},
+      // string container_id = 2;
+      {::_pbi::TcParser::FastUS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.container_id_)}},
+      // int64 expected_revision = 3;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(GrantRequest, _impl_.expected_revision_), 6>(),
+       {24, 6, 0,
+        PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.expected_revision_)}},
+      // string definition_id = 4;
+      {::_pbi::TcParser::FastUS1,
+       {34, 2, 0,
+        PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.definition_id_)}},
+      // int64 quantity = 5;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(GrantRequest, _impl_.quantity_), 7>(),
+       {40, 7, 0,
+        PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.quantity_)}},
+      // string source = 6;
+      {::_pbi::TcParser::FastUS1,
+       {50, 3, 0,
+        PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.source_)}},
+      // string causation_id = 7;
+      {::_pbi::TcParser::FastUS1,
+       {58, 4, 0,
+        PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.causation_id_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string operation_id = 1;
+      {PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.operation_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string container_id = 2;
+      {PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.container_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // int64 expected_revision = 3;
+      {PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.expected_revision_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      // string definition_id = 4;
+      {PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.definition_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // int64 quantity = 5;
+      {PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.quantity_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      // string source = 6;
+      {PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.source_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string causation_id = 7;
+      {PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.causation_id_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // .sf.inventory.v1.FollowUpIntent follow_up_intent = 8;
+      {PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.follow_up_intent_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+    }},
+    {{
+        #ifndef PROTOBUF_MESSAGE_GLOBALS
+        {::_pbi::TcParser::GetTable<::sf::inventory::v1::FollowUpIntent>()},
+        #else
+        {::_pbi::FieldAuxMessageGlobals(), &::sf::inventory::v1::FollowUpIntent_globals_},
+        #endif
+    }},
+    {{
+      "\34\14\14\0\15\0\6\14\0\0\0\0\0\0\0\0"
+      "sf.inventory.v1.GrantRequest"
+      "operation_id"
+      "container_id"
+      "definition_id"
+      "source"
+      "causation_id"
+    }},
+  };
+}
+
+
+inline constexpr GrantRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        operation_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        container_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        definition_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        source_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        causation_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        follow_up_intent_{nullptr},
+        expected_revision_{::int64_t{0}},
+        quantity_{::int64_t{0}} {}
+
+template <typename>
+constexpr GrantRequest::GrantRequest(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL GrantRequest::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) GrantRequest(arena);
+}
+constexpr auto GrantRequest::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(GrantRequest), alignof(GrantRequest));
+}
+constexpr auto GrantRequest::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &GrantRequest::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<GrantRequest>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &GrantRequest::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<GrantRequest>(), &GrantRequest::ByteSizeLong,
+              &GrantRequest::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[8],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct GrantRequestGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr GrantRequestGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 GrantRequest_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(GrantRequest::InternalGenerateClassData_(
+            _default, &GrantRequest_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<GrantRequest>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~GrantRequestGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) GrantRequest _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<GrantRequest>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(GrantRequestGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST GrantRequestGlobalsTypeInternal GrantRequest_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* GrantRequest_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return GrantRequest_globals_.GetClassData();
+#else
+  return GrantRequest_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
 class EnsureContainerRequest::_Internal {
  public:
   using HasBits = decltype(::std::declval<EnsureContainerRequest>()._impl_._has_bits_);
@@ -1620,7 +1797,7 @@ const ::uint32_t
         0,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::GrantRequest, _impl_._has_bits_),
-        10, // hasbit index offset
+        11, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::GrantRequest, _impl_.operation_id_),
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::GrantRequest, _impl_.container_id_),
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::GrantRequest, _impl_.expected_revision_),
@@ -1628,13 +1805,24 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::GrantRequest, _impl_.quantity_),
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::GrantRequest, _impl_.source_),
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::GrantRequest, _impl_.causation_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::GrantRequest, _impl_.follow_up_intent_),
         0,
         1,
-        5,
-        2,
         6,
+        2,
+        7,
         3,
         4,
+        5,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::FollowUpIntent, _impl_._has_bits_),
+        6, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::FollowUpIntent, _impl_.payload_version_),
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::FollowUpIntent, _impl_.payload_),
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::FollowUpIntent, _impl_.payload_digest_),
+        2,
+        0,
+        1,
 };
 
 static const ::_pbi::MigrationSchema
@@ -1648,6 +1836,7 @@ static const ::_pbi::MigrationSchema
         {58, sizeof(::sf::inventory::v1::EnsureContainerRequest)},
         {63, sizeof(::sf::inventory::v1::GetContainerRequest)},
         {68, sizeof(::sf::inventory::v1::GrantRequest)},
+        {87, sizeof(::sf::inventory::v1::FollowUpIntent)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
@@ -1660,6 +1849,7 @@ static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
         &::sf::inventory::v1::EnsureContainerRequest_globals_,
         &::sf::inventory::v1::GetContainerRequest_globals_,
         &::sf::inventory::v1::GrantRequest_globals_,
+        &::sf::inventory::v1::FollowUpIntent_globals_,
 };
 const char descriptor_table_protodef_sf_2finventory_2fv1_2fledger_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
@@ -1684,49 +1874,52 @@ const char descriptor_table_protodef_sf_2finventory_2fv1_2fledger_2eproto[] ABSL
     "nventory.v1.QuantityChange\"F\n\026EnsureCont"
     "ainerRequest\022,\n\004spec\030\001 \001(\0132\036.sf.inventor"
     "y.v1.ContainerSpec\"+\n\023GetContainerReques"
-    "t\022\024\n\014container_id\030\001 \001(\t\"\244\001\n\014GrantRequest"
+    "t\022\024\n\014container_id\030\001 \001(\t\"\337\001\n\014GrantRequest"
     "\022\024\n\014operation_id\030\001 \001(\t\022\024\n\014container_id\030\002"
     " \001(\t\022\031\n\021expected_revision\030\003 \001(\003\022\025\n\rdefin"
     "ition_id\030\004 \001(\t\022\020\n\010quantity\030\005 \001(\003\022\016\n\006sour"
-    "ce\030\006 \001(\t\022\024\n\014causation_id\030\007 \001(\t*\206\001\n\tOwner"
-    "Kind\022\032\n\026OWNER_KIND_UNSPECIFIED\020\000\022\030\n\024OWNE"
-    "R_KIND_CHARACTER\020\001\022\026\n\022OWNER_KIND_ACCOUNT"
-    "\020\002\022\024\n\020OWNER_KIND_GUILD\020\003\022\025\n\021OWNER_KIND_S"
-    "YSTEM\020\004*\377\002\n\rContainerKind\022\036\n\032CONTAINER_K"
-    "IND_UNSPECIFIED\020\000\022\034\n\030CONTAINER_KIND_EQUI"
-    "PMENT\020\001\022\033\n\027CONTAINER_KIND_BACKPACK\020\002\022\026\n\022"
-    "CONTAINER_KIND_BAG\020\003\022\027\n\023CONTAINER_KIND_B"
-    "ANK\020\004\022\037\n\033CONTAINER_KIND_ACCOUNT_BANK\020\005\022\035"
-    "\n\031CONTAINER_KIND_GUILD_BANK\020\006\022\032\n\026CONTAIN"
-    "ER_KIND_MAILBOX\020\007\022\031\n\025CONTAINER_KIND_ESCR"
-    "OW\020\010\022\032\n\026CONTAINER_KIND_BUYBACK\020\t\022%\n!CONT"
-    "AINER_KIND_CONSTRUCTION_CACHE\020\n\022(\n$CONTA"
-    "INER_KIND_CONSTRUCTION_RECOVERY\020\013*\264\001\n\014Le"
-    "dgerAction\022\035\n\031LEDGER_ACTION_UNSPECIFIED\020"
-    "\000\022\027\n\023LEDGER_ACTION_GRANT\020\001\022\031\n\025LEDGER_ACT"
-    "ION_CONSUME\020\002\022\032\n\026LEDGER_ACTION_TRANSFER\020"
-    "\003\022\031\n\025LEDGER_ACTION_CONVERT\020\004\022\032\n\026LEDGER_A"
-    "CTION_EXCHANGE\020\0052\213\002\n\017InventoryLedger\022Z\n\017"
-    "EnsureContainer\022\'.sf.inventory.v1.Ensure"
-    "ContainerRequest\032\036.sf.inventory.v1.Conta"
-    "inerView\022T\n\014GetContainer\022$.sf.inventory."
-    "v1.GetContainerRequest\032\036.sf.inventory.v1"
-    ".ContainerView\022F\n\005Grant\022\035.sf.inventory.v"
-    "1.GrantRequest\032\036.sf.inventory.v1.LedgerR"
-    "eceiptB\'\252\002$ShatteredFrontier.InventoryLe"
-    "dger.V1b\006proto3"
+    "ce\030\006 \001(\t\022\024\n\014causation_id\030\007 \001(\t\0229\n\020follow"
+    "_up_intent\030\010 \001(\0132\037.sf.inventory.v1.Follo"
+    "wUpIntent\"R\n\016FollowUpIntent\022\027\n\017payload_v"
+    "ersion\030\001 \001(\r\022\017\n\007payload\030\002 \001(\014\022\026\n\016payload"
+    "_digest\030\003 \001(\t*\206\001\n\tOwnerKind\022\032\n\026OWNER_KIN"
+    "D_UNSPECIFIED\020\000\022\030\n\024OWNER_KIND_CHARACTER\020"
+    "\001\022\026\n\022OWNER_KIND_ACCOUNT\020\002\022\024\n\020OWNER_KIND_"
+    "GUILD\020\003\022\025\n\021OWNER_KIND_SYSTEM\020\004*\377\002\n\rConta"
+    "inerKind\022\036\n\032CONTAINER_KIND_UNSPECIFIED\020\000"
+    "\022\034\n\030CONTAINER_KIND_EQUIPMENT\020\001\022\033\n\027CONTAI"
+    "NER_KIND_BACKPACK\020\002\022\026\n\022CONTAINER_KIND_BA"
+    "G\020\003\022\027\n\023CONTAINER_KIND_BANK\020\004\022\037\n\033CONTAINE"
+    "R_KIND_ACCOUNT_BANK\020\005\022\035\n\031CONTAINER_KIND_"
+    "GUILD_BANK\020\006\022\032\n\026CONTAINER_KIND_MAILBOX\020\007"
+    "\022\031\n\025CONTAINER_KIND_ESCROW\020\010\022\032\n\026CONTAINER"
+    "_KIND_BUYBACK\020\t\022%\n!CONTAINER_KIND_CONSTR"
+    "UCTION_CACHE\020\n\022(\n$CONTAINER_KIND_CONSTRU"
+    "CTION_RECOVERY\020\013*\264\001\n\014LedgerAction\022\035\n\031LED"
+    "GER_ACTION_UNSPECIFIED\020\000\022\027\n\023LEDGER_ACTIO"
+    "N_GRANT\020\001\022\031\n\025LEDGER_ACTION_CONSUME\020\002\022\032\n\026"
+    "LEDGER_ACTION_TRANSFER\020\003\022\031\n\025LEDGER_ACTIO"
+    "N_CONVERT\020\004\022\032\n\026LEDGER_ACTION_EXCHANGE\020\0052"
+    "\213\002\n\017InventoryLedger\022Z\n\017EnsureContainer\022\'"
+    ".sf.inventory.v1.EnsureContainerRequest\032"
+    "\036.sf.inventory.v1.ContainerView\022T\n\014GetCo"
+    "ntainer\022$.sf.inventory.v1.GetContainerRe"
+    "quest\032\036.sf.inventory.v1.ContainerView\022F\n"
+    "\005Grant\022\035.sf.inventory.v1.GrantRequest\032\036."
+    "sf.inventory.v1.LedgerReceiptB\'\252\002$Shatte"
+    "redFrontier.InventoryLedger.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2finventory_2fv1_2fledger_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2finventory_2fv1_2fledger_2eproto = {
     false,
     false,
-    2055,
+    2198,
     descriptor_table_protodef_sf_2finventory_2fv1_2fledger_2eproto,
     "sf/inventory/v1/ledger.proto",
     &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto_once,
     nullptr,
     0,
-    9,
+    10,
     schemas,
     file_message_globals,
     TableStruct_sf_2finventory_2fv1_2fledger_2eproto::offsets,
@@ -3790,6 +3983,10 @@ GrantRequest::GrantRequest(
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::uint32_t cached_has_bits = _impl_._has_bits_[0];
+  _impl_.follow_up_intent_ = (CheckHasBit(cached_has_bits, 0x00000020U))
+                ? ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.follow_up_intent_)
+                : nullptr;
   ::memcpy(reinterpret_cast<char*>(&_impl_) +
                offsetof(Impl_, expected_revision_),
            reinterpret_cast<const char*>(&from._impl_) +
@@ -3813,10 +4010,10 @@ PROTOBUF_NDEBUG_INLINE GrantRequest::Impl_::Impl_(
 inline void GrantRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   ::memset(reinterpret_cast<char*>(&_impl_) +
-               offsetof(Impl_, expected_revision_),
+               offsetof(Impl_, follow_up_intent_),
            0,
            offsetof(Impl_, quantity_) -
-               offsetof(Impl_, expected_revision_) +
+               offsetof(Impl_, follow_up_intent_) +
                sizeof(Impl_::quantity_));
 }
 GrantRequest::~GrantRequest() {
@@ -3835,6 +4032,7 @@ inline void GrantRequest::SharedDtor(MessageLite& self) {
   this_._impl_.definition_id_.Destroy();
   this_._impl_.source_.Destroy();
   this_._impl_.causation_id_.Destroy();
+  delete this_._impl_.follow_up_intent_;
   this_._impl_.~Impl_();
 }
 
@@ -3872,7 +4070,7 @@ PROTOBUF_NOINLINE void GrantRequest::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _impl_.operation_id_.ClearNonDefaultToEmpty();
     }
@@ -3888,8 +4086,12 @@ PROTOBUF_NOINLINE void GrantRequest::Clear() {
     if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       _impl_.causation_id_.ClearNonDefaultToEmpty();
     }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      ABSL_DCHECK(_impl_.follow_up_intent_ != nullptr);
+      _impl_.follow_up_intent_->Clear();
+    }
   }
-  if (BatchCheckHasBit(cached_has_bits, 0x00000060U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x000000c0U)) {
     ::memset(&_impl_.expected_revision_, 0, static_cast<::size_t>(
         reinterpret_cast<char*>(&_impl_.quantity_) -
         reinterpret_cast<char*>(&_impl_.expected_revision_)) + sizeof(_impl_.quantity_));
@@ -3938,7 +4140,7 @@ PROTOBUF_NOINLINE void GrantRequest::Clear() {
   }
 
   // int64 expected_revision = 3;
-  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
     if (this_._internal_expected_revision() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<3>(
@@ -3957,7 +4159,7 @@ PROTOBUF_NOINLINE void GrantRequest::Clear() {
   }
 
   // int64 quantity = 5;
-  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
     if (this_._internal_quantity() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<5>(
@@ -3985,6 +4187,13 @@ PROTOBUF_NOINLINE void GrantRequest::Clear() {
     }
   }
 
+  // .sf.inventory.v1.FollowUpIntent follow_up_intent = 8;
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+        8, *this_._impl_.follow_up_intent_, this_._impl_.follow_up_intent_->GetCachedSize(), target,
+        stream);
+  }
+
   if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
     target =
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -4010,7 +4219,7 @@ PROTOBUF_NOINLINE void GrantRequest::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x000000ffU)) {
     // string operation_id = 1;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       if (!this_._internal_operation_id().empty()) {
@@ -4046,15 +4255,20 @@ PROTOBUF_NOINLINE void GrantRequest::Clear() {
                                         this_._internal_causation_id());
       }
     }
-    // int64 expected_revision = 3;
+    // .sf.inventory.v1.FollowUpIntent follow_up_intent = 8;
     if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      total_size += 1 +
+                    ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.follow_up_intent_);
+    }
+    // int64 expected_revision = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (this_._internal_expected_revision() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_expected_revision());
       }
     }
     // int64 quantity = 5;
-    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
       if (this_._internal_quantity() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_quantity());
@@ -4072,13 +4286,14 @@ void GrantRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
   if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
     from.CheckHasBitConsistency();
   }
+  ::google::protobuf::Arena* arena = _this->GetArena();
   // @@protoc_insertion_point(class_specific_merge_from_start:sf.inventory.v1.GrantRequest)
   ABSL_DCHECK_NE(&from, _this);
   ::uint32_t cached_has_bits = 0;
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x000000ffU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       if (!from._internal_operation_id().empty()) {
         _this->_internal_set_operation_id(from._internal_operation_id());
@@ -4125,11 +4340,19 @@ void GrantRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
       }
     }
     if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      ABSL_DCHECK(from._impl_.follow_up_intent_ != nullptr);
+      if (_this->_impl_.follow_up_intent_ == nullptr) {
+        _this->_impl_.follow_up_intent_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.follow_up_intent_);
+      } else {
+        _this->_impl_.follow_up_intent_->MergeFrom(*from._impl_.follow_up_intent_);
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (from._internal_expected_revision() != 0) {
         _this->_impl_.expected_revision_ = from._impl_.expected_revision_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
       if (from._internal_quantity() != 0) {
         _this->_impl_.quantity_ = from._impl_.quantity_;
       }
@@ -4162,12 +4385,287 @@ void GrantRequest::InternalSwap(GrantRequest* PROTOBUF_RESTRICT PROTOBUF_NONNULL
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.quantity_)
       + sizeof(GrantRequest::_impl_.quantity_)
-      - PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.expected_revision_)>(
-          reinterpret_cast<char*>(&_impl_.expected_revision_),
-          reinterpret_cast<char*>(&other->_impl_.expected_revision_));
+      - PROTOBUF_FIELD_OFFSET(GrantRequest, _impl_.follow_up_intent_)>(
+          reinterpret_cast<char*>(&_impl_.follow_up_intent_),
+          reinterpret_cast<char*>(&other->_impl_.follow_up_intent_));
 }
 
 ::google::protobuf::Metadata GrantRequest::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+FollowUpIntent::FollowUpIntent(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, FollowUpIntent_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.inventory.v1.FollowUpIntent)
+}
+PROTOBUF_NDEBUG_INLINE FollowUpIntent::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::inventory::v1::FollowUpIntent& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        payload_(arena, from.payload_),
+        payload_digest_(arena, from.payload_digest_) {}
+
+FollowUpIntent::FollowUpIntent(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const FollowUpIntent& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, FollowUpIntent_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  FollowUpIntent* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  _impl_.payload_version_ = from._impl_.payload_version_;
+
+  // @@protoc_insertion_point(copy_constructor:sf.inventory.v1.FollowUpIntent)
+}
+PROTOBUF_NDEBUG_INLINE FollowUpIntent::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        payload_(arena),
+        payload_digest_(arena) {}
+
+inline void FollowUpIntent::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.payload_version_ = {};
+}
+FollowUpIntent::~FollowUpIntent() {
+  // @@protoc_insertion_point(destructor:sf.inventory.v1.FollowUpIntent)
+  SharedDtor(*this);
+}
+inline void FollowUpIntent::SharedDtor(MessageLite& self) {
+  FollowUpIntent& this_ = static_cast<FollowUpIntent&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.payload_.Destroy();
+  this_._impl_.payload_digest_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull FollowUpIntent_class_data_ =
+        FollowUpIntent::InternalGenerateClassData_(FollowUpIntent_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+FollowUpIntent::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&FollowUpIntent_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(FollowUpIntent_class_data_.tc_table);
+  return FollowUpIntent_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+FollowUpIntent::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&FollowUpIntent_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&FollowUpIntent_globals_));
+  return FollowUpIntent_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const FollowUpIntent::ParseTableT_
+    FollowUpIntent::_table_ =
+        FollowUpIntent::InternalGenerateParseTable_(FollowUpIntent_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void FollowUpIntent::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.inventory.v1.FollowUpIntent)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.payload_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.payload_digest_.ClearNonDefaultToEmpty();
+    }
+  }
+  _impl_.payload_version_ = 0u;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL FollowUpIntent::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const FollowUpIntent& this_ = static_cast<const FollowUpIntent&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL FollowUpIntent::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const FollowUpIntent& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.inventory.v1.FollowUpIntent)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // uint32 payload_version = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (this_._internal_payload_version() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+          1, this_._internal_payload_version(), target);
+    }
+  }
+
+  // bytes payload = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_payload().empty()) {
+      const ::std::string& _s = this_._internal_payload();
+      target = stream->WriteBytesMaybeAliased(2, _s, target);
+    }
+  }
+
+  // string payload_digest = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (!this_._internal_payload_digest().empty()) {
+      const ::std::string& _s = this_._internal_payload_digest();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.inventory.v1.FollowUpIntent.payload_digest");
+      target = stream->WriteStringMaybeAliased(3, _s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.inventory.v1.FollowUpIntent)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t FollowUpIntent::ByteSizeLong(const MessageLite& base) {
+  const FollowUpIntent& this_ = static_cast<const FollowUpIntent&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t FollowUpIntent::ByteSizeLong() const {
+  const FollowUpIntent& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.inventory.v1.FollowUpIntent)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    // bytes payload = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_payload().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::BytesSize(
+                                        this_._internal_payload());
+      }
+    }
+    // string payload_digest = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!this_._internal_payload_digest().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_payload_digest());
+      }
+    }
+    // uint32 payload_version = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (this_._internal_payload_version() != 0) {
+        total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+            this_._internal_payload_version());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void FollowUpIntent::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<FollowUpIntent*>(&to_msg);
+  auto& from = static_cast<const FollowUpIntent&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.inventory.v1.FollowUpIntent)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_payload().empty()) {
+        _this->_internal_set_payload(from._internal_payload());
+      } else {
+        if (_this->_impl_.payload_.IsDefault()) {
+          _this->_internal_set_payload("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!from._internal_payload_digest().empty()) {
+        _this->_internal_set_payload_digest(from._internal_payload_digest());
+      } else {
+        if (_this->_impl_.payload_digest_.IsDefault()) {
+          _this->_internal_set_payload_digest("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (from._internal_payload_version() != 0) {
+        _this->_impl_.payload_version_ = from._impl_.payload_version_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void FollowUpIntent::CopyFrom(const FollowUpIntent& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.inventory.v1.FollowUpIntent)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void FollowUpIntent::InternalSwap(FollowUpIntent* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.payload_, &other->_impl_.payload_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.payload_digest_, &other->_impl_.payload_digest_, arena);
+  swap(_impl_.payload_version_, other->_impl_.payload_version_);
+}
+
+::google::protobuf::Metadata FollowUpIntent::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // @@protoc_insertion_point(namespace_scope)
