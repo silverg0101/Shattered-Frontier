@@ -72,7 +72,7 @@ internal sealed class Scenarios(Config config)
         catch (Exception ex)
         {
             failed++; passed = false;
-            reason = ex is RuleException ? ex.Message : ex.GetType().Name;
+            reason = ex is RuleException ? ex.Message : ex.GetType().Name + " at " + ex.StackTrace?.Split('\n').FirstOrDefault()?.Trim();
         }
         finally
         {
@@ -103,7 +103,7 @@ internal sealed class Scenarios(Config config)
         }
         return snapshot;
     }
-    private async Task Create(string id = "a", long generation = 1) => await Call("geometry", new Request { Operation = "CREATE", Id = id, Generation = generation });
+    private async Task Create(string id = "a", long generation = 1) => await Call("geometry", new Request { Operation = "CREATE", Id = id, Generation = generation, DeadlineSeconds = config.UndecidedDeadlineSeconds });
     private async Task<Lookup> Lookup(string owner, string phase, string id = "a") => await Db("geometry").Lookup(id, owner, phase);
     private async Task<Reply> Phase(string owner, string phase, string id = "a", string expected = "OK", Lookup? lookup = null, string key = "") =>
         await Call(owner, new Request { Operation = phase, Id = id, Lookup = lookup ?? await Lookup(owner, phase, id), Key = key }, expected);
@@ -152,6 +152,7 @@ internal sealed class Scenarios(Config config)
     {
         Directory.CreateDirectory(config.ControlRoot);
         Check(Guid.TryParse(config.FixtureId, out _) && config.SystemIdentifier.All(char.IsAsciiDigit) && config.SystemIdentifier.Length > 0, "CONFIG_IDENTITY");
+        Check(config.UndecidedDeadlineSeconds is >= 5 and <= 30, "DEADLINE_SETTING_BOUNDS");
         var schema = await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Schema.sql"));
         Check(Store.Hash(schema) == config.DdlSha256.ToLowerInvariant(), "DDL_HASH");
         foreach (var o in Owners) await Call(o, new Request { Operation = "SEED" });
@@ -209,11 +210,15 @@ internal sealed class Scenarios(Config config)
         });
         await Case("F05_takeover_coordinator_CAS_completion_and_outbox", async () =>
         {
-            await Prepared(); var prepared = await Evidence(); await Takeover();
+            var clock = Stopwatch.StartNew();
+            await Prepared(); witnesses.Add(new { operation = "F05_PREPARED", elapsedMs = clock.ElapsedMilliseconds });
+            var prepared = await Evidence(); await Takeover();
             // Reuse immutable prepared evidence; do not spend the five-second undecided budget rereading it for negative CAS cases.
             await Call("geometry", new Request { Operation = "DECIDE", Id = "a", Value = "COMMIT", Evidence = prepared }, "COORDINATOR_FENCED");
             await Call("geometry", new Request { Operation = "DECIDE", Id = "a", Value = "COMMIT", Evidence = prepared, Generation = 2, Worker = "worker-2" }, "BARRIERS_REQUIRED");
-            await Barriers(); await Call("geometry", new Request { Operation = "DECIDE", Id = "a", Value = "COMMIT", Evidence = prepared, Generation = 2, Worker = "worker-2" });
+            await Barriers(); witnesses.Add(new { operation = "F05_BARRIERS", elapsedMs = clock.ElapsedMilliseconds });
+            await Call("geometry", new Request { Operation = "DECIDE", Id = "a", Value = "COMMIT", Evidence = prepared, Generation = 2, Worker = "worker-2" });
+            witnesses.Add(new { operation = "F05_DECIDED", elapsedMs = clock.ElapsedMilliseconds });
             var immutable = (await Lookup("geometry", "COMMIT")).DecisionDigest;
             await Phase("material", "COMMIT"); await Certify("ALL_APPLIED_REQUIRED", 2, "worker-2"); await NoOutput("material");
             foreach (var o in new[] { "geometry", "terrain" }) await Phase(o, "COMMIT");
@@ -461,6 +466,7 @@ internal sealed class Scenarios(Config config)
         info.ArgumentList.Add(new NpgsqlConnectionStringBuilder(config.Material).Port.ToString(System.Globalization.CultureInfo.InvariantCulture)); info.ArgumentList.Add(proxyRoot);
         foreach (var key in info.Environment.Keys.Where(k => k.StartsWith("AD_", StringComparison.OrdinalIgnoreCase) || k.StartsWith("PG", StringComparison.OrdinalIgnoreCase)).ToArray()) info.Environment.Remove(key);
         info.Environment["AD_FIXTURE_ID"] = config.FixtureId;
+        info.Environment["AD_ALLOWED_ROOT"] = config.AllowedRoot;
         var proxy = Process.Start(info) ?? throw new RuleException("PROXY_START"); children.Add(proxy);
         await WaitFile(Path.Combine(proxyRoot, "ready.json"));
         using var ready = JsonDocument.Parse(await File.ReadAllTextAsync(Path.Combine(proxyRoot, "ready.json")));
@@ -520,8 +526,11 @@ internal sealed class Scenarios(Config config)
         using var ack = JsonDocument.Parse(await File.ReadAllTextAsync(completePath));
         var root = ack.RootElement;
         Check(root.GetProperty("fixtureId").GetString() == config.FixtureId && root.GetProperty("requestId").GetString() == requestId && root.GetProperty("mode").GetString() == "immediate" && root.GetProperty("systemIdentifier").GetString() == config.SystemIdentifier, "RESTART_ACK_MISMATCH");
+        witnesses.Add(new { operation = "RESTART_ACK" });
         Check(JsonSerializer.Serialize(before) == JsonSerializer.Serialize(await Evidence()), "WAL_RECEIPT_MISMATCH");
+        witnesses.Add(new { operation = "RESTART_EVIDENCE" });
         foreach (var o in Owners) { await NoOutput(o); Check(await Scalar(o, "SELECT sum(quantity) FROM fixture.resources") == "1998", "WAL_CONSERVATION_FAILURE"); }
+        witnesses.Add(new { operation = "RESTART_CONSERVATION" });
         await Certify(); foreach (var o in Owners) await Phase(o, "COMPLETE");
     }
 }

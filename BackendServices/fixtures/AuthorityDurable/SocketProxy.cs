@@ -13,15 +13,20 @@ internal static class SocketProxy
         var fixtureId = Guid.Parse(Environment.GetEnvironmentVariable("AD_FIXTURE_ID")!);
         var control = Path.GetFullPath(controlRoot);
         var privateRoot = Directory.GetParent(control)?.Parent?.FullName ?? "";
-        var repository = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../../"));
-        var allowed = Path.Combine(repository, "Artifacts", "Persistence", "AuthorityDurable");
+        var allowedValue = Environment.GetEnvironmentVariable("AD_ALLOWED_ROOT") ?? "";
+        if (!Path.IsPathFullyQualified(allowedValue)) throw new ArgumentException("Proxy allowlist root is not absolute.");
+        var allowed = Path.GetFullPath(allowedValue);
         var expectedPrivate = Path.Combine(allowed, ".private-" + fixtureId.ToString("N"));
-        if (privateRoot != expectedPrivate || Directory.GetParent(control)?.Name != "control" ||
-            !Directory.Exists(control) || (File.GetAttributes(control) & FileAttributes.ReparsePoint) != 0)
+        if (!string.Equals(privateRoot, expectedPrivate, StringComparison.OrdinalIgnoreCase) ||
+            Directory.GetParent(control)?.Name != "control" ||
+            !Directory.Exists(control) ||
+            new[] { allowed, privateRoot, Directory.GetParent(control)!.FullName, control }
+                .Any(path => !Directory.Exists(path) || (File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0))
             throw new ArgumentException("Proxy control is not an owned fixture subdirectory.");
         using var marker = JsonDocument.Parse(await File.ReadAllTextAsync(Path.Combine(privateRoot, "owner.json")));
         var dataDirectory = Path.Combine(privateRoot, "data");
         if (marker.RootElement.GetProperty("fixtureId").GetString() != fixtureId.ToString() ||
+            !string.Equals(Path.GetFullPath(marker.RootElement.GetProperty("privateDirectory").GetString()!), privateRoot, StringComparison.OrdinalIgnoreCase) ||
             marker.RootElement.GetProperty("port").GetInt32() != port ||
             marker.RootElement.GetProperty("dataDirectory").GetString() != dataDirectory)
             throw new ArgumentException("Proxy fixture marker mismatch.");

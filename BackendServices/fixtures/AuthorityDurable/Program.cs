@@ -55,6 +55,8 @@ internal sealed class Config
     public string TerrainReadOnly { get; set; } = "";
     public string SystemIdentifier { get; set; } = "";
     public string ControlRoot { get; set; } = "";
+    public string AllowedRoot { get; set; } = "";
+    public int UndecidedDeadlineSeconds { get; set; } = 15;
     public string Dotnet { get; set; } = "";
     public string DdlSha256 { get; set; } = "";
 }
@@ -86,6 +88,7 @@ internal sealed class Lookup
 internal sealed class Request
 {
     public string Operation { get; set; } = "";
+    public int DeadlineSeconds { get; set; }
     public string Id { get; set; } = "";
     public string Owner { get; set; } = "";
     public Lookup? Lookup { get; set; }

@@ -124,8 +124,9 @@ internal sealed class Store(string connectionString, string fixtureId, string sy
         {
             case "CREATE":
                 Require(gate!["state"] == "OPEN", "GATE_CLOSED");
-                await Sql(c, "INSERT INTO fixture.actions(id,realm,origin,hash,profile,incarnation,generation,worker,deadline,fixed_set) VALUES(@id,'synthetic-realm','origin-1',@hash,'stage-s-v1',@inc,@gen,@worker,clock_timestamp()+interval '5 seconds','geometry,material,terrain')",
-                    ("id", r.Id), ("hash", Hash(r.Id)), ("inc", r.Incarnation), ("gen", r.Generation), ("worker", r.Worker));
+                Require(r.DeadlineSeconds is >= 5 and <= 30, "DEADLINE_SETTING_BOUNDS");
+                await Sql(c, "INSERT INTO fixture.actions(id,realm,origin,hash,profile,incarnation,generation,worker,deadline,fixed_set) VALUES(@id,'synthetic-realm','origin-1',@hash,'stage-s-v1',@inc,@gen,@worker,clock_timestamp()+make_interval(secs=>@seconds),'geometry,material,terrain')",
+                    ("id", r.Id), ("hash", Hash(r.Id)), ("inc", r.Incarnation), ("gen", r.Generation), ("worker", r.Worker), ("seconds", r.DeadlineSeconds));
                 reply = new Reply(); break;
             case "TAKEOVER": case "DECIDE": case "CERTIFY": case "ACK": case "COORD_RESTORE": case "DELIVERY_ACK":
                 reply = await Coordinator(c, r, gate!); break;

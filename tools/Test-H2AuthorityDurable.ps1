@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][string]$EvidenceRoot)
+param([Parameter(Mandatory)][string]$EvidenceRoot, [ValidateRange(5,30)][int]$UndecidedDeadlineSeconds = 15)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -104,7 +104,7 @@ try {
     [IO.File]::WriteAllLines((Join-Path $dataDir 'pg_hba.conf'),$hba,$utf8)
     Start-Cluster
     $systemId = (Require (Sql 'SELECT system_identifier::text FROM pg_control_system();') 'actual cluster identity').Trim()
-    $ddlText = [IO.File]::ReadAllText($ddl); $config = @{ fixtureId=$fixtureId; systemIdentifier=$systemId; controlRoot=$controlRoot; dotnet=$dotnet; ddlSha256=(Get-FileHash -LiteralPath $ddl -Algorithm SHA256).Hash.ToLowerInvariant() }
+    $ddlText = [IO.File]::ReadAllText($ddl); $config = @{ fixtureId=$fixtureId; systemIdentifier=$systemId; controlRoot=$controlRoot; allowedRoot=$allowedRoot; undecidedDeadlineSeconds=$UndecidedDeadlineSeconds; dotnet=$dotnet; ddlSha256=(Get-FileHash -LiteralPath $ddl -Algorithm SHA256).Hash.ToLowerInvariant() }
     foreach ($owner in $owners) {
         $database = "ad_${tokenId}_$owner"; $ownRole = "own_ad_$owner"; $migRole = "mig_ad_$owner"; $svcRole = "svc_ad_$owner"; $roRole = "ro_ad_$owner"
         $rolesSql = "CREATE ROLE $ownRole NOLOGIN; CREATE ROLE $migRole LOGIN NOINHERIT PASSWORD '$($secrets[$migRole])'; GRANT $ownRole TO $migRole; CREATE ROLE $svcRole LOGIN PASSWORD '$($secrets[$svcRole])'; CREATE ROLE $roRole LOGIN PASSWORD '$($secrets[$roRole])'; CREATE DATABASE $database;"
