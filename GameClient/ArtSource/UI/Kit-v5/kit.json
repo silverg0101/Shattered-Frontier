@@ -3458,6 +3458,348 @@
         "11-title-menu"
       ],
       "notes": "Stag and wordmark only; no laurel sprigs."
+    },
+    "paperdoll_adventurer": {
+      "file": "scenes/paperdoll_adventurer.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        256,
+        384
+      ],
+      "screens": [
+        "inventory"
+      ],
+      "notes": "Front-on figure; straight alpha."
+    },
+    "paperdoll_silhouette": {
+      "file": "scenes/paperdoll_silhouette.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        256,
+        384
+      ],
+      "screens": [
+        "inventory"
+      ],
+      "notes": "Empty equipment mannequin underlay; straight alpha."
+    },
+    "ghost_head": {
+      "file": "scenes/ghost_head.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        72,
+        72
+      ],
+      "screens": [
+        "inventory"
+      ],
+      "notes": "Empty equipment slot ghost; straight alpha."
+    },
+    "ghost_chest": {
+      "file": "scenes/ghost_chest.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        72,
+        72
+      ],
+      "screens": [
+        "inventory"
+      ],
+      "notes": "Empty equipment slot ghost; straight alpha."
+    },
+    "ghost_legs": {
+      "file": "scenes/ghost_legs.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        72,
+        72
+      ],
+      "screens": [
+        "inventory"
+      ],
+      "notes": "Empty equipment slot ghost; straight alpha."
+    },
+    "ghost_feet": {
+      "file": "scenes/ghost_feet.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        72,
+        72
+      ],
+      "screens": [
+        "inventory"
+      ],
+      "notes": "Empty equipment slot ghost; straight alpha."
+    },
+    "ghost_hands": {
+      "file": "scenes/ghost_hands.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        72,
+        72
+      ],
+      "screens": [
+        "inventory"
+      ],
+      "notes": "Empty equipment slot ghost; straight alpha."
+    },
+    "ghost_main_hand": {
+      "file": "scenes/ghost_main_hand.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        72,
+        72
+      ],
+      "screens": [
+        "inventory"
+      ],
+      "notes": "Empty equipment slot ghost; straight alpha."
+    },
+    "ghost_off_hand": {
+      "file": "scenes/ghost_off_hand.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        72,
+        72
+      ],
+      "screens": [
+        "inventory"
+      ],
+      "notes": "Empty equipment slot ghost; straight alpha."
+    },
+    "ghost_back": {
+      "file": "scenes/ghost_back.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        72,
+        72
+      ],
+      "screens": [
+        "inventory"
+      ],
+      "notes": "Empty equipment slot ghost; straight alpha."
+    },
+    "ghost_ring": {
+      "file": "scenes/ghost_ring.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        72,
+        72
+      ],
+      "screens": [
+        "inventory"
+      ],
+      "notes": "Empty equipment slot ghost; straight alpha."
+    },
+    "ghost_neck": {
+      "file": "scenes/ghost_neck.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        72,
+        72
+      ],
+      "screens": [
+        "inventory"
+      ],
+      "notes": "Empty equipment slot ghost; straight alpha."
+    },
+    "respawn_silverbrook_shrine": {
+      "file": "scenes/respawn_silverbrook_shrine.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        280,
+        170
+      ],
+      "screens": [
+        "defeated"
+      ],
+      "notes": "Scene art only; use existing respawn_image_well brush for frame and selection."
+    },
+    "respawn_bedroll": {
+      "file": "scenes/respawn_bedroll.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        280,
+        170
+      ],
+      "screens": [
+        "defeated"
+      ],
+      "notes": "Scene art only; use existing respawn_image_well brush for frame and selection."
+    },
+    "portrait_millwarden_oswin": {
+      "file": "scenes/portrait_millwarden_oswin.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        120,
+        120
+      ],
+      "screens": [
+        "10-npc-dialogue"
+      ],
+      "notes": "Bust art; use existing portrait_well brush."
+    },
+    "portrait_villager": {
+      "file": "scenes/portrait_villager.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        120,
+        120
+      ],
+      "screens": [
+        "10-npc-dialogue"
+      ],
+      "notes": "Generic Silverbrook villager bust; use existing portrait_well brush."
+    },
+    "quest_mills_supply": {
+      "file": "scenes/quest_mills_supply.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        280,
+        170
+      ],
+      "screens": [
+        "10-npc-dialogue"
+      ],
+      "notes": "Mill scene for The Mill’s Supply offer; frame and text remain UMG."
+    },
+    "greenlands_map_base": {
+      "file": "scenes/greenlands_map_base.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        2048,
+        1152
+      ],
+      "screens": [
+        "15-world-map"
+      ],
+      "notes": "4096x2304 label-free map terrain; title, legend, markers and brass frame remain UMG."
+    },
+    "world_silverbrook_arrival": {
+      "file": "scenes/world_silverbrook-arrival-ingame.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        1280,
+        720
+      ],
+      "screens": [
+        "gameplay-hud",
+        "inventory",
+        "defeated"
+      ],
+      "notes": "Source world capture from ArtSource/Greenlands; reference only, not a runtime render target."
+    },
+    "world_silverbrook_aerial": {
+      "file": "scenes/world_silverbrook-aerial-ingame.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        1280,
+        720
+      ],
+      "screens": [
+        "15-world-map"
+      ],
+      "notes": "Source world capture from ArtSource/Greenlands; reference only, not runtime terrain."
     }
   }
 }
