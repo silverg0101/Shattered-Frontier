@@ -1,8 +1,8 @@
 CREATE SCHEMA IF NOT EXISTS housing;
 CREATE TABLE housing.schema_version (singleton boolean PRIMARY KEY DEFAULT true CHECK (singleton), version integer NOT NULL CHECK (version > 0));
-INSERT INTO housing.schema_version(singleton,version) VALUES (true,1);
+INSERT INTO housing.schema_version(singleton,version) VALUES (true,2);
 CREATE TABLE housing.claims (
- id text PRIMARY KEY, owner_id text NOT NULL, state text NOT NULL,
+ id text PRIMARY KEY, owner_id text NOT NULL, state text NOT NULL CHECK (state IN ('Active','Grace','Delinquent','Notice','Archived','Reclaimed')),
  revision bigint NOT NULL CHECK (revision >= 0), permission_revision bigint NOT NULL CHECK (permission_revision >= 0),
  funded_until timestamptz NOT NULL, grace_ends timestamptz, notice_ends timestamptz,
  grants jsonb NOT NULL DEFAULT '{}'::jsonb

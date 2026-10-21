@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="../InventoryLedger/InventoryLedger.csproj" />
+    <ProjectReference Include="../InventoryLedger.Postgres/InventoryLedger.Postgres.csproj" />
     <PackageReference Include="Npgsql" />
   </ItemGroup>
 </Project>

@@ -26,6 +26,13 @@
       },
       "inventoryledger": {
         "type": "Project"
+      },
+      "inventoryledger.postgres": {
+        "type": "Project",
+        "dependencies": {
+          "InventoryLedger": "[1.0.0, )",
+          "Npgsql": "[10.0.3, 10.0.3]"
+        }
       }
     }
   }

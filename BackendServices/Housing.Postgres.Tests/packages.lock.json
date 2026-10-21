@@ -19,6 +19,7 @@
         "type": "Project",
         "dependencies": {
           "InventoryLedger": "[1.0.0, )",
+          "InventoryLedger.Postgres": "[1.0.0, )",
           "Npgsql": "[10.0.3, 10.0.3]"
         }
       },
