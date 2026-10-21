@@ -43,7 +43,8 @@ internal sealed class HousingGrpcService(PostgresHousingStore store, ProtectedZo
             reply.Structures.AddRange(snapshot.Structures.Select(s => new Pb.Structure
             {
                 StructureId = s.StructureId, Cell = new Pb.StructureCell { X = s.Cell.X, Y = s.Cell.Y, Z = s.Cell.Z },
-                ContentId = s.ContentId, Revision = s.Revision
+                ContentId = s.ContentId, Revision = s.Revision,
+                ShapeKey = s.ShapeKey, OrientationIndex = s.OrientationIndex
             }));
             return reply;
         });
@@ -92,6 +93,9 @@ internal sealed class HousingGrpcService(PostgresHousingStore store, ProtectedZo
             if (!request.StructureId.StartsWith("str_", StringComparison.Ordinal) ||
                 request.MaterialQuantity <= 0 || string.IsNullOrWhiteSpace(request.OperationId))
                 throw new ArgumentException("Invalid placement identity or quantity.");
+            var shapeKey = request.HasShapeKey ? request.ShapeKey : PostgresHousingStore.DefaultShapeKey;
+            if (!PostgresHousingStore.ValidGeometry(shapeKey, request.OrientationIndex))
+                throw new ArgumentException("Invalid construction geometry identity.");
             var kind = request.ContentId.StartsWith("piece/", StringComparison.Ordinal)
                 ? request.ContentId[6..] : "";
             if (kind is not ("foundation" or "wall" or "door" or "roof"))
@@ -107,7 +111,7 @@ internal sealed class HousingGrpcService(PostgresHousingStore store, ProtectedZo
                 request.ExpectedPermissionRevision, request.ExpectedStructureRevision,
                 request.StructureId, new HousingCell(request.CellX, request.CellY, request.CellZ),
                 request.ContentId, request.MaterialId, request.MaterialQuantity,
-                request.ContainerId, request.ExpectedContainerRevision), DateTimeOffset.UtcNow);
+                request.ContainerId, request.ExpectedContainerRevision, shapeKey, request.OrientationIndex), DateTimeOffset.UtcNow);
             if (pending.State == "Pending")
             {
                 if (Environment.GetEnvironmentVariable("SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT") == request.OperationId)
@@ -172,7 +176,8 @@ internal sealed class HousingGrpcService(PostgresHousingStore store, ProtectedZo
     {
         OperationId = placement.OperationId, State = placement.State,
         StructureId = placement.StructureId, StructureRevision = placement.Revision,
-        ConsumeOperationId = placement.ConsumeReceipt?.OperationId ?? ""
+        ConsumeOperationId = placement.ConsumeReceipt?.OperationId ?? "",
+        ShapeKey = placement.ShapeKey, OrientationIndex = placement.OrientationIndex
     };
 
     private static Pb.ClaimReply ToPb(HousingClaim c) => new()

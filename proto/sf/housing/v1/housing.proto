@@ -12,11 +12,16 @@ service Housing {
 }
 message ListStructuresRequest { string claim_id = 1; }
 message StructureCell { int32 x = 1; int32 y = 2; int32 z = 3; }
+// BLD-01 orientation_index: 0 is identity. Indices 1..23 enumerate the other
+// proper signed-axis rotations by lexicographic order of the ordered images
+// of local +X,+Y,+Z. The same index is persisted and returned unchanged.
 message Structure {
   string structure_id = 1;
   StructureCell cell = 2;
   string content_id = 3;
   int64 revision = 4;
+  string shape_key = 5;
+  int32 orientation_index = 6;
 }
 message ListStructuresReply {
   repeated Structure structures = 1;
@@ -64,6 +69,8 @@ message PlaceRequest {
   int64 material_quantity = 12;
   string container_id = 13;
   int64 expected_container_revision = 14;
+  optional string shape_key = 15;
+  int32 orientation_index = 16;
 }
 message RemoveRequest {
   string operation_id = 1;
@@ -81,4 +88,6 @@ message PlacementReply {
   string structure_id = 3;
   int64 structure_revision = 4;
   string consume_operation_id = 5;
+  string shape_key = 6;
+  int32 orientation_index = 7;
 }

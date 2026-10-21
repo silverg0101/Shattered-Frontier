@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Npgsql;
 using ShatteredFrontier.InventoryLedger;
 using ShatteredFrontier.InventoryLedger.Postgres;
@@ -20,10 +21,12 @@ public sealed record HousingClaim(string Id, string OwnerId, string State, long 
 public sealed record HousingCell(int X, int Y, int Z);
 public sealed record HousingPlacement(string OperationId, string Fingerprint, string ClaimId, string ActorId,
     string StructureId, HousingCell Cell, string ContentId, string MaterialId, long MaterialQuantity,
-    string ContainerId, long ExpectedContainerRevision, string State, long Revision, LedgerReceipt? ConsumeReceipt);
+    string ContainerId, long ExpectedContainerRevision, string State, long Revision, LedgerReceipt? ConsumeReceipt,
+    string ShapeKey = "legacy.generic", int OrientationIndex = 0);
 public sealed record HousingPlaceRequest(string OperationId, string Fingerprint, string ClaimId, string ActorId,
     long ExpectedPermissionRevision, long ExpectedStructureRevision, string StructureId, HousingCell Cell,
-    string ContentId, string MaterialId, long MaterialQuantity, string ContainerId, long ExpectedContainerRevision);
+    string ContentId, string MaterialId, long MaterialQuantity, string ContainerId, long ExpectedContainerRevision,
+    string ShapeKey = "legacy.generic", int OrientationIndex = 0);
 public sealed record HousingRemoveRequest(string OperationId, string Fingerprint, string ClaimId, string ActorId,
     string StructureId, long ExpectedPermissionRevision, long ExpectedStructureRevision,
     long ExpectedContainerRevision, int RefundPercent);
@@ -35,6 +38,11 @@ public sealed record HousingStructureSnapshot(long Revision, IReadOnlyList<Housi
 // debit is identified by operation_id + "/consume"; recovery only trusts a durable ledger receipt.
 public sealed class PostgresHousingStore(string connectionString)
 {
+    public const string DefaultShapeKey = "legacy.generic";
+    public static bool ValidGeometry(string shapeKey, int orientationIndex) =>
+        shapeKey.Length is >= 1 and <= 128 &&
+        Regex.IsMatch(shapeKey, "\\A[a-z0-9._-]+\\z", RegexOptions.CultureInvariant) &&
+        orientationIndex is >= 0 and <= 23;
     public const HousingRefundRounding RefundRounding = HousingRefundRounding.UpToWholeUnit;
     private sealed record CallState(CancellationToken Token, DateTime Deadline, List<IDisposable> Registrations);
     private static readonly AsyncLocal<CallState?> CallContext = new();
@@ -75,7 +83,7 @@ public sealed class PostgresHousingStore(string connectionString)
             try
             {
                 using var check = Cmd(c, t, "SELECT version FROM housing.schema_version WHERE singleton=true FOR SHARE");
-                if (check.ExecuteScalar() is not int version || version is not (3 or 4))
+                if (check.ExecuteScalar() is not int version || version != 5)
                     throw new HousingSchemaCompatibilityException("Unsupported housing schema version.");
             }
             catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501")
@@ -105,8 +113,8 @@ public sealed class PostgresHousingStore(string connectionString)
     private static void RequireGameplaySchema(NpgsqlConnection c, NpgsqlTransaction t)
     {
         using var check = Cmd(c,t,"SELECT version FROM housing.schema_version WHERE singleton=true");
-        if (check.ExecuteScalar() is not int version || version != 4)
-            throw new HousingSchemaCompatibilityException("Housing gameplay schema version 4 required.");
+        if (check.ExecuteScalar() is not int version || version != 5)
+            throw new HousingSchemaCompatibilityException("Housing gameplay schema version 5 required.");
     }
 
     public HousingClaim ReserveClaim(string operationId, string fingerprint, string claimId, string ownerId,
@@ -183,6 +191,9 @@ public sealed class PostgresHousingStore(string connectionString)
 
     public HousingPlacement Begin(HousingPlaceRequest request, DateTimeOffset now) => Run((c,t) =>
     {
+        RequireGameplaySchema(c,t);
+        if (!ValidGeometry(request.ShapeKey, request.OrientationIndex))
+            throw new HousingRejectedException("Invalid construction geometry identity.", HousingRejectionCode.InvalidArgument);
         var existing = ReadPlacement(c,t,request.OperationId);
         if (existing is not null)
         {
@@ -199,10 +210,10 @@ public sealed class PostgresHousingStore(string connectionString)
         using (var revision = Cmd(c,t,"SELECT revision FROM housing.claim_structure_revisions WHERE claim_id=$1",request.ClaimId))
             if (revision.ExecuteScalar() is not long value || value != request.ExpectedStructureRevision)
                 throw new HousingRejectedException("Stale structure revision.");
-        using var insert = Cmd(c,t,"INSERT INTO housing.placements (operation_id,fingerprint,claim_id,actor_id,structure_id,cell_x,cell_y,cell_z,content_id,material_id,material_quantity,container_id,expected_container_revision,state,revision,consume_receipt) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,'Pending',$14,NULL)",
+        using var insert = Cmd(c,t,"INSERT INTO housing.placements (operation_id,fingerprint,claim_id,actor_id,structure_id,cell_x,cell_y,cell_z,content_id,material_id,material_quantity,container_id,expected_container_revision,state,revision,consume_receipt,shape_key,orientation_index) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,'Pending',$14,NULL,$15,$16)",
             request.OperationId,request.Fingerprint,request.ClaimId,request.ActorId,request.StructureId,
             request.Cell.X,request.Cell.Y,request.Cell.Z,request.ContentId,request.MaterialId,request.MaterialQuantity,
-            request.ContainerId,request.ExpectedContainerRevision,request.ExpectedStructureRevision);
+            request.ContainerId,request.ExpectedContainerRevision,request.ExpectedStructureRevision,request.ShapeKey,request.OrientationIndex);
         insert.ExecuteNonQuery();
         return ReadPlacement(c,t,request.OperationId)!;
     });
@@ -210,12 +221,12 @@ public sealed class PostgresHousingStore(string connectionString)
     public HousingPlacement? Placement(string operationId) => Run((c,t) => ReadPlacement(c,t,operationId));
     private static HousingPlacement? ReadPlacement(NpgsqlConnection c,NpgsqlTransaction t,string id)
     {
-        using var cmd = Cmd(c,t,"SELECT operation_id,fingerprint,claim_id,actor_id,structure_id,cell_x,cell_y,cell_z,content_id,material_id,material_quantity,container_id,expected_container_revision,state,revision,consume_receipt::text FROM housing.placements WHERE operation_id=$1",id);
+        using var cmd = Cmd(c,t,"SELECT operation_id,fingerprint,claim_id,actor_id,structure_id,cell_x,cell_y,cell_z,content_id,material_id,material_quantity,container_id,expected_container_revision,state,revision,consume_receipt::text,shape_key,orientation_index FROM housing.placements WHERE operation_id=$1",id);
         using var r = cmd.ExecuteReader(); if (!r.Read()) return null;
         return new(r.GetString(0),r.GetString(1),r.GetString(2),r.GetString(3),r.GetString(4),
             new(r.GetInt32(5),r.GetInt32(6),r.GetInt32(7)),r.GetString(8),r.GetString(9),r.GetInt64(10),
             r.GetString(11),r.GetInt64(12),r.GetString(13),r.GetInt64(14),
-            r.IsDBNull(15)?null:JsonSerializer.Deserialize<LedgerReceipt>(r.GetString(15)));
+            r.IsDBNull(15)?null:JsonSerializer.Deserialize<LedgerReceipt>(r.GetString(15)),r.GetString(16),r.GetInt32(17));
     }
 
     public IReadOnlyList<HousingPlacement> Structures(string claimId) => Run((c,t) =>

@@ -1,0 +1,9 @@
+# Housing BLD-01 identity, 2026-10-21
+
+Housing v5 adds an additive `shape_key` and `orientation_index` on placements. The v4-to-v5 migration defaults existing rows to `legacy.generic` and 0. The proto fields are additive; absent shape key uses that default, while an explicitly empty or malformed key and indices outside 0–23 return `INVALID_ARGUMENT` before inventory debit. The receipt and `ListStructures` return both values.
+
+Fresh `Test-HousingDurable.ps1` at `Artifacts/Persistence/HousingDurable/geometry-20261021-01` passed immediate PostgreSQL restart, backup/restore and newer-schema refusal; private storage was removed. Fresh `Test-GameplayHosts.ps1` at `Artifacts/Persistence/GameplayHosts/geometry-20261021-03` passed malformed and explicitly empty geometry/no-cost, custom geometry receipt and list, and the same identity after host plus immediate PostgreSQL restart; it also read an old-client placement as the default. The fixture needed `REHEARSAL_RECEIPT_LEDGER` for another in-progress fixture path. Private storage was removed.
+
+The unchanged `Test-RestoreRehearsal.ps1` provisions Housing v4 and therefore failed at the Housing wire stage against the v5 fail-closed store. Its path is outside this task's allowed edit set. A temporary copy outside the repository with only the Housing v5 migration and expected marker added passed on `Artifacts/Persistence/RestoreRehearsal/geometry-20261021-02`: 29 acknowledged receipts survived crash and restore, a later receipt was absent, table digests matched, and newer markers were refused. The repository script still needs its version and migration lines advanced to v5.
+
+This change stores the canonical key and orientation index. Release content lookup, per-shape rotation allowlists, and Unreal reconstruction remain integration work.

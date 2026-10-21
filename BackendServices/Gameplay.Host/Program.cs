@@ -18,6 +18,11 @@ using DomLedger = ShatteredFrontier.InventoryLedger.InventoryLedger;
 static string Required(string name) => Environment.GetEnvironmentVariable(name) is { Length: > 0 } value
     ? value : throw new InvalidOperationException($"{name} is required.");
 
+if (args.Length == 1 && args[0].StartsWith("fixture-geometry-", StringComparison.Ordinal))
+{
+    HousingGeometryFixture.Run(args[0]);
+    return;
+}
 if (args.Length == 1 && args[0].StartsWith("fixture-", StringComparison.Ordinal))
 {
     GameplayFixtureClient.Run(args[0]);
