@@ -11,6 +11,8 @@ $dotnet = Join-Path $repo 'Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotn
 $pg = Join-Path $repo 'Artifacts/Persistence/Toolchains/postgresql-18.6/pgsql/bin'
 $project = Join-Path $repo 'BackendServices/Housing.Postgres.Tests/Housing.Postgres.Tests.csproj'
 $dll = Join-Path $repo 'BackendServices/Housing.Postgres.Tests/bin/Release/net10.0/Housing.Postgres.Tests.dll'
+$backupTool = Join-Path $repo 'tools/Backup-ServiceStore.ps1'; $restoreTool = Join-Path $repo 'tools/Restore-ServiceStore.ps1'
+$backup = Join-Path $EvidenceRoot 'backup'; $restoredInstance = Join-Path $EvidenceRoot 'restored-instance'
 foreach ($path in @($dotnet,$project,(Join-Path $pg 'postgres.exe'),(Join-Path $pg 'initdb.exe'),(Join-Path $pg 'pg_ctl.exe'),(Join-Path $pg 'psql.exe'))) { if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Required file missing: $path" } }
 if ((Get-FileHash $dotnet -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pins.sdk.executableSha256 -or (Get-FileHash (Join-Path $pg 'postgres.exe') -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pins.postgres.executableSha256) { throw 'Pinned toolchain mismatch.' }
 $run = [guid]::NewGuid().ToString('N'); $private = Join-Path $EvidenceRoot 'private'; $data = Join-Path $private 'data'
@@ -84,13 +86,35 @@ try {
     Cluster stop
     $results.Add((Invoke-Checked $dotnet @($dll,'outage') @{ HOUSING_CONNECTION=$connection }))
     Cluster start
-    [void](Sql 'UPDATE housing.schema_version SET version=2' "housing_$run")
+    # The fixture leaves one uncharged reservation after contention. A fenced worker
+    # would reconcile it; the synthetic fixture closes it before a backup point.
+    [void](Sql "UPDATE housing.placements SET state='Compensated' WHERE state='Pending' AND operation_id IN ('left','right')" "housing_$run")
+    if ((Sql "SELECT count(*) FROM housing.placements WHERE state='Pending'" "housing_$run").Trim() -ne '0') { throw 'Unresolved fixture placement.' }
+    if ((Sql 'SELECT version FROM housing.schema_version WHERE singleton=true' "housing_$run").Trim() -ne '2') { throw 'Housing schema changed before backup.' }
+    $results.Add((Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','Housing','-OutputDirectory',$backup,'-HostName','127.0.0.1','-Port',"$port",'-Database',"housing_$run",'-Username','housing_svc') @{ PGPASSWORD=$servicePassword }))
+    $backupRevision = (Sql "SELECT revision FROM housing.claims WHERE id='clm_test'" "housing_$run").Trim()
+    [void](Sql "UPDATE housing.claims SET revision=revision+1 WHERE id='clm_test'" "housing_$run")
+    if ((Sql "SELECT revision FROM housing.claims WHERE id='clm_test'" "housing_$run").Trim() -ne "$([long]$backupRevision + 1)") { throw 'Post-backup write failed.' }
+    $corrupt = Join-Path $EvidenceRoot 'corrupt-backup'; [void](New-Item -ItemType Directory -Path $corrupt)
+    Copy-Item (Join-Path $backup 'manifest.json') $corrupt
+    $corruptDump = Join-Path $corrupt 'housing.dump'; Copy-Item (Join-Path $backup 'housing.dump') $corruptDump
+    $stream = [IO.File]::Open($corruptDump,[IO.FileMode]::Open,[IO.FileAccess]::ReadWrite)
+    try { [void]$stream.Seek(64,[IO.SeekOrigin]::Begin); $byte=$stream.ReadByte(); [void]$stream.Seek(64,[IO.SeekOrigin]::Begin); $stream.WriteByte([byte]($byte -bxor 1)) } finally { $stream.Dispose() }
+    try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-Store','Housing','-BackupDirectory',$corrupt,'-InstanceRoot',$restoredInstance)); throw 'Corrupt backup was accepted.' }
+    catch { if ($_.Exception.Message -notmatch 'SHA256 mismatch') { throw }; $results.Add('PASS flipped-byte backup refused') }
+    $results.Add((Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-Store','Housing','-BackupDirectory',$backup,'-InstanceRoot',$restoredInstance)))
+    $restored = Get-Content (Join-Path $restoredInstance 'connection.json') -Raw | ConvertFrom-Json
+    $restoredRevision = (Invoke-Checked (Join-Path $pg 'psql.exe') @('-X','-A','-t','-h','127.0.0.1','-p',"$($restored.port)",'-U',$restored.username,'-d',$restored.database,'-c',"SELECT revision FROM housing.claims WHERE id='clm_test'") @{ PGPASSWORD=$restored.password }).Trim()
+    if ($restoredRevision -ne $backupRevision) { throw 'Restored housing revision differs from backup point.' }
+    $results.Add('PASS restored housing state equals backup point')
+    [void](Sql 'UPDATE housing.schema_version SET version=3' "housing_$run")
     $results.Add((Invoke-Checked $dotnet @($dll,'newer') @{ HOUSING_CONNECTION=$connection }))
     $results | Set-Content (Join-Path $EvidenceRoot 'results.txt')
 }
 catch { $failure = $_.Exception.Message.Replace($adminPassword,'[REDACTED]').Replace($servicePassword,'[REDACTED]') }
 finally {
     try {
+        if (Test-Path (Join-Path $restoredInstance 'owner.json')) { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-Store','Housing','-InstanceRoot',$restoredInstance,'-Cleanup')) }
         if (Test-Path (Join-Path $private 'owner.json')) {
             Assert-Owned
             if ($started -or $attempted) { try { [void](Invoke-Checked (Join-Path $pg 'pg_ctl.exe') @('-D',$data,'-m','immediate','-w','-t','30','stop')) } catch { if ($failure -eq '') { $failure = $_.Exception.Message } } }

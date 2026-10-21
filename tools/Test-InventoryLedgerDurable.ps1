@@ -89,7 +89,7 @@ try {
     $results.Add((Invoke-Checked $dotnet @($dll,'post-backup-write') @{ INVENTORY_LEDGER_CONNECTION=$connection }))
     $corrupt = Join-Path $EvidenceRoot 'corrupt-backup'; [void](New-Item -ItemType Directory -Path $corrupt)
     Copy-Item (Join-Path $backup 'manifest.json') (Join-Path $corrupt 'manifest.json')
-    $corruptDump = Join-Path $corrupt 'inventory.dump'; Copy-Item (Join-Path $backup 'inventory.dump') $corruptDump
+    $corruptDump = Join-Path $corrupt 'inventoryledger.dump'; Copy-Item (Join-Path $backup 'inventoryledger.dump') $corruptDump
     $stream = [IO.File]::Open($corruptDump,[IO.FileMode]::Open,[IO.FileAccess]::ReadWrite)
     try { [void]$stream.Seek(64,[IO.SeekOrigin]::Begin); $byte = $stream.ReadByte(); [void]$stream.Seek(64,[IO.SeekOrigin]::Begin); $stream.WriteByte([byte]($byte -bxor 1)) } finally { $stream.Dispose() }
     try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-BackupDirectory',$corrupt,'-InstanceRoot',$restoredInstance)); throw 'Corrupt backup was accepted.' }

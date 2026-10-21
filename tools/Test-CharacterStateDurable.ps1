@@ -12,6 +12,8 @@ $pg = Join-Path $repo 'Artifacts/Persistence/Toolchains/postgresql-18.6/pgsql/bi
 $project = Join-Path $repo 'BackendServices/CharacterState.Postgres.Tests/CharacterState.Postgres.Tests.csproj'
 $schema = Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.sql'
 $dll = Join-Path $repo 'BackendServices/CharacterState.Postgres.Tests/bin/Release/net10.0/CharacterState.Postgres.Tests.dll'
+$backupTool = Join-Path $repo 'tools/Backup-ServiceStore.ps1'; $restoreTool = Join-Path $repo 'tools/Restore-ServiceStore.ps1'
+$backup = Join-Path $EvidenceRoot 'backup'; $restoredInstance = Join-Path $EvidenceRoot 'restored-instance'
 foreach ($path in @($dotnet,$project,$schema,(Join-Path $pg 'postgres.exe'),(Join-Path $pg 'initdb.exe'),(Join-Path $pg 'pg_ctl.exe'),(Join-Path $pg 'psql.exe'))) { if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Required file missing: $path" } }
 if ((Get-FileHash $dotnet -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pins.sdk.executableSha256 -or (Get-FileHash (Join-Path $pg 'postgres.exe') -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pins.postgres.executableSha256) { throw 'Pinned toolchain mismatch.' }
 $run = [guid]::NewGuid().ToString('N'); $private = Join-Path $EvidenceRoot 'private'; $data = Join-Path $private 'data'
@@ -78,17 +80,38 @@ try {
     [void](Sql 'GRANT USAGE ON SCHEMA character_state TO state_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA character_state TO state_svc;' "state_$run")
     $connection = "Host=127.0.0.1;Port=$port;Database=state_$run;Username=state_svc;Password=$servicePassword;Pooling=false;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $results = [Collections.Generic.List[string]]::new()
-    foreach ($phase in @('seed','restart','concurrent','outage','recover','classification','newer')) {
+    foreach ($phase in @('seed','restart','concurrent','outage','recover','classification')) {
         if ($phase -eq 'restart' -or $phase -eq 'outage') { Cluster stop }
         if ($phase -eq 'restart' -or $phase -eq 'concurrent' -or $phase -eq 'recover') { if (-not $started) { Cluster start } }
         if ($phase -eq 'newer') { [void](Sql 'UPDATE character_state.schema_version SET version=2' "state_$run") }
         $results.Add((Invoke-Checked $dotnet @($dll,$phase) @{ CHARACTER_STATE_CONNECTION=$connection }))
     }
+    $results.Add((Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','CharacterState','-OutputDirectory',$backup,'-HostName','127.0.0.1','-Port',"$port",'-Database',"state_$run",'-Username','state_svc') @{ PGPASSWORD=$servicePassword }))
+    $backupRevision = (Sql "SELECT revision FROM character_state.progression WHERE character_id='character-1'" "state_$run").Trim()
+    [void](Sql "UPDATE character_state.progression SET revision=revision+1 WHERE character_id='character-1'" "state_$run")
+    if ((Sql "SELECT revision FROM character_state.progression WHERE character_id='character-1'" "state_$run").Trim() -ne "$([long]$backupRevision + 1)") { throw 'Post-backup write failed.' }
+    $corrupt = Join-Path $EvidenceRoot 'corrupt-backup'; [void](New-Item -ItemType Directory -Path $corrupt)
+    Copy-Item (Join-Path $backup 'manifest.json') $corrupt
+    $corruptDump = Join-Path $corrupt 'characterstate.dump'; Copy-Item (Join-Path $backup 'characterstate.dump') $corruptDump
+    $stream = [IO.File]::Open($corruptDump,[IO.FileMode]::Open,[IO.FileAccess]::ReadWrite)
+    try { [void]$stream.Seek(64,[IO.SeekOrigin]::Begin); $byte=$stream.ReadByte(); [void]$stream.Seek(64,[IO.SeekOrigin]::Begin); $stream.WriteByte([byte]($byte -bxor 1)) } finally { $stream.Dispose() }
+    try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-Store','CharacterState','-BackupDirectory',$corrupt,'-InstanceRoot',$restoredInstance)); throw 'Corrupt backup was accepted.' }
+    catch { if ($_.Exception.Message -notmatch 'SHA256 mismatch') { throw }; $results.Add('PASS flipped-byte backup refused') }
+    $results.Add((Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-Store','CharacterState','-BackupDirectory',$backup,'-InstanceRoot',$restoredInstance)))
+    $restored = Get-Content (Join-Path $restoredInstance 'connection.json') -Raw | ConvertFrom-Json
+    $restoredRevision = (Invoke-Checked (Join-Path $pg 'psql.exe') @('-X','-A','-t','-h','127.0.0.1','-p',"$($restored.port)",'-U',$restored.username,'-d',$restored.database,'-c',"SELECT revision FROM character_state.progression WHERE character_id='character-1'") @{ PGPASSWORD=$restored.password }).Trim()
+    if ($restoredRevision -ne $backupRevision) { throw 'Restored character revision differs from backup point.' }
+    $results.Add('PASS restored character state equals backup point')
+    [void](Sql 'UPDATE character_state.schema_version SET version=2' "state_$run")
+    $results.Add((Invoke-Checked $dotnet @($dll,'newer') @{ CHARACTER_STATE_CONNECTION=$connection }))
+    try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','CharacterState','-OutputDirectory',(Join-Path $EvidenceRoot 'newer-backup'),'-HostName','127.0.0.1','-Port',"$port",'-Database',"state_$run",'-Username','state_svc') @{ PGPASSWORD=$servicePassword }); throw 'Newer schema backup accepted.' }
+    catch { if ($_.Exception.Message -notmatch 'Unsupported source schema') { throw }; $results.Add('PASS newer schema backup refused') }
     $results | Set-Content (Join-Path $EvidenceRoot 'results.txt')
 }
 catch { $failure = $_.Exception.Message.Replace($adminPassword,'[REDACTED]').Replace($servicePassword,'[REDACTED]') }
 finally {
     try {
+        if (Test-Path (Join-Path $restoredInstance 'owner.json')) { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-Store','CharacterState','-InstanceRoot',$restoredInstance,'-Cleanup')) }
         if (Test-Path (Join-Path $private 'owner.json')) {
             Assert-Owned
             if ($attempted) {
