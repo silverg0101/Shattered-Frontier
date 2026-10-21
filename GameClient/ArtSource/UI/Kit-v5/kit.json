@@ -821,6 +821,104 @@
       ],
       "notes": "3-slice: preserve the 30 px hex ends; crop or UV-scale fill with progress."
     },
+    "bar_hp_frame": {
+      "file": "bar_hp_frame.png",
+      "nine_slice_px": [
+        54,
+        0,
+        54,
+        0
+      ],
+      "three_slice_px": [
+        54,
+        54
+      ],
+      "fill_inset_rect_px": [
+        42,
+        13,
+        718,
+        51
+      ],
+      "intended_1080p_px": [
+        380,
+        32
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ],
+      "notes": "Layer above fill and back. Fill rect is left, top, right, bottom in source pixels; horizontal 3-slice keeps the brass hex ends."
+    },
+    "bar_hp_fill": {
+      "file": "bar_hp_fill.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        38
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ],
+      "notes": "128x38 seamless horizontal tile, no end caps. Tile/crop horizontally inside the frame fill inset rect; avoid stretching the texture."
+    },
+    "bar_hp_back": {
+      "file": "bar_hp_back.png",
+      "nine_slice_px": [
+        54,
+        0,
+        54,
+        0
+      ],
+      "three_slice_px": [
+        54,
+        54
+      ],
+      "intended_1080p_px": [
+        380,
+        32
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ],
+      "notes": "Optional empty slate trough. Place behind fill and frame at frame source size."
+    },
     "bar_stamina": {
       "file": "bar_stamina.png",
       "nine_slice_px": [
@@ -849,6 +947,104 @@
       ],
       "notes": "3-slice: preserve the 30 px hex ends; crop or UV-scale fill with progress."
     },
+    "bar_stamina_frame": {
+      "file": "bar_stamina_frame.png",
+      "nine_slice_px": [
+        54,
+        0,
+        54,
+        0
+      ],
+      "three_slice_px": [
+        54,
+        54
+      ],
+      "fill_inset_rect_px": [
+        42,
+        13,
+        718,
+        51
+      ],
+      "intended_1080p_px": [
+        380,
+        32
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ],
+      "notes": "Layer above fill and back. Fill rect is left, top, right, bottom in source pixels; horizontal 3-slice keeps the brass hex ends."
+    },
+    "bar_stamina_fill": {
+      "file": "bar_stamina_fill.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        38
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ],
+      "notes": "128x38 seamless horizontal tile, no end caps. Tile/crop horizontally inside the frame fill inset rect; avoid stretching the texture."
+    },
+    "bar_stamina_back": {
+      "file": "bar_stamina_back.png",
+      "nine_slice_px": [
+        54,
+        0,
+        54,
+        0
+      ],
+      "three_slice_px": [
+        54,
+        54
+      ],
+      "intended_1080p_px": [
+        380,
+        32
+      ],
+      "screens": [
+        "gameplay-hud",
+        "build-mode",
+        "inventory",
+        "gathering",
+        "crafting-station",
+        "trade",
+        "market-board",
+        "defeated",
+        "10-npc-dialogue",
+        "14-settings",
+        "15-world-map",
+        "16-quest-journal"
+      ],
+      "notes": "Optional empty slate trough. Place behind fill and frame at frame source size."
+    },
     "bar_xp": {
       "file": "bar_xp.png",
       "nine_slice_px": [
@@ -868,6 +1064,77 @@
       ],
       "notes": "3-slice: preserve the 30 px hex ends; crop or UV-scale fill with progress."
     },
+    "bar_xp_frame": {
+      "file": "bar_xp_frame.png",
+      "nine_slice_px": [
+        54,
+        0,
+        54,
+        0
+      ],
+      "three_slice_px": [
+        54,
+        54
+      ],
+      "fill_inset_rect_px": [
+        42,
+        13,
+        718,
+        51
+      ],
+      "intended_1080p_px": [
+        380,
+        32
+      ],
+      "screens": [
+        "gathering",
+        "crafting-station",
+        "9-loading-screen"
+      ],
+      "notes": "Layer above fill and back. Fill rect is left, top, right, bottom in source pixels; horizontal 3-slice keeps the brass hex ends."
+    },
+    "bar_xp_fill": {
+      "file": "bar_xp_fill.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        38
+      ],
+      "screens": [
+        "gathering",
+        "crafting-station",
+        "9-loading-screen"
+      ],
+      "notes": "128x38 seamless horizontal tile, no end caps. Tile/crop horizontally inside the frame fill inset rect; avoid stretching the texture."
+    },
+    "bar_xp_back": {
+      "file": "bar_xp_back.png",
+      "nine_slice_px": [
+        54,
+        0,
+        54,
+        0
+      ],
+      "three_slice_px": [
+        54,
+        54
+      ],
+      "intended_1080p_px": [
+        380,
+        32
+      ],
+      "screens": [
+        "gathering",
+        "crafting-station",
+        "9-loading-screen"
+      ],
+      "notes": "Optional empty slate trough. Place behind fill and frame at frame source size."
+    },
     "bar_channel": {
       "file": "bar_channel.png",
       "nine_slice_px": [
@@ -884,6 +1151,71 @@
         "crafting-station"
       ],
       "notes": "3-slice: preserve the 30 px hex ends; crop or UV-scale fill with progress."
+    },
+    "bar_channel_frame": {
+      "file": "bar_channel_frame.png",
+      "nine_slice_px": [
+        54,
+        0,
+        54,
+        0
+      ],
+      "three_slice_px": [
+        54,
+        54
+      ],
+      "fill_inset_rect_px": [
+        42,
+        13,
+        718,
+        51
+      ],
+      "intended_1080p_px": [
+        380,
+        32
+      ],
+      "screens": [
+        "crafting-station"
+      ],
+      "notes": "Layer above fill and back. Fill rect is left, top, right, bottom in source pixels; horizontal 3-slice keeps the brass hex ends."
+    },
+    "bar_channel_fill": {
+      "file": "bar_channel_fill.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        64,
+        38
+      ],
+      "screens": [
+        "crafting-station"
+      ],
+      "notes": "128x38 seamless horizontal tile, no end caps. Tile/crop horizontally inside the frame fill inset rect; avoid stretching the texture."
+    },
+    "bar_channel_back": {
+      "file": "bar_channel_back.png",
+      "nine_slice_px": [
+        54,
+        0,
+        54,
+        0
+      ],
+      "three_slice_px": [
+        54,
+        54
+      ],
+      "intended_1080p_px": [
+        380,
+        32
+      ],
+      "screens": [
+        "crafting-station"
+      ],
+      "notes": "Optional empty slate trough. Place behind fill and frame at frame source size."
     },
     "hold_confirm_ring": {
       "file": "hold_confirm_ring.png",

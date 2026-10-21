@@ -2,6 +2,12 @@
 
 Production art at 2× 1920×1080 UI design size. `kit.json` is the authoritative size, 9-slice and usage manifest. PNGs are straight RGBA; 9-slice margins are stored in output pixels. Use 3-slice semantics for the hex-ended bars and buttons. Text, counts, input mapping and bar percentages remain runtime data. `structural-source.png` is the gpt-image atlas used by `build_structures.py`; `preview.py` rebuilds the contact sheet and a 1920×1080 gameplay HUD study. Run both with Python 3.12 and Pillow from the repository root.
 
+## Dynamic bar layers
+
+`bar_hp`, `bar_stamina`, `bar_xp`, and `bar_channel` remain the original baked references. For runtime values, stack each matching `_back` (optional empty slate trough), `_fill`, then `_frame`. The frame has a transparent aperture and preserves the brass hex ends; its `three_slice_px` gives the left and right fixed margins. `fill_inset_rect_px` is `[left, top, right, bottom]` in the 760×64 source frame, with right and bottom exclusive. All four use `[42, 13, 718, 51]`. Tile the 128×38 fill horizontally, crop it to the current percentage within that rect, and keep its 38 px height. The fill has no end caps; the frame covers its square edges. The `_back` uses the target plate's slate texture. `target_frame` has no baked health fill, so it needs no target bar layers. These are art placement dimensions, not gameplay tuning values.
+
+Regenerate the layers with `py -3 GameClient/ArtSource/UI/Kit-v5/split_bars.py`; rebuild only the contact sheet with `py -3 GameClient/ArtSource/UI/Kit-v5/preview.py --contact-only`.
+
 ## Screen to piece map
 
 ### gameplay-hud

@@ -2,6 +2,7 @@
 from pathlib import Path
 import json
 import math
+import sys
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT=Path(__file__).parent
@@ -25,6 +26,8 @@ for i,name in enumerate(names):
     contact.paste(im,(x+(cw-im.width)//2,y+(ch-28-im.height)//2),im)
     draw.text((x+4,y+ch-22),name,font=font,fill=(229,222,208))
 contact.save(CONCEPT/'kit-v5-contact.png')
+if '--contact-only' in sys.argv:
+    raise SystemExit(0)
 
 master=Image.open(CONCEPT/'gameplay-hud.png').convert('RGB')
 # Scene-only center crop removes the master HUD; it is the sole background layer.
