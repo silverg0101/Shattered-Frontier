@@ -51,9 +51,13 @@ def _build(result, layers, zone, cosmetic):
     name = f'PCG_{zone}_{district}' + ('_Cosmetic' if cosmetic else '')
     label = f'PCG_{district}' + ('_Cosmetic' if cosmetic else '')
     path = f'{GRAPH_DIR}/{name}'
-    if u.EditorAssetLibrary.does_asset_exist(path):
-        assert u.EditorAssetLibrary.delete_asset(path), f'Could not delete {path}'
-    graph = u.AssetToolsHelpers.get_asset_tools().create_asset(name, GRAPH_DIR, u.PCGGraph, u.PCGGraphFactory())
+    if u.EditorAssetLibrary.does_asset_exist(path):  # reuse and empty the graph: deleting a saved .uasset fails with Windows error 32 while the editor or another process holds it
+        graph = u.load_asset(path)
+        for node in list(graph.get_editor_property('nodes')):
+            graph.remove_node(node)
+    else:
+        graph = u.AssetToolsHelpers.get_asset_tools().create_asset(name, GRAPH_DIR, u.PCGGraph, u.PCGGraphFactory())
+    assert graph, f'Could not create {path}'
     excl_node, excl = graph.add_node_of_type(u.PCGGetVolumeSettings)
     sel = excl.get_editor_property('actor_selector')
     sel.set_editor_property('actor_filter', u.PCGActorFilter.ALL_WORLD_ACTORS)
