@@ -5,10 +5,11 @@
 #include "SFE1Character.generated.h"
 
 class UCameraComponent;
+class UInputAction;
+class UInputMappingContext;
 class USFCrowdControlComponent;
 class USFQuestPilotComponent;
 class USpringArmComponent;
-class UStaticMeshComponent;
 class UTextRenderComponent;
 
 UCLASS()
@@ -20,6 +21,9 @@ public:
     ASFE1Character();
     virtual void BeginPlay() override;
     virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+    virtual void PossessedBy(AController* NewController) override;
+    virtual void PawnClientRestart() override;
+    virtual void Tick(float DeltaSeconds) override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     void CombatSetHealth(int32 Value);
     int32 CombatHealth() const { return PilotHealth; }
@@ -37,11 +41,25 @@ private:
     void PilotAttack();
     UPROPERTY(VisibleAnywhere) TObjectPtr<USpringArmComponent> CameraBoom;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UCameraComponent> FollowCamera;
-    UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> FixtureBody;
 
     void MoveForward(float Value);
     void MoveRight(float Value);
     void LookRight(float Value);
     void LookUp(float Value);
     void Interact();
+
+    // CTL-01 WoW-style camera and movement (docs/decisions/CTL-01-player-camera-controls.md). Only under the plain
+    // ASFE1PlayerController; the construction controllers keep the legacy bindings and their own cursor handling.
+    struct FSFMouseButtonState { bool bDown = false; bool bDragging = false; double DownAt = 0; FVector2D DownCursor = FVector2D::ZeroVector; };
+    bool UsesCameraControls() const;
+    void ApplyControlScheme();
+    void TickCameraControls(float DeltaSeconds);
+    void SetMouseCaptured(bool bCaptured);
+    UPROPERTY(Transient) TObjectPtr<UInputMappingContext> PlayerMapping;
+    UPROPERTY(Transient) TArray<TObjectPtr<UInputAction>> PlayerActions;
+    FSFMouseButtonState OrbitButton, MouseLookButton;
+    FRotator CameraRotation = FRotator::ZeroRotator;
+    float LastControlYaw = 0, DesiredArmCm = 0;
+    uint32 HeldLastTick = 0;
+    bool bFirstPerson = false, bAutorun = false, bWalkToggled = false, bMouseCaptured = false;
 };

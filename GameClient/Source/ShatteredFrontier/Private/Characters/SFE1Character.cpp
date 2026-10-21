@@ -2,7 +2,14 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
-#include "Components/StaticMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Animation/AnimInstance.h"
+#include "Engine/SkeletalMesh.h"
+#include "Engine/LocalPlayer.h"
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedPlayerInput.h"
+#include "InputAction.h"
+#include "InputMappingContext.h"
 #include "Components/TextRenderComponent.h"
 #include "Framework/SFE1Settings.h"
 #include "Combat/SFCombatPilot.h"
@@ -39,15 +46,16 @@ ASFE1Character::ASFE1Character()
     GetCharacterMovement()->AirControl = 0.0f;
 
     CrowdControl = CreateDefaultSubobject<USFCrowdControlComponent>(TEXT("CrowdControl"));
-    FixtureBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FixtureBody"));
-    FixtureBody->SetupAttachment(GetCapsuleComponent());
-    FixtureBody->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    // Fixed graybox geometry, not a character/stat or runtime tuning profile.
-    FixtureBody->SetRelativeScale3D(FVector(0.5f, 0.5f, 1.5f));
+    // Rigged body on the UE4 mannequin skeleton the NPC pipeline also fits. Locomotion comes from the AnimBP reading
+    // replicated CharacterMovement velocity and falling state, so remote proxies animate with no extra replication.
+    GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight()), FRotator(0, -90, 0));
+    GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     if (!IsRunningDedicatedServer())
     {
-        static ConstructorHelpers::FObjectFinder<UStaticMesh> Cube(TEXT("/Engine/BasicShapes/Cube.Cube"));
-        FixtureBody->SetStaticMesh(Cube.Object);
+        static ConstructorHelpers::FObjectFinder<USkeletalMesh> Body(TEXT("/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
+        static ConstructorHelpers::FClassFinder<UAnimInstance> Locomotion(TEXT("/Game/Mannequin/Animations/ThirdPerson_AnimBP"));
+        GetMesh()->SetSkeletalMeshAsset(Body.Object);
+        GetMesh()->SetAnimInstanceClass(Locomotion.Class);
     }
 
     CombatHealthLabel = CreateDefaultSubobject<UTextRenderComponent>(TEXT("CombatHealthLabel"));
@@ -61,6 +69,9 @@ ASFE1Character::ASFE1Character()
     CameraBoom->SetupAttachment(RootComponent);
     CameraBoom->TargetArmLength = Settings->CameraBoomLengthCm;
     CameraBoom->bUsePawnControlRotation = true;
+    CameraBoom->SetRelativeLocation(FVector(0, 0, Settings->CameraPivotHeightCm));
+    CameraBoom->bEnableCameraLag = Settings->CameraLagSpeed > 0.0f;
+    CameraBoom->CameraLagSpeed = Settings->CameraLagSpeed;
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 }
@@ -99,9 +110,201 @@ void ASFE1Character::TickCombatScenario()
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_CLIENT_ATTACK Index=%d"), CombatScenarioAttackCount);
 }
 
+namespace SFE1CameraControls
+{
+    // Order matches the IA_* names below; tools/Create-PlayerInputAssets.py creates the assets.
+    enum EAction { IA_MoveForward, IA_MoveBack, IA_StrafeRight, IA_StrafeLeft, IA_TurnRight, IA_TurnLeft, IA_Look, IA_LookStick, IA_Zoom,
+                   IA_MouseLook, IA_Orbit, IA_Jump, IA_Autorun, IA_Walk, IA_WalkToggle, IA_Interact, IA_Count };
+    const TCHAR* const ActionNames[IA_Count] = { TEXT("IA_MoveForward"), TEXT("IA_MoveBack"), TEXT("IA_StrafeRight"),
+        TEXT("IA_StrafeLeft"), TEXT("IA_TurnRight"), TEXT("IA_TurnLeft"), TEXT("IA_Look"), TEXT("IA_LookStick"), TEXT("IA_Zoom"),
+        TEXT("IA_MouseLook"), TEXT("IA_Orbit"), TEXT("IA_Jump"), TEXT("IA_Autorun"), TEXT("IA_Walk"), TEXT("IA_WalkToggle"),
+        TEXT("IA_Interact") };
+}
+
+bool ASFE1Character::UsesCameraControls() const
+{
+    // Exact class: the construction sandbox controllers subclass it and own RMB/cursor themselves.
+    return Controller && Controller->GetClass() == ASFE1PlayerController::StaticClass();
+}
+
+void ASFE1Character::ApplyControlScheme()
+{
+    // Runs on the server and the owning client so both turn the pawn the same way; facing is the replicated
+    // control yaw (ServerMove carries it), the camera orbits on its own local rotation.
+    const bool bCameraControls = UsesCameraControls();
+    bUseControllerRotationYaw = bCameraControls;
+    GetCharacterMovement()->bOrientRotationToMovement = !bCameraControls;
+    CameraBoom->bUsePawnControlRotation = !bCameraControls;
+    CameraBoom->SetUsingAbsoluteRotation(bCameraControls);
+}
+
+void ASFE1Character::PossessedBy(AController* NewController)
+{
+    Super::PossessedBy(NewController);
+    ApplyControlScheme();
+}
+
+void ASFE1Character::PawnClientRestart()
+{
+    Super::PawnClientRestart();
+    ApplyControlScheme();
+    APlayerController* PC = Cast<APlayerController>(Controller);
+    if (!UsesCameraControls() || !PC || !PC->GetLocalPlayer()) { return; }
+    if (!PlayerMapping)
+    {
+        PlayerMapping = LoadObject<UInputMappingContext>(nullptr, TEXT("/Game/Frontier/Input/IMC_Player.IMC_Player"));
+        for (const TCHAR* Name : SFE1CameraControls::ActionNames)
+        { PlayerActions.Add(LoadObject<UInputAction>(nullptr, *FString::Printf(TEXT("/Game/Frontier/Input/%s.%s"), Name, Name))); }
+    }
+    UEnhancedInputLocalPlayerSubsystem* Input = PC->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+    if (!PlayerMapping || PlayerActions.Contains(nullptr) || !Input)
+    {
+        UE_LOG(LogTemp, Error, TEXT("CTL-01 player input assets missing; run tools/Create-PlayerInputAssets.py"));
+        return;
+    }
+    Input->AddMappingContext(PlayerMapping, 0);
+    const USFE1Settings* Settings = GetDefault<USFE1Settings>();
+    CameraRotation = FRotator(-15.0f, GetActorRotation().Yaw, 0.0f);
+    PC->SetControlRotation(FRotator(0.0f, CameraRotation.Yaw, 0.0f));
+    LastControlYaw = CameraRotation.Yaw;
+    DesiredArmCm = Settings->CameraBoomLengthCm;
+    SetMouseCaptured(false);
+}
+
+void ASFE1Character::SetMouseCaptured(bool bCaptured)
+{
+    APlayerController* PC = Cast<APlayerController>(Controller);
+    if (!PC) { return; }
+    bMouseCaptured = bCaptured;
+    PC->bShowMouseCursor = !bCaptured;
+    if (bCaptured)
+    { FInputModeGameOnly Mode; Mode.SetConsumeCaptureMouseDown(false); PC->SetInputMode(Mode); }
+    else
+    { FInputModeGameAndUI Mode; Mode.SetHideCursorDuringCapture(false); Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock); PC->SetInputMode(Mode); }
+}
+
+void ASFE1Character::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+    if (IsLocallyControlled() && PlayerMapping && UsesCameraControls()) { TickCameraControls(DeltaSeconds); }
+}
+
+void ASFE1Character::TickCameraControls(float Dt)
+{
+    using namespace SFE1CameraControls;
+    APlayerController* PC = Cast<APlayerController>(Controller);
+    UEnhancedInputLocalPlayerSubsystem* Subsystem = PC && PC->GetLocalPlayer() ? PC->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>() : nullptr;
+    UEnhancedPlayerInput* In = Subsystem ? Subsystem->GetPlayerInput() : nullptr;
+    if (!In) { return; }
+    const USFE1Settings* S = GetDefault<USFE1Settings>();
+    const auto Value = [&](EAction A) { return In->GetActionValue(PlayerActions[A]); };
+    const auto Axis = [&](EAction A) { return Value(A).Get<float>(); };
+    uint32 Held = 0;
+    for (EAction A : { IA_MouseLook, IA_Orbit, IA_Jump, IA_Autorun, IA_Walk, IA_WalkToggle, IA_Interact }) { if (Value(A).Get<bool>()) { Held |= 1u << A; } }
+    const auto IsHeld = [Held](EAction A) { return (Held & (1u << A)) != 0; };
+    const uint32 HeldBefore = HeldLastTick;
+    HeldLastTick = Held;
+    const auto Pressed = [&](EAction A) { return IsHeld(A) && !(HeldBefore & (1u << A)); };
+    const auto Released = [&](EAction A) { return !IsHeld(A) && (HeldBefore & (1u << A)) != 0; };
+
+    // A scripted SetControlRotation (combat scenario aim, review scripts) swings the camera behind the new facing.
+    FRotator Control = PC->GetControlRotation();
+    if (!FMath::IsNearlyEqual(FRotator::NormalizeAxis(Control.Yaw - LastControlYaw), 0.0f, 0.01f)) { CameraRotation.Yaw = Control.Yaw; }
+
+    // LMB/RMB: a press becomes a camera drag once the cursor moves or the press outlasts a click; then the cursor is
+    // hidden and locked, and it comes back where it was when the last drag ends. A short still press is a click.
+    const double Now = GetWorld()->GetRealTimeSeconds();
+    float CursorX = 0, CursorY = 0;
+    PC->GetMousePosition(CursorX, CursorY);
+    bool bClickOrbit = false, bClickMouseLook = false;
+    const auto UpdateButton = [&](FSFMouseButtonState& B, EAction A, bool& bClicked)
+    {
+        if (Pressed(A)) { B = FSFMouseButtonState{ true, false, Now, FVector2D(CursorX, CursorY) }; }
+        if (B.bDown && !B.bDragging && (Now - B.DownAt > S->ClickMaxSeconds
+            || FVector2D::Distance(B.DownCursor, FVector2D(CursorX, CursorY)) > S->ClickDragThresholdPixels))
+        { B.bDragging = true; }
+        if (Released(A)) { bClicked = B.bDown && !B.bDragging; B.bDown = B.bDragging = false; }
+    };
+    const FVector2D RestoreCursor = OrbitButton.bDragging ? OrbitButton.DownCursor : MouseLookButton.DownCursor;
+    UpdateButton(OrbitButton, IA_Orbit, bClickOrbit);
+    UpdateButton(MouseLookButton, IA_MouseLook, bClickMouseLook);
+    const bool bDragging = OrbitButton.bDragging || MouseLookButton.bDragging;
+    if (bDragging != bMouseCaptured)
+    {
+        SetMouseCaptured(bDragging);
+        if (!bDragging) { PC->SetMouseLocation(FMath::RoundToInt(RestoreCursor.X), FMath::RoundToInt(RestoreCursor.Y)); }
+    }
+    if (bClickOrbit) { PilotAttack(); }
+    if (bClickMouseLook) { Interact(); }
+
+    // Camera rotation: mouse while dragging, right stick always (mouselook semantics).
+    const FVector2D Stick = Value(IA_LookStick).Get<FVector2D>();
+    FVector2D LookDelta = Stick * S->GamepadLookDegreesPerSecond * Dt;
+    if (bDragging) { LookDelta += Value(IA_Look).Get<FVector2D>() * S->MouseLookDegreesPerCount; }
+    CameraRotation.Yaw += LookDelta.X;
+    CameraRotation.Pitch = FMath::Clamp(CameraRotation.Pitch + LookDelta.Y * (S->bInvertLookY ? -1.0f : 1.0f), S->CameraPitchMinDegrees, S->CameraPitchMaxDegrees);
+    const bool bMouseLook = MouseLookButton.bDragging || !Stick.IsNearlyZero(0.05f);
+
+    // Facing: RMB or the stick snaps the character to the camera; otherwise A/D turn it (and the camera behind it,
+    // unless LMB is orbiting) or strafe when the setting says so.
+    const float TurnAxis = Axis(IA_TurnRight) - Axis(IA_TurnLeft);
+    const bool bTurnKeysStrafe = bMouseLook || S->bStrafeWithAD;
+    if (bMouseLook) { Control.Yaw = CameraRotation.Yaw; }
+    else if (!bTurnKeysStrafe && TurnAxis != 0.0f)
+    {
+        const float Turn = TurnAxis * S->TurnRateDegreesPerSecond * Dt;
+        Control.Yaw += Turn;
+        if (!OrbitButton.bDragging) { CameraRotation.Yaw += Turn; }
+    }
+
+    // Movement in the facing frame. Walking scales the analog input, which CharacterMovement replicates.
+    float Forward = Axis(IA_MoveForward) - Axis(IA_MoveBack);
+    const float Strafe = Axis(IA_StrafeRight) - Axis(IA_StrafeLeft) + (bTurnKeysStrafe ? TurnAxis : 0.0f);
+    if (Pressed(IA_Autorun)) { bAutorun = !bAutorun; }
+    if (Forward != 0.0f) { bAutorun = false; }
+    if (bAutorun || (OrbitButton.bDown && MouseLookButton.bDown)) { Forward = 1.0f; }
+    if (Pressed(IA_WalkToggle)) { bWalkToggled = !bWalkToggled; }
+    const FRotator Facing(0.0f, Control.Yaw, 0.0f);
+    FVector Move = FRotationMatrix(Facing).GetUnitAxis(EAxis::X) * Forward + FRotationMatrix(Facing).GetUnitAxis(EAxis::Y) * Strafe;
+    Move = Move.GetClampedToMaxSize(1.0f) * ((IsHeld(IA_Walk) != bWalkToggled) ? S->WalkInputScale : 1.0f);
+    if (!Move.IsNearlyZero()) { AddMovementInput(Move, 1.0f); }
+    if (Pressed(IA_Jump)) { ACharacter::Jump(); }
+    if (Released(IA_Jump)) { StopJumping(); }
+    if (Pressed(IA_Interact)) { Interact(); }
+
+    // Optional follow: swing behind the character while it moves and the player is not steering the camera.
+    if (S->bCameraFollowWhileMoving && !bDragging && !bMouseLook && GetVelocity().Size2D() > 10.0f)
+    { CameraRotation.Yaw = FMath::FInterpTo(CameraRotation.Yaw, CameraRotation.Yaw + FRotator::NormalizeAxis(Control.Yaw - CameraRotation.Yaw), Dt, S->CameraFollowInterpSpeed); }
+
+    // Zoom: wheel steps the target length; in past the minimum is first person (owner mesh hidden), out leaves it.
+    const float Wheel = Axis(IA_Zoom);
+    if (Wheel > 0.0f && !bFirstPerson)
+    {
+        DesiredArmCm -= Wheel * S->CameraZoomStepCm;
+        if (DesiredArmCm < S->CameraZoomMinCm) { bFirstPerson = true; DesiredArmCm = S->CameraZoomMinCm; }
+    }
+    else if (Wheel < 0.0f)
+    {
+        if (bFirstPerson) { bFirstPerson = false; }
+        else { DesiredArmCm = FMath::Min(DesiredArmCm - Wheel * S->CameraZoomStepCm, S->CameraZoomMaxCm); }
+    }
+    CameraBoom->TargetArmLength = FMath::FInterpTo(CameraBoom->TargetArmLength, bFirstPerson ? 0.0f : DesiredArmCm, Dt, S->CameraZoomInterpSpeed);
+    const bool bHideBody = bFirstPerson && CameraBoom->TargetArmLength < S->CameraZoomMinCm * 0.5f;
+    if (GetMesh()->bOwnerNoSee != bHideBody) { GetMesh()->SetOwnerNoSee(bHideBody); }
+    CameraBoom->bEnableCameraLag = S->CameraLagSpeed > 0.0f && !bFirstPerson;
+
+    CameraRotation.Yaw = FRotator::NormalizeAxis(CameraRotation.Yaw);
+    CameraBoom->SetWorldRotation(FRotator(CameraRotation.Pitch, CameraRotation.Yaw, 0.0f));
+    Control.Yaw = FRotator::NormalizeAxis(Control.Yaw);
+    Control.Pitch = CameraRotation.Pitch;
+    PC->SetControlRotation(Control);
+    LastControlYaw = Control.Yaw;
+}
+
 void ASFE1Character::SetupPlayerInputComponent(UInputComponent* Input)
 {
     Super::SetupPlayerInputComponent(Input);
+    if (UsesCameraControls()) { return; }  // CTL-01 input is polled from IMC_Player in TickCameraControls
     Input->BindAxis(TEXT("MoveForward"), this, &ASFE1Character::MoveForward);
     Input->BindAxis(TEXT("MoveRight"), this, &ASFE1Character::MoveRight);
     Input->BindAxis(TEXT("LookRight"), this, &ASFE1Character::LookRight);

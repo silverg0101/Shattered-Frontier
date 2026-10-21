@@ -31,6 +31,59 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Camera", meta=(ClampMin="0.1", ClampMax="4.0"))
     float LookSensitivity = 1.0f;
 
+    // CTL-01 player camera (docs/decisions/CTL-01-player-camera-controls.md). Client-only presentation; next startup.
+    // CameraBoomLengthCm above is the starting zoom and must lie within [CameraZoomMinCm, CameraZoomMaxCm].
+    UPROPERTY(Config, EditAnywhere, Category="Camera", meta=(ClampMin="0.02", ClampMax="2.0", Units="deg", ToolTip="Camera rotation per mouse count while RMB/LMB is held."))
+    float MouseLookDegreesPerCount = 0.25f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Camera", meta=(ClampMin="30.0", ClampMax="720.0", Units="deg/s", ToolTip="Right-stick camera rate at full deflection."))
+    float GamepadLookDegreesPerSecond = 180.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Camera", meta=(ClampMin="30.0", ClampMax="200.0", Units="cm", ToolTip="Closest third-person zoom; scrolling in past it switches to first person."))
+    float CameraZoomMinCm = 60.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Camera", meta=(ClampMin="300.0", ClampMax="2000.0", Units="cm"))
+    float CameraZoomMaxCm = 1200.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Camera", meta=(ClampMin="10.0", ClampMax="500.0", Units="cm", ToolTip="Zoom change per mouse-wheel notch."))
+    float CameraZoomStepCm = 100.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Camera", meta=(ClampMin="1.0", ClampMax="30.0", ToolTip="Zoom interpolation speed (FInterpTo, per second)."))
+    float CameraZoomInterpSpeed = 10.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Camera", meta=(ClampMin="0.0", ClampMax="30.0", ToolTip="Spring-arm position lag speed; 0 turns lag off."))
+    float CameraLagSpeed = 12.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Camera", meta=(ClampMin="0.0", ClampMax="100.0", Units="cm", ToolTip="Camera pivot above the capsule centre (eye height in first person)."))
+    float CameraPivotHeightCm = 65.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Camera", meta=(ClampMin="-89.0", ClampMax="0.0", Units="deg"))
+    float CameraPitchMinDegrees = -80.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Camera", meta=(ClampMin="0.0", ClampMax="89.0", Units="deg"))
+    float CameraPitchMaxDegrees = 60.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Camera", meta=(ClampMin="1.0", ClampMax="20.0", ToolTip="Cursor travel in screen pixels that turns an LMB/RMB press into a camera drag instead of a click."))
+    float ClickDragThresholdPixels = 4.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Camera", meta=(ClampMin="0.05", ClampMax="1.0", Units="s", ToolTip="Longest press that still counts as a click."))
+    float ClickMaxSeconds = 0.2f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Camera")
+    bool bInvertLookY = false;
+
+    UPROPERTY(Config, EditAnywhere, Category="Camera", meta=(ToolTip="Auto-swing the camera behind the character while moving and not orbiting."))
+    bool bCameraFollowWhileMoving = false;
+
+    UPROPERTY(Config, EditAnywhere, Category="Camera", meta=(ClampMin="0.5", ClampMax="10.0", ToolTip="Follow swing speed (FInterpTo, per second)."))
+    float CameraFollowInterpSpeed = 3.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Movement", meta=(ToolTip="A/D strafe instead of turning when RMB is not held."))
+    bool bStrafeWithAD = false;
+
+    UPROPERTY(Config, EditAnywhere, Category="Movement", meta=(ClampMin="0.1", ClampMax="0.9", ToolTip="Walk speed as a fraction of run speed (analog input scale, so it replicates with movement)."))
+    float WalkInputScale = 0.35f;
+
     // E1 fixture declarations: reviewed release authors only; next process startup;
     // no GM/config-service keys. Invalid values fail startup (no silent fallback).
     UPROPERTY(Config, EditAnywhere, Category="Interaction (Release Only)", meta=(ClampMin="0.5", ClampMax="5.0", Units="m", ToolTip="Maximum pawn-origin to target-anchor range. Shipped default 3 m; release review required; next startup only."))
