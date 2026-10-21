@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup><Compile Remove="Tests/**/*.cs" /></ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../TerrainDelta/TerrainDelta.csproj" />
+    <PackageReference Include="Npgsql" />
+  </ItemGroup>
+</Project>
