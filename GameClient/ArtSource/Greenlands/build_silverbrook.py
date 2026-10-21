@@ -34,6 +34,7 @@ MAT_DIR = '/Game/Frontier/Core/Graybox'
 TERRAIN = '/Game/Frontier/Environment/Greenlands/Terrain/SM_Silverbrook_Terrain'
 BACKDROP = '/Game/Frontier/Environment/Greenlands/Terrain/SM_Silverbrook_Backdrop'
 CUBE = u.load_asset('/Engine/BasicShapes/Cube')
+PLANE = u.load_asset('/Engine/BasicShapes/Plane')
 NATURE_MATS = '/Game/Frontier/Environment/Greenlands/Nature/Materials'  # NatureFamilies/import_ground.py
 REAL = {'Ground': 'MI_GN_Ground', 'Road': 'MI_GN_Road', 'Trail': 'MI_GN_Trail', 'River': 'MI_GN_River'}
 SLOPE_FLAT_DEG, SLOPE_ROCK_DEG = 20.0, 40.0  # terrain vertex colour R: 0 at or below the first slope, 1 at or above the second (M_GN_Ground shows bedrock past the midpoint)
@@ -94,12 +95,16 @@ def _box(label, x, y, w, d, h, mat, z0, yaw, collide, folder, ground, pitch=0.0)
         h += 1
     elif ground == 'centre':
         z0 += HF.at(x, y)
-    a = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(x * 100, y * 100, (z0 + h / 2) * 100), u.Rotator(roll=0, pitch=pitch, yaw=yaw))
-    a.static_mesh_component.set_static_mesh(CUBE)
-    a.set_actor_scale3d(u.Vector(w, d, h))
+    water = mat == 'River'
+    a = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(x * 100, y * 100, (z0 + (h if water else h / 2)) * 100), u.Rotator(roll=0, pitch=pitch, yaw=yaw))
+    a.static_mesh_component.set_static_mesh(PLANE if water else CUBE)
+    a.set_actor_scale3d(u.Vector(w, d, 1 if water else h))
     a.set_actor_label(label)
     a.set_folder_path(folder)
     a.static_mesh_component.set_material(0, M[mat])
+    if water:
+        # A surface plane has no dark end face at the join between water tiles.
+        a.static_mesh_component.set_editor_property('cast_shadow', False)
     if not collide:
         a.static_mesh_component.set_collision_profile_name('NoCollision')  # the profile is reapplied on load; a bare flag is not kept
     return a

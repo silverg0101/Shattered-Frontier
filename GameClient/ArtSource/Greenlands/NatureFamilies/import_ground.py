@@ -147,8 +147,12 @@ def ground():
     import_scan('brown_mud_02'); import_scan('rocky_trail')  # dirt with roots and sticks; pale stones
     dc, dn, dr, _ = layer('T', T + 'brown_mud_02_Diffuse', T + 'brown_mud_02_nor_gl', T + 'brown_mud_02_Rough', 200, (0.85, 0.75, 0.65), 8000)
     sc_, sn, sr, _ = layer('S', T + 'rocky_trail_Diffuse', T + 'rocky_trail_nor_gl', T + 'rocky_trail_Rough', 150, (0.9, 0.88, 0.84), 9600)
-    sw = node(m, u.MaterialExpressionSaturate, 600, 8000)
-    link(g.mul(g.op(u.MaterialExpressionSubtract, mk, g.sc('StoneLow', 0.6, 300, 8000), 450, 8000), g.sc('StoneSharp', 14, 300, 8100), 500, 8000), '', sw, '')
+    def clamp01(value, x, y):
+        return g.op(u.MaterialExpressionMax,
+                    g.op(u.MaterialExpressionMin, value, node(m, u.MaterialExpressionConstant, x - 150, y, r=1.0), x, y),
+                    node(m, u.MaterialExpressionConstant, x - 150, y + 100, r=0.0), x + 150, y)
+    sw = clamp01(g.mul(g.op(u.MaterialExpressionSubtract, mk, g.sc('StoneLow', 0.6, 300, 8000), 450, 8000),
+                       g.sc('StoneSharp', 14, 300, 8100), 500, 8000), 600, 8000)
     tc, tn, tr = g.lerp(dc, sc_, sw, 800, 8000), g.lerp(dn, sn, sw, 800, 8250, '', 'RGB'), g.lerp(dr, sr, sw, 800, 8500)
     vcn = node(m, u.MaterialExpressionVertexColor, -600, 9000)
     edge = g.mask(g.smp('EdgeNoise', tex(T + 'forest_ground_04_Displacement'), S.SAMPLERTYPE_MASKS, g.uv(xy, g.sc('EdgeTileCm', 350, -1800, 9300), -1650, 9300), -1100, 9300), True, False, False, -800, 9300)
@@ -156,19 +160,21 @@ def ground():
     for ch, (c_, n_, r_) in ((('G', 0, 1, 0), (rc, rn, rr)), (('B', 0, 0, 1), (tc, tn, tr))):
         v = g.mask(vcn, *[bool(b) for b in ch[1:]], -400, 9000)
         w_ = node(m, u.MaterialExpressionSaturate, 400, 9000)
-        link(g.op(u.MaterialExpressionAdd, g.mul(g.op(u.MaterialExpressionAdd, g.op(u.MaterialExpressionSubtract, v, half, -200, 9000), wob, 0, 9000), g.sc('EdgeSharp', 5, 0, 9100), 200, 9000), half, 300, 9000), '', w_, '')
-        col = g.lerp(col, c_, w_, 1300, 0); nrm = g.lerp(nrm, n_, w_, 1300, 250, '', 'RGB'); rgh = g.lerp(rgh, r_, w_, 1300, 500)
+        edge_noise = wob if ch[0] == 'G' else g.mul(wob, g.sc('TrailEdgeNoise', 0.35, -200, 9200), 0, 9200)
+        link(g.op(u.MaterialExpressionAdd, g.mul(g.op(u.MaterialExpressionAdd, g.op(u.MaterialExpressionSubtract, v, half, -200, 9000), edge_noise, 0, 9000), g.sc('EdgeSharp', 5, 0, 9100), 200, 9000), half, 300, 9000), '', w_, '')
+        col = g.lerp(col, c_, w_, 1300, 0); nrm = g.lerp(nrm, n_, w_, 1300, 250); rgh = g.lerp(rgh, r_, w_, 1300, 500)
     # tilled fields: vertex alpha (0.5 at the field edge, same worn-edge blend); dark soil with crop rows, rows run along world X
-    va = node(m, u.MaterialExpressionComponentMask, -400, 10300, r=False, g=False, b=False, a=True); link(vcn, '', va, '')
-    wa = node(m, u.MaterialExpressionSaturate, 400, 10300)
-    link(g.op(u.MaterialExpressionAdd, g.mul(g.op(u.MaterialExpressionAdd, g.op(u.MaterialExpressionSubtract, va, half, -200, 10300), wob, 0, 10300), g.sc('EdgeSharp', 5, 0, 10400), 200, 10300), half, 300, 10300), '', wa, '')
+    wa = clamp01(g.op(u.MaterialExpressionAdd, g.mul(g.op(u.MaterialExpressionAdd,
+                 g.op(u.MaterialExpressionSubtract, vcn, half, -200, 10300, ao='A'), wob, 0, 10300),
+                 g.sc('EdgeSharp', 5, 0, 10400), 200, 10300), half, 300, 10300), 400, 10300)
     rows = node(m, u.MaterialExpressionSine, 0, 10600, period=1.0)
     link(g.uv(py, g.sc('RowCm', 110, -300, 10600), -150, 10600), '', rows, '')
-    stripe = node(m, u.MaterialExpressionSaturate, 300, 10600); link(g.op(u.MaterialExpressionAdd, g.mul(rows, g.sc('RowContrast', 1.6, 150, 10700), 150, 10600), half, 300, 10700), '', stripe, '')
+    stripe = clamp01(g.op(u.MaterialExpressionAdd, g.mul(rows, g.sc('RowContrast', 1.6, 150, 10700),
+                    150, 10600), half, 300, 10700), 300, 10600)
     soil = g.mul(dc, g.vec('SoilTint', (0.55, 0.45, 0.36), 0, 10800), 400, 10800)
     crop = g.mul(forest, g.vec('CropTint', (0.7, 1.15, 0.55), 0, 10900), 400, 10900)
     col = g.lerp(col, g.lerp(soil, crop, stripe, 600, 10800), wa, 1500, 0)
-    nrm = g.lerp(nrm, dn, wa, 1500, 250, '', 'RGB'); rgh = g.lerp(rgh, dr, wa, 1500, 500)
+    nrm = g.lerp(nrm, dn, wa, 1500, 250); rgh = g.lerp(rgh, dr, wa, 1500, 500)
     mel.connect_material_property(col, '', u.MaterialProperty.MP_BASE_COLOR); mel.connect_material_property(nrm, '', u.MaterialProperty.MP_NORMAL)
     mel.connect_material_property(rgh, '', u.MaterialProperty.MP_ROUGHNESS)
     mel.recompile_material(m); eal.save_loaded_asset(m)

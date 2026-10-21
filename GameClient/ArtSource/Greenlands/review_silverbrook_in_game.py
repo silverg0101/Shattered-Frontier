@@ -6,12 +6,12 @@ Follows review_route in silverbrook-town-layout.json from the arrival in the Mar
 back through the square, south over the Silverbrook Bridge to the South Gate, then across the Valemere Road bridge. Writes
 silverbrook-game-review.json and captures (arrival plus one per ReviewCamera_*) beside this script.
 """
-import json, math, time, sys
+import json, math, os, time, sys
 from pathlib import Path
 import unreal as u
 
 ROOT = Path(__file__).resolve().parent
-EVIDENCE = ROOT.parents[2] / 'docs/evidence/graphics/2026-10-21-before'
+EVIDENCE = ROOT.parents[2] / 'docs/evidence/graphics' / os.environ.get('GFX_EVIDENCE_DIR', '2026-10-21-before')
 LAYOUT = json.loads((ROOT / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))
 ROUTE = LAYOUT['review_route']
 world = u.load_asset('/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook')
@@ -145,6 +145,15 @@ def tick(delta):
 def reference_capture():
     """GFX-01 fixed views in the built editor target's -game world."""
     bookmarks = json.loads((ROOT / 'silverbrook-reference-bookmarks.json').read_text(encoding='utf-8'))
+    if os.environ.get('GFX_EVIDENCE_DIR'):
+        bookmarks['views'] += [
+            dict(name='05-market-plaza', xy_m=[55, -82], look_xy_m=[0, -30], eye_height_m=5,
+                 look_height_m=0, fov_deg=70),
+            dict(name='06-cemetery-trail', xy_m=[-75, 594], look_xy_m=[-245, 531], eye_height_m=8,
+                 look_height_m=0, fov_deg=70),
+            dict(name='07-farmlands', xy_m=[-430, 275], look_xy_m=[-550, 260], eye_height_m=18,
+                 look_height_m=0, fov_deg=70),
+        ]
     EVIDENCE.mkdir(parents=True, exist_ok=True)
     camera = next(c for c in u.GameplayStatics.get_all_actors_of_class(world, u.CameraActor)
                   if c.get_actor_label() == 'ReviewCamera_Aerial')
@@ -187,7 +196,8 @@ def reference_capture():
                                         False, True)
         if local == 125:
             name = view['name'] + '.png'
-            u.SystemLibrary.execute_console_command(world, 'HighResShot 2560x1440 filename=' +
+            resolution = '1920x1080' if os.environ.get('GFX_EVIDENCE_DIR') else '2560x1440'
+            u.SystemLibrary.execute_console_command(world, 'HighResShot ' + resolution + ' filename=' +
                                                      str(EVIDENCE / name).replace('\\', '/'))
             u.log('GFX01_CAPTURE ' + name)
         if local == 149:
