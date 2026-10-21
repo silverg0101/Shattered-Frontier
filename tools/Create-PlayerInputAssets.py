@@ -23,7 +23,7 @@ ACTIONS = {
     'IA_MouseLook': (T.BOOLEAN, ['RightMouseButton']),
     'IA_Orbit': (T.BOOLEAN, ['LeftMouseButton']),
     'IA_Jump': (T.BOOLEAN, ['SpaceBar', 'Gamepad_FaceButton_Bottom']),
-    'IA_Autorun': (T.BOOLEAN, ['NumLock', 'R', 'Gamepad_LeftThumbstick']),
+    'IA_Autorun': (T.BOOLEAN, ['NumLock', 'ThumbMouseButton', 'Gamepad_LeftThumbstick']),
     'IA_Walk': (T.BOOLEAN, ['LeftControl', 'RightControl']),
     'IA_WalkToggle': (T.BOOLEAN, ['Divide']),
     'IA_Interact': (T.BOOLEAN, ['F', 'Gamepad_FaceButton_Right']),
