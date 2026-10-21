@@ -1,4 +1,9 @@
 CREATE SCHEMA IF NOT EXISTS inventory;
+CREATE TABLE inventory.schema_version (
+    singleton boolean PRIMARY KEY DEFAULT true CHECK (singleton),
+    version integer NOT NULL CHECK (version > 0)
+);
+INSERT INTO inventory.schema_version(singleton, version) VALUES (true, 1);
 CREATE TABLE inventory.containers (
     id text PRIMARY KEY,
     owner_kind integer NOT NULL,

@@ -67,5 +67,19 @@ switch (args[0])
         catch (LedgerRejectedException) { Console.WriteLine("PASS SQL class 23 is non-retryable"); }
         Check(ledger.Read(id).Revision == 4, "constraint rejection rolls back");
         break;
+    case "post-backup-write":
+        ledger.Grant("after-backup", id, 4, item, 2, "fixture", "fixture-3");
+        Check(ledger.Read(id).Revision == 5 && ledger.Read(id).Quantities[item] == 6, "source advanced after backup");
+        break;
+    case "restored":
+        var restored = ledger.Read(id);
+        Check(restored.Revision == 4 && restored.Quantities[item] == 4 && restored.Quantities[bar] == 1, "restore equals backup point, not later source");
+        var replay = ledger.Grant("grant-1", id, 0, item, 6, "fixture", "fixture-1");
+        Check(replay.Revisions[0].After == 1 && ledger.Read(id).Revision == 4, "restored receipt replays without mutation");
+        break;
+    case "newer-schema":
+        try { ledger.Grant("blocked-newer", id, 4, item, 1, "fixture", "fixture-4"); throw new Exception("newer schema accepted write"); }
+        catch (LedgerSchemaCompatibilityException) { Console.WriteLine("PASS newer schema refuses runtime write"); }
+        break;
     default: throw new ArgumentException("Unknown test phase.");
 }

@@ -12,6 +12,8 @@ $pg = Join-Path $repo 'Artifacts/Persistence/Toolchains/postgresql-18.6/pgsql/bi
 $project = Join-Path $repo 'BackendServices/InventoryLedger.Postgres.Tests/InventoryLedger.Postgres.Tests.csproj'
 $schema = Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.sql'
 $dll = Join-Path $repo 'BackendServices/InventoryLedger.Postgres.Tests/bin/Release/net10.0/InventoryLedger.Postgres.Tests.dll'
+$backupTool = Join-Path $repo 'tools/Backup-InventoryLedger.ps1'; $restoreTool = Join-Path $repo 'tools/Restore-InventoryLedger.ps1'
+$backup = Join-Path $EvidenceRoot 'backup'; $restoredInstance = Join-Path $EvidenceRoot 'restored-instance'
 foreach ($path in @($dotnet,$project,$schema,(Join-Path $pg 'postgres.exe'),(Join-Path $pg 'initdb.exe'),(Join-Path $pg 'pg_ctl.exe'),(Join-Path $pg 'psql.exe'))) { if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Required file missing: $path" } }
 if ((Get-FileHash $dotnet -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pins.sdk.executableSha256 -or (Get-FileHash (Join-Path $pg 'postgres.exe') -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pins.postgres.executableSha256) { throw 'Pinned toolchain mismatch.' }
 $run = [guid]::NewGuid().ToString('N'); $private = Join-Path $EvidenceRoot 'private'; $data = Join-Path $private 'data'
@@ -27,7 +29,7 @@ function Invoke-Checked([string]$Executable,[string[]]$Arguments,[hashtable]$Env
     foreach ($key in $Environment.Keys) { $info.EnvironmentVariables[$key] = $Environment[$key] }
     $child = [Diagnostics.Process]::new(); $child.StartInfo = $info; [void]$child.Start()
     $out = $child.StandardOutput.ReadToEndAsync(); $err = $child.StandardError.ReadToEndAsync()
-    if (-not $child.WaitForExit(90000)) { $child.Kill($true); throw 'Owned child timeout.' }
+    if (-not $child.WaitForExit(90000)) { $child.Kill(); throw 'Owned child timeout.' }
     $stdout = if ($out.Wait(1000)) { $out.Result } else { '[server retained output pipe]' }
     $stderr = if ($err.Wait(1000)) { $err.Result } else { '[server retained error pipe]' }
     foreach ($secret in @($adminPassword,$servicePassword)) { $stdout = $stdout.Replace($secret,'[REDACTED]'); $stderr = $stderr.Replace($secret,'[REDACTED]') }
@@ -83,11 +85,29 @@ try {
         if ($phase -eq 'restart' -or $phase -eq 'concurrent' -or $phase -eq 'recover') { if (-not $started) { Cluster start } }
         $results.Add((Invoke-Checked $dotnet @($dll,$phase) @{ INVENTORY_LEDGER_CONNECTION=$connection }))
     }
+    $results.Add((Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-OutputDirectory',$backup,'-HostName','127.0.0.1','-Port',"$port",'-Database',"ledger_$run",'-Username','ledger_svc') @{ PGPASSWORD=$servicePassword }))
+    $results.Add((Invoke-Checked $dotnet @($dll,'post-backup-write') @{ INVENTORY_LEDGER_CONNECTION=$connection }))
+    $corrupt = Join-Path $EvidenceRoot 'corrupt-backup'; [void](New-Item -ItemType Directory -Path $corrupt)
+    Copy-Item (Join-Path $backup 'manifest.json') (Join-Path $corrupt 'manifest.json')
+    $corruptDump = Join-Path $corrupt 'inventory.dump'; Copy-Item (Join-Path $backup 'inventory.dump') $corruptDump
+    $stream = [IO.File]::Open($corruptDump,[IO.FileMode]::Open,[IO.FileAccess]::ReadWrite)
+    try { [void]$stream.Seek(64,[IO.SeekOrigin]::Begin); $byte = $stream.ReadByte(); [void]$stream.Seek(64,[IO.SeekOrigin]::Begin); $stream.WriteByte([byte]($byte -bxor 1)) } finally { $stream.Dispose() }
+    try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-BackupDirectory',$corrupt,'-InstanceRoot',$restoredInstance)); throw 'Corrupt backup was accepted.' }
+    catch { if ($_.Exception.Message -notmatch 'SHA256 mismatch') { throw }; $results.Add('PASS flipped-byte backup refused before restore') }
+    $results.Add((Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-BackupDirectory',$backup,'-InstanceRoot',$restoredInstance)))
+    $restored = Get-Content (Join-Path $restoredInstance 'connection.json') -Raw | ConvertFrom-Json
+    $restoredConnection = "Host=127.0.0.1;Port=$($restored.port);Database=$($restored.database);Username=ledger_svc;Password=$($restored.password);Pooling=false;Timeout=2;Command Timeout=5;Include Error Detail=false"
+    $results.Add((Invoke-Checked $dotnet @($dll,'restored') @{ INVENTORY_LEDGER_CONNECTION=$restoredConnection }))
+    [void](Sql 'UPDATE inventory.schema_version SET version=2' "ledger_$run")
+    $results.Add((Invoke-Checked $dotnet @($dll,'newer-schema') @{ INVENTORY_LEDGER_CONNECTION=$connection }))
+    $markerVersion = Sql 'SELECT version FROM inventory.schema_version WHERE singleton=true' "ledger_$run"
+    if ($markerVersion.Trim() -ne '2') { throw 'Newer schema marker changed unexpectedly.' }
     $results | Set-Content (Join-Path $EvidenceRoot 'results.txt')
 }
 catch { $failure = $_.Exception.Message.Replace($adminPassword,'[REDACTED]').Replace($servicePassword,'[REDACTED]') }
 finally {
     try {
+        if (Test-Path (Join-Path $restoredInstance 'owner.json')) { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-InstanceRoot',$restoredInstance,'-Cleanup')) }
         if (Test-Path (Join-Path $private 'owner.json')) {
             Assert-Owned
             if ($attempted) {

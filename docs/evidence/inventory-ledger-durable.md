@@ -4,4 +4,6 @@ On 2026-10-21, `tools/Test-InventoryLedgerDurable.ps1 -EvidenceRoot Artifacts/Pe
 
 The pinned SDK also ran `InventoryLedger.Tests`, `Exchange.Tests`, `CraftingContent.Tests`, and `MvpJourney.Tests` with `--locked-mode`; all four exited 0.
 
-This is synthetic single-database evidence. It does not cover production migration compatibility, backup/restore, a network listener, or cross-domain atomic writes.
+On 2026-10-21, `tools/Test-InventoryLedgerDurable.ps1 -EvidenceRoot Artifacts/Persistence/InventoryLedgerDurable/backup-restore-20261021-05` passed with the pinned .NET 10.0.402 SDK and PostgreSQL 18.6. The fixture backed up revision 4, advanced the source to revision 5, restored into a second fresh owned instance, and read revision 4 with the original quantities and replayable receipt. A flipped dump byte failed SHA256 verification before restore. Setting the source marker to version 2 caused a runtime write to throw `LedgerSchemaCompatibilityException`. Restore verified marker/version, four table counts, container references, receipt references, and contiguous revisions. `harness.json` reports pass and owned private storage removed; the restored instance was also removed.
+
+This is synthetic single-database evidence. It does not establish production migration rollout, backup scheduling/retention, disaster recovery targets, a network listener, or cross-domain atomic writes. The backup requires quiesced writes; its manifest is not an authenticity signature.

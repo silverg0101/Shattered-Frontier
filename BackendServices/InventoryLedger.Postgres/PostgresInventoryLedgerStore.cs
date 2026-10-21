@@ -5,6 +5,7 @@ using ShatteredFrontier.InventoryLedger;
 namespace ShatteredFrontier.InventoryLedger.Postgres;
 
 public sealed class LedgerStoreUnavailableException(string message, Exception inner) : Exception(message, inner);
+public sealed class LedgerSchemaCompatibilityException(string message) : Exception(message);
 
 // Schema.sql is installed by the migration identity. Runtime needs DML only.
 public sealed class PostgresInventoryLedgerStore(string connectionString) : IInventoryLedgerStore
@@ -19,6 +20,7 @@ public sealed class PostgresInventoryLedgerStore(string connectionString) : IInv
             // A transaction-scoped lock serializes the existing whole-state callback across processes.
             // It also makes operation-ID replay win before any stale revision check.
             Command(connection, db, "SELECT pg_advisory_xact_lock(519761, 1)").ExecuteNonQuery();
+            CheckSchema(connection, db);
             var state = Load(connection, db);
             var before = state.Copy();
             var result = transaction(state);
@@ -38,6 +40,21 @@ public sealed class PostgresInventoryLedgerStore(string connectionString) : IInv
     }
 
     private static NpgsqlCommand Command(NpgsqlConnection connection, NpgsqlTransaction db, string sql) => new(sql, connection, db);
+
+    private static void CheckSchema(NpgsqlConnection connection, NpgsqlTransaction db)
+    {
+        try
+        {
+            using var cmd = Command(connection, db, "SELECT version FROM inventory.schema_version WHERE singleton = true FOR SHARE");
+            var version = cmd.ExecuteScalar();
+            if (version is not int value || value != 1)
+                throw new LedgerSchemaCompatibilityException($"Unsupported inventory schema version: {version ?? "missing"}.");
+        }
+        catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501")
+        {
+            throw new LedgerSchemaCompatibilityException("Inventory schema marker is missing or inaccessible.");
+        }
+    }
 
     private static LedgerState Load(NpgsqlConnection connection, NpgsqlTransaction db)
     {
