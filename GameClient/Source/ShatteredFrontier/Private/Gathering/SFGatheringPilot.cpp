@@ -452,6 +452,15 @@ bool USFGatheringPilotComponent::TryEquipTool(bool bAxe)
     return false;
 }
 
+bool USFGatheringPilotComponent::GetInventoryWeight(float& TotalKg, float& MaxKg) const
+{
+#if SF_WITH_MINIMAL_INVENTORY
+    const auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+    if (Inventory) { TotalKg=Inventory->GetTotalWeight(); MaxKg=Inventory->MaxWeight; return true; }
+#endif
+    return false;
+}
+
 TArray<TPair<FText,int32>> USFGatheringPilotComponent::GetInventoryItems() const
 {
     TArray<TPair<FText,int32>> Items;

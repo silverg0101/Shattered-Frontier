@@ -193,6 +193,8 @@ public:
     FString GetStatusText(const FVector& Start, const FVector& Direction) const;
     // Read-only view of the owner-replicated inventory: one (display name, quantity) per occupied slot or equipped tool.
     TArray<TPair<FText,int32>> GetInventoryItems() const;
+    // Weight in kg (MaxKg 0 = unlimited); false when the pilot has no inventory.
+    bool GetInventoryWeight(float& TotalKg, float& MaxKg) const;
     static bool IsPilotRequested();
     void AssignPilotRole(bool bPrimary);
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST

@@ -16,6 +16,9 @@ bool FSFE1VitalsHudModelTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Countdown never negative"),FSFE1VitalsModel::RemainingSeconds(10.0,20.0,4.f),0.f);
     TestEqual(TEXT("Not defeated has no countdown"),FSFE1VitalsModel::RemainingSeconds(-1.0,20.0,4.f),0.f);
 
+    TestEqual(TEXT("Countdown rounds up and formats mm:ss"),FSFE1VitalsModel::Countdown(3.2f),FString(TEXT("00:04")));
+    TestEqual(TEXT("Countdown at zero"),FSFE1VitalsModel::Countdown(0.f),FString(TEXT("00:00")));
+
     FSFE1VitalsModel Model;
     Model.Observe(0,1.0);
     TestFalse(TEXT("Zero health before combat is inactive, so no HUD"),Model.bActive);

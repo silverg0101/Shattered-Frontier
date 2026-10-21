@@ -3,6 +3,7 @@
 #include "Blueprint/UserWidget.h"
 #include "SFInventoryPanel.generated.h"
 
+class UProgressBar;
 class UTextBlock;
 class USFGatheringPilotComponent;
 
@@ -12,6 +13,9 @@ class SHATTEREDFRONTIER_API USFInventoryPanel : public UUserWidget
 {
     GENERATED_BODY()
 public:
+    static constexpr int32 GridColumns = 5;
+    static constexpr int32 GridRows = 5;
+
     void Configure(USFGatheringPilotComponent* InPilot);
     // Merges stacks that share a name, drops empty entries and sorts by name.
     static TArray<TPair<FText,int32>> BuildRows(const TArray<TPair<FText,int32>>& Items);
@@ -25,5 +29,10 @@ private:
     void Refresh();
 
     UPROPERTY(Transient) TObjectPtr<USFGatheringPilotComponent> Pilot;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> Rows;
+    UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> SlotNames;
+    UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> SlotCounts;
+    UPROPERTY(Transient) TObjectPtr<UTextBlock> EmptyText;
+    UPROPERTY(Transient) TObjectPtr<UTextBlock> WeightText;
+    UPROPERTY(Transient) TObjectPtr<UTextBlock> WeightPercent;
+    UPROPERTY(Transient) TObjectPtr<UProgressBar> WeightBar;
 };

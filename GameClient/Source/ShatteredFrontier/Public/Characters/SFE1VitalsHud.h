@@ -6,6 +6,7 @@
 
 class UProgressBar;
 class UTextBlock;
+class UWidget;
 
 // Client-side view state from replicated health only. Zero health before any positive value means
 // combat is not active here; zero after a positive value is a defeat awaiting the server respawn.
@@ -19,8 +20,10 @@ struct SHATTEREDFRONTIER_API FSFE1VitalsModel
     bool IsDefeated() const { return bActive && Health <= 0; }
     static float HealthFraction(int32 Health, int32 MaxHealth);
     static float RemainingSeconds(double DefeatedAt, double Now, float DelaySeconds);
+    static FString Countdown(float RemainingSeconds);
 };
 
+// Full-screen canvas: bottom-left crest plate with the health bar, and a centred defeated panel.
 UCLASS()
 class SHATTEREDFRONTIER_API USFE1VitalsHud : public UUserWidget
 {
@@ -34,7 +37,8 @@ protected:
 private:
     UPROPERTY(Transient) TObjectPtr<UProgressBar> Bar;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> HealthText;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> DefeatText;
+    UPROPERTY(Transient) TObjectPtr<UTextBlock> CountdownText;
+    UPROPERTY(Transient) TObjectPtr<UWidget> DefeatedLayer;
 };
 
 // Creates the HUD for the local player once its ASFE1Character first reports health; no RPCs.

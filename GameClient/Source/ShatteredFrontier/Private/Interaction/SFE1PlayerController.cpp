@@ -208,8 +208,8 @@ void ASFE1PlayerController::ToggleInventoryPanel()
         if (!InventoryPanel) { return; }
         InventoryPanel->Configure(Pilot);
         InventoryPanel->AddToViewport(20);
-        InventoryPanel->SetDesiredSizeInViewport(FVector2D(320, 360));
-        InventoryPanel->SetPositionInViewport(FVector2D(16, 220));
+        InventoryPanel->SetDesiredSizeInViewport(FVector2D(480, 560));
+        InventoryPanel->SetPositionInViewport(FVector2D(92, 70));
         InventoryPanel->SetVisibility(ESlateVisibility::Collapsed);
     }
     // Display only: hit-test invisible so it never takes clicks from world controls.
