@@ -82,6 +82,11 @@ def step(delta):
     if f == 180: u.SystemLibrary.execute_console_command(world, 'StartFPSChart')
     if f == 260: shot('02-walking.png')
     if f == 299: u.SystemLibrary.execute_console_command(world, 'StopFPSChart')
+    # Shadow-trail check: orbit 180 degrees and look back along the walked path (stale VSM pages would show there).
+    if 300 <= f < 322:
+        inject('Orbit', 1.0)
+        if f >= 312: inject('Look', (72.0, -4.0))
+    if f == 326: shot('02b-path-behind.png')
     # RMB mouselook: pawn and camera turn together.
     if f == 330: m['rmb'] = yaws()
     if 330 <= f < 380:
