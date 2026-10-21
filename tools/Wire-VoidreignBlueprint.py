@@ -5,6 +5,7 @@
     Editor open:    python tools/Run-InEditor.py tools/Wire-VoidreignBlueprint.py
 
 Idempotent: reuses the rider blend space if present, re-applies every default, compiles, verifies and saves.
+Setting blend space samples leaves its runtime data empty: run tools/Resample-VoidreignBlendSpaces.py afterwards.
 """
 import json
 import unreal
@@ -57,6 +58,10 @@ defaults = dict(
 for k, v in defaults.items(): cdo.set_editor_property(k, v)
 rider_mesh = cdo.get_editor_property('rider_mesh')
 rider_mesh.set_editor_property('skeletal_mesh_asset', need('/Game/Mannequin/Character/Mesh/SK_Mannequin'))
+# The seat blend space as the component's own animation: an anim re-init otherwise leaves the rider in the reference
+# (standing) pose, and the editor viewport shows the rider seated too.
+rider_mesh.set_editor_property('animation_mode', unreal.AnimationMode.ANIMATION_SINGLE_NODE)
+rider_mesh.set_editor_property('animation_data', unreal.SingleAnimationPlayData(anim_to_play=rider_bs, saved_looping=True, saved_playing=True))
 unreal.BlueprintEditorLibrary.compile_blueprint(bp)
 
 # Verify after compile (compile regenerates the CDO from the stored defaults).
@@ -66,6 +71,7 @@ rm = cdo.get_editor_property('rider_mesh')
 checks = dict(parent=isinstance(cdo, unreal.SFVoidreignCharacter),
               defaults=not missing, rider_mesh=rm.get_editor_property('skeletal_mesh_asset') is not None,
               rider_socket=str(rm.get_attach_socket_name()) == 'RiderSeat',
+              rider_default_anim=rm.get_editor_property('animation_data').get_editor_property('anim_to_play') == rider_bs,
               rider_samples=len(rider_bs.get_editor_property('sample_data')) == 2)
 unreal.EditorAssetLibrary.save_loaded_asset(rider_bs, only_if_is_dirty=False)
 unreal.EditorAssetLibrary.save_loaded_asset(bp, only_if_is_dirty=False)
