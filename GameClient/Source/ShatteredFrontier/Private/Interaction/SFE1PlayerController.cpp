@@ -4,6 +4,8 @@
 #include "Gathering/SFGatheringPilot.h"
 #include "Gathering/SFGatheringHud.h"
 #include "Inventory/SFInventoryPanel.h"
+#include "Exchange/SFExchangeWidgets.h"
+#include "Exchange/SFFakeExchange.h"
 #include "Components/InputComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
@@ -208,6 +210,11 @@ void ASFE1PlayerController::SetupInputComponent()
 {
     Super::SetupInputComponent();
     InputComponent->BindKey(EKeys::I, IE_Pressed, this, &ASFE1PlayerController::ToggleInventoryPanel);
+    if (FParse::Param(FCommandLine::Get(), TEXT("ExchangeUiDemo")))
+    {
+        InputComponent->BindKey(EKeys::F6, IE_Pressed, this, &ASFE1PlayerController::ToggleTradeDemo);
+        InputComponent->BindKey(EKeys::F7, IE_Pressed, this, &ASFE1PlayerController::ToggleMarketDemo);
+    }
 }
 
 void ASFE1PlayerController::ToggleInventoryPanel()
@@ -238,4 +245,44 @@ void ASFE1PlayerController::InteractWithSelectedTarget()
     const double Now = GetWorld()->GetTimeSeconds();
     if (!LocalFeedback.TryBeginRequest(Now)) { return; }
     ServerRequestInteraction(SelectedTarget.Get(), SelectedRevision);
+}
+
+void ASFE1PlayerController::ToggleTradeDemo()
+{
+    if (!IsLocalController()) { return; }
+    if (!TradeWindow)
+    {
+        DemoExchange = DemoExchange ? DemoExchange : MakeShared<FSFFakeExchange>();
+        const double Now = GetWorld()->GetTimeSeconds();
+        DemoTrade = MakeShared<FSFTradeViewModel>(*DemoExchange, FSFFakeExchange::DemoTrade(Now + 108.0), true);
+        DemoTrade->AddMyItem({TEXT("item/oak_log"), TEXT("Oak Log"), 24});
+        DemoTrade->AddMyItem({TEXT("item/iron_ore"), TEXT("Iron Ore"), 12});
+        DemoTrade->OnPartnerLocked(true);  // the partner has locked in; adding items above cleared it
+        TradeWindow = CreateWidget<USFTradeWindow>(this, USFTradeWindow::StaticClass());
+        if (!TradeWindow) { return; }
+        TradeWindow->Bind(DemoTrade);
+        TradeWindow->AddToViewport(30);
+        TradeWindow->SetPositionInViewport(FVector2D(260, 120));
+        TradeWindow->SetVisibility(ESlateVisibility::Collapsed);
+    }
+    TradeWindow->SetVisibility(TradeWindow->GetVisibility() == ESlateVisibility::Collapsed ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+}
+
+void ASFE1PlayerController::ToggleMarketDemo()
+{
+    if (!IsLocalController()) { return; }
+    if (!MarketBoard)
+    {
+        DemoExchange = DemoExchange ? DemoExchange : MakeShared<FSFFakeExchange>();
+        DemoMarket = MakeShared<FSFMarketViewModel>(*DemoExchange);
+        DemoMarket->SetListings(FSFFakeExchange::DemoListings());
+        MarketBoard = CreateWidget<USFMarketBoard>(this, USFMarketBoard::StaticClass());
+        if (!MarketBoard) { return; }
+        MarketBoard->Bind(DemoMarket);
+        MarketBoard->SetSellItem(TEXT("item/oak_log"), TEXT("Oak Log"), 24);
+        MarketBoard->AddToViewport(30);
+        MarketBoard->SetPositionInViewport(FVector2D(120, 80));
+        MarketBoard->SetVisibility(ESlateVisibility::Collapsed);
+    }
+    MarketBoard->SetVisibility(MarketBoard->GetVisibility() == ESlateVisibility::Collapsed ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 }

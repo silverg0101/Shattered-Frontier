@@ -5,7 +5,12 @@
 #include "SFE1PlayerController.generated.h"
 
 class ASFE1InteractionTarget;
+class FSFFakeExchange;
+class FSFMarketViewModel;
+class FSFTradeViewModel;
 class USFGatheringHud;
+class USFMarketBoard;
+class USFTradeWindow;
 class USFInventoryPanel;
 
 UENUM()
@@ -26,6 +31,9 @@ public:
     virtual void SetupInputComponent() override;
     void InteractWithSelectedTarget();
     void ToggleInventoryPanel();
+    // Development screens for the trading UI (-ExchangeUiDemo): F6 trade window, F7 market board, both on a fake exchange.
+    void ToggleTradeDemo();
+    void ToggleMarketDemo();
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     // Observes entry before local request coalescing, so input-routing tests can
     // detect duplicate pawn dispatch even when cooldown hides another request.
@@ -45,6 +53,11 @@ private:
 
     UPROPERTY(Transient) TObjectPtr<USFInventoryPanel> InventoryPanel;
     UPROPERTY(Transient) TObjectPtr<USFGatheringHud> GatheringHud;
+    UPROPERTY(Transient) TObjectPtr<USFTradeWindow> TradeWindow;
+    UPROPERTY(Transient) TObjectPtr<USFMarketBoard> MarketBoard;
+    TSharedPtr<FSFFakeExchange> DemoExchange;
+    TSharedPtr<FSFTradeViewModel> DemoTrade;
+    TSharedPtr<FSFMarketViewModel> DemoMarket;
     TWeakObjectPtr<ASFE1InteractionTarget> SelectedTarget;
     uint32 SelectedRevision = 0;
     double LastAcceptedServerSeconds = -1.0e30;
