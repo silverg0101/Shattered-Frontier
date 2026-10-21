@@ -176,6 +176,10 @@ void USFHudLayout::BuildHotbar(UCanvasPanel* Root)
         UTextBlock* Key = Num(WidgetTree, FString::FromInt(HotSlot.Key), 18, Ivory());
         UOverlaySlot* KeySlot = Stack->AddChildToOverlay(Key);
         KeySlot->SetHorizontalAlignment(HAlign_Left); KeySlot->SetVerticalAlignment(VAlign_Top); KeySlot->SetPadding(FMargin(8.f, 4.f, 0.f, 0.f));
+        UTextBlock* Count = Num(WidgetTree, TEXT(""), 18, Ivory());
+        UOverlaySlot* CountSlot = Stack->AddChildToOverlay(Count);
+        CountSlot->SetHorizontalAlignment(HAlign_Right); CountSlot->SetVerticalAlignment(VAlign_Bottom); CountSlot->SetPadding(FMargin(0.f, 0.f, 8.f, 4.f));
+        SlotCounts.Add(Count);
         USizeBox* CellSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
         CellSize->SetWidthOverride(88.f); CellSize->SetHeightOverride(88.f); CellSize->SetContent(Cell);
         Row->AddChildToHorizontalBox(CellSize)->SetPadding(FMargin(6.f, 0.f));
@@ -211,6 +215,7 @@ void USFHudLayout::SetPrompts(ESFPromptContext Context)
         const FString Interact = InteractKeyLabel();
         if (!Interact.IsEmpty()) { for (FSFPromptSegment& Segment : Segments) { Segment.Key = Interact; } }
     }
+    if (USizeBox* BarSize = Cast<USizeBox>(PromptBox)) { BarSize->SetHeightOverride(Context == ESFPromptContext::Build ? 44.f : 52.f); }
     PromptBox->SetVisibility(Segments.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
     PromptFrame->SetBrush(KitOrFrame(Context == ESFPromptContext::Build ? TEXT("action_bar") : TEXT("button_normal"), Slate(0.9f), Brass(), 3.f));
     for (int32 Index = 0; Index < Segments.Num(); ++Index)
@@ -220,9 +225,11 @@ void USFHudLayout::SetPrompts(ESFPromptContext Context)
         // keycap_<key> / mouse_<button> kit pieces; an unlisted key falls back to a plain bold label.
         const FString Lower = Segment.Key.ToLower();
         const FString PieceName = Lower == TEXT("lmb") || Lower == TEXT("rmb") ? FString::Printf(TEXT("mouse_%s"), *Lower) : FString::Printf(TEXT("keycap_%s"), *Lower);
-        UWidget* Key = Kit(*PieceName) ? static_cast<UWidget*>(KitImage(WidgetTree, *PieceName)) : static_cast<UWidget*>(Text(WidgetTree, Segment.Key, 20, Ivory(), true));
+        const FSFHudKitElement* PieceArt = Kit(*PieceName);
+        const float PieceScale = Context == ESFPromptContext::Build ? 0.7f : 1.f;  // the build action bar is a slim single line
+        UWidget* Key = PieceArt ? static_cast<UWidget*>(KitImage(WidgetTree, *PieceName, PieceArt->Texture->GetSizeX() * PieceScale, PieceArt->Texture->GetSizeY() * PieceScale)) : static_cast<UWidget*>(Text(WidgetTree, Segment.Key, 20, Ivory(), true));
         PromptRow->AddChildToHorizontalBox(Key)->SetVerticalAlignment(VAlign_Center);
-        UHorizontalBoxSlot* ActionSlot = PromptRow->AddChildToHorizontalBox(Text(WidgetTree, Segment.Action, 24, Ivory()));
+        UHorizontalBoxSlot* ActionSlot = PromptRow->AddChildToHorizontalBox(Text(WidgetTree, Segment.Action, Context == ESFPromptContext::Build ? 18 : 24, Ivory()));
         ActionSlot->SetVerticalAlignment(VAlign_Center); ActionSlot->SetPadding(FMargin(8.f, 0.f, 0.f, 0.f));
     }
 }
@@ -242,6 +249,15 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
         ShownActiveKey = ActiveKey;
         for (int32 Index = 0; Index < SlotFrames.Num(); ++Index)
         { SlotFrames[Index]->SetBrush(KitOrFrame(Index + 1 == ActiveKey ? TEXT("slot_hotbar_selected") : TEXT("slot_hotbar_normal"), Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), 3.f)); }
+    }
+
+    // Stack counts, bottom-right: the pilot item whose name contains the slot label, shown from 2 up (tools are single items).
+    const TArray<FSFHotbarSlot> HotSlots = HotbarSlots();
+    for (int32 Index = 0; Index < SlotCounts.Num() && Index < HotSlots.Num(); ++Index)
+    {
+        int32 Total = 0;
+        for (const TPair<FText,int32>& Item : Pilot->GetInventoryItems()) { if (Item.Key.ToString().Contains(HotSlots[Index].Label)) { Total += Item.Value; } }
+        SlotCounts[Index]->SetText(Total > 1 ? FText::AsNumber(Total) : FText::GetEmpty());
     }
 
     FVector Start, Direction;

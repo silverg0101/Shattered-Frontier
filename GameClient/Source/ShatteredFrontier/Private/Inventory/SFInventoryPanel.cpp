@@ -51,7 +51,7 @@ void USFInventoryPanel::NativeOnInitialized()
     Title->AddChildToHorizontalBox(Heading(WidgetTree, TEXT("Inventory"), 36, Ivory()))->SetVerticalAlignment(VAlign_Center);
     UHorizontalBoxSlot* CloseSlot = Title->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("close_x"), 40.f));  // I or Esc closes
     CloseSlot->SetHorizontalAlignment(HAlign_Right); CloseSlot->SetVerticalAlignment(VAlign_Center); CloseSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-    AddRow(Title, FMargin(0.f, 0.f, 0.f, 10.f));
+    AddRow(Title, FMargin(0.f, 0.f, 0.f, 4.f));
 
     // Category tabs; clicks are hit-tested in NativeOnMouseButtonDown.
     UHorizontalBox* Tabs = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
@@ -67,14 +67,14 @@ void USFInventoryPanel::NativeOnInitialized()
         TabBorders.Add(Tab);
     }
     StyleTabs();
-    AddRow(Tabs, FMargin(0.f, 0.f, 0.f, 12.f));
+    AddRow(Tabs, FMargin(0.f, 0.f, 0.f, 6.f));
 
     // Equipment (v5 inventory.png): five armour slots left, the paperdoll centre, four slots right. Empty slots show their ghost
     // icon; only the main hand is live today (the equipped tool). ponytail: no armour system yet, so the others stay empty.
     auto EquipmentSlot = [this](const TCHAR* GhostName, TObjectPtr<UBorder>* OutFrame, TObjectPtr<UImage>* OutIcon)
     {
         USizeBox* Box = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        Box->SetWidthOverride(72.f); Box->SetHeightOverride(72.f);
+        Box->SetWidthOverride(68.f); Box->SetHeightOverride(68.f);
         UBorder* SlotFrame = KitPanel(WidgetTree, TEXT("slot_equipment_normal"), 1.f, Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), FMargin(0.f), 3.f);
         UImage* Ghost = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
         if (const FSFHudKitElement* Art = SFHudStyle::Kit(GhostName)) { Ghost->SetBrush(SFHudStyle::KitBrush(*Art)); Ghost->SetDesiredSizeOverride(FVector2D(48.f, 48.f)); }
@@ -92,7 +92,7 @@ void USFInventoryPanel::NativeOnInitialized()
     { LeftColumn->AddChildToVerticalBox(EquipmentSlot(Ghost, nullptr, nullptr))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f)); }
     Equipment->AddChildToHorizontalBox(LeftColumn)->SetVerticalAlignment(VAlign_Top);
     UImage* Paperdoll = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
-    if (const FSFHudKitElement* Doll = SFHudStyle::Kit(TEXT("paperdoll_adventurer"))) { Paperdoll->SetBrush(SFHudStyle::KitBrush(*Doll)); Paperdoll->SetDesiredSizeOverride(FVector2D(220.f, 396.f)); }
+    if (const FSFHudKitElement* Doll = SFHudStyle::Kit(TEXT("paperdoll_adventurer"))) { Paperdoll->SetBrush(SFHudStyle::KitBrush(*Doll)); Paperdoll->SetDesiredSizeOverride(FVector2D(190.f, 342.f)); }
     UHorizontalBoxSlot* DollSlot = Equipment->AddChildToHorizontalBox(Paperdoll);
     DollSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); DollSlot->SetHorizontalAlignment(HAlign_Center); DollSlot->SetVerticalAlignment(VAlign_Center);
     UVerticalBox* RightColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
@@ -100,7 +100,7 @@ void USFInventoryPanel::NativeOnInitialized()
     for (const TCHAR* Ghost : {TEXT("ghost_off_hand"), TEXT("ghost_neck"), TEXT("ghost_ring")})
     { RightColumn->AddChildToVerticalBox(EquipmentSlot(Ghost, nullptr, nullptr))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f)); }
     Equipment->AddChildToHorizontalBox(RightColumn)->SetVerticalAlignment(VAlign_Top);
-    AddRow(Equipment, FMargin(0.f, 0.f, 0.f, 8.f));
+    AddRow(Equipment, FMargin(0.f, 0.f, 0.f, 4.f));
 
     // 5 x 5 slot grid. ponytail: fixed 25 cells, no scrolling; pilot capacity is 8 slots, raise rows if that grows.
     UUniformGridPanel* Grid = WidgetTree->ConstructWidget<UUniformGridPanel>(UUniformGridPanel::StaticClass());

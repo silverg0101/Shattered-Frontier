@@ -58,6 +58,7 @@ private:
 
     UPROPERTY(Transient) TObjectPtr<USFGatheringPilotComponent> Pilot;
     UPROPERTY(Transient) TArray<TObjectPtr<UBorder>> SlotFrames;
+    UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> SlotCounts;
     UPROPERTY(Transient) TObjectPtr<UBorder> PromptFrame;
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> PromptRow;
     UPROPERTY(Transient) TObjectPtr<UWidget> PromptBox;

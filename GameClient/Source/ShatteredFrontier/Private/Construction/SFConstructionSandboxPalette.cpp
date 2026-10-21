@@ -9,6 +9,8 @@
 #include "Components/EditableTextBox.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
+#include "Components/Overlay.h"
+#include "Components/OverlaySlot.h"
 #include "Components/Image.h"
 #include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
@@ -90,7 +92,8 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
     UOverlay* SearchStack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
     USizeBox* SearchSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
     SearchSize->SetHeightOverride(40.f); SearchSize->SetContent(Search);
-    SearchStack->AddChildToOverlay(SearchSize);
+    UOverlaySlot* SearchFill = SearchStack->AddChildToOverlay(SearchSize);
+    SearchFill->SetHorizontalAlignment(HAlign_Fill); SearchFill->SetVerticalAlignment(VAlign_Fill);
     UWidget* SearchGlyph = KitImage(WidgetTree, TEXT("icon_search"), 20.f);
     SearchGlyph->SetVisibility(ESlateVisibility::HitTestInvisible);
     UOverlaySlot* GlyphSlot = SearchStack->AddChildToOverlay(SearchGlyph);
@@ -150,15 +153,25 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
         Button->SetStyle(Flat);
         UBorder* Frame = KitPanel(WidgetTree, TEXT("slot_catalogue_normal"), 1.f, Well, Hex(TEXT("3A4348")), FMargin(0.f), 3.f);  // selection state drawn by SelectTile
         UVerticalBox* Stack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-        Stack->AddChildToVerticalBox(KitImage(WidgetTree, TileIcons[Tile], 64.f))->SetHorizontalAlignment(HAlign_Center);
+        Stack->AddChildToVerticalBox(KitImage(WidgetTree, TileIcons[Tile], 70.f))->SetHorizontalAlignment(HAlign_Center);
         UTextBlock* Label = Text(WidgetTree, TileLabel(Tile), 16, Ivory());
         Label->SetJustification(ETextJustify::Center);
         Stack->AddChildToVerticalBox(Label)->SetHorizontalAlignment(HAlign_Center);
-        Frame->SetVerticalAlignment(VAlign_Center); Frame->SetContent(Stack); Frame->SetVisibility(ESlateVisibility::HitTestInvisible);
+        Frame->SetVerticalAlignment(VAlign_Center); Frame->SetHorizontalAlignment(HAlign_Center); Frame->SetContent(Stack); Frame->SetVisibility(ESlateVisibility::HitTestInvisible);
         Button->SetContent(Frame);
         Bind(Button, TileHandlers[Tile]);
         TileFrames.Add(Frame); TileButtons.Add(Button);
-        Catalogue->AddChildToUniformGrid(Button, Tile / 3, Tile % 3);
+        USizeBox* TileBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());  // fixed 100 px cell so labels never widen a column
+        TileBox->SetWidthOverride(100.f); TileBox->SetHeightOverride(100.f); TileBox->SetContent(Button);
+        Catalogue->AddChildToUniformGrid(TileBox, Tile / 3, Tile % 3);
+    }
+    // The other cells of the 3 x 4 grid are empty slots until more pieces exist.
+    for (int32 Cell = TileCount; Cell < 12; ++Cell)
+    {
+        USizeBox* EmptyBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        EmptyBox->SetWidthOverride(100.f); EmptyBox->SetHeightOverride(100.f);
+        EmptyBox->SetContent(KitPanel(WidgetTree, TEXT("slot_catalogue_normal"), 0.6f, Well, Hex(TEXT("3A4348")), FMargin(0.f), 3.f));
+        Catalogue->AddChildToUniformGrid(EmptyBox, Cell / 3, Cell % 3);
     }
     Body->AddChildToHorizontalBox(Catalogue)->SetVerticalAlignment(VAlign_Top);
     Contents->AddChildToVerticalBox(Body)->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
@@ -192,7 +205,8 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
     StatusTextBlock = Text(WidgetTree, TEXT(""), 18, Ivory());
     StatusTextBlock->SetText(CachedStatusText);
     StatusTextBlock->SetAutoWrapText(true);
-    StatusRow->AddChildToHorizontalBox(StatusTextBlock)->SetPadding(FMargin(12.f, 0.f, 0.f, 0.f));
+    UHorizontalBoxSlot* StatusSlot = StatusRow->AddChildToHorizontalBox(StatusTextBlock);
+    StatusSlot->SetPadding(FMargin(12.f, 0.f, 0.f, 0.f)); StatusSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
     CostStack->AddChildToVerticalBox(StatusRow);
     Cost->SetContent(CostStack);
     Contents->AddChildToVerticalBox(Cost);
