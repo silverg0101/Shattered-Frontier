@@ -16,6 +16,7 @@ import unreal as u
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT.parent / 'Silverbrook'))
+sys.path.insert(0, str(ROOT.parent))  # backdrop.py
 import importlib, place_parts; importlib.reload(place_parts)  # noqa: E402  (fresh part reports in an open editor)
 import place_props; importlib.reload(place_props)  # noqa: E402
 import townsfolk_lanes; importlib.reload(townsfolk_lanes)  # noqa: E402  (townsfolk footway ZoneGraph shapes)
@@ -33,8 +34,10 @@ MAT_DIR = '/Game/Frontier/Core/Graybox'
 TERRAIN = '/Game/Frontier/Environment/Greenlands/Terrain/SM_Silverbrook_Terrain'
 BACKDROP = '/Game/Frontier/Environment/Greenlands/Terrain/SM_Silverbrook_Backdrop'
 CUBE = u.load_asset('/Engine/BasicShapes/Cube')
-COLOURS = {'Ground': (0.16, 0.30, 0.11), 'Road': (0.55, 0.45, 0.30), 'Trail': (0.38, 0.30, 0.19),
-           'River': (0.08, 0.25, 0.55), 'Wall': (0.42, 0.42, 0.45), 'Civic': (0.82, 0.80, 0.72),
+NATURE_MATS = '/Game/Frontier/Environment/Greenlands/Nature/Materials'  # NatureFamilies/import_ground.py
+REAL = {'Ground': 'MI_GN_Ground', 'Road': 'MI_GN_Road', 'Trail': 'MI_GN_Trail', 'River': 'MI_GN_River'}
+SLOPE_FLAT_DEG, SLOPE_ROCK_DEG = 20.0, 40.0  # terrain vertex colour R: 0 at or below the first slope, 1 at or above the second (M_GN_Ground shows bedrock past the midpoint)
+COLOURS = {'Wall': (0.42, 0.42, 0.45), 'Civic': (0.82, 0.80, 0.72),
            'House': (0.62, 0.42, 0.28), 'Plot': (0.88, 0.76, 0.18), 'Field': (0.42, 0.48, 0.14),
            'Marker': (0.75, 0.10, 0.08), 'Rock': (0.36, 0.37, 0.40)}
 TYPES = L['building_types']
@@ -229,6 +232,7 @@ def _label(text, x, y, z, size):
     comp.set_editor_property('text_render_color', u.Color(255, 240, 200, 255))
     a.set_actor_label(f'Label_{text}')
     a.set_folder_path('Labels')
+    a.set_actor_hidden_in_game(True)  # editor-only debug text; it showed in game, backwards
 
 
 def seg_dist(p, a, b):
@@ -332,16 +336,14 @@ if '-run=' not in u.SystemLibrary.get_command_line().lower():
     assert not dirty or '--discard-unsaved' in sys.argv, \
         f'Save or discard these first, or pass --discard-unsaved: {dirty}'
 M = {name: material(name, rgb) for name, rgb in COLOURS.items()}
+for _k, _n in REAL.items():
+    M[_k] = u.load_asset(f'{NATURE_MATS}/{_n}')
+    assert M[_k], f'Missing {_n}; run NatureFamilies/import_terrain.py then import_ground.py in the editor'
 world = u.EditorLoadingAndSavingUtils.new_blank_map(False)  # also closes the zone map if it is open
 if u.EditorAssetLibrary.does_asset_exist(ZONE):
     assert u.EditorAssetLibrary.delete_asset(ZONE), 'Could not delete the previous zone map'
 
-sun = actors.spawn_actor_from_class(u.DirectionalLight, u.Vector(0, 0, 50000), u.Rotator(roll=0, pitch=-40, yaw=-60))
-sun.light_component.set_editor_property('atmosphere_sun_light', True)
-actors.spawn_actor_from_class(u.SkyAtmosphere, u.Vector(0, 0, 0))
-sky = actors.spawn_actor_from_class(u.SkyLight, u.Vector(0, 0, 1000))
-sky.light_component.set_editor_property('real_time_capture', True)
-actors.spawn_actor_from_class(u.ExponentialHeightFog, u.Vector(0, 0, 0))
+import lighting; importlib.reload(lighting); lighting.apply()  # WP2: sun, sky, atmosphere, fog, clouds, post (spawns what is missing)
 
 for w in WATERS:
     # Narrowed at graybox crossings (heightfield half_width); a piece's wider end runs under the built-up bank.
@@ -353,7 +355,9 @@ for b in BASINS:  # one flat surface at the basin level; the shore terrain hides
     box(b['name'].replace(' ', ''), bx0, by0, bw, bd, 0.1, 'River', z0=b['level'] - 0.1, collide=False, folder='Water', ground=None)
     pending.append(lambda n=b['name'].replace(' ', ''), g=(bx0, by0, bw, bd, b['level']): _water(n, *g))  # shore above the level stays dry
 for name, pts, width, tier in ROADS:
-    strip(name.replace(' ', ''), pts, width, 'Trail' if tier == 'trail' else 'Road', 0.3, f'Roads/{tier.title()}', on_road(name, pts),
+    # Walkable: the 0.3 m slab is centred 0.10 m under the ground, so its top is a 5 cm curb the capsule steps over, and it blocks.
+    strip(name.replace(' ', ''), pts, width, 'Trail' if tier == 'trail' else 'Road', 0.3, f'Roads/{tier.title()}',
+          lambda i, t, z=on_road(name, pts): z(i, t) - 0.10, collide=True,
           skip=lambda x, y: water_gap((x, y)) < 0)  # over the water the bridge deck is the road; a strip would show under its arches
 
 # Bridges where primary or secondary roads cross the river or a brook.
@@ -665,6 +669,18 @@ u.GeometryScript_Primitives.append_rectangle_xy(mesh, u.GeometryScriptPrimitiveO
 grid = u.GeometryScript_MeshQueries.get_all_vertex_positions(mesh, False)[1]
 moved = [u.Vector(v.x, v.y, HF.at(v.x / 100, v.y / 100) * 100) for v in u.GeometryScript_List.convert_vector_list_to_array(grid)]
 u.GeometryScript_MeshEdits.set_all_mesh_vertex_positions(mesh, u.GeometryScript_List.convert_array_to_vector_list(moved))
+
+
+def rockiness(v, h=2.5):
+    """0..1 from the ground slope around a grid vertex: the vertex colour M_GN_Ground blends bedrock by."""
+    x, y = v.x / 100, v.y / 100
+    deg = math.degrees(math.atan(math.hypot(HF.at(x + h, y) - HF.at(x - h, y), HF.at(x, y + h) - HF.at(x, y - h)) / (2 * h)))
+    return min(1.0, max(0.0, (deg - SLOPE_FLAT_DEG) / (SLOPE_ROCK_DEG - SLOPE_FLAT_DEG)))
+
+
+u.GeometryScript_VertexColors.set_mesh_per_vertex_colors(
+    mesh, u.GeometryScript_List.convert_array_to_color_list([u.LinearColor(rockiness(v), 0, 0, 1) for v in
+                                                              u.GeometryScript_List.convert_vector_list_to_array(grid)]))
 opts = u.GeometryScriptCreateNewStaticMeshAssetOptions()
 opts.set_editor_property('enable_recompute_normals', True)
 opts.set_editor_property('enable_collision', True)
@@ -766,5 +782,7 @@ for district in DRESS_DISTRICTS:
 u.log(f'SILVERBROOK_PROPS {place_props.place_all()}')  # wells, carts, benches... beside buildings; reruns replace them
 u.log(f'SILVERBROOK_TOWNSFOLK_LANES {townsfolk_lanes.build_in_editor(*townsfolk_lanes.plan(L), ground=HF.at, wet=lambda x, y: water_gap((x, y)) < 0)}')  # footways for the townsfolk prototype
 u.log(f'SILVERBROOK_TOWNSFOLK_SMARTOBJECTS {townsfolk_smartobjects.build_in_editor(L)}')  # doors, stalls and benches residents claim
+import silverbrook_props; importlib.reload(silverbrook_props); silverbrook_props.dress_all()  # WP6: re-materials Roads/Primary and Roads/Secondary by folder path, adds verges and props
 assert u.EditorLoadingAndSavingUtils.save_map(world, ZONE), 'Could not save the zone map'
+import backdrop as backdrop_ring; importlib.reload(backdrop_ring); backdrop_ring.place(backdrop_ring.config())  # WP5: needs the saved map; hides the white Backdrop above and saves again
 u.log(f'SILVERBROOK_BUILT Map={ZONE} Datum={DATUM} Bridges={len(bridges)} Fill={fill_report} Terrain={terrain_stats} Foundations={foundation} Dressing={dressing} Counts={counts}')
