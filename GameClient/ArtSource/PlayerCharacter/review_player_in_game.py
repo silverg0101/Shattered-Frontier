@@ -25,7 +25,9 @@ boom = pawn.get_component_by_class(u.SpringArmComponent)
 # The subsystem getter is BlueprintInternalUseOnly (not in Python), so find the live instance.
 inputs = next(s for s in u.ObjectIterator(u.EnhancedInputLocalPlayerSubsystem) if not s.get_name().startswith("Default__"))
 IA = {n: u.load_asset(f'/Game/Frontier/Input/IA_{n}') for n in ('MouseLook', 'Orbit', 'Look', 'Zoom', 'MoveForward')}
-state = dict(pawn=pawn.get_class().get_name(), mesh=mesh.skeletal_mesh_asset.get_path_name() if mesh.skeletal_mesh_asset else None,
+outfit = next((c for c in pawn.get_components_by_class(u.SkeletalMeshComponent) if c.get_name() == "Outfit"), None)
+state = dict(pawn=pawn.get_class().get_name(), outfit=outfit.skeletal_mesh_asset.get_path_name() if outfit and outfit.skeletal_mesh_asset else None,
+             mesh=mesh.skeletal_mesh_asset.get_path_name() if mesh.skeletal_mesh_asset else None,
              anim_class=mesh.get_anim_instance().get_class().get_name() if mesh.get_anim_instance() else None,
              bookmark=view['name'], checks={}, shots=[], frames_ms=[])
 x, y = view['xy_m']; tx, ty = view['look_xy_m']

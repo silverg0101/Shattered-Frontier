@@ -1,0 +1,20 @@
+Using your image generation tool, generate five SEPARATE images of the same character, in this order, and save each as a PNG at exactly these paths (relative to the current directory):
+0. GameClient/ArtSource/PlayerCharacter/Adventurer-01/concept-v001.png - a realistic three-quarter concept painting of the character standing on a sunlit forest trail (photoreal, grounded, not stylized). This is the design reference for the next four.
+1. GameClient/ArtSource/PlayerCharacter/Adventurer-01/Views1024-v001/raw/front.png - FRONT view: the character faces the camera straight on.
+2. GameClient/ArtSource/PlayerCharacter/Adventurer-01/Views1024-v001/raw/left.png - LEFT SIDE profile: the character's left side faces the camera; the character faces image-left.
+3. GameClient/ArtSource/PlayerCharacter/Adventurer-01/Views1024-v001/raw/back.png - BACK view: the character faces directly away from the camera.
+4. GameClient/ArtSource/PlayerCharacter/Adventurer-01/Views1024-v001/raw/right.png - RIGHT SIDE profile: the character's right side faces the camera; the character faces image-right.
+
+Rules for images 1-4:
+- Each image is a single 1024x1024 square with one figure. Not a sheet, not a grid, no collage.
+- Exactly the same character as image 0: same design, colors, proportions, pose and scale in every image, as if a camera orbits a statue.
+- Full body, centered, filling about 90% of the image height, feet at the same height in every image, small margin on all sides.
+- Pose: neutral A-pose, standing straight, arms angled 40 degrees away from the body, hands open with fingers slightly apart, legs straight and shoulder-width apart, nothing touching or overlapping.
+- No weapons, no held props, no capes or loose cloth hanging away from the body.
+- Orthographic camera at chest height, no perspective distortion.
+- Flat, even, neutral studio lighting; no cast shadows, no rim light, no ground shadow, no floor.
+- Plain pure white background. No text, labels or borders.
+
+Design (all five images): realistic human male frontier adventurer, about 30, average athletic build, weathered tanned skin, short dark-brown hair, short trimmed beard; off-white rough linen shirt with rolled sleeves to the forearm; a fitted dark-brown leather jerkin (sleeveless, laced at the front) over it, ending at the hips; worn leather bracers on both forearms; one wide brown belt with an iron buckle plus a thinner belt worn slanting; a canvas-and-leather satchel on the character's RIGHT hip, its strap running across the chest from the character's LEFT shoulder; a small pouch on the character's LEFT hip; dark olive wool trousers; knee-high scuffed brown leather boots with buckles. Muted earthy palette, used and dusty, rugged look, no fantasy armour, no glowing parts.
+
+Do nothing else: do not edit, create or delete any other file. When all five files exist, print their paths and pixel sizes.

@@ -41,6 +41,7 @@ private:
     void PilotAttack();
     UPROPERTY(VisibleAnywhere) TObjectPtr<USpringArmComponent> CameraBoom;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UCameraComponent> FollowCamera;
+    UPROPERTY(VisibleAnywhere) TObjectPtr<USkeletalMeshComponent> Outfit;  // null on a dedicated server
 
     void MoveForward(float Value);
     void MoveRight(float Value);

@@ -1,0 +1,22 @@
+{
+  "source": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Adventurer-01/Views-v001/cells/view02_azim180.png",
+  "source_sha256": "3e0ba64579cae417cada0e1ff479259cdd066884ef052984e2afbdf3fc5481de",
+  "output": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Adventurer-01/Views-v001/view02_azim180.png",
+  "output_sha256": "eab9558bbea82ca7fb0be17b2d34713fb5ce9c62e6715c912aaed183e6b5267a",
+  "mask_preview": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Adventurer-01/Views-v001/view02_azim180.mask.png",
+  "mask_preview_sha256": "da2170915ba2cae1e731c77199aafc964ba157aa8c898fbe11377a082dbf20a5",
+  "dimensions_px": [
+    1024,
+    1024
+  ],
+  "method": "border-connected fixed-range RGB flood fill; Gaussian alpha edge 0.8px",
+  "tolerance_rgb": 12,
+  "foreground_fraction": 0.171266,
+  "foreground_bounds_px": [
+    287,
+    43,
+    720,
+    955
+  ],
+  "review_status": "needs-review"
+}

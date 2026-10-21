@@ -24,6 +24,7 @@ def args():
     p.add_argument('--rig', type=Path, required=True); p.add_argument('--name', required=True)
     p.add_argument('--version', default='V1'); p.add_argument('--lods', type=int, default=4)
     p.add_argument('--nanite-variant', action='store_true')
+    p.add_argument('--root', default='/Game/Frontier/Characters/NPC', help='Parent Content folder (the player body uses /Game/Frontier/Characters/Player)')
     argv = sys.argv[1:]
     if not argv:  # -script="file args" passes arguments through the command line only
         toks = shlex.split(unreal.SystemLibrary.get_command_line(), posix=False)
@@ -76,7 +77,7 @@ def main():
     fbx = next(rig.glob('*.fbx'))
     if sha(fbx) != report['fbx_sha256']:
         raise RuntimeError('FBX does not match its rig report')
-    root = f'/Game/Frontier/Characters/NPC/{a.name}/{a.version}'
+    root = f'{a.root}/{a.name}/{a.version}'
     if unreal.EditorAssetLibrary.does_directory_exist(root):
         raise RuntimeError('Refusing to overwrite ' + root)
     for d in ['', '/Mesh', '/Animations']:

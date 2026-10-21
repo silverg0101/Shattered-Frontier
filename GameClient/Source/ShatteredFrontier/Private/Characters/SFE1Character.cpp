@@ -56,6 +56,19 @@ ASFE1Character::ASFE1Character()
         static ConstructorHelpers::FClassFinder<UAnimInstance> Locomotion(TEXT("/Game/Mannequin/Animations/ThirdPerson_AnimBP"));
         GetMesh()->SetSkeletalMeshAsset(Body.Object);
         GetMesh()->SetAnimInstanceClass(Locomotion.Class);
+        // WP7 step 2: the clothed adventurer (Build-NpcAutoRig on the same skeleton) follows the animated mannequin,
+        // which stays hidden but keeps ticking so its pose drives the outfit and remote proxies alike.
+        static ConstructorHelpers::FObjectFinder<USkeletalMesh> Adventurer(TEXT("/Game/Frontier/Characters/Player/Adventurer/V1/Mesh/SK_Adventurer.SK_Adventurer"));
+        if (Adventurer.Succeeded())
+        {
+            Outfit = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Outfit"));
+            Outfit->SetupAttachment(GetMesh());
+            Outfit->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            Outfit->SetSkeletalMeshAsset(Adventurer.Object);
+            Outfit->SetLeaderPoseComponent(GetMesh());
+            GetMesh()->SetVisibility(false);
+            GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+        }
     }
 
     CombatHealthLabel = CreateDefaultSubobject<UTextRenderComponent>(TEXT("CombatHealthLabel"));
@@ -290,7 +303,7 @@ void ASFE1Character::TickCameraControls(float Dt)
     }
     CameraBoom->TargetArmLength = FMath::FInterpTo(CameraBoom->TargetArmLength, bFirstPerson ? 0.0f : DesiredArmCm, Dt, S->CameraZoomInterpSpeed);
     const bool bHideBody = bFirstPerson && CameraBoom->TargetArmLength < S->CameraZoomMinCm * 0.5f;
-    if (GetMesh()->bOwnerNoSee != bHideBody) { GetMesh()->SetOwnerNoSee(bHideBody); }
+    if (GetMesh()->bOwnerNoSee != bHideBody) { GetMesh()->SetOwnerNoSee(bHideBody); if (Outfit) { Outfit->SetOwnerNoSee(bHideBody); } }
     CameraBoom->bEnableCameraLag = S->CameraLagSpeed > 0.0f && !bFirstPerson;
 
     CameraRotation.Yaw = FRotator::NormalizeAxis(CameraRotation.Yaw);
