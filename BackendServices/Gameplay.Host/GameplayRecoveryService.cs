@@ -22,7 +22,7 @@ internal sealed record GameplayRecoverySettings
     }
 }
 
-internal sealed class GameplayRecoveryService(GameplayRecoverySettings settings,
+internal sealed class GameplayRecoveryService(GameplayRecoverySettings settings, DatabasePoolSettings pools,
     PostgresCharacterStateStore characters, PostgresHousingStore housing,
     PostgresInventoryLedgerStore ledger, QuestRewardPayout payout, PostgresExchangeStore exchange) : BackgroundService
 {
@@ -40,7 +40,7 @@ internal sealed class GameplayRecoveryService(GameplayRecoverySettings settings,
 
     private void Sweep()
     {
-        using var connection = new NpgsqlConnection(Environment.GetEnvironmentVariable("GAMEPLAY_CHARACTER_CONNECTION"));
+        using var connection = new NpgsqlConnection(pools.For("CharacterState", Environment.GetEnvironmentVariable("GAMEPLAY_CHARACTER_CONNECTION")!));
         connection.Open();
         using var acquire = new NpgsqlCommand("SELECT pg_try_advisory_lock(519761, 44)", connection);
         if (acquire.ExecuteScalar() is not true) return;

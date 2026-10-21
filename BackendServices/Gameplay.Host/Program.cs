@@ -46,10 +46,11 @@ if (args.Length == 1 && args[0].StartsWith("fixture-", StringComparison.Ordinal)
 var portText = Required("GAMEPLAY_HOST_PORT");
 if (!int.TryParse(portText, out var port) || port is < 1 or > 65535)
     throw new InvalidOperationException("GAMEPLAY_HOST_PORT must be 1-65535.");
-var ledgerConnection = Required("GAMEPLAY_LEDGER_CONNECTION");
-var characterConnection = Required("GAMEPLAY_CHARACTER_CONNECTION");
-var housingConnection = Required("GAMEPLAY_HOUSING_CONNECTION");
-var exchangeConnection = Required("GAMEPLAY_EXCHANGE_CONNECTION");
+var pools = new DatabasePoolSettings();
+var ledgerConnection = pools.For("InventoryLedger", Required("GAMEPLAY_LEDGER_CONNECTION"));
+var characterConnection = pools.For("CharacterState", Required("GAMEPLAY_CHARACTER_CONNECTION"));
+var housingConnection = pools.For("Housing", Required("GAMEPLAY_HOUSING_CONNECTION"));
+var exchangeConnection = pools.For("Exchange", Required("GAMEPLAY_EXCHANGE_CONNECTION"));
 var token = Required("SF_GAMEPLAY_TOKEN");
 var contentRoot = Required("GAMEPLAY_CONTENT_ROOT");
 var boar = LootCatalog.LoadFiles([Path.Combine(contentRoot, "loot", "greenlands_starter.json")])["loot/greenlands_silverbrook_boar"];
@@ -63,6 +64,7 @@ builder.WebHost.UseSetting(WebHostDefaults.ServerUrlsKey, "");
 builder.WebHost.ConfigureKestrel(o => o.Listen(IPAddress.Loopback, port, l => l.Protocols = HttpProtocols.Http2));
 builder.Logging.SetMinimumLevel(LogLevel.Warning);
 builder.Services.AddSingleton(new AuthOptions(Encoding.UTF8.GetBytes("Bearer " + token)));
+builder.Services.AddSingleton(pools);
 builder.Services.AddSingleton(ledgerStore);
 builder.Services.AddSingleton(new DomLedger(ledgerStore));
 builder.Services.AddSingleton(new BoarRewardService(new DomLedger(ledgerStore), boar));

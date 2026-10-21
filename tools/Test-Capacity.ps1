@@ -135,7 +135,11 @@ try {
     $pwfile = Join-Path $private 'admin-password'; [IO.File]::WriteAllText($pwfile,$adminPassword)
     [void](Invoke-Checked (Join-Path $pg 'initdb.exe') @('-D',$data,'-U','fixture_admin','--pwfile',$pwfile,'--auth','scram-sha-256','--encoding','UTF8','--no-locale'))
     Remove-Item -LiteralPath $pwfile -Force
-    [IO.File]::AppendAllText((Join-Path $data 'postgresql.conf'),"`nlisten_addresses='127.0.0.1'`nport=$port`nfsync=on`nsynchronous_commit=on`nfull_page_writes=on`n")
+    # Disposable single-box capacity fixture: enough backend slots for the
+    # declared host pools plus the direct fixture client and sampler.
+    $postgresMaxConnections = 160
+    if ($postgresMaxConnections -lt 100 -or $postgresMaxConnections -gt 256) { throw 'Fixture connection bound outside 100..256.' }
+    [IO.File]::AppendAllText((Join-Path $data 'postgresql.conf'),"`nlisten_addresses='127.0.0.1'`nport=$port`nmax_connections=$postgresMaxConnections`nfsync=on`nsynchronous_commit=on`nfull_page_writes=on`n")
     [IO.File]::WriteAllLines((Join-Path $data 'pg_hba.conf'),@('host all fixture_admin 127.0.0.1/32 scram-sha-256',"host gameplay_$run gameplay_svc 127.0.0.1/32 scram-sha-256",'host all all 127.0.0.1/32 reject','host all all ::1/128 reject'))
     Cluster start
     [void](Sql "CREATE ROLE gameplay_owner NOLOGIN; CREATE ROLE gameplay_svc LOGIN PASSWORD '$servicePassword'; CREATE DATABASE gameplay_$run;")
@@ -147,7 +151,9 @@ try {
     $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Position.sql') -Raw
     [void](Sql ("SET ROLE gameplay_owner;`n" + ($schemas -join "`n")) "gameplay_$run")
     [void](Sql 'GRANT USAGE ON SCHEMA inventory,character_state,housing,exchange TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA character_state TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA housing TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA exchange TO gameplay_svc;' "gameplay_$run")
-    $connection = "Host=127.0.0.1;Port=$port;Database=gameplay_$run;Username=gameplay_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
+    # The load generator seeds and audits with its own process pool; the host
+    # applies its separate per-service limits to the same topology/credentials.
+    $connection = "Host=127.0.0.1;Port=$port;Database=gameplay_$run;Username=gameplay_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=0;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $hostPort = $listener.LocalEndpoint.Port; $listener.Stop()
     $rng = [Security.Cryptography.RandomNumberGenerator]::Create(); $rng.GetBytes($bytes); $token = [BitConverter]::ToString($bytes).Replace('-',''); $rng.Dispose()
     $env:GAMEPLAY_HOST_PORT = "$hostPort"
@@ -196,14 +202,14 @@ try {
             while (-not $child.HasExited) {
                 Start-Sleep -Seconds 5
                 if (((Get-Date) - $startedAt).TotalSeconds -gt ($WarmupSeconds + $MeasuredSeconds + 120)) { Stop-Process -Id $child.Id -Force; throw "Capacity child timeout at $tier" }
-                $stats = Sql "SELECT json_build_object('connections',(SELECT count(*) FROM pg_stat_activity WHERE datname=current_database()),'waits',coalesce((SELECT json_object_agg(wait,n) FROM (SELECT concat(wait_event_type,':',wait_event) wait,count(*) n FROM pg_stat_activity WHERE datname=current_database() AND wait_event IS NOT NULL GROUP BY 1) w),'{}'::json))" "gameplay_$run"
+                $stats = Sql "SELECT json_build_object('connections',(SELECT count(*) FROM pg_stat_activity WHERE datname=current_database()),'services',coalesce((SELECT json_object_agg(service,n) FROM (SELECT coalesce(nullif(application_name,''),'unlabeled') service,count(*) n FROM pg_stat_activity WHERE datname=current_database() GROUP BY 1) s),'{}'::json),'waits',coalesce((SELECT json_object_agg(wait,n) FROM (SELECT concat(wait_event_type,':',wait_event) wait,count(*) n FROM pg_stat_activity WHERE datname=current_database() AND wait_event IS NOT NULL GROUP BY 1) w),'{}'::json))" "gameplay_$run"
                 $db = $stats | ConvertFrom-Json
                 $pgIds = @((Sql "SELECT pid FROM pg_stat_activity WHERE datname=current_database()" "gameplay_$run") -split '\r?\n' | ForEach-Object { if ($_ -match '^\d+$') { [int]$_ } })
                 $pgCpuDelta = 0.0; $currentPgCpu = @{}
                 foreach ($pgId in $pgIds) { $p = Get-Process -Id $pgId -ErrorAction SilentlyContinue; if ($p) { $cpu = $p.TotalProcessorTime.TotalSeconds; if ($priorPgCpu.ContainsKey($pgId)) { $pgCpuDelta += [math]::Max(0,$cpu-$priorPgCpu[$pgId]) }; $currentPgCpu[$pgId] = $cpu } }
                 $hostProcess.Refresh(); $now = Get-Date; $elapsed = ($now - $priorAt).TotalSeconds
                 $hostCpu = $hostProcess.TotalProcessorTime.TotalSeconds
-                $samples += [pscustomobject]@{ hostCpuPct=[math]::Round(100*($hostCpu-$priorHostCpu)/$elapsed/[Environment]::ProcessorCount,1); postgresCpuPct=[math]::Round(100*$pgCpuDelta/$elapsed/[Environment]::ProcessorCount,1); connections=$db.connections; waits=$db.waits }
+                $samples += [pscustomobject]@{ hostCpuPct=[math]::Round(100*($hostCpu-$priorHostCpu)/$elapsed/[Environment]::ProcessorCount,1); postgresCpuPct=[math]::Round(100*$pgCpuDelta/$elapsed/[Environment]::ProcessorCount,1); connections=$db.connections; services=$db.services; waits=$db.waits }
                 $priorAt=$now; $priorHostCpu=$hostCpu; $priorPgCpu=$currentPgCpu
             }
             $child.WaitForExit()
@@ -217,7 +223,8 @@ try {
         $pass = $gate.audit.passed -and $errors -eq 0 -and $maxP95 -le 250 -and $child.ExitCode -eq 0
         $waits = @{}; foreach ($sample in $samples) { if ($sample.waits) { foreach ($name in $sample.waits.PSObject.Properties.Name) { $waits[$name] = [int]$waits[$name] + [int]$sample.waits.$name } } }
         $topWaits = @($waits.GetEnumerator() | Sort-Object Value -Descending | Select-Object -First 3 | ForEach-Object { "$($_.Key)=$($_.Value)" }) -join ', '
-        $gate | Add-Member -NotePropertyName resource -NotePropertyValue ([pscustomobject]@{ hostCpuPct=(@($samples | Measure-Object hostCpuPct -Average)[0].Average); postgresCpuPct=(@($samples | Measure-Object postgresCpuPct -Average)[0].Average); connections=(@($samples | Measure-Object connections -Maximum)[0].Maximum); topWaits=$topWaits; pass=$pass; worstP95Ms=$maxP95 })
+        $servicePeaks = @{}; foreach ($sample in $samples) { if ($sample.services) { foreach ($name in $sample.services.PSObject.Properties.Name) { $servicePeaks[$name] = [math]::Max([int]$servicePeaks[$name], [int]$sample.services.$name) } } }
+        $gate | Add-Member -NotePropertyName resource -NotePropertyValue ([pscustomobject]@{ hostCpuPct=(@($samples | Measure-Object hostCpuPct -Average)[0].Average); postgresCpuPct=(@($samples | Measure-Object postgresCpuPct -Average)[0].Average); connections=(@($samples | Measure-Object connections -Maximum)[0].Maximum); serviceConnectionPeaks=$servicePeaks; topWaits=$topWaits; pass=$pass; worstP95Ms=$maxP95 })
         $gate.resource | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $EvidenceRoot "resource-$tier-step$step.json")
         $gateResults += $gate
         if ($Ramp) { $claimOffset += [int]($gate.roles.'build') }

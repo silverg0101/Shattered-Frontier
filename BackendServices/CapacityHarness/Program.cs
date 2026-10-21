@@ -41,10 +41,13 @@ string Role(int i) => i < gatherCount ? "gather/craft" :
     i < gatherCount + buildCount + fightCount ? "fight/quest" :
     i < gatherCount + buildCount + fightCount + tradeCount ? "trade" : "reconnect";
 var runId = $"cap_{participants}_{seed}";
-var start = DateTimeOffset.UtcNow;
-var measureStart = start.AddSeconds(warmup);
-var end = measureStart.AddSeconds(seconds);
+var measureStart = DateTimeOffset.MaxValue;
+var end = DateTimeOffset.MaxValue;
 var counts = new ConcurrentDictionary<string, int>();
+var staleLogged = new ConcurrentDictionary<string, byte>();
+using var claimSeedGate = new SemaphoreSlim(8);
+var ready = 0;
+var startGate = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
 
 async Task Participant(int index)
 {
@@ -70,9 +73,23 @@ async Task Participant(int index)
         var north = participants is 25 or 100;
         var x = (east ? 1150 : -1150) + (east ? -1 : 1) * (slot % 5) * 55;
         var y = (north ? 1100 : -1100) + (north ? -1 : 1) * (slot / 5) * 55;
-        await Record("Housing.ClaimPlot", () => house.ClaimPlotAsync(new H.ClaimPlotRequest { OperationId = $"claim/{runId}/{index}", ClaimId = claimId,
-            OwnerId = id, CenterX = x, CenterY = y, SideMetres = 40, PrepaidDays = 1 }, headers, deadline: DateTime.UtcNow.AddSeconds(10)).ResponseAsync);
+        await claimSeedGate.WaitAsync();
+        try
+        {
+            await Record("Housing.ClaimPlot", () => house.ClaimPlotAsync(new H.ClaimPlotRequest { OperationId = $"claim/{runId}/{index}", ClaimId = claimId,
+                OwnerId = id, CenterX = x, CenterY = y, SideMetres = 40, PrepaidDays = 1 }, headers, deadline: DateTime.UtcNow.AddSeconds(10)).ResponseAsync);
+        }
+        finally { claimSeedGate.Release(); }
     }
+    if (Interlocked.Increment(ref ready) == participants)
+    {
+        measureStart = DateTimeOffset.UtcNow.AddSeconds(warmup);
+        end = measureStart.AddSeconds(seconds);
+        startGate.SetResult();
+    }
+    await startGate.Task;
+    // Spread the first cycle across the think interval after the setup barrier.
+    await Task.Delay((int)((long)index * think / participants));
     var cycle = 0;
     while (DateTimeOffset.UtcNow < end)
     {
@@ -130,7 +147,32 @@ async Task Participant(int index)
                     new P.GetCharacterStateRequest { CharacterId = id }, headers, deadline: DateTime.UtcNow.AddSeconds(10)).ResponseAsync);
             }
         }
-        catch (RpcException) { /* Record captured the failed RPC. */ }
+        catch (RpcException ex)
+        {
+            if (role == "build")
+            {
+                var expected = counts.GetOrAdd(id, 0);
+                try
+                {
+                    var actual = await house.ListStructuresAsync(new H.ListStructuresRequest { ClaimId = claimId }, headers,
+                        deadline: DateTime.UtcNow.AddSeconds(10));
+                    counts[id] = checked((int)actual.StructureRevision);
+                    if (staleLogged.TryAdd(id, 0))
+                        Console.Error.WriteLine($"CAPACITY_BUILDER_REFRESH claim={claimId} cycle={cycle} status={ex.StatusCode} expected={expected} actual={actual.StructureRevision}");
+                }
+                catch (RpcException) { if (staleLogged.TryAdd(id, 0)) Console.Error.WriteLine($"CAPACITY_BUILDER_REFRESH claim={claimId} cycle={cycle} actual=unavailable"); }
+            }
+            else if (role is "gather/craft" or "fight/quest")
+            {
+                try
+                {
+                    var actual = await progress.GetCharacterStateAsync(new P.GetCharacterStateRequest { CharacterId = id }, headers,
+                        deadline: DateTime.UtcNow.AddSeconds(10));
+                    counts[id] = checked((int)actual.ProgressionRevision);
+                }
+                catch (RpcException) { /* Retry the read after the next ambiguous call. */ }
+            }
+        }
         catch (Exception ex) { samples.Add(new Sample("cycle", -1, ex.GetType().Name + ": " + ex.Message, DateTimeOffset.UtcNow >= measureStart)); }
         await Task.Delay(think + rng.Next(-think / 4, think / 4 + 1));
     }
@@ -158,9 +200,17 @@ async Task<T> Record<T>(string rpc, Func<Task<T>> action, Action<T>? after = nul
 await Task.WhenAll(Enumerable.Range(0, participants).Select(Participant));
 var measured = samples.Where(x => x.Measured).ToArray();
 var audit = await Audit(connection);
+var auditDrainSeconds = 0;
+while (!audit.Passed && auditDrainSeconds < 30)
+{
+    await Task.Delay(2000);
+    auditDrainSeconds += 2;
+    audit = await Audit(connection);
+}
 var report = new
 {
     participants, seed, warmupSeconds = warmup, measuredSeconds = seconds, thinkMilliseconds = think,
+    auditDrainSeconds,
     roles = Enumerable.Range(0, participants).GroupBy(Role).ToDictionary(g => g.Key, g => g.Count()),
     rpcs = measured.GroupBy(x => x.Rpc).OrderBy(g => g.Key).Select(g => new { rpc = g.Key, calls = g.Count(), accepted = g.Count(x => x.Status == "OK"),
         errors = g.Count(x => x.Status != "OK"), errorRate = Math.Round(g.Count(x => x.Status != "OK") / (double)g.Count(), 4),

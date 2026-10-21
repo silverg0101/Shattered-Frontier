@@ -8,6 +8,7 @@ Environment (read at start; a bad value refuses to start with exit code 2):
 
 - `INVENTORY_LEDGER_PORT`: required, 1-65535.
 - `INVENTORY_LEDGER_CONNECTION`: required Npgsql connection string (runtime role, DML only). Never logged.
+- Its release-declared operating pool is 12 client connections per host (safe bounds 2..32, unit connections), zero preopened idle connections, with application name `sf.inventory-ledger`. The host enforces the shipped default over connection-string pool fields at startup. Realm configuration operators may publish a reviewed change through the shared configuration workflow, effective on restart; this development host does not yet consume a published snapshot. PostgreSQL `pg_stat_activity.application_name` shows effective usage. No console-only override is provided.
 - `SF_INVENTORY_LEDGER_TOKEN`: required. Every call must send `authorization: Bearer <token>` or gets `UNAUTHENTICATED`.
 - `INVENTORY_LEDGER_FAULT`: empty, or `drop_first_reply`. The first `Grant` commits, then the reply is `UNAVAILABLE`; a retry with the same operation ID returns the original receipt.
 

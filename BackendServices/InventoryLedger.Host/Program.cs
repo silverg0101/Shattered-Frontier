@@ -5,6 +5,7 @@ using System.Text;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Npgsql;
 using ShatteredFrontier.InventoryLedger.Postgres;
 using Dom = ShatteredFrontier.InventoryLedger;
 using Pb = ShatteredFrontier.InventoryLedger.V1;
@@ -60,6 +61,14 @@ if (!int.TryParse(Env("INVENTORY_LEDGER_PORT"), NumberStyles.None, CultureInfo.I
     Refuse("INVENTORY_LEDGER_PORT must be 1-65535.");
 var connection = Env("INVENTORY_LEDGER_CONNECTION");
 if (connection.Length == 0) Refuse("INVENTORY_LEDGER_CONNECTION is required.");
+var poolSettings = new LedgerPoolSettings();
+poolSettings.Validate();
+var pool = new NpgsqlConnectionStringBuilder(connection)
+{
+    Pooling = true, MinPoolSize = 0, MaxPoolSize = poolSettings.MaximumConnections,
+    ApplicationName = "sf.inventory-ledger"
+};
+connection = pool.ConnectionString;
 var token = Env("SF_INVENTORY_LEDGER_TOKEN");
 if (token.Length == 0) Refuse("SF_INVENTORY_LEDGER_TOKEN is required.");
 var fault = Env("INVENTORY_LEDGER_FAULT");
@@ -81,6 +90,17 @@ app.Run();
 return 0;
 
 sealed record LedgerOptions(byte[] ExpectedAuthorization, bool DropFirstReply);
+
+// Release-declared operating setting; shared config publication activates on restart.
+sealed record LedgerPoolSettings
+{
+    public int MaximumConnections { get; init; } = 12;
+    public void Validate()
+    {
+        if (MaximumConnections is < 2 or > 32)
+            throw new InvalidOperationException("Ledger pool bound must be 2..32 connections.");
+    }
+}
 
 // Development auth fixture, not the DEC-04 session protocol.
 sealed class TokenInterceptor(LedgerOptions options) : Interceptor

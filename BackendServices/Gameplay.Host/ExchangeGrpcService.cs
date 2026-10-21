@@ -6,7 +6,7 @@ using Npgsql;
 using Pb = ShatteredFrontier.Exchange.V1;
 
 internal sealed class ExchangeGrpcService(PostgresExchangeStore exchange, PostgresInventoryLedgerStore inventoryStore,
-    GameplayRecoverySettings recoverySettings) : Pb.Exchange.ExchangeBase
+    GameplayRecoverySettings recoverySettings, DatabasePoolSettings pools) : Pb.Exchange.ExchangeBase
 {
     private InventoryLedger Ledger => new(inventoryStore);
     private static void Require(bool condition, string message)
@@ -22,7 +22,7 @@ internal sealed class ExchangeGrpcService(PostgresExchangeStore exchange, Postgr
     }
     private bool TradeExpired(string operationId)
     {
-        using var connection = new NpgsqlConnection(Environment.GetEnvironmentVariable("GAMEPLAY_EXCHANGE_CONNECTION"));
+        using var connection = new NpgsqlConnection(pools.For("Exchange", Environment.GetEnvironmentVariable("GAMEPLAY_EXCHANGE_CONNECTION")!));
         connection.Open();
         using var command = new NpgsqlCommand("SELECT created_at FROM exchange.settlements WHERE operation_id=$1", connection);
         command.Parameters.AddWithValue(operationId);
