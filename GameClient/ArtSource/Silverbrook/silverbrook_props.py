@@ -254,7 +254,9 @@ def dress_footings(c):
     mel.set_material_instance_vector_parameter_value(mi,'Colour',u.LinearColor(*val(f['colour']),1))
     mel.set_material_instance_scalar_parameter_value(mi,'Roughness',val(f['roughness']));eal.save_loaded_asset(mi);n=0
     for a in _actors().get_all_level_actors():
-        if isinstance(a,u.StaticMeshActor) and a.get_actor_label().endswith('_Plinth'):a.static_mesh_component.set_material(0,mi);n+=1
+        if not isinstance(a,u.StaticMeshActor):continue
+        m0=a.static_mesh_component.get_material(0);pale=m0 is not None and m0.get_name()=='MI_Graybox_Civic' and a.get_actor_scale3d().z<0.5  # place pads (market stall floors)
+        if a.get_actor_label().endswith('_Plinth') or pale:a.static_mesh_component.set_material(0,mi);n+=1
     print('PLINTHS_RETEXTURED',n)
 
 def dress_all():
