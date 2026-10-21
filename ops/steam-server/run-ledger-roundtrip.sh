@@ -8,7 +8,7 @@
 # Image digests: keep in step with GameClient/Source/ThirdParty/gRPC/gRPC.lock.json roundTripImages.
 set -euo pipefail
 readonly PG_IMAGE='postgres:18.6-bookworm@sha256:bbf83594798e144bff365a9c191c5d779f181fb3135902064ab8ff11918020fc'
-readonly HOST_IMAGE='mcr.microsoft.com/dotnet/aspnet:10.0.13-noble@sha256:568a21ba4e54dc68251d80e57f95d484028d15682218c3378a96b3db812bb2b7'
+readonly HOST_IMAGE='mcr.microsoft.com/dotnet/aspnet:10.0.13-noble@sha256:d5633778c754e89a386882eddf8dbee6942447a8a4b8267c19cf1e1158d0b0ac'
 readonly RELEASE_IMAGE=$1 HOST_DIR=$(realpath -e "$2") SCHEMA=$(realpath -e "$3")
 [[ $(id -u) == 0 && $(hostname -s) == steam-server ]] || { echo 'Run as root on steam-server' >&2; exit 1; }
 [[ -f "$HOST_DIR/InventoryLedger.Host.dll" ]] || { echo 'Published host dir lacks InventoryLedger.Host.dll' >&2; exit 1; }

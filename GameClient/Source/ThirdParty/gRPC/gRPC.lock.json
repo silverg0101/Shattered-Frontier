@@ -36,6 +36,6 @@
   "zlib": { "provider": "Engine", "version": "1.3" },
   "roundTripImages": {
     "postgres": "postgres:18.6-bookworm@sha256:bbf83594798e144bff365a9c191c5d779f181fb3135902064ab8ff11918020fc",
-    "aspnet": "mcr.microsoft.com/dotnet/aspnet:10.0.13-noble@sha256:568a21ba4e54dc68251d80e57f95d484028d15682218c3378a96b3db812bb2b7"
+    "aspnet": "mcr.microsoft.com/dotnet/aspnet:10.0.13-noble@sha256:d5633778c754e89a386882eddf8dbee6942447a8a4b8267c19cf1e1158d0b0ac"
   }
 }
