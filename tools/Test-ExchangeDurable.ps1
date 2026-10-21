@@ -13,6 +13,8 @@ $project = Join-Path $repo 'BackendServices/Exchange.Postgres.Tests/Exchange.Pos
 $schema = Join-Path $repo 'BackendServices/Exchange.Postgres/Schema.sql'
 $dll = Join-Path $repo 'BackendServices/Exchange.Postgres.Tests/bin/Release/net10.0/Exchange.Postgres.Tests.dll'
 $inventorySchema = Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.sql'
+$backupTool = Join-Path $repo 'tools/Backup-ServiceStore.ps1'; $restoreTool = Join-Path $repo 'tools/Restore-ServiceStore.ps1'
+$backup = Join-Path $EvidenceRoot 'backup'; $restoredInstance = Join-Path $EvidenceRoot 'restored-instance'
 foreach ($path in @($dotnet,$project,$schema,(Join-Path $pg 'postgres.exe'),(Join-Path $pg 'initdb.exe'),(Join-Path $pg 'pg_ctl.exe'),(Join-Path $pg 'psql.exe'))) { if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Required file missing: $path" } }
 if ((Get-FileHash $dotnet -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pins.sdk.executableSha256 -or (Get-FileHash (Join-Path $pg 'postgres.exe') -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pins.postgres.executableSha256) { throw 'Pinned toolchain mismatch.' }
 $run = [guid]::NewGuid().ToString('N'); $private = Join-Path $EvidenceRoot 'private'; $data = Join-Path $private 'data'
@@ -87,15 +89,38 @@ try {
         $results.Add((Invoke-Checked $dotnet @($dll,$phase) @{ EXCHANGE_CONNECTION=$connection; INVENTORY_CONNECTION=$ledgerConnection }))
     }
     Cluster start
-    [void](Sql 'UPDATE exchange.schema_version SET version=3' "exchange_$run")
+    [void](Sql "INSERT INTO exchange.settlements(operation_id,fingerprint,kind,subject_id,amount,fee,deliveries,state,receipt,created_at) VALUES ('backup_pending','fixture','trade','trd_backup',0,0,'[]','pending','{}',clock_timestamp()-interval '2 hours')" "exchange_$run")
+    try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','Exchange','-OutputDirectory',$backup,'-HostName','127.0.0.1','-Port',"$port",'-Database',"exchange_$run",'-Username','exchange_svc') @{ PGPASSWORD=$servicePassword }); throw 'Aged pending settlement was accepted.' }
+    catch { if ($_.Exception.Message -notmatch 'exceeds recovery window') { throw }; $results.Add('PASS aged pending settlement refused') }
+    [void](Sql "UPDATE exchange.settlements SET created_at=clock_timestamp() WHERE operation_id='backup_pending'" "exchange_$run")
+    $results.Add((Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','Exchange','-OutputDirectory',$backup,'-HostName','127.0.0.1','-Port',"$port",'-Database',"exchange_$run",'-Username','exchange_svc') @{ PGPASSWORD=$servicePassword }))
+    $backupWallets = (Sql 'SELECT count(*),sum(balance) FROM exchange.wallets' "exchange_$run").Trim()
+    [void](Sql "INSERT INTO exchange.wallets(owner_id,balance,revision) VALUES ('chr_after_backup',7,1); INSERT INTO exchange.wallet_entries(owner_id,sequence,operation_id,delta,flow_class,code) VALUES ('chr_after_backup',1,'after_backup',7,'faucet','gm_grant')" "exchange_$run")
+    if ((Sql 'SELECT count(*),sum(balance) FROM exchange.wallets' "exchange_$run").Trim() -eq $backupWallets) { throw 'Post-backup write failed.' }
+    $corrupt = Join-Path $EvidenceRoot 'corrupt-backup'; [void](New-Item -ItemType Directory -Path $corrupt)
+    Copy-Item (Join-Path $backup 'manifest.json') $corrupt
+    $corruptDump = Join-Path $corrupt 'exchange.dump'; Copy-Item (Join-Path $backup 'exchange.dump') $corruptDump
+    $stream = [IO.File]::Open($corruptDump,[IO.FileMode]::Open,[IO.FileAccess]::ReadWrite)
+    try { [void]$stream.Seek(64,[IO.SeekOrigin]::Begin); $byte=$stream.ReadByte(); [void]$stream.Seek(64,[IO.SeekOrigin]::Begin); $stream.WriteByte([byte]($byte -bxor 1)) } finally { $stream.Dispose() }
+    try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-Store','Exchange','-BackupDirectory',$corrupt,'-InstanceRoot',$restoredInstance)); throw 'Corrupt backup was accepted.' }
+    catch { if ($_.Exception.Message -notmatch 'SHA256 mismatch') { throw }; $results.Add('PASS flipped-byte backup refused') }
+    $results.Add((Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-Store','Exchange','-BackupDirectory',$backup,'-InstanceRoot',$restoredInstance)))
+    $restored = Get-Content (Join-Path $restoredInstance 'connection.json') -Raw | ConvertFrom-Json
+    $restoredWallets = (Invoke-Checked (Join-Path $pg 'psql.exe') @('-X','-A','-t','-h','127.0.0.1','-p',"$($restored.port)",'-U',$restored.username,'-d',$restored.database,'-c','SELECT count(*),sum(balance) FROM exchange.wallets') @{ PGPASSWORD=$restored.password }).Trim()
+    if ($restoredWallets -ne $backupWallets) { throw 'Restored exchange wallets differ from backup point.' }
+    $results.Add('PASS restored exchange tables equal backup point')
+    [void](Sql 'UPDATE exchange.schema_version SET version=4' "exchange_$run")
     $results.Add((Invoke-Checked $dotnet @($dll,'newer-schema') @{ EXCHANGE_CONNECTION=$connection; INVENTORY_CONNECTION=$ledgerConnection }))
     $markerVersion = Sql 'SELECT version FROM exchange.schema_version WHERE singleton=true' "exchange_$run"
-    if ($markerVersion.Trim() -ne '3') { throw 'Newer schema marker changed unexpectedly.' }
+    if ($markerVersion.Trim() -ne '4') { throw 'Newer schema marker changed unexpectedly.' }
+    try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','Exchange','-OutputDirectory',(Join-Path $EvidenceRoot 'newer-backup'),'-HostName','127.0.0.1','-Port',"$port",'-Database',"exchange_$run",'-Username','exchange_svc') @{ PGPASSWORD=$servicePassword }); throw 'Newer source schema was accepted.' }
+    catch { if ($_.Exception.Message -notmatch 'Unsupported source schema version') { throw }; $results.Add('PASS newer source schema refused') }
     $results | Set-Content (Join-Path $EvidenceRoot 'results.txt')
 }
 catch { $failure = $_.Exception.Message.Replace($adminPassword,'[REDACTED]').Replace($servicePassword,'[REDACTED]').Replace($ledgerPassword,'[REDACTED]') }
 finally {
     try {
+        if (Test-Path (Join-Path $restoredInstance 'owner.json')) { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-Store','Exchange','-InstanceRoot',$restoredInstance,'-Cleanup')) }
         if (Test-Path (Join-Path $private 'owner.json')) {
             Assert-Owned
             if ($attempted) {

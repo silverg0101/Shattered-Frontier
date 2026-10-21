@@ -32,7 +32,7 @@ public sealed class PostgresExchangeStore(string connectionString)
             try
             {
                 using var check = Cmd(c,t,"SELECT version FROM exchange.schema_version WHERE singleton=true");
-                if (check.ExecuteScalar() is not int version || version != 2) throw new ExchangeSchemaCompatibilityException("Unsupported exchange schema version.");
+                if (check.ExecuteScalar() is not int version || version != 3) throw new ExchangeSchemaCompatibilityException("Unsupported exchange schema version.");
             }
             catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501")
             { throw new ExchangeSchemaCompatibilityException("Exchange schema marker missing or inaccessible."); }
@@ -167,7 +167,7 @@ public sealed class PostgresExchangeStore(string connectionString)
         if(payee is not null && ReadWallet(c,t,payee).Balance>long.MaxValue-amount) throw new ExchangeRejectedException("Payee wallet overflow.");
         if(payer is not null) Post(c,t,op,payer,0,"reserve","settlement_hold",amount);
         var receipt=new ExchangeReceipt(op,true,"pending",subject,amount,fee);
-        using(var insert=Cmd(c,t,"INSERT INTO exchange.settlements VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,'pending',$10::jsonb)",op,fingerprint,kind,subject,(object?)payer??DBNull.Value,(object?)payee??DBNull.Value,amount,fee,JsonSerializer.Serialize(deliveries),JsonSerializer.Serialize(receipt))) insert.ExecuteNonQuery();
+        using(var insert=Cmd(c,t,"INSERT INTO exchange.settlements(operation_id,fingerprint,kind,subject_id,payer_id,payee_id,amount,fee,deliveries,state,receipt) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,'pending',$10::jsonb)",op,fingerprint,kind,subject,(object?)payer??DBNull.Value,(object?)payee??DBNull.Value,amount,fee,JsonSerializer.Serialize(deliveries),JsonSerializer.Serialize(receipt))) insert.ExecuteNonQuery();
         Save(c,t,op,fingerprint,receipt);
         return ReadSettlement(c,t,op)!;
     }

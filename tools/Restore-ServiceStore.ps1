@@ -1,10 +1,11 @@
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory)][ValidateSet('InventoryLedger','CharacterState','Housing')][string]$Store,
+    [Parameter(Mandatory)][ValidateSet('InventoryLedger','CharacterState','Housing','Exchange')][string]$Store,
     [string]$BackupDirectory,
     [Parameter(Mandatory)][string]$InstanceRoot,
     [switch]$Cleanup,
-    [ValidateRange(60,86400)][int]$PendingPlacementRecoveryWindowSeconds = 3600
+    [ValidateRange(60,86400)][int]$PendingPlacementRecoveryWindowSeconds = 3600,
+    [ValidateRange(60,86400)][int]$PendingSettlementRecoveryWindowSeconds = 3600
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -56,15 +57,16 @@ if (-not $BackupDirectory) { throw 'Supply BackupDirectory.' }
 $BackupDirectory = [IO.Path]::GetFullPath($BackupDirectory)
 $manifest = Get-Content (Join-Path $BackupDirectory 'manifest.json') -Raw | ConvertFrom-Json
 $dump = Join-Path $BackupDirectory "$($Store.ToLowerInvariant()).dump"
-if ($manifest.format -ne 2 -or $manifest.store -cne $Store -or $manifest.schemaVersion -ne $(if ($Store -eq 'Housing') { 3 } else { 1 }) -or $manifest.dumpSha256 -notmatch '^[a-f0-9]{64}$' -or
+if ($manifest.format -ne 2 -or $manifest.store -cne $Store -or $manifest.schemaVersion -ne $(if ($Store -in @('Housing','Exchange')) { 3 } else { 1 }) -or $manifest.dumpSha256 -notmatch '^[a-f0-9]{64}$' -or
     (Get-FileHash $dump -Algorithm SHA256).Hash.ToLowerInvariant() -cne $manifest.dumpSha256) { throw 'Backup manifest or SHA256 mismatch.' }
 $tables = switch ($Store) {
     InventoryLedger { @('inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts') }
     CharacterState { @('character_state.schema_version','character_state.progression','character_state.quests','character_state.source_receipts','character_state.reward_receipts') }
     Housing { @('housing.schema_version','housing.claims','housing.claim_operations','housing.claim_structure_revisions','housing.placements','inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts') }
+    Exchange { @('exchange.schema_version','exchange.wallets','exchange.wallet_entries','exchange.operations','exchange.listings','exchange.settlements') }
 }
-$schemas = if ($Store -eq 'Housing') { @('housing','inventory') } elseif ($Store -eq 'CharacterState') { @('character_state') } else { @('inventory') }
-$serviceRole = switch ($Store) { InventoryLedger { 'ledger_svc' } CharacterState { 'state_svc' } Housing { 'housing_svc' } }
+$schemas = if ($Store -eq 'Housing') { @('housing','inventory') } elseif ($Store -eq 'CharacterState') { @('character_state') } elseif ($Store -eq 'Exchange') { @('exchange') } else { @('inventory') }
+$serviceRole = switch ($Store) { InventoryLedger { 'ledger_svc' } CharacterState { 'state_svc' } Housing { 'housing_svc' } Exchange { 'exchange_svc' } }
 if (@($manifest.tables.PSObject.Properties).Count -ne $tables.Count) { throw 'Invalid manifest table set.' }
 foreach ($table in $tables) {
     $entry = $manifest.tables.PSObject.Properties[$table].Value
@@ -104,9 +106,10 @@ try {
     & (Join-Path $pg 'pg_restore.exe') --exit-on-error --no-owner --no-acl --role=store_owner -h 127.0.0.1 -p $port -U restore_admin -d $database $dump *> $null
     if ($LASTEXITCODE -ne 0) { throw 'pg_restore failed.' }
     foreach ($schema in $schemas) {
-        [void](Sql "GRANT USAGE ON SCHEMA $schema TO $serviceRole; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA $schema TO $serviceRole" $database)
+        $grant = if ($Store -eq 'Exchange') { "GRANT SELECT ON $schema.schema_version TO $serviceRole; GRANT SELECT,INSERT,UPDATE ON exchange.wallets,exchange.wallet_entries,exchange.operations,exchange.listings,exchange.settlements TO $serviceRole" } else { "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA $schema TO $serviceRole" }
+        [void](Sql "GRANT USAGE ON SCHEMA $schema TO $serviceRole; $grant" $database)
         $version = (Sql "SELECT version FROM $schema.schema_version WHERE singleton=true" $database).Trim()
-        $expectedVersion = if ($schema -eq 'housing') { '3' } else { '1' }
+        $expectedVersion = if ($schema -eq 'housing' -or $schema -eq 'exchange') { '3' } else { '1' }
         if ($version -ne $expectedVersion) { throw 'Restored schema version mismatch.' }
     }
     foreach ($table in $tables) {
@@ -187,6 +190,32 @@ SELECT count(*) FROM (
 ) invalid
 "@ $database
         if ($bad.Trim() -ne '0') { throw 'Restored housing consistency check failed.' }
+    }
+    if ($Store -eq 'Exchange') {
+        $bad = Sql @"
+SELECT count(*) FROM (
+ SELECT 1 FROM exchange.wallets w WHERE w.balance < 0 OR w.reserved < 0 OR w.reserved > w.balance OR
+  w.balance::numeric IS DISTINCT FROM (SELECT coalesce(sum(e.delta::numeric),0) FROM exchange.wallet_entries e WHERE e.owner_id=w.owner_id) OR
+  w.revision IS DISTINCT FROM (SELECT count(*) FROM exchange.wallet_entries e WHERE e.owner_id=w.owner_id)
+ UNION ALL
+ SELECT 1 FROM exchange.settlements s WHERE s.state='pending' AND
+  s.created_at < clock_timestamp() - make_interval(secs => $PendingSettlementRecoveryWindowSeconds)
+ UNION ALL
+ SELECT 1 FROM exchange.settlements s WHERE s.kind='listing' AND s.state='committed' AND (
+  NOT EXISTS (SELECT 1 FROM exchange.listings l WHERE l.id=s.subject_id AND l.state='sold') OR
+  (SELECT count(*) FROM exchange.wallet_entries e WHERE e.operation_id=s.operation_id AND e.owner_id=s.payer_id AND e.flow_class='transfer' AND e.code='market_purchase' AND e.delta=-s.amount) <> 1 OR
+  (SELECT count(*) FROM exchange.wallet_entries e WHERE e.operation_id=s.operation_id AND e.owner_id=s.payee_id AND e.flow_class='transfer' AND e.code='market_sale' AND e.delta=s.amount) <> 1 OR
+  (SELECT count(*) FROM exchange.wallet_entries e WHERE e.operation_id=s.operation_id AND e.owner_id=s.payee_id AND e.flow_class='sink' AND e.code='market_transaction_fee' AND e.delta=-s.fee) <> CASE WHEN s.fee=0 THEN 0 ELSE 1 END OR
+  (SELECT coalesce(sum(-e.delta::numeric),0) FROM exchange.wallet_entries e WHERE e.operation_id=s.operation_id AND e.owner_id=s.payer_id AND e.code='market_purchase') <>
+  ((SELECT coalesce(sum(e.delta::numeric),0) FROM exchange.wallet_entries e WHERE e.operation_id=s.operation_id AND e.owner_id=s.payee_id AND e.code IN ('market_sale','market_transaction_fee')) + s.fee))
+ UNION ALL
+ SELECT 1 FROM exchange.listings l WHERE
+  (l.state='sold' AND (l.settlement_id IS NOT NULL OR (SELECT count(*) FROM exchange.settlements s WHERE s.kind='listing' AND s.subject_id=l.id AND s.state='committed') <> 1)) OR
+  (l.state='active' AND EXISTS (SELECT 1 FROM exchange.settlements s WHERE s.kind='listing' AND s.subject_id=l.id AND s.state='committed')) OR
+  (l.state='pending' AND NOT EXISTS (SELECT 1 FROM exchange.settlements s WHERE s.operation_id=l.settlement_id AND s.kind='listing' AND s.subject_id=l.id AND s.state='pending'))
+) invalid
+"@ $database
+        if ($bad.Trim() -ne '0') { throw 'Restored exchange consistency check failed.' }
     }
     @{host='127.0.0.1';port=$port;database=$database;username=$serviceRole;password=$servicePassword} |
         ConvertTo-Json | Set-Content (Join-Path $InstanceRoot 'connection.json')
