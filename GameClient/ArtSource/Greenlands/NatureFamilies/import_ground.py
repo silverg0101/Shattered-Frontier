@@ -20,6 +20,23 @@ def tex(path):
     t = u.load_asset(path); assert t, path; return t
 
 
+
+def import_scan(asset, channels=('Diffuse', 'nor_gl', 'Rough')):
+    """Import a Poly Haven scan from Sources/<asset>/ as T_GN_<asset>_<channel> (same texture settings as import_terrain.py)."""
+    from pathlib import Path
+    src = Path(__file__).resolve().parent / 'Sources' / asset
+    for ch in channels:
+        name = f'T_GN_{asset}_{ch}'; path = f'{LIB}/Textures/{name}'
+        if not eal.does_asset_exist(path):
+            t = u.AssetImportTask(); t.filename = str(src / f'{asset}_{ch}.jpg'); t.destination_path = LIB + '/Textures'; t.destination_name = name
+            t.automated = t.save = t.replace_existing = True; tools.import_asset_tasks([t])
+        a = u.load_asset(path); assert a, path
+        if ch == 'nor_gl':
+            a.set_editor_property('compression_settings', u.TextureCompressionSettings.TC_NORMALMAP); a.set_editor_property('srgb', False); a.set_editor_property('flip_green_channel', True)
+        elif ch == 'Rough':
+            a.set_editor_property('compression_settings', u.TextureCompressionSettings.TC_MASKS); a.set_editor_property('srgb', False)
+        eal.save_loaded_asset(a)
+
 def node(m, cls, x, y, **kw):
     e = mel.create_material_expression(m, cls, x, y)
     for k, v in kw.items(): e.set_editor_property(k, v)
@@ -126,7 +143,13 @@ def ground():
     # a fine noise moves the threshold so the edge is worn and ragged instead of a seam
     SB = '/Game/Frontier/Environment/Greenlands/Silverbrook/Textures/T_SB_cobblestone_pavement_'
     rc, rn, rr, _ = layer('R', SB + 'Diffuse', SB + 'nor_gl', SB + 'Rough', 240, (1, 1, 1), 6000)
-    tc, tn, tr, _ = layer('T', f'{ARR}/grass_path_3_Diffuse', f'{ARR}/grass_path_3_nor_dx', f'{ARR}/grass_path_3_Rough', 250, (0.95, 0.9, 0.8), 8000)
+    # trails: packed dark earth from the forest-floor scan with pale mossy stones pushed through it where a mask passes a high threshold
+    import_scan('brown_mud_02'); import_scan('rocky_trail')  # dirt with roots and sticks; pale stones
+    dc, dn, dr, _ = layer('T', T + 'brown_mud_02_Diffuse', T + 'brown_mud_02_nor_gl', T + 'brown_mud_02_Rough', 200, (0.85, 0.75, 0.65), 8000)
+    sc_, sn, sr, _ = layer('S', T + 'rocky_trail_Diffuse', T + 'rocky_trail_nor_gl', T + 'rocky_trail_Rough', 150, (0.9, 0.88, 0.84), 9600)
+    sw = node(m, u.MaterialExpressionSaturate, 600, 8000)
+    link(g.mul(g.op(u.MaterialExpressionSubtract, mk, g.sc('StoneLow', 0.6, 300, 8000), 450, 8000), g.sc('StoneSharp', 14, 300, 8100), 500, 8000), '', sw, '')
+    tc, tn, tr = g.lerp(dc, sc_, sw, 800, 8000), g.lerp(dn, sn, sw, 800, 8250, '', 'RGB'), g.lerp(dr, sr, sw, 800, 8500)
     vcn = node(m, u.MaterialExpressionVertexColor, -600, 9000)
     edge = g.mask(g.smp('EdgeNoise', tex(T + 'forest_ground_04_Displacement'), S.SAMPLERTYPE_MASKS, g.uv(xy, g.sc('EdgeTileCm', 350, -1800, 9300), -1650, 9300), -1100, 9300), True, False, False, -800, 9300)
     wob = g.mul(g.op(u.MaterialExpressionSubtract, edge, half, -600, 9300), g.sc('EdgeAmp', 0.9, -600, 9400), -400, 9300)
@@ -135,6 +158,17 @@ def ground():
         w_ = node(m, u.MaterialExpressionSaturate, 400, 9000)
         link(g.op(u.MaterialExpressionAdd, g.mul(g.op(u.MaterialExpressionAdd, g.op(u.MaterialExpressionSubtract, v, half, -200, 9000), wob, 0, 9000), g.sc('EdgeSharp', 5, 0, 9100), 200, 9000), half, 300, 9000), '', w_, '')
         col = g.lerp(col, c_, w_, 1300, 0); nrm = g.lerp(nrm, n_, w_, 1300, 250, '', 'RGB'); rgh = g.lerp(rgh, r_, w_, 1300, 500)
+    # tilled fields: vertex alpha (0.5 at the field edge, same worn-edge blend); dark soil with crop rows, rows run along world X
+    va = node(m, u.MaterialExpressionComponentMask, -400, 10300, r=False, g=False, b=False, a=True); link(vcn, '', va, '')
+    wa = node(m, u.MaterialExpressionSaturate, 400, 10300)
+    link(g.op(u.MaterialExpressionAdd, g.mul(g.op(u.MaterialExpressionAdd, g.op(u.MaterialExpressionSubtract, va, half, -200, 10300), wob, 0, 10300), g.sc('EdgeSharp', 5, 0, 10400), 200, 10300), half, 300, 10300), '', wa, '')
+    rows = node(m, u.MaterialExpressionSine, 0, 10600, period=1.0)
+    link(g.uv(py, g.sc('RowCm', 110, -300, 10600), -150, 10600), '', rows, '')
+    stripe = node(m, u.MaterialExpressionSaturate, 300, 10600); link(g.op(u.MaterialExpressionAdd, g.mul(rows, g.sc('RowContrast', 1.6, 150, 10700), 150, 10600), half, 300, 10700), '', stripe, '')
+    soil = g.mul(dc, g.vec('SoilTint', (0.55, 0.45, 0.36), 0, 10800), 400, 10800)
+    crop = g.mul(forest, g.vec('CropTint', (0.7, 1.15, 0.55), 0, 10900), 400, 10900)
+    col = g.lerp(col, g.lerp(soil, crop, stripe, 600, 10800), wa, 1500, 0)
+    nrm = g.lerp(nrm, dn, wa, 1500, 250, '', 'RGB'); rgh = g.lerp(rgh, dr, wa, 1500, 500)
     mel.connect_material_property(col, '', u.MaterialProperty.MP_BASE_COLOR); mel.connect_material_property(nrm, '', u.MaterialProperty.MP_NORMAL)
     mel.connect_material_property(rgh, '', u.MaterialProperty.MP_ROUGHNESS)
     mel.recompile_material(m); eal.save_loaded_asset(m)

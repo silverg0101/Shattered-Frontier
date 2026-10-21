@@ -25,7 +25,7 @@ import importlib, validate_layout, validate_region, region_heightfield, heightfi
 for _m in (validate_layout, validate_region, region_heightfield, heightfield, dress_zone, pcg_dressing):        # keeps modules between
     importlib.reload(_m)                                                                                         # runs; take the files' state
 from validate_layout import validate, waters
-from heightfield import _samples as _hf_samples, Heightfield, backdrop, check as check_terrain, crossings, in_polygon, water_level, zone_region
+from heightfield import SHOULDER, _samples as _hf_samples, Heightfield, backdrop, check as check_terrain, crossings, in_polygon, water_level, zone_region
 L = json.loads((ROOT / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))
 _problems = validate(L)
 assert not _problems, f'Layout is invalid; run validate_layout.py: {_problems}'
@@ -38,7 +38,7 @@ NATURE_MATS = '/Game/Frontier/Environment/Greenlands/Nature/Materials'  # Nature
 REAL = {'Ground': 'MI_GN_Ground', 'Road': 'MI_GN_Road', 'Trail': 'MI_GN_Trail', 'River': 'MI_GN_River'}
 SLOPE_FLAT_DEG, SLOPE_ROCK_DEG = 20.0, 40.0  # terrain vertex colour R: 0 at or below the first slope, 1 at or above the second (M_GN_Ground shows bedrock past the midpoint)
 COLOURS = {'Wall': (0.42, 0.42, 0.45), 'Civic': (0.82, 0.80, 0.72),
-           'House': (0.62, 0.42, 0.28), 'Plot': (0.88, 0.76, 0.18), 'Field': (0.42, 0.48, 0.14),
+           'House': (0.62, 0.42, 0.28), 'Plot': (0.62, 0.54, 0.26), 'Field': (0.42, 0.48, 0.14),
            'Marker': (0.75, 0.10, 0.08), 'Rock': (0.36, 0.37, 0.40)}
 TYPES = L['building_types']
 PROFILE = json.loads((ROOT / 'greenlands-look-profile.json').read_text(encoding='utf-8'))
@@ -273,6 +273,8 @@ placed = []  # (x, y, radius)
 footprints = []  # (x, y, w, d, yaw) of every building on land, levelled last in the terrain
 foundation = dict(max_step=0.0, plinths=0)  # ground height range under the delivered buildings
 flats = []  # (x, y, radius) open areas to level: plaza, fields, yard, ruins
+PLAZAS = []  # (x, y, w, d) market plazas, painted as cobble on the terrain
+FIELDS = []  # (x, y, w, d) farm fields, painted as tilled soil (terrain vertex alpha)
 blocked = []  # required places that overlap a road, the river, the wall or a building
 roster = []  # every building placed: the town census (townsfolk_census.py) reads it
 
@@ -527,7 +529,7 @@ for place in L['places']:
             building(f'{tag}_Granary', 'granary', x + 17, y - 6, 0, 'Civic', 'Places')
     elif kind == 'plaza':
         w, d = place['size']
-        box(tag, x, y, w, d, 0.08, 'Civic', collide=False, folder='Places', ground='centre')
+        PLAZAS.append((x, y, w, d))  # painted into the terrain as cobble below; a graybox slab here poked the terrain through as a white polygon
         placed.append((x, y, 6))  # keep the centre open; stalls ring the edge
         flats.append((x, y, math.hypot(w, d) / 2))
         stalls = 0
@@ -542,7 +544,10 @@ for place in L['places']:
             stalls += building(tag_, kind_, sx, sy, facing(sx, sy, x, y), 'House', 'Places', require=False)
     elif kind in ('fields', 'yard'):
         w, d = place['size']
-        box(tag, x, y, w, d, 0.1, 'Field' if kind == 'fields' else 'Plot', collide=False, folder='Places', ground='centre')
+        if kind == 'fields':
+            FIELDS.append((x, y, w, d))  # tilled soil painted into the terrain alpha below
+        else:
+            box(tag, x, y, w, d, 0.1, 'Plot', collide=False, folder='Places', ground='centre')
         flats.append((x, y, math.hypot(w, d) / 2))
     elif kind == 'ruins':
         flats.append((x, y, math.hypot(*place['size']) / 2))
@@ -656,6 +661,54 @@ REGION, DATUM, SEA = zone_region('silverbrook-town-layout.json')  # region first
 HF = Heightfield(L, pads=placed + flats, region=REGION, foundations=footprints)
 terrain_problems, terrain_stats = check_terrain(L, HF)
 assert not terrain_problems, f'Terrain checks failed: {terrain_problems}'
+
+
+# Terrain relief: smooth mid-frequency swells (12-45 m) laid over the open ground so the flats are not a billiard table. Pads, building
+# foundations, roads, water and the zone edge keep the carved heights, with a falloff outside each.
+RELIEF_AMP_M = 0.7  # peak height of the swells, m (0 turns relief off; keep under 1 so props sit within a step of the mesh)
+RELIEF_EDGE_M = 80.0  # no relief this close to the zone edge, where the terrain blends to the region
+
+
+def apply_relief(hf):
+    keep = {}
+
+    def block(samples, ramp):  # samples: (x, y, clear radius); full relief again `ramp` m beyond it
+        for x, y, r in samples:
+            for k, cx, cy in hf._cells(x, y, r + ramp):
+                d = math.hypot(cx - x, cy - y)
+                if d < r + ramp:
+                    t = max(0.0, d - r) / ramp
+                    keep[k] = min(keep.get(k, 1.0), t * t * (3 - 2 * t))
+    block(placed + flats, 8.0)
+    block([(x, y, math.hypot(w, d) / 2 + 4) for x, y, w, d, _ in footprints], 6.0)
+    for _, pts, width, _ in ROADS:
+        block([(p[0], p[1], max(width / 2, hf.step) + SHOULDER) for p, _, _ in _hf_samples(pts, 3.0)], 6.0)
+    for w in WATERS:
+        block([(p[0], p[1], w['width'] / 2 + 10) for p, _, _ in _hf_samples(w['points'], 3.0)], 10.0)
+    for b in BASINS:
+        ring = b['polygon'] + b['polygon'][:1]
+        block([(p[0], p[1], 15.0) for a, c in zip(ring, ring[1:]) for p, _, _ in _hf_samples([a, c], 3.0)], 10.0)
+        for k, cx, cy in hf._cells((min(q[0] for q in ring) + max(q[0] for q in ring)) / 2, (min(q[1] for q in ring) + max(q[1] for q in ring)) / 2,
+                                   max(max(q[0] for q in ring) - min(q[0] for q in ring), max(q[1] for q in ring) - min(q[1] for q in ring)) / 2 + 2):
+            if in_polygon((cx, cy), b['polygon']):
+                keep[k] = 0.0
+    rnd = random.Random(L['seed'] + 7)
+    waves = []
+    for _ in range(7):
+        a, wl = rnd.uniform(0, math.tau), rnd.uniform(12.0, 45.0)
+        waves.append((math.cos(a) * math.tau / wl, math.sin(a) * math.tau / wl, rnd.uniform(0, math.tau), wl / 45.0 + 0.4))
+    norm = sum(w[3] for w in waves)  # every wave at its crest: the peak is exactly RELIEF_AMP_M, typical swells a third of it
+    x0, y0, x1, y1 = L['zone_bounds']
+    for k in range(hf.nx * hf.ny):
+        x, y = hf.x0 + k % hf.nx * hf.step, hf.y0 + k // hf.nx * hf.step
+        edge = min(x - x0, x1 - x, y - y0, y1 - y)
+        t = min(1.0, max(0.0, edge / RELIEF_EDGE_M))
+        wgt = keep.get(k, 1.0) * t * t * (3 - 2 * t)
+        if wgt > 0:
+            hf.h[k] += wgt * RELIEF_AMP_M * sum(a * math.sin(kx * x + ky * y + ph) for kx, ky, ph, a in waves) / norm
+
+
+apply_relief(HF)
 if u.EditorAssetLibrary.does_asset_exist(TERRAIN):
     assert u.EditorAssetLibrary.delete_asset(TERRAIN), 'Could not delete the previous terrain mesh'
 mesh = u.DynamicMesh()
@@ -690,11 +743,24 @@ def road_field(tier_filter):
 
 
 ROAD_G, ROAD_B = road_field(('primary', 'secondary')), road_field(('trail',))
+for _x, _y, _w, _d in PLAZAS:  # plazas are cobble too: a rectangle distance field, 0.5 at the plaza edge like the roads
+    for _k, _cx, _cy in HF._cells(_x, _y, max(_w, _d) * 0.75 + ROAD_RAMP):
+        _dx, _dy = abs(_cx - _x) - _w / 2, abs(_cy - _y) - _d / 2
+        _f = min(1.0, max(0.0, 0.5 - (math.hypot(max(_dx, 0), max(_dy, 0)) + min(max(_dx, _dy), 0)) / ROAD_RAMP))
+        if _f > 0:
+            ROAD_G[_k] = max(ROAD_G.get(_k, 0.0), _f)
+ROAD_A = {}  # vertex alpha: farm fields, same 0.5-at-the-edge field as the plazas
+for _x, _y, _w, _d in FIELDS:
+    for _k, _cx, _cy in HF._cells(_x, _y, max(_w, _d) * 0.75 + ROAD_RAMP):
+        _dx, _dy = abs(_cx - _x) - _w / 2, abs(_cy - _y) - _d / 2
+        _f = min(1.0, max(0.0, 0.5 - (math.hypot(max(_dx, 0), max(_dy, 0)) + min(max(_dx, _dy), 0)) / ROAD_RAMP))
+        if _f > 0:
+            ROAD_A[_k] = max(ROAD_A.get(_k, 0.0), _f)
 
 
 def colour(v):
     k = round((v.y / 100 - HF.y0) / HF.step) * HF.nx + round((v.x / 100 - HF.x0) / HF.step)
-    return u.LinearColor(rockiness(v), ROAD_G.get(k, 0.0), ROAD_B.get(k, 0.0), 1)
+    return u.LinearColor(rockiness(v), ROAD_G.get(k, 0.0), ROAD_B.get(k, 0.0), ROAD_A.get(k, 0.0))
 
 
 u.GeometryScript_VertexColors.set_mesh_per_vertex_colors(
