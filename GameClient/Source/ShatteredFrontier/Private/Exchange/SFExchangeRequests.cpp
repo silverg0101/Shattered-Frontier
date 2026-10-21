@@ -64,7 +64,8 @@ FSFGameplayRequest SFExchangeRequests::CancelListing(const FString& ListingId, c
 
 bool SFExchangeRequests::Committed(const FSFGameplayResponse& Response)
 {
-    return Response.Status == ESFGameplayStatus::Ok && Response.Exchange.bCommitted;
+    // Gameplay.Host sets committed only when the settlement state is "committed"; an offer it opened replies "pending".
+    return Response.Status == ESFGameplayStatus::Ok && (Response.Exchange.bCommitted || Response.Exchange.State == TEXT("pending"));
 }
 
 FSFWalletView SFExchangeRequests::ToWallet(const FSFGameplayResponse& Response)

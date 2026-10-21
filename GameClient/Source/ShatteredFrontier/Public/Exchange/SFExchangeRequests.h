@@ -24,7 +24,8 @@ namespace SFExchangeRequests
     SHATTEREDFRONTIER_API FSFGameplayRequest List(const FSFExchangeParties& Parties, const FString& ListingId, const FString& ItemId, int32 Quantity, int64 UnitPrice, int64 ListingFee, int64 NowUnixMs);
     SHATTEREDFRONTIER_API FSFGameplayRequest Buy(const FSFListing& Listing, const FString& BuyerId, const FString& DestinationContainerId, int64 TransactionFee);
     SHATTEREDFRONTIER_API FSFGameplayRequest CancelListing(const FString& ListingId, const FString& SellerId);
-    // True only for an Ok reply the server committed; Rejected and Unavailable never count.
+    // True for an Ok reply the server applied: committed, or a "pending" settlement (an open trade offer awaiting the
+    // partner, a new listing). Rejected, Unavailable and any other state never count.
     SHATTEREDFRONTIER_API bool Committed(const FSFGameplayResponse& Response);
     SHATTEREDFRONTIER_API FSFWalletView ToWallet(const FSFGameplayResponse& Response);
 }

@@ -44,6 +44,12 @@ bool FSFExchangeRequestsTest::RunTest(const FString& Parameters)
     TestFalse(TEXT("Unavailable never counts as committed"),SFExchangeRequests::Committed(Reply));
     Reply.Status=ESFGameplayStatus::Ok; Reply.Exchange.bCommitted=false;
     TestFalse(TEXT("An Ok reply that did not commit does not count"),SFExchangeRequests::Committed(Reply));
+    Reply.Exchange.State=TEXT("pending");
+    TestTrue(TEXT("An Ok pending settlement (open offer) counts"),SFExchangeRequests::Committed(Reply));
+    Reply.Exchange.State=TEXT("cancelled");
+    TestFalse(TEXT("An Ok cancelled settlement does not count"),SFExchangeRequests::Committed(Reply));
+    Reply.Status=ESFGameplayStatus::Rejected; Reply.Exchange.State=TEXT("pending");
+    TestFalse(TEXT("A rejected reply never counts, whatever its state"),SFExchangeRequests::Committed(Reply));
     return true;
 }
 

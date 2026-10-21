@@ -14,8 +14,9 @@
 namespace
 {
 constexpr int32 ExchangeScenarioDone = 100;
-const TCHAR* ExchangeScenarioTrade = TEXT("scn-trade");
-const TCHAR* ExchangeScenarioListing = TEXT("scn-listing");
+// Exchange ids carry their kind prefix (trd_ / lst_); the live store (PostgresExchangeStore) rejects any other id.
+const TCHAR* ExchangeScenarioTrade = TEXT("trd_scenario");
+const TCHAR* ExchangeScenarioListing = TEXT("lst_scenario");
 }
 
 void USFExchangeComponent::TickComponent(float Delta, ELevelTick Type, FActorComponentTickFunction* Function)
@@ -85,8 +86,8 @@ void USFExchangeComponent::TickScenario()
     case 3:  // A lists one iron ore at 5 gold
         Intent.Kind = ESFExchangeIntentKind::ListItem; Intent.ListingId = ExchangeScenarioListing; Intent.ItemId = TEXT("item/iron_ore"); Intent.Quantity = 1; Intent.UnitPrice = 5;
         Run(A, Intent, 103); break;
-    case 4:  // B buys it (revision 1 is the first listing revision)
-        Intent.Kind = ESFExchangeIntentKind::BuyListing; Intent.ListingId = ExchangeScenarioListing; Intent.Quantity = 1; Intent.UnitPrice = 5; Intent.ExpectedRevision = 1;
+    case 4:  // B buys it (a new listing is revision 0: exchange.listings.revision defaults to 0)
+        Intent.Kind = ESFExchangeIntentKind::BuyListing; Intent.ListingId = ExchangeScenarioListing; Intent.Quantity = 1; Intent.UnitPrice = 5; Intent.ExpectedRevision = 0;
         Run(B, Intent, 104); break;
     case 5:  // read B's wallet, then replay accept and buy under the same derived operation ids
         Intent.Kind = ESFExchangeIntentKind::Wallet; Run(B, Intent, 105); break;
@@ -95,7 +96,7 @@ void USFExchangeComponent::TickScenario()
         UE_LOG(LogTemp, Display, TEXT("EXCHANGE_SCENARIO_WALLET Phase=Before B=%lld Reserved=%lld"), WalletBeforeReplay.Balance, WalletBeforeReplay.Reserved);
         Intent.Kind = ESFExchangeIntentKind::AcceptTrade; Intent.TradeId = ExchangeScenarioTrade; Run(B, Intent, 106); break;
     case 7:
-        Intent.Kind = ESFExchangeIntentKind::BuyListing; Intent.ListingId = ExchangeScenarioListing; Intent.Quantity = 1; Intent.UnitPrice = 5; Intent.ExpectedRevision = 1; Run(B, Intent, 107); break;
+        Intent.Kind = ESFExchangeIntentKind::BuyListing; Intent.ListingId = ExchangeScenarioListing; Intent.Quantity = 1; Intent.UnitPrice = 5; Intent.ExpectedRevision = 0; Run(B, Intent, 107); break;
     case 8:
         Intent.Kind = ESFExchangeIntentKind::Wallet; Run(B, Intent, 108); break;
     case 9:
