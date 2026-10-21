@@ -3,6 +3,7 @@
 #include "Tests/AutomationCommon.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Inventory/SFInventoryLedgerClient.h"
+#include "Services/SFBackpackComponent.h"
 #include "Containers/Ticker.h"
 #include "Construction/SFConstructionNetwork.h"
 #include "Characters/SFE1Character.h"
@@ -397,9 +398,12 @@ bool FSFGatheringPilotLedgerTest::RunTest(const FString& Parameters)
         if (Fake->bHold) { Fake->Held.Add(MoveTemp(Done)); return; }
         Done(Fake->Reply(Request));
     });
-    Gather->Ledger=FSFInventoryLedgerClient::Create(*Settings);
+    TSharedPtr<FSFInventoryLedgerClient> Client=FSFInventoryLedgerClient::Create(*Settings);
     FSFInventoryLedgerClient::SetSendOverrideForTests(nullptr);
-    if (!TestTrue(TEXT("Stubbed client created"),Gather->Ledger.IsValid())) { return false; }
+    if (!TestTrue(TEXT("Stubbed client created"),Client.IsValid())) { return false; }
+    // INT-04: the controller backpack is the single ledger writer the harvest commit goes through.
+    USFBackpackComponent* Pack=USFBackpackComponent::CreateForTests(PC,Client);
+    Gather->Backpack=Pack;
 
     const TSoftObjectPtr<UInventoryItemDefinition> WoodItem(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_OakLog.DA_OakLog")));
     const auto Tick=[&Fixture](int32 Count) { for (int32 I=0; I<Count; ++I) { Fixture.TickTestWorld(0.05f); FTSTicker::GetCoreTicker().Tick(0.3f); } };
@@ -413,7 +417,7 @@ bool FSFGatheringPilotLedgerTest::RunTest(const FString& Parameters)
     const FSFLedgerRequest First=Fake->Requests[1];
     TestTrue(TEXT("Server-generated operation id"),First.OperationId.StartsWith(TEXT("gather/")) && First.OperationId.Len()==43);
     TestEqual(TEXT("Causation is container:client operation"),First.CausationId,FString(TEXT("ctn_dev_local:1")));
-    TestTrue(TEXT("Grant payload"),First.ContainerId==TEXT("ctn_dev_local") && First.ExpectedRevision==0 && First.DefinitionId==TEXT("item/pilot_oak_log")
+    TestTrue(TEXT("Grant payload"),First.ContainerId==TEXT("ctn_dev_local") && First.ExpectedRevision==0 && First.DefinitionId==TEXT("item/oak_log")
         && First.Quantity==1 && First.Source==TEXT("gathering"));
     TestEqual(TEXT("Container capacity from typed settings"),Fake->Requests[0].Capacity,Gather->CapturedSettings->InventorySlots*Gather->CapturedSettings->MaterialStackUnits);
 
@@ -440,19 +444,23 @@ bool FSFGatheringPilotLedgerTest::RunTest(const FString& Parameters)
     TestTrue(TEXT("Unavailable keeps charge and revision and releases lock"),Wood->State.Charges==1 && Wood->State.Revision==2 && !Wood->State.bBusy);
     TestEqual(TEXT("Nothing projected"),UInventoryTransactionLibrary::GetItemQuantity(Bag,WoodItem),int64(2));
 
-    Fake->bAllUnavailable=false; Gather->LedgerRevision=Fake->Revision; Fake->Revision+=5;  // another writer moved the container
-    Gather->ServerGatheringAction_Implementation(Wood,2,4); Tick(12);
-    TestEqual(TEXT("Stale revision rejects"),Gather->Feedback.Result,ESFGatheringPilotResult::Stale);
-    TestTrue(TEXT("Stale re-reads the container"),Fake->Requests.Last().Rpc==ESFLedgerRpc::GetContainer && Gather->LedgerRevision==Fake->Revision);
-    TestTrue(TEXT("Stale keeps the charge"),Wood->State.Charges==1 && !Wood->State.bBusy);
+    Fake->bAllUnavailable=false; Pack->Revision=Fake->Revision; Fake->Revision+=5;  // another writer moved the container
+    const int32 CommitsBefore=Fake->Commits;
+    Gather->ServerGatheringAction_Implementation(Wood,2,4); Tick(14);
+    const FString Retried=Fake->Requests.Last().OperationId;
+    TestEqual(TEXT("A stale revision re-reads and retries once"),Gather->Feedback.Result,ESFGatheringPilotResult::Granted);
+    TestTrue(TEXT("The retry uses the derived <op>:r1 id"),Retried.EndsWith(TEXT(":r1")) && Grants(Retried.LeftChop(3))==1 && Grants(Retried)==1);
+    TestEqual(TEXT("Exactly one commit for the stale harvest"),Fake->Commits,CommitsBefore+1);
+    TestTrue(TEXT("The charge is consumed once after the retried receipt"),Wood->State.Charges==0 && !Wood->State.bBusy);
+    Wood->State.Charges=1;
 
     Fake->bHold=true;
-    Gather->ServerGatheringAction_Implementation(Wood,2,5); Tick(12);
+    Gather->ServerGatheringAction_Implementation(Wood,Wood->State.Revision,5); Tick(12);
     if (!TestEqual(TEXT("Disconnect case reaches committing"),Fake->Held.Num(),1)) { return false; }
     PC->Destroy();
     TestFalse(TEXT("Disconnect releases the node lock"),Wood->State.bBusy);
     FSFLedgerResponse Late=Fake->Reply(Fake->Requests.Last()); Fake->Held[0](Late);
-    TestEqual(TEXT("Ledger resolved the outcome after the owner left"),Fake->Commits,3);
+    TestEqual(TEXT("Ledger resolved the outcome after the owner left"),Fake->Commits,CommitsBefore+2);
     return true;
 }
 #endif

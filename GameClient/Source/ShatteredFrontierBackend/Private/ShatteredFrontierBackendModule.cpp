@@ -8,6 +8,7 @@
 #include "Sockets.h"
 #include "SocketSubsystem.h"
 #include "SFGrpcLedgerTransport.h"
+#include "SFGrpcGameplayTransport.h"
 
 namespace
 {
@@ -65,6 +66,17 @@ public:
                 FSFLedgerResponse Closed; Closed.Message = TEXT("Ledger transport shut down."); Done(Closed);
             };
         });
+        // INT-04: the same pattern for Gameplay.Host (one channel + completion-queue thread per endpoint).
+        FSFGameplayServicesClient::SetTransportFactory([this](const FString& Endpoint) -> FSFGameplaySend
+        {
+            TSharedPtr<FSFGrpcGameplayTransport>& Transport = GameplayTransports.FindOrAdd(Endpoint);
+            if (!Transport) { Transport = MakeShared<FSFGrpcGameplayTransport>(Endpoint); }
+            return [Weak = TWeakPtr<FSFGrpcGameplayTransport>(Transport)](const FSFGameplayRequest& Request, float Deadline, TFunction<void(const FSFGameplayResponse&)> Done)
+            {
+                if (const TSharedPtr<FSFGrpcGameplayTransport> Pinned = Weak.Pin()) { Pinned->Send(Request, Deadline, MoveTemp(Done)); return; }
+                FSFGameplayResponse Closed; Closed.Message = TEXT("Gameplay transport shut down."); Done(Closed);
+            };
+        });
 #if !UE_BUILD_SHIPPING
         FString ProbeEndpoint;
         if (FParse::Value(FCommandLine::Get(), TEXT("SFLedgerGrpcProbe="), ProbeEndpoint))
@@ -77,10 +89,13 @@ public:
     virtual void ShutdownModule() override
     {
         FSFInventoryLedgerClient::SetTransportFactory(nullptr);
+        FSFGameplayServicesClient::SetTransportFactory(nullptr);
+        GameplayTransports.Empty();
         Transports.Empty();
     }
 private:
     TMap<FString, TSharedPtr<FSFGrpcLedgerTransport>> Transports;
+    TMap<FString, TSharedPtr<FSFGrpcGameplayTransport>> GameplayTransports;
 };
 
 IMPLEMENT_MODULE(FShatteredFrontierBackendModule, ShatteredFrontierBackend)

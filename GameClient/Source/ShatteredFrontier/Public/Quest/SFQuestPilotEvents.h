@@ -8,8 +8,10 @@ class APlayerController;
 // Server-side broadcasts from the pilots' accepted-outcome paths; the quest pilot is the only listener.
 namespace SFQuestPilotEvents
 {
-    DECLARE_MULTICAST_DELEGATE_TwoParams(FGathered, APlayerController*, ESFGatheringPilotKind);
-    DECLARE_MULTICAST_DELEGATE_TwoParams(FStructurePlaced, APlayerController*, uint64 /*construction revision*/);
+    // Output is the committed item definition (the recipe output for a station); Operation is the ledger or craft
+    // operation id behind it, empty in session-only mode.
+    DECLARE_MULTICAST_DELEGATE_FourParams(FGathered, APlayerController*, ESFGatheringPilotKind, const FString& /*output*/, const FString& /*operation*/);
+    DECLARE_MULTICAST_DELEGATE_ThreeParams(FStructurePlaced, APlayerController*, uint64 /*construction revision*/, const FString& /*housing operation, empty when session-only*/);
     DECLARE_MULTICAST_DELEGATE_TwoParams(FBoarDefeated, APlayerController*, const FString& /*boar death id*/);
 
     /** Harvest or refine committed to the owner's bag. */

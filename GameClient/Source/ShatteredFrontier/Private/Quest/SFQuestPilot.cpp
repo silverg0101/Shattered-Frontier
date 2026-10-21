@@ -12,6 +12,9 @@
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 #include "Characters/SFE1Character.h"
+#include "Services/SFBackpackComponent.h"
+#include "Services/SFGameplayServicesClient.h"
+#include "Gathering/SFStationRecipes.h"
 #include "Combat/SFCombatPilot.h"
 #include "Construction/SFConstructionGeometry.h"
 #include "Construction/SFConstructionNetwork.h"
@@ -210,6 +213,13 @@ void USFQuestPilotComponent::Init(TSharedPtr<const FSFQuestDefinition> InQuest)
 bool USFQuestPilotComponent::Observe(const FString& Kind, const FString& TargetId, const FString& NodeId, const FString& OperationId)
 {
     if (!Quest || !GetOwner() || !GetOwner()->HasAuthority()) { return false; }
+    if (USFBackpackComponent::Services())
+    {
+        // INT-04: the Progression service decides; the local model only mirrors accepted replies (decision 5).
+        ServiceQueue.Add({Kind, TargetId, NodeId, OperationId});
+        PumpServices();
+        return true;
+    }
     TArray<FString> Rewards;
     const ESFQuestApply Result = Progress.Apply(*Quest, Kind, TargetId, NodeId, 1, OperationId, Rewards);
     UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_EVENT Kind=%s Target=%s Op=%s Result=%d Step=%d Rewards=%d"),
@@ -222,12 +232,103 @@ bool USFQuestPilotComponent::Observe(const FString& Kind, const FString& TargetI
     return true;
 }
 
+void USFQuestPilotComponent::PumpServices()
+{
+    auto* PC = Cast<APlayerController>(GetOwner());
+    USFBackpackComponent* Pack = USFBackpackComponent::FindOrCreate(PC);
+    if (bServiceBusy || ServiceQueue.IsEmpty() || !Pack) { return; }
+    bServiceBusy = true;
+    const FServiceEvent Event = ServiceQueue[0];
+    // Receipt kinds: harvest, craft and defeat carry a progression payload; building is quest evidence only.
+    FSFGameplayRequest Q; Q.Rpc = ESFGameplayRpc::ApplyReceipt; Q.OperationId = Event.OperationId; Q.CharacterId = Pack->GetCharacterId();
+    Q.Kind = Event.Kind == TEXT("build") ? FString(TEXT("quest")) : Event.Kind;
+    Q.ExpectedProgressionRevision = ProgressionRevision; Q.ExpectedQuestRevision = QuestRevision;
+    if (Event.Kind == TEXT("gather"))
+    {
+        Q.SkillId = Event.TargetId == TEXT("item/oak_log") ? TEXT("skill/logging") : TEXT("skill/mining");
+        Q.Difficulty = 1; Q.ActionSeconds = GetDefault<USFGatheringPilotSettings>()->HarvestSeconds; Q.ContextHash = GetTypeHash(Event.NodeId);
+    }
+    else if (Event.Kind == TEXT("craft"))
+    { Q.SkillId = TEXT("skill/smithing"); Q.Difficulty = 1; Q.ActionSeconds = GetDefault<USFGatheringPilotSettings>()->RefineSeconds; Q.ContextHash = GetTypeHash(Event.TargetId); }
+    else if (Event.Kind == TEXT("defeat")) { Q.EnemyLevel = 2; Q.EnemyTierMultiplier = 1; Q.PartySize = 1; }
+    if (!Progress.IsComplete(*Quest))
+    {
+        // Quest evidence names the server's current step; an event for another step is simply not accepted.
+        LastOccurredMs = FMath::Max(LastOccurredMs + 1, FDateTime::UtcNow().ToUnixTimestamp() * 1000 + FDateTime::UtcNow().GetMillisecond());
+        Q.bHasQuest = true; Q.QuestId = Quest->Id; Q.StepId = Quest->Steps[Progress.StepIndex].Id; Q.QuestKind = Event.Kind;
+        Q.TargetId = Event.TargetId; Q.NodeId = Event.NodeId; Q.Quantity = 1; Q.OccurredAtUnixMs = LastOccurredMs;
+    }
+    USFBackpackComponent::Services()->Call(Q, [Weak = TWeakObjectPtr<USFQuestPilotComponent>(this), Event](const FSFGameplayResponse& R)
+    {
+        USFQuestPilotComponent* Self = Weak.Get();
+        if (!Self) { return; }
+        Self->ServiceQueue.RemoveAt(0);
+        Self->bServiceBusy = false;
+        if (R.Status == ESFGameplayStatus::Ok)
+        {
+            if (R.ProgressionRevision > 0) { Self->ProgressionRevision = R.ProgressionRevision; }
+            if (R.QuestRevision > 0) { Self->QuestRevision = R.QuestRevision; }
+            if (R.bQuestAccepted)
+            {
+                // Mirror the accepted evidence for the tracker counts, then take the server's step as the truth.
+                TArray<FString> Ignored;
+                Self->Progress.Apply(*Self->Quest, Event.Kind, Event.TargetId, Event.NodeId, 1, Event.OperationId, Ignored);
+                const int32 Active = R.bQuestCompleted ? Self->Quest->Steps.Num()
+                    : Self->Quest->Steps.IndexOfByPredicate([&](const FSFQuestStep& S) { return S.Id == R.ActiveStepId; });
+                if (Active != INDEX_NONE && Active != Self->Progress.StepIndex)
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("QUEST_SERVICE_STEP_CORRECTED Local=%d Server=%d"), Self->Progress.StepIndex, Active);
+                    Self->Progress.StepIndex = Active; Self->Progress.Counts.Reset();
+                }
+                Self->RebuildView();
+            }
+            UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_EVENT Kind=%s Target=%s Op=%s Result=%d Step=%d Rewards=%d Source=service Active=%s"),
+                *Event.Kind, *Event.TargetId, *Event.OperationId, R.bQuestAccepted ? 0 : 2, Self->Progress.StepIndex, R.RewardBundleIds.Num(), *R.ActiveStepId);
+            for (const FString& Bundle : R.RewardBundleIds) { UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_REWARD Bundle=%s Source=service"), *Bundle); }
+            if (R.bQuestCompleted && R.bQuestAccepted) { UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_COMPLETE Quest=%s Source=service"), *Self->Quest->Id); }
+            for (const TPair<FString, int64>& Item : R.GrantedItems)
+            {
+                UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_PAYOUT Item=%s Quantity=%lld"), *Item.Key, Item.Value);
+                Self->RewardLines.AddUnique(FString::Printf(TEXT("%lld %s"), Item.Value, *SFStationRecipes::ItemDisplayName(Item.Key)));
+            }
+            // The granted lines are the committed payout; without them (payout still pending) re-read the backpack.
+            if (USFBackpackComponent* Pack = USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Self->GetOwner())))
+            { if (!R.GrantedItems.IsEmpty()) { Pack->ApplyToBag(R.GrantedItems); } else if (!R.RewardBundleIds.IsEmpty()) { Pack->Reconcile(); } }
+            if (!R.GrantedItems.IsEmpty()) { Self->RebuildView(); }
+        }
+        else if (R.Status == ESFGameplayStatus::Rejected && R.GrpcCode == 9 && !Event.bRetried)
+        {
+            // Stale progression or quest revision: read the character state and retry once with the same source id.
+            // The same id matters here: progression and quest are separate receipts, so a retry must replay, not re-apply.
+            USFBackpackComponent* Pack = USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Self->GetOwner()));
+            FSFGameplayRequest Get; Get.Rpc = ESFGameplayRpc::GetCharacterState; Get.CharacterId = Pack ? Pack->GetCharacterId() : FString();
+            USFBackpackComponent::Services()->Call(Get, [Weak, Event](const FSFGameplayResponse& State)
+            {
+                USFQuestPilotComponent* Again = Weak.Get();
+                if (!Again) { return; }
+                if (State.Status == ESFGameplayStatus::Ok) { Again->ProgressionRevision = State.ProgressionRevision; Again->QuestRevision = State.QuestRevision; }
+                FServiceEvent Retry = Event; Retry.bRetried = true;
+                Again->ServiceQueue.Insert(Retry, 0);
+                Again->PumpServices();
+            });
+            return;
+        }
+        else
+        {
+            UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_EVENT Kind=%s Target=%s Op=%s Result=3 Step=%d Rewards=0 Source=service Code=%d"),
+                *Event.Kind, *Event.TargetId, *Event.OperationId, Self->Progress.StepIndex, R.GrpcCode);
+        }
+        Self->PumpServices();
+    });
+}
+
 void USFQuestPilotComponent::RebuildView()
 {
     if (!Quest) { return; }
     FSFQuestView Next;
     Next.Title = Humanize(Quest->Id); Next.StepTotal = Quest->Steps.Num();
     Next.bComplete = Progress.IsComplete(*Quest);
+    Next.RewardLines = RewardLines;
     Next.StepNumber = FMath::Min(Progress.StepIndex + 1, Next.StepTotal);
     if (!Next.bComplete)
     {
@@ -287,13 +388,59 @@ namespace
         return nullptr;
     }
 
-    bool NodeKindFor(const FString& Kind, const FString& Target, ESFGatheringPilotKind& Out)
+    // What the driver does next: work a node or station (with a recipe), place the wall, or fight the boar.
+    enum class EFullAction : uint8 { None, Node, Build, Boar };
+    struct FFullTarget
     {
-        if (Kind == TEXT("gather") && Target == TEXT("item/oak_log")) { Out = ESFGatheringPilotKind::Oak; return true; }
-        if (Kind == TEXT("gather") && Target == TEXT("item/iron_ore")) { Out = ESFGatheringPilotKind::Iron; return true; }
-        if (Kind == TEXT("craft") && Target == TEXT("item/rough_timber")) { Out = ESFGatheringPilotKind::Sawmill; return true; }
-        if (Kind == TEXT("craft") && Target == TEXT("item/iron_ingot")) { Out = ESFGatheringPilotKind::Forge; return true; }
-        return false;
+        EFullAction Action = EFullAction::None;
+        ESFGatheringPilotKind Kind = ESFGatheringPilotKind::Oak;
+        FString Recipe;
+        FString Describe() const
+        {
+            return Action == EFullAction::Build ? TEXT("wall") : Action == EFullAction::Boar ? TEXT("boar")
+                : Action == EFullAction::Node ? FString::Printf(TEXT("%s%s%s"), *UEnum::GetValueAsString(Kind), Recipe.IsEmpty() ? TEXT("") : TEXT(":"), *Recipe) : TEXT("none");
+        }
+    };
+
+    FFullTarget Node(ESFGatheringPilotKind Kind, const TCHAR* Recipe = TEXT("")) { FFullTarget T; T.Action = EFullAction::Node; T.Kind = Kind; T.Recipe = Recipe; return T; }
+
+    int64 BagQuantity(const AActor* Owner, const TCHAR* Item)
+    {
+#if SF_WITH_MINIMAL_INVENTORY
+        auto* Bag = Owner ? Owner->FindComponentByClass<UInventoryComponent>() : nullptr;
+        return Bag ? UInventoryTransactionLibrary::GetItemQuantity(Bag, TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Item)))) : 0;
+#else
+        return 0;
+#endif
+    }
+
+    // Economy mode (gameplay services on): a wall costs a wall bundle, so walk back from the bundle recipe to what the bag lacks.
+    FFullTarget WallEconomy(const AActor* Owner)
+    {
+        const FSFStationRecipe* Bundle = SFStationRecipes::Find(TEXT("recipe/wall_material_bundle"));
+        if (!Bundle || BagQuantity(Owner, TEXT("item/wall_material_bundle")) >= 1) { FFullTarget T; T.Action = EFullAction::Build; return T; }
+        int64 Timber = 0, Nails = 0;
+        for (const FSFItemStack& Input : Bundle->Inputs)
+        { (Input.DefinitionId == TEXT("item/rough_timber") ? Timber : Nails) = Input.Quantity; }
+        const bool bTimber = BagQuantity(Owner, TEXT("item/rough_timber")) >= Timber, bNails = BagQuantity(Owner, TEXT("item/iron_nails")) >= Nails;
+        if (bTimber && bNails) { return Node(ESFGatheringPilotKind::Workbench, TEXT("recipe/wall_material_bundle")); }
+        if (!bNails)
+        {
+            if (BagQuantity(Owner, TEXT("item/iron_ingot")) >= 1) { return Node(ESFGatheringPilotKind::Forge, TEXT("recipe/iron_nails")); }
+            if (BagQuantity(Owner, TEXT("item/iron_ore")) >= 1) { return Node(ESFGatheringPilotKind::Forge, TEXT("recipe/iron_ingot")); }
+            return Node(ESFGatheringPilotKind::Iron);
+        }
+        return BagQuantity(Owner, TEXT("item/oak_log")) >= 1 ? Node(ESFGatheringPilotKind::Sawmill, TEXT("recipe/rough_timber")) : Node(ESFGatheringPilotKind::Oak);
+    }
+
+    FFullTarget Resolve(const FString& Kind, const FString& Target, const AActor* Owner, bool bEconomy)
+    {
+        if (Kind == TEXT("gather")) { return Node(Target == TEXT("item/oak_log") ? ESFGatheringPilotKind::Oak : ESFGatheringPilotKind::Iron); }
+        if (Kind == TEXT("craft"))
+        { return Target == TEXT("item/rough_timber") ? Node(ESFGatheringPilotKind::Sawmill, TEXT("recipe/rough_timber")) : Node(ESFGatheringPilotKind::Forge, TEXT("recipe/iron_ingot")); }
+        if (Kind == TEXT("build")) { if (bEconomy) { return WallEconomy(Owner); } FFullTarget T; T.Action = EFullAction::Build; return T; }
+        if (Kind == TEXT("defeat")) { FFullTarget T; T.Action = EFullAction::Boar; return T; }
+        return FFullTarget();
     }
 
     ASFGatheringPilotNode* NearestNode(UWorld* World, ESFGatheringPilotKind Kind, const FVector& To)
@@ -311,6 +458,23 @@ namespace
         { if (It->Health() > 0 && (!Best || FVector::Dist2D(It->GetActorLocation(), To) < FVector::Dist2D(Best->GetActorLocation(), To))) { Best = *It; } }
         return Best;
     }
+
+    const ASFConstructionNetworkState* FindClaim(UWorld* World)
+    {
+        const ASFConstructionNetworkState* Claim = nullptr;
+        for (TActorIterator<ASFConstructionNetworkState> It(World); It; ++It) { Claim = *It; }
+        return Claim && Claim->GetAnchorCell() != FIntVector::ZeroValue ? Claim : nullptr;
+    }
+
+    bool HeldStill(const APawn* Pawn, FVector& LastPosition, double& StableSince, double Now)
+    {
+        const auto* Character = Cast<ACharacter>(Pawn);
+        if (!Character || !Character->GetCharacterMovement()->IsMovingOnGround() || !Character->GetVelocity().IsNearlyZero(1.0)
+            || FVector::DistSquared(Pawn->GetActorLocation(), LastPosition) > 1.0)
+        { StableSince = 0; LastPosition = Pawn->GetActorLocation(); return false; }
+        if (StableSince == 0) { StableSince = Now; }
+        return Now - StableSince >= 1.0;
+    }
 }
 
 void USFQuestPilotComponent::TickFullServer()
@@ -320,34 +484,35 @@ void USFQuestPilotComponent::TickFullServer()
     APawn* Pawn = PC ? PC->GetPawn() : nullptr;
     const FSFQuestObjective* Objective = Quest ? NextObjective(*Quest, Progress) : nullptr;
     if (!Pawn || !Objective) { return; }
-    // Gather and node steps: the node nearest the world origin (oak, iron) or the only station; boar: the nearest live boar.
-    FVector Target = FVector::ZeroVector; ESFGatheringPilotKind Kind = ESFGatheringPilotKind::Oak;
-    if (NodeKindFor(Objective->Kind, Objective->TargetId, Kind))
+    // Nodes: the one nearest the world origin (oak, iron) or the only station; the claim pad for the wall; the nearest boar.
+    const FFullTarget Next = Resolve(Objective->Kind, Objective->TargetId, PC, USFBackpackComponent::Services().IsValid());
+    FVector Target = FVector::ZeroVector, Where = FVector::ZeroVector;
+    if (Next.Action == EFullAction::Node)
     {
-        const auto* Node = NearestNode(GetWorld(), Kind, FVector::ZeroVector);
-        if (!Node) { return; }
-        Target = Node->GetActorLocation();
+        const auto* NodeActor = NearestNode(GetWorld(), Next.Kind, FVector::ZeroVector);
+        if (!NodeActor) { return; }
+        Target = NodeActor->GetActorLocation();
+        Where = Target + (-Target * FVector(1, 1, 0)).GetSafeNormal() * 200 + FVector(0, 0, 80);
     }
-    else if (Objective->Kind == TEXT("defeat"))
+    else if (Next.Action == EFullAction::Boar)
     {
         const auto* Boar = NearestBoar(GetWorld(), Pawn->GetActorLocation());
         if (!Boar) { return; }
         Target = Boar->GetActorLocation();
+        Where = Target + (-Target * FVector(1, 1, 0)).GetSafeNormal() * 200 + FVector(0, 0, 80);
     }
-    else if (Objective->Kind == TEXT("build"))
+    else if (Next.Action == EFullAction::Build)
     {
         // The dev claim pad: stand on it beside the first cell (BLD-02 anchored construction).
-        const ASFConstructionNetworkState* Claim = nullptr;
-        for (TActorIterator<ASFConstructionNetworkState> It(GetWorld()); It; ++It) { Claim = *It; }
-        if (!Claim || Claim->GetAnchorCell() == FIntVector::ZeroValue) { return; }
+        const ASFConstructionNetworkState* Claim = FindClaim(GetWorld());
+        if (!Claim) { return; }
         Target = Claim->GetAnchorOffsetCm() + FVector(25, 25, 25);
+        Where = Target + FVector(-175, -125, 95);
     }
     else { return; }
-    const FString Key = Quest->Steps[Progress.StepIndex].Id + TEXT("/") + Objective->Key;
+    const FString Key = Quest->Steps[Progress.StepIndex].Id + TEXT("/") + Objective->Key + TEXT("/") + Next.Describe();
     if (Key == FullTeleportKey && FVector::Dist2D(Pawn->GetActorLocation(), Target) < 600) { return; }
-    // Re-place after a respawn or a boar that wandered off; otherwise once per objective.
-    const FVector Where = Objective->Kind == TEXT("build") ? Target + FVector(-175, -125, 95)
-        : Target + (-Target * FVector(1, 1, 0)).GetSafeNormal() * 200 + FVector(0, 0, 80);
+    // Re-place after a respawn or a boar that wandered off; otherwise once per target.
     Pawn->SetActorLocation(Where, false, nullptr, ETeleportType::TeleportPhysics);
     FullTeleportKey = Key;
     UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_PLACED Objective=%s"), *Key);
@@ -362,27 +527,37 @@ void USFQuestPilotComponent::TickFullClient(double Now)
     if (!PC || !PC->IsLocalController() || !Pawn || View.Title.IsEmpty() || bFullDone) { return; }
     if (View.bComplete)
     { bFullDone = true; UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_DONE Steps=%d"), View.StepTotal); return; }
-    const FSFQuestLine* Next = View.Lines.FindByPredicate([](const FSFQuestLine& L) { return L.Count < L.Target; });
-    if (!Next) { return; }  // e.g. the wall step before the dev skip lands
-    const FString Key = View.Step + TEXT("/") + Next->Label;
+    const FSFQuestLine* Line = View.Lines.FindByPredicate([](const FSFQuestLine& L) { return L.Count < L.Target; });
+    if (!Line) { return; }
+    // The tracker line names the objective; recover its content ids from the same label rule the server used.
+    FString Kind, Target;
+    static const TCHAR* const Objectives[][2] = { {TEXT("gather"), TEXT("item/oak_log")}, {TEXT("gather"), TEXT("item/iron_ore")},
+        {TEXT("craft"), TEXT("item/rough_timber")}, {TEXT("craft"), TEXT("item/iron_ingot")}, {TEXT("build"), TEXT("structure_tag/wall")}, {TEXT("defeat"), TEXT("npc/boar")} };
+    for (const auto& Pair : Objectives)
+    { if (Line->Label == Verb(Pair[0]) + TEXT(" ") + Humanize(Pair[1])) { Kind = Pair[0]; Target = Pair[1]; } }
+    const FFullTarget Next = Resolve(Kind, Target, PC, FParse::Param(FCommandLine::Get(), TEXT("QuestFullEconomy")));
+    const FString Key = View.Step + TEXT("/") + Line->Label + TEXT("/") + Next.Describe();
     if (Key != FullAttemptKey)
-    { FullAttemptKey = Key; FullEquipAt = 0; FullStableSince = 0; FullAttemptAt = 0; FullLastSwingAt = 0; }
+    { FullAttemptKey = Key; FullEquipAt = 0; FullStableSince = 0; FullAttemptAt = 0; FullLastSwingAt = 0; FullAttempts = 0; }
     const auto Fail = [&](const TCHAR* Why)
     { UE_LOG(LogTemp, Error, TEXT("QUEST_FULL_FAILED Objective=%s Why=%s"), *Key, Why); FPlatformMisc::RequestExitWithStatus(false, 1); };
+    // An attempt that produced nothing (for example a host-down refusal) is retried; a few in a row fail the run.
+    const auto Expired = [&](double Limit) -> bool
+    {
+        if (FullAttemptAt == 0 || Now - FullAttemptAt <= Limit) { return false; }
+        if (++FullAttempts >= 4) { Fail(TEXT("objective did not complete in time")); return true; }
+        UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_RETRY Objective=%s Attempt=%d"), *Key, FullAttempts + 1);
+        FullAttemptAt = 0; FullStableSince = 0; FullEquipAt = 0;
+        return true;
+    };
 
-    if (Next->Label == TEXT("Build Wall"))
+    if (Next.Action == EFullAction::Build)
     {
         auto* Builder = Cast<ASFConstructionNetworkController>(PC);
-        const ASFConstructionNetworkState* Claim = nullptr;
-        for (TActorIterator<ASFConstructionNetworkState> It(GetWorld()); It; ++It) { Claim = *It; }
-        if (!Builder || !Claim || Claim->GetAnchorCell() == FIntVector::ZeroValue) { return; }
+        const ASFConstructionNetworkState* Claim = FindClaim(GetWorld());
+        if (!Builder || !Claim) { return; }
         if (FVector::Dist2D(Pawn->GetActorLocation(), Claim->GetAnchorOffsetCm() + FVector(25, 25, 25)) > 300) { return; }  // not on the pad yet
-        const auto* Character = Cast<ACharacter>(Pawn);
-        if (!Character || !Character->GetCharacterMovement()->IsMovingOnGround() || !Character->GetVelocity().IsNearlyZero(1.0)
-            || FVector::DistSquared(Pawn->GetActorLocation(), FullLastPosition) > 1.0)
-        { FullStableSince = 0; FullLastPosition = Pawn->GetActorLocation(); return; }
-        if (FullStableSince == 0) { FullStableSince = Now; }
-        if (Now - FullStableSince < 1.0) { return; }
+        if (!HeldStill(Pawn, FullLastPosition, FullStableSince, Now) || Expired(20)) { return; }
         if (FullAttemptAt == 0)
         {
             // The same placement RPC the cursor sends: shape 0 (cube) on the first claim cell.
@@ -390,10 +565,9 @@ void USFQuestPilotComponent::TickFullClient(double Now)
             Builder->ServerPlace(FIntVector(0, 0, 0), Claim->GetSnapshot().Revision, 0, uint8(SFConstructionGeometry::IdentityRotation()));
             UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_ACTION Objective=%s Input=ServerPlace"), *Key);
         }
-        else if (Now - FullAttemptAt > 20) { Fail(TEXT("wall was not accepted in time")); }
         return;
     }
-    if (Next->Label == TEXT("Defeat Boar"))
+    if (Next.Action == EFullAction::Boar)
     {
         auto* Boar = NearestBoar(GetWorld(), Pawn->GetActorLocation());
         if (!Boar || FVector::Dist2D(Pawn->GetActorLocation(), Boar->GetActorLocation()) > 500) { return; }
@@ -412,41 +586,30 @@ void USFQuestPilotComponent::TickFullClient(double Now)
         }
         return;
     }
-
-    ESFGatheringPilotKind Kind = ESFGatheringPilotKind::Oak;
-    if (Next->Label == TEXT("Gather Oak Log")) { Kind = ESFGatheringPilotKind::Oak; }
-    else if (Next->Label == TEXT("Gather Iron Ore")) { Kind = ESFGatheringPilotKind::Iron; }
-    else if (Next->Label == TEXT("Craft Rough Timber")) { Kind = ESFGatheringPilotKind::Sawmill; }
-    else if (Next->Label == TEXT("Craft Iron Ingot")) { Kind = ESFGatheringPilotKind::Forge; }
-    else { return; }
+    if (Next.Action != EFullAction::Node) { return; }
     auto* Gathering = PC->FindComponentByClass<USFGatheringPilotComponent>();
-    ASFGatheringPilotNode* Node = NearestNode(GetWorld(), Kind, Pawn->GetActorLocation());
-    if (!Gathering || !Gathering->IsEnabled() || !Node || FVector::Dist2D(Pawn->GetActorLocation(), Node->GetActorLocation()) > 350) { return; }
-    if (!Node->IsRefinery() && Node->GetState().Charges <= 0) { return; }  // initial replication of the node
-    if (Kind == ESFGatheringPilotKind::Oak || Kind == ESFGatheringPilotKind::Iron)
+    ASFGatheringPilotNode* NodeActor = NearestNode(GetWorld(), Next.Kind, Pawn->GetActorLocation());
+    if (!Gathering || !Gathering->IsEnabled() || !NodeActor || FVector::Dist2D(Pawn->GetActorLocation(), NodeActor->GetActorLocation()) > 350) { return; }
+    if (!NodeActor->IsRefinery() && NodeActor->GetState().Charges <= 0) { return; }  // initial replication of the node
+    if (FullEquipAt == 0)
     {
-        if (FullEquipAt == 0)
-        {
-            if (Kind == ESFGatheringPilotKind::Oak) { Gathering->EquipAxe(); } else { Gathering->EquipPickaxe(); }
-            FullEquipAt = Now;
-        }
-        if (Now - FullEquipAt < 2.0) { return; }  // the equip RPC and replication
+        // Tools for resources; the recipe choice for a station (the same RPC the C key sends).
+        if (Next.Kind == ESFGatheringPilotKind::Oak) { Gathering->EquipAxe(); }
+        else if (Next.Kind == ESFGatheringPilotKind::Iron) { Gathering->EquipPickaxe(); }
+        else if (!Next.Recipe.IsEmpty()) { Gathering->SelectStationRecipe(Next.Kind, Next.Recipe); }
+        FullEquipAt = Now;
     }
-    const auto* Character = Cast<ACharacter>(Pawn);
-    if (!Character || !Character->GetCharacterMovement()->IsMovingOnGround() || !Character->GetVelocity().IsNearlyZero(1.0)
-        || FVector::DistSquared(Pawn->GetActorLocation(), FullLastPosition) > 1.0)
-    { FullStableSince = 0; FullLastPosition = Pawn->GetActorLocation(); return; }
-    if (FullStableSince == 0) { FullStableSince = Now; }
-    if (Now - FullStableSince < 1.0) { return; }
+    if (Now - FullEquipAt < 2.0) { return; }  // the equip or selection RPC and its replication
+    if (!Next.Recipe.IsEmpty() && Gathering->GetStationRecipe(Next.Kind) != Next.Recipe) { return; }
+    if (!HeldStill(Pawn, FullLastPosition, FullStableSince, Now) || Expired(20)) { return; }
     if (FullAttemptAt == 0)
     {
-        // One interaction per objective: a second one during the channel would cancel it.
+        // One interaction per attempt: a second one during the channel would cancel it.
         const FVector Eye = Pawn->GetPawnViewLocation();
-        Gathering->InteractFromRay(Eye, (Node->GetActorLocation() - Eye).GetSafeNormal());
+        Gathering->InteractFromRay(Eye, (NodeActor->GetActorLocation() - Eye).GetSafeNormal());
         FullAttemptAt = Now;
         UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_ACTION Objective=%s Input=InteractFromRay"), *Key);
     }
-    else if (Now - FullAttemptAt > 20) { Fail(TEXT("objective did not complete in time")); }
 #endif
 }
 
@@ -485,6 +648,7 @@ void USFQuestTrackerHud::Present(const FSFQuestView& View)
     if (!Rows) { return; }
     FString Key = FString::Printf(TEXT("%s|%s|%d|%d"), *View.Title, *View.Step, View.StepNumber, View.bComplete);
     for (const FSFQuestLine& L : View.Lines) { Key += FString::Printf(TEXT("|%s=%d/%d"), *L.Label, L.Count, L.Target); }
+    for (const FString& Reward : View.RewardLines) { Key += TEXT("|") + Reward; }
     if (Key == LastKey) { return; }
     LastKey = Key;
     UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_CLIENT_VIEW Step=%d Complete=%d Key=%s"), View.StepNumber, View.bComplete, *Key);
@@ -508,6 +672,7 @@ void USFQuestTrackerHud::Present(const FSFQuestView& View)
     };
     for (const FSFQuestLine& L : View.Lines) { AddRow(L.Label, FString::Printf(TEXT("%d/%d"), L.Count, L.Target), L.Count >= L.Target); }
     if (View.bComplete) { AddRow(TEXT("Frontier founded"), TEXT(""), true); }
+    for (const FString& Reward : View.RewardLines) { AddRow(TEXT("Received ") + Reward, TEXT(""), true); }
 }
 
 // ---------------------------------------------------------------- subsystem
@@ -533,19 +698,16 @@ void USFQuestPilotSubsystem::Initialize(FSubsystemCollectionBase& Collection)
     if (!FSFQuestDefinition::Load(Path, Def, Error) || Def.ZoneId != TEXT("zone/greenlands_silverbrook"))
     { UE_LOG(LogTemp, Error, TEXT("QUEST_PILOT_DISABLED %s"), Error.IsEmpty() ? TEXT("zone mismatch") : *Error); return; }
     Quest = MakeShared<FSFQuestDefinition>(MoveTemp(Def));
-    GatheredHandle = SFQuestPilotEvents::OnGathered().AddWeakLambda(this, [this](APlayerController* PC, ESFGatheringPilotKind Kind)
+    GatheredHandle = SFQuestPilotEvents::OnGathered().AddWeakLambda(this, [this](APlayerController* PC, ESFGatheringPilotKind Kind, const FString& Output, const FString& Operation)
     {
-        switch (Kind)
-        {
-        case ESFGatheringPilotKind::Oak: Route(PC, TEXT("gather"), TEXT("item/oak_log"), TEXT("gathering_node/oak_tree"), TEXT("oak")); break;
-        case ESFGatheringPilotKind::Iron: Route(PC, TEXT("gather"), TEXT("item/iron_ore"), TEXT("gathering_node/iron_vein"), TEXT("iron")); break;
-        case ESFGatheringPilotKind::Sawmill: Route(PC, TEXT("craft"), TEXT("item/rough_timber"), FString(), TEXT("timber")); break;
-        case ESFGatheringPilotKind::Forge: Route(PC, TEXT("craft"), TEXT("item/iron_ingot"), FString(), TEXT("ingot")); break;
-        default: break;
-        }
+        // A station commits its recipe's output (craft evidence); a resource node its harvest (gather evidence).
+        const bool bStation = !USFGatheringPilotComponent::StationName(Kind).IsEmpty();
+        const FString Node = Kind == ESFGatheringPilotKind::Oak ? TEXT("gathering_node/oak_tree") : Kind == ESFGatheringPilotKind::Iron ? TEXT("gathering_node/iron_vein") : TEXT("");
+        FString Short; Output.Split(TEXT("/"), nullptr, &Short);
+        Route(PC, bStation ? TEXT("craft") : TEXT("gather"), Output, Node, Operation.IsEmpty() ? Short : Operation);
     });
-    PlacedHandle = SFQuestPilotEvents::OnStructurePlaced().AddWeakLambda(this, [this](APlayerController* PC, uint64 Revision)
-    { Route(PC, TEXT("build"), TEXT("structure_tag/wall"), FString(), FString::Printf(TEXT("build:%llu"), Revision)); });
+    PlacedHandle = SFQuestPilotEvents::OnStructurePlaced().AddWeakLambda(this, [this](APlayerController* PC, uint64 Revision, const FString& Operation)
+    { Route(PC, TEXT("build"), TEXT("structure_tag/wall"), FString(), Operation.IsEmpty() ? FString::Printf(TEXT("build:%llu"), Revision) : Operation); });
     BoarHandle = SFQuestPilotEvents::OnBoarDefeated().AddWeakLambda(this, [this](APlayerController* PC, const FString& DeathId)
     { Route(PC, TEXT("defeat"), TEXT("npc/boar"), FString(), TEXT("boar:") + DeathId); });
     UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_READY Quest=%s Steps=%d"), *Quest->Id, Quest->Steps.Num());
@@ -565,7 +727,7 @@ void USFQuestPilotSubsystem::Route(APlayerController* PC, const FString& Kind, c
     auto* Component = IsValid(PC) && PC->GetWorld() == GetWorld() ? PC->FindComponentByClass<USFQuestPilotComponent>() : nullptr;
     if (!Component) { return; }
     // Gather/craft broadcasts carry no id of their own; a per-controller sequence keeps each accepted grant distinct.
-    const bool bHasOwnId = Operation.Contains(TEXT(":"));
+    const bool bHasOwnId = Operation.Contains(TEXT(":")) || Operation.Contains(TEXT("/"));  // "boar:<death>", "gather/<guid>"
     Component->Observe(Kind, Target, Node, bHasOwnId ? Operation : FString::Printf(TEXT("%s:%d"), *Operation, Component->GetProgress().Operations.Num()));
 }
 

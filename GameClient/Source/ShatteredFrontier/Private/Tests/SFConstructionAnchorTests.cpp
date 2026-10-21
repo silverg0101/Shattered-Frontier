@@ -10,8 +10,9 @@ bool FSFConstructionAnchorTest::RunTest(const FString& Parameters)
 {
     TestTrue(TEXT("Identity anchor offsets nothing"),SFConstructionAnchor::OffsetCm(FIntVector::ZeroValue).IsZero());
     TestTrue(TEXT("Z anchor is whole 50 cm cells"),SFConstructionAnchor::OffsetCm(FIntVector(0,0,53)).Equals(FVector(0,0,2650)));
-    TestTrue(TEXT("Z-only anchors are valid"),SFConstructionAnchor::IsValid(FIntVector(0,0,53)));
-    TestFalse(TEXT("X/Y anchors wait for claim territory"),SFConstructionAnchor::IsValid(FIntVector(1,0,0)));
+    TestTrue(TEXT("Z anchors are valid"),SFConstructionAnchor::IsValid(FIntVector(0,0,53)));
+    TestTrue(TEXT("A plot-centre X/Y anchor is valid"),SFConstructionAnchor::IsValid(FIntVector(860,430,53)));
+    TestTrue(TEXT("X/Y offsets are whole cells"),SFConstructionAnchor::OffsetCm(FIntVector(860,430,0)).Equals(FVector(43000,21500,0)));
     TestFalse(TEXT("A runaway Z is rejected"),SFConstructionAnchor::IsValid(FIntVector(0,0,1000000)));
 
     // Claim edges: nothing outside the 40 x 40 x 20 extent is a cell, so no contact can cross a claim edge.

@@ -19,7 +19,7 @@ enum class ESFConstructionPaletteAction : uint8;
 UENUM()
 enum class ESFConstructionNetworkResult : uint8
 {
-    Accepted, InvalidContext, PermissionDenied, Stale, InvalidCell, OutOfReach, Occluded, Occupied, ProjectionFailed, Unsupported, LimitReached, NotFound, Removed, InvalidPiece, DoorBlocked, DoorOpened, DoorClosed, DoorRemoved, InvalidLine
+    Accepted, InvalidContext, PermissionDenied, Stale, InvalidCell, OutOfReach, Occluded, Occupied, ProjectionFailed, Unsupported, LimitReached, NotFound, Removed, InvalidPiece, DoorBlocked, DoorOpened, DoorClosed, DoorRemoved, InvalidLine, ServiceUnavailable
 };
 
 USTRUCT()
@@ -73,7 +73,8 @@ public:
     ASFConstructionNetworkState();
     virtual void BeginPlay() override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-    ESFConstructionNetworkResult Edit(ASFConstructionNetworkController* Controller, FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation);
+    // bCommit=false runs every admission check without changing anything (a housing commit then follows).
+    ESFConstructionNetworkResult Edit(ASFConstructionNetworkController* Controller, FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation, bool bCommit=true);
     ESFConstructionNetworkResult PlaceLine(ASFConstructionNetworkController* Controller, FIntVector Start, FIntVector End, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation);
     ESFConstructionNetworkResult PlaceDoor(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision, uint8 Yaw);
     ESFConstructionNetworkResult ToggleDoor(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision);
@@ -136,13 +137,25 @@ public:
     bool IsAdmitted() const;
     bool IsZoneGatheringWorld() const;
     bool IsBuilder(const ASFConstructionNetworkController* Controller) const;
+    // Zone-world development claim (BLD-02); false in the sandbox. Centre in zone metres, as ClaimTerritory takes it.
+    bool GetDevClaim(FVector2D& OutCentreMetres, int32& OutSideMetres) const { OutCentreMetres=DevClaimCentreMetres; OutSideMetres=DevClaimSideMetres; return DevClaimSideMetres>0; }
+    // INT-04: with gameplay services on and a zone dev claim, placements and removals commit through Housing first.
+    bool IsHousingActive() const;
+    void EnsureDevClaim(ASFConstructionNetworkController* ClaimOwner, TFunction<void(bool bReady)> Done);
+    void CommitHousing(ASFConstructionNetworkController* Controller, FIntVector Cell, bool bRemove, TFunction<void(bool bCommitted, const FString& Operation)> Done);
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     void SpawnFiniteDoorObstruction(const FIntVector& Origin, uint8 Yaw);
     void DiscardFiniteDoorObstruction();
 #endif
 private:
     int32 SpawnZoneGatheringNodes();
-    bool PrepareDevClaim(FIntVector& OutAnchor);  // Silverbrook development claim: a level pad at the origin
+    bool PrepareDevClaim(FIntVector& OutAnchor);  // Silverbrook development claim: a level pad on the first build plot
+    FVector2D DevClaimCentreMetres = FVector2D::ZeroVector;
+    int32 DevClaimSideMetres = 0;
+    FString DevClaimId;
+    int64 ClaimPermissionRevision = 0, ClaimStructureRevision = 0;
+    bool bClaimReady = false;
+    TMap<FIntVector, FString> HousingStructures;  // cell -> housing structure id, for removals
     void PlaceForZoneScenario(APawn* Pawn, bool bPrimary) const;
     TWeakObjectPtr<ASFConstructionNetworkController> Builder;
     bool bBuilderAssigned = false;
@@ -196,6 +209,7 @@ private:
     void ToggleDoorFromView();
     void EquipGatheringAxe();
     void EquipGatheringPickaxe();
+    void CycleGatheringRecipe();
     void RefreshPlacementPreview(bool bDrawOutline);
     void ProcessEdit(FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation);
     void SelectCube();
@@ -216,6 +230,7 @@ private:
     UPROPERTY(Replicated) bool bRoleAssigned = false;
     UPROPERTY(Replicated) bool bBuilderRole = false; // Advisory; permission is derived again on server.
     uint64 LastRequestFrame = MAX_uint64;
+    bool bHousingPending = false;  // INT-04: one housing commit at a time per builder
     bool bHasPlacementPreview = false;
     FIntVector PreviewCell = FIntVector::ZeroValue;
     bool bHasRemovalPreview = false;

@@ -58,6 +58,7 @@ struct FSFQuestView
     UPROPERTY() int32 StepTotal = 0;
     UPROPERTY() bool bComplete = false;
     UPROPERTY() TArray<FSFQuestLine> Lines;
+    UPROPERTY() TArray<FString> RewardLines;  // committed completion payout, e.g. "3 Boar Hide"
 };
 
 // Release defaults. Pilot stand-in for the reward service: which pilot item the completion bundle pays.
@@ -94,12 +95,20 @@ private:
     FSFQuestProgress Progress;
     TArray<FString> PendingRewards;  // due but not yet in the bag; retried until delivered, then dropped
     UPROPERTY(Replicated) FSFQuestView View;
+    // INT-04: with gameplay services on, progress is Progression.ApplyReceipt replies only, one call at a time.
+    struct FServiceEvent { FString Kind, TargetId, NodeId, OperationId; bool bRetried = false; };
+    void PumpServices();
+    TArray<FServiceEvent> ServiceQueue;
+    bool bServiceBusy = false;
+    int64 ProgressionRevision = 0, QuestRevision = 0, LastOccurredMs = 0;
+    TArray<FString> RewardLines;
     // Development fixtures, off unless their command-line flags are given (see Test-QuestPilot.ps1 -Leg Full).
     void TickFullServer();
     void TickFullClient(double Now);
     FString FullTeleportKey;
     FString FullAttemptKey;
     double FullEquipAt = 0, FullStableSince = 0, FullAttemptAt = 0, FullLastSwingAt = 0;
+    int32 FullAttempts = 0;
     FVector FullLastPosition = FVector::ZeroVector;
     bool bFullDone = false;
 };

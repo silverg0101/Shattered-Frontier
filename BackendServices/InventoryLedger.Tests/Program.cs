@@ -25,6 +25,15 @@ Check(ledger.Read("ctn_a").Revision == 3 && ledger.Read("ctn_a").Quantities["ite
 ledger.Consume("op_use", "ctn_a", 3, "item/iron_bar", 1, "crafting_consumed");
 Reject(() => ledger.Consume("op_stale", "ctn_a", 3, "item/iron_bar", 1, "crafting_consumed"), "stale revision loser");
 Check(ledger.Read("ctn_a").Quantities["item/iron_bar"] == 1, "stale no mutation");
+// INT-04 backpack retry rule: a Stale rejection stores no receipt, and the expected revision is fingerprinted, so the
+// Unreal backpack retries once under the derived id "<op>:r1" with the refreshed revision; the original id still replays nothing.
+Reject(() => ledger.Grant("op_retry", "ctn_a", 3, "item/ore", 1, "gathering_output", "gather_r"), "retry stale first attempt");
+var retried = ledger.Grant("op_retry:r1", "ctn_a", 4, "item/ore", 1, "gathering_output", "gather_r");
+Check(retried.Revisions[0] == new RevisionChange("ctn_a", 4, 5), "derived retry id commits at the refreshed revision");
+Check(ReferenceEquals(retried, ledger.Grant("op_retry:r1", "ctn_a", 4, "item/ore", 1, "gathering_output", "gather_r")), "derived retry id replays");
+Reject(() => ledger.Grant("op_retry", "ctn_a", 3, "item/ore", 1, "gathering_output", "gather_r"), "stale original id left no receipt");
+Reject(() => ledger.Grant("op_retry:r1", "ctn_a", 5, "item/ore", 1, "gathering_output", "gather_r"), "revision is fingerprinted");
+Check(ledger.Read("ctn_a").Quantities["item/ore"] == 1, "exactly one retried grant");
 
 ledger.CreateContainer(new("ctn_parallel", OwnerKind.Character, owner, ContainerKind.Backpack, 20));
 var winners = 0;

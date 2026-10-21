@@ -1,6 +1,6 @@
 # BLD-02 — Terrain-anchored construction
 
-Status: design approved 2026-10-21 with reviewer amendments; the smallest subset below is implemented for the development claim. Extends [BLD-01](BLD-01-voxel-geometry-interface.md), which keeps owning cell geometry; this record only adds how a claim sits in the world.
+Status: design approved 2026-10-21 with reviewer amendments; the smallest subset below plus the X/Y anchor (step 2, INT-04) is implemented for the development claim. Extends [BLD-01](BLD-01-voxel-geometry-interface.md), which keeps owning cell geometry; this record only adds how a claim sits in the world.
 
 ## Problem
 
@@ -14,6 +14,7 @@ Construction was sandbox-only: `MatchesKnownPlaneGeometry` required one foundati
 - **A4 Claim edges.** One `SFConstructionAnchor::Contains(Cell)` bounds check; a cell outside the claim extent is `InvalidCell`, so no contact crosses a claim edge.
 - **A5 Replication.** `AnchorCell` replicates on the state. Previews and debug draws use it. The extent is a fixed 40 × 40 × 20 cells in this version.
 - **A6 Rotation.** Yaw 0 only.
+- **Step 2: X/Y anchor (done with INT-04).** The anchor is the claim plot centre plus its level, in whole cells. The dev claim is the zone record's first build plot (area purpose `claims`, 20 m square at 430, 215 m), outside the protected town; `Housing.ClaimPlot` accepts it, and the dev pad no longer sits in the market square.
 - **A7 Save (not yet).** The network path has no persistence (`Persistence=0`); the sandbox save codec is a separate standalone format. When saves reach claims, the snapshot header stores claim ID and anchor, a mismatch against the claim record is a hard reject, and the codec `FormatVersion` and magic change.
 - **A8 Bounds.** Hard-coded bounds in the network state and preview now use `Contains`. Still literal until the extent follows the claim: the wire packing in `FSFConstructionNetworkSnapshot::NetSerialize` (`uint8(X+20)`), `Activate`, the sandbox save codec, and the standalone sandbox.
 
@@ -36,6 +37,6 @@ The sandbox keeps the identity anchor and its map-placed slab, so all existing c
 
 ## Known gaps and required follow-ups
 
-- **Dev claim location.** The Silverbrook world origin is the market square, inside the protected town. ClaimTerritory refuses claims in protected areas, so this pad contradicts the design. It exists only for the development slice, behind the pilot flags (`-ConstructionNetworkSandbox` with `-GatheringPilot`), and is a floating level pad above whatever stands there. The next BLD-02 step adds X/Y to the anchor so the dev claim can sit on a flat spot outside the protected town.
+- **Dev claim location.** Resolved by step 2: the pad now stands on the first build plot. Real terrain levelling remains with DEC-03.
 - **Persistence.** A7 is required before the network path gains persistence: the snapshot header must store claim ID and anchor, and a mismatch against the claim record is a hard reject.
 - **Doors.** `PlaceDoor` returns `InvalidContext` in anchored claims until door envelopes, motion and approach volumes are translated by the anchor.

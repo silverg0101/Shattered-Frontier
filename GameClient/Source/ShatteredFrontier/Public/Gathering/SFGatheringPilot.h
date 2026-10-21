@@ -16,6 +16,8 @@ class UStaticMeshComponent;
 class UTextRenderComponent;
 class USFGatheringPilotComponent;
 class FSFInventoryLedgerClient;
+class USFBackpackComponent;
+struct FSFStationRecipe;
 struct FSFLedgerResponse;
 
 // Development values: reviewed release authors, next world start, no live/console overrides.
@@ -64,7 +66,7 @@ public:
 };
 
 UENUM(BlueprintType)
-enum class ESFGatheringPilotKind : uint8 { Oak, Iron, Sawmill, Forge, Stone };  // Stone last: the sandbox spawns kinds 0-3 by index
+enum class ESFGatheringPilotKind : uint8 { Oak, Iron, Sawmill, Forge, Stone, Workbench };  // the sandbox spawns kinds 0-3 by index; append new kinds
 
 class ASFHarvestFallingTree;
 
@@ -110,7 +112,7 @@ public:
     FString GetResourceName() const;
     bool GetResourceProfile(ESFGatheringSkill& Skill,ESFGatheringMaterialTier& Tier) const;
     FSFGatheringResourceProfile GetAuthoredResourceProfile() const;
-    bool IsRefinery() const { return Kind==ESFGatheringPilotKind::Sawmill || Kind==ESFGatheringPilotKind::Forge; }
+    bool IsRefinery() const { return Kind==ESFGatheringPilotKind::Sawmill || Kind==ESFGatheringPilotKind::Forge || Kind==ESFGatheringPilotKind::Workbench; }
     const FSFGatheringPilotNodeState& GetState() const { return State; }
     UFUNCTION(BlueprintPure, Category="Gathering Presentation")
     FSFGatheringPilotPresentation GetPresentationState() const;
@@ -187,8 +189,18 @@ public:
     void CancelLocalHarvest();
     void EquipAxe();
     void EquipPickaxe();
+    // Station recipes come from content/crafting; the first is the default. The choice is per player and server-held.
+    void SelectStationRecipe(ESFGatheringPilotKind Station, const FString& RecipeId);
+    void CycleStationRecipe(ESFGatheringPilotKind Station);
+    bool CycleRecipeFromRay(const FVector& Start, const FVector& Direction);  // the station under the cursor
+    FString GetStationRecipe(ESFGatheringPilotKind Station) const;
+    // Station recipe id ("sawmill" etc.) for a station kind; empty for resources.
+    static FString StationName(ESFGatheringPilotKind Kind);
     bool IsEnabled() const { return bEnabled; }
     const FSFGatheringSkillSnapshot& GetSkillSnapshot() const { return Skills; }
+    // Read-only views for the gathering HUD (ring, toast, recipe panel).
+    const FSFGatheringPilotFeedback& GetFeedback() const { return Feedback; }
+    ASFGatheringPilotNode* FindAimedNode(const FVector& Start, const FVector& Direction) const { return FindNode(Start, Direction); }
     bool RequestSkillLock(ESFGatheringSkill Skill,ESFGatheringSkillLock Lock);
     float GetSkillLockCooldownRemaining(ESFGatheringSkill Skill) const;
     bool IsSkillLockReady(ESFGatheringSkill Skill) const;
@@ -232,6 +244,9 @@ private:
     bool MatchesRequestBinding(ASFGatheringPilotNode* Node,uint32 Revision,bool bSurface,const FVector& Point) const;
     bool TryBeginGeometryAttempt(double Now);
     UFUNCTION(Server, Reliable) void ServerCancelHarvest(uint32 Operation);
+    UFUNCTION(Server, Reliable) void ServerSelectRecipe(ESFGatheringPilotKind Station, const FString& RecipeId);
+    const FSFStationRecipe* ActiveStationRecipe(ESFGatheringPilotKind Station) const;
+    void BeginCraftCommit();
     UFUNCTION(Server, Reliable) void ServerChangeSkillLock(ESFGatheringSkill Skill,ESFGatheringSkillLock Lock);
     UFUNCTION(Client, Reliable) void ClientSkillLockTiming(ESFGatheringSkill Skill,float RemainingSeconds);
     UFUNCTION() void OnRep_Feedback();
@@ -250,11 +265,16 @@ private:
     void CompleteHarvest(bool bRefining);
     void BeginLedgerCommit();
     void OnLedgerGrant(const FSFLedgerResponse& Response);
-    void RefreshLedgerRevision();
-    TSharedPtr<FSFInventoryLedgerClient> Ledger;  // set only when USFInventoryLedgerSettings::bEnabled
-    FString LedgerContainerId;
+
+    // INT-04: the controller backpack is the single ledger writer; set only when USFInventoryLedgerSettings::bEnabled.
+    TWeakObjectPtr<USFBackpackComponent> Backpack;
+    TSharedPtr<FSFLedgerResponse> LastLedgerResponse;  // the grant reply behind the backpack outcome, for logs
+    FString PendingCraftOperation;  // "craft/<guid>", reused on every retry until a terminal outcome
+    FString CommittedOperation;     // ledger or craft operation behind the outcome being broadcast
+    UPROPERTY(Replicated) TArray<FString> StationRecipes;  // selected recipe id per station kind
+
     FString PendingLedgerOperation;  // "gather/<guid>", reused on every retry until a terminal outcome
-    int64 LedgerRevision = -1;       // cached container revision; -1 until EnsureContainer/GET answers
+
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
     bool bTestWorldAdmission = false;
 #endif

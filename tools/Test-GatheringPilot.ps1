@@ -97,7 +97,7 @@ function Assert-LedgerPhase([string]$ServerText) {
     if ($ids.Count -ne 2) { throw 'The two committed OUTCOME lines name the same container.' }
     $views=@($ids | ForEach-Object { Get-LedgerView $fx $_ })
     foreach ($v in $views) { if ($v.exitCode -ne 0 -or $v.revision -ne 1 -or $v.items.Count -ne 1) { throw "Container $($v.container) view unexpected: $($v.line)" } }
-    if (@($views | Where-Object { $_.items['item/pilot_oak_log'] -eq 1 }).Count -ne 1 -or @($views | Where-Object { $_.items['item/pilot_iron_ore'] -eq 1 }).Count -ne 1) { throw 'Expected one container with item/pilot_oak_log=1 and one with item/pilot_iron_ore=1.' }
+    if (@($views | Where-Object { $_.items['item/oak_log'] -eq 1 }).Count -ne 1 -or @($views | Where-Object { $_.items['item/iron_ore'] -eq 1 }).Count -ne 1) { throw 'Expected one container with item/oak_log=1 and one with item/iron_ore=1.' }
     $receipts=Get-ReceiptCount $fx
     if ($receipts -ne 2) { throw "Expected 2 operation receipts, found $receipts." }
     if ($Fault -eq 'drop_first_reply') {

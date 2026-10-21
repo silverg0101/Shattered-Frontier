@@ -1,0 +1,62 @@
+#pragma once
+
+#include "Components/ActorComponent.h"
+#include "SFBackpackComponent.generated.h"
+
+class APlayerController;
+class FSFInventoryLedgerClient;
+class FSFGameplayServicesClient;
+
+enum class ESFBackpackOutcome : uint8 { Committed, Stale, Rejected, Unavailable };
+
+// One queued backpack mutation. Run issues the RPC with the given operation id and expected revision, then reports
+// the outcome and the container revision after it (or -1 when the reply carries none, so the next mutation re-reads).
+struct FSFBackpackMutation
+{
+    FString Label;
+    FString OperationId;
+    TFunction<void(const FString& OperationId, int64 ExpectedRevision, TFunction<void(ESFBackpackOutcome, int64)> Report)> Run;
+    TFunction<void(ESFBackpackOutcome)> Finished;
+};
+
+// INT-04 decision 4: the single server-side writer of a controller's InventoryLedger backpack. Every mutation (harvest
+// Grant, Craft, defeat reward, Place, Remove) is serialised FIFO against the cached container revision. A Stale outcome
+// re-reads the container and retries once under the derived id "<op>:r1" (InventoryLedger fingerprints the expected
+// revision and a Stale rejection stores no receipt). Exists only when the ledger is enabled.
+UCLASS(NotBlueprintable)
+class SHATTEREDFRONTIER_API USFBackpackComponent : public UActorComponent
+{
+    GENERATED_BODY()
+public:
+    // Server: the controller's backpack, created on first use; null when the ledger is disabled or misconfigured.
+    static USFBackpackComponent* FindOrCreate(APlayerController* Controller);
+    // Gameplay.Host client shared by every server-side caller; null when services are disabled.
+    static TSharedPtr<FSFGameplayServicesClient> Services();
+    const FString& GetContainerId() { BindIdentity(); return ContainerId; }
+    const FString& GetCharacterId() { BindIdentity(); return CharacterId; }
+    TSharedPtr<FSFInventoryLedgerClient> GetLedger() const { return Ledger; }
+    void Enqueue(FSFBackpackMutation Mutation);
+    // Applies committed ledger deltas to the session bag projection, by definition id. Unknown items are logged.
+    void ApplyToBag(const TMap<FString, int64>& Deltas) const;
+    bool IsBusy() const { return bBusy; }
+    // Queued read: rebuilds the bag projection from the ledger view (after a payout or refund whose items the reply omits).
+    void Reconcile();
+#if WITH_DEV_AUTOMATION_TESTS
+    // Test hook: a backpack over a stubbed ledger client, without the settings lookup.
+    static USFBackpackComponent* CreateForTests(APlayerController* Controller, TSharedPtr<FSFInventoryLedgerClient> InLedger);
+#endif
+private:
+    friend class FSFGatheringPilotLedgerTest;
+    bool Initialize(APlayerController* Controller);
+    void BindIdentity();
+    bool bIdentityUsed = false;
+    void Pump();
+    void Execute(int32 Attempt);
+    void Refresh(TFunction<void(bool)> Done);
+    TSharedPtr<FSFInventoryLedgerClient> Ledger;
+    FString ContainerId, CharacterId;
+    int32 Capacity = 0;
+    int64 Revision = -1;  // -1: unknown, read (or ensure) before the next mutation
+    bool bBusy = false;
+    TArray<FSFBackpackMutation> Queue;
+};

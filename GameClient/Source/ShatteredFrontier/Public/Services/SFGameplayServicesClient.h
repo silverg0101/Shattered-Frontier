@@ -1,0 +1,95 @@
+#pragma once
+
+#include "Engine/DeveloperSettings.h"
+#include "Templates/Function.h"
+#include "SFGameplayServicesClient.generated.h"
+
+// INT-04 development connection from the UE server to Gameplay.Host (proto/sf/{rewards,progression,housing,crafting}/v1).
+// Same shape as FSFInventoryLedgerClient: the gRPC transport lives in the server-only ShatteredFrontierBackend module and
+// registers itself here, so client builds carry no backend code.
+UCLASS(Config=Game, DefaultConfig, meta=(DisplayName="Gameplay Services (Release Only)"))
+class SHATTEREDFRONTIER_API USFGameplayServicesSettings : public UDeveloperSettings
+{
+    GENERATED_BODY()
+public:
+    UPROPERTY(Config, EditAnywhere, Category="Services", meta=(ToolTip="Route pilot rewards, progression, quest, crafting and housing through Gameplay.Host. Off keeps the session-only pilots. Release authors; next world start."))
+    bool bEnabled = false;
+    UPROPERTY(Config, EditAnywhere, Category="Services", meta=(ToolTip="Loopback host:port of Gameplay.Host (development topology)."))
+    FString Endpoint = TEXT("127.0.0.1:50072");
+    UPROPERTY(Config, EditAnywhere, Category="Services", meta=(ClampMin="1", ClampMax="30", Units="s", ToolTip="Deadline for each attempt."))
+    float TimeoutSeconds = 3;
+    UPROPERTY(Config, EditAnywhere, Category="Services", meta=(ClampMin="1", ClampMax="5", ToolTip="Attempts per operation, all with the same operation id."))
+    int32 MaxAttempts = 3;
+    bool Validate(FString& Error) const;
+};
+
+enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, ClaimPlot, GetClaim, Place, Remove, Craft };
+// Ok; Rejected = a typed gameplay refusal (FAILED_PRECONDITION, PERMISSION_DENIED, ALREADY_EXISTS, INVALID_ARGUMENT, ...);
+// Unavailable = UNAVAILABLE / DEADLINE_EXCEEDED / CANCELLED, retried with the same operation id.
+enum class ESFGameplayStatus : uint8 { Ok, Rejected, Unavailable };
+
+// One flat request per call; each RPC reads only its own fields (names follow the protos).
+struct FSFGameplayRequest
+{
+    ESFGameplayRpc Rpc = ESFGameplayRpc::GetCharacterState;
+    FString OperationId;          // also Rewards.defeat_event_id and Progression.source_receipt_id
+    FString CharacterId;          // killer/recipient, actor, owner
+    FString ContainerId;
+    int64 ExpectedContainerRevision = 0;
+    // Rewards
+    bool bKillerProtected = false, bBoarProtected = false;
+    FString TableId;
+    // Progression
+    FString Kind;                 // gather | craft | defeat | quest
+    int64 ExpectedProgressionRevision = 0, ExpectedQuestRevision = 0;
+    FString SkillId; int32 Difficulty = 0; double ActionSeconds = 0; uint64 ContextHash = 0; bool bSuccess = true;
+    int32 EnemyLevel = 0; double EnemyTierMultiplier = 0; int32 PartySize = 0;
+    bool bHasQuest = false;
+    FString QuestId, StepId, QuestKind, TargetId, NodeId; int32 Quantity = 1; int64 OccurredAtUnixMs = 0;
+    // Housing
+    FString ClaimId, StructureId, ContentId, MaterialId, RemovalKind;
+    double CenterX = 0, CenterY = 0; int32 SideMetres = 0, PrepaidDays = 0;
+    int64 ExpectedPermissionRevision = 0, ExpectedStructureRevision = 0, MaterialQuantity = 0;
+    FIntVector Cell = FIntVector::ZeroValue;
+    // Crafting
+    FString RecipeId; int32 Count = 1;
+};
+
+struct FSFGameplayResponse
+{
+    ESFGameplayStatus Status = ESFGameplayStatus::Unavailable;
+    int32 GrpcCode = 14;
+    FString Message;
+    // Rewards
+    bool bGranted = false; FString SourceCode, LedgerOperationId, DefinitionId; int64 Quantity = 0;
+    int64 ContainerRevision = 0;  // Rewards and Crafting
+    // Progression
+    bool bProgressionApplied = false, bQuestAccepted = false, bQuestCompleted = false;
+    int32 SkillGain = 0, XpGain = 0, Level = 0;
+    int64 ProgressionRevision = 0, QuestRevision = 0;
+    FString ActiveStepId; TArray<FString> RewardBundleIds; TMap<FString, int32> Skills;
+    TMap<FString, int64> GrantedItems;  // the quest payout lines committed with this receipt
+    // Housing
+    FString State, StructureId; int64 StructureRevision = 0, Revision = 0, PermissionRevision = 0;
+    // Crafting
+    TMap<FString, int64> Changes;
+};
+
+using FSFGameplaySend = TFunction<void(const FSFGameplayRequest&, float DeadlineSeconds, TFunction<void(const FSFGameplayResponse&)>)>;
+
+class SHATTEREDFRONTIER_API FSFGameplayServicesClient : public TSharedFromThis<FSFGameplayServicesClient>
+{
+public:
+    static void SetTransportFactory(TFunction<FSFGameplaySend(const FString& Endpoint)> Factory);
+    static void SetSendOverrideForTests(FSFGameplaySend Send);
+    // Null when disabled, when the backend module is absent (client builds) or settings are invalid.
+    static TSharedPtr<FSFGameplayServicesClient> Create(const USFGameplayServicesSettings& Settings);
+    // Retries Unavailable with backoff, reusing the request unchanged, up to MaxAttempts. Callback on the game thread.
+    void Call(const FSFGameplayRequest& Request, TFunction<void(const FSFGameplayResponse&)> Done);
+private:
+    FSFGameplayServicesClient(FSFGameplaySend InSend, float InTimeout, int32 InAttempts) : Send(MoveTemp(InSend)), TimeoutSeconds(InTimeout), MaxAttempts(InAttempts) {}
+    void Attempt(const FSFGameplayRequest& Request, int32 Number, TFunction<void(const FSFGameplayResponse&)> Done);
+    FSFGameplaySend Send;
+    float TimeoutSeconds;
+    int32 MaxAttempts;
+};

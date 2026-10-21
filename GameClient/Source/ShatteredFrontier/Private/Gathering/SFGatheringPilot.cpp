@@ -21,6 +21,9 @@
 #include "Misc/Parse.h"
 #include "Net/UnrealNetwork.h"
 #include "Quest/SFQuestPilotEvents.h"
+#include "Gathering/SFStationRecipes.h"
+#include "Services/SFBackpackComponent.h"
+#include "Services/SFGameplayServicesClient.h"
 #include "UObject/ConstructorHelpers.h"
 #if SF_WITH_MINIMAL_INVENTORY
 #include "InventoryComponent.h"
@@ -42,14 +45,14 @@ namespace
         default: return TEXT("");
         }
     }
-    // InventoryLedger definition ids for the raw materials; refined outputs stay session-only (INT-03 6.4).
+    // InventoryLedger definition ids for the raw materials: the content ids recipes and quests use (INT-04).
     const TCHAR* LedgerItemId(ESFGatheringPilotKind Kind)
     {
         switch (Kind)
         {
-        case ESFGatheringPilotKind::Oak: return TEXT("item/pilot_oak_log");
-        case ESFGatheringPilotKind::Iron: return TEXT("item/pilot_iron_ore");
-        case ESFGatheringPilotKind::Stone: return TEXT("item/pilot_rough_stone");
+        case ESFGatheringPilotKind::Oak: return TEXT("item/oak_log");
+        case ESFGatheringPilotKind::Iron: return TEXT("item/iron_ore");
+        case ESFGatheringPilotKind::Stone: return TEXT("item/rough_stone");
         default: return TEXT("");
         }
     }
@@ -226,8 +229,9 @@ FString ASFGatheringPilotNode::GetResourceName() const
     case ESFGatheringPilotKind::Oak: return TEXT("Oak logs");
     case ESFGatheringPilotKind::Iron: return TEXT("Iron ore");
     case ESFGatheringPilotKind::Stone: return TEXT("Rough stone");
-    case ESFGatheringPilotKind::Sawmill: return TEXT("Rough timber (sawmill)");
-    case ESFGatheringPilotKind::Forge: return TEXT("Iron ingot (forge)");
+    case ESFGatheringPilotKind::Sawmill: return TEXT("Sawmill");
+    case ESFGatheringPilotKind::Forge: return TEXT("Forge");
+    case ESFGatheringPilotKind::Workbench: return TEXT("Workbench");
     default: return TEXT("Unavailable");
     }
 }
@@ -242,10 +246,11 @@ void ASFGatheringPilotNode::OnRep_State()
     if (IsRefinery())
     {
         Mesh->SetStaticMesh(StationMesh); Mesh->SetRelativeScale3D(FVector(1.4,0.8,0.8));
-        const auto* Settings=GetDefault<USFGatheringPilotSettings>();
-        Label->SetText(FText::FromString(FString::Printf(TEXT("%s\n%s | %d %s -> %d units"),*GetResourceName(),
-            State.bBusy ? TEXT("In use") : TEXT("E: refine"),Kind==ESFGatheringPilotKind::Sawmill ? Settings->TimberInputLogs : Settings->IngotInputOre,
-            Kind==ESFGatheringPilotKind::Sawmill ? TEXT("log") : TEXT("ore"),Kind==ESFGatheringPilotKind::Sawmill ? Settings->TimberOutputUnits : Settings->IngotOutputUnits)));
+        // Recipes are content (content/crafting); a station with several lists them and C chooses.
+        TArray<FString> Recipes;
+        for (const FSFStationRecipe* Recipe : SFStationRecipes::ForStation(USFGatheringPilotComponent::StationName(Kind))) { Recipes.Add(Recipe->Describe()); }
+        Label->SetText(FText::FromString(FString::Printf(TEXT("%s\n%s | %s"),*GetResourceName(),
+            State.bBusy ? TEXT("In use") : Recipes.Num()>1 ? TEXT("E: craft, C: recipe") : TEXT("E: craft"),*FString::Join(Recipes,TEXT(" / ")))));
         Label->SetTextRenderColor(FColor::Yellow);
     }
     else
@@ -297,8 +302,8 @@ void USFGatheringPilotComponent::BeginPlay()
         const auto* LedgerSettings=GetDefault<USFInventoryLedgerSettings>();
         if (bEnabled && LedgerSettings->bEnabled)
         {
-            Ledger=FSFInventoryLedgerClient::Create(*LedgerSettings);
-            if (!Ledger) { bEnabled=false; }  // fail closed: an enabled ledger never falls back to session-only grants
+            Backpack=USFBackpackComponent::FindOrCreate(Cast<APlayerController>(GetOwner()));
+            if (!Backpack.IsValid()) { bEnabled=false; }  // fail closed: an enabled ledger never falls back to session-only grants
         }
     }
 #if SF_WITH_MINIMAL_INVENTORY
@@ -322,6 +327,7 @@ void USFGatheringPilotComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProp
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,bEnabled,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,bPrimaryRole,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,bRoleAssigned,COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,StationRecipes,COND_OwnerOnly);
 }
 
 float USFGatheringPilotComponent::GetSkillLockCooldownRemaining(ESFGatheringSkill Skill) const
@@ -441,7 +447,7 @@ bool USFGatheringPilotComponent::InitializeStarterTools()
 
 bool USFGatheringPilotComponent::HasRequiredTool(ESFGatheringPilotKind Kind) const
 {
-    if (Kind==ESFGatheringPilotKind::Sawmill || Kind==ESFGatheringPilotKind::Forge) { return true; }
+    if (Kind==ESFGatheringPilotKind::Sawmill || Kind==ESFGatheringPilotKind::Forge || Kind==ESFGatheringPilotKind::Workbench) { return true; }
 #if SF_WITH_MINIMAL_INVENTORY
     const auto* Inventory=GetOwner()->FindComponentByClass<UInventoryComponent>();
     TSoftObjectPtr<UInventoryItemDefinition> Equipped; int32 Quantity=0;
@@ -522,15 +528,20 @@ ESFGatheringPilotResult USFGatheringPilotComponent::ApplyInventory(ESFGatheringP
     FInventoryTransactionChange Change; Change.Inventory=Inventory;
     FInventoryItemQuantity Reward; Reward.Item=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(ItemPath(Kind)));
     Reward.Quantity=CapturedSettings->UnitsPerCharge;
-    if (Kind==ESFGatheringPilotKind::Sawmill || Kind==ESFGatheringPilotKind::Forge)
+    if (Kind==ESFGatheringPilotKind::Sawmill || Kind==ESFGatheringPilotKind::Forge || Kind==ESFGatheringPilotKind::Workbench)
     {
-        FInventoryItemQuantity Cost;
-        Cost.Item=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(ItemPath(Kind==ESFGatheringPilotKind::Sawmill ? ESFGatheringPilotKind::Oak : ESFGatheringPilotKind::Iron)));
-        Cost.Quantity=Kind==ESFGatheringPilotKind::Sawmill ? CapturedSettings->TimberInputLogs : CapturedSettings->IngotInputOre;
-        Reward.Quantity=Kind==ESFGatheringPilotKind::Sawmill ? CapturedSettings->TimberOutputUnits : CapturedSettings->IngotOutputUnits;
-        Change.RemoveItems.Add(Cost);
+        // The player's selected station recipe, from the same content the crafting service validates.
+        const FSFStationRecipe* Recipe=ActiveStationRecipe(Kind);
+        if (!Recipe) { return ESFGatheringPilotResult::Unavailable; }
+        const auto Stack=[](const FSFItemStack& Item)
+        {
+            FInventoryItemQuantity Out; Out.Item=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Item.DefinitionId)));
+            Out.Quantity=int32(Item.Quantity); return Out;
+        };
+        for (const FSFItemStack& Input : Recipe->Inputs) { Change.RemoveItems.Add(Stack(Input)); }
+        for (const FSFItemStack& Output : Recipe->Outputs) { Change.AddItems.Add(Stack(Output)); }
     }
-    Change.AddItems.Add(Reward);
+    else { Change.AddItems.Add(Reward); }
     const auto Result=bCommit ? UInventoryTransactionLibrary::ExecuteInventoryTransaction({Change})
         : UInventoryTransactionLibrary::CanExecuteInventoryTransaction({Change});
     switch (Result)
@@ -682,8 +693,17 @@ void USFGatheringPilotComponent::TickComponent(float Delta, ELevelTick Type, FAc
     }
     if (Result!=ESFGatheringPilotResult::None) { Finish(ESFGatheringPilotPhase::Canceled,Result); return; }
     if (GetWorld()->GetTimeSeconds()<Feedback.EndsAtServerSeconds) { return; }
-    const bool bRefining=ActiveKind==ESFGatheringPilotKind::Sawmill || ActiveKind==ESFGatheringPilotKind::Forge;
-    if (Ledger && !bRefining)
+    const bool bRefining=ActiveKind==ESFGatheringPilotKind::Sawmill || ActiveKind==ESFGatheringPilotKind::Forge || ActiveKind==ESFGatheringPilotKind::Workbench;
+    if (Backpack.IsValid() && bRefining && USFBackpackComponent::Services())
+    {
+        // INT-04: the crafting service converts the backpack items; the station stays locked until its receipt.
+        Result=ApplyInventory(ActiveKind,false);
+        if (Result!=ESFGatheringPilotResult::None) { Finish(ESFGatheringPilotPhase::Rejected,Result); return; }
+        Feedback.Phase=ESFGatheringPilotPhase::Committing; GetOwner()->ForceNetUpdate();
+        BeginCraftCommit();
+        return;
+    }
+    if (Backpack.IsValid() && !bRefining)
     {
         // The ledger is the truth for raw materials: check the projection still fits, then hold the node lock
         // until the receipt (or a terminal failure) arrives. Charges are consumed only after the receipt.
@@ -717,68 +737,83 @@ void USFGatheringPilotComponent::CompleteHarvest(bool bRefining)
         { Feedback.Node->State.FallingTree=Feedback.Node->HarvestVisuals->BeginTreeFall(Feedback.Node->State.Generation,ActiveVisualCut); }
     }
     ++Feedback.Node->State.Revision;
-    SFQuestPilotEvents::OnGathered().Broadcast(Cast<APlayerController>(GetOwner()),ActiveKind);
+    const FSFStationRecipe* Recipe=bRefining ? ActiveStationRecipe(ActiveKind) : nullptr;
+    SFQuestPilotEvents::OnGathered().Broadcast(Cast<APlayerController>(GetOwner()),ActiveKind,
+        Recipe ? Recipe->Outputs[0].DefinitionId : FString(LedgerItemId(ActiveKind)),CommittedOperation);
+    CommittedOperation.Reset();
     Finish(ESFGatheringPilotPhase::Committed,bRefining ? ESFGatheringPilotResult::Refined : ESFGatheringPilotResult::Granted);
+}
+
+namespace
+{
+    ESFBackpackOutcome LedgerOutcome(ESFLedgerStatus Status)
+    {
+        switch (Status)
+        {
+        case ESFLedgerStatus::Ok: return ESFBackpackOutcome::Committed;
+        case ESFLedgerStatus::Stale: return ESFBackpackOutcome::Stale;
+        case ESFLedgerStatus::Rejected: return ESFBackpackOutcome::Rejected;
+        default: return ESFBackpackOutcome::Unavailable;
+        }
+    }
 }
 
 void USFGatheringPilotComponent::BeginLedgerCommit()
 {
-    if (LedgerContainerId.IsEmpty())
-    {
-        // Development key per server connection (INT-03 6.3); character identity arrives with DEC-04.
-        const auto* PC=Cast<APlayerController>(GetOwner());
-        const UNetConnection* Connection=PC ? PC->GetNetConnection() : nullptr;
-        LedgerContainerId=Connection ? FString::Printf(TEXT("ctn_dev_%u"),Connection->GetConnectionHandle().GetParentConnectionId()) : FString(TEXT("ctn_dev_local"));
-    }
     if (PendingLedgerOperation.IsEmpty())
     { PendingLedgerOperation=TEXT("gather/")+FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower); }
+    USFBackpackComponent* Pack=Backpack.Get();
+    if (!Pack) { OnLedgerGrant(FSFLedgerResponse()); return; }
+    LastLedgerResponse.Reset();
+    // The backpack serialises this Grant behind any other writer and retries a Stale once as "<op>:r1" (INT-04).
+    const FString Operation=PendingLedgerOperation, Item=LedgerItemId(ActiveKind);
+    const int64 Quantity=CapturedSettings->UnitsPerCharge;
+    const FString Causation=FString::Printf(TEXT("%s:%u"),*Pack->GetContainerId(),Feedback.Operation);
     TWeakObjectPtr<USFGatheringPilotComponent> Weak(this);
-    const FString Operation=PendingLedgerOperation;
-    if (LedgerRevision<0)
+    FSFBackpackMutation Mutation; Mutation.Label=TEXT("gather"); Mutation.OperationId=Operation;
+    Mutation.Run=[Weak,Item,Quantity,Causation](const FString& Op,int64 Expected,TFunction<void(ESFBackpackOutcome,int64)> Report)
     {
-        FSFLedgerRequest Ensure; Ensure.Rpc=ESFLedgerRpc::EnsureContainer; Ensure.ContainerId=LedgerContainerId;
-        Ensure.OwnerId=TEXT("chr_dev_")+LedgerContainerId.RightChop(8);
-        Ensure.Capacity=CapturedSettings->InventorySlots*CapturedSettings->MaterialStackUnits;
-        Ledger->Call(Ensure,[Weak,Operation](const FSFLedgerResponse& Response)
+        USFGatheringPilotComponent* Self=Weak.Get(); USFBackpackComponent* Owner=Self ? Self->Backpack.Get() : nullptr;
+        if (!Owner) { Report(ESFBackpackOutcome::Unavailable,-1); return; }
+        FSFLedgerRequest Grant; Grant.Rpc=ESFLedgerRpc::Grant; Grant.OperationId=Op; Grant.ContainerId=Owner->GetContainerId();
+        Grant.ExpectedRevision=Expected; Grant.DefinitionId=Item; Grant.Quantity=Quantity;
+        Grant.Source=TEXT("gathering"); Grant.CausationId=Causation;
+        Owner->GetLedger()->Call(Grant,[Weak,Report](const FSFLedgerResponse& Response)
         {
-            USFGatheringPilotComponent* Self=Weak.Get();
-            if (!Self || Self->Feedback.Phase!=ESFGatheringPilotPhase::Committing)
-            { UE_LOG(LogTemp,Display,TEXT("GATHERING_LEDGER_REPLY_DROPPED Op=%s Rpc=EnsureContainer"),*Operation); return; }
-            if (Response.Status!=ESFLedgerStatus::Ok) { Self->OnLedgerGrant(Response); return; }
-            Self->LedgerRevision=Response.Revision; Self->BeginLedgerCommit();
+            if (USFGatheringPilotComponent* Again=Weak.Get()) { Again->LastLedgerResponse=MakeShared<FSFLedgerResponse>(Response); }
+            Report(LedgerOutcome(Response.Status),Response.Revision);
         });
-        return;
-    }
-    FSFLedgerRequest Grant; Grant.Rpc=ESFLedgerRpc::Grant; Grant.OperationId=Operation; Grant.ContainerId=LedgerContainerId;
-    Grant.ExpectedRevision=LedgerRevision; Grant.DefinitionId=LedgerItemId(ActiveKind); Grant.Quantity=CapturedSettings->UnitsPerCharge;
-    Grant.Source=TEXT("gathering"); Grant.CausationId=FString::Printf(TEXT("%s:%u"),*LedgerContainerId,Feedback.Operation);
-    Ledger->Call(Grant,[Weak,Operation](const FSFLedgerResponse& Response)
+    };
+    Mutation.Finished=[Weak,Operation](ESFBackpackOutcome Outcome)
     {
         USFGatheringPilotComponent* Self=Weak.Get();
         // A disconnected owner's outcome is still resolved by the ledger; only the reply is dropped.
         if (!Self || Self->Feedback.Phase!=ESFGatheringPilotPhase::Committing || Self->PendingLedgerOperation!=Operation)
-        { UE_LOG(LogTemp,Display,TEXT("GATHERING_LEDGER_REPLY_DROPPED Op=%s Code=%d"),*Operation,Response.GrpcCode); return; }
+        { UE_LOG(LogTemp,Display,TEXT("GATHERING_LEDGER_REPLY_DROPPED Op=%s Code=%d"),*Operation,Self && Self->LastLedgerResponse ? Self->LastLedgerResponse->GrpcCode : -1); return; }
+        FSFLedgerResponse Response=Self->LastLedgerResponse ? *Self->LastLedgerResponse : FSFLedgerResponse();
+        Response.Status=Outcome==ESFBackpackOutcome::Committed ? ESFLedgerStatus::Ok : Outcome==ESFBackpackOutcome::Stale ? ESFLedgerStatus::Stale
+            : Outcome==ESFBackpackOutcome::Rejected ? ESFLedgerStatus::Rejected : ESFLedgerStatus::Unavailable;
         Self->OnLedgerGrant(Response);
-    });
+    };
+    Pack->Enqueue(MoveTemp(Mutation));
 }
 
 void USFGatheringPilotComponent::OnLedgerGrant(const FSFLedgerResponse& Response)
 {
     const FString Operation=PendingLedgerOperation;
     PendingLedgerOperation.Reset();
+    const FString Container=Backpack.IsValid() ? Backpack->GetContainerId() : FString();
     // Node state is logged before any charge is consumed: a failed commit must show it unchanged.
-    UE_LOG(LogTemp,Display,TEXT("GATHERING_LEDGER_OUTCOME Op=%s Container=%s Code=%d Revision=%lld Delta=%lld NodeRevision=%d Charges=%d"),*Operation,*LedgerContainerId,
+    UE_LOG(LogTemp,Display,TEXT("GATHERING_LEDGER_OUTCOME Op=%s Container=%s Code=%d Revision=%lld Delta=%lld NodeRevision=%d Charges=%d"),*Operation,*Container,
         Response.GrpcCode,Response.Revision,Response.GrantedDelta,IsValid(Feedback.Node) ? int32(Feedback.Node->State.Revision) : -1,IsValid(Feedback.Node) ? Feedback.Node->State.Charges : -1);
-    if (Response.Status==ESFLedgerStatus::Stale) { RefreshLedgerRevision(); Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::Stale); return; }
+    if (Response.Status==ESFLedgerStatus::Stale) { Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::Stale); return; }
     if (Response.Status!=ESFLedgerStatus::Ok)
     {
-        // ponytail: an exhausted retry may still have committed; the next GET exposes it. Reconciling that
-        // quantity into the session inventory belongs with the GatheringNodes integration slice.
-        LedgerRevision=-1;
+        // ponytail: an exhausted retry may still have committed; the backpack re-reads before its next mutation.
+        // Reconciling that quantity into the session inventory belongs with the GatheringNodes integration slice.
         Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::Unavailable);
         return;
     }
-    LedgerRevision=Response.Revision;
 #if !UE_BUILD_SHIPPING
     if (FParse::Param(FCommandLine::Get(),TEXT("GatheringLedgerExitAfterCommit")))
     {
@@ -788,27 +823,121 @@ void USFGatheringPilotComponent::OnLedgerGrant(const FSFLedgerResponse& Response
     }
 #endif
     if (ApplyInventory(ActiveKind,true)!=ESFGatheringPilotResult::None)
+    { UE_LOG(LogTemp,Error,TEXT("GATHERING_LEDGER_PROJECTION_MISMATCH Op=%s Container=%s"),*Operation,*Container); }
+    CommittedOperation=Operation;
+    if (!IsValid(Feedback.Node))
     {
-        UE_LOG(LogTemp,Error,TEXT("GATHERING_LEDGER_PROJECTION_MISMATCH Op=%s Container=%s"),*Operation,*LedgerContainerId);
-        RefreshLedgerRevision();
+        SFQuestPilotEvents::OnGathered().Broadcast(Cast<APlayerController>(GetOwner()),ActiveKind,FString(LedgerItemId(ActiveKind)),CommittedOperation);
+        Finish(ESFGatheringPilotPhase::Committed,ESFGatheringPilotResult::Granted); return;
     }
-    if (!IsValid(Feedback.Node)) { SFQuestPilotEvents::OnGathered().Broadcast(Cast<APlayerController>(GetOwner()),ActiveKind); Finish(ESFGatheringPilotPhase::Committed,ESFGatheringPilotResult::Granted); return; }
     CompleteHarvest(false);
 }
 
-void USFGatheringPilotComponent::RefreshLedgerRevision()
+void USFGatheringPilotComponent::BeginCraftCommit()
 {
-    FSFLedgerRequest Get; Get.Rpc=ESFLedgerRpc::GetContainer; Get.ContainerId=LedgerContainerId;
-    LedgerRevision=-1;
-    Ledger->Call(Get,[Weak=TWeakObjectPtr<USFGatheringPilotComponent>(this)](const FSFLedgerResponse& Response)
+    if (PendingCraftOperation.IsEmpty())
+    { PendingCraftOperation=TEXT("craft/")+FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower); }
+    USFBackpackComponent* Pack=Backpack.Get();
+    const FSFStationRecipe* Recipe=ActiveStationRecipe(ActiveKind);
+    if (!Pack || !Recipe || !USFBackpackComponent::Services())
+    { PendingCraftOperation.Reset(); Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::Unavailable); return; }
+    const FString Operation=PendingCraftOperation, RecipeId=Recipe->Id;
+    TSharedRef<TMap<FString,int64>> Changes=MakeShared<TMap<FString,int64>>();
+    TWeakObjectPtr<USFGatheringPilotComponent> Weak(this);
+    FSFBackpackMutation Mutation; Mutation.Label=TEXT("craft"); Mutation.OperationId=Operation;
+    Mutation.Run=[Weak,RecipeId,Changes](const FString& Op,int64 Expected,TFunction<void(ESFBackpackOutcome,int64)> Report)
+    {
+        USFGatheringPilotComponent* Self=Weak.Get(); USFBackpackComponent* Owner=Self ? Self->Backpack.Get() : nullptr;
+        if (!Owner) { Report(ESFBackpackOutcome::Unavailable,-1); return; }
+        FSFGameplayRequest Craft; Craft.Rpc=ESFGameplayRpc::Craft; Craft.OperationId=Op; Craft.CharacterId=Owner->GetCharacterId();
+        Craft.ContainerId=Owner->GetContainerId(); Craft.RecipeId=RecipeId; Craft.ExpectedContainerRevision=Expected; Craft.Count=1;
+        USFBackpackComponent::Services()->Call(Craft,[Changes,Report](const FSFGameplayResponse& Response)
+        {
+            *Changes=Response.Changes;
+            // FAILED_PRECONDITION covers a stale container revision: the backpack re-reads and retries once.
+            Report(Response.Status==ESFGameplayStatus::Ok ? ESFBackpackOutcome::Committed : Response.Status==ESFGameplayStatus::Unavailable ? ESFBackpackOutcome::Unavailable
+                : Response.GrpcCode==9 ? ESFBackpackOutcome::Stale : ESFBackpackOutcome::Rejected, Response.Status==ESFGameplayStatus::Ok ? Response.ContainerRevision : -1);
+        });
+    };
+    Mutation.Finished=[Weak,Operation,RecipeId,Changes](ESFBackpackOutcome Outcome)
     {
         USFGatheringPilotComponent* Self=Weak.Get();
-        if (!Self || Response.Status!=ESFLedgerStatus::Ok) { return; }
-        Self->LedgerRevision=Response.Revision;
-        for (const auto& Entry : Response.Quantities)
-        { UE_LOG(LogTemp,Display,TEXT("GATHERING_LEDGER_VIEW Container=%s Revision=%lld Item=%s Quantity=%lld"),*Self->LedgerContainerId,Response.Revision,*Entry.Key,Entry.Value); }
-    });
+        if (!Self || Self->Feedback.Phase!=ESFGatheringPilotPhase::Committing || Self->PendingCraftOperation!=Operation)
+        { UE_LOG(LogTemp,Display,TEXT("CRAFTING_SERVICE_REPLY_DROPPED Op=%s"),*Operation); return; }
+        Self->PendingCraftOperation.Reset();
+        UE_LOG(LogTemp,Display,TEXT("CRAFTING_SERVICE_OUTCOME Op=%s Recipe=%s Outcome=%d Changes=%d StationRevision=%d"),*Operation,*RecipeId,int32(Outcome),Changes->Num(),
+            IsValid(Self->Feedback.Node) ? int32(Self->Feedback.Node->State.Revision) : -1);
+        if (Outcome!=ESFBackpackOutcome::Committed)
+        { Self->Finish(ESFGatheringPilotPhase::Rejected,Outcome==ESFBackpackOutcome::Unavailable ? ESFGatheringPilotResult::Unavailable : ESFGatheringPilotResult::MissingMaterials); return; }
+        // The receipt is the truth: project exactly its item changes into the session bag.
+        if (USFBackpackComponent* Owner=Self->Backpack.Get()) { Owner->ApplyToBag(*Changes); }
+        Self->CommittedOperation=Operation;
+        if (!IsValid(Self->Feedback.Node)) { Self->Finish(ESFGatheringPilotPhase::Committed,ESFGatheringPilotResult::Refined); return; }
+        Self->CompleteHarvest(true);
+    };
+    Pack->Enqueue(MoveTemp(Mutation));
 }
+
+FString USFGatheringPilotComponent::StationName(ESFGatheringPilotKind Kind)
+{
+    switch (Kind)
+    {
+    case ESFGatheringPilotKind::Sawmill: return TEXT("sawmill");
+    case ESFGatheringPilotKind::Forge: return TEXT("forge");
+    case ESFGatheringPilotKind::Workbench: return TEXT("workbench");
+    default: return FString();
+    }
+}
+
+const FSFStationRecipe* USFGatheringPilotComponent::ActiveStationRecipe(ESFGatheringPilotKind Station) const
+{
+    const TArray<const FSFStationRecipe*> Recipes=SFStationRecipes::ForStation(StationName(Station));
+    if (Recipes.IsEmpty()) { return nullptr; }
+    const FString Selected=StationRecipes.IsValidIndex(int32(Station)) ? StationRecipes[int32(Station)] : FString();
+    const FSFStationRecipe* const* Match=Recipes.FindByPredicate([&](const FSFStationRecipe* Recipe) { return Recipe->Id==Selected; });
+    return Match ? *Match : Recipes[0];
+}
+
+FString USFGatheringPilotComponent::GetStationRecipe(ESFGatheringPilotKind Station) const
+{
+    const FSFStationRecipe* Recipe=ActiveStationRecipe(Station);
+    return Recipe ? Recipe->Id : FString();
+}
+
+void USFGatheringPilotComponent::SelectStationRecipe(ESFGatheringPilotKind Station, const FString& RecipeId)
+{
+    if (!bEnabled) { return; }
+    if (GetOwner()->HasAuthority()) { ServerSelectRecipe_Implementation(Station,RecipeId); } else { ServerSelectRecipe(Station,RecipeId); }
+}
+
+void USFGatheringPilotComponent::CycleStationRecipe(ESFGatheringPilotKind Station)
+{
+    const TArray<const FSFStationRecipe*> Recipes=SFStationRecipes::ForStation(StationName(Station));
+    if (Recipes.Num()<2) { return; }
+    const int32 Current=Recipes.IndexOfByKey(ActiveStationRecipe(Station));
+    SelectStationRecipe(Station,Recipes[(Current+1)%Recipes.Num()]->Id);
+}
+
+bool USFGatheringPilotComponent::CycleRecipeFromRay(const FVector& Start, const FVector& Direction)
+{
+    ASFGatheringPilotNode* Node=FindNode(Start,Direction);
+    if (!Node || !Node->IsRefinery()) { return false; }
+    CycleStationRecipe(Node->Kind);
+    return true;
+}
+
+void USFGatheringPilotComponent::ServerSelectRecipe_Implementation(ESFGatheringPilotKind Station, const FString& RecipeId)
+{
+    // Only a recipe this station ships, and never mid-craft: the commit uses the recipe chosen when it started.
+    if (!IsAuthoritativePilotWorld() || !bEnabled || Feedback.Phase==ESFGatheringPilotPhase::Harvesting || Feedback.Phase==ESFGatheringPilotPhase::Committing) { return; }
+    const FSFStationRecipe* Recipe=SFStationRecipes::Find(RecipeId);
+    if (!Recipe || Recipe->Station!=StationName(Station)) { return; }
+    StationRecipes.SetNum(int32(ESFGatheringPilotKind::Workbench)+1);
+    StationRecipes[int32(Station)]=RecipeId;
+    GetOwner()->ForceNetUpdate();
+    UE_LOG(LogTemp,Display,TEXT("GATHERING_RECIPE_SELECTED Station=%s Recipe=%s"),*StationName(Station),*RecipeId);
+}
+
 
 ASFGatheringPilotNode* USFGatheringPilotComponent::FindNode(const FVector& Start, const FVector& Direction) const
 {
