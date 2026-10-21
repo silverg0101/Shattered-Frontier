@@ -4,6 +4,8 @@ Production art at 2× 1920×1080 UI design size. `kit.json` is the authoritative
 
 The remaining modal, detail card, primary button, hold ring, minimap ring and footer use `slim/build_remaining.py` for deterministic thin-line geometry at their original 2× sizes. Its approved concept crops and rendered outputs are compared in `Artifacts/slim2-vs-concept.png`. The hold ring supplies the empty track; runtime progress remains separate. The minimap mask remains the map aperture.
 
+The tooltip and bag, equipment and hotbar slot states use `slim/build_slots_tooltip.py` to regenerate thin borders and dark inset faces at their existing 2× sizes. The script samples the approved inventory, trade and gameplay HUD concepts, updates their `kit.json` slice margins and sizes, and renders `Artifacts/slim3-vs-concept.png` for visual review. Selected slots have a brighter edge; item art and text remain runtime layers.
+
 The structural cut ends at atlas y=248, outside the panel's lower alpha fringe. `build_structures.py` resizes in premultiplied RGBA, erodes the source alpha fringe by one pixel, clamps near-transparent backdrop alpha, and clears RGB under zero alpha. It preserves output dimensions and existing `kit.json` margins. After rebuilding structures and bar layers, run `py -3 GameClient/ArtSource/UI/Kit-v5/scan_borders.py`; it fails on visible chroma-key red/green speckles in the outer six pixels of every PNG. Rebuild both previews with `preview.py`.
 
 ## Dynamic bar layers

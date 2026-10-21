@@ -62,10 +62,10 @@
     "tooltip_frame": {
       "file": "tooltip_frame.png",
       "nine_slice_px": [
-        36,
-        28,
-        36,
-        28
+        20,
+        20,
+        20,
+        20
       ],
       "intended_1080p_px": [
         320,
@@ -618,10 +618,10 @@
     "slot_bag_normal": {
       "file": "slot_bag_normal.png",
       "nine_slice_px": [
-        25,
-        25,
-        25,
-        25
+        12,
+        12,
+        12,
+        12
       ],
       "intended_1080p_px": [
         64,
@@ -635,10 +635,10 @@
     "slot_bag_selected": {
       "file": "slot_bag_selected.png",
       "nine_slice_px": [
-        25,
-        25,
-        25,
-        25
+        12,
+        12,
+        12,
+        12
       ],
       "intended_1080p_px": [
         64,
@@ -651,10 +651,10 @@
     "slot_equipment_normal": {
       "file": "slot_equipment_normal.png",
       "nine_slice_px": [
-        28,
-        28,
-        28,
-        28
+        12,
+        12,
+        12,
+        12
       ],
       "intended_1080p_px": [
         72,
@@ -667,10 +667,10 @@
     "slot_equipment_selected": {
       "file": "slot_equipment_selected.png",
       "nine_slice_px": [
-        28,
-        28,
-        28,
-        28
+        12,
+        12,
+        12,
+        12
       ],
       "intended_1080p_px": [
         72,
@@ -683,10 +683,10 @@
     "slot_hotbar_normal": {
       "file": "slot_hotbar_normal.png",
       "nine_slice_px": [
-        24,
-        24,
-        24,
-        24
+        12,
+        12,
+        12,
+        12
       ],
       "intended_1080p_px": [
         88,
@@ -710,10 +710,10 @@
     "slot_hotbar_selected": {
       "file": "slot_hotbar_selected.png",
       "nine_slice_px": [
-        24,
-        24,
-        24,
-        24
+        12,
+        12,
+        12,
+        12
       ],
       "intended_1080p_px": [
         88,
