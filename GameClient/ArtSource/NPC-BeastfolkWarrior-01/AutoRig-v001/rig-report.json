@@ -1,0 +1,191 @@
+{
+ "schema_version": 1,
+ "status": "rig-needs-review",
+ "input": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\NPC-BeastfolkWarrior-01\\PixalMV-v001\\BeastfolkWarrior.glb",
+ "input_sha256": "e5aa2e0acb5459fcc398ee2bac66508b022f6a84b415825949e28ec2ead00ac4",
+ "skeleton": "/Game/Mannequin/Character/Mesh/SK_Mannequin_Skeleton.SK_Mannequin_Skeleton",
+ "tool_sha256": "51080353ac09b78bc090084952c9102a388538258ddb2def4f93d0ca4dc7bee6",
+ "height_m": 1.85,
+ "source_triangles": 286373,
+ "triangles": 50000,
+ "unweighted_vertices_fixed": 0,
+ "empty_deform_groups": [],
+ "vertices_per_group": {
+  "pelvis": 9491,
+  "spine_01": 21329,
+  "spine_02": 15041,
+  "spine_03": 5803,
+  "neck_01": 20138,
+  "head": 22485,
+  "clavicle_l": 21461,
+  "upperarm_l": 18987,
+  "lowerarm_l": 10374,
+  "hand_l": 3964,
+  "clavicle_r": 12671,
+  "upperarm_r": 16825,
+  "lowerarm_r": 9107,
+  "hand_r": 3514,
+  "thigh_l": 13014,
+  "calf_l": 8427,
+  "foot_l": 5070,
+  "ball_l": 1465,
+  "thigh_r": 18546,
+  "calf_r": 8249,
+  "foot_r": 4777,
+  "ball_r": 1232
+ },
+ "fbx_sha256": "6f997e019e7973b03554aa4eb248575f56969f79b27d7c80245178989ffaed50",
+ "landmarks_m": {
+  "armpit": 1.1649,
+  "torso_half_width": 0.2771,
+  "center_gap": 0.592,
+  "hip": 0.6938
+ },
+ "joints_m": {
+  "pelvis": [
+   0.0,
+   -0.0173,
+   0.7043
+  ],
+  "spine_01": [
+   0.0,
+   -0.0203,
+   0.8157
+  ],
+  "spine_02": [
+   0.0,
+   -0.0521,
+   1.0136
+  ],
+  "spine_03": [
+   0.0,
+   -0.0336,
+   1.1502
+  ],
+  "neck_01": [
+   0.0,
+   0.031,
+   1.3759
+  ],
+  "head": [
+   0.0,
+   0.0195,
+   1.5445
+  ],
+  "clavicle_l": [
+   0.0592,
+   -0.0279,
+   1.2757
+  ],
+  "upperarm_l": [
+   0.2771,
+   -0.0279,
+   1.2481
+  ],
+  "lowerarm_l": [
+   0.4859,
+   0.0255,
+   1.1064
+  ],
+  "hand_l": [
+   0.6635,
+   0.0059,
+   0.956
+  ],
+  "thigh_l": [
+   0.1831,
+   -0.0199,
+   0.6938
+  ],
+  "calf_l": [
+   0.2475,
+   0.0262,
+   0.3866
+  ],
+  "foot_l": [
+   0.2863,
+   -0.0011,
+   0.0985
+  ],
+  "ball_l": [
+   0.2863,
+   -0.1801,
+   0.0205
+  ],
+  "clavicle_r": [
+   -0.0592,
+   -0.0279,
+   1.2757
+  ],
+  "upperarm_r": [
+   -0.2771,
+   -0.0279,
+   1.2481
+  ],
+  "lowerarm_r": [
+   -0.4859,
+   0.0255,
+   1.1064
+  ],
+  "hand_r": [
+   -0.6635,
+   0.0059,
+   0.956
+  ],
+  "thigh_r": [
+   -0.1831,
+   -0.0199,
+   0.6938
+  ],
+  "calf_r": [
+   -0.2475,
+   0.0262,
+   0.3866
+  ],
+  "foot_r": [
+   -0.2863,
+   -0.0011,
+   0.0985
+  ],
+  "ball_r": [
+   -0.2863,
+   -0.1801,
+   0.0205
+  ]
+ },
+ "clips": [
+  {
+   "id": "ThirdPersonWalk",
+   "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\NPC-BeastfolkWarrior-01\\MannequinClips\\ThirdPersonWalk.fbx",
+   "source_sha256": "e77b8077f04dccaaba4fc4dc7d6d29e3dc42ff1b714b56fe1c5c7f84300d0614",
+   "frames": 26
+  },
+  {
+   "id": "ThirdPersonIdle",
+   "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\NPC-BeastfolkWarrior-01\\MannequinClips\\ThirdPersonIdle.fbx",
+   "source_sha256": "a3186d25b07ed84ff9f0179607fcfa5a214acf69fd42d76ccc6c3dd21895a603",
+   "frames": 67
+  }
+ ],
+ "review_images": [
+  "review/rest-joints-front.png",
+  "review/rest-joints-side.png",
+  "review/ThirdPersonWalk-001-front.png",
+  "review/ThirdPersonWalk-001-side.png",
+  "review/ThirdPersonWalk-006-front.png",
+  "review/ThirdPersonWalk-006-side.png",
+  "review/ThirdPersonWalk-013-front.png",
+  "review/ThirdPersonWalk-013-side.png",
+  "review/ThirdPersonIdle-001-front.png",
+  "review/ThirdPersonIdle-001-side.png",
+  "review/ThirdPersonIdle-016-front.png",
+  "review/ThirdPersonIdle-016-side.png",
+  "review/ThirdPersonIdle-033-front.png",
+  "review/ThirdPersonIdle-033-side.png"
+ ],
+ "limitations": [
+  "Joint landmarks are slice heuristics; review the rest-joints render before use.",
+  "Clips copy mannequin rotations; contacts (feet, hands) are not re-solved for new proportions.",
+  "Finger bones are placed but unweighted: hands deform as one piece."
+ ]
+}
