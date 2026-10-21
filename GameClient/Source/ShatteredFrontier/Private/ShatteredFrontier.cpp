@@ -1,3 +1,10 @@
 #include "Modules/ModuleManager.h"
+#include "Framework/SFLoadingScreen.h"
 
-IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, ShatteredFrontier, "ShatteredFrontier");
+class FShatteredFrontierModule : public FDefaultGameModuleImpl
+{
+    virtual void StartupModule() override { SFLoadingScreen::Register(); }
+    virtual void ShutdownModule() override { SFLoadingScreen::Unregister(); }
+};
+
+IMPLEMENT_PRIMARY_GAME_MODULE(FShatteredFrontierModule, ShatteredFrontier, "ShatteredFrontier");

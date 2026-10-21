@@ -12,6 +12,7 @@ public class ShatteredFrontier : ModuleRules
         PublicDefinitions.Add("SF_WITH_MINIMAL_INVENTORY=" + (WithPilotInventory ? "1" : "0"));
         if (WithPilotInventory) PrivateDependencyModuleNames.Add("MinimalInventoryRuntime");
         if (Target.bBuildEditor) PrivateDependencyModuleNames.AddRange(new[] { "RenderCore", "RHI" });
-        PrivateDependencyModuleNames.AddRange(new[] { "ProceduralMeshComponent", "PhysicsCore", "Chaos", "ChaosCore", "Slate", "SlateCore", "GeometryCore", "MeshConversionEngineTypes", "NetCore", "Json", "MassCore", "MassEntity", "MassCommon", "MassSpawner", "MassLOD", "MassRepresentation", "MassActors", "MassCrowd", "ZoneGraph", "SmartObjectsModule", "GameplayTags" });
+        PrivateDependencyModuleNames.AddRange(new[] { "ProceduralMeshComponent", "PhysicsCore", "Chaos", "ChaosCore", "Slate", "SlateCore", "GeometryCore", "MeshConversionEngineTypes", "NetCore", "Json", "MassCore", "MassEntity", "MassCommon", "MassSpawner", "MassLOD", "MassRepresentation", "MassActors", "MassCrowd", "ZoneGraph", "SmartObjectsModule", "GameplayTags", "MoviePlayer" });
+        PrivateDependencyModuleNames.Add("EnhancedInput");  // CTL-01 player controls (polled IMC_Player)
     }
 }
