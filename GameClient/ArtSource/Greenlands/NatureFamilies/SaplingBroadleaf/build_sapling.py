@@ -15,9 +15,9 @@ import veg_kit as G
 
 G.BARK_TILE = 1.89
 VARIANTS = [
-    dict(seed=5, height=2.76, width=1.56, lean=(.11,.03), branches=11),
-    dict(seed=8, height=2.19, width=1.32, lean=(-.09,.07), branches=10),
-    dict(seed=12, height=1.61, width=1.02, lean=(.05,-.08), branches=9),
+    dict(seed=5, height=2.76, width=1.56, lean=(.15,.04), branches=6),
+    dict(seed=8, height=2.19, width=1.32, lean=(-.12,.08), branches=5),
+    dict(seed=12, height=1.61, width=1.02, lean=(.08,-.10), branches=5),
 ]
 leaf_path = 'Sources/tree_small_02/textures/tree_small_02_leaves_'
 leaf_spec = dict(name='MI_SaplingBroadleaf_Leaf', base=leaf_path+'diff_2k.jpg',
@@ -36,47 +36,68 @@ bark_spec = dict(name='MI_SaplingBroadleaf_Bark', base=bark_path+'_Diffuse.jpg',
                amount=1.0, contrast=.2))
 
 def make_wood(vc, rng):
-    """A slender central stem and short ascending limbs ending inside foliage."""
+    """Uneven ascending limbs fork into exposed twigs below separate leaf tips."""
     height, width = vc['height'], vc['width']
-    t = np.linspace(0, 1, 27)
-    stem = np.c_[vc['lean'][0]*t**1.7 + .019*np.sin(t*5)*t,
-                 vc['lean'][1]*t**1.7 + .016*np.sin(t*4)*t, height*t*.96]
-    tubes = [(stem, .024*(1-t)**.85+.0035, 8)]
+    t = np.linspace(0, 1, 33)
+    stem = np.c_[vc['lean'][0]*t**1.5 + .014*np.sin(t*7)*t,
+                 vc['lean'][1]*t**1.5 + .012*np.sin(t*5)*t, height*t*.96]
+    tubes = [(stem, .027*(1-t)**.9+.003, 8)]
     anchors = []
+    # Small unfurnished shoots interrupt the clear trunk without becoming a shrub.
+    for f, angle in ((.19, .28), (.29, 2.78)):
+        root = stem[int(f*32)]
+        u = np.linspace(0, 1, 6)
+        reach = width*(.095 if f < .2 else .13)
+        shoot = root + np.c_[reach*np.cos(angle)*u,
+                             reach*np.sin(angle)*u, height*.07*u]
+        tubes.append((shoot, np.linspace(.006,.0015,len(u)), 5))
     for j in range(vc['branches']):
-        f = .33 + .58*(j+.45)/vc['branches']
-        idx = min(25, int(f*26))
-        start = stem[idx]
-        angle = 2*math.pi*(j*.618034 + .10*rng.random())
-        fullness = max(.32, math.sin(math.pi*(f-.19)/.88))
-        reach = width*(.28+.12*rng.random())*fullness
-        rise = height*(.14+.075*rng.random())
-        u = np.linspace(0,1,10)
-        limb = start[None,:] + np.c_[reach*np.cos(angle)*u**1.1,
-            reach*np.sin(angle)*u**1.1, rise*u + .017*height*np.sin(math.pi*u)]
-        tubes.append((limb, .0085*(1-u)**.8+.0016, 5))
-        for k in range(3,10):
-            anchors.extend([limb[k]] * (2 if k < 7 else 4))
-    anchors.extend([stem[k] for k in range(19,27) for _ in range(4)])
+        f = .36 + .34*j/max(vc['branches']-1,1) + rng.uniform(-.025,.025)
+        start = stem[int(f*32)]
+        angle = 2*math.pi*(j*.618034) + rng.uniform(-.22,.22)
+        fullness = math.sqrt(max(.25,1-(f-.46)*1.6))
+        reach = width*rng.uniform(.34,.48)*fullness
+        rise = height*rng.uniform(.10,.18)
+        u = np.linspace(0,1,11)
+        limb = start + np.c_[reach*np.cos(angle)*u**1.12,
+            reach*np.sin(angle)*u**1.12, rise*u + .012*height*np.sin(math.pi*u)]
+        tubes.append((limb, .012*(1-u)**.75+.002, 6))
+        # Two asymmetric forks leave a readable Y beneath each foliage group.
+        for side in (-1,1):
+            fork_at = 6 if side < 0 else 8
+            fork_angle = angle + side*rng.uniform(.43,.78)
+            length = reach*rng.uniform(.38,.64)
+            v = np.linspace(0,1,7)
+            fork = limb[fork_at] + np.c_[length*np.cos(fork_angle)*v,
+                length*np.sin(fork_angle)*v, height*rng.uniform(.035,.09)*v]
+            tubes.append((fork, np.linspace(.0055,.0015,len(v)), 5))
+            anchors.append(fork[-1])
+        anchors.append(limb[-1])
+    # Sparse leader tips round the top without filling the centre of the crown.
+    for k in (28,31,32):
+        anchors.append(stem[k] + rng.normal(0,[width*.075,width*.075,height*.012]))
     return tubes, np.asarray(anchors)
 
 def make_foliage(vc, lib, rng, anchors):
-    """Overlapping leaf pieces form attached clusters with a shaded interior."""
+    """Loose leaf tufts at branch ends preserve dark interiors and sky gaps."""
     vertices, tris, uvs, shades = [], [], [], []
     offset = triangle_count = 0
     height = vc['height']
-    while triangle_count < 51000:
-        anchor = anchors[rng.integers(len(anchors))]
-        pos = anchor + rng.normal(size=3)*[.08,.08,.05]
-        pos[2] = np.clip(pos[2], .38*height, .985*height)
-        lv, lt, luv = lib[rng.integers(len(lib))]
-        size = rng.uniform(.075,.110)*height
-        piece = (lv @ G.rot(rng).T) * (size/max(np.ptp(lv,axis=0).max(),1e-6)) + pos
-        vertices.append(piece); tris.append(lt+offset); uvs.append(luv)
-        radial = np.linalg.norm(pos[:2]-np.asarray(vc['lean'])*pos[2]/height)
-        interior = np.clip(.68-radial/(vc['width']*.58)+rng.uniform(-.12,.12),0,1)
-        shades.append(np.full(len(piece), interior, np.float32))
-        offset += len(piece); triangle_count += len(lt)
+    for n,anchor in enumerate(anchors):
+        count = rng.integers(36,47) if n < len(anchors)-3 else rng.integers(16,24)
+        for _ in range(count):
+            # A little droop and an anisotropic tuft make individual lobes.
+            pos = anchor + rng.normal(size=3)*[vc['width']*.065,
+                                                vc['width']*.065,height*.028]
+            pos[2] -= height*.025
+            lv, lt, luv = lib[rng.integers(len(lib))]
+            size = rng.uniform(.065,.092)*height
+            piece = (lv @ G.rot(rng).T) * (size/max(np.ptp(lv,axis=0).max(),1e-6)) + pos
+            vertices.append(piece); tris.append(lt+offset); uvs.append(luv)
+            radial = np.linalg.norm(pos[:2]-np.asarray(vc['lean'])*pos[2]/height)
+            interior = np.clip(.68-radial/(vc['width']*.58)+rng.uniform(-.12,.12),0,1)
+            shades.append(np.full(len(piece), interior, np.float32))
+            offset += len(piece); triangle_count += len(lt)
     return (np.vstack(vertices).astype(np.float32), np.vstack(tris),
             np.concatenate(uvs).astype(np.float32), np.concatenate(shades))
 
