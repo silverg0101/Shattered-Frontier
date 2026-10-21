@@ -111,7 +111,7 @@ try {
     $restoredRevision = (Invoke-Checked (Join-Path $pg 'psql.exe') @('-X','-A','-t','-h','127.0.0.1','-p',"$($restored.port)",'-U',$restored.username,'-d',$restored.database,'-c',"SELECT revision FROM housing.claims WHERE id='clm_test'") @{ PGPASSWORD=$restored.password }).Trim()
     if ($restoredRevision -ne $backupRevision) { throw 'Restored housing revision differs from backup point.' }
     $results.Add('PASS restored housing state equals backup point')
-    [void](Sql 'UPDATE housing.schema_version SET version=4' "housing_$run")
+    [void](Sql 'UPDATE housing.schema_version SET version=5' "housing_$run")
     $results.Add((Invoke-Checked $dotnet @($dll,'newer') @{ HOUSING_CONNECTION=$connection }))
     $results | Set-Content (Join-Path $EvidenceRoot 'results.txt')
 }
