@@ -2,6 +2,8 @@
 
 Silverbrook enables construction, gathering, combat, quests and client townsfolk through typed settings. Launch `Greenlands_Silverbrook -server -log` and connect with `127.0.0.1 -game -log`; no pilot flags or game-mode URL override are needed. B toggles build mode. `-ExchangeFake` and `-GatheringFixtureNodes` are non-shipping fixtures. The [gathering pilot](../docs/gameplay-gathering-pilot.md) uses the free Minimal Inventory Runtime 2.0.0 engine plugin on Win64 (install from Fab on a new machine). F harvests oak/iron or refines at the sawmill/forge over a timed channel; 5/6 equip the starter axe/pickaxe. Focused authority and `tools/Test-GatheringPilot.ps1` evidence are linked there.
 
+Tab selects the nearest attackable boar or handed-off townsfolk NPC within `USFCombatPilotSettings::MeleeRangeMetres`, then cycles by distance. The selected swing uses that actor and the server checks reach; the frame shows its HP. Combat creatures without a health and hit path are excluded.
+
 ## Isolated construction placement pilot
 
 The next playable milestone is the [construction sandbox](../docs/construction-sandbox-milestone.md). Its current [clearance/support checkpoint](../docs/evidence/construction-sandbox-support-pilot.md) adds actual canonical convex clearance and rough-timber support over an explicitly synthetic foundation to standalone cube/slab/slope placement. Private PhysicsCore/Chaos/ChaosCore dependencies provide the installed simple-body narrowphase; ProceduralMeshComponent projects clipped surfaces and canonical collision. Generated tables are checked with `py -3 tools/Generate-ConstructionGeometryHeader.py --check` from the repository root.

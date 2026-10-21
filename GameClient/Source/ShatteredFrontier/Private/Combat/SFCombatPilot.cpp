@@ -362,7 +362,7 @@ void ASFGameMode::SpawnSlot(const FString& Group, int32 Slot, int32 Cycle, const
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_SPAWN Group=%s Slot=%d Cycle=%d Point=%s"), *Group, Slot, Cycle, *PointId);
 }
 
-void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker)
+void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarget)
 {
     if (!bPilotActive || !CapturedSettings->bCombatAvailable || !IsValid(Attacker) || Attacker->CombatHealth() <= 0 || IsSafe(Attacker->GetActorLocation())) { return; }
     const double Now = GetWorld()->GetTimeSeconds();
@@ -371,10 +371,11 @@ void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker)
     const FVector Facing = Attacker->GetControlRotation().Vector().GetSafeNormal2D();
     for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
     {
-        if (It->Health() <= 0 || IsSafe(It->GetActorLocation())) { continue; }
+        if (!IsValid(*It) || It->IsActorBeingDestroyed() || It->Health() <= 0 || IsSafe(It->GetActorLocation())
+            || (SelectedTarget && SelectedTarget != *It)) { continue; }
         const FVector Delta = It->GetActorLocation() - Attacker->GetActorLocation();
         const double Distance = Delta.Size2D();
-        if (!SFCombatPilotRules::CanMelee(Distance, FVector::DotProduct(Facing,Delta.GetSafeNormal2D()),
+        if (!SFCombatPilotRules::CanMelee(Distance, SelectedTarget ? 1.0 : FVector::DotProduct(Facing,Delta.GetSafeNormal2D()),
             Now, PlayerNextSwing.FindRef(Attacker), BestDistance)) { continue; }
         FHitResult Hit; FCollisionQueryParams Query(SCENE_QUERY_STAT(CombatPilotMelee), false, Attacker);
         if (GetWorld()->LineTraceSingleByChannel(Hit, Attacker->GetActorLocation()+FVector(0,0,45),

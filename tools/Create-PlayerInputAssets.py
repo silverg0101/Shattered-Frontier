@@ -27,6 +27,7 @@ ACTIONS = {
     'IA_Walk': (T.BOOLEAN, ['LeftControl', 'RightControl']),
     'IA_WalkToggle': (T.BOOLEAN, ['Divide']),
     'IA_Interact': (T.BOOLEAN, ['F', 'Gamepad_FaceButton_Right']),
+    'IA_TargetNext': (T.BOOLEAN, ['Tab']),
     # GM-01: always-on controller actions (ASFPlayerController::SetupInputComponent binds them).
     'IA_BuildMode': (T.BOOLEAN, ['B']),
     'IA_Inventory': (T.BOOLEAN, ['I']),

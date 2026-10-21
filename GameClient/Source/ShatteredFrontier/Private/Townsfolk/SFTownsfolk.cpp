@@ -955,6 +955,12 @@ void USFTownsfolkHandoffComponent::ServerAttackNpc_Implementation(ASFTownsfolkNp
     if (USFTownsfolkSubsystem* Town=GetWorld()->GetSubsystem<USFTownsfolkSubsystem>()) { Town->HandleNpcAttack(Cast<APlayerController>(GetOwner()),Npc); }
 }
 
+void USFTownsfolkHandoffComponent::ServerAttackSelectedNpc_Implementation(ASFTownsfolkNpc* Npc)
+{
+    if (USFTownsfolkSubsystem* Town=GetWorld()->GetSubsystem<USFTownsfolkSubsystem>())
+    { Town->HandleNpcAttack(Cast<APlayerController>(GetOwner()),Npc,true); }
+}
+
 void USFTownsfolkSubsystem::OnPostLogin(AGameModeBase* Mode, APlayerController* PC)
 {
     if (!PC || PC->GetWorld()!=GetWorld() || PC->FindComponentByClass<USFTownsfolkHandoffComponent>()) { return; }
@@ -1028,13 +1034,13 @@ void USFTownsfolkSubsystem::HandleAttackRequest(APlayerController* PC, const FSt
     Npc->ReceiveHit(Pawn,Combat->PlayerMeleeDamage);
 }
 
-void USFTownsfolkSubsystem::HandleNpcAttack(APlayerController* PC, ASFTownsfolkNpc* Npc)
+void USFTownsfolkSubsystem::HandleNpcAttack(APlayerController* PC, ASFTownsfolkNpc* Npc, bool bSelected)
 {
     APawn* Pawn=PC ? PC->GetPawn() : nullptr;
     if (!Pawn || !IsValid(Npc) || Npc->Health()<=0) { return; }
     const USFCombatPilotSettings* Combat=GetDefault<USFCombatPilotSettings>(); const double Now=GetWorld()->GetTimeSeconds();
     const FVector D=Npc->GetActorLocation()-Pawn->GetActorLocation();
-    if (!SFCombatPilotRules::CanMelee(D.Size2D(),FVector::DotProduct(PC->GetControlRotation().Vector().GetSafeNormal2D(),D.GetSafeNormal2D()),
+    if (!SFCombatPilotRules::CanMelee(D.Size2D(),bSelected ? 1.0 : FVector::DotProduct(PC->GetControlRotation().Vector().GetSafeNormal2D(),D.GetSafeNormal2D()),
         Now,NextSwing.FindRef(PC),Combat->MeleeRangeMetres*100.0)) { return; }
     NextSwing.Add(PC,Now+Combat->PlayerMeleeCooldownSeconds);
     Npc->ReceiveHit(Pawn,Combat->PlayerMeleeDamage);

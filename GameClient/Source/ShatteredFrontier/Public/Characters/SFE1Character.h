@@ -34,7 +34,7 @@ private:
     FTimerHandle CombatScenarioTimer;
     int32 CombatScenarioAttackCount = 0;
     void TickCombatScenario();
-    UFUNCTION(Server, Reliable) void ServerPilotAttack();
+    UFUNCTION(Server, Reliable) void ServerPilotAttack(AActor* SelectedCombatTarget);
     void PilotAttack();
     UPROPERTY(VisibleAnywhere) TObjectPtr<USpringArmComponent> CameraBoom;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UCameraComponent> FollowCamera;

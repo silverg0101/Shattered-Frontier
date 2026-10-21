@@ -45,7 +45,7 @@ public:
 #endif
 
     // Combat (SFCombatPilot.cpp)
-    void TryPlayerAttack(ASFE1Character* Attacker);
+    void TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarget = nullptr);
     void TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim);
     void BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer);
     /** Grants the killer's hides for this death, at most once; returns the number granted. */

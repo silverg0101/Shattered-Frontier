@@ -29,6 +29,7 @@ HUD prompts should label keys from this table. The source of truth is `IMC_Playe
 | Autorun (toggle) | NumLock, Mouse 4 (`ThumbMouseButton`) | Left stick click |
 | Walk (hold) / WalkToggle | Ctrl / Numpad `/` | — |
 | Interact / Harvest | F | Face right (B) |
+| TargetNext (nearest hostile, then cycle in melee range) | Tab | — |
 | Run forward | LMB + RMB | — |
 
 **Build mode:** press B under `ASFPlayerController` to add `IMC_Build` above `IMC_Player`; press B again to leave. LMB places, E/F toggle a targeted door, R rotates the piece, and Esc cancels placement or leaves build mode. The build actions consume their keys, so LMB orbit, E strafe and F interact from `IMC_Player` pause while build mode is active. RMB look, wheel zoom, movement and autorun keep working. The standalone `ASFConstructionSandboxController` keeps its development fixture controls.

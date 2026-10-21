@@ -11,6 +11,10 @@
 #include "Services/SFGameplayServicesClient.h"
 #include "Exchange/SFExchangeWidgets.h"
 #include "Exchange/SFFakeExchange.h"
+#include "Combat/SFCombatPilot.h"
+#include "Combat/SFTabTargetSelection.h"
+#include "Townsfolk/SFTownsfolk.h"
+#include "Characters/SFE1Character.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
 #include "Components/InputComponent.h"
@@ -146,6 +150,7 @@ void ASFPlayerController::ClientInteractionResult_Implementation(ESFE1Interactio
 
 void ASFPlayerController::TickInteraction()
 {
+    if (IsLocalController()) { RefreshCombatTarget(); }
     if (IsLocalController() && !GatheringHud)
     {
         // The pilot component arrives after BeginPlay, so install the gathering HUD on first sight of an enabled pilot.
@@ -156,19 +161,82 @@ void ASFPlayerController::TickInteraction()
             GatheringHud->AddToViewport(10);
             GatheringHud->SetVisibility(ESlateVisibility::HitTestInvisible);
         }
-        // Hotbar, prompt bar, target frame and minimap frame (hud-layout-v4.md), installed with the gathering HUD.
-        if (Pilot && Pilot->IsEnabled() && !HudLayout && (HudLayout = CreateWidget<USFHudLayout>(this, USFHudLayout::StaticClass())))
+    }
+    // The target frame is also needed in combat-only sessions without a gathering pilot.
+    if (IsLocalController() && !HudLayout)
+    {
+        USFGatheringPilotComponent* Pilot = FindComponentByClass<USFGatheringPilotComponent>();
+        const ASFE1Character* Character = Cast<ASFE1Character>(GetPawn());
+        if ((Pilot && Pilot->IsEnabled()) || (Character && Character->CombatHealth() > 0))
         {
-            HudLayout->Configure(Pilot);
-            HudLayout->AddToViewport(9);
-            HudLayout->SetVisibility(ESlateVisibility::HitTestInvisible);
+            HudLayout = CreateWidget<USFHudLayout>(this, USFHudLayout::StaticClass());
+            if (HudLayout)
+            {
+                HudLayout->Configure(Pilot && Pilot->IsEnabled() ? Pilot : nullptr);
+                HudLayout->AddToViewport(9);
+                HudLayout->SetVisibility(ESlateVisibility::HitTestInvisible);
+            }
         }
+    }
+    if (IsLocalController() && HudLayout)
+    {
+        USFGatheringPilotComponent* Pilot = FindComponentByClass<USFGatheringPilotComponent>();
+        if (Pilot && Pilot->IsEnabled()) { HudLayout->Configure(Pilot); }
     }
     if (IsLocalController() && GetWorld()->GetTimeSeconds() >= NextLocalRefreshSeconds)
     {
         NextLocalRefreshSeconds = GetWorld()->GetTimeSeconds() + 0.1;
         RefreshLocalFeedback();
     }
+}
+
+namespace
+{
+bool IsLiveCombatTarget(const AActor* Actor)
+{
+    if (!IsValid(Actor) || Actor->IsActorBeingDestroyed()) { return false; }
+    if (const ASFPilotBoar* Boar = Cast<ASFPilotBoar>(Actor)) { return Boar->Health() > 0; }
+    if (const ASFTownsfolkNpc* Npc = Cast<ASFTownsfolkNpc>(Actor)) { return Npc->Health() > 0; }
+    return false;
+}
+}
+
+AActor* ASFPlayerController::GetSelectedCombatTarget() const
+{
+    AActor* Target = SelectedCombatTarget.Get();
+    const APawn* Pawn = GetPawn();
+    const double RangeCm = GetDefault<USFCombatPilotSettings>()->MeleeRangeMetres * 100.0;
+    return Pawn && IsLiveCombatTarget(Target) && Target->GetWorld() == GetWorld()
+        && FVector::Dist2D(Pawn->GetActorLocation(), Target->GetActorLocation()) <= RangeCm ? Target : nullptr;
+}
+
+void ASFPlayerController::RefreshCombatTarget()
+{
+    if (!GetSelectedCombatTarget()) { SelectedCombatTarget.Reset(); }
+}
+
+void ASFPlayerController::SelectNextCombatTarget()
+{
+    if (!IsLocalController() || !GetPawn() || !GetWorld()) { SelectedCombatTarget.Reset(); return; }
+    RefreshCombatTarget();
+    TArray<FSFTabTargetCandidate> Candidates;
+    TMap<int32, AActor*> Actors;
+    const FVector From = GetPawn()->GetActorLocation();
+    const double RangeCm = GetDefault<USFCombatPilotSettings>()->MeleeRangeMetres * 100.0;
+    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    {
+        if (!IsLiveCombatTarget(*It)) { continue; }
+        const double Distance = FVector::Dist2D(From, It->GetActorLocation());
+        Candidates.Add({It->GetUniqueID(), Distance}); Actors.Add(It->GetUniqueID(), *It);
+    }
+    for (TActorIterator<ASFTownsfolkNpc> It(GetWorld()); It; ++It)
+    {
+        if (!IsLiveCombatTarget(*It)) { continue; }
+        const double Distance = FVector::Dist2D(From, It->GetActorLocation());
+        Candidates.Add({It->GetUniqueID(), Distance}); Actors.Add(It->GetUniqueID(), *It);
+    }
+    const int32 CurrentId = SelectedCombatTarget.IsValid() ? SelectedCombatTarget->GetUniqueID() : INDEX_NONE;
+    SelectedCombatTarget = Actors.FindRef(FSFTabTargetSelection::Next(Candidates, CurrentId, RangeCm));
 }
 
 void ASFPlayerController::RefreshLocalFeedback()

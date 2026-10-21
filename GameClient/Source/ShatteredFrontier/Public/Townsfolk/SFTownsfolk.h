@@ -257,6 +257,7 @@ public:
     /** The client sees resident ResidentId at SeenAt (cm) and swings at it; the server checks it against the schedule. */
     UFUNCTION(Server, Reliable) void ServerAttackResident(const FString& ResidentId, FVector_NetQuantize SeenAt);
     UFUNCTION(Server, Reliable) void ServerAttackNpc(ASFTownsfolkNpc* Npc);
+    UFUNCTION(Server, Reliable) void ServerAttackSelectedNpc(ASFTownsfolkNpc* Npc);
 };
 
 /** The SmartObject subsystem on NM_Client, where the engine creates none (it holds server-authoritative Smart Objects).
@@ -377,7 +378,7 @@ public:
     bool LocalAttack(ASFE1Character* Attacker);
     /** Server: a client's attack on a resident it sees at SeenAt; dropped and logged unless it fits the schedule. */
     void HandleAttackRequest(APlayerController* PC, const FString& ResidentId, const FVector& SeenAt);
-    void HandleNpcAttack(APlayerController* PC, ASFTownsfolkNpc* Npc);
+    void HandleNpcAttack(APlayerController* PC, ASFTownsfolkNpc* Npc, bool bSelected = false);
     /** Server, quest hook: hands off the resident of Archetype (census role) whose scheduled stop is nearest Near, held
       * until ReleaseQuestHandoff. Null when none is free. */
     ASFTownsfolkNpc* RequestQuestHandoff(FName Archetype, const FVector& Near);

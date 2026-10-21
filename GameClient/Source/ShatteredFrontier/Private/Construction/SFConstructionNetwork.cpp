@@ -1529,6 +1529,7 @@ void ASFPlayerController::SetupInputComponent()
     Bind(TEXT("IA_MouseLook"),ETriggerEvent::Completed,&ASFPlayerController::EndCameraLook);
     Bind(TEXT("IA_Trade"),ETriggerEvent::Started,&ASFPlayerController::ToggleTradeDemo);
     Bind(TEXT("IA_Market"),ETriggerEvent::Started,&ASFPlayerController::ToggleMarketDemo);
+    Bind(TEXT("IA_TargetNext"),ETriggerEvent::Started,&ASFPlayerController::SelectNextCombatTarget);
     // IMC_Build (the character layers it on while build mode is active; it consumes these keys from IMC_Player).
     Bind(TEXT("IA_BuildPlace"),ETriggerEvent::Started,&ASFPlayerController::PlaceFromView);
     Bind(TEXT("IA_BuildDemolish"),ETriggerEvent::Started,&ASFPlayerController::ToggleDemolition);

@@ -1,4 +1,7 @@
 #include "Framework/SFHudLayout.h"
+#include "Framework/SFPlayerController.h"
+#include "Combat/SFCombatPilot.h"
+#include "Townsfolk/SFTownsfolk.h"
 
 #include "Construction/SFConstructionNetwork.h"
 #include "Framework/SFHudStyle.h"
@@ -241,9 +244,9 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     const FVector2D Size = MyGeometry.GetLocalSize();
     if (Size.X > 0.0 && Size.Y > 0.0 && !Size.Equals(ShownViewport, 1.0)) { PlaceMinimap(Size); }
     APlayerController* Controller = GetOwningPlayer();
-    if (!Pilot || !Controller || !Pilot->IsEnabled()) { return; }
+    if (!Controller) { return; }
 
-    const int32 ActiveKey = ActiveToolKey(Pilot->GetInventoryItems());
+    const int32 ActiveKey = Pilot && Pilot->IsEnabled() ? ActiveToolKey(Pilot->GetInventoryItems()) : 0;
     if (ActiveKey != ShownActiveKey)
     {
         ShownActiveKey = ActiveKey;
@@ -256,28 +259,33 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     for (int32 Index = 0; Index < SlotCounts.Num() && Index < HotSlots.Num(); ++Index)
     {
         int32 Total = 0;
-        for (const TPair<FText,int32>& Item : Pilot->GetInventoryItems()) { if (Item.Key.ToString().Contains(HotSlots[Index].Label)) { Total += Item.Value; } }
+        if (Pilot && Pilot->IsEnabled())
+        { for (const TPair<FText,int32>& Item : Pilot->GetInventoryItems()) { if (Item.Key.ToString().Contains(HotSlots[Index].Label)) { Total += Item.Value; } } }
         SlotCounts[Index]->SetText(Total > 1 ? FText::AsNumber(Total) : FText::GetEmpty());
     }
 
     FVector Start, Direction;
     if (!Controller->DeprojectMousePositionToWorld(Start, Direction)) { FRotator Rotation; Controller->GetPlayerViewPoint(Start, Rotation); Direction = Rotation.Vector(); }
-    const ASFGatheringPilotNode* Node = Pilot->FindAimedNode(Start, Direction);
+    const ASFGatheringPilotNode* Node = Pilot && Pilot->IsEnabled() ? Pilot->FindAimedNode(Start, Direction) : nullptr;
     ESFPromptContext Context = bBuildMode ? ESFPromptContext::Build : ESFPromptContext::None;
     if (Node)
     {
         Context = Node->IsRefinery() ? ESFPromptContext::Refine : ESFPromptContext::Harvest;
-        TargetBoxRoot->SetVisibility(ESlateVisibility::HitTestInvisible);
-        TargetName->SetText(FText::FromString(Node->GetResourceName()));
-        if (Node->IsRefinery()) { TargetCharges->SetText(FText::GetEmpty()); if (TargetBar) { TargetBar->SetVisibility(ESlateVisibility::Collapsed); } }
-        else
-        {
-            const int32 Max = GetDefault<USFGatheringPilotSettings>()->ChargesPerNode, Charges = Node->GetState().Charges;
-            TargetCharges->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), Charges, Max)));
-            if (TargetBar) { TargetBar->SetVisibility(ESlateVisibility::HitTestInvisible); }
-            if (TargetFillClip) { TargetFillClip->SetWidthOverride(TargetFillWidth * ChargeFraction(Charges, Max)); }
-        }
     }
-    else { TargetBoxRoot->SetVisibility(ESlateVisibility::Collapsed); }
+    AActor* CombatTarget = Cast<ASFPlayerController>(Controller) ? Cast<ASFPlayerController>(Controller)->GetSelectedCombatTarget() : nullptr;
+    int32 Health = 0, MaxHealth = 0;
+    FString Name;
+    if (const ASFPilotBoar* Boar = Cast<ASFPilotBoar>(CombatTarget))
+    { Health = Boar->Health(); MaxHealth = GetDefault<USFCombatPilotSettings>()->BoarHealth; Name = TEXT("Boar"); }
+    else if (const ASFTownsfolkNpc* Npc = Cast<ASFTownsfolkNpc>(CombatTarget))
+    { Health = Npc->Health(); MaxHealth = GetDefault<USFTownsfolkSettings>()->ResidentHealth; Name = Npc->Id(); }
+    TargetBoxRoot->SetVisibility(CombatTarget ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+    if (CombatTarget)
+    {
+        TargetName->SetText(FText::FromString(Name));
+        TargetCharges->SetText(FText::FromString(FString::Printf(TEXT("%d / %d HP"), Health, MaxHealth)));
+        if (TargetBar) { TargetBar->SetVisibility(ESlateVisibility::HitTestInvisible); }
+        if (TargetFillClip) { TargetFillClip->SetWidthOverride(TargetFillWidth * ChargeFraction(Health, MaxHealth)); }
+    }
     if (Context != ShownPrompt) { SetPrompts(Context); }
 }

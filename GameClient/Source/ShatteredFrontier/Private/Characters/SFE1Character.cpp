@@ -345,15 +345,23 @@ void ASFE1Character::CombatSetHealth(int32 Value)
 void ASFE1Character::PilotAttack()
 {
     if (!IsLocallyControlled()) { return; }
+    AActor* Selected = Cast<ASFPlayerController>(Controller) ? Cast<ASFPlayerController>(Controller)->GetSelectedCombatTarget() : nullptr;
+    if (ASFTownsfolkNpc* Npc = Cast<ASFTownsfolkNpc>(Selected))
+    {
+        if (USFTownsfolkHandoffComponent* Link = Controller->FindComponentByClass<USFTownsfolkHandoffComponent>())
+        { Link->ServerAttackSelectedNpc(Npc); }
+        return;
+    }
+    if (Selected) { if (PilotHealth > 0) { ServerPilotAttack(Selected); } return; }
     // A townsfolk resident in reach takes the swing (hand-off); otherwise it goes to the combat pilot.
     if (USFTownsfolkSubsystem* Town = GetWorld()->GetSubsystem<USFTownsfolkSubsystem>(); Town && Town->LocalAttack(this)) { return; }
-    if (PilotHealth > 0) { ServerPilotAttack(); }
+    if (PilotHealth > 0) { ServerPilotAttack(nullptr); }
 }
 
-void ASFE1Character::ServerPilotAttack_Implementation()
+void ASFE1Character::ServerPilotAttack_Implementation(AActor* SelectedCombatTarget)
 {
     if (auto* Mode = Cast<ASFGameMode>(GetWorld()->GetAuthGameMode()))
-    { Mode->TryPlayerAttack(this); }
+    { Mode->TryPlayerAttack(this, SelectedCombatTarget); }
 }
 
 void ASFE1Character::Interact()
