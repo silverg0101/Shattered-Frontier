@@ -17,6 +17,7 @@
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
 #include "Net/UnrealNetwork.h"
+#include "Quest/SFQuestPilotEvents.h"
 #include "UObject/ConstructorHelpers.h"
 #if SF_WITH_MINIMAL_INVENTORY
 #include "InventoryComponent.h"
@@ -680,6 +681,7 @@ void USFGatheringPilotComponent::TickComponent(float Delta, ELevelTick Type, FAc
         { Feedback.Node->State.FallingTree=Feedback.Node->HarvestVisuals->BeginTreeFall(Feedback.Node->State.Generation,ActiveVisualCut); }
     }
     ++Feedback.Node->State.Revision;
+    SFQuestPilotEvents::OnGathered().Broadcast(Cast<APlayerController>(GetOwner()),ActiveKind);
     Finish(ESFGatheringPilotPhase::Committed,bRefining ? ESFGatheringPilotResult::Refined : ESFGatheringPilotResult::Granted);
 }
 

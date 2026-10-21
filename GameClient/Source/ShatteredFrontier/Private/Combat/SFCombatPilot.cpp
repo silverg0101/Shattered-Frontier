@@ -19,6 +19,7 @@
 #include "Serialization/JsonSerializer.h"
 #include "TimerManager.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Quest/SFQuestPilotEvents.h"
 
 namespace
 {
@@ -451,6 +452,7 @@ int32 ASFCombatPilotGameMode::RewardKill(const FString& DeathId, const FVector& 
     const int32 Hides = SFCombatPilotRewards::HidesFor(RewardedDeaths, DeathId, bProtected, CapturedSettings->HidesPerBoar);
     AActor* Bag = IsValid(Killer) ? Killer->GetController() : nullptr;
     const bool bGranted = Hides > 0 && SFCombatPilotRewards::GrantHides(Bag, Hides);
+    if (Hides > 0) { SFQuestPilotEvents::OnBoarDefeated().Broadcast(Cast<APlayerController>(Bag), DeathId); }  // credited once per death
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_REWARD Death=%s Hides=%d Granted=%d Total=%d"),
         *DeathId, Hides, bGranted, SFCombatPilotRewards::CountHides(Bag));
     return bGranted ? Hides : 0;

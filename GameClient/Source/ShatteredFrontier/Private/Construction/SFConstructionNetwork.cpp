@@ -50,6 +50,7 @@
 #include "UnrealClient.h"
 #include "Net/UnrealNetwork.h"
 #include "PhysicsEngine/BodySetup.h"
+#include "Quest/SFQuestPilotEvents.h"
 
 namespace
 {
@@ -1391,6 +1392,7 @@ void ASFConstructionNetworkController::ServerPlaceLine_Implementation(FIntVector
     if (State && LastRequestFrame!=GFrameCounter)
     { LastRequestFrame=GFrameCounter; Result=State->PlaceLine(this,Start,End,ExpectedRevision,Shape,Rotation); }
     const uint64 Revision=State ? State->GetSnapshot().Revision : 0;
+    if (Result==ESFConstructionNetworkResult::Accepted) { SFQuestPilotEvents::OnStructurePlaced().Broadcast(this,Revision); }
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_LINE_RESULT Builder=%d Result=%d Revision=%llu Members=%d Collision=%d"),bBuilderRole,int32(Result),Revision,State ? State->GetSnapshot().Members.Num() : 0,State && State->HasCurrentCollision());
     ClientPlacementResult(Result,Revision);
 }
@@ -1457,6 +1459,7 @@ void ASFConstructionNetworkController::ProcessEdit(FIntVector Cell, uint64 Expec
         Result = State->Edit(this,Cell,ExpectedRevision,bRemove,Shape,Rotation);
     }
     const uint64 Revision = State ? State->GetSnapshot().Revision : 0;
+    if (!bRemove && Result==ESFConstructionNetworkResult::Accepted) { SFQuestPilotEvents::OnStructurePlaced().Broadcast(this,Revision); }
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_RESULT Builder=%d Result=%d Revision=%llu Members=%d Collision=%d Action=%s"),bBuilderRole,int32(Result),Revision,State ? State->GetSnapshot().Members.Num() : 0,State && State->HasCurrentCollision(),bRemove ? TEXT("Remove") : TEXT("Place"));
     ClientPlacementResult(Result,Revision);
 }
