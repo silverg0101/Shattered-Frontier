@@ -8,8 +8,10 @@ from pathlib import Path
 import urllib.request,json,hashlib,concurrent.futures
 ROOT=Path(__file__).resolve().parent/'Sources';ROOT.mkdir(exist_ok=True)
 MODELS=['pine_tree_01','pine_sapling_medium','tree_small_02','boulder_01','namaqualand_boulder_02','namaqualand_boulder_03','namaqualand_boulder_04',
-        'coast_land_rocks_02','coast_land_rocks_03','coast_land_rocks_04','rock_face_01','rock_face_02','moss_01','namaqualand_boulder_05','namaqualand_boulder_06','coast_rocks_05']
-SCANS=['pine_bark','rock_08','rock_3','rock_surface','marble_rock_01','rock_boulder_dry','mossy_rock','forest_ground_04','japanese_hackberry_bark','brown_mud_02','rocky_trail']
+        'coast_land_rocks_02','coast_land_rocks_03','coast_land_rocks_04','rock_face_01','rock_face_02','moss_01','namaqualand_boulder_05','namaqualand_boulder_06','coast_rocks_05',
+        'grass_medium_01','grass_medium_02']
+NEW_SCANS=['grass_ground','park_dirt','forest_leaves_03','cobblestone_large_01','brown_mud_03','aerial_grass_rock']
+SCANS=['pine_bark','rock_08','rock_3','rock_surface','marble_rock_01','rock_boulder_dry','mossy_rock','forest_ground_04','japanese_hackberry_bark','brown_mud_02','rocky_trail']+NEW_SCANS
 def get(url):
     with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'GreenlandsEnvironment/1.0'}),timeout=300) as r:return r.read()
 def download(pair):
@@ -25,7 +27,8 @@ for asset in MODELS+SCANS:
     if asset in MODELS:
         entry=files['gltf']['2k']['gltf'];items=[(folder/(asset+'.gltf'),entry)]+[(folder/n,i) for n,i in entry.get('include',{}).items()]
     else:
-        items=[(folder/(asset+'_'+c+'.jpg'),files[c]['2k']['jpg']) for c in ('Diffuse','nor_gl','Rough','Displacement') if c in files]
+        channels=('Diffuse','nor_gl','Displacement','arm') if asset in NEW_SCANS else ('Diffuse','nor_gl','Rough','Displacement','arm')
+        items=[(folder/(asset+'_'+c+'.jpg'),files[c]['2k']['jpg']) for c in channels if c in files]
     jobs+=items
     manifest.append(dict(asset=asset,kind='model' if asset in MODELS else 'scan',page='https://polyhaven.com/a/'+asset,license='CC0-1.0',license_url='https://polyhaven.com/license',author=meta.get('authors',{}),
         physical_size_mm=meta.get('dimensions'),files=[dict(file=p.relative_to(ROOT).as_posix(),url=i['url'],md5=i['md5'],bytes=i['size']) for p,i in items]))

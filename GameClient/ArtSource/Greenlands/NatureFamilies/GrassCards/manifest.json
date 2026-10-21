@@ -1,0 +1,158 @@
+{
+  "schema": "gfx02-grass-cards-v1",
+  "source": "Poly Haven CC0",
+  "atlas_px": [
+    2048,
+    1024
+  ],
+  "tile_px": [
+    512,
+    512
+  ],
+  "cards": [
+    {
+      "slot": 0,
+      "mesh": "SM_GN_GrassCard_00",
+      "source_asset": "grass_medium_01",
+      "source_object": "grass_medium_01_tall_b_LOD0",
+      "source_triangles": 310,
+      "dimensions_metres": [
+        0.14994847774505615,
+        0.13478967547416687,
+        0.28566300868988037
+      ],
+      "screen_sizes": [
+        1.0,
+        0.35,
+        0.12
+      ],
+      "nanite": false,
+      "collision": false,
+      "lod_triangles": [
+        36,
+        12,
+        4
+      ]
+    },
+    {
+      "slot": 1,
+      "mesh": "SM_GN_GrassCard_01",
+      "source_asset": "grass_medium_01",
+      "source_object": "grass_medium_01_tall_c_LOD0",
+      "source_triangles": 340,
+      "dimensions_metres": [
+        0.1530308723449707,
+        0.1281569004058838,
+        0.2362561821937561
+      ],
+      "screen_sizes": [
+        1.0,
+        0.35,
+        0.12
+      ],
+      "nanite": false,
+      "collision": false,
+      "lod_triangles": [
+        36,
+        12,
+        4
+      ]
+    },
+    {
+      "slot": 2,
+      "mesh": "SM_GN_GrassCard_02",
+      "source_asset": "grass_medium_01",
+      "source_object": "grass_medium_01_small_b_LOD0",
+      "source_triangles": 653,
+      "dimensions_metres": [
+        0.16595670580863953,
+        0.18989211320877075,
+        0.09989527612924576
+      ],
+      "screen_sizes": [
+        1.0,
+        0.35,
+        0.12
+      ],
+      "nanite": false,
+      "collision": false,
+      "lod_triangles": [
+        36,
+        12,
+        4
+      ]
+    },
+    {
+      "slot": 3,
+      "mesh": "SM_GN_GrassCard_03",
+      "source_asset": "grass_medium_01",
+      "source_object": "grass_medium_01_small_a_LOD0",
+      "source_triangles": 833,
+      "dimensions_metres": [
+        0.1848401129245758,
+        0.1623130440711975,
+        0.14042668044567108
+      ],
+      "screen_sizes": [
+        1.0,
+        0.35,
+        0.12
+      ],
+      "nanite": false,
+      "collision": false,
+      "lod_triangles": [
+        36,
+        12,
+        4
+      ]
+    },
+    {
+      "slot": 4,
+      "mesh": "SM_GN_GrassCard_04",
+      "source_asset": "grass_medium_02",
+      "source_object": "grass_medium_02_e",
+      "source_triangles": 1664,
+      "dimensions_metres": [
+        0.3555693030357361,
+        0.43324655294418335,
+        0.40323612093925476
+      ],
+      "screen_sizes": [
+        1.0,
+        0.35,
+        0.12
+      ],
+      "nanite": false,
+      "collision": false,
+      "lod_triangles": [
+        36,
+        12,
+        4
+      ]
+    },
+    {
+      "slot": 5,
+      "mesh": "SM_GN_GrassCard_05",
+      "source_asset": "grass_medium_02",
+      "source_object": "grass_medium_02_d",
+      "source_triangles": 2489,
+      "dimensions_metres": [
+        0.3173760771751404,
+        0.36192572116851807,
+        0.260376513004303
+      ],
+      "screen_sizes": [
+        1.0,
+        0.35,
+        0.12
+      ],
+      "nanite": false,
+      "collision": false,
+      "lod_triangles": [
+        36,
+        12,
+        4
+      ]
+    }
+  ]
+}

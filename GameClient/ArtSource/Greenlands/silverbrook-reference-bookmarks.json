@@ -33,6 +33,14 @@
       "look_xy_m": [520.7, 119.4],
       "look_height_m": 0.05,
       "fov_deg": 65
+    },
+    {
+      "name": "05-market-square",
+      "xy_m": [0, -30],
+      "eye_height_m": 1.7,
+      "look_xy_m": [35, -65],
+      "look_height_m": 3,
+      "fov_deg": 70
     }
   ]
 }

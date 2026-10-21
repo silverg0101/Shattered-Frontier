@@ -1,0 +1,18 @@
+{
+  "schema": "gfx02-landscape-layers-v1",
+  "units": {"tile": "m", "tint": "linear RGB multiplier", "saturation": "multiplier"},
+  "bounds": {"tile_m": [0.1, 100.0], "tint": [0.3, 1.2], "saturation": [0.0, 2.0]},
+  "effective_time": "next Silverbrook landscape material build",
+  "edit_permission": "content author through reviewed profile change",
+  "layers": [
+    {"layer": "Grass", "poly_haven_id": "grass_ground", "tile_m": 2.51, "tint": [1.0, 1.0, 1.0], "saturation": 1.0, "blend": "Weight", "grass_type": "LGT_Grass"},
+    {"layer": "Meadow", "poly_haven_id": "park_dirt", "tile_m": 3.0, "tint": [1.0, 1.0, 1.0], "saturation": 1.0, "blend": "Weight", "grass_type": "LGT_Meadow"},
+    {"layer": "ForestFloor", "poly_haven_id": "forest_ground_04", "tile_m": 3.15, "tint": [1.0, 1.0, 1.0], "saturation": 1.0, "blend": "Weight", "grass_type": "LGT_ForestFloor", "secondary": {"poly_haven_id": "forest_leaves_03", "tile_m": 2.3, "macro_mask": [0.45, 0.60]}},
+    {"layer": "Cobble", "poly_haven_id": "cobblestone_large_01", "tile_m": 4.0, "tint": [1.0, 1.0, 1.0], "saturation": 1.0, "blend": "Height", "grass_type": null},
+    {"layer": "PackedEarth", "poly_haven_id": "rocky_trail", "tile_m": 2.0, "tint": [1.0, 1.0, 1.0], "saturation": 1.0, "blend": "Height", "grass_type": "LGT_PackedEarth"},
+    {"layer": "Rock", "poly_haven_id": "marble_rock_01", "tile_m": 2.0, "tint": [1.0, 1.0, 1.0], "saturation": 1.0, "blend": "Height", "grass_type": null, "mapping": "triplanar", "secondary": {"poly_haven_id": "mossy_rock", "tile_m": 3.0}},
+    {"layer": "Mud", "poly_haven_id": "brown_mud_02", "tile_m": 1.3, "tint": [1.0, 1.0, 1.0], "saturation": 1.0, "blend": "Weight", "grass_type": "LGT_Mud"},
+    {"layer": "Field", "poly_haven_id": "brown_mud_03", "tile_m": 1.3, "tint": [1.0, 1.0, 1.0], "saturation": 1.0, "blend": "Weight", "grass_type": null, "crop_row_period_m": 0.75}
+  ],
+  "macro_poly_haven_id": "aerial_grass_rock"
+}

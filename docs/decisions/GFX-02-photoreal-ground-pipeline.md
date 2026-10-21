@@ -211,3 +211,12 @@ Later passes that depend on this: the forest density pass (tree and shrub `per_h
 - **VSM and grass:** cards cast no shadow and disable WPO at 25 m; if p95 still misses, the first lever is `LGT_Grass` density 220 → 160 and end cull 55 → 45, declared in the look profile, never a console override.
 - **Heightfield fidelity:** the ground is still a 5 m heightfield with 0.7 m relief; the landscape adds resolution to materials and grass, not to the shape. Finer relief is a `Heightfield` change (spacing 2.5 m) and a separate decision.
 - **Licensing:** every new asset is Poly Haven CC0 with hash provenance; nothing from Fab or Megascans is referenced.
+
+## Job log
+
+### J0 — 2026-10-21
+
+- Added the six new scan IDs and both grass model IDs to the hash-verified Poly Haven downloader, with `arm` for the new scans and no new `Rough` downloads. The eight-layer JSON profile uses the specified IDs, tiles, blends and grass type names. Source files remain locally restorable from `Sources/provenance.json`, following the existing source-file Git convention.
+- Built six 512 px diffuse and normal tiles, two 2048 × 1024 atlases, and six card meshes with 36/12/4-triangle LODs. Technical evidence and concept-left/live-right captures are in `docs/evidence/graphics/2026-10-21-gfx02-J0/`.
+- **Deviations:** The specified LOD1 "1 × 1" grid on three quads mathematically makes 6 triangles, while the same sentence requires 12. LOD1 uses 2 × 1 subdivisions per plane to meet the numeric 12-triangle gate. Blender 5.1's FBX exporter did not supply an Unreal `LODGroup` structure for these generated meshes, so each card has explicit `_LOD0`, `_LOD1`, `_LOD2` FBX files with the specified screen sizes in `GrassCards/manifest.json`; the J3 Unreal import must attach LOD1 and LOD2 and assign the final grass-card material. J0's Blender render is the live side of the six-card comparison; the five `-game` views are baseline map captures because J0 does not place cards in the level.
+- Independent visual review is pending; no builder verdict is recorded here.
