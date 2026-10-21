@@ -12,6 +12,29 @@ using Pb = ShatteredFrontier.InventoryLedger.V1;
 static string Env(string name) => Environment.GetEnvironmentVariable(name) ?? "";
 static void Refuse(string message) { Console.Error.WriteLine("INVENTORY_LEDGER_HOST_REFUSED " + message); Environment.Exit(2); }
 
+// Fixture seed (runners only): `InventoryLedger.Host seed <containerId> <ownerId> <capacity> <definitionId> <quantity> <operationId>`
+// ensures the character backpack and grants items through the same gRPC contract, so a test character can afford its builds.
+if (args.Length == 7 && args[0] == "seed")
+{
+    if (!int.TryParse(Env("INVENTORY_LEDGER_PORT"), NumberStyles.None, CultureInfo.InvariantCulture, out var seedPort) || seedPort is < 1 or > 65535)
+        Refuse("INVENTORY_LEDGER_PORT must be 1-65535.");
+    var seedToken = Env("SF_INVENTORY_LEDGER_TOKEN");
+    if (seedToken.Length == 0) Refuse("SF_INVENTORY_LEDGER_TOKEN is required.");
+    using var channel = Grpc.Net.Client.GrpcChannel.ForAddress($"http://127.0.0.1:{seedPort}");
+    var headers = new Metadata { { "authorization", "Bearer " + seedToken } };
+    var client = new Pb.InventoryLedger.InventoryLedgerClient(channel);
+    try
+    {
+        var view = client.EnsureContainer(new Pb.EnsureContainerRequest { Spec = new Pb.ContainerSpec { Id = args[1], OwnerKind = Pb.OwnerKind.Character,
+            OwnerId = args[2], Kind = Pb.ContainerKind.Backpack, Capacity = int.Parse(args[3], CultureInfo.InvariantCulture) } }, headers, deadline: DateTime.UtcNow.AddSeconds(5));
+        client.Grant(new Pb.GrantRequest { OperationId = args[6], ContainerId = args[1], ExpectedRevision = view.Revision, DefinitionId = args[4],
+            Quantity = long.Parse(args[5], CultureInfo.InvariantCulture), Source = "fixture_seed", CausationId = args[6] }, headers, deadline: DateTime.UtcNow.AddSeconds(5));
+        Console.Out.WriteLine($"INVENTORY_LEDGER_SEEDED container={args[1]} item={args[4]} quantity={args[5]}");
+        return 0;
+    }
+    catch (RpcException ex) { Console.Out.WriteLine($"INVENTORY_LEDGER_SEED_FAILED code={ex.StatusCode}"); return 3; }
+}
+
 // Client probe: `InventoryLedger.Host get <containerId>` prints the container view and exits.
 if (args.Length == 2 && args[0] == "get")
 {

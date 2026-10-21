@@ -39,6 +39,22 @@ bool USFBackpackComponent::Initialize(APlayerController* Controller)
     return true;
 }
 
+bool USFBackpackComponent::IsValidDevName(const FString& Name)
+{
+    if (Name.IsEmpty() || Name.Len() > 24) { return false; }
+    for (TCHAR C : Name) { if (!((C >= 'a' && C <= 'z') || (C >= '0' && C <= '9') || C == '_')) { return false; } }
+    return true;
+}
+
+void USFBackpackComponent::AssignDevIdentity(APlayerController* Controller, const FString& Name)
+{
+    USFBackpackComponent* Backpack = IsValidDevName(Name) ? FindOrCreate(Controller) : nullptr;
+    if (!Backpack || Backpack->bIdentityUsed) { return; }
+    Backpack->DevName = Name;
+    Backpack->BindIdentity();
+    UE_LOG(LogTemp, Display, TEXT("DEV_IDENTITY_BOUND Character=%s Container=%s"), *Backpack->CharacterId, *Backpack->ContainerId);
+}
+
 void USFBackpackComponent::BindIdentity()
 {
     // Development key per server connection (INT-03 6.3); character identity arrives with DEC-04. A controller gets its
@@ -46,7 +62,8 @@ void USFBackpackComponent::BindIdentity()
     if (bIdentityUsed) { return; }
     const auto* Controller = Cast<APlayerController>(GetOwner());
     const UNetConnection* Connection = Controller ? Controller->GetNetConnection() : nullptr;
-    ContainerId = Connection ? FString::Printf(TEXT("ctn_dev_%u"), Connection->GetConnectionHandle().GetParentConnectionId()) : FString(TEXT("ctn_dev_local"));
+    ContainerId = !DevName.IsEmpty() ? TEXT("ctn_dev_") + DevName
+        : Connection ? FString::Printf(TEXT("ctn_dev_%u"), Connection->GetConnectionHandle().GetParentConnectionId()) : FString(TEXT("ctn_dev_local"));
     CharacterId = TEXT("chr_dev_") + ContainerId.RightChop(8);
 }
 

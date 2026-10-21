@@ -29,6 +29,8 @@ static const char* Housing_method_names[] = {
   "/sf.housing.v1.Housing/Place",
   "/sf.housing.v1.Housing/Remove",
   "/sf.housing.v1.Housing/GetClaim",
+  "/sf.housing.v1.Housing/ListStructures",
+  "/sf.housing.v1.Housing/Grant",
 };
 
 std::unique_ptr< Housing::Stub> Housing::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -42,6 +44,8 @@ Housing::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, c
   , rpcmethod_Place_(Housing_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_Remove_(Housing_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_GetClaim_(Housing_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ListStructures_(Housing_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_Grant_(Housing_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status Housing::Stub::ClaimPlot(::grpc::ClientContext* context, const ::sf::housing::v1::ClaimPlotRequest& request, ::sf::housing::v1::ClaimReply* response) {
@@ -136,6 +140,52 @@ void Housing::Stub::async::GetClaim(::grpc::ClientContext* context, const ::sf::
   return result;
 }
 
+::grpc::Status Housing::Stub::ListStructures(::grpc::ClientContext* context, const ::sf::housing::v1::ListStructuresRequest& request, ::sf::housing::v1::ListStructuresReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::housing::v1::ListStructuresRequest, ::sf::housing::v1::ListStructuresReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ListStructures_, context, request, response);
+}
+
+void Housing::Stub::async::ListStructures(::grpc::ClientContext* context, const ::sf::housing::v1::ListStructuresRequest* request, ::sf::housing::v1::ListStructuresReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::housing::v1::ListStructuresRequest, ::sf::housing::v1::ListStructuresReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ListStructures_, context, request, response, std::move(f));
+}
+
+void Housing::Stub::async::ListStructures(::grpc::ClientContext* context, const ::sf::housing::v1::ListStructuresRequest* request, ::sf::housing::v1::ListStructuresReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ListStructures_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ListStructuresReply>* Housing::Stub::PrepareAsyncListStructuresRaw(::grpc::ClientContext* context, const ::sf::housing::v1::ListStructuresRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::housing::v1::ListStructuresReply, ::sf::housing::v1::ListStructuresRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ListStructures_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ListStructuresReply>* Housing::Stub::AsyncListStructuresRaw(::grpc::ClientContext* context, const ::sf::housing::v1::ListStructuresRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncListStructuresRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status Housing::Stub::Grant(::grpc::ClientContext* context, const ::sf::housing::v1::GrantRequest& request, ::sf::housing::v1::ClaimReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::housing::v1::GrantRequest, ::sf::housing::v1::ClaimReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_Grant_, context, request, response);
+}
+
+void Housing::Stub::async::Grant(::grpc::ClientContext* context, const ::sf::housing::v1::GrantRequest* request, ::sf::housing::v1::ClaimReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::housing::v1::GrantRequest, ::sf::housing::v1::ClaimReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_Grant_, context, request, response, std::move(f));
+}
+
+void Housing::Stub::async::Grant(::grpc::ClientContext* context, const ::sf::housing::v1::GrantRequest* request, ::sf::housing::v1::ClaimReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_Grant_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ClaimReply>* Housing::Stub::PrepareAsyncGrantRaw(::grpc::ClientContext* context, const ::sf::housing::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::housing::v1::ClaimReply, ::sf::housing::v1::GrantRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_Grant_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ClaimReply>* Housing::Stub::AsyncGrantRaw(::grpc::ClientContext* context, const ::sf::housing::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncGrantRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 Housing::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Housing_method_names[0],
@@ -177,6 +227,26 @@ Housing::Service::Service() {
              ::sf::housing::v1::ClaimReply* resp) {
                return service->GetClaim(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Housing_method_names[4],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Housing::Service, ::sf::housing::v1::ListStructuresRequest, ::sf::housing::v1::ListStructuresReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Housing::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::housing::v1::ListStructuresRequest* req,
+             ::sf::housing::v1::ListStructuresReply* resp) {
+               return service->ListStructures(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Housing_method_names[5],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Housing::Service, ::sf::housing::v1::GrantRequest, ::sf::housing::v1::ClaimReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Housing::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::housing::v1::GrantRequest* req,
+             ::sf::housing::v1::ClaimReply* resp) {
+               return service->Grant(ctx, req, resp);
+             }, this)));
 }
 
 Housing::Service::~Service() {
@@ -204,6 +274,20 @@ Housing::Service::~Service() {
 }
 
 ::grpc::Status Housing::Service::GetClaim(::grpc::ServerContext* context, const ::sf::housing::v1::GetClaimRequest* request, ::sf::housing::v1::ClaimReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Housing::Service::ListStructures(::grpc::ServerContext* context, const ::sf::housing::v1::ListStructuresRequest* request, ::sf::housing::v1::ListStructuresReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Housing::Service::Grant(::grpc::ServerContext* context, const ::sf::housing::v1::GrantRequest* request, ::sf::housing::v1::ClaimReply* response) {
   (void) context;
   (void) request;
   (void) response;

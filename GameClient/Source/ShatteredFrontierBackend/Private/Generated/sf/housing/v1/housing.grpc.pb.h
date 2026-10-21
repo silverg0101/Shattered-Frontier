@@ -66,6 +66,20 @@ class Housing final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::housing::v1::ClaimReply>> PrepareAsyncGetClaim(::grpc::ClientContext* context, const ::sf::housing::v1::GetClaimRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::housing::v1::ClaimReply>>(PrepareAsyncGetClaimRaw(context, request, cq));
     }
+    virtual ::grpc::Status ListStructures(::grpc::ClientContext* context, const ::sf::housing::v1::ListStructuresRequest& request, ::sf::housing::v1::ListStructuresReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::housing::v1::ListStructuresReply>> AsyncListStructures(::grpc::ClientContext* context, const ::sf::housing::v1::ListStructuresRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::housing::v1::ListStructuresReply>>(AsyncListStructuresRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::housing::v1::ListStructuresReply>> PrepareAsyncListStructures(::grpc::ClientContext* context, const ::sf::housing::v1::ListStructuresRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::housing::v1::ListStructuresReply>>(PrepareAsyncListStructuresRaw(context, request, cq));
+    }
+    virtual ::grpc::Status Grant(::grpc::ClientContext* context, const ::sf::housing::v1::GrantRequest& request, ::sf::housing::v1::ClaimReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::housing::v1::ClaimReply>> AsyncGrant(::grpc::ClientContext* context, const ::sf::housing::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::housing::v1::ClaimReply>>(AsyncGrantRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::housing::v1::ClaimReply>> PrepareAsyncGrant(::grpc::ClientContext* context, const ::sf::housing::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::housing::v1::ClaimReply>>(PrepareAsyncGrantRaw(context, request, cq));
+    }
     class async_interface {
      public:
       virtual ~async_interface() {}
@@ -77,6 +91,10 @@ class Housing final {
       virtual void Remove(::grpc::ClientContext* context, const ::sf::housing::v1::RemoveRequest* request, ::sf::housing::v1::PlacementReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void GetClaim(::grpc::ClientContext* context, const ::sf::housing::v1::GetClaimRequest* request, ::sf::housing::v1::ClaimReply* response, std::function<void(::grpc::Status)>) = 0;
       virtual void GetClaim(::grpc::ClientContext* context, const ::sf::housing::v1::GetClaimRequest* request, ::sf::housing::v1::ClaimReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void ListStructures(::grpc::ClientContext* context, const ::sf::housing::v1::ListStructuresRequest* request, ::sf::housing::v1::ListStructuresReply* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ListStructures(::grpc::ClientContext* context, const ::sf::housing::v1::ListStructuresRequest* request, ::sf::housing::v1::ListStructuresReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void Grant(::grpc::ClientContext* context, const ::sf::housing::v1::GrantRequest* request, ::sf::housing::v1::ClaimReply* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void Grant(::grpc::ClientContext* context, const ::sf::housing::v1::GrantRequest* request, ::sf::housing::v1::ClaimReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -90,6 +108,10 @@ class Housing final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::housing::v1::PlacementReply>* PrepareAsyncRemoveRaw(::grpc::ClientContext* context, const ::sf::housing::v1::RemoveRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::housing::v1::ClaimReply>* AsyncGetClaimRaw(::grpc::ClientContext* context, const ::sf::housing::v1::GetClaimRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::housing::v1::ClaimReply>* PrepareAsyncGetClaimRaw(::grpc::ClientContext* context, const ::sf::housing::v1::GetClaimRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::housing::v1::ListStructuresReply>* AsyncListStructuresRaw(::grpc::ClientContext* context, const ::sf::housing::v1::ListStructuresRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::housing::v1::ListStructuresReply>* PrepareAsyncListStructuresRaw(::grpc::ClientContext* context, const ::sf::housing::v1::ListStructuresRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::housing::v1::ClaimReply>* AsyncGrantRaw(::grpc::ClientContext* context, const ::sf::housing::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::housing::v1::ClaimReply>* PrepareAsyncGrantRaw(::grpc::ClientContext* context, const ::sf::housing::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -122,6 +144,20 @@ class Housing final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ClaimReply>> PrepareAsyncGetClaim(::grpc::ClientContext* context, const ::sf::housing::v1::GetClaimRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ClaimReply>>(PrepareAsyncGetClaimRaw(context, request, cq));
     }
+    ::grpc::Status ListStructures(::grpc::ClientContext* context, const ::sf::housing::v1::ListStructuresRequest& request, ::sf::housing::v1::ListStructuresReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ListStructuresReply>> AsyncListStructures(::grpc::ClientContext* context, const ::sf::housing::v1::ListStructuresRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ListStructuresReply>>(AsyncListStructuresRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ListStructuresReply>> PrepareAsyncListStructures(::grpc::ClientContext* context, const ::sf::housing::v1::ListStructuresRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ListStructuresReply>>(PrepareAsyncListStructuresRaw(context, request, cq));
+    }
+    ::grpc::Status Grant(::grpc::ClientContext* context, const ::sf::housing::v1::GrantRequest& request, ::sf::housing::v1::ClaimReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ClaimReply>> AsyncGrant(::grpc::ClientContext* context, const ::sf::housing::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ClaimReply>>(AsyncGrantRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ClaimReply>> PrepareAsyncGrant(::grpc::ClientContext* context, const ::sf::housing::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ClaimReply>>(PrepareAsyncGrantRaw(context, request, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
@@ -133,6 +169,10 @@ class Housing final {
       void Remove(::grpc::ClientContext* context, const ::sf::housing::v1::RemoveRequest* request, ::sf::housing::v1::PlacementReply* response, ::grpc::ClientUnaryReactor* reactor) override;
       void GetClaim(::grpc::ClientContext* context, const ::sf::housing::v1::GetClaimRequest* request, ::sf::housing::v1::ClaimReply* response, std::function<void(::grpc::Status)>) override;
       void GetClaim(::grpc::ClientContext* context, const ::sf::housing::v1::GetClaimRequest* request, ::sf::housing::v1::ClaimReply* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void ListStructures(::grpc::ClientContext* context, const ::sf::housing::v1::ListStructuresRequest* request, ::sf::housing::v1::ListStructuresReply* response, std::function<void(::grpc::Status)>) override;
+      void ListStructures(::grpc::ClientContext* context, const ::sf::housing::v1::ListStructuresRequest* request, ::sf::housing::v1::ListStructuresReply* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void Grant(::grpc::ClientContext* context, const ::sf::housing::v1::GrantRequest* request, ::sf::housing::v1::ClaimReply* response, std::function<void(::grpc::Status)>) override;
+      void Grant(::grpc::ClientContext* context, const ::sf::housing::v1::GrantRequest* request, ::sf::housing::v1::ClaimReply* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -152,10 +192,16 @@ class Housing final {
     ::grpc::ClientAsyncResponseReader< ::sf::housing::v1::PlacementReply>* PrepareAsyncRemoveRaw(::grpc::ClientContext* context, const ::sf::housing::v1::RemoveRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ClaimReply>* AsyncGetClaimRaw(::grpc::ClientContext* context, const ::sf::housing::v1::GetClaimRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ClaimReply>* PrepareAsyncGetClaimRaw(::grpc::ClientContext* context, const ::sf::housing::v1::GetClaimRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ListStructuresReply>* AsyncListStructuresRaw(::grpc::ClientContext* context, const ::sf::housing::v1::ListStructuresRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ListStructuresReply>* PrepareAsyncListStructuresRaw(::grpc::ClientContext* context, const ::sf::housing::v1::ListStructuresRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ClaimReply>* AsyncGrantRaw(::grpc::ClientContext* context, const ::sf::housing::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::housing::v1::ClaimReply>* PrepareAsyncGrantRaw(::grpc::ClientContext* context, const ::sf::housing::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_ClaimPlot_;
     const ::grpc::internal::RpcMethod rpcmethod_Place_;
     const ::grpc::internal::RpcMethod rpcmethod_Remove_;
     const ::grpc::internal::RpcMethod rpcmethod_GetClaim_;
+    const ::grpc::internal::RpcMethod rpcmethod_ListStructures_;
+    const ::grpc::internal::RpcMethod rpcmethod_Grant_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -167,6 +213,8 @@ class Housing final {
     virtual ::grpc::Status Place(::grpc::ServerContext* context, const ::sf::housing::v1::PlaceRequest* request, ::sf::housing::v1::PlacementReply* response);
     virtual ::grpc::Status Remove(::grpc::ServerContext* context, const ::sf::housing::v1::RemoveRequest* request, ::sf::housing::v1::PlacementReply* response);
     virtual ::grpc::Status GetClaim(::grpc::ServerContext* context, const ::sf::housing::v1::GetClaimRequest* request, ::sf::housing::v1::ClaimReply* response);
+    virtual ::grpc::Status ListStructures(::grpc::ServerContext* context, const ::sf::housing::v1::ListStructuresRequest* request, ::sf::housing::v1::ListStructuresReply* response);
+    virtual ::grpc::Status Grant(::grpc::ServerContext* context, const ::sf::housing::v1::GrantRequest* request, ::sf::housing::v1::ClaimReply* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_ClaimPlot : public BaseClass {
@@ -248,7 +296,47 @@ class Housing final {
       ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_ClaimPlot<WithAsyncMethod_Place<WithAsyncMethod_Remove<WithAsyncMethod_GetClaim<Service > > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_ListStructures : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_ListStructures() {
+      ::grpc::Service::MarkMethodAsync(4);
+    }
+    ~WithAsyncMethod_ListStructures() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListStructures(::grpc::ServerContext* /*context*/, const ::sf::housing::v1::ListStructuresRequest* /*request*/, ::sf::housing::v1::ListStructuresReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestListStructures(::grpc::ServerContext* context, ::sf::housing::v1::ListStructuresRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::housing::v1::ListStructuresReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_Grant : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_Grant() {
+      ::grpc::Service::MarkMethodAsync(5);
+    }
+    ~WithAsyncMethod_Grant() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Grant(::grpc::ServerContext* /*context*/, const ::sf::housing::v1::GrantRequest* /*request*/, ::sf::housing::v1::ClaimReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestGrant(::grpc::ServerContext* context, ::sf::housing::v1::GrantRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::housing::v1::ClaimReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_ClaimPlot<WithAsyncMethod_Place<WithAsyncMethod_Remove<WithAsyncMethod_GetClaim<WithAsyncMethod_ListStructures<WithAsyncMethod_Grant<Service > > > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_ClaimPlot : public BaseClass {
    private:
@@ -357,7 +445,61 @@ class Housing final {
     virtual ::grpc::ServerUnaryReactor* GetClaim(
       ::grpc::CallbackServerContext* /*context*/, const ::sf::housing::v1::GetClaimRequest* /*request*/, ::sf::housing::v1::ClaimReply* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_ClaimPlot<WithCallbackMethod_Place<WithCallbackMethod_Remove<WithCallbackMethod_GetClaim<Service > > > > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_ListStructures : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_ListStructures() {
+      ::grpc::Service::MarkMethodCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::housing::v1::ListStructuresRequest, ::sf::housing::v1::ListStructuresReply>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::housing::v1::ListStructuresRequest* request, ::sf::housing::v1::ListStructuresReply* response) { return this->ListStructures(context, request, response); }));}
+    void SetMessageAllocatorFor_ListStructures(
+        ::grpc::MessageAllocator< ::sf::housing::v1::ListStructuresRequest, ::sf::housing::v1::ListStructuresReply>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::housing::v1::ListStructuresRequest, ::sf::housing::v1::ListStructuresReply>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_ListStructures() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListStructures(::grpc::ServerContext* /*context*/, const ::sf::housing::v1::ListStructuresRequest* /*request*/, ::sf::housing::v1::ListStructuresReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ListStructures(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::housing::v1::ListStructuresRequest* /*request*/, ::sf::housing::v1::ListStructuresReply* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_Grant : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_Grant() {
+      ::grpc::Service::MarkMethodCallback(5,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::housing::v1::GrantRequest, ::sf::housing::v1::ClaimReply>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::housing::v1::GrantRequest* request, ::sf::housing::v1::ClaimReply* response) { return this->Grant(context, request, response); }));}
+    void SetMessageAllocatorFor_Grant(
+        ::grpc::MessageAllocator< ::sf::housing::v1::GrantRequest, ::sf::housing::v1::ClaimReply>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::housing::v1::GrantRequest, ::sf::housing::v1::ClaimReply>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_Grant() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Grant(::grpc::ServerContext* /*context*/, const ::sf::housing::v1::GrantRequest* /*request*/, ::sf::housing::v1::ClaimReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* Grant(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::housing::v1::GrantRequest* /*request*/, ::sf::housing::v1::ClaimReply* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_ClaimPlot<WithCallbackMethod_Place<WithCallbackMethod_Remove<WithCallbackMethod_GetClaim<WithCallbackMethod_ListStructures<WithCallbackMethod_Grant<Service > > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_ClaimPlot : public BaseClass {
@@ -423,6 +565,40 @@ class Housing final {
     }
     // disable synchronous version of this method
     ::grpc::Status GetClaim(::grpc::ServerContext* /*context*/, const ::sf::housing::v1::GetClaimRequest* /*request*/, ::sf::housing::v1::ClaimReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_ListStructures : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_ListStructures() {
+      ::grpc::Service::MarkMethodGeneric(4);
+    }
+    ~WithGenericMethod_ListStructures() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListStructures(::grpc::ServerContext* /*context*/, const ::sf::housing::v1::ListStructuresRequest* /*request*/, ::sf::housing::v1::ListStructuresReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_Grant : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_Grant() {
+      ::grpc::Service::MarkMethodGeneric(5);
+    }
+    ~WithGenericMethod_Grant() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Grant(::grpc::ServerContext* /*context*/, const ::sf::housing::v1::GrantRequest* /*request*/, ::sf::housing::v1::ClaimReply* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -505,6 +681,46 @@ class Housing final {
     }
     void RequestGetClaim(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_ListStructures : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_ListStructures() {
+      ::grpc::Service::MarkMethodRaw(4);
+    }
+    ~WithRawMethod_ListStructures() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListStructures(::grpc::ServerContext* /*context*/, const ::sf::housing::v1::ListStructuresRequest* /*request*/, ::sf::housing::v1::ListStructuresReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestListStructures(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_Grant : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_Grant() {
+      ::grpc::Service::MarkMethodRaw(5);
+    }
+    ~WithRawMethod_Grant() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Grant(::grpc::ServerContext* /*context*/, const ::sf::housing::v1::GrantRequest* /*request*/, ::sf::housing::v1::ClaimReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestGrant(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -593,6 +809,50 @@ class Housing final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* GetClaim(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_ListStructures : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_ListStructures() {
+      ::grpc::Service::MarkMethodRawCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ListStructures(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_ListStructures() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListStructures(::grpc::ServerContext* /*context*/, const ::sf::housing::v1::ListStructuresRequest* /*request*/, ::sf::housing::v1::ListStructuresReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ListStructures(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_Grant : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_Grant() {
+      ::grpc::Service::MarkMethodRawCallback(5,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->Grant(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_Grant() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Grant(::grpc::ServerContext* /*context*/, const ::sf::housing::v1::GrantRequest* /*request*/, ::sf::housing::v1::ClaimReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* Grant(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -703,9 +963,63 @@ class Housing final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedGetClaim(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::housing::v1::GetClaimRequest,::sf::housing::v1::ClaimReply>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_ClaimPlot<WithStreamedUnaryMethod_Place<WithStreamedUnaryMethod_Remove<WithStreamedUnaryMethod_GetClaim<Service > > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_ListStructures : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_ListStructures() {
+      ::grpc::Service::MarkMethodStreamed(4,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::housing::v1::ListStructuresRequest, ::sf::housing::v1::ListStructuresReply>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::housing::v1::ListStructuresRequest, ::sf::housing::v1::ListStructuresReply>* streamer) {
+                       return this->StreamedListStructures(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_ListStructures() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status ListStructures(::grpc::ServerContext* /*context*/, const ::sf::housing::v1::ListStructuresRequest* /*request*/, ::sf::housing::v1::ListStructuresReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedListStructures(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::housing::v1::ListStructuresRequest,::sf::housing::v1::ListStructuresReply>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_Grant : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_Grant() {
+      ::grpc::Service::MarkMethodStreamed(5,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::housing::v1::GrantRequest, ::sf::housing::v1::ClaimReply>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::housing::v1::GrantRequest, ::sf::housing::v1::ClaimReply>* streamer) {
+                       return this->StreamedGrant(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_Grant() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status Grant(::grpc::ServerContext* /*context*/, const ::sf::housing::v1::GrantRequest* /*request*/, ::sf::housing::v1::ClaimReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedGrant(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::housing::v1::GrantRequest,::sf::housing::v1::ClaimReply>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_ClaimPlot<WithStreamedUnaryMethod_Place<WithStreamedUnaryMethod_Remove<WithStreamedUnaryMethod_GetClaim<WithStreamedUnaryMethod_ListStructures<WithStreamedUnaryMethod_Grant<Service > > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_ClaimPlot<WithStreamedUnaryMethod_Place<WithStreamedUnaryMethod_Remove<WithStreamedUnaryMethod_GetClaim<Service > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_ClaimPlot<WithStreamedUnaryMethod_Place<WithStreamedUnaryMethod_Remove<WithStreamedUnaryMethod_GetClaim<WithStreamedUnaryMethod_ListStructures<WithStreamedUnaryMethod_Grant<Service > > > > > > StreamedService;
 };
 
 }  // namespace v1

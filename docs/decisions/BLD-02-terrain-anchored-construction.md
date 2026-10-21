@@ -38,5 +38,29 @@ The sandbox keeps the identity anchor and its map-placed slab, so all existing c
 ## Known gaps and required follow-ups
 
 - **Dev claim location.** Resolved by step 2: the pad now stands on the first build plot. Real terrain levelling remains with DEC-03.
-- **Persistence.** A7 is required before the network path gains persistence: the snapshot header must store claim ID and anchor, and a mismatch against the claim record is a hard reject.
+- **Persistence.** Resolved by step 3 for the network path, below.
 - **Doors.** `PlaceDoor` returns `InvalidContext` in anchored claims until door envelopes, motion and approach volumes are translated by the anchor.
+
+## Step 3 design: real claims and housing persistence (A2 + A7, implemented 2026-10-21)
+
+- **Claim states.** There is one `ASFConstructionNetworkState` per claim, spawned at its anchor. All existing anchor, bounds and projection code stays per-actor. The server owns a `ClaimId → state` map. Construction RPCs gain a `ClaimId`; the server resolves the state, anchor and extent from its own record, and clients only send cells.
+- **Claiming.** The player stands on one of the zone record's build plots (area purpose `claims`) and requests a claim. The server calls `Housing.ClaimPlot` with the plot centre and side and a deterministic id (`clm_<zone>_<plot index>`). The service enforces territory, the protected town and spacing. The reply's owner and permission revision create the claim state, and the anchor Z comes from the level-pad rule.
+- **Persistence.** Structures live only in Housing. At server start and on admission, the server reads each known plot's claim (`GetClaim`) and its structures (`ListStructures`, a new RPC), then rebuilds the snapshot. The rebuilt state carries `ClaimId` and `AnchorCell`. A record whose geometry differs from the zone plot or anchor is hard-rejected, logged and not projected (A7 for the network path).
+- **Permissions.** Place and Remove send the actor's character id; the service rejects non-owners without a build grant (`PERMISSION_DENIED`). The client shows the refusal text. The owner grants with a new `Housing.Grant(claim, target, rights)` RPC, using the existing `ClaimRight` model and the `SaveClaim` store path.
+- **Identity across a restart.** Today a character is `chr_dev_<connection>`, which is not stable across server restarts. Proposed: a dev-only URL option `?SFDevCharacter=<name>` binds `chr_dev_<name>`, so a restarted server reconnects A to A's claim. This is a fixture until DEC-04.
+- **Acceptance.** A two-client runner: A claims, places and removes. The server restarts, while the hosts and database stay up. A's structures come back in place, B is refused on A's claim, and after A grants B, B's placement succeeds.
+
+**As built.**
+- The zone server spawns one slab and one state per build plot (`CONSTRUCTION_NETWORK_CLAIM_PLOT`). With Gameplay services on, it loads each plot with `GetClaim` and `ListStructures` (`HOUSING_CLAIM_LOADED`) and retries every 3 s while the service is unavailable.
+- Each structure stores its BLD-01 shape key and orientation index: index 0 is identity, then the catalog's lexicographic order. The restore rebuilds exact pieces. An unknown key, an out-of-range orientation, a cell outside the extent or a duplicate rejects the whole claim (`CONSTRUCTION_NETWORK_RESTORE_REJECTED`).
+- The first placement on an unclaimed plot claims it for the builder; `K` claims explicitly. `SFGrantBuild <name>` grants build rights through `Housing.Grant`.
+- `?SFDevCharacter=<name>` (`[a-z0-9_]{1,24}`) is honoured only on a development server started with `-SFDevIdentity` in the pilot world. Otherwise it logs `DEV_IDENTITY_IGNORED`. This is a fixture until DEC-04.
+- Services off, the plots still spawn, but claims are unavailable and the sandbox rules apply. Doors stay `InvalidContext` in anchored claims.
+
+**Evidence.** `tools/Test-ClaimHousing.ps1` runs on owned PostgreSQL with both hosts:
+1. Alpha claims, places a turned slab and a second piece, then removes the second piece.
+2. The server restarts while the hosts and database stay up.
+3. Alpha's content digest is unchanged.
+4. Bravo is refused (`PERMISSION_DENIED`) until alpha grants build rights, then builds.
+
+`tools/Test-QuestPilot.ps1 -Leg Plain` asserts that a services-off client receives all three plot states and keeps the inventory key.

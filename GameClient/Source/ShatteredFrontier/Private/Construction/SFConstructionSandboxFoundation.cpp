@@ -23,6 +23,9 @@ bool SFConstructionSandboxFoundation::MatchesKnownPlaneGeometry(const UWorld* Wo
     for (TActorIterator<AStaticMeshActor> It(const_cast<UWorld*>(World)); It; ++It)
     {
         if (!It->ActorHasTag(TEXT("SFConstructionSandboxFoundationV1"))) { continue; }
+        // Each claim has its own pad (BLD-02 A2): another claim's pad lies a whole plot (20 m) away and is skipped; anything
+        // tagged within this plot must be exactly this claim's foundation, so a duplicate or moved one still fails closed.
+        if (FVector::Dist2D(It->GetActorLocation(),FVector(0,0,-50)+AnchorOffsetCm) >= 2000.0) { continue; }
         const auto* Mesh = It->GetStaticMeshComponent();
         if (It->IsActorBeingDestroyed() || !Mesh || Mesh != It->GetRootComponent() || !Mesh->GetStaticMesh()
             || Mesh->GetStaticMesh()->GetPathName() != TEXT("/Engine/BasicShapes/Cube.Cube")

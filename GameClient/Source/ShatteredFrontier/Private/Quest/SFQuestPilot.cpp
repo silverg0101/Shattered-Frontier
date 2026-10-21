@@ -461,9 +461,11 @@ namespace
 
     const ASFConstructionNetworkState* FindClaim(UWorld* World)
     {
+        // The zone's first build plot (lowest claim id), the same on server and client.
         const ASFConstructionNetworkState* Claim = nullptr;
-        for (TActorIterator<ASFConstructionNetworkState> It(World); It; ++It) { Claim = *It; }
-        return Claim && Claim->GetAnchorCell() != FIntVector::ZeroValue ? Claim : nullptr;
+        for (TActorIterator<ASFConstructionNetworkState> It(World); It; ++It)
+        { if (It->GetAnchorCell() != FIntVector::ZeroValue && (!Claim || It->GetClaimId() < Claim->GetClaimId())) { Claim = *It; } }
+        return Claim;
     }
 
     bool HeldStill(const APawn* Pawn, FVector& LastPosition, double& StableSince, double Now)
@@ -562,7 +564,7 @@ void USFQuestPilotComponent::TickFullClient(double Now)
         {
             // The same placement RPC the cursor sends: shape 0 (cube) on the first claim cell.
             FullAttemptAt = Now;
-            Builder->ServerPlace(FIntVector(0, 0, 0), Claim->GetSnapshot().Revision, 0, uint8(SFConstructionGeometry::IdentityRotation()));
+            Builder->ServerPlace(FIntVector(0, 0, 0), Claim->GetSnapshot().Revision, 0, uint8(SFConstructionGeometry::IdentityRotation()), Claim->GetClaimId());
             UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_ACTION Objective=%s Input=ServerPlace"), *Key);
         }
         return;

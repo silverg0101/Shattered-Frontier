@@ -23,7 +23,7 @@ public:
     bool Validate(FString& Error) const;
 };
 
-enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, ClaimPlot, GetClaim, Place, Remove, Craft };
+enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant };
 // Ok; Rejected = a typed gameplay refusal (FAILED_PRECONDITION, PERMISSION_DENIED, ALREADY_EXISTS, INVALID_ARGUMENT, ...);
 // Unavailable = UNAVAILABLE / DEADLINE_EXCEEDED / CANCELLED, retried with the same operation id.
 enum class ESFGameplayStatus : uint8 { Ok, Rejected, Unavailable };
@@ -51,6 +51,8 @@ struct FSFGameplayRequest
     double CenterX = 0, CenterY = 0; int32 SideMetres = 0, PrepaidDays = 0;
     int64 ExpectedPermissionRevision = 0, ExpectedStructureRevision = 0, MaterialQuantity = 0;
     FIntVector Cell = FIntVector::ZeroValue;
+    FString GranteeId; int32 Rights = 0;  // Grant: the grantee and its ClaimRight bits (1 = build)
+    FString ShapeKey; int32 OrientationIndex = 0;  // Place: BLD-01 geometry identity
     // Crafting
     FString RecipeId; int32 Count = 1;
 };
@@ -70,7 +72,9 @@ struct FSFGameplayResponse
     FString ActiveStepId; TArray<FString> RewardBundleIds; TMap<FString, int32> Skills;
     TMap<FString, int64> GrantedItems;  // the quest payout lines committed with this receipt
     // Housing
-    FString State, StructureId; int64 StructureRevision = 0, Revision = 0, PermissionRevision = 0;
+    FString State, StructureId, OwnerId; int64 StructureRevision = 0, Revision = 0, PermissionRevision = 0;
+    struct FStructure { FString StructureId, ContentId; FIntVector Cell = FIntVector::ZeroValue; int64 Revision = 0; FString ShapeKey; int32 OrientationIndex = 0; };
+    TArray<FStructure> Structures;  // ListStructures; StructureRevision then holds the claim's structure revision
     // Crafting
     TMap<FString, int64> Changes;
 };

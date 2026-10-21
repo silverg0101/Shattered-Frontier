@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     # Gathering: two clients harvest in Silverbrook; Combat: one client kills a boar (quest started at the boar step).
-    [Parameter(Mandatory)][ValidateSet('Gathering','Combat','Unified','Full')][string]$Leg,
+    [Parameter(Mandatory)][ValidateSet('Gathering','Combat','Unified','Full','Plain')][string]$Leg,
     [string]$EngineRoot = 'C:\Program Files\Epic Games\UE_5.8',
     [ValidateRange(12000,65000)][int]$Port = 17871,
     [ValidateRange(60,600)][int]$TimeoutSeconds = 240,
@@ -67,6 +67,13 @@ try {
             Start-Sleep -Milliseconds 300
         }
         if ($moved.Count -ne 1) { throw "Expected exactly one client tracker at step 2, got $($moved.Count)." }
+    } elseif ($Leg -eq 'Plain') {
+        # Regression: a plain Silverbrook gathering client with every service setting off gets construction state for
+        # every claim plot and an enabled gathering pilot (what the inventory key needs), as before claims existed.
+        $server = Start-Owned 'server' ($silverbrook + '?game=/Script/ShatteredFrontier.SFConstructionNetworkGameMode') @('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox','-GatheringPilot')
+        Wait-Log $server 'server' 'GATHERING_PILOT_READY Source=ZoneRecord'
+        $client = Start-Owned 'client' ('127.0.0.1:'+$Port) @('-game','-PlainClientCheck')
+        Wait-Log $client 'client' 'PLAIN_CLIENT_READY States=3 Ready=3 GatheringEnabled=1 InventoryKeyAllowed=1'
     } elseif ($Leg -eq 'Full') {
         # One client walks the chain through its normal entry points (the server only places the pawn beside each target).
         # -Services: harvests, crafts, the wall, the boar reward and quest progress commit through InventoryLedger.Host and
@@ -77,7 +84,7 @@ try {
         $serverEnv = @{}
         if ($Services) {
             New-LedgerFixture $fx $repo $root
-            $schemas = @('CharacterState.Postgres/Schema.sql','Housing.Postgres/Schema.sql','Exchange.Postgres/Schema.sql','Housing.Postgres/Schema.Gameplay.sql') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_") -Raw }
+            $schemas = @('CharacterState.Postgres/Schema.sql','Housing.Postgres/Schema.sql','Exchange.Postgres/Schema.sql','Housing.Postgres/Schema.Gameplay.sql','Housing.Postgres/Schema.Geometry.sql') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_") -Raw }
             [void](Invoke-LedgerSql $fx ("SET ROLE ledger_owner;`n" + ($schemas -join "`n")) $fx.db)
             [void](Invoke-LedgerSql $fx ('GRANT USAGE ON SCHEMA character_state,housing,exchange TO ledger_svc; ' + (@('character_state','housing','exchange') | ForEach-Object { "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA $_ TO ledger_svc;" }) -join ' ') $fx.db)
             $gameplayProject = Join-Path $repo 'BackendServices/Gameplay.Host/Gameplay.Host.csproj'

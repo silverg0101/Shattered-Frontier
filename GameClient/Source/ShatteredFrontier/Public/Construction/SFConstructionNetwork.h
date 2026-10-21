@@ -19,8 +19,11 @@ enum class ESFConstructionPaletteAction : uint8;
 UENUM()
 enum class ESFConstructionNetworkResult : uint8
 {
-    Accepted, InvalidContext, PermissionDenied, Stale, InvalidCell, OutOfReach, Occluded, Occupied, ProjectionFailed, Unsupported, LimitReached, NotFound, Removed, InvalidPiece, DoorBlocked, DoorOpened, DoorClosed, DoorRemoved, InvalidLine, ServiceUnavailable
+    Accepted, InvalidContext, PermissionDenied, Stale, InvalidCell, OutOfReach, Occluded, Occupied, ProjectionFailed, Unsupported, LimitReached, NotFound, Removed, InvalidPiece, DoorBlocked, DoorOpened, DoorClosed, DoorRemoved, InvalidLine, ServiceUnavailable, Claimed, Granted
 };
+
+// A Housing structure mapped onto the catalog; out-of-range shape or rotation rejects the restore.
+struct FSFConstructionNetworkRestoredPiece { FIntVector Cell = FIntVector::ZeroValue; int32 Shape = INDEX_NONE; int32 Rotation = INDEX_NONE; };
 
 USTRUCT()
 struct FSFConstructionNetworkMember
@@ -102,6 +105,12 @@ public:
     bool HasExpectedTransform() const;
     // Server only, before the first edit; an anchor never changes while the claim has members.
     bool ConfigureAnchor(const FIntVector& Cell);
+    // BLD-02 A2: the Housing claim this state projects ("" in the sandbox). Set with the anchor at spawn.
+    const FString& GetClaimId() const { return ClaimId; }
+    void SetClaimId(const FString& InClaimId) { ClaimId=InClaimId; }
+    // A7: rebuild an empty claim from its Housing structures. Every cell must lie inside the claim extent, or nothing
+    // is projected (hard reject). Pieces come back as identity cubes until piece content is persisted (BLD-01).
+    bool RestoreFromHousing(const TArray<FSFConstructionNetworkRestoredPiece>& Pieces);
 private:
     ESFConstructionNetworkResult ValidateEditContext(ASFConstructionNetworkController* Controller, uint64 ExpectedRevision, const APawn*& OutPawn, const AActor*& OutFoundation) const;
     ESFConstructionNetworkResult ValidateDoorTarget(ASFConstructionNetworkController* Controller, FIntVector Origin, uint64 ExpectedRevision, int32& OutIndex) const;
@@ -122,6 +131,7 @@ private:
     UPROPERTY(Replicated) int32 MaximumDoors = 0;
     UPROPERTY(Replicated) int32 MaximumLineCells = 0;
     UPROPERTY(Replicated) FIntVector AnchorCell = FIntVector::ZeroValue;
+    UPROPERTY(Replicated) FString ClaimId;
     uint64 ProjectionRevision = 0;
 };
 
@@ -133,29 +143,42 @@ public:
     ASFConstructionNetworkGameMode();
     virtual void StartPlay() override;
     virtual void PostLogin(APlayerController* NewPlayer) override;
+    virtual FString InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal = TEXT("")) override;
     virtual void RestartPlayer(AController* NewPlayer) override;
     bool IsAdmitted() const;
     bool IsZoneGatheringWorld() const;
     bool IsBuilder(const ASFConstructionNetworkController* Controller) const;
     // Zone-world development claim (BLD-02); false in the sandbox. Centre in zone metres, as ClaimTerritory takes it.
-    bool GetDevClaim(FVector2D& OutCentreMetres, int32& OutSideMetres) const { OutCentreMetres=DevClaimCentreMetres; OutSideMetres=DevClaimSideMetres; return DevClaimSideMetres>0; }
-    // INT-04: with gameplay services on and a zone dev claim, placements and removals commit through Housing first.
+    // BLD-02 A2: one claim state per zone build plot (area purpose "claims"), owned through Housing; none in the sandbox.
     bool IsHousingActive() const;
-    void EnsureDevClaim(ASFConstructionNetworkController* ClaimOwner, TFunction<void(bool bReady)> Done);
-    void CommitHousing(ASFConstructionNetworkController* Controller, FIntVector Cell, bool bRemove, TFunction<void(bool bCommitted, const FString& Operation)> Done);
+    ASFConstructionNetworkState* FindClaimState(const FString& ClaimId) const;
+    // Housing.ClaimPlot for the controller's character; Claimed when it already owns the plot.
+    void ClaimPlot(ASFConstructionNetworkController* Controller, const FString& ClaimId, TFunction<void(ESFConstructionNetworkResult)> Done);
+    // Housing.Grant of build rights on the controller's claim to another character.
+    void GrantBuild(ASFConstructionNetworkController* Controller, const FString& ClaimId, const FString& TargetCharacterId, TFunction<void(ESFConstructionNetworkResult)> Done);
+    void CommitHousing(ASFConstructionNetworkController* Controller, const FString& ClaimId, FIntVector Cell, bool bRemove, int32 Shape, int32 Rotation, TFunction<void(ESFConstructionNetworkResult Result, const FString& Operation)> Done);
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     void SpawnFiniteDoorObstruction(const FIntVector& Origin, uint8 Yaw);
     void DiscardFiniteDoorObstruction();
 #endif
 private:
     int32 SpawnZoneGatheringNodes();
-    bool PrepareDevClaim(FIntVector& OutAnchor);  // Silverbrook development claim: a level pad on the first build plot
-    FVector2D DevClaimCentreMetres = FVector2D::ZeroVector;
-    int32 DevClaimSideMetres = 0;
-    FString DevClaimId;
-    int64 ClaimPermissionRevision = 0, ClaimStructureRevision = 0;
-    bool bClaimReady = false;
-    TMap<FIntVector, FString> HousingStructures;  // cell -> housing structure id, for removals
+    struct FClaimPlot
+    {
+        FString ClaimId;
+        FVector2D CentreMetres = FVector2D::ZeroVector;
+        int32 SideMetres = 20;
+        TWeakObjectPtr<ASFConstructionNetworkState> State;
+        bool bLoaded = false, bClaimed = false;  // loaded: Housing answered GetClaim (and ListStructures) since start
+        FString OwnerId;
+        int64 PermissionRevision = 0, StructureRevision = 0;
+        TMap<FIntVector, FString> Structures;  // cell -> housing structure id, for removals
+    };
+    TArray<FClaimPlot> ClaimPlots;
+    int32 PrepareClaimPlots();
+    void LoadClaims();
+    FClaimPlot* FindPlot(const FString& ClaimId);
+    FTimerHandle ClaimLoadTimer;
     void PlaceForZoneScenario(APawn* Pawn, bool bPrimary) const;
     TWeakObjectPtr<ASFConstructionNetworkController> Builder;
     bool bBuilderAssigned = false;
@@ -180,6 +203,9 @@ public:
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     void AssignRole(bool bBuilder);
     FString GetBuildStatusText() const;
+    // Console (development): grant chr_dev_<name> build rights on the plot the pawn stands in, or claim that plot.
+    UFUNCTION(Exec) void SFGrantBuild(const FString& DevName);
+    UFUNCTION(Exec) void SFClaimPlot();
 private:
     friend class USFQuestPilotComponent;  // dev scenario driver sends the same placement RPC the cursor does
     UPROPERTY(VisibleAnywhere) TObjectPtr<USFGatheringPilotComponent> GatheringPilot;
@@ -210,8 +236,24 @@ private:
     void EquipGatheringAxe();
     void EquipGatheringPickaxe();
     void CycleGatheringRecipe();
+    void ClaimPlotFromView();  // K: claim the build plot the pawn stands in
+    // BLD-02 A2: claim a plot and grant build rights through Housing; the server checks everything with the service.
+    UFUNCTION(Server, Reliable) void ServerClaimPlot(const FString& ClaimId);
+    UFUNCTION(Server, Reliable) void ServerGrantBuild(const FString& ClaimId, const FString& TargetCharacterId);
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    void TickClaimScenario();  // -ClaimScenario=owner|owner_restart|guest (tools/Test-ClaimHousing.ps1)
+    int32 ClaimScenarioStep = 0;
+    bool bPlainCheckLogged = false;
+    uint32 ClaimScenarioSentSerial = 0;
+    double ClaimScenarioNextAt = 0;
+#endif
+    ESFConstructionNetworkResult LastResultCode = ESFConstructionNetworkResult::InvalidContext;
+    uint32 ResultSerial = 0;  // counts ClientPlacementResult replies
     void RefreshPlacementPreview(bool bDrawOutline);
-    void ProcessEdit(FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation);
+    void ProcessEdit(FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation, const FString& ClaimId);
+    // BLD-02 A2: the claim state the pawn stands in (the only state in the sandbox); "" when none.
+    class ASFConstructionNetworkState* ActiveState() const;
+    FString ActiveClaimId() const;
     void SelectCube();
     void SelectSlab();
     void SelectSlope();
@@ -220,12 +262,12 @@ private:
     void ToggleLineMode();
     void CancelLine();
     void SelectShape(uint8 Shape);
-    UFUNCTION(Server, Reliable) void ServerPlaceLine(FIntVector Start, FIntVector End, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation);
-    UFUNCTION(Server, Reliable) void ServerPlace(FIntVector Cell, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation);
-    UFUNCTION(Server, Reliable) void ServerRemove(FIntVector Cell, uint64 ExpectedRevision);
-    UFUNCTION(Server, Reliable) void ServerPlaceDoor(FIntVector Origin, uint64 ExpectedRevision, uint8 Yaw);
-    UFUNCTION(Server, Reliable) void ServerRemoveDoor(FIntVector Origin, uint64 ExpectedRevision);
-    UFUNCTION(Server, Reliable) void ServerToggleDoor(FIntVector Origin, uint64 ExpectedRevision);
+    UFUNCTION(Server, Reliable) void ServerPlaceLine(FIntVector Start, FIntVector End, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation, const FString& ClaimId);
+    UFUNCTION(Server, Reliable) void ServerPlace(FIntVector Cell, uint64 ExpectedRevision, uint8 Shape, uint8 Rotation, const FString& ClaimId);
+    UFUNCTION(Server, Reliable) void ServerRemove(FIntVector Cell, uint64 ExpectedRevision, const FString& ClaimId);
+    UFUNCTION(Server, Reliable) void ServerPlaceDoor(FIntVector Origin, uint64 ExpectedRevision, uint8 Yaw, const FString& ClaimId);
+    UFUNCTION(Server, Reliable) void ServerRemoveDoor(FIntVector Origin, uint64 ExpectedRevision, const FString& ClaimId);
+    UFUNCTION(Server, Reliable) void ServerToggleDoor(FIntVector Origin, uint64 ExpectedRevision, const FString& ClaimId);
     UFUNCTION(Client, Reliable) void ClientPlacementResult(ESFConstructionNetworkResult Result, uint64 Revision);
     UPROPERTY(Replicated) bool bRoleAssigned = false;
     UPROPERTY(Replicated) bool bBuilderRole = false; // Advisory; permission is derived again on server.

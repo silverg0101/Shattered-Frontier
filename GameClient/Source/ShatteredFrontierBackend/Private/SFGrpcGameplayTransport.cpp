@@ -47,7 +47,7 @@ namespace
     }
 
     void CopyClaim(const sf::housing::v1::ClaimReply& R, FSFGameplayResponse& Out)
-    { Out.State = FromUtf8(R.state()); Out.Revision = R.revision(); Out.PermissionRevision = R.permission_revision(); }
+    { Out.State = FromUtf8(R.state()); Out.OwnerId = FromUtf8(R.owner_id()); Out.Revision = R.revision(); Out.PermissionRevision = R.permission_revision(); }
 
     void CopyPlacement(const sf::housing::v1::PlacementReply& R, FSFGameplayResponse& Out)
     { Out.State = FromUtf8(R.state()); Out.StructureId = FromUtf8(R.structure_id()); Out.StructureRevision = R.structure_revision(); }
@@ -188,6 +188,8 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         M.set_structure_id(Utf8(Q.StructureId)); M.set_cell_x(Q.Cell.X); M.set_cell_y(Q.Cell.Y); M.set_cell_z(Q.Cell.Z);
         M.set_content_id(Utf8(Q.ContentId)); M.set_material_id(Utf8(Q.MaterialId)); M.set_material_quantity(Q.MaterialQuantity);
         M.set_container_id(Utf8(Q.ContainerId)); M.set_expected_container_revision(Q.ExpectedContainerRevision);
+        if (!Q.ShapeKey.IsEmpty()) { M.set_shape_key(Utf8(Q.ShapeKey)); }
+        M.set_orientation_index(Q.OrientationIndex);
         auto* Call = new TCall<sf::housing::v1::PlacementReply>(); Call->Copy = &CopyPlacement;
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Housing->AsyncPlace(C, M, &Channel->Queue); });
         break;
@@ -200,6 +202,29 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         M.set_expected_container_revision(Q.ExpectedContainerRevision); M.set_removal_kind(Utf8(Q.RemovalKind));
         auto* Call = new TCall<sf::housing::v1::PlacementReply>(); Call->Copy = &CopyPlacement;
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Housing->AsyncRemove(C, M, &Channel->Queue); });
+        break;
+    }
+    case ESFGameplayRpc::ListStructures:
+    {
+        sf::housing::v1::ListStructuresRequest M;
+        M.set_claim_id(Utf8(Q.ClaimId));
+        auto* Call = new TCall<sf::housing::v1::ListStructuresReply>();
+        Call->Copy = [](const sf::housing::v1::ListStructuresReply& R, FSFGameplayResponse& Out)
+        {
+            Out.StructureRevision = R.structure_revision();
+            for (const auto& S : R.structures())
+            { Out.Structures.Add({FromUtf8(S.structure_id()), FromUtf8(S.content_id()), FIntVector(S.cell().x(), S.cell().y(), S.cell().z()), S.revision(), FromUtf8(S.shape_key()), S.orientation_index()}); }
+        };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Housing->AsyncListStructures(C, M, &Channel->Queue); });
+        break;
+    }
+    case ESFGameplayRpc::Grant:
+    {
+        sf::housing::v1::GrantRequest M;
+        M.set_operation_id(Utf8(Q.OperationId)); M.set_claim_id(Utf8(Q.ClaimId)); M.set_actor_id(Utf8(Q.CharacterId));
+        M.set_target_id(Utf8(Q.GranteeId)); M.set_rights(Q.Rights); M.set_expected_permission_revision(Q.ExpectedPermissionRevision);
+        auto* Call = new TCall<sf::housing::v1::ClaimReply>(); Call->Copy = &CopyClaim;
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Housing->AsyncGrant(C, M, &Channel->Queue); });
         break;
     }
     case ESFGameplayRpc::Craft:
