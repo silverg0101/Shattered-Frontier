@@ -248,9 +248,18 @@ def dress_props(L,c):
         placed[rule['id']]=n
     print('PROPS_PLACED',placed);return placed
 
+def dress_footings(c):
+    """The builder's *_Plinth slabs read as bright white; give them a dark stone solid instead."""
+    f=c['footing'];mi=_instance('MI_SB_FootingStone',u.load_asset(f'{LIB}/Materials/M_SB_Solid'))
+    mel.set_material_instance_vector_parameter_value(mi,'Colour',u.LinearColor(*val(f['colour']),1))
+    mel.set_material_instance_scalar_parameter_value(mi,'Roughness',val(f['roughness']));eal.save_loaded_asset(mi);n=0
+    for a in _actors().get_all_level_actors():
+        if isinstance(a,u.StaticMeshActor) and a.get_actor_label().endswith('_Plinth'):a.static_mesh_component.set_material(0,mi);n+=1
+    print('PLINTHS_RETEXTURED',n)
+
 def dress_all():
     c=cfg();L=json.loads(LAYOUT.read_text(encoding='utf-8'));_clear(_actors())
-    dress_roads(c);gate_windows(c);dress_verge(L,c);dress_props(L,c)
+    dress_footings(c);dress_roads(c);gate_windows(c);dress_verge(L,c);dress_props(L,c)
 
 if __name__=='__main__':
     dress_all()
