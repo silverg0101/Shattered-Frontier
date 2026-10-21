@@ -9,7 +9,7 @@ import urllib.request,json,hashlib,concurrent.futures
 ROOT=Path(__file__).resolve().parent/'Sources';ROOT.mkdir(exist_ok=True)
 MODELS=['pine_tree_01','pine_sapling_medium','tree_small_02','boulder_01','namaqualand_boulder_02','namaqualand_boulder_03','namaqualand_boulder_04',
         'coast_land_rocks_02','coast_land_rocks_03','coast_land_rocks_04','rock_face_01','rock_face_02','moss_01','namaqualand_boulder_05','namaqualand_boulder_06','coast_rocks_05']
-SCANS=['pine_bark','rock_08','rock_3','rock_surface','marble_rock_01','rock_boulder_dry','mossy_rock','forest_ground_04','japanese_hackberry_bark']
+SCANS=['pine_bark','rock_08','rock_3','rock_surface','marble_rock_01','rock_boulder_dry','mossy_rock','forest_ground_04','japanese_hackberry_bark','brown_mud_02','rocky_trail']
 def get(url):
     with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'GreenlandsEnvironment/1.0'}),timeout=300) as r:return r.read()
 def download(pair):

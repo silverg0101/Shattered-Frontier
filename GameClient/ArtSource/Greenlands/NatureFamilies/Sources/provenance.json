@@ -1230,5 +1230,85 @@
         "bytes": 1397510
       }
     ]
+  },
+  {
+    "asset": "brown_mud_02",
+    "kind": "scan",
+    "page": "https://polyhaven.com/a/brown_mud_02",
+    "license": "CC0-1.0",
+    "license_url": "https://polyhaven.com/license",
+    "author": {
+      "Rob Tuytel": "All"
+    },
+    "physical_size_mm": [
+      1299.996018409729,
+      1299.996018409729
+    ],
+    "files": [
+      {
+        "file": "brown_mud_02/brown_mud_02_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/brown_mud_02/brown_mud_02_diff_2k.jpg",
+        "md5": "a2dd06f0df9ce45cc0c5abdd6c1629b2",
+        "bytes": 2163682
+      },
+      {
+        "file": "brown_mud_02/brown_mud_02_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/brown_mud_02/brown_mud_02_nor_gl_2k.jpg",
+        "md5": "4b3d0c1b97e25041c988ee3000c5aac4",
+        "bytes": 4234657
+      },
+      {
+        "file": "brown_mud_02/brown_mud_02_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/brown_mud_02/brown_mud_02_rough_2k.jpg",
+        "md5": "c758a09a088ad35f98d4fb6103f1b9ff",
+        "bytes": 1662813
+      },
+      {
+        "file": "brown_mud_02/brown_mud_02_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/brown_mud_02/brown_mud_02_disp_2k.jpg",
+        "md5": "8d13a31133acfb15f9a64846a96c9706",
+        "bytes": 585864
+      }
+    ]
+  },
+  {
+    "asset": "rocky_trail",
+    "kind": "scan",
+    "page": "https://polyhaven.com/a/rocky_trail",
+    "license": "CC0-1.0",
+    "license_url": "https://polyhaven.com/license",
+    "author": {
+      "Amal Kumar": "All"
+    },
+    "physical_size_mm": [
+      2000,
+      2000
+    ],
+    "files": [
+      {
+        "file": "rocky_trail/rocky_trail_Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rocky_trail/rocky_trail_diff_2k.jpg",
+        "md5": "7327bf7d48d33688fb12465222ee3f22",
+        "bytes": 4208713
+      },
+      {
+        "file": "rocky_trail/rocky_trail_nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rocky_trail/rocky_trail_nor_gl_2k.jpg",
+        "md5": "4642b3c833d526b23c96baa84f5bf429",
+        "bytes": 5525906
+      },
+      {
+        "file": "rocky_trail/rocky_trail_Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rocky_trail/rocky_trail_rough_2k.jpg",
+        "md5": "f731e8566945924c07679de4af9b7460",
+        "bytes": 2748294
+      },
+      {
+        "file": "rocky_trail/rocky_trail_Displacement.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rocky_trail/rocky_trail_disp_2k.jpg",
+        "md5": "a284765925e99896b088b791e4b1b0ad",
+        "bytes": 1244065
+      }
+    ]
   }
 ]
