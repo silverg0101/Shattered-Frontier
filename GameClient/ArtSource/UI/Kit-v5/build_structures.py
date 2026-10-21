@@ -8,7 +8,7 @@ ROOT = Path(__file__).parent
 ATLAS = Image.open(ROOT / "structural-source.png").convert("RGBA")
 MANIFEST = json.loads((ROOT / "kit.json").read_text())
 BOX = {
-    "panel": (40, 90, 607, 254),
+    "panel": (40, 90, 607, 248),
     "bar": (645, 121, 1194, 211),
     "slot": (1236, 55, 1462, 275),
     "button": (53, 422, 595, 582),
@@ -38,7 +38,8 @@ def nine(source, size, margin):
             piece = source.crop((xs[i], ys[j], xs[i+1], ys[j+1]))
             dw, dh = xd[i+1]-xd[i], yd[j+1]-yd[j]
             if dw and dh:
-                out.paste(piece.resize((dw, dh), Image.Resampling.BICUBIC), (xd[i], yd[j]))
+                # Resize premultiplied pixels, then return to straight RGBA.
+                out.paste(piece.convert("RGBa").resize((dw, dh), Image.Resampling.BICUBIC).convert("RGBA"), (xd[i], yd[j]))
     return out
 
 
@@ -61,7 +62,12 @@ def alpha_from_old(name, im, *, interior=225):
     if interior is not None:
         # Preserve the original transparent silhouette and translucent slate body.
         alpha = alpha.point(lambda a: min(a, interior) if a < 250 else a)
-    im.putalpha(alpha)
+    # The old silhouette controls the slate opacity, but the source cut must
+    # also exclude its nearly transparent studio backdrop and one-pixel fringe.
+    source_alpha = im.getchannel("A").point(lambda a: 0 if a < 16 else a)
+    source_alpha = source_alpha.filter(ImageFilter.MinFilter(3))
+    from PIL import ImageChops
+    im.putalpha(ImageChops.darker(alpha, source_alpha))
     return im
 
 
@@ -71,7 +77,32 @@ def save(name, source, margin=None, *, tint=None, interior=225):
     if tint:
         im = recolor(im, *tint)
     im = alpha_from_old(name, im, interior=interior)
+    im.putdata([(r, g, b, a) if a else (0, 0, 0, 0) for r, g, b, a in im.get_flattened_data()])
     im.save(ROOT / f"{name}.png")
+
+
+def despill_border(im):
+    """Replace isolated red/green key pixels with nearby neutral straight RGB."""
+    original = im.copy()
+    w, h = im.size
+    for y in range(h):
+        for x in range(w):
+            if 6 <= x < w - 6 and 6 <= y < h - 6:
+                continue
+            r, g, b, a = original.getpixel((x, y))
+            key = (r >= 80 and g * 10 <= r and b * 10 <= r) or (g >= 80 and r * 10 <= g and b * 10 <= g)
+            if not a or not key:
+                continue
+            nearby = []
+            for yy in range(max(0, y-2), min(h, y+3)):
+                for xx in range(max(0, x-2), min(w, x+3)):
+                    nr, ng, nb, na = original.getpixel((xx, yy))
+                    if na and not ((nr >= 80 and ng * 10 <= nr and nb * 10 <= nr) or (ng >= 80 and nr * 10 <= ng and nb * 10 <= ng)):
+                        nearby.append((nr, ng, nb))
+            if nearby:
+                nearby.sort(key=lambda rgb: sum(rgb))
+                im.putpixel((x, y), (*nearby[len(nearby)//2], a))
+    return im
 
 
 panel = ATLAS.crop(BOX["panel"])
@@ -89,7 +120,6 @@ for name in panel_names:
     m = MANIFEST["pieces"][name]["nine_slice_px"]
     # Keep a meaningful corner area in large frames without overrunning small rows.
     margin = [min(max(m[0], 36), size[0]//4), min(max(m[1], 28), size[1]//4), min(max(m[2], 36), size[0]//4), min(max(m[3], 28), size[1]//4)]
-    MANIFEST["pieces"][name]["nine_slice_px"] = margin
     save(name, panel, margin)
 
 for name in ["button_normal", "button_hover", "button_pressed", "button_disabled", "button_primary_brass", "button_destructive"]:
@@ -97,23 +127,19 @@ for name in ["button_normal", "button_hover", "button_pressed", "button_disabled
     if name == "button_destructive":
         source = bar
     margin = [40, 28, 40, 28]
-    MANIFEST["pieces"][name]["nine_slice_px"] = margin
     save(name, source, margin, interior=190 if name == "button_disabled" else 225)
 
 for name in ["slot_bag_normal", "slot_bag_selected", "slot_equipment_normal", "slot_equipment_selected", "slot_hotbar_normal", "slot_hotbar_selected", "slot_catalogue_normal", "slot_catalogue_selected"]:
     size = Image.open(ROOT / f"{name}.png").size
     m = max(25, min(36, size[0]//5))
-    MANIFEST["pieces"][name]["nine_slice_px"] = [m,m,m,m]
     save(name, slot, [m,m,m,m])
 
 for name, tint in [("bar_hp",None),("bar_stamina",(.12,.72,1)),("bar_xp",(.19,.75,.9)),("bar_channel",(.09,.35,.9))]:
     margin=[54,12,54,12]
-    MANIFEST["pieces"][name]["nine_slice_px"] = margin
     save(name, bar, margin, tint=tint, interior=None)
 
 save("hex_level_badge", badge, interior=None)
 save("action_bar", action, [48,32,48,32])
-MANIFEST["pieces"]["action_bar"]["nine_slice_px"]=[48,32,48,32]
 
 for name in ["gathering_channel_ring", "hold_confirm_ring", "loading_spinner"]:
     save(name, ring, interior=None)
@@ -132,6 +158,8 @@ for name, source, inner in [("minimap_ring", ATLAS.crop(BOX["map"]), .78)]:
                 mask[xx,yy]=255
     a=a.filter(ImageFilter.MaxFilter(5)).filter(ImageFilter.GaussianBlur(.7))
     im.putalpha(a)
+    im = despill_border(im)
+    im.putdata([(r, g, b, a) if a else (0, 0, 0, 0) for r, g, b, a in im.get_flattened_data()])
     im.save(ROOT/f"{name}.png")
 
 font_path=ROOT.parent.parent/"Fonts"/"EBGaramond"/"EBGaramond-Regular.ttf"
@@ -155,5 +183,3 @@ for name in ["divider","section_rule","cost_short_underline","journal_hinge"]:
     im=trim.resize(size,Image.Resampling.BICUBIC)
     im=alpha_from_old(name,im,interior=None)
     im.save(ROOT/f"{name}.png")
-
-(ROOT/"kit.json").write_text(json.dumps(MANIFEST,indent=2)+"\n")
