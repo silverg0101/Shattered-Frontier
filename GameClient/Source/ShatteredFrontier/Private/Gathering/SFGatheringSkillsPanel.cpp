@@ -1,114 +1,232 @@
 #include "Gathering/SFGatheringSkillsPanel.h"
 
 #include "Gathering/SFGatheringPilot.h"
+#include "Framework/SFScreenArt.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
 #include "Components/Button.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
-#include "Components/ScrollBox.h"
+#include "Components/Image.h"
+#include "Components/Overlay.h"
+#include "Components/OverlaySlot.h"
+#include "Components/ProgressBar.h"
+#include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
+
+const ESFGatheringSkill USFGatheringSkillsPanel::Rows[USFGatheringSkillsPanel::RowCount] =
+    {ESFGatheringSkill::Logging, ESFGatheringSkill::Mining, ESFGatheringSkill::Herbalism, ESFGatheringSkill::Fishing};
+
+namespace
+{
+// Panel 522 x 670 at x 2.7%, y 6% of a 1080p screen (gathering.png).
+const FVector2D SkillsPanelSize(522.f, 700.f);
+
+struct FSkillRowArt { const TCHAR* Icon; const TCHAR* NextIcon; const TCHAR* Material; };
+FSkillRowArt SkillRowArt(ESFGatheringSkill Skill)
+{
+    switch (Skill)
+    {
+    case ESFGatheringSkill::Logging: return {TEXT("woodcutting_axes"), TEXT("oak_log"), TEXT("timber")};
+    case ESFGatheringSkill::Mining: return {TEXT("iron_pickaxe"), TEXT("iron_ore"), TEXT("ore")};
+    case ESFGatheringSkill::Herbalism: return {TEXT("river_herb"), TEXT("river_herb"), TEXT("herbs")};
+    default: return {TEXT("trout"), TEXT("trout"), TEXT("fish")};
+    }
+}
+
+UImage* SkillIconImage(UWidgetTree* Tree, const TCHAR* Stem, float Side)
+{
+    UImage* Image = Tree->ConstructWidget<UImage>(UImage::StaticClass());
+    Image->SetBrush(SFScreenArt::Icon(Stem, Side));
+    return Image;
+}
+}
+
+FString USFGatheringSkillsPanel::PointsText(int32 Tenths)
+{
+    return FString::Printf(TEXT("%d.%d / 100.0"), FMath::Max(0, Tenths) / 10, FMath::Max(0, Tenths) % 10);
+}
+
+FString USFGatheringSkillsPanel::NextUnlockText(ESFGatheringSkill Skill, int32 Tenths)
+{
+    static const TCHAR* const TierNames[] = {TEXT("Common"), TEXT("Uncommon"), TEXT("Rare"), TEXT("Epic"), TEXT("Legendary")};
+    for (int32 Tier = 0; Tier < UE_ARRAY_COUNT(TierNames); ++Tier)
+    {
+        const int32 Required = FSFGatheringProgressionSession::RequiredSkill(ESFGatheringMaterialTier(Tier));
+        if (Required > Tenths) { return FString::Printf(TEXT("%s %s at %d.%d"), TierNames[Tier], SkillRowArt(Skill).Material, Required / 10, Required % 10); }
+    }
+    return TEXT("All tiers unlocked");
+}
+
+ESFGatheringSkillLock USFGatheringSkillsPanel::NextLock(ESFGatheringSkillLock Lock)
+{
+    return Lock == ESFGatheringSkillLock::Up ? ESFGatheringSkillLock::Locked : Lock == ESFGatheringSkillLock::Locked ? ESFGatheringSkillLock::Down : ESFGatheringSkillLock::Up;
+}
 
 void USFGatheringSkillsPanel::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
     SetIsFocusable(false);
+    using namespace SFHudStyle;
 
-    UBorder* Panel=WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(),TEXT("GatheringSkillsPanel"));
-    Panel->SetPadding(FMargin(18.f));
-    Panel->SetBrushColor(FLinearColor(0.035f,0.045f,0.055f,0.97f));
-    UVerticalBox* Contents=WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    UScrollBox* Scroll=WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass());
-    Scroll->AddChild(Contents);
-    Panel->SetContent(Scroll);
-    WidgetTree->RootWidget=Panel;
+    UOverlay* Root = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
+    WidgetTree->RootWidget = Root;
+    UBorder* Panel = KitPanel(WidgetTree, TEXT("panel_frame"), 1.f, Slate(0.85f), Brass(), FMargin(6.f, 0.f, 6.f, 4.f), 0.f);
+    UOverlaySlot* PanelSlot = Root->AddChildToOverlay(Panel);
+    PanelSlot->SetHorizontalAlignment(HAlign_Fill); PanelSlot->SetVerticalAlignment(VAlign_Fill);
+    UVerticalBox* Contents = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+    Panel->SetContent(Contents);
+    Contents->AddChildToVerticalBox(Heading(WidgetTree, TEXT("Gathering Skills"), 36, Ivory()))->SetPadding(FMargin(14.f, 0.f, 0.f, 8.f));
+    // Every window carries a 40 px close X top-right inside the frame (IMPLEMENTATION-FIX G5); M and Esc still close it.
+    UButton* Close = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass());
+    FButtonStyle CloseStyle = Close->GetStyle();
+    CloseStyle.Normal = FSlateNoResource(); CloseStyle.Hovered = FSlateNoResource(); CloseStyle.Pressed = FSlateNoResource();
+    CloseStyle.NormalPadding = FMargin(0.f); CloseStyle.PressedPadding = FMargin(0.f);
+    Close->SetStyle(CloseStyle);
+    Close->SetContent(KitImage(WidgetTree, TEXT("close_x"), 40.f, 40.f));
+    FScriptDelegate CloseClick; CloseClick.BindUFunction(this, TEXT("ClosePanel")); Close->OnClicked.Add(CloseClick);
+    UOverlaySlot* CloseSlot = Root->AddChildToOverlay(Close);
+    CloseSlot->SetHorizontalAlignment(HAlign_Right); CloseSlot->SetVerticalAlignment(VAlign_Top); CloseSlot->SetPadding(FMargin(0.f, 22.f, 26.f, 0.f));
 
-    auto AddText=[this,Contents](const TCHAR* Text,float Size,const FLinearColor& Color)
+    const TCHAR* Handlers[RowCount] = {TEXT("CycleRow0"), TEXT("CycleRow1"), TEXT("CycleRow2"), TEXT("CycleRow3")};
+    for (int32 Row = 0; Row < RowCount; ++Row)
     {
-        UTextBlock* Label=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
-        Label->SetText(FText::FromString(Text)); Label->SetFontSize(Size); Label->SetColorAndOpacity(FSlateColor(Color)); Label->SetAutoWrapText(true);
-        Contents->AddChildToVerticalBox(Label)->SetPadding(FMargin(2.f,3.f)); return Label;
-    };
-    AddText(TEXT("GATHERING SKILLS"),20.f,FLinearColor(0.9f,0.78f,0.48f,1.f));
-    AddText(TEXT("Session skills | M or Esc closes"),12.f,FLinearColor(0.72f,0.76f,0.8f,1.f));
+        const ESFGatheringSkill Skill = Rows[Row];
+        const FSkillRowArt Art = SkillRowArt(Skill);
+        UBorder* Frame = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+        Frame->SetBrush(KitOrFrame(TEXT("recipe_row"), Slate(0.6f), Hex(TEXT("5E5038")), 0.f));
+        Frame->SetPadding(FMargin(20.f, 6.f, 22.f, 6.f));
+        USizeBox* RowBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        RowBox->SetHeightOverride(144.f); RowBox->SetContent(Frame);
+        Contents->AddChildToVerticalBox(RowBox)->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
+        UHorizontalBox* Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+        Frame->SetContent(Line);
 
-    auto AddSkill=[this,Contents](TObjectPtr<UTextBlock>& Status,TObjectPtr<UButton>* Buttons,const TCHAR* const HandlerNames[3])
-    {
-        Status=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
-        Status->SetAutoWrapText(true); Status->SetFontSize(13.f);
-        Contents->AddChildToVerticalBox(Status)->SetPadding(FMargin(3.f,2.f,3.f,6.f));
-        UHorizontalBox* Row=WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-        Contents->AddChildToVerticalBox(Row)->SetPadding(FMargin(0.f,2.f,0.f,10.f));
-        const TCHAR* Labels[3]={TEXT("Train"),TEXT("Hold"),TEXT("Allow decrease")};
-        for (int32 I=0;I<3;++I)
+        // Icon over the whole-point numeral.
+        UVerticalBox* Badge = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+        USizeBox* IconBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        IconBox->SetWidthOverride(72.f); IconBox->SetHeightOverride(72.f); IconBox->SetContent(SkillIconImage(WidgetTree, Art.Icon, 72.f));
+        Badge->AddChildToVerticalBox(IconBox);
+        Levels[Row] = Heading(WidgetTree, TEXT("0"), 30, Ivory());
+        Badge->AddChildToVerticalBox(Levels[Row])->SetHorizontalAlignment(HAlign_Center);
+        UHorizontalBoxSlot* BadgeSlot = Line->AddChildToHorizontalBox(Badge);
+        BadgeSlot->SetVerticalAlignment(VAlign_Center); BadgeSlot->SetPadding(FMargin(0.f, 0.f, 22.f, 0.f));
+
+        UVerticalBox* Body = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+        UHorizontalBoxSlot* BodySlot = Line->AddChildToHorizontalBox(Body);
+        BodySlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); BodySlot->SetVerticalAlignment(VAlign_Center);
+
+        UHorizontalBox* NameLine = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+        NameLine->AddChildToHorizontalBox(Text(WidgetTree, FSFGatheringProgressionSession::SkillName(Skill), 24, Ivory()))->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+        // Icon toggle (G3: no text button under 44 px): plus raising, padlock held, minus lowering, with the word beside it.
+        UButton* Lock = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass());
+        FButtonStyle LockStyle = Lock->GetStyle();
+        LockStyle.Normal = FSlateNoResource(); LockStyle.Hovered = FSlateNoResource(); LockStyle.Pressed = FSlateNoResource(); LockStyle.Disabled = FSlateNoResource();
+        LockStyle.NormalPadding = FMargin(0.f); LockStyle.PressedPadding = FMargin(0.f);
+        Lock->SetStyle(LockStyle);
+        UHorizontalBox* LockLine = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+        LockIcons[Row] = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
+        USizeBox* LockIconBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        LockIconBox->SetWidthOverride(28.f); LockIconBox->SetHeightOverride(28.f); LockIconBox->SetContent(LockIcons[Row]);
+        LockLine->AddChildToHorizontalBox(LockIconBox)->SetVerticalAlignment(VAlign_Center);
+        LockTexts[Row] = Text(WidgetTree, TEXT(""), 16, Hex(TEXT("BDB6A2")));
+        LockLine->AddChildToHorizontalBox(LockTexts[Row])->SetPadding(FMargin(6.f, 0.f, 0.f, 0.f));
+        Lock->SetContent(LockLine);
+        FScriptDelegate Click; Click.BindUFunction(this, FName(Handlers[Row])); Lock->OnClicked.Add(Click);
+        NameLine->AddChildToHorizontalBox(Lock)->SetVerticalAlignment(VAlign_Center);
+        LockButtons[Row] = Lock;
+        Body->AddChildToVerticalBox(NameLine);
+
+        UHorizontalBox* BarLine = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+        // Kit-v5 framed moss XP bar; the styled UProgressBar when the kit is missing.
+        XpBars[Row] = MakeFramedBar(WidgetTree, TEXT("bar_xp"), 200.f);
+        USizeBox* BarBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        if (XpBars[Row].Root) { BarBox->SetContent(XpBars[Row].Root); }
+        else
         {
-            UButton* Button=WidgetTree->ConstructWidget<UButton>(UButton::StaticClass());
-            UTextBlock* Text=WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
-            Text->SetText(FText::FromString(Labels[I])); Text->SetFontSize(12.f); Text->SetJustification(ETextJustify::Center); Text->SetAutoWrapText(true);
-            Button->AddChild(Text); Button->SetBackgroundColor(FLinearColor(0.18f,0.21f,0.25f,1.f));
-            FScriptDelegate Click; Click.BindUFunction(this,FName(HandlerNames[I])); Button->OnClicked.Add(Click);
-            Row->AddChildToHorizontalBox(Button)->SetPadding(FMargin(3.f)); Buttons[I]=Button;
+            Bars[Row] = WidgetTree->ConstructWidget<UProgressBar>(UProgressBar::StaticClass());
+            StyleBar(Bars[Row], Moss());
+            BarBox->SetHeightOverride(12.f); BarBox->SetContent(Bars[Row]);
         }
-    };
-    const TCHAR* LoggingHandlers[3]={TEXT("TrainLogging"),TEXT("HoldLogging"),TEXT("AllowLoggingDecrease")};
-    const TCHAR* MiningHandlers[3]={TEXT("TrainMining"),TEXT("HoldMining"),TEXT("AllowMiningDecrease")};
-    AddSkill(LoggingStatus,LoggingButtons,LoggingHandlers);
-    AddSkill(MiningStatus,MiningButtons,MiningHandlers);
-    AddText(TEXT("Allow decrease only donates points when gathering is at its cap; it never removes points immediately. Only Logging and Mining are playable in this session pilot."),12.f,FLinearColor(0.75f,0.78f,0.82f,1.f));
+        UHorizontalBoxSlot* BarSlot = BarLine->AddChildToHorizontalBox(BarBox);
+        BarSlot->SetSize(FSlateChildSize(XpBars[Row].Root ? ESlateSizeRule::Automatic : ESlateSizeRule::Fill)); BarSlot->SetVerticalAlignment(VAlign_Center);
+        Points[Row] = Num(WidgetTree, TEXT(""), 18, Ivory(), false);
+        Points[Row]->SetJustification(ETextJustify::Right);
+        UHorizontalBoxSlot* PointsSlot = BarLine->AddChildToHorizontalBox(Points[Row]);
+        PointsSlot->SetPadding(FMargin(12.f, 0.f, 0.f, 0.f)); PointsSlot->SetVerticalAlignment(VAlign_Center);
+        if (XpBars[Row].Root) { PointsSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); }
+        Body->AddChildToVerticalBox(BarLine)->SetPadding(FMargin(0.f, 4.f, 0.f, 4.f));
+
+        UHorizontalBox* NextLine = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+        NextLine->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Next:"), 18, Hex(TEXT("BDB6A2"))))->SetVerticalAlignment(VAlign_Center);
+        USizeBox* NextIconBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        NextIconBox->SetWidthOverride(30.f); NextIconBox->SetHeightOverride(30.f); NextIconBox->SetContent(SkillIconImage(WidgetTree, Art.NextIcon, 30.f));
+        NextLine->AddChildToHorizontalBox(NextIconBox)->SetPadding(FMargin(10.f, 0.f, 10.f, 0.f));
+        NextTexts[Row] = Text(WidgetTree, TEXT(""), 18, Ivory());
+        NextLine->AddChildToHorizontalBox(NextTexts[Row])->SetVerticalAlignment(VAlign_Center);
+        Body->AddChildToVerticalBox(NextLine);
+    }
     Refresh();
 }
 
 void USFGatheringSkillsPanel::Configure(USFGatheringPilotComponent* InPilot)
 {
-    Pilot=InPilot;
+    Pilot = InPilot;
     Refresh();
 }
 
-void USFGatheringSkillsPanel::NativeTick(const FGeometry& MyGeometry,float InDeltaTime)
+void USFGatheringSkillsPanel::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
-    Super::NativeTick(MyGeometry,InDeltaTime);
-    Refresh();
-}
-
-void USFGatheringSkillsPanel::SetLock(ESFGatheringSkill Skill,ESFGatheringSkillLock Lock)
-{
-    if (Pilot && Pilot->IsEnabled())
+    Super::NativeTick(MyGeometry, InDeltaTime);
+    // ponytail: the controller still centres this panel when it opens; re-applying the concept placement every visible
+    // frame wins over it. Drop this once the controller stops laying the panel out.
+    const FVector2D Viewport = UWidgetLayoutLibrary::GetViewportSize(this);
+    if (Viewport.X > 0 && Viewport.Y > 0)
     {
-        const auto& Locks=Pilot->GetSkillSnapshot().Locks;
-        if (Locks.IsValidIndex(int32(Skill))&&Locks[int32(Skill)]!=Lock) { Pilot->RequestSkillLock(Skill,Lock); }
+        SetDesiredSizeInViewport(SkillsPanelSize);
+        SetPositionInViewport(FVector2D(0.027 * Viewport.X, 0.06 * Viewport.Y));
     }
+    Refresh();
 }
-void USFGatheringSkillsPanel::TrainLogging() { SetLock(ESFGatheringSkill::Logging,ESFGatheringSkillLock::Up); }
-void USFGatheringSkillsPanel::HoldLogging() { SetLock(ESFGatheringSkill::Logging,ESFGatheringSkillLock::Locked); }
-void USFGatheringSkillsPanel::AllowLoggingDecrease() { SetLock(ESFGatheringSkill::Logging,ESFGatheringSkillLock::Down); }
-void USFGatheringSkillsPanel::TrainMining() { SetLock(ESFGatheringSkill::Mining,ESFGatheringSkillLock::Up); }
-void USFGatheringSkillsPanel::HoldMining() { SetLock(ESFGatheringSkill::Mining,ESFGatheringSkillLock::Locked); }
-void USFGatheringSkillsPanel::AllowMiningDecrease() { SetLock(ESFGatheringSkill::Mining,ESFGatheringSkillLock::Down); }
+
+void USFGatheringSkillsPanel::ClosePanel() { SetVisibility(ESlateVisibility::Collapsed); }
+void USFGatheringSkillsPanel::CycleRow0() { CycleLock(0); }
+void USFGatheringSkillsPanel::CycleRow1() { CycleLock(1); }
+void USFGatheringSkillsPanel::CycleRow2() { CycleLock(2); }
+void USFGatheringSkillsPanel::CycleRow3() { CycleLock(3); }
+
+void USFGatheringSkillsPanel::CycleLock(int32 Row)
+{
+    if (!Pilot || !Pilot->IsEnabled()) { return; }
+    const auto& Locks = Pilot->GetSkillSnapshot().Locks;
+    const int32 Index = int32(Rows[Row]);
+    if (Locks.IsValidIndex(Index)) { Pilot->RequestSkillLock(Rows[Row], NextLock(Locks[Index])); }
+}
 
 void USFGatheringSkillsPanel::Refresh()
 {
-    if (!Pilot || !Pilot->IsEnabled()) { return; }
-    const FSFGatheringSkillSnapshot& Snapshot=Pilot->GetSkillSnapshot();
-    auto Update=[this,&Snapshot](ESFGatheringSkill Skill,UTextBlock* Status,TObjectPtr<UButton>* Buttons,const TCHAR* Name)
+    if (!Pilot || !Pilot->IsEnabled() || !Levels[0]) { return; }
+    const FSFGatheringSkillSnapshot& Snapshot = Pilot->GetSkillSnapshot();
+    for (int32 Row = 0; Row < RowCount; ++Row)
     {
-        const ESFGatheringSkillLock Lock=Snapshot.Locks.IsValidIndex(int32(Skill)) ? Snapshot.Locks[int32(Skill)] : ESFGatheringSkillLock::Up;
-        const TCHAR* Description=Lock==ESFGatheringSkillLock::Up ? TEXT("Training: successful gathering can raise this skill.")
-            : Lock==ESFGatheringSkillLock::Down ? TEXT("Allow decrease: points can be donated only at the gathering cap.")
-            : TEXT("Held: practice will not change this skill.");
-        const float Cooldown=FMath::Max(0.f,Pilot->GetSkillLockCooldownRemaining(Skill));
-        const bool bPending=Pilot->IsSkillLockChangePending(Skill)||(!Pilot->IsSkillLockReady(Skill)&&Cooldown<=0);
-        const FString Availability=bPending ? TEXT("Waiting for server") : Cooldown>0 ? FString::Printf(TEXT("Ready to change in %.1f s"),Cooldown) : TEXT("Ready to change");
-        Status->SetText(FText::FromString(FString::Printf(TEXT("%s  %d\n%s\n%s"),Name,Snapshot.Get(Skill),Description,*Availability)));
-        const int32 Selected=Lock==ESFGatheringSkillLock::Up ? 0 : Lock==ESFGatheringSkillLock::Locked ? 1 : 2;
-        for (int32 I=0;I<3;++I)
-        {
-            const bool bAvailable=!bPending && Cooldown<=0 && I!=Selected;
-            Buttons[I]->SetIsEnabled(I==Selected || bAvailable);
-            Buttons[I]->SetBackgroundColor(I==Selected ? FLinearColor(0.42f,0.32f,0.12f,1.f) : FLinearColor(0.18f,0.21f,0.25f,1.f));
-        }
-    };
-    Update(ESFGatheringSkill::Logging,LoggingStatus,LoggingButtons,TEXT("Logging"));
-    Update(ESFGatheringSkill::Mining,MiningStatus,MiningButtons,TEXT("Mining"));
+        const ESFGatheringSkill Skill = Rows[Row];
+        const int32 Tenths = Snapshot.Get(Skill);
+        Levels[Row]->SetText(FText::AsNumber(Tenths / 10));
+        const float Fraction = FMath::Clamp(Tenths / 1000.f, 0.f, 1.f);
+        if (XpBars[Row].Root) { XpBars[Row].SetFraction(Fraction); } else if (Bars[Row]) { Bars[Row]->SetPercent(Fraction); }
+        Points[Row]->SetText(FText::FromString(PointsText(Tenths)));
+        NextTexts[Row]->SetText(FText::FromString(NextUnlockText(Skill, Tenths)));
+        const ESFGatheringSkillLock Lock = Snapshot.Locks.IsValidIndex(int32(Skill)) ? Snapshot.Locks[int32(Skill)] : ESFGatheringSkillLock::Up;
+        const float Cooldown = FMath::Max(0.f, Pilot->GetSkillLockCooldownRemaining(Skill));
+        const bool bPending = Pilot->IsSkillLockChangePending(Skill) || (!Pilot->IsSkillLockReady(Skill) && Cooldown <= 0);
+        const TCHAR* Word = Lock == ESFGatheringSkillLock::Up ? TEXT("Raising") : Lock == ESFGatheringSkillLock::Locked ? TEXT("Held") : TEXT("Lowering");
+        LockTexts[Row]->SetText(FText::FromString(bPending ? FString(TEXT("Saving")) : Cooldown > 0 ? FString::Printf(TEXT("%s  %.0f s"), Word, FMath::CeilToFloat(Cooldown)) : FString(Word)));
+        const TCHAR* Glyph = Lock == ESFGatheringSkillLock::Up ? TEXT("plus") : Lock == ESFGatheringSkillLock::Locked ? TEXT("icon_closed_padlock") : TEXT("minus");
+        LockIcons[Row]->SetBrush(SFScreenArt::KitImage(Glyph, FVector2D(28.f, 28.f)));
+        LockIcons[Row]->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, bPending || Cooldown > 0 ? 0.45f : 1.f));
+        LockButtons[Row]->SetIsEnabled(!bPending && Cooldown <= 0);
+    }
 }

@@ -116,7 +116,8 @@ private:
     bool bFullDone = false;
 };
 
-// Tracker panel: right 84-99%, top 25-39% (HUD-v1). Title, step, objective rows with counts, tick when done.
+// v5 quest tracker (gameplay-hud.png, IMPLEMENTATION-FIX table 1): kit frame at x84% y31.3%, title, objective rows with
+// checkbox, label and count, tick when done.
 UCLASS()
 class SHATTEREDFRONTIER_API USFQuestTrackerHud : public UUserWidget
 {
@@ -127,7 +128,6 @@ protected:
     virtual void NativeOnInitialized() override;
 private:
     UPROPERTY(Transient) TObjectPtr<UTextBlock> TitleText;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> StepText;
     UPROPERTY(Transient) TObjectPtr<UVerticalBox> Rows;
     FString LastKey;
 };

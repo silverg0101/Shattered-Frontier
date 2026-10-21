@@ -10,7 +10,6 @@ class UInputMappingContext;
 class USFCrowdControlComponent;
 class USFQuestPilotComponent;
 class USpringArmComponent;
-class UTextRenderComponent;
 
 UCLASS()
 class SHATTEREDFRONTIER_API ASFE1Character : public ACharacter
@@ -31,9 +30,7 @@ public:
 
 private:
     friend class USFQuestPilotComponent;  // dev scenario driver swings through the same PilotAttack as the key
-    UPROPERTY(ReplicatedUsing=OnRep_PilotHealth) int32 PilotHealth = 0;
-    UPROPERTY(VisibleAnywhere) TObjectPtr<UTextRenderComponent> CombatHealthLabel;
-    UFUNCTION() void OnRep_PilotHealth();
+    UPROPERTY(Replicated) int32 PilotHealth = 0;  // shown by the vitals HUD (SFE1VitalsHud), not in the world
     FTimerHandle CombatScenarioTimer;
     int32 CombatScenarioAttackCount = 0;
     void TickCombatScenario();

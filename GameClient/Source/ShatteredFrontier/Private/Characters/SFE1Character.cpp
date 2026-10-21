@@ -10,7 +10,6 @@
 #include "EnhancedPlayerInput.h"
 #include "InputAction.h"
 #include "InputMappingContext.h"
-#include "Components/TextRenderComponent.h"
 #include "Framework/SFE1Settings.h"
 #include "Combat/SFCombatPilot.h"
 #include "Combat/SFCrowdControlComponent.h"
@@ -61,13 +60,6 @@ ASFE1Character::ASFE1Character()
         GetMesh()->SetSkeletalMeshAsset(Body.Object);
         GetMesh()->SetAnimInstanceClass(Locomotion.Class);
     }
-
-    CombatHealthLabel = CreateDefaultSubobject<UTextRenderComponent>(TEXT("CombatHealthLabel"));
-    CombatHealthLabel->SetupAttachment(GetCapsuleComponent());
-    CombatHealthLabel->SetRelativeLocation(FVector(0,0,150));
-    CombatHealthLabel->SetHorizontalAlignment(EHorizTextAligment::EHTA_Center);
-    CombatHealthLabel->SetWorldSize(30);
-    CombatHealthLabel->SetVisibility(false);
 
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
     CameraBoom->SetupAttachment(RootComponent);
@@ -347,14 +339,7 @@ void ASFE1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 void ASFE1Character::CombatSetHealth(int32 Value)
 {
-    if (HasAuthority()) { PilotHealth = Value; OnRep_PilotHealth(); ForceNetUpdate(); }
-}
-
-void ASFE1Character::OnRep_PilotHealth()
-{
-    CombatHealthLabel->SetVisibility(PilotHealth > 0);
-    CombatHealthLabel->SetText(FText::FromString(FString::Printf(TEXT("%d HP"), PilotHealth)));
-    CombatHealthLabel->SetTextRenderColor(FColor::Green);
+    if (HasAuthority()) { PilotHealth = Value; ForceNetUpdate(); }
 }
 
 void ASFE1Character::PilotAttack()

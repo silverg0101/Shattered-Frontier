@@ -18,6 +18,8 @@ bool FSFE1VitalsHudModelTest::RunTest(const FString& Parameters)
 
     TestEqual(TEXT("Countdown rounds up and formats mm:ss"),FSFE1VitalsModel::Countdown(3.2f),FString(TEXT("00:04")));
     TestEqual(TEXT("Countdown at zero"),FSFE1VitalsModel::Countdown(0.f),FString(TEXT("00:00")));
+    TestEqual(TEXT("Respawn point title"),FSFE1VitalsModel::RespawnTitle(TEXT("Silverbrook"),TEXT("north_gate")),FString(TEXT("Silverbrook North Gate")));
+    TestEqual(TEXT("Respawn title without a zone"),FSFE1VitalsModel::RespawnTitle(TEXT(""),TEXT("arrival")),FString(TEXT("Arrival")));
 
     FSFE1VitalsModel Model;
     Model.Observe(0,1.0);

@@ -1,4 +1,6 @@
 #include "Gathering/SFGatheringHud.h"
+#include "Gathering/SFGatheringSkillsPanel.h"
+#include "Gathering/SFStationPanel.h"
 #include "Construction/SFConstructionSandboxPalette.h"
 
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
@@ -25,15 +27,14 @@ bool FSFGatheringHudModelTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Expired toasts are dropped"),Later.Num(),3);
     TestEqual(TEXT("All expired"),Queue.Visible(10.0).Num(),0);
 
-    FSFStationRecipe Recipe; Recipe.Id=TEXT("recipe/test"); Recipe.Station=TEXT("workbench");
-    Recipe.Inputs={{TEXT("item/iron_ingot"),2},{TEXT("item/rough_timber"),1}}; Recipe.Outputs={{TEXT("item/iron_nails"),8}};
-    const FSFRecipeView View=USFGatheringHud::RecipeFor(Recipe,TEXT("Workbench"),3.f);
-    TestTrue(TEXT("Recipe view is valid"),View.bValid && View.Id==Recipe.Id && View.Title==TEXT("Workbench"));
-    TestEqual(TEXT("First input count"),View.InputCount,2);
-    TestEqual(TEXT("Output count"),View.OutputCount,8);
-    TestEqual(TEXT("Inputs are joined"),View.InputLabel,FString(TEXT("Iron Ingot x2 + Rough Timber")));
-    TestEqual(TEXT("Output label"),View.OutputLabel,FString(TEXT("Iron Nails")));
-    TestFalse(TEXT("A recipe without outputs is not shown"),USFGatheringHud::RecipeFor(FSFStationRecipe(),TEXT("X"),1.f).bValid);
+    TestEqual(TEXT("Skill points read in tenths"),USFGatheringSkillsPanel::PointsText(420),FString(TEXT("42.0 / 100.0")));
+    TestEqual(TEXT("Next tier at zero"),USFGatheringSkillsPanel::NextUnlockText(ESFGatheringSkill::Logging,0),FString(TEXT("Uncommon timber at 10.0")));
+    TestEqual(TEXT("Next tier past uncommon"),USFGatheringSkillsPanel::NextUnlockText(ESFGatheringSkill::Mining,100),FString(TEXT("Rare ore at 30.0")));
+    TestEqual(TEXT("All tiers unlocked"),USFGatheringSkillsPanel::NextUnlockText(ESFGatheringSkill::Mining,1000),FString(TEXT("All tiers unlocked")));
+    TestTrue(TEXT("Lock toggle cycles raise, hold, lower"),USFGatheringSkillsPanel::NextLock(ESFGatheringSkillLock::Up)==ESFGatheringSkillLock::Locked
+        && USFGatheringSkillsPanel::NextLock(ESFGatheringSkillLock::Locked)==ESFGatheringSkillLock::Down && USFGatheringSkillsPanel::NextLock(ESFGatheringSkillLock::Down)==ESFGatheringSkillLock::Up);
+    TestEqual(TEXT("Recipe icon stem"),USFStationPanel::IconStem(TEXT("item/rough_timber")),FString(TEXT("rough_timber")));
+    TestTrue(TEXT("Have / need met only at the need"),USFGatheringHud::NeedMet(4,4) && !USFGatheringHud::NeedMet(1,2));
 
     TestEqual(TEXT("Slab is the Foundation tile"),USFConstructionSandboxPalette::TileForAction(ESFConstructionPaletteAction::Slab),0);
     TestEqual(TEXT("Cube is the Wall tile"),USFConstructionSandboxPalette::TileForAction(ESFConstructionPaletteAction::Cube),1);

@@ -10,6 +10,7 @@
 #include "Components/HorizontalBoxSlot.h"
 #include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
+#include "Components/Overlay.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 #include "Characters/SFE1Character.h"
@@ -658,22 +659,17 @@ void USFQuestTrackerHud::NativeOnInitialized()
     using namespace SFHudStyle;
     UCanvasPanel* Canvas = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass(), TEXT("QuestCanvas"));
     WidgetTree->RootWidget = Canvas;
-    // Under the minimap: right edge, 25% down.
+    // IMPLEMENTATION-FIX table 1: quest_tracker_frame 280 wide at x84%, top y31.3% (under the minimap footer), height from the rows.
+    UBorder* Plate = KitPanel(WidgetTree, TEXT("quest_tracker_frame"), 1.f, Slate(0.88f), Brass(), FMargin(4.f, 10.f, 4.f, 12.f), 0.f);
     USizeBox* Box = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    Box->SetWidthOverride(280.f);
+    Box->SetWidthOverride(280.f); Box->SetContent(Plate);
     UCanvasPanelSlot* TrackerSlot = Canvas->AddChildToCanvas(Box);
-    TrackerSlot->SetAnchors(FAnchors(0.84f, 0.25f, 0.99f, 0.40f)); TrackerSlot->SetOffsets(FMargin(0.f));  // hud-layout-v4: 84-99% x 25-40%
-    UBorder* Plate = Panel(WidgetTree, Slate(0.88f), Brass(), FMargin(12.f, 9.f), 4.f);
-    Box->SetContent(Plate);
+    TrackerSlot->SetAnchors(FAnchors(0.84f, 0.313f)); TrackerSlot->SetAutoSize(true);
     UVerticalBox* Stack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     Plate->SetContent(Stack);
-    TitleText = Text(WidgetTree, TEXT(""), 16, Ivory(), true);
-    Stack->AddChildToVerticalBox(TitleText);
-    StepText = Text(WidgetTree, TEXT(""), 12, Brass());
-    Stack->AddChildToVerticalBox(StepText)->SetPadding(FMargin(0.f, 1.f, 0.f, 4.f));
-    USizeBox* Rule = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    Rule->SetHeightOverride(1.f); Rule->SetContent(Panel(WidgetTree, Brass(), Brass(), FMargin(0.f), 0.f));
-    Stack->AddChildToVerticalBox(Rule)->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
+    TitleText = Text(WidgetTree, TEXT(""), 24, Ivory(), true);
+    Stack->AddChildToVerticalBox(TitleText)->SetPadding(FMargin(0.f, 0.f, 0.f, 4.f));
+    Stack->AddChildToVerticalBox(KitImage(WidgetTree, TEXT("divider"), 244.f, 4.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));  // hairline under the title
     Rows = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     Stack->AddChildToVerticalBox(Rows);
 }
@@ -689,23 +685,22 @@ void USFQuestTrackerHud::Present(const FSFQuestView& View)
     UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_CLIENT_VIEW Step=%d Complete=%d Key=%s"), View.StepNumber, View.bComplete, *Key);
     using namespace SFHudStyle;
     TitleText->SetText(FText::FromString(View.Title));
-    StepText->SetText(FText::FromString(View.bComplete ? FString(TEXT("Chain complete")) : FString::Printf(TEXT("Step %d of %d: %s"), View.StepNumber, View.StepTotal, *View.Step)));
     Rows->ClearChildren();
     auto AddRow = [this](const FString& Label, const FString& Count, bool bDone)
     {
         UHorizontalBox* Row = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-        // Tick box: moss-filled when done, empty brass frame otherwise.
-        USizeBox* Tick = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        Tick->SetWidthOverride(12.f); Tick->SetHeightOverride(12.f);
-        Tick->SetContent(Panel(WidgetTree, bDone ? Moss() : Hex(TEXT("0E171C"), 1.f), Brass(), FMargin(0.f), 2.f));
-        UHorizontalBoxSlot* TickSlot = Row->AddChildToHorizontalBox(Tick);
+        // 18 px kit checkbox, the moss tick over it when done (glyph, not colour alone).
+        UOverlay* Check = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
+        Check->AddChildToOverlay(KitImage(WidgetTree, TEXT("checkbox"), 18.f, 18.f));
+        if (bDone) { Check->AddChildToOverlay(KitImage(WidgetTree, TEXT("status_tick"), 18.f, 18.f)); }
+        UHorizontalBoxSlot* TickSlot = Row->AddChildToHorizontalBox(Check);
         TickSlot->SetVerticalAlignment(VAlign_Center); TickSlot->SetPadding(FMargin(0.f, 0.f, 8.f, 0.f));
-        UHorizontalBoxSlot* LabelSlot = Row->AddChildToHorizontalBox(Text(WidgetTree, Label, 13, bDone ? Moss() : Ivory()));
-        LabelSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-        Row->AddChildToHorizontalBox(Text(WidgetTree, Count, 13, bDone ? Moss() : Ivory(), true));
-        Rows->AddChildToVerticalBox(Row)->SetPadding(FMargin(0.f, 2.f));
+        UHorizontalBoxSlot* LabelSlot = Row->AddChildToHorizontalBox(Text(WidgetTree, Label, 18, bDone ? Moss() : Ivory()));
+        LabelSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); LabelSlot->SetVerticalAlignment(VAlign_Center);
+        Row->AddChildToHorizontalBox(Num(WidgetTree, Count, 18, bDone ? Moss() : Ivory()))->SetVerticalAlignment(VAlign_Center);
+        Rows->AddChildToVerticalBox(Row)->SetPadding(FMargin(0.f, 3.f));
     };
-    for (const FSFQuestLine& L : View.Lines) { AddRow(L.Label, FString::Printf(TEXT("%d/%d"), L.Count, L.Target), L.Count >= L.Target); }
+    for (const FSFQuestLine& L : View.Lines) { AddRow(L.Label, FString::Printf(TEXT("%d / %d"), L.Count, L.Target), L.Count >= L.Target); }
     if (View.bComplete) { AddRow(TEXT("Frontier founded"), TEXT(""), true); }
     for (const FString& Reward : View.RewardLines) { AddRow(TEXT("Received ") + Reward, TEXT(""), true); }
 }

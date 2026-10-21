@@ -1,9 +1,12 @@
 #pragma once
 
 #include "Blueprint/UserWidget.h"
+#include "Framework/SFHudStyle.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "SFE1VitalsHud.generated.h"
 
+class APostProcessVolume;
+class UImage;
 class UProgressBar;
 class UTextBlock;
 class UWidget;
@@ -21,24 +24,46 @@ struct SHATTEREDFRONTIER_API FSFE1VitalsModel
     static float HealthFraction(int32 Health, int32 MaxHealth);
     static float RemainingSeconds(double DefeatedAt, double Now, float DelaySeconds);
     static FString Countdown(float RemainingSeconds);
+    // "north_gate" in zone "Silverbrook" -> "Silverbrook North Gate".
+    static FString RespawnTitle(const FString& ZoneName, const FString& PointId);
 };
 
-// Full-screen canvas: bottom-left crest plate with the health bar, and a centred defeated panel.
+// What the defeated window shows besides the countdown; filled by the subsystem from local, read-only state.
+struct FSFE1DefeatView
+{
+    FString Cause;         // "Wild Boar" when a pilot boar stood nearby at the defeat, else empty
+    FString RespawnPoint;  // the nearest zone respawn point, which the server's respawn picks
+    float DelaySeconds = 0.f;
+};
+
+// Full-screen canvas: bottom-left crest plate with the health bar, and the v5 defeated window
+// (docs/Game-Design/concept-art/UI/v5/defeated.png): title, stag divider, cause, two respawn cards and the respawn button
+// whose ring fills as the server's respawn delay runs.
 UCLASS()
 class SHATTEREDFRONTIER_API USFE1VitalsHud : public UUserWidget
 {
     GENERATED_BODY()
 public:
-    void Present(const FSFE1VitalsModel& Model, int32 MaxHealth, float RemainingSeconds);
+    void Present(const FSFE1VitalsModel& Model, int32 MaxHealth, float RemainingSeconds, const FSFE1DefeatView& Defeat = FSFE1DefeatView());
 
 protected:
     virtual void NativeOnInitialized() override;
+    virtual int32 NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect,
+        FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const override;
 
 private:
     UPROPERTY(Transient) TObjectPtr<UProgressBar> Bar;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> HealthText;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> CountdownText;
+    UPROPERTY(Transient) TObjectPtr<UTextBlock> CauseText;
+    UPROPERTY(Transient) TObjectPtr<UTextBlock> PointText;
+    UPROPERTY(Transient) TObjectPtr<UImage> RespawnRing;
     UPROPERTY(Transient) TObjectPtr<UWidget> DefeatedLayer;
+    SFHudStyle::FSFFramedBar HpBar;  // widgets owned by WidgetTree; Root null when the kit is missing
+    SFHudStyle::FSFFramedBar StaminaBar;  // drawn full: no stamina stat yet
+    UPROPERTY(Transient) TObjectPtr<UProgressBar> StaminaPlain;
+    float RespawnProgress = 0.f;
+    bool bDefeatShown = false;
 };
 
 // Creates the HUD for the local player once its ASFE1Character first reports health; no RPCs.
@@ -57,5 +82,9 @@ protected:
 
 private:
     FSFE1VitalsModel Model;
+    FSFE1DefeatView Defeat;
+    double DefeatSeenAt = -1;
     UPROPERTY(Transient) TObjectPtr<USFE1VitalsHud> Hud;
+    // Local, unbound desaturation while defeated; never replicated.
+    UPROPERTY(Transient) TObjectPtr<APostProcessVolume> DefeatGrade;
 };
