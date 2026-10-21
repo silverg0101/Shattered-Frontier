@@ -870,10 +870,26 @@ L['districts']['Outer South'] = dict(
     exclude_polygons=[d['polygon'] for d in L['districts'].values()], outside_wall=True,
     inside_wall=False, dress=dict(canopy=.22, rocks=.35, understory=.75, ground_cover=.55, litter=.6))
 DRESS_DISTRICTS.append('Outer South')
+# The bridge-side river banks sit between Riverside and the Commons polygons.
+# This infill uses the same ground-cover roles and exclusion tests; being inside_wall
+# keeps all tree, sapling and shrub roles out of the town verge.
+L['districts']['River Verge'] = dict(
+    polygon=[[-170, 140], [320, 140], [320, 520], [-170, 520]],
+    exclude_polygons=[d['polygon'] for name, d in L['districts'].items() if name != 'River Verge'],
+    inside_wall=True, dress=dict(canopy=0, rocks=.15, understory=.25, ground_cover=.9, litter=.5))
+DRESS_DISTRICTS.append('River Verge')
 dressing = {}
 for district in DRESS_DISTRICTS:
-    result = dress_zone.dress(L, PROFILE, HF, placed, district, L['seed'])
-    cands = dress_zone.candidates(result, PROFILE)
+    look = PROFILE
+    if district == 'River Verge':
+        look = json.loads(json.dumps(PROFILE))
+        for role in look['layers']:
+            if role['role'] in ('grass_clump', 'herb_broadleaf', 'fern'):
+                role['place']['slope'][1] = 35  # river banks are steeper than forest clearings
+            if role['role'] in ('herb_broadleaf', 'fern'):
+                role['place']['light'] = 'any'  # the open bank has little canopy shade
+    result = dress_zone.dress(L, look, HF, placed, district, L['seed'])
+    cands = dress_zone.candidates(result, look)
     dress_problems = dress_zone.check(L, result, cands, placed)
     assert not dress_problems, f'{district} dressing failed its checks: {dress_problems}'
     (ROOT / f"silverbrook-{district.lower().replace(' ', '-')}-candidates.json").write_text(json.dumps(dict(
