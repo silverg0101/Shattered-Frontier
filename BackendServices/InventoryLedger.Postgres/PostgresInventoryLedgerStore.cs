@@ -23,6 +23,24 @@ public sealed class PostgresInventoryLedgerStore(string connectionString) : IInv
         using var row = cmd.ExecuteReader(); row.Read();
         return (checked((int)row.GetInt64(0)), checked((int)row.GetInt64(1)));
     }
+    // Requeue keeps the immutable payload and character order. Only a parked row can be repaired;
+    // an in-flight lease or delivered tombstone is never reset by this operator action.
+    public void RequeueParkedOutbox(string operationId)
+    {
+        if (string.IsNullOrWhiteSpace(operationId)) throw new ArgumentException("Operation ID is required.", nameof(operationId));
+        using var connection = new NpgsqlConnection(connectionString); connection.Open();
+        using var db = connection.BeginTransaction(); CheckSchema(connection, db);
+        using var cmd = Command(connection, db, """
+            UPDATE inventory.receipt_outbox SET parked_at=NULL,attempts=0,next_attempt_at=now(),
+              last_error_code=NULL
+            WHERE source_operation_id=$1 AND destination='progression' AND parked_at IS NOT NULL
+              AND delivered_at IS NULL AND lease_owner IS NULL AND lease_until IS NULL
+            """);
+        cmd.Parameters.AddWithValue(operationId);
+        if (cmd.ExecuteNonQuery() != 1)
+            throw new InvalidOperationException("No parked, unleased outbox row matched the operation ID.");
+        db.Commit();
+    }
     public IReadOnlyList<OutboxDelivery> ClaimOutbox(string owner, int batchSize, int maxAttempts)
     {
         using var connection = new NpgsqlConnection(connectionString); connection.Open();

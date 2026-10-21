@@ -25,6 +25,12 @@ if (args is ["outbox-status"])
     Console.WriteLine($"RECEIPT_OUTBOX pending={pending} parked={parked} batch={controls.BatchSize} poll_seconds={controls.PollInterval.TotalSeconds} max_attempts={controls.MaxAttempts}");
     return;
 }
+if (args is ["outbox-requeue", var operationId])
+{
+    new PostgresInventoryLedgerStore(Required("GAMEPLAY_LEDGER_CONNECTION")).RequeueParkedOutbox(operationId);
+    Console.WriteLine($"RECEIPT_OUTBOX_REQUEUED op={operationId}");
+    return;
+}
 
 if (args.Length == 1 && args[0].StartsWith("fixture-geometry-", StringComparison.Ordinal))
 {

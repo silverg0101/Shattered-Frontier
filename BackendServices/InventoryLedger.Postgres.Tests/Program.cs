@@ -136,6 +136,14 @@ switch (args[0])
         outboxStore.FailOutbox("outbox-2", "worker-a", "INVALID_ARGUMENT", true, 12);
         Check(outboxStore.ClaimOutbox("worker-b", 32, 12).Count == 0 && outboxStore.OutboxCounts() == (1, 1),
             "parked receipt blocks later character work");
+        outboxStore.RequeueParkedOutbox("outbox-2");
+        Check(outboxStore.OutboxCounts() == (2, 0), "repair returns parked receipt to pending");
+        var repaired = outboxStore.ClaimOutbox("worker-b", 32, 12);
+        Check(repaired.Count == 1 && repaired[0].OperationId == "outbox-2" &&
+            repaired[0].Payload.SequenceEqual(Encoding.UTF8.GetBytes("outbox-2")), "repair retains original bytes and order");
+        outboxStore.CompleteOutbox("outbox-2", "worker-b");
+        Check(outboxStore.ClaimOutbox("worker-b", 32, 12).Single().OperationId == "outbox-3",
+            "later receipt resumes after repaired receipt");
         break;
     case "post-backup-write":
         ledger.Grant("after-backup", id, 4, item, 2, "fixture", "fixture-3");
