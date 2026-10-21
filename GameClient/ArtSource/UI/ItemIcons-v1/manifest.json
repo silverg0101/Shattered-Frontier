@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "items": {
+    "item/boar_hide": {
+      "256": "boar_hide_256.png",
+      "64": "boar_hide_64.png"
+    },
+    "item/door_material_bundle": {
+      "256": "door_material_bundle_256.png",
+      "64": "door_material_bundle_64.png"
+    },
+    "item/foundation_material_bundle": {
+      "256": "foundation_material_bundle_256.png",
+      "64": "foundation_material_bundle_64.png"
+    },
+    "item/hide_strips": {
+      "256": "hide_strips_256.png",
+      "64": "hide_strips_64.png"
+    },
+    "item/iron_axe": {
+      "256": "iron_axe_256.png",
+      "64": "iron_axe_64.png"
+    },
+    "item/iron_ingot": {
+      "256": "iron_ingot_256.png",
+      "64": "iron_ingot_64.png"
+    },
+    "item/iron_nails": {
+      "256": "iron_nails_256.png",
+      "64": "iron_nails_64.png"
+    },
+    "item/iron_ore": {
+      "256": "iron_ore_256.png",
+      "64": "iron_ore_64.png"
+    },
+    "item/iron_pickaxe": {
+      "256": "iron_pickaxe_256.png",
+      "64": "iron_pickaxe_64.png"
+    },
+    "item/oak_log": {
+      "256": "oak_log_256.png",
+      "64": "oak_log_64.png"
+    },
+    "item/roof_material_bundle": {
+      "256": "roof_material_bundle_256.png",
+      "64": "roof_material_bundle_64.png"
+    },
+    "item/rough_stone": {
+      "256": "rough_stone_256.png",
+      "64": "rough_stone_64.png"
+    },
+    "item/rough_timber": {
+      "256": "rough_timber_256.png",
+      "64": "rough_timber_64.png"
+    },
+    "item/starter_tool_repair_kit": {
+      "256": "starter_tool_repair_kit_256.png",
+      "64": "starter_tool_repair_kit_64.png"
+    },
+    "item/wall_material_bundle": {
+      "256": "wall_material_bundle_256.png",
+      "64": "wall_material_bundle_64.png"
+    }
+  }
+}
