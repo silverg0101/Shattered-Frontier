@@ -25,6 +25,7 @@ public sealed class PostgresCharacterStateStore(string connectionString)
 
     public long SavePosition(string characterId, long expectedRevision, CharacterPositionSnapshot position) => Transaction((c, t) =>
     {
+        LockCharacter(c, t, characterId);
         using var cmd = Command(c, t, "INSERT INTO character_state.positions(character_id,revision,zone_id,x,y,z,yaw) VALUES ($1,1,$3,$4,$5,$6,$7) ON CONFLICT (character_id) DO UPDATE SET revision=character_state.positions.revision+1,zone_id=EXCLUDED.zone_id,x=EXCLUDED.x,y=EXCLUDED.y,z=EXCLUDED.z,yaw=EXCLUDED.yaw,updated_at=now() WHERE character_state.positions.revision=$2 RETURNING revision",
             characterId, expectedRevision, position.ZoneId, position.X, position.Y, position.Z, position.Yaw);
         var result = cmd.ExecuteScalar();
@@ -56,13 +57,18 @@ public sealed class PostgresCharacterStateStore(string connectionString)
         return command;
     }
 
+    private static void LockCharacter(NpgsqlConnection c, NpgsqlTransaction t, string characterId)
+    {
+        using var command = Command(c, t, "SELECT pg_advisory_xact_lock(hashtext('sf.character:' || $1))", characterId);
+        command.ExecuteNonQuery();
+    }
+
     private T Transaction<T>(Func<NpgsqlConnection, NpgsqlTransaction, T> action)
     {
         try
         {
             using var c = new NpgsqlConnection(connectionString); c.Open();
             using var t = c.BeginTransaction();
-            using (var l = Command(c, t, "SELECT pg_advisory_xact_lock(519761, 2)")) l.ExecuteNonQuery();
             try
             {
                 using var marker = Command(c, t, "SELECT version,migration_id,compatible_build_min,compatible_build_max FROM character_state.schema_version WHERE singleton=true FOR SHARE");
@@ -100,6 +106,7 @@ public sealed class PostgresCharacterStateStore(string connectionString)
         if (string.IsNullOrWhiteSpace(receipt.CharacterId) || string.IsNullOrWhiteSpace(receipt.ReceiptId)) throw new ArgumentException("Receipt identity required.");
         return Transaction((c, t) =>
         {
+            LockCharacter(c, t, receipt.CharacterId);
             string hash = Fingerprint(receipt);
             var replay = Replay<ProgressionResult>(c, t, "progression", receipt.CharacterId, receipt.ReceiptId, hash);
             if (replay is not null) return replay;
@@ -133,6 +140,7 @@ public sealed class PostgresCharacterStateStore(string connectionString)
         if (string.IsNullOrWhiteSpace(characterId)) throw new ArgumentException("Character ID required.");
         return Transaction((c, t) =>
         {
+            LockCharacter(c, t, characterId);
             var model = new QuestProgression(quest); model.Accept(characterId, acceptedAt);
             using var cmd = Command(c, t, "INSERT INTO character_state.quests VALUES ($1,$2,$3,0,$4::jsonb) ON CONFLICT DO NOTHING", characterId, quest.Id, quest.Revision, JsonSerializer.Serialize(model.Snapshot(characterId)));
             cmd.ExecuteNonQuery();
@@ -149,6 +157,7 @@ public sealed class PostgresCharacterStateStore(string connectionString)
             throw new ArgumentException("Quest evidence identity invalid.");
         return Transaction((c, t) =>
         {
+            LockCharacter(c, t, evidence.CharacterId);
             string hash = Fingerprint(evidence);
             var replay = Replay<ProgressResult>(c, t, "quest", evidence.CharacterId, evidence.OperationId, hash);
             if (replay is not null) return replay;
@@ -204,6 +213,11 @@ public sealed class PostgresCharacterStateStore(string connectionString)
 
     public void CompleteReward(string operationId) => Transaction((c,t) =>
     {
+        using (var lookup = Command(c,t,"SELECT character_id FROM character_state.reward_receipts WHERE operation_id=$1",operationId))
+        {
+            var characterId = lookup.ExecuteScalar() as string ?? throw new CharacterStoreRejectedException("Reward intent missing.");
+            LockCharacter(c,t,characterId);
+        }
         using var cmd = Command(c,t,"UPDATE character_state.reward_receipts SET state='Complete' WHERE operation_id=$1",operationId);
         if (cmd.ExecuteNonQuery()!=1) throw new CharacterStoreRejectedException("Reward intent missing.");
         return true;

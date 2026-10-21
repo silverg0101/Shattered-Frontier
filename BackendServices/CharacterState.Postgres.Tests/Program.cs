@@ -1,6 +1,7 @@
 using ShatteredFrontier.CharacterState.Postgres;
 using ShatteredFrontier.Progression;
 using ShatteredFrontier.QuestContent;
+using Npgsql;
 
 static void Check(bool value, string label) { if (!value) throw new Exception(label); Console.WriteLine("PASS " + label); }
 var connection = Environment.GetEnvironmentVariable("CHARACTER_STATE_CONNECTION") ?? throw new Exception("Missing fixture connection.");
@@ -38,6 +39,28 @@ switch (args[0])
         })).ToArray();
         Check(ready.Wait(TimeSpan.FromSeconds(10)), "workers ready"); start.Set(); Task.WaitAll(tasks);
         Check(tasks.Count(t => t.Result) == 1, "one concurrent revision winner");
+        using (var blocker = new NpgsqlConnection(connection))
+        {
+            blocker.Open();
+            using var held = blocker.BeginTransaction();
+            using (var lockCommand = new NpgsqlCommand("SELECT pg_advisory_xact_lock(hashtext('sf.character:' || $1))", blocker, held))
+            {
+                lockCommand.Parameters.AddWithValue("held-character");
+                lockCommand.ExecuteNonQuery();
+            }
+            var position = new CharacterPositionSnapshot("zone_test", 0, 0, 0, 0);
+            var heldWrite = Task.Run(() => store.SavePosition("held-character", 0, position));
+            var otherWrite = Task.Run(() => store.SavePosition("other-character", 0, position));
+            try
+            {
+                Check(otherWrite.Wait(TimeSpan.FromSeconds(10)) && otherWrite.Result == 1,
+                    "different character writes do not serialize behind held lock");
+                Check(!heldWrite.IsCompleted, "same character write waits for held lock");
+            }
+            finally { held.Commit(); }
+            Check(heldWrite.Wait(TimeSpan.FromSeconds(10)) && heldWrite.Result == 1,
+                "held character write resumes after lock release");
+        }
         break;
     case "outage":
         try { store.ApplyProgression(Kill("outage"), 2, TimeProvider.System, () => .5); throw new Exception("outage accepted write"); }
