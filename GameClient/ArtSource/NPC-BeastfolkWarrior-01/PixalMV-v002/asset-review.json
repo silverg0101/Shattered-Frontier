@@ -1,0 +1,23 @@
+{
+  "asset_name": "BeastfolkWarrior",
+  "mesh_objects": 1,
+  "triangles": 285885,
+  "dimensions": [
+    1.4442863464355469,
+    0.6197159290313721,
+    1.850000023841858
+  ],
+  "dimension_unit": "metres",
+  "target_height_m": 1.85,
+  "scale_status": "explicit target height",
+  "yaw_degrees": 0,
+  "materials": [
+    "Material_0"
+  ],
+  "uv_layers": [
+    1
+  ],
+  "geometry_only": false,
+  "pitch_degrees": 0,
+  "roll_degrees": 0
+}
