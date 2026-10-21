@@ -7,7 +7,7 @@
 
 | Asset ID | Category / main concept | Source path / heading | Priority / dependencies | Owner / job state | Concept / clean-view status | Selected package / next action |
 |---|---|---|---|---|---|---|
-| VEG-GreenlandsShrubBroadleaf-01 | Vegetation / Waist-to-head-high broadleaf shrubs (hazel/bramble-like) clustered at wood edges, roadsides and under trees; the target frame's mid layer | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `shrub_broadleaf` | P2; 0 of 3 variants owned; stands in today: `sapling_broadleaf` meshes | unassigned / planned | proposed / — | concept sheet and asset view (Qwen Image), then model (Pixal3D or Blender); 3 variant(s) |
+| VEG-GreenlandsShrubBroadleaf-01 | Vegetation / Waist-to-head-high broadleaf shrubs (hazel/bramble-like) clustered at wood edges, roadsides and under trees; the target frame's mid layer | `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp`; look profile role `shrub_broadleaf` | P2; 0 of 3 variants owned | unassigned / planned | proposed / — | concept sheet and asset view (Qwen Image), then model (Pixal3D or Blender); 3 variant(s) |
 
 ## Briefs and component boundaries
 

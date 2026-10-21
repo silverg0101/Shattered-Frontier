@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parent;LIB='/Game/Frontier/Environment/Greenlands/Nature'
 tools=u.AssetToolsHelpers.get_asset_tools();mel=u.MaterialEditingLibrary;eal=u.EditorAssetLibrary;sme=u.get_editor_subsystem(u.StaticMeshEditorSubsystem)
 assert sme,'Full editor required'
-FAMILIES=[a for a in sys.argv[1:] if (ROOT/a/'asset-manifest.json').exists()] or ['BoulderLargeMoss','BedrockSlab','BroadleafYoung','PineTall','CobblePebbleScatter','MossPatch','LeafNeedleLitter','HerbBroadleaf','SaplingBroadleaf','GraniteDomeFar']
+FAMILIES=[a for a in sys.argv[1:] if (ROOT/a/'asset-manifest.json').exists()] or ['BoulderLargeMoss','BedrockSlab','BroadleafYoung','PineTall','CobblePebbleScatter','MossPatch','LeafNeedleLitter','HerbBroadleaf','SaplingBroadleaf','ShrubBroadleaf','GraniteDomeFar']
 COL={'BoulderLargeMoss':'convex','BedrockSlab':'convex','CobblePebbleScatter':'convex','BroadleafYoung':'ucx','PineTall':'ucx','SaplingBroadleaf':'ucx'}   # other families: no collision
 ROCKISH=('BoulderLargeMoss','BedrockSlab','CobblePebbleScatter','MossPatch','GraniteDomeFar')   # opaque one-sided master, Nanite fallback 10%
 TEX={}
