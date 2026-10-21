@@ -30,6 +30,10 @@ Out of MVP scope by the specs: extensive appearance editor, store, voluntary ren
 1. Human only at launch; any later race (own skeleton and proportions, non-human head, tail, horns, digitigrade legs) must fit without rework.
 2. Hybrid: MetaHuman-quality heads baked into our modular body and armour system; no full MetaHuman runtime per player.
 3. "Polished basic" MVP: name, 2 body types, ~8 faces, ~10 hairstyles, beards, colour pickers, starting skills and attributes, rotating 3D preview in a styled scene.
+4. Skeleton: UE5 / MetaHuman-compatible skeleton for every player race, adopted now while few clips exist. The AutoRig target and mannequin clips migrate once. This supersedes unknown 11.
+5. Body types: male and female. Heads, hair and outfits are authored or fitted per body, so the asset list's fit work doubles for those items.
+6. Lore: a Fable-drafted brief of 2-4 human peoples, appearance-only (palettes, hair, starting outfits; no stats), edited by the owner. It closes unknown 3 for humans.
+7. MetaHuman: from UE 5.6 MetaHumans are under the UE EULA and may be used with other engines and creative software, so the Blender bake step is permitted (re-check the current EULA before ship). Before committing to all 8 heads, prototype one: export, bake to our topology, attach to the body, then compare quality and cost near and far. Hybrid versus fallback is decided on that evidence. This narrows unknown 2 to bake fidelity.
 
 ## 3. Architecture
 
