@@ -42,22 +42,34 @@ def build_ring(c):
     t = np.linspace(0, 1, nr)
     T, R = np.meshgrid(th, t)  # rows = radial
     r = ri + (ro - ri) * R
-    # ridged angular noise (periodic in theta): ranges and gaps, not a wall
-    ang = sum((1 / (k + 1)) * np.abs(np.sin((k + 2) * T + ph[k, 0] + 1.7 * R * (k + 1))) for k in range(6))
-    ang = ang / ang.max()
-    ridge = 0.35 + 0.65 * ang * (0.6 + 0.4 * np.sin(5 * T + 9 * R + ph[6, 1]) ** 2)
-    prof = np.clip(np.sin(math.pi * np.clip(R * 1.15, 0, 1)), 0, 1) ** 0.8
-    z = H * prof * ridge - drop * (1 - np.clip(R * 6, 0, 1))
-    z = z + 25 * np.sin(T * 61 + ph[7, 0]) * np.sin(R * 83 + ph[7, 2]) * prof  # rock breakup
-    V = np.stack([r * np.cos(T), r * np.sin(T), z], -1).reshape(-1, 3)
+    # ridged multifractal from plane waves (sharp crests, uneven peaks), shaped by a radial envelope and angular gaps so ranges differ in height and spacing
+    X, Y = r * np.cos(T), r * np.sin(T)
+    ridge = np.zeros_like(r)
+    for k in range(9):
+        d = rng.uniform(0, 2 * math.pi)
+        f = 2 * math.pi / (7000.0 / 1.9 ** k)
+        ridge += (0.5 ** (k * 0.8)) * (1 - np.abs(np.sin(f * (X * math.cos(d) + Y * math.sin(d)) + rng.uniform(0, 6.28)))) ** 2.2
+    ridge = ridge / ridge.max()
+    gaps = 0.45 + 0.55 * np.clip(0.5 + 0.9 * np.sin(3 * T + ph[0, 0]) * np.sin(7 * T + ph[1, 1]) + 0.5 * np.sin(11 * T + ph[2, 0]), 0, 1)
+    prof = np.clip(np.sin(math.pi * np.clip(R * 1.1, 0, 1)), 0, 1) ** 0.7
+    z = H * prof * gaps * (0.25 + 0.75 * ridge) - drop * (1 - np.clip(R * 6, 0, 1))
+    V = np.stack([X, Y, z], -1).reshape(-1, 3)
     idx = np.arange(nr * na).reshape(nr, na)
     a, b = idx[:-1], idx[1:]
     F = np.stack([a, np.roll(a, -1, 1), np.roll(b, -1, 1), b], -1).reshape(-1, 4)
     gy, gx = np.gradient(z)
     slope = np.hypot(gx / ((ro - ri) / nr), gy / (2 * math.pi * r / na)).reshape(-1)
-    zn = np.clip(z.reshape(-1) / H, 0, 1)
-    forest = np.clip((0.45 - zn) / 0.2, 0, 1) * np.clip((1.2 - slope) / 0.8, 0, 1)  # low and gentle
-    snow = np.clip((zn - c['ring.snow_line_fraction']) / 0.1, 0, 1)
+    zf = z.reshape(-1)
+    zn = np.clip(zf / H, 0, 1)
+    n1 = 0.5 + 0.5 * np.sin(X.reshape(-1) * 0.011 + ph[3, 0]) * np.sin(Y.reshape(-1) * 0.013 + ph[3, 1]) * np.sin((X + Y).reshape(-1) * 0.037 + ph[4, 0])
+    sm = lambda x: np.clip(x, 0, 1) ** 2 * (3 - 2 * np.clip(x, 0, 1))
+    forest = sm((0.40 + 0.1 * n1 - zn) / 0.2) * sm((1.1 - slope) / 0.6)  # low and gentle
+    snow = sm((zn - c['ring.snow_line_fraction'] + 0.12 * (n1 - 0.5)) / 0.08) * sm((2.0 - slope) / 1.2)  # high, not on the steepest faces
+    rock = np.stack([0.34 + 0.08 * n1, 0.32 + 0.07 * n1, 0.30 + 0.06 * n1], -1)
+    pine = np.stack([0.07 + 0.03 * n1, 0.12 + 0.04 * n1, 0.06 + 0.02 * n1], -1)
+    alb = rock * (1 - forest[:, None]) + pine * forest[:, None]
+    alb = alb * (1 - snow[:, None]) + np.array([0.88, 0.9, 0.93]) * snow[:, None]
+    alb = np.clip(alb, 0, 1)
     me = bpy.data.meshes.new('SM_MountainRing')
     me.from_pydata(V.tolist(), [], F.tolist())
     me.update()
@@ -67,7 +79,7 @@ def build_ring(c):
     col = me.color_attributes.new(name='Color', type='BYTE_COLOR', domain='POINT')
     m = c['ring.uv_metres_per_tile']
     for i in range(len(V)):
-        col.data[i].color = (float(forest[i]), float(snow[i]), 0.0, 1.0)
+        col.data[i].color = (float(alb[i, 0]), float(alb[i, 1]), float(alb[i, 2]), 1.0)  # baked albedo
     for lp in me.loops:
         x, y, _ = V[lp.vertex_index]
         uvl.data[lp.index].uv = (x / m, y / m)
@@ -99,8 +111,7 @@ def place(c):
     u.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
     ring = u.load_asset(f'{NATURE}/Meshes/SM_MountainRing')
     assert ring, 'ring import failed'
-    mi = u.load_asset(f'{NATURE}/Materials/MI_GraniteDomeFar_00')
-    assert mi, 'MI_GraniteDomeFar_00 missing; run NatureFamilies/import_nature.py GraniteDomeFar'
+    mi = mountain_material(u)
     for i in range(len(ring.static_materials)):
         ring.set_material(i, mi)
     ns = ring.get_editor_property('nanite_settings')
@@ -141,6 +152,27 @@ def place(c):
             a.set_is_temporarily_hidden_in_editor(True)
     assert levels.save_current_level()
     print('BACKDROP_PLACED', n, 'domes + ring')
+
+
+def mountain_material(u):
+    """M_Backdrop_Mountain: baked vertex-colour albedo (rock, forest, snow by height and slope) times rock_08 detail; rebuilt each run."""
+    mel, tools, path = u.MaterialEditingLibrary, u.AssetToolsHelpers.get_asset_tools(), f'{NATURE}/Materials/M_Backdrop_Mountain'
+    m = u.load_asset(path) or tools.create_asset('M_Backdrop_Mountain', f'{NATURE}/Materials', u.Material, u.MaterialFactoryNew())
+    mel.delete_all_material_expressions(m)
+    node = lambda cls, x, y, **kw: (lambda e: ([e.set_editor_property(k, v) for k, v in kw.items()], e)[1])(mel.create_material_expression(m, cls, x, y))
+    tc = node(u.MaterialExpressionTextureCoordinate, -900, 0, u_tiling=24.0, v_tiling=24.0)
+    tex = node(u.MaterialExpressionTextureSample, -650, 0, texture=u.load_asset(f'{NATURE}/Textures/T_GN_rock_08_Diffuse'))
+    vc = node(u.MaterialExpressionVertexColor, -650, 250)
+    gain = node(u.MaterialExpressionMultiply, -450, 0, const_b=1.8)  # detail centred near 1
+    col = node(u.MaterialExpressionMultiply, -250, 100)
+    rough = node(u.MaterialExpressionConstant, -250, 300, r=0.92)
+    for a, o, b, i in ((tc, '', tex, 'UVs'), (tex, 'RGB', gain, 'A'), (vc, 'RGB', col, 'A'), (gain, '', col, 'B')):
+        assert mel.connect_material_expressions(a, o, b, i), (a, b)
+    mel.connect_material_property(col, '', u.MaterialProperty.MP_BASE_COLOR)
+    mel.connect_material_property(rough, '', u.MaterialProperty.MP_ROUGHNESS)
+    mel.recompile_material(m)
+    u.EditorAssetLibrary.save_loaded_asset(m)
+    return m
 
 
 def ground_z(u, world, x, y):
