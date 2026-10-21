@@ -13,12 +13,13 @@ pairs = {'build-mode': ('build.png', 'build-mode.png'), 'inventory': ('inv.png',
 for name, (live, concept) in pairs.items():
     im = Image.open(os.path.join(S, live)).convert('RGB'); w, h = im.size
     # the window screenshot includes the title bar and borders; crop to the client area and scale to the concept size
-    cl = im.crop((int(w * 0.0093), int(h * 0.042), int(w * 0.9907), int(h * 0.99))).resize((1672, 941), Image.LANCZOS)
-    cl.save(OUT + name + '-live.png')
+    if w > 2000: im = im.crop((int(w * 0.0093), int(h * 0.042), int(w * 0.9907), int(h * 0.99)))  # window shot: keep the client area only
+    im.save(OUT + name + "-live.png")  # native 1920x1080 client capture
+    cl = im.resize((1672, 941), Image.LANCZOS)
     cc = Image.open(C + concept).convert('RGB').resize((1672, 941), Image.LANCZOS)
     sheet = Image.new('RGB', (1672 * 2 + 20, 941), (20, 20, 20)); sheet.paste(cc, (0, 0)); sheet.paste(cl, (1692, 0)); sheet.save(OUT + name + '-compare.png')
 b, k, m = (Image.open(os.path.join(S, f)).convert('RGB') for f in ('b0.png', 'build.png', 'market.png'))
-parts = [b.crop((1000, 1440, 1900, 1620)), k.crop((120, 600, 1300, 1000)), m.crop((1880, 1130, 2400, 1280))]
+parts = [b.crop((660, 940, 1260, 1040)), k.crop((40, 230, 520, 600)), m.crop((1260, 690, 1600, 780))]  # hotbar, catalogue tiles+tabs, hold-to-buy button (native pixels)
 sheet = Image.new('RGB', (max(p.width for p in parts), sum(p.height for p in parts) + 20), (20, 20, 20)); y = 0
 for p in parts:
     sheet.paste(p, (0, y)); y += p.height + 10
