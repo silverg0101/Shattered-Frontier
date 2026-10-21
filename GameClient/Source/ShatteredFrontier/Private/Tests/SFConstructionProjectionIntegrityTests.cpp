@@ -5,7 +5,7 @@
 #include "Construction/SFConstructionSandbox.h"
 #include "Components/BoxComponent.h"
 #include "Components/PrimitiveComponent.h"
-#include "Framework/SFE1GameMode.h"
+#include "Framework/SFGameMode.h"
 #include "GameFramework/WorldSettings.h"
 #include "PhysicsEngine/BodySetup.h"
 #include "ProceduralMeshComponent.h"
@@ -16,7 +16,7 @@ bool PrepareIntegrityWorld(FTestWorldWrapper& Fixture, UWorld*& World, bool bSan
 {
     if (!Fixture.CreateTestWorld(EWorldType::Game)) { return false; }
     World = Fixture.GetTestWorld();
-    World->GetWorldSettings()->DefaultGameMode = bSandbox ? ASFConstructionSandboxGameMode::StaticClass() : ASFE1GameMode::StaticClass();
+    World->GetWorldSettings()->DefaultGameMode = bSandbox ? ASFConstructionSandboxGameMode::StaticClass() : ASFGameMode::StaticClass();
     if (!World->SetGameMode(FURL()) || !Fixture.BeginPlayInTestWorld()) { return false; }
     World->GetWorldSettings()->NotifyBeginPlay();
     return true;

@@ -1,20 +1,24 @@
-#include "Framework/SFE1GameMode.h"
+#include "Framework/SFGameMode.h"
+#include "Construction/SFConstructionNetwork.h"
 #include "Characters/SFE1Character.h"
 #include "Interaction/SFE1InteractionTarget.h"
-#include "Interaction/SFE1PlayerController.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
 #include "GameFramework/PlayerController.h"
 #include "TimerManager.h"
 #include "Tests/SFE1NetworkScenario.h"
 
-ASFE1GameMode::ASFE1GameMode()
+ASFGameMode::ASFGameMode()
 {
     DefaultPawnClass = ASFE1Character::StaticClass();
-    PlayerControllerClass = ASFE1PlayerController::StaticClass();
+    PlayerControllerClass = ASFConstructionNetworkController::StaticClass();
+    HUDClass = ASFConstructionNetworkHUD::StaticClass();
+    // The combat slot bridge is the only per-tick work; 1 Hz is enough for it.
+    PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.TickInterval = 1.0f;
 }
 
-void ASFE1GameMode::StartPlay()
+void ASFGameMode::StartPlay()
 {
     if (GetNetMode() == NM_DedicatedServer)
     {
@@ -39,16 +43,20 @@ void ASFE1GameMode::StartPlay()
 #if WITH_DEV_AUTOMATION_TESTS
     StartE1NetworkScenario(GetWorld());
 #endif
+    StartConstruction();
+    StartCombat();
 }
 
-void ASFE1GameMode::PostLogin(APlayerController* NewPlayer)
+void ASFGameMode::PostLogin(APlayerController* NewPlayer)
 {
     Super::PostLogin(NewPlayer);
     UE_LOG(LogTemp, Display, TEXT("E1_PLAYER_JOIN Controller=%s Players=%d Authority=%d"), *GetNameSafe(NewPlayer), GetNumPlayers(), HasAuthority());
     ScheduleLifecycleAudit(NewPlayer, false);
+    PostLoginConstruction(NewPlayer);
+    PostLoginCombat(NewPlayer);
 }
 
-void ASFE1GameMode::Logout(AController* Exiting)
+void ASFGameMode::Logout(AController* Exiting)
 {
     UE_LOG(LogTemp, Display, TEXT("E1_PLAYER_LEAVE Controller=%s"), *GetNameSafe(Exiting));
     // Capture before Logout/Destroyed finishes; inspect the world on the next tick.
@@ -56,7 +64,7 @@ void ASFE1GameMode::Logout(AController* Exiting)
     Super::Logout(Exiting);
 }
 
-void ASFE1GameMode::ScheduleLifecycleAudit(AController* Trigger, bool bLeaving)
+void ASFGameMode::ScheduleLifecycleAudit(AController* Trigger, bool bLeaving)
 {
     const TWeakObjectPtr<AController> TriggerController(Trigger);
     // PlayerController may already have destroyed/unpossessed its pawn at Logout.
@@ -110,7 +118,7 @@ void ASFE1GameMode::ScheduleLifecycleAudit(AController* Trigger, bool bLeaving)
         }));
 }
 
-void ASFE1GameMode::RestartPlayer(AController* NewPlayer)
+void ASFGameMode::RestartPlayer(AController* NewPlayer)
 {
     Super::RestartPlayer(NewPlayer);
     if (NewPlayer && NewPlayer->GetPawn())
@@ -120,4 +128,12 @@ void ASFE1GameMode::RestartPlayer(AController* NewPlayer)
     }
     UE_LOG(LogTemp, Display, TEXT("E1_POSSESSION Controller=%s Pawn=%s Authority=%d"),
         *GetNameSafe(NewPlayer), *GetNameSafe(NewPlayer ? NewPlayer->GetPawn() : nullptr), HasAuthority());
+    RestartConstruction(NewPlayer);
+    RestartCombat(NewPlayer);
+}
+
+void ASFGameMode::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+    TickCombat();
 }

@@ -4,7 +4,7 @@
 #include "Construction/SFConstructionSandbox.h"
 #include "Construction/SFConstructionSandboxDoorProjection.h"
 #include "Components/BoxComponent.h"
-#include "Framework/SFE1GameMode.h"
+#include "Framework/SFGameMode.h"
 #include "GameFramework/WorldSettings.h"
 #include "PhysicsEngine/BodyInstance.h"
 #include "PhysicsEngine/BodySetup.h"
@@ -16,7 +16,7 @@ bool PrepareDoorWorld(FTestWorldWrapper& Fixture, UWorld*& World, bool bSandbox 
 {
     if (!Fixture.CreateTestWorld(EWorldType::Game)) { return false; }
     World = Fixture.GetTestWorld();
-    World->GetWorldSettings()->DefaultGameMode = bSandbox ? ASFConstructionSandboxGameMode::StaticClass() : ASFE1GameMode::StaticClass();
+    World->GetWorldSettings()->DefaultGameMode = bSandbox ? ASFConstructionSandboxGameMode::StaticClass() : ASFGameMode::StaticClass();
     if (!World->SetGameMode(FURL()) || !Fixture.BeginPlayInTestWorld()) { return false; }
     World->GetWorldSettings()->NotifyBeginPlay();
     return true;

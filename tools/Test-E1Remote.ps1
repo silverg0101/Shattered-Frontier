@@ -45,7 +45,7 @@ try {
                 $failure = Select-String -LiteralPath $clientLog -Pattern 'NetworkFailure:|Network Failure:|Server is incompatible with the local version|incompatible version of the game' -List
                 if ($failure) { throw "Client$index reported a network or server compatibility failure: $($failure.Line). Inspect $clientLog" }
             }
-            if ((Test-Path -LiteralPath $clientLog) -and (Select-String -LiteralPath $clientLog -Pattern 'Welcomed by server \(Level: /Game/Frontier/Maps/Greenlands_E1, Game: /Script/ShatteredFrontier.SFE1GameMode\)')) {
+            if ((Test-Path -LiteralPath $clientLog) -and (Select-String -LiteralPath $clientLog -Pattern 'Welcomed by server \(Level: /Game/Frontier/Maps/Greenlands_E1, Game: /Script/ShatteredFrontier.SFGameMode\)')) {
                 $connected = $true
                 break
             }

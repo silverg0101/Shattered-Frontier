@@ -32,7 +32,7 @@ public:
     static USFBackpackComponent* FindOrCreate(APlayerController* Controller);
     // Gameplay.Host client shared by every server-side caller; null when services are disabled.
     static TSharedPtr<FSFGameplayServicesClient> Services();
-    // Development fixture until DEC-04: a stable dev character name for a connection (see ASFConstructionNetworkGameMode::InitNewPlayer).
+    // Development fixture until DEC-04: a stable dev character name for a connection (see ASFGameMode::InitNewPlayer).
     static bool IsValidDevName(const FString& Name);
     static void AssignDevIdentity(APlayerController* Controller, const FString& Name);
     const FString& GetContainerId() { BindIdentity(); return ContainerId; }

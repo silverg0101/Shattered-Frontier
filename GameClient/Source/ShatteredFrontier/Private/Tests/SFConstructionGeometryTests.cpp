@@ -4,7 +4,7 @@
 #include "Tests/AutomationCommon.h"
 #include "Construction/SFConstructionGeometry.h"
 #include "Construction/SFConstructionSandbox.h"
-#include "Framework/SFE1GameMode.h"
+#include "Framework/SFGameMode.h"
 #include "GameFramework/WorldSettings.h"
 #include "ProceduralMeshComponent.h"
 #include "EngineUtils.h"
@@ -107,7 +107,7 @@ bool FSFConstructionIsolationTest::RunTest(const FString& Parameters)
     FTestWorldWrapper Fixture;
     if (!Fixture.CreateTestWorld(EWorldType::Game)) { Fixture.ForwardErrorMessages(this); return false; }
     UWorld* World = Fixture.GetTestWorld();
-    World->GetWorldSettings()->DefaultGameMode = ASFE1GameMode::StaticClass();
+    World->GetWorldSettings()->DefaultGameMode = ASFGameMode::StaticClass();
     if (!TestTrue(TEXT("Normal E1 mode created"), World->SetGameMode(FURL()))) { return false; }
     if (!Fixture.BeginPlayInTestWorld()) { Fixture.ForwardErrorMessages(this); return false; }
     World->GetWorldSettings()->NotifyBeginPlay();

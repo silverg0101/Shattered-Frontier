@@ -55,7 +55,7 @@ def finish():
     state['elapsed_seconds'] = round(time.monotonic() - started, 1)
     state['passed'] = (state.get('walk_completed') is True and state['e1_fixtures'] == 0
                        and state.get('swim', {}).get('swimming_after_4s') is True and state['swim'].get('climbed_out') is True
-                       and state['game_mode'] == 'SFE1GameMode' and state['pawn'] == 'SFE1Character')
+                       and state['game_mode'] == 'SFGameMode' and state['pawn'] == 'SFE1Character')
     (ROOT / 'silverbrook-game-review.json').write_text(json.dumps(state, indent=2))
     u.log(f"SILVERBROOK_REVIEW passed={state['passed']} reached={len(state['reached'])}/{len(ROUTE) - 1}")
     u.unregister_slate_post_tick_callback(handle)

@@ -74,7 +74,7 @@ try {
     $flags = @('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox','-GatheringPilot','-ExchangeScenario',('-ExchangeScenarioGate="'+$gate+'"'),
         ($ledgerIni+':bEnabled=True'),($ledgerIni+':Endpoint=127.0.0.1:'+$fx.hostPort),($servicesIni+':bEnabled=True'),($servicesIni+':bExchangeEnabled=True'),($servicesIni+':Endpoint=127.0.0.1:'+$gameplayPort))
     $serverEnv = @{ SF_INVENTORY_LEDGER_TOKEN=$fx.token; SF_GAMEPLAY_TOKEN=$gameplayToken }
-    Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server' ($silverbrook + '?game=/Script/ShatteredFrontier.SFConstructionNetworkGameMode') $flags }
+    Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server' ($silverbrook + '?game=/Script/ShatteredFrontier.SFGameMode') $flags }
     Wait-Log $server 'server' 'GATHERING_PILOT_READY'
     $first = Start-Owned 'first' ('127.0.0.1:'+$Port) @('-game')
     $second = Start-Owned 'second' ('127.0.0.1:'+$Port) @('-game')

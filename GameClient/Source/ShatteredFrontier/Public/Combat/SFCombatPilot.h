@@ -2,7 +2,6 @@
 
 #include "Engine/DeveloperSettings.h"
 #include "Construction/SFConstructionNetwork.h"
-#include "Framework/SFE1GameMode.h"
 #include "GameFramework/Character.h"
 #include "SFCombatPilot.generated.h"
 
@@ -75,7 +74,7 @@ public:
     ASFPilotBoar();
     virtual void Tick(float DeltaSeconds) override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-    void Initialize(class ASFCombatPilotGameMode* OwnerMode, const FString& Group, int32 Slot,
+    void Initialize(class ASFGameMode* OwnerMode, const FString& Group, int32 Slot,
         const TArray<FVector2D>& Area, int32 Health, int32 Serial);
     void ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage);
     const FString& GroupId() const { return SpawnGroup; }
@@ -88,7 +87,7 @@ private:
     UPROPERTY(ReplicatedUsing=OnRep_Health) int32 CurrentHealth = 0;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> Body;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UTextRenderComponent> Label;
-    TWeakObjectPtr<class ASFCombatPilotGameMode> PilotMode;
+    TWeakObjectPtr<class ASFGameMode> PilotMode;
     TWeakObjectPtr<ASFE1Character> Target;
     FString SpawnGroup;
     int32 Slot = INDEX_NONE;
@@ -99,48 +98,4 @@ private:
     double NextWanderAt = 0;
     double NextSwingAt = 0;
     bool bReturning = false;
-};
-
-UCLASS(NotBlueprintable)
-// ponytail: inherits the construction/gathering mode so one Silverbrook world runs every pilot (quest chain).
-// Upgrade path: one Silverbrook mode that composes feature components instead of inheriting them.
-class SHATTEREDFRONTIER_API ASFCombatPilotGameMode : public ASFConstructionNetworkGameMode
-{
-    GENERATED_BODY()
-public:
-    ASFCombatPilotGameMode();
-    virtual void StartPlay() override;
-    virtual void PostLogin(APlayerController* NewPlayer) override;
-    virtual void RestartPlayer(AController* NewPlayer) override;
-    virtual void Tick(float DeltaSeconds) override;
-    void TryPlayerAttack(ASFE1Character* Attacker);
-    void TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim);
-    void BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer);
-    /** Grants the killer's hides for this death, at most once; returns the number granted. */
-    int32 RewardKill(const FString& DeathId, const FVector& BoarAt, ASFE1Character* Killer);
-    bool IsSafe(const FVector& Location) const;
-    bool IsInsideTerritory(const FVector& Location, const TArray<FVector2D>& Polygon) const;
-    bool IsActive() const { return bPilotActive; }
-    const USFCombatPilotSettings* Settings() const { return CapturedSettings; }
-private:
-    bool LoadZoneRecord();
-    bool RunWorldSlots(const FString& Command, const FString& Group = FString(), int32 Slot = INDEX_NONE);
-    void SpawnSlot(const FString& Group, int32 Slot, int32 Cycle, const FString& PointId,
-        double X, double Y, double Facing);
-    void RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player);
-    struct FBoarGroup { TArray<FVector2D> Polygon; };
-    TMap<FString,FBoarGroup> Groups;
-    TArray<TArray<FVector2D>> ProtectedAreas;
-    TArray<FVector> RespawnPoints;
-    TMap<FString,TWeakObjectPtr<ASFPilotBoar>> ActiveBoars;
-    TMap<TWeakObjectPtr<ASFE1Character>,double> PlayerNextSwing;
-    TSet<FString> RewardedDeaths;
-    int32 NextBoarSerial = 0;
-    FString SlotStatePath;
-    const USFCombatPilotSettings* CapturedSettings = nullptr;
-    bool bPilotActive = false;
-    bool bSlotBridgeHealthy = false;
-    double NextSlotTick = 0;
-    bool bScenario = false;
-    bool bScenarioFirstBoarDied = false;
 };

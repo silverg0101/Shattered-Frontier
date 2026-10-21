@@ -54,7 +54,7 @@ try {
     Wait-Exit $normal 'normal-negative'
     $normalLog = Get-Content -LiteralPath (Join-Path $root 'normal-negative.log') -Raw
     if ($normalLog -notmatch 'E1_WORLD_READY' -or $normalLog -match 'CONSTRUCTION_NETWORK_') { throw 'Normal E1 admitted the network sandbox.' }
-    $url = '/Game/Frontier/Maps/Greenlands_ConstructionSandbox?game=/Script/ShatteredFrontier.SFConstructionNetworkGameMode'
+    $url = '/Game/Frontier/Maps/Greenlands_ConstructionSandbox?game=/Script/ShatteredFrontier.SFGameMode'
     $disabled = Start-Owned 'flag-negative' $url @('-server',('-port='+($Port+2)),'-multihome=127.0.0.1','-testexit=CONSTRUCTION_NETWORK_DISABLED')
     Wait-Exit $disabled 'flag-negative'
     $disabledLog = Get-Content -LiteralPath (Join-Path $root 'flag-negative.log') -Raw

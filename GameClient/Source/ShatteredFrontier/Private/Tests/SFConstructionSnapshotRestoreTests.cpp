@@ -13,7 +13,7 @@
 #include "EngineUtils.h"
 #include "GameFramework/DefaultPawn.h"
 #include "GameFramework/WorldSettings.h"
-#include "Framework/SFE1GameMode.h"
+#include "Framework/SFGameMode.h"
 #include "ProceduralMeshComponent.h"
 
 namespace
@@ -32,7 +32,7 @@ struct FRestoreFixture
     {
         if (!Fixture.CreateTestWorld(EWorldType::Game)) { return false; }
         World = Fixture.GetTestWorld();
-        World->GetWorldSettings()->DefaultGameMode = bSandbox ? ASFConstructionSandboxGameMode::StaticClass() : ASFE1GameMode::StaticClass();
+        World->GetWorldSettings()->DefaultGameMode = bSandbox ? ASFConstructionSandboxGameMode::StaticClass() : ASFGameMode::StaticClass();
         if (!World->SetGameMode(FURL()) || !Fixture.BeginPlayInTestWorld()) { return false; }
         World->GetWorldSettings()->NotifyBeginPlay();
         Floor = World->SpawnActor<AStaticMeshActor>();

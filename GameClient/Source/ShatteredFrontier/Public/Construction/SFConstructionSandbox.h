@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Framework/SFE1GameMode.h"
+#include "Framework/SFGameMode.h"
 #include "GameFramework/Actor.h"
 #include "Construction/SFConstructionGeometry.h"
 #include "SFConstructionSandbox.generated.h"
@@ -10,7 +10,7 @@ class UPrimitiveComponent;
 
 // Explicit opt-in, local development preview only. No economic state or edit RPCs.
 UCLASS(NotBlueprintable)
-class SHATTEREDFRONTIER_API ASFConstructionSandboxGameMode : public ASFE1GameMode
+class SHATTEREDFRONTIER_API ASFConstructionSandboxGameMode : public ASFGameMode
 {
     GENERATED_BODY()
 public:

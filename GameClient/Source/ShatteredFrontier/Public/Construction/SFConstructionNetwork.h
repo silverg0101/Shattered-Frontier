@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Framework/SFE1GameMode.h"
+#include "Framework/SFGameMode.h"
 #include "Interaction/SFE1PlayerController.h"
 #include "GameFramework/HUD.h"
 #include "SFConstructionNetwork.generated.h"
@@ -133,59 +133,6 @@ private:
     UPROPERTY(Replicated) FIntVector AnchorCell = FIntVector::ZeroValue;
     UPROPERTY(Replicated) FString ClaimId;
     uint64 ProjectionRevision = 0;
-};
-
-UCLASS(NotBlueprintable)
-class SHATTEREDFRONTIER_API ASFConstructionNetworkGameMode : public ASFE1GameMode
-{
-    GENERATED_BODY()
-public:
-    ASFConstructionNetworkGameMode();
-    virtual void StartPlay() override;
-    virtual void PostLogin(APlayerController* NewPlayer) override;
-    virtual FString InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal = TEXT("")) override;
-    virtual void RestartPlayer(AController* NewPlayer) override;
-    bool IsAdmitted() const;
-    bool IsZoneGatheringWorld() const;
-    bool IsBuilder(const ASFConstructionNetworkController* Controller) const;
-    // Zone-world development claim (BLD-02); false in the sandbox. Centre in zone metres, as ClaimTerritory takes it.
-    // BLD-02 A2: one claim state per zone build plot (area purpose "claims"), owned through Housing; none in the sandbox.
-    bool IsHousingActive() const;
-    ASFConstructionNetworkState* FindClaimState(const FString& ClaimId) const;
-    // Housing.ClaimPlot for the controller's character; Claimed when it already owns the plot.
-    void ClaimPlot(ASFConstructionNetworkController* Controller, const FString& ClaimId, TFunction<void(ESFConstructionNetworkResult)> Done);
-    // Housing.Grant of build rights on the controller's claim to another character.
-    void GrantBuild(ASFConstructionNetworkController* Controller, const FString& ClaimId, const FString& TargetCharacterId, TFunction<void(ESFConstructionNetworkResult)> Done);
-    void CommitHousing(ASFConstructionNetworkController* Controller, const FString& ClaimId, FIntVector Cell, bool bRemove, int32 Shape, int32 Rotation, TFunction<void(ESFConstructionNetworkResult Result, const FString& Operation)> Done);
-#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-    void SpawnFiniteDoorObstruction(const FIntVector& Origin, uint8 Yaw);
-    void DiscardFiniteDoorObstruction();
-#endif
-private:
-    int32 SpawnZoneGatheringNodes();
-    struct FClaimPlot
-    {
-        FString ClaimId;
-        FVector2D CentreMetres = FVector2D::ZeroVector;
-        int32 SideMetres = 20;
-        TWeakObjectPtr<ASFConstructionNetworkState> State;
-        bool bLoaded = false, bClaimed = false;  // loaded: Housing answered GetClaim (and ListStructures) since start
-        FString OwnerId;
-        int64 PermissionRevision = 0, StructureRevision = 0;
-        TMap<FIntVector, FString> Structures;  // cell -> housing structure id, for removals
-    };
-    TArray<FClaimPlot> ClaimPlots;
-    int32 PrepareClaimPlots();
-    void LoadClaims();
-    FClaimPlot* FindPlot(const FString& ClaimId);
-    FTimerHandle ClaimLoadTimer;
-    void PlaceForZoneScenario(APawn* Pawn, bool bPrimary) const;
-    TWeakObjectPtr<ASFConstructionNetworkController> Builder;
-    bool bBuilderAssigned = false;
-#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-    TWeakObjectPtr<AActor> FiniteDoorObstruction;
-    bool bFiniteObstructionSpawned = false;
-#endif
 };
 
 UCLASS(NotBlueprintable)

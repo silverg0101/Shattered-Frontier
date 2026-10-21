@@ -293,7 +293,7 @@ void USFGatheringPilotComponent::BeginPlay()
     if (!CapturedSettings->Validate(Error)) { UE_LOG(LogTemp,Error,TEXT("GATHERING_PILOT_CONFIGURATION_FAILED %s"),*Error); return; }
     if (GetOwner()->HasAuthority())
     {
-        const auto* Mode=GetWorld()->GetAuthGameMode<ASFConstructionNetworkGameMode>();
+        const auto* Mode=GetWorld()->GetAuthGameMode<ASFGameMode>();
         bEnabled=IsPilotRequested() && Mode && Mode->IsAdmitted();
         if (bEnabled && !InitializeStarterTools())
         {
@@ -394,7 +394,7 @@ bool USFGatheringPilotComponent::IsAuthoritativePilotWorld() const
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
     if (bTestWorldAdmission && GetWorld()->WorldType==EWorldType::GameRPC && GetNetMode()==NM_Standalone) { return true; }
 #endif
-    const auto* Mode=GetWorld()->GetAuthGameMode<ASFConstructionNetworkGameMode>();
+    const auto* Mode=GetWorld()->GetAuthGameMode<ASFGameMode>();
     return IsPilotRequested() && Mode && Mode->IsAdmitted();
 }
 

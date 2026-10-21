@@ -6,7 +6,7 @@
 #include "Construction/SFConstructionSandboxController.h"
 #include "Construction/SFConstructionSandboxSettings.h"
 #include "Construction/SFConstructionGeometry.h"
-#include "Framework/SFE1GameMode.h"
+#include "Framework/SFGameMode.h"
 #include "GameFramework/DefaultPawn.h"
 #include "GameFramework/WorldSettings.h"
 #include "EngineUtils.h"
@@ -177,7 +177,7 @@ bool FSFConstructionSandboxNormalModeTest::RunTest(const FString& Parameters)
     FTestWorldWrapper Fixture;
     if (!Fixture.CreateTestWorld(EWorldType::Game)) { Fixture.ForwardErrorMessages(this); return false; }
     UWorld* World = Fixture.GetTestWorld();
-    World->GetWorldSettings()->DefaultGameMode = ASFE1GameMode::StaticClass();
+    World->GetWorldSettings()->DefaultGameMode = ASFGameMode::StaticClass();
     if (!World->SetGameMode(FURL()) || !Fixture.BeginPlayInTestWorld()) { Fixture.ForwardErrorMessages(this); return false; }
     World->GetWorldSettings()->NotifyBeginPlay();
     auto* Controller = World->SpawnActorDeferred<ASFConstructionSandboxController>(

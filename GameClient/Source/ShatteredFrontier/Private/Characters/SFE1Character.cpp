@@ -343,7 +343,7 @@ void ASFE1Character::PilotAttack()
 
 void ASFE1Character::ServerPilotAttack_Implementation()
 {
-    if (auto* Mode = Cast<ASFCombatPilotGameMode>(GetWorld()->GetAuthGameMode()))
+    if (auto* Mode = Cast<ASFGameMode>(GetWorld()->GetAuthGameMode()))
     { Mode->TryPlayerAttack(this); }
 }
 

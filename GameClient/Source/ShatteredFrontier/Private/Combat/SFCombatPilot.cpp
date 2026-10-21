@@ -1,4 +1,5 @@
 #include "Combat/SFCombatPilot.h"
+#include "Framework/SFGameMode.h"
 #include "Combat/SFCombatPilotRewards.h"
 #include "Characters/SFE1Character.h"
 #include "Components/CapsuleComponent.h"
@@ -119,7 +120,7 @@ void ASFPilotBoar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
     DOREPLIFETIME(ASFPilotBoar, CurrentHealth);
 }
 
-void ASFPilotBoar::Initialize(ASFCombatPilotGameMode* OwnerMode, const FString& Group, int32 InSlot,
+void ASFPilotBoar::Initialize(ASFGameMode* OwnerMode, const FString& Group, int32 InSlot,
     const TArray<FVector2D>& Area, int32 Health, int32 Serial)
 {
     check(HasAuthority());
@@ -147,17 +148,17 @@ void ASFPilotBoar::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage)
 void ASFPilotBoar::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
-    if (!HasAuthority() || CurrentHealth <= 0 || !PilotMode.IsValid() || !PilotMode->IsActive()) { return; }
+    if (!HasAuthority() || CurrentHealth <= 0 || !PilotMode.IsValid() || !PilotMode->IsCombatActive()) { return; }
     auto* Mode = PilotMode.Get();
     const double Now = GetWorld()->GetTimeSeconds();
     ASFE1Character* Victim = Target.Get();
     if (Victim && (Victim->CombatHealth() <= 0 || Mode->IsSafe(Victim->GetActorLocation()) ||
         !Mode->IsInsideTerritory(Victim->GetActorLocation(), Territory) ||
-        FVector::Dist2D(Anchor, GetActorLocation()) > Mode->Settings()->BoarLeashRadiusMetres*100))
+        FVector::Dist2D(Anchor, GetActorLocation()) > Mode->CombatSettings()->BoarLeashRadiusMetres*100))
     { Target.Reset(); Victim = nullptr; WanderDestination = Anchor; bReturning = true; }
     if (bReturning && FVector::Dist2D(GetActorLocation(),Anchor) < 100)
-    { bReturning = false; CurrentHealth = Mode->Settings()->BoarHealth; OnRep_Health(); ForceNetUpdate(); }
-    if (!Victim && !bReturning && Mode->Settings()->bCombatAvailable)
+    { bReturning = false; CurrentHealth = Mode->CombatSettings()->BoarHealth; OnRep_Health(); ForceNetUpdate(); }
+    if (!Victim && !bReturning && Mode->CombatSettings()->bCombatAvailable)
     {
         for (auto It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
         {
@@ -168,30 +169,30 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
             if (IsValid(Candidate) && Candidate->CombatHealth() > 0 && !USFCharacterSessionComponent::IsLinkdead(It->Get()) &&
                 !Mode->IsSafe(Candidate->GetActorLocation()) &&
                 Mode->IsInsideTerritory(Candidate->GetActorLocation(), Territory) &&
-                Distance <= Mode->Settings()->BoarAggroRadiusMetres*100 &&
-                (Distance <= Mode->Settings()->BoarNearNoticeRadiusMetres*100 ||
+                Distance <= Mode->CombatSettings()->BoarAggroRadiusMetres*100 &&
+                (Distance <= Mode->CombatSettings()->BoarNearNoticeRadiusMetres*100 ||
                     FVector::DotProduct(GetActorForwardVector(), Toward.GetSafeNormal2D()) >=
-                    FMath::Cos(FMath::DegreesToRadians(Mode->Settings()->BoarFieldOfViewDegrees*0.5f))))
+                    FMath::Cos(FMath::DegreesToRadians(Mode->CombatSettings()->BoarFieldOfViewDegrees*0.5f))))
             { Target = Candidate; Victim = Candidate; break; }
         }
     }
     FVector Destination = WanderDestination;
-    float Speed = Mode->Settings()->BoarWanderSpeedMetresPerSecond*100;
+    float Speed = Mode->CombatSettings()->BoarWanderSpeedMetresPerSecond*100;
     if (Victim)
     {
-        Destination = Victim->GetActorLocation(); Speed = Mode->Settings()->BoarChaseSpeedMetresPerSecond*100;
-        if (FVector::Dist2D(GetActorLocation(), Destination) <= Mode->Settings()->MeleeRangeMetres * 100 && Now >= NextSwingAt)
-        { NextSwingAt = Now + Mode->Settings()->BoarMeleeCooldownSeconds; Mode->TryBoarAttack(this, Victim); }
+        Destination = Victim->GetActorLocation(); Speed = Mode->CombatSettings()->BoarChaseSpeedMetresPerSecond*100;
+        if (FVector::Dist2D(GetActorLocation(), Destination) <= Mode->CombatSettings()->MeleeRangeMetres * 100 && Now >= NextSwingAt)
+        { NextSwingAt = Now + Mode->CombatSettings()->BoarMeleeCooldownSeconds; Mode->TryBoarAttack(this, Victim); }
     }
     else if (bReturning)
-    { Destination = Anchor; Speed = Mode->Settings()->BoarChaseSpeedMetresPerSecond*100; }
+    { Destination = Anchor; Speed = Mode->CombatSettings()->BoarChaseSpeedMetresPerSecond*100; }
     else if (Now >= NextWanderAt || Destination.IsNearlyZero() || FVector::Dist2D(GetActorLocation(), Destination) < 80)
     {
-        NextWanderAt = Now + FMath::FRandRange(double(Mode->Settings()->BoarWanderMinSeconds),
-            double(Mode->Settings()->BoarWanderMaxSeconds));
+        NextWanderAt = Now + FMath::FRandRange(double(Mode->CombatSettings()->BoarWanderMinSeconds),
+            double(Mode->CombatSettings()->BoarWanderMaxSeconds));
         for (int32 Attempt = 0; Attempt < 12; ++Attempt)
         {
-            const double Radius = Mode->Settings()->BoarWanderRadiusMetres*100;
+            const double Radius = Mode->CombatSettings()->BoarWanderRadiusMetres*100;
             const FVector Candidate = Anchor + FVector(FMath::FRandRange(-Radius, Radius), FMath::FRandRange(-Radius, Radius), 0);
             if (Mode->IsInsideTerritory(Candidate, Territory) && !Mode->IsSafe(Candidate))
             { WanderDestination = Candidate; break; }
@@ -207,7 +208,7 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
     SetActorRotation(Direction.Rotation());
 }
 
-bool ASFCombatPilotGameMode::IsInsideTerritory(const FVector& Location, const TArray<FVector2D>& Polygon) const
+bool ASFGameMode::IsInsideTerritory(const FVector& Location, const TArray<FVector2D>& Polygon) const
 {
     if (Polygon.Num() < 3) { return false; }
     const FVector2D P(Location.X / 100.0, Location.Y / 100.0);
@@ -224,14 +225,14 @@ bool ASFCombatPilotGameMode::IsInsideTerritory(const FVector& Location, const TA
     return Inside;
 }
 
-bool ASFCombatPilotGameMode::IsSafe(const FVector& Location) const
+bool ASFGameMode::IsSafe(const FVector& Location) const
 {
     for (const auto& Polygon : ProtectedAreas)
     { if (IsInsideTerritory(Location, Polygon)) { return true; } }
     return false;
 }
 
-bool ASFCombatPilotGameMode::LoadZoneRecord()
+bool ASFGameMode::LoadZoneRecord()
 {
     const FString Path = FPaths::Combine(FPaths::ProjectDir(), TEXT("../content/world/zones/greenlands_silverbrook.json"));
     FString Source; TSharedPtr<FJsonObject> Zone;
@@ -269,15 +270,8 @@ bool ASFCombatPilotGameMode::LoadZoneRecord()
         LevelTwoAreas.Contains(TEXT("boar_forest_edge")) && ProtectedAreas.Num() > 0 && RespawnPoints.Num() > 0;
 }
 
-ASFCombatPilotGameMode::ASFCombatPilotGameMode()
+void ASFGameMode::StartCombat()
 {
-    PrimaryActorTick.bCanEverTick = true;
-    PrimaryActorTick.TickInterval = 1.0f;
-}
-
-void ASFCombatPilotGameMode::StartPlay()
-{
-    Super::StartPlay();
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     bPilotActive = GetNetMode() == NM_DedicatedServer &&
         GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook") &&
@@ -296,9 +290,8 @@ void ASFCombatPilotGameMode::StartPlay()
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_READY Boars=%d Combat=%d HostileSpawning=%d"), ActiveBoars.Num(), CapturedSettings->bCombatAvailable, CapturedSettings->bSilverbrookHostileSpawning);
 }
 
-void ASFCombatPilotGameMode::PostLogin(APlayerController* NewPlayer)
+void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
 {
-    Super::PostLogin(NewPlayer);
     if (bPilotActive) { SFCombatPilotRewards::AddPilotBag(NewPlayer); }
     if (!bPilotActive || !bScenario || GetNumPlayers() != 1) { return; }
     const TWeakObjectPtr<APlayerController> Weak(NewPlayer);
@@ -315,22 +308,20 @@ void ASFCombatPilotGameMode::PostLogin(APlayerController* NewPlayer)
     }), 2.0f, false);
 }
 
-void ASFCombatPilotGameMode::RestartPlayer(AController* NewPlayer)
+void ASFGameMode::RestartCombat(AController* NewPlayer)
 {
-    Super::RestartPlayer(NewPlayer);
     if (bPilotActive)
     { if (auto* Player = Cast<ASFE1Character>(NewPlayer ? NewPlayer->GetPawn() : nullptr)) Player->CombatSetHealth(CapturedSettings->PlayerHealth); }
 }
 
-void ASFCombatPilotGameMode::Tick(float DeltaSeconds)
+void ASFGameMode::TickCombat()
 {
-    Super::Tick(DeltaSeconds);
     if (!bPilotActive || !CapturedSettings->bSilverbrookHostileSpawning || !bSlotBridgeHealthy) { return; }
     if (GetWorld()->GetTimeSeconds() >= NextSlotTick)
     { NextSlotTick = GetWorld()->GetTimeSeconds() + 2.0; bSlotBridgeHealthy = RunWorldSlots(TEXT("tick")); }
 }
 
-bool ASFCombatPilotGameMode::RunWorldSlots(const FString& Command, const FString& Group, int32 Slot)
+bool ASFGameMode::RunWorldSlots(const FString& Command, const FString& Group, int32 Slot)
 {
     const FString Root = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir(), TEXT(".."));
     const FString Dotnet = FPaths::Combine(Root, TEXT("Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotnet.exe"));
@@ -356,7 +347,7 @@ bool ASFCombatPilotGameMode::RunWorldSlots(const FString& Command, const FString
     return true;
 }
 
-void ASFCombatPilotGameMode::SpawnSlot(const FString& Group, int32 Slot, int32 Cycle, const FString& PointId,
+void ASFGameMode::SpawnSlot(const FString& Group, int32 Slot, int32 Cycle, const FString& PointId,
     double X, double Y, double Facing)
 {
     const FString Key = FString::Printf(TEXT("%s:%d"), *Group, Slot);
@@ -371,7 +362,7 @@ void ASFCombatPilotGameMode::SpawnSlot(const FString& Group, int32 Slot, int32 C
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_SPAWN Group=%s Slot=%d Cycle=%d Point=%s"), *Group, Slot, Cycle, *PointId);
 }
 
-void ASFCombatPilotGameMode::TryPlayerAttack(ASFE1Character* Attacker)
+void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker)
 {
     if (!bPilotActive || !CapturedSettings->bCombatAvailable || !IsValid(Attacker) || Attacker->CombatHealth() <= 0 || IsSafe(Attacker->GetActorLocation())) { return; }
     const double Now = GetWorld()->GetTimeSeconds();
@@ -395,7 +386,7 @@ void ASFCombatPilotGameMode::TryPlayerAttack(ASFE1Character* Attacker)
     Best->ReceivePilotDamage(Attacker, CapturedSettings->PlayerMeleeDamage);
 }
 
-void ASFCombatPilotGameMode::TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim)
+void ASFGameMode::TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim)
 {
     if (!bPilotActive || !CapturedSettings->bCombatAvailable || !IsValid(Boar) || !IsValid(Victim) ||
         Boar->Health() <= 0 || Victim->CombatHealth() <= 0 || IsSafe(Boar->GetActorLocation()) ||
@@ -414,7 +405,7 @@ void ASFCombatPilotGameMode::TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* V
     }
 }
 
-void ASFCombatPilotGameMode::RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player)
+void ASFGameMode::RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player)
 {
     if (!bPilotActive || !Player.IsValid() || Player->CombatHealth() != 0 || RespawnPoints.IsEmpty()) { return; }
     FVector Nearest = RespawnPoints[0]; double Distance = FVector::DistSquared2D(Player->GetActorLocation(), Nearest);
@@ -449,7 +440,7 @@ void ASFCombatPilotGameMode::RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player
     }
 }
 
-int32 ASFCombatPilotGameMode::RewardKill(const FString& DeathId, const FVector& BoarAt, ASFE1Character* Killer)
+int32 ASFGameMode::RewardKill(const FString& DeathId, const FVector& BoarAt, ASFE1Character* Killer)
 {
     if (!CapturedSettings || !HasAuthority()) { return 0; }
     const bool bProtected = IsSafe(BoarAt) || !IsValid(Killer) || IsSafe(Killer->GetActorLocation());
@@ -501,7 +492,7 @@ int32 ASFCombatPilotGameMode::RewardKill(const FString& DeathId, const FVector& 
     return bGranted ? Hides : 0;
 }
 
-void ASFCombatPilotGameMode::BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer)
+void ASFGameMode::BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer)
 {
     if (!bPilotActive || !IsValid(Boar)) { return; }
     const FString Key = FString::Printf(TEXT("%s:%d"), *Boar->GroupId(), Boar->SlotIndex());

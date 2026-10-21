@@ -110,7 +110,7 @@ function Assert-LedgerPhase([string]$ServerText) {
 try {
     if ($Silverbrook -and $Refining) { throw 'Silverbrook has no refinery stations; run -Refining in the sandbox.' }
     $map=if ($Silverbrook) { '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' } else { '/Game/Frontier/Maps/Greenlands_ConstructionSandbox' }
-    $url=$map+'?game=/Script/ShatteredFrontier.SFConstructionNetworkGameMode'
+    $url=$map+'?game=/Script/ShatteredFrontier.SFGameMode'
     $serverFlags=@('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkSandbox','-GatheringPilot')
     if ($Silverbrook) { $serverFlags+='-GatheringPilotScenario' }  # the server puts each test pawn beside its node
     $serverEnv=@{}

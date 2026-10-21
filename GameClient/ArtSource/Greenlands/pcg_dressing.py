@@ -13,7 +13,7 @@ import unreal as u
 GRAPH_DIR = '/Game/Frontier/PCG'
 EXCLUDE_TAG = 'PCG_Exclude'
 NO_COLLISION_LAYERS = ('ground_cover', 'litter', 'understory')
-COSMETIC_LAYERS = NO_COLLISION_LAYERS  # client-only: tagged so a dedicated server destroys them in ASFE1GameMode::StartPlay
+COSMETIC_LAYERS = NO_COLLISION_LAYERS  # client-only: tagged so a dedicated server destroys them in ASFGameMode::StartPlay
 COSMETIC_TAG = 'SF_ClientOnlyCosmetic'
 CULL_M = {'ground_cover': 50, 'understory': 50, 'litter': 25}  # default end-cull metres per layer; a role's place.cull_m overrides
 CULL_BOUNDS = (10, 200)

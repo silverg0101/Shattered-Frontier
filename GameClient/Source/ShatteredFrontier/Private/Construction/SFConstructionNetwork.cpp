@@ -231,7 +231,7 @@ ASFConstructionNetworkState::ASFConstructionNetworkState()
 void ASFConstructionNetworkState::BeginPlay()
 {
     Super::BeginPlay();
-    const auto* Mode = GetWorld()->GetAuthGameMode<ASFConstructionNetworkGameMode>();
+    const auto* Mode = GetWorld()->GetAuthGameMode<ASFGameMode>();
     if (!HasAuthority() || !Mode || !Mode->IsAdmitted()) { return; }
     const auto* Settings = GetDefault<USFConstructionSandboxSettings>();
     FString Error;
@@ -293,7 +293,7 @@ bool ASFConstructionNetworkState::ConfigureAnchor(const FIntVector& Cell)
 
 void ASFConstructionNetworkState::AdmitPair()
 {
-    auto* Mode = GetWorld() ? GetWorld()->GetAuthGameMode<ASFConstructionNetworkGameMode>() : nullptr;
+    auto* Mode = GetWorld() ? GetWorld()->GetAuthGameMode<ASFGameMode>() : nullptr;
     if (HasAuthority() && Mode && Mode->IsAdmitted() && Mode->GetNumPlayers() >= 2)
     { bPairReady = true; ForceNetUpdate(); UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_PAIR_READY Players=%d"),Mode->GetNumPlayers()); }
 }
@@ -482,7 +482,7 @@ void ASFConstructionNetworkState::OnRep_Snapshot()
 ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateEditContext(ASFConstructionNetworkController* Controller, uint64 ExpectedRevision, const APawn*& OutPawn, const AActor*& OutFoundation) const
 {
     OutPawn=nullptr; OutFoundation=nullptr;
-    const auto* Mode = GetWorld() ? GetWorld()->GetAuthGameMode<ASFConstructionNetworkGameMode>() : nullptr;
+    const auto* Mode = GetWorld() ? GetWorld()->GetAuthGameMode<ASFGameMode>() : nullptr;
     if (!IsInGameThread() || !HasAuthority() || IsActorBeingDestroyed() || !bConfigurationReady || !Mode || !Mode->IsAdmitted() || GetClass() != StaticClass()
         || !IsValid(Controller) || Controller->IsActorBeingDestroyed() || !Controller->HasAuthority() || Controller->GetWorld() != GetWorld()) { return ESFConstructionNetworkResult::InvalidContext; }
     // A claim's build rights belong to Housing (owner or grant); the sandbox keeps its first-admitted builder.
@@ -749,7 +749,7 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::ToggleDoor(ASFConstruc
     if (!SFConstructionNetworkProjection::IsDoorMotionClear(this,Door,*Projection))
     {
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-        GetWorld()->GetAuthGameMode<ASFConstructionNetworkGameMode>()->DiscardFiniteDoorObstruction();
+        GetWorld()->GetAuthGameMode<ASFGameMode>()->DiscardFiniteDoorObstruction();
 #endif
         return ESFConstructionNetworkResult::DoorBlocked;
     }
@@ -762,13 +762,13 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::ToggleDoor(ASFConstruc
     const bool bOpen=Snapshot.Doors[Index].bOpen;
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_DOOR_TOGGLE Revision=%llu Members=%d Doors=%d Open=%d Cell=%s Content=%s"),Snapshot.Revision,Snapshot.Members.Num(),Snapshot.Doors.Num(),bOpen,*Origin.ToString(),*GetContentDigest());
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-    if (bOpen) { GetWorld()->GetAuthGameMode<ASFConstructionNetworkGameMode>()->SpawnFiniteDoorObstruction(Origin,Snapshot.Doors[Index].Yaw); }
+    if (bOpen) { GetWorld()->GetAuthGameMode<ASFGameMode>()->SpawnFiniteDoorObstruction(Origin,Snapshot.Doors[Index].Yaw); }
 #endif
     return bOpen ? ESFConstructionNetworkResult::DoorOpened : ESFConstructionNetworkResult::DoorClosed;
 }
 
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-void ASFConstructionNetworkGameMode::SpawnFiniteDoorObstruction(const FIntVector& Origin, uint8 Yaw)
+void ASFGameMode::SpawnFiniteDoorObstruction(const FIntVector& Origin, uint8 Yaw)
 {
     if (!IsAdmitted() || bFiniteObstructionSpawned || !FParse::Param(FCommandLine::Get(),TEXT("ConstructionNetworkDoorObstruction"))) { return; }
     bFiniteObstructionSpawned=true;
@@ -792,7 +792,7 @@ void ASFConstructionNetworkGameMode::SpawnFiniteDoorObstruction(const FIntVector
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_DOOR_OBSTRUCTION_READY Physics=1"));
 }
 
-void ASFConstructionNetworkGameMode::DiscardFiniteDoorObstruction()
+void ASFGameMode::DiscardFiniteDoorObstruction()
 {
     auto* Obstacle=FiniteDoorObstruction.Get();
     if (IsAdmitted() && FParse::Param(FCommandLine::Get(),TEXT("ConstructionNetworkDoorObstruction")) && Obstacle && Obstacle->GetOwner()==this)
@@ -800,19 +800,13 @@ void ASFConstructionNetworkGameMode::DiscardFiniteDoorObstruction()
 }
 #endif
 
-ASFConstructionNetworkGameMode::ASFConstructionNetworkGameMode()
-{
-    HUDClass = ASFConstructionNetworkHUD::StaticClass();
-    PlayerControllerClass = ASFConstructionNetworkController::StaticClass();
-}
-
-bool ASFConstructionNetworkGameMode::IsZoneGatheringWorld() const
+bool ASFGameMode::IsZoneGatheringWorld() const
 {
     // Development opt-in: the gathering pilot in the Silverbrook zone, with nodes from its zone record.
     return GetWorld() && GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
 }
 
-void ASFConstructionNetworkGameMode::PlaceForZoneScenario(APawn* Pawn, bool bPrimary) const
+void ASFGameMode::PlaceForZoneScenario(APawn* Pawn, bool bPrimary) const
 {
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     // The claim runner: both test pawns stand on the first build plot's pad, the first-admitted one to the west.
@@ -840,7 +834,7 @@ void ASFConstructionNetworkGameMode::PlaceForZoneScenario(APawn* Pawn, bool bPri
 #endif
 }
 
-int32 ASFConstructionNetworkGameMode::SpawnZoneGatheringNodes()
+int32 ASFGameMode::SpawnZoneGatheringNodes()
 {
     // The zone record's gathering spawn groups: active_count points per group, chosen by a stable seed.
     // ponytail: session-only pilot nodes with fixed points; World spawn slots (rotation, respawn timing) replace this.
@@ -893,7 +887,7 @@ int32 ASFConstructionNetworkGameMode::SpawnZoneGatheringNodes()
     return Spawned;
 }
 
-int32 ASFConstructionNetworkGameMode::PrepareClaimPlots()
+int32 ASFGameMode::PrepareClaimPlots()
 {
     // Every 20 m build plot of the zone record (area purpose "claims", outside the protected town) gets a level pad and
     // its own construction state at its anchor (BLD-02 A2). ClaimTerritory, through Housing, decides who may own each.
@@ -958,23 +952,23 @@ int32 ASFConstructionNetworkGameMode::PrepareClaimPlots()
     return ClaimPlots.Num();
 }
 
-bool ASFConstructionNetworkGameMode::IsHousingActive() const
+bool ASFGameMode::IsHousingActive() const
 {
     return IsAdmitted() && !ClaimPlots.IsEmpty() && USFBackpackComponent::Services().IsValid();
 }
 
-ASFConstructionNetworkGameMode::FClaimPlot* ASFConstructionNetworkGameMode::FindPlot(const FString& ClaimId)
+ASFGameMode::FClaimPlot* ASFGameMode::FindPlot(const FString& ClaimId)
 {
     return ClaimId.IsEmpty() ? nullptr : ClaimPlots.FindByPredicate([&](const FClaimPlot& Plot) { return Plot.ClaimId==ClaimId; });
 }
 
-ASFConstructionNetworkState* ASFConstructionNetworkGameMode::FindClaimState(const FString& ClaimId) const
+ASFConstructionNetworkState* ASFGameMode::FindClaimState(const FString& ClaimId) const
 {
     const FClaimPlot* Plot=ClaimPlots.FindByPredicate([&](const FClaimPlot& Candidate) { return Candidate.ClaimId==ClaimId; });
     return Plot ? Plot->State.Get() : nullptr;
 }
 
-void ASFConstructionNetworkGameMode::LoadClaims()
+void ASFGameMode::LoadClaims()
 {
     // A7 for the network path: Housing is the only store. Each plot's claim and structures are read back at start (and
     // retried while the service is unreachable); a structure outside the plot extent rejects that claim's projection.
@@ -984,9 +978,9 @@ void ASFConstructionNetworkGameMode::LoadClaims()
         if (Plot.bLoaded) { continue; }
         bPending=true;
         FSFGameplayRequest Get; Get.Rpc=ESFGameplayRpc::GetClaim; Get.ClaimId=Plot.ClaimId;
-        USFBackpackComponent::Services()->Call(Get,[Weak=TWeakObjectPtr<ASFConstructionNetworkGameMode>(this),ClaimId=Plot.ClaimId](const FSFGameplayResponse& Claim)
+        USFBackpackComponent::Services()->Call(Get,[Weak=TWeakObjectPtr<ASFGameMode>(this),ClaimId=Plot.ClaimId](const FSFGameplayResponse& Claim)
         {
-            ASFConstructionNetworkGameMode* Self=Weak.Get(); FClaimPlot* Plot=Self ? Self->FindPlot(ClaimId) : nullptr;
+            ASFGameMode* Self=Weak.Get(); FClaimPlot* Plot=Self ? Self->FindPlot(ClaimId) : nullptr;
             if (!Plot || Plot->bLoaded || Claim.Status==ESFGameplayStatus::Unavailable) { return; }
             if (Claim.Status!=ESFGameplayStatus::Ok)
             { Plot->bLoaded=true; UE_LOG(LogTemp,Display,TEXT("HOUSING_CLAIM_LOADED Claim=%s Claimed=0"),*ClaimId); return; }
@@ -994,7 +988,7 @@ void ASFConstructionNetworkGameMode::LoadClaims()
             FSFGameplayRequest List; List.Rpc=ESFGameplayRpc::ListStructures; List.ClaimId=ClaimId;
             USFBackpackComponent::Services()->Call(List,[Weak,ClaimId](const FSFGameplayResponse& Structures)
             {
-                ASFConstructionNetworkGameMode* Again=Weak.Get(); FClaimPlot* Loaded=Again ? Again->FindPlot(ClaimId) : nullptr;
+                ASFGameMode* Again=Weak.Get(); FClaimPlot* Loaded=Again ? Again->FindPlot(ClaimId) : nullptr;
                 if (!Loaded || Loaded->bLoaded || Structures.Status!=ESFGameplayStatus::Ok) { return; }
                 // An unknown shape key or orientation maps out of range, so the restore rejects the whole claim.
                 TArray<FSFConstructionNetworkRestoredPiece> Pieces;
@@ -1011,10 +1005,10 @@ void ASFConstructionNetworkGameMode::LoadClaims()
         });
     }
     if (bPending)
-    { GetWorldTimerManager().SetTimer(ClaimLoadTimer,FTimerDelegate::CreateUObject(this,&ASFConstructionNetworkGameMode::LoadClaims),3.0f,false); }
+    { GetWorldTimerManager().SetTimer(ClaimLoadTimer,FTimerDelegate::CreateUObject(this,&ASFGameMode::LoadClaims),3.0f,false); }
 }
 
-void ASFConstructionNetworkGameMode::ClaimPlot(ASFConstructionNetworkController* Controller, const FString& ClaimId, TFunction<void(ESFConstructionNetworkResult)> Done)
+void ASFGameMode::ClaimPlot(ASFConstructionNetworkController* Controller, const FString& ClaimId, TFunction<void(ESFConstructionNetworkResult)> Done)
 {
     USFBackpackComponent* Pack=USFBackpackComponent::FindOrCreate(Controller);
     FClaimPlot* Plot=FindPlot(ClaimId);
@@ -1022,9 +1016,9 @@ void ASFConstructionNetworkGameMode::ClaimPlot(ASFConstructionNetworkController*
     if (Plot->bClaimed) { Done(Plot->OwnerId==Pack->GetCharacterId() ? ESFConstructionNetworkResult::Claimed : ESFConstructionNetworkResult::PermissionDenied); return; }
     FSFGameplayRequest Claim; Claim.Rpc=ESFGameplayRpc::ClaimPlot; Claim.OperationId=TEXT("claim/")+ClaimId+TEXT("/")+Pack->GetCharacterId(); Claim.ClaimId=ClaimId;
     Claim.CharacterId=Pack->GetCharacterId(); Claim.CenterX=Plot->CentreMetres.X; Claim.CenterY=Plot->CentreMetres.Y; Claim.SideMetres=Plot->SideMetres; Claim.PrepaidDays=30;
-    USFBackpackComponent::Services()->Call(Claim,[Weak=TWeakObjectPtr<ASFConstructionNetworkGameMode>(this),ClaimId,Done=MoveTemp(Done)](const FSFGameplayResponse& Reply)
+    USFBackpackComponent::Services()->Call(Claim,[Weak=TWeakObjectPtr<ASFGameMode>(this),ClaimId,Done=MoveTemp(Done)](const FSFGameplayResponse& Reply)
     {
-        ASFConstructionNetworkGameMode* Self=Weak.Get(); FClaimPlot* Claimed=Self ? Self->FindPlot(ClaimId) : nullptr;
+        ASFGameMode* Self=Weak.Get(); FClaimPlot* Claimed=Self ? Self->FindPlot(ClaimId) : nullptr;
         if (!Claimed) { return; }
         UE_LOG(LogTemp,Display,TEXT("HOUSING_CLAIM Claim=%s Ok=%d Code=%d Owner=%s State=%s PermissionRevision=%lld %s"),*ClaimId,Reply.Status==ESFGameplayStatus::Ok,Reply.GrpcCode,*Reply.OwnerId,*Reply.State,Reply.PermissionRevision,*Reply.Message);
         if (Reply.Status!=ESFGameplayStatus::Ok)
@@ -1034,7 +1028,7 @@ void ASFConstructionNetworkGameMode::ClaimPlot(ASFConstructionNetworkController*
     });
 }
 
-void ASFConstructionNetworkGameMode::GrantBuild(ASFConstructionNetworkController* Controller, const FString& ClaimId, const FString& TargetCharacterId, TFunction<void(ESFConstructionNetworkResult)> Done)
+void ASFGameMode::GrantBuild(ASFConstructionNetworkController* Controller, const FString& ClaimId, const FString& TargetCharacterId, TFunction<void(ESFConstructionNetworkResult)> Done)
 {
     USFBackpackComponent* Pack=USFBackpackComponent::FindOrCreate(Controller);
     FClaimPlot* Plot=FindPlot(ClaimId);
@@ -1043,9 +1037,9 @@ void ASFConstructionNetworkGameMode::GrantBuild(ASFConstructionNetworkController
     FSFGameplayRequest Grant; Grant.Rpc=ESFGameplayRpc::Grant; Grant.ClaimId=ClaimId; Grant.CharacterId=Pack->GetCharacterId(); Grant.GranteeId=TargetCharacterId;
     Grant.Rights=1; Grant.ExpectedPermissionRevision=Plot->PermissionRevision;
     Grant.OperationId=FString::Printf(TEXT("grant/%s/%s/%lld"),*ClaimId,*TargetCharacterId,Plot->PermissionRevision);
-    USFBackpackComponent::Services()->Call(Grant,[Weak=TWeakObjectPtr<ASFConstructionNetworkGameMode>(this),ClaimId,TargetCharacterId,Done=MoveTemp(Done)](const FSFGameplayResponse& Reply)
+    USFBackpackComponent::Services()->Call(Grant,[Weak=TWeakObjectPtr<ASFGameMode>(this),ClaimId,TargetCharacterId,Done=MoveTemp(Done)](const FSFGameplayResponse& Reply)
     {
-        ASFConstructionNetworkGameMode* Self=Weak.Get(); FClaimPlot* Granted=Self ? Self->FindPlot(ClaimId) : nullptr;
+        ASFGameMode* Self=Weak.Get(); FClaimPlot* Granted=Self ? Self->FindPlot(ClaimId) : nullptr;
         if (!Granted) { return; }
         UE_LOG(LogTemp,Display,TEXT("HOUSING_GRANT Claim=%s Target=%s Ok=%d Code=%d PermissionRevision=%lld %s"),*ClaimId,*TargetCharacterId,Reply.Status==ESFGameplayStatus::Ok,Reply.GrpcCode,Reply.PermissionRevision,*Reply.Message);
         if (Reply.Status==ESFGameplayStatus::Ok) { Granted->PermissionRevision=Reply.PermissionRevision; }
@@ -1054,17 +1048,17 @@ void ASFConstructionNetworkGameMode::GrantBuild(ASFConstructionNetworkController
     });
 }
 
-void ASFConstructionNetworkGameMode::CommitHousing(ASFConstructionNetworkController* Controller, const FString& ClaimId, FIntVector Cell, bool bRemove, int32 Shape, int32 Rotation,
+void ASFGameMode::CommitHousing(ASFConstructionNetworkController* Controller, const FString& ClaimId, FIntVector Cell, bool bRemove, int32 Shape, int32 Rotation,
     TFunction<void(ESFConstructionNetworkResult Result, const FString& Operation)> Done)
 {
-    TWeakObjectPtr<ASFConstructionNetworkGameMode> Weak(this);
+    TWeakObjectPtr<ASFGameMode> Weak(this);
     TWeakObjectPtr<ASFConstructionNetworkController> WeakController(Controller);
     FClaimPlot* Target=FindPlot(ClaimId);
     if (!Target || !Target->bLoaded) { Done(ESFConstructionNetworkResult::ServiceUnavailable,FString()); return; }
     // The first placement on an unclaimed plot claims it for the builder; on someone else's claim the service decides.
     auto Commit=[Weak,WeakController,ClaimId,Cell,bRemove,Shape,Rotation,Done](ESFConstructionNetworkResult ClaimResult)
     {
-        ASFConstructionNetworkGameMode* Self=Weak.Get();
+        ASFGameMode* Self=Weak.Get();
         FClaimPlot* Plot=Self ? Self->FindPlot(ClaimId) : nullptr;
         USFBackpackComponent* Pack=USFBackpackComponent::FindOrCreate(WeakController.Get());
         const FString* Existing=Plot ? Plot->Structures.Find(Cell) : nullptr;
@@ -1079,7 +1073,7 @@ void ASFConstructionNetworkGameMode::CommitHousing(ASFConstructionNetworkControl
         FSFBackpackMutation Mutation; Mutation.Label=bRemove ? TEXT("housing_remove") : TEXT("housing_place"); Mutation.OperationId=Operation;
         Mutation.Run=[Weak,Receipt,ClaimId,Cell,bRemove,Shape,Rotation,Structure,Material,WeakPack=TWeakObjectPtr<USFBackpackComponent>(Pack)](const FString& Op,int64 Expected,TFunction<void(ESFBackpackOutcome,int64)> Report)
         {
-            ASFConstructionNetworkGameMode* Mode=Weak.Get(); FClaimPlot* Current=Mode ? Mode->FindPlot(ClaimId) : nullptr; USFBackpackComponent* Owner=WeakPack.Get();
+            ASFGameMode* Mode=Weak.Get(); FClaimPlot* Current=Mode ? Mode->FindPlot(ClaimId) : nullptr; USFBackpackComponent* Owner=WeakPack.Get();
             if (!Current || !Owner) { Report(ESFBackpackOutcome::Unavailable,-1); return; }
             FSFGameplayRequest Q; Q.Rpc=bRemove ? ESFGameplayRpc::Remove : ESFGameplayRpc::Place; Q.OperationId=Op; Q.ClaimId=ClaimId;
             Q.CharacterId=Owner->GetCharacterId(); Q.ExpectedPermissionRevision=Current->PermissionRevision; Q.ExpectedStructureRevision=Current->StructureRevision;
@@ -1096,7 +1090,7 @@ void ASFConstructionNetworkGameMode::CommitHousing(ASFConstructionNetworkControl
         };
         Mutation.Finished=[Weak,Receipt,ClaimId,Cell,bRemove,Structure,Material,Operation,WeakPack=TWeakObjectPtr<USFBackpackComponent>(Pack),Done](ESFBackpackOutcome Outcome)
         {
-            ASFConstructionNetworkGameMode* Mode=Weak.Get(); FClaimPlot* Current=Mode ? Mode->FindPlot(ClaimId) : nullptr; USFBackpackComponent* Owner=WeakPack.Get();
+            ASFGameMode* Mode=Weak.Get(); FClaimPlot* Current=Mode ? Mode->FindPlot(ClaimId) : nullptr; USFBackpackComponent* Owner=WeakPack.Get();
             const bool bCommitted=Outcome==ESFBackpackOutcome::Committed && (Receipt->State==TEXT("Committed") || Receipt->State==TEXT("Removed"));
             UE_LOG(LogTemp,Display,TEXT("HOUSING_OUTCOME Op=%s Claim=%s Action=%s Structure=%s Outcome=%d State=%s StructureRevision=%lld Code=%d %s"),*Operation,*ClaimId,
                 bRemove ? TEXT("Remove") : TEXT("Place"),*Structure,int32(Outcome),*Receipt->State,Receipt->StructureRevision,Receipt->GrpcCode,*Receipt->Message);
@@ -1117,10 +1111,10 @@ void ASFConstructionNetworkGameMode::CommitHousing(ASFConstructionNetworkControl
     else { ClaimPlot(Controller,ClaimId,Commit); }
 }
 
-bool ASFConstructionNetworkGameMode::IsAdmitted() const
+bool ASFGameMode::IsAdmitted() const
 {
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-    return HasAuthority() && !IsActorBeingDestroyed() && (GetClass() == StaticClass() || GetClass() == ASFCombatPilotGameMode::StaticClass()) && GetWorld() && GetNetMode() == NM_DedicatedServer
+    return HasAuthority() && !IsActorBeingDestroyed() && GetClass() == StaticClass() && GetWorld() && GetNetMode() == NM_DedicatedServer
         && (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands_ConstructionSandbox")
             || (IsZoneGatheringWorld() && USFGatheringPilotComponent::IsPilotRequested()))
         && FParse::Param(FCommandLine::Get(),TEXT("ConstructionNetworkSandbox"));
@@ -1129,10 +1123,15 @@ bool ASFConstructionNetworkGameMode::IsAdmitted() const
 #endif
 }
 
-void ASFConstructionNetworkGameMode::StartPlay()
+void ASFGameMode::StartConstruction()
 {
-    Super::StartPlay();
-    if (!IsAdmitted()) { UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_DISABLED")); return; }
+    if (!IsAdmitted())
+    {
+        // Worlds with no construction content (E1, other zones) stay silent, as before the GM-01 fold.
+        if (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands_ConstructionSandbox") || IsZoneGatheringWorld())
+        { UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_DISABLED")); }
+        return;
+    }
     // The sandbox keeps one identity-anchored state and its map-placed foundation; a zone gets one claim state per
     // build plot (BLD-02 A2), rebuilt from Housing when the services are on.
     if (!(IsZoneGatheringWorld() && PrepareClaimPlots()>0))
@@ -1165,9 +1164,8 @@ void ASFConstructionNetworkGameMode::StartPlay()
     }
 }
 
-void ASFConstructionNetworkGameMode::PostLogin(APlayerController* NewPlayer)
+void ASFGameMode::PostLoginConstruction(APlayerController* NewPlayer)
 {
-    Super::PostLogin(NewPlayer);
     auto* Controller = Cast<ASFConstructionNetworkController>(NewPlayer);
     if (!IsAdmitted() || !Controller) { return; }
     const bool bAssignBuilder = !bBuilderAssigned;
@@ -1181,16 +1179,15 @@ void ASFConstructionNetworkGameMode::PostLogin(APlayerController* NewPlayer)
     for (TActorIterator<ASFConstructionNetworkState> It(GetWorld()); It; ++It) { It->AdmitPair(); }
 }
 
-void ASFConstructionNetworkGameMode::RestartPlayer(AController* NewPlayer)
+void ASFGameMode::RestartConstruction(AController* NewPlayer)
 {
-    Super::RestartPlayer(NewPlayer);
     const auto* Controller = Cast<ASFConstructionNetworkController>(NewPlayer);
     if (IsAdmitted() && !IsZoneGatheringWorld() && Controller && Controller->GetPawn())
     { Controller->GetPawn()->SetActorLocation(FVector(IsBuilder(Controller) ? -200 : 200,-400,96)); }
     if (IsAdmitted() && IsZoneGatheringWorld() && Controller) { PlaceForZoneScenario(Controller->GetPawn(), IsBuilder(Controller)); }
 }
 
-bool ASFConstructionNetworkGameMode::IsBuilder(const ASFConstructionNetworkController* Controller) const
+bool ASFGameMode::IsBuilder(const ASFConstructionNetworkController* Controller) const
 {
     return IsAdmitted() && Builder.Get() == Controller;
 }
@@ -1757,7 +1754,7 @@ void ASFConstructionNetworkController::ServerPlaceLine_Implementation(FIntVector
     auto* State=ResolveState(GetWorld(),ClaimId);
     auto Result=ESFConstructionNetworkResult::InvalidContext;
     // ponytail: housing commits one structure per placement; lines stay sandbox-only until their cost is batched.
-    const auto* LineMode=GetWorld()->GetAuthGameMode<ASFConstructionNetworkGameMode>();
+    const auto* LineMode=GetWorld()->GetAuthGameMode<ASFGameMode>();
     if (State && LastRequestFrame!=GFrameCounter && !(LineMode && LineMode->IsHousingActive()))
     { LastRequestFrame=GFrameCounter; Result=State->PlaceLine(this,Start,End,ExpectedRevision,Shape,Rotation); }
     const uint64 Revision=State ? State->GetSnapshot().Revision : 0;
@@ -1821,7 +1818,7 @@ void ASFConstructionNetworkController::ServerPlaceDoor_Implementation(FIntVector
 void ASFConstructionNetworkController::ProcessEdit(FIntVector Cell, uint64 ExpectedRevision, bool bRemove, uint8 Shape, uint8 Rotation, const FString& ClaimId)
 {
     auto* State = ResolveState(GetWorld(),ClaimId);
-    auto* Mode = GetWorld() ? GetWorld()->GetAuthGameMode<ASFConstructionNetworkGameMode>() : nullptr;
+    auto* Mode = GetWorld() ? GetWorld()->GetAuthGameMode<ASFGameMode>() : nullptr;
     ESFConstructionNetworkResult Result = ESFConstructionNetworkResult::InvalidContext;
     if (State && Mode && Mode->IsHousingActive() && !State->GetClaimId().IsEmpty() && LastRequestFrame != GFrameCounter)
     {
@@ -2394,7 +2391,7 @@ void ASFConstructionNetworkController::TickFiniteScenario()
 }
 #endif
 
-FString ASFConstructionNetworkGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal)
+FString ASFGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal)
 {
     const FString Result=Super::InitNewPlayer(NewPlayerController,UniqueId,Options,Portal);
     const FString Name=UGameplayStatics::ParseOption(Options,TEXT("SFDevCharacter"));
@@ -2436,7 +2433,7 @@ void ASFConstructionNetworkController::SFGrantBuild(const FString& DevName)
 
 void ASFConstructionNetworkController::ServerClaimPlot_Implementation(const FString& ClaimId)
 {
-    auto* Mode=GetWorld()->GetAuthGameMode<ASFConstructionNetworkGameMode>();
+    auto* Mode=GetWorld()->GetAuthGameMode<ASFGameMode>();
     if (!Mode) { return; }
     Mode->ClaimPlot(this,ClaimId,[Weak=TWeakObjectPtr<ASFConstructionNetworkController>(this),ClaimId](ESFConstructionNetworkResult Result)
     {
@@ -2449,7 +2446,7 @@ void ASFConstructionNetworkController::ServerClaimPlot_Implementation(const FStr
 
 void ASFConstructionNetworkController::ServerGrantBuild_Implementation(const FString& ClaimId, const FString& TargetCharacterId)
 {
-    auto* Mode=GetWorld()->GetAuthGameMode<ASFConstructionNetworkGameMode>();
+    auto* Mode=GetWorld()->GetAuthGameMode<ASFGameMode>();
     if (!Mode) { return; }
     Mode->GrantBuild(this,ClaimId,TargetCharacterId,[Weak=TWeakObjectPtr<ASFConstructionNetworkController>(this),ClaimId,TargetCharacterId](ESFConstructionNetworkResult Result)
     {

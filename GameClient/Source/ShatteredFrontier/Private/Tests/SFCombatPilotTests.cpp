@@ -24,7 +24,7 @@ bool FSFCombatPilotRulesTest::RunTest(const FString& Parameters)
 
     FTestWorldWrapper Fixture;
     if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) return false;
-    auto* Mode = Fixture.GetTestWorld()->SpawnActor<ASFCombatPilotGameMode>();
+    auto* Mode = Fixture.GetTestWorld()->SpawnActor<ASFGameMode>();
     if (!Mode) return false;
     const TArray<FVector2D> Town = {{-4,-4},{4,-4},{4,4},{-4,4}};
     TestTrue(TEXT("Town polygon contains its centre"), Mode->IsInsideTerritory(FVector::ZeroVector, Town));
