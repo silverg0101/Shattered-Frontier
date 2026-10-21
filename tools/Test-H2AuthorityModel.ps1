@@ -19,15 +19,16 @@ $env:DOTNET_CLI_UI_LANGUAGE = 'en'
 Push-Location (Join-Path $repo 'BackendServices')
 try {
     $project = 'fixtures/AuthorityModel/AuthorityModel.csproj'
-    $restore = & $dotnet restore $project --locked-mode --packages (Join-Path $repo 'Artifacts/Persistence/Toolchains/nuget') --verbosity quiet 2>&1
+    $buildRoot = Join-Path $EvidenceRoot 'build'
+    $restore = & $dotnet restore $project --locked-mode --packages (Join-Path $repo 'Artifacts/Persistence/Toolchains/nuget') --artifacts-path $buildRoot --verbosity quiet 2>&1
     $code = $LASTEXITCODE
     $restore | Set-Content -LiteralPath (Join-Path $EvidenceRoot 'restore.txt') -Encoding utf8
     if ($code) { throw 'Locked model restore failed.' }
-    $build = & $dotnet build $project --no-restore --configuration Release --verbosity quiet 2>&1
+    $build = & $dotnet build $project --no-restore --configuration Release --artifacts-path $buildRoot --verbosity quiet 2>&1
     $code = $LASTEXITCODE
     $build | Set-Content -LiteralPath (Join-Path $EvidenceRoot 'build.txt') -Encoding utf8
     if ($code) { throw 'Model build failed.' }
-    $binary = 'fixtures/AuthorityModel/bin/Release/net10.0/AuthorityModel.dll'
+    $binary = Join-Path $buildRoot 'bin/AuthorityModel/release/AuthorityModel.dll'
     $raw = & $dotnet $binary 2>&1
     $code = $LASTEXITCODE
     $raw | Set-Content -LiteralPath (Join-Path $EvidenceRoot 'model-output.txt') -Encoding utf8

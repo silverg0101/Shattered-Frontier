@@ -11,7 +11,8 @@ $dotnet = Join-Path $repo 'Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotn
 $pgBin = Join-Path $repo 'Artifacts/Persistence/Toolchains/postgresql-18.6/pgsql/bin'
 $project = Join-Path $repo 'BackendServices/fixtures/AuthorityDurable/AuthorityDurable.csproj'
 $ddl = Join-Path $repo 'BackendServices/fixtures/AuthorityDurable/Schema.sql'
-$dll = Join-Path $repo 'BackendServices/fixtures/AuthorityDurable/bin/Release/net10.0/AuthorityDurable.dll'
+$buildRoot = Join-Path $EvidenceRoot 'build'
+$dll = Join-Path $buildRoot 'bin/AuthorityDurable/release/AuthorityDurable.dll'
 foreach ($path in @($dotnet,$project,$ddl,(Join-Path $pgBin 'postgres.exe'),(Join-Path $pgBin 'initdb.exe'),(Join-Path $pgBin 'pg_ctl.exe'),(Join-Path $pgBin 'psql.exe'))) { if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Required file missing: $path" } }
 if ((Get-FileHash -LiteralPath $dotnet -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pins.sdk.executableSha256 -or (Get-FileHash -LiteralPath (Join-Path $pgBin 'postgres.exe') -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pins.postgres.executableSha256) { throw 'Pinned toolchain identity mismatch; use Prepare-H2Toolchains.' }
 $fixtureId = [guid]::NewGuid().ToString()
@@ -85,9 +86,9 @@ try {
     [void](Require $acl 'private directory ACL')
     [void](New-Item -ItemType Directory -Path $controlRoot)
     Write-Json $ownerFile @{ fixtureId=$fixtureId; dataDirectory=$dataDir; privateDirectory=$privateRoot; port=$port }
-    $restore = Invoke-Owned $dotnet @('restore',$project,'--locked-mode','--packages',(Join-Path $repo 'Artifacts/Persistence/Toolchains/nuget'),'--verbosity','quiet')
+    $restore = Invoke-Owned $dotnet @('restore',$project,'--locked-mode','--packages',(Join-Path $repo 'Artifacts/Persistence/Toolchains/nuget'),'--artifacts-path',$buildRoot,'--verbosity','quiet')
     Write-Json (Join-Path $EvidenceRoot 'restore.json') $restore; [void](Require $restore 'locked restore')
-    $build = Invoke-Owned $dotnet @('build',$project,'--no-restore','--configuration','Release','--verbosity','quiet')
+    $build = Invoke-Owned $dotnet @('build',$project,'--no-restore','--configuration','Release','--artifacts-path',$buildRoot,'--verbosity','quiet')
     Write-Json (Join-Path $EvidenceRoot 'build.json') $build; [void](Require $build 'focused build')
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $port = $listener.LocalEndpoint.Port; $listener.Stop()
     if ($port -lt 1024) { throw 'Expected ephemeral unprivileged port.' }

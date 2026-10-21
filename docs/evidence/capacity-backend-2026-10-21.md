@@ -65,3 +65,9 @@ Fresh evidence root: Artifacts/Persistence/GameplayHosts/capacity-619596ee62ad43
 | 25 | Rewards.GrantDefeatReward | 1000 / 3977 | 4026.27 / 63.78 | 0 / 0 | 7.15 / 44.57 |
 
 Both after tiers had zero unavailable calls and passed every SQL integrity check. Worst durable RPC p95 fell from 1501.97 to 78.69 ms at 10 participants and from 8251.6 to 78.31 ms at 25 participants. This is backend loopback evidence with simulated client delay; actual 50 ms network RTT and the 50/100 participant gates remain unmeasured.
+
+## H2 authority fixture follow-up
+
+PowerShell 7.6.7 ran both authority fixtures with the pinned .NET 10.0.402 SDK and run-private build output. `Test-H2AuthorityModel.ps1` passed 22/22 cases and 120 bounded schedules (`Artifacts/Persistence/AuthorityModel/codex-lock-c744f1e1d0674d71a8ed27add6191537`).
+
+`Test-H2AuthorityDurable.ps1` failed twice on fresh, isolated PostgreSQL clusters and ports. The first run (`Artifacts/Persistence/AuthorityDurable/codex-lock-a8f3ca2279d5467eb9798dd7832deaed`) passed 21/22 groups; `F06_retained_upstream_socket_partition` reported `CONTROL_FILE_TIMEOUT`. The repeat (`Artifacts/Persistence/AuthorityDurable/codex-lock-36aae8b4a3004ff98f2f4c5a429e7ff1`) passed 20/22; F06 repeated, and `F05_takeover_coordinator_CAS_completion_and_outbox` reported `DECIDE_EXPECTED_OK_GOT_DEADLINE_EXPIRED`. Each run passed 15/15 role assertions, completed one PostgreSQL restart, stopped its cluster, and removed its private storage. F06 also failed with pooling disabled in the first run, so the evidence does not isolate the pooling change in 237ecb3 as its cause. No authority behavior fix was made; the durable group remains failed.
