@@ -1,0 +1,53 @@
+{
+  "_about": "Runtime hair physics for SK_Voidreign (tools/Create-VoidreignHairPhysics.py). One AnimDynamics chain per mane/tail strand in a post-process AnimBP; overrides the baked SEC bone keys. Angles in degrees, lengths in cm. Each chain simulates relative to its parent bone (third entry), so body/head motion carries the hair rigidly and only sim_space_angular_alpha of that bone's rotation is fed back as inertia; component-space simulation flailed under the rear/attack clips.",
+  "abp": "/Game/Frontier/Creatures/Voidreign/V1/Animation/ABP_Voidreign_HairPost",
+  "mesh": "/Game/Frontier/Creatures/Voidreign/V1/Mesh/SK_Voidreign",
+  "chains": [
+    [
+      "SEC_mane_0_00",
+      "SEC_mane_0_02",
+      "PRI_body_neck"
+    ],
+    [
+      "SEC_mane_1_00",
+      "SEC_mane_1_02",
+      "PRI_body_neck"
+    ],
+    [
+      "SEC_mane_2_00",
+      "SEC_mane_2_02",
+      "PRI_body_neck"
+    ],
+    [
+      "SEC_mane_3_00",
+      "SEC_mane_3_02",
+      "PRI_body_neck"
+    ],
+    [
+      "SEC_mane_4_00",
+      "SEC_mane_4_02",
+      "PRI_body_head"
+    ],
+    [
+      "SEC_tail_0_00",
+      "SEC_tail_0_07",
+      "PRI_body_tail-base"
+    ]
+  ],
+  "bone_axis": [
+    0,
+    -1,
+    0
+  ],
+  "root_swing_deg": 15,
+  "swing_deg": 30,
+  "twist_deg": 8,
+  "body_width_fraction": 0.35,
+  "min_body_cm": 3.0,
+  "min_body_length_cm": 8.0,
+  "solver_iterations": 8,
+  "angular_spring": 0.0,
+  "gravity_scale": 1.0,
+  "lod_threshold": 1,
+  "sim_space_angular_alpha": 0.3
+}
