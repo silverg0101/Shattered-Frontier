@@ -1,0 +1,75 @@
+{
+  "backend": "Pixal3D-mv",
+  "status": "complete",
+  "seed": 42,
+  "pipeline": "1024_cascade",
+  "steps": 12,
+  "asset_name": "BeastfolkWarrior",
+  "views": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/NPC-BeastfolkWarrior-01/Views-v001",
+  "transforms_sha256": "c4c2c1ff1bf60df63fe8222f9219a9c9b92e30a0ac7869968b4fdc160c5b6614",
+  "view_images": [
+    {
+      "file": "view00_azim000.png",
+      "sha256": "3d8619e3459697ef68aed8e04ae84899c88ec09338a17b55cb5921c3a3f69def"
+    },
+    {
+      "file": "view01_azim090.png",
+      "sha256": "7c7cbdf7fe97c45d385da56dc42e876a5e6c87f6d96f99c1f5e3dd4c4c405358"
+    },
+    {
+      "file": "view02_azim180.png",
+      "sha256": "85750156083a502ee22805ffa8ba15d9a30e0d13555fe9a279d907d95cd1eebe"
+    },
+    {
+      "file": "view03_azim270.png",
+      "sha256": "65de2f3e5a74c8e95532f1452bd8de8c6d5adfcf24f10413b40b807f8a1cbccb"
+    }
+  ],
+  "torch": "2.14.0+rocm10.1.0",
+  "hip": "7.16.26385",
+  "gpu": "AMD Radeon RX 7900 XTX",
+  "asset_lab_root": "/home/grego/sf-asset-lab",
+  "stages": {
+    "load_seconds": 43.632,
+    "inference_seconds": 598.49,
+    "export_seconds": 30.505
+  },
+  "texture_size": 2048,
+  "decimation_target": 300000,
+  "max_num_tokens": 49152,
+  "remesh_band": 1,
+  "remesh_project": 0,
+  "attention": "dense and sparse PyTorch SDPA; NAF shifted dilated neighborhoods via chunked PyTorch",
+  "stage": "complete",
+  "model_revision": "b0cb2e1b794cab9aa0ac38a95d794a4d9337437f",
+  "camera": {
+    "fov_degrees": [
+      20.0,
+      20.0,
+      20.0,
+      20.0
+    ],
+    "distance": [
+      3.1192,
+      3.1192,
+      3.1192,
+      3.1192
+    ],
+    "mesh_scale": 1.0
+  },
+  "raw_mesh": {
+    "vertices": 4306352,
+    "faces": 8953438
+  },
+  "effective_grid_resolution": 1024,
+  "files": {
+    "BeastfolkWarrior.raw.ply": {
+      "sha256": "05d366c0e1496bb0402eb72efad29b1448b4fb985572604c732f2ea0a12e3391",
+      "bytes": 168071141
+    },
+    "BeastfolkWarrior.glb": {
+      "sha256": "e5aa2e0acb5459fcc398ee2bac66508b022f6a84b415825949e28ec2ead00ac4",
+      "bytes": 24425944
+    }
+  }
+}
