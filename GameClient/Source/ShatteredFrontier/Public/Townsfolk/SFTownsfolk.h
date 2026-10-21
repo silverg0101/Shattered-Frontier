@@ -11,12 +11,40 @@
 #include "SFTownsfolk.generated.h"
 
 class UAnimSequence;
+class USkeletalMesh;
 class UMassEntityConfigAsset;
 class USkeletalMeshComponent;
 
 // Townsfolk prototype, AI Townsfolk doc section 9 steps 2-3: census residents walking their day on ZoneGraph footways
 // across the town, drawn by MassRepresentation, stepping aside for each other and the player.
 // Development opt-in (-TownsfolkPrototype) on Greenlands_Silverbrook; client-simulated, never on a dedicated server.
+
+/** A body for one or more census archetypes: its own skeletal mesh with the walk and idle clips made for that skeleton.
+  * Archetypes with no entry keep the UE4 mannequin. Mesh paths are content assets; YawOffset turns the mesh to face +X. */
+USTRUCT()
+struct FSFTownsfolkLook
+{
+    GENERATED_BODY()
+    UPROPERTY(EditAnywhere, Category="Look", meta=(ToolTip="Census archetype ids from townsfolk-archetypes.json that wear this body."))
+    TArray<FName> Archetypes;
+    UPROPERTY(EditAnywhere, Category="Look", meta=(AllowedClasses="/Script/Engine.SkeletalMesh"))
+    FSoftObjectPath Mesh;
+    UPROPERTY(EditAnywhere, Category="Look", meta=(AllowedClasses="/Script/Engine.AnimSequence"))
+    FSoftObjectPath Walk;
+    UPROPERTY(EditAnywhere, Category="Look", meta=(AllowedClasses="/Script/Engine.AnimSequence"))
+    FSoftObjectPath Idle;
+    UPROPERTY(EditAnywhere, Category="Look", meta=(ClampMin="-180.0", ClampMax="180.0", Units="deg"))
+    float YawOffset = 0.0f;
+    UPROPERTY(EditAnywhere, Category="Look", meta=(ClampMin="50.0", ClampMax="400.0", Units="cm/s", ToolTip="Ground speed the walk clip covers at play rate 1; the play rate scales to the resident's speed."))
+    float WalkClipCmPerSecond = 150.0f;
+};
+
+/** A Look with its assets loaded. */
+struct FSFTownsfolkResolvedLook
+{
+    USkeletalMesh* Mesh=nullptr; UAnimSequence* Walk=nullptr; UAnimSequence* Idle=nullptr;
+    float YawOffset=0, WalkClipCmPerSecond=150;
+};
 
 // Release-controlled prototype settings, read at world start; no live overrides.
 UCLASS(Config=Game, DefaultConfig, meta=(DisplayName="Townsfolk Prototype"))
@@ -39,6 +67,9 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Prototype", meta=(ToolTip="Census district to draw residents from; empty takes them evenly from the whole town."))
     FString District;
 
+    UPROPERTY(Config, EditAnywhere, Category="Prototype", meta=(ToolTip="Bodies by archetype; archetypes not listed keep the UE4 mannequin placeholder."))
+    TArray<FSFTownsfolkLook> Looks;
+
     UPROPERTY(Config, EditAnywhere, Category="Prototype", meta=(ClampMin="0.0", ClampMax="2.0", Units="m", ToolTip="Furthest a resident steps aside from the footway to pass someone."))
     float SidestepMaxMetres = 1.5f;
 
@@ -51,6 +82,7 @@ enum class ESFTownsfolkGoal : uint8 { None, Home, Work, Market };
 struct FSFTownsfolkResident
 {
     FString Id;
+    FName Archetype;
     FVector Home=FVector::ZeroVector, Work=FVector::ZeroVector;
     bool bHasWork=false;
     TArray<FVector> Markets;
@@ -89,12 +121,15 @@ class SHATTEREDFRONTIER_API ASFTownsfolkBody : public AActor
     GENERATED_BODY()
 public:
     ASFTownsfolkBody();
-    void Pose(const FVector& At, float Yaw, bool bWalking, float WalkRate, bool bIndoors);
+    /** Look null is the mannequin; a body recycled between archetypes changes mesh and clips when the look changes. */
+    void Pose(const FVector& At, float Yaw, bool bWalking, float WalkSpeedCm, bool bIndoors, const FSFTownsfolkResolvedLook* Look);
 private:
     UPROPERTY(VisibleAnywhere) TObjectPtr<USkeletalMeshComponent> Mesh;
     UPROPERTY() TObjectPtr<UAnimSequence> Walk;
     UPROPERTY() TObjectPtr<UAnimSequence> Idle;
     int8 Playing=-1;  // 1 walk, 0 idle, -1 nothing yet
+    const FSFTownsfolkResolvedLook* Applied=nullptr;
+    UPROPERTY() TObjectPtr<USkeletalMesh> DefaultMesh;
 };
 
 /** Picks each resident's goal from the clock, plans a footway route when it changes, and walks it. */
@@ -124,6 +159,7 @@ public:
     float WalkSpeedCm() const { return WalkSpeedCmPerSecond; }
     const FSFTownsfolkResident& Resident(int32 Index) const { return Residents[Index]; }
     TArray<FVector>& Route(int32 Index) { return Routes[Index]; }
+    const FSFTownsfolkResolvedLook* LookFor(FName Archetype) const { return Looks.Find(Archetype); }
     bool PlanRoute(const FVector& From, const FVector& To, TArray<FVector>& OutRoute) const;
     /** Records where a resident is shown this frame, for the next frame's sidesteps and the review. */
     void Note(int32 Index, const FVector& At, const FVector& Forward, bool bOutdoors);
@@ -135,6 +171,9 @@ public:
 
 private:
     bool LoadCensus(FString& OutError);
+    bool LoadLooks(FString& OutError);
+    TMap<FName,FSFTownsfolkResolvedLook> Looks;
+    UPROPERTY() TArray<TObjectPtr<UObject>> LookAssets;
     bool bActive=false;
     TArray<FSFTownsfolkResident> Residents;
     TArray<TArray<FVector>> Routes;  // per resident; Mass fragments must stay trivially copyable

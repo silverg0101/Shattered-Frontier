@@ -5,7 +5,12 @@ Headless:
         -script="<project>/tools/Import-NpcSkeletal.py --rig <AutoRig folder> --name BeastfolkWarrior --version V1 [--nanite-variant]"
 Imports SK_<name> (own skeleton, physics asset, FBX materials/textures, every take) and generates engine-reduced
 LODs, the default NPC treatment. --nanite-variant also writes SK_<name>_Nanite, a copy with Nanite enabled, for
-the skinned-Nanite trial. Writes Artifacts/Art/NPC/<name>-<version>-import.json. Refuses to overwrite.
+the skinned-Nanite trial; use it only to re-test, not for shipping. Treatment by category (evidence:
+docs/evidence/npc-nanite-bench.md; 100 walking 286k-triangle NPCs, LOD 2.9 ms vs skinned Nanite 3.5-3.7 ms frame):
+    skinned humanoid NPCs and townsfolk  engine LODs (this script's default), Nanite off
+    skinned creatures and mounts         engine LODs, same reason (not separately measured)
+    static props, buildings, rocks       not measured here; keep the project's existing static-mesh practice
+Writes Artifacts/Art/NPC/<name>-<version>-import.json. Refuses to overwrite.
 """
 import argparse, hashlib, json, shlex, sys
 from pathlib import Path

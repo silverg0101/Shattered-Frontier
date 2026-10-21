@@ -64,8 +64,12 @@ bool USFTownsfolkSettings::Validate(FString& OutError) const
     const bool bOk=ResidentCap>=1 && ResidentCap<=300 && FMath::IsFinite(GameDayMinutes) && GameDayMinutes>=1 && GameDayMinutes<=240
         && StartHour>=0 && StartHour<24 && WalkSpeedMetresPerSecond>=0.5f && WalkSpeedMetresPerSecond<=3
         && SidestepMaxMetres>=0 && SidestepMaxMetres<=2;
-    OutError=bOk ? FString() : TEXT("Townsfolk prototype settings outside declared bounds.");
-    return bOk;
+    bool bLooksOk=true;
+    for (const FSFTownsfolkLook& L:Looks)
+    { bLooksOk=bLooksOk && !L.Archetypes.IsEmpty() && !L.Mesh.IsNull() && !L.Walk.IsNull() && !L.Idle.IsNull()
+        && FMath::IsFinite(L.YawOffset) && FMath::Abs(L.YawOffset)<=180 && L.WalkClipCmPerSecond>=50 && L.WalkClipCmPerSecond<=400; }
+    OutError=(bOk && bLooksOk) ? FString() : TEXT("Townsfolk prototype settings outside declared bounds.");
+    return bOk && bLooksOk;
 }
 
 ESFTownsfolkGoal FSFTownsfolkResident::GoalAt(float Hour, int32 Day, int32& OutMarket) const
@@ -102,15 +106,23 @@ ASFTownsfolkBody::ASFTownsfolkBody()
     static ConstructorHelpers::FObjectFinder<USkeletalMesh> Manny(TEXT("/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
     static ConstructorHelpers::FObjectFinder<UAnimSequence> WalkClip(TEXT("/Game/Mannequin/Animations/ThirdPersonWalk.ThirdPersonWalk"));
     static ConstructorHelpers::FObjectFinder<UAnimSequence> IdleClip(TEXT("/Game/Mannequin/Animations/ThirdPersonIdle.ThirdPersonIdle"));
-    Mesh->SetSkeletalMeshAsset(Manny.Object); Walk=WalkClip.Object; Idle=IdleClip.Object;
+    Mesh->SetSkeletalMeshAsset(Manny.Object); Walk=WalkClip.Object; Idle=IdleClip.Object; DefaultMesh=Manny.Object;
 }
 
-void ASFTownsfolkBody::Pose(const FVector& At, float Yaw, bool bWalking, float WalkRate, bool bIndoors)
+void ASFTownsfolkBody::Pose(const FVector& At, float Yaw, bool bWalking, float WalkSpeedCm, bool bIndoors, const FSFTownsfolkResolvedLook* Look)
 {
     SetActorHiddenInGame(bIndoors);
     if (bIndoors) { return; }
+    if (Look!=Applied)
+    {   // First pose, or a recycled body now showing another archetype: swap the mesh and its clips together (the skeletons differ).
+        Mesh->SetSkeletalMeshAsset(Look ? Look->Mesh : DefaultMesh.Get());
+        Mesh->SetRelativeRotation(FRotator(0,Look ? Look->YawOffset : -90.0f,0));  // the mannequin faces +Y
+        Applied=Look; Playing=-1;
+    }
+    UAnimSequence* WalkClip=Look ? Look->Walk : Walk.Get(); UAnimSequence* IdleClip=Look ? Look->Idle : Idle.Get();
+    const float WalkRate=WalkSpeedCm/(Look ? Look->WalkClipCmPerSecond : WalkClipCmPerSecond);
     SetActorTransform(FTransform(FRotator(0,Yaw,0),At));  // full transform: an actor spawned for an indoor resident got its zero scale
-    if (Playing!=int8(bWalking)) { Mesh->PlayAnimation(bWalking ? Walk : Idle,true); Playing=int8(bWalking); }
+    if (Playing!=int8(bWalking)) { Mesh->PlayAnimation(bWalking ? WalkClip : IdleClip,true); Playing=int8(bWalking); }
     Mesh->SetPlayRate(bWalking ? WalkRate : 1.0f);
 }
 
@@ -175,7 +187,7 @@ void USFTownsfolkProcessor::Execute(FMassEntityManager& EntityManager, FMassExec
             T.SetScale3D(FVector(W.bInside ? 0 : 1));
             Town->Note(W.Resident,Shown,W.Forward,!W.bInside);
             if (ASFTownsfolkBody* Body=Cast<ASFTownsfolkBody>(Bodies[It].GetMutable()))
-            { Body->Pose(Shown,W.Forward.Rotation().Yaw,W.Next<Route.Num(),Town->WalkSpeedCm()/WalkClipCmPerSecond,W.bInside); }
+            { Body->Pose(Shown,W.Forward.Rotation().Yaw,W.Next<Route.Num(),Town->WalkSpeedCm(),W.bInside,Town->LookFor(R.Archetype)); }
         }
     });
     Town->NoteFrame((FPlatformTime::Seconds()-Started)*1000.0);
@@ -212,7 +224,7 @@ bool USFTownsfolkSubsystem::LoadCensus(FString& OutError)
     for (int32 K=0; K<Count; ++K)
     {
         const TSharedPtr<FJsonObject> O=Pool[int32(int64(K)*Pool.Num()/Count)];  // evenly through the census: every district gets its share
-        FSFTownsfolkResident R; R.Id=O->GetStringField(TEXT("id")); R.Seed=GetTypeHash(R.Id);
+        FSFTownsfolkResident R; R.Id=O->GetStringField(TEXT("id")); R.Seed=GetTypeHash(R.Id); R.Archetype=FName(*O->GetStringField(TEXT("archetype")));
         R.Home=Homes.FindRef(O->GetStringField(TEXT("household")));
         const TSharedPtr<FJsonObject> Hours=O->GetObjectField(TEXT("schedule"));
         R.Wake=Hours->GetNumberField(TEXT("wake")); R.Sleep=Hours->GetNumberField(TEXT("sleep")); R.ErrandChance=Hours->GetNumberField(TEXT("errand_chance"));
@@ -223,6 +235,20 @@ bool USFTownsfolkSubsystem::LoadCensus(FString& OutError)
         Residents.Add(R);
     }
     if (Residents.IsEmpty()) { OutError=FString::Printf(TEXT("No census residents in '%s'"),*Settings->District); return false; }
+    return true;
+}
+
+bool USFTownsfolkSubsystem::LoadLooks(FString& OutError)
+{
+    for (const FSFTownsfolkLook& L:GetDefault<USFTownsfolkSettings>()->Looks)
+    {
+        FSFTownsfolkResolvedLook Look;
+        Look.Mesh=Cast<USkeletalMesh>(L.Mesh.TryLoad()); Look.Walk=Cast<UAnimSequence>(L.Walk.TryLoad()); Look.Idle=Cast<UAnimSequence>(L.Idle.TryLoad());
+        Look.YawOffset=L.YawOffset; Look.WalkClipCmPerSecond=L.WalkClipCmPerSecond;
+        if (!Look.Mesh || !Look.Walk || !Look.Idle) { OutError=FString::Printf(TEXT("Townsfolk look assets missing: %s"),*L.Mesh.ToString()); return false; }
+        LookAssets.Add(Look.Mesh); LookAssets.Add(Look.Walk); LookAssets.Add(Look.Idle);
+        for (const FName& A:L.Archetypes) { Looks.Add(A,Look); }
+    }
     return true;
 }
 
@@ -357,7 +383,7 @@ void USFTownsfolkSubsystem::OnWorldBeginPlay(UWorld& World)
         || World.GetOutermost()->GetName()!=ZoneMap) { return; }
     const USFTownsfolkSettings* Settings=GetDefault<USFTownsfolkSettings>();
     FString Error;
-    if (!Settings->Validate(Error) || !LoadCensus(Error)) { UE_LOG(LogTemp,Error,TEXT("TOWNSFOLK_DISABLED %s"),*Error); return; }
+    if (!Settings->Validate(Error) || !LoadCensus(Error) || !LoadLooks(Error)) { UE_LOG(LogTemp,Error,TEXT("TOWNSFOLK_DISABLED %s"),*Error); return; }
     StartHour=Settings->StartHour; StartSeconds=World.GetTimeSeconds();
     SecondsPerGameHour=Settings->GameDayMinutes*60.0f/24.0f;
     WalkSpeedCmPerSecond=Settings->WalkSpeedMetresPerSecond*100.0f*FMath::Max(1.0f,60.0f/Settings->GameDayMinutes);

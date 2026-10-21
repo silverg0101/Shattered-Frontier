@@ -29,4 +29,17 @@ Screenshots: `npc-nanite-bench/NpcBench_{LOD,Nanite}_{Near,Far}.jpg` (Near and F
 - Frame time is render-thread bound at about 350-450 fps, so this scene is light; the comparison shows relative overhead, not a budget. The conclusion holds for this asset and count only: ~286k triangle skinned meshes with a 4-LOD chain. It does not cover denser crowds, Lumen, or virtual shadow maps being the active shadow path.
 - Nanite skinned meshes being active was inferred from the ShadowDepths and render-thread difference, not from a Nanite stat dump; a `stat NaniteStats`/`NaniteVisualize` check would confirm it.
 
-Suggested treatment, pending steps 4 and 5 of the NPC task list: keep engine LODs as the default for skinned NPCs.
+## Treatment by category
+
+| Category | Treatment | Why |
+|---|---|---|
+| Skinned humanoid NPCs, townsfolk | Engine LODs (`Import-NpcSkeletal.py` default); Nanite off | Measured here: LOD is cheaper near and far for a 100-NPC crowd |
+| Skinned creatures and mounts | Engine LODs | Same cost model; not separately measured |
+| Static props, buildings, rocks | Unchanged project practice | This bench covers skinned meshes only |
+
+`--nanite-variant` stays available to re-test when the engine or crowd size changes.
+
+## Townsfolk bodies
+
+`USFTownsfolkSettings::Looks` (`Config/DefaultGame.ini`) maps census archetypes to a skeletal mesh and its walk/idle clips; unlisted archetypes keep the mannequin. Shipped: `guard` -> beastfolk V3 (engine LODs, per the table above).
+Check on Greenlands_Silverbrook with `-TownsfolkPrototype` (`review_townsfolk_in_game.py`): the `TOWNSFOLK_HOUR` lines match the earlier evidence (84 outdoors at 10:00, 2 route failures, ProcessorMs 0.05-0.16). [townsfolk-beastfolk-look.png](townsfolk-beastfolk-look.png) is that run with `labourer`, `elder` and `child` temporarily added to the beastfolk look so it shows on screen (a 200-resident sample has few guards outdoors); the beastfolk walk and face along their route with YawOffset 0. Whole-town frame time with the beastfolk look was not measured separately.
