@@ -1,0 +1,40 @@
+{
+  "id": "quest/frontier_founder",
+  "revision": 1,
+  "zone_id": "zone/greenlands_silverbrook",
+  "steps": [
+    {
+      "id": "harvest_oak",
+      "prerequisites": [],
+      "objectives": [ { "key": "oak_logs", "kind": "gather", "target_id": "item/oak_log", "node_id": "gathering_node/oak_tree", "count": 1 } ],
+      "rewards": []
+    },
+    {
+      "id": "mine_iron",
+      "prerequisites": ["harvest_oak"],
+      "objectives": [ { "key": "iron_ore", "kind": "gather", "target_id": "item/iron_ore", "count": 1 } ],
+      "rewards": []
+    },
+    {
+      "id": "refine_materials",
+      "prerequisites": ["mine_iron"],
+      "objectives": [
+        { "key": "rough_timber", "kind": "craft", "target_id": "item/rough_timber", "count": 1 },
+        { "key": "iron_ingot", "kind": "craft", "target_id": "item/iron_ingot", "count": 1 }
+      ],
+      "rewards": []
+    },
+    {
+      "id": "place_wall",
+      "prerequisites": ["refine_materials"],
+      "objectives": [ { "key": "wall", "kind": "build", "target_id": "structure_tag/wall", "count": 1 } ],
+      "rewards": []
+    },
+    {
+      "id": "defeat_boar",
+      "prerequisites": ["place_wall"],
+      "objectives": [ { "key": "boar", "kind": "defeat", "target_id": "npc/boar", "count": 1 } ],
+      "rewards": [ { "bundle_id": "reward/frontier_founder_completion" } ]
+    }
+  ]
+}
