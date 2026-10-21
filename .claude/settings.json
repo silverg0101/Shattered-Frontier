@@ -9,10 +9,6 @@
       "Bash(git status:*)",
       "Bash(git diff:*)",
       "Bash(git log:*)"
-    ],
-    "ask": [
-      "Bash(git push:*)",
-      "PowerShell(git push:*)"
     ]
   }
 }
