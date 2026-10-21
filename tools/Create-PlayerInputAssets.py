@@ -1,4 +1,4 @@
-"""Create the CTL-01 player input assets (IMC_Player and IA_*) under /Game/Frontier/Input (Editor Python, UE 5.8).
+"""Create the CTL-01 input assets (IMC_Player, IMC_Build and their IA_*) under /Game/Frontier/Input (Editor Python, UE 5.8).
 
 Headless: UnrealEditor-Cmd.exe <uproject> -run=pythonscript -nullrhi -unattended -script="<this file>"
 Editor open: python tools/Run-InEditor.py tools/Create-PlayerInputAssets.py
@@ -28,6 +28,11 @@ ACTIONS = {
     'IA_WalkToggle': (T.BOOLEAN, ['Divide']),
     'IA_Interact': (T.BOOLEAN, ['F', 'Gamepad_FaceButton_Right']),
 }
+# Build mode (construction controllers): reserves the keys whose build actions win over IMC_Player. Added at a
+# higher priority, it consumes them so the player context does not also strafe, orbit or interact on them.
+BUILD_ACTIONS = {
+    "IA_BuildReserved": (T.BOOLEAN, ["E", "F", "LeftMouseButton"]),
+}
 tools = unreal.AssetToolsHelpers.get_asset_tools()
 lib = unreal.EditorAssetLibrary
 
@@ -37,14 +42,19 @@ def ensure(name, cls, factory):
     return lib.load_asset(path) if lib.does_asset_exist(path) else tools.create_asset(name, ROOT, cls, factory)
 
 
-imc = ensure('IMC_Player', unreal.InputMappingContext, unreal.InputMappingContext_Factory())
-imc.unmap_all()
-for name, (value_type, keys) in ACTIONS.items():
-    action = ensure(name, unreal.InputAction, unreal.InputAction_Factory())
-    action.set_editor_property('value_type', value_type)
-    for key in keys:
-        k = unreal.Key(); k.import_text(key)
-        imc.map_key(action, k)
-    lib.save_loaded_asset(action, False)
-lib.save_loaded_asset(imc, False)
+def build_context(context_name, actions):
+    imc = ensure(context_name, unreal.InputMappingContext, unreal.InputMappingContext_Factory())
+    imc.unmap_all()
+    for name, (value_type, keys) in actions.items():
+        action = ensure(name, unreal.InputAction, unreal.InputAction_Factory())
+        action.set_editor_property("value_type", value_type)
+        for key in keys:
+            k = unreal.Key(); k.import_text(key)
+            imc.map_key(action, k)
+        lib.save_loaded_asset(action, False)
+    lib.save_loaded_asset(imc, False)
+
+
+build_context("IMC_Player", ACTIONS)
+build_context("IMC_Build", BUILD_ACTIONS)
 unreal.log(f'PLAYER_INPUT_ASSETS actions={len(ACTIONS)} mappings={sum(len(k) for _, k in ACTIONS.values())} root={ROOT}')

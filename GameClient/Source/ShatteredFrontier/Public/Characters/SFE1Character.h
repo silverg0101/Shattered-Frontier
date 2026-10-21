@@ -48,18 +48,19 @@ private:
     void LookUp(float Value);
     void Interact();
 
-    // CTL-01 WoW-style camera and movement (docs/decisions/CTL-01-player-camera-controls.md). Only under the plain
-    // ASFE1PlayerController; the construction controllers keep the legacy bindings and their own cursor handling.
+    // CTL-01 WoW-style camera and movement (docs/decisions/CTL-01-player-camera-controls.md) under every
+    // ASFE1PlayerController; in the construction controllers their build keys (IMC_Build) take priority.
     struct FSFMouseButtonState { bool bDown = false; bool bDragging = false; double DownAt = 0; FVector2D DownCursor = FVector2D::ZeroVector; };
     bool UsesCameraControls() const;
     void ApplyControlScheme();
     void TickCameraControls(float DeltaSeconds);
     void SetMouseCaptured(bool bCaptured);
     UPROPERTY(Transient) TObjectPtr<UInputMappingContext> PlayerMapping;
+    UPROPERTY(Transient) TObjectPtr<UInputMappingContext> BuildMapping;
     UPROPERTY(Transient) TArray<TObjectPtr<UInputAction>> PlayerActions;
     FSFMouseButtonState OrbitButton, MouseLookButton;
     FRotator CameraRotation = FRotator::ZeroRotator;
-    float LastControlYaw = 0, DesiredArmCm = 0;
+    float LastControlYaw = 0, LastControlPitch = 0, DesiredArmCm = 0;
     uint32 HeldLastTick = 0;
-    bool bFirstPerson = false, bAutorun = false, bWalkToggled = false, bMouseCaptured = false;
+    bool bFirstPerson = false, bAutorun = false, bWalkToggled = false, bMouseCaptured = false, bBuildMappingActive = false;
 };

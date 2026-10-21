@@ -1485,6 +1485,7 @@ void ASFConstructionNetworkController::SetupInputComponent()
     InputComponent->BindKey(EKeys::K,IE_Pressed,this,&ASFConstructionNetworkController::ClaimPlotFromView);
     // Controller consumes E before the inherited pawn's probe binding.
     InputComponent->BindKey(EKeys::E,IE_Pressed,this,&ASFConstructionNetworkController::ToggleDoorFromView);
+    InputComponent->BindKey(EKeys::F,IE_Pressed,this,&ASFConstructionNetworkController::ToggleDoorFromView);  // CTL-01: F is Interact/Harvest
     InputComponent->BindKey(EKeys::L,IE_Pressed,this,&ASFConstructionNetworkController::ToggleLineMode);
     InputComponent->BindKey(EKeys::P,IE_Pressed,this,&ASFConstructionNetworkController::TogglePlacementPlane);
     InputComponent->BindKey(EKeys::PageDown,IE_Pressed,this,&ASFConstructionNetworkController::LayerDown);
@@ -2011,7 +2012,7 @@ void ASFConstructionNetworkController::TickFiniteScenario()
     if (FMath::Abs(Position.X-(bBuilderRole ? -200.0 : 200.0))>1.0 || FMath::Abs(Position.Y+400.0)>1.0) { return; }
     if (ScenarioStarted==0) { ScenarioStarted=FPlatformTime::Seconds(); }
     if (!bBuilderRole && ScenarioStep==0)
-    { SetControlRotation((FVector(-150,-175,50)-GetPawn()->GetActorLocation()).Rotation()); }
+    { SetControlRotation((FVector(-150,-175,50)-PlayerCameraManager->GetCameraLocation()).Rotation()); }
     if (FPlatformTime::Seconds()-ScenarioStarted>45) { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_SCENARIO_FAILED Timeout=1")); FPlatformMisc::RequestExitWithStatus(false,1); return; }
     if (ScenarioStep==100)
     {
@@ -2065,7 +2066,7 @@ void ASFConstructionNetworkController::TickFiniteScenario()
         && State->GetSnapshot().Revision==11 && State->GetSnapshot().Members.Num()==2 && State->GetSnapshot().Doors.Num()==1 && State->HasCurrentCollision())
     {
         if (!bBuilderRole && !bScenarioDoorCameraAimed)
-        { SetControlRotation((FVector(150,25,100)-GetPawn()->GetActorLocation()).Rotation()); bScenarioDoorCameraAimed=true; return; }
+        { SetControlRotation((FVector(150,25,100)-PlayerCameraManager->GetCameraLocation()).Rotation()); bScenarioDoorCameraAimed=true; return; }
         if (!bScenarioDoorClosedReported)
         { UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_DOOR_CLOSED_READY Builder=%d Revision=11"),bBuilderRole); bScenarioDoorClosedReported=true; }
     }
@@ -2074,7 +2075,7 @@ void ASFConstructionNetworkController::TickFiniteScenario()
     {
         if (bBuilderRole && !bScenarioDoorOpenReported)
         {
-            SetControlRotation((FVector(150,25,100)-GetPawn()->GetActorLocation()).Rotation());
+            SetControlRotation((FVector(150,25,100)-PlayerCameraManager->GetCameraLocation()).Rotation());
             FVector Start; FRotator Aim; GetPlayerViewPoint(Start,Aim);
             FHitResult Hit; FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionNetworkVirtualProof),false,GetPawn());
             FIntVector HitOrigin;
@@ -2159,7 +2160,7 @@ void ASFConstructionNetworkController::TickFiniteScenario()
     {
         // Aim through the third-person camera at the known floor cell; wait for
         // the ordinary camera/input stack rather than calling placement directly.
-        SetControlRotation((FVector(-175,-175,0)-GetPawn()->GetActorLocation()).Rotation());
+        SetControlRotation((FVector(-175,-175,0)-PlayerCameraManager->GetCameraLocation()).Rotation());
         if (!bHasPlacementPreview || PreviewCell!=FIntVector(-4,-4,0)) { return; }
         ScenarioStep=3;
         InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::B,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
@@ -2186,7 +2187,7 @@ void ASFConstructionNetworkController::TickFiniteScenario()
     }
     else if (bBuilderRole && ScenarioStep==14 && State->GetSnapshot().Revision==3 && State->HasCurrentCollision())
     {
-        SetControlRotation((FVector(-175,-175,75)-GetPawn()->GetActorLocation()).Rotation());
+        SetControlRotation((FVector(-175,-175,75)-PlayerCameraManager->GetCameraLocation()).Rotation());
         if (!bHasRemovalPreview || RemovalCell!=FIntVector(-4,-4,1)) { return; }
         if (!SupportCache.bRemovalAllowed)
         { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_SCENARIO_FAILED SupportedTopPreview=1")); FPlatformMisc::RequestExitWithStatus(false,1); return; }
@@ -2226,7 +2227,7 @@ void ASFConstructionNetworkController::TickFiniteScenario()
     { ScenarioStep=27; ServerPlace(FIntVector(-4,-4,0),6,0,255,ActiveClaimId()); }
     else if (bBuilderRole && ScenarioStep==28)
     {
-        SetControlRotation((FVector(-175,-175,0)-GetPawn()->GetActorLocation()).Rotation());
+        SetControlRotation((FVector(-175,-175,0)-PlayerCameraManager->GetCameraLocation()).Rotation());
         if (SelectedShape!=1)
         {
             InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::Two,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
@@ -2239,7 +2240,7 @@ void ASFConstructionNetworkController::TickFiniteScenario()
     }
     else if (bBuilderRole && ScenarioStep==30 && State->GetSnapshot().Revision==7 && State->HasCurrentCollision())
     {
-        SetControlRotation((FVector(-175,-200,12.5)-GetPawn()->GetActorLocation()).Rotation());
+        SetControlRotation((FVector(-175,-200,12.5)-PlayerCameraManager->GetCameraLocation()).Rotation());
         if (SelectedShape!=2)
         {
             InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::Three,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
@@ -2257,7 +2258,7 @@ void ASFConstructionNetworkController::TickFiniteScenario()
     }
     else if (bBuilderRole && ScenarioStep==34)
     {
-        SetControlRotation((FVector(125,25,0)-GetPawn()->GetActorLocation()).Rotation());
+        SetControlRotation((FVector(125,25,0)-PlayerCameraManager->GetCameraLocation()).Rotation());
         if (!bDoorSelected)
         {
             InputKey(FInputKeyEventArgs::CreateSimulated(EKeys::Four,IE_Pressed,1.f,1,FInputDeviceId::CreateFromInternalId(0)));
@@ -2340,7 +2341,7 @@ void ASFConstructionNetworkController::TickFiniteScenario()
             bScenarioLineSeedReported=true;
         }
         const FVector Target=bHasLineSeed ? FVector(375,-175,0) : FVector(275,-175,0);
-        SetControlRotation((Target-GetPawn()->GetActorLocation()).Rotation());
+        SetControlRotation((Target-PlayerCameraManager->GetCameraLocation()).Rotation());
         if (!bHasPlacementPreview || PreviewCell!=(bHasLineSeed ? FIntVector(7,-4,0) : FIntVector(5,-4,0))) { return; }
         const bool bSeedOnly=!bHasLineSeed;
         if (!bSeedOnly)
@@ -2379,7 +2380,7 @@ void ASFConstructionNetworkController::TickFiniteScenario()
             UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_LAYER_SEED_ONLY Revision=15 Members=5 Layer=1"));
             bScenarioLayerSeedReported=true;
         }
-        SetControlRotation(((bHasLineSeed ? FVector(375,-175,50) : FVector(275,-175,50))-GetPawn()->GetActorLocation()).Rotation());
+        SetControlRotation(((bHasLineSeed ? FVector(375,-175,50) : FVector(275,-175,50))-PlayerCameraManager->GetCameraLocation()).Rotation());
         if (!bHasPlacementPreview || PreviewCell!=(bHasLineSeed ? FIntVector(7,-4,1) : FIntVector(5,-4,1))) { return; }
         const bool bSeedOnly=!bHasLineSeed;
         if (!bSeedOnly)

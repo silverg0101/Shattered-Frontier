@@ -17,22 +17,36 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT.parents[1] / 'docs/evidence/graphics/wp7-player'
 OUT.mkdir(parents=True, exist_ok=True)
 view = json.loads((ROOT / 'Greenlands/silverbrook-reference-bookmarks.json').read_text(encoding='utf-8'))['views'][0]
-world = u.load_asset('/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook')
-pc = u.GameplayStatics.get_player_controller(world, 0)
-pawn = u.GameplayStatics.get_player_character(world, 0)
-mesh = pawn.mesh
-boom = pawn.get_component_by_class(u.SpringArmComponent)
-# The subsystem getter is BlueprintInternalUseOnly (not in Python), so find the live instance.
-inputs = next(s for s in u.ObjectIterator(u.EnhancedInputLocalPlayerSubsystem) if not s.get_name().startswith("Default__"))
-IA = {n: u.load_asset(f'/Game/Frontier/Input/IA_{n}') for n in ('MouseLook', 'Orbit', 'Look', 'Zoom', 'MoveForward')}
-outfit = next((c for c in pawn.get_components_by_class(u.SkeletalMeshComponent) if c.get_name() == "Outfit"), None)
-state = dict(pawn=pawn.get_class().get_name(), outfit=outfit.skeletal_mesh_asset.get_path_name() if outfit and outfit.skeletal_mesh_asset else None,
-             mesh=mesh.skeletal_mesh_asset.get_path_name() if mesh.skeletal_mesh_asset else None,
-             anim_class=mesh.get_anim_instance().get_class().get_name() if mesh.get_anim_instance() else None,
-             bookmark=view['name'], checks={}, shots=[], frames_ms=[])
+IA = {n: u.load_asset(f'/Game/Frontier/Input/IA_{n}') for n in ('MouseLook', 'Orbit', 'Look', 'Zoom', 'MoveForward', 'StrafeRight', 'Interact')}
 x, y = view['xy_m']; tx, ty = view['look_xy_m']
 yaw = math.degrees(math.atan2(ty - y, tx - x))
 tick = dict(frame=0, mark={})
+world = pc = pawn = mesh = boom = inputs = state = None
+build = network = False
+
+
+def setup():
+    """Standalone or network client: wait for the map and the possessed pawn (a client connects after ExecCmds)."""
+    global world, pc, pawn, mesh, boom, inputs, state, build, network
+    world = next((w for w in u.ObjectIterator(u.World) if w.get_name() == 'Greenlands_Silverbrook'
+                  and u.GameplayStatics.get_player_controller(w, 0)), None)
+    pc = u.GameplayStatics.get_player_controller(world, 0) if world else None
+    pawn = pc.get_controlled_pawn() if pc else None
+    if not pawn:
+        return False
+    mesh = pawn.mesh
+    boom = pawn.get_component_by_class(u.SpringArmComponent)
+    # The subsystem getter is BlueprintInternalUseOnly (not in Python), so find the live instance.
+    inputs = next(s for s in u.ObjectIterator(u.EnhancedInputLocalPlayerSubsystem) if not s.get_name().startswith("Default__"))
+    # build mode (IMC_Build owns LMB/E/F): sandbox controller, or a replicated construction state on the network controller
+    build = pc.get_class().get_name() == 'SFConstructionSandboxController' or bool(u.GameplayStatics.get_all_actors_of_class(world, u.load_class(None, '/Script/ShatteredFrontier.SFConstructionNetworkState')))
+    network = str(pawn.get_editor_property('role')).endswith('AUTONOMOUS_PROXY: 2>')
+    state = dict(pawn=pawn.get_class().get_name(), controller=pc.get_class().get_name(), build_mode=build, network_client=network,
+                 mesh=mesh.skeletal_mesh_asset.get_path_name() if mesh.skeletal_mesh_asset else None,
+                 anim_class=mesh.get_anim_instance().get_class().get_name() if mesh.get_anim_instance() else None,
+                 shadow_cache_invalidation=str(mesh.get_editor_property('shadow_cache_invalidation_behavior')),
+                 bookmark=view['name'], checks={}, shots=[], frames_ms=[])
+    return True
 
 
 def inject(name, value):
@@ -65,13 +79,17 @@ def on_tick(delta):
 
 
 def step(delta):
-    tick['frame'] += 1
+    if state is None:
+        setup()
+        return
+    tick["frame"] += 1
     f = tick['frame']; m = tick['mark']
     if f == 90:
         hit = u.SystemLibrary.line_trace_single(world, u.Vector(x * 100, y * 100, 100000), u.Vector(x * 100, y * 100, -100000),
                                                  u.TraceTypeQuery.TRACE_TYPE_QUERY1, False, [pawn], u.DrawDebugTrace.NONE, True)
         z = hit.to_tuple()[4].z if hit else 0
-        pawn.set_actor_location_and_rotation(u.Vector(x * 100, y * 100, z + 100), u.Rotator(pitch=0, yaw=yaw, roll=0), False, True)
+        if not network:  # a client teleport would be corrected by the server; it walks from its spawn instead
+            pawn.set_actor_location_and_rotation(u.Vector(x * 100, y * 100, z + 100), u.Rotator(pitch=0, yaw=yaw, roll=0), False, True)
         pc.set_control_rotation(u.Rotator(pitch=0, yaw=yaw, roll=0))
         for c in ('r.MotionBlurQuality 0', 'r.ScreenPercentage 100', 'ShowFlag.TextRender 0'):
             u.SystemLibrary.execute_console_command(world, c)
@@ -84,7 +102,7 @@ def step(delta):
     if f == 299: u.SystemLibrary.execute_console_command(world, 'StopFPSChart')
     # Shadow-trail check: orbit 180 degrees and look back along the walked path (stale VSM pages would show there).
     if 300 <= f < 360:
-        inject("Orbit", 1.0)
+        inject("MouseLook" if build else "Orbit", 1.0)
         if f >= 330: inject("Look", (24.0, -1.0))
     if f == 364: shot("02b-path-behind.png")
     # RMB mouselook: pawn and camera turn together.
@@ -102,9 +120,14 @@ def step(delta):
     if 460 <= f < 510:
         inject('Orbit', 1.0)
         if f >= 480: inject('Look', (15.0, 0.0))
+    if f == 455 and build:  # injection bypasses key mappings, so ask which keys still reach the player actions
+        keys = {n: sorted(k.export_text() for k in inputs.query_keys_mapped_to_action(IA[n])) for n in ('Orbit', 'StrafeRight', 'Interact')}
+        state['checks']['build_keys_reserved'] = dict(keys=keys, passed=not any('LeftMouseButton' in k for k in keys['Orbit'])
+                                                      and 'E' not in keys['StrafeRight'] and 'F' not in keys['Interact'])
     if f == 520:
         (p0, c0), (p1, c1) = m['lmb'], yaws()
         state['checks']['lmb_orbit'] = dict(pawn_turn=round(turned(p0, p1), 1), camera_turn=round(turned(c0, c1), 1),
+                                            # build mode: injection skips key mappings, so the LMB reservation is checked by build_keys_reserved
                                             passed=turned(p0, p1) < 1 and turned(c0, c1) > 30)
     # Wheel in to first person, one notch out to the nearest third-person zoom, then all the way out.
     if 530 <= f < 560: inject('Zoom', 1.0)
@@ -124,7 +147,7 @@ def step(delta):
         state['frame_ms_p95'] = ms[int(len(ms) * 0.95)] if ms else None
         state['walk_speed_ok'] = state['shots'][1]['speed_cms'] > 100
         state['passed'] = bool(state['mesh'] and state['anim_class'] and state['walk_speed_ok']
-                               and all(c['passed'] for c in state['checks'].values()) and len(state['checks']) == 4)
+                               and all(c['passed'] for c in state['checks'].values()) and len(state["checks"]) == (5 if build else 4))
         (OUT / 'player-review.json').write_text(json.dumps(state, indent=2))
         u.log('WP7_REVIEW ' + json.dumps(dict(passed=state['passed'], checks={k: v['passed'] for k, v in state['checks'].items()},
                                               frame_ms_mean=state['frame_ms_mean'], frame_ms_p95=state['frame_ms_p95'])))

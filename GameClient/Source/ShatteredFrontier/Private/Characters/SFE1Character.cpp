@@ -26,6 +26,8 @@
 #include "Misc/Parse.h"
 #include "TimerManager.h"
 #include "Townsfolk/SFTownsfolk.h"
+#include "Construction/SFConstructionNetwork.h"
+#include "Construction/SFConstructionSandboxController.h"
 
 ASFE1Character::ASFE1Character()
 {
@@ -50,6 +52,8 @@ ASFE1Character::ASFE1Character()
     // replicated CharacterMovement velocity and falling state, so remote proxies animate with no extra replication.
     GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight()), FRotator(0, -90, 0));
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    // Skinned body: always invalidate its virtual shadow map pages, so no stale shadow pieces stay behind it.
+    GetMesh()->ShadowCacheInvalidationBehavior = EShadowCacheInvalidationBehavior::Always;
     if (!IsRunningDedicatedServer())
     {
         static ConstructorHelpers::FObjectFinder<USkeletalMesh> Body(TEXT("/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
@@ -123,8 +127,8 @@ namespace SFE1CameraControls
 
 bool ASFE1Character::UsesCameraControls() const
 {
-    // Exact class: the construction sandbox controllers subclass it and own RMB/cursor themselves.
-    return Controller && Controller->GetClass() == ASFE1PlayerController::StaticClass();
+    // Every player controller; IMC_Build is layered on while build mode is active (TickCameraControls).
+    return Cast<ASFE1PlayerController>(Controller) != nullptr;
 }
 
 void ASFE1Character::ApplyControlScheme()
@@ -153,20 +157,24 @@ void ASFE1Character::PawnClientRestart()
     if (!PlayerMapping)
     {
         PlayerMapping = LoadObject<UInputMappingContext>(nullptr, TEXT("/Game/Frontier/Input/IMC_Player.IMC_Player"));
+        BuildMapping = LoadObject<UInputMappingContext>(nullptr, TEXT("/Game/Frontier/Input/IMC_Build.IMC_Build"));
         for (const TCHAR* Name : SFE1CameraControls::ActionNames)
         { PlayerActions.Add(LoadObject<UInputAction>(nullptr, *FString::Printf(TEXT("/Game/Frontier/Input/%s.%s"), Name, Name))); }
     }
     UEnhancedInputLocalPlayerSubsystem* Input = PC->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-    if (!PlayerMapping || PlayerActions.Contains(nullptr) || !Input)
+    if (!PlayerMapping || !BuildMapping || PlayerActions.Contains(nullptr) || !Input)
     {
         UE_LOG(LogTemp, Error, TEXT("CTL-01 player input assets missing; run tools/Create-PlayerInputAssets.py"));
         return;
     }
     Input->AddMappingContext(PlayerMapping, 0);
+    Input->RemoveMappingContext(BuildMapping);  // TickCameraControls adds it back while build mode is active
+    bBuildMappingActive = false;
     const USFE1Settings* Settings = GetDefault<USFE1Settings>();
     CameraRotation = FRotator(-15.0f, GetActorRotation().Yaw, 0.0f);
     PC->SetControlRotation(FRotator(0.0f, CameraRotation.Yaw, 0.0f));
     LastControlYaw = CameraRotation.Yaw;
+    LastControlPitch = 0.0f;
     DesiredArmCm = Settings->CameraBoomLengthCm;
     SetMouseCaptured(false);
 }
@@ -207,9 +215,25 @@ void ASFE1Character::TickCameraControls(float Dt)
     const auto Pressed = [&](EAction A) { return IsHeld(A) && !(HeldBefore & (1u << A)); };
     const auto Released = [&](EAction A) { return !IsHeld(A) && (HeldBefore & (1u << A)) != 0; };
 
-    // A scripted SetControlRotation (combat scenario aim, review scripts) swings the camera behind the new facing.
+    // Build mode (CTL-01): the construction sandbox controller, or the network controller once a construction state has
+    // replicated. Its legacy E/F (interact, harvest, door) and LMB (place) win, so IMC_Build reserves those keys at a
+    // higher priority and consumes them from IMC_Player only while build mode lasts.
+    const bool bBuildMode = PC->IsA<ASFConstructionSandboxController>()
+        || (PC->IsA<ASFConstructionNetworkController>() && TActorIterator<ASFConstructionNetworkState>(GetWorld()));
+    if (bBuildMode != bBuildMappingActive)
+    {
+        bBuildMappingActive = bBuildMode;
+        if (bBuildMode) { Subsystem->AddMappingContext(BuildMapping, 1); } else { Subsystem->RemoveMappingContext(BuildMapping); }
+    }
+
+    // A SetControlRotation from elsewhere (combat aim, construction camera aim, review scripts) moves the camera to it.
     FRotator Control = PC->GetControlRotation();
-    if (!FMath::IsNearlyEqual(FRotator::NormalizeAxis(Control.Yaw - LastControlYaw), 0.0f, 0.01f)) { CameraRotation.Yaw = Control.Yaw; }
+    if (!FMath::IsNearlyEqual(FRotator::NormalizeAxis(Control.Yaw - LastControlYaw), 0.0f, 0.01f)
+        || !FMath::IsNearlyEqual(FRotator::NormalizeAxis(Control.Pitch - LastControlPitch), 0.0f, 0.01f))
+    {
+        CameraRotation.Yaw = Control.Yaw;
+        CameraRotation.Pitch = FMath::Clamp(FRotator::NormalizeAxis(Control.Pitch), S->CameraPitchMinDegrees, S->CameraPitchMaxDegrees);
+    }
 
     // LMB/RMB: a press becomes a camera drag once the cursor moves or the press outlasts a click; then the cursor is
     // hidden and locked, and it comes back where it was when the last drag ends. A short still press is a click.
@@ -299,6 +323,7 @@ void ASFE1Character::TickCameraControls(float Dt)
     Control.Pitch = CameraRotation.Pitch;
     PC->SetControlRotation(Control);
     LastControlYaw = Control.Yaw;
+    LastControlPitch = Control.Pitch;
 }
 
 void ASFE1Character::SetupPlayerInputComponent(UInputComponent* Input)
