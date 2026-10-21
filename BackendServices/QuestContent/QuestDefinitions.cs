@@ -31,6 +31,13 @@ public sealed class QuestObjective
 public sealed class QuestReward
 {
     public string BundleId { get; set; } = "";
+    public List<QuestRewardItem> Items { get; set; } = [];
+}
+
+public sealed class QuestRewardItem
+{
+    public string DefinitionId { get; set; } = "";
+    public long Quantity { get; set; }
 }
 
 public static class QuestLoader
@@ -55,7 +62,7 @@ public static class QuestValidator
     private static readonly Regex ContentId = new("^[a-z_]+/[a-z0-9_]+$", RegexOptions.CultureInvariant);
     private static readonly Regex Slug = new("^[a-z][a-z0-9_]*$", RegexOptions.CultureInvariant);
 
-    public static IReadOnlyList<string> Validate(QuestDefinition quest, QuestTuning? tuning = null)
+    public static IReadOnlyList<string> Validate(QuestDefinition quest, QuestTuning? tuning = null, IReadOnlySet<string>? knownItems = null)
     {
         tuning ??= new QuestTuning();
         tuning.Validate();
@@ -84,17 +91,24 @@ public static class QuestValidator
             if (step.Rewards is null || step.Rewards.Any(r => r is null || !ValidId(r.BundleId, "reward")) ||
                 step.Rewards.Select(r => r.BundleId).Distinct(StringComparer.Ordinal).Count() != step.Rewards.Count)
                 issues.Add($"step {step.Id}: rewards invalid/duplicate");
+            if (step.Rewards is not null)
+                foreach (var reward in step.Rewards.Where(r => r is not null))
+                    if (reward.Items is null || (reward.Items.Count == 0 && knownItems is not null) || reward.Items.Any(i => i is null ||
+                        !ValidId(i.DefinitionId, "item") || i.Quantity is < 1 or > 1000000 ||
+                        (knownItems is not null && !knownItems.Contains(i.DefinitionId))) ||
+                        reward.Items.Select(i => i.DefinitionId).Distinct(StringComparer.Ordinal).Count() != reward.Items.Count)
+                        issues.Add($"step {step.Id}: reward items invalid/unknown/duplicate");
         }
         return issues;
     }
 
-    public static IReadOnlyList<string> ValidateAll(IReadOnlyList<(string Path, QuestDefinition Quest)> files)
+    public static IReadOnlyList<string> ValidateAll(IReadOnlyList<(string Path, QuestDefinition Quest)> files, IReadOnlySet<string>? knownItems = null)
     {
         var issues = new List<string>();
         var ids = new HashSet<string>(StringComparer.Ordinal);
         foreach (var (path, quest) in files)
         {
-            issues.AddRange(Validate(quest).Select(i => $"{path}: {i}"));
+            issues.AddRange(Validate(quest, knownItems: knownItems).Select(i => $"{path}: {i}"));
             if (!ids.Add(quest.Id)) issues.Add($"{path}: duplicate quest id {quest.Id}");
         }
         return issues;

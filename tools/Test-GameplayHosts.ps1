@@ -163,6 +163,18 @@ try {
             GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
         }))
     }
+    $currentStep = 'full reward backpack'
+    $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-quest-full') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+    $pending = Sql "SELECT state FROM character_state.reward_receipts WHERE character_id='chr_quest_full'" "gameplay_$run"
+    $premature = Sql "SELECT count(*) FROM inventory.operation_receipts WHERE operation_id LIKE 'quest:chr_quest_full:%'" "gameplay_$run"
+    if ($pending -ne 'Pending' -or $premature -ne '0') { throw "Full backpack did not preserve pending intent: $pending/$premature" }
+    $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-quest-free') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+    Start-Sleep -Seconds 9
+    $fullState = Sql "SELECT state FROM character_state.reward_receipts WHERE character_id='chr_quest_full'" "gameplay_$run"
+    $fullLines = Sql "SELECT string_agg(definition_id || ':' || quantity, ',' ORDER BY definition_id) FROM inventory.entries WHERE container_id='ctn_quest_full'" "gameplay_$run"
+    $fullOps = Sql "SELECT count(*) FROM inventory.operation_receipts WHERE operation_id LIKE 'quest:chr_quest_full:%'" "gameplay_$run"
+    if ($fullState -ne 'Complete' -or $fullLines -ne 'item/iron_nails:8,item/rough_timber:4,item/starter_tool_repair_kit:1' -or $fullOps -ne '1') { throw "Full backpack recovery failed: $fullState/$fullLines/$fullOps" }
+    $results.Add('PASS full backpack intent stayed pending and granted exact item lines after space freed')
     $currentStep = 'abandoned placement'
     Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
     $env:SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT = 'place/abandon'
@@ -192,8 +204,9 @@ try {
     if ($hostProcess.HasExited -or $hostProcess2.HasExited) { throw 'Sweep host exited.' }
     $placement = Sql "SELECT state FROM housing.placements WHERE operation_id='place/abandon'" "gameplay_$run"
     $rewardState = Sql "SELECT state FROM character_state.reward_receipts WHERE character_id='chr_quest_abandon'" "gameplay_$run"
-    $rewardQuantity = Sql "SELECT quantity FROM inventory.entries WHERE container_id='ctn_quest_abandon' AND definition_id='item/frontier_founder_completion_bundle'" "gameplay_$run"
-    if ($placement -ne 'Compensated' -or $rewardState -ne 'Complete' -or $rewardQuantity -ne '1') { throw "Sweep failed: placement=$placement reward=$rewardState quantity=$rewardQuantity" }
+    $rewardLines = Sql "SELECT string_agg(definition_id || ':' || quantity, ',' ORDER BY definition_id) FROM inventory.entries WHERE container_id='ctn_quest_abandon'" "gameplay_$run"
+    $rewardOps = Sql "SELECT count(*) FROM inventory.operation_receipts WHERE operation_id LIKE 'quest:chr_quest_abandon:%'" "gameplay_$run"
+    if ($placement -ne 'Compensated' -or $rewardState -ne 'Complete' -or $rewardLines -ne 'item/iron_nails:8,item/rough_timber:4,item/starter_tool_repair_kit:1' -or $rewardOps -ne '1') { throw "Sweep failed: placement=$placement reward=$rewardState lines=$rewardLines ops=$rewardOps" }
     $sweepLogs = @((Get-Content (Join-Path $private 'host-sweep-a.out') | Where-Object { $_ -match '^GAMEPLAY_SWEEP (placement place/abandon|reward quest:chr_quest_abandon:)' }))
     $sweepLogs += @(Get-Content (Join-Path $private 'host-sweep-b.out') | Where-Object { $_ -match '^GAMEPLAY_SWEEP (placement place/abandon|reward quest:chr_quest_abandon:)' })
     $sweepLogs += @(Get-Content (Join-Path $private 'host-quest-fault.out') | Where-Object { $_ -match '^GAMEPLAY_SWEEP placement place/abandon' })

@@ -46,6 +46,11 @@ message ApplyReceiptReply {
   bool quest_completed = 8;
   int64 quest_revision = 9;
   repeated string reward_bundle_ids = 10;
+  repeated GrantedItem granted_items = 11;
+}
+message GrantedItem {
+  string definition_id = 1;
+  int64 quantity = 2;
 }
 message GetCharacterStateRequest { string character_id = 1; }
 message CharacterStateReply {

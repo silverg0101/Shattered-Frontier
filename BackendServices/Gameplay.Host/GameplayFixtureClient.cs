@@ -83,7 +83,13 @@ internal static class GameplayFixtureClient
                 Console.WriteLine("PASS abandoned placement reserved");
                 break;
             case "fixture-quest-abandon":
-                ledger.CreateContainer(new ContainerSpec("ctn_quest_abandon", OwnerKind.Character, "chr_quest_abandon", ContainerKind.Backpack, 100));
+            case "fixture-quest-full":
+                var full = mode == "fixture-quest-full";
+                var suffix = full ? "full" : "abandon";
+                var containerId = "ctn_quest_" + suffix;
+                var characterId = "chr_quest_" + suffix;
+                ledger.CreateContainer(new ContainerSpec(containerId, OwnerKind.Character, characterId, ContainerKind.Backpack, full ? 13 : 100));
+                if (full) ledger.Grant("quest-full/fill", containerId, 0, "item/oak_log", 1, "fixture", "quest-full/fill");
                 var progress = new ProgressPb.Progression.ProgressionClient(channel);
                 var steps = new (string Step, string Kind, string Target, string Node)[] {
                     ("harvest_oak","gather","item/oak_log","gathering_node/oak_tree"),
@@ -95,8 +101,8 @@ internal static class GameplayFixtureClient
                 for (var i = 0; i < steps.Length; i++)
                 {
                     var step = steps[i];
-                    var request = new ProgressPb.ApplyReceiptRequest { SourceReceiptId = $"quest-abandon/{i}",
-                        Kind = "quest", CharacterId = "chr_quest_abandon",
+                    var request = new ProgressPb.ApplyReceiptRequest { SourceReceiptId = $"quest-{suffix}/{i}",
+                        Kind = "quest", CharacterId = characterId,
                         ExpectedQuestRevision = i,
                         Quest = new ProgressPb.QuestEvidence { QuestId = "quest/frontier_founder",
                             StepId = step.Step, Kind = step.Kind, TargetId = step.Target, NodeId = step.Node,
@@ -104,12 +110,17 @@ internal static class GameplayFixtureClient
                     try
                     {
                         var result = progress.ApplyReceipt(request, headers, deadline: DateTime.UtcNow.AddSeconds(10));
-                        if (i == steps.Length - 1) throw new Exception("Quest fault did not fire.");
+                        if (i == steps.Length - 1) throw new Exception(full ? "Full backpack was accepted." : "Quest fault did not fire.");
                         Check(result.QuestAccepted, "Quest setup step rejected.");
                     }
-                    catch (RpcException) when (i == steps.Length - 1) { }
+                    catch (RpcException ex) when (i == steps.Length - 1 && (!full || ex.StatusCode == StatusCode.FailedPrecondition)) { }
                 }
-                Console.WriteLine("PASS abandoned reward grant committed");
+                Console.WriteLine(full ? "PASS full backpack rejects payout" : "PASS abandoned reward grant committed");
+                break;
+            case "fixture-quest-free":
+                var view = ledger.Read("ctn_quest_full");
+                ledger.Consume("quest-full/free", "ctn_quest_full", view.Revision, "item/oak_log", 1, "fixture");
+                Console.WriteLine("PASS reward backpack space freed");
                 break;
             default: throw new ArgumentException("Unknown fixture mode.");
         }

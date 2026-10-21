@@ -163,11 +163,17 @@ if (mode == "journey")
         TableId = "loot/greenlands_silverbrook_boar" }, headers, deadline: Deadline());
     Check(reward.Granted, "Journey boar reward failed.");
     Console.WriteLine("JOURNEY rewarded");
+    var beforeQuestReward = ledger.Read("ctn_journey");
     var final = Apply("defeat/journey-boar", "defeat", "", "defeat_boar", "defeat", "npc/boar");
     Check(final.QuestCompleted && final.RewardBundleIds.Contains("reward/frontier_founder_completion"),
         "Journey completion failed.");
-    Check(ledger.Read("ctn_journey").Quantities.GetValueOrDefault("item/frontier_founder_completion_bundle") == 1,
-        "Quest reward was not paid exactly once.");
+    var expectedReward = new Dictionary<string, long> { ["item/rough_timber"] = 4,
+        ["item/iron_nails"] = 8, ["item/starter_tool_repair_kit"] = 1 };
+    Check(final.GrantedItems.Count == expectedReward.Count && final.GrantedItems.All(i =>
+        expectedReward.GetValueOrDefault(i.DefinitionId) == i.Quantity), "Quest reply item lines differ.");
+    var afterQuestReward = ledger.Read("ctn_journey");
+    Check(expectedReward.All(i => afterQuestReward.Quantities.GetValueOrDefault(i.Key) -
+        beforeQuestReward.Quantities.GetValueOrDefault(i.Key) == i.Value), "Quest reward was not paid exactly once.");
     Console.WriteLine("PASS journey harvest, craft, place, boar reward, quest completion and replay");
     return;
 }

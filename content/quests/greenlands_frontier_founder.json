@@ -34,7 +34,11 @@
       "id": "defeat_boar",
       "prerequisites": ["place_wall"],
       "objectives": [ { "key": "boar", "kind": "defeat", "target_id": "npc/boar", "count": 1 } ],
-      "rewards": [ { "bundle_id": "reward/frontier_founder_completion" } ]
+      "rewards": [ { "bundle_id": "reward/frontier_founder_completion", "items": [
+        { "definition_id": "item/rough_timber", "quantity": 4 },
+        { "definition_id": "item/iron_nails", "quantity": 8 },
+        { "definition_id": "item/starter_tool_repair_kit", "quantity": 1 }
+      ] } ]
     }
   ]
 }

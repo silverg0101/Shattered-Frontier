@@ -69,7 +69,8 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
                 {
                     if (store.Reward(grant.OperationId)?.ContainerId != rewardContainerId)
                         throw new GameplayRejectedException("Reward container conflicts with original receipt.", StatusCode.AlreadyExists);
-                    payout.Resolve(grant.OperationId);
+                    reply.GrantedItems.AddRange(payout.Resolve(grant.OperationId).Select(i =>
+                        new Pb.GrantedItem { DefinitionId = i.DefinitionId, Quantity = i.Quantity }));
                 }
             }
             return reply;

@@ -65,8 +65,15 @@ internal sealed class GameplayRecoveryService(GameplayRecoverySettings settings,
             }
             foreach (var intent in characters.PendingRewards(cutoff))
             {
-                payout.Resolve(intent.OperationId);
-                Console.Out.WriteLine($"GAMEPLAY_SWEEP reward {intent.OperationId} Complete");
+                try
+                {
+                    payout.Resolve(intent.OperationId);
+                    Console.Out.WriteLine($"GAMEPLAY_SWEEP reward {intent.OperationId} Complete");
+                }
+                catch (GameplayRejectedException ex) when (ex.Code == Grpc.Core.StatusCode.FailedPrecondition)
+                {
+                    Console.Out.WriteLine($"GAMEPLAY_SWEEP reward {intent.OperationId} Pending");
+                }
             }
         }
         finally

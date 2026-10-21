@@ -23,6 +23,12 @@ try { new QuestTuning(0).Validate(); throw new Exception("invalid tuning accepte
 catch (ArgumentOutOfRangeException) { Console.WriteLine("PASS tuning bounds"); }
 Broken("duplicate objective", q => q.Steps[2].Objectives[1].Key = q.Steps[2].Objectives[0].Key, "duplicate");
 Broken("bad reward", q => q.Steps[4].Rewards[0].BundleId = "item/boar_hide", "rewards");
+var emptyReward = Copy(); emptyReward.Steps[4].Rewards[0].Items.Clear();
+Check(QuestValidator.Validate(emptyReward, knownItems: new HashSet<string>()).Any(i => i.Contains("reward items", StringComparison.Ordinal)), "empty authored reward lines rejected");
+Broken("duplicate reward line", q => q.Steps[4].Rewards[0].Items.Add(q.Steps[4].Rewards[0].Items[0]), "reward items");
+Broken("zero reward quantity", q => q.Steps[4].Rewards[0].Items[0].Quantity = 0, "reward items");
+var unknownReward = Copy(); unknownReward.Steps[4].Rewards[0].Items[0].DefinitionId = "item/invented";
+Check(QuestValidator.Validate(unknownReward, knownItems: new HashSet<string> { "item/rough_timber", "item/iron_nails", "item/starter_tool_repair_kit" }).Any(i => i.Contains("unknown", StringComparison.Ordinal)), "unknown reward item rejected");
 Check(QuestValidator.ValidateAll([("a", quest), ("b", quest)]).Any(i => i.Contains("duplicate quest id", StringComparison.Ordinal)), "duplicate record");
 
 var model = new QuestProgression(quest);

@@ -1,37 +1,55 @@
+using Grpc.Core;
 using ShatteredFrontier.CharacterState.Postgres;
 using ShatteredFrontier.InventoryLedger;
 using ShatteredFrontier.InventoryLedger.Postgres;
+using ShatteredFrontier.QuestContent;
 
-internal sealed class QuestRewardPayout(PostgresCharacterStateStore state, PostgresInventoryLedgerStore ledgerStore)
+internal sealed class QuestRewardPayout(PostgresCharacterStateStore state, PostgresInventoryLedgerStore ledgerStore, QuestDefinition quest)
 {
-    private readonly InventoryLedger ledger = new(ledgerStore);
-
-    public void Resolve(string operationId)
+    public IReadOnlyList<ItemQuantity> Resolve(string operationId)
     {
         var intent = state.Reward(operationId) ?? throw new InvalidOperationException("Reward intent missing.");
         if (string.IsNullOrWhiteSpace(intent.ContainerId)) throw new InvalidOperationException("Reward container missing.");
-        if (intent.BundleId != "reward/frontier_founder_completion")
-            throw new InvalidOperationException("Unknown reward bundle.");
-        const string item = "item/frontier_founder_completion_bundle";
-        var container = ledger.Read(intent.ContainerId);
-        if (container.Spec.OwnerKind != OwnerKind.Character || container.Spec.OwnerId != intent.CharacterId)
-            throw new InvalidOperationException("Reward container owner changed.");
-        var existing = ledgerStore.Execute(s => s.Operations.TryGetValue(operationId, out var op) ? op : null);
-        if (existing is null)
+        var reward = quest.Steps.Single(s => s.Id == intent.StepId).Rewards.Single(r => r.BundleId == intent.BundleId);
+        var items = reward.Items.Select(i => new ItemQuantity(i.DefinitionId, i.Quantity)).ToArray();
+        if (items.Length == 0) throw new InvalidOperationException("Reward items missing.");
+        var fingerprint = "quest-reward-v1|" + intent.ContainerId + "|" +
+            string.Join("|", items.OrderBy(i => i.DefinitionId, StringComparer.Ordinal).Select(i => $"{i.DefinitionId}:{i.Quantity}"));
+        var receipt = ledgerStore.Execute(s =>
         {
-            try { ledger.Grant(operationId, intent.ContainerId, container.Revision, item, 1, "quest_reward", operationId); }
-            catch (LedgerRejectedException)
+            if (!s.Containers.TryGetValue(intent.ContainerId, out var container) ||
+                container.Spec.OwnerKind != OwnerKind.Character || container.Spec.OwnerId != intent.CharacterId)
+                throw new GameplayRejectedException("Reward backpack missing or owner changed.", StatusCode.FailedPrecondition);
+            if (s.Operations.TryGetValue(operationId, out var prior))
             {
-                // Another host may have committed the same deterministic operation concurrently.
+                if (prior.Fingerprint != fingerprint) throw new InvalidOperationException("Reward operation conflicts with intent.");
+                return prior.Receipt;
             }
-            existing = ledgerStore.Execute(s => s.Operations.TryGetValue(operationId, out var op) ? op : null);
-        }
-        if (existing?.Receipt is not { Action: LedgerAction.Grant } receipt || receipt.Changes.Count != 1 ||
-            receipt.Changes[0].ContainerId != intent.ContainerId || receipt.Changes[0].DefinitionId != item ||
-            receipt.Changes[0].Delta != 1)
-            throw new InvalidOperationException("Reward ledger grant is absent or differs from intent.");
+            long total;
+            try
+            {
+                total = container.Quantities.Values.Aggregate(0L, (sum, value) => checked(sum + value));
+                foreach (var item in items) total = checked(total + item.Quantity);
+            }
+            catch (OverflowException) { throw new GameplayRejectedException("Reward quantity overflow.", StatusCode.FailedPrecondition); }
+            if (total > container.Spec.Capacity)
+                throw new GameplayRejectedException("Reward backpack full; intent remains pending.", StatusCode.FailedPrecondition);
+            foreach (var item in items)
+                container.Quantities[item.DefinitionId] = checked(container.Quantities.GetValueOrDefault(item.DefinitionId) + item.Quantity);
+            var before = container.Revision++;
+            var committed = new LedgerReceipt(operationId, LedgerAction.Grant,
+                [new RevisionChange(intent.ContainerId, before, container.Revision)],
+                items.Select(i => new QuantityChange(intent.ContainerId, i.DefinitionId, i.Quantity)).ToArray());
+            s.Operations.Add(operationId, new StoredOperation(fingerprint, committed));
+            return committed;
+        });
+        if (receipt.Action != LedgerAction.Grant || receipt.Changes.Count != items.Length ||
+            items.Any(item => !receipt.Changes.Any(c => c.ContainerId == intent.ContainerId &&
+                c.DefinitionId == item.DefinitionId && c.Delta == item.Quantity)))
+            throw new InvalidOperationException("Reward ledger grant differs from intent.");
         if (Environment.GetEnvironmentVariable("SF_GAMEPLAY_FAULT_AFTER_QUEST_GRANT") == operationId)
             Environment.FailFast("Injected post-reward host fault.");
         state.CompleteReward(operationId);
+        return items;
     }
 }
