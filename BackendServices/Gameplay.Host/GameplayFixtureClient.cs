@@ -102,7 +102,6 @@ internal static class GameplayFixtureClient
                 foreach (var actor in new[] { "chr_exchange_seller", "chr_exchange_a", "chr_exchange_b" })
                     ledger.CreateContainer(new ContainerSpec("ctn_" + actor, OwnerKind.Character, actor, ContainerKind.Backpack, 100));
                 ledger.CreateContainer(new ContainerSpec("ctn_trade_escrow", OwnerKind.Character, "chr_exchange_seller", ContainerKind.Escrow, 100));
-                ledger.CreateContainer(new ContainerSpec("ctn_list_escrow", OwnerKind.Character, "chr_exchange_seller", ContainerKind.Escrow, 100));
                 ledger.CreateContainer(new ContainerSpec("ctn_fault_escrow", OwnerKind.Character, "chr_exchange_seller", ContainerKind.Escrow, 100));
                 ledger.CreateContainer(new ContainerSpec("ctn_cancel_escrow", OwnerKind.Character, "chr_exchange_seller", ContainerKind.Escrow, 100));
                 ledger.CreateContainer(new ContainerSpec("ctn_expire_escrow", OwnerKind.Character, "chr_exchange_seller", ContainerKind.Escrow, 100));
@@ -118,6 +117,8 @@ internal static class GameplayFixtureClient
                     PartyA = "chr_exchange_seller", PartyB = "chr_exchange_a", GoldB = 10,
                     Deliveries = { new ExchangePb.ItemDelivery { EscrowId = "ctn_trade_escrow", DestinationId = "ctn_chr_exchange_a", ItemId = "item/iron_ore", Quantity = 1 } } }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
                 Check(offer.State == "pending", "Trade offer was not pending.");
+                Check(tradeClient.ListTrades(new ExchangePb.ListTradesRequest { CharacterId = "chr_exchange_a", PageSize = 10 }, headers,
+                    deadline: DateTime.UtcNow.AddSeconds(10)).Trades.Any(x => x.TradeId == "trd_wire"), "Pending trade read missing.");
                 var accepted = tradeClient.AcceptTrade(new ExchangePb.TradeActionRequest { OperationId = "exchange/accept", OfferOperationId = "exchange/offer",
                     TradeId = "trd_wire", ActorId = "chr_exchange_a" }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
                 Check(accepted.State == "committed" && ledger.Read("ctn_chr_exchange_a").Quantities.GetValueOrDefault("item/iron_ore") == 1,
@@ -130,9 +131,12 @@ internal static class GameplayFixtureClient
             case "fixture-exchange-market":
                 var market = new ExchangePb.Exchange.ExchangeClient(invoker);
                 var listed = market.ListItem(new ExchangePb.ListItemRequest { OperationId = "exchange/list", ListingId = "lst_wire",
-                    SellerId = "chr_exchange_seller", SourceContainerId = "ctn_chr_exchange_seller", EscrowContainerId = "ctn_list_escrow",
+                    SellerId = "chr_exchange_seller", SourceContainerId = "ctn_chr_exchange_seller", EscrowContainerId = "ctn_chr_exchange_seller:escrow",
                     ItemId = "item/iron_ore", Quantity = 1, UnitPrice = 20, CreatedAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
                 Check(listed.State == "active", "Listing not active.");
+                Check(ledger.Read("ctn_chr_exchange_seller:escrow").Spec.Kind == ContainerKind.Escrow &&
+                    market.ListListings(new ExchangePb.ListListingsRequest { MarketId = "market/global", PageSize = 10 }, headers,
+                        deadline: DateTime.UtcNow.AddSeconds(10)).Listings.Any(x => x.Id == "lst_wire"), "Host did not create and list escrow.");
                 var start = new ManualResetEventSlim();
                 var buys = new[] { "a", "b" }.Select(buyer => Task.Run(() =>
                 {

@@ -52,6 +52,23 @@ internal sealed class ExchangeGrpcService(PostgresExchangeStore exchange, Postgr
         var w = exchange.Wallet(request.OwnerId);
         return new Pb.WalletReply { Balance = w.Balance, Reserved = w.Reserved, Available = w.Spendable, Revision = w.Sequence };
     });
+    public override Task<Pb.ListListingsReply> ListListings(Pb.ListListingsRequest request, ServerCallContext context) => GrpcRun.Call(context, () =>
+    {
+        var page = exchange.ListListings(request.MarketId, request.ItemId, request.PageToken, request.PageSize);
+        var reply = new Pb.ListListingsReply { NextPageToken = page.NextToken };
+        reply.Listings.AddRange(page.Items.Select(x => new Pb.ListingView { Id = x.Id, SellerId = x.SellerId,
+            ItemId = x.ItemId, Quantity = x.Quantity, UnitPrice = x.UnitPrice, ListingFee = x.Fee,
+            CreatedAtUnixMs = x.CreatedAt.ToUnixTimeMilliseconds() }));
+        return reply;
+    });
+    public override Task<Pb.ListTradesReply> ListTrades(Pb.ListTradesRequest request, ServerCallContext context) => GrpcRun.Call(context, () =>
+    {
+        var page = exchange.ListTrades(request.CharacterId, request.PageToken, request.PageSize);
+        var reply = new Pb.ListTradesReply { NextPageToken = page.NextToken };
+        reply.Trades.AddRange(page.Items.Select(x => new Pb.TradeView { TradeId = x.TradeId, OfferOperationId = x.OperationId,
+            PartyA = x.PartyA, PartyB = x.PartyB, State = x.State, CreatedAtUnixMs = x.CreatedAt.ToUnixTimeMilliseconds() }));
+        return reply;
+    });
     public override Task<Pb.ExchangeReply> OfferTrade(Pb.TradeOfferRequest request, ServerCallContext context) => GrpcRun.Call(context, () =>
     {
         Require(request.PartyA.StartsWith("chr_", StringComparison.Ordinal) && request.PartyB.StartsWith("chr_", StringComparison.Ordinal) &&
@@ -103,10 +120,14 @@ internal sealed class ExchangeGrpcService(PostgresExchangeStore exchange, Postgr
     public override Task<Pb.ExchangeReply> ListItem(Pb.ListItemRequest request, ServerCallContext context) => GrpcRun.Call(context, () =>
     {
         var source = Owned(request.SourceContainerId, request.SellerId);
-        var escrow = Owned(request.EscrowContainerId, request.SellerId, ContainerKind.Escrow);
         Require(request.Quantity > 0 && request.UnitPrice > 0 && request.SourceContainerId != request.EscrowContainerId, "Invalid listing item.");
+        var escrow = request.EscrowContainerId == source.Spec.Id + ":escrow"
+            ? Ledger.CreateContainer(new ContainerSpec(request.EscrowContainerId, OwnerKind.Character,
+                request.SellerId, ContainerKind.Escrow, source.Spec.Capacity))
+            : Owned(request.EscrowContainerId, request.SellerId, ContainerKind.Escrow);
         var intent = exchange.BeginListing(request.OperationId, request.ListingId, request.SellerId, source.Spec.Id, escrow.Spec.Id,
-            request.ItemId, request.Quantity, request.UnitPrice, request.ListingFee, DateTimeOffset.FromUnixTimeMilliseconds(request.CreatedAtUnixMs));
+            request.ItemId, request.Quantity, request.UnitPrice, request.ListingFee, DateTimeOffset.FromUnixTimeMilliseconds(request.CreatedAtUnixMs),
+            market: string.IsNullOrEmpty(request.MarketId) ? "market/global" : request.MarketId);
         if (intent.Code == "pending")
         {
             try { Ledger.Transfer(request.OperationId + "/escrow", source.Spec.Id, source.Revision, escrow.Spec.Id, escrow.Revision, request.ItemId, request.Quantity); }

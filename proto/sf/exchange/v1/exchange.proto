@@ -10,6 +10,8 @@ service Exchange {
   rpc ListItem (ListItemRequest) returns (ExchangeReply);
   rpc BuyListing (BuyListingRequest) returns (ExchangeReply);
   rpc CancelListing (ListingActionRequest) returns (ExchangeReply);
+  rpc ListListings (ListListingsRequest) returns (ListListingsReply);
+  rpc ListTrades (ListTradesRequest) returns (ListTradesReply);
 }
 message WalletRequest { string owner_id = 1; }
 message WalletReply { int64 balance = 1; int64 reserved = 2; int64 available = 3; int64 revision = 4; }
@@ -24,7 +26,14 @@ message ListItemRequest {
   string source_container_id = 4; string escrow_container_id = 5;
   string item_id = 6; int64 quantity = 7; int64 unit_price = 8; int64 listing_fee = 9;
   int64 created_at_unix_ms = 10;
+  string market_id = 11;
 }
+message ListListingsRequest { string market_id = 1; string item_id = 2; string page_token = 3; int32 page_size = 4; }
+message ListingView { string id = 1; string seller_id = 2; string item_id = 3; int64 quantity = 4; int64 unit_price = 5; int64 listing_fee = 6; int64 created_at_unix_ms = 7; }
+message ListListingsReply { repeated ListingView listings = 1; string next_page_token = 2; }
+message ListTradesRequest { string character_id = 1; string page_token = 2; int32 page_size = 3; }
+message TradeView { string trade_id = 1; string offer_operation_id = 2; string party_a = 3; string party_b = 4; string state = 5; int64 created_at_unix_ms = 6; }
+message ListTradesReply { repeated TradeView trades = 1; string next_page_token = 2; }
 message BuyListingRequest {
   string operation_id = 1; string listing_id = 2; string buyer_id = 3;
   string destination_container_id = 4; int64 expected_revision = 5;

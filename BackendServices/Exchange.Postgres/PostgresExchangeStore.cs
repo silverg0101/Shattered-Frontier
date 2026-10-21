@@ -13,7 +13,10 @@ public sealed record DurableListing(string Id, string SellerId, string SellerCon
 public sealed record DurableSettlement(string OperationId, string Kind, string SubjectId, string? PayerId, string? PayeeId,
     long Amount, long Fee, IReadOnlyList<EscrowDelivery> Deliveries, string State, ExchangeReceipt Receipt);
 public sealed record ListingIntent(string Command, string Id, string Seller, string SellerContainer, string Escrow,
-    string Item, long Quantity, long Price, long Fee, DateTimeOffset Now, long DurationHours, DateTimeOffset CreatedAt);
+    string Item, long Quantity, long Price, long Fee, DateTimeOffset Now, long DurationHours, DateTimeOffset CreatedAt, string Market = "market/global");
+public sealed record ListingRead(string Id, string SellerId, string ItemId, long Quantity, long UnitPrice, long Fee, DateTimeOffset CreatedAt);
+public sealed record TradeRead(string TradeId, string OperationId, string PartyA, string PartyB, string State, DateTimeOffset CreatedAt);
+public sealed record ExchangePage<T>(IReadOnlyList<T> Items, string NextToken);
 
 public sealed class PostgresExchangeStore(string connectionString)
 {
@@ -35,8 +38,10 @@ public sealed class PostgresExchangeStore(string connectionString)
             {
                 using var check = Cmd(c,t,"SELECT version FROM exchange.schema_version WHERE singleton=true");
                 if (check.ExecuteScalar() is not int version || version != 3) throw new ExchangeSchemaCompatibilityException("Unsupported exchange schema version.");
+                using var shape=Cmd(c,t,"SELECT market_id,created_at FROM exchange.listings LIMIT 0"); shape.ExecuteNonQuery();
+                using var tradeShape=Cmd(c,t,"SELECT party_a,party_b FROM exchange.settlements LIMIT 0"); tradeShape.ExecuteNonQuery();
             }
-            catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501")
+            catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501" or "42703")
             { throw new ExchangeSchemaCompatibilityException("Exchange schema marker missing or inaccessible."); }
             var value = action(c,t); t.Commit(); return value;
         }
@@ -96,6 +101,26 @@ public sealed class PostgresExchangeStore(string connectionString)
         using var r=cmd.ExecuteReader(); return r.Read()?new(r.GetString(0),r.GetString(1),r.GetString(2),r.GetString(3),r.GetString(4),r.GetInt64(5),r.GetInt64(6),r.GetInt64(7),r.GetFieldValue<DateTimeOffset>(8),r.GetString(9),r.GetInt64(10)):null;
     }
     public DurableListing? Listing(string id)=>Run((c,t)=>ReadListing(c,t,id));
+    private static int PageSize(int size)
+    { if(size is < 1 or > 100) throw new ExchangeRejectedException("Page size must be 1..100."); return size; }
+    public ExchangePage<ListingRead> ListListings(string market,string? item,string? after,int pageSize)=>Run((c,t)=>
+    {
+        PageSize(pageSize); if(string.IsNullOrWhiteSpace(market) || market.Length>128 || (item?.Length ?? 0)>128 || (after?.Length ?? 0)>128) throw new ExchangeRejectedException("Invalid listing query.");
+        var rows=new List<ListingRead>();
+        using var cmd=Cmd(c,t,"SELECT id,seller_id,item_id,quantity,price,fee,created_at FROM exchange.listings WHERE state='active' AND expires_at>clock_timestamp() AND market_id=$1 AND ($2='' OR item_id=$2) AND id>$3 ORDER BY id LIMIT $4",market,item??"",after??"",pageSize+1);
+        using var reader=cmd.ExecuteReader(); while(reader.Read()) rows.Add(new(reader.GetString(0),reader.GetString(1),reader.GetString(2),reader.GetInt64(3),reader.GetInt64(4),reader.GetInt64(5),reader.GetFieldValue<DateTimeOffset>(6)));
+        var more=rows.Count>pageSize; if(more) rows.RemoveAt(pageSize);
+        return new ExchangePage<ListingRead>(rows,more?rows[^1].Id:"");
+    });
+    public ExchangePage<TradeRead> ListTrades(string character,string? after,int pageSize)=>Run((c,t)=>
+    {
+        PageSize(pageSize); if(!character.StartsWith("chr_",StringComparison.Ordinal) || character.Length>128 || (after?.Length ?? 0)>128) throw new ExchangeRejectedException("Invalid trade query.");
+        var rows=new List<TradeRead>();
+        using var cmd=Cmd(c,t,"SELECT subject_id,operation_id,party_a,party_b,state,created_at FROM exchange.settlements WHERE kind='trade' AND state='pending' AND (party_a=$1 OR party_b=$1) AND operation_id>$2 ORDER BY operation_id LIMIT $3",character,after??"",pageSize+1);
+        using var reader=cmd.ExecuteReader(); while(reader.Read()) rows.Add(new(reader.GetString(0),reader.GetString(1),reader.GetString(2),reader.GetString(3),reader.GetString(4),reader.GetFieldValue<DateTimeOffset>(5)));
+        var more=rows.Count>pageSize; if(more) rows.RemoveAt(pageSize);
+        return new ExchangePage<TradeRead>(rows,more?rows[^1].OperationId:"");
+    });
     private static void ReturnItems(string op,IReadOnlyList<EscrowDelivery> moves,IInventoryLedgerStore store)
     {
         if(moves.Count==0) return;
@@ -154,7 +179,7 @@ public sealed class PostgresExchangeStore(string connectionString)
         using(var insert=Cmd(c,t,"INSERT INTO exchange.listings(id,seller_id,seller_container_id,escrow_id,item_id,quantity,price,fee,expires_at,state) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'active')",id,seller,sellerContainer,escrow,item,quantity,price,listingFee,expires)) insert.ExecuteNonQuery();
         var receipt=new ExchangeReceipt(op,true,"ok",id,0,listingFee); Save(c,t,op,fingerprint,receipt); return receipt;
     });
-    public ExchangeReceipt BeginListing(string op,string id,string seller,string sellerContainer,string escrow,string item,long quantity,long price,long fee,DateTimeOffset now,ExchangeSettings? settings=null) => Mutate(op,(c,t)=>
+    public ExchangeReceipt BeginListing(string op,string id,string seller,string sellerContainer,string escrow,string item,long quantity,long price,long fee,DateTimeOffset now,ExchangeSettings? settings=null,string market="market/global") => Mutate(op,(c,t)=>
     {
         RequireId(op);
         using (var advisory=Cmd(c,t,"SELECT pg_advisory_xact_lock(519761,hashtext('lst:'||$1))",id)) advisory.ExecuteNonQuery();
@@ -165,19 +190,19 @@ public sealed class PostgresExchangeStore(string connectionString)
         {
             var prior=JsonSerializer.Deserialize<ListingIntent>(reader.GetString(0));
             if(prior is null || prior.Command!="listing-intent" || prior.Id!=id || prior.Seller!=seller || prior.SellerContainer!=sellerContainer ||
-                prior.Escrow!=escrow || prior.Item!=item || prior.Quantity!=quantity || prior.Price!=price || prior.Fee!=fee || prior.DurationHours!=duration)
+                prior.Escrow!=escrow || prior.Item!=item || prior.Quantity!=quantity || prior.Price!=price || prior.Fee!=fee || prior.DurationHours!=duration || prior.Market!=market)
                 throw new ExchangeRejectedException("Operation ID conflict.");
             return JsonSerializer.Deserialize<ExchangeReceipt>(reader.GetString(1))!;
         }
         long total; try { total=checked(quantity*price); } catch(OverflowException) { throw new ExchangeRejectedException("Price overflow."); }
-        if(!id.StartsWith("lst_",StringComparison.Ordinal) || !seller.StartsWith("chr_",StringComparison.Ordinal) || string.IsNullOrWhiteSpace(sellerContainer) ||
+        if(string.IsNullOrWhiteSpace(market) || market.Length>128 || !id.StartsWith("lst_",StringComparison.Ordinal) || !seller.StartsWith("chr_",StringComparison.Ordinal) || string.IsNullOrWhiteSpace(sellerContainer) ||
             sellerContainer==escrow || quantity<=0 || price<=0 || fee<0 || fee>total) throw new ExchangeRejectedException("Invalid listing.");
         try { _=now.AddHours(duration); } catch(ArgumentOutOfRangeException) { throw new ExchangeRejectedException("Invalid listing time."); }
         if(ReadListing(c,t,id) is not null) throw new ExchangeRejectedException("Listing exists.");
         using(var occupied=Cmd(c,t,"SELECT 1 FROM exchange.operations WHERE receipt->>'SubjectId'=$1 AND receipt->>'Code'='pending' AND fingerprint::jsonb->>'Command'='listing-intent' LIMIT 1",id))
             if(occupied.ExecuteScalar() is not null) throw new ExchangeRejectedException("Listing intent exists.");
         if(fee>0) Post(c,t,op,seller,0,"reserve","market_listing_hold",fee);
-        var intent=new ListingIntent("listing-intent",id,seller,sellerContainer,escrow,item,quantity,price,fee,now,duration,DateTimeOffset.UtcNow);
+        var intent=new ListingIntent("listing-intent",id,seller,sellerContainer,escrow,item,quantity,price,fee,now,duration,DateTimeOffset.UtcNow,market);
         var receipt=new ExchangeReceipt(op,true,"pending",id,0,fee);
         Save(c,t,op,JsonSerializer.Serialize(intent),receipt);
         return receipt;
@@ -222,8 +247,8 @@ public sealed class PostgresExchangeStore(string connectionString)
             compensated?"market_listing_release":"market_listing_fee",-intent.Fee);
         if(!compensated)
         {
-            using var insert=Cmd(c,t,"INSERT INTO exchange.listings(id,seller_id,seller_container_id,escrow_id,item_id,quantity,price,fee,expires_at,state) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'active')",
-                intent.Id,intent.Seller,intent.SellerContainer,intent.Escrow,intent.Item,intent.Quantity,intent.Price,intent.Fee,intent.Now.AddHours(intent.DurationHours));
+            using var insert=Cmd(c,t,"INSERT INTO exchange.listings(id,seller_id,seller_container_id,escrow_id,item_id,quantity,price,fee,expires_at,state,market_id,created_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'active',$10,$11)",
+                intent.Id,intent.Seller,intent.SellerContainer,intent.Escrow,intent.Item,intent.Quantity,intent.Price,intent.Fee,intent.Now.AddHours(intent.DurationHours),intent.Market,intent.Now);
             insert.ExecuteNonQuery();
         }
         var result=new ExchangeReceipt(op,!compensated,compensated?"compensated":"ok",intent.Id,0,compensated?0:intent.Fee);
@@ -250,19 +275,28 @@ public sealed class PostgresExchangeStore(string connectionString)
         Save(c,t,op,fingerprint,receipt);
         return ReadSettlement(c,t,op)!;
     }
-    public DurableSettlement BeginTrade(string op,string tradeId,string? payer,string? payee,long amount,IReadOnlyList<EscrowDelivery> deliveries)=>Mutate(op,(c,t)=>
+    public DurableSettlement BeginTrade(string op,string tradeId,string? payer,string? payee,long amount,IReadOnlyList<EscrowDelivery> deliveries,string? partyA=null,string? partyB=null)=>Mutate(op,(c,t)=>
     {
         RequireId(op); var fingerprint=JsonSerializer.Serialize(new { command="trade",tradeId,payer,payee,amount,deliveries });
         if(!tradeId.StartsWith("trd_",StringComparison.Ordinal) || payer==payee && payer is not null) throw new ExchangeRejectedException("Invalid trade.");
-        return Begin(c,t,op,fingerprint,"trade",tradeId,payer,payee,amount,0,deliveries);
+        var result=Begin(c,t,op,fingerprint,"trade",tradeId,payer,payee,amount,0,deliveries);
+        if(partyA is not null && partyB is not null)
+        {
+            using(var parties=Cmd(c,t,"UPDATE exchange.settlements SET party_a=$1,party_b=$2 WHERE operation_id=$3 AND party_a IS NULL AND party_b IS NULL",partyA,partyB,op)) parties.ExecuteNonQuery();
+            using var verify=Cmd(c,t,"SELECT party_a,party_b FROM exchange.settlements WHERE operation_id=$1",op);
+            using var reader=verify.ExecuteReader();
+            if(!reader.Read() || reader.IsDBNull(0) || reader.IsDBNull(1) || reader.GetString(0)!=partyA || reader.GetString(1)!=partyB)
+                throw new ExchangeRejectedException("Trade party replay conflict.");
+        }
+        return result;
     });
     // The coordinator supplies both offers; their difference is the only wallet transfer for the trade.
     public DurableSettlement BeginTrade(string op,string tradeId,string partyA,string partyB,long goldA,long goldB,IReadOnlyList<EscrowDelivery> deliveries)
     {
         if(goldA<0 || goldB<0 || partyA==partyB) throw new ExchangeRejectedException("Invalid trade offers.");
         return goldA>=goldB
-            ? BeginTrade(op,tradeId,goldA==goldB?null:partyA,goldA==goldB?null:partyB,goldA-goldB,deliveries)
-            : BeginTrade(op,tradeId,partyB,partyA,goldB-goldA,deliveries);
+            ? BeginTrade(op,tradeId,goldA==goldB?null:partyA,goldA==goldB?null:partyB,goldA-goldB,deliveries,partyA,partyB)
+            : BeginTrade(op,tradeId,partyB,partyA,goldB-goldA,deliveries,partyA,partyB);
     }
     public ExchangeReceipt CancelTrade(string op,string tradeId,string actor,IReadOnlyList<EscrowDelivery> returns,IInventoryLedgerStore store)=>Mutate(op,(c,t)=>
     {

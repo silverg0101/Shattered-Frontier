@@ -30,6 +30,18 @@ switch (args[0])
         ledger.Grant("fund-expire", "ctn_esc_expire", 0, "item/ore", 1, "fixture", "expire");
         exchange.CreateListing("list", "lst_one", "chr_seller", "ctn_bag_seller", "ctn_esc_market", "item/ore", 1, 30, 2,DateTimeOffset.UtcNow);
         Check(exchange.Wallet("chr_seller").Balance == 18 && exchange.Listing("lst_one")?.State == "active", "wallet and listing acknowledged");
+        ledger.Grant("fund-page-ore","ctn_esc_cancel",ledger.Read("ctn_esc_cancel").Revision,"item/ore",1,"fixture","page-ore");
+        exchange.CreateListing("list-page-1","lst_page_1","chr_seller","ctn_bag_seller","ctn_esc_cancel","item/ore",1,2,0,DateTimeOffset.UtcNow);
+        ledger.Grant("fund-page-wood","ctn_esc_expire",ledger.Read("ctn_esc_expire").Revision,"item/wood",1,"fixture","page-wood");
+        exchange.CreateListing("list-page-2","lst_page_2","chr_seller","ctn_bag_seller","ctn_esc_expire","item/wood",1,3,0,DateTimeOffset.UtcNow);
+        var firstPage=exchange.ListListings("market/global",null,null,1);
+        Check(firstPage.Items.Count==1 && firstPage.NextToken=="lst_one" && exchange.ListListings("market/global",null,firstPage.NextToken,1).Items[0].Id=="lst_page_1","listing pagination");
+        Check(exchange.ListListings("market/global","item/wood",null,10).Items.Single().Id=="lst_page_2","listing item filter");
+        Check(exchange.ListListings("market/other",null,null,10).Items.Count==0,"listing market filter");
+        var escrowId="ctn_bag_seller:escrow";
+        var created=Task.WhenAll(Enumerable.Range(0,8).Select(_=>Task.Run(()=>new InventoryLedger(new PostgresInventoryLedgerStore(inventoryConnection))
+            .CreateContainer(new(escrowId,OwnerKind.Character,"chr_seller",ContainerKind.Escrow,20))))).GetAwaiter().GetResult();
+        Check(created.All(x=>x.Spec.Id==escrowId) && ledgerStore.FindContainers(OwnerKind.Character,"chr_seller",ContainerKind.Escrow).Count(x=>x.Id==escrowId)==1,"concurrent escrow first use creates one container");
         break;
     case "tombstone":
         exchange.BeginTrade("tomb","trd_tomb","chr_a","chr_seller",4,[Move("ctn_esc_tomb",1,"ctn_bag_seller",1)]);
@@ -51,14 +63,21 @@ switch (args[0])
     case "restart":
         Check(exchange.Wallet("chr_seller").Balance == 18 && exchange.Listing("lst_one")?.State == "active", "wallet and listing survive immediate stop");
         Check(exchange.Credit("credit-a", "chr_a", 100, "starter_kit").Amount == 100 && exchange.Wallet("chr_a").Balance == 100, "credit retry returns original receipt");
-        var trade = exchange.BeginTrade("trade", "trd_one", "chr_a", "chr_seller", 10, [Move("ctn_esc_trade", 1, "ctn_bag_seller", 0)]);
+        var trade = exchange.BeginTrade("trade", "trd_one", "chr_a", "chr_seller", 10, 0, [Move("ctn_esc_trade", 1, "ctn_bag_seller", 0)]);
         Check(trade.State == "pending" && exchange.Wallet("chr_a").Reserved == 10, "trade reserves spend");
         ledger.DeliverEscrowBatch("trade/settle", trade.Deliveries);
         Console.WriteLine("PASS crash point after ledger delivery before exchange commit");
         break;
     case "recover":
+        exchange.BeginTrade("page-trade","trd_page","chr_a","chr_seller",0,0,[Move("ctn_esc_tomb",1,"ctn_bag_seller",0)]);
+        var tradePage=exchange.ListTrades("chr_a",null,1);
+        Check(tradePage.Items.Count==1 && tradePage.NextToken=="page-trade" &&
+            exchange.ListTrades("chr_a",tradePage.NextToken,1).Items.Single().TradeId=="trd_one","trade pagination");
+        Check(exchange.ListTrades("chr_seller",null,10).Items.Any(x=>x.TradeId=="trd_one"),"pending trade visible to both parties");
+        exchange.Reconcile("page-trade",ledgerStore);
         Check(exchange.Settlement("trade")?.State == "pending" && ledger.Read("ctn_bag_seller").Quantities["item/ore"] == 1, "interrupted trade has durable debit only");
         var settled = exchange.Reconcile("trade", ledgerStore);
+        Check(exchange.ListTrades("chr_a",null,10).Items.All(x=>x.TradeId!="trd_one"),"settled trade excluded");
         Check(settled.State == "committed" && exchange.Reconcile("trade", ledgerStore).Receipt == settled.Receipt, "trade commits both sides exactly once");
         Check(exchange.Wallet("chr_a").Balance == 90 && exchange.Wallet("chr_seller").Balance == 28 && exchange.Wallet("chr_a").Reserved == 0, "trade gold conserved");
         var late = Move("ctn_esc_late", 1, "ctn_bag_a", 0);
@@ -155,8 +174,9 @@ switch (args[0])
         Check(exchange.Entries("chr_seller").Where(x=>x.FlowClass=="sink").Sum(x=>-x.Delta)==7,"entries account for all fee sinks");
         exchange.CreateListing("list-cancel","lst_cancel","chr_seller","ctn_bag_seller","ctn_esc_cancel","item/ore",1,5,0,DateTimeOffset.UtcNow);
         Check(exchange.CancelListing("cancel","lst_cancel","chr_seller",ledgerStore).Accepted && exchange.CancelListing("cancel","lst_cancel","chr_seller",ledgerStore).Accepted && exchange.Listing("lst_cancel")?.State=="cancelled","listing cancel returns and replays");
+        Check(exchange.ListListings("market/global",null,null,100).Items.All(x=>x.Id!="lst_cancel" && x.Id!="lst_one"),"cancelled and sold listings excluded");
         exchange.CreateListing("list-expire","lst_expire","chr_seller","ctn_bag_seller","ctn_esc_expire","item/ore",1,5,0,DateTimeOffset.UtcNow);
-        Check(exchange.ExpireListings(DateTimeOffset.UtcNow.AddDays(3),ledgerStore).Count==2 && exchange.Listing("lst_expire")?.State=="expired" &&
+        Check(exchange.ExpireListings(DateTimeOffset.UtcNow.AddDays(3),ledgerStore).Count==4 && exchange.Listing("lst_expire")?.State=="expired" &&
             exchange.Listing("lst_race")?.State=="expired","expired listings return escrow once");
         Check(exchange.ExpireListings(DateTimeOffset.UtcNow.AddDays(3),ledgerStore).Count==0,"expiry sweep replay does not refund twice");
         try { exchange.CreateListing("overflow-list","lst_overflow","chr_seller","ctn_bag_seller","ctn_esc_cancel","item/ore",long.MaxValue,2,0,DateTimeOffset.UtcNow); throw new Exception("Overflow accepted."); }
