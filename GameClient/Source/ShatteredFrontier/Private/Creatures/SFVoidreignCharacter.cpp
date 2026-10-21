@@ -1,5 +1,6 @@
 #include "Creatures/SFVoidreignCharacter.h"
 
+#include "Animation/AnimInstance.h"
 #include "Animation/AnimSequence.h"
 #include "Animation/AnimSingleNodeInstance.h"
 #include "Animation/BlendSpace.h"
@@ -9,10 +10,12 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/World.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "Net/UnrealNetwork.h"
 
 namespace
 {
     const FName RiderSeatBone(TEXT("RiderSeat"));
+    const FName MountSlot(TEXT("DefaultSlot"));
     const FName ProgressParam(TEXT("Progress"));
     constexpr float TrailInterval = 0.12f;
     constexpr float HornForward = 200.f;  // horn tip ahead of the capsule centre, cm
@@ -60,9 +63,18 @@ float ASFVoidreignCharacter::ClipLength(const UAnimSequence* Clip) const
     return Clip ? Clip->GetPlayLength() : 0.5f;
 }
 
+void ASFVoidreignCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    DOREPLIFETIME(ASFVoidreignCharacter, Phase);
+    DOREPLIFETIME(ASFVoidreignCharacter, AnchorLocation);
+}
+
 void ASFVoidreignCharacter::PlayMount(UAnimSequence* Clip, bool bLoop)
 {
-    if (Clip) GetMesh()->PlayAnimation(Clip, bLoop);  // temporarily replaces ABP locomotion
+    // A dynamic montage in ABP_Voidreign's DefaultSlot blends over the locomotion graph; the next montage replaces it.
+    UAnimInstance* Anim = GetMesh()->GetAnimInstance();
+    if (Clip && Anim) Anim->PlaySlotAnimationAsDynamicMontage(Clip, MountSlot, 0.12f, 0.2f, 1.f, bLoop ? 1000 : 1);
 }
 
 void ASFVoidreignCharacter::PlayRider(UAnimSequence* Clip)
@@ -72,29 +84,22 @@ void ASFVoidreignCharacter::PlayRider(UAnimSequence* Clip)
 
 void ASFVoidreignCharacter::PlayBasicAttack()
 {
-    if (!HasAuthority() || Phase != EPhase::None) return;
+    if (!HasAuthority() || Phase != ESFVoidreignPhase::None) return;
     GetCharacterMovement()->DisableMovement();
-    PlayMount(MountAttack, false);
-    PlayRider(RiderAttack);
-    EnterPhase(EPhase::Attack);
+    EnterPhase(ESFVoidreignPhase::Attack);
 }
 
 void ASFVoidreignCharacter::PlayRiftRecall()
 {
-    if (!HasAuthority() || Phase != EPhase::None) return;
+    if (!HasAuthority() || Phase != ESFVoidreignPhase::None) return;
     const USFVoidreignSettings* Settings = GetDefault<USFVoidreignSettings>();
     WindowSeconds = Settings->RiftRecallWindowMs / 1000.f;
     AnchorMaxCm = Settings->RiftAnchorMaxMetres * 100.f;
     LastReject = ESFRiftRecallReject::None;
     GetCharacterMovement()->DisableMovement();
     Anchor = GetActorTransform();
-    const FVector Ground = GetActorLocation() - FVector(0, 0, GetSimpleCollisionHalfHeight());
-    SpawnVfx(VfxRiftOpen, Ground + FVector(0, 0, 2), 3.f, 0.9f, false);
-    SpawnVfx(VfxRiftAnchor, Ground + FVector(0, 0, 3), 2.f, 0.f, true);
-    AnchorVfx = Vfx.Num() > 0 ? Vfx.Last().Component : nullptr;
-    PlayMount(RiftWindup, false);
-    PlayRider(RiderBrace);
-    EnterPhase(EPhase::Windup);
+    AnchorLocation = Anchor.GetLocation();
+    EnterPhase(ESFVoidreignPhase::Windup);
 }
 
 void ASFVoidreignCharacter::RequestRiftRecall()
@@ -124,28 +129,84 @@ void ASFVoidreignCharacter::TryRiftRecall()
     const FCollisionShape Shape = FCollisionShape::MakeCapsule(Capsule->GetScaledCapsuleRadius() * 0.9f, Capsule->GetScaledCapsuleHalfHeight() * 0.9f);
     const bool bClear = !GetWorld()->SweepTestByChannel(Here, There, FQuat::Identity, ECC_Pawn, Shape, Params);
     // ponytail: no crowd-control state exists on mounts yet; wire rooted/stunned/feared/incapacitated here when it does.
-    LastReject = SFRiftRecallRules::Validate(Phase == EPhase::Hold, PhaseTime, WindowSeconds, FVector::Dist(Here, There),
+    LastReject = SFRiftRecallRules::Validate(Phase == ESFVoidreignPhase::Hold, PhaseTime, WindowSeconds, FVector::Dist(Here, There),
         AnchorMaxCm, bLineOfSight, bClear ? 1.0 : 0.0, false);
     if (LastReject != ESFRiftRecallReject::None) return;  // anchor kept until the window expires
     RiderLockoutSeconds = GetDefault<USFVoidreignSettings>()->RiftRiderLockoutMs / 1000.f;
     RiderLockedUntil = TNumericLimits<double>::Max();  // until arrival plus the lockout
-    PlayMount(RecallEnter, false);
-    PlayRider(RiderRecallHold);
-    EnterPhase(EPhase::RecallEnter);
+    EnterPhase(ESFVoidreignPhase::RecallEnter);
 }
 
-void ASFVoidreignCharacter::EnterPhase(EPhase NewPhase)
+void ASFVoidreignCharacter::EnterPhase(ESFVoidreignPhase NewPhase)
 {
     Phase = NewPhase;
+    BeginPhasePresentation();
+}
+
+void ASFVoidreignCharacter::OnRep_Phase()
+{
+    BeginPhasePresentation();
+}
+
+void ASFVoidreignCharacter::ReleaseAnchorVfx()
+{
+    for (FSFVoidreignVfx& Effect : Vfx)
+    {
+        if (AnchorVfx && Effect.Component == AnchorVfx) { Effect.bPersistent = false; Effect.Duration = Effect.Age + 0.4f; }
+    }
+    AnchorVfx = nullptr;
+}
+
+void ASFVoidreignCharacter::BeginPhasePresentation()
+{
     PhaseTime = 0.f;
     bHitSpawned = false;
+    const FVector Ground = AnchorLocation - FVector(0, 0, GetSimpleCollisionHalfHeight());
+    const FVector Horn = GetActorLocation() + GetActorForwardVector() * HornForward + FVector(0, 0, HornUp);
+    // The anchor lives from Windup through RecallEnter; a client that missed Windup still gets it from a later phase.
+    const bool bAnchored = Phase >= ESFVoidreignPhase::Windup && Phase <= ESFVoidreignPhase::RecallEnter;
+    if (bAnchored && !AnchorVfx) AnchorVfx = SpawnVfx(VfxRiftAnchor, Ground + FVector(0, 0, 3), 2.f, 0.f, true);
+    switch (Phase)
+    {
+    case ESFVoidreignPhase::None:
+        ReleaseAnchorVfx();  // window expired without a recall
+        if (UAnimInstance* Anim = GetMesh()->GetAnimInstance()) Anim->Montage_Stop(0.2f);
+        if (RiderLocomotion && bShowRider) RiderMesh->PlayAnimation(RiderLocomotion, true);
+        break;
+    case ESFVoidreignPhase::Attack:
+        PlayMount(MountAttack, false);
+        PlayRider(RiderAttack);
+        break;
+    case ESFVoidreignPhase::Windup:
+        SpawnVfx(VfxRiftOpen, Ground + FVector(0, 0, 2), 3.f, 0.9f, false);
+        PlayMount(RiftWindup, false);
+        PlayRider(RiderBrace);
+        break;
+    case ESFVoidreignPhase::Charge:
+        TrailTimer = 0.f;
+        PlayMount(RiftChargeRun, true);
+        break;
+    case ESFVoidreignPhase::Impact:
+        PlayMount(RiftImpact, false);
+        SpawnVfx(VfxSpark, Horn, 1.2f, 0.3f, false, true);
+        break;
+    case ESFVoidreignPhase::RecallEnter:
+        PlayMount(RecallEnter, false);
+        PlayRider(RiderRecallHold);
+        break;
+    case ESFVoidreignPhase::RecallExit:
+        SpawnVfx(VfxRiftCollapse, Ground + FVector(0, 0, 3), 2.4f, 0.6f, false);  // arrival; the departure one is timed in Tick
+        ReleaseAnchorVfx();
+        PlayMount(RecallExit, false);
+        break;
+    default:
+        break;
+    }
 }
 
 void ASFVoidreignCharacter::EndAction()
 {
-    Phase = EPhase::None;
-    GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);  // back to ABP locomotion
-    if (RiderLocomotion && bShowRider) RiderMesh->PlayAnimation(RiderLocomotion, true);
+    EnterPhase(ESFVoidreignPhase::None);
     GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 }
 
@@ -155,13 +216,13 @@ void ASFVoidreignCharacter::Tick(float DeltaSeconds)
     LocalTime += DeltaSeconds;
     TickVfx(DeltaSeconds);
 
-    if (Phase == EPhase::None)
+    if (Phase == ESFVoidreignPhase::None)
     {
         if (UAnimSingleNodeInstance* Rider = RiderMesh->GetSingleNodeInstance())
         {
             if (Rider->GetAnimationAsset() == RiderLocomotion) Rider->SetBlendSpacePosition(FVector(GetVelocity().Size2D(), 0.f, 0.f));
         }
-        if (DemoAbilityInterval > 0.f && (DemoTimer += DeltaSeconds) >= DemoAbilityInterval)
+        if (HasAuthority() && DemoAbilityInterval > 0.f && (DemoTimer += DeltaSeconds) >= DemoAbilityInterval)
         {
             DemoTimer = 0.f;
             bDemoNextIsRift ? PlayRiftRecall() : PlayBasicAttack();
@@ -173,76 +234,63 @@ void ASFVoidreignCharacter::Tick(float DeltaSeconds)
     PhaseTime += DeltaSeconds;
     const FVector Horn = GetActorLocation() + GetActorForwardVector() * HornForward + FVector(0, 0, HornUp);
     const FVector Ground = GetActorLocation() - FVector(0, 0, GetSimpleCollisionHalfHeight());
+
+    // Timed effects, identical on the server and every client.
+    if (Phase == ESFVoidreignPhase::Attack && !bHitSpawned && PhaseTime >= 0.5f * ClipLength(MountAttack))  // clip event hit at frame 18 of 36
+    {
+        bHitSpawned = true;
+        SpawnVfx(VfxSpark, Horn, 0.8f, 0.25f, false, true);
+    }
+    else if (Phase == ESFVoidreignPhase::Charge && (TrailTimer += DeltaSeconds) >= TrailInterval)
+    {
+        TrailTimer = 0.f;
+        SpawnVfx(VfxRiftTrail, Ground + FVector(0, 0, 2), 1.4f, 0.5f, false);
+    }
+    else if (Phase == ESFVoidreignPhase::RecallEnter && !bHitSpawned && PhaseTime >= ClipLength(RecallEnter))
+    {
+        bHitSpawned = true;  // departure collapse, just before the server teleports
+        SpawnVfx(VfxRiftCollapse, Ground + FVector(0, 0, 3), 2.4f, 0.6f, false);
+    }
+
+    if (!HasAuthority()) return;  // clients follow the replicated phase and location
+
     switch (Phase)
     {
-    case EPhase::Attack:
-        if (!bHitSpawned && PhaseTime >= 0.5f * ClipLength(MountAttack))  // clip event 'hit' at frame 18 of 36
-        {
-            bHitSpawned = true;
-            SpawnVfx(VfxSpark, Horn, 0.8f, 0.25f, false, true);
-        }
+    case ESFVoidreignPhase::Attack:
         if (PhaseTime >= ClipLength(MountAttack)) EndAction();
         break;
-    case EPhase::Windup:
+    case ESFVoidreignPhase::Windup:
         if (PhaseTime >= ClipLength(RiftWindup))
         {
             ChargeTravelled = 0.f;
-            TrailTimer = 0.f;
-            PlayMount(RiftChargeRun, true);
-            EnterPhase(EPhase::Charge);
+            EnterPhase(ESFVoidreignPhase::Charge);
         }
         break;
-    case EPhase::Charge:
+    case ESFVoidreignPhase::Charge:
     {
         const float Step = FMath::Min(ChargeSpeed * DeltaSeconds, ChargeDistance - ChargeTravelled);
         FHitResult Hit;
         AddActorWorldOffset(GetActorForwardVector() * Step, true, &Hit);  // swept: stops at obstacles
         ChargeTravelled += Step;
-        if ((TrailTimer += DeltaSeconds) >= TrailInterval)
-        {
-            TrailTimer = 0.f;
-            SpawnVfx(VfxRiftTrail, Ground + FVector(0, 0, 2), 1.4f, 0.5f, false);
-        }
-        if (Hit.bBlockingHit || ChargeTravelled >= ChargeDistance)
-        {
-            PlayMount(RiftImpact, false);
-            SpawnVfx(VfxSpark, Horn, 1.2f, 0.3f, false, true);
-            EnterPhase(EPhase::Impact);
-        }
+        if (Hit.bBlockingHit || ChargeTravelled >= ChargeDistance) EnterPhase(ESFVoidreignPhase::Impact);
         break;
     }
-    case EPhase::Impact:
-        if (PhaseTime >= ClipLength(RiftImpact)) EnterPhase(EPhase::Hold);
+    case ESFVoidreignPhase::Impact:
+        if (PhaseTime >= ClipLength(RiftImpact)) EnterPhase(ESFVoidreignPhase::Hold);
         break;
-    case EPhase::Hold:  // return window: the recall is the player's re-press (RequestRiftRecall)
+    case ESFVoidreignPhase::Hold:  // return window: the recall is the player's re-press (RequestRiftRecall)
         if (DemoAbilityInterval > 0.f && PhaseTime >= RecallDelay) TryRiftRecall();
-        if (Phase == EPhase::Hold && PhaseTime > WindowSeconds)  // no recall: the anchor is lost
-        {
-            for (FSFVoidreignVfx& Effect : Vfx)
-            {
-                if (Effect.Component == AnchorVfx) { Effect.bPersistent = false; Effect.Duration = Effect.Age + 0.4f; }
-            }
-            AnchorVfx = nullptr;
-            EndAction();
-        }
+        if (Phase == ESFVoidreignPhase::Hold && PhaseTime > WindowSeconds) EndAction();  // no recall: the anchor is lost
         break;
-    case EPhase::RecallEnter:
+    case ESFVoidreignPhase::RecallEnter:
         if (PhaseTime >= ClipLength(RecallEnter))
         {
-            SpawnVfx(VfxRiftCollapse, Ground + FVector(0, 0, 3), 2.4f, 0.6f, false);
             TeleportTo(Anchor.GetLocation(), Anchor.Rotator(), false, true);
-            SpawnVfx(VfxRiftCollapse, Anchor.GetLocation() - FVector(0, 0, GetSimpleCollisionHalfHeight() - 3), 2.4f, 0.6f, false);
-            for (FSFVoidreignVfx& Effect : Vfx)
-            {
-                if (Effect.Component == AnchorVfx) { Effect.bPersistent = false; Effect.Duration = Effect.Age + 0.4f; }
-            }
-            AnchorVfx = nullptr;
-            PlayMount(RecallExit, false);
             RiderLockedUntil = LocalTime + RiderLockoutSeconds;
-            EnterPhase(EPhase::RecallExit);
+            EnterPhase(ESFVoidreignPhase::RecallExit);
         }
         break;
-    case EPhase::RecallExit:
+    case ESFVoidreignPhase::RecallExit:
         if (PhaseTime >= ClipLength(RecallExit)) EndAction();
         break;
     default:
@@ -250,9 +298,9 @@ void ASFVoidreignCharacter::Tick(float DeltaSeconds)
     }
 }
 
-void ASFVoidreignCharacter::SpawnVfx(UMaterialInterface* Material, const FVector& Location, float SizeMetres, float Duration, bool bPersistent, bool bUpright)
+UStaticMeshComponent* ASFVoidreignCharacter::SpawnVfx(UMaterialInterface* Material, const FVector& Location, float SizeMetres, float Duration, bool bPersistent, bool bUpright)
 {
-    if (!Material || !VfxPlane) return;
+    if (!Material || !VfxPlane) return nullptr;
     UStaticMeshComponent* Plane = NewObject<UStaticMeshComponent>(this);
     Plane->SetStaticMesh(VfxPlane);
     Plane->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -267,6 +315,7 @@ void ASFVoidreignCharacter::SpawnVfx(UMaterialInterface* Material, const FVector
     Effect.bPersistent = bPersistent;
     Plane->SetMaterial(0, Effect.Material);
     Effect.Material->SetScalarParameterValue(ProgressParam, 0.f);
+    return Plane;
 }
 
 void ASFVoidreignCharacter::TickVfx(float DeltaSeconds)

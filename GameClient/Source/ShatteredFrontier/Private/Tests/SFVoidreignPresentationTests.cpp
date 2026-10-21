@@ -2,6 +2,8 @@
 #include "Misc/AutomationTest.h"
 #include "Tests/AutomationCommon.h"
 #include "Creatures/SFVoidreignCharacter.h"
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
@@ -180,6 +182,84 @@ bool FSFRiftRecallServerTest::RunTest(const FString& Parameters)
     TestTrue(TEXT("Back at the anchor"), FVector::Dist(Anchor, Horse->GetActorLocation()) < 1.f);
     const float Locked = RunUntil(Horse, 3.f, [Horse] { return !Horse->IsRiderLockedOut(); });
     TestTrue(TEXT("Rider lockout ends after arrival"), !Horse->IsRiderLockedOut() && Locked <= Settings->RiftRiderLockoutMs / 1000.f + 2 * FrameStep);
+    return true;
+}
+
+/** Phase and anchor replication: the replicated properties exist, and a proxy that receives the server's state plays the
+ *  matching montage in the DefaultSlot and shows/clears the anchor effect. */
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFVoidreignReplicationTest, "ShatteredFrontier.Creatures.Voidreign.PhaseReplication",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSFVoidreignReplicationTest::RunTest(const FString& Parameters)
+{
+    for (const TCHAR* Name : { TEXT("Phase"), TEXT("AnchorLocation") })
+    {
+        const FProperty* Prop = ASFVoidreignCharacter::StaticClass()->FindPropertyByName(Name);
+        TestTrue(FString::Printf(TEXT("%s is replicated"), Name), Prop && Prop->HasAnyPropertyFlags(CPF_Net));
+    }
+    TestTrue(TEXT("Phase notifies clients"), ASFVoidreignCharacter::StaticClass()->FindPropertyByName(TEXT("Phase"))->HasAnyPropertyFlags(CPF_RepNotify));
+
+    FVoidreignWorld World;
+    if (!World.Create(*this, FVector(0, 0, 200))) return false;
+    ASFVoidreignCharacter* Horse = World.Horse;
+    ASFVoidreignCharacter* Proxy = World.Fixture.GetTestWorld()->SpawnActor<ASFVoidreignCharacter>(Horse->GetClass(), FVector(5000, 0, 200), FRotator::ZeroRotator);
+    if (!TestNotNull(TEXT("Proxy spawns"), Proxy)) return false;
+
+    // The clip the proxy's active montage plays in the DefaultSlot (null when none is active).
+    auto SlotClip = [this](ASFVoidreignCharacter* H) -> const UAnimSequenceBase*
+    {
+        UAnimInstance* Anim = H->GetMesh()->GetAnimInstance();
+        if (!TestNotNull(TEXT("Mount has an anim instance"), Anim)) return nullptr;
+        const UAnimMontage* Montage = Anim->GetCurrentActiveMontage();
+        if (!Montage || Montage->SlotAnimTracks.Num() == 0) return nullptr;
+        TestEqual(TEXT("Montage plays in DefaultSlot"), Montage->SlotAnimTracks[0].SlotName, FName(TEXT("DefaultSlot")));
+        const TArray<FAnimSegment>& Segments = Montage->SlotAnimTracks[0].AnimTrack.AnimSegments;
+        return Segments.Num() ? Segments[0].GetAnimReference().Get() : nullptr;
+    };
+    auto Receive = [Horse, Proxy]
+    {
+        Proxy->Phase = Horse->Phase;
+        Proxy->AnchorLocation = Horse->AnchorLocation;
+        Proxy->OnRep_Phase();
+    };
+    const TMap<ESFVoidreignPhase, const UAnimSequence*> Expected = {
+        { ESFVoidreignPhase::Windup, Horse->RiftWindup }, { ESFVoidreignPhase::Charge, Horse->RiftChargeRun },
+        { ESFVoidreignPhase::Impact, Horse->RiftImpact }, { ESFVoidreignPhase::RecallEnter, Horse->RecallEnter },
+        { ESFVoidreignPhase::RecallExit, Horse->RecallExit } };
+
+    Horse->PlayRiftRecall();
+    ESFVoidreignPhase Seen = ESFVoidreignPhase::None;
+    TSet<ESFVoidreignPhase> Phases;
+    bool bRecalled = false;
+    for (int32 Frame = 0; Frame < 30 * 30 && Horse->IsPerformingAction(); ++Frame)
+    {
+        if (Horse->GetPhase() != Seen)
+        {
+            Seen = Horse->GetPhase();
+            Receive();
+            Phases.Add(Seen);
+            TestEqual(TEXT("Proxy phase follows the server"), (int32)Proxy->GetPhase(), (int32)Seen);
+            TestTrue(TEXT("Anchor location replicated"), Proxy->AnchorLocation.Equals(Horse->AnchorLocation));
+            if (const UAnimSequence* const* Clip = Expected.Find(Seen)) TestTrue(*FString::Printf(TEXT("Proxy plays the clip for phase %d"), (int32)Seen), SlotClip(Proxy) == *Clip);
+            const bool bAnchored = Seen >= ESFVoidreignPhase::Windup && Seen <= ESFVoidreignPhase::RecallEnter;
+            TestEqual(*FString::Printf(TEXT("Anchor effect in phase %d"), (int32)Seen), Proxy->AnchorVfx != nullptr, bAnchored);
+            if (Seen == ESFVoidreignPhase::Hold && !bRecalled) { bRecalled = true; Horse->RequestRiftRecall(); }
+        }
+        Horse->Tick(FrameStep);
+    }
+    TestTrue(TEXT("Proxy saw charge, return window, recall and exit"),
+        Phases.Contains(ESFVoidreignPhase::Charge) && Phases.Contains(ESFVoidreignPhase::Hold) && Phases.Contains(ESFVoidreignPhase::RecallEnter) && Phases.Contains(ESFVoidreignPhase::RecallExit));
+    Receive();
+    TestEqual(TEXT("Proxy returns to locomotion"), (int32)Proxy->GetPhase(), (int32)ESFVoidreignPhase::None);
+    TestNull(TEXT("Anchor effect cleared"), Proxy->AnchorVfx.Get());
+
+    // A client that joins mid-window gets the anchor from the Hold phase alone.
+    Horse->PlayRiftRecall();
+    RunUntil(Horse, 10.f, [Horse] { return Horse->IsRecallWindowOpen(); });
+    ASFVoidreignCharacter* Late = World.Fixture.GetTestWorld()->SpawnActor<ASFVoidreignCharacter>(Horse->GetClass(), FVector(5000, 500, 200), FRotator::ZeroRotator);
+    Late->Phase = Horse->Phase;
+    Late->AnchorLocation = Horse->AnchorLocation;
+    Late->OnRep_Phase();
+    TestNotNull(TEXT("Late joiner sees the anchor"), Late->AnchorVfx.Get());
     return true;
 }
 #endif

@@ -51,11 +51,16 @@ namespace SFRiftRecallRules
         double AnchorMaxCm, bool bLineOfSight, double PathRatio, bool bIncapacitated);
 }
 
+/** Ability phase; replicated so every client plays the matching clip and effects (OnRep_Phase). */
+UENUM()
+enum class ESFVoidreignPhase : uint8 { None, Attack, Windup, Charge, Impact, Hold, RecallEnter, RecallExit };
+
 /**
  * Voidreign mount: rider attached at the RiderSeat bone with a speed-blended seat pose, basic attack, and the
  * Rift Recall legendary signature. Abilities run on the server: Rift Charge places the anchor at its origin, and an
  * optional re-press within the return window recalls the Voidreign to it after server validation (no damage, no CC).
- * Client presentation of the ability phases is not replicated yet.
+ * The phase and the anchor location replicate; each machine plays mount clips as montages in ABP_Voidreign's
+ * DefaultSlot and spawns the effects from the same phase presentation.
  */
 UCLASS()
 class SHATTEREDFRONTIER_API ASFVoidreignCharacter : public ACharacter
@@ -66,13 +71,15 @@ public:
     ASFVoidreignCharacter();
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
     UFUNCTION(BlueprintCallable, Category = "Voidreign") void PlayBasicAttack();
     UFUNCTION(BlueprintCallable, Category = "Voidreign") void PlayRiftRecall();
     /** The signature re-press: asks the server to recall to the anchor; the server's verdict is LastRecallReject. */
     UFUNCTION(BlueprintCallable, Category = "Voidreign") void RequestRiftRecall();
-    UFUNCTION(BlueprintPure, Category = "Voidreign") bool IsPerformingAction() const { return Phase != EPhase::None; }
-    UFUNCTION(BlueprintPure, Category = "Voidreign") bool IsRecallWindowOpen() const { return Phase == EPhase::Hold; }
+    UFUNCTION(BlueprintPure, Category = "Voidreign") bool IsPerformingAction() const { return Phase != ESFVoidreignPhase::None; }
+    UFUNCTION(BlueprintPure, Category = "Voidreign") bool IsRecallWindowOpen() const { return Phase == ESFVoidreignPhase::Hold; }
+    ESFVoidreignPhase GetPhase() const { return Phase; }
     /** Rider abilities are refused from recall start until arrival plus the rider lockout. */
     UFUNCTION(BlueprintPure, Category = "Voidreign") bool IsRiderLockedOut() const;
     ESFRiftRecallReject LastRecallReject() const { return LastReject; }
@@ -113,19 +120,26 @@ public:
     float DemoAbilityInterval = 0.f;
 
 private:
-    enum class EPhase : uint8 { None, Attack, Windup, Charge, Impact, Hold, RecallEnter, RecallExit };
+    friend class FSFVoidreignReplicationTest;
 
     UFUNCTION(Server, Reliable) void ServerRiftRecall();
+    /** Client: the server's phase arrived; play its clips and effects. */
+    UFUNCTION() void OnRep_Phase();
     void TryRiftRecall();
-    void EnterPhase(EPhase NewPhase);
+    void EnterPhase(ESFVoidreignPhase NewPhase);
+    /** Clips, rider pose and one-shot effects for entering a phase; runs on the server and on every client. */
+    void BeginPhasePresentation();
+    void ReleaseAnchorVfx();
     void EndAction();
     void PlayMount(UAnimSequence* Clip, bool bLoop);
     void PlayRider(UAnimSequence* Clip);
-    void SpawnVfx(UMaterialInterface* Material, const FVector& Location, float SizeMetres, float Duration, bool bPersistent, bool bUpright = false);
+    UStaticMeshComponent* SpawnVfx(UMaterialInterface* Material, const FVector& Location, float SizeMetres, float Duration, bool bPersistent, bool bUpright = false);
     void TickVfx(float DeltaSeconds);
     float ClipLength(const UAnimSequence* Clip) const;
 
-    EPhase Phase = EPhase::None;
+    UPROPERTY(ReplicatedUsing = OnRep_Phase) ESFVoidreignPhase Phase = ESFVoidreignPhase::None;
+    /** Rift anchor origin (capsule centre), set with the Windup phase; clients draw the anchor effect from it. */
+    UPROPERTY(Replicated) FVector_NetQuantize AnchorLocation = FVector::ZeroVector;
     float PhaseTime = 0.f;
     float ChargeTravelled = 0.f;
     float TrailTimer = 0.f;
