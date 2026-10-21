@@ -23,9 +23,10 @@ hardening=(--cap-drop=ALL --security-opt=no-new-privileges --pids-limit=256 --me
 
 # ponytail: superuser on a tmpfs database in a loopback-only namespace; the Windows fixture keeps the
 # separate owner/service roles. Add them here if this ever outlives a single proof run.
-docker run -d --name "$pg" --network none --tmpfs /var/lib/postgresql/data:rw,size=256m \
+docker run -d --name "$pg" --network none --tmpfs /var/lib/postgresql:rw,size=256m \
     -e POSTGRES_PASSWORD="$password" -e POSTGRES_DB=ledger --memory=1g --cpus=1 "$PG_IMAGE" >/dev/null
 for _ in $(seq 60); do docker exec "$pg" pg_isready -q -h 127.0.0.1 -U postgres -d ledger && break; sleep 1; done
+docker exec "$pg" pg_isready -q -h 127.0.0.1 -U postgres -d ledger || { echo 'Postgres did not become ready' >&2; docker logs "$pg" 2>&1 | tail -20; exit 1; }
 docker exec -i "$pg" psql -q -v ON_ERROR_STOP=1 -h 127.0.0.1 -U postgres -d ledger < "$SCHEMA"
 
 docker run -d --name "$host" --network "container:$pg" --read-only --user 65534:65534 "${hardening[@]}" \
