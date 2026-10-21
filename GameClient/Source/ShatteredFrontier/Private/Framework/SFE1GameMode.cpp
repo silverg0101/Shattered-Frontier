@@ -16,6 +16,14 @@ ASFE1GameMode::ASFE1GameMode()
 
 void ASFE1GameMode::StartPlay()
 {
+    if (GetNetMode() == NM_DedicatedServer)
+    {
+        // Cosmetic dressing (PCG ground cover and litter, tagged by pcg_dressing.py) is client-only: drop it before it begins play.
+        TArray<AActor*> Cosmetic;
+        for (TActorIterator<AActor> It(GetWorld()); It; ++It) { if (It->ActorHasTag(TEXT("SF_ClientOnlyCosmetic"))) { Cosmetic.Add(*It); } }
+        for (AActor* Actor : Cosmetic) { Actor->Destroy(); }
+        UE_LOG(LogTemp, Display, TEXT("COSMETIC_STRIPPED Count=%d"), Cosmetic.Num());
+    }
     Super::StartPlay();
     // Versioned E1-only placement beside one arrival spawn; no biome/resource claim.
     // Zone maps share this game mode, so the fixture stays in the E1 graybox.

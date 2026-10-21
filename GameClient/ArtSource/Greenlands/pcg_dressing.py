@@ -13,6 +13,11 @@ import unreal as u
 GRAPH_DIR = '/Game/Frontier/PCG'
 EXCLUDE_TAG = 'PCG_Exclude'
 NO_COLLISION_LAYERS = ('ground_cover', 'litter', 'understory')
+COSMETIC_LAYERS = NO_COLLISION_LAYERS  # client-only: tagged so a dedicated server destroys them in ASFE1GameMode::StartPlay
+COSMETIC_TAG = 'SF_ClientOnlyCosmetic'
+CULL_M = {'ground_cover': 50, 'understory': 50, 'litter': 25}  # default end-cull metres per layer; a role's place.cull_m overrides
+CULL_BOUNDS = (10, 200)
+WPO_DISABLE_CM = 3000  # leaf wind (M_GN_Leaf) switches off beyond 30 m on every instance: VSM cost grows with WPO
 
 
 def _meshes(names):
@@ -25,10 +30,26 @@ def _meshes(names):
     return {n: a.get_asset() for n, a in found.items()}
 
 
-def build(result, layers, zone, label_suffix=''):
-    """result: dress_zone.dress() output; layers: {role: layer name}. Returns (volume actor, expected instance count)."""
+def build(result, layers, zone):
+    """result: dress_zone.dress() output; layers: {role: layer name}. Trees and rocks go in the district's gameplay
+    volume (the server keeps their collision); cosmetic layers go in a second, client-only volume.
+    Returns (gameplay volume actor, expected instance count over both)."""
+    split = {c: dict(result, roles={r: v for r, v in result['roles'].items() if (layers[r] in COSMETIC_LAYERS) == c}) for c in (False, True)}
+    vol, expected = _build(split[False], layers, zone, False)
+    if split[True]['roles']:
+        expected += _build(split[True], layers, zone, True)[1]
+    return vol, expected
+
+
+def _cull_cm(result, layers, role):
+    metres = result.get('cull', {}).get(role, CULL_M.get(layers[role]))
+    return 0 if metres is None else min(max(metres, CULL_BOUNDS[0]), CULL_BOUNDS[1]) * 100
+
+
+def _build(result, layers, zone, cosmetic):
     district = result['district'].replace(' ', '')
-    name = f'PCG_{zone}_{district}'
+    name = f'PCG_{zone}_{district}' + ('_Cosmetic' if cosmetic else '')
+    label = f'PCG_{district}' + ('_Cosmetic' if cosmetic else '')
     path = f'{GRAPH_DIR}/{name}'
     if u.EditorAssetLibrary.does_asset_exist(path):
         assert u.EditorAssetLibrary.delete_asset(path), f'Could not delete {path}'
@@ -44,10 +65,10 @@ def build(result, layers, zone, label_suffix=''):
     items = {}
     for role, placed in result['roles'].items():
         for t in placed:
-            items.setdefault((t['mesh'], layers[role]), []).append(t)
-    meshes = _meshes({m for m, _ in items})
+            items.setdefault((t['mesh'], layers[role], _cull_cm(result, layers, role)), []).append(t)
+    meshes = _meshes({m for m, _, _ in items})
     expected = 0
-    for (mesh_name, layer), group in sorted(items.items()):
+    for (mesh_name, layer, cull), group in sorted(items.items()):
         mesh = meshes[mesh_name]
         b = mesh.get_bounding_box(); height = (b.max.z - b.min.z) / 100
         points = []
@@ -75,6 +96,10 @@ def build(result, layers, zone, label_suffix=''):
             body = desc.get_editor_property('body_instance')
             body.set_editor_property('collision_profile_name', 'NoCollision')
             desc.set_editor_property('body_instance', body)
+        if cull:
+            desc.set_editor_property('instance_end_cull_distance', int(cull))
+            desc.set_editor_property('instance_start_cull_distance', int(cull * 0.8))  # dither out over the last fifth
+        desc.set_editor_property('world_position_offset_disable_distance', WPO_DISABLE_CM)
         entry.set_editor_property('descriptor', desc)
         entry.set_editor_property('weight', 1)
         sp.get_editor_property('mesh_selector_parameters').set_editor_property('mesh_entries', [entry])
@@ -89,8 +114,8 @@ def build(result, layers, zone, label_suffix=''):
     actors = u.get_editor_subsystem(u.EditorActorSubsystem)
     vol = actors.spawn_actor_from_class(u.PCGVolume, u.Vector((min(xs) + max(xs)) * 50, (min(ys) + max(ys)) * 50, 0))
     vol.set_actor_scale3d(u.Vector((max(xs) - min(xs) + 20) / 2, (max(ys) - min(ys) + 20) / 2, 50))  # brush is 2 m; 100 m tall
-    vol.set_actor_label(f'PCG_{district}'); vol.set_folder_path('Dressing')
-    vol.tags = [u.Name('PCG_Dressing'), u.Name(f'expected:{expected}'), u.Name(f"version:{result['version']}")]
+    vol.set_actor_label(label); vol.set_folder_path('Dressing')
+    vol.tags = [u.Name('PCG_Dressing'), *([u.Name(COSMETIC_TAG)] if cosmetic else []), u.Name(f'expected:{expected}'), u.Name(f"version:{result['version']}")]
     comp = vol.get_component_by_class(u.PCGComponent)
     comp.set_graph(graph)
     comp.set_editor_property('generation_trigger', u.PCGComponentGenerationTrigger.GENERATE_ON_DEMAND)

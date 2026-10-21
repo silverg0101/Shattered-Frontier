@@ -19,6 +19,7 @@ from validate_layout import waters  # noqa: E402
 RULES_VERSION = 1  # bump when a rule here changes meaning; part of the content version
 CELL = 2.5         # m, raster for clearances, slope and valley height
 SHADE = 6.0        # m from a canopy trunk counts as shade
+CULL_BOUNDS = (10, 200)  # m, bounds on a role's place.cull_m (pcg_dressing.py applies it as the instance end-cull distance)
 SOLID = 2.5        # m kept between any two trees or rocks, whatever their role
 SOLID_LAYERS = ('canopy', 'rocks')
 ORDER = ('canopy', 'rocks', 'understory', 'ground_cover', 'litter')
@@ -55,11 +56,15 @@ class Site:
         n = self.nx * self.ny
         self.inside = bytearray(n)
         self.clear = [99.0] * n  # metres to the nearest road edge, water edge or building footprint
+        self.road = [99.0] * n   # metres to the nearest road edge (paths), for roles that hug or avoid paths
         self.slope, self.valley = [0.0] * n, [0.0] * n
         lines = [(pts, L['roads'][f'{tier}_width'] / 2) for tier in ('primary', 'secondary', 'trail') for pts in L['roads'][tier].values()]
+        n_roads = len(lines)
         lines += [(w['points'], w['width'] / 2) for w in waters(L)]
         lines += [(b['polygon'] + b['polygon'][:1], 0.0) for b in L.get('basins', [])]
-        near = [(pts, hw) for pts, hw in lines if _dist(((min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2), pts) < max(max(xs) - min(xs), max(ys) - min(ys))]
+        close = lambda pts: _dist(((min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2), pts) < max(max(xs) - min(xs), max(ys) - min(ys))
+        near_roads = [(pts, hw) for pts, hw in lines[:n_roads] if close(pts)]
+        near_other = [(pts, hw) for pts, hw in lines[n_roads:] if close(pts)]
         plots = L['construction_plots']
         pads = list(placed) + [(x, y, plots['size'] * 0.71) for x, y in plots['centres']]  # plots stay clear even before they are built
         floor = self._floor(hf, xs, ys)
@@ -70,7 +75,8 @@ class Site:
                 if not in_polygon((x, y), self.poly):
                     continue
                 self.inside[k] = 1
-                c = min([_dist((x, y), pts) - hw for pts, hw in near] + [99.0])
+                self.road[k] = min([_dist((x, y), pts) - hw for pts, hw in near_roads] + [99.0])
+                c = min([self.road[k], *[_dist((x, y), pts) - hw for pts, hw in near_other]] + [99.0])
                 c = min([c] + [math.hypot(x - px, y - py) - r for px, py, r in pads if abs(x - px) < 40 and abs(y - py) < 40])
                 if any(in_polygon((x, y), b['polygon']) for b in L.get('basins', [])):
                     c = -1.0
@@ -148,6 +154,8 @@ def dress(L, P, hf, placed, district, seed):
                     k = site.cell(x, y)
                     if k is None or not site.inside[k] or site.clear[k] < rule['clear']:
                         continue
+                    if site.road[k] > rule.get('path', 99.0):  # 'path': only within this many metres of a road edge
+                        continue
                     if not (rule['slope'][0] <= site.slope[k] <= rule['slope'][1] and rule['valley'][0] <= site.valley[k] <= rule['valley'][1]):
                         continue
                     if rule['light'] != 'any' and shaded(x, y) != (rule['light'] == 'shade'):
@@ -166,7 +174,8 @@ def dress(L, P, hf, placed, district, seed):
                 for t in placed_here:
                     bucket.setdefault((int(t['x'] // SHADE), int(t['y'] // SHADE)), []).append((t['x'], t['y']))
             out[role] = placed_here
-    return dict(version=content_version(seed, district, out), district=district,
+    cull = {r: min(max(roles[r]['place']['cull_m'], CULL_BOUNDS[0]), CULL_BOUNDS[1]) for r in out if 'cull_m' in roles[r]['place']}
+    return dict(version=content_version(seed, district, out), district=district, cull=cull,
                 area_ha=round(area_ha, 2), roles=out, gaps=gaps)
 
 
