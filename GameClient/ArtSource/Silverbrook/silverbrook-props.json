@@ -119,7 +119,7 @@
       "id": "fence",
       "asset": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropFenceSection",
       "spacing_m": 9,
-      "offset_m": 2.2,
+      "offset_m": 0.6,
       "tiers": [
         "Secondary"
       ],
@@ -156,7 +156,7 @@
       "id": "barrel_planter",
       "asset": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropRainBarrel",
       "spacing_m": 22,
-      "offset_m": 1.6,
+      "offset_m": 0.3,
       "tiers": [
         "Primary",
         "Secondary"
@@ -215,7 +215,7 @@
       "fab": "/Game/MedievalVillage/Meshes/Flag/SKM_FlagA",
       "asset": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropSignpost",
       "spacing_m": 60,
-      "offset_m": 1.9,
+      "offset_m": 0.8,
       "tiers": [
         "Primary"
       ],
@@ -240,7 +240,7 @@
       "id": "market_goods",
       "asset": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropMarketGoods",
       "spacing_m": 38,
-      "offset_m": 3.4,
+      "offset_m": 0.8,
       "tiers": [
         "Primary"
       ],
@@ -252,7 +252,7 @@
       "id": "sacks",
       "asset": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropSackPile",
       "spacing_m": 33,
-      "offset_m": 2.4,
+      "offset_m": 0.8,
       "tiers": [
         "Primary",
         "Secondary"
@@ -301,7 +301,7 @@
       "id": "bench",
       "asset": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropBench",
       "spacing_m": 50,
-      "offset_m": 2.2,
+      "offset_m": 0.8,
       "tiers": [
         "Primary",
         "Secondary"
@@ -338,21 +338,12 @@
   ],
   "_notes": "Street lamps are placed by build_silverbrook.py (layout `street_lamps`), not here. A rule with `fab` uses that path when mounted, else `asset`; `optional_only` rules are skipped unless the fab asset exists.",
   "footing": {
-    "colour": {
-      "value": [
-        0.12,
-        0.11,
-        0.1
-      ],
-      "min": 0,
-      "max": 1,
-      "unit": "linear RGB, stone footing under plinth slabs"
-    },
-    "roughness": {
-      "value": 0.9,
-      "min": 0,
-      "max": 1,
-      "unit": "fraction"
+    "material": "/Game/Frontier/Environment/Greenlands/Silverbrook/Materials/MI_SB_StoneBridge_Masonry",
+    "inset_fraction": {
+      "value": 0.82,
+      "min": 0.65,
+      "max": 1.0,
+      "unit": "fraction of the building mesh bounds, applied at the next dressing pass"
     }
   }
 }

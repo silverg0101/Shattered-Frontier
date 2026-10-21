@@ -186,7 +186,9 @@ def _obstacles(A):
     rects=[]
     for a in A.get_all_level_actors():
         if isinstance(a,u.StaticMeshActor) and a.static_mesh_component.static_mesh and a.static_mesh_component.static_mesh.get_name().startswith('SM_Silverbrook') and TAG not in [str(t) for t in a.tags]:
-            rects.append(pp._rect(a))
+            r=pp._rect(a)
+            if max(r[2]-r[0],r[3]-r[1])<=4000:  # terrain and backdrop are not street obstacles
+                rects.append(r)
     return pp,rects
 
 def _clear(A):
@@ -233,30 +235,38 @@ def dress_props(L,c):
                 key=f"{rule['id']}{name}{k}"
                 if n>=rule['max_count']:break
                 if not _inside(L,c,x,y) or _h(key+'p')<.35:continue
-                side=1 if _h(key+'q')<.5 else -1;d=width/2+off
-                px,py=(x-side*uy*d)*100,(y+side*ux*d)*100
-                if not pp._free((px-clr-50,py-clr-50,px+clr+50,py+clr+50),rects):continue
-                z=pp._ground(world,px,py,0)
-                if z is None:continue
-                to_road=math.degrees(math.atan2(side*ux,-side*uy))   # direction from the prop toward the street centre
-                yaw={'road':to_road-90,'along':math.degrees(math.atan2(uy,ux))-90,'random':_h(key+'y')*360}[rule['face']]  # mesh front is +Y (FBX flip)
-                s=slo+(shi-slo)*_h(key+'s')
-                a=A.spawn_actor_from_class(u.StaticMeshActor,u.Vector(px,py,z),u.Rotator(roll=0,pitch=0,yaw=yaw))
-                a.static_mesh_component.set_static_mesh(mesh);a.set_actor_scale3d(u.Vector(s,s,s));a.tags=[TAG];a.set_folder_path('Silverbrook/Dressing')
-                a.set_actor_label(f'{rule["id"]}_{n:02d}')
-                rects.append((px-clr,py-clr,px+clr,py+clr));n+=1
+                preferred=1 if _h(key+'q')<.5 else -1;d=width/2+off
+                for side in (preferred,-preferred):
+                    px,py=(x-side*uy*d)*100,(y+side*ux*d)*100
+                    if not pp._free((px-clr-50,py-clr-50,px+clr+50,py+clr+50),rects):continue
+                    z=pp._ground(world,px,py,0)
+                    if z is None:continue
+                    to_road=math.degrees(math.atan2(side*ux,-side*uy))   # direction from the prop toward the street centre
+                    yaw={'road':to_road-90,'along':math.degrees(math.atan2(uy,ux))-90,'random':_h(key+'y')*360}[rule['face']]  # mesh front is +Y (FBX flip)
+                    s=slo+(shi-slo)*_h(key+'s')
+                    a=A.spawn_actor_from_class(u.StaticMeshActor,u.Vector(px,py,z),u.Rotator(roll=0,pitch=0,yaw=yaw))
+                    a.static_mesh_component.set_static_mesh(mesh);a.set_actor_scale3d(u.Vector(s,s,s));a.tags=[TAG];a.set_folder_path('Silverbrook/Dressing')
+                    a.set_actor_label(f'{rule["id"]}_{n:02d}')
+                    rects.append((px-clr,py-clr,px+clr,py+clr));n+=1
+                    break
         placed[rule['id']]=n
     print('PROPS_PLACED',placed);return placed
 
 def dress_footings(c):
-    """The builder's *_Plinth slabs read as bright white; give them a dark stone solid instead."""
-    f=c['footing'];mi=_instance('MI_SB_FootingStone',u.load_asset(f'{LIB}/Materials/M_SB_Solid'))
-    mel.set_material_instance_vector_parameter_value(mi,'Colour',u.LinearColor(*val(f['colour']),1))
-    mel.set_material_instance_scalar_parameter_value(mi,'Roughness',val(f['roughness']));eal.save_loaded_asset(mi);n=0
-    for a in _actors().get_all_level_actors():
+    """Inset builder plinths under the masonry walls and use textured stone."""
+    f=c['footing'];mi=_asset(f['material']);assert mi,f['material']
+    actors=_actors().get_all_level_actors();by_label={a.get_actor_label():a for a in actors};n=0
+    for a in actors:
         if not isinstance(a,u.StaticMeshActor):continue
         m0=a.static_mesh_component.get_material(0);pale=m0 is not None and m0.get_name()=='MI_Graybox_Civic' and a.get_actor_scale3d().z<0.5  # place pads (market stall floors)
-        if a.get_actor_label().endswith('_Plinth') or pale:a.static_mesh_component.set_material(0,mi);n+=1
+        if a.get_actor_label().endswith('_Plinth'):
+            building=by_label.get(a.get_actor_label()[:-7])
+            if isinstance(building,u.StaticMeshActor) and building.static_mesh_component.static_mesh:
+                b=building.static_mesh_component.static_mesh.get_bounding_box();s=a.get_actor_scale3d()
+                inset=val(f['inset_fraction'])
+                a.set_actor_scale3d(u.Vector((b.max.x-b.min.x)/100*inset,(b.max.y-b.min.y)/100*inset,s.z))
+            a.static_mesh_component.set_material(0,mi);n+=1
+        elif pale:a.static_mesh_component.set_material(0,mi);n+=1
     print('PLINTHS_RETEXTURED',n)
 
 def dress_all():

@@ -1,0 +1,9 @@
+# GFX-01 WP6 Silverbrook town dressing — 2026-10-21
+
+Open-editor pass: `py -3 tools/Run-InEditor.py GameClient/ArtSource/Silverbrook/silverbrook_props.py --save`, then save the level and `/Game/Frontier/Environment/Greenlands/Silverbrook` assets. The run retextured and inset 246 building/place pads, placed 45 tagged street props and 385 verge instances. The optional Fab lantern mesh was unavailable; the map's authored street lamps remain. The road actor pass found zero legacy strips because current roads are painted in the terrain.
+
+`check_ground.py` traced the base of all 45 placed street props and 385 verge instances directly against `SM_Silverbrook_Terrain`: **430 checked, zero over 5 cm, zero missing terrain hits**. `ground-gap.json` includes the result and nearby armour stall actors. `ArmorVendor_RainBarrel` has a 0 cm pivot and bounds-bottom gap; the armour-stall frame shows barrels grounded beside the stall, not a floating sign.
+
+Final live `-game` captures are `main-street.png`, `market.png`, `house-frontage.png`, and `armour-stall.png`. For each of the requested three views, `*-vs-hud.jpg` places the v5 gameplay target on the left and live on the right; `*-vs-gfx01.jpg` does the same using the Silverbrook design board's town overview. The concept frames use different cameras and include UI; comparison is for design character and density, not pixel registration.
+
+**Verdict: partial, not a design match.** The house frontage now has a textured, inset stone footing, and the street has a cart, barrels, lamps and some verge detail. The main street still reads as a long straight row; the market is sparse. Garden plots, chimney smoke and visible dusk lamp glow are not established by these daylight frames. The distant mountains remain pale and faceted, and the target's dense woodland, varied town silhouette, and richer market activity are absent. The screenshots do not support claiming GFX-01 acceptance.

@@ -1,0 +1,242 @@
+{
+  "checked": 430,
+  "floating_over_5_cm": [],
+  "no_terrain_hit": [],
+  "worst_gap_cm": 0.0,
+  "by_kind": {
+    "street_prop": 45,
+    "verge": 385
+  },
+  "armour_area": [
+    {
+      "name": "ArmorVendor",
+      "xyz_cm": [
+        2550,
+        -2590,
+        1107
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": 0.0
+    },
+    {
+      "name": "TheCommons_townhouse_037_RainBarrel",
+      "xyz_cm": [
+        -22739,
+        -8724,
+        1998
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "Riverside_townhouse_040_RainBarrel",
+      "xyz_cm": [
+        7517,
+        50221,
+        595
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "Riverside_townhouse_026_RainBarrel",
+      "xyz_cm": [
+        2306,
+        42885,
+        880
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "Riverside_townhouse_042_RainBarrel",
+      "xyz_cm": [
+        6223,
+        50444,
+        568
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "TheCommons_townhouse_134_RainBarrel",
+      "xyz_cm": [
+        -4450,
+        -12197,
+        1842
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "ArmorVendor_Wheelbarrow",
+      "xyz_cm": [
+        2537,
+        -2050,
+        1106
+      ],
+      "pivot_gap_cm": -0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "ArmorVendor_RainBarrel",
+      "xyz_cm": [
+        2697,
+        -3049,
+        1138
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "TheCommons_townhouse_101_RainBarrel",
+      "xyz_cm": [
+        7721,
+        4526,
+        1580
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "Riverside_townhouse_051_RainBarrel",
+      "xyz_cm": [
+        -5095,
+        48360,
+        1237
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "Riverside_townhouse_011_RainBarrel",
+      "xyz_cm": [
+        1841,
+        27376,
+        723
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "TheCommons_townhouse_019_RainBarrel",
+      "xyz_cm": [
+        -7185,
+        -4604,
+        1549
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "TheCommons_townhouse_125_RainBarrel",
+      "xyz_cm": [
+        -10281,
+        -1909,
+        1726
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "TheCommons_townhouse_111_RainBarrel",
+      "xyz_cm": [
+        -3099,
+        5650,
+        1652
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "Riverside_townhouse_038_RainBarrel",
+      "xyz_cm": [
+        7922,
+        43858,
+        633
+      ],
+      "pivot_gap_cm": -0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "Riverside_townhouse_043_RainBarrel",
+      "xyz_cm": [
+        6261,
+        48867,
+        582
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "barrel_planter_00",
+      "xyz_cm": [
+        2694,
+        24308,
+        761
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "barrel_planter_01",
+      "xyz_cm": [
+        2996,
+        28698,
+        666
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "barrel_planter_02",
+      "xyz_cm": [
+        3299,
+        33087,
+        575
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "barrel_planter_03",
+      "xyz_cm": [
+        2863,
+        39730,
+        769
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "barrel_planter_04",
+      "xyz_cm": [
+        4267,
+        48460,
+        619
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "barrel_planter_05",
+      "xyz_cm": [
+        5232,
+        42088,
+        722
+      ],
+      "pivot_gap_cm": 0.0,
+      "bounds_bottom_gap_cm": -0.0
+    },
+    {
+      "name": "barrel_planter_06",
+      "xyz_cm": [
+        7135,
+        43325,
+        648
+      ],
+      "pivot_gap_cm": -0.0,
+      "bounds_bottom_gap_cm": -0.0
+    }
+  ]
+}
