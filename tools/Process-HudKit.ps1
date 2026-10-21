@@ -7,6 +7,7 @@ $ErrorActionPreference = 'Stop'
 $entries = Get-Content (Join-Path $Kit 'kit.json') -Raw | ConvertFrom-Json
 $out = Join-Path $Kit 'processed'; $null = New-Item -ItemType Directory -Force $out
 foreach ($e in $entries.elements) {
+    if ($e.preprocessed) { continue }  # alpha-clean PNGs already in processed/ (v4 glyph sheets, hold ring, toast card)
     if (-not (Test-Path (Join-Path $Kit ("source\" + $e.name + ".png")))) { Write-Warning "missing source $($e.name)"; continue }
     $src = [Drawing.Bitmap]::FromFile((Join-Path $Kit ("source\" + $e.name + '.png')))
     $bmp = New-Object Drawing.Bitmap $src.Width, $src.Height, ([Drawing.Imaging.PixelFormat]::Format32bppArgb)

@@ -17,6 +17,26 @@
     { "name": "crest_plate",     "width": 128, "height": 128, "margin": [0, 0, 0, 0],     "inset": 0 },
     { "name": "ring_frame",      "width": 256, "height": 256, "margin": [0, 0, 0, 0],     "inset": 0 },
     { "name": "tooltip_frame",   "width": 256, "height": 128, "margin": [24, 24, 24, 24], "inset": 8 },
-    { "name": "divider",         "width": 512, "height": 32,  "margin": [0, 0, 0, 0],     "inset": 0 }
+    { "name": "divider",         "width": 512, "height": 32,  "margin": [0, 0, 0, 0],     "inset": 0 },
+    { "name": "status_tick",       "width": 64,  "height": 64,  "margin": [0, 0, 0, 0],     "inset": 0, "preprocessed": true },
+    { "name": "status_cross",      "width": 64,  "height": 64,  "margin": [0, 0, 0, 0],     "inset": 0, "preprocessed": true },
+    { "name": "warning_triangle",  "width": 64,  "height": 64,  "margin": [0, 0, 0, 0],     "inset": 0, "preprocessed": true },
+    { "name": "keycap_blank",      "width": 64,  "height": 64,  "margin": [16, 16, 16, 16], "inset": 0, "preprocessed": true },
+    { "name": "mouse_lmb",         "width": 64,  "height": 64,  "margin": [0, 0, 0, 0],     "inset": 0, "preprocessed": true },
+    { "name": "mouse_rmb",         "width": 64,  "height": 64,  "margin": [0, 0, 0, 0],     "inset": 0, "preprocessed": true },
+    { "name": "mouse_wheel",       "width": 64,  "height": 64,  "margin": [0, 0, 0, 0],     "inset": 0, "preprocessed": true },
+    { "name": "gamepad_a",         "width": 64,  "height": 64,  "margin": [0, 0, 0, 0],     "inset": 0, "preprocessed": true },
+    { "name": "gamepad_b",         "width": 64,  "height": 64,  "margin": [0, 0, 0, 0],     "inset": 0, "preprocessed": true },
+    { "name": "gamepad_x",         "width": 64,  "height": 64,  "margin": [0, 0, 0, 0],     "inset": 0, "preprocessed": true },
+    { "name": "gamepad_y",         "width": 64,  "height": 64,  "margin": [0, 0, 0, 0],     "inset": 0, "preprocessed": true },
+    { "name": "gamepad_lb",        "width": 64,  "height": 64,  "margin": [0, 0, 0, 0],     "inset": 0, "preprocessed": true },
+    { "name": "gamepad_rb",        "width": 64,  "height": 64,  "margin": [0, 0, 0, 0],     "inset": 0, "preprocessed": true },
+    { "name": "gamepad_lt",        "width": 64,  "height": 64,  "margin": [0, 0, 0, 0],     "inset": 0, "preprocessed": true },
+    { "name": "gamepad_rt",        "width": 64,  "height": 64,  "margin": [0, 0, 0, 0],     "inset": 0, "preprocessed": true },
+    { "name": "gamepad_dpad",      "width": 64,  "height": 64,  "margin": [0, 0, 0, 0],     "inset": 0, "preprocessed": true },
+    { "name": "gamepad_l3",        "width": 64,  "height": 64,  "margin": [0, 0, 0, 0],     "inset": 0, "preprocessed": true },
+    { "name": "gamepad_r3",        "width": 64,  "height": 64,  "margin": [0, 0, 0, 0],     "inset": 0, "preprocessed": true },
+    { "name": "hold_confirm_ring", "width": 128, "height": 128, "margin": [0, 0, 0, 0],     "inset": 0, "preprocessed": true },
+    { "name": "toast_card",        "width": 512, "height": 104, "margin": [112, 20, 20, 20], "inset": 0, "preprocessed": true }
   ]
 }
