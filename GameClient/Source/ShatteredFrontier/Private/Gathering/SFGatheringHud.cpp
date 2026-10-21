@@ -169,7 +169,7 @@ void USFGatheringHud::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     const bool bHarvesting = Feedback.Phase == ESFGatheringPilotPhase::Harvesting && IsValid(Feedback.Node);
     // Committing = the channel ended and the server is awaiting the ledger receipt: keep the ring full as "finishing".
     const bool bFinishing = Feedback.Phase == ESFGatheringPilotPhase::Committing && IsValid(Feedback.Node);
-    FVector2D Screen;
+    FVector2D Screen = FVector2D::ZeroVector;
     bRingVisible = (bHarvesting || bFinishing) && UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(Controller, Feedback.Node->GetActorLocation() + FVector(0, 0, 90), Screen, false);
     if (bHarvesting)
     {
