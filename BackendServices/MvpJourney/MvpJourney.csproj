@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk"><ItemGroup>
+  <ProjectReference Include="../InventoryLedger/InventoryLedger.csproj" />
+  <ProjectReference Include="../CraftingContent/CraftingContent.csproj" />
+  <ProjectReference Include="../GatheringNodes/GatheringNodes.csproj" />
+  <ProjectReference Include="../QuestContent/QuestContent.csproj" />
+  <ProjectReference Include="../Exchange/Exchange.csproj" />
+  <ProjectReference Include="../ClaimTerritory/ClaimTerritory.csproj" />
+</ItemGroup></Project>

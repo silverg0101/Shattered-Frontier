@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net10.0": {
+      "claimterritory": {
+        "type": "Project"
+      },
+      "craftingcontent": {
+        "type": "Project",
+        "dependencies": {
+          "InventoryLedger": "[1.0.0, )"
+        }
+      },
+      "exchange": {
+        "type": "Project",
+        "dependencies": {
+          "InventoryLedger": "[1.0.0, )"
+        }
+      },
+      "gatheringnodes": {
+        "type": "Project",
+        "dependencies": {
+          "WorldContent": "[1.0.0, )"
+        }
+      },
+      "inventoryledger": {
+        "type": "Project"
+      },
+      "questcontent": {
+        "type": "Project"
+      },
+      "worldcontent": {
+        "type": "Project"
+      }
+    }
+  }
+}
