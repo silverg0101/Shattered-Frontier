@@ -10,6 +10,27 @@ public sealed class LedgerSchemaCompatibilityException(string message) : Excepti
 // Schema.sql is installed by the migration identity. Runtime needs DML only.
 public sealed class PostgresInventoryLedgerStore(string connectionString) : IInventoryLedgerStore
 {
+    public IReadOnlyList<ContainerSpec> FindContainers(OwnerKind ownerKind, string ownerId, ContainerKind kind)
+    {
+        try
+        {
+            using var connection = new NpgsqlConnection(connectionString);
+            connection.Open();
+            using var db = connection.BeginTransaction();
+            CheckSchema(connection, db);
+            using var cmd = Command(connection, db, "SELECT id,capacity FROM inventory.containers WHERE owner_kind=$1 AND owner_id=$2 AND kind=$3 ORDER BY id");
+            cmd.Parameters.AddWithValue((int)ownerKind);
+            cmd.Parameters.AddWithValue(ownerId);
+            cmd.Parameters.AddWithValue((int)kind);
+            var result = new List<ContainerSpec>();
+            using var rows = cmd.ExecuteReader();
+            while (rows.Read()) result.Add(new ContainerSpec(rows.GetString(0), ownerKind, ownerId, kind, rows.GetInt32(1)));
+            return result;
+        }
+        catch (Exception ex) when (ex is NpgsqlException or TimeoutException or System.IO.IOException)
+        { throw new LedgerStoreUnavailableException("Inventory store unavailable; retry the operation ID.", ex); }
+    }
+
     public T Execute<T>(Func<LedgerState, T> transaction)
     {
         try
@@ -56,6 +77,8 @@ public sealed class PostgresInventoryLedgerStore(string connectionString) : IInv
     {
         ContainerRecord? Container(string id)
         {
+            using (var advisory = Command(connection, db, "SELECT pg_advisory_xact_lock(519762, hashtext($1))"))
+            { advisory.Parameters.AddWithValue(id); advisory.ExecuteNonQuery(); }
             using var cmd = Command(connection, db, "SELECT id,owner_kind,owner_id,kind,capacity,revision FROM inventory.containers WHERE id=$1 FOR UPDATE");
             cmd.Parameters.AddWithValue(id);
             ContainerRecord record;

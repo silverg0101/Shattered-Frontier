@@ -247,7 +247,7 @@ public sealed class PostgresHousingStore(string connectionString)
         RequireGameplaySchema(c,t);
         if (ReadClaim(c,t,claimId) is null) throw new HousingRejectedException("Claim missing.");
         long revision;
-        using (var cmd = Cmd(c,t,"SELECT revision FROM housing.claim_structure_revisions WHERE claim_id=$1",claimId))
+        using (var cmd = Cmd(c,t,"SELECT revision FROM housing.claim_structure_revisions WHERE claim_id=$1 FOR SHARE",claimId))
             revision = cmd.ExecuteScalar() is long value ? value : throw new HousingRejectedException("Claim structure revision missing.");
         var ids = new List<string>();
         using (var cmd = Cmd(c,t,"SELECT operation_id FROM housing.placements WHERE claim_id=$1 AND state='Committed' ORDER BY revision",claimId))

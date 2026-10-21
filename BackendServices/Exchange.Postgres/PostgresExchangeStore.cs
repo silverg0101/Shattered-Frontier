@@ -157,6 +157,7 @@ public sealed class PostgresExchangeStore(string connectionString)
     public ExchangeReceipt BeginListing(string op,string id,string seller,string sellerContainer,string escrow,string item,long quantity,long price,long fee,DateTimeOffset now,ExchangeSettings? settings=null) => Mutate(op,(c,t)=>
     {
         RequireId(op);
+        using (var advisory=Cmd(c,t,"SELECT pg_advisory_xact_lock(519761,hashtext('lst:'||$1))",id)) advisory.ExecuteNonQuery();
         var duration=(long)(settings??new ExchangeSettings()).Get("tune.economy.market_listing_durations_hours");
         // CreatedAt is assigned once. A replay compares the immutable request fields below.
         using(var find=Cmd(c,t,"SELECT fingerprint,receipt::text FROM exchange.operations WHERE operation_id=$1",op))
@@ -336,6 +337,10 @@ public sealed class PostgresExchangeStore(string connectionString)
         {
             if(committed)
             {
+                foreach (var owner in new[]{payer,pending.PayeeId!}.Distinct(StringComparer.Ordinal).OrderBy(x=>x,StringComparer.Ordinal))
+                    using (var ensure=Cmd(c,t,"INSERT INTO exchange.wallets(owner_id) VALUES ($1) ON CONFLICT DO NOTHING",owner)) ensure.ExecuteNonQuery();
+                using (var locked=Cmd(c,t,"SELECT 1 FROM exchange.wallets WHERE owner_id = ANY($1) ORDER BY owner_id FOR UPDATE",(object)new[]{payer,pending.PayeeId!}))
+                using (var rows=locked.ExecuteReader()) while(rows.Read()) { }
                 Post(c,t,op,payer,-pending.Amount,"transfer",pending.Kind=="trade"?"trade_send":"market_purchase",-pending.Amount);
                 Post(c,t,op,pending.PayeeId!,pending.Amount,"transfer",pending.Kind=="trade"?"trade_receive":"market_sale");
                 if(pending.Fee>0) Post(c,t,op,pending.PayeeId!,-pending.Fee,"sink","market_transaction_fee");

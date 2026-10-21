@@ -11,7 +11,7 @@ $dotnet = Join-Path $repo 'Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotn
 $pg = Join-Path $repo 'Artifacts/Persistence/Toolchains/postgresql-18.6/pgsql/bin'
 $project = Join-Path $repo 'BackendServices/InventoryLedger.Postgres.Tests/InventoryLedger.Postgres.Tests.csproj'
 $schema = Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.sql'
-$dll = Join-Path $repo 'BackendServices/InventoryLedger.Postgres.Tests/bin/Release/net10.0/InventoryLedger.Postgres.Tests.dll'
+$dll = Join-Path $EvidenceRoot 'private/build/InventoryLedger.Postgres.Tests.dll'
 $backupTool = Join-Path $repo 'tools/Backup-InventoryLedger.ps1'; $restoreTool = Join-Path $repo 'tools/Restore-InventoryLedger.ps1'
 $backup = Join-Path $EvidenceRoot 'backup'; $restoredInstance = Join-Path $EvidenceRoot 'restored-instance'
 foreach ($path in @($dotnet,$project,$schema,(Join-Path $pg 'postgres.exe'),(Join-Path $pg 'initdb.exe'),(Join-Path $pg 'pg_ctl.exe'),(Join-Path $pg 'psql.exe'))) { if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Required file missing: $path" } }
@@ -66,8 +66,9 @@ try {
     [void](Invoke-Checked 'icacls.exe' @($private,'/inheritance:r','/grant:r',"${account}:(OI)(CI)F"))
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $port = $listener.LocalEndpoint.Port; $listener.Stop()
     @{run=$run;data=$data;port=$port} | ConvertTo-Json | Set-Content (Join-Path $private 'owner.json')
+    $buildPath = (Join-Path $private 'build') + [IO.Path]::DirectorySeparatorChar
     [void](Invoke-Checked $dotnet @('restore',$project,'--locked-mode','--packages',(Join-Path $repo 'Artifacts/Persistence/Toolchains/nuget'),'--verbosity','quiet'))
-    [void](Invoke-Checked $dotnet @('build',$project,'--no-restore','--configuration','Release','--verbosity','quiet'))
+    [void](Invoke-Checked $dotnet @('build',$project,'--no-restore','--configuration','Release','--verbosity','quiet',"-p:OutDir=$buildPath"))
     $pwfile = Join-Path $private 'admin-password'; [IO.File]::WriteAllText($pwfile,$adminPassword)
     [void](Invoke-Checked (Join-Path $pg 'initdb.exe') @('-D',$data,'-U','fixture_admin','--pwfile',$pwfile,'--auth','scram-sha-256','--encoding','UTF8','--no-locale'))
     Remove-Item -LiteralPath $pwfile -Force
@@ -85,16 +86,16 @@ try {
         if ($phase -eq 'restart' -or $phase -eq 'concurrent' -or $phase -eq 'recover') { if (-not $started) { Cluster start } }
         $results.Add((Invoke-Checked $dotnet @($dll,$phase) @{ INVENTORY_LEDGER_CONNECTION=$connection }))
     }
-    $results.Add((Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-OutputDirectory',$backup,'-HostName','127.0.0.1','-Port',"$port",'-Database',"ledger_$run",'-Username','ledger_svc') @{ PGPASSWORD=$servicePassword }))
+    $results.Add((Invoke-Checked 'pwsh.exe' @('-NoProfile','-File',$backupTool,'-OutputDirectory',$backup,'-HostName','127.0.0.1','-Port',"$port",'-Database',"ledger_$run",'-Username','ledger_svc') @{ PGPASSWORD=$servicePassword }))
     $results.Add((Invoke-Checked $dotnet @($dll,'post-backup-write') @{ INVENTORY_LEDGER_CONNECTION=$connection }))
     $corrupt = Join-Path $EvidenceRoot 'corrupt-backup'; [void](New-Item -ItemType Directory -Path $corrupt)
     Copy-Item (Join-Path $backup 'manifest.json') (Join-Path $corrupt 'manifest.json')
     $corruptDump = Join-Path $corrupt 'inventoryledger.dump'; Copy-Item (Join-Path $backup 'inventoryledger.dump') $corruptDump
     $stream = [IO.File]::Open($corruptDump,[IO.FileMode]::Open,[IO.FileAccess]::ReadWrite)
     try { [void]$stream.Seek(64,[IO.SeekOrigin]::Begin); $byte = $stream.ReadByte(); [void]$stream.Seek(64,[IO.SeekOrigin]::Begin); $stream.WriteByte([byte]($byte -bxor 1)) } finally { $stream.Dispose() }
-    try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-BackupDirectory',$corrupt,'-InstanceRoot',$restoredInstance)); throw 'Corrupt backup was accepted.' }
+    try { [void](Invoke-Checked 'pwsh.exe' @('-NoProfile','-File',$restoreTool,'-BackupDirectory',$corrupt,'-InstanceRoot',$restoredInstance)); throw 'Corrupt backup was accepted.' }
     catch { if ($_.Exception.Message -notmatch 'SHA256 mismatch') { throw }; $results.Add('PASS flipped-byte backup refused before restore') }
-    $results.Add((Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-BackupDirectory',$backup,'-InstanceRoot',$restoredInstance)))
+    $results.Add((Invoke-Checked 'pwsh.exe' @('-NoProfile','-File',$restoreTool,'-BackupDirectory',$backup,'-InstanceRoot',$restoredInstance)))
     $restored = Get-Content (Join-Path $restoredInstance 'connection.json') -Raw | ConvertFrom-Json
     $restoredConnection = "Host=127.0.0.1;Port=$($restored.port);Database=$($restored.database);Username=ledger_svc;Password=$($restored.password);Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $results.Add((Invoke-Checked $dotnet @($dll,'restored') @{ INVENTORY_LEDGER_CONNECTION=$restoredConnection }))
@@ -107,7 +108,7 @@ try {
 catch { $failure = $_.Exception.Message.Replace($adminPassword,'[REDACTED]').Replace($servicePassword,'[REDACTED]') }
 finally {
     try {
-        if (Test-Path (Join-Path $restoredInstance 'owner.json')) { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-InstanceRoot',$restoredInstance,'-Cleanup')) }
+        if (Test-Path (Join-Path $restoredInstance 'owner.json')) { [void](Invoke-Checked 'pwsh.exe' @('-NoProfile','-File',$restoreTool,'-InstanceRoot',$restoredInstance,'-Cleanup')) }
         if (Test-Path (Join-Path $private 'owner.json')) {
             Assert-Owned
             if ($attempted) {

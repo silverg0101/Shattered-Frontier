@@ -65,13 +65,11 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
             {
                 var q = request.Quest;
                 if (q.QuestId != quest.Id) throw new ArgumentException("Unknown quest.");
-                var containers = ledgerStore.Execute(s => s.Containers.Values
-                    .Where(c => c.Spec.OwnerKind == ShatteredFrontier.InventoryLedger.OwnerKind.Character &&
-                        c.Spec.OwnerId == request.CharacterId && c.Spec.Kind == ShatteredFrontier.InventoryLedger.ContainerKind.Backpack)
-                    .Select(c => c.Spec.Id).ToArray());
-                if (containers.Length != 1)
+                var containers = ledgerStore.FindContainers(ShatteredFrontier.InventoryLedger.OwnerKind.Character,
+                    request.CharacterId, ShatteredFrontier.InventoryLedger.ContainerKind.Backpack);
+                if (containers.Count != 1)
                     throw new GameplayRejectedException("Character must have exactly one reward backpack.", StatusCode.FailedPrecondition);
-                var rewardContainerId = containers[0];
+                var rewardContainerId = containers[0].Id;
                 var occurred = DateTimeOffset.FromUnixTimeMilliseconds(q.OccurredAtUnixMs);
                 store.AcceptQuest(quest, request.CharacterId, occurred);
                 var eventReceipt = new ObjectiveEvent(request.SourceReceiptId, request.CharacterId, q.QuestId,

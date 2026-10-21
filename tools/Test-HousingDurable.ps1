@@ -10,7 +10,7 @@ $pins = Get-Content (Join-Path $repo 'BackendServices/toolchain-lock.json') -Raw
 $dotnet = Join-Path $repo 'Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotnet.exe'
 $pg = Join-Path $repo 'Artifacts/Persistence/Toolchains/postgresql-18.6/pgsql/bin'
 $project = Join-Path $repo 'BackendServices/Housing.Postgres.Tests/Housing.Postgres.Tests.csproj'
-$dll = Join-Path $repo 'BackendServices/Housing.Postgres.Tests/bin/Release/net10.0/Housing.Postgres.Tests.dll'
+$dll = Join-Path $EvidenceRoot 'private/build/Housing.Postgres.Tests.dll'
 $backupTool = Join-Path $repo 'tools/Backup-ServiceStore.ps1'; $restoreTool = Join-Path $repo 'tools/Restore-ServiceStore.ps1'
 $backup = Join-Path $EvidenceRoot 'backup'; $restoredInstance = Join-Path $EvidenceRoot 'restored-instance'
 foreach ($path in @($dotnet,$project,(Join-Path $pg 'postgres.exe'),(Join-Path $pg 'initdb.exe'),(Join-Path $pg 'pg_ctl.exe'),(Join-Path $pg 'psql.exe'))) { if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Required file missing: $path" } }
@@ -66,7 +66,8 @@ try {
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $port = $listener.LocalEndpoint.Port; $listener.Stop()
     @{run=$run;data=$data;port=$port} | ConvertTo-Json | Set-Content (Join-Path $private 'owner.json')
     [void](Invoke-Checked $dotnet @('restore',$project,'--locked-mode','--packages',(Join-Path $repo 'Artifacts/Persistence/Toolchains/nuget'),'--verbosity','quiet'))
-    [void](Invoke-Checked $dotnet @('build',$project,'--no-restore','--configuration','Release','--verbosity','quiet'))
+    $buildPath = (Join-Path $private 'build') + [IO.Path]::DirectorySeparatorChar
+    [void](Invoke-Checked $dotnet @('build',$project,'--no-restore','--configuration','Release','--verbosity','quiet',"-p:OutDir=$buildPath"))
     $pwfile = Join-Path $private 'admin-password'; [IO.File]::WriteAllText($pwfile,$adminPassword)
     [void](Invoke-Checked (Join-Path $pg 'initdb.exe') @('-D',$data,'-U','fixture_admin','--pwfile',$pwfile,'--auth','scram-sha-256','--encoding','UTF8','--no-locale'))
     Remove-Item -LiteralPath $pwfile -Force
@@ -88,17 +89,17 @@ try {
     Cluster start
     [void](Sql "INSERT INTO housing.claim_geometry VALUES ('clm_test',0,0,40),('clm_time',100,100,40)" "housing_$run")
     [void](Sql "INSERT INTO housing.removals VALUES ('remove/window','fixture','one','Pending',4,1,5,NULL); UPDATE housing.placements SET created_at=clock_timestamp()-interval '2 hours' WHERE operation_id='one'" "housing_$run")
-    try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','Housing','-OutputDirectory',$backup,'-HostName','127.0.0.1','-Port',"$port",'-Database',"housing_$run",'-Username','housing_svc') @{ PGPASSWORD=$servicePassword }); throw 'Aged pending removal was accepted.' }
+    try { [void](Invoke-Checked 'pwsh.exe' @('-NoProfile','-File',$backupTool,'-Store','Housing','-OutputDirectory',$backup,'-HostName','127.0.0.1','-Port',"$port",'-Database',"housing_$run",'-Username','housing_svc') @{ PGPASSWORD=$servicePassword }); throw 'Aged pending removal was accepted.' }
     catch { if ($_.Exception.Message -notmatch 'exceeds recovery window') { throw }; $results.Add('PASS aged pending removal refused') }
     [void](Sql "UPDATE housing.placements SET created_at=clock_timestamp() WHERE operation_id='one'" "housing_$run")
     # The contention fixture leaves one pending reservation to exercise the recovery window.
     if ((Sql "SELECT count(*) FROM housing.placements WHERE state='Pending' AND created_at IS NOT NULL" "housing_$run").Trim() -ne '1') { throw 'Expected one timestamped pending placement.' }
     [void](Sql "UPDATE housing.placements SET created_at=clock_timestamp()-interval '2 hours' WHERE state='Pending'" "housing_$run")
-    try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','Housing','-OutputDirectory',$backup,'-HostName','127.0.0.1','-Port',"$port",'-Database',"housing_$run",'-Username','housing_svc') @{ PGPASSWORD=$servicePassword }); throw 'Aged pending placement was accepted.' }
+    try { [void](Invoke-Checked 'pwsh.exe' @('-NoProfile','-File',$backupTool,'-Store','Housing','-OutputDirectory',$backup,'-HostName','127.0.0.1','-Port',"$port",'-Database',"housing_$run",'-Username','housing_svc') @{ PGPASSWORD=$servicePassword }); throw 'Aged pending placement was accepted.' }
     catch { if ($_.Exception.Message -notmatch 'exceeds recovery window') { throw }; $results.Add('PASS aged pending placement refused') }
     [void](Sql "UPDATE housing.placements SET created_at=clock_timestamp()-interval '120 seconds' WHERE state='Pending'" "housing_$run")
     if ((Sql 'SELECT version FROM housing.schema_version WHERE singleton=true' "housing_$run").Trim() -ne '5') { throw 'Housing schema changed before backup.' }
-    $results.Add((Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','Housing','-OutputDirectory',$backup,'-HostName','127.0.0.1','-Port',"$port",'-Database',"housing_$run",'-Username','housing_svc') @{ PGPASSWORD=$servicePassword }))
+    $results.Add((Invoke-Checked 'pwsh.exe' @('-NoProfile','-File',$backupTool,'-Store','Housing','-OutputDirectory',$backup,'-HostName','127.0.0.1','-Port',"$port",'-Database',"housing_$run",'-Username','housing_svc') @{ PGPASSWORD=$servicePassword }))
     $backupRevision = (Sql "SELECT revision FROM housing.claims WHERE id='clm_test'" "housing_$run").Trim()
     [void](Sql "UPDATE housing.claims SET revision=revision+1 WHERE id='clm_test'" "housing_$run")
     if ((Sql "SELECT revision FROM housing.claims WHERE id='clm_test'" "housing_$run").Trim() -ne "$([long]$backupRevision + 1)") { throw 'Post-backup write failed.' }
@@ -107,25 +108,25 @@ try {
     $corruptDump = Join-Path $corrupt 'housing.dump'; Copy-Item (Join-Path $backup 'housing.dump') $corruptDump
     $stream = [IO.File]::Open($corruptDump,[IO.FileMode]::Open,[IO.FileAccess]::ReadWrite)
     try { [void]$stream.Seek(64,[IO.SeekOrigin]::Begin); $byte=$stream.ReadByte(); [void]$stream.Seek(64,[IO.SeekOrigin]::Begin); $stream.WriteByte([byte]($byte -bxor 1)) } finally { $stream.Dispose() }
-    try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-Store','Housing','-BackupDirectory',$corrupt,'-InstanceRoot',$restoredInstance)); throw 'Corrupt backup was accepted.' }
+    try { [void](Invoke-Checked 'pwsh.exe' @('-NoProfile','-File',$restoreTool,'-Store','Housing','-BackupDirectory',$corrupt,'-InstanceRoot',$restoredInstance)); throw 'Corrupt backup was accepted.' }
     catch { if ($_.Exception.Message -notmatch 'SHA256 mismatch') { throw }; $results.Add('PASS flipped-byte backup refused') }
-    try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-Store','Housing','-BackupDirectory',$backup,'-InstanceRoot',$restoredInstance,'-PendingPlacementRecoveryWindowSeconds','60')); throw 'Aged restored placement was accepted.' }
+    try { [void](Invoke-Checked 'pwsh.exe' @('-NoProfile','-File',$restoreTool,'-Store','Housing','-BackupDirectory',$backup,'-InstanceRoot',$restoredInstance,'-PendingPlacementRecoveryWindowSeconds','60')); throw 'Aged restored placement was accepted.' }
     catch { if ($_.Exception.Message -notmatch 'Restored housing consistency check failed') { throw }; $results.Add('PASS aged restored placement refused') }
-    $results.Add((Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-Store','Housing','-BackupDirectory',$backup,'-InstanceRoot',$restoredInstance)))
+    $results.Add((Invoke-Checked 'pwsh.exe' @('-NoProfile','-File',$restoreTool,'-Store','Housing','-BackupDirectory',$backup,'-InstanceRoot',$restoredInstance)))
     $restored = Get-Content (Join-Path $restoredInstance 'connection.json') -Raw | ConvertFrom-Json
     $restoredRevision = (Invoke-Checked (Join-Path $pg 'psql.exe') @('-X','-A','-t','-h','127.0.0.1','-p',"$($restored.port)",'-U',$restored.username,'-d',$restored.database,'-c',"SELECT revision FROM housing.claims WHERE id='clm_test'") @{ PGPASSWORD=$restored.password }).Trim()
     if ($restoredRevision -ne $backupRevision) { throw 'Restored housing revision differs from backup point.' }
     $results.Add('PASS restored housing state equals backup point')
     [void](Sql 'UPDATE housing.schema_version SET version=6' "housing_$run")
     $results.Add((Invoke-Checked $dotnet @($dll,'newer') @{ HOUSING_CONNECTION=$connection }))
-    try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','Housing','-OutputDirectory',(Join-Path $EvidenceRoot 'newer-backup'),'-HostName','127.0.0.1','-Port',"$port",'-Database',"housing_$run",'-Username','housing_svc') @{ PGPASSWORD=$servicePassword }); throw 'Newer Housing schema backup was accepted.' }
+    try { [void](Invoke-Checked 'pwsh.exe' @('-NoProfile','-File',$backupTool,'-Store','Housing','-OutputDirectory',(Join-Path $EvidenceRoot 'newer-backup'),'-HostName','127.0.0.1','-Port',"$port",'-Database',"housing_$run",'-Username','housing_svc') @{ PGPASSWORD=$servicePassword }); throw 'Newer Housing schema backup was accepted.' }
     catch { if ($_.Exception.Message -notmatch 'Unsupported source schema version') { throw }; $results.Add('PASS newer Housing schema backup refused') }
     $results | Set-Content (Join-Path $EvidenceRoot 'results.txt')
 }
 catch { $failure = $_.Exception.Message.Replace($adminPassword,'[REDACTED]').Replace($servicePassword,'[REDACTED]') }
 finally {
     try {
-        if (Test-Path (Join-Path $restoredInstance 'owner.json')) { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$restoreTool,'-Store','Housing','-InstanceRoot',$restoredInstance,'-Cleanup')) }
+        if (Test-Path (Join-Path $restoredInstance 'owner.json')) { [void](Invoke-Checked 'pwsh.exe' @('-NoProfile','-File',$restoreTool,'-Store','Housing','-InstanceRoot',$restoredInstance,'-Cleanup')) }
         if (Test-Path (Join-Path $private 'owner.json')) {
             Assert-Owned
             if ($started -or $attempted) { try { [void](Invoke-Checked (Join-Path $pg 'pg_ctl.exe') @('-D',$data,'-m','immediate','-w','-t','30','stop')) } catch { if ($failure -eq '') { $failure = $_.Exception.Message } } }

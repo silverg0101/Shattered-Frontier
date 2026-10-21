@@ -109,8 +109,7 @@ internal sealed class GameplayRecoveryService(GameplayRecoverySettings settings,
                 var returns = offer.Deliveries.Select(d =>
                 {
                     var escrow = new ShatteredFrontier.InventoryLedger.InventoryLedger(ledger).Read(d.FromId);
-                    var bag = ledger.Execute(s => s.Containers.Values.Single(c => c.Spec.OwnerKind == OwnerKind.Character &&
-                        c.Spec.OwnerId == escrow.Spec.OwnerId && c.Spec.Kind == ContainerKind.Backpack).Spec.Id);
+                    var bag = ledger.FindContainers(OwnerKind.Character, escrow.Spec.OwnerId, ContainerKind.Backpack).Single().Id;
                     return new EscrowDelivery(d.FromId, 0, bag, 0, d.DefinitionId, d.Quantity);
                 }).ToArray();
                 exchange.CancelTrade("expire/" + id, offer.SubjectId, "system", returns, ledger);

@@ -6,4 +6,5 @@ param(
     [Parameter(Mandatory)][string]$Database,
     [Parameter(Mandatory)][string]$Username
 )
+$ErrorActionPreference = 'Stop'
 & (Join-Path $PSScriptRoot 'Backup-ServiceStore.ps1') -Store InventoryLedger -OutputDirectory $OutputDirectory -HostName $HostName -Port $Port -Database $Database -Username $Username

@@ -12,6 +12,7 @@ CREATE TABLE inventory.containers (
     capacity integer NOT NULL CHECK (capacity BETWEEN 1 AND 10000),
     revision bigint NOT NULL DEFAULT 0 CHECK (revision >= 0)
 );
+CREATE INDEX containers_owner_lookup ON inventory.containers(owner_kind, owner_id, kind, id);
 CREATE TABLE inventory.entries (
     container_id text NOT NULL REFERENCES inventory.containers(id),
     definition_id text NOT NULL,

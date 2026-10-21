@@ -95,7 +95,7 @@ internal sealed class ExchangeGrpcService(PostgresExchangeStore exchange, Postgr
         var returns = settlement.Deliveries.Select(d =>
         {
             var escrow = Ledger.Read(d.FromId);
-            var bag = inventoryStore.Execute(s => s.Containers.Values.Single(c => c.Spec.OwnerId == escrow.Spec.OwnerId && c.Spec.Kind == ContainerKind.Backpack).Spec.Id);
+            var bag = inventoryStore.FindContainers(escrow.Spec.OwnerKind, escrow.Spec.OwnerId, ContainerKind.Backpack).Single().Id;
             return new EscrowDelivery(d.FromId, 0, bag, 0, d.DefinitionId, d.Quantity);
         }).ToArray();
         return Reply(exchange.CancelTrade(request.OperationId, request.TradeId, request.ActorId, returns, inventoryStore), "cancelled");

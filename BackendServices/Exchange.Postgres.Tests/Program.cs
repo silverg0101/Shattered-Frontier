@@ -83,6 +83,53 @@ switch (args[0])
         Check(exchange.Reconcile("net",ledgerStore).State=="committed","netted trade settles");
         break;
     case "concurrent":
+        ledger.CreateContainer(new("ctn_esc_listing_race",OwnerKind.Character,"chr_seller",ContainerKind.Escrow,20));
+        ledger.Grant("fund-listing-race","ctn_bag_seller",ledger.Read("ctn_bag_seller").Revision,"item/ore",1,"fixture","listing-race");
+        using (var beginBarrier = new Barrier(2))
+        {
+            var beginTasks = new[] { "listing-race-a", "listing-race-b" }.Select(op => Task.Run(() =>
+            {
+                beginBarrier.SignalAndWait(TimeSpan.FromSeconds(10));
+                try { return (Operation:op, Receipt:exchange.BeginListing(op,"lst_race","chr_seller","ctn_bag_seller","ctn_esc_listing_race","item/ore",1,5,2,DateTimeOffset.UtcNow), Error:""); }
+                catch (ExchangeRejectedException ex) { return (Operation:op, Receipt:(ShatteredFrontier.Exchange.ExchangeReceipt?)null, Error:ex.Message); }
+            })).ToArray();
+            Task.WaitAll(beginTasks);
+            Check(beginTasks.Count(t => t.Result.Receipt?.Code=="pending")==1 &&
+                beginTasks.Count(t => t.Result.Error=="Listing intent exists.")==1,"same listing intent has one winner");
+            var winnerOp=beginTasks.Single(t => t.Result.Receipt?.Code=="pending").Result.Operation;
+            ledger.Transfer(winnerOp+"/escrow","ctn_bag_seller",ledger.Read("ctn_bag_seller").Revision,
+                "ctn_esc_listing_race",0,"item/ore",1);
+            Check(exchange.ReconcileListing(winnerOp,ledgerStore).Code=="ok","winning listing reconciles");
+            var loserOp=beginTasks.Single(t => t.Result.Receipt is null).Result.Operation;
+            try { exchange.ReconcileListing(loserOp,ledgerStore); throw new Exception("Rejected listing reconciled."); }
+            catch (ExchangeRejectedException ex) when (ex.Message=="Listing intent missing.") { }
+            Check(exchange.Listing("lst_race")?.State=="active" && exchange.Wallet("chr_seller").Reserved==0 &&
+                exchange.Entries("chr_seller").Count(e=>e.Code=="market_listing_fee" && e.OperationId==winnerOp)==1,
+                "listing race leaves no stranded fee");
+        }
+        foreach (var suffix in new[]{"ab","ba"})
+        {
+            ledger.CreateContainer(new("ctn_esc_swap_"+suffix,OwnerKind.Character,"chr_seller",ContainerKind.Escrow,20));
+            ledger.CreateContainer(new("ctn_bag_swap_"+suffix,OwnerKind.Character,"chr_seller",ContainerKind.Backpack,20));
+            ledger.Grant("fund-swap-"+suffix,"ctn_esc_swap_"+suffix,0,"item/ore",1,"fixture","swap");
+        }
+        var swapA=Move("ctn_esc_swap_ab",1,"ctn_bag_swap_ab",0);
+        var swapB=Move("ctn_esc_swap_ba",1,"ctn_bag_swap_ba",0);
+        exchange.BeginTrade("swap-ab","trd_swap_ab","chr_a","chr_b",3,[swapA]);
+        exchange.BeginTrade("swap-ba","trd_swap_ba","chr_b","chr_a",4,[swapB]);
+        ledger.DeliverEscrowBatch("swap-ab/settle",[swapA]);
+        ledger.DeliverEscrowBatch("swap-ba/settle",[swapB]);
+        using (var settleBarrier = new Barrier(2))
+        {
+            var settlements = new[]{"swap-ab","swap-ba"}.Select(op=>Task.Run(() =>
+            {
+                settleBarrier.SignalAndWait(TimeSpan.FromSeconds(10));
+                return exchange.Reconcile(op,ledgerStore).State;
+            })).ToArray();
+            Task.WaitAll(settlements);
+            Check(settlements.All(t=>t.Result=="committed") && exchange.Wallet("chr_a").Reserved==0 &&
+                exchange.Wallet("chr_b").Reserved==0,"swapped payer settlements commit without deadlock");
+        }
         var ready = new CountdownEvent(2);
         var start = new ManualResetEventSlim(false);
         var tasks = new[] { ("buy-a", "chr_a", "ctn_bag_a"), ("buy-b", "chr_b", "ctn_bag_b") }.Select(x => Task.Run(() =>
@@ -104,12 +151,13 @@ switch (args[0])
         Check(exchange.Reconcile(winner, ledgerStore).State == "committed" && exchange.Listing("lst_one")?.State == "sold", "re-read revision receipt reconciles sale once");
         Check(exchange.Reconcile(winner, ledgerStore).Receipt == exchange.Settlement(winner)!.Receipt, "purchase retry returns same receipt");
         var total = exchange.Wallet("chr_a").Balance + exchange.Wallet("chr_b").Balance + exchange.Wallet("chr_seller").Balance;
-        Check(total == 215 && exchange.Wallet("chr_seller").Balance == 55, "listing and transaction fees conserved as five copper sinks");
-        Check(exchange.Entries("chr_seller").Where(x=>x.FlowClass=="sink").Sum(x=>-x.Delta)==5,"entries account for both fee sinks");
+        Check(total == 213 && exchange.Wallet("chr_seller").Balance == 53, "listing and transaction fees conserved as seven copper sinks");
+        Check(exchange.Entries("chr_seller").Where(x=>x.FlowClass=="sink").Sum(x=>-x.Delta)==7,"entries account for all fee sinks");
         exchange.CreateListing("list-cancel","lst_cancel","chr_seller","ctn_bag_seller","ctn_esc_cancel","item/ore",1,5,0,DateTimeOffset.UtcNow);
         Check(exchange.CancelListing("cancel","lst_cancel","chr_seller",ledgerStore).Accepted && exchange.CancelListing("cancel","lst_cancel","chr_seller",ledgerStore).Accepted && exchange.Listing("lst_cancel")?.State=="cancelled","listing cancel returns and replays");
         exchange.CreateListing("list-expire","lst_expire","chr_seller","ctn_bag_seller","ctn_esc_expire","item/ore",1,5,0,DateTimeOffset.UtcNow);
-        Check(exchange.ExpireListings(DateTimeOffset.UtcNow.AddDays(3),ledgerStore).Count==1 && exchange.Listing("lst_expire")?.State=="expired","expired listing returns escrow once");
+        Check(exchange.ExpireListings(DateTimeOffset.UtcNow.AddDays(3),ledgerStore).Count==2 && exchange.Listing("lst_expire")?.State=="expired" &&
+            exchange.Listing("lst_race")?.State=="expired","expired listings return escrow once");
         Check(exchange.ExpireListings(DateTimeOffset.UtcNow.AddDays(3),ledgerStore).Count==0,"expiry sweep replay does not refund twice");
         try { exchange.CreateListing("overflow-list","lst_overflow","chr_seller","ctn_bag_seller","ctn_esc_cancel","item/ore",long.MaxValue,2,0,DateTimeOffset.UtcNow); throw new Exception("Overflow accepted."); }
         catch(ExchangeRejectedException) { Console.WriteLine("PASS listing price overflow rejected"); }

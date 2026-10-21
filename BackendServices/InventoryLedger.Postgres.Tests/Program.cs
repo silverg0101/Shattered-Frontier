@@ -26,6 +26,17 @@ switch (args[0])
         Check(converted.Revisions[0].After == 2, "convert acknowledged durably");
         break;
     case "concurrent":
+        var createSpec = new ContainerSpec("ctn_create_race",OwnerKind.Character,"chr_durable",ContainerKind.Backpack,100);
+        using (var createBarrier = new Barrier(2))
+        {
+            var creates = Enumerable.Range(0,2).Select(_=>Task.Run(() =>
+            {
+                createBarrier.SignalAndWait(TimeSpan.FromSeconds(10));
+                return ledger.CreateContainer(createSpec);
+            })).ToArray();
+            Task.WaitAll(creates);
+            Check(creates.All(t=>t.Result.Spec==createSpec && t.Result.Revision==0),"concurrent create returns the same container view");
+        }
         Check(ledger.Read(id).Quantities[item] == 4 && ledger.Read(id).Quantities[bar] == 1, "convert survives process and database restart");
         var ready = new CountdownEvent(2);
         var start = new ManualResetEventSlim(false);

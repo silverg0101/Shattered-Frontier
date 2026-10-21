@@ -22,9 +22,13 @@ public sealed class LedgerRejectedException(string message) : InvalidOperationEx
 
 // The adapter must commit the complete working state (including the receipt) durably before Execute returns.
 // A failed callback must publish nothing. Concurrent writes to the same operation or container serialize.
+// Lock order: advisory operation lock first, then container rows in sorted ID order.
 public interface IInventoryLedgerStore
 {
     T Execute<T>(Func<LedgerState, T> transaction);
+    IReadOnlyList<ContainerSpec> FindContainers(OwnerKind ownerKind, string ownerId, ContainerKind kind) =>
+        Execute(state => state.Containers.Values.Where(c => c.Spec.OwnerKind == ownerKind && c.Spec.OwnerId == ownerId && c.Spec.Kind == kind)
+            .Select(c => c.Spec).ToArray());
 }
 
 public sealed class LedgerState
