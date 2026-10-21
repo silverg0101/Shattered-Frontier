@@ -51,6 +51,12 @@ namespace
 
     void CopyPlacement(const sf::housing::v1::PlacementReply& R, FSFGameplayResponse& Out)
     { Out.State = FromUtf8(R.state()); Out.StructureId = FromUtf8(R.structure_id()); Out.StructureRevision = R.structure_revision(); }
+
+    void CopyExchange(const sf::exchange::v1::ExchangeReply& R, FSFGameplayResponse& Out)
+    {
+        Out.Exchange.SubjectId = FromUtf8(R.subject_id()); Out.Exchange.State = FromUtf8(R.state()); Out.Exchange.bCommitted = R.committed();
+        Out.Exchange.Amount = R.amount(); Out.Exchange.Fee = R.fee();
+    }
 }
 
 struct FSFGrpcGameplayChannel
@@ -59,6 +65,7 @@ struct FSFGrpcGameplayChannel
     std::unique_ptr<sf::progression::v1::Progression::Stub> Progression;
     std::unique_ptr<sf::housing::v1::Housing::Stub> Housing;
     std::unique_ptr<sf::crafting::v1::Crafting::Stub> Crafting;
+    std::unique_ptr<sf::exchange::v1::Exchange::Stub> Exchange;
     grpc::CompletionQueue Queue;
     std::string Token;
     FCriticalSection PendingLock;
@@ -73,6 +80,7 @@ FSFGrpcGameplayTransport::FSFGrpcGameplayTransport(const FString& Endpoint) : Ch
     Channel->Progression = sf::progression::v1::Progression::NewStub(Wire);
     Channel->Housing = sf::housing::v1::Housing::NewStub(Wire);
     Channel->Crafting = sf::crafting::v1::Crafting::NewStub(Wire);
+    Channel->Exchange = sf::exchange::v1::Exchange::NewStub(Wire);
     Channel->Token = Utf8(FPlatformMisc::GetEnvironmentVariable(TEXT("SF_GAMEPLAY_TOKEN")));
     if (Channel->Token.empty()) { UE_LOG(LogTemp, Warning, TEXT("GAMEPLAY_SERVICES_TOKEN_MISSING SF_GAMEPLAY_TOKEN is empty; the host will reject calls.")); }
     Thread = FRunnableThread::Create(this, TEXT("SFGameplayServicesGrpc"));
@@ -254,6 +262,71 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
             for (const auto& Change : R.changes()) { Out.Changes.FindOrAdd(FromUtf8(Change.definition_id())) += Change.delta(); }
         };
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Crafting->AsyncCraft(C, M, &Channel->Queue); });
+        break;
+    }
+    case ESFGameplayRpc::ExchangeWallet:
+    {
+        sf::exchange::v1::WalletRequest M; M.set_owner_id(Utf8(Q.CharacterId));
+        auto* Call = new TCall<sf::exchange::v1::WalletReply>();
+        Call->Copy = [](const sf::exchange::v1::WalletReply& R, FSFGameplayResponse& Out)
+        { Out.Exchange.Balance = R.balance(); Out.Exchange.Reserved = R.reserved(); Out.Exchange.Available = R.available(); Out.Exchange.WalletRevision = R.revision(); };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Exchange->AsyncWallet(C, M, &Channel->Queue); });
+        break;
+    }
+    case ESFGameplayRpc::OfferTrade:
+    {
+        const FSFExchangeRequest& E = Q.Exchange;
+        sf::exchange::v1::TradeOfferRequest M;
+        M.set_operation_id(Utf8(Q.OperationId)); M.set_trade_id(Utf8(E.TradeId)); M.set_party_a(Utf8(E.PartyA)); M.set_party_b(Utf8(E.PartyB));
+        M.set_gold_a(E.GoldA); M.set_gold_b(E.GoldB);
+        for (const FSFExchangeDelivery& D : E.Deliveries)
+        {
+            auto* Line = M.add_deliveries();
+            Line->set_escrow_id(Utf8(D.EscrowId)); Line->set_destination_id(Utf8(D.DestinationId)); Line->set_item_id(Utf8(D.ItemId)); Line->set_quantity(D.Quantity);
+        }
+        auto* Call = new TCall<sf::exchange::v1::ExchangeReply>(); Call->Copy = &CopyExchange;
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Exchange->AsyncOfferTrade(C, M, &Channel->Queue); });
+        break;
+    }
+    case ESFGameplayRpc::AcceptTrade:
+    case ESFGameplayRpc::CancelTrade:
+    {
+        sf::exchange::v1::TradeActionRequest M;
+        M.set_operation_id(Utf8(Q.OperationId)); M.set_trade_id(Utf8(Q.Exchange.TradeId)); M.set_actor_id(Utf8(Q.CharacterId));
+        M.set_offer_operation_id(Utf8(Q.Exchange.OfferOperationId));
+        auto* Call = new TCall<sf::exchange::v1::ExchangeReply>(); Call->Copy = &CopyExchange;
+        if (Q.Rpc == ESFGameplayRpc::AcceptTrade) { Start(Call, [&](grpc::ClientContext* C) { return Channel->Exchange->AsyncAcceptTrade(C, M, &Channel->Queue); }); }
+        else { Start(Call, [&](grpc::ClientContext* C) { return Channel->Exchange->AsyncCancelTrade(C, M, &Channel->Queue); }); }
+        break;
+    }
+    case ESFGameplayRpc::ListItem:
+    {
+        const FSFExchangeRequest& E = Q.Exchange;
+        sf::exchange::v1::ListItemRequest M;
+        M.set_operation_id(Utf8(Q.OperationId)); M.set_listing_id(Utf8(E.ListingId)); M.set_seller_id(Utf8(E.SellerId));
+        M.set_source_container_id(Utf8(E.SourceContainerId)); M.set_escrow_container_id(Utf8(E.EscrowContainerId));
+        M.set_item_id(Utf8(E.ItemId)); M.set_quantity(E.Quantity); M.set_unit_price(E.UnitPrice); M.set_listing_fee(E.Fee); M.set_created_at_unix_ms(E.CreatedAtUnixMs);
+        auto* Call = new TCall<sf::exchange::v1::ExchangeReply>(); Call->Copy = &CopyExchange;
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Exchange->AsyncListItem(C, M, &Channel->Queue); });
+        break;
+    }
+    case ESFGameplayRpc::BuyListing:
+    {
+        const FSFExchangeRequest& E = Q.Exchange;
+        sf::exchange::v1::BuyListingRequest M;
+        M.set_operation_id(Utf8(Q.OperationId)); M.set_listing_id(Utf8(E.ListingId)); M.set_buyer_id(Utf8(Q.CharacterId));
+        M.set_destination_container_id(Utf8(E.DestinationContainerId)); M.set_expected_revision(E.ExpectedRevision);
+        M.set_expected_unit_price(E.ExpectedUnitPrice); M.set_transaction_fee(E.Fee);
+        auto* Call = new TCall<sf::exchange::v1::ExchangeReply>(); Call->Copy = &CopyExchange;
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Exchange->AsyncBuyListing(C, M, &Channel->Queue); });
+        break;
+    }
+    case ESFGameplayRpc::CancelListing:
+    {
+        sf::exchange::v1::ListingActionRequest M;
+        M.set_operation_id(Utf8(Q.OperationId)); M.set_listing_id(Utf8(Q.Exchange.ListingId)); M.set_seller_id(Utf8(Q.Exchange.SellerId));
+        auto* Call = new TCall<sf::exchange::v1::ExchangeReply>(); Call->Copy = &CopyExchange;
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Exchange->AsyncCancelListing(C, M, &Channel->Queue); });
         break;
     }
     default:
