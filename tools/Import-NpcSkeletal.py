@@ -35,6 +35,35 @@ def sha(path):
     return h.hexdigest()
 
 
+def build_material(a, rig, root, mesh, imported):
+    """M_<name>: BaseColor from the FBX image; the optional second image (Pixal metallic-roughness) gives G=Roughness, B=Metallic."""
+    base = next(o for o in imported if isinstance(o, unreal.Texture2D))
+    mr_png = next(iter(sorted((rig / 'textures').glob('*_Image_1.png'))), None)
+    mr = None
+    if mr_png:
+        t = unreal.AssetImportTask()
+        for k, v in [('filename', str(mr_png)), ('destination_path', root + '/Mesh'), ('destination_name', f'T_{a.name}_MR'),
+                     ('automated', True), ('save', False), ('replace_existing', False)]:
+            t.set_editor_property(k, v)
+        unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([t])
+        mr = unreal.load_asset(f'{root}/Mesh/T_{a.name}_MR')
+        mr.set_editor_property('srgb', False); mr.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_MASKS)
+    mel = unreal.MaterialEditingLibrary
+    mat = unreal.AssetToolsHelpers.get_asset_tools().create_asset(f'M_{a.name}', root + '/Mesh', unreal.Material, unreal.MaterialFactoryNew())
+    tb = mel.create_material_expression(mat, unreal.MaterialExpressionTextureSample, -600, 0); tb.set_editor_property('texture', base)
+    mel.connect_material_property(tb, 'RGB', unreal.MaterialProperty.MP_BASE_COLOR)
+    if mr:
+        tm = mel.create_material_expression(mat, unreal.MaterialExpressionTextureSample, -600, 300); tm.set_editor_property('texture', mr)
+        tm.set_editor_property('sampler_type', unreal.MaterialSamplerType.SAMPLERTYPE_MASKS)
+        mel.connect_material_property(tm, 'G', unreal.MaterialProperty.MP_ROUGHNESS)
+        mel.connect_material_property(tm, 'B', unreal.MaterialProperty.MP_METALLIC)
+    mel.recompile_material(mat)
+    # Struct elements of an Unreal array come back as copies: build new entries rather than editing them in place.
+    mesh.set_editor_property('materials', [unreal.SkeletalMaterial(material_interface=mat, material_slot_name=m.get_editor_property('material_slot_name'))
+                                           for m in mesh.get_editor_property('materials')])
+    return mat
+
+
 def main():
     a = args(); rig = a.rig.resolve()
     report = json.loads((rig / 'rig-report.json').read_text())
@@ -69,6 +98,8 @@ def main():
         clip = anim.get_name().split('_')[-1]
         new = f'{root}/Animations/A_{a.name}_{clip}'
         unreal.EditorAssetLibrary.rename_asset(anim.get_path_name(), new); anims.append(new)
+
+    material = build_material(a, rig, root, mesh, imported)
 
     sub = unreal.get_editor_subsystem(unreal.SkeletalMeshEditorSubsystem)
     sub.regenerate_lod(mesh, a.lods, False, False)
