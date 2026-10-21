@@ -5,6 +5,7 @@ option csharp_namespace = "ShatteredFrontier.Progression.V1";
 service Progression {
   rpc ApplyReceipt(ApplyReceiptRequest) returns (ApplyReceiptReply);
   rpc GetCharacterState(GetCharacterStateRequest) returns (CharacterStateReply);
+  rpc SavePosition(SavePositionRequest) returns (SavePositionReply);
 }
 
 message ApplyReceiptRequest {
@@ -53,6 +54,19 @@ message GrantedItem {
   int64 quantity = 2;
 }
 message GetCharacterStateRequest { string character_id = 1; }
+message CharacterPosition {
+  string zone_id = 1;
+  double x = 2;
+  double y = 3;
+  double z = 4;
+  float yaw = 5;
+}
+message SavePositionRequest {
+  string character_id = 1;
+  int64 expected_position_revision = 2;
+  CharacterPosition position = 3;
+}
+message SavePositionReply { int64 position_revision = 1; }
 message CharacterStateReply {
   int64 progression_revision = 1;
   int64 lifetime_xp = 2;
@@ -61,4 +75,7 @@ message CharacterStateReply {
   int64 quest_revision = 5;
   string active_step_id = 6;
   bool quest_completed = 7;
+  map<string, int32> objective_counts = 8;
+  CharacterPosition position = 9;
+  int64 position_revision = 10;
 }

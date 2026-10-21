@@ -1,4 +1,5 @@
 using Grpc.Core;
+using System.Text.RegularExpressions;
 using ShatteredFrontier.CharacterState.Postgres;
 using ShatteredFrontier.Progression;
 using ShatteredFrontier.QuestContent;
@@ -7,6 +8,22 @@ using Pb = ShatteredFrontier.Progression.V1;
 internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, QuestDefinition quest, QuestRewardPayout payout,
     ShatteredFrontier.InventoryLedger.Postgres.PostgresInventoryLedgerStore ledgerStore) : Pb.Progression.ProgressionBase
 {
+    public override Task<Pb.SavePositionReply> SavePosition(Pb.SavePositionRequest request, ServerCallContext context) =>
+        GrpcRun.Call(context, () =>
+        {
+            if (string.IsNullOrWhiteSpace(request.CharacterId) || request.Position is null ||
+                !Regex.IsMatch(request.Position.ZoneId, "^[a-z0-9_]{1,64}$", RegexOptions.CultureInvariant) ||
+                !ValidCoordinate(request.Position.X) || !ValidCoordinate(request.Position.Y) ||
+                !ValidCoordinate(request.Position.Z) || !float.IsFinite(request.Position.Yaw) ||
+                Math.Abs(request.Position.Yaw) > 360)
+                throw new ArgumentException("Invalid character position.");
+            var p = request.Position;
+            return new Pb.SavePositionReply { PositionRevision = store.SavePosition(request.CharacterId,
+                request.ExpectedPositionRevision, new CharacterPositionSnapshot(p.ZoneId, p.X, p.Y, p.Z, p.Yaw)) };
+        });
+
+    private static bool ValidCoordinate(double value) => double.IsFinite(value) && Math.Abs(value) <= 1e7;
+
     public override Task<Pb.ApplyReceiptReply> ApplyReceipt(Pb.ApplyReceiptRequest request, ServerCallContext context) =>
         GrpcRun.Call(context, () =>
         {
@@ -97,6 +114,16 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
                 state.QuestRevision = q.Revision;
                 state.QuestCompleted = q.Result.StepIndex >= quest.Steps.Count;
                 state.ActiveStepId = state.QuestCompleted ? "" : quest.Steps[q.Result.StepIndex].Id;
+                if (!state.QuestCompleted)
+                    foreach (var objective in quest.Steps[q.Result.StepIndex].Objectives)
+                        state.ObjectiveCounts.Add(objective.Key, q.Result.Counts.GetValueOrDefault(objective.Key));
+            }
+            var position = store.ReadPosition(request.CharacterId);
+            if (position is not null)
+            {
+                state.PositionRevision = position.Revision;
+                state.Position = new Pb.CharacterPosition { ZoneId = position.Result.ZoneId,
+                    X = position.Result.X, Y = position.Result.Y, Z = position.Result.Z, Yaw = position.Result.Yaw };
             }
             return state;
         });

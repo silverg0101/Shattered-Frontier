@@ -34,9 +34,14 @@ if (mode.EndsWith("-outage", StringComparison.Ordinal))
             ContainerId = "ctn_rewards", TableId = "loot/greenlands_silverbrook_boar"
         }, headers, deadline: Deadline()), StatusCode.Unavailable);
     else if (mode == "progression-outage")
+    {
         Code(() => new ProgressPb.Progression.ProgressionClient(channel).GetCharacterState(
             new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_progression" }, headers,
             deadline: Deadline()), StatusCode.Unavailable);
+        Code(() => new ProgressPb.Progression.ProgressionClient(channel).SavePosition(new ProgressPb.SavePositionRequest
+        { CharacterId = "chr_progression", ExpectedPositionRevision = 1,
+            Position = new ProgressPb.CharacterPosition { ZoneId = "silverbrook" } }, headers, deadline: Deadline()), StatusCode.Unavailable);
+    }
     else if (mode == "housing-outage")
         Code(() => new HousingPb.Housing.HousingClient(channel).GetClaim(
             new HousingPb.GetClaimRequest { ClaimId = "clm_test" }, headers,
@@ -66,6 +71,11 @@ if (mode.EndsWith("-replay", StringComparison.Ordinal))
                 OccurredAtUnixMs = 1792540800000 }
         }, headers, deadline: Deadline());
         Check(result.QuestAccepted && result.QuestRevision == 1, "Progression restart replay failed.");
+        var state = new ProgressPb.Progression.ProgressionClient(channel).GetCharacterState(
+            new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_progression" }, headers, deadline: Deadline());
+        Check(state.PositionRevision == 2 && state.Position?.ZoneId == "silverbrook" && state.Position.X == 11.5 &&
+            state.Position.Y == -9.25 && state.Position.Z == 42 && state.Position.Yaw == 90,
+            "Position missing after host and PostgreSQL restart.");
     }
     else if (mode == "housing-replay")
     {
@@ -149,6 +159,9 @@ if (mode == "journey")
     }
     Craft("craft/journey-timber", "recipe/rough_timber", 2);
     Apply("craft/journey-timber", "craft", "skill/smithing", "refine_materials", "craft", "item/rough_timber");
+    var partial = progress.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_journey" }, headers, deadline: Deadline());
+    Check(partial.ActiveStepId == "refine_materials" && partial.ObjectiveCounts["rough_timber"] == 1 &&
+        partial.ObjectiveCounts["iron_ingot"] == 0, "Active quest objective counts missing.");
     Craft("craft/journey-ingot", "recipe/iron_ingot", 2);
     Check(Apply("craft/journey-ingot", "craft", "skill/smithing", "refine_materials", "craft",
         "item/iron_ingot").ActiveStepId == "place_wall", "Craft step failed.");
@@ -230,6 +243,41 @@ else if (mode == "progression")
     Check(first.Equals(replay) && first.QuestAccepted && first.ActiveStepId == "mine_iron", "Progression or quest replay differs.");
     var state = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_progression" }, headers, deadline: Deadline());
     Check(state.QuestRevision == 1 && state.ActiveStepId == "mine_iron", "Quest state missing.");
+    Check(state.Position is null && state.PositionRevision == 0 && state.ObjectiveCounts["iron_ore"] == 0,
+        "Unsaved position or active objective defaults invalid.");
+    var save = new ProgressPb.SavePositionRequest { CharacterId = "chr_progression", ExpectedPositionRevision = 0,
+        Position = new ProgressPb.CharacterPosition { ZoneId = "silverbrook", X = 10, Y = -9.25, Z = 42, Yaw = 90 } };
+    Code(() => client.SavePosition(save, bad, deadline: Deadline()), StatusCode.Unauthenticated);
+    Code(() => client.SavePosition(save, headers, deadline: DateTime.UtcNow.AddMilliseconds(-1)), StatusCode.DeadlineExceeded);
+    Code(() => client.SavePosition(new ProgressPb.SavePositionRequest { Position = save.Position }, headers, deadline: Deadline()), StatusCode.InvalidArgument);
+    foreach (var zone in new[] { "", "Upper", "bad-zone", new string('a', 65) })
+    {
+        save.Position.ZoneId = zone;
+        Code(() => client.SavePosition(save, headers, deadline: Deadline()), StatusCode.InvalidArgument);
+    }
+    save.Position.ZoneId = "silverbrook";
+    foreach (var value in new[] { double.NaN, double.PositiveInfinity, double.NegativeInfinity, 10000000.01, -10000000.01 })
+    {
+        save.Position.X = value;
+        Code(() => client.SavePosition(save, headers, deadline: Deadline()), StatusCode.InvalidArgument);
+        save.Position.X = 10; save.Position.Y = value;
+        Code(() => client.SavePosition(save, headers, deadline: Deadline()), StatusCode.InvalidArgument);
+        save.Position.Y = -9.25; save.Position.Z = value;
+        Code(() => client.SavePosition(save, headers, deadline: Deadline()), StatusCode.InvalidArgument);
+        save.Position.Z = 42;
+    }
+    foreach (var yaw in new[] { float.NaN, float.PositiveInfinity, float.NegativeInfinity, 360.1f, -360.1f })
+    {
+        save.Position.Yaw = yaw;
+        Code(() => client.SavePosition(save, headers, deadline: Deadline()), StatusCode.InvalidArgument);
+    }
+    save.Position.Yaw = 90;
+    Check(client.SavePosition(save, headers, deadline: Deadline()).PositionRevision == 1, "First position save failed.");
+    Code(() => client.SavePosition(save, headers, deadline: Deadline()), StatusCode.FailedPrecondition);
+    save.ExpectedPositionRevision = 1; save.Position.X = 11.5;
+    Check(client.SavePosition(save, headers, deadline: Deadline()).PositionRevision == 2, "Position update failed.");
+    state = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_progression" }, headers, deadline: Deadline());
+    Check(state.PositionRevision == 2 && state.Position?.X == 11.5, "Saved position missing from state.");
     request.SourceReceiptId = "harvest/stale";
     Code(() => client.ApplyReceipt(request, headers, deadline: Deadline()), StatusCode.FailedPrecondition);
     request.SourceReceiptId = "bad/kind"; request.Kind = "unknown";

@@ -66,7 +66,7 @@ function Cluster([string]$Action) {
 }
 function TableSnapshot([string]$Database) {
     $tables = @('inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts',
-        'character_state.schema_version','character_state.progression','character_state.quests','character_state.source_receipts','character_state.reward_receipts',
+        'character_state.schema_version','character_state.progression','character_state.quests','character_state.source_receipts','character_state.reward_receipts','character_state.positions',
         'housing.schema_version','housing.claims','housing.claim_operations','housing.claim_structure_revisions','housing.placements','housing.claim_geometry','housing.removals',
         'exchange.schema_version','exchange.wallets','exchange.wallet_entries','exchange.operations','exchange.listings','exchange.settlements')
     $snapshot = [ordered]@{}
@@ -139,6 +139,7 @@ try {
     $schemas = @('InventoryLedger.Postgres','CharacterState.Postgres','Housing.Postgres','Exchange.Postgres') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_/Schema.sql") -Raw }
     $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Gameplay.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Geometry.sql') -Raw
+    $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Position.sql') -Raw
     [void](Sql ("SET ROLE gameplay_owner;`n" + ($schemas -join "`n")) "gameplay_$run")
     [void](Sql 'GRANT USAGE ON SCHEMA inventory,character_state,housing,exchange TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA character_state TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA housing TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA exchange TO gameplay_svc;' "gameplay_$run")
     $connection = "Host=127.0.0.1;Port=$port;Database=gameplay_$run;Username=gameplay_svc;Password=$servicePassword;Pooling=false;Timeout=2;Command Timeout=5;Include Error Detail=false"
@@ -176,7 +177,7 @@ try {
         GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection;
         GAMEPLAY_CONTENT_ROOT=(Join-Path $repo 'content'); SF_GAMEPLAY_TOKEN=$token
     }))
-    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(30000) | Out-Null; $hostProcess.Refresh()
     $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-restart.out') -RedirectStandardError (Join-Path $private 'host-restart.err')
     $ready = $false
     for ($i=0; $i -lt 100; $i++) {
@@ -192,7 +193,7 @@ try {
         }))
     }
     $currentStep = 'post-refund crash'
-    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(30000) | Out-Null; $hostProcess.Refresh()
     $env:SF_GAMEPLAY_FAULT_AFTER_REMOVE_GRANT = 'remove/fault'
     $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-fault.out') -RedirectStandardError (Join-Path $private 'host-fault.err')
     for ($i=0; $i -lt 100; $i++) {
@@ -203,7 +204,7 @@ try {
     $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-fault-seed') @{
         GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
     }))
-    $hostProcess.WaitForExit(10000) | Out-Null
+    $hostProcess.WaitForExit(30000) | Out-Null; $hostProcess.Refresh()
     if (-not $hostProcess.HasExited) { throw 'Fault host did not exit.' }
     Cluster stop
     Cluster start
@@ -227,7 +228,7 @@ try {
     $pending = Sql "SELECT state FROM character_state.reward_receipts WHERE character_id='chr_quest_full'" "gameplay_$run"
     $premature = Sql "SELECT count(*) FROM inventory.operation_receipts WHERE operation_id LIKE 'quest:chr_quest_full:%'" "gameplay_$run"
     if ($pending -ne 'Pending' -or $premature -ne '0') { throw "Full backpack did not preserve pending intent: $pending/$premature" }
-    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(30000) | Out-Null; $hostProcess.Refresh()
     $questFile = Join-Path $fixtureContent 'quests/greenlands_frontier_founder.json'
     $questOriginal = Get-Content -LiteralPath $questFile -Raw
     $questChanged = $questOriginal.Replace('"revision": 1','"revision": 2').Replace('"definition_id": "item/rough_timber", "quantity": 4','"definition_id": "item/rough_timber", "quantity": 9')
@@ -244,12 +245,12 @@ try {
     $results.Add('PASS reward intent granted original item snapshot after content revision and lines changed')
     [IO.File]::WriteAllText($questFile,$questOriginal)
     $currentStep = 'abandoned placement'
-    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(30000) | Out-Null; $hostProcess.Refresh()
     $env:SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT = 'place/abandon'
     $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-place-fault.out') -RedirectStandardError (Join-Path $private 'host-place-fault.err')
     for ($i=0; $i -lt 100; $i++) { if ((Test-Path (Join-Path $private 'host-place-fault.out')) -and (Get-Content (Join-Path $private 'host-place-fault.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
     $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-place-abandon') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
-    $hostProcess.WaitForExit(10000) | Out-Null
+    $hostProcess.WaitForExit(30000) | Out-Null; $hostProcess.Refresh()
     if (-not $hostProcess.HasExited) { throw 'Placement fault host did not exit.' }
     Remove-Item Env:SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT
     $currentStep = 'abandoned reward'
@@ -257,7 +258,7 @@ try {
     $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-quest-fault.out') -RedirectStandardError (Join-Path $private 'host-quest-fault.err')
     for ($i=0; $i -lt 100; $i++) { if ((Test-Path (Join-Path $private 'host-quest-fault.out')) -and (Get-Content (Join-Path $private 'host-quest-fault.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
     $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-quest-abandon') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
-    $hostProcess.WaitForExit(10000) | Out-Null
+    $hostProcess.WaitForExit(30000) | Out-Null; $hostProcess.Refresh()
     if (-not $hostProcess.HasExited) { throw 'Reward fault host did not exit.' }
     Cluster stop
     Cluster start
@@ -292,14 +293,14 @@ try {
     $returnedOre = Sql "SELECT COALESCE((SELECT quantity FROM inventory.entries WHERE container_id='ctn_expire_escrow' AND definition_id='item/iron_ore'),0)" "gameplay_$run"
     if ($expiredState -ne 'cancelled' -or $returnedOre -ne '0') { throw "Trade deadline cancellation failed: $expiredState/$returnedOre" }
     $results.Add('PASS trade offer deadline cancelled and returned escrow')
-    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(30000) | Out-Null; $hostProcess.Refresh()
     $currentStep = 'listing escrow crash recovery'
     $env:SF_GAMEPLAY_FAULT_AFTER_LISTING_ESCROW = 'exchange/list-fault'
     $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-list-fault.out') -RedirectStandardError (Join-Path $private 'host-list-fault.err')
     for ($i=0; $i -lt 100; $i++) { if ($hostProcess.HasExited) { throw 'Listing fault host exited before ready.' }; if ((Test-Path (Join-Path $private 'host-list-fault.out')) -and (Get-Content (Join-Path $private 'host-list-fault.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
     try { [void](Invoke-Checked $dotnet @($hostDll,'fixture-exchange-fault') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; GAMEPLAY_EXCHANGE_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }); throw 'Listing fault did not fire.' }
     catch { if ($_.Exception.Message -match 'Listing fault did not fire') { throw } }
-    $hostProcess.WaitForExit(10000) | Out-Null
+    $hostProcess.WaitForExit(30000) | Out-Null; $hostProcess.Refresh()
     if (-not $hostProcess.HasExited) { throw 'Listing fault host did not exit.' }
     Cluster stop
     Cluster start
@@ -319,12 +320,12 @@ try {
     $tombstone = Sql "SELECT count(*) FROM inventory.operation_receipts WHERE operation_id='exchange/list-missing/escrow' AND fingerprint='exchange/listing-compensated'" "gameplay_$run"
     if ($missingState -ne 'compensated' -or $tombstone -ne '1') { throw "Missing listing escrow was not fenced: $missingState/$tombstone" }
     $results.Add('PASS absent listing escrow tombstoned at transfer operation key')
-    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(30000) | Out-Null; $hostProcess.Refresh()
     $env:SF_GAMEPLAY_FAULT_AFTER_EXCHANGE_DELIVERY = 'exchange/buy-fault'
     $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-exchange-fault.out') -RedirectStandardError (Join-Path $private 'host-exchange-fault.err')
     for ($i=0; $i -lt 100; $i++) { if ($hostProcess.HasExited) { throw 'Exchange fault host exited before ready.' }; if ((Test-Path (Join-Path $private 'host-exchange-fault.out')) -and (Get-Content (Join-Path $private 'host-exchange-fault.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
     $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-exchange-fault') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; GAMEPLAY_EXCHANGE_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
-    $hostProcess.WaitForExit(10000) | Out-Null
+    $hostProcess.WaitForExit(30000) | Out-Null; $hostProcess.Refresh()
     if (-not $hostProcess.HasExited) { throw 'Exchange fault host did not exit.' }
     Cluster stop
     Cluster start
@@ -351,10 +352,10 @@ try {
     $backupAcknowledgements = @(Get-Content -LiteralPath $receiptFile).Count
     $bad = (Sql "SELECT (SELECT count(*) FROM inventory.entries WHERE quantity < 0) + (SELECT count(*) FROM exchange.wallets WHERE balance < 0 OR reserved < 0 OR reserved > balance) + (SELECT count(*) FROM housing.placements p WHERE state='Committed' AND NOT EXISTS (SELECT 1 FROM inventory.operation_receipts r WHERE r.operation_id=p.operation_id || '/consume')) + (SELECT count(*) FROM exchange.settlements s WHERE state='committed' AND kind='listing' AND NOT EXISTS (SELECT 1 FROM exchange.listings l WHERE l.id=s.subject_id AND l.state='sold'))" $db).Trim()
     if ($bad -ne '0') { throw "Cross-store conservation violations: $bad" }
-    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(30000) | Out-Null; $hostProcess.Refresh()
     $hostProcess = $null
     $currentStep = 'consistent four-store backup'
-    $versions = @{inventory=1;character_state=2;housing=5;exchange=3}
+    $versions = @{inventory=1;character_state=3;housing=5;exchange=3}
     foreach ($schema in $versions.Keys) {
         if ((Sql "SELECT version FROM $schema.schema_version WHERE singleton=true" $db).Trim() -ne [string]$versions[$schema]) { throw "Unsupported source schema: $schema" }
     }
@@ -416,7 +417,7 @@ finally {
         Remove-Item "Env:$key" -ErrorAction SilentlyContinue
     }
     try {
-        if ($hostProcess -and -not $hostProcess.HasExited) { Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null }
+        if ($hostProcess -and -not $hostProcess.HasExited) { Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(30000) | Out-Null; $hostProcess.Refresh() }
         if ($hostProcess2 -and -not $hostProcess2.HasExited) { Stop-Process -Id $hostProcess2.Id -Force; $hostProcess2.WaitForExit(10000) | Out-Null }
         if ($restoreStarted -and (Test-Path -LiteralPath $restoreData)) {
             $restorePid = Join-Path $restoreData 'postmaster.pid'

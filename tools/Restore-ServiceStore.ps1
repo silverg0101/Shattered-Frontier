@@ -57,11 +57,11 @@ if (-not $BackupDirectory) { throw 'Supply BackupDirectory.' }
 $BackupDirectory = [IO.Path]::GetFullPath($BackupDirectory)
 $manifest = Get-Content (Join-Path $BackupDirectory 'manifest.json') -Raw | ConvertFrom-Json
 $dump = Join-Path $BackupDirectory "$($Store.ToLowerInvariant()).dump"
-if ($manifest.format -ne 2 -or $manifest.store -cne $Store -or $manifest.schemaVersion -ne $(if ($Store -eq 'Housing') { 5 } elseif ($Store -eq 'Exchange') { 3 } elseif ($Store -eq 'CharacterState') { 2 } else { 1 }) -or $manifest.dumpSha256 -notmatch '^[a-f0-9]{64}$' -or
+if ($manifest.format -ne 2 -or $manifest.store -cne $Store -or $manifest.schemaVersion -ne $(if ($Store -eq 'Housing') { 5 } elseif ($Store -eq 'Exchange' -or $Store -eq 'CharacterState') { 3 } else { 1 }) -or $manifest.dumpSha256 -notmatch '^[a-f0-9]{64}$' -or
     (Get-FileHash $dump -Algorithm SHA256).Hash.ToLowerInvariant() -cne $manifest.dumpSha256) { throw 'Backup manifest or SHA256 mismatch.' }
 $tables = switch ($Store) {
     InventoryLedger { @('inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts') }
-    CharacterState { @('character_state.schema_version','character_state.progression','character_state.quests','character_state.source_receipts','character_state.reward_receipts') }
+    CharacterState { @('character_state.schema_version','character_state.progression','character_state.quests','character_state.source_receipts','character_state.reward_receipts','character_state.positions') }
     Housing { @('housing.schema_version','housing.claims','housing.claim_operations','housing.claim_structure_revisions','housing.placements','housing.claim_geometry','housing.removals','inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts') }
     Exchange { @('exchange.schema_version','exchange.wallets','exchange.wallet_entries','exchange.operations','exchange.listings','exchange.settlements') }
 }
@@ -109,7 +109,7 @@ try {
         $grant = if ($Store -eq 'Exchange') { "GRANT SELECT ON $schema.schema_version TO $serviceRole; GRANT SELECT,INSERT,UPDATE ON exchange.wallets,exchange.wallet_entries,exchange.operations,exchange.listings,exchange.settlements TO $serviceRole" } else { "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA $schema TO $serviceRole" }
         [void](Sql "GRANT USAGE ON SCHEMA $schema TO $serviceRole; $grant" $database)
         $version = (Sql "SELECT version FROM $schema.schema_version WHERE singleton=true" $database).Trim()
-        $expectedVersion = if ($schema -eq 'housing') { '5' } elseif ($schema -eq 'exchange') { '3' } elseif ($schema -eq 'character_state') { '2' } else { '1' }
+        $expectedVersion = if ($schema -eq 'housing') { '5' } elseif ($schema -eq 'exchange' -or $schema -eq 'character_state') { '3' } else { '1' }
         if ($version -ne $expectedVersion) { throw 'Restored schema version mismatch.' }
     }
     foreach ($table in $tables) {
@@ -168,6 +168,13 @@ SELECT count(*) FROM (
   (SELECT 1 FROM character_state.quests q WHERE q.character_id=r.character_id AND q.quest_id=r.quest_id)
   OR (r.state='Pending' AND (r.content_revision <= 0 OR jsonb_typeof(r.item_lines) IS DISTINCT FROM 'array'
    OR jsonb_array_length(r.item_lines)=0))
+ UNION ALL
+ SELECT 1 FROM character_state.positions p WHERE p.revision < 1 OR
+  p.zone_id !~ '^[a-z0-9_]{1,64}$' OR
+  p.x NOT BETWEEN -10000000 AND 10000000 OR
+  p.y NOT BETWEEN -10000000 AND 10000000 OR
+  p.z NOT BETWEEN -10000000 AND 10000000 OR
+  p.yaw NOT BETWEEN -360 AND 360
 ) invalid
 '@ $database
         if ($bad.Trim() -ne '0') { throw 'Restored character consistency check failed.' }

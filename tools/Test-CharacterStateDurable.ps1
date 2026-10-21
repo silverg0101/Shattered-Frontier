@@ -77,8 +77,9 @@ try {
     [void](Sql "CREATE ROLE state_owner NOLOGIN; CREATE ROLE state_svc LOGIN PASSWORD '$servicePassword'; CREATE DATABASE state_$run;")
     [void](Sql "REVOKE ALL ON DATABASE state_$run FROM PUBLIC; GRANT CONNECT ON DATABASE state_$run TO state_svc; GRANT CREATE ON DATABASE state_$run TO state_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC;" "state_$run")
     [void](Sql ("SET ROLE state_owner;`n" + (Get-Content $schema -Raw)) "state_$run")
+    [void](Sql ("SET ROLE state_owner;`n" + (Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Position.sql') -Raw)) "state_$run")
     [void](Sql 'GRANT USAGE ON SCHEMA character_state TO state_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA character_state TO state_svc;' "state_$run")
-    $connection = "Host=127.0.0.1;Port=$port;Database=state_$run;Username=state_svc;Password=$servicePassword;Pooling=false;Timeout=2;Command Timeout=5;Include Error Detail=false"
+    $connection = "Host=127.0.0.1;Port=$port;Database=state_$run;Username=state_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $results = [Collections.Generic.List[string]]::new()
     foreach ($phase in @('seed','restart','concurrent','outage','recover','classification')) {
         if ($phase -eq 'restart' -or $phase -eq 'outage') { Cluster stop }
@@ -87,11 +88,13 @@ try {
         if ($phase -eq 'seed') {
             # The legacy domain fixture omits reward item content; give its pending intent a valid version-2 snapshot.
             [void](Sql 'UPDATE character_state.reward_receipts SET item_lines=''[{"DefinitionId":"item/ore","Quantity":1}]''::jsonb WHERE state=''Pending'' AND item_lines=''[]''::jsonb' "state_$run")
+            [void](Sql "INSERT INTO character_state.positions(character_id,revision,zone_id,x,y,z,yaw) VALUES ('character-1',1,'silverbrook',12.5,-3,40,90)" "state_$run")
         }
     }
     $results.Add((Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','CharacterState','-OutputDirectory',$backup,'-HostName','127.0.0.1','-Port',"$port",'-Database',"state_$run",'-Username','state_svc') @{ PGPASSWORD=$servicePassword }))
     $backupRevision = (Sql "SELECT revision FROM character_state.progression WHERE character_id='character-1'" "state_$run").Trim()
     [void](Sql "UPDATE character_state.progression SET revision=revision+1 WHERE character_id='character-1'" "state_$run")
+    [void](Sql "UPDATE character_state.positions SET revision=revision+1,x=99 WHERE character_id='character-1'" "state_$run")
     if ((Sql "SELECT revision FROM character_state.progression WHERE character_id='character-1'" "state_$run").Trim() -ne "$([long]$backupRevision + 1)") { throw 'Post-backup write failed.' }
     $corrupt = Join-Path $EvidenceRoot 'corrupt-backup'; [void](New-Item -ItemType Directory -Path $corrupt)
     Copy-Item (Join-Path $backup 'manifest.json') $corrupt
@@ -104,8 +107,10 @@ try {
     $restored = Get-Content (Join-Path $restoredInstance 'connection.json') -Raw | ConvertFrom-Json
     $restoredRevision = (Invoke-Checked (Join-Path $pg 'psql.exe') @('-X','-A','-t','-h','127.0.0.1','-p',"$($restored.port)",'-U',$restored.username,'-d',$restored.database,'-c',"SELECT revision FROM character_state.progression WHERE character_id='character-1'") @{ PGPASSWORD=$restored.password }).Trim()
     if ($restoredRevision -ne $backupRevision) { throw 'Restored character revision differs from backup point.' }
+    $restoredPosition = (Invoke-Checked (Join-Path $pg 'psql.exe') @('-X','-A','-t','-h','127.0.0.1','-p',"$($restored.port)",'-U',$restored.username,'-d',$restored.database,'-c',"SELECT revision,x,zone_id FROM character_state.positions WHERE character_id='character-1'") @{ PGPASSWORD=$restored.password }).Trim()
+    if ($restoredPosition -ne '1|12.5|silverbrook') { throw 'Restored position differs from backup point.' }
     $results.Add('PASS restored character state equals backup point')
-    [void](Sql 'UPDATE character_state.schema_version SET version=3' "state_$run")
+    [void](Sql 'UPDATE character_state.schema_version SET version=4' "state_$run")
     $results.Add((Invoke-Checked $dotnet @($dll,'newer') @{ CHARACTER_STATE_CONNECTION=$connection }))
     try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','CharacterState','-OutputDirectory',(Join-Path $EvidenceRoot 'newer-backup'),'-HostName','127.0.0.1','-Port',"$port",'-Database',"state_$run",'-Username','state_svc') @{ PGPASSWORD=$servicePassword }); throw 'Newer schema backup accepted.' }
     catch { if ($_.Exception.Message -notmatch 'Unsupported source schema') { throw }; $results.Add('PASS newer schema backup refused') }

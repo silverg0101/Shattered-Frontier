@@ -11,10 +11,28 @@ public sealed class CharacterStoreUnavailableException(string message, Exception
 public sealed class CharacterSchemaCompatibilityException(string message) : Exception(message);
 public sealed class CharacterStoreRejectedException(string message) : Exception(message);
 public sealed record VersionedResult<T>(long Revision, T Result);
+public sealed record CharacterPositionSnapshot(string ZoneId, double X, double Y, double Z, float Yaw);
 
 // Migration identity installs Schema.sql. Runtime uses DML and marker SELECT only.
 public sealed class PostgresCharacterStateStore(string connectionString)
 {
+    public VersionedResult<CharacterPositionSnapshot>? ReadPosition(string characterId) => Transaction<VersionedResult<CharacterPositionSnapshot>?>((c, t) =>
+    {
+        using var cmd = Command(c, t, "SELECT revision,zone_id,x,y,z,yaw FROM character_state.positions WHERE character_id=$1", characterId);
+        using var r = cmd.ExecuteReader();
+        return r.Read() ? new(r.GetInt64(0), new(r.GetString(1), r.GetDouble(2), r.GetDouble(3), r.GetDouble(4), r.GetFloat(5))) : null;
+    });
+
+    public long SavePosition(string characterId, long expectedRevision, CharacterPositionSnapshot position) => Transaction((c, t) =>
+    {
+        using var cmd = Command(c, t, "INSERT INTO character_state.positions(character_id,revision,zone_id,x,y,z,yaw) VALUES ($1,1,$3,$4,$5,$6,$7) ON CONFLICT (character_id) DO UPDATE SET revision=character_state.positions.revision+1,zone_id=EXCLUDED.zone_id,x=EXCLUDED.x,y=EXCLUDED.y,z=EXCLUDED.z,yaw=EXCLUDED.yaw,updated_at=now() WHERE character_state.positions.revision=$2 RETURNING revision",
+            characterId, expectedRevision, position.ZoneId, position.X, position.Y, position.Z, position.Yaw);
+        var result = cmd.ExecuteScalar();
+        if (result is null) throw new CharacterStoreRejectedException("Stale position revision.");
+        if (expectedRevision != 0 && (long)result == 1) throw new CharacterStoreRejectedException("Stale position revision.");
+        return (long)result;
+    });
+
     public VersionedResult<ProgressionSnapshot>? ReadProgression(string characterId) => Transaction<VersionedResult<ProgressionSnapshot>?>((c, t) =>
     {
         using var cmd = Command(c, t, "SELECT revision,state::text FROM character_state.progression WHERE character_id=$1", characterId);
@@ -49,7 +67,7 @@ public sealed class PostgresCharacterStateStore(string connectionString)
             {
                 using var marker = Command(c, t, "SELECT version,migration_id,compatible_build_min,compatible_build_max FROM character_state.schema_version WHERE singleton=true FOR SHARE");
                 using var row = marker.ExecuteReader();
-                if (!row.Read() || row.GetInt32(0) != 2 || row.GetString(1) != "character-state-002" || row.GetInt32(2) > 2 || row.GetInt32(3) < 2)
+                if (!row.Read() || row.GetInt32(0) != 3 || row.GetString(1) != "character-state-003" || row.GetInt32(2) > 3 || row.GetInt32(3) < 3)
                     throw new CharacterSchemaCompatibilityException("Unsupported character state schema version.");
             }
             catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501")
