@@ -2130,6 +2130,12 @@
         "16-quest-journal"
       ]
     },
+    "dropdown_arrow": {
+      "file": "dropdown_arrow.png",
+      "nine_slice_px": [0, 0, 0, 0],
+      "intended_1080p_px": [20, 20],
+      "screens": ["build-mode"]
+    },
     "icon_sword": {
       "file": "icon_sword.png",
       "nine_slice_px": [
@@ -2261,6 +2267,12 @@
         "16-quest-journal"
       ],
       "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+    },
+    "icon_coin": {
+      "file": "icon_coin.png",
+      "nine_slice_px": [0, 0, 0, 0],
+      "intended_1080p_px": [20, 20],
+      "screens": ["market-board", "trade"]
     },
     "icon_xp_roundel": {
       "file": "icon_xp_roundel.png",

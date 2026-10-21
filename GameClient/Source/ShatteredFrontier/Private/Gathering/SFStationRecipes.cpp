@@ -103,4 +103,12 @@ FString SFStationRecipes::ItemAssetPath(const FString& DefinitionId)
     return FString::Printf(TEXT("/Game/Frontier/Gameplay/Pilot/%s.%s"), *Name, *Name);
 }
 
-FString SFStationRecipes::ItemDisplayName(const FString& DefinitionId) { return PascalTail(DefinitionId, true); }
+FString SFStationRecipes::ItemDisplayName(const FString& DefinitionId)
+{
+    if (DefinitionId == TEXT("item/foundation_material_bundle")) { return TEXT("Foundation Bundle"); }
+    if (DefinitionId == TEXT("item/wall_material_bundle")) { return TEXT("Wall Bundle"); }
+    if (DefinitionId == TEXT("item/door_material_bundle")) { return TEXT("Door Bundle"); }
+    if (DefinitionId == TEXT("item/roof_material_bundle")) { return TEXT("Roof Bundle"); }
+    if (DefinitionId == TEXT("item/starter_tool_repair_kit")) { return TEXT("Tool Repair Kit"); }
+    return PascalTail(DefinitionId, true);
+}
