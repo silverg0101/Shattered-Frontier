@@ -161,3 +161,18 @@ Perf (on - off): chimney -0.154 ms, street -0.031 ms.
 5. Assets: only the map (lamp and chimney actors) and `MI_SB_LanternGlow` differ. Every other `.uasset` is at its `af48e04f` blob (the lamp_fx and dress_all resaves were reverted after each run).
 
 Perf (1440p, on - off): chimney -0.24 ms; street +0.72 ms (on-2 5.39 outlier; on-1 - off-1 -0.22).
+
+## Round 9: REVIEW-r8.md fix list (r8 scored 16 PASS / 3 FAIL)
+
+1. `glass_sockets` has two paths. Street lamps keep the *Glow-slot merge. Buildings take the `lamp-sockets.json` point as (x, -y, z) x 100, confirm it against a lantern-sized piece (8-35 cm on every axis), and put the light 14 cm outward along the overhang axis. Building lanterns get no flame, halo or smoke cards.
+   - Deviation, memory: splitting every material slot of every building into pieces (the review's code) ran the editor out of memory twice (`GenericPlatformMemory` fatal in GeometryCore). Each socket now splits only the triangles inside a 120 cm box round it (`select_mesh_elements_in_box` + `copy_mesh_selection_to_mesh`), with one mesh pool per mesh that is freed after use.
+   - Deviation, unmatched sockets: a socket with no lantern-sized piece within 40 cm logs `LAMP_NOMATCH` and gets no light, instead of asserting. The two hits are `SM_SilverbrookWeaponsVendor` sockets at (-46, 25, 112) and (256, 13, 248), nearest piece 208 cm.
+   - `LAMP_MATCH` (all `dist 20`, piece 10 x 20 x 10, centred 19 cm above the socket): Townhouse1 json (-216, 310, 228) -> pane (-211, 310, 247); Townhouse4 (-222, 267, 198) -> (-217, 267, 217); Townhouse2 (-178, 268, 203) -> (-173, 268, 222).
+   - Counts: `LAMP_FX` 731 lights (the review expected about 524; every json socket now lights). `LIGHT_CHECK lights 731 on_glass 731 orphans 0 in_wall 0` from the rewritten gate.
+2. `check_lights.py` checks buildings independently of lamp_fx: a light must be within 20 cm of a lantern-sized piece of any material within 40 cm of it (local box, same memory reason). Street lamps keep the *Glow slots.
+3. `dusk-panes.json`: side-b uses the far lamp panes and four far windows instead of the blanket box. `check_dusk_blobs.py` adds `DUSK_WASH` for the subject lantern: warm >= 3000 / 3000 / 2000, hot 0.
+   - On the r8 frames it fails (warm 61 / 745 / 34).
+   - r9: frontage warm 10690, hot 15, 1 blob outside (lantern cap 369-378 / 356-371, L 226); lamp-wall warm 19645, hot 6, 1 blob outside (476-499 / 947-973); side-b warm 855 (158 in x 1250-1455), 0 blobs.
+   - **Open:** the hot pixels and cap blobs at frontage / lamp-wall, and side-b under 2000. The side-b corner lantern is on the neighbouring house, so the subject's own wall gets little.
+
+Plume unchanged (core 0.972 / 1.021 / 1.067, dense R - B -4.1, 0 thin rows). Perf (1440p, on - off): chimney -0.21 ms, street -0.03 ms with 731 lights.

@@ -14,6 +14,7 @@ from scipy import ndimage as nd
 
 HERE = Path(__file__).resolve().parent
 PANES = json.loads((HERE / 'dusk-panes.json').read_text(encoding='utf-8'))
+WARM = {'house-frontage-dusk': 3000, 'context-lamp-wall-dusk': 3000, 'context-house-side-b-dusk': 2000}   # REVIEW-r8 fix 1 bands
 
 
 def outside(mask, L, boxes):
@@ -41,4 +42,14 @@ for view, p in PANES.items():
     print('DUSK_BLOBS', view, 'outside', len(o), 'largest', o[0] if o else None)
     print('DUSK_ORANGE', view, 'outside', len(orange), 'largest', orange[0] if orange else None)
     bad += len(o)
+    # DUSK_WASH (r8 fix 3): the subject lantern (first lantern box) must light its surroundings without clipping: pixels within
+    # 150 px of the pane centre and outside the pane bbox grown by 10 px, warm = R >= B + 10 and L >= 30, hot = L > 235.
+    x0, x1, y0, y1 = p['lantern'][0]; cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+    yy, xx = np.mgrid[0:L.shape[0], 0:L.shape[1]]
+    ring = ((xx - cx) ** 2 + (yy - cy) ** 2 <= 150 ** 2) & ~((xx >= x0 - 10) & (xx <= x1 + 10) & (yy >= y0 - 10) & (yy <= y1 + 10))
+    warm = ring & (a[..., 0] >= a[..., 2] + 10) & (L >= 30); hot = ring & (L > 235)
+    need = WARM.get(view, 0)
+    print('DUSK_WASH', view, 'warm_px', int(warm.sum()), 'need', need, 'hot_px', int(hot.sum()),
+          'warm_x1250_1455', int(warm[:, 1250:1456].sum()) if view == 'context-house-side-b-dusk' else '-')
+    bad += int(warm.sum() < need) + int(hot.sum() > 0)
 sys.exit(1 if bad else 0)

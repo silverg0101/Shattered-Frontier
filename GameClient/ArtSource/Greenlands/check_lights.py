@@ -1,7 +1,7 @@
 """Light gate (owner: "magical light sources from nowhere"). Independent of lamp-sockets.json and of lamp_fx's socket code:
 reads the lantern glass straight from the meshes.
 
-Every PointLight must be attached to a visible lamp/building actor, sit within 35 cm of the box around that actor's *Glow
+Every PointLight must be attached to a visible lamp/building actor, sit within 20 cm of a lantern-sized piece around that actor's *Glow
 material pieces near it (one lantern's panes) (lamp_fx puts wall-panel lights 30 cm in front of the pane), and not be inside any other actor's mesh
 (3 cm sphere overlap). Wall-mounted lights (owner not a StreetLamp_) must cast shadows so they cannot light through walls.
 Run in the open Silverbrook editor: py -3 tools/Run-InEditor.py GameClient/ArtSource/Greenlands/check_lights.py
@@ -14,21 +14,40 @@ actors = list(u.get_editor_subsystem(u.EditorActorSubsystem).get_all_level_actor
 _boxes = {}
 
 
-def glow_boxes(mesh):   # mesh-space boxes of the connected pieces of the mesh's *Glow material slots
-    if mesh.get_name() not in _boxes:
-        glow = [i for i, s in enumerate(mesh.static_materials) if 'Glow' in str(s.material_slot_name)]
+_dm = {}
+
+
+def glow_boxes(mesh, near):   # mesh-space lantern boxes: street lamps' *Glow-slot pieces; on a building the lantern-sized
+    # (8-35 cm on every axis) connected pieces of any material within 40 cm of `near` (duplicated from lamp_fx on purpose,
+    # WP6i r8 fix 2; a local box, because splitting every building slot runs the editor out of memory)
+    name = mesh.get_name()
+    if name not in _dm:
         dm = u.DynamicMesh()
-        dm, _ = u.GeometryScript_AssetUtils.copy_mesh_from_static_mesh(mesh, dm, u.GeometryScriptCopyMeshFromAssetOptions(), u.GeometryScriptMeshReadLOD())
-        parts = u.GeometryScript_MeshDecomposition.split_mesh_by_material_i_ds(dm, mesh_pool=u.DynamicMeshPool())
-        meshes = next(x for x in parts if isinstance(x, u.Array) and len(x) and isinstance(x[0], u.DynamicMesh))
-        ids = next(x for x in parts if isinstance(x, u.Array) and len(x) and isinstance(x[0], int))
-        out = []
-        for piece, mid in zip(meshes, ids):
-            if mid in glow:
-                comps = u.GeometryScript_MeshDecomposition.split_mesh_by_components(piece, mesh_pool=u.DynamicMeshPool())
-                out += [u.GeometryScript_MeshQueries.get_mesh_bounding_box(c) for c in next(x for x in comps if isinstance(x, u.Array))]
-        _boxes[mesh.get_name()] = out
-    return _boxes[mesh.get_name()]
+        _dm[name], _ = u.GeometryScript_AssetUtils.copy_mesh_from_static_mesh(mesh, dm, u.GeometryScriptCopyMeshFromAssetOptions(), u.GeometryScriptMeshReadLOD())
+    dm, pool = _dm[name], u.DynamicMeshPool()
+    if name.startswith('SM_SilverbrookStreetLamp'):
+        if name not in _boxes:
+            glow = [i for i, s in enumerate(mesh.static_materials) if 'Glow' in str(s.material_slot_name)]
+            parts = u.GeometryScript_MeshDecomposition.split_mesh_by_material_i_ds(dm, mesh_pool=pool)
+            meshes = next(x for x in parts if isinstance(x, u.Array) and len(x) and isinstance(x[0], u.DynamicMesh))
+            ids = next(x for x in parts if isinstance(x, u.Array) and len(x) and isinstance(x[0], int))
+            out = []
+            for piece, mid in zip(meshes, ids):
+                if mid in glow:
+                    comps = u.GeometryScript_MeshDecomposition.split_mesh_by_components(piece, mesh_pool=pool)
+                    out += [u.GeometryScript_MeshQueries.get_mesh_bounding_box(c) for c in next(x for x in comps if isinstance(x, u.Array))]
+            _boxes[name] = out
+        pool.free_all_meshes()
+        return _boxes[name]
+    sel = u.GeometryScript_MeshSelection.select_mesh_elements_in_box(
+        dm, u.Box(u.Vector(near.x - 40, near.y - 40, near.z - 40), u.Vector(near.x + 40, near.y + 40, near.z + 40)),
+        u.GeometryScriptMeshSelectionType.TRIANGLES, False, 3)[1]
+    sub = u.DynamicMesh(); u.GeometryScript_MeshDecomposition.copy_mesh_selection_to_mesh(dm, sub, sel)
+    comps = u.GeometryScript_MeshDecomposition.split_mesh_by_components(sub, mesh_pool=pool)
+    out = [bb for bb in (u.GeometryScript_MeshQueries.get_mesh_bounding_box(c) for c in next(x for x in comps if isinstance(x, u.Array)))
+           if all(8 <= getattr(bb.max, a) - getattr(bb.min, a) <= 35 for a in 'xyz')]
+    pool.free_all_meshes()
+    return out
 
 
 def gap(p, b):
@@ -48,14 +67,10 @@ for light in lights:
         mesh = comp.get_editor_property('static_mesh')
         if mesh:
             local = comp.get_world_transform().inverse_transform_location(p)
-            near = [b for b in glow_boxes(mesh) if gap(local, b) <= 60]   # the panes of one lantern; a light may hang inside them
-            if near:
-                lo = u.Vector(*(min(getattr(b.min, a) for b in near) for a in 'xyz')); hi = u.Vector(*(max(getattr(b.max, a) for b in near) for a in 'xyz'))
-                g = gap(local, u.Box(lo, hi))
-                if max(getattr(hi, a) - getattr(lo, a) for a in 'xyz') < 60 and g > 3:   # a lantern (< 60 cm): light at the glass (WP6i r6)
-                    g = 1e9
-                best = min(best, g)
-    if best > 35:   # 30 cm in front of a wall pane (WP6h review 3b) plus 5 cm
+            boxes = glow_boxes(mesh, local)
+            g = min(gap(local, b) for b in boxes) if boxes else 1e9
+            best = min(best, g)
+    if best > 20:   # a light 14 cm outside a pane face is 6.5 cm from the box; 20 leaves room for the cage variant (WP6i r8)
         orphans.append((label, round(best, 1))); continue
     hits = [h for h in (u.SystemLibrary.sphere_overlap_actors(light, p, 3., [u.ObjectTypeQuery.ECC_WORLD_STATIC], u.StaticMeshActor, [owner]) or [])
             if not h.is_hidden_ed()]

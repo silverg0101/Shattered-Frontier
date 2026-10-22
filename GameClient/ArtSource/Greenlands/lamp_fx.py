@@ -1,6 +1,6 @@
 """Silverbrook lamp dressing. In the open map: import lamp_fx; importlib.reload(lamp_fx); lamp_fx.apply().
 
-Uses committed lamp-glass sockets derived from Silverbrook GLBs. Owns only FX_StreetLamp_* actors
+Uses committed lamp-glass sockets derived from Silverbrook GLBs (Y mirrored on import; confirmed against the mesh's lantern pane). Owns only FX_StreetLamp_* actors
 in the map and /Game/Frontier/VFX/StreetLamp assets. Rerun replaces owned actors; source meshes
 and other sessions' map scripts are untouched. Editor authoring only; no runtime Python tick.
 """
@@ -60,57 +60,78 @@ def _lantern(slot):   # lantern and street-lamp glass only: a window's light is 
     return 'Glow' in nm and not re.search(r'LitGlass|Window', nm, re.I)
 
 
-def glass_sockets(mesh, u):
-    """Mesh-space cm centre of every lantern-glass chamber, read from the imported mesh itself: the connected pieces of its
-    *Glow material slots, merged when closer than 60 cm. (The GLB-derived lamp-sockets.json points of building meshes
-    were 2-20 m off their imported glass, so their lights shone on bare walls; street lamps matched to 0 cm.) On a building,
-    pieces merge only within 20 cm, a chamber with any axis >= 60 cm (a sign emblem, a sill strip, a lit room) is dropped,
-    and every chamber keeps its cards and light at the glass centre (WP6i r7-r8: a sign merged with the lantern put the flame on the wall);
-    on a building, a glow volume >= 30 cm in every axis (a lit room or doorway seen through glass) or one centred under
-    1 m (a cellar grille) gets no lamp."""
+LANTERN_AXES = (8., 35.)   # a kit lantern pane is a 15 x 15 x 24 cm box (silverbrook_kit.lantern; the cage variant 12 x 12 x 22)
+PANE_CLEAR = 14.   # cm outward from the pane centre: the 6 cm light source clears the opaque 7.5 cm half-box (WP6i r8 fix 1)
+
+
+def glass_sockets(mesh, u, sockets=None):
+    """Mesh-space cm light positions. Street lamps: the connected pieces of the *Glow slots merged within 60 cm (translucent
+    M_LampGlass; GLB sockets matched to 0 cm). Buildings: the committed lamp-sockets.json point (Blender metres; UE's FBX
+    import mirrors Y, so (x, -y, z) x 100) confirmed by a lantern-sized connected piece of ANY material slot within 40 cm.
+    The dynamic-mesh material IDs of the merged building meshes do not line up with static_materials (WP6i r8: the 'glow'
+    ID returned Townhouse2/4's banner and Townhouse1's sill), so the slot scan is not used on buildings. The kit pane is an
+    opaque emissive box, so the light sits PANE_CLEAR cm outward of it along the axis the lantern overhangs the house on."""
     name = mesh.get_name()
-    if name not in _GLASS:
-        glow = [i for i, slot in enumerate(mesh.static_materials) if _lantern(slot)]
-        dm = u.DynamicMesh()
-        dm, _ = u.GeometryScript_AssetUtils.copy_mesh_from_static_mesh(
-            mesh, dm, u.GeometryScriptCopyMeshFromAssetOptions(), u.GeometryScriptMeshReadLOD())
-        parts = u.GeometryScript_MeshDecomposition.split_mesh_by_material_i_ds(dm, mesh_pool=u.DynamicMeshPool())
+    if name in _GLASS:
+        return _GLASS[name]
+    street = name.startswith('SM_SilverbrookStreetLamp')
+    glow = [i for i, slot in enumerate(mesh.static_materials) if _lantern(slot)]
+    pool = u.DynamicMeshPool()   # one pool per mesh, freed below (WP6i r9: splitting every building slot ran the editor out of memory)
+    dm = u.DynamicMesh()
+    dm, _ = u.GeometryScript_AssetUtils.copy_mesh_from_static_mesh(
+        mesh, dm, u.GeometryScriptCopyMeshFromAssetOptions(), u.GeometryScriptMeshReadLOD())
+
+    def pieces(source):   # bounding boxes [min xyz, max xyz] of the connected pieces of a dynamic mesh
+        comps = u.GeometryScript_MeshDecomposition.split_mesh_by_components(source, mesh_pool=pool)
+        out_ = []
+        for comp in next(x for x in comps if isinstance(x, u.Array)):
+            bb = u.GeometryScript_MeshQueries.get_mesh_bounding_box(comp)
+            out_.append([bb.min.x, bb.min.y, bb.min.z, bb.max.x, bb.max.y, bb.max.z])
+        return out_
+
+    boxes = []
+    if street:
+        parts = u.GeometryScript_MeshDecomposition.split_mesh_by_material_i_ds(dm, mesh_pool=pool)
         meshes = next(x for x in parts if isinstance(x, u.Array) and len(x) and isinstance(x[0], u.DynamicMesh))
         ids = next(x for x in parts if isinstance(x, u.Array) and len(x) and isinstance(x[0], int))
-        boxes = []
         for piece, mid in zip(meshes, ids):
-            if mid not in glow:
-                continue
-            comps = u.GeometryScript_MeshDecomposition.split_mesh_by_components(piece, mesh_pool=u.DynamicMeshPool())
-            slot = mesh.static_materials[mid].material_slot_name
-            for comp in next(x for x in comps if isinstance(x, u.Array)):
-                bb = u.GeometryScript_MeshQueries.get_mesh_bounding_box(comp)
-                b = [bb.min.x, bb.min.y, bb.min.z, bb.max.x, bb.max.y, bb.max.z]
-                size = [b[i + 3] - b[i] for i in range(3)]
-                u.log(f'LAMP_PIECE {name} slot {slot} centre {[round((b[i] + b[i + 3]) / 2) for i in range(3)]} size {[round(v) for v in size]}')
-                boxes.append(b)
+            if mid in glow:
+                boxes += pieces(piece)
+    out = []
+    if street:
         merged = []
-        gap = 60 if name.startswith('SM_SilverbrookStreetLamp') else 20   # WP6i r8: on a building a sign's frame strips touch its own face, not a lantern 45 cm away
-        for b in boxes:   # union boxes whose gap is under gap cm into one chamber
+        for b in boxes:   # union boxes whose gap is under 60 cm into one chamber
             for m in merged:
-                if all(max(m[i], b[i]) - min(m[i + 3], b[i + 3]) < gap for i in range(3)):
+                if all(max(m[i], b[i]) - min(m[i + 3], b[i + 3]) < 60 for i in range(3)):
                     m[:] = [min(m[i], b[i]) for i in range(3)] + [max(m[i + 3], b[i + 3]) for i in range(3)]
                     break
             else:
                 merged.append(list(b))
-        out = []
-        for m in merged:
-            c = [(m[i] + m[i + 3]) / 2 for i in range(3)]
-            size = [m[i + 3] - m[i] for i in range(3)]
-            u.log(f'LAMP_SOCKET {name} centre {[round(v) for v in c]} size {[round(v) for v in size]}')
-            if not name.startswith('SM_SilverbrookStreetLamp') and (min(size) >= 30 or c[2] < 100 or size[2] < 5 or max(size) >= 60):
-                # a glowing room or doorway volume behind glass, a cellar grille at the ground, or a horizontal glow strip
-                # (SM_SilverbrookTownhouse1's first-floor sill: centre z 417, box 204 x 19 x 2 cm; WP6i r5 fix 3), or a chamber with an
-                # axis >= 60 cm (the SB_LanternGlow sign emblem with its frame on SM_SilverbrookTownhouse2/4, 50 x 3 x 98; WP6i r7-r8): not a lantern
-                continue
-            out.append(c)   # cards and light at the glass centre; every kept building chamber is lantern-sized (WP6i r7 fix 1)
-        _GLASS[name] = out
-    return _GLASS[name]
+        out = [[(m[i] + m[i + 3]) / 2 for i in range(3)] for m in merged]
+    else:
+        box = mesh.get_bounding_box()
+        centre = [(box.min.x + box.max.x) / 2, (box.min.y + box.max.y) / 2]
+        half = [max((box.max.x - box.min.x) / 2, 1), max((box.max.y - box.min.y) / 2, 1)]
+        for p in (sockets or load_sockets())[name]:
+            t = [p[0] * 100, -p[1] * 100, p[2] * 100]
+            # only the triangles inside a 120 cm box round the socket, split into pieces: lantern-sized ones are the pane
+            sel = u.GeometryScript_MeshSelection.select_mesh_elements_in_box(
+                dm, u.Box(u.Vector(t[0] - 60, t[1] - 60, t[2] - 60), u.Vector(t[0] + 60, t[1] + 60, t[2] + 60)),
+                u.GeometryScriptMeshSelectionType.TRIANGLES, False, 3)[1]
+            sub = u.DynamicMesh(); u.GeometryScript_MeshDecomposition.copy_mesh_selection_to_mesh(dm, sub, sel)
+            boxes = [b for b in pieces(sub) if all(LANTERN_AXES[0] <= b[i + 3] - b[i] <= LANTERN_AXES[1] for i in range(3))]
+            near = sorted(((sum(((b[i] + b[i + 3]) / 2 - t[i]) ** 2 for i in range(3)) ** .5, b) for b in boxes), key=lambda n: n[0])
+            d, b = near[0] if near else (1e9, None)
+            c = [(b[i] + b[i + 3]) / 2 for i in range(3)] if b else None
+            u.log(f'LAMP_MATCH {name} json {[round(v) for v in t]} pane {c and [round(v) for v in c]} size {b and [round(b[i + 3] - b[i]) for i in range(3)]} dist {round(d)}')
+            if d > 40:   # no kit lantern there (e.g. SM_SilverbrookWeaponsVendor's z 112 socket, nearest piece 208 cm): no light from nowhere
+                u.log(f'LAMP_NOMATCH {name} json {[round(v) for v in t]}'); continue
+            a = max(range(2), key=lambda i: abs(c[i] - centre[i]) / half[i])   # the horizontal axis the lantern overhangs on
+            c[a] += PANE_CLEAR if c[a] >= centre[a] else -PANE_CLEAR
+            out.append(c)
+    pool.free_all_meshes()
+    _GLASS[name] = out
+    return out
 
 
 def _mesh_sockets(actor, sockets, u):
@@ -119,7 +140,7 @@ def _mesh_sockets(actor, sockets, u):
         mesh = component.get_editor_property('static_mesh')
         if mesh and mesh.get_name() in sockets:
             # Component local transform covers per-building mesh offsets; static mesh actors are the common case.
-            for xyz in glass_sockets(mesh, u):
+            for xyz in glass_sockets(mesh, u, sockets):
                 found.append(u.MathLibrary.transform_location(component.get_world_transform(), u.Vector(*xyz)))
     return found
 
@@ -259,11 +280,12 @@ def apply(world=None, save=False):
         yaw = _stable_fraction(key + ':yaw') * 180
         vertical = u.Rotator(pitch=90, yaw=yaw, roll=0)
         high = u.Vector(pos.x, pos.y, pos.z + 45)
-        _instance(cards['Flame'], pos, vertical, u.Vector(.10, .22, 1), u)
-        _instance(cards['Flame'], pos, u.Rotator(pitch=90, yaw=yaw + 90, roll=0), u.Vector(.10, .22, 1), u)
-        _instance(cards['Halo'], pos, vertical, u.Vector(.26, .26, 1), u)
-        _instance(cards['Halo'], pos, u.Rotator(pitch=90, yaw=yaw + 90, roll=0), u.Vector(.26, .26, 1), u)
-        _instance(cards['Smoke'], high, vertical, u.Vector(.16, .25, 1), u)
+        if label.startswith('StreetLamp_'):   # a building lantern's opaque emissive pane is the flame (WP6i r8 fix 1)
+            _instance(cards['Flame'], pos, vertical, u.Vector(.10, .22, 1), u)
+            _instance(cards['Flame'], pos, u.Rotator(pitch=90, yaw=yaw + 90, roll=0), u.Vector(.10, .22, 1), u)
+            _instance(cards['Halo'], pos, vertical, u.Vector(.26, .26, 1), u)
+            _instance(cards['Halo'], pos, u.Rotator(pitch=90, yaw=yaw + 90, roll=0), u.Vector(.26, .26, 1), u)
+            _instance(cards['Smoke'], high, vertical, u.Vector(.16, .25, 1), u)
         _point_light(subsystem, pos, cfg, mats['M_LampLightFunction'],
                      PREFIX + f'Light_{label}_{index}', owner, u)
         counts['sockets'] += 1; counts['lights'] += 1
