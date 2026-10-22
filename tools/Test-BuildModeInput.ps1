@@ -15,7 +15,7 @@ $project = Join-Path $repoRoot 'GameClient\ShatteredFrontier.uproject'
 $log = Join-Path $EvidenceRoot 'game.log'
 $script = Join-Path $PSScriptRoot 'review_build_mode_in_game.py'
 $evidence = $EvidenceRoot -replace '\\', '/'
-$arguments = @(('"' + $project + '"'), '/Game/Frontier/Maps/Dev/BuildMode/BuildMode_Review', '-game', '-RenderOffscreen', '-ResX=1920', '-ResY=1080',
+$arguments = @(('"' + $project + '"'), '/Game/Frontier/Maps/Dev/BuildMode/BuildMode_Review', '-game', '-SFDevUnlimitedStock', '-RenderOffscreen', '-ResX=1920', '-ResY=1080',
     '-unattended', '-nosound', '-nop4', ('-abslog="' + $log + '"'), ('"-ExecCmds=py ' + ($script -replace '\\', '/') + ' ' + $evidence + '"'))
 $process = Start-Process -FilePath $editor -ArgumentList $arguments -WindowStyle Hidden -PassThru
 try {

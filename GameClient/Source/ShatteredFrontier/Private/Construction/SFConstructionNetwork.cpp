@@ -1168,7 +1168,8 @@ void ASFGameMode::StartConstruction()
         if (!State) { UE_LOG(LogTemp,Fatal,TEXT("Construction network fixture state could not spawn")); }
     }
     else if (IsHousingActive()) { LoadClaims(); }
-    UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_READY UnlimitedDevelopmentStock=1 Shapes=CubeSlabSlope Support=RoughTimber Persistence=0"));
+    UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_READY UnlimitedDevelopmentStock=%d Shapes=CubeSlabSlope Support=RoughTimber Persistence=%d"),
+        USFConstructionSandboxSettings::AllowsUnpaidEdits(),IsHousingActive());
     if (USFGatheringPilotComponent::IsPilotRequested())
     {
         FString Error;
@@ -1835,7 +1836,7 @@ void ASFPlayerController::ServerPlaceLine_Implementation(FIntVector Start, FIntV
     auto Result=ESFConstructionNetworkResult::InvalidContext;
     // ponytail: housing commits one structure per placement; lines stay sandbox-only until their cost is batched.
     const auto* LineMode=GetWorld()->GetAuthGameMode<ASFGameMode>();
-    if (State && LastRequestFrame!=GFrameCounter && !(LineMode && LineMode->IsHousingActive()))
+    if (State && LastRequestFrame!=GFrameCounter && !(LineMode && LineMode->IsHousingActive()) && USFConstructionSandboxSettings::AllowsUnpaidEdits())
     { LastRequestFrame=GFrameCounter; Result=State->PlaceLine(this,Start,End,ExpectedRevision,Shape,Rotation); }
     const uint64 Revision=State ? State->GetSnapshot().Revision : 0;
     if (Result==ESFConstructionNetworkResult::Accepted) { SFQuestPilotEvents::OnStructurePlaced().Broadcast(this,Revision,FString()); }
@@ -1867,7 +1868,7 @@ void ASFPlayerController::ServerRemoveDoor_Implementation(FIntVector Origin, uin
     auto* State=ResolveState(GetWorld(),ClaimId);
     auto Result=ESFConstructionNetworkResult::InvalidContext;
     if (State && LastRequestFrame!=GFrameCounter)
-    { LastRequestFrame=GFrameCounter; Result=State->RemoveDoor(this,Origin,ExpectedRevision); }
+    { LastRequestFrame=GFrameCounter; Result=USFConstructionSandboxSettings::AllowsUnpaidEdits() ? State->RemoveDoor(this,Origin,ExpectedRevision) : ESFConstructionNetworkResult::ServiceUnavailable; }
     const uint64 Revision=State ? State->GetSnapshot().Revision : 0;
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_REMOVE_DOOR_RESULT Builder=%d Result=%d Revision=%llu Doors=%d Collision=%d"),bBuilderRole,int32(Result),Revision,State ? State->GetSnapshot().Doors.Num() : 0,State && State->HasCurrentCollision());
     ClientPlacementResult(Result,Revision);
@@ -1889,7 +1890,7 @@ void ASFPlayerController::ServerPlaceDoor_Implementation(FIntVector Origin, uint
     auto* State=ResolveState(GetWorld(),ClaimId);
     auto Result=ESFConstructionNetworkResult::InvalidContext;
     if (State && LastRequestFrame!=GFrameCounter)
-    { LastRequestFrame=GFrameCounter; Result=State->PlaceDoor(this,Origin,ExpectedRevision,Yaw); }
+    { LastRequestFrame=GFrameCounter; Result=USFConstructionSandboxSettings::AllowsUnpaidEdits() ? State->PlaceDoor(this,Origin,ExpectedRevision,Yaw) : ESFConstructionNetworkResult::ServiceUnavailable; }
     const uint64 Revision=State ? State->GetSnapshot().Revision : 0;
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_DOOR_RESULT Builder=%d Result=%d Revision=%llu Doors=%d Collision=%d"),bBuilderRole,int32(Result),Revision,State ? State->GetSnapshot().Doors.Num() : 0,State && State->HasCurrentCollision());
     ClientPlacementResult(Result,Revision);
@@ -1935,8 +1936,10 @@ void ASFPlayerController::ProcessEdit(FIntVector Cell, uint64 ExpectedRevision, 
     }
     else if (State && LastRequestFrame != GFrameCounter)
     {
+        // DEC-02: an edit that Housing does not pay for runs only under the explicit development stock fixture.
         LastRequestFrame = GFrameCounter;
-        Result = State->Edit(this,Cell,ExpectedRevision,bRemove,Shape,Rotation);
+        Result = USFConstructionSandboxSettings::AllowsUnpaidEdits() ? State->Edit(this,Cell,ExpectedRevision,bRemove,Shape,Rotation)
+            : ESFConstructionNetworkResult::ServiceUnavailable;
     }
     const uint64 Revision = State ? State->GetSnapshot().Revision : 0;
     if (!bRemove && Result==ESFConstructionNetworkResult::Accepted) { SFQuestPilotEvents::OnStructurePlaced().Broadcast(this,Revision,FString()); }
@@ -2054,8 +2057,8 @@ void ASFPlayerController::Tick(float DeltaSeconds)
 FString ASFPlayerController::GetBuildStatusText() const
 {
     const auto* State=ActiveState();
-    return FString::Printf(TEXT("CONSTRUCTION | %s | DEV: UNLIMITED STOCK\nB: build mode    Click: apply    RMB hold: look    X / Delete: demolition    E: door    WASD: move\n1 Cube | 2 Half slab | 3 Slope | 4 Door | R Rotate | Selected: %s (%u deg) | L: %s | P: %s | Esc: cancel\n%s\n%s\nLast action: %s\nMembers: %d / %d | Doors: %d / %d | Reach: %.1f m\nAmber: place | Orange: demolish | Cyan: door | Red: blocked estimate | Server checks edits."),
-        !bRoleAssigned ? TEXT("CONNECTING") : bBuilderRole ? TEXT("BUILDER") : TEXT("OBSERVER"),
+    return FString::Printf(TEXT("CONSTRUCTION | %s | %s\nB: build mode    Click: apply    RMB hold: look    X / Delete: demolition    E: door    WASD: move\n1 Cube | 2 Half slab | 3 Slope | 4 Door | R Rotate | Selected: %s (%u deg) | L: %s | P: %s | Esc: cancel\n%s\n%s\nLast action: %s\nMembers: %d / %d | Doors: %d / %d | Reach: %.1f m\nAmber: place | Orange: demolish | Cyan: door | Red: blocked estimate | Server checks edits."),
+        !bRoleAssigned ? TEXT("CONNECTING") : bBuilderRole ? TEXT("BUILDER") : TEXT("OBSERVER"),USFConstructionSandboxSettings::AllowsUnpaidEdits() ? TEXT("DEV: UNLIMITED STOCK") : TEXT("COSTS: BACKPACK"),
         bDoorSelected ? TEXT("Door") : SelectedShape==0 ? TEXT("Cube") : SelectedShape==1 ? TEXT("Half slab") : TEXT("Slope"),SelectedYaw*90,bDemolitionMode ? TEXT("Demolish") : bLineMode ? TEXT("Line") : TEXT("Single"),*GetPlaneStatusText(),
         *PreviewStatus,*RemovalStatus,*LastPlacementStatus,State ? State->GetSnapshot().Members.Num() : 0,
         State ? State->GetMaximumMembers() : 0,State ? State->GetSnapshot().Doors.Num() : 0,State ? State->GetMaximumDoors() : 0,State ? State->GetReachCentimetres()/100.0 : 0.0);

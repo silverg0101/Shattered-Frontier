@@ -1,7 +1,7 @@
 """GM-01 follow-up: every mapped action in a -game session on the build-mode dev map.
 
 Launch (no editor open); tools/Test-BuildModeInput.ps1 does this and checks the log:
-    UnrealEditor.exe <uproject> /Game/Frontier/Maps/Dev/BuildMode/BuildMode_Review -game -RenderOffscreen -ResX=1920 -ResY=1080
+    UnrealEditor.exe <uproject> /Game/Frontier/Maps/Dev/BuildMode/BuildMode_Review -game -SFDevUnlimitedStock -RenderOffscreen -ResX=1920 -ResY=1080
         "-ExecCmds=py <this file> <evidence folder>"
 Injects each IMC_Player / IMC_Build action through EnhancedInput (the controller logs INPUT_ACTION <name> when a bound action
 reaches its handler). Pawn-polled actions are checked by their effect (position, yaw, jump, zoom). A build action injected before

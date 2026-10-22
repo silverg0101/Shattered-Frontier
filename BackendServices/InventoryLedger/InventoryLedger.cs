@@ -224,6 +224,14 @@ public sealed class InventoryLedger(IInventoryLedgerStore store)
     public LedgerReceipt Grant(string operationId, string containerId, long expectedRevision, string definitionId, long quantity, string source, string causationId) =>
         Apply(operationId, LedgerAction.Grant, [containerId], [expectedRevision], [new ItemQuantity(definitionId, quantity)], [], source, causationId);
 
+    // Several definitions in one atomic grant under one operation ID (the Alpha Starter Kit).
+    public LedgerReceipt GrantBundle(string operationId, string containerId, long expectedRevision, IReadOnlyList<ItemQuantity> items, string source, string causationId) =>
+        Apply(operationId, LedgerAction.Grant, [containerId], [expectedRevision], items, [], source, causationId);
+
+    // The committed receipt for an operation ID, or null when none exists.
+    public LedgerReceipt? Receipt(string operationId) =>
+        store.Execute(state => state.Operations.TryGetValue(operationId, out var stored) ? stored.Receipt : null);
+
     public LedgerReceipt Consume(string operationId, string containerId, long expectedRevision, string definitionId, long quantity, string sink) =>
         Apply(operationId, LedgerAction.Consume, [containerId], [expectedRevision], [new ItemQuantity(definitionId, quantity)], [], sink, "");
 

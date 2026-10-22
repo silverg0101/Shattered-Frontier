@@ -34,7 +34,7 @@ if ($Final3) {
         default { throw "Unsupported final3 state: $Name" }
     }
 }
-$server = Start-Process $ed -ArgumentList (@("`"$up`"", "/Game/Frontier/Maps/$Map`?game=/Script/ShatteredFrontier.SFGameMode", '-server', "-port=$Port", '-multihome=127.0.0.1', '-unattended', '-NullRHI', '-nosound', '-nop4', "-UserDir=`"$out\server-user`"", "-abslog=`"$out\server.log`"") + $ServerFlags) -PassThru -WindowStyle Hidden
+$server = Start-Process $ed -ArgumentList (@("`"$up`"", "/Game/Frontier/Maps/$Map`?game=/Script/ShatteredFrontier.SFGameMode", '-server', "-port=$Port", '-multihome=127.0.0.1', '-SFDevUnlimitedStock', '-unattended', '-NullRHI', '-nosound', '-nop4', "-UserDir=`"$out\server-user`"", "-abslog=`"$out\server.log`"") + $ServerFlags) -PassThru -WindowStyle Hidden
 try {
     Start-Sleep 45
     $exec = if ($Final3) { "-ExecCmds=`"py $root/tools/Capture-UiV5.py $Name $evidence`"" } else { "-ExecCmds=`"py $root/tools/Capture-TimedShots.py $out/frames $Seconds $Interval`"" }

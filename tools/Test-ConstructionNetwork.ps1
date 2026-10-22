@@ -59,7 +59,7 @@ try {
     Wait-Exit $disabled 'flag-negative'
     $disabledLog = Get-Content -LiteralPath (Join-Path $root 'flag-negative.log') -Raw
     if ($disabledLog -notmatch 'CONSTRUCTION_NETWORK_DISABLED' -or $disabledLog -match 'CONSTRUCTION_NETWORK_READY|CONSTRUCTION_NETWORK_ACCEPT|CONSTRUCTION_NETWORK_EDIT') { throw 'bNetworkConstructionEnabled=False did not fence the network mode.' }
-    $server = Start-Owned 'server' $url @('-server',('-port='+$Port),'-multihome=127.0.0.1','-ConstructionNetworkDoorObstruction')
+    $server = Start-Owned 'server' $url @('-server',('-port='+$Port),'-multihome=127.0.0.1','-SFDevUnlimitedStock','-ConstructionNetworkDoorObstruction')
     Wait-Log $server 'server' 'CONSTRUCTION_NETWORK_READY'
     $driver = Start-Owned 'driver' ('127.0.0.1:'+$Port) @('-game','-ConstructionNetworkScenario')
     $observer = Start-Owned 'observer' ('127.0.0.1:'+$Port) @('-game','-ConstructionNetworkScenario')

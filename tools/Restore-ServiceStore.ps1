@@ -110,7 +110,7 @@ try {
         $grant = if ($Store -eq 'Exchange') { "GRANT SELECT ON $schema.schema_version TO $serviceRole; GRANT SELECT,INSERT,UPDATE ON exchange.wallets,exchange.wallet_entries,exchange.operations,exchange.listings,exchange.settlements TO $serviceRole" } else { "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA $schema TO $serviceRole" }
         [void](Sql "GRANT USAGE ON SCHEMA $schema TO $serviceRole; $grant" $database)
         $version = (Sql "SELECT version FROM $schema.schema_version WHERE singleton=true" $database).Trim()
-        $expectedVersion = if ($schema -eq 'housing') { '5' } elseif ($schema -eq 'exchange' -or $schema -eq 'character_state') { '3' } elseif ($schema -eq 'inventory') { '2' } else { '1' }
+        $expectedVersion = if ($schema -eq 'housing') { '6' } elseif ($schema -eq 'exchange' -or $schema -eq 'character_state') { '3' } elseif ($schema -eq 'inventory') { '2' } else { '1' }
         if ($version -ne $expectedVersion) { throw 'Restored schema version mismatch.' }
     }
     foreach ($table in $tables) {
@@ -193,7 +193,7 @@ SELECT count(*) FROM (
   p.consume_receipt IS NULL OR p.consume_receipt->>'OperationId' IS DISTINCT FROM p.operation_id || '/consume' OR
   p.consume_receipt->>'Action' IS DISTINCT FROM '1' OR
   NOT EXISTS (SELECT 1 FROM jsonb_array_elements(p.consume_receipt->'Changes') c WHERE
-    c->>'ContainerId'=p.container_id AND c->>'DefinitionId'=p.material_id AND
+    c->>'ContainerId' IN (p.container_id,'ctn_hold_' || p.actor_id) AND c->>'DefinitionId'=p.material_id AND
     (c->>'Delta')::bigint = -p.material_quantity) OR
   NOT EXISTS (SELECT 1 FROM inventory.operation_receipts r WHERE r.operation_id=p.operation_id || '/consume'
     AND r.receipt=p.consume_receipt))

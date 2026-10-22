@@ -73,6 +73,11 @@ var token = Env("SF_INVENTORY_LEDGER_TOKEN");
 if (token.Length == 0) Refuse("SF_INVENTORY_LEDGER_TOKEN is required.");
 var fault = Env("INVENTORY_LEDGER_FAULT");
 if (fault is not ("" or "drop_first_reply")) Refuse("INVENTORY_LEDGER_FAULT must be empty or drop_first_reply.");
+// Alpha Starter Kit (DEC-02 alpha grant): off unless the realm enables it at start; contents are release-declared.
+var kitSwitch = Env("INVENTORY_LEDGER_ALPHA_STARTER_KIT");
+if (kitSwitch is not ("" or "on")) Refuse("INVENTORY_LEDGER_ALPHA_STARTER_KIT must be empty or on.");
+var kit = kitSwitch == "on" ? new Dom.AlphaStarterKitSettings() : null;
+kit?.Validate();
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseSetting(WebHostDefaults.ServerUrlsKey, "");
@@ -80,7 +85,7 @@ builder.WebHost.ConfigureKestrel(o => o.Listen(IPAddress.Loopback, port, l => l.
 builder.Logging.SetMinimumLevel(LogLevel.Warning);
 builder.Services.AddSingleton(new PostgresInventoryLedgerStore(connection));
 builder.Services.AddSingleton(sp => new Dom.InventoryLedger(sp.GetRequiredService<PostgresInventoryLedgerStore>()));
-builder.Services.AddSingleton(new LedgerOptions(Encoding.UTF8.GetBytes("Bearer " + token), fault == "drop_first_reply"));
+builder.Services.AddSingleton(new LedgerOptions(Encoding.UTF8.GetBytes("Bearer " + token), fault == "drop_first_reply", kit));
 builder.Services.AddGrpc(o => o.Interceptors.Add<TokenInterceptor>());
 
 var app = builder.Build();
@@ -89,7 +94,7 @@ app.Lifetime.ApplicationStarted.Register(() => Console.Out.WriteLine($"INVENTORY
 app.Run();
 return 0;
 
-sealed record LedgerOptions(byte[] ExpectedAuthorization, bool DropFirstReply);
+sealed record LedgerOptions(byte[] ExpectedAuthorization, bool DropFirstReply, Dom.AlphaStarterKitSettings? StarterKit);
 
 // Release-declared operating setting; shared config publication activates on restart.
 sealed record LedgerPoolSettings
@@ -122,7 +127,14 @@ sealed class LedgerService(Dom.InventoryLedger ledger, PostgresInventoryLedgerSt
         Run(context, () =>
         {
             var s = request.Spec ?? throw new RpcException(new Status(StatusCode.InvalidArgument, "Spec is required."));
-            return ToPb(ledger.CreateContainer(new Dom.ContainerSpec(s.Id, Map(s.OwnerKind), s.OwnerId, Map(s.Kind), s.Capacity)));
+            var view = ledger.CreateContainer(new Dom.ContainerSpec(s.Id, Map(s.OwnerKind), s.OwnerId, Map(s.Kind), s.Capacity));
+            if (options.StarterKit is { } kit)
+            {
+                var before = view.Revision;
+                view = kit.GrantOnce(ledger, view);
+                if (view.Revision != before) Console.Out.WriteLine($"ALPHA_STARTER_KIT_GRANTED container={view.Spec.Id} owner={view.Spec.OwnerId} operation={kit.OperationId(view.Spec.OwnerId)}");
+            }
+            return ToPb(view);
         });
 
     public override Task<Pb.ContainerView> GetContainer(Pb.GetContainerRequest request, ServerCallContext context) =>

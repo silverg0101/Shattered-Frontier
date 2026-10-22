@@ -88,7 +88,8 @@ function Start-LedgerHost([hashtable]$Fx,[string]$Fault = '') {
     if (-not $Fx.hostPort) { $Fx.hostPort = Get-FreeTcpPort }  # callers may pre-pick it (HostDown needs the port before the host runs)
     $n = if ($Fx.Contains('hostRuns')) { $Fx.hostRuns + 1 } else { 1 }; $Fx.hostRuns = $n
     $Fx.hostOut = Join-Path $Fx.evidence "host-$n.stdout.txt"; $Fx.hostErr = Join-Path $Fx.evidence "host-$n.stderr.txt"
-    $vars = @{ INVENTORY_LEDGER_PORT="$($Fx.hostPort)"; INVENTORY_LEDGER_CONNECTION=$Fx.connection; SF_INVENTORY_LEDGER_TOKEN=$Fx.token; INVENTORY_LEDGER_FAULT=$Fault }
+    $vars = @{ INVENTORY_LEDGER_PORT="$($Fx.hostPort)"; INVENTORY_LEDGER_CONNECTION=$Fx.connection; SF_INVENTORY_LEDGER_TOKEN=$Fx.token; INVENTORY_LEDGER_FAULT=$Fault
+        INVENTORY_LEDGER_ALPHA_STARTER_KIT=$(if ($Fx.Contains('starterKit') -and $Fx.starterKit) { 'on' } else { '' }) }
     $hostArgs = @(('"' + $Fx.dll + '"'))
     $p = $null
     Invoke-WithEnv $vars { $script:__hp = Start-Process -FilePath $Fx.dotnet -ArgumentList $hostArgs -WindowStyle Hidden -PassThru -RedirectStandardOutput $Fx.hostOut -RedirectStandardError $Fx.hostErr }

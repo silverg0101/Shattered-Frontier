@@ -50,6 +50,21 @@ Check(winners == 1 && ledger.Read("ctn_parallel").Revision == 1 && ledger.Read("
 
 var second = new InventoryLedger(store);
 Check(ReferenceEquals(first, second.Grant("op_gather", "ctn_a", 0, "item/ore", 8, "gathering_output", "gather_1")), "receipt survives service instance");
+
+// Alpha Starter Kit: once per character, atomic, idempotent across repeated ensures and concurrent first spawns.
+var kit = new AlphaStarterKitSettings();
+kit.Validate();
+Reject(() => { try { (kit with { Items = [new("item/ore", 101)] }).Validate(); } catch (InvalidOperationException) { throw new LedgerRejectedException("bounds"); } }, "kit bounds");
+var bag = ledger.CreateContainer(new("ctn_kit", OwnerKind.Character, "chr_kit", ContainerKind.Backpack, 160));
+var kitted = kit.GrantOnce(ledger, bag);
+Check(kitted.Revision == 1 && kit.Items.All(i => kitted.Quantities[i.DefinitionId] == i.Quantity), "kit granted on first spawn");
+ledger.Consume("op_kit_use", "ctn_kit", 1, "item/wall_material_bundle", 1, "construction_material_consumed");
+var again = kit.GrantOnce(ledger, ledger.CreateContainer(new("ctn_kit", OwnerKind.Character, "chr_kit", ContainerKind.Backpack, 160)));
+Check(again.Revision == 2 && again.Quantities["item/wall_material_bundle"] == 29, "kit not granted twice");
+Check(kit.GrantOnce(ledger, ledger.Read("ctn_b")).Revision == ledger.Read("ctn_b").Revision, "kit skips non-backpack containers");
+ledger.CreateContainer(new("ctn_kit_race", OwnerKind.Character, "chr_kit_race", ContainerKind.Backpack, 160));
+Parallel.For(0, 16, _ => kit.GrantOnce(ledger, ledger.Read("ctn_kit_race")));
+Check(ledger.Read("ctn_kit_race").Revision == 1 && ledger.Read("ctn_kit_race").Quantities["item/rough_timber"] == 12, "concurrent first spawns grant one kit");
 Console.WriteLine("InventoryLedger checks passed");
 
 static void Check(bool condition, string name)

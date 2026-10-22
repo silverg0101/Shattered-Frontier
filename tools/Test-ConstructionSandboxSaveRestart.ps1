@@ -56,7 +56,7 @@ $ownedProcesses = [Collections.Generic.List[Diagnostics.Process]]::new()
 $ordinaryBefore = $null
 function Invoke-FiniteRun([string]$Name,[string]$Map,[string[]]$Extra) {
     $log = Join-Path $EvidenceRoot ($Name + '.log')
-    $arguments = @(('"' + $copyProject + '"'),$Map,'-game','-NullRHI','-unattended','-nosound','-nop4','-NoSplash','-ExecCmds="t.MaxFPS 60"',('-abslog="' + $log + '"')) + $Extra
+    $arguments = @(('"' + $copyProject + '"'),$Map,'-game','-SFDevUnlimitedStock','-NullRHI','-unattended','-nosound','-nop4','-NoSplash','-ExecCmds="t.MaxFPS 60"',('-abslog="' + $log + '"')) + $Extra
     $run = [ordered]@{ name=$Name; arguments=$arguments; startedUtc=[DateTime]::UtcNow.ToString('o') }
     $results.runs.Add($run)
     $process = Start-Process -FilePath $executable -ArgumentList $arguments -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $EvidenceRoot ($Name + '.stdout.txt')) -RedirectStandardError (Join-Path $EvidenceRoot ($Name + '.stderr.txt'))

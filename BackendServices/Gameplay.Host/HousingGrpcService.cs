@@ -116,17 +116,25 @@ internal sealed class HousingGrpcService(PostgresHousingStore store, ProtectedZo
             {
                 if (Environment.GetEnvironmentVariable("SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT") == request.OperationId)
                     Environment.FailFast("Injected post-placement-intent host fault.");
-                try
+                if (pending.Decision is null)
                 {
-                    ledger.Consume(request.OperationId + "/consume", request.ContainerId,
-                        request.ExpectedContainerRevision, request.MaterialId, request.MaterialQuantity,
-                        "construction_material_consumed");
+                    // DEC-02 prepare: inventory reserves the materials into the builder's hold.
+                    try
+                    {
+                        var hold = ledger.CreateContainer(PostgresHousingStore.HoldSpec(request.ActorId));
+                        ledger.Transfer(request.OperationId + "/reserve", request.ContainerId, request.ExpectedContainerRevision,
+                            hold.Spec.Id, hold.Revision, request.MaterialId, request.MaterialQuantity);
+                    }
+                    catch (LedgerRejectedException)
+                    {
+                        // The decision trusts only the durable ledger operation; a missing reservation aborts.
+                    }
+                    pending = store.Decide(request.OperationId, ledgerStore, DateTimeOffset.UtcNow);
                 }
-                catch (LedgerRejectedException)
-                {
-                    // Reconcile closes a reservation only after checking the durable ledger operation.
-                }
-                pending = store.Reconcile(request.OperationId, ledgerStore);
+                if (pending.Decision is not null && pending.State == "Pending" &&
+                    Environment.GetEnvironmentVariable("SF_GAMEPLAY_FAULT_AFTER_PLACE_DECISION") == request.OperationId)
+                    Environment.FailFast("Injected post-placement-decision host fault.");
+                pending = store.Finish(request.OperationId, ledgerStore);
             }
             if (pending.State != "Committed") throw new InvalidOperationException("Placement compensated.");
             return PlacementReply(pending);

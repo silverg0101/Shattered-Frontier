@@ -2,7 +2,10 @@
 param(
     [string]$EngineRoot = 'C:\Program Files\Epic Games\UE_5.8',
     [ValidateRange(12000,65000)][int]$Port = 17991,
-    [ValidateRange(60,600)][int]$TimeoutSeconds = 240
+    [ValidateRange(60,600)][int]$TimeoutSeconds = 240,
+    # DEC-02 leg: no seeding; every character spawns with the Alpha Starter Kit, placement reserves and debits it, and
+    # the restart hard-kills the UE server and both hosts. Alpha's backpack and hold must be unchanged afterwards.
+    [switch]$StarterKit
 )
 # BLD-02 A2 + A7 on the network path: real claims and housing persistence through Gameplay.Host (owned PostgreSQL).
 # Phase 1: alpha claims the first Silverbrook build plot, places two pieces and removes one. The UE server then restarts
@@ -46,7 +49,7 @@ function Read-Log([string]$Name) { Get-Content -LiteralPath (Join-Path $root ($N
 function Stop-Owned([Diagnostics.Process]$Process) { if (-not $Process.HasExited) { Stop-Process -Id $Process.Id; $Process.WaitForExit() } }
 try {
     New-LedgerFixture $fx $repo $root
-    $schemas = @('CharacterState.Postgres/Schema.sql','Housing.Postgres/Schema.sql','Exchange.Postgres/Schema.sql','Housing.Postgres/Schema.Gameplay.sql','Housing.Postgres/Schema.Geometry.sql','CharacterState.Postgres/Schema.Position.sql') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_") -Raw }
+    $schemas = @('CharacterState.Postgres/Schema.sql','Housing.Postgres/Schema.sql','Exchange.Postgres/Schema.sql','Housing.Postgres/Schema.Gameplay.sql','Housing.Postgres/Schema.Geometry.sql','Housing.Postgres/Schema.Construction.sql','CharacterState.Postgres/Schema.Position.sql') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_") -Raw }
     [void](Invoke-LedgerSql $fx ("SET ROLE ledger_owner;`n" + ($schemas -join "`n")) $fx.db)
     [void](Invoke-LedgerSql $fx ('GRANT USAGE ON SCHEMA character_state,housing,exchange TO ledger_svc; ' + ((@('character_state','housing','exchange') | ForEach-Object { "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA $_ TO ledger_svc;" }) -join ' ')) $fx.db)
     $gameplayProject = Join-Path $repo 'BackendServices/Gameplay.Host/Gameplay.Host.csproj'
@@ -54,19 +57,23 @@ try {
     [void](Invoke-FxOk $fx $fx.dotnet @('restore',$gameplayProject,'--locked-mode','--packages',$fx.nuget,'--verbosity','quiet'))
     [void](Invoke-FxOk $fx $fx.dotnet @('build',$gameplayProject,'--no-restore','--configuration','Release','--verbosity','quiet','--output',$gameplayOut))
     $fx.hostPort = Get-FreeTcpPort; $gameplayPort = Get-FreeTcpPort; $gameplayToken = New-HexSecret; $fx.secrets += $gameplayToken
+    $fx.starterKit = [bool]$StarterKit
     Start-LedgerHost $fx ''
     $gameplayEnv = @{ GAMEPLAY_HOST_PORT="$gameplayPort"; SF_GAMEPLAY_TOKEN=$gameplayToken; GAMEPLAY_LEDGER_CONNECTION=$fx.connection; GAMEPLAY_CHARACTER_CONNECTION=$fx.connection
         GAMEPLAY_HOUSING_CONNECTION=$fx.connection; GAMEPLAY_EXCHANGE_CONNECTION=$fx.connection; GAMEPLAY_CONTENT_ROOT=(Join-Path $repo 'content') }
-    Invoke-WithEnv $gameplayEnv { $script:gameplay = Start-Process -FilePath $fx.dotnet -ArgumentList @(('"'+(Join-Path $gameplayOut 'Gameplay.Host.dll')+'"')) -WindowStyle Hidden -PassThru `
-        -RedirectStandardOutput (Join-Path $root 'gameplay.stdout.txt') -RedirectStandardError (Join-Path $root 'gameplay.stderr.txt') }
-    $null = $gameplay.Handle; $owned.Add($gameplay)
-    $watch = [Diagnostics.Stopwatch]::StartNew()
-    while (-not ((Test-Path (Join-Path $root 'gameplay.stdout.txt')) -and (Get-Content (Join-Path $root 'gameplay.stdout.txt') -Raw) -match 'GAMEPLAY_HOST_READY')) {
-        if ($gameplay.HasExited -or $watch.Elapsed.TotalSeconds -gt 60) { throw 'Gameplay host did not become ready.' }
-        Start-Sleep -Milliseconds 200
+    function Start-Gameplay([string]$Name) {
+        Invoke-WithEnv $gameplayEnv { $script:gameplay = Start-Process -FilePath $fx.dotnet -ArgumentList @(('"'+(Join-Path $gameplayOut 'Gameplay.Host.dll')+'"')) -WindowStyle Hidden -PassThru `
+            -RedirectStandardOutput (Join-Path $root "$Name.stdout.txt") -RedirectStandardError (Join-Path $root "$Name.stderr.txt") }
+        $null = $script:gameplay.Handle; $owned.Add($script:gameplay)
+        $watch = [Diagnostics.Stopwatch]::StartNew()
+        while (-not ((Test-Path (Join-Path $root "$Name.stdout.txt")) -and (Get-Content (Join-Path $root "$Name.stdout.txt") -Raw) -match 'GAMEPLAY_HOST_READY')) {
+            if ($script:gameplay.HasExited -or $watch.Elapsed.TotalSeconds -gt 60) { throw 'Gameplay host did not become ready.' }
+            Start-Sleep -Milliseconds 200
+        }
     }
+    Start-Gameplay 'gameplay'
     # Fixture seed: each piece costs one wall bundle; alpha places two, bravo one. Capacity matches the backpack's typed default.
-    foreach ($seed in @(@('alpha',2),@('bravo',1))) {
+    foreach ($seed in @(if (-not $StarterKit) { @('alpha',2); @('bravo',1) })) {
         $r = Invoke-FxChecked $fx $fx.dotnet @($fx.dll,'seed',"ctn_dev_$($seed[0])","chr_dev_$($seed[0])",'160','item/wall_material_bundle',"$($seed[1])","seed/$($seed[0])") @{ INVENTORY_LEDGER_PORT="$($fx.hostPort)"; SF_INVENTORY_LEDGER_TOKEN=$fx.token }
         if ($r.ExitCode -ne 0 -or $r.Stdout -notmatch 'INVENTORY_LEDGER_SEEDED') { throw "Seeding $($seed[0]) failed: $($r.Stdout)" }
     }
@@ -82,7 +89,15 @@ try {
     Wait-Log $alpha1 'alpha1' "CLAIM_SCENARIO_OWNER_DONE Claim=$claim Members=1"
     Wait-Log $server1 'server1' 'DEV_IDENTITY_BOUND Character=chr_dev_alpha'
     $before = [regex]::Match((Read-Log 'alpha1'),'CLAIM_SCENARIO_OWNER_DONE Claim=\S+ Members=1 Content=(\S+)').Groups[1].Value
-    Stop-Owned $alpha1; Stop-Owned $server1
+    $alphaBag = "SELECT coalesce(string_agg(container_id||':'||definition_id||':'||quantity, ',' ORDER BY container_id,definition_id),'') FROM inventory.entries WHERE container_id IN ('ctn_dev_alpha','ctn_hold_chr_dev_alpha')"
+    $bagBefore = (Invoke-LedgerSql $fx $alphaBag $fx.db).Trim()
+    Stop-Owned $alpha1
+    if ($StarterKit) {
+        # Kill everything but PostgreSQL: the UE server, Gameplay.Host and InventoryLedger.Host, then restart the hosts.
+        foreach ($process in @($server1,$gameplay,$fx.hostProcess)) { Stop-Process -Id $process.Id -Force; $process.WaitForExit() }
+        Start-LedgerHost $fx ''
+        Start-Gameplay 'gameplay2'
+    } else { Stop-Owned $server1 }
 
     # Phase 2: a fresh UE server against the same Housing state.
     Invoke-WithEnv $serverEnv { $script:server2 = Start-Owned 'server2' $silverbrook $serverFlags }
@@ -103,6 +118,18 @@ try {
     $claims = (Invoke-LedgerSql $fx "SELECT count(*)||','||min(owner_id) FROM housing.claims" $fx.db).Trim()
     if ($claims -ne '1,chr_dev_alpha') { throw "Expected one claim owned by chr_dev_alpha, got $claims." }
     $result.contentBeforeAndAfterRestart = $before; $result.claims = $claims
+    if ($StarterKit) {
+        # Spawned with the kit exactly once each; alpha paid one bundle per kept piece (the removal refund is integral);
+        # the hard restart and reconnect left alpha's backpack and hold unchanged.
+        $kits = (Invoke-LedgerSql $fx "SELECT string_agg(operation_id, ',' ORDER BY operation_id) FROM inventory.operation_receipts WHERE operation_id LIKE 'alpha-starter-kit/v1/chr_dev_alpha' OR operation_id LIKE 'alpha-starter-kit/v1/chr_dev_bravo'" $fx.db).Trim()
+        if ($kits -ne 'alpha-starter-kit/v1/chr_dev_alpha,alpha-starter-kit/v1/chr_dev_bravo') { throw "Expected one kit per character, got $kits." }
+        $bagAfter = (Invoke-LedgerSql $fx $alphaBag $fx.db).Trim()
+        if (-not $bagBefore -or $bagBefore -ne $bagAfter) { throw "Alpha's inventory changed across the restart: $bagBefore -> $bagAfter" }
+        if ($bagBefore -notmatch 'ctn_dev_alpha:item/wall_material_bundle:(\d+)' -or [int]$Matches[1] -ge 30) { throw "Placement did not debit the kit: $bagBefore" }
+        $ops = (Invoke-LedgerSql $fx "SELECT string_agg(split_part(operation_id,'/',3), ',' ORDER BY operation_id) FROM inventory.operation_receipts WHERE operation_id LIKE 'place/%'" $fx.db).Trim()
+        $decisions = (Invoke-LedgerSql $fx "SELECT string_agg(state||':'||decision, ',' ORDER BY created_at) FROM housing.placements" $fx.db).Trim()
+        $result.starterKit = [ordered]@{ kits=$kits; alphaBeforeRestart=$bagBefore; alphaAfterRestart=$bagAfter; placementLedgerSteps=$ops; placements=$decisions }
+    }
     $result.status = 'Passed'
 } catch { $result.status = 'Failed'; $result.error = $_.Exception.Message; throw }
 finally {

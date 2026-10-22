@@ -22,3 +22,12 @@ bool USFConstructionSandboxSettings::Validate(FString& Error) const
     Error.Reset();
     return true;
 }
+
+bool USFConstructionSandboxSettings::AllowsUnpaidEdits()
+{
+#if UE_BUILD_SHIPPING
+    return false;
+#else
+    return FParse::Param(FCommandLine::Get(), TEXT("SFDevUnlimitedStock"));
+#endif
+}

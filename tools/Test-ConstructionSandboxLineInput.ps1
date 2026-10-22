@@ -36,7 +36,7 @@ $ownedProcesses = [Collections.Generic.List[Diagnostics.Process]]::new()
 $results = [ordered]@{ status = 'Running'; engine = $editor; project = $project; runs = @(); scope = 'Automated line input and native simple collision; NullRHI; standalone development; no human/rendered/packaged/network acceptance' }
 function Invoke-FiniteGame([string]$Name, [string]$Map, [string[]]$Extra) {
     $log = Join-Path $EvidenceRoot ($Name + '.log')
-    $arguments = @(('"' + $project + '"'), $Map, '-game', '-NullRHI', '-unattended', '-nosound', '-nop4',
+    $arguments = @(('"' + $project + '"'), $Map, '-game', '-SFDevUnlimitedStock', '-NullRHI', '-unattended', '-nosound', '-nop4',
         '-ConstructionLineInputScenario', '-ExecCmds="t.MaxFPS 60"', ('-abslog="' + $log + '"')) + $Extra
     $watch = [Diagnostics.Stopwatch]::StartNew()
     $process = Start-Process -FilePath $editor -ArgumentList $arguments -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $EvidenceRoot ($Name + '.stdout.txt')) -RedirectStandardError (Join-Path $EvidenceRoot ($Name + '.stderr.txt'))

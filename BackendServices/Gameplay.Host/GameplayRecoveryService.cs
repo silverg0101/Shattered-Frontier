@@ -56,8 +56,9 @@ internal sealed class GameplayRecoveryService(GameplayRecoverySettings settings,
             }
             foreach (var id in placements)
             {
-                var result = housing.Reconcile(id, ledger);
-                Console.Out.WriteLine($"GAMEPLAY_SWEEP placement {id} {result.State}");
+                // Expired undecided actions get their one fenced decision; decided ones roll forward (debit or release).
+                try { Console.Out.WriteLine($"GAMEPLAY_SWEEP placement {id} {housing.Reconcile(id, ledger).State}"); }
+                catch (HousingUnavailableException) { Console.Out.WriteLine($"GAMEPLAY_SWEEP placement {id} Pending"); }
             }
             var removals = new List<string>();
             using (var cmd = new NpgsqlCommand("SELECT operation_id FROM housing.removals WHERE state='Pending' ORDER BY operation_id LIMIT 100", connection))

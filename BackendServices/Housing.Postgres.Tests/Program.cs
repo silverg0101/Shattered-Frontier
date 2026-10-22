@@ -11,6 +11,12 @@ var phase = args.Single();
 var now = DateTimeOffset.UtcNow;
 static void Check(bool value, string message) { if (!value) throw new Exception(message); }
 static HousingPlaceRequest Request(string id,int x,long revision) => new(id,$"fingerprint-{id}","clm_test","chr_owner",0,revision,$"str_{id}",new(x,0,0),"piece/foundation","item/foundation_material_bundle",1,"ctn_bag",revision);
+var Hold = PostgresHousingStore.HoldSpec("chr_owner").Id;
+void Reserve(string id, long bagRevision)
+{
+    var hold = ledger.CreateContainer(PostgresHousingStore.HoldSpec("chr_owner"));
+    ledger.Transfer(id + "/reserve", "ctn_bag", bagRevision, hold.Spec.Id, hold.Revision, "item/foundation_material_bundle", 1);
+}
 switch (phase)
 {
     case "seed":
@@ -21,47 +27,70 @@ switch (phase)
         ledger.Grant("materials","ctn_bag",0,"item/foundation_material_bundle",10,"fixture","fixture");
         var first = housing.Begin(Request("one",0,0) with { ExpectedContainerRevision=1 },now);
         Check(first.State == "Pending","First prepare failed.");
-        ledger.Consume("one/consume","ctn_bag",1,first.MaterialId,1,"construction_material_consumed");
+        Reserve("one",1);
+        Check(ledger.Read(Hold).Quantities[first.MaterialId] == 1,"Reservation did not hold the materials.");
         Check(housing.Reconcile("one",ledgerStore).State == "Committed","First commit failed.");
-        var second = housing.Begin(Request("two",1,1) with { ExpectedContainerRevision=2 },now);
-        ledger.Consume("two/consume","ctn_bag",2,second.MaterialId,1,"construction_material_consumed");
-        Console.WriteLine("PASS seed, acknowledged commit and interrupted consume");
+        Check(!ledger.Read(Hold).Quantities.ContainsKey(first.MaterialId),"Commit did not debit the hold.");
+        housing.Begin(Request("two",1,1) with { ExpectedContainerRevision=2 },now);
+        Reserve("two",2);
+        housing.Begin(Request("decided",5,1) with { ExpectedContainerRevision=3 },now);
+        Reserve("decided",3);
+        Check(housing.Decide("decided",ledgerStore,now).Decision == "Commit","Commit decision was not recorded.");
+        Console.WriteLine("PASS seed, reserve and debit, interrupted reservation, killed after commit decision");
         break;
     case "restart":
         Check(housing.Claim("clm_test")?.OwnerId == "chr_owner","Claim lost on restart.");
         Check(housing.Structures("clm_test").Count == 1,"Committed structure lost on restart.");
-        Check(housing.Reconcile("two",ledgerStore).State == "Committed","Confirmed debit was not committed on recovery.");
+        Check(housing.Reconcile("two",ledgerStore).State == "Committed","Confirmed reservation was not committed on recovery.");
         Check(housing.Reconcile("two",ledgerStore).Revision == 2,"Recovery replay changed revision.");
         Check(housing.Begin(Request("two",1,1) with { ExpectedContainerRevision=2 },now).State == "Committed","Retry did not return the same decision.");
-        var parallelA = housing.Begin(Request("parallel-a",10,2) with { ExpectedContainerRevision=3 },now);
-        var parallelB = housing.Begin(Request("parallel-b",11,2) with { ExpectedContainerRevision=4 },now);
-        ledger.Consume("parallel-a/consume","ctn_bag",3,parallelA.MaterialId,1,"construction_material_consumed");
-        ledger.Consume("parallel-b/consume","ctn_bag",4,parallelB.MaterialId,1,"construction_material_consumed");
-        Check(housing.Reconcile("parallel-a",ledgerStore).Revision == 3,"First same-revision placement failed.");
-        Check(housing.Reconcile("parallel-b",ledgerStore).Revision == 4,"Second same-revision placement failed.");
-        var noDebit = housing.Begin(Request("three",2,4) with { ExpectedContainerRevision=5 },now);
+        Check(housing.Placement("decided") is { State: "Pending", Decision: "Commit" },"Commit decision lost on restart.");
+        var rolled = housing.Reconcile("decided",ledgerStore);
+        Check(rolled.State == "Committed" && rolled.Revision == 3 && rolled.ConsumeReceipt?.OperationId == "decided/consume","Commit after restart did not roll forward.");
+        var parallelA = housing.Begin(Request("parallel-a",10,3) with { ExpectedContainerRevision=4 },now);
+        var parallelB = housing.Begin(Request("parallel-b",11,3) with { ExpectedContainerRevision=5 },now);
+        Reserve("parallel-a",4);
+        Reserve("parallel-b",5);
+        Check(housing.Reconcile("parallel-a",ledgerStore).Revision == 4,"First same-revision placement failed.");
+        Check(housing.Reconcile("parallel-b",ledgerStore).Revision == 5,"Second same-revision placement failed.");
+        var noDebit = housing.Begin(Request("three",2,5) with { ExpectedContainerRevision=6 },now);
         Check(noDebit.State == "Pending","Third prepare failed.");
-        Check(housing.Reconcile("three",ledgerStore).State == "Compensated","Unconfirmed debit was not compensated.");
-        var wrong = housing.Begin(Request("wrong-revision",12,4) with { ExpectedContainerRevision=5 },now);
+        Check(housing.Reconcile("three",ledgerStore) is { State: "Compensated", Decision: "Abort" },"Unconfirmed reservation was not aborted.");
+        var wrong = housing.Begin(Request("wrong-revision",12,5) with { ExpectedContainerRevision=6 },now);
         try { housing.Reconcile("wrong-revision",new FailingStore(new LedgerStoreUnavailableException("offline",new Exception()))); throw new Exception("Ledger outage accepted."); }
         catch (HousingUnavailableException) { }
         try { housing.Reconcile("wrong-revision",new FailingStore(new LedgerRejectedException("rejected"))); throw new Exception("Ledger rejection accepted."); }
         catch (HousingRejectedException) { }
         Check(housing.Placement("wrong-revision")?.State == "Pending","Ledger error changed placement.");
         var injected = new InMemoryInventoryLedgerStore();
-        injected.Execute(s => { s.Operations.Add("wrong-revision/consume",new StoredOperation("fixture",new LedgerReceipt(
-            "wrong-revision/consume",LedgerAction.Consume,[new RevisionChange("ctn_bag",4,5)],
-            [new QuantityChange("ctn_bag",wrong.MaterialId,-1)]))); return 0; });
+        injected.Execute(s => { s.Operations.Add("wrong-revision/reserve",new StoredOperation("fixture",new LedgerReceipt(
+            "wrong-revision/reserve",LedgerAction.Transfer,[new RevisionChange("ctn_bag",5,6),new RevisionChange(Hold,9,10)],
+            [new QuantityChange("ctn_bag",wrong.MaterialId,-1),new QuantityChange(Hold,wrong.MaterialId,1)]))); return 0; });
         try { housing.Reconcile("wrong-revision",injected); throw new Exception("Wrong container revision accepted."); }
         catch (HousingRejectedException) { }
-        Check(housing.Placement("wrong-revision")?.State == "Pending","Mismatched receipt changed placement.");
+        Check(housing.Placement("wrong-revision") is { State: "Pending", Decision: null },"Mismatched receipt changed placement.");
         housing.Reconcile("wrong-revision",ledgerStore);
-        Check(housing.Begin(Request("three",2,4) with { ExpectedContainerRevision=5 },now).State == "Compensated","Compensated retry changed state.");
-        try { ledger.Consume("three/consume","ctn_bag",5,noDebit.MaterialId,1,"construction_material_consumed"); throw new Exception("Late consume accepted."); }
+        Check(housing.Begin(Request("three",2,5) with { ExpectedContainerRevision=6 },now).State == "Compensated","Compensated retry changed state.");
+        try { Reserve("three",6); throw new Exception("Late reservation accepted."); }
         catch (LedgerRejectedException) { }
-        Check(ledger.Read("ctn_bag").Quantities["item/foundation_material_bundle"] == 6,"Late debit or guessed refund broke conservation.");
+        Check(ledger.Read("ctn_bag").Quantities["item/foundation_material_bundle"] == 5 && ledger.Read(Hold).Quantities.Count == 0,
+            "Late reservation or guessed refund broke conservation.");
         Check(housing.Reconcile("three",ledgerStore).State == "Compensated","Compensated replay changed state.");
-        Console.WriteLine("PASS restart, two same-revision commits, fenced compensation and conservation");
+        // A grant revoked between reservation and decision aborts the action and releases the hold to the builder.
+        var revoke = new HousingClaim("clm_revoke","chr_owner","Active",0,0,now.AddDays(1),null,null,new Dictionary<string,int>{{"chr_builder",1}});
+        housing.SaveClaim("claim/revoke","revoke",revoke,-1);
+        ledger.CreateContainer(new("ctn_builder",OwnerKind.Character,"chr_builder",ContainerKind.Backpack,100));
+        ledger.Grant("builder-materials","ctn_builder",0,"item/foundation_material_bundle",2,"fixture","fixture");
+        housing.Begin(Request("revoked",0,0) with { ClaimId="clm_revoke", ActorId="chr_builder", ContainerId="ctn_builder", ExpectedContainerRevision=1 },now);
+        var builderHold = ledger.CreateContainer(PostgresHousingStore.HoldSpec("chr_builder"));
+        ledger.Transfer("revoked/reserve","ctn_builder",1,builderHold.Spec.Id,builderHold.Revision,"item/foundation_material_bundle",1);
+        housing.SaveClaim("claim/revoke-edit","revoke-edit",revoke with { Revision=1, PermissionRevision=1, Grants=new Dictionary<string,int>() },0);
+        var released = housing.Reconcile("revoked",ledgerStore);
+        Check(released is { State: "Compensated", Decision: "Abort" } && released.ConsumeReceipt?.OperationId == "revoked/release","Revoked action was not aborted.");
+        Check(ledger.Read("ctn_builder").Quantities["item/foundation_material_bundle"] == 2 && ledger.Read(builderHold.Spec.Id).Quantities.Count == 0,
+            "Abort did not release the held materials.");
+        Check(housing.Structures("clm_revoke").Count == 0,"Aborted action placed a structure.");
+        Console.WriteLine("PASS restart, commit roll-forward, two same-revision commits, fenced abort, release on revoke and conservation");
         break;
     case "concurrent":
         var wins = 0;
@@ -70,7 +99,7 @@ switch (phase)
         var workers = new[]{"left","right"}.Select(id => Task.Run(() => {
             var worker = new PostgresHousingStore(connection);
             ready.Signal(); release.Wait();
-            try { if (worker.Begin(Request(id,3,4) with { ExpectedContainerRevision=5 },now).State == "Pending") Interlocked.Increment(ref wins); }
+            try { if (worker.Begin(Request(id,3,5) with { ExpectedContainerRevision=6 },now).State == "Pending") Interlocked.Increment(ref wins); }
             catch (HousingRejectedException) { }
         })).ToArray();
         Check(ready.Wait(TimeSpan.FromSeconds(10)),"Workers did not reach the barrier.");
@@ -103,7 +132,7 @@ switch (phase)
         Check(housing.Reconcile("timed",ledgerStore).State == "Compensated","Grace cleanup failed.");
         try { housing.SaveClaim("claim/invalid","invalid",timed with { Id="clm_invalid", State="Invalid" },-1); throw new Exception("Invalid claim state accepted."); }
         catch (HousingRejectedException) { }
-        try { housing.Begin(Request("denied",4,4) with { ActorId="intruder", ExpectedContainerRevision=5 },now); throw new Exception("Unauthorized build accepted."); }
+        try { housing.Begin(Request("denied",4,5) with { ActorId="intruder", ExpectedContainerRevision=6 },now); throw new Exception("Unauthorized build accepted."); }
         catch (HousingRejectedException) { }
         var old = housing.Claim("clm_test")!;
         var edited = old with { Revision=1, PermissionRevision=1, Grants=new Dictionary<string,int>() };

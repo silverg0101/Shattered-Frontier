@@ -42,7 +42,7 @@ function Snapshot {
 }
 foreach ($schema in $schemas) {
     $version = (Query "SELECT version FROM $schema.schema_version WHERE singleton=true").Trim()
-    $expectedVersion = if ($schema -eq 'housing') { '5' } elseif ($schema -eq 'exchange' -or $schema -eq 'character_state') { '3' } elseif ($schema -eq 'inventory') { '2' } else { '1' }
+    $expectedVersion = if ($schema -eq 'housing') { '6' } elseif ($schema -eq 'exchange' -or $schema -eq 'character_state') { '3' } elseif ($schema -eq 'inventory') { '2' } else { '1' }
     if ($version -ne $expectedVersion) { throw "Unsupported source schema version: $schema=$version" }
 }
 if ($Store -eq 'Housing') {

@@ -88,6 +88,7 @@ try {
     $schemas += Get-Content (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Gameplay.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Geometry.sql') -Raw
+    $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Construction.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Position.sql') -Raw
     [void](Sql ("SET ROLE gameplay_owner;`n" + ($schemas -join "`n")) "gameplay_$run")
     [void](Sql 'GRANT USAGE ON SCHEMA inventory,character_state,housing,exchange TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA character_state TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA housing TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA exchange TO gameplay_svc;' "gameplay_$run")
@@ -213,6 +214,16 @@ try {
     $hostProcess.WaitForExit(10000) | Out-Null
     if (-not $hostProcess.HasExited) { throw 'Placement fault host did not exit.' }
     Remove-Item Env:SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT
+    $currentStep = 'killed after placement decision'
+    $env:SF_GAMEPLAY_FAULT_AFTER_PLACE_DECISION = 'place/decided'
+    $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-decision-fault.out') -RedirectStandardError (Join-Path $private 'host-decision-fault.err')
+    for ($i=0; $i -lt 100; $i++) { if ((Test-Path (Join-Path $private 'host-decision-fault.out')) -and (Get-Content (Join-Path $private 'host-decision-fault.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
+    $results.Add((Invoke-Checked $dotnet @($hostDll,'fixture-place-decided') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+    $hostProcess.WaitForExit(10000) | Out-Null
+    if (-not $hostProcess.HasExited) { throw 'Decision fault host did not exit.' }
+    Remove-Item Env:SF_GAMEPLAY_FAULT_AFTER_PLACE_DECISION
+    $decided = Sql "SELECT state || ':' || decision FROM housing.placements WHERE operation_id='place/decided'" "gameplay_$run"
+    if ($decided -ne 'Pending:Commit') { throw "Decision fault left $decided instead of a durable commit decision." }
     $currentStep = 'abandoned reward'
     $env:SF_GAMEPLAY_FAULT_AFTER_QUEST_GRANT = 'quest:chr_quest_abandon:quest/frontier_founder:defeat_boar:reward/frontier_founder_completion'
     $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-quest-fault.out') -RedirectStandardError (Join-Path $private 'host-quest-fault.err')
@@ -241,6 +252,12 @@ try {
     $sweepLogs += @(Get-Content (Join-Path $private 'host-quest-fault.out') | Where-Object { $_ -match '^GAMEPLAY_SWEEP placement place/abandon' })
     if ($sweepLogs.Count -ne 2) { throw "Expected one sweep resolution per abandoned intent, got $($sweepLogs.Count)." }
     $results.Add('PASS dual-host sweeper resolved abandoned placement and reward once after PostgreSQL restart')
+    # Kill after commit: the restarted host rolls the decision forward, debiting the hold once and keeping the piece.
+    $decided = Sql "SELECT state || ':' || decision FROM housing.placements WHERE operation_id='place/decided'" "gameplay_$run"
+    $decidedLines = Sql "SELECT count(*) FROM inventory.entries WHERE container_id IN ('ctn_decided','ctn_hold_chr_decided')" "gameplay_$run"
+    $decidedOps = Sql "SELECT string_agg(operation_id, ',' ORDER BY operation_id) FROM inventory.operation_receipts WHERE operation_id LIKE 'place/decided/%'" "gameplay_$run"
+    if ($decided -ne 'Committed:Commit' -or $decidedLines -ne '0' -or $decidedOps -ne 'place/decided/consume,place/decided/reserve') { throw "Commit roll-forward failed: $decided lines=$decidedLines ops=$decidedOps" }
+    $results.Add('PASS host killed after commit decision rolled forward: reserved, debited once, structure committed')
     Stop-Process -Id $hostProcess2.Id -Force; $hostProcess2.WaitForExit(10000) | Out-Null; $hostProcess2 = $null
     $currentStep = 'exchange wire trade and market'
     foreach ($mode in @('fixture-exchange-seed','fixture-exchange-trade','fixture-exchange-market','fixture-exchange-cancel','fixture-exchange-expire-seed')) {
@@ -352,7 +369,7 @@ catch {
     }
 }
 finally {
-    foreach ($key in @('SF_GAMEPLAY_TOKEN','SF_GAMEPLAY_FAULT_AFTER_REMOVE_GRANT','SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT','SF_GAMEPLAY_FAULT_AFTER_QUEST_GRANT','SF_GAMEPLAY_FAULT_AFTER_LISTING_ESCROW','SF_GAMEPLAY_FAULT_BEFORE_OUTBOX_SEND','GAMEPLAY_LEDGER_CONNECTION','GAMEPLAY_LEDGER_PORT','INVENTORY_LEDGER_PORT','INVENTORY_LEDGER_CONNECTION','SF_INVENTORY_LEDGER_TOKEN','GAMEPLAY_CHARACTER_CONNECTION','GAMEPLAY_HOUSING_CONNECTION')) {
+    foreach ($key in @('SF_GAMEPLAY_TOKEN','SF_GAMEPLAY_FAULT_AFTER_REMOVE_GRANT','SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT','SF_GAMEPLAY_FAULT_AFTER_PLACE_DECISION','SF_GAMEPLAY_FAULT_AFTER_QUEST_GRANT','SF_GAMEPLAY_FAULT_AFTER_LISTING_ESCROW','SF_GAMEPLAY_FAULT_BEFORE_OUTBOX_SEND','GAMEPLAY_LEDGER_CONNECTION','GAMEPLAY_LEDGER_PORT','INVENTORY_LEDGER_PORT','INVENTORY_LEDGER_CONNECTION','SF_INVENTORY_LEDGER_TOKEN','GAMEPLAY_CHARACTER_CONNECTION','GAMEPLAY_HOUSING_CONNECTION')) {
         Remove-Item "Env:$key" -ErrorAction SilentlyContinue
     }
     try {

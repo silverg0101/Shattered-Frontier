@@ -22,7 +22,7 @@ public sealed record HousingCell(int X, int Y, int Z);
 public sealed record HousingPlacement(string OperationId, string Fingerprint, string ClaimId, string ActorId,
     string StructureId, HousingCell Cell, string ContentId, string MaterialId, long MaterialQuantity,
     string ContainerId, long ExpectedContainerRevision, string State, long Revision, LedgerReceipt? ConsumeReceipt,
-    string ShapeKey = "legacy.generic", int OrientationIndex = 0);
+    string ShapeKey = "legacy.generic", int OrientationIndex = 0, string? Decision = null);
 public sealed record HousingPlaceRequest(string OperationId, string Fingerprint, string ClaimId, string ActorId,
     long ExpectedPermissionRevision, long ExpectedStructureRevision, string StructureId, HousingCell Cell,
     string ContentId, string MaterialId, long MaterialQuantity, string ContainerId, long ExpectedContainerRevision,
@@ -34,8 +34,9 @@ public sealed record HousingRemoval(string OperationId, string Fingerprint, Hous
     string State, long Revision, long RefundQuantity, long ExpectedContainerRevision, LedgerReceipt? RefundReceipt);
 public sealed record HousingStructureSnapshot(long Revision, IReadOnlyList<HousingPlacement> Structures);
 
-// Each housing call commits its receipt and revision in one transaction. The external inventory
-// debit is identified by operation_id + "/consume"; recovery only trusts a durable ledger receipt.
+// Each housing call commits its receipt and revision in one transaction. Placement materials move through inventory
+// at operation_id + "/reserve" (backpack to hold), then "/consume" (commit) or "/release" (abort); recovery only
+// trusts a durable ledger receipt.
 public sealed class PostgresHousingStore(string connectionString)
 {
     public const string DefaultShapeKey = "legacy.generic";
@@ -81,7 +82,7 @@ public sealed class PostgresHousingStore(string connectionString)
             try
             {
                 using var check = Cmd(c, t, "SELECT version FROM housing.schema_version WHERE singleton=true FOR SHARE");
-                if (check.ExecuteScalar() is not int version || version != 5)
+                if (check.ExecuteScalar() is not int version || version != 6)
                     throw new HousingSchemaCompatibilityException("Unsupported housing schema version.");
             }
             catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501")
@@ -111,8 +112,8 @@ public sealed class PostgresHousingStore(string connectionString)
     private static void RequireGameplaySchema(NpgsqlConnection c, NpgsqlTransaction t)
     {
         using var check = Cmd(c,t,"SELECT version FROM housing.schema_version WHERE singleton=true");
-        if (check.ExecuteScalar() is not int version || version != 5)
-            throw new HousingSchemaCompatibilityException("Housing gameplay schema version 5 required.");
+        if (check.ExecuteScalar() is not int version || version != 6)
+            throw new HousingSchemaCompatibilityException("Housing gameplay schema version 6 required.");
     }
     private static void LockStructure(NpgsqlConnection c, NpgsqlTransaction t, string claimId)
     {
@@ -226,12 +227,12 @@ public sealed class PostgresHousingStore(string connectionString)
     public HousingPlacement? Placement(string operationId) => Run((c,t) => ReadPlacement(c,t,operationId));
     private static HousingPlacement? ReadPlacement(NpgsqlConnection c,NpgsqlTransaction t,string id)
     {
-        using var cmd = Cmd(c,t,"SELECT operation_id,fingerprint,claim_id,actor_id,structure_id,cell_x,cell_y,cell_z,content_id,material_id,material_quantity,container_id,expected_container_revision,state,revision,consume_receipt::text,shape_key,orientation_index FROM housing.placements WHERE operation_id=$1",id);
+        using var cmd = Cmd(c,t,"SELECT operation_id,fingerprint,claim_id,actor_id,structure_id,cell_x,cell_y,cell_z,content_id,material_id,material_quantity,container_id,expected_container_revision,state,revision,consume_receipt::text,shape_key,orientation_index,decision FROM housing.placements WHERE operation_id=$1",id);
         using var r = cmd.ExecuteReader(); if (!r.Read()) return null;
         return new(r.GetString(0),r.GetString(1),r.GetString(2),r.GetString(3),r.GetString(4),
             new(r.GetInt32(5),r.GetInt32(6),r.GetInt32(7)),r.GetString(8),r.GetString(9),r.GetInt64(10),
             r.GetString(11),r.GetInt64(12),r.GetString(13),r.GetInt64(14),
-            r.IsDBNull(15)?null:JsonSerializer.Deserialize<LedgerReceipt>(r.GetString(15)),r.GetString(16),r.GetInt32(17));
+            r.IsDBNull(15)?null:JsonSerializer.Deserialize<LedgerReceipt>(r.GetString(15)),r.GetString(16),r.GetInt32(17),r.IsDBNull(18)?null:r.GetString(18));
     }
 
     public IReadOnlyList<HousingPlacement> Structures(string claimId) => Run((c,t) =>
@@ -255,51 +256,110 @@ public sealed class PostgresHousingStore(string connectionString)
         return new HousingStructureSnapshot(revision, ids.Select(id => ReadPlacement(c,t,id)!).ToArray());
     });
 
-    public HousingPlacement Reconcile(string operationId, IInventoryLedgerStore ledgerStore) =>
+    // DEC-02 construction hold: one per builder. Inventory owns it; Housing only names it.
+    public static ContainerSpec HoldSpec(string actorId) =>
+        new("ctn_hold_" + actorId, OwnerKind.Character, actorId, ContainerKind.ConstructionCache, 10000);
+    private static bool CanBuild(HousingClaim claim, string actorId, DateTimeOffset now) =>
+        (claim.State == "Grace" || (claim.State == "Active" && now < claim.FundedUntil)) &&
+        (claim.OwnerId == actorId || (claim.Grants.TryGetValue(actorId, out var rights) && (rights & 1) != 0));
+
+    // Prepare, decide, apply, complete (DEC-02). The coordinator calls Begin, has inventory reserve the materials
+    // (Transfer at operationId + "/reserve" from the backpack into the builder's hold), then calls Reconcile.
+    public HousingPlacement Reconcile(string operationId, IInventoryLedgerStore ledgerStore)
+    {
+        Decide(operationId, ledgerStore, DateTimeOffset.UtcNow);
+        return Finish(operationId, ledgerStore);
+    }
+
+    // Records the immutable decision. A missing reservation is fenced with a zero-change tombstone in the same ledger
+    // transaction as the read (Abort, nothing held). A matching reservation commits while the builder may still build
+    // on the claim; otherwise it aborts and Finish releases the hold.
+    public HousingPlacement Decide(string operationId, IInventoryLedgerStore ledgerStore, DateTimeOffset now) =>
+        Run((c,t) =>
+        {
+            var pending = ReadPlacement(c,t,operationId) ?? throw new HousingRejectedException("Placement missing.");
+            LockStructure(c,t,pending.ClaimId);
+            pending = ReadPlacement(c,t,operationId) ?? throw new HousingRejectedException("Placement missing.");
+            if (pending.State != "Pending" || pending.Decision is not null) return pending;
+            var key = operationId + "/reserve";
+            var reserve = Ledger(() => ledgerStore.Execute(s =>
+            {
+                if (s.Operations.TryGetValue(key, out var existing)) return existing;
+                var marker = new StoredOperation("housing/compensated", new LedgerReceipt(key, LedgerAction.Transfer, [], []));
+                s.Operations.Add(key, marker);
+                return marker;
+            }));
+            var receipt = reserve.Receipt;
+            if (reserve.Fingerprint == "housing/compensated" && receipt.Revisions.Count == 0 && receipt.Changes.Count == 0)
+            {
+                using var abort = Cmd(c,t,"UPDATE housing.placements SET state='Compensated',decision='Abort' WHERE operation_id=$1 AND state='Pending'",operationId);
+                abort.ExecuteNonQuery();
+                return ReadPlacement(c,t,operationId)!;
+            }
+            var hold = HoldSpec(pending.ActorId).Id;
+            var bag = receipt.Revisions.SingleOrDefault(r => r.ContainerId == pending.ContainerId);
+            var expected = new[] { new QuantityChange(pending.ContainerId, pending.MaterialId, -pending.MaterialQuantity),
+                new QuantityChange(hold, pending.MaterialId, pending.MaterialQuantity) };
+            if (receipt.Action != LedgerAction.Transfer || receipt.Revisions.Count != 2 || bag is null ||
+                bag.Before != pending.ExpectedContainerRevision || receipt.Revisions.All(r => r.ContainerId != hold) ||
+                receipt.Changes.Count != 2 || expected.Any(e => !receipt.Changes.Contains(e)))
+                throw new HousingRejectedException("Ledger reservation does not match the placement materials.");
+            var claim = ReadClaim(c,t,pending.ClaimId) ?? throw new HousingRejectedException("Claim missing.");
+            using var decide = Cmd(c,t,"UPDATE housing.placements SET decision=$1 WHERE operation_id=$2 AND state='Pending' AND decision IS NULL",
+                CanBuild(claim, pending.ActorId, now) ? "Commit" : "Abort", operationId);
+            if (decide.ExecuteNonQuery()!=1) throw new HousingRejectedException("Placement already decided.");
+            return ReadPlacement(c,t,operationId)!;
+        });
+
+    // Applies a recorded decision once through inventory (debit the hold, or release it to the backpack), then
+    // completes the placement from that durable receipt. A ledger outage or a busy hold leaves it decided and pending.
+    public HousingPlacement Finish(string operationId, IInventoryLedgerStore ledgerStore) =>
         Run((c,t) =>
         {
             var pending = ReadPlacement(c,t,operationId) ?? throw new HousingRejectedException("Placement missing.");
             LockStructure(c,t,pending.ClaimId);
             pending = ReadPlacement(c,t,operationId) ?? throw new HousingRejectedException("Placement missing.");
             if (pending.State != "Pending") return pending;
-            // A missing receipt is fenced in the same ledger transaction as the read.
-            StoredOperation operation;
-            try
+            if (pending.Decision is null) throw new HousingRejectedException("Placement is undecided.");
+            var commit = pending.Decision == "Commit";
+            var key = operationId + (commit ? "/consume" : "/release");
+            var hold = HoldSpec(pending.ActorId).Id;
+            var ledger = new InventoryLedger.InventoryLedger(ledgerStore);
+            var applied = Ledger(() => ledger.Receipt(key));
+            for (var attempt = 0; applied is null && attempt < 3; attempt++)
             {
-                operation = ledgerStore.Execute(s =>
+                // A stale hold or backpack revision (another action moved it) stores no receipt; re-read and retry.
+                try
                 {
-                    var key = operationId + "/consume";
-                    if (s.Operations.TryGetValue(key, out var existing)) return existing;
-                    var tombstone = new LedgerReceipt(key, LedgerAction.Consume, [], []);
-                    var marker = new StoredOperation("housing/compensated", tombstone);
-                    s.Operations.Add(key, marker);
-                    return marker;
-                });
+                    Ledger(() => commit
+                        ? ledger.Consume(key, hold, ledger.Read(hold).Revision, pending.MaterialId, pending.MaterialQuantity, "construction_material_consumed")
+                        : ledger.Transfer(key, hold, ledger.Read(hold).Revision, pending.ContainerId, ledger.Read(pending.ContainerId).Revision,
+                            pending.MaterialId, pending.MaterialQuantity));
+                }
+                catch (HousingRejectedException) { }
+                applied = Ledger(() => ledger.Receipt(key));
             }
-            catch (LedgerStoreUnavailableException ex) { throw new HousingUnavailableException("Inventory store unavailable; retry reconciliation.", ex); }
-            catch (LedgerRejectedException ex) { throw new HousingRejectedException($"Inventory reconciliation rejected: {ex.Message}"); }
-            var debit = operation.Receipt;
-            var compensated = operation.Fingerprint == "housing/compensated" &&
-                debit.OperationId == operationId + "/consume" && debit.Action == LedgerAction.Consume &&
-                debit.Revisions.Count == 0 && debit.Changes.Count == 0;
-            if (!compensated && (debit.OperationId != operationId + "/consume" || debit.Action != LedgerAction.Consume ||
-                debit.Revisions.Count != 1 || debit.Revisions[0].ContainerId != pending.ContainerId ||
-                debit.Revisions[0].Before != pending.ExpectedContainerRevision ||
-                debit.Changes.Count != 1 || debit.Changes[0].ContainerId != pending.ContainerId ||
-                debit.Changes[0].DefinitionId != pending.MaterialId || debit.Changes[0].Delta != -pending.MaterialQuantity))
-                throw new HousingRejectedException("Ledger receipt does not match reserved materials.");
-            var state = compensated ? "Compensated" : "Committed";
+            if (applied is null) throw new HousingUnavailableException("Construction decision not applied yet; retry reconciliation.", new TimeoutException(key));
+            if (applied.Changes.Count == 0 || applied.Changes.All(x => x.ContainerId != hold || x.Delta != -pending.MaterialQuantity))
+                throw new HousingRejectedException("Ledger apply receipt does not match the held materials.");
             var revision = pending.Revision;
-            if (!compensated)
+            if (commit)
             {
                 using var rev = Cmd(c,t,"UPDATE housing.claim_structure_revisions SET revision=revision+1 WHERE claim_id=$1 RETURNING revision",pending.ClaimId);
                 revision = rev.ExecuteScalar() is long value ? value : throw new HousingRejectedException("Claim structure revision missing.");
             }
             using var update = Cmd(c,t,"UPDATE housing.placements SET state=$1,revision=$2,consume_receipt=$3::jsonb WHERE operation_id=$4 AND state='Pending'",
-                state,revision,compensated ? "null" : JsonSerializer.Serialize(debit),operationId);
-            if (update.ExecuteNonQuery()!=1) throw new HousingRejectedException("Placement already decided.");
+                commit ? "Committed" : "Compensated",revision,JsonSerializer.Serialize(applied),operationId);
+            if (update.ExecuteNonQuery()!=1) throw new HousingRejectedException("Placement already completed.");
             return ReadPlacement(c,t,operationId)!;
         });
+
+    private static T Ledger<T>(Func<T> call)
+    {
+        try { return call(); }
+        catch (LedgerStoreUnavailableException ex) { throw new HousingUnavailableException("Inventory store unavailable; retry reconciliation.", ex); }
+        catch (LedgerRejectedException ex) { throw new HousingRejectedException($"Inventory rejected: {ex.Message}"); }
+    }
 
     public HousingRemoval BeginRemove(HousingRemoveRequest request, DateTimeOffset now) => Run((c,t) =>
     {

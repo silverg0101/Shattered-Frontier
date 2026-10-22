@@ -41,4 +41,8 @@ public:
     bool bAllowUnclaimedBuilding = true;
 
     bool Validate(FString& Error) const;
+
+    // Development fixture only, compiled out of shipping: -SFDevUnlimitedStock lets edits that do not go through Housing
+    // (fixture maps, a zone without Gameplay services) build without paying. Off on the normal path.
+    static bool AllowsUnpaidEdits();
 };

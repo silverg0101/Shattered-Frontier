@@ -303,22 +303,25 @@ internal static class GameplayFixtureClient
                 Console.WriteLine("PASS stale revision retry and concurrent place/remove");
                 break;
             case "fixture-place-abandon":
-                ledger.CreateContainer(new ContainerSpec("ctn_abandon", OwnerKind.Character, "chr_abandon", ContainerKind.Backpack, 100));
-                ledger.Grant("seed/abandon", "ctn_abandon", 0, "item/wall_material_bundle", 1, "fixture", "seed/abandon");
-                client.ClaimPlot(new Pb.ClaimPlotRequest { OperationId = "claim/abandon", ClaimId = "clm_abandon",
-                    OwnerId = "chr_abandon", CenterX = 700, CenterY = 700, SideMetres = 40, PrepaidDays = 1 },
+            case "fixture-place-decided":
+                // The host dies after the placement intent (abandon) or after its commit decision (decided).
+                var fault = mode == "fixture-place-abandon" ? "abandon" : "decided";
+                ledger.CreateContainer(new ContainerSpec($"ctn_{fault}", OwnerKind.Character, $"chr_{fault}", ContainerKind.Backpack, 100));
+                ledger.Grant($"seed/{fault}", $"ctn_{fault}", 0, "item/wall_material_bundle", 1, "fixture", $"seed/{fault}");
+                client.ClaimPlot(new Pb.ClaimPlotRequest { OperationId = $"claim/{fault}", ClaimId = $"clm_{fault}",
+                    OwnerId = $"chr_{fault}", CenterX = fault == "abandon" ? 700 : 820, CenterY = 700, SideMetres = 40, PrepaidDays = 1 },
                     headers, deadline: DateTime.UtcNow.AddSeconds(10));
                 try
                 {
-                    client.Place(new Pb.PlaceRequest { OperationId = "place/abandon", ClaimId = "clm_abandon",
-                        ActorId = "chr_abandon", StructureId = "str_abandon", ContentId = "piece/wall",
+                    client.Place(new Pb.PlaceRequest { OperationId = $"place/{fault}", ClaimId = $"clm_{fault}",
+                        ActorId = $"chr_{fault}", StructureId = $"str_{fault}", ContentId = "piece/wall",
                         MaterialId = "item/wall_material_bundle", MaterialQuantity = 1,
-                        ContainerId = "ctn_abandon", ExpectedContainerRevision = 1 },
+                        ContainerId = $"ctn_{fault}", ExpectedContainerRevision = 1 },
                         headers, deadline: DateTime.UtcNow.AddSeconds(10));
                     throw new Exception("Placement fault did not fire.");
                 }
                 catch (RpcException) { }
-                Console.WriteLine("PASS abandoned placement reserved");
+                Console.WriteLine($"PASS {fault} placement interrupted");
                 break;
             case "fixture-quest-abandon":
             case "fixture-quest-full":

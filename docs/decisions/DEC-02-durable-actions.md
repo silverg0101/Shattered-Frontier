@@ -1,6 +1,16 @@
 # DEC-02 — MVP durable construction actions
 
-Status: proposed, 2026-10-17. Documentation reconciliation complete only after independent review; architecture and persistence owners must accept deployment and implementation evidence separately. This is not an installed schema or runtime guarantee.
+Status: **accepted by the owner 2026-10-22** ([decision record](OWNER-2026-10-22-decisions.md)): structures save to the player's claim and placement costs real inventory, with an Alpha Starter Kit for testing. Proposed 2026-10-17. The MVP slice below is implemented; the remaining gates at the end still apply.
+
+## Implementation status (2026-10-22)
+
+- **Placement protocol.** Housing.Postgres schema v6 (`Schema.Construction.sql`) and Gameplay.Host `Place` run steps 2–5 for one structure. `Begin` stages the cell. Inventory reserves the materials by moving them from the backpack into the builder's construction hold at `<op>/reserve`. `Decide` records an immutable Commit or Abort. A missing reservation is tombstoned; a revoked grant or lost claim state aborts. `Finish` has inventory debit the hold (`/consume`) or release it to the backpack (`/release`), then completes from that receipt. Inventory is the only writer of items. Housing only fences a missing reservation with the existing zero-change tombstone. The sweeper rolls decided actions forward after a crash.
+- **Unreal adapter.** `ASFGameMode::CommitHousing` was already the zone path (validate locally, `Housing.Place`, apply). It now gets the reserve/debit/release protocol unchanged on the wire. Structures load back from the claim at server start (`LoadClaims`).
+- **Alpha Starter Kit.** `InventoryLedger/AlphaStarterKit.cs` declares the typed contents, quantities and bounds. `InventoryLedger.Host` grants it on `EnsureContainer` once per character (`alpha-starter-kit/v1/<character>`) when `INVENTORY_LEDGER_ALPHA_STARTER_KIT=on`. This is a development/alpha grant, not a shipped player feature.
+- **Development stock.** An edit that Housing does not pay for needs the explicit `-SFDevUnlimitedStock` fixture flag, compiled out of shipping. That covers sandbox and dev maps, a zone without Gameplay services, lines and doors. Sandbox and dev-map runners pass the flag.
+- **Not covered yet.** World/terrain participants (BLD-03, TER-01). Per-piece costs (every pilot shape costs one wall bundle). Line placement through Housing. The authenticated participant transport and coordinator takeover (PER-01/INT-02). The full failure matrix beyond the fixtures below.
+
+Evidence: `tools/Test-HousingDurable.ps1` covers reserve, debit, a release on revoke, a fenced abort, a kill after the commit decision with restart roll-forward, and conservation. `tools/Test-GameplayHosts.ps1` adds a host killed after the decision, swept to exactly one debit. `InventoryLedger.Tests` checks kit idempotency and concurrency. `ShatteredFrontier.Construction.DevStock` checks the gate. `tools/Test-ClaimHousing.ps1 -StarterKit` runs the two-process `-game` route. On 2026-10-22 it passed: one kit per character, and alpha built and removed a piece (30 → 29 wall bundles, each placement `reserve` then `consume`). The UE server, Gameplay.Host and InventoryLedger.Host were hard-killed and restarted. The structure digest and alpha's backpack and hold were identical afterwards, and bravo then built from its own kit.
 
 ## Decision boundary and sources
 

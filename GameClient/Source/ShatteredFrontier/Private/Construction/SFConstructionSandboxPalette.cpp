@@ -1,5 +1,6 @@
 #include "Construction/SFConstructionSandboxPalette.h"
 
+#include "Construction/SFConstructionSandboxSettings.h"
 #include "Framework/SFHudStyle.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
@@ -192,13 +193,14 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
     MaterialSize->SetHeightOverride(40.f); MaterialSize->SetContent(Material);
     Contents->AddChildToVerticalBox(MaterialSize)->SetPadding(FMargin(0.f, 6.f, 0.f, 10.f));
 
-    // Required materials. ponytail: no cost model exists yet (dev stock is unlimited); replace the row with have / need rows when it does.
+    // Required materials: every pilot piece costs one wall bundle from the backpack (DEC-02); unpaid only under the dev stock fixture.
+    // ponytail: one fixed row; have / need rows per piece follow BLD-01 piece costs.
     UBorder* Cost = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
     Cost->SetBrush(Frame(Well, Hex(TEXT("3A4348")), 3.f)); Cost->SetPadding(FMargin(14.f, 10.f));
     UVerticalBox* CostStack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     CostStack->AddChildToVerticalBox(Text(WidgetTree, TEXT("Required Materials"), 20, Ivory()))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
     UHorizontalBox* CostRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    UHorizontalBoxSlot* CostName = CostRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Unlimited dev stock"), 18, Ivory()));
+    UHorizontalBoxSlot* CostName = CostRow->AddChildToHorizontalBox(Text(WidgetTree, USFConstructionSandboxSettings::AllowsUnpaidEdits() ? TEXT("Unlimited dev stock") : TEXT("1 Wall Material Bundle"), 18, Ivory()));
     CostName->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
     CostRow->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("status_tick"), 18.f))->SetVerticalAlignment(VAlign_Center);
     CostStack->AddChildToVerticalBox(CostRow)->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
