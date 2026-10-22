@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Frontier Assets</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+<style>
+:root {
+  --background: hsl(220, 14%, 8%);
+  --foreground: hsl(210, 16%, 95%);
+  --primary: hsl(206, 100%, 52%);
+  --primary-30: hsla(206, 100%, 52%, .3);
+  --primary-12: hsla(206, 100%, 52%, .12);
+  --primary-foreground: #fff;
+  --muted-foreground: hsl(215, 10%, 58%);
+  --border: hsl(220, 12%, 20%);
+  --card: hsl(220, 13%, 12%);
+  --card-elevated: hsl(220, 12%, 16%);
+  --success: hsl(152, 62%, 44%);
+  --danger: hsl(355, 78%, 58%);
+  --warn: hsl(38, 92%, 56%);
+  --deep: hsl(220, 16%, 5%);
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --display: 'Sora', system-ui, sans-serif;
+  --sans: 'Inter', system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--background); color: var(--foreground); font: 400 14px/1.6 var(--sans); overflow: hidden; }
+button, input, select { font: inherit; color: inherit; }
+a { color: var(--primary); text-decoration: none; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; border: 2px solid var(--background); }
+
+.app { display: grid; grid-template-columns: 224px 1fr auto; height: 100vh; }
+
+/* ---- left menu */
+nav.side { background: var(--deep); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 22px 14px; gap: 4px; }
+.brand { display: flex; align-items: center; gap: 10px; padding: 0 10px 26px; }
+.brand b { font: 800 20px/1 var(--display); letter-spacing: -.035em; }
+.brand small { display: block; font: 600 9px/1 var(--sans); letter-spacing: .28em; color: var(--muted-foreground); margin-top: 5px; }
+.brand svg { color: var(--primary); filter: drop-shadow(0 0 8px var(--primary-30)); }
+nav.side a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; color: var(--muted-foreground); font-weight: 500; transition: background .25s, color .25s; }
+nav.side a:hover { background: var(--card); color: var(--foreground); }
+nav.side a.on { background: var(--primary-12); color: var(--foreground); box-shadow: inset 2px 0 0 var(--primary); }
+nav.side a.on svg { color: var(--primary); }
+nav.side .foot { margin-top: auto; padding: 10px 12px; font-size: 11px; color: var(--muted-foreground); }
+
+/* ---- main */
+main { display: flex; flex-direction: column; min-width: 0; }
+header.top { height: 64px; flex: none; display: flex; align-items: center; gap: 12px; padding: 0 28px; border-bottom: 1px solid var(--border); background: hsla(220, 14%, 8%, .92); backdrop-filter: blur(10px); }
+.crumbs { display: flex; align-items: center; gap: 6px; font: 600 13px var(--display); min-width: 0; overflow: hidden; white-space: nowrap; }
+.crumbs a { color: var(--muted-foreground); padding: 4px 6px; border-radius: 6px; transition: color .2s, background .2s; }
+.crumbs a:hover { color: var(--foreground); background: var(--card); }
+.crumbs a:last-child { color: var(--foreground); }
+.crumbs i { color: var(--border); font-style: normal; }
+.view { flex: 1; overflow: auto; padding: 28px; }
+.eyebrow { font: 600 11px/1 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--primary); }
+h2 { font: 700 32px/1.1 var(--display); letter-spacing: -.025em; margin: 10px 0 0; }
+h3 { font: 600 18px/1.2 var(--display); margin: 0; }
+.muted { color: var(--muted-foreground); }
+.fade { animation: fadeUp .6s var(--ease) both; animation-delay: calc(var(--i, 0) * 40ms); }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+
+.btn { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--card); cursor: pointer; font-weight: 500; font-size: 13px; transition: border-color .25s, background .25s, box-shadow .25s; white-space: nowrap; }
+.btn:hover:not(:disabled) { border-color: var(--primary-30); background: var(--card-elevated); }
+.btn:disabled { opacity: .4; cursor: default; }
+.btn.primary { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); font-weight: 600; }
+.btn.primary:hover:not(:disabled) { box-shadow: 0 0 24px var(--primary-30); background: var(--primary); }
+.btn.danger:hover:not(:disabled) { border-color: var(--danger); color: var(--danger); }
+.btn.icon { width: 36px; padding: 0; justify-content: center; }
+.btn.sm { height: 28px; padding: 0 10px; font-size: 12px; }
+input[type=text], input[type=number], input[type=search], select { height: 38px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--card); outline: none; transition: border-color .2s, box-shadow .2s; width: 100%; }
+input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-12); }
+input[type=checkbox] { accent-color: var(--primary); width: 16px; height: 16px; }
+
+/* ---- assets */
+.assets { display: grid; grid-template-columns: 1fr 380px; gap: 24px; height: 100%; }
+.assets.nopreview { grid-template-columns: 1fr; }
+.pane { min-width: 0; display: flex; flex-direction: column; }
+.toolbar { position: sticky; top: -28px; z-index: 5; margin: 0 -28px; padding: 14px 28px; background: hsla(220, 14%, 8%, .95); backdrop-filter: blur(10px); border-block: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.toolbar .search { width: 220px; margin-left: auto; }
+.toolbar .count { font-size: 12px; color: var(--muted-foreground); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--tile, 168px), 1fr)); gap: 16px; padding: 20px 0; align-content: start; flex: 1; border-radius: 16px; transition: background .2s, outline-color .2s; outline: 2px dashed transparent; outline-offset: -2px; }
+.grid.drop { background: var(--primary-12); outline-color: var(--primary); }
+.tile { position: relative; overflow: hidden; border-radius: 12px; border: 1px solid var(--border); background: var(--card); cursor: pointer; user-select: none; transition: border-color .25s, box-shadow .25s; }
+.tile:hover { border-color: var(--primary-30); }
+.tile.sel { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary), 0 0 24px var(--primary-12); }
+.tile .thumb { aspect-ratio: 1; display: grid; place-items: center; overflow: hidden; background: radial-gradient(circle at 50% 30%, var(--card-elevated), var(--card)); }
+.tile .thumb img { width: 100%; height: 100%; object-fit: contain; transition: transform .7s var(--ease); }
+.tile:hover .thumb img { transform: scale(1.05); }
+.tile .thumb svg { width: 44px; height: 44px; color: var(--muted-foreground); transition: transform .7s var(--ease), color .25s; }
+.tile:hover .thumb svg { transform: scale(1.08); color: var(--primary); }
+.tile .meta { padding: 9px 11px 11px; }
+.tile .name { font: 600 13px/1.3 var(--display); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile .sub { font-size: 11px; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+.tile .check { position: absolute; top: 8px; left: 8px; opacity: 0; transition: opacity .2s; }
+.tile:hover .check, .tile.sel .check, .grid.multi .check { opacity: 1; }
+.badge { position: absolute; top: 8px; right: 8px; border-radius: 999px; padding: 2px 8px; font: 600 10px/1.6 var(--sans); letter-spacing: .08em; text-transform: uppercase; background: hsla(220, 14%, 8%, .8); backdrop-filter: blur(6px); color: var(--muted-foreground); }
+.badge.model { background: var(--primary); color: #fff; }
+.empty { grid-column: 1 / -1; text-align: center; padding: 70px 20px; color: var(--muted-foreground); border: 1px dashed var(--border); border-radius: 16px; }
+
+.preview { position: sticky; top: 0; align-self: start; border: 1px solid var(--border); border-radius: 16px; background: var(--card-elevated); overflow: hidden; max-height: calc(100vh - 120px); display: flex; flex-direction: column; }
+.preview .stage { aspect-ratio: 1; background: radial-gradient(circle at 50% 35%, hsl(220, 12%, 20%), var(--deep)); display: grid; place-items: center; }
+.preview .stage img { max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in; }
+.preview model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
+.preview .info { padding: 18px 20px; overflow: auto; }
+.preview dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 14px 0; font-size: 12px; }
+.preview dt { color: var(--muted-foreground); }
+.preview dd { margin: 0; font-variant-numeric: tabular-nums; word-break: break-all; }
+.preview .acts { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ---- create */
+.types { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin: 22px 0 26px; }
+.type { text-align: left; padding: 18px; border-radius: 14px; border: 1px solid var(--border); background: var(--card); cursor: pointer; transition: border-color .25s, box-shadow .25s; }
+.type.on { border-color: var(--primary); box-shadow: 0 0 28px var(--primary-12); }
+.type:disabled { opacity: .45; cursor: default; }
+.type svg { color: var(--primary); }
+.type h3 { margin: 12px 0 4px; }
+.form { display: grid; grid-template-columns: 340px 1fr; gap: 24px; align-items: start; }
+.card { border: 1px solid var(--border); border-radius: 16px; background: var(--card-elevated); padding: 22px; }
+.src { aspect-ratio: 1; border-radius: 12px; border: 1px dashed var(--border); display: grid; place-items: center; overflow: hidden; background: var(--card); margin: 14px 0; color: var(--muted-foreground); text-align: center; transition: border-color .2s, background .2s; }
+.src.drop { border-color: var(--primary); background: var(--primary-12); }
+.src img { width: 100%; height: 100%; object-fit: contain; }
+.fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px 18px; margin-top: 14px; }
+.field label { display: block; font: 600 11px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--muted-foreground); margin-bottom: 8px; }
+.field.check { display: flex; align-items: center; gap: 10px; padding-top: 22px; }
+.field.check label { margin: 0; }
+details.sec { border-top: 1px solid var(--border); padding: 14px 0 4px; margin-top: 18px; }
+details.sec summary { cursor: pointer; font: 600 15px var(--display); list-style: none; display: flex; align-items: center; gap: 8px; }
+details.sec summary::before { content: '›'; color: var(--primary); font-size: 18px; transition: transform .25s; }
+details.sec[open] summary::before { transform: rotate(90deg); }
+
+/* ---- settings */
+table.hosts { width: 100%; border-collapse: collapse; margin-top: 12px; }
+table.hosts th { text-align: left; font: 600 11px var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--muted-foreground); padding: 8px 6px; }
+table.hosts td { padding: 6px; vertical-align: middle; }
+table.hosts input[type=text], table.hosts input[type=number] { height: 34px; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; background: var(--muted-foreground); }
+.dot.ok { background: var(--success); box-shadow: 0 0 8px var(--success); }
+.dot.bad { background: var(--danger); }
+.dot.busy { background: var(--warn); }
+
+/* ---- queue flyout */
+aside.queue { width: 380px; border-left: 1px solid var(--border); background: var(--deep); display: flex; flex-direction: column; transition: width .35s var(--ease); overflow: hidden; }
+aside.queue.closed { width: 52px; }
+.qhead { height: 64px; flex: none; display: flex; align-items: center; gap: 10px; padding: 0 12px 0 16px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+aside.queue.closed .qhead { padding: 0 8px; justify-content: center; }
+aside.queue.closed .qhide { display: none; }
+.qcount { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--primary); color: #fff; font: 700 11px/20px var(--display); text-align: center; }
+.qbody { flex: 1; overflow: auto; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+aside.queue.closed .qbody { display: none; }
+.vtab { display: none; writing-mode: vertical-rl; font: 600 11px var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--muted-foreground); margin: 18px auto; cursor: pointer; }
+aside.queue.closed .vtab { display: block; }
+.job { border: 1px solid var(--border); border-radius: 12px; background: var(--card); padding: 12px 14px; animation: fadeUp .45s var(--ease) both; }
+.job.running { border-color: var(--primary-30); box-shadow: 0 0 24px var(--primary-12); }
+.job .row { display: flex; align-items: center; gap: 8px; }
+.job .title { font: 600 14px var(--display); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pill { font: 600 10px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; padding: 5px 8px; border-radius: 999px; background: var(--card-elevated); color: var(--muted-foreground); }
+.pill.running { background: var(--primary); color: #fff; animation: pulse 1.6s ease-in-out infinite; }
+.pill.done { background: var(--success); color: #04180f; }
+.pill.failed { background: var(--danger); color: #fff; }
+.pill.cancelling, .pill.cancelled { background: var(--warn); color: #241600; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 4px var(--primary-30); } }
+.job .sub { font-size: 11px; color: var(--muted-foreground); margin-top: 4px; font-variant-numeric: tabular-nums; }
+.job .err { font-size: 12px; color: var(--danger); margin-top: 6px; word-break: break-word; }
+.metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin-top: 10px; }
+.metric { font-size: 11px; }
+.metric .lbl { display: flex; justify-content: space-between; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+.metric .lbl b { color: var(--foreground); font: 700 11px var(--display); }
+.bar { height: 4px; border-radius: 4px; background: var(--card-elevated); overflow: hidden; margin-top: 4px; }
+.bar i { display: block; height: 100%; background: var(--primary); border-radius: 4px; transition: width .6s var(--ease); }
+.log { margin-top: 10px; border-radius: 8px; background: var(--deep); border: 1px solid var(--border); font: 11px/1.5 ui-monospace, Consolas, monospace; color: hsl(210, 16%, 80%); }
+.log pre { margin: 0; padding: 8px 10px; white-space: pre-wrap; word-break: break-all; max-height: 1.5em; overflow: hidden; }
+.log.open pre { max-height: 320px; overflow: auto; }
+.log .lbar { display: flex; align-items: center; gap: 10px; padding: 4px 8px; border-top: 1px solid var(--border); font: 11px var(--sans); color: var(--muted-foreground); }
+.log .lbar label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+.log .lbar input { width: 13px; height: 13px; }
+.job .acts { display: flex; gap: 6px; margin-top: 10px; }
+
+/* ---- modal, lightbox, toast */
+.overlay { position: fixed; inset: 0; z-index: 50; background: hsla(220, 16%, 4%, .75); backdrop-filter: blur(6px); display: grid; place-items: center; padding: 20px; animation: fadeIn .2s both; }
+@keyframes fadeIn { from { opacity: 0; } }
+.modal { width: min(560px, 100%); max-height: 80vh; display: flex; flex-direction: column; background: var(--card-elevated); border: 1px solid var(--border); border-radius: 18px; padding: 22px; animation: pop .3s var(--ease) both; }
+@keyframes pop { from { opacity: 0; transform: scale(.97); } }
+.modal .list { flex: 1; overflow: auto; margin: 14px 0; border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
+.modal .item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; cursor: pointer; border-bottom: 1px solid var(--border); }
+.modal .item:hover { background: var(--primary-12); }
+.modal .item img { width: 36px; height: 36px; object-fit: cover; border-radius: 6px; }
+.modal .foot { display: flex; justify-content: flex-end; gap: 8px; }
+.lightbox img { max-width: 92vw; max-height: 90vh; border-radius: 12px; box-shadow: 0 0 60px var(--primary-12); }
+.toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 60; padding: 10px 18px; border-radius: 999px; background: var(--card-elevated); border: 1px solid var(--border); box-shadow: 0 10px 30px #0008; animation: fadeUp .35s var(--ease) both; }
+.toast.err { border-color: var(--danger); color: var(--danger); }
+
+@media (max-width: 1100px) { .assets { grid-template-columns: 1fr; } .preview { position: static; } .form { grid-template-columns: 1fr; } }
+@media (max-width: 760px) {
+  .app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  nav.side { flex-direction: row; padding: 8px 16px; overflow-x: auto; }
+  nav.side .brand, nav.side .foot { display: none; }
+  aside.queue { position: fixed; right: 0; top: 0; bottom: 0; z-index: 40; max-width: 100vw; }
+  .view { padding: 20px 16px; } header.top { padding: 0 16px; } .toolbar { margin: 0 -16px; padding: 12px 16px; } .toolbar .search { width: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="side">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l8-10 8 10"/><path d="M8 17l4-5 4 5"/></svg>
+      <div><b>FRONTIER</b><small>ASSET FORGE</small></div>
+    </div>
+    <a href="#/assets" data-nav="assets"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Assets</a>
+    <a href="#/create" data-nav="create"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>Create</a>
+    <a href="#/settings" data-nav="settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>Settings</a>
+    <div class="foot">ComfyUI · Trellis2 + Pixal3D</div>
+  </nav>
+  <main>
+    <header class="top"><div class="crumbs" id="crumbs"></div></header>
+    <div class="view" id="view"></div>
+  </main>
+  <aside class="queue" id="queue">
+    <div class="qhead">
+      <button class="btn icon sm" id="qtoggle" title="Toggle queue"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 6l6 6-6 6"/></svg></button>
+      <span class="eyebrow qhide">Queue</span><span class="qcount" id="qcount">0</span>
+      <span class="qhide" style="margin-left:auto"><button class="btn sm" id="qclear">Clear finished</button></span>
+    </div>
+    <div class="vtab" id="vtab">Queue</div>
+    <div class="qbody" id="qbody"></div>
+  </aside>
+</div>
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const fileUrl = p => '/files/' + p.split('/').map(encodeURIComponent).join('/');
+const store = { get: (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } }, set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
+const fmtSize = n => n < 1024 ? n + ' B' : n < 1 << 20 ? (n / 1024).toFixed(1) + ' KB' : n < 1 << 30 ? (n / 1048576).toFixed(1) + ' MB' : (n / 1073741824).toFixed(2) + ' GB';
+const fmtTime = t => new Date(t * 1000).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+const dur = s => s < 60 ? Math.round(s) + 's' : Math.floor(s / 60) + 'm ' + String(Math.round(s % 60)).padStart(2, '0') + 's';
+
+async function api(path, opts = {}) {
+  const r = await fetch(path, { ...opts, headers: opts.body && !(opts.body instanceof Blob) ? { 'Content-Type': 'application/json' } : {} });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || r.statusText);
+  return j;
+}
+const post = (p, b) => api(p, { method: 'POST', body: JSON.stringify(b || {}) });
+function toast(msg, err) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const t = Object.assign(document.createElement('div'), { className: 'toast' + (err ? ' err' : ''), textContent: msg });
+  document.body.append(t); setTimeout(() => t.remove(), 3500);
+}
+const fail = e => toast(e.message, true);
+
+const ICON = {
+  dir: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>',
+  model: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>',
+  file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/></svg>',
+  image: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>',
+};
+
+/* ---------------- router */
+const state = { path: '', entries: [], sel: new Set(), anchor: null, focus: null, filter: '', createImage: store.get('createImage', null) };
+function route() {
+  const h = location.hash.slice(2) || 'assets';
+  const [page, ...rest] = h.split('/');
+  document.querySelectorAll('[data-nav]').forEach(a => a.classList.toggle('on', a.dataset.nav === page));
+  if (page === 'create') return renderCreate();
+  if (page === 'settings') return renderSettings();
+  state.path = rest.map(decodeURIComponent).join('/');
+  renderAssets();
+}
+function crumbs(parts) {
+  $('#crumbs').innerHTML = parts.map(([label, href]) => `<a href="${href}">${esc(label)}</a>`).join('<i>/</i>');
+}
+const assetHref = p => '#/assets/' + p.split('/').filter(Boolean).map(encodeURIComponent).join('/');
+
+/* ---------------- assets */
+async function renderAssets() {
+  const segs = state.path.split('/').filter(Boolean);
+  crumbs([['Assets', '#/assets'], ...segs.map((s, i) => [s, assetHref(segs.slice(0, i + 1).join('/'))])]);
+  let data;
+  try { data = await api('/api/ls?path=' + encodeURIComponent(state.path)); } catch (e) { fail(e); data = { entries: [] }; }
+  state.entries = data.entries; state.sel.clear(); state.focus = null; state.anchor = null;
+  $('#view').innerHTML = `
+    <div class="assets nopreview" id="assets">
+      <div class="pane">
+        <div class="eyebrow">Asset library</div>
+        <h2 style="margin-bottom:18px">${esc(segs.at(-1) || 'All assets')}</h2>
+        <div class="toolbar">
+          ${segs.length ? `<button class="btn icon" id="up" title="Up one folder"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>` : ''}
+          <button class="btn" id="mkdir">+ New folder</button>
+          <button class="btn" id="upload">Upload</button>
+          <input type="file" id="files" multiple hidden>
+          <button class="btn" id="move" disabled>Move</button>
+          <button class="btn" id="rename" disabled>Rename</button>
+          <button class="btn danger" id="del" disabled>Delete</button>
+          <span class="count" id="count"></span>
+          <input type="search" class="search" id="filter" placeholder="Filter this folder…" value="${esc(state.filter)}">
+        </div>
+        <div class="grid" id="grid"></div>
+      </div>
+      <div id="preview"></div>
+    </div>`;
+  drawGrid();
+  $('#up')?.addEventListener('click', () => location.hash = assetHref(segs.slice(0, -1).join('/')));
+  $('#mkdir').onclick = async () => {
+    const name = prompt('New folder name'); if (!name) return;
+    post('/api/mkdir', { path: join(state.path, name) }).then(renderAssets, fail);
+  };
+  $('#upload').onclick = () => $('#files').click();
+  $('#files').onchange = e => uploadFiles([...e.target.files]);
+  $('#move').onclick = () => pickFolder('Move ' + state.sel.size + ' item(s) to…').then(dest => dest !== null &&
+    post('/api/move', { paths: [...state.sel], dest }).then(() => { toast('Moved'); renderAssets(); }, fail));
+  $('#rename').onclick = () => {
+    const p = [...state.sel][0], old = p.split('/').pop(), name = prompt('Rename to', old);
+    if (name && name !== old) post('/api/rename', { path: p, name }).then(renderAssets, fail);
+  };
+  $('#del').onclick = deleteSel;
+  $('#filter').oninput = e => { state.filter = e.target.value; drawGrid(); };
+  const grid = $('#grid');
+  grid.addEventListener('dragover', e => { if (e.dataTransfer.types.includes('Files')) { e.preventDefault(); grid.classList.add('drop'); } });
+  grid.addEventListener('dragleave', e => { if (!grid.contains(e.relatedTarget)) grid.classList.remove('drop'); });
+  grid.addEventListener('drop', e => { e.preventDefault(); grid.classList.remove('drop'); uploadFiles([...e.dataTransfer.files]); });
+  grid.addEventListener('click', e => { if (e.target === grid) { state.sel.clear(); syncSel(); } });
+}
+const join = (a, b) => [a, b].filter(Boolean).join('/');
+const visible = () => state.entries.filter(e => e.name.toLowerCase().includes(state.filter.toLowerCase()));
+
+function drawGrid() {
+  const list = visible();
+  $('#grid').innerHTML = list.length ? list.map((e, i) => `
+    <div class="tile fade" style="--i:${Math.min(i, 20)}" data-path="${esc(e.path)}" draggable="false">
+      <input type="checkbox" class="check" tabindex="-1">
+      ${e.kind === 'model' ? `<span class="badge model">${esc(e.name.split('.').pop())}</span>` : e.kind === 'dir' ? '' : `<span class="badge">${esc(e.name.split('.').pop())}</span>`}
+      <div class="thumb">${e.thumb ? `<img loading="lazy" src="${fileUrl(e.thumb)}" alt="">` : ICON[e.kind]}</div>
+      <div class="meta"><div class="name" title="${esc(e.name)}">${esc(e.name)}</div>
+        <div class="sub">${e.kind === 'dir' ? 'Folder' : fmtSize(e.size)} · ${fmtTime(e.mtime)}</div></div>
+    </div>`).join('') : `<div class="empty">${state.filter ? 'Nothing matches the filter.' : 'This folder is empty. Drop files here or use Upload.'}</div>`;
+  $('#grid').querySelectorAll('.tile').forEach(t => {
+    t.onclick = ev => select(t.dataset.path, ev);
+    t.ondblclick = () => { const e = byPath(t.dataset.path); if (e.kind === 'dir') location.hash = assetHref(e.path); };
+  });
+  syncSel();
+}
+const byPath = p => state.entries.find(e => e.path === p);
+function select(path, ev) {
+  const list = visible().map(e => e.path);
+  if (ev.shiftKey && state.anchor) {
+    const [a, b] = [list.indexOf(state.anchor), list.indexOf(path)].sort((x, y) => x - y);
+    if (!(ev.ctrlKey || ev.metaKey)) state.sel.clear();
+    list.slice(a, b + 1).forEach(p => state.sel.add(p));
+  } else if (ev.ctrlKey || ev.metaKey || ev.target.classList.contains('check')) {
+    state.sel.has(path) ? state.sel.delete(path) : state.sel.add(path); state.anchor = path;
+  } else { state.sel = new Set([path]); state.anchor = path; }
+  state.focus = path;
+  syncSel();
+}
+function syncSel() {
+  document.querySelectorAll('.tile').forEach(t => {
+    const on = state.sel.has(t.dataset.path); t.classList.toggle('sel', on); $('.check', t).checked = on;
+  });
+  $('#grid')?.classList.toggle('multi', state.sel.size > 1);
+  const n = state.sel.size;
+  $('#move').disabled = $('#del').disabled = !n; $('#rename').disabled = n !== 1;
+  $('#count').textContent = n ? `${n} selected` : `${visible().length} items`;
+  drawPreview(n === 1 ? byPath([...state.sel][0]) : null);
+}
+function drawPreview(e) {
+  const box = $('#preview'); if (!box) return;
+  $('#assets').classList.toggle('nopreview', !e);
+  if (!e) { box.innerHTML = ''; return; }
+  if (box.dataset.path === e.path && box.innerHTML) return;
+  box.dataset.path = e.path;
+  const url = fileUrl(e.path), ext = e.name.split('.').pop().toLowerCase();
+  const stage = e.kind === 'image' ? `<img src="${url}" alt="" id="zoom">`
+    : e.kind === 'model' && ['glb', 'gltf'].includes(ext) ? `<model-viewer src="${url}" camera-controls auto-rotate shadow-intensity="1" exposure="1.1" environment-image="neutral" ${e.thumb ? `poster="${fileUrl(e.thumb)}"` : ''}></model-viewer>`
+    : e.thumb ? `<img src="${fileUrl(e.thumb)}" alt="">` : `<div class="muted" style="text-align:center">${ICON[e.kind].replace('<svg', '<svg width="64" height="64"')}<br>No preview for .${esc(ext)}</div>`;
+  box.innerHTML = `<div class="preview fade">
+    <div class="stage">${stage}</div>
+    <div class="info"><div class="eyebrow">${esc(e.kind === 'dir' ? 'Folder' : e.kind)}</div><h3 style="margin-top:8px;word-break:break-all">${esc(e.name)}</h3>
+      <dl><dt>Size</dt><dd>${e.kind === 'dir' ? '—' : fmtSize(e.size)}</dd><dt>Modified</dt><dd>${fmtTime(e.mtime)}</dd><dt>Path</dt><dd>${esc(e.path)}</dd></dl>
+      <div class="acts">
+        ${e.kind === 'dir' ? `<a class="btn primary" href="${assetHref(e.path)}">Open folder</a>` : `<a class="btn" href="${url}" download>Download</a>`}
+        ${e.kind === 'image' ? `<button class="btn primary" id="use">Use in Create</button>` : ''}
+      </div></div></div>`;
+  $('#zoom') && ($('#zoom').onclick = () => lightbox(url));
+  $('#use') && ($('#use').onclick = () => { setCreateImage(e.path); location.hash = '#/create'; });
+}
+function lightbox(url) {
+  const o = Object.assign(document.createElement('div'), { className: 'overlay lightbox', innerHTML: `<img src="${url}" alt="">` });
+  o.onclick = () => o.remove(); document.body.append(o);
+}
+async function deleteSel() {
+  const n = state.sel.size;
+  if (!n || !confirm(`Delete ${n} item(s)? Folders are deleted with everything inside. This cannot be undone.`)) return;
+  post('/api/delete', { paths: [...state.sel] }).then(() => { toast(`Deleted ${n} item(s)`); renderAssets(); }, fail);
+}
+async function uploadFiles(files, dir = state.path) {
+  const out = [];
+  for (const [i, f] of files.entries()) {
+    toast(`Uploading ${i + 1}/${files.length}: ${f.name}`);
+    try { out.push((await api(`/api/upload?dir=${encodeURIComponent(dir)}&name=${encodeURIComponent(f.name)}`, { method: 'PUT', body: f })).path); }
+    catch (e) { fail(e); }
+  }
+  if (out.length) toast(`Uploaded ${out.length} file(s)`);
+  if (location.hash.startsWith('#/assets') || location.hash === '') renderAssets();
+  return out;
+}
+document.addEventListener('keydown', e => {
+  if (!$('#grid') || e.target.matches('input, select, textarea') || document.querySelector('.overlay')) return;
+  if (e.key === 'Delete') deleteSel();
+  if (e.key === 'Escape') { state.sel.clear(); syncSel(); }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'a') { e.preventDefault(); visible().forEach(x => state.sel.add(x.path)); syncSel(); }
+});
+
+/* ---------------- picker modal (folders, or images) */
+function picker(title, wantImage) {
+  return new Promise(resolve => {
+    let cur = wantImage ? (state.createImage || '').split('/').slice(0, -1).join('/') : state.path;
+    const o = Object.assign(document.createElement('div'), { className: 'overlay' });
+    const done = v => { o.remove(); resolve(v); };
+    o.onclick = e => e.target === o && done(null);
+    document.body.append(o);
+    async function draw() {
+      let d; try { d = await api('/api/ls?path=' + encodeURIComponent(cur)); } catch { cur = ''; return draw(); }
+      const items = d.entries.filter(e => e.kind === 'dir' || (wantImage && e.kind === 'image'));
+      o.innerHTML = `<div class="modal"><h3>${esc(title)}</h3>
+        <div class="muted" style="margin-top:6px;font-size:12px">/${esc(cur)}</div>
+        <div class="list">
+          ${cur ? `<div class="item" data-up>↑ ..</div>` : ''}
+          ${items.map(e => `<div class="item" data-p="${esc(e.path)}" data-k="${e.kind}">${e.kind === 'image' ? `<img src="${fileUrl(e.path)}" loading="lazy" alt="">` : ICON.dir.replace('<svg', '<svg width="20" height="20"')} ${esc(e.name)}</div>`).join('') || '<div class="item muted">Nothing here</div>'}
+        </div>
+        <div class="foot"><button class="btn" data-x>Cancel</button>${wantImage ? '' : '<button class="btn primary" data-ok>Move here</button>'}</div></div>`;
+      $('[data-x]', o).onclick = () => done(null);
+      $('[data-ok]', o) && ($('[data-ok]', o).onclick = () => done(cur));
+      $('[data-up]', o) && ($('[data-up]', o).onclick = () => { cur = cur.split('/').slice(0, -1).join('/'); draw(); });
+      o.querySelectorAll('[data-p]').forEach(it => it.onclick = () => it.dataset.k === 'dir' ? (cur = it.dataset.p, draw()) : done(it.dataset.p));
+    }
+    draw();
+  });
+}
+const pickFolder = t => picker(t, false);
+
+/* ---------------- create */
+let schema = null;
+const setCreateImage = p => { state.createImage = p; store.set('createImage', p); };
+async function renderCreate() {
+  crumbs([['Create', '#/create'], ['3D Asset', '#/create']]);
+  schema = schema || (await api('/api/schema').catch(e => (fail(e), {})))['3d'] || [];
+  const saved = store.get('createParams', {});
+  const sections = [...new Set(schema.map(p => p.section))];
+  const field = p => {
+    const v = saved[p.key] ?? p.default, id = 'p_' + p.key;
+    if (p.kind === 'bool') return `<div class="field check"><input type="checkbox" id="${id}" ${v ? 'checked' : ''}><label for="${id}">${esc(p.label)}</label></div>`;
+    if (p.kind === 'choice') return `<div class="field"><label for="${id}">${esc(p.label)}</label><select id="${id}">${p.options.map(o => `<option ${String(o) === String(v) ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></div>`;
+    return `<div class="field"><label for="${id}">${esc(p.label)}</label><input type="number" id="${id}" value="${v}" min="${p.min}" max="${p.max}" step="${p.step ?? (p.kind === 'int' ? 1 : 0.01)}"></div>`;
+  };
+  $('#view').innerHTML = `
+    <div class="eyebrow fade">New job</div>
+    <h2 class="fade" style="--i:1">Create</h2>
+    <div class="types fade" style="--i:2">
+      <button class="type on">${ICON.model.replace('<svg', '<svg width="28" height="28"')}<h3>3D Asset</h3><div class="muted" style="font-size:12px">Image → textured GLB · Pixal3D geometry, Trellis2 4B texture</div></button>
+    </div>
+    <div class="form">
+      <div class="card fade" style="--i:3">
+        <div class="eyebrow">Source image</div>
+        <div class="src" id="src"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="pick">Choose from assets</button><button class="btn" id="up">Upload</button><input type="file" id="srcfile" accept="image/*" hidden></div>
+        <div class="field" style="margin-top:18px"><label for="jname">Asset name</label><input type="text" id="jname" placeholder="Defaults to the image name" value="${esc(saved._name || '')}"></div>
+        <button class="btn primary" id="submit" style="width:100%;justify-content:center;margin-top:18px;height:44px">Add to queue</button>
+      </div>
+      <div class="card fade" style="--i:4">
+        ${sections.map((s, i) => i === 0
+          ? `<div class="eyebrow">${esc(s)}</div><div class="fields">${schema.filter(p => p.section === s).map(field).join('')}</div>`
+          : `<details class="sec"><summary>${esc(s)}</summary><div class="fields">${schema.filter(p => p.section === s).map(field).join('')}</div></details>`).join('')}
+        <div style="margin-top:18px;display:flex;justify-content:flex-end"><button class="btn sm" id="reset">Reset to workflow defaults</button></div>
+      </div>
+    </div>`;
+  const drawSrc = () => $('#src').innerHTML = state.createImage
+    ? `<img src="${fileUrl(state.createImage)}" alt="" title="${esc(state.createImage)}">`
+    : `<div>Drop an image here<br><span style="font-size:12px">plain background, flat light, no shadows</span></div>`;
+  drawSrc();
+  const src = $('#src');
+  src.ondragover = e => { e.preventDefault(); src.classList.add('drop'); };
+  src.ondragleave = () => src.classList.remove('drop');
+  const settings = await api('/api/settings').catch(() => ({ input_folder: 'Inputs' }));
+  const take = async files => { const [p] = await uploadFiles(files.slice(0, 1), settings.input_folder); if (p) { setCreateImage(p); drawSrc(); } };
+  src.ondrop = e => { e.preventDefault(); src.classList.remove('drop'); take([...e.dataTransfer.files]); };
+  $('#pick').onclick = () => picker('Choose a source image', true).then(p => { if (p) { setCreateImage(p); drawSrc(); } });
+  $('#up').onclick = () => $('#srcfile').click();
+  $('#srcfile').onchange = e => take([...e.target.files]);
+  $('#reset').onclick = () => { store.set('createParams', {}); renderCreate(); };
+  $('#submit').onclick = async () => {
+    if (!state.createImage) return toast('Pick a source image first', true);
+    const params = { image: state.createImage };
+    for (const p of schema) {
+      const el = $('#p_' + p.key);
+      params[p.key] = p.kind === 'bool' ? el.checked : p.kind === 'choice' ? (typeof p.default === 'number' ? +el.value : el.value) : +el.value;
+    }
+    const name = $('#jname').value.trim();
+    store.set('createParams', { ...params, image: undefined, _name: '' });
+    try { await post('/api/jobs', { kind: '3d', name, params }); toast('Added to queue'); setQueueOpen(true); pollQueue(); } catch (e) { fail(e); }
+  };
+}
+
+/* ---------------- settings */
+async function renderSettings() {
+  crumbs([['Settings', '#/settings']]);
+  let s; try { s = await api('/api/settings'); } catch (e) { return fail(e); }
+  const row = (h, i) => {
+    const agent = h.kind === 'agent', inp = (f, v, t = 'text') => `<input type="${t}" data-f="${f}" value="${esc(v ?? '')}">`;
+    return `<tr data-i="${i}">
+    <td><span class="dot" data-dot></span></td>
+    <td><input type="checkbox" data-f="enabled" ${h.enabled ? 'checked' : ''}></td>
+    <td>${inp('name', h.name)}</td>
+    <td style="width:100px"><select data-f="kind" data-kind><option value="ssh" ${agent ? '' : 'selected'}>SSH</option><option value="agent" ${agent ? 'selected' : ''}>Agent</option></select></td>
+    <td>${agent ? inp('url', h.url || 'http://host:8291') : inp('ssh', h.ssh)}</td>
+    <td style="width:70px">${inp('gpu', h.gpu ?? 0, 'number')}</td>
+    <td style="width:90px">${agent ? '<span class="muted">—</span>' : inp('port', h.port, 'number')}</td>
+    <td>${agent ? '<span class="muted">set on the agent</span>' : inp('comfy_dir', h.comfy_dir)}</td>
+    <td>${agent ? `<input type="password" data-f="token" value="${esc(h.token || '')}" placeholder="agent token">` : inp('unit', h.unit)}</td>
+    <td><button class="btn icon sm danger" data-rm title="Remove">×</button></td></tr>`;
+  };
+  $('#view').innerHTML = `
+    <div class="eyebrow fade">Configuration</div><h2 class="fade" style="--i:1">Settings</h2>
+    <div class="card fade" style="--i:2;margin-top:22px">
+      <h3>Folders</h3>
+      <div class="fields">
+        <div class="field"><label>Generated models folder</label><input type="text" id="s_out" value="${esc(s.output_folder)}"></div>
+        <div class="field"><label>Uploaded inputs folder</label><input type="text" id="s_in" value="${esc(s.input_folder)}"></div>
+        <div class="field"><label>Job timeout (minutes)</label><input type="number" id="s_to" value="${s.job_timeout_min}" min="5" max="600"></div>
+      </div>
+    </div>
+    <div class="card fade" style="--i:3;margin-top:18px;overflow-x:auto">
+      <div style="display:flex;align-items:center;gap:10px"><h3>GPU hosts</h3><span class="muted" style="font-size:12px">ComfyUI servers reached over SSH. One job per host at a time.</span>
+        <button class="btn sm" id="test" style="margin-left:auto">Test hosts</button><button class="btn sm" id="add">+ Add host</button></div>
+      <table class="hosts"><thead><tr><th></th><th>On</th><th>Name</th><th>Type</th><th>SSH target / agent URL</th><th>GPU</th><th>Port</th><th>ComfyUI dir</th><th>Log unit / token</th><th></th></tr></thead>
+        <tbody id="hrows">${s.hosts.map(row).join('')}</tbody></table>
+      <div id="hstat" class="muted" style="font-size:12px;margin-top:10px"></div>
+    </div>
+    <div style="margin-top:18px;display:flex;justify-content:flex-end"><button class="btn primary" id="save">Save settings</button></div>`;
+  const read = () => ({
+    output_folder: $('#s_out').value.trim(), input_folder: $('#s_in').value.trim(), job_timeout_min: +$('#s_to').value,
+    hosts: [...document.querySelectorAll('#hrows tr')].map(rowData),
+  });
+  const rowData = tr => Object.fromEntries([...tr.querySelectorAll('[data-f]')].map(el =>
+      [el.dataset.f, el.type === 'checkbox' ? el.checked : el.type === 'number' ? +el.value : el.value.trim()]));
+  const wire = () => {
+    document.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => b.closest('tr').remove());
+    document.querySelectorAll('[data-kind]').forEach(sel => sel.onchange = () => {
+      const tr = sel.closest('tr'); tr.outerHTML = row(rowData(tr), tr.dataset.i); wire();
+    });
+  };
+  wire();
+  $('#add').onclick = () => {
+    $('#hrows').insertAdjacentHTML('beforeend', row({ name: 'New host', ssh: 'user@host', gpu: 0, port: 8188, comfy_dir: '/home/user/ComfyUI', unit: 'comfyui', enabled: false }, Date.now()));
+    wire();
+  };
+  $('#save').onclick = () => api('/api/settings', { method: 'PUT', body: JSON.stringify(read()) }).then(() => toast('Settings saved'), fail);
+  $('#test').onclick = async () => {
+    $('#hstat').textContent = 'Testing… (save first to test edited rows)';
+    try {
+      const hs = await api('/api/hosts');
+      hs.forEach((h, i) => {
+        const dot = document.querySelectorAll('#hrows [data-dot]')[i];
+        if (dot) { dot.className = 'dot ' + (!h.ok ? 'bad' : h.busy || !h.trellis ? 'busy' : 'ok'); dot.title = h.detail; }
+      });
+      $('#hstat').innerHTML = hs.map(h => `<div><b>${esc(h.name)}</b>: ${esc(h.detail)}</div>`).join('');
+    } catch (e) { fail(e); }
+  };
+}
+
+/* ---------------- queue flyout */
+const qOpen = { log: new Set(store.get('openLogs', [])), auto: store.get('autoScroll', true) };
+function setQueueOpen(on) { $('#queue').classList.toggle('closed', !on); store.set('queueOpen', on); }
+setQueueOpen(store.get('queueOpen', true));
+$('#qtoggle').onclick = () => setQueueOpen($('#queue').classList.contains('closed'));
+$('#vtab').onclick = () => setQueueOpen(true);
+$('#qclear').onclick = () => post('/api/jobs/clear').then(pollQueue, fail);
+const metric = (lbl, pct, extra) => `<div class="metric"><div class="lbl">${lbl}<b>${extra || pct + '%'}</b></div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
+let qTimer;
+async function pollQueue() {
+  clearTimeout(qTimer);
+  try { drawQueue(await api('/api/queue')); } catch {}
+  qTimer = setTimeout(pollQueue, 2000);
+}
+function drawQueue(jobs) {
+  const active = jobs.filter(j => ['queued', 'running', 'cancelling'].includes(j.status));
+  $('#qcount').textContent = active.length;
+  $('#qcount').style.visibility = active.length ? 'visible' : 'hidden';
+  const body = $('#qbody'), now = Date.now() / 1000;
+  const scrolls = {};
+  body.querySelectorAll('.log pre').forEach(p => scrolls[p.dataset.id] = [p.scrollTop, p.scrollHeight - p.clientHeight - p.scrollTop < 4]);
+  body.innerHTML = jobs.length ? jobs.map(j => {
+    const live = j.status === 'running' || j.status === 'cancelling';
+    const m = j.metrics, open = qOpen.log.has(j.id);
+    const time = j.started ? dur((j.finished || now) - j.started) : 'queued ' + fmtTime(j.created);
+    return `<div class="job ${live ? 'running' : ''}" style="animation:none">
+      <div class="row"><span class="title" title="${esc(j.name)}">${esc(j.name)}</span><span class="pill ${j.status}">${j.status}</span></div>
+      <div class="sub">3D Asset · #${j.id}${j.host ? ' · ' + esc(j.host) : ''} · ${time}${j.note && j.status === 'queued' ? ' · ' + esc(j.note) : ''}</div>
+      ${j.error ? `<div class="err">${esc(j.error)}</div>` : ''}
+      ${live && m ? `<div class="metrics">${metric('CPU', m.cpu)}${metric('RAM', m.ram, m.ram_gb.join(' / ') + ' GB')}${metric('GPU', m.gpu)}${metric('VRAM', m.vram, m.vram_gb.join(' / ') + ' GB')}</div>` : ''}
+      ${j.log.length || live ? `<div class="log ${open ? 'open' : ''}"><pre data-id="${j.id}">${esc(open ? j.log.join('\n') : j.log.at(-1) || 'waiting for output…')}</pre>
+        <div class="lbar"><a href="#" data-log="${j.id}">${open ? 'Collapse log' : 'Expand log'}</a>${open ? `<label><input type="checkbox" data-auto ${qOpen.auto ? 'checked' : ''}>Auto-scroll</label>` : ''}<span style="margin-left:auto">${j.log.length} lines</span></div></div>` : ''}
+      <div class="acts">
+        ${['queued', 'running'].includes(j.status) ? `<button class="btn sm danger" data-act="cancel" data-id="${j.id}">Cancel</button>` : ''}
+        ${['failed', 'cancelled'].includes(j.status) ? `<button class="btn sm" data-act="retry" data-id="${j.id}">Retry</button>` : ''}
+        ${j.output ? `<a class="btn sm primary" href="${assetHref(j.output.split('/').slice(0, -1).join('/'))}">Open in Assets</a>` : ''}
+        ${!live && j.status !== 'queued' ? `<button class="btn sm" data-act="remove" data-id="${j.id}" style="margin-left:auto">Remove</button>` : ''}
+      </div></div>`;
+  }).join('') : '<div class="empty" style="padding:40px 16px">No jobs yet. Start one from Create.</div>';
+  body.querySelectorAll('.log pre').forEach(p => {
+    const prev = scrolls[p.dataset.id];
+    p.scrollTop = qOpen.auto || !prev ? p.scrollHeight : prev[0];
+  });
+  body.querySelectorAll('[data-log]').forEach(a => a.onclick = e => {
+    e.preventDefault(); const id = +a.dataset.log;
+    qOpen.log.has(id) ? qOpen.log.delete(id) : qOpen.log.add(id); store.set('openLogs', [...qOpen.log]); drawQueue(jobs);
+  });
+  body.querySelectorAll('[data-auto]').forEach(c => c.onchange = () => { qOpen.auto = c.checked; store.set('autoScroll', c.checked); });
+  body.querySelectorAll('[data-act]').forEach(b => b.onclick = () => post(`/api/jobs/${b.dataset.id}/${b.dataset.act}`).then(pollQueue, fail));
+}
+
+window.addEventListener('hashchange', route);
+route();
+pollQueue();
+</script>
+</body>
+</html>
