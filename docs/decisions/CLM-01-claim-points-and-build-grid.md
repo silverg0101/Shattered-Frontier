@@ -110,7 +110,7 @@ Entering build mode (B) projects a 1 m grid on the ground within `grid_radius_m`
 | Owned | cell in one of my claims | ivory `#E8E1CE` lines at 35% alpha, 3 cm wide; 4 m major lines at 5 cm, 50% |
 | Affordable | cell within reach of my claim (or, with no claim yet, within the disc the budget buys around the player, radius `sqrt(points / (π × cost))`), and claiming it fits points and cap | moss `#688267` lines 55%, 3 cm, plus 8% moss fill |
 | Limit | the first `fade_m` = 3 m of affordable cells past the budget or cap | same lines, alpha falls linearly to 0 over 3 m; the last affordable cell carries a 6 cm ivory rim |
-| Blocked | §3.4 reasons | crimson `#A34842` fill 25% with a 45° hatch at 0.25 m pitch, lines 60%; never colour alone: the status line names the reason ("Too close to the road") |
+| Blocked | §3.4 reasons and every cell outside the actor's claim parcels for placement (TER-02 §13) | crimson `#A34842` fill 25% with a 45° hatch at 0.25 m pitch, lines 60%; never colour alone: the status line names the reason ("Too close to the road") |
 | Out of band | the cell's band differs from the claim's | amber `#B69A55` lines 40%, no fill, status "Outside this claim's band" |
 
 Beyond `fade_m`, cells past the limit are not drawn, so an empty budget shows only the owned area. The whole grid fades with distance from the player from 16 m to 24 m. Lines keep a 1.5 px screen-space minimum so they read at 20 m, matching the faint white lines of the reference at about a quarter of the ghost's brightness; the ghost and its corner studs stay the brightest green element on screen.
