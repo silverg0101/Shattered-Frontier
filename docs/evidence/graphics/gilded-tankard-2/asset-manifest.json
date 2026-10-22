@@ -9,42 +9,42 @@
   "method": "procedural original geometry (concept interpretation, not image reconstruction)",
   "units": "metres, Z up, front -Y, origin ground centre",
   "bounds_m": [
-    10.306,
-    8.918,
-    12.57
+    10.585,
+    8.925,
+    12.07
   ],
   "meshes": {
     "SM_SBGildedTankard_Masonry": {
-      "triangles": 828,
+      "triangles": 772,
       "materials": [
         "SB_Ashlar"
       ]
     },
     "SM_SBGildedTankard_Plaster": {
-      "triangles": 840,
+      "triangles": 920,
       "materials": [
         "SB_LimePlaster"
       ]
     },
     "SM_SBGildedTankard_Timber": {
-      "triangles": 2272,
+      "triangles": 3084,
       "materials": [
         "SB_OakTimber"
       ]
     },
     "SM_SBGildedTankard_Roof": {
-      "triangles": 33188,
+      "triangles": 31668,
       "materials": [
         "SB_Slate",
         "SB_OakTimber"
       ]
     },
     "SM_SBGildedTankard_Details": {
-      "triangles": 13544,
+      "triangles": 14664,
       "materials": [
-        "SB_ChimneyPot",
         "SB_LitGlass",
         "SB_LeadCame",
+        "SB_ChimneyPot",
         "SB_OakTimber",
         "SB_ForgedIron",
         "SB_GildedTankard_SignBoard",
@@ -53,14 +53,15 @@
       ]
     },
     "SM_SBGildedTankard_Details_Door1": {
-      "triangles": 276,
+      "triangles": 508,
       "materials": [
         "SB_DoorBoards",
-        "SB_ForgedIron"
+        "SB_ForgedIron",
+        "SB_OakTimber"
       ]
     }
   },
-  "triangles": 50948,
+  "triangles": 51616,
   "materials": [
     {
       "name": "SB_Slate",
@@ -247,8 +248,8 @@
       "fbx": "SilverbrookGildedTankard_Door1.fbx",
       "unreal_mesh": "SM_SilverbrookGildedTankard_Door1",
       "pivot_m": [
-        -1.3,
-        -2.9789,
+        -1.5475,
+        -2.5326,
         0.2
       ],
       "axis": [

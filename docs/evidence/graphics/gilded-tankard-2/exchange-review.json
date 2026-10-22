@@ -1,11 +1,11 @@
 {
   "source": {
     "meshes": 7,
-    "triangles": 50958,
+    "triangles": 51626,
     "size_m": [
-      10.306,
-      8.918,
-      12.57
+      10.585,
+      8.925,
+      12.07
     ],
     "materials": [
       "SB_Ashlar",
@@ -30,11 +30,11 @@
   },
   "glb": {
     "meshes": 6,
-    "triangles": 50948,
+    "triangles": 51616,
     "size_m": [
-      10.306,
-      8.918,
-      12.57
+      10.585,
+      8.925,
+      12.07
     ],
     "materials": [
       "SB_Ashlar",
@@ -59,11 +59,11 @@
   },
   "fbx": {
     "meshes": 6,
-    "triangles": 50682,
+    "triangles": 51118,
     "size_m": [
-      10.306,
-      8.918,
-      12.57
+      10.585,
+      8.925,
+      12.07
     ],
     "materials": [
       "SB_Ashlar",

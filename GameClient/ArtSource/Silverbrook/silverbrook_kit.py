@@ -311,14 +311,14 @@ def window(G,M,c,o,w,h,shutters=True,planter=False,wall_th=.3,band=None):
         B(G['detail'],0,.15,-t-.095,(w+2*t+.04,.19,.02),M['soil'],0)
         for a in (-w/2,w/2):G['timber'].beam(P(a,.03,-t-.55),P(a,.25,-t-.3),.06,.06,M['timber'],band=band)
 
-def door(G,M,c,o,w,spring,stone_rects,wall_th=.3,band=None):
+def door(G,M,c,o,w,spring,stone_rects,wall_th=.3,band=None,straps=True):
     """Round-headed ledged plank door in a dressed-stone surround (jamb quoins + voussoirs)."""
     P,R=frame(c,o);rad=w/2
     # The leaf (boards, straps, ring) is its own mesh so it can open: hinge on the left jamb seen from outside.
     D=Geo(f"{G['detail'].name}_Door{len(DOORS)+1}",G['detail'].col);G[D.name]=D
     outline=[P(-rad,-.2,0),P(rad,-.2,0)]+[P(rad*math.cos(t),-.2,spring+rad*math.sin(t)) for t in np.linspace(0,math.pi,17)]
     D.prism(outline,o,.07,M['door'])
-    for z in (.35,spring-.1):
+    for z in ((.35,spring-.1) if straps else ()):   # straps=False: the package lays its own per-leaf straps
         D.box(P(-rad*.15,-.15,z),(w*.8,.012,.05),M['iron'],.004,R)
     for k in range(10):
         t=math.tau*k/10;D.box(P(rad*.55+.06*math.cos(t),-.13,1.0+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R@Matrix.Rotation(t,3,'Y'))

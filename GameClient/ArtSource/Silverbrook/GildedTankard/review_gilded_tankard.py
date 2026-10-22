@@ -2,11 +2,13 @@
 
 "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe" -b --factory-startup SilverbrookGildedTankard.blend -P review_gilded_tankard.py
 """
-import bpy,json
+import bpy,json,math
 from pathlib import Path
 from mathutils import Vector
 HERE=Path(__file__).resolve().parent;scene=bpy.context.scene
-for name in ['Beauty','Front','Side','Rear']:
+for name in ['Beauty','Front','Side','SideR','Rear']:
+    scene.world.node_tree.nodes['Background'].inputs['Strength'].default_value=.9 if name=='Rear' else .45   # rear wall is in sun shadow
+    bpy.data.objects['Sun'].rotation_euler[2]=math.radians(145 if name in ('Rear','SideR') else -35)
     scene.camera=bpy.data.objects[name];scene.render.filepath=str(HERE/f'GildedTankard-{name}.png');bpy.ops.render.render(write_still=True)
 def summary(col=None):
     objs=[o for o in (col.objects if col else bpy.data.objects) if o.type=='MESH'];pts=[o.matrix_world@Vector(c) for o in objs for c in o.bound_box]
