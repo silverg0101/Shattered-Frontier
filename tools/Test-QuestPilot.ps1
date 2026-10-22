@@ -1,11 +1,12 @@
 [CmdletBinding()]
 param(
     # Gathering: two clients harvest in Silverbrook; Combat: one client kills a boar (quest started at the boar step).
-    [Parameter(Mandatory)][ValidateSet('Gathering','Combat','Unified','Full','Plain')][string]$Leg,
+    [Parameter(Mandatory)][ValidateSet('Gathering','Combat','Unified','Full','Plain','Board')][string]$Leg,
     [string]$EngineRoot = 'C:\Program Files\Epic Games\UE_5.8',
     [ValidateRange(12000,65000)][int]$Port = 17871,
     [ValidateRange(60,600)][int]$TimeoutSeconds = 240,
-    # -Leg Full only: commit through owned InventoryLedger.Host + Gameplay.Host (INT-04), with a host-down phase.
+    # -Leg Full: commit through owned InventoryLedger.Host + Gameplay.Host (INT-04), with a host-down phase.
+    # -Leg Board (QST-02): board accept, 3 oak, server restart keeps 3/6, then abandon and re-accept from Oswin; services required.
     [switch]$Services,
     [switch]$Int06KillAfterGrant
 )
@@ -20,7 +21,8 @@ if (@([Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties().GetAc
 $root = Join-Path $repo ('Artifacts\QuestPilot\' + $Leg.ToLower() + '-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
 $null = New-Item -ItemType Directory -Path $root
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
-if ($Services -and $Leg -ne 'Full') { throw '-Services applies to -Leg Full only.' }
+if ($Services -and $Leg -notin 'Full','Board') { throw '-Services applies to -Leg Full and -Leg Board only.' }
+if ($Leg -eq 'Board' -and -not $Services) { throw '-Leg Board needs -Services (durable quest state).' }
 if ($Int06KillAfterGrant -and (-not $Services -or $Leg -ne 'Full')) { throw '-Int06KillAfterGrant requires -Leg Full -Services.' }
 $fx = @{}
 if ($Services) { . (Join-Path $PSScriptRoot 'InventoryLedgerHostFixture.ps1') }
@@ -46,8 +48,70 @@ function Wait-Log([Diagnostics.Process]$Process,[string]$Name,[string]$Pattern) 
     throw "Timed out waiting for $Name ($Pattern)."
 }
 function Read-Log([string]$Name) { Get-Content -LiteralPath (Join-Path $root ($Name+'.log')) -Raw }
+function Initialize-QuestServices {
+    # Owned PostgreSQL with every schema the hosts need, a private Gameplay.Host build, ports, synthetic per-run tokens.
+    New-LedgerFixture $fx $repo $root
+    $schemas = @('CharacterState.Postgres/Schema.sql','Housing.Postgres/Schema.sql','Exchange.Postgres/Schema.sql','Housing.Postgres/Schema.Gameplay.sql','Housing.Postgres/Schema.Geometry.sql','Housing.Postgres/Schema.Construction.sql','CharacterState.Postgres/Schema.Position.sql') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_") -Raw }
+    [void](Invoke-LedgerSql $fx ("SET ROLE ledger_owner;`n" + ($schemas -join "`n")) $fx.db)
+    [void](Invoke-LedgerSql $fx ('GRANT USAGE ON SCHEMA character_state,housing,exchange TO ledger_svc; ' + (@('character_state','housing','exchange') | ForEach-Object { "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA $_ TO ledger_svc;" }) -join ' ') $fx.db)
+    $gameplayProject = Join-Path $repo 'BackendServices/Gameplay.Host/Gameplay.Host.csproj'
+    [void](Invoke-FxOk $fx $fx.dotnet @('restore',$gameplayProject,'--locked-mode','--packages',$fx.nuget,'--verbosity','quiet'))
+    # A private output folder: another session may be running a host from the shared bin folder.
+    $script:gameplayOut = Join-Path $fx.base 'gameplay-host'
+    [void](Invoke-FxOk $fx $fx.dotnet @('build',$gameplayProject,'--no-restore','--configuration','Release','--verbosity','quiet','--output',$script:gameplayOut))
+    $fx.hostPort = Get-FreeTcpPort; $script:gameplayPort = Get-FreeTcpPort; $script:gameplayToken = New-HexSecret; $fx.secrets += $script:gameplayToken
+    $script:servicesIni = '-ini:Game:[/Script/ShatteredFrontier.SFGameplayServicesSettings]'
+    $ledgerIni = '-ini:Game:[/Script/ShatteredFrontier.SFInventoryLedgerSettings]'
+    $script:serviceFlags = @(($ledgerIni+':bEnabled=True'),($ledgerIni+':Endpoint=127.0.0.1:'+$fx.hostPort),($script:servicesIni+':bEnabled=True'),($script:servicesIni+':Endpoint=127.0.0.1:'+$script:gameplayPort))
+    $script:serverEnv = @{ SF_INVENTORY_LEDGER_TOKEN=$fx.token; SF_GAMEPLAY_TOKEN=$script:gameplayToken }
+}
+function Start-QuestHosts {
+    Start-LedgerHost $fx ''
+    $gameplayEnv = @{ GAMEPLAY_HOST_PORT="$script:gameplayPort"; SF_GAMEPLAY_TOKEN=$script:gameplayToken; GAMEPLAY_LEDGER_CONNECTION=$fx.connection; GAMEPLAY_CHARACTER_CONNECTION=$fx.connection
+        GAMEPLAY_HOUSING_CONNECTION=$fx.connection; GAMEPLAY_EXCHANGE_CONNECTION=$fx.connection; GAMEPLAY_CONTENT_ROOT=(Join-Path $repo 'content') }
+    $gameplayDll = Join-Path $script:gameplayOut 'Gameplay.Host.dll'
+    Invoke-WithEnv $gameplayEnv { $script:gameplay = Start-Process -FilePath $fx.dotnet -ArgumentList @(('"'+$gameplayDll+'"')) -WindowStyle Hidden -PassThru `
+        -RedirectStandardOutput (Join-Path $root 'gameplay.stdout.txt') -RedirectStandardError (Join-Path $root 'gameplay.stderr.txt') }
+    $null = $script:gameplay.Handle; $owned.Add($script:gameplay)
+    $watch = [Diagnostics.Stopwatch]::StartNew()
+    while (-not ((Test-Path (Join-Path $root 'gameplay.stdout.txt')) -and (Get-Content (Join-Path $root 'gameplay.stdout.txt') -Raw) -match 'GAMEPLAY_HOST_READY')) {
+        if ($script:gameplay.HasExited -or $watch.Elapsed.TotalSeconds -gt 60) { throw 'Gameplay host did not become ready.' }
+        Start-Sleep -Milliseconds 200
+    }
+}
 try {
-    if ($Leg -in 'Gathering','Unified') {
+    if ($Leg -eq 'Board') {
+        # QST-02 acceptance 4 (+1, 7): one character (dev identity alpha) presses Accept at the Silverbrook board and harvests
+        # 3 of 6 oak; the server and client are killed and a fresh pair restores 3/6 from Gameplay.Host. The restored client then
+        # abandons the quest (journal RPC) and takes it again from Millwarden Oswin's dialogue: the new instance starts at 0/6.
+        Initialize-QuestServices
+        Start-QuestHosts
+        $flags = @('-server',('-port='+$Port),'-multihome=127.0.0.1','-SFDevIdentity',($script:servicesIni+':bRestoreOnConnect=True')) + $script:serviceFlags
+        $clientUrl = '127.0.0.1:'+$Port+'?SFDevCharacter=alpha'
+        Invoke-WithEnv $script:serverEnv { $script:server = Start-Owned 'server' $silverbrook ($flags + '-QuestBoardScenario') }
+        Wait-Log $server 'server' 'QUEST_PILOT_READY Quests='
+        Wait-Log $server 'server' 'QUEST_BOARD_PLACED Id=board/silverbrook .* Ground=1'
+        $client = Start-Owned 'client' $clientUrl @('-game','-QuestBoardScenario')
+        Wait-Log $server 'server' 'QUEST_ACCEPT_REQUEST Quest=quest/mills_supply Source=board/silverbrook Result=allowed'
+        Wait-Log $server 'server' 'QUEST_ACCEPTED Quest=quest/mills_supply Result=accepted .* Source=service'
+        Wait-Log $client 'client' 'QUEST_BOARD_SCENARIO_HARVESTED Count=3'
+        Wait-Log $client 'client' 'QUEST_PILOT_CLIENT_VIEW Step=1 Complete=0 Quest=quest/mills_supply Counts=3/6'
+        $character = 'chr_dev_alpha'
+        $row = (Invoke-LedgerSql $fx ("SELECT state->>'StepIndex'||','||(state->'Counts'->>'oak_logs') FROM character_state.quests WHERE character_id='$character' AND quest_id='quest/mills_supply'") $fx.db).Trim()
+        if ($row -ne '0,3') { throw "Durable quest row before restart = '$row', expected 0,3." }
+        foreach ($process in @($client,$server)) { Stop-Process -Id $process.Id; $process.WaitForExit() }
+        Invoke-WithEnv $script:serverEnv { $script:restart = Start-Owned 'restart-server' $silverbrook ($flags + '-QuestNpcScenario') }
+        Wait-Log $restart 'restart-server' 'QUEST_GIVER_PLACED Npc=npc/millwarden_oswin .* Ground=1'
+        $restored = Start-Owned 'restored-client' $clientUrl @('-game','-QuestNpcScenario')
+        Wait-Log $restart 'restart-server' 'QUEST_PILOT_RESTORED Quest=quest/mills_supply Step=0 Active=gather_oak Counts=1 Completed=0'
+        Wait-Log $restored 'restored-client' 'QUEST_PILOT_CLIENT_VIEW Step=1 Complete=0 Quest=quest/mills_supply Counts=3/6'
+        Wait-Log $restart 'restart-server' 'QUEST_ABANDONED Quest=quest/mills_supply Result=abandoned .* Source=service'
+        Wait-Log $restart 'restart-server' 'QUEST_ACCEPT_REQUEST Quest=quest/mills_supply Source=npc/millwarden_oswin Result=allowed'
+        Wait-Log $restored 'restored-client' 'QUEST_NPC_SCENARIO_DONE Counts=0/6'
+        $rows = (Invoke-LedgerSql $fx ("SELECT count(*)||','||max(state->>'Instance')||','||coalesce(max(state->'Counts'->>'oak_logs'),'0') FROM character_state.quests WHERE character_id='$character' AND quest_id='quest/mills_supply'") $fx.db).Trim()
+        if ($rows -ne '1,2,0') { throw "Quest rows after re-accept (rows,instance,oak) = '$rows', expected 1,2,0." }
+        $result.durable = "before restart 0,3; after re-accept $rows"
+    } elseif ($Leg -in 'Gathering','Unified') {
         # Unified: the one game mode hosts gathering, construction and combat together (one Silverbrook world).
         $flags = @('-server',('-port='+$Port),'-multihome=127.0.0.1','-GatheringPilotScenario')
         $server = Start-Owned 'server' $silverbrook $flags
@@ -83,20 +147,10 @@ try {
         $clientFlags = @('-game','-QuestFullScenario')
         $serverEnv = @{}
         if ($Services) {
-            New-LedgerFixture $fx $repo $root
-            $schemas = @('CharacterState.Postgres/Schema.sql','Housing.Postgres/Schema.sql','Exchange.Postgres/Schema.sql','Housing.Postgres/Schema.Gameplay.sql','Housing.Postgres/Schema.Geometry.sql','Housing.Postgres/Schema.Construction.sql','CharacterState.Postgres/Schema.Position.sql') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_") -Raw }
-            [void](Invoke-LedgerSql $fx ("SET ROLE ledger_owner;`n" + ($schemas -join "`n")) $fx.db)
-            [void](Invoke-LedgerSql $fx ('GRANT USAGE ON SCHEMA character_state,housing,exchange TO ledger_svc; ' + (@('character_state','housing','exchange') | ForEach-Object { "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA $_ TO ledger_svc;" }) -join ' ') $fx.db)
-            $gameplayProject = Join-Path $repo 'BackendServices/Gameplay.Host/Gameplay.Host.csproj'
-            [void](Invoke-FxOk $fx $fx.dotnet @('restore',$gameplayProject,'--locked-mode','--packages',$fx.nuget,'--verbosity','quiet'))
-            # A private output folder: another session may be running a host from the shared bin folder.
-            $gameplayOut = Join-Path $fx.base 'gameplay-host'
-            [void](Invoke-FxOk $fx $fx.dotnet @('build',$gameplayProject,'--no-restore','--configuration','Release','--verbosity','quiet','--output',$gameplayOut))
-            $fx.hostPort = Get-FreeTcpPort; $gameplayPort = Get-FreeTcpPort; $gameplayToken = New-HexSecret; $fx.secrets += $gameplayToken
-            $ledgerIni = '-ini:Game:[/Script/ShatteredFrontier.SFInventoryLedgerSettings]'; $servicesIni = '-ini:Game:[/Script/ShatteredFrontier.SFGameplayServicesSettings]'
-            $flags += @(($ledgerIni+':bEnabled=True'),($ledgerIni+':Endpoint=127.0.0.1:'+$fx.hostPort),($servicesIni+':bEnabled=True'),($servicesIni+':Endpoint=127.0.0.1:'+$gameplayPort))
+            Initialize-QuestServices
+            $flags += $script:serviceFlags
             $clientFlags += '-QuestFullEconomy'
-            $serverEnv = @{ SF_INVENTORY_LEDGER_TOKEN=$fx.token; SF_GAMEPLAY_TOKEN=$gameplayToken }
+            $serverEnv = $script:serverEnv
             if ($Int06KillAfterGrant) {
                 $flags += '-GatheringLedgerExitAfterCommit'
                 $flags += '-SFDevIdentity'
@@ -112,18 +166,7 @@ try {
             # Host-down phase: the first oak harvest is refused as Unavailable before any charge is consumed.
             Wait-Log $server 'server' 'GATHERING_LEDGER_OUTCOME .* Code=14 .* NodeRevision=0 Charges=3'
             $result.hostDown = 'first harvest refused; node revision 0, charges 3'
-            Start-LedgerHost $fx ''
-            $gameplayEnv = @{ GAMEPLAY_HOST_PORT="$gameplayPort"; SF_GAMEPLAY_TOKEN=$gameplayToken; GAMEPLAY_LEDGER_CONNECTION=$fx.connection; GAMEPLAY_CHARACTER_CONNECTION=$fx.connection
-                GAMEPLAY_HOUSING_CONNECTION=$fx.connection; GAMEPLAY_EXCHANGE_CONNECTION=$fx.connection; GAMEPLAY_CONTENT_ROOT=(Join-Path $repo 'content') }
-            $gameplayDll = Join-Path $gameplayOut 'Gameplay.Host.dll'
-            Invoke-WithEnv $gameplayEnv { $script:gameplay = Start-Process -FilePath $fx.dotnet -ArgumentList @(('"'+$gameplayDll+'"')) -WindowStyle Hidden -PassThru `
-                -RedirectStandardOutput (Join-Path $root 'gameplay.stdout.txt') -RedirectStandardError (Join-Path $root 'gameplay.stderr.txt') }
-            $null = $gameplay.Handle; $owned.Add($gameplay)
-            $watch = [Diagnostics.Stopwatch]::StartNew()
-            while (-not ((Test-Path (Join-Path $root 'gameplay.stdout.txt')) -and (Get-Content (Join-Path $root 'gameplay.stdout.txt') -Raw) -match 'GAMEPLAY_HOST_READY')) {
-                if ($gameplay.HasExited -or $watch.Elapsed.TotalSeconds -gt 60) { throw 'Gameplay host did not become ready.' }
-                Start-Sleep -Milliseconds 200
-            }
+            Start-QuestHosts
             if ($Int06KillAfterGrant) {
                 Wait-Log $server 'server' 'GATHERING_LEDGER_EXIT_AFTER_COMMIT Op=gather/'
                 $server.WaitForExit(10000) | Out-Null

@@ -491,8 +491,9 @@ bool USFQuestPilotComponent::Observe(const FString& Kind, const FString& TargetI
         const int32 Before = Entry->Progress.StepIndex;
         TArray<FString> Rewards;
         const ESFQuestApply Result = Entry->Progress.Apply(*Entry->Quest, Kind, TargetId, NodeId, 1, OperationId, Rewards);
-        UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_EVENT Quest=%s Kind=%s Target=%s Op=%s Result=%d Step=%d Rewards=%d"),
-            *Entry->Quest->Id, *Kind, *TargetId, *OperationId, int32(Result), Entry->Progress.StepIndex, Rewards.Num());
+        UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_EVENT Kind=%s Target=%s Op=%s Result=%d Step=%d Rewards=%d Quest=%s"),
+            *Kind, *TargetId, *OperationId, int32(Result), Entry->Progress.StepIndex, Rewards.Num(), *Entry->Quest->Id);
+        for (const FString& Bundle : Rewards) { UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_REWARD Bundle=%s Quest=%s"), *Bundle, *Entry->Quest->Id); }
         if (!Rewards.IsEmpty())
         { for (const FSFQuestRewardItem& Item : Entry->Quest->Steps[Before].RewardItems) { PendingRewards.Add({Entry->Quest->Id, Item}); } }
         if (Entry->Progress.IsComplete(*Entry->Quest))
@@ -570,8 +571,8 @@ void USFQuestPilotComponent::PumpServices()
                     }
                     if (R.bQuestCompleted) { Self->Completed.AddUnique(Event.QuestId); UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_COMPLETE Quest=%s Source=service"), *Event.QuestId); }
                 }
-                UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_EVENT Quest=%s Kind=%s Target=%s Op=%s Result=%d Step=%d Rewards=%d Source=service Active=%s Reason=%s"),
-                    *Event.QuestId, *Event.QuestKind, *Event.TargetId, *Event.OperationId, R.bQuestAccepted ? 0 : 2, Entry->Progress.StepIndex, R.RewardBundleIds.Num(), *R.ActiveStepId, *R.QuestReason);
+                UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_EVENT Kind=%s Target=%s Op=%s Result=%d Step=%d Rewards=%d Source=service Active=%s Reason=%s Quest=%s"),
+                    *Event.QuestKind, *Event.TargetId, *Event.OperationId, R.bQuestAccepted ? 0 : 2, Entry->Progress.StepIndex, R.RewardBundleIds.Num(), *R.ActiveStepId, *R.QuestReason, *Event.QuestId);
                 for (const FString& Bundle : R.RewardBundleIds) { UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_REWARD Bundle=%s Source=service"), *Bundle); }
                 for (const TPair<FString, int64>& Item : R.GrantedItems)
                 {
@@ -609,8 +610,8 @@ void USFQuestPilotComponent::PumpServices()
         }
         else
         {
-            UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_EVENT Quest=%s Kind=%s Target=%s Op=%s Result=3 Rewards=0 Source=service Code=%d"),
-                *Event.QuestId, *Event.QuestKind, *Event.TargetId, *Event.OperationId, R.GrpcCode);
+            UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_EVENT Kind=%s Target=%s Op=%s Result=3 Rewards=0 Source=service Code=%d Quest=%s"),
+                *Event.QuestKind, *Event.TargetId, *Event.OperationId, R.GrpcCode, *Event.QuestId);
             // A refused payout (full backpack) still committed the step: re-read what the service holds.
             if (!Event.QuestId.IsEmpty()) { Self->RequestRefresh(GetDefault<USFQuestPilotSettings>()->RewardRetrySeconds); }
             if (Event.QuestKind == TEXT("accept") || Event.QuestKind == TEXT("abandon")) { Self->ClientQuestResult(Event.QuestId, TEXT("service_unavailable")); }
@@ -730,7 +731,7 @@ void USFQuestPilotComponent::TryDeliverRewards()
             if (Entry && !Entry->bRewardWaiting) { Entry->bRewardWaiting = true; bChanged = true; }
             break;
         }
-        UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_REWARD Quest=%s Item=%s Units=%lld"), *Due.Key, *Due.Value.DefinitionId, Due.Value.Quantity);
+        UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_PAYOUT Item=%s Quantity=%lld Quest=%s Source=local"), *Due.Value.DefinitionId, Due.Value.Quantity, *Due.Key);
         PendingRewards.RemoveAt(0);
         if (Entry)
         {
@@ -826,6 +827,8 @@ void USFQuestPilotComponent::TickComponent(float Delta, ELevelTick Type, FActorC
         TickDevAccept();
     }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (FParse::Param(FCommandLine::Get(), TEXT("QuestBoardScenario")) || FParse::Param(FCommandLine::Get(), TEXT("QuestNpcScenario")))
+    { TickBoardScenario(GetWorld()->GetTimeSeconds()); return; }
     if (!FParse::Param(FCommandLine::Get(), TEXT("QuestFullScenario"))) { return; }
     if (GetOwner() && GetOwner()->HasAuthority()) { TickFullServer(); }
     else { TickFullClient(GetWorld()->GetTimeSeconds()); }
@@ -857,7 +860,8 @@ void USFQuestPilotComponent::TickDevAccept()
 
 namespace
 {
-    const TCHAR* const PilotQuest = TEXT("quest/frontier_founder");
+    // The chain the scenario drivers walk: the pilot chain, or the board scenario's mill quest.
+    FString ScenarioQuestId() { return FParse::Param(FCommandLine::Get(), TEXT("QuestBoardScenario")) ? TEXT("quest/mills_supply") : TEXT("quest/frontier_founder"); }
 
     // First unmet objective of the current step, by the stable content ids.
     const FSFQuestObjective* NextObjective(const FSFQuestDefinition& Quest, const FSFQuestProgress& Progress)
@@ -971,7 +975,7 @@ void USFQuestPilotComponent::TickFullServer()
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     const auto* PC = Cast<APlayerController>(GetOwner());
     APawn* Pawn = PC ? PC->GetPawn() : nullptr;
-    const FEntry* Entry = Find(PilotQuest);
+    const FEntry* Entry = Find(ScenarioQuestId());
     const FSFQuestObjective* Objective = Entry ? NextObjective(*Entry->Quest, Entry->Progress) : nullptr;
     // A restoring character keeps its restored position; the fixture places it once progress is known.
     if (!Pawn || !Objective || USFCharacterSessionComponent::IsRestoring(PC)) { return; }
@@ -1019,12 +1023,12 @@ void USFQuestPilotComponent::TickFullClient(double Now)
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     auto* PC = Cast<APlayerController>(GetOwner());
     APawn* Pawn = PC ? PC->GetPawn() : nullptr;
-    const FSFQuestView* View = FindView(PilotQuest);
+    const FSFQuestView* View = FindView(ScenarioQuestId());
     if (!PC || !PC->IsLocalController() || !Pawn || !View || bFullDone) { return; }
     if (View->bComplete)
     { bFullDone = true; UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_DONE Steps=%d"), View->StepTotal); return; }
     const FSFQuestLine* Line = View->Lines.FindByPredicate([](const FSFQuestLine& L) { return L.Count < L.Target; });
-    const TSharedPtr<const FSFQuestDefinition> Quest = FSFQuestCatalog::Get().Find(PilotQuest);
+    const TSharedPtr<const FSFQuestDefinition> Quest = FSFQuestCatalog::Get().Find(ScenarioQuestId());
     if (!Line || !Quest) { return; }
     // The tracker line names the objective; recover its content ids from the same label rule the server used.
     FString Kind, Target;
@@ -1108,6 +1112,67 @@ void USFQuestPilotComponent::TickFullClient(double Now)
 #endif
 }
 
+void USFQuestPilotComponent::TickBoardScenario(double Now)
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    // Development fixture (Test-QuestPilot.ps1 -Leg Board). -QuestBoardScenario: the server stands the pawn at the Silverbrook
+    // board; the client opens it and presses Accept on The Mill's Supply, then harvests three oak through the full driver.
+    // -QuestNpcScenario (after a restart): the client abandons the restored quest (the journal's RPC), talks to Oswin and picks
+    // "I'll help" (the dialogue's own accept). The server only places the pawn; every request goes through the normal entry points.
+    const FString Mill = TEXT("quest/mills_supply");
+    const bool bBoard = FParse::Param(FCommandLine::Get(), TEXT("QuestBoardScenario"));
+    APlayerController* PC = Cast<APlayerController>(GetOwner());
+    APawn* Pawn = PC ? PC->GetPawn() : nullptr;
+    if (!Pawn) { return; }
+    AActor* Source = nullptr;
+    if (bBoard) { for (TActorIterator<ASFQuestBoard> It(GetWorld()); It && !Source; ++It) { Source = *It; } }
+    else { for (TActorIterator<ASFDialogueNpc> It(GetWorld()); It && !Source; ++It) { if (It->DialogueFile == TEXT("millwarden_oswin.json")) { Source = *It; } } }
+    if (!Source) { return; }
+    const FVector Front = Source->GetActorRotation().RotateVector(bBoard ? FVector(0, -1, 0) : FVector(1, 0, 0));
+    if (GetOwner()->HasAuthority())
+    {
+        if (bBoard && Find(Mill)) { TickFullServer(); return; }
+        if (FullTeleportKey == TEXT("source") || USFCharacterSessionComponent::IsRestoring(PC) || !bRestored) { return; }
+        Pawn->SetActorLocation(Source->GetActorLocation() + Front * 200 + FVector(0, 0, 100), false, nullptr, ETeleportType::TeleportPhysics);
+        FullTeleportKey = TEXT("source");
+        UE_LOG(LogTemp, Display, TEXT("QUEST_SCENARIO_PLACED Source=%s At=%s"), bBoard ? TEXT("board") : TEXT("npc"), *Pawn->GetActorLocation().ToString());
+        return;
+    }
+    if (!PC->IsLocalController() || bFullDone) { return; }
+    const FSFQuestView* View = FindView(Mill);
+    if (bBoard && View)
+    {
+        if (View->Lines.IsValidIndex(0) && View->Lines[0].Count >= 3)
+        { bFullDone = true; UE_LOG(LogTemp, Display, TEXT("QUEST_BOARD_SCENARIO_HARVESTED Count=%d"), View->Lines[0].Count); return; }
+        TickFullClient(Now);
+        return;
+    }
+    if (FVector::Dist2D(Pawn->GetActorLocation(), Source->GetActorLocation()) > 300) { return; }  // not placed yet
+    PC->SetControlRotation((Source->GetActorLocation() - Pawn->GetActorLocation()).GetSafeNormal2D().Rotation());
+    if (Now < FullStableSince) { return; }
+    FullStableSince = Now + 10;  // one try every 10 s until the replicated log shows the result
+    if (bBoard)
+    {
+        if (!USFQuestBoardPanel::TryOpenBoard(PC)) { UE_LOG(LogTemp, Display, TEXT("QUEST_SCENARIO_WAIT Board=not_in_reach")); return; }
+        USFQuestPilotSubsystem* Quests = GetWorld()->GetSubsystem<USFQuestPilotSubsystem>();
+        if (!Quests || !Quests->Panel) { return; }
+        Quests->Panel->Select(Mill);
+        Quests->Panel->CallFunctionByNameWithArguments(TEXT("HandlePrimary"), *GLog, nullptr, true);  // the Accept button
+        UE_LOG(LogTemp, Display, TEXT("QUEST_SCENARIO_ACTION Input=BoardAccept"));
+        return;
+    }
+    auto* Player = Cast<ASFPlayerController>(PC);
+    if (!Player) { return; }
+    if (View && View->Lines.IsValidIndex(0) && View->Lines[0].Count > 0 && FullAttempts == 0)
+    { ++FullAttempts; ServerAbandonQuest(Mill); UE_LOG(LogTemp, Display, TEXT("QUEST_SCENARIO_ACTION Input=JournalAbandon Count=%d"), View->Lines[0].Count); return; }
+    if (View && FullAttempts > 0) { bFullDone = true; UE_LOG(LogTemp, Display, TEXT("QUEST_NPC_SCENARIO_DONE Counts=%d/%d"), View->Lines[0].Count, View->Lines[0].Target); return; }
+    if (View || FullAttempts == 0) { return; }
+    Player->SFTalk();
+    Player->SFDialogueChoose(1);  // greeting: "I'll help"
+    UE_LOG(LogTemp, Display, TEXT("QUEST_SCENARIO_ACTION Input=DialogueAccept"));
+#endif
+}
+
 FString USFQuestPilotComponent::ActiveObjectiveKind() const
 {
     for (const FSFQuestView& View : Views)
@@ -1156,7 +1221,10 @@ void USFQuestTrackerHud::Present(const TArray<FSFQuestView>& Shown)
     LastKey = Key;
     // One line per shown quest; the runners match "Step=<n> Complete=<0|1>" for the pilot chain.
     for (const FSFQuestView& View : Shown)
-    { UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_CLIENT_VIEW Step=%d Complete=%d Quest=%s Waiting=%d"), View.StepNumber, View.bComplete, *View.QuestId, View.bRewardWaiting); }
+    {
+        FString Counts; for (const FSFQuestLine& L : View.Lines) { Counts += FString::Printf(TEXT("%s%d/%d"), Counts.IsEmpty() ? TEXT("") : TEXT(","), L.Count, L.Target); }
+        UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_CLIENT_VIEW Step=%d Complete=%d Quest=%s Counts=%s Waiting=%d"), View.StepNumber, View.bComplete, *View.QuestId, *Counts, View.bRewardWaiting);
+    }
     using namespace SFHudStyle;
     Frame->SetVisibility(Shown.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
     Rows->ClearChildren();

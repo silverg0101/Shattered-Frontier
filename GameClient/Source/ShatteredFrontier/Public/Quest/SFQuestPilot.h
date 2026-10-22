@@ -192,6 +192,7 @@ private:
     // Development fixtures, off unless their command-line flags are given (see Test-QuestPilot.ps1 -Leg Full).
     void TickDevAccept();
     bool bDevAcceptDone = false;
+    void TickBoardScenario(double Now);
     void TickFullServer();
     void TickFullClient(double Now);
     FString FullTeleportKey;
