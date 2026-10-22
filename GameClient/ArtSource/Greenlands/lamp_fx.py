@@ -51,15 +51,63 @@ def _stable_fraction(text):
     return int.from_bytes(hashlib.sha256(text.encode('utf-8')).digest()[:8], 'little') / 2**64
 
 
+_GLASS = {}
+
+
+def glass_sockets(mesh, u):
+    """Mesh-space cm centre of every lantern-glass chamber, read from the imported mesh itself: the connected pieces of its
+    *Glow material slots, merged when closer than 60 cm. (The GLB-derived lamp-sockets.json points of building meshes
+    were 2-20 m off their imported glass, so their lights shone on bare walls; street lamps matched to 0 cm.) A flat glow
+    panel (< 5 cm thick) gets its light 10 cm in front of it, away from the mesh centre, so the light is not inside a wall;
+    on a building, a glow volume >= 30 cm in every axis (a lit room or doorway seen through glass) or one centred under
+    1 m (a cellar grille) gets no lamp."""
+    name = mesh.get_name()
+    if name not in _GLASS:
+        glow = [i for i, slot in enumerate(mesh.static_materials) if 'Glow' in str(slot.material_slot_name)]
+        dm = u.DynamicMesh()
+        dm, _ = u.GeometryScript_AssetUtils.copy_mesh_from_static_mesh(
+            mesh, dm, u.GeometryScriptCopyMeshFromAssetOptions(), u.GeometryScriptMeshReadLOD())
+        parts = u.GeometryScript_MeshDecomposition.split_mesh_by_material_i_ds(dm, mesh_pool=u.DynamicMeshPool())
+        meshes = next(x for x in parts if isinstance(x, u.Array) and len(x) and isinstance(x[0], u.DynamicMesh))
+        ids = next(x for x in parts if isinstance(x, u.Array) and len(x) and isinstance(x[0], int))
+        boxes = []
+        for piece, mid in zip(meshes, ids):
+            if mid not in glow:
+                continue
+            comps = u.GeometryScript_MeshDecomposition.split_mesh_by_components(piece, mesh_pool=u.DynamicMeshPool())
+            for comp in next(x for x in comps if isinstance(x, u.Array)):
+                bb = u.GeometryScript_MeshQueries.get_mesh_bounding_box(comp)
+                boxes.append([bb.min.x, bb.min.y, bb.min.z, bb.max.x, bb.max.y, bb.max.z])
+        merged = []
+        for b in boxes:   # union boxes whose gap is under 60 cm into one chamber
+            for m in merged:
+                if all(max(m[i], b[i]) - min(m[i + 3], b[i + 3]) < 60 for i in range(3)):
+                    m[:] = [min(m[i], b[i]) for i in range(3)] + [max(m[i + 3], b[i + 3]) for i in range(3)]
+                    break
+            else:
+                merged.append(list(b))
+        out = []
+        for m in merged:
+            c = [(m[i] + m[i + 3]) / 2 for i in range(3)]
+            size = [m[i + 3] - m[i] for i in range(3)]
+            if not name.startswith('SM_SilverbrookStreetLamp') and (min(size) >= 30 or c[2] < 100):
+                continue   # a glowing room or doorway volume behind glass, or a cellar grille at the ground: not a lantern
+            thin = min(range(2), key=lambda i: size[i])
+            if size[thin] < 5:   # wall-mounted glow panel: light in front of it
+                c[thin] += 10 if c[thin] >= 0 else -10
+            out.append(c)
+        _GLASS[name] = out
+    return _GLASS[name]
+
+
 def _mesh_sockets(actor, sockets, u):
     found = []
     for component in actor.get_components_by_class(u.StaticMeshComponent):
         mesh = component.get_editor_property('static_mesh')
         if mesh and mesh.get_name() in sockets:
             # Component local transform covers per-building mesh offsets; static mesh actors are the common case.
-            for xyz in sockets[mesh.get_name()]:
-                local = u.Vector(*(v * 100 for v in xyz))
-                found.append(u.MathLibrary.transform_location(component.get_world_transform(), local))
+            for xyz in glass_sockets(mesh, u):
+                found.append(u.MathLibrary.transform_location(component.get_world_transform(), u.Vector(*xyz)))
     return found
 
 
@@ -84,7 +132,7 @@ def _instance(component, place, rotation, scale, u):
     component.add_instance_world_space(transform)
 
 
-def _point_light(subsystem, position, cfg, material, label, u):
+def _point_light(subsystem, position, cfg, material, label, owner, u):
     actor = subsystem.spawn_actor_from_class(u.PointLight, position)
     actor.set_actor_label(label)
     actor.set_folder_path('VFX/StreetLamp')
@@ -95,9 +143,13 @@ def _point_light(subsystem, position, cfg, material, label, u):
     light.set_editor_property('attenuation_radius', cfg['light_radius'] * 100)
     # UE Python positional Color arguments map to BGRA; name channels to avoid a cyan lamp.
     light.set_editor_property('light_color', u.Color(r=255, g=150, b=65, a=255))
-    light.set_editor_property('cast_shadows', False)
+    # Wall-mounted lanterns cast shadows so their light cannot pass through the wall they hang on (owner: light pools on
+    # bare walls); free-standing street lamps stay shadowless (budget).
+    light.set_editor_property('cast_shadows', not owner.get_actor_label().startswith('StreetLamp_'))
     light.set_editor_property('light_function_material', material)
     light.set_editor_property('max_draw_distance', 2500.0)
+    # Follows its lantern: dress_footings raises houses after placement.
+    actor.attach_to_actor(owner, '', u.AttachmentRule.KEEP_WORLD, u.AttachmentRule.KEEP_WORLD, u.AttachmentRule.KEEP_WORLD, False)
     return actor
 
 
@@ -121,8 +173,8 @@ def apply(world=None, save=False):
             continue
         positions = _mesh_sockets(actor, sockets, u)
         if positions:
-            targets.extend((label, i, p) for i, p in enumerate(positions))
-        elif label.startswith('StreetLamp_') or 'Lantern' in label:
+            targets.extend((label, i, p, actor) for i, p in enumerate(positions))
+        elif label.startswith('StreetLamp_') or 'Lantern' in label:   # building meshes may have no lantern glass at all
             unmatched.append(label)
     assert targets, 'No lamp glass found: run the Silverbrook builder/import first'
     assert not unmatched, f'Lamp actors lack authored sockets: {unmatched[:12]}'
@@ -172,7 +224,7 @@ def apply(world=None, save=False):
              for key in ('Flame', 'Halo', 'Smoke')}
     cards['Fireflies'] = _component(host, 'Fireflies', plane, mats['M_LampFirefly'], u)
     counts = {'sockets': 0, 'lights': 0, 'fireflies': 0}
-    for label, index, pos in targets:
+    for label, index, pos, owner in targets:
         key = f'{label}:{index}'
         yaw = _stable_fraction(key + ':yaw') * 180
         vertical = u.Rotator(pitch=90, yaw=yaw, roll=0)
@@ -183,7 +235,7 @@ def apply(world=None, save=False):
         _instance(cards['Halo'], pos, u.Rotator(pitch=90, yaw=yaw + 90, roll=0), u.Vector(.26, .26, 1), u)
         _instance(cards['Smoke'], high, vertical, u.Vector(.16, .25, 1), u)
         _point_light(subsystem, pos, cfg, mats['M_LampLightFunction'],
-                     PREFIX + f'Light_{label}_{index}', u)
+                     PREFIX + f'Light_{label}_{index}', owner, u)
         counts['sockets'] += 1; counts['lights'] += 1
         if _stable_fraction(key + ':fireflies') < cfg['firefly_chance']:
             count = 1 + int(_stable_fraction(key + ':count') * cfg['firefly_count'])

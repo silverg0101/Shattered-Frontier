@@ -1,6 +1,6 @@
 """Author only /Game/Frontier/VFX/StreetLamp assets in the open full editor.
 
-Called by Greenlands/lamp_fx.py; safe to rerun. No Niagara graph authoring is required.
+Called by Greenlands/lamp_fx.py; safe to rerun. NS_ChimneySmoke's emitter is authored by build_chimney_niagara.py.
 """
 from pathlib import Path
 import json
@@ -118,19 +118,48 @@ def _texture(name):
     tools.import_asset_tasks([task])
     tex = u.load_asset(path)
     assert tex, path
-    tex.set_editor_property('compression_settings', u.TextureCompressionSettings.TC_DEFAULT)
-    tex.set_editor_property('srgb', True)
-    if name == 'T_ChimneySmoke':   # WP6f review fix 1b: the taper samples U past 0..1 at the pot; wrapped, the next tile's column shows at the card edge
+    if name == 'T_ChimneyPuffs':   # WP6g review: luminance is density; clamped cells, effects LOD group
+        tex.set_editor_property('compression_settings', u.TextureCompressionSettings.TC_GRAYSCALE)
+        tex.set_editor_property('srgb', False)
         tex.set_editor_property('address_x', u.TextureAddress.TA_CLAMP)
+        tex.set_editor_property('address_y', u.TextureAddress.TA_CLAMP)
+        tex.set_editor_property('lod_group', u.TextureGroup.TEXTUREGROUP_EFFECTS)
+    else:
+        tex.set_editor_property('compression_settings', u.TextureCompressionSettings.TC_DEFAULT)
+        tex.set_editor_property('srgb', True)
     eal.save_loaded_asset(tex)
+
+
+def build_chimney_sprite():
+    """Lit camera-facing puff sprite for NS_ChimneySmoke (WP6g review): opacity = atlas density x particle alpha x Opacity x distance fade."""
+    m = _material('M_ChimneySmokeSprite', blend=u.BlendMode.BLEND_TRANSLUCENT)
+    m.set_editor_property('shading_model', u.MaterialShadingModel.MSM_DEFAULT_LIT)
+    m.set_editor_property('translucency_lighting_mode', u.TranslucencyLightingMode.TLM_VOLUMETRIC_PER_VERTEX_NON_DIRECTIONAL)
+    m.set_editor_property('used_with_niagara_sprites', True)
+    m.set_editor_property('two_sided', False)
+    puff = _node(m, u.MaterialExpressionParticleSubUV, texture=u.load_asset(DEST + '/T_ChimneyPuffs'))   # SubImageIndex picks the atlas cell
+    pcol = _node(m, u.MaterialExpressionParticleColor)
+    tint = _node(m, u.MaterialExpressionVectorParameter, parameter_name='Tint', default_value=u.LinearColor(.42, .42, .45, 1))
+    _output(_mul(m, tint, pcol), u.MaterialProperty.MP_BASE_COLOR)                     # lit grey; ParticleColor.rgb stays 1
+    opacity = _node(m, u.MaterialExpressionScalarParameter, parameter_name='Opacity', default_value=.55)
+    depth = _node(m, u.MaterialExpressionPixelDepth)
+    far = _node(m, u.MaterialExpressionSaturate)                                           # full to 80 m, gone at 120 m (= ET_ChimneySmoke Max Distance)
+    _link(_mul(m, _add(m, _mul(m, depth, _constant(m, -1.)), _constant(m, 12000.)), _constant(m, 1 / 4000.)), far, '')
+    density = _node(m, u.MaterialExpressionComponentMask, r=True, g=False, b=False, a=False); _link(puff, density, '')
+    dens_alpha = _node(m, u.MaterialExpressionMultiply)   # ParticleColor's default output is RGB only: take its A pin
+    _link(density, dens_alpha, 'A'); _link(pcol, dens_alpha, 'B', 'A')
+    _output(_mul(m, _mul(m, dens_alpha, opacity), far), u.MaterialProperty.MP_OPACITY)
+    _save(m)
+    return m
 
 
 def build(cfg=None):
     if cfg is None:
         raw = json.loads(CFG.read_text(encoding='utf-8'))
         cfg = {k: v['value'] for k, v in raw.items() if not k.startswith('_')}
-    for name in ('T_LampFlame', 'T_LampSmoke', 'T_LampGlow', 'T_ChimneySmoke'):
+    for name in ('T_LampFlame', 'T_LampSmoke', 'T_LampGlow', 'T_ChimneyPuffs'):
         _texture(name)
+    build_chimney_sprite()
     color = u.LinearColor(*cfg['flame_colour'], 1)
 
     # The imported window master is opaque, hiding every interior flame card.
@@ -158,8 +187,7 @@ def build(cfg=None):
     # Lit, not emitted: smoke against a bright sky must read darker than the sky (WP6d review fix 1a).
     smoke.set_editor_property('shading_model', u.MaterialShadingModel.MSM_DEFAULT_LIT)
     smoke.set_editor_property('translucency_lighting_mode', u.TranslucencyLightingMode.TLM_VOLUMETRIC_NON_DIRECTIONAL)
-    # Parameters default to the lamp wisp; MI_SB_ChimneySmoke (silverbrook_props.py) overrides them for chimney plumes:
-    # SmokeTex (T_ChimneySmoke, make_chimney_smoke.py), PanV (rise speed), Tint, Opacity, EdgeFade (fade the card's ends).
+    # Lamp wisp only (chimneys use M_ChimneySmokeSprite / NS_ChimneySmoke). The chimney-card parameters below stay at their lamp defaults.
     image = _node(smoke, u.MaterialExpressionTextureSampleParameter2D, parameter_name='SmokeTex', texture=u.load_asset(DEST + '/T_LampSmoke'))
     uv = _node(smoke, u.MaterialExpressionTextureCoordinate)
     pan_v = _node(smoke, u.MaterialExpressionScalarParameter, parameter_name='PanV', default_value=-.018)

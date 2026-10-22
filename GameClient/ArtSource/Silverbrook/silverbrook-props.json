@@ -369,10 +369,14 @@
     "max_groups": {"value": 1500, "min": 100, "max": 2000, "unit": "groups in the whole town"}
   },
   "chimney_smoke": {
-    "opacity": {"value": 0.5, "min": 0.2, "max": 0.7, "unit": "plume opacity (MI_SB_ChimneySmoke Opacity)"},
-    "tint": {"value": [0.42, 0.42, 0.45], "min": 0.0, "max": 1.0, "unit": "linear base colour"},
-    "pan_v": {"value": -0.12, "min": -0.3, "max": 0.3, "unit": "UV per second along V; negative rises (card V = 0 is at the pot; +0.12 sank, WP6f -game frames)"},
-    "edge_fade": {"value": 1.0, "min": 0.0, "max": 1.0, "unit": "fraction: fade the card's top and bottom ends"},
-    "texture": "/Game/Frontier/VFX/StreetLamp/T_ChimneySmoke"
+    "_note": "NS_ChimneySmoke User parameters, pushed per NiagaraActor by dress_house_details (WP6g review; docs/blueprints/vfx.md section 2)",
+    "spawn_rate": {"value": 6, "min": 2, "max": 12, "unit": "puffs per second (User.SpawnRate)"},
+    "lifetime": {"value": 4.0, "min": 2.5, "max": 6.0, "unit": "seconds per puff (User.Lifetime)"},
+    "rise_speed": {"value": 1.6, "min": 0.8, "max": 3.0, "unit": "m/s initial rise (User.RiseSpeed, cm/s)"},
+    "wind": {"value": [0.8, 0.0, 0.0], "min": -2.0, "max": 2.0, "unit": "m/s world wind per axis (User.Wind, cm/s)"},
+    "start_size": {"value": 0.6, "min": 0.3, "max": 1.0, "unit": "m puff size at the pot (User.StartSize, cm)"},
+    "end_size": {"value": 2.2, "min": 1.2, "max": 3.5, "unit": "m puff size at end of life (User.EndSize, cm)"},
+    "opacity": {"value": 0.55, "min": 0.2, "max": 0.8, "unit": "sprite opacity (User.Opacity -> M_ChimneySmokeSprite Opacity)"},
+    "tint": {"value": [0.42, 0.42, 0.45], "min": 0.0, "max": 1.0, "unit": "linear base colour (User.Tint)"}
   }
 }

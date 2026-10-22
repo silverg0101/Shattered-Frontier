@@ -326,20 +326,10 @@ def dress_house_details():
     tub=_asset(LIB+'/Meshes/SM_SilverbrookPropFlowerTub')  # oak half-barrel with geraniums (WP6c review fix 7)
     crop=_asset('/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_HerbBroadleaf_00')
     firewood=_asset(LIB+'/Meshes/SM_SilverbrookPropFirewoodStack')
-    lamp_smoke=_asset('/Game/Frontier/VFX/StreetLamp/M_LampSmoke');plane=_asset('/Engine/BasicShapes/Plane')
-    assert all((fence,tub,crop,firewood,lamp_smoke,plane)),'import PropFlowerTub (import_silverbrook.py PropFlowerTub)'
-    if 'ViewFade' not in [str(n) for n in mel.get_scalar_parameter_names(lamp_smoke)]:  # older M_LampSmoke without ViewFade
-        sys.path.insert(0,str(ROOT.parent/'VFX'/'StreetLamp'));import build_materials,importlib;importlib.reload(build_materials).build()
-        assert 'ViewFade' in [str(n) for n in mel.get_scalar_parameter_names(lamp_smoke)]
-    cs=cfg()['chimney_smoke'];smoke=_instance('MI_SB_ChimneySmoke',lamp_smoke)
-    mel.set_material_instance_scalar_parameter_value(smoke,'Opacity',val(cs['opacity']))
-    mel.set_material_instance_scalar_parameter_value(smoke,'PanV',val(cs['pan_v']))
-    mel.set_material_instance_vector_parameter_value(smoke,'Tint',u.LinearColor(*val(cs['tint']),1))
-    mel.set_material_instance_scalar_parameter_value(smoke,'EdgeFade',val(cs['edge_fade']))
-    mel.set_material_instance_scalar_parameter_value(smoke,'ViewFade',1.)  # edge-on cards vanish (WP6c review fix 1)
-    tex=_asset(cs['texture']);mel.set_material_instance_texture_parameter_value(smoke,'SmokeTex',tex)
-    assert mel.get_material_instance_texture_parameter_value(smoke,'SmokeTex')==tex,'SmokeTex not set'
-    assert eal.save_loaded_asset(smoke)
+    assert all((fence,tub,crop,firewood)),'import PropFlowerTub (import_silverbrook.py PropFlowerTub)'
+    # Chimney smoke (WP6g review): one Niagara sprite system per smoking chimney, tuned through its User parameters.
+    ns=_asset('/Game/Frontier/VFX/ChimneySmoke/NS_ChimneySmoke');assert ns,'author NS_ChimneySmoke (docs/blueprints/vfx.md section 2)'
+    cs=cfg()['chimney_smoke']
     sign,line,ladder,planter,ivy=(_asset(LIB+'/Meshes/SM_SilverbrookProp'+n) for n in ('ShopSign','WashingLine','Ladder','SillPlanter','IvyClump'))
     assert all((sign,line,ladder,planter,ivy)),'import the five wall-dressing props (import_silverbrook.py PropShopSign ...)'
     boards=[_asset(f'{LIB}/Materials/MI_SB_PropShopSignBoard{v}') for v in ('','_Boots','_Ale')]
@@ -359,16 +349,20 @@ def dress_house_details():
     stacks={1:(2.2,1.5,8.85),2:(-2.05,0,8.7),3:(2.45,-.55,8.75),4:(-2.1,.3,8.65),5:(2.25,.55,8.7),6:(-2.15,1.2,8.55)}
     counts=dict(gardens=0,crops=0,pots=0,stoop_pots=0,firewood=0,smoking=0,signs=0,washing_lines=0,ladders=0,sill_planters=0,ivy=0)
     def spawn(label,mesh,x,y,z,yaw,scale):
-        # Smoke card: roll -90 stands the plane up with its local Y (and texture V) pointing down, so scale Y is the
-        # plume height, the sheet reads upright and a +V pan moves the smoke upward.
-        a=A.spawn_actor_from_class(u.StaticMeshActor,u.Vector(x,y,z),u.Rotator(roll=-90 if mesh==plane else 0,yaw=yaw))
+        a=A.spawn_actor_from_class(u.StaticMeshActor,u.Vector(x,y,z),u.Rotator(yaw=yaw))
         a.static_mesh_component.set_static_mesh(mesh)
         a.set_actor_scale3d(u.Vector(*scale))
         a.set_actor_label(label);a.set_folder_path('Silverbrook/Dressing');a.tags=[TAG]
-        if mesh==plane:
-            a.static_mesh_component.set_material(0,smoke)
-            a.static_mesh_component.set_collision_profile_name('NoCollision')
-            a.static_mesh_component.set_editor_property('cast_shadow',False)
+        return a
+    def smoke(label,x,y,z,yaw):
+        a=A.spawn_actor_from_class(u.NiagaraActor,u.Vector(x,y,z),u.Rotator(yaw=yaw))
+        c=a.get_editor_property('niagara_component');c.set_asset(ns)
+        name=lambda k:'User.'+''.join(w.title() for w in k.split('_'))
+        for k in ('spawn_rate','lifetime','opacity'):c.set_variable_float(name(k),float(val(cs[k])))
+        for k in ('rise_speed','start_size','end_size'):c.set_variable_float(name(k),float(val(cs[k]))*100)   # m -> cm
+        c.set_variable_vec3('User.Wind',u.Vector(*[w*100 for w in val(cs['wind'])]))
+        c.set_variable_linear_color('User.Tint',u.LinearColor(*val(cs['tint']),1))
+        a.set_actor_label(label);a.set_folder_path('Silverbrook/Dressing');a.tags=[TAG]
         return a
     for a in A.get_all_level_actors():
         if not isinstance(a,u.StaticMeshActor) or not str(a.get_folder_path()).startswith('Districts/'):continue
@@ -465,7 +459,7 @@ def dress_house_details():
         if mesh.get_name().startswith('SM_SilverbrookTownhouse') and h<.4:
             number=int(mesh.get_name().removeprefix('SM_SilverbrookTownhouse'))
             sx,sy,sz=stacks[number];x,y=pt(sx*100,sy*100)
-            for k in range(2):spawn(f'ChimneySmoke_{label}_{k}',plane,x,y,p.z+sz*100+320,yaw+35+90*k,(2.2,6.0,1))
+            smoke(f'ChimneySmoke_{label}',x,y,p.z+sz*100+20,yaw)   # pot top + 20 cm
             counts['smoking']+=1
     print('HOUSE_DETAILS',counts)
     return counts
@@ -529,6 +523,67 @@ def _base_box(mesh,band):
                     _edge(sorted(p.y for p in near),True),_edge(sorted(p.y for p in near),False))
     return _BASE[key]
 
+_SHELL={}
+def _wall_shell(a,step=20.):
+    """Ground-floor wall shell of a placed house, from horizontal traces against its own mesh (owner: the lowest-band box
+    covered only the stoop/porch strip at the front and the rest of the house floated). Returns mesh-space cm
+    (x0,x1,y0,y1,bottom,stoops): per side the outermost wall plane hit by >= 30 % of the rays at 1.0-1.8 m above the mesh's lowest
+    point (bays, stoops, sills, posts and signs are minorities; the foot-level base course up to 15 cm proud is included; rays through doors and windows that reach the far inside are
+    dropped), `bottom` = the lowest wall foot along those planes, found by stepping the hitting rays down 2 cm at a time, and
+    `stoops` = [(side, lateral from, lateral to, outer depth)] runs of the mesh's own foot-level steps/porch outside the walls.
+    Cached per mesh and scale; the actor's yaw and position do not change the result."""
+    c=a.static_mesh_component;m=c.static_mesh;s=a.get_actor_scale3d()
+    key=(m.get_name(),round(s.x,3),round(s.y,3),round(s.z,3))
+    if key in _SHELL:return _SHELL[key]
+    b=m.get_bounding_box();T=a.get_actor_transform()
+    W=lambda q:T.transform_location(u.Vector(*q));L=lambda q:T.inverse_transform_location(q)
+    def ray(ax,sg,t,z):  # ray from outside the bounds toward the centre line; returns the hit depth along `ax` or None
+        out=(b.max if sg>0 else b.min).x if ax==0 else (b.max if sg>0 else b.min).y
+        p0=[0,0,z];p1=[0,0,z];p0[ax]=out+sg*100;p0[1-ax]=t;p1[1-ax]=t
+        h=c.line_trace_component(W(p0),W(p1),True,False)
+        return None if not h else (L(h[0]).x if ax==0 else L(h[0]).y)
+    low=b.min.z;planes={};bottoms=[];stoops=[]
+    for side,(ax,sg) in {'x0':(0,-1),'x1':(0,1),'y0':(1,-1),'y1':(1,1)}.items():
+        lo,hi=((b.min.y,b.max.y) if ax==0 else (b.min.x,b.max.x));out=(b.max if sg>0 else b.min).x if ax==0 else (b.max if sg>0 else b.min).y
+        hits=[]
+        for z in (low+100,low+140,low+180):
+            t=lo+step/2
+            while t<hi:
+                d=ray(ax,sg,t,z)
+                if d is not None and abs(out-d)<=150:hits.append((d,t))
+                t+=step
+        assert hits,(key,side)
+        ds=sorted(hits,key=lambda h:-sg*h[0]);groups=[[ds[0]]]
+        for h in ds[1:]:
+            (groups[-1].append(h) if abs(h[0]-groups[-1][-1][0])<=12 else groups.append([h]))
+        g=next(g for g in groups if len(g)>=.3*len(hits))   # main wall: a canted bay or porch is < 30 % of a side
+        plane=max(sg*h[0] for h in g)*sg
+        # The stone base course at the wall foot stands a few cm proud of the wall: take the outermost foot-level hit
+        # within 15 cm outside the wall plane (stoops and steps stand further out and are skipped).
+        for z in (low+4,low+16,low+30):
+            t=lo+step/4
+            while t<hi:   # at a quarter of the step: a narrow chimney-breast foot is easy to miss
+                d=ray(ax,sg,t,z)
+                if d is not None and 0<sg*(d-plane)<=15:plane=d
+                t+=step/2
+        planes[side]=plane
+        # The mesh's own doorstep / porch: foot-level geometry 15-150 cm out of the wall, grouped into runs along the side.
+        t=lo+step/2;run=None
+        while t<hi+step:
+            ds_=[q for q in (ray(ax,sg,t,low+4),ray(ax,sg,t,low+10)) if q is not None] if t<hi else []
+            d=max(ds_,key=lambda q:sg*q) if ds_ else None
+            if d is not None and 15<sg*(d-plane)<=150:
+                run=[t,t,d] if run is None else [run[0],t,d if sg*(d-run[2])>0 else run[2]]
+            elif run is not None:
+                stoops.append((side,run[0]-step/2,run[1]+step/2,run[2]));run=None
+            t+=step
+        for d,t in g[::3]:   # wall foot: step the ray down while it still hits this plane
+            z=low+100
+            while z>low-2 and (lambda d2:d2 is not None and abs(d2-d)<=8)(ray(ax,sg,t,z-2)):z-=2
+            bottoms.append(z)
+    _SHELL[key]=(planes['x0'],planes['x1'],planes['y0'],planes['y1'],min(bottoms),stoops)
+    return _SHELL[key]
+
 def dress_footings(c):
     """A matte stone course under every house, including level lots; repeatable after a rebuild."""
     f=c['footing'];path=f['material'];m=_asset(path)
@@ -575,15 +630,18 @@ def dress_footings(c):
         mesh=building.static_mesh_component.static_mesh
         if not mesh or not mesh.get_name().startswith('SM_Silverbrook') or '_Door' in mesh.get_name():continue
         b=mesh.get_bounding_box();s=building.get_actor_scale3d();loc=building.get_actor_location()
-        # Footprint = the mesh's own wall base: vertices within base_band_cm of its lowest point, plus a few cm of proud edge.
-        # (Whole-mesh bounds include eaves, bays and signs, which left one-sided ledges.)
-        x0,x1,y0,y1=_base_box(mesh,val(f['base_band_cm']))
+        # Footprint = the ground-floor wall shell traced on the house's own mesh, plus a few cm of proud edge. (Whole-mesh
+        # bounds include eaves, bays and signs, which left one-sided ledges; the lowest-band box covered only the front strip.)
+        x0,x1,y0,y1,_,stoop_runs=_wall_shell(building)
         pad=val(f['proud_cm'])
         w=(x1-x0+2*pad)*s.x;d=(y1-y0+2*pad)*s.y;cx=(x0+x1)/2*s.x;cy=(y0+y1)/2*s.y
         yaw=math.radians(building.get_actor_rotation().yaw);co,si=math.cos(yaw),math.sin(yaw)
         px=loc.x+co*cx-si*cy;py=loc.y+si*cx+co*cy
-        heights=[ground(px+co*x-si*y,py+si*x+co*y) for x in (-w/2,w/2) for y in (-d/2,d/2)]
-        heights.append(ground(px,py))
+        # Terrain under the whole footprint, every 50 cm along its edge and on a 2 m grid inside (corners alone missed dips).
+        nx,ny=max(1,math.ceil(w/50)),max(1,math.ceil(d/50))
+        edge=[(-w/2+w*i/nx,sy_) for i in range(nx+1) for sy_ in (-d/2,d/2)]+[(sx_,-d/2+d*j/ny) for j in range(ny+1) for sx_ in (-w/2,w/2)]
+        grid=[(-w/2+w*i/max(1,math.ceil(w/200)),-d/2+d*j/max(1,math.ceil(d/200))) for i in range(math.ceil(w/200)+1) for j in range(math.ceil(d/200)+1)]
+        heights=[ground(px+co*x-si*y,py+si*x+co*y) for x,y in edge+grid]
         marker='SilverbrookFoundationRaised'
         wall_base=loc.z+b.min.z*s.z
         wanted=max(heights)+val(f['visible_cm'])
@@ -594,7 +652,7 @@ def dress_footings(c):
             if not raised:building.tags=list(building.tags)+[marker]
             wall_base+=shift
         assert wall_base-max(heights)>=50-0.1,(building.get_actor_label(),wall_base-max(heights))
-        bottom=min(heights)-val(f['burial_cm'])
+        bottom=min(heights)-val(f['burial_cm'])-2   # 2 cm: terrain between the 50 cm samples can sit a little lower
         plinth=by_label.get(building.get_actor_label()+'_Plinth')
         if not plinth:
             plinth=A.spawn_actor_from_class(u.StaticMeshActor,u.Vector(px,py,(bottom+wall_base)/2),building.get_actor_rotation())
@@ -608,6 +666,22 @@ def dress_footings(c):
         plinth.static_mesh_component.set_material(0,m)
         # Stoop: equal low risers from the doorstep down to the street, so the raised doorway stays walkable.
         for old in [x for x in by_label.values() if x.get_actor_label().startswith(building.get_actor_label()+'_Stoop')]:A.destroy_actor(old)
+        # The mesh's own doorsteps/porch outside the walls stand on stone too (owner: floating houses), same top and burial.
+        beyond={}   # per side: how far the stone base reaches past the plinth face, so the risers start in front of it
+        for k,(side,t0,t1,dout) in enumerate(stoop_runs):
+            ax_=0 if side[0]=='x' else 1;sg_=1 if side[1]=='1' else -1
+            plane={'x0':x0,'x1':x1,'y0':y0,'y1':y1}[side]
+            a0,a1=sorted((plane,dout+sg_*pad));b0,b1=t0-pad,t1+pad
+            lx_,ly_=((a0+a1)/2,(b0+b1)/2) if ax_==0 else ((b0+b1)/2,(a0+a1)/2)
+            sx_,sy_=((a1-a0),(b1-b0)) if ax_==0 else ((b1-b0),(a1-a0))
+            wx,wy=loc.x+co*lx_*s.x-si*ly_*s.y,loc.y+si*lx_*s.x+co*ly_*s.y
+            under=[ground(loc.x+co*qx*s.x-si*qy*s.y,loc.y+si*qx*s.x+co*qy*s.y) for qx in (lx_-sx_/2,lx_,lx_+sx_/2) for qy in (ly_-sy_/2,ly_,ly_+sy_/2)]
+            low_=min(under)-val(f['burial_cm'])-2
+            sb=A.spawn_actor_from_class(u.StaticMeshActor,u.Vector(wx,wy,(low_+wall_base)/2),building.get_actor_rotation())
+            sb.static_mesh_component.set_static_mesh(cube);sb.static_mesh_component.set_material(0,m)
+            sb.set_actor_scale3d(u.Vector(sx_*s.x/100,sy_*s.y/100,(wall_base-low_)/100))
+            sb.set_actor_label(f'{building.get_actor_label()}_StoopBase{k}');sb.set_folder_path(building.get_folder_path())
+            key_=(ax_,sg_);beyond[key_]=max(beyond.get(key_,0),abs(dout+sg_*pad-plane-sg_*pad)*(s.x if ax_==0 else s.y))
         doors=[x for x in building.get_attached_actors() if 'Door' in x.get_actor_label()]
         if doors:
             dc,_=doors[0].get_actor_bounds(False)
@@ -618,7 +692,7 @@ def dress_footings(c):
             rise=wall_base-ground(gx+(co*ax-si*ay)*60,gy+(si*ax+co*ay)*60)
             steps=max(0,math.ceil(rise/22)) if rise>2 else 0
             for k in range(steps):
-                off=face+20+40*k;cxl,cyl=(ax*off+(0 if ax else lat),ay*off+(lat if ax else 0))
+                off=face+beyond.get((0 if ax else 1,ax or ay),0)+20+40*k;cxl,cyl=(ax*off+(0 if ax else lat),ay*off+(lat if ax else 0))
                 sx,sy=px+co*cxl-si*cyl,py+si*cxl+co*cyl
                 top=wall_base-1-k*rise/steps;low=ground(sx,sy)-50
                 st=A.spawn_actor_from_class(u.StaticMeshActor,u.Vector(sx,sy,(top+low)/2),building.get_actor_rotation())
@@ -645,6 +719,8 @@ def hide_debug_actors():
 def dress_all():
     c=cfg();L=json.loads(LAYOUT.read_text(encoding='utf-8'));_clear(_actors())
     dress_footings(c);hide_debug_actors();vary_house_finishes();dress_roads(c);gate_windows(c);dress_verge(L,c);dress_props(L,c);dress_house_details();dress_street_groups(L,c)  # groups keep clear of tubs (WP6d fix 4a)
+    # Lamp lights and flame cards last, on the glass where dress_footings left the houses (owner: lights from nowhere).
+    sys.path.insert(0,str(ROOT.parent/'Greenlands'));import lamp_fx,importlib;importlib.reload(lamp_fx).apply()
 
 if __name__=='__main__':
     dress_all()

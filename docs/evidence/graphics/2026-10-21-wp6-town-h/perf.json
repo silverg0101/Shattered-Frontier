@@ -1,0 +1,104 @@
+{
+ "resolution": [
+  2560,
+  1440
+ ],
+ "samples": {
+  "chimney/on-1": {
+   "gt_ms": 0.112,
+   "worker_ms": 0.36,
+   "rt_ms": 0.244,
+   "active_within_120m": 9,
+   "within_120m": 9,
+   "active_total": 9,
+   "frame_ms": 8.09,
+   "root_ms": 7.055
+  },
+  "chimney/off-1": {
+   "gt_ms": null,
+   "worker_ms": 0.0,
+   "rt_ms": 0.0,
+   "active_within_120m": 9,
+   "within_120m": 9,
+   "active_total": 9,
+   "frame_ms": 5.89,
+   "root_ms": 4.703
+  },
+  "chimney/on-2": {
+   "gt_ms": 0.1,
+   "worker_ms": 0.307,
+   "rt_ms": 0.37,
+   "active_within_120m": 9,
+   "within_120m": 9,
+   "active_total": 9,
+   "frame_ms": 5.47,
+   "root_ms": 4.494
+  },
+  "chimney/off-2": {
+   "gt_ms": null,
+   "worker_ms": 0.0,
+   "rt_ms": 0.0,
+   "active_within_120m": 9,
+   "within_120m": 9,
+   "active_total": 9,
+   "frame_ms": 5.62,
+   "root_ms": 4.609
+  },
+  "street/on-1": {
+   "gt_ms": 0.101,
+   "worker_ms": 0.363,
+   "rt_ms": 0.23,
+   "active_within_120m": 9,
+   "within_120m": 9,
+   "active_total": 9,
+   "frame_ms": 5.26,
+   "root_ms": 4.23
+  },
+  "street/off-1": {
+   "gt_ms": null,
+   "worker_ms": 0.0,
+   "rt_ms": 0.0,
+   "active_within_120m": 9,
+   "within_120m": 9,
+   "active_total": 9,
+   "frame_ms": 5.57,
+   "root_ms": 4.447
+  },
+  "street/on-2": {
+   "gt_ms": 0.074,
+   "worker_ms": 0.287,
+   "rt_ms": 1.012,
+   "active_within_120m": 9,
+   "within_120m": 9,
+   "active_total": 9,
+   "frame_ms": 5.36,
+   "root_ms": 4.171
+  },
+  "street/off-2": {
+   "gt_ms": null,
+   "worker_ms": 0.0,
+   "rt_ms": 0.0,
+   "active_within_120m": 9,
+   "within_120m": 9,
+   "active_total": 9,
+   "frame_ms": 5.44,
+   "root_ms": 4.328
+  },
+  "far/on-1": {
+   "gt_ms": 0.087,
+   "worker_ms": 0.0,
+   "rt_ms": 0.0,
+   "active_within_120m": 0,
+   "within_120m": 0,
+   "active_total": 0,
+   "nearest_chimney_m": 224.6,
+   "frame_ms": 6.55,
+   "root_ms": 5.334
+  }
+ },
+ "gpu_root_delta_on_minus_off_ms": {
+  "chimney": 1.118,
+  "street": -0.187
+ },
+ "note": "gt_ms = STAT_NiagaraOverview_GT of one frame; worker_ms / rt_ms = sum of every NS_ChimneySmoke [GT_CNC] / [RT] entry in that frame dump (nested entries counted again, so an upper bound); off hides the 85 ChimneySmoke components."
+}
