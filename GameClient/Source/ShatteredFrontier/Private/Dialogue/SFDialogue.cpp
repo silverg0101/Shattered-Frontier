@@ -12,6 +12,8 @@
 #include "Components/VerticalBoxSlot.h"
 #include "Dom/JsonObject.h"
 #include "Framework/Application/SlateApplication.h"
+#include "Fonts/FontMeasure.h"
+#include "Rendering/SlateRenderer.h"
 #include "Framework/SFHudStyle.h"
 #include "Misc/FileHelper.h"
 #include "Quest/SFQuestPilot.h"
@@ -189,8 +191,8 @@ namespace DialogueLayout
 const FAnchors BoardAnchors(486.f / 1920.f, 219.f / 1080.f, 1437.f / 1920.f, 841.f / 1080.f);
 inline float X(float ConceptX) { return ConceptX - 486.f; }
 inline float Y(float ConceptY) { return ConceptY - 219.f; }
-// EB Garamond: the cap top sits this many px below the text block's top per px of font size.
-constexpr float CapLift = 0.43f;
+// EB Garamond: the cap top sits this many px below the text block's top per 1080p px of font size.
+constexpr float CapLift = 0.3225f;
 
 // Places a widget on its concept rectangle.
 UCanvasPanelSlot* Box(UCanvasPanel* Into, UWidget* Widget, float Left, float Top, float Width, float Height)
@@ -201,10 +203,22 @@ UCanvasPanelSlot* Box(UCanvasPanel* Into, UWidget* Widget, float Left, float Top
     return Slot;
 }
 
-// Type sizes matched to the concept's measured text widths need fractions of a point; the helpers take whole sizes.
-void Resize(UTextBlock* Label, float Size)
+// Type sizes matched to the concept's measured text widths need fractions of a px; the helpers take whole 1080p px.
+void Resize(UTextBlock* Label, float Px)
 {
-    FSlateFontInfo Font = Label->GetFont(); Font.Size = Size; Label->SetFont(Font);
+    FSlateFontInfo Font = Label->GetFont(); Font.Size = Px * 0.75f; Label->SetFont(Font);  // Slate sizes are points (SFHudStyle::RoleFont)
+}
+
+// Text from quest and recipe data can be longer than the concept's; scale it down to fit the space (never under 18 px,
+// the family's floor is 16) instead of truncating it. Returns the px size used.
+float FitWidth(UTextBlock* Label, float BasePx, float MaxWidth)
+{
+    Resize(Label, BasePx);
+    const TSharedRef<FSlateFontMeasure> Measure = FSlateApplication::Get().GetRenderer()->GetFontMeasureService();
+    const float Width = Measure->Measure(Label->GetText().ToString(), Label->GetFont()).X;
+    const float Px = Width > MaxWidth ? FMath::Max(18.f, BasePx * MaxWidth / Width) : BasePx;
+    if (Px != BasePx) { Resize(Label, Px); }
+    return Px;
 }
 
 // Places a text block so its cap top lands on the concept's cap top.
@@ -252,11 +266,11 @@ void USFDialoguePanel::NativeOnInitialized()
     UOverlaySlot* FaceSlot = Portrait->AddChildToOverlay(FaceBox);
     FaceSlot->SetHorizontalAlignment(HAlign_Center); FaceSlot->SetVerticalAlignment(VAlign_Center);
     Box(Board, Portrait, 516.f, 267.f, 122.f, 124.f);
-    NameText = Text(WidgetTree, TEXT(""), 25, Ivory());
-    Resize(NameText, 27.5f);
-    Line(Board, NameText, 25, 662.f, 286.f);
-    LineText = Text(WidgetTree, TEXT(""), 20, Ivory());
-    Resize(LineText, 20.6f);
+    NameText = Text(WidgetTree, TEXT(""), 37, Ivory());
+    Resize(NameText, 36.7f);
+    Line(Board, NameText, 33, 662.f, 286.f);
+    LineText = Text(WidgetTree, TEXT(""), 27, Ivory());
+    Resize(LineText, 27.5f);
     LineText->SetWrapTextAt(X(982.f) - X(662.f));
     LineText->SetLineHeightPercentage(0.85f);  // the concept's 31 px line pitch
     // Below the name the left column flows: speech, divider, rows. A two-line speech puts every piece on its concept rect;
@@ -274,10 +288,11 @@ void USFDialoguePanel::NativeOnInitialized()
         Flat.Normal = Flat.Hovered = Flat.Pressed = Flat.Disabled = FSlateNoResource();
         Flat.NormalPadding = FMargin(0.f); Flat.PressedPadding = FMargin(0.f);
         Control->SetStyle(Flat);
-        UTextBlock* RowLabel = Text(WidgetTree, TEXT(""), 21, Ivory());
+        UTextBlock* RowLabel = Text(WidgetTree, TEXT(""), 28, Ivory());
         RowLabel->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
+        RowLabel->SetClipping(EWidgetClipping::ClipToBounds);  // the ellipsis applies only to a clipped block
         UBorder* Pad = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
-        Pad->SetBrush(FSlateNoResource()); Pad->SetPadding(FMargin(606.f - 513.f - 6.f, 0.f, 24.f, 0.f)); Pad->SetVerticalAlignment(VAlign_Center); Pad->SetHorizontalAlignment(HAlign_Left);  // label ink at x 606
+        Pad->SetBrush(FSlateNoResource()); Pad->SetPadding(FMargin(606.f - 513.f - 6.f, 0.f, 24.f, 0.f)); Pad->SetVerticalAlignment(VAlign_Center); Pad->SetHorizontalAlignment(HAlign_Fill);  // label ink at x 606; a long label ends in an ellipsis inside the row
         Pad->SetContent(RowLabel);
         UBorder* RowPlate = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
         SetRowSelected(RowPlate, false);
@@ -313,40 +328,51 @@ void USFDialoguePanel::NativeOnInitialized()
     OfferArt = ArtImage(WidgetTree, ArtBox, 1.f, 1.f);
     ArtBox->ClearWidthOverride(); ArtBox->ClearHeightOverride();
     Box(Offer, ArtBox, 1028.f, 248.f, 383.f, 190.f);
-    OfferTitle = Text(WidgetTree, TEXT(""), 23, Ivory());
-    Resize(OfferTitle, 25.4f);
-    Line(Offer, OfferTitle, 23, 1041.f, 457.f);
-    OfferSummary = Text(WidgetTree, TEXT(""), 16, Ivory());
-    Resize(OfferSummary, 17.1f);
-    Line(Offer, OfferSummary, 16, 1044.f, 499.f);
-    Line(Offer, Text(WidgetTree, TEXT("Objectives"), 17, Ivory()), 17, 1044.f, 549.f);
+    OfferTitle = Text(WidgetTree, TEXT(""), 34, Ivory());
+    Resize(OfferTitle, 33.9f);
+    Line(Offer, OfferTitle, 31, 1041.f, 457.f);
+    OfferSummary = Text(WidgetTree, TEXT(""), 23, Ivory());
+    Resize(OfferSummary, 22.8f);
+    Line(Offer, OfferSummary, 21, 1044.f, 499.f);
+    Line(Offer, Text(WidgetTree, TEXT("Objectives"), 23, Ivory()), 23, 1044.f, 549.f);
     Box(Offer, SectionRule(WidgetTree), 1159.f, 553.f, 237.f, 8.f);
     static const float ObjectiveTops[3] = {584.f, 620.f, 656.f};
     for (int32 Index = 0; Index < 3; ++Index)
     {
         UHorizontalBox* Row = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
         Row->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("objective_checkbox"), 24.f))->SetVerticalAlignment(VAlign_Center);
-        UTextBlock* Label = Text(WidgetTree, TEXT(""), 18, Ivory());
+        UTextBlock* Label = Text(WidgetTree, TEXT(""), 24, Ivory());
         UHorizontalBoxSlot* LabelSlot = Row->AddChildToHorizontalBox(Label);
         LabelSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); LabelSlot->SetPadding(FMargin(1088.f - 1068.f, 0.f, 0.f, 8.f)); LabelSlot->SetVerticalAlignment(VAlign_Center);  // EB Garamond sits low in its line box
-        UTextBlock* Count = Text(WidgetTree, TEXT(""), 18, Ivory());
+        UTextBlock* Count = Text(WidgetTree, TEXT(""), 24, Ivory());
         UHorizontalBoxSlot* CountSlot = Row->AddChildToHorizontalBox(Count);
         CountSlot->SetVerticalAlignment(VAlign_Center); CountSlot->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
         Box(Offer, Row, 1044.f, ObjectiveTops[Index], 344.f, 24.f);
         ObjectiveLabels.Add(Label); ObjectiveCounts.Add(Count); ObjectiveRows.Add(Row);
     }
-    Line(Offer, Text(WidgetTree, TEXT("Rewards"), 17, Ivory()), 17, 1044.f, 668.f);
+    Line(Offer, Text(WidgetTree, TEXT("Rewards"), 23, Ivory()), 23, 1044.f, 668.f);
     Box(Offer, SectionRule(WidgetTree), 1141.f, 674.f, 255.f, 8.f);
+    // Two reward pairs (icon + line) flow left to right: the second starts at the concept's x 1231, or 20 px after a long first line.
+    UHorizontalBox* Rewards = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     USizeBox* FirstIcon = KitImage(WidgetTree, TEXT("icon_xp_roundel"), 45.f);
-    Box(Offer, FirstIcon, 1044.f, 701.f, 45.f, 45.f);
     RewardIcons.Add(Cast<UImage>(FirstIcon->GetContent()));
-    XpText = Text(WidgetTree, TEXT(""), 17, Ivory());
-    Line(Offer, XpText, 17, 1107.f, 713.f);
+    XpText = Text(WidgetTree, TEXT(""), 23, Ivory());
+    UHorizontalBox* FirstPair = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+    FirstPair->AddChildToHorizontalBox(FirstIcon)->SetVerticalAlignment(VAlign_Center);
+    UHorizontalBoxSlot* XpSlot = FirstPair->AddChildToHorizontalBox(XpText);
+    XpSlot->SetVerticalAlignment(VAlign_Center); XpSlot->SetPadding(FMargin(1110.f - 1089.f, 0.f, 20.f, 6.f));  // ink at x 1110; EB Garamond sits low
+    USizeBox* FirstColumn = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+    FirstColumn->SetMinDesiredWidth(1231.f - 1044.f); FirstColumn->SetContent(FirstPair);
+    Rewards->AddChildToHorizontalBox(FirstColumn)->SetVerticalAlignment(VAlign_Center);
     USizeBox* SecondIcon = KitImage(WidgetTree, TEXT("icon_coin_stack"), 43.f);
-    Box(Offer, SecondIcon, 1231.f, 701.f, 43.f, 43.f);
     RewardIcons.Add(Cast<UImage>(SecondIcon->GetContent()));
-    CoinText = Text(WidgetTree, TEXT(""), 17, Ivory());
-    Line(Offer, CoinText, 17, 1293.f, 713.f);
+    Rewards->AddChildToHorizontalBox(SecondIcon)->SetVerticalAlignment(VAlign_Center);
+    CoinText = Text(WidgetTree, TEXT(""), 23, Ivory());
+    CoinText->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
+    CoinText->SetClipping(EWidgetClipping::ClipToBounds);
+    UHorizontalBoxSlot* CoinSlot = Rewards->AddChildToHorizontalBox(CoinText);
+    CoinSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); CoinSlot->SetVerticalAlignment(VAlign_Center); CoinSlot->SetPadding(FMargin(1293.f - 1274.f, 0.f, 0.f, 6.f));
+    Box(Offer, Rewards, 1044.f, 701.f, 1396.f - 1044.f, 45.f);
     const FSFHudButton Accept = Button(WidgetTree, TEXT("Accept"), EButtonKind::Primary, 0.f);
     AcceptButton = Accept.Button; AcceptLabel = Accept.Label;
     FScriptDelegate AcceptClicked; AcceptClicked.BindUFunction(this, TEXT("HandleAccept")); AcceptButton->OnClicked.Add(AcceptClicked);
@@ -386,6 +412,13 @@ void USFDialoguePanel::Open(TSharedPtr<const FSFDialogueTree> InTree, const FSFQ
         const TArray<FString> Rewards = Quest->RewardLines();
         XpText->SetText(FText::FromString(Rewards.IsValidIndex(0) ? Rewards[0] : FString()));
         CoinText->SetText(FText::FromString(Rewards.IsValidIndex(1) ? Rewards[1] : FString()));
+        {
+            const float Room = (1396.f - 1044.f) - 45.f - 21.f - 20.f - 43.f - 19.f;  // both lines together
+            DialogueLayout::Resize(XpText, 23.f); DialogueLayout::Resize(CoinText, 23.f);
+            const TSharedRef<FSlateFontMeasure> Measure = FSlateApplication::Get().GetRenderer()->GetFontMeasureService();
+            const float Both = Measure->Measure(XpText->GetText().ToString(), XpText->GetFont()).X + Measure->Measure(CoinText->GetText().ToString(), CoinText->GetFont()).X;
+            if (Both > Room) { const float Px = FMath::Max(18.f, 23.f * Room / Both); DialogueLayout::Resize(XpText, Px); DialogueLayout::Resize(CoinText, Px); }
+        }
         TArray<FString> Items;
         for (const FSFQuestStep& Step : Quest->Steps) { for (const FSFQuestRewardItem& Item : Step.RewardItems) { Items.Add(Item.DefinitionId); } }
         for (int32 Index = 0; Index < RewardIcons.Num(); ++Index)
@@ -410,7 +443,11 @@ void USFDialoguePanel::Refresh()
     {
         const bool bShown = Node->Choices.IsValidIndex(Index);
         RowRoots[Index]->SetVisibility(bShown ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
-        if (bShown) { RowLabels[Index]->SetText(FText::FromString(Node->Choices[Index].Label)); }
+        if (bShown)
+        {
+            RowLabels[Index]->SetText(FText::FromString(Node->Choices[Index].Label));
+            DialogueLayout::FitWidth(RowLabels[Index], 28.f, 985.f - 606.f - 24.f);
+        }
     }
     Selected = FMath::Clamp(Selected, 0, FMath::Max(0, Node->Choices.Num() - 1));
     StyledSelected = -1;
