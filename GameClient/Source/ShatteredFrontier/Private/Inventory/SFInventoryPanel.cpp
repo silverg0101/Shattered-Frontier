@@ -57,7 +57,7 @@ void USFInventoryPanel::NativeOnInitialized()
     UHorizontalBox* Tabs = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     for (int32 TabIndex = 0; TabIndex < TabCount; ++TabIndex)
     {
-        UBorder* Tab = KitPanel(WidgetTree, TEXT("tab_normal"), 1.f, Slate(), Brass(), FMargin(0.f), 3.f);
+        UBorder* Tab = SFHudStyle::Tab(WidgetTree, false);
         UTextBlock* TabText = Text(WidgetTree, TabLabel(static_cast<ESFInventoryTab>(TabIndex)), 18, Ivory());
         TabText->SetJustification(ETextJustify::Center);
         Tab->SetVerticalAlignment(VAlign_Center); Tab->SetContent(TabText);
@@ -306,7 +306,7 @@ void USFInventoryPanel::StyleTabs()
     for (int32 Index = 0; Index < TabBorders.Num(); ++Index)
     {
         const bool bActive = Index == static_cast<int32>(ActiveTab);
-        TabBorders[Index]->SetBrush(KitOrFrame(bActive ? TEXT("tab_selected") : TEXT("tab_normal"), bActive ? Hex(TEXT("2B3B2C"), 1.f) : Hex(TEXT("0E171C"), 0.85f), bActive ? Brass() : Hex(TEXT("3A4348")), 3.f));
+        SetTabState(TabBorders[Index], bActive ? EHudState::Selected : EHudState::Normal);
     }
 }
 
@@ -381,12 +381,12 @@ void USFInventoryPanel::RefreshMainHand(const TArray<FSFInventoryEntry>& All)
     if (Icon)
     {
         if (MainHandIcon->GetBrush().GetResourceObject() != Icon) { MainHandIcon->SetBrushFromTexture(Icon, false); MainHandIcon->SetDesiredSizeOverride(FVector2D(56.f, 56.f)); }
-        MainHandFrame->SetBrush(SFHudStyle::KitOrFrame(TEXT("slot_equipment_selected"), SFHudStyle::Hex(TEXT("2B3B2C"), 1.f), SFHudStyle::Brass(), 3.f));
+        SFHudStyle::SetSlotSelected(MainHandFrame, TEXT("slot_equipment_normal"), true);
     }
     else if (const FSFHudKitElement* Ghost = SFHudStyle::Kit(TEXT("ghost_main_hand")))
     {
         if (MainHandIcon->GetBrush().GetResourceObject() != Ghost->Texture) { MainHandIcon->SetBrush(SFHudStyle::KitBrush(*Ghost)); MainHandIcon->SetDesiredSizeOverride(FVector2D(48.f, 48.f)); }
-        MainHandFrame->SetBrush(SFHudStyle::KitOrFrame(TEXT("slot_equipment_normal"), SFHudStyle::Hex(TEXT("0E171C"), 0.85f), SFHudStyle::Hex(TEXT("3A4348")), 3.f));
+        SFHudStyle::SetSlotSelected(MainHandFrame, TEXT("slot_equipment_normal"), false);
     }
 }
 

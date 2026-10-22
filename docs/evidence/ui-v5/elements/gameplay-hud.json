@@ -1,0 +1,327 @@
+{
+ "concept": "gameplay-hud.png",
+ "elements": [
+  {
+   "name": "target frame",
+   "rect": [
+    735,
+    32,
+    433,
+    74
+   ],
+   "samples": [
+    [
+     840,
+     60,
+     "fill dark"
+    ],
+    [
+     1100,
+     60,
+     "fill dark"
+    ]
+   ]
+  },
+  {
+   "name": "target level cap diamond",
+   "rect": [
+    735,
+    32,
+    57,
+    55
+   ],
+   "samples": [
+    [
+     750,
+     60,
+     "fill dark"
+    ]
+   ]
+  },
+  {
+   "name": "target HP bar",
+   "rect": [
+    762,
+    76,
+    403,
+    29
+   ],
+   "samples": [
+    [
+     800,
+     92,
+     "hp red fill"
+    ]
+   ]
+  },
+  {
+   "name": "level badge hex",
+   "rect": [
+    37,
+    894,
+    115,
+    158
+   ],
+   "samples": [
+    [
+     70,
+     975,
+     "badge fill dark"
+    ],
+    [
+     125,
+     990,
+     "badge fill dark"
+    ]
+   ]
+  },
+  {
+   "name": "HP bar",
+   "rect": [
+    157,
+    925,
+    396,
+    44
+   ],
+   "samples": [
+    [
+     220,
+     947,
+     "hp red fill"
+    ]
+   ]
+  },
+  {
+   "name": "stamina bar",
+   "rect": [
+    157,
+    972,
+    396,
+    42
+   ],
+   "samples": [
+    [
+     220,
+     993,
+     "stamina amber fill"
+    ]
+   ]
+  },
+  {
+   "name": "prompt bar",
+   "rect": [
+    848,
+    838,
+    239,
+    60
+   ],
+   "samples": [
+    [
+     1068,
+     868,
+     "fill dark"
+    ]
+   ]
+  },
+  {
+   "name": "keycap F",
+   "rect": [
+    885,
+    846,
+    43,
+    43
+   ],
+   "samples": [
+    [
+     894,
+     868,
+     "fill dark"
+    ]
+   ]
+  },
+  {
+   "name": "hotbar slot 1 (axe)",
+   "rect": [
+    657,
+    925,
+    95,
+    99
+   ],
+   "samples": [
+    [
+     735,
+     945,
+     "fill dark"
+    ],
+    [
+     690,
+     1010,
+     "fill dark"
+    ]
+   ]
+  },
+  {
+   "name": "hotbar slot 3 (sword)",
+   "rect": [
+    857,
+    925,
+    95,
+    99
+   ],
+   "samples": [
+    [
+     940,
+     1000,
+     "fill dark"
+    ]
+   ]
+  },
+  {
+   "name": "hotbar slot 6 (campfire)",
+   "rect": [
+    1157,
+    925,
+    98,
+    99
+   ],
+   "samples": [
+    [
+     1235,
+     945,
+     "fill dark"
+    ]
+   ]
+  },
+  {
+   "name": "minimap ring",
+   "rect": [
+    1609,
+    17,
+    286,
+    287
+   ],
+   "samples": [
+    [
+     1752,
+     166,
+     "player arrow white"
+    ]
+   ]
+  },
+  {
+   "name": "minimap footer",
+   "rect": [
+    1650,
+    284,
+    203,
+    33
+   ],
+   "samples": [
+    [
+     1660,
+     300,
+     "fill dark"
+    ]
+   ]
+  },
+  {
+   "name": "quest tracker frame",
+   "rect": [
+    1612,
+    338,
+    286,
+    160
+   ],
+   "samples": [
+    [
+     1840,
+     358,
+     "fill dark"
+    ],
+    [
+     1625,
+     470,
+     "fill dark"
+    ]
+   ]
+  },
+  {
+   "name": "quest title Silverbrook",
+   "rect": [
+    1632,
+    350,
+    148,
+    29
+   ]
+  },
+  {
+   "name": "quest checkbox row 1",
+   "rect": [
+    1631,
+    396,
+    22,
+    22
+   ],
+   "samples": [
+    [
+     1641,
+     407,
+     "fill dark"
+    ]
+   ]
+  },
+  {
+   "name": "toast Item gained",
+   "rect": [
+    1612,
+    508,
+    286,
+    76
+   ],
+   "samples": [
+    [
+     1850,
+     530,
+     "fill dark"
+    ],
+    [
+     1665,
+     570,
+     "fill dark"
+    ]
+   ]
+  },
+  {
+   "name": "toast Skill gain",
+   "rect": [
+    1612,
+    589,
+    286,
+    76
+   ],
+   "samples": [
+    [
+     1850,
+     610,
+     "fill dark"
+    ]
+   ]
+  },
+  {
+   "name": "toast Warning",
+   "rect": [
+    1612,
+    670,
+    286,
+    76
+   ],
+   "samples": [
+    [
+     1850,
+     690,
+     "fill dark"
+    ]
+   ]
+  }
+ ]
+}

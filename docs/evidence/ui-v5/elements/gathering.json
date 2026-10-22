@@ -1,0 +1,382 @@
+{
+ "concept": "gathering.png",
+ "elements": [
+  {
+   "name": "skills panel frame",
+   "rect": [
+    50,
+    64,
+    527,
+    672
+   ],
+   "samples": [
+    [
+     480,
+     108,
+     "panel fill"
+    ],
+    [
+     540,
+     600,
+     "panel fill"
+    ]
+   ]
+  },
+  {
+   "name": "title Gathering Skills",
+   "rect": [
+    87,
+    90,
+    273,
+    38
+   ]
+  },
+  {
+   "name": "skill card Woodcutting",
+   "rect": [
+    66,
+    151,
+    494,
+    143
+   ],
+   "samples": [
+    [
+     540,
+     200,
+     "card fill"
+    ]
+   ]
+  },
+  {
+   "name": "skill card Foraging",
+   "rect": [
+    66,
+    438,
+    494,
+    132
+   ],
+   "samples": [
+    [
+     540,
+     490,
+     "card fill"
+    ]
+   ]
+  },
+  {
+   "name": "skill card Mining",
+   "rect": [
+    66,
+    295,
+    494,
+    133
+   ],
+   "samples": [
+    [
+     540,
+     350,
+     "card fill"
+    ]
+   ]
+  },
+  {
+   "name": "skill card Fishing",
+   "rect": [
+    66,
+    581,
+    494,
+    140
+   ],
+   "samples": [
+    [
+     540,
+     630,
+     "card fill"
+    ]
+   ]
+  },
+  {
+   "name": "Woodcutting level well",
+   "rect": [
+    77,
+    165,
+    100,
+    110
+   ],
+   "samples": [
+    [
+     85,
+     200,
+     "well fill"
+    ]
+   ]
+  },
+  {
+   "name": "Woodcutting XP bar",
+   "rect": [
+    198,
+    208,
+    336,
+    18
+   ],
+   "samples": [
+    [
+     250,
+     217,
+     "xp green fill"
+    ]
+   ]
+  },
+  {
+   "name": "Mining XP bar",
+   "rect": [
+    198,
+    351,
+    336,
+    18
+   ],
+   "samples": [
+    [
+     250,
+     360,
+     "xp green fill"
+    ]
+   ]
+  },
+  {
+   "name": "target frame Old Oak",
+   "rect": [
+    790,
+    32,
+    340,
+    92
+   ],
+   "samples": [
+    [
+     840,
+     50,
+     "frame fill"
+    ],
+    [
+     1100,
+     105,
+     "frame fill"
+    ]
+   ]
+  },
+  {
+   "name": "target name Old Oak",
+   "rect": [
+    915,
+    40,
+    89,
+    23
+   ]
+  },
+  {
+   "name": "target HP bar",
+   "rect": [
+    790,
+    71,
+    340,
+    18
+   ],
+   "samples": [
+    [
+     850,
+     80,
+     "hp red fill"
+    ]
+   ]
+  },
+  {
+   "name": "target HP value",
+   "rect": [
+    930,
+    99,
+    61,
+    17
+   ]
+  },
+  {
+   "name": "progress ring 64%",
+   "rect": [
+    989,
+    366,
+    110,
+    110
+   ],
+   "samples": [
+    [
+     1043,
+     395,
+     "ring centre fill"
+    ]
+   ]
+  },
+  {
+   "name": "action label Woodcutting",
+   "rect": [
+    969,
+    484,
+    148,
+    33
+   ],
+   "samples": [
+    [
+     985,
+     500,
+     "label plate fill"
+    ]
+   ]
+  },
+  {
+   "name": "prompt bar Chop",
+   "rect": [
+    869,
+    843,
+    183,
+    51
+   ],
+   "samples": [
+    [
+     1030,
+     880,
+     "fill dark"
+    ]
+   ]
+  },
+  {
+   "name": "keycap E",
+   "rect": [
+    911,
+    850,
+    35,
+    34
+   ]
+  },
+  {
+   "name": "hotbar frame",
+   "rect": [
+    649,
+    905,
+    621,
+    115
+   ]
+  },
+  {
+   "name": "hotbar slot 1 (selected axe)",
+   "rect": [
+    660,
+    913,
+    93,
+    101
+   ],
+   "samples": [
+    [
+     737,
+     930,
+     "selected slot fill"
+    ]
+   ]
+  },
+  {
+   "name": "hotbar slot 6 (bandage)",
+   "rect": [
+    1166,
+    913,
+    95,
+    101
+   ],
+   "samples": [
+    [
+     1250,
+     930,
+     "slot fill"
+    ]
+   ]
+  },
+  {
+   "name": "vitals HP bar",
+   "rect": [
+    151,
+    943,
+    393,
+    33
+   ],
+   "samples": [
+    [
+     250,
+     960,
+     "hp red fill"
+    ]
+   ]
+  },
+  {
+   "name": "vitals level badge",
+   "rect": [
+    33,
+    902,
+    108,
+    141
+   ],
+   "samples": [
+    [
+     60,
+     990,
+     "badge fill"
+    ]
+   ]
+  },
+  {
+   "name": "minimap ring",
+   "rect": [
+    1654,
+    17,
+    241,
+    240
+   ]
+  },
+  {
+   "name": "minimap footer text",
+   "rect": [
+    1697,
+    263,
+    158,
+    20
+   ]
+  },
+  {
+   "name": "quest tracker frame",
+   "rect": [
+    1618,
+    304,
+    286,
+    203
+   ],
+   "samples": [
+    [
+     1880,
+     325,
+     "fill dark"
+    ]
+   ]
+  },
+  {
+   "name": "toast Skill gain",
+   "rect": [
+    1618,
+    523,
+    286,
+    77
+   ],
+   "samples": [
+    [
+     1880,
+     545,
+     "fill dark"
+    ]
+   ]
+  }
+ ]
+}

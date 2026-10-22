@@ -184,8 +184,8 @@ void USFE1VitalsHud::NativeOnInitialized()
         UOverlaySlot* StripSlot = Card->AddChildToOverlay(StripBox);
         StripSlot->SetHorizontalAlignment(HAlign_Fill); StripSlot->SetVerticalAlignment(VAlign_Bottom);
         UBorder* CardFrame = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
-        CardFrame->SetBrush(KitOrFrame(TEXT("respawn_image_well"), FLinearColor(0.f, 0.f, 0.f, 0.f), bSelected ? Moss() : Brass(), 0.f));
-        if (bSelected) { CardFrame->SetBrushColor(FLinearColor(0.55f, 0.85f, 0.5f)); }  // moss edge for the chosen point
+        CardFrame->SetBrush(KitOrFrame(TEXT("respawn_image_well"), FLinearColor(0.f, 0.f, 0.f, 0.f), CardEdge(bSelected), 0.f));
+        if (bSelected) { CardFrame->SetBrushColor(CardSelectTint()); }  // moss edge for the chosen point
         UOverlaySlot* FrameSlot = Card->AddChildToOverlay(CardFrame);
         FrameSlot->SetHorizontalAlignment(HAlign_Fill); FrameSlot->SetVerticalAlignment(VAlign_Fill);
         // Tick roundel (moss disc + kit tick) on the chosen card, the kit clock roundel on the other.

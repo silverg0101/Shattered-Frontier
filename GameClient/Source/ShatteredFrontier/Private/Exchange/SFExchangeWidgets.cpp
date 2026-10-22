@@ -121,7 +121,7 @@ void USFTradeWindow::BuildSide(UVerticalBox* Column, FSideWidgets& Side, bool bM
     UHorizontalBox* GridRow = nullptr;
     for (int32 Index = 0; Index < SlotCount; ++Index)
     {
-        UBorder* Frame = KitPanel(WidgetTree, TEXT("slot_bag_normal"), 1.f, Well(), Hex(TEXT("3A4348")), FMargin(0.f), 3.f);
+        UBorder* Frame = KitPanel(WidgetTree, TEXT("slot_bag_normal"), 1.f, Well(), Hairline(), FMargin(0.f), 3.f);
         UOverlay* Stack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
         Frame->SetContent(Stack);
         UImage* Icon = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
@@ -189,7 +189,7 @@ void USFTradeWindow::BuildSide(UVerticalBox* Column, FSideWidgets& Side, bool bM
     {
         // Offer Locked toggle: pressed = moss tint with a tick; the model decides whether Lock is allowed.
         const FSFHudButton Lock = Button(WidgetTree, TEXT("Offer Locked"), EButtonKind::Secondary, 300.f);
-        LockButton = Lock.Button; LockLabel = Lock.Label; LockIdleBrush = LockButton->GetStyle().Normal;
+        LockButton = Lock.Button; LockLabel = Lock.Label;
         FScriptDelegate Clicked; Clicked.BindUFunction(this, TEXT("HandleLock")); LockButton->OnClicked.Add(Clicked);
         LockPlate = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
         LockPlate->SetBrush(FSlateNoResource());
@@ -348,9 +348,7 @@ void USFTradeWindow::Refresh()
     // Offer Locked toggle: moss tint and a tick while locked, the hint underneath says how to undo.
     LockLabel->SetText(FText::FromString(Trade.Mine.bLocked ? TEXT("Offer Locked") : TEXT("Lock Offer")));
     LockTick->SetVisibility(Trade.Mine.bLocked ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
-    FButtonStyle LockStyle = LockButton->GetStyle();
-    LockStyle.Normal = Trade.Mine.bLocked ? LockStyle.Pressed : LockIdleBrush;
-    LockButton->SetStyle(LockStyle);
+    ApplyButtonStyle(LockButton, EButtonKind::Secondary, Trade.Mine.bLocked);
     LockHint->SetVisibility(Trade.Mine.bLocked ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
     LockButton->SetIsEnabled(Trade.State == ESFTradeState::Open && (Model->CanLock() || Trade.Mine.bLocked));
     // Partner status.
@@ -422,7 +420,7 @@ void USFMarketBoard::NativeOnInitialized()
     static const TCHAR* const TabNames[3] = {TEXT("Browse"), TEXT("My Listings"), TEXT("Sell")};
     for (int32 Index = 0; Index < 3; ++Index)
     {
-        UBorder* Tab = KitPanel(WidgetTree, TEXT("tab_normal"), 1.f, Well(), Hex(TEXT("3A4348")), FMargin(0.f), 3.f);
+        UBorder* Tab = SFHudStyle::Tab(WidgetTree, false);
         UTextBlock* Label = Text(WidgetTree, TabNames[Index], 20, Ivory());
         Label->SetJustification(ETextJustify::Center);
         Tab->SetVerticalAlignment(VAlign_Center); Tab->SetContent(Label);
@@ -444,7 +442,7 @@ void USFMarketBoard::NativeOnInitialized()
     static const TCHAR* const RailIcons[5] = {TEXT("icon_structures"), TEXT("icon_sword"), TEXT("icon_oak_log"), TEXT("icon_bread"), TEXT("icon_woodcutting_axes")};
     for (int32 Index = 0; Index < 5; ++Index)
     {
-        UBorder* Row = KitPanel(WidgetTree, TEXT("tab_normal"), 1.f, Well(), Hex(TEXT("3A4348")), FMargin(8.f, 0.f), 3.f);
+        UBorder* Row = SFHudStyle::Tab(WidgetTree, false, FMargin(8.f, 0.f));
         UHorizontalBox* Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
         Line->AddChildToHorizontalBox(KitImage(WidgetTree, RailIcons[Index], 24.f))->SetVerticalAlignment(VAlign_Center);
         Line->AddChildToHorizontalBox(Text(WidgetTree, RailNames[Index], 20, Ivory()))->SetPadding(FMargin(10.f, 0.f, 0.f, 0.f));
@@ -574,9 +572,9 @@ void USFMarketBoard::SetSellItem(const FString& ItemId, const FString& Name, int
 void USFMarketBoard::Style()
 {
     for (int32 Index = 0; Index < TopTabs.Num(); ++Index)
-    { TopTabs[Index]->SetBrush(KitOrFrame(Index == ActiveTab ? TEXT("tab_selected") : TEXT("tab_normal"), Well(), Brass(), 3.f)); TopTabs[Index]->SetRenderOpacity(Index == 1 ? 0.45f : 1.f); }
+    { SetTabState(TopTabs[Index], Index == 1 ? EHudState::Disabled : Index == ActiveTab ? EHudState::Selected : EHudState::Normal); }
     for (int32 Index = 0; Index < RailRows.Num(); ++Index)
-    { RailRows[Index]->SetBrush(KitOrFrame(Index == ActiveRail ? TEXT("tab_selected") : TEXT("tab_normal"), Well(), Brass(), 3.f)); }
+    { SetTabState(RailRows[Index], Index == ActiveRail ? EHudState::Selected : EHudState::Normal); }
     BrowsePane->SetVisibility(ActiveTab == 2 ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
     SellPane->SetVisibility(ActiveTab == 2 ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 }
@@ -627,7 +625,7 @@ void USFMarketBoard::Rebuild()
     {
         const bool bChosen = L.ListingId == SelectedListingId;
         UBorder* Row = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
-        Row->SetBrush(bChosen ? KitOrFrame(TEXT("tab_selected"), Hex(TEXT("2B3B2C"), 1.f), Brass(), 3.f) : FSlateBrush(Frame(Hex(TEXT("17232A"), 0.6f), Hex(TEXT("3A4348")), 0.f)));  // 1 px rule between rows
+        Row->SetBrush(RowBrush(bChosen));  // 1 px rule between rows
         Row->SetPadding(FMargin(8.f, 0.f));
         UHorizontalBox* Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
         Row->SetVerticalAlignment(VAlign_Center); Row->SetContent(Line);

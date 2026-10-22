@@ -1,0 +1,429 @@
+{
+ "concept": "crafting-station.png",
+ "elements": [
+  {
+   "name": "station window frame",
+   "rect": [
+    631,
+    97,
+    866,
+    797
+   ],
+   "samples": [
+    [
+     850,
+     125,
+     "window fill"
+    ],
+    [
+     1450,
+     125,
+     "window fill"
+    ]
+   ]
+  },
+  {
+   "name": "title Sawmill",
+   "rect": [
+    663,
+    117,
+    131,
+    33
+   ]
+  },
+  {
+   "name": "search recipes field",
+   "rect": [
+    655,
+    183,
+    301,
+    44
+   ],
+   "samples": [
+    [
+     900,
+     205,
+     "field fill"
+    ]
+   ]
+  },
+  {
+   "name": "filter tab All (selected)",
+   "rect": [
+    655,
+    243,
+    100,
+    38
+   ],
+   "samples": [
+    [
+     662,
+     262,
+     "selected tab fill"
+    ]
+   ]
+  },
+  {
+   "name": "filter tab Lumber",
+   "rect": [
+    760,
+    243,
+    96,
+    38
+   ],
+   "samples": [
+    [
+     770,
+     262,
+     "tab fill"
+    ]
+   ]
+  },
+  {
+   "name": "filter tab Parts",
+   "rect": [
+    862,
+    243,
+    94,
+    38
+   ],
+   "samples": [
+    [
+     870,
+     262,
+     "tab fill"
+    ]
+   ]
+  },
+  {
+   "name": "recipe row Oak Planks (selected)",
+   "rect": [
+    655,
+    297,
+    300,
+    64
+   ],
+   "samples": [
+    [
+     930,
+     345,
+     "selected row fill"
+    ]
+   ]
+  },
+  {
+   "name": "recipe row Timber Beam",
+   "rect": [
+    655,
+    367,
+    300,
+    64
+   ],
+   "samples": [
+    [
+     930,
+     415,
+     "row fill"
+    ]
+   ]
+  },
+  {
+   "name": "recipe row Wooden Pegs",
+   "rect": [
+    655,
+    437,
+    300,
+    64
+   ],
+   "samples": [
+    [
+     930,
+     485,
+     "row fill"
+    ]
+   ]
+  },
+  {
+   "name": "recipe row Treated Board",
+   "rect": [
+    655,
+    507,
+    300,
+    64
+   ],
+   "samples": [
+    [
+     930,
+     555,
+     "row fill"
+    ]
+   ]
+  },
+  {
+   "name": "detail title Oak Planks",
+   "rect": [
+    998,
+    187,
+    165,
+    33
+   ]
+  },
+  {
+   "name": "detail description",
+   "rect": [
+    1000,
+    228,
+    438,
+    45
+   ]
+  },
+  {
+   "name": "detail item image",
+   "rect": [
+    1100,
+    279,
+    264,
+    129
+   ],
+   "samples": [
+    [
+     1110,
+     300,
+     "image well fill"
+    ]
+   ]
+  },
+  {
+   "name": "ingredients heading",
+   "rect": [
+    1000,
+    419,
+    98,
+    19
+   ]
+  },
+  {
+   "name": "ingredient row Oak Logs",
+   "rect": [
+    1000,
+    446,
+    470,
+    52
+   ],
+   "samples": [
+    [
+     1250,
+     485,
+     "row fill"
+    ]
+   ]
+  },
+  {
+   "name": "ingredient row Iron Nails (short)",
+   "rect": [
+    1000,
+    504,
+    470,
+    52
+   ],
+   "samples": [
+    [
+     1250,
+     540,
+     "row fill"
+    ]
+   ]
+  },
+  {
+   "name": "quantity stepper",
+   "rect": [
+    1131,
+    572,
+    184,
+    46
+   ],
+   "samples": [
+    [
+     1223,
+     577,
+     "field fill"
+    ]
+   ]
+  },
+  {
+   "name": "craft time label",
+   "rect": [
+    1156,
+    626,
+    130,
+    22
+   ]
+  },
+  {
+   "name": "Hold Craft button",
+   "rect": [
+    1041,
+    655,
+    371,
+    60
+   ],
+   "samples": [
+    [
+     1060,
+     700,
+     "brass fill"
+    ]
+   ]
+  },
+  {
+   "name": "crafting queue heading",
+   "rect": [
+    660,
+    737,
+    175,
+    22
+   ]
+  },
+  {
+   "name": "queue row Timber Beam 60%",
+   "rect": [
+    660,
+    765,
+    808,
+    54
+   ],
+   "samples": [
+    [
+     800,
+     810,
+     "row fill"
+    ]
+   ]
+  },
+  {
+   "name": "queue row Wooden Pegs 25%",
+   "rect": [
+    660,
+    824,
+    808,
+    55
+   ],
+   "samples": [
+    [
+     800,
+     868,
+     "row fill"
+    ]
+   ]
+  },
+  {
+   "name": "queue progress bar Timber Beam",
+   "rect": [
+    944,
+    787,
+    408,
+    12
+   ]
+  },
+  {
+   "name": "hotbar slot 1 (sword)",
+   "rect": [
+    677,
+    929,
+    89,
+    89
+   ]
+  },
+  {
+   "name": "hotbar slot 6 (bandage)",
+   "rect": [
+    1161,
+    929,
+    88,
+    89
+   ],
+   "samples": [
+    [
+     1235,
+     940,
+     "slot fill"
+    ]
+   ]
+  },
+  {
+   "name": "vitals HP bar",
+   "rect": [
+    136,
+    938,
+    365,
+    38
+   ],
+   "samples": [
+    [
+     220,
+     950,
+     "hp red fill"
+    ]
+   ]
+  },
+  {
+   "name": "vitals level badge",
+   "rect": [
+    27,
+    903,
+    100,
+    130
+   ],
+   "samples": [
+    [
+     45,
+     985,
+     "badge fill"
+    ]
+   ]
+  },
+  {
+   "name": "minimap ring",
+   "rect": [
+    1674,
+    12,
+    217,
+    220
+   ]
+  },
+  {
+   "name": "minimap footer text",
+   "rect": [
+    1732,
+    237,
+    100,
+    43
+   ]
+  },
+  {
+   "name": "quest tracker frame",
+   "rect": [
+    1636,
+    308,
+    264,
+    198
+   ]
+  },
+  {
+   "name": "toast Oak Logs",
+   "rect": [
+    1646,
+    541,
+    254,
+    62
+   ],
+   "samples": [
+    [
+     1860,
+     560,
+     "fill dark"
+    ]
+   ]
+  }
+ ]
+}

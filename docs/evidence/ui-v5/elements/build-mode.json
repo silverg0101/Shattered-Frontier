@@ -1,0 +1,378 @@
+{
+ "concept": "build-mode.png",
+ "elements": [
+  {
+   "name": "catalogue panel frame",
+   "rect": [
+    33,
+    39,
+    523,
+    845
+   ],
+   "samples": [
+    [
+     300,
+     90,
+     "panel fill"
+    ],
+    [
+     48,
+     620,
+     "panel fill"
+    ]
+   ]
+  },
+  {
+   "name": "title Build Catalogue",
+   "rect": [
+    62,
+    52,
+    298,
+    40
+   ]
+  },
+  {
+   "name": "search field",
+   "rect": [
+    53,
+    111,
+    480,
+    41
+   ],
+   "samples": [
+    [
+     450,
+     131,
+     "field fill"
+    ]
+   ]
+  },
+  {
+   "name": "tab Voxel Objects (selected)",
+   "rect": [
+    52,
+    161,
+    259,
+    41
+   ],
+   "samples": [
+    [
+     75,
+     182,
+     "selected tab fill"
+    ],
+    [
+     285,
+     182,
+     "selected tab fill"
+    ]
+   ]
+  },
+  {
+   "name": "tab Blueprints",
+   "rect": [
+    322,
+    161,
+    214,
+    41
+   ],
+   "samples": [
+    [
+     350,
+     182,
+     "tab fill"
+    ]
+   ]
+  },
+  {
+   "name": "rail Structures (selected)",
+   "rect": [
+    43,
+    215,
+    95,
+    78
+   ],
+   "samples": [
+    [
+     52,
+     255,
+     "selected rail fill"
+    ]
+   ]
+  },
+  {
+   "name": "rail Decor",
+   "rect": [
+    43,
+    305,
+    95,
+    83
+   ],
+   "samples": [
+    [
+     52,
+     345,
+     "rail fill"
+    ]
+   ]
+  },
+  {
+   "name": "rail Terrain",
+   "rect": [
+    43,
+    398,
+    95,
+    83
+   ],
+   "samples": [
+    [
+     52,
+     440,
+     "rail fill"
+    ]
+   ]
+  },
+  {
+   "name": "rail Favourites",
+   "rect": [
+    43,
+    490,
+    95,
+    83
+   ],
+   "samples": [
+    [
+     52,
+     530,
+     "rail fill"
+    ]
+   ]
+  },
+  {
+   "name": "tile Timber Block",
+   "rect": [
+    155,
+    213,
+    123,
+    111
+   ],
+   "samples": [
+    [
+     165,
+     235,
+     "tile fill"
+    ]
+   ]
+  },
+  {
+   "name": "tile Wall (selected)",
+   "rect": [
+    155,
+    327,
+    123,
+    106
+   ],
+   "samples": [
+    [
+     165,
+     350,
+     "selected tile fill"
+    ]
+   ]
+  },
+  {
+   "name": "tile Floor",
+   "rect": [
+    285,
+    327,
+    121,
+    106
+   ],
+   "samples": [
+    [
+     295,
+     350,
+     "tile fill"
+    ]
+   ]
+  },
+  {
+   "name": "tile Window",
+   "rect": [
+    413,
+    555,
+    123,
+    107
+   ],
+   "samples": [
+    [
+     423,
+     580,
+     "tile fill"
+    ]
+   ]
+  },
+  {
+   "name": "material dropdown",
+   "rect": [
+    43,
+    673,
+    497,
+    50
+   ],
+   "samples": [
+    [
+     350,
+     698,
+     "field fill"
+    ]
+   ]
+  },
+  {
+   "name": "required materials box",
+   "rect": [
+    43,
+    729,
+    497,
+    148
+   ],
+   "samples": [
+    [
+     400,
+     790,
+     "inset fill"
+    ]
+   ]
+  },
+  {
+   "name": "action bar",
+   "rect": [
+    722,
+    882,
+    493,
+    38
+   ],
+   "samples": [
+    [
+     735,
+     900,
+     "bar fill"
+    ]
+   ]
+  },
+  {
+   "name": "hotbar slot 1 (axe)",
+   "rect": [
+    688,
+    938,
+    92,
+    92
+   ],
+   "samples": [
+    [
+     770,
+     955,
+     "slot fill"
+    ]
+   ]
+  },
+  {
+   "name": "hotbar slot 6 (sack)",
+   "rect": [
+    1154,
+    938,
+    92,
+    92
+   ],
+   "samples": [
+    [
+     1236,
+     950,
+     "slot fill"
+    ]
+   ]
+  },
+  {
+   "name": "vitals HP bar",
+   "rect": [
+    123,
+    948,
+    367,
+    34
+   ],
+   "samples": [
+    [
+     200,
+     965,
+     "hp red fill"
+    ]
+   ]
+  },
+  {
+   "name": "vitals level badge",
+   "rect": [
+    24,
+    919,
+    102,
+    123
+   ],
+   "samples": [
+    [
+     50,
+     985,
+     "badge fill"
+    ]
+   ]
+  },
+  {
+   "name": "minimap ring",
+   "rect": [
+    1640,
+    27,
+    250,
+    245
+   ]
+  },
+  {
+   "name": "minimap footer",
+   "rect": [
+    1677,
+    276,
+    188,
+    20
+   ]
+  },
+  {
+   "name": "quest tracker frame",
+   "rect": [
+    1629,
+    320,
+    274,
+    182
+   ],
+   "samples": [
+    [
+     1860,
+     345,
+     "fill dark"
+    ]
+   ]
+  },
+  {
+   "name": "toast Rough Timber",
+   "rect": [
+    1631,
+    525,
+    269,
+    67
+   ],
+   "samples": [
+    [
+     1860,
+     545,
+     "fill dark"
+    ]
+   ]
+  }
+ ]
+}

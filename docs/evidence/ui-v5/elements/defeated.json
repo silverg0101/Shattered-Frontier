@@ -1,0 +1,331 @@
+{
+ "concept": "defeated.png",
+ "elements": [
+  {
+   "name": "defeated modal frame",
+   "rect": [
+    535,
+    191,
+    843,
+    630
+   ],
+   "samples": [
+    [
+     600,
+     260,
+     "modal fill"
+    ],
+    [
+     1300,
+     700,
+     "modal fill"
+    ]
+   ]
+  },
+  {
+   "name": "title Defeated",
+   "rect": [
+    813,
+    236,
+    292,
+    66
+   ]
+  },
+  {
+   "name": "flourish divider with stag",
+   "rect": [
+    688,
+    316,
+    545,
+    30
+   ]
+  },
+  {
+   "name": "subtitle Defeated by Wild Boar",
+   "rect": [
+    816,
+    355,
+    286,
+    34
+   ]
+  },
+  {
+   "name": "respawn card Silverbrook Shrine (selected)",
+   "rect": [
+    620,
+    409,
+    333,
+    241
+   ],
+   "samples": [
+    [
+     640,
+     630,
+     "card fill"
+    ]
+   ]
+  },
+  {
+   "name": "shrine card image",
+   "rect": [
+    626,
+    416,
+    320,
+    160
+   ]
+  },
+  {
+   "name": "shrine check badge",
+   "rect": [
+    894,
+    423,
+    46,
+    46
+   ],
+   "samples": [
+    [
+     917,
+     432,
+     "badge fill"
+    ]
+   ]
+  },
+  {
+   "name": "shrine card name",
+   "rect": [
+    684,
+    576,
+    212,
+    28
+   ]
+  },
+  {
+   "name": "shrine card status Available now",
+   "rect": [
+    726,
+    608,
+    124,
+    24
+   ]
+  },
+  {
+   "name": "respawn card Bedroll",
+   "rect": [
+    974,
+    410,
+    324,
+    238
+   ],
+   "samples": [
+    [
+     1000,
+     630,
+     "card fill"
+    ]
+   ]
+  },
+  {
+   "name": "bedroll clock badge",
+   "rect": [
+    1242,
+    424,
+    46,
+    46
+   ]
+  },
+  {
+   "name": "bedroll card name",
+   "rect": [
+    1100,
+    576,
+    76,
+    28
+   ]
+  },
+  {
+   "name": "bedroll timer 00:30",
+   "rect": [
+    1110,
+    608,
+    56,
+    24
+   ]
+  },
+  {
+   "name": "Hold to Respawn button",
+   "rect": [
+    709,
+    675,
+    501,
+    78
+   ],
+   "samples": [
+    [
+     730,
+     715,
+     "brass fill"
+    ],
+    [
+     1190,
+     715,
+     "brass fill"
+    ]
+   ]
+  },
+  {
+   "name": "hold ring",
+   "rect": [
+    785,
+    682,
+    62,
+    62
+   ]
+  },
+  {
+   "name": "footer note",
+   "rect": [
+    800,
+    776,
+    318,
+    22
+   ]
+  },
+  {
+   "name": "vitals HP bar empty",
+   "rect": [
+    145,
+    949,
+    332,
+    26
+   ],
+   "samples": [
+    [
+     160,
+     962,
+     "empty hp fill"
+    ]
+   ]
+  },
+  {
+   "name": "vitals stamina bar",
+   "rect": [
+    145,
+    986,
+    332,
+    26
+   ],
+   "samples": [
+    [
+     200,
+     999,
+     "stamina amber fill"
+    ]
+   ]
+  },
+  {
+   "name": "vitals level badge",
+   "rect": [
+    28,
+    908,
+    102,
+    130
+   ],
+   "samples": [
+    [
+     55,
+     975,
+     "badge fill"
+    ]
+   ]
+  },
+  {
+   "name": "hotbar slot 1 (sword)",
+   "rect": [
+    690,
+    938,
+    82,
+    86
+   ],
+   "samples": [
+    [
+     760,
+     1010,
+     "slot fill"
+    ]
+   ]
+  },
+  {
+   "name": "hotbar slot 6 (torch)",
+   "rect": [
+    1150,
+    938,
+    82,
+    86
+   ],
+   "samples": [
+    [
+     1220,
+     960,
+     "slot fill"
+    ]
+   ]
+  },
+  {
+   "name": "minimap ring",
+   "rect": [
+    1660,
+    15,
+    234,
+    231
+   ]
+  },
+  {
+   "name": "quest tracker frame",
+   "rect": [
+    1645,
+    305,
+    258,
+    196
+   ],
+   "samples": [
+    [
+     1860,
+     325,
+     "dim fill"
+    ]
+   ]
+  },
+  {
+   "name": "loot toast Raw Boar Meat",
+   "rect": [
+    1647,
+    530,
+    246,
+    48
+   ],
+   "samples": [
+    [
+     1860,
+     553,
+     "toast fill"
+    ]
+   ]
+  },
+  {
+   "name": "loot toast Tough Hide",
+   "rect": [
+    1647,
+    588,
+    246,
+    48
+   ],
+   "samples": [
+    [
+     1860,
+     612,
+     "toast fill"
+    ]
+   ]
+  }
+ ]
+}
