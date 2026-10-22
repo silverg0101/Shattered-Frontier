@@ -6,7 +6,8 @@ param(
     [ValidateRange(12000,65000)][int]$Port = 17871,
     [ValidateRange(60,600)][int]$TimeoutSeconds = 240,
     # -Leg Full only: commit through owned InventoryLedger.Host + Gameplay.Host (INT-04), with a host-down phase.
-    [switch]$Services
+    [switch]$Services,
+    [switch]$Int06KillAfterGrant
 )
 # The gathering and combat pilots run in different game modes, so each leg proves its own events reach the quest
 # (real server-side harvest/boar outcomes, no synthetic events) and the owning client's tracker view follows.
@@ -20,6 +21,7 @@ $root = Join-Path $repo ('Artifacts\QuestPilot\' + $Leg.ToLower() + '-' + (Get-D
 $null = New-Item -ItemType Directory -Path $root
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
 if ($Services -and $Leg -ne 'Full') { throw '-Services applies to -Leg Full only.' }
+if ($Int06KillAfterGrant -and (-not $Services -or $Leg -ne 'Full')) { throw '-Int06KillAfterGrant requires -Leg Full -Services.' }
 $fx = @{}
 if ($Services) { . (Join-Path $PSScriptRoot 'InventoryLedgerHostFixture.ps1') }
 $result = [ordered]@{ status='Running'; leg=$Leg; runs=@() }
@@ -95,12 +97,17 @@ try {
             $flags += @(($ledgerIni+':bEnabled=True'),($ledgerIni+':Endpoint=127.0.0.1:'+$fx.hostPort),($servicesIni+':bEnabled=True'),($servicesIni+':Endpoint=127.0.0.1:'+$gameplayPort))
             $clientFlags += '-QuestFullEconomy'
             $serverEnv = @{ SF_INVENTORY_LEDGER_TOKEN=$fx.token; SF_GAMEPLAY_TOKEN=$gameplayToken }
+            if ($Int06KillAfterGrant) {
+                $flags += '-GatheringLedgerExitAfterCommit'
+                $flags += '-SFDevIdentity'
+            }
         }
         $url = $silverbrook
         if ($Services) { Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server' $url $flags } } else { $server = Start-Owned 'server' $url $flags }
         Wait-Log $server 'server' 'QUEST_PILOT_READY Quest=quest/frontier_founder Steps=5'
         Wait-Log $server 'server' 'COMBAT_PILOT_READY Boars=10'
-        $client = Start-Owned 'client' ('127.0.0.1:'+$Port) $clientFlags
+        $clientUrl = if ($Int06KillAfterGrant) { '127.0.0.1:'+$Port+'?SFDevCharacter=alpha' } else { '127.0.0.1:'+$Port }
+        $client = Start-Owned 'client' $clientUrl $clientFlags
         if ($Services) {
             # Host-down phase: the first oak harvest is refused as Unavailable before any charge is consumed.
             Wait-Log $server 'server' 'GATHERING_LEDGER_OUTCOME .* Code=14 .* NodeRevision=0 Charges=3'
@@ -116,6 +123,40 @@ try {
             while (-not ((Test-Path (Join-Path $root 'gameplay.stdout.txt')) -and (Get-Content (Join-Path $root 'gameplay.stdout.txt') -Raw) -match 'GAMEPLAY_HOST_READY')) {
                 if ($gameplay.HasExited -or $watch.Elapsed.TotalSeconds -gt 60) { throw 'Gameplay host did not become ready.' }
                 Start-Sleep -Milliseconds 200
+            }
+            if ($Int06KillAfterGrant) {
+                Wait-Log $server 'server' 'GATHERING_LEDGER_EXIT_AFTER_COMMIT Op=gather/'
+                $server.WaitForExit(10000) | Out-Null
+                if (-not $server.HasExited) { throw 'Gather server did not exit after the committed grant.' }
+                $serverText = Read-Log 'server'
+                if ($serverText -notmatch 'GATHERING_LEDGER_EXIT_AFTER_COMMIT Op=(gather/[a-zA-Z0-9-]+)' -or
+                    $serverText -notmatch 'GATHERING_LEDGER_OUTCOME Op=\S+ Container=(ctn_dev_\w+) Code=0') {
+                    throw 'No matching committed gather receipt preceded server exit.'
+                }
+                $operation = [regex]::Match($serverText, 'GATHERING_LEDGER_EXIT_AFTER_COMMIT Op=(gather/[a-zA-Z0-9-]+)').Groups[1].Value
+                $container = [regex]::Match($serverText, 'GATHERING_LEDGER_OUTCOME Op=' + [regex]::Escape($operation) + ' Container=(ctn_dev_\w+) Code=0').Groups[1].Value
+                if (-not $container) { throw 'Committed operation and container did not match.' }
+                $character = 'chr_dev_' + $container.Substring(8)
+                $counts = ''
+                for ($i=0; $i -lt 100; $i++) {
+                    $counts = (Invoke-LedgerSql $fx ("SELECT (SELECT count(*) FROM inventory.operation_receipts WHERE operation_id='$operation')||','||" +
+                        "(SELECT count(*) FROM inventory.receipt_outbox WHERE source_operation_id='$operation' AND delivered_at IS NOT NULL)||','||" +
+                        "(SELECT count(*) FROM character_state.source_receipts WHERE operation_id='$operation' AND character_id='$character')") $fx.db).Trim()
+                    if ($counts -eq '1,1,2') { break }
+                    Start-Sleep -Milliseconds 300
+                }
+                if ($counts -ne '1,1,2') { throw "Grant/outbox/progression/quest counts were $counts, expected 1,1,2." }
+                $view = Get-LedgerView $fx $container
+                if ([int64]$view.Items['item/oak_log'] -ne 1) { throw 'Committed oak grant did not survive server exit.' }
+                if (-not $client.HasExited) { Stop-Process -Id $client.Id; $client.WaitForExit() }
+                $restartFlags = @($flags | Where-Object { $_ -ne '-GatheringLedgerExitAfterCommit' }) + ($servicesIni+':bRestoreOnConnect=True')
+                Invoke-WithEnv $serverEnv { $script:restart = Start-Owned 'restart-server' $url $restartFlags }
+                Wait-Log $restart 'restart-server' 'QUEST_PILOT_READY Quest=quest/frontier_founder Steps=5'
+                $restored = Start-Owned 'restored-client' $clientUrl @('-game')
+                Wait-Log $restored 'restored-client' 'QUEST_PILOT_CLIENT_VIEW Step=2 Complete=0'
+                $result.operation = $operation; $result.counts = $counts; $result.ledger = $view.Line
+                $result.status = 'Passed'
+                return
             }
         }
         Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=gather Target=item/oak_log .* Result=0 Step=1 '

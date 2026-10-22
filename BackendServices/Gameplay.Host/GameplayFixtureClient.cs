@@ -96,9 +96,18 @@ internal static class GameplayFixtureClient
                     FollowUpIntent = new InventoryPb.FollowUpIntent { PayloadVersion = 1,
                         Payload = ByteString.CopyFrom(bytes), PayloadDigest = Convert.ToHexStringLower(SHA256.HashData(bytes)) } };
                 if (mode == "fixture-outbox-omit") grant.FollowUpIntent = null;
+                if (mode == "fixture-outbox-seed")
+                {
+                    var missing = grant.Clone(); missing.FollowUpIntent = null;
+                    try { inventory.GrantWithIntent(missing, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                        throw new Exception("Intent-required RPC accepted a missing intent."); }
+                    catch (RpcException ex) when (ex.StatusCode == StatusCode.InvalidArgument) { }
+                }
                 try
                 {
-                    var receipt = inventory.Grant(grant, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                    var receipt = mode == "fixture-outbox-omit"
+                        ? inventory.Grant(grant, headers, deadline: DateTime.UtcNow.AddSeconds(10))
+                        : inventory.GrantWithIntent(grant, headers, deadline: DateTime.UtcNow.AddSeconds(10));
                     Check(mode is not ("fixture-outbox-conflict" or "fixture-outbox-omit") && receipt.OperationId == grant.OperationId, "Outbox grant result mismatch.");
                 }
                 catch (RpcException ex) when (mode is "fixture-outbox-conflict" or "fixture-outbox-omit" && ex.StatusCode == StatusCode.AlreadyExists) { }
@@ -355,4 +364,3 @@ internal static class GameplayFixtureClient
         }
     }
 }
-

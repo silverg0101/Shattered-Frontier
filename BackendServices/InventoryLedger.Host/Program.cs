@@ -128,13 +128,19 @@ sealed class LedgerService(Dom.InventoryLedger ledger, PostgresInventoryLedgerSt
     public override Task<Pb.ContainerView> GetContainer(Pb.GetContainerRequest request, ServerCallContext context) =>
         Run(context, () => ToPb(ledger.Read(request.ContainerId)));
 
-    public override Task<Pb.LedgerReceipt> Grant(Pb.GrantRequest r, ServerCallContext context)
+    public override Task<Pb.LedgerReceipt> Grant(Pb.GrantRequest r, ServerCallContext context) => GrantCore(r, context, false);
+
+    public override Task<Pb.LedgerReceipt> GrantWithIntent(Pb.GrantRequest r, ServerCallContext context) => GrantCore(r, context, true);
+
+    private Task<Pb.LedgerReceipt> GrantCore(Pb.GrantRequest r, ServerCallContext context, bool requireIntent)
     {
         var code = StatusCode.OK;
         try
         {
             return Run(context, () =>
             {
+                if (requireIntent && r.FollowUpIntent is null)
+                    throw new RpcException(new Status(StatusCode.InvalidArgument, "Follow-up intent is required."));
                 PostgresInventoryLedgerStore.FollowUpIntent? intent = null;
                 if (r.FollowUpIntent is { } supplied)
                 {
