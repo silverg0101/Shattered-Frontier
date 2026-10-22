@@ -13,8 +13,11 @@ class SHATTEREDFRONTIER_API USFWidgetAuthoring : public UObject
 public:
 #if WITH_EDITOR
     // Creates (or with bOverwrite rebuilds) every shared and HUD WBP under /Game/Frontier/UI/Widgets/, compiles and saves them.
-    // Returns one line per asset.
+    // Only (a WBP name) limits it to that one asset. Returns one line per asset.
     UFUNCTION(BlueprintCallable, Category = "SF UI|Authoring")
-    static FString BuildAll(bool bOverwrite);
+    static FString BuildAll(bool bOverwrite, const FString& Only = TEXT(""));
+    // One line per widget of a WBP's tree (indent = depth), for checking a Designer layout from a script.
+    UFUNCTION(BlueprintCallable, Category = "SF UI|Authoring")
+    static FString DumpTree(const FString& AssetPath);
 #endif
 };

@@ -1,7 +1,9 @@
 #include "UI/SFHudWidgets.h"
 
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
-#include "Components/ProgressBar.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Components/Image.h"
+#include "Components/Widget.h"
 #include "Components/TextBlock.h"
 #include "Editor.h"
 #include "Misc/AutomationTest.h"
@@ -26,17 +28,59 @@ bool FSFHudWidgetTest::RunTest(const FString& Parameters)
     TestNotNull(TEXT("QuestTracker bound"),Hud->QuestTracker.Get());
     TestNotNull(TEXT("Toasts bound"),Hud->Toasts.Get());
     if (!Hud->Vitals || !Hud->Hotbar || !Hud->QuestTracker || !Hud->Toasts) { return false; }
+    TestNotNull(TEXT("Target bound"),Hud->Target.Get());
     TestNotNull(TEXT("Health bar bound"),Hud->Vitals->HealthBar.Get());
     TestNotNull(TEXT("Stamina bar bound"),Hud->Vitals->StaminaBar.Get());
+    if (!Hud->Target) { return false; }
 
     // Vitals from data.
     Hud->PresentVitals(40,80,50,60);
-    TestEqual(TEXT("Health bar fraction"),Hud->Vitals->HealthBar->GetPercent(),0.5f);
+    auto Percent=[](UImage* Bar) { float V=-1.f; if (UMaterialInstanceDynamic* M=USFUnitFrameWidget::FillMaterial(Bar)) { M->GetScalarParameterValue(TEXT("Percent"),V); } return V; };
+    TestEqual(TEXT("Health bar fraction reaches the material"),Percent(Hud->Vitals->HealthBar),0.5f);
     TestEqual(TEXT("Health numeral"),Hud->Vitals->HealthText->GetText().ToString(),FString(TEXT("40 / 80")));
-    TestEqual(TEXT("Stamina bar fraction"),Hud->Vitals->StaminaBar->GetPercent(),50.f/60.f);
+    TestEqual(TEXT("Stamina bar fraction reaches the material"),Percent(Hud->Vitals->StaminaBar),50.f/60.f);
     Hud->PresentVitals(-5,80,60,60);
-    TestEqual(TEXT("Overkill clamps the bar"),Hud->Vitals->HealthBar->GetPercent(),0.f);
+    TestEqual(TEXT("Overkill clamps the bar"),Percent(Hud->Vitals->HealthBar),0.f);
     TestEqual(TEXT("Overkill never shows below zero"),Hud->Vitals->HealthText->GetText().ToString(),FString(TEXT("0 / 80")));
+
+    // Part toggles per child class: badge, name, stamina, values (collapsed when off).
+    struct FParts { const TCHAR* Wbp; bool bBadge,bName,bStamina,bValues; };
+    const FParts Cases[]={{TEXT("WBP_PlayerFrame"),true,false,true,true},{TEXT("WBP_TargetFrame"),true,true,false,true},
+        {TEXT("WBP_PartyFrame"),true,true,true,false},{TEXT("WBP_RaidFrame"),false,true,false,false}};
+    auto Shown=[](const UWidget* W) { return W && W->GetVisibility()!=ESlateVisibility::Collapsed; };
+    for (const FParts& Case : Cases)
+    {
+        const TSubclassOf<USFUnitFrameWidget> Class=LoadClass<USFUnitFrameWidget>(nullptr,*FString::Printf(TEXT("/Game/Frontier/UI/Widgets/Unit/%s.%s_C"),Case.Wbp,Case.Wbp));
+        if (!TestNotNull(FString::Printf(TEXT("%s loads"),Case.Wbp),Class.Get())) { continue; }
+        USFUnitFrameWidget* Frame=CreateWidget<USFUnitFrameWidget>(World,Class);
+        if (!TestNotNull(FString::Printf(TEXT("%s constructs"),Case.Wbp),Frame)) { continue; }
+        const FString Name(Case.Wbp);
+        TestEqual(Name+TEXT(" badge"),Shown(Frame->BadgeRoot),Case.bBadge);
+        TestEqual(Name+TEXT(" name"),Shown(Frame->NameText),Case.bName);
+        TestEqual(Name+TEXT(" stamina"),Shown(Frame->StaminaRow),Case.bStamina);
+        TestEqual(Name+TEXT(" health values"),Shown(Frame->HealthText),Case.bValues);
+        Frame->SetName(FText::FromString(TEXT("Boar")));
+        TestEqual(Name+TEXT(" SetName"),Frame->NameText->GetText().ToString(),FString(TEXT("Boar")));
+        Frame->SetLevel(7);
+        TestEqual(Name+TEXT(" SetLevel"),Frame->LevelText->GetText().ToString(),FString(TEXT("7")));
+        Frame->SetStamina(30,60);
+        TestEqual(Name+TEXT(" SetStamina reaches the material"),Percent(Frame->StaminaBar),0.5f);
+    }
+
+    // Target frame: shown with a name and health, hidden without a target.
+    Hud->PresentTarget(true,TEXT("Boar"),1,30,60);
+    TestNotEqual(TEXT("Target shows"),Hud->Target->GetVisibility(),ESlateVisibility::Collapsed);
+    TestEqual(TEXT("Target name"),Hud->Target->NameText->GetText().ToString(),FString(TEXT("Boar")));
+    TestEqual(TEXT("Target health reaches the material"),Percent(Hud->Target->HealthBar),0.5f);
+    Hud->PresentTarget(false,FString(),0,0,0);
+    TestEqual(TEXT("Target hides"),Hud->Target->GetVisibility(),ESlateVisibility::Collapsed);
+
+    // Party helpers: empty and collapsed until a member is added.
+    TestEqual(TEXT("No party members yet"),Hud->PartyCount(),0);
+    Hud->AddPartyMember(TEXT("Ally"),3,50,100,40,50);
+    TestEqual(TEXT("Party member added"),Hud->PartyCount(),1);
+    Hud->ClearParty();
+    TestEqual(TEXT("Party cleared"),Hud->PartyCount(),0);
 
     // Hotbar from the pilot's item list: six cells, the equipped axe lights key 5, stacks show their count.
     auto Item=[](const TCHAR* Name,int32 Count) { return TPair<FText,int32>(FText::FromString(Name),Count); };

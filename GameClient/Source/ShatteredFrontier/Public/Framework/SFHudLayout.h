@@ -15,8 +15,8 @@ struct FSFPromptSegment { FString Key; FString Action; };
 
 enum class ESFPromptContext : uint8 { None, Build, Harvest, Refine, Read };
 
-// Code-built part of the HUD that has not moved to Widget Blueprints yet: the action/prompt bar (32-68%, 79-85%) and the target
-// frame (38-62%, 4-11%) of docs/Game-Design/concept-art/UI/HUD-v1/hud-layout-v4.md. The hotbar, vitals, minimap frame, quest
+// Code-built part of the HUD that has not moved to Widget Blueprints yet: the action/prompt bar (32-68%, 79-85%) and the
+// target hit message of docs/Game-Design/concept-art/UI/HUD-v1/hud-layout-v4.md. The hotbar, vitals, minimap frame, quest
 // tracker and toasts are WBP_Hud (UI/SFHudWidgets.h). Local-only presentation; it reads the owner's replicated pilot state.
 UCLASS()
 class SHATTEREDFRONTIER_API USFHudLayout : public UUserWidget
@@ -47,14 +47,7 @@ private:
     UPROPERTY(Transient) TObjectPtr<UBorder> PromptFrame;
     UPROPERTY(Transient) TObjectPtr<UHorizontalBox> PromptRow;
     UPROPERTY(Transient) TObjectPtr<UWidget> PromptBox;
-    UPROPERTY(Transient) TObjectPtr<UBorder> TargetFrame;
-    UPROPERTY(Transient) TObjectPtr<UWidget> TargetBoxRoot;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> TargetName;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> TargetCharges;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> TargetMessage;  // pilot hit message, own line under the frame
-    UPROPERTY(Transient) TObjectPtr<UWidget> TargetBar;
-    UPROPERTY(Transient) TObjectPtr<USizeBox> TargetFillClip;
-    float TargetFillWidth = 0.f;
     bool bBuildMode = false;
 
     ESFPromptContext ShownPrompt = ESFPromptContext::None;

@@ -7,6 +7,8 @@
 #include "Components/Border.h"
 #include "Components/Button.h"
 #include "Components/CanvasPanel.h"
+#include "Components/ContentWidget.h"
+#include "Components/PanelWidget.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
@@ -14,11 +16,13 @@
 #include "Components/NamedSlot.h"
 #include "Components/Overlay.h"
 #include "Components/OverlaySlot.h"
-#include "Components/ProgressBar.h"
 #include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
+#include "Components/WrapBox.h"
+#include "Engine/Texture2D.h"
+#include "Materials/MaterialInterface.h"
 #include "Framework/SFHudStyle.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "Kismet2/KismetEditorUtilities.h"
@@ -35,6 +39,7 @@ namespace
 {
 constexpr const TCHAR* CommonDir = TEXT("/Game/Frontier/UI/Widgets/Common");
 constexpr const TCHAR* HudDir = TEXT("/Game/Frontier/UI/Widgets/Hud");
+constexpr const TCHAR* UnitFramesDir = TEXT("/Game/Frontier/UI/Widgets/Unit");
 
 // ---- tree helpers. Named widgets are Designer variables so the C++ BindWidget lookups find them. Fonts are never baked (the family is a
 // runtime composite font); the C++ base applies them, so seeds only set text.
@@ -185,36 +190,207 @@ void ToastCardLayout(UWidgetTree* T)
     T->RootWidget = Sized(T, TEXT("RootSize"), Card, 280.f, 66.f);
 }
 
-// One framed bar: back art, a progress bar over the fill region, frame art on top, numeral centred (Kit-v5 bar geometry).
-UWidget* BarStack(UWidgetTree* T, const TCHAR* Base, const TCHAR* BarName, const TCHAR* TextName)
+// HudVitals-v6 parts (tools/ui/import_hud_vitals.py). The art is 2x its 1x display size.
+constexpr const TCHAR* VitalsDir = TEXT("/Game/Frontier/UI/Kit/HudVitals");
+
+UImage* VitalsImage(UWidgetTree* T, const TCHAR* Name, const TCHAR* Part, float W, float H)
 {
-    const FSFHudKitElement* FrameArt = Kit(*FString::Printf(TEXT("%s_frame"), Base));
-    constexpr float InsetLeft = 21.f, InsetTop = 6.5f, InsetRight = 359.f, InsetBottom = 25.5f;  // 1x px of the 760x64 source
-    const float Scale = FrameArt ? 380.f / static_cast<float>(KitDesignSize(*FrameArt).X) : 1.f;
-    const float FrameHeight = FrameArt ? static_cast<float>(KitDesignSize(*FrameArt).Y) * Scale : 32.f;
-    UOverlay* Stack = A<UOverlay>(T);
-    Put(Stack, Piece(T, nullptr, *FString::Printf(TEXT("%s_back"), Base), 380.f, FrameHeight), HAlign_Left, VAlign_Top);
-    UProgressBar* Bar = N<UProgressBar>(T, BarName);
-    Bar->SetPercent(1.f);
-    Put(Stack, Sized(T, nullptr, Bar, (InsetRight - InsetLeft) * Scale - 6.f, (InsetBottom - InsetTop) * Scale), HAlign_Left, VAlign_Center, FMargin(InsetLeft * Scale, 0.f, 0.f, 0.f));
-    Put(Stack, Piece(T, nullptr, *FString::Printf(TEXT("%s_frame"), Base), 380.f, FrameHeight), HAlign_Left, VAlign_Top);
-    Put(Stack, Txt(T, TextName, TEXT("")), HAlign_Center, VAlign_Center);
-    return Sized(T, nullptr, Stack, 380.f, FrameHeight);
+    UImage* Img = Name ? N<UImage>(T, Name) : A<UImage>(T);
+    FSlateBrush Brush;
+    Brush.ImageSize = FVector2D(W, H);
+    if (UTexture2D* Tex = LoadObject<UTexture2D>(nullptr, *FString::Printf(TEXT("%s/T_HudVitals_%s.T_HudVitals_%s"), VitalsDir, Part, Part))) { Brush.SetResourceObject(Tex); }
+    Img->SetBrush(Brush);
+    return Img;
+}
+
+// icon, then the bar: 9-slice frame, the masked fill (the bound image) over it (the frame's navy interior is opaque; the mask keeps the
+// fill inside it and off the brass border), numeral on top. Sizes are 1x of the 600x44 art.
+UWidget* VitalsRow(UWidgetTree* T, const TCHAR* IconPart, const TCHAR* MaterialName, const TCHAR* BarName, const TCHAR* TextName)
+{
+    constexpr float BarW = 300.f, BarH = 22.f;
+    UHorizontalBox* Row = A<UHorizontalBox>(T);
+    Row->AddChildToHorizontalBox(Sized(T, nullptr, VitalsImage(T, nullptr, IconPart, 22.f, 22.f), 22.f, 22.f))->SetVerticalAlignment(VAlign_Center);
+    UOverlay* Bar = A<UOverlay>(T);
+    UImage* FrameImg = VitalsImage(T, nullptr, TEXT("bar_frame"), BarW, BarH);
+    FSlateBrush FrameBrush = FrameImg->GetBrush();
+    FrameBrush.DrawAs = ESlateBrushDrawType::Box;
+    FrameBrush.Margin = FMargin(16.f / 600.f, 8.f / 44.f, 34.f / 600.f, 8.f / 44.f);  // left 16, top 8, right 34, bottom 8 px of the 2x art
+    FrameImg->SetBrush(FrameBrush);
+    Put(Bar, FrameImg, HAlign_Fill, VAlign_Fill);
+    UImage* Fill = N<UImage>(T, BarName);
+    FSlateBrush FillBrush;
+    FillBrush.ImageSize = FVector2D(BarW, BarH);
+    if (UMaterialInterface* Mat = LoadObject<UMaterialInterface>(nullptr, *FString::Printf(TEXT("%s/%s.%s"), VitalsDir, MaterialName, MaterialName))) { FillBrush.SetResourceObject(Mat); }
+    Fill->SetBrush(FillBrush);
+    Put(Bar, Fill, HAlign_Fill, VAlign_Fill);
+    Put(Bar, Txt(T, TextName, TEXT("")), HAlign_Center, VAlign_Center);
+    Row->AddChildToHorizontalBox(Sized(T, nullptr, Bar, BarW, BarH));
+    return Row;
 }
 
 void VitalsLayout(UWidgetTree* T)
 {
     UHorizontalBox* Row = A<UHorizontalBox>(T);
     UOverlay* Badge = A<UOverlay>(T);
-    Badge->AddChildToOverlay(Piece(T, nullptr, TEXT("hex_level_badge"), 115.f, 158.f));
-    Put(Badge, Txt(T, TEXT("LevelText"), TEXT("1")), HAlign_Center, VAlign_Bottom, FMargin(0.f, 0.f, 0.f, 18.f));
-    Row->AddChildToHorizontalBox(Badge)->SetVerticalAlignment(VAlign_Center);
+    Badge->AddChildToOverlay(VitalsImage(T, nullptr, TEXT("badge_frame"), 64.f, 84.f));
+    Put(Badge, Sized(T, nullptr, VitalsImage(T, nullptr, TEXT("badge_stag"), 40.f, 44.f), 40.f, 44.f), HAlign_Center, VAlign_Top, FMargin(0.f, 10.f, 0.f, 0.f));
+    Put(Badge, Txt(T, TEXT("LevelText"), TEXT("1")), HAlign_Center, VAlign_Bottom, FMargin(0.f, 0.f, 0.f, 5.f));
+    Row->AddChildToHorizontalBox(Sized(T, nullptr, Badge, 64.f, 84.f))->SetVerticalAlignment(VAlign_Center);
     UVerticalBox* Bars = A<UVerticalBox>(T);
-    Bars->AddChildToVerticalBox(BarStack(T, TEXT("bar_hp"), TEXT("HealthBar"), TEXT("HealthText")));
-    Bars->AddChildToVerticalBox(BarStack(T, TEXT("bar_stamina"), TEXT("StaminaBar"), TEXT("StaminaText")))->SetPadding(FMargin(0.f, 10.f, 0.f, 0.f));
+    Bars->AddChildToVerticalBox(VitalsRow(T, TEXT("icon_heart"), TEXT("MI_UI_BarFill_Health"), TEXT("HealthBar"), TEXT("HealthText")));
+    Bars->AddChildToVerticalBox(VitalsRow(T, TEXT("icon_stamina_bolt"), TEXT("MI_UI_BarFill_Stamina"), TEXT("StaminaBar"), TEXT("StaminaText")));
     UHorizontalBoxSlot* BarsSlot = Row->AddChildToHorizontalBox(Bars);
-    BarsSlot->SetVerticalAlignment(VAlign_Center); BarsSlot->SetPadding(FMargin(10.f, 0.f, 0.f, 0.f));
+    BarsSlot->SetVerticalAlignment(VAlign_Center); BarsSlot->SetPadding(FMargin(4.f, 0.f, 0.f, 0.f));
     T->RootWidget = Row;
+}
+
+// The widget From's ancestor that sits directly under an ancestor of Anchor (the sibling branch holding From).
+UWidget* BranchOf(UWidget* From, UWidget* Anchor)
+{
+    TSet<const UWidget*> Up;
+    for (const UWidget* P = Anchor ? Anchor->GetParent() : nullptr; P; P = P->GetParent()) { Up.Add(P); }
+    for (UWidget* W = From; W && W->GetParent(); W = W->GetParent()) { if (Up.Contains(W->GetParent())) { return W; } }
+    return nullptr;
+}
+
+// Idempotent: names the badge SizeBox BadgeRoot and the stamina row StaminaRow (renaming the existing widgets, so the Designer layout is
+// untouched) and adds NameText above the health row. Returns true when it changed the tree. Blueprint may be null (seed: the caller registers variables).
+bool AddUnitParts(UWidgetTree* T, UWidgetBlueprint* Blueprint)
+{
+    bool bChanged = false;
+    auto Mark = [&](UWidget* W, const TCHAR* Name)
+    {
+        if (!W || T->FindWidget(FName(Name))) { return; }
+        W->Rename(Name, T); W->bIsVariable = true;
+        if (Blueprint) { Blueprint->OnVariableAdded(W->GetFName()); }
+        bChanged = true;
+    };
+    UWidget* Health = T->FindWidget(TEXT("HealthBar"));
+    if (!Health) { return false; }
+    Mark(BranchOf(T->FindWidget(TEXT("LevelText")), Health), TEXT("BadgeRoot"));
+    Mark(BranchOf(T->FindWidget(TEXT("StaminaBar")), Health), TEXT("StaminaRow"));
+    if (!T->FindWidget(TEXT("NameText")))
+    {
+        UWidget* HealthRow = nullptr;
+        UVerticalBox* Column = nullptr;
+        for (UWidget* W = Health; W && W->GetParent(); W = W->GetParent())
+        {
+            if (UVerticalBox* Box = Cast<UVerticalBox>(W->GetParent())) { Column = Box; HealthRow = W; break; }
+        }
+        if (Column)
+        {
+            UTextBlock* Name = N<UTextBlock>(T, TEXT("NameText"));
+            Name->SetText(FText::FromString(TEXT("Name")));
+            Name->SetColorAndOpacity(FSlateColor(Ivory()));
+            Name->SetJustification(ETextJustify::Left);
+            if (const UTextBlock* Value = Cast<UTextBlock>(T->FindWidget(TEXT("HealthText"))))
+            {
+                FSlateFontInfo Font = Value->GetFont();  // the value text family, a little larger
+                Font.Size += 4;
+                Name->SetFont(Font);
+            }
+            float IconWidth = 0.f;  // line the name up with the bar, not the icon in front of it
+            if (const UPanelWidget* Row = Cast<UPanelWidget>(HealthRow); Row && Row->GetChildrenCount() > 0)
+            { if (const USizeBox* Icon = Cast<USizeBox>(Row->GetChildAt(0))) { IconWidth = Icon->GetWidthOverride(); } }
+            UVerticalBoxSlot* Slot = Cast<UVerticalBoxSlot>(Column->InsertChildAt(0, Name));
+            if (Slot) { Slot->SetHorizontalAlignment(HAlign_Left); Slot->SetPadding(FMargin(IconWidth, 0.f, 0.f, 2.f)); }
+            if (Blueprint) { Blueprint->OnVariableAdded(Name->GetFName()); }
+            bChanged = true;
+        }
+    }
+    return bChanged;
+}
+
+void UnitFrameLayout(UWidgetTree* T)
+{
+    VitalsLayout(T);
+    AddUnitParts(T, nullptr);
+}
+
+// Hud additions: Target (WBP_TargetFrame, top centre, hidden), PartyList (left, empty) and RaidGrid (empty). True when something was added.
+bool AddHudParts(UWidgetTree* T, UCanvasPanel* Root, UWidgetBlueprint* Blueprint)
+{
+    bool bChanged = false;
+    if (!T->FindWidget(TEXT("Target")))
+    {
+        if (UClass* Class = SharedClass(UnitFramesDir, TEXT("WBP_TargetFrame")))
+        {
+            UUserWidget* Frame = T->ConstructWidget<UUserWidget>(TSubclassOf<UUserWidget>(Class), FName(TEXT("Target")));
+            Frame->bIsVariable = true; Frame->SetVisibility(ESlateVisibility::Collapsed);
+            Anchor(Root, Frame, 0.4956f, 0.0296f, 0.5f, 0.f);  // centre 951.5 of 1920, y 32 px of 1080: where the old Slate frame sat
+            if (Blueprint) { Blueprint->OnVariableAdded(Frame->GetFName()); }
+            bChanged = true;
+        }
+    }
+    if (!T->FindWidget(TEXT("PartyList")))
+    {
+        UVerticalBox* List = N<UVerticalBox>(T, TEXT("PartyList"));
+        List->SetVisibility(ESlateVisibility::Collapsed);
+        Anchor(Root, List, 0.02f, 0.25f, 0.f, 0.f);
+        if (Blueprint) { Blueprint->OnVariableAdded(List->GetFName()); }
+        bChanged = true;
+    }
+    if (!T->FindWidget(TEXT("RaidGrid")))
+    {
+        UWrapBox* Grid = N<UWrapBox>(T, TEXT("RaidGrid"));
+        Grid->SetExplicitWrapSize(true); Grid->SetWrapSize(480.f);
+        Grid->SetVisibility(ESlateVisibility::Collapsed);
+        Anchor(Root, Grid, 0.02f, 0.45f, 0.f, 0.f);
+        if (Blueprint) { Blueprint->OnVariableAdded(Grid->GetFName()); }
+        bChanged = true;
+    }
+    return bChanged;
+}
+
+bool CompileAndSave(UWidgetBlueprint* Blueprint)
+{
+    FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(Blueprint);
+    FKismetEditorUtilities::CompileBlueprint(Blueprint);
+    Blueprint->GetPackage()->MarkPackageDirty();
+    FSavePackageArgs Args;
+    Args.TopLevelFlags = RF_Public | RF_Standalone;
+    const bool bSaved = UPackage::SavePackage(Blueprint->GetPackage(), Blueprint, *FPackageName::LongPackageNameToFilename(Blueprint->GetPackage()->GetName(), FPackageName::GetAssetPackageExtension()), Args);
+    return bSaved && Blueprint->Status != BS_Error && Blueprint->Status != BS_UpToDateWithWarnings;
+}
+
+// Owner-edited WBP_Hud: swap the Vitals slot to WBP_PlayerFrame (same canvas slot), then add the Target/party parts. Idempotent.
+FString MigrateHud()
+{
+    UWidgetBlueprint* Blueprint = LoadObject<UWidgetBlueprint>(nullptr, *FString::Printf(TEXT("%s/WBP_Hud.WBP_Hud"), HudDir));
+    UCanvasPanel* Root = Blueprint && Blueprint->WidgetTree ? Cast<UCanvasPanel>(Blueprint->WidgetTree->RootWidget) : nullptr;
+    UClass* PlayerFrame = SharedClass(UnitFramesDir, TEXT("WBP_PlayerFrame"));
+    if (!Root || !PlayerFrame) { return TEXT("skip   WBP_Hud migration (Hud or WBP_PlayerFrame missing)\n"); }
+    UWidgetTree* T = Blueprint->WidgetTree;
+    bool bChanged = false;
+    UWidget* Old = T->FindWidget(TEXT("Vitals"));
+    if (Old && Old->GetClass() != PlayerFrame)
+    {
+        const UCanvasPanelSlot* OldSlot = Cast<UCanvasPanelSlot>(Old->Slot);
+        const FAnchorData Layout = OldSlot ? OldSlot->GetLayout() : FAnchorData();
+        const int32 ZOrder = OldSlot ? OldSlot->GetZOrder() : 0;
+        const bool bAutoSize = OldSlot ? OldSlot->GetAutoSize() : true;
+        Old->Rename(TEXT("Vitals_old"), T);
+        T->RemoveWidget(Old);
+        UUserWidget* Frame = T->ConstructWidget<UUserWidget>(TSubclassOf<UUserWidget>(PlayerFrame), FName(TEXT("Vitals")));
+        Frame->bIsVariable = true;
+        UCanvasPanelSlot* NewSlot = Root->AddChildToCanvas(Frame);
+        NewSlot->SetLayout(Layout); NewSlot->SetZOrder(ZOrder); NewSlot->SetAutoSize(bAutoSize);
+        bChanged = true;
+    }
+    bChanged |= AddHudParts(T, Root, Blueprint);
+    // A unit-frame instance carries its class's part toggles (a template built mid-run can hold the parent's): resync them.
+    TArray<UWidget*> All;
+    T->GetAllWidgets(All);
+    for (UWidget* W : All)
+    {
+        USFUnitFrameWidget* Unit = Cast<USFUnitFrameWidget>(W);
+        const USFUnitFrameWidget* Class = Unit ? Cast<USFUnitFrameWidget>(Unit->GetClass()->GetDefaultObject()) : nullptr;
+        if (!Class || (Unit->bShowBadge == Class->bShowBadge && Unit->bShowName == Class->bShowName && Unit->bShowStamina == Class->bShowStamina && Unit->bShowValues == Class->bShowValues)) { continue; }
+        Unit->bShowBadge = Class->bShowBadge; Unit->bShowName = Class->bShowName; Unit->bShowStamina = Class->bShowStamina; Unit->bShowValues = Class->bShowValues;
+        bChanged = true;
+    }
+    if (!bChanged) { return TEXT("skip   WBP_Hud (already migrated)\n"); }
+    return FString::Printf(TEXT("%s WBP_Hud migrated\n"), CompileAndSave(Blueprint) ? TEXT("rebuilt") : TEXT("FAIL   "));
 }
 
 void HotbarLayout(UWidgetTree* T)
@@ -256,7 +432,7 @@ void MinimapLayout(UWidgetTree* T)
     UBorder* Footer = KitPanel(T, TEXT("minimap_footer"), 1.f, Slate(0.85f), Brass(), FMargin(4.f, 0.f), 3.f);
     Footer->SetVerticalAlignment(VAlign_Center);
     UTextBlock* Zone = Txt(T, TEXT("ZoneText"), TEXT("Silverbrook"));
-    Zone->SetJustification(ETextJustify::Center);
+    Zone->SetJustification(ETextJustify::Center); Zone->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
     Footer->SetContent(Zone);
     UVerticalBoxSlot* FooterSlot = Column->AddChildToVerticalBox(Sized(T, nullptr, Footer, 180.f, 32.f));
     FooterSlot->SetHorizontalAlignment(HAlign_Center); FooterSlot->SetPadding(FMargin(0.f, 4.f, 0.f, 0.f));
@@ -287,19 +463,20 @@ void ToastsLayout(UWidgetTree* T)
 void HudLayout(UWidgetTree* T)
 {
     UCanvasPanel* Root = N<UCanvasPanel>(T, TEXT("Root"));
-    auto Child = [&](const TCHAR* Name, const TCHAR* WbpName, float X, float Y, float AlignX, float AlignY)
+    auto Child = [&](const TCHAR* Name, const TCHAR* WbpName, float X, float Y, float AlignX, float AlignY, const TCHAR* Dir = HudDir)
     {
-        UClass* Class = SharedClass(HudDir, WbpName);
+        UClass* Class = SharedClass(Dir, WbpName);
         UUserWidget* Widget = T->ConstructWidget<UUserWidget>(TSubclassOf<UUserWidget>(Class), FName(Name));
         if (!Widget) { return; }
         Widget->bIsVariable = true;
         Anchor(Root, Widget, X, Y, AlignX, AlignY);
     };
-    Child(TEXT("Vitals"), TEXT("WBP_HudVitals"), 0.02f, 0.974f, 0.f, 1.f);
+    Child(TEXT("Vitals"), TEXT("WBP_PlayerFrame"), 0.02f, 0.974f, 0.f, 1.f, UnitFramesDir);
     Child(TEXT("Hotbar"), TEXT("WBP_HudHotbar"), 0.5f, 0.95f, 0.5f, 1.f);
     Child(TEXT("Minimap"), TEXT("WBP_HudMinimap"), 0.99f, 0.02f, 1.f, 0.f);
     Child(TEXT("QuestTracker"), TEXT("WBP_HudQuestTracker"), 0.84f, 0.313f, 0.f, 0.f);
     Child(TEXT("Toasts"), TEXT("WBP_HudToasts"), 0.84f, 0.47f, 0.f, 0.f);
+    AddHudParts(T, Root, nullptr);
     T->RootWidget = Root;
 }
 
@@ -310,12 +487,22 @@ struct FSpec
     UClass* Parent;
     TFunction<void(UWidgetTree*)> Layout;
     TFunction<void(UObject*)> Defaults;
+    const TCHAR* ParentWbp = nullptr;  // parent is that Widget Blueprint (resolved at build time) instead of Parent
 };
 
 // Dependency order: a WBP that nests another is listed after it.
 TArray<FSpec> Specs()
 {
     auto Row = [](UObject* Cdo) { return Cast<USFListRowWidget>(Cdo); };
+    // Badge, name, stamina, values.
+    auto Parts = [](bool bBadge, bool bName, bool bStamina, bool bValues)
+    {
+        return TFunction<void(UObject*)>([=](UObject* Cdo)
+        {
+            USFUnitFrameWidget* Frame = Cast<USFUnitFrameWidget>(Cdo);
+            Frame->bShowBadge = bBadge; Frame->bShowName = bName; Frame->bShowStamina = bStamina; Frame->bShowValues = bValues;
+        });
+    };
     return {
         {CommonDir, TEXT("WBP_PanelFrame"), USFPanelFrameWidget::StaticClass(), PanelFrame, nullptr},
         {CommonDir, TEXT("WBP_Button"), USFButtonWidget::StaticClass(), [](UWidgetTree* T) { ButtonLayout(T, 56.f, 160.f, TEXT("Button")); }, nullptr},
@@ -333,7 +520,11 @@ TArray<FSpec> Specs()
                 Card->LabelStyle = FSFUiTextStyle(22, Ivory());
                 Card->ValueStyle = FSFUiTextStyle(22, Moss());
             }},
-        {HudDir, TEXT("WBP_HudVitals"), USFHudVitalsWidget::StaticClass(), VitalsLayout, nullptr},
+        {UnitFramesDir, TEXT("WBP_UnitFrame"), USFUnitFrameWidget::StaticClass(), UnitFrameLayout, nullptr},
+        {UnitFramesDir, TEXT("WBP_PlayerFrame"), nullptr, nullptr, Parts(true, false, true, true), TEXT("WBP_UnitFrame")},
+        {UnitFramesDir, TEXT("WBP_TargetFrame"), nullptr, nullptr, Parts(true, true, false, true), TEXT("WBP_UnitFrame")},
+        {UnitFramesDir, TEXT("WBP_PartyFrame"), nullptr, nullptr, Parts(true, true, true, false), TEXT("WBP_UnitFrame")},
+        {UnitFramesDir, TEXT("WBP_RaidFrame"), nullptr, nullptr, Parts(false, true, false, false), TEXT("WBP_UnitFrame")},
         {HudDir, TEXT("WBP_HudHotbar"), USFHudHotbarWidget::StaticClass(), HotbarLayout, nullptr},
         {HudDir, TEXT("WBP_HudMinimap"), USFHudMinimapWidget::StaticClass(), MinimapLayout, nullptr},
         {HudDir, TEXT("WBP_HudQuestTracker"), USFHudQuestTrackerWidget::StaticClass(), QuestTrackerLayout, nullptr},
@@ -343,11 +534,45 @@ TArray<FSpec> Specs()
 }
 }
 
-FString USFWidgetAuthoring::BuildAll(bool bOverwrite)
+FString USFWidgetAuthoring::DumpTree(const FString& AssetPath)
+{
+    UWidgetBlueprint* Blueprint = LoadObject<UWidgetBlueprint>(nullptr, *AssetPath);
+    if (!Blueprint || !Blueprint->WidgetTree) { return TEXT("cannot load ") + AssetPath; }
+    FString Out = FString::Printf(TEXT("parent=%s\n"), Blueprint->ParentClass ? *Blueprint->ParentClass->GetPathName() : TEXT("none"));
+    TFunction<void(UWidget*, int32)> Walk = [&](UWidget* W, int32 Depth)
+    {
+        Out += FString::Printf(TEXT("%s%s [%s]%s vis=%d\n"), *FString::ChrN(Depth * 2, ' '), *W->GetName(), *W->GetClass()->GetName(), W->bIsVariable ? TEXT(" VAR") : TEXT(""), static_cast<int32>(W->GetVisibility()));
+        if (const USFUnitFrameWidget* Unit = Cast<USFUnitFrameWidget>(W))
+        {
+            Out += FString::Printf(TEXT("%s    parts badge=%d name=%d stamina=%d values=%d kitstyle=%d\n"), *FString::ChrN(Depth * 2, ' '), Unit->bShowBadge, Unit->bShowName, Unit->bShowStamina, Unit->bShowValues, Unit->bApplyKitStyle);
+        }
+        if (const UTextBlock* Text = Cast<UTextBlock>(W))
+        {
+            const FSlateFontInfo& F = Text->GetFont();
+            Out += FString::Printf(TEXT("%s    font=%s size=%.0f face=%s color=%s\n"), *FString::ChrN(Depth * 2, ' '), F.FontObject ? *F.FontObject->GetPathName() : TEXT("none"), F.Size, *F.TypefaceFontName.ToString(), *Text->GetColorAndOpacity().GetSpecifiedColor().ToString());
+        }
+        if (const UPanelWidget* Panel = Cast<UPanelWidget>(W)) { for (UWidget* Child : Panel->GetAllChildren()) { Walk(Child, Depth + 1); } }
+        else if (const UContentWidget* Holder = Cast<UContentWidget>(W)) { if (Holder->GetContent()) { Walk(Holder->GetContent(), Depth + 1); } }
+    };
+    if (Blueprint->WidgetTree->RootWidget) { Walk(Blueprint->WidgetTree->RootWidget, 0); }
+    return Out;
+}
+
+FString USFWidgetAuthoring::BuildAll(bool bOverwrite, const FString& Only)
 {
     FString Report;
+    if (Only.IsEmpty() || Only == TEXT("WBP_UnitFrame"))  // the owner hand-laid WBP_UnitFrame (duplicated from WBP_HudVitals): add the new named parts
+    {
+        UWidgetBlueprint* Frame = bOverwrite ? nullptr : LoadObject<UWidgetBlueprint>(nullptr, *FString::Printf(TEXT("%s/WBP_UnitFrame.WBP_UnitFrame"), UnitFramesDir));
+        // Kit style is fill-only now (project font family where the Designer left the default; never sizes, colours or layout), so it is on.
+        USFUnitFrameWidget* Defaults = Frame && Frame->GeneratedClass ? Cast<USFUnitFrameWidget>(Frame->GeneratedClass->GetDefaultObject()) : nullptr;
+        const bool bTurnStyleOn = Defaults && !Defaults->bApplyKitStyle;
+        if (bTurnStyleOn) { Defaults->bApplyKitStyle = true; }
+        if (Frame && Frame->WidgetTree && (AddUnitParts(Frame->WidgetTree, Frame) || bTurnStyleOn)) { Report += FString::Printf(TEXT("%s WBP_UnitFrame parts added\n"), CompileAndSave(Frame) ? TEXT("rebuilt") : TEXT("FAIL   ")); }
+    }
     for (const FSpec& Spec : Specs())
     {
+        if (!Only.IsEmpty() && Only != Spec.Name) { continue; }
         const FString PackageName = FString::Printf(TEXT("%s/%s"), Spec.Dir, Spec.Name);
         const bool bExists = FPackageName::DoesPackageExist(PackageName);
         if (bExists && !bOverwrite) { Report += FString::Printf(TEXT("skip   %s (exists; --force rebuilds it and discards layout edits)\n"), *PackageName); continue; }
@@ -364,12 +589,14 @@ FString USFWidgetAuthoring::BuildAll(bool bOverwrite)
         else
         {
             Package = CreatePackage(*PackageName);
-            Blueprint = FWidgetBlueprintOperationUtils::CreateWidgetBlueprint(Package, FName(Spec.Name), BPTYPE_Normal, TSubclassOf<UUserWidget>(Spec.Parent), nullptr, NAME_None, false);
+            UClass* Parent = Spec.ParentWbp ? SharedClass(UnitFramesDir, Spec.ParentWbp) : Spec.Parent;
+            if (!Parent) { Report += FString::Printf(TEXT("FAIL   %s (parent class missing)\n"), *PackageName); continue; }
+            Blueprint = FWidgetBlueprintOperationUtils::CreateWidgetBlueprint(Package, FName(Spec.Name), BPTYPE_Normal, TSubclassOf<UUserWidget>(Parent), nullptr, NAME_None, false);
             if (!Blueprint) { Report += FString::Printf(TEXT("FAIL   %s (create)\n"), *PackageName); continue; }
             FAssetRegistryModule::AssetCreated(Blueprint);
         }
 
-        Spec.Layout(Blueprint->WidgetTree);
+        if (Spec.Layout) { Spec.Layout(Blueprint->WidgetTree); }
         // Register every named widget as a Designer variable (GUID map), or the compiler finds no BindWidget targets.
         TArray<UWidget*> Widgets;
         Blueprint->WidgetTree->GetAllWidgets(Widgets);
@@ -386,6 +613,7 @@ FString USFWidgetAuthoring::BuildAll(bool bOverwrite)
         Report += FString::Printf(TEXT("%s %s%s\n"), bOk ? (bExists ? TEXT("rebuilt") : TEXT("created")) : TEXT("FAIL   "), *PackageName,
             Blueprint->Status == BS_Error || Blueprint->Status == BS_UpToDateWithWarnings ? TEXT(" (compile errors or warnings: open the asset)") : bSaved ? TEXT("") : TEXT(" (save failed)"));
     }
+    if (Only.IsEmpty() || Only == TEXT("WBP_Hud")) { Report += MigrateHud(); }
     return Report;
 }
 #endif

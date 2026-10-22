@@ -9,17 +9,30 @@
 
 using namespace SFHudStyle;
 
+// Fill-only: the Designer owns fonts, sizes and colours. A family left at the UMG default gets the project family (the runtime composite
+// font cannot be picked in the Designer); the size and colour are filled only while still at the UMG defaults.
 void FSFUiTextStyle::Apply(UTextBlock* Block) const
 {
     if (!Block) { return; }
-    FSlateFontInfo Font = RoleFont(TextFamily(), SizePx, bBold);
-    if (bShadow)
+    const UTextBlock* Default = GetDefault<UTextBlock>();
+    const FSlateFontInfo DefaultFont = Default->GetFont();
+    FSlateFontInfo Font = Block->GetFont();
+    const bool bFamilyUnset = !Font.FontObject || Font.FontObject == DefaultFont.FontObject;
+    const bool bSizeUnset = FMath::IsNearlyEqual(Font.Size, DefaultFont.Size);
+    if (bFamilyUnset)
     {
-        Block->SetShadowOffset(FVector2D(1.f, 1.f)); Block->SetShadowColorAndOpacity(Hex(TEXT("0E171C")));
-        Font.OutlineSettings.OutlineSize = 1; Font.OutlineSettings.OutlineColor = Hex(TEXT("0E171C"));
+        const float DesignerSize = Font.Size;
+        Font = RoleFont(TextFamily(), SizePx, bBold);
+        if (!bSizeUnset) { Font.Size = DesignerSize; }
+        if (bShadow)
+        {
+            Block->SetShadowOffset(FVector2D(1.f, 1.f)); Block->SetShadowColorAndOpacity(Hex(TEXT("0E171C")));
+            Font.OutlineSettings.OutlineSize = 1; Font.OutlineSettings.OutlineColor = Hex(TEXT("0E171C"));
+        }
     }
+    else if (bSizeUnset) { Font.Size = RoleFont(TextFamily(), SizePx, bBold).Size; }
     Block->SetFont(Font);
-    Block->SetColorAndOpacity(FSlateColor(Color));
+    if (Block->GetColorAndOpacity().GetSpecifiedColor().Equals(Default->GetColorAndOpacity().GetSpecifiedColor())) { Block->SetColorAndOpacity(FSlateColor(Color)); }
 }
 
 void USFUiWidget::NativeOnInitialized()

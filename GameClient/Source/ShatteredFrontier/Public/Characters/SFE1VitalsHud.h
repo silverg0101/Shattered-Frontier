@@ -38,7 +38,7 @@ struct FSFE1DefeatView
 
 // Full-screen canvas with the v5 defeated window (docs/Game-Design/concept-art/UI/v5/defeated.png): title, stag divider, cause,
 // two respawn cards and the respawn button whose ring fills as the server's respawn delay runs. The health and stamina bars are
-// in WBP_Hud (USFHudVitalsWidget); the subsystem below feeds both.
+// in WBP_Hud (USFUnitFrameWidget); the subsystem below feeds both.
 UCLASS()
 class SHATTEREDFRONTIER_API USFE1VitalsHud : public UUserWidget
 {

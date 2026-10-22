@@ -1,13 +1,19 @@
 #include "UI/SFHudWidgets.h"
 
 #include "Characters/SFE1VitalsHud.h"
+#include "Combat/SFCombatPilot.h"
+#include "Framework/SFPlayerController.h"
+#include "Townsfolk/SFTownsfolk.h"
+#include "Components/WrapBox.h"
 #include "Framework/SFScreenArt.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Components/HorizontalBox.h"
+#include "Components/Image.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Engine/Texture2D.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "EngineUtils.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
@@ -27,48 +33,82 @@ TArray<FString> FSFToastQueue::Visible(double Now)
     return Out;
 }
 
-// ---- vitals
+// ---- unit frame
 
-FText USFHudVitalsWidget::ValueText(int32 Current, int32 Max)
+FText USFUnitFrameWidget::ValueText(int32 Current, int32 Max)
 {
     return FText::FromString(FString::Printf(TEXT("%d / %d"), FMath::Max(0, Current), Max));
 }
 
-void USFHudVitalsWidget::SetVitals(int32 Health, int32 MaxHealth, int32 Stamina, int32 MaxStamina)
+UMaterialInstanceDynamic* USFUnitFrameWidget::FillMaterial(UImage* Bar)
 {
-    if (HealthBar) { HealthBar->SetPercent(FSFE1VitalsModel::HealthFraction(Health, MaxHealth)); }
-    if (HealthText) { HealthText->SetText(ValueText(Health, MaxHealth)); }
-    if (StaminaBar) { StaminaBar->SetPercent(FSFE1VitalsModel::HealthFraction(Stamina, MaxStamina)); }
-    if (StaminaText) { StaminaText->SetText(ValueText(Stamina, MaxStamina)); }
+    return Bar && Bar->GetBrush().GetResourceObject() ? Bar->GetDynamicMaterial() : nullptr;
 }
 
-void USFHudVitalsWidget::SetLevel(int32 Level)
+void USFUnitFrameWidget::SetHealth(int32 Current, int32 Max)
+{
+    if (UMaterialInstanceDynamic* Mid = FillMaterial(HealthBar)) { Mid->SetScalarParameterValue(TEXT("Percent"), FSFE1VitalsModel::HealthFraction(Current, Max)); }
+    if (HealthText) { HealthText->SetText(ValueText(Current, Max)); }
+}
+
+void USFUnitFrameWidget::SetStamina(int32 Current, int32 Max)
+{
+    if (UMaterialInstanceDynamic* Mid = FillMaterial(StaminaBar)) { Mid->SetScalarParameterValue(TEXT("Percent"), FSFE1VitalsModel::HealthFraction(Current, Max)); }
+    if (StaminaText) { StaminaText->SetText(ValueText(Current, Max)); }
+}
+
+void USFUnitFrameWidget::SetLevel(int32 Level)
 {
     if (LevelText) { LevelText->SetText(FText::AsNumber(Level)); }
 }
 
-void USFHudVitalsWidget::ApplyKitStyle()
+void USFUnitFrameWidget::SetName(const FText& Name)
 {
-    auto StyleOne = [](UProgressBar* Bar, FName FillPiece)
+    if (NameText) { NameText->SetText(Name); }
+}
+
+void USFUnitFrameWidget::ApplyParts()
+{
+    // Off = Collapsed. On = restored only when a toggle collapsed it, so Designer visibility (e.g. hit-test settings) is left alone.
+    auto Show = [](UWidget* Part, bool bShow)
     {
-        if (!Bar) { return; }
-        FProgressBarStyle Style = Bar->GetWidgetStyle();
-        Style.BackgroundImage = FSlateNoResource();  // the back and frame art are images in the WBP
-        const FSFHudKitElement* Fill = Kit(*FillPiece.ToString());
-        if (Fill)
-        {
-            FSlateBrush Brush = KitBrush(*Fill);
-            Brush.DrawAs = ESlateBrushDrawType::Image;
-            Style.FillImage = Brush;
-        }
-        Bar->SetWidgetStyle(Style);
-        Bar->SetFillColorAndOpacity(FLinearColor::White);
+        if (!Part) { return; }
+        if (!bShow) { Part->SetVisibility(ESlateVisibility::Collapsed); }
+        else if (Part->GetVisibility() == ESlateVisibility::Collapsed) { Part->SetVisibility(ESlateVisibility::SelfHitTestInvisible); }
     };
-    StyleOne(HealthBar, HealthFillPiece);
-    StyleOne(StaminaBar, StaminaFillPiece);
-    ValueStyle.Apply(HealthText);
-    ValueStyle.Apply(StaminaText);
-    LevelStyle.Apply(LevelText);
+    Show(BadgeRoot ? Cast<UWidget>(BadgeRoot) : Cast<UWidget>(LevelText), bShowBadge);
+    Show(NameText, bShowName);
+    Show(StaminaRow, bShowStamina);
+    if (!StaminaRow) { Show(StaminaBar, bShowStamina); }
+    Show(StaminaText, bShowStamina && bShowValues);
+    Show(HealthText, bShowValues);
+}
+
+void USFUnitFrameWidget::NativeOnInitialized()
+{
+    Super::NativeOnInitialized();
+    ApplyParts();  // at creation too: PreConstruct only runs once the widget is built for Slate
+}
+
+void USFUnitFrameWidget::NativePreConstruct()
+{
+    Super::NativePreConstruct();
+    ApplyParts();
+}
+
+void USFUnitFrameWidget::ApplyKitStyle()
+{
+    // A bar image the owner already gave a material keeps it; otherwise it gets the kit's masked-fill instance.
+    auto StyleOne = [](UImage* Bar, const TSoftObjectPtr<UMaterialInterface>& Material)
+    {
+        if (Bar && !Bar->GetBrush().GetResourceObject()) { if (UMaterialInterface* Loaded = Material.LoadSynchronous()) { Bar->SetBrushResourceObject(Loaded); } }
+    };
+    StyleOne(HealthBar, HealthFillMaterial);
+    StyleOne(StaminaBar, StaminaFillMaterial);
+    // Text: only the project font family where the Designer left the default (the runtime composite font cannot be picked in the Designer);
+    // the Designer's size and colour stay.
+    const FSFUiTextStyle FamilyOnly;
+    for (UTextBlock* Text : {HealthText.Get(), StaminaText.Get(), LevelText.Get(), NameText.Get()}) { FamilyOnly.Apply(Text); }
 }
 
 // ---- hotbar
@@ -147,7 +187,6 @@ void USFHudMinimapWidget::SetFooter(const FString& Line)
 void USFHudMinimapWidget::ApplyKitStyle()
 {
     ZoneStyle.Apply(ZoneText);
-    if (ZoneText) { ZoneText->SetJustification(ETextJustify::Center); ZoneText->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis); }
 }
 
 void USFHudMinimapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -288,6 +327,46 @@ void USFHudWidget::PresentVitals(int32 Health, int32 MaxHealth, int32 Stamina, i
     if (Vitals) { Vitals->SetVitals(Health, MaxHealth, Stamina, MaxStamina); }
 }
 
+void USFHudWidget::PresentTarget(bool bShow, const FString& Name, int32 Level, int32 Health, int32 MaxHealth)
+{
+    if (!Target) { return; }
+    Target->SetVisibility(bShow ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+    if (!bShow) { return; }
+    Target->SetName(FText::FromString(Name));
+    Target->SetLevel(Level);
+    Target->SetHealth(Health, MaxHealth);
+}
+
+USFUnitFrameWidget* USFHudWidget::MakeFrame(TSubclassOf<USFUnitFrameWidget>& Cached, const TCHAR* Path)
+{
+    if (!Cached) { Cached = LoadClass<USFUnitFrameWidget>(nullptr, Path); }
+    return Cached ? CreateWidget<USFUnitFrameWidget>(this, Cached) : nullptr;
+}
+
+void USFHudWidget::AddPartyMember(const FString& Name, int32 Level, int32 Health, int32 MaxHealth, int32 Stamina, int32 MaxStamina, bool bRaid)
+{
+    USFUnitFrameWidget* Frame = bRaid ? MakeFrame(RaidFrameClass, TEXT("/Game/Frontier/UI/Widgets/Unit/WBP_RaidFrame.WBP_RaidFrame_C"))
+                                      : MakeFrame(PartyFrameClass, TEXT("/Game/Frontier/UI/Widgets/Unit/WBP_PartyFrame.WBP_PartyFrame_C"));
+    UPanelWidget* Host = bRaid ? static_cast<UPanelWidget*>(RaidGrid) : static_cast<UPanelWidget*>(PartyList);
+    if (!Frame || !Host) { return; }
+    Frame->SetName(FText::FromString(Name));
+    Frame->SetLevel(Level);
+    Frame->SetVitals(Health, MaxHealth, Stamina, MaxStamina);
+    Host->AddChild(Frame);
+    Host->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+}
+
+void USFHudWidget::ClearParty()
+{
+    if (PartyList) { PartyList->ClearChildren(); PartyList->SetVisibility(ESlateVisibility::Collapsed); }
+    if (RaidGrid) { RaidGrid->ClearChildren(); RaidGrid->SetVisibility(ESlateVisibility::Collapsed); }
+}
+
+int32 USFHudWidget::PartyCount() const
+{
+    return (PartyList ? PartyList->GetChildrenCount() : 0) + (RaidGrid ? RaidGrid->GetChildrenCount() : 0);
+}
+
 void USFHudWidget::PresentQuests(const TArray<FSFQuestView>& Shown)
 {
     if (QuestTracker) { QuestTracker->Present(Shown); }
@@ -302,4 +381,15 @@ void USFHudWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
     if (Hotbar) { Hotbar->Present(Pilot && Pilot->IsEnabled() ? Pilot->GetInventoryItems() : TArray<TPair<FText, int32>>()); }
+    // Target frame: the controller's selected combat target (boar or townsfolk), hidden while the station panel is open.
+    const ASFPlayerController* Player = Cast<ASFPlayerController>(GetOwningPlayer());
+    const AActor* CombatTarget = Player ? Player->GetSelectedCombatTarget() : nullptr;
+    int32 Health = 0, MaxHealth = 0;
+    FString Name;
+    if (const ASFPilotBoar* Boar = Cast<ASFPilotBoar>(CombatTarget))
+    { Health = Boar->Health(); MaxHealth = GetDefault<USFCombatPilotSettings>()->BoarHealth; Name = TEXT("Boar"); }
+    else if (const ASFTownsfolkNpc* Npc = Cast<ASFTownsfolkNpc>(CombatTarget))
+    { Health = Npc->Health(); MaxHealth = GetDefault<USFTownsfolkSettings>()->ResidentHealth; Name = Npc->Id(); }
+    // ponytail: targets carry no level yet, so the badge shows 1.
+    PresentTarget(CombatTarget && !Player->IsStationPanelOpen(), Name, 1, Health, MaxHealth);
 }

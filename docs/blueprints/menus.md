@@ -8,14 +8,14 @@ The always-on HUD is [ui-hud.md](ui-hud.md). Everything here is for screens the 
 
 - C++ bases: `Public/UI/SFUiWidgets.h` (shared parts) and `SFHudWidgets.h` (HUD). Each `UUserWidget` binds the parts it drives with `meta=(BindWidget)` / `BindWidgetOptional`; a base applies the kit brushes, fonts and colours from `SFHudStyle` at creation (and live in the Designer preview). Style values are `UPROPERTY` defaults (`FSFUiTextStyle`, `FramePiece`/`NormalPiece` kit names, `Kind`), so one `SFHudStyle` change updates every widget. Untick `bApplyKitStyle` on one WBP to style it by hand.
 - Assets: `/Game/Frontier/UI/Widgets/Common/` and `/Hud/`. They are seeded by `py -3 tools/Run-InEditor.py tools/ui/create_widgets.py` (first drafts from `Private/UI/SFWidgetAuthoring.cpp`; existing assets are skipped, `--force` rebuilds them and discards the owner's layout). After the first run the `.uasset` files are the source of truth.
-- Open them: Content Browser > `Frontier/UI/Widgets/Hud/WBP_Hud` (the HUD; its children `WBP_HudVitals`, `WBP_HudHotbar`, `WBP_HudMinimap`, `WBP_HudQuestTracker`, `WBP_HudToasts` open on their own) and `Frontier/UI/Widgets/Common/` (`WBP_PanelFrame`, `WBP_Button`, `WBP_ButtonPrimary`, `WBP_Tab`, `WBP_Slot`, `WBP_ListRow`).
+- Open them: Content Browser > `Frontier/UI/Widgets/Hud/WBP_Hud` (the HUD; its children `WBP_PlayerFrame`, `WBP_TargetFrame`, `WBP_HudHotbar`, `WBP_HudMinimap`, `WBP_HudQuestTracker`, `WBP_HudToasts` open on their own) `Frontier/UI/Widgets/Unit/` (the unit frames) and `Frontier/UI/Widgets/Common/` (`WBP_PanelFrame`, `WBP_Button`, `WBP_ButtonPrimary`, `WBP_Tab`, `WBP_Slot`, `WBP_ListRow`).
 
 **Names C++ binds** (rename or delete one and the WBP compile fails or the part goes dead; add anything else freely):
 
 | WBP | Required | Optional |
 | --- | --- | --- |
-| `WBP_Hud` (`USFHudWidget`) | `Vitals`, `Hotbar`, `Minimap`, `QuestTracker`, `Toasts` (the child WBP instances) | |
-| `WBP_HudVitals` | `HealthBar` (ProgressBar) | `StaminaBar`, `HealthText`, `StaminaText`, `LevelText` |
+| `WBP_Hud` (`USFHudWidget`) | `Vitals` (`WBP_PlayerFrame`), `Target` (`WBP_TargetFrame`, collapsed without a target), `Hotbar`, `Minimap`, `QuestTracker`, `Toasts` (the child WBP instances) | `PartyList` (VerticalBox, left, empty and collapsed), `RaidGrid` (WrapBox, empty and collapsed) |
+| `WBP_UnitFrame` (`USFUnitFrameWidget`) and its children | `HealthBar` (Image drawing the masked-fill material) | `LevelText`, `NameText`, `StaminaBar`, `HealthText`, `StaminaText`, `BadgeRoot` (the badge container), `StaminaRow` (the stamina row container) |
 | `WBP_HudHotbar` | `SlotRow` (HorizontalBox; its `WBP_Slot` children are keys 1-6 in order) | |
 | `WBP_HudMinimap` | | `ZoneText` |
 | `WBP_HudQuestTracker` | `Rows` (VerticalBox; rows are `WBP_HudQuestRow`, set by `RowClass`) | |
@@ -25,7 +25,20 @@ The always-on HUD is [ui-hud.md](ui-hud.md). Everything here is for screens the 
 | `WBP_Slot` | | `Frame`, `Icon`, `KeyLabel`, `CountLabel` |
 | `WBP_ListRow`, `WBP_HudQuestRow`, `WBP_HudToastCard` | | `Frame`, `Icon`, `Caption`, `Label`, `Value`, `Marker`, `DoneMark`, `Rule` |
 
-Fed by C++: `ASFPlayerController` creates `WBP_Hud` (`USFHudWidget::AssetPath`) and pushes the hotbar from the pilot inventory; `USFE1VitalsHudSubsystem` pushes vitals; `USFQuestPilotSubsystem` pushes quests (`PresentQuests`); `USFGatheringHud` pushes skill toasts (`PushToast`). Still code-built (later phases): prompt bar and target frame (`SFHudLayout`), gathering ring and station panel (`SFGatheringHud`), the defeated window (`SFE1VitalsHud`) and every menu below.
+**Unit frames.** `USFUnitFrameWidget` (API `SetLevel`, `SetName`, `SetHealth(cur,max)`, `SetStamina(cur,max)`) is one hierarchy for every unit frame. `WBP_UnitFrame` holds the owner's hand-laid layout; the children only set the four `EditDefaultsOnly` part toggles (Class Defaults, category "SF Parts"), applied in `NativeOnInitialized` and `NativePreConstruct` (so the Designer previews them) by collapsing the optional bound widgets:
+
+| Child WBP | `bShowBadge` | `bShowName` | `bShowStamina` | `bShowValues` | Used as |
+| --- | --- | --- | --- | --- | --- |
+| `WBP_PlayerFrame` | on | off | on | on | `WBP_Hud.Vitals` |
+| `WBP_TargetFrame` | on | on | off | on | `WBP_Hud.Target` |
+| `WBP_PartyFrame` | on | on | on | off | `PartyList` rows (`AddPartyMember`) |
+| `WBP_RaidFrame` | off | on | off | off | `RaidGrid` cells (`AddPartyMember(..., bRaid)`) |
+
+Badge = `BadgeRoot` (else `LevelText`), stamina = `StaminaRow` (else `StaminaBar`), values = `HealthText` and `StaminaText`. A new unit frame kind is a child WBP of `WBP_UnitFrame` with other toggles. There is no party system yet: `PartyList`/`RaidGrid` stay empty and collapsed.
+
+**C++ never overrides Designer styling.** C++ sets data only: text values, bar percent, visibility toggles. Fonts, sizes, colours and layout set in the Designer stay. The one allowed fill is a value left unset: `FSFUiTextStyle::Apply` gives a text block the project font family only while it still has the UMG default (the runtime composite font cannot be picked in the Designer), and sets size and colour only while they equal the UMG defaults; a bar image with no material gets the kit's `MI_UI_BarFill_*`. Never call `SetFont`, `SetColorAndOpacity`, `SetJustification` or padding on a Designer-owned widget from C++ (runtime state tints via `SetTint` are data).
+
+Fed by C++: `ASFPlayerController` creates `WBP_Hud` (`USFHudWidget::AssetPath`) and pushes the hotbar from the pilot inventory; `USFE1VitalsHudSubsystem` pushes vitals; `USFQuestPilotSubsystem` pushes quests (`PresentQuests`); `USFGatheringHud` pushes skill toasts (`PushToast`). Still code-built (later phases): prompt bar and the target hit message (`SFHudLayout`), gathering ring and station panel (`SFGatheringHud`), the defeated window (`SFE1VitalsHud`) and every menu below.
 
 **New menu (WBP path).** 1. Write `USF<Name>` in `Public/UI/` on `USFUiWidget` (or a shared part): `BindWidget` the parts C++ drives, `UPROPERTY` style defaults from `SFHudStyle`, setters/events for data, `BlueprintImplementableEvent` hooks for visual states. 2. Add a `FSpec` row and a seed layout in `SFWidgetAuthoring.cpp` and run `tools/ui/create_widgets.py`. 3. Owner lays it out in the Designer. 4. Create it from `ASFPlayerController` with `LoadClass` + `CreateWidget` like the HUD; add a focused test like `ShatteredFrontier.Hud.Widget`. 5. Add the bound names to the table above and the files to `docs/dependency-map/ui.md`.
 

@@ -79,42 +79,7 @@ void USFHudLayout::NativeOnInitialized()
     PromptBox = PromptSize;
     HudAnchor(Root, PromptSize, 0.5f, 0.831f, 0.5f, 1.f);
 
-    // Target frame: 433 x 74 at top centre (y 32 px); brass level diamond left, name 26 centred, a 403 px framed hp bar with the numeral inside it.
-    TargetFrame = KitPanel(WidgetTree, TEXT("target_frame"), 1.f, Slate(0.9f), Brass(), FMargin(0.f), 3.f);
-    TargetFrame->SetVerticalAlignment(VAlign_Center);
-    UOverlay* TargetStack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
-    TargetFrame->SetContent(TargetStack);
-    UVerticalBox* TargetBox = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    UOverlaySlot* TargetBoxSlot = TargetStack->AddChildToOverlay(TargetBox);
-    TargetBoxSlot->SetHorizontalAlignment(HAlign_Fill); TargetBoxSlot->SetVerticalAlignment(VAlign_Center); TargetBoxSlot->SetPadding(FMargin(15.f, 0.f, 15.f, 6.f));
-    TargetName = Text(WidgetTree, TEXT(""), 26, Ivory());
-    TargetName->SetJustification(ETextJustify::Center);
-    TargetBox->AddChildToVerticalBox(TargetName)->SetHorizontalAlignment(HAlign_Center);
-    TargetCharges = Num(WidgetTree, TEXT(""), 22, Ivory());
-    const FSFFramedBar Bar = MakeFramedBar(WidgetTree, TEXT("bar_hp"), 403.f);
-    if (Bar.Root)
-    {
-        TargetFillClip = Bar.FillClip; TargetFillWidth = Bar.FillWidth;
-        UOverlay* BarStack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
-        BarStack->AddChildToOverlay(Bar.Root);
-        UOverlaySlot* ChargesSlot = BarStack->AddChildToOverlay(TargetCharges);
-        ChargesSlot->SetHorizontalAlignment(HAlign_Center); ChargesSlot->SetVerticalAlignment(VAlign_Center);
-        TargetBar = BarStack;
-        TargetBox->AddChildToVerticalBox(BarStack)->SetHorizontalAlignment(HAlign_Center);
-    }
-    else { TargetBox->AddChildToVerticalBox(TargetCharges)->SetHorizontalAlignment(HAlign_Center); }
-    // Level diamond (target_level_diamond, 57 x 55) at the frame's left edge. ponytail: targets carry no level yet, so the numeral is fixed at 1.
-    UOverlay* Diamond = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
-    Diamond->AddChildToOverlay(KitImage(WidgetTree, TEXT("target_level_diamond"), 57.f, 55.f));
-    UOverlaySlot* LevelSlot = Diamond->AddChildToOverlay(Num(WidgetTree, TEXT("1"), 24, Ivory()));
-    LevelSlot->SetHorizontalAlignment(HAlign_Center); LevelSlot->SetVerticalAlignment(VAlign_Center);
-    UOverlaySlot* DiamondSlot = TargetStack->AddChildToOverlay(Diamond);
-    DiamondSlot->SetHorizontalAlignment(HAlign_Left); DiamondSlot->SetVerticalAlignment(VAlign_Top); DiamondSlot->SetPadding(FMargin(0.f));  // flush with the frame's top-left corner
-    USizeBox* TargetSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    TargetSize->SetWidthOverride(433.f); TargetSize->SetHeightOverride(74.f); TargetSize->SetContent(TargetFrame);
-    TargetSize->SetVisibility(ESlateVisibility::Collapsed);
-    TargetBoxRoot = TargetSize;
-    HudAnchor(Root, TargetSize, 0.4956f, 0.0296f, 0.5f, 0.f);  // centre 951.5 -> left edge 735
+    // The target frame is WBP_Hud's Target (USFHudWidget); only the pilot hit message under it stays here.
     TargetMessage = Text(WidgetTree, TEXT(""), 20, Amber());
     TargetMessage->SetVisibility(ESlateVisibility::Collapsed);
     HudAnchor(Root, TargetMessage, 0.4956f, 0.1f, 0.5f, 0.f);
@@ -192,24 +157,13 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     if (GetWorld() && GetWorld()->GetTimeSeconds() < CapturePromptUntil) { Context = ESFPromptContext::Harvest; HarvestVerb = TEXT("Harvest"); }
 #endif
     AActor* CombatTarget = Cast<ASFPlayerController>(Controller) ? Cast<ASFPlayerController>(Controller)->GetSelectedCombatTarget() : nullptr;
-    int32 Health = 0, MaxHealth = 0;
-    FString Name;
-    if (const ASFPilotBoar* Boar = Cast<ASFPilotBoar>(CombatTarget))
-    { Health = Boar->Health(); MaxHealth = GetDefault<USFCombatPilotSettings>()->BoarHealth; Name = TEXT("Boar"); }
-    else if (const ASFTownsfolkNpc* Npc = Cast<ASFTownsfolkNpc>(CombatTarget))
-    { Health = Npc->Health(); MaxHealth = GetDefault<USFTownsfolkSettings>()->ResidentHealth; Name = Npc->Id(); }
-    TargetBoxRoot->SetVisibility(CombatTarget && !bStation ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
     if (!CombatTarget || bStation) { TargetMessage->SetVisibility(ESlateVisibility::Collapsed); }
-    if (CombatTarget)
+    else
     {
-        TargetName->SetText(FText::FromString(Name));
         const ASFPlayerController* Player = Cast<ASFPlayerController>(Controller);
         const FString Message = Player ? Player->GetPilotMessage() : FString();
-        TargetCharges->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), Health, MaxHealth)));
         TargetMessage->SetText(FText::FromString(Message));
         TargetMessage->SetVisibility(Message.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
-        if (TargetBar) { TargetBar->SetVisibility(ESlateVisibility::HitTestInvisible); }
-        if (TargetFillClip) { TargetFillClip->SetWidthOverride(TargetFillWidth * ChargeFraction(Health, MaxHealth)); }
     }
     if (Context != ShownPrompt || (Context == ESFPromptContext::Harvest && HarvestVerb != ShownVerb)) { ShownVerb = HarvestVerb; SetPrompts(Context); }
 }
