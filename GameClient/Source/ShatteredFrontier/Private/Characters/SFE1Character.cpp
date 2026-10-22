@@ -370,7 +370,9 @@ void ASFE1Character::TickCameraControls(float Dt)
         && Now - LastFramingSteerAt >= S->CombatFramingSteerHoldSeconds)
     {
         const FRotator ToTarget = (FrameTarget->GetActorLocation() - CameraBoom->GetComponentLocation()).Rotation();
-        CameraRotation.Yaw = SFCombatFramingLogic::AssistAxis(CameraRotation.Yaw, ToTarget.Yaw,
+        // A speaker is framed beside the dialogue board (about x 20 % of the screen), not behind it. The assist stops within its deadzone, so the offset is 30 deg plus that.
+        const float DialogueYaw = DialogueFramingTarget.Get() == FrameTarget ? 38.f : 0.f;
+        CameraRotation.Yaw = SFCombatFramingLogic::AssistAxis(CameraRotation.Yaw, ToTarget.Yaw + DialogueYaw,
             S->CombatFramingDeadzoneDegrees, S->CombatFramingYawSpeed, CombatFramingBlend, Dt);
         const float DesiredPitch = FMath::Clamp(FRotator::NormalizeAxis(ToTarget.Pitch) + S->CombatPitchBiasDegrees,
             S->CameraPitchMinDegrees, S->CameraPitchMaxDegrees);

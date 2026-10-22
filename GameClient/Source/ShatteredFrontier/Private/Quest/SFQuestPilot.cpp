@@ -816,7 +816,7 @@ void USFQuestPilotSubsystem::Tick(float DeltaTime)
         Hud->AddToViewport(14);
         Hud->SetVisibility(ESlateVisibility::HitTestInvisible);
     }
-    Hud->Present(Component->GetView());
+    Hud->Present(bOfferShown ? OfferView : Component->GetView());
 }
 
 FString USFQuestPilotComponent::ActiveObjectiveKind() const

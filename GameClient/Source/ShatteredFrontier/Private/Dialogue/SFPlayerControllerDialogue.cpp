@@ -8,6 +8,7 @@
 #include "EngineUtils.h"
 #include "GameFramework/Pawn.h"
 #include "InputCoreTypes.h"
+#include "Quest/SFQuestPilot.h"
 
 namespace
 {
@@ -63,6 +64,12 @@ bool ASFPlayerController::TryOpenDialogue()
     DialoguePanel->SetPositionInViewport(FVector2D::ZeroVector, false);
     DialoguePanel->SetVisibility(ESlateVisibility::Visible);
     DialogueNpc = Best;
+    if (Tree->bHasOffer)
+    {
+        FSFQuestView Offered; Offered.Title = Tree->Offer.Title;
+        for (const FSFDialogueObjective& Objective : Tree->Offer.Objectives) { FSFQuestLine Line; Line.Label = Objective.Label; Line.Target = Objective.Need; Offered.Lines.Add(Line); }
+        if (USFQuestPilotSubsystem* Quests = World->GetSubsystem<USFQuestPilotSubsystem>()) { Quests->PresentOffer(Offered); }
+    }
     SetIgnoreMoveInput(true);
     const FVector ToPlayer = Body->GetActorLocation() - Best->GetActorLocation();
     Best->SetActorRotation(FRotator(0.f, FMath::RadiansToDegrees(FMath::Atan2(ToPlayer.Y, ToPlayer.X)), 0.f));
@@ -80,6 +87,7 @@ void ASFPlayerController::CloseDialogue()
     SetIgnoreMoveInput(false);
     if (ASFE1Character* Hero = Cast<ASFE1Character>(GetPawn())) { Hero->SetDialogueFramingTarget(nullptr); }
     DialogueNpc.Reset();
+    if (USFQuestPilotSubsystem* Quests = GetWorld() ? GetWorld()->GetSubsystem<USFQuestPilotSubsystem>() : nullptr) { Quests->RestoreTracker(); }
     UE_LOG(LogTemp, Display, TEXT("DIALOGUE_CLOSED"));
 }
 
