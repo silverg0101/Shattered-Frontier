@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "race": 0,
+  "bodies": 2,
+  "heritages": [0, 1, 2, 3],
+  "parts": { "head": 8, "hair": 10, "beard": 6, "brows": 4 },
+  "palettes": { "skin": 16, "hair": 16, "beard": 16, "eyes": 8 },
+  "morph_slots": ["face_width", "face_length", "brow_height", "eye_spacing", "nose_width", "nose_length", "jaw_width", "chin_length"],
+  "cosmetic_slots": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+  "max_cosmetic_overrides": 8
+}

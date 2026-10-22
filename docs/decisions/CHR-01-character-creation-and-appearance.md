@@ -1,6 +1,6 @@
 # CHR-01 — Character creation and appearance
 
-Status: design proposal, 2026-10-21. Owner decisions in §2; nothing here is implemented. Paths are repository-relative; `Backend P1` = `docs/Game-Design/Backend/Legends_Shattered_Frontier_Backend_Identity_Gateway_and_Characters_v1.0.md`.
+Status: design proposal, 2026-10-21; WP1 schema and validator implemented 2026-10-22. Paths are repository-relative; `Backend P1` = `docs/Game-Design/Backend/Legends_Shattered_Frontier_Backend_Identity_Gateway_and_Characters_v1.0.md`.
 
 ## 1. Plan as written today
 
@@ -45,14 +45,16 @@ Stored in `appearance jsonb` by name; packed to indices on the wire.
 | --- | --- | --- |
 | `v` | u8 | version; unknown versions rejected |
 | `race` | u8 | `0 = human` |
-| `body` | u8 | body type within the race (MVP 0/1) |
+| `body` | u8 | Gender step's body type: 0 male, 1 female |
+| `heritage` | u8 | 0 unset, 1 Valefolk, 2 Northkin, 3 Seaborn; appearance-only, no part or colour restrictions |
+| `height`, `build` | u8 each | independent quantized body controls; 128 is the neutral creator default |
 | `morphs` | u8[N] | quantized per race morph slot (MVP N ≤ 16) |
 | `parts` | u16 per slot | head, hair, beard, brows; the race decides which slots exist |
 | `colors` | u8 per channel | skin, hair, beard, eyes: indices into race palettes |
 | `cosmetics` | u16 per `equip_slot` | wardrobe overrides; 0 = none |
 
 - Validation is server-only, against the race allowlist `content/appearance/<race>.json`: parts exist and are unlocked, palette indices in range, morph count matches, cosmetics owned. `character-service` returns a new `INVALID_ARGUMENT APPEARANCE_INVALID`.
-- Budget: ≤64 bytes packed, replicated once per pawn (`FSFAppearance`, initial-only plus hash, `OnRep` builds the mesh); cosmetic swaps replicate one slot. 100 players ≈ 6 KB on join.
+- Budget: ≤64 bytes packed (v1 allows ≤16 face morphs and ≤8 sparse cosmetic overrides; maximum 60 bytes), replicated once per pawn (`FSFAppearance`, initial-only plus hash, `OnRep` builds the mesh); cosmetic swaps replicate one slot. 100 players ≈ 6 KB on join.
 - Indices resolve against the same content-pack version on both sides, so a pack change cannot silently remap.
 
 ### 3.2 Race definition (data)
@@ -101,10 +103,11 @@ A beastfolk race later adds its skeleton, `tail`/`horn` slots and a fit profile;
 | Screen | Content | Call |
 | --- | --- | --- |
 | Character select | ≤8 slot cards: name, level, zone, live portrait; Enter, Create, Delete (typed name at level ≥20), Restore | `ListCharacters`, `EnterWorld`, `DeleteCharacter`, `RestoreCharacter` |
-| 1 Body and face | body type, 8 faces, skin, morph sliders | local |
-| 2 Hair | hair, beard, brows, colours | local |
-| 3 Skills and attributes | 3 of 35 skills over 150 points; 40 attribute points, ≤+30 each | local; mirrors `InitializeCharacter` limits |
-| 4 Name and bio | pattern checked while typing; uniqueness and denylist on submit | `CreateCharacter` with `Idempotency-Key`; on `CREATION_PENDING` poll `GetCharacter`; `NAME_TAKEN` returns here with the name kept |
+| 1 Gender | 2×3 portrait grid: male row and female row; one Valefolk, Northkin and Seaborn portrait per row. Selection sets `body` and `heritage` | local |
+| 2 Body and face | 8 faces, skin, face morph sliders, Height and Build | local |
+| 3 Hair | hair, beard, brows, colours | local |
+| 4 Skills and attributes | 3 of 35 skills over 150 points; 40 attribute points, ≤+30 each | local; mirrors `InitializeCharacter` limits |
+| 5 Name and bio | pattern checked while typing; uniqueness and denylist on submit | `CreateCharacter` with `Idempotency-Key`; on `CREATION_PENDING` poll `GetCharacter`; `NAME_TAKEN` returns here with the name kept |
 
 - Preview: map `/Game/Frontier/Maps/UI/CharacterCreate`, Silverbrook backdrop (`GameClient/ArtSource/backdrop.py`), the game's own assembly on a preview pawn, RMB rotates, face/body camera presets, styled by `Framework/SFHudStyle.h` and `/Game/Frontier/UI/Kit/`.
 - Until DEC-04 lands the UI runs against a local in-process store with the same validator, so creation is testable without auth.
