@@ -133,7 +133,7 @@ The build HUD cost panel (reference: "Construction Cost") gains one row under th
 
 ### 5.4 Dig and Raise Ground in the build menu
 
-Owner, 2026-10-22: Dig and Raise Ground are two actions in a **Terrain** section of the build catalogue, beside Foundation, Wall, Door and Roof (the v5 `build-mode.png` already shows the Terrain tab), not a held tool. Selecting one shows the TER-02 brush instead of a piece ghost.
+Owner, 2026-10-22: Dig and Raise Ground are actions in a **Terrain** section of the build catalogue, beside Foundation, Wall, Door and Roof (the v5 `build-mode.png` already shows the Terrain tab), not a held tool; §5.5 grows the section to six tools (Dig, Raise, Level, Smooth, Ramp, Restore) under the same limits. Selecting one shows the TER-02 brush instead of a piece ghost.
 
 - **Same limits for both.** Raising follows exactly the digging limits: 2 m above the original ground on open land (`public_raise_m`), the claim band inside a claim (to `anchor_base_z + band_height_m`, within T7's 12 m), the 3 m buffers, the shared 1,000 m³ open-land budget per player (one counter for cut and fill, 8,000 cells), and 7-day healing of public edits.
 - **Shared grid and preview.** Both actions draw the same claim grid of §5.1 and tint the brush ghost green / amber / red per TER-02 §6: green when the whole brush passes, amber when the server would clip it to the legal depth, height or shape (the tool offers the clipped brush), red with the first failing reason. Blocked grid cells (§3.4) are red for terrain actions too; a terrain action on open land ignores the budget states (it claims nothing), so owned, affordable and limit cells draw at their normal alpha but the ghost tint alone decides validity.
@@ -147,48 +147,161 @@ Owner, 2026-10-22: Dig and Raise Ground are two actions in a **Terrain** section
 3. §5 `public_outstanding_cells`: default 8,000 (= 1,000 m³ per the owner's answer), and note that cut and fill share it.
 4. §6 reject table: add `raise_too_high` — "Too high for open land. You can raise the ground 2 m above the original here. Claim this land to build higher." and `raise_no_step` — "This would leave a wall you can't climb. Slope one side so it can be walked up."
 5. §2 "Your own claim" row: "To the band ceiling" should name `anchor_base_z + band_height_m` from CLM-01 §3.3.
+6. §1 and §2: name all six tools of §5.5.1; Level, Smooth and Ramp are cut-and-fill strokes under the same limits per column; Restore moves only toward the original surface and releases that volume from the budget; inside a buffer Smooth and Level may add at most 0.5 m and remove nothing.
+7. §6 reject table: `raise_no_step` is raised by Raise, Level and Ramp alike; the client may append the advisory "Try Ramp" / "Try Smooth" after a `dig_no_exit` or `raise_no_step` message.
+8. §8.1: Restore and undo (inverse commits, §5.5.4) are public edits like any other: a column returned to the baseline leaves the healing list and the editor's outstanding count at once.
 
-### 5.5 Terrain brushes and the result preview
+### 5.5 Terrain tools, brushes and the result preview
 
-Owner, 2026-10-22: the Terrain section "needs a visual guide on how it's going to affect the ground too, with different size tools to use."
+Owner, 2026-10-22: the Terrain section "needs a visual guide on how it's going to affect the ground too, with different size tools to use", and "the terrain editor should be full featured. size, flatten, etc. research other games terrain editors and pick the best tools from them". The research is in §5.6; this section is the chosen set. Everything here is a client tool over the same server action: every stroke is one DEC-03 terrain commit measured against the original surface, clipped by the client and validated by the server in T order, with no cost and no yield.
 
-**Brush sizes.** Four sizes on the 0.5 m voxel grid, each a round or square footprint, for the three Terrain actions Dig, Raise Ground and Level (World's dig / raise / flatten kinds; Level sets every column in the brush to the height under the cursor at the first click). Depth per stroke is the action's step; a stroke never exceeds the band or open-land limit, and the server clips it (amber) rather than refusing when part of it is legal.
+#### 5.5.1 The six tools
 
-| Tile | Shape | Size (footprint) | Depth or height per stroke | Full 2 m cut volume | Use |
+| # | Tile | What a stroke does | Taken from | Why it is in |
+| --- | --- | --- | --- | --- |
+| 1 | **Dig** | Lowers every column in the brush by the strength step, to at most the depth limit. | Valheim pickaxe, No Man's Sky Subtract | The basic cut. |
+| 2 | **Raise** | Lifts every column by the step, to at most the height limit. | Valheim hoe Raise Ground, No Man's Sky Create | The basic fill. |
+| 3 | **Level** | Sets every column to one **target height**: the ground under the cursor at the first click, or the locked height (§5.5.4). Cut and fill in one stroke. | Valheim hoe Level + Shift lock, Cities: Skylines 2 Level Terrain, Astroneer Flatten | The most used tool in every game surveyed; a house pad in one stroke. |
+| 4 | **Smooth** | Replaces each column by the mean of its 3 × 3 neighbours, `smooth_passes` times. Never crosses the limits; adds at most 0.5 m inside a buffer and removes nothing there (TER-02 §2 row 3). | WorldEdit `//smooth`, Cities: Skylines 2 Soften, Landmark Smooth | Fixes the stepped edges every voxel tool leaves and turns a clipped cut into something walkable. |
+| 5 | **Ramp** | Two clicks: low end, then high end. Draws a straight slope of the brush's width between the two heights, at most `ramp_max_m` long. | Cities: Skylines 2 Slope Terrain, Medieval Engineers stakes-and-rope plane, Space Engineers Ramp shape | The exit rule (TER-02 §3) refuses any cut you can't walk out of; Ramp is the one-stroke way to satisfy it. |
+| 6 | **Restore** | Returns every column in the brush to the shipped original surface and material, and frees that volume from the open-land budget. Never clipped: it only ever moves toward the baseline. | No Man's Sky Restore, Landmark Heal | Free, unlimited "put it back"; the only undo that works after the 60 s window. |
+
+`1`–`6` pick the tiles. Level, Smooth and Ramp are the "flatten, etc." the owner asked for; Restore is the safety net that an MMO with a 7-day heal and a shared budget needs.
+
+#### 5.5.2 Brushes: shape, size, strength
+
+| Control | Values | Default | Key (`tune.world.brush.*`) | Bounds | Step | Effective |
+| --- | --- | --- | --- | --- | --- | --- |
+| Shape | round, square | round | — (fixed set) | — | — | — |
+| Size (footprint across) | presets 0.5 / 2 / 4 / 7 m; fine steps between in 0.5 m | 4 m | `precise_m` / `small_m` / `medium_m` / `large_m` (radius; square uses it as half-side) | 0.25–5.0 m, non-decreasing (World's 5 m ceiling) | 0.25 | Next brush selection |
+| Strength (height per stroke) | ½ m, 1 m, 2 m | 1 m (Precise: ½ m only) | `step_m` | 0.5–2.0 | 0.5 | Next stroke |
+| Smooth passes | 1–4 | 2 | `smooth_passes` | 1–4 | 1 | Next stroke |
+| Ramp length | — | 10 m | `ramp_max_m` | 4–10 (the 22-column shape pass of TER-02 §3) | 1 | Next stroke |
+| Preview rate | — | 20 Hz | `preview_hz` | 5–60 | 5 | Client only |
+| Undo window | — | 60 s, 8 strokes | `undo_window_s` / `undo_depth` | 15–120 s / 1–16 | 15 / 1 | Next stroke |
+
+| Size preset | Shape | Footprint | Strength default | Full 2 m cut volume | Use |
 | --- | --- | ---: | ---: | ---: | --- |
-| Precise | square | 0.5 m (one voxel column) | 0.5 m | 0.1 m³ | Trim a step, fix a seam |
-| Small | round or square | 2 m across (`small_m` = 1.0 radius) | 0.5 m | 6 m³ | Ditch, post hole, path edge |
-| Medium | round or square | 4 m across (`medium_m` = 2.0 radius) | 1.0 m | 25 m³ | House pad, ramp |
-| Large | round or square | 7 m across (`large_m` = 3.5 radius) | 1.0 m | 77 m³ | Whole pad, terrace; stays under the 100 m³ per-commit cap at a full 2 m cut |
+| Precise | square only | 0.5 m (one column) | ½ m | 0.1 m³ | Trim a step, fix a seam |
+| Small | round or square | 2 m | ½ m | 6 m³ | Ditch, post hole, path edge |
+| Medium | round or square | 4 m | 1 m | 25 m³ | House pad, ramp |
+| Large | round or square | 7 m | 1 m | 77 m³ | Whole pad, terrace; under the 100 m³ per-commit cap at a full 2 m cut |
 
-| Key (`tune.world.brush.*`) | Unit | Default | Safe bounds | Step | Effective |
-| --- | ---: | ---: | ---: | ---: | --- |
-| `precise_m` / `small_m` / `medium_m` / `large_m` (radius; square uses it as half-side) | m | 0.25 / 1.0 / 2.0 / 3.5 | 0.25–5.0 (World's 5 m ceiling), non-decreasing | 0.25 | Next brush selection |
-| `step_m` precise / small / medium / large | m | 0.5 / 0.5 / 1.0 / 1.0 | 0.5–2.0 | 0.5 | Next stroke |
-| `preview_hz` | Hz | 20 | 5–60 | 5 | Client only |
+No hardness or falloff slider (Planet Coaster): on a 0.5 m grid with ½–2 m steps a soft edge only makes the clipped outline unpredictable; Smooth does the same job visibly. No continuous strength (Cities: Skylines, Planet Coaster intensity 0.1–1.0): three steps on the voxel grid are exact and read out as metres. World's 100 m³ per-commit cap, 0.5–5 m brush bounds and rate keys are unchanged; a stroke over 100 m³ is offered clipped (Construction §13).
 
-World's 100 m³ per-commit cap, 0.5–5 m brush bounds, rate keys and TER-02's limits are unchanged and bind every size; a size whose stroke would exceed 100 m³ on the current ground is offered clipped, as Construction §13 already says.
+#### 5.5.3 Controls
 
-**Switching sizes.** `[` and `]` step the size down and up; `Ctrl` + mouse wheel does the same (the plain wheel keeps its camera role); `T` toggles round/square; `1`–`4` while the Terrain section is open pick a tile directly. The Terrain section shows the three actions as 100 px catalogue tiles (Dig, Raise Ground, Level) and, below them, four 72 px size tiles labelled with their metre size ("0.5 m", "2 m", "4 m", "7 m") and a two-tab round/square toggle; the selected action and size tiles carry the brass edge of `ui-hud.md` §3, and the key caps `[` `]` sit at the row ends in the prompt-bar style.
-
-**Result preview before commit.** While a Terrain action is selected the player sees, before clicking:
-
-1. **Surface ghost.** A translucent ghost of the final ground surface over the brush footprint plus a one-voxel ring (at most 16 × 16 columns for Large), drawn as a moss `#688267` surface at 30% with the same 0.5 m sub-grid lines as the claim grid at 45%; for Dig the ghost sits below the current ground and the removed volume shows as a 3 cm ivory wire box per column so the hole reads through the turf; for Raise and Level the ghost rises above the ground. Columns the server would clip (depth, height, 100 m³, exit step) draw amber `#B69A55`; columns it would refuse (buffers, under a character, protected, outside the claim parcel or band) draw crimson `#A34842` with the §5.1 hatch. The ghost tint of TER-02 §6 (green / amber / red) applies to the whole brush outline; the per-column colours say where.
-2. **Cut/fill readout** in the cost panel, in place of the material rows and never showing a material: "Cut 36 m³ · Fill 0 m³", "This stroke 36 / 100 m³", and on open land "Open-land budget 620 / 1,000 m³" (inside a claim: "Claim terrain 1,240 / 100,000 cells"), all in the have/need style with the crimson underline when over.
-3. **Depth/height gauge.** A vertical 24 × 120 px gauge at the panel's right edge, bar frame from the kit, filled moss up to the stroke's deepest cut or highest fill against the active limit: 2.0 m on open land, the band distance inside a claim ("1.5 / 2.0 m"); the part past the limit fills amber and the label turns amber, matching the clipped columns.
-4. **Status line.** "Valid dig", "Clipped to 2 m" or the first TER-02 reject message, under the gauge.
-
-Everything is a client preview from the replicated voxel density and the zone masks; the server's prepare step (DEC-03 step 2) recomputes it and a mismatch returns the clipped or refused receipt, which refreshes the ghost.
-
-**Implementation.** Three options for the surface ghost:
-
-| Option | Cost | Fit |
+| Action | Mouse + keyboard | Gamepad |
 | --- | --- | --- |
-| **Dynamic mesh ghost**: one `UDynamicMeshComponent` on the controller, vertices on the 0.5 m columns of the footprint + ring (≤ 17 × 17 = 289 vertices, 512 triangles), heights from the client's voxel replica (or a line trace per column until the voxel replica ships), rebuilt at `preview_hz` only when the cursor cell, size, shape or action changes; per-vertex colour carries the state | ~0.05–0.1 ms rebuild, 289 traces at most 20 times a second on the trace fallback; one translucent draw | Shows a real new surface above or below the ground, which a decal cannot; works on mesh, Landscape and voxel ground |
-| Decal | as §5.3 | Can only paint the footprint on the existing surface; no new height, no hole |
-| Material on a pre-made preview mesh (one static disc/box per size) | Cheapest draw | Cannot follow a slope or show a clipped shape; wrong on every uneven pad |
+| Stroke (Dig, Raise, Level, Smooth, Restore) | LMB; hold to repeat at the commit rate | RT; hold to repeat |
+| Ramp points | LMB low end, LMB high end; Esc cancels the first point | RT, RT; B cancels |
+| Sample and lock a height (Level, Raise, Dig) | Shift + LMB | LT |
+| Clear the height lock | `L` | hold LT 0.5 s |
+| Tool | `1`–`6`; `Q` / `E` previous / next | LB / RB |
+| Size | `[` / `]` presets; Ctrl + wheel fine 0.5 m steps | D-pad left / right presets; hold + D-pad fine |
+| Strength | `-` / `=` | D-pad down / up |
+| Shape round / square | `T` | Y |
+| Undo / redo | Ctrl + Z / Ctrl + Y | X / hold X 0.5 s |
+| Leave the Terrain section | Esc or `B` | B |
 
-**Pick the dynamic mesh ghost**, with `MI_TerrainGhost` (translucent, vertex-colour driven, the §5.3 line parameters, depth-test on so the ground occludes the underside of a dig ghost except for the wire boxes, which are a second `MI_TerrainGhostWire` section with depth test off). The claim grid decal of §5.3 stays underneath. Recipe: `docs/blueprints/building-mode.md` §C; the concept for the Fable review is generated by Codex from the prompt there.
+Build mode's camera, movement, `E`/`F` and placement keys are untouched (`IMC_Build`); the plain wheel keeps its camera role. Every binding is remappable through the existing input settings. There is no console command and no typed command line (WorldEdit, Axiom): those tools exist for unlimited editors and would not survive the gamepad or the limits.
+
+#### 5.5.4 Modifiers
+
+- **Height lock** (Valheim Shift). Shift-click samples the ground under the cursor and pins the target: Level flattens to it, Raise never lifts above it, Dig never cuts below it. The chip reads "Lock 412.5 m (+1.5 m)" with the offset from the original ground at the cursor; a locked target outside the limits at the cursor shows amber and the stroke clips there. The chip also accepts a typed value: click it, type a signed offset in metres (−2.0 … +2.0 on open land, −8.0 … the band height in a claim), Enter; the field rounds to 0.5 m. The lock survives tool changes and clears with `L`, on leaving build mode, or when the player moves more than 24 m from the sample.
+- **Grid snap** is always on: the brush centre snaps to the 0.5 m column, the square brush aligns to the 1 m claim grid when its size is a whole metre, heights to 0.5 m. There is no free-aim or off-grid mode (No Man's Sky, Astroneer); the server stores columns, so the preview must show columns.
+- **Undo / redo.** Ctrl + Z submits the inverse of the last stroke within `undo_window_s`, up to `undo_depth` strokes back; Ctrl + Y re-submits it. Each is an ordinary commit: measured against the original surface, validated in T order, counted in the rate limit, and the budget counts the net. Undo is refused with "Nothing to undo" when the window has passed or another player's commit touched the columns; Restore covers everything older. The panel shows "Undo 3" with the count available. (Cities: Skylines 2 has no undo and every guide warns about it; Planet Coaster 2 batches eight edits per undo; Axiom keeps a history window.)
+- **Repeat on hold.** Holding the stroke button repeats at the commit rate; the ghost shows the next stroke from the result of the last. A toggle in Accessibility makes a single press repeat until pressed again.
+- **No symmetry, no stamps, no noise** (Axiom Distort/Roughen, World Painter shapes, Mountools): nothing in a 2 m, 100 m³ edit benefits, and they would not survive the exit rule.
+
+#### 5.5.5 The Terrain section in the build menu
+
+Left Build Catalogue panel, Terrain tab, top to bottom, panel width as `build-mode.png`:
+
+1. **Tool row**: six 100 px catalogue tiles in two rows of three: Dig, Raise, Level / Smooth, Ramp, Restore (`slot_catalogue_*` from the kit; the selected tile carries the brass edge of `ui-hud.md` §3; key caps `1`–`6` bottom-right of each tile).
+2. **Size row**: four 72 px tiles labelled "0.5 m", "2 m", "4 m", "7 m"; a fine size between presets shows on the nearest tile's label ("3.5 m") with no preset selected; `[` `]` key caps at the row ends.
+3. **Shape and strength row**: a two-tab round / square toggle (`tab_*`) left; three tabs "½ m", "1 m", "2 m" right (Precise greys "1 m" and "2 m"; a strength above the remaining limit greys too and shows the reason on hover: "Only 0.5 m left before the 2 m limit").
+4. **Modifier row**: the height-lock chip ("Lock off" / "Lock 412.5 m (+1.5 m)", `L` key cap) and the undo chip ("Undo 3 · Redo 1", Ctrl + Z / Ctrl + Y caps). Smooth replaces the lock chip with "Passes 2" (`-` / `=` adjust it while Smooth is selected); Ramp replaces it with "Max 10 m".
+
+Bottom-right cost panel (reference "Construction Cost"), no material rows ever:
+
+1. "Cut 36 m³ · Fill 0 m³" and "This stroke 36 / 100 m³".
+2. "Open-land budget 620 / 1,000 m³" or, inside a claim, "Claim terrain 1,240 / 100,000 cells"; have/need style, crimson underline when over.
+3. Tool line: Level "Target 412.5 m (+1.5 m)"; Ramp "Ramp 8.0 m · rise 2.0 m · 1:4 · 14°"; Restore "Restores 12 m³ · frees 12 m³"; Smooth "2 passes"; Dig/Raise "Step 1.0 m".
+4. "Heals on 29 Oct unless claimed" on open land (TER-02 §6).
+5. The depth/height gauge: 24 × 120 px at the panel's right edge, kit bar frame, moss fill to the stroke's deepest cut or highest fill against the active limit (2.0 m open land; the band distance inside a claim), amber past it, label "1.5 / 2.0 m".
+6. Status line, one of: "Valid dig" / "Valid raise" / "Valid level" / "Valid smooth" / "Valid ramp" / "Valid restore"; "Clipped to 2 m"; "Clipped to 100 m³"; "Clipped to the lock"; "Pick the ramp's low end" / "Pick the high end"; "Ramp too long: 10 m per stroke"; "Nothing to restore here"; "Nothing to undo"; "Undone (2 left)"; or the first TER-02 §6 reject message. A refused stroke that Ramp or Smooth could fix appends "Try Ramp" or "Try Smooth".
+
+#### 5.5.6 Result preview
+
+While a tool is selected the player sees, before clicking:
+
+1. **Surface ghost.** A translucent ghost of the final surface over the footprint plus a one-voxel ring (Ramp: the slope plus ring, at most 22 × 22 columns), a moss `#688267` surface at 30% with the 0.5 m sub-grid at 45%. Dig, Level-down and Restore-down sit below the ground with the removed volume as 3 cm ivory wire boxes per column, so the hole reads through the turf; Raise, Level-up and Restore-up rise above it. Columns the server would clip (depth, height, lock, 100 m³) draw amber `#B69A55`; columns it would refuse (buffers, under a capsule, protected, outside parcel or band, open-sky, exit) draw crimson `#A34842` with the §5.1 hatch. The outline carries the TER-02 §6 tint for the whole stroke; the per-column colours say where. Ramp shows a 3 cm ivory centre line from the first click to the cursor before the second.
+2. **Readouts and gauge** of §5.5.5, from the same preview pass.
+3. **Existing public edits** under the brush keep their TER-02 §8.5 healing tint (earth hatch, orange on the last day, striped when residual).
+
+Everything is a client preview from the replicated voxel density and the zone masks; the server's prepare step (DEC-03 step 2) recomputes it and a mismatch returns the clipped or refused receipt, which refreshes the ghost. Clipping is computed client-side only; the server rejects, never clips, and the client submits the clipped stroke (TER-02 §7).
+
+#### 5.5.7 How each tool meets the TER-02 limits
+
+Per column, in T order; amber = clipped (the stroke still goes, at the clipped shape), red = refused (nothing goes) with the first failing code:
+
+| Tool | Clip (amber) | Refuse (red) |
+| --- | --- | --- |
+| Dig | Stops at original − 2 m (open) or the band floor (claim); at the lock; at 100 m³ | `dig_buffer`, `dig_under_character`, `dig_claim_shell`, `dig_outside_band`; `dig_no_exit` when even the clipped cut has no 1 m walk-out ("Try Ramp"); `dig_overhang` on any undercut |
+| Raise | Stops at original + 2 m or the band ceiling; at the lock; at 100 m³ | `dig_buffer`, T8 capsule, `dig_claim_shell`; `raise_no_step` when a raised edge exceeds 1 m against an unchanged neighbour ("Try Ramp"); `dig_overhang` if fill would float |
+| Level | Target clipped into [original − 2, original + 2] per column, so a pad across a slope levels as far as the limit allows and shows amber where it could not reach; 100 m³ | As Dig for cut columns and Raise for fill columns; inside a buffer only fill ≤ 0.5 m is allowed, cut columns there are red |
+| Smooth | Result clipped to the limits; inside a buffer the add is capped at 0.5 m and removal is dropped | Capsule, parcel and band codes only; Smooth can never create an exit or overhang fault because it only moves toward neighbours |
+| Ramp | Each column clipped to the limits; a clipped ramp changes grade and the tool line turns amber ("1:4 → 1:6, clipped") | Any red column refuses the whole ramp; a ramp whose steps exceed 1 m per column (`ramp_max_m` too short for the rise) is `dig_no_exit` |
+| Restore | Never clipped | `dig_under_character` when restoring a raise under a capsule; T8 when filling into one; T4 outside the actor's rights; nothing else, because the baseline is always legal |
+
+Inside a claim the parcel rule holds for all six (TER-02 §2) and open-land tools ignore the grid's budget states (§5.4). The 1,000 m³ open-land budget counts cut and fill net of Restore, so a player can always undo their own work.
+
+#### 5.5.8 Accessibility
+
+- Never colour alone: amber columns carry a dotted outline, red ones the hatch, and the status line names the reason; the gauge has the number next to the bar (`ui-hud.md` colour-blind rule 3).
+- Three distinct short sounds for pass, clipped and refused on hover change, and one on commit; off in the audio settings.
+- Hold-to-repeat can be a toggle (§5.5.4); every key remaps; gamepad has full parity (§5.5.3) and the tiles are focusable with the stick.
+- Reduce-motion setting: the ghost does not pulse and the wire boxes are static.
+- The panel text follows the HUD scale; the height-lock field accepts typed values so a player who cannot aim precisely can still level to an exact height.
+- A help line under the tool row on first use: "Hold to repeat · Shift-click locks a height · Ctrl+Z undoes" (dismissed per tool, remembered on the client).
+
+#### 5.5.9 Dropped, and why
+
+| Idea (source) | Why not |
+| --- | --- |
+| Free-aim spheres in the air, tunnels on open land (No Man's Sky, Astroneer, Space Engineers Voxel Hands) | Open-sky rule and the exit rule forbid overhangs and pits on open land; inside a claim Dig with a square brush carves rooms within the band. |
+| Placed terrain shapes: cubes, ramps, capsules dropped as blocks (Enshrouded hammer terrain row, Space Engineers Box/Capsule) | A floating or unsupported fill is `dig_overhang`; Raise with the square brush and a height lock gives the same block on the ground. |
+| Command line, masks, scripted brushes, heightmap stamps, history window (WorldEdit, Axiom) | Unlimited-editor tools; no gamepad path; nothing under a 2 m / 100 m³ limit needs them. |
+| Hardness / falloff and continuous intensity (Planet Coaster, Cities: Skylines) | Unpredictable clipped outlines on a 0.5 m grid; three metre steps plus Smooth cover it. |
+| Material cost per stroke (Valheim stone, Astroneer soil canisters, Enshrouded dirt) | Owner: altering land costs nothing and yields nothing. |
+| Planet-curvature alignment (Astroneer Alignment Mod) | Flat world; the most complained-about tool in the survey. |
+| Symmetry, stamps, noise, distort (Axiom, World Painter) | No use under the limits. |
+| Surface paint: path, cobble, soil (Valheim Pathen/Paved, Enshrouded Dirt Road) | Not in J9. Material writes need TER-01's material byte and the ground material's blend; owner question 1 below. |
+| Unbounded undo history (Axiom) | Server-authoritative commits; 60 s / 8 strokes of inverse commits plus Restore cover it without server history. |
+
+### 5.6 Research: terrain editors in other games
+
+Surveyed 2026-10-22; player opinions are from forum threads and are dated where the thread is.
+
+| Game | Tools and modes | Brush | Controls, preview | Praise / complaints |
+| --- | --- | --- | --- | --- |
+| Valheim | Hoe: Level ground, Raise ground, Pathen, Paved road; pickaxe lowers; cultivator plants. Shift-click locks the hoe to the height under the cursor; otherwise it uses the player's feet. | One size; Level smooths toward the sample rather than cutting; raise costs stone. | No preview; each strike is a persistent modifier. | Level "doesn't do it all at once"; 100 modifiers per 10 × 10 m caused lag until the 0.150.3 terrain rewrite ([wiki](https://breezewiki.discard.no/valheim/wiki/Hoe), [guide](https://www.corrosionhour.com/how-does-the-hoe-work-in-valheim/), [PC Gamer](https://www.pcgamer.com/au/valheim-patch-overhauls-terrain-buffs-hoe), [BetterTerrain README](https://github.com/74oshua/BetterTerrain/blob/master/README.md)). |
+| Enshrouded | Pickaxe digs; Rake levels toward the surroundings; the Construction Hammer's terrain row (hold Alt / Tab) places 1 / 2 / 4 m dirt cubes and other shapes; the hammer's remove action clears them. | Fixed shapes, three sizes. | Ghost of the shape. | Praised: fast fill-and-rake workflow; complaints: rake recipe bugs, shapes rather than brushes ([Steam](https://steamcommunity.com/app/1203620/discussions/0/4361247379738471743), [GamesFuze](https://gamesfuze.com/guides/enshrouded-how-to-fill-up-holes-in-the-ground/), [Gameluster](https://gameluster.com/enshrouded-basic-custom-base-building-guide/)). |
+| Minecraft + WorldEdit | `/brush sphere`, `cylinder`, `smooth [radius] [iterations] [mask]`, bound to a held item. | Radius typed; hollow flag. | None; `//undo`. | Power-user; command syntax is the barrier ([docs](https://worldedit.readthedocs.io/en/latest/usage/tools/brushes/)). |
+| Minecraft + Axiom | Editor mode (Right Shift): Elevation, Slope; Smooth, Distort, Roughen, Shatter, Extrude; Sculpt Draw, Melt, Stamp, Path; Floodfill. | Sphere / cube / octahedron; Radius slider, Ctrl + middle button. | Live preview; Ctrl + Z / Y with a History window. | Praised for live preview and history; mouse-and-keyboard only ([docs](https://axiomdocs.moulberry.com/tools/intro.html)). |
+| No Man's Sky | Terrain Manipulator: Create, Subtract, Flatten, Restore; mode cycles on middle mouse. | Size steps. | Cursor sphere; no result ghost. | Edits revert when the save-wide edit cache overflows, especially near bases; the top complaint ([Steam](https://steamcommunity.com/app/275850/discussions/0/1762482479185377839), [TheGamer](https://www.thegamer.com/nms-guide-terrain-manipulator-blueprint-location/)). |
+| Astroneer | Terrain Tool: dig, Raise (spends soil), Flatten (samples the grade under the centre dot); Alignment Mod locks the plane to gravity at the first click. | Size augments. | No ghost; continuous flow. | Flatten drifts over distance; the Alignment Mod is widely called a "lie" for bases ([wiki](https://astroneer.wiki.gg/wiki/Terrain_Tool), [Alignment Mod](https://astroneer.wiki.gg/wiki/Alignment_Mod), [Steam](https://steamcommunity.com/app/361420/discussions/0/2647504242058531931)). |
+| Space Engineers / Medieval Engineers | SE Voxel Hands (creative): Box, Capsule, Ramp, Sphere, Terrain Auto Level; K opens size 1–100 per axis. ME survival: stakes and rope define a plane, the shovel cuts above and fills below it. | Shape sizes typed. | Shape ghost. | ME stakes called cumbersome; players asked for a plain flatten ([SE wiki](https://spaceengineers.wiki.gg/wiki/Voxel_Hands), [ME devblog](https://www.medievalengineers.com/devblog-002-shovel-tool-tools-update/), [feedback](https://support.keenswh.com/medievalengineers/topic/better-terraforming-street-building-tools-for-survival-mode)). |
+| 7 Days to Die | Shovel and auger remove blocks; no flatten; players level by placing frames that conform to terrain. | Block. | None. | "Terrain smoothing" leaves uneven tops and spikes; auger noisy and gas-hungry ([wiki](https://wiki.7d2d.net/hosting/community/terrain-leveling-and-construction-techniques/), [Steam](https://steamcommunity.com/app/251570/discussions/0/558751364210721867)). |
+| Vintage Story | Shovel digs soil blocks; placement is block-by-block; land claims by command. | Block. | None. | Claims are command-only; no terrain tool beyond the block ([wiki shovel](https://wiki.vintagestory.at/index.php/Shovel), [claims](https://wiki.vintagestory.at/Special:MyLanguage/List_of_server_commands/land)). |
+| Landmark (EverQuest Next) | Add, Delete, Heal, Select, Smooth, Paint, Line; tools earned by crafting. | Scalable; copy/paste, undo. | Ghost. | Smooth would not bevel hard edges well; tool gating by crafting frustrated builders ([PC Gamer](https://pcgamer.com/everquest-next-landmark-hands-on), [Allakhazam](https://everquest.allakhazam.com/news/tags/MakingOurMark)). |
+| Dual Universe | Nanoformer digs and contours; later a line/selection tool. | Shape. | Ghost. | Little documented; voxel precision for ships, not terrain ([wiki](https://dualuniverse.fandom.com/wiki/Voxel_Technology?oldid=970), [MassivelyOP](https://massivelyop.com/?p=162499)). |
+| Satisfactory | No terrain editing by design; foundations instead. | — | — | Static hand-made world; players bury foundations ([Steam](https://steamcommunity.com/app/526870/discussions/0/5241649843389545572)). The owner's fallback if TER-01 fails. |
+| Cities: Skylines 2 | Shift (raise LMB / lower RMB), Level (RMB sets the grade), Soften, Slope between a target height and the ground. | Three sizes, three strengths. | None, and no undo: every guide warns to start weak. | Level called the most useful tool; no undo the top complaint ([GGRecon](https://www.ggrecon.com/guides/cities-skylines-2-how-to-terraform), [Prima](https://primagames.com/tips/how-to-terraform-your-city-in-cities-skylines-2), [Steam](https://steamcommunity.com/app/949230/discussions/0/3877095833483358195)). |
+| Planet Coaster 2 | Sculpt push/pull, flatten, smooth, paint; `[` `]` size, `-` `=` intensity. | Size to 60 m, intensity 0.1–1.0, no hardness slider; undo batches 8 edits. | Live. | "Invisible ceilings" on size and intensity; paint lost by sculpting ([wiki](https://planetcoaster.fandom.com/wiki/Terrain), [Nexus mod notes](https://www.nexusmods.com/planetcoaster2/mods/44)). |
+
+What carried over: Valheim's Shift height lock and the level-to-sample; Cities: Skylines 2's four verbs and its right-click target; Astroneer's sample-under-the-dot flatten (without the curvature); No Man's Sky's Restore; Medieval Engineers' two-point plane as Ramp; Axiom's live preview and undo; Planet Coaster's `[` `]` `-` `=` keys; Enshrouded's fill-then-rake as Raise-then-Smooth.
 
 ## 6. Server authority and durable owner
 
@@ -214,10 +327,16 @@ Everything is a client preview from the replicated voxel density and the zone ma
 9. **Empty archive.** A claim with every piece removed archives after 24 h and its points return; placing again inside 24 h keeps it.
 10. **Levelled pad adoption.** A 2 m public cut of 200 m³ is levelled without a claim; a foundation on it claims the pad cells at the band price with no extra points, the 200 m³ leaves the player's 1,000 m³ public allowance and the edits leave the healing list; removing the foundation puts them back with a fresh 7-day deadline.
 11. **Grid visual.** Fresh Fable review of `build-grid-<view>-compare.png` against the reference and `build-mode.png` per `docs/visual-review.md`: owned ivory, affordable moss, limit fade over 3 m, crimson hatch by the road, no grid past the limit.
-12. **Terrain preview.** Captures per `docs/blueprints/building-mode.md` §C: each brush size on flat ground, the Medium brush on a slope, at a road buffer and at the claim edge; the ghost, readout and gauge match the Codex concept and the preview equals the server result (cut volume, clipped columns, refused columns) within one voxel.
+12. **Terrain preview.** Captures per `docs/blueprints/building-mode.md` §C: each brush size on flat ground, each of the six tools at Medium, the Medium brush on a slope, at a road buffer and at the claim edge; the ghost, readout and gauge match the Codex concept and the preview equals the server result (cut volume, clipped columns, refused columns) within one voxel.
 13. **Upkeep charge and pause.** With `enabled`, a claim listing 320 timber and 80 ingot at 1% debits 3.2 timber and 0.8 ingot per offline day from the storehouse, nothing while the owner is logged in, and whole units only once the fractions reach one.
 14. **Depletion stages.** An empty storehouse pins `depleted_at`; at offline day 7 condition starts falling 1 per day with a floor of 1 and no collapse; at day 30 the final notice is sent; at day 37 the claim archives, its stock, structures and edits land in the recovery store, and its cells and points are released. A deposit on day 20 returns it to Provisioned and resumes growth.
 15. **Storehouse rules.** A second storehouse is refused; removing a stocked one is refused; a visitor can deposit and cannot withdraw; a non-listed item is refused. With `enabled` false none of 13–14 happens and the plaque reads "Provisioned".
+16. **Level.** On a 20° slope with Medium, the first click samples the ground under the cursor and the pad levels to it, amber where the 2 m limit stops it; Shift-click then a typed +1.0 lock levels to original + 1.0 m at the sample column; the result equals the server receipt within one voxel.
+17. **Smooth.** A 2 m stepped cut smoothed with 2 passes has no step over 1.0 m along its edge and passes the exit rule; Smooth 3 m from the road adds at most 0.5 m and removes nothing inside the buffer.
+18. **Ramp.** Low end on a 2 m pad floor, high end on original ground 8 m away → accepted, tool line "Ramp 8.0 m · rise 2.0 m · 1:4 · 14°"; 12 m requested → "Ramp too long: 10 m per stroke"; a 2 m rise over 1.5 m → `dig_no_exit`.
+19. **Restore.** After a 25 m³ cut, Restore over it returns every column to base density and material byte-for-byte, the open-land budget drops by 25 m³ and no item is produced; Restore of a raise under a standing player → `dig_under_character`.
+20. **Undo.** Ctrl + Z within 60 s inverts the last stroke and the budget shows the net; a ninth undo, or one after 60 s, reads "Nothing to undo"; Ctrl + Y re-applies; another player's commit on the same columns refuses the undo with a fresh quote.
+21. **Controls and accessibility.** Every §5.5.3 binding fires its action on keyboard and on gamepad (`tools/Test-BuildModeInput.ps1`-style injection, `INPUT_ACTION` log lines); in the colour-blind capture amber columns keep the dotted outline and red ones the hatch; the hold-to-repeat toggle repeats a Dig stroke at the commit rate without the button held.
 
 ## 8. Upkeep: the claim storehouse
 
@@ -293,14 +412,10 @@ Claim panel plus the account notification inbox (existing §2.2 channels, no ext
 | J6 TER-02 hook | S | `anchor_base_z`, band height and footprint cells feed TER-02's parcel/band checks |
 | J7 Two-client runner | M | `tools/Test-ClaimGrid.ps1` on owned PostgreSQL covering tests 2–9 |
 | J8 Dependency map, Building and Territory v1.1 note | S | Record §2's changes in the design doc's §2.1 and the map |
-| J9 Terrain section and result preview | M | Dig / Raise Ground / Level tiles and size tiles in the catalogue, `[`/`]`/`Ctrl`+wheel/`T` input, `UDynamicMeshComponent` ghost with `MI_TerrainGhost`, cut/fill readout, depth gauge, Codex concept and Fable review (test 12); needs TER-01/DEC-03 digging to exist on the server |
+| J9a Terrain tools and result preview | M | Dig / Raise / Level / Smooth / Ramp / Restore tiles, size / shape / strength rows, lock and undo chips (§5.5.5), `UDynamicMeshComponent` ghost with `MI_TerrainGhost`, readouts, gauge and status from one preview pass, per-tool clip/refuse of §5.5.7; Codex concept and Fable review (tests 12, 16–19); needs TER-01/DEC-03 digging to exist on the server |
+| J9b Terrain input and accessibility | S | §5.5.3 bindings in `IMC_Build` for keyboard and gamepad, remap, hold-to-repeat toggle, the three sounds, reduce-motion, help line; test 21 |
+| J9c Undo and Restore | S | Inverse-commit undo under `undo_window_s` / `undo_depth`, Restore tool and budget release, "Nothing to undo" states; tests 19–20; after J9a |
 | J10 Upkeep and storehouse | M | Storehouse object and Codex sheet, upkeep list from Placement receipts, hourly offline-attributed charge, stages, notifications, plaque, map marker, `enabled` flag and switch-on cover; `ClaimTerritory.Tests` for tests 13–15; after J2 and only when `enabled` is planned for a release |
-
-DEC-02 hand-over for J3/J4 (2026-10-22). Already true on the BLD-02 plots: placement goes through `Housing.Place`, which reserves, decides and then debits or releases materials. The first placement on an unclaimed plot claims it in the same action. Nothing can be placed outside a claim state: off-plot previews and out-of-extent cells read "You need a claim to place this here." Edits that skip Housing need `-SFDevUnlimitedStock`. Still for these jobs:
-- the first *foundation* (not any piece) creating a claim through `cba_` growth;
-- the 4 m reach ring beyond the claim edge, validated on the server;
-- the same refusal text on the server-side `Place` rejection;
-- the Alpha Starter Kit needs no terrain fill, because land edits cost and yield nothing.
 
 ## Owner answers and open questions
 
@@ -314,7 +429,13 @@ Answered 2026-10-22 (recorded in [OWNER-2026-10-22-decisions.md](OWNER-2026-10-2
 6. Open-land placement: anything placed needs a claim (§4 Start).
 7. Terrain edits: Dig and Raise Ground cost nothing and yield nothing; the readout shows volume and remaining budget only (§2, §5.4, §5.5).
 
-No owner questions remain open.
+Open after the terrain-tool revision of §5.5 (2026-10-22):
+
+1. **Should players be able to paint the ground surface (dirt path, cobbles, tilled soil) as a seventh Terrain tool?** Options: (a) not now, revisit after TER-01 proves the material byte and the ground material's blend; (b) ship one "Path" material in J9a so roads between claims look made; (c) a full material set in a later packet. Recommendation: (a); nothing else in J9 depends on it, and a half-working paint tool is the most visible failure in the survey (Planet Coaster loses paint when you sculpt).
+2. **How should undo work?** Options: (a) 60 s / 8 strokes of inverse commits on the client plus the Restore tool for anything older; (b) no undo, Restore only; (c) server-side per-player history. Recommendation: (a); Cities: Skylines 2's missing undo is the top complaint found, and (c) adds server state for no player benefit over (a) + Restore.
+3. **How fast may strokes repeat while the button is held?** Options: (a) the existing terrain rate, one commit per 1.5 s; (b) the placement rate, two per second with a burst of four, still under the 2,000 m³ per hour cap; (c) batch the held strokes into one commit per second. Recommendation: (b); at (a) levelling a 7 m pad in 1 m steps feels like Valheim's "pad the same spot several times".
+4. **Where does Level take its target height from?** Options: (a) the ground under the cursor at the first click, with Shift-click or a typed value to lock another; (b) always the player's feet, Valheim style, unless locked; (c) lock required before Level works. Recommendation: (a); it matches Cities: Skylines 2 and Astroneer and needs no extra step for the common pad.
+5. **Largest brush?** Options: (a) keep 7 m; (b) allow 10 m (World's 5 m radius ceiling), which at a full 2 m cut is 157 m³ and is always clipped to the 100 m³ commit cap; (c) raise the commit cap to 160 m³ for Large. Recommendation: (a); a brush that is always clipped teaches players to distrust the ghost.
 
 [Building and Territory]: ../Game-Design/Legends_Shattered_Frontier_Building_and_Territory_System_v1.0.md
 [Construction]: ../Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md
