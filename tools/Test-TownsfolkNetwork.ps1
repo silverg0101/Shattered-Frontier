@@ -13,9 +13,10 @@ param(
 # Townsfolk step 4 (AI Townsfolk doc section 9): a dedicated server on Greenlands_Silverbrook owns the town state; two
 # NullRHI clients simulate residents on NM_Client. Passes when both clients agree on the hour
 # (within HourToleranceSeconds of real time) and on market state, both see the server's danger cell, and residents claim
-# Smart Objects on each client. The server runs a fast day (DayMinutes) from 10:00 with markets closing at 12:00, so the
-# samples span an open and a closed market. Hand-off: the first client walks to a resident standing still and swings at
-# it; both clients must see the same server actor (resident id and serial) with their own Mass copy hidden, and both
+# Smart Objects on each client. The server runs a fast day (DayMinutes) from 10:00 and closes markets partway through
+# the sample, so both states remain observable when the day length changes. Hand-off: the first client walks to a
+# resident standing still and swings at it; both clients must see the same server actor (resident id and serial) with
+# their own Mass copy hidden, and both
 # must resume the resident on its schedule from the actor's last position once the server releases it.
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -29,11 +30,15 @@ $null = New-Item -ItemType Directory -Path $root
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
 $clock = [Diagnostics.Stopwatch]::StartNew()
 $settings = '-ini:Game:[/Script/ShatteredFrontier.SFTownsfolkSettings]:'
+# Client startup can take over a minute on a cold asset cache. Keep the market open until the sample can observe it,
+# then close before the 120-second default sample ends. The old fixed 12:00 close preceded short-day samples.
+$marketCloseAfterSeconds = [math]::Min(125, 15 + $SampleSeconds)
+$marketCloseHour = [math]::Min(23.5, 10 + $marketCloseAfterSeconds * 24 / ($DayMinutes * 60))
 $results = [ordered]@{
     status='Running'
     leg=$Leg
     scope='Mechanism only: dedicated editor server town state (clock, markets, one danger cell) replicated to two NullRHI NM_Client clients simulating residents. Attack hand-off and release (the resident fights back, then flees; no guards in Silverbrook yet). No rendering, looks or quest hand-off.'
-    serverOverrides="GameDayMinutes=$DayMinutes StartHour=10 MarketCloseHour=12 DangerSeconds=1800 HandoffReleaseMetres=10 HandoffQuietSeconds=8, danger cell at (20,-20) m; clients keep shipped settings"
+    serverOverrides="GameDayMinutes=$DayMinutes StartHour=10 MarketCloseHour=$marketCloseHour DangerSeconds=1800 HandoffReleaseMetres=10 HandoffQuietSeconds=8, danger cell at (20,-20) m; clients keep shipped settings"
     timeoutSeconds=$TimeoutSeconds
     runs=@()
 }
@@ -77,7 +82,7 @@ function Read-Samples([string]$Text) {
 try {
     $map='/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook'
     $serverFlags=@('-server',('-port='+$Port),'-multihome=127.0.0.1',
-        ($settings+'GameDayMinutes='+$DayMinutes),($settings+'StartHour=10'),($settings+'MarketCloseHour=12'),($settings+'DangerSeconds=1800'),
+        ($settings+'GameDayMinutes='+$DayMinutes),($settings+'StartHour=10'),($settings+'MarketCloseHour='+$marketCloseHour),($settings+'DangerSeconds=1800'),
         ($settings+'HandoffReleaseMetres=10'),($settings+'HandoffQuietSeconds=8'),'-TownsfolkDangerX=20','-TownsfolkDangerY=-20')
     if ($Leg -eq 'Quest') {
         # The quest pilot is on in Silverbrook (GM-01); only the quest it runs changes.
