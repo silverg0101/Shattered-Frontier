@@ -108,7 +108,7 @@ private:
     UPROPERTY(Transient) TArray<TObjectPtr<UButton>> RowButtons;
     UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> RowLabels;
     UPROPERTY(Transient) TArray<TObjectPtr<UWidget>> RowRoots;
-    UPROPERTY(Transient) TArray<TObjectPtr<UBorder>> RowWash;
+    UPROPERTY(Transient) TArray<TObjectPtr<UBorder>> RowPlates;
     UPROPERTY(Transient) TObjectPtr<UWidget> OfferColumn;
     UPROPERTY(Transient) TObjectPtr<UImage> OfferArt;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> OfferTitle;

@@ -271,23 +271,24 @@ void USFDialoguePanel::NativeOnInitialized()
     static const float RowTops[FSFDialogueTree::MaxChoices] = {460.f, 546.f, 631.f, 716.f};  // 72 tall, x 513-985
     for (int32 Index = 0; Index < FSFDialogueTree::MaxChoices; ++Index)
     {
-        // A response row is the kit quest_row (a plain brass-edged row), not a text button; the selected one is moss-filled.
+        // A response row is the shared list row (menus.md section 1: RowBrush, selected = moss plate + brass edge) under a flat hit button.
         UButton* Control = WidgetTree->ConstructWidget<USFHudButton>(USFHudButton::StaticClass());
+        FButtonStyle Flat = Control->GetStyle();
+        Flat.Normal = Flat.Hovered = Flat.Pressed = Flat.Disabled = FSlateNoResource();
+        Flat.NormalPadding = FMargin(0.f); Flat.PressedPadding = FMargin(0.f);
+        Control->SetStyle(Flat);
         UTextBlock* RowLabel = Text(WidgetTree, TEXT(""), 21, Ivory());
         RowLabel->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
         UBorder* Pad = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
         Pad->SetBrush(FSlateNoResource()); Pad->SetPadding(FMargin(606.f - 513.f - 6.f, 0.f, 24.f, 0.f)); Pad->SetVerticalAlignment(VAlign_Center); Pad->SetHorizontalAlignment(HAlign_Left);  // label ink at x 606
         Pad->SetContent(RowLabel);
-        UBorder* Wash = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());  // selection fill under the label, over the row art
-        Wash->SetBrush(FSlateColorBrush(FLinearColor::White)); Wash->SetBrushColor(FLinearColor(0.f, 0.f, 0.f, 0.f)); Wash->SetVisibility(ESlateVisibility::HitTestInvisible);
-        UOverlay* Face = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
-        UOverlaySlot* WashSlot = Face->AddChildToOverlay(Wash);
-        WashSlot->SetHorizontalAlignment(HAlign_Fill); WashSlot->SetVerticalAlignment(VAlign_Fill); WashSlot->SetPadding(FMargin(4.f));
-        UOverlaySlot* PadSlot = Face->AddChildToOverlay(Pad);
-        PadSlot->SetHorizontalAlignment(HAlign_Fill); PadSlot->SetVerticalAlignment(VAlign_Fill);
-        RowWash.Add(Wash);
-        Control->SetContent(Face);
-        if (UButtonSlot* ContentSlot = Cast<UButtonSlot>(Face->Slot)) { ContentSlot->SetHorizontalAlignment(HAlign_Fill); ContentSlot->SetVerticalAlignment(VAlign_Fill); }
+        UBorder* RowPlate = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+        SetRowSelected(RowPlate, false);
+        RowPlate->SetPadding(FMargin(0.f)); RowPlate->SetVerticalAlignment(VAlign_Fill); RowPlate->SetHorizontalAlignment(HAlign_Fill);
+        RowPlate->SetContent(Pad);
+        RowPlates.Add(RowPlate);
+        Control->SetContent(RowPlate);
+        if (UButtonSlot* ContentSlot = Cast<UButtonSlot>(RowPlate->Slot)) { ContentSlot->SetHorizontalAlignment(HAlign_Fill); ContentSlot->SetVerticalAlignment(VAlign_Fill); }
         FScriptDelegate Clicked;
         Clicked.BindUFunction(this, *FString::Printf(TEXT("HandleChoice%d"), Index));
         Control->OnClicked.Add(Clicked);
@@ -400,21 +401,12 @@ void USFDialoguePanel::Refresh()
     StyleRows();
 }
 
-// Selected row = moss tint and brass edge (the pressed art); the others keep the plain button art.
+// Selected row = the shared selected row (moss plate, brass edge); the others the hairline row.
 void USFDialoguePanel::StyleRows()
 {
     if (StyledSelected == Selected) { return; }
     StyledSelected = Selected;
-    for (int32 Index = 0; Index < RowButtons.Num(); ++Index)
-    {
-        FButtonStyle Style = RowButtons[Index]->GetStyle();
-        const bool bSelected = Index == Selected;
-        FSlateBrush Row = KitOrFrame(TEXT("quest_row"), bSelected ? Hex(TEXT("2B3B2C")) : Hex(TEXT("0E171C"), 0.85f), bSelected ? Brass() : Hex(TEXT("3A4348")), 3.f);
-        if (RowWash.IsValidIndex(Index)) { RowWash[Index]->SetBrushColor(bSelected ? Hex(TEXT("2F3D2D")) : FLinearColor(0.f, 0.f, 0.f, 0.f)); }  // #2F3D2D, the concept's selected fill (state colour, rule 3)
-        Style.Normal = Row; Style.Hovered = Row; Style.Pressed = Row;
-        Style.NormalPadding = FMargin(0.f); Style.PressedPadding = FMargin(0.f);
-        RowButtons[Index]->SetStyle(Style);
-    }
+    for (int32 Index = 0; Index < RowPlates.Num(); ++Index) { SetRowSelected(RowPlates[Index], Index == Selected); }
 }
 
 void USFDialoguePanel::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
