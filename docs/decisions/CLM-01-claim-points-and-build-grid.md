@@ -1,6 +1,6 @@
 # CLM-01 — Claim points and the build grid
 
-Status: proposed, 2026-10-22, from the owner's idea in the Task Runner session; owner answers 1–4 of the closing section are applied, grid colours still open. Extends [Building and Territory] §2 and [BLD-02](BLD-02-terrain-anchored-construction.md); the digging half is [TER-02](TER-02-digging-limits.md). Nothing here is implemented.
+Status: proposed, 2026-10-22, from the owner's idea in the Task Runner session; every owner question in the closing section is answered and applied. Extends [Building and Territory] §2 and [BLD-02](BLD-02-terrain-anchored-construction.md); the digging half is [TER-02](TER-02-digging-limits.md). Nothing here is implemented.
 
 Owner, 2026-10-22: "Closer to a town you are limited on size, but as you adventure away your available claim points can be spent. This would allow higher population close to established towns and then larger houses or even someone wanting to build a castle out in the middle of nowhere. We could put a grid on the ground showing the available area based on where you are and your budget ... once an object is placed, it would extend from the placed objects ... a little more defined with a fade effect once it reaches the limit or show red in blocked areas."
 
@@ -22,6 +22,7 @@ Reference: [building-claim-grid-reference.webp](../Game-Design/concept-art/UI/bu
 | Expansion through the claim map (§2.1) | Expansion is placing a piece; shrinking is removing one (§4). The map stays the view, not the tool. | Owner: "it would always show the limits and update each placed item." |
 | `Construction` §13: "a larger claim vertical band permits taller structures, not deeper excavation" | Unchanged for height. Depth is TER-02's `claim_dig_below_anchor_m` (8 m under the anchor base). | TER-02. |
 
+| Terrain excavation can yield materials (World fractional-yield provenance) and World charges material for fill | **Dig and Raise Ground cost nothing and yield nothing** (owner's answer): no materials, no points, no ore or stone from the hole; resources come from gathering nodes only. The preview readout shows volume and remaining budget, never materials. | Owner's answer. |
 | Claim anchor maintenance reserve, hourly charges on elapsed real time, 7-day grace → 30-day delinquency → 7-day notice → archive (§2.2, §4) | The **claim storehouse** is the reserve (§9). Charges accrue only while the owner is offline, at a rate derived from the materials actually in that claim; a depleted storehouse starts a 30-day offline countdown (7 days without decay, then decay), then the existing 7-day final notice and archive. Off in alpha behind `tune.building.upkeep.enabled`. | Owner's answer 4. |
 
 Unchanged: 5 m clear spacing between unrelated claims, the protected town plus 5 m clearance, first-winner reservation, the archive/recovery-store path (§2.2), permissions and presets (§3), the §15 cell/object ceilings, 7-day public healing and claim adoption (DEC-03, TER-02), siege rules (personal claims are never capturable), the `cba_` action protocol (DEC-02).
@@ -89,7 +90,7 @@ Clearances are `tune.building.claim.*` keys, metres, bounds 2–50, step 1, effe
 
 ## 4. Claim growth from placed objects
 
-- **Start.** A claim begins with the first foundation placed on unblocked, unclaimed ground while the character has a free claim slot. The foundation's base level becomes `anchor_base_z`; its band is read once. The BLD-02 integer anchor is the foundation's minimum cell.
+- **Start.** Nothing can be placed on open land (owner's answer: anything placed needs a claim; Construction §13 already forbids public structures). A claim begins with the first foundation placed on unblocked, unclaimed ground while the character has a free claim slot; creating the claim and placing the foundation are one action, so there is never a free-standing piece. Every later placeable, the storehouse included, must land inside a claim or its reach ring. The foundation's base level becomes `anchor_base_z`; its band is read once. The BLD-02 integer anchor is the foundation's minimum cell.
 - **Grow.** Every placed piece claims the 1 m cells under its footprint plus every cell within `reach_m` (4 m) of that footprint, at the cell's band price, skipping cells already owned. A piece may only be placed inside the claim or inside that reach ring of the claim. Cells that cannot be claimed (blocked, over budget, over cap, outside the band) refuse the placement with the first failing reason; the grid already showed them red or faded.
 - **Cap.** Every band caps a claim's total footprint (400 / 1,600 / 3,600 m²), and the §15 ceilings (50,000 structural cells, 100,000 altered terrain cells) bind as well. The cell under a piece is always part of the footprint, so a cap also caps the building.
 - **Shrink.** Removing a piece releases every cell that is no longer within `reach_m` of any remaining piece, returns its points, and hands its committed terrain edits back to the public 7-day healing clock, starting at the release. A removal that would strand another piece's support follows Construction §3.4. A claim may become two parts after removals; it stays one record (one id, one band, one anchor).
@@ -137,7 +138,7 @@ Owner, 2026-10-22: Dig and Raise Ground are two actions in a **Terrain** section
 - **Same limits for both.** Raising follows exactly the digging limits: 2 m above the original ground on open land (`public_raise_m`), the claim band inside a claim (to `anchor_base_z + band_height_m`, within T7's 12 m), the 3 m buffers, the shared 1,000 m³ open-land budget per player (one counter for cut and fill, 8,000 cells), and 7-day healing of public edits.
 - **Shared grid and preview.** Both actions draw the same claim grid of §5.1 and tint the brush ghost green / amber / red per TER-02 §6: green when the whole brush passes, amber when the server would clip it to the legal depth, height or shape (the tool offers the clipped brush), red with the first failing reason. Blocked grid cells (§3.4) are red for terrain actions too; a terrain action on open land ignores the budget states (it claims nothing), so owned, affordable and limit cells draw at their normal alpha but the ghost tint alone decides validity.
 - **Points.** Terrain actions never grow or shrink a claim. Inside a claim the brush must lie within claimed cells (TER-02 parcel rule); on open land it needs no claim and no points. Claiming later adopts the edits per §3.3.
-- **Cost panel.** The materials rows are replaced by "Volume  36 / 100 m³" (brush changed volume against the 100 m³ per-commit cap) and, on open land, "Open-land budget  620 / 1,000 m³"; both in the have/need style with the crimson underline when over.
+- **Cost panel.** Terrain actions have no material rows at all (owner's answer: digging and raising cost nothing and yield nothing). The panel shows "Volume  36 / 100 m³" (brush changed volume against the 100 m³ per-commit cap) and, on open land, "Open-land budget  620 / 1,000 m³"; both in the have/need style with the crimson underline when over. No inventory changes on commit, and no items are produced.
 
 **TER-02 wording that needs a one-line update** so that raising is covered explicitly (TER-02 owns these; CLM-01 only lists them):
 
@@ -173,7 +174,7 @@ World's 100 m³ per-commit cap, 0.5–5 m brush bounds, rate keys and TER-02's l
 **Result preview before commit.** While a Terrain action is selected the player sees, before clicking:
 
 1. **Surface ghost.** A translucent ghost of the final ground surface over the brush footprint plus a one-voxel ring (at most 16 × 16 columns for Large), drawn as a moss `#688267` surface at 30% with the same 0.5 m sub-grid lines as the claim grid at 45%; for Dig the ghost sits below the current ground and the removed volume shows as a 3 cm ivory wire box per column so the hole reads through the turf; for Raise and Level the ghost rises above the ground. Columns the server would clip (depth, height, 100 m³, exit step) draw amber `#B69A55`; columns it would refuse (buffers, under a character, protected, outside the claim parcel or band) draw crimson `#A34842` with the §5.1 hatch. The ghost tint of TER-02 §6 (green / amber / red) applies to the whole brush outline; the per-column colours say where.
-2. **Cut/fill readout** in the cost panel, replacing the material rows: "Cut 36 m³ · Fill 0 m³", "This stroke 36 / 100 m³", and on open land "Open-land budget 620 / 1,000 m³" (inside a claim: "Claim terrain 1,240 / 100,000 cells"), all in the have/need style with the crimson underline when over.
+2. **Cut/fill readout** in the cost panel, in place of the material rows and never showing a material: "Cut 36 m³ · Fill 0 m³", "This stroke 36 / 100 m³", and on open land "Open-land budget 620 / 1,000 m³" (inside a claim: "Claim terrain 1,240 / 100,000 cells"), all in the have/need style with the crimson underline when over.
 3. **Depth/height gauge.** A vertical 24 × 120 px gauge at the panel's right edge, bar frame from the kit, filled moss up to the stroke's deepest cut or highest fill against the active limit: 2.0 m on open land, the band distance inside a claim ("1.5 / 2.0 m"); the part past the limit fills amber and the label turns amber, matching the clipped columns.
 4. **Status line.** "Valid dig", "Clipped to 2 m" or the first TER-02 reject message, under the gauge.
 
@@ -303,13 +304,11 @@ Answered 2026-10-22 (recorded in [OWNER-2026-10-22-decisions.md](OWNER-2026-10-2
 2. Three claims per character, sharing one budget (§3.1, §4).
 3. Largest wilderness claim about 60 × 60 m: `wild_cost` 0.75 pt/m² and `wild_cap_m2` 3,600 m² (§3.2).
 4. Upkeep: nothing in alpha, then the claim storehouse, charges from the materials used in that claim, no decay while online, a 30-day countdown once depleted (§8).
+5. Grid colours: option (a), ivory owned / moss affordable / fade at the limit / crimson hatch blocked (§5.1).
+6. Open-land placement: anything placed needs a claim (§4 Start).
+7. Terrain edits: Dig and Raise Ground cost nothing and yield nothing; the readout shows volume and remaining budget only (§2, §5.4, §5.5).
 
-Still open:
-
-5. **Grid colours.**
-   - a) Ivory for owned, moss for "you can still afford this", fade at the limit, crimson hatch for blocked, as in the HUD style. **Recommended**: matches the v5 UI and reads for colour-blind players because blocked is hatched and named.
-   - b) Green and red only, like the reference ghost. Fewer states to learn, but "owned" and "affordable" look the same.
-   - c) White only, with blocked cells left empty. Cleanest, but no warning before a refused placement.
+No owner questions remain open.
 
 [Building and Territory]: ../Game-Design/Legends_Shattered_Frontier_Building_and_Territory_System_v1.0.md
 [Construction]: ../Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md
