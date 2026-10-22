@@ -1,0 +1,56 @@
+# Blueprint: menus and panels (inventory, build palette, station, market, trade, settings, dialogue board, future menus)
+
+The always-on HUD is [ui-hud.md](ui-hud.md). Everything here is for screens the player opens. Rules are written as steps; follow them literally. Code lives in `GameClient/Source/ShatteredFrontier/Public/Framework/SFHudStyle.h` (namespace `SFHudStyle`): a menu composes these helpers and builds no art or colour of its own. `tools/Check-HudStyle.ps1` fails if it does.
+
+## 1. Canonical specs (same values the helpers use)
+
+| Control | Helper | Kit piece (nine-slice margins at 1080p) | Size | Text | States |
+| --- | --- | --- | --- | --- | --- |
+| Button, secondary | `Button`, `ApplyButtonStyle`, `ButtonBrush` | `button_normal` (20/14) | min width 160-420 x 56, label pad 24 | EB Garamond 24 ivory #E8E1CE | normal; hover = same piece tint (1.35,1.25,1.0); pressed and toggled-on (Offer Locked) = `tab_selected` moss plate; disabled = tint 0.5, alpha 0.8 |
+| Button, primary / destructive | `Button(..., Primary or Destructive)` | `button_primary_brass`, `button_destructive` | as above | 24, dark ink #2A1E10 on brass | hover tint, pressed/selected tint 0.8, disabled tint 0.5 |
+| Hold button | `HoldButton`, `PaintHoldArc` | primary + 36 px `hold_confirm_ring` at x 20, moss arc #7FA07A | 56 tall, left pad 72 | 24 | as primary |
+| Tab, rail row | `Tab`, `SetTabState`, `TabBrush` | `tab_normal` / `tab_selected` (18/11) | tabs 100-210 x 44, market rail 190 x 48, build rail 80 x 80 (`bInset=false`) | 18-20 ivory | normal = dark plate + hairline #3A4348; selected = moss fill #2B3B2C + brass #A98A55 edge; disabled = tint 0.5 |
+| Slot or tile | `SlotBrush`, `SetSlotSelected` | its own `slot_*_normal`: bag 64, equipment 72, hotbar 88, catalogue 100 | per piece | caption 16 ivory | selected = same piece + pale-gold #E6D08A 2 px outline, fill #0E171C 95%. The `slot_*_selected` art is never used |
+| List row | `RowBrush`, `SetRowSelected` | selected = `tab_selected`; unselected = hairline row (#17232A 60%, #3A4348) | rows 56 tall | 18-20 ivory | selected = moss + brass edge |
+| Image card | `CardEdge`, `CardSelectTint` | `respawn_image_well` | 340 x 240 | title 26 | chosen = moss-green outline + tick; other = brass hairline |
+| Panel / window / modal | `KitPanel`, `Panel` | `panel_frame` 36,140; `window_frame` 36,176; `modal_frame` 36,206; `tooltip_frame` 36,86; `detail_card_frame` 36,142 (2x px) | per screen | title Heading 36-48 ivory | none |
+| Text | `Text`, `Num`, `Heading`, `DisplayHeading` | EB Garamond text, Source Sans numerals, OFL fonts only | | | |
+
+Colours: ivory #E8E1CE, brass #A98A55, moss #2B3B2C, hairline #3A4348, slate #17232A, well #0E171C, amber #B69A55, crimson #A34842. Never use the bracketed `button_hover/pressed/disabled` art.
+
+## 2. Acceptance (pixel-perfect within reason)
+
+At 1920x1080 against the concept: geometry +-2 px (position, size, spacing, padding); type same family and weight, cap height +-1 px, same alignment, nothing truncated; colour dE2000 <= 3 at the sample points; art matches at 1:1 crop (brass hairline, chamfer, nine-slice corners; textures imported at 1x, no mips, `TC_EDITOR_ICON`); states match the concept or section 1. Measured by `py -3 tools/ui_pixel_diff.py --all`; judged by a fresh Fable reviewer using those numbers ([visual-review.md](../visual-review.md)). Where two concepts disagree, section 1 picks the canonical style and the report flags it.
+
+## 3. New menu recipe
+
+1. **Concept.** Ask Codex (images only): `codex exec --dangerously-bypass-approvals-and-sandbox -C . -o <out> -` with the prompt: "UI concept, 1672x941, dark slate fantasy MMO <menu name> panel in the Legends v5 kit look (brass hairline frames, EB Garamond serif, moss selected states, no corner brackets), reference docs/Game-Design/concept-art/UI/v5/<nearest>.png; show normal, selected and disabled states." Save as `docs/Game-Design/concept-art/UI/v5/<name>.png`.
+2. **Element list.** Create `docs/evidence/ui-v5/elements/<name>.json`: `{"concept": "<name>.png", "elements": [{"name": "...", "rect": [x, y, w, h], "samples": [[x, y, "fill"]]}]}`. Rects are tight boxes in 1920x1080 px (concept px x 1.1483); 12-25 elements: frame, title, each tab, rail row, button, slot (normal + selected), field, table header, key rows. Samples sit on flat colour (fill, hairline). Check by drawing the boxes on the concept and viewing it; run `py -3 tools/ui_pixel_diff.py <name> --live <concept resized to 1920x1080>`: every element must PASS against itself.
+3. **Widget.** `Public/<Area>/SF<Name>.h` + `Private/<Area>/SF<Name>.cpp`, class `USF<Name>` (`UUserWidget`), built in `NativeOnInitialized` with `WidgetTree`; `using namespace SFHudStyle`. Compose in this order: `Panel`/`KitPanel` frame, `Heading` title + `close_x` `KitImage`, `Tab` row, content (`SlotBrush` slots, `RowBrush` rows, `Text`/`Num`), footer `Button`/`HoldButton`. Sizes from section 1 and the concept rects; use `USizeBox` + `HAlign_Left` for fixed-width plates (a Fill slot ignores a width override).
+4. **Register.** Create and toggle it from `ASFPlayerController` like `ToggleInventoryPanel`; a modal calls `CloseSidePanelsForModal()`; add an `SFUi` name in `SFConstructionNetwork.cpp` so the capture can open it. Add file rows to `docs/dependency-map.md`.
+5. **Build.** `/build-editor` (close your own editor first). Kit changes: `py -3 tools/Process-KitV5.py`, then `py -3 tools/Run-InEditor.py tools/Import-HudKit.py --save`.
+6. **Capture.** Add the screen to `tools/Capture-UiV5.py` STEPS; run `UnrealEditor.exe <uproject> /Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook -game -windowed -ResX=1920 -ResY=1080 -ForceRes -nosound -nop4 -ExchangeFake -UserDir=<temp> "-ExecCmds=py <repo>/tools/Capture-UiV5.py docs/evidence/ui-v5/final3"`. Output `<name>-live.png`.
+7. **Diff.** `py -3 tools/ui_pixel_diff.py <name>`; open `diff-heat.png`; fix every FAIL element (geometry first); `pwsh tools/Check-HudStyle.ps1` must print ok.
+8. **Review.** Spawn a fresh `Agent` with `model: fable` and no context, brief from [visual-review.md](../visual-review.md) plus the pixel report; fix only its list; repeat with a NEW agent until PASS. Never grade your own work.
+9. **Record.** Add the menu's section below with the evidence path.
+
+## 4. Passing menus
+
+Add a section per menu when, and only when, its Fable review passes: concept, widget file, helper composition, element list, last PASS evidence. (None yet.)
+
+## 5. Known failures (never X, always Y)
+
+1. Never gate the kit load on `GIsRunning`; always `!IsRunningCommandlet()` (`SFHudKit.cpp`). A widget built during the startup map load otherwise gets no kit.
+2. Never let `KitImage` draw an empty `UImage` for a missing piece (white square); the helper collapses it.
+3. Never write a unicode character as `00B7` in `TEXT()`; always `·`.
+4. Never rely on `USizeBox` width to cap a widget in a Fill slot; always `HAlign_Left` on the slot.
+5. Never use `UUniformGridPanel` when rows differ (it sizes all cells to the tallest); always one `UHorizontalBox` per row in a `UVerticalBox`.
+6. Never let a panel's content exceed its frame; always sum the heights, and `SetClipping(ClipToBounds)` on the frame.
+7. Never put an editable text box in an overlay slot at default alignment; always `HAlign_Fill`/`VAlign_Fill`.
+8. Never build your own tab, button, slot, row or selection brush or colour; always the helpers in section 1.
+9. Never use `slot_*_selected` or `button_hover/pressed/disabled` art; always the helper states.
+10. Never leave an inventory panel under a modal; always `CloseSidePanelsForModal()` first.
+11. Never run `tools/Run-InEditor.py` against an editor you did not start (it targets this checkout's editor only; check `Get-CimInstance Win32_Process`).
+12. Never grade your own capture; always a fresh Fable agent.
+13. Never claim a state was shown unless the live frame shows it (loading, defeated, station, gathering need their scenarios).
+14. Never stop Unreal by name; always the PID you started.

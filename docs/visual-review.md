@@ -29,3 +29,7 @@ Use this as the reviewer's prompt, and fill in the paths:
 >   - LEVEL: the script or data file and the exact parameter changes.
 > End with a numbered, deduplicated **fix list** (shared fixes first). Make each item executable without the review, and mark it Codex (art regeneration, mechanical edits) or Engineer.
 > Don't praise and don't say "close". Write the review to `<evidence folder>/REVIEW.md` and return the PASS/FAIL count and the top 5 fixes.
+
+## Pixel-perfect rule for UI screens
+
+For UI the reviewer also receives `tools/ui_pixel_diff.py` output per screen (heat map, 50/50 overlay, flip GIF, per-element rect and dE2000 table) and applies the tolerances in [blueprints/ui-hud.md](blueprints/ui-hud.md) "Acceptance": geometry +-2 px, type cap height +-1 px with the same family and weight, colour dE2000 <= 3, art matching at 1:1 crop, states matching the concept or the Controls table. Any element outside tolerance, and any button, tab or selection that differs between screens, is a FAIL.
