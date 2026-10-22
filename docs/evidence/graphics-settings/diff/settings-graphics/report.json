@@ -38,11 +38,11 @@
    46
   ],
   "found": true,
-  "match": 0.69,
-  "d_left": -2,
-  "d_top": -17,
-  "d_width": 3,
-  "d_height": 17,
+  "match": 0.64,
+  "d_left": -1,
+  "d_top": -18,
+  "d_width": 1,
+  "d_height": 23,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -86,7 +86,7 @@
   "de": [
    [
     "mossfill",
-    3.2
+    7.7
    ]
   ],
   "geometry": "PASS",
@@ -183,11 +183,11 @@
    31
   ],
   "found": true,
-  "match": 0.73,
+  "match": 0.69,
   "d_left": 0,
-  "d_top": 0,
-  "d_width": 3,
-  "d_height": 0,
+  "d_top": 1,
+  "d_width": -3,
+  "d_height": 2,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -296,12 +296,12 @@
   "de": [
    [
     "mossfill",
-    6.6
+    2.7
    ]
   ],
   "geometry": "PASS",
-  "colour": "FAIL",
-  "verdict": "FAIL"
+  "colour": "PASS",
+  "verdict": "PASS"
  },
  {
   "widget": "SizeBox:SizeBox_12",
@@ -353,15 +353,15 @@
    29
   ],
   "found": true,
-  "match": 0.73,
-  "d_left": -1,
-  "d_top": 1,
-  "d_width": 0,
-  "d_height": 1,
+  "match": 0.65,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 1,
+  "d_height": 3,
   "de": [],
-  "geometry": "PASS",
+  "geometry": "FAIL",
   "colour": "PASS",
-  "verdict": "PASS"
+  "verdict": "FAIL"
  },
  {
   "widget": "Overlay:Overlay_0",
@@ -553,15 +553,15 @@
    28
   ],
   "found": true,
-  "match": 0.72,
+  "match": 0.71,
   "d_left": 1,
-  "d_top": 2,
-  "d_width": 0,
+  "d_top": 1,
+  "d_width": -3,
   "d_height": 0,
   "de": [],
-  "geometry": "PASS",
+  "geometry": "FAIL",
   "colour": "PASS",
-  "verdict": "PASS"
+  "verdict": "FAIL"
  },
  {
   "widget": "SizeBox:SizeBox_58",
