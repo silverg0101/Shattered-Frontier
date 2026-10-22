@@ -268,6 +268,30 @@ void ASFConstructionNetworkState::GetLifetimeReplicatedProps(TArray<FLifetimePro
     DOREPLIFETIME(ASFConstructionNetworkState, MaximumLineCells);
     DOREPLIFETIME(ASFConstructionNetworkState, AnchorCell);
     DOREPLIFETIME(ASFConstructionNetworkState, ClaimId);
+    DOREPLIFETIME(ASFConstructionNetworkState, ClaimMask);
+    DOREPLIFETIME(ASFConstructionNetworkState, MaskOrigin);
+    DOREPLIFETIME(ASFConstructionNetworkState, MaskWidth);
+    DOREPLIFETIME(ASFConstructionNetworkState, MaskHeight);
+}
+
+bool ASFConstructionNetworkState::SetClaimMask(const TArray<uint8>& Bits, int32 OriginX, int32 OriginY, int32 Width, int32 Height)
+{
+    const int64 Count=int64(Width)*Height;
+    if (!HasAuthority() || ClaimId.IsEmpty() || Width<1 || Height<1 || Width>100 || Height>100 ||
+        Count>3600 || Bits.Num()!=(Count+7)/8 || Bits.IsEmpty()) { return false; }
+    ClaimMask=Bits; MaskOrigin=FIntPoint(OriginX,OriginY); MaskWidth=Width; MaskHeight=Height;
+    ForceNetUpdate(); return true;
+}
+
+bool ASFConstructionNetworkState::ContainsClaimCell(const FIntVector& Cell) const
+{
+    if (!SFConstructionAnchor::Contains(Cell)) { return false; }
+    if (ClaimId.IsEmpty()) { return true; }
+    const int32 X=FMath::FloorToInt(double(Cell.X)*0.5)-MaskOrigin.X;
+    const int32 Y=FMath::FloorToInt(double(Cell.Y)*0.5)-MaskOrigin.Y;
+    if (X<0 || Y<0 || X>=MaskWidth || Y>=MaskHeight) { return false; }
+    const int32 Index=Y*MaskWidth+X;
+    return ClaimMask.IsValidIndex(Index>>3) && (ClaimMask[Index>>3] & (1u<<(Index&7)))!=0;
 }
 
 bool ASFConstructionNetworkState::RestoreFromHousing(const TArray<FSFConstructionNetworkRestoredPiece>& Pieces)
@@ -276,7 +300,7 @@ bool ASFConstructionNetworkState::RestoreFromHousing(const TArray<FSFConstructio
     FSFConstructionNetworkSnapshot Candidate; Candidate.Revision=1;
     for (const FSFConstructionNetworkRestoredPiece& Piece : Pieces)
     {
-        if (!SFConstructionAnchor::Contains(Piece.Cell) || Candidate.Find(Piece.Cell)!=INDEX_NONE || Piece.Shape<0 || Piece.Shape>=SFConstructionGeometry::ShapeCount
+        if (!ContainsClaimCell(Piece.Cell) || Candidate.Find(Piece.Cell)!=INDEX_NONE || Piece.Shape<0 || Piece.Shape>=SFConstructionGeometry::ShapeCount
             || Piece.Rotation<0 || Piece.Rotation>=SFConstructionGeometry::RotationCount)
         { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_RESTORE_REJECTED Claim=%s Cell=%s Shape=%d Rotation=%d"),*ClaimId,*Piece.Cell.ToString(),Piece.Shape,Piece.Rotation); return false; }
         FSFConstructionNetworkMember Member; Member.Cell=Piece.Cell; Member.Shape=uint8(Piece.Shape); Member.Rotation=uint8(Piece.Rotation);
@@ -444,7 +468,7 @@ bool ASFConstructionNetworkState::OwnsDoorProjection(const FSFConstructionNetwor
 
 bool ASFConstructionNetworkState::IsSupportAllowedForPreview(FIntVector Cell, uint8 Shape, uint8 Rotation, bool bRemove) const
 {
-    if (!IsInGameThread() || !SFConstructionAnchor::Contains(Cell)
+    if (!IsInGameThread() || !ContainsClaimCell(Cell)
         || Shape>=SFConstructionGeometry::ShapeCount || Rotation>=SFConstructionGeometry::RotationCount) { return false; }
     auto Candidate=Snapshot;
     const int32 Index=Candidate.Find(Cell);
@@ -523,7 +547,7 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateEditContext(AS
 ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateMemberCell(const APawn* Pawn, const AActor* Foundation, FIntVector Cell, bool bRemove, uint8 Shape, uint8 Rotation) const
 {
     if (!bRemove && (Shape>=SFConstructionGeometry::ShapeCount || Rotation>=SFConstructionGeometry::RotationCount)) { return ESFConstructionNetworkResult::InvalidPiece; }
-    if (!SFConstructionAnchor::Contains(Cell)) { return ESFConstructionNetworkResult::InvalidCell; }
+    if (!ContainsClaimCell(Cell)) { return ESFConstructionNetworkResult::InvalidCell; }
     if (bRemove && Snapshot.Find(Cell)==INDEX_NONE) { return ESFConstructionNetworkResult::NotFound; }
     if (!bRemove && Snapshot.Find(Cell)!=INDEX_NONE) { return ESFConstructionNetworkResult::Occupied; }
     if (!bRemove && Snapshot.Members.Num() >= MaximumMembers) { return ESFConstructionNetworkResult::LimitReached; }
@@ -583,7 +607,7 @@ bool ASFConstructionNetworkState::IsLineSupportedForPreview(FIntVector Start, FI
     auto Members=Snapshot.Members;
     for (const auto& Cell : Cells)
     {
-        if (Snapshot.Find(Cell)!=INDEX_NONE) { return false; }
+        if (!ContainsClaimCell(Cell) || Snapshot.Find(Cell)!=INDEX_NONE) { return false; }
         FSFConstructionNetworkMember Member; Member.Cell=Cell; Member.Shape=Shape; Member.Rotation=Rotation; Members.Add(Member);
     }
     return SupportsMembers(Members,Snapshot.Doors);
@@ -972,6 +996,8 @@ int32 ASFGameMode::PrepareClaimPlots()
         auto* State=GetWorld()->SpawnActorDeferred<ASFConstructionNetworkState>(ASFConstructionNetworkState::StaticClass(),StateAt);
         if (!State) { continue; }
         State->ConfigureAnchor(Anchor); State->SetClaimId(Claim.ClaimId);
+        TArray<uint8> InitialMask; InitialMask.Init(0xff,50); // 20 x 20 one-metre legacy plot.
+        if (!State->SetClaimMask(InitialMask,-10,-10,20,20)) { State->Destroy(); continue; }
         State->FinishSpawning(StateAt);
         Claim.State=State;
         ClaimPlots.Add(MoveTemp(Claim));
@@ -1027,8 +1053,11 @@ void ASFGameMode::LoadClaims()
                 }
                 Loaded->StructureRevision=Structures.StructureRevision;
                 Loaded->bClaimed=true; Loaded->bLoaded=true;
-                const bool bRestored=Loaded->State.IsValid() && Loaded->State->RestoreFromHousing(Pieces);
-                UE_LOG(LogTemp,Display,TEXT("HOUSING_CLAIM_LOADED Claim=%s Claimed=1 Owner=%s Structures=%d StructureRevision=%lld Restored=%d"),*ClaimId,*Loaded->OwnerId,Pieces.Num(),Loaded->StructureRevision,bRestored);
+                const bool bMask=Loaded->State.IsValid() && Loaded->State->SetClaimMask(Structures.ClaimMask,
+                    Structures.MaskOriginX,Structures.MaskOriginY,Structures.MaskWidth,Structures.MaskHeight);
+                const bool bRestored=bMask && Loaded->State->RestoreFromHousing(Pieces);
+                if (!bMask) { UE_LOG(LogTemp,Error,TEXT("CONSTRUCTION_NETWORK_RESTORE_REJECTED Claim=%s Mask=invalid"),*ClaimId); }
+                UE_LOG(LogTemp,Display,TEXT("HOUSING_CLAIM_LOADED Claim=%s Claimed=1 Owner=%s Structures=%d StructureRevision=%lld Restored=%d Mask=%dx%d"),*ClaimId,*Loaded->OwnerId,Pieces.Num(),Loaded->StructureRevision,bRestored,Structures.MaskWidth,Structures.MaskHeight);
             });
         });
     }
@@ -1813,7 +1842,7 @@ void ASFPlayerController::RefreshPlacementPreview(bool bDrawOutline)
         return;
     }
     const TCHAR* BlockReason=nullptr;
-    if (!SFConstructionAnchor::Contains(PreviewCell))
+    if (!State->ContainsClaimCell(PreviewCell))
     { BlockReason=PlacementResultText(ESFConstructionNetworkResult::InvalidCell); }
     else if (FVector::DistSquared(GetPawn()->GetActorLocation(),Centre)>FMath::Square(State->GetReachCentimetres()))
     { BlockReason=PlacementResultText(ESFConstructionNetworkResult::OutOfReach); }

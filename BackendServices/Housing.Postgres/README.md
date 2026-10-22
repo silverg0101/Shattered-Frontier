@@ -27,3 +27,5 @@ Run the owned synthetic loopback fixture from the repository root with a fresh c
 The fixture uses pinned .NET and PostgreSQL, the existing pinned Npgsql package, generated per-run credentials passed through child environment variables, immediate-stop restart, outage and newer-schema refusal, and removes its owned cluster. It does not use a shared or remote database.
 
 StructureSnapshot holds a shared lock on the claim structure revision while reading its placements, keeping the revision and list from one committed structure state.
+
+CLM-01 transition: `ListStructures` now returns a one-metre bit mask reconstructed in the same transaction from each legacy claim's saved plot geometry. This preserves the existing 20 m plot behavior while the client checks restored pieces and previews against a replicated mask. It does not implement sparse point-priced growth, shrink, or terrain-edit adoption; those require a durable claim-cell record and the World terrain commit owner.

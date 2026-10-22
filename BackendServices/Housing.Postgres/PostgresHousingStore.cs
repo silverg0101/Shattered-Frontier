@@ -32,7 +32,8 @@ public sealed record HousingRemoveRequest(string OperationId, string Fingerprint
     long ExpectedContainerRevision, int RefundPercent);
 public sealed record HousingRemoval(string OperationId, string Fingerprint, HousingPlacement Placement,
     string State, long Revision, long RefundQuantity, long ExpectedContainerRevision, LedgerReceipt? RefundReceipt);
-public sealed record HousingStructureSnapshot(long Revision, IReadOnlyList<HousingPlacement> Structures);
+public sealed record HousingStructureSnapshot(long Revision, IReadOnlyList<HousingPlacement> Structures,
+    byte[] ClaimMask, int MaskOriginX, int MaskOriginY, int MaskWidth, int MaskHeight);
 
 // Each housing call commits its receipt and revision in one transaction. Placement materials move through inventory
 // at operation_id + "/reserve" (backpack to hold), then "/consume" (commit) or "/release" (abort); recovery only
@@ -253,7 +254,15 @@ public sealed class PostgresHousingStore(string connectionString)
         var ids = new List<string>();
         using (var cmd = Cmd(c,t,"SELECT operation_id FROM housing.placements WHERE claim_id=$1 AND state='Committed' ORDER BY revision",claimId))
         using (var r = cmd.ExecuteReader()) while (r.Read()) ids.Add(r.GetString(0));
-        return new HousingStructureSnapshot(revision, ids.Select(id => ReadPlacement(c,t,id)!).ToArray());
+        // The existing 20 m plots are a transitional, fully occupied one-metre mask. Read the
+        // geometry and structures in this same transaction so a restore cannot mix revisions.
+        int side;
+        using (var geometry = Cmd(c,t,"SELECT side_metres FROM housing.claim_geometry WHERE claim_id=$1",claimId))
+            side = geometry.ExecuteScalar() is int value ? value : 0;
+        var mask = new byte[(side * side + 7) / 8];
+        for (var i = 0; i < side * side; ++i) mask[i >> 3] |= (byte)(1 << (i & 7));
+        return new HousingStructureSnapshot(revision, ids.Select(id => ReadPlacement(c,t,id)!).ToArray(),
+            mask, -side / 2, -side / 2, side, side);
     });
 
     // DEC-02 construction hold: one per builder. Inventory owns it; Housing only names it.

@@ -39,7 +39,10 @@ internal sealed class HousingGrpcService(PostgresHousingStore store, ProtectedZo
         GrpcRun.Call(context, () =>
         {
             var snapshot = store.StructureSnapshot(request.ClaimId);
-            var reply = new Pb.ListStructuresReply { StructureRevision = snapshot.Revision };
+            if (snapshot.MaskWidth == 0) throw new HousingRejectedException("Claim geometry missing.");
+            var reply = new Pb.ListStructuresReply { StructureRevision = snapshot.Revision,
+                ClaimMask = ByteString.CopyFrom(snapshot.ClaimMask), MaskOriginX = snapshot.MaskOriginX,
+                MaskOriginY = snapshot.MaskOriginY, MaskWidth = snapshot.MaskWidth, MaskHeight = snapshot.MaskHeight };
             reply.Structures.AddRange(snapshot.Structures.Select(s => new Pb.Structure
             {
                 StructureId = s.StructureId, Cell = new Pb.StructureCell { X = s.Cell.X, Y = s.Cell.Y, Z = s.Cell.Z },

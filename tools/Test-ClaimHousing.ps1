@@ -105,6 +105,7 @@ try {
     # Phase 2: a fresh UE server against the same Housing state.
     Invoke-WithEnv $serverEnv { $script:server2 = Start-Owned 'server2' $silverbrook $serverFlags }
     Wait-Log $server2 'server2' "HOUSING_CLAIM_LOADED Claim=$claim Claimed=1 Owner=chr_dev_alpha Structures=1 .* Restored=1"
+    Wait-Log $server2 'server2' "HOUSING_CLAIM_LOADED Claim=$claim .* Restored=1 Mask=20x20"
     $barrier = Join-Path $root 'grant.flag'
     $alpha2 = Start-Owned 'alpha2' ("127.0.0.1:$Port"+'?SFDevCharacter=alpha') @('-game','-ClaimScenario=owner_restart',('-ClaimGrantBarrier="'+$barrier+'"'))
     Wait-Log $alpha2 'alpha2' "CLAIM_SCENARIO_RESTORED Claim=$claim Members=1 Cell=X=0 Y=0 Z=0"

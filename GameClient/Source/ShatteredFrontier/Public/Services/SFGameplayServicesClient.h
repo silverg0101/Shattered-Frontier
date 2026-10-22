@@ -119,6 +119,7 @@ struct FSFGameplayResponse
     FString State, StructureId, OwnerId; int64 StructureRevision = 0, Revision = 0, PermissionRevision = 0;
     struct FStructure { FString StructureId, ContentId; FIntVector Cell = FIntVector::ZeroValue; int64 Revision = 0; FString ShapeKey; int32 OrientationIndex = 0; };
     TArray<FStructure> Structures;  // ListStructures; StructureRevision then holds the claim's structure revision
+    TArray<uint8> ClaimMask; int32 MaskOriginX = 0, MaskOriginY = 0, MaskWidth = 0, MaskHeight = 0;
     // Crafting
     TMap<FString, int64> Changes;
     int32 QualityScore = 0; FString Grade, DiscoveredRecipeId;

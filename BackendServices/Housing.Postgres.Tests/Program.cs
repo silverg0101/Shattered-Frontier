@@ -109,6 +109,10 @@ switch (phase)
         foreach (var suffix in new[] { "a", "b" })
             housing.ReserveClaim("claim/parallel-"+suffix,"parallel-"+suffix,"clm_parallel_"+suffix,
                 "chr_parallel_"+suffix,suffix=="a"?1000:2000,1000,10,1,0,40,5,now);
+        var mask = housing.StructureSnapshot("clm_parallel_a");
+        Check(mask is { MaskOriginX: -5, MaskOriginY: -5, MaskWidth: 10, MaskHeight: 10 } &&
+            mask.ClaimMask.Length == 13 && mask.ClaimMask[0] == 0xff && mask.ClaimMask[12] == 0x0f,
+            "Claim mask did not restore from durable geometry.");
         using (var start = new ManualResetEventSlim())
         {
             var separate = new[] { "a", "b" }.Select(suffix => Task.Run(() =>

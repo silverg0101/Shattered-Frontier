@@ -254,6 +254,9 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         Call->Copy = [](const sf::housing::v1::ListStructuresReply& R, FSFGameplayResponse& Out)
         {
             Out.StructureRevision = R.structure_revision();
+            Out.MaskOriginX=R.mask_origin_x(); Out.MaskOriginY=R.mask_origin_y();
+            Out.MaskWidth=R.mask_width(); Out.MaskHeight=R.mask_height();
+            Out.ClaimMask.Append(reinterpret_cast<const uint8*>(R.claim_mask().data()),R.claim_mask().size());
             for (const auto& S : R.structures())
             { Out.Structures.Add({FromUtf8(S.structure_id()), FromUtf8(S.content_id()), FIntVector(S.cell().x(), S.cell().y(), S.cell().z()), S.revision(), FromUtf8(S.shape_key()), S.orientation_index()}); }
         };

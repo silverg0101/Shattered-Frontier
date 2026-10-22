@@ -3117,7 +3117,12 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListStructuresReply final : public 
   // accessors -------------------------------------------------------
   enum : int {
     kStructuresFieldNumber = 1,
+    kClaimMaskFieldNumber = 3,
     kStructureRevisionFieldNumber = 2,
+    kMaskOriginXFieldNumber = 4,
+    kMaskOriginYFieldNumber = 5,
+    kMaskWidthFieldNumber = 6,
+    kMaskHeightFieldNumber = 7,
   };
   // repeated .sf.housing.v1.Structure structures = 1;
   [[nodiscard]] int structures_size()
@@ -3140,6 +3145,21 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListStructuresReply final : public 
   ::google::protobuf::RepeatedPtrField<::sf::housing::v1::Structure>* PROTOBUF_NONNULL _internal_mutable_structures();
 
   public:
+  // bytes claim_mask = 3;
+  void clear_claim_mask() ;
+  [[nodiscard]] const ::std::string& claim_mask() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_claim_mask(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_claim_mask();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_claim_mask();
+  void set_allocated_claim_mask(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_claim_mask() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_claim_mask(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_claim_mask();
+
+  public:
   // int64 structure_revision = 2;
   void clear_structure_revision() ;
   [[nodiscard]] ::int64_t structure_revision() const;
@@ -3150,11 +3170,51 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListStructuresReply final : public 
   void _internal_set_structure_revision(::int64_t value);
 
   public:
+  // int32 mask_origin_x = 4;
+  void clear_mask_origin_x() ;
+  [[nodiscard]] ::int32_t mask_origin_x() const;
+  void set_mask_origin_x(::int32_t value);
+
+  private:
+  ::int32_t _internal_mask_origin_x() const;
+  void _internal_set_mask_origin_x(::int32_t value);
+
+  public:
+  // int32 mask_origin_y = 5;
+  void clear_mask_origin_y() ;
+  [[nodiscard]] ::int32_t mask_origin_y() const;
+  void set_mask_origin_y(::int32_t value);
+
+  private:
+  ::int32_t _internal_mask_origin_y() const;
+  void _internal_set_mask_origin_y(::int32_t value);
+
+  public:
+  // int32 mask_width = 6;
+  void clear_mask_width() ;
+  [[nodiscard]] ::int32_t mask_width() const;
+  void set_mask_width(::int32_t value);
+
+  private:
+  ::int32_t _internal_mask_width() const;
+  void _internal_set_mask_width(::int32_t value);
+
+  public:
+  // int32 mask_height = 7;
+  void clear_mask_height() ;
+  [[nodiscard]] ::int32_t mask_height() const;
+  void set_mask_height(::int32_t value);
+
+  private:
+  ::int32_t _internal_mask_height() const;
+  void _internal_set_mask_height(::int32_t value);
+
+  public:
   // @@protoc_insertion_point(class_scope:sf.housing.v1.ListStructuresReply)
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<1, 2,
+      ::google::protobuf::internal::TcParseTable<3, 7,
                           1, 0,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
@@ -3184,7 +3244,12 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListStructuresReply final : public 
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::RepeatedPtrField< ::sf::housing::v1::Structure > structures_;
+    ::google::protobuf::internal::ArenaStringPtr claim_mask_;
     ::int64_t structure_revision_;
+    ::int32_t mask_origin_x_;
+    ::int32_t mask_origin_y_;
+    ::int32_t mask_width_;
+    ::int32_t mask_height_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -3752,7 +3817,7 @@ ListStructuresReply::_internal_mutable_structures() {
 inline void ListStructuresReply::clear_structure_revision() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.structure_revision_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
 }
 inline ::int64_t ListStructuresReply::structure_revision() const {
   // @@protoc_insertion_point(field_get:sf.housing.v1.ListStructuresReply.structure_revision)
@@ -3760,7 +3825,7 @@ inline ::int64_t ListStructuresReply::structure_revision() const {
 }
 inline void ListStructuresReply::set_structure_revision(::int64_t value) {
   _internal_set_structure_revision(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
   // @@protoc_insertion_point(field_set:sf.housing.v1.ListStructuresReply.structure_revision)
 }
 inline ::int64_t ListStructuresReply::_internal_structure_revision() const {
@@ -3770,6 +3835,166 @@ inline ::int64_t ListStructuresReply::_internal_structure_revision() const {
 inline void ListStructuresReply::_internal_set_structure_revision(::int64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.structure_revision_ = value;
+}
+
+// bytes claim_mask = 3;
+inline void ListStructuresReply::clear_claim_mask() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.claim_mask_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& ListStructuresReply::claim_mask() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.housing.v1.ListStructuresReply.claim_mask)
+  return _internal_claim_mask();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void ListStructuresReply::set_claim_mask(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.claim_mask_.SetBytes(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.housing.v1.ListStructuresReply.claim_mask)
+}
+inline ::std::string* PROTOBUF_NONNULL ListStructuresReply::mutable_claim_mask()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_claim_mask();
+  // @@protoc_insertion_point(field_mutable:sf.housing.v1.ListStructuresReply.claim_mask)
+  return _s;
+}
+inline const ::std::string& ListStructuresReply::_internal_claim_mask() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.claim_mask_.Get();
+}
+inline void ListStructuresReply::_internal_set_claim_mask(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.claim_mask_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL ListStructuresReply::_internal_mutable_claim_mask() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.claim_mask_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE ListStructuresReply::release_claim_mask() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.housing.v1.ListStructuresReply.claim_mask)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.claim_mask_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.claim_mask_.Set("", GetArena());
+  }
+  return released;
+}
+inline void ListStructuresReply::set_allocated_claim_mask(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.claim_mask_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.claim_mask_.IsDefault()) {
+    _impl_.claim_mask_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.housing.v1.ListStructuresReply.claim_mask)
+}
+
+// int32 mask_origin_x = 4;
+inline void ListStructuresReply::clear_mask_origin_x() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.mask_origin_x_ = 0;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline ::int32_t ListStructuresReply::mask_origin_x() const {
+  // @@protoc_insertion_point(field_get:sf.housing.v1.ListStructuresReply.mask_origin_x)
+  return _internal_mask_origin_x();
+}
+inline void ListStructuresReply::set_mask_origin_x(::int32_t value) {
+  _internal_set_mask_origin_x(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  // @@protoc_insertion_point(field_set:sf.housing.v1.ListStructuresReply.mask_origin_x)
+}
+inline ::int32_t ListStructuresReply::_internal_mask_origin_x() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.mask_origin_x_;
+}
+inline void ListStructuresReply::_internal_set_mask_origin_x(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.mask_origin_x_ = value;
+}
+
+// int32 mask_origin_y = 5;
+inline void ListStructuresReply::clear_mask_origin_y() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.mask_origin_y_ = 0;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+}
+inline ::int32_t ListStructuresReply::mask_origin_y() const {
+  // @@protoc_insertion_point(field_get:sf.housing.v1.ListStructuresReply.mask_origin_y)
+  return _internal_mask_origin_y();
+}
+inline void ListStructuresReply::set_mask_origin_y(::int32_t value) {
+  _internal_set_mask_origin_y(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  // @@protoc_insertion_point(field_set:sf.housing.v1.ListStructuresReply.mask_origin_y)
+}
+inline ::int32_t ListStructuresReply::_internal_mask_origin_y() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.mask_origin_y_;
+}
+inline void ListStructuresReply::_internal_set_mask_origin_y(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.mask_origin_y_ = value;
+}
+
+// int32 mask_width = 6;
+inline void ListStructuresReply::clear_mask_width() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.mask_width_ = 0;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+}
+inline ::int32_t ListStructuresReply::mask_width() const {
+  // @@protoc_insertion_point(field_get:sf.housing.v1.ListStructuresReply.mask_width)
+  return _internal_mask_width();
+}
+inline void ListStructuresReply::set_mask_width(::int32_t value) {
+  _internal_set_mask_width(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  // @@protoc_insertion_point(field_set:sf.housing.v1.ListStructuresReply.mask_width)
+}
+inline ::int32_t ListStructuresReply::_internal_mask_width() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.mask_width_;
+}
+inline void ListStructuresReply::_internal_set_mask_width(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.mask_width_ = value;
+}
+
+// int32 mask_height = 7;
+inline void ListStructuresReply::clear_mask_height() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.mask_height_ = 0;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+}
+inline ::int32_t ListStructuresReply::mask_height() const {
+  // @@protoc_insertion_point(field_get:sf.housing.v1.ListStructuresReply.mask_height)
+  return _internal_mask_height();
+}
+inline void ListStructuresReply::set_mask_height(::int32_t value) {
+  _internal_set_mask_height(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  // @@protoc_insertion_point(field_set:sf.housing.v1.ListStructuresReply.mask_height)
+}
+inline ::int32_t ListStructuresReply::_internal_mask_height() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.mask_height_;
+}
+inline void ListStructuresReply::_internal_set_mask_height(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.mask_height_ = value;
 }
 
 // -------------------------------------------------------------------

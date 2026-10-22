@@ -1,4 +1,4 @@
-param([string]$Sdk)
+param([string]$Sdk,[switch]$TwoClient)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 Set-Location $root
@@ -8,3 +8,7 @@ if (-not (Test-Path -LiteralPath $Sdk)) { throw "Pinned backend SDK missing: $Sd
 if ($LASTEXITCODE -ne 0) { throw 'ClaimTerritory.Tests failed' }
 & py -3 tools/claim_bands.py 900 900
 if ($LASTEXITCODE -ne 0) { throw 'claim_bands.py failed' }
+if ($TwoClient) {
+    & tools/Test-ClaimHousing.ps1 -StarterKit
+    if ($LASTEXITCODE -ne 0) { throw 'Owned PostgreSQL two-client restart fixture failed' }
+}

@@ -107,6 +107,8 @@ public:
     // BLD-02 A2: the Housing claim this state projects ("" in the sandbox). Set with the anchor at spawn.
     const FString& GetClaimId() const { return ClaimId; }
     void SetClaimId(const FString& InClaimId) { ClaimId=InClaimId; }
+    bool SetClaimMask(const TArray<uint8>& Bits, int32 OriginX, int32 OriginY, int32 Width, int32 Height);
+    bool ContainsClaimCell(const FIntVector& Cell) const;
     // A7: rebuild an empty claim from its Housing structures. Every cell must lie inside the claim extent, or nothing
     // is projected (hard reject). Pieces come back as identity cubes until piece content is persisted (BLD-01).
     bool RestoreFromHousing(const TArray<FSFConstructionNetworkRestoredPiece>& Pieces);
@@ -131,6 +133,10 @@ private:
     UPROPERTY(Replicated) int32 MaximumLineCells = 0;
     UPROPERTY(Replicated) FIntVector AnchorCell = FIntVector::ZeroValue;
     UPROPERTY(Replicated) FString ClaimId;
+    UPROPERTY(Replicated) TArray<uint8> ClaimMask;
+    UPROPERTY(Replicated) FIntPoint MaskOrigin = FIntPoint::ZeroValue;
+    UPROPERTY(Replicated) int32 MaskWidth = 0;
+    UPROPERTY(Replicated) int32 MaskHeight = 0;
     uint64 ProjectionRevision = 0;
 };
 

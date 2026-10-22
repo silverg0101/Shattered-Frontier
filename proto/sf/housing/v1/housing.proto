@@ -26,6 +26,12 @@ message Structure {
 message ListStructuresReply {
   repeated Structure structures = 1;
   int64 structure_revision = 2;
+  // One bit per 1 m cell, row major from (mask_origin_x,mask_origin_y).
+  bytes claim_mask = 3;
+  int32 mask_origin_x = 4;
+  int32 mask_origin_y = 5;
+  int32 mask_width = 6;
+  int32 mask_height = 7;
 }
 message GrantRequest {
   string operation_id = 1;
