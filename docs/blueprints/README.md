@@ -11,6 +11,7 @@ One doc per asset kind. **Load only the doc for your asset**, plus this page. Ea
 | Sun, sky, fog, exposure, post, renderer tiers, shadows | [lighting-and-atmosphere.md](lighting-and-atmosphere.md) | [GFX-01](../decisions/GFX-01-graphics-quality-plan.md), GFX-02 §5 |
 | Lamps, flames, smoke, fire | [vfx.md](vfx.md) | `GameClient/ArtSource/VFX/StreetLamp/README.md`, `docs/evidence/graphics/lamp-fx-3/REVIEW.md` |
 | HUD and screens: kit, nine-slice, typography, layout | [ui-hud.md](ui-hud.md) | `docs/Game-Design/concept-art/UI/v5/{REVIEW,IMPLEMENTATION-FIX}.md` |
+| Building-mode claim grid: state mask, decal material, HUD claim row, captures | [building-mode.md](building-mode.md) | [CLM-01](../decisions/CLM-01-claim-points-and-build-grid.md) §5 |
 | Menus and panels: canonical controls, pixel-perfect acceptance, new-menu recipe, passing menus, known failures | [menus.md](menus.md) | `tools/ui_pixel_diff.py`, `docs/evidence/ui-v5/elements/` |
 | Player and NPC characters | [characters.md](characters.md) | `GameClient/ArtSource/PlayerCharacter/README.md` |
 
