@@ -227,7 +227,8 @@ inline UFont* LoadFontFamily(const TCHAR* RegularAsset, const TCHAR* BoldAsset)
 // Each falls back to the engine sans when its font is not imported.
 inline FSlateFontInfo RoleFont(UFont* Family, int32 Size, bool bBold)
 {
-    return Family ? FSlateFontInfo(Family, Size, bBold ? TEXT("Bold") : TEXT("Regular")) : FCoreStyle::GetDefaultFontStyle(bBold ? "Bold" : "Regular", Size);
+    const int32 Points = FMath::RoundToInt(Size * 0.75f);  // every size in the specs is 1080p px; Slate font sizes are points (1 pt = 1.333 px)
+    return Family ? FSlateFontInfo(Family, Points, bBold ? TEXT("Bold") : TEXT("Regular")) : FCoreStyle::GetDefaultFontStyle(bBold ? "Bold" : "Regular", Points);
 }
 inline UFont* TextFamily()
 {
@@ -250,17 +251,15 @@ inline UTextBlock* Text(UWidgetTree* Tree, const FString& Value, int32 Size, con
 }
 
 // Counts, have / need and bar values.
-inline UTextBlock* Num(UWidgetTree* Tree, const FString& Value, int32 Size, const FLinearColor& Color, bool bBold = true)
+inline UTextBlock* Num(UWidgetTree* Tree, const FString& Value, int32 Size, const FLinearColor& Color, bool bBold = false)
 {
-    UTextBlock* Label = Text(Tree, Value, Size, Color, bBold);
-    Label->SetFont(RoleFont(NumeralFamily(), Size, bBold));
-    return Label;
+    return Text(Tree, Value, Size, Color, bBold);  // concepts set numerals in EB Garamond regular like the text
 }
 
 // Panel, window and section titles: mixed-case EB Garamond Bold (the approved v5 concepts; sizes 48 window, 36 panel, 26 section).
 inline UTextBlock* Heading(UWidgetTree* Tree, const FString& Value, int32 Size, const FLinearColor& Color)
 {
-    return Text(Tree, Value, Size, Color, true);
+    return Text(Tree, Value, Size, Color, false);
 }
 
 // Cinzel display capitals, kept for the loading-screen zone title and "Defeated" only.
@@ -278,7 +277,7 @@ inline UTextBlock* DisplayHeading(UWidgetTree* Tree, const FString& Value, int32
         Entry.Font = FFontData(Face);
         return TStrongObjectPtr<UFont>(Font);
     }();
-    if (Serif.IsValid()) { Label->SetFont(FSlateFontInfo(Serif.Get(), Size, TEXT("Regular"))); }
+    if (Serif.IsValid()) { Label->SetFont(FSlateFontInfo(Serif.Get(), FMath::RoundToInt(Size * 0.75f), TEXT("Regular"))); }
     return Label;
 }
 

@@ -69,7 +69,8 @@ FSlateFontInfo LoadingScreenFont(const TCHAR* FaceName, int32 Size)
             Cached.Reset(Font);
         }
     }
-    return Cached.IsValid() ? FSlateFontInfo(Cached.Get(), Size, TEXT("Regular")) : FCoreStyle::GetDefaultFontStyle("Regular", Size);
+    const int32 Points = FMath::RoundToInt(Size * 0.75f);  // design px to Slate points
+    return Cached.IsValid() ? FSlateFontInfo(Cached.Get(), Points, TEXT("Regular")) : FCoreStyle::GetDefaultFontStyle("Regular", Points);
 }
 
 // Slate widget tree for the loading thread: no UMG, no UObject access after construction.

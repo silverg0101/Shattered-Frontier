@@ -1353,9 +1353,9 @@
     "divider": {
       "file": "divider.png",
       "nine_slice_px": [
+        120,
         0,
-        0,
-        0,
+        120,
         0
       ],
       "intended_1080p_px": [
@@ -1378,14 +1378,14 @@
         "15-world-map",
         "16-quest-journal"
       ],
-      "notes": "Brass rule with a centered 12 px at 1080p lozenge; 2x source pixels."
+      "notes": "Brass rule with a hollow 10 px center diamond and two 5 px diamonds 14 px to either side at 1080p; 2x source pixels."
     },
     "section_rule": {
       "file": "section_rule.png",
       "nine_slice_px": [
+        24,
         0,
-        0,
-        0,
+        24,
         0
       ],
       "intended_1080p_px": [
@@ -1395,7 +1395,7 @@
       "screens": [
         "16-quest-journal"
       ],
-      "notes": "Plain 1 px at 1080p brass hairline; stretch horizontally."
+      "notes": "1 px brass rule with hollow 6 px diamonds at both ends at 1080p; stretch horizontally."
     },
     "cost_short_underline": {
       "file": "cost_short_underline.png",
@@ -1620,8 +1620,8 @@
         0
       ],
       "intended_1080p_px": [
-        40,
-        36
+        53,
+        54
       ],
       "screens": [
         "10-npc-dialogue"
@@ -1636,8 +1636,8 @@
         0
       ],
       "intended_1080p_px": [
-        40,
-        36
+        53,
+        54
       ],
       "screens": [
         "10-npc-dialogue"
@@ -1652,8 +1652,8 @@
         0
       ],
       "intended_1080p_px": [
-        40,
-        36
+        53,
+        54
       ],
       "screens": [
         "10-npc-dialogue"
@@ -1668,8 +1668,8 @@
         0
       ],
       "intended_1080p_px": [
-        40,
-        36
+        53,
+        54
       ],
       "screens": [
         "10-npc-dialogue"
