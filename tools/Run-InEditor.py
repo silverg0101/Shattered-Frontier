@@ -19,6 +19,7 @@ sys.path.insert(0, str(engine / 'Engine/Plugins/Experimental/PythonScriptPlugin/
 import remote_execution as rx  # noqa: E402  (ships with the engine)
 
 script = Path(args[0]).resolve()
+here = (Path(__file__).resolve().parents[1] / 'GameClient').resolve()
 remote = rx.RemoteExecution()
 remote.start()
 try:
@@ -26,11 +27,13 @@ try:
     nodes = []
     first = None
     while time.time() < deadline and not (first and time.time() > first + 1.5):  # several instances may answer
-        nodes = [n for n in remote.remote_nodes if n.get('project_name') == 'ShatteredFrontier']
+        # Worktrees each run their own editor; only talk to the one opened from this checkout.
+        nodes = [n for n in remote.remote_nodes if n.get('project_name') == 'ShatteredFrontier'
+                 and Path(n.get('project_root', '')).resolve() == here]
         first = first or (nodes and time.time())
         time.sleep(0.2)
     if not nodes:
-        print('No open ShatteredFrontier editor answered. Open the project and enable Python remote execution.')
+        print(f'No ShatteredFrontier editor opened from {here} answered. Open it and enable Python remote execution.')
         sys.exit(2)
     # A -game/-RenderOffscreen run of the project also answers; pick the instance that has an editor world.
     for node in nodes:
