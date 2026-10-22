@@ -20,8 +20,8 @@ One doc per asset kind. **Load only the doc for your asset**, plus this page. Ea
 ### Routing
 1. **Sonnet builds** (editor passes, Blender, materials, scripts, C++ widgets).
 2. **Codex does image generation only**: concept sheets, textures, masks, UI PNGs. Write the prompt to `prompt.txt` (start with "Generate one image with your image generation tool:" and end with "Save it as <name>.png in the current directory.") and run it from an empty or package `concept/` folder: `codex exec --skip-git-repo-check -s workspace-write -o codex-last-message.txt - < prompt.txt` (stdin redirect; the `cat prompt.txt | codex exec ... -` pipe is refused by the command guard; about 20 k tokens and 1-2 min per image). Codex stores every image under `~/.codex/generated_images/` and copies it into the cwd when the prompt says so; if the file is missing, copy the newest PNG from that folder (`Get-ChildItem ~/.codex/generated_images -Recurse -Filter *.png | Sort-Object LastWriteTime | Select-Object -Last 1 | Copy-Item -Destination .\<name>.png`). Commit `prompt.txt` and `codex-last-message.txt` beside the image. Codex may also run already-committed scripts in the background; it never makes judgement calls on art.
-3. **Fable judges, and the builder spawns the judge**: after every capture or render batch the builder itself calls the `Agent` tool (`subagent_type` general-purpose, `model: fable`, no prior context) with the brief in [docs/visual-review.md](../visual-review.md), the `*-compare.png` or render paths, the concept paths, the spec and the evidence folder, and asks for `REVIEW.md` there. The builder never grades its own work, never writes a verdict in its README, and implements only the reviewer's numbered fix list. Owner sign-off comes after the reviewer's PASS, never instead of it.
-4. **A failed Fable check goes to Opus** for the next pass; the Opus pass is re-judged by a fresh Fable reviewer.
+3. **A fresh Opus reviewer judges, spawned by the builder**: after every capture or render batch the builder calls the `Agent` tool (`subagent_type` general-purpose, `model: opus`, no prior context) with the brief in [docs/visual-review.md](../visual-review.md), the `*-compare.png` or render paths, the concept paths and, from round 2, the previous open list. It asks for `REVIEW.md` in the evidence folder. The builder never grades its own work and implements only the reviewer's numbered fix list.
+4. **At most 3 review rounds, then the owner.** After round 3 (or a PASS) the work goes to the owner with the latest compare images and open list; the owner's sign-off is what makes it done.
 5. One active Claude task at a time; everything scriptable goes to Codex.
 
 ### Capture rules
@@ -44,7 +44,7 @@ One doc per asset kind. **Load only the doc for your asset**, plus this page. Ea
 | PCG dressing grounded | `py -3 tools/Run-InEditor.py GameClient/ArtSource/Greenlands/check_dressing_grounded.py` | `DRESSING_GROUNDED {"floating": 0, ...}` |
 | House details | `py -3 tools/Run-InEditor.py <evidence>/check_details.py` | `SILL_PLANTERS 140 expected 140 GROUP_DETAIL_OVERLAPS 0 []` |
 | Frame time | `perf_bookmark_game.py <view>` (docstring has the launch line) | `perf-<view>.json` p95 <= 16.7 ms, median <= 13 ms at 1440p Standard |
-| Visual | fresh Fable review of the pairs | `REVIEW.md` with every view PASS |
+| Visual | fresh Opus review of the pairs (max 3 rounds), then owner sign-off | `REVIEW.md` verdict plus owner sign-off |
 The counts above are the whole-town values; a single building in a dev map uses the per-doc values (for example [buildings.md](buildings.md) §6: `FOUNDATION_CHECK 1 failures 0 ...`).
 
 ### Worktrees (a feature session in its own checkout)
