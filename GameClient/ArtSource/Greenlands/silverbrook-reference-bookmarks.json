@@ -49,7 +49,8 @@
       "look_xy_m": [90, 574],
       "look_height_m": 0,
       "fov_deg": 70,
-      "repeat_crops": {"cobble": [876, 816, 256, 256], "earth": [640, 380, 256, 256], "grass": [1170, 470, 256, 256]}
+      "repeat_crops": {"cobble": [876, 816, 256, 256], "earth": [700, 715, 128, 112], "grass": [175, 440, 128, 128]},
+      "repeat_min_radius_px": 12
     },
     {
       "name": "A2-south-approach-100m",
@@ -58,7 +59,7 @@
       "look_xy_m": [90, 574],
       "look_height_m": 0,
       "fov_deg": 70,
-      "repeat_crops": {"cobble": [840, 620, 256, 256], "earth": [730, 600, 256, 256], "grass": [1228, 800, 256, 256]}
+      "repeat_crops": {"cobble": [885, 790, 160, 256], "earth": [815, 600, 64, 256], "grass": [1230, 800, 256, 256]}
     },
     {
       "name": "A3-south-approach-250m",
@@ -67,7 +68,7 @@
       "look_xy_m": [90, 574],
       "look_height_m": 0,
       "fov_deg": 70,
-      "repeat_crops": {"cobble": [840, 740, 256, 256], "earth": [840, 600, 256, 256], "grass": [1066, 514, 256, 256]}
+      "repeat_crops": {"cobble": [915, 600, 85, 256], "earth": [884, 600, 32, 256], "grass": [1075, 520, 190, 190]}
     }
   ]
 }

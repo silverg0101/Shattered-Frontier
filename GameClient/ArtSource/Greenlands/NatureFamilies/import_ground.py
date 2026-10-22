@@ -103,7 +103,7 @@ def ground():
 
     HEX = hex_tile.build()  # GFX-02 2a: MF_GN_HexTile exists before any layer calls it
 
-    def hexlayer(p, base, nor, rough, uv, tint, y, rot):
+    def hexlayer(p, base, nor, rough, uv, tint, y, rot, cell, snap):
         """One MF_GN_HexTile call in place of the three plain samples (D, N, M = Rough; H stays on its default)."""
         call = node(m, u.MaterialExpressionMaterialFunctionCall, -1100, y)
         call.set_material_function(HEX)
@@ -111,7 +111,8 @@ def ground():
         for pin, nm, path, kind, dy in (('D', 'Base', base, S.SAMPLERTYPE_COLOR, 0), ('N', 'Normal', nor, S.SAMPLERTYPE_NORMAL, 100), ('M', 'Rough', rough, S.SAMPLERTYPE_MASKS, 200)):
             link(node(m, u.MaterialExpressionTextureObjectParameter, -1300, y + dy, parameter_name=nm + p, texture=tex(path), sampler_type=kind), '', call, pin)
         link(node(m, u.MaterialExpressionConstant, -1300, y + 300, r=rot), '', call, 'Rot')
-        link(node(m, u.MaterialExpressionConstant, -1300, y + 340, r=0.5), '', call, 'CellTiles')
+        link(node(m, u.MaterialExpressionConstant, -1300, y + 340, r=cell), '', call, 'CellTiles')
+        link(node(m, u.MaterialExpressionConstant, -1300, y + 380, r=snap), '', call, 'Snap')
 
         def pick(pin, yy, **ch):
             c = node(m, u.MaterialExpressionComponentMask, -950, yy, **ch); link(call, pin, c, ''); return c
@@ -119,11 +120,11 @@ def ground():
         return (g.mul(pick('D', y, **rgb), g.vec('Tint' + p, tint, -900, y - 100), -500, y), pick('N', y + 250, **rgb),
                 pick('M', y + 500, r=True, g=False, b=False, a=False))
 
-    def layer(p, base, nor, rough, tile_cm, tint, y, hex=False, rot=1.0):
+    def layer(p, base, nor, rough, tile_cm, tint, y, hex=False, rot=1.0, cell=1.0, snap=0.0):
         t = g.sc('TileCm' + p, tile_cm, -1800, y + 150)
         uv = g.uv(xy, t, -1650, y)
         if hex:
-            return (*hexlayer(p, base, nor, rough, uv, tint, y, rot), t)
+            return (*hexlayer(p, base, nor, rough, uv, tint, y, rot, cell, snap), t)
         col = g.smp('Base' + p, tex(base), S.SAMPLERTYPE_COLOR, uv, -1100, y)
         n = g.smp('Normal' + p, tex(nor), S.SAMPLERTYPE_NORMAL, uv, -1100, y + 250)
         r = g.mask(g.smp('Rough' + p, tex(rough), S.SAMPLERTYPE_MASKS, uv, -1100, y + 500), True, False, False, -800, y + 500)
@@ -131,13 +132,17 @@ def ground():
     T = f'{LIB}/Textures/T_GN_'
     fa, na, ra, _ = layer('A', T + 'forest_ground_04_Diffuse', T + 'forest_ground_04_nor_gl', T + 'forest_ground_04_Rough', 200, (0.50, 0.66, 0.34), 0, hex=True)
     fb, nb, rb, _ = layer('B', T + 'mossy_rock_Diffuse', T + 'mossy_rock_nor_gl', T + 'mossy_rock_Rough', 150, (0.34, 0.46, 0.20), 1200)
-    # J2-pre deviation from 2a (which leaves Mask plain): the 9 m Mask drives the moss patches, and its grid is the repeat the A2/A3 grass crops measure
-    mcall = node(m, u.MaterialExpressionMaterialFunctionCall, -1100, 2600); mcall.set_material_function(HEX)
-    link(g.uv(xy, g.sc('TileCmMask', 900, -1800, 2700), -1650, 2600), '', mcall, 'UV')
-    mobj = node(m, u.MaterialExpressionTextureObjectParameter, -1300, 2600, parameter_name='Mask', texture=tex(T + 'forest_ground_04_Displacement'), sampler_type=S.SAMPLERTYPE_MASKS)
-    for pin in 'DNMH': link(mobj, '', mcall, pin)  # only M is read; the other taps are dead code
-    link(node(m, u.MaterialExpressionConstant, -1300, 2700, r=1.0), '', mcall, 'Rot'); link(node(m, u.MaterialExpressionConstant, -1300, 2740, r=0.25), '', mcall, 'CellTiles')
-    mk = node(m, u.MaterialExpressionComponentMask, -800, 2600, r=True, g=False, b=False, a=False); link(mcall, 'M', mk, '')
+    # J2-pre review fix 1: the Mask stays a plain 9 m sample (hex-tiling it put the moss patches on the hex lattice); its UV is domain-warped by two
+    # world-space Simplex noises (+-0.3 tile = +-2.7 m, ~25 m features) so the 9 m period never lines up on a grid.
+    wp = node(m, u.MaterialExpressionWorldPosition, -2000, 2900)
+
+    def warp_noise(y, off):
+        nz = node(m, u.MaterialExpressionNoise, -1700, y, noise_function=u.NoiseFunction.NOISEFUNCTION_SIMPLEX_TEX, scale=0.0004, levels=2, output_min=-1.0, output_max=1.0, quality=2, turbulence=False)
+        link(g.op(u.MaterialExpressionAdd, wp, node(m, u.MaterialExpressionConstant3Vector, -1900, y, constant=u.LinearColor(0.0, 0.0, 4096.0 if off else 0.0, 0.0)), -1800, y), '', nz, 'World Position'); return nz
+    wxy = node(m, u.MaterialExpressionAppendVector, -1500, 2900); link(warp_noise(2900, ''), '', wxy, 'A'); link(warp_noise(3050, 'B'), '', wxy, 'B')
+    warp = g.mul(wxy, g.sc('MaskWarp', 0.3, -1500, 3000), -1350, 2900)
+    muv = g.op(u.MaterialExpressionAdd, g.uv(xy, g.sc('TileCmMask', 900, -1800, 2700), -1650, 2600), warp, -1250, 2600)
+    mk = g.mask(g.smp('Mask', tex(T + 'forest_ground_04_Displacement'), S.SAMPLERTYPE_MASKS, muv, -1100, 2600), True, False, False, -800, 2600)
     wm = node(m, u.MaterialExpressionSaturate, 0, 2600)
     sub = g.op(u.MaterialExpressionSubtract, mk, g.sc('Low', 0.4, -600, 2700), -500, 2600)
     link(g.mul(sub, g.sc('InvRange', 32, -600, 2800), -300, 2600), '', wm, '')
@@ -173,7 +178,7 @@ def ground():
     # a fine noise moves the threshold so the edge is worn and ragged instead of a seam. Earth under the cobble; cobble wins where G is high
     # (earth is blended first, cobble on top, so the cobble's soft edge lands on earth, not grass: WP6e review fix 2a).
     SB = '/Game/Frontier/Environment/Greenlands/Silverbrook/Textures/T_SB_cobblestone_pavement_'
-    rc, rn, rr, _ = layer('R', SB + 'Diffuse', SB + 'nor_gl', SB + 'Rough', 240, (1, 1, 1), 6000, hex=True, rot=0.15)
+    rc, rn, rr, _ = layer('R', SB + 'Diffuse', SB + 'nor_gl', SB + 'Rough', 240, (1, 1, 1), 6000, hex=True, rot=0.0, cell=1.0, snap=14.0)  # 14 stone courses per 2.4 m tile
     # trails: packed dark earth from the forest-floor scan with pale mossy stones pushed through it where a mask passes a high threshold
     import_scan('brown_mud_02'); import_scan('rocky_trail')  # dirt with roots and sticks; pale stones
     dc, dn, dr, _ = layer('T', T + 'brown_mud_02_Diffuse', T + 'brown_mud_02_nor_gl', T + 'brown_mud_02_Rough', 200, (0.85, 0.75, 0.65), 8000, hex=True)

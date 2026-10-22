@@ -2,42 +2,46 @@
 
 Spec: `docs/decisions/GFX-02-photoreal-ground-pipeline.md` section 2a (Interim J2-pre). No verdict here; the reviewer writes `REVIEW.md`.
 
-## Changed
-- `GameClient/ArtSource/Greenlands/NatureFamilies/hex_tile.py` builds `MF_GN_HexTile` (Mikkelsen 2022, one Custom HLSL node, spec code verbatim). Rebuild deletes each expression explicitly (`delete_all_material_expressions_in_function` leaves stale ones behind) and gives every texture input a Preview (the function's own compile needs it).
-- `import_ground.py`: `layer(..., hex=True)` for A forest floor, R cobble (Rot 0.15), T mud, S rocky trail; B and bedrock C plain; macro and EdgeNoise plain. **Deviation:** the `Mask` sample (9 m, drives moss patches and trail stones) is also hex-tiled (`CellTiles` 0.25, bounds 0.25-1.0). With it plain the green moss patches stay a visible 9 m grid and the grass crops of A2 read 0.39 / A3 0.30 (before and after the layers alone).
-- `Measure-GroundRepeat.py`, three views `A1/A2/A3` with `repeat_crops` in `silverbrook-reference-bookmarks.json`.
-- Assets: `MF_GN_HexTile.uasset` (new), `M_GN_Ground.uasset`. `MI_GN_Ground` untouched. Side-effect re-saves of `M_GN_Surface`, `MI_GN_Road`, `MI_GN_Trail`, `M_GN_River` reverted.
+## Round 2 (after REVIEW-r1.md: 3 PASS, 8 FAIL)
+Implemented from the r1 fix list:
+1. `import_ground.py`: Mask is a plain 9 m sample again; its UV is domain-warped by two world-space Simplex `Noise` nodes (`scale` 0.0004, 2 levels, +-0.3 tile via `MaskWarp`). `Low`, `InvRange`, `StoneLow`, `StoneSharp` unchanged.
+2. `CellTiles` 1.0 for layers A, T, S (and cobble R).
+3. `MF_GN_HexTile` gains a `Snap` input (offsets snap to 1/Snap tile); cobble R: `Rot` 0.0, `CellTiles` 1.0, `Snap` 14 (14 stone courses per 2.4 m tile, counted on `cobblestone_pavement_Diffuse`).
+4. `tools/Measure-GroundRepeat.py`: 6 px Gaussian high-pass, NaN (fail) when the band has no local maximum, per-view `repeat_min_radius_px` (A1 12, others 6). Measurement captures are separate (`before-measure/`, `after-measure/`: A1-A3 only, `ShowFlag.DynamicShadows 0`, capture-only), crops re-fixed on the shadow-free frames, sizes 32-256 px where 256 px of pure surface does not exist (earth margin 32-128 px, A3 road 85 px). PCG shrubs were not hidden; crops avoid them.
+5. Sun-20 ground-level captures: `after/ctx-ground-4-sun20`, `after/A1-margin-sun20` (no `before/` pair for these).
+Rebuilt with `import_ground.py`; no compile errors for `M_GN_Ground` / `MF_GN_HexTile`. All `after/` captures are from the round-2 material; `before/` is the original material (before-measure also).
+
+## Changed (cumulative)
+- `NatureFamilies/hex_tile.py` builds `MF_GN_HexTile` (spec HLSL + `Snap`). Rebuild deletes each expression explicitly (`delete_all_material_expressions_in_function` leaves stale ones) and gives every texture input a Preview (the function's own compile needs it).
+- `import_ground.py`: `layer(..., hex=True)` for A forest floor, R cobble, T mud, S rocky trail; B and bedrock C plain; macro and EdgeNoise plain; Mask plain + warp (above).
+- `Measure-GroundRepeat.py`, views `A1/A2/A3` with `repeat_crops` in `silverbrook-reference-bookmarks.json`.
+- Assets: `MF_GN_HexTile.uasset` (new), `M_GN_Ground.uasset`; `MI_GN_Ground` untouched. Side-effect re-saves of `M_GN_Surface`, `MI_GN_Road`, `MI_GN_Trail`, `M_GN_River` reverted (`M_GN_River` logs "No inputs to Single Layer Water Material" on the untouched master too).
 
 ## Run order
-1. Build.bat against this worktree: `Result: Succeeded`. Editor opened from this checkout.
-2. `py -3 tools/Run-InEditor.py .../NatureFamilies/import_ground.py` -> `GROUND_IMPORT [...]`; no `Failed to compile` for `M_GN_Ground` or `MF_GN_HexTile` (`M_GN_River` logs "No inputs to Single Layer Water Material", which it does on the untouched master too).
-3. Editor closed. `-game` shots at 1920x1080, `capture_game.py` with `GFX_TAG=before` (old asset) and `after`.
-4. `py -3.12 tools/Measure-GroundRepeat.py <dir> <json>`; `make_pairs.py`.
-5. `perf_gpu.py` at bookmark 01, 2560x1440 windowed, alternating old and new `M_GN_Ground`.
+1. Build.bat against this worktree: `Result: Succeeded`. Editor opened from this checkout, `import_ground.py` via `Run-InEditor.py`.
+2. Editor closed. `-game` 1920x1080 shots: `capture_game.py` (`GFX_TAG`, optional `GFX_MEASURE=1`).
+3. `py -3.12 tools/Measure-GroundRepeat.py <dir> <json>`; `make_pairs.py`; `perf_gpu.py`.
 
-## Repeat gate (`repeat-measure.json`, before in `repeat-measure-before.json`)
-`GROUND_REPEAT PASS crops 9 max_peak 0.2414 limit 0.25`
+## Repeat gate (round 2; `repeat-measure.json` after, `repeat-measure-before.json` before; both on the `*-measure` frames)
+`GROUND_REPEAT FAIL crops 9 max_peak 0.2946 limit 0.25` (after); before `max_peak 0.665`.
 
-| crop | before | after |
+| crop (rect x,y,w,h) | before | after |
 |---|---|---|
-| A1 cobble / earth / grass | 0.782 / 0.082 / 0.270 | 0.000 / 0.083 / 0.236 |
-| A2 cobble / earth / grass | 0.000 / 0.000 / 0.387 | 0.000 / 0.000 / 0.240 |
-| A3 cobble / earth / grass | 0.151 / 0.104 / 0.077 | 0.155 / 0.105 / 0.066 |
+| A1 cobble [876,816,256,256] | 0.194 | 0.096 |
+| A1 earth [700,715,128,112] | 0.559 | 0.078 |
+| A1 grass [175,440,128,128] | 0.244 | 0.280 FAIL |
+| A2 cobble [885,790,160,256] | 0.436 | 0.110 |
+| A2 earth [815,600,64,256] | 0.665 | 0.118 |
+| A2 grass [1230,800,256,256] | 0.342 | 0.236 |
+| A3 cobble [915,600,85,256] | 0.592 | 0.204 |
+| A3 earth [884,600,32,256] | 0.243 | 0.098 |
+| A3 grass [1075,520,190,190] | 0.433 | 0.295 FAIL |
 
-Measurement notes (deviations a reviewer should know):
-- Peak is taken over local maxima of the autocorrelation in 6 < r <= 120 px. Taking the plain maximum returns the zero-lag shoulder (0.7-0.9 for any smooth image, before or after), so it cannot show a repeat.
-- A 256 px crop of pure ground is not possible in these views (the earth margin is 25-90 px wide, shadows and PCG shrubs cover the fields). Crops are chosen away from props where possible; A1 earth/grass and A2 cobble/earth still contain shrubs, tree shadows or road edges, whose repeats are unchanged by the material. "0.000" means no local maximum in the band.
-- The numbers sit close to the limit (0.236, 0.240). A3 cobble and earth are mostly road edge.
+Local-maximum rule kept (the plain maximum returns the zero-lag shoulder). The two grass failures are the small cross-shaped moss patch of the Mask texture, now scattered but still repeated; no change outside the r1 fix list was made for it.
+(The round-1 table from the earlier frames is superseded by `REVIEW-r1.md`'s findings.)
 
 ## Captures (`before/`, `after/`)
-A1-A3 PNG (lossless, the gate reads them), everything else JPG q90. `01-forest-path-town`, `04-forest-floor`, `04-forest-floor-sun20` and `A1-sun20` (sun pitch -20, -game only), context views: `ctx-overview-south`, `ctx-overview-east` (300 m up) and `ctx-ground-1..4` (seeded, Random(20261022)).
-Pairs: `A1-hud-before-after-compare.jpg` (gameplay-hud far range | before | after), `A2-...`, `A3-...`, `01-...`, `04-forest-floor-sun20-before-after-compare.jpg`.
-
-## Hex-border lighting self-check
-`04-sun20-after-crop.png` and `A1-sun20-after-crop.png` (1:1 crops of the after shots with the sun at 20 deg elevation): no brightness step visible along a hex edge, so the rotation sign was left as in the spec (`NEG_ANGLE` False). The visible ground at bookmark 04 is mostly the plain mossy-rock layer B, so A1-sun20 (cobble, earth, grass) is the stronger check.
-
-## Look change to expect
-Bookmark 04 changed from stony olive forest floor to mostly green mossy rock: the hex-tiled `Mask` no longer lands on the same 9 m window there, so that spot now draws from the whole mask texture instead of one low-moss patch of it.
+A1-A3 PNG, everything else JPG q90: `01-forest-path-town`, `04-forest-floor`, `04-forest-floor-sun20`, `A1-sun20`, `A1-margin-sun20`, `ctx-overview-south/east`, `ctx-ground-1..4`, `ctx-ground-4-sun20` (sun pitch -20, -game only). Pairs: `A1-hud-before-after-compare.jpg` (gameplay-hud far range | before | after), `A2-`, `A3-`, `01-`, `04-forest-floor-sun20-before-after-compare.jpg`.
 
 ## Timing at bookmark 01 (`perf-01.json` per folder, 500 frames, 2560x1440 windowed, other editors running on the machine)
 | run | median / p95 ms |

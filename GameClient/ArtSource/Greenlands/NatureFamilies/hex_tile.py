@@ -2,7 +2,7 @@
 
 Idempotent; import_ground.py / landscape_material.py call hex_tile.build() first. Standalone:
 py -3 tools/Run-InEditor.py GameClient/ArtSource/Greenlands/NatureFamilies/hex_tile.py
-Inputs  UV (texture tiles = world cm / TileCm), D diffuse, N normal, M mask (arm or Rough), H displacement, Rot 0-1, CellTiles (hex width in tiles).
+Inputs  UV (texture tiles = world cm / TileCm), D diffuse, N normal, M mask (arm or Rough), H displacement, Rot 0-1, CellTiles (hex width in tiles), Snap (0 = off; else offsets snap to 1/Snap tile).
 Outputs D float4, N float3 (decoded tangent-space normal), M float4, H float.
 """
 import unreal as u
@@ -27,6 +27,7 @@ float4 cD[3]; float3 cN[3]; float4 cM[3]; float cH[3]; float3 L = 0;
     float cs = cos(a), sn = sin(a); float2x2 R = float2x2(cs, -sn, sn, cs);
     float2 cen = float2(v[i].x + 0.5 * v[i].y, v[i].y / 1.15470054);
     float2 h = frac(sin(float2(127.1 * v[i].x + 311.7 * v[i].y, 269.5 * v[i].x + 183.3 * v[i].y)) * 43758.5453);
+    if (Snap > 0.0) h = floor(h * Snap + 0.5) / Snap;   // offsets in whole stone courses (cobble), so borders fall on mortar lines
     float2 uv = (mul(p - cen, R) + cen) * CellTiles + h;
     float2 rx = mul(gx, R), ry = mul(gy, R);
     cD[i] = D.SampleGrad(Material.Wrap_WorldGroupSettings, uv, rx, ry);
@@ -65,7 +66,7 @@ def build():
     default_tex = u.load_asset('/Engine/EngineResources/DefaultTexture')
     spec = [('UV', T.FUNCTION_INPUT_VECTOR2, None), ('D', T.FUNCTION_INPUT_TEXTURE2D, False), ('N', T.FUNCTION_INPUT_TEXTURE2D, False),
             ('M', T.FUNCTION_INPUT_TEXTURE2D, True), ('H', T.FUNCTION_INPUT_TEXTURE2D, True),
-            ('Rot', T.FUNCTION_INPUT_SCALAR, 1.0), ('CellTiles', T.FUNCTION_INPUT_SCALAR, 0.5)]
+            ('Rot', T.FUNCTION_INPUT_SCALAR, 1.0), ('CellTiles', T.FUNCTION_INPUT_SCALAR, 0.5), ('Snap', T.FUNCTION_INPUT_SCALAR, 0.0)]
     fins = []
     for i, (name, kind, extra) in enumerate(spec):
         fi = n(u.MaterialExpressionFunctionInput, -900, i * 200, input_name=name, input_type=kind, sort_priority=i)

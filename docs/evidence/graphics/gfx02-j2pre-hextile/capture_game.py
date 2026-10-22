@@ -9,7 +9,8 @@ import json, math, os, random
 from pathlib import Path
 import unreal as u
 
-OUT = Path(__file__).resolve().parent / os.environ.get('GFX_TAG', 'after'); OUT.mkdir(exist_ok=True)
+MEASURE = bool(os.environ.get('GFX_MEASURE'))  # measurement captures: A1-A3 only, dynamic shadows off (review pairs keep shadows)
+OUT = Path(__file__).resolve().parent / (os.environ.get('GFX_TAG', 'after') + ('-measure' if MEASURE else '')); OUT.mkdir(exist_ok=True)
 BM = Path(__file__).resolve().parents[4] / 'GameClient/ArtSource/Greenlands/silverbrook-reference-bookmarks.json'
 world = u.load_asset('/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook')
 pc = u.GameplayStatics.get_player_controller(world, 0); pawn = u.GameplayStatics.get_player_character(world, 0)
@@ -27,8 +28,13 @@ for i in range(4):
     x, y = rng.uniform(-600, 600), rng.uniform(-200, 900); a = rng.uniform(0, 2 * math.pi)
     views.append(dict(name=f'ctx-ground-{i + 1}', xy_m=[round(x), round(y)], eye_height_m=1.7, look_xy_m=[round(x + 40 * math.cos(a)), round(y + 40 * math.sin(a))],
                       look_height_m=1.5, fov_deg=70))
-for c in ('r.EyeAdaptationQuality 0', 'r.DefaultFeature.AutoExposure 0', 'r.MotionBlurQuality 0', 'r.ScreenPercentage 100', 'r.ExposureOffset 0',
-          'r.Streaming.FullyLoadUsedTextures 1'):
+g4 = next(v for v in views if v['name'] == 'ctx-ground-4')
+views.append(dict(g4, name='ctx-ground-4-sun20', sun_pitch=-20))
+views.append(dict(name='A1-margin-sun20', xy_m=[181, 661], eye_height_m=1.7, look_xy_m=[90, 574], look_height_m=1.5, fov_deg=70, sun_pitch=-20))
+if MEASURE:
+    views = [v for v in views if v['name'].startswith('A') and v['name'][1] in '123' and 'sun' not in v['name']]
+for c in (['ShowFlag.DynamicShadows 0'] if MEASURE else []) + ['r.EyeAdaptationQuality 0', 'r.DefaultFeature.AutoExposure 0', 'r.MotionBlurQuality 0', 'r.ScreenPercentage 100', 'r.ExposureOffset 0',
+          'r.Streaming.FullyLoadUsedTextures 1']:
     u.SystemLibrary.execute_console_command(world, c)
 pawn.set_actor_hidden_in_game(True); pawn.character_movement.disable_movement()
 st = dict(frame=0, i=0)

@@ -1,12 +1,12 @@
 {
   "limit": 0.25,
-  "passed": true,
+  "passed": false,
   "crops": {
     "A1-south-approach-30m/cobble": {
-      "peak": 0.0,
+      "peak": 0.0956,
       "lag_px": [
-        0,
-        0
+        -12,
+        29
       ],
       "rect": [
         876,
@@ -17,69 +17,69 @@
       "passed": true
     },
     "A1-south-approach-30m/earth": {
-      "peak": 0.0829,
+      "peak": 0.0777,
       "lag_px": [
-        48,
-        -64
+        -49,
+        -16
       ],
       "rect": [
-        640,
-        380,
-        256,
-        256
+        700,
+        715,
+        128,
+        112
       ],
       "passed": true
     },
     "A1-south-approach-30m/grass": {
-      "peak": 0.2364,
+      "peak": 0.2802,
       "lag_px": [
-        21,
-        -59
+        16,
+        -1
       ],
       "rect": [
-        1170,
-        470,
-        256,
-        256
+        175,
+        440,
+        128,
+        128
       ],
-      "passed": true
+      "passed": false
     },
     "A2-south-approach-100m/cobble": {
-      "peak": 0.0,
+      "peak": 0.1098,
       "lag_px": [
-        0,
-        0
+        -2,
+        -19
       ],
       "rect": [
-        840,
-        620,
-        256,
+        885,
+        790,
+        160,
         256
       ],
       "passed": true
     },
     "A2-south-approach-100m/earth": {
-      "peak": 0.0,
+      "peak": 0.1179,
       "lag_px": [
-        0,
-        0
+        -6,
+        39
       ],
       "rect": [
-        730,
+        815,
         600,
-        256,
+        64,
         256
       ],
       "passed": true
     },
     "A2-south-approach-100m/grass": {
-      "peak": 0.2414,
+      "peak": 0.2361,
       "lag_px": [
-        9,
-        -9
+        15,
+        11
       ],
       "rect": [
-        1228,
+        1230,
         800,
         256,
         256
@@ -87,46 +87,46 @@
       "passed": true
     },
     "A3-south-approach-250m/cobble": {
-      "peak": 0.1548,
+      "peak": 0.2041,
       "lag_px": [
-        64,
-        -21
+        1,
+        6
       ],
       "rect": [
-        840,
-        740,
-        256,
+        915,
+        600,
+        85,
         256
       ],
       "passed": true
     },
     "A3-south-approach-250m/earth": {
-      "peak": 0.1054,
+      "peak": 0.0983,
       "lag_px": [
-        99,
-        -36
+        0,
+        -27
       ],
       "rect": [
-        840,
+        884,
         600,
-        256,
+        32,
         256
       ],
       "passed": true
     },
     "A3-south-approach-250m/grass": {
-      "peak": 0.0661,
+      "peak": 0.2946,
       "lag_px": [
-        -9,
-        -61
+        -5,
+        5
       ],
       "rect": [
-        1066,
-        514,
-        256,
-        256
+        1075,
+        520,
+        190,
+        190
       ],
-      "passed": true
+      "passed": false
     }
   }
 }
