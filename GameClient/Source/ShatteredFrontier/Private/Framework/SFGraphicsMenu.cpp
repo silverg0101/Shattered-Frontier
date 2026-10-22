@@ -130,17 +130,16 @@ void USFGraphicsMenu::NativeOnInitialized()
     FrameSlot->SetAnchors(FAnchors(0.f, 0.f, 1.f, 1.f)); FrameSlot->SetOffsets(FMargin(0.f));
 
     // Header: crest, title, flanking rules, close, tabs with the LB/RB keycaps.
-    Put(Stage, KitImage(WidgetTree, TEXT("window_crest"), 120.f, 40.f), 779.f, 66.f, 120.f / S, 40.f / S);
-    Put(Stage, KitImage(WidgetTree, TEXT("icon_stag_emblem"), 60.f), 809.f, 70.f, 60.f / S, 60.f / S);
+    Put(Stage, KitImage(WidgetTree, TEXT("window_crest"), 150.f, 42.f), 774.f, 65.f, 150.f / S, 42.f / S);  // arch with the stag, centred on the title
     UTextBlock* Title = Heading(WidgetTree, TEXT("Settings"), 36, Ivory()); Title->SetJustification(ETextJustify::Center);
-    PutText(Stage, Title, 839.f, 141.f, 0.5f);
+    PutText(Stage, Title, 839.f, 138.4f, 0.5f);
     // Title rules: a section_rule and a quest_diamond each side of "Settings".
     Put(Stage, KitImage(WidgetTree, TEXT("section_rule"), 110.f, 4.f), 640.f, 139.f, 110.f / S, 4.f / S);
     Put(Stage, KitImage(WidgetTree, TEXT("quest_diamond"), 12.f), 745.f, 135.f, 12.f / S, 12.f / S);
     Put(Stage, KitImage(WidgetTree, TEXT("quest_diamond"), 12.f), 925.f, 135.f, 12.f / S, 12.f / S);
     Put(Stage, KitImage(WidgetTree, TEXT("section_rule"), 110.f, 4.f), 937.f, 139.f, 110.f / S, 4.f / S);
     UBorder* CloseBox = Panel(WidgetTree, WellFill(), Brass(), FMargin(9.f), 4.f);
-    CloseBox->SetContent(KitImage(WidgetTree, TEXT("close_x"), 28.f));
+    CloseBox->SetContent(KitImage(WidgetTree, TEXT("close_x"), 24.f));
     UButton* Close = FlatButton(WidgetTree, CloseBox);
     Click(Close, [Self]() { if (USFGraphicsMenu* Menu = Self.Get()) { Menu->HandleEscape(); } });
     Put(Stage, Close, 1319.f, 121.f, 40.f, 40.f);
@@ -196,7 +195,7 @@ void USFGraphicsMenu::NativeOnInitialized()
         ValueSlot->SetHorizontalAlignment(HAlign_Center); ValueSlot->SetVerticalAlignment(VAlign_Center);
         for (int32 Dir : {-1, 1})
         {
-            USizeBox* Arrow = KitImage(WidgetTree, TEXT("stepper_chevron"), 16.f, 16.f);
+            USizeBox* Arrow = KitImage(WidgetTree, TEXT("stepper_chevron"), 26.f, 26.f);
             if (Dir < 0) { Arrow->SetRenderTransform(FWidgetTransform(FVector2D::ZeroVector, FVector2D(-1.f, 1.f), FVector2D::ZeroVector, 0.f)); Arrow->SetRenderTransformPivot(FVector2D(0.5f, 0.5f)); }
             // 36 px end cell with the 16 px chevron centred in it.
             UBorder* Center = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
@@ -250,7 +249,7 @@ void USFGraphicsMenu::NativeOnInitialized()
     // ---- Display column
     PutText(Stage, Heading(WidgetTree, TEXT("Display"), 22, Ivory()), 337.f, 387.f);
     Put(Stage, Hairline1(WidgetTree), 337.f, 407.f, 483.f, 1.f / S);
-    auto RowLabel = [&](const TCHAR* Name, float CenterY) { PutText(Stage, Text(WidgetTree, Name, 20, Ivory()), 337.f, CenterY); };
+    auto RowLabel = [&](const TCHAR* Name, float CenterY) { PutText(Stage, Text(WidgetTree, Name, 17, Ivory()), 337.f, CenterY); };
     RowLabel(TEXT("Resolution"), 432.f);
     Put(Stage, Stepper(17, [Edit]() { return FString::Printf(TEXT("%d x %d"), Edit->Pending().Resolution.X, Edit->Pending().Resolution.Y); },
         [Self, Edit, Cycle](int32 Dir)
@@ -280,7 +279,7 @@ void USFGraphicsMenu::NativeOnInitialized()
     Toggle(573.f, [Edit]() { return Edit->Pending().bVSync; }, [Edit](bool bOn) { Edit->EditPending().bVSync = bOn; });
     Put(Stage, Hairline1(WidgetTree), 337.f, 597.f, 483.f, 1.f / S);
     RowLabel(TEXT("Render Scale"), 615.f);
-    PutText(Stage, Text(WidgetTree, TEXT("67%"), 18, Ivory()), 338.f, 650.f);
+    PutText(Stage, Text(WidgetTree, TEXT("67%"), 15, Ivory()), 338.f, 650.f);
     USlider* Slider = WidgetTree->ConstructWidget<USlider>(USlider::StaticClass());
     Slider->SetMinValue(67.f); Slider->SetMaxValue(100.f); Slider->SetStepSize(1.f);
     FSliderStyle SliderStyle = Slider->GetWidgetStyle();
@@ -298,7 +297,7 @@ void USFGraphicsMenu::NativeOnInitialized()
     Put(Stage, KitPanel(WidgetTree, TEXT("slider_track"), 1.f, WellFill(), Hairline(), FMargin(0.f), 3.f, false), 389.f, 644.f, 286.f, 12.f);
     Put(Stage, ScaleFill, 391.f, 646.f, 282.f, 8.f);
     Put(Stage, Slider, 383.f, 641.f, 298.f, 18.f);
-    PutText(Stage, Text(WidgetTree, TEXT("100%"), 18, Ivory()), 693.f, 650.f);
+    PutText(Stage, Text(WidgetTree, TEXT("100%"), 15, Ivory()), 693.f, 650.f);
     UOverlay* ScaleBox = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
     UBorder* ScalePlate = KitPanel(WidgetTree, TEXT("field_well"), 1.f, WellFill(), Brass(), FMargin(0.f), 3.f, false);
     UOverlaySlot* ScalePlateSlot = ScaleBox->AddChildToOverlay(ScalePlate); ScalePlateSlot->SetHorizontalAlignment(HAlign_Fill); ScalePlateSlot->SetVerticalAlignment(VAlign_Fill);
@@ -352,7 +351,7 @@ void USFGraphicsMenu::NativeOnInitialized()
     for (const FLevelRow& Row : LevelRows)
     {
         UHorizontalBox* Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-        UHorizontalBoxSlot* LabelSlot = Line->AddChildToHorizontalBox(Text(WidgetTree, Row.Label, 18, Ivory()));
+        UHorizontalBoxSlot* LabelSlot = Line->AddChildToHorizontalBox(Text(WidgetTree, Row.Label, 16, Ivory()));
         LabelSlot->SetPadding(FMargin(7.f * S, 0.f, 0.f, 0.f));
         LabelSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); LabelSlot->SetVerticalAlignment(VAlign_Center);
         const bool bTess = Row.bTessellation; int32 FSFGraphicsOptions::* const Field = Row.Field;
@@ -363,7 +362,12 @@ void USFGraphicsMenu::NativeOnInitialized()
         UHorizontalBoxSlot* ControlSlot = Line->AddChildToHorizontalBox(ControlSize);
         ControlSlot->SetVerticalAlignment(VAlign_Center); ControlSlot->SetPadding(FMargin(0.f, 0.f, 10.f * S, 0.f));
         USizeBox* RowSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        RowSize->SetHeightOverride(30.9f * S); RowSize->SetContent(Line);
+        RowSize->SetHeightOverride(30.9f * S);
+        UOverlay* RowStack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
+        UOverlaySlot* LineSlot = RowStack->AddChildToOverlay(Line); LineSlot->SetHorizontalAlignment(HAlign_Fill); LineSlot->SetVerticalAlignment(VAlign_Fill);
+        UOverlaySlot* RuleSlot = RowStack->AddChildToOverlay(Hairline1(WidgetTree)); RuleSlot->SetHorizontalAlignment(HAlign_Fill); RuleSlot->SetVerticalAlignment(VAlign_Bottom);
+        RuleSlot->SetPadding(FMargin(7.f * S, 0.f, 10.f * S, 0.f));
+        RowSize->SetContent(RowStack);
         List->AddChild(RowSize);
     }
     Put(Stage, List, 871.f, 411.f, 469.f, 312.f);

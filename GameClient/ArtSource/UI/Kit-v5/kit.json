@@ -33,7 +33,7 @@
     "window_crest": {
       "file": "window_crest.png",
       "nine_slice_px": [0, 0, 0, 0],
-      "intended_1080p_px": [120, 40],
+      "intended_1080p_px": [150, 42],
       "screens": ["14b-settings-graphics"]
     },
     "window_frame": {
