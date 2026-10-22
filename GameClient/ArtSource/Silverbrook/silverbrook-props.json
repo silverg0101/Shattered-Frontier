@@ -46,7 +46,7 @@
   },
   "windows": {
     "always_lit_patterns": ["ForgeFire"],
-    "glow_strength_scale": {"value": 0.05, "min": 0.02, "max": 1.0, "unit": "x imported window EmissionStrength (M_SB_WindowGlow GlowScale; WP6i review fix 4)"},
+    "glow_strength_scale": {"value": 0.1, "min": 0.02, "max": 1.0, "unit": "x imported window EmissionStrength (M_SB_WindowGlow GlowScale; WP6i review fix 4)"},
     "glow_begins_sun_elevation_deg": {
       "value": 4,
       "min": -10,
@@ -380,6 +380,6 @@
     "start_size": {"value": 0.7, "min": 0.3, "max": 1.0, "unit": "m puff size at the pot (User.StartSize, cm)"},
     "end_size": {"value": 2.8, "min": 1.2, "max": 3.5, "unit": "m puff size at end of life (User.EndSize, cm)"},
     "opacity": {"value": 0.7, "min": 0.2, "max": 0.8, "unit": "sprite opacity (User.Opacity -> M_ChimneySmokeSprite Opacity)"},
-    "tint": {"value": [0.06, 0.06, 0.07], "min": 0.0, "max": 1.0, "unit": "linear base colour (User.Tint)"}
+    "tint": {"value": [0.10, 0.10, 0.13], "min": 0.0, "max": 1.0, "unit": "linear base colour (User.Tint)"}
   }
 }

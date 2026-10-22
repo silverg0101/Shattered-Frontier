@@ -57,6 +57,14 @@ px150 = plume(150)[0]
 c['5_L_over_ref_y150'] = round(float(rows(L, 150)[px150].mean() / rows(LR, 150)[px150].mean()), 3) if len(px150) else None
 sky = [ratios[y] for y in ratios if y < 60]
 c['5_max_L_over_ref_sky_rows'] = max(sky) if sky else None
+# WP6i review r4 fix 1: no black pixels, no brown cast, hill and sky bands.
+box = (np.abs(L[0:561, 760:1201] - LR[0:561, 760:1201]) >= T)
+c['5_p5_L_over_ref_x760_1200_y0_560'] = round(float(np.percentile((L[0:561, 760:1201] / np.maximum(LR[0:561, 760:1201], 1))[box], 5)), 3) if box.any() else None
+rgb = np.asarray(Image.open(HERE / 'chimney-smoke.png').convert('RGB'), dtype=float)
+field = np.abs(L[380:541] - LR[380:541]) >= T
+c['5_field_plume_mean_R_minus_B'] = round(float((rgb[380:541, :, 0] - rgb[380:541, :, 2])[field].mean()), 1) if field.any() else None
+hill = [ratios[y] for y in ratios if 60 <= y <= 300]
+c['5_L_over_ref_hill_y60_300'] = [min(hill), max(hill)] if hill else None
 c['5_L_over_ref_min_max_y10_560'] = [min(ratios.values()), max(ratios.values())] if ratios else None
 c['5_rows_with_plume'] = sorted(ratios)
 edges = np.array([float(plume(y)[0].min()) if len(plume(y)[0]) else np.nan for y in range(100, 501)])

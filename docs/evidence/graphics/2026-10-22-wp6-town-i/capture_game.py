@@ -63,7 +63,7 @@ add('chimney-smoke-ref', chimney[0], chimney[1], 55)   # smoke hidden: measure_p
 REF = len(views) - 1
 CHIMNEY = REF - 1
 # Night row (lighting-and-atmosphere.md section 3): UE pitch +12 = sun 12 deg below the horizon, the Moon at 0.25 lux, sky light 1.0.
-NIGHT = {'sun_pitch': 12., 'sky': 1.0, 'moon_lux': 2.0}   # 0.25 lux (review r3) measured ground L 4 = black; 1 / 1.5 / 2 lux -> 7 / 11 / 15
+NIGHT = {'sun_pitch': 12., 'sky': 3.0, 'moon_lux': 2.5}   # review r4: the sky light carries the house shadows; 0.25 lux moon was black
 MOTION = REF   # the motion set follows the reference frame (smoke shown again) without moving the camera
 
 rng = random.Random(20261022)
@@ -161,8 +161,10 @@ u.log('WP6I_VIEWS ' + json.dumps([v[0] for v in views]))
 
 
 def hide_people():   # WP6i review r3 fix 2: every actor with a skeletal mesh (townsfolk, guards, NPCs), before each plume shot
-    hid = [a for a in u.GameplayStatics.get_all_actors_of_class(world, u.Actor) if a != pawn and not a.get_editor_property('hidden') and a.get_components_by_class(u.SkeletalMeshComponent)]
-    for a in hid: a.set_actor_hidden_in_game(True)
+    hid = [a for a in u.GameplayStatics.get_all_actors_of_class(world, u.Actor) if a != pawn and a.get_components_by_class(u.SkeletalMeshComponent)]
+    for a in hid:
+        a.set_actor_hidden_in_game(True)
+        for c in a.get_components_by_class(u.SkeletalMeshComponent): c.set_visibility(False, True)   # Pose() re-shows the actor, not the mesh
     state.setdefault('others', []).extend(hid)
     if hid: u.log(f'WP6_PEOPLE_HIDDEN {len(hid)} classes {sorted(set(a.get_class().get_name() for a in hid))}')
     return hid
@@ -195,6 +197,8 @@ def tick(_delta):
             if block: u.log(f'WP6_SIGHTLINE_BLOCKED {name} {block[:3]}')
         u.log(f'WP6_SIGHTLINE_CLEAR {name} props {len(props)}')
         if state['index'] in (CHIMNEY, REF):
+            if state['index'] == CHIMNEY and not u.GameplayStatics.get_all_actors_of_class(world, u.load_class(None, '/Script/ShatteredFrontier.SFTownsfolkBody')):
+                u.log('WP6_TOWNSFOLK_OFF')   # the capture runs with -ini:Game:[/Script/ShatteredFrontier.SFTownsfolkSettings]:bEnabled=False
             hide_people()
         if state['index'] == REF:
             for a in smokes: a.set_actor_hidden_in_game(True)

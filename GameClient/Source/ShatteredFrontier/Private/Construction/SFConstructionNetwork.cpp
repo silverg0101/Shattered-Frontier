@@ -965,6 +965,7 @@ int32 ASFGameMode::PrepareClaimPlots()
         Slab->GetStaticMeshComponent()->SetStaticMesh(LoadObject<UStaticMesh>(nullptr,TEXT("/Engine/BasicShapes/Cube.Cube")));
         Slab->GetStaticMeshComponent()->SetIsReplicated(true);
         Slab->Tags.Add(TEXT("SFConstructionSandboxFoundationV1"));
+        Slab->SetActorHiddenInGame(true);   // BLD-02 A2 fixture: the pad's visible form is DEC-03 levelling, not a graybox cube in the woods (WP6i r4)
         Slab->FinishSpawning(SlabAt);
         FClaimPlot Claim; Claim.ClaimId=FString::Printf(TEXT("clm_%s_%d"),*ZoneName,Index+1); Claim.CentreMetres=Plot.GetCenter(); Claim.SideMetres=20;
         const FTransform StateAt(FQuat::Identity,Offset,FVector::OneVector);

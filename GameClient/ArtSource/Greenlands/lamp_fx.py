@@ -9,6 +9,7 @@ import hashlib
 import importlib
 import json
 import math
+import re
 import sys
 
 HERE = Path(__file__).resolve().parent
@@ -54,6 +55,11 @@ def _stable_fraction(text):
 _GLASS = {}
 
 
+def _lantern(slot):   # lantern and street-lamp glass only: a window's light is its emissive (WP6i review r4 fix 5)
+    nm = str(slot.material_slot_name) + ' ' + (slot.material_interface.get_name() if slot.material_interface else '')
+    return 'Glow' in nm and not re.search(r'LitGlass|Window', nm, re.I)
+
+
 def glass_sockets(mesh, u):
     """Mesh-space cm centre of every lantern-glass chamber, read from the imported mesh itself: the connected pieces of its
     *Glow material slots, merged when closer than 60 cm. (The GLB-derived lamp-sockets.json points of building meshes
@@ -63,7 +69,7 @@ def glass_sockets(mesh, u):
     1 m (a cellar grille) gets no lamp."""
     name = mesh.get_name()
     if name not in _GLASS:
-        glow = [i for i, slot in enumerate(mesh.static_materials) if 'Glow' in str(slot.material_slot_name)]
+        glow = [i for i, slot in enumerate(mesh.static_materials) if _lantern(slot)]
         dm = u.DynamicMesh()
         dm, _ = u.GeometryScript_AssetUtils.copy_mesh_from_static_mesh(
             mesh, dm, u.GeometryScriptCopyMeshFromAssetOptions(), u.GeometryScriptMeshReadLOD())
