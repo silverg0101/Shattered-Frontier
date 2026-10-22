@@ -120,6 +120,8 @@ def _texture(name):
     assert tex, path
     tex.set_editor_property('compression_settings', u.TextureCompressionSettings.TC_DEFAULT)
     tex.set_editor_property('srgb', True)
+    if name == 'T_ChimneySmoke':   # WP6f review fix 1b: the taper samples U past 0..1 at the pot; wrapped, the next tile's column shows at the card edge
+        tex.set_editor_property('address_x', u.TextureAddress.TA_CLAMP)
     eal.save_loaded_asset(tex)
 
 
@@ -179,7 +181,9 @@ def build(cfg=None):
     _output(tint, u.MaterialProperty.MP_BASE_COLOR)
     opacity = _node(smoke, u.MaterialExpressionScalarParameter, parameter_name='Opacity', default_value=cfg['smoke_opacity'])
     v = _node(smoke, u.MaterialExpressionComponentMask, r=False, g=True, b=False, a=False); _link(uv, v, '')
-    ends = _node(smoke, u.MaterialExpressionSine, period=2.0); _link(v, ends, '')   # 0 at both ends of the card, 1 mid-way
+    foot = _node(smoke, u.MaterialExpressionSaturate); _link(_mul(smoke, v, _constant(smoke, 8.)), foot, '')   # 0 at the card's bottom edge, 1 from V = .125 (75 cm): hides the cut, keeps the pot end dense
+    head = _node(smoke, u.MaterialExpressionSaturate); _link(_mul(smoke, _sub(smoke, _constant(smoke, 1.), v), _constant(smoke, 5.)), head, '')   # 1 to V = .8, 0 at the top edge
+    ends = _mul(smoke, foot, head)   # WP6f review fix 1a: densest at the pot; `thin` does the dispersal
     fade = _node(smoke, u.MaterialExpressionLinearInterpolate)
     _link(_constant(smoke, 1), fade, 'A'); _link(ends, fade, 'B')
     _link(_node(smoke, u.MaterialExpressionScalarParameter, parameter_name='EdgeFade', default_value=0.), fade, 'Alpha')
