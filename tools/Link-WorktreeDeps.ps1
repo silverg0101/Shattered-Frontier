@@ -4,7 +4,10 @@ param([string]$Main = 'C:\Projects\Shattered-Frontier')
 $ErrorActionPreference = 'Stop'
 $here = (git rev-parse --show-toplevel).Replace('/', '\')
 if ($here -ieq $Main) { 'main checkout: nothing to link'; return }
-foreach ($rel in 'Artifacts\ThirdParty') {
+# Licensed, git-ignored Fab content the town builder needs (Environment/Greenlands/.gitignore).
+foreach ($rel in 'Artifacts\ThirdParty', 'GameClient\Content\Frontier\Environment\Greenlands\Garden',
+                 'GameClient\Content\Frontier\Environment\Greenlands\Village') {
+    if (-not (Test-Path (Join-Path $Main $rel))) { "missing in main: $rel"; continue }
     $dst = Join-Path $here $rel
     if (Test-Path $dst) { "exists: $rel"; continue }
     New-Item -ItemType Directory -Force (Split-Path $dst) | Out-Null
