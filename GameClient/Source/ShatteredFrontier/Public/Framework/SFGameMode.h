@@ -47,6 +47,9 @@ public:
     // Combat (SFCombatPilot.cpp)
     void TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarget = nullptr);
     void TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim);
+    /** Authority: an NPC's landed melee hit on a player (boar, townsfolk, guard); the caller checks reach and cooldown.
+      * A downed player respawns when this world's game mode runs the combat pilot. */
+    static void HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage);
     void BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer);
     /** Grants the killer's hides for this death, at most once; returns the number granted. */
     int32 RewardKill(const FString& DeathId, const FVector& BoarAt, ASFE1Character* Killer);
