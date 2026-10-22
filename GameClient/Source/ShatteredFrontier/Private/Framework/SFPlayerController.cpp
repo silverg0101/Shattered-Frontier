@@ -7,7 +7,7 @@
 #include "Framework/SFHudLayout.h"
 #include "UI/SFHudWidgets.h"
 #include "Gathering/SFGatheringHud.h"
-#include "Inventory/SFInventoryPanel.h"
+#include "UI/SFInventoryWidget.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Exchange/SFExchangeComponent.h"
 #include "Exchange/SFMarketBoardActor.h"
@@ -340,25 +340,27 @@ void ASFPlayerController::ToggleInventoryPanel()
 {
     USFGatheringPilotComponent* Pilot = FindComponentByClass<USFGatheringPilotComponent>();
     if (!IsLocalController() || !Pilot || !Pilot->IsEnabled()) { return; }
-    if (!InventoryPanel)
+    if (!InventoryWidget)
     {
-        InventoryPanel = CreateWidget<USFInventoryPanel>(this, USFInventoryPanel::StaticClass());
-        if (!InventoryPanel) { return; }
-        InventoryPanel->Configure(Pilot);
-        InventoryPanel->AddToViewport(20);
-        InventoryPanel->SetVisibility(ESlateVisibility::Collapsed);
+        const TSubclassOf<USFInventoryWidget> InventoryClass = LoadClass<USFInventoryWidget>(nullptr, USFInventoryWidget::AssetPath);
+        if (!InventoryClass) { UE_LOG(LogTemp, Error, TEXT("INVENTORY_WBP_MISSING %s: run tools/ui/create_widgets.py"), USFInventoryWidget::AssetPath); return; }
+        InventoryWidget = CreateWidget<USFInventoryWidget>(this, InventoryClass);
+        if (!InventoryWidget) { return; }
+        InventoryWidget->Configure(Pilot);
+        InventoryWidget->AddToViewport(20);
+        InventoryWidget->SetVisibility(ESlateVisibility::Collapsed);
     }
     // Visible (hit-testable) so the category tabs and item tooltips work; it only covers its own slot.
-    const bool bOpen = InventoryPanel->GetVisibility() == ESlateVisibility::Collapsed;
+    const bool bOpen = InventoryWidget->GetVisibility() == ESlateVisibility::Collapsed;
     if (bOpen)
     {
         // UI v5: fill the viewport; the canvas root places the 576 x 886 panel at 4% x 3% itself.
         int32 Width = 0, Height = 0; GetViewportSize(Width, Height);
         const float Scale = FMath::Max(0.01f, UWidgetLayoutLibrary::GetViewportScale(this));
-        InventoryPanel->SetDesiredSizeInViewport(FVector2D(Width / Scale, Height / Scale));
-        InventoryPanel->SetPositionInViewport(FVector2D::ZeroVector, false);
+        InventoryWidget->SetDesiredSizeInViewport(FVector2D(Width / Scale, Height / Scale));
+        InventoryWidget->SetPositionInViewport(FVector2D::ZeroVector, false);
     }
-    InventoryPanel->SetVisibility(bOpen ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    InventoryWidget->SetVisibility(bOpen ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
     // The build catalogue shares the left column: hidden while the inventory is open, back with build mode on close.
     if (Palette) { Palette->SetBuildModeActive(!bOpen && bBuildMode); }
 }
@@ -420,7 +422,7 @@ TSharedPtr<ISFExchangeService> ExchangeServiceFor(APlayerController* Controller)
 // A modal (trade, market) opens over the dimmed HUD only: the inventory and the build catalogue close first.
 void ASFPlayerController::CloseSidePanelsForModal()
 {
-    if (InventoryPanel) { InventoryPanel->SetVisibility(ESlateVisibility::Collapsed); }
+    if (InventoryWidget) { InventoryWidget->SetVisibility(ESlateVisibility::Collapsed); }
     if (Palette) { Palette->SetBuildModeActive(false); }
 }
 

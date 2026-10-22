@@ -2,7 +2,7 @@
 #include "Exchange/SFExchangeWidgets.h"
 #include "Framework/SFPlayerController.h"
 #include "Framework/SFHudLayout.h"
-#include "Inventory/SFInventoryPanel.h"
+#include "UI/SFInventoryWidget.h"
 #include "EnhancedInputComponent.h"
 #include "InputAction.h"
 #include "Combat/SFCombatPilot.h"
@@ -1403,7 +1403,7 @@ void ASFPlayerController::SetBuildMode(bool bActive)
     if (Palette)
     {
         if (bActive) { PaletteViewportSize=FIntPoint::ZeroValue; }  // LayoutPalette measures the content again
-        Palette->SetBuildModeActive(bActive && !(InventoryPanel && InventoryPanel->GetVisibility()==ESlateVisibility::Visible));
+        Palette->SetBuildModeActive(bActive && !(InventoryWidget && InventoryWidget->GetVisibility()==ESlateVisibility::Visible));
     }
     if (HudLayout) { HudLayout->SetBuildModeActive(bActive); }
     UE_LOG(LogTemp,Display,TEXT("BUILD_MODE Enabled=%d"),bActive);

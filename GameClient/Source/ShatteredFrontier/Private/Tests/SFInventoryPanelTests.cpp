@@ -1,4 +1,4 @@
-#include "Inventory/SFInventoryPanel.h"
+#include "UI/SFInventoryWidget.h"
 #include "Framework/SFPlayerController.h"
 
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
@@ -9,7 +9,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFInventoryPanelRowsTest,
 
 bool FSFInventoryPanelRowsTest::RunTest(const FString& Parameters)
 {
-    TestEqual(TEXT("Empty inventory shows Empty"),USFInventoryPanel::FormatRows(USFInventoryPanel::BuildRows({})),FString(TEXT("Empty")));
+    TestEqual(TEXT("Empty inventory shows Empty"),USFInventoryWidget::FormatRows(USFInventoryWidget::BuildRows({})),FString(TEXT("Empty")));
 
     // Fake inventory: split oak stacks, an empty slot, an unnamed entry and an equipped tool.
     const TArray<TPair<FText,int32>> Fake={
@@ -19,17 +19,17 @@ bool FSFInventoryPanelRowsTest::RunTest(const FString& Parameters)
         {FText::FromString(TEXT("Rough timber")),0},
         {FText::GetEmpty(),4},
         {FText::FromString(TEXT("Iron axe (equipped)")),1}};
-    const TArray<TPair<FText,int32>> Rows=USFInventoryPanel::BuildRows(Fake);
+    const TArray<TPair<FText,int32>> Rows=USFInventoryWidget::BuildRows(Fake);
     if (!TestEqual(TEXT("Merged, non-empty rows"),Rows.Num(),3)) { return false; }
     TestEqual(TEXT("Sorted first"),Rows[0].Key.ToString(),FString(TEXT("Iron axe (equipped)")));
     TestEqual(TEXT("Iron ore name"),Rows[1].Key.ToString(),FString(TEXT("Iron ore")));
     TestEqual(TEXT("Iron ore count"),Rows[1].Value,2);
     TestEqual(TEXT("Oak stacks merge"),Rows[2].Value,8);
-    TestEqual(TEXT("Formatted text"),USFInventoryPanel::FormatRows(Rows),FString(TEXT("Iron axe (equipped)  x1\nIron ore  x2\nOak log  x8")));
+    TestEqual(TEXT("Formatted text"),USFInventoryWidget::FormatRows(Rows),FString(TEXT("Iron axe (equipped)  x1\nIron ore  x2\nOak log  x8")));
 
     // A later harvest grant changes the count the panel shows.
     TArray<TPair<FText,int32>> AfterHarvest=Fake; AfterHarvest.Emplace(FText::FromString(TEXT("Oak log")),1);
-    TestEqual(TEXT("Count updates after grant"),USFInventoryPanel::BuildRows(AfterHarvest)[2].Value,9);
+    TestEqual(TEXT("Count updates after grant"),USFInventoryWidget::BuildRows(AfterHarvest)[2].Value,9);
     return true;
 }
 
@@ -41,24 +41,67 @@ bool FSFInventoryPanelTabsTest::RunTest(const FString& Parameters)
 {
     auto Entry=[](const TCHAR* Name,int32 Count,ESFInventoryTab Category,bool bEquipped=false)
     { FSFInventoryEntry E; E.Name=FText::FromString(Name); E.Count=Count; E.Category=Category; E.bEquipped=bEquipped; E.UnitWeight=1.5f; E.Description=FText::FromString(TEXT("Desc")); return E; };
-    const TArray<FSFInventoryEntry> Entries=USFInventoryPanel::BuildEntries({
+    const TArray<FSFInventoryEntry> Entries=USFInventoryWidget::BuildEntries({
         Entry(TEXT("Oak log"),5,ESFInventoryTab::Materials),Entry(TEXT("Oak log"),3,ESFInventoryTab::Materials),
         Entry(TEXT("Iron axe"),1,ESFInventoryTab::Gear,true),Entry(TEXT("Stew"),2,ESFInventoryTab::Consumables),
         Entry(TEXT("Empty"),0,ESFInventoryTab::Gear)});
     if (!TestEqual(TEXT("Merged and empties dropped"),Entries.Num(),3)) { return false; }
     TestEqual(TEXT("Oak stacks merge"),Entries[1].Count,8);
-    TestEqual(TEXT("All tab keeps everything"),USFInventoryPanel::FilterByTab(Entries,ESFInventoryTab::All).Num(),3);
-    const TArray<FSFInventoryEntry> Gear=USFInventoryPanel::FilterByTab(Entries,ESFInventoryTab::Gear);
+    TestEqual(TEXT("All tab keeps everything"),USFInventoryWidget::FilterByTab(Entries,ESFInventoryTab::All).Num(),3);
+    const TArray<FSFInventoryEntry> Gear=USFInventoryWidget::FilterByTab(Entries,ESFInventoryTab::Gear);
     if (TestEqual(TEXT("Gear tab"),Gear.Num(),1)) { TestEqual(TEXT("Gear is the axe"),Gear[0].Name.ToString(),FString(TEXT("Iron axe"))); }
-    TestEqual(TEXT("Materials tab"),USFInventoryPanel::FilterByTab(Entries,ESFInventoryTab::Materials).Num(),1);
-    TestEqual(TEXT("Consumables tab"),USFInventoryPanel::FilterByTab(Entries,ESFInventoryTab::Consumables).Num(),1);
-    TestEqual(TEXT("Tab label"),USFInventoryPanel::TabLabel(ESFInventoryTab::Consumables),FString(TEXT("Food")));
+    TestEqual(TEXT("Materials tab"),USFInventoryWidget::FilterByTab(Entries,ESFInventoryTab::Materials).Num(),1);
+    TestEqual(TEXT("Consumables tab"),USFInventoryWidget::FilterByTab(Entries,ESFInventoryTab::Consumables).Num(),1);
+    TestEqual(TEXT("Tab label"),USFInventoryWidget::TabLabel(ESFInventoryTab::Consumables),FString(TEXT("Food")));
 
-    const FSFInventoryTooltip Tip=USFInventoryPanel::BuildTooltip(Gear[0]);
+    const FSFInventoryTooltip Tip=USFInventoryWidget::BuildTooltip(Gear[0]);
     TestEqual(TEXT("Tooltip name"),Tip.Title,FString(TEXT("Iron axe")));
     TestEqual(TEXT("Tooltip description"),Tip.Description,FString(TEXT("Desc")));
     TestEqual(TEXT("Tooltip category, rarity and state"),Tip.TypeLine,FString(TEXT("Tools  -  Common  -  Equipped")));
     TestEqual(TEXT("Tooltip weight"),Tip.WeightLine,FString(TEXT("Weight  1.5 kg")));
+    return true;
+}
+
+#include "Components/TextBlock.h"
+#include "Editor.h"
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFInventoryWidgetTest,
+    "ShatteredFrontier.Inventory.Panel.Widget",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+
+// WBP_Inventory constructs, binds SlotGrid, fills one cell per backpack slot from entries, shows stacks, equip state and weight.
+// Needs /Game/Frontier/UI/Widgets/Inventory/WBP_Inventory (py -3 tools/Run-InEditor.py tools/ui/create_widgets.py).
+bool FSFInventoryWidgetTest::RunTest(const FString& Parameters)
+{
+    UWorld* World=GEditor ? GEditor->GetEditorWorldContext().World() : nullptr;
+    if (!TestNotNull(TEXT("Editor world"),World)) { return false; }
+    const TSubclassOf<USFInventoryWidget> Class=LoadClass<USFInventoryWidget>(nullptr,USFInventoryWidget::AssetPath);
+    if (!TestNotNull(TEXT("WBP_Inventory loads"),Class.Get())) { return false; }
+    USFInventoryWidget* Panel=CreateWidget<USFInventoryWidget>(World,Class);
+    if (!TestNotNull(TEXT("WBP_Inventory constructs"),Panel)) { return false; }
+    for (const TCHAR* Name : {TEXT("SlotGrid"),TEXT("TabAll"),TEXT("TabMaterials"),TEXT("TabTools"),TEXT("TabFood"),TEXT("MainHandSlot"),TEXT("CloseButton"),TEXT("WeightText"),TEXT("Tooltip")})
+    { TestNotNull(FString::Printf(TEXT("%s bound"),Name),Panel->GetWidgetFromName(Name)); }
+
+    auto Entry=[](const TCHAR* Name,int32 Count,ESFInventoryTab Category,bool bEquipped=false)
+    { FSFInventoryEntry E; E.Name=FText::FromString(Name); E.Count=Count; E.Category=Category; E.bEquipped=bEquipped; E.UnitWeight=1.5f; return E; };
+    const TArray<FSFInventoryEntry> Entries=USFInventoryWidget::BuildEntries({
+        Entry(TEXT("Oak log"),5,ESFInventoryTab::Materials),Entry(TEXT("Iron axe"),1,ESFInventoryTab::Gear,true),Entry(TEXT("Stew"),2,ESFInventoryTab::Consumables)});
+    Panel->Present(Entries,12,3.f,40.f);
+    TestEqual(TEXT("One cell per backpack slot"),Panel->CellCount(),12);
+    if (Panel->CellCount()!=12) { return false; }
+    // Sorted by name: Iron axe, Oak log, Stew.
+    TestTrue(TEXT("Equipped axe cell is selected"),Panel->GetCell(0)->IsSelected());
+    TestFalse(TEXT("Oak cell is not selected"),Panel->GetCell(1)->IsSelected());
+    TestEqual(TEXT("Oak stack count"),Panel->GetCell(1)->GetCountText().ToString(),FString(TEXT("5")));
+    TestEqual(TEXT("Stew stack count"),Panel->GetCell(2)->GetCountText().ToString(),FString(TEXT("2")));
+    TestEqual(TEXT("Empty cell has no count"),Panel->GetCell(3)->GetCountText().ToString(),FString());
+    if (Panel->GetMainHand()) { TestTrue(TEXT("Main hand shows the equipped tool"),Panel->GetMainHand()->IsSelected()); }
+    TestEqual(TEXT("Weight line"),Panel->GetWeightLine().ToString(),FString(TEXT("Weight 3.0 / 40 kg")));
+    Panel->SelectTab(ESFInventoryTab::Materials);
+    Panel->Present(Entries,12,3.f,40.f);
+    TestEqual(TEXT("Materials tab keeps the stack count"),Panel->GetCell(0)->GetCountText().ToString(),FString(TEXT("5")));
+    TestEqual(TEXT("Materials tab drops the stew"),Panel->GetCell(1)->GetCountText().ToString(),FString());
+    Panel->Present(Entries,6,3.f,40.f);
+    TestEqual(TEXT("Cells follow a smaller backpack"),Panel->CellCount(),6);
     return true;
 }
 
@@ -95,7 +138,7 @@ bool FSFInventoryPanelAccessorTest::RunTest(const FString& Parameters)
     }
     const FText OakText=Oak.Item.LoadSynchronous()->DisplayName;
     const FString OakName=OakText.IsEmpty() ? Oak.Item.GetAssetName() : OakText.ToString();
-    const TArray<TPair<FText,int32>> Rows=USFInventoryPanel::BuildRows(Gather->GetInventoryItems());
+    const TArray<TPair<FText,int32>> Rows=USFInventoryWidget::BuildRows(Gather->GetInventoryItems());
     const TPair<FText,int32>* OakRow=Rows.FindByPredicate([&OakName](const TPair<FText,int32>& Row) { return Row.Key.ToString()==OakName; });
     if (TestNotNull(TEXT("Oak row from real inventory"),OakRow)) { TestEqual(TEXT("Oak count"),OakRow->Value,3); }
     TestTrue(TEXT("Equipped tool listed"),Rows.ContainsByPredicate([](const TPair<FText,int32>& Row) { return Row.Key.ToString().EndsWith(TEXT(" (equipped)")); }));
@@ -112,13 +155,13 @@ bool FSFInventoryPanelDefinitionTest::RunTest(const FString& Parameters)
     Tool->Description=FText::FromString(TEXT("Chops."));
     UInventoryItemDefinition* Food=NewObject<UInventoryItemDefinition>(GetTransientPackage()); Food->UseType=EInventoryItemUseType::Eat;
     UInventoryItemDefinition* Ore=NewObject<UInventoryItemDefinition>(GetTransientPackage());
-    TestEqual(TEXT("Equip is Gear"),USFInventoryPanel::CategoryOf(*Tool),ESFInventoryTab::Gear);
-    TestEqual(TEXT("Eat is Consumables"),USFInventoryPanel::CategoryOf(*Food),ESFInventoryTab::Consumables);
-    TestEqual(TEXT("No use type is Materials"),USFInventoryPanel::CategoryOf(*Ore),ESFInventoryTab::Materials);
-    const FSFInventoryEntry Entry=USFInventoryPanel::MakeEntry(*Tool,TEXT("Fallback"),1,false);
+    TestEqual(TEXT("Equip is Gear"),USFInventoryWidget::CategoryOf(*Tool),ESFInventoryTab::Gear);
+    TestEqual(TEXT("Eat is Consumables"),USFInventoryWidget::CategoryOf(*Food),ESFInventoryTab::Consumables);
+    TestEqual(TEXT("No use type is Materials"),USFInventoryWidget::CategoryOf(*Ore),ESFInventoryTab::Materials);
+    const FSFInventoryEntry Entry=USFInventoryWidget::MakeEntry(*Tool,TEXT("Fallback"),1,false);
     TestEqual(TEXT("Name from definition"),Entry.Name.ToString(),FString(TEXT("Test axe")));
     TestEqual(TEXT("Weight from definition"),Entry.UnitWeight,2.f);
-    TestEqual(TEXT("Fallback name when unnamed"),USFInventoryPanel::MakeEntry(*Ore,TEXT("Fallback"),1,false).Name.ToString(),FString(TEXT("Fallback")));
+    TestEqual(TEXT("Fallback name when unnamed"),USFInventoryWidget::MakeEntry(*Ore,TEXT("Fallback"),1,false).Name.ToString(),FString(TEXT("Fallback")));
     return true;
 }
 #endif

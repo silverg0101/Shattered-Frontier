@@ -59,7 +59,10 @@ void USFUnitFrameWidget::SetStamina(int32 Current, int32 Max)
 
 void USFUnitFrameWidget::SetLevel(int32 Level)
 {
-    if (LevelText) { LevelText->SetText(FText::AsNumber(Level)); }
+    // No level (a target that carries none): the numeral collapses instead of showing a made-up one.
+    if (!LevelText) { return; }
+    LevelText->SetVisibility(Level > 0 ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+    if (Level > 0) { LevelText->SetText(FText::AsNumber(Level)); }
 }
 
 void USFUnitFrameWidget::SetName(const FText& Name)
@@ -327,6 +330,16 @@ void USFHudWidget::PresentVitals(int32 Health, int32 MaxHealth, int32 Stamina, i
     if (Vitals) { Vitals->SetVitals(Health, MaxHealth, Stamina, MaxStamina); }
 }
 
+void USFHudWidget::PresentLevel(int32 Level)
+{
+    if (Vitals) { Vitals->SetLevel(Level); }
+}
+
+void USFHudWidget::SyncLevel()
+{
+    if (Pilot && Pilot->GetCharacterLevel() != ShownLevel) { ShownLevel = Pilot->GetCharacterLevel(); PresentLevel(ShownLevel); }
+}
+
 void USFHudWidget::PresentTarget(bool bShow, const FString& Name, int32 Level, int32 Health, int32 MaxHealth)
 {
     if (!Target) { return; }
@@ -380,6 +393,7 @@ void USFHudWidget::PushToast(const FString& Message)
 void USFHudWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
+    SyncLevel();
     if (Hotbar) { Hotbar->Present(Pilot && Pilot->IsEnabled() ? Pilot->GetInventoryItems() : TArray<TPair<FText, int32>>()); }
     // Target frame: the controller's selected combat target (boar or townsfolk), hidden while the station panel is open.
     const ASFPlayerController* Player = Cast<ASFPlayerController>(GetOwningPlayer());
@@ -390,6 +404,6 @@ void USFHudWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     { Health = Boar->Health(); MaxHealth = GetDefault<USFCombatPilotSettings>()->BoarHealth; Name = TEXT("Boar"); }
     else if (const ASFTownsfolkNpc* Npc = Cast<ASFTownsfolkNpc>(CombatTarget))
     { Health = Npc->Health(); MaxHealth = GetDefault<USFTownsfolkSettings>()->ResidentHealth; Name = Npc->Id(); }
-    // ponytail: targets carry no level yet, so the badge shows 1.
-    PresentTarget(CombatTarget && !Player->IsStationPanelOpen(), Name, 1, Health, MaxHealth);
+    // Targets carry no level yet: level 0 collapses the target badge numeral.
+    PresentTarget(CombatTarget && !Player->IsStationPanelOpen(), Name, 0, Health, MaxHealth);
 }

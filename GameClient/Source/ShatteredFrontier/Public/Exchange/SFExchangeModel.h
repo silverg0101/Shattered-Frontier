@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Inventory/SFInventoryPanel.h"
+#include "UI/SFInventoryWidget.h"
 
 // View-model layer for the trading UI. No UObjects and no gRPC here: widgets bind to these classes, and the real
 // Exchange client (Services/) or a test fake implements ISFExchangeService. Amounts are whole gold, int64, as in

@@ -135,7 +135,7 @@ void USFCharacterSessionComponent::BeginRestore()
         if (!Self || State.Status != ESFGameplayStatus::Ok) { Part(2, false); return; }
         AActor* Owner = Self->GetOwner();
         if (auto* Gathering = Owner->FindComponentByClass<USFGatheringPilotComponent>())
-        { Gathering->RestoreSkills(State.Skills); Gathering->RestoreKnownRecipes(State.KnownRecipes); }
+        { Gathering->RestoreSkills(State.Skills); Gathering->RestoreLevel(State.Level); Gathering->RestoreKnownRecipes(State.KnownRecipes); }
         if (auto* Quest = Owner->FindComponentByClass<USFQuestPilotComponent>())
         { Quest->Restore(State.Quests, State.ProgressionRevision); }
         Self->PositionRevision = State.PositionRevision;

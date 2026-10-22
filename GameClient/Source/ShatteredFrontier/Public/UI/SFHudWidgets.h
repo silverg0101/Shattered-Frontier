@@ -186,6 +186,9 @@ class SHATTEREDFRONTIER_API USFHudWidget : public USFUiWidget
 public:
     void Configure(USFGatheringPilotComponent* InPilot) { Pilot = InPilot; }
     void PresentVitals(int32 Health, int32 MaxHealth, int32 Stamina, int32 MaxStamina);
+    // The player badge: the character level. SyncLevel (each tick) reads it from the pilot component and pushes only when it changes.
+    void PresentLevel(int32 Level);
+    void SyncLevel();
     void PresentQuests(const TArray<FSFQuestView>& Shown);
     void PushToast(const FString& Text);
     // Shows the target frame with this data, or hides it (bShow false).
@@ -215,4 +218,5 @@ protected:
 private:
     USFUnitFrameWidget* MakeFrame(TSubclassOf<USFUnitFrameWidget>& Cached, const TCHAR* Path);
     UPROPERTY(Transient) TObjectPtr<USFGatheringPilotComponent> Pilot;
+    int32 ShownLevel = 0;
 };

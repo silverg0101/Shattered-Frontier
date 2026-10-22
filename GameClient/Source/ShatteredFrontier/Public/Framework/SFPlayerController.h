@@ -14,7 +14,7 @@ class USFHudLayout;
 class USFHudWidget;
 class USFMarketBoard;
 class USFTradeWindow;
-class USFInventoryPanel;
+class USFInventoryWidget;
 class USFDialoguePanel;
 class USFGraphicsMenu;
 class ASFDialogueNpc;
@@ -247,7 +247,7 @@ private:
     ESFE1InteractionResult ProcessInteraction(AActor* Target, uint32 ExpectedRevision);
     void RefreshLocalFeedback();
 
-    UPROPERTY(Transient) TObjectPtr<USFInventoryPanel> InventoryPanel;
+    UPROPERTY(Transient) TObjectPtr<USFInventoryWidget> InventoryWidget;
     UPROPERTY(Transient) TObjectPtr<USFGatheringHud> GatheringHud;
     UPROPERTY(Transient) TObjectPtr<USFHudLayout> HudLayout;
     UPROPERTY(Transient) TObjectPtr<USFHudWidget> HudWidget;

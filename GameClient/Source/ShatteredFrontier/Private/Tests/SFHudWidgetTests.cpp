@@ -113,4 +113,37 @@ bool FSFHudWidgetTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Toast expires"),Hud->Toasts->VisibleCards(),0);
     return true;
 }
+
+#include "Framework/SFPlayerController.h"
+#include "Gathering/SFGatheringPilot.h"
+#include "GameFramework/WorldSettings.h"
+#include "Tests/AutomationCommon.h"
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFHudLevelTest,
+    "ShatteredFrontier.Hud.Level",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+
+// The character level (restored from progression-service into the owner-replicated pilot component) reaches the player badge; a target has no level.
+bool FSFHudLevelTest::RunTest(const FString& Parameters)
+{
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) { return false; }
+    UWorld* World=Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
+    auto* PC=World->SpawnActor<ASFPlayerController>();
+    auto* Pilot=PC ? PC->FindComponentByClass<USFGatheringPilotComponent>() : nullptr;
+    if (!TestNotNull(TEXT("Pilot"),Pilot)) { return false; }
+    const TSubclassOf<USFHudWidget> HudClass=LoadClass<USFHudWidget>(nullptr,USFHudWidget::AssetPath);
+    USFHudWidget* Hud=HudClass ? CreateWidget<USFHudWidget>(World,HudClass) : nullptr;
+    if (!TestNotNull(TEXT("WBP_Hud constructs"),Hud) || !Hud->Vitals || !Hud->Target) { return false; }
+    Hud->Configure(Pilot);
+    TestEqual(TEXT("New character is level 1"),Pilot->GetCharacterLevel(),1);
+    Pilot->RestoreLevel(12);
+    Hud->SyncLevel();
+    TestEqual(TEXT("Restored level reaches the player badge"),Hud->Vitals->LevelText->GetText().ToString(),FString(TEXT("12")));
+    Pilot->RestoreLevel(13);
+    Hud->SyncLevel();
+    TestEqual(TEXT("A level-up reaches the badge"),Hud->Vitals->LevelText->GetText().ToString(),FString(TEXT("13")));
+    Hud->PresentTarget(true,TEXT("Boar"),0,30,60);
+    TestEqual(TEXT("A target without a level collapses its numeral"),Hud->Target->LevelText->GetVisibility(),ESlateVisibility::Collapsed);
+    return true;
+}
 #endif

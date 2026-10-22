@@ -356,6 +356,7 @@ void USFGatheringPilotComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProp
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,Feedback,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,Skills,COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,CharacterLevel,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,SkillLockReadyAt,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,bEnabled,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,bPrimaryRole,COND_OwnerOnly);
@@ -1017,6 +1018,12 @@ bool USFGatheringPilotComponent::CycleRecipeFromRay(const FVector& Start, const 
     if (!Node || !Node->IsRefinery()) { return false; }
     CycleStationRecipe(Node->Kind);
     return true;
+}
+
+void USFGatheringPilotComponent::RestoreLevel(int32 ServiceLevel)
+{
+    CharacterLevel=FMath::Max(1,ServiceLevel);
+    GetOwner()->ForceNetUpdate();
 }
 
 void USFGatheringPilotComponent::RestoreSkills(const TMap<FString,int32>& ServiceSkills)

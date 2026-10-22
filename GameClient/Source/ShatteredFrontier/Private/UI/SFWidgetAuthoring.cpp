@@ -18,6 +18,7 @@
 #include "Components/OverlaySlot.h"
 #include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
+#include "Components/UniformGridPanel.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 #include "Components/WrapBox.h"
@@ -28,6 +29,7 @@
 #include "Kismet2/KismetEditorUtilities.h"
 #include "Misc/PackageName.h"
 #include "UI/SFHudWidgets.h"
+#include "UI/SFInventoryWidget.h"
 #include "UI/SFUiWidgets.h"
 #include "UObject/SavePackage.h"
 #include "WidgetBlueprint.h"
@@ -40,6 +42,7 @@ namespace
 constexpr const TCHAR* CommonDir = TEXT("/Game/Frontier/UI/Widgets/Common");
 constexpr const TCHAR* HudDir = TEXT("/Game/Frontier/UI/Widgets/Hud");
 constexpr const TCHAR* UnitFramesDir = TEXT("/Game/Frontier/UI/Widgets/Unit");
+constexpr const TCHAR* InventoryDir = TEXT("/Game/Frontier/UI/Widgets/Inventory");
 
 // ---- tree helpers. Named widgets are Designer variables so the C++ BindWidget lookups find them. Fonts are never baked (the family is a
 // runtime composite font); the C++ base applies them, so seeds only set text.
@@ -480,6 +483,86 @@ void HudLayout(UWidgetTree* T)
     T->RootWidget = Root;
 }
 
+// ---- inventory (WBP_Inventory, rough start from the old code-built panel and v5 inventory.png; the owner lays it out in the Designer)
+UUserWidget* Inst(UWidgetTree* T, const TCHAR* Dir, const TCHAR* Wbp, const TCHAR* Name)
+{
+    UClass* Class = SharedClass(Dir, Wbp);
+    UUserWidget* Widget = Class ? T->ConstructWidget<UUserWidget>(TSubclassOf<UUserWidget>(Class), Name ? FName(Name) : NAME_None) : nullptr;
+    if (Widget && Name) { Widget->bIsVariable = true; }
+    return Widget;
+}
+
+void InventoryLayout(UWidgetTree* T)
+{
+    UCanvasPanel* Root = N<UCanvasPanel>(T, TEXT("Root"));
+    // The panel frame (WBP_PanelFrame) at the concept rect (85,31) 575 x 887 of 1920 x 1080, the body over it.
+    UUserWidget* Frame = Inst(T, CommonDir, TEXT("WBP_PanelFrame"), TEXT("Panel"));
+    UCanvasPanel* Body = A<UCanvasPanel>(T);
+    auto Place = [Body](UWidget* Child, float X, float Y)
+    {
+        if (!Child) { return; }
+        UCanvasPanelSlot* Placed = Body->AddChildToCanvas(Child);
+        Placed->SetAutoSize(true); Placed->SetPosition(FVector2D(X, Y));
+    };
+    // Tabs and close.
+    UHorizontalBox* Tabs = A<UHorizontalBox>(T);
+    for (const TCHAR* Name : {TEXT("TabAll"), TEXT("TabMaterials"), TEXT("TabTools"), TEXT("TabFood")})
+    { if (UUserWidget* Tab = Inst(T, CommonDir, TEXT("WBP_Tab"), Name)) { Tabs->AddChildToHorizontalBox(Tab)->SetPadding(FMargin(0.f, 0.f, 6.f, 0.f)); } }
+    Place(Tabs, 0.f, 0.f);
+    Place(Inst(T, CommonDir, TEXT("WBP_Button"), TEXT("CloseButton")), 440.f, 0.f);
+    // Equipment: five armour slots left, the paperdoll, the main hand (the equipped tool) and three more right. Only the main hand is live today.
+    UVerticalBox* Left = A<UVerticalBox>(T);
+    for (int32 Index = 0; Index < 5; ++Index) { if (UUserWidget* Cell = Inst(T, CommonDir, TEXT("WBP_Slot"), nullptr)) { Left->AddChildToVerticalBox(Cell)->SetPadding(FMargin(0.f, 0.f, 0.f, 4.f)); } }
+    Place(Left, 0.f, 60.f);
+    Place(Piece(T, nullptr, TEXT("paperdoll_adventurer"), 158.f, 390.f), 180.f, 70.f);
+    UVerticalBox* Right = A<UVerticalBox>(T);
+    for (int32 Index = 0; Index < 4; ++Index) { if (UUserWidget* Cell = Inst(T, CommonDir, TEXT("WBP_Slot"), Index == 0 ? TEXT("MainHandSlot") : nullptr)) { Right->AddChildToVerticalBox(Cell)->SetPadding(FMargin(0.f, 0.f, 0.f, 4.f)); } }
+    Place(Right, 400.f, 60.f);
+    // The bag: C++ fills SlotGrid with one WBP_Slot per backpack slot.
+    UUniformGridPanel* Grid = N<UUniformGridPanel>(T, TEXT("SlotGrid"));
+    Grid->SetSlotPadding(FMargin(2.f));
+    UOverlay* GridStack = A<UOverlay>(T);
+    GridStack->AddChildToOverlay(Grid);
+    UTextBlock* Empty = Txt(T, TEXT("EmptyText"), TEXT("Your pack is empty."));
+    Put(GridStack, Empty, HAlign_Center, VAlign_Center);
+    Place(GridStack, 0.f, 540.f);
+    // Footer.
+    Place(Txt(T, TEXT("WeightText"), TEXT("Weight 0.0 kg")), 0.f, 760.f);
+    UHorizontalBox* Gold = N<UHorizontalBox>(T, TEXT("GoldRow"));
+    Gold->AddChildToHorizontalBox(Txt(T, TEXT("GoldText"), TEXT("Gold 0")))->SetPadding(FMargin(0.f, 0.f, 8.f, 0.f));
+    Gold->AddChildToHorizontalBox(Piece(T, nullptr, Kit(TEXT("icon_coin")) ? TEXT("icon_coin") : TEXT("icon_coin_stack"), 20.f))->SetVerticalAlignment(VAlign_Center);
+    Gold->SetVisibility(ESlateVisibility::Collapsed);
+    Place(Gold, 380.f, 760.f);
+    if (Frame)
+    {
+        // A nested WBP cannot hold tree widgets in its NamedSlot from here, so the shared frame is the backdrop and the body sits over it.
+        if (USFPanelFrameWidget* Titled = Cast<USFPanelFrameWidget>(Frame)) { Titled->TitleText = FText::FromString(TEXT("Inventory")); }
+        UCanvasPanelSlot* FrameSlot = Root->AddChildToCanvas(Sized(T, nullptr, Frame, 575.f, 887.f));
+        FrameSlot->SetAnchors(FAnchors(85.f / 1920.f, 31.f / 1080.f)); FrameSlot->SetOffsets(FMargin(0.f)); FrameSlot->SetAutoSize(true);
+    }
+    UCanvasPanelSlot* BodySlot = Root->AddChildToCanvas(Body);
+    BodySlot->SetAnchors(FAnchors(85.f / 1920.f, 31.f / 1080.f)); BodySlot->SetOffsets(FMargin(24.f, 70.f, 0.f, 0.f)); BodySlot->SetAutoSize(true);
+    // The tooltip sits beside the panel (587,120): art, name, type line, quantity and weight rows, description.
+    UBorder* Tip = KitPanel(T, TEXT("tooltip_frame"), 1.f, Slate(0.96f), Brass(), FMargin(16.f, 12.f), 3.f);
+    Tip->Rename(TEXT("Tooltip")); Tip->bIsVariable = true;
+    UHorizontalBox* TipLayout = A<UHorizontalBox>(T);
+    TipLayout->AddChildToHorizontalBox(Sized(T, nullptr, N<UImage>(T, TEXT("TipIcon")), 120.f, 178.f))->SetVerticalAlignment(VAlign_Top);
+    UVerticalBox* TipText = A<UVerticalBox>(T);
+    TipText->AddChildToVerticalBox(Txt(T, TEXT("TipTitle"), TEXT("Item")));
+    TipText->AddChildToVerticalBox(Txt(T, TEXT("TipType"), TEXT("Type")));
+    TipText->AddChildToVerticalBox(Txt(T, TEXT("TipQuantity"), TEXT("0")));
+    TipText->AddChildToVerticalBox(Txt(T, TEXT("TipWeight"), TEXT("0.0 kg")));
+    UTextBlock* Description = Txt(T, TEXT("TipDescription"), TEXT(""));
+    Description->SetAutoWrapText(true);
+    TipText->AddChildToVerticalBox(Sized(T, nullptr, Description, 300.f, 0.f));
+    TipLayout->AddChildToHorizontalBox(TipText)->SetPadding(FMargin(14.f, 0.f, 0.f, 0.f));
+    Tip->SetContent(TipLayout);
+    Tip->SetVisibility(ESlateVisibility::Collapsed);
+    UCanvasPanelSlot* TipSlot = Root->AddChildToCanvas(Tip);
+    TipSlot->SetAnchors(FAnchors(587.f / 1920.f, 120.f / 1080.f)); TipSlot->SetAutoSize(true); TipSlot->SetOffsets(FMargin(0.f));
+    T->RootWidget = Root;
+}
+
 struct FSpec
 {
     const TCHAR* Dir;
@@ -530,6 +613,7 @@ TArray<FSpec> Specs()
         {HudDir, TEXT("WBP_HudQuestTracker"), USFHudQuestTrackerWidget::StaticClass(), QuestTrackerLayout, nullptr},
         {HudDir, TEXT("WBP_HudToasts"), USFHudToastsWidget::StaticClass(), ToastsLayout, nullptr},
         {HudDir, TEXT("WBP_Hud"), USFHudWidget::StaticClass(), HudLayout, nullptr},
+        {InventoryDir, TEXT("WBP_Inventory"), USFInventoryWidget::StaticClass(), InventoryLayout, nullptr},
     };
 }
 }

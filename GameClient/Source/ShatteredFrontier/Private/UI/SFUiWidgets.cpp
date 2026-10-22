@@ -164,6 +164,7 @@ void USFSlotWidget::OnSelectedChanged_Implementation(bool bNowSelected)
 void USFSlotWidget::ApplyKitStyle()
 {
     if (Frame) { Frame->SetBrush(SlotBrush(*NormalPiece.ToString(), bSelected)); Frame->SetBrushColor(FLinearColor::White); }
+    if (Icon && !Icon->GetBrush().GetResourceObject()) { Icon->SetVisibility(ESlateVisibility::Collapsed); }  // an empty slot draws no white square; SetIcon shows it again
     KeyStyle.Apply(KeyLabel);
     CountStyle.Apply(CountLabel);
 }
