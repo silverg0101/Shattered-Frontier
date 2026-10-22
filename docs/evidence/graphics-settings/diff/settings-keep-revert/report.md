@@ -5,7 +5,7 @@ REVIEW = the element could not be measured (no live widget overlaps it, or no vi
 | element | concept rect | live widget | dx | dy | dw | dh | IoU/edge | colour dE | verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | modal frame | [548, 379, 824, 341] | SizeBox:SizeBox_149 | +0 | +0 | +0 | +0 | 1.00 | panelfill 3.0, panelfill 3.0 | PASS |
-| modal title | [701, 444, 524, 46] | TextBlock:TextBlock_63 | -4 | -2 | +0 | +4 | 0.67 | - | FAIL |
+| modal title | [701, 444, 524, 46] | TextBlock:TextBlock_63 | +7 | +1 | -22 | +2 | 0.70 | - | FAIL |
 | modal detail | [764, 506, 393, 24] | TextBlock:TextBlock_64 | +2 | +1 | -5 | +1 | 0.33 | - | FAIL |
 | modal countdown | [838, 549, 245, 25] | - | - | - | - | - | 0.00 | - | REVIEW |
 | modal progress bar | [630, 586, 659, 18] | SizeBox:SizeBox_146 | +0 | +0 | +0 | +0 | 0.94 | - | PASS |

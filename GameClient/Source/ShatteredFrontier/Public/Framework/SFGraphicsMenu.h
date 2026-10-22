@@ -75,6 +75,7 @@ private:
     TWeakObjectPtr<UWidget> LevelUnderlines[5];
     TWeakObjectPtr<UTextBlock> StatusText, ScaleText, KeepTitle, KeepDetailText, KeepCountdown;
     TWeakObjectPtr<UButton> ApplyButton;
+    TWeakObjectPtr<UTextBlock> ApplyLabel;
     TWeakObjectPtr<USlider> ScaleSlider;
     TWeakObjectPtr<UProgressBar> KeepBar, ScaleFillBar;
     TWeakObjectPtr<UWidget> KeepLayer;

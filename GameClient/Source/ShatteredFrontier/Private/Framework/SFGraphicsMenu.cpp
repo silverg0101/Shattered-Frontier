@@ -130,8 +130,8 @@ void USFGraphicsMenu::NativeOnInitialized()
     FrameSlot->SetAnchors(FAnchors(0.f, 0.f, 1.f, 1.f)); FrameSlot->SetOffsets(FMargin(0.f));
 
     // Header: crest, title, flanking rules, close, tabs with the LB/RB keycaps.
-    Put(Stage, KitImage(WidgetTree, TEXT("window_crest"), 150.f, 42.f), 774.f, 65.f, 150.f / S, 42.f / S);  // arch with the stag, centred on the title
-    UTextBlock* Title = Heading(WidgetTree, TEXT("Settings"), 53, Ivory()); Title->SetJustification(ETextJustify::Center);
+    Put(Stage, KitImage(WidgetTree, TEXT("window_crest"), 150.f, 60.f), 774.f, 65.f, 150.f / S, 60.f / S);  // arch with the stag, centred on the title
+    UTextBlock* Title = Heading(WidgetTree, TEXT("Settings"), 52, Ivory()); Title->SetJustification(ETextJustify::Center);
     PutText(Stage, Title, 839.f, 140.6f, 0.5f);
     // Title rules: a section_rule and a quest_diamond each side of "Settings".
     Put(Stage, KitImage(WidgetTree, TEXT("section_rule"), 110.f, 4.f), 640.f, 139.f, 110.f / S, 4.f / S);
@@ -151,7 +151,7 @@ void USFGraphicsMenu::NativeOnInitialized()
     {
         // Only Graphics exists so far; the other tabs are the rest of the settings screen and do nothing yet.
         UBorder* Tab = SFHudStyle::Tab(WidgetTree, Index == 0);
-        UTextBlock* Label = Text(WidgetTree, TabNames[Index], 27, Ivory()); Label->SetJustification(ETextJustify::Center);
+        UTextBlock* Label = Text(WidgetTree, TabNames[Index], 25, Ivory()); Label->SetJustification(ETextJustify::Center);
         Tab->SetVerticalAlignment(VAlign_Center); Tab->SetHorizontalAlignment(HAlign_Center); Tab->SetContent(Label);
         Put(Stage, Tab, TabEdges[Index], 180.f, TabEdges[Index + 1] - TabEdges[Index], 48.f);
     }
@@ -233,7 +233,7 @@ void USFGraphicsMenu::NativeOnInitialized()
             Content->SetVisibility(ESlateVisibility::HitTestInvisible);
             // The status_cross art is red, so the chosen Off plate (crimson) carries the ivory close_x glyph instead.
             UWidget* Glyph = bOnSide ? static_cast<UWidget*>(SFHudStyle::KitImage(WidgetTree, TEXT("status_tick"), 24.f))
-                : static_cast<UWidget*>(SFHudStyle::KitImage(WidgetTree, TEXT("close_x"), 14.f));
+                : static_cast<UWidget*>(SFHudStyle::KitImage(WidgetTree, TEXT("close_x"), 16.f));
             Content->AddChildToHorizontalBox(Glyph)->SetVerticalAlignment(VAlign_Center);
             Content->AddChildToHorizontalBox(SFHudStyle::Text(WidgetTree, bOnSide ? TEXT("On") : TEXT("Off"), 24, SFHudStyle::Ivory()))->SetPadding(FMargin(8.f, 0.f, 0.f, 0.f));
             UOverlaySlot* ContentSlot = Face->AddChildToOverlay(Content);
@@ -285,14 +285,15 @@ void USFGraphicsMenu::NativeOnInitialized()
     FSliderStyle SliderStyle = Slider->GetWidgetStyle();
     // The track and its moss fill are separate layers under the slider; the slider itself draws only the thumb.
     SliderStyle.NormalBarImage = SliderStyle.HoveredBarImage = SliderStyle.DisabledBarImage = FSlateNoResource();
-    if (const FSFHudKitElement* Thumb = Kit(TEXT("slider_thumb"))) { FSlateBrush ThumbBrush = KitBrush(*Thumb); ThumbBrush.ImageSize = FVector2D(22.f, 22.f); SliderStyle.NormalThumbImage = SliderStyle.HoveredThumbImage = SliderStyle.DisabledThumbImage = ThumbBrush; }
+    if (const FSFHudKitElement* Thumb = Kit(TEXT("slider_thumb"))) { FSlateBrush ThumbBrush = KitBrush(*Thumb); ThumbBrush.ImageSize = FVector2D(25.f, 25.f); SliderStyle.NormalThumbImage = SliderStyle.HoveredThumbImage = SliderStyle.DisabledThumbImage = ThumbBrush; }
     SliderStyle.BarThickness = 12.f;
     Slider->SetWidgetStyle(SliderStyle);
     Slider->OnValueChanged.AddDynamic(this, &USFGraphicsMenu::HandleSlider);
     ScaleSlider = Slider;
     UProgressBar* ScaleFill = WidgetTree->ConstructWidget<UProgressBar>(UProgressBar::StaticClass());
     StyleBar(ScaleFill, Moss());
-    FProgressBarStyle FillStyle = ScaleFill->GetWidgetStyle(); FillStyle.BackgroundImage = FSlateNoResource(); ScaleFill->SetWidgetStyle(FillStyle);
+    FProgressBarStyle FillStyle = ScaleFill->GetWidgetStyle(); FillStyle.BackgroundImage = FSlateNoResource(); FillStyle.FillImage = Frame(FLinearColor::White, FLinearColor::Transparent, 2.f);
+    ScaleFill->SetWidgetStyle(FillStyle); ScaleFill->SetFillColorAndOpacity(Hex(TEXT("465A41")));  // flat concept moss, not the lit bar_fill_moss
     ScaleFillBar = ScaleFill;
     Put(Stage, KitPanel(WidgetTree, TEXT("slider_track"), 1.f, WellFill(), Hairline(), FMargin(0.f), 3.f, false), 389.f, 644.f, 286.f, 12.f);
     Put(Stage, ScaleFill, 391.f, 646.f, 282.f, 8.f);
@@ -378,7 +379,7 @@ void USFGraphicsMenu::NativeOnInitialized()
     ApplyButtonStyle(Apply.Button, EButtonKind::Secondary, true);
     Click(Apply.Button, [Self]() { if (USFGraphicsMenu* Menu = Self.Get()) { Menu->DoApply(); } });
     Apply.Label->SetFont(RoleFont(TextFamily(), 28, false));
-    ApplyButton = Apply.Button;
+    ApplyButton = Apply.Button; ApplyLabel = Apply.Label;
     Put(Stage, Apply.Root, 595.f, 750.f, 218.f, 47.f);
     const FSFHudButton Revert = Button(WidgetTree, TEXT("Revert"), EButtonKind::Secondary, 0.f);
     Revert.Label->SetFont(RoleFont(TextFamily(), 28, false));
@@ -393,10 +394,10 @@ void USFGraphicsMenu::NativeOnInitialized()
     UBorder* Dim = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
     Dim->SetBrush(Frame(FLinearColor(0.f, 0.f, 0.f, 0.55f), FLinearColor::Transparent, 0.f));
     UCanvasPanelSlot* DimSlot = Prompt->AddChildToCanvas(Dim); DimSlot->SetAnchors(FAnchors(0.f, 0.f, 1.f, 1.f)); DimSlot->SetOffsets(FMargin(0.f));
-    UBorder* Modal = KitPanel(WidgetTree, TEXT("modal_frame"), 1.f, Slate(0.96f), Brass(), FMargin(29.f, 37.f, 29.f, 30.f), 6.f);
+    UBorder* Modal = KitPanel(WidgetTree, TEXT("modal_frame"), 1.f, Slate(0.96f), Brass(), FMargin(29.f, 41.f, 29.f, 30.f), 6.f);
     UVerticalBox* Body = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     Modal->SetContent(Body);
-    UTextBlock* KeepHead = Heading(WidgetTree, TEXT("Keep these display settings?"), 50, Ivory()); KeepHead->SetJustification(ETextJustify::Center);
+    UTextBlock* KeepHead = Heading(WidgetTree, TEXT("Keep these display settings?"), 48, Ivory()); KeepHead->SetJustification(ETextJustify::Center);
     KeepTitle = KeepHead;
     Body->AddChildToVerticalBox(KeepHead)->SetHorizontalAlignment(HAlign_Center);
     UTextBlock* KeepDetail = Text(WidgetTree, TEXT(""), 29, Ivory()); KeepDetail->SetJustification(ETextJustify::Center);
@@ -409,7 +410,7 @@ void USFGraphicsMenu::NativeOnInitialized()
     StyleBar(Bar, Moss()); Bar->SetPercent(1.f); KeepBar = Bar;
     FProgressBarStyle KeepStyle = Bar->GetWidgetStyle();
     KeepStyle.FillImage = Frame(FLinearColor::White, FLinearColor::Transparent, 2.f); KeepStyle.BackgroundImage = FSlateNoResource();
-    Bar->SetWidgetStyle(KeepStyle); Bar->SetFillColorAndOpacity(Hex(TEXT("7FA07A")));
+    Bar->SetWidgetStyle(KeepStyle); Bar->SetFillColorAndOpacity(Hex(TEXT("557F3E")));  // the concept keep-bar moss
     USizeBox* BarSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
     BarSize->SetWidthOverride(574.f * S); BarSize->SetHeightOverride(18.f);
     UBorder* BarFrame = Panel(WidgetTree, WellFill(), Brass(), FMargin(2.f), 3.f); BarFrame->SetContent(Bar); BarSize->SetContent(BarFrame);
@@ -418,10 +419,10 @@ void USFGraphicsMenu::NativeOnInitialized()
     UHorizontalBox* Buttons = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     const FSFHudButton Keep = Button(WidgetTree, TEXT("Keep Changes"), EButtonKind::Secondary, 305.f * S);
     ApplyButtonStyle(Keep.Button, EButtonKind::Secondary, true);
-    Keep.Root->SetHeightOverride(58.f * S);
+    Keep.Root->SetHeightOverride(58.f * S); Keep.Label->SetFont(RoleFont(TextFamily(), 32, false));
     Click(Keep.Button, [Self]() { if (USFGraphicsMenu* Menu = Self.Get()) { Menu->DoKeep(); } });
     const FSFHudButton Undo = Button(WidgetTree, TEXT("Revert"), EButtonKind::Secondary, 302.f * S);
-    Undo.Root->SetHeightOverride(58.f * S);
+    Undo.Root->SetHeightOverride(58.f * S); Undo.Label->SetFont(RoleFont(TextFamily(), 32, false));
     Click(Undo.Button, [Self]() { if (USFGraphicsMenu* Menu = Self.Get()) { Menu->DoUndo(); } });
     Buttons->AddChildToHorizontalBox(Keep.Root)->SetPadding(FMargin(0.f, 0.f, 29.f, 0.f));
     Buttons->AddChildToHorizontalBox(Undo.Root);
@@ -518,7 +519,8 @@ void USFGraphicsMenu::Refresh()
     {
         if (LevelUnderlines[Index].IsValid()) { LevelUnderlines[Index]->SetVisibility(Index == All ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Hidden); }
     }
-    if (ApplyButton.IsValid()) { ApplyButton->SetIsEnabled(EditSession->IsDirty()); }
+    // Concept: with nothing to apply, Apply keeps its moss plate and its label dims; clicking it then does nothing (Apply() is a no-op when clean).
+    if (ApplyLabel.IsValid()) { ApplyLabel->SetColorAndOpacity(FSlateColor(FLinearColor(Ivory().R, Ivory().G, Ivory().B, EditSession->IsDirty() ? 1.f : 0.45f))); }
     if (KeepLayer.IsValid()) { KeepLayer->SetVisibility(EditSession->IsAwaitingKeep() ? ESlateVisibility::Visible : ESlateVisibility::Collapsed); }
     if (KeepDetailText.IsValid()) { KeepDetailText->SetText(FText::FromString(FString::Printf(TEXT("Resolution %d x %d, %s"), Pending.Resolution.X, Pending.Resolution.Y, *WindowModeName(Pending.WindowMode)))); }
 }

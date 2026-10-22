@@ -21,7 +21,7 @@
     "stepper_chevron": {
       "file": "stepper_chevron.png",
       "nine_slice_px": [0, 0, 0, 0],
-      "intended_1080p_px": [16, 16],
+      "intended_1080p_px": [26, 26],
       "screens": ["14b-settings-graphics"]
     },
     "field_well": {
@@ -33,7 +33,7 @@
     "window_crest": {
       "file": "window_crest.png",
       "nine_slice_px": [0, 0, 0, 0],
-      "intended_1080p_px": [150, 42],
+      "intended_1080p_px": [150, 60],
       "screens": ["14b-settings-graphics"]
     },
     "window_frame": {

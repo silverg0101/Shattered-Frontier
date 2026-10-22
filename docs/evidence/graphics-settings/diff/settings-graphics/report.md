@@ -5,7 +5,7 @@ REVIEW = the element could not be measured (no live widget overlaps it, or no vi
 | element | concept rect | live widget | dx | dy | dw | dh | IoU/edge | colour dE | verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | window frame | [336, 115, 1249, 810] | CanvasPanel:CanvasPanel_1 | +0 | +0 | +0 | +0 | 1.00 | panelfill 1.8, panelfill 2.5 | PASS |
-| title Settings | [885, 144, 157, 46] | TextBlock:TextBlock_0 | -1 | -18 | +1 | +23 | 0.64 | - | FAIL |
+| title Settings | [885, 144, 157, 46] | TextBlock:TextBlock_0 | +2 | -17 | -5 | +22 | 0.67 | - | FAIL |
 | close x | [1515, 139, 46, 46] | SFHudButton:SFHudButton_0 | +0 | +0 | +0 | +0 | 0.97 | - | PASS |
 | tab Graphics | [452, 207, 202, 55] | Border:Border_3 | +0 | +0 | +0 | +0 | 0.99 | mossfill 7.7 | FAIL |
 | tab Audio | [655, 207, 198, 55] | Border:Border_4 | -1 | +0 | +0 | +0 | 0.99 | - | PASS |
