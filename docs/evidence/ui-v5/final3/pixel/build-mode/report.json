@@ -39,10 +39,10 @@
   ],
   "found": true,
   "match": 0.6,
-  "d_left": 62,
-  "d_top": -5,
-  "d_width": -97,
-  "d_height": 4,
+  "d_left": 63,
+  "d_top": 4,
+  "d_width": -99,
+  "d_height": -8,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -395,7 +395,7 @@
   "de": [
    [
     "bar fill",
-    4.0
+    3.7
    ]
   ],
   "geometry": "FAIL",
@@ -585,7 +585,7 @@
   "de": [
    [
     "fill dark",
-    34.6
+    34.7
    ]
   ],
   "geometry": "UNMEASURED",

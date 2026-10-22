@@ -1,6 +1,6 @@
 [
  {
-  "widget": "SizeBox:SizeBox_17",
+  "widget": "",
   "name": "target frame",
   "rect": [
    735,
@@ -8,28 +8,28 @@
    433,
    74
   ],
-  "found": true,
-  "match": 1.0,
-  "d_left": 0,
-  "d_top": 0,
-  "d_width": 0,
-  "d_height": 0,
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
   "de": [
    [
     "fill dark",
-    5.6
+    30.1
    ],
    [
     "fill dark",
-    4.4
+    33.7
    ]
   ],
-  "geometry": "PASS",
+  "geometry": "UNMEASURED",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
-  "widget": "Overlay:Overlay_10",
+  "widget": "",
   "name": "target level cap diamond",
   "rect": [
    735,
@@ -37,24 +37,24 @@
    57,
    55
   ],
-  "found": true,
-  "match": 0.5,
-  "d_left": 14,
-  "d_top": 6,
-  "d_width": 0,
-  "d_height": 0,
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
   "de": [
    [
     "fill dark",
-    5.0
+    27.3
    ]
   ],
-  "geometry": "FAIL",
+  "geometry": "UNMEASURED",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
-  "widget": "Overlay:Overlay_9",
+  "widget": "",
   "name": "target HP bar",
   "rect": [
    762,
@@ -62,19 +62,19 @@
    403,
    29
   ],
-  "found": true,
-  "match": 0.8,
-  "d_left": 2,
-  "d_top": -5,
-  "d_width": -28,
-  "d_height": 5,
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
   "de": [
    [
     "hp red fill",
-    11.4
+    33.9
    ]
   ],
-  "geometry": "FAIL",
+  "geometry": "UNMEASURED",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
@@ -100,7 +100,7 @@
    ],
    [
     "badge fill dark",
-    41.1
+    41.2
    ]
   ],
   "geometry": "PASS",
@@ -175,7 +175,7 @@
   "de": [
    [
     "fill dark",
-    3.5
+    5.6
    ]
   ],
   "geometry": "FAIL",
@@ -183,7 +183,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_22",
+  "widget": "SizeBox:SizeBox_21",
   "name": "keycap F",
   "rect": [
    885,
@@ -229,7 +229,7 @@
    ],
    [
     "fill dark",
-    37.5
+    38.0
    ]
   ],
   "geometry": "FAIL",
@@ -254,7 +254,7 @@
   "de": [
    [
     "fill dark",
-    32.7
+    32.8
    ]
   ],
   "geometry": "FAIL",
@@ -329,11 +329,11 @@
   "de": [
    [
     "fill dark",
-    2.5
+    5.4
    ]
   ],
   "geometry": "FAIL",
-  "colour": "PASS",
+  "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
@@ -354,11 +354,11 @@
   "de": [
    [
     "fill dark",
-    5.4
+    9.7
    ],
    [
     "fill dark",
-    4.8
+    56.6
    ]
   ],
   "geometry": "FAIL",
@@ -377,9 +377,9 @@
   "found": true,
   "match": 0.38,
   "d_left": 3,
-  "d_top": 6,
-  "d_width": 94,
-  "d_height": 3,
+  "d_top": 12,
+  "d_width": 28,
+  "d_height": -11,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -403,7 +403,7 @@
   "de": [
    [
     "fill dark",
-    6.1
+    12.9
    ]
   ],
   "geometry": "UNMEASURED",
@@ -428,11 +428,11 @@
   "de": [
    [
     "fill dark",
-    3.1
+    6.8
    ],
    [
     "fill dark",
-    2.5
+    7.4
    ]
   ],
   "geometry": "FAIL",
@@ -457,7 +457,7 @@
   "de": [
    [
     "fill dark",
-    16.2
+    8.3
    ]
   ],
   "geometry": "UNMEASURED",
@@ -482,7 +482,7 @@
   "de": [
    [
     "fill dark",
-    4.3
+    38.8
    ]
   ],
   "geometry": "UNMEASURED",

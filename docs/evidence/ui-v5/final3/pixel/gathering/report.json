@@ -39,10 +39,10 @@
   ],
   "found": true,
   "match": 0.41,
-  "d_left": -7,
-  "d_top": -8,
-  "d_width": 208,
-  "d_height": 14,
+  "d_left": -5,
+  "d_top": 3,
+  "d_width": 186,
+  "d_height": 1,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -241,7 +241,7 @@
   "de": [
    [
     "frame fill",
-    6.1
+    6.3
    ],
    [
     "frame fill",
@@ -290,7 +290,7 @@
   "de": [
    [
     "hp red fill",
-    34.2
+    34.1
    ]
   ],
   "geometry": "UNMEASURED",
@@ -360,7 +360,7 @@
   "de": [
    [
     "label plate fill",
-    3.1
+    3.4
    ]
   ],
   "geometry": "UNMEASURED",
@@ -385,7 +385,7 @@
   "de": [
    [
     "fill dark",
-    8.5
+    8.2
    ]
   ],
   "geometry": "UNMEASURED",
@@ -590,7 +590,7 @@
   "de": [
    [
     "fill dark",
-    4.9
+    4.7
    ]
   ],
   "geometry": "FAIL",
@@ -615,7 +615,7 @@
   "de": [
    [
     "fill dark",
-    6.9
+    6.7
    ]
   ],
   "geometry": "UNMEASURED",

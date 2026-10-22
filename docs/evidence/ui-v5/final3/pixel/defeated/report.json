@@ -39,10 +39,10 @@
   ],
   "found": true,
   "match": 0.61,
-  "d_left": -6,
-  "d_top": -9,
-  "d_width": 7,
-  "d_height": 39,
+  "d_left": -5,
+  "d_top": 14,
+  "d_width": 5,
+  "d_height": -8,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -79,10 +79,10 @@
   ],
   "found": true,
   "match": 0.42,
-  "d_left": 17,
-  "d_top": 11,
-  "d_width": -40,
-  "d_height": 4,
+  "d_left": 18,
+  "d_top": 20,
+  "d_width": -42,
+  "d_height": -6,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -189,10 +189,10 @@
   ],
   "found": true,
   "match": 0.35,
-  "d_left": -64,
-  "d_top": -12,
-  "d_width": 110,
-  "d_height": 12,
+  "d_left": -63,
+  "d_top": -4,
+  "d_width": 107,
+  "d_height": -5,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -274,10 +274,10 @@
   ],
   "found": true,
   "match": 0.49,
-  "d_left": -15,
-  "d_top": -12,
-  "d_width": 20,
-  "d_height": 12,
+  "d_left": -14,
+  "d_top": -4,
+  "d_width": 18,
+  "d_height": -5,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -343,10 +343,10 @@
   ],
   "found": true,
   "match": 0.41,
-  "d_left": -68,
-  "d_top": -9,
-  "d_width": 131,
-  "d_height": 4,
+  "d_left": -67,
+  "d_top": -4,
+  "d_width": 129,
+  "d_height": -2,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -370,7 +370,7 @@
   "de": [
    [
     "empty hp fill",
-    14.8
+    23.2
    ]
   ],
   "geometry": "FAIL",
@@ -515,11 +515,11 @@
   "de": [
    [
     "dim fill",
-    2.8
+    3.2
    ]
   ],
   "geometry": "FAIL",
-  "colour": "PASS",
+  "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
@@ -540,7 +540,7 @@
   "de": [
    [
     "toast fill",
-    17.5
+    3.1
    ]
   ],
   "geometry": "UNMEASURED",
@@ -565,7 +565,7 @@
   "de": [
    [
     "toast fill",
-    12.9
+    6.5
    ]
   ],
   "geometry": "UNMEASURED",

@@ -40,9 +40,9 @@
   "found": true,
   "match": 0.5,
   "d_left": 0,
-  "d_top": 7,
+  "d_top": 16,
   "d_width": -80,
-  "d_height": -4,
+  "d_height": -14,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -330,9 +330,9 @@
   "found": true,
   "match": 0.7,
   "d_left": 0,
-  "d_top": 0,
-  "d_width": -12,
-  "d_height": 7,
+  "d_top": 6,
+  "d_width": -13,
+  "d_height": 0,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -376,11 +376,11 @@
   "de": [
    [
     "tooltip fill",
-    35.8
+    36.0
    ],
    [
     "tooltip fill",
-    48.9
+    49.0
    ]
   ],
   "geometry": "UNMEASURED",
@@ -505,7 +505,7 @@
   "de": [
    [
     "fill dark",
-    20.1
+    19.9
    ]
   ],
   "geometry": "UNMEASURED",

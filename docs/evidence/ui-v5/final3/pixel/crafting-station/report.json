@@ -1,6 +1,6 @@
 [
  {
-  "widget": "SFStationPanel:SFStationPanel_0",
+  "widget": "CanvasPanel:VitalsCanvas",
   "name": "station window frame",
   "rect": [
    631,
@@ -9,22 +9,22 @@
    797
   ],
   "found": true,
-  "match": 1.0,
-  "d_left": 0,
-  "d_top": 0,
-  "d_width": 0,
-  "d_height": 0,
+  "match": 0.33,
+  "d_left": -631,
+  "d_top": -97,
+  "d_width": 1054,
+  "d_height": 283,
   "de": [
    [
     "window fill",
-    4.0
+    9.2
    ],
    [
     "window fill",
-    1.1
+    41.6
    ]
   ],
-  "geometry": "PASS",
+  "geometry": "FAIL",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
@@ -66,7 +66,7 @@
   "de": [
    [
     "field fill",
-    3.2
+    53.1
    ]
   ],
   "geometry": "UNMEASURED",
@@ -91,7 +91,7 @@
   "de": [
    [
     "selected tab fill",
-    12.2
+    33.3
    ]
   ],
   "geometry": "UNMEASURED",
@@ -116,7 +116,7 @@
   "de": [
    [
     "tab fill",
-    9.7
+    47.4
    ]
   ],
   "geometry": "UNMEASURED",
@@ -141,7 +141,7 @@
   "de": [
    [
     "tab fill",
-    12.5
+    43.9
    ]
   ],
   "geometry": "UNMEASURED",
@@ -166,7 +166,7 @@
   "de": [
    [
     "selected row fill",
-    4.9
+    20.5
    ]
   ],
   "geometry": "UNMEASURED",
@@ -191,7 +191,7 @@
   "de": [
    [
     "row fill",
-    4.5
+    44.3
    ]
   ],
   "geometry": "UNMEASURED",
@@ -216,7 +216,7 @@
   "de": [
    [
     "row fill",
-    3.7
+    6.9
    ]
   ],
   "geometry": "UNMEASURED",
@@ -241,7 +241,7 @@
   "de": [
    [
     "row fill",
-    6.0
+    53.3
    ]
   ],
   "geometry": "UNMEASURED",
@@ -306,7 +306,7 @@
   "de": [
    [
     "image well fill",
-    3.6
+    51.4
    ]
   ],
   "geometry": "UNMEASURED",
@@ -351,7 +351,7 @@
   "de": [
    [
     "row fill",
-    4.7
+    45.7
    ]
   ],
   "geometry": "UNMEASURED",
@@ -376,7 +376,7 @@
   "de": [
    [
     "row fill",
-    13.4
+    42.6
    ]
   ],
   "geometry": "UNMEASURED",
@@ -401,7 +401,7 @@
   "de": [
    [
     "field fill",
-    4.4
+    43.0
    ]
   ],
   "geometry": "UNMEASURED",
@@ -446,7 +446,7 @@
   "de": [
    [
     "brass fill",
-    25.0
+    22.0
    ]
   ],
   "geometry": "UNMEASURED",
@@ -491,7 +491,7 @@
   "de": [
    [
     "row fill",
-    3.2
+    3.9
    ]
   ],
   "geometry": "UNMEASURED",
@@ -516,7 +516,7 @@
   "de": [
    [
     "row fill",
-    3.6
+    4.1
    ]
   ],
   "geometry": "UNMEASURED",
@@ -716,7 +716,7 @@
   "de": [
    [
     "fill dark",
-    39.6
+    39.5
    ]
   ],
   "geometry": "UNMEASURED",

@@ -80,9 +80,9 @@
   "found": true,
   "match": 0.27,
   "d_left": -25,
-  "d_top": -4,
-  "d_width": 1,
-  "d_height": 18,
+  "d_top": 8,
+  "d_width": 0,
+  "d_height": -5,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -119,10 +119,10 @@
   ],
   "found": true,
   "match": 0.37,
-  "d_left": -35,
-  "d_top": -4,
-  "d_width": 30,
-  "d_height": 19,
+  "d_left": -34,
+  "d_top": 8,
+  "d_width": 28,
+  "d_height": -4,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -555,7 +555,7 @@
   "de": [
    [
     "dimmed fill",
-    2.4
+    2.3
    ]
   ],
   "geometry": "UNMEASURED",
