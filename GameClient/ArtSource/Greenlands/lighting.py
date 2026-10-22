@@ -75,9 +75,9 @@ def _actors(cls):
     return [a for a in u.get_editor_subsystem(u.EditorActorSubsystem).get_all_level_actors() if isinstance(a, cls)]
 
 
-def _one(cls, label=None, at=(0, 0, 0)):
-    """The level's actor of `cls` (labelled `label` when given), spawned if missing."""
-    found = [a for a in _actors(cls) if label is None or a.get_actor_label() == label]
+def _one(cls, label=None, at=(0, 0, 0), skip=('Moon',)):
+    """The level's actor of `cls` (labelled `label` when given, never one labelled in `skip`), spawned if missing."""
+    found = [a for a in _actors(cls) if (label is None and a.get_actor_label() not in skip) or a.get_actor_label() == label]
     if found:
         return found[0]
     a = u.get_editor_subsystem(u.EditorActorSubsystem).spawn_actor_from_class(cls, u.Vector(*at))
@@ -102,6 +102,14 @@ def apply(save=False):
                      light_source_angle=cfg['sun.source_angle_deg']).items():
         lc.set_editor_property(k, v)
     sun.set_actor_rotation(u.Rotator(roll=0, pitch=cfg['sun.pitch_deg'], yaw=cfg['sun.yaw_deg']), False)
+    # Night captures (WP6i review r3 fix 3): a moon on atmosphere light index 1, saved off; the sun keeps index 0, so every
+    # SkyAtmosphereLightDirection(0) gate (windows, lamps, fireflies) still follows the sun. Captures set its intensity.
+    moon = _one(u.DirectionalLight, label='Moon', at=(0, 0, 50000))
+    moon.root_component.set_mobility(u.ComponentMobility.MOVABLE)
+    for k, v in dict(intensity=0.0, light_color=u.Color(r=153, g=178, b=255, a=255), cast_shadows=True, atmosphere_sun_light=True,
+                     atmosphere_sun_light_index=1, cast_cloud_shadows=False).items():
+        moon.light_component.set_editor_property(k, v)
+    moon.set_actor_rotation(u.Rotator(roll=0, pitch=-35, yaw=cfg['sun.yaw_deg'] + 150), False)
 
     sk = _one(u.SkyLight, at=(0, 0, 1000)).light_component
     sk.set_editor_property('real_time_capture', True)

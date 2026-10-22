@@ -173,7 +173,7 @@ def main():
     drag = add(PU, wind, '/Niagara/Modules/Update/Forces/Drag')
     put(PU, drag, 'Drag', local(T_FLOAT, value=.12))
     curl = add(PU, drag, '/Niagara/Modules/Update/Forces/CurlNoiseForce')
-    put(PU, curl, 'Noise Strength', local(T_FLOAT, value=25.))
+    put(PU, curl, 'Noise Strength', local(T_FLOAT, value=10.))
     put(PU, curl, 'Noise Frequency', local(T_FLOAT, value=.01))
     put(PU, curl, 'Pan Noise', local('/Script/Niagara.NiagaraBool', value=-1))   # edit-condition toggle
     put(PU, curl, 'Pan Noise Field', local(T_VEC, x=.1, y=.1, z=.1))
@@ -185,8 +185,8 @@ def main():
         f' : lerp(2.9f, User.EndSize / User.StartSize, ({a} - 0.7f) / 0.3f))'))
     color = add(PU, size, '/Niagara/Modules/Update/Color/ScaleColor')
     put(PU, color, 'ScaleA', local('/Script/Niagara.NiagaraBool', value=-1))   # edit-condition toggle; RGB stays unscaled (ScaleRGB off = 1)
-    put(PU, color, 'Scale Alpha', hlsl(   # 0 @ 0, 0.9 @ 0.06, 0.5 @ 0.4, 0.2 @ 0.75, 0 @ 1
-        f'{a} < 0.06f ? {a} / 0.06f * 0.9f : ({a} < 0.4f ? lerp(0.9f, 0.5f, ({a} - 0.06f) / 0.34f) : ({a} < 0.75f ? lerp(0.5f, 0.2f, ({a} - 0.4f) / 0.35f)'
+    put(PU, color, 'Scale Alpha', hlsl(   # 0 @ 0, 0.9 @ 0.03, 0.5 @ 0.4, 0.2 @ 0.75, 0 @ 1
+        f'{a} < 0.03f ? {a} / 0.03f * 0.9f : ({a} < 0.4f ? lerp(0.9f, 0.5f, ({a} - 0.03f) / 0.37f) : ({a} < 0.75f ? lerp(0.5f, 0.2f, ({a} - 0.4f) / 0.35f)'
         f' : lerp(0.2f, 0.0f, ({a} - 0.75f) / 0.25f)))'))
     rot = add(PU, color, '/Niagara/Modules/Update/Orientation/SpriteRotationRate')
     put(PU, rot, 'Rotation Rate', linked('Particles.RotationRate', T_FLOAT))

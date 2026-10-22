@@ -157,7 +157,7 @@ def reference_capture():
     EVIDENCE.mkdir(parents=True, exist_ok=True)
     camera = next(c for c in u.GameplayStatics.get_all_actors_of_class(world, u.CameraActor)
                   if c.get_actor_label() == 'ReviewCamera_Aerial')
-    sun = u.GameplayStatics.get_all_actors_of_class(world, u.DirectionalLight)[0]
+    sun = next(a for a in u.GameplayStatics.get_all_actors_of_class(world, u.DirectionalLight) if a.get_actor_label() != 'Moon')
     sun.set_actor_rotation(u.Rotator(pitch=-40, yaw=-60, roll=0), False)
     for command in ('r.EyeAdaptationQuality 0', 'r.DefaultFeature.AutoExposure 0',
                     'r.MotionBlurQuality 0', 'r.ScreenPercentage 100', 'r.ExposureOffset 0',

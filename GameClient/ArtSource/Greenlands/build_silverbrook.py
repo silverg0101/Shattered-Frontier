@@ -573,12 +573,12 @@ for place in L['places']:
 
 # Wave 0 construction plots, before district fill so houses keep clear of them.
 size = L['construction_plots']['size']
+PLOT_PADS = []  # WP6i review r3 fix 6: plots keep houses clear (placed) but get no levelled pad, no relief hole and no authoring box
 for i, (x, y) in enumerate(L['construction_plots']['centres']):
     if not clear(x, y, size, size, margin=1):
         blocked.append(f'ConstructionPlot_{i} at {x},{y}')
         continue
-    placed.append((x, y, size * 0.71))
-    box(f'ConstructionPlot_{i}', x, y, size, size, 0.05, 'Plot', collide=False, folder='Plots', ground='centre')
+    placed.append((x, y, size * 0.71)); PLOT_PADS.append(placed[-1])
 
 assert not blocked, f'Blocked places (move them in the layout): {blocked}'
 
@@ -675,7 +675,7 @@ label('Arrival', ax, ay, 8, 3)
 
 # Terrain: shaped from the layout's elevation with every building, plot and open area levelled.
 REGION, DATUM, SEA = zone_region('silverbrook-town-layout.json')  # region first: edges and backdrop come from it
-HF = Heightfield(L, pads=placed + flats, region=REGION, foundations=footprints)
+HF = Heightfield(L, pads=[p for p in placed if p not in PLOT_PADS] + flats, region=REGION, foundations=footprints)
 terrain_problems, terrain_stats = check_terrain(L, HF)
 assert not terrain_problems, f'Terrain checks failed: {terrain_problems}'
 
@@ -696,7 +696,7 @@ def apply_relief(hf):
                 if d < r + ramp:
                     t = max(0.0, d - r) / ramp
                     keep[k] = min(keep.get(k, 1.0), t * t * (3 - 2 * t))
-    block(placed + flats, 8.0)
+    block([p for p in placed if p not in PLOT_PADS] + flats, 8.0)
     block([(x, y, math.hypot(w, d) / 2 + 4) for x, y, w, d, _ in footprints], 6.0)
     for _, pts, width, _ in ROADS:
         block([(p[0], p[1], max(width / 2, hf.step) + SHOULDER) for p, _, _ in _hf_samples(pts, 3.0)], 6.0)
@@ -920,7 +920,7 @@ for district in DRESS_DISTRICTS:
                 role['place']['slope'][1] = 35  # river banks are steeper than forest clearings
             if role['role'] in ('herb_broadleaf', 'fern') and district == 'River Verge':
                 role['place']['light'] = 'any'  # the open bank has little canopy shade
-    result = dress_zone.dress(L, look, HF, placed, district, L['seed'],
+    result = dress_zone.dress(L, look, HF, [p for p in placed if p not in PLOT_PADS], district, L['seed'],
                               paved=lambda x, y: ROAD_G.get(round((y - HF.y0) / HF.step) * HF.nx + round((x - HF.x0) / HF.step), 0.0))
     cands = dress_zone.candidates(result, look)
     dress_problems = dress_zone.check(L, result, cands, placed)

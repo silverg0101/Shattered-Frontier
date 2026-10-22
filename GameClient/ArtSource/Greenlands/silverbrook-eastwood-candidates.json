@@ -1,9 +1,9 @@
 {
  "_about": "Gameplay candidates (harvestable trees and stone) from dress_zone.py; produced but not used yet (pipeline stage 3).",
- "version": "eastwood-1019-1-a04010d7e1",
+ "version": "eastwood-1019-1-dd7f613c93",
  "candidates": [
   {
-   "id": "2c0a1ae897aadfa5",
+   "id": "dddedbad01c46eb9",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -13,7 +13,7 @@
    ]
   },
   {
-   "id": "92d39d194c054d36",
+   "id": "e11de77cf9aa4e88",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -23,7 +23,7 @@
    ]
   },
   {
-   "id": "e0a82bca06cd5da9",
+   "id": "e5cfcc995d276040",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -33,7 +33,7 @@
    ]
   },
   {
-   "id": "0fbb823ae605e97e",
+   "id": "8148be608ac447a5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -43,7 +43,7 @@
    ]
   },
   {
-   "id": "8ef96abee4f6bfdf",
+   "id": "de79dead3f9dd469",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -53,7 +53,7 @@
    ]
   },
   {
-   "id": "9f4f89b089d7b43b",
+   "id": "10819b3ddd1283c0",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -63,7 +63,7 @@
    ]
   },
   {
-   "id": "d315cd359dcb4bfc",
+   "id": "1a39569b2dfacc99",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -73,7 +73,7 @@
    ]
   },
   {
-   "id": "94bee7201a4ef8e4",
+   "id": "00ca79a3a5eb0674",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -83,7 +83,7 @@
    ]
   },
   {
-   "id": "d068d9324a6be43a",
+   "id": "b026485fbd6392e5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -93,7 +93,7 @@
    ]
   },
   {
-   "id": "0a1bfa816ab6b1a3",
+   "id": "5b674156fabe50a3",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -103,7 +103,7 @@
    ]
   },
   {
-   "id": "3075708d0f80e239",
+   "id": "95bfffc9497394d1",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -113,7 +113,7 @@
    ]
   },
   {
-   "id": "3c4d09d7a5cdeb8f",
+   "id": "67e0687bb818014b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -123,7 +123,7 @@
    ]
   },
   {
-   "id": "70cb03943171a1a9",
+   "id": "4b5382f0ab30fb97",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -133,7 +133,7 @@
    ]
   },
   {
-   "id": "05b72dfdf82365fb",
+   "id": "9d5ca810ed24ccfc",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -143,7 +143,7 @@
    ]
   },
   {
-   "id": "b80d80228623719b",
+   "id": "35aeaccd4d709bfe",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -153,7 +153,7 @@
    ]
   },
   {
-   "id": "1610694e68e174a7",
+   "id": "e50346d8d726916b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -163,7 +163,7 @@
    ]
   },
   {
-   "id": "8eaf2e78afa8c685",
+   "id": "21c7b40f10aec865",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -173,7 +173,7 @@
    ]
   },
   {
-   "id": "d1f5a56638d575e9",
+   "id": "a8581d931188c37c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -183,7 +183,7 @@
    ]
   },
   {
-   "id": "302a2f5e2e576d98",
+   "id": "b9305630758e6ebd",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -193,7 +193,7 @@
    ]
   },
   {
-   "id": "75e7d06d089401d8",
+   "id": "79750f265aade94b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -203,7 +203,7 @@
    ]
   },
   {
-   "id": "5ee3281d99129fa4",
+   "id": "ae2f6cc0e9cd6826",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -213,7 +213,7 @@
    ]
   },
   {
-   "id": "1bc17355006b24ba",
+   "id": "5ea8cb42895027a4",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -223,7 +223,7 @@
    ]
   },
   {
-   "id": "99ee8ffad70ceadc",
+   "id": "db1b1dc8db0c67b5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -233,7 +233,7 @@
    ]
   },
   {
-   "id": "bbc12833a2c5bc30",
+   "id": "95ccb0d1e6e2f789",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -243,7 +243,7 @@
    ]
   },
   {
-   "id": "9b1d140b1a2f18b3",
+   "id": "16b0bc1e4433ef53",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -253,7 +253,7 @@
    ]
   },
   {
-   "id": "8262eb0ea6ad8205",
+   "id": "4b01d47f5c7cf5a7",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -263,7 +263,7 @@
    ]
   },
   {
-   "id": "aba207dce545425d",
+   "id": "b5da302802a13468",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -273,7 +273,7 @@
    ]
   },
   {
-   "id": "8db7ad125efcbb62",
+   "id": "713c1ec66a463fda",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -283,7 +283,7 @@
    ]
   },
   {
-   "id": "fbd66be58d804470",
+   "id": "3210f0037fcb8aaa",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -293,7 +293,7 @@
    ]
   },
   {
-   "id": "265bd5283b0de542",
+   "id": "e10cce7ab6a26063",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -303,7 +303,7 @@
    ]
   },
   {
-   "id": "c59f7c36f53ed69b",
+   "id": "72d5ac8ca15e0d67",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -313,7 +313,7 @@
    ]
   },
   {
-   "id": "e95fdc5b0a8090f8",
+   "id": "08807e685996cb9f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -323,7 +323,7 @@
    ]
   },
   {
-   "id": "9cacd48b00eea60b",
+   "id": "2ff4ab5f69b1bac0",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -333,7 +333,7 @@
    ]
   },
   {
-   "id": "c953787ea5b22cb4",
+   "id": "ae28e18e3413c6c1",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -343,7 +343,7 @@
    ]
   },
   {
-   "id": "a51bcb2146d0f9f4",
+   "id": "259f90ae53b9ee7c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -353,7 +353,7 @@
    ]
   },
   {
-   "id": "ab32d67da5694fe5",
+   "id": "8b7e5deed4c21247",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -363,7 +363,7 @@
    ]
   },
   {
-   "id": "3e6e8707efe089d8",
+   "id": "c1077a877bf6a153",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -373,7 +373,7 @@
    ]
   },
   {
-   "id": "92317ab8bcf6b40c",
+   "id": "de6f665221bdc0d0",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -383,7 +383,7 @@
    ]
   },
   {
-   "id": "8393df8e6aff39d4",
+   "id": "eef0d4d8c64c009d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -393,7 +393,7 @@
    ]
   },
   {
-   "id": "55822cccfec4b4c1",
+   "id": "15b9189006738691",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -403,7 +403,7 @@
    ]
   },
   {
-   "id": "70603864f57dba1e",
+   "id": "bd5ee0cd906c99af",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -413,7 +413,7 @@
    ]
   },
   {
-   "id": "66207bf8bba877fd",
+   "id": "dba0d9a8006457c7",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -423,7 +423,7 @@
    ]
   },
   {
-   "id": "f31836e680284d1f",
+   "id": "c7b9679bd78a0cb4",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -433,7 +433,7 @@
    ]
   },
   {
-   "id": "ca919bb4a9ca2b88",
+   "id": "e1c90f14bca9f388",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -443,7 +443,7 @@
    ]
   },
   {
-   "id": "0079255f9f0a820f",
+   "id": "4b12b4f7d6a61839",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -453,7 +453,7 @@
    ]
   },
   {
-   "id": "fad24851df159d9b",
+   "id": "d3e65e1d2e3ae505",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -463,7 +463,7 @@
    ]
   },
   {
-   "id": "e499fe6fa59feafd",
+   "id": "9f7989fa94d7e385",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -473,7 +473,7 @@
    ]
   },
   {
-   "id": "0db4d1560430f365",
+   "id": "f7bf243b68006920",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -483,7 +483,7 @@
    ]
   },
   {
-   "id": "1c6b269a1134f47b",
+   "id": "20211ac50d353a8a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -493,7 +493,7 @@
    ]
   },
   {
-   "id": "6c66e8d13e551d4b",
+   "id": "bee3e2d3919ea082",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -503,7 +503,7 @@
    ]
   },
   {
-   "id": "b6a712e891de1de0",
+   "id": "62e4333e9ecaa4f2",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -513,7 +513,7 @@
    ]
   },
   {
-   "id": "372a41bca76eadd3",
+   "id": "c0f118dd220bd994",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -523,7 +523,7 @@
    ]
   },
   {
-   "id": "707a9e54905d0e72",
+   "id": "85c9e74e995a4119",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -533,7 +533,7 @@
    ]
   },
   {
-   "id": "0d978a0a5b30dcfc",
+   "id": "dd237451a6c45d27",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -543,7 +543,7 @@
    ]
   },
   {
-   "id": "cb23897bb8713d3d",
+   "id": "8220ff05ab175f74",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -553,7 +553,7 @@
    ]
   },
   {
-   "id": "dd00098d236615f3",
+   "id": "b9724202737c2fcf",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -563,7 +563,7 @@
    ]
   },
   {
-   "id": "da775c2370521805",
+   "id": "32ceb7aaca2ee504",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -573,7 +573,7 @@
    ]
   },
   {
-   "id": "68520765c7187721",
+   "id": "244d12aff5f38c09",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -583,7 +583,7 @@
    ]
   },
   {
-   "id": "68da7d64aa404c16",
+   "id": "f50b0fe8b4136860",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -593,7 +593,7 @@
    ]
   },
   {
-   "id": "043ffdc6e8e9b932",
+   "id": "ad413432742f2ba7",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -603,7 +603,7 @@
    ]
   },
   {
-   "id": "85b080fb7f279100",
+   "id": "cdca724bfa506b18",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -613,7 +613,7 @@
    ]
   },
   {
-   "id": "9055f661c4a05936",
+   "id": "23d68714f398af5d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -623,7 +623,7 @@
    ]
   },
   {
-   "id": "86685f4085f37dea",
+   "id": "1d51d34605d2a283",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -633,7 +633,7 @@
    ]
   },
   {
-   "id": "231a54973bb8239d",
+   "id": "85a777e9b47523c9",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -643,7 +643,7 @@
    ]
   },
   {
-   "id": "4f80ec20243b5d45",
+   "id": "518086fd525bef2d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -653,7 +653,7 @@
    ]
   },
   {
-   "id": "fd087fda034cf6fa",
+   "id": "f06ec940fe460e1c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -663,7 +663,7 @@
    ]
   },
   {
-   "id": "2b8ac5d17d908679",
+   "id": "4eac1bb419ed7c18",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -673,7 +673,7 @@
    ]
   },
   {
-   "id": "a6f1956296e0c502",
+   "id": "d81e2f62dbc7304f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -683,7 +683,7 @@
    ]
   },
   {
-   "id": "0ed6a5b0d612629a",
+   "id": "cfa6805608ab4f17",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -693,7 +693,7 @@
    ]
   },
   {
-   "id": "527c34e35b21eedc",
+   "id": "8011a0605af37186",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -703,7 +703,7 @@
    ]
   },
   {
-   "id": "799b9f3bcaa29be3",
+   "id": "181d480412034dca",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -713,7 +713,7 @@
    ]
   },
   {
-   "id": "ac30414157ebb396",
+   "id": "a69581bb910fb351",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -723,17 +723,17 @@
    ]
   },
   {
-   "id": "2c8adbe0486637ef",
+   "id": "e66fb015c2608fae",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
     514.68,
     240.86,
-    28.35
+    28.38
    ]
   },
   {
-   "id": "ff7243ccc1068c3f",
+   "id": "ff1ffea1fc6f86fb",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -743,7 +743,7 @@
    ]
   },
   {
-   "id": "9198b63a4a3b8820",
+   "id": "db329015ee88f9e1",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -753,7 +753,7 @@
    ]
   },
   {
-   "id": "d39e43c8d3636158",
+   "id": "c40e7d4cfc19a617",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -763,7 +763,7 @@
    ]
   },
   {
-   "id": "2c3622bfa6fd0ad6",
+   "id": "3894493a0cc51c6a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -773,7 +773,7 @@
    ]
   },
   {
-   "id": "ca20445cf7364b91",
+   "id": "1e937fc33b525e21",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -783,7 +783,7 @@
    ]
   },
   {
-   "id": "2cf493c6bc85c861",
+   "id": "08e79fbe6e2cfcb9",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -793,7 +793,7 @@
    ]
   },
   {
-   "id": "93b9365d8acb3a3b",
+   "id": "eb143647f767312d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -803,7 +803,7 @@
    ]
   },
   {
-   "id": "b3630aca15da8126",
+   "id": "17f32fcf356e9864",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -813,7 +813,7 @@
    ]
   },
   {
-   "id": "b9e2a2bf2ce2ecde",
+   "id": "ad9ea0e2bd42d87a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -823,7 +823,7 @@
    ]
   },
   {
-   "id": "f03291f8db047fc9",
+   "id": "ea989aef024742c0",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -833,7 +833,7 @@
    ]
   },
   {
-   "id": "6f55aaca4c5f7f02",
+   "id": "9f4f2f29a0504279",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -843,7 +843,7 @@
    ]
   },
   {
-   "id": "dd3fca29bbedc480",
+   "id": "bb195aaa3db98e2b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -853,7 +853,7 @@
    ]
   },
   {
-   "id": "39adef9d6fa6e2b8",
+   "id": "3ef1119c8beb559d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -863,7 +863,7 @@
    ]
   },
   {
-   "id": "ec91160d39440fff",
+   "id": "1bd6545485ab1b7b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -873,7 +873,7 @@
    ]
   },
   {
-   "id": "d7e920b7ff4aec42",
+   "id": "95fb0866d05441c8",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -883,7 +883,7 @@
    ]
   },
   {
-   "id": "4b69f06855bda780",
+   "id": "19df82ae9c10f0ed",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -893,7 +893,7 @@
    ]
   },
   {
-   "id": "6051bcc5f0f1859d",
+   "id": "b0eaee1fac9b729f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -903,7 +903,7 @@
    ]
   },
   {
-   "id": "ff8378ee5f20c148",
+   "id": "0afe91ce18818fcf",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -913,7 +913,7 @@
    ]
   },
   {
-   "id": "c1abe8f4df751e56",
+   "id": "5a2835ba1d01c62d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -923,7 +923,7 @@
    ]
   },
   {
-   "id": "ec67163b71a2c91a",
+   "id": "c15e0fdcd8c6956c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -933,7 +933,7 @@
    ]
   },
   {
-   "id": "b5adcbb6f6cf67bb",
+   "id": "3b3713cb4e289f6a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -943,7 +943,7 @@
    ]
   },
   {
-   "id": "bcde1496e578ef41",
+   "id": "291b722a8189a8bb",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -953,7 +953,7 @@
    ]
   },
   {
-   "id": "ffe267d028b2afaf",
+   "id": "c2a5b197fc9686a6",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -963,7 +963,7 @@
    ]
   },
   {
-   "id": "51748ae637652e90",
+   "id": "79034f23234fcfc5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -973,7 +973,7 @@
    ]
   },
   {
-   "id": "e6614de167762f33",
+   "id": "b647ad790901095c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -983,7 +983,7 @@
    ]
   },
   {
-   "id": "1fc796ec40d46ddb",
+   "id": "7d850c65d8ded6f1",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -993,7 +993,7 @@
    ]
   },
   {
-   "id": "c5f8eb6bdb611027",
+   "id": "04f954f3009045e0",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1003,7 +1003,7 @@
    ]
   },
   {
-   "id": "6f20cda4fc04b2c9",
+   "id": "9ee775cb04e79a37",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1013,7 +1013,7 @@
    ]
   },
   {
-   "id": "17a90fb89cd0c21d",
+   "id": "6605c911ed758650",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1023,7 +1023,7 @@
    ]
   },
   {
-   "id": "b297a9b2d2604ddc",
+   "id": "4fa93b7a259fec69",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1033,7 +1033,7 @@
    ]
   },
   {
-   "id": "24e0a8d72325868b",
+   "id": "05110ddf8dc652d6",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1043,7 +1043,7 @@
    ]
   },
   {
-   "id": "a4400b7b02faa888",
+   "id": "3c7e4347866e597c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1053,7 +1053,7 @@
    ]
   },
   {
-   "id": "96e414329f7b1fa4",
+   "id": "a01f1a89a8effc46",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1063,7 +1063,7 @@
    ]
   },
   {
-   "id": "45a37e01ba7d2977",
+   "id": "b643b21517e2d1ce",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1073,7 +1073,7 @@
    ]
   },
   {
-   "id": "bf6da8bbc3a4d7cc",
+   "id": "8dcb48389c224b70",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1083,7 +1083,7 @@
    ]
   },
   {
-   "id": "81855d9ba9316b5b",
+   "id": "5797b5428d5987da",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1093,7 +1093,7 @@
    ]
   },
   {
-   "id": "3f8c46d2b8888c7a",
+   "id": "dbd01678955dcfe3",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1103,17 +1103,17 @@
    ]
   },
   {
-   "id": "93cb76f7d23c57e4",
+   "id": "5d49687cdd55f3fa",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
     492.85,
     210.57,
-    27.26
+    26.65
    ]
   },
   {
-   "id": "ff5b6807fdbab982",
+   "id": "ff09a5493669ba50",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1123,7 +1123,7 @@
    ]
   },
   {
-   "id": "b6bf7d6c06eef220",
+   "id": "35f44fd9a37c2f2a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1133,7 +1133,7 @@
    ]
   },
   {
-   "id": "ab21eba6d21c588f",
+   "id": "438a9f92ae95efc0",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1143,7 +1143,7 @@
    ]
   },
   {
-   "id": "1a111de826f20e25",
+   "id": "a813475b278db3e7",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1153,7 +1153,7 @@
    ]
   },
   {
-   "id": "223a8c824d5516d4",
+   "id": "3f7b8a2979ae2b5f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1163,7 +1163,7 @@
    ]
   },
   {
-   "id": "16978792de6f39c4",
+   "id": "934011745c916087",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1173,7 +1173,7 @@
    ]
   },
   {
-   "id": "ba3fa53a35e2312b",
+   "id": "4a5d448231e2474e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1183,7 +1183,7 @@
    ]
   },
   {
-   "id": "319bf6ea84f2738a",
+   "id": "ec480a4ae6710329",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1193,7 +1193,7 @@
    ]
   },
   {
-   "id": "f0cac7f415f9ccee",
+   "id": "02ac6518d9c69b87",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1203,7 +1203,7 @@
    ]
   },
   {
-   "id": "ed32c35ed4792b52",
+   "id": "c36215394a5b0145",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1213,7 +1213,7 @@
    ]
   },
   {
-   "id": "0e34de9b3723dc60",
+   "id": "0c42ec49174189cd",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1223,7 +1223,7 @@
    ]
   },
   {
-   "id": "4f8003ed404428a2",
+   "id": "25f344ffa6bb3f8d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1233,7 +1233,7 @@
    ]
   },
   {
-   "id": "5488fd13f29ba8b1",
+   "id": "5ca62385f2880cd1",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1243,7 +1243,7 @@
    ]
   },
   {
-   "id": "28564e26d87a4c6f",
+   "id": "c35fb27e03e99a5b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1253,7 +1253,7 @@
    ]
   },
   {
-   "id": "c7774aaa127b7af5",
+   "id": "064d44f43f8f81ca",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1263,7 +1263,7 @@
    ]
   },
   {
-   "id": "45874ee3113d4a9b",
+   "id": "9d764cce7239393a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1273,7 +1273,7 @@
    ]
   },
   {
-   "id": "cbafd75afa5ac341",
+   "id": "e9cbc875c78f285f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1283,7 +1283,7 @@
    ]
   },
   {
-   "id": "8555c1dbc016dde1",
+   "id": "d22e1ee12b587124",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1293,7 +1293,7 @@
    ]
   },
   {
-   "id": "e228c66400eff7e9",
+   "id": "62cb9e5ef81a9e91",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1303,7 +1303,7 @@
    ]
   },
   {
-   "id": "90137112584ef905",
+   "id": "84ee9879bc42bf8c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1313,7 +1313,7 @@
    ]
   },
   {
-   "id": "03db2daefe0ae89f",
+   "id": "05ffcf52a610bb9f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1323,7 +1323,7 @@
    ]
   },
   {
-   "id": "afe6f80385f2d417",
+   "id": "82b2a1fb759584f9",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1333,7 +1333,7 @@
    ]
   },
   {
-   "id": "1dd244d733ddd365",
+   "id": "508013df3988f769",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1343,7 +1343,7 @@
    ]
   },
   {
-   "id": "270cc4f22cb255a0",
+   "id": "593006d7b4252de2",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1353,7 +1353,7 @@
    ]
   },
   {
-   "id": "cc3b3ee148bed610",
+   "id": "1417f375c7a7d702",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1363,7 +1363,7 @@
    ]
   },
   {
-   "id": "b98616b73a073b16",
+   "id": "3501a93f25f0a1b0",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1373,7 +1373,7 @@
    ]
   },
   {
-   "id": "7ccb171fb2d7493f",
+   "id": "5315ca79528e3d81",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1383,7 +1383,7 @@
    ]
   },
   {
-   "id": "31d62aa76a6ee3c1",
+   "id": "befba41777935e96",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1393,7 +1393,7 @@
    ]
   },
   {
-   "id": "3096d18e5b88fed9",
+   "id": "d0bd2f8a9ace0b7d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1403,7 +1403,7 @@
    ]
   },
   {
-   "id": "d6ebc36f548a3f57",
+   "id": "3e528d874bdc89a7",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1413,7 +1413,7 @@
    ]
   },
   {
-   "id": "eeb8f10ec6528a83",
+   "id": "5a466e49edd7ceea",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1423,7 +1423,7 @@
    ]
   },
   {
-   "id": "abad706f2df180cc",
+   "id": "d025240c117b1ca1",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1433,7 +1433,7 @@
    ]
   },
   {
-   "id": "075ec5a2f409bebe",
+   "id": "3927015e5d8f80ca",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1443,7 +1443,7 @@
    ]
   },
   {
-   "id": "0ece9be1e5e2fafd",
+   "id": "67de99e00eedce64",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1453,7 +1453,7 @@
    ]
   },
   {
-   "id": "f256553b97751676",
+   "id": "ac7813531bf5f5f4",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1463,7 +1463,7 @@
    ]
   },
   {
-   "id": "ebb3bcb0539678b0",
+   "id": "86291241fc581614",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1473,7 +1473,7 @@
    ]
   },
   {
-   "id": "d1bd8975c2d8a325",
+   "id": "e25400f5dd29c6fd",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1483,7 +1483,7 @@
    ]
   },
   {
-   "id": "cae60d1dcfcfe262",
+   "id": "dc32fc70e8e9c694",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1493,7 +1493,7 @@
    ]
   },
   {
-   "id": "013015a300efc472",
+   "id": "62e70fc152b30a52",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1503,7 +1503,7 @@
    ]
   },
   {
-   "id": "cba744704eb4199e",
+   "id": "ab0ecb19708120cc",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1513,7 +1513,7 @@
    ]
   },
   {
-   "id": "474cf7a7fbe6616c",
+   "id": "d7dd92066672a7ab",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1523,7 +1523,7 @@
    ]
   },
   {
-   "id": "14c148fc6fcb72ad",
+   "id": "6615170cb30b6aac",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1533,7 +1533,7 @@
    ]
   },
   {
-   "id": "62aeaa742ba68f41",
+   "id": "6f046024af1a816c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1543,7 +1543,7 @@
    ]
   },
   {
-   "id": "642ed0a1f1dd0fa3",
+   "id": "7997175346270701",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1553,7 +1553,7 @@
    ]
   },
   {
-   "id": "2accc3b1a9f46ceb",
+   "id": "4e3e1aa44fc890f5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1563,7 +1563,7 @@
    ]
   },
   {
-   "id": "883225d5fb3cf798",
+   "id": "61b66167393f97da",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1573,7 +1573,7 @@
    ]
   },
   {
-   "id": "e2b1397b7108f0c9",
+   "id": "7b5b235dc251bf50",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1583,7 +1583,7 @@
    ]
   },
   {
-   "id": "f6b0ed81f53e0c15",
+   "id": "3c911dcedbbbad9f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1593,7 +1593,7 @@
    ]
   },
   {
-   "id": "b842ca46fb802944",
+   "id": "5178a13323b04c19",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1603,7 +1603,7 @@
    ]
   },
   {
-   "id": "ce2e6c619788d4ca",
+   "id": "2a4e4b9053b8ca6f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1613,7 +1613,7 @@
    ]
   },
   {
-   "id": "1421009d27a61e41",
+   "id": "525507bf49aa4511",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1623,7 +1623,7 @@
    ]
   },
   {
-   "id": "fe8489292dbb74bb",
+   "id": "7dbb5e715741eb84",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1633,7 +1633,7 @@
    ]
   },
   {
-   "id": "d1c0bc0323591061",
+   "id": "8737f8ef35af1cf6",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1643,7 +1643,7 @@
    ]
   },
   {
-   "id": "2700c67c9814701e",
+   "id": "8b99f12eeb97406e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1653,7 +1653,7 @@
    ]
   },
   {
-   "id": "d9a924f665869606",
+   "id": "549fa7fabb4795fb",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1663,7 +1663,7 @@
    ]
   },
   {
-   "id": "a7795e8f88dbc23c",
+   "id": "e6200d6ff5356198",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1673,7 +1673,7 @@
    ]
   },
   {
-   "id": "196b02dd3c955a5a",
+   "id": "264875520f28bd34",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1683,7 +1683,7 @@
    ]
   },
   {
-   "id": "14354df3f487ecce",
+   "id": "1e320a8cb6b705ba",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1693,7 +1693,7 @@
    ]
   },
   {
-   "id": "5ad8ba5289dc5831",
+   "id": "7347f825f12c3deb",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1703,7 +1703,7 @@
    ]
   },
   {
-   "id": "84fbbf79134779e4",
+   "id": "4c728779dc644832",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1713,7 +1713,7 @@
    ]
   },
   {
-   "id": "8cbe0a504643382d",
+   "id": "1c79f27322d04c82",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1723,7 +1723,7 @@
    ]
   },
   {
-   "id": "ef7c7306db9d6416",
+   "id": "b7396244516bb4cb",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1733,7 +1733,7 @@
    ]
   },
   {
-   "id": "6932d1cab4a49b27",
+   "id": "bc410575aa67cf41",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1743,7 +1743,7 @@
    ]
   },
   {
-   "id": "5274098c2b8765d4",
+   "id": "b64ab64defa004e4",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1753,7 +1753,7 @@
    ]
   },
   {
-   "id": "52c93909f39ccc91",
+   "id": "f048345ebaedee39",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1763,17 +1763,17 @@
    ]
   },
   {
-   "id": "dd533318a0dfb74a",
+   "id": "fdb9232d31534c7a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
     457.96,
     234.52,
-    23.73
+    23.68
    ]
   },
   {
-   "id": "b970414280d6d4ae",
+   "id": "15390c196ffc6404",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1783,7 +1783,7 @@
    ]
   },
   {
-   "id": "774b38337160604d",
+   "id": "e24a2ba8359a6e48",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1793,7 +1793,7 @@
    ]
   },
   {
-   "id": "2ecf67a735f3988e",
+   "id": "118d298414ca4c41",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1803,7 +1803,7 @@
    ]
   },
   {
-   "id": "d64a78f3b854b451",
+   "id": "ff7e623110d50bd5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1813,7 +1813,7 @@
    ]
   },
   {
-   "id": "e93f1be02293457f",
+   "id": "1cbe2296701e6bdf",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1823,7 +1823,7 @@
    ]
   },
   {
-   "id": "7407776236351955",
+   "id": "cf10b98129125446",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1833,7 +1833,7 @@
    ]
   },
   {
-   "id": "082c0c801438606f",
+   "id": "157bb563ac1607a1",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1843,7 +1843,7 @@
    ]
   },
   {
-   "id": "bed587bc1ff9d53e",
+   "id": "9299caff338dee20",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1853,7 +1853,7 @@
    ]
   },
   {
-   "id": "be884f3ca9d3f417",
+   "id": "2f45569d73f64914",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1863,7 +1863,7 @@
    ]
   },
   {
-   "id": "cb56dc5c81c3d538",
+   "id": "5fdd2472fe6713cd",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1873,7 +1873,7 @@
    ]
   },
   {
-   "id": "a1785a3a2fe0c221",
+   "id": "de894e65567457ae",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1883,7 +1883,7 @@
    ]
   },
   {
-   "id": "fc78a12995463154",
+   "id": "335ac39295c7509c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1893,7 +1893,7 @@
    ]
   },
   {
-   "id": "0640183675750630",
+   "id": "bc4f5598a3bc5650",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1903,7 +1903,7 @@
    ]
   },
   {
-   "id": "26eb253ac8807ed6",
+   "id": "76414952495af6e9",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1913,7 +1913,7 @@
    ]
   },
   {
-   "id": "af2c2550eda3a6b3",
+   "id": "e908c13019479977",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1923,7 +1923,7 @@
    ]
   },
   {
-   "id": "03bf8760b3ab2dca",
+   "id": "5c1356ce8260626d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1933,7 +1933,7 @@
    ]
   },
   {
-   "id": "e89255f5897b3538",
+   "id": "a6356892cd4286e1",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1943,7 +1943,7 @@
    ]
   },
   {
-   "id": "8633ff1bca4dd2c7",
+   "id": "0665d273f1525d18",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1953,7 +1953,7 @@
    ]
   },
   {
-   "id": "8fbe5c464fd6fc5f",
+   "id": "e1e6e51b8be8f8d1",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1963,7 +1963,7 @@
    ]
   },
   {
-   "id": "e3adbe90871366ac",
+   "id": "b47221f9ae495a93",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1973,7 +1973,7 @@
    ]
   },
   {
-   "id": "0df91b32708ccb27",
+   "id": "b80a5f10f78b2d2a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1983,7 +1983,7 @@
    ]
   },
   {
-   "id": "cfa26e3aaf6956d0",
+   "id": "cfa9fcd639782bc0",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -1993,7 +1993,7 @@
    ]
   },
   {
-   "id": "c6545138777ad6ba",
+   "id": "35f6b1e622cee766",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2003,7 +2003,7 @@
    ]
   },
   {
-   "id": "993b73c35383af36",
+   "id": "4653086c6b422340",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2013,7 +2013,7 @@
    ]
   },
   {
-   "id": "c6cd497c74a6be4e",
+   "id": "98771755e581075d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2023,7 +2023,7 @@
    ]
   },
   {
-   "id": "f259f43856cc16db",
+   "id": "95eb645e2aef5add",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2033,7 +2033,7 @@
    ]
   },
   {
-   "id": "59a0211a0039638b",
+   "id": "6581ac004f02033c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2043,7 +2043,7 @@
    ]
   },
   {
-   "id": "9b50460b292835a9",
+   "id": "f5c70b3e69406cbb",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2053,7 +2053,7 @@
    ]
   },
   {
-   "id": "8c387dbd57e221e3",
+   "id": "93f9adc02a2e3d27",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2063,7 +2063,7 @@
    ]
   },
   {
-   "id": "e6031f0fdbd79764",
+   "id": "faa891d67854b851",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2073,7 +2073,7 @@
    ]
   },
   {
-   "id": "4ae490adf699101c",
+   "id": "2e62e8b4f728067f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2083,7 +2083,7 @@
    ]
   },
   {
-   "id": "a5feb5a2591f7b5e",
+   "id": "eb4ef725e85d84cd",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2093,7 +2093,7 @@
    ]
   },
   {
-   "id": "8d934c0105736873",
+   "id": "43753964cf870279",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2103,7 +2103,7 @@
    ]
   },
   {
-   "id": "61b5e5061fc85b91",
+   "id": "539555e4edbf2865",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2113,7 +2113,7 @@
    ]
   },
   {
-   "id": "e5c42142423d5f90",
+   "id": "31f1454173f90a52",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2123,7 +2123,7 @@
    ]
   },
   {
-   "id": "aa4934d2e0b1597a",
+   "id": "8cb4cdb9f2e63eaa",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2133,7 +2133,7 @@
    ]
   },
   {
-   "id": "b8570e8b47a23a3e",
+   "id": "300c1ebe5fecaeae",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2143,7 +2143,7 @@
    ]
   },
   {
-   "id": "f6140e1845b4748f",
+   "id": "c9fdfd06c56ddbee",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2153,7 +2153,7 @@
    ]
   },
   {
-   "id": "9546dedb066f2d07",
+   "id": "67020ba457f97400",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2163,7 +2163,7 @@
    ]
   },
   {
-   "id": "ba1f4b788700e8c4",
+   "id": "8924020487fe4001",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2173,7 +2173,7 @@
    ]
   },
   {
-   "id": "c7eecdbe9a9c6d91",
+   "id": "cf8d612d7a5d853e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2183,7 +2183,7 @@
    ]
   },
   {
-   "id": "ba4d78439b2bedd2",
+   "id": "b39c73d5ba663d32",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2193,7 +2193,7 @@
    ]
   },
   {
-   "id": "0b2717d73e1d6697",
+   "id": "1d1fdeff1259d543",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2203,7 +2203,7 @@
    ]
   },
   {
-   "id": "7842b7b898bcc82b",
+   "id": "aab27a870a1a3cb1",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2213,7 +2213,7 @@
    ]
   },
   {
-   "id": "84a6b0ff711ebc93",
+   "id": "d03d401d6dad3ddf",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2223,7 +2223,7 @@
    ]
   },
   {
-   "id": "199401102875ec7f",
+   "id": "a746253a4376e817",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2233,7 +2233,7 @@
    ]
   },
   {
-   "id": "fbba73d7f161043d",
+   "id": "38df25cb7db9cfa7",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2243,7 +2243,7 @@
    ]
   },
   {
-   "id": "dc92fb90dbf8b343",
+   "id": "0b26305181428e83",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2253,7 +2253,7 @@
    ]
   },
   {
-   "id": "a4ce967892b66339",
+   "id": "39787f75b1c8a0f5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2263,7 +2263,7 @@
    ]
   },
   {
-   "id": "f19ae27e2ebb88c4",
+   "id": "b2c7b57c034e9e92",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2273,7 +2273,7 @@
    ]
   },
   {
-   "id": "8663a31d1006b84b",
+   "id": "4ab715195b956f30",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2283,7 +2283,7 @@
    ]
   },
   {
-   "id": "7f0040f3f894c0c4",
+   "id": "5dc0735fbc0008c2",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2293,7 +2293,7 @@
    ]
   },
   {
-   "id": "00ce6e6a5361c847",
+   "id": "41431b25c268dce0",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2303,17 +2303,17 @@
    ]
   },
   {
-   "id": "34d7c32f558bc513",
+   "id": "dae192f945a4ec64",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
     508.09,
     198.45,
-    28.22
+    28.21
    ]
   },
   {
-   "id": "516f68d74bbd0311",
+   "id": "a24f416ce8d3679a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2323,7 +2323,7 @@
    ]
   },
   {
-   "id": "bd3e65139b5507e6",
+   "id": "a632db3b6c62ca35",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2333,7 +2333,7 @@
    ]
   },
   {
-   "id": "909acf91a250718f",
+   "id": "4157a8a79d4cd570",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2343,7 +2343,7 @@
    ]
   },
   {
-   "id": "0c6546befd9a7a37",
+   "id": "49b3c2933ac81452",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2353,7 +2353,7 @@
    ]
   },
   {
-   "id": "80ae786b4d8a0cb3",
+   "id": "c779835d47d83d8e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2363,7 +2363,7 @@
    ]
   },
   {
-   "id": "7a0bead34af3cc85",
+   "id": "d2f231316f5d6bf2",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2373,7 +2373,7 @@
    ]
   },
   {
-   "id": "08e7ac7ec69e5e7e",
+   "id": "95a3189c44ba8350",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2383,7 +2383,7 @@
    ]
   },
   {
-   "id": "11c75e81955af8e5",
+   "id": "6528edbcc02e4063",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2393,7 +2393,7 @@
    ]
   },
   {
-   "id": "5f5c6014928ad53f",
+   "id": "bc1de438dc33e7f1",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2403,7 +2403,7 @@
    ]
   },
   {
-   "id": "db2413ded6eb0825",
+   "id": "9cea04f191844a27",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2413,7 +2413,7 @@
    ]
   },
   {
-   "id": "58d5b17617b332c6",
+   "id": "be3286b5d3a25568",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2423,7 +2423,7 @@
    ]
   },
   {
-   "id": "e9def1bebac66e8b",
+   "id": "98b4eb2b358a2e67",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2433,7 +2433,7 @@
    ]
   },
   {
-   "id": "4772f5bc7b030cd9",
+   "id": "58c183a2256eca2c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2443,7 +2443,7 @@
    ]
   },
   {
-   "id": "05f4f8ff52bf57e9",
+   "id": "03cbc504601de01a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2453,17 +2453,17 @@
    ]
   },
   {
-   "id": "4a478198b848d60b",
+   "id": "3ef90546e959302f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
     489.98,
     228.89,
-    26.2
+    26.13
    ]
   },
   {
-   "id": "71500e2e610f944f",
+   "id": "ba51a408e5008ecf",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2473,7 +2473,7 @@
    ]
   },
   {
-   "id": "9901e185f90503b9",
+   "id": "829cdaaea6f0861e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2483,7 +2483,7 @@
    ]
   },
   {
-   "id": "343cdc362b51080f",
+   "id": "57e485003587f5df",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2493,7 +2493,7 @@
    ]
   },
   {
-   "id": "97a87784867f9015",
+   "id": "51cffd4efb730a0e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2503,7 +2503,7 @@
    ]
   },
   {
-   "id": "59a7603cbc451dcc",
+   "id": "635ee4e733ac60a5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2513,7 +2513,7 @@
    ]
   },
   {
-   "id": "7de3ff238b625a76",
+   "id": "ec323e63e4e96483",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2523,7 +2523,7 @@
    ]
   },
   {
-   "id": "ed74857bacf4f888",
+   "id": "f972418f804a15d5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2533,7 +2533,7 @@
    ]
   },
   {
-   "id": "c7f43069a5faab11",
+   "id": "ae555ae4f06786bd",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2543,7 +2543,7 @@
    ]
   },
   {
-   "id": "2023318901baf07a",
+   "id": "347429ba9bdb9c4a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2553,7 +2553,7 @@
    ]
   },
   {
-   "id": "7d78c302023f3fa9",
+   "id": "cea1c89c89ce2859",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2563,7 +2563,7 @@
    ]
   },
   {
-   "id": "6a5131030479d56e",
+   "id": "a356ea5986032149",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2573,7 +2573,7 @@
    ]
   },
   {
-   "id": "fb19a72bc60df0d1",
+   "id": "ea081657b00dfac6",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2583,7 +2583,7 @@
    ]
   },
   {
-   "id": "bddcf574f174fe15",
+   "id": "98de7d9efdd6adc4",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2593,7 +2593,7 @@
    ]
   },
   {
-   "id": "d9a541731f8ef033",
+   "id": "846c9cd40276e6d7",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2603,7 +2603,7 @@
    ]
   },
   {
-   "id": "de7473d23a62b9ac",
+   "id": "3cb19c61596b860a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2613,7 +2613,7 @@
    ]
   },
   {
-   "id": "3e58a2860b4fdc19",
+   "id": "9665c32f54577565",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2623,7 +2623,7 @@
    ]
   },
   {
-   "id": "f31e1b4e7e6f6e12",
+   "id": "3e88da5a3bcbbe6a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2633,7 +2633,7 @@
    ]
   },
   {
-   "id": "dbcaf4e30b04dfe3",
+   "id": "6db8cbe8752e17ef",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2643,7 +2643,7 @@
    ]
   },
   {
-   "id": "07c9ca3474b75643",
+   "id": "0c6acde2d3f27f89",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2653,7 +2653,7 @@
    ]
   },
   {
-   "id": "0523f08f720708a3",
+   "id": "1c2ff99096544375",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2663,7 +2663,7 @@
    ]
   },
   {
-   "id": "167a8bc195c6666a",
+   "id": "2abada8d32eb662a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2673,7 +2673,7 @@
    ]
   },
   {
-   "id": "e02e83c3ee388574",
+   "id": "0fe1526857514fa9",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2683,7 +2683,7 @@
    ]
   },
   {
-   "id": "cc116980395d9520",
+   "id": "ee9e22892af9f8e8",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2693,7 +2693,7 @@
    ]
   },
   {
-   "id": "848b012c5b8aac23",
+   "id": "d5bcfabf417e55c4",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2703,7 +2703,7 @@
    ]
   },
   {
-   "id": "b652c1a400649f60",
+   "id": "5331ca143e648808",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2713,7 +2713,7 @@
    ]
   },
   {
-   "id": "a5c28f3494ec9b99",
+   "id": "8d3f35757d7039dc",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2723,7 +2723,7 @@
    ]
   },
   {
-   "id": "b3eb4396ded0bd1a",
+   "id": "a9c6ac0e89deaa3a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2733,7 +2733,7 @@
    ]
   },
   {
-   "id": "be933acdf46edd14",
+   "id": "25b84335c766ebdd",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2743,7 +2743,7 @@
    ]
   },
   {
-   "id": "1bfccb77bdab858e",
+   "id": "9c4aee852072fb67",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2753,7 +2753,7 @@
    ]
   },
   {
-   "id": "4866f750c51298d5",
+   "id": "c5cbf6a2ad4efdfa",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2763,7 +2763,7 @@
    ]
   },
   {
-   "id": "d001917f7e5e2842",
+   "id": "5c68ba96a7c18eba",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2773,7 +2773,7 @@
    ]
   },
   {
-   "id": "22c6534dfa963288",
+   "id": "1e00b8c9098e0df9",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2783,7 +2783,7 @@
    ]
   },
   {
-   "id": "5874e1d3956a8163",
+   "id": "d739c9f7627c20e4",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2793,7 +2793,7 @@
    ]
   },
   {
-   "id": "60ef2cbb98aa4278",
+   "id": "79b5423c9f7160a5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2803,7 +2803,7 @@
    ]
   },
   {
-   "id": "47fe65e8e263ea94",
+   "id": "d11ceb02bfc69ecb",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2813,7 +2813,7 @@
    ]
   },
   {
-   "id": "56c0e6bf2756815f",
+   "id": "60fdfb36fda17147",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2823,7 +2823,7 @@
    ]
   },
   {
-   "id": "edb1eb191c2cddd1",
+   "id": "04e5913826fb60ae",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2833,7 +2833,7 @@
    ]
   },
   {
-   "id": "1cd55496bff8cc4c",
+   "id": "ea5b19e872fb7d5f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2843,7 +2843,7 @@
    ]
   },
   {
-   "id": "069f19b8d955f43f",
+   "id": "bdbe284a6df44224",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2853,7 +2853,7 @@
    ]
   },
   {
-   "id": "05dd37c834e52865",
+   "id": "a71f2d9951142458",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2863,7 +2863,7 @@
    ]
   },
   {
-   "id": "0aa6a14b10f87b3d",
+   "id": "235c4af62333a782",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2873,7 +2873,7 @@
    ]
   },
   {
-   "id": "d719052184b20c2f",
+   "id": "6d3477cb068734e3",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2883,7 +2883,7 @@
    ]
   },
   {
-   "id": "732b10d4b97dcc0d",
+   "id": "58280d4b571fe44b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2893,7 +2893,7 @@
    ]
   },
   {
-   "id": "88f0b24bfd975f94",
+   "id": "d03c182bb46af540",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2903,17 +2903,17 @@
    ]
   },
   {
-   "id": "20edf84863f0010b",
+   "id": "aa3058fe03b98218",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
     531.84,
     225.58,
-    30.48
+    30.51
    ]
   },
   {
-   "id": "23ee6395abb759f4",
+   "id": "e9c34910c4c71f47",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2923,7 +2923,7 @@
    ]
   },
   {
-   "id": "4a00361d4c879e88",
+   "id": "1f8002c41baa8954",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2933,7 +2933,7 @@
    ]
   },
   {
-   "id": "a053fd95849d3dfc",
+   "id": "7ccb11eb1f17634c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2943,7 +2943,7 @@
    ]
   },
   {
-   "id": "60611ebcc46979c1",
+   "id": "652ec5b14fcfac63",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2953,7 +2953,7 @@
    ]
   },
   {
-   "id": "fddc05de06982fe2",
+   "id": "863e185863cb80d8",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2963,7 +2963,7 @@
    ]
   },
   {
-   "id": "6d415af08d3a4e31",
+   "id": "63fb2e9386559c0e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2973,7 +2973,7 @@
    ]
   },
   {
-   "id": "7c23f0353e09f177",
+   "id": "9e318211da49c270",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2983,7 +2983,7 @@
    ]
   },
   {
-   "id": "51228b084b3f5018",
+   "id": "f8dc06407665b2dc",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -2993,7 +2993,7 @@
    ]
   },
   {
-   "id": "0c784975abd06620",
+   "id": "fcb301742dc84826",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3003,7 +3003,7 @@
    ]
   },
   {
-   "id": "0d2c6c6b930cd671",
+   "id": "7fe0c97e1933d65d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3013,7 +3013,7 @@
    ]
   },
   {
-   "id": "a47b3714ca7d56d4",
+   "id": "00d8647f98e6adb8",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3023,7 +3023,7 @@
    ]
   },
   {
-   "id": "6e446769a2be5e44",
+   "id": "32eee6251e23609f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3033,7 +3033,7 @@
    ]
   },
   {
-   "id": "c4316fe59e5cbab8",
+   "id": "5e8d5925a6794e1a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3043,7 +3043,7 @@
    ]
   },
   {
-   "id": "85a1139b0d5e0294",
+   "id": "60a68862648f5e8f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3053,7 +3053,7 @@
    ]
   },
   {
-   "id": "94a1ebe8efd92a7b",
+   "id": "c53332014db6be12",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3063,7 +3063,7 @@
    ]
   },
   {
-   "id": "974f6001f973b56b",
+   "id": "c78dd96d2ebbb732",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3073,7 +3073,7 @@
    ]
   },
   {
-   "id": "920287c3d74ca512",
+   "id": "dcb93c07a36d8d33",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3083,7 +3083,7 @@
    ]
   },
   {
-   "id": "ec1fb237245c6d97",
+   "id": "4bbc21f99d0f5530",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3093,7 +3093,7 @@
    ]
   },
   {
-   "id": "d14a0abc2d9850bc",
+   "id": "48c67fb6322167e2",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3103,7 +3103,7 @@
    ]
   },
   {
-   "id": "2299b1b08c185cd8",
+   "id": "5a2f2c1d4403d48b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3113,7 +3113,7 @@
    ]
   },
   {
-   "id": "3133d2d078ad0f81",
+   "id": "7d5691f8c574af18",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3123,7 +3123,7 @@
    ]
   },
   {
-   "id": "4702830d55880795",
+   "id": "46252e3423ee2526",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3133,7 +3133,7 @@
    ]
   },
   {
-   "id": "abedf92193080e03",
+   "id": "c879e68ac8dd17fe",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3143,7 +3143,7 @@
    ]
   },
   {
-   "id": "35aac38ebf8829b0",
+   "id": "d347faf1d08ab106",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3153,17 +3153,17 @@
    ]
   },
   {
-   "id": "44f28c676bcfebed",
+   "id": "0693b25c54689bfb",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
     445.83,
     227.6,
-    23.64
+    23.71
    ]
   },
   {
-   "id": "de990ca83e8a33c8",
+   "id": "d67fa55a5e432598",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3173,7 +3173,7 @@
    ]
   },
   {
-   "id": "aaa9c60a30e3f3ca",
+   "id": "3c2b88643229f330",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3183,7 +3183,7 @@
    ]
   },
   {
-   "id": "86cfef3629392960",
+   "id": "05423ae47184815c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3193,7 +3193,7 @@
    ]
   },
   {
-   "id": "1504e71192963118",
+   "id": "4c372f1cab7d8135",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3203,7 +3203,7 @@
    ]
   },
   {
-   "id": "1589eba9e9cf332a",
+   "id": "4bdb46522ea0874f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3213,7 +3213,7 @@
    ]
   },
   {
-   "id": "e67b885e886fd847",
+   "id": "5c2a25ac7eeed558",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3223,7 +3223,7 @@
    ]
   },
   {
-   "id": "ff059d672e15803d",
+   "id": "d3ba7fb9c8f41814",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3233,7 +3233,7 @@
    ]
   },
   {
-   "id": "fc9b6cd8c91b2f5c",
+   "id": "1662482df8f9bde6",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3243,7 +3243,7 @@
    ]
   },
   {
-   "id": "98313e56e73c16fd",
+   "id": "af441eaef09670d9",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3253,7 +3253,7 @@
    ]
   },
   {
-   "id": "91edbafd1ea8aca2",
+   "id": "1b3b9009aae5062f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3263,7 +3263,7 @@
    ]
   },
   {
-   "id": "7e4f1bb9bafea064",
+   "id": "2c945bf7a69c6bec",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3273,7 +3273,7 @@
    ]
   },
   {
-   "id": "b3748cbdecc3674b",
+   "id": "6d026cf25f76ef51",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3283,7 +3283,7 @@
    ]
   },
   {
-   "id": "ff8a1fb8a63d9473",
+   "id": "3282d274722fa286",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3293,7 +3293,7 @@
    ]
   },
   {
-   "id": "0feadf95fa9d3455",
+   "id": "4a002870a2033354",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3303,7 +3303,7 @@
    ]
   },
   {
-   "id": "425cbf813429f366",
+   "id": "2b639f57557035d3",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3313,7 +3313,7 @@
    ]
   },
   {
-   "id": "0b943487c2e05b1b",
+   "id": "8411d8294a520453",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3323,7 +3323,7 @@
    ]
   },
   {
-   "id": "9b212ed02005a66e",
+   "id": "9783a024500239fd",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3333,7 +3333,7 @@
    ]
   },
   {
-   "id": "a08cf4970bf77b10",
+   "id": "7ffc922fd87c68ff",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3343,7 +3343,7 @@
    ]
   },
   {
-   "id": "287c37c5b4b6165c",
+   "id": "e60637b68cf30974",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3353,7 +3353,7 @@
    ]
   },
   {
-   "id": "1f3b50bd0567162e",
+   "id": "e88af87772f86a7e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3363,7 +3363,7 @@
    ]
   },
   {
-   "id": "ee93a6442bff4d50",
+   "id": "52279ae318be5ad7",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3373,7 +3373,7 @@
    ]
   },
   {
-   "id": "e62367ee83e4e82e",
+   "id": "2923af02772dd9c5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3383,7 +3383,7 @@
    ]
   },
   {
-   "id": "00e5318639b7d10c",
+   "id": "e58f5f5043dea230",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3393,7 +3393,7 @@
    ]
   },
   {
-   "id": "5eaa856b771a9583",
+   "id": "c701c99aef081914",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3403,7 +3403,7 @@
    ]
   },
   {
-   "id": "20f208e41233089e",
+   "id": "5c731f40edc6f79c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3413,7 +3413,7 @@
    ]
   },
   {
-   "id": "bd1701f4903ab75c",
+   "id": "3cf6fd91fe7334c4",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3423,7 +3423,7 @@
    ]
   },
   {
-   "id": "d833d98bb2d0dcd6",
+   "id": "0014d4546fc6b92d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3433,7 +3433,7 @@
    ]
   },
   {
-   "id": "47fd221c97d838e9",
+   "id": "596eae89df6d2756",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3443,7 +3443,7 @@
    ]
   },
   {
-   "id": "d1ed5eb0a896e90c",
+   "id": "ab9ff47f535a3f5f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3453,7 +3453,7 @@
    ]
   },
   {
-   "id": "ff56379605da121d",
+   "id": "f96fdb2233592a20",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3463,7 +3463,7 @@
    ]
   },
   {
-   "id": "35131084bf150f00",
+   "id": "a30f9ff1d9bd1915",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3473,7 +3473,7 @@
    ]
   },
   {
-   "id": "0ca2f8f4d4d0a339",
+   "id": "058b8fff744bdc29",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3483,7 +3483,7 @@
    ]
   },
   {
-   "id": "345262e650eb1267",
+   "id": "27b562e1bbee9a0c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3493,7 +3493,7 @@
    ]
   },
   {
-   "id": "04261fc26f8452c2",
+   "id": "8498c14e340e0ef0",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3503,7 +3503,7 @@
    ]
   },
   {
-   "id": "029cbb86b3f4898b",
+   "id": "467948bb503e58e9",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3513,7 +3513,7 @@
    ]
   },
   {
-   "id": "d27991f1c149edf6",
+   "id": "acf3a5b0d6b19847",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3523,7 +3523,7 @@
    ]
   },
   {
-   "id": "1e1302b1adc459b1",
+   "id": "8abdbc080da59f4f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3533,7 +3533,7 @@
    ]
   },
   {
-   "id": "06d5936b627d6fd7",
+   "id": "6b5ed5a31220692c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3543,7 +3543,7 @@
    ]
   },
   {
-   "id": "102e3d08c6b026ca",
+   "id": "bbfaa73b0219f93d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3553,7 +3553,7 @@
    ]
   },
   {
-   "id": "62cc6f24754ca41d",
+   "id": "8de87bf807c1262a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3563,7 +3563,7 @@
    ]
   },
   {
-   "id": "f91b7a9687e60190",
+   "id": "263982abc1a036b6",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3573,7 +3573,7 @@
    ]
   },
   {
-   "id": "3ae2349f5d32a840",
+   "id": "03db347957dce59b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3583,7 +3583,7 @@
    ]
   },
   {
-   "id": "497a440682784391",
+   "id": "dd4b0d2c33cb1ecc",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3593,7 +3593,7 @@
    ]
   },
   {
-   "id": "b9d0d87b0c984d74",
+   "id": "92c0ebcec80b6db5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3603,7 +3603,7 @@
    ]
   },
   {
-   "id": "d1b521a2a0515a71",
+   "id": "378ebbbfd5a90a02",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3613,7 +3613,7 @@
    ]
   },
   {
-   "id": "fccc3ce6ae6b8226",
+   "id": "d3c38e685ebd39d5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3623,7 +3623,7 @@
    ]
   },
   {
-   "id": "a0e32e825d5fabce",
+   "id": "e304ec44d57148f8",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3633,7 +3633,7 @@
    ]
   },
   {
-   "id": "2c3109852b896c0b",
+   "id": "6ac23fed7fd32d4c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3643,7 +3643,7 @@
    ]
   },
   {
-   "id": "ee9972396567c52e",
+   "id": "798752a63129a660",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3653,7 +3653,7 @@
    ]
   },
   {
-   "id": "8a980d488ac99b8c",
+   "id": "6f34620238830b89",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3663,7 +3663,7 @@
    ]
   },
   {
-   "id": "1a026f26e4d80095",
+   "id": "fcdf96d35b8d7212",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3673,7 +3673,7 @@
    ]
   },
   {
-   "id": "d1f71139364ae8e3",
+   "id": "20d3ccb137e533e1",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3683,7 +3683,7 @@
    ]
   },
   {
-   "id": "5d8ec17a6b893c7d",
+   "id": "766a3efefaf6b961",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3693,7 +3693,7 @@
    ]
   },
   {
-   "id": "3be0fb64c92ff15d",
+   "id": "7a78a47999c16714",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3703,7 +3703,7 @@
    ]
   },
   {
-   "id": "1ceda1024deff481",
+   "id": "6d38cd2bdfcb9372",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3713,7 +3713,7 @@
    ]
   },
   {
-   "id": "478a6290ae1b30c6",
+   "id": "15024408748da59c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3723,7 +3723,7 @@
    ]
   },
   {
-   "id": "d17c63fdca637b07",
+   "id": "58921264a5c8c89f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3733,7 +3733,7 @@
    ]
   },
   {
-   "id": "f30935243656f553",
+   "id": "6c696fa14071af0e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3743,7 +3743,7 @@
    ]
   },
   {
-   "id": "7759a767661cd1e1",
+   "id": "550fa827e4da3ee7",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3753,7 +3753,7 @@
    ]
   },
   {
-   "id": "aac2c3e2dc61cf04",
+   "id": "30606b166f143baf",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3763,7 +3763,7 @@
    ]
   },
   {
-   "id": "057f8477d7c4ded5",
+   "id": "463ba8fa1cabe37a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3773,7 +3773,7 @@
    ]
   },
   {
-   "id": "dc10a5b911c07e2d",
+   "id": "ecab18e07916c0a4",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3783,7 +3783,7 @@
    ]
   },
   {
-   "id": "170b0cb256edd6a7",
+   "id": "39c4488a785fc31c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3793,7 +3793,7 @@
    ]
   },
   {
-   "id": "4d54b517a003855c",
+   "id": "511c13ec279a1aed",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3803,7 +3803,7 @@
    ]
   },
   {
-   "id": "ffad00194feea11a",
+   "id": "3363ff2622cb68d7",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3813,7 +3813,7 @@
    ]
   },
   {
-   "id": "372f5a636dbddd76",
+   "id": "23fa4f606bcfaaed",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3823,7 +3823,7 @@
    ]
   },
   {
-   "id": "c407ce809a5ec14c",
+   "id": "f1b97d7529023fb2",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3833,7 +3833,7 @@
    ]
   },
   {
-   "id": "8468e546bfe0d7fe",
+   "id": "2c63b18f0b980699",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3843,7 +3843,7 @@
    ]
   },
   {
-   "id": "bac55d05ddd7d14c",
+   "id": "ae375937d6d8d2c3",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3853,7 +3853,7 @@
    ]
   },
   {
-   "id": "6916d17b3b500e7f",
+   "id": "7fc31cc5e7e17afb",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3863,7 +3863,7 @@
    ]
   },
   {
-   "id": "0447c065c2fe72f2",
+   "id": "50e18f88e42bf3a5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3873,7 +3873,7 @@
    ]
   },
   {
-   "id": "1f868266bee9cf5e",
+   "id": "7aa15869dbb88f0a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3883,7 +3883,7 @@
    ]
   },
   {
-   "id": "22cf9c4ecddadc4e",
+   "id": "118e9d9b036ceb10",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3893,7 +3893,7 @@
    ]
   },
   {
-   "id": "e88c0a0fa8fbe5b7",
+   "id": "f027f973f7845b30",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3903,7 +3903,7 @@
    ]
   },
   {
-   "id": "ff82a880d31137d3",
+   "id": "d69493fc55f488f2",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3913,7 +3913,7 @@
    ]
   },
   {
-   "id": "9a08b1935fa2367e",
+   "id": "f4c893b267d088c2",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3923,7 +3923,7 @@
    ]
   },
   {
-   "id": "96a2ccf8f3f0bc17",
+   "id": "2c571eec15818152",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3933,7 +3933,7 @@
    ]
   },
   {
-   "id": "fa570f4db586ce55",
+   "id": "fc278da28ebfe05c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3943,7 +3943,7 @@
    ]
   },
   {
-   "id": "511c30b5a4a6302f",
+   "id": "c1376029db8be197",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3953,7 +3953,7 @@
    ]
   },
   {
-   "id": "49c9067ac5d723ca",
+   "id": "88472a08f5260286",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3963,7 +3963,7 @@
    ]
   },
   {
-   "id": "73e691c5d17dd13e",
+   "id": "5fbf1a3e5490e67c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3973,7 +3973,7 @@
    ]
   },
   {
-   "id": "2984b6aadab3af5b",
+   "id": "8ae1d8c5c16b7293",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3983,7 +3983,7 @@
    ]
   },
   {
-   "id": "fdf8b18dc528247b",
+   "id": "00c22a7a5fec3181",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -3993,7 +3993,7 @@
    ]
   },
   {
-   "id": "78d73ec8ea9c5a07",
+   "id": "27f64b3c16d42604",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4003,7 +4003,7 @@
    ]
   },
   {
-   "id": "6e4d53009b982c63",
+   "id": "ff06b8b10fb1fe21",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4013,7 +4013,7 @@
    ]
   },
   {
-   "id": "c059d8e05203797b",
+   "id": "f79a5bf2cb822dc7",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4023,7 +4023,7 @@
    ]
   },
   {
-   "id": "0073bf2fb6f7cc1f",
+   "id": "cb86451a1588fb8d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4033,7 +4033,7 @@
    ]
   },
   {
-   "id": "62715d1d600a0c7c",
+   "id": "089fb7c7aa554dd5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4043,7 +4043,7 @@
    ]
   },
   {
-   "id": "d4e541f7d73df74f",
+   "id": "4bc94aed9e7c940d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4053,7 +4053,7 @@
    ]
   },
   {
-   "id": "0648fda4fed3906a",
+   "id": "00ab9d0f507d9d57",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4063,7 +4063,7 @@
    ]
   },
   {
-   "id": "59b3d59b41eb1392",
+   "id": "3321e67aed72de90",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4073,7 +4073,7 @@
    ]
   },
   {
-   "id": "6c024dff01d611bd",
+   "id": "1e45b174db42f52b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4083,7 +4083,7 @@
    ]
   },
   {
-   "id": "cc754ed02bf0401f",
+   "id": "3b3bb25d35f57e59",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4093,7 +4093,7 @@
    ]
   },
   {
-   "id": "aa7e8f7a4eda158d",
+   "id": "dd3924b3a4acdc08",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4103,7 +4103,7 @@
    ]
   },
   {
-   "id": "48b3ad24ec2e729a",
+   "id": "733ddcdb83544688",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4113,7 +4113,7 @@
    ]
   },
   {
-   "id": "26f1e5a5c7a81278",
+   "id": "50b52064e63c6463",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4123,7 +4123,7 @@
    ]
   },
   {
-   "id": "bd92d39f7a10c7bc",
+   "id": "3b2261a0da6a19bb",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4133,7 +4133,7 @@
    ]
   },
   {
-   "id": "e4b52b86520e9347",
+   "id": "4e7e3c162127967b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4143,7 +4143,7 @@
    ]
   },
   {
-   "id": "702d23cd59c09a40",
+   "id": "ac6d47907265cca4",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4153,7 +4153,7 @@
    ]
   },
   {
-   "id": "5b8b26d830d3690d",
+   "id": "4ac042e00b39b9c0",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4163,7 +4163,7 @@
    ]
   },
   {
-   "id": "5ed6c77765537b27",
+   "id": "701ec08b7582e29c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4173,7 +4173,7 @@
    ]
   },
   {
-   "id": "dd6cc154c743b4fe",
+   "id": "c4618c3390d31c06",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4183,7 +4183,7 @@
    ]
   },
   {
-   "id": "94d27f551453484f",
+   "id": "2714604cf3a1f80c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4193,7 +4193,7 @@
    ]
   },
   {
-   "id": "8645a983f305893d",
+   "id": "26e3efc92c03c2c7",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4203,7 +4203,7 @@
    ]
   },
   {
-   "id": "87c1c0e3688a0688",
+   "id": "a76a4971235afc29",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4213,7 +4213,7 @@
    ]
   },
   {
-   "id": "00418095cb94078f",
+   "id": "a4643def28a17dcb",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4223,7 +4223,7 @@
    ]
   },
   {
-   "id": "fd6877902f101352",
+   "id": "ac31b4b0d4d1442d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4233,7 +4233,7 @@
    ]
   },
   {
-   "id": "c37cbbff99cb9923",
+   "id": "478a1b84f688758b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4243,7 +4243,7 @@
    ]
   },
   {
-   "id": "158a436a52169673",
+   "id": "39f64dc752e6d382",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4253,7 +4253,7 @@
    ]
   },
   {
-   "id": "1638503549d4dfbe",
+   "id": "fbcf38055f814831",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4263,7 +4263,7 @@
    ]
   },
   {
-   "id": "8361a8c7ee33d4b1",
+   "id": "2104c731b5252b47",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4273,7 +4273,7 @@
    ]
   },
   {
-   "id": "4acc48fc2c3a5d36",
+   "id": "3953f2747d36c6a2",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4283,7 +4283,7 @@
    ]
   },
   {
-   "id": "0478d92c36899389",
+   "id": "3435c5600162aeb6",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4293,7 +4293,7 @@
    ]
   },
   {
-   "id": "83814fd80f8f3d22",
+   "id": "3ebc93776d6ce142",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4303,7 +4303,7 @@
    ]
   },
   {
-   "id": "f2a72fef27843877",
+   "id": "24d9c1f272107890",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4313,7 +4313,7 @@
    ]
   },
   {
-   "id": "0776be66102d4978",
+   "id": "1b50f4e533b3714e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4323,7 +4323,7 @@
    ]
   },
   {
-   "id": "a72d2b3d445b4d2b",
+   "id": "cfd2b4b745128c93",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4333,7 +4333,7 @@
    ]
   },
   {
-   "id": "eb5fab8ed20a357c",
+   "id": "98b9e0bda7d5dccb",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4343,7 +4343,7 @@
    ]
   },
   {
-   "id": "3a94d7e453b432fb",
+   "id": "1570616043556b86",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4353,7 +4353,7 @@
    ]
   },
   {
-   "id": "9c878b48b41c4130",
+   "id": "8ec14c51efadf4dc",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4363,7 +4363,7 @@
    ]
   },
   {
-   "id": "075a594a88e66d6c",
+   "id": "075f95ed23e4971f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4373,7 +4373,7 @@
    ]
   },
   {
-   "id": "d1a2175210c54448",
+   "id": "87967606f1b73f03",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4383,7 +4383,7 @@
    ]
   },
   {
-   "id": "8d7a0349a3d3529a",
+   "id": "5e27e07fdbb756fc",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4393,7 +4393,7 @@
    ]
   },
   {
-   "id": "6769c7df456bfcfe",
+   "id": "9475b29de8c4853e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4403,7 +4403,7 @@
    ]
   },
   {
-   "id": "22518affa9914288",
+   "id": "8c9613a7c162160a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4413,7 +4413,7 @@
    ]
   },
   {
-   "id": "7879f7168bd8b561",
+   "id": "5f7fe4ab146ff8e4",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4423,7 +4423,7 @@
    ]
   },
   {
-   "id": "5a66beddc93bd6a1",
+   "id": "3eb826703dcef732",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4433,7 +4433,7 @@
    ]
   },
   {
-   "id": "3552acfc5622f82f",
+   "id": "d7c76b6a4402d109",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4443,7 +4443,7 @@
    ]
   },
   {
-   "id": "e9d95d8b0bdc4716",
+   "id": "52f342c6a5d63468",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4453,7 +4453,7 @@
    ]
   },
   {
-   "id": "f3ee4fa77f4bbdeb",
+   "id": "ace659821a72dc2d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4463,7 +4463,7 @@
    ]
   },
   {
-   "id": "7418df1f182b34e7",
+   "id": "cac15a33185e9f57",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4473,7 +4473,7 @@
    ]
   },
   {
-   "id": "3c8afb85133ec018",
+   "id": "44996d8332e0bb35",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4483,7 +4483,7 @@
    ]
   },
   {
-   "id": "eedd7834f40d9c49",
+   "id": "2145d6fcfa30769c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4493,7 +4493,7 @@
    ]
   },
   {
-   "id": "c54cb6ac8bf18370",
+   "id": "f1294b81efc5c050",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4503,7 +4503,7 @@
    ]
   },
   {
-   "id": "3bf898fbb7102c9c",
+   "id": "8becf185eb2a4b68",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4513,7 +4513,7 @@
    ]
   },
   {
-   "id": "e93c49dd2c8fe8b6",
+   "id": "34873c7459f4c96b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4523,7 +4523,7 @@
    ]
   },
   {
-   "id": "00bcc09c23135844",
+   "id": "55ccd6675d89178a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4533,7 +4533,7 @@
    ]
   },
   {
-   "id": "b1b7e4269a7266f8",
+   "id": "ab0bda63ce820d55",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4543,7 +4543,7 @@
    ]
   },
   {
-   "id": "b12cac245087d6e4",
+   "id": "63e7a8435757324d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4553,7 +4553,7 @@
    ]
   },
   {
-   "id": "ff6d68814046a89e",
+   "id": "b9deda324486d550",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4563,7 +4563,7 @@
    ]
   },
   {
-   "id": "6e4454cbff5c3bb1",
+   "id": "f889dc569635ee96",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4573,7 +4573,7 @@
    ]
   },
   {
-   "id": "fa1af97cd98ead37",
+   "id": "5067006246253396",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4583,7 +4583,7 @@
    ]
   },
   {
-   "id": "05d33cf0355d4fdb",
+   "id": "9daf2f83625b3e96",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4593,7 +4593,7 @@
    ]
   },
   {
-   "id": "72cfcbb434c22ac3",
+   "id": "5b3cf27ff6748474",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4603,7 +4603,7 @@
    ]
   },
   {
-   "id": "25c52f11362a432e",
+   "id": "31ffaafbe88d22b8",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4613,7 +4613,7 @@
    ]
   },
   {
-   "id": "0f5720674f1a60d3",
+   "id": "8492be8d005c0334",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4623,7 +4623,7 @@
    ]
   },
   {
-   "id": "21d7fc2e293aefda",
+   "id": "c30b3959e31f2d00",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4633,7 +4633,7 @@
    ]
   },
   {
-   "id": "a364d65d1af1a471",
+   "id": "65c4d193ad32ae08",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4643,7 +4643,7 @@
    ]
   },
   {
-   "id": "7bf2d112f6fd3c09",
+   "id": "0ee8fa9d713d23fb",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4653,7 +4653,7 @@
    ]
   },
   {
-   "id": "631bdea8649a0801",
+   "id": "ba5c25270d65b635",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4663,7 +4663,7 @@
    ]
   },
   {
-   "id": "f4499f2099dafa03",
+   "id": "9acbbfcb9e3efef4",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4673,7 +4673,7 @@
    ]
   },
   {
-   "id": "bb46f02e9cbf4423",
+   "id": "4e6c2dab2121041e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4683,7 +4683,7 @@
    ]
   },
   {
-   "id": "71d16f923188cba4",
+   "id": "8cd897c383e02fc0",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4693,7 +4693,7 @@
    ]
   },
   {
-   "id": "edaf2c304127e18d",
+   "id": "f97f8cb6c5e8c8df",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4703,7 +4703,7 @@
    ]
   },
   {
-   "id": "c5426cb3e60d1085",
+   "id": "e9ef12874a2983ee",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4713,7 +4713,7 @@
    ]
   },
   {
-   "id": "27d99aefa6014de8",
+   "id": "98139dffc57597af",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4723,7 +4723,7 @@
    ]
   },
   {
-   "id": "ffb266f576fcae72",
+   "id": "78230ed2d4d982b4",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4733,7 +4733,7 @@
    ]
   },
   {
-   "id": "87ca99f1013ac93f",
+   "id": "caeb4f6dcd01f6cb",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4743,7 +4743,7 @@
    ]
   },
   {
-   "id": "548e2209c4d402fd",
+   "id": "ed141bd70d15184d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4753,7 +4753,7 @@
    ]
   },
   {
-   "id": "8e95af5fcbf4c3a6",
+   "id": "ce90ec42db03bd48",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4763,7 +4763,7 @@
    ]
   },
   {
-   "id": "8b3e0ff9790128c6",
+   "id": "75aceb223cc21c97",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4773,7 +4773,7 @@
    ]
   },
   {
-   "id": "1295497034575051",
+   "id": "cd32734b67b362f7",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4783,7 +4783,7 @@
    ]
   },
   {
-   "id": "364e87a19161dd2d",
+   "id": "de94bb5e42d7888b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4793,7 +4793,7 @@
    ]
   },
   {
-   "id": "5d298a2a95bf522d",
+   "id": "a54c19eec04bc9e8",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4803,7 +4803,7 @@
    ]
   },
   {
-   "id": "2c16e66871480fb3",
+   "id": "60fc2eefe3dd54cf",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4813,7 +4813,7 @@
    ]
   },
   {
-   "id": "d6c709c2bace6297",
+   "id": "67eb263330da3f93",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4823,7 +4823,7 @@
    ]
   },
   {
-   "id": "dc0d825701d744a3",
+   "id": "1ebad1b608b077ee",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4833,7 +4833,7 @@
    ]
   },
   {
-   "id": "1e7cae1a9a60c3ea",
+   "id": "c925d1781a50cefb",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4843,7 +4843,7 @@
    ]
   },
   {
-   "id": "a068a3c9255d4329",
+   "id": "4c551a79cdd1c21b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4853,7 +4853,7 @@
    ]
   },
   {
-   "id": "a06d5ef2c86130bf",
+   "id": "35c4077881a81db5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4863,7 +4863,7 @@
    ]
   },
   {
-   "id": "9de530a5d845c42a",
+   "id": "f0d50c4db235a710",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4873,7 +4873,7 @@
    ]
   },
   {
-   "id": "a614cec74ad467e2",
+   "id": "d5f1ba5d28008c42",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4883,7 +4883,7 @@
    ]
   },
   {
-   "id": "2afcab2317590723",
+   "id": "7a0f74774fffb4dc",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4893,7 +4893,7 @@
    ]
   },
   {
-   "id": "9f8bfa3fcfdb1ed1",
+   "id": "d889bba1b9f33da9",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4903,7 +4903,7 @@
    ]
   },
   {
-   "id": "3f8cd61ea470ce8d",
+   "id": "fcf8934b3a87c98b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4913,7 +4913,7 @@
    ]
   },
   {
-   "id": "bb57aadfca81636f",
+   "id": "8f237830ac3c63f9",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4923,7 +4923,7 @@
    ]
   },
   {
-   "id": "edfc032b2c257112",
+   "id": "db0efc5c9c37c694",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4933,7 +4933,7 @@
    ]
   },
   {
-   "id": "f3c85b609f41804d",
+   "id": "b373d003d592bbe9",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4943,7 +4943,7 @@
    ]
   },
   {
-   "id": "8e4dc9e0d092b90b",
+   "id": "b2609349a58bc33a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4953,7 +4953,7 @@
    ]
   },
   {
-   "id": "2aed119ce139e457",
+   "id": "b2463490d5818661",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4963,7 +4963,7 @@
    ]
   },
   {
-   "id": "2724dd132df73069",
+   "id": "d9c35e26ddb912b7",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4973,7 +4973,7 @@
    ]
   },
   {
-   "id": "74bb18e284e3c6ce",
+   "id": "32e5c6a4e688ecab",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4983,7 +4983,7 @@
    ]
   },
   {
-   "id": "fd590a019bdb91be",
+   "id": "e242395809b97161",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -4993,7 +4993,7 @@
    ]
   },
   {
-   "id": "c65da199e96a4bd3",
+   "id": "c46dec529044f38a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5003,7 +5003,7 @@
    ]
   },
   {
-   "id": "0c9ec805328a8a0e",
+   "id": "69527a9efb42d91b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5013,7 +5013,7 @@
    ]
   },
   {
-   "id": "01ca08c051a38265",
+   "id": "dab8a85e6c0c7150",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5023,7 +5023,7 @@
    ]
   },
   {
-   "id": "927b1ef31d3b57f1",
+   "id": "bc474fb9e8faf5f2",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5033,7 +5033,7 @@
    ]
   },
   {
-   "id": "5f7adffa23cf76e7",
+   "id": "57212260a04465cb",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5043,7 +5043,7 @@
    ]
   },
   {
-   "id": "5143a7be9f65efd6",
+   "id": "80be0fd453f4af7a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5053,7 +5053,7 @@
    ]
   },
   {
-   "id": "36b085b9029dc9e7",
+   "id": "267f3552ebf3f074",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5063,7 +5063,7 @@
    ]
   },
   {
-   "id": "19c26cadc8792cb2",
+   "id": "255dd874b8680720",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5073,7 +5073,7 @@
    ]
   },
   {
-   "id": "8d019e12385da68f",
+   "id": "099ff5a271b33396",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5083,7 +5083,7 @@
    ]
   },
   {
-   "id": "c72f60398981e05b",
+   "id": "c28e33ae0a33f5e6",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5093,7 +5093,7 @@
    ]
   },
   {
-   "id": "e9ab8ba97771d146",
+   "id": "da9be9ecf4e7aaaf",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5103,7 +5103,7 @@
    ]
   },
   {
-   "id": "41f592e0cf58e5c8",
+   "id": "13e48f4889a91586",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5113,7 +5113,7 @@
    ]
   },
   {
-   "id": "3635dd814df3aa48",
+   "id": "d9d51370eb97de81",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5123,7 +5123,7 @@
    ]
   },
   {
-   "id": "395cc68c6c11b8c1",
+   "id": "03d8d57df87e99f0",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5133,7 +5133,7 @@
    ]
   },
   {
-   "id": "43e36c7ef0f3ae07",
+   "id": "c21148cee4a8b4dc",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5143,7 +5143,7 @@
    ]
   },
   {
-   "id": "9ecadb8f94a3e80c",
+   "id": "1ffb9b01f56dfc37",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5153,7 +5153,7 @@
    ]
   },
   {
-   "id": "6c05a725332b0327",
+   "id": "877e929b8af107ea",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5163,7 +5163,7 @@
    ]
   },
   {
-   "id": "1ad2673a91124e77",
+   "id": "e9df0c2d1236d958",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5173,7 +5173,7 @@
    ]
   },
   {
-   "id": "8504a554b8c307ff",
+   "id": "3c16bdc78b486fc6",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5183,7 +5183,7 @@
    ]
   },
   {
-   "id": "08aa814d7bacbd3e",
+   "id": "8395a6bf1e40cf40",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5193,7 +5193,7 @@
    ]
   },
   {
-   "id": "a8dbe0bfbd45829f",
+   "id": "534e9fd5105d12de",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5203,7 +5203,7 @@
    ]
   },
   {
-   "id": "610d1ab6a3879162",
+   "id": "1163eb00f97a56c2",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5213,7 +5213,7 @@
    ]
   },
   {
-   "id": "d0174dec7d373208",
+   "id": "b712c1eab74a514d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5223,7 +5223,7 @@
    ]
   },
   {
-   "id": "98ba140c8c7e0157",
+   "id": "df0a9398742368d4",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5233,7 +5233,7 @@
    ]
   },
   {
-   "id": "b23cb4da05262b95",
+   "id": "262a35cef6056c7a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5243,7 +5243,7 @@
    ]
   },
   {
-   "id": "fb7cc7f4187cb600",
+   "id": "cc38881504c83933",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5253,7 +5253,7 @@
    ]
   },
   {
-   "id": "b1e39737c5060c98",
+   "id": "22af46ce32b9efab",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5263,7 +5263,7 @@
    ]
   },
   {
-   "id": "f44b04531ad5e32f",
+   "id": "f4b6a441d6f73643",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5273,7 +5273,7 @@
    ]
   },
   {
-   "id": "1334eb69e9881778",
+   "id": "aa20c75529e4c60d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5283,7 +5283,7 @@
    ]
   },
   {
-   "id": "a197d3dcce264c01",
+   "id": "b8a5bdb06cc091f8",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5293,7 +5293,7 @@
    ]
   },
   {
-   "id": "401de9d343c6b37c",
+   "id": "9936282a4e4c203d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5303,7 +5303,7 @@
    ]
   },
   {
-   "id": "33cc993e367e43e4",
+   "id": "52d42bf088e3700e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5313,7 +5313,7 @@
    ]
   },
   {
-   "id": "3f9e266dbd8d940f",
+   "id": "17675025afad8676",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5323,7 +5323,7 @@
    ]
   },
   {
-   "id": "fa12c3336cec0e89",
+   "id": "d3f647288a89eedb",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5333,7 +5333,7 @@
    ]
   },
   {
-   "id": "2f766d3a695b9b30",
+   "id": "a31f86cfe29ec127",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5343,7 +5343,7 @@
    ]
   },
   {
-   "id": "a361a723de721345",
+   "id": "e80829b6b2aedc2d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5353,7 +5353,7 @@
    ]
   },
   {
-   "id": "089a70c6e2b59ee4",
+   "id": "c4524db56b744022",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5363,7 +5363,7 @@
    ]
   },
   {
-   "id": "40071d4984c6c356",
+   "id": "35b8f3ec61045e89",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5373,7 +5373,7 @@
    ]
   },
   {
-   "id": "bbb8c57cf0725c42",
+   "id": "3af48967a6354a0e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5383,7 +5383,7 @@
    ]
   },
   {
-   "id": "c2ae0fb23084cdd6",
+   "id": "98c5a851c7b13f35",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5393,7 +5393,7 @@
    ]
   },
   {
-   "id": "a865c0a83bbf4615",
+   "id": "d2ac601b9491b660",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5403,7 +5403,7 @@
    ]
   },
   {
-   "id": "0d14b86b544fa84f",
+   "id": "2f66e96e29e0ccba",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5413,7 +5413,7 @@
    ]
   },
   {
-   "id": "3fd99a47ef4d6dfa",
+   "id": "af12632291b2d6c8",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5423,7 +5423,7 @@
    ]
   },
   {
-   "id": "01e726694c81372a",
+   "id": "f0fb412f88c4dde5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5433,7 +5433,7 @@
    ]
   },
   {
-   "id": "9aa936b36a1ff90e",
+   "id": "d130eac06501fc9e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5443,7 +5443,7 @@
    ]
   },
   {
-   "id": "f3cfb5cf40f451d6",
+   "id": "bef16013914cdb6f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5453,7 +5453,7 @@
    ]
   },
   {
-   "id": "2262f711125a31c0",
+   "id": "63c2720cc406a357",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5463,7 +5463,7 @@
    ]
   },
   {
-   "id": "b4eaebdbd368166f",
+   "id": "88d54a6435bc7976",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5473,7 +5473,7 @@
    ]
   },
   {
-   "id": "db9f41b501ca6e83",
+   "id": "ea6ccb528cc57748",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5483,7 +5483,7 @@
    ]
   },
   {
-   "id": "fb3124ac9c5954cf",
+   "id": "cba38391e54ca0a2",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5493,7 +5493,7 @@
    ]
   },
   {
-   "id": "40df7d21dc6b9bb2",
+   "id": "36953f0a87c378b4",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5503,7 +5503,7 @@
    ]
   },
   {
-   "id": "834e2f5833f26ae6",
+   "id": "09953d62a0b39fbd",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5513,7 +5513,7 @@
    ]
   },
   {
-   "id": "14cb99bc3da8688e",
+   "id": "e2bb1d48c4fdd4cf",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5523,7 +5523,7 @@
    ]
   },
   {
-   "id": "923da43a9357549d",
+   "id": "3da7f627a135b4e4",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5533,7 +5533,7 @@
    ]
   },
   {
-   "id": "9490c96b95acf52e",
+   "id": "f410ab8152e50ff5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5543,7 +5543,7 @@
    ]
   },
   {
-   "id": "7f6a4f91593ecf41",
+   "id": "9f1108afa21d9f8d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5553,7 +5553,7 @@
    ]
   },
   {
-   "id": "d3cff3609472f9df",
+   "id": "51489a9061828821",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5563,7 +5563,7 @@
    ]
   },
   {
-   "id": "b0484f7861e7d74a",
+   "id": "27b8cdd0905328a2",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5573,7 +5573,7 @@
    ]
   },
   {
-   "id": "966e42d7ee6e301f",
+   "id": "bbfd3cd05a13ce7f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5583,7 +5583,7 @@
    ]
   },
   {
-   "id": "1657d14bd3e7604e",
+   "id": "8771516b02d59d13",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5593,7 +5593,7 @@
    ]
   },
   {
-   "id": "5f517b7f9fe98803",
+   "id": "14cfd1e55759d390",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5603,7 +5603,7 @@
    ]
   },
   {
-   "id": "f39406f21b049dcf",
+   "id": "3adad54ed557b450",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5613,7 +5613,7 @@
    ]
   },
   {
-   "id": "a3643677e6f5e4fc",
+   "id": "fd77ef4c85314511",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5623,7 +5623,7 @@
    ]
   },
   {
-   "id": "e3ab8c73f81ccc7d",
+   "id": "a319b30ea16c68e2",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5633,7 +5633,7 @@
    ]
   },
   {
-   "id": "d98936c56661e266",
+   "id": "28d18e9025ad9d2e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5643,7 +5643,7 @@
    ]
   },
   {
-   "id": "df3cf6d8c04205da",
+   "id": "578ad8d9a1d6ef2b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5653,7 +5653,7 @@
    ]
   },
   {
-   "id": "2c3080417e5305f1",
+   "id": "2152e5d55fa1060b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5663,7 +5663,7 @@
    ]
   },
   {
-   "id": "bc08b50437e39158",
+   "id": "7632ab4d1eb29164",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5673,7 +5673,7 @@
    ]
   },
   {
-   "id": "9e9a37882a3cbf56",
+   "id": "25b00bac42c6f097",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5683,7 +5683,7 @@
    ]
   },
   {
-   "id": "f6e48bfe7e6a0c25",
+   "id": "e335daf2862872cc",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5693,7 +5693,7 @@
    ]
   },
   {
-   "id": "f87f2cc5262a0559",
+   "id": "ce4dd89e1be0f402",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5703,17 +5703,17 @@
    ]
   },
   {
-   "id": "5d2029b4aa58870a",
+   "id": "57b037dd010e88a6",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
     482.6,
     234.55,
-    25.26
+    25.25
    ]
   },
   {
-   "id": "e332e4bd11892ca8",
+   "id": "241553311b13ca33",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5723,7 +5723,7 @@
    ]
   },
   {
-   "id": "19a67714853821a3",
+   "id": "3f84629ae59ff38e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5733,7 +5733,7 @@
    ]
   },
   {
-   "id": "9a2b28a6f8c456d1",
+   "id": "a5396a89f02f8657",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5743,7 +5743,7 @@
    ]
   },
   {
-   "id": "ca0ccf532ebdc8f7",
+   "id": "5d83dfcd1214ee76",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5753,7 +5753,7 @@
    ]
   },
   {
-   "id": "c0c0998b0720e850",
+   "id": "5627d3aadc08ddc6",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5763,7 +5763,7 @@
    ]
   },
   {
-   "id": "b0d97b7a5c416692",
+   "id": "f7d8ac912b55281e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5773,7 +5773,7 @@
    ]
   },
   {
-   "id": "d57eda6eb121b43b",
+   "id": "534da496df422818",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5783,7 +5783,7 @@
    ]
   },
   {
-   "id": "dd05a9189268fa42",
+   "id": "d05491c3ffee4257",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5793,7 +5793,7 @@
    ]
   },
   {
-   "id": "5254a438081e1ff1",
+   "id": "1b7e16702b17c584",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5803,7 +5803,7 @@
    ]
   },
   {
-   "id": "f160f8aabfc0ad51",
+   "id": "1919cbba1291341e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5813,7 +5813,7 @@
    ]
   },
   {
-   "id": "00663d86a5b369db",
+   "id": "f151a79137b4a49f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5823,7 +5823,7 @@
    ]
   },
   {
-   "id": "ad10b5a4473a9f67",
+   "id": "441d9e160b7a05ca",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5833,17 +5833,17 @@
    ]
   },
   {
-   "id": "c9a7be24b0457d7b",
+   "id": "63a6cd5464bb2a04",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
     431.88,
     194.07,
-    24.64
+    24.88
    ]
   },
   {
-   "id": "614a673c574006a9",
+   "id": "825e620e7e1a095a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5853,7 +5853,7 @@
    ]
   },
   {
-   "id": "b2d7f69a41f9e849",
+   "id": "c8cdb66c2f6a1046",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5863,7 +5863,7 @@
    ]
   },
   {
-   "id": "1e37fbb000d992b7",
+   "id": "122355df0d0d559c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5873,7 +5873,7 @@
    ]
   },
   {
-   "id": "212ea1e486eb3d20",
+   "id": "e45ee5f17b11916a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5883,7 +5883,7 @@
    ]
   },
   {
-   "id": "04b46eb116a30133",
+   "id": "3cb9a813d34193f9",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5893,7 +5893,7 @@
    ]
   },
   {
-   "id": "83a59a67b4d20d53",
+   "id": "d7e87688f0dc36c9",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5903,7 +5903,7 @@
    ]
   },
   {
-   "id": "4a0d40dd3ff324c4",
+   "id": "8b86508b4eef427a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5913,7 +5913,7 @@
    ]
   },
   {
-   "id": "1e9e1695988a64c7",
+   "id": "3969cc644ebe8253",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5923,7 +5923,7 @@
    ]
   },
   {
-   "id": "3caa3cd990ab4f61",
+   "id": "def7dc6fb5d786d0",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5933,7 +5933,7 @@
    ]
   },
   {
-   "id": "6700b8464c6f6166",
+   "id": "f3894fa48c377cf7",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5943,7 +5943,7 @@
    ]
   },
   {
-   "id": "cd24238bcb7ff64a",
+   "id": "84b86b1a307e34f0",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5953,7 +5953,7 @@
    ]
   },
   {
-   "id": "ff1207208715286e",
+   "id": "8099a89307c2b45c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5963,7 +5963,7 @@
    ]
   },
   {
-   "id": "3422424c3f2a919a",
+   "id": "6bc67d8b5561a335",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5973,7 +5973,7 @@
    ]
   },
   {
-   "id": "48da4a0c977d5968",
+   "id": "7195dcc7a4a60add",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5983,7 +5983,7 @@
    ]
   },
   {
-   "id": "31b9db5489eee7a4",
+   "id": "901ce32522428b74",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -5993,7 +5993,7 @@
    ]
   },
   {
-   "id": "24d7e63972c7a8ef",
+   "id": "e5ce9862130fdc04",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6003,7 +6003,7 @@
    ]
   },
   {
-   "id": "7c0d0d197b503d28",
+   "id": "1cf5943e224d32fc",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6013,7 +6013,7 @@
    ]
   },
   {
-   "id": "6e0005f4ad0ba3c8",
+   "id": "f07b0b5af96407d9",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6023,7 +6023,7 @@
    ]
   },
   {
-   "id": "65eed26fcfe65ee7",
+   "id": "41a19e5bbe62ca65",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6033,7 +6033,7 @@
    ]
   },
   {
-   "id": "33cd6f63dd3bb0ab",
+   "id": "82826dcb882b379f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6043,7 +6043,7 @@
    ]
   },
   {
-   "id": "bfc87e9367f9b905",
+   "id": "9e8b5345f87e4012",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6053,7 +6053,7 @@
    ]
   },
   {
-   "id": "395b09a40be0e93c",
+   "id": "c0dc84e9a97010d0",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6063,7 +6063,7 @@
    ]
   },
   {
-   "id": "3674926a9fe77731",
+   "id": "f7898c8b0d8a13d2",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6073,7 +6073,7 @@
    ]
   },
   {
-   "id": "fdd0d2495671cd5d",
+   "id": "fcba04d7c35b5779",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6083,7 +6083,7 @@
    ]
   },
   {
-   "id": "33eab404474f5fa3",
+   "id": "2a6bf760d72454e2",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6093,7 +6093,7 @@
    ]
   },
   {
-   "id": "3a79f61a8312274f",
+   "id": "16945e1e90a2f77b",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6103,7 +6103,7 @@
    ]
   },
   {
-   "id": "aa653bb4b276a62e",
+   "id": "a692ed1714556339",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6113,7 +6113,7 @@
    ]
   },
   {
-   "id": "8c4e1bbe9ed22de1",
+   "id": "7cd2b47487072cfc",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6123,7 +6123,7 @@
    ]
   },
   {
-   "id": "f7fb15b90f80832a",
+   "id": "40f2f4dc0606f50e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6133,7 +6133,7 @@
    ]
   },
   {
-   "id": "3b3648d487dbd8c9",
+   "id": "0c9448a38d613fe1",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6143,7 +6143,7 @@
    ]
   },
   {
-   "id": "f918484c4becf796",
+   "id": "653686edcf9ae555",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6153,7 +6153,7 @@
    ]
   },
   {
-   "id": "961cb9fd07534285",
+   "id": "cfd50e520b870ac3",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6163,7 +6163,7 @@
    ]
   },
   {
-   "id": "ed7c84102e1806c4",
+   "id": "51b9e543c081d39d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6173,7 +6173,7 @@
    ]
   },
   {
-   "id": "33bc242c49d0d53b",
+   "id": "867442c446eddd0c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6183,7 +6183,7 @@
    ]
   },
   {
-   "id": "4c64929a72af361a",
+   "id": "38d3c7cd1bbb4f04",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6193,7 +6193,7 @@
    ]
   },
   {
-   "id": "5a0ebbaba7e04201",
+   "id": "f87e6a81e9faf964",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6203,7 +6203,7 @@
    ]
   },
   {
-   "id": "b719e4a4483856db",
+   "id": "130f001200a98cbe",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6213,7 +6213,7 @@
    ]
   },
   {
-   "id": "d41b24de61169d97",
+   "id": "122b88d47ba46bec",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6223,7 +6223,7 @@
    ]
   },
   {
-   "id": "3444af033de1edeb",
+   "id": "17dde290e20a48b6",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6233,7 +6233,7 @@
    ]
   },
   {
-   "id": "6c5d2ace2d29c47d",
+   "id": "52eecd8b837ad9c5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6243,7 +6243,7 @@
    ]
   },
   {
-   "id": "8dcabf439939c7ea",
+   "id": "058ef17c3c2cbea2",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6253,7 +6253,7 @@
    ]
   },
   {
-   "id": "2bc72146f3f16d7b",
+   "id": "48fc1ee4b7e9497a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6263,7 +6263,7 @@
    ]
   },
   {
-   "id": "7e0d82ffada8c1d1",
+   "id": "405a70042ff3d0c0",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6273,7 +6273,7 @@
    ]
   },
   {
-   "id": "7395ec6484a2e6e5",
+   "id": "461de7500eb44f12",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6283,7 +6283,7 @@
    ]
   },
   {
-   "id": "27ace44952f46465",
+   "id": "5190266258278c5c",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6293,7 +6293,7 @@
    ]
   },
   {
-   "id": "e7dda413b8dcaad8",
+   "id": "39f112dd4cfa290f",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6303,7 +6303,7 @@
    ]
   },
   {
-   "id": "3a19f0c3f299ab34",
+   "id": "d53680cb9769a0e6",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6313,7 +6313,7 @@
    ]
   },
   {
-   "id": "0012d87ad9bc6e36",
+   "id": "cfdfbf14d7642dd4",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6323,7 +6323,7 @@
    ]
   },
   {
-   "id": "82779512018ae16c",
+   "id": "a17aec26b2257be5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6333,7 +6333,7 @@
    ]
   },
   {
-   "id": "7aa5493b8f501077",
+   "id": "192678d338dc9391",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6343,7 +6343,7 @@
    ]
   },
   {
-   "id": "196b39aa35f14966",
+   "id": "b614b15a4a3177e5",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6353,7 +6353,7 @@
    ]
   },
   {
-   "id": "448ccd0fea9a3764",
+   "id": "c4df0285307c690d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6363,7 +6363,7 @@
    ]
   },
   {
-   "id": "b23833ac3db72485",
+   "id": "4f7b1d3f5b0a4cb6",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6373,7 +6373,7 @@
    ]
   },
   {
-   "id": "0b16ed320f53d175",
+   "id": "5e322524ff185f8d",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6383,7 +6383,7 @@
    ]
   },
   {
-   "id": "20a6279975b40c1d",
+   "id": "9c368fea78a32c90",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6393,7 +6393,7 @@
    ]
   },
   {
-   "id": "baa8c4251949c5d3",
+   "id": "ee49d33eb281c425",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6403,7 +6403,7 @@
    ]
   },
   {
-   "id": "776343f07223a959",
+   "id": "cd5059f52ef4ee0a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6413,7 +6413,7 @@
    ]
   },
   {
-   "id": "d2fa974d73f71824",
+   "id": "d35dc966e824cbe9",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6423,7 +6423,7 @@
    ]
   },
   {
-   "id": "be95a2476d8a64ec",
+   "id": "c0b47e15992d1a6a",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6433,7 +6433,7 @@
    ]
   },
   {
-   "id": "f61e821c4930a0f8",
+   "id": "6dafac2436e06ac0",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6443,7 +6443,7 @@
    ]
   },
   {
-   "id": "ae24c5f22888bf29",
+   "id": "f15d8f28ceae571e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6453,7 +6453,7 @@
    ]
   },
   {
-   "id": "22ea369e324ae033",
+   "id": "c77504c55fa294a7",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6463,7 +6463,7 @@
    ]
   },
   {
-   "id": "0da3e12608dbdd45",
+   "id": "703de484eb17cc2e",
    "role": "tree_pine_tall",
    "resource": "wood",
    "at": [
@@ -6473,7 +6473,7 @@
    ]
   },
   {
-   "id": "3be702125b3a1253",
+   "id": "1b3316159c04acc0",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6483,7 +6483,7 @@
    ]
   },
   {
-   "id": "983aaa511cf7a8ff",
+   "id": "46116ab270bbe52f",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6493,7 +6493,7 @@
    ]
   },
   {
-   "id": "de313d64ef171144",
+   "id": "71f7f0eb67fee79a",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6503,7 +6503,7 @@
    ]
   },
   {
-   "id": "84257c07ce994a07",
+   "id": "1f66a0d648ae8dce",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6513,7 +6513,7 @@
    ]
   },
   {
-   "id": "f17292a37be2cd38",
+   "id": "61135385d3e1e876",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6523,7 +6523,7 @@
    ]
   },
   {
-   "id": "3811cdc5f6915653",
+   "id": "46a91b9fba2c5267",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6533,7 +6533,7 @@
    ]
   },
   {
-   "id": "dfdf9b4f92fcdde2",
+   "id": "8a113146ea1af8f6",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6543,7 +6543,7 @@
    ]
   },
   {
-   "id": "7b82f90d719501bb",
+   "id": "00f25d1cdab38327",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6553,7 +6553,7 @@
    ]
   },
   {
-   "id": "4cd8826b072a6381",
+   "id": "0380fdd8976dd73a",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6563,7 +6563,7 @@
    ]
   },
   {
-   "id": "d254034c536fa4c1",
+   "id": "e7f70eabc5c75e0f",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6573,7 +6573,7 @@
    ]
   },
   {
-   "id": "e18f66afbe6fed03",
+   "id": "45808702298dde53",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6583,7 +6583,7 @@
    ]
   },
   {
-   "id": "64a7b5028c0e0c6b",
+   "id": "50bb95130712b107",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6593,7 +6593,7 @@
    ]
   },
   {
-   "id": "51d8dabb9dc3dd5a",
+   "id": "21e3c55311dd27cf",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6603,7 +6603,7 @@
    ]
   },
   {
-   "id": "b75ab801872bf14b",
+   "id": "180e6cc088a5bc00",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6613,7 +6613,7 @@
    ]
   },
   {
-   "id": "9a7e51a39b7b177a",
+   "id": "edcdb5b499d8de4d",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6623,7 +6623,7 @@
    ]
   },
   {
-   "id": "204c8359c6bf37c7",
+   "id": "4a9b9ffab6803dd7",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6633,7 +6633,7 @@
    ]
   },
   {
-   "id": "db80ac42261bd12a",
+   "id": "5d8932dc761268ca",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6643,7 +6643,7 @@
    ]
   },
   {
-   "id": "5172372f7b46cffa",
+   "id": "1282a70cad70efd4",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6653,7 +6653,7 @@
    ]
   },
   {
-   "id": "8d8285f591c6945d",
+   "id": "f75397e24c2da738",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6663,7 +6663,17 @@
    ]
   },
   {
-   "id": "9d91f68302ffe971",
+   "id": "b716f366dbc6e86d",
+   "role": "tree_broadleaf_young",
+   "resource": "wood",
+   "at": [
+    555.53,
+    71.64,
+    31.53
+   ]
+  },
+  {
+   "id": "d508483b9b1b1343",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6673,7 +6683,7 @@
    ]
   },
   {
-   "id": "8be3e609a20b6c77",
+   "id": "4c074d9dd851f520",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6683,7 +6693,7 @@
    ]
   },
   {
-   "id": "8f236119486b4dcd",
+   "id": "e4291e67b6f7a471",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6693,7 +6703,7 @@
    ]
   },
   {
-   "id": "7c90827274a3a36f",
+   "id": "84ca4fde741fea79",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6703,7 +6713,7 @@
    ]
   },
   {
-   "id": "3ca87cc1b4e86bfe",
+   "id": "a0afc699771d2eb9",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6713,7 +6723,7 @@
    ]
   },
   {
-   "id": "d92fcc13afe50e8d",
+   "id": "82e3b01158edb6ba",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6723,7 +6733,17 @@
    ]
   },
   {
-   "id": "d57ec6d79389ebfb",
+   "id": "820ff81bd3cc8b6f",
+   "role": "tree_broadleaf_young",
+   "resource": "wood",
+   "at": [
+    585.81,
+    74.7,
+    33.88
+   ]
+  },
+  {
+   "id": "543f8899ef576547",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6733,7 +6753,7 @@
    ]
   },
   {
-   "id": "f3ea2b7bfce87856",
+   "id": "a49958ddba6bbc96",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6743,7 +6763,7 @@
    ]
   },
   {
-   "id": "f2f183574b6ab9e4",
+   "id": "e4217be9d62e25b7",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6753,7 +6773,7 @@
    ]
   },
   {
-   "id": "79851973793b89ba",
+   "id": "63e8cbfa8238d884",
    "role": "tree_broadleaf_young",
    "resource": "wood",
    "at": [
@@ -6763,7 +6783,7 @@
    ]
   },
   {
-   "id": "75f3f8c77292a0c4",
+   "id": "4fc67d8f1739f47e",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6773,7 +6793,7 @@
    ]
   },
   {
-   "id": "08e0f96df2e42696",
+   "id": "f3451d62c43d439a",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6783,7 +6803,7 @@
    ]
   },
   {
-   "id": "c3a4c1d8d9dc0669",
+   "id": "91d61c1faa6f971f",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6793,7 +6813,7 @@
    ]
   },
   {
-   "id": "93fec6dfa377d87b",
+   "id": "7bc9e1ef3f966b31",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6803,7 +6823,7 @@
    ]
   },
   {
-   "id": "f2ec03f81ce52afc",
+   "id": "53aefaca551770a9",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6813,7 +6833,7 @@
    ]
   },
   {
-   "id": "236575265e7e3dde",
+   "id": "61b9fb392046ab52",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6823,7 +6843,7 @@
    ]
   },
   {
-   "id": "775b72fe4aa2a8c6",
+   "id": "c6899d9e131c243d",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6833,7 +6853,7 @@
    ]
   },
   {
-   "id": "c949fd40d7079c5f",
+   "id": "4447a28b38ca485c",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6843,7 +6863,7 @@
    ]
   },
   {
-   "id": "f4567437d6e0b882",
+   "id": "218c8d30d1f960f4",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6853,7 +6873,7 @@
    ]
   },
   {
-   "id": "a75d32b149ffb4fb",
+   "id": "13139e81ada17571",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6863,7 +6883,7 @@
    ]
   },
   {
-   "id": "0936c937ad984dcc",
+   "id": "c387113619a28f25",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6873,7 +6893,7 @@
    ]
   },
   {
-   "id": "3daa6a5db76fbc77",
+   "id": "555b8345ea7fe944",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6883,7 +6903,7 @@
    ]
   },
   {
-   "id": "ace6d2bd349aa724",
+   "id": "de157548001f1d7c",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6893,7 +6913,7 @@
    ]
   },
   {
-   "id": "a8c0c73b6ef19592",
+   "id": "97624dd2c0cd2f82",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6903,7 +6923,7 @@
    ]
   },
   {
-   "id": "61a143eaf17f5521",
+   "id": "c3273e954cabb8d2",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6913,7 +6933,7 @@
    ]
   },
   {
-   "id": "0b837009cd3879ae",
+   "id": "a817213154dee822",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6923,7 +6943,7 @@
    ]
   },
   {
-   "id": "949d2f3646771712",
+   "id": "d517bde472a3881c",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6933,7 +6953,7 @@
    ]
   },
   {
-   "id": "e11326431e3655c8",
+   "id": "b98810b468fd8982",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6943,7 +6963,7 @@
    ]
   },
   {
-   "id": "7e731e70cc0fd0a8",
+   "id": "5353ae8eaaa16804",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6953,7 +6973,7 @@
    ]
   },
   {
-   "id": "875f2f370512c796",
+   "id": "32b208d299dc2669",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6963,7 +6983,7 @@
    ]
   },
   {
-   "id": "48d450a6519167ef",
+   "id": "7cbb4121b03850b3",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6973,7 +6993,7 @@
    ]
   },
   {
-   "id": "741170dd8c6043f5",
+   "id": "6e8c78a86814dbb2",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6983,7 +7003,7 @@
    ]
   },
   {
-   "id": "1585819ef4e13f18",
+   "id": "76759bea2721b943",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -6993,7 +7013,7 @@
    ]
   },
   {
-   "id": "afd74fc8b482aaef",
+   "id": "cb0fe0aa349fcac7",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7003,7 +7023,7 @@
    ]
   },
   {
-   "id": "26b24e83c99cad3c",
+   "id": "8865b10a2fa85aa7",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7013,7 +7033,7 @@
    ]
   },
   {
-   "id": "e2179973229fb1d7",
+   "id": "b5eee2b461c09f14",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7023,7 +7043,7 @@
    ]
   },
   {
-   "id": "7bb5c446bea73636",
+   "id": "c658b2ac53393a77",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7033,7 +7053,7 @@
    ]
   },
   {
-   "id": "1c8f59ec9852978a",
+   "id": "505363a7e9e83bbc",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7043,7 +7063,7 @@
    ]
   },
   {
-   "id": "b6947f732248ef85",
+   "id": "128a0b3ab287f4a4",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7053,7 +7073,7 @@
    ]
   },
   {
-   "id": "f703d218647d0e70",
+   "id": "d94a650da7b4ccdc",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7063,7 +7083,7 @@
    ]
   },
   {
-   "id": "b84fa8ab365a8e04",
+   "id": "09f5f4ec772618dd",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7073,7 +7093,7 @@
    ]
   },
   {
-   "id": "48da5f519daf3b77",
+   "id": "4161d46995d9b5d7",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7083,7 +7103,7 @@
    ]
   },
   {
-   "id": "70e04369ac0a1ba1",
+   "id": "601b6bcfaeeee358",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7093,7 +7113,7 @@
    ]
   },
   {
-   "id": "503074a938adee83",
+   "id": "551d01113c069047",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7103,7 +7123,7 @@
    ]
   },
   {
-   "id": "f45f0e82b7ab89e9",
+   "id": "fb93fee038e2daff",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7113,7 +7133,7 @@
    ]
   },
   {
-   "id": "1de666ce2765a4bc",
+   "id": "b5136dcfdf3a8cbf",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7123,7 +7143,7 @@
    ]
   },
   {
-   "id": "8d351d62bdfb9e0e",
+   "id": "6331b7ffd45a7cd0",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7133,7 +7153,7 @@
    ]
   },
   {
-   "id": "f7844db95c5e9e7c",
+   "id": "f0d7e6edd5fe4118",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7143,7 +7163,7 @@
    ]
   },
   {
-   "id": "d22cb66ca8f69b41",
+   "id": "82f78632963e67a8",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7153,7 +7173,7 @@
    ]
   },
   {
-   "id": "b2deaecdffff396c",
+   "id": "04b657ff51c82ff3",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7163,7 +7183,7 @@
    ]
   },
   {
-   "id": "e246c599d9068360",
+   "id": "c8eb07780ea7006e",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7173,7 +7193,7 @@
    ]
   },
   {
-   "id": "7d4566e261213215",
+   "id": "5df31fe2aa90413d",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7183,7 +7203,7 @@
    ]
   },
   {
-   "id": "d632b81b072e3966",
+   "id": "5ff70f949b34cb62",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7193,7 +7213,7 @@
    ]
   },
   {
-   "id": "0f4b048823b34be2",
+   "id": "2824819a873a17f8",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7203,7 +7223,7 @@
    ]
   },
   {
-   "id": "ebdb37ea79ab4519",
+   "id": "6c29ca16851c53e9",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7213,7 +7233,7 @@
    ]
   },
   {
-   "id": "473d510ce76f41ec",
+   "id": "e470dd5855b4ee23",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7223,7 +7243,7 @@
    ]
   },
   {
-   "id": "9bad7670816fb7f6",
+   "id": "ecd7d6e0483c64ce",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7233,7 +7253,7 @@
    ]
   },
   {
-   "id": "bc87347fc808aef1",
+   "id": "6199ff6adce99908",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7243,7 +7263,7 @@
    ]
   },
   {
-   "id": "6ea6913d678bd821",
+   "id": "44ba3edba8148fd1",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7253,7 +7273,7 @@
    ]
   },
   {
-   "id": "ba0b59a455271147",
+   "id": "9e5a450b0af7a97b",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7263,7 +7283,7 @@
    ]
   },
   {
-   "id": "a27894bf9001a857",
+   "id": "676d95cf6d7e347e",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7273,7 +7293,7 @@
    ]
   },
   {
-   "id": "04e62cd5aead0ab8",
+   "id": "77084573fac1d585",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7283,7 +7303,7 @@
    ]
   },
   {
-   "id": "b5e0165747d47f7f",
+   "id": "41b13b1d7b1ce1a0",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7293,7 +7313,7 @@
    ]
   },
   {
-   "id": "8095c6b7bdef64e2",
+   "id": "ee61f1a094257a50",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7303,7 +7323,7 @@
    ]
   },
   {
-   "id": "2c507b50dbed566e",
+   "id": "c1ea27640b7ac528",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7313,7 +7333,7 @@
    ]
   },
   {
-   "id": "4e0c9513bb7f096f",
+   "id": "34a198c2e21e56cf",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7323,7 +7343,7 @@
    ]
   },
   {
-   "id": "5a06a75b662ccfb3",
+   "id": "095ff981877d5189",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7333,7 +7353,7 @@
    ]
   },
   {
-   "id": "22d690f81ffdce83",
+   "id": "bd7cf939131a7d4c",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7343,7 +7363,7 @@
    ]
   },
   {
-   "id": "ed120a374d428311",
+   "id": "e7093a999e92cfdf",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7353,7 +7373,7 @@
    ]
   },
   {
-   "id": "a94ea7b8407103f2",
+   "id": "3abe4bb7623dca67",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7363,7 +7383,7 @@
    ]
   },
   {
-   "id": "feb1d83488ce86fe",
+   "id": "e065f35a3f0c0f8d",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7373,7 +7393,7 @@
    ]
   },
   {
-   "id": "4c1723417485ed66",
+   "id": "e6daa4b2eec12d2f",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7383,7 +7403,7 @@
    ]
   },
   {
-   "id": "eb87fba0f6ad26d2",
+   "id": "1816247c0e09c7e5",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7393,7 +7413,7 @@
    ]
   },
   {
-   "id": "355bb8542d84eb69",
+   "id": "aa5ff58acf807638",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7403,7 +7423,7 @@
    ]
   },
   {
-   "id": "0f04ae75697f5413",
+   "id": "b10e2e6ddbc26b7d",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7413,7 +7433,7 @@
    ]
   },
   {
-   "id": "7be9a020aebbf8ba",
+   "id": "7498f07a7aa02d02",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7423,7 +7443,7 @@
    ]
   },
   {
-   "id": "2c030c302b8456ad",
+   "id": "1ec5a57e73344def",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7433,7 +7453,7 @@
    ]
   },
   {
-   "id": "aa9d842a14092c05",
+   "id": "0804122297bf3cbb",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7443,7 +7463,7 @@
    ]
   },
   {
-   "id": "3840c0ba7e13e1fb",
+   "id": "33dccba6d6e89022",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7453,7 +7473,7 @@
    ]
   },
   {
-   "id": "7d70e988944d8c74",
+   "id": "f4cf20405c325215",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7463,7 +7483,7 @@
    ]
   },
   {
-   "id": "f5c338de4b1ae745",
+   "id": "8f0cf0a5a23b4b51",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7473,7 +7493,7 @@
    ]
   },
   {
-   "id": "b8750c6d601edfc5",
+   "id": "a4368a6d288deefc",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7483,7 +7503,7 @@
    ]
   },
   {
-   "id": "20cecae4fa541b0e",
+   "id": "ff73e833f69ebbb5",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7493,7 +7513,7 @@
    ]
   },
   {
-   "id": "908b79f768958b5f",
+   "id": "5a7d0c1cadc7a3e2",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7503,7 +7523,7 @@
    ]
   },
   {
-   "id": "c5c28c78e8d89033",
+   "id": "13e608fc64f21176",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7513,7 +7533,7 @@
    ]
   },
   {
-   "id": "14dd5b8b96744e53",
+   "id": "40d01a701527e8c4",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7523,7 +7543,7 @@
    ]
   },
   {
-   "id": "9fdce88778c3998b",
+   "id": "ad7aae57ccbbdb13",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7533,7 +7553,7 @@
    ]
   },
   {
-   "id": "ce17daf67e3cbbb1",
+   "id": "4e1e5be36b25003d",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7543,7 +7563,7 @@
    ]
   },
   {
-   "id": "059859248a8b9bfd",
+   "id": "9a14937dafadd914",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7553,7 +7573,7 @@
    ]
   },
   {
-   "id": "73b29b2bb4f4645e",
+   "id": "f532558ab601bc65",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7563,7 +7583,7 @@
    ]
   },
   {
-   "id": "d03c88611742ee95",
+   "id": "ea7423845a17e49b",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7573,7 +7593,7 @@
    ]
   },
   {
-   "id": "d8358933d4ad1efe",
+   "id": "319aadc3c85d0b20",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7583,7 +7603,7 @@
    ]
   },
   {
-   "id": "08c4de9bbefe4b7f",
+   "id": "693e4df104818bf7",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7593,7 +7613,7 @@
    ]
   },
   {
-   "id": "a49a3feab748d09c",
+   "id": "205d1f8d59086e72",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7603,7 +7623,7 @@
    ]
   },
   {
-   "id": "4f43ca7dc03ce708",
+   "id": "d9c76d9b3542def6",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7613,7 +7633,7 @@
    ]
   },
   {
-   "id": "d8cafaddcbad33e2",
+   "id": "b738277467e90e79",
    "role": "tree_oak",
    "resource": "wood",
    "at": [
@@ -7623,7 +7643,7 @@
    ]
   },
   {
-   "id": "91223c3244485f12",
+   "id": "6824b13c2cf377e3",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7633,7 +7653,7 @@
    ]
   },
   {
-   "id": "3db13305c7b36672",
+   "id": "1eab002c9fedfa18",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7643,7 +7663,7 @@
    ]
   },
   {
-   "id": "bd2f125ef0225cef",
+   "id": "212d243e431f0481",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7653,7 +7673,7 @@
    ]
   },
   {
-   "id": "9f8feccb585ff5af",
+   "id": "3754482201d1f608",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7663,7 +7683,7 @@
    ]
   },
   {
-   "id": "77c6fca58c02c6c3",
+   "id": "45ea9a3268bd9b48",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7673,7 +7693,7 @@
    ]
   },
   {
-   "id": "ded189b7619a875e",
+   "id": "a5aedb12d98dbb36",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7683,7 +7703,7 @@
    ]
   },
   {
-   "id": "c59e4fd1f192dadf",
+   "id": "951d26beed07f36e",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7693,7 +7713,7 @@
    ]
   },
   {
-   "id": "0647bc99ad350ee9",
+   "id": "0b00c124b0cf5a1c",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7703,7 +7723,7 @@
    ]
   },
   {
-   "id": "604b287211b69d06",
+   "id": "ad9e2383f8889a4a",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7713,7 +7733,7 @@
    ]
   },
   {
-   "id": "7851427b844aee4a",
+   "id": "e9530d3ba6bfb6b4",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7723,7 +7743,7 @@
    ]
   },
   {
-   "id": "41068a138c13f777",
+   "id": "def1253ec381ffc6",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7733,7 +7753,7 @@
    ]
   },
   {
-   "id": "3bd75d0cb0a5666f",
+   "id": "c3f17dbeb0978d57",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7743,7 +7763,7 @@
    ]
   },
   {
-   "id": "c2984cecde7ec1ba",
+   "id": "f92c5651ab0618f1",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7753,7 +7773,7 @@
    ]
   },
   {
-   "id": "6f60df7af731ffb2",
+   "id": "32365a7fe27d8b21",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7763,7 +7783,7 @@
    ]
   },
   {
-   "id": "bfed201934522321",
+   "id": "5b1e2cc508650ff4",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7773,7 +7793,7 @@
    ]
   },
   {
-   "id": "11bb8d4b7d7067bf",
+   "id": "147ac7a9a3dd2c57",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7783,7 +7803,7 @@
    ]
   },
   {
-   "id": "754d989708aa0389",
+   "id": "707493d7edd81766",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7793,7 +7813,7 @@
    ]
   },
   {
-   "id": "1dd0a1ea6cf94438",
+   "id": "fdd7d84fc19c7b19",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7803,7 +7823,7 @@
    ]
   },
   {
-   "id": "6e64074007c54e3b",
+   "id": "ccfcffeaead59780",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7813,7 +7833,7 @@
    ]
   },
   {
-   "id": "230eb9d744998f67",
+   "id": "470fcd656811efca",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7823,7 +7843,7 @@
    ]
   },
   {
-   "id": "9355230a901d7806",
+   "id": "4efe125618161ece",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7833,7 +7853,7 @@
    ]
   },
   {
-   "id": "55a55f8df2cdc0c0",
+   "id": "4f06476d49d4563d",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7843,7 +7863,7 @@
    ]
   },
   {
-   "id": "f3618b812d5abf1f",
+   "id": "8217903e50a8774e",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7853,7 +7873,7 @@
    ]
   },
   {
-   "id": "81de87e2793365fc",
+   "id": "0ab89f64c92e02e0",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7863,7 +7883,7 @@
    ]
   },
   {
-   "id": "988f596aae9e515b",
+   "id": "4cf5655b6f2d195e",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7873,7 +7893,7 @@
    ]
   },
   {
-   "id": "ba13280a9331f5bc",
+   "id": "6ea28421f4e89e2b",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7883,7 +7903,7 @@
    ]
   },
   {
-   "id": "12eb5bd705672fc0",
+   "id": "439fb5e440bae005",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7893,7 +7913,7 @@
    ]
   },
   {
-   "id": "108ae8a7082e5656",
+   "id": "1d7f2e7248f6b384",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7903,7 +7923,7 @@
    ]
   },
   {
-   "id": "e62c8e20f6888cb1",
+   "id": "700f36943eaf30a3",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7913,7 +7933,7 @@
    ]
   },
   {
-   "id": "9828cbbcb3898c95",
+   "id": "0f3646b7edc0e95e",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7923,7 +7943,7 @@
    ]
   },
   {
-   "id": "70038d2454c6771b",
+   "id": "b7ab8bc31c486996",
    "role": "boulder_large_moss",
    "resource": "stone",
    "at": [
@@ -7933,7 +7953,7 @@
    ]
   },
   {
-   "id": "c16f54bda648301b",
+   "id": "e3010124349e5ed5",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -7943,7 +7963,7 @@
    ]
   },
   {
-   "id": "0eb00dedb7ce237f",
+   "id": "7e84e99678584073",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -7953,7 +7973,7 @@
    ]
   },
   {
-   "id": "d78ed1cee79afb65",
+   "id": "61556c8595961a71",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -7963,7 +7983,7 @@
    ]
   },
   {
-   "id": "2aaa0cf975888855",
+   "id": "bbb97e4b2f1d477a",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -7973,7 +7993,7 @@
    ]
   },
   {
-   "id": "a73c5d4c540e9b10",
+   "id": "5951e2bba56a465f",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -7983,7 +8003,7 @@
    ]
   },
   {
-   "id": "68669bf593f6790e",
+   "id": "cef82df5cf81a6f8",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -7993,7 +8013,7 @@
    ]
   },
   {
-   "id": "cc809061284958c8",
+   "id": "da6127fd142678fd",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8003,7 +8023,7 @@
    ]
   },
   {
-   "id": "f758d20bf91ccb11",
+   "id": "16852f7841bfe8e2",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8013,7 +8033,7 @@
    ]
   },
   {
-   "id": "a6336e3cefea7c04",
+   "id": "51905abfa6c92d7b",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8023,7 +8043,7 @@
    ]
   },
   {
-   "id": "e62d9e9c875125f5",
+   "id": "ebeaaccd31f7d732",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8033,7 +8053,7 @@
    ]
   },
   {
-   "id": "dbc978b059c171d6",
+   "id": "c0fbf483b716e22b",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8043,7 +8063,7 @@
    ]
   },
   {
-   "id": "25af03405ebbf574",
+   "id": "379af65bc4bf7aa6",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8053,7 +8073,7 @@
    ]
   },
   {
-   "id": "5e096cce3d6156f4",
+   "id": "aad085b27a676f0b",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8063,7 +8083,7 @@
    ]
   },
   {
-   "id": "f0eeefec8bc64452",
+   "id": "65b662802e5fc0e0",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8073,7 +8093,7 @@
    ]
   },
   {
-   "id": "bd6961bc89486e82",
+   "id": "dd903744ff8f3a1e",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8083,7 +8103,7 @@
    ]
   },
   {
-   "id": "64ff9fbccaa6e20a",
+   "id": "71e7269941b81fb2",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8093,7 +8113,7 @@
    ]
   },
   {
-   "id": "c46e0980ccfc50bb",
+   "id": "d93ad7e614780e52",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8103,7 +8123,7 @@
    ]
   },
   {
-   "id": "1b1cbe414cc5d857",
+   "id": "028d99269aefc8f6",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8113,7 +8133,7 @@
    ]
   },
   {
-   "id": "1788a55be4a11a15",
+   "id": "a5f4b69e97610641",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8123,7 +8143,7 @@
    ]
   },
   {
-   "id": "1e8b00aaf578fe76",
+   "id": "81f30fe484aee048",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8133,7 +8153,7 @@
    ]
   },
   {
-   "id": "6315acea0b038229",
+   "id": "04f4f87d21fb6ffa",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8143,7 +8163,7 @@
    ]
   },
   {
-   "id": "65c53effd5e4186d",
+   "id": "03bb1bac02b44623",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8153,7 +8173,7 @@
    ]
   },
   {
-   "id": "079987e62965f27e",
+   "id": "be833cb205c810dc",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8163,7 +8183,7 @@
    ]
   },
   {
-   "id": "46a7f148795717a0",
+   "id": "30ed2a7f2e72af4c",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8173,7 +8193,7 @@
    ]
   },
   {
-   "id": "49aaf4df57910177",
+   "id": "77e35226e129f81f",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8183,7 +8203,7 @@
    ]
   },
   {
-   "id": "f137230cfd1c599f",
+   "id": "93afd387dec8e1d2",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8193,7 +8213,7 @@
    ]
   },
   {
-   "id": "768ca039d21762b2",
+   "id": "e33be416c7537396",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8203,7 +8223,7 @@
    ]
   },
   {
-   "id": "d1fc96d07e5ca2c9",
+   "id": "6868c31649b0dc75",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8213,7 +8233,7 @@
    ]
   },
   {
-   "id": "7a5fe67b381e6559",
+   "id": "192a83316d486dc5",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8223,7 +8243,7 @@
    ]
   },
   {
-   "id": "3453b976da880020",
+   "id": "5cdf45fd94b390f9",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8233,7 +8253,7 @@
    ]
   },
   {
-   "id": "ed72bb94c90924bf",
+   "id": "beac16c7a4ff303e",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8243,7 +8263,7 @@
    ]
   },
   {
-   "id": "5ed541387d2397ee",
+   "id": "6b4229a33ed96baa",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8253,7 +8273,7 @@
    ]
   },
   {
-   "id": "311563920b6cedf1",
+   "id": "ff5705c851887aed",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8263,7 +8283,7 @@
    ]
   },
   {
-   "id": "0a5094428eb4169d",
+   "id": "db56d339510f3442",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8273,7 +8293,7 @@
    ]
   },
   {
-   "id": "ce544f05bccfecb2",
+   "id": "5dd4798dad611ff4",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8283,7 +8303,7 @@
    ]
   },
   {
-   "id": "6e2f2056998f38ac",
+   "id": "0b8f0e7e499a130b",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8293,7 +8313,7 @@
    ]
   },
   {
-   "id": "520cd3a7febeda84",
+   "id": "80b3f182a78388fa",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8303,7 +8323,7 @@
    ]
   },
   {
-   "id": "4b5e3b9f54f24241",
+   "id": "7048913d07de9276",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8313,7 +8333,7 @@
    ]
   },
   {
-   "id": "d69e75f4d9fc2427",
+   "id": "f46ee1d179576c3c",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8323,7 +8343,7 @@
    ]
   },
   {
-   "id": "37b9ea3e6a29caa4",
+   "id": "7af95ee9353cdb30",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8333,7 +8353,7 @@
    ]
   },
   {
-   "id": "7ed69b08fe5c77bf",
+   "id": "709d9ba1eece5087",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8343,7 +8363,7 @@
    ]
   },
   {
-   "id": "11e6d8e0bda1fda0",
+   "id": "5a47a5a308defdb3",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8353,7 +8373,7 @@
    ]
   },
   {
-   "id": "dcc86dc5b67d99e8",
+   "id": "3adcfe9dc65a5689",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8363,7 +8383,7 @@
    ]
   },
   {
-   "id": "074c25f6e75ebd7e",
+   "id": "ecf3ad8c97052858",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8373,7 +8393,7 @@
    ]
   },
   {
-   "id": "d6ee231b764b12ab",
+   "id": "a25908931f1b0b8f",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8383,7 +8403,7 @@
    ]
   },
   {
-   "id": "1c7f7114e55c10f2",
+   "id": "c5a1e11044a6d376",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8393,7 +8413,7 @@
    ]
   },
   {
-   "id": "199a6262255b6c42",
+   "id": "7b4e49087b8c20ba",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8403,7 +8423,7 @@
    ]
   },
   {
-   "id": "ceb0f791efaad3e6",
+   "id": "da71edee930bb431",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8413,7 +8433,7 @@
    ]
   },
   {
-   "id": "6a1bc2e98e15f75b",
+   "id": "2e33a69727346623",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8423,7 +8443,7 @@
    ]
   },
   {
-   "id": "edb8beb44bea67cf",
+   "id": "e2822dc4839a9814",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8433,7 +8453,7 @@
    ]
   },
   {
-   "id": "1aaa764b0cb3d5ba",
+   "id": "2021bfc30948fe70",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8443,7 +8463,7 @@
    ]
   },
   {
-   "id": "ec8228091668f8cb",
+   "id": "3a4cdab2bd0e4497",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8453,7 +8473,7 @@
    ]
   },
   {
-   "id": "01ff28c46dc04cce",
+   "id": "de390c0a0f93d59f",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8463,7 +8483,7 @@
    ]
   },
   {
-   "id": "714f093ff36aabbf",
+   "id": "e23f8df401c7dc37",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8473,7 +8493,7 @@
    ]
   },
   {
-   "id": "6de346abf9e69e53",
+   "id": "927cae5c210add0e",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8483,7 +8503,7 @@
    ]
   },
   {
-   "id": "f15c1d119813f107",
+   "id": "afe1ed9f6f25ecbc",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8493,7 +8513,7 @@
    ]
   },
   {
-   "id": "5a1600a601b4485e",
+   "id": "523b0c30f0a46b47",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8503,7 +8523,7 @@
    ]
   },
   {
-   "id": "256135a4ba84b5e2",
+   "id": "ce06155b1ed1c307",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8513,7 +8533,7 @@
    ]
   },
   {
-   "id": "a550ba1a2d9b007a",
+   "id": "584a5229aae98a53",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8523,7 +8543,7 @@
    ]
   },
   {
-   "id": "79b77b32baeff203",
+   "id": "1ec940b61fbcf015",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8533,7 +8553,7 @@
    ]
   },
   {
-   "id": "857a4639308ea59f",
+   "id": "fb1bbf382cce42a2",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8543,7 +8563,7 @@
    ]
   },
   {
-   "id": "5ae37faf9226cc27",
+   "id": "ec1d78c2cbe3399f",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8553,7 +8573,7 @@
    ]
   },
   {
-   "id": "38a79cad21506bcb",
+   "id": "7b00c1c4e729a1f1",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8563,7 +8583,7 @@
    ]
   },
   {
-   "id": "e09d481e306e9e99",
+   "id": "89ebab62b62e89cd",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8573,7 +8593,7 @@
    ]
   },
   {
-   "id": "11ec5ca51aea73c4",
+   "id": "f57c294ea853f2de",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8583,7 +8603,7 @@
    ]
   },
   {
-   "id": "d157a443e501be55",
+   "id": "9ed01d192200a5e6",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8593,7 +8613,7 @@
    ]
   },
   {
-   "id": "f173ba14b6a078cc",
+   "id": "dad21066aad486a8",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8603,7 +8623,7 @@
    ]
   },
   {
-   "id": "6a810c78e40d60e4",
+   "id": "b17446636a349e75",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8613,7 +8633,7 @@
    ]
   },
   {
-   "id": "b4788246d73ff3c7",
+   "id": "49b1e1833a936120",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8623,7 +8643,7 @@
    ]
   },
   {
-   "id": "d621b7635b586c7b",
+   "id": "3c1c4f3ca93d5369",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8633,7 +8653,7 @@
    ]
   },
   {
-   "id": "105058eb29c2ce05",
+   "id": "d5ccbcee666da058",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8643,7 +8663,7 @@
    ]
   },
   {
-   "id": "e22e6081a1ee254a",
+   "id": "bb1fef4266ff9c56",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8653,7 +8673,7 @@
    ]
   },
   {
-   "id": "569f3b54e9a67d50",
+   "id": "2026fcf1b3838363",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8663,7 +8683,7 @@
    ]
   },
   {
-   "id": "a56be70c8119e39e",
+   "id": "3d6a9e2e77761c12",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8673,7 +8693,7 @@
    ]
   },
   {
-   "id": "9ce8fc5c5e41aee6",
+   "id": "aba2c9537d061511",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8683,7 +8703,7 @@
    ]
   },
   {
-   "id": "d1ccac78bd2c6ff1",
+   "id": "b7a6dd12dab1aadb",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8693,7 +8713,7 @@
    ]
   },
   {
-   "id": "6bdb36ff41f7efcf",
+   "id": "32f502355ab919f8",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8703,7 +8723,7 @@
    ]
   },
   {
-   "id": "ebee9ceca6b1af96",
+   "id": "89e67f5e15bfc4be",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8713,7 +8733,7 @@
    ]
   },
   {
-   "id": "66878a49a1c58f06",
+   "id": "7ec6a084827b3152",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8723,7 +8743,7 @@
    ]
   },
   {
-   "id": "c4b95b55c005b899",
+   "id": "6af5bfdb3730f6f4",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8733,17 +8753,17 @@
    ]
   },
   {
-   "id": "bf230e60fca6a6e1",
+   "id": "06aa8f65cdd1a5e1",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
     491.97,
     231.64,
-    26.62
+    26.3
    ]
   },
   {
-   "id": "38766002db21f460",
+   "id": "779f94bf4a8f4dad",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8753,7 +8773,7 @@
    ]
   },
   {
-   "id": "0438c89b62934aa2",
+   "id": "ab8f22a64eaacec5",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8763,7 +8783,7 @@
    ]
   },
   {
-   "id": "f14a1f548fa0a0d0",
+   "id": "94f84a2f5bf7bbee",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8773,7 +8793,7 @@
    ]
   },
   {
-   "id": "ea0bf103926d30c8",
+   "id": "0a30c35be4a4b217",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8783,7 +8803,7 @@
    ]
   },
   {
-   "id": "31a74164d9430dbb",
+   "id": "51b531715dab18c5",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8793,7 +8813,7 @@
    ]
   },
   {
-   "id": "0d1b14298cf23bcf",
+   "id": "a8218d2bdb10bd47",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8803,7 +8823,7 @@
    ]
   },
   {
-   "id": "5e7e67ebb67c0b0d",
+   "id": "78a7f7d9891caa5f",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8813,7 +8833,7 @@
    ]
   },
   {
-   "id": "ee8247b5462f83bf",
+   "id": "6cf7d2ba668b53e3",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8823,7 +8843,7 @@
    ]
   },
   {
-   "id": "1b058c92068a0f56",
+   "id": "4b9d3b8d89eddcb9",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8833,7 +8853,7 @@
    ]
   },
   {
-   "id": "836b0b3a84aebc26",
+   "id": "28505f73563dfdaa",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8843,7 +8863,7 @@
    ]
   },
   {
-   "id": "e9e13ffa61b1dc8a",
+   "id": "1db76137857a89fb",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8853,7 +8873,7 @@
    ]
   },
   {
-   "id": "60eb182427f3fbb1",
+   "id": "60153700d9e66040",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8863,7 +8883,7 @@
    ]
   },
   {
-   "id": "f13c9d957f991e8c",
+   "id": "bb8972cf483a4471",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8873,7 +8893,7 @@
    ]
   },
   {
-   "id": "b1069191bdbcbf50",
+   "id": "1faed46f2bfb85d6",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8883,7 +8903,7 @@
    ]
   },
   {
-   "id": "defd04e6d00f51ef",
+   "id": "1402d29974a0d936",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8893,7 +8913,7 @@
    ]
   },
   {
-   "id": "a231deb5364af823",
+   "id": "d56237f9a525287e",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8903,7 +8923,7 @@
    ]
   },
   {
-   "id": "810d7718d0e682fa",
+   "id": "59dc67279bd4774a",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8913,7 +8933,7 @@
    ]
   },
   {
-   "id": "99cde591494521c5",
+   "id": "0aa210fbd897a6d0",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8923,7 +8943,7 @@
    ]
   },
   {
-   "id": "714a90f038d23221",
+   "id": "65b17c76a4b7aa32",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8933,7 +8953,7 @@
    ]
   },
   {
-   "id": "80f798207e4a9dfe",
+   "id": "36638efc0ac89537",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8943,7 +8963,7 @@
    ]
   },
   {
-   "id": "6b2ee8f55299d5f4",
+   "id": "fe6e78fc38afaba3",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8953,7 +8973,7 @@
    ]
   },
   {
-   "id": "e5e04c129f446bfc",
+   "id": "356400b854b54a95",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8963,7 +8983,7 @@
    ]
   },
   {
-   "id": "a84c5919d04229f6",
+   "id": "f7ebac27927e9266",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8973,7 +8993,7 @@
    ]
   },
   {
-   "id": "55fe3ee8ae09acb9",
+   "id": "26764d444e73eb45",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8983,7 +9003,7 @@
    ]
   },
   {
-   "id": "0fe5142f17c23255",
+   "id": "6b78e0c7a457e84f",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -8993,7 +9013,7 @@
    ]
   },
   {
-   "id": "439288e5fb1bb34d",
+   "id": "b2672bab2d35cc45",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9003,7 +9023,7 @@
    ]
   },
   {
-   "id": "aa2660d7fc455c3d",
+   "id": "37cac63fe5f8cddb",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9013,7 +9033,7 @@
    ]
   },
   {
-   "id": "81910d6386e64ad2",
+   "id": "5a161c40768d5549",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9023,7 +9043,7 @@
    ]
   },
   {
-   "id": "0a8da703c5e33620",
+   "id": "751768e0819d7b3a",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9033,7 +9053,7 @@
    ]
   },
   {
-   "id": "03e0feb9d54c39e9",
+   "id": "4e9ef0bab4f82229",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9043,7 +9063,7 @@
    ]
   },
   {
-   "id": "c73308b161d234f2",
+   "id": "a5b81210c486b6f9",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9053,7 +9073,7 @@
    ]
   },
   {
-   "id": "74fad222d5e287c1",
+   "id": "e1a518d6ce159121",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9063,7 +9083,7 @@
    ]
   },
   {
-   "id": "d52a220652201829",
+   "id": "cfc16c4a2191f715",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9073,7 +9093,7 @@
    ]
   },
   {
-   "id": "2921e20969967529",
+   "id": "bf0961b6926255b6",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9083,7 +9103,7 @@
    ]
   },
   {
-   "id": "4f464b428ee8ac82",
+   "id": "6c5cec4ee689f644",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9093,7 +9113,7 @@
    ]
   },
   {
-   "id": "8fc452c1219fda79",
+   "id": "de2bf4a724ef0a26",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9103,7 +9123,7 @@
    ]
   },
   {
-   "id": "196a8682511130fb",
+   "id": "27767c3d6ec40363",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9113,7 +9133,7 @@
    ]
   },
   {
-   "id": "3bf921477f7f6423",
+   "id": "0f96aa0d1cb1c891",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9123,7 +9143,7 @@
    ]
   },
   {
-   "id": "013501f1b8eb1452",
+   "id": "a9f6202a2447e9b2",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9133,7 +9153,7 @@
    ]
   },
   {
-   "id": "e212789ee804d863",
+   "id": "154c8342da3a2776",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9143,7 +9163,7 @@
    ]
   },
   {
-   "id": "20cfe88ec1601484",
+   "id": "c5941a24b59b2ce7",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9153,7 +9173,7 @@
    ]
   },
   {
-   "id": "ea1611cf6c7c5a27",
+   "id": "630c71026afb7ef5",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9163,7 +9183,7 @@
    ]
   },
   {
-   "id": "3b6cf0439a10afd5",
+   "id": "4bb98effc8b47c0e",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9173,7 +9193,7 @@
    ]
   },
   {
-   "id": "b7c0ed52255ed21a",
+   "id": "28f601aaa563b2ad",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9183,7 +9203,7 @@
    ]
   },
   {
-   "id": "052f713645406ad1",
+   "id": "8714c8da8b24cf24",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9193,7 +9213,7 @@
    ]
   },
   {
-   "id": "e4bd36e536c6fa75",
+   "id": "cdd80c8e813cc3ce",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9203,7 +9223,7 @@
    ]
   },
   {
-   "id": "e2f197143875f7c8",
+   "id": "8998231c2b5e3f2a",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9213,7 +9233,7 @@
    ]
   },
   {
-   "id": "6a97ad3db2d3b638",
+   "id": "41817323d7b15805",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9223,7 +9243,7 @@
    ]
   },
   {
-   "id": "a476ad499fa2b058",
+   "id": "40f188320c496a8e",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9233,7 +9253,7 @@
    ]
   },
   {
-   "id": "d6c3e284396d323b",
+   "id": "0a9cd504af999107",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9243,7 +9263,7 @@
    ]
   },
   {
-   "id": "b2e0bf39e1bce7fc",
+   "id": "7e61bc939af77883",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9253,7 +9273,7 @@
    ]
   },
   {
-   "id": "ac9f233db72d628f",
+   "id": "0f1ab7c0b82392c1",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9263,7 +9283,7 @@
    ]
   },
   {
-   "id": "8f16ec15f6574e04",
+   "id": "fd6c9db0ea00ad3a",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9273,7 +9293,7 @@
    ]
   },
   {
-   "id": "955e2a5c7544a387",
+   "id": "730068d34b1f5005",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9283,7 +9303,7 @@
    ]
   },
   {
-   "id": "b51aa24994a11496",
+   "id": "ba19bd491113f4c3",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9293,7 +9313,7 @@
    ]
   },
   {
-   "id": "970b9222269af2a6",
+   "id": "830c75d187b8a85e",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9303,7 +9323,7 @@
    ]
   },
   {
-   "id": "c249575b1edaddaf",
+   "id": "3687d86fe6b77448",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9313,7 +9333,7 @@
    ]
   },
   {
-   "id": "ea3111b4778a9fe2",
+   "id": "65185a0e08f42e04",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9323,7 +9343,7 @@
    ]
   },
   {
-   "id": "d0b29925f6d8d37f",
+   "id": "bdbb6da4bceec9e0",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9333,7 +9353,7 @@
    ]
   },
   {
-   "id": "4d9d472e780aa304",
+   "id": "fb6a7e79222a4c81",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9343,7 +9363,7 @@
    ]
   },
   {
-   "id": "1cc65df68a698992",
+   "id": "957bd05c10c58991",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9353,7 +9373,7 @@
    ]
   },
   {
-   "id": "089eba5081829075",
+   "id": "98f26d5523e85165",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9363,7 +9383,7 @@
    ]
   },
   {
-   "id": "d4ae48421068459f",
+   "id": "033d59b7a5283c5a",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9373,7 +9393,7 @@
    ]
   },
   {
-   "id": "21b3264cfc7158cd",
+   "id": "a8ef36ba0e10b282",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9383,7 +9403,7 @@
    ]
   },
   {
-   "id": "a59d4a7f28e0ec34",
+   "id": "8cd91cd675e47153",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9393,7 +9413,7 @@
    ]
   },
   {
-   "id": "0fce66a210da05fe",
+   "id": "841ec47f248b1b83",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9403,7 +9423,7 @@
    ]
   },
   {
-   "id": "eb4a889b9c92ad84",
+   "id": "92ac290f149f525b",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9413,7 +9433,7 @@
    ]
   },
   {
-   "id": "2a0f3519a00a1fa6",
+   "id": "29a651d2f0e338d0",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9423,7 +9443,7 @@
    ]
   },
   {
-   "id": "d0c9c00c7a8cbce5",
+   "id": "f829bb970c9f3dba",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9433,7 +9453,7 @@
    ]
   },
   {
-   "id": "308116801c751d00",
+   "id": "54febffd27bb15f5",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9443,7 +9463,7 @@
    ]
   },
   {
-   "id": "58b78c3994e2fd45",
+   "id": "a75bc5d0554e2c9d",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9453,7 +9473,7 @@
    ]
   },
   {
-   "id": "51373d0182d9dcd9",
+   "id": "76af4712c2ec8602",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9463,7 +9483,7 @@
    ]
   },
   {
-   "id": "416908c5ac448e34",
+   "id": "29d626cd7e75c54d",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9473,7 +9493,7 @@
    ]
   },
   {
-   "id": "70eb9ab244322c6e",
+   "id": "6581f5711dc00137",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9483,7 +9503,7 @@
    ]
   },
   {
-   "id": "b753fd724d671470",
+   "id": "5b172c3fc14418f9",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9493,7 +9513,7 @@
    ]
   },
   {
-   "id": "e433a3e7581f6c8b",
+   "id": "82fbd56c9ec71a2f",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9503,7 +9523,7 @@
    ]
   },
   {
-   "id": "921fac10458a4e37",
+   "id": "56d855da90f98483",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9513,7 +9533,7 @@
    ]
   },
   {
-   "id": "fdfe959c41b633b9",
+   "id": "89ae5bcdc9703890",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9523,7 +9543,7 @@
    ]
   },
   {
-   "id": "7aa925337c42dd5a",
+   "id": "5ceee37a2248eacd",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9533,7 +9553,7 @@
    ]
   },
   {
-   "id": "ba4b49a80cbe74d1",
+   "id": "9f8fdb15bc782bfb",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9543,7 +9563,7 @@
    ]
   },
   {
-   "id": "80b4881583546571",
+   "id": "cd75fdd7ffe537c6",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9553,7 +9573,7 @@
    ]
   },
   {
-   "id": "bdbcfc4a7e78d8e7",
+   "id": "da44a97cb5fef95e",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9563,7 +9583,7 @@
    ]
   },
   {
-   "id": "f0e3abf9e25a4f5e",
+   "id": "859b186566a51979",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9573,7 +9593,7 @@
    ]
   },
   {
-   "id": "d37c180e26f08a05",
+   "id": "2896fa128a393cab",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9583,7 +9603,7 @@
    ]
   },
   {
-   "id": "c0c059612a590942",
+   "id": "d12402f07d22669d",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9593,7 +9613,7 @@
    ]
   },
   {
-   "id": "3dd7877e81082fff",
+   "id": "1fc04eb5922b8cfc",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9603,7 +9623,7 @@
    ]
   },
   {
-   "id": "c9010dd96109d498",
+   "id": "78e003166c30467e",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9613,7 +9633,7 @@
    ]
   },
   {
-   "id": "530ef47e25a01dd4",
+   "id": "12487f9b070449be",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9623,7 +9643,7 @@
    ]
   },
   {
-   "id": "919c458883032372",
+   "id": "f41be22465b92e19",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9633,7 +9653,7 @@
    ]
   },
   {
-   "id": "47a43a1a3b3a9abd",
+   "id": "4fc9e5ae8d472e86",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9643,7 +9663,7 @@
    ]
   },
   {
-   "id": "e6b1910eca679414",
+   "id": "cd3d72163ae2df5a",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9653,7 +9673,7 @@
    ]
   },
   {
-   "id": "ab9687f07eb1214a",
+   "id": "6be59478135f5ac3",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9663,7 +9683,7 @@
    ]
   },
   {
-   "id": "b52f2e25a3dfebb6",
+   "id": "6db600b3802b334e",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9673,7 +9693,7 @@
    ]
   },
   {
-   "id": "d2c7505fc1935348",
+   "id": "ef2620ff5abf168f",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9683,7 +9703,7 @@
    ]
   },
   {
-   "id": "b8353b6d217daa37",
+   "id": "dacb7993463736af",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9693,7 +9713,7 @@
    ]
   },
   {
-   "id": "f557faa84e0c2224",
+   "id": "43782b89bbb6196f",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9703,7 +9723,7 @@
    ]
   },
   {
-   "id": "f022a1f24093c838",
+   "id": "4dbdaed4647dc25e",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9713,7 +9733,7 @@
    ]
   },
   {
-   "id": "fc4735e0535d823b",
+   "id": "6ad2c5c395760246",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9723,7 +9743,7 @@
    ]
   },
   {
-   "id": "f0485f2aee4d0080",
+   "id": "9b61bf47ab74d85f",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9733,7 +9753,7 @@
    ]
   },
   {
-   "id": "32a96ecafb4012e6",
+   "id": "faa9a54311ba36a0",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9743,7 +9763,7 @@
    ]
   },
   {
-   "id": "27770a92d5fb669c",
+   "id": "2472174d0626215b",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9753,7 +9773,7 @@
    ]
   },
   {
-   "id": "c35adc5f0e1440ac",
+   "id": "60198625a9f1b539",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9763,7 +9783,7 @@
    ]
   },
   {
-   "id": "189ada835d896e07",
+   "id": "cadd3a0d19100554",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9773,7 +9793,7 @@
    ]
   },
   {
-   "id": "80e23a7f7836bbb8",
+   "id": "4ed5fca76b2b25cc",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9783,7 +9803,7 @@
    ]
   },
   {
-   "id": "92d143a731433fa2",
+   "id": "5e99c5436731b4ba",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9793,7 +9813,7 @@
    ]
   },
   {
-   "id": "f1295a057badd752",
+   "id": "8940c840aef7beab",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9803,7 +9823,7 @@
    ]
   },
   {
-   "id": "cde736d56f8b60fe",
+   "id": "4bc1414df578c387",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9813,7 +9833,7 @@
    ]
   },
   {
-   "id": "f24258f5ddef028e",
+   "id": "c6cb63946816a55f",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9823,7 +9843,7 @@
    ]
   },
   {
-   "id": "1b0f571d7e121c3a",
+   "id": "3e411ff533870245",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9833,7 +9853,7 @@
    ]
   },
   {
-   "id": "70eb27eaf540f0ec",
+   "id": "2c4a48572125b640",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9843,7 +9863,7 @@
    ]
   },
   {
-   "id": "aec4051f8f59a618",
+   "id": "4b3677e46d0754c8",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9853,7 +9873,7 @@
    ]
   },
   {
-   "id": "2c7ce3e436aced67",
+   "id": "48493dcfb7b98b97",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9863,7 +9883,7 @@
    ]
   },
   {
-   "id": "d533abd8cbc6cef9",
+   "id": "ef64b6f63a83dfbc",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9873,7 +9893,7 @@
    ]
   },
   {
-   "id": "b1799f58eb93681d",
+   "id": "23426e5ca2d00b99",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9883,7 +9903,7 @@
    ]
   },
   {
-   "id": "63534857e18e9a06",
+   "id": "8af3db45d7f865f2",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9893,7 +9913,7 @@
    ]
   },
   {
-   "id": "28ab68286022248e",
+   "id": "f802b90bb431f9ae",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9903,7 +9923,7 @@
    ]
   },
   {
-   "id": "e95d27f4fa2b0caf",
+   "id": "daf6ab8cd3722222",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9913,7 +9933,7 @@
    ]
   },
   {
-   "id": "8e4646228657bae7",
+   "id": "f8b708bd2327ea5e",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9923,7 +9943,7 @@
    ]
   },
   {
-   "id": "bf485bcab07250ce",
+   "id": "3418bcc3fe75071f",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9933,7 +9953,7 @@
    ]
   },
   {
-   "id": "cc78ef7473cb7c74",
+   "id": "a2070b86374eed4c",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9943,7 +9963,7 @@
    ]
   },
   {
-   "id": "c3f1205c045c490d",
+   "id": "9c46f1a77b199b88",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9953,7 +9973,7 @@
    ]
   },
   {
-   "id": "53164e566ac3e3a6",
+   "id": "decfaf11759d3498",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9963,7 +9983,7 @@
    ]
   },
   {
-   "id": "7023fbe5ae20823e",
+   "id": "81546f582023f15c",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9973,7 +9993,7 @@
    ]
   },
   {
-   "id": "fe8200fb39f0b2a8",
+   "id": "08c9f33ff5629573",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9983,7 +10003,7 @@
    ]
   },
   {
-   "id": "e67dab98476ee178",
+   "id": "b218bcea6e40b3c9",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -9993,7 +10013,7 @@
    ]
   },
   {
-   "id": "143eb92dbe8d62cf",
+   "id": "ce93d3d05da3416a",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10003,7 +10023,7 @@
    ]
   },
   {
-   "id": "b61f2d6f7acaa611",
+   "id": "c327c21a8befd836",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10013,7 +10033,7 @@
    ]
   },
   {
-   "id": "a3e376fdc595efe5",
+   "id": "7786320a71a7f94b",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10023,7 +10043,7 @@
    ]
   },
   {
-   "id": "f139db38a0261008",
+   "id": "14992d10dee5bb39",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10033,7 +10053,7 @@
    ]
   },
   {
-   "id": "b13865bfa415d15f",
+   "id": "f1bae6d15f393260",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10043,7 +10063,7 @@
    ]
   },
   {
-   "id": "ea2350ab1ae7417b",
+   "id": "da06b1648268bdb0",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10053,7 +10073,7 @@
    ]
   },
   {
-   "id": "819b3ef1abc43bc1",
+   "id": "0b0835348476e228",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10063,7 +10083,7 @@
    ]
   },
   {
-   "id": "c6eae4dbfcceccab",
+   "id": "623fa9f09e1c1a40",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10073,7 +10093,7 @@
    ]
   },
   {
-   "id": "fc93b2efc477cccf",
+   "id": "9f0fec9c9af8c25e",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10083,7 +10103,7 @@
    ]
   },
   {
-   "id": "b9741378e8d8a5d5",
+   "id": "64af1d237e0b0917",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10093,7 +10113,7 @@
    ]
   },
   {
-   "id": "9a2d07e8dc7d72ab",
+   "id": "e2d78e7240e2a266",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10103,7 +10123,7 @@
    ]
   },
   {
-   "id": "d14a935daf9cb354",
+   "id": "feef28dceb9fe465",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10113,7 +10133,7 @@
    ]
   },
   {
-   "id": "476967c39bdeb6a9",
+   "id": "21b2d17ba1e3d78d",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10123,7 +10143,7 @@
    ]
   },
   {
-   "id": "a2d67ac5d377b14b",
+   "id": "b007d6cd9f0447fb",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10133,7 +10153,7 @@
    ]
   },
   {
-   "id": "f7d04da8ee077bae",
+   "id": "0bcae49b61f57d75",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10143,7 +10163,7 @@
    ]
   },
   {
-   "id": "d1cf6818f9d456cd",
+   "id": "7fb4bcd461b1d456",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10153,7 +10173,7 @@
    ]
   },
   {
-   "id": "b6c6f4b7a81f657c",
+   "id": "7614cd669cfde4da",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10163,27 +10183,17 @@
    ]
   },
   {
-   "id": "7cca3e79bbe461b8",
+   "id": "578589f1800f6415",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
-    553.8,
-    72.01,
-    31.53
+    559.55,
+    76.73,
+    32.33
    ]
   },
   {
-   "id": "93acd2d59943644e",
-   "role": "rock_medium",
-   "resource": "stone",
-   "at": [
-    556.27,
-    76.48,
-    32.18
-   ]
-  },
-  {
-   "id": "4e44960b89bfcc2f",
+   "id": "e34047ef66edda5a",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10193,17 +10203,7 @@
    ]
   },
   {
-   "id": "01f96570eca52426",
-   "role": "rock_medium",
-   "resource": "stone",
-   "at": [
-    476.57,
-    262.99,
-    23.4
-   ]
-  },
-  {
-   "id": "5c39d77317c90299",
+   "id": "9dae8c7114366cfb",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10213,37 +10213,17 @@
    ]
   },
   {
-   "id": "080b578470401ee8",
-   "role": "rock_medium",
-   "resource": "stone",
-   "at": [
-    537.6,
-    9.39,
-    27.76
-   ]
-  },
-  {
-   "id": "e0f128fa279f3bf0",
+   "id": "e6af769dfebeb0e4",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
     495.22,
     200.69,
-    26.95
+    26.93
    ]
   },
   {
-   "id": "9c89e56677191590",
-   "role": "rock_medium",
-   "resource": "stone",
-   "at": [
-    492.83,
-    199.37,
-    26.8
-   ]
-  },
-  {
-   "id": "3ff5a48ae7859f8c",
+   "id": "5fd2ee2702cffff3",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10253,7 +10233,17 @@
    ]
   },
   {
-   "id": "24e6cac4947683e7",
+   "id": "341c2dc29f161369",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    611.14,
+    97.77,
+    37.31
+   ]
+  },
+  {
+   "id": "0c459c8dba8994c0",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10263,17 +10253,17 @@
    ]
   },
   {
-   "id": "1abeaa702eee7b97",
+   "id": "94dde329fd55d335",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
-    573.83,
-    11.23,
-    31.83
+    573.61,
+    5.91,
+    31.9
    ]
   },
   {
-   "id": "15ac275969d1dd70",
+   "id": "36d96786d36772b9",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10283,17 +10273,17 @@
    ]
   },
   {
-   "id": "3bd8b09da619eab3",
+   "id": "769a0a3c6804e75c",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
-    710.22,
-    133.02,
-    43.62
+    710.01,
+    133.22,
+    43.56
    ]
   },
   {
-   "id": "8714dd7b8bf4a5d8",
+   "id": "91570eaf86538d9e",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10303,17 +10293,17 @@
    ]
   },
   {
-   "id": "99684d0bde302625",
+   "id": "f87a6bea33cedf2f",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
-    581.72,
-    -212.21,
-    47.5
+    587.16,
+    -210.56,
+    48.16
    ]
   },
   {
-   "id": "83f4ccd140b75dda",
+   "id": "ccacac17086d6a0d",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10323,17 +10313,27 @@
    ]
   },
   {
-   "id": "c096596ee33a0386",
+   "id": "e9eeb51566862442",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
-    537.02,
-    277.0,
-    27.89
+    537.85,
+    276.39,
+    27.97
    ]
   },
   {
-   "id": "b390f99179312c73",
+   "id": "a49c8b660adc5fae",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    541.19,
+    279.65,
+    28.0
+   ]
+  },
+  {
+   "id": "59c378262cc16c3f",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10343,7 +10343,17 @@
    ]
   },
   {
-   "id": "55506f1e56658190",
+   "id": "77efda4092268f0a",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    643.09,
+    229.07,
+    34.0
+   ]
+  },
+  {
+   "id": "e08cab316d5a13bb",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10353,7 +10363,17 @@
    ]
   },
   {
-   "id": "61c7e1dfb34b85af",
+   "id": "46126f14c17cd94e",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    708.8,
+    217.29,
+    39.19
+   ]
+  },
+  {
+   "id": "584e6fb6cd761048",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10363,17 +10383,17 @@
    ]
   },
   {
-   "id": "7e2fc3a2252b3d99",
+   "id": "69ff26b5c4c91922",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
-    663.36,
-    -61.75,
-    48.17
+    663.21,
+    -58.41,
+    47.98
    ]
   },
   {
-   "id": "7caf3675dea5e2a3",
+   "id": "48a86fba81e4c445",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10383,7 +10403,27 @@
    ]
   },
   {
-   "id": "d8bea290fa0cceba",
+   "id": "8cae710740baf385",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    600.57,
+    -136.15,
+    46.48
+   ]
+  },
+  {
+   "id": "97cac28732585973",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    596.27,
+    -138.57,
+    45.89
+   ]
+  },
+  {
+   "id": "9534052eac195028",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -10393,33 +10433,13 @@
    ]
   },
   {
-   "id": "0fccb3b8a8021f9f",
+   "id": "2729dc41356056d4",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
-    457.35,
-    115.41,
-    26.9
-   ]
-  },
-  {
-   "id": "1bf75f7e80df0981",
-   "role": "rock_medium",
-   "resource": "stone",
-   "at": [
-    459.07,
-    117.27,
-    26.97
-   ]
-  },
-  {
-   "id": "21162eea385b6b08",
-   "role": "rock_medium",
-   "resource": "stone",
-   "at": [
-    567.54,
-    -235.46,
-    44.83
+    578.89,
+    -20.81,
+    36.14
    ]
   }
  ]

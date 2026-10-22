@@ -227,7 +227,7 @@ def apply(world=None, save=False):
             mel.set_material_instance_scalar_parameter_value(mi, 'GlowScale', 1.)   # the window scale (gate_windows) is not for the pane
             assert u.EditorAssetLibrary.save_loaded_asset(mi); lanterns.append(mi.get_name())
     assert lanterns, 'no building lantern glow instances under ' + LANTERN_MATS
-    print('LANTERN_PANES', lanterns)
+    print('LANTERN_PANES', lanterns, 'GlowScale', [mel.get_material_instance_scalar_parameter_value(u.load_asset(LANTERN_MATS + '/' + n), 'GlowScale') for n in lanterns])
     plane = u.load_asset('/Engine/BasicShapes/Plane')
     assert plane, 'Engine Plane mesh unavailable'
     # Build all assets and discover all targets before replacing prior owned actors.

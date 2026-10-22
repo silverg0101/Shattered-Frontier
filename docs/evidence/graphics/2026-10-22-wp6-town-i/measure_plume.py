@@ -49,10 +49,10 @@ for y in range(10, 561, 10):
     px, ex = plume(y)
     if len(px): ratios[y] = round(float(rows(L, y)[px].mean() / max(rows(LR, y)[px].mean(), 1e-6)), 3)
 c['5_L_over_ref_rows_30_80_260'] = {y: ratios.get(y) for y in (30, 80, 260)}
-# WP6i review fix 2: item 5 = core L / ref L in 0.65-0.88 over rows 380-540 within x 840-960, |L/ref - 1| >= 0.05 at y 150,
+# WP6i review fix 2: item 5 = core L / ref L in 0.65-0.88 over rows 380-540 within x 880-1060 (r3), |L/ref - 1| >= 0.05 at y 150,
 # never > 1.05 over sky rows (y < 60).
-core = [float(rows(L, y)[840:961].mean() / rows(LR, y)[840:961].mean()) for y in range(380, 541, 10)]
-c['5_core_L_over_ref_y380_540_x840_960'] = [round(min(core), 3), round(float(np.mean(core)), 3), round(max(core), 3)]
+core = [float(rows(L, y)[880:1061].mean() / rows(LR, y)[880:1061].mean()) for y in range(380, 541, 10)]   # WP6i r3: the window follows the wind drift
+c['5_core_L_over_ref_y380_540_x880_1060'] = [round(min(core), 3), round(float(np.mean(core)), 3), round(max(core), 3)]
 px150 = plume(150)[0]
 c['5_L_over_ref_y150'] = round(float(rows(L, 150)[px150].mean() / rows(LR, 150)[px150].mean()), 3) if len(px150) else None
 sky = [ratios[y] for y in ratios if y < 60]
