@@ -11,7 +11,7 @@ Implemented from the r9 fix list:
 
 Windows (`sharp.py` sharpness / std, before -> r9 -> r10): 04 16.95 / 27.4 -> 14.99 / 26.2 -> 16.16 / 28.2; 04-sun20 18.40 -> 18.36 -> 19.98; ctx-ground-1 9.73 -> 9.25 -> 9.34; ctx-ground-2 8.74 -> 7.67 -> 7.85; ctx-ground-3 9.15 -> 9.00 -> 9.12; ctx-ground-4 mud 11.15 -> 9.80 -> 9.79; ctx-ground-4-sun20 10.49 -> 10.31 -> 10.31.
 ctx-ground-1 [503,1006,63,24] mean RGB (142.8, 128.6, 60.2) vs surround [400,950,300,130] (145.4, 130.4, 62.3). Moss coverage (G - R > 8, y >= 500): ctx-ground-2 0.090, ctx-ground-3 0.039, 04 0.000.
-Rib-angle `R` (r10): A2 earth [815,600,64,256] 32 px 0.18; A3 strip [884,600,32,100] 16 px 0.41 vs the same frame's cobble crop [925,600,55,215] 0.61.
+Rib-angle `R` (r10): A1 earth [705,730,110,96] 32 px 0.93; A2 earth [815,600,64,256] 32 px 0.18; A3 earth [884,600,32,215] 16 px 0.53; A3 strip [884,600,32,100] 16 px 0.41 vs the same frame's cobble crop [925,600,55,215] 0.61.
 
 ### Repeat gate, round 10
 `GROUND_REPEAT PASS crops 9 max_peak 0.1972 limit 0.25` (before `FAIL max_peak 0.665`).
@@ -303,4 +303,4 @@ Committed pre-change `GameClient/ArtSource/Greenlands/perf-01-forest-path-town.j
 Note: the timing above was measured with the round-1 material (hex Mask). The round-2 material (plain Mask + 2 Simplex noises, CellTiles 1.0) was not re-timed.
 
 ## Status
-Two Fable reviews (`REVIEW-r1.md`, `REVIEW-r2.md`) did not pass; stopped per the rule for an Opus hand-off. Open items are the fix list in `REVIEW-r2.md` (implemented in round 3) (layer B hex, Mask patch variation, `HeightSharp` tie-break, A1 earth crop).
+Round 10 passed the independent Fable review (`REVIEW.md`: 15 PASS, 0 FAIL). Optional r10 fix 2 (`InvRange` 512 for the 60 x 70 px residual at 04's right edge) not taken.
