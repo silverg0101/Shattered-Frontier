@@ -1,7 +1,7 @@
 """Repaint the open map's terrain vertex colours so streets read as cobble with packed earth at the margins, grass only beyond.
 
 python tools/Run-InEditor.py GameClient/ArtSource/Greenlands/paint_street_edges.py   (open Greenlands_Silverbrook)
-Same fields as build_silverbrook.py (ROAD_G cobble +STREET_COBBLE_EXTRA_M, ROAD_B earth +STREET_EARTH_EXTRA_M, ramp 2 grid steps),
+Same fields as build_silverbrook.py (ROAD_G cobble +STREET_COBBLE_EXTRA_M, ROAD_B earth +STREET_EARTH_EXTRA_M, plazas cobble plus a 10 m earth band, ramp 1 grid step),
 so a rebuild gives the identical paint; this just avoids a full rebuild. Idempotent (G only rises; B in the street margin is recomputed, so a trail's own B inside it is replaced).
 """
 import json, math, sys
@@ -27,7 +27,7 @@ step = min(b - a for a, b in zip(xs, xs[1:]) if b > a) / 100.0
 cell = {}
 for i, p in enumerate(pos):
     cell.setdefault((round(p.x / 100 / step), round(p.y / 100 / step)), []).append(i)
-ramp = 2 * step
+ramp = step  # field is 1 to the edge, then falls to 0 over one grid step (WP6d review fix 2)
 
 def field(extra):
     best = {}
@@ -38,17 +38,28 @@ def field(extra):
                 n = max(1, math.ceil(math.dist(a, b)))
                 for s in range(n + 1):
                     x, y = a[0] + (b[0] - a[0]) * s / n, a[1] + (b[1] - a[1]) * s / n
-                    r = hw + ramp / 2
+                    r = hw + ramp
                     for ci in range(math.floor((x - r) / step), math.ceil((x + r) / step) + 1):
                         for cj in range(math.floor((y - r) / step), math.ceil((y + r) / step) + 1):
                             d = math.hypot(ci * step - x, cj * step - y)
                             if d <= r:
-                                f = min(1.0, max(0.0, 0.5 + (hw - d) / ramp))
+                                f = min(1.0, max(0.0, 1.0 - (d - hw) / ramp))
                                 if f > best.get((ci, cj), 0.0):
                                     best[(ci, cj)] = f
     return best
 
 g, b = field(COBBLE_EXTRA), field(EARTH_EXTRA)
+PLAZA_EARTH = 10.0  # same as build_silverbrook.PLAZA_EARTH_M
+def rect(at, size, grow, out):
+    (x, y), (w, d) = at, size
+    for ci in range(math.floor((x - w / 2 - grow - ramp) / step), math.ceil((x + w / 2 + grow + ramp) / step) + 1):
+        for cj in range(math.floor((y - d / 2 - grow - ramp) / step), math.ceil((y + d / 2 + grow + ramp) / step) + 1):
+            dx, dy = abs(ci * step - x) - w / 2 - grow, abs(cj * step - y) - d / 2 - grow
+            f = min(1.0, max(0.0, 1.0 - math.hypot(max(dx, 0), max(dy, 0)) / ramp))
+            if f > out.get((ci, cj), 0.0):
+                out[(ci, cj)] = f
+for at, size in [(p['at'], p['size']) for p in L['places'] if p['type'] == 'plaza']:
+    rect(at, size, 0.0, g); rect(at, size, PLAZA_EARTH, b)
 
 # Door paths (WP6b review fix 5, widened by WP6c fix 8): B = 1 in a 2.4 m strip from each house's top stoop step to the nearest street centre line.
 SEGS = [(a, c) for tier in ('primary', 'secondary') for pts in L['roads'][tier].values() for a, c in zip(pts, pts[1:])]
@@ -56,7 +67,7 @@ def nearest(p, a, c):
     dx, dy = c[0] - a[0], c[1] - a[1]
     t = max(0.0, min(1.0, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / ((dx * dx + dy * dy) or 1)))
     return a[0] + dx * t, a[1] + dy * t
-def strip(p, q, half=1.2):
+def strip(p, q, half=max(1.2, step / 2 + 0.05)):  # one continuous vertex column on the terrain grid
     for ci in range(math.floor((min(p[0], q[0]) - half) / step), math.ceil((max(p[0], q[0]) + half) / step) + 1):
         for cj in range(math.floor((min(p[1], q[1]) - half) / step), math.ceil((max(p[1], q[1]) + half) / step) + 1):
             if math.dist((ci * step, cj * step), nearest((ci * step, cj * step), p, q)) <= half:

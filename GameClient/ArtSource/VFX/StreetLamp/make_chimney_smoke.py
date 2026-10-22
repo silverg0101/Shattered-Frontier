@@ -34,9 +34,10 @@ u = (np.arange(W) + .5) / W - .5
 sway = (periodic_noise(3)[:, :1] - .5) * .18          # the column's centre drifts a little along V
 profile = np.exp(-((u[None, :] - sway) / .30) ** 2)    # soft-edged column, about 70 % of the card wide
 alpha = np.clip(profile * (.35 + .75 * n), 0, 1) * 1.0
+alpha *= np.clip((.5 - .5 / W - np.abs(u)) / .10, 0, 1)[None, :]   # zero in the edge pixel columns (WP6d review fix 1c)
 shade = .82 + .18 * n                                  # lighter puffs, slightly darker gaps
 rgba = np.dstack([shade, shade, shade * 1.02, alpha])
 out = Path(__file__).with_name('T_ChimneySmoke.png')
 Image.fromarray((np.clip(rgba, 0, 1) * 255).astype(np.uint8), 'RGBA').save(out)
-assert alpha.max() > .7 and (profile[0] > .5).sum() > W * .3, 'plume too faint or too narrow'
+assert alpha.max() > .7 and (profile[0] > .5).sum() > W * .3 and alpha[:, 0].max() == 0 and alpha[:, -1].max() == 0, 'plume too faint, too narrow or hard-edged'
 print('CHIMNEY_SMOKE_TEXTURE', out.name, W, H, 'alpha max', round(float(alpha.max()), 2), 'mean', round(float(alpha.mean()), 2))

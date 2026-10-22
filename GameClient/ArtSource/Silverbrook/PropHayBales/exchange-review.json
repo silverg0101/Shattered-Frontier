@@ -1,11 +1,11 @@
 {
   "source": {
     "meshes": 3,
-    "triangles": 4716,
+    "triangles": 12636,
     "size_m": [
-      2.084,
-      0.79,
-      1.26
+      2.356,
+      1.046,
+      1.533
     ],
     "materials": [
       "SB_PropHayBales_Straw",
@@ -19,11 +19,11 @@
   },
   "glb": {
     "meshes": 3,
-    "triangles": 4716,
+    "triangles": 12636,
     "size_m": [
-      2.084,
-      0.79,
-      1.26
+      2.356,
+      1.046,
+      1.533
     ],
     "materials": [
       "SB_PropHayBales_Straw",
@@ -38,11 +38,11 @@
   },
   "fbx": {
     "meshes": 3,
-    "triangles": 4716,
+    "triangles": 12636,
     "size_m": [
-      2.084,
-      0.79,
-      1.26
+      2.356,
+      1.046,
+      1.533
     ],
     "materials": [
       "SB_PropHayBales_Straw",

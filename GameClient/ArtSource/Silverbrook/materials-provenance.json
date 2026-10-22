@@ -2025,5 +2025,28 @@
         "md5": "06b87ab938a91f2423f65648ae53face"
       }
     ]
+  },
+  {
+    "asset": "sb_straw_face",
+    "license": "self-made (Codex image generation, PropHayBales/textures; make_straw_scan.py)",
+    "physical_size_metres": [
+      0.6,
+      0.6
+    ],
+    "note": "packed golden straw cut face; normal and roughness derived from the generated height map",
+    "files": [
+      {
+        "file": "Textures/sb_straw_face_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/sb_straw_face_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/sb_straw_face_Rough.jpg"
+      },
+      {
+        "file": "Textures/sb_straw_face_Displacement.jpg"
+      }
+    ]
   }
 ]

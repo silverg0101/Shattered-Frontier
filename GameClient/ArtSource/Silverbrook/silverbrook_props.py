@@ -186,6 +186,7 @@ def _obstacles(A):
     rects=[]
     for a in A.get_all_level_actors():
         if isinstance(a,u.StaticMeshActor) and '_Stoop' in a.get_actor_label():rects.append(pp._rect(a))
+        elif isinstance(a,u.StaticMeshActor) and a.get_actor_label().split('_')[0] in ('FlowerTub','StoopTub','GardenFence','GardenFirewood','WashingLine','SillPlanter'):rects.append(pp._rect(a))  # house details (WP6d fix 4a)
         elif isinstance(a,u.StaticMeshActor) and a.static_mesh_component.static_mesh and a.static_mesh_component.static_mesh.get_name().startswith('SM_Silverbrook') and TAG not in [str(t) for t in a.tags]:
             r=pp._rect(a)
             if max(r[2]-r[0],r[3]-r[1])<=4000:  # terrain and backdrop are not street obstacles
@@ -344,8 +345,12 @@ def dress_house_details():
     boards=[_asset(f'{LIB}/Materials/MI_SB_PropShopSignBoard{v}') for v in ('','_Boots','_Ale')]
     blooms=[_asset(f'{LIB}/Materials/MI_SB_GeraniumBloom{v}') for v in ('','_Pink')]
     band=val(cfg()['footing']['base_band_cm'])
-    # Bay-window sills (mesh-local cm, measured on the imported mesh): Townhouse6's ground bay and upper oriel.
-    sills={'SM_SilverbrookTownhouse6':[(-116,246,84),(-87,270,432)]}
+    # Bay-window sills (WP6d review fix 3), mesh-local cm traced on the imported meshes (the import recentres each mesh on its
+    # bounds, so Blender coordinates are off by up to 26 cm): x = bay centre, y = outermost frame/sill face + 2 cm (the planter's
+    # origin is the back edge of its trough), z = apron top / sill line.
+    sills={'SM_SilverbrookTownhouse1':[(140,330,95)],             # canted bay: front 160 cm, frame and sill face y 328
+           'SM_SilverbrookTownhouse3':[(0,276,92)],               # canted bay: sill face 273, centre mullion 274
+           'SM_SilverbrookTownhouse6':[(-120,260,84),(-90,280,435)]}  # ground bay posts at 258; oriel mullion 278 on its 305 base
     houses=[x for x in A.get_all_level_actors() if isinstance(x,u.StaticMeshActor) and str(x.get_folder_path()).startswith('Districts/')
             and x.static_mesh_component.static_mesh and x.static_mesh_component.static_mesh.get_name().startswith('SM_Silverbrook')
             and '_Door' not in x.static_mesh_component.static_mesh.get_name()]
@@ -414,6 +419,8 @@ def dress_house_details():
         for lx,ly,lz in sills.get(mesh.get_name(),[]):  # a planter on every bay-window sill (WP6c review fix 6)
             x,y=pt(lx,ly);pl=spawn(f'SillPlanter_{label}_{lz}',planter,x,y,p.z+lz,yaw,(1,1,1))
             pl.static_mesh_component.set_material(0,blooms[int(_h(label+'bloom'+str(lz))*2)%2]);counts['sill_planters']+=1
+            fx,fy=pt(lx,ly+150)  # a hit means the house wall stands between the street and the planter
+            assert not a.static_mesh_component.line_trace_component(u.Vector(fx,fy,p.z+lz+15),u.Vector(x,y,p.z+lz+15),True,False),('sill planter inside the wall',label,lz)
         if _h(label+'wall')<.4:  # wall dressing on 40 % of houses (WP6b review fix 8)
             doors=[d for d in a.get_attached_actors() if 'Door' in d.get_actor_label()]
             dlx=(co*(doors[0].get_actor_location().x-p.x)+si*(doors[0].get_actor_location().y-p.y)) if doors else 0
@@ -637,7 +644,7 @@ def hide_debug_actors():
 
 def dress_all():
     c=cfg();L=json.loads(LAYOUT.read_text(encoding='utf-8'));_clear(_actors())
-    dress_footings(c);hide_debug_actors();vary_house_finishes();dress_roads(c);gate_windows(c);dress_verge(L,c);dress_props(L,c);dress_street_groups(L,c);dress_house_details()
+    dress_footings(c);hide_debug_actors();vary_house_finishes();dress_roads(c);gate_windows(c);dress_verge(L,c);dress_props(L,c);dress_house_details();dress_street_groups(L,c)  # groups keep clear of tubs (WP6d fix 4a)
 
 if __name__=='__main__':
     dress_all()

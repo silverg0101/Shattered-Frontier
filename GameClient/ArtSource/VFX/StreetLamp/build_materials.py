@@ -46,6 +46,12 @@ def _add(mat, a, b):
     return n
 
 
+def _sub(mat, a, b):
+    n = _node(mat, u.MaterialExpressionSubtract)
+    _link(a, n, 'A'); _link(b, n, 'B')
+    return n
+
+
 def _sin(mat, a):
     return _link(a, _node(mat, u.MaterialExpressionSine), '')
 
@@ -147,6 +153,9 @@ def build(cfg=None):
             u.MaterialProperty.MP_EMISSIVE_COLOR); _save(halo)
 
     smoke = _material('M_LampSmoke', blend=u.BlendMode.BLEND_TRANSLUCENT)
+    # Lit, not emitted: smoke against a bright sky must read darker than the sky (WP6d review fix 1a).
+    smoke.set_editor_property('shading_model', u.MaterialShadingModel.MSM_DEFAULT_LIT)
+    smoke.set_editor_property('translucency_lighting_mode', u.TranslucencyLightingMode.TLM_VOLUMETRIC_NON_DIRECTIONAL)
     # Parameters default to the lamp wisp; MI_SB_ChimneySmoke (silverbrook_props.py) overrides them for chimney plumes:
     # SmokeTex (T_ChimneySmoke, make_chimney_smoke.py), PanV (rise speed), Tint, Opacity, EdgeFade (fade the card's ends).
     image = _node(smoke, u.MaterialExpressionTextureSampleParameter2D, parameter_name='SmokeTex', texture=u.load_asset(DEST + '/T_LampSmoke'))
@@ -155,9 +164,16 @@ def build(cfg=None):
     speed = _node(smoke, u.MaterialExpressionAppendVector)
     _link(_constant(smoke, .012), speed, 'A'); _link(pan_v, speed, 'B')
     panner = _node(smoke, u.MaterialExpressionPanner)
-    _link(uv, panner, 'Coordinate'); _link(speed, panner, 'Speed'); _link(panner, image, 'UVs')
+    # Taper (WP6d fix 1d): texture V runs down the card, so U is squeezed x1.6 at the pot (narrow) and x0.7 at the top (wide).
+    vs = _node(smoke, u.MaterialExpressionComponentMask, r=False, g=True, b=False, a=False); _link(uv, vs, '')
+    widen = _node(smoke, u.MaterialExpressionLinearInterpolate)
+    _link(_constant(smoke, .7), widen, 'A'); _link(_constant(smoke, 1.6), widen, 'B'); _link(vs, widen, 'Alpha')
+    scale = _node(smoke, u.MaterialExpressionAppendVector); _link(widen, scale, 'A'); _link(_constant(smoke, 1), scale, 'B')
+    centre = _node(smoke, u.MaterialExpressionConstant2Vector, r=.5, g=0.)
+    tapered = _add(smoke, _mul(smoke, _sub(smoke, uv, centre), scale), centre)
+    _link(tapered, panner, 'Coordinate'); _link(speed, panner, 'Speed'); _link(panner, image, 'UVs')
     tint = _node(smoke, u.MaterialExpressionVectorParameter, parameter_name='Tint', default_value=u.LinearColor(.31, .30, .27, 1))
-    _output(tint, u.MaterialProperty.MP_EMISSIVE_COLOR)
+    _output(tint, u.MaterialProperty.MP_BASE_COLOR)
     opacity = _node(smoke, u.MaterialExpressionScalarParameter, parameter_name='Opacity', default_value=cfg['smoke_opacity'])
     v = _node(smoke, u.MaterialExpressionComponentMask, r=False, g=True, b=False, a=False); _link(uv, v, '')
     ends = _node(smoke, u.MaterialExpressionSine, period=2.0); _link(v, ends, '')   # 0 at both ends of the card, 1 mid-way
@@ -172,7 +188,17 @@ def build(cfg=None):
     _link(_mul(smoke, _add(smoke, facing, _constant(smoke, -.25)), _constant(smoke, 1.8)), view, '')
     vf = _node(smoke, u.MaterialExpressionLinearInterpolate); _link(_constant(smoke, 1), vf, 'A'); _link(view, vf, 'B')
     _link(_node(smoke, u.MaterialExpressionScalarParameter, parameter_name='ViewFade', default_value=0.), vf, 'Alpha')
-    _output(_mul(smoke, _mul(smoke, _mul(smoke, _alpha(smoke, image), opacity), fade), vf), u.MaterialProperty.MP_OPACITY)
+    # Distance fade (fix 1f): full to 80 m, gone at 120 m, so back-row cards do not stack into a picket of streaks.
+    depth = _node(smoke, u.MaterialExpressionPixelDepth)
+    far = _node(smoke, u.MaterialExpressionSaturate)
+    _link(_mul(smoke, _add(smoke, _mul(smoke, depth, _constant(smoke, -1.)), _constant(smoke, 12000.)), _constant(smoke, 1 / 4000.)), far, '')
+    # Card side edges at zero on the card itself: the panner drifts U, so the texture's zero edge columns do not stay there.
+    cu = _node(smoke, u.MaterialExpressionComponentMask, r=True, g=False, b=False, a=False); _link(uv, cu, '')
+    off = _node(smoke, u.MaterialExpressionAbs); _link(_add(smoke, cu, _constant(smoke, -.5)), off, '')
+    sides = _node(smoke, u.MaterialExpressionSaturate)
+    _link(_mul(smoke, _sub(smoke, _constant(smoke, .5), off), _constant(smoke, 10.)), sides, '')
+    _output(_mul(smoke, _mul(smoke, _mul(smoke, _mul(smoke, _mul(smoke, _alpha(smoke, image), opacity), fade), vf), far), sides),
+            u.MaterialProperty.MP_OPACITY)
     _save(smoke)
 
     firefly = _material('M_LampFirefly', blend=u.BlendMode.BLEND_ADDITIVE)
