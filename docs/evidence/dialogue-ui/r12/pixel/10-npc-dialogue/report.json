@@ -1,0 +1,435 @@
+[
+ {
+  "name": "board frame",
+  "rect": [
+   486,
+   219,
+   951,
+   622
+  ],
+  "found": false,
+  "match": 0.36,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "board fill",
+    2.6
+   ],
+   [
+    "board fill low",
+    2.8
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "portrait",
+  "rect": [
+   516,
+   267,
+   122,
+   124
+  ],
+  "found": false,
+  "match": 0.16,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "speaker name",
+  "rect": [
+   663,
+   284,
+   262,
+   25
+  ],
+  "found": true,
+  "match": 0.83,
+  "d_left": 1,
+  "d_top": 0,
+  "d_width": 3,
+  "d_height": 1,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "speech line",
+  "rect": [
+   663,
+   340,
+   290,
+   50
+  ],
+  "found": false,
+  "match": 0.23,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "divider",
+  "rect": [
+   516,
+   425,
+   467,
+   9
+  ],
+  "found": true,
+  "match": 0.85,
+  "d_left": 14,
+  "d_top": 0,
+  "d_width": -34,
+  "d_height": 0,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "row 1 (selected)",
+  "rect": [
+   513,
+   460,
+   472,
+   72
+  ],
+  "found": true,
+  "match": 0.56,
+  "d_left": 17,
+  "d_top": 12,
+  "d_width": -19,
+  "d_height": -16,
+  "de": [
+   [
+    "selected fill",
+    0.8
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "row 2",
+  "rect": [
+   513,
+   546,
+   472,
+   71
+  ],
+  "found": true,
+  "match": 0.6,
+  "d_left": 2,
+  "d_top": 1,
+  "d_width": -11,
+  "d_height": -4,
+  "de": [
+   [
+    "row fill",
+    3.3
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "row 3",
+  "rect": [
+   513,
+   631,
+   472,
+   71
+  ],
+  "found": true,
+  "match": 0.59,
+  "d_left": 2,
+  "d_top": 1,
+  "d_width": -11,
+  "d_height": -4,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "row 4",
+  "rect": [
+   513,
+   716,
+   472,
+   71
+  ],
+  "found": true,
+  "match": 0.59,
+  "d_left": 1,
+  "d_top": 2,
+  "d_width": -3,
+  "d_height": -16,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "keycap 1",
+  "rect": [
+   529,
+   469,
+   53,
+   54
+  ],
+  "found": true,
+  "match": 0.68,
+  "d_left": 4,
+  "d_top": 2,
+  "d_width": -5,
+  "d_height": -6,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "row 1 label",
+  "rect": [
+   606,
+   487,
+   138,
+   18
+  ],
+  "found": false,
+  "match": 0.45,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "quest art",
+  "rect": [
+   1024,
+   244,
+   391,
+   198
+  ],
+  "found": false,
+  "match": 0.31,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "quest title",
+  "rect": [
+   1044,
+   456,
+   228,
+   29
+  ],
+  "found": true,
+  "match": 0.82,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": -3,
+  "d_height": 0,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "quest summary",
+  "rect": [
+   1045,
+   498,
+   351,
+   20
+  ],
+  "found": true,
+  "match": 0.78,
+  "d_left": 0,
+  "d_top": 1,
+  "d_width": -16,
+  "d_height": 0,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "objectives heading",
+  "rect": [
+   1045,
+   548,
+   99,
+   21
+  ],
+  "found": true,
+  "match": 0.74,
+  "d_left": 1,
+  "d_top": 1,
+  "d_width": -2,
+  "d_height": 0,
+  "de": [],
+  "geometry": "PASS",
+  "colour": "PASS",
+  "verdict": "PASS"
+ },
+ {
+  "name": "objective 1",
+  "rect": [
+   1044,
+   584,
+   342,
+   24
+  ],
+  "found": true,
+  "match": 0.52,
+  "d_left": 0,
+  "d_top": 1,
+  "d_width": -2,
+  "d_height": 0,
+  "de": [],
+  "geometry": "PASS",
+  "colour": "PASS",
+  "verdict": "PASS"
+ },
+ {
+  "name": "rewards heading",
+  "rect": [
+   1046,
+   668,
+   80,
+   16
+  ],
+  "found": true,
+  "match": 0.71,
+  "d_left": 2,
+  "d_top": 0,
+  "d_width": 1,
+  "d_height": 0,
+  "de": [
+   [
+    "card fill",
+    3.6
+   ]
+  ],
+  "geometry": "PASS",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "xp roundel",
+  "rect": [
+   1044,
+   701,
+   46,
+   45
+  ],
+  "found": false,
+  "match": 0.34,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "coin stack",
+  "rect": [
+   1231,
+   701,
+   44,
+   44
+  ],
+  "found": true,
+  "match": 0.65,
+  "d_left": 0,
+  "d_top": 8,
+  "d_width": 2,
+  "d_height": -8,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "accept",
+  "rect": [
+   1030,
+   765,
+   205,
+   54
+  ],
+  "found": false,
+  "match": 0.48,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "accept fill",
+    7.0
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "decline",
+  "rect": [
+   1248,
+   765,
+   164,
+   54
+  ],
+  "found": true,
+  "match": 0.78,
+  "d_left": 0,
+  "d_top": -1,
+  "d_width": 0,
+  "d_height": 2,
+  "de": [
+   [
+    "decline fill",
+    1.5
+   ]
+  ],
+  "geometry": "PASS",
+  "colour": "PASS",
+  "verdict": "PASS"
+ }
+]

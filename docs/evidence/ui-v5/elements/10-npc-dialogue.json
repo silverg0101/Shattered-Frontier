@@ -1,0 +1,26 @@
+{
+  "concept": "10-npc-dialogue.png",
+  "elements": [
+    {"name": "board frame", "rect": [486, 219, 951, 622], "samples": [[700, 445, "board fill"], [600, 815, "board fill low"]]},
+    {"name": "portrait", "rect": [516, 267, 122, 124], "samples": []},
+    {"name": "speaker name", "rect": [663, 284, 262, 25], "samples": []},
+    {"name": "speech line", "rect": [663, 340, 290, 50], "samples": []},
+    {"name": "divider", "rect": [516, 425, 467, 9], "samples": []},
+    {"name": "row 1 (selected)", "rect": [513, 460, 472, 72], "samples": [[850, 475, "selected fill"]]},
+    {"name": "row 2", "rect": [513, 546, 472, 71], "samples": [[850, 562, "row fill"]]},
+    {"name": "row 3", "rect": [513, 631, 472, 71], "samples": []},
+    {"name": "row 4", "rect": [513, 716, 472, 71], "samples": []},
+    {"name": "keycap 1", "rect": [529, 469, 53, 54], "samples": []},
+    {"name": "row 1 label", "rect": [606, 487, 138, 18], "samples": []},
+    {"name": "quest art", "rect": [1024, 244, 391, 198], "samples": []},
+    {"name": "quest title", "rect": [1044, 456, 228, 29], "samples": []},
+    {"name": "quest summary", "rect": [1045, 498, 351, 20], "samples": []},
+    {"name": "objectives heading", "rect": [1045, 548, 99, 21], "samples": []},
+    {"name": "objective 1", "rect": [1044, 584, 342, 24], "samples": []},
+    {"name": "rewards heading", "rect": [1046, 668, 80, 16], "samples": [[1300, 650, "card fill"]]},
+    {"name": "xp roundel", "rect": [1044, 701, 46, 45], "samples": []},
+    {"name": "coin stack", "rect": [1231, 701, 44, 44], "samples": []},
+    {"name": "accept", "rect": [1030, 765, 205, 54], "samples": [[1060, 792, "accept fill"]]},
+    {"name": "decline", "rect": [1248, 765, 164, 54], "samples": [[1270, 792, "decline fill"]]}
+  ]
+}
