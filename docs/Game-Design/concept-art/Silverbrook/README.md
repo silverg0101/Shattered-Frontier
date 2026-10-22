@@ -8,6 +8,7 @@ Owner-supplied concept images for the Silverbrook buildings. One image is one de
 | [Adventurers Guild.png](Adventurers%20Guild.png) | Adventurers' Guild | BLD-GreenlandsAdventurersGuild-01 | 16 × 13 × 18 | `GameClient/ArtSource/Silverbrook/AdventurersGuild` | delivered |
 | [The Golden Stag Inn.png](The%20Golden%20Stag%20Inn.png) | The Golden Stag Inn | BLD-GreenlandsTheGoldenStagInn-01 | 14 × 12 × 14 | — | delivered |
 | [Blacksmith.png](Blacksmith.png) | Blacksmith | BLD-GreenlandsBlacksmith-01 | 14 × 12 × 14 | `GameClient/ArtSource/Silverbrook/Blacksmith` | delivered |
+| [The Gilded Tankard.png](The%20Gilded%20Tankard.png) | The Gilded Tankard | BLD-GreenlandsGildedTankard-01 | 14 × 12 × 14 | `GameClient/ArtSource/Silverbrook/GildedTankard` | Blender review FAIL (2 rounds); not imported |
 | [Temple of the Dawn.png](Temple%20of%20the%20Dawn.png) | Temple of the Dawn | BLD-GreenlandsTempleOfTheDawn-01 | 14 × 24 × 20 | `GameClient/ArtSource/Silverbrook/TempleOfTheDawn` | delivered |
 | [Market Stall.png](Market%20Stall.png) | Market stall | BLD-GreenlandsMarketStall-01 | 4 × 4 × 4 | `GameClient/ArtSource/Silverbrook/MarketStall` | delivered |
 | [Watchtower.png](Watchtower.png) | Watchtower | BLD-GreenlandsWatchtower-01 | 8 × 8 × 9 | `GameClient/ArtSource/Silverbrook/Watchtower` | delivered |

@@ -1,0 +1,3 @@
+Generated the two-view concept sheet with the built-in image tool: [GildedTankard.png](<C:/Projects/Shattered-Frontier/.claude/worktrees/agent-a257612538b402df2/GameClient/ArtSource/Silverbrook/GildedTankard/concept/GildedTankard.png>).
+
+The prompt specified a dominant front elevation and matching three-quarter view, using Silverbrook’s weathered stone, dark oak, pale plaster, and grey slate palette.

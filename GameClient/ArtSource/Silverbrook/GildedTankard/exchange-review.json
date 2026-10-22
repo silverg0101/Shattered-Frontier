@@ -1,0 +1,88 @@
+{
+  "source": {
+    "meshes": 7,
+    "triangles": 50958,
+    "size_m": [
+      10.306,
+      8.918,
+      12.57
+    ],
+    "materials": [
+      "SB_Ashlar",
+      "SB_ChimneyPot",
+      "SB_DoorBoards",
+      "SB_EntryRoom",
+      "SB_ForgedIron",
+      "SB_GildedTankard_Gilt",
+      "SB_GildedTankard_SignBoard",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LimePlaster",
+      "SB_LitGlass",
+      "SB_OakTimber",
+      "SB_Slate"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 16
+  },
+  "glb": {
+    "meshes": 6,
+    "triangles": 50948,
+    "size_m": [
+      10.306,
+      8.918,
+      12.57
+    ],
+    "materials": [
+      "SB_Ashlar",
+      "SB_ChimneyPot",
+      "SB_DoorBoards",
+      "SB_ForgedIron",
+      "SB_GildedTankard_Gilt",
+      "SB_GildedTankard_SignBoard",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LimePlaster",
+      "SB_LitGlass",
+      "SB_OakTimber",
+      "SB_Slate"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 6,
+    "triangles": 50682,
+    "size_m": [
+      10.306,
+      8.918,
+      12.57
+    ],
+    "materials": [
+      "SB_Ashlar",
+      "SB_ChimneyPot",
+      "SB_EntryRoom",
+      "SB_ForgedIron",
+      "SB_GildedTankard_Gilt",
+      "SB_GildedTankard_SignBoard",
+      "SB_LanternGlow",
+      "SB_LeadCame",
+      "SB_LimePlaster",
+      "SB_LitGlass",
+      "SB_OakTimber",
+      "SB_Slate"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 5
+  }
+}

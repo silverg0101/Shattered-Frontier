@@ -188,6 +188,7 @@
     "town_hall": [22, 18, 28],
     "adventurers_guild": [16, 13, 18],
     "inn": [14, 12, 14],
+    "tavern": [14, 12, 14],
     "blacksmith": [14, 12, 14],
     "temple": [14, 24, 20],
     "market_stall": [4, 4, 4],
