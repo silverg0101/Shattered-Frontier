@@ -21,7 +21,7 @@
    ],
    [
     "modal fill",
-    4.1
+    4.2
    ]
   ],
   "geometry": "FAIL",
@@ -106,7 +106,7 @@
   "de": [
    [
     "card fill",
-    2.8
+    2.5
    ]
   ],
   "geometry": "FAIL",
@@ -216,7 +216,7 @@
   "de": [
    [
     "card fill",
-    1.8
+    1.7
    ]
   ],
   "geometry": "FAIL",
@@ -370,7 +370,7 @@
   "de": [
    [
     "empty hp fill",
-    15.0
+    15.3
    ]
   ],
   "geometry": "FAIL",
@@ -420,11 +420,11 @@
   "de": [
    [
     "badge fill",
-    5.1
+    2.4
    ]
   ],
   "geometry": "FAIL",
-  "colour": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  },
  {
@@ -507,11 +507,11 @@
    196
   ],
   "found": true,
-  "match": 0.56,
+  "match": 0.55,
   "d_left": -32,
   "d_top": 33,
   "d_width": 28,
-  "d_height": -76,
+  "d_height": -79,
   "de": [
    [
     "dim fill",
@@ -540,7 +540,7 @@
   "de": [
    [
     "toast fill",
-    11.1
+    11.5
    ]
   ],
   "geometry": "UNMEASURED",
@@ -565,7 +565,7 @@
   "de": [
    [
     "toast fill",
-    8.9
+    9.2
    ]
   ],
   "geometry": "UNMEASURED",

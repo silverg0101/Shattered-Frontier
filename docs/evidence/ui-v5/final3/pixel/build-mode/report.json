@@ -395,7 +395,7 @@
   "de": [
    [
     "bar fill",
-    3.8
+    3.6
    ]
   ],
   "geometry": "FAIL",
@@ -495,7 +495,7 @@
   "de": [
    [
     "badge fill",
-    5.7
+    4.2
    ]
   ],
   "geometry": "FAIL",
@@ -543,7 +543,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_0",
+  "widget": "",
   "name": "quest tracker frame",
   "rect": [
    1629,
@@ -551,20 +551,20 @@
    274,
    182
   ],
-  "found": true,
-  "match": 0.62,
-  "d_left": -16,
-  "d_top": 18,
-  "d_width": 12,
-  "d_height": -62,
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
   "de": [
    [
     "fill dark",
-    2.0
+    7.6
    ]
   ],
-  "geometry": "FAIL",
-  "colour": "PASS",
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
@@ -585,7 +585,7 @@
   "de": [
    [
     "fill dark",
-    40.0
+    35.2
    ]
   ],
   "geometry": "UNMEASURED",

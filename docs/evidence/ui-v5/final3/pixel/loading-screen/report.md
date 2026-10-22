@@ -9,12 +9,12 @@ REVIEW = the element could not be measured (no live widget overlaps it, or no vi
 | zone title Silverbrook | [712, 582, 508, 89] | - | - | - | - | - | 0.04 | - | REVIEW |
 | title divider with centre ornament | [712, 679, 493, 29] | - | +0 | -12 | +4 | +8 | 0.12 | - | FAIL |
 | divider centre diamond | [943, 679, 35, 29] | - | +11 | +15 | -19 | -7 | 0.21 | - | FAIL |
-| tip text | [719, 870, 485, 30] | - | - | - | - | - | 0.03 | - | REVIEW |
+| tip text | [719, 870, 485, 30] | - | +4 | +3 | +18 | -28 | 0.79 | - | FAIL |
 | progress bar frame | [609, 915, 701, 35] | - | -1 | -25 | +19 | +30 | 0.08 | - | FAIL |
 | progress bar left cap | [609, 915, 36, 35] | - | -1 | -3 | +16 | +1 | 0.08 | - | FAIL |
 | progress bar right cap | [1274, 915, 36, 35] | - | -20 | +26 | +38 | -48 | 0.08 | - | FAIL |
 | progress bar fill | [644, 925, 321, 16] | - | - | - | - | - | 0.00 | brass fill 32.4 | FAIL |
 | progress bar empty track | [966, 925, 316, 16] | - | - | - | - | - | 0.00 | track fill 24.0 | FAIL |
-| spinner ring | [939, 972, 42, 43] | - | +0 | -22 | +0 | +22 | 0.05 | - | FAIL |
+| spinner ring | [939, 972, 42, 43] | - | - | - | - | - | 0.01 | - | REVIEW |
 
 Images: diff-heat.png (red = large difference), overlay-50.png, flip.gif (concept / live).

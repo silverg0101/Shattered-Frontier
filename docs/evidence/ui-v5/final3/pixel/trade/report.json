@@ -17,16 +17,16 @@
   "de": [
    [
     "window fill",
-    2.3
+    2.2
    ],
    [
     "window fill",
-    2.2
+    8.2
    ]
   ],
   "geometry": "PASS",
-  "colour": "PASS",
-  "verdict": "PASS"
+  "colour": "FAIL",
+  "verdict": "FAIL"
  },
  {
   "widget": "HorizontalBox:HorizontalBox_0",
@@ -361,7 +361,7 @@
   "de": [
    [
     "field fill",
-    4.3
+    4.5
    ]
   ],
   "geometry": "FAIL",
@@ -386,7 +386,7 @@
   "de": [
    [
     "field fill",
-    4.2
+    4.1
    ]
   ],
   "geometry": "FAIL",
@@ -481,7 +481,7 @@
   "de": [
    [
     "button fill",
-    2.6
+    2.8
    ]
   ],
   "geometry": "FAIL",
@@ -506,7 +506,7 @@
   "de": [
    [
     "brass fill",
-    7.1
+    6.7
    ],
    [
     "brass fill",
@@ -538,7 +538,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_0",
+  "widget": "",
   "name": "quest tracker frame",
   "rect": [
    1612,
@@ -546,20 +546,20 @@
    286,
    160
   ],
-  "found": true,
-  "match": 0.75,
-  "d_left": 1,
-  "d_top": 0,
-  "d_width": 0,
-  "d_height": -40,
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
   "de": [
    [
     "dimmed fill",
-    2.8
+    2.3
    ]
   ],
-  "geometry": "FAIL",
+  "geometry": "UNMEASURED",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "REVIEW"
  }
 ]

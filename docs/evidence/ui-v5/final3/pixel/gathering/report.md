@@ -18,17 +18,17 @@ REVIEW = the element could not be measured (no live widget overlaps it, or no vi
 | target HP bar | [790, 71, 340, 18] | - | - | - | - | - | 0.00 | hp red fill 34.0 | FAIL |
 | target HP value | [930, 99, 61, 17] | - | - | - | - | - | 0.00 | - | REVIEW |
 | progress ring 64% | [989, 366, 110, 110] | - | - | - | - | - | 0.00 | ring centre fill 4.8 | FAIL |
-| action label Woodcutting | [969, 484, 148, 33] | - | - | - | - | - | 0.00 | label plate fill 3.5 | FAIL |
+| action label Woodcutting | [969, 484, 148, 33] | - | - | - | - | - | 0.00 | label plate fill 3.8 | FAIL |
 | prompt bar Chop | [869, 843, 183, 51] | - | - | - | - | - | 0.00 | fill dark 8.9 | FAIL |
 | keycap E | [911, 850, 35, 34] | - | - | - | - | - | 0.00 | - | REVIEW |
 | hotbar frame | [649, 905, 621, 115] | HorizontalBox:HorizontalBox_0 | +11 | +33 | -21 | -27 | 0.66 | - | FAIL |
 | hotbar slot 1 (selected axe) | [660, 913, 93, 101] | SizeBox:SizeBox_1 | +6 | +25 | -5 | -13 | 0.63 | selected slot fill 10.0 | FAIL |
 | hotbar slot 6 (bandage) | [1166, 913, 95, 101] | SizeBox:SizeBox_11 | +0 | +25 | -7 | -13 | 0.63 | slot fill 44.3 | FAIL |
 | vitals HP bar | [151, 943, 393, 33] | VerticalBox:VerticalBox_0 | +12 | -27 | -13 | +51 | 0.39 | hp red fill 13.5 | FAIL |
-| vitals level badge | [33, 902, 108, 141] | Overlay:Overlay_0 | +5 | -23 | +7 | +17 | 0.71 | badge fill 41.5 | FAIL |
+| vitals level badge | [33, 902, 108, 141] | Overlay:Overlay_0 | +5 | -23 | +7 | +17 | 0.71 | badge fill 41.3 | FAIL |
 | minimap ring | [1654, 17, 241, 240] | SizeBox:SizeBox_18 | -3 | +5 | +9 | +10 | 0.89 | - | FAIL |
 | minimap footer text | [1697, 263, 158, 20] | - | - | - | - | - | 0.00 | - | REVIEW |
-| quest tracker frame | [1618, 304, 286, 203] | SizeBox:SizeBox_0 | -5 | +34 | +0 | -83 | 0.57 | fill dark 4.9 | FAIL |
+| quest tracker frame | [1618, 304, 286, 203] | SizeBox:SizeBox_0 | -5 | +34 | +0 | -86 | 0.56 | fill dark 5.0 | FAIL |
 | toast Skill gain | [1618, 523, 286, 77] | - | - | - | - | - | 0.00 | fill dark 6.8 | FAIL |
 
 Images: diff-heat.png (red = large difference), overlay-50.png, flip.gif (concept / live).

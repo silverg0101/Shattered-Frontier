@@ -17,7 +17,7 @@
   "de": [
    [
     "modal fill",
-    1.8
+    1.7
    ],
    [
     "modal fill",
@@ -256,11 +256,11 @@
   "de": [
    [
     "field fill",
-    3.8
+    1.6
    ]
   ],
   "geometry": "FAIL",
-  "colour": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  },
  {
@@ -306,11 +306,11 @@
   "de": [
    [
     "selected row fill",
-    10.2
+    8.9
    ],
    [
     "selected row fill",
-    11.0
+    10.2
    ]
   ],
   "geometry": "FAIL",
@@ -335,7 +335,7 @@
   "de": [
    [
     "row fill",
-    3.8
+    4.8
    ]
   ],
   "geometry": "FAIL",
@@ -360,12 +360,12 @@
   "de": [
    [
     "row fill",
-    2.0
+    4.6
    ]
   ],
   "geometry": "UNMEASURED",
-  "colour": "PASS",
-  "verdict": "REVIEW"
+  "colour": "FAIL",
+  "verdict": "FAIL"
  },
  {
   "widget": "SizeBox:SizeBox_42",
@@ -385,7 +385,7 @@
   "de": [
    [
     "card fill",
-    2.9
+    2.7
    ]
   ],
   "geometry": "FAIL",
@@ -410,7 +410,7 @@
   "de": [
    [
     "well fill",
-    2.4
+    2.6
    ]
   ],
   "geometry": "FAIL",
@@ -575,7 +575,7 @@
   "de": [
    [
     "badge fill",
-    6.3
+    5.8
    ]
   ],
   "geometry": "FAIL",

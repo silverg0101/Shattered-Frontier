@@ -96,11 +96,11 @@
   "de": [
    [
     "badge fill dark",
-    3.8
+    4.1
    ],
    [
     "badge fill dark",
-    22.7
+    23.2
    ]
   ],
   "geometry": "FAIL",
@@ -175,7 +175,7 @@
   "de": [
    [
     "fill dark",
-    28.8
+    64.1
    ]
   ],
   "geometry": "FAIL",
@@ -229,7 +229,7 @@
    ],
    [
     "fill dark",
-    38.5
+    38.0
    ]
   ],
   "geometry": "FAIL",
@@ -329,7 +329,7 @@
   "de": [
    [
     "fill dark",
-    5.1
+    5.5
    ]
   ],
   "geometry": "FAIL",
@@ -346,19 +346,19 @@
    160
   ],
   "found": true,
-  "match": 0.75,
+  "match": 0.73,
   "d_left": 1,
   "d_top": 0,
   "d_width": 0,
-  "d_height": -40,
+  "d_height": -43,
   "de": [
    [
     "fill dark",
-    9.1
+    9.6
    ],
    [
     "fill dark",
-    30.8
+    56.8
    ]
   ],
   "geometry": "FAIL",
@@ -375,11 +375,11 @@
    29
   ],
   "found": true,
-  "match": 0.35,
+  "match": 0.38,
   "d_left": 3,
   "d_top": 6,
   "d_width": 94,
-  "d_height": 7,
+  "d_height": 3,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -403,7 +403,7 @@
   "de": [
    [
     "fill dark",
-    10.2
+    12.6
    ]
   ],
   "geometry": "UNMEASURED",
@@ -428,11 +428,11 @@
   "de": [
    [
     "fill dark",
-    6.0
+    8.5
    ],
    [
     "fill dark",
-    5.9
+    7.2
    ]
   ],
   "geometry": "FAIL",
@@ -457,7 +457,7 @@
   "de": [
    [
     "fill dark",
-    26.9
+    66.5
    ]
   ],
   "geometry": "UNMEASURED",
@@ -482,7 +482,7 @@
   "de": [
    [
     "fill dark",
-    28.0
+    62.1
    ]
   ],
   "geometry": "UNMEASURED",

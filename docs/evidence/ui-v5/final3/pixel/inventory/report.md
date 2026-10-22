@@ -19,17 +19,17 @@ REVIEW = the element could not be measured (no live widget overlaps it, or no vi
 | bag slot last (stick) | [573, 793, 62, 61] | SizeBox:SizeBox_51 | +13 | +6 | +0 | +1 | 0.55 | slot fill 7.2 | FAIL |
 | weight footer text | [121, 876, 156, 20] | TextBlock:TextBlock_82 | +16 | +8 | -12 | +7 | 0.32 | - | FAIL |
 | gold footer | [503, 873, 116, 22] | - | - | - | - | - | 0.00 | - | REVIEW |
-| tooltip frame Iron Axe | [587, 120, 410, 326] | - | - | - | - | - | 0.00 | tooltip fill 5.0, tooltip fill 6.5 | FAIL |
+| tooltip frame Iron Axe | [587, 120, 410, 326] | - | - | - | - | - | 0.00 | tooltip fill 36.5, tooltip fill 48.7 | FAIL |
 | tooltip title Iron Axe | [742, 141, 103, 27] | - | - | - | - | - | 0.00 | - | REVIEW |
 | tooltip item art | [602, 140, 120, 178] | - | - | - | - | - | 0.00 | - | REVIEW |
 | tooltip stat rows | [742, 213, 220, 107] | - | - | - | - | - | 0.00 | - | REVIEW |
 | tooltip description | [614, 353, 256, 67] | - | - | - | - | - | 0.00 | - | REVIEW |
 | minimap ring | [1651, 22, 243, 248] | SizeBox:SizeBox_18 | +0 | +0 | +7 | +2 | 0.96 | - | FAIL |
-| quest tracker frame | [1626, 315, 275, 273] | SizeBox:SizeBox_0 | -13 | +23 | +11 | -153 | 0.43 | fill dark 4.4 | FAIL |
-| toast River Herbs | [1627, 603, 274, 67] | - | - | - | - | - | 0.00 | fill dark 33.7 | FAIL |
+| quest tracker frame | [1626, 315, 275, 273] | - | - | - | - | - | 0.00 | fill dark 22.1 | FAIL |
+| toast River Herbs | [1627, 603, 274, 67] | - | - | - | - | - | 0.00 | fill dark 35.5 | FAIL |
 | hotbar slot 1 (selected axe) | [670, 946, 92, 89] | SizeBox:SizeBox_1 | -4 | -8 | -4 | -1 | 0.73 | slot fill 4.7 | FAIL |
 | hotbar slot 6 (campfire) | [1159, 946, 89, 89] | SizeBox:SizeBox_11 | +7 | -8 | -1 | -1 | 0.72 | slot fill 3.9 | FAIL |
 | vitals HP bar | [134, 950, 392, 36] | VerticalBox:VerticalBox_0 | +29 | -34 | -12 | +48 | 0.40 | hp red fill 14.9 | FAIL |
-| vitals level badge | [32, 940, 116, 110] | Overlay:Overlay_0 | +6 | -61 | -1 | +48 | 0.52 | badge fill 7.0 | FAIL |
+| vitals level badge | [32, 940, 116, 110] | Overlay:Overlay_0 | +6 | -61 | -1 | +48 | 0.52 | badge fill 6.3 | FAIL |
 
 Images: diff-heat.png (red = large difference), overlay-50.png, flip.gif (concept / live).

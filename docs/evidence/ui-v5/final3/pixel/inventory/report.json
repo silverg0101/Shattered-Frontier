@@ -376,11 +376,11 @@
   "de": [
    [
     "tooltip fill",
-    5.0
+    36.5
    ],
    [
     "tooltip fill",
-    6.5
+    48.7
    ]
   ],
   "geometry": "UNMEASURED",
@@ -488,7 +488,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_0",
+  "widget": "",
   "name": "quest tracker frame",
   "rect": [
    1626,
@@ -496,19 +496,19 @@
    275,
    273
   ],
-  "found": true,
-  "match": 0.43,
-  "d_left": -13,
-  "d_top": 23,
-  "d_width": 11,
-  "d_height": -153,
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
   "de": [
    [
     "fill dark",
-    4.4
+    22.1
    ]
   ],
-  "geometry": "FAIL",
+  "geometry": "UNMEASURED",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
@@ -530,7 +530,7 @@
   "de": [
    [
     "fill dark",
-    33.7
+    35.5
    ]
   ],
   "geometry": "UNMEASURED",
@@ -630,7 +630,7 @@
   "de": [
    [
     "badge fill",
-    7.0
+    6.3
    ]
   ],
   "geometry": "FAIL",

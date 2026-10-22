@@ -113,16 +113,16 @@
    485,
    30
   ],
-  "found": false,
-  "match": 0.03,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.79,
+  "d_left": 4,
+  "d_top": 3,
+  "d_width": 18,
+  "d_height": -28,
   "de": [],
-  "geometry": "UNMEASURED",
+  "geometry": "FAIL",
   "colour": "PASS",
-  "verdict": "REVIEW"
+  "verdict": "FAIL"
  },
  {
   "widget": "",
@@ -243,15 +243,15 @@
    42,
    43
   ],
-  "found": true,
-  "match": 0.05,
-  "d_left": 0,
-  "d_top": -22,
-  "d_width": 0,
-  "d_height": 22,
+  "found": false,
+  "match": 0.01,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "UNMEASURED",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "REVIEW"
  }
 ]

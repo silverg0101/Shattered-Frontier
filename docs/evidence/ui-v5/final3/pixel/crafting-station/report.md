@@ -4,36 +4,36 @@ REVIEW = the element could not be measured (no live widget overlaps it, or no vi
 
 | element | concept rect | live widget | dx | dy | dw | dh | IoU/edge | colour dE | verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| station window frame | [631, 97, 866, 797] | SFStationPanel:SFStationPanel_0 | +0 | +0 | +0 | +0 | 1.00 | window fill 3.8, window fill 2.6 | FAIL |
+| station window frame | [631, 97, 866, 797] | CanvasPanel:VitalsCanvas | -631 | -97 | +1054 | +283 | 0.33 | window fill 35.5, window fill 44.4 | FAIL |
 | title Sawmill | [663, 117, 131, 33] | - | - | - | - | - | 0.00 | - | REVIEW |
-| search recipes field | [655, 183, 301, 44] | - | - | - | - | - | 0.00 | field fill 3.8 | FAIL |
-| filter tab All (selected) | [655, 243, 100, 38] | - | - | - | - | - | 0.00 | selected tab fill 12.2 | FAIL |
-| filter tab Lumber | [760, 243, 96, 38] | - | - | - | - | - | 0.00 | tab fill 9.4 | FAIL |
-| filter tab Parts | [862, 243, 94, 38] | - | - | - | - | - | 0.00 | tab fill 11.5 | FAIL |
-| recipe row Oak Planks (selected) | [655, 297, 300, 64] | - | - | - | - | - | 0.00 | selected row fill 4.9 | FAIL |
-| recipe row Timber Beam | [655, 367, 300, 64] | - | - | - | - | - | 0.00 | row fill 4.8 | FAIL |
-| recipe row Wooden Pegs | [655, 437, 300, 64] | - | - | - | - | - | 0.00 | row fill 4.9 | FAIL |
-| recipe row Treated Board | [655, 507, 300, 64] | - | - | - | - | - | 0.00 | row fill 7.3 | FAIL |
+| search recipes field | [655, 183, 301, 44] | - | - | - | - | - | 0.00 | field fill 28.3 | FAIL |
+| filter tab All (selected) | [655, 243, 100, 38] | - | - | - | - | - | 0.00 | selected tab fill 37.8 | FAIL |
+| filter tab Lumber | [760, 243, 96, 38] | - | - | - | - | - | 0.00 | tab fill 7.6 | FAIL |
+| filter tab Parts | [862, 243, 94, 38] | - | - | - | - | - | 0.00 | tab fill 7.7 | FAIL |
+| recipe row Oak Planks (selected) | [655, 297, 300, 64] | - | - | - | - | - | 0.00 | selected row fill 16.9 | FAIL |
+| recipe row Timber Beam | [655, 367, 300, 64] | - | - | - | - | - | 0.00 | row fill 51.1 | FAIL |
+| recipe row Wooden Pegs | [655, 437, 300, 64] | - | - | - | - | - | 0.00 | row fill 41.4 | FAIL |
+| recipe row Treated Board | [655, 507, 300, 64] | - | - | - | - | - | 0.00 | row fill 84.0 | FAIL |
 | detail title Oak Planks | [998, 187, 165, 33] | - | - | - | - | - | 0.00 | - | REVIEW |
 | detail description | [1000, 228, 438, 45] | - | - | - | - | - | 0.00 | - | REVIEW |
-| detail item image | [1100, 279, 264, 129] | - | - | - | - | - | 0.00 | image well fill 3.3 | FAIL |
+| detail item image | [1100, 279, 264, 129] | - | - | - | - | - | 0.00 | image well fill 45.5 | FAIL |
 | ingredients heading | [1000, 419, 98, 19] | - | - | - | - | - | 0.00 | - | REVIEW |
-| ingredient row Oak Logs | [1000, 446, 470, 52] | - | - | - | - | - | 0.00 | row fill 4.5 | FAIL |
-| ingredient row Iron Nails (short) | [1000, 504, 470, 52] | - | - | - | - | - | 0.00 | row fill 13.4 | FAIL |
-| quantity stepper | [1131, 572, 184, 46] | - | - | - | - | - | 0.00 | field fill 4.8 | FAIL |
+| ingredient row Oak Logs | [1000, 446, 470, 52] | - | - | - | - | - | 0.00 | row fill 45.4 | FAIL |
+| ingredient row Iron Nails (short) | [1000, 504, 470, 52] | - | - | - | - | - | 0.00 | row fill 47.1 | FAIL |
+| quantity stepper | [1131, 572, 184, 46] | - | - | - | - | - | 0.00 | field fill 45.5 | FAIL |
 | craft time label | [1156, 626, 130, 22] | - | - | - | - | - | 0.00 | - | REVIEW |
-| Hold Craft button | [1041, 655, 371, 60] | - | - | - | - | - | 0.00 | brass fill 26.7 | FAIL |
+| Hold Craft button | [1041, 655, 371, 60] | - | - | - | - | - | 0.00 | brass fill 17.9 | FAIL |
 | crafting queue heading | [660, 737, 175, 22] | - | - | - | - | - | 0.00 | - | REVIEW |
-| queue row Timber Beam 60% | [660, 765, 808, 54] | - | - | - | - | - | 0.00 | row fill 4.4 | FAIL |
-| queue row Wooden Pegs 25% | [660, 824, 808, 55] | - | - | - | - | - | 0.00 | row fill 4.9 | FAIL |
+| queue row Timber Beam 60% | [660, 765, 808, 54] | - | - | - | - | - | 0.00 | row fill 40.7 | FAIL |
+| queue row Wooden Pegs 25% | [660, 824, 808, 55] | - | - | - | - | - | 0.00 | row fill 40.4 | FAIL |
 | queue progress bar Timber Beam | [944, 787, 408, 12] | - | - | - | - | - | 0.00 | - | REVIEW |
 | hotbar slot 1 (sword) | [677, 929, 89, 89] | SizeBox:SizeBox_1 | -11 | +9 | -1 | -1 | 0.65 | - | FAIL |
 | hotbar slot 6 (bandage) | [1161, 929, 88, 89] | SizeBox:SizeBox_11 | +5 | +9 | +0 | -1 | 0.74 | slot fill 4.0 | FAIL |
-| vitals HP bar | [136, 938, 365, 38] | VerticalBox:VerticalBox_0 | +27 | -22 | +15 | +46 | 0.39 | hp red fill 27.5 | FAIL |
-| vitals level badge | [27, 903, 100, 130] | Overlay:Overlay_0 | +11 | -24 | +15 | +28 | 0.59 | badge fill 29.4 | FAIL |
+| vitals HP bar | [136, 938, 365, 38] | VerticalBox:VerticalBox_0 | +27 | -22 | +15 | +46 | 0.39 | hp red fill 29.9 | FAIL |
+| vitals level badge | [27, 903, 100, 130] | Overlay:Overlay_0 | +11 | -24 | +15 | +28 | 0.59 | badge fill 28.1 | FAIL |
 | minimap ring | [1674, 12, 217, 220] | Image:Image_10 | -13 | +20 | +13 | +10 | 0.76 | - | FAIL |
 | minimap footer text | [1732, 237, 100, 43] | - | - | - | - | - | 0.00 | - | REVIEW |
-| quest tracker frame | [1636, 308, 264, 198] | SizeBox:SizeBox_0 | -23 | +30 | +22 | -78 | 0.57 | - | FAIL |
-| toast Oak Logs | [1646, 541, 254, 62] | - | - | - | - | - | 0.00 | fill dark 33.0 | FAIL |
+| quest tracker frame | [1636, 308, 264, 198] | SizeBox:SizeBox_0 | -23 | +30 | +22 | -81 | 0.56 | - | FAIL |
+| toast Oak Logs | [1646, 541, 254, 62] | - | - | - | - | - | 0.00 | fill dark 35.1 | FAIL |
 
 Images: diff-heat.png (red = large difference), overlay-50.png, flip.gif (concept / live).

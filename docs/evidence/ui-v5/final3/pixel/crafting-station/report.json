@@ -1,6 +1,6 @@
 [
  {
-  "widget": "SFStationPanel:SFStationPanel_0",
+  "widget": "CanvasPanel:VitalsCanvas",
   "name": "station window frame",
   "rect": [
    631,
@@ -9,22 +9,22 @@
    797
   ],
   "found": true,
-  "match": 1.0,
-  "d_left": 0,
-  "d_top": 0,
-  "d_width": 0,
-  "d_height": 0,
+  "match": 0.33,
+  "d_left": -631,
+  "d_top": -97,
+  "d_width": 1054,
+  "d_height": 283,
   "de": [
    [
     "window fill",
-    3.8
+    35.5
    ],
    [
     "window fill",
-    2.6
+    44.4
    ]
   ],
-  "geometry": "PASS",
+  "geometry": "FAIL",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
@@ -66,7 +66,7 @@
   "de": [
    [
     "field fill",
-    3.8
+    28.3
    ]
   ],
   "geometry": "UNMEASURED",
@@ -91,7 +91,7 @@
   "de": [
    [
     "selected tab fill",
-    12.2
+    37.8
    ]
   ],
   "geometry": "UNMEASURED",
@@ -116,7 +116,7 @@
   "de": [
    [
     "tab fill",
-    9.4
+    7.6
    ]
   ],
   "geometry": "UNMEASURED",
@@ -141,7 +141,7 @@
   "de": [
    [
     "tab fill",
-    11.5
+    7.7
    ]
   ],
   "geometry": "UNMEASURED",
@@ -166,7 +166,7 @@
   "de": [
    [
     "selected row fill",
-    4.9
+    16.9
    ]
   ],
   "geometry": "UNMEASURED",
@@ -191,7 +191,7 @@
   "de": [
    [
     "row fill",
-    4.8
+    51.1
    ]
   ],
   "geometry": "UNMEASURED",
@@ -216,7 +216,7 @@
   "de": [
    [
     "row fill",
-    4.9
+    41.4
    ]
   ],
   "geometry": "UNMEASURED",
@@ -241,7 +241,7 @@
   "de": [
    [
     "row fill",
-    7.3
+    84.0
    ]
   ],
   "geometry": "UNMEASURED",
@@ -306,7 +306,7 @@
   "de": [
    [
     "image well fill",
-    3.3
+    45.5
    ]
   ],
   "geometry": "UNMEASURED",
@@ -351,7 +351,7 @@
   "de": [
    [
     "row fill",
-    4.5
+    45.4
    ]
   ],
   "geometry": "UNMEASURED",
@@ -376,7 +376,7 @@
   "de": [
    [
     "row fill",
-    13.4
+    47.1
    ]
   ],
   "geometry": "UNMEASURED",
@@ -401,7 +401,7 @@
   "de": [
    [
     "field fill",
-    4.8
+    45.5
    ]
   ],
   "geometry": "UNMEASURED",
@@ -446,7 +446,7 @@
   "de": [
    [
     "brass fill",
-    26.7
+    17.9
    ]
   ],
   "geometry": "UNMEASURED",
@@ -491,7 +491,7 @@
   "de": [
    [
     "row fill",
-    4.4
+    40.7
    ]
   ],
   "geometry": "UNMEASURED",
@@ -516,7 +516,7 @@
   "de": [
    [
     "row fill",
-    4.9
+    40.4
    ]
   ],
   "geometry": "UNMEASURED",
@@ -606,7 +606,7 @@
   "de": [
    [
     "hp red fill",
-    27.5
+    29.9
    ]
   ],
   "geometry": "FAIL",
@@ -631,7 +631,7 @@
   "de": [
    [
     "badge fill",
-    29.4
+    28.1
    ]
   ],
   "geometry": "FAIL",
@@ -688,11 +688,11 @@
    198
   ],
   "found": true,
-  "match": 0.57,
+  "match": 0.56,
   "d_left": -23,
   "d_top": 30,
   "d_width": 22,
-  "d_height": -78,
+  "d_height": -81,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -716,7 +716,7 @@
   "de": [
    [
     "fill dark",
-    33.0
+    35.1
    ]
   ],
   "geometry": "UNMEASURED",

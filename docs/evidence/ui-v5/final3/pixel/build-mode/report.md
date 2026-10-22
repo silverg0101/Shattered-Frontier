@@ -19,14 +19,14 @@ REVIEW = the element could not be measured (no live widget overlaps it, or no vi
 | tile Window | [413, 555, 123, 107] | SizeBox:SizeBox_30 | +16 | +29 | +0 | +4 | 0.45 | tile fill 3.0 | FAIL |
 | material dropdown | [43, 673, 497, 50] | - | - | - | - | - | 0.00 | field fill 4.3 | FAIL |
 | required materials box | [43, 729, 497, 148] | Border:Border_21 | +16 | +42 | -26 | -31 | 0.64 | inset fill 1.7 | FAIL |
-| action bar | [722, 882, 493, 38] | SizeBox:SizeBox_12 | -8 | +0 | +0 | +0 | 0.96 | bar fill 3.8 | FAIL |
+| action bar | [722, 882, 493, 38] | SizeBox:SizeBox_12 | -8 | +0 | +0 | +0 | 0.96 | bar fill 3.6 | FAIL |
 | hotbar slot 1 (axe) | [688, 938, 92, 92] | SizeBox:SizeBox_1 | -22 | +0 | -4 | -4 | 0.56 | slot fill 18.6 | FAIL |
 | hotbar slot 6 (sack) | [1154, 938, 92, 92] | SizeBox:SizeBox_11 | +12 | +0 | -4 | -4 | 0.77 | slot fill 18.9 | FAIL |
 | vitals HP bar | [123, 948, 367, 34] | VerticalBox:VerticalBox_0 | +40 | -32 | +13 | +50 | 0.33 | hp red fill 14.0 | FAIL |
-| vitals level badge | [24, 919, 102, 123] | Overlay:Overlay_0 | +14 | -40 | +13 | +35 | 0.51 | badge fill 5.7 | FAIL |
+| vitals level badge | [24, 919, 102, 123] | Overlay:Overlay_0 | +14 | -40 | +13 | +35 | 0.51 | badge fill 4.2 | FAIL |
 | minimap ring | [1640, 27, 250, 245] | SizeBox:SizeBox_18 | +11 | -5 | +0 | +5 | 0.90 | - | FAIL |
 | minimap footer | [1677, 276, 188, 20] | SizeBox:SizeBox_20 | +9 | +0 | -8 | +12 | 0.60 | - | FAIL |
-| quest tracker frame | [1629, 320, 274, 182] | SizeBox:SizeBox_0 | -16 | +18 | +12 | -62 | 0.62 | fill dark 2.0 | FAIL |
-| toast Rough Timber | [1631, 525, 269, 67] | - | - | - | - | - | 0.00 | fill dark 40.0 | FAIL |
+| quest tracker frame | [1629, 320, 274, 182] | - | - | - | - | - | 0.00 | fill dark 7.6 | FAIL |
+| toast Rough Timber | [1631, 525, 269, 67] | - | - | - | - | - | 0.00 | fill dark 35.2 | FAIL |
 
 Images: diff-heat.png (red = large difference), overlay-50.png, flip.gif (concept / live).
