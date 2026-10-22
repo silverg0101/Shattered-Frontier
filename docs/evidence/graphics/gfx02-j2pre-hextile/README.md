@@ -49,3 +49,8 @@ A1-A3 PNG, everything else JPG q90: `01-forest-path-town`, `04-forest-floor`, `0
 | before | 10.31 / 13.10 (first launch, shader compile in warm-up), 8.20 / 13.9, 7.65 / 9.36 |
 | after | 7.66 / 10.34, 7.87 / 10.40, 8.02 / 10.35 |
 Committed pre-change `GameClient/ArtSource/Greenlands/perf-01-forest-path-town.json` (older state): 6.93 / 9.23. The `stat gpu` overlay is not drawn by `HighResShot` (`perf-01-gpu.png` shows no rows), so no per-pass GPU numbers; frame time is the measure and the difference is inside run-to-run noise (budget: within +1 ms of today).
+
+Note: the timing above was measured with the round-1 material (hex Mask). The round-2 material (plain Mask + 2 Simplex noises, CellTiles 1.0) was not re-timed.
+
+## Status
+Two Fable reviews (`REVIEW-r1.md`, `REVIEW.md`) did not pass; stopped per the rule for an Opus hand-off. Open items are the fix list in `REVIEW.md` (layer B hex, Mask patch variation, `HeightSharp` tie-break, A1 earth crop).
