@@ -39,9 +39,11 @@ function New-LedgerFixture([hashtable]$Fx,[string]$RepoRoot,[string]$EvidenceRoo
     & (Join-Path $RepoRoot 'tools/Assert-InventoryOutboxMigration.ps1') -MigrationPath (Join-Path $RepoRoot 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') | Out-Null
     $Fx.repo=$RepoRoot; $Fx.evidence=$EvidenceRoot; $Fx.started=$false; $Fx.hostProcess=$null; $Fx.hostPort=0; $Fx.secrets=@()
     $pins = Get-Content (Join-Path $RepoRoot 'BackendServices/toolchain-lock.json') -Raw | ConvertFrom-Json
-    $Fx.dotnet = Join-Path $RepoRoot 'Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotnet.exe'
-    $Fx.nuget = Join-Path $RepoRoot 'Artifacts/Persistence/Toolchains/nuget'
-    $Fx.pg = Join-Path $RepoRoot 'Artifacts/Persistence/Toolchains/postgresql-18.6/pgsql/bin'
+    # A worktree can reuse the pinned, ignored toolchain from the main checkout.
+    $toolchainRoot = if ($env:SF_FIXTURE_TOOLCHAIN_ROOT) { [IO.Path]::GetFullPath($env:SF_FIXTURE_TOOLCHAIN_ROOT) } else { $RepoRoot }
+    $Fx.dotnet = Join-Path $toolchainRoot 'Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotnet.exe'
+    $Fx.nuget = Join-Path $toolchainRoot 'Artifacts/Persistence/Toolchains/nuget'
+    $Fx.pg = Join-Path $toolchainRoot 'Artifacts/Persistence/Toolchains/postgresql-18.6/pgsql/bin'
     $Fx.project = Join-Path $RepoRoot 'BackendServices/InventoryLedger.Host/InventoryLedger.Host.csproj'
     $Fx.dll = Join-Path $EvidenceRoot 'private/host-build/InventoryLedger.Host.dll'
     $schema = Join-Path $RepoRoot 'BackendServices/InventoryLedger.Postgres/Schema.sql'
@@ -143,8 +145,16 @@ function Remove-LedgerFixture([hashtable]$Fx) {
             if ($LASTEXITCODE -eq 0) { [void](Invoke-FxOk $Fx (Join-Path $Fx.pg 'pg_ctl.exe') @('-D',$Fx.data,'-m','immediate','-w','-t','30','stop')) }
         }
         $evidence = [IO.Path]::GetFullPath($Fx.evidence).TrimEnd([IO.Path]::DirectorySeparatorChar)
-        $artifacts = [IO.Path]::GetFullPath((Join-Path $Fx.repo 'Artifacts')).TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
-        if (-not ($evidence + [IO.Path]::DirectorySeparatorChar).StartsWith($artifacts,[StringComparison]::OrdinalIgnoreCase)) { throw 'Evidence root is outside Artifacts.' }
+        $artifacts = [IO.Path]::GetFullPath((Join-Path $Fx.repo 'Artifacts')).TrimEnd([IO.Path]::DirectorySeparatorChar)
+        $docsEvidence = [IO.Path]::GetFullPath((Join-Path $Fx.repo 'docs/evidence')).TrimEnd([IO.Path]::DirectorySeparatorChar)
+        $evidenceIsArtifactChild = ($evidence + [IO.Path]::DirectorySeparatorChar).StartsWith(($artifacts + [IO.Path]::DirectorySeparatorChar),[StringComparison]::OrdinalIgnoreCase)
+        $evidenceIsDocsChild = ($evidence + [IO.Path]::DirectorySeparatorChar).StartsWith(($docsEvidence + [IO.Path]::DirectorySeparatorChar),[StringComparison]::OrdinalIgnoreCase)
+        if (-not ($evidenceIsArtifactChild -or $evidenceIsDocsChild)) { throw 'Evidence root must be a child of repo/Artifacts or repo/docs/evidence.' }
+        if ($evidenceIsDocsChild) {
+            foreach ($path in @((Join-Path $Fx.repo 'docs'),$docsEvidence,$evidence)) {
+                if ((Get-Item -LiteralPath $path -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'Evidence path contains a reparse point.' }
+            }
+        }
         $allowed = $evidence + [IO.Path]::DirectorySeparatorChar
         $full = [IO.Path]::GetFullPath($Fx.base)
         if (-not $full.StartsWith($allowed,[StringComparison]::OrdinalIgnoreCase)) { throw 'Owned path mismatch.' }

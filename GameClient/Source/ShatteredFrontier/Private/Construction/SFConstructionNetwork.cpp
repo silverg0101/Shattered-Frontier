@@ -1171,6 +1171,20 @@ void ASFGameMode::CommitHousing(ASFPlayerController* Controller, const FString& 
                 if (bRemove) { Current->Structures.Remove(Cell); } else { Current->Structures.Add(Cell,Structure); }
                 // Placement consumed exactly the bundle; a refund's quantity is not in the reply, so re-read the backpack.
                 if (Owner) { if (bRemove) { Owner->Reconcile(); } else { Owner->ApplyToBag({{Material.DefinitionId,-Material.Quantity}}); } }
+                // The placement reply has no claim mask. Read the durable mask before projecting the edit so a
+                // Housing growth or shrink is reflected in the replicated state on this same action.
+                FSFGameplayRequest List; List.Rpc=ESFGameplayRpc::ListStructures; List.ClaimId=ClaimId;
+                USFBackpackComponent::Services()->Call(List,[Weak,ClaimId,Operation,Done](const FSFGameplayResponse& Structures)
+                {
+                    ASFGameMode* Again=Weak.Get(); FClaimPlot* Plot=Again ? Again->FindPlot(ClaimId) : nullptr;
+                    const bool bMask=Plot && Plot->State.IsValid() && Structures.Status==ESFGameplayStatus::Ok
+                        && Plot->State->SetClaimMask(Structures.ClaimMask,Structures.MaskOriginX,Structures.MaskOriginY,
+                            Structures.MaskWidth,Structures.MaskHeight);
+                    if (!bMask)
+                    { UE_LOG(LogTemp,Error,TEXT("HOUSING_MASK_REFRESH_FAILED Claim=%s Op=%s Code=%d"),*ClaimId,*Operation,Structures.GrpcCode); }
+                    Done(bMask ? ESFConstructionNetworkResult::Accepted : ESFConstructionNetworkResult::ServiceUnavailable,Operation);
+                });
+                return;
             }
             // A refusal for rights (no build grant on someone else's claim) reaches the player as such.
             Done(bCommitted ? ESFConstructionNetworkResult::Accepted : Receipt->GrpcCode==7 ? ESFConstructionNetworkResult::PermissionDenied

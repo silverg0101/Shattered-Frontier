@@ -6,7 +6,8 @@ public enum ClaimBand { Near, Middle, Wilderness }
 public readonly record struct ClaimCell(int X, int Y);
 public sealed record PricedCell(ClaimCell Cell, ClaimBand Band, decimal Points);
 public sealed record GridClaim(string Id, string Owner, ClaimBand Band, double AnchorBaseZ,
-    int BandHeightMetres, IReadOnlyList<PricedCell> Cells, long Revision, DateTimeOffset? EmptySince);
+    int BandHeightMetres, IReadOnlyList<PricedCell> Cells, long Revision, DateTimeOffset? EmptySince,
+    IReadOnlyList<ClaimCell>? DormantCells = null);
 public sealed record GridReceipt(bool Accepted, string Reason, long Revision, GridClaim? Claim = null);
 
 // One realm-scoped economy tier 3 snapshot. Rules and prices are shipped; only these bounded
@@ -162,6 +163,42 @@ public sealed class ClaimGridService(ClaimBandMap map, TimeProvider clock, Claim
             var result = apply(); operations.Add(op, (payload, result)); return result;
         }
     }
+    // A placement supplies only its occupied one-metre footprint. The server derives the
+    // paid reach ring; callers cannot omit cells from the quoted growth or claim remote land.
+    public GridReceipt GrowForFootprint(string op, string id, string owner, int level,
+        IEnumerable<ClaimCell> footprint, long expectedRevision, double anchorBaseZ)
+    {
+        var occupied = footprint.Distinct().ToArray();
+        lock (gate)
+        {
+            if (occupied.Length is 0 or > 3600)
+                return new(false, "invalid_request", revision);
+            if (claims.TryGetValue(id, out var prior) && !occupied.Any(cell =>
+                (prior.Cells.Select(owned => owned.Cell).Concat(prior.DormantCells ?? [])).Any(owned =>
+                    Math.Abs(owned.X-cell.X) <= settings.ReachMetres &&
+                    Math.Abs(owned.Y-cell.Y) <= settings.ReachMetres)))
+                return new(false, "outside_reach", prior.Revision);
+            var ring = new HashSet<ClaimCell>();
+            foreach (var cell in occupied)
+                for (var x = cell.X - settings.ReachMetres; x <= cell.X + settings.ReachMetres; x++)
+                    for (var y = cell.Y - settings.ReachMetres; y <= cell.Y + settings.ReachMetres; y++)
+                        ring.Add(new ClaimCell(x, y));
+            return Grow(op, id, owner, level, ring, expectedRevision, anchorBaseZ);
+        }
+    }
+    public GridReceipt ShrinkToFootprints(string op, string id, string owner,
+        IEnumerable<ClaimCell> remainingFootprint, long expectedRevision)
+    {
+        var occupied = remainingFootprint.Distinct().ToArray();
+        lock (gate)
+        {
+            if (!claims.TryGetValue(id, out var prior)) return new(false, "claim_missing", revision);
+            var retained = prior.Cells.Where(priced => occupied.Any(cell =>
+                Math.Abs(priced.Cell.X-cell.X) <= settings.ReachMetres &&
+                Math.Abs(priced.Cell.Y-cell.Y) <= settings.ReachMetres)).Select(priced => priced.Cell);
+            return Shrink(op, id, owner, retained, expectedRevision);
+        }
+    }
     public GridReceipt Grow(string op, string id, string owner, int level, IEnumerable<ClaimCell> proposed,
         long expectedRevision, double anchorBaseZ)
     {
@@ -178,20 +215,22 @@ public sealed class ClaimGridService(ClaimBandMap map, TimeProvider clock, Claim
             if (prior is not null && prior.Owner != owner) return new(false, "not_owner", revision);
             if (prior is null && claims.Values.Count(c => c.Owner == owner) >= settings.MaxClaims)
                 return new(false, "claim_slots", revision);
+            var claimBand = prior?.Band ?? map.Band(cells[0]);
             var existing = prior?.Cells.ToDictionary(c => c.Cell) ?? new Dictionary<ClaimCell, PricedCell>();
             foreach (var cell in cells)
             {
                 if (existing.ContainsKey(cell)) continue;
+                var band = map.Band(cell);
+                if (band != claimBand) return new(false, "outside_band", revision);
                 var blocked = map.BlockReason(cell);
                 if (blocked.Length != 0) return new(false, "claim_blocked:" + blocked, revision);
                 if (claims.Values.Any(c => c.Id != id && c.Cells.Any(x =>
                     Math.Abs(x.Cell.X-cell.X) <= settings.SpacingMetres && Math.Abs(x.Cell.Y-cell.Y) <= settings.SpacingMetres)))
                     return new(false, "claim_spacing", revision);
-                var band = map.Band(cell);
                 existing.Add(cell, new(cell, band, settings.Cost(band)));
             }
-            var claimBand = prior?.Band ?? map.Band(cells[0]);
-            var connected = new HashSet<ClaimCell>(prior?.Cells.Select(c => c.Cell) ?? [cells[0]]);
+            var connected = new HashSet<ClaimCell>(prior is { Cells.Count: > 0 }
+                ? prior.Cells.Select(c => c.Cell) : [cells[0]]);
             var pending = new HashSet<ClaimCell>(cells);
             while (pending.RemoveWhere(c => connected.Any(p =>
                 Math.Abs(c.X-p.X) <= settings.ReachMetres && Math.Abs(c.Y-p.Y) <= settings.ReachMetres)) is var added && added > 0)
@@ -221,7 +260,8 @@ public sealed class ClaimGridService(ClaimBandMap map, TimeProvider clock, Claim
             var existing = prior.Cells.ToDictionary(c => c.Cell);
             if (cells.Any(c => !existing.ContainsKey(c))) return new(false, "invalid_request", prior.Revision);
             var next = prior with { Cells = cells.Select(c => existing[c]).ToArray(), Revision = prior.Revision+1,
-                EmptySince = cells.Length == 0 ? clock.GetUtcNow() : null };
+                EmptySince = cells.Length == 0 ? clock.GetUtcNow() : null,
+                DormantCells = cells.Length == 0 ? prior.Cells.Select(c => c.Cell).ToArray() : null };
             claims[id] = next; revision++;
             return new(true, "", next.Revision, next);
         });

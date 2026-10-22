@@ -1,0 +1,13 @@
+{
+  "scope": "Owned PostgreSQL and two-client fixture; test 8 only partially covers legacy plot mask restore.",
+  "tests": {
+    "2": "NotRun: sparse growth/reach scenario is not wired to the client runner.",
+    "3": "NotRun: sparse point/cap scenario is not wired to the client runner.",
+    "4": "NotRun: shrink/refund/adoption scenario is not wired to the client runner.",
+    "5": "NotRun: blocked-cell reasons are not wired to the client runner.",
+    "6": "NotRun: engulfment scenario is not wired to the client runner.",
+    "7": "NotRun: three-claim slot scenario is not wired to the client runner.",
+    "8": "Partial: legacy structure mask restore and two-client permission flow only; sparse mask, points and anchor assertions are absent.",
+    "9": "NotRun: empty-claim archive scenario is not wired to the client runner."
+  }
+}

@@ -1,0 +1,3 @@
+run-*/**
+!run-*/coverage.json
+!run-*/summary.json

@@ -3,6 +3,7 @@ param(
     [string]$EngineRoot = 'C:\Program Files\Epic Games\UE_5.8',
     [ValidateRange(12000,65000)][int]$Port = 17991,
     [ValidateRange(60,600)][int]$TimeoutSeconds = 240,
+    [string]$EvidenceRoot,
     # DEC-02 leg: no seeding; every character spawns with the Alpha Starter Kit, placement reserves and debits it, and
     # the restart hard-kills the UE server and both hosts. Alpha's backpack and hold must be unchanged afterwards.
     [switch]$StarterKit
@@ -18,8 +19,9 @@ $editor = Join-Path $EngineRoot 'Engine\Binaries\Win64\UnrealEditor-Cmd.exe'
 $project = Join-Path $repo 'GameClient\ShatteredFrontier.uproject'
 foreach ($required in @($editor,$project)) { if (-not (Test-Path -LiteralPath $required -PathType Leaf)) { throw "Required input missing: $required" } }
 if (@([Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties().GetActiveUdpListeners() | Where-Object Port -eq $Port).Count) { throw 'Test port is already in use.' }
-$root = Join-Path $repo ('Artifacts\ClaimHousing\run-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
-$null = New-Item -ItemType Directory -Path $root
+if (-not $EvidenceRoot) { $EvidenceRoot = Join-Path $repo ('docs\evidence\clm01-claim-grid\run-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff')) }
+$root = [IO.Path]::GetFullPath($EvidenceRoot)
+$null = New-Item -ItemType Directory -Path $root -Force
 . (Join-Path $PSScriptRoot 'InventoryLedgerHostFixture.ps1')
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
 $result = [ordered]@{ status='Running'; scope='Development loopback fixture: Win64 editor -server + editor clients, owned PostgreSQL, InventoryLedger.Host + Gameplay.Host, guarded dev identities'; runs=@() }

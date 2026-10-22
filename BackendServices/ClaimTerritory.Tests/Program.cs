@@ -94,6 +94,30 @@ Check(empty.Accepted && grid.Claims.Count == 3, "empty claim waits");
 clock.Advance(TimeSpan.FromHours(25));
 Check(grid.Claims.Count == 2, "empty claim archives");
 Check(new ClaimGridSettings(AlphaFixedPoints: 0).Budget(100) == 4400, "shipped level budget");
+var footprintGrid = new ClaimGridService(bandMap, clock, gridSettings);
+var slab = (from x in Enumerable.Range(900, 4) from y in Enumerable.Range(900, 4)
+    select new ClaimCell(x, y)).ToArray();
+var slabGrowth = footprintGrid.GrowForFootprint("slab", "clm_footprint", "builder", 1, slab, 0, 100);
+Check(slabGrowth.Accepted && slabGrowth.Claim!.Cells.Count == 144 &&
+    footprintGrid.Allocated("builder") == 108m, "4 by 4 slab prices its complete 12 by 12 reach ring");
+var wall = new ClaimCell(907, 900);
+var wallGrowth = footprintGrid.GrowForFootprint("wall", "clm_footprint", "builder", 1,
+    [wall], slabGrowth.Claim!.Revision, 100);
+Check(wallGrowth.Accepted && wallGrowth.Claim!.Cells.Count > 144, "edge wall grows the sparse mask");
+Check(footprintGrid.GrowForFootprint("remote", "clm_footprint", "builder", 1,
+    [new ClaimCell(920, 900)], wallGrowth.Claim!.Revision, 100).Reason == "outside_reach",
+    "remote piece refused before pricing its ring");
+var release = footprintGrid.ShrinkToFootprints("remove-wall", "clm_footprint", "builder",
+    slab, wallGrowth.Claim!.Revision);
+Check(release.Accepted && release.Claim!.Cells.Count == 144 &&
+    footprintGrid.Allocated("builder") == 108m, "wall removal releases only unsupported priced cells");
+var emptyFootprint = footprintGrid.ShrinkToFootprints("remove-slab", "clm_footprint", "builder",
+    [], release.Claim!.Revision);
+Check(emptyFootprint.Accepted && emptyFootprint.Claim!.Cells.Count == 0, "last piece empties claim");
+var replaced = footprintGrid.GrowForFootprint("replace-slab", "clm_footprint", "builder", 1,
+    slab, emptyFootprint.Claim!.Revision, 100);
+Check(replaced.Accepted && replaced.Claim!.EmptySince is null && replaced.Claim.Cells.Count == 144,
+    "placing within the recovery window keeps the same claim: " + replaced.Reason);
 Console.WriteLine("ClaimTerritory: focused assertions passed");
 
 sealed class FakeClock(DateTimeOffset initial) : TimeProvider

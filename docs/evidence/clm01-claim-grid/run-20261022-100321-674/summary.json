@@ -1,0 +1,9 @@
+{
+  "status": "Passed",
+  "contentBeforeAndAfterRestart": "2f2fde878f35d13a197ef302559134b5e4a9d48747530914f765a8dda69c1f03",
+  "claims": "1,chr_dev_alpha",
+  "inventoryUnchanged": true,
+  "placementLedgerSteps": "consume,reserve,consume,reserve,consume,reserve",
+  "placements": "Committed:Commit,Removed:Commit,Committed:Commit",
+  "cleanup": "removed"
+}
