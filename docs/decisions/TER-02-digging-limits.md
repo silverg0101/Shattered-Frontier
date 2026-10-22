@@ -210,16 +210,16 @@ No terrain support solver (terrain never collapses; structures still do under Co
 
 ## 13. Conflicts with existing design
 
-The owner's "no cost, no yield" and "nothing placed on open land" decisions override the following; each named document needs a matching edit in its next revision, and this packet is the binding statement until then.
+The owner's "no cost, no yield" and "nothing placed on open land" decisions override the former passages below; the cited documents are now synchronized.
 
 | Source | Current text | Now |
 | --- | --- | --- |
-| [DEC-03] "Proposed adaptor sequence" step 3, "Lifecycle" and fixtures TER-D03-02/04/08 | Terrain edits prepare "paid stock/yield" under the `cba_` action; "fractional yield provenance" persists through excavation, fill, revert and healing; "renewed yield" and "paid fill" are checked before healing. | No stock or yield participant on a terrain action. Provenance fields stay but are always zero; the "paid fill" and "renewed yield" rechecks become no-ops. Fixture steps that assert a yield or a charge assert zero instead. |
-| World terrain spec, "Durability and material conservation" and the cost tables | "Resource-yielding excavation"; "healing cannot refresh an already harvested baseline cell". | Excavation yields nothing, so there is no harvested baseline to protect. The sentence stays true vacuously; mining nodes own ore. |
-| [Construction] §3.1 | "Terrain removal yields the authored common soil/stone yield once; placed fill consumes matching material, and neither action creates ore nodes." | Terrain removal yields nothing; placed fill consumes nothing. Compact/fill provenance for structure anchors (DEC-03 owner request 2) remains a support question, not a cost question. |
-| [Construction] §13 and §3.1 | "Public digging cannot place permanent unclaimed structures, caches, or automation" and scaffolding as a reclaimable structure imply temporary unclaimed placeables. | No placeable of any kind outside a claim parcel, scaffolding included. Placement validation rejects outside a parcel (§8.4). |
-| CLM-01 grid colours | Crimson hatch marks blocked cells. | Also marks every cell outside the actor's parcels for placement. |
-| GAT-01 growing resource nodes | Unchanged. | Confirmed as the only source of soil, stone and ore. |
+| [DEC-03] "Proposed adaptor sequence" step 3, "Lifecycle" and fixtures TER-D03-02/04/08 (synced in c29677266f77c86155f88f9d91dda6d8dbd86710) | Terrain edits prepare "paid stock/yield" under the `cba_` action; "fractional yield provenance" persists through excavation, fill, revert and healing; "renewed yield" and "paid fill" are checked before healing. | No stock or yield participant on a terrain action. Provenance fields stay but are always zero; the "paid fill" and "renewed yield" rechecks become no-ops. Fixture steps that assert a yield or a charge assert zero instead. |
+| World terrain spec, "Durability and material conservation" and the cost tables (synced in c29677266f77c86155f88f9d91dda6d8dbd86710) | "Resource-yielding excavation"; "healing cannot refresh an already harvested baseline cell". | Excavation yields nothing, so there is no harvested baseline to protect. The sentence stays true vacuously; mining nodes own ore. |
+| [Construction] §3.1 (synced in c29677266f77c86155f88f9d91dda6d8dbd86710) | "Terrain removal yields the authored common soil/stone yield once; placed fill consumes matching material, and neither action creates ore nodes." | Terrain removal yields nothing; placed fill consumes nothing. Compact/fill provenance for structure anchors (DEC-03 owner request 2) remains a support question, not a cost question. |
+| [Construction] §13 and §3.1 (synced in c29677266f77c86155f88f9d91dda6d8dbd86710) | "Public digging cannot place permanent unclaimed structures, caches, or automation" and scaffolding as a reclaimable structure imply temporary unclaimed placeables. | No placeable of any kind outside a claim parcel, scaffolding included. Placement validation rejects outside a parcel (§8.4). |
+| CLM-01 grid colours (synced in c29677266f77c86155f88f9d91dda6d8dbd86710) | Crimson hatch marks blocked cells. | Also marks every cell outside the actor's parcels for placement. |
+| GAT-01 growing resource nodes (synced in c29677266f77c86155f88f9d91dda6d8dbd86710) | Unchanged. | Confirmed as the only source of soil, stone and ore. |
 
 Unaffected: DEC-02 staging/certificate, the terrain codec, chunk keys, T1–T10 order, 7-day healing, claim adoption, the 8 m / 12 m outer bounds.
 
