@@ -27,6 +27,7 @@ struct FSFDialogueOffer
 struct SHATTEREDFRONTIER_API FSFDialogueTree
 {
     static constexpr int32 MaxChoices = 4;  // keys 1-4 and the four response rows
+    static constexpr int32 MaxLineChars = 100;  // three wrapped lines of 20.6 pt EB Garamond at 320 px
     FString Speaker, Portrait, Start;
     TMap<FString, FSFDialogueNode> Nodes;
     bool bHasOffer = false;
@@ -102,6 +103,7 @@ private:
     FSFDialogueSession Session;
     int32 Selected = 0;
     int32 StyledSelected = -1;
+    FVector2D LastMouse = FVector2D(-1.f, -1.f);
     UPROPERTY(Transient) TObjectPtr<UTextBlock> NameText;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> LineText;
     UPROPERTY(Transient) TObjectPtr<UImage> PortraitImage;

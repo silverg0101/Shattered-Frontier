@@ -326,7 +326,8 @@ void ASFE1Character::TickCameraControls(float Dt)
         else { DesiredArmCm = FMath::Min(DesiredArmCm - Wheel * S->CameraZoomStepCm, S->CameraZoomMaxCm); }
     }
     CameraBoom->TargetArmLength = FMath::FInterpTo(CameraBoom->TargetArmLength, bFirstPerson ? 0.0f : DesiredArmCm, Dt, S->CameraZoomInterpSpeed);
-    const bool bHideBody = bFirstPerson && CameraBoom->TargetArmLength < S->CameraZoomMinCm * 0.5f;
+    // The own body is hidden in first person, and while a dialogue board is open (it would show behind the board).
+    const bool bHideBody = (bFirstPerson && CameraBoom->TargetArmLength < S->CameraZoomMinCm * 0.5f) || IsValid(DialogueFramingTarget.Get());
     if (GetMesh()->bOwnerNoSee != bHideBody) { GetMesh()->SetOwnerNoSee(bHideBody); }
     CameraBoom->bEnableCameraLag = S->CameraLagSpeed > 0.0f && !bFirstPerson;
 

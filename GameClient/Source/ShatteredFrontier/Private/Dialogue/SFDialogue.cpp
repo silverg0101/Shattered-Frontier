@@ -11,6 +11,7 @@
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 #include "Dom/JsonObject.h"
+#include "Framework/Application/SlateApplication.h"
 #include "Framework/SFHudStyle.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
@@ -35,6 +36,7 @@ bool FSFDialogueTree::Parse(const FString& Json, FSFDialogueTree& Out, FString& 
         const TSharedPtr<FJsonObject> Object = Entry.Value->AsObject();
         if (!Object.IsValid()) { Error = FString::Printf(TEXT("node %s is not an object"), *Entry.Key); return false; }
         FSFDialogueNode Node; Node.Id = Entry.Key; Node.Line = Object->GetStringField(TEXT("line"));
+        if (Node.Line.Len() > MaxLineChars) { Error = FString::Printf(TEXT("node %s line is %d characters; the board shows %d (three lines)"), *Entry.Key, Node.Line.Len(), MaxLineChars); return false; }
         const TArray<TSharedPtr<FJsonValue>>* Choices = nullptr;
         if (!Object->TryGetArrayField(TEXT("choices"), Choices) || Choices->Num() < 1 || Choices->Num() > MaxChoices)
         { Error = FString::Printf(TEXT("node %s needs 1-%d choices"), *Entry.Key, MaxChoices); return false; }
@@ -239,6 +241,7 @@ void USFDialoguePanel::NativeOnInitialized()
     UCanvasPanelSlot* BackingSlot = Root->AddChildToCanvas(Backing);
     BackingSlot->SetAnchors(BoardAnchors); BackingSlot->SetOffsets(FMargin(8.f));
     UBorder* Frame = KitPanel(WidgetTree, TEXT("window_frame"), 1.f, Slate(1.f), Brass(), FMargin(0.f), 6.f);
+    Frame->SetClipping(EWidgetClipping::ClipToBounds);
     UCanvasPanelSlot* FrameSlot = Root->AddChildToCanvas(Frame);
     FrameSlot->SetAnchors(BoardAnchors); FrameSlot->SetOffsets(FMargin(0.f));
     UCanvasPanel* Board = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass());
@@ -258,18 +261,20 @@ void USFDialoguePanel::NativeOnInitialized()
     UOverlaySlot* FaceSlot = Portrait->AddChildToOverlay(FaceBox);
     FaceSlot->SetHorizontalAlignment(HAlign_Center); FaceSlot->SetVerticalAlignment(VAlign_Center);
     Box(Board, Portrait, 516.f, 267.f, 122.f, 124.f);
-    NameText = Heading(WidgetTree, TEXT(""), 25, Ivory());
-    Resize(NameText, 25.f);
+    NameText = Text(WidgetTree, TEXT(""), 25, Ivory());
+    Resize(NameText, 27.5f);
     Line(Board, NameText, 25, 662.f, 286.f);
     LineText = Text(WidgetTree, TEXT(""), 20, Ivory());
     Resize(LineText, 20.6f);
     LineText->SetWrapTextAt(X(982.f) - X(662.f));
     LineText->SetLineHeightPercentage(0.85f);  // the concept's 31 px line pitch
-    Line(Board, LineText, 20, 662.f, 341.f);
-    Box(Board, Rule(WidgetTree), 516.f, 425.f, 466.f, 8.f);
+    // Below the name the left column flows: speech, divider, rows. A two-line speech puts every piece on its concept rect;
+    // a longer one pushes the rows down instead of running through them (tree lines are capped at three, see Parse).
+    UVerticalBox* Flow = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+    Flow->AddChildToVerticalBox(LineText)->SetPadding(FMargin(662.f - 513.f, 0.f, 0.f, 0.f));  // speech block top 341 - 0.43 * 20 = 332
+    Flow->AddChildToVerticalBox(Rule(WidgetTree))->SetPadding(FMargin(3.f, 32.f, 3.f, 27.f));  // rule 425-433, row 1 at 460
 
     static const TCHAR* const Keycaps[FSFDialogueTree::MaxChoices] = {TEXT("keycap_1"), TEXT("keycap_2"), TEXT("keycap_3"), TEXT("keycap_4")};
-    static const float RowTops[FSFDialogueTree::MaxChoices] = {460.f, 546.f, 631.f, 716.f};  // 72 tall, x 513-985
     for (int32 Index = 0; Index < FSFDialogueTree::MaxChoices; ++Index)
     {
         // A response row is the shared list row (menus.md section 1: RowBrush, selected = moss plate + brass edge) under a flat hit button.
@@ -300,12 +305,15 @@ void USFDialoguePanel::NativeOnInitialized()
         Cap->SetVisibility(ESlateVisibility::HitTestInvisible);
         UOverlaySlot* CapSlot = Stack->AddChildToOverlay(Cap);
         CapSlot->SetHorizontalAlignment(HAlign_Left); CapSlot->SetVerticalAlignment(VAlign_Center); CapSlot->SetPadding(FMargin(529.f - 513.f, 0.f, 0.f, 0.f));
-        Box(Board, Stack, 513.f, RowTops[Index], 472.f, 72.f);
-        RowButtons.Add(Control); RowLabels.Add(RowLabel); RowRoots.Add(Stack);
+        USizeBox* RowBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        RowBox->SetHeightOverride(72.f); RowBox->SetContent(Stack);
+        Flow->AddChildToVerticalBox(RowBox)->SetPadding(FMargin(0.f, 0.f, 0.f, 13.f));  // concept row pitch 85-86
+        RowButtons.Add(Control); RowLabels.Add(RowLabel); RowRoots.Add(RowBox);
     }
+    Box(Board, Flow, 513.f, 332.f, 472.f, 500.f);
 
     // Right half: the offered quest in its inset card.
-    Box(Offer, KitPanel(WidgetTree, TEXT("detail_card_frame"), 1.f, Slate(0.85f), Brass(), FMargin(0.f), 0.f), 1016.f, 244.f, 400.f, 522.f);
+    Box(Offer, KitPanel(WidgetTree, TEXT("detail_card_frame"), 0.5f, Hex(TEXT("0F1517")), Brass(), FMargin(0.f), 0.f), 1016.f, 244.f, 400.f, 522.f);
     USizeBox* WellFrame = KitImage(WidgetTree, TEXT("respawn_image_well"), 1.f, 1.f);
     WellFrame->ClearWidthOverride(); WellFrame->ClearHeightOverride();
     WellFrame->SetVisibility(ESlateVisibility::HitTestInvisible);
@@ -314,12 +322,13 @@ void USFDialoguePanel::NativeOnInitialized()
     OfferArt = ArtImage(WidgetTree, ArtBox, 1.f, 1.f);
     ArtBox->ClearWidthOverride(); ArtBox->ClearHeightOverride();
     Box(Offer, ArtBox, 1028.f, 248.f, 383.f, 190.f);
-    OfferTitle = Heading(WidgetTree, TEXT(""), 23, Ivory());
+    OfferTitle = Text(WidgetTree, TEXT(""), 23, Ivory());
+    Resize(OfferTitle, 25.4f);
     Line(Offer, OfferTitle, 23, 1041.f, 457.f);
     OfferSummary = Text(WidgetTree, TEXT(""), 16, Ivory());
     Resize(OfferSummary, 17.1f);
     Line(Offer, OfferSummary, 16, 1044.f, 499.f);
-    Line(Offer, Text(WidgetTree, TEXT("Objectives"), 17, Brass(), true), 17, 1044.f, 549.f);
+    Line(Offer, Text(WidgetTree, TEXT("Objectives"), 17, Ivory()), 17, 1044.f, 549.f);
     Box(Offer, SectionRule(WidgetTree), 1159.f, 553.f, 237.f, 8.f);
     static const float ObjectiveTops[3] = {584.f, 620.f, 656.f};
     for (int32 Index = 0; Index < 3; ++Index)
@@ -335,7 +344,7 @@ void USFDialoguePanel::NativeOnInitialized()
         Box(Offer, Row, 1044.f, ObjectiveTops[Index], 344.f, 24.f);
         ObjectiveLabels.Add(Label); ObjectiveCounts.Add(Count); ObjectiveRows.Add(Row);
     }
-    Line(Offer, Text(WidgetTree, TEXT("Rewards"), 17, Brass(), true), 17, 1044.f, 668.f);
+    Line(Offer, Text(WidgetTree, TEXT("Rewards"), 17, Ivory()), 17, 1044.f, 668.f);
     Box(Offer, SectionRule(WidgetTree), 1141.f, 674.f, 255.f, 8.f);
     Box(Offer, KitImage(WidgetTree, TEXT("icon_xp_roundel"), 45.f), 1044.f, 701.f, 45.f, 45.f);
     XpText = Text(WidgetTree, TEXT(""), 17, Ivory());
@@ -415,9 +424,14 @@ void USFDialoguePanel::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
     Super::NativeTick(MyGeometry, InDeltaTime);
     const FSFDialogueNode* Node = Session.Node();
     if (!Node) { return; }
-    for (int32 Index = 0; Index < Node->Choices.Num() && Index < RowButtons.Num(); ++Index)
+    const FVector2D Mouse = FSlateApplication::Get().GetCursorPos();
+    if (Mouse != LastMouse)
     {
-        if (RowButtons[Index]->IsHovered()) { Selected = Index; }
+        LastMouse = Mouse;
+        for (int32 Index = 0; Index < Node->Choices.Num() && Index < RowButtons.Num(); ++Index)
+        {
+            if (RowButtons[Index]->IsHovered()) { Selected = Index; }
+        }
     }
     StyleRows();
 }

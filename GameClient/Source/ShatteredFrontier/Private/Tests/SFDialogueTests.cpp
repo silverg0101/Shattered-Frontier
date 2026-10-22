@@ -36,6 +36,7 @@ bool FSFDialogueValidationTest::RunTest(const FString&)
     TestFalse(TEXT("dangling target"), FSFDialogueTree::Parse(TEXT(R"({"speaker":"A","start":"y","nodes":{"y":{"line":"l","choices":[{"label":"b","next":"nowhere"}]}}})"), Tree, Error));
     TestFalse(TEXT("five choices"), FSFDialogueTree::Parse(TEXT(R"({"speaker":"A","start":"y","nodes":{"y":{"line":"l","choices":[{"label":"1","action":"end"},{"label":"2","action":"end"},{"label":"3","action":"end"},{"label":"4","action":"end"},{"label":"5","action":"end"}]}}})"), Tree, Error));
     TestFalse(TEXT("accept without offer"), FSFDialogueTree::Parse(TEXT(R"({"speaker":"A","start":"y","nodes":{"y":{"line":"l","choices":[{"label":"b","action":"accept"}]}}})"), Tree, Error));
+    TestFalse(TEXT("line longer than three board lines"), FSFDialogueTree::Parse(FString::Printf(TEXT(R"({"speaker":"A","start":"y","nodes":{"y":{"line":"%s","choices":[{"label":"b","action":"end"}]}}})"), *FString::ChrN(FSFDialogueTree::MaxLineChars + 1, TEXT('a'))), Tree, Error));
     TestFalse(TEXT("path in file name"), FSFDialogueTree::Load(TEXT("../x.json"), Tree, Error));
     TestTrue(TEXT("minimal tree"), FSFDialogueTree::Parse(TEXT(R"({"speaker":"A","start":"y","nodes":{"y":{"line":"l","choices":[{"label":"b","action":"end"}]}}})"), Tree, Error));
     return true;

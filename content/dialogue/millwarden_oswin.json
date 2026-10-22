@@ -13,7 +13,7 @@
       ]
     },
     "more": {
-      "line": "The wheel is idle until I can saw the oak. Six logs from the river road will keep the stones turning through the wet season.",
+      "line": "The wheel is idle until I can saw the oak. Six logs from the river road will keep it turning.",
       "choices": [
         { "label": "I'll help", "action": "accept" },
         { "label": "What is the reward?", "next": "reward" },
