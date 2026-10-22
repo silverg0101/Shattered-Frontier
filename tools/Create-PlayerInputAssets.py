@@ -80,7 +80,4 @@ def build_context(context_name, actions):
 
 build_context("IMC_Player", ACTIONS)
 build_context("IMC_Build", BUILD_ACTIONS)
-# The WP7 stand-in replaced by the build actions above.
-if lib.does_asset_exist(f'{ROOT}/IA_BuildReserved'):
-    lib.delete_asset(f'{ROOT}/IA_BuildReserved')
 unreal.log(f'PLAYER_INPUT_ASSETS actions={len(ACTIONS)} mappings={sum(len(k) for _, k in ACTIONS.values())} root={ROOT}')

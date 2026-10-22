@@ -403,20 +403,6 @@ void ASFE1Character::TickCameraControls(float Dt)
     LastControlPitch = Control.Pitch;
 }
 
-void ASFE1Character::SetupPlayerInputComponent(UInputComponent* Input)
-{
-    Super::SetupPlayerInputComponent(Input);
-    if (UsesCameraControls()) { return; }  // CTL-01 input is polled from IMC_Player in TickCameraControls
-    Input->BindAxis(TEXT("MoveForward"), this, &ASFE1Character::MoveForward);
-    Input->BindAxis(TEXT("MoveRight"), this, &ASFE1Character::MoveRight);
-    Input->BindAxis(TEXT("LookRight"), this, &ASFE1Character::LookRight);
-    Input->BindAxis(TEXT("LookUp"), this, &ASFE1Character::LookUp);
-    Input->BindAction(TEXT("Jump"), IE_Pressed, this, &ACharacter::Jump);
-    Input->BindAction(TEXT("Jump"), IE_Released, this, &ACharacter::StopJumping);
-    Input->BindAction(TEXT("Interact"), IE_Pressed, this, &ASFE1Character::Interact);
-    Input->BindKey(EKeys::LeftMouseButton, IE_Pressed, this, &ASFE1Character::PilotAttack);
-}
-
 void ASFE1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -467,32 +453,4 @@ void ASFE1Character::Interact()
     {
         PlayerController->InteractWithSelectedTarget();
     }
-}
-
-void ASFE1Character::MoveForward(float Value)
-{
-    if (Controller && Value != 0.0f)
-    {
-        const FRotator Yaw(0, Controller->GetControlRotation().Yaw, 0);
-        AddMovementInput(FRotationMatrix(Yaw).GetUnitAxis(EAxis::X), Value);
-    }
-}
-
-void ASFE1Character::MoveRight(float Value)
-{
-    if (Controller && Value != 0.0f)
-    {
-        const FRotator Yaw(0, Controller->GetControlRotation().Yaw, 0);
-        AddMovementInput(FRotationMatrix(Yaw).GetUnitAxis(EAxis::Y), Value);
-    }
-}
-
-void ASFE1Character::LookRight(float Value)
-{
-    AddControllerYawInput(Value * GetDefault<USFE1Settings>()->LookSensitivity);
-}
-
-void ASFE1Character::LookUp(float Value)
-{
-    AddControllerPitchInput(Value * GetDefault<USFE1Settings>()->LookSensitivity);
 }

@@ -19,7 +19,6 @@ class SHATTEREDFRONTIER_API ASFE1Character : public ACharacter
 public:
     ASFE1Character();
     virtual void BeginPlay() override;
-    virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
     virtual void PossessedBy(AController* NewController) override;
     virtual void PawnClientRestart() override;
     virtual void Tick(float DeltaSeconds) override;
@@ -45,10 +44,6 @@ private:
     UPROPERTY(VisibleAnywhere) TObjectPtr<USpringArmComponent> CameraBoom;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UCameraComponent> FollowCamera;
 
-    void MoveForward(float Value);
-    void MoveRight(float Value);
-    void LookRight(float Value);
-    void LookUp(float Value);
     void Interact();
 
     // CTL-01 WoW-style camera and movement (docs/decisions/CTL-01-player-camera-controls.md) under every

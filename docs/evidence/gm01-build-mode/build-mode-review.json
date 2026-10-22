@@ -1,0 +1,252 @@
+{
+  "checks": {
+    "build_keys_inactive_before_B": true,
+    "key_assignments": true,
+    "move_forward": true,
+    "strafe_right": true,
+    "jump": true,
+    "mouse_look_turns": true,
+    "zoom_in": true,
+    "zoom_out": true,
+    "lmb_reserved_in_build": true,
+    "build_keys_assigned": true,
+    "zoom_in_build_mode": true
+  },
+  "shots": [
+    "01-build-mode.png",
+    "02-build-mode-zoomed-out.png"
+  ],
+  "keys": {
+    "MoveForward": {
+      "have": [
+        "Gamepad_LeftY",
+        "Up",
+        "W"
+      ],
+      "ok": true
+    },
+    "MoveBack": {
+      "have": [
+        "Down",
+        "S"
+      ],
+      "ok": true
+    },
+    "StrafeLeft": {
+      "have": [
+        "Q"
+      ],
+      "ok": true
+    },
+    "StrafeRight": {
+      "have": [
+        "E",
+        "Gamepad_LeftX"
+      ],
+      "ok": true
+    },
+    "TurnLeft": {
+      "have": [
+        "A",
+        "Left"
+      ],
+      "ok": true
+    },
+    "TurnRight": {
+      "have": [
+        "D",
+        "Right"
+      ],
+      "ok": true
+    },
+    "Look": {
+      "have": [
+        "Mouse2D"
+      ],
+      "ok": true
+    },
+    "Zoom": {
+      "have": [
+        "MouseWheelAxis"
+      ],
+      "ok": true
+    },
+    "MouseLook": {
+      "have": [
+        "RightMouseButton"
+      ],
+      "ok": true
+    },
+    "Orbit": {
+      "have": [
+        "LeftMouseButton"
+      ],
+      "ok": true
+    },
+    "Jump": {
+      "have": [
+        "Gamepad_FaceButton_Bottom",
+        "SpaceBar"
+      ],
+      "ok": true
+    },
+    "Interact": {
+      "have": [
+        "F",
+        "Gamepad_FaceButton_Right"
+      ],
+      "ok": true
+    },
+    "TargetNext": {
+      "have": [
+        "Tab"
+      ],
+      "ok": true
+    },
+    "BuildMode": {
+      "have": [
+        "B"
+      ],
+      "ok": true
+    },
+    "Inventory": {
+      "have": [
+        "I"
+      ],
+      "ok": true
+    },
+    "Skills": {
+      "have": [
+        "M"
+      ],
+      "ok": true
+    },
+    "EquipAxe": {
+      "have": [
+        "Five"
+      ],
+      "ok": true
+    },
+    "EquipPickaxe": {
+      "have": [
+        "Six"
+      ],
+      "ok": true
+    },
+    "CycleRecipe": {
+      "have": [
+        "C"
+      ],
+      "ok": true
+    },
+    "ClaimPlot": {
+      "have": [
+        "K"
+      ],
+      "ok": true
+    },
+    "Escape": {
+      "have": [
+        "Escape"
+      ],
+      "ok": true
+    },
+    "Trade": {
+      "have": [
+        "F6"
+      ],
+      "ok": true
+    },
+    "Market": {
+      "have": [
+        "F7"
+      ],
+      "ok": true
+    },
+    "BuildPlace": {
+      "have": [
+        "LeftMouseButton"
+      ],
+      "ok": true
+    },
+    "BuildDemolish": {
+      "have": [
+        "Delete",
+        "X"
+      ],
+      "ok": true
+    },
+    "BuildShape1": {
+      "have": [
+        "One"
+      ],
+      "ok": true
+    },
+    "BuildShape2": {
+      "have": [
+        "Two"
+      ],
+      "ok": true
+    },
+    "BuildShape3": {
+      "have": [
+        "Three"
+      ],
+      "ok": true
+    },
+    "BuildShape4": {
+      "have": [
+        "Four"
+      ],
+      "ok": true
+    },
+    "BuildRotate": {
+      "have": [
+        "R"
+      ],
+      "ok": true
+    },
+    "BuildLine": {
+      "have": [
+        "L"
+      ],
+      "ok": true
+    },
+    "BuildPlane": {
+      "have": [
+        "P"
+      ],
+      "ok": true
+    },
+    "BuildLayerUp": {
+      "have": [
+        "PageUp"
+      ],
+      "ok": true
+    },
+    "BuildLayerDown": {
+      "have": [
+        "PageDown"
+      ],
+      "ok": true
+    },
+    "BuildDoor": {
+      "have": [
+        "E",
+        "F"
+      ],
+      "ok": true
+    }
+  },
+  "controller": "SFPlayerController",
+  "pawn": "SFE1Character",
+  "move_cm": 1309.2,
+  "pawn_at": "<Struct 'Vector' (0x000001D04AE03710) {x: -199.999984, y: 909.177922, z: 90.149999}>",
+  "strafe_cm": 619.3,
+  "yaw_turn": 30.0,
+  "arm_build_cm": [
+    1200,
+    0
+  ],
+  "passed": true
+}

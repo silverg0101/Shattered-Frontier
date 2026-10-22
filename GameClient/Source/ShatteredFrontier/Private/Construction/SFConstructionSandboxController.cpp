@@ -218,9 +218,9 @@ void ASFConstructionSandboxController::SetupInputComponent()
     InputComponent->BindKey(EKeys::Two, IE_Pressed, this, &ThisClass::SelectSlab);
     InputComponent->BindKey(EKeys::Three, IE_Pressed, this, &ThisClass::SelectSlope);
     InputComponent->BindKey(EKeys::Four, IE_Pressed, this, &ThisClass::SelectDoor);
-    // Controller input is above the pawn's input component. Consume the same
-    // action so its inherited Interact callback cannot dispatch a second time.
-    InputComponent->BindAction(TEXT("Interact"),IE_Pressed,this,&ThisClass::Interact).bConsumeInput = true;
+    // Controller keys sit above the pawn's input component; consume E/F so the pawn's polled IA_Interact cannot dispatch twice.
+    InputComponent->BindKey(EKeys::E, IE_Pressed, this, &ThisClass::Interact);
+    InputComponent->BindKey(EKeys::F, IE_Pressed, this, &ThisClass::Interact);
     InputComponent->BindKey(EKeys::R, IE_Pressed, this, &ThisClass::Rotate);
     InputComponent->BindKey(EKeys::LeftMouseButton, IE_Pressed, this, &ThisClass::Place);
     InputComponent->BindKey(EKeys::RightMouseButton, IE_Pressed, this, &ThisClass::BeginCameraLook);

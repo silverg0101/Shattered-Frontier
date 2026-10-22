@@ -1123,13 +1123,20 @@ void ASFGameMode::CommitHousing(ASFPlayerController* Controller, const FString& 
     else { ClaimPlot(Controller,ClaimId,Commit); }
 }
 
+// The sandbox map and the dev review maps under /Maps/Dev/ (GM-01 build-mode review) run construction on a flat floor.
+static bool IsConstructionFixtureMap(const UWorld* World)
+{
+    const FString Name = World->GetOutermost()->GetName();
+    return Name == TEXT("/Game/Frontier/Maps/Greenlands_ConstructionSandbox") || Name.StartsWith(TEXT("/Game/Frontier/Maps/Dev/"));
+}
+
 bool ASFGameMode::IsAdmitted() const
 {
     // GM-01: on wherever the world has construction content (the sandbox map, a zone with build plots), on any authority,
     // so dedicated, listen, standalone and PIE all build. Typed bNetworkConstructionEnabled turns it off.
     return HasAuthority() && !IsActorBeingDestroyed() && GetClass() == StaticClass() && GetWorld() && GetNetMode() != NM_Client
         && GetDefault<USFConstructionSandboxSettings>()->bNetworkConstructionEnabled
-        && (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands_ConstructionSandbox") || IsZoneGatheringWorld());
+        && (IsConstructionFixtureMap(GetWorld()) || IsZoneGatheringWorld());
 }
 
 void ASFGameMode::StartConstruction()
@@ -1137,7 +1144,7 @@ void ASFGameMode::StartConstruction()
     if (!IsAdmitted())
     {
         // Worlds with no construction content (E1, other zones) stay silent, as before the GM-01 fold.
-        if (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands_ConstructionSandbox") || IsZoneGatheringWorld())
+        if (IsConstructionFixtureMap(GetWorld()) || IsZoneGatheringWorld())
         { UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_DISABLED")); }
         return;
     }
@@ -1514,7 +1521,15 @@ void ASFPlayerController::SetupInputComponent()
     const auto Bind=[this,Input](const TCHAR* Name,ETriggerEvent Event,void (ASFPlayerController::*Handler)())
     {
         if (const UInputAction* Action=LoadObject<UInputAction>(nullptr,*FString::Printf(TEXT("/Game/Frontier/Input/%s.%s"),Name,Name)))
-        { Input->BindAction(Action,Event,this,Handler); }
+        {
+#if !UE_BUILD_SHIPPING
+            // Review evidence: each mapped action logs when it reaches its handler.
+            Input->BindActionInstanceLambda(Action,Event,[this,Handler,Name,Event](const FInputActionInstance&)
+            { UE_LOG(LogTemp,Display,TEXT("INPUT_ACTION %s Event=%d"),Name,(int32)Event); (this->*Handler)(); });
+#else
+            Input->BindAction(Action,Event,this,Handler);
+#endif
+        }
         else { UE_LOG(LogTemp,Error,TEXT("GM-01 input action %s missing; run tools/Create-PlayerInputAssets.py"),Name); }
     };
     // IMC_Player (always on; CTL-01 key map). The camera itself is polled by ASFE1Character.

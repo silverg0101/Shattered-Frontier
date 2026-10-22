@@ -27,9 +27,8 @@ Today four game modes and three controllers form a chain (`ASFE1GameMode` -> `AS
 `// ponytail:` build mode stays as controller members; extract to `USFBuildModeComponent` only when a second build-capable pawn or controller exists (component RPCs would change the replicated subobject layout, see risks).
 
 ## 2. Input
-- `IMC_Player` (priority 0) is always active for every local `ASFPlayerController`; the character keeps polling it (CTL-01). Legacy `DefaultInput.ini` mappings remain pending the sandbox `Interact` binding follow-up; the sandbox subclass still uses `BindKey`.
-- `IMC_Build` (priority 1) is added only while build mode is on. `B` toggles build mode; `Esc` leaves it after cancelling a placement. Build actions, all `IA_Build*` in `IMC_Build`, written by `tools/Create-PlayerInputAssets.py`: Place (LMB), Remove toggle (X, Delete), Shape 1-4, Rotate (R), Line (L), Plane (P), LayerUp/LayerDown (PageUp/PageDown), Door toggle (E, F), Cancel (Esc). They consume their keys, so LMB-orbit, F-interact and E-strafe yield to build only in build mode. `IA_BuildReserved` remains as an editor asset pending deletion.
-- Always-on controller actions move into `IMC_Player`: Inventory (I), Skills (M), Equip axe/pickaxe (5/6), Cycle recipe (C), Claim plot (K), Market (F7), Trade (F6). Bound with `UEnhancedInputComponent::BindAction` (the default input component class already is Enhanced).
+- `IMC_Player` (priority 0) is always active for every local `ASFPlayerController`; the character keeps polling it (CTL-01). `DefaultInput.ini` has no legacy mappings; the sandbox subclass uses `BindKey`.
+- `IMC_Build` (priority 1) is added only while build mode is on. `B` toggles build mode; `Esc` leaves it after cancelling a placement. Build actions, all `IA_Build*` in `IMC_Build`, written by `tools/Create-PlayerInputAssets.py`: Place (LMB), Remove toggle (X, Delete), Shape 1-4, Rotate (R), Line (L), Plane (P), LayerUp/LayerDown (PageUp/PageDown), Door toggle (E, F), Cancel (Esc). They consume their keys, so LMB-orbit, F-interact and E-strafe yield to build only in build mode.- Always-on controller actions move into `IMC_Player`: Inventory (I), Skills (M), Equip axe/pickaxe (5/6), Cycle recipe (C), Claim plot (K), Market (F7), Trade (F6). Bound with `UEnhancedInputComponent::BindAction` (the default input component class already is Enhanced).
 - Wheel: `IA_Zoom` stays in `IMC_Player` and `IMC_Build` never maps the wheel, so zoom works in build mode. Layer step stays PageUp/PageDown. If a wheel layer step is wanted later, the controller reads Ctrl + `IA_Zoom` in `Tick` and the character skips zoom while Ctrl is held; no chorded mapping in `IMC_Build` (a higher-priority chord still consumes the key).
 - Migration of the legacy `BindKey` calls is one-to-one; the finite scenarios inject real key events through `InputKey`, which Enhanced Input processes the same way, so only their step order changes (press `B` first, see tests).
 
@@ -60,10 +59,8 @@ Launch: server `ShatteredFrontierServer Greenlands_Silverbrook -log` (or editor 
 4. Cleanup: updated the dependency map, GameClient README and CTL-01; removed only the two obsolete controller `CoreRedirects` after checking GameClient Content text exports, Config and Source. The three game-mode redirects remain for a separate reference check. The sandbox re-parent comments and optional `ASFConstructionNetworkHUD` rename remain outside this documentation pass.
 
 ## Follow-ups
-- Remove legacy `DefaultInput.ini` mappings after the sandbox's `Interact` binding is migrated or confirmed independent.
 - Keep townsfolk non-shipping only until its runtime and content have shipping acceptance.
-- Run `review_player_in_game.py` in build mode after pressing B to check input and wheel zoom in game.
-- Delete `IA_BuildReserved.uasset` in the editor after checking asset references; this docs pass does not edit the asset.
+- Done: legacy `DefaultInput.ini` mappings removed (the sandbox controller now `BindKey`s E/F; the character's dead legacy bindings deleted); `IA_BuildReserved` deleted; build-mode -game review run, see `docs/evidence/gm01-build-mode/`.
 
 ## 7. Risks
 - Replication (top risk): the controller keeps its replicated `bRoleAssigned`/`bBuilderRole` and all RPCs, so the wire layout is unchanged, but server and client must be built from the same step (a renamed class on one side fails `?game=`/class resolution at connect). Never ship step 1 and step 2 binaries mixed; the runners build both from one tree. Deferring the `USFBuildModeComponent` extraction avoids changing RPC routing and the replicated subobject list.
