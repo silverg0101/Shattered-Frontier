@@ -1,10 +1,12 @@
 #pragma once
 
-// TER-01 measured spike (development only, docs/decisions/TER-01-mesh-terrain-fit-check.md).
-// A server-authoritative 0.5 m signed-density voxel field in 16 m chunks (DEC-03 geometry) meshed by
-// surface nets into one ProceduralMeshComponent per chunk, plus a heightfield comparison strip.
+// TER-01 / TER-01b voxel ground (development only, docs/decisions/TER-01-mesh-terrain-fit-check.md).
+// A server-authoritative 0.5 m signed-density field (DEC-03 geometry: published base + sparse edited 16 m chunks of 32^3),
+// meshed per octree leaf (distance LOD, 2:1 balanced, transition faces) by SFVoxelCore.h into one ProceduralMeshComponent
+// per leaf. Meshing runs on worker threads; collision is cooked async and only for LOD-0 leaves. Two areas:
+// - default: the spike's 96 m x 96 m analytic base plus a 1 m heightfield comparison strip;
+// - -SFTerrainSpikeZone=<hf.bin> (tools/ter01/Export-ZoneHeightfield.py): the 2.5 km Silverbrook zone.
 // Not the production terrain adapter: no World codec, no persistence, no Building rights.
-// ponytail: whole-chunk synchronous remesh + sync collision cook; async/LOD only if a real adapter is built.
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -12,6 +14,8 @@
 
 class UProceduralMeshComponent;
 class UMaterialInterface;
+struct FSFTerrainSpikeImpl;
+struct FSFLeafUpload;
 
 USTRUCT()
 struct FSFTerrainSpikeOp
@@ -33,9 +37,11 @@ class ASFTerrainSpike : public AActor
     GENERATED_BODY()
 public:
     ASFTerrainSpike();
+    virtual ~ASFTerrainSpike() override;
 
     virtual void PostInitializeComponents() override;
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type Reason) override;
     virtual void Tick(float DeltaSeconds) override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out) const override;
 
@@ -50,7 +56,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "SF|TerrainSpike")
     int32 DensityHash() const;
 
-    // Fallback (a) seam: |voxel surface - 1 m heightfield surface| along x = 0, y 10..90 m every 0.5 m.
+    // Fallback (a) seam: |voxel surface - 1 m heightfield surface| along x = 0, y 10..90 m every 0.5 m (default area only).
     UFUNCTION(BlueprintCallable, Category = "SF|TerrainSpike")
     FString SeamGapJson() const;
 
@@ -60,6 +66,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "SF|TerrainSpike")
     void SetVoxelVisible(bool bVisible);
 
+    // Comparison (-SFTerrainSpikeCompareMesh=<static mesh>): today's Silverbrook ground mesh in the same frame and views.
+    UFUNCTION(BlueprintCallable, Category = "SF|TerrainSpike")
+    bool SetCompareVisible(bool bInVisible);
+
     UFUNCTION(BlueprintCallable, Category = "SF|TerrainSpike")
     static float GpuFrameMs();
 
@@ -67,7 +77,19 @@ public:
     UFUNCTION(BlueprintCallable, Category = "SF|TerrainSpike")
     void SetSpikeCamera(FVector Eye, FVector At);
 
-    // Base terrain (metres) shared by voxel base and heightfield strip.
+    // True when no meshing is in flight or queued (the shown meshes match the current field and LOD focus).
+    UFUNCTION(BlueprintCallable, Category = "SF|TerrainSpike")
+    bool IsSettled() const;
+
+    // Base ground height (cm) at (x, y) cm: the analytic spike base or the zone heightfield.
+    UFUNCTION(BlueprintCallable, Category = "SF|TerrainSpike")
+    float GroundZ(float X, float Y) const;
+
+    // Whole-mesh tear and seam check over every shown leaf (no rays). Logs and returns SPIKE_SEAMS json.
+    UFUNCTION(BlueprintCallable, Category = "SF|TerrainSpike")
+    FString SeamCheckAll();
+
+    // Base terrain (metres) of the default spike area.
     static double BaseHeightM(double Xm, double Ym);
 
     UPROPERTY(EditAnywhere, Category = "SF|TerrainSpike") int32 ChunksX = 6;
@@ -80,38 +102,34 @@ public:
     UPROPERTY(EditAnywhere, Category = "SF|TerrainSpike") TObjectPtr<UMaterialInterface> GroundMaterial;
 
 private:
-    struct FChunk
-    {
-        TArray<int16> D; // 32^3, Q15 0..32767, solid at >= 16384
-        TObjectPtr<UProceduralMeshComponent> Mesh = nullptr;
-    };
-
     UFUNCTION() void OnRep_Ops();
     void ApplyOp(const FSFTerrainSpikeOp& Op, bool bLog);
-    int16 Sample(const FIntVector& G) const;
-    void Remesh(const FIntVector& Key, double& OutExtractMs, double& OutUploadMs, int32& OutTris);
     void BuildHeightfieldStrip();
     void BuildBase();
-    // After every edit: open edges, border mismatches, flipped/degenerate triangles and see-through rays (first hit back-facing
-    // or a missed air->solid crossing) for each touched chunk. Logs SPIKE_TEARS <chunk> <count>; returns the total.
-    int32 TearCheck(const TArray<FIntVector>& Touched, const FBox& OpBox);
+    void UpdateFocus(bool bForce);
+    void LaunchBatch();
+    void ApplyBatch();
+    void ShowLeaf(uint64 Key, bool bLod0, const FSFLeafUpload& Up);
+    void RemoveLeaf(uint64 Key);
+    void TearCheckOp(int32 N, const FBox& OpBox, const void* BatchPtr);
     void CheckPawns();
     void RunScenarioStep();
+    void RunZoneSoakStep();
+    void ZoneEdit();
+    FBox AreaBox() const;
 
     UPROPERTY(ReplicatedUsing = OnRep_Ops) TArray<FSFTerrainSpikeOp> Ops;
-    TMap<FIntVector, FChunk> Chunks;
-    UPROPERTY() TArray<TObjectPtr<UProceduralMeshComponent>> MeshRefs;
+    UPROPERTY() TMap<uint64, TObjectPtr<UProceduralMeshComponent>> LeafMeshes;
+    UPROPERTY() TObjectPtr<UProceduralMeshComponent> HeightfieldStrip;
+    UPROPERTY() TObjectPtr<class UStaticMeshComponent> CompareMesh;
+    UPROPERTY() TObjectPtr<class ACameraActor> SpikeCamera;
+    TSharedPtr<FSFTerrainSpikeImpl> Impl; // shared: the generated code destroys it where the type is incomplete
     int32 Applied = 0;
-    TArray<double> EditMs, ExtractMs, UploadMs, LatencyMs;
-    TArray<int32> ChunksPerEdit;
     double InitialBuildMs = 0.0;
-    int32 TotalTris = 0;
-    int32 TotalTears = 0;
-    int32 TearChecks = 0;
     bool bScenario = false;
+    bool bVisible = true;
     double ScenarioStart = -1.0;
     int32 ScenarioIndex = 0;
     double TimeoutSeconds = 0.0;
     TSet<TWeakObjectPtr<APawn>> SeenPawns;
-    UPROPERTY() TObjectPtr<class ACameraActor> SpikeCamera;
 };

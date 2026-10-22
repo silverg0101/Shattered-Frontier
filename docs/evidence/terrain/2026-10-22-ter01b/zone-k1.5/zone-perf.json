@@ -1,0 +1,531 @@
+{
+  "01-forest-path-town": {
+    "view": {
+      "name": "01-forest-path-town",
+      "xy_m": [
+        154,
+        632
+      ],
+      "eye_height_m": 1.7,
+      "look_xy_m": [
+        18,
+        190
+      ],
+      "look_height_m": 10,
+      "fov_deg": 70,
+      "over_shoulder": true
+    },
+    "seams": {
+      "tears": 0,
+      "open": 0,
+      "border_mismatch": 0,
+      "orient": 0,
+      "degenerate": 0,
+      "backfacing": 0,
+      "nonmanifold_edges": 0,
+      "gradient_disagree": 0,
+      "edges": 1493336,
+      "tris": 995308,
+      "leaves": {
+        "L4": 48,
+        "L1": 99,
+        "L2": 106,
+        "L0": 146,
+        "L3": 76,
+        "L5": 20
+      },
+      "ms": 2146
+    },
+    "stats": {
+      "netmode": 0,
+      "zone": 1,
+      "leaves": 2016,
+      "meshed_leaves": 495,
+      "tris": 995308,
+      "tris_by_lod": {
+        "L4": 109352,
+        "L1": 203550,
+        "L2": 214600,
+        "L0": 289688,
+        "L3": 161754,
+        "L5": 16364
+      },
+      "edited_chunks": 0,
+      "density_bytes": 0,
+      "cpu_mesh_bytes": 24713880,
+      "initial_build_ms": 152.9,
+      "edits": 0,
+      "apply_ms_p95": 0.0,
+      "apply_ms_max": 0.0,
+      "mesh_task_ms_p50": 33.88,
+      "mesh_task_ms_p95": 76.83,
+      "gt_upload_ms_p95": 26.77,
+      "gt_upload_ms_max": 26.77,
+      "edit_to_visible_ms_p50": 0.0,
+      "edit_to_visible_ms_p95": 0.0,
+      "edit_to_visible_ms_max": 0.0,
+      "spike_tick_ms_p95": 0.0,
+      "spike_tick_ms_max": 26.84,
+      "tear_checks": 0,
+      "tears_total": 0,
+      "open": 0,
+      "border_mismatch": 0,
+      "orient": 0,
+      "degenerate": 0,
+      "backfacing": 0,
+      "ray_holes": 0,
+      "rays": 0,
+      "nonmanifold_edges": 0,
+      "gradient_disagree": 0,
+      "leaves_per_edit_max": 0,
+      "latency_ms_p50": 0.0,
+      "latency_ms_p95": 0.0,
+      "latency_ms_max": 0.0,
+      "hash": 0
+    },
+    "on": {
+      "frame_ms_p50": 10.18,
+      "frame_ms_p95": 11.19,
+      "gpu_ms_p50": 9.53,
+      "gpu_ms_p95": 9.79
+    },
+    "off": {
+      "frame_ms_p50": 5.93,
+      "frame_ms_p95": 6.24,
+      "gpu_ms_p50": 5.42,
+      "gpu_ms_p95": 5.5
+    },
+    "cmp": {
+      "frame_ms_p50": 9.83,
+      "frame_ms_p95": 10.15,
+      "gpu_ms_p50": 9.34,
+      "gpu_ms_p95": 9.42
+    }
+  },
+  "02-main-street": {
+    "view": {
+      "name": "02-main-street",
+      "xy_m": [
+        22,
+        330
+      ],
+      "eye_height_m": 1.7,
+      "look_xy_m": [
+        0,
+        -30
+      ],
+      "look_height_m": 4,
+      "fov_deg": 70
+    },
+    "seams": {
+      "tears": 0,
+      "open": 0,
+      "border_mismatch": 0,
+      "orient": 0,
+      "degenerate": 0,
+      "backfacing": 0,
+      "nonmanifold_edges": 0,
+      "gradient_disagree": 0,
+      "edges": 1335410,
+      "tris": 890024,
+      "leaves": {
+        "L1": 107,
+        "L0": 157,
+        "L5": 24,
+        "L4": 37,
+        "L3": 59,
+        "L2": 81
+      },
+      "ms": 1867
+    },
+    "stats": {
+      "netmode": 0,
+      "zone": 1,
+      "leaves": 1812,
+      "meshed_leaves": 465,
+      "tris": 890024,
+      "tris_by_lod": {
+        "L1": 197334,
+        "L0": 301269,
+        "L5": 27130,
+        "L4": 77501,
+        "L3": 128263,
+        "L2": 158527
+      },
+      "edited_chunks": 0,
+      "density_bytes": 0,
+      "cpu_mesh_bytes": 22121928,
+      "initial_build_ms": 152.9,
+      "edits": 0,
+      "apply_ms_p95": 0.0,
+      "apply_ms_max": 0.0,
+      "mesh_task_ms_p50": 33.88,
+      "mesh_task_ms_p95": 76.83,
+      "gt_upload_ms_p95": 26.77,
+      "gt_upload_ms_max": 26.77,
+      "edit_to_visible_ms_p50": 0.0,
+      "edit_to_visible_ms_p95": 0.0,
+      "edit_to_visible_ms_max": 0.0,
+      "spike_tick_ms_p95": 0.0,
+      "spike_tick_ms_max": 26.84,
+      "tear_checks": 0,
+      "tears_total": 0,
+      "open": 0,
+      "border_mismatch": 0,
+      "orient": 0,
+      "degenerate": 0,
+      "backfacing": 0,
+      "ray_holes": 0,
+      "rays": 0,
+      "nonmanifold_edges": 0,
+      "gradient_disagree": 0,
+      "leaves_per_edit_max": 0,
+      "latency_ms_p50": 0.0,
+      "latency_ms_p95": 0.0,
+      "latency_ms_max": 0.0,
+      "hash": 0
+    },
+    "on": {
+      "frame_ms_p50": 9.62,
+      "frame_ms_p95": 10.65,
+      "gpu_ms_p50": 8.97,
+      "gpu_ms_p95": 9.22
+    },
+    "off": {
+      "frame_ms_p50": 5.91,
+      "frame_ms_p95": 6.28,
+      "gpu_ms_p50": 5.43,
+      "gpu_ms_p95": 5.5
+    },
+    "cmp": {
+      "frame_ms_p50": 9.62,
+      "frame_ms_p95": 9.93,
+      "gpu_ms_p50": 9.1,
+      "gpu_ms_p95": 9.24
+    }
+  },
+  "05-market-square": {
+    "view": {
+      "name": "05-market-square",
+      "xy_m": [
+        0,
+        -30
+      ],
+      "eye_height_m": 1.7,
+      "look_xy_m": [
+        35,
+        -65
+      ],
+      "look_height_m": 3,
+      "fov_deg": 70
+    },
+    "seams": {
+      "tears": 0,
+      "open": 0,
+      "border_mismatch": 0,
+      "orient": 0,
+      "degenerate": 0,
+      "backfacing": 0,
+      "nonmanifold_edges": 0,
+      "gradient_disagree": 0,
+      "edges": 1380178,
+      "tris": 919880,
+      "leaves": {
+        "L0": 160,
+        "L5": 21,
+        "L4": 53,
+        "L3": 58,
+        "L2": 83,
+        "L1": 96
+      },
+      "ms": 1946
+    },
+    "stats": {
+      "netmode": 0,
+      "zone": 1,
+      "leaves": 1858,
+      "meshed_leaves": 471,
+      "tris": 919880,
+      "tris_by_lod": {
+        "L0": 297729,
+        "L5": 17386,
+        "L4": 116956,
+        "L3": 125162,
+        "L2": 177777,
+        "L1": 184870
+      },
+      "edited_chunks": 0,
+      "density_bytes": 0,
+      "cpu_mesh_bytes": 22851456,
+      "initial_build_ms": 152.9,
+      "edits": 0,
+      "apply_ms_p95": 0.0,
+      "apply_ms_max": 0.0,
+      "mesh_task_ms_p50": 33.88,
+      "mesh_task_ms_p95": 76.83,
+      "gt_upload_ms_p95": 26.77,
+      "gt_upload_ms_max": 26.77,
+      "edit_to_visible_ms_p50": 0.0,
+      "edit_to_visible_ms_p95": 0.0,
+      "edit_to_visible_ms_max": 0.0,
+      "spike_tick_ms_p95": 0.0,
+      "spike_tick_ms_max": 26.84,
+      "tear_checks": 0,
+      "tears_total": 0,
+      "open": 0,
+      "border_mismatch": 0,
+      "orient": 0,
+      "degenerate": 0,
+      "backfacing": 0,
+      "ray_holes": 0,
+      "rays": 0,
+      "nonmanifold_edges": 0,
+      "gradient_disagree": 0,
+      "leaves_per_edit_max": 0,
+      "latency_ms_p50": 0.0,
+      "latency_ms_p95": 0.0,
+      "latency_ms_max": 0.0,
+      "hash": 0
+    },
+    "on": {
+      "frame_ms_p50": 9.23,
+      "frame_ms_p95": 10.38,
+      "gpu_ms_p50": 8.64,
+      "gpu_ms_p95": 8.92
+    },
+    "off": {
+      "frame_ms_p50": 5.95,
+      "frame_ms_p95": 6.23,
+      "gpu_ms_p50": 5.45,
+      "gpu_ms_p95": 5.51
+    },
+    "cmp": {
+      "frame_ms_p50": 9.32,
+      "frame_ms_p95": 9.68,
+      "gpu_ms_p50": 8.77,
+      "gpu_ms_p95": 8.94
+    }
+  },
+  "A3-south-approach-250m": {
+    "view": {
+      "name": "A3-south-approach-250m",
+      "xy_m": [
+        181,
+        661
+      ],
+      "eye_height_m": 250,
+      "look_xy_m": [
+        90,
+        574
+      ],
+      "look_height_m": 0,
+      "fov_deg": 70,
+      "repeat_crops": {
+        "cobble": [
+          925,
+          600,
+          55,
+          215
+        ],
+        "earth": [
+          884,
+          600,
+          32,
+          215
+        ],
+        "grass": [
+          1075,
+          520,
+          190,
+          190
+        ]
+      }
+    },
+    "seams": {
+      "tears": 0,
+      "open": 0,
+      "border_mismatch": 0,
+      "orient": 0,
+      "degenerate": 0,
+      "backfacing": 0,
+      "nonmanifold_edges": 0,
+      "gradient_disagree": 2,
+      "edges": 1087085,
+      "tris": 724472,
+      "leaves": {
+        "L3": 99,
+        "L0": 77,
+        "L5": 20,
+        "L4": 46,
+        "L2": 81,
+        "L1": 40
+      },
+      "ms": 1422
+    },
+    "stats": {
+      "netmode": 0,
+      "zone": 1,
+      "leaves": 1320,
+      "meshed_leaves": 363,
+      "tris": 724472,
+      "tris_by_lod": {
+        "L3": 191099,
+        "L0": 144418,
+        "L5": 16364,
+        "L4": 106671,
+        "L2": 179510,
+        "L1": 86410
+      },
+      "edited_chunks": 0,
+      "density_bytes": 0,
+      "cpu_mesh_bytes": 17995752,
+      "initial_build_ms": 152.9,
+      "edits": 0,
+      "apply_ms_p95": 0.0,
+      "apply_ms_max": 0.0,
+      "mesh_task_ms_p50": 33.88,
+      "mesh_task_ms_p95": 76.83,
+      "gt_upload_ms_p95": 26.77,
+      "gt_upload_ms_max": 26.77,
+      "edit_to_visible_ms_p50": 0.0,
+      "edit_to_visible_ms_p95": 0.0,
+      "edit_to_visible_ms_max": 0.0,
+      "spike_tick_ms_p95": 0.0,
+      "spike_tick_ms_max": 26.84,
+      "tear_checks": 0,
+      "tears_total": 0,
+      "open": 0,
+      "border_mismatch": 0,
+      "orient": 0,
+      "degenerate": 0,
+      "backfacing": 0,
+      "ray_holes": 0,
+      "rays": 0,
+      "nonmanifold_edges": 0,
+      "gradient_disagree": 0,
+      "leaves_per_edit_max": 0,
+      "latency_ms_p50": 0.0,
+      "latency_ms_p95": 0.0,
+      "latency_ms_max": 0.0,
+      "hash": 0
+    },
+    "on": {
+      "frame_ms_p50": 9.25,
+      "frame_ms_p95": 10.65,
+      "gpu_ms_p50": 8.66,
+      "gpu_ms_p95": 8.94
+    },
+    "off": {
+      "frame_ms_p50": 5.94,
+      "frame_ms_p95": 6.23,
+      "gpu_ms_p50": 5.44,
+      "gpu_ms_p95": 5.51
+    },
+    "cmp": {
+      "frame_ms_p50": 9.75,
+      "frame_ms_p95": 10.09,
+      "gpu_ms_p50": 9.24,
+      "gpu_ms_p95": 9.35
+    }
+  },
+  "overview-600m": {
+    "view": {
+      "xy_m": [
+        -900,
+        -900
+      ],
+      "eye_height_m": 600,
+      "look_xy_m": [
+        200,
+        200
+      ],
+      "look_height_m": 0
+    },
+    "seams": {
+      "tears": 0,
+      "open": 0,
+      "border_mismatch": 0,
+      "orient": 0,
+      "degenerate": 0,
+      "backfacing": 0,
+      "nonmanifold_edges": 0,
+      "gradient_disagree": 0,
+      "edges": 921011,
+      "tris": 613668,
+      "leaves": {
+        "L5": 35,
+        "L3": 20,
+        "L2": 65,
+        "L1": 74,
+        "L0": 88,
+        "L4": 16
+      },
+      "ms": 1051
+    },
+    "stats": {
+      "netmode": 0,
+      "zone": 1,
+      "leaves": 992,
+      "meshed_leaves": 298,
+      "tris": 613668,
+      "tris_by_lod": {
+        "L5": 42394,
+        "L3": 44930,
+        "L2": 139598,
+        "L1": 158803,
+        "L0": 189311,
+        "L4": 38632
+      },
+      "edited_chunks": 0,
+      "density_bytes": 0,
+      "cpu_mesh_bytes": 15222672,
+      "initial_build_ms": 152.9,
+      "edits": 0,
+      "apply_ms_p95": 0.0,
+      "apply_ms_max": 0.0,
+      "mesh_task_ms_p50": 33.88,
+      "mesh_task_ms_p95": 76.83,
+      "gt_upload_ms_p95": 26.77,
+      "gt_upload_ms_max": 26.77,
+      "edit_to_visible_ms_p50": 0.0,
+      "edit_to_visible_ms_p95": 0.0,
+      "edit_to_visible_ms_max": 0.0,
+      "spike_tick_ms_p95": 0.0,
+      "spike_tick_ms_max": 26.84,
+      "tear_checks": 0,
+      "tears_total": 0,
+      "open": 0,
+      "border_mismatch": 0,
+      "orient": 0,
+      "degenerate": 0,
+      "backfacing": 0,
+      "ray_holes": 0,
+      "rays": 0,
+      "nonmanifold_edges": 0,
+      "gradient_disagree": 0,
+      "leaves_per_edit_max": 0,
+      "latency_ms_p50": 0.0,
+      "latency_ms_p95": 0.0,
+      "latency_ms_max": 0.0,
+      "hash": 0
+    },
+    "on": {
+      "frame_ms_p50": 9.44,
+      "frame_ms_p95": 10.52,
+      "gpu_ms_p50": 8.78,
+      "gpu_ms_p95": 9.1
+    },
+    "off": {
+      "frame_ms_p50": 5.93,
+      "frame_ms_p95": 6.26,
+      "gpu_ms_p50": 5.44,
+      "gpu_ms_p95": 5.51
+    },
+    "cmp": {
+      "frame_ms_p50": 9.76,
+      "frame_ms_p95": 10.06,
+      "gpu_ms_p50": 9.25,
+      "gpu_ms_p95": 9.32
+    }
+  }
+}

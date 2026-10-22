@@ -1,0 +1,200 @@
+{
+  "01-forest-path-town": {
+    "ground_gpu_ms": 3.638,
+    "geometry_pass_deltas": {
+      "BasePass": 2.866,
+      "PrePass DDM_AllOpaqueNoVelocity (Forced by Nanite)": 0.267,
+      "ShadowDepths": 0.505
+    },
+    "frame_profile_delta_ms": 3.754,
+    "frame_on_ms": 9.124,
+    "gpu_ms_p50_on": 9.21,
+    "gpu_ms_p50_off": 5.42,
+    "other_deltas_ms": {
+      "RenderDeferredLighting": 0.199,
+      "Nanite::VisBuffer": -0.077,
+      "StochasticLighting": 0.069,
+      "GPUScene.UploadDynamicPrimitiveShaderDataForView": 0.05
+    },
+    "tris": 482962,
+    "tris_by_lod": {
+      "L5": 36170,
+      "L0": 113306,
+      "L1": 95414,
+      "L3": 91363,
+      "L2": 90464,
+      "L4": 56245
+    },
+    "seams": 0,
+    "today": {
+      "ground_gpu_ms": 2.96,
+      "geometry_pass_deltas": {
+        "BasePass": 2.674,
+        "PrePass DDM_AllOpaqueNoVelocity (Forced by Nanite)": 0.094,
+        "ShadowDepths": 0.192
+      },
+      "frame_profile_delta_ms": 3.884,
+      "gpu_ms_p50": 9.37,
+      "voxel_minus_today_ground_ms": 0.678,
+      "voxel_minus_today_frame_ms": -0.13
+    }
+  },
+  "02-main-street": {
+    "ground_gpu_ms": 3.108,
+    "geometry_pass_deltas": {
+      "BasePass": 2.555,
+      "PrePass DDM_AllOpaqueNoVelocity (Forced by Nanite)": 0.08,
+      "ShadowDepths": 0.473
+    },
+    "frame_profile_delta_ms": 3.566,
+    "frame_on_ms": 8.898,
+    "gpu_ms_p50_on": 8.82,
+    "gpu_ms_p50_off": 5.44,
+    "other_deltas_ms": {
+      "RenderDeferredLighting": 0.203,
+      "StochasticLighting": 0.071,
+      "GPUScene.UploadDynamicPrimitiveShaderDataForView": 0.056
+    },
+    "tris": 591154,
+    "tris_by_lod": {
+      "L5": 33772,
+      "L0": 171474,
+      "L1": 133891,
+      "L3": 73769,
+      "L4": 68079,
+      "L2": 110169
+    },
+    "seams": 0,
+    "today": {
+      "ground_gpu_ms": 2.688,
+      "geometry_pass_deltas": {
+        "BasePass": 2.428,
+        "PrePass DDM_AllOpaqueNoVelocity (Forced by Nanite)": 0.089,
+        "ShadowDepths": 0.171
+      },
+      "frame_profile_delta_ms": 3.628,
+      "gpu_ms_p50": 9.11,
+      "voxel_minus_today_ground_ms": 0.42,
+      "voxel_minus_today_frame_ms": -0.062
+    }
+  },
+  "05-market-square": {
+    "ground_gpu_ms": 2.906,
+    "geometry_pass_deltas": {
+      "BasePass": 2.349,
+      "PrePass DDM_AllOpaqueNoVelocity (Forced by Nanite)": 0.176,
+      "ShadowDepths": 0.381
+    },
+    "frame_profile_delta_ms": 3.025,
+    "frame_on_ms": 8.367,
+    "gpu_ms_p50_on": 8.44,
+    "gpu_ms_p50_off": 5.46,
+    "other_deltas_ms": {
+      "RenderDeferredLighting": 0.179,
+      "Nanite::VisBuffer": 0.139,
+      "StochasticLighting": 0.059
+    },
+    "tris": 553312,
+    "tris_by_lod": {
+      "L5": 31483,
+      "L0": 148376,
+      "L1": 104973,
+      "L4": 75632,
+      "L2": 107254,
+      "L3": 85594
+    },
+    "seams": 0,
+    "today": {
+      "ground_gpu_ms": 2.547,
+      "geometry_pass_deltas": {
+        "BasePass": 2.165,
+        "PrePass DDM_AllOpaqueNoVelocity (Forced by Nanite)": 0.195,
+        "ShadowDepths": 0.187
+      },
+      "frame_profile_delta_ms": 3.224,
+      "gpu_ms_p50": 8.74,
+      "voxel_minus_today_ground_ms": 0.359,
+      "voxel_minus_today_frame_ms": -0.199
+    }
+  },
+  "A3-south-approach-250m": {
+    "ground_gpu_ms": 2.622,
+    "geometry_pass_deltas": {
+      "BasePass": 2.105,
+      "PrePass DDM_AllOpaqueNoVelocity (Forced by Nanite)": 0.209,
+      "ShadowDepths": 0.308
+    },
+    "frame_profile_delta_ms": 3.08,
+    "frame_on_ms": 8.447,
+    "gpu_ms_p50_on": 8.56,
+    "gpu_ms_p50_off": 5.45,
+    "other_deltas_ms": {
+      "RenderDeferredLighting": 0.397,
+      "StochasticLighting": 0.119,
+      "VirtualShadowMapMarkPages": 0.096,
+      "Nanite::VisBuffer": 0.087,
+      "GPUScene.UploadDynamicPrimitiveShaderDataForView": 0.061
+    },
+    "tris": 406156,
+    "tris_by_lod": {
+      "L5": 30828,
+      "L0": 54282,
+      "L3": 113042,
+      "L1": 39894,
+      "L4": 73385,
+      "L2": 94725
+    },
+    "seams": 0,
+    "today": {
+      "ground_gpu_ms": 2.308,
+      "geometry_pass_deltas": {
+        "BasePass": 2.037,
+        "PrePass DDM_AllOpaqueNoVelocity (Forced by Nanite)": 0.09,
+        "ShadowDepths": 0.181
+      },
+      "frame_profile_delta_ms": 3.635,
+      "gpu_ms_p50": 9.23,
+      "voxel_minus_today_ground_ms": 0.314,
+      "voxel_minus_today_frame_ms": -0.555
+    }
+  },
+  "overview-600m": {
+    "ground_gpu_ms": 3.025,
+    "geometry_pass_deltas": {
+      "BasePass": 2.565,
+      "PrePass DDM_AllOpaqueNoVelocity (Forced by Nanite)": 0.196,
+      "ShadowDepths": 0.264
+    },
+    "frame_profile_delta_ms": 3.236,
+    "frame_on_ms": 8.561,
+    "gpu_ms_p50_on": 8.65,
+    "gpu_ms_p50_off": 5.45,
+    "other_deltas_ms": {
+      "RenderDeferredLighting": 0.227,
+      "Nanite::VisBuffer": 0.125,
+      "StochasticLighting": 0.078
+    },
+    "tris": 409080,
+    "tris_by_lod": {
+      "L5": 42394,
+      "L2": 71326,
+      "L4": 38632,
+      "L1": 93311,
+      "L0": 96271,
+      "L3": 67146
+    },
+    "seams": 0,
+    "today": {
+      "ground_gpu_ms": 3.318,
+      "geometry_pass_deltas": {
+        "BasePass": 2.977,
+        "PrePass DDM_AllOpaqueNoVelocity (Forced by Nanite)": 0.189,
+        "ShadowDepths": 0.152
+      },
+      "frame_profile_delta_ms": 3.719,
+      "gpu_ms_p50": 9.2,
+      "voxel_minus_today_ground_ms": -0.293,
+      "voxel_minus_today_frame_ms": -0.483
+    }
+  }
+}

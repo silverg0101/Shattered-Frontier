@@ -1,35 +1,35 @@
 #include "TerrainSpike/SFTerrainSpike.h"
 
-#include "Engine/World.h"
+#include "TerrainSpike/SFVoxelCore.h"
+
+#include "Async/ParallelFor.h"
+#include "Camera/CameraActor.h"
+#include "Camera/CameraComponent.h"
+#include "Camera/PlayerCameraManager.h"
 #include "Engine/CollisionProfile.h"
+#include "Engine/World.h"
+#include "EngineUtils.h"
+#include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
+#include "GameFramework/PlayerStart.h"
 #include "HAL/PlatformTime.h"
 #include "Materials/MaterialInterface.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Crc.h"
+#include "Misc/FileHelper.h"
 #include "Net/UnrealNetwork.h"
 #include "ProceduralMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
 #include "RHI.h"
-#include "EngineUtils.h"
-#include "Camera/CameraActor.h"
-#include "Camera/CameraComponent.h"
-#include "GameFramework/Pawn.h"
+#include "Tasks/Task.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSFTerrainSpike, Log, All);
 
 namespace
 {
-constexpr int32 TsN = 32;          // samples per chunk axis (DEC-03 32^3)
-constexpr double TsV = 50.0;       // voxel cm (0.5 m)
-constexpr double TsChunkCm = TsN * TsV; // 1600 cm (16 m)
-constexpr int32 TsQMax = 32767;
-constexpr int32 TsIso = 16384;     // solid at rho >= 0.5 rho_max
-bool bTsLegacyWinding = false;     // -SFTerrainSpikeLegacyWinding reproduces the pre-fix tears
-
-int32 TsFloorDiv(int32 A, int32 B) { return (A >= 0) ? A / B : -((-A + B - 1) / B); }
-int32 TsCeilDiv(int32 A, int32 B) { return -TsFloorDiv(-A, B); }
-
-int16 TsQuantize(double F) { return (int16)FMath::Clamp((int32)FMath::RoundHalfFromZero(F * TsQMax), 0, TsQMax); }
+constexpr double TsV = SFVox::V;                 // voxel cm (0.5 m)
+constexpr double TsChunkCm = SFVox::N * SFVox::V; // 1600 cm (16 m)
 
 double TsStat(TArray<double> A, double P)
 {
@@ -40,7 +40,96 @@ double TsStat(TArray<double> A, double P)
 
 // Spike sequence: kind, x cm, y cm, z cm (NaN = base surface), radius cm. Area is 96 m x 96 m, chunk corners every 16 m.
 struct FTsStep { int32 Kind; double X, Y, Z, R; const TCHAR* Label; };
+
+// Zone base: tools/ter01/Export-ZoneHeightfield.py (int32 nx, ny; float32 x0, y0, step metres; nx*ny float32 metres).
+struct FTsZoneHF
+{
+    int32 Nx = 0, Ny = 0;
+    double X0 = 0, Y0 = 0, Step = 1;
+    TArray<float> H;
+    float Lo = 0, Hi = 0;
+    bool Load(const FString& Path)
+    {
+        TArray<uint8> Bytes;
+        if (!FFileHelper::LoadFileToArray(Bytes, *Path) || Bytes.Num() < 20) { return false; }
+        float F3[3];
+        FMemory::Memcpy(&Nx, Bytes.GetData(), 4); FMemory::Memcpy(&Ny, Bytes.GetData() + 4, 4); FMemory::Memcpy(F3, Bytes.GetData() + 8, 12);
+        X0 = F3[0]; Y0 = F3[1]; Step = F3[2];
+        if (Nx < 2 || Ny < 2 || Bytes.Num() != 20 + Nx * Ny * 4) { return false; }
+        H.SetNumUninitialized(Nx * Ny);
+        FMemory::Memcpy(H.GetData(), Bytes.GetData() + 20, Nx * Ny * 4);
+        Lo = FMath::Min(H); Hi = FMath::Max(H);
+        return true;
+    }
+    double AtM(double X, double Y) const // bilinear, clamped (heightfield.Heightfield.at)
+    {
+        const double Fx = FMath::Clamp((X - X0) / Step, 0.0, Nx - 1.001), Fy = FMath::Clamp((Y - Y0) / Step, 0.0, Ny - 1.001);
+        const int32 I = (int32)Fx, J = (int32)Fy; const double U = Fx - I, W = Fy - J;
+        return (H[J * Nx + I] * (1 - U) + H[J * Nx + I + 1] * U) * (1 - W) + (H[(J + 1) * Nx + I] * (1 - U) + H[(J + 1) * Nx + I + 1] * U) * W;
+    }
+    void RangeM(double X0m, double Y0m, double X1m, double Y1m, double& OLo, double& OHi) const
+    {
+        const int32 I0 = FMath::Clamp((int32)FMath::FloorToInt((X0m - X0) / Step), 0, Nx - 1), I1 = FMath::Clamp((int32)FMath::CeilToInt((X1m - X0) / Step), 0, Nx - 1);
+        const int32 J0 = FMath::Clamp((int32)FMath::FloorToInt((Y0m - Y0) / Step), 0, Ny - 1), J1 = FMath::Clamp((int32)FMath::CeilToInt((Y1m - Y0) / Step), 0, Ny - 1);
+        OLo = 1e30; OHi = -1e30;
+        for (int32 J = J0; J <= J1; ++J) for (int32 I = I0; I <= I1; ++I) { OLo = FMath::Min<double>(OLo, H[J * Nx + I]); OHi = FMath::Max<double>(OHi, H[J * Nx + I]); }
+    }
+};
 }
+
+struct FSFLeafUpload
+{
+    TArray<FVector> P, N;
+    TArray<FLinearColor> Col;
+    TArray<int32> I;
+};
+
+struct FSFTerrainSpikeImpl
+{
+    std::shared_ptr<SFVox::Base> Base;
+    FTsZoneHF Zone;
+    bool bZone = false;
+    SFVox::Field Field;
+    std::shared_ptr<const SFVox::LodTree> Tree;      // latest built: what meshing targets
+    std::shared_ptr<const SFVox::LodTree> ShownTree; // the tree the shown meshes belong to
+    std::unordered_map<uint64_t, std::shared_ptr<const SFVox::Mesh>> Cpu; // shown, non-empty CPU meshes (tear/seam checks)
+    TSet<uint64> Dirty;
+    struct FOpCheck { int32 N = 0; FBox Box; double T0 = 0; };
+    TArray<FOpCheck> Queued;
+    struct FBatch
+    {
+        std::vector<SFVox::Leaf> Leaves;
+        std::vector<uint64_t> Keys;
+        std::vector<uint64_t> Remove;
+        SFVox::Field Snap;
+        std::shared_ptr<const SFVox::LodTree> Tree;
+        std::vector<std::shared_ptr<SFVox::Mesh>> Out;
+        std::vector<FSFLeafUpload> Up;
+        TArray<FOpCheck> Ops;
+        double MeshMs = 0, T0 = 0;
+    };
+    std::shared_ptr<FBatch> Batch;
+    UE::Tasks::FTask Task;
+    std::vector<std::array<double, 3>> Focus;
+    double NextFocus = 0;
+    double K = 3.0;
+    int32 MinLod = 0;
+    bool bServer = false;
+    bool bFixedFocus = false;
+    bool bInitialDone = false;
+    bool bTearCheck = true;
+    double TearCheckMs = 0.0;
+    // Stats.
+    TArray<double> SoakFrameMs, ApplyMs, MeshMs, UploadMs, VisibleMs, LatencyMs, TickMs, ChunksPerEdit;
+    int64 TearChecks = 0, TearsTotal = 0, SeamChecks = 0;
+    SFVox::TearStats TearSum;
+    int32 TearLogged = 0;
+    int32 SoakLeft = 0, SoakDone = 0, BurstDone = 0, SoakRejected = 0;
+    bool bSoakLogged = false;
+    double BurstRate = 0, BurstStart = -1, SoakRadiusCm = 30000.0;
+    FVector SoakCenter = FVector::ZeroVector;
+    FRandomStream Rng = FRandomStream(1201);
+};
 
 ASFTerrainSpike::ASFTerrainSpike()
 {
@@ -51,7 +140,10 @@ ASFTerrainSpike::ASFTerrainSpike()
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
     static ConstructorHelpers::FObjectFinder<UMaterialInterface> Ground(TEXT("/Game/Frontier/Environment/Greenlands/Nature/Materials/MI_GN_Ground.MI_GN_Ground"));
     GroundMaterial = Ground.Object;
+    Impl = MakeShared<FSFTerrainSpikeImpl>();
 }
+
+ASFTerrainSpike::~ASFTerrainSpike() = default;
 
 void ASFTerrainSpike::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -65,26 +157,24 @@ double ASFTerrainSpike::BaseHeightM(double X, double Y)
     return 3.0 * FMath::Sin(X / 23.0) * FMath::Cos(Y / 31.0) + 1.5 * FMath::Sin((X + 2.0 * Y) / 11.0) + 0.04 * (X - 48.0) + Mound;
 }
 
-int16 ASFTerrainSpike::Sample(const FIntVector& G) const
+float ASFTerrainSpike::GroundZ(float X, float Y) const { return Impl->Base ? (float)Impl->Base->HeightCm(X, Y) : 0.f; }
+
+FBox ASFTerrainSpike::AreaBox() const
 {
-    const FIntVector K(TsFloorDiv(G.X, TsN), TsFloorDiv(G.Y, TsN), TsFloorDiv(G.Z, TsN));
-    if (const FChunk* C = Chunks.Find(K))
-    {
-        const FIntVector L = G - K * TsN;
-        return C->D[(L.Z * TsN + L.Y) * TsN + L.X];
-    }
-    const double H = BaseHeightM(G.X * TsV / 100.0, G.Y * TsV / 100.0) * 100.0;
-    return TsQuantize(0.5 + (H - G.Z * TsV) / (2.0 * TsV));
+    const SFVox::LodTree& T = *Impl->Tree;
+    return FBox(FVector(T.AreaMin.x, T.AreaMin.y, T.AreaMin.z) * TsV, FVector(T.AreaMax.x, T.AreaMax.y, T.AreaMax.z) * TsV);
 }
 
 void ASFTerrainSpike::PostInitializeComponents()
 {
     Super::PostInitializeComponents();
     // DEC-03 readiness: terrain collision is installed during level load, before world BeginPlay and before any pawn spawns.
-    // -SFTerrainSpikeChunks=N widens the area to N x N chunk columns for the scale/perf run (spike only).
     int32 Wide = 0;
     if (FParse::Value(FCommandLine::Get(), TEXT("SFTerrainSpikeChunks="), Wide) && Wide >= 6 && Wide <= 64) { ChunksX = ChunksY = Wide; }
-    bTsLegacyWinding = FParse::Param(FCommandLine::Get(), TEXT("SFTerrainSpikeLegacyWinding"));
+    if (FParse::Param(FCommandLine::Get(), TEXT("SFTerrainSpikeLegacyWinding")))
+    {
+        UE_LOG(LogSFTerrainSpike, Warning, TEXT("TERRAIN_SPIKE -SFTerrainSpikeLegacyWinding is gone: TER-01b replaced the surface-nets mesher (see TER-01 legacy-winding evidence)."));
+    }
     if (GetWorld() && GetWorld()->IsGameWorld()) { BuildBase(); }
 }
 
@@ -93,45 +183,171 @@ void ASFTerrainSpike::BeginPlay()
     Super::BeginPlay();
     bScenario = HasAuthority() && FParse::Param(FCommandLine::Get(), TEXT("SFTerrainSpikeScenario"));
     FParse::Value(FCommandLine::Get(), TEXT("SFTerrainSpikeTimeout="), TimeoutSeconds);
+    int32 Soak = 0;
+    if (HasAuthority() && FParse::Value(FCommandLine::Get(), TEXT("SFTerrainSpikeZoneSoak="), Soak)) { Impl->SoakLeft = Soak; }
+    FParse::Value(FCommandLine::Get(), TEXT("SFTerrainSpikeBurst="), Impl->BurstRate);
+    if (FParse::Value(FCommandLine::Get(), TEXT("SFTerrainSpikeSoakRadius="), Impl->SoakRadiusCm)) { Impl->SoakRadiusCm *= 100.0; } // metres
     OnRep_Ops();
+}
+
+void ASFTerrainSpike::EndPlay(const EEndPlayReason::Type Reason)
+{
+    if (Impl->Batch) { Impl->Task.Wait(); }
+    Super::EndPlay(Reason);
 }
 
 void ASFTerrainSpike::BuildBase()
 {
     const double T0 = FPlatformTime::Seconds();
-    for (int32 Z = ChunkZMin; Z <= ChunkZMax; ++Z)
-        for (int32 Y = 0; Y < ChunksY; ++Y)
-            for (int32 X = 0; X < ChunksX; ++X)
-            {
-                const FIntVector K(X, Y, Z);
-                FChunk C; C.D.SetNumUninitialized(TsN * TsN * TsN);
-                for (int32 Lz = 0; Lz < TsN; ++Lz)
-                    for (int32 Ly = 0; Ly < TsN; ++Ly)
-                        for (int32 Lx = 0; Lx < TsN; ++Lx)
-                        {
-                            const FIntVector G = K * TsN + FIntVector(Lx, Ly, Lz);
-                            const double H = BaseHeightM(G.X * TsV / 100.0, G.Y * TsV / 100.0) * 100.0;
-                            C.D[(Lz * TsN + Ly) * TsN + Lx] = TsQuantize(0.5 + (H - G.Z * TsV) / (2.0 * TsV));
-                        }
-                C.Mesh = NewObject<UProceduralMeshComponent>(this);
-                C.Mesh->bUseAsyncCooking = false;
-                C.Mesh->SetupAttachment(RootComponent);
-                C.Mesh->SetCollisionProfileName(UCollisionProfile::BlockAll_ProfileName);
-                C.Mesh->RegisterComponent();
-                C.Mesh->SetMaterial(0, GroundMaterial);
-                MeshRefs.Add(C.Mesh);
-                Chunks.Add(K, MoveTemp(C));
-            }
-    for (const FSFTerrainSpikeOp& Op : Ops) { ApplyOp(Op, false); }
+    FSFTerrainSpikeImpl& I = *Impl;
+    I.bServer = GetNetMode() == NM_DedicatedServer;
+    FParse::Value(FCommandLine::Get(), TEXT("SFTerrainSpikeLodK="), I.K);
+    FParse::Value(FCommandLine::Get(), TEXT("SFTerrainSpikeMinLod="), I.MinLod);
+    I.bTearCheck = !FParse::Param(FCommandLine::Get(), TEXT("SFTerrainSpikeNoTearCheck"));
+    FString MatPath; // diagnostics only: split material cost from geometry cost
+    if (FParse::Value(FCommandLine::Get(), TEXT("SFTerrainSpikeMaterial="), MatPath)) { if (UMaterialInterface* M = LoadObject<UMaterialInterface>(nullptr, *MatPath)) { GroundMaterial = M; } }
+    auto Tree = std::make_shared<SFVox::LodTree>();
+    I.Base = std::make_shared<SFVox::Base>();
+    FString ZonePath;
+    if (FParse::Value(FCommandLine::Get(), TEXT("SFTerrainSpikeZone="), ZonePath) && I.Zone.Load(ZonePath))
+    {
+        // 2.5 km Silverbrook zone: 156 x 156 chunk columns of 16 m (2,496 m), heights from the exported Heightfield.
+        I.bZone = true;
+        const FTsZoneHF* Z = &I.Zone;
+        I.Base->HeightCm = [Z](double X, double Y) { return Z->AtM(X / 100.0, Y / 100.0) * 100.0; };
+        I.Base->RangeCm = [Z](double X0, double Y0, double X1, double Y1, double& Lo, double& Hi) { Z->RangeM(X0 / 100, Y0 / 100, X1 / 100, Y1 / 100, Lo, Hi); Lo *= 100; Hi *= 100; };
+        Tree->MaxLod = 5;
+        Tree->AreaMin = {-78 * SFVox::N, -78 * SFVox::N, SFVox::FloorDiv((SFVox::i64)FMath::FloorToInt((I.Zone.Lo - 16.0) * 2), SFVox::N) * SFVox::N};
+        Tree->AreaMax = {78 * SFVox::N, 78 * SFVox::N, (SFVox::FloorDiv((SFVox::i64)FMath::CeilToInt((I.Zone.Hi + 16.0) * 2), SFVox::N) + 1) * SFVox::N};
+        BedrockZCm = (I.Zone.Lo - 14.0) * 100.0;
+        // K = 1: cells of 12-24 px; levels 0-3 (0.5-4 m cells) reproduce the 5 m base exactly, edits sit in the LOD-0 ring
+        // (>= 32 m around camera and pawn). Measured: TER-01b zone-k1-static (K 1.5 and 3 cost more for no visible gain).
+        if (!FParse::Value(FCommandLine::Get(), TEXT("SFTerrainSpikeLodK="), I.K)) { I.K = 1.0; }
+        BorderExclusionCm = 800.f;
+    }
+    else
+    {
+        I.Base->HeightCm = [](double X, double Y) { return BaseHeightM(X / 100.0, Y / 100.0) * 100.0; };
+        I.Base->RangeCm = [](double X0, double Y0, double X1, double Y1, double& Lo, double& Hi)
+        {
+            Lo = 1e30; Hi = -1e30;
+            for (double X = X0; X <= X1 + 100; X += 100) for (double Y = Y0; Y <= Y1 + 100; Y += 100) { const double H = BaseHeightM(X / 100, Y / 100) * 100; Lo = FMath::Min(Lo, H); Hi = FMath::Max(Hi, H); }
+            Lo -= 100; Hi += 100;
+        };
+        Tree->MaxLod = ChunksX > 8 ? 3 : 2;
+        Tree->AreaMin = {0, 0, ChunkZMin * SFVox::N};
+        Tree->AreaMax = {ChunksX * SFVox::N, ChunksY * SFVox::N, (ChunkZMax + 1) * SFVox::N};
+        // The spike area keeps LOD 0 everywhere by default (collision and traces anywhere in it); LOD runs override K.
+        if (!FParse::Value(FCommandLine::Get(), TEXT("SFTerrainSpikeLodK="), I.K)) { I.K = 8.0; }
+    }
+    I.Field.B = I.Base;
+    I.Field.BedrockCm = BedrockZCm;
+    I.Tree = Tree;
+    for (const FSFTerrainSpikeOp& Op : Ops) { SFVox::P3 Lo, Hi; I.Field.Apply({Op.Xmm / 10.0, Op.Ymm / 10.0, Op.Zmm / 10.0, Op.RadiusMm / 10.0, Op.Kind}, Lo, Hi); }
     Applied = Ops.Num();
-    TotalTris = 0;
-    for (auto& P : Chunks) { double E, U; int32 T; Remesh(P.Key, E, U, T); TotalTris += T; }
+    FString FocusStr;
+    if (FParse::Value(FCommandLine::Get(), TEXT("SFTerrainSpikeFocus="), FocusStr))
+    {
+        TArray<FString> P; FocusStr.ParseIntoArray(P, TEXT(","));
+        if (P.Num() == 3) { I.Focus = {{FCString::Atod(*P[0]), FCString::Atod(*P[1]), FCString::Atod(*P[2])}}; I.bFixedFocus = true; }
+    }
+    if (!I.bFixedFocus)
+    {
+        for (TActorIterator<APlayerStart> It(GetWorld()); It; ++It) { const FVector L = It->GetActorLocation(); I.Focus.push_back({L.X, L.Y, I.Base->HeightCm(L.X, L.Y)}); }
+        if (I.Focus.empty()) { I.Focus.push_back({2400, 1200, I.Base->HeightCm(2400, 1200)}); }
+    }
+    Tree->Build(I.Focus, I.K, I.MinLod);
+    // Initial build: every leaf meshed in parallel, collision cooked synchronously (ready before any pawn exists).
+    std::vector<SFVox::Leaf> Leaves;
+    for (const auto& P : Tree->Leaves) { if (!(I.bServer && P.second.Lod > 0)) { Leaves.push_back(P.second); } }
+    std::vector<std::shared_ptr<SFVox::Mesh>> Out(Leaves.size());
+    std::vector<FSFLeafUpload> Up(Leaves.size());
+    const SFVox::Field& F = I.Field;
+    ParallelFor((int32)Leaves.size(), [&](int32 Li)
+    {
+        if (!SFVox::MayHaveSurface(F, Leaves[Li])) { return; }
+        auto M = std::make_shared<SFVox::Mesh>();
+        SFVox::MeshChunk({Leaves[Li], Tree->AreaMin, Tree->AreaMax}, F, *Tree, *M);
+        if (M->I.empty()) { return; }
+        FSFLeafUpload& U = Up[Li];
+        const int32 Nv = int32(M->P.size() / 3);
+        U.P.SetNumUninitialized(Nv); U.N.SetNumUninitialized(Nv); U.Col.SetNumUninitialized(Nv);
+        for (int32 V = 0; V < Nv; ++V)
+        {
+            U.P[V] = FVector(M->P[V * 3], M->P[V * 3 + 1], M->P[V * 3 + 2]);
+            U.N[V] = FVector(M->Nrm[V * 3], M->Nrm[V * 3 + 1], M->Nrm[V * 3 + 2]);
+            const double Deg = FMath::RadiansToDegrees(FMath::Acos(FMath::Clamp((double)U.N[V].Z, -1.0, 1.0)));
+            U.Col[V] = FLinearColor(FMath::Clamp((Deg - 20.0) / 20.0, 0.0, 1.0), 0, 0, 0);
+        }
+        U.I.SetNumUninitialized(int32(M->I.size()));
+        for (int32 Q = 0; Q < U.I.Num(); ++Q) { U.I[Q] = int32(M->I[Q]); }
+        Out[Li] = M;
+    });
+    const double TMesh = FPlatformTime::Seconds();
+    int32 Tris = 0;
+    for (size_t Li = 0; Li < Leaves.size(); ++Li)
+    {
+        if (!Out[Li]) { continue; }
+        const uint64 Key = SFVox::LodTree::KeyOf(Leaves[Li]);
+        ShowLeaf(Key, Leaves[Li].Lod == 0, Up[Li]);
+        I.Cpu[Key] = Out[Li];
+        Tris += Up[Li].I.Num() / 3;
+    }
+    for (auto& P : LeafMeshes) { P.Value->bUseAsyncCooking = true; } // later edits cook collision off the game thread
+    I.ShownTree = Tree;
+    I.bInitialDone = true;
     InitialBuildMs = (FPlatformTime::Seconds() - T0) * 1000.0;
-    BuildHeightfieldStrip();
+    if (!I.bZone) { BuildHeightfieldStrip(); }
+    FString CmpPath;
+    if (FParse::Value(FCommandLine::Get(), TEXT("SFTerrainSpikeCompareMesh="), CmpPath))
+    {
+        if (UStaticMesh* SM = LoadObject<UStaticMesh>(nullptr, *CmpPath))
+        {
+            CompareMesh = NewObject<UStaticMeshComponent>(this, TEXT("CompareMesh"));
+            CompareMesh->SetupAttachment(RootComponent);
+            CompareMesh->SetStaticMesh(SM);
+            CompareMesh->SetMaterial(0, GroundMaterial);
+            CompareMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            CompareMesh->SetVisibility(false);
+            CompareMesh->RegisterComponent();
+        }
+    }
+    TMap<int32, int32> Hist; for (const auto& P : Tree->Leaves) { Hist.FindOrAdd(P.second.Lod)++; }
+    FString HistStr; for (const auto& H : Hist) { HistStr += FString::Printf(TEXT("L%d:%d "), H.Key, H.Value); }
+    const FVector S(I.Focus[0][0], I.Focus[0][1], 0);
     FHitResult Hit;
-    const bool bGround = GetWorld()->LineTraceSingleByChannel(Hit, FVector(2400, 1200, 3000), FVector(2400, 1200, -3200), ECC_Visibility);
-    UE_LOG(LogSFTerrainSpike, Display, TEXT("TERRAIN_SPIKE_READY netmode=%d chunks=%d tris=%d initial_build_ms=%.1f process_uptime_s=%.2f start_ground=%d start_ground_z=%.1f hash=%d"),
-        (int32)GetNetMode(), Chunks.Num(), TotalTris, InitialBuildMs, FPlatformTime::Seconds() - GStartTime, bGround ? 1 : 0, bGround ? Hit.ImpactPoint.Z : 0.0, DensityHash());
+    const bool bGround = GetWorld()->LineTraceSingleByChannel(Hit, FVector(S.X, S.Y, 1e5), FVector(S.X, S.Y, -1e5), ECC_Visibility);
+    UE_LOG(LogSFTerrainSpike, Display, TEXT("TERRAIN_SPIKE_READY netmode=%d zone=%d leaves=%d meshed=%d lods=%s k=%.2f tris=%d initial_build_ms=%.1f mesh_ms=%.1f process_uptime_s=%.2f start_ground=%d start_ground_z=%.1f hash=%d"),
+        (int32)GetNetMode(), I.bZone ? 1 : 0, (int32)Tree->Leaves.size(), (int32)I.Cpu.size(), *HistStr.TrimEnd(), I.K, Tris, InitialBuildMs, (TMesh - T0) * 1000.0,
+        FPlatformTime::Seconds() - GStartTime, bGround ? 1 : 0, bGround ? Hit.ImpactPoint.Z : 0.0, DensityHash());
+}
+
+void ASFTerrainSpike::ShowLeaf(uint64 Key, bool bLod0, const FSFLeafUpload& Up)
+{
+    TObjectPtr<UProceduralMeshComponent>& C = LeafMeshes.FindOrAdd(Key);
+    if (!C)
+    {
+        C = NewObject<UProceduralMeshComponent>(this);
+        C->bUseAsyncCooking = Impl->bInitialDone;
+        C->SetupAttachment(RootComponent);
+        C->SetCollisionProfileName(bLod0 ? UCollisionProfile::BlockAll_ProfileName : UCollisionProfile::NoCollision_ProfileName);
+        // Static: the ground never moves, so no velocity pass and cacheable shadow pages; a remesh only re-creates the proxy.
+        if (!FParse::Param(FCommandLine::Get(), TEXT("SFTerrainSpikeMovable"))) { C->SetMobility(EComponentMobility::Static); }
+        C->RegisterComponent();
+        C->SetMaterial(0, GroundMaterial);
+        C->SetVisibility(bVisible);
+    }
+    C->CreateMeshSection_LinearColor(0, Up.P, Up.I, Up.N, {}, Up.Col, {}, bLod0);
+}
+
+void ASFTerrainSpike::RemoveLeaf(uint64 Key)
+{
+    if (TObjectPtr<UProceduralMeshComponent>* C = LeafMeshes.Find(Key))
+    {
+        if (*C) { (*C)->DestroyComponent(); }
+        LeafMeshes.Remove(Key);
+    }
+    Impl->Cpu.erase(Key);
 }
 
 void ASFTerrainSpike::CheckPawns()
@@ -147,19 +363,23 @@ void ASFTerrainSpike::CheckPawns()
             FHitResult Hit; FCollisionQueryParams Q; Q.AddIgnoredActor(P);
             const bool bGround = GetWorld()->LineTraceSingleByChannel(Hit, L, L - FVector(0, 0, 6000), ECC_Visibility, Q);
             UE_LOG(LogSFTerrainSpike, Display, TEXT("TERRAIN_SPIKE_PAWN_SEEN netmode=%d t=%.2f pos=(%.0f,%.0f,%.0f) ground=%d ground_z=%.1f collision_ready_before_pawn=%d"),
-                (int32)GetNetMode(), Now, L.X, L.Y, L.Z, bGround ? 1 : 0, bGround ? Hit.ImpactPoint.Z : 0.0, Chunks.Num() > 0 ? 1 : 0);
+                (int32)GetNetMode(), Now, L.X, L.Y, L.Z, bGround ? 1 : 0, bGround ? Hit.ImpactPoint.Z : 0.0, Impl->Cpu.size() > 0 ? 1 : 0);
         }
         if (HasAuthority() && L.Z > BedrockZCm)
         {
-            // Snap rule: a pawn placed where no terrain exists (the Dev-map construction fixture teleports to (-200,-400,96))
-            // is moved onto installed terrain at the spike start before it can fall.
+            // Snap rule: a pawn with no ground under it (the Dev-map construction fixture teleports to (-200,-400,96), which can
+            // be outside the spike area or under the zone ground) is moved onto installed terrain before it can fall.
             FHitResult Hit; FCollisionQueryParams Q; Q.AddIgnoredActor(P);
-            if (!GetWorld()->LineTraceSingleByChannel(Hit, L + FVector(0, 0, 200), L - FVector(0, 0, 6000), ECC_Visibility, Q)
-                && GetWorld()->LineTraceSingleByChannel(Hit, FVector(2400, 1200, 3000), FVector(2400, 1200, -3200), ECC_Visibility, Q))
+            if (!GetWorld()->LineTraceSingleByChannel(Hit, L + FVector(0, 0, 200), L - FVector(0, 0, 6000), ECC_Visibility, Q))
             {
-                P->SetActorLocation(Hit.ImpactPoint + FVector(0, 0, 120), false, nullptr, ETeleportType::TeleportPhysics);
-                UE_LOG(LogSFTerrainSpike, Display, TEXT("TERRAIN_SPIKE_PAWN_SNAPPED t=%.2f from=(%.0f,%.0f,%.0f) to_ground_z=%.1f"), Now, L.X, L.Y, L.Z, Hit.ImpactPoint.Z);
-                continue;
+                const FVector S(Impl->Focus[0][0], Impl->Focus[0][1], 0);
+                if (GetWorld()->LineTraceSingleByChannel(Hit, FVector(L.X, L.Y, 1e5), FVector(L.X, L.Y, -1e5), ECC_Visibility, Q)
+                    || GetWorld()->LineTraceSingleByChannel(Hit, FVector(S.X, S.Y, 1e5), FVector(S.X, S.Y, -1e5), ECC_Visibility, Q))
+                {
+                    P->SetActorLocation(Hit.ImpactPoint + FVector(0, 0, 120), false, nullptr, ETeleportType::TeleportPhysics);
+                    UE_LOG(LogSFTerrainSpike, Display, TEXT("TERRAIN_SPIKE_PAWN_SNAPPED t=%.2f from=(%.0f,%.0f,%.0f) to=(%.0f,%.0f,%.1f)"), Now, L.X, L.Y, L.Z, Hit.ImpactPoint.X, Hit.ImpactPoint.Y, Hit.ImpactPoint.Z);
+                    continue;
+                }
             }
         }
         if (L.Z < BedrockZCm - 1000.f)
@@ -178,6 +398,7 @@ void ASFTerrainSpike::SetSpikeCamera(FVector Eye, FVector At)
     if (!SpikeCamera) { SpikeCamera = GetWorld()->SpawnActor<ACameraActor>(); SpikeCamera->GetCameraComponent()->SetFieldOfView(70.f); }
     SpikeCamera->SetActorLocationAndRotation(Eye, (At - Eye).Rotation());
     PC->SetViewTarget(SpikeCamera);
+    Impl->NextFocus = 0; // re-focus the LOD on the next tick
 }
 
 void ASFTerrainSpike::BuildHeightfieldStrip()
@@ -188,7 +409,7 @@ void ASFTerrainSpike::BuildHeightfieldStrip()
     HF->SetupAttachment(RootComponent);
     HF->SetCollisionProfileName(UCollisionProfile::BlockAll_ProfileName);
     HF->RegisterComponent();
-    MeshRefs.Add(HF);
+    HeightfieldStrip = HF;
     const int32 NX = 49, NY = 97;
     TArray<FVector> P; TArray<FVector> Nrm; TArray<FLinearColor> Col; TArray<int32> T;
     for (int32 J = 0; J < NY; ++J)
@@ -216,8 +437,8 @@ FString ASFTerrainSpike::ApplyEdit(FVector C, float R, int32 Kind)
 {
     if (!HasAuthority()) { return TEXT("not authority"); }
     if (R < 50.f || R > 500.f) { return TEXT("radius outside 0.5-5 m"); }
-    const double SizeX = ChunksX * TsChunkCm, SizeY = ChunksY * TsChunkCm;
-    if (C.X - R < BorderExclusionCm || C.Y - R < BorderExclusionCm || C.X + R > SizeX - BorderExclusionCm || C.Y + R > SizeY - BorderExclusionCm)
+    const FBox A = AreaBox();
+    if (C.X - R < A.Min.X + BorderExclusionCm || C.Y - R < A.Min.Y + BorderExclusionCm || C.X + R > A.Max.X - BorderExclusionCm || C.Y + R > A.Max.Y - BorderExclusionCm)
     {
         return TEXT("region border exclusion");
     }
@@ -234,180 +455,237 @@ FString ASFTerrainSpike::ApplyEdit(FVector C, float R, int32 Kind)
 
 void ASFTerrainSpike::OnRep_Ops()
 {
-    if (Chunks.Num() == 0) { return; } // BeginPlay applies the backlog
+    if (!Impl->bInitialDone) { return; } // BuildBase applies the backlog
     for (; Applied < Ops.Num(); ++Applied)
     {
-        LatencyMs.Add((FPlatformTime::Seconds() - Ops[Applied].ServerSeconds) * 1000.0);
+        Impl->LatencyMs.Add((FPlatformTime::Seconds() - Ops[Applied].ServerSeconds) * 1000.0);
         ApplyOp(Ops[Applied], true);
     }
 }
 
-void ASFTerrainSpike::ApplyOp(const FSFTerrainSpikeOp& Op, bool bRemesh)
+void ASFTerrainSpike::ApplyOp(const FSFTerrainSpikeOp& Op, bool bLog)
 {
+    FSFTerrainSpikeImpl& I = *Impl;
     const double T0 = FPlatformTime::Seconds();
-    const FVector C(Op.Xmm / 10.0, Op.Ymm / 10.0, Op.Zmm / 10.0);
-    const double R = Op.RadiusMm / 10.0;
-    const FIntVector GMin(FMath::FloorToInt((C.X - R - 2 * TsV) / TsV), FMath::FloorToInt((C.Y - R - 2 * TsV) / TsV), FMath::FloorToInt((C.Z - R - 2 * TsV) / TsV));
-    const FIntVector GMax(FMath::CeilToInt((C.X + R + 2 * TsV) / TsV), FMath::CeilToInt((C.Y + R + 2 * TsV) / TsV), FMath::CeilToInt((C.Z + R + 2 * TsV) / TsV));
-    for (int32 Gz = GMin.Z; Gz <= GMax.Z; ++Gz)
+    SFVox::P3 GMin, GMax;
+    I.Field.Apply({Op.Xmm / 10.0, Op.Ymm / 10.0, Op.Zmm / 10.0, Op.RadiusMm / 10.0, Op.Kind}, GMin, GMax);
+    // Every leaf that reads a changed sample (its closed box, +-2 cells for gradients and the level filter) is remeshed.
+    int32 Count = 0;
+    for (const auto& P : I.Tree->Leaves)
     {
-        if (Op.Kind == 0 && Gz * TsV < BedrockZCm) { continue; } // bedrock floor: never lowered
-        for (int32 Gy = GMin.Y; Gy <= GMax.Y; ++Gy)
-            for (int32 Gx = GMin.X; Gx <= GMax.X; ++Gx)
-            {
-                const FIntVector G(Gx, Gy, Gz), K(TsFloorDiv(Gx, TsN), TsFloorDiv(Gy, TsN), TsFloorDiv(Gz, TsN));
-                FChunk* Ch = Chunks.Find(K);
-                if (!Ch) { continue; }
-                const FIntVector L = G - K * TsN;
-                int16& D = Ch->D[(L.Z * TsN + L.Y) * TsN + L.X];
-                const double Dist = (FVector(Gx, Gy, Gz) * TsV - C).Size();
-                if (Op.Kind == 0) { D = FMath::Min<int16>(D, TsQuantize(FMath::Clamp(0.5 + (Dist - R) / (2 * TsV), 0.0, 1.0))); }
-                else if (Op.Kind == 1) { D = FMath::Max<int16>(D, TsQuantize(FMath::Clamp(0.5 + (R - Dist) / (2 * TsV), 0.0, 1.0))); }
-                else
-                {
-                    // Flatten: inside the cylinder of radius R, |dz| <= R, the surface becomes the plane z = C.Z (cut and fill).
-                    const double Hd = FVector2D(Gx * TsV - C.X, Gy * TsV - C.Y).Size(), Dz = Gz * TsV - C.Z;
-                    if (Hd <= R && FMath::Abs(Dz) <= R && !(Dz < 0 && Gz * TsV < BedrockZCm)) { D = TsQuantize(FMath::Clamp(0.5 - Dz / (2 * TsV), 0.0, 1.0)); }
-                }
-            }
+        if (SFVox::LeafReads(P.second, GMin, GMax)) { I.Dirty.Add(P.first); ++Count; }
     }
-    if (!bRemesh) { return; }
-    // Chunk k reads samples [32k-1, 32k+33]; remesh every chunk that reads a touched sample.
-    double E = 0, U = 0; int32 Count = 0, Tris = 0;
-    TArray<FIntVector> Touched;
-    for (int32 Kz = TsCeilDiv(GMin.Z - 33, TsN); Kz <= TsFloorDiv(GMax.Z + 1, TsN); ++Kz)
-        for (int32 Ky = TsCeilDiv(GMin.Y - 33, TsN); Ky <= TsFloorDiv(GMax.Y + 1, TsN); ++Ky)
-            for (int32 Kx = TsCeilDiv(GMin.X - 33, TsN); Kx <= TsFloorDiv(GMax.X + 1, TsN); ++Kx)
-            {
-                const FIntVector K(Kx, Ky, Kz);
-                if (!Chunks.Contains(K)) { continue; }
-                double E1, U1; int32 T1; Remesh(K, E1, U1, T1);
-                E += E1; U += U1; Tris += T1; ++Count; Touched.Add(K);
-            }
-    const double Total = (FPlatformTime::Seconds() - T0) * 1000.0;
-    TotalTears += TearCheck(Touched, FBox(FVector(GMin) * TsV, FVector(GMax) * TsV)); // outside the timed edit
-    EditMs.Add(Total); ExtractMs.Add(E); UploadMs.Add(U); ChunksPerEdit.Add(Count);
-    UE_LOG(LogSFTerrainSpike, Display, TEXT("TERRAIN_SPIKE_EDIT n=%d netmode=%d kind=%d c=(%.0f,%.0f,%.0f) r=%.0f chunks=%d tris=%d extract_ms=%.2f upload_collision_ms=%.2f total_ms=%.2f latency_ms=%.1f hash=%d"),
-        EditMs.Num(), (int32)GetNetMode(), Op.Kind, C.X, C.Y, C.Z, R, Count, Tris, E, U, Total,
-        LatencyMs.Num() ? LatencyMs.Last() : 0.0, DensityHash());
+    const double Ms = (FPlatformTime::Seconds() - T0) * 1000.0;
+    I.ApplyMs.Add(Ms); I.ChunksPerEdit.Add(Count);
+    I.Queued.Add({I.ApplyMs.Num(), FBox(FVector(GMin.x, GMin.y, GMin.z) * TsV, FVector(GMax.x, GMax.y, GMax.z) * TsV), T0});
+    if (bLog)
+    {
+        UE_LOG(LogSFTerrainSpike, Display, TEXT("TERRAIN_SPIKE_EDIT n=%d netmode=%d kind=%d c=(%.0f,%.0f,%.0f) r=%.0f leaves=%d apply_ms=%.3f latency_ms=%.1f hash=%d"),
+            I.ApplyMs.Num(), (int32)GetNetMode(), Op.Kind, Op.Xmm / 10.0, Op.Ymm / 10.0, Op.Zmm / 10.0, Op.RadiusMm / 10.0, Count, Ms,
+            I.LatencyMs.Num() ? I.LatencyMs.Last() : 0.0, DensityHash());
+    }
 }
 
-void ASFTerrainSpike::Remesh(const FIntVector& Key, double& OutE, double& OutU, int32& OutTris)
+void ASFTerrainSpike::UpdateFocus(bool bForce)
 {
-    const double T0 = FPlatformTime::Seconds();
-    const FIntVector O = Key * TsN;
-    // Samples -1..33 (35^3) cached once; cells -1..31 (33^3) carry vertices.
-    constexpr int32 S = TsN + 3, CN = TsN + 1;
-    TArray<float> F; F.SetNumUninitialized(S * S * S);
-    for (int32 Z = 0; Z < S; ++Z)
-        for (int32 Y = 0; Y < S; ++Y)
-            for (int32 X = 0; X < S; ++X)
-                F[(Z * S + Y) * S + X] = (Sample(O + FIntVector(X - 1, Y - 1, Z - 1)) - TsIso) / float(TsQMax);
-    auto f = [&](int32 X, int32 Y, int32 Z) { return F[((Z + 1) * S + (Y + 1)) * S + (X + 1)]; };
+    FSFTerrainSpikeImpl& I = *Impl;
+    if (I.bFixedFocus || I.Batch) { return; }
+    const double Now = FPlatformTime::Seconds();
+    if (!bForce && Now < I.NextFocus) { return; }
+    I.NextFocus = Now + 0.2;
+    std::vector<std::array<double, 3>> F;
+    if (I.bServer)
+    {
+        for (TActorIterator<APawn> It(GetWorld()); It; ++It) { const FVector L = It->GetActorLocation(); F.push_back({L.X, L.Y, L.Z}); }
+    }
+    else if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
+    {
+        // Camera for the look, and the local pawn so its LOD-0 collision stays under it wherever the camera goes.
+        if (PC->PlayerCameraManager) { const FVector L = PC->PlayerCameraManager->GetCameraLocation(); F.push_back({L.X, L.Y, L.Z}); }
+        if (const APawn* P = PC->GetPawn()) { const FVector L = P->GetActorLocation(); F.push_back({L.X, L.Y, L.Z}); }
+    }
+    if (F.empty()) { return; }
+    double Moved = F.size() != I.Focus.size() ? 1e9 : 0.0;
+    for (size_t Q = 0; Q < F.size() && Q < I.Focus.size(); ++Q) { Moved = FMath::Max(Moved, FVector(F[Q][0] - I.Focus[Q][0], F[Q][1] - I.Focus[Q][1], F[Q][2] - I.Focus[Q][2]).Size()); }
+    if (!bForce && Moved < 100.0) { return; }
+    auto T = std::make_shared<SFVox::LodTree>();
+    T->MaxLod = I.Tree->MaxLod; T->AreaMin = I.Tree->AreaMin; T->AreaMax = I.Tree->AreaMax;
+    T->Build(F, I.K, I.MinLod);
+    I.Focus = F;
+    // Diff: new leaves, and kept leaves touching an added or removed leaf (their boundary point levels may change).
+    std::vector<SFVox::Leaf> Changed;
+    for (const auto& P : T->Leaves) { if (!I.Tree->Leaves.count(P.first)) { Changed.push_back(P.second); I.Dirty.Add(P.first); } }
+    for (const auto& P : I.Tree->Leaves) { if (!T->Leaves.count(P.first)) { Changed.push_back(P.second); } }
+    if (Changed.empty()) { return; }
+    for (const auto& P : T->Leaves)
+    {
+        if (!I.Tree->Leaves.count(P.first)) { continue; }
+        const SFVox::Leaf& A = P.second; const SFVox::i64 Ea = SFVox::LodTree::Size(A.Lod);
+        for (const SFVox::Leaf& B : Changed)
+        {
+            const SFVox::i64 Eb = SFVox::LodTree::Size(B.Lod);
+            if (A.O.x <= B.O.x + Eb && A.O.x + Ea >= B.O.x && A.O.y <= B.O.y + Eb && A.O.y + Ea >= B.O.y && A.O.z <= B.O.z + Eb && A.O.z + Ea >= B.O.z) { I.Dirty.Add(P.first); break; }
+        }
+    }
+    I.Tree = T;
+}
 
-    TArray<int32> Index; Index.Init(-1, CN * CN * CN);
-    TArray<FVector> P, Nrm; TArray<FLinearColor> Col; TArray<int32> T;
-    for (int32 Z = -1; Z < TsN; ++Z)
-        for (int32 Y = -1; Y < TsN; ++Y)
-            for (int32 X = -1; X < TsN; ++X)
+void ASFTerrainSpike::LaunchBatch()
+{
+    FSFTerrainSpikeImpl& I = *Impl;
+    auto B = std::make_shared<FSFTerrainSpikeImpl::FBatch>();
+    B->Tree = I.Tree;
+    B->Snap = I.Field;
+    B->T0 = FPlatformTime::Seconds();
+    for (uint64 Key : I.Dirty)
+    {
+        auto It = I.Tree->Leaves.find(Key);
+        if (It == I.Tree->Leaves.end()) { continue; }
+        if (I.bServer && It->second.Lod > 0) { B->Remove.push_back(Key); continue; } // the server renders nothing: LOD 0 collision only
+        B->Leaves.push_back(It->second); B->Keys.push_back(Key);
+    }
+    I.Dirty.Reset();
+    B->Ops = MoveTemp(I.Queued);
+    B->Out.resize(B->Leaves.size());
+    B->Up.resize(B->Leaves.size());
+    I.Batch = B;
+    I.Task = UE::Tasks::Launch(UE_SOURCE_LOCATION, [B]()
+    {
+        const double T0 = FPlatformTime::Seconds();
+        ParallelFor((int32)B->Leaves.size(), [&B](int32 Li)
+        {
+            if (!SFVox::MayHaveSurface(B->Snap, B->Leaves[Li])) { return; }
+            auto M = std::make_shared<SFVox::Mesh>();
+            SFVox::MeshChunk({B->Leaves[Li], B->Tree->AreaMin, B->Tree->AreaMax}, B->Snap, *B->Tree, *M);
+            if (M->I.empty()) { return; }
+            FSFLeafUpload& U = B->Up[Li];
+            const int32 Nv = int32(M->P.size() / 3);
+            U.P.SetNumUninitialized(Nv); U.N.SetNumUninitialized(Nv); U.Col.SetNumUninitialized(Nv);
+            for (int32 V = 0; V < Nv; ++V)
             {
-                float c[8]; int32 Solid = 0;
-                for (int32 i = 0; i < 8; ++i) { c[i] = f(X + (i & 1), Y + ((i >> 1) & 1), Z + ((i >> 2) & 1)); Solid += c[i] >= 0.f; }
-                if (Solid == 0 || Solid == 8) { continue; }
-                FVector Acc(0); int32 Cnt = 0;
-                static const int32 E[12][2] = {{0,1},{2,3},{4,5},{6,7},{0,2},{1,3},{4,6},{5,7},{0,4},{1,5},{2,6},{3,7}};
-                for (const auto& e : E)
-                {
-                    const float a = c[e[0]], b = c[e[1]];
-                    if ((a >= 0.f) == (b >= 0.f)) { continue; }
-                    const float t = a / (a - b);
-                    const FVector Pa(e[0] & 1, (e[0] >> 1) & 1, (e[0] >> 2) & 1), Pb(e[1] & 1, (e[1] >> 1) & 1, (e[1] >> 2) & 1);
-                    Acc += Pa + (Pb - Pa) * t; ++Cnt;
-                }
-                const FVector Grad((c[1] + c[3] + c[5] + c[7]) - (c[0] + c[2] + c[4] + c[6]),
-                                   (c[2] + c[3] + c[6] + c[7]) - (c[0] + c[1] + c[4] + c[5]),
-                                   (c[4] + c[5] + c[6] + c[7]) - (c[0] + c[1] + c[2] + c[3]));
-                const FVector Out = (-Grad).GetSafeNormal(UE_SMALL_NUMBER, FVector::UpVector);
-                Index[((Z + 1) * CN + (Y + 1)) * CN + (X + 1)] = P.Num();
-                P.Add((FVector(O + FIntVector(X, Y, Z)) + Acc / Cnt) * TsV);
-                Nrm.Add(Out);
-                const double Deg = FMath::RadiansToDegrees(FMath::Acos(FMath::Clamp(Out.Z, -1.0, 1.0)));
-                Col.Add(FLinearColor(FMath::Clamp((Deg - 20.0) / 20.0, 0.0, 1.0), 0, 0, 0));
+                U.P[V] = FVector(M->P[V * 3], M->P[V * 3 + 1], M->P[V * 3 + 2]);
+                U.N[V] = FVector(M->Nrm[V * 3], M->Nrm[V * 3 + 1], M->Nrm[V * 3 + 2]);
+                const double Deg = FMath::RadiansToDegrees(FMath::Acos(FMath::Clamp((double)U.N[V].Z, -1.0, 1.0)));
+                U.Col[V] = FLinearColor(FMath::Clamp((Deg - 20.0) / 20.0, 0.0, 1.0), 0, 0, 0);
             }
-    auto Cell = [&](int32 X, int32 Y, int32 Z) { return Index[((Z + 1) * CN + (Y + 1)) * CN + (X + 1)]; };
-    for (int32 Z = 0; Z < TsN; ++Z)
-        for (int32 Y = 0; Y < TsN; ++Y)
-            for (int32 X = 0; X < TsN; ++X)
-                for (int32 Axis = 0; Axis < 3; ++Axis)
-                {
-                    const FIntVector Ea(Axis == 0, Axis == 1, Axis == 2), Eb(Axis == 1, Axis == 2, Axis == 0), Ec(Axis == 2, Axis == 0, Axis == 1);
-                    const float a = f(X, Y, Z), b = f(X + Ea.X, Y + Ea.Y, Z + Ea.Z);
-                    if ((a >= 0.f) == (b >= 0.f)) { continue; }
-                    const FIntVector Q(X, Y, Z);
-                    const FIntVector Q1 = Q - Eb, Q2 = Q - Eb - Ec, Q3 = Q - Ec;
-                    int32 I0 = Cell(Q.X, Q.Y, Q.Z), I1 = Cell(Q1.X, Q1.Y, Q1.Z), I2 = Cell(Q2.X, Q2.Y, Q2.Z), I3 = Cell(Q3.X, Q3.Y, Q3.Z);
-                    if (I0 < 0 || I1 < 0 || I2 < 0 || I3 < 0) { continue; }
-                    const FVector OutDir = FVector(Ea) * (a >= 0.f ? 1.0 : -1.0); // from solid to air
-                    // UE front face: (P2 - P0) ^ (P1 - P0) points out.
-                    auto Facing = [&](int32 A, int32 B, int32 C) { return ((P[C] - P[A]) ^ (P[B] - P[A])) | OutDir; };
-                    if (Facing(I0, I1, I2) + Facing(I0, I2, I3) < 0.0) { Swap(I1, I3); }
-                    if (bTsLegacyWinding)
-                    {
-                        // Pre-fix behaviour (one orientation test per quad, fixed diagonal): folded quads leave a back-facing triangle.
-                        T.Append({I0, I1, I2, I0, I2, I3});
-                        continue;
-                    }
-                    // Fix: take the diagonal whose two triangles both face the air side; orient any remaining triangle on its own.
-                    int32 Tri[6] = {I0, I1, I2, I0, I2, I3};
-                    if (FMath::Min(Facing(I0, I1, I3), Facing(I1, I2, I3)) > FMath::Min(Facing(I0, I1, I2), Facing(I0, I2, I3)))
-                    {
-                        Tri[0] = I0; Tri[1] = I1; Tri[2] = I3; Tri[3] = I1; Tri[4] = I2; Tri[5] = I3;
-                    }
-                    for (int32 k = 0; k < 6; k += 3)
-                    {
-                        // Outward side = -grad of the trilinear field at the triangle centroid (cell-vertex normals average two sheets at
-                        // non-manifold cells and can point the wrong way there).
-                        const FVector Gc = (P[Tri[k]] + P[Tri[k + 1]] + P[Tri[k + 2]]) / (3.0 * TsV) - FVector(O);
-                        auto Tl = [&](FVector G)
-                        {
-                            G = G.BoundToBox(FVector(-1.0), FVector(TsN + 0.999)); const FIntVector B(FMath::FloorToInt(G.X), FMath::FloorToInt(G.Y), FMath::FloorToInt(G.Z));
-                            const FVector Fr = G - FVector(B); double Acc = 0;
-                            for (int32 c = 0; c < 8; ++c) { const int32 Ox = c & 1, Oy = (c >> 1) & 1, Oz = (c >> 2) & 1;
-                                Acc += (Ox ? Fr.X : 1 - Fr.X) * (Oy ? Fr.Y : 1 - Fr.Y) * (Oz ? Fr.Z : 1 - Fr.Z) * f(B.X + Ox, B.Y + Oy, B.Z + Oz); }
-                            return Acc;
-                        };
-                        const double h = 0.25;
-                        const FVector Nt = -FVector(Tl(Gc + FVector(h, 0, 0)) - Tl(Gc - FVector(h, 0, 0)), Tl(Gc + FVector(0, h, 0)) - Tl(Gc - FVector(0, h, 0)), Tl(Gc + FVector(0, 0, h)) - Tl(Gc - FVector(0, 0, h)));
-                        const FVector Ft = (P[Tri[k + 2]] - P[Tri[k]]) ^ (P[Tri[k + 1]] - P[Tri[k]]);
-                        auto Same = [&](int32 A, int32 B) { return FVector::DistSquared(P[A], P[B]) < 1e-6; };
-                        if (Same(Tri[k], Tri[k + 1]) || Same(Tri[k + 1], Tri[k + 2]) || Same(Tri[k], Tri[k + 2])) { continue; } // coincident cell vertices: drop, its two edge uses cancel
-                        if ((Ft | Nt) < 0.0) { Swap(Tri[k + 1], Tri[k + 2]); }
-                        T.Append({Tri[k], Tri[k + 1], Tri[k + 2]});
-                    }
-                }
+            U.I.SetNumUninitialized(int32(M->I.size()));
+            for (int32 Q = 0; Q < U.I.Num(); ++Q) { U.I[Q] = int32(M->I[Q]); }
+            B->Out[Li] = M;
+        });
+        B->MeshMs = (FPlatformTime::Seconds() - T0) * 1000.0;
+    });
+}
+
+void ASFTerrainSpike::ApplyBatch()
+{
+    FSFTerrainSpikeImpl& I = *Impl;
+    std::shared_ptr<FSFTerrainSpikeImpl::FBatch> B = I.Batch;
+    I.Batch.reset();
+    const double T0 = FPlatformTime::Seconds();
+    if (B->Tree != I.ShownTree)
+    {
+        TArray<uint64> Gone;
+        for (const auto& P : LeafMeshes) { if (!B->Tree->Leaves.count(P.Key)) { Gone.Add(P.Key); } }
+        for (const auto& P : I.Cpu) { if (!B->Tree->Leaves.count(P.first) && !LeafMeshes.Contains(P.first)) { Gone.Add(P.first); } }
+        for (uint64 K : Gone) { RemoveLeaf(K); }
+        I.ShownTree = B->Tree;
+    }
+    for (uint64 K : B->Remove) { RemoveLeaf(K); }
+    for (size_t Li = 0; Li < B->Keys.size(); ++Li)
+    {
+        if (!B->Out[Li]) { RemoveLeaf(B->Keys[Li]); continue; }
+        ShowLeaf(B->Keys[Li], B->Leaves[Li].Lod == 0, B->Up[Li]);
+        I.Cpu[B->Keys[Li]] = B->Out[Li];
+    }
     const double T1 = FPlatformTime::Seconds();
-    UProceduralMeshComponent* M = Chunks[Key].Mesh;
-    if (T.Num()) { M->CreateMeshSection_LinearColor(0, P, T, Nrm, {}, Col, {}, true); }
-    else { M->ClearAllMeshSections(); }
-    OutE = (T1 - T0) * 1000.0;
-    OutU = (FPlatformTime::Seconds() - T1) * 1000.0;
-    OutTris = T.Num() / 3;
+    I.MeshMs.Add(B->MeshMs);
+    I.UploadMs.Add((T1 - T0) * 1000.0);
+    for (const FSFTerrainSpikeImpl::FOpCheck& Op : B->Ops) { I.VisibleMs.Add((T1 - Op.T0) * 1000.0); }
+    if (I.bTearCheck) { for (const FSFTerrainSpikeImpl::FOpCheck& Op : B->Ops) { TearCheckOp(Op.N, Op.Box, B.get()); } } // test instrumentation, timed apart
+    I.TearCheckMs += (FPlatformTime::Seconds() - T1) * 1000.0;
+}
+
+void ASFTerrainSpike::TearCheckOp(int32 N, const FBox& OpBox, const void* BatchPtr)
+{
+    FSFTerrainSpikeImpl& I = *Impl;
+    const auto* B = static_cast<const FSFTerrainSpikeImpl::FBatch*>(BatchPtr);
+    const SFVox::LodTree& T = *I.ShownTree;
+    const FBox Near = OpBox.ExpandBy(60.0);
+    std::vector<SFVox::CheckMesh> M;
+    std::vector<SFVox::Leaf> Core;
+    TMap<int32, int32> Lods;
+    bool bMissingRing = false;
+    auto Box = [](const SFVox::Leaf& L) { const double E = double(SFVox::LodTree::Size(L.Lod)) * TsV; const FVector O(L.O.x * TsV, L.O.y * TsV, L.O.z * TsV); return FBox(O, O + FVector(E)); };
+    for (const auto& P : I.Cpu)
+    {
+        auto It = T.Leaves.find(P.first);
+        if (It != T.Leaves.end() && Box(It->second).Intersect(Near)) { M.push_back({It->second, P.second.get(), true}); Core.push_back(It->second); Lods.FindOrAdd(It->second.Lod)++; }
+    }
+    if (M.empty()) { return; }
+    for (const auto& P : T.Leaves)
+    {
+        bool bCore = false, bTouch = false;
+        const FBox Bp = Box(P.second);
+        for (const SFVox::Leaf& C : Core) { if (C.O.x == P.second.O.x && C.O.y == P.second.O.y && C.O.z == P.second.O.z && C.Lod == P.second.Lod) { bCore = true; break; } bTouch |= Bp.ExpandBy(1.0).Intersect(Box(C)); }
+        if (bCore || !bTouch) { continue; }
+        auto Ct = I.Cpu.find(P.first);
+        if (Ct != I.Cpu.end()) { M.push_back({P.second, Ct->second.get(), false}); }
+        else if (I.bServer && P.second.Lod > 0) { bMissingRing = true; }
+    }
+    if (bMissingRing) { return; } // dedicated server next to unmeshed LOD > 0 leaves: edge counts would be meaningless
+    const FBox R = OpBox.ExpandBy(50.0);
+    const double RLo[3] = {R.Min.X, R.Min.Y, R.Min.Z}, RHi[3] = {R.Max.X, R.Max.Y, R.Max.Z};
+    auto Report = [&I](const char* What, const double* At)
+    {
+        if (I.TearLogged++ < 12) { UE_LOG(LogSFTerrainSpike, Display, TEXT("SPIKE_TEAR_AT %s (%.1f,%.1f,%.1f)"), ANSI_TO_TCHAR(What), At[0], At[1], At[2]); }
+    };
+    const SFVox::TearStats S = SFVox::CheckTears(B ? B->Snap : I.Field, T, M, RLo, RHi, Report);
+    ++I.TearChecks;
+    I.TearsTotal += S.Tears();
+    I.TearSum.Open += S.Open; I.TearSum.Border += S.Border; I.TearSum.Orient += S.Orient; I.TearSum.Degenerate += S.Degenerate; I.TearSum.BackFacing += S.BackFacing;
+    I.TearSum.RayHoles += S.RayHoles; I.TearSum.NonManifold += S.NonManifold; I.TearSum.GradientDisagree += S.GradientDisagree; I.TearSum.Rays += S.Rays; I.TearSum.Tris += S.Tris;
+    FString LodStr; for (const auto& L : Lods) { LodStr += FString::Printf(TEXT("L%d:%d "), L.Key, L.Value); }
+    UE_LOG(LogSFTerrainSpike, Display, TEXT("SPIKE_TEARS %d op=%d netmode=%d lods=%s open=%d border_mismatch=%d orient=%d degenerate=%d backfacing=%d ray_holes=%d nonmanifold_edges=%d gradient_disagree=%d rays=%d tris=%d check=%d"),
+        (int32)S.Tears(), N, (int32)GetNetMode(), *LodStr.TrimEnd(), (int32)S.Open, (int32)S.Border, (int32)S.Orient, (int32)S.Degenerate, (int32)S.BackFacing, (int32)S.RayHoles,
+        (int32)S.NonManifold, (int32)S.GradientDisagree, (int32)S.Rays, (int32)S.Tris, (int32)I.TearChecks);
+}
+
+FString ASFTerrainSpike::SeamCheckAll()
+{
+    FSFTerrainSpikeImpl& I = *Impl;
+    if (!I.ShownTree) { return TEXT("{}"); }
+    std::vector<SFVox::CheckMesh> M;
+    TMap<int32, int32> Lods;
+    for (const auto& P : I.Cpu)
+    {
+        auto It = I.ShownTree->Leaves.find(P.first);
+        if (It != I.ShownTree->Leaves.end()) { M.push_back({It->second, P.second.get(), true}); Lods.FindOrAdd(It->second.Lod)++; }
+    }
+    const double T0 = FPlatformTime::Seconds();
+    auto Report = [&I](const char* What, const double* At) { if (I.TearLogged++ < 12) { UE_LOG(LogSFTerrainSpike, Display, TEXT("SPIKE_TEAR_AT %s (%.1f,%.1f,%.1f)"), ANSI_TO_TCHAR(What), At[0], At[1], At[2]); } };
+    const SFVox::TearStats S = SFVox::CheckTears(I.Field, *I.ShownTree, M, nullptr, nullptr, Report);
+    ++I.SeamChecks;
+    FString LodStr; for (const auto& L : Lods) { LodStr += FString::Printf(TEXT("\"L%d\":%d,"), L.Key, L.Value); }
+    LodStr.RemoveFromEnd(TEXT(","));
+    const FString J = FString::Printf(TEXT("{\"tears\":%d,\"open\":%d,\"border_mismatch\":%d,\"orient\":%d,\"degenerate\":%d,\"backfacing\":%d,\"nonmanifold_edges\":%d,\"gradient_disagree\":%d,\"edges\":%lld,\"tris\":%lld,\"leaves\":{%s},\"ms\":%.0f}"),
+        (int32)S.Tears(), (int32)S.Open, (int32)S.Border, (int32)S.Orient, (int32)S.Degenerate, (int32)S.BackFacing, (int32)S.NonManifold, (int32)S.GradientDisagree, (long long)S.Edges, (long long)S.Tris, *LodStr,
+        (FPlatformTime::Seconds() - T0) * 1000.0);
+    UE_LOG(LogSFTerrainSpike, Display, TEXT("SPIKE_SEAMS netmode=%d %s"), (int32)GetNetMode(), *J);
+    return J;
 }
 
 int32 ASFTerrainSpike::CountOpenEdges(FBox Box) const
 {
-    // Weld by exact position (surface nets vertices are pure functions of shared samples), count edge uses.
+    // Weld by exact position (shared vertices are bit-identical across leaves), count edge uses.
     TMap<TPair<FIntVector, FIntVector>, int32> Uses;
-    auto Q = [](const FVector3f& P) { return FIntVector(FMath::RoundToInt(P.X * 100.f), FMath::RoundToInt(P.Y * 100.f), FMath::RoundToInt(P.Z * 100.f)); };
-    for (const auto& Pair : Chunks)
+    auto Q = [](const float* P) { return FIntVector(FMath::RoundToInt(P[0] * 100.f), FMath::RoundToInt(P[1] * 100.f), FMath::RoundToInt(P[2] * 100.f)); };
+    for (const auto& P : Impl->Cpu)
     {
-        const FProcMeshSection* Sec = Pair.Value.Mesh->GetProcMeshSection(0);
-        if (!Sec) { continue; }
-        for (int32 i = 0; i + 2 < Sec->ProcIndexBuffer.Num(); i += 3)
-            for (int32 e = 0; e < 3; ++e)
+        const SFVox::Mesh& M = *P.second;
+        for (size_t I = 0; I + 2 < M.I.size(); I += 3)
+            for (int32 E = 0; E < 3; ++E)
             {
-                FIntVector A = Q(FVector3f(Sec->ProcVertexBuffer[Sec->ProcIndexBuffer[i + e]].Position));
-                FIntVector B = Q(FVector3f(Sec->ProcVertexBuffer[Sec->ProcIndexBuffer[i + (e + 1) % 3]].Position));
+                FIntVector A = Q(&M.P[M.I[I + E] * 3]), B = Q(&M.P[M.I[I + (E + 1) % 3] * 3]);
                 if (B.X < A.X || (B.X == A.X && (B.Y < A.Y || (B.Y == A.Y && B.Z < A.Z)))) { Swap(A, B); }
                 Uses.FindOrAdd({A, B})++;
             }
@@ -421,152 +699,37 @@ int32 ASFTerrainSpike::CountOpenEdges(FBox Box) const
     return Open;
 }
 
-int32 ASFTerrainSpike::TearCheck(const TArray<FIntVector>& Touched, const FBox& OpBox)
-{
-    struct FTri { FVector A, B, C, N; FIntVector Key; };
-    const FBox Near = OpBox.ExpandBy(60.0);
-    const FBox Area(FVector(0, 0, ChunkZMin * TsChunkCm), FVector(ChunksX * TsChunkCm, ChunksY * TsChunkCm, (ChunkZMax + 1) * TsChunkCm));
-    auto Q = [](const FVector& P) { return FIntVector(FMath::RoundToInt(P.X * 100.0), FMath::RoundToInt(P.Y * 100.0), FMath::RoundToInt(P.Z * 100.0)); };
-    TMap<TPair<FIntVector, FIntVector>, int32> Uses;
-    TArray<FTri> Tris;
-    TMap<FIntVector, FIntVector> Bad; // chunk -> (flipped, degenerate, unused)
-    TSet<FIntVector> Seen;
-    auto FieldAt = [&](const FVector& P)
-    {
-        const FVector G = P / TsV; const FIntVector B(FMath::FloorToInt(G.X), FMath::FloorToInt(G.Y), FMath::FloorToInt(G.Z));
-        const FVector F = G - FVector(B); double Acc = 0;
-        for (int32 c = 0; c < 8; ++c)
-        {
-            const FIntVector O(c & 1, (c >> 1) & 1, (c >> 2) & 1);
-            Acc += (O.X ? F.X : 1 - F.X) * (O.Y ? F.Y : 1 - F.Y) * (O.Z ? F.Z : 1 - F.Z) * ((Sample(B + O) - TsIso) / double(TsQMax));
-        }
-        return Acc;
-    };
-    auto FieldOut = [&](const FVector& P) { const double h = 0.25 * TsV; return -FVector(FieldAt(P + FVector(h, 0, 0)) - FieldAt(P - FVector(h, 0, 0)), FieldAt(P + FVector(0, h, 0)) - FieldAt(P - FVector(0, h, 0)), FieldAt(P + FVector(0, 0, h)) - FieldAt(P - FVector(0, 0, h))); };
-    for (const FIntVector& T : Touched)
-        for (int32 Dz = -1; Dz <= 1; ++Dz) for (int32 Dy = -1; Dy <= 1; ++Dy) for (int32 Dx = -1; Dx <= 1; ++Dx)
-        {
-            const FIntVector K = T + FIntVector(Dx, Dy, Dz);
-            const FChunk* Ch = Chunks.Find(K);
-            if (!Ch || Seen.Contains(K)) { continue; }
-            Seen.Add(K);
-            const FProcMeshSection* Sec = Ch->Mesh->GetProcMeshSection(0);
-            if (!Sec) { continue; }
-            const bool bTouched = Touched.Contains(K);
-            for (int32 i = 0; i + 2 < Sec->ProcIndexBuffer.Num(); i += 3)
-            {
-                const FProcMeshVertex* V[3] = {&Sec->ProcVertexBuffer[Sec->ProcIndexBuffer[i]], &Sec->ProcVertexBuffer[Sec->ProcIndexBuffer[i + 1]], &Sec->ProcVertexBuffer[Sec->ProcIndexBuffer[i + 2]]};
-                const FVector Face = (V[2]->Position - V[0]->Position) ^ (V[1]->Position - V[0]->Position);
-                for (int32 e = 0; e < 3; ++e)
-                {
-                    FIntVector A = Q(V[e]->Position), B = Q(V[(e + 1) % 3]->Position);
-                    if (B.X < A.X || (B.X == A.X && (B.Y < A.Y || (B.Y == A.Y && B.Z < A.Z)))) { Swap(A, B); }
-                    Uses.FindOrAdd({A, B})++;
-                }
-                if (bTouched)
-                {
-                    FIntVector& Cnt = Bad.FindOrAdd(K);
-                    if ((Face | FieldOut((V[0]->Position + V[1]->Position + V[2]->Position) / 3.0)) < 0.0) { ++Cnt.X; } // faces the solid side
-                    if (FVector::DistSquared(V[0]->Position, V[1]->Position) < 1e-6 || FVector::DistSquared(V[1]->Position, V[2]->Position) < 1e-6 || FVector::DistSquared(V[0]->Position, V[2]->Position) < 1e-6) { ++Cnt.Y; } // coincident vertices
-                }
-                FTri Tr{V[0]->Position, V[1]->Position, V[2]->Position, Face, K};
-                FBox Tb(ForceInit); Tb += Tr.A; Tb += Tr.B; Tb += Tr.C;
-                if (Tb.Intersect(Near)) { Tris.Add(Tr); }
-            }
-        }
-    TMap<FIntVector, int32> Open, Border, Holes, NonManifold;
-    for (const auto& U : Uses)
-    {
-        if (U.Value == 2) { continue; }
-        const FVector Mid = FVector(U.Key.Key + U.Key.Value) / 200.0;
-        if (!Area.ExpandBy(-1.0).IsInside(Mid)) { continue; } // world edge: open edges allowed
-        const FIntVector K(FMath::FloorToInt(Mid.X / TsChunkCm), FMath::FloorToInt(Mid.Y / TsChunkCm), FMath::FloorToInt(Mid.Z / TsChunkCm));
-        if (U.Value > 2) { NonManifold.FindOrAdd(K)++; } // two sheets touching on one edge: closed, informational
-        if (U.Value % 2 == 0) { continue; }
-        Open.FindOrAdd(K)++;
-        auto OnPlane = [](double X) { const double M = FMath::Fmod(FMath::Abs(X), TsChunkCm); return M < 0.5 || M > TsChunkCm - 0.5; };
-        if (OnPlane(Mid.X) || OnPlane(Mid.Y) || OnPlane(Mid.Z)) { Border.FindOrAdd(K)++; }
-    }
-    // Ray grid: a ray that starts in air must meet a front face first; air->solid without any hit is a hole.
-    // Trilinear density (-0.5 air .. +0.5 solid). Ray ends are classified only when clearly off the surface (|f| > 0.25);
-    // within a voxel of the surface the extracted mesh and the field may disagree by design, which is not a tear.
-    auto Field = [&](const FVector& P)
-    {
-        const FVector G = P / TsV; const FIntVector B(FMath::FloorToInt(G.X), FMath::FloorToInt(G.Y), FMath::FloorToInt(G.Z));
-        const FVector F = G - FVector(B); double Acc = 0;
-        for (int32 c = 0; c < 8; ++c)
-        {
-            const FIntVector O(c & 1, (c >> 1) & 1, (c >> 2) & 1);
-            const double W = (O.X ? F.X : 1 - F.X) * (O.Y ? F.Y : 1 - F.Y) * (O.Z ? F.Z : 1 - F.Z);
-            Acc += W * ((Sample(B + O) - TsIso) / double(TsQMax));
-        }
-        return Acc;
-    };
-    auto Solid = [&](const FVector& P) { return Field(P) > 0.25; };
-    auto Cast = [&](const FVector& S, const FVector& E)
-    {
-        if (Field(S) > -0.25) { return; } // start must be clearly in air
-        const FVector Dir = E - S;
-        double Best = 2.0; const FTri* Hit = nullptr;
-        for (const FTri& Tr : Tris)
-        {
-            const FVector E1 = Tr.B - Tr.A, E2 = Tr.C - Tr.A, Pv = Dir ^ E2;
-            const double Det = E1 | Pv;
-            if (FMath::Abs(Det) < 1e-9) { continue; }
-            const FVector Tv = S - Tr.A; const double Inv = 1.0 / Det;
-            const double U = (Tv | Pv) * Inv; if (U < 0 || U > 1) { continue; }
-            const FVector Qv = Tv ^ E1; const double W = (Dir | Qv) * Inv; if (W < 0 || U + W > 1) { continue; }
-            const double T = (E2 | Qv) * Inv;
-            if (T > 1e-6 && T < Best) { Best = T; Hit = &Tr; }
-        }
-        const FVector At = Hit ? S + Dir * Best : E;
-        const FIntVector K(FMath::FloorToInt(At.X / TsChunkCm), FMath::FloorToInt(At.Y / TsChunkCm), FMath::FloorToInt(At.Z / TsChunkCm));
-        if ((Hit && (Hit->N | Dir) > 0.0) || (!Hit && Solid(E)))
-        {
-            Holes.FindOrAdd(K)++;
-            static int32 Logged = 0;
-            if (Logged++ < 12)
-            {
-                UE_LOG(LogSFTerrainSpike, Display, TEXT("SPIKE_TEAR_RAY s=(%.1f,%.1f,%.1f) e=(%.1f,%.1f,%.1f) hit=%d at=(%.1f,%.1f,%.1f) f_start=%.3f f_hit_before=%.3f f_end=%.3f"),
-                    S.X, S.Y, S.Z, E.X, E.Y, E.Z, Hit ? 1 : 0, At.X, At.Y, At.Z, Field(S), Field(S + Dir * FMath::Max(0.0, Best - 0.02)), Field(E));
-            }
-        }
-    };
-    const FBox R = OpBox.ExpandBy(50.0).Overlap(Area.ExpandBy(-1.0));
-    for (double X = R.Min.X + 12.5; X < R.Max.X; X += 25.0)
-        for (double Y = R.Min.Y + 12.5; Y < R.Max.Y; Y += 25.0) { Cast(FVector(X, Y, R.Max.Z), FVector(X, Y, R.Min.Z)); }
-    for (double Z = R.Min.Z + 12.5; Z < R.Max.Z; Z += 50.0)
-    {
-        for (double Y = R.Min.Y + 12.5; Y < R.Max.Y; Y += 50.0) { Cast(FVector(R.Min.X, Y, Z), FVector(R.Max.X, Y, Z)); Cast(FVector(R.Max.X, Y, Z), FVector(R.Min.X, Y, Z)); }
-        for (double X = R.Min.X + 12.5; X < R.Max.X; X += 50.0) { Cast(FVector(X, R.Min.Y, Z), FVector(X, R.Max.Y, Z)); Cast(FVector(X, R.Max.Y, Z), FVector(X, R.Min.Y, Z)); }
-    }
-    int32 Total = 0;
-    ++TearChecks;
-    for (const FIntVector& K : Touched)
-    {
-        const FIntVector B = Bad.FindRef(K);
-        const int32 N = Open.FindRef(K) + B.X + B.Y + Holes.FindRef(K);
-        Total += N;
-        UE_LOG(LogSFTerrainSpike, Display, TEXT("SPIKE_TEARS (%d,%d,%d) %d open=%d border_mismatch=%d flipped=%d degenerate=%d ray_holes=%d nonmanifold_edges=%d check=%d"),
-            K.X, K.Y, K.Z, N, Open.FindRef(K), Border.FindRef(K), B.X, B.Y, Holes.FindRef(K), NonManifold.FindRef(K), TearChecks);
-    }
-    return Total;
-}
-
 FString ASFTerrainSpike::SeamGapJson() const
 {
-    UProceduralMeshComponent* HF = nullptr;
-    for (UProceduralMeshComponent* M : MeshRefs) { if (M && M->GetFName() == TEXT("HeightfieldStrip")) { HF = M; } }
+    if (!HeightfieldStrip) { return TEXT("{\"samples\":0}"); }
+    // Voxel side by a CPU ray down the shown meshes at x = 1 cm (independent of which leaves carry collision).
+    auto VoxelZ = [this](double X, double Y)
+    {
+        double Best = -1e9;
+        for (const auto& P : Impl->Cpu)
+        {
+            const SFVox::Mesh& M = *P.second;
+            for (size_t I = 0; I + 2 < M.I.size(); I += 3)
+            {
+                const float* A = &M.P[M.I[I] * 3]; const float* B = &M.P[M.I[I + 1] * 3]; const float* C = &M.P[M.I[I + 2] * 3];
+                if (FMath::Max3(A[0], B[0], C[0]) < X || FMath::Min3(A[0], B[0], C[0]) > X || FMath::Max3(A[1], B[1], C[1]) < Y || FMath::Min3(A[1], B[1], C[1]) > Y) { continue; }
+                const double D = (B[0] - A[0]) * (C[1] - A[1]) - (C[0] - A[0]) * (B[1] - A[1]);
+                if (FMath::Abs(D) < 1e-9) { continue; }
+                const double U = ((X - A[0]) * (C[1] - A[1]) - (C[0] - A[0]) * (Y - A[1])) / D, W = ((B[0] - A[0]) * (Y - A[1]) - (X - A[0]) * (B[1] - A[1])) / D;
+                if (U < 0 || W < 0 || U + W > 1) { continue; }
+                Best = FMath::Max(Best, A[2] + U * (B[2] - A[2]) + W * (C[2] - A[2]));
+            }
+        }
+        return Best;
+    };
     TArray<double> Gaps;
     FCollisionQueryParams Q;
-    for (int32 i = 0; i <= 160 && HF; ++i)
+    for (int32 I = 0; I <= 160; ++I)
     {
-        const double Y = 1000.0 + i * 50.0;
-        FHitResult H, Hv;
-        if (!HF->LineTraceComponent(H, FVector(-1, Y, 3000), FVector(-1, Y, -3200), Q)) { continue; }
-        double Zv = -1e9;
-        for (const auto& P : Chunks)
-            if (P.Value.Mesh->LineTraceComponent(Hv, FVector(1, Y, 3000), FVector(1, Y, -3200), Q)) { Zv = FMath::Max(Zv, Hv.ImpactPoint.Z); }
+        const double Y = 1000.0 + I * 50.0;
+        FHitResult H;
+        if (!HeightfieldStrip->LineTraceComponent(H, FVector(-1, Y, 3000), FVector(-1, Y, -3200), Q)) { continue; }
+        const double Zv = VoxelZ(1.0, Y);
         if (Zv > -1e8) { Gaps.Add(FMath::Abs(Zv - H.ImpactPoint.Z)); }
     }
     double Sum = 0; for (double G : Gaps) { Sum += G; }
@@ -575,17 +738,34 @@ FString ASFTerrainSpike::SeamGapJson() const
 
 int32 ASFTerrainSpike::DensityHash() const
 {
-    TArray<FIntVector> Keys; Chunks.GetKeys(Keys);
-    Keys.Sort([](const FIntVector& A, const FIntVector& B) { return A.Z != B.Z ? A.Z < B.Z : (A.Y != B.Y ? A.Y < B.Y : A.X < B.X); });
+    // Edited chunks only (the base is regenerated from base_content_version), in key order.
+    std::vector<uint64_t> Keys;
+    for (const auto& P : Impl->Field.Edited) { Keys.push_back(P.first); }
+    std::sort(Keys.begin(), Keys.end());
     uint32 H = 0;
-    for (const FIntVector& K : Keys) { const TArray<int16>& D = Chunks[K].D; H = FCrc::MemCrc32(D.GetData(), D.Num() * sizeof(int16), H); }
+    for (uint64_t K : Keys)
+    {
+        const SFVox::Density& D = *Impl->Field.Edited.at(K);
+        H = FCrc::MemCrc32(&K, sizeof(K), H);
+        H = FCrc::MemCrc32(D.data(), int32(D.size() * sizeof(int16_t)), H);
+    }
     return (int32)H;
 }
 
-void ASFTerrainSpike::SetVoxelVisible(bool bVisible)
+void ASFTerrainSpike::SetVoxelVisible(bool bInVisible)
 {
-    for (auto& P : Chunks) { P.Value.Mesh->SetVisibility(bVisible); }
+    bVisible = bInVisible;
+    for (auto& P : LeafMeshes) { if (P.Value) { P.Value->SetVisibility(bVisible); } }
 }
+
+bool ASFTerrainSpike::SetCompareVisible(bool bInVisible)
+{
+    if (!CompareMesh) { return false; }
+    CompareMesh->SetVisibility(bInVisible);
+    return true;
+}
+
+bool ASFTerrainSpike::IsSettled() const { return !Impl->Batch && Impl->Dirty.Num() == 0; }
 
 float ASFTerrainSpike::GpuFrameMs()
 {
@@ -594,20 +774,30 @@ float ASFTerrainSpike::GpuFrameMs()
 
 FString ASFTerrainSpike::StatsJson() const
 {
-    int32 Tris = 0; SIZE_T MeshBytes = 0;
-    for (const auto& P : Chunks)
-        if (const FProcMeshSection* S = P.Value.Mesh->GetProcMeshSection(0))
-        {
-            Tris += S->ProcIndexBuffer.Num() / 3;
-            MeshBytes += S->ProcVertexBuffer.Num() * sizeof(FProcMeshVertex) + S->ProcIndexBuffer.Num() * sizeof(uint32);
-        }
-    TArray<double> Chn; for (int32 C : ChunksPerEdit) { Chn.Add(C); }
-    return FString::Printf(TEXT("{\"netmode\":%d,\"chunks\":%d,\"tris\":%d,\"density_bytes\":%d,\"cpu_mesh_bytes\":%llu,\"initial_build_ms\":%.1f,\"edits\":%d,")
-        TEXT("\"edit_ms_p50\":%.2f,\"edit_ms_p95\":%.2f,\"edit_ms_max\":%.2f,\"extract_ms_p95\":%.2f,\"upload_collision_ms_p95\":%.2f,\"upload_collision_ms_max\":%.2f,")
-        TEXT("\"tear_checks\":%d,\"tears_total\":%d,\"legacy_winding\":%d,\"chunks_per_edit_max\":%.0f,\"latency_ms_p50\":%.1f,\"latency_ms_p95\":%.1f,\"latency_ms_max\":%.1f,\"hash\":%d}"),
-        (int32)GetNetMode(), Chunks.Num(), Tris, Chunks.Num() * TsN * TsN * TsN * 2, (unsigned long long)MeshBytes, InitialBuildMs, EditMs.Num(),
-        TsStat(EditMs, 0.5), TsStat(EditMs, 0.95), TsStat(EditMs, 1.0), TsStat(ExtractMs, 0.95), TsStat(UploadMs, 0.95), TsStat(UploadMs, 1.0),
-        TearChecks, TotalTears, bTsLegacyWinding ? 1 : 0, TsStat(Chn, 1.0), TsStat(LatencyMs, 0.5), TsStat(LatencyMs, 0.95), TsStat(LatencyMs, 1.0), DensityHash());
+    const FSFTerrainSpikeImpl& I = *Impl;
+    if (!I.ShownTree) { return TEXT("{}"); }
+    int64 Tris = 0; SIZE_T MeshBytes = 0;
+    TMap<int32, int32> TrisByLod;
+    for (const auto& P : I.Cpu)
+    {
+        Tris += P.second->I.size() / 3;
+        MeshBytes += P.second->P.size() * 4 * 2 + P.second->I.size() * 4;
+        auto It = I.ShownTree->Leaves.find(P.first);
+        if (It != I.ShownTree->Leaves.end()) { TrisByLod.FindOrAdd(It->second.Lod) += int32(P.second->I.size() / 3); }
+    }
+    FString Tl; for (const auto& L : TrisByLod) { Tl += FString::Printf(TEXT("\"L%d\":%d,"), L.Key, L.Value); }
+    Tl.RemoveFromEnd(TEXT(","));
+    return FString::Printf(TEXT("{\"netmode\":%d,\"zone\":%d,\"leaves\":%d,\"meshed_leaves\":%d,\"tris\":%lld,\"tris_by_lod\":{%s},\"edited_chunks\":%d,\"density_bytes\":%d,\"cpu_mesh_bytes\":%llu,\"initial_build_ms\":%.1f,\"edits\":%d,")
+        TEXT("\"apply_ms_p95\":%.3f,\"apply_ms_max\":%.3f,\"mesh_task_ms_p50\":%.2f,\"mesh_task_ms_p95\":%.2f,\"gt_upload_ms_p95\":%.2f,\"gt_upload_ms_max\":%.2f,\"edit_to_visible_ms_p50\":%.1f,\"edit_to_visible_ms_p95\":%.1f,\"edit_to_visible_ms_max\":%.1f,")
+        TEXT("\"spike_tick_ms_p95\":%.2f,\"spike_tick_ms_max\":%.2f,\"soak_frame_ms_p50\":%.2f,\"soak_frame_ms_p95\":%.2f,\"soak_frame_ms_max\":%.2f,\"tear_checks\":%lld,\"tears_total\":%lld,\"open\":%lld,\"border_mismatch\":%lld,\"orient\":%lld,\"degenerate\":%lld,\"backfacing\":%lld,\"ray_holes\":%lld,\"rays\":%lld,\"nonmanifold_edges\":%lld,\"gradient_disagree\":%lld,")
+        TEXT("\"leaves_per_edit_max\":%.0f,\"latency_ms_p50\":%.1f,\"latency_ms_p95\":%.1f,\"latency_ms_max\":%.1f,\"hash\":%d}"),
+        (int32)GetNetMode(), I.bZone ? 1 : 0, (int32)I.ShownTree->Leaves.size(), (int32)I.Cpu.size(), (long long)Tris, *Tl, (int32)I.Field.Edited.size(), (int32)I.Field.Edited.size() * SFVox::N * SFVox::N * SFVox::N * 2,
+        (unsigned long long)MeshBytes, InitialBuildMs, I.ApplyMs.Num(),
+        TsStat(I.ApplyMs, 0.95), TsStat(I.ApplyMs, 1.0), TsStat(I.MeshMs, 0.5), TsStat(I.MeshMs, 0.95), TsStat(I.UploadMs, 0.95), TsStat(I.UploadMs, 1.0),
+        TsStat(I.VisibleMs, 0.5), TsStat(I.VisibleMs, 0.95), TsStat(I.VisibleMs, 1.0), TsStat(I.TickMs, 0.95), TsStat(I.TickMs, 1.0), TsStat(I.SoakFrameMs, 0.5), TsStat(I.SoakFrameMs, 0.95), TsStat(I.SoakFrameMs, 1.0),
+        (long long)I.TearChecks, (long long)I.TearsTotal, (long long)I.TearSum.Open, (long long)I.TearSum.Border, (long long)I.TearSum.Orient, (long long)I.TearSum.Degenerate, (long long)I.TearSum.BackFacing,
+        (long long)I.TearSum.RayHoles, (long long)I.TearSum.Rays, (long long)I.TearSum.NonManifold, (long long)I.TearSum.GradientDisagree,
+        TsStat(I.ChunksPerEdit, 1.0), TsStat(I.LatencyMs, 0.5), TsStat(I.LatencyMs, 0.95), TsStat(I.LatencyMs, 1.0), DensityHash());
 }
 
 void ASFTerrainSpike::Tick(float DeltaSeconds)
@@ -621,13 +811,63 @@ void ASFTerrainSpike::Tick(float DeltaSeconds)
         FPlatformMisc::RequestExit(false);
         return;
     }
+    const double T0 = FPlatformTime::Seconds();
+    const double Tc0 = Impl->TearCheckMs;
+    if (Impl->Batch && Impl->Task.IsCompleted()) { ApplyBatch(); }
+    UpdateFocus(false);
+    if (!Impl->Batch && Impl->Dirty.Num() > 0) { LaunchBatch(); }
+    Impl->TickMs.Add((FPlatformTime::Seconds() - T0) * 1000.0 - (Impl->TearCheckMs - Tc0)); // game-thread cost of the ground, tear checks excluded
+    if (Impl->SoakDone > 0 && Impl->SoakLeft > 0) { Impl->SoakFrameMs.Add(DeltaSeconds * 1000.0); }
     if (!bScenario) { return; }
     int32 Players = 0;
     for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It) { ++Players; }
     const int32 Need = GetNetMode() == NM_ListenServer ? 2 : 1;
     if (ScenarioStart < 0.0) { if (Players >= Need) { ScenarioStart = GetWorld()->GetTimeSeconds() + 5.0; } return; }
+    if (Impl->bZone) { RunZoneSoakStep(); return; }
     if (GetWorld()->GetTimeSeconds() < ScenarioStart + ScenarioIndex * 1.0) { return; }
     RunScenarioStep();
+}
+
+void ASFTerrainSpike::RunZoneSoakStep()
+{
+    // Random TER-02-range edits (0.5-5 m, dig/raise/flatten) within -SFTerrainSpikeSoakRadius (m, default 300) of the start, one per settled frame, so they land on
+    // LOD 0-4 leaves and across transition faces; each runs the tear check. -SFTerrainSpikeZoneSoak=N edits.
+    FSFTerrainSpikeImpl& I = *Impl;
+    if (I.SoakLeft <= 0)
+    {
+        if (I.SoakDone > 0 && !I.bSoakLogged && IsSettled())
+        {
+            I.bSoakLogged = true;
+            UE_LOG(LogSFTerrainSpike, Display, TEXT("TERRAIN_SPIKE_STATS %s"), *StatsJson());
+            SeamCheckAll();
+            UE_LOG(LogSFTerrainSpike, Display, TEXT("TERRAIN_SPIKE_ZONE_SOAK_DONE edits=%d rejected=%d burst_rate=%.0f"), I.SoakDone, I.SoakRejected, I.BurstRate);
+        }
+        return;
+    }
+    if (GetWorld()->GetTimeSeconds() < ScenarioStart) { return; }
+    if (I.BurstRate > 0)
+    {
+        // Capacity: BurstRate edits per second regardless of meshing (stats show game-thread cost and edit-to-visible).
+        if (I.BurstStart < 0) { I.BurstStart = FPlatformTime::Seconds(); }
+        const int32 Due = FMath::Min(I.SoakLeft, (int32)((FPlatformTime::Seconds() - I.BurstStart) * I.BurstRate) + 1 - I.BurstDone);
+        for (int32 Q = 0; Q < Due; ++Q) { ++I.BurstDone; ZoneEdit(); }
+        return;
+    }
+    if (!IsSettled()) { return; }
+    ZoneEdit();
+}
+
+void ASFTerrainSpike::ZoneEdit()
+{
+    FSFTerrainSpikeImpl& I = *Impl;
+    if (I.SoakDone == 0) { I.SoakCenter = FVector(I.Focus[0][0], I.Focus[0][1], 0); }
+    const double A = I.Rng.FRandRange(0, 2 * PI), D = I.SoakRadiusCm * FMath::Sqrt(I.Rng.FRand()), R = I.Rng.FRandRange(50, 500);
+    const int32 Kind = I.Rng.RandRange(0, 2);
+    const double X = I.SoakCenter.X + D * FMath::Cos(A), Y = I.SoakCenter.Y + D * FMath::Sin(A);
+    const double Z = I.Base->HeightCm(X, Y) + I.Rng.FRandRange(-1.0, 1.0) * R + (Kind == 2 ? I.Rng.FRandRange(-150, 150) : 0);
+    const FString Res = ApplyEdit(FVector(X, Y, Z), R, Kind);
+    ++I.SoakDone; --I.SoakLeft;
+    if (!Res.IsEmpty()) { ++I.SoakRejected; }
 }
 
 void ASFTerrainSpike::RunScenarioStep()
@@ -656,13 +896,14 @@ void ASFTerrainSpike::RunScenarioStep()
     }
     if (ScenarioIndex >= Steps.Num())
     {
-        if (ScenarioIndex == Steps.Num())
+        if (ScenarioIndex == Steps.Num() && IsSettled())
         {
             UE_LOG(LogSFTerrainSpike, Display, TEXT("TERRAIN_SPIKE_STATS %s"), *StatsJson());
+            SeamCheckAll();
             UE_LOG(LogSFTerrainSpike, Display, TEXT("TERRAIN_SPIKE_SCENARIO_DONE open_edges_interior=%d"),
                 CountOpenEdges(FBox(FVector(100, 100, -3150), FVector(ChunksX * TsChunkCm - 100, ChunksY * TsChunkCm - 100, 1550))));
+            ++ScenarioIndex;
         }
-        ++ScenarioIndex;
         return;
     }
     const FTsStep& S = Steps[ScenarioIndex++];

@@ -1,0 +1,90 @@
+{
+  "stats": {
+    "netmode": 3,
+    "zone": 0,
+    "leaves": 108,
+    "meshed_leaves": 65,
+    "tris": 107394,
+    "tris_by_lod": {
+      "L0": 107394
+    },
+    "edited_chunks": 23,
+    "density_bytes": 1507328,
+    "cpu_mesh_bytes": 2683800,
+    "initial_build_ms": 97.2,
+    "edits": 51,
+    "apply_ms_p95": 1.087,
+    "apply_ms_max": 1.304,
+    "mesh_task_ms_p50": 3.59,
+    "mesh_task_ms_p95": 9.89,
+    "gt_upload_ms_p95": 1.8,
+    "gt_upload_ms_max": 2.47,
+    "edit_to_visible_ms_p50": 6.5,
+    "edit_to_visible_ms_p95": 26.6,
+    "edit_to_visible_ms_max": 28.4,
+    "spike_tick_ms_p95": 0.0,
+    "spike_tick_ms_max": 2.5,
+    "soak_frame_ms_p50": 0.0,
+    "soak_frame_ms_p95": 0.0,
+    "soak_frame_ms_max": 0.0,
+    "tear_checks": 51,
+    "tears_total": 0,
+    "open": 0,
+    "border_mismatch": 0,
+    "orient": 0,
+    "degenerate": 0,
+    "backfacing": 0,
+    "ray_holes": 0,
+    "rays": 183926,
+    "nonmanifold_edges": 0,
+    "gradient_disagree": 0,
+    "leaves_per_edit_max": 48,
+    "latency_ms_p50": 4.8,
+    "latency_ms_p95": 10.5,
+    "latency_ms_max": 18.6,
+    "hash": -412092947
+  },
+  "dig_interior_floor_z": 240.5,
+  "dig_interior_base_z": 128.3,
+  "tunnel_roof_from_inside_z": 270.0,
+  "tunnel_floor_z": 30.0,
+  "tunnel_top_surface_from_above_z": 541.7,
+  "tunnel_top_base_z": 541.7,
+  "tunnel_axis_clear": null,
+  "shaft_bottom_z": -1425.0,
+  "bedrock_z": -1400,
+  "open_edges_interior": 0,
+  "open_edges_corner_8_chunks": 0,
+  "seam_voxel_vs_1m_heightfield": {
+    "samples": 159,
+    "max_cm": 0.84,
+    "p95_cm": 0.74,
+    "mean_cm": 0.31
+  },
+  "density_hash": -412092947,
+  "perf_overview_1920x1080": {
+    "perf_on": {
+      "frame_ms_p50": 5.24,
+      "frame_ms_p95": 6.9,
+      "gpu_ms_p50": 2.24,
+      "gpu_ms_p95": 2.44
+    },
+    "perf_off": {
+      "frame_ms_p50": 5.19,
+      "frame_ms_p95": 7.19,
+      "gpu_ms_p50": 1.55,
+      "gpu_ms_p95": 1.71
+    }
+  },
+  "shots": [
+    "dig-0-before",
+    "dig-1-interior",
+    "dig-2-chunk-corner",
+    "dig-3-tunnel",
+    "dig-4-shaft",
+    "dig-5-ter02-legal",
+    "dig-6-final-overview",
+    "look-seam-heightfield-vs-voxel"
+  ],
+  "netmode": null
+}

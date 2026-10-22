@@ -1,0 +1,9 @@
+'vswhere.exe' is not recognized as an internal or external command,
+operable program or batch file.
+mesher_selftest.cpp
+tree mixed_focus_origin leaves: L0=12 L1=6 L2=6
+tree mixed_focus_far leaves: L0=12 L1=16
+tree lod0 leaves: L0=108
+tree lod1 leaves: L1=18
+tree lod2 leaves: L2=8
+SELFTEST_TOTAL ops=551 checks=2023 tears=0 open=0 border=0 orient=0 degenerate=0 backfacing=0 ray_holes=0 | info: rays=3177659 tris_checked=149283336 edges_checked=224463687 nonmanifold_edges=72 gradient_disagree=13752 edited_chunks=70 seconds=298.6
