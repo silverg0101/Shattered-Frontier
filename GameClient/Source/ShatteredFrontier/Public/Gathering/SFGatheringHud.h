@@ -32,6 +32,8 @@ public:
     void Configure(USFGatheringPilotComponent* InPilot) { Pilot = InPilot; }
     // 0 at the start of a harvest, 1 when it completes; safe for a zero or unknown total.
     static float RingFraction(double RemainingSeconds, double TotalSeconds);
+    // Item-gained, warning and loot toasts share the skill-gain queue ("<Name> +1": text before the last space is the name).
+    void PushToast(const FString& Text) { Toasts.Push(Text, GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0); }
     static FString SkillToastText(const TCHAR* SkillName) { return FString::Printf(TEXT("%s +1"), SkillName); }
     // "have / need" and whether it is met; the tick or cross glyph follows from it.
     static FString NeedText(int32 Have, int32 Need) { return FString::Printf(TEXT("%d / %d"), Have, Need); }

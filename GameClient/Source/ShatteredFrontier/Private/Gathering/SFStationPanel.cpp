@@ -85,7 +85,7 @@ void USFStationPanel::NativeOnInitialized()
     WidgetTree->RootWidget = Window;
     UVerticalBox* Stack = StationNew<UVerticalBox>(WidgetTree);
     Window->SetContent(Stack);
-    Title = Heading(WidgetTree, TEXT(""), 36, Ivory());
+    Title = Heading(WidgetTree, TEXT(""), 33, Ivory());
     Stack->AddChildToVerticalBox(Title)->SetPadding(FMargin(14.f, 0.f, 0.f, 10.f));
     Stack->AddChildToVerticalBox(StationSized(WidgetTree, StationRule(WidgetTree), 0.f, 2.f));
 
@@ -101,9 +101,9 @@ void USFStationPanel::NativeOnInitialized()
     UImage* Glass = StationNew<UImage>(WidgetTree);
     Glass->SetBrush(SFScreenArt::KitImage(TEXT("icon_search"), FVector2D(26.f, 26.f)));
     SearchLine->AddChildToHorizontalBox(Glass)->SetVerticalAlignment(VAlign_Center);
-    SearchLine->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Search recipes"), 18, Hex(TEXT("9C9886"))))->SetPadding(FMargin(14.f, 0.f, 0.f, 0.f));
+    SearchLine->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Search recipes"), 20, Hex(TEXT("9C9886"))))->SetPadding(FMargin(14.f, 0.f, 0.f, 0.f));
     Search->SetContent(SearchLine);
-    Left->AddChildToVerticalBox(StationSized(WidgetTree, Search, 0.f, 42.f));
+    Left->AddChildToVerticalBox(StationSized(WidgetTree, Search, 301.f, 44.f));
     UHorizontalBox* Tabs = StationNew<UHorizontalBox>(WidgetTree);
     const TCHAR* TabLabels[] = {TEXT("All"), TEXT("Materials"), TEXT("Parts")};
     int32 TabIndex = 0;
@@ -112,7 +112,7 @@ void USFStationPanel::NativeOnInitialized()
         UBorder* Tab = SFHudStyle::Tab(WidgetTree, TabIndex == 0);
         UTextBlock* TabText = Text(WidgetTree, Label, 18, Ivory());
         Tab->SetContent(TabText); Tab->SetHorizontalAlignment(HAlign_Center); Tab->SetVerticalAlignment(VAlign_Center);
-        UHorizontalBoxSlot* TabSlot = Tabs->AddChildToHorizontalBox(StationSized(WidgetTree, Tab, 0.f, 44.f));
+        UHorizontalBoxSlot* TabSlot = Tabs->AddChildToHorizontalBox(StationSized(WidgetTree, Tab, 0.f, 38.f));
         TabSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); TabSlot->SetPadding(FMargin(TabIndex == 0 ? 0.f : 6.f, 0.f, 0.f, 0.f));
         ++TabIndex;
     }
@@ -127,15 +127,15 @@ void USFStationPanel::NativeOnInitialized()
     UVerticalBox* Right = StationNew<UVerticalBox>(WidgetTree);
     UHorizontalBoxSlot* RightSlot = Body->AddChildToHorizontalBox(Right);
     RightSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); RightSlot->SetPadding(FMargin(22.f, 16.f, 14.f, 0.f));
-    OutputName = Heading(WidgetTree, TEXT(""), 30, Ivory());
+    OutputName = Heading(WidgetTree, TEXT(""), 33, Ivory());
     Right->AddChildToVerticalBox(OutputName);
-    OutputText = Text(WidgetTree, TEXT(""), 19, Hex(TEXT("C9C2AE")));
+    OutputText = Text(WidgetTree, TEXT(""), 20, Hex(TEXT("C9C2AE")));
     OutputText->SetAutoWrapText(true);
     Right->AddChildToVerticalBox(OutputText)->SetPadding(FMargin(2.f, 2.f, 0.f, 0.f));
     OutputIcon = StationNew<UImage>(WidgetTree);
-    UVerticalBoxSlot* IconSlot = Right->AddChildToVerticalBox(StationSized(WidgetTree, OutputIcon, 136.f, 136.f));
+    UVerticalBoxSlot* IconSlot = Right->AddChildToVerticalBox(StationSized(WidgetTree, OutputIcon, 264.f, 129.f));
     IconSlot->SetHorizontalAlignment(HAlign_Center); IconSlot->SetPadding(FMargin(0.f, 6.f, 0.f, 6.f));
-    Right->AddChildToVerticalBox(Text(WidgetTree, TEXT("Ingredients"), 18, Ivory()))->SetPadding(FMargin(2.f, 0.f, 0.f, 6.f));
+    Right->AddChildToVerticalBox(Text(WidgetTree, TEXT("Ingredients"), 19, Ivory()))->SetPadding(FMargin(2.f, 0.f, 0.f, 6.f));
     Ingredients = StationNew<UVerticalBox>(WidgetTree);
     Right->AddChildToVerticalBox(Ingredients);
 
@@ -149,22 +149,22 @@ void USFStationPanel::NativeOnInitialized()
         Glyph->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 0.5f));  // disabled
         Step->SetContent(Glyph);
         Step->SetHorizontalAlignment(HAlign_Center); Step->SetVerticalAlignment(VAlign_Center);
-        Stepper->AddChildToHorizontalBox(StationSized(WidgetTree, Step, 52.f, 46.f));
+        Stepper->AddChildToHorizontalBox(StationSized(WidgetTree, Step, 46.f, 46.f));
     };
     AddStep(TEXT("minus"));
     UBorder* Value = StationFrame(WidgetTree, TEXT("stepper_field"), FMargin(0.f));
-    Value->SetContent(Num(WidgetTree, TEXT("1"), 20, Ivory(), false));
+    Value->SetContent(Num(WidgetTree, TEXT("1"), 22, Ivory(), false));
     Value->SetHorizontalAlignment(HAlign_Center); Value->SetVerticalAlignment(VAlign_Center);
-    Stepper->AddChildToHorizontalBox(StationSized(WidgetTree, Value, 90.f, 46.f))->SetPadding(FMargin(6.f, 0.f));
+    Stepper->AddChildToHorizontalBox(StationSized(WidgetTree, Value, 84.f, 46.f))->SetPadding(FMargin(6.f, 0.f));
     AddStep(TEXT("plus"));
     UVerticalBoxSlot* StepperSlot = Right->AddChildToVerticalBox(Stepper);
     StepperSlot->SetHorizontalAlignment(HAlign_Center); StepperSlot->SetPadding(FMargin(0.f, 14.f, 0.f, 6.f));
-    CraftTime = Text(WidgetTree, TEXT(""), 18, Hex(TEXT("BDB6A2")));
+    CraftTime = Text(WidgetTree, TEXT(""), 22, Hex(TEXT("BDB6A2")));
     Right->AddChildToVerticalBox(CraftTime)->SetHorizontalAlignment(HAlign_Center);
 
     // The shared Primary button (IMPLEMENTATION-FIX G3): no hold ring, crafting is not irreversible. The interact key cap
     // sits inside its left end: the Kit-v5 keycap_<key> art when the kit has that key, else the blank cap with the key as text.
-    const FSFHudButton CraftButton = SFHudStyle::Button(WidgetTree, TEXT("Craft"), EButtonKind::Primary, 370.f);
+    const FSFHudButton CraftButton = SFHudStyle::Button(WidgetTree, TEXT("Craft"), EButtonKind::Primary, 371.f);
     UOverlay* CraftFace = StationNew<UOverlay>(WidgetTree);
     CraftFace->AddChildToOverlay(CraftButton.Root);
     UOverlay* Cap = StationNew<UOverlay>(WidgetTree);
@@ -180,16 +180,16 @@ void USFStationPanel::NativeOnInitialized()
 
     // Queue: the craft in progress at this station (one at a time).
     Stack->AddChildToVerticalBox(StationSized(WidgetTree, StationRule(WidgetTree), 0.f, 2.f));
-    QueueTitle = Text(WidgetTree, TEXT(""), 18, Ivory());
+    QueueTitle = Text(WidgetTree, TEXT(""), 22, Ivory());
     Stack->AddChildToVerticalBox(QueueTitle)->SetPadding(FMargin(16.f, 10.f, 0.f, 6.f));
     QueueRow = StationFrame(WidgetTree, TEXT("queue_row"), FMargin(14.f, 2.f, 22.f, 2.f));
     UHorizontalBox* QueueLine = StationNew<UHorizontalBox>(WidgetTree);
     QueueIcon = StationNew<UImage>(WidgetTree);
     QueueLine->AddChildToHorizontalBox(StationSized(WidgetTree, QueueIcon, 44.f, 44.f))->SetVerticalAlignment(VAlign_Center);
-    QueueName = Text(WidgetTree, TEXT(""), 20, Ivory());
+    QueueName = Text(WidgetTree, TEXT(""), 22, Ivory());
     QueueLine->AddChildToHorizontalBox(StationSized(WidgetTree, QueueName, 230.f, 0.f))->SetPadding(FMargin(18.f, 0.f, 0.f, 0.f));
     // Kit-v5 framed channel bar; the styled UProgressBar when the kit is missing.
-    QueueFramed = MakeFramedBar(WidgetTree, TEXT("bar_channel"), 360.f);
+    QueueFramed = MakeFramedBar(WidgetTree, TEXT("bar_channel"), 408.f);
     if (QueueFramed.Root) { QueueLine->AddChildToHorizontalBox(QueueFramed.Root)->SetVerticalAlignment(VAlign_Center); }
     else
     {
@@ -198,12 +198,12 @@ void USFStationPanel::NativeOnInitialized()
         UHorizontalBoxSlot* QueueBarSlot = QueueLine->AddChildToHorizontalBox(StationSized(WidgetTree, QueueBar, 0.f, 10.f));
         QueueBarSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); QueueBarSlot->SetVerticalAlignment(VAlign_Center);
     }
-    QueuePercent = Num(WidgetTree, TEXT(""), 18, Ivory(), false);
+    QueuePercent = Num(WidgetTree, TEXT(""), 22, Ivory(), false);
     QueuePercent->SetJustification(ETextJustify::Right);
     QueueLine->AddChildToHorizontalBox(StationSized(WidgetTree, QueuePercent, 70.f, 0.f))->SetVerticalAlignment(VAlign_Center);
     for (UWidget* Child : QueueLine->GetAllChildren()) { if (UHorizontalBoxSlot* S = Cast<UHorizontalBoxSlot>(Child->Slot)) { S->SetVerticalAlignment(VAlign_Center); } }
     QueueRow->SetContent(QueueLine);
-    Stack->AddChildToVerticalBox(StationSized(WidgetTree, QueueRow, 0.f, 54.f))->SetPadding(FMargin(12.f, 0.f, 12.f, 4.f));
+    Stack->AddChildToVerticalBox(StationSized(WidgetTree, QueueRow, 808.f, 54.f))->SetPadding(FMargin(12.f, 0.f, 12.f, 4.f));
     QueueEmpty = Text(WidgetTree, TEXT("Nothing crafting"), 18, Hex(TEXT("9C9886")));
     Stack->AddChildToVerticalBox(QueueEmpty)->SetPadding(FMargin(16.f, 10.f, 0.f, 22.f));
 }
@@ -225,13 +225,13 @@ void USFStationPanel::Rebuild(USFGatheringPilotComponent* Pilot, const ASFGather
         UBorder* Row = StationFrame(WidgetTree, TEXT("recipe_row"), FMargin(14.f, 2.f, 10.f, 2.f));
         SFHudStyle::SetRowSelected(Row, bSelected);
         UHorizontalBox* Line = StationNew<UHorizontalBox>(WidgetTree);
-        Line->AddChildToHorizontalBox(StationSized(WidgetTree, StationIcon(WidgetTree, IconStem(Recipe->Outputs[0].DefinitionId), 40.f), 40.f, 40.f))->SetVerticalAlignment(VAlign_Center);
-        UTextBlock* RecipeName = Text(WidgetTree, SFStationRecipes::ItemDisplayName(Recipe->Outputs[0].DefinitionId), 18, Ivory());
+        Line->AddChildToHorizontalBox(StationSized(WidgetTree, StationIcon(WidgetTree, IconStem(Recipe->Outputs[0].DefinitionId), 48.f), 48.f, 48.f))->SetVerticalAlignment(VAlign_Center);
+        UTextBlock* RecipeName = Text(WidgetTree, SFStationRecipes::ItemDisplayName(Recipe->Outputs[0].DefinitionId), 22, Ivory());
         RecipeName->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
         UHorizontalBoxSlot* NameSlot = Line->AddChildToHorizontalBox(RecipeName);
         NameSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); NameSlot->SetVerticalAlignment(VAlign_Center); NameSlot->SetPadding(FMargin(16.f, 0.f, 0.f, 0.f));
         Row->SetContent(Line);
-        UWidget* RowWidget = StationSized(WidgetTree, Row, 0.f, 56.f);
+        UWidget* RowWidget = StationSized(WidgetTree, Row, 300.f, 64.f);
         if (bSelected)
         {
             // A small brass chevron notch on the panel's left edge points at the selected row.
@@ -260,22 +260,22 @@ void USFStationPanel::Rebuild(USFGatheringPilotComponent* Pilot, const ASFGather
         UHorizontalBox* Line = StationNew<UHorizontalBox>(WidgetTree);
         Line->AddChildToHorizontalBox(StationSized(WidgetTree, StationIcon(WidgetTree, IconStem(Input.DefinitionId), 40.f), 40.f, 40.f))->SetVerticalAlignment(VAlign_Center);
         const FString Name = SFStationRecipes::ItemDisplayName(Input.DefinitionId);
-        UHorizontalBoxSlot* NameSlot = Line->AddChildToHorizontalBox(Text(WidgetTree, Name, 20, Ivory()));
+        UHorizontalBoxSlot* NameSlot = Line->AddChildToHorizontalBox(Text(WidgetTree, Name, 22, Ivory()));
         NameSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); NameSlot->SetVerticalAlignment(VAlign_Center); NameSlot->SetPadding(FMargin(16.f, 0.f, 0.f, 0.f));
         // The short number carries a 2 px crimson underline; the glyph at row end says met or short.
         UVerticalBox* HaveColumn = StationNew<UVerticalBox>(WidgetTree);
-        UTextBlock* Have = Num(WidgetTree, TEXT("0"), 19, Ivory(), false);
+        UTextBlock* Have = Num(WidgetTree, TEXT("0"), 22, Ivory(), false);
         HaveColumn->AddChildToVerticalBox(Have);
         UBorder* Underline = StationNew<UBorder>(WidgetTree);
         Underline->SetBrush(Frame(Crimson(), Crimson(), 0.f)); Underline->SetVisibility(ESlateVisibility::Hidden);
         HaveColumn->AddChildToVerticalBox(StationSized(WidgetTree, Underline, 0.f, 2.f));
         Line->AddChildToHorizontalBox(HaveColumn)->SetVerticalAlignment(VAlign_Center);
-        Line->AddChildToHorizontalBox(Num(WidgetTree, FString::Printf(TEXT(" / %lld"), Input.Quantity), 19, Ivory(), false))->SetVerticalAlignment(VAlign_Center);
+        Line->AddChildToHorizontalBox(Num(WidgetTree, FString::Printf(TEXT(" / %lld"), Input.Quantity), 22, Ivory(), false))->SetVerticalAlignment(VAlign_Center);
         UImage* Glyph = StationNew<UImage>(WidgetTree);
         UHorizontalBoxSlot* GlyphSlot = Line->AddChildToHorizontalBox(StationSized(WidgetTree, Glyph, 28.f, 28.f));
         GlyphSlot->SetVerticalAlignment(VAlign_Center); GlyphSlot->SetPadding(FMargin(28.f, 0.f, 0.f, 0.f));
         Row->SetContent(Line);
-        Ingredients->AddChildToVerticalBox(StationSized(WidgetTree, Row, 0.f, 44.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
+        Ingredients->AddChildToVerticalBox(StationSized(WidgetTree, Row, 470.f, 52.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
         HaveTexts.Add(Have); Glyphs.Add(Glyph); Underlines.Add(Underline); NeedNames.Add(Name); NeedAmounts.Add(static_cast<int32>(Input.Quantity));
     }
 }

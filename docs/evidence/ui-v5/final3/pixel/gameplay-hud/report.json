@@ -1,6 +1,6 @@
 [
  {
-  "widget": "SizeBox:SizeBox_16",
+  "widget": "SizeBox:SizeBox_17",
   "name": "target frame",
   "rect": [
    735,
@@ -9,19 +9,19 @@
    74
   ],
   "found": true,
-  "match": 0.74,
-  "d_left": 20,
-  "d_top": 11,
-  "d_width": -23,
-  "d_height": -4,
+  "match": 0.96,
+  "d_left": 8,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "fill dark",
-    7.7
+    7.6
    ],
    [
     "fill dark",
-    43.4
+    4.6
    ]
   ],
   "geometry": "FAIL",
@@ -29,7 +29,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "",
+  "widget": "Overlay:Overlay_10",
   "name": "target level cap diamond",
   "rect": [
    735,
@@ -37,24 +37,24 @@
    57,
    55
   ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.33,
+  "d_left": 22,
+  "d_top": 10,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "fill dark",
-    25.9
+    5.0
    ]
   ],
-  "geometry": "UNMEASURED",
+  "geometry": "FAIL",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
-  "widget": "VerticalBox:VerticalBox_0",
+  "widget": "Overlay:Overlay_9",
   "name": "target HP bar",
   "rect": [
    762,
@@ -63,15 +63,15 @@
    29
   ],
   "found": true,
-  "match": 0.48,
-  "d_left": 15,
-  "d_top": -27,
-  "d_width": -37,
-  "d_height": 29,
+  "match": 0.8,
+  "d_left": 10,
+  "d_top": -2,
+  "d_width": -28,
+  "d_height": 5,
   "de": [
    [
     "hp red fill",
-    32.2
+    11.4
    ]
   ],
   "geometry": "FAIL",
@@ -88,19 +88,19 @@
    158
   ],
   "found": true,
-  "match": 0.71,
+  "match": 0.81,
   "d_left": 1,
-  "d_top": 27,
-  "d_width": 1,
-  "d_height": -42,
+  "d_top": -15,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "badge fill dark",
-    2.8
+    3.8
    ],
    [
     "badge fill dark",
-    25.5
+    22.7
    ]
   ],
   "geometry": "FAIL",
@@ -108,7 +108,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_1",
+  "widget": "Overlay:Overlay_1",
   "name": "HP bar",
   "rect": [
    157,
@@ -117,9 +117,9 @@
    44
   ],
   "found": true,
-  "match": 0.54,
-  "d_left": 7,
-  "d_top": 17,
+  "match": 0.7,
+  "d_left": 6,
+  "d_top": 1,
   "d_width": -16,
   "d_height": -12,
   "de": [
@@ -133,7 +133,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_4",
+  "widget": "Overlay:Overlay_4",
   "name": "stamina bar",
   "rect": [
    157,
@@ -142,9 +142,9 @@
    42
   ],
   "found": true,
-  "match": 0.5,
-  "d_left": 7,
-  "d_top": 17,
+  "match": 0.58,
+  "d_left": 6,
+  "d_top": -4,
   "d_width": -16,
   "d_height": -10,
   "de": [
@@ -167,15 +167,15 @@
    60
   ],
   "found": true,
-  "match": 0.33,
-  "d_left": 20,
-  "d_top": 28,
-  "d_width": -54,
-  "d_height": -8,
+  "match": 0.74,
+  "d_left": 22,
+  "d_top": 0,
+  "d_width": -60,
+  "d_height": 0,
   "de": [
    [
     "fill dark",
-    5.1
+    28.8
    ]
   ],
   "geometry": "FAIL",
@@ -183,7 +183,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "",
+  "widget": "SizeBox:SizeBox_22",
   "name": "keycap F",
   "rect": [
    885,
@@ -191,19 +191,19 @@
    43,
    43
   ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.58,
+  "d_left": 10,
+  "d_top": 4,
+  "d_width": -3,
+  "d_height": -7,
   "de": [
    [
     "fill dark",
-    4.7
+    3.8
    ]
   ],
-  "geometry": "UNMEASURED",
+  "geometry": "FAIL",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
@@ -217,19 +217,19 @@
    99
   ],
   "found": true,
-  "match": 0.61,
+  "match": 0.76,
   "d_left": 9,
-  "d_top": 24,
+  "d_top": 13,
   "d_width": -7,
   "d_height": -11,
   "de": [
    [
     "fill dark",
-    5.8
+    6.0
    ],
    [
     "fill dark",
-    11.4
+    38.5
    ]
   ],
   "geometry": "FAIL",
@@ -246,19 +246,19 @@
    99
   ],
   "found": true,
-  "match": 0.61,
+  "match": 0.76,
   "d_left": 9,
-  "d_top": 24,
+  "d_top": 13,
   "d_width": -7,
   "d_height": -11,
   "de": [
    [
     "fill dark",
-    2.3
+    32.8
    ]
   ],
   "geometry": "FAIL",
-  "colour": "PASS",
+  "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
@@ -271,15 +271,15 @@
    99
   ],
   "found": true,
-  "match": 0.61,
+  "match": 0.77,
   "d_left": 9,
-  "d_top": 24,
+  "d_top": 13,
   "d_width": -10,
   "d_height": -11,
   "de": [
    [
     "fill dark",
-    6.4
+    7.7
    ]
   ],
   "geometry": "FAIL",
@@ -312,7 +312,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_19",
+  "widget": "SizeBox:SizeBox_20",
   "name": "minimap footer",
   "rect": [
    1650,
@@ -329,7 +329,7 @@
   "de": [
    [
     "fill dark",
-    5.3
+    5.1
    ]
   ],
   "geometry": "FAIL",
@@ -346,19 +346,19 @@
    160
   ],
   "found": true,
-  "match": 0.8,
+  "match": 0.75,
   "d_left": 1,
   "d_top": 0,
-  "d_width": -6,
-  "d_height": -30,
+  "d_width": 0,
+  "d_height": -40,
   "de": [
    [
     "fill dark",
-    9.2
+    9.1
    ],
    [
     "fill dark",
-    32.1
+    30.8
    ]
   ],
   "geometry": "FAIL",
@@ -375,11 +375,11 @@
    29
   ],
   "found": true,
-  "match": 0.33,
-  "d_left": -3,
-  "d_top": 4,
-  "d_width": 100,
-  "d_height": 14,
+  "match": 0.35,
+  "d_left": 3,
+  "d_top": 6,
+  "d_width": 94,
+  "d_height": 7,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -420,9 +420,9 @@
    76
   ],
   "found": true,
-  "match": 0.37,
+  "match": 0.95,
   "d_left": 1,
-  "d_top": -36,
+  "d_top": 0,
   "d_width": -6,
   "d_height": 2,
   "de": [
@@ -432,7 +432,7 @@
    ],
    [
     "fill dark",
-    6.1
+    5.9
    ]
   ],
   "geometry": "FAIL",
@@ -457,7 +457,7 @@
   "de": [
    [
     "fill dark",
-    28.4
+    26.9
    ]
   ],
   "geometry": "UNMEASURED",
@@ -482,7 +482,7 @@
   "de": [
    [
     "fill dark",
-    29.4
+    28.0
    ]
   ],
   "geometry": "UNMEASURED",

@@ -9,19 +9,19 @@
    845
   ],
   "found": true,
-  "match": 0.91,
-  "d_left": 5,
-  "d_top": -7,
-  "d_width": -43,
-  "d_height": 13,
+  "match": 0.97,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 22,
   "de": [
    [
     "panel fill",
-    41.2
+    7.3
    ],
    [
     "panel fill",
-    4.0
+    4.9
    ]
   ],
   "geometry": "FAIL",
@@ -38,11 +38,11 @@
    40
   ],
   "found": true,
-  "match": 0.46,
-  "d_left": 38,
-  "d_top": -6,
-  "d_width": 27,
-  "d_height": 24,
+  "match": 0.53,
+  "d_left": 72,
+  "d_top": 5,
+  "d_width": -73,
+  "d_height": 8,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -58,15 +58,15 @@
    41
   ],
   "found": true,
-  "match": 0.38,
-  "d_left": 7,
-  "d_top": 17,
-  "d_width": -44,
-  "d_height": -1,
+  "match": 0.53,
+  "d_left": 16,
+  "d_top": 12,
+  "d_width": -19,
+  "d_height": 0,
   "de": [
    [
     "field fill",
-    2.2
+    2.1
    ]
   ],
   "geometry": "FAIL",
@@ -83,19 +83,19 @@
    41
   ],
   "found": true,
-  "match": 0.33,
-  "d_left": 8,
-  "d_top": 17,
-  "d_width": -49,
-  "d_height": 3,
+  "match": 0.5,
+  "d_left": 7,
+  "d_top": 13,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "selected tab fill",
-    9.9
+    4.1
    ],
    [
     "selected tab fill",
-    12.0
+    3.0
    ]
   ],
   "geometry": "FAIL",
@@ -112,19 +112,19 @@
    41
   ],
   "found": true,
-  "match": 0.29,
-  "d_left": -40,
-  "d_top": 17,
-  "d_width": -4,
-  "d_height": 3,
+  "match": 0.5,
+  "d_left": 7,
+  "d_top": 13,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "tab fill",
-    3.1
+    2.8
    ]
   ],
   "geometry": "FAIL",
-  "colour": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  },
  {
@@ -137,15 +137,15 @@
    78
   ],
   "found": true,
-  "match": 0.49,
-  "d_left": 17,
-  "d_top": 19,
-  "d_width": -15,
-  "d_height": 2,
+  "match": 0.54,
+  "d_left": 16,
+  "d_top": 12,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "selected rail fill",
-    12.3
+    4.9
    ]
   ],
   "geometry": "FAIL",
@@ -162,15 +162,15 @@
    83
   ],
   "found": true,
-  "match": 0.5,
-  "d_left": 17,
-  "d_top": 21,
-  "d_width": -15,
-  "d_height": -3,
+  "match": 0.55,
+  "d_left": 16,
+  "d_top": 12,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "rail fill",
-    3.2
+    3.3
    ]
   ],
   "geometry": "FAIL",
@@ -187,19 +187,19 @@
    83
   ],
   "found": true,
-  "match": 0.52,
-  "d_left": 17,
-  "d_top": 20,
-  "d_width": -15,
-  "d_height": -3,
+  "match": 0.53,
+  "d_left": 16,
+  "d_top": 14,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "rail fill",
-    3.2
+    2.8
    ]
   ],
   "geometry": "FAIL",
-  "colour": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  },
  {
@@ -212,19 +212,19 @@
    83
   ],
   "found": true,
-  "match": 0.52,
-  "d_left": 17,
-  "d_top": 20,
-  "d_width": -15,
-  "d_height": -3,
+  "match": 0.5,
+  "d_left": 16,
+  "d_top": 17,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "rail fill",
-    3.1
+    2.8
    ]
   ],
   "geometry": "FAIL",
-  "colour": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  },
  {
@@ -237,15 +237,15 @@
    111
   ],
   "found": true,
-  "match": 0.55,
-  "d_left": 3,
-  "d_top": 27,
-  "d_width": -23,
-  "d_height": -11,
+  "match": 0.59,
+  "d_left": 14,
+  "d_top": 17,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "tile fill",
-    3.1
+    5.4
    ]
   ],
   "geometry": "FAIL",
@@ -262,15 +262,15 @@
    106
   ],
   "found": true,
-  "match": 0.54,
-  "d_left": 3,
-  "d_top": 25,
-  "d_width": -23,
-  "d_height": -6,
+  "match": 0.52,
+  "d_left": 14,
+  "d_top": 21,
+  "d_width": 0,
+  "d_height": 5,
   "de": [
    [
     "selected tile fill",
-    12.4
+    12.0
    ]
   ],
   "geometry": "FAIL",
@@ -287,15 +287,15 @@
    106
   ],
   "found": true,
-  "match": 0.43,
-  "d_left": -15,
-  "d_top": 25,
-  "d_width": -21,
-  "d_height": -6,
+  "match": 0.52,
+  "d_left": 14,
+  "d_top": 21,
+  "d_width": 2,
+  "d_height": 5,
   "de": [
    [
     "tile fill",
-    3.9
+    3.7
    ]
   ],
   "geometry": "FAIL",
@@ -312,15 +312,15 @@
    107
   ],
   "found": true,
-  "match": 0.34,
-  "d_left": -31,
-  "d_top": 21,
-  "d_width": -23,
-  "d_height": -7,
+  "match": 0.45,
+  "d_left": 16,
+  "d_top": 29,
+  "d_width": 0,
+  "d_height": 4,
   "de": [
    [
     "tile fill",
-    2.2
+    3.0
    ]
   ],
   "geometry": "FAIL",
@@ -328,7 +328,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_33",
+  "widget": "",
   "name": "material dropdown",
   "rect": [
    43,
@@ -336,20 +336,20 @@
    497,
    50
   ],
-  "found": true,
-  "match": 0.42,
-  "d_left": 17,
-  "d_top": 21,
-  "d_width": -61,
-  "d_height": -10,
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
   "de": [
    [
     "field fill",
-    2.9
+    4.3
    ]
   ],
-  "geometry": "FAIL",
-  "colour": "PASS",
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
@@ -362,15 +362,15 @@
    148
   ],
   "found": true,
-  "match": 0.78,
-  "d_left": 17,
-  "d_top": 15,
-  "d_width": -61,
-  "d_height": -16,
+  "match": 0.64,
+  "d_left": 16,
+  "d_top": 42,
+  "d_width": -26,
+  "d_height": -31,
   "de": [
    [
     "inset fill",
-    2.0
+    1.7
    ]
   ],
   "geometry": "FAIL",
@@ -378,7 +378,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "HorizontalBox:HorizontalBox_1",
+  "widget": "SizeBox:SizeBox_12",
   "name": "action bar",
   "rect": [
    722,
@@ -387,15 +387,15 @@
    38
   ],
   "found": true,
-  "match": 0.71,
-  "d_left": -28,
-  "d_top": -2,
-  "d_width": 38,
-  "d_height": -6,
+  "match": 0.96,
+  "d_left": -8,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "bar fill",
-    3.5
+    3.8
    ]
   ],
   "geometry": "FAIL",
@@ -412,15 +412,15 @@
    92
   ],
   "found": true,
-  "match": 0.49,
+  "match": 0.56,
   "d_left": -22,
-  "d_top": 11,
+  "d_top": 0,
   "d_width": -4,
   "d_height": -4,
   "de": [
    [
     "slot fill",
-    10.6
+    18.6
    ]
   ],
   "geometry": "FAIL",
@@ -437,15 +437,15 @@
    92
   ],
   "found": true,
-  "match": 0.67,
+  "match": 0.77,
   "d_left": 12,
-  "d_top": 11,
+  "d_top": 0,
   "d_width": -4,
   "d_height": -4,
   "de": [
    [
     "slot fill",
-    10.7
+    18.9
    ]
   ],
   "geometry": "FAIL",
@@ -453,7 +453,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "Overlay:Overlay_1",
+  "widget": "VerticalBox:VerticalBox_0",
   "name": "vitals HP bar",
   "rect": [
    123,
@@ -462,15 +462,15 @@
    34
   ],
   "found": true,
-  "match": 0.61,
-  "d_left": 41,
-  "d_top": -6,
+  "match": 0.33,
+  "d_left": 40,
+  "d_top": -32,
   "d_width": 13,
-  "d_height": 3,
+  "d_height": 50,
   "de": [
    [
     "hp red fill",
-    10.2
+    14.0
    ]
   ],
   "geometry": "FAIL",
@@ -487,15 +487,15 @@
    123
   ],
   "found": true,
-  "match": 0.64,
+  "match": 0.51,
   "d_left": 14,
-  "d_top": 2,
-  "d_width": 14,
-  "d_height": -7,
+  "d_top": -40,
+  "d_width": 13,
+  "d_height": 35,
   "de": [
    [
     "badge fill",
-    4.5
+    5.7
    ]
   ],
   "geometry": "FAIL",
@@ -503,7 +503,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_17",
+  "widget": "SizeBox:SizeBox_18",
   "name": "minimap ring",
   "rect": [
    1640,
@@ -523,7 +523,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_19",
+  "widget": "SizeBox:SizeBox_20",
   "name": "minimap footer",
   "rect": [
    1677,
@@ -552,11 +552,11 @@
    182
   ],
   "found": true,
-  "match": 0.66,
+  "match": 0.62,
   "d_left": -16,
   "d_top": 18,
-  "d_width": 6,
-  "d_height": -52,
+  "d_width": 12,
+  "d_height": -62,
   "de": [
    [
     "fill dark",
@@ -585,7 +585,7 @@
   "de": [
    [
     "fill dark",
-    39.9
+    40.0
    ]
   ],
   "geometry": "UNMEASURED",

@@ -33,53 +33,40 @@ void USFInventoryPanel::NativeOnInitialized()
     SetIsFocusable(false);
     using namespace SFHudStyle;
 
-    UBorder* Frame = Panel(WidgetTree, Slate(0.92f), Brass(), FMargin(14.f, 8.f), 6.f);
-    // Full-viewport canvas root (the controller fills the viewport with it); the panel sits at x 4-34%, y 3-85% = 576 x 886 at 1080p.
+    UBorder* Frame = Panel(WidgetTree, Slate(0.92f), Brass(), FMargin(0.f), 6.f);
+    // Full-viewport canvas root; the panel is the concept rect (85,31) 575 x 887 at 1920x1080 and its children are placed in panel coordinates.
     Frame->SetClipping(EWidgetClipping::ClipToBounds);
     UCanvasPanel* Root = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass());
     WidgetTree->RootWidget = Root;
     UCanvasPanelSlot* PanelSlot = Root->AddChildToCanvas(Frame);
-    PanelSlot->SetAnchors(FAnchors(0.04f, 0.03f, 0.34f, 0.85f)); PanelSlot->SetOffsets(FMargin(0.f));
-    UVerticalBox* Contents = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    Frame->SetContent(Contents);
-    auto AddRow = [Contents](UWidget* Child, const FMargin& Pad) { Contents->AddChildToVerticalBox(Child)->SetPadding(Pad); };
-
-    // Title row: stag crest, heading, close.
-    UHorizontalBox* Title = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    UHorizontalBoxSlot* CrestSlot = Title->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("icon_stag_emblem"), 28.f));  // the same crest the market header uses
-    CrestSlot->SetVerticalAlignment(VAlign_Center); CrestSlot->SetPadding(FMargin(4.f, 0.f, 16.f, 0.f));
-    Title->AddChildToHorizontalBox(Heading(WidgetTree, TEXT("Inventory"), 36, Ivory()))->SetVerticalAlignment(VAlign_Center);
-    UHorizontalBoxSlot* CloseSlot = Title->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("close_x"), 40.f));  // I or Esc closes
-    CloseSlot->SetHorizontalAlignment(HAlign_Right); CloseSlot->SetVerticalAlignment(VAlign_Center); CloseSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-    AddRow(Title, FMargin(0.f));
-
-    // Category tabs; clicks are hit-tested in NativeOnMouseButtonDown.
-    UHorizontalBox* Tabs = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    for (int32 TabIndex = 0; TabIndex < TabCount; ++TabIndex)
+    PanelSlot->SetAnchors(FAnchors(85.f / 1920.f, 31.f / 1080.f, 660.f / 1920.f, 918.f / 1080.f)); PanelSlot->SetOffsets(FMargin(0.f));
+    UCanvasPanel* Body = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass());
+    Frame->SetContent(Body);
+    // Auto-sized child at a panel-relative position.
+    auto Put = [Body](UWidget* Child, float X, float Y)
     {
-        UBorder* Tab = SFHudStyle::Tab(WidgetTree, false);
-        UTextBlock* TabText = Text(WidgetTree, TabLabel(static_cast<ESFInventoryTab>(TabIndex)), 18, Ivory());
-        TabText->SetJustification(ETextJustify::Center);
-        Tab->SetVerticalAlignment(VAlign_Center); Tab->SetContent(TabText);
-        USizeBox* TabSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        TabSize->SetWidthOverride(100.f); TabSize->SetHeightOverride(44.f); TabSize->SetContent(Tab);
-        Tabs->AddChildToHorizontalBox(TabSize)->SetPadding(FMargin(0.f, 0.f, 8.f, 0.f));
-        TabBorders.Add(Tab);
-    }
-    StyleTabs();
-    AddRow(Tabs, FMargin(0.f, 0.f, 0.f, 6.f));
+        UCanvasPanelSlot* Placed = Body->AddChildToCanvas(Child);
+        Placed->SetAutoSize(true); Placed->SetPosition(FVector2D(X, Y));
+        return Placed;
+    };
 
-    // Equipment (v5 inventory.png): five armour slots left, the paperdoll centre, four slots right. Empty slots show their ghost
-    // icon; only the main hand is live today (the equipped tool). ponytail: no armour system yet, so the others stay empty.
+    // Title: ornament (24 px at x 88), regular heading (concept cap 19 = 30 px) at x 103; no tab row in the concept (categories remain in code only).
+    Put(KitImage(WidgetTree, TEXT("icon_stag_emblem"), 24.f), 3.f, 31.f);
+    Put(Heading(WidgetTree, TEXT("Inventory"), 30, Ivory()), 18.f, 26.f);
+    Put(KitImage(WidgetTree, TEXT("close_x"), 40.f), 575.f - 52.f, 12.f);  // I or Esc closes
+
+    // Equipment (v5 inventory.png): five armour slots left (x 134), the paperdoll centre, four slots right (x 490); 78 px plates, 10 px gaps.
+    // Empty slots show a 60 px grey ghost icon; only the main hand is live today (the equipped tool). ponytail: no armour system yet.
     auto EquipmentSlot = [this](const TCHAR* GhostName, TObjectPtr<UBorder>* OutFrame, TObjectPtr<UImage>* OutIcon)
     {
         USizeBox* Box = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        Box->SetWidthOverride(72.f); Box->SetHeightOverride(72.f);
+        Box->SetWidthOverride(78.f); Box->SetHeightOverride(78.f);
         UBorder* SlotFrame = KitPanel(WidgetTree, TEXT("slot_equipment_normal"), 1.f, Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), FMargin(0.f), 3.f);
         UImage* Ghost = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
-        if (const FSFHudKitElement* Art = SFHudStyle::Kit(GhostName)) { Ghost->SetBrush(SFHudStyle::KitBrush(*Art)); Ghost->SetDesiredSizeOverride(FVector2D(48.f, 48.f)); }
+        if (const FSFHudKitElement* Art = SFHudStyle::Kit(GhostName)) { Ghost->SetBrush(SFHudStyle::KitBrush(*Art)); }
         // Equipment ghosts and the paperdoll are 2x scene art without a declared design size: draw them stretched into fixed boxes.
-        { FSlateBrush Stretch = Ghost->GetBrush(); Stretch.ImageSize = FVector2D(48.f, 48.f); Ghost->SetBrush(Stretch); }
+        { FSlateBrush Stretch = Ghost->GetBrush(); Stretch.ImageSize = FVector2D(60.f, 60.f); Ghost->SetBrush(Stretch); Ghost->SetDesiredSizeOverride(FVector2D(60.f, 60.f)); }
+        Ghost->SetColorAndOpacity(Hex(TEXT("6E7378")));
         UOverlay* Stack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
         UOverlaySlot* GhostSlot = Stack->AddChildToOverlay(Ghost);
         GhostSlot->SetHorizontalAlignment(HAlign_Center); GhostSlot->SetVerticalAlignment(VAlign_Center);
@@ -88,31 +75,28 @@ void USFInventoryPanel::NativeOnInitialized()
         if (OutIcon) { *OutIcon = Ghost; }
         return Box;
     };
-    UHorizontalBox* Equipment = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     UVerticalBox* LeftColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     for (const TCHAR* Ghost : {TEXT("ghost_head"), TEXT("ghost_chest"), TEXT("ghost_hands"), TEXT("ghost_legs"), TEXT("ghost_feet")})
-    { LeftColumn->AddChildToVerticalBox(EquipmentSlot(Ghost, nullptr, nullptr))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f)); }
-    Equipment->AddChildToHorizontalBox(LeftColumn)->SetVerticalAlignment(VAlign_Top);
+    { LeftColumn->AddChildToVerticalBox(EquipmentSlot(Ghost, nullptr, nullptr))->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f)); }
+    Put(LeftColumn, 49.f, 96.f);
     UImage* Paperdoll = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
-    if (const FSFHudKitElement* Doll = SFHudStyle::Kit(TEXT("paperdoll_adventurer"))) { Paperdoll->SetBrush(SFHudStyle::KitBrush(*Doll)); Paperdoll->SetDesiredSizeOverride(FVector2D(220.f, 380.f)); }
+    if (const FSFHudKitElement* Doll = SFHudStyle::Kit(TEXT("paperdoll_adventurer"))) { Paperdoll->SetBrush(SFHudStyle::KitBrush(*Doll)); Paperdoll->SetDesiredSizeOverride(FVector2D(158.f, 390.f)); }
     USizeBox* DollBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());  // a fixed box: the image fills it, so the art cannot size the row
-    DollBox->SetWidthOverride(220.f); DollBox->SetHeightOverride(380.f); DollBox->SetContent(Paperdoll);
-    UHorizontalBoxSlot* DollSlot = Equipment->AddChildToHorizontalBox(DollBox);
-    DollSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); DollSlot->SetHorizontalAlignment(HAlign_Center); DollSlot->SetVerticalAlignment(VAlign_Center);
+    DollBox->SetWidthOverride(158.f); DollBox->SetHeightOverride(390.f); DollBox->SetContent(Paperdoll);
+    Put(DollBox, 187.f, 87.f);
     UVerticalBox* RightColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    RightColumn->AddChildToVerticalBox(EquipmentSlot(TEXT("ghost_main_hand"), &MainHandFrame, &MainHandIcon))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
+    RightColumn->AddChildToVerticalBox(EquipmentSlot(TEXT("ghost_main_hand"), &MainHandFrame, &MainHandIcon))->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
     for (const TCHAR* Ghost : {TEXT("ghost_off_hand"), TEXT("ghost_neck"), TEXT("ghost_ring")})
-    { RightColumn->AddChildToVerticalBox(EquipmentSlot(Ghost, nullptr, nullptr))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f)); }
-    Equipment->AddChildToHorizontalBox(RightColumn)->SetVerticalAlignment(VAlign_Top);
-    AddRow(Equipment, FMargin(0.f, 0.f, 0.f, 4.f));
+    { RightColumn->AddChildToVerticalBox(EquipmentSlot(Ghost, nullptr, nullptr))->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f)); }
+    Put(RightColumn, 405.f, 96.f);
 
-    // 5 x 5 slot grid. ponytail: fixed 25 cells, no scrolling; pilot capacity is 8 slots, raise rows if that grows.
+    // 8 x 5 slot grid, 62 px cells at 4 px gaps from (108,527). ponytail: fixed 40 cells, no scrolling; pilot capacity is 8 slots, raise rows if that grows.
     UUniformGridPanel* Grid = WidgetTree->ConstructWidget<UUniformGridPanel>(UUniformGridPanel::StaticClass());
-    Grid->SetSlotPadding(FMargin(1.f));
+    Grid->SetSlotPadding(FMargin(2.f));
     for (int32 Index = 0; Index < GridColumns * GridRows; ++Index)
     {
         USizeBox* Cell = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        Cell->SetWidthOverride(64.f); Cell->SetHeightOverride(64.f);
+        Cell->SetWidthOverride(62.f); Cell->SetHeightOverride(62.f);
         Cell->SetContent(KitPanel(WidgetTree, TEXT("slot_bag_normal"), 1.f, Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), FMargin(0.f), 3.f));
         UBorder* CellFrame = Cast<UBorder>(Cell->GetContent());
         UOverlay* Stack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
@@ -138,32 +122,29 @@ void USFInventoryPanel::NativeOnInitialized()
     GridStack->AddChildToOverlay(Grid);
     UOverlaySlot* EmptySlot = GridStack->AddChildToOverlay(EmptyText);
     EmptySlot->SetHorizontalAlignment(HAlign_Center); EmptySlot->SetVerticalAlignment(VAlign_Center);
-    AddRow(GridStack, FMargin(0.f, 0.f, 0.f, 2.f));
+    Put(GridStack, 21.f, 494.f);  // cells start at (108,527); the 2 px slot padding is part of the grid
 
-    // Footer: weight readout left, gold right (the gold side stays collapsed until the exchange wallet exists).
-    UHorizontalBox* Footer = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    WeightText = Text(WidgetTree, TEXT(""), 18, Ivory());
-    UHorizontalBoxSlot* WeightSlot = Footer->AddChildToHorizontalBox(WeightText);
-    WeightSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+    // Footer (20 px): weight at (121,876); "Gold N" + 20 px coin right-aligned at x 619, shown only when this controller has an exchange wallet.
+    WeightText = Text(WidgetTree, TEXT(""), 20, Ivory());
+    Put(WeightText, 36.f, 845.f);
     UHorizontalBox* Gold = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    GoldText = Num(WidgetTree, TEXT(""), 18, Ivory());
+    GoldText = Num(WidgetTree, TEXT(""), 20, Ivory());
     Gold->AddChildToHorizontalBox(GoldText)->SetPadding(FMargin(0.f, 0.f, 8.f, 0.f));
     Gold->AddChildToHorizontalBox(KitImage(WidgetTree, Kit(TEXT("icon_coin")) ? TEXT("icon_coin") : TEXT("icon_coin_stack"), 20.f))->SetVerticalAlignment(VAlign_Center);
     Gold->SetVisibility(ESlateVisibility::Collapsed);
     GoldRow = Gold;
-    Footer->AddChildToHorizontalBox(Gold)->SetHorizontalAlignment(HAlign_Right);
-    AddRow(Footer, FMargin(4.f, 2.f, 4.f, 0.f));
+    Put(Gold, 534.f, 842.f)->SetAlignment(FVector2D(1.f, 0.f));
 
-    // One panel-owned tooltip beside the panel (x 34% + 16, y 3% + 86): 96 px art, title 26, type 18 grey, stat rows, rule, description.
+    // One panel-owned tooltip beside the panel (587,120): 410 x 326 frame, 120 x 178 art, title 27, type 18 grey, stat rows, rule, description.
     TooltipPanel = KitPanel(WidgetTree, TEXT("tooltip_frame"), 1.f, Slate(0.96f), Brass(), FMargin(16.f, 12.f), 3.f);
     UHorizontalBox* TipLayout = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     USizeBox* TipIconBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    TipIconBox->SetWidthOverride(96.f); TipIconBox->SetHeightOverride(96.f);
+    TipIconBox->SetWidthOverride(120.f); TipIconBox->SetHeightOverride(178.f);
     TipIcon = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
     TipIconBox->SetContent(TipIcon);
     TipLayout->AddChildToHorizontalBox(TipIconBox)->SetVerticalAlignment(VAlign_Top);
     UVerticalBox* TipText = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    TipTitle = Heading(WidgetTree, TEXT(""), 26, Ivory());
+    TipTitle = Heading(WidgetTree, TEXT(""), 27, Ivory());
     TipText->AddChildToVerticalBox(TipTitle);
     TipType = Text(WidgetTree, TEXT(""), 18, Hex(TEXT("A9A593")));
     TipText->AddChildToVerticalBox(TipType)->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
@@ -184,7 +165,7 @@ void USFInventoryPanel::NativeOnInitialized()
     TipLayout->AddChildToHorizontalBox(TipText)->SetPadding(FMargin(14.f, 0.f, 0.f, 0.f));
     TooltipPanel->SetContent(TipLayout);
     UCanvasPanelSlot* TipSlot = Root->AddChildToCanvas(TooltipPanel);
-    TipSlot->SetAnchors(FAnchors(0.34f, 0.03f)); TipSlot->SetAlignment(FVector2D(0.f, 0.f)); TipSlot->SetAutoSize(true); TipSlot->SetPosition(FVector2D(16.f, 86.f));
+    TipSlot->SetAnchors(FAnchors(587.f / 1920.f, 120.f / 1080.f)); TipSlot->SetAlignment(FVector2D(0.f, 0.f)); TipSlot->SetAutoSize(true); TipSlot->SetPosition(FVector2D(0.f, 0.f));
     TooltipPanel->SetVisibility(ESlateVisibility::Collapsed);
     Refresh();
 }
@@ -252,7 +233,7 @@ void USFInventoryPanel::Refresh()
     }
     // Gold readout from the exchange wallet when this controller has one (the row stays collapsed otherwise).
     const USFExchangeComponent* Exchange = GetOwningPlayer() ? GetOwningPlayer()->FindComponentByClass<USFExchangeComponent>() : nullptr;
-    if (Exchange && GoldRow) { GoldText->SetText(FText::AsNumber(Exchange->GetWallet().Available)); GoldRow->SetVisibility(ESlateVisibility::HitTestInvisible); }
+    if (Exchange && GoldRow) { GoldText->SetText(FText::FromString(FString::Printf(TEXT("Gold %s"), *FText::AsNumber(Exchange->GetWallet().Available).ToString()))); GoldRow->SetVisibility(ESlateVisibility::HitTestInvisible); }
 }
 
 FString USFInventoryPanel::TabLabel(ESFInventoryTab Tab)
@@ -380,12 +361,16 @@ void USFInventoryPanel::RefreshMainHand(const TArray<FSFInventoryEntry>& All)
     UTexture2D* Icon = Equipped ? Equipped->Icon.LoadSynchronous() : nullptr;
     if (Icon)
     {
-        if (MainHandIcon->GetBrush().GetResourceObject() != Icon) { MainHandIcon->SetBrushFromTexture(Icon, false); MainHandIcon->SetDesiredSizeOverride(FVector2D(56.f, 56.f)); }
+        if (MainHandIcon->GetBrush().GetResourceObject() != Icon) { MainHandIcon->SetBrushFromTexture(Icon, false); MainHandIcon->SetDesiredSizeOverride(FVector2D(60.f, 60.f)); }
+        MainHandIcon->SetColorAndOpacity(FLinearColor::White);
+        MainHandEntry = *Equipped; bHasMainHand = true;
         SFHudStyle::SetSlotSelected(MainHandFrame, TEXT("slot_equipment_normal"), true);
     }
     else if (const FSFHudKitElement* Ghost = SFHudStyle::Kit(TEXT("ghost_main_hand")))
     {
-        if (MainHandIcon->GetBrush().GetResourceObject() != Ghost->Texture) { MainHandIcon->SetBrush(SFHudStyle::KitBrush(*Ghost)); MainHandIcon->SetDesiredSizeOverride(FVector2D(48.f, 48.f)); }
+        if (MainHandIcon->GetBrush().GetResourceObject() != Ghost->Texture) { MainHandIcon->SetBrush(SFHudStyle::KitBrush(*Ghost)); MainHandIcon->SetDesiredSizeOverride(FVector2D(60.f, 60.f)); }
+        MainHandIcon->SetColorAndOpacity(SFHudStyle::Hex(TEXT("6E7378")));
+        bHasMainHand = false;
         SFHudStyle::SetSlotSelected(MainHandFrame, TEXT("slot_equipment_normal"), false);
     }
 }
@@ -400,8 +385,9 @@ void USFInventoryPanel::UpdateTooltip()
     {
         if (ShownItems.IsValidIndex(Index) && SlotFrames[Index]->GetCachedGeometry().IsUnderLocation(CursorPos)) { Hovered = Index; break; }
     }
-    if (Hovered == INDEX_NONE) { TooltipPanel->SetVisibility(ESlateVisibility::Collapsed); return; }
-    const FSFInventoryEntry& Entry = ShownItems[Hovered];
+    const bool bMainHand = Hovered == INDEX_NONE && bHasMainHand && MainHandFrame && MainHandFrame->GetCachedGeometry().IsUnderLocation(CursorPos);
+    if (Hovered == INDEX_NONE && !bMainHand) { TooltipPanel->SetVisibility(ESlateVisibility::Collapsed); return; }
+    const FSFInventoryEntry& Entry = bMainHand ? MainHandEntry : ShownItems[Hovered];
     const FSFInventoryTooltip Tip = BuildTooltip(Entry);
     TipTitle->SetText(FText::FromString(Tip.Title));
     TipType->SetText(FText::FromString(Tip.TypeLine));
@@ -409,7 +395,7 @@ void USFInventoryPanel::UpdateTooltip()
     TipWeight->SetText(FText::FromString(FString::Printf(TEXT("%.1f kg"), Entry.UnitWeight)));
     TipDescription->SetText(FText::FromString(Tip.Description));
     TipDescription->SetVisibility(Tip.Description.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
-    if (UTexture2D* Art = Entry.Icon.LoadSynchronous()) { FSlateBrush Brush; Brush.SetResourceObject(Art); Brush.ImageSize = FVector2D(96.f, 96.f); TipIcon->SetBrush(Brush); TipIcon->SetVisibility(ESlateVisibility::HitTestInvisible); }
+    if (UTexture2D* Art = Entry.Icon.LoadSynchronous()) { FSlateBrush Brush; Brush.SetResourceObject(Art); Brush.ImageSize = FVector2D(120.f, 120.f); TipIcon->SetBrush(Brush); TipIcon->SetVisibility(ESlateVisibility::HitTestInvisible); }
     else { TipIcon->SetVisibility(ESlateVisibility::Collapsed); }
     TooltipPanel->SetVisibility(ESlateVisibility::HitTestInvisible);
 }

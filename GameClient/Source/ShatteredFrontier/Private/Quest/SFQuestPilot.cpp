@@ -1197,9 +1197,9 @@ void USFQuestTrackerHud::NativeOnInitialized()
     UCanvasPanel* Canvas = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass(), TEXT("QuestCanvas"));
     WidgetTree->RootWidget = Canvas;
     // IMPLEMENTATION-FIX table 1: quest_tracker_frame 280 wide at x84%, top y31.3% (under the minimap footer), height from the rows.
-    UBorder* Plate = KitPanel(WidgetTree, TEXT("quest_tracker_frame"), 1.f, Slate(0.88f), Brass(), FMargin(4.f, 10.f, 4.f, 12.f), 0.f);
+    UBorder* Plate = KitPanel(WidgetTree, TEXT("quest_tracker_frame"), 1.f, Slate(0.88f), Brass(), FMargin(10.f, 12.f, 10.f, 14.f), 0.f);
     USizeBox* Box = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    Box->SetWidthOverride(280.f); Box->SetContent(Plate);
+    Box->SetWidthOverride(286.f); Box->SetContent(Plate);
     UCanvasPanelSlot* TrackerSlot = Canvas->AddChildToCanvas(Box);
     TrackerSlot->SetAnchors(FAnchors(0.84f, 0.313f)); TrackerSlot->SetAutoSize(true);
     Frame = Box;
@@ -1233,13 +1233,13 @@ void USFQuestTrackerHud::Present(const TArray<FSFQuestView>& Shown)
         UHorizontalBox* Row = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
         // 18 px kit checkbox, the moss tick over it when done (glyph, not colour alone).
         UOverlay* Check = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
-        Check->AddChildToOverlay(KitImage(WidgetTree, TEXT("checkbox"), 18.f, 18.f));
-        if (bDone) { Check->AddChildToOverlay(KitImage(WidgetTree, TEXT("status_tick"), 18.f, 18.f)); }
+        Check->AddChildToOverlay(KitImage(WidgetTree, TEXT("checkbox"), 22.f, 22.f));
+        if (bDone) { Check->AddChildToOverlay(KitImage(WidgetTree, TEXT("status_tick"), 22.f, 22.f)); }
         UHorizontalBoxSlot* TickSlot = Row->AddChildToHorizontalBox(Check);
         TickSlot->SetVerticalAlignment(VAlign_Center); TickSlot->SetPadding(FMargin(0.f, 0.f, 8.f, 0.f));
-        UHorizontalBoxSlot* LabelSlot = Row->AddChildToHorizontalBox(Text(WidgetTree, Label, 18, Colour));
+        UHorizontalBoxSlot* LabelSlot = Row->AddChildToHorizontalBox(Text(WidgetTree, Label, 20, Colour));
         LabelSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); LabelSlot->SetVerticalAlignment(VAlign_Center);
-        Row->AddChildToHorizontalBox(Num(WidgetTree, Count, 18, Colour))->SetVerticalAlignment(VAlign_Center);
+        Row->AddChildToHorizontalBox(Num(WidgetTree, Count, 20, Colour))->SetVerticalAlignment(VAlign_Center);
         Rows->AddChildToVerticalBox(Row)->SetPadding(FMargin(0.f, 3.f));
     };
     for (int32 Index = 0; Index < Shown.Num(); ++Index)

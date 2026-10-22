@@ -9,11 +9,11 @@
    780
   ],
   "found": true,
-  "match": 0.87,
-  "d_left": -7,
-  "d_top": 9,
-  "d_width": 14,
-  "d_height": -89,
+  "match": 1.0,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "window fill",
@@ -21,12 +21,12 @@
    ],
    [
     "window fill",
-    4.2
+    2.2
    ]
   ],
-  "geometry": "FAIL",
-  "colour": "FAIL",
-  "verdict": "FAIL"
+  "geometry": "PASS",
+  "colour": "PASS",
+  "verdict": "PASS"
  },
  {
   "widget": "HorizontalBox:HorizontalBox_0",
@@ -38,11 +38,11 @@
    42
   ],
   "found": true,
-  "match": 0.35,
-  "d_left": -24,
-  "d_top": 7,
-  "d_width": 44,
-  "d_height": 43,
+  "match": 0.65,
+  "d_left": 62,
+  "d_top": -2,
+  "d_width": -127,
+  "d_height": 6,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -58,18 +58,18 @@
    94
   ],
   "found": true,
-  "match": 0.36,
-  "d_left": 4,
-  "d_top": 39,
-  "d_width": -31,
-  "d_height": -22,
+  "match": 0.83,
+  "d_left": 3,
+  "d_top": -7,
+  "d_width": -7,
+  "d_height": 2,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
   "verdict": "FAIL"
  },
  {
-  "widget": "",
+  "widget": "TextBlock:TextBlock_1",
   "name": "name You",
   "rect": [
    668,
@@ -77,19 +77,19 @@
    55,
    29
   ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.45,
+  "d_left": -10,
+  "d_top": -8,
+  "d_width": -9,
+  "d_height": 9,
   "de": [],
-  "geometry": "UNMEASURED",
+  "geometry": "FAIL",
   "colour": "PASS",
-  "verdict": "REVIEW"
+  "verdict": "FAIL"
  },
  {
-  "widget": "",
+  "widget": "Overlay:Overlay_15",
   "name": "portrait well Elira",
   "rect": [
    1000,
@@ -97,19 +97,19 @@
    103,
    94
   ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.46,
+  "d_left": -29,
+  "d_top": -7,
+  "d_width": -7,
+  "d_height": 2,
   "de": [],
-  "geometry": "UNMEASURED",
+  "geometry": "FAIL",
   "colour": "PASS",
-  "verdict": "REVIEW"
+  "verdict": "FAIL"
  },
  {
-  "widget": "",
+  "widget": "TextBlock:TextBlock_29",
   "name": "name Elira",
   "rect": [
    1123,
@@ -117,19 +117,19 @@
    69,
    28
   ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.27,
+  "d_left": -42,
+  "d_top": -8,
+  "d_width": 11,
+  "d_height": 10,
   "de": [],
-  "geometry": "UNMEASURED",
+  "geometry": "FAIL",
   "colour": "PASS",
-  "verdict": "REVIEW"
+  "verdict": "FAIL"
  },
  {
-  "widget": "",
+  "widget": "SizeBox:SizeBox_94",
   "name": "column divider diamond",
   "rect": [
    950,
@@ -137,19 +137,19 @@
    22,
    545
   ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.88,
+  "d_left": -1,
+  "d_top": -11,
+  "d_width": 0,
+  "d_height": 1,
   "de": [],
-  "geometry": "UNMEASURED",
+  "geometry": "FAIL",
   "colour": "PASS",
-  "verdict": "REVIEW"
+  "verdict": "FAIL"
  },
  {
-  "widget": "VerticalBox:VerticalBox_4",
+  "widget": "SizeBox:SizeBox_6",
   "name": "my offer slot 1 Iron Axe",
   "rect": [
    534,
@@ -158,23 +158,23 @@
    95
   ],
   "found": true,
-  "match": 0.57,
-  "d_left": 21,
-  "d_top": 19,
-  "d_width": -19,
-  "d_height": -11,
+  "match": 0.63,
+  "d_left": 17,
+  "d_top": -6,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "slot fill",
-    12.2
+    1.6
    ]
   ],
   "geometry": "FAIL",
-  "colour": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  },
  {
-  "widget": "VerticalBox:VerticalBox_5",
+  "widget": "SizeBox:SizeBox_9",
   "name": "my offer slot 2 Oak Planks",
   "rect": [
    635,
@@ -183,23 +183,23 @@
    95
   ],
   "found": true,
-  "match": 0.6,
-  "d_left": 8,
-  "d_top": 19,
-  "d_width": -19,
-  "d_height": -11,
+  "match": 0.63,
+  "d_left": 17,
+  "d_top": -6,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "slot fill",
-    13.2
+    1.5
    ]
   ],
   "geometry": "FAIL",
-  "colour": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  },
  {
-  "widget": "VerticalBox:VerticalBox_7",
+  "widget": "SizeBox:SizeBox_15",
   "name": "my offer slot 4 River Herbs",
   "rect": [
    836,
@@ -208,19 +208,19 @@
    95
   ],
   "found": true,
-  "match": 0.41,
-  "d_left": -17,
-  "d_top": 19,
-  "d_width": -19,
-  "d_height": -11,
+  "match": 0.61,
+  "d_left": 18,
+  "d_top": -6,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "slot fill",
-    13.7
+    1.4
    ]
   ],
   "geometry": "FAIL",
-  "colour": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  },
  {
@@ -253,15 +253,15 @@
    91
   ],
   "found": true,
-  "match": 0.37,
-  "d_left": 21,
+  "match": 0.58,
+  "d_left": 17,
   "d_top": -10,
-  "d_width": -31,
-  "d_height": -27,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "empty slot fill",
-    1.7
+    1.9
    ]
   ],
   "geometry": "FAIL",
@@ -269,7 +269,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "",
+  "widget": "VerticalBox:VerticalBox_15",
   "name": "my empty slot row 3 col 4",
   "rect": [
    836,
@@ -277,24 +277,24 @@
    95,
    90
   ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.58,
+  "d_left": 18,
+  "d_top": -9,
+  "d_width": 0,
+  "d_height": 1,
   "de": [
    [
     "empty slot fill",
-    5.6
+    2.1
    ]
   ],
-  "geometry": "UNMEASURED",
-  "colour": "FAIL",
+  "geometry": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  },
  {
-  "widget": "VerticalBox:VerticalBox_18",
+  "widget": "SizeBox:SizeBox_51",
   "name": "their offer slot 1 Wolf Pelt",
   "rect": [
    989,
@@ -303,23 +303,23 @@
    95
   ],
   "found": true,
-  "match": 0.53,
-  "d_left": -6,
-  "d_top": 19,
-  "d_width": -19,
-  "d_height": -11,
+  "match": 0.65,
+  "d_left": -15,
+  "d_top": -6,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "slot fill",
-    12.1
+    1.9
    ]
   ],
   "geometry": "FAIL",
-  "colour": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  },
  {
-  "widget": "",
+  "widget": "SizeBox:SizeBox_60",
   "name": "their offer slot 4 Iron Ingot",
   "rect": [
    1291,
@@ -327,24 +327,24 @@
    95,
    95
   ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.66,
+  "d_left": -14,
+  "d_top": -6,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "slot fill",
-    4.7
+    1.0
    ]
   ],
-  "geometry": "UNMEASURED",
-  "colour": "FAIL",
+  "geometry": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  },
  {
-  "widget": "Overlay:Overlay_14",
+  "widget": "SizeBox:SizeBox_43",
   "name": "my gold offered field",
   "rect": [
    545,
@@ -353,15 +353,15 @@
    46
   ],
   "found": true,
-  "match": 0.65,
-  "d_left": 8,
-  "d_top": 2,
-  "d_width": -60,
-  "d_height": 10,
+  "match": 0.73,
+  "d_left": 3,
+  "d_top": -7,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "field fill",
-    23.2
+    4.3
    ]
   ],
   "geometry": "FAIL",
@@ -378,15 +378,15 @@
    46
   ],
   "found": true,
-  "match": 0.56,
-  "d_left": -38,
-  "d_top": 0,
-  "d_width": -60,
-  "d_height": 10,
+  "match": 0.59,
+  "d_left": -44,
+  "d_top": -7,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "field fill",
-    5.3
+    4.2
    ]
   ],
   "geometry": "FAIL",
@@ -394,7 +394,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "",
+  "widget": "Border:Border_17",
   "name": "Offer Locked button (pressed)",
   "rect": [
    585,
@@ -402,24 +402,24 @@
    300,
    70
   ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.76,
+  "d_left": -37,
+  "d_top": 0,
+  "d_width": 8,
+  "d_height": 4,
   "de": [
    [
     "moss fill",
-    9.0
+    6.2
    ]
   ],
-  "geometry": "UNMEASURED",
+  "geometry": "FAIL",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
-  "widget": "",
+  "widget": "SizeBox:SizeBox_91",
   "name": "Reviewing offer status plate",
   "rect": [
    1036,
@@ -427,19 +427,19 @@
    300,
    70
   ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.64,
+  "d_left": -65,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "plate fill",
-    5.3
+    5.5
    ]
   ],
-  "geometry": "UNMEASURED",
+  "geometry": "FAIL",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
@@ -464,7 +464,7 @@
   "verdict": "REVIEW"
  },
  {
-  "widget": "TextBlock:TextBlock_59",
+  "widget": "VerticalBox:VerticalBox_30",
   "name": "Cancel Trade button",
   "rect": [
    539,
@@ -473,23 +473,23 @@
    61
   ],
   "found": true,
-  "match": 0.42,
-  "d_left": 14,
-  "d_top": 4,
-  "d_width": -27,
-  "d_height": -33,
+  "match": 0.52,
+  "d_left": 17,
+  "d_top": -24,
+  "d_width": 0,
+  "d_height": 11,
   "de": [
    [
     "button fill",
-    28.9
+    2.6
    ]
   ],
   "geometry": "FAIL",
-  "colour": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  },
  {
-  "widget": "Overlay:Overlay_29",
+  "widget": "Overlay:Overlay_30",
   "name": "Hold to Accept Trade button",
   "rect": [
    965,
@@ -498,19 +498,19 @@
    67
   ],
   "found": true,
-  "match": 0.28,
-  "d_left": -14,
-  "d_top": -53,
-  "d_width": 1,
-  "d_height": 21,
+  "match": 0.54,
+  "d_left": -20,
+  "d_top": -21,
+  "d_width": 0,
+  "d_height": 5,
   "de": [
    [
     "brass fill",
-    14.5
+    7.1
    ],
    [
     "brass fill",
-    25.2
+    21.2
    ]
   ],
   "geometry": "FAIL",
@@ -547,11 +547,11 @@
    160
   ],
   "found": true,
-  "match": 0.8,
+  "match": 0.75,
   "d_left": 1,
   "d_top": 0,
-  "d_width": -6,
-  "d_height": -30,
+  "d_width": 0,
+  "d_height": -40,
   "de": [
    [
     "dimmed fill",

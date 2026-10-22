@@ -98,40 +98,52 @@ void USFHudLayout::NativeOnInitialized()
     WidgetTree->RootWidget = Root;
     BuildHotbar(Root);
 
-    // Prompt bar: auto width, 52 tall, bottom edge at 85% (action_bar in build mode, button_normal plate otherwise).
-    PromptFrame = KitPanel(WidgetTree, TEXT("button_normal"), 1.f, Slate(0.9f), Brass(), FMargin(8.f, 0.f), 3.f);  // plate art only; the state brush is ButtonBrush
+    // Prompt bar: auto width, 60 tall, bottom edge at 83.1% (898 px); the build bar is a 493 x 38 pill at 85.2% (SetPrompts).
+    PromptFrame = KitPanel(WidgetTree, TEXT("button_normal"), 1.f, Slate(0.9f), Brass(), FMargin(24.f, 0.f), 3.f);  // plate art only; the state brush is ButtonBrush
     PromptRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    PromptFrame->SetVerticalAlignment(VAlign_Center);
+    PromptFrame->SetVerticalAlignment(VAlign_Center); PromptFrame->SetHorizontalAlignment(HAlign_Center);
     PromptFrame->SetContent(PromptRow);
     USizeBox* PromptSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    PromptSize->SetHeightOverride(52.f); PromptSize->SetContent(PromptFrame);
+    PromptSize->SetHeightOverride(60.f); PromptSize->SetContent(PromptFrame);
     PromptSize->SetVisibility(ESlateVisibility::Collapsed);
     PromptBox = PromptSize;
-    HudAnchor(Root, PromptSize, 0.5f, 0.85f, 0.5f, 1.f);
+    HudAnchor(Root, PromptSize, 0.5f, 0.831f, 0.5f, 1.f);
 
-    // Target frame: 410 x 70 at top centre (y 4%); name 24, charges as a 300 px framed hp bar with a numeral.
-    TargetFrame = KitPanel(WidgetTree, TEXT("target_frame"), 1.f, Slate(0.9f), Brass(), FMargin(8.f, 0.f), 3.f);
+    // Target frame: 433 x 74 at top centre (y 32 px); brass level diamond left, name 26 centred, a 403 px framed hp bar with the numeral inside it.
+    TargetFrame = KitPanel(WidgetTree, TEXT("target_frame"), 1.f, Slate(0.9f), Brass(), FMargin(0.f), 3.f);
     TargetFrame->SetVerticalAlignment(VAlign_Center);
+    UOverlay* TargetStack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
+    TargetFrame->SetContent(TargetStack);
     UVerticalBox* TargetBox = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    TargetFrame->SetContent(TargetBox);
-    UHorizontalBox* TargetTop = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    TargetName = Heading(WidgetTree, TEXT(""), 24, Ivory());
-    TargetTop->AddChildToHorizontalBox(TargetName)->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-    TargetCharges = Num(WidgetTree, TEXT(""), 18, Ivory());
-    TargetTop->AddChildToHorizontalBox(TargetCharges)->SetVerticalAlignment(VAlign_Center);
-    TargetBox->AddChildToVerticalBox(TargetTop);
-    const FSFFramedBar Bar = MakeFramedBar(WidgetTree, TEXT("bar_hp"), 300.f);
+    UOverlaySlot* TargetBoxSlot = TargetStack->AddChildToOverlay(TargetBox);
+    TargetBoxSlot->SetHorizontalAlignment(HAlign_Fill); TargetBoxSlot->SetVerticalAlignment(VAlign_Center); TargetBoxSlot->SetPadding(FMargin(15.f, 0.f));
+    TargetName = Text(WidgetTree, TEXT(""), 26, Ivory());
+    TargetName->SetJustification(ETextJustify::Center);
+    TargetBox->AddChildToVerticalBox(TargetName)->SetHorizontalAlignment(HAlign_Center);
+    TargetCharges = Num(WidgetTree, TEXT(""), 22, Ivory());
+    const FSFFramedBar Bar = MakeFramedBar(WidgetTree, TEXT("bar_hp"), 403.f);
     if (Bar.Root)
     {
         TargetFillClip = Bar.FillClip; TargetFillWidth = Bar.FillWidth;
-        TargetBar = Bar.Root;
-        TargetBox->AddChildToVerticalBox(Bar.Root)->SetHorizontalAlignment(HAlign_Center);
+        UOverlay* BarStack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
+        BarStack->AddChildToOverlay(Bar.Root);
+        UOverlaySlot* ChargesSlot = BarStack->AddChildToOverlay(TargetCharges);
+        ChargesSlot->SetHorizontalAlignment(HAlign_Center); ChargesSlot->SetVerticalAlignment(VAlign_Center);
+        TargetBar = BarStack;
+        TargetBox->AddChildToVerticalBox(BarStack)->SetHorizontalAlignment(HAlign_Center);
     }
-    USizeBox* TargetSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    TargetSize->SetWidthOverride(410.f); TargetSize->SetHeightOverride(70.f); TargetSize->SetContent(TargetFrame);
+    else { TargetBox->AddChildToVerticalBox(TargetCharges)->SetHorizontalAlignment(HAlign_Center); }
+    // Level diamond (target_level_diamond, 57 x 55) at the frame's left edge. ponytail: targets carry no level yet, so the numeral is fixed at 1.
+    UOverlay* Diamond = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
+    Diamond->AddChildToOverlay(KitImage(WidgetTree, TEXT("target_level_diamond"), 57.f, 55.f));
+    UOverlaySlot* LevelSlot = Diamond->AddChildToOverlay(Num(WidgetTree, TEXT("1"), 24, Ivory()));
+    LevelSlot->SetHorizontalAlignment(HAlign_Center); LevelSlot->SetVerticalAlignment(VAlign_Center);
+    UOverlaySlot* DiamondSlot = TargetStack->AddChildToOverlay(Diamond);
+    DiamondSlot->SetHorizontalAlignment(HAlign_Left); DiamondSlot->SetVerticalAlignment(VAlign_Center);    USizeBox* TargetSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+    TargetSize->SetWidthOverride(433.f); TargetSize->SetHeightOverride(74.f); TargetSize->SetContent(TargetFrame);
     TargetSize->SetVisibility(ESlateVisibility::Collapsed);
     TargetBoxRoot = TargetSize;
-    HudAnchor(Root, TargetSize, 0.5f, 0.04f, 0.5f, 0.f);
+    HudAnchor(Root, TargetSize, 0.5f, 0.0296f, 0.5f, 0.f);
 
     // Minimap: a fixed 250 px disc at the right edge (x 99%, y 2%); the ring art bakes in the N cap. No map is rendered into it yet.
     UVerticalBox* MapColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
@@ -162,7 +174,9 @@ void USFHudLayout::NativeOnInitialized()
         UOverlaySlot* RingSlot = Disc->AddChildToOverlay(Ring);
         RingSlot->SetHorizontalAlignment(HAlign_Fill); RingSlot->SetVerticalAlignment(VAlign_Fill);
     }
-    UOverlaySlot* MarkerSlot = Disc->AddChildToOverlay(KitImage(WidgetTree, TEXT("player_arrow"), 18.f));
+    USizeBox* Arrow = KitImage(WidgetTree, TEXT("player_arrow"), 18.f);
+    if (UImage* ArrowImage = Cast<UImage>(Arrow->GetContent())) { ArrowImage->SetColorAndOpacity(FLinearColor::White); }  // the piece drew grey
+    UOverlaySlot* MarkerSlot = Disc->AddChildToOverlay(Arrow);
     MarkerSlot->SetHorizontalAlignment(HAlign_Center); MarkerSlot->SetVerticalAlignment(VAlign_Center);
     MapColumn->AddChildToVerticalBox(DiscBox);
     UBorder* ZoneFrame = KitPanel(WidgetTree, TEXT("minimap_footer"), 1.f, Slate(0.85f), Brass(), FMargin(4.f, 0.f), 3.f);
@@ -205,7 +219,7 @@ void USFHudLayout::BuildHotbar(UCanvasPanel* Root)
         Row->AddChildToHorizontalBox(CellSize)->SetPadding(FMargin(6.f, 0.f));
         SlotFrames.Add(Cell);
     }
-    HudAnchor(Root, Row, 0.5f, 0.96f, 0.5f, 1.f);
+    HudAnchor(Root, Row, 0.5f, 0.95f, 0.5f, 1.f);
 }
 
 void USFHudLayout::PlaceMinimap(const FVector2D& ViewportSize)
@@ -236,21 +250,27 @@ void USFHudLayout::SetPrompts(ESFPromptContext Context)
         const FString Interact = InteractKeyLabel();
         if (!Interact.IsEmpty()) { for (FSFPromptSegment& Segment : Segments) { Segment.Key = Interact; } }
     }
-    if (USizeBox* BarSize = Cast<USizeBox>(PromptBox)) { BarSize->SetHeightOverride(Context == ESFPromptContext::Build ? 44.f : 52.f); }
+    const bool bBuild = Context == ESFPromptContext::Build;
+    if (USizeBox* BarSize = Cast<USizeBox>(PromptBox))
+    {
+        BarSize->SetHeightOverride(bBuild ? 38.f : 60.f);
+        if (bBuild) { BarSize->SetWidthOverride(493.f); } else { BarSize->ClearWidthOverride(); }
+    }
+    if (UCanvasPanelSlot* BarSlot = Cast<UCanvasPanelSlot>(PromptBox->Slot)) { BarSlot->SetAnchors(FAnchors(0.5f, bBuild ? 0.852f : 0.831f)); }  // build bottom 920, interact 898
+    PromptFrame->SetPadding(FMargin(bBuild ? 12.f : 24.f, 0.f));
     PromptBox->SetVisibility(Segments.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
-    PromptFrame->SetBrush(Context == ESFPromptContext::Build ? KitOrFrame(TEXT("action_bar"), Slate(0.9f), Brass(), 3.f) : ButtonBrush(EButtonKind::Secondary, EHudState::Normal));
+    PromptFrame->SetBrush(ButtonBrush(EButtonKind::Secondary, EHudState::Normal));
     for (int32 Index = 0; Index < Segments.Num(); ++Index)
     {
         const FSFPromptSegment& Segment = Segments[Index];
-        if (Index > 0) { PromptRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("·"), 20, Brass(), true))->SetPadding(FMargin(12.f, 0.f)); }
-        // keycap_<key> / mouse_<button> kit pieces; an unlisted key falls back to a plain bold label.
+        if (Index > 0) { PromptRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("·"), bBuild ? 18 : 20, Brass(), true))->SetPadding(FMargin(12.f, 0.f)); }
+        // keycap_<key> / mouse_<button> kit pieces; an unlisted key falls back to a plain bold label. The build bar is plain text (no keycap art).
         const FString Lower = Segment.Key.ToLower();
         const FString PieceName = Lower == TEXT("lmb") || Lower == TEXT("rmb") ? FString::Printf(TEXT("mouse_%s"), *Lower) : FString::Printf(TEXT("keycap_%s"), *Lower);
-        const FSFHudKitElement* PieceArt = Kit(*PieceName);
-        const float PieceScale = Context == ESFPromptContext::Build ? 0.75f : 1.f;  // the build action bar is a slim single line
-        UWidget* Key = PieceArt ? static_cast<UWidget*>(KitImage(WidgetTree, *PieceName, KitDesignSize(*PieceArt).X * PieceScale, KitDesignSize(*PieceArt).Y * PieceScale)) : static_cast<UWidget*>(Text(WidgetTree, Segment.Key, 20, Ivory(), true));
+        const FSFHudKitElement* PieceArt = bBuild ? nullptr : Kit(*PieceName);
+        UWidget* Key = PieceArt ? static_cast<UWidget*>(KitImage(WidgetTree, *PieceName, KitDesignSize(*PieceArt).X, KitDesignSize(*PieceArt).Y)) : static_cast<UWidget*>(Text(WidgetTree, Segment.Key, bBuild ? 18 : 20, Ivory(), true));
         PromptRow->AddChildToHorizontalBox(Key)->SetVerticalAlignment(VAlign_Center);
-        UHorizontalBoxSlot* ActionSlot = PromptRow->AddChildToHorizontalBox(Text(WidgetTree, Segment.Action, Context == ESFPromptContext::Build ? 18 : 24, Ivory()));
+        UHorizontalBoxSlot* ActionSlot = PromptRow->AddChildToHorizontalBox(Text(WidgetTree, Segment.Action, bBuild ? 18 : 26, Ivory()));
         ActionSlot->SetVerticalAlignment(VAlign_Center); ActionSlot->SetPadding(FMargin(8.f, 0.f, 0.f, 0.f));
     }
 }
@@ -311,7 +331,7 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
         TargetName->SetText(FText::FromString(Name));
         const ASFPlayerController* Player = Cast<ASFPlayerController>(Controller);
         const FString Message = Player ? Player->GetPilotMessage() : FString();
-        TargetCharges->SetText(FText::FromString(Message.IsEmpty() ? FString::Printf(TEXT("%d / %d HP"), Health, MaxHealth) : Message));
+        TargetCharges->SetText(FText::FromString(Message.IsEmpty() ? FString::Printf(TEXT("%d / %d"), Health, MaxHealth) : Message));
         if (TargetBar) { TargetBar->SetVisibility(ESlateVisibility::HitTestInvisible); }
         if (TargetFillClip) { TargetFillClip->SetWidthOverride(TargetFillWidth * ChargeFraction(Health, MaxHealth)); }
     }
@@ -325,13 +345,17 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
         NextFooterSeconds = Now + 1.0;
         if (ZoneName.IsEmpty()) { ZoneName = ZoneFromMapName(UGameplayStatics::GetCurrentLevelName(this, true)); }
         FString Footer = ZoneName;
-        const USFQuestPilotComponent* Quest = Controller->FindComponentByClass<USFQuestPilotComponent>();
-        if (Quest && Quest->ActiveObjectiveKind() == TEXT("gather") && Controller->GetPawn())
+        if (Controller->GetPawn())
         {
+            // Always show a distance. Gather objective: nearest gathering node; otherwise the nearest node of any kind, else the world origin as the zone centre.
+            const USFQuestPilotComponent* Quest = Controller->FindComponentByClass<USFQuestPilotComponent>();
+            const bool bGatherObjective = Quest && Quest->ActiveObjectiveKind() == TEXT("gather");
+            const FVector PawnAt = Controller->GetPawn()->GetActorLocation();
             double Nearest = TNumericLimits<double>::Max();
             for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It; ++It)
-            { if (!It->IsRefinery()) { Nearest = FMath::Min(Nearest, FVector::Dist2D(It->GetActorLocation(), Controller->GetPawn()->GetActorLocation())); } }
-            if (Nearest < TNumericLimits<double>::Max()) { Footer = FString::Printf(TEXT("%s · %d m"), *ZoneName, FMath::RoundToInt(Nearest / 100.0)); }
+            { if (!bGatherObjective || !It->IsRefinery()) { Nearest = FMath::Min(Nearest, FVector::Dist2D(It->GetActorLocation(), PawnAt)); } }
+            if (Nearest == TNumericLimits<double>::Max()) { Nearest = FVector::Dist2D(FVector::ZeroVector, PawnAt); }  // ponytail: no zone-centre marker exists; the world origin stands in
+            Footer = FString::Printf(TEXT("%s · %d m"), *ZoneName, FMath::RoundToInt(Nearest / 100.0));
         }
         ZoneText->SetText(FText::FromString(Footer));
     }

@@ -9,22 +9,22 @@
    672
   ],
   "found": true,
-  "match": 0.76,
-  "d_left": -12,
-  "d_top": 12,
-  "d_width": -47,
-  "d_height": 84,
+  "match": 1.0,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "panel fill",
-    78.7
+    3.3
    ],
    [
     "panel fill",
-    7.4
+    2.4
    ]
   ],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
@@ -38,11 +38,11 @@
    38
   ],
   "found": true,
-  "match": 0.38,
-  "d_left": -13,
-  "d_top": -6,
-  "d_width": 149,
-  "d_height": 26,
+  "match": 0.32,
+  "d_left": -1,
+  "d_top": -18,
+  "d_width": 196,
+  "d_height": 9,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -58,23 +58,23 @@
    143
   ],
   "found": true,
-  "match": 0.81,
-  "d_left": -6,
-  "d_top": 5,
-  "d_width": -58,
-  "d_height": 1,
+  "match": 0.7,
+  "d_left": 6,
+  "d_top": -24,
+  "d_width": -11,
+  "d_height": 0,
   "de": [
    [
     "card fill",
-    11.3
+    2.1
    ]
   ],
   "geometry": "FAIL",
-  "colour": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_17",
+  "widget": "SizeBox:SizeBox_21",
   "name": "skill card Foraging",
   "rect": [
    66,
@@ -83,23 +83,23 @@
    132
   ],
   "found": true,
-  "match": 0.59,
-  "d_left": -6,
-  "d_top": 22,
-  "d_width": -58,
-  "d_height": 12,
+  "match": 0.9,
+  "d_left": 6,
+  "d_top": -9,
+  "d_width": -11,
+  "d_height": 11,
   "de": [
    [
     "card fill",
-    7.5
+    2.8
    ]
   ],
   "geometry": "FAIL",
-  "colour": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_9",
+  "widget": "SizeBox:SizeBox_11",
   "name": "skill card Mining",
   "rect": [
    66,
@@ -108,23 +108,23 @@
    133
   ],
   "found": true,
-  "match": 0.68,
-  "d_left": -6,
-  "d_top": 13,
-  "d_width": -58,
-  "d_height": 11,
+  "match": 0.82,
+  "d_left": 6,
+  "d_top": -17,
+  "d_width": -11,
+  "d_height": 10,
   "de": [
    [
     "card fill",
-    23.2
+    2.1
    ]
   ],
   "geometry": "FAIL",
-  "colour": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_25",
+  "widget": "SizeBox:SizeBox_31",
   "name": "skill card Fishing",
   "rect": [
    66,
@@ -133,15 +133,15 @@
    140
   ],
   "found": true,
-  "match": 0.55,
-  "d_left": -6,
-  "d_top": 31,
-  "d_width": -58,
-  "d_height": 4,
+  "match": 0.96,
+  "d_left": 6,
+  "d_top": -1,
+  "d_width": -11,
+  "d_height": 3,
   "de": [
    [
     "card fill",
-    7.7
+    3.3
    ]
   ],
   "geometry": "FAIL",
@@ -149,7 +149,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "VerticalBox:VerticalBox_1",
+  "widget": "SizeBox:SizeBox_3",
   "name": "Woodcutting level well",
   "rect": [
    77,
@@ -158,23 +158,23 @@
    110
   ],
   "found": true,
-  "match": 0.65,
-  "d_left": 3,
-  "d_top": 0,
-  "d_width": -28,
-  "d_height": 15,
+  "match": 0.61,
+  "d_left": 6,
+  "d_top": -22,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "well fill",
-    36.4
+    1.8
    ]
   ],
   "geometry": "FAIL",
-  "colour": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  },
  {
-  "widget": "",
+  "widget": "SizeBox:SizeBox_9",
   "name": "Woodcutting XP bar",
   "rect": [
    198,
@@ -182,24 +182,24 @@
    336,
    18
   ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.68,
+  "d_left": 6,
+  "d_top": -6,
+  "d_width": -7,
+  "d_height": 8,
   "de": [
    [
     "xp green fill",
-    39.1
+    38.9
    ]
   ],
-  "geometry": "UNMEASURED",
+  "geometry": "FAIL",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
-  "widget": "",
+  "widget": "SizeBox:SizeBox_19",
   "name": "Mining XP bar",
   "rect": [
    198,
@@ -207,19 +207,19 @@
    336,
    18
   ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.54,
+  "d_left": 6,
+  "d_top": 2,
+  "d_width": -7,
+  "d_height": 8,
   "de": [
    [
     "xp green fill",
-    40.7
+    40.4
    ]
   ],
-  "geometry": "UNMEASURED",
+  "geometry": "FAIL",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
@@ -290,7 +290,7 @@
   "de": [
    [
     "hp red fill",
-    34.1
+    34.0
    ]
   ],
   "geometry": "UNMEASURED",
@@ -360,7 +360,7 @@
   "de": [
    [
     "label plate fill",
-    3.6
+    3.5
    ]
   ],
   "geometry": "UNMEASURED",
@@ -385,7 +385,7 @@
   "de": [
    [
     "fill dark",
-    8.8
+    8.9
    ]
   ],
   "geometry": "UNMEASURED",
@@ -422,9 +422,9 @@
    115
   ],
   "found": true,
-  "match": 0.52,
+  "match": 0.66,
   "d_left": 11,
-  "d_top": 44,
+  "d_top": 33,
   "d_width": -21,
   "d_height": -27,
   "de": [],
@@ -442,15 +442,15 @@
    101
   ],
   "found": true,
-  "match": 0.49,
+  "match": 0.63,
   "d_left": 6,
-  "d_top": 36,
+  "d_top": 25,
   "d_width": -5,
   "d_height": -13,
   "de": [
    [
     "selected slot fill",
-    9.7
+    10.0
    ]
   ],
   "geometry": "FAIL",
@@ -467,15 +467,15 @@
    101
   ],
   "found": true,
-  "match": 0.49,
+  "match": 0.63,
   "d_left": 0,
-  "d_top": 36,
+  "d_top": 25,
   "d_width": -7,
   "d_height": -13,
   "de": [
    [
     "slot fill",
-    8.7
+    44.3
    ]
   ],
   "geometry": "FAIL",
@@ -483,7 +483,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_1",
+  "widget": "VerticalBox:VerticalBox_0",
   "name": "vitals HP bar",
   "rect": [
    151,
@@ -492,15 +492,15 @@
    33
   ],
   "found": true,
-  "match": 0.87,
-  "d_left": 13,
-  "d_top": -1,
+  "match": 0.39,
+  "d_left": 12,
+  "d_top": -27,
   "d_width": -13,
-  "d_height": -1,
+  "d_height": 51,
   "de": [
    [
     "hp red fill",
-    10.8
+    13.5
    ]
   ],
   "geometry": "FAIL",
@@ -519,13 +519,13 @@
   "found": true,
   "match": 0.71,
   "d_left": 5,
-  "d_top": 19,
-  "d_width": 8,
-  "d_height": -25,
+  "d_top": -23,
+  "d_width": 7,
+  "d_height": 17,
   "de": [
    [
     "badge fill",
-    34.3
+    41.5
    ]
   ],
   "geometry": "FAIL",
@@ -533,7 +533,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_17",
+  "widget": "SizeBox:SizeBox_18",
   "name": "minimap ring",
   "rect": [
    1654,
@@ -582,11 +582,11 @@
    203
   ],
   "found": true,
-  "match": 0.61,
+  "match": 0.57,
   "d_left": -5,
   "d_top": 34,
-  "d_width": -6,
-  "d_height": -73,
+  "d_width": 0,
+  "d_height": -83,
   "de": [
    [
     "fill dark",
@@ -615,7 +615,7 @@
   "de": [
    [
     "fill dark",
-    6.7
+    6.8
    ]
   ],
   "geometry": "UNMEASURED",

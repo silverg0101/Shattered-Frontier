@@ -7,14 +7,14 @@ The always-on HUD is [ui-hud.md](ui-hud.md). Everything here is for screens the 
 | Control | Helper | Kit piece (nine-slice margins at 1080p) | Size | Text | States |
 | --- | --- | --- | --- | --- | --- |
 | Button, secondary | `Button`, `ApplyButtonStyle`, `ButtonBrush` | `button_normal` (20/14) | min width 160-420 x 56, label pad 24 | EB Garamond 24 ivory #E8E1CE | normal; hover = same piece tint (1.35,1.25,1.0); pressed and toggled-on (Offer Locked) = `tab_selected` moss plate; disabled = tint 0.5, alpha 0.8 |
-| Button, primary / destructive | `Button(..., Primary or Destructive)` | `button_primary_brass`, `button_destructive` | as above | 24, dark ink #2A1E10 on brass | hover tint, pressed/selected tint 0.8, disabled tint 0.5 |
-| Hold button | `HoldButton`, `PaintHoldArc` | primary + 36 px `hold_confirm_ring` at x 20, moss arc #7FA07A | 56 tall, left pad 72 | 24 | as primary |
+| Button, primary / destructive | `Button(..., Primary or Destructive)` | `button_primary_brass`, `button_destructive` | as above | 26 regular, dark ink #2A1E10 on brass, height 72 | hover tint, pressed/selected tint 0.8, disabled tint 0.5 |
+| Hold button | `HoldButton`, `PaintHoldArc` | primary + 62 px `hold_confirm_ring` (2x 124) at x 12, moss arc #7FA07A | 72 tall, ring 62 at x 12, left pad 96 | 26 regular, dark ink | as primary |
 | Tab, rail row | `Tab`, `SetTabState`, `TabBrush` | `tab_normal` / `tab_selected` (18/11) | tabs 100-210 x 44, market rail 190 x 48, build rail 80 x 80 (`bInset=false`) | 18-20 ivory | normal = dark plate + hairline #3A4348; selected = moss fill #2B3B2C + brass #A98A55 edge; disabled = tint 0.5 |
 | Slot or tile | `SlotBrush`, `SetSlotSelected` | its own `slot_*_normal`: bag 64, equipment 72, hotbar 88, catalogue 100 | per piece | caption 16 ivory | selected = same piece + pale-gold #E6D08A 2 px outline, fill #0E171C 95%. The `slot_*_selected` art is never used |
 | List row | `RowBrush`, `SetRowSelected` | selected = `tab_selected`; unselected = hairline row (#17232A 60%, #3A4348) | rows 56 tall | 18-20 ivory | selected = moss + brass edge |
 | Image card | `CardEdge`, `CardSelectTint` | `respawn_image_well` | 340 x 240 | title 26 | chosen = moss-green outline + tick; other = brass hairline |
 | Panel / window / modal | `KitPanel`, `Panel` | `panel_frame` 36,140; `window_frame` 36,176; `modal_frame` 36,206; `tooltip_frame` 36,86; `detail_card_frame` 36,142 (2x px) | per screen | title Heading 36-48 ivory | none |
-| Text | `Text`, `Num`, `Heading`, `DisplayHeading` | EB Garamond text, Source Sans numerals, OFL fonts only | | | |
+| Text | `Text`, `Num`, `Heading`, `DisplayHeading` | EB Garamond regular for text, headings and numerals (OFL fonts only). Sizes passed to the helpers are 1080p px; `RoleFont` converts to Slate points (x0.75) | | | |
 
 Colours: ivory #E8E1CE, brass #A98A55, moss #2B3B2C, hairline #3A4348, slate #17232A, well #0E171C, amber #B69A55, crimson #A34842. Never use the bracketed `button_hover/pressed/disabled` art.
 

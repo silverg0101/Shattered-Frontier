@@ -15,7 +15,7 @@ class UVerticalBox;
 class UWidget;
 
 // Direct trade window (docs/Game-Design/concept-art/UI/v5/trade.png). Display and input only: every decision lives in
-// FSFTradeViewModel. The root fills the viewport (40% dim) and the window sits at 26-74% x 14-78%.
+// FSFTradeViewModel. The root fills the viewport (40% dim) and the window is 908 x 780 at (506,142) (26.35-73.65% x 13.15-85.37%).
 UCLASS()
 class SHATTEREDFRONTIER_API USFTradeWindow : public UUserWidget
 {

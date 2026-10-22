@@ -1,6 +1,6 @@
 [
  {
-  "widget": "SizeBox:SizeBox_7",
+  "widget": "Border:Border_1",
   "name": "defeated modal frame",
   "rect": [
    535,
@@ -9,19 +9,19 @@
    630
   ],
   "found": true,
-  "match": 0.95,
-  "d_left": 4,
-  "d_top": -22,
-  "d_width": -1,
-  "d_height": 25,
+  "match": 0.91,
+  "d_left": -36,
+  "d_top": 0,
+  "d_width": 79,
+  "d_height": 0,
   "de": [
    [
     "modal fill",
-    4.2
+    4.1
    ],
    [
     "modal fill",
-    4.3
+    4.1
    ]
   ],
   "geometry": "FAIL",
@@ -38,18 +38,18 @@
    66
   ],
   "found": true,
-  "match": 0.36,
-  "d_left": -34,
-  "d_top": -67,
-  "d_width": 69,
-  "d_height": 60,
+  "match": 0.65,
+  "d_left": 4,
+  "d_top": 0,
+  "d_width": -6,
+  "d_height": 34,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
   "verdict": "FAIL"
  },
  {
-  "widget": "Overlay:Overlay_7",
+  "widget": "",
   "name": "flourish divider with stag",
   "rect": [
    688,
@@ -57,16 +57,16 @@
    545,
    30
   ],
-  "found": true,
-  "match": 0.37,
-  "d_left": -8,
-  "d_top": -21,
-  "d_width": 15,
-  "d_height": 10,
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "UNMEASURED",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "REVIEW"
  },
  {
   "widget": "TextBlock:TextBlock_4",
@@ -78,11 +78,11 @@
    34
   ],
   "found": true,
-  "match": 0.58,
-  "d_left": -10,
-  "d_top": -16,
-  "d_width": 22,
-  "d_height": 13,
+  "match": 0.32,
+  "d_left": 21,
+  "d_top": 15,
+  "d_width": -40,
+  "d_height": 4,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -98,23 +98,23 @@
    241
   ],
   "found": true,
-  "match": 0.91,
-  "d_left": -12,
-  "d_top": -5,
-  "d_width": 7,
-  "d_height": -1,
+  "match": 0.85,
+  "d_left": -4,
+  "d_top": 17,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "card fill",
-    3.8
+    2.8
    ]
   ],
   "geometry": "FAIL",
-  "colour": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_10",
+  "widget": "SizeBox:SizeBox_8",
   "name": "shrine card image",
   "rect": [
    626,
@@ -123,11 +123,11 @@
    160
   ],
   "found": true,
-  "match": 0.63,
-  "d_left": -18,
-  "d_top": -12,
-  "d_width": 20,
-  "d_height": 80,
+  "match": 0.8,
+  "d_left": -3,
+  "d_top": 16,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -143,15 +143,15 @@
    46
   ],
   "found": true,
-  "match": 0.55,
-  "d_left": 2,
-  "d_top": -5,
-  "d_width": -8,
-  "d_height": -8,
+  "match": 0.41,
+  "d_left": -4,
+  "d_top": 17,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "badge fill",
-    25.7
+    28.7
    ]
   ],
   "geometry": "FAIL",
@@ -159,33 +159,13 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "TextBlock:TextBlock_5",
+  "widget": "",
   "name": "shrine card name",
   "rect": [
    684,
    576,
    212,
    28
-  ],
-  "found": true,
-  "match": 0.35,
-  "d_left": -62,
-  "d_top": 4,
-  "d_width": 100,
-  "d_height": 15,
-  "de": [],
-  "geometry": "FAIL",
-  "colour": "PASS",
-  "verdict": "FAIL"
- },
- {
-  "widget": "",
-  "name": "shrine card status Available now",
-  "rect": [
-   726,
-   608,
-   124,
-   24
   ],
   "found": false,
   "match": 0.0,
@@ -199,6 +179,26 @@
   "verdict": "REVIEW"
  },
  {
+  "widget": "TextBlock:TextBlock_5",
+  "name": "shrine card status Available now",
+  "rect": [
+   726,
+   608,
+   124,
+   24
+  ],
+  "found": true,
+  "match": 0.35,
+  "d_left": -60,
+  "d_top": -8,
+  "d_width": 110,
+  "d_height": 12,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
   "widget": "SizeBox:SizeBox_13",
   "name": "respawn card Bedroll",
   "rect": [
@@ -208,15 +208,15 @@
    238
   ],
   "found": true,
-  "match": 0.92,
-  "d_left": -2,
-  "d_top": -6,
-  "d_width": 16,
-  "d_height": 2,
+  "match": 0.84,
+  "d_left": -4,
+  "d_top": 16,
+  "d_width": 9,
+  "d_height": 3,
   "de": [
    [
     "card fill",
-    1.2
+    1.8
    ]
   ],
   "geometry": "FAIL",
@@ -233,11 +233,11 @@
    46
   ],
   "found": true,
-  "match": 0.34,
-  "d_left": 18,
-  "d_top": -6,
-  "d_width": -8,
-  "d_height": -8,
+  "match": 0.44,
+  "d_left": 2,
+  "d_top": 16,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -264,7 +264,7 @@
   "verdict": "REVIEW"
  },
  {
-  "widget": "",
+  "widget": "TextBlock:TextBlock_7",
   "name": "bedroll timer 00:30",
   "rect": [
    1110,
@@ -272,16 +272,16 @@
    56,
    24
   ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.49,
+  "d_left": -11,
+  "d_top": -8,
+  "d_width": 20,
+  "d_height": 12,
   "de": [],
-  "geometry": "UNMEASURED",
+  "geometry": "FAIL",
   "colour": "PASS",
-  "verdict": "REVIEW"
+  "verdict": "FAIL"
  },
  {
   "widget": "Overlay:Overlay_12",
@@ -293,19 +293,19 @@
    78
   ],
   "found": true,
-  "match": 0.56,
-  "d_left": 11,
-  "d_top": -7,
-  "d_width": -21,
-  "d_height": -22,
+  "match": 0.7,
+  "d_left": 0,
+  "d_top": 16,
+  "d_width": 0,
+  "d_height": -6,
   "de": [
    [
     "brass fill",
-    22.1
+    20.1
    ],
    [
     "brass fill",
-    22.0
+    36.5
    ]
   ],
   "geometry": "FAIL",
@@ -333,7 +333,7 @@
   "verdict": "REVIEW"
  },
  {
-  "widget": "TextBlock:TextBlock_11",
+  "widget": "TextBlock:TextBlock_10",
   "name": "footer note",
   "rect": [
    800,
@@ -342,18 +342,18 @@
    22
   ],
   "found": true,
-  "match": 0.63,
-  "d_left": 16,
-  "d_top": 0,
-  "d_width": -31,
-  "d_height": 10,
+  "match": 0.44,
+  "d_left": -94,
+  "d_top": -5,
+  "d_width": 191,
+  "d_height": 9,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_1",
+  "widget": "VerticalBox:VerticalBox_0",
   "name": "vitals HP bar empty",
   "rect": [
    145,
@@ -362,15 +362,15 @@
    26
   ],
   "found": true,
-  "match": 0.59,
-  "d_left": 19,
-  "d_top": -7,
+  "match": 0.25,
+  "d_left": 18,
+  "d_top": -33,
   "d_width": 48,
-  "d_height": 6,
+  "d_height": 58,
   "de": [
    [
     "empty hp fill",
-    24.5
+    15.0
    ]
   ],
   "geometry": "FAIL",
@@ -378,7 +378,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_4",
+  "widget": "Overlay:Overlay_4",
   "name": "vitals stamina bar",
   "rect": [
    145,
@@ -387,9 +387,9 @@
    26
   ],
   "found": true,
-  "match": 0.54,
-  "d_left": 19,
-  "d_top": 3,
+  "match": 0.26,
+  "d_left": 18,
+  "d_top": -18,
   "d_width": 48,
   "d_height": 6,
   "de": [
@@ -412,19 +412,19 @@
    130
   ],
   "found": true,
-  "match": 0.66,
+  "match": 0.6,
   "d_left": 10,
-  "d_top": 13,
-  "d_width": 14,
-  "d_height": -14,
+  "d_top": -29,
+  "d_width": 13,
+  "d_height": 28,
   "de": [
    [
     "badge fill",
-    1.5
+    5.1
    ]
   ],
   "geometry": "FAIL",
-  "colour": "PASS",
+  "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
@@ -437,9 +437,9 @@
    86
   ],
   "found": true,
-  "match": 0.48,
+  "match": 0.59,
   "d_left": -24,
-  "d_top": 11,
+  "d_top": 0,
   "d_width": 6,
   "d_height": 2,
   "de": [
@@ -462,15 +462,15 @@
    86
   ],
   "found": true,
-  "match": 0.5,
+  "match": 0.62,
   "d_left": 16,
-  "d_top": 11,
+  "d_top": 0,
   "d_width": 6,
   "d_height": 2,
   "de": [
    [
     "slot fill",
-    4.9
+    5.3
    ]
   ],
   "geometry": "FAIL",
@@ -478,7 +478,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "Image:Image_9",
+  "widget": "Image:Image_10",
   "name": "minimap ring",
   "rect": [
    1660,
@@ -507,11 +507,11 @@
    196
   ],
   "found": true,
-  "match": 0.59,
+  "match": 0.56,
   "d_left": -32,
   "d_top": 33,
-  "d_width": 22,
-  "d_height": -66,
+  "d_width": 28,
+  "d_height": -76,
   "de": [
    [
     "dim fill",
@@ -540,7 +540,7 @@
   "de": [
    [
     "toast fill",
-    11.6
+    11.1
    ]
   ],
   "geometry": "UNMEASURED",
@@ -565,7 +565,7 @@
   "de": [
    [
     "toast fill",
-    9.3
+    8.9
    ]
   ],
   "geometry": "UNMEASURED",

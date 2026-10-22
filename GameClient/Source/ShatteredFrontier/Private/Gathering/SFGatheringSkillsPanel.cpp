@@ -22,8 +22,8 @@ const ESFGatheringSkill USFGatheringSkillsPanel::Rows[USFGatheringSkillsPanel::R
 
 namespace
 {
-// Panel 480 x 756 at x 2%, y 7% of a 1080p screen (gathering.png).
-const FVector2D SkillsPanelSize(480.f, 756.f);
+// Panel 527 x 672 at (50,64) of a 1080p screen (gathering.png).
+const FVector2D SkillsPanelSize(527.f, 672.f);
 
 struct FSkillRowArt { const TCHAR* Icon; const TCHAR* NextIcon; const TCHAR* Material; };
 FSkillRowArt SkillRowArt(ESFGatheringSkill Skill)
@@ -79,7 +79,7 @@ void USFGatheringSkillsPanel::NativeOnInitialized()
     PanelSlot->SetHorizontalAlignment(HAlign_Fill); PanelSlot->SetVerticalAlignment(VAlign_Fill);
     UVerticalBox* Contents = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     Panel->SetContent(Contents);
-    Contents->AddChildToVerticalBox(Heading(WidgetTree, TEXT("Gathering Skills"), 36, Ivory()))->SetPadding(FMargin(14.f, 0.f, 0.f, 8.f));
+    Contents->AddChildToVerticalBox(Heading(WidgetTree, TEXT("Gathering Skills"), 34, Ivory()))->SetPadding(FMargin(14.f, 0.f, 0.f, 8.f));
     // Every window carries a 40 px close X top-right inside the frame (IMPLEMENTATION-FIX G5); M and Esc still close it.
     UButton* Close = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass());
     FButtonStyle CloseStyle = Close->GetStyle();
@@ -97,10 +97,10 @@ void USFGatheringSkillsPanel::NativeOnInitialized()
         const ESFGatheringSkill Skill = Rows[Row];
         const FSkillRowArt Art = SkillRowArt(Skill);
         UBorder* Frame = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
-        Frame->SetBrush(KitOrFrame(TEXT("recipe_row"), Slate(0.6f), Hex(TEXT("5E5038")), 0.f));
-        Frame->SetPadding(FMargin(20.f, 6.f, 22.f, 6.f));
+        Frame->SetBrush(RowBrush(false));
+        Frame->SetPadding(FMargin(11.f, 8.f, 22.f, 8.f));
         USizeBox* RowBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        RowBox->SetHeightOverride(144.f); RowBox->SetContent(Frame);
+        RowBox->SetHeightOverride(143.f); RowBox->SetContent(Frame);
         Contents->AddChildToVerticalBox(RowBox)->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
         UHorizontalBox* Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
         Frame->SetContent(Line);
@@ -108,12 +108,16 @@ void USFGatheringSkillsPanel::NativeOnInitialized()
         // Icon over the whole-point numeral.
         UVerticalBox* Badge = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
         USizeBox* IconBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        IconBox->SetWidthOverride(72.f); IconBox->SetHeightOverride(72.f); IconBox->SetContent(SkillIconImage(WidgetTree, Art.Icon, 72.f));
-        Badge->AddChildToVerticalBox(IconBox);
-        Levels[Row] = Heading(WidgetTree, TEXT("0"), 30, Ivory());
+        IconBox->SetWidthOverride(56.f); IconBox->SetHeightOverride(56.f); IconBox->SetContent(SkillIconImage(WidgetTree, Art.Icon, 56.f));
+        Badge->AddChildToVerticalBox(IconBox)->SetHorizontalAlignment(HAlign_Center);
+        Levels[Row] = Text(WidgetTree, TEXT("0"), 32, Ivory());
         Badge->AddChildToVerticalBox(Levels[Row])->SetHorizontalAlignment(HAlign_Center);
-        UHorizontalBoxSlot* BadgeSlot = Line->AddChildToHorizontalBox(Badge);
-        BadgeSlot->SetVerticalAlignment(VAlign_Center); BadgeSlot->SetPadding(FMargin(0.f, 0.f, 22.f, 0.f));
+        UBorder* Well = KitPanel(WidgetTree, TEXT("slot_catalogue_normal"), 1.f, Slate(0.85f), Hex(TEXT("3A4348")), FMargin(0.f, 4.f, 0.f, 0.f), 0.f);
+        Well->SetContent(Badge);
+        USizeBox* WellBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        WellBox->SetWidthOverride(100.f); WellBox->SetHeightOverride(110.f); WellBox->SetContent(Well);
+        UHorizontalBoxSlot* BadgeSlot = Line->AddChildToHorizontalBox(WellBox);
+        BadgeSlot->SetVerticalAlignment(VAlign_Center); BadgeSlot->SetPadding(FMargin(0.f, 0.f, 21.f, 0.f));
 
         UVerticalBox* Body = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
         UHorizontalBoxSlot* BodySlot = Line->AddChildToHorizontalBox(Body);
@@ -142,7 +146,7 @@ void USFGatheringSkillsPanel::NativeOnInitialized()
 
         UHorizontalBox* BarLine = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
         // Kit-v5 framed moss XP bar; the styled UProgressBar when the kit is missing.
-        XpBars[Row] = MakeFramedBar(WidgetTree, TEXT("bar_xp"), 300.f);
+        XpBars[Row] = MakeFramedBar(WidgetTree, TEXT("bar_xp"), 336.f);
         USizeBox* BarBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
         if (XpBars[Row].Root) { BarBox->SetContent(XpBars[Row].Root); }
         else
@@ -153,12 +157,14 @@ void USFGatheringSkillsPanel::NativeOnInitialized()
         }
         UHorizontalBoxSlot* BarSlot = BarLine->AddChildToHorizontalBox(BarBox);
         BarSlot->SetSize(FSlateChildSize(XpBars[Row].Root ? ESlateSizeRule::Automatic : ESlateSizeRule::Fill)); BarSlot->SetVerticalAlignment(VAlign_Center);
+        Body->AddChildToVerticalBox(BarLine)->SetPadding(FMargin(0.f, 4.f, 0.f, 0.f));
+        // "420 / 1,000" on its own line under the bar's right end, never across the bar.
         Points[Row] = Num(WidgetTree, TEXT(""), 18, Ivory(), false);
         Points[Row]->SetJustification(ETextJustify::Right);
-        UHorizontalBoxSlot* PointsSlot = BarLine->AddChildToHorizontalBox(Points[Row]);
-        PointsSlot->SetPadding(FMargin(12.f, 0.f, 0.f, 0.f)); PointsSlot->SetVerticalAlignment(VAlign_Center);
-        if (XpBars[Row].Root) { PointsSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); }
-        Body->AddChildToVerticalBox(BarLine)->SetPadding(FMargin(0.f, 4.f, 0.f, 4.f));
+        USizeBox* PointsBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        if (XpBars[Row].Root) { PointsBox->SetWidthOverride(336.f); }
+        PointsBox->SetContent(Points[Row]);
+        Body->AddChildToVerticalBox(PointsBox)->SetHorizontalAlignment(XpBars[Row].Root ? HAlign_Left : HAlign_Fill);
 
         UHorizontalBox* NextLine = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
         NextLine->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Next:"), 18, Hex(TEXT("BDB6A2"))))->SetVerticalAlignment(VAlign_Center);
@@ -166,7 +172,9 @@ void USFGatheringSkillsPanel::NativeOnInitialized()
         NextIconBox->SetWidthOverride(30.f); NextIconBox->SetHeightOverride(30.f); NextIconBox->SetContent(SkillIconImage(WidgetTree, Art.NextIcon, 30.f));
         NextLine->AddChildToHorizontalBox(NextIconBox)->SetPadding(FMargin(10.f, 0.f, 10.f, 0.f));
         NextTexts[Row] = Text(WidgetTree, TEXT(""), 18, Ivory());
-        NextLine->AddChildToHorizontalBox(NextTexts[Row])->SetVerticalAlignment(VAlign_Center);
+        NextTexts[Row]->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
+        UHorizontalBoxSlot* NextSlot = NextLine->AddChildToHorizontalBox(NextTexts[Row]);
+        NextSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); NextSlot->SetVerticalAlignment(VAlign_Center);
         Body->AddChildToVerticalBox(NextLine);
     }
     Refresh();
@@ -187,7 +195,7 @@ void USFGatheringSkillsPanel::NativeTick(const FGeometry& MyGeometry, float InDe
     if (Viewport.X > 0 && Viewport.Y > 0)
     {
         SetDesiredSizeInViewport(SkillsPanelSize);
-        SetPositionInViewport(FVector2D(0.02 * Viewport.X, 0.07 * Viewport.Y));
+        SetPositionInViewport(FVector2D(0.026 * Viewport.X, 0.059 * Viewport.Y));
     }
     Refresh();
 }
@@ -217,7 +225,7 @@ void USFGatheringSkillsPanel::Refresh()
         Levels[Row]->SetText(FText::AsNumber(Tenths / 10));
         const float Fraction = FMath::Clamp(Tenths / 1000.f, 0.f, 1.f);
         if (XpBars[Row].Root) { XpBars[Row].SetFraction(Fraction); } else if (Bars[Row]) { Bars[Row]->SetPercent(Fraction); }
-        Points[Row]->SetText(FText::FromString(PointsText(Tenths)));
+        Points[Row]->SetText(FText::FromString(FString::Printf(TEXT("%s / %s"), *FText::AsNumber(Tenths).ToString(), *FText::AsNumber(1000).ToString())));
         NextTexts[Row]->SetText(FText::FromString(NextUnlockText(Skill, Tenths)));
         const ESFGatheringSkillLock Lock = Snapshot.Locks.IsValidIndex(int32(Skill)) ? Snapshot.Locks[int32(Skill)] : ESFGatheringSkillLock::Up;
         const float Cooldown = FMath::Max(0.f, Pilot->GetSkillLockCooldownRemaining(Skill));

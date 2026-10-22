@@ -1,10 +1,65 @@
 {
   "note": "Processed size in px per element for tools/Process-HudKit.ps1 -Kit <this dir>; margins are unused (plain images). ls_background is imported straight from source/.",
   "elements": [
-    { "name": "ls_emblem",    "width": 256,  "height": 256, "margin": [0, 0, 0, 0], "inset": 0 },
-    { "name": "ls_rule",      "width": 512,  "height": 48,  "margin": [0, 0, 0, 0], "inset": 0 },
-    { "name": "ls_bar_frame", "width": 668,  "height": 36,  "margin": [0, 0, 0, 0], "inset": 0 },
-    { "name": "ls_bar_fill",  "width": 512,  "height": 16,  "margin": [0, 0, 0, 0], "inset": 0 },
-    { "name": "ls_spinner",   "width": 128,  "height": 128, "margin": [0, 0, 0, 0], "inset": 0 }
+    {
+      "name": "ls_emblem",
+      "width": 494,
+      "height": 534,
+      "margin": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "inset": 0
+    },
+    {
+      "name": "ls_rule",
+      "width": 986,
+      "height": 58,
+      "margin": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "inset": 0
+    },
+    {
+      "name": "ls_bar_frame",
+      "width": 1402,
+      "height": 70,
+      "margin": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "inset": 0
+    },
+    {
+      "name": "ls_bar_fill",
+      "width": 1258,
+      "height": 32,
+      "margin": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "inset": 0
+    },
+    {
+      "name": "ls_spinner",
+      "width": 84,
+      "height": 84,
+      "margin": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "inset": 0
+    }
   ]
 }

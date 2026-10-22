@@ -38,10 +38,10 @@ float USFGatheringHud::RingFraction(double RemainingSeconds, double TotalSeconds
 
 namespace
 {
-// Ring side and its moss track (gathering.png: ~100 px ring; track radius and width measured on gathering_channel_ring).
-constexpr float GatherRingSide = 100.f;
-constexpr float GatherRingTrackRadius = 45.f;
-constexpr float GatherRingTrackWidth = 6.f;
+// Ring side and its moss track (gathering.png: 110 px ring; track radius and width measured on gathering_channel_ring).
+constexpr float GatherRingSide = 110.f;
+constexpr float GatherRingTrackRadius = 51.f;
+constexpr float GatherRingTrackWidth = 7.f;
 
 const TCHAR* ToastIconStem(const FString& ToastText)
 {
@@ -80,10 +80,10 @@ void USFGatheringHud::NativeOnInitialized()
         IconBox->SetWidthOverride(48.f); IconBox->SetHeightOverride(48.f); IconBox->SetContent(Icon);
         Line->AddChildToHorizontalBox(IconBox)->SetVerticalAlignment(VAlign_Center);
         UVerticalBox* Lines = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-        Lines->AddChildToVerticalBox(Text(WidgetTree, TEXT("Skill gain"), 16, Brass()));
+        Lines->AddChildToVerticalBox(Text(WidgetTree, TEXT("Skill gain"), 18, Brass()));
         UHorizontalBox* GainLine = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-        UTextBlock* Name = Text(WidgetTree, TEXT(""), 20, Ivory());
-        UTextBlock* Delta = Num(WidgetTree, TEXT(""), 20, Moss());
+        UTextBlock* Name = Text(WidgetTree, TEXT(""), 22, Ivory());
+        UTextBlock* Delta = Num(WidgetTree, TEXT(""), 22, Moss());
         GainLine->AddChildToHorizontalBox(Name);
         GainLine->AddChildToHorizontalBox(Delta)->SetPadding(FMargin(6.f, 0.f, 0.f, 0.f));
         Lines->AddChildToVerticalBox(GainLine);
@@ -97,10 +97,10 @@ void USFGatheringHud::NativeOnInitialized()
     }
     UCanvasPanelSlot* ToastSlot = Root->AddChildToCanvas(ToastBox);
     // Below the quest tracker (top y31.3%, ~120 px for three rows) plus a 12 px gap (IMPLEMENTATION-FIX table 1).
-    ToastSlot->SetAnchors(FAnchors(0.84f, 0.437f)); ToastSlot->SetAutoSize(true);
+    ToastSlot->SetAnchors(FAnchors(0.84f, 0.47f)); ToastSlot->SetAutoSize(true);
 
     // Ring centre percent and the label plate below it; the disc and moss arc are painted in NativePaint.
-    RingPercent = Num(WidgetTree, TEXT(""), 26, Ivory(), false);
+    RingPercent = Num(WidgetTree, TEXT(""), 28, Ivory(), false);
     RingPercent->SetVisibility(ESlateVisibility::Collapsed);
     Place(RingPercent, FVector2D(0.5f, 0.5f));
     RingPlate = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
@@ -110,10 +110,10 @@ void USFGatheringHud::NativeOnInitialized()
     RingPlate->SetContent(RingLabel); RingPlate->SetVisibility(ESlateVisibility::Collapsed);
     Place(RingPlate, FVector2D(0.5f, 0.f));
 
-    // Station panel at x33-78% y9-82% (crafting-station.png): 859 x 792 at 1080p.
+    // Station panel at x33-78% y9-82% (crafting-station.png): 866 x 797 at (631,97) at 1080p.
     StationPanel = CreateWidget<USFStationPanel>(this, USFStationPanel::StaticClass());
     UCanvasPanelSlot* StationSlot = Root->AddChildToCanvas(StationPanel);
-    StationSlot->SetAnchors(FAnchors(0.555f, 0.08f)); StationSlot->SetAlignment(FVector2D(0.5f, 0.f)); StationSlot->SetSize(FVector2D(864.f, 770.f));
+    StationSlot->SetAnchors(FAnchors(0.554f, 0.09f)); StationSlot->SetAlignment(FVector2D(0.5f, 0.f)); StationSlot->SetSize(FVector2D(866.f, 797.f));
     StationPanel->SetVisibility(ESlateVisibility::Collapsed);
 }
 

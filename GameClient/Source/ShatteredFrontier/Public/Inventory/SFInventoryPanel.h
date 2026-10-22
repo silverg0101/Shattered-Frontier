@@ -75,6 +75,8 @@ private:
     UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> SlotCounts;
     // One panel-owned tooltip (tooltip_frame) shown beside the panel for the hovered bag slot.
     TArray<FSFInventoryEntry> ShownItems;  // the filtered entries the grid currently shows, by slot index
+    FSFInventoryEntry MainHandEntry;  // the equipped tool, hoverable in the main-hand slot
+    bool bHasMainHand = false;
     UPROPERTY(Transient) TObjectPtr<UBorder> TooltipPanel;
     UPROPERTY(Transient) TObjectPtr<UImage> TipIcon;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> TipTitle;

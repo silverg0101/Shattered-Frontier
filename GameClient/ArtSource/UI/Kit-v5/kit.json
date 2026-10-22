@@ -57,7 +57,8 @@
         "12-character-select",
         "13-character-creator",
         "14-settings"
-      ]
+      ],
+      "notes": "Final3 Fable art fix; transparent RGBA at 2x design scale."
     },
     "tooltip_frame": {
       "file": "tooltip_frame.png",
@@ -529,7 +530,8 @@
         "14-settings",
         "15-world-map",
         "16-quest-journal"
-      ]
+      ],
+      "notes": "Final3 Fable art fix; transparent RGBA at 2x design scale."
     },
     "button_destructive": {
       "file": "button_destructive.png",
@@ -613,7 +615,8 @@
         "14-settings",
         "15-world-map",
         "16-quest-journal"
-      ]
+      ],
+      "notes": "Final3 Fable art fix; transparent RGBA at 2x design scale."
     },
     "slot_bag_normal": {
       "file": "slot_bag_normal.png",
@@ -630,7 +633,8 @@
       "screens": [
         "inventory",
         "trade"
-      ]
+      ],
+      "notes": "Final3 Fable art fix; transparent RGBA at 2x design scale."
     },
     "slot_bag_selected": {
       "file": "slot_bag_selected.png",
@@ -662,7 +666,8 @@
       ],
       "screens": [
         "inventory"
-      ]
+      ],
+      "notes": "Final3 Fable art fix; transparent RGBA at 2x design scale."
     },
     "slot_equipment_selected": {
       "file": "slot_equipment_selected.png",
@@ -705,7 +710,8 @@
         "14-settings",
         "15-world-map",
         "16-quest-journal"
-      ]
+      ],
+      "notes": "Final3 Fable art fix; transparent RGBA at 2x design scale."
     },
     "slot_hotbar_selected": {
       "file": "slot_hotbar_selected.png",
@@ -748,7 +754,8 @@
       ],
       "screens": [
         "build-mode"
-      ]
+      ],
+      "notes": "Final3 Fable art fix; transparent RGBA at 2x design scale."
     },
     "slot_catalogue_selected": {
       "file": "slot_catalogue_selected.png",
@@ -775,8 +782,8 @@
         0
       ],
       "intended_1080p_px": [
-        116,
-        116
+        115,
+        158
       ],
       "screens": [
         "gameplay-hud",
@@ -791,7 +798,8 @@
         "14-settings",
         "15-world-map",
         "16-quest-journal"
-      ]
+      ],
+      "notes": "Final3 Fable art fix; transparent RGBA at 2x design scale."
     },
     "bar_hp": {
       "file": "bar_hp.png",
@@ -917,7 +925,7 @@
         "15-world-map",
         "16-quest-journal"
       ],
-      "notes": "Optional empty slate trough. Place behind fill and frame at frame source size."
+      "notes": "Final3 Fable art fix; transparent RGBA at 2x design scale."
     },
     "bar_stamina": {
       "file": "bar_stamina.png",
@@ -1226,15 +1234,16 @@
         0
       ],
       "intended_1080p_px": [
-        36,
-        36
+        62,
+        62
       ],
       "screens": [
         "trade",
         "market-board",
         "defeated",
         "16-quest-journal"
-      ]
+      ],
+      "notes": "Final3 Fable art fix; transparent RGBA at 2x design scale."
     },
     "gathering_channel_ring": {
       "file": "gathering_channel_ring.png",
@@ -1422,8 +1431,8 @@
         0
       ],
       "intended_1080p_px": [
-        18,
-        18
+        22,
+        22
       ],
       "screens": [
         "gameplay-hud",
@@ -1438,7 +1447,8 @@
         "14-settings",
         "15-world-map",
         "16-quest-journal"
-      ]
+      ],
+      "notes": "Final3 Fable art fix; transparent RGBA at 2x design scale."
     },
     "objective_checkbox": {
       "file": "objective_checkbox.png",
@@ -2134,9 +2144,19 @@
     },
     "dropdown_arrow": {
       "file": "dropdown_arrow.png",
-      "nine_slice_px": [0, 0, 0, 0],
-      "intended_1080p_px": [20, 20],
-      "screens": ["build-mode"]
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        20,
+        20
+      ],
+      "screens": [
+        "build-mode"
+      ]
     },
     "icon_sword": {
       "file": "icon_sword.png",
@@ -2272,9 +2292,20 @@
     },
     "icon_coin": {
       "file": "icon_coin.png",
-      "nine_slice_px": [0, 0, 0, 0],
-      "intended_1080p_px": [20, 20],
-      "screens": ["market-board", "trade"]
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        20,
+        20
+      ],
+      "screens": [
+        "market-board",
+        "trade"
+      ]
     },
     "icon_xp_roundel": {
       "file": "icon_xp_roundel.png",
@@ -2834,8 +2865,8 @@
         0
       ],
       "intended_1080p_px": [
-        64,
-        64
+        24,
+        24
       ],
       "screens": [
         "gameplay-hud",
@@ -2855,7 +2886,7 @@
         "15-world-map",
         "16-quest-journal"
       ],
-      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+      "notes": "Final3 Fable art fix; transparent RGBA at 2x design scale."
     },
     "icon_sort_arrow": {
       "file": "icon_sort_arrow.png",
@@ -3760,7 +3791,7 @@
       "screens": [
         "10-npc-dialogue"
       ],
-      "notes": "Mill scene for The Mill’s Supply offer; frame and text remain UMG."
+      "notes": "Mill scene for The Mill\u00e2\u20ac\u2122s Supply offer; frame and text remain UMG."
     },
     "greenlands_map_base": {
       "file": "scenes/greenlands_map_base.png",
@@ -3814,6 +3845,135 @@
         "15-world-map"
       ],
       "notes": "Source world capture from ArtSource/Greenlands; reference only, not runtime terrain."
+    },
+    "target_level_diamond": {
+      "file": "target_level_diamond.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        57,
+        55
+      ],
+      "screens": [
+        "gameplay-hud",
+        "gathering"
+      ]
+    },
+    "icon_hammer": {
+      "file": "icon_hammer.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        44,
+        44
+      ],
+      "screens": [
+        "build-mode"
+      ]
+    },
+    "icon_rail_all": {
+      "file": "icon_rail_all.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        24,
+        24
+      ],
+      "screens": [
+        "market-board"
+      ]
+    },
+    "icon_rail_weapons": {
+      "file": "icon_rail_weapons.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        24,
+        24
+      ],
+      "screens": [
+        "market-board"
+      ]
+    },
+    "icon_rail_materials": {
+      "file": "icon_rail_materials.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        24,
+        24
+      ],
+      "screens": [
+        "market-board"
+      ]
+    },
+    "icon_rail_consumables": {
+      "file": "icon_rail_consumables.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        24,
+        24
+      ],
+      "screens": [
+        "market-board"
+      ]
+    },
+    "icon_rail_tools": {
+      "file": "icon_rail_tools.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        24,
+        24
+      ],
+      "screens": [
+        "market-board"
+      ]
+    },
+    "title_flourish": {
+      "file": "title_flourish.png",
+      "nine_slice_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "intended_1080p_px": [
+        48,
+        16
+      ],
+      "screens": [
+        "trade"
+      ]
     }
   }
 }

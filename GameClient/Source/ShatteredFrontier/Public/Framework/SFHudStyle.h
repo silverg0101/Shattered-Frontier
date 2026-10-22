@@ -387,14 +387,14 @@ inline FSFHudButton Button(UWidgetTree* Tree, const FString& Label, EButtonKind 
     const bool bPrimary = Kind == EButtonKind::Primary;
     ApplyButtonStyle(Control, Kind, false);
     // Primary buttons carry dark ink (#2A1E10) on the brass, as in the concepts; secondary buttons use ivory.
-    UTextBlock* Caption = Text(Tree, Label, 24, bPrimary ? Hex(TEXT("2A1E10")) : Ivory(), bPrimary);
+    UTextBlock* Caption = Text(Tree, Label, bPrimary ? 26 : 24, bPrimary ? Hex(TEXT("2A1E10")) : Ivory(), false);
     Caption->SetJustification(ETextJustify::Center);
     UBorder* Pad = Tree->ConstructWidget<UBorder>(UBorder::StaticClass());
     Pad->SetBrush(FSlateNoResource()); Pad->SetPadding(FMargin(24.f, 0.f)); Pad->SetVerticalAlignment(VAlign_Center); Pad->SetHorizontalAlignment(HAlign_Center);
     Pad->SetContent(Caption);
     Control->SetContent(Pad);
     USizeBox* Box = Tree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    Box->SetMinDesiredWidth(MinWidth); Box->SetHeightOverride(56.f);
+    Box->SetMinDesiredWidth(MinWidth); Box->SetHeightOverride(bPrimary ? 72.f : 56.f);
     Box->SetContent(Control);
     Result.Root = Box; Result.Button = Control; Result.Label = Caption;
     return Result;
@@ -409,14 +409,14 @@ inline FSFHudHoldButton HoldButton(UWidgetTree* Tree, const FString& Label, floa
 {
     FSFHudHoldButton Result;
     static_cast<FSFHudButton&>(Result) = Button(Tree, Label, EButtonKind::Primary, MinWidth);
-    if (UBorder* Pad = Cast<UBorder>(Result.Label->GetParent())) { Pad->SetPadding(FMargin(72.f, 0.f, 24.f, 0.f)); }
+    if (UBorder* Pad = Cast<UBorder>(Result.Label->GetParent())) { Pad->SetPadding(FMargin(96.f, 0.f, 24.f, 0.f)); }
     UOverlay* Face = Tree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
     Face->AddChildToOverlay(Result.Root);
-    USizeBox* RingBox = KitImage(Tree, TEXT("hold_confirm_ring"), 36.f);
+    USizeBox* RingBox = KitImage(Tree, TEXT("hold_confirm_ring"), 62.f);
     RingBox->SetVisibility(ESlateVisibility::HitTestInvisible);
     Result.Ring = Cast<UImage>(RingBox->GetContent());
     UOverlaySlot* RingSlot = Face->AddChildToOverlay(RingBox);
-    RingSlot->SetHorizontalAlignment(HAlign_Left); RingSlot->SetVerticalAlignment(VAlign_Center); RingSlot->SetPadding(FMargin(20.f, 0.f, 0.f, 0.f));
+    RingSlot->SetHorizontalAlignment(HAlign_Left); RingSlot->SetVerticalAlignment(VAlign_Center); RingSlot->SetPadding(FMargin(12.f, 0.f, 0.f, 0.f));
     Result.Face = Face;
     return Result;
 }

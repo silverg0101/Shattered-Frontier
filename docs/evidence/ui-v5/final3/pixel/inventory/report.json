@@ -9,22 +9,22 @@
    887
   ],
   "found": true,
-  "match": 0.97,
-  "d_left": -8,
-  "d_top": 1,
-  "d_width": 1,
-  "d_height": -1,
+  "match": 1.0,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "panel fill",
-    7.5
+    5.5
    ],
    [
     "panel fill",
-    2.3
+    5.6
    ]
   ],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
@@ -38,11 +38,11 @@
    48
   ],
   "found": true,
-  "match": 0.48,
-  "d_left": 52,
-  "d_top": -2,
-  "d_width": -4,
-  "d_height": 16,
+  "match": 0.37,
+  "d_left": 16,
+  "d_top": 15,
+  "d_width": -85,
+  "d_height": -7,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -58,23 +58,23 @@
    78
   ],
   "found": true,
-  "match": 0.26,
-  "d_left": -27,
-  "d_top": -15,
-  "d_width": 22,
-  "d_height": -34,
+  "match": 0.55,
+  "d_left": 16,
+  "d_top": 8,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "slot fill",
-    24.3
+    3.0
    ]
   ],
   "geometry": "FAIL",
-  "colour": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_7",
+  "widget": "SizeBox:SizeBox_3",
   "name": "equip slot chest",
   "rect": [
    134,
@@ -83,15 +83,15 @@
    78
   ],
   "found": true,
-  "match": 0.26,
-  "d_left": -27,
-  "d_top": 25,
-  "d_width": -6,
-  "d_height": -6,
+  "match": 0.55,
+  "d_left": 16,
+  "d_top": 8,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "slot fill",
-    2.7
+    2.9
    ]
   ],
   "geometry": "FAIL",
@@ -99,7 +99,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_10",
+  "widget": "",
   "name": "equip slot boots",
   "rect": [
    134,
@@ -107,24 +107,24 @@
    78,
    56
   ],
-  "found": true,
-  "match": 0.26,
-  "d_left": -27,
-  "d_top": 11,
-  "d_width": -6,
-  "d_height": 16,
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
   "de": [
    [
     "slot fill",
-    2.5
+    5.6
    ]
   ],
-  "geometry": "FAIL",
-  "colour": "PASS",
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
-  "widget": "",
+  "widget": "SizeBox:SizeBox_8",
   "name": "equip slot main hand (selected)",
   "rect": [
    490,
@@ -132,115 +132,15 @@
    80,
    80
   ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.6,
+  "d_left": 16,
+  "d_top": 7,
+  "d_width": -2,
+  "d_height": -2,
   "de": [
    [
     "selected slot fill",
-    2.1
-   ]
-  ],
-  "geometry": "UNMEASURED",
-  "colour": "PASS",
-  "verdict": "REVIEW"
- },
- {
-  "widget": "",
-  "name": "equip slot shield",
-  "rect": [
-   490,
-   217,
-   80,
-   80
-  ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
-  "de": [
-   [
-    "slot fill",
-    4.0
-   ]
-  ],
-  "geometry": "UNMEASURED",
-  "colour": "FAIL",
-  "verdict": "FAIL"
- },
- {
-  "widget": "",
-  "name": "equip slot ring",
-  "rect": [
-   490,
-   397,
-   80,
-   80
-  ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
-  "de": [
-   [
-    "slot fill",
-    11.1
-   ]
-  ],
-  "geometry": "UNMEASURED",
-  "colour": "FAIL",
-  "verdict": "FAIL"
- },
- {
-  "widget": "SizeBox:SizeBox_11",
-  "name": "paperdoll adventurer",
-  "rect": [
-   272,
-   118,
-   158,
-   390
-  ],
-  "found": true,
-  "match": 0.59,
-  "d_left": -17,
-  "d_top": 49,
-  "d_width": 62,
-  "d_height": -10,
-  "de": [
-   [
-    "backdrop fill",
-    8.2
-   ]
-  ],
-  "geometry": "FAIL",
-  "colour": "FAIL",
-  "verdict": "FAIL"
- },
- {
-  "widget": "SizeBox:SizeBox_16",
-  "name": "bag slot 1 Oak Log",
-  "rect": [
-   108,
-   527,
-   62,
-   61
-  ],
-  "found": true,
-  "match": 0.32,
-  "d_left": 0,
-  "d_top": 30,
-  "d_width": 0,
-  "d_height": 3,
-  "de": [
-   [
-    "slot fill",
     3.2
    ]
   ],
@@ -249,7 +149,107 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_17",
+  "widget": "SizeBox:SizeBox_9",
+  "name": "equip slot shield",
+  "rect": [
+   490,
+   217,
+   80,
+   80
+  ],
+  "found": true,
+  "match": 0.61,
+  "d_left": 16,
+  "d_top": 6,
+  "d_width": -2,
+  "d_height": -2,
+  "de": [
+   [
+    "slot fill",
+    12.6
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_11",
+  "name": "equip slot ring",
+  "rect": [
+   490,
+   397,
+   80,
+   80
+  ],
+  "found": true,
+  "match": 0.67,
+  "d_left": 16,
+  "d_top": 2,
+  "d_width": -2,
+  "d_height": -2,
+  "de": [
+   [
+    "slot fill",
+    12.8
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_7",
+  "name": "paperdoll adventurer",
+  "rect": [
+   272,
+   118,
+   158,
+   390
+  ],
+  "found": true,
+  "match": 0.79,
+  "d_left": 16,
+  "d_top": 8,
+  "d_width": 0,
+  "d_height": 0,
+  "de": [
+   [
+    "backdrop fill",
+    4.4
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_12",
+  "name": "bag slot 1 Oak Log",
+  "rect": [
+   108,
+   527,
+   62,
+   61
+  ],
+  "found": true,
+  "match": 0.47,
+  "d_left": 16,
+  "d_top": 8,
+  "d_width": 0,
+  "d_height": 1,
+  "de": [
+   [
+    "slot fill",
+    7.0
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_13",
   "name": "bag slot 2 Stone",
   "rect": [
    174,
@@ -258,19 +258,19 @@
    61
   ],
   "found": true,
-  "match": 0.31,
-  "d_left": -2,
-  "d_top": 30,
+  "match": 0.47,
+  "d_left": 16,
+  "d_top": 8,
   "d_width": 0,
-  "d_height": 3,
+  "d_height": 1,
   "de": [
    [
     "slot fill",
-    2.8
+    7.5
    ]
   ],
   "geometry": "FAIL",
-  "colour": "PASS",
+  "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
@@ -283,10 +283,10 @@
    327
   ],
   "found": true,
-  "match": 0.81,
-  "d_left": -1,
-  "d_top": 29,
-  "d_width": -11,
+  "match": 0.91,
+  "d_left": 14,
+  "d_top": 6,
+  "d_width": 1,
   "d_height": 3,
   "de": [],
   "geometry": "FAIL",
@@ -294,7 +294,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_55",
+  "widget": "SizeBox:SizeBox_51",
   "name": "bag slot last (stick)",
   "rect": [
    573,
@@ -303,15 +303,15 @@
    61
   ],
   "found": true,
-  "match": 0.26,
-  "d_left": -14,
-  "d_top": 28,
+  "match": 0.55,
+  "d_left": 13,
+  "d_top": 6,
   "d_width": 0,
-  "d_height": 3,
+  "d_height": 1,
   "de": [
    [
     "slot fill",
-    3.1
+    7.2
    ]
   ],
   "geometry": "FAIL",
@@ -319,7 +319,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "",
+  "widget": "TextBlock:TextBlock_82",
   "name": "weight footer text",
   "rect": [
    121,
@@ -327,16 +327,16 @@
    156,
    20
   ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.32,
+  "d_left": 16,
+  "d_top": 8,
+  "d_width": -12,
+  "d_height": 7,
   "de": [],
-  "geometry": "UNMEASURED",
+  "geometry": "FAIL",
   "colour": "PASS",
-  "verdict": "REVIEW"
+  "verdict": "FAIL"
  },
  {
   "widget": "",
@@ -376,11 +376,11 @@
   "de": [
    [
     "tooltip fill",
-    36.7
+    5.0
    ],
    [
     "tooltip fill",
-    51.6
+    6.5
    ]
   ],
   "geometry": "UNMEASURED",
@@ -468,7 +468,7 @@
   "verdict": "REVIEW"
  },
  {
-  "widget": "SizeBox:SizeBox_17",
+  "widget": "SizeBox:SizeBox_18",
   "name": "minimap ring",
   "rect": [
    1651,
@@ -497,11 +497,11 @@
    273
   ],
   "found": true,
-  "match": 0.45,
+  "match": 0.43,
   "d_left": -13,
   "d_top": 23,
-  "d_width": 5,
-  "d_height": -143,
+  "d_width": 11,
+  "d_height": -153,
   "de": [
    [
     "fill dark",
@@ -547,9 +547,9 @@
    89
   ],
   "found": true,
-  "match": 0.83,
+  "match": 0.73,
   "d_left": -4,
-  "d_top": 3,
+  "d_top": -8,
   "d_width": -4,
   "d_height": -1,
   "de": [
@@ -572,15 +572,15 @@
    89
   ],
   "found": true,
-  "match": 0.82,
+  "match": 0.72,
   "d_left": 7,
-  "d_top": 3,
+  "d_top": -8,
   "d_width": -1,
   "d_height": -1,
   "de": [
    [
     "slot fill",
-    3.3
+    3.9
    ]
   ],
   "geometry": "FAIL",
@@ -588,7 +588,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "Overlay:Overlay_1",
+  "widget": "VerticalBox:VerticalBox_0",
   "name": "vitals HP bar",
   "rect": [
    134,
@@ -597,15 +597,15 @@
    36
   ],
   "found": true,
-  "match": 0.59,
-  "d_left": 30,
-  "d_top": -8,
+  "match": 0.4,
+  "d_left": 29,
+  "d_top": -34,
   "d_width": -12,
-  "d_height": 1,
+  "d_height": 48,
   "de": [
    [
     "hp red fill",
-    8.3
+    14.9
    ]
   ],
   "geometry": "FAIL",
@@ -622,15 +622,15 @@
    110
   ],
   "found": true,
-  "match": 0.68,
+  "match": 0.52,
   "d_left": 6,
-  "d_top": -19,
-  "d_width": 0,
-  "d_height": 6,
+  "d_top": -61,
+  "d_width": -1,
+  "d_height": 48,
   "de": [
    [
     "badge fill",
-    6.4
+    7.0
    ]
   ],
   "geometry": "FAIL",

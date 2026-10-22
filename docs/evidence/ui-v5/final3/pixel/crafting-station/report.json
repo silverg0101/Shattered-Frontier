@@ -1,6 +1,6 @@
 [
  {
-  "widget": "CanvasPanel:VitalsCanvas",
+  "widget": "SFStationPanel:SFStationPanel_0",
   "name": "station window frame",
   "rect": [
    631,
@@ -9,22 +9,22 @@
    797
   ],
   "found": true,
-  "match": 0.33,
-  "d_left": -631,
-  "d_top": -97,
-  "d_width": 1054,
-  "d_height": 283,
+  "match": 1.0,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "window fill",
-    39.4
+    3.8
    ],
    [
     "window fill",
-    35.8
+    2.6
    ]
   ],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
@@ -66,7 +66,7 @@
   "de": [
    [
     "field fill",
-    28.4
+    3.8
    ]
   ],
   "geometry": "UNMEASURED",
@@ -91,7 +91,7 @@
   "de": [
    [
     "selected tab fill",
-    37.5
+    12.2
    ]
   ],
   "geometry": "UNMEASURED",
@@ -116,7 +116,7 @@
   "de": [
    [
     "tab fill",
-    7.5
+    9.4
    ]
   ],
   "geometry": "UNMEASURED",
@@ -141,7 +141,7 @@
   "de": [
    [
     "tab fill",
-    7.6
+    11.5
    ]
   ],
   "geometry": "UNMEASURED",
@@ -166,7 +166,7 @@
   "de": [
    [
     "selected row fill",
-    16.0
+    4.9
    ]
   ],
   "geometry": "UNMEASURED",
@@ -191,7 +191,7 @@
   "de": [
    [
     "row fill",
-    49.2
+    4.8
    ]
   ],
   "geometry": "UNMEASURED",
@@ -216,7 +216,7 @@
   "de": [
    [
     "row fill",
-    42.2
+    4.9
    ]
   ],
   "geometry": "UNMEASURED",
@@ -241,7 +241,7 @@
   "de": [
    [
     "row fill",
-    90.0
+    7.3
    ]
   ],
   "geometry": "UNMEASURED",
@@ -306,7 +306,7 @@
   "de": [
    [
     "image well fill",
-    43.5
+    3.3
    ]
   ],
   "geometry": "UNMEASURED",
@@ -351,7 +351,7 @@
   "de": [
    [
     "row fill",
-    41.3
+    4.5
    ]
   ],
   "geometry": "UNMEASURED",
@@ -376,7 +376,7 @@
   "de": [
    [
     "row fill",
-    48.6
+    13.4
    ]
   ],
   "geometry": "UNMEASURED",
@@ -401,7 +401,7 @@
   "de": [
    [
     "field fill",
-    47.1
+    4.8
    ]
   ],
   "geometry": "UNMEASURED",
@@ -446,7 +446,7 @@
   "de": [
    [
     "brass fill",
-    17.5
+    26.7
    ]
   ],
   "geometry": "UNMEASURED",
@@ -491,7 +491,7 @@
   "de": [
    [
     "row fill",
-    34.4
+    4.4
    ]
   ],
   "geometry": "UNMEASURED",
@@ -516,7 +516,7 @@
   "de": [
    [
     "row fill",
-    13.3
+    4.9
    ]
   ],
   "geometry": "UNMEASURED",
@@ -553,9 +553,9 @@
    89
   ],
   "found": true,
-  "match": 0.52,
+  "match": 0.65,
   "d_left": -11,
-  "d_top": 20,
+  "d_top": 9,
   "d_width": -1,
   "d_height": -1,
   "de": [],
@@ -573,15 +573,15 @@
    89
   ],
   "found": true,
-  "match": 0.58,
+  "match": 0.74,
   "d_left": 5,
-  "d_top": 20,
+  "d_top": 9,
   "d_width": 0,
   "d_height": -1,
   "de": [
    [
     "slot fill",
-    5.1
+    4.0
    ]
   ],
   "geometry": "FAIL",
@@ -589,7 +589,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_1",
+  "widget": "VerticalBox:VerticalBox_0",
   "name": "vitals HP bar",
   "rect": [
    136,
@@ -598,15 +598,15 @@
    38
   ],
   "found": true,
-  "match": 0.71,
-  "d_left": 28,
-  "d_top": 4,
+  "match": 0.39,
+  "d_left": 27,
+  "d_top": -22,
   "d_width": 15,
-  "d_height": -6,
+  "d_height": 46,
   "de": [
    [
     "hp red fill",
-    10.9
+    27.5
    ]
   ],
   "geometry": "FAIL",
@@ -623,15 +623,15 @@
    130
   ],
   "found": true,
-  "match": 0.6,
+  "match": 0.59,
   "d_left": 11,
-  "d_top": 18,
-  "d_width": 16,
-  "d_height": -14,
+  "d_top": -24,
+  "d_width": 15,
+  "d_height": 28,
   "de": [
    [
     "badge fill",
-    20.3
+    29.4
    ]
   ],
   "geometry": "FAIL",
@@ -639,7 +639,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "Image:Image_9",
+  "widget": "Image:Image_10",
   "name": "minimap ring",
   "rect": [
    1674,
@@ -688,11 +688,11 @@
    198
   ],
   "found": true,
-  "match": 0.6,
+  "match": 0.57,
   "d_left": -23,
   "d_top": 30,
-  "d_width": 16,
-  "d_height": -68,
+  "d_width": 22,
+  "d_height": -78,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -716,7 +716,7 @@
   "de": [
    [
     "fill dark",
-    33.1
+    33.0
    ]
   ],
   "geometry": "UNMEASURED",

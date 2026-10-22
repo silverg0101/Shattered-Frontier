@@ -109,6 +109,21 @@ bool USFGatheringPilotSettings::Validate(FString& Error) const
     return bValid;
 }
 
+namespace
+{
+// Debug text labels only in dev scenarios (-UiEvidence*, *Scenario); players see the prop and the HUD prompt instead.
+bool ShowStationLabels() { return FCString::Stristr(FCommandLine::Get(),TEXT("UiEvidence")) || FCString::Stristr(FCommandLine::Get(),TEXT("Scenario")); }
+
+// Placed props stand in for the stations until dedicated workbench/forge/sawmill meshes exist under /Game/Frontier/Props.
+UStaticMesh* StationPropMesh(ESFGatheringPilotKind Kind)
+{
+    const TCHAR* Path=Kind==ESFGatheringPilotKind::Workbench ? TEXT("/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropBench.SM_SilverbrookPropBench")
+        : Kind==ESFGatheringPilotKind::Sawmill ? TEXT("/Game/Frontier/Environment/Greenlands/Meshes/SM_LogStack.SM_LogStack")
+        : TEXT("/Game/Frontier/Environment/Greenlands/Arrival/Meshes/SM_PH_wooden_crate_01_00.SM_PH_wooden_crate_01_00");
+    return LoadObject<UStaticMesh>(nullptr,Path);
+}
+}
+
 ASFGatheringPilotNode::ASFGatheringPilotNode()
 {
     bReplicates=true;
@@ -123,7 +138,7 @@ ASFGatheringPilotNode::ASFGatheringPilotNode()
     Mesh->SetRelativeScale3D(FVector(0.7,0.7,1.4));
     Label=CreateDefaultSubobject<UTextRenderComponent>(TEXT("ResourceLabel")); Label->SetupAttachment(Mesh);
     Label->SetRelativeLocation(FVector(0,-60,90)); Label->SetRelativeRotation(FRotator(0,-90,0));
-    Label->SetWorldSize(16); Label->SetHorizontalAlignment(EHTA_Center);
+    Label->SetWorldSize(16); Label->SetHorizontalAlignment(EHTA_Center); Label->SetVisibility(ShowStationLabels());
     HarvestVisuals=CreateDefaultSubobject<USFHarvestPresentation>(TEXT("HarvestPresentation"));
 }
 
@@ -247,7 +262,8 @@ void ASFGatheringPilotNode::OnRep_State()
     }
     if (IsRefinery())
     {
-        Mesh->SetStaticMesh(StationMesh); Mesh->SetRelativeScale3D(FVector(1.4,0.8,0.8));
+        if (UStaticMesh* Prop=StationPropMesh(Kind)) { Mesh->SetStaticMesh(Prop); Mesh->SetRelativeScale3D(FVector(1.0)); }
+        else { Mesh->SetStaticMesh(StationMesh); Mesh->SetRelativeScale3D(FVector(1.4,0.8,0.8)); }
         // Recipes are content (content/crafting); a station with several lists them and C chooses.
         TArray<FString> Recipes;
         for (const FSFStationRecipe* Recipe : SFStationRecipes::ForStation(USFGatheringPilotComponent::StationName(Kind))) { Recipes.Add(Recipe->Describe()); }
@@ -261,6 +277,7 @@ void ASFGatheringPilotNode::OnRep_State()
             State.Charges==0 ? TEXT("Depleted") : State.bBusy ? TEXT("In use") : TEXT("E: harvest"),State.Charges)));
         Label->SetTextRenderColor(State.Charges==0 ? FColor::Silver : Kind==ESFGatheringPilotKind::Oak ? FColor::Green : FColor::Cyan);
     }
+    if (!ShowStationLabels()) { Label->SetVisibility(false); }
     if (HasActorBegunPlay() && GetNetMode()!=NM_DedicatedServer) { RefreshResourcePresentation(GetPresentationState()); }
 }
 

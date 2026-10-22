@@ -58,7 +58,7 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
     const FLinearColor Well = Hex(TEXT("0E171C"), 0.85f);
 
     UVerticalBox* Contents = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("PaletteContents"));
-    PalettePanel = KitPanel(WidgetTree, TEXT("panel_frame"), 1.f, Slate(0.94f), Brass(), FMargin(6.f), 6.f);
+    PalettePanel = KitPanel(WidgetTree, TEXT("panel_frame"), 1.f, Slate(0.94f), Brass(), FMargin(10.f), 6.f);
     PalettePanel->SetVisibility(ESlateVisibility::Visible);
     PalettePanel->SetContent(Contents);
     // The root is a full-viewport canvas (the controller fills the viewport with it) so the panel is placed by percent anchors:
@@ -66,15 +66,15 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
     UCanvasPanel* Root = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass());
     WidgetTree->RootWidget = Root;
     USizeBox* PanelSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    PanelSize->SetWidthOverride(480.f); PanelSize->SetContent(PalettePanel);
+    PanelSize->SetWidthOverride(523.f); PanelSize->SetContent(PalettePanel);
     UCanvasPanelSlot* PanelSlot = Root->AddChildToCanvas(PanelSize);
-    PanelSlot->SetAnchors(FAnchors(0.02f, 0.03f)); PanelSlot->SetAlignment(FVector2D(0.f, 0.f)); PanelSlot->SetAutoSize(true); PanelSlot->SetOffsets(FMargin(0.f));
+    PanelSlot->SetAnchors(FAnchors(0.0172f, 0.036f)); PanelSlot->SetAlignment(FVector2D(0.f, 0.f)); PanelSlot->SetAutoSize(true); PanelSlot->SetOffsets(FMargin(0.f));
 
     // Title row, with the 2 px rule under it.
     UHorizontalBox* Title = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    Title->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("icon_structures"), 28.f))->SetVerticalAlignment(VAlign_Center);
+    Title->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("icon_hammer"), 44.f))->SetVerticalAlignment(VAlign_Center);
     Title->AddChildToHorizontalBox(Heading(WidgetTree, TEXT("Build Catalogue"), 36, Ivory()))->SetPadding(FMargin(12.f, 0.f, 0.f, 0.f));
-    Contents->AddChildToVerticalBox(Title)->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
+    Contents->AddChildToVerticalBox(Title)->SetPadding(FMargin(19.f, 0.f, 0.f, 6.f));
     USizeBox* Rule = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
     Rule->SetHeightOverride(2.f); Rule->SetContent(KitPanel(WidgetTree, TEXT("divider"), 1.f, Brass(), Brass(), FMargin(0.f), 0.f));
     Contents->AddChildToVerticalBox(Rule)->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
@@ -92,14 +92,14 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
     FScriptDelegate SearchChanged; SearchChanged.BindUFunction(this, TEXT("HandleSearchChanged")); Search->OnTextChanged.Add(SearchChanged);
     UOverlay* SearchStack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
     USizeBox* SearchSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    SearchSize->SetHeightOverride(40.f); SearchSize->SetContent(Search);
+    SearchSize->SetWidthOverride(480.f); SearchSize->SetHeightOverride(41.f); SearchSize->SetContent(Search);
     UOverlaySlot* SearchFill = SearchStack->AddChildToOverlay(SearchSize);
     SearchFill->SetHorizontalAlignment(HAlign_Fill); SearchFill->SetVerticalAlignment(VAlign_Fill);
-    UWidget* SearchGlyph = KitImage(WidgetTree, TEXT("icon_search"), 20.f);
+    UWidget* SearchGlyph = KitImage(WidgetTree, TEXT("icon_search"), 24.f);
     SearchGlyph->SetVisibility(ESlateVisibility::HitTestInvisible);
     UOverlaySlot* GlyphSlot = SearchStack->AddChildToOverlay(SearchGlyph);
     GlyphSlot->SetHorizontalAlignment(HAlign_Left); GlyphSlot->SetVerticalAlignment(VAlign_Center); GlyphSlot->SetPadding(FMargin(14.f, 0.f, 0.f, 0.f));
-    Contents->AddChildToVerticalBox(SearchStack)->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
+    Contents->AddChildToVerticalBox(SearchStack)->SetPadding(FMargin(10.f, 0.f, 0.f, 10.f));
 
     // Voxel Objects / Blueprints tabs (Blueprints stays disabled until blueprints exist).
     UHorizontalBox* Tabs = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
@@ -110,8 +110,8 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
         Label->SetJustification(ETextJustify::Center);
         Tab->SetVerticalAlignment(VAlign_Center); Tab->SetContent(Label); Tab->SetVisibility(ESlateVisibility::HitTestInvisible);
         USizeBox* TabSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        TabSize->SetWidthOverride(210.f); TabSize->SetHeightOverride(44.f); TabSize->SetContent(Tab);
-        Tabs->AddChildToHorizontalBox(TabSize)->SetPadding(FMargin(Index == 0 ? 0.f : 12.f, 0.f, 0.f, 0.f));
+        TabSize->SetWidthOverride(Index == 0 ? 259.f : 214.f); TabSize->SetHeightOverride(41.f); TabSize->SetContent(Tab);
+        Tabs->AddChildToHorizontalBox(TabSize)->SetPadding(FMargin(Index == 0 ? 0.f : 11.f, 0.f, 0.f, 0.f));
     }
     Contents->AddChildToVerticalBox(Tabs)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
 
@@ -129,14 +129,14 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
     {
         UBorder* Entry = SFHudStyle::Tab(WidgetTree, Category == 0, FMargin(0.f), false);
         UVerticalBox* Stack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-        Stack->AddChildToVerticalBox(KitImage(WidgetTree, RailIcons[Category], 32.f))->SetHorizontalAlignment(HAlign_Center);
-        UTextBlock* Label = Text(WidgetTree, RailLabels[Category], 16, Category == 0 ? Ivory() : Dim);
+        Stack->AddChildToVerticalBox(KitImage(WidgetTree, RailIcons[Category], 40.f))->SetHorizontalAlignment(HAlign_Center);
+        UTextBlock* Label = Text(WidgetTree, RailLabels[Category], 18, Category == 0 ? Ivory() : Dim);
         Label->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
         Label->SetJustification(ETextJustify::Center);
         Stack->AddChildToVerticalBox(Label)->SetHorizontalAlignment(HAlign_Center);
         Entry->SetVerticalAlignment(VAlign_Center); Entry->SetContent(Stack); Entry->SetVisibility(ESlateVisibility::HitTestInvisible);
         USizeBox* RailBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        RailBox->SetWidthOverride(80.f); RailBox->SetHeightOverride(80.f); RailBox->SetContent(Entry);
+        RailBox->SetWidthOverride(95.f); RailBox->SetHeightOverride(Category == 0 ? 78.f : 83.f); RailBox->SetContent(Entry);
         Rail->AddChildToVerticalBox(RailBox)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
     }
     Body->AddChildToHorizontalBox(Rail)->SetPadding(FMargin(0.f, 0.f, 12.f, 0.f));
@@ -145,7 +145,7 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
     static const TCHAR* const TileHandlers[TileCount] = {TEXT("HandleSlab"), TEXT("HandleCube"), TEXT("HandleDoor"), TEXT("HandleSlope")};
     static const TCHAR* const TileIcons[TileCount] = {TEXT("icon_timber_floor"), TEXT("icon_timber_wall"), TEXT("icon_wooden_door"), TEXT("icon_timber_roof")};
     UUniformGridPanel* Catalogue = WidgetTree->ConstructWidget<UUniformGridPanel>(UUniformGridPanel::StaticClass());
-    Catalogue->SetSlotPadding(FMargin(6.f)); Catalogue->SetMinDesiredSlotWidth(100.f); Catalogue->SetMinDesiredSlotHeight(100.f);
+    Catalogue->SetSlotPadding(FMargin(3.5f)); Catalogue->SetMinDesiredSlotWidth(123.f); Catalogue->SetMinDesiredSlotHeight(111.f);
     for (int32 Tile = 0; Tile < TileCount; ++Tile)
     {
         UButton* Button = WidgetTree->ConstructWidget<USFConstructionPaletteButton>(USFConstructionPaletteButton::StaticClass(), TileHandlers[Tile]);
@@ -155,8 +155,8 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
         Button->SetStyle(Flat);
         UBorder* Frame = KitPanel(WidgetTree, TEXT("slot_catalogue_normal"), 1.f, Well, Hex(TEXT("3A4348")), FMargin(4.f, 6.f, 4.f, 4.f), 3.f, false);  // selection state drawn by SelectTile
         UVerticalBox* Stack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-        Stack->AddChildToVerticalBox(KitImage(WidgetTree, TileIcons[Tile], 56.f))->SetHorizontalAlignment(HAlign_Center);
-        UTextBlock* Label = Text(WidgetTree, TileLabel(Tile), 16, Ivory());
+        Stack->AddChildToVerticalBox(KitImage(WidgetTree, TileIcons[Tile], 72.f))->SetHorizontalAlignment(HAlign_Center);
+        UTextBlock* Label = Text(WidgetTree, TileLabel(Tile), 20, Ivory());
         Label->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
         Label->SetJustification(ETextJustify::Center);
         Stack->AddChildToVerticalBox(Label)->SetHorizontalAlignment(HAlign_Center);
@@ -165,14 +165,14 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
         Bind(Button, TileHandlers[Tile]);
         TileFrames.Add(Frame); TileButtons.Add(Button);
         USizeBox* TileBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());  // fixed 100 px cell so labels never widen a column
-        TileBox->SetWidthOverride(100.f); TileBox->SetHeightOverride(100.f); TileBox->SetContent(Button);
+        TileBox->SetWidthOverride(123.f); TileBox->SetHeightOverride(111.f); TileBox->SetContent(Button);
         Catalogue->AddChildToUniformGrid(TileBox, Tile / 3, Tile % 3);
     }
     // The other cells of the 3 x 4 grid are empty slots until more pieces exist.
     for (int32 Cell = TileCount; Cell < 12; ++Cell)
     {
         USizeBox* EmptyBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        EmptyBox->SetWidthOverride(100.f); EmptyBox->SetHeightOverride(100.f);
+        EmptyBox->SetWidthOverride(123.f); EmptyBox->SetHeightOverride(111.f);
         EmptyBox->SetContent(KitPanel(WidgetTree, TEXT("slot_catalogue_normal"), 0.6f, Well, Hex(TEXT("3A4348")), FMargin(0.f), 3.f, false));
         Catalogue->AddChildToUniformGrid(EmptyBox, Cell / 3, Cell % 3);
     }
@@ -183,14 +183,14 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
     // Material row. ponytail: one material until a materials model exists.
     UBorder* Material = KitPanel(WidgetTree, TEXT("dropdown_field"), 1.f, Well, Hex(TEXT("3A4348")), FMargin(8.f, 0.f), 3.f);
     UHorizontalBox* MaterialRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    MaterialRow->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("icon_timber_board"), 28.f))->SetVerticalAlignment(VAlign_Center);
-    MaterialRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Material:"), 18, Brass()))->SetPadding(FMargin(12.f, 0.f, 8.f, 0.f));
-    UHorizontalBoxSlot* NameSlot = MaterialRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Rough Timber"), 18, Ivory()));
+    MaterialRow->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("icon_timber_board"), 40.f))->SetVerticalAlignment(VAlign_Center);
+    MaterialRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Material:"), 22, Ivory(), true))->SetPadding(FMargin(12.f, 0.f, 8.f, 0.f));
+    UHorizontalBoxSlot* NameSlot = MaterialRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Rough Timber"), 22, Ivory()));
     NameSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-    MaterialRow->AddChildToHorizontalBox(KitImage(WidgetTree, Kit(TEXT("dropdown_arrow")) ? TEXT("dropdown_arrow") : TEXT("row_chevron"), 20.f))->SetVerticalAlignment(VAlign_Center);
+    MaterialRow->AddChildToHorizontalBox(KitImage(WidgetTree, Kit(TEXT("dropdown_arrow")) ? TEXT("dropdown_arrow") : TEXT("row_chevron"), 24.f))->SetVerticalAlignment(VAlign_Center);
     Material->SetVerticalAlignment(VAlign_Center); Material->SetContent(MaterialRow); Material->SetVisibility(ESlateVisibility::HitTestInvisible);
     USizeBox* MaterialSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    MaterialSize->SetHeightOverride(40.f); MaterialSize->SetContent(Material);
+    MaterialSize->SetHeightOverride(50.f); MaterialSize->SetContent(Material);
     Contents->AddChildToVerticalBox(MaterialSize)->SetPadding(FMargin(0.f, 6.f, 0.f, 10.f));
 
     // Required materials: every pilot piece costs one wall bundle from the backpack (DEC-02); unpaid only under the dev stock fixture.
@@ -198,17 +198,17 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
     UBorder* Cost = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
     Cost->SetBrush(Frame(Well, Hex(TEXT("3A4348")), 3.f)); Cost->SetPadding(FMargin(14.f, 10.f));
     UVerticalBox* CostStack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    CostStack->AddChildToVerticalBox(Text(WidgetTree, TEXT("Required Materials"), 20, Ivory()))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
+    CostStack->AddChildToVerticalBox(Text(WidgetTree, TEXT("Required Materials"), 22, Ivory()))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
     UHorizontalBox* CostRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    UHorizontalBoxSlot* CostName = CostRow->AddChildToHorizontalBox(Text(WidgetTree, USFConstructionSandboxSettings::AllowsUnpaidEdits() ? TEXT("Unlimited dev stock") : TEXT("1 Wall Material Bundle"), 18, Ivory()));
+    UHorizontalBoxSlot* CostName = CostRow->AddChildToHorizontalBox(Text(WidgetTree, USFConstructionSandboxSettings::AllowsUnpaidEdits() ? TEXT("Unlimited dev stock") : TEXT("1 Wall Material Bundle"), 20, Ivory()));
     CostName->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-    CostRow->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("status_tick"), 18.f))->SetVerticalAlignment(VAlign_Center);
+    CostRow->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("status_tick"), 20.f))->SetVerticalAlignment(VAlign_Center);
     CostStack->AddChildToVerticalBox(CostRow)->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
     UHorizontalBox* StatusRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    USizeBox* GlyphBox = KitImage(WidgetTree, TEXT("status_tick"), 18.f);
+    USizeBox* GlyphBox = KitImage(WidgetTree, TEXT("status_tick"), 20.f);
     StatusGlyph = Cast<UImage>(GlyphBox->GetContent());
     StatusRow->AddChildToHorizontalBox(GlyphBox)->SetVerticalAlignment(VAlign_Center);
-    StatusTextBlock = Text(WidgetTree, TEXT(""), 18, Ivory());
+    StatusTextBlock = Text(WidgetTree, TEXT(""), 20, Ivory());
     StatusTextBlock->SetText(CachedStatusText);
     UHorizontalBoxSlot* StatusSlot = StatusRow->AddChildToHorizontalBox(StatusTextBlock);
     StatusSlot->SetPadding(FMargin(12.f, 0.f, 0.f, 0.f)); StatusSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
