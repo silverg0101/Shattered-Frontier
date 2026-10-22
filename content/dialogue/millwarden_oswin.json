@@ -21,7 +21,7 @@
       ]
     },
     "reward": {
-      "line": "Sawn timber from the mill and a pouch of nails, and the thanks of Silverbrook besides. Fair pay for honest work.",
+      "line": "Sawn timber and a pouch of nails, and the thanks of Silverbrook besides.",
       "choices": [
         { "label": "Tell me more", "next": "more" },
         { "label": "I'll help", "action": "accept" },
