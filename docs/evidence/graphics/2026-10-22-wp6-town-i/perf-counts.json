@@ -1,0 +1,48 @@
+{
+ "chimney/on-1": {
+  "active_within_120m": 9,
+  "within_120m": 9,
+  "active_total": 9
+ },
+ "chimney/off-1": {
+  "active_within_120m": 9,
+  "within_120m": 9,
+  "active_total": 9
+ },
+ "chimney/on-2": {
+  "active_within_120m": 9,
+  "within_120m": 9,
+  "active_total": 9
+ },
+ "chimney/off-2": {
+  "active_within_120m": 9,
+  "within_120m": 9,
+  "active_total": 9
+ },
+ "street/on-1": {
+  "active_within_120m": 9,
+  "within_120m": 9,
+  "active_total": 9
+ },
+ "street/off-1": {
+  "active_within_120m": 9,
+  "within_120m": 9,
+  "active_total": 9
+ },
+ "street/on-2": {
+  "active_within_120m": 9,
+  "within_120m": 9,
+  "active_total": 9
+ },
+ "street/off-2": {
+  "active_within_120m": 9,
+  "within_120m": 9,
+  "active_total": 9
+ },
+ "far/on-1": {
+  "active_within_120m": 0,
+  "within_120m": 0,
+  "active_total": 0,
+  "nearest_chimney_m": 224.6
+ }
+}

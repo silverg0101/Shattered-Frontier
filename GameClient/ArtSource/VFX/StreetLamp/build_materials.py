@@ -4,6 +4,7 @@ Called by Greenlands/lamp_fx.py; safe to rerun. NS_ChimneySmoke's emitter is aut
 """
 from pathlib import Path
 import json
+import math
 import unreal as u
 
 HERE = Path(__file__).resolve().parent
@@ -101,6 +102,20 @@ def _alpha(mat, sample):
     return scalar
 
 
+def _night(mat, cfg):
+    """M_SB_WindowGlow's sun gate (WP6h review 3c): 0 with the sun above SinBegins, 1 below SinFull, linear between, so lamp
+    lights, lamp glass and windows switch together. lit = always (dev override) returns a constant 1."""
+    if cfg['lit'] != 'time-of-day':
+        return _constant(mat, 1.)
+    w = json.loads((HERE.parent.parent / 'Silverbrook' / 'silverbrook-props.json').read_text(encoding='utf-8'))['windows']
+    hi = _node(mat, u.MaterialExpressionScalarParameter, parameter_name='SinBegins', default_value=math.sin(math.radians(w['glow_begins_sun_elevation_deg']['value'])))
+    lo = _node(mat, u.MaterialExpressionScalarParameter, parameter_name='SinFull', default_value=math.sin(math.radians(w['glow_full_sun_elevation_deg']['value'])))
+    sun = _node(mat, u.MaterialExpressionSkyAtmosphereLightDirection, light_index=0)
+    z = _node(mat, u.MaterialExpressionComponentMask, r=False, g=False, b=True, a=False); _link(sun, z, '')   # sin(sun elevation)
+    q = _node(mat, u.MaterialExpressionDivide); _link(_sub(mat, hi, z), q, 'A'); _link(_sub(mat, hi, lo), q, 'B')
+    return _link(q, _node(mat, u.MaterialExpressionSaturate), '')
+
+
 def _save(mat):
     mel.recompile_material(mat)
     assert eal.save_loaded_asset(mat), mat.get_name()
@@ -165,7 +180,7 @@ def build(cfg=None):
     # The imported window master is opaque, hiding every interior flame card.
     glass = _material('M_LampGlass', blend=u.BlendMode.BLEND_TRANSLUCENT)
     tint = _node(glass, u.MaterialExpressionConstant3Vector, constant=color)
-    _output(_mul(glass, tint, _constant(glass, cfg['glass_emission_strength'])),
+    _output(_mul(glass, _mul(glass, tint, _constant(glass, cfg['glass_emission_strength'])), _night(glass, cfg)),
             u.MaterialProperty.MP_EMISSIVE_COLOR)
     _output(_constant(glass, .22), u.MaterialProperty.MP_OPACITY)
     _save(glass)
@@ -263,6 +278,6 @@ def build(cfg=None):
     _output(xyz, u.MaterialProperty.MP_WORLD_POSITION_OFFSET); _save(firefly)
 
     light = _material('M_LampLightFunction', domain=u.MaterialDomain.MD_LIGHT_FUNCTION)
-    _output(_flicker(light, cfg), u.MaterialProperty.MP_EMISSIVE_COLOR); _save(light)
+    _output(_mul(light, _flicker(light, cfg), _night(light, cfg)), u.MaterialProperty.MP_EMISSIVE_COLOR); _save(light)
     return {name: u.load_asset(DEST + '/' + name) for name in
             ('M_LampGlass', 'M_LampFlame', 'M_LampHalo', 'M_LampSmoke', 'M_LampFirefly', 'M_LampLightFunction')}

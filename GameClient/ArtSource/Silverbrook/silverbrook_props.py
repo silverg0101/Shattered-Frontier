@@ -270,6 +270,18 @@ def dress_props(L,c):
         placed[rule['id']]=n
     print('PROPS_PLACED',placed);return placed
 
+def _fronts(A,folder='Districts/'):
+    """World (x, y) cm of every Silverbrook building: street groups stand only where a frontage has one."""
+    return [(a.get_actor_location().x,a.get_actor_location().y) for a in A.get_all_level_actors()
+            if isinstance(a,u.StaticMeshActor) and str(a.get_folder_path()).startswith(folder) and a.static_mesh_component.static_mesh
+            and a.static_mesh_component.static_mesh.get_name().startswith('SM_Silverbrook') and '_Door' not in a.static_mesh_component.static_mesh.get_name()]
+def _has_frontage(fronts,x,y,ux,uy,side,along=1200,depth=1800):
+    """A building within `along` cm of the station (x, y cm) on this side of the road and within `depth` cm of it."""
+    for bx,by in fronts:
+        dx,dy=bx-x,by-y
+        if abs(ux*dx+uy*dy)<=along and 0<side*(ux*dy-uy*dx)<=depth:return True
+    return False
+
 def dress_street_groups(L,c):
     """Small, mixed Frontier prop groups just outside the walkable road."""
     A=_actors();world=_world();pp,rects=_obstacles(A)
@@ -279,6 +291,7 @@ def dress_street_groups(L,c):
     names=['RainBarrel','SackPile','FirewoodStack','Bench','MarketGoods','Wheelbarrow','HayBales','HitchingPost']
     meshes=[_asset(LIB+'/Meshes/SM_SilverbrookProp'+n) for n in names]
     assert all(meshes),names
+    fronts=_fronts(A);ways=[tuple(w) for w in L.get('waystations',[])]
     total=0;road_counts={}
     # Each street gets its share of max_groups by length inside the wall, so the cap is not spent on the first streets.
     share={road:sum(1 for x,y,_,_ in _stations(pts,step) if _inside(L,c,x,y)) for road,tier,pts,width in _roads(L,c)}
@@ -286,10 +299,16 @@ def dress_street_groups(L,c):
     for road,tier,pts,width in _roads(L,c):
         road_counts[road]=0
         for k,(x,y,ux,uy) in enumerate(_stations(pts,step)):
-            if total>=val(g['max_groups']) or road_counts[road]>=quota[road] or not _inside(L,c,x,y):continue
             key=f'group:{road}:{k}'
+            if _h(key+'skip')<val(g['skip_chance']):continue                         # irregular spacing: about a third of the stations stay empty
+            j=(_h(key+'jit')-.5)*step*.8;x,y=x+ux*j,y+uy*j                           # the rest slide up to +-40 % of a step
+            way=any(math.hypot(x-wx,y-wy)<15 for wx,wy in ways)
+            if total>=val(g['max_groups']) or road_counts[road]>=quota[road] or not (_inside(L,c,x,y) or way):continue
+            sides=[s for s in (1,-1) if way or _has_frontage(fronts,x*100,y*100,ux,uy,s)]   # only a frontage with a building
+            if not sides:continue
+            side=sides[int(_h(key+'side')*len(sides))%len(sides)]                     # one side per station: never a mirrored pair
             mesh=meshes[int(_h(key)*len(meshes))%len(meshes)]
-            for side,shift in ((1,0),(1,0.8),(-1,0),(-1,0.8)):
+            for shift in (0,0.8):
                 d=width/2+offset+shift
                 px=(x-side*uy*d)*100;py=(y+side*ux*d)*100
                 box=(px-clear,py-clear,px+clear,py+clear)
@@ -315,10 +334,12 @@ def dress_street_groups(L,c):
                     s.static_mesh_component.set_static_mesh(m2)
                     s.set_actor_label(f'{label}_{j}');s.set_folder_path('Silverbrook/Dressing');s.tags=[TAG]
                     rects.append(sbox)
-    need=sum(1 for road,tier,pts,width in _roads(L,c) for x,y,_,_ in _stations(pts,50) if _inside(L,c,x,y))*6
+    need=sum(1 for road,tier,pts,width in _roads(L,c) for x,y,ux,uy in _stations(pts,50)
+             if _inside(L,c,x,y) and any(_has_frontage(fronts,x*100,y*100,ux,uy,s) for s in (1,-1)))*3
     print('STREET_GROUPS',total,'GATE',need,road_counts)
-    assert total>=need,('STREET_GROUPS below 6 per 50 m',total,need)
-    assert min(road_counts[r] for r,n in share.items() if n)>0,road_counts  # no street inside the wall is left bare
+    assert total>=need,('STREET_GROUPS below 3 per fronted 50 m',total,need)
+    bare=[r for r,tier,pts,width in _roads(L,c) if road_counts[r]==0 and any(_inside(L,c,x,y) and any(_has_frontage(fronts,x*100,y*100,ux,uy,s) for s in (1,-1)) for x,y,ux,uy in _stations(pts,step))]
+    assert not bare,('fronted streets left bare',bare)
     return road_counts
 
 def _outside_houses(houses,q,band,pad=50):
@@ -766,7 +787,8 @@ def dress_all(folder='Districts/'):
         return
     hide_debug_actors();vary_house_finishes();dress_roads(c);gate_windows(c);dress_verge(L,c);dress_props(L,c);dress_house_details();dress_street_groups(L,c)  # groups keep clear of tubs (WP6d fix 4a)
     # Lamp lights and flame cards last, on the glass where dress_footings left the houses (owner: lights from nowhere).
-    sys.path.insert(0,str(ROOT.parent/'Greenlands'));import lamp_fx,importlib;importlib.reload(lamp_fx).apply()
+    sys.path.insert(0,str(ROOT.parent/'Greenlands'));import lamp_fx,importlib;importlib.reload(lamp_fx)
+    if lamp_fx.ZONE in _world().get_path_name():lamp_fx.apply()   # build_silverbrook.py runs dress_all in its unsaved new world and calls lamp_fx.apply() itself after saving
 
 if __name__=='__main__':
     import argparse

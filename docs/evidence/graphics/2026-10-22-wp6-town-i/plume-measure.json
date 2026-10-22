@@ -1,0 +1,117 @@
+{
+ "chimney-smoke": {
+  "definition": "plume = |L(frame) - L(ref)| >= 4, 7-row mean",
+  "1_origin_y550": {
+   "x0": 1039,
+   "x1": 1457,
+   "span": 419,
+   "centre": 1248.0
+  },
+  "2_growth_y150": null,
+  "2_ratio_150_over_550": null,
+  "3_max_cols_460_540": 13,
+  "3_leftmost_x_460_540": 1003,
+  "3_rightmost_x_460_540": 1919,
+  "4_peak_abs_excess_380_540": 14.9,
+  "4_peak_abs_excess_y100": 1.2,
+  "5_L_over_ref_rows_30_80_260": {
+   "30": null,
+   "80": null,
+   "260": 0.975
+  },
+  "5_L_over_ref_min_max_y10_560": [
+   0.937,
+   1.061
+  ],
+  "5_rows_with_plume": [
+   260,
+   270,
+   300,
+   310,
+   320,
+   330,
+   340,
+   350,
+   360,
+   370,
+   380,
+   390,
+   410,
+   420,
+   430,
+   440,
+   460,
+   470,
+   480,
+   490,
+   500,
+   510,
+   520,
+   530,
+   540,
+   550,
+   560
+  ],
+  "6_left_edge_sd_per_100_rows": {
+   "100-199": NaN,
+   "200-299": 99.7,
+   "300-399": 386.0,
+   "400-499": 243.5
+  },
+  "6_density_maxima_y": [
+   269,
+   317,
+   368,
+   409,
+   465
+  ],
+  "7_upward_px_per_s_mean": 41.0,
+  "7_upward_px_per_s": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   109.3,
+   130.7,
+   108.4,
+   75.6,
+   108.7
+  ],
+  "7_sideways_drift_px_per_s_mean": 3.2,
+  "7_consecutive_mean_abs_diff_min_mean": [
+   0.67,
+   0.72
+  ],
+  "7_frame_dt_s": [
+   0.299,
+   0.302,
+   0.297,
+   0.303,
+   0.3,
+   0.304,
+   0.336,
+   0.269,
+   0.293,
+   0.299,
+   0.314,
+   0.37,
+   0.276
+  ]
+ },
+ "main-street": {
+  "x790-830": {
+   "max_cols_rb_ge5": 5,
+   "row": 382,
+   "thread_L_over_sky": 0.766
+  },
+  "x1085-1125": {
+   "max_cols_rb_ge5": 0,
+   "row": null,
+   "thread_L_over_sky": null
+  }
+ }
+}

@@ -16,6 +16,7 @@ SOURCE = HERE.parent / 'VFX' / 'StreetLamp'
 ZONE = '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook'
 DEST = '/Game/Frontier/VFX/StreetLamp'
 PREFIX = 'FX_StreetLamp_'
+LANTERN_MATS = '/Game/Frontier/Environment/Greenlands/Silverbrook/Materials'
 
 
 def load_config():
@@ -36,7 +37,6 @@ def load_config():
                 assert type(v) in ((int,) if kind == 'integer' else (int, float)), key
                 assert math.isfinite(v) and spec['min'] <= v <= spec['max'], key
         cfg[key] = value
-    assert cfg['lit'] == 'always', 'time-of-day mode needs the GFX WP6 runtime signal; keep always until integrated'
     return cfg
 
 
@@ -58,7 +58,7 @@ def glass_sockets(mesh, u):
     """Mesh-space cm centre of every lantern-glass chamber, read from the imported mesh itself: the connected pieces of its
     *Glow material slots, merged when closer than 60 cm. (The GLB-derived lamp-sockets.json points of building meshes
     were 2-20 m off their imported glass, so their lights shone on bare walls; street lamps matched to 0 cm.) A flat glow
-    panel (< 5 cm thick) gets its light 10 cm in front of it, away from the mesh centre, so the light is not inside a wall;
+    panel (< 5 cm thick) gets its light 30 cm in front of it (WP6h review 3b: 10 cm clipped the wall), away from the mesh centre, so the light is not inside a wall;
     on a building, a glow volume >= 30 cm in every axis (a lit room or doorway seen through glass) or one centred under
     1 m (a cellar grille) gets no lamp."""
     name = mesh.get_name()
@@ -94,7 +94,7 @@ def glass_sockets(mesh, u):
                 continue   # a glowing room or doorway volume behind glass, or a cellar grille at the ground: not a lantern
             thin = min(range(2), key=lambda i: size[i])
             if size[thin] < 5:   # wall-mounted glow panel: light in front of it
-                c[thin] += 10 if c[thin] >= 0 else -10
+                c[thin] += 30 if c[thin] >= 0 else -30
             out.append(c)
         _GLASS[name] = out
     return _GLASS[name]
@@ -139,13 +139,17 @@ def _point_light(subsystem, position, cfg, material, label, owner, u):
     light = actor.light_component
     light.set_editor_property('mobility', u.ComponentMobility.MOVABLE)
     light.set_editor_property('intensity_units', u.LightUnits.LUMENS)
-    light.set_editor_property('intensity', cfg['light_intensity'])
+    wall = not owner.get_actor_label().startswith('StreetLamp_')
+    # WP6h review 3b: a wall lantern at full output clipped the stone beside it; half the lumens and a 6 cm source.
+    light.set_editor_property('intensity', cfg['light_intensity'] * (.5 if wall else 1.))
+    if wall:
+        light.set_editor_property('source_radius', 6.)
     light.set_editor_property('attenuation_radius', cfg['light_radius'] * 100)
     # UE Python positional Color arguments map to BGRA; name channels to avoid a cyan lamp.
     light.set_editor_property('light_color', u.Color(r=255, g=150, b=65, a=255))
     # Wall-mounted lanterns cast shadows so their light cannot pass through the wall they hang on (owner: light pools on
     # bare walls); free-standing street lamps stay shadowless (budget).
-    light.set_editor_property('cast_shadows', not owner.get_actor_label().startswith('StreetLamp_'))
+    light.set_editor_property('cast_shadows', wall)
     light.set_editor_property('light_function_material', material)
     light.set_editor_property('max_draw_distance', 2500.0)
     # Follows its lantern: dress_footings raises houses after placement.
@@ -211,6 +215,18 @@ def apply(world=None, save=False):
                     mesh_component.set_material(slot, iron)
                 elif name.endswith('_Glow') or name == 'M_LampGlass':
                     mesh_component.set_material(slot, mats['M_LampGlass'])
+    # WP6h review 3a: building lantern panes glow with the flame (they were dark tan while their light washed the wall),
+    # and with lit = time-of-day they follow the same sun gate as the windows (M_SB_WindowGlow's Gate).
+    lanterns = []
+    for path in u.EditorAssetLibrary.list_assets(LANTERN_MATS, recursive=False, include_folder=False):
+        mi = u.load_asset(path)
+        if isinstance(mi, u.MaterialInstanceConstant) and mi.get_name() == 'MI_SB_LanternGlow':   # the kit lantern pane (gate_windows' ALWAYS_LIT list holds vendor signs, no lanterns)
+            mel.set_material_instance_vector_parameter_value(mi, 'Emission', u.LinearColor(*cfg['flame_colour'], 1))
+            mel.set_material_instance_scalar_parameter_value(mi, 'EmissionStrength', cfg['glass_emission_strength'])
+            mel.set_material_instance_scalar_parameter_value(mi, 'Gate', 1. if cfg['lit'] == 'time-of-day' else 0.)
+            assert u.EditorAssetLibrary.save_loaded_asset(mi); lanterns.append(mi.get_name())
+    assert lanterns, 'no building lantern glow instances under ' + LANTERN_MATS
+    print('LANTERN_PANES', lanterns)
     plane = u.load_asset('/Engine/BasicShapes/Plane')
     assert plane, 'Engine Plane mesh unavailable'
     # Build all assets and discover all targets before replacing prior owned actors.

@@ -645,7 +645,10 @@ for name, pts, width, tier in ROADS:
                   and all(math.dist(post, q) > SL['clear'] for q in bridges + list(gate_points.values()))
                   and all(line_dist(post, p2) > w2 / 2 + SL['clear'] for n2, p2, w2, _ in ROADS if n2 != name)
                   and all(math.dist(post, q[:2]) > q[2] + 1 for q in placed)
-                  and all(math.dist(post, q) > 4 for q in lamps))
+                  and all(math.dist(post, q) > 4 for q in lamps)
+                  # WP6h review: no lamps along empty roads; a building pad within 18 m, or the approach to a gate or bridge
+                  and (any(math.dist(post, q[:2]) < 18 for q in placed)
+                       or any(math.dist(post, q) < SL['clear'] + 8 for q in bridges + list(gate_points.values()))))
             if ok:
                 lamps.append(post)
                 yaw = math.degrees(math.atan2(-side * ux, side * uy))  # +X from the post toward the road centre
@@ -749,7 +752,8 @@ STREET_EARTH_EXTRA_M = 8.0   # packed earth (B channel) runs this far; paint_str
 
 
 def road_field(tier_filter, extra=0.0):
-    """cell -> 0..1 field, 1 out to the road edge (+extra) then a one-ramp fall, for the roads whose tier is in tier_filter; none over water."""
+    """cell -> 0..1 field, 1 out to the road edge (+extra) then a one-ramp fall, for the roads whose tier is in tier_filter; none over
+    water, and none on banks: x (1 - rockiness), so a cut or fill bank steeper than SLOPE_FLAT_DEG takes bedrock (WP6h review)."""
     best = {}
     for name, pts, width, tier in ROADS:
         if tier not in tier_filter:
@@ -757,7 +761,7 @@ def road_field(tier_filter, extra=0.0):
         samples = [(p, width / 2 + extra) for p, _, _ in _hf_samples(pts, 1.0) if water_gap(p) > 0]
         for k, (d, hw) in HF._nearest(samples, width / 2 + extra + ROAD_RAMP).items():
             best[k] = max(best.get(k, 0.0), min(1.0, max(0.0, 1.0 - (d - hw) / ROAD_RAMP)))
-    return best
+    return {k: f * (1.0 - rockiness(u.Vector((HF.x0 + k % HF.nx * HF.step) * 100, (HF.y0 + k // HF.nx * HF.step) * 100, 0))) for k, f in best.items()}
 
 
 ROAD_G, ROAD_B = road_field(('primary', 'secondary'), STREET_COBBLE_EXTRA_M), road_field(('trail',))

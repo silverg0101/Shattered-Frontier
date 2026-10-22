@@ -1,9 +1,9 @@
 {
  "_about": "Gameplay candidates (harvestable trees and stone) from dress_zone.py; produced but not used yet (pipeline stage 3).",
- "version": "the_commons-1019-1-09cacf41c7",
+ "version": "the_commons-1019-1-b7b553c6a8",
  "candidates": [
   {
-   "id": "343c42824cc97892",
+   "id": "43334288fa0bfb1a",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -13,7 +13,7 @@
    ]
   },
   {
-   "id": "5ce1adec940ef207",
+   "id": "912db78e74682883",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -23,7 +23,7 @@
    ]
   },
   {
-   "id": "f17b729b536480eb",
+   "id": "17ba6f209dbc85ca",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -33,7 +33,7 @@
    ]
   },
   {
-   "id": "ef71cbbaa456263c",
+   "id": "71660496c24ec5ba",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -43,7 +43,7 @@
    ]
   },
   {
-   "id": "71a9f558f3cb9bc8",
+   "id": "cbcd2dc67d64aa06",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -53,7 +53,7 @@
    ]
   },
   {
-   "id": "4e37976a4816fe2d",
+   "id": "6978f968c74da9b7",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -63,7 +63,7 @@
    ]
   },
   {
-   "id": "b22af542d081d05e",
+   "id": "4a21631a8491bb8a",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -73,7 +73,7 @@
    ]
   },
   {
-   "id": "421058ed26e21619",
+   "id": "ee05fe3ab2dc4e40",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -83,7 +83,7 @@
    ]
   },
   {
-   "id": "6d84abb021298aec",
+   "id": "a2356d00027d2006",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -93,7 +93,7 @@
    ]
   },
   {
-   "id": "cb2b993c2a798401",
+   "id": "5048863fc6c20b5a",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -103,7 +103,7 @@
    ]
   },
   {
-   "id": "7b922e743416bde7",
+   "id": "fb2b515c1ca2c90b",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -113,7 +113,7 @@
    ]
   },
   {
-   "id": "e9a57a81373b1e74",
+   "id": "6414383887b6e105",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -123,7 +123,7 @@
    ]
   },
   {
-   "id": "88ff52c5342ab763",
+   "id": "9b5497220ba8ff96",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -133,7 +133,7 @@
    ]
   },
   {
-   "id": "3f0c8c3ddd3b9316",
+   "id": "f88d18e29cdd5715",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -143,7 +143,7 @@
    ]
   },
   {
-   "id": "32fb69514dd60441",
+   "id": "78f1b0f9a4789bff",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -153,7 +153,7 @@
    ]
   },
   {
-   "id": "dbee0a3b6c7b0656",
+   "id": "9fe9a98f8b6378d6",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -163,7 +163,7 @@
    ]
   },
   {
-   "id": "c1310e8e2f204d56",
+   "id": "c5a972ee061a95d3",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -173,7 +173,7 @@
    ]
   },
   {
-   "id": "24fa6822f8e25f81",
+   "id": "77763eb2d237b9c0",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -183,7 +183,7 @@
    ]
   },
   {
-   "id": "31bd09d59dae95e6",
+   "id": "1bc89314800df358",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -193,7 +193,7 @@
    ]
   },
   {
-   "id": "1b00759b45562c1a",
+   "id": "51698bed5a1a0d01",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -203,7 +203,7 @@
    ]
   },
   {
-   "id": "69e74eb09ff42094",
+   "id": "b0552f0f88ddb995",
    "role": "rock_medium",
    "resource": "stone",
    "at": [

@@ -19,6 +19,8 @@ CHANNEL_DEPTH = 2.0  # m below water at a channel centre
 BASIN_DEPTH = 3.0    # m below water in the middle of a basin
 BANK_SLOPE = 0.6     # m of rise per m away from the water's edge
 SHOULDER = 6.0       # m blend outside a road bed or building pad
+BANK_DEG = 30.0      # steepest road cut or fill bank (WP6h review: the Silvermere road ran through the north ridge in a trench)
+BANK_REACH = 120.0   # m beyond a road bed the bank may reach (a 69 m cut at BANK_DEG)
 ABUTMENT_FACE = 4.0  # m of rise per m: the rock face of a built-up crossing abutment
 MARKER_WEIGHT = 4   # elevation markers count this many times a ridge or bank control point
 
@@ -257,6 +259,13 @@ class Heightfield:
                         self.h[k] += (zz - self.h[k]) * (1 - _smoothstep((d - hw_) / SHOULDER))
                         if d <= hw_:
                             bed.append(k)
+                # Side slopes: past the bed, the ground may not rise or fall faster than tan(BANK_DEG) from the graded road.
+                t, own = math.tan(math.radians(BANK_DEG)), set(bed)
+                for (p, _, _), zz in zip(s, z):
+                    for k, cx, cy in self._cells(p[0], p[1], hw + BANK_REACH):
+                        d = math.hypot(cx - p[0], cy - p[1]) - hw
+                        if d > 0 and not locked[k] and k not in own:
+                            self.h[k] = min(max(self.h[k], zz - t * d), zz + t * d)
                 for k in bed:
                     locked[k] = 1
         return profiles

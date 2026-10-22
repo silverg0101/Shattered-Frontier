@@ -2957,15 +2957,6 @@
    "kind": "bench",
    "owner": "Bench_00",
    "at": [
-    -263.97,
-    -101.0
-   ],
-   "facing": 197.5
-  },
-  {
-   "kind": "bench",
-   "owner": "Bench_01",
-   "at": [
     -122.76,
     -51.34
    ],
@@ -2973,7 +2964,7 @@
   },
   {
    "kind": "bench",
-   "owner": "Bench_02",
+   "owner": "Bench_01",
    "at": [
     -106.97,
     -92.48
@@ -2982,7 +2973,7 @@
   },
   {
    "kind": "bench",
-   "owner": "Bench_03",
+   "owner": "Bench_02",
    "at": [
     -79.23,
     -112.97
@@ -2991,7 +2982,7 @@
   },
   {
    "kind": "bench",
-   "owner": "Bench_04",
+   "owner": "Bench_03",
    "at": [
     -76.48,
     -80.56
@@ -3000,7 +2991,7 @@
   },
   {
    "kind": "bench",
-   "owner": "Bench_05",
+   "owner": "Bench_04",
    "at": [
     -61.07,
     -121.86
@@ -3009,7 +3000,7 @@
   },
   {
    "kind": "bench",
-   "owner": "Bench_06",
+   "owner": "Bench_05",
    "at": [
     -20.14,
     -13.73
@@ -3018,12 +3009,21 @@
   },
   {
    "kind": "bench",
-   "owner": "Bench_07",
+   "owner": "Bench_06",
    "at": [
     -7.74,
     -12.0
    ],
    "facing": 297.2
+  },
+  {
+   "kind": "bench",
+   "owner": "Bench_07",
+   "at": [
+    3.78,
+    211.45
+   ],
+   "facing": 176.1
   },
   {
    "kind": "bench",

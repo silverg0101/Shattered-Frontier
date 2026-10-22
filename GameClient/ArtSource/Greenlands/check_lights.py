@@ -1,8 +1,8 @@
 """Light gate (owner: "magical light sources from nowhere"). Independent of lamp-sockets.json and of lamp_fx's socket code:
 reads the lantern glass straight from the meshes.
 
-Every PointLight must be attached to a visible lamp/building actor, sit within 15 cm of the box around that actor's *Glow
-material pieces near it (one lantern's panes) (lamp_fx puts wall-panel lights 10 cm in front of the pane), and not be inside any other actor's mesh
+Every PointLight must be attached to a visible lamp/building actor, sit within 35 cm of the box around that actor's *Glow
+material pieces near it (one lantern's panes) (lamp_fx puts wall-panel lights 30 cm in front of the pane), and not be inside any other actor's mesh
 (3 cm sphere overlap). Wall-mounted lights (owner not a StreetLamp_) must cast shadows so they cannot light through walls.
 Run in the open Silverbrook editor: py -3 tools/Run-InEditor.py GameClient/ArtSource/Greenlands/check_lights.py
 Prints LIGHT_CHECK lights N on_glass N orphans N in_wall N unshadowed_wall N shadowed N; any orphan, in-wall light or
@@ -52,7 +52,7 @@ for light in lights:
             if near:
                 lo = u.Vector(*(min(getattr(b.min, a) for b in near) for a in 'xyz')); hi = u.Vector(*(max(getattr(b.max, a) for b in near) for a in 'xyz'))
                 best = min(best, gap(local, u.Box(lo, hi)))
-    if best > 15:
+    if best > 35:   # 30 cm in front of a wall pane (WP6h review 3b) plus 5 cm
         orphans.append((label, round(best, 1))); continue
     hits = [h for h in (u.SystemLibrary.sphere_overlap_actors(light, p, 3., [u.ObjectTypeQuery.ECC_WORLD_STATIC], u.StaticMeshActor, [owner]) or [])
             if not h.is_hidden_ed()]

@@ -1,0 +1,6872 @@
+{
+ "houses": 312,
+ "points": 12891,
+ "failing_houses": 0,
+ "failing_points": 0,
+ "rows": [
+  {
+   "house": "Northridge_elite_house_000",
+   "mesh": "SM_SilverbrookNorthridgeHouse4",
+   "points": 62,
+   "overhang_points": 6,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": -678,
+    "y": -23211,
+    "foot": 1560.0,
+    "side": "x-",
+    "local": [
+     -564,
+     -309,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_001",
+   "mesh": "SM_SilverbrookNorthridgeHouse5",
+   "points": 48,
+   "overhang_points": 11,
+   "min_buried_cm": 104.7,
+   "failures": 0,
+   "worst": {
+    "x": 2627,
+    "y": -23063,
+    "foot": 1595.3,
+    "side": "x+",
+    "local": [
+     538,
+     -138,
+     1.5
+    ],
+    "gap_cm": 1.5,
+    "buried_cm": 107.7
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_002",
+   "mesh": "SM_SilverbrookNorthridgeHouse4",
+   "points": 62,
+   "overhang_points": 6,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": -530,
+    "y": -26079,
+    "foot": 1808.9,
+    "side": "x-",
+    "local": [
+     -564,
+     -309,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 107.2
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_003",
+   "mesh": "SM_SilverbrookNorthridgeHouse2",
+   "points": 43,
+   "overhang_points": 11,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 3009,
+    "y": -26984,
+    "foot": 1853.9,
+    "side": "x-",
+    "local": [
+     -467,
+     -334,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.0
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_004",
+   "mesh": "SM_SilverbrookNorthridgeHouse1",
+   "points": 48,
+   "overhang_points": 2,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 98,
+    "y": -29765,
+    "foot": 2171.4,
+    "side": "x-",
+    "local": [
+     -482,
+     183,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 108.1
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_005",
+   "mesh": "SM_SilverbrookNorthridgeHouse2",
+   "points": 43,
+   "overhang_points": 11,
+   "min_buried_cm": 105.1,
+   "failures": 0,
+   "worst": {
+    "x": 3143,
+    "y": -30606,
+    "foot": 2164.0,
+    "side": "x-",
+    "local": [
+     -467,
+     -334,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 112.1
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_006",
+   "mesh": "SM_SilverbrookNorthridgeHouse1",
+   "points": 48,
+   "overhang_points": 2,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 165,
+    "y": -31576,
+    "foot": 2294.3,
+    "side": "x-",
+    "local": [
+     -482,
+     183,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 108.9
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_007",
+   "mesh": "SM_SilverbrookNorthridgeHouse3",
+   "points": 51,
+   "overhang_points": 3,
+   "min_buried_cm": 103.9,
+   "failures": 0,
+   "worst": {
+    "x": 3251,
+    "y": -32478,
+    "foot": 2323.4,
+    "side": "x-",
+    "local": [
+     -530,
+     -372,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 151.0
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_008",
+   "mesh": "SM_SilverbrookNorthridgeHouse6",
+   "points": 40,
+   "overhang_points": 8,
+   "min_buried_cm": 112.4,
+   "failures": 0,
+   "worst": {
+    "x": -244,
+    "y": -33413,
+    "foot": 2450.3,
+    "side": "x-",
+    "local": [
+     -473,
+     -293,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 113.4
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_009",
+   "mesh": "SM_SilverbrookNorthridgeHouse1",
+   "points": 48,
+   "overhang_points": 2,
+   "min_buried_cm": 103.6,
+   "failures": 0,
+   "worst": {
+    "x": 2761,
+    "y": -34261,
+    "foot": 2521.6,
+    "side": "x-",
+    "local": [
+     -482,
+     183,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 200.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_010",
+   "mesh": "SM_SilverbrookNorthridgeHouse5",
+   "points": 48,
+   "overhang_points": 11,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 15,
+    "y": -36232,
+    "foot": 2572.9,
+    "side": "x+",
+    "local": [
+     538,
+     -138,
+     1.5
+    ],
+    "gap_cm": 1.5,
+    "buried_cm": 122.0
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_011",
+   "mesh": "SM_SilverbrookNorthridgeHouse1",
+   "points": 48,
+   "overhang_points": 2,
+   "min_buried_cm": 103.3,
+   "failures": 0,
+   "worst": {
+    "x": 2827,
+    "y": -36072,
+    "foot": 2706.7,
+    "side": "x-",
+    "local": [
+     -482,
+     183,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 153.5
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_012",
+   "mesh": "SM_SilverbrookNorthridgeHouse3",
+   "points": 51,
+   "overhang_points": 3,
+   "min_buried_cm": 104.3,
+   "failures": 0,
+   "worst": {
+    "x": -192,
+    "y": -36980,
+    "foot": 2732.2,
+    "side": "x-",
+    "local": [
+     -530,
+     -372,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 106.7
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_013",
+   "mesh": "SM_SilverbrookNorthridgeHouse1",
+   "points": 48,
+   "overhang_points": 2,
+   "min_buried_cm": 103.7,
+   "failures": 0,
+   "worst": {
+    "x": 2894,
+    "y": -37883,
+    "foot": 2918.3,
+    "side": "x-",
+    "local": [
+     -482,
+     183,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 174.8
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_014",
+   "mesh": "SM_SilverbrookNorthridgeHouse4",
+   "points": 62,
+   "overhang_points": 6,
+   "min_buried_cm": 105.1,
+   "failures": 0,
+   "worst": {
+    "x": -63,
+    "y": -38755,
+    "foot": 2896.2,
+    "side": "x-",
+    "local": [
+     -564,
+     -309,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 108.8
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_015",
+   "mesh": "SM_SilverbrookNorthridgeHouse5",
+   "points": 48,
+   "overhang_points": 11,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 216,
+    "y": -41664,
+    "foot": 2979.1,
+    "side": "x+",
+    "local": [
+     538,
+     -138,
+     1.5
+    ],
+    "gap_cm": 1.5,
+    "buried_cm": 119.2
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_016",
+   "mesh": "SM_SilverbrookNorthridgeHouse4",
+   "points": 62,
+   "overhang_points": 6,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 3523,
+    "y": -41568,
+    "foot": 3172.7,
+    "side": "x-",
+    "local": [
+     -564,
+     -309,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.0
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_017",
+   "mesh": "SM_SilverbrookNorthridgeHouse5",
+   "points": 48,
+   "overhang_points": 11,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 282,
+    "y": -43475,
+    "foot": 3064.3,
+    "side": "x+",
+    "local": [
+     538,
+     -138,
+     1.5
+    ],
+    "gap_cm": 1.5,
+    "buried_cm": 128.7
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_018",
+   "mesh": "SM_SilverbrookNorthridgeHouse1",
+   "points": 48,
+   "overhang_points": 2,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 3095,
+    "y": -43315,
+    "foot": 3178.0,
+    "side": "x-",
+    "local": [
+     -482,
+     183,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.3
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_019",
+   "mesh": "SM_SilverbrookNorthridgeHouse2",
+   "points": 43,
+   "overhang_points": 11,
+   "min_buried_cm": 107.6,
+   "failures": 0,
+   "worst": {
+    "x": 116,
+    "y": -44285,
+    "foot": 3125.7,
+    "side": "x-",
+    "local": [
+     -467,
+     -334,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 109.0
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_020",
+   "mesh": "SM_SilverbrookNorthridgeHouse3",
+   "points": 51,
+   "overhang_points": 3,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 3719,
+    "y": -45154,
+    "foot": 3151.1,
+    "side": "x-",
+    "local": [
+     -530,
+     -372,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.0
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_021",
+   "mesh": "SM_SilverbrookNorthridgeHouse4",
+   "points": 62,
+   "overhang_points": 6,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 205,
+    "y": -45998,
+    "foot": 3250.1,
+    "side": "x-",
+    "local": [
+     -564,
+     -309,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 105.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_022",
+   "mesh": "SM_SilverbrookNorthridgeHouse2",
+   "points": 43,
+   "overhang_points": 11,
+   "min_buried_cm": 104.3,
+   "failures": 0,
+   "worst": {
+    "x": 3745,
+    "y": -46903,
+    "foot": 3225.6,
+    "side": "x-",
+    "local": [
+     -467,
+     -334,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 126.4
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_023",
+   "mesh": "SM_SilverbrookNorthridgeHouse6",
+   "points": 40,
+   "overhang_points": 8,
+   "min_buried_cm": 110.8,
+   "failures": 0,
+   "worst": {
+    "x": 23440,
+    "y": -37295,
+    "foot": 2658.7,
+    "side": "x-",
+    "local": [
+     -473,
+     -293,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 122.2
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_024",
+   "mesh": "SM_SilverbrookNorthridgeHouse1",
+   "points": 48,
+   "overhang_points": 2,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 20611,
+    "y": -37064,
+    "foot": 2629.5,
+    "side": "x-",
+    "local": [
+     -482,
+     183,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 114.0
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_025",
+   "mesh": "SM_SilverbrookNorthridgeHouse5",
+   "points": 48,
+   "overhang_points": 11,
+   "min_buried_cm": 102.8,
+   "failures": 0,
+   "worst": {
+    "x": 21544,
+    "y": -33477,
+    "foot": 2335.7,
+    "side": "x+",
+    "local": [
+     538,
+     -138,
+     1.5
+    ],
+    "gap_cm": 1.5,
+    "buried_cm": 102.9
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_026",
+   "mesh": "SM_SilverbrookNorthridgeHouse6",
+   "points": 40,
+   "overhang_points": 8,
+   "min_buried_cm": 108.3,
+   "failures": 0,
+   "worst": {
+    "x": 19287,
+    "y": -35442,
+    "foot": 2453.5,
+    "side": "x-",
+    "local": [
+     -473,
+     -293,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 116.4
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_027",
+   "mesh": "SM_SilverbrookNorthridgeHouse5",
+   "points": 48,
+   "overhang_points": 11,
+   "min_buried_cm": 102.4,
+   "failures": 0,
+   "worst": {
+    "x": 18974,
+    "y": -31089,
+    "foot": 2127.3,
+    "side": "x+",
+    "local": [
+     538,
+     -138,
+     1.5
+    ],
+    "gap_cm": 1.5,
+    "buried_cm": 103.3
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_028",
+   "mesh": "SM_SilverbrookNorthridgeHouse6",
+   "points": 40,
+   "overhang_points": 8,
+   "min_buried_cm": 104.4,
+   "failures": 0,
+   "worst": {
+    "x": 17387,
+    "y": -33626,
+    "foot": 2245.9,
+    "side": "x-",
+    "local": [
+     -473,
+     -293,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 108.8
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_029",
+   "mesh": "SM_SilverbrookNorthridgeHouse1",
+   "points": 48,
+   "overhang_points": 2,
+   "min_buried_cm": 102.5,
+   "failures": 0,
+   "worst": {
+    "x": 18139,
+    "y": -30925,
+    "foot": 2090.7,
+    "side": "x-",
+    "local": [
+     -482,
+     183,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 120.0
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_030",
+   "mesh": "SM_SilverbrookNorthridgeHouse3",
+   "points": 51,
+   "overhang_points": 3,
+   "min_buried_cm": 104.7,
+   "failures": 0,
+   "worst": {
+    "x": 15780,
+    "y": -32668,
+    "foot": 2204.9,
+    "side": "x-",
+    "local": [
+     -530,
+     -372,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 110.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_031",
+   "mesh": "SM_SilverbrookNorthridgeHouse4",
+   "points": 62,
+   "overhang_points": 6,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 16478,
+    "y": -29341,
+    "foot": 2006.9,
+    "side": "x-",
+    "local": [
+     -564,
+     -309,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 106.9
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_032",
+   "mesh": "SM_SilverbrookNorthridgeHouse5",
+   "points": 48,
+   "overhang_points": 11,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 13697,
+    "y": -28439,
+    "foot": 1992.2,
+    "side": "x+",
+    "local": [
+     538,
+     -138,
+     1.5
+    ],
+    "gap_cm": 1.5,
+    "buried_cm": 104.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_033",
+   "mesh": "SM_SilverbrookNorthridgeHouse3",
+   "points": 51,
+   "overhang_points": 3,
+   "min_buried_cm": 114.3,
+   "failures": 0,
+   "worst": {
+    "x": 12588,
+    "y": -31304,
+    "foot": 2204.1,
+    "side": "x-",
+    "local": [
+     -530,
+     -372,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 119.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_034",
+   "mesh": "SM_SilverbrookNorthridgeHouse4",
+   "points": 62,
+   "overhang_points": 6,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 12114,
+    "y": -27700,
+    "foot": 1973.4,
+    "side": "x-",
+    "local": [
+     -564,
+     -309,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.8
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_035",
+   "mesh": "SM_SilverbrookNorthridgeHouse5",
+   "points": 48,
+   "overhang_points": 11,
+   "min_buried_cm": 104.2,
+   "failures": 0,
+   "worst": {
+    "x": 11475,
+    "y": -30640,
+    "foot": 2160.5,
+    "side": "x+",
+    "local": [
+     538,
+     -138,
+     1.5
+    ],
+    "gap_cm": 1.5,
+    "buried_cm": 116.5
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_036",
+   "mesh": "SM_SilverbrookNorthridgeHouse6",
+   "points": 40,
+   "overhang_points": 8,
+   "min_buried_cm": 101.9,
+   "failures": 0,
+   "worst": {
+    "x": 10247,
+    "y": -27328,
+    "foot": 1971.9,
+    "side": "x-",
+    "local": [
+     -473,
+     -293,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 106.9
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_037",
+   "mesh": "SM_SilverbrookNorthridgeHouse4",
+   "points": 62,
+   "overhang_points": 6,
+   "min_buried_cm": 103.5,
+   "failures": 0,
+   "worst": {
+    "x": 8583,
+    "y": -30212,
+    "foot": 2163.1,
+    "side": "x-",
+    "local": [
+     -564,
+     -309,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 124.0
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_038",
+   "mesh": "SM_SilverbrookNorthridgeHouse1",
+   "points": 48,
+   "overhang_points": 2,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 6966,
+    "y": -27187,
+    "foot": 1896.9,
+    "side": "x-",
+    "local": [
+     -482,
+     183,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 106.3
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_039",
+   "mesh": "SM_SilverbrookNorthridgeHouse5",
+   "points": 48,
+   "overhang_points": 11,
+   "min_buried_cm": 103.8,
+   "failures": 0,
+   "worst": {
+    "x": 6878,
+    "y": -29702,
+    "foot": 2102.0,
+    "side": "x+",
+    "local": [
+     538,
+     -138,
+     1.5
+    ],
+    "gap_cm": 1.5,
+    "buried_cm": 104.1
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_040",
+   "mesh": "SM_SilverbrookNorthridgeHouse2",
+   "points": 43,
+   "overhang_points": 11,
+   "min_buried_cm": 104.8,
+   "failures": 0,
+   "worst": {
+    "x": 5173,
+    "y": -26566,
+    "foot": 1885.7,
+    "side": "x-",
+    "local": [
+     -467,
+     -334,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 115.7
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_041",
+   "mesh": "SM_SilverbrookNorthridgeHouse4",
+   "points": 62,
+   "overhang_points": 6,
+   "min_buried_cm": 102.6,
+   "failures": 0,
+   "worst": {
+    "x": 3955,
+    "y": -29705,
+    "foot": 2111.1,
+    "side": "x-",
+    "local": [
+     -564,
+     -309,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 145.7
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_042",
+   "mesh": "SM_SilverbrookNorthridgeHouse5",
+   "points": 48,
+   "overhang_points": 11,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": -3019,
+    "y": -26868,
+    "foot": 1912.9,
+    "side": "x+",
+    "local": [
+     538,
+     -138,
+     1.5
+    ],
+    "gap_cm": 1.5,
+    "buried_cm": 102.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_043",
+   "mesh": "SM_SilverbrookNorthridgeHouse6",
+   "points": 40,
+   "overhang_points": 8,
+   "min_buried_cm": 112.8,
+   "failures": 0,
+   "worst": {
+    "x": -2781,
+    "y": -29852,
+    "foot": 2170.9,
+    "side": "x-",
+    "local": [
+     -473,
+     -293,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 118.4
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_044",
+   "mesh": "SM_SilverbrookNorthridgeHouse5",
+   "points": 48,
+   "overhang_points": 11,
+   "min_buried_cm": 102.9,
+   "failures": 0,
+   "worst": {
+    "x": -4783,
+    "y": -27180,
+    "foot": 1954.9,
+    "side": "x+",
+    "local": [
+     538,
+     -138,
+     1.5
+    ],
+    "gap_cm": 1.5,
+    "buried_cm": 124.3
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_045",
+   "mesh": "SM_SilverbrookNorthridgeHouse1",
+   "points": 48,
+   "overhang_points": 2,
+   "min_buried_cm": 103.4,
+   "failures": 0,
+   "worst": {
+    "x": -5489,
+    "y": -27656,
+    "foot": 2014.6,
+    "side": "x-",
+    "local": [
+     -482,
+     183,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.9
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_046",
+   "mesh": "SM_SilverbrookNorthridgeHouse5",
+   "points": 48,
+   "overhang_points": 11,
+   "min_buried_cm": 107.0,
+   "failures": 0,
+   "worst": {
+    "x": -4921,
+    "y": -30108,
+    "foot": 2232.0,
+    "side": "x+",
+    "local": [
+     538,
+     -138,
+     1.5
+    ],
+    "gap_cm": 1.5,
+    "buried_cm": 112.1
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_047",
+   "mesh": "SM_SilverbrookNorthridgeHouse6",
+   "points": 40,
+   "overhang_points": 8,
+   "min_buried_cm": 102.7,
+   "failures": 0,
+   "worst": {
+    "x": -8857,
+    "y": -27945,
+    "foot": 1983.5,
+    "side": "x-",
+    "local": [
+     -473,
+     -293,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.5
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_048",
+   "mesh": "SM_SilverbrookNorthridgeHouse2",
+   "points": 43,
+   "overhang_points": 11,
+   "min_buried_cm": 102.7,
+   "failures": 0,
+   "worst": {
+    "x": -8578,
+    "y": -31259,
+    "foot": 2266.0,
+    "side": "x-",
+    "local": [
+     -467,
+     -334,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 122.1
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_049",
+   "mesh": "SM_SilverbrookNorthridgeHouse6",
+   "points": 40,
+   "overhang_points": 8,
+   "min_buried_cm": 104.4,
+   "failures": 0,
+   "worst": {
+    "x": -10545,
+    "y": -28604,
+    "foot": 2011.9,
+    "side": "x-",
+    "local": [
+     -473,
+     -293,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.4
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_050",
+   "mesh": "SM_SilverbrookNorthridgeHouse1",
+   "points": 48,
+   "overhang_points": 2,
+   "min_buried_cm": 104.1,
+   "failures": 0,
+   "worst": {
+    "x": -10467,
+    "y": -31441,
+    "foot": 2363.6,
+    "side": "x-",
+    "local": [
+     -482,
+     183,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 131.5
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_051",
+   "mesh": "SM_SilverbrookNorthridgeHouse5",
+   "points": 48,
+   "overhang_points": 11,
+   "min_buried_cm": 103.9,
+   "failures": 0,
+   "worst": {
+    "x": -13983,
+    "y": -30439,
+    "foot": 1995.8,
+    "side": "x+",
+    "local": [
+     538,
+     -138,
+     1.5
+    ],
+    "gap_cm": 1.5,
+    "buried_cm": 109.5
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_052",
+   "mesh": "SM_SilverbrookNorthridgeHouse6",
+   "points": 40,
+   "overhang_points": 8,
+   "min_buried_cm": 111.6,
+   "failures": 0,
+   "worst": {
+    "x": -12287,
+    "y": -32905,
+    "foot": 2303.9,
+    "side": "x-",
+    "local": [
+     -473,
+     -293,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 124.0
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_053",
+   "mesh": "SM_SilverbrookNorthridgeHouse1",
+   "points": 48,
+   "overhang_points": 2,
+   "min_buried_cm": 102.4,
+   "failures": 0,
+   "worst": {
+    "x": -14466,
+    "y": -31140,
+    "foot": 2005.8,
+    "side": "x-",
+    "local": [
+     -482,
+     183,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.5
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_054",
+   "mesh": "SM_SilverbrookNorthridgeHouse2",
+   "points": 43,
+   "overhang_points": 11,
+   "min_buried_cm": 103.8,
+   "failures": 0,
+   "worst": {
+    "x": -13774,
+    "y": -33930,
+    "foot": 2279.2,
+    "side": "x-",
+    "local": [
+     -467,
+     -334,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 119.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_055",
+   "mesh": "SM_SilverbrookNorthridgeHouse4",
+   "points": 62,
+   "overhang_points": 6,
+   "min_buried_cm": 102.7,
+   "failures": 0,
+   "worst": {
+    "x": -16659,
+    "y": -32148,
+    "foot": 2107.5,
+    "side": "x-",
+    "local": [
+     -564,
+     -309,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.7
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_056",
+   "mesh": "SM_SilverbrookNorthridgeHouse2",
+   "points": 43,
+   "overhang_points": 11,
+   "min_buried_cm": 106.4,
+   "failures": 0,
+   "worst": {
+    "x": -18940,
+    "y": -35281,
+    "foot": 2322.3,
+    "side": "x-",
+    "local": [
+     -467,
+     -334,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 106.4
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_057",
+   "mesh": "SM_SilverbrookNorthridgeHouse6",
+   "points": 40,
+   "overhang_points": 8,
+   "min_buried_cm": 108.3,
+   "failures": 0,
+   "worst": {
+    "x": -16107,
+    "y": -37022,
+    "foot": 2443.3,
+    "side": "x-",
+    "local": [
+     -473,
+     -293,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 113.4
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_058",
+   "mesh": "SM_SilverbrookNorthridgeHouse3",
+   "points": 51,
+   "overhang_points": 3,
+   "min_buried_cm": 102.9,
+   "failures": 0,
+   "worst": {
+    "x": -19532,
+    "y": -38670,
+    "foot": 2539.4,
+    "side": "x-",
+    "local": [
+     -530,
+     -372,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 106.3
+   },
+   "failed": []
+  },
+  {
+   "house": "Northridge_elite_house_059",
+   "mesh": "SM_SilverbrookNorthridgeHouse1",
+   "points": 48,
+   "overhang_points": 2,
+   "min_buried_cm": 105.0,
+   "failures": 0,
+   "worst": {
+    "x": -16611,
+    "y": -38936,
+    "foot": 2527.7,
+    "side": "x-",
+    "local": [
+     -482,
+     183,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 135.7
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_000",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": -1252,
+    "y": -5955,
+    "foot": 1170.0,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_001",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 1088,
+    "y": -6334,
+    "foot": 1226.0,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 127.9
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_002",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 103.1,
+   "failures": 0,
+   "worst": {
+    "x": -1183,
+    "y": -7266,
+    "foot": 1504.4,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 110.0
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_003",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 109.1,
+   "failures": 0,
+   "worst": {
+    "x": 1184,
+    "y": -7176,
+    "foot": 1433.2,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 110.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_004",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 106.7,
+   "failures": 0,
+   "worst": {
+    "x": -1161,
+    "y": -8583,
+    "foot": 1659.4,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 118.6
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_005",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 103.7,
+   "failures": 0,
+   "worst": {
+    "x": 1738,
+    "y": -8957,
+    "foot": 1663.6,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 193.2
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_006",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 118.3,
+   "failures": 0,
+   "worst": {
+    "x": -576,
+    "y": -10375,
+    "foot": 1787.6,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 155.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_007",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 103.7,
+   "failures": 0,
+   "worst": {
+    "x": 1838,
+    "y": -10279,
+    "foot": 1800.4,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 168.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_008",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.6,
+   "failures": 0,
+   "worst": {
+    "x": 1364,
+    "y": -11579,
+    "foot": 1820.1,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.3
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_009",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": -838,
+    "y": -13822,
+    "foot": 1900.3,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 106.4
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_010",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.3,
+   "failures": 0,
+   "worst": {
+    "x": 2045,
+    "y": -14213,
+    "foot": 1906.8,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 137.9
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_011",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 102.9,
+   "failures": 0,
+   "worst": {
+    "x": -300,
+    "y": -15620,
+    "foot": 1881.1,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 103.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_012",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 104.0,
+   "failures": 0,
+   "worst": {
+    "x": 1571,
+    "y": -15512,
+    "foot": 1881.9,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 114.8
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_013",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": -3192,
+    "y": -2485,
+    "foot": 1191.1,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_014",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": -2955,
+    "y": -4889,
+    "foot": 1202.7,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 127.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_015",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 106.1,
+   "failures": 0,
+   "worst": {
+    "x": -4394,
+    "y": -2897,
+    "foot": 1453.9,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 137.0
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_016",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 111.7,
+   "failures": 0,
+   "worst": {
+    "x": -4207,
+    "y": -5285,
+    "foot": 1464.4,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 203.9
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_017",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 104.0,
+   "failures": 0,
+   "worst": {
+    "x": -5699,
+    "y": -3309,
+    "foot": 1567.4,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.0
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_018",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 106.0,
+   "failures": 0,
+   "worst": {
+    "x": -5384,
+    "y": -6192,
+    "foot": 1712.0,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 244.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_019",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 103.6,
+   "failures": 0,
+   "worst": {
+    "x": -6948,
+    "y": -3671,
+    "foot": 1651.3,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 112.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_020",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 103.2,
+   "failures": 0,
+   "worst": {
+    "x": -8075,
+    "y": -4595,
+    "foot": 1711.4,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 111.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_021",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.9,
+   "failures": 0,
+   "worst": {
+    "x": -7855,
+    "y": -6956,
+    "foot": 1776.4,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 128.0
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_022",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 106.2,
+   "failures": 0,
+   "worst": {
+    "x": -9402,
+    "y": -4479,
+    "foot": 1790.8,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 122.4
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_023",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": -9107,
+    "y": -7351,
+    "foot": 1820.0,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 123.0
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_024",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": -11956,
+    "y": -5254,
+    "foot": 1833.5,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.4
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_025",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": -11591,
+    "y": -8154,
+    "foot": 1825.9,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.0
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_026",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": -13158,
+    "y": -5666,
+    "foot": 1846.1,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.2
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_027",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": -12846,
+    "y": -8582,
+    "foot": 1822.8,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.4
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_028",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 103.4,
+   "failures": 0,
+   "worst": {
+    "x": -14335,
+    "y": -6573,
+    "foot": 1870.9,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.8
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_029",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": -14095,
+    "y": -8945,
+    "foot": 1833.7,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 107.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_030",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": -15712,
+    "y": -6440,
+    "foot": 1875.6,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.3
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_031",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": -18219,
+    "y": -7264,
+    "foot": 1925.5,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.0
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_032",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 102.6,
+   "failures": 0,
+   "worst": {
+    "x": -17518,
+    "y": -9544,
+    "foot": 1915.4,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 102.9
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_033",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.5,
+   "failures": 0,
+   "worst": {
+    "x": -19468,
+    "y": -7627,
+    "foot": 1989.5,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 107.3
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_034",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 103.0,
+   "failures": 0,
+   "worst": {
+    "x": -19123,
+    "y": -10516,
+    "foot": 1959.1,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 123.4
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_035",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.4,
+   "failures": 0,
+   "worst": {
+    "x": -20595,
+    "y": -8551,
+    "foot": 2022.2,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.3
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_036",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 103.2,
+   "failures": 0,
+   "worst": {
+    "x": -20375,
+    "y": -10911,
+    "foot": 2014.9,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 126.7
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_037",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 103.3,
+   "failures": 0,
+   "worst": {
+    "x": -21847,
+    "y": -8946,
+    "foot": 2067.1,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_038",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 102.5,
+   "failures": 0,
+   "worst": {
+    "x": -21274,
+    "y": -10731,
+    "foot": 2044.2,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 103.6
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_039",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.3,
+   "failures": 0,
+   "worst": {
+    "x": -23099,
+    "y": -9342,
+    "foot": 2104.6,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 107.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_040",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": -22859,
+    "y": -11714,
+    "foot": 2101.6,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 126.9
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_041",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 103.3,
+   "failures": 0,
+   "worst": {
+    "x": -24351,
+    "y": -9737,
+    "foot": 2148.8,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.2
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_042",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.6,
+   "failures": 0,
+   "worst": {
+    "x": -24112,
+    "y": -12109,
+    "foot": 2136.6,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 116.0
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_043",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": -25678,
+    "y": -9621,
+    "foot": 2147.9,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_044",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 2851,
+    "y": -5080,
+    "foot": 1199.8,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 120.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_045",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 107.8,
+   "failures": 0,
+   "worst": {
+    "x": 3460,
+    "y": -5794,
+    "foot": 1439.5,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 129.6
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_046",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 102.5,
+   "failures": 0,
+   "worst": {
+    "x": 4304,
+    "y": -3563,
+    "foot": 1535.9,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 108.8
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_047",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 113.1,
+   "failures": 0,
+   "worst": {
+    "x": 4895,
+    "y": -5780,
+    "foot": 1652.1,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 116.7
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_048",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 110.1,
+   "failures": 0,
+   "worst": {
+    "x": 6211,
+    "y": -3778,
+    "foot": 1625.7,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 175.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_049",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 105.0,
+   "failures": 0,
+   "worst": {
+    "x": 7413,
+    "y": -4189,
+    "foot": 1668.1,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 137.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_050",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 104.3,
+   "failures": 0,
+   "worst": {
+    "x": 7999,
+    "y": -4928,
+    "foot": 1718.2,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 107.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_051",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 106.1,
+   "failures": 0,
+   "worst": {
+    "x": 8590,
+    "y": -7145,
+    "foot": 1849.3,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 111.6
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_052",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 103.6,
+   "failures": 0,
+   "worst": {
+    "x": 9854,
+    "y": -5124,
+    "foot": 1784.1,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 146.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_053",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 103.9,
+   "failures": 0,
+   "worst": {
+    "x": 10798,
+    "y": -8505,
+    "foot": 1913.0,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 114.7
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_054",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.5,
+   "failures": 0,
+   "worst": {
+    "x": 12326,
+    "y": -6055,
+    "foot": 1847.0,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 107.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_055",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 102.4,
+   "failures": 0,
+   "worst": {
+    "x": 12705,
+    "y": -8720,
+    "foot": 1912.9,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 104.3
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_056",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.8,
+   "failures": 0,
+   "worst": {
+    "x": 13558,
+    "y": -6510,
+    "foot": 1875.4,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 116.3
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_057",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.6,
+   "failures": 0,
+   "worst": {
+    "x": 13516,
+    "y": -8965,
+    "foot": 1919.5,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.7
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_058",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 102.7,
+   "failures": 0,
+   "worst": {
+    "x": 14157,
+    "y": -7203,
+    "foot": 1898.8,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 105.7
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_059",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 14523,
+    "y": -9913,
+    "foot": 1926.1,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 105.3
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_060",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 16064,
+    "y": -7418,
+    "foot": 1891.4,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.9
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_061",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.5,
+   "failures": 0,
+   "worst": {
+    "x": 15768,
+    "y": -10323,
+    "foot": 1919.1,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 118.8
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_062",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 17041,
+    "y": -8323,
+    "foot": 1869.7,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.2
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_063",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 103.0,
+   "failures": 0,
+   "worst": {
+    "x": 16999,
+    "y": -10778,
+    "foot": 1876.4,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 123.8
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_064",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 18476,
+    "y": -8309,
+    "foot": 1838.7,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_065",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 20095,
+    "y": -11449,
+    "foot": 1783.2,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 102.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_066",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 104.4,
+   "failures": 0,
+   "worst": {
+    "x": 20681,
+    "y": -12188,
+    "foot": 1752.3,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 129.3
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_067",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 21547,
+    "y": -9933,
+    "foot": 1730.2,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 106.4
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_068",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.3,
+   "failures": 0,
+   "worst": {
+    "x": 21883,
+    "y": -12599,
+    "foot": 1655.3,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 136.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_069",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.3,
+   "failures": 0,
+   "worst": {
+    "x": 23411,
+    "y": -10149,
+    "foot": 1712.1,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 107.3
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_070",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 102.5,
+   "failures": 0,
+   "worst": {
+    "x": 23790,
+    "y": -12814,
+    "foot": 1598.9,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 102.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_071",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.5,
+   "failures": 0,
+   "worst": {
+    "x": 24634,
+    "y": -10583,
+    "foot": 1649.4,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 111.6
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_072",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 1875,
+    "y": -366,
+    "foot": 1184.6,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_073",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": -868,
+    "y": 604,
+    "foot": 1177.9,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.0
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_074",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 107.1,
+   "failures": 0,
+   "worst": {
+    "x": 1668,
+    "y": 1507,
+    "foot": 1393.2,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 177.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_075",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 107.6,
+   "failures": 0,
+   "worst": {
+    "x": -186,
+    "y": 1784,
+    "foot": 1379.3,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 207.4
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_076",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.5,
+   "failures": 0,
+   "worst": {
+    "x": 2227,
+    "y": 2233,
+    "foot": 1549.6,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_077",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 104.9,
+   "failures": 0,
+   "worst": {
+    "x": 13,
+    "y": 3081,
+    "foot": 1462.1,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 141.0
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_078",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.9,
+   "failures": 0,
+   "worst": {
+    "x": 2474,
+    "y": 3527,
+    "foot": 1588.2,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 122.4
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_079",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 106.1,
+   "failures": 0,
+   "worst": {
+    "x": 91,
+    "y": 3925,
+    "foot": 1587.5,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 106.3
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_080",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 108.1,
+   "failures": 0,
+   "worst": {
+    "x": 2145,
+    "y": 4947,
+    "foot": 1643.9,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 108.6
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_081",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 105.3,
+   "failures": 0,
+   "worst": {
+    "x": -79,
+    "y": 5836,
+    "foot": 1643.5,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 139.8
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_082",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 3073,
+    "y": 7420,
+    "foot": 1572.5,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.0
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_083",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 812,
+    "y": 8272,
+    "foot": 1587.6,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.9
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_084",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 103.8,
+   "failures": 0,
+   "worst": {
+    "x": 2866,
+    "y": 9294,
+    "foot": 1556.7,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 103.9
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_085",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.7,
+   "failures": 0,
+   "worst": {
+    "x": 1012,
+    "y": 9570,
+    "foot": 1566.6,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.6
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_086",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 103.0,
+   "failures": 0,
+   "worst": {
+    "x": 3422,
+    "y": 10275,
+    "foot": 1488.2,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 109.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_087",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 102.6,
+   "failures": 0,
+   "worst": {
+    "x": 2963,
+    "y": 12082,
+    "foot": 1422.5,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 104.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_088",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 104.4,
+   "failures": 0,
+   "worst": {
+    "x": 1088,
+    "y": 12074,
+    "foot": 1429.1,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.4
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_089",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 103.2,
+   "failures": 0,
+   "worst": {
+    "x": 3422,
+    "y": 14214,
+    "foot": 1198.5,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 109.7
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_090",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 103.3,
+   "failures": 0,
+   "worst": {
+    "x": 1037,
+    "y": 14233,
+    "foot": 1220.5,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 117.9
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_091",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 12745,
+    "y": -2535,
+    "foot": 1705.0,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.4
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_092",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 10133,
+    "y": -2405,
+    "foot": 1736.0,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 110.7
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_093",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.4,
+   "failures": 0,
+   "worst": {
+    "x": 12505,
+    "y": -1231,
+    "foot": 1692.8,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 117.6
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_094",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.9,
+   "failures": 0,
+   "worst": {
+    "x": 10420,
+    "y": -1073,
+    "foot": 1719.5,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_095",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 12140,
+    "y": 265,
+    "foot": 1643.7,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.7
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_096",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 11561,
+    "y": 1492,
+    "foot": 1648.4,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_097",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.6,
+   "failures": 0,
+   "worst": {
+    "x": 9492,
+    "y": 1014,
+    "foot": 1670.4,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.3
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_098",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 10733,
+    "y": 2775,
+    "foot": 1660.8,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.2
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_099",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 9860,
+    "y": 3739,
+    "foot": 1660.9,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.7
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_100",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 7630,
+    "y": 2347,
+    "foot": 1671.3,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.3
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_101",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 8592,
+    "y": 4935,
+    "foot": 1648.8,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.9
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_102",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 7465,
+    "y": 5633,
+    "foot": 1634.1,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 108.8
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_103",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 5599,
+    "y": 3813,
+    "foot": 1629.1,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_104",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 5771,
+    "y": 6019,
+    "foot": 1602.9,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 108.7
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_105",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 103.0,
+   "failures": 0,
+   "worst": {
+    "x": 4785,
+    "y": 6913,
+    "foot": 1604.1,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.0
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_106",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 3384,
+    "y": 4730,
+    "foot": 1646.9,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.7
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_107",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.5,
+   "failures": 0,
+   "worst": {
+    "x": -377,
+    "y": 7228,
+    "foot": 1653.3,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 113.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_108",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.9,
+   "failures": 0,
+   "worst": {
+    "x": -1706,
+    "y": 7608,
+    "foot": 1692.1,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.9
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_109",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 103.0,
+   "failures": 0,
+   "worst": {
+    "x": -1518,
+    "y": 5531,
+    "foot": 1709.1,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 103.0
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_110",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": -3679,
+    "y": 7287,
+    "foot": 1721.9,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.6
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_111",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.4,
+   "failures": 0,
+   "worst": {
+    "x": -3449,
+    "y": 5222,
+    "foot": 1718.1,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 107.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_112",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.3,
+   "failures": 0,
+   "worst": {
+    "x": -4910,
+    "y": 6831,
+    "foot": 1740.9,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.8
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_113",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 103.1,
+   "failures": 0,
+   "worst": {
+    "x": -4680,
+    "y": 4766,
+    "foot": 1713.3,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 113.6
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_114",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": -6607,
+    "y": 6133,
+    "foot": 1778.9,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.8
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_115",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": -7726,
+    "y": 5470,
+    "foot": 1779.0,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 108.7
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_116",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.6,
+   "failures": 0,
+   "worst": {
+    "x": -9212,
+    "y": 4377,
+    "foot": 1758.5,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 115.0
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_117",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 103.5,
+   "failures": 0,
+   "worst": {
+    "x": -7713,
+    "y": 2927,
+    "foot": 1687.7,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 131.0
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_118",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.8,
+   "failures": 0,
+   "worst": {
+    "x": -10078,
+    "y": 3465,
+    "foot": 1773.4,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 105.6
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_119",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.9,
+   "failures": 0,
+   "worst": {
+    "x": -8976,
+    "y": 1672,
+    "foot": 1696.0,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 113.2
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_120",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": -11261,
+    "y": 2023,
+    "foot": 1812.4,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 107.9
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_121",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 104.3,
+   "failures": 0,
+   "worst": {
+    "x": -11658,
+    "y": 201,
+    "foot": 1832.4,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 114.6
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_122",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": -9780,
+    "y": -773,
+    "foot": 1784.1,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.6
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_123",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": -12381,
+    "y": -558,
+    "foot": 1845.7,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 106.0
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_124",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 103.4,
+   "failures": 0,
+   "worst": {
+    "x": -12107,
+    "y": -1975,
+    "foot": 1839.0,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 108.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_125",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": -10185,
+    "y": -2830,
+    "foot": 1799.8,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_126",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": -12745,
+    "y": -3465,
+    "foot": 1823.3,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_127",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 103.5,
+   "failures": 0,
+   "worst": {
+    "x": -10325,
+    "y": -8552,
+    "foot": 1878.6,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_128",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 103.1,
+   "failures": 0,
+   "worst": {
+    "x": -9807,
+    "y": -9835,
+    "foot": 1913.2,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 110.4
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_129",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 103.0,
+   "failures": 0,
+   "worst": {
+    "x": -7615,
+    "y": -8386,
+    "foot": 1860.3,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 109.8
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_130",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.6,
+   "failures": 0,
+   "worst": {
+    "x": -8263,
+    "y": -10503,
+    "foot": 1919.5,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.7
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_131",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": -7511,
+    "y": -11603,
+    "foot": 1915.4,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 108.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_132",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": -5641,
+    "y": -9805,
+    "foot": 1924.0,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 105.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_133",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": -5771,
+    "y": -12019,
+    "foot": 1903.6,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 106.0
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_134",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": -4755,
+    "y": -12957,
+    "foot": 1908.1,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.1
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_135",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": -3384,
+    "y": -10730,
+    "foot": 1906.3,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.7
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_136",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": -2869,
+    "y": -13523,
+    "foot": 1894.9,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.9
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_137",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.7,
+   "failures": 0,
+   "worst": {
+    "x": -2075,
+    "y": -11031,
+    "foot": 1888.8,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.7
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_138",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.3,
+   "failures": 0,
+   "worst": {
+    "x": 3635,
+    "y": -13324,
+    "foot": 1879.3,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 116.8
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_139",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 3316,
+    "y": -10704,
+    "foot": 1825.4,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.4
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_140",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.3,
+   "failures": 0,
+   "worst": {
+    "x": 4903,
+    "y": -12854,
+    "foot": 1883.4,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 113.9
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_141",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 4240,
+    "y": -10894,
+    "foot": 1832.7,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 106.3
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_142",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 6725,
+    "y": -12116,
+    "foot": 1878.8,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 108.2
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_143",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 5812,
+    "y": -9674,
+    "foot": 1850.7,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 108.9
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_144",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.3,
+   "failures": 0,
+   "worst": {
+    "x": 7569,
+    "y": -10955,
+    "foot": 1879.1,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.3
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_145",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 103.7,
+   "failures": 0,
+   "worst": {
+    "x": 6911,
+    "y": -8956,
+    "foot": 1843.2,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 105.5
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_146",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.6,
+   "failures": 0,
+   "worst": {
+    "x": 9207,
+    "y": -10436,
+    "foot": 1909.6,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 114.9
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_147",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 10100,
+    "y": -9476,
+    "foot": 1915.7,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 109.2
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_148",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 102.5,
+   "failures": 0,
+   "worst": {
+    "x": 12232,
+    "y": -3572,
+    "foot": 1739.5,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 103.8
+   },
+   "failed": []
+  },
+  {
+   "house": "TheCommons_townhouse_149",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 23906,
+    "y": -1510,
+    "foot": 1712.3,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.7
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_000",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 103.5,
+   "failures": 0,
+   "worst": {
+    "x": 3434,
+    "y": 20621,
+    "foot": 850.7,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 112.1
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_001",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 606,
+    "y": 21399,
+    "foot": 816.3,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.4
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_002",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 3528,
+    "y": 21986,
+    "foot": 842.1,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 105.0
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_003",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.3,
+   "failures": 0,
+   "worst": {
+    "x": 696,
+    "y": 22709,
+    "foot": 834.5,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 111.4
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_004",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 3601,
+    "y": 23282,
+    "foot": 830.5,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 113.3
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_005",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 103.8,
+   "failures": 0,
+   "worst": {
+    "x": 1240,
+    "y": 23479,
+    "foot": 864.7,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 104.0
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_006",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 3705,
+    "y": 24551,
+    "foot": 809.1,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.7
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_007",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 105.6,
+   "failures": 0,
+   "worst": {
+    "x": 1414,
+    "y": 25251,
+    "foot": 890.3,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 113.5
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_008",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 3799,
+    "y": 25916,
+    "foot": 787.1,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 112.1
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_009",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.4,
+   "failures": 0,
+   "worst": {
+    "x": 1001,
+    "y": 26679,
+    "foot": 858.4,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 117.9
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_010",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.9,
+   "failures": 0,
+   "worst": {
+    "x": 3382,
+    "y": 27289,
+    "foot": 770.5,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 115.2
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_011",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.5,
+   "failures": 0,
+   "worst": {
+    "x": 1087,
+    "y": 27934,
+    "foot": 813.3,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 105.2
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_012",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 3976,
+    "y": 28481,
+    "foot": 733.6,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 107.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_013",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 1148,
+    "y": 29258,
+    "foot": 781.8,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.2
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_014",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 4070,
+    "y": 29846,
+    "foot": 725.8,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 105.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_015",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 1238,
+    "y": 30568,
+    "foot": 732.0,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.3
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_016",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 103.4,
+   "failures": 0,
+   "worst": {
+    "x": 3736,
+    "y": 31681,
+    "foot": 720.4,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 103.5
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_017",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 103.2,
+   "failures": 0,
+   "worst": {
+    "x": 1866,
+    "y": 31801,
+    "foot": 709.1,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.3
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_018",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.4,
+   "failures": 0,
+   "worst": {
+    "x": 4251,
+    "y": 32465,
+    "foot": 666.2,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 115.2
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_019",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.6,
+   "failures": 0,
+   "worst": {
+    "x": 1796,
+    "y": 38551,
+    "foot": 804.9,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.5
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_020",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 4681,
+    "y": 39117,
+    "foot": 762.2,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.3
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_021",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 105.5,
+   "failures": 0,
+   "worst": {
+    "x": 1877,
+    "y": 39862,
+    "foot": 864.3,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 137.0
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_022",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 103.6,
+   "failures": 0,
+   "worst": {
+    "x": 4792,
+    "y": 40414,
+    "foot": 785.9,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.8
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_023",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.7,
+   "failures": 0,
+   "worst": {
+    "x": 1955,
+    "y": 41117,
+    "foot": 913.3,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 124.3
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_024",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 103.3,
+   "failures": 0,
+   "worst": {
+    "x": 2040,
+    "y": 42483,
+    "foot": 945.5,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 123.3
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_025",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 105.1,
+   "failures": 0,
+   "worst": {
+    "x": 4955,
+    "y": 43035,
+    "foot": 844.4,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 105.9
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_026",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 104.5,
+   "failures": 0,
+   "worst": {
+    "x": 2122,
+    "y": 43793,
+    "foot": 954.6,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 114.8
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_027",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 4499,
+    "y": 44419,
+    "foot": 855.9,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 120.9
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_028",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 2199,
+    "y": 45048,
+    "foot": 969.2,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 106.9
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_029",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.4,
+   "failures": 0,
+   "worst": {
+    "x": 5118,
+    "y": 45656,
+    "foot": 829.8,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 112.8
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_030",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 104.9,
+   "failures": 0,
+   "worst": {
+    "x": 2789,
+    "y": 46299,
+    "foot": 951.2,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 108.9
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_031",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 5166,
+    "y": 46925,
+    "foot": 748.1,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 124.9
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_032",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.6,
+   "failures": 0,
+   "worst": {
+    "x": 2380,
+    "y": 47684,
+    "foot": 887.7,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 111.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_033",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 103.2,
+   "failures": 0,
+   "worst": {
+    "x": 4823,
+    "y": 48813,
+    "foot": 686.7,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 103.5
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_034",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 111.2,
+   "failures": 0,
+   "worst": {
+    "x": 2952,
+    "y": 48920,
+    "foot": 805.4,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 112.0
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_035",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 102.3,
+   "failures": 0,
+   "worst": {
+    "x": 6333,
+    "y": 41899,
+    "foot": 742.1,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 105.5
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_036",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 111.4,
+   "failures": 0,
+   "worst": {
+    "x": 7118,
+    "y": 42219,
+    "foot": 711.8,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 135.3
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_037",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 6927,
+    "y": 44334,
+    "foot": 727.3,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 106.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_038",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.7,
+   "failures": 0,
+   "worst": {
+    "x": 8189,
+    "y": 44712,
+    "foot": 721.2,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 111.7
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_039",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 9699,
+    "y": 50091,
+    "foot": 685.9,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.1
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_040",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.3,
+   "failures": 0,
+   "worst": {
+    "x": 8350,
+    "y": 50323,
+    "foot": 680.4,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 107.2
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_041",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 102.3,
+   "failures": 0,
+   "worst": {
+    "x": 7979,
+    "y": 48271,
+    "foot": 687.4,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 102.4
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_042",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 7056,
+    "y": 50545,
+    "foot": 645.3,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 111.8
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_043",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.4,
+   "failures": 0,
+   "worst": {
+    "x": 6065,
+    "y": 48133,
+    "foot": 678.2,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 122.9
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_044",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 101.7,
+   "failures": 0,
+   "worst": {
+    "x": 5649,
+    "y": 50268,
+    "foot": 626.5,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 118.8
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_045",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.5,
+   "failures": 0,
+   "worst": {
+    "x": 1934,
+    "y": 51424,
+    "foot": 823.6,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 107.4
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_046",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 107.2,
+   "failures": 0,
+   "worst": {
+    "x": 1057,
+    "y": 49511,
+    "foot": 847.2,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 127.2
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_047",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.6,
+   "failures": 0,
+   "worst": {
+    "x": -800,
+    "y": 49096,
+    "foot": 1000.2,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 121.5
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_048",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.3,
+   "failures": 0,
+   "worst": {
+    "x": -2037,
+    "y": 48869,
+    "foot": 1100.0,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 139.5
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_049",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 104.8,
+   "failures": 0,
+   "worst": {
+    "x": -2925,
+    "y": 49173,
+    "foot": 1223.6,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 105.5
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_050",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.9,
+   "failures": 0,
+   "worst": {
+    "x": -4685,
+    "y": 48902,
+    "foot": 1281.3,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 131.2
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_051",
+   "mesh": "SM_SilverbrookTownhouse3",
+   "points": 41,
+   "overhang_points": 3,
+   "min_buried_cm": 102.4,
+   "failures": 0,
+   "worst": {
+    "x": -5965,
+    "y": 48148,
+    "foot": 1348.4,
+    "side": "x-",
+    "local": [
+     -310,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 131.1
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_052",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.5,
+   "failures": 0,
+   "worst": {
+    "x": -7209,
+    "y": 47888,
+    "foot": 1394.3,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 123.1
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_053",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.3,
+   "failures": 0,
+   "worst": {
+    "x": -8559,
+    "y": 48190,
+    "foot": 1412.7,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 109.3
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_054",
+   "mesh": "SM_SilverbrookTownhouse2",
+   "points": 38,
+   "overhang_points": 4,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": -10048,
+    "y": 47204,
+    "foot": 1401.7,
+    "side": "x-",
+    "local": [
+     -255,
+     -241,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.7
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_055",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 103.1,
+   "failures": 0,
+   "worst": {
+    "x": -12210,
+    "y": 48365,
+    "foot": 1429.2,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 103.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_056",
+   "mesh": "SM_SilverbrookTownhouse1",
+   "points": 39,
+   "overhang_points": 5,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": -11417,
+    "y": 47005,
+    "foot": 1415.9,
+    "side": "y+",
+    "local": [
+     268,
+     -229,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 109.9
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_057",
+   "mesh": "SM_SilverbrookTownhouse4",
+   "points": 36,
+   "overhang_points": 4,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": -12319,
+    "y": 45860,
+    "foot": 1437.5,
+    "side": "x-",
+    "local": [
+     -267,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 110.7
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_058",
+   "mesh": "SM_SilverbrookTownhouse5",
+   "points": 39,
+   "overhang_points": 1,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": -13483,
+    "y": 45244,
+    "foot": 1458.1,
+    "side": "x-",
+    "local": [
+     -270,
+     -224,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 112.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Riverside_townhouse_059",
+   "mesh": "SM_SilverbrookTownhouse6",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 102.4,
+   "failures": 0,
+   "worst": {
+    "x": -14399,
+    "y": 45227,
+    "foot": 1484.1,
+    "side": "x+",
+    "local": [
+     236,
+     218,
+     1.0
+    ],
+    "gap_cm": 1.0,
+    "buried_cm": 103.9
+   },
+   "failed": []
+  },
+  {
+   "house": "Westfields_farmhouse_000",
+   "mesh": "SM_SilverbrookFarmhouse",
+   "points": 45,
+   "overhang_points": 1,
+   "min_buried_cm": 102.3,
+   "failures": 0,
+   "worst": {
+    "x": -47260,
+    "y": -7838,
+    "foot": 2094.1,
+    "side": "x-",
+    "local": [
+     -538,
+     -277,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Westfields_farmhouse_001",
+   "mesh": "SM_SilverbrookFarmhouse",
+   "points": 45,
+   "overhang_points": 1,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": -45254,
+    "y": -5151,
+    "foot": 2148.1,
+    "side": "x-",
+    "local": [
+     -538,
+     -277,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.8
+   },
+   "failed": []
+  },
+  {
+   "house": "Westfields_farmhouse_002",
+   "mesh": "SM_SilverbrookFarmhouse",
+   "points": 45,
+   "overhang_points": 1,
+   "min_buried_cm": 103.3,
+   "failures": 0,
+   "worst": {
+    "x": -48409,
+    "y": -6595,
+    "foot": 2141.1,
+    "side": "x-",
+    "local": [
+     -538,
+     -277,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 129.2
+   },
+   "failed": []
+  },
+  {
+   "house": "Westfields_farmhouse_003",
+   "mesh": "SM_SilverbrookFarmhouse",
+   "points": 45,
+   "overhang_points": 1,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": -46403,
+    "y": -3908,
+    "foot": 2126.5,
+    "side": "x-",
+    "local": [
+     -538,
+     -277,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 110.3
+   },
+   "failed": []
+  },
+  {
+   "house": "Westfields_farmhouse_004",
+   "mesh": "SM_SilverbrookFarmhouse",
+   "points": 45,
+   "overhang_points": 1,
+   "min_buried_cm": 104.5,
+   "failures": 0,
+   "worst": {
+    "x": -49557,
+    "y": -5353,
+    "foot": 2214.7,
+    "side": "x-",
+    "local": [
+     -538,
+     -277,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 150.8
+   },
+   "failed": []
+  },
+  {
+   "house": "Westfields_farmhouse_005",
+   "mesh": "SM_SilverbrookFarmhouse",
+   "points": 45,
+   "overhang_points": 1,
+   "min_buried_cm": 102.9,
+   "failures": 0,
+   "worst": {
+    "x": -47552,
+    "y": -2666,
+    "foot": 2167.8,
+    "side": "x-",
+    "local": [
+     -538,
+     -277,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.9
+   },
+   "failed": []
+  },
+  {
+   "house": "Westfields_farmhouse_006",
+   "mesh": "SM_SilverbrookFarmhouse",
+   "points": 45,
+   "overhang_points": 1,
+   "min_buried_cm": 102.3,
+   "failures": 0,
+   "worst": {
+    "x": -50706,
+    "y": -4110,
+    "foot": 2265.7,
+    "side": "x-",
+    "local": [
+     -538,
+     -277,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 134.8
+   },
+   "failed": []
+  },
+  {
+   "house": "Westfields_farmhouse_007",
+   "mesh": "SM_SilverbrookFarmhouse",
+   "points": 45,
+   "overhang_points": 1,
+   "min_buried_cm": 104.0,
+   "failures": 0,
+   "worst": {
+    "x": -48701,
+    "y": -1423,
+    "foot": 2305.4,
+    "side": "x-",
+    "local": [
+     -538,
+     -277,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 105.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Westfields_farmhouse_008",
+   "mesh": "SM_SilverbrookFarmhouse",
+   "points": 45,
+   "overhang_points": 1,
+   "min_buried_cm": 102.9,
+   "failures": 0,
+   "worst": {
+    "x": -51855,
+    "y": -2868,
+    "foot": 2346.0,
+    "side": "x-",
+    "local": [
+     -538,
+     -277,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 132.5
+   },
+   "failed": []
+  },
+  {
+   "house": "Westfields_farmhouse_009",
+   "mesh": "SM_SilverbrookFarmhouse",
+   "points": 45,
+   "overhang_points": 1,
+   "min_buried_cm": 103.1,
+   "failures": 0,
+   "worst": {
+    "x": -49850,
+    "y": -181,
+    "foot": 2448.0,
+    "side": "x-",
+    "local": [
+     -538,
+     -277,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Westfields_farmhouse_010",
+   "mesh": "SM_SilverbrookFarmhouse",
+   "points": 45,
+   "overhang_points": 1,
+   "min_buried_cm": 106.0,
+   "failures": 0,
+   "worst": {
+    "x": -53004,
+    "y": -1625,
+    "foot": 2482.8,
+    "side": "x-",
+    "local": [
+     -538,
+     -277,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 173.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Westfields_farmhouse_011",
+   "mesh": "SM_SilverbrookFarmhouse",
+   "points": 45,
+   "overhang_points": 1,
+   "min_buried_cm": 102.6,
+   "failures": 0,
+   "worst": {
+    "x": -50998,
+    "y": 1062,
+    "foot": 2516.7,
+    "side": "x-",
+    "local": [
+     -538,
+     -277,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 118.5
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_000",
+   "mesh": "SM_SilverbrookCottage1",
+   "points": 42,
+   "overhang_points": 2,
+   "min_buried_cm": 101.9,
+   "failures": 0,
+   "worst": {
+    "x": 41833,
+    "y": -13442,
+    "foot": 2343.2,
+    "side": "x-",
+    "local": [
+     -337,
+     -222,
+     0.0
+    ],
+    "gap_cm": 0.0,
+    "buried_cm": 116.7
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_001",
+   "mesh": "SM_SilverbrookCottage3",
+   "points": 43,
+   "overhang_points": 1,
+   "min_buried_cm": 102.9,
+   "failures": 0,
+   "worst": {
+    "x": 42541,
+    "y": -12411,
+    "foot": 2454.8,
+    "side": "x-",
+    "local": [
+     -336,
+     -221,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 106.2
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_002",
+   "mesh": "SM_SilverbrookCottage1",
+   "points": 42,
+   "overhang_points": 2,
+   "min_buried_cm": 103.2,
+   "failures": 0,
+   "worst": {
+    "x": 43250,
+    "y": -11382,
+    "foot": 2556.4,
+    "side": "x-",
+    "local": [
+     -337,
+     -222,
+     0.0
+    ],
+    "gap_cm": -0.0,
+    "buried_cm": 127.1
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_003",
+   "mesh": "SM_SilverbrookCottage2",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 41635,
+    "y": -9432,
+    "foot": 2489.9,
+    "side": "x-",
+    "local": [
+     -349,
+     -215,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 128.2
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_004",
+   "mesh": "SM_SilverbrookCottage3",
+   "points": 43,
+   "overhang_points": 1,
+   "min_buried_cm": 103.0,
+   "failures": 0,
+   "worst": {
+    "x": 43959,
+    "y": -10351,
+    "foot": 2681.0,
+    "side": "x-",
+    "local": [
+     -336,
+     -221,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 104.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_005",
+   "mesh": "SM_SilverbrookCottage4",
+   "points": 41,
+   "overhang_points": 1,
+   "min_buried_cm": 102.4,
+   "failures": 0,
+   "worst": {
+    "x": 42272,
+    "y": -8451,
+    "foot": 2567.0,
+    "side": "y-",
+    "local": [
+     -244,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 131.2
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_006",
+   "mesh": "SM_SilverbrookCottage5",
+   "points": 39,
+   "overhang_points": 3,
+   "min_buried_cm": 107.2,
+   "failures": 0,
+   "worst": {
+    "x": 44655,
+    "y": -9327,
+    "foot": 2787.0,
+    "side": "x-",
+    "local": [
+     -348,
+     -214,
+     0.0
+    ],
+    "gap_cm": -0.0,
+    "buried_cm": 131.5
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_007",
+   "mesh": "SM_SilverbrookCottage6",
+   "points": 40,
+   "overhang_points": 2,
+   "min_buried_cm": 102.4,
+   "failures": 0,
+   "worst": {
+    "x": 42944,
+    "y": -8143,
+    "foot": 2662.0,
+    "side": "x+",
+    "local": [
+     342,
+     133,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.4
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_008",
+   "mesh": "SM_SilverbrookCottage1",
+   "points": 42,
+   "overhang_points": 2,
+   "min_buried_cm": 104.8,
+   "failures": 0,
+   "worst": {
+    "x": 45377,
+    "y": -8294,
+    "foot": 2879.1,
+    "side": "x-",
+    "local": [
+     -337,
+     -222,
+     0.0
+    ],
+    "gap_cm": -0.0,
+    "buried_cm": 108.7
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_009",
+   "mesh": "SM_SilverbrookCottage5",
+   "points": 39,
+   "overhang_points": 3,
+   "min_buried_cm": 102.7,
+   "failures": 0,
+   "worst": {
+    "x": 43761,
+    "y": -6345,
+    "foot": 2745.3,
+    "side": "x-",
+    "local": [
+     -348,
+     -214,
+     0.0
+    ],
+    "gap_cm": 0.0,
+    "buried_cm": 138.8
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_010",
+   "mesh": "SM_SilverbrookCottage6",
+   "points": 40,
+   "overhang_points": 2,
+   "min_buried_cm": 105.3,
+   "failures": 0,
+   "worst": {
+    "x": 46181,
+    "y": -6500,
+    "foot": 2942.7,
+    "side": "x+",
+    "local": [
+     342,
+     133,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 135.2
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_011",
+   "mesh": "SM_SilverbrookCottage1",
+   "points": 42,
+   "overhang_points": 2,
+   "min_buried_cm": 103.5,
+   "failures": 0,
+   "worst": {
+    "x": 44457,
+    "y": -5320,
+    "foot": 2815.1,
+    "side": "x-",
+    "local": [
+     -337,
+     -222,
+     0.0
+    ],
+    "gap_cm": -0.0,
+    "buried_cm": 140.5
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_012",
+   "mesh": "SM_SilverbrookCottage4",
+   "points": 41,
+   "overhang_points": 1,
+   "min_buried_cm": 103.0,
+   "failures": 0,
+   "worst": {
+    "x": 46853,
+    "y": -6192,
+    "foot": 2951.7,
+    "side": "y-",
+    "local": [
+     -244,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 114.3
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_013",
+   "mesh": "SM_SilverbrookCottage6",
+   "points": 40,
+   "overhang_points": 2,
+   "min_buried_cm": 102.7,
+   "failures": 0,
+   "worst": {
+    "x": 45070,
+    "y": -5054,
+    "foot": 2869.8,
+    "side": "x+",
+    "local": [
+     342,
+     133,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.0
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_014",
+   "mesh": "SM_SilverbrookCottage3",
+   "points": 43,
+   "overhang_points": 1,
+   "min_buried_cm": 102.6,
+   "failures": 0,
+   "worst": {
+    "x": 47503,
+    "y": -5203,
+    "foot": 2959.5,
+    "side": "x-",
+    "local": [
+     -336,
+     -221,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 110.1
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_015",
+   "mesh": "SM_SilverbrookCottage4",
+   "points": 41,
+   "overhang_points": 1,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 45816,
+    "y": -3303,
+    "foot": 2883.4,
+    "side": "y-",
+    "local": [
+     -244,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 111.6
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_016",
+   "mesh": "SM_SilverbrookCottage1",
+   "points": 42,
+   "overhang_points": 2,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 48212,
+    "y": -4175,
+    "foot": 2965.4,
+    "side": "x-",
+    "local": [
+     -337,
+     -222,
+     0.0
+    ],
+    "gap_cm": 0.0,
+    "buried_cm": 106.3
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_017",
+   "mesh": "SM_SilverbrookCottage5",
+   "points": 39,
+   "overhang_points": 3,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 46596,
+    "y": -2227,
+    "foot": 2895.0,
+    "side": "x-",
+    "local": [
+     -348,
+     -214,
+     0.0
+    ],
+    "gap_cm": -0.0,
+    "buried_cm": 102.4
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_018",
+   "mesh": "SM_SilverbrookCottage4",
+   "points": 41,
+   "overhang_points": 1,
+   "min_buried_cm": 102.7,
+   "failures": 0,
+   "worst": {
+    "x": 48979,
+    "y": -3103,
+    "foot": 2978.2,
+    "side": "y-",
+    "local": [
+     -244,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 109.0
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_019",
+   "mesh": "SM_SilverbrookCottage5",
+   "points": 39,
+   "overhang_points": 3,
+   "min_buried_cm": 102.7,
+   "failures": 0,
+   "worst": {
+    "x": 47305,
+    "y": -1197,
+    "foot": 2891.9,
+    "side": "x-",
+    "local": [
+     -348,
+     -214,
+     0.0
+    ],
+    "gap_cm": -0.0,
+    "buried_cm": 103.4
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_020",
+   "mesh": "SM_SilverbrookCottage1",
+   "points": 42,
+   "overhang_points": 2,
+   "min_buried_cm": 103.4,
+   "failures": 0,
+   "worst": {
+    "x": 49629,
+    "y": -2116,
+    "foot": 2967.1,
+    "side": "x-",
+    "local": [
+     -337,
+     -222,
+     0.0
+    ],
+    "gap_cm": 0.0,
+    "buried_cm": 126.0
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_021",
+   "mesh": "SM_SilverbrookCottage2",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 48014,
+    "y": -166,
+    "foot": 2872.0,
+    "side": "x-",
+    "local": [
+     -349,
+     -215,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.3
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_022",
+   "mesh": "SM_SilverbrookCottage1",
+   "points": 42,
+   "overhang_points": 2,
+   "min_buried_cm": 102.2,
+   "failures": 0,
+   "worst": {
+    "x": 50338,
+    "y": -1086,
+    "foot": 2946.0,
+    "side": "x-",
+    "local": [
+     -337,
+     -222,
+     0.0
+    ],
+    "gap_cm": 0.0,
+    "buried_cm": 139.4
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_023",
+   "mesh": "SM_SilverbrookCottage2",
+   "points": 42,
+   "overhang_points": 0,
+   "min_buried_cm": 103.1,
+   "failures": 0,
+   "worst": {
+    "x": 48723,
+    "y": 864,
+    "foot": 2869.5,
+    "side": "x-",
+    "local": [
+     -349,
+     -215,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 108.4
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_024",
+   "mesh": "SM_SilverbrookCottage4",
+   "points": 41,
+   "overhang_points": 1,
+   "min_buried_cm": 102.0,
+   "failures": 0,
+   "worst": {
+    "x": 51106,
+    "y": -14,
+    "foot": 2879.0,
+    "side": "y-",
+    "local": [
+     -244,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 121.3
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_025",
+   "mesh": "SM_SilverbrookCottage5",
+   "points": 39,
+   "overhang_points": 3,
+   "min_buried_cm": 102.5,
+   "failures": 0,
+   "worst": {
+    "x": 49431,
+    "y": 1892,
+    "foot": 2892.7,
+    "side": "x-",
+    "local": [
+     -348,
+     -214,
+     0.0
+    ],
+    "gap_cm": -0.0,
+    "buried_cm": 121.8
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_026",
+   "mesh": "SM_SilverbrookCottage4",
+   "points": 41,
+   "overhang_points": 1,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 51814,
+    "y": 1016,
+    "foot": 2873.7,
+    "side": "y-",
+    "local": [
+     -244,
+     -271,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 103.5
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_027",
+   "mesh": "SM_SilverbrookCottage6",
+   "points": 40,
+   "overhang_points": 2,
+   "min_buried_cm": 102.9,
+   "failures": 0,
+   "worst": {
+    "x": 50032,
+    "y": 2154,
+    "foot": 2937.2,
+    "side": "x+",
+    "local": [
+     342,
+     133,
+     0.5
+    ],
+    "gap_cm": 0.5,
+    "buried_cm": 102.9
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_028",
+   "mesh": "SM_SilverbrookCottage5",
+   "points": 39,
+   "overhang_points": 3,
+   "min_buried_cm": 102.9,
+   "failures": 0,
+   "worst": {
+    "x": 52452,
+    "y": 1999,
+    "foot": 2915.7,
+    "side": "x-",
+    "local": [
+     -348,
+     -214,
+     0.0
+    ],
+    "gap_cm": 0.0,
+    "buried_cm": 102.9
+   },
+   "failed": []
+  },
+  {
+   "house": "Eastwood_cottage_029",
+   "mesh": "SM_SilverbrookCottage1",
+   "points": 42,
+   "overhang_points": 2,
+   "min_buried_cm": 102.1,
+   "failures": 0,
+   "worst": {
+    "x": 50836,
+    "y": 3947,
+    "foot": 2965.1,
+    "side": "x-",
+    "local": [
+     -337,
+     -222,
+     0.0
+    ],
+    "gap_cm": -0.0,
+    "buried_cm": 115.5
+   },
+   "failed": []
+  }
+ ]
+}

@@ -94,7 +94,8 @@ changed = 0
 for key in set(g) | set(b):
     for i in cell.get(key, []):
         c = cols[i]
-        ng = max(c.g, g.get(key, 0.0)); nb = max(c.b, b.get(key, 0.0))  # earth under the cobble too (M_GN_Ground blends cobble over earth)
+        flat = 1.0 - c.r   # R = rockiness: no cobble or earth paint on banks (WP6h review, same as build_silverbrook.road_field)
+        ng = max(c.g, g.get(key, 0.0) * flat); nb = max(c.b, b.get(key, 0.0) * flat)  # earth under the cobble too (M_GN_Ground blends cobble over earth)
         if ng != c.g or nb != c.b:
             cols[i] = u.LinearColor(c.r, ng, nb, c.a); changed += 1
 mesh = u.GeometryScript_VertexColors.set_mesh_per_vertex_colors(mesh, u.GeometryScript_List.convert_array_to_color_list(cols))

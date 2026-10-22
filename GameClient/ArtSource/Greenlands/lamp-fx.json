@@ -9,5 +9,5 @@
   "smoke_opacity": {"type": "float", "label": "Smoke visibility", "help": "Soft wisp opacity", "value": 0.09, "default": 0.09, "fallback": 0.09, "min": 0.0, "max": 0.2, "step": 0.01, "unit": "opacity"},
   "firefly_chance": {"type": "float", "label": "Firefly lamp chance", "help": "Share of lamps with occasional fireflies", "value": 0.28, "default": 0.28, "fallback": 0.28, "min": 0.0, "max": 0.6, "step": 0.01, "unit": "probability per lamp"},
   "firefly_count": {"type": "integer", "label": "Fireflies near selected lamp", "help": "Maximum drifting glints by a selected lamp", "value": 3, "default": 3, "fallback": 3, "min": 1, "max": 4, "step": 1, "unit": "sprites"},
-  "lit": {"type": "enum", "label": "Lamp schedule", "help": "Always lit until the town time-of-day signal exists", "value": "always", "default": "always", "fallback": "always", "values": ["always", "time-of-day"], "unit": "mode"}
+  "lit": {"type": "enum", "label": "Lamp schedule", "help": "time-of-day: lamp lights, lantern panes and windows switch together on the sun's elevation (4 deg to -4 deg, M_SB_WindowGlow's SinBegins/SinFull); always: dev override, lit at noon", "value": "time-of-day", "default": "time-of-day", "fallback": "always", "values": ["always", "time-of-day"], "unit": "mode"}
 }
