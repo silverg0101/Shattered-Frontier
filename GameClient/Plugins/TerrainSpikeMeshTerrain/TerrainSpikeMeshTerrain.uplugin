@@ -1,0 +1,16 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "0.1",
+	"FriendlyName": "TER-01 Mesh Terrain spike",
+	"Description": "Development-only editor helper for the TER-01 spike: imports a heightmap as a UE 5.8 Mesh Terrain (Mesh Partition). Disabled by default; enable only for the spike.",
+	"Category": "Shattered Frontier",
+	"CreatedBy": "Shattered Frontier",
+	"EnabledByDefault": false,
+	"CanContainContent": false,
+	"Modules": [ { "Name": "TerrainSpikeMeshTerrain", "Type": "Editor", "LoadingPhase": "Default" } ],
+	"Plugins": [
+		{ "Name": "MeshPartition", "Enabled": true },
+		{ "Name": "MeshTerrainMode", "Enabled": true }
+	]
+}

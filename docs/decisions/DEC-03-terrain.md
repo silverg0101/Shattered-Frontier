@@ -95,7 +95,7 @@ These are future focused verification cases, not tests executed by this document
 
 Revisit representation only if measured capability or compatibility evidence shows the baseline cannot satisfy the bounded scope. Compare a scoped content reduction, a different derived mesh/collision adapter preserving World storage, and an explicit representation migration in that order. Each alternative needs affected contracts, player/data impact and new fixtures; no live console exception or unreviewed algorithm replacement.
 
-Pending evidence for the derived-adapter option: [TER-01](TER-01-mesh-terrain-fit-check.md) spikes UE 5.8 Mesh Terrain as an adapter, base-terrain authoring source or backdrop. It does not change this representation.
+Derived-adapter evidence: [TER-01](TER-01-mesh-terrain-fit-check.md) (2026-10-22) found that UE 5.8 Mesh Terrain is authoring or backdrop only. A density-driven mesh and collision adapter met replication, collision and chunk-seam needs. Its tear-free mesher and distance LOD are the TER-01b gate. This representation is unchanged.
 
 Validation: source link targets and named headings checked; documentation-only work, no runtime tests. Independent review and correction evidence are recorded in the work plan. Coordinator owns planning/index integration.
 

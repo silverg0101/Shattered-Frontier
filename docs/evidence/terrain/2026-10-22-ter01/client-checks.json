@@ -1,0 +1,68 @@
+{
+  "stats": {
+    "netmode": 3,
+    "chunks": 108,
+    "tris": 107670,
+    "density_bytes": 7077888,
+    "cpu_mesh_bytes": 10751912,
+    "initial_build_ms": 393.8,
+    "edits": 51,
+    "edit_ms_p50": 14.89,
+    "edit_ms_p95": 34.15,
+    "edit_ms_max": 35.6,
+    "extract_ms_p95": 16.61,
+    "upload_collision_ms_p95": 17.06,
+    "upload_collision_ms_max": 17.36,
+    "tear_checks": 51,
+    "tears_total": 1,
+    "legacy_winding": 0,
+    "chunks_per_edit_max": 8,
+    "latency_ms_p50": 48.2,
+    "latency_ms_p95": 131.4,
+    "latency_ms_max": 149.7,
+    "hash": -2004971412
+  },
+  "dig_interior_floor_z": 232.4,
+  "dig_interior_base_z": 128.3,
+  "tunnel_roof_from_inside_z": 257.5,
+  "tunnel_floor_z": 42.5,
+  "tunnel_top_surface_from_above_z": 540.8,
+  "tunnel_top_base_z": 541.7,
+  "tunnel_axis_clear": null,
+  "shaft_bottom_z": -1425.0,
+  "bedrock_z": -1400,
+  "open_edges_interior": 0,
+  "open_edges_corner_8_chunks": 0,
+  "seam_voxel_vs_1m_heightfield": {
+    "samples": 161,
+    "max_cm": 0.81,
+    "p95_cm": 0.72,
+    "mean_cm": 0.3
+  },
+  "density_hash": -2004971412,
+  "perf_overview_1920x1080": {
+    "perf_on": {
+      "frame_ms_p50": 3.92,
+      "frame_ms_p95": 6.38,
+      "gpu_ms_p50": 1.67,
+      "gpu_ms_p95": 2.27
+    },
+    "perf_off": {
+      "frame_ms_p50": 4.15,
+      "frame_ms_p95": 6.13,
+      "gpu_ms_p50": 1.38,
+      "gpu_ms_p95": 1.9
+    }
+  },
+  "shots": [
+    "dig-0-before",
+    "dig-1-interior",
+    "dig-2-chunk-corner",
+    "dig-3-tunnel",
+    "dig-4-shaft",
+    "dig-5-ter02-legal",
+    "dig-6-final-overview",
+    "look-seam-heightfield-vs-voxel"
+  ],
+  "netmode": null
+}

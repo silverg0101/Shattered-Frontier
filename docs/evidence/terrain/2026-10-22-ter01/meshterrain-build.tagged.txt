@@ -1,0 +1,34 @@
+[2026.10.22-06.10.15:561][  0]LogMegaMeshEditor: Display: Build for World TerrainSpike_MeshTerrain (1 Mesh Partitions, BuildKey 0333F98D)
+[2026.10.22-06.10.15:562][  0]LogMegaMeshEditor: Display: [0 / 3] Initializing compiled sections build...
+[2026.10.22-06.10.15:562][  0]LogMegaMeshEditor: Display: -- 420F1B Build Mesh Partition MeshTerrain (3 Variants, 0 Existing Compiled Sections
+[2026.10.22-06.10.15:565][  0]LogMegaMeshEditor: Display: -- 420F1B -- Common_GameplayData Build Variant
+[2026.10.22-06.10.16:496][993]LogMegaMeshEditor: Display: ConvertMeshToComplexCollision: QEM simplified collision data, 0.80 seconds, Initial: 37636 verts / 74498 tris, Simplified: 330 (0.9%) verts / 582 (0.8%) tris
+[2026.10.22-06.10.16:539][996]LogMegaMeshEditor: Display: [1 / 3] Building compiled sections...
+[2026.10.22-06.10.16:539][996]LogMegaMeshEditor: Sections: 1 built, 0 reused out of 1 total
+[2026.10.22-06.10.16:539][997]LogMegaMeshEditor: Display: -- 420F1B -- Common_GameplayData Finish Variant (Built 1, Reused 0, Failed 0 Compiled Sections)
+[2026.10.22-06.10.16:571][998]LogMegaMeshEditor: Display: -- 420F1B -- HighEndPlatform_RenderData Build Variant
+[2026.10.22-06.10.16:959][200]LogMegaMeshEditor: Display: [2 / 3] Building compiled sections...
+[2026.10.22-06.10.16:959][200]LogMegaMeshEditor: Sections: 1 built, 0 reused out of 1 total
+[2026.10.22-06.10.16:959][201]LogMegaMeshEditor: Display: -- 420F1B -- HighEndPlatform_RenderData Finish Variant (Built 1, Reused 0, Failed 0 Compiled Sections)
+[2026.10.22-06.10.16:991][202]LogMegaMeshEditor: Display: -- 420F1B -- LowEndPlatform_RenderData Build Variant
+[2026.10.22-06.10.17:217][747]LogMegaMeshEditor: Display: Static mesh transformer: LOD0 ScreenSize=1.000000 (source: LOD0 anchor, calculated (from actual geometric deviation and PixelError): 0.000000)
+[2026.10.22-06.10.17:302][341]LogMegaMeshEditor: Warning: Static mesh transformer: not applying mesh reduction. EdgeLength, ErrorTolerance, or MaxTrianglesFraction<1 must be set.
+[2026.10.22-06.10.17:302][351]LogMegaMeshEditor: Display: Static mesh transformer LOD1 simplified: 76042 -> 76042 tris (100.0% retained), ErrorTolerance=0.000000, achieved MaxDeviation symmetric=0.000000 one-sided=0.000000
+[2026.10.22-06.10.17:428][724]LogMegaMeshEditor: Display: Static mesh transformer: LOD1 ScreenSize=0.750000 (source: fallback, calculated (from actual geometric deviation and PixelError): 0.000000)
+[2026.10.22-06.10.17:513][277]LogMegaMeshEditor: Warning: Static mesh transformer: not applying mesh reduction. EdgeLength, ErrorTolerance, or MaxTrianglesFraction<1 must be set.
+[2026.10.22-06.10.17:514][286]LogMegaMeshEditor: Display: Static mesh transformer LOD2 simplified: 76042 -> 76042 tris (100.0% retained), ErrorTolerance=0.000000, achieved MaxDeviation symmetric=0.000000 one-sided=0.000000
+[2026.10.22-06.10.17:631][425]LogMegaMeshEditor: Display: Static mesh transformer: LOD2 ScreenSize=0.562500 (source: fallback, calculated (from actual geometric deviation and PixelError): 0.000000)
+[2026.10.22-06.10.17:730][976]LogMegaMeshEditor: Warning: Static mesh transformer: not applying mesh reduction. EdgeLength, ErrorTolerance, or MaxTrianglesFraction<1 must be set.
+[2026.10.22-06.10.17:730][979]LogMegaMeshEditor: Display: Static mesh transformer LOD3 simplified: 76042 -> 76042 tris (100.0% retained), ErrorTolerance=0.000000, achieved MaxDeviation symmetric=0.000000 one-sided=0.000000
+[2026.10.22-06.10.17:882][318]LogMegaMeshEditor: Display: Static mesh transformer: LOD3 ScreenSize=0.421875 (source: fallback, calculated (from actual geometric deviation and PixelError): 0.000000)
+[2026.10.22-06.10.17:960][645]LogMegaMeshEditor: Warning: Static mesh transformer: not applying mesh reduction. EdgeLength, ErrorTolerance, or MaxTrianglesFraction<1 must be set.
+[2026.10.22-06.10.17:960][651]LogMegaMeshEditor: Display: Static mesh transformer LOD4 simplified: 76042 -> 76042 tris (100.0% retained), ErrorTolerance=0.000000, achieved MaxDeviation symmetric=0.000000 one-sided=0.000000
+[2026.10.22-06.10.18:086][863]LogMegaMeshEditor: Display: Static mesh transformer: LOD4 ScreenSize=0.316406 (source: fallback, calculated (from actual geometric deviation and PixelError): 0.000000)
+[2026.10.22-06.10.18:259][955]LogMegaMeshEditor: Display: [3 / 3] Building compiled sections...
+[2026.10.22-06.10.18:259][955]LogMegaMeshEditor: Sections: 1 built, 0 reused out of 1 total
+[2026.10.22-06.10.18:259][956]LogMegaMeshEditor: Display: -- 420F1B -- LowEndPlatform_RenderData Finish Variant (Built 1, Reused 0, Failed 0 Compiled Sections)
+[2026.10.22-06.10.18:287][957]LogMegaMeshEditor: Display: -- 420F1B -- Finished Mesh Partition Build (MeshTerrain)
+[2026.10.22-06.10.18:287][957]LogMegaMeshEditor: Display: Removing out-of-date compiled sections from World TerrainSpike_MeshTerrain
+[2026.10.22-06.10.18:289][957]LogMegaMeshEditor: Display: Finished Build for World TerrainSpike_MeshTerrain (Built 3, Reused 0, Failed 0, Removed 0, Could Not Remove 0 Compiled Sections, 0 Failed Mesh Partitions)
+[2026.10.22-06.10.18:341][957]LogWorldPartitionBuilderCommandlet: Display: Execution took 2.91 sec
+[2026.10.22-06.10.18:341][957]LogInit: Display: LogMegaMeshEditor: Warning: Static mesh transformer: not applying mesh reduction. EdgeLength, ErrorTolerance, or MaxTrianglesFraction<1 must be set.

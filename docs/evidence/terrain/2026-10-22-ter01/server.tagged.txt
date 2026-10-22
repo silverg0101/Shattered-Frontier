@@ -1,0 +1,364 @@
+[2026.10.22-06.43.21:868][  0]LogLoad: LoadMap: /Game/Frontier/Maps/Dev/TerrainSpike/TerrainSpike_Voxel?Name=Player
+[2026.10.22-06.43.22:271][  0]LogSFTerrainSpike: Display: TERRAIN_SPIKE_READY netmode=1 chunks=108 tris=96740 initial_build_ms=356.9 process_uptime_s=7.11 start_ground=1 start_ground_z=3.6 hash=397579864
+[2026.10.22-06.43.44:234][639]LogSFTerrainSpike: Display: TERRAIN_SPIKE_PAWN_SEEN netmode=1 t=29.08 pos=(-200,-400,96) ground=0 ground_z=0.0 collision_ready_before_pawn=1
+[2026.10.22-06.43.44:234][639]LogSFTerrainSpike: Display: TERRAIN_SPIKE_PAWN_SNAPPED t=29.08 from=(-200,-400,96) to_ground_z=3.6
+[2026.10.22-06.43.49:266][790]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=1
+[2026.10.22-06.43.49:266][790]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=1
+[2026.10.22-06.43.49:269][790]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=1 netmode=1 kind=0 c=(2400,2400,128) r=200 chunks=2 tris=2858 extract_ms=5.07 upload_collision_ms=3.39 total_ms=8.54 latency_ms=0.0 hash=-451919133
+[2026.10.22-06.43.49:269][790]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 1 dig_interior result=applied
+[2026.10.22-06.43.50:251][820]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=2
+[2026.10.22-06.43.50:251][820]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=2
+[2026.10.22-06.43.50:253][820]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=2 netmode=1 kind=1 c=(4000,2400,328) r=150 chunks=2 tris=2728 extract_ms=3.02 upload_collision_ms=2.36 total_ms=5.42 latency_ms=0.0 hash=-2109789822
+[2026.10.22-06.43.50:253][820]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 2 raise_interior result=applied
+[2026.10.22-06.43.51:341][851]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=3
+[2026.10.22-06.43.51:341][851]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=3
+[2026.10.22-06.43.51:341][851]LogSFTerrainSpike: Display: SPIKE_TEARS (1,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=3
+[2026.10.22-06.43.51:341][851]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=3
+[2026.10.22-06.43.51:341][851]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=3
+[2026.10.22-06.43.51:341][851]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=3
+[2026.10.22-06.43.51:341][851]LogSFTerrainSpike: Display: SPIKE_TEARS (1,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=3
+[2026.10.22-06.43.51:341][851]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=3
+[2026.10.22-06.43.51:344][851]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=3 netmode=1 kind=0 c=(3200,3200,0) r=300 chunks=8 tris=11516 extract_ms=16.25 upload_collision_ms=12.95 total_ms=29.30 latency_ms=0.0 hash=2052335476
+[2026.10.22-06.43.51:344][851]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 3 dig_chunk_corner_8 result=applied
+[2026.10.22-06.43.52:273][879]LogSFTerrainSpike: Display: SPIKE_TEARS (0,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=4
+[2026.10.22-06.43.52:273][879]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=4
+[2026.10.22-06.43.52:273][879]LogSFTerrainSpike: Display: SPIKE_TEARS (0,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=4
+[2026.10.22-06.43.52:273][879]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=4
+[2026.10.22-06.43.52:277][879]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=4 netmode=1 kind=0 c=(1600,6000,150) r=120 chunks=4 tris=6020 extract_ms=7.16 upload_collision_ms=6.48 total_ms=13.68 latency_ms=0.0 hash=2052335476
+[2026.10.22-06.43.52:277][879]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 4 tunnel result=applied
+[2026.10.22-06.43.53:270][909]LogSFTerrainSpike: Display: SPIKE_TEARS (0,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=5
+[2026.10.22-06.43.53:270][909]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=5
+[2026.10.22-06.43.53:270][909]LogSFTerrainSpike: Display: SPIKE_TEARS (0,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=5
+[2026.10.22-06.43.53:270][909]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=5
+[2026.10.22-06.43.53:273][909]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=5 netmode=1 kind=0 c=(1700,6000,150) r=120 chunks=4 tris=6020 extract_ms=7.98 upload_collision_ms=5.52 total_ms=13.54 latency_ms=0.0 hash=-27987787
+[2026.10.22-06.43.53:273][909]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 5 tunnel result=applied
+[2026.10.22-06.43.54:264][939]LogSFTerrainSpike: Display: SPIKE_TEARS (0,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=6
+[2026.10.22-06.43.54:264][939]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=6
+[2026.10.22-06.43.54:264][939]LogSFTerrainSpike: Display: SPIKE_TEARS (0,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=6
+[2026.10.22-06.43.54:265][939]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=6
+[2026.10.22-06.43.54:266][939]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=6 netmode=1 kind=0 c=(1800,6000,150) r=120 chunks=4 tris=6032 extract_ms=6.71 upload_collision_ms=6.27 total_ms=13.02 latency_ms=0.0 hash=-1166837778
+[2026.10.22-06.43.54:266][939]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 6 tunnel result=applied
+[2026.10.22-06.43.55:291][970]LogSFTerrainSpike: Display: SPIKE_TEARS (0,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=7
+[2026.10.22-06.43.55:291][970]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=7
+[2026.10.22-06.43.55:291][970]LogSFTerrainSpike: Display: SPIKE_TEARS (0,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=7
+[2026.10.22-06.43.55:291][970]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=7
+[2026.10.22-06.43.55:294][970]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=7 netmode=1 kind=0 c=(1900,6000,150) r=120 chunks=4 tris=6060 extract_ms=7.96 upload_collision_ms=6.64 total_ms=14.64 latency_ms=0.0 hash=737730157
+[2026.10.22-06.43.55:294][970]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 7 tunnel result=applied
+[2026.10.22-06.43.56:279][  0]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=8
+[2026.10.22-06.43.56:279][  0]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=8
+[2026.10.22-06.43.56:282][  0]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=8 netmode=1 kind=0 c=(2000,6000,150) r=120 chunks=2 tris=3498 extract_ms=3.67 upload_collision_ms=3.57 total_ms=7.29 latency_ms=0.0 hash=-818017532
+[2026.10.22-06.43.56:282][  0]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 8 tunnel result=applied
+[2026.10.22-06.43.57:274][ 30]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=9
+[2026.10.22-06.43.57:275][ 30]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=9
+[2026.10.22-06.43.57:277][ 30]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=9 netmode=1 kind=0 c=(2100,6000,150) r=120 chunks=2 tris=3574 extract_ms=3.80 upload_collision_ms=3.54 total_ms=7.37 latency_ms=0.0 hash=872889265
+[2026.10.22-06.43.57:277][ 30]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 9 tunnel result=applied
+[2026.10.22-06.43.58:270][ 60]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=10
+[2026.10.22-06.43.58:270][ 60]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=4 check=10
+[2026.10.22-06.43.58:273][ 60]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=10 netmode=1 kind=0 c=(2200,6000,150) r=120 chunks=2 tris=3686 extract_ms=3.55 upload_collision_ms=3.57 total_ms=7.16 latency_ms=0.0 hash=-17557218
+[2026.10.22-06.43.58:273][ 60]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 10 tunnel result=applied
+[2026.10.22-06.43.59:266][ 90]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=11
+[2026.10.22-06.43.59:266][ 90]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=4 check=11
+[2026.10.22-06.43.59:269][ 90]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=11 netmode=1 kind=0 c=(2300,6000,150) r=120 chunks=2 tris=3798 extract_ms=4.95 upload_collision_ms=3.71 total_ms=8.71 latency_ms=0.0 hash=1741409709
+[2026.10.22-06.43.59:269][ 90]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 11 tunnel result=applied
+[2026.10.22-06.44.00:269][120]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=12
+[2026.10.22-06.44.00:269][120]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=4 check=12
+[2026.10.22-06.44.00:272][120]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=12 netmode=1 kind=0 c=(2400,6000,150) r=120 chunks=2 tris=3910 extract_ms=4.45 upload_collision_ms=4.04 total_ms=8.53 latency_ms=0.0 hash=-5731166
+[2026.10.22-06.44.00:272][120]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 12 tunnel result=applied
+[2026.10.22-06.44.01:269][150]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=13
+[2026.10.22-06.44.01:269][150]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=4 check=13
+[2026.10.22-06.44.01:272][150]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=13 netmode=1 kind=0 c=(2500,6000,150) r=120 chunks=2 tris=4022 extract_ms=3.76 upload_collision_ms=4.08 total_ms=7.88 latency_ms=0.0 hash=1814471718
+[2026.10.22-06.44.01:272][150]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 13 tunnel result=applied
+[2026.10.22-06.44.02:261][180]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=14
+[2026.10.22-06.44.02:261][180]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=4 check=14
+[2026.10.22-06.44.02:263][180]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=14 netmode=1 kind=0 c=(2600,6000,150) r=120 chunks=2 tris=4134 extract_ms=3.58 upload_collision_ms=3.87 total_ms=7.50 latency_ms=0.0 hash=-1127425971
+[2026.10.22-06.44.02:263][180]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 14 tunnel result=applied
+[2026.10.22-06.44.03:273][206]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=15
+[2026.10.22-06.44.03:273][206]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=4 check=15
+[2026.10.22-06.44.03:276][206]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=15 netmode=1 kind=0 c=(2700,6000,150) r=120 chunks=2 tris=4246 extract_ms=4.30 upload_collision_ms=5.04 total_ms=9.38 latency_ms=0.0 hash=1237696250
+[2026.10.22-06.44.03:276][206]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 15 tunnel result=applied
+[2026.10.22-06.44.04:258][236]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=16
+[2026.10.22-06.44.04:258][236]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=4 check=16
+[2026.10.22-06.44.04:261][236]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=16 netmode=1 kind=0 c=(2800,6000,150) r=120 chunks=2 tris=4358 extract_ms=3.53 upload_collision_ms=4.38 total_ms=7.95 latency_ms=0.0 hash=-2087154932
+[2026.10.22-06.44.04:261][236]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 16 tunnel result=applied
+[2026.10.22-06.44.05:279][266]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=17
+[2026.10.22-06.44.05:279][266]LogSFTerrainSpike: Display: SPIKE_TEARS (2,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=17
+[2026.10.22-06.44.05:279][266]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=4 check=17
+[2026.10.22-06.44.05:279][266]LogSFTerrainSpike: Display: SPIKE_TEARS (2,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=17
+[2026.10.22-06.44.05:281][266]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=17 netmode=1 kind=0 c=(2900,6000,150) r=120 chunks=4 tris=7622 extract_ms=9.43 upload_collision_ms=8.53 total_ms=18.01 latency_ms=0.0 hash=959173009
+[2026.10.22-06.44.05:281][266]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 17 tunnel result=applied
+[2026.10.22-06.44.06:290][295]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=18
+[2026.10.22-06.44.06:290][295]LogSFTerrainSpike: Display: SPIKE_TEARS (2,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=18
+[2026.10.22-06.44.06:290][295]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=4 check=18
+[2026.10.22-06.44.06:290][295]LogSFTerrainSpike: Display: SPIKE_TEARS (2,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=18
+[2026.10.22-06.44.06:293][295]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=18 netmode=1 kind=0 c=(3000,6000,150) r=120 chunks=4 tris=7734 extract_ms=8.89 upload_collision_ms=8.08 total_ms=17.03 latency_ms=0.0 hash=820622333
+[2026.10.22-06.44.06:293][295]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 18 tunnel result=applied
+[2026.10.22-06.44.07:321][324]LogSFTerrainSpike: Display: SPIKE_TEARS (3,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=19
+[2026.10.22-06.44.07:321][324]LogSFTerrainSpike: Display: SPIKE_TEARS (4,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=19
+[2026.10.22-06.44.07:321][324]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=19
+[2026.10.22-06.44.07:321][324]LogSFTerrainSpike: Display: SPIKE_TEARS (4,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=19
+[2026.10.22-06.44.07:321][324]LogSFTerrainSpike: Display: SPIKE_TEARS (3,0,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=19
+[2026.10.22-06.44.07:321][324]LogSFTerrainSpike: Display: SPIKE_TEARS (4,0,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=19
+[2026.10.22-06.44.07:321][324]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=19
+[2026.10.22-06.44.07:321][324]LogSFTerrainSpike: Display: SPIKE_TEARS (4,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=19
+[2026.10.22-06.44.07:324][324]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=19 netmode=1 kind=0 c=(6000,2000,200) r=250 chunks=8 tris=10690 extract_ms=17.73 upload_collision_ms=13.53 total_ms=31.39 latency_ms=0.0 hash=-1355227121
+[2026.10.22-06.44.07:324][324]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 19 shaft_to_bedrock result=applied
+[2026.10.22-06.44.08:320][353]LogSFTerrainSpike: Display: SPIKE_TEARS (3,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=20
+[2026.10.22-06.44.08:320][353]LogSFTerrainSpike: Display: SPIKE_TEARS (4,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=20
+[2026.10.22-06.44.08:320][353]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=20
+[2026.10.22-06.44.08:320][353]LogSFTerrainSpike: Display: SPIKE_TEARS (4,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=20
+[2026.10.22-06.44.08:320][353]LogSFTerrainSpike: Display: SPIKE_TEARS (3,0,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=20
+[2026.10.22-06.44.08:320][353]LogSFTerrainSpike: Display: SPIKE_TEARS (4,0,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=20
+[2026.10.22-06.44.08:320][353]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=20
+[2026.10.22-06.44.08:320][353]LogSFTerrainSpike: Display: SPIKE_TEARS (4,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=20
+[2026.10.22-06.44.08:323][353]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=20 netmode=1 kind=0 c=(6000,2000,-100) r=250 chunks=8 tris=11202 extract_ms=17.82 upload_collision_ms=12.65 total_ms=30.57 latency_ms=0.0 hash=1397803821
+[2026.10.22-06.44.08:323][353]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 20 shaft_to_bedrock result=applied
+[2026.10.22-06.44.09:314][381]LogSFTerrainSpike: Display: SPIKE_TEARS (3,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=21
+[2026.10.22-06.44.09:315][381]LogSFTerrainSpike: Display: SPIKE_TEARS (4,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=21
+[2026.10.22-06.44.09:315][381]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=21
+[2026.10.22-06.44.09:315][381]LogSFTerrainSpike: Display: SPIKE_TEARS (4,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=21
+[2026.10.22-06.44.09:315][381]LogSFTerrainSpike: Display: SPIKE_TEARS (3,0,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=21
+[2026.10.22-06.44.09:315][381]LogSFTerrainSpike: Display: SPIKE_TEARS (4,0,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=21
+[2026.10.22-06.44.09:315][381]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=21
+[2026.10.22-06.44.09:315][381]LogSFTerrainSpike: Display: SPIKE_TEARS (4,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=21
+[2026.10.22-06.44.09:318][381]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=21 netmode=1 kind=0 c=(6000,2000,-400) r=250 chunks=8 tris=11714 extract_ms=15.30 upload_collision_ms=12.41 total_ms=27.82 latency_ms=0.0 hash=-536716361
+[2026.10.22-06.44.09:318][381]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 21 shaft_to_bedrock result=applied
+[2026.10.22-06.44.10:279][409]LogSFTerrainSpike: Display: SPIKE_TEARS (3,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=22
+[2026.10.22-06.44.10:279][409]LogSFTerrainSpike: Display: SPIKE_TEARS (4,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=22
+[2026.10.22-06.44.10:279][409]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=22
+[2026.10.22-06.44.10:279][409]LogSFTerrainSpike: Display: SPIKE_TEARS (4,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=22
+[2026.10.22-06.44.10:282][409]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=22 netmode=1 kind=0 c=(6000,2000,-700) r=250 chunks=4 tris=3088 extract_ms=9.19 upload_collision_ms=4.58 total_ms=13.86 latency_ms=0.0 hash=-765022219
+[2026.10.22-06.44.10:282][409]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 22 shaft_to_bedrock result=applied
+[2026.10.22-06.44.11:304][439]LogSFTerrainSpike: Display: SPIKE_TEARS (3,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=23
+[2026.10.22-06.44.11:304][439]LogSFTerrainSpike: Display: SPIKE_TEARS (4,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=23
+[2026.10.22-06.44.11:304][439]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=23
+[2026.10.22-06.44.11:304][439]LogSFTerrainSpike: Display: SPIKE_TEARS (4,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=23
+[2026.10.22-06.44.11:306][439]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=23 netmode=1 kind=0 c=(6000,2000,-1000) r=250 chunks=4 tris=3600 extract_ms=6.85 upload_collision_ms=4.26 total_ms=11.21 latency_ms=0.0 hash=1450672670
+[2026.10.22-06.44.11:307][439]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 23 shaft_to_bedrock result=applied
+[2026.10.22-06.44.12:292][468]LogSFTerrainSpike: Display: SPIKE_TEARS (3,0,-2) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=24
+[2026.10.22-06.44.12:292][468]LogSFTerrainSpike: Display: SPIKE_TEARS (4,0,-2) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=24
+[2026.10.22-06.44.12:292][468]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,-2) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=24
+[2026.10.22-06.44.12:292][468]LogSFTerrainSpike: Display: SPIKE_TEARS (4,1,-2) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=24
+[2026.10.22-06.44.12:292][468]LogSFTerrainSpike: Display: SPIKE_TEARS (3,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=24
+[2026.10.22-06.44.12:292][468]LogSFTerrainSpike: Display: SPIKE_TEARS (4,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=24
+[2026.10.22-06.44.12:292][468]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=24
+[2026.10.22-06.44.12:292][468]LogSFTerrainSpike: Display: SPIKE_TEARS (4,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=24
+[2026.10.22-06.44.12:295][468]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=24 netmode=1 kind=0 c=(6000,2000,-1300) r=250 chunks=8 tris=4016 extract_ms=14.49 upload_collision_ms=5.79 total_ms=20.37 latency_ms=0.0 hash=-1193676629
+[2026.10.22-06.44.12:295][468]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 24 shaft_to_bedrock result=applied
+[2026.10.22-06.44.13:295][497]LogSFTerrainSpike: Display: SPIKE_TEARS (3,0,-2) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=25
+[2026.10.22-06.44.13:295][497]LogSFTerrainSpike: Display: SPIKE_TEARS (4,0,-2) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=25
+[2026.10.22-06.44.13:295][497]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,-2) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=25
+[2026.10.22-06.44.13:295][497]LogSFTerrainSpike: Display: SPIKE_TEARS (4,1,-2) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=25
+[2026.10.22-06.44.13:295][497]LogSFTerrainSpike: Display: SPIKE_TEARS (3,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=25
+[2026.10.22-06.44.13:295][497]LogSFTerrainSpike: Display: SPIKE_TEARS (4,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=25
+[2026.10.22-06.44.13:295][497]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=25
+[2026.10.22-06.44.13:295][497]LogSFTerrainSpike: Display: SPIKE_TEARS (4,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=25
+[2026.10.22-06.44.13:298][497]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=25 netmode=1 kind=0 c=(6000,2000,-1600) r=250 chunks=8 tris=4016 extract_ms=15.39 upload_collision_ms=5.84 total_ms=21.28 latency_ms=0.0 hash=-1193676629
+[2026.10.22-06.44.13:298][497]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 25 shaft_to_bedrock result=applied
+[2026.10.22-06.44.14:360][526]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=26
+[2026.10.22-06.44.14:360][526]LogSFTerrainSpike: Display: SPIKE_TEARS (3,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=26
+[2026.10.22-06.44.14:360][526]LogSFTerrainSpike: Display: SPIKE_TEARS (2,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=26
+[2026.10.22-06.44.14:360][526]LogSFTerrainSpike: Display: SPIKE_TEARS (3,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=26
+[2026.10.22-06.44.14:360][526]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=26
+[2026.10.22-06.44.14:360][526]LogSFTerrainSpike: Display: SPIKE_TEARS (3,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=26
+[2026.10.22-06.44.14:360][526]LogSFTerrainSpike: Display: SPIKE_TEARS (2,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=26
+[2026.10.22-06.44.14:360][526]LogSFTerrainSpike: Display: SPIKE_TEARS (3,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=26
+[2026.10.22-06.44.14:363][526]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=26 netmode=1 kind=0 c=(4600,4400,400) r=500 chunks=8 tris=11198 extract_ms=18.33 upload_collision_ms=14.41 total_ms=33.17 latency_ms=0.0 hash=-1305062881
+[2026.10.22-06.44.14:363][526]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 26 ter02_bowl result=applied
+[2026.10.22-06.44.15:358][553]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=27
+[2026.10.22-06.44.15:358][553]LogSFTerrainSpike: Display: SPIKE_TEARS (3,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=27
+[2026.10.22-06.44.15:359][553]LogSFTerrainSpike: Display: SPIKE_TEARS (2,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=27
+[2026.10.22-06.44.15:359][553]LogSFTerrainSpike: Display: SPIKE_TEARS (3,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=27
+[2026.10.22-06.44.15:359][553]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=27
+[2026.10.22-06.44.15:359][553]LogSFTerrainSpike: Display: SPIKE_TEARS (3,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=27
+[2026.10.22-06.44.15:359][553]LogSFTerrainSpike: Display: SPIKE_TEARS (2,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=27
+[2026.10.22-06.44.15:359][553]LogSFTerrainSpike: Display: SPIKE_TEARS (3,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=27
+[2026.10.22-06.44.15:362][553]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=27 netmode=1 kind=0 c=(4800,4800,512) r=500 chunks=8 tris=11254 extract_ms=14.39 upload_collision_ms=12.74 total_ms=27.56 latency_ms=0.0 hash=-554238475
+[2026.10.22-06.44.15:362][553]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 27 ter02_bowl result=applied
+[2026.10.22-06.44.16:362][580]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=28
+[2026.10.22-06.44.16:362][580]LogSFTerrainSpike: Display: SPIKE_TEARS (3,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=28
+[2026.10.22-06.44.16:362][580]LogSFTerrainSpike: Display: SPIKE_TEARS (2,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=28
+[2026.10.22-06.44.16:362][580]LogSFTerrainSpike: Display: SPIKE_TEARS (3,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=28
+[2026.10.22-06.44.16:362][580]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=28
+[2026.10.22-06.44.16:362][580]LogSFTerrainSpike: Display: SPIKE_TEARS (3,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=28
+[2026.10.22-06.44.16:362][580]LogSFTerrainSpike: Display: SPIKE_TEARS (2,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=28
+[2026.10.22-06.44.16:362][580]LogSFTerrainSpike: Display: SPIKE_TEARS (3,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=28
+[2026.10.22-06.44.16:365][580]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=28 netmode=1 kind=0 c=(5000,5200,562) r=500 chunks=8 tris=11282 extract_ms=14.06 upload_collision_ms=13.35 total_ms=27.88 latency_ms=0.0 hash=1142014288
+[2026.10.22-06.44.16:365][580]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 28 ter02_bowl result=applied
+[2026.10.22-06.44.17:357][607]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=29
+[2026.10.22-06.44.17:357][607]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=29
+[2026.10.22-06.44.17:357][607]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=29
+[2026.10.22-06.44.17:357][607]LogSFTerrainSpike: Display: SPIKE_TEARS (3,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=29
+[2026.10.22-06.44.17:357][607]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=29
+[2026.10.22-06.44.17:357][607]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=29
+[2026.10.22-06.44.17:357][607]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=29
+[2026.10.22-06.44.17:357][607]LogSFTerrainSpike: Display: SPIKE_TEARS (3,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=29
+[2026.10.22-06.44.17:360][607]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=29 netmode=1 kind=2 c=(4800,3200,31) r=400 chunks=8 tris=13802 extract_ms=18.00 upload_collision_ms=15.59 total_ms=33.92 latency_ms=0.0 hash=1696572404
+[2026.10.22-06.44.17:360][607]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 29 ter02_flatten_pad result=applied
+[2026.10.22-06.44.18:305][635]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=30
+[2026.10.22-06.44.18:306][635]LogSFTerrainSpike: Display: SPIKE_TEARS (3,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=30
+[2026.10.22-06.44.18:306][635]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=30
+[2026.10.22-06.44.18:306][635]LogSFTerrainSpike: Display: SPIKE_TEARS (3,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=30
+[2026.10.22-06.44.18:308][635]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=30 netmode=1 kind=2 c=(4800,3900,81) r=300 chunks=4 tris=5552 extract_ms=6.94 upload_collision_ms=6.19 total_ms=13.24 latency_ms=0.0 hash=1562237590
+[2026.10.22-06.44.18:308][635]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 30 ter02_flatten_step_0.5m result=applied
+[2026.10.22-06.44.19:367][664]LogSFTerrainSpike: Display: SPIKE_TEARS (1,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=31
+[2026.10.22-06.44.19:367][664]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=31
+[2026.10.22-06.44.19:367][664]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=31
+[2026.10.22-06.44.19:367][664]LogSFTerrainSpike: Display: SPIKE_TEARS (2,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=31
+[2026.10.22-06.44.19:367][664]LogSFTerrainSpike: Display: SPIKE_TEARS (1,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=31
+[2026.10.22-06.44.19:367][664]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=31
+[2026.10.22-06.44.19:367][664]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=4 check=31
+[2026.10.22-06.44.19:367][664]LogSFTerrainSpike: Display: SPIKE_TEARS (2,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=31
+[2026.10.22-06.44.19:371][664]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=31 netmode=1 kind=1 c=(3600,4400,-447) r=500 chunks=8 tris=13498 extract_ms=16.53 upload_collision_ms=16.19 total_ms=33.14 latency_ms=0.0 hash=318381498
+[2026.10.22-06.44.19:371][664]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 31 ter02_mound result=applied
+[2026.10.22-06.44.20:246][691]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 32 reject_border result=region border exclusion
+[2026.10.22-06.44.21:262][719]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 33 reject_protected result=protected volume (safe area/road/spawn/claim)
+[2026.10.22-06.44.22:278][749]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=32
+[2026.10.22-06.44.22:278][749]LogSFTerrainSpike: Display: SPIKE_TEARS (3,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=32
+[2026.10.22-06.44.22:278][749]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=32
+[2026.10.22-06.44.22:278][749]LogSFTerrainSpike: Display: SPIKE_TEARS (3,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=32
+[2026.10.22-06.44.22:281][749]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=32 netmode=1 kind=0 c=(5402,3152,-4) r=192 chunks=4 tris=8230 extract_ms=10.61 upload_collision_ms=10.96 total_ms=21.64 latency_ms=0.0 hash=1438851646
+[2026.10.22-06.44.22:281][749]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 34 random result=applied
+[2026.10.22-06.44.23:315][775]LogSFTerrainSpike: Display: SPIKE_TEARS (1,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=33
+[2026.10.22-06.44.23:315][775]LogSFTerrainSpike: Display: SPIKE_TEARS (2,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=33
+[2026.10.22-06.44.23:315][775]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=33
+[2026.10.22-06.44.23:315][775]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=33
+[2026.10.22-06.44.23:315][775]LogSFTerrainSpike: Display: SPIKE_TEARS (1,0,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=33
+[2026.10.22-06.44.23:315][775]LogSFTerrainSpike: Display: SPIKE_TEARS (2,0,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=33
+[2026.10.22-06.44.23:315][775]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=33
+[2026.10.22-06.44.23:315][775]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=33
+[2026.10.22-06.44.23:318][775]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=33 netmode=1 kind=0 c=(3226,1827,179) r=163 chunks=8 tris=11190 extract_ms=14.14 upload_collision_ms=11.80 total_ms=26.02 latency_ms=0.0 hash=1108295191
+[2026.10.22-06.44.23:318][775]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 35 random result=applied
+[2026.10.22-06.44.24:335][804]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=34
+[2026.10.22-06.44.24:336][804]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=34
+[2026.10.22-06.44.24:336][804]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=34
+[2026.10.22-06.44.24:336][804]LogSFTerrainSpike: Display: SPIKE_TEARS (3,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=34
+[2026.10.22-06.44.24:336][804]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=34
+[2026.10.22-06.44.24:336][804]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=34
+[2026.10.22-06.44.24:336][804]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=34
+[2026.10.22-06.44.24:336][804]LogSFTerrainSpike: Display: SPIKE_TEARS (3,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=34
+[2026.10.22-06.44.24:338][804]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=34 netmode=1 kind=0 c=(4914,3136,38) r=264 chunks=8 tris=14614 extract_ms=15.65 upload_collision_ms=14.89 total_ms=30.68 latency_ms=0.0 hash=166661608
+[2026.10.22-06.44.24:338][804]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 36 random result=applied
+[2026.10.22-06.44.25:261][832]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=2 check=35
+[2026.10.22-06.44.25:261][832]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=35
+[2026.10.22-06.44.25:264][832]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=35 netmode=1 kind=1 c=(2408,2294,108) r=171 chunks=2 tris=3298 extract_ms=3.69 upload_collision_ms=3.55 total_ms=7.30 latency_ms=0.0 hash=-505597327
+[2026.10.22-06.44.25:264][832]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 37 random result=applied
+[2026.10.22-06.44.26:281][863]LogSFTerrainSpike: Display: SPIKE_TEARS (1,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=36
+[2026.10.22-06.44.26:281][863]LogSFTerrainSpike: Display: SPIKE_TEARS (1,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=36
+[2026.10.22-06.44.26:283][863]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=36 netmode=1 kind=1 c=(2127,4047,9) r=162 chunks=2 tris=2840 extract_ms=4.20 upload_collision_ms=3.28 total_ms=7.56 latency_ms=0.0 hash=-1330446230
+[2026.10.22-06.44.26:283][863]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 38 random result=applied
+[2026.10.22-06.44.27:294][893]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=2 check=37
+[2026.10.22-06.44.27:294][893]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=37
+[2026.10.22-06.44.27:294][893]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=2 check=37
+[2026.10.22-06.44.27:294][893]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=37
+[2026.10.22-06.44.27:297][893]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=37 netmode=1 kind=0 c=(2910,2034,160) r=214 chunks=4 tris=6564 extract_ms=6.65 upload_collision_ms=7.04 total_ms=13.77 latency_ms=0.0 hash=-1771601521
+[2026.10.22-06.44.27:297][893]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 39 random result=applied
+[2026.10.22-06.44.28:299][922]LogSFTerrainSpike: Display: SPIKE_TEARS (0,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=38
+[2026.10.22-06.44.28:299][922]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=2 check=38
+[2026.10.22-06.44.28:299][922]LogSFTerrainSpike: Display: SPIKE_TEARS (0,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=38
+[2026.10.22-06.44.28:299][922]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=2 check=38
+[2026.10.22-06.44.28:301][922]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=38 netmode=1 kind=0 c=(1622,2159,-94) r=347 chunks=4 tris=6674 extract_ms=7.39 upload_collision_ms=7.30 total_ms=14.89 latency_ms=0.0 hash=-1175493330
+[2026.10.22-06.44.28:301][922]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 40 random result=applied
+[2026.10.22-06.44.29:365][952]LogSFTerrainSpike: Display: SPIKE_TEARS (1,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=39
+[2026.10.22-06.44.29:365][952]LogSFTerrainSpike: Display: SPIKE_TEARS (2,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=39
+[2026.10.22-06.44.29:365][952]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=2 check=39
+[2026.10.22-06.44.29:365][952]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=39
+[2026.10.22-06.44.29:365][952]LogSFTerrainSpike: Display: SPIKE_TEARS (1,0,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=39
+[2026.10.22-06.44.29:365][952]LogSFTerrainSpike: Display: SPIKE_TEARS (2,0,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=39
+[2026.10.22-06.44.29:365][952]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=3 check=39
+[2026.10.22-06.44.29:365][952]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=39
+[2026.10.22-06.44.29:367][952]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=39 netmode=1 kind=0 c=(3467,1798,218) r=389 chunks=8 tris=12458 extract_ms=13.70 upload_collision_ms=12.35 total_ms=26.40 latency_ms=0.0 hash=-723117799
+[2026.10.22-06.44.29:367][952]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 41 random result=applied
+[2026.10.22-06.44.30:267][979]LogSFTerrainSpike: Display: SPIKE_TEARS (2,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=40
+[2026.10.22-06.44.30:270][979]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=40 netmode=1 kind=1 c=(3760,5691,466) r=252 chunks=1 tris=3448 extract_ms=2.04 upload_collision_ms=2.93 total_ms=5.06 latency_ms=0.0 hash=-1670705793
+[2026.10.22-06.44.30:270][979]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 42 random result=applied
+[2026.10.22-06.44.31:348][ 10]LogSFTerrainSpike: Display: SPIKE_TEARS (1,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=41
+[2026.10.22-06.44.31:348][ 10]LogSFTerrainSpike: Display: SPIKE_TEARS (2,0,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=41
+[2026.10.22-06.44.31:348][ 10]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=6 check=41
+[2026.10.22-06.44.31:348][ 10]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=2 check=41
+[2026.10.22-06.44.31:348][ 10]LogSFTerrainSpike: Display: SPIKE_TEARS (1,0,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=41
+[2026.10.22-06.44.31:348][ 10]LogSFTerrainSpike: Display: SPIKE_TEARS (2,0,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=41
+[2026.10.22-06.44.31:348][ 10]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=7 check=41
+[2026.10.22-06.44.31:348][ 10]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=9 check=41
+[2026.10.22-06.44.31:351][ 10]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=41 netmode=1 kind=1 c=(3304,1832,195) r=236 chunks=8 tris=13186 extract_ms=17.17 upload_collision_ms=14.32 total_ms=31.64 latency_ms=0.0 hash=1602150717
+[2026.10.22-06.44.31:351][ 10]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 43 random result=applied
+[2026.10.22-06.44.32:318][ 38]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=6 check=42
+[2026.10.22-06.44.32:318][ 38]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=2 check=42
+[2026.10.22-06.44.32:318][ 38]LogSFTerrainSpike: Display: SPIKE_TEARS (1,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=42
+[2026.10.22-06.44.32:318][ 38]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=42
+[2026.10.22-06.44.32:318][ 38]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=7 check=42
+[2026.10.22-06.44.32:318][ 38]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=9 check=42
+[2026.10.22-06.44.32:318][ 38]LogSFTerrainSpike: Display: SPIKE_TEARS (1,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=42
+[2026.10.22-06.44.32:318][ 38]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=42
+[2026.10.22-06.44.32:321][ 38]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=42 netmode=1 kind=0 c=(3403,3515,72) r=209 chunks=8 tris=13942 extract_ms=14.59 upload_collision_ms=14.00 total_ms=28.69 latency_ms=0.0 hash=-109023688
+[2026.10.22-06.44.32:321][ 38]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 44 random result=applied
+[2026.10.22-06.44.33:350][ 67]LogSFTerrainSpike: Display: SPIKE_TEARS (1,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=43
+[2026.10.22-06.44.33:350][ 67]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=43
+[2026.10.22-06.44.33:350][ 67]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=43
+[2026.10.22-06.44.33:350][ 67]LogSFTerrainSpike: Display: SPIKE_TEARS (2,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=43
+[2026.10.22-06.44.33:350][ 67]LogSFTerrainSpike: Display: SPIKE_TEARS (1,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=43
+[2026.10.22-06.44.33:350][ 67]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=43
+[2026.10.22-06.44.33:350][ 67]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=4 check=43
+[2026.10.22-06.44.33:350][ 67]LogSFTerrainSpike: Display: SPIKE_TEARS (2,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=43
+[2026.10.22-06.44.33:353][ 67]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=43 netmode=1 kind=0 c=(3592,4944,162) r=323 chunks=8 tris=14386 extract_ms=16.18 upload_collision_ms=15.86 total_ms=32.25 latency_ms=0.0 hash=153387350
+[2026.10.22-06.44.33:353][ 67]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 45 random result=applied
+[2026.10.22-06.44.34:280][ 95]LogSFTerrainSpike: Display: SPIKE_TEARS (3,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=44
+[2026.10.22-06.44.34:280][ 95]LogSFTerrainSpike: Display: SPIKE_TEARS (3,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=44
+[2026.10.22-06.44.34:280][ 95]LogSFTerrainSpike: Display: SPIKE_TEARS (3,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=44
+[2026.10.22-06.44.34:280][ 95]LogSFTerrainSpike: Display: SPIKE_TEARS (3,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=44
+[2026.10.22-06.44.34:282][ 95]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=44 netmode=1 kind=1 c=(5586,4873,182) r=152 chunks=4 tris=5664 extract_ms=8.14 upload_collision_ms=6.72 total_ms=15.03 latency_ms=0.0 hash=-1164628857
+[2026.10.22-06.44.34:282][ 95]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 46 random result=applied
+[2026.10.22-06.44.35:340][125]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=7 check=45
+[2026.10.22-06.44.35:340][125]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=2 check=45
+[2026.10.22-06.44.35:340][125]LogSFTerrainSpike: Display: SPIKE_TEARS (1,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=45
+[2026.10.22-06.44.35:340][125]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=45
+[2026.10.22-06.44.35:340][125]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=9 check=45
+[2026.10.22-06.44.35:340][125]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=9 check=45
+[2026.10.22-06.44.35:340][125]LogSFTerrainSpike: Display: SPIKE_TEARS (1,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=45
+[2026.10.22-06.44.35:340][125]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=45
+[2026.10.22-06.44.35:343][125]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=45 netmode=1 kind=1 c=(2848,3177,203) r=296 chunks=8 tris=14502 extract_ms=15.81 upload_collision_ms=15.94 total_ms=31.91 latency_ms=0.0 hash=93710207
+[2026.10.22-06.44.35:343][125]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 47 random result=applied
+[2026.10.22-06.44.36:321][153]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=7 check=46
+[2026.10.22-06.44.36:321][153]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=2 check=46
+[2026.10.22-06.44.36:321][153]LogSFTerrainSpike: Display: SPIKE_TEARS (1,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=46
+[2026.10.22-06.44.36:321][153]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=46
+[2026.10.22-06.44.36:321][153]LogSFTerrainSpike: Display: SPIKE_TEARS (1,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=12 check=46
+[2026.10.22-06.44.36:321][153]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=9 check=46
+[2026.10.22-06.44.36:321][153]LogSFTerrainSpike: Display: SPIKE_TEARS (1,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=46
+[2026.10.22-06.44.36:321][153]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=46
+[2026.10.22-06.44.36:323][153]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=46 netmode=1 kind=0 c=(2962,2914,246) r=158 chunks=8 tris=14630 extract_ms=19.09 upload_collision_ms=18.88 total_ms=38.04 latency_ms=0.0 hash=577601235
+[2026.10.22-06.44.36:323][153]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 48 random result=applied
+[2026.10.22-06.44.37:337][182]LogSFTerrainSpike: Display: SPIKE_TEAR_RAY s=(4837.5,3562.5,450.0) e=(4837.5,3562.5,-450.0) hit=1 at=(4837.5,3562.5,10.5) f_start=-0.500 f_hit_before=-0.159 f_end=0.500
+[2026.10.22-06.44.37:350][182]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=2 check=47
+[2026.10.22-06.44.37:350][182]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=47
+[2026.10.22-06.44.37:350][182]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=47
+[2026.10.22-06.44.37:350][182]LogSFTerrainSpike: Display: SPIKE_TEARS (3,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=2 check=47
+[2026.10.22-06.44.37:350][182]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=9 check=47
+[2026.10.22-06.44.37:350][182]LogSFTerrainSpike: Display: SPIKE_TEARS (3,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=47
+[2026.10.22-06.44.37:350][182]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=47
+[2026.10.22-06.44.37:350][182]LogSFTerrainSpike: Display: SPIKE_TEARS (3,2,0) 1 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=1 nonmanifold_edges=1 check=47
+[2026.10.22-06.44.37:353][182]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=47 netmode=1 kind=0 c=(4716,3299,13) r=283 chunks=8 tris=15858 extract_ms=21.36 upload_collision_ms=19.97 total_ms=41.52 latency_ms=0.0 hash=499434706
+[2026.10.22-06.44.37:353][182]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 49 random result=applied
+[2026.10.22-06.44.38:291][210]LogSFTerrainSpike: Display: SPIKE_TEARS (1,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=48
+[2026.10.22-06.44.38:291][210]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=48
+[2026.10.22-06.44.38:291][210]LogSFTerrainSpike: Display: SPIKE_TEARS (1,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=48
+[2026.10.22-06.44.38:291][210]LogSFTerrainSpike: Display: SPIKE_TEARS (1,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=4 check=48
+[2026.10.22-06.44.38:293][210]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=48 netmode=1 kind=0 c=(2400,4633,-57) r=154 chunks=4 tris=7846 extract_ms=8.00 upload_collision_ms=8.53 total_ms=16.58 latency_ms=0.0 hash=782472093
+[2026.10.22-06.44.38:293][210]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 50 random result=applied
+[2026.10.22-06.44.39:298][240]LogSFTerrainSpike: Display: SPIKE_TEARS (0,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=49
+[2026.10.22-06.44.39:298][240]LogSFTerrainSpike: Display: SPIKE_TEARS (1,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=49
+[2026.10.22-06.44.39:298][240]LogSFTerrainSpike: Display: SPIKE_TEARS (0,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=49
+[2026.10.22-06.44.39:298][240]LogSFTerrainSpike: Display: SPIKE_TEARS (1,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=49
+[2026.10.22-06.44.39:300][240]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=49 netmode=1 kind=0 c=(1291,3706,71) r=243 chunks=4 tris=6110 extract_ms=6.87 upload_collision_ms=6.47 total_ms=13.43 latency_ms=0.0 hash=-783654830
+[2026.10.22-06.44.39:301][240]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 51 random result=applied
+[2026.10.22-06.44.40:323][270]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=2 check=50
+[2026.10.22-06.44.40:324][270]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=1 check=50
+[2026.10.22-06.44.40:324][270]LogSFTerrainSpike: Display: SPIKE_TEARS (2,1,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=9 check=50
+[2026.10.22-06.44.40:324][270]LogSFTerrainSpike: Display: SPIKE_TEARS (2,2,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=50
+[2026.10.22-06.44.40:326][270]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=50 netmode=1 kind=0 c=(4154,3034,158) r=281 chunks=4 tris=7614 extract_ms=8.76 upload_collision_ms=9.50 total_ms=18.43 latency_ms=0.0 hash=-277476535
+[2026.10.22-06.44.40:326][270]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 52 random result=applied
+[2026.10.22-06.44.41:299][299]LogSFTerrainSpike: Display: SPIKE_TEARS (3,3,-1) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=51
+[2026.10.22-06.44.41:299][299]LogSFTerrainSpike: Display: SPIKE_TEARS (3,3,0) 0 open=0 border_mismatch=0 flipped=0 degenerate=0 ray_holes=0 nonmanifold_edges=0 check=51
+[2026.10.22-06.44.41:302][299]LogSFTerrainSpike: Display: TERRAIN_SPIKE_EDIT n=51 netmode=1 kind=1 c=(5624,5533,75) r=293 chunks=2 tris=3194 extract_ms=5.05 upload_collision_ms=3.87 total_ms=9.09 latency_ms=0.0 hash=-2004971412
+[2026.10.22-06.44.41:302][299]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STEP 53 random result=applied
+[2026.10.22-06.44.42:266][329]LogSFTerrainSpike: Display: TERRAIN_SPIKE_STATS {"netmode":1,"chunks":108,"tris":107670,"density_bytes":7077888,"cpu_mesh_bytes":10751912,"initial_build_ms":356.9,"edits":51,"edit_ms_p50":15.03,"edit_ms_p95":33.92,"edit_ms_max":41.52,"extract_ms_p95":18.33,"upload_collision_ms_p95":16.19,"upload_collision_ms_max":19.97,"tear_checks":51,"tears_total":1,"legacy_winding":0,"chunks_per_edit_max":8,"latency_ms_p50":0.0,"latency_ms_p95":0.0,"latency_ms_max":0.0,"hash":-2004971412}
+[2026.10.22-06.44.42:296][329]LogSFTerrainSpike: Display: TERRAIN_SPIKE_SCENARIO_DONE open_edges_interior=0

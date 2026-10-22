@@ -1,0 +1,2 @@
+[2026.10.22-06.10.06:132][  0]LogPython: MESH_TERRAIN_SAVE saved=46 skipped_non_game=[]
+[2026.10.22-06.10.06:132][  0]LogPython: MESH_TERRAIN_MAP_CREATED /Game/Frontier/Maps/Dev/TerrainSpike/TerrainSpike_MeshTerrain import_s=0.09 lo_m=-4.71 hi_m=6.61 definition=/Game/Frontier/Maps/Dev/TerrainSpike/MPD_TerrainSpike.MPD_TerrainSpike class=MeshPartition
