@@ -6,6 +6,10 @@
 #include "EnhancedInputComponent.h"
 #include "InputAction.h"
 #include "Combat/SFCombatPilot.h"
+#include "Blueprint/UserWidget.h"
+#include "Blueprint/WidgetTree.h"
+#include "Misc/FileHelper.h"
+#include "Misc/Paths.h"
 #include "Gathering/SFGatheringHud.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Gathering/SFGatheringSkillsPanel.h"
@@ -2600,8 +2604,48 @@ void ASFPlayerController::TickClaimScenario()
 }
 #endif
 
+
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+// Dev (UI evidence): every visible widget of every viewport UserWidget with its real Slate rect in 1920x1080 viewport pixels, written to
+// Saved/UiRects.json for tools/ui_pixel_diff.py (exact live geometry, including dark-on-dark edges).
+static void WriteUiRects(UWorld* World)
+{
+    struct FEntry { FString Owner, Name, Class; FVector2D Pos, Size; };
+    TArray<FEntry> Entries;
+    FVector2D Origin = FVector2D::ZeroVector; double Scale = 1.0, BestArea = 0.0;
+    for (TObjectIterator<UUserWidget> It; It; ++It)
+    {
+        UUserWidget* Root = *It;
+        if (!Root->IsInViewport() || !Root->IsVisible() || Root->GetWorld() != World || !Root->WidgetTree) { continue; }
+        const FGeometry RootGeometry = Root->GetCachedGeometry();
+        const double Area = RootGeometry.GetAbsoluteSize().X * RootGeometry.GetAbsoluteSize().Y;
+        if (Area > BestArea) { BestArea = Area; Origin = FVector2D(RootGeometry.GetAbsolutePosition()); Scale = RootGeometry.GetAbsoluteSize().X > 0.f ? 1920.0 / RootGeometry.GetAbsoluteSize().X : 1.0; }
+        Root->WidgetTree->ForEachWidget([&](UWidget* Widget)
+        {
+            if (!Widget) { return; }
+            for (const UWidget* Node = Widget; Node; Node = Node->GetParent()) { if (!Node->IsVisible()) { return; } }  // a collapsed ancestor leaves stale geometry
+            const FGeometry Geometry = Widget->GetCachedGeometry();
+            if (Geometry.GetAbsoluteSize().X < 1.f || Geometry.GetAbsoluteSize().Y < 1.f) { return; }
+            Entries.Add({Root->GetName(), Widget->GetName(), Widget->GetClass()->GetName(), FVector2D(Geometry.GetAbsolutePosition()), FVector2D(Geometry.GetAbsoluteSize())});
+        });
+    }
+    FString Json = TEXT("[\n");
+    for (const FEntry& Entry : Entries)
+    {
+        const FVector2D Pos = (Entry.Pos - Origin) * Scale, Size = Entry.Size * Scale;
+        Json += FString::Printf(TEXT("{\"owner\":\"%s\",\"name\":\"%s\",\"class\":\"%s\",\"rect\":[%.1f,%.1f,%.1f,%.1f]},\n"), *Entry.Owner, *Entry.Name, *Entry.Class, Pos.X, Pos.Y, Size.X, Size.Y);
+    }
+    Json += TEXT("{}]\n");
+    FFileHelper::SaveStringToFile(Json, *(FPaths::ProjectSavedDir() / TEXT("UiRects.json")));
+    UE_LOG(LogTemp, Display, TEXT("UI_RECTS_WRITTEN %d"), Entries.Num());
+}
+#endif
+
 void ASFPlayerController::SFUi(const FString& Screen)
 {
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (Screen.Equals(TEXT("rects"), ESearchCase::IgnoreCase)) { WriteUiRects(GetWorld()); return; }
+#endif
     if (Screen.Equals(TEXT("inventory"), ESearchCase::IgnoreCase)) { ToggleInventoryPanel(); }
     else if (Screen.Equals(TEXT("market"), ESearchCase::IgnoreCase)) { ToggleMarketDemo(); }
     else if (Screen.Equals(TEXT("trade"), ESearchCase::IgnoreCase)) { ToggleTradeDemo(); }

@@ -1,0 +1,492 @@
+[
+ {
+  "widget": "SizeBox:SizeBox_16",
+  "name": "target frame",
+  "rect": [
+   735,
+   32,
+   433,
+   74
+  ],
+  "found": true,
+  "match": 0.74,
+  "d_left": 20,
+  "d_top": 11,
+  "d_width": -23,
+  "d_height": -4,
+  "de": [
+   [
+    "fill dark",
+    7.7
+   ],
+   [
+    "fill dark",
+    43.4
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "target level cap diamond",
+  "rect": [
+   735,
+   32,
+   57,
+   55
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "fill dark",
+    25.9
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "VerticalBox:VerticalBox_0",
+  "name": "target HP bar",
+  "rect": [
+   762,
+   76,
+   403,
+   29
+  ],
+  "found": true,
+  "match": 0.48,
+  "d_left": 15,
+  "d_top": -27,
+  "d_width": -37,
+  "d_height": 29,
+  "de": [
+   [
+    "hp red fill",
+    32.2
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "Overlay:Overlay_0",
+  "name": "level badge hex",
+  "rect": [
+   37,
+   894,
+   115,
+   158
+  ],
+  "found": true,
+  "match": 0.71,
+  "d_left": 1,
+  "d_top": 27,
+  "d_width": 1,
+  "d_height": -42,
+  "de": [
+   [
+    "badge fill dark",
+    2.8
+   ],
+   [
+    "badge fill dark",
+    25.5
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_1",
+  "name": "HP bar",
+  "rect": [
+   157,
+   925,
+   396,
+   44
+  ],
+  "found": true,
+  "match": 0.54,
+  "d_left": 7,
+  "d_top": 17,
+  "d_width": -16,
+  "d_height": -12,
+  "de": [
+   [
+    "hp red fill",
+    8.0
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_4",
+  "name": "stamina bar",
+  "rect": [
+   157,
+   972,
+   396,
+   42
+  ],
+  "found": true,
+  "match": 0.5,
+  "d_left": 7,
+  "d_top": 17,
+  "d_width": -16,
+  "d_height": -10,
+  "de": [
+   [
+    "stamina amber fill",
+    14.1
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_12",
+  "name": "prompt bar",
+  "rect": [
+   848,
+   838,
+   239,
+   60
+  ],
+  "found": true,
+  "match": 0.33,
+  "d_left": 20,
+  "d_top": 28,
+  "d_width": -54,
+  "d_height": -8,
+  "de": [
+   [
+    "fill dark",
+    5.1
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "keycap F",
+  "rect": [
+   885,
+   846,
+   43,
+   43
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "fill dark",
+    4.7
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_1",
+  "name": "hotbar slot 1 (axe)",
+  "rect": [
+   657,
+   925,
+   95,
+   99
+  ],
+  "found": true,
+  "match": 0.61,
+  "d_left": 9,
+  "d_top": 24,
+  "d_width": -7,
+  "d_height": -11,
+  "de": [
+   [
+    "fill dark",
+    5.8
+   ],
+   [
+    "fill dark",
+    11.4
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_5",
+  "name": "hotbar slot 3 (sword)",
+  "rect": [
+   857,
+   925,
+   95,
+   99
+  ],
+  "found": true,
+  "match": 0.61,
+  "d_left": 9,
+  "d_top": 24,
+  "d_width": -7,
+  "d_height": -11,
+  "de": [
+   [
+    "fill dark",
+    2.3
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_11",
+  "name": "hotbar slot 6 (campfire)",
+  "rect": [
+   1157,
+   925,
+   98,
+   99
+  ],
+  "found": true,
+  "match": 0.61,
+  "d_left": 9,
+  "d_top": 24,
+  "d_width": -10,
+  "d_height": -11,
+  "de": [
+   [
+    "fill dark",
+    6.4
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "VerticalBox:VerticalBox_1",
+  "name": "minimap ring",
+  "rect": [
+   1609,
+   17,
+   286,
+   287
+  ],
+  "found": true,
+  "match": 0.81,
+  "d_left": 42,
+  "d_top": 5,
+  "d_width": -36,
+  "d_height": -1,
+  "de": [
+   [
+    "player arrow white",
+    37.0
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_19",
+  "name": "minimap footer",
+  "rect": [
+   1650,
+   284,
+   203,
+   33
+  ],
+  "found": true,
+  "match": 0.46,
+  "d_left": 36,
+  "d_top": -8,
+  "d_width": -23,
+  "d_height": -1,
+  "de": [
+   [
+    "fill dark",
+    5.3
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_0",
+  "name": "quest tracker frame",
+  "rect": [
+   1612,
+   338,
+   286,
+   160
+  ],
+  "found": true,
+  "match": 0.8,
+  "d_left": 1,
+  "d_top": 0,
+  "d_width": -6,
+  "d_height": -30,
+  "de": [
+   [
+    "fill dark",
+    9.2
+   ],
+   [
+    "fill dark",
+    32.1
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "TextBlock:TextBlock_0",
+  "name": "quest title Silverbrook",
+  "rect": [
+   1632,
+   350,
+   148,
+   29
+  ],
+  "found": true,
+  "match": 0.33,
+  "d_left": -3,
+  "d_top": 4,
+  "d_width": 100,
+  "d_height": 14,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "quest checkbox row 1",
+  "rect": [
+   1631,
+   396,
+   22,
+   22
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "fill dark",
+    10.2
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "VerticalBox:VerticalBox_0",
+  "name": "toast Item gained",
+  "rect": [
+   1612,
+   508,
+   286,
+   76
+  ],
+  "found": true,
+  "match": 0.37,
+  "d_left": 1,
+  "d_top": -36,
+  "d_width": -6,
+  "d_height": 2,
+  "de": [
+   [
+    "fill dark",
+    6.0
+   ],
+   [
+    "fill dark",
+    6.1
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "toast Skill gain",
+  "rect": [
+   1612,
+   589,
+   286,
+   76
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "fill dark",
+    28.4
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "toast Warning",
+  "rect": [
+   1612,
+   670,
+   286,
+   76
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "fill dark",
+    29.4
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ }
+]

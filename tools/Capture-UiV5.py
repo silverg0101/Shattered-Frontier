@@ -40,6 +40,11 @@ def set_cursor(x, y):
     ctypes.windll.user32.SetCursorPos(point.x, point.y)
 
 
+def shoot(world):
+    u.SystemLibrary.execute_console_command(world, 'SFUi rects')  # exact widget rects of this frame -> Saved/UiRects.json
+    u.SystemLibrary.execute_console_command(world, 'Shot showui')
+
+
 def collect():
     if not state['pending']:
         return
@@ -49,6 +54,10 @@ def collect():
         try:
             newest.replace(out / (state['pending_name'] + '-live.png'))
             state['pending'] = False
+            try:
+                import shutil; shutil.copyfile(str(Path(u.Paths.project_saved_dir()) / 'UiRects.json'), str(out / (state['pending_name'] + '-live.json')))
+            except OSError:
+                pass
             u.log('UI_CAPTURE_SAVED ' + str(out / (state['pending_name'] + '-live.png')))
         except OSError:
             pass
@@ -73,7 +82,7 @@ def tick(delta):
             state['pending'] = True
             state['pending_name'] = name
             state['defeat_shot'] = True
-            u.SystemLibrary.execute_console_command(world, 'Shot showui')
+            shoot(world)
         while state['index'] < len(steps) and state['time'] >= steps[state['index']][0]:
             action = steps[state['index']][1]
             state['index'] += 1
@@ -84,7 +93,7 @@ def tick(delta):
             elif action == 'shot' or action.startswith('shot:'):
                 state['pending'] = True
                 state['pending_name'] = action[5:] if action.startswith('shot:') else name
-                u.SystemLibrary.execute_console_command(world, 'Shot showui')
+                shoot(world)
             elif action == 'quit':
                 if state['pending']:
                     state['index'] -= 1

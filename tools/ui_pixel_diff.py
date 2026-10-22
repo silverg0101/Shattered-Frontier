@@ -62,19 +62,40 @@ def gray(img):
     return np.asarray(img.convert('L'), dtype=np.float64)
 
 
-def match_patch(concept_g, live_g, cx, cy):
-    """Top-left of the PATCH x PATCH concept patch at (cx, cy) found in the live frame within +-SEARCH; returns (dx, dy, score)."""
-    h, w = concept_g.shape
-    cx, cy = int(np.clip(cx, 0, w - PATCH)), int(np.clip(cy, 0, h - PATCH))
-    tpl = concept_g[cy:cy + PATCH, cx:cx + PATCH]; tpl = tpl - tpl.mean(); tn = np.sqrt((tpl ** 2).sum()) or 1.0
-    best = (0, 0, -2.0)
-    for dy in range(-SEARCH, SEARCH + 1):
-        for dx in range(-SEARCH, SEARCH + 1):
-            x, y = cx + dx, cy + dy
-            if x < 0 or y < 0 or x + PATCH > w or y + PATCH > h: continue
-            win = live_g[y:y + PATCH, x:x + PATCH]; win = win - win.mean(); wn = np.sqrt((win ** 2).sum()) or 1.0
-            s = float((tpl * win).sum() / (tn * wn))
-            if s > best[2]: best = (dx, dy, s)
+def edge_pos(g, side, x, y, w, h):
+    """Strongest intensity edge (gradient peak of the strip-averaged profile) near one side of the rect: returns (position, strength)."""
+    if side in 'lr':
+        c = x if side == 'l' else x + w; lo, hi = max(1, c - SEARCH), min(g.shape[1] - 2, c + SEARCH)
+        y0, y1 = int(y + h * 0.25), max(int(y + h * 0.75), int(y + h * 0.25) + 1)
+        prof = g[y0:y1, :].mean(axis=0)
+    else:
+        c = y if side == 't' else y + h; lo, hi = max(1, c - SEARCH), min(g.shape[0] - 2, c + SEARCH)
+        x0, x1 = int(x + w * 0.25), max(int(x + w * 0.75), int(x + w * 0.25) + 1)
+        prof = g[:, x0:x1].mean(axis=1)
+    grad = np.abs(np.convolve(prof, [1, 0, -1], mode='same'))
+    seg = grad[lo:hi + 1]
+    # nearest of the strong edges (>= 60% of the strongest) to the annotated side: borders beat inner texture
+    strong = np.where(seg >= 0.6 * seg.max())[0] if seg.max() > 0 else []
+    if len(strong) == 0: return c, 0.0
+    best = min(strong, key=lambda i: abs(lo + i - c))
+    return lo + int(best), float(seg.max())
+
+
+def iou(a, b):
+    ax, ay, aw, ah = a; bx, by, bw, bh = b
+    iw, ih = min(ax + aw, bx + bw) - max(ax, bx), min(ay + ah, by + bh) - max(ay, by)
+    if iw <= 0 or ih <= 0: return 0.0
+    return iw * ih / (aw * ah + bw * bh - iw * ih)
+
+
+def live_rect(widgets, rect):
+    """The live widget (exact Slate rect from <live>.json) that best overlaps the concept rect; prefers the smallest on ties. None if IoU < 0.25."""
+    best, best_key = None, (0.25, 0)
+    for w in widgets:
+        r = w.get('rect')
+        if not r: continue
+        key = (round(iou(rect, r), 3), -r[2] * r[3])
+        if key > best_key: best, best_key = w, key
     return best
 
 
@@ -88,6 +109,8 @@ def run(screen, live_path, out_root):
     concept = load(CONCEPTS / spec['concept']); live = load(live_path)
     out = Path(out_root) / screen; out.mkdir(parents=True, exist_ok=True)
     cg, lg = gray(concept), gray(live)
+    jpath = Path(live_path).with_suffix('.json')
+    widgets = [w for w in json.loads(jpath.read_text()) if w] if jpath.exists() else None
     diff = np.abs(np.asarray(concept, dtype=np.int16) - np.asarray(live, dtype=np.int16)).sum(axis=2) / 3
     heat = np.zeros((1080, 1920, 3), dtype=np.uint8); heat[..., 0] = np.clip(diff * 3, 0, 255); heat[..., 1] = np.clip(255 - diff * 3, 0, 255) // 4
     Image.fromarray(heat).save(out / 'diff-heat.png')
@@ -96,10 +119,20 @@ def run(screen, live_path, out_root):
     rows, ok_all = [], True
     for el in spec['elements']:
         x, y, w, h = el['rect']
-        tl = match_patch(cg, lg, x, y); br = match_patch(cg, lg, x + w - PATCH, y + h - PATCH)
-        found = min(tl[2], br[2]) >= 0.5  # below this the element is not where the template search could see it
-        dl, dt, dr, db = (tl[0], tl[1], br[0], br[1]) if found else (None,) * 4
-        dw = (dr - dl) if found else None; dh_ = (db - dt) if found else None
+        match_name = ''
+        if widgets is not None:  # exact live geometry from the engine
+            w = live_rect(widgets, el['rect']); found = w is not None
+            if found:
+                lx, ly, lw, lh = w['rect']; dl, dt = round(lx - x), round(ly - y); dw, dh_ = round(lw - el['rect'][2]), round(lh - el['rect'][3])
+                match_name = '%s:%s' % (w['class'], w['name'])
+            else: dl = dt = dw = dh_ = None
+            tl = br = (0, 0, iou(el['rect'], w['rect']) if found else 0.0)
+        else:  # no widget dump: strongest visible edges per side
+            ce = [edge_pos(cg, k, x, y, w, h) for k in 'ltrb']; le = [edge_pos(lg, k, x, y, w, h) for k in 'ltrb']
+            found = all(c[1] >= 4 and l[1] >= 4 for c, l in zip(ce, le))
+            dl, dt, dr, db = [l[0] - c[0] for c, l in zip(ce, le)] if found else (None,) * 4
+            dw = (dr - dl) if found else None; dh_ = (db - dt) if found else None
+            tl = br = (0, 0, min(min(c[1], l[1]) for c, l in zip(ce, le)) / 100.0)
         geo = found and max(abs(dl), abs(dt), abs(dw), abs(dh_)) <= TOL_PX
         des = []
         for sx, sy, label in el.get('samples', []):
@@ -107,17 +140,17 @@ def run(screen, live_path, out_root):
             c = srgb_to_lab(sample(concept, sx, sy)); l = srgb_to_lab(sample(live, sx + ox, sy + oy))
             des.append((label, round(de2000(c, l), 1)))
         col = all(d <= TOL_DE for _, d in des)
-        ok = bool(geo and col); ok_all &= ok
-        rows.append(dict(name=el['name'], rect=el['rect'], found=found, match=round(min(tl[2], br[2]), 2), d_left=dl, d_top=dt, d_width=dw, d_height=dh_, de=des, geometry='PASS' if geo else 'FAIL', colour='PASS' if col else 'FAIL', verdict='PASS' if ok else 'FAIL'))
+        ok = bool(col and (geo or not found)); ok_all &= ok and found  # an unmeasurable edge is REVIEW for the reviewer, never a silent PASS
+        rows.append(dict(widget=match_name, name=el['name'], rect=el['rect'], found=found, match=round(min(tl[2], br[2]), 2), d_left=dl, d_top=dt, d_width=dw, d_height=dh_, de=des, geometry=('PASS' if geo else 'FAIL') if found else 'UNMEASURED', colour='PASS' if col else 'FAIL', verdict=('PASS' if ok else 'FAIL') if found else ('REVIEW' if col else 'FAIL')))
     (out / 'report.json').write_text(json.dumps(rows, indent=1))
-    lines = ['# %s: pixel diff, %s' % (screen, 'PASS' if ok_all else 'FAIL'), '', 'Tolerance: geometry +-%d px (left/top/width/height), colour dE2000 <= %.0f. dx/dy = live minus concept; "-" = the corner patch was not found (match < 0.5).' % (TOL_PX, TOL_DE), '',
-             '| element | concept rect | dx | dy | dw | dh | match | colour dE | verdict |', '| --- | --- | --- | --- | --- | --- | --- | --- | --- |']
+    lines = ['# %s: pixel diff, %s' % (screen, 'PASS' if ok_all else 'FAIL'), '', 'REVIEW = the element could not be measured (no live widget overlaps it, or no visible edge); REVIEW never counts as PASS and the reviewer must judge it by eye. Tolerance: geometry +-%d px (left/top/width/height), colour dE2000 <= %.0f. dx/dy = live minus concept; "-" = the corner patch was not found (no visible edge).' % (TOL_PX, TOL_DE), '',
+             '| element | concept rect | live widget | dx | dy | dw | dh | IoU/edge | colour dE | verdict |', '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |']
     for r in rows:
         f = lambda v: '-' if v is None else '%+d' % v
-        lines.append('| %s | %s | %s | %s | %s | %s | %.2f | %s | %s |' % (r['name'], r['rect'], f(r['d_left']), f(r['d_top']), f(r['d_width']), f(r['d_height']), r['match'], ', '.join('%s %.1f' % d for d in r['de']) or '-', r['verdict']))
+        lines.append('| %s | %s | %s | %s | %s | %s | %s | %.2f | %s | %s |' % (r['name'], r['rect'], r.get('widget') or '-', f(r['d_left']), f(r['d_top']), f(r['d_width']), f(r['d_height']), r['match'], ', '.join('%s %.1f' % d for d in r['de']) or '-', r['verdict']))
     lines += ['', 'Images: diff-heat.png (red = large difference), overlay-50.png, flip.gif (concept / live).']
     (out / 'report.md').write_text('\n'.join(lines) + '\n')
-    print(screen, 'PASS' if ok_all else 'FAIL', sum(r['verdict'] == 'PASS' for r in rows), '/', len(rows))
+    print(screen, 'PASS' if ok_all else 'FAIL', sum(r['verdict'] == 'PASS' for r in rows), 'PASS', sum(r['verdict'] == 'REVIEW' for r in rows), 'REVIEW', sum(r['verdict'] == 'FAIL' for r in rows), 'FAIL of', len(rows))
     return ok_all
 
 
@@ -129,6 +162,7 @@ def main():
     ok = True
     for s in screens:
         live = a.live if a.live and not a.all else Path(a.live_dir) / (s + '-live.png')
+        if not Path(live).exists() and (Path(a.live_dir) / ('9-' + s + '-live.png')).exists(): live = Path(a.live_dir) / ('9-' + s + '-live.png')
         if not Path(live).exists(): print(s, 'no live capture', live); ok = False; continue
         ok &= run(s, live, a.out)
     sys.exit(0 if ok else 1)

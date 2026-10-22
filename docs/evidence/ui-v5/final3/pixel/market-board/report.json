@@ -1,0 +1,585 @@
+[
+ {
+  "widget": "Border:Border_1",
+  "name": "modal frame",
+  "rect": [
+   246,
+   109,
+   1430,
+   803
+  ],
+  "found": true,
+  "match": 0.99,
+  "d_left": 4,
+  "d_top": -1,
+  "d_width": -9,
+  "d_height": 7,
+  "de": [
+   [
+    "modal fill",
+    1.8
+   ],
+   [
+    "modal fill",
+    2.9
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "HorizontalBox:HorizontalBox_0",
+  "name": "emblem and title Market Board",
+  "rect": [
+   292,
+   132,
+   392,
+   76
+  ],
+  "found": true,
+  "match": 0.74,
+  "d_left": 12,
+  "d_top": -6,
+  "d_width": 58,
+  "d_height": 9,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_2",
+  "name": "tab Browse (selected)",
+  "rect": [
+   286,
+   221,
+   207,
+   52
+  ],
+  "found": true,
+  "match": 0.77,
+  "d_left": 18,
+  "d_top": 0,
+  "d_width": -17,
+  "d_height": -8,
+  "de": [
+   [
+    "selected tab fill",
+    8.9
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_3",
+  "name": "tab My Listings",
+  "rect": [
+   502,
+   221,
+   208,
+   52
+  ],
+  "found": true,
+  "match": 0.77,
+  "d_left": 4,
+  "d_top": 0,
+  "d_width": -18,
+  "d_height": -8,
+  "de": [
+   [
+    "tab fill",
+    1.3
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_4",
+  "name": "tab Sell",
+  "rect": [
+   719,
+   221,
+   208,
+   52
+  ],
+  "found": true,
+  "match": 0.69,
+  "d_left": -11,
+  "d_top": 0,
+  "d_width": -18,
+  "d_height": -8,
+  "de": [
+   [
+    "tab fill",
+    3.1
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_7",
+  "name": "rail All Items (selected)",
+  "rect": [
+   279,
+   294,
+   222,
+   58
+  ],
+  "found": true,
+  "match": 0.42,
+  "d_left": 25,
+  "d_top": -14,
+  "d_width": -32,
+  "d_height": -10,
+  "de": [
+   [
+    "selected rail fill",
+    7.4
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_9",
+  "name": "rail Weapons",
+  "rect": [
+   279,
+   353,
+   222,
+   58
+  ],
+  "found": true,
+  "match": 0.37,
+  "d_left": 25,
+  "d_top": -17,
+  "d_width": -32,
+  "d_height": -10,
+  "de": [
+   [
+    "rail fill",
+    3.6
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_11",
+  "name": "rail Materials",
+  "rect": [
+   279,
+   412,
+   222,
+   58
+  ],
+  "found": true,
+  "match": 0.32,
+  "d_left": 25,
+  "d_top": -20,
+  "d_width": -32,
+  "d_height": -10,
+  "de": [
+   [
+    "rail fill",
+    3.5
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_13",
+  "name": "rail Consumables",
+  "rect": [
+   279,
+   471,
+   222,
+   58
+  ],
+  "found": true,
+  "match": 0.28,
+  "d_left": 25,
+  "d_top": -23,
+  "d_width": -32,
+  "d_height": -10,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "rail Tools",
+  "rect": [
+   279,
+   531,
+   222,
+   58
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "SizeBox:SizeBox_17",
+  "name": "search field",
+  "rect": [
+   522,
+   295,
+   720,
+   48
+  ],
+  "found": true,
+  "match": 0.46,
+  "d_left": -8,
+  "d_top": -15,
+  "d_width": 8,
+  "d_height": -4,
+  "de": [
+   [
+    "field fill",
+    2.9
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_41",
+  "name": "table header row",
+  "rect": [
+   522,
+   360,
+   720,
+   56
+  ],
+  "found": true,
+  "match": 0.69,
+  "d_left": -8,
+  "d_top": 10,
+  "d_width": 8,
+  "d_height": 0,
+  "de": [
+   [
+    "header fill",
+    23.5
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_49",
+  "name": "table row Iron Axe (selected)",
+  "rect": [
+   522,
+   418,
+   720,
+   70
+  ],
+  "found": true,
+  "match": 0.79,
+  "d_left": -8,
+  "d_top": 9,
+  "d_width": 8,
+  "d_height": -14,
+  "de": [
+   [
+    "selected row fill",
+    8.3
+   ],
+   [
+    "selected row fill",
+    10.5
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_57",
+  "name": "table row Oak Planks",
+  "rect": [
+   522,
+   489,
+   720,
+   70
+  ],
+  "found": true,
+  "match": 0.67,
+  "d_left": -8,
+  "d_top": -5,
+  "d_width": 8,
+  "d_height": -14,
+  "de": [
+   [
+    "row fill",
+    10.4
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "table row River Herbs",
+  "rect": [
+   522,
+   780,
+   720,
+   70
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "row fill",
+    4.5
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_30",
+  "name": "detail card frame",
+  "rect": [
+   1257,
+   290,
+   388,
+   592
+  ],
+  "found": true,
+  "match": 0.73,
+  "d_left": 9,
+  "d_top": -10,
+  "d_width": -48,
+  "d_height": -84,
+  "de": [
+   [
+    "card fill",
+    2.4
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_25",
+  "name": "detail item image well",
+  "rect": [
+   1283,
+   314,
+   338,
+   198
+  ],
+  "found": true,
+  "match": 0.52,
+  "d_left": 7,
+  "d_top": -21,
+  "d_width": -46,
+  "d_height": -48,
+  "de": [
+   [
+    "well fill",
+    2.4
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "detail name Iron Axe",
+  "rect": [
+   1282,
+   526,
+   132,
+   36
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "HorizontalBox:HorizontalBox_17",
+  "name": "detail stat rows",
+  "rect": [
+   1283,
+   598,
+   340,
+   112
+  ],
+  "found": true,
+  "match": 0.25,
+  "d_left": 7,
+  "d_top": 35,
+  "d_width": -48,
+  "d_height": -79,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "Hold to Buy button",
+  "rect": [
+   1281,
+   780,
+   342,
+   78
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "brass fill",
+    21.4
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_1",
+  "name": "hotbar slot 1 (sword)",
+  "rect": [
+   716,
+   962,
+   77,
+   81
+  ],
+  "found": true,
+  "match": 0.26,
+  "d_left": -50,
+  "d_top": -13,
+  "d_width": 11,
+  "d_height": 7,
+  "de": [
+   [
+    "slot fill",
+    1.4
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "hotbar slot 6 (herbs)",
+  "rect": [
+   1127,
+   962,
+   76,
+   81
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "slot fill",
+    1.4
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "VerticalBox:VerticalBox_0",
+  "name": "vitals HP bar",
+  "rect": [
+   135,
+   970,
+   392,
+   32
+  ],
+  "found": true,
+  "match": 0.32,
+  "d_left": 29,
+  "d_top": -38,
+  "d_width": -12,
+  "d_height": 62,
+  "de": [
+   [
+    "hp red fill",
+    5.2
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "Overlay:Overlay_0",
+  "name": "vitals level badge",
+  "rect": [
+   29,
+   930,
+   106,
+   114
+  ],
+  "found": true,
+  "match": 0.68,
+  "d_left": 9,
+  "d_top": -9,
+  "d_width": 10,
+  "d_height": 2,
+  "de": [
+   [
+    "badge fill",
+    5.7
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ }
+]

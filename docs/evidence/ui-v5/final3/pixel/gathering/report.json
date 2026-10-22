@@ -1,0 +1,625 @@
+[
+ {
+  "widget": "Overlay:Overlay_0",
+  "name": "skills panel frame",
+  "rect": [
+   50,
+   64,
+   527,
+   672
+  ],
+  "found": true,
+  "match": 0.76,
+  "d_left": -12,
+  "d_top": 12,
+  "d_width": -47,
+  "d_height": 84,
+  "de": [
+   [
+    "panel fill",
+    78.7
+   ],
+   [
+    "panel fill",
+    7.4
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "TextBlock:TextBlock_0",
+  "name": "title Gathering Skills",
+  "rect": [
+   87,
+   90,
+   273,
+   38
+  ],
+  "found": true,
+  "match": 0.38,
+  "d_left": -13,
+  "d_top": -6,
+  "d_width": 149,
+  "d_height": 26,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_1",
+  "name": "skill card Woodcutting",
+  "rect": [
+   66,
+   151,
+   494,
+   143
+  ],
+  "found": true,
+  "match": 0.81,
+  "d_left": -6,
+  "d_top": 5,
+  "d_width": -58,
+  "d_height": 1,
+  "de": [
+   [
+    "card fill",
+    11.3
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_17",
+  "name": "skill card Foraging",
+  "rect": [
+   66,
+   438,
+   494,
+   132
+  ],
+  "found": true,
+  "match": 0.59,
+  "d_left": -6,
+  "d_top": 22,
+  "d_width": -58,
+  "d_height": 12,
+  "de": [
+   [
+    "card fill",
+    7.5
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_9",
+  "name": "skill card Mining",
+  "rect": [
+   66,
+   295,
+   494,
+   133
+  ],
+  "found": true,
+  "match": 0.68,
+  "d_left": -6,
+  "d_top": 13,
+  "d_width": -58,
+  "d_height": 11,
+  "de": [
+   [
+    "card fill",
+    23.2
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_25",
+  "name": "skill card Fishing",
+  "rect": [
+   66,
+   581,
+   494,
+   140
+  ],
+  "found": true,
+  "match": 0.55,
+  "d_left": -6,
+  "d_top": 31,
+  "d_width": -58,
+  "d_height": 4,
+  "de": [
+   [
+    "card fill",
+    7.7
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "VerticalBox:VerticalBox_1",
+  "name": "Woodcutting level well",
+  "rect": [
+   77,
+   165,
+   100,
+   110
+  ],
+  "found": true,
+  "match": 0.65,
+  "d_left": 3,
+  "d_top": 0,
+  "d_width": -28,
+  "d_height": 15,
+  "de": [
+   [
+    "well fill",
+    36.4
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "Woodcutting XP bar",
+  "rect": [
+   198,
+   208,
+   336,
+   18
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "xp green fill",
+    39.1
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "Mining XP bar",
+  "rect": [
+   198,
+   351,
+   336,
+   18
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "xp green fill",
+    40.7
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "target frame Old Oak",
+  "rect": [
+   790,
+   32,
+   340,
+   92
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "frame fill",
+    6.2
+   ],
+   [
+    "frame fill",
+    9.4
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "target name Old Oak",
+  "rect": [
+   915,
+   40,
+   89,
+   23
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "",
+  "name": "target HP bar",
+  "rect": [
+   790,
+   71,
+   340,
+   18
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "hp red fill",
+    34.1
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "target HP value",
+  "rect": [
+   930,
+   99,
+   61,
+   17
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "",
+  "name": "progress ring 64%",
+  "rect": [
+   989,
+   366,
+   110,
+   110
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "ring centre fill",
+    4.8
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "action label Woodcutting",
+  "rect": [
+   969,
+   484,
+   148,
+   33
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "label plate fill",
+    3.6
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "prompt bar Chop",
+  "rect": [
+   869,
+   843,
+   183,
+   51
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "fill dark",
+    8.8
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "keycap E",
+  "rect": [
+   911,
+   850,
+   35,
+   34
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "HorizontalBox:HorizontalBox_0",
+  "name": "hotbar frame",
+  "rect": [
+   649,
+   905,
+   621,
+   115
+  ],
+  "found": true,
+  "match": 0.52,
+  "d_left": 11,
+  "d_top": 44,
+  "d_width": -21,
+  "d_height": -27,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_1",
+  "name": "hotbar slot 1 (selected axe)",
+  "rect": [
+   660,
+   913,
+   93,
+   101
+  ],
+  "found": true,
+  "match": 0.49,
+  "d_left": 6,
+  "d_top": 36,
+  "d_width": -5,
+  "d_height": -13,
+  "de": [
+   [
+    "selected slot fill",
+    9.7
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_11",
+  "name": "hotbar slot 6 (bandage)",
+  "rect": [
+   1166,
+   913,
+   95,
+   101
+  ],
+  "found": true,
+  "match": 0.49,
+  "d_left": 0,
+  "d_top": 36,
+  "d_width": -7,
+  "d_height": -13,
+  "de": [
+   [
+    "slot fill",
+    8.7
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_1",
+  "name": "vitals HP bar",
+  "rect": [
+   151,
+   943,
+   393,
+   33
+  ],
+  "found": true,
+  "match": 0.87,
+  "d_left": 13,
+  "d_top": -1,
+  "d_width": -13,
+  "d_height": -1,
+  "de": [
+   [
+    "hp red fill",
+    10.8
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "Overlay:Overlay_0",
+  "name": "vitals level badge",
+  "rect": [
+   33,
+   902,
+   108,
+   141
+  ],
+  "found": true,
+  "match": 0.71,
+  "d_left": 5,
+  "d_top": 19,
+  "d_width": 8,
+  "d_height": -25,
+  "de": [
+   [
+    "badge fill",
+    34.3
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_17",
+  "name": "minimap ring",
+  "rect": [
+   1654,
+   17,
+   241,
+   240
+  ],
+  "found": true,
+  "match": 0.89,
+  "d_left": -3,
+  "d_top": 5,
+  "d_width": 9,
+  "d_height": 10,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "minimap footer text",
+  "rect": [
+   1697,
+   263,
+   158,
+   20
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "SizeBox:SizeBox_0",
+  "name": "quest tracker frame",
+  "rect": [
+   1618,
+   304,
+   286,
+   203
+  ],
+  "found": true,
+  "match": 0.61,
+  "d_left": -5,
+  "d_top": 34,
+  "d_width": -6,
+  "d_height": -73,
+  "de": [
+   [
+    "fill dark",
+    4.9
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "toast Skill gain",
+  "rect": [
+   1618,
+   523,
+   286,
+   77
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "fill dark",
+    6.7
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ }
+]
