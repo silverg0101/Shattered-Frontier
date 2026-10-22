@@ -111,7 +111,9 @@ def apply(save=False):
         moon.light_component.set_editor_property(k, v)
     moon.set_actor_rotation(u.Rotator(roll=0, pitch=-35, yaw=cfg['sun.yaw_deg'] + 150), False)
 
-    sk = _one(u.SkyLight, at=(0, 0, 1000)).light_component
+    sky = _one(u.SkyLight, at=(0, 0, 1000))
+    sky.root_component.set_mobility(u.ComponentMobility.MOVABLE)   # real-time capture needs a movable sky light (WP6i r5 fix 2)
+    sk = sky.light_component
     sk.set_editor_property('real_time_capture', True)
     sk.set_editor_property('intensity', cfg['sun.sky_light_intensity'])
 

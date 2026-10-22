@@ -96,8 +96,11 @@ def glass_sockets(mesh, u):
         for m in merged:
             c = [(m[i] + m[i + 3]) / 2 for i in range(3)]
             size = [m[i + 3] - m[i] for i in range(3)]
-            if not name.startswith('SM_SilverbrookStreetLamp') and (min(size) >= 30 or c[2] < 100):
-                continue   # a glowing room or doorway volume behind glass, or a cellar grille at the ground: not a lantern
+            u.log(f'LAMP_SOCKET {name} centre {[round(v) for v in c]} size {[round(v) for v in size]}')
+            if not name.startswith('SM_SilverbrookStreetLamp') and (min(size) >= 30 or c[2] < 100 or size[2] < 5):
+                # a glowing room or doorway volume behind glass, a cellar grille at the ground, or a horizontal glow strip
+                # (SM_SilverbrookTownhouse1's first-floor sill: centre z 417, box 204 x 19 x 2 cm; WP6i r5 fix 3): not a lantern
+                continue
             thin = min(range(2), key=lambda i: size[i])
             if size[thin] < 5:   # wall-mounted glow panel: light in front of it
                 c[thin] += 30 if c[thin] >= 0 else -30

@@ -63,7 +63,7 @@ add('chimney-smoke-ref', chimney[0], chimney[1], 55)   # smoke hidden: measure_p
 REF = len(views) - 1
 CHIMNEY = REF - 1
 # Night row (lighting-and-atmosphere.md section 3): UE pitch +12 = sun 12 deg below the horizon, the Moon at 0.25 lux, sky light 1.0.
-NIGHT = {'sun_pitch': 12., 'sky': 3.0, 'moon_lux': 2.5}   # review r4: the sky light carries the house shadows; 0.25 lux moon was black
+NIGHT = {'sun_pitch': 12., 'sky': 6.0, 'moon_lux': 2.5}   # review r5: frontage steps median 4.0 at sky 3.0 with a movable sky light; 0.25 lux moon was black
 MOTION = REF   # the motion set follows the reference frame (smoke shown again) without moving the camera
 
 rng = random.Random(20261022)
@@ -143,7 +143,8 @@ for l in rng.sample(lights, len(lights)):
     dx, dy = p.x - c.x, p.y - c.y; n = math.hypot(dx, dy) or 1
     x, y = (p.x + dx/n*600)/100, (p.y + dy/n*600)/100; e = at(x, y, 1.7)
     if not clear(e, p, owner.get_actor_label() if owner else ''):
-        add('context-lamp-wall', e, p, 60, owner.get_actor_label() if owner else ''); break
+        add('context-lamp-wall', e, p, 60, owner.get_actor_label() if owner else '')
+        u.log(f'WP6_LAMP_WALL_SUBJECT {l.get_actor_label()} {owner.get_actor_label() if owner else None} {owner.static_mesh_component.static_mesh.get_name() if owner else None} light_z {round(p.z)}'); break
 # Owner's image 21 (WP6h review fix 4): from the Silverbrook Bridge's south end along South Street to the Riverside row.
 bridge = next(p['at'] for p in LAYOUT['places'] if p['name'] == 'Silverbrook Bridge')
 south = LAYOUT['roads']['primary']['South Street']
@@ -205,9 +206,10 @@ def tick(_delta):
         if name.endswith('-dusk'):   # lighting-and-atmosphere.md section 3 night row (WP6i review fix 5)
             sun.root_component.set_mobility(u.ComponentMobility.MOVABLE)   # a stationary sun ignores runtime rotation
             r = sun.get_actor_rotation(); sun.set_actor_rotation(u.Rotator(roll=r.roll, pitch=NIGHT['sun_pitch'], yaw=r.yaw), False)
-            for s in u.GameplayStatics.get_all_actors_of_class(world, u.SkyLight): s.light_component.set_intensity(NIGHT['sky'])
+            for s in u.GameplayStatics.get_all_actors_of_class(world, u.SkyLight):
+                s.light_component.set_intensity(NIGHT['sky']); s.light_component.recapture_sky(); state['sky_mob'] = s.root_component.mobility
             moon.light_component.set_intensity(NIGHT['moon_lux'])
-            u.log(f'WP6_NIGHT_ROW sun_pitch {sun.get_actor_rotation().pitch} sky {NIGHT["sky"]} moon_lux {NIGHT["moon_lux"]}')   # fixed exposure
+            u.log(f'WP6_NIGHT_ROW sun_pitch {sun.get_actor_rotation().pitch} sky {NIGHT["sky"]} moon_lux {NIGHT["moon_lux"]} sky_mobility {state.get("sky_mob")}')   # fixed exposure
         d = t - e
         camera.set_actor_location(e, False, False)
         camera.set_actor_rotation(u.Rotator(pitch=math.degrees(math.atan2(d.z, math.hypot(d.x, d.y))), yaw=math.degrees(math.atan2(d.y, d.x))), False)

@@ -5,14 +5,14 @@
  ],
  "samples": {
   "chimney/on-1": {
-   "gt_ms": 0.125,
-   "worker_ms": 0.377,
-   "rt_ms": 0.284,
+   "gt_ms": 0.104,
+   "worker_ms": 0.326,
+   "rt_ms": 0.326,
    "active_within_120m": 9,
    "within_120m": 9,
    "active_total": 9,
-   "frame_ms": 4.51,
-   "root_ms": 4.416
+   "frame_ms": 7.08,
+   "root_ms": 5.726
   },
   "chimney/off-1": {
    "gt_ms": null,
@@ -21,18 +21,18 @@
    "active_within_120m": 9,
    "within_120m": 9,
    "active_total": 9,
-   "frame_ms": 5.7,
-   "root_ms": 4.426
+   "frame_ms": 4.45,
+   "root_ms": 4.36
   },
   "chimney/on-2": {
-   "gt_ms": 0.134,
-   "worker_ms": 0.322,
-   "rt_ms": 0.292,
+   "gt_ms": 0.123,
+   "worker_ms": 0.297,
+   "rt_ms": 0.768,
    "active_within_120m": 9,
    "within_120m": 9,
    "active_total": 9,
-   "frame_ms": 5.64,
-   "root_ms": 4.335
+   "frame_ms": 6.89,
+   "root_ms": 5.931
   },
   "chimney/off-2": {
    "gt_ms": null,
@@ -41,18 +41,18 @@
    "active_within_120m": 9,
    "within_120m": 9,
    "active_total": 9,
-   "frame_ms": 5.4,
-   "root_ms": 4.334
+   "frame_ms": 7.15,
+   "root_ms": 5.77
   },
   "street/on-1": {
-   "gt_ms": 0.132,
-   "worker_ms": 0.346,
-   "rt_ms": 0.355,
+   "gt_ms": 0.156,
+   "worker_ms": 0.365,
+   "rt_ms": 0.45,
    "active_within_120m": 9,
    "within_120m": 9,
    "active_total": 9,
    "frame_ms": 5.06,
-   "root_ms": 3.831
+   "root_ms": 3.835
   },
   "street/off-1": {
    "gt_ms": null,
@@ -61,18 +61,18 @@
    "active_within_120m": 9,
    "within_120m": 9,
    "active_total": 9,
-   "frame_ms": 6.97,
-   "root_ms": 5.543
+   "frame_ms": 5.08,
+   "root_ms": 3.976
   },
   "street/on-2": {
-   "gt_ms": 0.155,
-   "worker_ms": 0.331,
-   "rt_ms": 0.244,
+   "gt_ms": 0.131,
+   "worker_ms": 0.288,
+   "rt_ms": 0.209,
    "active_within_120m": 9,
    "within_120m": 9,
    "active_total": 9,
-   "frame_ms": 5.37,
-   "root_ms": 4.233
+   "frame_ms": 4.81,
+   "root_ms": 3.793
   },
   "street/off-2": {
    "gt_ms": null,
@@ -81,24 +81,24 @@
    "active_within_120m": 9,
    "within_120m": 9,
    "active_total": 9,
-   "frame_ms": 6.48,
-   "root_ms": 4.978
+   "frame_ms": 4.81,
+   "root_ms": 3.774
   },
   "far/on-1": {
-   "gt_ms": 0.131,
+   "gt_ms": 0.079,
    "worker_ms": 0.0,
    "rt_ms": 0.0,
    "active_within_120m": 0,
    "within_120m": 0,
    "active_total": 0,
    "nearest_chimney_m": 224.6,
-   "frame_ms": 6.34,
-   "root_ms": 5.764
+   "frame_ms": 5.9,
+   "root_ms": 4.756
   }
  },
  "gpu_root_delta_on_minus_off_ms": {
-  "chimney": -0.004,
-  "street": -1.229
+  "chimney": 0.764,
+  "street": -0.061
  },
  "note": "gt_ms = STAT_NiagaraOverview_GT of one frame; worker_ms / rt_ms = sum of every NS_ChimneySmoke [GT_CNC] / [RT] entry in that frame dump (nested entries counted again, so an upper bound); off hides the 85 ChimneySmoke components."
 }
