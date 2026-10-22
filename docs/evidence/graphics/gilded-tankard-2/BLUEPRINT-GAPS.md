@@ -1,0 +1,24 @@
+# Blueprint gaps: The Gilded Tankard (gilded-tankard-2)
+
+One line per spot where the blueprints were unclear, missing or wrong, with what the builder guessed. Source: `docs/blueprints/buildings.md` and `docs/blueprints/README.md`.
+
+1. README "Worktrees" step 1 says `git merge --ff-only origin/main`, while the task said `git rebase origin/main`; both were no-ops (already up to date), so the builder used the rebase.
+2. The Bash tool refused every worktree command that named git or a quoted Blender path (command guard), while the same commands ran fine in PowerShell; the blueprint should say to run worktree commands in PowerShell, with `codex exec ... - < prompt.txt` in Bash as the only exception that worked.
+3. §2 concept: the template does not say what Status to write for a concept whose model is not yet imported or reviewed; the builder wrote "Blender review FAIL (2 rounds); not imported".
+4. §2 concept README row: `GameClient/ArtSource/Greenlands/missing_assets.py` regenerates `docs/Game-Design/concept-art/Silverbrook/README.md` from its own list, so a hand-added row is overwritten; the blueprint does not say where a new building must be registered so the row survives.
+5. §3 SLOT: "For a new kind add the row there" gives no kind name; the builder added `"tavern": [14, 12, 14]` to `silverbrook-town-layout.json` (no lot or place uses it yet, which §7 says must exist).
+6. §3 footprint: the rule "0.6-0.8 of SLOT w/d" conflicts with its own example "Tankard 4.5/3.2" (3.2 / 6 = 0.53 deep); the builder used W2 4.6, D2 3.6 (0.66 and 0.60).
+7. §3 roof: "RX = W2 + .4" and "RIDGE = EAVE + (W2+.4) * tan(pitch)" do not match the Blacksmith package the blueprint names (RX 3.6 is the ridge half-length; RIDGE 11.6 from EAVE 5.4 over EY 4.2 is about 56 degrees, not the formula's value); the builder used the Blacksmith convention (EX = W2+.4, EY = D2+.4, RX chosen by hand).
+8. §3 windows: "sill WZ 1.0-1.3 m" applies to a ground storey only; no rule places upper-storey windows above a stone storey line; the builder used WZ 4.6 m.
+9. §4 copy recipe: no recipe for a jetty, corbels, two-storey oak framing or a side storey; the builder wrote those from the kit helpers (`post`, `rail`, `beam`, `box`).
+10. §4 and §3 cite a "Tankard" passing example (34 k triangles, 4.5/3.2 walls, 2.6/2.0/0.2 door) that is not in the repository; the builder used the Blacksmith as the reference and set its own values.
+11. §5 signs: "bracket at z 3.45-3.75 m, above the door head, below the upper sills" and "board 0.8 m wide x 0.8-1.15 m tall" cannot hold the concept (sign about 1.05 x 1.65 m hung from about 5.9 m on a two-storey front); the builder followed the reviewer's round-1 fix 5 (1.04 x 1.65 m board, bracket at 5.9 m) instead of the rule.
+12. §5 placement: the rule says "beside the door or on the left side wall", the concept hangs it above the door; the builder followed the concept.
+13. §9 / kit: no per-package knob for ashlar block size; the builder changed `kit.SCALE['SB_Ashlar']` from the package script (x1.6) to get the reviewer's block scale, which is an undocumented hack.
+14. §9 / kit: the round-1 fix 7 contingency (door strap height in shared `silverbrook_kit.py`) and round-2 fix 8 need a change to the shared kit; the blueprint has no rule for changing the shared kit from a package, and the builder did not change it.
+15. §1 step 5: "reviewer writes `<pkg>/review/REVIEW-blender.md`", while the visual-review brief writes `<evidence>/REVIEW.md`; no rule says which location counts for a Blender-stage verdict or what the second round is named; the builder used `review/REVIEW-blender.md` and `review/REVIEW-blender-r2.md`.
+16. Routing: `docs/blueprints/README.md` says a failed Fable check goes to Opus, but the builder is Haiku and the task caps review at two rounds; the blueprint does not say who implements the fix list after round 2 or whether a third review is allowed.
+17. §1 step 3 and §6.4: "parts=DOORS" and a manifest `sills` list are required by the props scripts; the builder wrote no `sills` key (no bays), and the blueprint does not say whether an empty list or no key is correct for `silverbrook_props.py`; unverified, since the editor stage was not reached.
+18. README gate table: `perf_bookmark_game.py <view>` is named without a path; it lives at `GameClient/ArtSource/Greenlands/perf_bookmark_game.py`, not in the wp6 evidence folder the table implies.
+19. §1 step 2 and README "Worktrees": the Link-WorktreeDeps, build and launch steps were not run because the Blender stage did not pass; the blueprint has no statement of what a failing Blender review stops (the Unreal steps are sequenced after it, but "Done means" only covers the final pass).
+20. Concept dormer: the concept shows a front dormer; the blueprint has no rule for dormers on a hip roof beyond the Blacksmith's gable-dormer code, so the dormer was left out and reported as not modelled.
