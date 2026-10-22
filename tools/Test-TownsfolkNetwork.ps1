@@ -4,7 +4,7 @@ param(
     [ValidateRange(12000,65000)][int]$Port = 17850,
     [ValidateRange(60,600)][int]$TimeoutSeconds = 360,
     [ValidateRange(30,300)][int]$SampleSeconds = 120,
-    [ValidateRange(1,30)][double]$DayMinutes = 4,
+    [ValidateRange(1,30)][double]$DayMinutes = 20,
     [ValidateRange(0.05,2)][double]$HourToleranceSeconds = 0.5,
     # Attack: the first client swings at a resident. Quest: the server runs the quest pilot on
     # content/quests/silverbrook_introductions.json (talk_resident) and the first client walks to the held resident.
