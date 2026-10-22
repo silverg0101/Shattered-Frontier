@@ -164,10 +164,13 @@ def build(cfg=None):
     speed = _node(smoke, u.MaterialExpressionAppendVector)
     _link(_constant(smoke, .012), speed, 'A'); _link(pan_v, speed, 'B')
     panner = _node(smoke, u.MaterialExpressionPanner)
-    # Taper (WP6d fix 1d): texture V runs down the card, so U is squeezed x1.6 at the pot (narrow) and x0.7 at the top (wide).
+    # Taper (WP6e review fix 1a): the card's V = 0 is at the pot (taken from the WP6e capture), so U is squeezed x1.6 at the
+    # pot (V = 0) and x0.7 at the top (V = 1).
     vs = _node(smoke, u.MaterialExpressionComponentMask, r=False, g=True, b=False, a=False); _link(uv, vs, '')
     widen = _node(smoke, u.MaterialExpressionLinearInterpolate)
-    _link(_constant(smoke, .7), widen, 'A'); _link(_constant(smoke, 1.6), widen, 'B'); _link(vs, widen, 'Alpha')
+    _link(_constant(smoke, 1.6), widen, 'A'); _link(_constant(smoke, .7), widen, 'B'); _link(vs, widen, 'Alpha')
+    thin = _node(smoke, u.MaterialExpressionLinearInterpolate)   # fix 1b: disperse, full at the pot, 45 % at the top
+    _link(_constant(smoke, 1.), thin, 'A'); _link(_constant(smoke, .45), thin, 'B'); _link(vs, thin, 'Alpha')
     scale = _node(smoke, u.MaterialExpressionAppendVector); _link(widen, scale, 'A'); _link(_constant(smoke, 1), scale, 'B')
     centre = _node(smoke, u.MaterialExpressionConstant2Vector, r=.5, g=0.)
     tapered = _add(smoke, _mul(smoke, _sub(smoke, uv, centre), scale), centre)
@@ -197,7 +200,7 @@ def build(cfg=None):
     off = _node(smoke, u.MaterialExpressionAbs); _link(_add(smoke, cu, _constant(smoke, -.5)), off, '')
     sides = _node(smoke, u.MaterialExpressionSaturate)
     _link(_mul(smoke, _sub(smoke, _constant(smoke, .5), off), _constant(smoke, 10.)), sides, '')
-    _output(_mul(smoke, _mul(smoke, _mul(smoke, _mul(smoke, _mul(smoke, _alpha(smoke, image), opacity), fade), vf), far), sides),
+    _output(_mul(smoke, _mul(smoke, _mul(smoke, _mul(smoke, _mul(smoke, _alpha(smoke, image), opacity), fade), vf), far), _mul(smoke, sides, thin)),
             u.MaterialProperty.MP_OPACITY)
     _save(smoke)
 

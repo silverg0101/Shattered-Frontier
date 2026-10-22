@@ -761,8 +761,8 @@ def road_field(tier_filter, extra=0.0):
 
 
 ROAD_G, ROAD_B = road_field(('primary', 'secondary'), STREET_COBBLE_EXTRA_M), road_field(('trail',))
-for _k, _f in road_field(('primary', 'secondary'), STREET_EARTH_EXTRA_M).items():  # packed earth only outside the cobble
-    ROAD_B[_k] = max(ROAD_B.get(_k, 0.0), _f * (1.0 - ROAD_G.get(_k, 0.0)))
+for _k, _f in road_field(('primary', 'secondary'), STREET_EARTH_EXTRA_M).items():  # packed earth, under the cobble too (M_GN_Ground lays cobble over earth: WP6e review fix 2b)
+    ROAD_B[_k] = max(ROAD_B.get(_k, 0.0), _f)
 PLAZA_EARTH_M = 10.0  # packed earth band around a plaza (WP6d review fix 2b)
 for _x, _y, _w, _d in PLAZAS:  # plazas are cobble too: 1 everywhere inside, a one-ramp fall outside
     for _k, _cx, _cy in HF._cells(_x, _y, max(_w, _d) * 0.75 + ROAD_RAMP):
@@ -770,12 +770,12 @@ for _x, _y, _w, _d in PLAZAS:  # plazas are cobble too: 1 everywhere inside, a o
         _f = min(1.0, max(0.0, 1.0 - math.hypot(max(_dx, 0), max(_dy, 0)) / ROAD_RAMP))
         if _f > 0:
             ROAD_G[_k] = max(ROAD_G.get(_k, 0.0), _f)
-for _x, _y, _w, _d in PLAZAS:  # earth band: the rectangle grown by PLAZA_EARTH_M, outside the cobble
+for _x, _y, _w, _d in PLAZAS:  # earth band: the rectangle grown by PLAZA_EARTH_M, earth under the cobble too
     for _k, _cx, _cy in HF._cells(_x, _y, max(_w, _d) * 0.75 + PLAZA_EARTH_M + ROAD_RAMP):
         _dx, _dy = abs(_cx - _x) - _w / 2 - PLAZA_EARTH_M, abs(_cy - _y) - _d / 2 - PLAZA_EARTH_M
         _f = min(1.0, max(0.0, 1.0 - math.hypot(max(_dx, 0), max(_dy, 0)) / ROAD_RAMP))
         if _f > 0:
-            ROAD_B[_k] = max(ROAD_B.get(_k, 0.0), _f * (1.0 - ROAD_G.get(_k, 0.0)))
+            ROAD_B[_k] = max(ROAD_B.get(_k, 0.0), _f)
 ROAD_A = {}  # vertex alpha: farm fields, same 0.5-at-the-edge field as the plazas
 for _x, _y, _w, _d in FIELDS:
     for _k, _cx, _cy in HF._cells(_x, _y, max(_w, _d) * 0.75 + ROAD_RAMP):

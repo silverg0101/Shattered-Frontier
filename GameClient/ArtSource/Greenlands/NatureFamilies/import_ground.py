@@ -140,7 +140,8 @@ def ground():
     col = g.mul(g.lerp(forest, bc, s, 900, 0), bright, 1100, 0)
     nrm = g.lerp(fn, bn, s, 900, 250, '', 'RGB'); rgh = g.lerp(fr, br, s, 900, 500)
     # roads and trails grown into the ground: vertex colour G (cobbled roads) / B (trails) is a distance field that is 0.5 at the road edge;
-    # a fine noise moves the threshold so the edge is worn and ragged instead of a seam
+    # a fine noise moves the threshold so the edge is worn and ragged instead of a seam. Earth under the cobble; cobble wins where G is high
+    # (earth is blended first, cobble on top, so the cobble's soft edge lands on earth, not grass: WP6e review fix 2a).
     SB = '/Game/Frontier/Environment/Greenlands/Silverbrook/Textures/T_SB_cobblestone_pavement_'
     rc, rn, rr, _ = layer('R', SB + 'Diffuse', SB + 'nor_gl', SB + 'Rough', 240, (1, 1, 1), 6000)
     # trails: packed dark earth from the forest-floor scan with pale mossy stones pushed through it where a mask passes a high threshold
@@ -157,7 +158,7 @@ def ground():
     vcn = node(m, u.MaterialExpressionVertexColor, -600, 9000)
     edge = g.mask(g.smp('EdgeNoise', tex(T + 'forest_ground_04_Displacement'), S.SAMPLERTYPE_MASKS, g.uv(xy, g.sc('EdgeTileCm', 350, -1800, 9300), -1650, 9300), -1100, 9300), True, False, False, -800, 9300)
     wob = g.mul(g.op(u.MaterialExpressionSubtract, edge, half, -600, 9300), g.sc('EdgeAmp', 0.9, -600, 9400), -400, 9300)
-    for ch, (c_, n_, r_) in ((('G', 0, 1, 0), (rc, rn, rr)), (('B', 0, 0, 1), (tc, tn, tr))):
+    for ch, (c_, n_, r_) in ((('B', 0, 0, 1), (tc, tn, tr)), (('G', 0, 1, 0), (rc, rn, rr))):
         v = g.mask(vcn, *[bool(b) for b in ch[1:]], -400, 9000)
         w_ = node(m, u.MaterialExpressionSaturate, 400, 9000)
         edge_noise = wob if ch[0] == 'G' else g.mul(wob, g.sc('TrailEdgeNoise', 0.35, -200, 9200), 0, 9200)

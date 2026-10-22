@@ -31,9 +31,9 @@ def periodic_noise(octaves=5):
 
 n = periodic_noise()
 u = (np.arange(W) + .5) / W - .5
-sway = (periodic_noise(3)[:, :1] - .5) * .18          # the column's centre drifts a little along V
+sway = (periodic_noise(3)[:, :1] - .5) * .30          # the column's centre drifts a little along V
 profile = np.exp(-((u[None, :] - sway) / .30) ** 2)    # soft-edged column, about 70 % of the card wide
-alpha = np.clip(profile * (.35 + .75 * n), 0, 1) * 1.0
+alpha = np.clip(profile * np.clip((n - .3) / .7, 0, 1) * 1.4, 0, 1)   # puffs with real gaps (WP6e review fix 1c)
 alpha *= np.clip((.5 - .5 / W - np.abs(u)) / .10, 0, 1)[None, :]   # zero in the edge pixel columns (WP6d review fix 1c)
 shade = .82 + .18 * n                                  # lighter puffs, slightly darker gaps
 rgba = np.dstack([shade, shade, shade * 1.02, alpha])

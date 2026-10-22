@@ -2,7 +2,7 @@
 
 python tools/Run-InEditor.py GameClient/ArtSource/Greenlands/paint_street_edges.py   (open Greenlands_Silverbrook)
 Same fields as build_silverbrook.py (ROAD_G cobble +STREET_COBBLE_EXTRA_M, ROAD_B earth +STREET_EARTH_EXTRA_M, plazas cobble plus a 10 m earth band, ramp 1 grid step),
-so a rebuild gives the identical paint; this just avoids a full rebuild. Idempotent (G only rises; B in the street margin is recomputed, so a trail's own B inside it is replaced).
+so a rebuild gives the identical paint; this just avoids a full rebuild. Idempotent (G and B only rise; earth is painted under the cobble as well as outside it).
 """
 import json, math, sys
 from pathlib import Path
@@ -94,7 +94,7 @@ changed = 0
 for key in set(g) | set(b):
     for i in cell.get(key, []):
         c = cols[i]
-        ng = max(c.g, g.get(key, 0.0)); nb = b.get(key, 0.0) * (1.0 - ng)  # earth only outside the cobble; replaces B in the street margin
+        ng = max(c.g, g.get(key, 0.0)); nb = max(c.b, b.get(key, 0.0))  # earth under the cobble too (M_GN_Ground blends cobble over earth)
         if ng != c.g or nb != c.b:
             cols[i] = u.LinearColor(c.r, ng, nb, c.a); changed += 1
 mesh = u.GeometryScript_VertexColors.set_mesh_per_vertex_colors(mesh, u.GeometryScript_List.convert_array_to_color_list(cols))
