@@ -315,6 +315,7 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     // While the station panel is open it carries its own title and Craft key: no prompt bar and no target frame over it.
     const bool bStation = Cast<ASFPlayerController>(Controller) && Cast<ASFPlayerController>(Controller)->IsStationPanelOpen();
     if (bStation) { Context = ESFPromptContext::None; }
+    if (const USFQuestPilotSubsystem* Quests = GetWorld() ? GetWorld()->GetSubsystem<USFQuestPilotSubsystem>() : nullptr; Quests && Quests->Panel && Quests->Panel->IsOpen()) { Context = ESFPromptContext::None; }
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (GetWorld() && GetWorld()->GetTimeSeconds() < CapturePromptUntil) { Context = ESFPromptContext::Harvest; HarvestVerb = TEXT("Harvest"); }
 #endif

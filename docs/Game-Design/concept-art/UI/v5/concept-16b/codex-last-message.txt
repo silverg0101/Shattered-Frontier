@@ -1,0 +1,3 @@
+Created the **1672×941** concept image: [16b-quest-board.png](C:/Projects/Shattered-Frontier/.claude/worktrees/quests-board-ab5937/docs/Game-Design/concept-art/UI/v5/concept-16b/16b-quest-board.png).
+
+Generated with the built-in image tool using the supplied journal as the reference. The prompt specified the Notice Board copy, row states, rewards, buttons, and preserved scene and HUD.

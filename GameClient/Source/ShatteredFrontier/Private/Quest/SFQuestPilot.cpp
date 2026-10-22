@@ -843,7 +843,7 @@ void USFQuestPilotComponent::TickDevAccept()
     if (bDevAcceptDone || !bRestored) { return; }
     bDevAcceptDone = true;
     FString List;
-    if (!FParse::Value(FCommandLine::Get(), TEXT("QuestAutoAccept="), List)
+    if (!FParse::Value(FCommandLine::Get(), TEXT("QuestAutoAccept="), List, false)
         && (FParse::Param(FCommandLine::Get(), TEXT("QuestPilot")) || FParse::Param(FCommandLine::Get(), TEXT("QuestFullScenario"))))
     { List = TEXT("quest/frontier_founder"); }
     TArray<FString> Ids; List.ParseIntoArray(Ids, TEXT(","));
@@ -1128,7 +1128,7 @@ void USFQuestPilotComponent::TickBoardScenario(double Now)
     if (bBoard) { for (TActorIterator<ASFQuestBoard> It(GetWorld()); It && !Source; ++It) { Source = *It; } }
     else { for (TActorIterator<ASFDialogueNpc> It(GetWorld()); It && !Source; ++It) { if (It->DialogueFile == TEXT("millwarden_oswin.json")) { Source = *It; } } }
     if (!Source) { return; }
-    const FVector Front = Source->GetActorRotation().RotateVector(bBoard ? FVector(0, -1, 0) : FVector(1, 0, 0));
+    const FVector Front = Source->GetActorRotation().RotateVector(bBoard ? FVector(0, 1, 0) : FVector(1, 0, 0));
     if (GetOwner()->HasAuthority())
     {
         if (bBoard && Find(Mill)) { TickFullServer(); return; }
@@ -1237,15 +1237,20 @@ void USFQuestTrackerHud::Present(const TArray<FSFQuestView>& Shown)
         if (bDone) { Check->AddChildToOverlay(KitImage(WidgetTree, TEXT("status_tick"), 22.f, 22.f)); }
         UHorizontalBoxSlot* TickSlot = Row->AddChildToHorizontalBox(Check);
         TickSlot->SetVerticalAlignment(VAlign_Center); TickSlot->SetPadding(FMargin(0.f, 0.f, 8.f, 0.f));
-        UHorizontalBoxSlot* LabelSlot = Row->AddChildToHorizontalBox(Text(WidgetTree, Label, 20, Colour));
+        UTextBlock* LabelText = Text(WidgetTree, Label, 20, Colour);
+        LabelText->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis); LabelText->SetClipping(EWidgetClipping::ClipToBounds);
+        UHorizontalBoxSlot* LabelSlot = Row->AddChildToHorizontalBox(LabelText);
         LabelSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); LabelSlot->SetVerticalAlignment(VAlign_Center);
-        Row->AddChildToHorizontalBox(Num(WidgetTree, Count, 20, Colour))->SetVerticalAlignment(VAlign_Center);
+        UHorizontalBoxSlot* CountSlot = Row->AddChildToHorizontalBox(Num(WidgetTree, Count, 20, Colour));
+        CountSlot->SetVerticalAlignment(VAlign_Center); CountSlot->SetPadding(FMargin(8.f, 0.f, 0.f, 0.f));
         Rows->AddChildToVerticalBox(Row)->SetPadding(FMargin(0.f, 3.f));
     };
     for (int32 Index = 0; Index < Shown.Num(); ++Index)
     {
         const FSFQuestView& View = Shown[Index];
-        Rows->AddChildToVerticalBox(Text(WidgetTree, View.Title, 24, Ivory(), true))->SetPadding(FMargin(0.f, Index == 0 ? 0.f : 10.f, 0.f, 4.f));
+        UTextBlock* Title = Text(WidgetTree, View.Title, 24, Ivory(), true);
+        Title->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis); Title->SetClipping(EWidgetClipping::ClipToBounds);
+        Rows->AddChildToVerticalBox(Title)->SetPadding(FMargin(0.f, Index == 0 ? 0.f : 10.f, 0.f, 4.f));
         Rows->AddChildToVerticalBox(KitImage(WidgetTree, TEXT("divider"), 244.f, 4.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));  // hairline under the title
         for (const FSFQuestLine& L : View.Lines) { const bool bDone = L.Count >= L.Target; AddRow(L.Label, FString::Printf(TEXT("%d / %d"), L.Count, L.Target), bDone, bDone ? Moss() : Ivory()); }
         if (View.bComplete) { AddRow(TEXT("Complete"), TEXT(""), true, Moss()); }
@@ -1330,7 +1335,7 @@ void USFQuestPilotSubsystem::PlaceFromLayout(UWorld& World)
             ASFQuestBoard* Board = World.SpawnActor<ASFQuestBoard>();
             if (!Board) { continue; }
             Board->BoardId = Id;
-            const bool bGround = Place(Board, At, Facing, FVector(0, -1, 0));  // the notice board's front is -Y
+            const bool bGround = Place(Board, At, Facing, FVector(0, 1, 0));  // the imported notice board shows its notices on +Y
             UE_LOG(LogTemp, Display, TEXT("QUEST_BOARD_PLACED Id=%s At=%s Ground=%d"), *Id, *Board->GetActorLocation().ToString(), bGround);
         }
     }

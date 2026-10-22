@@ -79,6 +79,7 @@ private:
 
     TWeakObjectPtr<USFQuestPilotComponent> Log;
     FString BoardId, SelectedQuest, LastKey;
+    FSlateFontInfo JournalTitleFont;
     TArray<FString> RowQuests;
     double HoldStartedAt = -1.0;
     float HoldFraction = 0.f;

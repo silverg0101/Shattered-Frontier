@@ -5,6 +5,7 @@
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
 #include "Components/Button.h"
+#include "Components/ButtonSlot.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/HorizontalBox.h"
@@ -35,6 +36,7 @@ ASFQuestBoard::ASFQuestBoard()
     Mesh->SetMobility(EComponentMobility::Movable);
     static ConstructorHelpers::FObjectFinder<UStaticMesh> Board(TEXT("/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropNoticeBoard.SM_SilverbrookPropNoticeBoard"));
     if (Board.Succeeded()) { Mesh->SetStaticMesh(Board.Object); }
+    Mesh->bDisallowNanite = true;  // the prop's material instances have no Nanite usage flag; a runtime spawn cannot add one
 }
 
 FString ASFQuestBoard::DisplayName() const
@@ -124,12 +126,21 @@ void USFQuestBoardPanel::NativeOnInitialized()
     UCanvasPanel* Book = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass());
     UCanvasPanelSlot* BookSlot = Root->AddChildToCanvas(Book);
     BookSlot->SetAnchors(BookAnchors); BookSlot->SetOffsets(FMargin(0.f));
-    Box(Book, KitPanel(WidgetTree, TEXT("journal_book_frame"), 1.f, Slate(1.f), Brass(), FMargin(0.f), 6.f), 0.f, 0.f, PageWidth, PageHeight);
-    Box(Book, KitPanel(WidgetTree, TEXT("journal_book_frame"), 1.f, Slate(1.f), Brass(), FMargin(0.f), 6.f), RightPage, 0.f, PageWidth, PageHeight);
+    for (const float PageLeft : {0.f, RightPage})
+    {
+        // The page art is translucent inside; an opaque backing keeps the scene from showing through the text (as the dialogue board).
+        UBorder* Backing = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+        Backing->SetBrush(FSlateColorBrush(FLinearColor::White)); Backing->SetBrushColor(Hex(TEXT("10171A")));
+        Box(Book, Backing, PageLeft + 8.f, 8.f, PageWidth - 16.f, PageHeight - 16.f);
+        Box(Book, KitPanel(WidgetTree, TEXT("journal_book_frame"), 1.f, Slate(1.f), Brass(), FMargin(0.f), 6.f), PageLeft, 0.f, PageWidth, PageHeight);
+    }
 
     // Left page: title, stag, divider, the list.
     PageTitle = Heading(WidgetTree, TEXT("Quest Journal"), 46, Ivory());
-    Line(Book, PageTitle, 46, 61.f, 70.f);
+    JournalTitleFont = PageTitle->GetFont();
+    PageTitle->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
+    UCanvasPanelSlot* TitleSlot = Box(Book, PageTitle, 61.f, 70.f - CapLift * 46.f, 370.f, 60.f);
+    TitleSlot->SetAutoSize(false);
     Emblem = KitImage(WidgetTree, TEXT("icon_stag_emblem"), 84.f, 84.f);
     Box(Book, Emblem, 436.f, 52.f, 84.f, 84.f);
     Box(Book, Rule(WidgetTree, TEXT("divider")), 59.f, 145.f, 438.f, 12.f);
@@ -166,19 +177,24 @@ void USFQuestBoardPanel::NativeOnInitialized()
         UTextBlock* Count = Num(WidgetTree, TEXT(""), 22, Ivory());
         Count->SetJustification(ETextJustify::Right);
         Box(Row, Count, 300.f, 9.f - CapLift * 22.f, 137.f, 32.f);
-        Box(Page, Row, 646.f, 357.f + 56.f * Index, 440.f, 40.f);
+        Box(Page, Row, 646.f, 357.f + 50.f * Index, 440.f, 40.f);
         ObjectiveRows.Add(Row); ObjectiveLabels.Add(Label); ObjectiveCounts.Add(Count); ObjectiveTicks.Add(Tick);
     }
     Line(Page, Text(WidgetTree, TEXT("Rewards"), 26, Brass()), 26, 645.f, 514.f);
     Box(Page, Rule(WidgetTree, TEXT("section_rule")), 644.f, 544.f, 446.f, 8.f);
+    // Reward lines flow left to right: icon, quantity and name, then the next (16-quest-journal.png reward row at y 569).
+    UHorizontalBox* RewardRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+    Box(Page, RewardRow, 646.f, 569.f, 446.f, 55.f);
     for (int32 Index = 0; Index < 2; ++Index)
     {
         USizeBox* IconBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        IconBox->SetWidthOverride(52.f); IconBox->SetHeightOverride(52.f);
         UImage* Icon = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
         IconBox->SetContent(Icon);
-        Box(Page, IconBox, 646.f + 214.f * Index, 569.f, 55.f, 55.f);
+        RewardRow->AddChildToHorizontalBox(IconBox)->SetVerticalAlignment(VAlign_Center);
         UTextBlock* Label = Text(WidgetTree, TEXT(""), 22, Ivory());
-        Line(Page, Label, 22, 721.f + 214.f * Index, 589.f);
+        UHorizontalBoxSlot* LabelSlot = RewardRow->AddChildToHorizontalBox(Label);
+        LabelSlot->SetVerticalAlignment(VAlign_Center); LabelSlot->SetPadding(FMargin(12.f, 0.f, 26.f, 0.f));
         RewardIcons.Add(Icon); RewardTexts.Add(Label);
     }
     NoReward = Text(WidgetTree, TEXT("No item reward"), 22, Greyed());
@@ -302,6 +318,7 @@ void USFQuestBoardPanel::Rebuild()
         if (bSelected) { Line->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("row_chevron"), 28.f, 28.f))->SetVerticalAlignment(VAlign_Center); }
         Plate->SetContent(Line);
         Hit->SetContent(Plate);
+        if (UButtonSlot* Fill = Cast<UButtonSlot>(Plate->Slot)) { Fill->SetHorizontalAlignment(HAlign_Fill); Fill->SetVerticalAlignment(VAlign_Fill); Fill->SetPadding(FMargin(0.f)); }
         USizeBox* Size = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
         Size->SetHeightOverride(54.f); Size->SetContent(Hit);
         List->AddChildToVerticalBox(Size)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
@@ -401,6 +418,7 @@ void USFQuestBoardPanel::OpenJournal(USFQuestPilotComponent* InLog)
 {
     Log = InLog; BoardId.Reset();
     PageTitle->SetText(FText::FromString(TEXT("Quest Journal")));
+    PageTitle->SetFont(JournalTitleFont);
     Show();
     UE_LOG(LogTemp, Display, TEXT("QUEST_JOURNAL_OPENED Rows=%d"), RowQuests.Num());
 }
@@ -409,6 +427,7 @@ void USFQuestBoardPanel::OpenBoard(USFQuestPilotComponent* InLog, const FString&
 {
     Log = InLog; BoardId = InBoardId; SelectedQuest.Reset();
     PageTitle->SetText(FText::FromString(InTitle));
+    PageTitle->SetFont(SFHudStyle::RoleFont(SFHudStyle::TextFamily(), 31, false));  // 16b-quest-board.png: regular face, clear of the stag
     Show();
     if (APlayerController* PC = GetOwningPlayer()) { PC->SetIgnoreMoveInput(true); }
     UE_LOG(LogTemp, Display, TEXT("QUEST_BOARD_OPENED Board=%s Rows=%d"), *BoardId, RowQuests.Num());
