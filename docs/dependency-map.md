@@ -113,6 +113,8 @@ Setup reference: [first-time-setup.md](first-time-setup.md) covers required soft
 
 Visual review: [visual-review.md](visual-review.md) is the concept → result acceptance step for any visual change (capture, pair with concept, independent reviewer brief, fix-list loop). Load it when finishing UI, art, world, VFX or lighting work.
 
+Parallel worktrees: a feature session in its own git worktree runs `tools/Link-WorktreeDeps.ps1` once (links the git-ignored `Artifacts/ThirdParty` gRPC build from the main checkout), then builds, runs its editor and tests independently. It works in its own dev map under `/Game/Frontier/Maps/Dev/<Feature>/` and never edits the Silverbrook map or shared art; wiring into Silverbrook happens later in the main editor lane.
+
 Claude Code: `CLAUDE.md` imports `AGENTS.md`; `.mcp.json` (`unreal-editor`, `http://127.0.0.1:8000/mcp`) reaches the interactive editor, whose MCP server `GameClient/Config/DefaultEditorPerProjectUserSettings.ini` auto-starts. `.claude/settings.json` allow-lists build/automation/runner commands; `tools/Run-InEditor.py` runs a Python file inside the open editor through PythonScriptPlugin remote execution (localhost; enable it in Project Settings); MCP `execute_tool_script` is sandboxed without `unreal`. `.claude/commands/` holds `/build-editor`, `/test <filter>` (reports to `Artifacts/Automation/`), `/netcheck <name>` (maps names to `tools/Test-*.ps1`) and `/implement <spec>`.
 
 | Reference | Summary | Read when |
