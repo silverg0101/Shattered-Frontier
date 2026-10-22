@@ -63,6 +63,22 @@ c['5_p5_L_over_ref_x760_1200_y0_560'] = round(float(np.percentile((L[0:561, 760:
 rgb = np.asarray(Image.open(HERE / 'chimney-smoke.png').convert('RGB'), dtype=float)
 field = np.abs(L[380:541] - LR[380:541]) >= T
 c['5_field_plume_mean_R_minus_B'] = round(float((rgb[380:541, :, 0] - rgb[380:541, :, 2])[field].mean()), 1) if field.any() else None
+# WP6i review r6 fix 3: growth at y 300, dense-puff colour, RGB continuity over all 15 frames, MAD over the plume box.
+def span_in(y, x0=760, x1=1100):
+    px = plume(y)[0]; px = px[(px >= x0) & (px <= x1)]
+    return int(px.max() - px.min() + 1) if len(px) else 0
+c['r6_growth_span_y300_over_y550_x760_1100'] = [span_in(300), span_in(550), round(span_in(300) / max(span_in(550), 1), 2)]
+dl = (L - LR)[560:761, 880:1021]; top = dl >= np.percentile(dl, 97)
+c['r6_dense_puff_R_minus_B_top3pct_y560_760'] = round(float((rgb[560:761, 880:1021, 0] - rgb[560:761, 880:1021, 2])[top].mean()), 1)
+refrgb = np.asarray(Image.open(HERE / 'chimney-smoke-ref.png').convert('RGB'), dtype=float)
+thin = {}
+for n in ['chimney-smoke.png'] + [f'motion-{k:02d}.png' for k in range(14)]:
+    f = np.asarray(Image.open(HERE / n).convert('RGB'), dtype=float)
+    m = np.abs(f - refrgb).sum(2) >= 8
+    thin[n] = sum(1 for y in range(150, 561, 5) if m[y, 880:1081].sum() < 5)
+c['r6_continuity_thin_rows_y150_560'] = thin
+mot = [np.asarray(Image.open(HERE / f'motion-{k:02d}.png').convert('L'), dtype=float)[100:761, 760:1201] for k in range(14)]
+c['r6_mad_x760_1200_y100_760_min_mean'] = [round(min(float(np.abs(a - b).mean()) for a, b in zip(mot, mot[1:])), 2), round(float(np.mean([np.abs(a - b).mean() for a, b in zip(mot, mot[1:])])), 2)]
 hill = [ratios[y] for y in ratios if 60 <= y <= 300]
 c['5_L_over_ref_hill_y60_300'] = [min(hill), max(hill)] if hill else None
 c['5_L_over_ref_min_max_y10_560'] = [min(ratios.values()), max(ratios.values())] if ratios else None

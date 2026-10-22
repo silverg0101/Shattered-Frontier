@@ -125,3 +125,26 @@ Round 5 numbers. Plume: core L/ref 0.819 / 0.847 / 0.888; 5th percentile 0.665; 
 3. `lamp_fx.glass_sockets` logs `LAMP_SOCKET` per chamber. The sill chamber is `SM_SilverbrookTownhouse1` centre z 417, box 204 x 19 x 2 cm, and is now excluded by rule: any building glow piece thinner than 5 cm vertically is a strip, not a lantern. Lights went from 589 to 524; `LIGHT_CHECK lights 524 on_glass 524 orphans 0`. Because the light list changed, the seeded `context-lamp-wall` pick changed too: it is now `TheCommons_townhouse_099` (SM_SilverbrookTownhouse4), logged as `WP6_LAMP_WALL_SUBJECT`, so its frame is a different wall from r5.
 
 Round 6 numbers (chimney-smoke against its reference): core L/ref 0.968 / 1.004 / 1.023; p5 0.913; hill p50 1.027; roofs p50 1.143; sky rows p50 0.976 (25 px only); field plume R - B 28.7 (open: semi-transparent smoke over the yellow-green field keeps the field's cast); y 550 row still holds the other chimneys (x 974-1457); y 150 span 51 (ratio 0.11); up 86.6 px/s; MAD min 1.17; main-street x 790-830 14 columns, L/sky 0.92. Dusk: frontage sky 15.5, bottom-quarter 6.0, steps 5.0; side-b sky 18.6, bottom-quarter 12.0; lamp-wall sky 19.1, bottom-quarter 15.0, clipped 0.39 % of the frame. Perf (on - off): chimney +0.76 ms (off-1 outlier 4.36; on-2 - off-2 +0.16), street -0.06 ms.
+
+## Round 7: REVIEW-r6.md fix list (r6 scored 16 PASS / 3 FAIL)
+
+1. `glass_sockets`: only a flush panel (< 5 cm thin and >= 60 cm across) gets the 30 cm offset, now outward from the mesh bounds centre. A lantern pane (every axis < 60 cm) keeps its cards and light at the glass centre. `check_lights.py` fails a light more than 3 cm from a lantern chamber under 60 cm. `LIGHT_CHECK lights 524 on_glass 524 orphans 0 in_wall 0`.
+   - The dusk subjects' chambers (`LAMP_SOCKET`): side-b `TheCommons_townhouse_129` (`SM_SilverbrookTownhouse2`) centre (-316, 156, 199), box 52 x 3 x 98 cm; `SM_SilverbrookTownhouse4` centre (-312, 205, 221), box 50 x 2 x 95 cm. Both are 95-98 cm tall, so they count as flush panels.
+   - Their lights stay 30 cm in front, now outward from the bounds centre. The 3 cm rule therefore covers no townhouse lantern.
+   - The offsets gate is `check_lights.py` over every building light, not a five-lamp JSON.
+2. Night row: moon 5.0 lux, sky light 6.0 (movable). Frontage steps median 9.0 and bottom-quarter median 9.0; x 0-700 / y 700-1080 median 34. The frontage sky (x 0-330, top 60 rows) is L 107.5, over the 10-60 band. Side-b sky 32.6 / bottom quarter 22; lamp-wall sky 46.0 / 22.
+3. Tint [0.28,0.31,0.40]; `measure_plume.py` adds the r6 metrics:
+   - growth: y 300 span 140 / y 550 span 66 = 2.12
+   - dense-puff R - B 7.7 (band <= 5)
+   - RGB continuity: 0 thin rows in all 15 frames
+   - MAD in x 760-1200, y 100-760: min 1.33
+   - core 0.966 / 1.008 / 1.03; p5 0.927; hill 0.958-1.049; sky rows max 0.973; up 70 px/s
+   - main-street x 790-830: 9 columns, L/sky 0.98
+4. `context-lamp-wall` is pinned to `SM_SilverbrookTownhouse1`. It is seeded over those houses and aims at the former sill glow, mesh (-39, 325, 417) cm: `WP6_LAMP_WALL_SUBJECT TheCommons_townhouse_037`.
+5. The 43 resaved `.uasset`s that no fix changed are reverted to their `af48e04f` blobs; only `MI_SB_LanternGlow` (lamp_fx) remains. Assets each fix rebuilt:
+   - fix 1: the map's lamp actors and cards
+   - fix 3: the map's chimney actors (User.Tint)
+   - fixes 2 and 4: capture script only
+   The captures were retaken after the revert.
+
+Perf (on - off): chimney -0.154 ms, street -0.031 ms.

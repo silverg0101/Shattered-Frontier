@@ -63,7 +63,7 @@ add('chimney-smoke-ref', chimney[0], chimney[1], 55)   # smoke hidden: measure_p
 REF = len(views) - 1
 CHIMNEY = REF - 1
 # Night row (lighting-and-atmosphere.md section 3): UE pitch +12 = sun 12 deg below the horizon, the Moon at 0.25 lux, sky light 1.0.
-NIGHT = {'sun_pitch': 12., 'sky': 6.0, 'moon_lux': 2.5}   # review r5: frontage steps median 4.0 at sky 3.0 with a movable sky light; 0.25 lux moon was black
+NIGHT = {'sun_pitch': 12., 'sky': 6.0, 'moon_lux': 5.0}   # review r5: frontage steps median 4.0 at sky 3.0 with a movable sky light; 0.25 lux moon was black
 MOTION = REF   # the motion set follows the reference frame (smoke shown again) without moving the camera
 
 rng = random.Random(20261022)
@@ -136,15 +136,18 @@ for a in rng.sample(th, len(th)):
     e = at(x, y, 1.7); t = u.Vector(loc.x, loc.y, e.z - 70)
     if not open_sky(e) or clear(e, t, a.get_actor_label()): continue
     add('context-house-' + side, e, t, 70, a.get_actor_label()); picked += 1
-# A lantern-lit wall: the light of a wall lantern on a townhouse, from 6 m in front of it.
-lights = [l for l in u.GameplayStatics.get_all_actors_of_class(world, u.PointLight) if '_townhouse_' in l.get_actor_label()]
-for l in rng.sample(lights, len(lights)):
-    p = l.get_actor_location(); owner = l.get_attach_parent_actor(); c = owner.get_actor_location() if owner else p
-    dx, dy = p.x - c.x, p.y - c.y; n = math.hypot(dx, dy) or 1
-    x, y = (p.x + dx/n*600)/100, (p.y + dy/n*600)/100; e = at(x, y, 1.7)
-    if not clear(e, p, owner.get_actor_label() if owner else ''):
-        add('context-lamp-wall', e, p, 60, owner.get_actor_label() if owner else '')
-        u.log(f'WP6_LAMP_WALL_SUBJECT {l.get_actor_label()} {owner.get_actor_label() if owner else None} {owner.static_mesh_component.static_mesh.get_name() if owner else None} light_z {round(p.z)}'); break
+    if side == 'side-b': u.log(f'WP6_SIDE_B_SUBJECT {a.get_actor_label()} {a.static_mesh_component.static_mesh.get_name()}')
+# The lamp-lit wall (WP6i r6 fix 4: pinned to SM_SilverbrookTownhouse1, the mesh whose first-floor sill strip used to get
+# a light; sampling the light list moved the subject whenever a lamp changed): its sill glow (mesh-space centre
+# (-39, 325, 417) cm, LAMP_SOCKET log), from 6 m in front of it.
+th1 = sorted((h for h in houses if h.static_mesh_component.static_mesh.get_name() == 'SM_SilverbrookTownhouse1'), key=lambda a: a.get_actor_label())
+for h in rng.sample(th1, len(th1)):
+    xf = h.static_mesh_component.get_world_transform()
+    p = u.MathLibrary.transform_location(xf, u.Vector(-39, 325, 417)); f = u.MathLibrary.transform_direction(xf, u.Vector(0, 1, 0))
+    x, y = (p.x + f.x*600)/100, (p.y + f.y*600)/100; e = at(x, y, 1.7)
+    if open_sky(e) and not clear(e, p, h.get_actor_label()):
+        add('context-lamp-wall', e, p, 60, h.get_actor_label())
+        u.log(f'WP6_LAMP_WALL_SUBJECT {h.get_actor_label()} SM_SilverbrookTownhouse1 sill_z {round(p.z)}'); break
 # Owner's image 21 (WP6h review fix 4): from the Silverbrook Bridge's south end along South Street to the Riverside row.
 bridge = next(p['at'] for p in LAYOUT['places'] if p['name'] == 'Silverbrook Bridge')
 south = LAYOUT['roads']['primary']['South Street']

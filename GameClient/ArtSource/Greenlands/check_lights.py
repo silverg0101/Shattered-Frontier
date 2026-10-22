@@ -51,7 +51,10 @@ for light in lights:
             near = [b for b in glow_boxes(mesh) if gap(local, b) <= 60]   # the panes of one lantern; a light may hang inside them
             if near:
                 lo = u.Vector(*(min(getattr(b.min, a) for b in near) for a in 'xyz')); hi = u.Vector(*(max(getattr(b.max, a) for b in near) for a in 'xyz'))
-                best = min(best, gap(local, u.Box(lo, hi)))
+                g = gap(local, u.Box(lo, hi))
+                if max(getattr(hi, a) - getattr(lo, a) for a in 'xyz') < 60 and g > 3:   # a lantern (< 60 cm): light at the glass (WP6i r6)
+                    g = 1e9
+                best = min(best, g)
     if best > 35:   # 30 cm in front of a wall pane (WP6h review 3b) plus 5 cm
         orphans.append((label, round(best, 1))); continue
     hits = [h for h in (u.SystemLibrary.sphere_overlap_actors(light, p, 3., [u.ObjectTypeQuery.ECC_WORLD_STATIC], u.StaticMeshActor, [owner]) or [])

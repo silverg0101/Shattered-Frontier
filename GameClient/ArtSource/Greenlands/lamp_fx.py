@@ -64,11 +64,13 @@ def glass_sockets(mesh, u):
     """Mesh-space cm centre of every lantern-glass chamber, read from the imported mesh itself: the connected pieces of its
     *Glow material slots, merged when closer than 60 cm. (The GLB-derived lamp-sockets.json points of building meshes
     were 2-20 m off their imported glass, so their lights shone on bare walls; street lamps matched to 0 cm.) A flat glow
-    panel (< 5 cm thick) gets its light 30 cm in front of it (WP6h review 3b: 10 cm clipped the wall), away from the mesh centre, so the light is not inside a wall;
+    panel (< 5 cm thick, >= 60 cm across) gets its light 30 cm in front of it, outward from the mesh bounds centre; a lantern
+    pane (every axis < 60 cm) keeps cards and light at its centre (WP6i r6: the old offset put flames beside the glass);
     on a building, a glow volume >= 30 cm in every axis (a lit room or doorway seen through glass) or one centred under
     1 m (a cellar grille) gets no lamp."""
     name = mesh.get_name()
     if name not in _GLASS:
+        box = mesh.get_bounding_box(); centre = [(box.min.x + box.max.x) / 2, (box.min.y + box.max.y) / 2]
         glow = [i for i, slot in enumerate(mesh.static_materials) if _lantern(slot)]
         dm = u.DynamicMesh()
         dm, _ = u.GeometryScript_AssetUtils.copy_mesh_from_static_mesh(
@@ -102,9 +104,9 @@ def glass_sockets(mesh, u):
                 # (SM_SilverbrookTownhouse1's first-floor sill: centre z 417, box 204 x 19 x 2 cm; WP6i r5 fix 3): not a lantern
                 continue
             thin = min(range(2), key=lambda i: size[i])
-            if size[thin] < 5:   # wall-mounted glow panel: light in front of it
-                c[thin] += 30 if c[thin] >= 0 else -30
-            out.append(c)
+            if size[thin] < 5 and max(size) >= 60:   # a flush glow panel (window-sized): light 30 cm in front of it, outward from the mesh bounds centre
+                c[thin] += 30 if c[thin] >= centre[thin] else -30
+            out.append(c)   # a lantern pane (every axis under 60 cm) keeps its cards and light at the glass centre (WP6i r6 fix 1)
         _GLASS[name] = out
     return _GLASS[name]
 
