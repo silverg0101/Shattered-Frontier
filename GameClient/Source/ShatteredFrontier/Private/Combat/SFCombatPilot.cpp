@@ -308,7 +308,8 @@ void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
         auto* Player = Cast<ASFE1Character>(Weak->GetPawn());
         auto* Boar = ActiveBoars.FindRef(TEXT("boar_farm_edge:0")).Get();
         if (!Player || !Boar) { return; }
-        const FVector Near = Grounded(GetWorld(), Boar->GetActorLocation()+FVector(180,0,0), Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+        const bool bUiEvidence = FParse::Param(FCommandLine::Get(), TEXT("UiEvidenceHud")) || FParse::Param(FCommandLine::Get(), TEXT("UiEvidenceDefeat"));
+        const FVector Near = Grounded(GetWorld(), Boar->GetActorLocation()+FVector(bUiEvidence ? 600 : 180,0,0), Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
         Player->SetActorLocation(Near, false, nullptr, ETeleportType::TeleportPhysics);
         UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_SCENARIO_START Pawn=%s"), *Player->GetName());
     }), 2.0f, false);

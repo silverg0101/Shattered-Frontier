@@ -1,10 +1,16 @@
 #include "Framework/SFLoadingScreen.h"
 
 #include "Framework/SFHudStyle.h"
+#include "Framework/Application/SlateApplication.h"
+#include "ImageUtils.h"
 #include "Framework/SFLoadingScreenSettings.h"
 #include "Engine/Texture2D.h"
 #include "MoviePlayer.h"
 #include "Misc/App.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
+#include "Misc/FileHelper.h"
+#include "UnrealClient.h"
 #include "RHI.h"
 #include "UObject/UObjectGlobals.h"
 #include "Widgets/Images/SImage.h"
@@ -72,6 +78,33 @@ public:
         TipSeconds = Settings.TipSeconds;
         FirstTip = FMath::RandRange(0, Tips.Num() - 1);
         StartTime = FPlatformTime::Seconds();
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+        FString LoadingShotPath;
+        if (FParse::Value(FCommandLine::Get(), TEXT("LoadingShot="), LoadingShotPath) && !LoadingShotPath.IsEmpty())
+        {
+            RegisterActiveTimer(1.5f, FWidgetActiveTimerDelegate::CreateLambda([LoadingShotPath](double, float)
+            {
+                FScreenshotRequest::RequestScreenshot(LoadingShotPath, true, false);
+                return EActiveTimerReturnType::Stop;
+            }));
+            RegisterActiveTimer(1.7f, FWidgetActiveTimerDelegate::CreateLambda([this, LoadingShotPath](double, float)
+            {
+                TArray<FColor> Pixels;
+                FIntVector Size = FIntVector::ZeroValue;
+                const TSharedPtr<SWindow> Window = FSlateApplication::Get().GetActiveTopLevelWindow();
+                if (Window.IsValid() && FSlateApplication::Get().TakeScreenshot(Window.ToSharedRef(), Pixels, Size) && Size.X == 1920 && Size.Y == 1080)
+                {
+                    TArray64<uint8> Png;
+                    FImageUtils::PNGCompressImageArray(Size.X, Size.Y, MakeArrayView(Pixels), Png);
+                    if (FFileHelper::SaveArrayToFile(Png, *LoadingShotPath))
+                    { UE_LOG(LogTemp, Display, TEXT("UI_LOADING_SHOT_SAVED %s"), *LoadingShotPath); }
+                    else { UE_LOG(LogTemp, Warning, TEXT("UI_LOADING_SHOT_WRITE_FAILED %s"), *LoadingShotPath); }
+                }
+                else { UE_LOG(LogTemp, Warning, TEXT("UI_LOADING_SHOT_SLATE_FAILED")); }
+                return EActiveTimerReturnType::Stop;
+            }));
+        }
+#endif
 
         UTexture2D* Splash = LoadingScreenLoadTexture(Settings.Splash);
         if (Splash)

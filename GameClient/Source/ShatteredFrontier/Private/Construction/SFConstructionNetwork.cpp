@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "InputAction.h"
 #include "Combat/SFCombatPilot.h"
+#include "Gathering/SFGatheringHud.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Gathering/SFGatheringSkillsPanel.h"
 #if SF_WITH_MINIMAL_INVENTORY
@@ -830,7 +831,8 @@ void ASFGameMode::PlaceForZoneScenario(APawn* Pawn, bool bPrimary) const
         return;
     }
     // The finite network scenario only: put each test pawn 2 m from its node.
-    if (!Pawn || !FParse::Param(FCommandLine::Get(),TEXT("GatheringPilotScenario"))) { return; }
+    const bool bUiStation = FParse::Param(FCommandLine::Get(), TEXT("UiEvidenceStation"));
+    if (!Pawn || (!FParse::Param(FCommandLine::Get(),TEXT("GatheringPilotScenario")) && !bUiStation)) { return; }
     // Same choice as the client scenario: the oak nearest the origin, and the rock nearest that oak.
     const ASFGatheringPilotNode* Oak=nullptr; const ASFGatheringPilotNode* Rock=nullptr;
     for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It; ++It)
@@ -841,6 +843,11 @@ void ASFGameMode::PlaceForZoneScenario(APawn* Pawn, bool bPrimary) const
         { Rock=*It; }
     }
     const ASFGatheringPilotNode* Target=bPrimary ? Oak : Rock;
+    if (bUiStation)
+    {
+        for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It; ++It)
+        { if (It->Kind==ESFGatheringPilotKind::Sawmill) { Target=*It; break; } }
+    }
     if (!Target) { return; }
     const FVector Node=Target->GetActorLocation(); const FVector Away=(-Node*FVector(1,1,0)).GetSafeNormal();
     Pawn->SetActorLocation(Node+Away*200+FVector(0,0,80),false,nullptr,ETeleportType::TeleportPhysics);
@@ -2600,4 +2607,42 @@ void ASFPlayerController::SFUi(const FString& Screen)
     else if (Screen.Equals(TEXT("trade"), ESearchCase::IgnoreCase)) { ToggleTradeDemo(); }
     else if (Screen.Equals(TEXT("tradelock"), ESearchCase::IgnoreCase) && TradeWindow) { TradeWindow->CallFunctionByNameWithArguments(TEXT("HandleLock"), *GLog, nullptr, true); }
     else if (Screen.Equals(TEXT("build"), ESearchCase::IgnoreCase)) { ToggleBuildMode(); }
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    else if (Screen.Equals(TEXT("skills"), ESearchCase::IgnoreCase)) { ToggleGatheringSkillsPanel(); }
+    else if (Screen.Equals(TEXT("target"), ESearchCase::IgnoreCase))
+    {
+        ASFPilotBoar* NearestBoar = nullptr;
+        double BestBoar = TNumericLimits<double>::Max();
+        for (TActorIterator<ASFPilotBoar> It(GetWorld()); It && GetPawn(); ++It)
+        {
+            const double Distance = FVector::DistSquared(GetPawn()->GetActorLocation(), It->GetActorLocation());
+            if (Distance < BestBoar) { BestBoar = Distance; NearestBoar = *It; }
+        }
+        if (NearestBoar && GetPawn()) { SetControlRotation((NearestBoar->GetActorLocation() - GetPawn()->GetPawnViewLocation()).Rotation()); }
+        SelectNextCombatTarget();
+        if (GatheringHud) { GatheringHud->CaptureToast(); }
+        if (HudLayout) { HudLayout->CapturePrompt(); }
+    }
+    else if ((Screen.Equals(TEXT("station"), ESearchCase::IgnoreCase) || Screen.Equals(TEXT("aim"), ESearchCase::IgnoreCase))
+        && GatheringPilot && GatheringPilot->IsEnabled() && GetPawn())
+    {
+        const bool bStation = Screen.Equals(TEXT("station"), ESearchCase::IgnoreCase);
+        ASFGatheringPilotNode* Nearest = nullptr;
+        double Best = TNumericLimits<double>::Max();
+        for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It; ++It)
+        {
+            if (bStation ? !It->IsRefinery() : It->Kind != ESFGatheringPilotKind::Oak) { continue; }
+            const double Distance = FVector::DistSquared(GetPawn()->GetActorLocation(), It->GetActorLocation());
+            if (Distance < Best) { Best = Distance; Nearest = *It; }
+        }
+        if (Nearest)
+        {
+            const FVector Start = GetPawn()->GetPawnViewLocation();
+            const FVector Direction = (Nearest->GetActorLocation() - Start).GetSafeNormal();
+            SetControlRotation(Direction.Rotation());
+            FVector2D ScreenLocation;
+            if (ProjectWorldLocationToScreen(Nearest->GetActorLocation(), ScreenLocation)) { SetMouseLocation(FMath::RoundToInt(ScreenLocation.X), FMath::RoundToInt(ScreenLocation.Y)); }
+        }
+    }
+#endif
 }

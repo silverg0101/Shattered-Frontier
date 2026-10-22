@@ -57,6 +57,9 @@ private:
 public:
     // True while the crafting-station panel is on screen (the target frame and prompt bar step aside for it).
     bool IsStationShown() const;
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    void CaptureToast() { Toasts.Push(TEXT("Logging +1"), GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0); }
+#endif
 
 private:
 

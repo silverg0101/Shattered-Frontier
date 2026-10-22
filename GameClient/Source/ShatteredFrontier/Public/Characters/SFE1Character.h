@@ -25,6 +25,7 @@ public:
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     void CombatSetHealth(int32 Value);
     int32 CombatHealth() const { return PilotHealth; }
+    UFUNCTION(BlueprintPure, Category="Combat") int32 GetPilotHealthForCapture() const { return PilotHealth; }
     AActor* GetCombatTarget() const { return CombatTarget; }
     void SetCombatTarget(AActor* Target);
     // Local dialogue UI calls this on open/close; never sent to the server.

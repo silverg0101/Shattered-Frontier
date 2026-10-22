@@ -1,60 +1,99 @@
-"""One -game session that stages the HUD screens reachable by console (gameplay, build, inventory with the cursor on bag cell 1, market, trade)
-and screenshots each with "Shot showui". Usage (-game client, 1920x1080):
-    UnrealEditor.exe <uproject> <map> -game -windowed -ResX=1920 -ResY=1080 -ForceRes "-ExecCmds=py tools/Capture-UiV5.py <out folder>"
-Writes <out folder>/<name>-live.png. Gathering, station, defeated and loading need their server scenarios (tools/Capture-UiScene.ps1)."""
-import sys, ctypes
+"""Capture one live UI state in a 1920x1080 -game client.
+
+Usage: -ExecCmds="py <this file> <state> <output directory>"
+The server scene is selected by Capture-UiScene.ps1; this driver uses dev SFUi
+commands to operate the controller and Shot showui for the final frame.
+The original one-argument invocation still captures the inventory/market/trade/build sequence.
+"""
+import sys
+import ctypes
 from ctypes import wintypes
+import time
 from pathlib import Path
 import unreal as u
 
-OUT = Path(sys.argv[1]); OUT.mkdir(parents=True, exist_ok=True)
-SHOTS = Path(u.Paths.screen_shot_dir())
-# (seconds after the pawn exists, action): 'cmd:<console>' | 'cursor:<x>,<y>' | 'shot:<name>'
-STEPS = [(6, 'shot:gameplay-hud'), (7, 'cmd:SFUi build'), (10, 'shot:build-mode'), (11, 'cmd:SFUi build'),
-         (13, 'cmd:SFUi inventory'), (14, 'cursor:140,624'), (16, 'shot:inventory'), (17, 'cmd:SFUi inventory'),
-         (19, 'cmd:SFUi market'), (23, 'shot:market-board'), (24, 'cmd:SFUi market'),
-         (26, 'cmd:SFUi trade'), (28, 'cmd:SFUi tradelock'), (30, 'shot:trade'), (32, 'quit')]
-state = dict(world=None, t=0.0, i=0, pending=[])
+name = sys.argv[1] if len(sys.argv) > 2 else 'all'
+out = Path(sys.argv[2] if len(sys.argv) > 2 else sys.argv[1])
+out.mkdir(parents=True, exist_ok=True)
+shots = Path(u.Paths.screen_shot_dir())
+started = time.time()
+plans = {
+    'all': [(6, 'shot:gameplay-hud'), (7, 'cmd:SFUi build'), (10, 'shot:build-mode'),
+            (11, 'cmd:SFUi build'), (13, 'cmd:SFUi inventory'), (14, 'cursor:140,624'),
+            (16, 'shot:inventory'), (17, 'cmd:SFUi inventory'),
+            (19, 'cmd:SFUi market'), (23, 'shot:market-board'), (24, 'cmd:SFUi market'),
+            (26, 'cmd:SFUi trade'), (28, 'cmd:SFUi tradelock'), (30, 'shot:trade')],
+    'gameplay-hud': [(4, 'cmd:SFUi target'), (5, 'shot')],
+    'gathering': [(1.5, 'cmd:SFUi skills'), (2.0, 'cmd:SFUi aim'), (3, 'shot')],
+    'crafting-station': [(4, 'cmd:SFUi station'), (6, 'shot')],
+    'defeated': [],
+}
+steps = plans[name] + [(35 if name == 'defeated' else 32 if name == 'all' else 12, 'quit')]
+state = {'world': None, 'time': 0.0, 'index': 0, 'pending': False,
+         'pending_name': None, 'defeat_seen': None, 'defeat_shot': False}
 
 
 def set_cursor(x, y):
-    """Move the real OS cursor to client pixel (x, y) of the game window (Slate reads GetCursorPos for hover)."""
-    hwnd = ctypes.windll.user32.GetForegroundWindow(); pt = wintypes.POINT(int(x), int(y))
-    ctypes.windll.user32.ClientToScreen(hwnd, ctypes.byref(pt)); ctypes.windll.user32.SetCursorPos(pt.x, pt.y)
+    hwnd = ctypes.windll.user32.GetForegroundWindow()
+    point = wintypes.POINT(int(x), int(y))
+    ctypes.windll.user32.ClientToScreen(hwnd, ctypes.byref(point))
+    ctypes.windll.user32.SetCursorPos(point.x, point.y)
 
 
 def collect():
-    """Rename finished engine screenshots to the queued names."""
-    for path in sorted(SHOTS.rglob('*.png'), key=lambda p: p.stat().st_mtime):
-        if not state['pending']:
-            return
+    if not state['pending']:
+        return
+    candidates = [p for p in shots.rglob('*.png') if p.stat().st_mtime >= started]
+    if candidates:
+        newest = max(candidates, key=lambda p: p.stat().st_mtime)
         try:
-            path.replace(OUT / (state['pending'][0] + '-live.png')); state['pending'].pop(0)
+            newest.replace(out / (state['pending_name'] + '-live.png'))
+            state['pending'] = False
+            u.log('UI_CAPTURE_SAVED ' + str(out / (state['pending_name'] + '-live.png')))
         except OSError:
-            return
+            pass
 
 
-def on_tick(delta):
+def tick(delta):
     try:
-        world = state['world'] or next((w for w in u.ObjectIterator(u.World) if u.GameplayStatics.get_player_controller(w, 0)
-                                        and u.GameplayStatics.get_player_controller(w, 0).get_controlled_pawn()), None)
+        world = state['world'] or next((w for w in u.ObjectIterator(u.World)
+            if u.GameplayStatics.get_player_controller(w, 0)
+            and u.GameplayStatics.get_player_controller(w, 0).get_controlled_pawn()), None)
         if not world:
             return
-        state['world'] = world; collect(); state['t'] += delta
-        while state['i'] < len(STEPS) and state['t'] >= STEPS[state['i']][0]:
-            action = STEPS[state['i']][1]; state['i'] += 1
+        state['world'] = world
+        state['time'] += delta
+        collect()
+        if name == 'defeated' and state['defeat_seen'] is None and state['time'] >= 3:
+            pawn = u.GameplayStatics.get_player_controller(world, 0).get_controlled_pawn()
+            if pawn.get_pilot_health_for_capture() == 0:
+                state['defeat_seen'] = state['time']
+                u.log('UI_CAPTURE_DEFEATED_HEALTH_ZERO')
+        if name == 'defeated' and state['defeat_seen'] is not None and not state['defeat_shot'] and state['time'] >= state['defeat_seen'] + 0.35:
+            state['pending'] = True
+            state['pending_name'] = name
+            state['defeat_shot'] = True
+            u.SystemLibrary.execute_console_command(world, 'Shot showui')
+        while state['index'] < len(steps) and state['time'] >= steps[state['index']][0]:
+            action = steps[state['index']][1]
+            state['index'] += 1
             if action.startswith('cmd:'):
                 u.SystemLibrary.execute_console_command(world, action[4:])
             elif action.startswith('cursor:'):
                 set_cursor(*action[7:].split(','))
-            elif action.startswith('shot:'):
-                state['pending'].append(action[5:]); u.SystemLibrary.execute_console_command(world, 'Shot showui')
-            elif action == 'quit' and not state['pending']:
-                u.unregister_slate_post_tick_callback(state['handle']); u.SystemLibrary.execute_console_command(world, 'quit')
+            elif action == 'shot' or action.startswith('shot:'):
+                state['pending'] = True
+                state['pending_name'] = action[5:] if action.startswith('shot:') else name
+                u.SystemLibrary.execute_console_command(world, 'Shot showui')
             elif action == 'quit':
-                state['i'] -= 1; break
+                if state['pending']:
+                    state['index'] -= 1
+                    break
+                u.unregister_slate_post_tick_callback(state['handle'])
+                u.SystemLibrary.execute_console_command(world, 'quit')
     except Exception as error:
-        u.log_error('UI_CAPTURE error %r' % (error,)); u.unregister_slate_post_tick_callback(state['handle'])
+        u.log_error('UI_CAPTURE_ERROR %r' % (error,))
+        u.unregister_slate_post_tick_callback(state['handle'])
 
 
-state['handle'] = u.register_slate_post_tick_callback(on_tick)
+state['handle'] = u.register_slate_post_tick_callback(tick)
