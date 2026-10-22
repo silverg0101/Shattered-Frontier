@@ -166,6 +166,7 @@ void USFHudLayout::NativeOnInitialized()
     UBorder* ZoneFrame = KitPanel(WidgetTree, TEXT("minimap_footer"), 1.f, Slate(0.85f), Brass(), FMargin(4.f, 0.f), 3.f);
     ZoneText = Text(WidgetTree, ZoneFromMapName(UGameplayStatics::GetCurrentLevelName(this, true)), 18, Ivory());
     ZoneText->SetJustification(ETextJustify::Center);
+    ZoneText->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
     ZoneFrame->SetVerticalAlignment(VAlign_Center); ZoneFrame->SetContent(ZoneText);
     USizeBox* ZoneSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
     ZoneSize->SetWidthOverride(180.f); ZoneSize->SetHeightOverride(32.f); ZoneSize->SetContent(ZoneFrame);
@@ -324,7 +325,7 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
             double Nearest = TNumericLimits<double>::Max();
             for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It; ++It)
             { if (!It->IsRefinery()) { Nearest = FMath::Min(Nearest, FVector::Dist2D(It->GetActorLocation(), Controller->GetPawn()->GetActorLocation())); } }
-            if (Nearest < TNumericLimits<double>::Max()) { Footer = FString::Printf(TEXT("%s 00B7 %d m"), *ZoneName, FMath::RoundToInt(Nearest / 100.0)); }
+            if (Nearest < TNumericLimits<double>::Max()) { Footer = FString::Printf(TEXT("%s · %d m"), *ZoneName, FMath::RoundToInt(Nearest / 100.0)); }
         }
         ZoneText->SetText(FText::FromString(Footer));
     }

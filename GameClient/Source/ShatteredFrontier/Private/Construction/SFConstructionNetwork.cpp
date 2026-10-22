@@ -1,4 +1,5 @@
 #include "Construction/SFConstructionNetwork.h"
+#include "Exchange/SFExchangeWidgets.h"
 #include "Framework/SFPlayerController.h"
 #include "Framework/SFHudLayout.h"
 #include "Inventory/SFInventoryPanel.h"
@@ -2590,3 +2591,12 @@ void ASFPlayerController::TickClaimScenario()
     }
 }
 #endif
+
+void ASFPlayerController::SFUi(const FString& Screen)
+{
+    if (Screen.Equals(TEXT("inventory"), ESearchCase::IgnoreCase)) { ToggleInventoryPanel(); }
+    else if (Screen.Equals(TEXT("market"), ESearchCase::IgnoreCase)) { ToggleMarketDemo(); }
+    else if (Screen.Equals(TEXT("trade"), ESearchCase::IgnoreCase)) { ToggleTradeDemo(); }
+    else if (Screen.Equals(TEXT("tradelock"), ESearchCase::IgnoreCase) && TradeWindow) { TradeWindow->CallFunctionByNameWithArguments(TEXT("HandleLock"), *GLog, nullptr, true); }
+    else if (Screen.Equals(TEXT("build"), ESearchCase::IgnoreCase)) { ToggleBuildMode(); }
+}

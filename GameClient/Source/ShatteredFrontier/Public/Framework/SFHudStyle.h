@@ -294,7 +294,7 @@ inline USizeBox* KitImage(UWidgetTree* Tree, const TCHAR* Name, float Width = 0.
         Box->SetWidthOverride(Width > 0.f ? Width : static_cast<float>(Design.X));
         Box->SetHeightOverride(Height > 0.f ? Height : (Width > 0.f ? Width : static_cast<float>(Design.Y)));
     }
-    else if (Width > 0.f) { Box->SetWidthOverride(Width); Box->SetHeightOverride(Height > 0.f ? Height : Width); }
+    else { Image->SetVisibility(ESlateVisibility::Collapsed); if (Width > 0.f) { Box->SetWidthOverride(Width); Box->SetHeightOverride(Height > 0.f ? Height : Width); } }
     Box->SetContent(Image);
     return Box;
 }

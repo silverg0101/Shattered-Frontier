@@ -44,6 +44,8 @@ public:
     // Console (development): grant chr_dev_<name> build rights on the plot the pawn stands in, or claim that plot.
     UFUNCTION(Exec) void SFGrantBuild(const FString& DevName);
     UFUNCTION(Exec) void SFClaimPlot();
+    // Console (development, UI evidence captures): toggle one screen by name - inventory, market, trade or build.
+    UFUNCTION(Exec) void SFUi(const FString& Screen);
     void InteractWithSelectedTarget();
     void SelectNextCombatTarget();
     AActor* GetSelectedCombatTarget() const;

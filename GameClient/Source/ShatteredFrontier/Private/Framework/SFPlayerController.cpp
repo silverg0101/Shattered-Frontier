@@ -405,7 +405,6 @@ void ASFPlayerController::ToggleTradeDemo()
         DemoTrade = MakeShared<FSFTradeViewModel>(*DemoExchange, FSFFakeExchange::DemoTrade(Now + 108.0), true);
         DemoTrade->AddMyItem({TEXT("item/oak_log"), TEXT("Oak Log"), 24});
         DemoTrade->AddMyItem({TEXT("item/iron_ore"), TEXT("Iron Ore"), 12});
-        DemoTrade->OnPartnerLocked(true);  // the partner has locked in; adding items above cleared it
         TradeWindow = CreateWidget<USFTradeWindow>(this, USFTradeWindow::StaticClass());
         if (!TradeWindow) { return; }
         TradeWindow->Bind(DemoTrade);
