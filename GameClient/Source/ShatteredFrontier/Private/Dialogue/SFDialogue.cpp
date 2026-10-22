@@ -12,8 +12,6 @@
 #include "Components/VerticalBoxSlot.h"
 #include "Dom/JsonObject.h"
 #include "Framework/Application/SlateApplication.h"
-#include "Fonts/FontMeasure.h"
-#include "Rendering/SlateRenderer.h"
 #include "Framework/SFHudStyle.h"
 #include "Misc/FileHelper.h"
 #include "Quest/SFQuestPilot.h"
@@ -203,23 +201,8 @@ UCanvasPanelSlot* Box(UCanvasPanel* Into, UWidget* Widget, float Left, float Top
     return Slot;
 }
 
-// Type sizes matched to the concept's measured text widths need fractions of a px; the helpers take whole 1080p px.
-void Resize(UTextBlock* Label, float Px)
-{
-    FSlateFontInfo Font = Label->GetFont(); Font.Size = Px * 0.75f; Label->SetFont(Font);  // Slate sizes are points (SFHudStyle::RoleFont)
-}
-
-// Text from quest and recipe data can be longer than the concept's; scale it down to fit the space (never under 18 px,
-// the family's floor is 16) instead of truncating it. Returns the px size used.
-float FitWidth(UTextBlock* Label, float BasePx, float MaxWidth)
-{
-    Resize(Label, BasePx);
-    const TSharedRef<FSlateFontMeasure> Measure = FSlateApplication::Get().GetRenderer()->GetFontMeasureService();
-    const float Width = Measure->Measure(Label->GetText().ToString(), Label->GetFont()).X;
-    const float Px = Width > MaxWidth ? FMath::Max(18.f, BasePx * MaxWidth / Width) : BasePx;
-    if (Px != BasePx) { Resize(Label, Px); }
-    return Px;
-}
+// Type sizes matched to the concept's measured text widths need fractions of a px.
+inline void Resize(UTextBlock* Label, float Px) { SFHudStyle::ResizePx(Label, Px); }
 
 // Places a text block so its cap top lands on the concept's cap top.
 UCanvasPanelSlot* Line(UCanvasPanel* Into, UTextBlock* Label, int32 Size, float Left, float CapTop)
@@ -415,8 +398,7 @@ void USFDialoguePanel::Open(TSharedPtr<const FSFDialogueTree> InTree, const FSFQ
         {
             const float Room = (1396.f - 1044.f) - 45.f - 21.f - 20.f - 43.f - 19.f;  // both lines together
             DialogueLayout::Resize(XpText, 23.f); DialogueLayout::Resize(CoinText, 23.f);
-            const TSharedRef<FSlateFontMeasure> Measure = FSlateApplication::Get().GetRenderer()->GetFontMeasureService();
-            const float Both = Measure->Measure(XpText->GetText().ToString(), XpText->GetFont()).X + Measure->Measure(CoinText->GetText().ToString(), CoinText->GetFont()).X;
+            const float Both = SFHudStyle::TextWidth(XpText) + SFHudStyle::TextWidth(CoinText);
             if (Both > Room) { const float Px = FMath::Max(18.f, 23.f * Room / Both); DialogueLayout::Resize(XpText, Px); DialogueLayout::Resize(CoinText, Px); }
         }
         TArray<FString> Items;
@@ -446,7 +428,7 @@ void USFDialoguePanel::Refresh()
         if (bShown)
         {
             RowLabels[Index]->SetText(FText::FromString(Node->Choices[Index].Label));
-            DialogueLayout::FitWidth(RowLabels[Index], 28.f, 985.f - 606.f - 24.f);
+            SFHudStyle::FitWidth(RowLabels[Index], 28.f, 985.f - 606.f - 24.f);
         }
     }
     Selected = FMath::Clamp(Selected, 0, FMath::Max(0, Node->Choices.Num() - 1));

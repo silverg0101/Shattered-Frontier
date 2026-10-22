@@ -1238,10 +1238,11 @@ void USFQuestTrackerHud::Present(const TArray<FSFQuestView>& Shown)
         UHorizontalBoxSlot* TickSlot = Row->AddChildToHorizontalBox(Check);
         TickSlot->SetVerticalAlignment(VAlign_Center); TickSlot->SetPadding(FMargin(0.f, 0.f, 8.f, 0.f));
         UTextBlock* LabelText = Text(WidgetTree, Label, 20, Colour);
-        LabelText->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis); LabelText->SetClipping(EWidgetClipping::ClipToBounds);
+        UTextBlock* CountText = Num(WidgetTree, Count, 20, Colour);
+        LabelText->SetAutoWrapText(true);  // a long label wraps to its slot (never truncated)
         UHorizontalBoxSlot* LabelSlot = Row->AddChildToHorizontalBox(LabelText);
         LabelSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); LabelSlot->SetVerticalAlignment(VAlign_Center);
-        UHorizontalBoxSlot* CountSlot = Row->AddChildToHorizontalBox(Num(WidgetTree, Count, 20, Colour));
+        UHorizontalBoxSlot* CountSlot = Row->AddChildToHorizontalBox(CountText);
         CountSlot->SetVerticalAlignment(VAlign_Center); CountSlot->SetPadding(FMargin(8.f, 0.f, 0.f, 0.f));
         Rows->AddChildToVerticalBox(Row)->SetPadding(FMargin(0.f, 3.f));
     };
@@ -1249,7 +1250,7 @@ void USFQuestTrackerHud::Present(const TArray<FSFQuestView>& Shown)
     {
         const FSFQuestView& View = Shown[Index];
         UTextBlock* Title = Text(WidgetTree, View.Title, 24, Ivory(), true);
-        Title->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis); Title->SetClipping(EWidgetClipping::ClipToBounds);
+        Title->SetAutoWrapText(true);
         Rows->AddChildToVerticalBox(Title)->SetPadding(FMargin(0.f, Index == 0 ? 0.f : 10.f, 0.f, 4.f));
         Rows->AddChildToVerticalBox(KitImage(WidgetTree, TEXT("divider"), 244.f, 4.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));  // hairline under the title
         for (const FSFQuestLine& L : View.Lines) { const bool bDone = L.Count >= L.Target; AddRow(L.Label, FString::Printf(TEXT("%d / %d"), L.Count, L.Target), bDone, bDone ? Moss() : Ivory()); }

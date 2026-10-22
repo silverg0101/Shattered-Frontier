@@ -18,6 +18,9 @@
 #endif
 #include "Framework/SFHudButton.h"
 #include "Framework/SFHudKit.h"
+#include "Framework/Application/SlateApplication.h"
+#include "Fonts/FontMeasure.h"
+#include "Rendering/SlateRenderer.h"
 #include "Styling/CoreStyle.h"
 #include "Rendering/DrawElements.h"
 #include "UObject/StrongObjectPtr.h"
@@ -254,6 +257,30 @@ inline UTextBlock* Text(UWidgetTree* Tree, const FString& Value, int32 Size, con
 inline UTextBlock* Num(UWidgetTree* Tree, const FString& Value, int32 Size, const FLinearColor& Color, bool bBold = false)
 {
     return Text(Tree, Value, Size, Color, bBold);  // concepts set numerals in EB Garamond regular like the text
+}
+
+// Sets a text block's size in 1080p px, fractions allowed (the constructors take whole px; Slate sizes are points).
+inline void ResizePx(UTextBlock* Label, float Px)
+{
+    FSlateFontInfo Font = Label->GetFont(); Font.Size = Px * 0.75f; Label->SetFont(Font);
+}
+
+// The rendered width of a text block's current text, in px; 0 without a Slate renderer (commandlets, tests).
+inline float TextWidth(const UTextBlock* Label)
+{
+    if (!FSlateApplication::IsInitialized() || !FSlateApplication::Get().GetRenderer()) { return 0.f; }
+    return FSlateApplication::Get().GetRenderer()->GetFontMeasureService()->Measure(Label->GetText().ToString(), Label->GetFont()).X;
+}
+
+// Data text (quest, recipe and item names) can be longer than a concept's: scale it down to fit MaxWidth, never under 18 px
+// (the family floor is 16), instead of truncating it (menus.md section 2: nothing truncated). Returns the px size used.
+inline float FitWidth(UTextBlock* Label, float BasePx, float MaxWidth)
+{
+    ResizePx(Label, BasePx);
+    const float Width = TextWidth(Label);
+    const float Px = Width > MaxWidth ? FMath::Max(18.f, BasePx * MaxWidth / Width) : BasePx;
+    if (Px != BasePx) { ResizePx(Label, Px); }
+    return Px;
 }
 
 // Panel, window and section titles: mixed-case EB Garamond Bold (the approved v5 concepts; sizes 48 window, 36 panel, 26 section).
