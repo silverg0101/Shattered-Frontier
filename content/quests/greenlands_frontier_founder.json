@@ -2,6 +2,13 @@
   "id": "quest/frontier_founder",
   "revision": 1,
   "zone_id": "zone/greenlands_silverbrook",
+  "offer": {
+    "title": "Frontier Founder",
+    "summary": "Gather, refine and raise your first wall, then see off a boar.",
+    "art": "",
+    "boards": ["board/silverbrook"],
+    "requires_completed": []
+  },
   "steps": [
     {
       "id": "harvest_oak",

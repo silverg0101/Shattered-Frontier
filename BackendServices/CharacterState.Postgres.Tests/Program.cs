@@ -15,9 +15,45 @@ switch (args[0])
     case "seed":
         Check(store.ApplyProgression(Kill("source-xp-1"), 0, TimeProvider.System, () => .5).Revision == 1, "XP acknowledged");
         Check(store.ApplyProgression(practice, 0, TimeProvider.System, () => 0).Result.SkillGain == 1, "skill gain acknowledged");
-        Check(store.AcceptQuest(quest, "character-1", DateTimeOffset.Parse("2026-01-01T00:00:00Z")) == 0, "quest accepted");
+        var t0 = DateTimeOffset.Parse("2026-01-01T00:00:00Z");
+        var accepted = store.AcceptQuest(quest, "character-1", t0, "accept-1", []);
+        Check(accepted.Revision == 0 && accepted.Result is { Accepted: true, ActiveStepId: "first" }, "quest accepted");
+        Check(store.AcceptQuest(quest, "character-1", t0.AddHours(1), "accept-1", []) is { Revision: 0, Result: { Accepted: true, ActiveStepId: "first" } }, "accept replays same reply");
+        Check(store.AcceptQuest(quest, "character-1", t0, "accept-2", []).Result is { Accepted: false, Reason: "duplicate" }, "second accept is duplicate");
+        var gated = new QuestDefinition { Id = "quest/gated", Revision = 1, ZoneId = "zone/test", Steps = quest.Steps };
+        Check(store.AcceptQuest(gated, "character-1", t0, "accept-gated-1", [quest]).Result.Reason == "prerequisite_missing", "unfinished prerequisite refused");
+        Check(store.ReadQuests("character-1").Count == 1, "refusal stored no row");
         var first = store.ApplyQuest(quest, event1, 0);
         Check(first.Revision == 1 && first.Result.Completed && first.Result.Grants.Count == 1, "quest step and reward receipt acknowledged");
+        Check(store.AcceptQuest(quest, "character-1", t0, "accept-3", []).Result.Reason == "completed", "completed quest not re-accepted");
+        Check(store.AcceptQuest(gated, "character-1", t0, "accept-gated-2", [quest]).Result.Accepted, "completed prerequisite allows accept");
+        Check(store.AbandonQuest(quest, "character-1", "abandon-done").Result.Reason == "not_active", "completed quest cannot be abandoned");
+        var two = new QuestDefinition { Id = "quest/two", Revision = 1, ZoneId = "zone/test", Steps = [
+            new QuestStep { Id = "a", Objectives = [new QuestObjective { Key = "ore", Kind = "gather", TargetId = "item/ore", Count = 2 }], Rewards = [new QuestReward { BundleId = "reward/a" }] },
+            new QuestStep { Id = "b", Prerequisites = ["a"], Objectives = [new QuestObjective { Key = "gem", Kind = "gather", TargetId = "item/gem", Count = 1 }] }] };
+        ObjectiveEvent Ev(string op, string step, string target, int sec) => new(op, "character-3", two.Id, step, "gather", target, null, 1, t0.AddSeconds(sec));
+        Check(store.ApplyQuest(two, Ev("pre", "a", "item/ore", 1), 0).Result.Reason == "quest not accepted", "evidence before accept does not throw");
+        Check(store.AcceptQuest(two, "character-3", t0, "t-accept-1", []).Revision == 0, "multi-step quest accepted");
+        Check(store.ApplyQuest(two, Ev("o1", "a", "item/ore", 1), 0).Result.Accepted, "first ore counted");
+        var step1 = store.ApplyQuest(two, Ev("o2", "a", "item/ore", 2), 1);
+        Check(step1.Result.Grants.Single().OperationId == "quest:character-3:quest/two:a:reward/a", "instance 1 grant id has no suffix");
+        var gem = Ev("g1", "b", "item/gem", 3);
+        Check(store.AbandonQuest(two, "character-3", "t-abandon-1").Result is { Accepted: true } && store.AbandonQuest(two, "character-3", "t-abandon-1").Revision == 3, "abandon and replay");
+        Check(store.AbandonQuest(two, "character-3", "t-abandon-2").Result.Reason == "not_active", "abandoned quest cannot be abandoned again");
+        Check(store.ApplyQuest(two, gem, 3).Result.Reason == "quest not accepted", "evidence after abandon refused");
+        Check(store.ReadQuests("character-3").Single().State.Abandoned, "row reads abandoned");
+        var again = store.AcceptQuest(two, "character-3", t0.AddMinutes(1), "t-accept-2", []);
+        Check(again.Revision == 4 && again.Result.Accepted, "re-accept resets abandoned row");
+        var fresh = store.ReadQuest(two, "character-3")!.Result;
+        Check(fresh is { Instance: 2, StepIndex: 0, Abandoned: false } && fresh.Counts.Count == 0 && fresh.Operations.Length == 0, "re-accepted quest starts from zero");
+        Check(store.ApplyQuest(two, Ev("o1", "a", "item/ore", 1), 3).Result.Accepted == true &&
+            store.ReadQuest(two, "character-3")!.Result.StepIndex == 0, "old operation replays its stored reply without touching the new instance");
+        ObjectiveEvent Ev2(string op, int sec) => new(op, "character-3", two.Id, "a", "gather", "item/ore", null, 1, t0.AddMinutes(1).AddSeconds(sec));
+        store.ApplyQuest(two, Ev2("n1", 1), 4);
+        var step1b = store.ApplyQuest(two, Ev2("n2", 2), 5);
+        Check(step1b.Result.Grants.Single().OperationId == "quest:character-3:quest/two:a:reward/a:i2" && store.Reward(step1b.Result.Grants[0].OperationId) is not null &&
+            store.Reward("quest:character-3:quest/two:a:reward/a") is not null, "re-accepted completion pays a second distinct reward intent");
+        Check(store.PendingRewardQuests("character-3").Contains("quest/two") && !store.PendingRewardQuests("character-2").Contains("quest/two"), "pending reward quests listed");
         break;
     case "restart":
         var xp = store.ApplyProgression(Kill("source-xp-1"), 0, TimeProvider.System, () => .5);
@@ -28,6 +64,7 @@ switch (args[0])
         var questReplay = store.ApplyQuest(quest, event1, 0);
         Check(questReplay.Revision == 1 && questReplay.Result.Grants.Count == 1, "quest and reward replay without second advance");
         Check(store.ReadQuest(quest, "character-1")?.Result.StepIndex == 1, "committed quest step survives restart");
+        Check(store.ReadQuests("character-3").Single().State.Instance == 2 && store.PendingRewardQuests("character-1").Contains("quest/durable"), "quest log and pending reward survive restart");
         break;
     case "concurrent":
         var ready = new CountdownEvent(2); var start = new ManualResetEventSlim();

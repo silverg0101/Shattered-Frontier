@@ -34,7 +34,17 @@ try
     var knownRoles = archetypeDocument.RootElement.EnumerateObject()
         .Where(p => p.Value.ValueKind == System.Text.Json.JsonValueKind.Object && p.Name != "default")
         .Select(p => p.Name).ToHashSet(StringComparer.Ordinal);
-    var issues = QuestValidator.ValidateAll(files, knownItems, knownRoles);
+    // NPC ids are the dialogue file stems; dialogue offers must name a quest that lists that NPC as giver.
+    var dialogue = Directory.GetFiles(Path.Combine(content, "dialogue"), "*.json");
+    var knownNpcs = dialogue.Select(p => Path.GetFileNameWithoutExtension(p)!).ToHashSet(StringComparer.Ordinal);
+    var offers = new List<(string, string)>();
+    foreach (var path in dialogue)
+    {
+        using var doc = System.Text.Json.JsonDocument.Parse(File.ReadAllText(path));
+        if (doc.RootElement.TryGetProperty("offer", out var offer) && offer.TryGetProperty("quest_id", out var id) && id.GetString() is { } questId)
+            offers.Add((Path.GetFileNameWithoutExtension(path), questId));
+    }
+    var issues = QuestValidator.ValidateAll(files, knownItems, knownRoles, knownNpcs).Concat(QuestValidator.ValidateDialogueOffers(offers, files.Select(f => f.Quest))).ToList();
     foreach (var issue in issues) Console.Error.WriteLine(issue);
     if (issues.Count != 0) return 1;
     Console.WriteLine($"Validated {files.Count} quest record(s).");

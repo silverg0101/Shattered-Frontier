@@ -100,6 +100,9 @@ struct FSFGameplayResponse
     FString ActiveStepId; TArray<FString> RewardBundleIds; TMap<FString, int32> Skills;
     TMap<FString, int64> GrantedItems;  // the quest payout lines committed with this receipt
     TMap<FString, int32> ObjectiveCounts;  // GetCharacterState: the active step's counts by objective key
+    FString QuestReason;  // ApplyReceipt: why quest evidence (or an accept/abandon) was not accepted
+    struct FQuestState { FString QuestId, State, ActiveStepId; TMap<FString, int32> Counts; int64 Revision = 0; bool bRewardPending = false; };
+    TArray<FQuestState> Quests;  // GetCharacterState: every quest row (QST-02)
     bool bHasPosition = false; FString ZoneId; FVector Position = FVector::ZeroVector; float Yaw = 0; int64 PositionRevision = 0;
     // Housing
     FString State, StructureId, OwnerId; int64 StructureRevision = 0, Revision = 0, PermissionRevision = 0;

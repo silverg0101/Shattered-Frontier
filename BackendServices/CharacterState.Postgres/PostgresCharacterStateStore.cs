@@ -135,21 +135,93 @@ public sealed class PostgresCharacterStateStore(string connectionString)
         });
     }
 
-    public long AcceptQuest(QuestDefinition quest, string characterId, DateTimeOffset acceptedAt)
+    public VersionedResult<ProgressResult> AcceptQuest(QuestDefinition quest, string characterId, DateTimeOffset acceptedAt, string operationId, IReadOnlyList<QuestDefinition> prerequisites)
     {
-        if (string.IsNullOrWhiteSpace(characterId)) throw new ArgumentException("Character ID required.");
+        if (string.IsNullOrWhiteSpace(characterId) || string.IsNullOrWhiteSpace(operationId)) throw new ArgumentException("Character and operation ID required.");
         return Transaction((c, t) =>
         {
             LockCharacter(c, t, characterId);
-            var model = new QuestProgression(quest); model.Accept(characterId, acceptedAt);
-            using var cmd = Command(c, t, "INSERT INTO character_state.quests VALUES ($1,$2,$3,0,$4::jsonb) ON CONFLICT DO NOTHING", characterId, quest.Id, quest.Revision, JsonSerializer.Serialize(model.Snapshot(characterId)));
-            cmd.ExecuteNonQuery();
-            using var read = Command(c, t, "SELECT content_revision,revision FROM character_state.quests WHERE character_id=$1 AND quest_id=$2", characterId, quest.Id);
-            using var r = read.ExecuteReader(); r.Read();
-            if (r.GetInt32(0) != quest.Revision) throw new CharacterStoreRejectedException("Quest content revision changed.");
-            return r.GetInt64(1);
+            string hash = Fingerprint(("accept", quest.Id, characterId));
+            var replay = Replay<ProgressResult>(c, t, "quest", characterId, operationId, hash);
+            if (replay is not null) return replay;
+            long revision = -1; QuestProgressSnapshot? existing = null;
+            using (var cmd = Command(c, t, "SELECT content_revision,revision,state::text FROM character_state.quests WHERE character_id=$1 AND quest_id=$2", characterId, quest.Id))
+            using (var r = cmd.ExecuteReader())
+                if (r.Read())
+                {
+                    revision = r.GetInt64(1);
+                    existing = JsonSerializer.Deserialize<QuestProgressSnapshot>(r.GetString(2)) ?? throw new CharacterStoreRejectedException("Invalid stored quest state.");
+                }
+            var first = quest.Steps[0].Id;
+            if (existing is { Abandoned: false })
+                return new VersionedResult<ProgressResult>(revision, new ProgressResult(false, existing.StepIndex >= quest.Steps.Count ? "completed" : "duplicate", null, existing.StepIndex >= quest.Steps.Count, []));
+            foreach (var p in prerequisites)
+            {
+                using var cmd = Command(c, t, "SELECT state::text FROM character_state.quests WHERE character_id=$1 AND quest_id=$2", characterId, p.Id);
+                var s = cmd.ExecuteScalar() as string;
+                var snap = s is null ? null : JsonSerializer.Deserialize<QuestProgressSnapshot>(s);
+                if (snap is null || snap.Abandoned || snap.StepIndex < p.Steps.Count)
+                    return new VersionedResult<ProgressResult>(revision < 0 ? 0 : revision, new ProgressResult(false, "prerequisite_missing", null, false, []));
+            }
+            var model = new QuestProgression(quest); model.Accept(characterId, acceptedAt, (existing?.Instance ?? 0) + 1);
+            var state = JsonSerializer.Serialize(model.Snapshot(characterId));
+            if (existing is null)
+            {
+                using var cmd = Command(c, t, "INSERT INTO character_state.quests VALUES ($1,$2,$3,0,$4::jsonb)", characterId, quest.Id, quest.Revision, state); cmd.ExecuteNonQuery();
+                revision = 0;
+            }
+            else
+            {
+                using var cmd = Command(c, t, "UPDATE character_state.quests SET content_revision=$1,revision=$2,state=$3::jsonb WHERE character_id=$4 AND quest_id=$5 AND revision=$6", quest.Revision, revision + 1, state, characterId, quest.Id, revision);
+                if (cmd.ExecuteNonQuery() != 1) throw new CharacterStoreRejectedException("Stale quest revision.");
+                revision++;
+            }
+            var result = new VersionedResult<ProgressResult>(revision, new ProgressResult(true, "accepted", first, false, []));
+            Receipt(c, t, "quest", characterId, operationId, hash, result);
+            return result;
         });
     }
+
+    public VersionedResult<ProgressResult> AbandonQuest(QuestDefinition quest, string characterId, string operationId)
+    {
+        if (string.IsNullOrWhiteSpace(characterId) || string.IsNullOrWhiteSpace(operationId)) throw new ArgumentException("Character and operation ID required.");
+        return Transaction((c, t) =>
+        {
+            LockCharacter(c, t, characterId);
+            string hash = Fingerprint(("abandon", quest.Id, characterId));
+            var replay = Replay<ProgressResult>(c, t, "quest", characterId, operationId, hash);
+            if (replay is not null) return replay;
+            long revision = 0; QuestProgressSnapshot? snapshot = null;
+            using (var cmd = Command(c, t, "SELECT revision,state::text FROM character_state.quests WHERE character_id=$1 AND quest_id=$2", characterId, quest.Id))
+            using (var r = cmd.ExecuteReader())
+                if (r.Read()) { revision = r.GetInt64(0); snapshot = JsonSerializer.Deserialize<QuestProgressSnapshot>(r.GetString(1)); }
+            if (snapshot is null || snapshot.Abandoned || snapshot.StepIndex >= quest.Steps.Count)
+                return new VersionedResult<ProgressResult>(revision, new ProgressResult(false, "not_active", null, snapshot is { Abandoned: false }, []));
+            using var update = Command(c, t, "UPDATE character_state.quests SET revision=$1,state=$2::jsonb WHERE character_id=$3 AND quest_id=$4 AND revision=$5", revision + 1, JsonSerializer.Serialize(snapshot with { Abandoned = true }), characterId, quest.Id, revision);
+            if (update.ExecuteNonQuery() != 1) throw new CharacterStoreRejectedException("Stale quest revision.");
+            var result = new VersionedResult<ProgressResult>(revision + 1, new ProgressResult(true, "abandoned", null, false, []));
+            Receipt(c, t, "quest", characterId, operationId, hash, result);
+            return result;
+        });
+    }
+
+    public IReadOnlyList<(string QuestId, int ContentRevision, long Revision, QuestProgressSnapshot State)> ReadQuests(string characterId) => Transaction((c, t) =>
+    {
+        var rows = new List<(string, int, long, QuestProgressSnapshot)>();
+        using var cmd = Command(c, t, "SELECT quest_id,content_revision,revision,state::text FROM character_state.quests WHERE character_id=$1 ORDER BY quest_id", characterId);
+        using var r = cmd.ExecuteReader();
+        while (r.Read()) rows.Add((r.GetString(0), r.GetInt32(1), r.GetInt64(2), JsonSerializer.Deserialize<QuestProgressSnapshot>(r.GetString(3)) ?? throw new CharacterStoreRejectedException("Invalid stored quest state.")));
+        return (IReadOnlyList<(string QuestId, int ContentRevision, long Revision, QuestProgressSnapshot State)>)rows;
+    });
+
+    public IReadOnlySet<string> PendingRewardQuests(string characterId) => Transaction((c, t) =>
+    {
+        using var cmd = Command(c, t, "SELECT DISTINCT quest_id FROM character_state.reward_receipts WHERE character_id=$1 AND state='Pending'", characterId);
+        using var r = cmd.ExecuteReader();
+        var ids = new HashSet<string>(StringComparer.Ordinal);
+        while (r.Read()) ids.Add(r.GetString(0));
+        return (IReadOnlySet<string>)ids;
+    });
 
     public VersionedResult<ProgressResult> ApplyQuest(QuestDefinition quest, ObjectiveEvent evidence, long expectedRevision, string rewardContainerId = "")
     {
@@ -165,10 +237,11 @@ public sealed class PostgresCharacterStateStore(string connectionString)
             using (var cmd = Command(c, t, "SELECT content_revision,revision,state::text FROM character_state.quests WHERE character_id=$1 AND quest_id=$2", evidence.CharacterId, quest.Id))
             using (var r = cmd.ExecuteReader())
             {
-                if (!r.Read()) throw new CharacterStoreRejectedException("Quest not accepted.");
-                if (r.GetInt32(0) != quest.Revision) throw new CharacterStoreRejectedException("Quest content revision changed.");
+                if (!r.Read()) return new VersionedResult<ProgressResult>(0, new ProgressResult(false, "quest not accepted", null, false, []));
                 revision = r.GetInt64(1);
                 snapshot = JsonSerializer.Deserialize<QuestProgressSnapshot>(r.GetString(2)) ?? throw new CharacterStoreRejectedException("Invalid stored quest state.");
+                if (snapshot.Abandoned) return new VersionedResult<ProgressResult>(revision, new ProgressResult(false, "quest not accepted", null, false, []));
+                if (r.GetInt32(0) != quest.Revision) throw new CharacterStoreRejectedException("Quest content revision changed.");
             }
             if (revision != expectedRevision) throw new CharacterStoreRejectedException("Stale quest revision.");
             var model = new QuestProgression(quest); model.Restore(evidence.CharacterId, snapshot);

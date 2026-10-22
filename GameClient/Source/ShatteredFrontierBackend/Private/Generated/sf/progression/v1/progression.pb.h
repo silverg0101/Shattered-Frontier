@@ -140,6 +140,22 @@ extern const ::google::protobuf::internal::ClassDataFull QuestEvidence_class_dat
 #else
 extern const QuestEvidenceGlobalsTypeInternal QuestEvidence_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
+class QuestState;
+struct QuestStateGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern QuestStateGlobalsTypeInternal QuestState_globals_;
+extern const ::google::protobuf::internal::ClassDataFull QuestState_class_data_;
+#else
+extern const QuestStateGlobalsTypeInternal QuestState_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+class QuestState_CountsEntry_DoNotUse;
+struct QuestState_CountsEntry_DoNotUseGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern QuestState_CountsEntry_DoNotUseGlobalsTypeInternal QuestState_CountsEntry_DoNotUse_globals_;
+extern const ::google::protobuf::internal::ClassDataFull QuestState_CountsEntry_DoNotUse_class_data_;
+#else
+extern const QuestState_CountsEntry_DoNotUseGlobalsTypeInternal QuestState_CountsEntry_DoNotUse_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
 class SavePositionReply;
 struct SavePositionReplyGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -371,6 +387,55 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED SavePositionReply final : public ::
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_sf_2fprogression_2fv1_2fprogression_2eproto;
+};
+// -------------------------------------------------------------------
+
+class PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED QuestState_CountsEntry_DoNotUse final
+    : public ::google::protobuf::internal::MapEntry<::std::string, ::int32_t,
+                             ::google::protobuf::internal::WireFormatLite::TYPE_STRING,
+                             ::google::protobuf::internal::WireFormatLite::TYPE_INT32> {
+ public:
+  using SuperType =
+      ::google::protobuf::internal::MapEntry<::std::string, ::int32_t,
+                      ::google::protobuf::internal::WireFormatLite::TYPE_STRING,
+                      ::google::protobuf::internal::WireFormatLite::TYPE_INT32>;
+  QuestState_CountsEntry_DoNotUse();
+  template <typename = void>
+  explicit constexpr QuestState_CountsEntry_DoNotUse(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+  explicit QuestState_CountsEntry_DoNotUse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr const void* PROTOBUF_NONNULL internal_message_globals() {
+    return &QuestState_CountsEntry_DoNotUse_globals_;
+  }
+
+
+  static constexpr auto InternalGenerateClassData_(
+      const ::google::protobuf::MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+ private:
+  friend class ::google::protobuf::MessageLite;
+  friend struct ::TableStruct_sf_2fprogression_2fv1_2fprogression_2eproto;
+  friend ::google::protobuf::internal::PrivateAccess;
+  friend QuestState_CountsEntry_DoNotUseGlobalsTypeInternal;
+
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<1, 2,
+                          0, 52,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
 };
 // -------------------------------------------------------------------
 
@@ -1974,31 +2039,31 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED SavePositionRequest final : public 
 };
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:sf.progression.v1.CharacterStateReply) */ {
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED QuestState final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.progression.v1.QuestState) */ {
  public:
-  inline CharacterStateReply() : CharacterStateReply(nullptr) {}
-  ~CharacterStateReply() PROTOBUF_FINAL;
+  inline QuestState() : QuestState(nullptr) {}
+  ~QuestState() PROTOBUF_FINAL;
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-  void operator delete(CharacterStateReply* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+  void operator delete(QuestState* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
     SharedDtor(*msg);
-    ::google::protobuf::internal::SizedDelete(msg, sizeof(CharacterStateReply));
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(QuestState));
   }
 #endif
 
   template <typename = void>
-  explicit constexpr CharacterStateReply(::google::protobuf::internal::ConstantInitialized,
+  explicit constexpr QuestState(::google::protobuf::internal::ConstantInitialized,
                            const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
                                class_data);
 
-  inline CharacterStateReply(const CharacterStateReply& from) : CharacterStateReply(nullptr, from) {}
-  inline CharacterStateReply(CharacterStateReply&& from) noexcept : CharacterStateReply(nullptr, ::std::move(from)) {}
-  inline CharacterStateReply& operator=(const CharacterStateReply& from) {
+  inline QuestState(const QuestState& from) : QuestState(nullptr, from) {}
+  inline QuestState(QuestState&& from) noexcept : QuestState(nullptr, ::std::move(from)) {}
+  inline QuestState& operator=(const QuestState& from) {
     CopyFrom(from);
     return *this;
   }
-  inline CharacterStateReply& operator=(CharacterStateReply&& from) noexcept {
+  inline QuestState& operator=(QuestState&& from) noexcept {
     if (this == &from) return *this;
     if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
       InternalSwap(&from);
@@ -2027,12 +2092,12 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public 
   [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  [[nodiscard]] static const CharacterStateReply& default_instance() {
-    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<CharacterStateReply>(&CharacterStateReply_globals_);
+  [[nodiscard]] static const QuestState& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<QuestState>(&QuestState_globals_);
   }
-  static constexpr int kIndexInFileMessages = 11;
-  friend void swap(CharacterStateReply& a, CharacterStateReply& b) { a.Swap(&b); }
-  inline void Swap(CharacterStateReply* PROTOBUF_NONNULL other) {
+  static constexpr int kIndexInFileMessages = 13;
+  friend void swap(QuestState& a, QuestState& b) { a.Swap(&b); }
+  inline void Swap(QuestState* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -2040,7 +2105,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public 
       ::google::protobuf::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(CharacterStateReply* PROTOBUF_NONNULL other) {
+  void UnsafeArenaSwap(QuestState* PROTOBUF_NONNULL other) {
     if (other == this) return;
     ABSL_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
@@ -2048,14 +2113,14 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public 
 
   // implements Message ----------------------------------------------
 
-  [[nodiscard]] CharacterStateReply* PROTOBUF_NONNULL
+  [[nodiscard]] QuestState* PROTOBUF_NONNULL
   New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
-    return ::google::protobuf::Message::DefaultConstruct<CharacterStateReply>(arena);
+    return ::google::protobuf::Message::DefaultConstruct<QuestState>(arena);
   }
   using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const CharacterStateReply& from);
+  void CopyFrom(const QuestState& from);
   using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom(const CharacterStateReply& from) { CharacterStateReply::MergeImpl(*this, from); }
+  void MergeFrom(const QuestState& from) { QuestState::MergeImpl(*this, from); }
 
   private:
   static void MergeImpl(::google::protobuf::MessageLite& to_msg,
@@ -2093,17 +2158,17 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public 
   private:
   void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
   static void SharedDtor(MessageLite& self);
-  void InternalSwap(CharacterStateReply* PROTOBUF_NONNULL other);
+  void InternalSwap(QuestState* PROTOBUF_NONNULL other);
  private:
   template <typename T>
   friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "sf.progression.v1.CharacterStateReply"; }
+  static ::absl::string_view FullMessageName() { return "sf.progression.v1.QuestState"; }
 
-  explicit CharacterStateReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-  CharacterStateReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const CharacterStateReply& from);
-  CharacterStateReply(
-      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, CharacterStateReply&& from) noexcept
-      : CharacterStateReply(arena) {
+  explicit QuestState(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  QuestState(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const QuestState& from);
+  QuestState(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, QuestState&& from) noexcept
+      : QuestState(arena) {
     *this = ::std::move(from);
   }
   const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
@@ -2122,18 +2187,45 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public 
 
   // accessors -------------------------------------------------------
   enum : int {
-    kActiveStepIdFieldNumber = 6,
-    kPositionFieldNumber = 9,
-    kProgressionRevisionFieldNumber = 1,
-    kLifetimeXpFieldNumber = 2,
-    kQuestRevisionFieldNumber = 5,
-    kLevelFieldNumber = 3,
-    kQuestCompletedFieldNumber = 7,
-    kPositionRevisionFieldNumber = 10,
-    kSkillsFieldNumber = 4,
-    kObjectiveCountsFieldNumber = 8,
+    kQuestIdFieldNumber = 1,
+    kStateFieldNumber = 2,
+    kActiveStepIdFieldNumber = 3,
+    kRevisionFieldNumber = 6,
+    kContentRevisionFieldNumber = 5,
+    kRewardPendingFieldNumber = 7,
+    kCountsFieldNumber = 4,
   };
-  // string active_step_id = 6;
+  // string quest_id = 1;
+  void clear_quest_id() ;
+  [[nodiscard]] const ::std::string& quest_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_quest_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_quest_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_quest_id();
+  void set_allocated_quest_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_quest_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_quest_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_quest_id();
+
+  public:
+  // string state = 2;
+  void clear_state() ;
+  [[nodiscard]] const ::std::string& state() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_state(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_state();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_state();
+  void set_allocated_state(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_state() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_state(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_state();
+
+  public:
+  // string active_step_id = 3;
   void clear_active_step_id() ;
   [[nodiscard]] const ::std::string& active_step_id() const;
   template <typename Arg_ = const ::std::string&, typename... Args_>
@@ -2148,120 +2240,58 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public 
   ::std::string* PROTOBUF_NONNULL _internal_mutable_active_step_id();
 
   public:
-  // .sf.progression.v1.CharacterPosition position = 9;
-  [[nodiscard]] bool has_position()
-      const;
-  void clear_position() ;
-  [[nodiscard]] const ::sf::progression::v1::CharacterPosition& position() const;
-  [[nodiscard]] ::sf::progression::v1::CharacterPosition* PROTOBUF_NULLABLE release_position();
-  ::sf::progression::v1::CharacterPosition* PROTOBUF_NONNULL mutable_position();
-  void set_allocated_position(::sf::progression::v1::CharacterPosition* PROTOBUF_NULLABLE value);
-  void unsafe_arena_set_allocated_position(::sf::progression::v1::CharacterPosition* PROTOBUF_NULLABLE value);
-  ::sf::progression::v1::CharacterPosition* PROTOBUF_NULLABLE unsafe_arena_release_position();
+  // int64 revision = 6;
+  void clear_revision() ;
+  [[nodiscard]] ::int64_t revision() const;
+  void set_revision(::int64_t value);
 
   private:
-  const ::sf::progression::v1::CharacterPosition& _internal_position() const;
-  ::sf::progression::v1::CharacterPosition* PROTOBUF_NONNULL _internal_mutable_position();
+  ::int64_t _internal_revision() const;
+  void _internal_set_revision(::int64_t value);
 
   public:
-  // int64 progression_revision = 1;
-  void clear_progression_revision() ;
-  [[nodiscard]] ::int64_t progression_revision() const;
-  void set_progression_revision(::int64_t value);
+  // int32 content_revision = 5;
+  void clear_content_revision() ;
+  [[nodiscard]] ::int32_t content_revision() const;
+  void set_content_revision(::int32_t value);
 
   private:
-  ::int64_t _internal_progression_revision() const;
-  void _internal_set_progression_revision(::int64_t value);
+  ::int32_t _internal_content_revision() const;
+  void _internal_set_content_revision(::int32_t value);
 
   public:
-  // int64 lifetime_xp = 2;
-  void clear_lifetime_xp() ;
-  [[nodiscard]] ::int64_t lifetime_xp() const;
-  void set_lifetime_xp(::int64_t value);
+  // bool reward_pending = 7;
+  void clear_reward_pending() ;
+  [[nodiscard]] bool reward_pending() const;
+  void set_reward_pending(bool value);
 
   private:
-  ::int64_t _internal_lifetime_xp() const;
-  void _internal_set_lifetime_xp(::int64_t value);
+  bool _internal_reward_pending() const;
+  void _internal_set_reward_pending(bool value);
 
   public:
-  // int64 quest_revision = 5;
-  void clear_quest_revision() ;
-  [[nodiscard]] ::int64_t quest_revision() const;
-  void set_quest_revision(::int64_t value);
-
-  private:
-  ::int64_t _internal_quest_revision() const;
-  void _internal_set_quest_revision(::int64_t value);
-
-  public:
-  // int32 level = 3;
-  void clear_level() ;
-  [[nodiscard]] ::int32_t level() const;
-  void set_level(::int32_t value);
-
-  private:
-  ::int32_t _internal_level() const;
-  void _internal_set_level(::int32_t value);
-
-  public:
-  // bool quest_completed = 7;
-  void clear_quest_completed() ;
-  [[nodiscard]] bool quest_completed() const;
-  void set_quest_completed(bool value);
-
-  private:
-  bool _internal_quest_completed() const;
-  void _internal_set_quest_completed(bool value);
-
-  public:
-  // int64 position_revision = 10;
-  void clear_position_revision() ;
-  [[nodiscard]] ::int64_t position_revision() const;
-  void set_position_revision(::int64_t value);
-
-  private:
-  ::int64_t _internal_position_revision() const;
-  void _internal_set_position_revision(::int64_t value);
-
-  public:
-  // map<string, int32> skills = 4;
-  [[nodiscard]] int skills_size()
+  // map<string, int32> counts = 4;
+  [[nodiscard]] int counts_size()
       const;
   private:
-  int _internal_skills_size() const;
+  int _internal_counts_size() const;
 
   public:
-  void clear_skills() ;
-  [[nodiscard]] const ::google::protobuf::Map<::std::string, ::int32_t>& skills() const;
-  [[nodiscard]] ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL mutable_skills();
+  void clear_counts() ;
+  [[nodiscard]] const ::google::protobuf::Map<::std::string, ::int32_t>& counts() const;
+  [[nodiscard]] ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL mutable_counts();
 
   private:
-  const ::google::protobuf::Map<::std::string, ::int32_t>& _internal_skills() const;
-  ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL _internal_mutable_skills();
+  const ::google::protobuf::Map<::std::string, ::int32_t>& _internal_counts() const;
+  ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL _internal_mutable_counts();
 
   public:
-  // map<string, int32> objective_counts = 8;
-  [[nodiscard]] int objective_counts_size()
-      const;
-  private:
-  int _internal_objective_counts_size() const;
-
-  public:
-  void clear_objective_counts() ;
-  [[nodiscard]] const ::google::protobuf::Map<::std::string, ::int32_t>& objective_counts() const;
-  [[nodiscard]] ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL mutable_objective_counts();
-
-  private:
-  const ::google::protobuf::Map<::std::string, ::int32_t>& _internal_objective_counts() const;
-  ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL _internal_mutable_objective_counts();
-
-  public:
-  // @@protoc_insertion_point(class_scope:sf.progression.v1.CharacterStateReply)
+  // @@protoc_insertion_point(class_scope:sf.progression.v1.QuestState)
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<4, 10,
-                          3, 90,
+      ::google::protobuf::internal::TcParseTable<3, 7,
+                          1, 70,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
       const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
@@ -2286,19 +2316,16 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public 
     inline explicit Impl_(
         ::google::protobuf::internal::InternalVisibility visibility,
         ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
-        const CharacterStateReply& from_msg);
+        const QuestState& from_msg);
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr quest_id_;
+    ::google::protobuf::internal::ArenaStringPtr state_;
     ::google::protobuf::internal::ArenaStringPtr active_step_id_;
-    ::sf::progression::v1::CharacterPosition* PROTOBUF_NULLABLE position_;
-    ::int64_t progression_revision_;
-    ::int64_t lifetime_xp_;
-    ::int64_t quest_revision_;
-    ::int32_t level_;
-    bool quest_completed_;
-    ::int64_t position_revision_;
-    ::google::protobuf::internal::MapField<CharacterStateReply_SkillsEntry_DoNotUse, ::std::string, ::int32_t> skills_;
-    ::google::protobuf::internal::MapField<CharacterStateReply_ObjectiveCountsEntry_DoNotUse, ::std::string, ::int32_t> objective_counts_;
+    ::int64_t revision_;
+    ::int32_t content_revision_;
+    bool reward_pending_;
+    ::google::protobuf::internal::MapField<QuestState_CountsEntry_DoNotUse, ::std::string, ::int32_t> counts_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -2757,6 +2784,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ApplyReceiptReply final : public ::
     kRewardBundleIdsFieldNumber = 10,
     kGrantedItemsFieldNumber = 11,
     kActiveStepIdFieldNumber = 7,
+    kQuestReasonFieldNumber = 12,
     kSkillGainFieldNumber = 2,
     kXpGainFieldNumber = 3,
     kLevelFieldNumber = 4,
@@ -2827,6 +2855,21 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ApplyReceiptReply final : public ::
   const ::std::string& _internal_active_step_id() const;
   PROTOBUF_ALWAYS_INLINE void _internal_set_active_step_id(const ::std::string& value);
   ::std::string* PROTOBUF_NONNULL _internal_mutable_active_step_id();
+
+  public:
+  // string quest_reason = 12;
+  void clear_quest_reason() ;
+  [[nodiscard]] const ::std::string& quest_reason() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_quest_reason(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_quest_reason();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_quest_reason();
+  void set_allocated_quest_reason(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_quest_reason() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_quest_reason(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_quest_reason();
 
   public:
   // int32 skill_gain = 2;
@@ -2913,8 +2956,8 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ApplyReceiptReply final : public ::
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<4, 11,
-                          1, 83,
+      ::google::protobuf::internal::TcParseTable<4, 12,
+                          1, 95,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
       const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
@@ -2945,6 +2988,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ApplyReceiptReply final : public ::
     ::google::protobuf::RepeatedPtrField<::std::string> reward_bundle_ids_;
     ::google::protobuf::RepeatedPtrField< ::sf::progression::v1::GrantedItem > granted_items_;
     ::google::protobuf::internal::ArenaStringPtr active_step_id_;
+    ::google::protobuf::internal::ArenaStringPtr quest_reason_;
     ::int32_t skill_gain_;
     ::int32_t xp_gain_;
     ::int32_t level_;
@@ -2953,6 +2997,361 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ApplyReceiptReply final : public ::
     bool quest_completed_;
     ::int64_t progression_revision_;
     ::int64_t quest_revision_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2fprogression_2fv1_2fprogression_2eproto;
+};
+// -------------------------------------------------------------------
+
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.progression.v1.CharacterStateReply) */ {
+ public:
+  inline CharacterStateReply() : CharacterStateReply(nullptr) {}
+  ~CharacterStateReply() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CharacterStateReply* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CharacterStateReply));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr CharacterStateReply(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline CharacterStateReply(const CharacterStateReply& from) : CharacterStateReply(nullptr, from) {}
+  inline CharacterStateReply(CharacterStateReply&& from) noexcept : CharacterStateReply(nullptr, ::std::move(from)) {}
+  inline CharacterStateReply& operator=(const CharacterStateReply& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CharacterStateReply& operator=(CharacterStateReply&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const CharacterStateReply& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<CharacterStateReply>(&CharacterStateReply_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 11;
+  friend void swap(CharacterStateReply& a, CharacterStateReply& b) { a.Swap(&b); }
+  inline void Swap(CharacterStateReply* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CharacterStateReply* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] CharacterStateReply* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<CharacterStateReply>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const CharacterStateReply& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const CharacterStateReply& from) { CharacterStateReply::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(CharacterStateReply* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.progression.v1.CharacterStateReply"; }
+
+  explicit CharacterStateReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  CharacterStateReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const CharacterStateReply& from);
+  CharacterStateReply(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, CharacterStateReply&& from) noexcept
+      : CharacterStateReply(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kQuestsFieldNumber = 11,
+    kActiveStepIdFieldNumber = 6,
+    kPositionFieldNumber = 9,
+    kProgressionRevisionFieldNumber = 1,
+    kLifetimeXpFieldNumber = 2,
+    kQuestRevisionFieldNumber = 5,
+    kLevelFieldNumber = 3,
+    kQuestCompletedFieldNumber = 7,
+    kPositionRevisionFieldNumber = 10,
+    kSkillsFieldNumber = 4,
+    kObjectiveCountsFieldNumber = 8,
+  };
+  // repeated .sf.progression.v1.QuestState quests = 11;
+  [[nodiscard]] int quests_size()
+      const;
+  private:
+  int _internal_quests_size() const;
+
+  public:
+  void clear_quests() ;
+  [[nodiscard]] const ::sf::progression::v1::QuestState& quests(int index) const;
+  [[nodiscard]] ::sf::progression::v1::QuestState* PROTOBUF_NONNULL mutable_quests(int index);
+  ::sf::progression::v1::QuestState* PROTOBUF_NONNULL add_quests();
+  [[nodiscard]] const ::google::protobuf::RepeatedPtrField<::sf::progression::v1::QuestState>&
+  quests() const;
+  [[nodiscard]] ::google::protobuf::RepeatedPtrField<::sf::progression::v1::QuestState>* PROTOBUF_NONNULL
+  mutable_quests();
+
+  private:
+  const ::google::protobuf::RepeatedPtrField<::sf::progression::v1::QuestState>& _internal_quests() const;
+  ::google::protobuf::RepeatedPtrField<::sf::progression::v1::QuestState>* PROTOBUF_NONNULL _internal_mutable_quests();
+
+  public:
+  // string active_step_id = 6;
+  void clear_active_step_id() ;
+  [[nodiscard]] const ::std::string& active_step_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_active_step_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_active_step_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_active_step_id();
+  void set_allocated_active_step_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_active_step_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_active_step_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_active_step_id();
+
+  public:
+  // .sf.progression.v1.CharacterPosition position = 9;
+  [[nodiscard]] bool has_position()
+      const;
+  void clear_position() ;
+  [[nodiscard]] const ::sf::progression::v1::CharacterPosition& position() const;
+  [[nodiscard]] ::sf::progression::v1::CharacterPosition* PROTOBUF_NULLABLE release_position();
+  ::sf::progression::v1::CharacterPosition* PROTOBUF_NONNULL mutable_position();
+  void set_allocated_position(::sf::progression::v1::CharacterPosition* PROTOBUF_NULLABLE value);
+  void unsafe_arena_set_allocated_position(::sf::progression::v1::CharacterPosition* PROTOBUF_NULLABLE value);
+  ::sf::progression::v1::CharacterPosition* PROTOBUF_NULLABLE unsafe_arena_release_position();
+
+  private:
+  const ::sf::progression::v1::CharacterPosition& _internal_position() const;
+  ::sf::progression::v1::CharacterPosition* PROTOBUF_NONNULL _internal_mutable_position();
+
+  public:
+  // int64 progression_revision = 1;
+  void clear_progression_revision() ;
+  [[nodiscard]] ::int64_t progression_revision() const;
+  void set_progression_revision(::int64_t value);
+
+  private:
+  ::int64_t _internal_progression_revision() const;
+  void _internal_set_progression_revision(::int64_t value);
+
+  public:
+  // int64 lifetime_xp = 2;
+  void clear_lifetime_xp() ;
+  [[nodiscard]] ::int64_t lifetime_xp() const;
+  void set_lifetime_xp(::int64_t value);
+
+  private:
+  ::int64_t _internal_lifetime_xp() const;
+  void _internal_set_lifetime_xp(::int64_t value);
+
+  public:
+  // int64 quest_revision = 5;
+  void clear_quest_revision() ;
+  [[nodiscard]] ::int64_t quest_revision() const;
+  void set_quest_revision(::int64_t value);
+
+  private:
+  ::int64_t _internal_quest_revision() const;
+  void _internal_set_quest_revision(::int64_t value);
+
+  public:
+  // int32 level = 3;
+  void clear_level() ;
+  [[nodiscard]] ::int32_t level() const;
+  void set_level(::int32_t value);
+
+  private:
+  ::int32_t _internal_level() const;
+  void _internal_set_level(::int32_t value);
+
+  public:
+  // bool quest_completed = 7;
+  void clear_quest_completed() ;
+  [[nodiscard]] bool quest_completed() const;
+  void set_quest_completed(bool value);
+
+  private:
+  bool _internal_quest_completed() const;
+  void _internal_set_quest_completed(bool value);
+
+  public:
+  // int64 position_revision = 10;
+  void clear_position_revision() ;
+  [[nodiscard]] ::int64_t position_revision() const;
+  void set_position_revision(::int64_t value);
+
+  private:
+  ::int64_t _internal_position_revision() const;
+  void _internal_set_position_revision(::int64_t value);
+
+  public:
+  // map<string, int32> skills = 4;
+  [[nodiscard]] int skills_size()
+      const;
+  private:
+  int _internal_skills_size() const;
+
+  public:
+  void clear_skills() ;
+  [[nodiscard]] const ::google::protobuf::Map<::std::string, ::int32_t>& skills() const;
+  [[nodiscard]] ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL mutable_skills();
+
+  private:
+  const ::google::protobuf::Map<::std::string, ::int32_t>& _internal_skills() const;
+  ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL _internal_mutable_skills();
+
+  public:
+  // map<string, int32> objective_counts = 8;
+  [[nodiscard]] int objective_counts_size()
+      const;
+  private:
+  int _internal_objective_counts_size() const;
+
+  public:
+  void clear_objective_counts() ;
+  [[nodiscard]] const ::google::protobuf::Map<::std::string, ::int32_t>& objective_counts() const;
+  [[nodiscard]] ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL mutable_objective_counts();
+
+  private:
+  const ::google::protobuf::Map<::std::string, ::int32_t>& _internal_objective_counts() const;
+  ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL _internal_mutable_objective_counts();
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.progression.v1.CharacterStateReply)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<4, 11,
+                          4, 90,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const CharacterStateReply& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::RepeatedPtrField< ::sf::progression::v1::QuestState > quests_;
+    ::google::protobuf::internal::ArenaStringPtr active_step_id_;
+    ::sf::progression::v1::CharacterPosition* PROTOBUF_NULLABLE position_;
+    ::int64_t progression_revision_;
+    ::int64_t lifetime_xp_;
+    ::int64_t quest_revision_;
+    ::int32_t level_;
+    bool quest_completed_;
+    ::int64_t position_revision_;
+    ::google::protobuf::internal::MapField<CharacterStateReply_SkillsEntry_DoNotUse, ::std::string, ::int32_t> skills_;
+    ::google::protobuf::internal::MapField<CharacterStateReply_ObjectiveCountsEntry_DoNotUse, ::std::string, ::int32_t> objective_counts_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -4027,7 +4426,7 @@ inline void QuestEvidence::_internal_set_occurred_at_unix_ms(::int64_t value) {
 inline void ApplyReceiptReply::clear_progression_applied() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.progression_applied_ = false;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
 }
 inline bool ApplyReceiptReply::progression_applied() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.ApplyReceiptReply.progression_applied)
@@ -4035,7 +4434,7 @@ inline bool ApplyReceiptReply::progression_applied() const {
 }
 inline void ApplyReceiptReply::set_progression_applied(bool value) {
   _internal_set_progression_applied(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.ApplyReceiptReply.progression_applied)
 }
 inline bool ApplyReceiptReply::_internal_progression_applied() const {
@@ -4051,7 +4450,7 @@ inline void ApplyReceiptReply::_internal_set_progression_applied(bool value) {
 inline void ApplyReceiptReply::clear_skill_gain() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.skill_gain_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
 }
 inline ::int32_t ApplyReceiptReply::skill_gain() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.ApplyReceiptReply.skill_gain)
@@ -4059,7 +4458,7 @@ inline ::int32_t ApplyReceiptReply::skill_gain() const {
 }
 inline void ApplyReceiptReply::set_skill_gain(::int32_t value) {
   _internal_set_skill_gain(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.ApplyReceiptReply.skill_gain)
 }
 inline ::int32_t ApplyReceiptReply::_internal_skill_gain() const {
@@ -4075,7 +4474,7 @@ inline void ApplyReceiptReply::_internal_set_skill_gain(::int32_t value) {
 inline void ApplyReceiptReply::clear_xp_gain() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.xp_gain_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
 }
 inline ::int32_t ApplyReceiptReply::xp_gain() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.ApplyReceiptReply.xp_gain)
@@ -4083,7 +4482,7 @@ inline ::int32_t ApplyReceiptReply::xp_gain() const {
 }
 inline void ApplyReceiptReply::set_xp_gain(::int32_t value) {
   _internal_set_xp_gain(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.ApplyReceiptReply.xp_gain)
 }
 inline ::int32_t ApplyReceiptReply::_internal_xp_gain() const {
@@ -4099,7 +4498,7 @@ inline void ApplyReceiptReply::_internal_set_xp_gain(::int32_t value) {
 inline void ApplyReceiptReply::clear_level() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.level_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
 }
 inline ::int32_t ApplyReceiptReply::level() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.ApplyReceiptReply.level)
@@ -4107,7 +4506,7 @@ inline ::int32_t ApplyReceiptReply::level() const {
 }
 inline void ApplyReceiptReply::set_level(::int32_t value) {
   _internal_set_level(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.ApplyReceiptReply.level)
 }
 inline ::int32_t ApplyReceiptReply::_internal_level() const {
@@ -4123,7 +4522,7 @@ inline void ApplyReceiptReply::_internal_set_level(::int32_t value) {
 inline void ApplyReceiptReply::clear_progression_revision() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.progression_revision_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000200U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000400U);
 }
 inline ::int64_t ApplyReceiptReply::progression_revision() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.ApplyReceiptReply.progression_revision)
@@ -4131,7 +4530,7 @@ inline ::int64_t ApplyReceiptReply::progression_revision() const {
 }
 inline void ApplyReceiptReply::set_progression_revision(::int64_t value) {
   _internal_set_progression_revision(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000200U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000400U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.ApplyReceiptReply.progression_revision)
 }
 inline ::int64_t ApplyReceiptReply::_internal_progression_revision() const {
@@ -4147,7 +4546,7 @@ inline void ApplyReceiptReply::_internal_set_progression_revision(::int64_t valu
 inline void ApplyReceiptReply::clear_quest_accepted() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.quest_accepted_ = false;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000100U);
 }
 inline bool ApplyReceiptReply::quest_accepted() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.ApplyReceiptReply.quest_accepted)
@@ -4155,7 +4554,7 @@ inline bool ApplyReceiptReply::quest_accepted() const {
 }
 inline void ApplyReceiptReply::set_quest_accepted(bool value) {
   _internal_set_quest_accepted(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000100U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.ApplyReceiptReply.quest_accepted)
 }
 inline bool ApplyReceiptReply::_internal_quest_accepted() const {
@@ -4235,7 +4634,7 @@ inline void ApplyReceiptReply::set_allocated_active_step_id(::std::string* PROTO
 inline void ApplyReceiptReply::clear_quest_completed() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.quest_completed_ = false;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000100U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000200U);
 }
 inline bool ApplyReceiptReply::quest_completed() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.ApplyReceiptReply.quest_completed)
@@ -4243,7 +4642,7 @@ inline bool ApplyReceiptReply::quest_completed() const {
 }
 inline void ApplyReceiptReply::set_quest_completed(bool value) {
   _internal_set_quest_completed(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000100U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000200U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.ApplyReceiptReply.quest_completed)
 }
 inline bool ApplyReceiptReply::_internal_quest_completed() const {
@@ -4259,7 +4658,7 @@ inline void ApplyReceiptReply::_internal_set_quest_completed(bool value) {
 inline void ApplyReceiptReply::clear_quest_revision() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.quest_revision_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000400U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000800U);
 }
 inline ::int64_t ApplyReceiptReply::quest_revision() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.ApplyReceiptReply.quest_revision)
@@ -4267,7 +4666,7 @@ inline ::int64_t ApplyReceiptReply::quest_revision() const {
 }
 inline void ApplyReceiptReply::set_quest_revision(::int64_t value) {
   _internal_set_quest_revision(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000400U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000800U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.ApplyReceiptReply.quest_revision)
 }
 inline ::int64_t ApplyReceiptReply::_internal_quest_revision() const {
@@ -4404,6 +4803,70 @@ inline ::google::protobuf::RepeatedPtrField<::sf::progression::v1::GrantedItem>*
 ApplyReceiptReply::_internal_mutable_granted_items() {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return &_impl_.granted_items_;
+}
+
+// string quest_reason = 12;
+inline void ApplyReceiptReply::clear_quest_reason() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quest_reason_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline const ::std::string& ApplyReceiptReply::quest_reason() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.ApplyReceiptReply.quest_reason)
+  return _internal_quest_reason();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void ApplyReceiptReply::set_quest_reason(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  _impl_.quest_reason_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.progression.v1.ApplyReceiptReply.quest_reason)
+}
+inline ::std::string* PROTOBUF_NONNULL ApplyReceiptReply::mutable_quest_reason()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ::std::string* _s = _internal_mutable_quest_reason();
+  // @@protoc_insertion_point(field_mutable:sf.progression.v1.ApplyReceiptReply.quest_reason)
+  return _s;
+}
+inline const ::std::string& ApplyReceiptReply::_internal_quest_reason() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.quest_reason_.Get();
+}
+inline void ApplyReceiptReply::_internal_set_quest_reason(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quest_reason_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL ApplyReceiptReply::_internal_mutable_quest_reason() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.quest_reason_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE ApplyReceiptReply::release_quest_reason() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.progression.v1.ApplyReceiptReply.quest_reason)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000008U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  auto* released = _impl_.quest_reason_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.quest_reason_.Set("", GetArena());
+  }
+  return released;
+}
+inline void ApplyReceiptReply::set_allocated_quest_reason(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  }
+  _impl_.quest_reason_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.quest_reason_.IsDefault()) {
+    _impl_.quest_reason_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.progression.v1.ApplyReceiptReply.quest_reason)
 }
 
 // -------------------------------------------------------------------
@@ -4960,7 +5423,7 @@ inline void SavePositionReply::_internal_set_position_revision(::int64_t value) 
 inline void CharacterStateReply::clear_progression_revision() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.progression_revision_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
 }
 inline ::int64_t CharacterStateReply::progression_revision() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.CharacterStateReply.progression_revision)
@@ -4968,7 +5431,7 @@ inline ::int64_t CharacterStateReply::progression_revision() const {
 }
 inline void CharacterStateReply::set_progression_revision(::int64_t value) {
   _internal_set_progression_revision(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.CharacterStateReply.progression_revision)
 }
 inline ::int64_t CharacterStateReply::_internal_progression_revision() const {
@@ -4984,7 +5447,7 @@ inline void CharacterStateReply::_internal_set_progression_revision(::int64_t va
 inline void CharacterStateReply::clear_lifetime_xp() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.lifetime_xp_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
 }
 inline ::int64_t CharacterStateReply::lifetime_xp() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.CharacterStateReply.lifetime_xp)
@@ -4992,7 +5455,7 @@ inline ::int64_t CharacterStateReply::lifetime_xp() const {
 }
 inline void CharacterStateReply::set_lifetime_xp(::int64_t value) {
   _internal_set_lifetime_xp(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.CharacterStateReply.lifetime_xp)
 }
 inline ::int64_t CharacterStateReply::_internal_lifetime_xp() const {
@@ -5008,7 +5471,7 @@ inline void CharacterStateReply::_internal_set_lifetime_xp(::int64_t value) {
 inline void CharacterStateReply::clear_level() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.level_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
 }
 inline ::int32_t CharacterStateReply::level() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.CharacterStateReply.level)
@@ -5016,7 +5479,7 @@ inline ::int32_t CharacterStateReply::level() const {
 }
 inline void CharacterStateReply::set_level(::int32_t value) {
   _internal_set_level(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.CharacterStateReply.level)
 }
 inline ::int32_t CharacterStateReply::_internal_level() const {
@@ -5038,7 +5501,7 @@ inline int CharacterStateReply::skills_size() const {
 inline void CharacterStateReply::clear_skills() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.skills_.Clear();
-  ClearHasBit(_impl_._has_bits_[0], 0x00000100U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000200U);
 }
 inline const ::google::protobuf::Map<::std::string, ::int32_t>& CharacterStateReply::_internal_skills() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
@@ -5054,7 +5517,7 @@ inline ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL Chara
 }
 inline ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL CharacterStateReply::mutable_skills()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000100U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000200U);
   // @@protoc_insertion_point(field_mutable_map:sf.progression.v1.CharacterStateReply.skills)
   return _internal_mutable_skills();
 }
@@ -5063,7 +5526,7 @@ inline ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL Chara
 inline void CharacterStateReply::clear_quest_revision() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.quest_revision_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
 }
 inline ::int64_t CharacterStateReply::quest_revision() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.CharacterStateReply.quest_revision)
@@ -5071,7 +5534,7 @@ inline ::int64_t CharacterStateReply::quest_revision() const {
 }
 inline void CharacterStateReply::set_quest_revision(::int64_t value) {
   _internal_set_quest_revision(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.CharacterStateReply.quest_revision)
 }
 inline ::int64_t CharacterStateReply::_internal_quest_revision() const {
@@ -5087,7 +5550,7 @@ inline void CharacterStateReply::_internal_set_quest_revision(::int64_t value) {
 inline void CharacterStateReply::clear_active_step_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.active_step_id_.ClearToEmpty();
-  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
 }
 inline const ::std::string& CharacterStateReply::active_step_id() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -5097,13 +5560,13 @@ inline const ::std::string& CharacterStateReply::active_step_id() const
 template <typename Arg_, typename... Args_>
 PROTOBUF_ALWAYS_INLINE void CharacterStateReply::set_active_step_id(Arg_&& arg, Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
   _impl_.active_step_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
   // @@protoc_insertion_point(field_set:sf.progression.v1.CharacterStateReply.active_step_id)
 }
 inline ::std::string* PROTOBUF_NONNULL CharacterStateReply::mutable_active_step_id()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
   ::std::string* _s = _internal_mutable_active_step_id();
   // @@protoc_insertion_point(field_mutable:sf.progression.v1.CharacterStateReply.active_step_id)
   return _s;
@@ -5123,10 +5586,10 @@ inline ::std::string* PROTOBUF_NONNULL CharacterStateReply::_internal_mutable_ac
 inline ::std::string* PROTOBUF_NULLABLE CharacterStateReply::release_active_step_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   // @@protoc_insertion_point(field_release:sf.progression.v1.CharacterStateReply.active_step_id)
-  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
     return nullptr;
   }
-  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
   auto* released = _impl_.active_step_id_.Release();
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
     _impl_.active_step_id_.Set("", GetArena());
@@ -5136,9 +5599,9 @@ inline ::std::string* PROTOBUF_NULLABLE CharacterStateReply::release_active_step
 inline void CharacterStateReply::set_allocated_active_step_id(::std::string* PROTOBUF_NULLABLE value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (value != nullptr) {
-    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
   } else {
-    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
   }
   _impl_.active_step_id_.SetAllocated(value, GetArena());
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.active_step_id_.IsDefault()) {
@@ -5151,7 +5614,7 @@ inline void CharacterStateReply::set_allocated_active_step_id(::std::string* PRO
 inline void CharacterStateReply::clear_quest_completed() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.quest_completed_ = false;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
 }
 inline bool CharacterStateReply::quest_completed() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.CharacterStateReply.quest_completed)
@@ -5159,7 +5622,7 @@ inline bool CharacterStateReply::quest_completed() const {
 }
 inline void CharacterStateReply::set_quest_completed(bool value) {
   _internal_set_quest_completed(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.CharacterStateReply.quest_completed)
 }
 inline bool CharacterStateReply::_internal_quest_completed() const {
@@ -5181,7 +5644,7 @@ inline int CharacterStateReply::objective_counts_size() const {
 inline void CharacterStateReply::clear_objective_counts() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.objective_counts_.Clear();
-  ClearHasBit(_impl_._has_bits_[0], 0x00000200U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000400U);
 }
 inline const ::google::protobuf::Map<::std::string, ::int32_t>& CharacterStateReply::_internal_objective_counts() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
@@ -5197,21 +5660,21 @@ inline ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL Chara
 }
 inline ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL CharacterStateReply::mutable_objective_counts()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000200U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000400U);
   // @@protoc_insertion_point(field_mutable_map:sf.progression.v1.CharacterStateReply.objective_counts)
   return _internal_mutable_objective_counts();
 }
 
 // .sf.progression.v1.CharacterPosition position = 9;
 inline bool CharacterStateReply::has_position() const {
-  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000002U);
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000004U);
   PROTOBUF_ASSUME(!value || _impl_.position_ != nullptr);
   return value;
 }
 inline void CharacterStateReply::clear_position() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (_impl_.position_ != nullptr) _impl_.position_->Clear();
-  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
 }
 inline const ::sf::progression::v1::CharacterPosition& CharacterStateReply::_internal_position() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
@@ -5230,16 +5693,16 @@ inline void CharacterStateReply::unsafe_arena_set_allocated_position(
   }
   _impl_.position_ = reinterpret_cast<::sf::progression::v1::CharacterPosition*>(value);
   if (value != nullptr) {
-    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
   } else {
-    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
   }
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:sf.progression.v1.CharacterStateReply.position)
 }
 inline ::sf::progression::v1::CharacterPosition* PROTOBUF_NULLABLE CharacterStateReply::release_position() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
 
-  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
   ::sf::progression::v1::CharacterPosition* released = _impl_.position_;
   _impl_.position_ = nullptr;
   if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
@@ -5259,7 +5722,7 @@ inline ::sf::progression::v1::CharacterPosition* PROTOBUF_NULLABLE CharacterStat
   ::google::protobuf::internal::TSanWrite(&_impl_);
   // @@protoc_insertion_point(field_release:sf.progression.v1.CharacterStateReply.position)
 
-  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
   ::sf::progression::v1::CharacterPosition* temp = _impl_.position_;
   _impl_.position_ = nullptr;
   return temp;
@@ -5274,7 +5737,7 @@ inline ::sf::progression::v1::CharacterPosition* PROTOBUF_NONNULL CharacterState
 }
 inline ::sf::progression::v1::CharacterPosition* PROTOBUF_NONNULL CharacterStateReply::mutable_position()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
   ::sf::progression::v1::CharacterPosition* _msg = _internal_mutable_position();
   // @@protoc_insertion_point(field_mutable:sf.progression.v1.CharacterStateReply.position)
   return _msg;
@@ -5291,9 +5754,9 @@ inline void CharacterStateReply::set_allocated_position(::sf::progression::v1::C
     if (message_arena != submessage_arena) {
       value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
     }
-    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
   } else {
-    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
   }
 
   _impl_.position_ = reinterpret_cast<::sf::progression::v1::CharacterPosition*>(value);
@@ -5304,7 +5767,7 @@ inline void CharacterStateReply::set_allocated_position(::sf::progression::v1::C
 inline void CharacterStateReply::clear_position_revision() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.position_revision_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000100U);
 }
 inline ::int64_t CharacterStateReply::position_revision() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.CharacterStateReply.position_revision)
@@ -5312,7 +5775,7 @@ inline ::int64_t CharacterStateReply::position_revision() const {
 }
 inline void CharacterStateReply::set_position_revision(::int64_t value) {
   _internal_set_position_revision(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000100U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.CharacterStateReply.position_revision)
 }
 inline ::int64_t CharacterStateReply::_internal_position_revision() const {
@@ -5322,6 +5785,362 @@ inline ::int64_t CharacterStateReply::_internal_position_revision() const {
 inline void CharacterStateReply::_internal_set_position_revision(::int64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.position_revision_ = value;
+}
+
+// repeated .sf.progression.v1.QuestState quests = 11;
+inline int CharacterStateReply::_internal_quests_size() const {
+  return _internal_quests().size();
+}
+inline int CharacterStateReply::quests_size() const {
+  return _internal_quests_size();
+}
+inline void CharacterStateReply::clear_quests() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quests_.Clear();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::sf::progression::v1::QuestState& CharacterStateReply::quests(int index) const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.CharacterStateReply.quests)
+  return _internal_quests().Get(index);
+}
+inline ::sf::progression::v1::QuestState* PROTOBUF_NONNULL CharacterStateReply::mutable_quests(int index)
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable:sf.progression.v1.CharacterStateReply.quests)
+  return _internal_mutable_quests()->Mutable(index);
+}
+inline ::sf::progression::v1::QuestState* PROTOBUF_NONNULL CharacterStateReply::add_quests()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::sf::progression::v1::QuestState* _add =
+      _internal_mutable_quests()->InternalAddWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), GetArena());
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_add:sf.progression.v1.CharacterStateReply.quests)
+  return _add;
+}
+inline const ::google::protobuf::RepeatedPtrField<::sf::progression::v1::QuestState>& CharacterStateReply::quests() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_list:sf.progression.v1.CharacterStateReply.quests)
+  return _internal_quests();
+}
+inline ::google::protobuf::RepeatedPtrField<::sf::progression::v1::QuestState>* PROTOBUF_NONNULL
+CharacterStateReply::mutable_quests() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_mutable_list:sf.progression.v1.CharacterStateReply.quests)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _internal_mutable_quests();
+}
+inline const ::google::protobuf::RepeatedPtrField<::sf::progression::v1::QuestState>&
+CharacterStateReply::_internal_quests() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.quests_;
+}
+inline ::google::protobuf::RepeatedPtrField<::sf::progression::v1::QuestState>* PROTOBUF_NONNULL
+CharacterStateReply::_internal_mutable_quests() {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return &_impl_.quests_;
+}
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// QuestState
+
+// string quest_id = 1;
+inline void QuestState::clear_quest_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quest_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& QuestState::quest_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.QuestState.quest_id)
+  return _internal_quest_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void QuestState::set_quest_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.quest_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.progression.v1.QuestState.quest_id)
+}
+inline ::std::string* PROTOBUF_NONNULL QuestState::mutable_quest_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_quest_id();
+  // @@protoc_insertion_point(field_mutable:sf.progression.v1.QuestState.quest_id)
+  return _s;
+}
+inline const ::std::string& QuestState::_internal_quest_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.quest_id_.Get();
+}
+inline void QuestState::_internal_set_quest_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quest_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL QuestState::_internal_mutable_quest_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.quest_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE QuestState::release_quest_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.progression.v1.QuestState.quest_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.quest_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.quest_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void QuestState::set_allocated_quest_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.quest_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.quest_id_.IsDefault()) {
+    _impl_.quest_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.progression.v1.QuestState.quest_id)
+}
+
+// string state = 2;
+inline void QuestState::clear_state() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.state_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& QuestState::state() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.QuestState.state)
+  return _internal_state();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void QuestState::set_state(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.state_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.progression.v1.QuestState.state)
+}
+inline ::std::string* PROTOBUF_NONNULL QuestState::mutable_state()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_state();
+  // @@protoc_insertion_point(field_mutable:sf.progression.v1.QuestState.state)
+  return _s;
+}
+inline const ::std::string& QuestState::_internal_state() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.state_.Get();
+}
+inline void QuestState::_internal_set_state(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.state_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL QuestState::_internal_mutable_state() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.state_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE QuestState::release_state() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.progression.v1.QuestState.state)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.state_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.state_.Set("", GetArena());
+  }
+  return released;
+}
+inline void QuestState::set_allocated_state(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.state_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.state_.IsDefault()) {
+    _impl_.state_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.progression.v1.QuestState.state)
+}
+
+// string active_step_id = 3;
+inline void QuestState::clear_active_step_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.active_step_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline const ::std::string& QuestState::active_step_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.QuestState.active_step_id)
+  return _internal_active_step_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void QuestState::set_active_step_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  _impl_.active_step_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.progression.v1.QuestState.active_step_id)
+}
+inline ::std::string* PROTOBUF_NONNULL QuestState::mutable_active_step_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ::std::string* _s = _internal_mutable_active_step_id();
+  // @@protoc_insertion_point(field_mutable:sf.progression.v1.QuestState.active_step_id)
+  return _s;
+}
+inline const ::std::string& QuestState::_internal_active_step_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.active_step_id_.Get();
+}
+inline void QuestState::_internal_set_active_step_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.active_step_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL QuestState::_internal_mutable_active_step_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.active_step_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE QuestState::release_active_step_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.progression.v1.QuestState.active_step_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  auto* released = _impl_.active_step_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.active_step_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void QuestState::set_allocated_active_step_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  }
+  _impl_.active_step_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.active_step_id_.IsDefault()) {
+    _impl_.active_step_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.progression.v1.QuestState.active_step_id)
+}
+
+// map<string, int32> counts = 4;
+inline int QuestState::_internal_counts_size() const {
+  return _internal_counts().size();
+}
+inline int QuestState::counts_size() const {
+  return _internal_counts_size();
+}
+inline void QuestState::clear_counts() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.counts_.Clear();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+}
+inline const ::google::protobuf::Map<::std::string, ::int32_t>& QuestState::_internal_counts() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.counts_.GetMap();
+}
+inline const ::google::protobuf::Map<::std::string, ::int32_t>& QuestState::counts() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_map:sf.progression.v1.QuestState.counts)
+  return _internal_counts();
+}
+inline ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL QuestState::_internal_mutable_counts() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.counts_.MutableMap();
+}
+inline ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL QuestState::mutable_counts()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  // @@protoc_insertion_point(field_mutable_map:sf.progression.v1.QuestState.counts)
+  return _internal_mutable_counts();
+}
+
+// int32 content_revision = 5;
+inline void QuestState::clear_content_revision() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.content_revision_ = 0;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+}
+inline ::int32_t QuestState::content_revision() const {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.QuestState.content_revision)
+  return _internal_content_revision();
+}
+inline void QuestState::set_content_revision(::int32_t value) {
+  _internal_set_content_revision(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  // @@protoc_insertion_point(field_set:sf.progression.v1.QuestState.content_revision)
+}
+inline ::int32_t QuestState::_internal_content_revision() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.content_revision_;
+}
+inline void QuestState::_internal_set_content_revision(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.content_revision_ = value;
+}
+
+// int64 revision = 6;
+inline void QuestState::clear_revision() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.revision_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline ::int64_t QuestState::revision() const {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.QuestState.revision)
+  return _internal_revision();
+}
+inline void QuestState::set_revision(::int64_t value) {
+  _internal_set_revision(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  // @@protoc_insertion_point(field_set:sf.progression.v1.QuestState.revision)
+}
+inline ::int64_t QuestState::_internal_revision() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.revision_;
+}
+inline void QuestState::_internal_set_revision(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.revision_ = value;
+}
+
+// bool reward_pending = 7;
+inline void QuestState::clear_reward_pending() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.reward_pending_ = false;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+}
+inline bool QuestState::reward_pending() const {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.QuestState.reward_pending)
+  return _internal_reward_pending();
+}
+inline void QuestState::set_reward_pending(bool value) {
+  _internal_set_reward_pending(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  // @@protoc_insertion_point(field_set:sf.progression.v1.QuestState.reward_pending)
+}
+inline bool QuestState::_internal_reward_pending() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.reward_pending_;
+}
+inline void QuestState::_internal_set_reward_pending(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.reward_pending_ = value;
 }
 
 #ifdef __GNUC__

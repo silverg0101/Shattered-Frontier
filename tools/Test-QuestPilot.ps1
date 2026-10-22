@@ -51,7 +51,7 @@ try {
         # Unified: the one game mode hosts gathering, construction and combat together (one Silverbrook world).
         $flags = @('-server',('-port='+$Port),'-multihome=127.0.0.1','-GatheringPilotScenario')
         $server = Start-Owned 'server' $silverbrook $flags
-        Wait-Log $server 'server' 'QUEST_PILOT_READY Quest=quest/frontier_founder Steps=5'
+        Wait-Log $server 'server' 'QUEST_PILOT_READY Quests='
         if ($Leg -eq 'Unified') {
             Wait-Log $server 'server' 'COMBAT_PILOT_READY Boars=10'
             Wait-Log $server 'server' 'GATHERING_PILOT_READY Source=ZoneRecord Nodes=[1-9]'
@@ -104,7 +104,7 @@ try {
         }
         $url = $silverbrook
         if ($Services) { Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server' $url $flags } } else { $server = Start-Owned 'server' $url $flags }
-        Wait-Log $server 'server' 'QUEST_PILOT_READY Quest=quest/frontier_founder Steps=5'
+        Wait-Log $server 'server' 'QUEST_PILOT_READY Quests='
         Wait-Log $server 'server' 'COMBAT_PILOT_READY Boars=10'
         $clientUrl = if ($Int06KillAfterGrant) { '127.0.0.1:'+$Port+'?SFDevCharacter=alpha' } else { '127.0.0.1:'+$Port }
         $client = Start-Owned 'client' $clientUrl $clientFlags
@@ -151,7 +151,7 @@ try {
                 if (-not $client.HasExited) { Stop-Process -Id $client.Id; $client.WaitForExit() }
                 $restartFlags = @($flags | Where-Object { $_ -ne '-GatheringLedgerExitAfterCommit' }) + ($servicesIni+':bRestoreOnConnect=True')
                 Invoke-WithEnv $serverEnv { $script:restart = Start-Owned 'restart-server' $url $restartFlags }
-                Wait-Log $restart 'restart-server' 'QUEST_PILOT_READY Quest=quest/frontier_founder Steps=5'
+                Wait-Log $restart 'restart-server' 'QUEST_PILOT_READY Quests='
                 $restored = Start-Owned 'restored-client' $clientUrl @('-game')
                 Wait-Log $restored 'restored-client' 'QUEST_PILOT_CLIENT_VIEW Step=2 Complete=0'
                 $result.operation = $operation; $result.counts = $counts; $result.ledger = $view.Line
@@ -196,7 +196,7 @@ try {
     } else {
         $url = $silverbrook
         $server = Start-Owned 'server' $url @('-server',('-port='+$Port),'-multihome=127.0.0.1','-CombatPilotScenario','-QuestPilotStartStep=defeat_boar')
-        Wait-Log $server 'server' 'QUEST_PILOT_READY Quest=quest/frontier_founder Steps=5'
+        Wait-Log $server 'server' 'QUEST_PILOT_READY Quests='
         $client = Start-Owned 'client' ('127.0.0.1:'+$Port) @('-game','-CombatPilotScenario')
         Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=defeat Target=npc/boar Op=boar:boar_farm_edge:0:\d+ Result=0'
         Wait-Log $server 'server' 'QUEST_PILOT_COMPLETE Quest=quest/frontier_founder'

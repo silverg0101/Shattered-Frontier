@@ -8,7 +8,18 @@ public sealed class QuestDefinition
     public string Id { get; set; } = "";
     public int Revision { get; set; }
     public string ZoneId { get; set; } = "";
+    public QuestOffer? Offer { get; set; }
     public List<QuestStep> Steps { get; set; } = [];
+}
+
+public sealed class QuestOffer
+{
+    public string Title { get; set; } = "";
+    public string Summary { get; set; } = "";
+    public string Art { get; set; } = "";
+    public List<string> Boards { get; set; } = [];
+    public string? GiverNpc { get; set; }
+    public List<string> RequiresCompleted { get; set; } = [];
 }
 
 public sealed class QuestStep
@@ -64,13 +75,14 @@ public static class QuestValidator
 
     /// <summary>knownRoles: townsfolk census archetypes a talk_resident objective may name (resident_role/&lt;archetype&gt;).</summary>
     public static IReadOnlyList<string> Validate(QuestDefinition quest, QuestTuning? tuning = null, IReadOnlySet<string>? knownItems = null,
-        IReadOnlySet<string>? knownRoles = null)
+        IReadOnlySet<string>? knownRoles = null, IReadOnlySet<string>? knownNpcs = null)
     {
         tuning ??= new QuestTuning();
         tuning.Validate();
         var issues = new List<string>();
         if (!ValidId(quest.Id, "quest") || quest.Revision < 1) issues.Add("quest id/revision invalid");
         if (!ValidId(quest.ZoneId, "zone")) issues.Add("zone_id invalid");
+        if (quest.Offer is { } offer) ValidateOffer(quest, offer, issues, knownNpcs);
         if (quest.Steps is null || quest.Steps.Count is < 1 or > 20) { issues.Add("steps count invalid"); return issues; }
         var seen = new HashSet<string>(StringComparer.Ordinal);
         foreach (var step in quest.Steps)
@@ -85,10 +97,12 @@ public static class QuestValidator
             {
                 if (obj is null) { issues.Add($"step {step.Id}: objective null"); continue; }
                 if (!Slug.IsMatch(obj.Key ?? "") || !keys.Add(obj.Key ?? "")) issues.Add($"step {step.Id}: objective key invalid/duplicate");
-                var prefix = obj.Kind switch { "gather" or "craft" => "item", "defeat" => "npc", "build" => "structure_tag", "talk_resident" => "resident_role", _ => "" };
+                var prefix = obj.Kind switch { "gather" or "craft" => "item", "defeat" => "npc", "build" => "structure_tag", "talk_resident" => "resident_role", "talk_npc" => "npc", _ => "" };
                 if (prefix.Length == 0 || !ValidId(obj.TargetId, prefix)) issues.Add($"step {step.Id}/{obj.Key}: kind/target invalid");
                 else if (obj.Kind == "talk_resident" && knownRoles is not null && !knownRoles.Contains(obj.TargetId[(prefix.Length + 1)..]))
                     issues.Add($"step {step.Id}/{obj.Key}: unknown resident role");
+                else if (obj.Kind == "talk_npc" && knownNpcs is not null && !knownNpcs.Contains(obj.TargetId[(prefix.Length + 1)..]))
+                    issues.Add($"step {step.Id}/{obj.Key}: unknown npc");
                 if (obj.NodeId is not null && (obj.Kind != "gather" || !ValidId(obj.NodeId, "gathering_node"))) issues.Add($"step {step.Id}/{obj.Key}: node_id invalid");
                 if (obj.Count < 1 || obj.Count > tuning.MaxObjectiveCount) issues.Add($"step {step.Id}/{obj.Key}: count outside 1..{tuning.MaxObjectiveCount}");
             }
@@ -106,16 +120,41 @@ public static class QuestValidator
         return issues;
     }
 
+    private static void ValidateOffer(QuestDefinition quest, QuestOffer offer, List<string> issues, IReadOnlySet<string>? knownNpcs)
+    {
+        if (string.IsNullOrWhiteSpace(offer.Title) || string.IsNullOrWhiteSpace(offer.Summary)) issues.Add("offer title/summary missing");
+        var boards = offer.Boards ?? [];
+        if (boards.Count > 8 || boards.Any(b => !ValidId(b, "board")) || boards.Distinct(StringComparer.Ordinal).Count() != boards.Count)
+            issues.Add("offer boards invalid (0..8 unique board/<slug>)");
+        if (offer.GiverNpc is not null && !ValidId(offer.GiverNpc, "npc")) issues.Add("offer giver_npc invalid");
+        else if (offer.GiverNpc is not null && knownNpcs is not null && !knownNpcs.Contains(offer.GiverNpc[4..])) issues.Add("offer giver_npc unknown npc");
+        if (boards.Count == 0 && offer.GiverNpc is null) issues.Add("offer unreachable (no board and no giver_npc)");
+        var req = offer.RequiresCompleted ?? [];
+        if (req.Count > 8 || req.Any(r => !ValidId(r, "quest") || r == quest.Id) || req.Distinct(StringComparer.Ordinal).Count() != req.Count)
+            issues.Add("offer requires_completed invalid (0..8 unique other quest/<slug>)");
+    }
+
+    /// <summary>offers: (dialogue file stem, offer.quest_id) pairs; each quest must exist and name npc/&lt;stem&gt; as giver_npc.</summary>
+    public static IReadOnlyList<string> ValidateDialogueOffers(IEnumerable<(string Stem, string QuestId)> offers, IEnumerable<QuestDefinition> quests)
+    {
+        var byId = quests.ToDictionary(q => q.Id, StringComparer.Ordinal);
+        return [.. offers.Select(o => !byId.TryGetValue(o.QuestId, out var q) ? $"dialogue {o.Stem}: offer names unknown quest {o.QuestId}"
+            : q.Offer?.GiverNpc != "npc/" + o.Stem ? $"dialogue {o.Stem}: quest {o.QuestId} does not list npc/{o.Stem} as giver_npc" : "").Where(i => i.Length != 0)];
+    }
+
     public static IReadOnlyList<string> ValidateAll(IReadOnlyList<(string Path, QuestDefinition Quest)> files, IReadOnlySet<string>? knownItems = null,
-        IReadOnlySet<string>? knownRoles = null)
+        IReadOnlySet<string>? knownRoles = null, IReadOnlySet<string>? knownNpcs = null)
     {
         var issues = new List<string>();
         var ids = new HashSet<string>(StringComparer.Ordinal);
         foreach (var (path, quest) in files)
         {
-            issues.AddRange(Validate(quest, knownItems: knownItems, knownRoles: knownRoles).Select(i => $"{path}: {i}"));
+            issues.AddRange(Validate(quest, knownItems: knownItems, knownRoles: knownRoles, knownNpcs: knownNpcs).Select(i => $"{path}: {i}"));
             if (!ids.Add(quest.Id)) issues.Add($"{path}: duplicate quest id {quest.Id}");
         }
+        foreach (var (path, quest) in files)
+            foreach (var req in quest.Offer?.RequiresCompleted ?? [])
+                if (!ids.Contains(req)) issues.Add($"{path}: requires_completed names unknown quest {req}");
         return issues;
     }
 

@@ -367,6 +367,12 @@
     "size": 20,
     "centres": [[430, 215], [470, 215], [510, 220]]
   },
+  "quest_boards": [
+    {"_about": "QST-02 Quest Board: where the city's questlines start. North edge of Market Square (key 5), facing its centre. Placed at runtime by USFQuestPilotSubsystem from this row; build_silverbrook.py keeps the spot clear of dressing.", "id": "board/silverbrook", "at": [0, -54], "facing": [0, -30]}
+  ],
+  "quest_givers": [
+    {"_about": "QST-02: an NPC who offers its quest directly (content/dialogue/<stem>.json). Millwarden Oswin outside the Mill (key 8).", "npc": "npc/millwarden_oswin", "at": [-110, 292], "facing": [-110, 280]}
+  ],
   "arrival": {
     "at": [0, -30],
     "face": [0, 0]

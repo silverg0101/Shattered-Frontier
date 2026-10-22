@@ -1,4 +1,5 @@
 #include "Framework/SFPlayerController.h"
+#include "Quest/SFQuestBoard.h"
 #include "Construction/SFConstructionSandboxPalette.h"
 #include "Interaction/SFE1InteractionTarget.h"
 #include "Framework/SFE1Settings.h"
@@ -349,7 +350,7 @@ void ASFPlayerController::InteractWithSelectedTarget()
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (InteractionInputAttempts != MAX_uint64) { ++InteractionInputAttempts; }
 #endif
-    if (TryOpenDialogue()) { return; }
+    if (TryOpenDialogue() || USFQuestBoardPanel::TryOpenBoard(this)) { return; }
     if (!IsLocalController() || !bSettingsCaptured) { return; }
     const double Now = GetWorld()->GetTimeSeconds();
     if (!LocalFeedback.TryBeginRequest(Now)) { return; }

@@ -14,6 +14,7 @@
 #include "Framework/Application/SlateApplication.h"
 #include "Framework/SFHudStyle.h"
 #include "Misc/FileHelper.h"
+#include "Quest/SFQuestPilot.h"
 #include "Misc/Paths.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
@@ -54,21 +55,9 @@ bool FSFDialogueTree::Parse(const FString& Json, FSFDialogueTree& Out, FString& 
     if (Root->TryGetObjectField(TEXT("offer"), OfferObject))
     {
         Tree.bHasOffer = true; FSFDialogueOffer& Offer = Tree.Offer;
-        (*OfferObject)->TryGetStringField(TEXT("title"), Offer.Title); (*OfferObject)->TryGetStringField(TEXT("summary"), Offer.Summary);
-        (*OfferObject)->TryGetStringField(TEXT("art"), Offer.ArtPath);
+        (*OfferObject)->TryGetStringField(TEXT("quest_id"), Offer.QuestId);
         Offer.AcceptedNode = TEXT("accepted"); (*OfferObject)->TryGetStringField(TEXT("accepted_node"), Offer.AcceptedNode);
-        const TArray<TSharedPtr<FJsonValue>>* Objectives = nullptr;
-        if ((*OfferObject)->TryGetArrayField(TEXT("objectives"), Objectives))
-        {
-            for (const TSharedPtr<FJsonValue>& Value : *Objectives)
-            {
-                const TSharedPtr<FJsonObject> Object = Value->AsObject(); if (!Object.IsValid()) { continue; }
-                FSFDialogueObjective Objective; Objective.Label = Object->GetStringField(TEXT("label")); Objective.Need = Object->GetIntegerField(TEXT("need"));
-                Offer.Objectives.Add(Objective);
-            }
-        }
-        const TSharedPtr<FJsonObject>* Rewards = nullptr;
-        if ((*OfferObject)->TryGetObjectField(TEXT("rewards"), Rewards)) { (*Rewards)->TryGetNumberField(TEXT("xp"), Offer.RewardXp); (*Rewards)->TryGetNumberField(TEXT("coin"), Offer.RewardCoin); }
+        if (!Offer.QuestId.StartsWith(TEXT("quest/"))) { Error = TEXT("offer needs a quest_id"); return false; }
         if (!Tree.Nodes.Contains(Offer.AcceptedNode)) { Error = TEXT("offer needs its accepted node"); return false; }
     }
     if (!Tree.Nodes.Contains(Tree.Start)) { Error = TEXT("start node is missing"); return false; }
@@ -346,10 +335,14 @@ void USFDialoguePanel::NativeOnInitialized()
     }
     Line(Offer, Text(WidgetTree, TEXT("Rewards"), 17, Ivory()), 17, 1044.f, 668.f);
     Box(Offer, SectionRule(WidgetTree), 1141.f, 674.f, 255.f, 8.f);
-    Box(Offer, KitImage(WidgetTree, TEXT("icon_xp_roundel"), 45.f), 1044.f, 701.f, 45.f, 45.f);
+    USizeBox* FirstIcon = KitImage(WidgetTree, TEXT("icon_xp_roundel"), 45.f);
+    Box(Offer, FirstIcon, 1044.f, 701.f, 45.f, 45.f);
+    RewardIcons.Add(Cast<UImage>(FirstIcon->GetContent()));
     XpText = Text(WidgetTree, TEXT(""), 17, Ivory());
     Line(Offer, XpText, 17, 1107.f, 713.f);
-    Box(Offer, KitImage(WidgetTree, TEXT("icon_coin_stack"), 43.f), 1231.f, 701.f, 43.f, 43.f);
+    USizeBox* SecondIcon = KitImage(WidgetTree, TEXT("icon_coin_stack"), 43.f);
+    Box(Offer, SecondIcon, 1231.f, 701.f, 43.f, 43.f);
+    RewardIcons.Add(Cast<UImage>(SecondIcon->GetContent()));
     CoinText = Text(WidgetTree, TEXT(""), 17, Ivory());
     Line(Offer, CoinText, 17, 1293.f, 713.f);
     const FSFHudButton Accept = Button(WidgetTree, TEXT("Accept"), EButtonKind::Primary, 0.f);
@@ -361,31 +354,47 @@ void USFDialoguePanel::NativeOnInitialized()
     Box(Offer, Decline.Root, 1248.f, 765.f, 164.f, 54.f);
 }
 
-void USFDialoguePanel::Open(TSharedPtr<const FSFDialogueTree> InTree)
+void USFDialoguePanel::Open(TSharedPtr<const FSFDialogueTree> InTree, const FSFQuestDefinition* Quest, bool bOffered)
 {
-    Session.Begin(InTree);
+    Session.Begin(InTree, Quest && !bOffered);
     Selected = 0; StyledSelected = -1;
     if (!InTree.IsValid()) { return; }
     NameText->SetText(FText::FromString(InTree->Speaker));
     SetArt(PortraitImage, TextureFor(InTree->Portrait), FVector2D(108.f, 112.f));
-    const FSFDialogueOffer& Offer = InTree->Offer;
-    OfferColumn->SetVisibility(InTree->bHasOffer ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-    if (InTree->bHasOffer)
+    // QST-02: the offer renders from the quest record; a quest already held or finished is not offered again.
+    const bool bShowOffer = InTree->bHasOffer && Quest && bOffered;
+    OfferColumn->SetVisibility(bShowOffer ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+    if (bShowOffer)
     {
-        SetArt(OfferArt, TextureFor(Offer.ArtPath), FVector2D(382.f, 211.f));
-        OfferTitle->SetText(FText::FromString(Offer.Title)); OfferSummary->SetText(FText::FromString(Offer.Summary));
+        SetArt(OfferArt, TextureFor(Quest->Offer.Art), FVector2D(382.f, 211.f));
+        OfferTitle->SetText(FText::FromString(Quest->Title())); OfferSummary->SetText(FText::FromString(Quest->Offer.Summary));
+        TArray<const FSFQuestObjective*> Objectives;
+        for (const FSFQuestStep& Step : Quest->Steps) { for (const FSFQuestObjective& Objective : Step.Objectives) { Objectives.Add(&Objective); } }
         for (int32 Index = 0; Index < ObjectiveRows.Num(); ++Index)
         {
-            const bool bShown = Offer.Objectives.IsValidIndex(Index);
+            const bool bShown = Objectives.IsValidIndex(Index);
             ObjectiveRows[Index]->SetVisibility(bShown ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
             if (bShown)
             {
-                ObjectiveLabels[Index]->SetText(FText::FromString(Offer.Objectives[Index].Label));
-                ObjectiveCounts[Index]->SetText(FText::FromString(FString::Printf(TEXT("0 / %d"), Offer.Objectives[Index].Need)));
+                ObjectiveLabels[Index]->SetText(FText::FromString(FSFQuestCatalog::ObjectiveLabel(*Objectives[Index])));
+                ObjectiveCounts[Index]->SetText(FText::FromString(FString::Printf(TEXT("0 / %d"), Objectives[Index]->Count)));
             }
         }
-        XpText->SetText(FText::FromString(FString::Printf(TEXT("%d XP"), Offer.RewardXp)));
-        CoinText->SetText(FText::FromString(FString::Printf(TEXT("%d Coin"), Offer.RewardCoin)));
+        // Rewards are item lines now (xp/coin left the dialogue offer); the two reward slots show the first two.
+        const TArray<FString> Rewards = Quest->RewardLines();
+        XpText->SetText(FText::FromString(Rewards.IsValidIndex(0) ? Rewards[0] : FString()));
+        CoinText->SetText(FText::FromString(Rewards.IsValidIndex(1) ? Rewards[1] : FString()));
+        TArray<FString> Items;
+        for (const FSFQuestStep& Step : Quest->Steps) { for (const FSFQuestRewardItem& Item : Step.RewardItems) { Items.Add(Item.DefinitionId); } }
+        for (int32 Index = 0; Index < RewardIcons.Num(); ++Index)
+        {
+            if (!RewardIcons[Index]) { continue; }
+            FString Stem; if (Items.IsValidIndex(Index)) { Items[Index].Split(TEXT("/"), nullptr, &Stem); }
+            const FString Piece = Stem == TEXT("rough_timber") ? FString(TEXT("icon_timber_board")) : TEXT("icon_") + Stem;
+            const FSFHudKitElement* Icon = Kit(*Piece) ? Kit(*Piece) : Kit(TEXT("icon_leather_bag"));
+            RewardIcons[Index]->SetVisibility(Items.IsValidIndex(Index) ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+            if (Icon) { RewardIcons[Index]->SetBrush(KitBrush(*Icon)); }
+        }
     }
     Refresh();
 }

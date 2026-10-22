@@ -60,3 +60,43 @@ Check(!model.Apply(E("boar", "defeat_boar", "defeat", "npc/boar", 9)).Accepted &
     model.Apply(E("another", "defeat_boar", "defeat", "npc/boar", 10)).Grants.Count == 0, "terminal replays never grant");
 Check(model.Accept("chr_b", t) && model.Apply(new ObjectiveEvent("oak", "chr_b", quest.Id, "harvest_oak", "gather", "item/oak_log", "gathering_node/oak_tree", 1, t.AddSeconds(1))).Accepted,
     "operation scope is per character");
+
+// QST-02: offers, talk_npc, instances
+var offered = Copy(); offered.Offer = new QuestOffer { Title = "T", Summary = "S", Boards = ["board/silverbrook"], GiverNpc = "npc/oswin", RequiresCompleted = ["quest/other"] };
+Check(QuestValidator.Validate(offered).Count == 0 && QuestValidator.Validate(offered, knownNpcs: new HashSet<string> { "oswin" }).Count == 0, "offer validates");
+void BrokenOffer(string name, Action<QuestOffer> mutate, string expected)
+{
+    var copy = Copy(); copy.Offer = new QuestOffer { Title = "T", Summary = "S", Boards = ["board/silverbrook"], GiverNpc = "npc/oswin" }; mutate(copy.Offer);
+    Check(QuestValidator.Validate(copy, knownNpcs: new HashSet<string> { "oswin" }).Any(i => i.Contains(expected, StringComparison.Ordinal)), name);
+}
+BrokenOffer("offer without board or giver rejected", o => { o.Boards = []; o.GiverNpc = null; }, "unreachable");
+BrokenOffer("more than 8 boards rejected", o => o.Boards = [.. Enumerable.Range(0, 9).Select(i => "board/b" + i)], "boards invalid");
+BrokenOffer("duplicate board rejected", o => o.Boards = ["board/a", "board/a"], "boards invalid");
+BrokenOffer("unknown giver npc rejected", o => o.GiverNpc = "npc/ghost", "unknown npc");
+BrokenOffer("bad giver id rejected", o => o.GiverNpc = "oswin", "giver_npc invalid");
+BrokenOffer("self prerequisite rejected", o => o.RequiresCompleted = [quest.Id], "requires_completed");
+BrokenOffer("empty title rejected", o => o.Title = " ", "title/summary");
+var talkNpc = Copy(); talkNpc.Steps[0].Objectives[0] = new QuestObjective { Key = "oswin", Kind = "talk_npc", TargetId = "npc/oswin", Count = 1 };
+Check(QuestValidator.Validate(talkNpc, knownNpcs: new HashSet<string> { "oswin" }).Count == 0, "talk_npc with known npc validates");
+Check(QuestValidator.Validate(talkNpc, knownNpcs: new HashSet<string> { "other" }).Any(i => i.Contains("unknown npc", StringComparison.Ordinal)), "talk_npc with unknown npc rejected");
+var chained = Copy(); chained.Id = "quest/chained"; chained.Offer = new QuestOffer { Title = "T", Summary = "S", Boards = ["board/x"], RequiresCompleted = ["quest/missing"] };
+Check(QuestValidator.ValidateAll([("a", quest), ("b", chained)]).Any(i => i.Contains("unknown quest quest/missing", StringComparison.Ordinal)), "requires_completed must name a known quest");
+var withGiver = Copy(); withGiver.Offer = new QuestOffer { Title = "T", Summary = "S", GiverNpc = "npc/oswin" };
+Check(QuestValidator.ValidateDialogueOffers([("oswin", quest.Id)], [withGiver]).Count == 0, "dialogue offer names its giver");
+Check(QuestValidator.ValidateDialogueOffers([("other", quest.Id)], [withGiver]).Count == 1, "dialogue offer for a different npc rejected");
+Check(QuestValidator.ValidateDialogueOffers([("oswin", "quest/none")], [withGiver]).Count == 1, "dialogue offer for unknown quest rejected");
+var talkModel = new QuestProgression(talkNpc); talkModel.Accept("chr_t", t);
+var talked = talkModel.Apply(new ObjectiveEvent("talk1", "chr_t", talkNpc.Id, talkNpc.Steps[0].Id, "talk_npc", "npc/oswin", null, 1, t.AddSeconds(1)));
+Check(talked.Accepted && talked.ActiveStepId == talkNpc.Steps[1].Id, "talk_npc evidence advances");
+var inst = new QuestProgression(quest); inst.Accept("chr_i", t, 2);
+var instResult = inst.Apply(new ObjectiveEvent("i1", "chr_i", quest.Id, "harvest_oak", "gather", "item/oak_log", "gathering_node/oak_tree", 1, t.AddSeconds(1)));
+Check(inst.Snapshot("chr_i")!.Instance == 2 && instResult.Accepted, "instance carried through snapshot");
+var rest = new QuestProgression(quest); rest.Restore("chr_i", inst.Snapshot("chr_i")!);
+Check(rest.Snapshot("chr_i")!.Instance == 2, "instance restored");
+var multi = Copy(); multi.Steps[0].Rewards.Add(new QuestReward { BundleId = "reward/x" });
+foreach (var (n, id) in new[] { (1, ""), (3, ":i3") })
+{
+    var m = new QuestProgression(multi); m.Accept("chr_g", t, n);
+    var g = m.Apply(new ObjectiveEvent("g", "chr_g", multi.Id, "harvest_oak", "gather", "item/oak_log", "gathering_node/oak_tree", multi.Steps[0].Objectives[0].Count, t.AddSeconds(1)));
+    Check(g.Grants.Single().OperationId == $"quest:chr_g:{multi.Id}:harvest_oak:reward/x{id}", "grant id for instance " + n);
+}

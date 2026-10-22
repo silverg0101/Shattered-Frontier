@@ -27,6 +27,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "EngineUtils.h"
+#include "Quest/SFQuestBoard.h"
 #include "Quest/SFQuestPilot.h"
 
 TArray<FSFHotbarSlot> USFHudLayout::HotbarSlots()
@@ -54,6 +55,7 @@ TArray<FSFPromptSegment> USFHudLayout::PromptsFor(ESFPromptContext Context)
     case ESFPromptContext::Build: return {{TEXT("LMB"), TEXT("Place")}, {TEXT("R"), TEXT("Rotate")}, {TEXT("X"), TEXT("Remove")}, {TEXT("Esc"), TEXT("Cancel")}};
     case ESFPromptContext::Harvest: return {{TEXT("F"), TEXT("Harvest")}};  // CTL-01: interact is F; Q/E strafe
     case ESFPromptContext::Refine: return {{TEXT("F"), TEXT("Refine")}};
+    case ESFPromptContext::Read: return {{TEXT("F"), TEXT("Read notices")}};  // QST-02 quest board
     default: return {};
     }
 }
@@ -289,6 +291,7 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
         Context = Node->IsRefinery() ? ESFPromptContext::Refine : ESFPromptContext::Harvest;
         HarvestVerb = Node->IsRefinery() ? FString() : Node->ActionVerb();
     }
+    else if (!bBuildMode && ASFQuestBoard::FindInReach(Controller)) { Context = ESFPromptContext::Read; }
     // While the station panel is open it carries its own title and Craft key: no prompt bar and no target frame over it.
     const bool bStation = Cast<ASFPlayerController>(Controller) && Cast<ASFPlayerController>(Controller)->IsStationPanelOpen();
     if (bStation) { Context = ESFPromptContext::None; }

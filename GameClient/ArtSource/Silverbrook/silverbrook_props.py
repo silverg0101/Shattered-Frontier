@@ -200,6 +200,10 @@ def _obstacles(A):
             r=pp._rect(a)
             if max(r[2]-r[0],r[3]-r[1])<=4000:  # terrain and backdrop are not street obstacles
                 rects.append(r)
+    # QST-02: quest boards and givers spawn at runtime from the layout rows; keep a 3 m square around each free of dressing.
+    L=json.loads(LAYOUT.read_text(encoding='utf-8'))
+    for row in L.get('quest_boards',[])+L.get('quest_givers',[]):
+        x,y=row['at'];rects.append((x*100-150,y*100-150,x*100+150,y*100+150))
     return pp,rects
 
 def _clear(A):

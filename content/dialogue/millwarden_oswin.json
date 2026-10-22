@@ -21,7 +21,7 @@
       ]
     },
     "reward": {
-      "line": "Coin from the mill's purse, and the thanks of Silverbrook besides. Fair pay for honest work.",
+      "line": "Sawn timber from the mill and a pouch of nails, and the thanks of Silverbrook besides. Fair pay for honest work.",
       "choices": [
         { "label": "Tell me more", "next": "more" },
         { "label": "I'll help", "action": "accept" },
@@ -42,15 +42,5 @@
       ]
     }
   },
-  "offer": {
-    "title": "The Mill's Supply",
-    "summary": "Bring oak logs to the mill before the rain.",
-    "art": "/Game/Frontier/UI/Dialogue/T_Quest_MillsSupply.T_Quest_MillsSupply",
-    "accepted_node": "accepted",
-    "objectives": [
-      { "label": "Gather Oak Logs", "need": 6 },
-      { "label": "Deliver to Oswin", "need": 1 }
-    ],
-    "rewards": { "xp": 120, "coin": 20 }
-  }
+  "offer": { "quest_id": "quest/mills_supply", "accepted_node": "accepted" }
 }

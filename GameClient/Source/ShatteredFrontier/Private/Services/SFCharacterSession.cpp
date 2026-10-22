@@ -125,7 +125,7 @@ void USFCharacterSessionComponent::BeginRestore()
         const auto* Quest = Self->GetOwner()->FindComponentByClass<USFQuestPilotComponent>();
         UE_LOG(LogTemp, Display, TEXT("CHARACTER_RESTORED Character=%s Logging=%d Mining=%d Step=%d Position=%s Location=%s"), *Self->CharacterId,
             Gathering ? Gathering->GetSkillSnapshot().Get(ESFGatheringSkill::Logging) : -1, Gathering ? Gathering->GetSkillSnapshot().Get(ESFGatheringSkill::Mining) : -1,
-            Quest ? Quest->GetProgress().StepIndex : -1, Self->bHasRestoredLocation ? TEXT("saved") : TEXT("start"), Pawn ? *Pawn->GetActorLocation().ToString() : TEXT("none"));
+            Quest ? Quest->ActiveIds().Num() : -1, Self->bHasRestoredLocation ? TEXT("saved") : TEXT("start"), Pawn ? *Pawn->GetActorLocation().ToString() : TEXT("none"));
     };
     Pack->Reconcile([Part](bool bOk) { Part(1, bOk); });
     FSFGameplayRequest Get; Get.Rpc = ESFGameplayRpc::GetCharacterState; Get.CharacterId = CharacterId;
@@ -136,7 +136,7 @@ void USFCharacterSessionComponent::BeginRestore()
         AActor* Owner = Self->GetOwner();
         if (auto* Gathering = Owner->FindComponentByClass<USFGatheringPilotComponent>()) { Gathering->RestoreSkills(State.Skills); }
         if (auto* Quest = Owner->FindComponentByClass<USFQuestPilotComponent>())
-        { Quest->Restore(State.ActiveStepId, State.bQuestCompleted, State.ObjectiveCounts, State.ProgressionRevision, State.QuestRevision); }
+        { Quest->Restore(State.Quests, State.ProgressionRevision); }
         Self->PositionRevision = State.PositionRevision;
         // A position saved in another zone, or not finite, falls back to the spawn the game mode chose.
         APawn* Pawn = Cast<APlayerController>(Owner)->GetPawn();

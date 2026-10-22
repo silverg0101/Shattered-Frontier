@@ -5,7 +5,7 @@ using ShatteredFrontier.Progression;
 using ShatteredFrontier.QuestContent;
 using Pb = ShatteredFrontier.Progression.V1;
 
-internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, QuestDefinition quest, QuestRewardPayout payout,
+internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, IReadOnlyDictionary<string, QuestDefinition> quests, QuestRewardPayout payout,
     ShatteredFrontier.InventoryLedger.Postgres.PostgresInventoryLedgerStore ledgerStore,
     ShatteredFrontier.Exchange.Postgres.PostgresExchangeStore exchange, StarterKitOptions starterKit) : Pb.Progression.ProgressionBase
 {
@@ -65,18 +65,31 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
             if (request.Quest is not null)
             {
                 var q = request.Quest;
-                if (q.QuestId != quest.Id) throw new ArgumentException("Unknown quest.");
+                if (!quests.TryGetValue(q.QuestId, out var quest)) throw new ArgumentException("Unknown quest.");
+                var occurred = DateTimeOffset.FromUnixTimeMilliseconds(q.OccurredAtUnixMs);
+                if (q.Kind is "accept" or "abandon")
+                {
+                    var done = q.Kind == "accept"
+                        ? store.AcceptQuest(quest, request.CharacterId, occurred, request.SourceReceiptId,
+                            [.. (quest.Offer?.RequiresCompleted ?? []).Select(id => quests.TryGetValue(id, out var p) ? p : throw new ArgumentException("Unknown prerequisite quest."))])
+                        : store.AbandonQuest(quest, request.CharacterId, request.SourceReceiptId);
+                    reply.QuestAccepted = done.Result.Accepted;
+                    reply.QuestReason = done.Result.Reason;
+                    reply.ActiveStepId = done.Result.ActiveStepId ?? "";
+                    reply.QuestCompleted = done.Result.Completed;
+                    reply.QuestRevision = done.Revision;
+                    return reply;
+                }
                 var containers = ledgerStore.FindContainers(ShatteredFrontier.InventoryLedger.OwnerKind.Character,
                     request.CharacterId, ShatteredFrontier.InventoryLedger.ContainerKind.Backpack);
                 if (containers.Count != 1)
                     throw new GameplayRejectedException("Character must have exactly one reward backpack.", StatusCode.FailedPrecondition);
                 var rewardContainerId = containers[0].Id;
-                var occurred = DateTimeOffset.FromUnixTimeMilliseconds(q.OccurredAtUnixMs);
-                store.AcceptQuest(quest, request.CharacterId, occurred);
                 var eventReceipt = new ObjectiveEvent(request.SourceReceiptId, request.CharacterId, q.QuestId,
                     q.StepId, q.Kind, q.TargetId, string.IsNullOrEmpty(q.NodeId) ? null : q.NodeId, q.Quantity, occurred);
                 var result = store.ApplyQuest(quest, eventReceipt, request.ExpectedQuestRevision, rewardContainerId);
                 reply.QuestAccepted = result.Result.Accepted;
+                reply.QuestReason = result.Result.Accepted ? "" : result.Result.Reason;
                 reply.ActiveStepId = result.Result.ActiveStepId ?? "";
                 reply.QuestCompleted = result.Result.Completed;
                 reply.QuestRevision = result.Revision;
@@ -110,15 +123,20 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
                 TimeProvider.System, () => .5, snapshot: progression.Result).Level;
             if (progression is not null)
                 foreach (var (id, value) in progression.Result.Skills) state.Skills.Add(id, value);
-            var q = store.ReadQuest(quest, request.CharacterId);
-            if (q is not null)
+            var pending = store.PendingRewardQuests(request.CharacterId);
+            foreach (var row in store.ReadQuests(request.CharacterId))
             {
-                state.QuestRevision = q.Revision;
-                state.QuestCompleted = q.Result.StepIndex >= quest.Steps.Count;
-                state.ActiveStepId = state.QuestCompleted ? "" : quest.Steps[q.Result.StepIndex].Id;
-                if (!state.QuestCompleted)
-                    foreach (var objective in quest.Steps[q.Result.StepIndex].Objectives)
-                        state.ObjectiveCounts.Add(objective.Key, q.Result.Counts.GetValueOrDefault(objective.Key));
+                if (!quests.TryGetValue(row.QuestId, out var def)) continue;
+                var done = row.State.StepIndex >= def.Steps.Count;
+                var qs = new Pb.QuestState { QuestId = row.QuestId, State = row.State.Abandoned ? "abandoned" : done ? "completed" : "active",
+                    ActiveStepId = row.State.Abandoned || done ? "" : def.Steps[row.State.StepIndex].Id, ContentRevision = row.ContentRevision,
+                    Revision = row.Revision, RewardPending = pending.Contains(row.QuestId) };
+                if (qs.State == "active")
+                    foreach (var objective in def.Steps[row.State.StepIndex].Objectives) qs.Counts.Add(objective.Key, row.State.Counts.GetValueOrDefault(objective.Key));
+                state.Quests.Add(qs);
+                if (row.QuestId != "quest/frontier_founder" || row.State.Abandoned) continue;
+                state.QuestRevision = row.Revision; state.QuestCompleted = done; state.ActiveStepId = qs.ActiveStepId;
+                foreach (var (k, v) in qs.Counts) state.ObjectiveCounts.Add(k, v);
             }
             var position = store.ReadPosition(request.CharacterId);
             if (position is not null)

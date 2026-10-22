@@ -1,6 +1,7 @@
 #include "Quest/SFQuestPilot.h"
 #include "Framework/SFPlayerController.h"
 
+#include "Quest/SFQuestBoard.h"
 #include "Quest/SFQuestPilotEvents.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
@@ -14,6 +15,7 @@
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 #include "Characters/SFE1Character.h"
+#include "Dialogue/SFDialogue.h"
 #include "Services/SFBackpackComponent.h"
 #include "Services/SFCharacterSession.h"
 #include "Services/SFGameplayServicesClient.h"
@@ -25,6 +27,7 @@
 #include "EngineUtils.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "HAL/FileManager.h"
 #include "InputCoreTypes.h"
 #include "InputKeyEventArgs.h"
 #include "HAL/PlatformTime.h"
@@ -52,6 +55,7 @@ SFQuestPilotEvents::FBoarDefeated& SFQuestPilotEvents::OnBoarDefeated() { static
 namespace
 {
     constexpr int32 MaxObjectiveCount = 500;  // QuestTuning default; same bounds as the backend model
+    constexpr int32 MaxOfferLinks = 8;        // boards[] and requires_completed[] (QST-02 content)
 
     bool QuestValidId(const FString& Id, const TCHAR* Prefix)
     {
@@ -83,8 +87,36 @@ namespace
         return Out;
     }
 
-    FString Verb(const FString& Kind)
-    { return Kind == TEXT("gather") ? TEXT("Gather") : Kind == TEXT("craft") ? TEXT("Craft") : Kind == TEXT("build") ? TEXT("Build") : Kind == TEXT("talk_resident") ? TEXT("Talk to") : TEXT("Defeat"); }
+    FString Stem(const FString& Id) { FString Tail; return Id.Split(TEXT("/"), nullptr, &Tail) ? Tail : Id; }
+
+    bool IsProgressionKind(const FString& Kind) { return Kind == TEXT("gather") || Kind == TEXT("craft") || Kind == TEXT("defeat"); }
+
+    bool ReadIds(const TSharedPtr<FJsonObject>& Object, const TCHAR* Field, const TCHAR* Prefix, TArray<FString>& Out)
+    {
+        const TArray<TSharedPtr<FJsonValue>>* Values = nullptr;
+        if (!Object->TryGetArrayField(Field, Values)) { return true; }
+        if (Values->Num() > MaxOfferLinks) { return false; }
+        for (const TSharedPtr<FJsonValue>& Value : *Values)
+        {
+            const FString Id = Value ? Value->AsString() : FString();
+            if (!QuestValidId(Id, Prefix) || Out.Contains(Id)) { return false; }
+            Out.Add(Id);
+        }
+        return true;
+    }
+}
+
+FString FSFQuestDefinition::Title() const { return bHasOffer && !Offer.Title.IsEmpty() ? Offer.Title : Humanize(Id); }
+
+TArray<FString> FSFQuestDefinition::RewardLines() const
+{
+    TArray<FString> Lines;
+    for (const FSFQuestStep& Step : Steps)
+    {
+        for (const FSFQuestRewardItem& Item : Step.RewardItems)
+        { Lines.Add(FString::Printf(TEXT("%lld %s"), Item.Quantity, *SFStationRecipes::ItemDisplayName(Item.DefinitionId))); }
+    }
+    return Lines;
 }
 
 bool FSFQuestDefinition::Parse(const FString& Json, FSFQuestDefinition& Out, FString& Error)
@@ -97,6 +129,18 @@ bool FSFQuestDefinition::Parse(const FString& Json, FSFQuestDefinition& Out, FSt
     Q.Revision = int32(Rev);
     if (!QuestValidId(Q.Id, TEXT("quest")) || Q.Revision < 1) { Error = TEXT("quest id/revision invalid"); return false; }
     if (!QuestValidId(Q.ZoneId, TEXT("zone"))) { Error = TEXT("zone_id invalid"); return false; }
+    const TSharedPtr<FJsonObject>* OfferObject = nullptr;
+    if (Root->TryGetObjectField(TEXT("offer"), OfferObject))
+    {
+        Q.bHasOffer = true; FSFQuestOffer& O = Q.Offer;
+        (*OfferObject)->TryGetStringField(TEXT("title"), O.Title); (*OfferObject)->TryGetStringField(TEXT("summary"), O.Summary);
+        (*OfferObject)->TryGetStringField(TEXT("art"), O.Art); (*OfferObject)->TryGetStringField(TEXT("giver_npc"), O.GiverNpc);
+        if (O.Title.IsEmpty() || O.Summary.IsEmpty()) { Error = TEXT("offer title/summary missing"); return false; }
+        if (!ReadIds(*OfferObject, TEXT("boards"), TEXT("board"), O.Boards)) { Error = TEXT("offer boards invalid"); return false; }
+        if (!ReadIds(*OfferObject, TEXT("requires_completed"), TEXT("quest"), O.RequiresCompleted) || O.RequiresCompleted.Contains(Q.Id)) { Error = TEXT("offer requires_completed invalid"); return false; }
+        if (!O.GiverNpc.IsEmpty() && !QuestValidId(O.GiverNpc, TEXT("npc"))) { Error = TEXT("offer giver_npc invalid"); return false; }
+        if (O.Boards.IsEmpty() && O.GiverNpc.IsEmpty()) { Error = TEXT("offer unreachable: no board and no giver"); return false; }
+    }
     const TArray<TSharedPtr<FJsonValue>>* Steps = nullptr;
     if (!Root->TryGetArrayField(TEXT("steps"), Steps) || Steps->Num() < 1 || Steps->Num() > 20) { Error = TEXT("steps count invalid"); return false; }
     TSet<FString> Seen;
@@ -128,7 +172,7 @@ bool FSFQuestDefinition::Parse(const FString& Json, FSFQuestDefinition& Out, FSt
             O->TryGetNumberField(TEXT("count"), Count); Obj.Count = int32(Count);
             Obj.bHasNode = O->TryGetStringField(TEXT("node_id"), Obj.NodeId);
             const TCHAR* Prefix = Obj.Kind == TEXT("gather") || Obj.Kind == TEXT("craft") ? TEXT("item")
-                : Obj.Kind == TEXT("defeat") ? TEXT("npc") : Obj.Kind == TEXT("build") ? TEXT("structure_tag")
+                : Obj.Kind == TEXT("defeat") || Obj.Kind == TEXT("talk_npc") ? TEXT("npc") : Obj.Kind == TEXT("build") ? TEXT("structure_tag")
                 : Obj.Kind == TEXT("talk_resident") ? TEXT("resident_role") : TEXT("");
             const bool bDuplicate = Step.Objectives.ContainsByPredicate([&](const FSFQuestObjective& E) { return E.Key == Obj.Key; });
             if (!ValidSlug(Obj.Key) || bDuplicate) { Error = FString::Printf(TEXT("step %s: objective key invalid/duplicate"), *Step.Id); return false; }
@@ -146,6 +190,20 @@ bool FSFQuestDefinition::Parse(const FString& Json, FSFQuestDefinition& Out, FSt
                 if (!R || !R->TryGetStringField(TEXT("bundle_id"), Bundle) || !QuestValidId(Bundle, TEXT("reward")) || Step.Rewards.Contains(Bundle))
                 { Error = FString::Printf(TEXT("step %s: rewards invalid/duplicate"), *Step.Id); return false; }
                 Step.Rewards.Add(Bundle);
+                const TArray<TSharedPtr<FJsonValue>>* Items = nullptr;
+                if (R->TryGetArrayField(TEXT("items"), Items))
+                {
+                    for (const auto& IV : *Items)
+                    {
+                        const TSharedPtr<FJsonObject> I = IV ? IV->AsObject() : nullptr;
+                        FSFQuestRewardItem Item; double Quantity = 0;
+                        if (!I || !I->TryGetStringField(TEXT("definition_id"), Item.DefinitionId) || !I->TryGetNumberField(TEXT("quantity"), Quantity)
+                            || !QuestValidId(Item.DefinitionId, TEXT("item")) || Quantity < 1 || Quantity > 1000000)
+                        { Error = FString::Printf(TEXT("step %s: reward items invalid"), *Step.Id); return false; }
+                        Item.Quantity = int64(Quantity);
+                        Step.RewardItems.Add(Item);
+                    }
+                }
             }
         }
         Q.Steps.Add(MoveTemp(Step));
@@ -161,6 +219,14 @@ bool FSFQuestDefinition::Load(const FString& Path, FSFQuestDefinition& Out, FStr
     return Parse(Text, Out, Error);
 }
 
+const FSFQuestObjective* FSFQuestProgress::Wants(const FSFQuestDefinition& Quest, const FString& Kind, const FString& TargetId, const FString& NodeId) const
+{
+    if (IsComplete(Quest)) { return nullptr; }
+    const FSFQuestObjective* Match = Quest.Steps[StepIndex].Objectives.FindByPredicate([&](const FSFQuestObjective& O)
+    { return O.Kind == Kind && O.TargetId == TargetId && (!O.bHasNode || O.NodeId == NodeId); });
+    return Match && Counts.FindRef(Match->Key) < Match->Count ? Match : nullptr;
+}
+
 ESFQuestApply FSFQuestProgress::Apply(const FSFQuestDefinition& Quest, const FString& Kind, const FString& TargetId, const FString& NodeId,
     int32 Quantity, const FString& OperationId, TArray<FString>& NewRewards)
 {
@@ -168,9 +234,8 @@ ESFQuestApply FSFQuestProgress::Apply(const FSFQuestDefinition& Quest, const FSt
     const FSFQuestStep& Step = Quest.Steps[StepIndex];
     if (OperationId.IsEmpty() || Operations.Contains(OperationId)) { return ESFQuestApply::Duplicate; }
     if (Quantity < 1) { return ESFQuestApply::Mismatch; }
-    const FSFQuestObjective* Match = Step.Objectives.FindByPredicate([&](const FSFQuestObjective& O)
-    { return O.Kind == Kind && O.TargetId == TargetId && (!O.bHasNode || O.NodeId == NodeId); });
-    if (!Match || Counts.FindRef(Match->Key) >= Match->Count) { return ESFQuestApply::Mismatch; }
+    const FSFQuestObjective* Match = Wants(Quest, Kind, TargetId, NodeId);
+    if (!Match) { return ESFQuestApply::Mismatch; }
     Operations.Add(OperationId);
     int32& Count = Counts.FindOrAdd(Match->Key);
     Count = int32(FMath::Min<int64>(Match->Count, int64(Count) + Quantity));
@@ -182,6 +247,84 @@ ESFQuestApply FSFQuestProgress::Apply(const FSFQuestDefinition& Quest, const FSt
         ++StepIndex; Counts.Reset();
     }
     return ESFQuestApply::Accepted;
+}
+
+// ---------------------------------------------------------------- catalog
+
+const FSFQuestCatalog& FSFQuestCatalog::Get()
+{
+    static const FSFQuestCatalog Catalog = []
+    {
+        FSFQuestCatalog Out;
+        const FString Folder = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectDir(), TEXT("../content/quests")));
+        TArray<FString> Files;
+        IFileManager::Get().FindFiles(Files, *FPaths::Combine(Folder, TEXT("*.json")), true, false);
+        Files.Sort();
+        for (const FString& File : Files)
+        {
+            FSFQuestDefinition Def; FString Error;
+            if (!FSFQuestDefinition::Load(FPaths::Combine(Folder, File), Def, Error)) { UE_LOG(LogTemp, Error, TEXT("QUEST_CONTENT_REJECTED %s: %s"), *File, *Error); continue; }
+            Out.Quests.Add(MakeShared<const FSFQuestDefinition>(MoveTemp(Def)));
+        }
+        UE_LOG(LogTemp, Display, TEXT("QUEST_CATALOG_LOADED Quests=%d"), Out.Quests.Num());
+        return Out;
+    }();
+    return Catalog;
+}
+
+TSharedPtr<const FSFQuestDefinition> FSFQuestCatalog::Find(const FString& Id) const
+{
+    const TSharedPtr<const FSFQuestDefinition>* Hit = Quests.FindByPredicate([&](const TSharedPtr<const FSFQuestDefinition>& Q) { return Q->Id == Id; });
+    return Hit ? *Hit : nullptr;
+}
+
+FString FSFQuestCatalog::ObjectiveLabel(const FSFQuestObjective& O)
+{
+    if (O.Kind == TEXT("gather") || O.Kind == TEXT("craft"))
+    {
+        FString Name = SFStationRecipes::ItemDisplayName(O.TargetId);
+        if (O.Count > 1 && !Name.EndsWith(TEXT("s"))) { Name += TEXT("s"); }
+        return (O.Kind == TEXT("gather") ? TEXT("Gather ") : TEXT("Craft ")) + Name;
+    }
+    if (O.Kind == TEXT("talk_npc"))
+    {
+        // The NPC's own dialogue names it ("Millwarden Oswin").
+        static TMap<FString, FString> Speakers;
+        if (const FString* Hit = Speakers.Find(O.TargetId)) { return TEXT("Talk to ") + *Hit; }
+        FSFDialogueTree Tree; FString Error;
+        const FString Name = FSFDialogueTree::Load(Stem(O.TargetId) + TEXT(".json"), Tree, Error) ? Tree.Speaker : Humanize(O.TargetId);
+        return TEXT("Talk to ") + Speakers.Add(O.TargetId, Name);
+    }
+    if (O.Kind == TEXT("talk_resident")) { return TEXT("Talk to the ") + Humanize(O.TargetId); }
+    return (O.Kind == TEXT("build") ? TEXT("Build ") : TEXT("Defeat ")) + Humanize(O.TargetId);
+}
+
+ESFQuestOfferState FSFQuestCatalog::OfferState(const FSFQuestDefinition& Quest, const TSet<FString>& Active, const TSet<FString>& Done, FString* Reason) const
+{
+    if (Active.Contains(Quest.Id)) { if (Reason) { *Reason = TEXT("In your journal"); } return ESFQuestOfferState::Active; }
+    if (Done.Contains(Quest.Id)) { if (Reason) { *Reason = TEXT("Completed"); } return ESFQuestOfferState::Completed; }
+    for (const FString& Needed : Quest.Offer.RequiresCompleted)
+    {
+        if (Done.Contains(Needed)) { continue; }
+        if (Reason) { const TSharedPtr<const FSFQuestDefinition> First = Find(Needed); *Reason = FString::Printf(TEXT("Finish %s first"), First ? *First->Title() : *Humanize(Needed)); }
+        return ESFQuestOfferState::Locked;
+    }
+    if (Reason) { Reason->Reset(); }
+    return ESFQuestOfferState::Available;
+}
+
+TArray<TSharedPtr<const FSFQuestDefinition>> FSFQuestCatalog::ForBoard(const FString& BoardId, int32 Max) const
+{
+    TArray<TSharedPtr<const FSFQuestDefinition>> Out;
+    for (const TSharedPtr<const FSFQuestDefinition>& Q : Quests)
+    { if (Out.Num() < Max && Q->bHasOffer && Q->Offer.Boards.Contains(BoardId)) { Out.Add(Q); } }
+    return Out;
+}
+
+TSharedPtr<const FSFQuestDefinition> FSFQuestCatalog::ForGiver(const FString& NpcId) const
+{
+    const TSharedPtr<const FSFQuestDefinition>* Hit = Quests.FindByPredicate([&](const TSharedPtr<const FSFQuestDefinition>& Q) { return Q->bHasOffer && Q->Offer.GiverNpc == NpcId; });
+    return Hit ? *Hit : nullptr;
 }
 
 // ---------------------------------------------------------------- component
@@ -196,45 +339,168 @@ USFQuestPilotComponent::USFQuestPilotComponent()
 void USFQuestPilotComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-    DOREPLIFETIME_CONDITION(USFQuestPilotComponent, View, COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(USFQuestPilotComponent, Views, COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(USFQuestPilotComponent, Completed, COND_OwnerOnly);
 }
 
-void USFQuestPilotComponent::Init(TSharedPtr<const FSFQuestDefinition> InQuest)
+TSet<FString> USFQuestPilotComponent::ActiveIds() const
 {
-    Quest = InQuest;
+    TSet<FString> Ids;
+    for (const FSFQuestView& View : Views) { if (!View.bComplete) { Ids.Add(View.QuestId); } }
+    return Ids;
+}
+
+void USFQuestPilotComponent::AddEntry(TSharedPtr<const FSFQuestDefinition> Quest, int64 Revision)
+{
+    Entries.RemoveAll([&](const FEntry& E) { return E.Quest->Id == Quest->Id; });
+    FEntry& Entry = Entries.AddDefaulted_GetRef();
+    Entry.Quest = Quest; Entry.Revision = Revision;
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-    // Development fixture for the network runners: start at a named step, earlier steps credited, no rewards due.
+    // Development fixture for the network runners: start the pilot chain at a named step, earlier steps credited, no rewards due.
     FString StartStep;
-    if (Quest && FParse::Value(FCommandLine::Get(), TEXT("QuestPilotStartStep="), StartStep))
+    if (!USFBackpackComponent::Services() && FParse::Value(FCommandLine::Get(), TEXT("QuestPilotStartStep="), StartStep))
     {
         const int32 Index = Quest->Steps.IndexOfByPredicate([&](const FSFQuestStep& S) { return S.Id == StartStep; });
-        for (int32 I = 0; I < Index; ++I) { Progress.GrantedSteps.Add(Quest->Steps[I].Id); }
-        Progress.StepIndex = FMath::Max(0, Index);
+        for (int32 I = 0; I < Index; ++I) { Entry.Progress.GrantedSteps.Add(Quest->Steps[I].Id); }
+        Entry.Progress.StepIndex = FMath::Max(0, Index);
     }
 #endif
     RebuildView();
 }
 
+FString USFQuestPilotComponent::CheckAccept(const FString& QuestId, const FString& SourceId) const
+{
+    const FSFQuestCatalog& Catalog = FSFQuestCatalog::Get();
+    const TSharedPtr<const FSFQuestDefinition> Quest = Catalog.Find(QuestId);
+    if (!Quest || !Quest->bHasOffer) { return TEXT("unknown_quest"); }
+    if (USFBackpackComponent::Services() && !bRestored) { return TEXT("not_ready"); }
+    const APlayerController* PC = Cast<APlayerController>(GetOwner());
+    const APawn* Pawn = PC ? PC->GetPawn() : nullptr;
+    if (!Pawn) { return TEXT("out_of_reach"); }
+    bool bOffered = false, bInReach = false;
+    if (SourceId.StartsWith(TEXT("board/")))
+    {
+        bOffered = Quest->Offer.Boards.Contains(SourceId);
+        for (TActorIterator<ASFQuestBoard> It(GetWorld()); It && bOffered; ++It)
+        { bInReach |= It->BoardId == SourceId && FVector::Dist2D(It->GetActorLocation(), Pawn->GetActorLocation()) <= GetDefault<USFQuestPilotSettings>()->BoardReachCm(); }
+    }
+    else if (SourceId.StartsWith(TEXT("npc/")))
+    {
+        bOffered = Quest->Offer.GiverNpc == SourceId;
+        for (TActorIterator<ASFDialogueNpc> It(GetWorld()); It && bOffered; ++It)
+        { bInReach |= It->DialogueFile == Stem(SourceId) + TEXT(".json") && FVector::Dist2D(It->GetActorLocation(), Pawn->GetActorLocation()) <= GetDefault<USFQuestPilotSettings>()->OfferReachCm(); }
+    }
+    if (!bOffered) { return TEXT("not_offered"); }
+    if (!bInReach) { return TEXT("out_of_reach"); }
+    switch (Catalog.OfferState(*Quest, ActiveIds(), CompletedIds()))
+    {
+    case ESFQuestOfferState::Active: return TEXT("duplicate");
+    case ESFQuestOfferState::Completed: return TEXT("completed");
+    case ESFQuestOfferState::Locked: return TEXT("prerequisite_missing");
+    default: return FString();
+    }
+}
+
+void USFQuestPilotComponent::ServerAcceptQuest_Implementation(const FString& QuestId, const FString& SourceId)
+{
+    const FString Refusal = CheckAccept(QuestId, SourceId);
+    UE_LOG(LogTemp, Display, TEXT("QUEST_ACCEPT_REQUEST Quest=%s Source=%s Result=%s"), *QuestId, *SourceId, Refusal.IsEmpty() ? TEXT("allowed") : *Refusal);
+    if (!Refusal.IsEmpty()) { ClientQuestResult(QuestId, Refusal); return; }
+    Accept(QuestId, SourceId);
+}
+
+void USFQuestPilotComponent::Accept(const FString& QuestId, const FString& SourceId)
+{
+    const TSharedPtr<const FSFQuestDefinition> Quest = FSFQuestCatalog::Get().Find(QuestId);
+    if (!Quest) { return; }
+    if (USFBackpackComponent* Pack = USFBackpackComponent::Services() ? USFBackpackComponent::FindOrCreate(Cast<APlayerController>(GetOwner())) : nullptr)
+    {
+        // The Progression service owns the row; the source id names this accept attempt so a retry replays it.
+        ServiceQueue.Add({TEXT("quest"), TEXT("accept"), QuestId, FString(), FString(),
+            FString::Printf(TEXT("qa:%s:%s:%s"), *Pack->GetCharacterId(), *QuestId, *FGuid::NewGuid().ToString(EGuidFormats::Short))});
+        PumpServices();
+        return;
+    }
+    AddEntry(Quest, 0);
+    UE_LOG(LogTemp, Display, TEXT("QUEST_ACCEPTED Quest=%s Source=%s"), *QuestId, *SourceId);
+    ClientQuestResult(QuestId, TEXT("accepted"));
+}
+
+void USFQuestPilotComponent::ServerAbandonQuest_Implementation(const FString& QuestId)
+{
+    const FEntry* Entry = Find(QuestId);
+    if (!Entry || Entry->Progress.IsComplete(*Entry->Quest)) { ClientQuestResult(QuestId, TEXT("not_active")); return; }
+    Abandon(QuestId);
+}
+
+void USFQuestPilotComponent::Abandon(const FString& QuestId)
+{
+    if (USFBackpackComponent* Pack = USFBackpackComponent::Services() ? USFBackpackComponent::FindOrCreate(Cast<APlayerController>(GetOwner())) : nullptr)
+    {
+        ServiceQueue.Add({TEXT("quest"), TEXT("abandon"), QuestId, FString(), FString(),
+            FString::Printf(TEXT("qx:%s:%s:%s"), *Pack->GetCharacterId(), *QuestId, *FGuid::NewGuid().ToString(EGuidFormats::Short))});
+        PumpServices();
+        return;
+    }
+    Entries.RemoveAll([&](const FEntry& E) { return E.Quest->Id == QuestId; });
+    RebuildView();
+    UE_LOG(LogTemp, Display, TEXT("QUEST_ABANDONED Quest=%s"), *QuestId);
+    ClientQuestResult(QuestId, TEXT("abandoned"));
+}
+
+void USFQuestPilotComponent::ClientQuestResult_Implementation(const FString& QuestId, const FString& Result)
+{
+    LastResult = Result;
+    UE_LOG(LogTemp, Display, TEXT("QUEST_CLIENT_RESULT Quest=%s Result=%s"), *QuestId, *Result);
+}
+
+void USFQuestPilotComponent::ServerTalkedTo_Implementation(const FString& NpcId)
+{
+    const APlayerController* PC = Cast<APlayerController>(GetOwner());
+    const APawn* Pawn = PC ? PC->GetPawn() : nullptr;
+    if (!Pawn || !QuestValidId(NpcId, TEXT("npc"))) { return; }
+    bool bNear = false;
+    for (TActorIterator<ASFDialogueNpc> It(GetWorld()); It && !bNear; ++It)
+    { bNear = It->DialogueFile == Stem(NpcId) + TEXT(".json") && FVector::Dist2D(It->GetActorLocation(), Pawn->GetActorLocation()) <= GetDefault<USFQuestPilotSettings>()->OfferReachCm(); }
+    if (!bNear) { UE_LOG(LogTemp, Display, TEXT("QUEST_TALK_REFUSED Npc=%s Why=out_of_reach"), *NpcId); return; }
+    Observe(TEXT("talk_npc"), NpcId, FString(), FString::Printf(TEXT("talk_npc:%s:%s"), *Stem(NpcId), *FGuid::NewGuid().ToString(EGuidFormats::Short)));
+}
+
 bool USFQuestPilotComponent::Observe(const FString& Kind, const FString& TargetId, const FString& NodeId, const FString& OperationId)
 {
-    if (!Quest || !GetOwner() || !GetOwner()->HasAuthority()) { return false; }
+    if (!GetOwner() || !GetOwner()->HasAuthority()) { return false; }
+    TArray<FEntry*> Matches;
+    for (FEntry& Entry : Entries) { if (Entry.Progress.Wants(*Entry.Quest, Kind, TargetId, NodeId)) { Matches.Add(&Entry); } }
     if (USFBackpackComponent::Services())
     {
-        // INT-04: the Progression service decides; the local model only mirrors accepted replies (decision 5).
-        ServiceQueue.Add({Kind, TargetId, NodeId, OperationId});
+        // INT-04: the Progression service decides; the local model only mirrors accepted replies (decision 5). The first quest
+        // carries the action's progression receipt; any other quest the outcome counts for gets its own quest-only receipt.
+        const bool bProgression = IsProgressionKind(Kind);
+        if (Matches.IsEmpty() && bProgression) { ServiceQueue.Add({Kind, FString(), FString(), TargetId, NodeId, OperationId}); }
+        for (int32 Index = 0; Index < Matches.Num(); ++Index)
+        {
+            const FString& QuestId = Matches[Index]->Quest->Id;
+            ServiceQueue.Add({Index == 0 && bProgression ? Kind : FString(TEXT("quest")), Kind, QuestId, TargetId, NodeId,
+                Index == 0 ? OperationId : OperationId + TEXT("#") + QuestId});
+        }
         PumpServices();
-        return true;
+        return !Matches.IsEmpty();
     }
-    TArray<FString> Rewards;
-    const ESFQuestApply Result = Progress.Apply(*Quest, Kind, TargetId, NodeId, 1, OperationId, Rewards);
-    UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_EVENT Kind=%s Target=%s Op=%s Result=%d Step=%d Rewards=%d"),
-        *Kind, *TargetId, *OperationId, int32(Result), Progress.StepIndex, Rewards.Num());
-    if (Result != ESFQuestApply::Accepted) { return false; }
-    PendingRewards.Append(Rewards);
+    for (FEntry* Entry : Matches)
+    {
+        const int32 Before = Entry->Progress.StepIndex;
+        TArray<FString> Rewards;
+        const ESFQuestApply Result = Entry->Progress.Apply(*Entry->Quest, Kind, TargetId, NodeId, 1, OperationId, Rewards);
+        UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_EVENT Quest=%s Kind=%s Target=%s Op=%s Result=%d Step=%d Rewards=%d"),
+            *Entry->Quest->Id, *Kind, *TargetId, *OperationId, int32(Result), Entry->Progress.StepIndex, Rewards.Num());
+        if (!Rewards.IsEmpty())
+        { for (const FSFQuestRewardItem& Item : Entry->Quest->Steps[Before].RewardItems) { PendingRewards.Add({Entry->Quest->Id, Item}); } }
+        if (Entry->Progress.IsComplete(*Entry->Quest))
+        { Completed.AddUnique(Entry->Quest->Id); UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_COMPLETE Quest=%s"), *Entry->Quest->Id); }
+    }
     RebuildView();
     TryDeliverRewards();
-    if (Progress.IsComplete(*Quest)) { UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_COMPLETE Quest=%s"), *Quest->Id); }
-    return true;
+    return !Matches.IsEmpty();
 }
 
 void USFQuestPilotComponent::PumpServices()
@@ -242,26 +508,30 @@ void USFQuestPilotComponent::PumpServices()
     auto* PC = Cast<APlayerController>(GetOwner());
     USFBackpackComponent* Pack = USFBackpackComponent::FindOrCreate(PC);
     if (bServiceBusy || ServiceQueue.IsEmpty() || !Pack) { return; }
-    bServiceBusy = true;
     const FServiceEvent Event = ServiceQueue[0];
-    // Receipt kinds: harvest, craft and defeat carry a progression payload; building is quest evidence only.
+    const FEntry* Entry = Event.QuestId.IsEmpty() ? nullptr : Find(Event.QuestId);
+    const bool bLifecycle = Event.QuestKind == TEXT("accept") || Event.QuestKind == TEXT("abandon");
+    // Quest evidence names the server's current step; an entry gone or finished since it was queued has nothing left to count.
+    if (!Event.QuestId.IsEmpty() && !bLifecycle && (!Entry || Entry->Progress.IsComplete(*Entry->Quest)) && Event.ReceiptKind == TEXT("quest"))
+    { ServiceQueue.RemoveAt(0); PumpServices(); return; }
+    bServiceBusy = true;
+    // Receipt kinds: harvest, craft and defeat carry a progression payload; the rest are quest evidence only.
     FSFGameplayRequest Q; Q.Rpc = ESFGameplayRpc::ApplyReceipt; Q.OperationId = Event.OperationId; Q.CharacterId = Pack->GetCharacterId();
-    Q.Kind = Event.Kind == TEXT("build") ? FString(TEXT("quest")) : Event.Kind;
-    Q.ExpectedProgressionRevision = ProgressionRevision; Q.ExpectedQuestRevision = QuestRevision;
-    if (Event.Kind == TEXT("gather"))
+    Q.Kind = Event.ReceiptKind; Q.ExpectedProgressionRevision = ProgressionRevision; Q.ExpectedQuestRevision = Entry ? Entry->Revision : 0;
+    if (Event.ReceiptKind == TEXT("gather"))
     {
         Q.SkillId = Event.TargetId == TEXT("item/oak_log") ? TEXT("skill/logging") : TEXT("skill/mining");
         Q.Difficulty = 1; Q.ActionSeconds = GetDefault<USFGatheringPilotSettings>()->HarvestSeconds; Q.ContextHash = GetTypeHash(Event.NodeId);
     }
-    else if (Event.Kind == TEXT("craft"))
+    else if (Event.ReceiptKind == TEXT("craft"))
     { Q.SkillId = TEXT("skill/smithing"); Q.Difficulty = 1; Q.ActionSeconds = GetDefault<USFGatheringPilotSettings>()->RefineSeconds; Q.ContextHash = GetTypeHash(Event.TargetId); }
-    else if (Event.Kind == TEXT("defeat")) { Q.EnemyLevel = 2; Q.EnemyTierMultiplier = 1; Q.PartySize = 1; }
-    if (!Progress.IsComplete(*Quest))
+    else if (Event.ReceiptKind == TEXT("defeat")) { Q.EnemyLevel = 2; Q.EnemyTierMultiplier = 1; Q.PartySize = 1; }
+    if (!Event.QuestId.IsEmpty() && (bLifecycle || (Entry && !Entry->Progress.IsComplete(*Entry->Quest))))
     {
-        // Quest evidence names the server's current step; an event for another step is simply not accepted.
         LastOccurredMs = FMath::Max(LastOccurredMs + 1, FDateTime::UtcNow().ToUnixTimestamp() * 1000 + FDateTime::UtcNow().GetMillisecond());
-        Q.bHasQuest = true; Q.QuestId = Quest->Id; Q.StepId = Quest->Steps[Progress.StepIndex].Id; Q.QuestKind = Event.Kind;
-        Q.TargetId = Event.TargetId; Q.NodeId = Event.NodeId; Q.Quantity = 1; Q.OccurredAtUnixMs = LastOccurredMs;
+        Q.bHasQuest = true; Q.QuestId = Event.QuestId; Q.QuestKind = Event.QuestKind; Q.OccurredAtUnixMs = LastOccurredMs;
+        if (!bLifecycle) { Q.StepId = Entry->Quest->Steps[Entry->Progress.StepIndex].Id; Q.TargetId = Event.TargetId; Q.NodeId = Event.NodeId; Q.Quantity = 1; }
+        else { Q.Quantity = 0; }
     }
     USFBackpackComponent::Services()->Call(Q, [Weak = TWeakObjectPtr<USFQuestPilotComponent>(this), Event](const FSFGameplayResponse& R)
     {
@@ -269,37 +539,51 @@ void USFQuestPilotComponent::PumpServices()
         if (!Self) { return; }
         Self->ServiceQueue.RemoveAt(0);
         Self->bServiceBusy = false;
+        FEntry* Entry = Event.QuestId.IsEmpty() ? nullptr : Self->Find(Event.QuestId);
         if (R.Status == ESFGameplayStatus::Ok)
         {
             if (R.ProgressionRevision > 0) { Self->ProgressionRevision = R.ProgressionRevision; }
-            if (R.QuestRevision > 0) { Self->QuestRevision = R.QuestRevision; }
-            if (R.bQuestAccepted)
+            if (Event.QuestKind == TEXT("accept") || Event.QuestKind == TEXT("abandon"))
             {
-                // Mirror the accepted evidence for the tracker counts, then take the server's step as the truth.
-                TArray<FString> Ignored;
-                Self->Progress.Apply(*Self->Quest, Event.Kind, Event.TargetId, Event.NodeId, 1, Event.OperationId, Ignored);
-                const int32 Active = R.bQuestCompleted ? Self->Quest->Steps.Num()
-                    : Self->Quest->Steps.IndexOfByPredicate([&](const FSFQuestStep& S) { return S.Id == R.ActiveStepId; });
-                if (Active != INDEX_NONE && Active != Self->Progress.StepIndex)
+                const bool bAccept = Event.QuestKind == TEXT("accept");
+                FString Result = R.bQuestAccepted ? FString(bAccept ? TEXT("accepted") : TEXT("abandoned")) : (R.QuestReason.IsEmpty() ? FString(TEXT("refused")) : R.QuestReason);
+                if (R.bQuestAccepted && bAccept) { Self->AddEntry(FSFQuestCatalog::Get().Find(Event.QuestId), R.QuestRevision); }
+                if (R.bQuestAccepted && !bAccept) { Self->Entries.RemoveAll([&](const FEntry& E) { return E.Quest->Id == Event.QuestId; }); Self->RebuildView(); }
+                if (!R.bQuestAccepted) { Self->RequestRefresh(0.f); }  // the service knows better (another session accepted, say)
+                UE_LOG(LogTemp, Display, TEXT("QUEST_%s Quest=%s Result=%s Revision=%lld Source=service"), bAccept ? TEXT("ACCEPTED") : TEXT("ABANDONED"), *Event.QuestId, *Result, R.QuestRevision);
+                Self->ClientQuestResult(Event.QuestId, Result);
+            }
+            else if (Entry)
+            {
+                if (R.QuestRevision > 0) { Entry->Revision = R.QuestRevision; }
+                if (R.bQuestAccepted)
                 {
-                    UE_LOG(LogTemp, Warning, TEXT("QUEST_SERVICE_STEP_CORRECTED Local=%d Server=%d"), Self->Progress.StepIndex, Active);
-                    Self->Progress.StepIndex = Active; Self->Progress.Counts.Reset();
+                    // Mirror the accepted evidence for the tracker counts, then take the server's step as the truth.
+                    TArray<FString> Ignored;
+                    Entry->Progress.Apply(*Entry->Quest, Event.QuestKind, Event.TargetId, Event.NodeId, 1, Event.OperationId, Ignored);
+                    const int32 Active = R.bQuestCompleted ? Entry->Quest->Steps.Num()
+                        : Entry->Quest->Steps.IndexOfByPredicate([&](const FSFQuestStep& S) { return S.Id == R.ActiveStepId; });
+                    if (Active != INDEX_NONE && Active != Entry->Progress.StepIndex)
+                    {
+                        UE_LOG(LogTemp, Warning, TEXT("QUEST_SERVICE_STEP_CORRECTED Quest=%s Local=%d Server=%d"), *Event.QuestId, Entry->Progress.StepIndex, Active);
+                        Entry->Progress.StepIndex = Active; Entry->Progress.Counts.Reset();
+                    }
+                    if (R.bQuestCompleted) { Self->Completed.AddUnique(Event.QuestId); UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_COMPLETE Quest=%s Source=service"), *Event.QuestId); }
                 }
+                UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_EVENT Quest=%s Kind=%s Target=%s Op=%s Result=%d Step=%d Rewards=%d Source=service Active=%s Reason=%s"),
+                    *Event.QuestId, *Event.QuestKind, *Event.TargetId, *Event.OperationId, R.bQuestAccepted ? 0 : 2, Entry->Progress.StepIndex, R.RewardBundleIds.Num(), *R.ActiveStepId, *R.QuestReason);
+                for (const FString& Bundle : R.RewardBundleIds) { UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_REWARD Bundle=%s Source=service"), *Bundle); }
+                for (const TPair<FString, int64>& Item : R.GrantedItems)
+                {
+                    UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_PAYOUT Item=%s Quantity=%lld"), *Item.Key, Item.Value);
+                    Entry->RewardLines.AddUnique(FString::Printf(TEXT("%lld %s"), Item.Value, *SFStationRecipes::ItemDisplayName(Item.Key)));
+                }
+                // The granted lines are the committed payout; without them (payout still pending) the reward waits and is re-read.
+                if (!R.RewardBundleIds.IsEmpty() && R.GrantedItems.IsEmpty()) { Entry->bRewardWaiting = true; }
+                if (USFBackpackComponent* Pack = USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Self->GetOwner())))
+                { if (!R.GrantedItems.IsEmpty()) { Pack->ApplyToBag(R.GrantedItems); } else if (!R.RewardBundleIds.IsEmpty()) { Pack->Reconcile(); } }
                 Self->RebuildView();
             }
-            UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_EVENT Kind=%s Target=%s Op=%s Result=%d Step=%d Rewards=%d Source=service Active=%s"),
-                *Event.Kind, *Event.TargetId, *Event.OperationId, R.bQuestAccepted ? 0 : 2, Self->Progress.StepIndex, R.RewardBundleIds.Num(), *R.ActiveStepId);
-            for (const FString& Bundle : R.RewardBundleIds) { UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_REWARD Bundle=%s Source=service"), *Bundle); }
-            if (R.bQuestCompleted && R.bQuestAccepted) { UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_COMPLETE Quest=%s Source=service"), *Self->Quest->Id); }
-            for (const TPair<FString, int64>& Item : R.GrantedItems)
-            {
-                UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_PAYOUT Item=%s Quantity=%lld"), *Item.Key, Item.Value);
-                Self->RewardLines.AddUnique(FString::Printf(TEXT("%lld %s"), Item.Value, *SFStationRecipes::ItemDisplayName(Item.Key)));
-            }
-            // The granted lines are the committed payout; without them (payout still pending) re-read the backpack.
-            if (USFBackpackComponent* Pack = USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Self->GetOwner())))
-            { if (!R.GrantedItems.IsEmpty()) { Pack->ApplyToBag(R.GrantedItems); } else if (!R.RewardBundleIds.IsEmpty()) { Pack->Reconcile(); } }
-            if (!R.GrantedItems.IsEmpty()) { Self->RebuildView(); }
         }
         else if (R.Status == ESFGameplayStatus::Rejected && R.GrpcCode == 9 && !Event.bRetried)
         {
@@ -311,7 +595,12 @@ void USFQuestPilotComponent::PumpServices()
             {
                 USFQuestPilotComponent* Again = Weak.Get();
                 if (!Again) { return; }
-                if (State.Status == ESFGameplayStatus::Ok) { Again->ProgressionRevision = State.ProgressionRevision; Again->QuestRevision = State.QuestRevision; }
+                if (State.Status == ESFGameplayStatus::Ok)
+                {
+                    Again->ProgressionRevision = State.ProgressionRevision;
+                    for (const FSFGameplayResponse::FQuestState& Row : State.Quests)
+                    { if (FEntry* Stale = Again->Find(Row.QuestId); Stale && Row.QuestId == Event.QuestId) { Stale->Revision = Row.Revision; } }
+                }
                 FServiceEvent Retry = Event; Retry.bRetried = true;
                 Again->ServiceQueue.Insert(Retry, 0);
                 Again->PumpServices();
@@ -320,65 +609,162 @@ void USFQuestPilotComponent::PumpServices()
         }
         else
         {
-            UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_EVENT Kind=%s Target=%s Op=%s Result=3 Step=%d Rewards=0 Source=service Code=%d"),
-                *Event.Kind, *Event.TargetId, *Event.OperationId, Self->Progress.StepIndex, R.GrpcCode);
+            UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_EVENT Quest=%s Kind=%s Target=%s Op=%s Result=3 Rewards=0 Source=service Code=%d"),
+                *Event.QuestId, *Event.QuestKind, *Event.TargetId, *Event.OperationId, R.GrpcCode);
+            // A refused payout (full backpack) still committed the step: re-read what the service holds.
+            if (!Event.QuestId.IsEmpty()) { Self->RequestRefresh(GetDefault<USFQuestPilotSettings>()->RewardRetrySeconds); }
+            if (Event.QuestKind == TEXT("accept") || Event.QuestKind == TEXT("abandon")) { Self->ClientQuestResult(Event.QuestId, TEXT("service_unavailable")); }
         }
         Self->PumpServices();
     });
 }
 
-void USFQuestPilotComponent::Restore(const FString& ActiveStepId, bool bCompleted, const TMap<FString,int32>& Counts, int64 InProgressionRevision, int64 InQuestRevision)
+void USFQuestPilotComponent::RequestRefresh(float DelaySeconds)
 {
-    if (!Quest) { return; }
-    const int32 Found = Quest->Steps.IndexOfByPredicate([&](const FSFQuestStep& Step) { return Step.Id == ActiveStepId; });
-    Progress = FSFQuestProgress();
-    Progress.StepIndex = bCompleted ? Quest->Steps.Num() : FMath::Max(Found, 0);
-    if (!bCompleted && Found != INDEX_NONE) { Progress.Counts = Counts; }
-    for (int32 Index = 0; Index < Progress.StepIndex; ++Index) { Progress.GrantedSteps.Add(Quest->Steps[Index].Id); }
-    ProgressionRevision = InProgressionRevision; QuestRevision = InQuestRevision;
-    UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_RESTORED Quest=%s Step=%d Active=%s Counts=%d Completed=%d"), *Quest->Id, Progress.StepIndex, *ActiveStepId, Progress.Counts.Num(), bCompleted);
+    if (!USFBackpackComponent::Services()) { return; }
+    const double At = GetWorld()->GetTimeSeconds() + DelaySeconds;
+    NextRefreshAt = RefreshesDue > 0 ? FMath::Min(NextRefreshAt, At) : At;
+    RefreshesDue = FMath::Max(RefreshesDue, 1);
+}
+
+void USFQuestPilotComponent::Refresh()
+{
+    USFBackpackComponent* Pack = USFBackpackComponent::FindOrCreate(Cast<APlayerController>(GetOwner()));
+    if (bRefreshBusy || !Pack || !USFBackpackComponent::Services()) { return; }
+    bRefreshBusy = true;
+    FSFGameplayRequest Get; Get.Rpc = ESFGameplayRpc::GetCharacterState; Get.CharacterId = Pack->GetCharacterId();
+    USFBackpackComponent::Services()->Call(Get, [Weak = TWeakObjectPtr<USFQuestPilotComponent>(this)](const FSFGameplayResponse& State)
+    {
+        USFQuestPilotComponent* Self = Weak.Get();
+        if (!Self) { return; }
+        Self->bRefreshBusy = false;
+        // Evidence still in flight would be undone by an older read; its reply corrects the mirror itself.
+        if (State.Status == ESFGameplayStatus::Ok && !Self->HasPendingServiceWork()) { Self->Restore(State.Quests, State.ProgressionRevision); }
+    });
+}
+
+void USFQuestPilotComponent::Restore(const TArray<FSFGameplayResponse::FQuestState>& Rows, int64 InProgressionRevision)
+{
+    const FSFQuestCatalog& Catalog = FSFQuestCatalog::Get();
+    ProgressionRevision = InProgressionRevision;
+    TSet<FString> Listed;
+    for (const FSFGameplayResponse::FQuestState& Row : Rows)
+    {
+        const TSharedPtr<const FSFQuestDefinition> Quest = Catalog.Find(Row.QuestId);
+        if (!Quest || Row.State == TEXT("abandoned")) { continue; }
+        Listed.Add(Row.QuestId);
+        FEntry* Entry = Find(Row.QuestId);
+        const bool bDone = Row.State == TEXT("completed");
+        if (bDone) { Completed.AddUnique(Row.QuestId); }
+        // A finished quest stays on the tracker only while its reward waits (or when it finished in this session).
+        if (!Entry && bDone && !Row.bRewardPending) { continue; }
+        if (!Entry) { Entry = &Entries.AddDefaulted_GetRef(); Entry->Quest = Quest; }
+        const int32 Found = Quest->Steps.IndexOfByPredicate([&](const FSFQuestStep& Step) { return Step.Id == Row.ActiveStepId; });
+        const int32 Step = bDone ? Quest->Steps.Num() : FMath::Max(Found, 0);
+        if (Step != Entry->Progress.StepIndex || (!bDone && Row.Counts.OrderIndependentCompareEqual(Entry->Progress.Counts) == false))
+        {
+            Entry->Progress = FSFQuestProgress();
+            Entry->Progress.StepIndex = Step;
+            if (!bDone && Found != INDEX_NONE) { Entry->Progress.Counts = Row.Counts; }
+            for (int32 Index = 0; Index < Step; ++Index) { Entry->Progress.GrantedSteps.Add(Quest->Steps[Index].Id); }
+        }
+        Entry->Revision = Row.Revision;
+        if (Entry->bRewardWaiting && !Row.bRewardPending)
+        {
+            // The recovery sweep granted it: show what landed and re-read the backpack.
+            Entry->RewardLines = Quest->RewardLines();
+            if (USFBackpackComponent* Pack = USFBackpackComponent::FindOrCreate(Cast<APlayerController>(GetOwner()))) { Pack->Reconcile(); }
+            UE_LOG(LogTemp, Display, TEXT("QUEST_REWARD_DELIVERED Quest=%s"), *Row.QuestId);
+        }
+        Entry->bRewardWaiting = Row.bRewardPending;
+        UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_RESTORED Quest=%s Step=%d Active=%s Counts=%d Completed=%d Waiting=%d"), *Row.QuestId,
+            Entry->Progress.StepIndex, *Row.ActiveStepId, Entry->Progress.Counts.Num(), bDone, Entry->bRewardWaiting);
+    }
+    Entries.RemoveAll([&](const FEntry& E) { return !Listed.Contains(E.Quest->Id); });
+    bRestored = true;
+    UE_LOG(LogTemp, Display, TEXT("QUEST_LOG_RESTORED Rows=%d Active=%d Completed=%d"), Rows.Num(), ActiveIds().Num(), Completed.Num());
     RebuildView();
 }
 
 void USFQuestPilotComponent::RebuildView()
 {
-    if (!Quest) { return; }
-    FSFQuestView Next;
-    Next.Title = Humanize(Quest->Id); Next.StepTotal = Quest->Steps.Num();
-    Next.bComplete = Progress.IsComplete(*Quest);
-    Next.RewardLines = RewardLines;
-    Next.StepNumber = FMath::Min(Progress.StepIndex + 1, Next.StepTotal);
-    if (!Next.bComplete)
+    TArray<FSFQuestView> Next;
+    for (const FEntry& Entry : Entries)
     {
-        const FSFQuestStep& Step = Quest->Steps[Progress.StepIndex];
-        Next.Step = Humanize(Step.Id);
+        const FSFQuestDefinition& Quest = *Entry.Quest;
+        FSFQuestView& View = Next.AddDefaulted_GetRef();
+        View.QuestId = Quest.Id; View.Title = Quest.Title(); View.StepTotal = Quest.Steps.Num();
+        View.bComplete = Entry.Progress.IsComplete(Quest);
+        View.bRewardWaiting = Entry.bRewardWaiting;
+        View.RewardLines = Entry.RewardLines;
+        View.StepNumber = FMath::Min(Entry.Progress.StepIndex + 1, View.StepTotal);
+        if (View.bComplete) { continue; }
+        const FSFQuestStep& Step = Quest.Steps[Entry.Progress.StepIndex];
+        View.Step = Humanize(Step.Id);
         for (const FSFQuestObjective& O : Step.Objectives)
         {
-            FSFQuestLine Line; Line.Label = Verb(O.Kind) + TEXT(" ") + Humanize(O.TargetId);
-            Line.Count = Progress.Counts.FindRef(O.Key); Line.Target = O.Count;
-            Next.Lines.Add(Line);
+            FSFQuestLine Line; Line.Label = FSFQuestCatalog::ObjectiveLabel(O);
+            Line.Count = Entry.Progress.Counts.FindRef(O.Key); Line.Target = O.Count;
+            View.Lines.Add(Line);
         }
     }
-    View = MoveTemp(Next);
+    Views = MoveTemp(Next);
 }
 
 void USFQuestPilotComponent::TryDeliverRewards()
 {
-    // Only the completion bundle is authored; the pilot pays it in a configured pilot item through the same
-    // bag transaction the combat pilot uses for hides. Undelivered bundles stay pending, so nothing repeats or is lost.
+    // Without gameplay services the server pays the quest record's items straight into the bag. An item that does not fit
+    // stays pending (the tracker says so) and is retried every RewardRetrySeconds, so nothing repeats or is lost.
 #if SF_WITH_MINIMAL_INVENTORY
-    const auto* Settings = GetDefault<USFQuestPilotSettings>();
     auto* Inventory = GetOwner() ? GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+    bool bChanged = false;
     while (Inventory && !PendingRewards.IsEmpty())
     {
+        const TPair<FString, FSFQuestRewardItem> Due = PendingRewards[0];
+        FEntry* Entry = Find(Due.Key);
         FInventoryItemQuantity Pay;
-        Pay.Item = TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(Settings->CompletionRewardItemPath));
-        Pay.Quantity = Settings->CompletionRewardUnits;
-        if (UInventoryTransactionLibrary::ExchangeInventoryItems(Inventory, {}, {Pay}) != EInventoryTransactionResult::Success) { return; }
-        UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_REWARD Bundle=%s Units=%d"), *PendingRewards[0], Pay.Quantity);
+        Pay.Item = TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Due.Value.DefinitionId)));
+        Pay.Quantity = int32(Due.Value.Quantity);
+        if (UInventoryTransactionLibrary::ExchangeInventoryItems(Inventory, {}, {Pay}) != EInventoryTransactionResult::Success)
+        {
+            if (Entry && !Entry->bRewardWaiting) { Entry->bRewardWaiting = true; bChanged = true; }
+            break;
+        }
+        UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_REWARD Quest=%s Item=%s Units=%lld"), *Due.Key, *Due.Value.DefinitionId, Due.Value.Quantity);
         PendingRewards.RemoveAt(0);
+        if (Entry)
+        {
+            Entry->RewardLines.Add(FString::Printf(TEXT("%lld %s"), Due.Value.Quantity, *SFStationRecipes::ItemDisplayName(Due.Value.DefinitionId)));
+            Entry->bRewardWaiting = PendingRewards.ContainsByPredicate([&](const TPair<FString, FSFQuestRewardItem>& P) { return P.Key == Due.Key; }) && Entry->bRewardWaiting;
+            bChanged = true;
+        }
     }
+    if (bChanged) { RebuildView(); }
 #endif
+}
+
+bool USFQuestPilotComponent::CaptureGatherReceipt(FSFGameplayRequest& Q, const FString& TargetId, const FString& NodeId)
+{
+    if (!GetOwner() || !GetOwner()->HasAuthority()) { return false; }
+    Q.ExpectedProgressionRevision = ProgressionRevision;
+    Q.SkillId = TargetId == TEXT("item/oak_log") ? TEXT("skill/logging") : TEXT("skill/mining");
+    Q.Difficulty = 1;
+    Q.ActionSeconds = GetDefault<USFGatheringPilotSettings>()->HarvestSeconds;
+    Q.ContextHash = GetTypeHash(NodeId);
+    // ponytail: one follow-up receipt carries one quest's evidence, so a harvest counts for the first active quest that wants it;
+    // a second quest wanting the same harvest needs a second receipt from the ledger outbox.
+    const FEntry* Entry = Entries.FindByPredicate([&](const FEntry& E) { return E.Progress.Wants(*E.Quest, TEXT("gather"), TargetId, NodeId) != nullptr; });
+    if (Entry)
+    {
+        LastOccurredMs = FMath::Max(LastOccurredMs + 1, FDateTime::UtcNow().ToUnixTimestamp() * 1000 + FDateTime::UtcNow().GetMillisecond());
+        Q.ExpectedQuestRevision = Entry->Revision;
+        Q.bHasQuest = true; Q.QuestId = Entry->Quest->Id; Q.StepId = Entry->Quest->Steps[Entry->Progress.StepIndex].Id;
+        Q.QuestKind = TEXT("gather"); Q.TargetId = TargetId; Q.NodeId = NodeId;
+        Q.Quantity = 1; Q.OccurredAtUnixMs = LastOccurredMs;
+        // The ledger outbox relays the receipt after the grant commits; read the result back twice.
+        RequestRefresh(3.f); RefreshesDue = 2;
+    }
+    return true;
 }
 
 void USFQuestPilotComponent::TickTalk()
@@ -388,9 +774,15 @@ void USFQuestPilotComponent::TickTalk()
     const APlayerController* PC = Cast<APlayerController>(GetOwner());
     const APawn* Pawn = PC ? PC->GetPawn() : nullptr;
     USFTownsfolkSubsystem* Town = GetWorld()->GetSubsystem<USFTownsfolkSubsystem>();
-    if (!Pawn || !Town || Progress.IsComplete(*Quest)) { return; }
-    const FSFQuestObjective* Talk = Quest->Steps[Progress.StepIndex].Objectives.FindByPredicate([this](const FSFQuestObjective& O)
-    { return O.Kind == TEXT("talk_resident") && Progress.Counts.FindRef(O.Key) < O.Count; });
+    if (!Pawn || !Town) { return; }
+    const FSFQuestObjective* Talk = nullptr;
+    for (const FEntry& Entry : Entries)
+    {
+        if (Entry.Progress.IsComplete(*Entry.Quest)) { continue; }
+        Talk = Entry.Quest->Steps[Entry.Progress.StepIndex].Objectives.FindByPredicate([&](const FSFQuestObjective& O)
+        { return O.Kind == TEXT("talk_resident") && Entry.Progress.Counts.FindRef(O.Key) < O.Count; });
+        if (Talk) { break; }
+    }
     if (!Talk) { return; }
     const double Now = GetWorld()->GetTimeSeconds();
     if (!Talker.IsValid())
@@ -419,12 +811,44 @@ void USFQuestPilotComponent::EndPlay(const EEndPlayReason::Type Reason)
 void USFQuestPilotComponent::TickComponent(float Delta, ELevelTick Type, FActorComponentTickFunction* Function)
 {
     Super::TickComponent(Delta, Type, Function);
-    if (GetOwner() && GetOwner()->HasAuthority() && !PendingRewards.IsEmpty()) { TryDeliverRewards(); }
-    if (GetOwner() && GetOwner()->HasAuthority() && Quest) { TickTalk(); }
+    if (GetOwner() && GetOwner()->HasAuthority())
+    {
+        const double Now = GetWorld()->GetTimeSeconds();
+        if (!USFBackpackComponent::Services()) { bRestored = true; }
+        static double NextLocalReward = 0;
+        if (!PendingRewards.IsEmpty() && Now >= NextLocalReward) { NextLocalReward = Now + GetDefault<USFQuestPilotSettings>()->RewardRetrySeconds; TryDeliverRewards(); }
+        // A waiting reward is re-read every RewardRetrySeconds until the service reports it delivered.
+        if (Entries.ContainsByPredicate([](const FEntry& E) { return E.bRewardWaiting; }) && RefreshesDue == 0)
+        { RequestRefresh(GetDefault<USFQuestPilotSettings>()->RewardRetrySeconds); }
+        if (RefreshesDue > 0 && Now >= NextRefreshAt && bRestored)
+        { --RefreshesDue; NextRefreshAt = Now + 5.0; Refresh(); }
+        TickTalk();
+        TickDevAccept();
+    }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (!FParse::Param(FCommandLine::Get(), TEXT("QuestFullScenario"))) { return; }
     if (GetOwner() && GetOwner()->HasAuthority()) { TickFullServer(); }
     else { TickFullClient(GetWorld()->GetTimeSeconds()); }
+#endif
+}
+
+void USFQuestPilotComponent::TickDevAccept()
+{
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    // Development fixture: the network runners start with quests already taken (-QuestAutoAccept=<id>[,<id>]); the older
+    // -QuestPilot / -QuestFullScenario runners imply the pilot chain. Same accept path as the board, without the reach check.
+    if (bDevAcceptDone || !bRestored) { return; }
+    bDevAcceptDone = true;
+    FString List;
+    if (!FParse::Value(FCommandLine::Get(), TEXT("QuestAutoAccept="), List)
+        && (FParse::Param(FCommandLine::Get(), TEXT("QuestPilot")) || FParse::Param(FCommandLine::Get(), TEXT("QuestFullScenario"))))
+    { List = TEXT("quest/frontier_founder"); }
+    TArray<FString> Ids; List.ParseIntoArray(Ids, TEXT(","));
+    for (const FString& Id : Ids)
+    {
+        if (!ActiveIds().Contains(Id) && !Completed.Contains(Id) && FSFQuestCatalog::Get().Find(Id))
+        { UE_LOG(LogTemp, Display, TEXT("QUEST_DEV_AUTO_ACCEPT Quest=%s"), *Id); Accept(Id, TEXT("dev")); }
+    }
 #endif
 }
 
@@ -433,6 +857,8 @@ void USFQuestPilotComponent::TickComponent(float Delta, ELevelTick Type, FActorC
 
 namespace
 {
+    const TCHAR* const PilotQuest = TEXT("quest/frontier_founder");
+
     // First unmet objective of the current step, by the stable content ids.
     const FSFQuestObjective* NextObjective(const FSFQuestDefinition& Quest, const FSFQuestProgress& Progress)
     {
@@ -545,7 +971,8 @@ void USFQuestPilotComponent::TickFullServer()
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     const auto* PC = Cast<APlayerController>(GetOwner());
     APawn* Pawn = PC ? PC->GetPawn() : nullptr;
-    const FSFQuestObjective* Objective = Quest ? NextObjective(*Quest, Progress) : nullptr;
+    const FEntry* Entry = Find(PilotQuest);
+    const FSFQuestObjective* Objective = Entry ? NextObjective(*Entry->Quest, Entry->Progress) : nullptr;
     // A restoring character keeps its restored position; the fixture places it once progress is known.
     if (!Pawn || !Objective || USFCharacterSessionComponent::IsRestoring(PC)) { return; }
     // Nodes: the one nearest the world origin (oak, iron) or the only station; the claim pad for the wall; the nearest boar.
@@ -578,7 +1005,7 @@ void USFQuestPilotComponent::TickFullServer()
     int32 Index = 0;
     for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It && It->Get() != PC; ++It) { ++Index; }
     Where += FVector::CrossProduct((Target - Where).GetSafeNormal2D(), FVector::UpVector) * (Index % 3) * 110.0;
-    const FString Key = Quest->Steps[Progress.StepIndex].Id + TEXT("/") + Objective->Key + TEXT("/") + Next.Describe();
+    const FString Key = Entry->Quest->Steps[Entry->Progress.StepIndex].Id + TEXT("/") + Objective->Key + TEXT("/") + Next.Describe();
     if (Key == FullTeleportKey && FVector::Dist2D(Pawn->GetActorLocation(), Target) < 600) { return; }
     // Re-place after a respawn or a boar that wandered off; otherwise once per target.
     Pawn->SetActorLocation(Where, false, nullptr, ETeleportType::TeleportPhysics);
@@ -592,19 +1019,19 @@ void USFQuestPilotComponent::TickFullClient(double Now)
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     auto* PC = Cast<APlayerController>(GetOwner());
     APawn* Pawn = PC ? PC->GetPawn() : nullptr;
-    if (!PC || !PC->IsLocalController() || !Pawn || View.Title.IsEmpty() || bFullDone) { return; }
-    if (View.bComplete)
-    { bFullDone = true; UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_DONE Steps=%d"), View.StepTotal); return; }
-    const FSFQuestLine* Line = View.Lines.FindByPredicate([](const FSFQuestLine& L) { return L.Count < L.Target; });
-    if (!Line) { return; }
+    const FSFQuestView* View = FindView(PilotQuest);
+    if (!PC || !PC->IsLocalController() || !Pawn || !View || bFullDone) { return; }
+    if (View->bComplete)
+    { bFullDone = true; UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_DONE Steps=%d"), View->StepTotal); return; }
+    const FSFQuestLine* Line = View->Lines.FindByPredicate([](const FSFQuestLine& L) { return L.Count < L.Target; });
+    const TSharedPtr<const FSFQuestDefinition> Quest = FSFQuestCatalog::Get().Find(PilotQuest);
+    if (!Line || !Quest) { return; }
     // The tracker line names the objective; recover its content ids from the same label rule the server used.
     FString Kind, Target;
-    static const TCHAR* const Objectives[][2] = { {TEXT("gather"), TEXT("item/oak_log")}, {TEXT("gather"), TEXT("item/iron_ore")},
-        {TEXT("craft"), TEXT("item/rough_timber")}, {TEXT("craft"), TEXT("item/iron_ingot")}, {TEXT("build"), TEXT("structure_tag/wall")}, {TEXT("defeat"), TEXT("npc/boar")} };
-    for (const auto& Pair : Objectives)
-    { if (Line->Label == Verb(Pair[0]) + TEXT(" ") + Humanize(Pair[1])) { Kind = Pair[0]; Target = Pair[1]; } }
+    for (const FSFQuestStep& Step : Quest->Steps)
+    { for (const FSFQuestObjective& O : Step.Objectives) { if (FSFQuestCatalog::ObjectiveLabel(O) == Line->Label) { Kind = O.Kind; Target = O.TargetId; } } }
     const FFullTarget Next = Resolve(Kind, Target, PC, FParse::Param(FCommandLine::Get(), TEXT("QuestFullEconomy")));
-    const FString Key = View.Step + TEXT("/") + Line->Label + TEXT("/") + Next.Describe();
+    const FString Key = View->Step + TEXT("/") + Line->Label + TEXT("/") + Next.Describe();
     if (Key != FullAttemptKey)
     { UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_TARGET Objective=%s Bag=%s"), *Key, *BagLine(PC)); FullAttemptKey = Key; FullEquipAt = 0; FullStableSince = 0; FullAttemptAt = 0; FullLastSwingAt = 0; FullAttempts = 0; }
     const auto Fail = [&](const TCHAR* Why)
@@ -681,6 +1108,20 @@ void USFQuestPilotComponent::TickFullClient(double Now)
 #endif
 }
 
+FString USFQuestPilotComponent::ActiveObjectiveKind() const
+{
+    for (const FSFQuestView& View : Views)
+    {
+        if (View.bComplete || !IsTracked(View.QuestId)) { continue; }
+        const TSharedPtr<const FSFQuestDefinition> Quest = FSFQuestCatalog::Get().Find(View.QuestId);
+        if (!Quest || !Quest->Steps.IsValidIndex(View.StepNumber - 1)) { continue; }
+        const TArray<FSFQuestObjective>& Objectives = Quest->Steps[View.StepNumber - 1].Objectives;
+        for (int32 Index = 0; Index < Objectives.Num() && Index < View.Lines.Num(); ++Index)
+        { if (View.Lines[Index].Count < View.Lines[Index].Target) { return Objectives[Index].Kind; } }
+    }
+    return FString();
+}
+
 // ---------------------------------------------------------------- tracker widget
 
 void USFQuestTrackerHud::NativeOnInitialized()
@@ -696,28 +1137,30 @@ void USFQuestTrackerHud::NativeOnInitialized()
     Box->SetWidthOverride(280.f); Box->SetContent(Plate);
     UCanvasPanelSlot* TrackerSlot = Canvas->AddChildToCanvas(Box);
     TrackerSlot->SetAnchors(FAnchors(0.84f, 0.313f)); TrackerSlot->SetAutoSize(true);
-    UVerticalBox* Stack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    Plate->SetContent(Stack);
-    TitleText = Text(WidgetTree, TEXT(""), 24, Ivory(), true);
-    Stack->AddChildToVerticalBox(TitleText)->SetPadding(FMargin(0.f, 0.f, 0.f, 4.f));
-    Stack->AddChildToVerticalBox(KitImage(WidgetTree, TEXT("divider"), 244.f, 4.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));  // hairline under the title
+    Frame = Box;
     Rows = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    Stack->AddChildToVerticalBox(Rows);
+    Plate->SetContent(Rows);
 }
 
-void USFQuestTrackerHud::Present(const FSFQuestView& View)
+void USFQuestTrackerHud::Present(const TArray<FSFQuestView>& Shown)
 {
     if (!Rows) { return; }
-    FString Key = FString::Printf(TEXT("%s|%s|%d|%d"), *View.Title, *View.Step, View.StepNumber, View.bComplete);
-    for (const FSFQuestLine& L : View.Lines) { Key += FString::Printf(TEXT("|%s=%d/%d"), *L.Label, L.Count, L.Target); }
-    for (const FString& Reward : View.RewardLines) { Key += TEXT("|") + Reward; }
+    FString Key;
+    for (const FSFQuestView& View : Shown)
+    {
+        Key += FString::Printf(TEXT("#%s|%s|%d|%d|%d"), *View.Title, *View.Step, View.StepNumber, View.bComplete, View.bRewardWaiting);
+        for (const FSFQuestLine& L : View.Lines) { Key += FString::Printf(TEXT("|%s=%d/%d"), *L.Label, L.Count, L.Target); }
+        for (const FString& Reward : View.RewardLines) { Key += TEXT("|") + Reward; }
+    }
     if (Key == LastKey) { return; }
     LastKey = Key;
-    UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_CLIENT_VIEW Step=%d Complete=%d Key=%s"), View.StepNumber, View.bComplete, *Key);
+    // One line per shown quest; the runners match "Step=<n> Complete=<0|1>" for the pilot chain.
+    for (const FSFQuestView& View : Shown)
+    { UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_CLIENT_VIEW Step=%d Complete=%d Quest=%s Waiting=%d"), View.StepNumber, View.bComplete, *View.QuestId, View.bRewardWaiting); }
     using namespace SFHudStyle;
-    TitleText->SetText(FText::FromString(View.Title));
+    Frame->SetVisibility(Shown.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
     Rows->ClearChildren();
-    auto AddRow = [this](const FString& Label, const FString& Count, bool bDone)
+    auto AddRow = [this](const FString& Label, const FString& Count, bool bDone, const FLinearColor& Colour)
     {
         UHorizontalBox* Row = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
         // 18 px kit checkbox, the moss tick over it when done (glyph, not colour alone).
@@ -726,14 +1169,21 @@ void USFQuestTrackerHud::Present(const FSFQuestView& View)
         if (bDone) { Check->AddChildToOverlay(KitImage(WidgetTree, TEXT("status_tick"), 18.f, 18.f)); }
         UHorizontalBoxSlot* TickSlot = Row->AddChildToHorizontalBox(Check);
         TickSlot->SetVerticalAlignment(VAlign_Center); TickSlot->SetPadding(FMargin(0.f, 0.f, 8.f, 0.f));
-        UHorizontalBoxSlot* LabelSlot = Row->AddChildToHorizontalBox(Text(WidgetTree, Label, 18, bDone ? Moss() : Ivory()));
+        UHorizontalBoxSlot* LabelSlot = Row->AddChildToHorizontalBox(Text(WidgetTree, Label, 18, Colour));
         LabelSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); LabelSlot->SetVerticalAlignment(VAlign_Center);
-        Row->AddChildToHorizontalBox(Num(WidgetTree, Count, 18, bDone ? Moss() : Ivory()))->SetVerticalAlignment(VAlign_Center);
+        Row->AddChildToHorizontalBox(Num(WidgetTree, Count, 18, Colour))->SetVerticalAlignment(VAlign_Center);
         Rows->AddChildToVerticalBox(Row)->SetPadding(FMargin(0.f, 3.f));
     };
-    for (const FSFQuestLine& L : View.Lines) { AddRow(L.Label, FString::Printf(TEXT("%d / %d"), L.Count, L.Target), L.Count >= L.Target); }
-    if (View.bComplete) { AddRow(TEXT("Frontier founded"), TEXT(""), true); }
-    for (const FString& Reward : View.RewardLines) { AddRow(TEXT("Received ") + Reward, TEXT(""), true); }
+    for (int32 Index = 0; Index < Shown.Num(); ++Index)
+    {
+        const FSFQuestView& View = Shown[Index];
+        Rows->AddChildToVerticalBox(Text(WidgetTree, View.Title, 24, Ivory(), true))->SetPadding(FMargin(0.f, Index == 0 ? 0.f : 10.f, 0.f, 4.f));
+        Rows->AddChildToVerticalBox(KitImage(WidgetTree, TEXT("divider"), 244.f, 4.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));  // hairline under the title
+        for (const FSFQuestLine& L : View.Lines) { const bool bDone = L.Count >= L.Target; AddRow(L.Label, FString::Printf(TEXT("%d / %d"), L.Count, L.Target), bDone, bDone ? Moss() : Ivory()); }
+        if (View.bComplete) { AddRow(TEXT("Complete"), TEXT(""), true, Moss()); }
+        if (View.bRewardWaiting) { AddRow(TEXT("Reward waiting: make room"), TEXT(""), false, Amber()); }
+        for (const FString& Reward : View.RewardLines) { AddRow(TEXT("Received ") + Reward, TEXT(""), true, Moss()); }
+    }
 }
 
 // ---------------------------------------------------------------- subsystem
@@ -743,19 +1193,18 @@ bool USFQuestPilotSubsystem::IsRequested()
     return GetDefault<USFQuestPilotSettings>()->bEnabled;  // GM-01: typed config, no launch flag
 }
 
+bool USFQuestPilotSubsystem::IsQuestMap(const UWorld* World)
+{
+    return World && World->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
+}
+
 void USFQuestPilotSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
     Super::Initialize(Collection);
     UWorld* World = GetWorld();
-    if (!World || World->GetNetMode() == NM_Client || !IsRequested()
-        || World->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")) { return; }
-    FSFQuestDefinition Def; FString Error;
-    const FString File = GetDefault<USFQuestPilotSettings>()->QuestFile;
-    if (File.IsEmpty() || File.Contains(TEXT("/")) || File.Contains(TEXT("\\")) || File.Contains(TEXT(".."))) { UE_LOG(LogTemp, Error, TEXT("QUEST_PILOT_DISABLED QuestFile must be a file name in content/quests")); return; }
-    const FString Path = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectDir(), TEXT("../content/quests"), File));
-    if (!FSFQuestDefinition::Load(Path, Def, Error) || Def.ZoneId != TEXT("zone/greenlands_silverbrook"))
-    { UE_LOG(LogTemp, Error, TEXT("QUEST_PILOT_DISABLED %s"), Error.IsEmpty() ? TEXT("zone mismatch") : *Error); return; }
-    Quest = MakeShared<FSFQuestDefinition>(MoveTemp(Def));
+    bActive = IsRequested() && IsQuestMap(World);
+    if (!bActive || World->GetNetMode() == NM_Client) { return; }
+    UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_READY Quests=%d"), FSFQuestCatalog::Get().Quests.Num());
     GatheredHandle = SFQuestPilotEvents::OnGathered().AddWeakLambda(this, [this](APlayerController* PC, ESFGatheringPilotKind Kind, const FString& Output, const FString& Operation)
     {
         // A station commits its recipe's output (craft evidence); a resource node its harvest (gather evidence).
@@ -768,7 +1217,69 @@ void USFQuestPilotSubsystem::Initialize(FSubsystemCollectionBase& Collection)
     { Route(PC, TEXT("build"), TEXT("structure_tag/wall"), FString(), Operation.IsEmpty() ? FString::Printf(TEXT("build:%llu"), Revision) : Operation); });
     BoarHandle = SFQuestPilotEvents::OnBoarDefeated().AddWeakLambda(this, [this](APlayerController* PC, const FString& DeathId)
     { Route(PC, TEXT("defeat"), TEXT("npc/boar"), FString(), TEXT("boar:") + DeathId); });
-    UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_READY Quest=%s Steps=%d"), *Quest->Id, Quest->Steps.Num());
+}
+
+void USFQuestPilotSubsystem::OnWorldBeginPlay(UWorld& InWorld)
+{
+    Super::OnWorldBeginPlay(InWorld);
+    if (bActive) { PlaceFromLayout(InWorld); }
+}
+
+void USFQuestPilotSubsystem::PlaceFromLayout(UWorld& World)
+{
+    // QST-02: the town layout data places the quest boards and quest givers (silverbrook-town-layout.json quest_boards,
+    // quest_givers), on the server and on each client alike, so map rebuilds keep them and no binary map edit is needed.
+    // ponytail: read from ArtSource, which a packaged build does not stage; move the rows into content/world when one ships.
+    const FString Path = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectDir(), TEXT("ArtSource/Greenlands/silverbrook-town-layout.json")));
+    FString Json; TSharedPtr<FJsonObject> Root;
+    if (!FFileHelper::LoadFileToString(Json, *Path) || !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Json), Root) || !Root)
+    { UE_LOG(LogTemp, Error, TEXT("QUEST_LAYOUT_MISSING %s"), *Path); return; }
+    const auto Read = [](const TSharedPtr<FJsonObject>& Row, const TCHAR* Field, FVector2D& Out)
+    {
+        const TArray<TSharedPtr<FJsonValue>>* Pair = nullptr;
+        if (!Row->TryGetArrayField(Field, Pair) || Pair->Num() != 2) { return false; }
+        Out = FVector2D((*Pair)[0]->AsNumber(), (*Pair)[1]->AsNumber()) * 100.0;
+        return true;
+    };
+    const auto Place = [&World](AActor* Actor, const FVector2D& At, const FVector2D& Facing, const FVector& Front)
+    {
+        // Rest on the first static surface under the column; the actor's front axis turns to the facing point.
+        FHitResult Ground; FCollisionQueryParams Query(SCENE_QUERY_STAT(SFQuestPlace), false, Actor);
+        const FVector Column(At.X, At.Y, 0.0);
+        const bool bHit = World.LineTraceSingleByChannel(Ground, Column + FVector(0, 0, 100000), Column - FVector(0, 0, 100000), ECC_WorldStatic, Query);
+        const FVector2D Look = Facing - At;
+        const float Yaw = FMath::RadiansToDegrees(FMath::Atan2(Look.Y, Look.X)) - FMath::RadiansToDegrees(FMath::Atan2(Front.Y, Front.X));
+        Actor->SetActorLocationAndRotation(bHit ? Ground.ImpactPoint : Column, FRotator(0.f, Yaw, 0.f));
+        return bHit;
+    };
+    const TArray<TSharedPtr<FJsonValue>>* Boards = nullptr;
+    if (Root->TryGetArrayField(TEXT("quest_boards"), Boards))
+    {
+        for (const TSharedPtr<FJsonValue>& Value : *Boards)
+        {
+            const TSharedPtr<FJsonObject> Row = Value->AsObject(); FVector2D At, Facing; FString Id;
+            if (!Row || !Row->TryGetStringField(TEXT("id"), Id) || !QuestValidId(Id, TEXT("board")) || !Read(Row, TEXT("at"), At) || !Read(Row, TEXT("facing"), Facing)) { continue; }
+            ASFQuestBoard* Board = World.SpawnActor<ASFQuestBoard>();
+            if (!Board) { continue; }
+            Board->BoardId = Id;
+            const bool bGround = Place(Board, At, Facing, FVector(0, -1, 0));  // the notice board's front is -Y
+            UE_LOG(LogTemp, Display, TEXT("QUEST_BOARD_PLACED Id=%s At=%s Ground=%d"), *Id, *Board->GetActorLocation().ToString(), bGround);
+        }
+    }
+    const TArray<TSharedPtr<FJsonValue>>* Givers = nullptr;
+    if (Root->TryGetArrayField(TEXT("quest_givers"), Givers))
+    {
+        for (const TSharedPtr<FJsonValue>& Value : *Givers)
+        {
+            const TSharedPtr<FJsonObject> Row = Value->AsObject(); FVector2D At, Facing; FString Npc;
+            if (!Row || !Row->TryGetStringField(TEXT("npc"), Npc) || !QuestValidId(Npc, TEXT("npc")) || !Read(Row, TEXT("at"), At) || !Read(Row, TEXT("facing"), Facing)) { continue; }
+            ASFDialogueNpc* Giver = World.SpawnActor<ASFDialogueNpc>();
+            if (!Giver) { continue; }
+            Giver->DialogueFile = Stem(Npc) + TEXT(".json");
+            const bool bGround = Place(Giver, At, Facing, FVector(1, 0, 0));
+            UE_LOG(LogTemp, Display, TEXT("QUEST_GIVER_PLACED Npc=%s At=%s Ground=%d"), *Npc, *Giver->GetActorLocation().ToString(), bGround);
+        }
+    }
 }
 
 void USFQuestPilotSubsystem::Deinitialize()
@@ -784,16 +1295,16 @@ void USFQuestPilotSubsystem::Route(APlayerController* PC, const FString& Kind, c
 {
     auto* Component = IsValid(PC) && PC->GetWorld() == GetWorld() ? PC->FindComponentByClass<USFQuestPilotComponent>() : nullptr;
     if (!Component) { return; }
-    // Gather/craft broadcasts carry no id of their own; a per-controller sequence keeps each accepted grant distinct.
+    // Gather/craft broadcasts carry no id of their own; a GUID keeps each accepted grant distinct.
     const bool bHasOwnId = Operation.Contains(TEXT(":")) || Operation.Contains(TEXT("/"));  // "boar:<death>", "gather/<guid>"
-    Component->Observe(Kind, Target, Node, bHasOwnId ? Operation : FString::Printf(TEXT("%s:%d"), *Operation, Component->GetProgress().Operations.Num()));
+    Component->Observe(Kind, Target, Node, bHasOwnId ? Operation : FString::Printf(TEXT("%s:%s"), *Operation, *FGuid::NewGuid().ToString(EGuidFormats::Short)));
 }
 
 void USFQuestPilotSubsystem::Tick(float DeltaTime)
 {
     UWorld* World = GetWorld();
-    if (!World) { return; }
-    if (World->GetNetMode() != NM_Client && Quest)
+    if (!World || !bActive) { return; }
+    if (World->GetNetMode() != NM_Client)
     {
         for (auto It = World->GetPlayerControllerIterator(); It; ++It)
         {
@@ -801,14 +1312,14 @@ void USFQuestPilotSubsystem::Tick(float DeltaTime)
             if (IsValid(PC) && !PC->FindComponentByClass<USFQuestPilotComponent>())
             {
                 auto* Component = NewObject<USFQuestPilotComponent>(PC, TEXT("QuestPilot"));
-                Component->Init(Quest);
                 Component->RegisterComponent();
             }
         }
     }
     APlayerController* Local = World->GetFirstPlayerController();
     auto* Component = Local && Local->IsLocalController() ? Local->FindComponentByClass<USFQuestPilotComponent>() : nullptr;
-    if (!Component || Component->GetView().Title.IsEmpty()) { return; }
+    if (!Component) { return; }
+    USFQuestBoardPanel::TickClient(Local, Component);
     if (!Hud)
     {
         Hud = CreateWidget<USFQuestTrackerHud>(Local, USFQuestTrackerHud::StaticClass());
@@ -816,13 +1327,13 @@ void USFQuestPilotSubsystem::Tick(float DeltaTime)
         Hud->AddToViewport(14);
         Hud->SetVisibility(ESlateVisibility::HitTestInvisible);
     }
-    Hud->Present(bOfferShown ? OfferView : Component->GetView());
-}
-
-FString USFQuestPilotComponent::ActiveObjectiveKind() const
-{
-    if (!Quest || Progress.IsComplete(*Quest)) { return FString(); }
-    for (const FSFQuestObjective& Objective : Quest->Steps[Progress.StepIndex].Objectives)
-    { if (Progress.Counts.FindRef(Objective.Key) < Objective.Count) { return Objective.Kind; } }
-    return FString();
+    // Up to three tracked quests, unfinished first; an offer the dialogue board shows takes the tracker while it is open.
+    TArray<FSFQuestView> Shown;
+    if (bOfferShown) { Shown.Add(OfferView); }
+    for (int32 Pass = 0; Pass < 2 && !bOfferShown; ++Pass)
+    {
+        for (const FSFQuestView& View : Component->GetViews())
+        { if (View.bComplete == (Pass == 1) && Component->IsTracked(View.QuestId) && Shown.Num() < USFQuestPilotComponent::MaxTracked) { Shown.Add(View); } }
+    }
+    Hud->Present(Shown);
 }

@@ -1,5 +1,6 @@
 // CTL-02 NPC dialogue on the player controller: opens the v5 board for the speaker in front of the pawn, routes keys 1-4 / Esc,
-// and frames the speaker through ASFE1Character::SetDialogueFramingTarget. Local presentation only; nothing here is sent to the server.
+// and frames the speaker through ASFE1Character::SetDialogueFramingTarget. QST-02: Accept asks the server's quest log to take the
+// quest, and opening a speaker reports the talk (talk_npc turn-ins); everything else is local presentation.
 #include "Framework/SFPlayerController.h"
 
 #include "Blueprint/WidgetLayoutLibrary.h"
@@ -8,6 +9,7 @@
 #include "EngineUtils.h"
 #include "GameFramework/Pawn.h"
 #include "InputCoreTypes.h"
+#include "Misc/Paths.h"
 #include "Quest/SFQuestPilot.h"
 
 namespace
@@ -57,18 +59,24 @@ bool ASFPlayerController::TryOpenDialogue()
         DialoguePanel->AddToViewport(30);
     }
     CloseSidePanelsForModal();
-    DialoguePanel->Open(Tree);
+    // The speaker's quest is offered only while the player can take it; held, finished or locked opens on the accepted line.
+    USFQuestPilotComponent* Quests = FindComponentByClass<USFQuestPilotComponent>();
+    const TSharedPtr<const FSFQuestDefinition> Quest = Tree->bHasOffer ? FSFQuestCatalog::Get().Find(Tree->Offer.QuestId) : nullptr;
+    const bool bOffered = Quest && (!Quests || FSFQuestCatalog::Get().OfferState(*Quest, Quests->ActiveIds(), Quests->CompletedIds()) == ESFQuestOfferState::Available);
+    DialoguePanel->Open(Tree, Quest.Get(), bOffered);
+    if (Quests) { Quests->ServerTalkedTo(TEXT("npc/") + FPaths::GetBaseFilename(Best->DialogueFile)); }
     int32 Width = 0, Height = 0; GetViewportSize(Width, Height);
     const float Scale = FMath::Max(0.01f, UWidgetLayoutLibrary::GetViewportScale(this));
     DialoguePanel->SetDesiredSizeInViewport(FVector2D(Width / Scale, Height / Scale));  // modal root: dims the scene, places the board itself
     DialoguePanel->SetPositionInViewport(FVector2D::ZeroVector, false);
     DialoguePanel->SetVisibility(ESlateVisibility::Visible);
     DialogueNpc = Best;
-    if (Tree->bHasOffer)
+    if (bOffered)
     {
-        FSFQuestView Offered; Offered.Title = Tree->Offer.Title;
-        for (const FSFDialogueObjective& Objective : Tree->Offer.Objectives) { FSFQuestLine Line; Line.Label = Objective.Label; Line.Target = Objective.Need; Offered.Lines.Add(Line); }
-        if (USFQuestPilotSubsystem* Quests = World->GetSubsystem<USFQuestPilotSubsystem>()) { Quests->PresentOffer(Offered); }
+        FSFQuestView Offered; Offered.QuestId = Quest->Id; Offered.Title = Quest->Title();
+        for (const FSFQuestStep& Step : Quest->Steps)
+        { for (const FSFQuestObjective& Objective : Step.Objectives) { FSFQuestLine Line; Line.Label = FSFQuestCatalog::ObjectiveLabel(Objective); Line.Target = Objective.Count; Offered.Lines.Add(Line); } }
+        if (USFQuestPilotSubsystem* Log = World->GetSubsystem<USFQuestPilotSubsystem>()) { Log->PresentOffer(Offered); }
     }
     SetIgnoreMoveInput(true);
     const FVector ToPlayer = Body->GetActorLocation() - Best->GetActorLocation();
@@ -93,7 +101,14 @@ void ASFPlayerController::CloseDialogue()
 
 void ASFPlayerController::HandleDialogueStep(ESFDialogueStep Step)
 {
-    if (Step == ESFDialogueStep::Accepted) { UE_LOG(LogTemp, Display, TEXT("DIALOGUE_OFFER_ACCEPTED")); }  // no quest service owns offers yet
+    if (Step == ESFDialogueStep::Accepted)
+    {
+        const FSFDialogueSession& Session = DialoguePanel->GetSession();
+        const FString QuestId = Session.Tree.IsValid() ? Session.Tree->Offer.QuestId : FString();
+        const FString Giver = DialogueNpc.IsValid() ? TEXT("npc/") + FPaths::GetBaseFilename(DialogueNpc->DialogueFile) : FString();
+        UE_LOG(LogTemp, Display, TEXT("DIALOGUE_OFFER_ACCEPTED Quest=%s Giver=%s"), *QuestId, *Giver);
+        if (USFQuestPilotComponent* Quests = FindComponentByClass<USFQuestPilotComponent>()) { Quests->ServerAcceptQuest(QuestId, Giver); }
+    }
     if (Step == ESFDialogueStep::Closed || Step == ESFDialogueStep::Declined) { CloseDialogue(); }
 }
 

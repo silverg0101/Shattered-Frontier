@@ -34,8 +34,12 @@ bool FSFGrantFollowUpTest::RunTest(const FString&)
     TArray<uint8> Changed; FString ChangedDigest;
     TestTrue(TEXT("changed occurrence serializes"), SFSerializeGatherFollowUp(Q, Changed, ChangedDigest));
     TestTrue(TEXT("changed evidence changes digest"), ChangedDigest != FirstDigest);
+    Q.StepId.Reset();
+    TestFalse(TEXT("quest without its step fails closed"), SFSerializeGatherFollowUp(Q, Changed, ChangedDigest));
     Q.bHasQuest = false;
-    TestFalse(TEXT("missing required quest fails closed"), SFSerializeGatherFollowUp(Q, Changed, ChangedDigest));
+    TestTrue(TEXT("harvest no quest wants keeps its progression receipt"), SFSerializeGatherFollowUp(Q, Changed, ChangedDigest));
+    sf::progression::v1::ApplyReceiptRequest Bare;
+    TestTrue(TEXT("bare parses"), Bare.ParseFromArray(Changed.GetData(), Changed.Num()) && !Bare.has_quest());
     return true;
 }
 #endif

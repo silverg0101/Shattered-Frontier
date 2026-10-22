@@ -1,0 +1,22 @@
+{
+  "id": "quest/river_road_timber",
+  "revision": 1,
+  "zone_id": "zone/greenlands_silverbrook",
+  "offer": {
+    "title": "Timber for the River Road",
+    "summary": "The mill can saw again; the road crews need sawn timber.",
+    "art": "",
+    "boards": ["board/silverbrook"],
+    "requires_completed": ["quest/mills_supply"]
+  },
+  "steps": [
+    {
+      "id": "saw_timber",
+      "prerequisites": [],
+      "objectives": [ { "key": "rough_timber", "kind": "craft", "target_id": "item/rough_timber", "count": 4 } ],
+      "rewards": [ { "bundle_id": "reward/river_road_timber_completion", "items": [
+        { "definition_id": "item/iron_nails", "quantity": 4 }
+      ] } ]
+    }
+  ]
+}

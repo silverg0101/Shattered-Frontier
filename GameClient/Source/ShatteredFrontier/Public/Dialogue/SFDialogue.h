@@ -16,13 +16,8 @@ class USizeBox;
 
 struct FSFDialogueChoice { FString Label, Next, Action; };  // Action: "" (go to Next), "end" or "accept"
 struct FSFDialogueNode { FString Id, Line; TArray<FSFDialogueChoice> Choices; };
-struct FSFDialogueObjective { FString Label; int32 Need = 0; };
-struct FSFDialogueOffer
-{
-    FString Title, Summary, ArtPath, AcceptedNode;
-    TArray<FSFDialogueObjective> Objectives;
-    int32 RewardXp = 0, RewardCoin = 0;
-};
+// QST-02: the offer names a quest record (content/quests); title, summary, art, objectives and rewards live there.
+struct FSFDialogueOffer { FString QuestId, AcceptedNode; };
 
 struct SHATTEREDFRONTIER_API FSFDialogueTree
 {
@@ -47,7 +42,12 @@ struct SHATTEREDFRONTIER_API FSFDialogueSession
     FString NodeId;
     bool bAccepted = false;
 
-    void Begin(TSharedPtr<const FSFDialogueTree> InTree) { Tree = InTree; NodeId = InTree.IsValid() ? InTree->Start : FString(); bAccepted = false; }
+    /** bAlreadyAccepted: the speaker's quest is held or finished, so the conversation opens on its accepted line. */
+    void Begin(TSharedPtr<const FSFDialogueTree> InTree, bool bAlreadyAccepted = false)
+    {
+        Tree = InTree; bAccepted = bAlreadyAccepted && InTree.IsValid() && InTree->bHasOffer;
+        NodeId = !InTree.IsValid() ? FString() : bAccepted ? InTree->Offer.AcceptedNode : InTree->Start;
+    }
     const FSFDialogueNode* Node() const { return Tree.IsValid() ? Tree->Nodes.Find(NodeId) : nullptr; }
     ESFDialogueStep Choose(int32 Index);
     ESFDialogueStep Accept();
@@ -77,7 +77,8 @@ class SHATTEREDFRONTIER_API USFDialoguePanel : public UUserWidget
 {
     GENERATED_BODY()
 public:
-    void Open(TSharedPtr<const FSFDialogueTree> InTree);
+    /** Quest: the offered quest record (null hides the offer column); bOffered false when it is held, finished or locked. */
+    void Open(TSharedPtr<const FSFDialogueTree> InTree, const struct FSFQuestDefinition* Quest = nullptr, bool bOffered = true);
     // Keys 1-4 and the response rows; false when the index is not a response.
     bool ChooseIndex(int32 Index);
     // Fired when the conversation ends (Farewell, Decline, Esc) and when the offer is accepted.
@@ -120,6 +121,7 @@ private:
     UPROPERTY(Transient) TArray<TObjectPtr<UWidget>> ObjectiveRows;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> XpText;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> CoinText;
+    UPROPERTY(Transient) TArray<TObjectPtr<UImage>> RewardIcons;  // item icons beside XpText / CoinText
     UPROPERTY(Transient) TObjectPtr<UButton> AcceptButton;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> AcceptLabel;
 };

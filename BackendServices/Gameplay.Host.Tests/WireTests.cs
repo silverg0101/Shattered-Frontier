@@ -113,6 +113,9 @@ if (mode == "journey")
     var housing = new HousingPb.Housing.HousingClient(channel);
     var rewards = new RewardPb.Rewards.RewardsClient(channel);
     long progressionRevision = 0, questRevision = 0;
+    Check(progress.ApplyReceipt(new ProgressPb.ApplyReceiptRequest { SourceReceiptId = "accept/journey", Kind = "quest", CharacterId = "chr_journey",
+        Quest = new ProgressPb.QuestEvidence { QuestId = "quest/frontier_founder", Kind = "accept", OccurredAtUnixMs = 1792540800000 } },
+        headers, deadline: Deadline()).QuestAccepted, "Journey accept failed.");
     ProgressPb.ApplyReceiptReply Apply(string id, string kind, string skill, string step, string objectiveKind,
         string target, string node = "")
     {
@@ -238,11 +241,23 @@ else if (mode == "progression")
     };
     Code(() => client.ApplyReceipt(request, bad, deadline: Deadline()), StatusCode.Unauthenticated);
     Code(() => client.ApplyReceipt(request, headers, deadline: DateTime.UtcNow.AddMilliseconds(-1)), StatusCode.DeadlineExceeded);
+    ProgressPb.ApplyReceiptReply Quest(string id, string quest, string kind) => client.ApplyReceipt(new ProgressPb.ApplyReceiptRequest { SourceReceiptId = id,
+        Kind = "quest", CharacterId = "chr_progression", Quest = new ProgressPb.QuestEvidence { QuestId = quest, Kind = kind, OccurredAtUnixMs = 1792540800000 } }, headers, deadline: Deadline());
+    Check(Quest("accept/founder", "quest/frontier_founder", "accept") is { QuestAccepted: true, ActiveStepId: "harvest_oak" }, "Founder accept failed.");
+    Check(Quest("accept/founder-2", "quest/frontier_founder", "accept") is { QuestAccepted: false, QuestReason: "duplicate" }, "Duplicate accept not refused.");
+    Check(Quest("accept/river", "quest/river_road_timber", "accept") is { QuestAccepted: false, QuestReason: "prerequisite_missing" }, "Prerequisite not enforced.");
+    Code(() => Quest("accept/nope", "quest/nope", "accept"), StatusCode.InvalidArgument);
+    Check(Quest("accept/mills", "quest/mills_supply", "accept").QuestAccepted, "Mills accept failed.");
+    Check(Quest("abandon/mills", "quest/mills_supply", "abandon").QuestAccepted, "Mills abandon failed.");
+    Check(Quest("abandon/mills-2", "quest/mills_supply", "abandon") is { QuestAccepted: false, QuestReason: "not_active" }, "Second abandon not refused.");
+    Check(Quest("accept/mills-again", "quest/mills_supply", "accept").QuestAccepted, "Re-accept failed.");
     var first = client.ApplyReceipt(request, headers, deadline: Deadline());
     var replay = client.ApplyReceipt(request, headers, deadline: Deadline());
     Check(first.Equals(replay) && first.QuestAccepted && first.ActiveStepId == "mine_iron", "Progression or quest replay differs.");
     var state = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_progression" }, headers, deadline: Deadline());
     Check(state.QuestRevision == 1 && state.ActiveStepId == "mine_iron", "Quest state missing.");
+    Check(state.Quests.Count == 2 && state.Quests.Single(q => q.QuestId == "quest/mills_supply") is { State: "active", ActiveStepId: "gather_oak", Revision: 2 } &&
+        state.Quests.Single(q => q.QuestId == "quest/frontier_founder").State == "active", "Quest log missing.");
     Check(state.Position is null && state.PositionRevision == 0 && state.ObjectiveCounts["iron_ore"] == 0,
         "Unsaved position or active objective defaults invalid.");
     var save = new ProgressPb.SavePositionRequest { CharacterId = "chr_progression", ExpectedPositionRevision = 0,

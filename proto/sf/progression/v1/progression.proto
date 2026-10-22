@@ -27,6 +27,8 @@ message ActionPayload {
   double enemy_tier_multiplier = 7;
   int32 eligible_party_size = 8;
 }
+// kind: gather | craft | build | defeat | talk_resident | talk_npc (progress evidence for step_id),
+// or accept | abandon (QST-02; step_id and target_id empty, quantity 0).
 message QuestEvidence {
   string quest_id = 1;
   string step_id = 2;
@@ -48,6 +50,8 @@ message ApplyReceiptReply {
   int64 quest_revision = 9;
   repeated string reward_bundle_ids = 10;
   repeated GrantedItem granted_items = 11;
+  // Why quest evidence was not accepted (duplicate, completed, prerequisite_missing, not_active, ...); empty when accepted.
+  string quest_reason = 12;
 }
 message GrantedItem {
   string definition_id = 1;
@@ -78,4 +82,15 @@ message CharacterStateReply {
   map<string, int32> objective_counts = 8;
   CharacterPosition position = 9;
   int64 position_revision = 10;
+  // QST-02: every quest row of the character (fields 5-8 describe quest/frontier_founder only).
+  repeated QuestState quests = 11;
+}
+message QuestState {
+  string quest_id = 1;
+  string state = 2;  // active | completed | abandoned
+  string active_step_id = 3;
+  map<string, int32> counts = 4;
+  int32 content_revision = 5;
+  int64 revision = 6;
+  bool reward_pending = 7;  // a reward intent of this quest is not yet in the backpack (full backpack, host down)
 }

@@ -10,7 +10,9 @@ bool FSFDialogueModelTest::RunTest(const FString&)
     TestTrue(TEXT("shipped Millwarden tree loads"), FSFDialogueTree::Load(TEXT("millwarden_oswin.json"), Tree, Error));
     TestEqual(TEXT("speaker"), Tree.Speaker, FString(TEXT("Millwarden Oswin")));
     TestTrue(TEXT("offer"), Tree.bHasOffer);
-    TestEqual(TEXT("two objectives"), Tree.Offer.Objectives.Num(), 2);
+    TestEqual(TEXT("offer names its quest record"), Tree.Offer.QuestId, FString(TEXT("quest/mills_supply")));
+    FSFDialogueSession Held; Held.Begin(MakeShared<FSFDialogueTree>(Tree), true);
+    TestTrue(TEXT("a held quest opens on the accepted line"), Held.bAccepted && Held.NodeId == TEXT("accepted"));
 
     const TSharedRef<FSFDialogueTree> Shared = MakeShared<FSFDialogueTree>(Tree);
     FSFDialogueSession Session; Session.Begin(Shared);

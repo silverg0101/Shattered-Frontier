@@ -76,7 +76,7 @@ try {
 
     # Phase 1: a drop during the first harvest's commit, then a reconnect.
     Invoke-WithEnv $serverEnv { $script:server1 = Start-Owned 'server1' $silverbrook ($serverFlags + '-SFDropDuringCommit') }
-    Wait-Log $server1 'server1' 'QUEST_PILOT_READY Quest=quest/frontier_founder Steps=5'
+    Wait-Log $server1 'server1' 'QUEST_PILOT_READY Quests='
     $alpha1 = Start-Owned 'alpha1' $alphaUrl $alphaFlags
     $bravo1 = Start-Owned 'bravo1' $bravoUrl @('-game')
     Wait-Log $server1 'server1' 'RECONNECT_DROP_DURING_COMMIT Op=gather/'
@@ -94,7 +94,7 @@ try {
 
     # Phase 2: a fresh UE server; both characters reconnect and are restored from the services.
     Invoke-WithEnv $serverEnv { $script:server2 = Start-Owned 'server2' $silverbrook $serverFlags }
-    Wait-Log $server2 'server2' 'QUEST_PILOT_READY Quest=quest/frontier_founder Steps=5'
+    Wait-Log $server2 'server2' 'QUEST_PILOT_READY Quests='
     $alpha3 = Start-Owned 'alpha3' $alphaUrl $alphaFlags
     $bravo2 = Start-Owned 'bravo2' $bravoUrl @('-game')
     Wait-Log $server2 'server2' 'CHARACTER_RESTORED Character=chr_dev_alpha .* Position=saved'

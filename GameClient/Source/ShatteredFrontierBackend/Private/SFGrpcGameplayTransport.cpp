@@ -150,7 +150,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         {
             Out.bProgressionApplied = R.progression_applied(); Out.SkillGain = R.skill_gain(); Out.XpGain = R.xp_gain(); Out.Level = R.level();
             Out.ProgressionRevision = R.progression_revision(); Out.bQuestAccepted = R.quest_accepted(); Out.ActiveStepId = FromUtf8(R.active_step_id());
-            Out.bQuestCompleted = R.quest_completed(); Out.QuestRevision = R.quest_revision();
+            Out.bQuestCompleted = R.quest_completed(); Out.QuestRevision = R.quest_revision(); Out.QuestReason = FromUtf8(R.quest_reason());
             for (const auto& Bundle : R.reward_bundle_ids()) { Out.RewardBundleIds.Add(FromUtf8(Bundle)); }
             for (const auto& Item : R.granted_items()) { Out.GrantedItems.FindOrAdd(FromUtf8(Item.definition_id())) += Item.quantity(); }
         };
@@ -168,6 +168,12 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
             Out.ActiveStepId = FromUtf8(R.active_step_id()); Out.bQuestCompleted = R.quest_completed();
             for (const auto& Skill : R.skills()) { Out.Skills.Add(FromUtf8(Skill.first), Skill.second); }
             for (const auto& Count : R.objective_counts()) { Out.ObjectiveCounts.Add(FromUtf8(Count.first), Count.second); }
+            for (const auto& Quest : R.quests())
+            {
+                FSFGameplayResponse::FQuestState& Row = Out.Quests.AddDefaulted_GetRef();
+                Row.QuestId = FromUtf8(Quest.quest_id()); Row.State = FromUtf8(Quest.state()); Row.ActiveStepId = FromUtf8(Quest.active_step_id()); Row.Revision = Quest.revision(); Row.bRewardPending = Quest.reward_pending();
+                for (const auto& Count : Quest.counts()) { Row.Counts.Add(FromUtf8(Count.first), Count.second); }
+            }
             Out.PositionRevision = R.position_revision(); Out.bHasPosition = R.has_position();
             if (Out.bHasPosition)
             { Out.ZoneId = FromUtf8(R.position().zone_id()); Out.Position = FVector(R.position().x(), R.position().y(), R.position().z()); Out.Yaw = R.position().yaw(); }

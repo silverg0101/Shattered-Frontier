@@ -81,11 +81,11 @@ try {
         ($settings+'HandoffReleaseMetres=10'),($settings+'HandoffQuietSeconds=8'),'-TownsfolkDangerX=20','-TownsfolkDangerY=-20')
     if ($Leg -eq 'Quest') {
         # The quest pilot is on in Silverbrook (GM-01); only the quest it runs changes.
-        $serverFlags+=@('-ini:Game:[/Script/ShatteredFrontier.SFQuestPilotSettings]:QuestFile=silverbrook_introductions.json')
+        $serverFlags+=@('-QuestAutoAccept=quest/silverbrook_introductions')
     }
     $server=Start-Owned 'server' $map $serverFlags
     Wait-Log $server 'server' 'TOWNSFOLK_STATE_CHANGE[^\r\n]*Cell='
-    if ($Leg -eq 'Quest') { Wait-Log $server 'server' 'QUEST_PILOT_READY Quest=quest/silverbrook_introductions' }
+    if ($Leg -eq 'Quest') { Wait-Log $server 'server' 'QUEST_PILOT_READY Quests=' }
     $first=Start-Owned 'first' ('127.0.0.1:'+$Port) @('-game',$(if ($Leg -eq 'Quest') { '-TownsfolkQuestScenario' } else { '-TownsfolkHandoffScenario' }))
     # Quest: every player gets the quest and shares the one held resident, so both walk to it and back.
     $second=Start-Owned 'second' ('127.0.0.1:'+$Port) @(@('-game')+$(if ($Leg -eq 'Quest') { @('-TownsfolkQuestScenario') } else { @() }))

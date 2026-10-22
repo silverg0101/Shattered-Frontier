@@ -20,7 +20,7 @@ struct FSFHotbarSlot { int32 Key = 0; FString IconStem; FString Label; };
 // One "[key] Action" piece of the prompt bar. Key is a keycap label, or LMB/RMB for the mouse glyphs.
 struct FSFPromptSegment { FString Key; FString Action; };
 
-enum class ESFPromptContext : uint8 { None, Build, Harvest, Refine };
+enum class ESFPromptContext : uint8 { None, Build, Harvest, Refine, Read };
 
 // HUD-v1 canonical layout (docs/Game-Design/concept-art/UI/HUD-v1/hud-layout-v4.md) for the elements the other widgets do not
 // own: the 6-slot hotbar (33-67% x, 86-96% y), the action/prompt bar (32-68%, 79-85%), the target frame (38-62%, 4-11%) and the

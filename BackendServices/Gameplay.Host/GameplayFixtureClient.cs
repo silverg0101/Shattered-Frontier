@@ -83,6 +83,8 @@ internal static class GameplayFixtureClient
                 var container = inventory.EnsureContainer(new InventoryPb.EnsureContainerRequest { Spec = new InventoryPb.ContainerSpec {
                     Id = "ctn_int06", OwnerKind = InventoryPb.OwnerKind.Character, OwnerId = character,
                     Kind = InventoryPb.ContainerKind.Backpack, Capacity = 100 } }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                new ProgressPb.Progression.ProgressionClient(invoker).ApplyReceipt(new ProgressPb.ApplyReceiptRequest { SourceReceiptId = "int06/accept/1", Kind = "quest", CharacterId = character,
+                    Quest = new ProgressPb.QuestEvidence { QuestId = "quest/frontier_founder", Kind = "accept", OccurredAtUnixMs = 1792540800000 } }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
                 var request = new ProgressPb.ApplyReceiptRequest { SourceReceiptId = "int06/gather/1", CharacterId = character,
                     Kind = "gather", Payload = new ProgressPb.ActionPayload { SkillId = "skill/logging", Difficulty = 1,
                         ActionSeconds = mode == "fixture-outbox-conflict" ? 7 : 6, Success = true },
@@ -332,6 +334,8 @@ internal static class GameplayFixtureClient
                 ledger.CreateContainer(new ContainerSpec(containerId, OwnerKind.Character, characterId, ContainerKind.Backpack, full ? 13 : 100));
                 if (full) ledger.Grant("quest-full/fill", containerId, 0, "item/oak_log", 1, "fixture", "quest-full/fill");
                 var progress = new ProgressPb.Progression.ProgressionClient(invoker);
+                progress.ApplyReceipt(new ProgressPb.ApplyReceiptRequest { SourceReceiptId = $"quest-{suffix}/accept", Kind = "quest", CharacterId = characterId,
+                    Quest = new ProgressPb.QuestEvidence { QuestId = "quest/frontier_founder", Kind = "accept", OccurredAtUnixMs = 1792540800000 } }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
                 var steps = new (string Step, string Kind, string Target, string Node)[] {
                     ("harvest_oak","gather","item/oak_log","gathering_node/oak_tree"),
                     ("mine_iron","gather","item/iron_ore",""),

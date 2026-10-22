@@ -6,16 +6,17 @@ public sealed record RewardGrant(string OperationId, string CharacterId, string 
 public sealed record ProgressResult(bool Accepted, string Reason, string? ActiveStepId, bool Completed,
     IReadOnlyList<RewardGrant> Grants);
 public sealed record QuestProgressSnapshot(DateTimeOffset AcceptedAt, DateTimeOffset LastOccurredAt, int StepIndex,
-    Dictionary<string, int> Counts, string[] Operations, string[] GrantedSteps);
+    Dictionary<string, int> Counts, string[] Operations, string[] GrantedSteps, bool Abandoned = false, int Instance = 1);
 
 public sealed class QuestProgression
 {
     private readonly QuestDefinition _quest;
     private readonly Dictionary<string, CharacterState> _characters = new(StringComparer.Ordinal);
 
-    private sealed class CharacterState(DateTimeOffset acceptedAt)
+    private sealed class CharacterState(DateTimeOffset acceptedAt, int instance = 1)
     {
         public DateTimeOffset AcceptedAt { get; } = acceptedAt;
+        public int Instance { get; } = instance;
         public DateTimeOffset LastOccurredAt { get; set; } = acceptedAt;
         public int StepIndex { get; set; }
         public Dictionary<string, int> Counts { get; } = new(StringComparer.Ordinal);
@@ -32,12 +33,13 @@ public sealed class QuestProgression
 
     public QuestProgressSnapshot? Snapshot(string characterId) => _characters.TryGetValue(characterId, out var state)
         ? new(state.AcceptedAt, state.LastOccurredAt, state.StepIndex, new(state.Counts, StringComparer.Ordinal),
-            [.. state.Operations], [.. state.GrantedSteps]) : null;
+            [.. state.Operations], [.. state.GrantedSteps], false, state.Instance) : null;
 
     public void Restore(string characterId, QuestProgressSnapshot snapshot)
     {
         if (string.IsNullOrWhiteSpace(characterId) || snapshot.StepIndex < 0 || snapshot.StepIndex > _quest.Steps.Count ||
-            snapshot.LastOccurredAt < snapshot.AcceptedAt || !Accept(characterId, snapshot.AcceptedAt))
+            snapshot.LastOccurredAt < snapshot.AcceptedAt || snapshot.Instance < 1 ||
+            !Accept(characterId, snapshot.AcceptedAt, snapshot.Instance))
             throw new ArgumentException("Invalid quest progress snapshot", nameof(snapshot));
         var state = _characters[characterId];
         state.LastOccurredAt = snapshot.LastOccurredAt; state.StepIndex = snapshot.StepIndex;
@@ -46,8 +48,8 @@ public sealed class QuestProgression
         foreach (var id in snapshot.GrantedSteps) state.GrantedSteps.Add(id);
     }
 
-    public bool Accept(string characterId, DateTimeOffset acceptedAt) =>
-        !string.IsNullOrWhiteSpace(characterId) && _characters.TryAdd(characterId, new CharacterState(acceptedAt));
+    public bool Accept(string characterId, DateTimeOffset acceptedAt, int instance = 1) =>
+        !string.IsNullOrWhiteSpace(characterId) && instance >= 1 && _characters.TryAdd(characterId, new CharacterState(acceptedAt, instance));
 
     public ProgressResult Apply(ObjectiveEvent evidence)
     {
@@ -73,7 +75,7 @@ public sealed class QuestProgression
         {
             if (state.GrantedSteps.Add(step.Id))
                 grants.AddRange(step.Rewards.Select(r => new RewardGrant(
-                    $"quest:{evidence.CharacterId}:{_quest.Id}:{step.Id}:{r.BundleId}", evidence.CharacterId, _quest.Id, step.Id, r.BundleId)));
+                    $"quest:{evidence.CharacterId}:{_quest.Id}:{step.Id}:{r.BundleId}{(state.Instance > 1 ? $":i{state.Instance}" : "")}", evidence.CharacterId, _quest.Id, step.Id, r.BundleId)));
             state.StepIndex++;
             state.Counts.Clear();
         }

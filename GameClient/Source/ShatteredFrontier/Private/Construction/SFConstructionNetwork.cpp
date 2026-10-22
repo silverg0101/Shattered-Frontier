@@ -66,6 +66,7 @@
 #include "Net/UnrealNetwork.h"
 #include "PhysicsEngine/BodySetup.h"
 #include "Quest/SFQuestPilotEvents.h"
+#include "Quest/SFQuestBoard.h"
 #include "Gathering/SFStationRecipes.h"
 #include "Services/SFBackpackComponent.h"
 #include "Services/SFCharacterSession.h"
@@ -2657,6 +2658,7 @@ void ASFPlayerController::SFUi(const FString& Screen)
     else if (Screen.Equals(TEXT("tradelock"), ESearchCase::IgnoreCase) && TradeWindow) { TradeWindow->CallFunctionByNameWithArguments(TEXT("HandleLock"), *GLog, nullptr, true); }
     else if (Screen.Equals(TEXT("build"), ESearchCase::IgnoreCase)) { ToggleBuildMode(); }
     else if (Screen.Equals(TEXT("settings"), ESearchCase::IgnoreCase)) { ToggleSettingsPanel(); }
+    else if (Screen.Equals(TEXT("journal"), ESearchCase::IgnoreCase) || Screen.Equals(TEXT("board"), ESearchCase::IgnoreCase)) { USFQuestBoardPanel::OpenForCapture(this, Screen.ToLower()); }
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     else if (Screen.Equals(TEXT("skills"), ESearchCase::IgnoreCase)) { ToggleGatheringSkillsPanel(); }
     else if (Screen.Equals(TEXT("target"), ESearchCase::IgnoreCase))

@@ -1,0 +1,30 @@
+{
+  "id": "quest/mills_supply",
+  "revision": 1,
+  "zone_id": "zone/greenlands_silverbrook",
+  "offer": {
+    "title": "The Mill's Supply",
+    "summary": "Bring oak logs to the mill before the rain.",
+    "art": "/Game/Frontier/UI/Dialogue/T_Quest_MillsSupply.T_Quest_MillsSupply",
+    "boards": ["board/silverbrook"],
+    "giver_npc": "npc/millwarden_oswin",
+    "requires_completed": []
+  },
+  "steps": [
+    {
+      "id": "gather_oak",
+      "prerequisites": [],
+      "objectives": [ { "key": "oak_logs", "kind": "gather", "target_id": "item/oak_log", "count": 6 } ],
+      "rewards": []
+    },
+    {
+      "id": "deliver_to_oswin",
+      "prerequisites": ["gather_oak"],
+      "objectives": [ { "key": "oswin", "kind": "talk_npc", "target_id": "npc/millwarden_oswin", "count": 1 } ],
+      "rewards": [ { "bundle_id": "reward/mills_supply_completion", "items": [
+        { "definition_id": "item/rough_timber", "quantity": 4 },
+        { "definition_id": "item/iron_nails", "quantity": 2 }
+      ] } ]
+    }
+  ]
+}
