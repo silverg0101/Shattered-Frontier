@@ -18,6 +18,24 @@
     "sans_numerals": "GameClient/ArtSource/Fonts/SourceSans3/SourceSans3-Regular.ttf"
   },
   "pieces": {
+    "stepper_chevron": {
+      "file": "stepper_chevron.png",
+      "nine_slice_px": [0, 0, 0, 0],
+      "intended_1080p_px": [16, 16],
+      "screens": ["14b-settings-graphics"]
+    },
+    "field_well": {
+      "file": "field_well.png",
+      "nine_slice_px": [16, 16, 16, 16],
+      "intended_1080p_px": [110, 38],
+      "screens": ["14b-settings-graphics"]
+    },
+    "window_crest": {
+      "file": "window_crest.png",
+      "nine_slice_px": [0, 0, 0, 0],
+      "intended_1080p_px": [120, 40],
+      "screens": ["14b-settings-graphics"]
+    },
     "window_frame": {
       "file": "window_frame.png",
       "nine_slice_px": [
@@ -1774,8 +1792,8 @@
         0
       ],
       "intended_1080p_px": [
-        60,
-        26
+        48,
+        30
       ],
       "screens": [
         "build-mode",
@@ -1794,8 +1812,8 @@
         0
       ],
       "intended_1080p_px": [
-        60,
-        26
+        48,
+        30
       ],
       "screens": [
         "build-mode",

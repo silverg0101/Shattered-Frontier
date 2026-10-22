@@ -1,5 +1,6 @@
 [
  {
+  "widget": "CanvasPanel:CanvasPanel_1",
   "name": "window frame",
   "rect": [
    336,
@@ -7,46 +8,48 @@
    1249,
    810
   ],
-  "found": false,
-  "match": 0.32,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 1.0,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "panelfill",
-    2.7
+    1.8
    ],
    [
     "panelfill",
-    7.1
+    2.5
    ]
   ],
-  "geometry": "FAIL",
-  "colour": "FAIL",
-  "verdict": "FAIL"
+  "geometry": "PASS",
+  "colour": "PASS",
+  "verdict": "PASS"
  },
  {
+  "widget": "TextBlock:TextBlock_0",
   "name": "title Settings",
   "rect": [
-   884,
-   140,
-   161,
-   44
+   885,
+   134,
+   157,
+   56
   ],
-  "found": false,
-  "match": 0.49,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.84,
+  "d_left": -2,
+  "d_top": -4,
+  "d_width": 3,
+  "d_height": 7,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
   "verdict": "FAIL"
  },
  {
+  "widget": "SFHudButton:SFHudButton_0",
   "name": "close x",
   "rect": [
    1515,
@@ -55,17 +58,18 @@
    46
   ],
   "found": true,
-  "match": 0.67,
-  "d_left": -8,
-  "d_top": -7,
-  "d_width": 15,
-  "d_height": 15,
+  "match": 0.97,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "Border:Border_3",
   "name": "tab Graphics",
   "rect": [
    452,
@@ -73,23 +77,24 @@
    202,
    55
   ],
-  "found": false,
-  "match": 0.46,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.99,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "mossfill",
     3.2
    ]
   ],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
+  "widget": "Border:Border_4",
   "name": "tab Audio",
   "rect": [
    655,
@@ -98,17 +103,18 @@
    55
   ],
   "found": true,
-  "match": 0.83,
-  "d_left": 0,
-  "d_top": 17,
-  "d_width": -23,
-  "d_height": -17,
+  "match": 0.99,
+  "d_left": -1,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "Border:Border_5",
   "name": "tab Controls",
   "rect": [
    852,
@@ -117,17 +123,18 @@
    55
   ],
   "found": true,
-  "match": 0.73,
-  "d_left": 11,
-  "d_top": 2,
-  "d_width": -18,
-  "d_height": -2,
+  "match": 0.99,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "Border:Border_6",
   "name": "tab Interface",
   "rect": [
    1056,
@@ -136,17 +143,18 @@
    55
   ],
   "found": true,
-  "match": 0.86,
-  "d_left": 1,
-  "d_top": 22,
-  "d_width": -25,
-  "d_height": -22,
+  "match": 0.99,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "Border:Border_7",
   "name": "tab Gameplay",
   "rect": [
    1253,
@@ -155,29 +163,30 @@
    55
   ],
   "found": true,
-  "match": 0.74,
-  "d_left": 1,
-  "d_top": 23,
-  "d_width": -7,
-  "d_height": -23,
+  "match": 0.99,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "TextBlock:TextBlock_6",
   "name": "label Graphics Preset",
   "rect": [
-   385,
-   292,
-   201,
-   32
+   386,
+   293,
+   199,
+   31
   ],
   "found": true,
-  "match": 0.52,
-  "d_left": 3,
-  "d_top": 1,
-  "d_width": 5,
+  "match": 0.73,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 3,
   "d_height": 0,
   "de": [],
   "geometry": "FAIL",
@@ -185,6 +194,7 @@
   "verdict": "FAIL"
  },
  {
+  "widget": "SizeBox:SizeBox_9",
   "name": "button Auto-Detect",
   "rect": [
    1277,
@@ -193,36 +203,38 @@
    36
   ],
   "found": true,
-  "match": 0.53,
-  "d_left": -11,
+  "match": 0.98,
+  "d_left": 0,
   "d_top": 0,
-  "d_width": 21,
-  "d_height": 1,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "TextBlock:TextBlock_8",
   "name": "status Preset",
   "rect": [
-   1435,
-   299,
-   103,
-   21
+   1444,
+   301,
+   93,
+   19
   ],
-  "found": false,
-  "match": 0.36,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.68,
+  "d_left": 0,
+  "d_top": 1,
+  "d_width": 1,
+  "d_height": 1,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "SizeBox:SizeBox_10",
   "name": "preset Low",
   "rect": [
    386,
@@ -231,22 +243,23 @@
    47
   ],
   "found": true,
-  "match": 0.86,
+  "match": 0.98,
   "d_left": 0,
-  "d_top": 3,
-  "d_width": -1,
-  "d_height": -3,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "platefill",
-    2.0
+    1.9
    ]
   ],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "SizeBox:SizeBox_11",
   "name": "preset Medium",
   "rect": [
    610,
@@ -255,17 +268,18 @@
    47
   ],
   "found": true,
-  "match": 0.88,
+  "match": 0.98,
   "d_left": 0,
-  "d_top": 3,
-  "d_width": -2,
-  "d_height": -3,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "SizeBox:SizeBox_12",
   "name": "preset High selected",
   "rect": [
    842,
@@ -274,22 +288,23 @@
    47
   ],
   "found": true,
-  "match": 0.6,
+  "match": 0.98,
   "d_left": 0,
-  "d_top": 4,
-  "d_width": -1,
-  "d_height": -4,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "mossfill",
     6.6
    ]
   ],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
+  "widget": "SizeBox:SizeBox_13",
   "name": "preset Epic",
   "rect": [
    1083,
@@ -298,17 +313,18 @@
    47
   ],
   "found": true,
-  "match": 0.85,
+  "match": 0.98,
   "d_left": 0,
-  "d_top": 3,
-  "d_width": -2,
-  "d_height": -3,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "SizeBox:SizeBox_14",
   "name": "preset Ultra",
   "rect": [
    1315,
@@ -317,36 +333,38 @@
    47
   ],
   "found": true,
-  "match": 0.85,
+  "match": 0.98,
   "d_left": 0,
-  "d_top": 3,
+  "d_top": 0,
   "d_width": 0,
-  "d_height": -3,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "TextBlock:TextBlock_14",
   "name": "heading Display",
   "rect": [
-   387,
+   388,
    432,
-   94,
-   28
+   92,
+   29
   ],
-  "found": false,
-  "match": 0.42,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.73,
+  "d_left": -1,
+  "d_top": 1,
+  "d_width": 0,
+  "d_height": 1,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "Overlay:Overlay_0",
   "name": "stepper Resolution",
   "rect": [
    669,
@@ -355,17 +373,18 @@
    37
   ],
   "found": true,
-  "match": 0.64,
-  "d_left": -20,
-  "d_top": -10,
-  "d_width": 41,
-  "d_height": 19,
+  "match": 0.99,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "Overlay:Overlay_1",
   "name": "stepper Window Mode",
   "rect": [
    669,
@@ -374,17 +393,18 @@
    37
   ],
   "found": true,
-  "match": 0.64,
-  "d_left": -20,
-  "d_top": -11,
-  "d_width": 41,
-  "d_height": 19,
+  "match": 0.98,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "Overlay:Overlay_2",
   "name": "stepper Frame Rate",
   "rect": [
    669,
@@ -393,17 +413,18 @@
    37
   ],
   "found": true,
-  "match": 0.63,
-  "d_left": -20,
-  "d_top": -11,
-  "d_width": 41,
-  "d_height": 19,
+  "match": 0.97,
+  "d_left": 0,
+  "d_top": 1,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "Overlay:Overlay_3",
   "name": "vsync On",
   "rect": [
    669,
@@ -412,17 +433,18 @@
    39
   ],
   "found": true,
-  "match": 0.79,
+  "match": 0.94,
   "d_left": 0,
-  "d_top": 0,
-  "d_width": -2,
-  "d_height": -1,
+  "d_top": -1,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
   "geometry": "PASS",
   "colour": "PASS",
   "verdict": "PASS"
  },
  {
+  "widget": "Overlay:Overlay_4",
   "name": "vsync Off",
   "rect": [
    814,
@@ -430,18 +452,19 @@
    129,
    39
   ],
-  "found": false,
-  "match": 0.39,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.94,
+  "d_left": 0,
+  "d_top": -1,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "Slider:Slider_0",
   "name": "render scale track",
   "rect": [
    440,
@@ -449,18 +472,19 @@
    342,
    21
   ],
-  "found": false,
-  "match": 0.37,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.97,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "Overlay:Overlay_5",
   "name": "render scale value",
   "rect": [
    859,
@@ -468,18 +492,19 @@
    87,
    40
   ],
-  "found": false,
-  "match": 0.43,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.99,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "Overlay:Overlay_6",
   "name": "motion blur On",
   "rect": [
    669,
@@ -488,17 +513,18 @@
    39
   ],
   "found": true,
-  "match": 0.8,
-  "d_left": 1,
+  "match": 0.96,
+  "d_left": 0,
   "d_top": 1,
-  "d_width": -2,
-  "d_height": -3,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "Overlay:Overlay_7",
   "name": "motion blur Off",
   "rect": [
    814,
@@ -506,37 +532,39 @@
    129,
    39
   ],
-  "found": false,
-  "match": 0.17,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.96,
+  "d_left": 0,
+  "d_top": 1,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "TextBlock:TextBlock_35",
   "name": "heading Quality",
   "rect": [
    1005,
-   429,
+   432,
    87,
    28
   ],
-  "found": false,
-  "match": 0.46,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.72,
+  "d_left": 1,
+  "d_top": 2,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "SizeBox:SizeBox_59",
   "name": "quality row View Distance",
   "rect": [
    1284,
@@ -544,18 +572,19 @@
    243,
    31
   ],
-  "found": false,
-  "match": 0.48,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.97,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "SizeBox:SizeBox_67",
   "name": "quality row Shadows",
   "rect": [
    1284,
@@ -563,18 +592,19 @@
    243,
    31
   ],
-  "found": false,
-  "match": 0.49,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.94,
+  "d_left": 0,
+  "d_top": -1,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "SizeBox:SizeBox_131",
   "name": "quality row Nanite Tessellation",
   "rect": [
    1284,
@@ -582,18 +612,19 @@
    243,
    31
   ],
-  "found": false,
-  "match": 0.5,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.87,
+  "d_left": 0,
+  "d_top": -2,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "SizeBox:SizeBox_134",
   "name": "button Apply",
   "rect": [
    683,
@@ -602,10 +633,10 @@
    54
   ],
   "found": true,
-  "match": 0.68,
+  "match": 0.98,
   "d_left": 0,
   "d_top": 1,
-  "d_width": -1,
+  "d_width": 0,
   "d_height": 0,
   "de": [],
   "geometry": "PASS",
@@ -613,6 +644,7 @@
   "verdict": "PASS"
  },
  {
+  "widget": "SizeBox:SizeBox_135",
   "name": "button Revert",
   "rect": [
    985,
@@ -621,15 +653,15 @@
    54
   ],
   "found": true,
-  "match": 0.74,
+  "match": 0.98,
   "d_left": 0,
   "d_top": 1,
-  "d_width": -1,
+  "d_width": 0,
   "d_height": 0,
   "de": [
    [
     "platefill",
-    8.8
+    9.2
    ]
   ],
   "geometry": "PASS",

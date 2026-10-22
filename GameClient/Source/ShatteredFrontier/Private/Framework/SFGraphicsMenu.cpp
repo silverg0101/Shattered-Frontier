@@ -121,18 +121,31 @@ void USFGraphicsMenu::NativeOnInitialized()
     StageSlot->SetPosition(FVector2D(1.f, -20.f)); StageSlot->SetSize(FVector2D(WindowW * S, WindowH * S));
 
     UBorder* WindowFrame = KitPanel(WidgetTree, TEXT("window_frame"), 1.f, Slate(0.94f), Brass(), FMargin(0.f), 6.f);
+    FLinearColor WellOpaque = WellFill(); WellOpaque.A = 1.f;
+    UBorder* WindowBacking = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+    WindowBacking->SetBrush(Frame(WellOpaque, FLinearColor::Transparent, 6.f));
+    UCanvasPanelSlot* BackingSlot = Stage->AddChildToCanvas(WindowBacking);
+    BackingSlot->SetAnchors(FAnchors(0.f, 0.f, 1.f, 1.f)); BackingSlot->SetOffsets(FMargin(8.f));
     UCanvasPanelSlot* FrameSlot = Stage->AddChildToCanvas(WindowFrame);
     FrameSlot->SetAnchors(FAnchors(0.f, 0.f, 1.f, 1.f)); FrameSlot->SetOffsets(FMargin(0.f));
 
     // Header: crest, title, flanking rules, close, tabs with the LB/RB keycaps.
+    Put(Stage, KitImage(WidgetTree, TEXT("window_crest"), 120.f, 40.f), 779.f, 66.f, 120.f / S, 40.f / S);
     Put(Stage, KitImage(WidgetTree, TEXT("icon_stag_emblem"), 60.f), 809.f, 70.f, 60.f / S, 60.f / S);
-    UTextBlock* Title = Heading(WidgetTree, TEXT("Settings"), 48, Ivory()); Title->SetJustification(ETextJustify::Center);
+    UTextBlock* Title = Heading(WidgetTree, TEXT("Settings"), 36, Ivory()); Title->SetJustification(ETextJustify::Center);
     PutText(Stage, Title, 839.f, 141.f, 0.5f);
-    UButton* Close = FlatButton(WidgetTree, KitImage(WidgetTree, TEXT("close_x"), 40.f));
+    // Title rules: a section_rule and a quest_diamond each side of "Settings".
+    Put(Stage, KitImage(WidgetTree, TEXT("section_rule"), 110.f, 4.f), 640.f, 139.f, 110.f / S, 4.f / S);
+    Put(Stage, KitImage(WidgetTree, TEXT("quest_diamond"), 12.f), 745.f, 135.f, 12.f / S, 12.f / S);
+    Put(Stage, KitImage(WidgetTree, TEXT("quest_diamond"), 12.f), 925.f, 135.f, 12.f / S, 12.f / S);
+    Put(Stage, KitImage(WidgetTree, TEXT("section_rule"), 110.f, 4.f), 937.f, 139.f, 110.f / S, 4.f / S);
+    UBorder* CloseBox = Panel(WidgetTree, WellFill(), Brass(), FMargin(9.f), 4.f);
+    CloseBox->SetContent(KitImage(WidgetTree, TEXT("close_x"), 28.f));
+    UButton* Close = FlatButton(WidgetTree, CloseBox);
     Click(Close, [Self]() { if (USFGraphicsMenu* Menu = Self.Get()) { Menu->HandleEscape(); } });
-    Put(Stage, Close, 1318.f, 121.f, 40.f, 40.f);
-    Put(Stage, KitImage(WidgetTree, TEXT("keycap_lb"), 44.f, 30.f), 330.f, 189.f, 44.f / S, 28.f / S);
-    Put(Stage, KitImage(WidgetTree, TEXT("keycap_rb"), 44.f, 30.f), 1297.f, 189.f, 44.f / S, 28.f / S);
+    Put(Stage, Close, 1319.f, 121.f, 40.f, 40.f);
+    Put(Stage, KitImage(WidgetTree, TEXT("keycap_lb"), 48.f, 30.f), 330.f, 189.f, 48.f / S, 30.f / S);
+    Put(Stage, KitImage(WidgetTree, TEXT("keycap_rb"), 48.f, 30.f), 1297.f, 189.f, 48.f / S, 30.f / S);
     static const TCHAR* const TabNames[5] = {TEXT("Graphics"), TEXT("Audio"), TEXT("Controls"), TEXT("Interface"), TEXT("Gameplay")};
     static const float TabEdges[6] = {394.f, 570.f, 742.f, 920.f, 1091.f, 1273.f};
     for (int32 Index = 0; Index < 5; ++Index)
@@ -146,20 +159,21 @@ void USFGraphicsMenu::NativeOnInitialized()
 
 
     // Preset row.
-    PutText(Stage, Heading(WidgetTree, TEXT("Graphics Preset"), 28, Ivory()), 335.f, 267.f);
+    UTextBlock* PresetHeading = Heading(WidgetTree, TEXT("Graphics Preset"), 23, Ivory());
+    PutText(Stage, PresetHeading, 335.f, 266.f);
     const FSFHudButton Detect = Button(WidgetTree, TEXT("Auto-Detect"), EButtonKind::Secondary, 0.f);
-    Detect.Label->SetFont(RoleFont(TextFamily(), 18, false));
+    Detect.Label->SetFont(RoleFont(TextFamily(), 15, false));
     if (UBorder* DetectPad = Cast<UBorder>(Detect.Label->GetParent())) { DetectPad->SetPadding(FMargin(6.f, 0.f)); }
     Click(Detect.Button, [Self]() { if (USFGraphicsMenu* Menu = Self.Get()) { Menu->DoAutoDetect(); } });
     Put(Stage, Detect.Root, 1112.f, 253.f, 110.f, 31.f);
     Put(Stage, Panel(WidgetTree, Hairline(), Hairline(), FMargin(0.f), 0.f), 1241.f, 258.f, 1.f / S, 22.f);
-    UTextBlock* Status = Text(WidgetTree, TEXT("Preset: High"), 18, Ivory());
+    UTextBlock* Status = Text(WidgetTree, TEXT("Preset: High"), 15, Ivory());
     StatusText = Status;
-    PutText(Stage, Status, 1250.f, 269.f);
+    PutText(Stage, Status, 1340.f, 269.f, 1.f);
     for (int32 Index = 0; Index < 5; ++Index)
     {
         const FSFHudButton Preset = Button(WidgetTree, LevelNames[Index], EButtonKind::Secondary, 0.f);
-        Preset.Label->SetFont(RoleFont(TextFamily(), 22, false));
+        Preset.Label->SetFont(RoleFont(TextFamily(), 17, false));
         Click(Preset.Button, [Self, Index]()
         {
             if (USFGraphicsMenu* Menu = Self.Get()) { Menu->Session().SelectPreset(static_cast<ESFGraphicsPreset>(Index)); Menu->Refresh(); }
@@ -174,7 +188,7 @@ void USFGraphicsMenu::NativeOnInitialized()
     auto Stepper = [this, Self](int32 FontSize, TFunction<FString()> Value, TFunction<void(int32)> Step)
     {
         UOverlay* Box = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
-        UBorder* Plate = KitPanel(WidgetTree, TEXT("stepper_field"), 1.f, WellFill(), Hairline(), FMargin(0.f), 3.f, false);
+        UBorder* Plate = KitPanel(WidgetTree, TEXT("field_well"), 1.f, WellFill(), Brass(), FMargin(0.f), 3.f, false);
         UOverlaySlot* PlateSlot = Box->AddChildToOverlay(Plate);
         PlateSlot->SetHorizontalAlignment(HAlign_Fill); PlateSlot->SetVerticalAlignment(VAlign_Fill);
         UTextBlock* ValueText = Text(WidgetTree, Value(), FontSize, Ivory()); ValueText->SetJustification(ETextJustify::Center);
@@ -182,15 +196,17 @@ void USFGraphicsMenu::NativeOnInitialized()
         ValueSlot->SetHorizontalAlignment(HAlign_Center); ValueSlot->SetVerticalAlignment(VAlign_Center);
         for (int32 Dir : {-1, 1})
         {
-            UTextBlock* Arrow = Text(WidgetTree, Dir < 0 ? TEXT("<") : TEXT(">"), FontSize + 2, Ivory()); Arrow->SetJustification(ETextJustify::Center);
-            USizeBox* Hit = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-            Hit->SetWidthOverride(36.f); Hit->SetContent(Arrow);
+            USizeBox* Arrow = KitImage(WidgetTree, TEXT("stepper_chevron"), 16.f, 16.f);
+            if (Dir < 0) { Arrow->SetRenderTransform(FWidgetTransform(FVector2D::ZeroVector, FVector2D(-1.f, 1.f), FVector2D::ZeroVector, 0.f)); Arrow->SetRenderTransformPivot(FVector2D(0.5f, 0.5f)); }
+            // 36 px end cell with the 16 px chevron centred in it.
             UBorder* Center = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
-            Center->SetBrush(FSlateNoResource()); Center->SetHorizontalAlignment(HAlign_Center); Center->SetVerticalAlignment(VAlign_Center); Center->SetContent(Hit);
-            UButton* ArrowButton = FlatButton(WidgetTree, Center);
+            Center->SetBrush(FSlateNoResource()); Center->SetPadding(FMargin(0.f)); Center->SetHorizontalAlignment(HAlign_Center); Center->SetVerticalAlignment(VAlign_Center); Center->SetContent(Arrow);
+            USizeBox* Hit = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+            Hit->SetWidthOverride(36.f); Hit->SetContent(Center);
+            UButton* ArrowButton = FlatButton(WidgetTree, Hit);
             Click(ArrowButton, [Self, Step, Dir]() { Step(Dir); if (USFGraphicsMenu* Menu = Self.Get()) { Menu->Refresh(); } });
             UOverlaySlot* ArrowSlot = Box->AddChildToOverlay(ArrowButton);
-            ArrowSlot->SetHorizontalAlignment(Dir < 0 ? HAlign_Left : HAlign_Right); ArrowSlot->SetVerticalAlignment(VAlign_Fill); ArrowSlot->SetPadding(FMargin(4.f, 0.f));
+            ArrowSlot->SetHorizontalAlignment(Dir < 0 ? HAlign_Left : HAlign_Right); ArrowSlot->SetVerticalAlignment(VAlign_Fill); ArrowSlot->SetPadding(FMargin(2.f, 0.f));
         }
         for (const bool bLeft : {true, false})
         {
@@ -216,10 +232,11 @@ void USFGraphicsMenu::NativeOnInitialized()
             RootSlot->SetHorizontalAlignment(HAlign_Fill); RootSlot->SetVerticalAlignment(VAlign_Fill);
             UHorizontalBox* Content = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
             Content->SetVisibility(ESlateVisibility::HitTestInvisible);
-            USizeBox* Glyph = SFHudStyle::KitImage(WidgetTree, bOnSide ? TEXT("status_tick") : TEXT("status_cross"), 24.f);
-            if (UImage* GlyphImage = Cast<UImage>(Glyph->GetContent())) { GlyphImage->SetColorAndOpacity(SFHudStyle::Ivory()); }
+            // The status_cross art is red, so the chosen Off plate (crimson) carries the ivory close_x glyph instead.
+            UWidget* Glyph = bOnSide ? static_cast<UWidget*>(SFHudStyle::KitImage(WidgetTree, TEXT("status_tick"), 24.f))
+                : static_cast<UWidget*>(SFHudStyle::KitImage(WidgetTree, TEXT("close_x"), 14.f));
             Content->AddChildToHorizontalBox(Glyph)->SetVerticalAlignment(VAlign_Center);
-            Content->AddChildToHorizontalBox(SFHudStyle::Text(WidgetTree, bOnSide ? TEXT("On") : TEXT("Off"), 20, SFHudStyle::Ivory()))->SetPadding(FMargin(8.f, 0.f, 0.f, 0.f));
+            Content->AddChildToHorizontalBox(SFHudStyle::Text(WidgetTree, bOnSide ? TEXT("On") : TEXT("Off"), 18, SFHudStyle::Ivory()))->SetPadding(FMargin(8.f, 0.f, 0.f, 0.f));
             UOverlaySlot* ContentSlot = Face->AddChildToOverlay(Content);
             ContentSlot->SetHorizontalAlignment(HAlign_Center); ContentSlot->SetVerticalAlignment(VAlign_Center);
             Click(Segment.Button, [Self, Set, bOnSide]() { Set(bOnSide); if (USFGraphicsMenu* Menu = Self.Get()) { Menu->Refresh(); } });
@@ -231,11 +248,11 @@ void USFGraphicsMenu::NativeOnInitialized()
     };
 
     // ---- Display column
-    PutText(Stage, Heading(WidgetTree, TEXT("Display"), 26, Ivory()), 337.f, 387.f);
+    PutText(Stage, Heading(WidgetTree, TEXT("Display"), 22, Ivory()), 337.f, 387.f);
     Put(Stage, Hairline1(WidgetTree), 337.f, 407.f, 483.f, 1.f / S);
-    auto RowLabel = [&](const TCHAR* Name, float CenterY) { PutText(Stage, Text(WidgetTree, Name, 22, Ivory()), 337.f, CenterY); };
+    auto RowLabel = [&](const TCHAR* Name, float CenterY) { PutText(Stage, Text(WidgetTree, Name, 20, Ivory()), 337.f, CenterY); };
     RowLabel(TEXT("Resolution"), 432.f);
-    Put(Stage, Stepper(20, [Edit]() { return FString::Printf(TEXT("%d x %d"), Edit->Pending().Resolution.X, Edit->Pending().Resolution.Y); },
+    Put(Stage, Stepper(17, [Edit]() { return FString::Printf(TEXT("%d x %d"), Edit->Pending().Resolution.X, Edit->Pending().Resolution.Y); },
         [Self, Edit, Cycle](int32 Dir)
         {
             const TArray<FIntPoint>& List = Self->Resolutions;
@@ -243,7 +260,7 @@ void USFGraphicsMenu::NativeOnInitialized()
         }), 583.f, 416.f, 237.f, 32.f);
     Put(Stage, Hairline1(WidgetTree), 337.f, 455.f, 483.f, 1.f / S);
     RowLabel(TEXT("Window Mode"), 478.f);
-    Put(Stage, Stepper(20, [Edit]() { return WindowModeName(Edit->Pending().WindowMode); },
+    Put(Stage, Stepper(17, [Edit]() { return WindowModeName(Edit->Pending().WindowMode); },
         [Edit, Cycle](int32 Dir)
         {
             static const EWindowMode::Type Modes[3] = {EWindowMode::Fullscreen, EWindowMode::WindowedFullscreen, EWindowMode::Windowed};
@@ -252,7 +269,7 @@ void USFGraphicsMenu::NativeOnInitialized()
         }), 583.f, 462.f, 237.f, 32.f);
     Put(Stage, Hairline1(WidgetTree), 337.f, 501.f, 483.f, 1.f / S);
     RowLabel(TEXT("Frame Rate Limit"), 524.f);
-    Put(Stage, Stepper(20, [Edit]() { return FrameRateName(Edit->Pending().FrameRateLimit); },
+    Put(Stage, Stepper(17, [Edit]() { return FrameRateName(Edit->Pending().FrameRateLimit); },
         [Self, Edit, Cycle](int32 Dir)
         {
             const TArray<int32>& List = Self->FrameRates;
@@ -263,11 +280,12 @@ void USFGraphicsMenu::NativeOnInitialized()
     Toggle(573.f, [Edit]() { return Edit->Pending().bVSync; }, [Edit](bool bOn) { Edit->EditPending().bVSync = bOn; });
     Put(Stage, Hairline1(WidgetTree), 337.f, 597.f, 483.f, 1.f / S);
     RowLabel(TEXT("Render Scale"), 615.f);
-    PutText(Stage, Text(WidgetTree, TEXT("67%"), 19, Ivory()), 338.f, 650.f);
+    PutText(Stage, Text(WidgetTree, TEXT("67%"), 18, Ivory()), 338.f, 650.f);
     USlider* Slider = WidgetTree->ConstructWidget<USlider>(USlider::StaticClass());
     Slider->SetMinValue(67.f); Slider->SetMaxValue(100.f); Slider->SetStepSize(1.f);
     FSliderStyle SliderStyle = Slider->GetWidgetStyle();
-    if (const FSFHudKitElement* Track = Kit(TEXT("slider_track"))) { SliderStyle.NormalBarImage = SliderStyle.HoveredBarImage = SliderStyle.DisabledBarImage = KitBrush(*Track); }
+    // The track and its moss fill are separate layers under the slider; the slider itself draws only the thumb.
+    SliderStyle.NormalBarImage = SliderStyle.HoveredBarImage = SliderStyle.DisabledBarImage = FSlateNoResource();
     if (const FSFHudKitElement* Thumb = Kit(TEXT("slider_thumb"))) { FSlateBrush ThumbBrush = KitBrush(*Thumb); ThumbBrush.ImageSize = FVector2D(22.f, 22.f); SliderStyle.NormalThumbImage = SliderStyle.HoveredThumbImage = SliderStyle.DisabledThumbImage = ThumbBrush; }
     SliderStyle.BarThickness = 12.f;
     Slider->SetWidgetStyle(SliderStyle);
@@ -277,13 +295,14 @@ void USFGraphicsMenu::NativeOnInitialized()
     StyleBar(ScaleFill, Moss());
     FProgressBarStyle FillStyle = ScaleFill->GetWidgetStyle(); FillStyle.BackgroundImage = FSlateNoResource(); ScaleFill->SetWidgetStyle(FillStyle);
     ScaleFillBar = ScaleFill;
-    Put(Stage, ScaleFill, 389.f, 646.f, 286.f, 8.f);
-    Put(Stage, Slider, 383.f, 638.f, 298.f, 24.f);
-    PutText(Stage, Text(WidgetTree, TEXT("100%"), 19, Ivory()), 693.f, 650.f);
+    Put(Stage, KitPanel(WidgetTree, TEXT("slider_track"), 1.f, WellFill(), Hairline(), FMargin(0.f), 3.f, false), 389.f, 644.f, 286.f, 12.f);
+    Put(Stage, ScaleFill, 391.f, 646.f, 282.f, 8.f);
+    Put(Stage, Slider, 383.f, 641.f, 298.f, 18.f);
+    PutText(Stage, Text(WidgetTree, TEXT("100%"), 18, Ivory()), 693.f, 650.f);
     UOverlay* ScaleBox = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
-    UBorder* ScalePlate = KitPanel(WidgetTree, TEXT("stepper_field"), 1.f, WellFill(), Hairline(), FMargin(0.f), 3.f, false);
+    UBorder* ScalePlate = KitPanel(WidgetTree, TEXT("field_well"), 1.f, WellFill(), Brass(), FMargin(0.f), 3.f, false);
     UOverlaySlot* ScalePlateSlot = ScaleBox->AddChildToOverlay(ScalePlate); ScalePlateSlot->SetHorizontalAlignment(HAlign_Fill); ScalePlateSlot->SetVerticalAlignment(VAlign_Fill);
-    UTextBlock* ScaleValue = Num(WidgetTree, TEXT("75%"), 24, Ivory()); ScaleText = ScaleValue;
+    UTextBlock* ScaleValue = Num(WidgetTree, TEXT("75%"), 20, Ivory()); ScaleText = ScaleValue;
     UOverlaySlot* ScaleValueSlot = ScaleBox->AddChildToOverlay(ScaleValue); ScaleValueSlot->SetHorizontalAlignment(HAlign_Center); ScaleValueSlot->SetVerticalAlignment(VAlign_Center);
     Put(Stage, ScaleBox, 748.f, 632.f, 76.f, 35.f);
     Put(Stage, Hairline1(WidgetTree), 337.f, 684.f, 483.f, 1.f / S);
@@ -291,12 +310,12 @@ void USFGraphicsMenu::NativeOnInitialized()
     Toggle(707.f, [Edit]() { return Edit->Pending().bMotionBlur; }, [Edit](bool bOn) { Edit->EditPending().bMotionBlur = bOn; });
 
     // ---- Quality column: a "set all" strip, then one stepper per scalability group
-    PutText(Stage, Heading(WidgetTree, TEXT("Quality"), 26, Ivory()), 875.f, 386.f);
+    PutText(Stage, Heading(WidgetTree, TEXT("Quality"), 21, Ivory()), 875.f, 386.f);
     static const float LevelCenters[5] = {1021.f, 1093.f, 1167.f, 1233.f, 1301.f};
     for (int32 Index = 0; Index < 5; ++Index)
     {
         UVerticalBox* Stack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-        UTextBlock* Name = Text(WidgetTree, LevelNames[Index], 17, Ivory()); Name->SetJustification(ETextJustify::Center);
+        UTextBlock* Name = Text(WidgetTree, LevelNames[Index], 13, Ivory()); Name->SetJustification(ETextJustify::Center);
         Stack->AddChildToVerticalBox(Name)->SetHorizontalAlignment(HAlign_Center);
         USizeBox* Underline = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
         Underline->SetHeightOverride(2.f); Underline->SetContent(Panel(WidgetTree, Amber(), Amber(), FMargin(0.f), 0.f));
@@ -333,11 +352,11 @@ void USFGraphicsMenu::NativeOnInitialized()
     for (const FLevelRow& Row : LevelRows)
     {
         UHorizontalBox* Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-        UHorizontalBoxSlot* LabelSlot = Line->AddChildToHorizontalBox(Text(WidgetTree, Row.Label, 20, Ivory()));
+        UHorizontalBoxSlot* LabelSlot = Line->AddChildToHorizontalBox(Text(WidgetTree, Row.Label, 18, Ivory()));
         LabelSlot->SetPadding(FMargin(7.f * S, 0.f, 0.f, 0.f));
         LabelSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); LabelSlot->SetVerticalAlignment(VAlign_Center);
         const bool bTess = Row.bTessellation; int32 FSFGraphicsOptions::* const Field = Row.Field;
-        UOverlay* Control = Stepper(20, [Edit, Field, bTess]() { return LevelName(Edit->Pending().*Field, bTess); },
+        UOverlay* Control = Stepper(16, [Edit, Field, bTess]() { return LevelName(Edit->Pending().*Field, bTess); },
             [Edit, Field](int32 Dir) { int32& Level = Edit->EditPending().*Field; Level = FMath::Clamp(Level + Dir, 0, FSFGraphicsOptions::MaxLevel); });
         USizeBox* ControlSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
         ControlSize->SetWidthOverride(212.f * S); ControlSize->SetHeightOverride(27.f * S); ControlSize->SetContent(Control);
@@ -354,9 +373,11 @@ void USFGraphicsMenu::NativeOnInitialized()
     const FSFHudButton Apply = Button(WidgetTree, TEXT("Apply"), EButtonKind::Secondary, 0.f);
     ApplyButtonStyle(Apply.Button, EButtonKind::Secondary, true);
     Click(Apply.Button, [Self]() { if (USFGraphicsMenu* Menu = Self.Get()) { Menu->DoApply(); } });
+    Apply.Label->SetFont(RoleFont(TextFamily(), 21, false));
     ApplyButton = Apply.Button;
     Put(Stage, Apply.Root, 595.f, 750.f, 218.f, 47.f);
     const FSFHudButton Revert = Button(WidgetTree, TEXT("Revert"), EButtonKind::Secondary, 0.f);
+    Revert.Label->SetFont(RoleFont(TextFamily(), 21, false));
     Click(Revert.Button, [Self]() { if (USFGraphicsMenu* Menu = Self.Get()) { Menu->DoRevert(); } });
     Put(Stage, Revert.Root, 858.f, 750.f, 216.f, 47.f);
     Put(Stage, KitImage(WidgetTree, TEXT("quest_diamond"), 16.f), 828.f, 767.f, 16.f / S, 16.f / S);
@@ -368,24 +389,28 @@ void USFGraphicsMenu::NativeOnInitialized()
     UBorder* Dim = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
     Dim->SetBrush(Frame(FLinearColor(0.f, 0.f, 0.f, 0.55f), FLinearColor::Transparent, 0.f));
     UCanvasPanelSlot* DimSlot = Prompt->AddChildToCanvas(Dim); DimSlot->SetAnchors(FAnchors(0.f, 0.f, 1.f, 1.f)); DimSlot->SetOffsets(FMargin(0.f));
-    UBorder* Modal = KitPanel(WidgetTree, TEXT("modal_frame"), 1.f, Slate(0.96f), Brass(), FMargin(40.f, 48.f), 6.f);
+    UBorder* Modal = KitPanel(WidgetTree, TEXT("modal_frame"), 1.f, Slate(0.96f), Brass(), FMargin(29.f, 40.f, 29.f, 30.f), 6.f);
     UVerticalBox* Body = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     Modal->SetContent(Body);
-    UTextBlock* KeepHead = Heading(WidgetTree, TEXT("Keep these display settings?"), 35, Ivory()); KeepHead->SetJustification(ETextJustify::Center);
+    UTextBlock* KeepHead = Heading(WidgetTree, TEXT("Keep these display settings?"), 34, Ivory()); KeepHead->SetJustification(ETextJustify::Center);
     KeepTitle = KeepHead;
     Body->AddChildToVerticalBox(KeepHead)->SetHorizontalAlignment(HAlign_Center);
     UTextBlock* KeepDetail = Text(WidgetTree, TEXT(""), 22, Ivory()); KeepDetail->SetJustification(ETextJustify::Center);
     KeepDetailText = KeepDetail;
-    Body->AddChildToVerticalBox(KeepDetail)->SetPadding(FMargin(0.f, 14.f, 0.f, 0.f));
+    Body->AddChildToVerticalBox(KeepDetail)->SetPadding(FMargin(0.f, 7.f, 0.f, 0.f));
     UTextBlock* Countdown = Text(WidgetTree, TEXT(""), 20, Ivory()); Countdown->SetJustification(ETextJustify::Center);
     KeepCountdown = Countdown;
-    Body->AddChildToVerticalBox(Countdown)->SetPadding(FMargin(0.f, 8.f, 0.f, 12.f));
+    Body->AddChildToVerticalBox(Countdown)->SetPadding(FMargin(0.f, 4.f, 0.f, 12.f));
     UProgressBar* Bar = WidgetTree->ConstructWidget<UProgressBar>(UProgressBar::StaticClass());
     StyleBar(Bar, Moss()); Bar->SetPercent(1.f); KeepBar = Bar;
+    FProgressBarStyle KeepStyle = Bar->GetWidgetStyle();
+    KeepStyle.FillImage = Frame(FLinearColor::White, FLinearColor::Transparent, 2.f); KeepStyle.BackgroundImage = FSlateNoResource();
+    Bar->SetWidgetStyle(KeepStyle); Bar->SetFillColorAndOpacity(Hex(TEXT("7FA07A")));
     USizeBox* BarSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
     BarSize->SetWidthOverride(574.f * S); BarSize->SetHeightOverride(18.f);
-    UBorder* BarFrame = Panel(WidgetTree, WellFill(), Hairline(), FMargin(2.f), 3.f); BarFrame->SetContent(Bar); BarSize->SetContent(BarFrame);
-    Body->AddChildToVerticalBox(BarSize)->SetPadding(FMargin(0.f, 0.f, 0.f, 24.f));
+    UBorder* BarFrame = Panel(WidgetTree, WellFill(), Brass(), FMargin(2.f), 3.f); BarFrame->SetContent(Bar); BarSize->SetContent(BarFrame);
+    UVerticalBoxSlot* BarSlot = Body->AddChildToVerticalBox(BarSize);
+    BarSlot->SetPadding(FMargin(0.f, 0.f, 0.f, 22.f)); BarSlot->SetHorizontalAlignment(HAlign_Center);
     UHorizontalBox* Buttons = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     const FSFHudButton Keep = Button(WidgetTree, TEXT("Keep Changes"), EButtonKind::Secondary, 305.f * S);
     ApplyButtonStyle(Keep.Button, EButtonKind::Secondary, true);
@@ -394,13 +419,21 @@ void USFGraphicsMenu::NativeOnInitialized()
     const FSFHudButton Undo = Button(WidgetTree, TEXT("Revert"), EButtonKind::Secondary, 302.f * S);
     Undo.Root->SetHeightOverride(58.f * S);
     Click(Undo.Button, [Self]() { if (USFGraphicsMenu* Menu = Self.Get()) { Menu->DoUndo(); } });
-    Buttons->AddChildToHorizontalBox(Keep.Root)->SetPadding(FMargin(0.f, 0.f, 24.f, 0.f));
+    Buttons->AddChildToHorizontalBox(Keep.Root)->SetPadding(FMargin(0.f, 0.f, 29.f, 0.f));
     Buttons->AddChildToHorizontalBox(Undo.Root);
     Body->AddChildToVerticalBox(Buttons)->SetHorizontalAlignment(HAlign_Center);
     USizeBox* ModalBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    ModalBox->SetWidthOverride(718.f * S); ModalBox->SetHeightOverride(297.f * S); ModalBox->SetContent(Modal);
+    // The modal_frame centre is translucent: an opaque slate backing keeps the menu from reading through.
+    UOverlay* ModalStack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
+    UBorder* Backing = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+    Backing->SetBrush(Frame(WellOpaque, FLinearColor::Transparent, 6.f));
+    UOverlaySlot* BackSlot = ModalStack->AddChildToOverlay(Backing);
+    BackSlot->SetHorizontalAlignment(HAlign_Fill); BackSlot->SetVerticalAlignment(VAlign_Fill); BackSlot->SetPadding(FMargin(6.f));
+    UOverlaySlot* ModalFrameSlot = ModalStack->AddChildToOverlay(Modal);
+    ModalFrameSlot->SetHorizontalAlignment(HAlign_Fill); ModalFrameSlot->SetVerticalAlignment(VAlign_Fill);
+    ModalBox->SetWidthOverride(718.f * S); ModalBox->SetHeightOverride(297.f * S); ModalBox->SetContent(ModalStack);
     UCanvasPanelSlot* ModalSlot = Prompt->AddChildToCanvas(ModalBox);
-    ModalSlot->SetAnchors(FAnchors(0.5f, 0.5f)); ModalSlot->SetAlignment(FVector2D(0.5, 0.5)); ModalSlot->SetAutoSize(true);
+    ModalSlot->SetAnchors(FAnchors(0.5f, 0.5f)); ModalSlot->SetAlignment(FVector2D(0.5, 0.5)); ModalSlot->SetAutoSize(true); ModalSlot->SetPosition(FVector2D(0.f, 10.f));
     Prompt->SetVisibility(ESlateVisibility::Collapsed);
     KeepLayer = Prompt;
 

@@ -3,7 +3,8 @@
         -nosound -nop4 -UserDir=<temp dir> "-ExecCmds=py tools/Capture-GraphicsMenu.py <out folder>"
 Once the pawn exists it opens the menu through the dev SFGfx command, selects each preset and shoots 'Shot showui' (menu-<preset>), then
 the Custom label, the keep-or-revert prompt, and finally closes the menu and shoots the bare scene at Low, High and Ultra (scene-<preset>).
-The High menu and the keep prompt are also written as settings-graphics-live.png / settings-keep-revert-live.png for tools/ui_pixel_diff.py.
+The High menu and the keep prompt are also written as settings-graphics-live.png / settings-keep-revert-live.png for tools/ui_pixel_diff.py,
+each menu shot with its SFUi rects widget dump (<name>.json) so the diff measures exact live geometry.
 The engine writes PNGs under Saved/Screenshots; they are moved into <out>."""
 import shutil
 import sys
@@ -38,10 +39,14 @@ def collect():
         except OSError:
             state['pending'].insert(0, name)
             return
-        if name == 'menu-high':
-            shutil.copyfile(OUT / (name + '.png'), OUT / 'settings-graphics-live.png')
-        if name == 'menu-keep':
-            shutil.copyfile(OUT / (name + '.png'), OUT / 'settings-keep-revert-live.png')
+        rects = Path(u.Paths.project_saved_dir()) / 'UiRects.json'  # written by SFUi rects just before the shot
+        if name.startswith('menu-') and rects.exists():
+            shutil.copyfile(rects, OUT / (name + '.json'))
+        for shot, live in (('menu-high', 'settings-graphics-live'), ('menu-keep', 'settings-keep-revert-live')):
+            if name == shot:
+                shutil.copyfile(OUT / (name + '.png'), OUT / (live + '.png'))
+                if (OUT / (name + '.json')).exists():
+                    shutil.copyfile(OUT / (name + '.json'), OUT / (live + '.json'))
 
 
 def on_tick(delta):
@@ -58,6 +63,8 @@ def on_tick(delta):
             state['step'] += 1
             if name:
                 state['pending'].append(name)
+            if command == 'Shot showui':  # exact widget rects of this frame for tools/ui_pixel_diff.py
+                u.SystemLibrary.execute_console_command(world, 'SFUi rects')
             u.SystemLibrary.execute_console_command(world, command)
             u.log('GFX_CAPTURE ' + command)
     except Exception as error:  # never leave a -game session running on a script error

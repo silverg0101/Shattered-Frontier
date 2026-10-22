@@ -88,6 +88,16 @@ def iou(a, b):
     return iw * ih / (aw * ah + bw * bh - iw * ih)
 
 
+def text_ink(gray_img, x, y, w, h):
+    """Tight box of the light glyph pixels inside a text widget's line box (UI text is light on a dark plate); the line box if none."""
+    x0, y0 = max(0, int(x)), max(0, int(y))
+    crop = np.asarray(gray_img)[y0:int(y + h), x0:int(x + w)]
+    if crop.size == 0: return x, y, w, h
+    ys, xs = np.nonzero(crop > np.median(crop) + 60)
+    if len(xs) == 0: return x, y, w, h
+    return x0 + xs.min(), y0 + ys.min(), xs.max() - xs.min() + 1, ys.max() - ys.min() + 1
+
+
 def live_rect(widgets, rect):
     """The live widget (exact Slate rect from <live>.json) that best overlaps the concept rect; prefers the smallest on ties. None if IoU < 0.25."""
     best, best_key = None, (0.25, 0)
@@ -123,7 +133,10 @@ def run(screen, live_path, out_root):
         if widgets is not None:  # exact live geometry from the engine
             w = live_rect(widgets, el['rect']); found = w is not None
             if found:
-                lx, ly, lw, lh = w['rect']; dl, dt = round(lx - x), round(ly - y); dw, dh_ = round(lw - el['rect'][2]), round(lh - el['rect'][3])
+                lx, ly, lw, lh = w['rect']
+                if w['class'] == 'TextBlock':  # a text widget's rect is its line box; the concept rect is the ink, so measure the live ink
+                    lx, ly, lw, lh = text_ink(lg, lx, ly, lw, lh)
+                dl, dt = round(lx - x), round(ly - y); dw, dh_ = round(lw - el['rect'][2]), round(lh - el['rect'][3])
                 match_name = '%s:%s' % (w['class'], w['name'])
             else: dl = dt = dw = dh_ = None
             tl = br = (0, 0, iou(el['rect'], w['rect']) if found else 0.0)

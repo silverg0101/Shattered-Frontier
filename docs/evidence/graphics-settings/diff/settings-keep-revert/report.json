@@ -1,5 +1,6 @@
 [
  {
+  "widget": "SizeBox:SizeBox_140",
   "name": "modal frame",
   "rect": [
    548,
@@ -8,76 +9,39 @@
    341
   ],
   "found": true,
-  "match": 0.5,
+  "match": 1.0,
   "d_left": 0,
-  "d_top": -7,
-  "d_width": -1,
-  "d_height": -5,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "panelfill",
-    29.4
+    3.0
    ],
    [
     "panelfill",
-    6.4
+    3.0
    ]
   ],
-  "geometry": "FAIL",
-  "colour": "FAIL",
-  "verdict": "FAIL"
+  "geometry": "PASS",
+  "colour": "PASS",
+  "verdict": "PASS"
  },
  {
+  "widget": "TextBlock:TextBlock_63",
   "name": "modal title",
   "rect": [
-   700,
-   440,
-   526,
-   48
+   701,
+   444,
+   524,
+   46
   ],
   "found": true,
-  "match": 0.81,
-  "d_left": -13,
+  "match": 0.74,
+  "d_left": -2,
   "d_top": -2,
-  "d_width": 19,
-  "d_height": -2,
-  "de": [],
-  "geometry": "FAIL",
-  "colour": "PASS",
-  "verdict": "FAIL"
- },
- {
-  "name": "modal detail",
-  "rect": [
-   762,
-   503,
-   395,
-   30
-  ],
-  "found": true,
-  "match": 0.72,
-  "d_left": 3,
-  "d_top": 5,
-  "d_width": -7,
-  "d_height": 1,
-  "de": [],
-  "geometry": "FAIL",
-  "colour": "PASS",
-  "verdict": "FAIL"
- },
- {
-  "name": "modal countdown",
-  "rect": [
-   837,
-   545,
-   246,
-   30
-  ],
-  "found": true,
-  "match": 0.76,
-  "d_left": 0,
-  "d_top": 9,
-  "d_width": 0,
+  "d_width": -3,
   "d_height": 0,
   "de": [],
   "geometry": "FAIL",
@@ -85,6 +49,47 @@
   "verdict": "FAIL"
  },
  {
+  "widget": "TextBlock:TextBlock_64",
+  "name": "modal detail",
+  "rect": [
+   764,
+   506,
+   393,
+   24
+  ],
+  "found": true,
+  "match": 0.33,
+  "d_left": 2,
+  "d_top": -2,
+  "d_width": -5,
+  "d_height": 1,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "modal countdown",
+  "rect": [
+   838,
+   549,
+   245,
+   25
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "SizeBox:SizeBox_137",
   "name": "modal progress bar",
   "rect": [
    630,
@@ -92,18 +97,19 @@
    659,
    18
   ],
-  "found": false,
-  "match": 0.47,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.85,
+  "d_left": 0,
+  "d_top": 2,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "SizeBox:SizeBox_138",
   "name": "button Keep Changes",
   "rect": [
    597,
@@ -111,18 +117,19 @@
    350,
    67
   ],
-  "found": false,
-  "match": 0.49,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.95,
+  "d_left": 0,
+  "d_top": -2,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  },
  {
+  "widget": "SizeBox:SizeBox_139",
   "name": "button Revert",
   "rect": [
    976,
@@ -131,14 +138,14 @@
    67
   ],
   "found": true,
-  "match": 0.68,
-  "d_left": 6,
-  "d_top": 11,
-  "d_width": 1,
+  "match": 0.95,
+  "d_left": 0,
+  "d_top": -2,
+  "d_width": 0,
   "d_height": 0,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "PASS"
  }
 ]
