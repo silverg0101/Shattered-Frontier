@@ -91,7 +91,7 @@ const TCHAR* PlacementResultText(ESFConstructionNetworkResult Result)
     case ESFConstructionNetworkResult::Granted: return TEXT("Build permission granted.");
     case ESFConstructionNetworkResult::PermissionDenied: return TEXT("Observer only: building permission required.");
     case ESFConstructionNetworkResult::Stale: return TEXT("The structure changed. Aim again and retry.");
-    case ESFConstructionNetworkResult::InvalidCell: return TEXT("Outside the construction area.");
+    case ESFConstructionNetworkResult::InvalidCell: return TEXT("You need a claim to place this here.");
     case ESFConstructionNetworkResult::OutOfReach: return TEXT("Out of reach. Move closer.");
     case ESFConstructionNetworkResult::Occluded: return TEXT("Blocked view. Move so you can see the placement.");
     case ESFConstructionNetworkResult::Occupied: return TEXT("Space occupied. Aim at an empty neighboring cell.");
@@ -1678,7 +1678,7 @@ void ASFPlayerController::RefreshPlacementPreview(bool bDrawOutline)
     if (bHasLineSeed && (!State || State->GetSnapshot().Revision!=LineRevision)) { CancelLine(); }
     if (!CanUseConstructionControls()) { PreviewStatus=TEXT("Hold RMB to look; release to build."); return; }
     if (!State && GetPawn() && TActorIterator<ASFConstructionNetworkState>(GetWorld()))
-    { PreviewStatus=TEXT("Stand on a build plot to build. K claims the plot you stand on."); return; }  // claims exist, none here
+    { PreviewStatus=TEXT("You need a claim to place this here. Stand on a build plot; K claims it."); return; }  // claims exist, none here
     if (!IsLocalController() || !GetPawn() || !bRoleAssigned || !State
         || State->GetReachCentimetres()<=0 || State->GetMaximumMembers()<=0)
     { PreviewStatus=TEXT("Waiting for server construction state..."); return; }

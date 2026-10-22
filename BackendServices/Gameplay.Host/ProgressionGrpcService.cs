@@ -6,7 +6,8 @@ using ShatteredFrontier.QuestContent;
 using Pb = ShatteredFrontier.Progression.V1;
 
 internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, QuestDefinition quest, QuestRewardPayout payout,
-    ShatteredFrontier.InventoryLedger.Postgres.PostgresInventoryLedgerStore ledgerStore) : Pb.Progression.ProgressionBase
+    ShatteredFrontier.InventoryLedger.Postgres.PostgresInventoryLedgerStore ledgerStore,
+    ShatteredFrontier.Exchange.Postgres.PostgresExchangeStore exchange, StarterKitOptions starterKit) : Pb.Progression.ProgressionBase
 {
     public override Task<Pb.SavePositionReply> SavePosition(Pb.SavePositionRequest request, ServerCallContext context) =>
         GrpcRun.Call(context, () =>
@@ -95,6 +96,9 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
         GrpcRun.Call(context, () =>
         {
             if (string.IsNullOrWhiteSpace(request.CharacterId)) throw new ArgumentException("Character ID required.");
+            // The character restore on connect is first spawn: the kit purse is credited once (idempotent operation ID).
+            if (starterKit.Kit is { PurseCopper: > 0 } kit && request.CharacterId.StartsWith("chr_", StringComparison.Ordinal))
+                exchange.Credit(kit.PurseOperationId(request.CharacterId), request.CharacterId, kit.PurseCopper, "starter_kit");
             var progression = store.ReadProgression(request.CharacterId);
             var state = new Pb.CharacterStateReply
             {

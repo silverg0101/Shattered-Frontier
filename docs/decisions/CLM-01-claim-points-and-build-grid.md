@@ -296,6 +296,12 @@ Claim panel plus the account notification inbox (existing §2.2 channels, no ext
 | J9 Terrain section and result preview | M | Dig / Raise Ground / Level tiles and size tiles in the catalogue, `[`/`]`/`Ctrl`+wheel/`T` input, `UDynamicMeshComponent` ghost with `MI_TerrainGhost`, cut/fill readout, depth gauge, Codex concept and Fable review (test 12); needs TER-01/DEC-03 digging to exist on the server |
 | J10 Upkeep and storehouse | M | Storehouse object and Codex sheet, upkeep list from Placement receipts, hourly offline-attributed charge, stages, notifications, plaque, map marker, `enabled` flag and switch-on cover; `ClaimTerritory.Tests` for tests 13–15; after J2 and only when `enabled` is planned for a release |
 
+DEC-02 hand-over for J3/J4 (2026-10-22). Already true on the BLD-02 plots: placement goes through `Housing.Place`, which reserves, decides and then debits or releases materials. The first placement on an unclaimed plot claims it in the same action. Nothing can be placed outside a claim state: off-plot previews and out-of-extent cells read "You need a claim to place this here." Edits that skip Housing need `-SFDevUnlimitedStock`. Still for these jobs:
+- the first *foundation* (not any piece) creating a claim through `cba_` growth;
+- the 4 m reach ring beyond the claim edge, validated on the server;
+- the same refusal text on the server-side `Place` rejection;
+- the Alpha Starter Kit needs no terrain fill, because land edits cost and yield nothing.
+
 ## Owner answers and open questions
 
 Answered 2026-10-22 (recorded in [OWNER-2026-10-22-decisions.md](OWNER-2026-10-22-decisions.md)):

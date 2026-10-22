@@ -58,6 +58,11 @@ var quest = QuestLoader.Load(Path.Combine(contentRoot, "quests", "greenlands_fro
 var zone = ProtectedZone.Load(Path.Combine(contentRoot, "world", "zones", "greenlands_silverbrook.json"));
 var recipes = RecipeCatalog.LoadFiles([Path.Combine(contentRoot, "crafting", "recipes_greenlands_starter.json")]);
 var ledgerStore = new PostgresInventoryLedgerStore(ledgerConnection);
+// Alpha Starter Kit purse (MKT-01 owner answer): off unless the realm enables it, like the ledger host kit switch.
+var kitSwitch = Environment.GetEnvironmentVariable("GAMEPLAY_ALPHA_STARTER_KIT") ?? "";
+if (kitSwitch is not ("" or "on")) throw new InvalidOperationException("GAMEPLAY_ALPHA_STARTER_KIT must be empty or on.");
+var starterKit = new StarterKitOptions(kitSwitch == "on" ? new ShatteredFrontier.InventoryLedger.AlphaStarterKitSettings() : null);
+starterKit.Kit?.Validate();
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseSetting(WebHostDefaults.ServerUrlsKey, "");
@@ -65,6 +70,7 @@ builder.WebHost.ConfigureKestrel(o => o.Listen(IPAddress.Loopback, port, l => l.
 builder.Logging.SetMinimumLevel(LogLevel.Warning);
 builder.Services.AddSingleton(new AuthOptions(Encoding.UTF8.GetBytes("Bearer " + token)));
 builder.Services.AddSingleton(pools);
+builder.Services.AddSingleton(starterKit);
 builder.Services.AddSingleton(ledgerStore);
 builder.Services.AddSingleton(new DomLedger(ledgerStore));
 builder.Services.AddSingleton(new BoarRewardService(new DomLedger(ledgerStore), boar));
@@ -92,6 +98,7 @@ app.Lifetime.ApplicationStarted.Register(() => Console.Out.WriteLine($"GAMEPLAY_
 app.Run();
 
 internal sealed record AuthOptions(byte[] Expected);
+internal sealed record StarterKitOptions(ShatteredFrontier.InventoryLedger.AlphaStarterKitSettings? Kit);
 internal sealed class GameplayRejectedException(string message, StatusCode code) : InvalidOperationException(message)
 {
     public StatusCode Code { get; } = code;

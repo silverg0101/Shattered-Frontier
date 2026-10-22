@@ -60,7 +60,8 @@ try {
     $fx.starterKit = [bool]$StarterKit
     Start-LedgerHost $fx ''
     $gameplayEnv = @{ GAMEPLAY_HOST_PORT="$gameplayPort"; SF_GAMEPLAY_TOKEN=$gameplayToken; GAMEPLAY_LEDGER_CONNECTION=$fx.connection; GAMEPLAY_CHARACTER_CONNECTION=$fx.connection
-        GAMEPLAY_HOUSING_CONNECTION=$fx.connection; GAMEPLAY_EXCHANGE_CONNECTION=$fx.connection; GAMEPLAY_CONTENT_ROOT=(Join-Path $repo 'content') }
+        GAMEPLAY_HOUSING_CONNECTION=$fx.connection; GAMEPLAY_EXCHANGE_CONNECTION=$fx.connection; GAMEPLAY_CONTENT_ROOT=(Join-Path $repo 'content')
+        GAMEPLAY_ALPHA_STARTER_KIT=$(if ($StarterKit) { 'on' } else { '' }) }
     function Start-Gameplay([string]$Name) {
         Invoke-WithEnv $gameplayEnv { $script:gameplay = Start-Process -FilePath $fx.dotnet -ArgumentList @(('"'+(Join-Path $gameplayOut 'Gameplay.Host.dll')+'"')) -WindowStyle Hidden -PassThru `
             -RedirectStandardOutput (Join-Path $root "$Name.stdout.txt") -RedirectStandardError (Join-Path $root "$Name.stderr.txt") }
@@ -80,6 +81,8 @@ try {
     $ledgerIni = '-ini:Game:[/Script/ShatteredFrontier.SFInventoryLedgerSettings]'; $servicesIni = '-ini:Game:[/Script/ShatteredFrontier.SFGameplayServicesSettings]'
     $serverFlags = @('-server',('-port='+$Port),'-multihome=127.0.0.1','-SFDevIdentity','-ClaimScenario',
         ($ledgerIni+':bEnabled=True'),($ledgerIni+':Endpoint=127.0.0.1:'+$fx.hostPort),($servicesIni+':bEnabled=True'),($servicesIni+':Endpoint=127.0.0.1:'+$gameplayPort))
+    # The kit purse is credited on the character restore (GetCharacterState), so the alpha leg restores on connect.
+    if ($StarterKit) { $serverFlags += ($servicesIni+':bRestoreOnConnect=True') }
     $serverEnv = @{ SF_INVENTORY_LEDGER_TOKEN=$fx.token; SF_GAMEPLAY_TOKEN=$gameplayToken }
 
     # Phase 1: claim, place two, remove one.
@@ -126,9 +129,12 @@ try {
         $bagAfter = (Invoke-LedgerSql $fx $alphaBag $fx.db).Trim()
         if (-not $bagBefore -or $bagBefore -ne $bagAfter) { throw "Alpha's inventory changed across the restart: $bagBefore -> $bagAfter" }
         if ($bagBefore -notmatch 'ctn_dev_alpha:item/wall_material_bundle:(\d+)' -or [int]$Matches[1] -ge 30) { throw "Placement did not debit the kit: $bagBefore" }
+        # The kit purse (MKT-01): 500 copper credited once per character, unchanged by reconnects and the restart.
+        $purse = (Invoke-LedgerSql $fx "SELECT string_agg(w.owner_id||':'||w.balance||':'||(SELECT count(*) FROM exchange.wallet_entries e WHERE e.owner_id=w.owner_id AND e.operation_id LIKE 'alpha-starter-kit/v1/%/purse'), ',' ORDER BY w.owner_id) FROM exchange.wallets w WHERE w.owner_id IN ('chr_dev_alpha','chr_dev_bravo')" $fx.db).Trim()
+        if ($purse -ne 'chr_dev_alpha:500:1,chr_dev_bravo:500:1') { throw "Expected one 500-copper purse per character, got $purse." }
         $ops = (Invoke-LedgerSql $fx "SELECT string_agg(split_part(operation_id,'/',3), ',' ORDER BY operation_id) FROM inventory.operation_receipts WHERE operation_id LIKE 'place/%'" $fx.db).Trim()
         $decisions = (Invoke-LedgerSql $fx "SELECT string_agg(state||':'||decision, ',' ORDER BY created_at) FROM housing.placements" $fx.db).Trim()
-        $result.starterKit = [ordered]@{ kits=$kits; alphaBeforeRestart=$bagBefore; alphaAfterRestart=$bagAfter; placementLedgerSteps=$ops; placements=$decisions }
+        $result.starterKit = [ordered]@{ kits=$kits; purses=$purse; alphaBeforeRestart=$bagBefore; alphaAfterRestart=$bagAfter; placementLedgerSteps=$ops; placements=$decisions }
     }
     $result.status = 'Passed'
 } catch { $result.status = 'Failed'; $result.error = $_.Exception.Message; throw }

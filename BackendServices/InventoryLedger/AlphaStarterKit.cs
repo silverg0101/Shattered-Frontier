@@ -13,17 +13,22 @@ public sealed record AlphaStarterKitSettings
         new("item/rough_timber", 12), new("item/iron_nails", 8),
     ];
 
-    // Bounds: 1-16 definitions, 1-100 units each, at most 100 units in all, so the kit fits the 160-unit backpack.
+    // MKT-01 owner answer: a purse of about 5 silver, in copper, credited once through the Exchange wallet (Gameplay.Host).
+    public long PurseCopper { get; init; } = 500;
+
+    // Bounds: 1-16 definitions, 1-100 units each, at most 100 units in all (fits the 160-unit backpack); purse 0-10000 copper.
+    // No terrain fill: altering land costs and yields nothing (TER-02 owner answer).
     public void Validate()
     {
         if (!KitId.StartsWith("alpha-starter-kit/", StringComparison.Ordinal) || Items.Count is < 1 or > 16 ||
             Items.Any(i => i.Quantity is < 1 or > 100 || !i.DefinitionId.StartsWith("item/", StringComparison.Ordinal)) ||
             Items.Select(i => i.DefinitionId).Distinct(StringComparer.Ordinal).Count() != Items.Count ||
-            Items.Sum(i => i.Quantity) > 100)
+            Items.Sum(i => i.Quantity) > 100 || PurseCopper is < 0 or > 10000)
             throw new InvalidOperationException("Alpha Starter Kit outside declared bounds.");
     }
 
     public string OperationId(string characterId) => KitId + "/" + characterId;
+    public string PurseOperationId(string characterId) => OperationId(characterId) + "/purse";
 
     // Grants the kit into a character backpack once; returns the backpack view after the grant (or unchanged).
     public ContainerView GrantOnce(InventoryLedger ledger, ContainerView backpack)
