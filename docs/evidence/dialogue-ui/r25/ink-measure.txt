@@ -1,0 +1,32 @@
+name M cap                   concept (np.int64(663), np.int64(286), np.int64(689), np.int64(309), np.int64(26), np.int64(23))  live (np.int64(663), np.int64(288), np.int64(692), np.int64(312), np.int64(29), np.int64(24))
+speech T cap                 concept (np.int64(663), np.int64(341), np.int64(676), np.int64(358), np.int64(13), np.int64(17))  live (np.int64(663), np.int64(341), np.int64(676), np.int64(361), np.int64(13), np.int64(20))
+row1 T cap                   concept (np.int64(606), np.int64(488), np.int64(622), np.int64(505), np.int64(16), np.int64(17))  live (np.int64(605), np.int64(490), np.int64(622), np.int64(510), np.int64(17), np.int64(20))
+row1 label ink               concept (np.int64(606), np.int64(487), np.int64(744), np.int64(505), np.int64(138), np.int64(18))  live (np.int64(605), np.int64(490), np.int64(748), np.int64(510), np.int64(143), np.int64(20))
+keycap1 numeral              concept (np.int64(550), np.int64(485), np.int64(561), np.int64(507), np.int64(11), np.int64(22))  live (np.int64(535), np.int64(492), np.int64(558), np.int64(524), np.int64(23), np.int64(32))
+title T cap                  concept (np.int64(1044), np.int64(456), np.int64(1066), np.int64(478), np.int64(22), np.int64(22))  live (np.int64(1042), np.int64(458), np.int64(1066), np.int64(481), np.int64(24), np.int64(23))
+summary B cap                concept (np.int64(1045), np.int64(499), np.int64(1060), np.int64(513), np.int64(15), np.int64(14))  live (np.int64(1045), np.int64(499), np.int64(1060), np.int64(515), np.int64(15), np.int64(16))
+objectives O cap             concept (np.int64(1045), np.int64(549), np.int64(1059), np.int64(564), np.int64(14), np.int64(15))  live (np.int64(1045), np.int64(549), np.int64(1060), np.int64(565), np.int64(15), np.int64(16))
+obj1 G cap                   concept (np.int64(1089), np.int64(588), np.int64(1106), np.int64(603), np.int64(17), np.int64(15))  live (np.int64(1089), np.int64(588), np.int64(1104), np.int64(604), np.int64(15), np.int64(16))
+count1 ink                   concept (np.int64(1346), np.int64(588), np.int64(1386), np.int64(604), np.int64(40), np.int64(16))  live (np.int64(1344), np.int64(588), np.int64(1386), np.int64(605), np.int64(42), np.int64(17))
+rewards R cap                concept (np.int64(1045), np.int64(669), np.int64(1062), np.int64(684), np.int64(17), np.int64(15))  live (np.int64(1045), np.int64(668), np.int64(1062), np.int64(684), np.int64(17), np.int64(16))
+reward text ink              concept (np.int64(1110), np.int64(714), np.int64(1240), np.int64(738), np.int64(130), np.int64(24))  live (np.int64(1111), np.int64(711), np.int64(1227), np.int64(729), np.int64(116), np.int64(18))
+reward2 text ink             concept (np.int64(1293), np.int64(713), np.int64(1361), np.int64(729), np.int64(68), np.int64(16))  live (np.int64(1280), np.int64(711), np.int64(1392), np.int64(724), np.int64(112), np.int64(13))
+accept label ink (dark)      concept (np.int64(1096), np.int64(782), np.int64(1169), np.int64(807), np.int64(73), np.int64(25))  live (np.int64(1095), np.int64(783), np.int64(1169), np.int64(809), np.int64(74), np.int64(26))
+decline label ink            concept (np.int64(1295), np.int64(783), np.int64(1366), np.int64(800), np.int64(71), np.int64(17))  live (np.int64(1295), np.int64(783), np.int64(1364), np.int64(800), np.int64(69), np.int64(17))
+tracker title                concept (np.int64(1634), np.int64(355), np.int64(1833), np.int64(376), np.int64(199), np.int64(21))  live None
+concept divider y 429 rgb [131 113  71] max row lum 117.2
+concept centre diamond max lum 144.5
+live divider y 433 rgb [52 53 44] max row lum 51.9
+live centre diamond max lum 96.9
+keycap outline concept [112  82  56] [237 204 142] live [103  97  64] [50 64 46] [41 47 46]
+hp fill hud [163  72  66] dialogue [98 43 39] ratio [0.6  0.6  0.59]
+stamina fill hud [184 152  84] dialogue [110  91  50] ratio [0.6 0.6 0.6]
+hotbar numeral region hud [67 49 37] dialogue [40 29 22] ratio [0.6  0.59 0.59]
+minimap ring hud [49 36 24] dialogue [29 22 14] ratio [0.59 0.61 0.58]
+badge brass hud [42 47 54] dialogue [18 20 22] ratio [0.43 0.43 0.41]
+tracker text hud [46 56 62] dialogue [27 31 31] ratio [0.59 0.55 0.5 ]
+tracker plate hud [169 165 169] dialogue [35 40 40] ratio [0.21 0.24 0.24]
+footer plate hud [29 36 40] dialogue [13 18 22] ratio [0.45 0.5  0.55]
+tracker title max 134.99 hud tracker title max 225.01 hp text max 134.99 hud hp text max 225.01
+row2 fill [20 32 38] row2 edge [20 32 38] [20 32 38] [20 32 38]
+accept border live [70 58 39] [125  97  51] [148 120  71] [203 176 119] concept [220 177 107] [83 62 35] [62 46 30] [221 179 111] [186 139  74]

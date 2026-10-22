@@ -156,7 +156,7 @@ UImage* ArtImage(UWidgetTree* Tree, USizeBox*& OutBox, float Width, float Height
 UWidget* Rule(UWidgetTree* Tree)
 {
     USizeBox* Box = Tree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    Box->SetHeightOverride(8.f); Box->SetContent(KitPanel(Tree, TEXT("divider"), 1.f, Brass(), Brass(), FMargin(0.f), 0.f, false));
+    Box->SetHeightOverride(12.f); Box->SetContent(KitPanel(Tree, TEXT("divider"), 1.f, Brass(), Brass(), FMargin(0.f), 0.f, false));
     return Box;
 }
 
@@ -277,7 +277,7 @@ void USFDialoguePanel::NativeOnInitialized()
     // a longer one pushes the rows down instead of running through them (tree lines are capped at three, see Parse).
     UVerticalBox* Flow = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     Flow->AddChildToVerticalBox(LineText)->SetPadding(FMargin(662.f - 513.f, 0.f, 0.f, 0.f));  // speech block top 341 - 0.43 * 20 = 332
-    Flow->AddChildToVerticalBox(Rule(WidgetTree))->SetPadding(FMargin(3.f, 32.f, 3.f, 27.f));  // rule 425-433, row 1 at 460
+    Flow->AddChildToVerticalBox(Rule(WidgetTree))->SetPadding(FMargin(3.f, 26.f, 3.f, 25.f));  // rule 423-435 (12 px art box), row 1 at 460
 
     static const TCHAR* const Keycaps[FSFDialogueTree::MaxChoices] = {TEXT("keycap_1"), TEXT("keycap_2"), TEXT("keycap_3"), TEXT("keycap_4")};
     for (int32 Index = 0; Index < FSFDialogueTree::MaxChoices; ++Index)

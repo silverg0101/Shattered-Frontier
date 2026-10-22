@@ -325,7 +325,9 @@ void ASFE1Character::TickCameraControls(float Dt)
         if (bFirstPerson) { bFirstPerson = false; }
         else { DesiredArmCm = FMath::Min(DesiredArmCm - Wheel * S->CameraZoomStepCm, S->CameraZoomMaxCm); }
     }
-    CameraBoom->TargetArmLength = FMath::FInterpTo(CameraBoom->TargetArmLength, bFirstPerson ? 0.0f : DesiredArmCm, Dt, S->CameraZoomInterpSpeed);
+    // While a dialogue speaker is framed the camera comes in to DialogueArmCm; the player's own zoom (DesiredArmCm) is kept for after.
+    const float ArmGoal = bFirstPerson ? 0.0f : IsValid(DialogueFramingTarget.Get()) ? S->DialogueArmCm : DesiredArmCm;
+    CameraBoom->TargetArmLength = FMath::FInterpTo(CameraBoom->TargetArmLength, ArmGoal, Dt, S->CameraZoomInterpSpeed);
     // The own body is hidden in first person, and while a dialogue board is open (it would show behind the board).
     const bool bHideBody = (bFirstPerson && CameraBoom->TargetArmLength < S->CameraZoomMinCm * 0.5f) || IsValid(DialogueFramingTarget.Get());
     if (GetMesh()->bOwnerNoSee != bHideBody) { GetMesh()->SetOwnerNoSee(bHideBody); }
@@ -343,8 +345,9 @@ void ASFE1Character::TickCameraControls(float Dt)
         // A dialogue speaker is framed at once, beside the board (x 20 % of the screen) at eye level, rather than eased in.
         if (FrameTarget == DialogueFramingTarget.Get())
         {
-            CameraRotation.Yaw = (FrameTarget->GetActorLocation() - FollowCamera->GetComponentLocation()).Rotation().Yaw + S->DialogueFramingYawDegrees;
-            CameraRotation.Pitch = S->DialogueFramingPitchDegrees;
+            const FRotator ToHead = (DialogueHeadPoint(FrameTarget) - FollowCamera->GetComponentLocation()).Rotation();
+            CameraRotation.Yaw = ToHead.Yaw + S->DialogueFramingYawDegrees;
+            CameraRotation.Pitch = FMath::Clamp(ToHead.Pitch - S->DialogueHeadAboveCentreDegrees, S->CameraPitchMinDegrees, S->CameraPitchMaxDegrees);
         }
         // Keep the shoulder continuous; the new yaw and focus ease from their current values.
         FramingOccludedSince = -1.0;
@@ -377,9 +380,12 @@ void ASFE1Character::TickCameraControls(float Dt)
     {
         // Dialogue holds the speaker beside the board (about x 20 % of the screen) at eye level. The board is modal, so there is
         // no deadzone or occlusion release; the angle is measured from the camera, so it is the speaker's place on screen.
-        const float AimYaw = (FrameTarget->GetActorLocation() - FollowCamera->GetComponentLocation()).Rotation().Yaw + S->DialogueFramingYawDegrees;
+        // Pitch aims at the speaker's head, held DialogueHeadAboveCentreDegrees above the screen centre (y 30 %).
+        const FRotator ToHead = (DialogueHeadPoint(FrameTarget) - FollowCamera->GetComponentLocation()).Rotation();
+        const float AimYaw = ToHead.Yaw + S->DialogueFramingYawDegrees;
+        const float AimPitch = FMath::Clamp(ToHead.Pitch - S->DialogueHeadAboveCentreDegrees, S->CameraPitchMinDegrees, S->CameraPitchMaxDegrees);
         CameraRotation.Yaw += FMath::FInterpTo(0.0f, FRotator::NormalizeAxis(AimYaw - CameraRotation.Yaw), Dt, S->CombatFramingYawSpeed);
-        CameraRotation.Pitch = FMath::FInterpTo(CameraRotation.Pitch, S->DialogueFramingPitchDegrees, Dt, S->CombatFramingYawSpeed);
+        CameraRotation.Pitch = FMath::FInterpTo(CameraRotation.Pitch, AimPitch, Dt, S->CombatFramingYawSpeed);
     }
     else if (FrameTarget && bWanted && !bOccluded && !bSteering
         && Now - LastFramingSteerAt >= S->CombatFramingSteerHoldSeconds)
@@ -428,6 +434,13 @@ void ASFE1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 void ASFE1Character::SetCombatTarget(AActor* Target)
 {
     if (HasAuthority() && CombatTarget != Target) { CombatTarget = Target; ForceNetUpdate(); }
+}
+
+// The top of the speaker's bounds, a little down: its head, whatever the body's pose or origin.
+FVector ASFE1Character::DialogueHeadPoint(const AActor* Speaker)
+{
+    FVector Origin, Extent; Speaker->GetActorBounds(true, Origin, Extent);
+    return FVector(Origin.X, Origin.Y, Origin.Z + Extent.Z - 12.0f);
 }
 
 void ASFE1Character::SetDialogueFramingTarget(AActor* Speaker)
