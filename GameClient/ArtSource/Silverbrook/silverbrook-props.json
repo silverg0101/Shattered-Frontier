@@ -338,12 +338,36 @@
   ],
   "_notes": "Street lamps are placed by build_silverbrook.py (layout `street_lamps`), not here. A rule with `fab` uses that path when mounted, else `asset`; `optional_only` rules are skipped unless the fab asset exists.",
   "footing": {
-    "material": "/Game/Frontier/Environment/Greenlands/Silverbrook/Materials/MI_SB_StoneBridge_Masonry",
-    "inset_fraction": {
-      "value": 0.82,
-      "min": 0.65,
-      "max": 1.0,
-      "unit": "fraction of the building mesh bounds, applied at the next dressing pass"
+    "material": "/Game/Frontier/Environment/Greenlands/Silverbrook/Materials/M_SB_FoundationStone",
+    "base_band_cm": {
+      "value": 25,
+      "min": 10,
+      "max": 60,
+      "unit": "centimetres above a building mesh's lowest point that count as its wall base when sizing the foundation"
+    },
+    "proud_cm": {
+      "value": 4,
+      "min": 0,
+      "max": 8,
+      "unit": "centimetres the foundation stands proud of the wall base on every side"
+    },
+    "visible_cm": {
+      "value": 65,
+      "min": 50,
+      "max": 70,
+      "unit": "centimetres above the highest terrain at the foundation footprint"
+    },
+    "burial_cm": {
+      "value": 100,
+      "min": 100,
+      "max": 150,
+      "unit": "centimetres below the lowest terrain at the foundation footprint"
     }
+  },
+  "street_groups": {
+    "spacing_m": {"value": 7, "min": 5, "max": 9, "unit": "metres between street-side group candidates"},
+    "offset_m": {"value": 1.8, "min": 0.8, "max": 3.5, "unit": "metres beyond the painted road edge"},
+    "clear_m": {"value": 0.55, "min": 0.4, "max": 1.2, "unit": "metres of footprint clearance"},
+    "max_groups": {"value": 520, "min": 100, "max": 700, "unit": "groups in the whole town"}
   }
 }

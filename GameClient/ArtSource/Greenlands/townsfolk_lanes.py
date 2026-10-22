@@ -190,6 +190,9 @@ def build_in_editor(edges, junctions, ground=None, wet=lambda x, y: False):
         arms = [u.Vector((c[0] + dx * JUNCTION_R) * 100, (c[1] + dy * JUNCTION_R) * 100, z(c[0] + dx * JUNCTION_R, c[1] + dy * JUNCTION_R)) for dx, dy in dirs]
         lib.spawn_footway(world, arms, True, f'Junction_{i:03d}', u.Vector(c[0] * 100, c[1] * 100, sum(a.z for a in arms) / len(arms)))
     lanes = lib.rebuild_zone_graph(world)
+    for a in eas.get_all_level_actors():  # authoring visualisers: never drawn in game (GFX-02 J1b)
+        if a.get_class().get_name() in ('ZoneShape', 'ZoneGraphData') or str(a.get_folder_path()) == 'Townsfolk/Lanes':
+            a.set_actor_hidden_in_game(True)
     u.log(f'TOWNSFOLK_LANES pieces={len(edges)} junctions={len(junctions)} lanes={lanes}')
     assert lanes > 0, 'ZoneGraph built no lanes'
     if not ground:  # the zone builder saves the map itself

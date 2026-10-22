@@ -107,6 +107,8 @@ def _box(label, x, y, w, d, h, mat, z0, yaw, collide, folder, ground, pitch=0.0)
         a.static_mesh_component.set_editor_property('cast_shadow', False)
     if not collide:
         a.static_mesh_component.set_collision_profile_name('NoCollision')  # the profile is reapplied on load; a bare flag is not kept
+    if mat == 'Marker':
+        a.set_actor_hidden_in_game(True)  # authoring marker (GFX-02 J1b): never drawn in game; check_hidden_in_game.py asserts it
     return a
 
 
@@ -735,19 +737,25 @@ def rockiness(v, h=2.5):
 ROAD_RAMP = 2 * HF.step  # m over which the road field falls from 1 to 0, centred on the road edge (0.5 at the edge)
 
 
-def road_field(tier_filter):
-    """cell -> 0..1 field, 0.5 exactly at the road edge, for the roads whose tier is in tier_filter; none over water."""
+STREET_COBBLE_EXTRA_M = 2.0  # cobble runs this far past the nominal street edge (GFX-01 WP6b: grass only at the street margins)
+STREET_EARTH_EXTRA_M = 4.5   # packed earth (B channel) runs this far; paint_street_edges.py repaints an open map to the same fields
+
+
+def road_field(tier_filter, extra=0.0):
+    """cell -> 0..1 field, 0.5 exactly at the road edge (+extra), for the roads whose tier is in tier_filter; none over water."""
     best = {}
     for name, pts, width, tier in ROADS:
         if tier not in tier_filter:
             continue
-        samples = [(p, width / 2) for p, _, _ in _hf_samples(pts, 1.0) if water_gap(p) > 0]
-        for k, (d, hw) in HF._nearest(samples, width / 2 + ROAD_RAMP / 2).items():
+        samples = [(p, width / 2 + extra) for p, _, _ in _hf_samples(pts, 1.0) if water_gap(p) > 0]
+        for k, (d, hw) in HF._nearest(samples, width / 2 + extra + ROAD_RAMP / 2).items():
             best[k] = max(best.get(k, 0.0), min(1.0, max(0.0, 0.5 + (hw - d) / ROAD_RAMP)))
     return best
 
 
-ROAD_G, ROAD_B = road_field(('primary', 'secondary')), road_field(('trail',))
+ROAD_G, ROAD_B = road_field(('primary', 'secondary'), STREET_COBBLE_EXTRA_M), road_field(('trail',))
+for _k, _f in road_field(('primary', 'secondary'), STREET_EARTH_EXTRA_M).items():  # packed earth only outside the cobble
+    ROAD_B[_k] = max(ROAD_B.get(_k, 0.0), _f * (1.0 - ROAD_G.get(_k, 0.0)))
 for _x, _y, _w, _d in PLAZAS:  # plazas are cobble too: a rectangle distance field, 0.5 at the plaza edge like the roads
     for _k, _cx, _cy in HF._cells(_x, _y, max(_w, _d) * 0.75 + ROAD_RAMP):
         _dx, _dy = abs(_cx - _x) - _w / 2, abs(_cy - _y) - _d / 2

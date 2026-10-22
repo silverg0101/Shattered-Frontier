@@ -1,0 +1,2506 @@
+{
+ "count": 312,
+ "failures": [],
+ "min_visible_cm": 53.37,
+ "min_proud_cm": 4.0,
+ "max_proud_cm": 4.0,
+ "max_abs_gap_cm": 0.0,
+ "houses": [
+  {
+   "house": "Northridge_elite_house_000",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 62.32,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_001",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.27,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_002",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_003",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 63.53,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_004",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_005",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_006",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 63.46,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_007",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_008",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 53.37,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_009",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.92,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_010",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_011",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_012",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_013",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 62.09,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_014",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 57.64,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_015",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_016",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_017",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.15,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_018",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.05,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_019",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.06,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_020",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.83,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_021",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 54.21,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_022",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 61.9,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_023",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 61.04,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_024",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.89,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_025",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 63.9,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_026",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 60.8,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_027",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 68.42,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_028",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_029",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.27,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_030",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 70.33,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_031",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 74.79,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_032",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 63.78,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_033",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.57,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_034",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 70.32,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_035",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 71.09,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_036",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 73.77,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_037",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.06,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_038",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.56,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_039",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.67,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_040",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.04,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_041",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 84.45,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_042",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 73.17,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_043",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.09,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_044",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 69.61,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_045",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 83.5,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_046",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 68.92,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_047",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 73.96,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_048",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.12,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_049",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 70.05,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_050",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.7,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_051",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 73.22,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_052",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 63.92,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_053",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 77.73,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_054",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 68.62,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_055",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 63.89,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_056",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 69.8,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_057",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 61.97,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_058",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.87,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Northridge_elite_house_059",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.67,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_000",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.62,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_001",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 59.59,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_002",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 62.91,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_003",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 72.95,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_004",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 76.54,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_005",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_006",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_007",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 69.21,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_008",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 72.1,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_009",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.41,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_010",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 87.99,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_011",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 75.43,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_012",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.07,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_013",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 71.7,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_014",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 69.43,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_015",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.76,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_016",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 63.72,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_017",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.05,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_018",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 78.49,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_019",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.38,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_020",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.25,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_021",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 73.83,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_022",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 69.17,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_023",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 79.84,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_024",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.92,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_025",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.98,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_026",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.05,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_027",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.4,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_028",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.9,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_029",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.63,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_030",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.94,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_031",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.08,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_032",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.46,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_033",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.07,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_034",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.04,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_035",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 63.65,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_036",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.71,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_037",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_038",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.45,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_039",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 68.23,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_040",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.27,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_041",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.94,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_042",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.74,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_043",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.29,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_044",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.45,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_045",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.41,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_046",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.86,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_047",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.12,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_048",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 77.27,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_049",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 68.41,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_050",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.95,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_051",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.88,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_052",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.29,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_053",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_054",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.67,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_055",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.46,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_056",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.13,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_057",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_058",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.18,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_059",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_060",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.78,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_061",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 74.89,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_062",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 71.75,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_063",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 70.25,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_064",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 68.41,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_065",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.6,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_066",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 84.18,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_067",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.46,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_068",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 75.5,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_069",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 78.61,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_070",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 87.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_071",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.52,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_072",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 69.19,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_073",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 70.58,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_074",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.69,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_075",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 68.46,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_076",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 62.89,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_077",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 68.98,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_078",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 80.02,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_079",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.7,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_080",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.83,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_081",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 73.71,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_082",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.23,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_083",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 62.53,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_084",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 72.35,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_085",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.69,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_086",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.96,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_087",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 63.48,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_088",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.91,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_089",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.93,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_090",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.87,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_091",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.77,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_092",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 72.09,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_093",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 70.71,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_094",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.9,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_095",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 63.33,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_096",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.4,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_097",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.98,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_098",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.96,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_099",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.85,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_100",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.14,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_101",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.07,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_102",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.79,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_103",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.77,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_104",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.94,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_105",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.27,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_106",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 68.95,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_107",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 62.74,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_108",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.42,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_109",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_110",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.23,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_111",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.98,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_112",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.02,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_113",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.78,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_114",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_115",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.69,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_116",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.8,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_117",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.19,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_118",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 70.08,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_119",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.2,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_120",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.65,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_121",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.78,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_122",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.24,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_123",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 68.68,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_124",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.15,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_125",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.14,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_126",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.99,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_127",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.11,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_128",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 71.94,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_129",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.6,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_130",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.17,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_131",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.22,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_132",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.85,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_133",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.5,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_134",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.56,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_135",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.13,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_136",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.04,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_137",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.9,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_138",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 72.49,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_139",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.99,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_140",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 72.95,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_141",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.93,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_142",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.07,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_143",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 69.69,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_144",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 63.47,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_145",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.04,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_146",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 72.43,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_147",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 72.86,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_148",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.08,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "TheCommons_townhouse_149",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.27,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_000",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_001",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.74,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_002",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.26,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_003",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.85,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_004",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 69.43,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_005",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_006",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 63.77,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_007",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.52,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_008",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.27,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_009",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 63.82,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_010",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 73.33,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_011",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 68.56,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_012",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.2,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_013",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 73.28,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_014",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.56,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_015",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.63,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_016",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 72.75,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_017",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 72.16,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_018",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.92,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_019",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.01,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_020",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.97,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_021",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.22,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_022",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_023",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.01,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_024",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 76.23,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_025",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 62.38,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_026",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.33,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_027",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 61.86,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_028",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.86,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_029",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 70.33,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_030",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 69.43,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_031",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 60.67,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_032",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 80.9,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_033",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 86.65,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_034",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 71.73,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_035",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 68.22,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_036",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.66,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_037",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.73,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_038",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 77.04,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_039",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.8,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_040",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 68.0,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_041",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.89,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_042",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.88,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_043",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.98,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_044",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 72.02,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_045",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 61.09,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_046",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.27,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_047",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 58.46,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_048",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.99,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_049",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 63.58,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_050",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.21,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_051",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.8,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_052",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.09,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_053",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.58,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_054",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.79,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_055",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.04,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_056",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.83,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_057",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.13,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_058",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 69.12,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Riverside_townhouse_059",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.95,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Westfields_farmhouse_000",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.11,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Westfields_farmhouse_001",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.01,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Westfields_farmhouse_002",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.23,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Westfields_farmhouse_003",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.33,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Westfields_farmhouse_004",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.27,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Westfields_farmhouse_005",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 61.55,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Westfields_farmhouse_006",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.34,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Westfields_farmhouse_007",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.14,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Westfields_farmhouse_008",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.83,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Westfields_farmhouse_009",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 70.54,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Westfields_farmhouse_010",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.27,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Westfields_farmhouse_011",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.7,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_000",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.51,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_001",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 63.76,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_002",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 62.97,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_003",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.55,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_004",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 61.62,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_005",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.85,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_006",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.64,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_007",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 61.85,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_008",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 66.37,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_009",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 97.71,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_010",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 63.75,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_011",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 62.91,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_012",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.93,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_013",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.11,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_014",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.9,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_015",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.26,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_016",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.93,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_017",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 74.76,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_018",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 67.18,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_019",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 72.46,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_020",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.29,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_021",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 62.64,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_022",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 82.06,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_023",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.7,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_024",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 78.65,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_025",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.61,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_026",
+   "gap_cm": -0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 68.18,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_027",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.02,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_028",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 62.91,
+   "min_buried_cm": 100.0
+  },
+  {
+   "house": "Eastwood_cottage_029",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 64.76,
+   "min_buried_cm": 100.0
+  }
+ ]
+}

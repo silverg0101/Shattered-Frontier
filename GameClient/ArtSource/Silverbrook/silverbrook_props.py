@@ -185,7 +185,8 @@ def _obstacles(A):
     import place_props as pp
     rects=[]
     for a in A.get_all_level_actors():
-        if isinstance(a,u.StaticMeshActor) and a.static_mesh_component.static_mesh and a.static_mesh_component.static_mesh.get_name().startswith('SM_Silverbrook') and TAG not in [str(t) for t in a.tags]:
+        if isinstance(a,u.StaticMeshActor) and '_Stoop' in a.get_actor_label():rects.append(pp._rect(a))
+        elif isinstance(a,u.StaticMeshActor) and a.static_mesh_component.static_mesh and a.static_mesh_component.static_mesh.get_name().startswith('SM_Silverbrook') and TAG not in [str(t) for t in a.tags]:
             r=pp._rect(a)
             if max(r[2]-r[0],r[3]-r[1])<=4000:  # terrain and backdrop are not street obstacles
                 rects.append(r)
@@ -252,26 +253,272 @@ def dress_props(L,c):
         placed[rule['id']]=n
     print('PROPS_PLACED',placed);return placed
 
+def dress_street_groups(L,c):
+    """Small, mixed Frontier prop groups just outside the walkable road."""
+    A=_actors();world=_world();pp,rects=_obstacles(A)
+    import pcg_dressing
+    _,terrain=pcg_dressing._terrain()
+    g=c['street_groups'];step=val(g['spacing_m']);offset=val(g['offset_m']);clear=val(g['clear_m'])*100
+    names=['RainBarrel','SackPile','FirewoodStack','Bench','MarketGoods','Wheelbarrow','HayBales','HitchingPost']
+    meshes=[_asset(LIB+'/Meshes/SM_SilverbrookProp'+n) for n in names]
+    assert all(meshes),names
+    total=0;road_counts={}
+    for road,tier,pts,width in _roads(L,c):
+        road_counts[road]=0
+        for k,(x,y,ux,uy) in enumerate(_stations(pts,step)):
+            if total>=val(g['max_groups']) or not _inside(L,c,x,y):continue
+            key=f'group:{road}:{k}';side=1 if k%2 else -1
+            mesh=meshes[int(_h(key)*len(meshes))%len(meshes)]
+            for side,shift in ((side,0),(side,0.8),(-side,0),(-side,0.8)):
+                d=width/2+offset+shift
+                px=(x-side*uy*d)*100;py=(y+side*ux*d)*100
+                box=(px-clear,py-clear,px+clear,py+clear)
+                if not pp._free(box,rects):continue
+                hit=terrain.static_mesh_component.line_trace_component(u.Vector(px,py,100000),u.Vector(px,py,-100000),True,False)
+                if not hit:continue
+                z=hit[0].z
+                yaw=math.degrees(math.atan2(uy,ux))-90
+                a=A.spawn_actor_from_class(u.StaticMeshActor,u.Vector(px,py,z),u.Rotator(yaw=yaw))
+                a.static_mesh_component.set_static_mesh(mesh)
+                a.set_actor_label(f'StreetGroup_{road.replace(" ", "")}_{k:03d}')
+                a.set_folder_path('Silverbrook/Dressing');a.tags=[TAG]
+                rects.append(box);total+=1;road_counts[road]+=1
+                break
+    print('STREET_GROUPS',total,road_counts)
+    return road_counts
+
+def dress_house_details():
+    """Side gardens, small flowering tubs and the existing animated smoke-card VFX."""
+    A=_actors();world=_world();import pcg_dressing
+    _,terrain=pcg_dressing._terrain()
+    fence=_asset(LIB+'/Meshes/SM_SilverbrookPropFenceSection')
+    barrel=_asset(LIB+'/Meshes/SM_SilverbrookPropRainBarrel')
+    crop=_asset('/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_HerbBroadleaf_00')
+    flower=_asset('/Game/Frontier/Environment/Greenlands/Arrival/Meshes/SM_PH_FloweringClump_0')
+    smoke=_asset('/Game/Frontier/VFX/StreetLamp/M_LampSmoke');plane=_asset('/Engine/BasicShapes/Plane')
+    assert all((fence,barrel,crop,flower,smoke,plane))
+    stacks={1:(2.2,1.5,8.85),2:(-2.05,0,8.7),3:(2.45,-.55,8.75),4:(-2.1,.3,8.65),5:(2.25,.55,8.7),6:(-2.15,1.2,8.55)}
+    counts=dict(gardens=0,crops=0,pots=0,smoking=0)
+    def spawn(label,mesh,x,y,z,yaw,scale):
+        a=A.spawn_actor_from_class(u.StaticMeshActor,u.Vector(x,y,z),u.Rotator(pitch=90 if mesh==plane else 0,yaw=yaw))
+        a.static_mesh_component.set_static_mesh(mesh)
+        a.set_actor_scale3d(u.Vector(*scale))
+        a.set_actor_label(label);a.set_folder_path('Silverbrook/Dressing');a.tags=[TAG]
+        if mesh==plane:
+            a.static_mesh_component.set_material(0,smoke)
+            a.static_mesh_component.set_collision_profile_name('NoCollision')
+            a.static_mesh_component.set_editor_property('cast_shadow',False)
+        return a
+    for a in A.get_all_level_actors():
+        if not isinstance(a,u.StaticMeshActor) or not str(a.get_folder_path()).startswith('Districts/'):continue
+        mesh=a.static_mesh_component.static_mesh
+        if not mesh or not mesh.get_name().startswith('SM_Silverbrook') or '_Door' in mesh.get_name():continue
+        label=a.get_actor_label();h=_h(label);b=mesh.get_bounding_box();p=a.get_actor_location()
+        yaw=a.get_actor_rotation().yaw;co,si=math.cos(math.radians(yaw)),math.sin(math.radians(yaw))
+        def pt(lx,ly):return p.x+co*lx-si*ly,p.y+si*lx+co*ly
+        def terrain_z(x,y):
+            hit=terrain.static_mesh_component.line_trace_component(u.Vector(x,y,100000),u.Vector(x,y,-100000),True,False)
+            return hit[0].z if hit else None
+        if h<.38:
+            side=-1 if _h(label+'side')<.5 else 1
+            sx=side*((b.max.x-b.min.x)*.42+140)
+            x,y=pt(sx,0);z=terrain_z(x,y)
+            if z is not None:
+                spawn('GardenFence_'+label,fence,x,y,z,yaw,(.82,.82,.72))
+                for i in range(4):
+                    cx,cy=pt(sx+side*(55+(i%2)*85),(i//2-.5)*130)
+                    cz=terrain_z(cx,cy)
+                    if cz is not None:
+                        spawn(f'GardenCrop_{label}_{i}',crop,cx,cy,cz,yaw,(1.15,1.15,1.15));counts['crops']+=1
+                counts['gardens']+=1
+        if h<.5:
+            side=-1 if _h(label+'pot')<.5 else 1
+            x,y=pt(side*170,b.min.y*.43);z=terrain_z(x,y)
+            if z is not None:
+                spawn('FlowerTub_'+label,barrel,x,y,z,yaw,(.25,.25,.25))
+                spawn('Flower_'+label,flower,x,y,z+25,yaw,(.35,.35,.35));counts['pots']+=1
+        if mesh.get_name().startswith('SM_SilverbrookTownhouse') and h<.4:
+            number=int(mesh.get_name().removeprefix('SM_SilverbrookTownhouse'))
+            sx,sy,sz=stacks[number];x,y=pt(sx*100,sy*100)
+            for k in range(2):spawn(f'ChimneySmoke_{label}_{k}',plane,x,y,p.z+sz*100+80,yaw+35+90*k,(1.6,.8,1))
+            counts['smoking']+=1
+    print('HOUSE_DETAILS',counts)
+    return counts
+
+def vary_house_finishes():
+    """Three shared, subtle roof/plaster tints assigned deterministically per house."""
+    master=_asset(LIB+'/Materials/M_SB_Scan');assert master
+    expr=mel.get_material_expressions(master)
+    if not any(isinstance(e,u.MaterialExpressionVectorParameter) and str(e.get_editor_property('parameter_name'))=='BaseTint' for e in expr):
+        attrs=next(e for e in expr if isinstance(e,u.MaterialExpressionMakeMaterialAttributes))
+        source=mel.get_inputs_for_material_expression(master,attrs)[0]
+        assert source, 'scan master has no BaseColor input'
+        tint=_node(master,u.MaterialExpressionVectorParameter,parameter_name='BaseTint',default_value=u.LinearColor(1,1,1,1))
+        mul=_node(master,u.MaterialExpressionMultiply);_link(source,mul,'A');_link(tint,mul,'B')
+        _link(mul,attrs,'BaseColor')
+        mel.recompile_material(master);assert eal.save_loaded_asset(master)
+    palettes={'MI_SB_LimePlaster':[(.96,.92,.86),(1.02,.99,.94),(.91,.95,.98)],
+              'MI_SB_Slate':[(.91,.96,1.04),(1.04,.99,.91),(.98,1.0,1.01)]}
+    variants={}
+    for source,cols in palettes.items():
+        parent=_asset(LIB+'/Materials/'+source);assert parent
+        for i,col in enumerate(cols):
+            name=f'{source}_HouseTone{i+1}'
+            mi=_instance(name,parent)
+            mel.set_material_instance_vector_parameter_value(mi,'BaseTint',u.LinearColor(*col,1))
+            assert eal.save_loaded_asset(mi)
+            variants[(source,i)]=mi
+    n=0
+    for a in _actors().get_all_level_actors():
+        if not isinstance(a,u.StaticMeshActor) or not str(a.get_folder_path()).startswith('Districts/'):continue
+        mesh=a.static_mesh_component.static_mesh
+        if not mesh or not mesh.get_name().startswith('SM_Silverbrook') or '_Door' in mesh.get_name():continue
+        i=int(_h(a.get_actor_label()+'tone')*3)%3
+        for slot in range(a.static_mesh_component.get_num_materials()):
+            mat=a.static_mesh_component.get_material(slot)
+            if not mat:continue
+            name=mat.get_name().split('_HouseTone')[0]
+            if (name,i) in variants:
+                a.static_mesh_component.set_material(slot,variants[(name,i)])
+        n+=1
+    print('HOUSE_TINTS',n)
+
+_BASE={}
+def _edge(v,low,mass=.08,band=6.):
+    """Outermost wall plane along one axis: the extreme coordinate with at least `mass` of the base vertices within `band` cm,
+    so a doorstep, post or drainpipe sticking out of the wall does not become the foundation edge."""
+    v=v if low else v[::-1];n=max(1,int(len(v)*mass));sign=1 if low else -1
+    for i in range(len(v)-n+1):
+        if abs(v[i+n-1]-v[i])<=band:return v[i]
+    return v[0]
+def _base_box(mesh,band):
+    """(xmin,xmax,ymin,ymax) in mesh space (cm) of the vertices within `band` cm of the mesh's lowest point."""
+    key=(mesh.get_name(),band)
+    if key not in _BASE:
+        dm=u.DynamicMesh()
+        dm,out=u.GeometryScript_AssetUtils.copy_mesh_from_static_mesh(mesh,dm,u.GeometryScriptCopyMeshFromAssetOptions(),u.GeometryScriptMeshReadLOD())
+        assert out==u.GeometryScriptOutcomePins.SUCCESS,mesh.get_name()
+        pts=u.GeometryScript_List.convert_vector_list_to_array(u.GeometryScript_MeshQueries.get_all_vertex_positions(dm,False)[1])
+        low=min(p.z for p in pts);near=[p for p in pts if p.z<=low+band]
+        _BASE[key]=(_edge(sorted(p.x for p in near),True),_edge(sorted(p.x for p in near),False),
+                    _edge(sorted(p.y for p in near),True),_edge(sorted(p.y for p in near),False))
+    return _BASE[key]
+
 def dress_footings(c):
-    """Inset builder plinths under the masonry walls and use textured stone."""
-    f=c['footing'];mi=_asset(f['material']);assert mi,f['material']
-    actors=_actors().get_all_level_actors();by_label={a.get_actor_label():a for a in actors};n=0
+    """A matte stone course under every house, including level lots; repeatable after a rebuild."""
+    f=c['footing'];path=f['material'];m=_asset(path)
+    if not m:
+        m=tools.create_asset('M_SB_FoundationStone',LIB+'/Materials',u.Material,u.MaterialFactoryNew())
+    mel.delete_all_material_expressions(m)
+    # World-aligned stone: the plinth is a stretched cube, so UVs come from world position (no smeared courses).
+    def mask(src,**ch):
+        n=_node(m,u.MaterialExpressionComponentMask,**{'r':False,'g':False,'b':False,'a':False,**ch});_link(src,n,'');return n
+    def op(cls,a,b):
+        n=_node(m,cls);_link(a,n,'A');_link(b,n,'B');return n
+    wp=_node(m,u.MaterialExpressionWorldPosition);an=_node(m,u.MaterialExpressionAbs);_link(_node(m,u.MaterialExpressionVertexNormalWS),an,'')
+    across=op(u.MaterialExpressionAdd,op(u.MaterialExpressionMultiply,mask(wp,r=True),mask(an,g=True)),
+              op(u.MaterialExpressionMultiply,mask(wp,g=True),mask(an,r=True)))
+    side=op(u.MaterialExpressionAppendVector,across,mask(wp,b=True))
+    top_uv=_node(m,u.MaterialExpressionComponentMask,r=True,g=True,b=False,a=False);_link(wp,top_uv,'')
+    off=_node(m,u.MaterialExpressionAdd,const_b=-.5);_link(mask(an,b=True),off,'A')
+    gain=_node(m,u.MaterialExpressionMultiply,const_b=100.);_link(off,gain,'A')
+    up=_node(m,u.MaterialExpressionSaturate);_link(gain,up,'')
+    pick=_node(m,u.MaterialExpressionLinearInterpolate);_link(side,pick,'A');_link(top_uv,pick,'B');_link(up,pick,'Alpha')
+    div=_node(m,u.MaterialExpressionDivide,const_b=180.);_link(pick,div,'A')
+    tex=_node(m,u.MaterialExpressionTextureSample,texture=_tex('rock_wall_08','Diffuse'),sampler_type=u.MaterialSamplerType.SAMPLERTYPE_COLOR)
+    _link(div,tex,'UVs')
+    nor=_node(m,u.MaterialExpressionTextureSample,texture=_tex('rock_wall_08','nor_gl'),sampler_type=u.MaterialSamplerType.SAMPLERTYPE_NORMAL)
+    _link(div,nor,'UVs');assert mel.connect_material_property(nor,'',u.MaterialProperty.MP_NORMAL)
+    tint=_node(m,u.MaterialExpressionVectorParameter,parameter_name='StoneTint',default_value=u.LinearColor(.62,.64,.67,1))
+    col=_node(m,u.MaterialExpressionMultiply);_link(tex,col,'A');_link(tint,col,'B')
+    rough=_node(m,u.MaterialExpressionScalarParameter,parameter_name='Roughness',default_value=.86)
+    assert mel.connect_material_property(col,'',u.MaterialProperty.MP_BASE_COLOR)
+    assert mel.connect_material_property(rough,'',u.MaterialProperty.MP_ROUGHNESS)
+    mel.recompile_material(m);assert eal.save_loaded_asset(m)
+    sys.path.insert(0,str(ROOT.parent/'Greenlands'))
+    import pcg_dressing
+    _,terrain=pcg_dressing._terrain()
+    A=_actors();actors=A.get_all_level_actors();by_label={a.get_actor_label():a for a in actors}
+    cube=_asset('/Engine/BasicShapes/Cube');n=0;created=0
+    def ground(x,y):
+        hit=terrain.static_mesh_component.line_trace_component(u.Vector(x,y,100000),u.Vector(x,y,-100000),True,False)
+        assert hit,(x,y)
+        return hit[0].z
+    for building in actors:
+        if not isinstance(building,u.StaticMeshActor) or not str(building.get_folder_path()).startswith('Districts/'):
+            continue
+        mesh=building.static_mesh_component.static_mesh
+        if not mesh or not mesh.get_name().startswith('SM_Silverbrook') or '_Door' in mesh.get_name():continue
+        b=mesh.get_bounding_box();s=building.get_actor_scale3d();loc=building.get_actor_location()
+        # Footprint = the mesh's own wall base: vertices within base_band_cm of its lowest point, plus a few cm of proud edge.
+        # (Whole-mesh bounds include eaves, bays and signs, which left one-sided ledges.)
+        x0,x1,y0,y1=_base_box(mesh,val(f['base_band_cm']))
+        pad=val(f['proud_cm'])
+        w=(x1-x0+2*pad)*s.x;d=(y1-y0+2*pad)*s.y;cx=(x0+x1)/2*s.x;cy=(y0+y1)/2*s.y
+        yaw=math.radians(building.get_actor_rotation().yaw);co,si=math.cos(yaw),math.sin(yaw)
+        px=loc.x+co*cx-si*cy;py=loc.y+si*cx+co*cy
+        heights=[ground(px+co*x-si*y,py+si*x+co*y) for x in (-w/2,w/2) for y in (-d/2,d/2)]
+        heights.append(ground(px,py))
+        marker='SilverbrookFoundationRaised'
+        wall_base=loc.z+b.min.z*s.z
+        wanted=max(heights)+val(f['visible_cm'])
+        raised=marker in [str(t) for t in building.tags]
+        if not raised or wall_base-max(heights)<50:  # first pass lifts the house onto its plinth; later passes only top up
+            shift=wanted-wall_base if raised else max(val(f['visible_cm']),wanted-wall_base)
+            building.set_actor_location(u.Vector(loc.x,loc.y,loc.z+shift),False,False)
+            if not raised:building.tags=list(building.tags)+[marker]
+            wall_base+=shift
+        assert wall_base-max(heights)>=50-0.1,(building.get_actor_label(),wall_base-max(heights))
+        bottom=min(heights)-val(f['burial_cm'])
+        plinth=by_label.get(building.get_actor_label()+'_Plinth')
+        if not plinth:
+            plinth=A.spawn_actor_from_class(u.StaticMeshActor,u.Vector(px,py,(bottom+wall_base)/2),building.get_actor_rotation())
+            plinth.static_mesh_component.set_static_mesh(cube)
+            plinth.set_actor_label(building.get_actor_label()+'_Plinth')
+            plinth.set_folder_path(building.get_folder_path())
+            created+=1
+        plinth.set_actor_location(u.Vector(px,py,(bottom+wall_base)/2),False,False)
+        plinth.set_actor_rotation(building.get_actor_rotation(),False)
+        plinth.set_actor_scale3d(u.Vector(w/100,d/100,(wall_base-bottom)/100))
+        plinth.static_mesh_component.set_material(0,m)
+        # Stoop: equal low risers from the doorstep down to the street, so the raised doorway stays walkable.
+        for old in [x for x in by_label.values() if x.get_actor_label().startswith(building.get_actor_label()+'_Stoop')]:A.destroy_actor(old)
+        doors=[x for x in building.get_attached_actors() if 'Door' in x.get_actor_label()]
+        if doors:
+            dc,_=doors[0].get_actor_bounds(False)
+            dx,dy=dc.x-px,dc.y-py;lx,ly=co*dx+si*dy,-si*dx+co*dy
+            ax,ay=((1 if lx>0 else -1),0) if abs(lx)/(w/2)>abs(ly)/(d/2) else (0,(1 if ly>0 else -1))
+            face=w/2 if ax else d/2;lat=ly if ax else lx
+            gx,gy=px+co*(ax*face)-si*(ay*face)+0,py+si*(ax*face)+co*(ay*face)
+            rise=wall_base-ground(gx+(co*ax-si*ay)*60,gy+(si*ax+co*ay)*60)
+            steps=max(0,math.ceil(rise/22)) if rise>2 else 0
+            for k in range(steps):
+                off=face+20+40*k;cxl,cyl=(ax*off+(0 if ax else lat),ay*off+(lat if ax else 0))
+                sx,sy=px+co*cxl-si*cyl,py+si*cxl+co*cyl
+                top=wall_base-1-k*rise/steps;low=ground(sx,sy)-50
+                st=A.spawn_actor_from_class(u.StaticMeshActor,u.Vector(sx,sy,(top+low)/2),building.get_actor_rotation())
+                st.static_mesh_component.set_static_mesh(cube);st.static_mesh_component.set_material(0,m)
+                st.set_actor_scale3d(u.Vector((.4 if ax else 1.5),(1.5 if ax else .4),(top-low)/100))
+                st.set_actor_label(f'{building.get_actor_label()}_Stoop{k}');st.set_folder_path(building.get_folder_path())
+        n+=1
+    # Existing non-house courses use the same matte stone, without shifting public buildings.
     for a in actors:
-        if not isinstance(a,u.StaticMeshActor):continue
-        m0=a.static_mesh_component.get_material(0);pale=m0 is not None and m0.get_name()=='MI_Graybox_Civic' and a.get_actor_scale3d().z<0.5  # place pads (market stall floors)
-        if a.get_actor_label().endswith('_Plinth'):
-            building=by_label.get(a.get_actor_label()[:-7])
-            if isinstance(building,u.StaticMeshActor) and building.static_mesh_component.static_mesh:
-                b=building.static_mesh_component.static_mesh.get_bounding_box();s=a.get_actor_scale3d()
-                inset=val(f['inset_fraction'])
-                a.set_actor_scale3d(u.Vector((b.max.x-b.min.x)/100*inset,(b.max.y-b.min.y)/100*inset,s.z))
-            a.static_mesh_component.set_material(0,mi);n+=1
-        elif pale:a.static_mesh_component.set_material(0,mi);n+=1
-    print('PLINTHS_RETEXTURED',n)
+        if isinstance(a,u.StaticMeshActor) and a.get_actor_label().endswith('_Plinth') and not str(a.get_folder_path()).startswith('Districts/'):
+            a.static_mesh_component.set_material(0,m)
+    print('HOUSE_FOUNDATIONS',n,'CREATED',created)
+
+def hide_debug_actors():
+    """Authoring visualisers never render in game (GFX-02 J1b); build_silverbrook.py sets the same on a fresh build."""
+    n=0
+    for a in _actors().get_all_level_actors():
+        marker=isinstance(a,u.StaticMeshActor) and str(a.get_folder_path())=="Places" and a.static_mesh_component.get_material(0) and a.static_mesh_component.get_material(0).get_name()=="MI_Graybox_Marker"
+        if marker or a.get_class().get_name() in ("TextRenderActor","ZoneShape","ZoneGraphData") or str(a.get_folder_path()) in ("Labels","Townsfolk/Lanes"):
+            a.set_actor_hidden_in_game(True);n+=1
+    print("DEBUG_HIDDEN_IN_GAME",n)
 
 def dress_all():
     c=cfg();L=json.loads(LAYOUT.read_text(encoding='utf-8'));_clear(_actors())
-    dress_footings(c);dress_roads(c);gate_windows(c);dress_verge(L,c);dress_props(L,c)
+    dress_footings(c);hide_debug_actors();vary_house_finishes();dress_roads(c);gate_windows(c);dress_verge(L,c);dress_props(L,c);dress_street_groups(L,c);dress_house_details()
 
 if __name__=='__main__':
     dress_all()

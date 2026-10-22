@@ -76,7 +76,9 @@ def scan_master():
     disp=node(m,u.MaterialExpressionLinearInterpolate,-600,1050);link(half,'',disp,'A');link(hgt,'R',disp,'B');link(ds,'',disp,'Alpha')
     # Displacement is not exposed as a MaterialProperty in Python, so drive everything through attributes.
     attrs=node(m,u.MaterialExpressionMakeMaterialAttributes,100,0)
-    link(base,'',attrs,'BaseColor');link(rough,'R',attrs,'Roughness');link(nl,'',attrs,'Normal')
+    base_tint=node(m,u.MaterialExpressionVectorParameter,-100,-350,parameter_name='BaseTint',default_value=u.LinearColor(1,1,1,1))
+    tinted=node(m,u.MaterialExpressionMultiply,0,-100);link(base,'',tinted,'A');link(base_tint,'',tinted,'B')
+    link(tinted,'',attrs,'BaseColor');link(rough,'R',attrs,'Roughness');link(nl,'',attrs,'Normal')
     # Displacement wired with tessellation off makes Nanite reject the material: every mesh then draws its coarse fallback.
     if DISPLACEMENT_CM>0:link(disp,'',attrs,'Displacement')
     # Poly Haven model sets pack metalness into the Rough map's G; terrain-style scans leave MetalAmount at 0.
