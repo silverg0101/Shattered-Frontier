@@ -16,6 +16,7 @@
 #include "Engine/StaticMesh.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/GameModeBase.h"
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/Pawn.h"
@@ -1377,24 +1378,55 @@ void USFTownsfolkSubsystem::TickScenario()
     if (ScenarioStart<0) { ScenarioStart=Now; ScenarioHome=Me->GetActorLocation(); }
     if (Now-ScenarioStart<5) { return; }  // let the crowd leave home first
     if (Now-ScenarioStart>90) { UE_LOG(LogTemp,Error,TEXT("TOWNSFOLK_HANDOFF_SCENARIO_FAILED no resident reached")); bScenarioSent=true; return; }
-    {   // Re-picked each frame: the nearest worker standing at work with two game hours of shift left (still there when the
-        // player arrives). Keeping the first pick sent the player across town after one that qualified early. The current
-        // target stays eligible while it shifts aside for the approaching player.
-        const int32 Was=ScenarioTarget; ScenarioTarget=INDEX_NONE; double BestD=TNumericLimits<double>::Max();
+    {   // Pick a worker by the actual footway route and real time left on shift, then follow until the shift ends.
+        // Straight-line distance can hide a long lane detour, and two game hours are only 20 real seconds on a
+        // four-minute day. Re-picking every frame can also send the player between work sites mid-approach.
         int32 Day=0; const float Hour=GameHour(Day);
-        for (int32 I=0; I<Residents.Num(); ++I)
+        int32 Market=INDEX_NONE;
+        if (!Residents.IsValidIndex(ScenarioTarget) || !Outdoors[ScenarioTarget] || GoalFor(ScenarioTarget,Hour,Day,Market)!=ESFTownsfolkGoal::Work)
         {
-            int32 M=INDEX_NONE; const double D=FVector::Dist2D(Shown[I],Me->GetActorLocation());
-            // At least 40 m from where the players spawn: a flee covers at most 27 m, so the resident can't stop inside
-            // the release radius of the other player still standing there.
-            if (Outdoors[I] && (Still[I]>=30 || I==Was) && D<BestD && FVector::Dist2D(Shown[I],ScenarioHome)>=4000 && GoalFor(I,Hour,Day,M)==ESFTownsfolkGoal::Work && Residents[I].WorkEnd-Hour>=2) { BestD=D; ScenarioTarget=I; }
+            ScenarioTarget=INDEX_NONE; double BestRouteCm=TNumericLimits<double>::Max();
+            double BestD=0, BestTravelSeconds=0, BestShiftSeconds=0;
+            const FVector From=Me->GetActorLocation();
+            const double PlayerSpeedCm=FMath::Max(100.0,double(Me->GetCharacterMovement()->MaxWalkSpeed));
+            for (int32 I=0; I<Residents.Num(); ++I)
+            {
+                int32 M=INDEX_NONE; const double D=FVector::Dist2D(Shown[I],From);
+                // At least 40 m from where the players spawn: a flee covers at most 27 m, so the resident can't stop
+                // inside the release radius of the other player still standing there.
+                // The civilian hand-off check should not chase guard work posts; guard combat has its own scenario.
+                if (Residents[I].Archetype==FName(TEXT("guard")) || ScenarioStalled.Contains(I) || !Outdoors[I]
+                    || Still[I]<30 || D>=15000 || FVector::Dist2D(Shown[I],ScenarioHome)<4000
+                    || GoalFor(I,Hour,Day,M)!=ESFTownsfolkGoal::Work || Residents[I].WorkEnd-Hour<2) { continue; }
+                TArray<FVector> CandidatePath;
+                if (!PlanRoute(From,Shown[I],CandidatePath,true)) { continue; }
+                double RouteCm=0; FVector At=From;
+                for (const FVector& Point:CandidatePath) { RouteCm+=FVector::Dist2D(At,Point); At=Point; }
+                const double TravelSeconds=RouteCm/PlayerSpeedCm;
+                const double ShiftSeconds=(Residents[I].WorkEnd-Hour)*State->DayMinutes()*60.0/24.0;
+                if (TravelSeconds>60 || TravelSeconds*1.25+5>ShiftSeconds || RouteCm>=BestRouteCm) { continue; }
+                BestRouteCm=RouteCm; BestD=D; BestTravelSeconds=TravelSeconds; BestShiftSeconds=ShiftSeconds;
+                ScenarioTarget=I; ScenarioPath=MoveTemp(CandidatePath);
+            }
+            if (ScenarioTarget==INDEX_NONE) { return; }
+            ScenarioPathNext=0; ScenarioPathAt=Now; ScenarioPathFor=ScenarioTarget;
+            ScenarioProgressFrom=From; ScenarioProgressAt=Now;
+            ScenarioTargetDeadline=Now+FMath::Min(65.0,FMath::Max(15.0,BestTravelSeconds*2.5+5.0));
+            UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_HANDOFF_SCENARIO_TARGET Id=%s Distance=%.0f LaneCm=%.0f TravelSeconds=%.1f ShiftSeconds=%.1f"),
+                *Residents[ScenarioTarget].Id,BestD,BestRouteCm,BestTravelSeconds,BestShiftSeconds);
         }
-        if (ScenarioTarget==INDEX_NONE) { return; }
-        if (ScenarioTarget!=Was) { UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_HANDOFF_SCENARIO_TARGET Id=%s Distance=%.0f"),*Residents[ScenarioTarget].Id,BestD); }
     }
     const FVector D=(Shown[ScenarioTarget]-Me->GetActorLocation())*FVector(1,1,0);
     if (D.Size()>150)
     {   // Along the footways, not straight through the houses: a straight line from the arrival point stalls on walls.
+        if (FVector::Dist2D(Me->GetActorLocation(),ScenarioProgressFrom)>=200)
+        { ScenarioProgressFrom=Me->GetActorLocation(); ScenarioProgressAt=Now; }
+        if (Now-ScenarioProgressAt>8 || Now>ScenarioTargetDeadline)
+        {
+            UE_LOG(LogTemp,Warning,TEXT("TOWNSFOLK_HANDOFF_SCENARIO_STALLED Id=%s At=%s Reason=%s"),
+                *Residents[ScenarioTarget].Id,*Me->GetActorLocation().ToCompactString(),Now>ScenarioTargetDeadline ? TEXT("route-time") : TEXT("no-progress"));
+            ScenarioStalled.Add(ScenarioTarget); ScenarioTarget=INDEX_NONE; return;
+        }
         if (ScenarioTarget!=ScenarioPathFor || Now-ScenarioPathAt>5)
         { PlanRoute(Me->GetActorLocation(),Shown[ScenarioTarget],ScenarioPath,true); ScenarioPathNext=0; ScenarioPathAt=Now; ScenarioPathFor=ScenarioTarget; }
         while (ScenarioPathNext<ScenarioPath.Num()-1 && FVector::Dist2D(ScenarioPath[ScenarioPathNext],Me->GetActorLocation())<150) { ++ScenarioPathNext; }

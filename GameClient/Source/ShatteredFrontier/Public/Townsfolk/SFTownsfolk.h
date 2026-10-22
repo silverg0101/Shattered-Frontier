@@ -511,6 +511,7 @@ private:
     int32 HandoffSerial=0, ScenarioTarget=INDEX_NONE, LastReturned=INDEX_NONE;
     FVector ScenarioHome=FVector::ZeroVector;
     TArray<FVector> ScenarioPath; int32 ScenarioPathNext=0, ScenarioPathFor=INDEX_NONE; double ScenarioPathAt=0;
+    TSet<int32> ScenarioStalled; FVector ScenarioProgressFrom=FVector::ZeroVector; double ScenarioProgressAt=0, ScenarioTargetDeadline=0;
     double ScenarioStart=-1, LastReturnedAt=0; bool bScenario=false, bScenarioSent=false, bCensus=false;
     bool bQuestScenario=false; uint8 QuestScenarioPhase=0; FVector QuestScenarioHome=FVector::ZeroVector; double QuestScenarioAt=0;
     FDelegateHandle PostLoginHandle;
