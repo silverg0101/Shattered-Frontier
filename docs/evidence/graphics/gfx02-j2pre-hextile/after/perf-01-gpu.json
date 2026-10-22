@@ -1,0 +1,30 @@
+{
+  "log": "perf-01.log",
+  "frame_ms": 5.869,
+  "scene_ms": 5.692,
+  "passes": {
+    "BasePass": 1.264,
+    "RenderDeferredLighting": 0.859,
+    "PostProcessing": 0.566,
+    "ShadowDepths": 0.491,
+    "VolumetricCloud": 0.47,
+    "Nanite::VisBuffer": 0.419,
+    "PrePass DDM_AllOpaqueNoVelocity (Forced by Nanite)": 0.199,
+    "Translucency": 0.176,
+    "HZB": 0.168,
+    "SingleLayerWater": 0.159,
+    "LumenSceneUpdate: N card captures": 0.145,
+    "ComputeVolumetricFog": 0.082,
+    "VirtualShadowMapMarkPages": 0.077,
+    "VolCloudComposeOverScene": 0.073,
+    "StochasticLighting": 0.072,
+    "ExponentialHeightFog": 0.072,
+    "BuildRenderingCommandsDeferred(Culling=On)": 0.069,
+    "NaniteBasePass": 0.045,
+    "SkyAtmosphereLUTs": 0.041,
+    "SingleLayerWaterDepthPrepass": 0.041,
+    "VolCloudReconstruction": 0.029,
+    "SkyAtmosphere": 0.026,
+    "RenderVelocities(Opaque)": 0.02
+  }
+}

@@ -2,18 +2,20 @@
 
 Idempotent; import_ground.py / landscape_material.py call hex_tile.build() first. Standalone:
 py -3 tools/Run-InEditor.py GameClient/ArtSource/Greenlands/NatureFamilies/hex_tile.py
-Inputs  UV (texture tiles = world cm / TileCm), D diffuse, N normal, M mask (arm or Rough), H displacement, Rot 0-1, CellTiles (hex width in tiles), Snap (0 = off; else offsets snap to 1/Snap tile).
-Outputs D float4, N float3 (decoded tangent-space normal), M float4, H float.
+Inputs  UV (texture tiles = world cm / TileCm), D diffuse, N normal, M mask (arm or Rough), H displacement, Rot 0-1, CellTiles (hex width in tiles), Snap (0 = off; else offsets snap to 1/Snap tile), VN vertex normal (world; default (0,0,1)),
+        BlendSharp (blend exponent, paper 7), Warp (lattice warp, tiles),
+        HeightSharp (0 = off; else the blend weights get x exp2(HeightSharp * H), so the taller texel (a stone) wins over its neighbour's soil).
+Outputs D float4, N float3 (WORLD-space normal in the world-x/y frame of the UV; the calling material sets tangent_space_normal False), M float4, H float.
 """
 import unreal as u
 DIR = '/Game/Frontier/Environment/Greenlands/Nature/Materials'
 NAME = 'MF_GN_HexTile'
-NEG_ANGLE = False  # flip to True only if the hex-border lighting self-check (bookmark 04) shows a step: negates the rotation sign on the normal
+NEG_ANGLE = False  # the uv rotation is a row-vector product (R^T p), so the texture turns by +a and the normal by mul(R, n.xy); True (normal turned by -a) only if the mesh tangent frame is shown mirrored (r5 review)
 
 HLSL = """
-float2 p = UV / CellTiles;
+float2 p = UV / CellTiles, pw = p + Warp / CellTiles;                       // lattice from the warped coordinate (borders bend by +-Warp tiles), texels from the unwarped p (r7 review)
 float2 gx = ddx(UV), gy = ddy(UV);
-float2 sk = float2(p.x - 0.57735027 * p.y, 1.15470054 * p.y);
+float2 sk = float2(pw.x - 0.57735027 * pw.y, 1.15470054 * pw.y);
 int2 b = int2(floor(sk));
 float3 t = float3(frac(sk), 0.0); t.z = 1.0 - t.x - t.y;
 float s = step(0.0, -t.z), s2 = 2.0 * s - 1.0; int si = (int)s;
@@ -37,11 +39,19 @@ float4 cD[3]; float3 cN[3]; float4 cM[3]; float cH[3]; float3 L = 0;
     cH[i] = H.SampleGrad(Material.Wrap_WorldGroupSettings, uv, rx, ry).r;
     L[i] = dot(cD[i].rgb, float3(0.299, 0.587, 0.114));
 }
-float3 W = lerp(1.0, L, 0.6) * pow(w, 7.0); W /= (W.x + W.y + W.z);
-Nrm = normalize(W.x * cN[0] + W.y * cN[1] + W.z * cN[2]);
-Msk = W.x * cM[0] + W.y * cM[1] + W.z * cM[2];
-Hgt = W.x * cH[0] + W.y * cH[1] + W.z * cH[2];
-return W.x * cD[0] + W.y * cD[1] + W.z * cD[2];
+float3 Hv = float3(cH[0], cH[1], cH[2]);
+float3 W = lerp(1.0, L, 0.6) * pow(w, BlendSharp) * exp2(max(HeightSharp * (Hv - max(Hv.x, max(Hv.y, Hv.z))), -3.0)); W /= (W.x + W.y + W.z);   // height tie-break capped at 8x (r5 review); BlendSharp 24 narrows the 20-50 % band to ~3 % of the cell (r7 review)
+float k = rsqrt(dot(W, W));                                                                 // variance-preserving blend (Heitz-Neyret 2018): a 50/50 band keeps the texel contrast (r6 review)
+float4 mD = D.SampleLevel(Material.Wrap_WorldGroupSettings, float2(0.5, 0.5), 20.0);          // texture mean = its last mip
+float4 mM = M.SampleLevel(Material.Wrap_WorldGroupSettings, float2(0.5, 0.5), 20.0);
+float  mH = H.SampleLevel(Material.Wrap_WorldGroupSettings, float2(0.5, 0.5), 20.0).r;
+float3 nb = float3((W.x * cN[0].xy + W.y * cN[1].xy + W.z * cN[2].xy) * k, W.x * cN[0].z + W.y * cN[1].z + W.z * cN[2].z);   // mean normal is (0,0,1): scale the xy deviation only
+nb = normalize(nb);
+float3 Tw = normalize(cross(float3(0.0, 1.0, 0.0), VN)), Bw = cross(VN, Tw);   // world-aligned frame: u = world +x, v = world +y (UV is WorldPosition.xy); measured at Rot 0: +y 15.8, -y 11.2 at 04; the mesh's UV tangents are not this frame
+Nrm = normalize(Tw * nb.x + Bw * nb.y + VN * nb.z);                              // world-space normal; the material sets tangent_space_normal False
+Msk = max(mM + (W.x * cM[0] + W.y * cM[1] + W.z * cM[2] - mM) * k, 0.0);
+Hgt = max(mH + (W.x * cH[0] + W.y * cH[1] + W.z * cH[2] - mH) * k, 0.0);
+return max(mD + (W.x * cD[0] + W.y * cD[1] + W.z * cD[2] - mD) * k, 0.0);
 """
 
 
@@ -66,7 +76,9 @@ def build():
     default_tex = u.load_asset('/Engine/EngineResources/DefaultTexture')
     spec = [('UV', T.FUNCTION_INPUT_VECTOR2, None), ('D', T.FUNCTION_INPUT_TEXTURE2D, False), ('N', T.FUNCTION_INPUT_TEXTURE2D, False),
             ('M', T.FUNCTION_INPUT_TEXTURE2D, True), ('H', T.FUNCTION_INPUT_TEXTURE2D, True),
-            ('Rot', T.FUNCTION_INPUT_SCALAR, 1.0), ('CellTiles', T.FUNCTION_INPUT_SCALAR, 0.5), ('Snap', T.FUNCTION_INPUT_SCALAR, 0.0)]
+            ('Rot', T.FUNCTION_INPUT_SCALAR, 1.0), ('CellTiles', T.FUNCTION_INPUT_SCALAR, 0.5), ('Snap', T.FUNCTION_INPUT_SCALAR, 0.0),
+            ('HeightSharp', T.FUNCTION_INPUT_SCALAR, 0.0), ('VN', T.FUNCTION_INPUT_VECTOR3, None),
+            ('BlendSharp', T.FUNCTION_INPUT_SCALAR, 7.0), ('Warp', T.FUNCTION_INPUT_VECTOR2, 0.0)]
     fins = []
     for i, (name, kind, extra) in enumerate(spec):
         fi = n(u.MaterialExpressionFunctionInput, -900, i * 200, input_name=name, input_type=kind, sort_priority=i)
@@ -76,10 +88,14 @@ def build():
             if extra: fi.set_editor_property('use_preview_value_as_default', True)
         elif kind == T.FUNCTION_INPUT_SCALAR:
             pv = u.Vector4f(); pv.set_editor_property('x', extra); fi.set_editor_property('preview_value', pv); fi.set_editor_property('use_preview_value_as_default', True)
+        elif kind == T.FUNCTION_INPUT_VECTOR3:  # VN: the vertex normal (world); default straight up
+            pv = u.Vector4f(); pv.set_editor_property('z', 1.0); fi.set_editor_property('preview_value', pv); fi.set_editor_property('use_preview_value_as_default', True)
+        elif name == 'Warp':  # lattice warp in texture tiles; default none (UV, also VECTOR2, keeps no default)
+            pv = u.Vector4f(); fi.set_editor_property('preview_value', pv); fi.set_editor_property('use_preview_value_as_default', True)
         fins.append(fi)
 
     custom = n(u.MaterialExpressionCustom, -400, 300, description='HexTile', output_type=u.CustomMaterialOutputType.CMOT_FLOAT4,
-               code=HLSL.replace('a *= Rot;', 'a *= -Rot;') if NEG_ANGLE else HLSL)
+               code=HLSL.replace('n.xy = mul(R, n.xy);', 'n.xy = mul(n.xy, R);') if NEG_ANGLE else HLSL)  # normal turns by -a (R transposed); the UV rotation is unchanged
     ins = []
     for name, _, _ in spec:
         ci = u.CustomInput(); ci.set_editor_property('input_name', name); ins.append(ci)

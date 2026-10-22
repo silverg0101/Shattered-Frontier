@@ -3,30 +3,30 @@
   "passed": false,
   "crops": {
     "A1-south-approach-30m/cobble": {
-      "peak": 0.1943,
+      "peak": 0.2254,
       "lag_px": [
-        44,
-        -21
+        -44,
+        21
       ],
       "rect": [
         876,
-        816,
+        850,
         256,
-        256
+        222
       ],
       "passed": true
     },
     "A1-south-approach-30m/earth": {
-      "peak": 0.5595,
+      "peak": 0.544,
       "lag_px": [
         -23,
         -13
       ],
       "rect": [
-        700,
-        715,
-        128,
-        112
+        705,
+        730,
+        110,
+        96
       ],
       "passed": false
     },
@@ -45,15 +45,15 @@
       "passed": true
     },
     "A2-south-approach-100m/cobble": {
-      "peak": 0.4359,
+      "peak": 0.5833,
       "lag_px": [
-        20,
-        -16
+        -19,
+        -17
       ],
       "rect": [
         885,
         790,
-        160,
+        110,
         256
       ],
       "passed": false
@@ -87,21 +87,21 @@
       "passed": false
     },
     "A3-south-approach-250m/cobble": {
-      "peak": 0.5919,
+      "peak": 0.6278,
       "lag_px": [
-        -9,
-        -9
+        0,
+        -17
       ],
       "rect": [
-        915,
+        925,
         600,
-        85,
-        256
+        55,
+        215
       ],
       "passed": false
     },
     "A3-south-approach-250m/earth": {
-      "peak": 0.2426,
+      "peak": 0.5,
       "lag_px": [
         1,
         -14
@@ -110,9 +110,9 @@
         884,
         600,
         32,
-        256
+        215
       ],
-      "passed": true
+      "passed": false
     },
     "A3-south-approach-250m/grass": {
       "peak": 0.4332,

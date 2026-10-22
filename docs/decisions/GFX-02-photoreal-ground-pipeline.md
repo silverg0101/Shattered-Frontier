@@ -162,37 +162,46 @@ Verified alternatives in UE 5.8 (`C:\Program Files\Epic Games\UE_5.8\Engine\Cont
 **`MF_GN_HexTile`** (built by `NatureFamilies/hex_tile.py`, idempotent, saved to `/Game/Frontier/Environment/Greenlands/Nature/Materials/MF_GN_HexTile`; `landscape_material.py` and `import_ground.py` both `import hex_tile` and call `hex_tile.build()` first; expressions via `MaterialEditingLibrary.create_material_expression_in_function` as `foliage_interaction.py` does). Function inputs (`MaterialExpressionFunctionInput`: `input_name`, `input_type`, default): `UV` Vector2 (texture tiles = world cm / TileCm); `D`, `N`, `M`, `H` Texture2D (diffuse, normal, mask = `arm` or `Rough`, displacement; `M` and `H` get a `MaterialExpressionTextureObject` of `/Engine/EngineResources/DefaultTexture` on their `Preview` pin and `use_preview_value_as_default` True so a layer without them still compiles); `Rot` Scalar `preview_value` 1.0 (random rotation strength 0-1, `use_preview_value_as_default` True); `CellTiles` Scalar 0.5 (hex width in texture tiles, same default rule). Function outputs: `D` (float4), `N` (float3, decoded tangent-space normal), `M` (float4), `H` (float). One `MaterialExpressionCustom`: `inputs` = `CustomInput` named exactly `UV, D, N, M, H, Rot, CellTiles` (in that order, each linked from its FunctionInput), `output_type` `CMOT_FLOAT4`, `additional_outputs` = `CustomOutput('Nrm', CMOT_FLOAT3)`, `('Msk', CMOT_FLOAT4)`, `('Hgt', CMOT_FLOAT1)`, `code` =
 
 ```hlsl
-// Mikkelsen 2022 hex-tiling, contrast-preserving blend, 3 taps per texture. Shared wrap sampler = the spec's SSM_WRAP_WORLD_GROUP_SETTINGS.
-float2 p = UV / CellTiles;                              // hex lattice space: vertex spacing 1 = CellTiles texture tiles
+// as built by hex_tile.py (J2-pre r8); hex_tile.py is the source of truth
+float2 p = UV / CellTiles, pw = p + Warp / CellTiles;                       // lattice from the warped coordinate (borders bend by +-Warp tiles), texels from the unwarped p (r7 review)
 float2 gx = ddx(UV), gy = ddy(UV);
-float2 sk = float2(p.x - 0.57735027 * p.y, 1.15470054 * p.y);   // skew to the simplex grid
+float2 sk = float2(pw.x - 0.57735027 * pw.y, 1.15470054 * pw.y);
 int2 b = int2(floor(sk));
 float3 t = float3(frac(sk), 0.0); t.z = 1.0 - t.x - t.y;
 float s = step(0.0, -t.z), s2 = 2.0 * s - 1.0; int si = (int)s;
-float3 w = float3(-t.z * s2, s - t.y * s2, s - t.x * s2);      // barycentric weights of the 3 nearest hex centres
+float3 w = float3(-t.z * s2, s - t.y * s2, s - t.x * s2);
 int2 v[3]; v[0] = b + int2(si, si); v[1] = b + int2(si, 1 - si); v[2] = b + int2(1 - si, si);
 float4 cD[3]; float3 cN[3]; float4 cM[3]; float cH[3]; float3 L = 0;
 [unroll] for (int i = 0; i < 3; i++)
 {
-    float a = abs(v[i].x * v[i].y) + abs(v[i].x + v[i].y) + 3.14159265;   // per-cell pseudo-random angle
+    float a = abs(v[i].x * v[i].y) + abs(v[i].x + v[i].y) + 3.14159265;
     a = fmod(a, 6.28318531); a = (a > 3.14159265) ? a - 6.28318531 : a; a *= Rot;
     float cs = cos(a), sn = sin(a); float2x2 R = float2x2(cs, -sn, sn, cs);
-    float2 cen = float2(v[i].x + 0.5 * v[i].y, v[i].y / 1.15470054);       // hex centre back in lattice space
+    float2 cen = float2(v[i].x + 0.5 * v[i].y, v[i].y / 1.15470054);
     float2 h = frac(sin(float2(127.1 * v[i].x + 311.7 * v[i].y, 269.5 * v[i].x + 183.3 * v[i].y)) * 43758.5453);
-    float2 uv = (mul(p - cen, R) + cen) * CellTiles + h;                    // rotate about the centre, random offset (tiles)
-    float2 rx = mul(gx, R), ry = mul(gy, R);                                 // rotated gradients keep mips exact at hex borders
+    if (Snap > 0.0) h = floor(h * Snap + 0.5) / Snap;   // offsets in whole stone courses (cobble), so borders fall on mortar lines
+    float2 uv = (mul(p - cen, R) + cen) * CellTiles + h;
+    float2 rx = mul(gx, R), ry = mul(gy, R);
     cD[i] = D.SampleGrad(Material.Wrap_WorldGroupSettings, uv, rx, ry);
     float3 n = UnpackNormalMap(N.SampleGrad(Material.Wrap_WorldGroupSettings, uv, rx, ry)).xyz;
-    n.xy = mul(R, n.xy); cN[i] = n;                                          // undo the UV rotation on the normal (inverse of mul(v, R))
+    n.xy = mul(R, n.xy); cN[i] = n;
     cM[i] = M.SampleGrad(Material.Wrap_WorldGroupSettings, uv, rx, ry);
     cH[i] = H.SampleGrad(Material.Wrap_WorldGroupSettings, uv, rx, ry).r;
     L[i] = dot(cD[i].rgb, float3(0.299, 0.587, 0.114));
 }
-float3 W = lerp(1.0, L, 0.6) * pow(w, 7.0); W /= (W.x + W.y + W.z);        // paper constants: fall-off contrast 0.6, exponent 7
-Nrm = normalize(W.x * cN[0] + W.y * cN[1] + W.z * cN[2]);
-Msk = W.x * cM[0] + W.y * cM[1] + W.z * cM[2];
-Hgt = W.x * cH[0] + W.y * cH[1] + W.z * cH[2];
-return W.x * cD[0] + W.y * cD[1] + W.z * cD[2];
+float3 Hv = float3(cH[0], cH[1], cH[2]);
+float3 W = lerp(1.0, L, 0.6) * pow(w, BlendSharp) * exp2(max(HeightSharp * (Hv - max(Hv.x, max(Hv.y, Hv.z))), -3.0)); W /= (W.x + W.y + W.z);   // height tie-break capped at 8x (r5 review); BlendSharp 24 narrows the 20-50 % band to ~3 % of the cell (r7 review)
+float k = rsqrt(dot(W, W));                                                                 // variance-preserving blend (Heitz-Neyret 2018): a 50/50 band keeps the texel contrast (r6 review)
+float4 mD = D.SampleLevel(Material.Wrap_WorldGroupSettings, float2(0.5, 0.5), 20.0);          // texture mean = its last mip
+float4 mM = M.SampleLevel(Material.Wrap_WorldGroupSettings, float2(0.5, 0.5), 20.0);
+float  mH = H.SampleLevel(Material.Wrap_WorldGroupSettings, float2(0.5, 0.5), 20.0).r;
+float3 nb = float3((W.x * cN[0].xy + W.y * cN[1].xy + W.z * cN[2].xy) * k, W.x * cN[0].z + W.y * cN[1].z + W.z * cN[2].z);   // mean normal is (0,0,1): scale the xy deviation only
+nb = normalize(nb);
+float3 Tw = normalize(cross(float3(0.0, 1.0, 0.0), VN)), Bw = cross(VN, Tw);   // world-aligned frame: u = world +x, v = world +y (UV is WorldPosition.xy); measured at Rot 0: +y 15.8, -y 11.2 at 04; the mesh's UV tangents are not this frame
+Nrm = normalize(Tw * nb.x + Bw * nb.y + VN * nb.z);                              // world-space normal; the material sets tangent_space_normal False
+Msk = max(mM + (W.x * cM[0] + W.y * cM[1] + W.z * cM[2] - mM) * k, 0.0);
+Hgt = max(mH + (W.x * cH[0] + W.y * cH[1] + W.z * cH[2] - mH) * k, 0.0);
+return max(mD + (W.x * cD[0] + W.y * cD[1] + W.z * cD[2] - mD) * k, 0.0);
 ```
 
 The Custom output pins feed the four FunctionOutputs (`D` from the main output, `N` from `Nrm`, `M` from `Msk`, `H` from `Hgt`). Normal convention: scans import with `flip_green_channel` True (`import_ground.import_scan`), so `UnpackNormalMap` yields the engine's DirectX-style normal and the rotation above is the one that keeps lighting continuous across hex borders; the self-check is a `-game` capture at bookmark 04 with the sun at 20° elevation showing no brightness step along any hex edge (if a step shows, negate `a` before `cos`/`sin`; never touch the blend).
@@ -217,7 +226,9 @@ RVT: unchanged. The RVT output takes the same hex-tiled BaseColor/Normal/Roughne
 
 Cost (RTX 3060, 1440p x 75%, estimates to be measured by the J2 perf gate; landscape allocation 1.0 ms): 3 taps per texture instead of 1 (soft layers were going to be 2), ~40 ALU per layer for the lattice; a component with 3 active layers samples 36 textures + 5 macro/noise (was 12 + 4); rock-slope components 72 (two sets x three projections). Expected +0.4-0.7 ms over a plain 8-layer material. Levers, in order, if the gate fails: `H` through a plain sample (-25% taps; the height blend is low-frequency), Rock side projections plain, `hex_cell_tiles` 0.5 -> 1.0.
 
-**Interim (J2-pre; yes, do it now):** the live terrain mesh's `M_GN_Ground` gets the same function. `import_ground.py`: `layer()` grows a `hex=True` path that replaces its three `smp` nodes with one `MF_GN_HexTile` call (`D`, `N`, `M` = the `Rough` texture, `H` left on its default, `Rot` 1.0 except cobble `R` 0.15, `CellTiles` 0.5) for layers `A` (forest floor), `R` (cobble), `T` (mud) and `S` (rocky trail); `B` (mossy rock) and bedrock `C` stay plain (slope-only, triplanar already breaks the grid); the macro, `Mask` and `EdgeNoise` samples stay plain. Size: `hex_tile.py` ~70 lines, `import_ground.py` ~12 lines, re-run `py -3 tools/Run-InEditor.py GameClient/ArtSource/Greenlands/NatureFamilies/import_ground.py` (masters only; `MI_GN_Ground` keeps its parameters, no level rebuild), captures A1-A3 below, the repeat gate, a fresh review. About half a day; +24 taps per pixel on the mesh terrain (no per-component compile-out there), expected +0.3-0.5 ms at bookmark 01, inside the J1 "+1 ms of today" margin. Evidence `docs/evidence/graphics/<date>-gfx02-J2pre/`.
+**Interim (J2-pre; yes, do it now):** the live terrain mesh's `M_GN_Ground` gets the same function. `import_ground.py`: `layer()` grows a `hex=True` path that replaces its three `smp` nodes with one `MF_GN_HexTile` call (`D`, `N`, `M` = the `Rough` texture, `H` left on its default, `Rot` 1.0 except cobble `R` 0.15, `CellTiles` 0.5) for layers `A` (forest floor), `R` (cobble), `T` (mud) and `S` (rocky trail); `B` (mossy rock) hex too (it fills the moss patches on open ground in `M_GN_Ground`; `Rot` 1.0, `CellTiles` 1.0); bedrock `C` stays plain (triplanar); the macro, `Mask` and `EdgeNoise` samples stay plain. Size: `hex_tile.py` ~70 lines, `import_ground.py` ~12 lines, re-run `py -3 tools/Run-InEditor.py GameClient/ArtSource/Greenlands/NatureFamilies/import_ground.py` (masters only; `MI_GN_Ground` keeps its parameters, no level rebuild), captures A1-A3 below, the repeat gate, a fresh review. About half a day; +30 taps per pixel on the mesh terrain (no per-component compile-out there), expected +0.3-0.5 ms at bookmark 01, inside the J1 "+1 ms of today" margin. Evidence `docs/evidence/graphics/<date>-gfx02-J2pre/`.
+
+**J2-pre as shipped (r8):** `MF_GN_HexTile` inputs are `UV, D, N, M, H, Rot, CellTiles, Snap, HeightSharp, VN, BlendSharp, Warp` (VN = `VertexNormalWS`; Warp = lattice warp in tiles); its `N` output is a WORLD-space normal in the world x/y frame of the UV (`Tw = normalize(cross((0,1,0), VN))`, `Bw = cross(VN, Tw)`), and `M_GN_Ground` sets `tangent_space_normal` False (bedrock C's plain normal is wrapped into the same frame). The world-space frame is kept because the +y / -y test at `Rot` 0 showed the frame is not mirrored (04 15.8 vs 11.2); it measured neutral at `Rot` 1.0 (13.26 tangent frame, 13.28 world frame). Blend: `pow(w, BlendSharp)` with `BlendSharp` 24 (bounds 7-32), the lattice (not the texels) warped by two 2.5 m Simplex noises x `HexWarp` 0.25 tile (bounds 0-0.4), height tie-break capped at 8x, variance-preserving gain `k = rsqrt(dot(W, W))` around the last-mip mean. Neither `BlendSharp` 24 nor 32 recovers 04 at full rotation (13.2), so `Rot` is per layer: A forest floor 0.15 (04 16.2), T mud 0.5 (breaks the rib lattice: A2 rib-angle R 0.92 before, 0.03 after; full rotation smears mud at 1-5 m), S rocky trail 1.0, B mossy rock 1.0 (moss-patch motif), cobble R 0.0 + `Snap` 14; `CellTiles` 1.0; A wires `H` = forest_ground_04 Displacement with `HeightSharp` 96; `MaskNoise` 0.02; `EdgeNoise` UV warped by the Mask warp x `EdgeWarp` 2.5.
 
 **Acceptance (repeat gate, `tools/Measure-GroundRepeat.py`, `py -3.12` with NumPy):** three new views in `silverbrook-reference-bookmarks.json`, `fov_deg` 70, `look_height_m` 0, camera over the Valemere Road bend looking down the cobbled south approach to the South Gate (the owner's shot): `A1-south-approach-30m` `xy_m` [181, 661], `eye_height_m` 30, `look_xy_m` [90, 574] (ground in frame from 43 m to the horizon); `A2-south-approach-100m` same, `eye_height_m` 100 (58-330 m); `A3-south-approach-250m` same, `eye_height_m` 250. Each view declares three 256 x 256 px `repeat_crops` at 1920 x 1080 (`cobble` on the carriageway, `earth` on the margin, `grass` in the open field; pixel rectangles fixed by the builder at the first capture and committed with the view, no props or grass cards inside). Per crop: luminance `0.2126 R + 0.7152 G + 0.0722 B`, mean removed, Hann window, autocorrelation `ifft2(|fft2|^2)` normalised to 1 at the origin; `peak` = the maximum over 6 px < radius <= 120 px (6 px is below the smallest period in frame, 14 px for the 2.51 m grass tile at 250 m). **Gate: `peak <= 0.25` for all nine crops**, written to `repeat-measure.json`; tiled ground measures 0.5-0.9, hex-tiled ground 0.05-0.15. J1b adds `08-high-point` crops `snow` and `rock` to the same gate. Human check for the Fable review: the `A1` before/after pair (`make_pairs.py`) beside `gameplay-hud.png`'s far range; the reviewer names any repeating motif and counts its copies; two or more copies of one motif inside a crop is a FAIL.
 

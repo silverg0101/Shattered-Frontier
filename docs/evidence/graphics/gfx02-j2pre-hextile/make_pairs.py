@@ -28,5 +28,10 @@ def sheet(name, panels, size):
 sheet('A1-hud-before-after-compare.png', [('TARGET: gameplay-hud.png far range', hud, (830, 180, 1450, 530)),
                                           ('BEFORE: A1 south approach 30 m', OUT / 'before/A1-south-approach-30m.png', None),
                                           ('AFTER: A1 (hex-tiled ground)', OUT / 'after/A1-south-approach-30m.png', None)], (640, 360))
-for v in ('A2-south-approach-100m', 'A3-south-approach-250m', '01-forest-path-town', '04-forest-floor-sun20'):
+for v in ('A2-south-approach-100m', 'A3-south-approach-250m', '01-forest-path-town', '04-forest-floor', '04-forest-floor-sun20'):
     sheet(f'{v}-before-after-compare.png', [(f'BEFORE {v}', OUT / f'before/{v}.png', None), (f'AFTER {v}', OUT / f'after/{v}.png', None)], (960, 540))
+# r3 review item 4: a sun view must differ from its default-sun twin, or the sun change did not take effect
+import numpy as np
+for a, b in (('04-forest-floor', '04-forest-floor-sun20'), ('A1-south-approach-30m', 'A1-sun20'), ('ctx-ground-4', 'ctx-ground-4-sun20')):
+    ims = [np.asarray(Image.open(p if p.exists() else p.with_suffix('.jpg')).convert('RGB'), dtype=np.float32) for p in (OUT / f'after/{a}.png', OUT / f'after/{b}.png')]
+    d = float(np.abs(ims[0] - ims[1]).mean()); print(f'SUN_TWIN_DIFF {b} {d:.1f}'); assert d > 8, (b, d)

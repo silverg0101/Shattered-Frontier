@@ -1,9 +1,9 @@
-"""Frame time + GPU timing at bookmark 01 in a real -game run (GFX-02 J2-pre; perf_bookmark_game.py plus a `stat gpu` capture).
+"""Frame time + per-pass GPU timing at bookmark 01 in a real -game run (GFX-02 J2-pre; perf_bookmark_game.py plus a ProfileGPU dump).
 
 $env:GFX_TAG='before'|'after'; UnrealEditor.exe <uproject> /Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook -game -ResX=2560 -ResY=1440 -windowed
-    "-ExecCmds=py <this file>"
-Warms up 6 s, records 500 frames (median / p95 / worst ms), then runs `stat gpu`, waits 90 frames, HighResShot -> <tag>/perf-01-gpu.png, quits.
-Writes <tag>/perf-01.json beside this script.
+    -log -abslog=<abs>/<tag>/perf-01.log "-ExecCmds=py <this file>"
+Warms up 6 s, records 500 frames (median / p95 / worst ms), then runs `ProfileGPU` (the per-pass tree goes to the log; `stat gpu` is an overlay
+HighResShot does not draw), waits 150 frames, quits. Writes <tag>/perf-01.json beside this script; gpu_passes.py reads the log.
 """
 import json, math, os, time
 from pathlib import Path
@@ -38,11 +38,9 @@ def tick(delta):
             out = dict(view=view['name'], frames=len(f), median_ms=round(f[len(f) // 2], 2), p95_ms=round(f[int(len(f) * .95)], 2), worst_ms=round(f[-1], 2),
                        fps_median=round(1000 / f[len(f) // 2], 1), fps_p95=round(1000 / f[int(len(f) * .95)], 1), resolution='2560x1440 windowed, 100% screen percentage, project defaults')
             (OUT / 'perf-01.json').write_text(json.dumps(out, indent=2)); u.log('PERF ' + json.dumps(out))
-            cmd('stat gpu'); st['stat_at'] = 0
+            cmd('r.ProfileGPU.ShowUI 0'); cmd('ProfileGPU'); st['stat_at'] = 0
     else:
         st['stat_at'] += 1
-        if st['stat_at'] == 90:
-            cmd('HighResShot 2560x1440 filename=' + str(OUT / 'perf-01-gpu.png').replace('\\', '/'))
         if st['stat_at'] == 150:
             u.unregister_slate_post_tick_callback(st['h']); cmd('quit')
 

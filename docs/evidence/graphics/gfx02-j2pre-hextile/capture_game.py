@@ -2,7 +2,7 @@
 
 $env:GFX_TAG='before'|'after'; UnrealEditor.exe <uproject> /Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook -game -RenderOffscreen -unattended -nosound -NoSplash
     -ResX=1920 -ResY=1080 "-ExecCmds=py <this file>"
-Writes <tag>/<view>.png beside this script. Views: A1-A3 and bookmarks 01/04 from silverbrook-reference-bookmarks.json, 04 again with the sun at 20 deg
+Writes <tag>/<view>.png beside this script. Views: A1-A3 and bookmarks 01/04 from silverbrook-reference-bookmarks.json, 04 again with the sun at 20 deg (sun views run last; they make the map's Stationary sun Movable)
 (hex-border lighting self-check), two high overviews and four seeded ground-level context views (Random(20261022)). Sun changes are -game only.
 """
 import json, math, os, random
@@ -17,6 +17,7 @@ pc = u.GameplayStatics.get_player_controller(world, 0); pawn = u.GameplayStatics
 camera = next(c for c in u.GameplayStatics.get_all_actors_of_class(world, u.CameraActor) if c.get_actor_label() == 'ReviewCamera_Aerial')
 sun = u.GameplayStatics.get_all_actors_of_class(world, u.DirectionalLight)[0]
 sun0 = sun.get_actor_rotation()
+u.log(f'J2PRE_SUN0 pitch {sun0.pitch:.1f} yaw {sun0.yaw:.1f}')
 bm = {v['name']: v for v in json.loads(BM.read_text(encoding='utf-8'))['views']}
 views = [dict(bm[n]) for n in ('A1-south-approach-30m', 'A2-south-approach-100m', 'A3-south-approach-250m', '01-forest-path-town', '04-forest-floor')]
 views.append(dict(bm['04-forest-floor'], name='04-forest-floor-sun20', sun_pitch=-20))
@@ -31,9 +32,12 @@ for i in range(4):
 g4 = next(v for v in views if v['name'] == 'ctx-ground-4')
 views.append(dict(g4, name='ctx-ground-4-sun20', sun_pitch=-20))
 views.append(dict(name='A1-margin-sun20', xy_m=[181, 661], eye_height_m=1.7, look_xy_m=[90, 574], look_height_m=1.5, fov_deg=70, sun_pitch=-20))
+views.sort(key=lambda v: 'sun_pitch' in v)  # sun views last: they make the sun Movable, the default views keep the map's lighting
+if os.environ.get('GFX_ONLY'):
+    views = [v for v in views if v['name'] in os.environ['GFX_ONLY'].split(',')]
 if MEASURE:
     views = [v for v in views if v['name'].startswith('A') and v['name'][1] in '123' and 'sun' not in v['name']]
-for c in (['ShowFlag.DynamicShadows 0'] if MEASURE else []) + ['r.EyeAdaptationQuality 0', 'r.DefaultFeature.AutoExposure 0', 'r.MotionBlurQuality 0', 'r.ScreenPercentage 100', 'r.ExposureOffset 0',
+for c in (['ShowFlag.DynamicShadows 0'] if MEASURE else []) + (['r.BufferVisualizationDumpFrames 1'] if os.environ.get('GFX_DUMP') else []) + ['r.EyeAdaptationQuality 0', 'r.DefaultFeature.AutoExposure 0', 'r.MotionBlurQuality 0', 'r.ScreenPercentage 100', 'r.ExposureOffset 0',
           'r.Streaming.FullyLoadUsedTextures 1']:
     u.SystemLibrary.execute_console_command(world, c)
 pawn.set_actor_hidden_in_game(True); pawn.character_movement.disable_movement()
@@ -55,7 +59,10 @@ def tick(_d):
         camera.set_actor_location(u.Vector(x * 100, y * 100, z), False, False)
         camera.set_actor_rotation(u.Rotator(pitch=math.degrees(math.atan2(tz - z, math.hypot(tx - x, ty - y) * 100)), yaw=math.degrees(math.atan2(ty - y, tx - x)), roll=0), False)
         camera.camera_component.set_field_of_view(v['fov_deg']); pc.set_view_target_with_blend(camera, 0)
+        if 'sun_pitch' in v:  # the map's sun is Stationary and ignores a runtime rotation until it is Movable (r3 review item 4)
+            sun.root_component.set_mobility(u.ComponentMobility.MOVABLE)
         sun.set_actor_rotation(u.Rotator(pitch=v['sun_pitch'], yaw=sun0.yaw, roll=0) if 'sun_pitch' in v else sun0, False)
+        u.log(f'J2PRE_SUN {v["name"]} pitch {sun.get_actor_rotation().pitch:.1f}')
     if local == 145:
         u.SystemLibrary.execute_console_command(world, 'HighResShot 1920x1080 filename=' + str(OUT / (v['name'] + '.png')).replace('\\', '/'))
         u.log('J2PRE_CAPTURE ' + v['name'])

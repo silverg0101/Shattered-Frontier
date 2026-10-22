@@ -89,6 +89,7 @@ class G:
 
 def ground():
     m = master('M_GN_Ground'); g = G(m)
+    m.set_editor_property('tangent_space_normal', False)  # every normal below is world space (r6 review fix 2b)
     xy = g.mask(node(m, u.MaterialExpressionWorldPosition, -2400, 0), True, True, False, -2250, 0)
     # triplanar weights from the vertex normal, |n|^4 normalised: z = top, x/y = side faces
     ab = node(m, u.MaterialExpressionAbs, -2250, 700); link(node(m, u.MaterialExpressionVertexNormalWS, -2400, 700), '', ab, '')
@@ -102,17 +103,30 @@ def ground():
     xz = node(m, u.MaterialExpressionAppendVector, -2100, 400); link(px, '', xz, 'A'); link(pz, '', xz, 'B')
 
     HEX = hex_tile.build()  # GFX-02 2a: MF_GN_HexTile exists before any layer calls it
+    hwp = node(m, u.MaterialExpressionWorldPosition, -2000, 11000)
 
-    def hexlayer(p, base, nor, rough, uv, tint, y, rot, cell, snap):
-        """One MF_GN_HexTile call in place of the three plain samples (D, N, M = Rough; H stays on its default)."""
+    def hex_noise(y, zoff):  # r7 review fix 1: hex lattice warp, 2.5 m features, +-HexWarp tile
+        nz = node(m, u.MaterialExpressionNoise, -1700, y, noise_function=u.NoiseFunction.NOISEFUNCTION_SIMPLEX_TEX, scale=0.004, levels=2, output_min=-1.0, output_max=1.0, quality=2, turbulence=False)
+        link(g.op(u.MaterialExpressionAdd, hwp, node(m, u.MaterialExpressionConstant3Vector, -1900, y, constant=u.LinearColor(0.0, 0.0, zoff, 0.0)), -1800, y), '', nz, 'World Position'); return nz
+    hxy = node(m, u.MaterialExpressionAppendVector, -1500, 11000); link(hex_noise(11000, 0.0), '', hxy, 'A'); link(hex_noise(11150, 8192.0), '', hxy, 'B')
+    hwarp = g.mul(hxy, g.sc('HexWarp', 0.25, -1500, 11100), -1350, 11000)  # tiles; bounds 0-0.4 (above 0.4 adjacent borders cross)
+
+    def hexlayer(p, base, nor, rough, uv, tint, y, rot, cell, snap, height, hsharp, bsharp):
+        """One MF_GN_HexTile call in place of the three plain samples (D, N, M = Rough; H = the scan's Displacement when it has one, else default)."""
         call = node(m, u.MaterialExpressionMaterialFunctionCall, -1100, y)
         call.set_material_function(HEX)
         link(uv, '', call, 'UV')
-        for pin, nm, path, kind, dy in (('D', 'Base', base, S.SAMPLERTYPE_COLOR, 0), ('N', 'Normal', nor, S.SAMPLERTYPE_NORMAL, 100), ('M', 'Rough', rough, S.SAMPLERTYPE_MASKS, 200)):
+        pins = [('D', 'Base', base, S.SAMPLERTYPE_COLOR, 0), ('N', 'Normal', nor, S.SAMPLERTYPE_NORMAL, 100), ('M', 'Rough', rough, S.SAMPLERTYPE_MASKS, 200)]
+        if height: pins.append(('H', 'Height', height, S.SAMPLERTYPE_MASKS, 250))
+        for pin, nm, path, kind, dy in pins:
             link(node(m, u.MaterialExpressionTextureObjectParameter, -1300, y + dy, parameter_name=nm + p, texture=tex(path), sampler_type=kind), '', call, pin)
         link(node(m, u.MaterialExpressionConstant, -1300, y + 300, r=rot), '', call, 'Rot')
         link(node(m, u.MaterialExpressionConstant, -1300, y + 340, r=cell), '', call, 'CellTiles')
         link(node(m, u.MaterialExpressionConstant, -1300, y + 380, r=snap), '', call, 'Snap')
+        link(g.sc('HeightSharp' + p, hsharp, -1300, y + 420), '', call, 'HeightSharp')
+        link(node(m, u.MaterialExpressionVertexNormalWS, -1300, y + 460), '', call, 'VN')
+        link(g.sc('BlendSharp' + p, bsharp, -1300, y + 500), '', call, 'BlendSharp')  # bounds 7-32 (7 = the r1-r7 blend)
+        link(hwarp, '', call, 'Warp')
 
         def pick(pin, yy, **ch):
             c = node(m, u.MaterialExpressionComponentMask, -950, yy, **ch); link(call, pin, c, ''); return c
@@ -120,18 +134,22 @@ def ground():
         return (g.mul(pick('D', y, **rgb), g.vec('Tint' + p, tint, -900, y - 100), -500, y), pick('N', y + 250, **rgb),
                 pick('M', y + 500, r=True, g=False, b=False, a=False))
 
-    def layer(p, base, nor, rough, tile_cm, tint, y, hex=False, rot=1.0, cell=1.0, snap=0.0):
+    # J2-pre r8: MF_GN_HexTile returns a world-space normal in the world-x/y frame of the UV (tangent_space_normal False below; at Rot 0 the +y frame read
+    # 15.8 at 04, -y 11.2). BlendSharp 24 + a 2.5 m lattice warp narrow the overlap bands. Rot is per layer (A 0.15, T 0.5, S/B 1.0, R 0.0): see the calls.
+    def layer(p, base, nor, rough, tile_cm, tint, y, hex=False, rot=1.0, cell=1.0, snap=0.0, height=None, hsharp=0.0, bsharp=24.0):
         t = g.sc('TileCm' + p, tile_cm, -1800, y + 150)
         uv = g.uv(xy, t, -1650, y)
         if hex:
-            return (*hexlayer(p, base, nor, rough, uv, tint, y, rot, cell, snap), t)
+            return (*hexlayer(p, base, nor, rough, uv, tint, y, rot, cell, snap, height, hsharp, bsharp), t)
         col = g.smp('Base' + p, tex(base), S.SAMPLERTYPE_COLOR, uv, -1100, y)
         n = g.smp('Normal' + p, tex(nor), S.SAMPLERTYPE_NORMAL, uv, -1100, y + 250)
         r = g.mask(g.smp('Rough' + p, tex(rough), S.SAMPLERTYPE_MASKS, uv, -1100, y + 500), True, False, False, -800, y + 500)
         return g.mul(col, g.vec('Tint' + p, tint, -900, y - 100), -500, y), n, r, t
     T = f'{LIB}/Textures/T_GN_'
-    fa, na, ra, _ = layer('A', T + 'forest_ground_04_Diffuse', T + 'forest_ground_04_nor_gl', T + 'forest_ground_04_Rough', 200, (0.50, 0.66, 0.34), 0, hex=True)
-    fb, nb, rb, _ = layer('B', T + 'mossy_rock_Diffuse', T + 'mossy_rock_nor_gl', T + 'mossy_rock_Rough', 150, (0.34, 0.46, 0.20), 1200)
+    fa, na, ra, _ = layer('A', T + 'forest_ground_04_Diffuse', T + 'forest_ground_04_nor_gl', T + 'forest_ground_04_Rough', 200, (0.50, 0.66, 0.34), 0, hex=True, rot=0.15,  # r8: 04 13.2 at Rot 1.0 with BlendSharp 24 or 32 (bands ruled out), 16.1 at 0.15
+                          height=T + 'forest_ground_04_Displacement', hsharp=96.0)  # J2-pre r2 fix 3 / r3 fix 2: height tie-break (HeightSharp 0-160; the map's stone/soil step is 0.03-0.05), stones win over soil in the overlaps
+    # J2-pre r2 fix 1: B hex too; it fills the moss patches on open ground, and its plain 1.5 m tile showed as the same stripes in every patch
+    fb, nb, rb, _ = layer('B', T + 'mossy_rock_Diffuse', T + 'mossy_rock_nor_gl', T + 'mossy_rock_Rough', 150, (0.34, 0.46, 0.20), 1200, hex=True, rot=1.0)  # r6 review fix 3: B keeps full rotation (its crack dashes are the moss-patch motif at A2/A3)
     # J2-pre review fix 1: the Mask stays a plain 9 m sample (hex-tiling it put the moss patches on the hex lattice); its UV is domain-warped by two
     # world-space Simplex noises (+-0.3 tile = +-2.7 m, ~25 m features) so the 9 m period never lines up on a grid.
     wp = node(m, u.MaterialExpressionWorldPosition, -2000, 2900)
@@ -139,14 +157,17 @@ def ground():
     def warp_noise(y, off):
         nz = node(m, u.MaterialExpressionNoise, -1700, y, noise_function=u.NoiseFunction.NOISEFUNCTION_SIMPLEX_TEX, scale=0.0004, levels=2, output_min=-1.0, output_max=1.0, quality=2, turbulence=False)
         link(g.op(u.MaterialExpressionAdd, wp, node(m, u.MaterialExpressionConstant3Vector, -1900, y, constant=u.LinearColor(0.0, 0.0, 4096.0 if off else 0.0, 0.0)), -1800, y), '', nz, 'World Position'); return nz
-    wxy = node(m, u.MaterialExpressionAppendVector, -1500, 2900); link(warp_noise(2900, ''), '', wxy, 'A'); link(warp_noise(3050, 'B'), '', wxy, 'B')
+    nzA = warp_noise(2900, '')
+    wxy = node(m, u.MaterialExpressionAppendVector, -1500, 2900); link(nzA, '', wxy, 'A'); link(warp_noise(3050, 'B'), '', wxy, 'B')
     warp = g.mul(wxy, g.sc('MaskWarp', 0.3, -1500, 3000), -1350, 2900)
     muv = g.op(u.MaterialExpressionAdd, g.uv(xy, g.sc('TileCmMask', 900, -1800, 2700), -1650, 2600), warp, -1250, 2600)
     mk = g.mask(g.smp('Mask', tex(T + 'forest_ground_04_Displacement'), S.SAMPLERTYPE_MASKS, muv, -1100, 2600), True, False, False, -800, 2600)
     wm = node(m, u.MaterialExpressionSaturate, 0, 2600)
-    sub = g.op(u.MaterialExpressionSubtract, mk, g.sc('Low', 0.4, -600, 2700), -500, 2600)
+    # J2-pre r2 fix 2: the first warp noise also moves the threshold, so moss patches range from absent to twice the size over ~25 m (MaskNoise 0-0.03: coverage at ctx-ground-2 is 0.053 + 2.0 x MaskNoise; 0.15 flooded 04 and the plain with layer B)
+    mkv = g.op(u.MaterialExpressionAdd, mk, g.mul(nzA, g.sc('MaskNoise', 0.02, -900, 2750), -850, 2700), -700, 2600)
+    sub = g.op(u.MaterialExpressionSubtract, mkv, g.sc('Low', 0.4, -600, 2700), -500, 2600)
     link(g.mul(sub, g.sc('InvRange', 32, -600, 2800), -300, 2600), '', wm, '')
-    forest = g.lerp(fa, fb, wm, 200, 0); fn = g.lerp(na, nb, wm, 200, 250, '', 'RGB'); fr = g.lerp(ra, rb, wm, 200, 500)
+    forest = g.lerp(fa, fb, wm, 200, 0); fn = g.lerp(na, nb, wm, 200, 250); fr = g.lerp(ra, rb, wm, 200, 500)
 
     # bedrock: triplanar colour/roughness, top-projected normal
     def tri(name, path, kind, ymid):
@@ -173,7 +194,13 @@ def ground():
     sh = g.mul(g.op(u.MaterialExpressionAdd, g.op(u.MaterialExpressionSubtract, vr, half, 150, 5000), jitter, 300, 5000), g.sc('SlopeSharp', 4, 150, 5100), 450, 5000)
     s = node(m, u.MaterialExpressionSaturate, 600, 5000); link(g.op(u.MaterialExpressionAdd, sh, half, 600, 5100), '', s, '')
     col = g.mul(g.lerp(forest, bc, s, 900, 0), bright, 1100, 0)
-    nrm = g.lerp(fn, bn, s, 900, 250, '', 'RGB'); rgh = g.lerp(fr, br, s, 900, 500)
+    bw = node(m, u.MaterialExpressionCustom, -800, 3900, description='WorldNormalC', output_type=u.CustomMaterialOutputType.CMOT_FLOAT3,
+              code='float3 Tw = normalize(cross(float3(0.0, 1.0, 0.0), VN)), Bw = cross(VN, Tw); return normalize(Tw * n.x + Bw * n.y + VN * n.z);')
+    cins = [u.CustomInput(), u.CustomInput()]
+    for ci, nm in zip(cins, ('n', 'VN')): ci.set_editor_property('input_name', nm)
+    bw.set_editor_property('inputs', cins)  # bedrock's plain normal into the same world frame
+    link(bn, 'RGB', bw, 'n'); link(node(m, u.MaterialExpressionVertexNormalWS, -1000, 4000), '', bw, 'VN')
+    nrm = g.lerp(fn, bw, s, 900, 250); rgh = g.lerp(fr, br, s, 900, 500)
     # roads and trails grown into the ground: vertex colour G (cobbled roads) / B (trails) is a distance field that is 0.5 at the road edge;
     # a fine noise moves the threshold so the edge is worn and ragged instead of a seam. Earth under the cobble; cobble wins where G is high
     # (earth is blended first, cobble on top, so the cobble's soft edge lands on earth, not grass: WP6e review fix 2a).
@@ -181,7 +208,7 @@ def ground():
     rc, rn, rr, _ = layer('R', SB + 'Diffuse', SB + 'nor_gl', SB + 'Rough', 240, (1, 1, 1), 6000, hex=True, rot=0.0, cell=1.0, snap=14.0)  # 14 stone courses per 2.4 m tile
     # trails: packed dark earth from the forest-floor scan with pale mossy stones pushed through it where a mask passes a high threshold
     import_scan('brown_mud_02'); import_scan('rocky_trail')  # dirt with roots and sticks; pale stones
-    dc, dn, dr, _ = layer('T', T + 'brown_mud_02_Diffuse', T + 'brown_mud_02_nor_gl', T + 'brown_mud_02_Rough', 200, (0.85, 0.75, 0.65), 8000, hex=True)
+    dc, dn, dr, _ = layer('T', T + 'brown_mud_02_Diffuse', T + 'brown_mud_02_nor_gl', T + 'brown_mud_02_Rough', 200, (0.85, 0.75, 0.65), 8000, hex=True, rot=0.5)  # r8: mud ribs need rotation (A2 rib R 0.03 at 0.5), full rotation smears it at 1-5 m (mud 9.1 at 1.0, 9.85 at 0.5)
     sc_, sn, sr, _ = layer('S', T + 'rocky_trail_Diffuse', T + 'rocky_trail_nor_gl', T + 'rocky_trail_Rough', 150, (0.9, 0.88, 0.84), 9600, hex=True)
     def clamp01(value, x, y):
         return g.op(u.MaterialExpressionMax,
@@ -191,7 +218,8 @@ def ground():
                        g.sc('StoneSharp', 14, 300, 8100), 500, 8000), 600, 8000)
     tc, tn, tr = g.lerp(dc, sc_, sw, 800, 8000), g.lerp(dn, sn, sw, 800, 8250), g.lerp(dr, sr, sw, 800, 8500)
     vcn = node(m, u.MaterialExpressionVertexColor, -600, 9000)
-    edge = g.mask(g.smp('EdgeNoise', tex(T + 'forest_ground_04_Displacement'), S.SAMPLERTYPE_MASKS, g.uv(xy, g.sc('EdgeTileCm', 350, -1800, 9300), -1650, 9300), -1100, 9300), True, False, False, -800, 9300)
+    euv = g.op(u.MaterialExpressionAdd, g.uv(xy, g.sc('EdgeTileCm', 350, -1800, 9300), -1650, 9300), g.mul(warp, g.sc('EdgeWarp', 2.5, -1500, 9200), -1400, 9250), -1250, 9300)  # r5 review fix 3: the Mask's two Simplex warps x2.5 (+-0.75 tile = +-2.6 m; EdgeWarp 0-4) so the worn edge never repeats on the 3.5 m tile
+    edge = g.mask(g.smp('EdgeNoise', tex(T + 'forest_ground_04_Displacement'), S.SAMPLERTYPE_MASKS, euv, -1100, 9300), True, False, False, -800, 9300)
     wob = g.mul(g.op(u.MaterialExpressionSubtract, edge, half, -600, 9300), g.sc('EdgeAmp', 0.9, -600, 9400), -400, 9300)
     for ch, (c_, n_, r_) in ((('B', 0, 0, 1), (tc, tn, tr)), (('G', 0, 1, 0), (rc, rn, rr))):
         v = g.mask(vcn, *[bool(b) for b in ch[1:]], -400, 9000)
