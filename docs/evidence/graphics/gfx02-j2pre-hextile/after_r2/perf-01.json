@@ -1,0 +1,10 @@
+{
+  "view": "01-forest-path-town",
+  "frames": 500,
+  "median_ms": 7.87,
+  "p95_ms": 10.4,
+  "worst_ms": 34.26,
+  "fps_median": 127.0,
+  "fps_p95": 96.2,
+  "resolution": "2560x1440 windowed, 100% screen percentage, project defaults"
+}

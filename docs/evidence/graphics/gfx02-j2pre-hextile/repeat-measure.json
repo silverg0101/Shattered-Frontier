@@ -1,0 +1,132 @@
+{
+  "limit": 0.25,
+  "passed": true,
+  "crops": {
+    "A1-south-approach-30m/cobble": {
+      "peak": 0.0,
+      "lag_px": [
+        0,
+        0
+      ],
+      "rect": [
+        876,
+        816,
+        256,
+        256
+      ],
+      "passed": true
+    },
+    "A1-south-approach-30m/earth": {
+      "peak": 0.0829,
+      "lag_px": [
+        48,
+        -64
+      ],
+      "rect": [
+        640,
+        380,
+        256,
+        256
+      ],
+      "passed": true
+    },
+    "A1-south-approach-30m/grass": {
+      "peak": 0.2364,
+      "lag_px": [
+        21,
+        -59
+      ],
+      "rect": [
+        1170,
+        470,
+        256,
+        256
+      ],
+      "passed": true
+    },
+    "A2-south-approach-100m/cobble": {
+      "peak": 0.0,
+      "lag_px": [
+        0,
+        0
+      ],
+      "rect": [
+        840,
+        620,
+        256,
+        256
+      ],
+      "passed": true
+    },
+    "A2-south-approach-100m/earth": {
+      "peak": 0.0,
+      "lag_px": [
+        0,
+        0
+      ],
+      "rect": [
+        730,
+        600,
+        256,
+        256
+      ],
+      "passed": true
+    },
+    "A2-south-approach-100m/grass": {
+      "peak": 0.2414,
+      "lag_px": [
+        9,
+        -9
+      ],
+      "rect": [
+        1228,
+        800,
+        256,
+        256
+      ],
+      "passed": true
+    },
+    "A3-south-approach-250m/cobble": {
+      "peak": 0.1548,
+      "lag_px": [
+        64,
+        -21
+      ],
+      "rect": [
+        840,
+        740,
+        256,
+        256
+      ],
+      "passed": true
+    },
+    "A3-south-approach-250m/earth": {
+      "peak": 0.1054,
+      "lag_px": [
+        99,
+        -36
+      ],
+      "rect": [
+        840,
+        600,
+        256,
+        256
+      ],
+      "passed": true
+    },
+    "A3-south-approach-250m/grass": {
+      "peak": 0.0661,
+      "lag_px": [
+        -9,
+        -61
+      ],
+      "rect": [
+        1066,
+        514,
+        256,
+        256
+      ],
+      "passed": true
+    }
+  }
+}
