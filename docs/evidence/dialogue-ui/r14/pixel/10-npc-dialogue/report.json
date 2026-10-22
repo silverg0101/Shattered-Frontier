@@ -1,0 +1,456 @@
+[
+ {
+  "widget": "Border:Border_2",
+  "name": "board frame",
+  "rect": [
+   486,
+   219,
+   951,
+   622
+  ],
+  "found": true,
+  "match": 1.0,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
+  "de": [
+   [
+    "board fill",
+    2.6
+   ],
+   [
+    "board fill low",
+    2.8
+   ]
+  ],
+  "geometry": "PASS",
+  "colour": "PASS",
+  "verdict": "PASS"
+ },
+ {
+  "widget": "Overlay:Overlay_0",
+  "name": "portrait",
+  "rect": [
+   516,
+   267,
+   122,
+   124
+  ],
+  "found": true,
+  "match": 1.0,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
+  "de": [],
+  "geometry": "PASS",
+  "colour": "PASS",
+  "verdict": "PASS"
+ },
+ {
+  "widget": "TextBlock:TextBlock_0",
+  "name": "speaker name",
+  "rect": [
+   663,
+   284,
+   262,
+   25
+  ],
+  "found": true,
+  "match": 0.54,
+  "d_left": -1,
+  "d_top": -9,
+  "d_width": 8,
+  "d_height": 20,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "TextBlock:TextBlock_1",
+  "name": "speech line",
+  "rect": [
+   663,
+   340,
+   290,
+   50
+  ],
+  "found": true,
+  "match": 0.81,
+  "d_left": -1,
+  "d_top": -8,
+  "d_width": -1,
+  "d_height": 11,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_2",
+  "name": "divider",
+  "rect": [
+   516,
+   425,
+   467,
+   9
+  ],
+  "found": true,
+  "match": 0.89,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": -1,
+  "d_height": -1,
+  "de": [],
+  "geometry": "PASS",
+  "colour": "PASS",
+  "verdict": "PASS"
+ },
+ {
+  "widget": "Overlay:Overlay_1",
+  "name": "row 1 (selected)",
+  "rect": [
+   513,
+   460,
+   472,
+   72
+  ],
+  "found": true,
+  "match": 1.0,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
+  "de": [
+   [
+    "selected fill",
+    8.5
+   ]
+  ],
+  "geometry": "PASS",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "Overlay:Overlay_2",
+  "name": "row 2",
+  "rect": [
+   513,
+   546,
+   472,
+   71
+  ],
+  "found": true,
+  "match": 0.99,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 1,
+  "de": [
+   [
+    "row fill",
+    4.4
+   ]
+  ],
+  "geometry": "PASS",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "Overlay:Overlay_3",
+  "name": "row 3",
+  "rect": [
+   513,
+   631,
+   472,
+   71
+  ],
+  "found": true,
+  "match": 0.99,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 1,
+  "de": [],
+  "geometry": "PASS",
+  "colour": "PASS",
+  "verdict": "PASS"
+ },
+ {
+  "widget": "Overlay:Overlay_4",
+  "name": "row 4",
+  "rect": [
+   513,
+   716,
+   472,
+   71
+  ],
+  "found": true,
+  "match": 0.99,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 1,
+  "de": [],
+  "geometry": "PASS",
+  "colour": "PASS",
+  "verdict": "PASS"
+ },
+ {
+  "widget": "SizeBox:SizeBox_3",
+  "name": "keycap 1",
+  "rect": [
+   529,
+   469,
+   53,
+   54
+  ],
+  "found": true,
+  "match": 0.98,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": -1,
+  "de": [],
+  "geometry": "PASS",
+  "colour": "PASS",
+  "verdict": "PASS"
+ },
+ {
+  "widget": "TextBlock:TextBlock_2",
+  "name": "row 1 label",
+  "rect": [
+   606,
+   487,
+   138,
+   18
+  ],
+  "found": true,
+  "match": 0.45,
+  "d_left": -2,
+  "d_top": -10,
+  "d_width": 8,
+  "d_height": 20,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_7",
+  "name": "quest art",
+  "rect": [
+   1024,
+   244,
+   391,
+   198
+  ],
+  "found": true,
+  "match": 1.0,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
+  "de": [],
+  "geometry": "PASS",
+  "colour": "PASS",
+  "verdict": "PASS"
+ },
+ {
+  "widget": "TextBlock:TextBlock_6",
+  "name": "quest title",
+  "rect": [
+   1044,
+   456,
+   228,
+   29
+  ],
+  "found": true,
+  "match": 0.7,
+  "d_left": -3,
+  "d_top": -9,
+  "d_width": 2,
+  "d_height": 12,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "TextBlock:TextBlock_7",
+  "name": "quest summary",
+  "rect": [
+   1045,
+   498,
+   351,
+   20
+  ],
+  "found": true,
+  "match": 0.65,
+  "d_left": -1,
+  "d_top": -6,
+  "d_width": -12,
+  "d_height": 10,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "TextBlock:TextBlock_8",
+  "name": "objectives heading",
+  "rect": [
+   1045,
+   548,
+   99,
+   21
+  ],
+  "found": true,
+  "match": 0.67,
+  "d_left": -1,
+  "d_top": -6,
+  "d_width": 1,
+  "d_height": 10,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "HorizontalBox:HorizontalBox_0",
+  "name": "objective 1",
+  "rect": [
+   1044,
+   584,
+   342,
+   24
+  ],
+  "found": true,
+  "match": 1.0,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
+  "de": [],
+  "geometry": "PASS",
+  "colour": "PASS",
+  "verdict": "PASS"
+ },
+ {
+  "widget": "TextBlock:TextBlock_15",
+  "name": "rewards heading",
+  "rect": [
+   1046,
+   668,
+   80,
+   16
+  ],
+  "found": true,
+  "match": 0.48,
+  "d_left": -2,
+  "d_top": -7,
+  "d_width": 6,
+  "d_height": 15,
+  "de": [
+   [
+    "card fill",
+    3.9
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_14",
+  "name": "xp roundel",
+  "rect": [
+   1044,
+   701,
+   46,
+   45
+  ],
+  "found": true,
+  "match": 0.98,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": -1,
+  "d_height": 0,
+  "de": [],
+  "geometry": "PASS",
+  "colour": "PASS",
+  "verdict": "PASS"
+ },
+ {
+  "widget": "SizeBox:SizeBox_15",
+  "name": "coin stack",
+  "rect": [
+   1231,
+   701,
+   44,
+   44
+  ],
+  "found": true,
+  "match": 0.96,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": -1,
+  "d_height": -1,
+  "de": [],
+  "geometry": "PASS",
+  "colour": "PASS",
+  "verdict": "PASS"
+ },
+ {
+  "widget": "SizeBox:SizeBox_16",
+  "name": "accept",
+  "rect": [
+   1030,
+   765,
+   205,
+   54
+  ],
+  "found": true,
+  "match": 1.0,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
+  "de": [
+   [
+    "accept fill",
+    3.2
+   ]
+  ],
+  "geometry": "PASS",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_17",
+  "name": "decline",
+  "rect": [
+   1248,
+   765,
+   164,
+   54
+  ],
+  "found": true,
+  "match": 1.0,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
+  "de": [
+   [
+    "decline fill",
+    1.4
+   ]
+  ],
+  "geometry": "PASS",
+  "colour": "PASS",
+  "verdict": "PASS"
+ }
+]

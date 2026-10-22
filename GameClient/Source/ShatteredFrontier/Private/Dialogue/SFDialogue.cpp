@@ -259,9 +259,10 @@ void USFDialoguePanel::NativeOnInitialized()
     FaceSlot->SetHorizontalAlignment(HAlign_Center); FaceSlot->SetVerticalAlignment(VAlign_Center);
     Box(Board, Portrait, 516.f, 267.f, 122.f, 124.f);
     NameText = Heading(WidgetTree, TEXT(""), 25, Ivory());
-    Resize(NameText, 25.5f);
+    Resize(NameText, 25.f);
     Line(Board, NameText, 25, 662.f, 286.f);
     LineText = Text(WidgetTree, TEXT(""), 20, Ivory());
+    Resize(LineText, 20.6f);
     LineText->SetWrapTextAt(X(982.f) - X(662.f));
     LineText->SetLineHeightPercentage(0.85f);  // the concept's 31 px line pitch
     Line(Board, LineText, 20, 662.f, 341.f);
@@ -316,7 +317,7 @@ void USFDialoguePanel::NativeOnInitialized()
     OfferTitle = Heading(WidgetTree, TEXT(""), 23, Ivory());
     Line(Offer, OfferTitle, 23, 1041.f, 457.f);
     OfferSummary = Text(WidgetTree, TEXT(""), 16, Ivory());
-    Resize(OfferSummary, 16.7f);
+    Resize(OfferSummary, 17.1f);
     Line(Offer, OfferSummary, 16, 1044.f, 499.f);
     Line(Offer, Text(WidgetTree, TEXT("Objectives"), 17, Brass(), true), 17, 1044.f, 549.f);
     Box(Offer, SectionRule(WidgetTree), 1159.f, 553.f, 237.f, 8.f);
@@ -331,14 +332,14 @@ void USFDialoguePanel::NativeOnInitialized()
         UTextBlock* Count = Text(WidgetTree, TEXT(""), 18, Ivory());
         UHorizontalBoxSlot* CountSlot = Row->AddChildToHorizontalBox(Count);
         CountSlot->SetVerticalAlignment(VAlign_Center); CountSlot->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
-        Box(Offer, Row, 1044.f, ObjectiveTops[Index], 342.f, 24.f);
+        Box(Offer, Row, 1044.f, ObjectiveTops[Index], 344.f, 24.f);
         ObjectiveLabels.Add(Label); ObjectiveCounts.Add(Count); ObjectiveRows.Add(Row);
     }
     Line(Offer, Text(WidgetTree, TEXT("Rewards"), 17, Brass(), true), 17, 1044.f, 668.f);
     Box(Offer, SectionRule(WidgetTree), 1141.f, 674.f, 255.f, 8.f);
     Box(Offer, KitImage(WidgetTree, TEXT("icon_xp_roundel"), 45.f), 1044.f, 701.f, 45.f, 45.f);
     XpText = Text(WidgetTree, TEXT(""), 17, Ivory());
-    Line(Offer, XpText, 17, 1110.f, 713.f);
+    Line(Offer, XpText, 17, 1107.f, 713.f);
     Box(Offer, KitImage(WidgetTree, TEXT("icon_coin_stack"), 43.f), 1231.f, 701.f, 43.f, 43.f);
     CoinText = Text(WidgetTree, TEXT(""), 17, Ivory());
     Line(Offer, CoinText, 17, 1293.f, 713.f);

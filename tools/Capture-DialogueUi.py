@@ -3,8 +3,9 @@
         -nosound -nop4 -UserDir=<dir> "-ExecCmds=py tools/Capture-DialogueUi.py <out folder> ["x y yaw" metres/deg]"
 Once the pawn exists it stands the Millwarden ahead (SFSpawnDialogueNpc opens his board), waits for the framing camera to settle,
 shoots 'Shot showui' as dialogue-open, picks response 1 ('Tell me more') and shoots dialogue-more, accepts the offer and shoots
-dialogue-accepted, then quits. The engine writes PNGs under Saved/Screenshots; they are moved to <out>/<name>.png."""
-import sys
+dialogue-accepted, then quits. The engine writes PNGs under Saved/Screenshots; they are moved to <out>/<name>.png, each with
+<name>.json, the exact widget rects of that frame ('SFUi rects'), which tools/ui_pixel_diff.py reads for live geometry."""
+import shutil, sys
 from pathlib import Path
 import unreal as u
 
@@ -22,9 +23,10 @@ def collect():
         if not state['pending']:
             return
         try:
-            path.replace(OUT / (state['pending'].pop(0) + '.png'))
+            path.replace(OUT / (state['pending'][0] + '.png'))
         except OSError:
             return
+        shutil.copyfile(str(Path(u.Paths.project_saved_dir()) / 'UiRects.json'), str(OUT / (state['pending'].pop(0) + '.json')))
 
 
 def on_tick(delta):
@@ -41,6 +43,7 @@ def on_tick(delta):
             state['step'] += 1
             if name:
                 state['pending'].append(name)
+                u.SystemLibrary.execute_console_command(world, 'SFUi rects')  # this frame's widget rects -> Saved/UiRects.json
             u.SystemLibrary.execute_console_command(world, command)
             u.log('DIALOGUE_CAPTURE ' + command)
     except Exception as error:  # never leave a -game session running on a script error
