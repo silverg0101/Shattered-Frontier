@@ -2,6 +2,33 @@
 
 The always-on HUD is [ui-hud.md](ui-hud.md). Everything here is for screens the player opens. Rules are written as steps; follow them literally. Code lives in `GameClient/Source/ShatteredFrontier/Public/Framework/SFHudStyle.h` (namespace `SFHudStyle`): a menu composes these helpers and builds no art or colour of its own. `tools/Check-HudStyle.ps1` fails if it does.
 
+## 0. C++ / Widget Blueprint split (phase 1: shared parts and the HUD; other menus still follow sections 1-5 until migrated)
+
+**Rule.** C++ owns everything except UX: data, state, events, input, network and replication hooks, formatting rules and the style tokens (`SFHudStyle`: kit pieces, margins, colours, fonts). The Widget Blueprint (`WBP_*`) owns layout and look, which the owner arranges in the UMG Designer. No logic in Blueprint graphs beyond visuals (event hooks such as `OnStateChanged` / `OnSelectedChanged`).
+
+- C++ bases: `Public/UI/SFUiWidgets.h` (shared parts) and `SFHudWidgets.h` (HUD). Each `UUserWidget` binds the parts it drives with `meta=(BindWidget)` / `BindWidgetOptional`; a base applies the kit brushes, fonts and colours from `SFHudStyle` at creation (and live in the Designer preview). Style values are `UPROPERTY` defaults (`FSFUiTextStyle`, `FramePiece`/`NormalPiece` kit names, `Kind`), so one `SFHudStyle` change updates every widget. Untick `bApplyKitStyle` on one WBP to style it by hand.
+- Assets: `/Game/Frontier/UI/Widgets/Common/` and `/Hud/`. They are seeded by `py -3 tools/Run-InEditor.py tools/ui/create_widgets.py` (first drafts from `Private/UI/SFWidgetAuthoring.cpp`; existing assets are skipped, `--force` rebuilds them and discards the owner's layout). After the first run the `.uasset` files are the source of truth.
+- Open them: Content Browser > `Frontier/UI/Widgets/Hud/WBP_Hud` (the HUD; its children `WBP_HudVitals`, `WBP_HudHotbar`, `WBP_HudMinimap`, `WBP_HudQuestTracker`, `WBP_HudToasts` open on their own) and `Frontier/UI/Widgets/Common/` (`WBP_PanelFrame`, `WBP_Button`, `WBP_ButtonPrimary`, `WBP_Tab`, `WBP_Slot`, `WBP_ListRow`).
+
+**Names C++ binds** (rename or delete one and the WBP compile fails or the part goes dead; add anything else freely):
+
+| WBP | Required | Optional |
+| --- | --- | --- |
+| `WBP_Hud` (`USFHudWidget`) | `Vitals`, `Hotbar`, `Minimap`, `QuestTracker`, `Toasts` (the child WBP instances) | |
+| `WBP_HudVitals` | `HealthBar` (ProgressBar) | `StaminaBar`, `HealthText`, `StaminaText`, `LevelText` |
+| `WBP_HudHotbar` | `SlotRow` (HorizontalBox; its `WBP_Slot` children are keys 1-6 in order) | |
+| `WBP_HudMinimap` | | `ZoneText` |
+| `WBP_HudQuestTracker` | `Rows` (VerticalBox; rows are `WBP_HudQuestRow`, set by `RowClass`) | |
+| `WBP_HudToasts` | `CardRows` (VerticalBox; its `WBP_HudToastCard` children, newest on top) | |
+| `WBP_PanelFrame` | | `Frame`, `Title`, `Content` (NamedSlot) |
+| `WBP_Button`, `WBP_ButtonPrimary`, `WBP_Tab` | `Button` | `Label` |
+| `WBP_Slot` | | `Frame`, `Icon`, `KeyLabel`, `CountLabel` |
+| `WBP_ListRow`, `WBP_HudQuestRow`, `WBP_HudToastCard` | | `Frame`, `Icon`, `Caption`, `Label`, `Value`, `Marker`, `DoneMark`, `Rule` |
+
+Fed by C++: `ASFPlayerController` creates `WBP_Hud` (`USFHudWidget::AssetPath`) and pushes the hotbar from the pilot inventory; `USFE1VitalsHudSubsystem` pushes vitals; `USFQuestPilotSubsystem` pushes quests (`PresentQuests`); `USFGatheringHud` pushes skill toasts (`PushToast`). Still code-built (later phases): prompt bar and target frame (`SFHudLayout`), gathering ring and station panel (`SFGatheringHud`), the defeated window (`SFE1VitalsHud`) and every menu below.
+
+**New menu (WBP path).** 1. Write `USF<Name>` in `Public/UI/` on `USFUiWidget` (or a shared part): `BindWidget` the parts C++ drives, `UPROPERTY` style defaults from `SFHudStyle`, setters/events for data, `BlueprintImplementableEvent` hooks for visual states. 2. Add a `FSpec` row and a seed layout in `SFWidgetAuthoring.cpp` and run `tools/ui/create_widgets.py`. 3. Owner lays it out in the Designer. 4. Create it from `ASFPlayerController` with `LoadClass` + `CreateWidget` like the HUD; add a focused test like `ShatteredFrontier.Hud.Widget`. 5. Add the bound names to the table above and the files to `docs/dependency-map/ui.md`.
+
 ## 1. Canonical specs (same values the helpers use)
 
 | Control | Helper | Kit piece (nine-slice margins at 1080p) | Size | Text | States |

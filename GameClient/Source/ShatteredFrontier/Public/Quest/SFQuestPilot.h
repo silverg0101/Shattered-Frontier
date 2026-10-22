@@ -204,22 +204,6 @@ private:
     friend class FSFQuestLogTest;
 };
 
-// v5 quest tracker (gameplay-hud.png, IMPLEMENTATION-FIX table 1): kit frame at x84% y31.3%, per tracked quest a title and
-// objective rows with checkbox, label and count, tick when done; "Reward waiting: make room" while a reward cannot land.
-UCLASS()
-class SHATTEREDFRONTIER_API USFQuestTrackerHud : public UUserWidget
-{
-    GENERATED_BODY()
-public:
-    void Present(const TArray<FSFQuestView>& Shown);
-protected:
-    virtual void NativeOnInitialized() override;
-private:
-    UPROPERTY(Transient) TObjectPtr<UVerticalBox> Rows;
-    UPROPERTY(Transient) TObjectPtr<UWidget> Frame;
-    FString LastKey;
-};
-
 /** Server (Silverbrook and the QuestBoard dev map): attaches the quest log, routes pilot events.
  *  Both sides: places the layout's quest boards and quest givers. Client: the tracker, the journal (J) and the board panel. */
 UCLASS()
@@ -248,7 +232,6 @@ private:
     void PlaceFromLayout(UWorld& World);
     bool bActive = false;
     FDelegateHandle GatheredHandle, PlacedHandle, BoarHandle;
-    UPROPERTY(Transient) TObjectPtr<USFQuestTrackerHud> Hud;
     FSFQuestView OfferView;
     bool bOfferShown = false;
 };

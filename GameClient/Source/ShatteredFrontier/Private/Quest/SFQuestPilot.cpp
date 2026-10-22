@@ -33,6 +33,8 @@
 #include "HAL/PlatformTime.h"
 #include "Engine/World.h"
 #include "Framework/SFHudStyle.h"
+#include "Framework/SFPlayerController.h"
+#include "UI/SFHudWidgets.h"
 #include "GameFramework/PlayerController.h"
 #include "Misc/CommandLine.h"
 #include "Misc/FileHelper.h"
@@ -1187,79 +1189,6 @@ FString USFQuestPilotComponent::ActiveObjectiveKind() const
     return FString();
 }
 
-// ---------------------------------------------------------------- tracker widget
-
-void USFQuestTrackerHud::NativeOnInitialized()
-{
-    Super::NativeOnInitialized();
-    SetIsFocusable(false);
-    using namespace SFHudStyle;
-    UCanvasPanel* Canvas = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass(), TEXT("QuestCanvas"));
-    WidgetTree->RootWidget = Canvas;
-    // IMPLEMENTATION-FIX table 1: quest_tracker_frame 280 wide at x84%, top y31.3% (under the minimap footer), height from the rows.
-    UBorder* Plate = KitPanel(WidgetTree, TEXT("quest_tracker_frame"), 1.f, Slate(0.88f), Brass(), FMargin(10.f, 12.f, 10.f, 14.f), 0.f);
-    USizeBox* Box = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    Box->SetWidthOverride(286.f); Box->SetContent(Plate);
-    UCanvasPanelSlot* TrackerSlot = Canvas->AddChildToCanvas(Box);
-    TrackerSlot->SetAnchors(FAnchors(0.84f, 0.313f)); TrackerSlot->SetAutoSize(true);
-    Frame = Box;
-    Rows = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    Plate->SetContent(Rows);
-}
-
-void USFQuestTrackerHud::Present(const TArray<FSFQuestView>& Shown)
-{
-    if (!Rows) { return; }
-    FString Key;
-    for (const FSFQuestView& View : Shown)
-    {
-        Key += FString::Printf(TEXT("#%s|%s|%d|%d|%d"), *View.Title, *View.Step, View.StepNumber, View.bComplete, View.bRewardWaiting);
-        for (const FSFQuestLine& L : View.Lines) { Key += FString::Printf(TEXT("|%s=%d/%d"), *L.Label, L.Count, L.Target); }
-        for (const FString& Reward : View.RewardLines) { Key += TEXT("|") + Reward; }
-    }
-    if (Key == LastKey) { return; }
-    LastKey = Key;
-    // One line per shown quest; the runners match "Step=<n> Complete=<0|1>" for the pilot chain.
-    for (const FSFQuestView& View : Shown)
-    {
-        FString Counts; for (const FSFQuestLine& L : View.Lines) { Counts += FString::Printf(TEXT("%s%d/%d"), Counts.IsEmpty() ? TEXT("") : TEXT(","), L.Count, L.Target); }
-        UE_LOG(LogTemp, Display, TEXT("QUEST_PILOT_CLIENT_VIEW Step=%d Complete=%d Quest=%s Counts=%s Waiting=%d"), View.StepNumber, View.bComplete, *View.QuestId, *Counts, View.bRewardWaiting);
-    }
-    using namespace SFHudStyle;
-    Frame->SetVisibility(Shown.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
-    Rows->ClearChildren();
-    auto AddRow = [this](const FString& Label, const FString& Count, bool bDone, const FLinearColor& Colour)
-    {
-        UHorizontalBox* Row = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-        // 18 px kit checkbox, the moss tick over it when done (glyph, not colour alone).
-        UOverlay* Check = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
-        Check->AddChildToOverlay(KitImage(WidgetTree, TEXT("checkbox"), 22.f, 22.f));
-        if (bDone) { Check->AddChildToOverlay(KitImage(WidgetTree, TEXT("status_tick"), 22.f, 22.f)); }
-        UHorizontalBoxSlot* TickSlot = Row->AddChildToHorizontalBox(Check);
-        TickSlot->SetVerticalAlignment(VAlign_Center); TickSlot->SetPadding(FMargin(0.f, 0.f, 8.f, 0.f));
-        UTextBlock* LabelText = Text(WidgetTree, Label, 20, Colour);
-        UTextBlock* CountText = Num(WidgetTree, Count, 20, Colour);
-        LabelText->SetAutoWrapText(true);  // a long label wraps to its slot (never truncated)
-        UHorizontalBoxSlot* LabelSlot = Row->AddChildToHorizontalBox(LabelText);
-        LabelSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); LabelSlot->SetVerticalAlignment(VAlign_Center);
-        UHorizontalBoxSlot* CountSlot = Row->AddChildToHorizontalBox(CountText);
-        CountSlot->SetVerticalAlignment(VAlign_Center); CountSlot->SetPadding(FMargin(8.f, 0.f, 0.f, 0.f));
-        Rows->AddChildToVerticalBox(Row)->SetPadding(FMargin(0.f, 3.f));
-    };
-    for (int32 Index = 0; Index < Shown.Num(); ++Index)
-    {
-        const FSFQuestView& View = Shown[Index];
-        UTextBlock* Title = Text(WidgetTree, View.Title, 24, Ivory(), true);
-        Title->SetAutoWrapText(true);
-        Rows->AddChildToVerticalBox(Title)->SetPadding(FMargin(0.f, Index == 0 ? 0.f : 10.f, 0.f, 4.f));
-        Rows->AddChildToVerticalBox(KitImage(WidgetTree, TEXT("divider"), 244.f, 4.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));  // hairline under the title
-        for (const FSFQuestLine& L : View.Lines) { const bool bDone = L.Count >= L.Target; AddRow(L.Label, FString::Printf(TEXT("%d / %d"), L.Count, L.Target), bDone, bDone ? Moss() : Ivory()); }
-        if (View.bComplete) { AddRow(TEXT("Complete"), TEXT(""), true, Moss()); }
-        if (View.bRewardWaiting) { AddRow(TEXT("Reward waiting: make room"), TEXT(""), false, Amber()); }
-        for (const FString& Reward : View.RewardLines) { AddRow(TEXT("Received ") + Reward, TEXT(""), true, Moss()); }
-    }
-}
-
 // ---------------------------------------------------------------- subsystem
 
 bool USFQuestPilotSubsystem::IsRequested()
@@ -1361,7 +1290,6 @@ void USFQuestPilotSubsystem::Deinitialize()
     SFQuestPilotEvents::OnGathered().Remove(GatheredHandle);
     SFQuestPilotEvents::OnStructurePlaced().Remove(PlacedHandle);
     SFQuestPilotEvents::OnBoarDefeated().Remove(BoarHandle);
-    if (Hud) { Hud->RemoveFromParent(); Hud = nullptr; }
     Super::Deinitialize();
 }
 
@@ -1394,13 +1322,6 @@ void USFQuestPilotSubsystem::Tick(float DeltaTime)
     auto* Component = Local && Local->IsLocalController() ? Local->FindComponentByClass<USFQuestPilotComponent>() : nullptr;
     if (!Component) { return; }
     USFQuestBoardPanel::TickClient(Local, Component);
-    if (!Hud)
-    {
-        Hud = CreateWidget<USFQuestTrackerHud>(Local, USFQuestTrackerHud::StaticClass());
-        if (!Hud) { return; }
-        Hud->AddToViewport(14);
-        Hud->SetVisibility(ESlateVisibility::HitTestInvisible);
-    }
     // Up to three tracked quests, unfinished first; an offer the dialogue board shows takes the tracker while it is open.
     TArray<FSFQuestView> Shown;
     if (bOfferShown) { Shown.Add(OfferView); }
@@ -1409,5 +1330,5 @@ void USFQuestPilotSubsystem::Tick(float DeltaTime)
         for (const FSFQuestView& View : Component->GetViews())
         { if (View.bComplete == (Pass == 1) && Component->IsTracked(View.QuestId) && Shown.Num() < USFQuestPilotComponent::MaxTracked) { Shown.Add(View); } }
     }
-    Hud->Present(Shown);
+    if (const ASFPlayerController* SFPlayer = Cast<ASFPlayerController>(Local)) { if (USFHudWidget* HudWidget = SFPlayer->GetHudWidget()) { HudWidget->PresentQuests(Shown); } }
 }

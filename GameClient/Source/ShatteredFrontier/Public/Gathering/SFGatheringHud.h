@@ -5,25 +5,12 @@
 #include "SFGatheringHud.generated.h"
 
 class UBorder;
-class UImage;
 class UTextBlock;
 class USFStationPanel;
 
-// Short-lived skill-gain toasts, newest last; MaxVisible caps what is drawn.
-struct FSFToastQueue
-{
-    static constexpr int32 MaxVisible = 3;
-    struct FToast { FString Text; double ExpiresAt = 0; };
-    TArray<FToast> Items;
-
-    void Push(const FString& Text, double Now, double LifetimeSeconds = 3.0);
-    // Drops expired toasts and returns the newest MaxVisible texts, oldest first.
-    TArray<FString> Visible(double Now);
-};
-
-// Local-only presentation of gathering feedback (v5 gathering.png): a channel ring over the target, skill-gain toasts and
-// the aimed station's panel (USFStationPanel, crafting-station.png). It reads the owner's replicated pilot state and
-// sends nothing to the server.
+// Local-only presentation of gathering feedback (v5 gathering.png): a channel ring over the target and the aimed station's
+// panel (USFStationPanel, crafting-station.png). Skill-gain toasts are pushed to the HUD's toast stack (USFHudToastsWidget in
+// WBP_Hud). It reads the owner's replicated pilot state and sends nothing to the server.
 UCLASS()
 class SHATTEREDFRONTIER_API USFGatheringHud : public UUserWidget
 {
@@ -32,8 +19,6 @@ public:
     void Configure(USFGatheringPilotComponent* InPilot) { Pilot = InPilot; }
     // 0 at the start of a harvest, 1 when it completes; safe for a zero or unknown total.
     static float RingFraction(double RemainingSeconds, double TotalSeconds);
-    // Item-gained, warning and loot toasts share the skill-gain queue ("<Name> +1": text before the last space is the name).
-    void PushToast(const FString& Text) { Toasts.Push(Text, GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0); }
     static FString SkillToastText(const TCHAR* SkillName) { return FString::Printf(TEXT("%s +1"), SkillName); }
     // "have / need" and whether it is met; the tick or cross glyph follows from it.
     static FString NeedText(int32 Have, int32 Need) { return FString::Printf(TEXT("%d / %d"), Have, Need); }
@@ -47,10 +32,6 @@ protected:
 
 private:
     UPROPERTY(Transient) TObjectPtr<USFGatheringPilotComponent> Pilot;
-    UPROPERTY(Transient) TArray<TObjectPtr<UBorder>> ToastFrames;
-    UPROPERTY(Transient) TArray<TObjectPtr<UImage>> ToastIcons;
-    UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> ToastNames;
-    UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> ToastDeltas;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> RingPercent;
     UPROPERTY(Transient) TObjectPtr<UBorder> RingPlate;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> RingLabel;
@@ -64,15 +45,13 @@ public:
     // True while the crafting-station panel is on screen (the target frame and prompt bar step aside for it).
     bool IsStationShown() const;
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-    void CaptureToast() { Toasts.Push(TEXT("Logging +1"), GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0); }
+    void CaptureToast();
 #endif
 
 private:
-
     FSlateBrush RingBrush;  // Kit-v5 gathering_channel_ring, valid when bHasRingBrush
     FSlateBrush RingBack;
     bool bHasRingBrush = false;
-    FSFToastQueue Toasts;
     uint32 LastToastOperation = 0;
     uint32 RingOperation = 0;
     double RingTotalSeconds = 0;

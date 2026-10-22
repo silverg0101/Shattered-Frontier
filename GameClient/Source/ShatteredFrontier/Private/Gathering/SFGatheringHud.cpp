@@ -1,4 +1,6 @@
 #include "Gathering/SFGatheringHud.h"
+#include "Framework/SFPlayerController.h"
+#include "UI/SFHudWidgets.h"
 
 #include "Framework/SFScreenArt.h"
 #include "Gathering/SFGatheringProgression.h"
@@ -18,19 +20,6 @@
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/PlayerController.h"
 
-void FSFToastQueue::Push(const FString& Text, double Now, double LifetimeSeconds)
-{
-    Items.Add({Text, Now + LifetimeSeconds});
-}
-
-TArray<FString> FSFToastQueue::Visible(double Now)
-{
-    Items.RemoveAll([Now](const FToast& Toast) { return Toast.ExpiresAt <= Now; });
-    TArray<FString> Out;
-    for (int32 I = FMath::Max(0, Items.Num() - MaxVisible); I < Items.Num(); ++I) { Out.Add(Items[I].Text); }
-    return Out;
-}
-
 float USFGatheringHud::RingFraction(double RemainingSeconds, double TotalSeconds)
 {
     return TotalSeconds > 0.0 ? static_cast<float>(FMath::Clamp(1.0 - RemainingSeconds / TotalSeconds, 0.0, 1.0)) : 0.f;
@@ -43,13 +32,6 @@ constexpr float GatherRingSide = 110.f;
 constexpr float GatherRingTrackRadius = 51.f;
 constexpr float GatherRingTrackWidth = 9.f;
 
-const TCHAR* ToastIconStem(const FString& ToastText)
-{
-    if (ToastText.StartsWith(TEXT("Mining"))) { return TEXT("iron_pickaxe"); }
-    if (ToastText.StartsWith(TEXT("Herbalism"))) { return TEXT("river_herb"); }
-    if (ToastText.StartsWith(TEXT("Fishing"))) { return TEXT("trout"); }
-    return TEXT("woodcutting_axes");
-}
 }
 
 void USFGatheringHud::NativeOnInitialized()
@@ -67,38 +49,6 @@ void USFGatheringHud::NativeOnInitialized()
         UCanvasPanelSlot* CanvasSlot = Root->AddChildToCanvas(Child);
         CanvasSlot->SetAnchors(FAnchors(0.f, 0.f)); CanvasSlot->SetAlignment(Alignment); CanvasSlot->SetAutoSize(true);
     };
-
-    // Toast stack (family rule 6): 280 px wide at x84-99%, 66 px cards, 12 px gap, max 3, newest on top; kit toast card
-    // with the skill icon in its well, "Skill gain" over "<Skill> +1".
-    UVerticalBox* ToastBox = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    for (int32 I = 0; I < FSFToastQueue::MaxVisible; ++I)
-    {
-        UBorder* Card = KitPanel(WidgetTree, TEXT("toast_frame"), 1.f, Slate(0.92f), Brass(), FMargin(12.f, 4.f, 12.f, 4.f), 0.f);
-        UHorizontalBox* Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-        UImage* Icon = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
-        USizeBox* IconBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        IconBox->SetWidthOverride(48.f); IconBox->SetHeightOverride(48.f); IconBox->SetContent(Icon);
-        Line->AddChildToHorizontalBox(IconBox)->SetVerticalAlignment(VAlign_Center);
-        UVerticalBox* Lines = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-        Lines->AddChildToVerticalBox(Text(WidgetTree, TEXT("Skill gain"), 18, Brass()));
-        UHorizontalBox* GainLine = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-        UTextBlock* Name = Text(WidgetTree, TEXT(""), 22, Ivory());
-        UTextBlock* Delta = Num(WidgetTree, TEXT(""), 22, Moss());
-        GainLine->AddChildToHorizontalBox(Name);
-        GainLine->AddChildToHorizontalBox(Delta)->SetPadding(FMargin(6.f, 0.f, 0.f, 0.f));
-        Lines->AddChildToVerticalBox(GainLine);
-        UHorizontalBoxSlot* LinesSlot = Line->AddChildToHorizontalBox(Lines);
-        LinesSlot->SetVerticalAlignment(VAlign_Center); LinesSlot->SetPadding(FMargin(22.f, 0.f, 0.f, 0.f));
-        Card->SetContent(Line); Card->SetVisibility(ESlateVisibility::Collapsed);
-        USizeBox* CardSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        CardSize->SetWidthOverride(280.f); CardSize->SetHeightOverride(66.f); CardSize->SetContent(Card);
-        ToastBox->AddChildToVerticalBox(CardSize)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
-        ToastFrames.Add(Card); ToastIcons.Add(Icon); ToastNames.Add(Name); ToastDeltas.Add(Delta);
-    }
-    UCanvasPanelSlot* ToastSlot = Root->AddChildToCanvas(ToastBox);
-    // Below the quest tracker (top y31.3%, ~120 px for three rows) plus a 12 px gap (IMPLEMENTATION-FIX table 1).
-    ToastSlot->SetAnchors(FAnchors(0.84f, 0.47f)); ToastSlot->SetAutoSize(true);
-
     // Ring centre percent and the label plate below it; the disc and moss arc are painted in NativePaint.
     RingPercent = Num(WidgetTree, TEXT(""), 28, Ivory(), false);
     RingPercent->SetVisibility(ESlateVisibility::Collapsed);
@@ -132,24 +82,8 @@ void USFGatheringHud::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     if (Feedback.bSkillGained && Feedback.Phase == ESFGatheringPilotPhase::Committed && Feedback.Operation != LastToastOperation)
     {
         LastToastOperation = Feedback.Operation;
-        Toasts.Push(SkillToastText(FSFGatheringProgressionSession::SkillName(Feedback.Skill)), Now);
+        if (const ASFPlayerController* SFPlayer = Cast<ASFPlayerController>(Controller)) { if (USFHudWidget* HudWidget = SFPlayer->GetHudWidget()) { HudWidget->PushToast(SkillToastText(FSFGatheringProgressionSession::SkillName(Feedback.Skill))); } }
     }
-    const TArray<FString> Visible = Toasts.Visible(Now);
-    for (int32 I = 0; I < ToastFrames.Num(); ++I)
-    {
-        const bool bShown = Visible.IsValidIndex(I);
-        ToastFrames[I]->SetVisibility(bShown ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
-        if (UWidget* Card = ToastFrames[I]->GetParent()) { Card->SetVisibility(bShown ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed); }  // the fixed-height wrapper
-        if (!bShown) { continue; }
-        const FString& Toast = Visible[Visible.Num() - 1 - I];  // newest on top
-        FString Name, Delta;
-        if (!Toast.Split(TEXT(" "), &Name, &Delta, ESearchCase::CaseSensitive, ESearchDir::FromEnd)) { Name = Toast; }
-        ToastNames[I]->SetText(FText::FromString(Name));
-        ToastDeltas[I]->SetText(FText::FromString(Delta));
-        const FSlateBrush Icon = SFScreenArt::Icon(ToastIconStem(Toast), 48.f);
-        if (ToastIcons[I]->GetBrush().GetResourceObject() != Icon.GetResourceObject()) { ToastIcons[I]->SetBrush(Icon); }
-    }
-
     // Ring: the total is the first remaining time seen for an operation (the replicated feedback only carries the end time).
     const bool bHarvesting = Feedback.Phase == ESFGatheringPilotPhase::Harvesting && IsValid(Feedback.Node);
     // Committing = the channel ended and the server is awaiting the ledger receipt: keep the ring full as "finishing".
@@ -213,6 +147,13 @@ int32 USFGatheringHud::NativePaint(const FPaintArgs& Args, const FGeometry& Allo
     }
     return Super::NativePaint(Args, AllottedGeometry, MyCullingRect, OutDrawElements, LayerId, InWidgetStyle, bParentEnabled);
 }
+
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+void USFGatheringHud::CaptureToast()
+{
+    if (const ASFPlayerController* SFPlayer = Cast<ASFPlayerController>(GetOwningPlayer())) { if (USFHudWidget* HudWidget = SFPlayer->GetHudWidget()) { HudWidget->PushToast(TEXT("Logging +1")); } }
+}
+#endif
 
 bool USFGatheringHud::IsStationShown() const
 {

@@ -1,4 +1,5 @@
 #include "Gathering/SFGatheringHud.h"
+#include "UI/SFHudWidgets.h"
 #include "Gathering/SFGatheringSkillsPanel.h"
 #include "Gathering/SFStationPanel.h"
 #include "Construction/SFConstructionSandboxPalette.h"

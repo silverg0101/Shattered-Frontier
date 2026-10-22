@@ -2,7 +2,9 @@
 
 #include "Characters/SFE1Character.h"
 #include "Combat/SFCombatPilot.h"
+#include "Framework/SFPlayerController.h"
 #include "Framework/SFScreenArt.h"
+#include "UI/SFHudWidgets.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
 #include "Components/CanvasPanel.h"
@@ -67,49 +69,6 @@ void USFE1VitalsHud::NativeOnInitialized()
     using namespace SFHudStyle;
     UCanvasPanel* Canvas = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass(), TEXT("VitalsCanvas"));
     WidgetTree->RootWidget = Canvas;
-
-    // Vitals (IMPLEMENTATION-FIX table 1): 116 px hex level badge at x2%, bottom y96%, then the 380x32 HP and stamina
-    // framed bars 10 px apart with centred Source Sans 20 numerals. No plate behind them.
-    UHorizontalBox* Row = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    UCanvasPanelSlot* RowSlot = Canvas->AddChildToCanvas(Row);
-    RowSlot->SetAnchors(FAnchors(0.02f, 0.974f)); RowSlot->SetAlignment(FVector2D(0.f, 1.f)); RowSlot->SetAutoSize(true);
-    // Level badge: the numeral sits in the lower plate. ponytail: no character level stat exists yet, so it shows 1 until Character gains one.
-    UOverlay* BadgeStack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
-    BadgeStack->AddChildToOverlay(KitImage(WidgetTree, TEXT("hex_level_badge"), 115.f, 158.f));
-    UTextBlock* LevelText = Num(WidgetTree, TEXT("1"), 28, Ivory());
-    LevelText->SetShadowOffset(FVector2D(1.f, 1.f)); LevelText->SetShadowColorAndOpacity(Hex(TEXT("0E171C")));
-    FSlateFontInfo LevelFont = LevelText->GetFont(); LevelFont.OutlineSettings.OutlineSize = 1; LevelFont.OutlineSettings.OutlineColor = Hex(TEXT("0E171C"));
-    LevelText->SetFont(LevelFont);
-    UOverlaySlot* LevelSlot = BadgeStack->AddChildToOverlay(LevelText);
-    LevelSlot->SetHorizontalAlignment(HAlign_Center); LevelSlot->SetVerticalAlignment(VAlign_Bottom); LevelSlot->SetPadding(FMargin(0.f, 0.f, 0.f, 18.f));
-    Row->AddChildToHorizontalBox(BadgeStack)->SetVerticalAlignment(VAlign_Center);
-    UVerticalBox* Bars = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    UHorizontalBoxSlot* BarsSlot = Row->AddChildToHorizontalBox(Bars);
-    BarsSlot->SetVerticalAlignment(VAlign_Center); BarsSlot->SetPadding(FMargin(10.f, 0.f, 0.f, 0.f));
-    auto AddBar = [&](const TCHAR* Base, const FLinearColor& Fallback, FSFFramedBar& Framed, TObjectPtr<UProgressBar>& Plain) -> UTextBlock*
-    {
-        UOverlay* Stack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
-        Framed = MakeFramedBar(WidgetTree, Base, 380.f);  // the styled UProgressBar when the kit is missing
-        if (Framed.Root) { Stack->AddChildToOverlay(Framed.Root); }
-        else
-        {
-            Plain = WidgetTree->ConstructWidget<UProgressBar>(UProgressBar::StaticClass());
-            StyleBar(Plain, Fallback);
-            USizeBox* PlainBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-            PlainBox->SetWidthOverride(380.f); PlainBox->SetHeightOverride(32.f); PlainBox->SetContent(Plain);
-            Stack->AddChildToOverlay(PlainBox);
-        }
-        UTextBlock* Value = Num(WidgetTree, TEXT(""), 20, Ivory());
-        Value->SetShadowOffset(FVector2D(1.f, 1.f)); Value->SetShadowColorAndOpacity(Hex(TEXT("0E171C")));
-        UOverlaySlot* ValueSlot = Stack->AddChildToOverlay(Value);
-        ValueSlot->SetHorizontalAlignment(HAlign_Center); ValueSlot->SetVerticalAlignment(VAlign_Center);
-        Bars->AddChildToVerticalBox(Stack)->SetPadding(FMargin(0.f, Bars->GetChildrenCount() > 0 ? 10.f : 0.f, 0.f, 0.f));
-        return Value;
-    };
-    HealthText = AddBar(TEXT("bar_hp"), Crimson(), HpBar, Bar);
-    // ponytail: no stamina stat exists yet, so the bar is drawn full with no numeral; bind it when Character gains stamina.
-    StaminaText = AddBar(TEXT("bar_stamina"), Amber(), StaminaBar, StaminaPlain);
-    if (StaminaPlain) { StaminaPlain->SetPercent(1.f); }
 
     // Defeated (v5 defeated.png): 40% dim, then an 840 x 627 window centred at y18%, built from the v5 screen art.
     UCanvasPanel* DefeatedRoot = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass());
@@ -217,17 +176,8 @@ void USFE1VitalsHud::NativeOnInitialized()
     DefeatedLayer->SetVisibility(ESlateVisibility::Collapsed);
 }
 
-void USFE1VitalsHud::Present(const FSFE1VitalsModel& Model, int32 MaxHealth, float RemainingSeconds, const FSFE1DefeatView& Defeat)
+void USFE1VitalsHud::Present(const FSFE1VitalsModel& Model, float RemainingSeconds, const FSFE1DefeatView& Defeat)
 {
-    if (!HealthText) { return; }
-    const float Fraction = FSFE1VitalsModel::HealthFraction(Model.Health, MaxHealth);
-    if (HpBar.Root) { HpBar.SetFraction(Fraction); } else if (Bar) { Bar->SetPercent(Fraction); }
-    HealthText->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), FMath::Max(0, Model.Health), MaxHealth)));
-    if (StaminaText)
-    {
-        const int32 Stamina = GetDefault<USFCombatPilotSettings>()->PlayerStamina;  // drawn full: no stamina stat yet
-        StaminaText->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), Stamina, Stamina)));
-    }
     bDefeatShown = Model.IsDefeated();
     DefeatedLayer->SetVisibility(bDefeatShown ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
     if (!bDefeatShown) { return; }
@@ -326,7 +276,10 @@ void USFE1VitalsHudSubsystem::Tick(float DeltaTime)
     else if (!Model.IsDefeated() && DefeatGrade) { DefeatGrade->Destroy(); DefeatGrade = nullptr; }
     FSFE1VitalsModel Shown = Model;
     if (!Model.bActive) { Shown.Health = Settings->PlayerHealth; }
-    Hud->Present(Shown, Settings->PlayerHealth, FSFE1VitalsModel::RemainingSeconds(Model.DefeatedAt, Now, Settings->PlayerRespawnDelaySeconds), Defeat);
+    Hud->Present(Shown, FSFE1VitalsModel::RemainingSeconds(Model.DefeatedAt, Now, Settings->PlayerRespawnDelaySeconds), Defeat);
+    // The bars live in WBP_Hud; stamina is drawn full (no stamina stat yet).
+    if (const ASFPlayerController* SFPlayer = Cast<ASFPlayerController>(PC))
+    { if (USFHudWidget* HudWidget = SFPlayer->GetHudWidget()) { HudWidget->PresentVitals(Shown.Health, Settings->PlayerHealth, Settings->PlayerStamina, Settings->PlayerStamina); } }
 }
 
 void USFE1VitalsHudSubsystem::Deinitialize()

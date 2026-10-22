@@ -5,6 +5,7 @@
 #include "Framework/SFE1Settings.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Framework/SFHudLayout.h"
+#include "UI/SFHudWidgets.h"
 #include "Gathering/SFGatheringHud.h"
 #include "Inventory/SFInventoryPanel.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
@@ -180,10 +181,26 @@ void ASFPlayerController::TickInteraction()
             }
         }
     }
-    if (IsLocalController() && HudLayout)
+    // The persistent HUD is a Widget Blueprint (layout and look in the Designer); C++ feeds it.
+    if (IsLocalController() && !HudWidget && (Cast<ASFE1Character>(GetPawn()) || FindComponentByClass<USFGatheringPilotComponent>()))
+    {
+        const TSubclassOf<USFHudWidget> HudClass = LoadClass<USFHudWidget>(nullptr, USFHudWidget::AssetPath);
+        static bool bMissingReported = false;
+        if (!HudClass) { if (!bMissingReported) { bMissingReported = true; UE_LOG(LogTemp, Error, TEXT("HUD_WBP_MISSING %s: run tools/ui/create_widgets.py"), USFHudWidget::AssetPath); } }
+        else if ((HudWidget = CreateWidget<USFHudWidget>(this, HudClass)))
+        {
+            HudWidget->AddToViewport(8);
+            HudWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
+        }
+    }
+    if (IsLocalController() && (HudLayout || HudWidget))
     {
         USFGatheringPilotComponent* Pilot = FindComponentByClass<USFGatheringPilotComponent>();
-        if (Pilot && Pilot->IsEnabled()) { HudLayout->Configure(Pilot); }
+        if (Pilot && Pilot->IsEnabled())
+        {
+            if (HudLayout) { HudLayout->Configure(Pilot); }
+            if (HudWidget) { HudWidget->Configure(Pilot); }
+        }
     }
     if (IsLocalController() && GetWorld()->GetTimeSeconds() >= NextLocalRefreshSeconds)
     {

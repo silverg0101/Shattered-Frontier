@@ -11,6 +11,7 @@ class FSFMarketViewModel;
 class FSFTradeViewModel;
 class USFGatheringHud;
 class USFHudLayout;
+class USFHudWidget;
 class USFMarketBoard;
 class USFTradeWindow;
 class USFInventoryPanel;
@@ -53,6 +54,8 @@ public:
     void InteractWithSelectedTarget();
     void SelectNextCombatTarget();
     AActor* GetSelectedCombatTarget() const;
+    // The in-game HUD (WBP_Hud), created on the local controller; null elsewhere or before it exists.
+    USFHudWidget* GetHudWidget() const { return HudWidget; }
     UFUNCTION(Server, Reliable) void ServerSelectCombatTarget(AActor* Target);
     UFUNCTION(Client, Unreliable) void ClientPilotHit(const FString& Message);
     FString GetPilotMessage() const;
@@ -247,6 +250,7 @@ private:
     UPROPERTY(Transient) TObjectPtr<USFInventoryPanel> InventoryPanel;
     UPROPERTY(Transient) TObjectPtr<USFGatheringHud> GatheringHud;
     UPROPERTY(Transient) TObjectPtr<USFHudLayout> HudLayout;
+    UPROPERTY(Transient) TObjectPtr<USFHudWidget> HudWidget;
     UPROPERTY(Transient) TObjectPtr<USFTradeWindow> TradeWindow;
     UPROPERTY(Transient) TObjectPtr<USFMarketBoard> MarketBoard;
     TSharedPtr<ISFExchangeService> DemoExchange;  // the fake, or the live client service when this controller has an exchange component

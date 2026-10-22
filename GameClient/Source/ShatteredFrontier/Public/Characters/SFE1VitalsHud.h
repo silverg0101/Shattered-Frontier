@@ -36,15 +36,15 @@ struct FSFE1DefeatView
     float DelaySeconds = 0.f;
 };
 
-// Full-screen canvas: bottom-left crest plate with the health bar, and the v5 defeated window
-// (docs/Game-Design/concept-art/UI/v5/defeated.png): title, stag divider, cause, two respawn cards and the respawn button
-// whose ring fills as the server's respawn delay runs.
+// Full-screen canvas with the v5 defeated window (docs/Game-Design/concept-art/UI/v5/defeated.png): title, stag divider, cause,
+// two respawn cards and the respawn button whose ring fills as the server's respawn delay runs. The health and stamina bars are
+// in WBP_Hud (USFHudVitalsWidget); the subsystem below feeds both.
 UCLASS()
 class SHATTEREDFRONTIER_API USFE1VitalsHud : public UUserWidget
 {
     GENERATED_BODY()
 public:
-    void Present(const FSFE1VitalsModel& Model, int32 MaxHealth, float RemainingSeconds, const FSFE1DefeatView& Defeat = FSFE1DefeatView());
+    void Present(const FSFE1VitalsModel& Model, float RemainingSeconds, const FSFE1DefeatView& Defeat = FSFE1DefeatView());
 
 protected:
     virtual void NativeOnInitialized() override;
@@ -52,17 +52,11 @@ protected:
         FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const override;
 
 private:
-    UPROPERTY(Transient) TObjectPtr<UProgressBar> Bar;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> HealthText;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> StaminaText;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> CountdownText;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> CauseText;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> PointText;
     UPROPERTY(Transient) TObjectPtr<UImage> RespawnRing;
     UPROPERTY(Transient) TObjectPtr<UWidget> DefeatedLayer;
-    SFHudStyle::FSFFramedBar HpBar;  // widgets owned by WidgetTree; Root null when the kit is missing
-    SFHudStyle::FSFFramedBar StaminaBar;  // drawn full: no stamina stat yet
-    UPROPERTY(Transient) TObjectPtr<UProgressBar> StaminaPlain;
     float RespawnProgress = 0.f;
     bool bDefeatShown = false;
 };
