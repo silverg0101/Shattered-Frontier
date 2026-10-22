@@ -33,6 +33,11 @@
    84,
    1.85
   ],
+  "r11_growth_mean_span_y300_over_y550_15_frames": [
+   216.2,
+   92.4,
+   2.34
+  ],
   "r6_dense_puff_R_minus_B_top3pct_y560_760": -3.4,
   "r6_continuity_thin_rows_y150_560": {
    "chimney-smoke.png": 0,

@@ -227,3 +227,11 @@ Pools: frontage x 430-560 / y 280-500 median R - B -9 (band >= +20, open); lamp-
 | context-lamp-wall-dusk | 0 / 0 | 15077 (3000) | 0 | 20.5, 110.0 | 86 / 85 (min 60 / 30, met) |
 
 Assets: only the map and `MI_SB_LanternGlow` differ from HEAD. The r7-r10 reverts checked out `af48e04f` blobs; the audit of commits r7-r10 shows they touched only this pipeline's assets, never other sessions' files. From now on the revert restores HEAD.
+
+## Round 11 review: 19 PASS / 0 FAIL (REVIEW-r11.md). Evidence fixes applied after it
+
+1. `dusk-panes.json`: the second frontage pool box is now `[500, 560, 300, 400, 40, 10]`, on lit stone rather than the bracket mount. `DUSK_POOL` reads L 60, R - B 22, and `check_dusk_blobs.py --selftest` exits 0 on the r11 frames.
+2. `measure_plume.py`: growth averaged over `chimney-smoke.png` and the 14 motion frames, `r11_growth_mean_span_y300_over_y550_15_frames` = 216.2 / 92.4 = **2.34** (band >= 2.0, met). The single-frame chord stays reported.
+3. The full `LAMP_PIECES` lines for `SM_SilverbrookTownhouse1`, `2` and `4` are in `lamp-pieces.txt`.
+
+No asset or capture changed after the review.

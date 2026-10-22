@@ -68,6 +68,13 @@ def span_in(y, x0=760, x1=1100):
     px = plume(y)[0]; px = px[(px >= x0) & (px <= x1)]
     return int(px.max() - px.min() + 1) if len(px) else 0
 c['r6_growth_span_y300_over_y550_x760_1100'] = [span_in(300), span_in(550), round(span_in(300) / max(span_in(550), 1), 2)]
+# REVIEW-r11 fix 2: one frame's chords swing 1.76-2.52 on an unchanged asset; average the spans over all 15 frames.
+def span_frame(F, y, x0=760, x1=1100):
+    ex = rows(F, y) - rows(LR, y); px = np.nonzero(np.abs(ex) >= T)[0]; px = px[(px >= x0) & (px <= x1)]
+    return int(px.max() - px.min() + 1) if len(px) else 0
+_frames = [L] + [load(f'motion-{k:02d}.png')[1] for k in range(14)]
+s300, s550 = float(np.mean([span_frame(F, 300) for F in _frames])), float(np.mean([span_frame(F, 550) for F in _frames]))
+c['r11_growth_mean_span_y300_over_y550_15_frames'] = [round(s300, 1), round(s550, 1), round(s300 / max(s550, 1), 2)]
 dl = (L - LR)[560:761, 880:1021]; top = dl >= np.percentile(dl, 97)
 c['r6_dense_puff_R_minus_B_top3pct_y560_760'] = round(float((rgb[560:761, 880:1021, 0] - rgb[560:761, 880:1021, 2])[top].mean()), 1)
 refrgb = np.asarray(Image.open(HERE / 'chimney-smoke-ref.png').convert('RGB'), dtype=float)
