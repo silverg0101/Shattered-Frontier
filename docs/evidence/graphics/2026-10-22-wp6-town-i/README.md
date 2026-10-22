@@ -148,3 +148,16 @@ Round 6 numbers (chimney-smoke against its reference): core L/ref 0.968 / 1.004 
    The captures were retaken after the revert.
 
 Perf (on - off): chimney -0.154 ms, street -0.031 ms.
+
+## Round 8: REVIEW-r7.md fix list (r7 scored 18 PASS / 1 FAIL)
+
+1. `glass_sockets` logs every glow piece (`LAMP_PIECE`) and drops the flush-panel offset, so cards and light sit at the glass centre. The review's per-piece filter (drop any piece >= 60 cm before the merge) was tried first. It left the sign's frame strips (25 x 2 x 12) as a "lantern" under the sign: side-b had 4 blobs outside the panes and 17 orange ones (`LAMP_FX` 573). The rule is therefore: on a building, pieces merge only within 20 cm, and a chamber with any axis >= 60 cm is dropped (street lamps keep the 60 cm merge).
+   - `LAMP_PIECE` lines: `SM_SilverbrookTownhouse1` `SB_LanternGlow` = six faces of the 204 x 19 x 2 sill strip. `SM_SilverbrookTownhouse4` `SB_LanternGlow` = two 50 x 0 x 95 faces at (-312, 205, 221), top edge 50 x 2 x 0 at z 268, sides 0 x 2 x 83 at x -287 / -337, two 25 x 2 x 12 feet at z 179. `SM_SilverbrookTownhouse2` is the same sign, 52 x 3 x 98 at (-316, 156, 199).
+   - Resulting chambers: Townhouse1 204 x 19 x 2, Townhouse4 50 x 2 x 95 and Townhouse2 52 x 3 x 98 are all dropped. These houses have no lantern of their own; the glow is the hanging sign.
+   - `LAMP_FX` 392 lights (from 524); `LIGHT_CHECK lights 392 on_glass 392 orphans 0 in_wall 0`.
+2. `check_dusk_blobs.py` + `dusk-panes.json` (seeded from the r7 frames; side-b also lists the far house's two door lanterns at x 1440 / 1482, y 411-416, present in r7 too): `DUSK_BLOBS outside 0` and `DUSK_ORANGE outside 0` in all three dusk views.
+3. Night-row band by direction written in `lighting-and-atmosphere.md`. r8: frontage sky (sun side) 103.5, steps 9.0, bottom quarter 9.0; side-b sky 31.2, bottom quarter 18; lamp-wall sky 47.0, bottom quarter 21.
+4. Tint [0.25,0.31,0.43]: dense puffs R - B -4.7; core 0.972 / 1.01 / 1.031; p5 0.939; hill 0.959-1.035; growth 155 / 66 = 2.35; 0 thin rows in 15 frames; MAD min 1.36; up 69.6 px/s; main-street x 790-830 11 columns, L/sky 0.92.
+5. Assets: only the map (lamp and chimney actors) and `MI_SB_LanternGlow` differ. Every other `.uasset` is at its `af48e04f` blob (the lamp_fx and dress_all resaves were reverted after each run).
+
+Perf (1440p, on - off): chimney -0.24 ms; street +0.72 ms (on-2 5.39 outlier; on-1 - off-1 -0.22).

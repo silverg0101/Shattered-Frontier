@@ -63,14 +63,13 @@ def _lantern(slot):   # lantern and street-lamp glass only: a window's light is 
 def glass_sockets(mesh, u):
     """Mesh-space cm centre of every lantern-glass chamber, read from the imported mesh itself: the connected pieces of its
     *Glow material slots, merged when closer than 60 cm. (The GLB-derived lamp-sockets.json points of building meshes
-    were 2-20 m off their imported glass, so their lights shone on bare walls; street lamps matched to 0 cm.) A flat glow
-    panel (< 5 cm thick, >= 60 cm across) gets its light 30 cm in front of it, outward from the mesh bounds centre; a lantern
-    pane (every axis < 60 cm) keeps cards and light at its centre (WP6i r6: the old offset put flames beside the glass);
+    were 2-20 m off their imported glass, so their lights shone on bare walls; street lamps matched to 0 cm.) On a building,
+    pieces merge only within 20 cm, a chamber with any axis >= 60 cm (a sign emblem, a sill strip, a lit room) is dropped,
+    and every chamber keeps its cards and light at the glass centre (WP6i r7-r8: a sign merged with the lantern put the flame on the wall);
     on a building, a glow volume >= 30 cm in every axis (a lit room or doorway seen through glass) or one centred under
     1 m (a cellar grille) gets no lamp."""
     name = mesh.get_name()
     if name not in _GLASS:
-        box = mesh.get_bounding_box(); centre = [(box.min.x + box.max.x) / 2, (box.min.y + box.max.y) / 2]
         glow = [i for i, slot in enumerate(mesh.static_materials) if _lantern(slot)]
         dm = u.DynamicMesh()
         dm, _ = u.GeometryScript_AssetUtils.copy_mesh_from_static_mesh(
@@ -83,13 +82,18 @@ def glass_sockets(mesh, u):
             if mid not in glow:
                 continue
             comps = u.GeometryScript_MeshDecomposition.split_mesh_by_components(piece, mesh_pool=u.DynamicMeshPool())
+            slot = mesh.static_materials[mid].material_slot_name
             for comp in next(x for x in comps if isinstance(x, u.Array)):
                 bb = u.GeometryScript_MeshQueries.get_mesh_bounding_box(comp)
-                boxes.append([bb.min.x, bb.min.y, bb.min.z, bb.max.x, bb.max.y, bb.max.z])
+                b = [bb.min.x, bb.min.y, bb.min.z, bb.max.x, bb.max.y, bb.max.z]
+                size = [b[i + 3] - b[i] for i in range(3)]
+                u.log(f'LAMP_PIECE {name} slot {slot} centre {[round((b[i] + b[i + 3]) / 2) for i in range(3)]} size {[round(v) for v in size]}')
+                boxes.append(b)
         merged = []
-        for b in boxes:   # union boxes whose gap is under 60 cm into one chamber
+        gap = 60 if name.startswith('SM_SilverbrookStreetLamp') else 20   # WP6i r8: on a building a sign's frame strips touch its own face, not a lantern 45 cm away
+        for b in boxes:   # union boxes whose gap is under gap cm into one chamber
             for m in merged:
-                if all(max(m[i], b[i]) - min(m[i + 3], b[i + 3]) < 60 for i in range(3)):
+                if all(max(m[i], b[i]) - min(m[i + 3], b[i + 3]) < gap for i in range(3)):
                     m[:] = [min(m[i], b[i]) for i in range(3)] + [max(m[i + 3], b[i + 3]) for i in range(3)]
                     break
             else:
@@ -99,14 +103,12 @@ def glass_sockets(mesh, u):
             c = [(m[i] + m[i + 3]) / 2 for i in range(3)]
             size = [m[i + 3] - m[i] for i in range(3)]
             u.log(f'LAMP_SOCKET {name} centre {[round(v) for v in c]} size {[round(v) for v in size]}')
-            if not name.startswith('SM_SilverbrookStreetLamp') and (min(size) >= 30 or c[2] < 100 or size[2] < 5):
+            if not name.startswith('SM_SilverbrookStreetLamp') and (min(size) >= 30 or c[2] < 100 or size[2] < 5 or max(size) >= 60):
                 # a glowing room or doorway volume behind glass, a cellar grille at the ground, or a horizontal glow strip
-                # (SM_SilverbrookTownhouse1's first-floor sill: centre z 417, box 204 x 19 x 2 cm; WP6i r5 fix 3): not a lantern
+                # (SM_SilverbrookTownhouse1's first-floor sill: centre z 417, box 204 x 19 x 2 cm; WP6i r5 fix 3), or a chamber with an
+                # axis >= 60 cm (the SB_LanternGlow sign emblem with its frame on SM_SilverbrookTownhouse2/4, 50 x 3 x 98; WP6i r7-r8): not a lantern
                 continue
-            thin = min(range(2), key=lambda i: size[i])
-            if size[thin] < 5 and max(size) >= 60:   # a flush glow panel (window-sized): light 30 cm in front of it, outward from the mesh bounds centre
-                c[thin] += 30 if c[thin] >= centre[thin] else -30
-            out.append(c)   # a lantern pane (every axis under 60 cm) keeps its cards and light at the glass centre (WP6i r6 fix 1)
+            out.append(c)   # cards and light at the glass centre; every kept building chamber is lantern-sized (WP6i r7 fix 1)
         _GLASS[name] = out
     return _GLASS[name]
 

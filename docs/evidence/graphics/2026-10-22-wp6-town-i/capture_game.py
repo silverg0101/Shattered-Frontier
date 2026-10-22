@@ -63,7 +63,7 @@ add('chimney-smoke-ref', chimney[0], chimney[1], 55)   # smoke hidden: measure_p
 REF = len(views) - 1
 CHIMNEY = REF - 1
 # Night row (lighting-and-atmosphere.md section 3): UE pitch +12 = sun 12 deg below the horizon, the Moon at 0.25 lux, sky light 1.0.
-NIGHT = {'sun_pitch': 12., 'sky': 6.0, 'moon_lux': 5.0}   # review r5: frontage steps median 4.0 at sky 3.0 with a movable sky light; 0.25 lux moon was black
+NIGHT = {'sun_pitch': 12., 'sky': 6.0, 'moon_lux': 5.0}   # r7: steps 8.5, frontage sky 109 (sun side)   # review r5: frontage steps median 4.0 at sky 3.0 with a movable sky light; 0.25 lux moon was black
 MOTION = REF   # the motion set follows the reference frame (smoke shown again) without moving the camera
 
 rng = random.Random(20261022)
