@@ -1,6 +1,6 @@
 # TER-02 — Digging and raising limits, and healing
 
-Status: proposed, 2026-10-22; limits questions answered by the owner the same day (§9), healing questions open (§10). Answers the "Digging limits", "Terrain tools in building mode", "Terrain tool preview + sizes" and "Healing rules" lines in [OWNER-2026-10-22](OWNER-2026-10-22-decisions.md). Applies only if [TER-01](TER-01-mesh-terrain-fit-check.md) ends in a dig-anywhere adoption; otherwise the owner's terrain choice rule drops digging entirely and this packet is moot. Extends [DEC-03](DEC-03-terrain.md)'s T1–T10 order and its healing lifecycle; it changes no storage or codec.
+Status: proposed, 2026-10-22; limits and healing questions both answered by the owner the same day (§9, §10). Conflicts with existing design are listed in §13. Answers the "Digging limits", "Terrain tools in building mode", "Terrain tool preview + sizes" and "Healing rules" lines in [OWNER-2026-10-22](OWNER-2026-10-22-decisions.md). Applies only if [TER-01](TER-01-mesh-terrain-fit-check.md) ends in a dig-anywhere adoption; otherwise the owner's terrain choice rule drops digging entirely and this packet is moot. Extends [DEC-03](DEC-03-terrain.md)'s T1–T10 order and its healing lifecycle; it changes no storage or codec.
 
 Owner's words: "digging into a mountain to make a house, which would require claiming that area. I am ok with that. But digging down for grief holes shouldnt be allowed. digging a small ridge side down, to give room for a house is allowed." And: "healing needs to be defined fully too. if a player's voxel occupies the space, it cant get healed over it."
 
@@ -12,7 +12,8 @@ Owner's words: "digging into a mountain to make a house, which would require cla
 - Outside a claim you may cut or raise at most 2 m, every edit must be walkable out of, and nothing may be dug under or raised over a roof of ground. That allows levelling a pad, cutting a ridge side back, banking a mound, ditches and ramps. It cannot make a pit, a shaft, a tunnel, a trench with vertical walls, or a wall ring around someone.
 - Inside your own claim the claim's vertical band is the limit: basements, tunnels and a house carved into a mountainside are allowed as long as every changed voxel lies inside the parcel and band and clears the existing protections.
 - Nobody digs under anyone's feet, next to a road, or up against someone else's claim or structure.
-- Public edits heal after 7 days; claiming the land adopts them. Healing leaves alone every voxel that a player, structure, block, item, creature or mount occupies, with a 1 m margin (§8).
+- Altering land **costs nothing and yields nothing** (owner): digging gives no material, raising uses none, on open land and in claims alike. Resources come only from harvesting and mining nodes.
+- Public edits heal after 7 days; claiming the land adopts them. Nothing can be placed on open land without a claim, so nothing pins a hole open. Healing leaves alone every voxel that an online player, a dropped item, a creature or a mount occupies, with a 1 m margin; a player who logged out there is moved to the nearest spawn on login (§8).
 
 ## 2. Rules by location (dig and raise)
 
@@ -81,7 +82,7 @@ Dig and Raise share the build-mode palette (CLM-01). The ghost tints **green** w
 | `rate_limited` (budget) | "You have 1,000 m³ of open-land digging and raising at a time. Yours heals over the next N days, or claim it to keep it." |
 | existing `interact_state` reasons | unchanged wording for cities, borders, spawns, protections |
 
-The preview also states "Heals on <date> unless claimed" for open land, "Fill material is not returned when it heals" for a raise, and the volume this edit adds to the player's outstanding budget.
+The preview also states "Heals on <date> unless claimed" for open land and the volume this edit adds to the player's outstanding budget. It never shows a material cost or a yield, because there is none (§8.1).
 
 ## 7. Server enforcement in DEC-03's order
 
@@ -105,7 +106,8 @@ Clipping (amber) is computed client-side for preview only; the server never clip
 
 ### 8.1 What heals
 
-- Only **public, unclaimed** edits: dig, raise, flatten, smooth and paint committed under T4's "unclaimed land" permission. Healing restores each voxel to the shipped base density **and** base material. It yields nothing (no soil, stone or ore), never renews a harvested baseline cell (provenance, DEC-03), and does not return fill material spent on a raise (owner question 4).
+- Only **public, unclaimed** edits: dig, raise, flatten, smooth and paint committed under T4's "unclaimed land" permission. Healing restores each voxel to the shipped base density **and** base material.
+- **No cost, no yield, anywhere.** Owner: "altering land shouldnt cost anything or gain material from". Dig produces no soil, stone or ore; raise consumes no fill; healing returns nothing. This replaces DEC-03's terrain yield and paid-fill accounting (§13): the terrain action carries no stock or yield participant, the yield-provenance fields stay at zero, and the Alpha Starter Kit is not drawn on by terrain. Resource gathering stays with harvesting and mining nodes (GAT-01).
 - **Claimed** land never heals. A legal claim adopts every committed intersecting public edit at the claim transaction (DEC-03), and adopted edits leave the editor's outstanding budget. Claim release or archive restores through the archive-and-safe-restoration workflow using the same §8.3 occupancy rules.
 - Event and GM edits follow their declared policy, never this process.
 
@@ -113,34 +115,34 @@ Clipping (amber) is computed client-side for preview only; the server never clip
 
 - Each edit carries its own deadline: `commit_time + heal_age_days` (7 real days). Overlapping, adjacent or newer edits **do not reset** it; nor does standing on it, re-painting it, or logging out on it. The oldest part of a worked area heals first.
 - The nightly safe-restoration run (realm-local 04:00, inside `heal_window_min`) heals every edit whose deadline has passed, oldest first. An expired edit is dropped from the chunk's op list and the remaining, younger ops replay over the base (World's "replay without expired ops"), so a younger overlapping edit keeps its own shape until its own deadline.
-- **Re-editing a healed spot** is a new edit: new deadline, counted against the budget again, measured against the same original surface. It cannot reach yield that the first edit already harvested.
+- **Re-editing a healed spot** is a new edit: new deadline, counted against the budget again, measured against the same original surface.
 
 ### 8.3 Occupied space is never filled
 
-**Occupants:** player characters online or logged out in place (last authoritative capsule), placed structures and building pieces, placed blocks and props, dropped or placed items, NPCs and creatures, vehicles and mounts. For each, the server takes its collision bounds and grows them by `heal_clearance_m` = 1.0 m in every direction: the **occupant mask**.
+**Occupants:** online player characters, dropped items (until their own despawn timer), NPCs and creatures, vehicles and mounts. Placed structures, pieces, blocks and props are not on the list because they cannot exist on open land (§8.4). Logged-out characters are not on the list either: the run heals normally, and a character whose capsule is inside solid ground on login is moved to the nearest spawn with their items (owner). For each occupant the server takes its collision bounds and grows them by `heal_clearance_m` = 1.0 m in every direction: the **occupant mask**.
 
 The heal of an edit is computed as the base state masked by:
 
 1. **No fill into the mask.** A voxel inside any occupant mask never gains density. The pocket around an occupant stays exactly as the player left it.
-2. **No removal under an occupant.** Healing a raise never removes a voxel in the column beneath an occupant's footprint plus the 1 m margin, down to the base surface. A tent on a mound keeps its mound.
+2. **No removal under an occupant.** Healing a raise never removes a voxel in the column beneath an occupant's footprint plus the 1 m margin, down to the base surface. A mount parked on a mound keeps its mound until it moves.
 3. **No floating, no undercut.** Columns heal bottom-up: a voxel gains density only if the voxel below it is solid after this run; a voxel loses density only if no solid voxel remains above it. If rule 1 or 2 blocks a voxel, every voxel above it in that column stays as it is.
 4. **Walkable edge.** Where healed ground meets a masked pocket, the final surface may not step more than `public_exit_step_m` (1.0 m) per column. Instead of building a wall around the pocket the run widens the untouched zone outward, column by column, until the step rule holds: healing fills less, never more.
 5. **Exit check on the pocket.** The residual pocket (masked columns plus the widening) must pass the §3 exit rule for a character standing in it. If healing around the occupant would leave a well a player can't climb out of, nothing in that edit's footprint within 3 m of the pocket heals this run.
 
-Voxels left unhealed by rules 1–5 remain a **residual edit** with the same identity, already past its deadline. It is retried every night and heals the first night its occupants are gone (a logged-out player comes back and walks away, a dropped item despawns on its own timer, a tent decays). Residual, expired voxels **do not count** against the original editor's outstanding budget, so another player's item cannot pin someone's budget.
+Voxels left unhealed by rules 1–5 remain a **residual edit** with the same identity, already past its deadline. It is retried every night and heals the first night its occupants are gone (the player walks away or logs out, the item despawns, the creature wanders, the mount is ridden off). Nothing an occupant can do holds a residual for longer than its own presence. Residual, expired voxels **do not count** against the original editor's outstanding budget.
 
-Healing never entombs: rule 1 keeps 1 m of air around every character capsule; rule 3 never seals a pocket from above; rule 5 keeps the pocket walkable. A character who logged out in a 2 m hole wakes in the same hole with the same way out.
+Healing never entombs anyone who is present: rule 1 keeps 1 m of air around every online capsule; rule 3 never seals a pocket from above; rule 5 keeps the pocket walkable. A character who logged out in the area and finds solid ground where they stood is moved to the nearest spawn on login, keeping their inventory; the login check is the same capsule-overlap test as T8.
 
 ### 8.4 Ownership
 
-- Permanent structures cannot exist on open land ([Construction] §13); only temporary placeables (campfire, tent, scaffolding, dropped items), each with its own decay timer. A placeable in someone's public hole keeps **only its own footprint plus 1 m** open, for only as long as it exists; the rest of the hole heals on schedule. Nothing placed makes a hole permanent; a claim does (owner question 1).
-- The editor keeps the outstanding budget for an edit until it heals or is adopted; a placer of a block in that hole takes over nothing. Expired residual voxels blocked by someone else's occupant count against nobody.
+- **Anything placed on open land needs a claim** (owner). No structure, piece, block, prop, tent, campfire, scaffold or cache can be placed outside a claim parcel. The rule lives in Construction's placement validation, the Building-rights step that mirrors terrain T4: a placement whose footprint is not inside a parcel where the actor holds the build right rejects `interact_state` with "You need a claim to place this here", and the CLM-01 grid shows it as crimson hatch. Dropping an item is not placement; dropped items keep their own despawn timer.
+- So nothing placed can pin a public hole open, and no structure ever stands in one. Only a claim keeps an edit; the editor keeps its outstanding budget until it heals or is adopted. Expired residual voxels blocked by an occupant count against nobody.
 - When a claim adopts an edit, the claim owns it from then on: the original editor's budget is released and the World provenance records both.
 
 ### 8.5 Player-facing
 
-- **Marker.** In build mode, every public edit shows an earth-coloured hatch tint with "Heals in N days" on hover; within `heal_warn_hours` (24 h) the tint turns orange; a residual edit waiting on an occupant shows a striped tint with "Waiting: something is in the way". Outside build mode nothing is drawn (owner question 3).
-- **Notification.** The commit preview states the healing date. The editor's notification inbox gets one message 24 h before the first of their edits heals ("Your digging near Silverbrook north ridge heals tonight unless you claim it") and one summary after each run ("3 edits healed; 1 is waiting because a tent occupies it"). One message per run, not per edit.
+- **Marker.** In build mode, every public edit shows an earth-coloured hatch tint with "Heals in N days" on hover; within `heal_warn_hours` (24 h) the tint turns orange (owner); a residual edit waiting on an occupant shows a striped tint with "Waiting: someone or something is in the way". Outside build mode nothing is drawn.
+- **Notification.** The commit preview states the healing date. The editor's notification inbox gets one message 24 h before the first of their edits heals ("Your digging near Silverbrook north ridge heals tonight unless you claim it") and one summary after each run ("3 edits healed; 1 is waiting because a player is standing in it"). One message per run, not per edit. A character moved to a spawn on login sees "The ground where you logged out has healed; you were moved to <spawn>".
 - **Preview colours** stay the build palette: green/amber/red for the candidate; hatch/orange/striped for healing age on existing edits.
 
 ### 8.6 Server enforcement
@@ -150,8 +152,8 @@ Healing is not a T1–T10 player edit; it is a world action by `world-service` t
 | Step | Check | Outcome if it fails |
 | --- | --- | --- |
 | H1 | Edit still public: not adopted, no pending claim action or chunk action on its chunks, deadline passed. | Skip (adopted) or defer to next run (pending). |
-| H2 | Build the occupant mask from authoritative positions (characters incl. logged-out, structures, placeables, items, NPCs, mounts); apply §8.3 rules 1–2. | Masked voxels become residual. |
-| H3 | Support: no removal beneath structure anchors or occupant footprints; Construction re-evaluates support for any structure touching the healed columns with the same solver as placement. | Columns that would fail support stay residual. |
+| H2 | Build the occupant mask from authoritative positions (online characters, dropped items, NPCs, mounts; logged-out characters are not masked); apply §8.3 rules 1–2. | Masked voxels become residual. |
+| H3 | Support: no removal beneath occupant footprints; Construction re-evaluates support for any claim structure whose anchor touches healed columns across the parcel edge, with the same solver as placement. | Columns that would fail support stay residual. |
 | H4 | Shape: §8.3 rules 3–5 on the result; protected volumes, routes and watercourses are restored first and never left partial. | Widen the untouched zone or defer the 3 m neighbourhood. |
 | H5 | Prepare: expected heads for every touched chunk under the current zone-owner epoch, 100 m³ and 8-chunk caps per decision (a larger edit heals as several decisions, oldest voxels first), immutable decision and receipt recorded. | Head conflict: revalidate and retry inside the window. |
 | H6 | Apply, install collision/support projection, activate with the completion certificate; update the editor's outstanding budget and provenance (`healed`, or `residual` with reason). | Crash after decision: recovery completes it; never a half-healed chunk. |
@@ -164,12 +166,12 @@ Healing is not a T1–T10 player edit; it is a world action by `world-service` t
 
 Open-land depth **2 m**; levelling a house pad on open land needs **no claim**; buffer **3 m**; unhealed open-land volume per player **1,000 m³** (about 23 m × 23 m × 2 m), dig and raise combined; in your own claim dig to **8 m** below the claim anchor; trapped visitors use **Unstuck**. Dig and Raise are separate building-menu actions with brush sizes and a result preview; raising follows the same limits. The tables above carry these values.
 
-## 10. Owner questions (healing)
+## 10. Owner answers, 2026-10-22 (healing)
 
-1. **Someone places a block, tent or campfire in another player's open-land hole. What stays open?** (a) Only the thing's own footprint plus 1 m, and only while it exists; the rest heals on schedule, and the thing itself decays on its own timer unless the land is claimed. (b) The whole hole stays open until the thing is gone. (c) Anything placed on open land needs a claim, so this can't happen. **Recommend (a):** honours "never heal over it" without letting one plank pin a whole pit forever.
-2. **A player logged out inside a hole or behind a raised bank. What does healing do?** (a) Heal around them with a 1 m margin, but only if they can still walk out of what is left; otherwise wait for them to leave. (b) Always wait until they leave. (c) Heal and move them to the nearest spawn on login. **Recommend (a):** the land comes back without ever trapping anyone.
-3. **How do players see that an edit is about to heal?** (a) A tint in build mode with the days left, turning orange on the last day, plus one inbox note the day before. (b) A marker always visible in the world, even outside build mode. (c) Only the inbox note. **Recommend (a):** clear when it matters, no clutter when walking around.
-4. **Material spent raising open land. What happens when it heals?** (a) It is gone; the preview says so before you commit. (b) It returns to the editor's recovery store. (c) Half returns. **Recommend (a):** raising open land is temporary by design, and returning it would turn open land into free storage.
+1. **Placed objects:** anything placed on open land needs a claim; a tent, block or campfire cannot be placed on unclaimed land, so nothing can pin a public hole open (§8.4).
+2. **Logged-out players:** heal normally, then move the player to the nearest spawn on login (§8.3).
+3. **Warnings:** build-mode tint with days left, orange on the last day, plus an inbox note the day before (§8.5).
+4. **No cost, no yield:** "altering land shouldnt cost anything or gain material from". Digging gives no material and raising consumes none, on open land and in claims alike; resource gathering stays with harvesting and mining nodes (§8.1, §13).
 
 ## 11. Acceptance tests
 
@@ -192,18 +194,35 @@ Limits (TER-D03-10):
 Healing (TER-D03-08 extension):
 
 12. Age: an edit committed at day 0 is untouched on the day-7 run before its commit hour and healed on the first run after 7 × 24 h; a day-3 overlapping edit does not extend it and keeps its own shape after the older one heals.
-13. Restore: healed voxels equal base density and material byte-for-byte; a cell harvested by the edit stays harvested; the editor's budget drops by the healed volume; no item or yield receipt is produced; raise fill is not returned.
+13. Restore and no economy: healed voxels equal base density and material byte-for-byte; the editor's budget drops by the healed volume; no item, stock or yield receipt is produced by the dig, the raise or the heal; a dig and a raise commit with an empty inventory succeed and change no inventory.
 14. Adoption: a claim over a day-5 pad adopts it; day-7 run skips it; the editor's budget is released; releasing the claim later archives and restores with the same occupancy rules.
-15. Occupied by a character: a player logged out in a 2 m hole → the run heals the rest, leaves 1 m of air around the capsule, widens until no step exceeds 1 m, and the pocket passes the exit rule; the residual heals the night after the player walks away. A player logged out at the bottom of a hole whose partial heal would fail the exit rule → the 3 m neighbourhood is deferred whole.
-16. Occupied by a placeable or item: a tent on a mound keeps the mound under its footprint plus 1 m; the rest of the mound heals with a walkable slope; after the tent decays the remainder heals. A dropped item in a pit keeps its 1 m pocket; the residual counts against nobody's budget.
+15. Occupied by a character: a player standing in a 2 m hole at run time → the run heals the rest, leaves 1 m of air around the capsule, widens until no step exceeds 1 m, and the pocket passes the exit rule; the residual heals the night after the player leaves. A player standing where the partial heal would fail the exit rule → the 3 m neighbourhood is deferred whole. A player logged out in the same hole → the run heals it fully; on login the capsule-overlap check moves them to the nearest spawn with their inventory and shows the notice.
+16. Placement on open land: placing a tent, block, campfire or scaffold outside any parcel → `interact_state` "You need a claim to place this here", crimson hatch in the grid, nothing charged; the same placement inside the actor's parcel → accepted. A dropped item in a pit keeps its 1 m pocket until it despawns; the residual counts against nobody's budget.
 17. Occupied by an NPC or mount: a mount parked in a trench keeps its pocket; the surrounding trench heals; no voxel is added inside its bounds plus 1 m.
 18. Never floating, never undercut: healing a raise under which a later dig left a cavity removes the raise only where no solid remains above; healing a dig beside a surviving raised bank never adds a voxel over air.
-19. Support: healing a raise beneath a claim structure's anchor that leaned on the public mound → the columns under the anchor plus 1 m stay residual; Construction re-evaluation reports no instability.
+19. Support: a public mound raised beside a parcel edge (outside the 3 m buffer) that a claim structure's anchor later came to rest on across the boundary → healing leaves the columns under the anchor plus 1 m residual; Construction re-evaluation reports no instability.
 20. Batching and crash: 10,000 expired edits with a 15 min window → oldest first, the run stops at the window, the rest heal the next night, metrics match; a crash after decision on edit N → recovery completes N with the original receipt, N+1 is untouched, no chunk is activated twice.
 21. Player-facing: build-mode tint shows days left, turns orange within 24 h, striped for residual; one inbox note the day before and one summary after the run, regardless of edit count.
 
 ## 12. Not in this packet
 
-No terrain support solver (terrain never collapses; structures still do under Construction §3.4), no auto-generated ramps, no GM or land-owner override of the limits, no siege-time digging (Building's), no dig zones, no public permanent structures.
+No terrain support solver (terrain never collapses; structures still do under Construction §3.4), no auto-generated ramps, no GM or land-owner override of the limits, no siege-time digging (Building's), no dig zones, no placement of any kind on open land, no terrain yield or fill cost.
+
+## 13. Conflicts with existing design
+
+The owner's "no cost, no yield" and "nothing placed on open land" decisions override the following; each named document needs a matching edit in its next revision, and this packet is the binding statement until then.
+
+| Source | Current text | Now |
+| --- | --- | --- |
+| [DEC-03] "Proposed adaptor sequence" step 3, "Lifecycle" and fixtures TER-D03-02/04/08 | Terrain edits prepare "paid stock/yield" under the `cba_` action; "fractional yield provenance" persists through excavation, fill, revert and healing; "renewed yield" and "paid fill" are checked before healing. | No stock or yield participant on a terrain action. Provenance fields stay but are always zero; the "paid fill" and "renewed yield" rechecks become no-ops. Fixture steps that assert a yield or a charge assert zero instead. |
+| World terrain spec, "Durability and material conservation" and the cost tables | "Resource-yielding excavation"; "healing cannot refresh an already harvested baseline cell". | Excavation yields nothing, so there is no harvested baseline to protect. The sentence stays true vacuously; mining nodes own ore. |
+| [Construction] §3.1 | "Terrain removal yields the authored common soil/stone yield once; placed fill consumes matching material, and neither action creates ore nodes." | Terrain removal yields nothing; placed fill consumes nothing. Compact/fill provenance for structure anchors (DEC-03 owner request 2) remains a support question, not a cost question. |
+| [Construction] §13 and §3.1 | "Public digging cannot place permanent unclaimed structures, caches, or automation" and scaffolding as a reclaimable structure imply temporary unclaimed placeables. | No placeable of any kind outside a claim parcel, scaffolding included. Placement validation rejects outside a parcel (§8.4). |
+| CLM-01 grid colours | Crimson hatch marks blocked cells. | Also marks every cell outside the actor's parcels for placement. |
+| GAT-01 growing resource nodes | Unchanged. | Confirmed as the only source of soil, stone and ore. |
+
+Unaffected: DEC-02 staging/certificate, the terrain codec, chunk keys, T1–T10 order, 7-day healing, claim adoption, the 8 m / 12 m outer bounds.
+
+[DEC-03]: DEC-03-terrain.md
 
 [Construction]: ../Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md
