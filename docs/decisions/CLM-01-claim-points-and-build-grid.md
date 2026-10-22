@@ -128,6 +128,65 @@ The build HUD cost panel (reference: "Construction Cost") gains one row under th
 
 **Pick the decal.** `MI_ClaimGrid` under `/Game/Frontier/UI/Build/`, parameters: `StateMask` (R8 64 × 64, nearest sampling), `GridOriginCm` (vector), `CellCm` 100, `LineCm` 3, `MajorEvery` 4, `MajorLineCm` 5, `FadeStartCm` 1600, `FadeEndCm` 2400, `LimitFadeCm` 300, the five colours as vector parameters. Sort order above the ground, `DBuffer Translucent Color` blend so it does not change normals or roughness. The decal exists only while build mode is active. Recipe: `docs/blueprints/building-mode.md`.
 
+### 5.4 Dig and Raise Ground in the build menu
+
+Owner, 2026-10-22: Dig and Raise Ground are two actions in a **Terrain** section of the build catalogue, beside Foundation, Wall, Door and Roof (the v5 `build-mode.png` already shows the Terrain tab), not a held tool. Selecting one shows the TER-02 brush instead of a piece ghost.
+
+- **Same limits for both.** Raising follows exactly the digging limits: 2 m above the original ground on open land (`public_raise_m`), the claim band inside a claim (to `anchor_base_z + band_height_m`, within T7's 12 m), the 3 m buffers, the shared 1,000 m³ open-land budget per player (one counter for cut and fill, 8,000 cells), and 7-day healing of public edits.
+- **Shared grid and preview.** Both actions draw the same claim grid of §5.1 and tint the brush ghost green / amber / red per TER-02 §6: green when the whole brush passes, amber when the server would clip it to the legal depth, height or shape (the tool offers the clipped brush), red with the first failing reason. Blocked grid cells (§3.4) are red for terrain actions too; a terrain action on open land ignores the budget states (it claims nothing), so owned, affordable and limit cells draw at their normal alpha but the ghost tint alone decides validity.
+- **Points.** Terrain actions never grow or shrink a claim. Inside a claim the brush must lie within claimed cells (TER-02 parcel rule); on open land it needs no claim and no points. Claiming later adopts the edits per §3.3.
+- **Cost panel.** The materials rows are replaced by "Volume  36 / 100 m³" (brush changed volume against the 100 m³ per-commit cap) and, on open land, "Open-land budget  620 / 1,000 m³"; both in the have/need style with the crimson underline when over.
+
+**TER-02 wording that needs a one-line update** so that raising is covered explicitly (TER-02 owns these; CLM-01 only lists them):
+
+1. §1 "every cut must be walkable out of": add "and every raised edge must be walkable up to (same 1.0 m step), so a 2 m fill cannot wall off a road or a neighbour".
+2. §3 exit rule: state that it runs on raised columns too (a column whose final surface is above its original surface must connect through steps of at most `public_exit_step_m` to an unchanged column).
+3. §5 `public_outstanding_cells`: default 8,000 (= 1,000 m³ per the owner's answer), and note that cut and fill share it.
+4. §6 reject table: add `raise_too_high` — "Too high for open land. You can raise the ground 2 m above the original here. Claim this land to build higher." and `raise_no_step` — "This would leave a wall you can't climb. Slope one side so it can be walked up."
+5. §2 "Your own claim" row: "To the band ceiling" should name `anchor_base_z + band_height_m` from CLM-01 §3.3.
+
+### 5.5 Terrain brushes and the result preview
+
+Owner, 2026-10-22: the Terrain section "needs a visual guide on how it's going to affect the ground too, with different size tools to use."
+
+**Brush sizes.** Four sizes on the 0.5 m voxel grid, each a round or square footprint, for the three Terrain actions Dig, Raise Ground and Level (World's dig / raise / flatten kinds; Level sets every column in the brush to the height under the cursor at the first click). Depth per stroke is the action's step; a stroke never exceeds the band or open-land limit, and the server clips it (amber) rather than refusing when part of it is legal.
+
+| Tile | Shape | Size (footprint) | Depth or height per stroke | Full 2 m cut volume | Use |
+| --- | --- | ---: | ---: | ---: | --- |
+| Precise | square | 0.5 m (one voxel column) | 0.5 m | 0.1 m³ | Trim a step, fix a seam |
+| Small | round or square | 2 m across (`small_m` = 1.0 radius) | 0.5 m | 6 m³ | Ditch, post hole, path edge |
+| Medium | round or square | 4 m across (`medium_m` = 2.0 radius) | 1.0 m | 25 m³ | House pad, ramp |
+| Large | round or square | 7 m across (`large_m` = 3.5 radius) | 1.0 m | 77 m³ | Whole pad, terrace; stays under the 100 m³ per-commit cap at a full 2 m cut |
+
+| Key (`tune.world.brush.*`) | Unit | Default | Safe bounds | Step | Effective |
+| --- | ---: | ---: | ---: | ---: | --- |
+| `precise_m` / `small_m` / `medium_m` / `large_m` (radius; square uses it as half-side) | m | 0.25 / 1.0 / 2.0 / 3.5 | 0.25–5.0 (World's 5 m ceiling), non-decreasing | 0.25 | Next brush selection |
+| `step_m` precise / small / medium / large | m | 0.5 / 0.5 / 1.0 / 1.0 | 0.5–2.0 | 0.5 | Next stroke |
+| `preview_hz` | Hz | 20 | 5–60 | 5 | Client only |
+
+World's 100 m³ per-commit cap, 0.5–5 m brush bounds, rate keys and TER-02's limits are unchanged and bind every size; a size whose stroke would exceed 100 m³ on the current ground is offered clipped, as Construction §13 already says.
+
+**Switching sizes.** `[` and `]` step the size down and up; `Ctrl` + mouse wheel does the same (the plain wheel keeps its camera role); `T` toggles round/square; `1`–`4` while the Terrain section is open pick a tile directly. The Terrain section shows the three actions as 100 px catalogue tiles (Dig, Raise Ground, Level) and, below them, four 72 px size tiles labelled with their metre size ("0.5 m", "2 m", "4 m", "7 m") and a two-tab round/square toggle; the selected action and size tiles carry the brass edge of `ui-hud.md` §3, and the key caps `[` `]` sit at the row ends in the prompt-bar style.
+
+**Result preview before commit.** While a Terrain action is selected the player sees, before clicking:
+
+1. **Surface ghost.** A translucent ghost of the final ground surface over the brush footprint plus a one-voxel ring (at most 16 × 16 columns for Large), drawn as a moss `#688267` surface at 30% with the same 0.5 m sub-grid lines as the claim grid at 45%; for Dig the ghost sits below the current ground and the removed volume shows as a 3 cm ivory wire box per column so the hole reads through the turf; for Raise and Level the ghost rises above the ground. Columns the server would clip (depth, height, 100 m³, exit step) draw amber `#B69A55`; columns it would refuse (buffers, under a character, protected, outside the claim parcel or band) draw crimson `#A34842` with the §5.1 hatch. The ghost tint of TER-02 §6 (green / amber / red) applies to the whole brush outline; the per-column colours say where.
+2. **Cut/fill readout** in the cost panel, replacing the material rows: "Cut 36 m³ · Fill 0 m³", "This stroke 36 / 100 m³", and on open land "Open-land budget 620 / 1,000 m³" (inside a claim: "Claim terrain 1,240 / 100,000 cells"), all in the have/need style with the crimson underline when over.
+3. **Depth/height gauge.** A vertical 24 × 120 px gauge at the panel's right edge, bar frame from the kit, filled moss up to the stroke's deepest cut or highest fill against the active limit: 2.0 m on open land, the band distance inside a claim ("1.5 / 2.0 m"); the part past the limit fills amber and the label turns amber, matching the clipped columns.
+4. **Status line.** "Valid dig", "Clipped to 2 m" or the first TER-02 reject message, under the gauge.
+
+Everything is a client preview from the replicated voxel density and the zone masks; the server's prepare step (DEC-03 step 2) recomputes it and a mismatch returns the clipped or refused receipt, which refreshes the ghost.
+
+**Implementation.** Three options for the surface ghost:
+
+| Option | Cost | Fit |
+| --- | --- | --- |
+| **Dynamic mesh ghost**: one `UDynamicMeshComponent` on the controller, vertices on the 0.5 m columns of the footprint + ring (≤ 17 × 17 = 289 vertices, 512 triangles), heights from the client's voxel replica (or a line trace per column until the voxel replica ships), rebuilt at `preview_hz` only when the cursor cell, size, shape or action changes; per-vertex colour carries the state | ~0.05–0.1 ms rebuild, 289 traces at most 20 times a second on the trace fallback; one translucent draw | Shows a real new surface above or below the ground, which a decal cannot; works on mesh, Landscape and voxel ground |
+| Decal | as §5.3 | Can only paint the footprint on the existing surface; no new height, no hole |
+| Material on a pre-made preview mesh (one static disc/box per size) | Cheapest draw | Cannot follow a slope or show a clipped shape; wrong on every uneven pad |
+
+**Pick the dynamic mesh ghost**, with `MI_TerrainGhost` (translucent, vertex-colour driven, the §5.3 line parameters, depth-test on so the ground occludes the underside of a dig ghost except for the wire boxes, which are a second `MI_TerrainGhostWire` section with depth test off). The claim grid decal of §5.3 stays underneath. Recipe: `docs/blueprints/building-mode.md` §C; the concept for the Fable review is generated by Codex from the prompt there.
+
 ## 6. Server authority and durable owner
 
 - **Durable owner.** ClaimTerritory keeps claims; its record changes from centre + side to `cells` (a sparse set of 1 m cell keys with pinned band and price), `anchor_base_z`, `band`, `points_allocated`, plus the per-character `points_total` and `points_allocated` sums. `Reserve` becomes `Grow(op, claimId | new, cells[], expectedRevision)` and `Shrink`. Settings move from `ClaimSettings` to the `tune.building.claim.*` snapshot. `Check`, `Grant`, `Revoke`, `Pay`, `Recover` and the lifecycle are unchanged.
@@ -152,6 +211,7 @@ The build HUD cost panel (reference: "Construction Cost") gains one row under th
 9. **Empty archive.** A claim with every piece removed archives after 24 h and its points return; placing again inside 24 h keeps it.
 10. **Levelled pad adoption.** A 2 m public cut of 200 m³ is levelled without a claim; a foundation on it claims the pad cells at the band price with no extra points, the 200 m³ leaves the player's 1,000 m³ public allowance and the edits leave the healing list; removing the foundation puts them back with a fresh 7-day deadline.
 11. **Grid visual.** Fresh Fable review of `build-grid-<view>-compare.png` against the reference and `build-mode.png` per `docs/visual-review.md`: owned ivory, affordable moss, limit fade over 3 m, crimson hatch by the road, no grid past the limit.
+12. **Terrain preview.** Captures per `docs/blueprints/building-mode.md` §C: each brush size on flat ground, the Medium brush on a slope, at a road buffer and at the claim edge; the ghost, readout and gauge match the Codex concept and the preview equals the server result (cut volume, clipped columns, refused columns) within one voxel.
 
 ## 8. Jobs, in order
 
@@ -165,6 +225,7 @@ The build HUD cost panel (reference: "Construction Cost") gains one row under th
 | J6 TER-02 hook | S | `anchor_base_z`, band height and footprint cells feed TER-02's parcel/band checks |
 | J7 Two-client runner | M | `tools/Test-ClaimGrid.ps1` on owned PostgreSQL covering tests 2–9 |
 | J8 Dependency map, Building and Territory v1.1 note | S | Record §2's changes in the design doc's §2.1 and the map |
+| J9 Terrain section and result preview | M | Dig / Raise Ground / Level tiles and size tiles in the catalogue, `[`/`]`/`Ctrl`+wheel/`T` input, `UDynamicMeshComponent` ghost with `MI_TerrainGhost`, cut/fill readout, depth gauge, Codex concept and Fable review (test 12); needs TER-01/DEC-03 digging to exist on the server |
 
 ## Owner questions
 

@@ -1,6 +1,6 @@
 # Building-mode claim grid blueprint
 
-Scope: the ground grid that build mode (B) projects around the player to show owned, affordable, limit, blocked and out-of-band claim cells. Spec and states: [CLM-01](../decisions/CLM-01-claim-points-and-build-grid.md) §5. Concepts: `docs/Game-Design/concept-art/UI/building-claim-grid-reference.webp` (owner reference) and `docs/Game-Design/concept-art/UI/v5/build-mode.png`. Shared rules: [README.md](README.md); HUD panel rows: [ui-hud.md](ui-hud.md).
+Scope: the ground grid that build mode (B) projects around the player to show owned, affordable, limit, blocked and out-of-band claim cells, and the Terrain section (Dig / Raise Ground / Level) with its brush sizes and result preview. Spec and states: [CLM-01](../decisions/CLM-01-claim-points-and-build-grid.md) §5. Concepts: `docs/Game-Design/concept-art/UI/building-claim-grid-reference.webp` (owner reference) and `docs/Game-Design/concept-art/UI/v5/build-mode.png`. Shared rules: [README.md](README.md); HUD panel rows: [ui-hud.md](ui-hud.md).
 
 ## A. Build the grid (in order)
 | # | Step | Command / value | Done when |
@@ -22,10 +22,24 @@ Scope: the ground grid that build mode (B) projects around the player to show ow
 | Blocked | never colour alone: hatch plus the reason in the status line | colour-blind rule 3 of `ui-hud.md` |
 | Authority | client mask is a preview; a refused placement refreshes it from the server reply | the grid never disagrees with the server for more than one round trip |
 
-## C. Known failure -> rule
+## C. Terrain section: brushes and the result preview (CLM-01 §5.4–5.5)
+| # | Step | Command / value | Done when |
+|---|---|---|---|
+| 1 | Concept (Codex) | `docs/Game-Design/concept-art/UI/terrain-brush/prompt.txt`: "Generate one image with your image generation tool: third-person medieval building mode, 1672x941, same scene, camera and HUD as docs/Game-Design/concept-art/UI/v5/build-mode.png with its left Build Catalogue panel open on a Terrain tab showing three tiles Dig, Raise Ground, Level and under them four size tiles labelled 0.5 m, 2 m, 4 m, 7 m with the 4 m tile selected by a thin brass edge; on the ground in front of the player a faint ivory 1 m grid and, where the cursor is, a round 4 m translucent moss-green ghost of a 1 m deep pit sitting below the turf with thin ivory wire boxes marking the removed columns, two columns on the road side hatched red, one column on the far side amber; bottom-right a dark slate cost panel with brass frame reading Cut 25 m³ · Fill 0 m³, This stroke 25 / 100 m³, Open-land budget 620 / 1,000 m³, and a vertical gauge beside it labelled 1.0 / 2.0 m; status line Valid dig. Save it as terrain-brush.png in the current directory." Run per README routing | `terrain-brush.png` approved as the concept |
+| 2 | Input | `[` / `]` size down/up, `Ctrl`+wheel same, `T` round/square, `1`–`4` tiles; sizes from `tune.world.brush.*` (0.25 / 1.0 / 2.0 / 3.5 m radius; square = half-side) | size label changes in the panel on every key |
+| 3 | Catalogue | Terrain section tiles Dig / Raise Ground / Level (100 px, `slot_catalogue_*`), four 72 px size tiles with the metre label, round/square as two `tab_*`; selected = brass edge; `[` `]` key caps at the size row ends | `build-terrain-live.png` matches the concept crop |
+| 4 | Ghost | `UDynamicMeshComponent` on the controller: vertices on the 0.5 m columns of footprint + 1 ring (≤ 17 × 17), heights from the voxel replica (line trace per column until it ships), per-vertex colour = state (moss pass, amber clipped, crimson refused), rebuilt only when cursor cell, size, shape or action changes and at most `preview_hz` 20; `MI_TerrainGhost` translucent vertex-colour, depth test on; second section `MI_TerrainGhostWire` 3 cm ivory boxes per removed column, depth test off | ghost moves with the cursor; no rebuild while idle (stat check) |
+| 5 | Panel | cost panel swaps material rows for "Cut N m³ · Fill N m³", "This stroke N / 100 m³", "Open-land budget N / 1,000 m³" (or "Claim terrain N / 100,000 cells"), 24 × 120 px gauge (kit bar frame, moss fill, amber over-limit) labelled "d / limit m", status line "Valid dig" / "Clipped to 2 m" / TER-02 message | all values come from the same preview pass as the ghost |
+| 6 | Capture | `ui-hud.md` §4 protocol: `terrain-flat-{precise,small,medium,large}` on the river-trail plot, `terrain-slope-medium` on the bank, `terrain-road-medium` 3 m from the trail, `terrain-claimedge-medium` on the plot's boundary; `make_pairs.py` with `terrain-brush.png` left | seven `*-compare.png` in `docs/evidence/ui-v5/terrain-brush/` |
+| 7 | Review | fresh Fable with `docs/visual-review.md`; also assert the preview's cut volume and clipped/refused columns equal the server receipt within one voxel (`tools/Test-ClaimGrid.ps1`) | `REVIEW.md` PASS and the equality check logged |
+
+## D. Known failure -> rule
 | Failure | Rule |
 |---|---|
 | Grid drawn as a procedural mesh or line batch | one DBuffer decal and one material (CLM-01 §5.3) |
 | Texture recreated per change, or mask updated per frame | region upload on change only; snap the origin to whole metres |
 | Decal survives leaving build mode | lifetime bound to `SetBuildMode` |
 | Red cells without a reason | every blocked cell has a hatch and the status line names the reason |
+| Terrain ghost as a decal or a fixed disc mesh | dynamic mesh from the 0.5 m columns (CLM-01 §5.5); a decal cannot show a new height |
+| Ghost rebuilt every frame | rebuild on cursor-cell/size/shape/action change only, capped at `preview_hz` |
+| Readout computed separately from the ghost | one preview pass feeds ghost, readout, gauge and status |
