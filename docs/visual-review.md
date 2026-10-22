@@ -2,6 +2,8 @@
 
 Every visual change (UI screens, kit art, world and terrain, foliage, props, VFX, lighting, characters) is done only after an independent review passes. The builder never grades its own work.
 
+Before building, load the blueprint for the asset kind from [docs/blueprints/README.md](blueprints/README.md): pipeline steps, exact values, gates and the known-failure rules per category.
+
 ## Steps
 
 1. **Capture in-engine** at a 1920x1080 client (`-game`, timed shots; no screen-capture prompts to the owner). Use the same view as the concept.
