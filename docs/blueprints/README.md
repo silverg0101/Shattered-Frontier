@@ -17,8 +17,8 @@ One doc per asset kind. **Load only the doc for your asset**, plus this page. Ea
 
 ### Routing
 1. **Sonnet builds** (editor passes, Blender, materials, scripts, C++ widgets).
-2. **Codex does image generation only**: concept sheets, textures, masks, UI PNGs. Working call: `cd <empty out dir> && timeout 600 codex exec --skip-git-repo-check -s workspace-write "Generate one image with your image generation tool: <prompt>. Save it as <name>.png in the current directory."` Codex may also run already-committed scripts in the background; it never makes judgement calls on art.
-3. **Fable judges**: a fresh `Agent` on model `fable` with no prior context, given the `*-compare.png` pairs, the concept paths and the brief in [docs/visual-review.md](../visual-review.md). The builder never grades its own work and implements only the reviewer's numbered fix list.
+2. **Codex does image generation only**: concept sheets, textures, masks, UI PNGs. Write the prompt to `prompt.txt` (start with "Generate one image with your image generation tool:" and end with "Save it as <name>.png in the current directory.") and run it from an empty or package `concept/` folder: `codex exec --skip-git-repo-check -s workspace-write -o codex-last-message.txt - < prompt.txt` (stdin redirect; the `cat prompt.txt | codex exec ... -` pipe is refused by the command guard; about 20 k tokens and 1-2 min per image). Codex stores every image under `~/.codex/generated_images/` and copies it into the cwd when the prompt says so; if the file is missing, copy the newest PNG from that folder (`Get-ChildItem ~/.codex/generated_images -Recurse -Filter *.png | Sort-Object LastWriteTime | Select-Object -Last 1 | Copy-Item -Destination .\<name>.png`). Commit `prompt.txt` and `codex-last-message.txt` beside the image. Codex may also run already-committed scripts in the background; it never makes judgement calls on art.
+3. **Fable judges, and the builder spawns the judge**: after every capture or render batch the builder itself calls the `Agent` tool (`subagent_type` general-purpose, `model: fable`, no prior context) with the brief in [docs/visual-review.md](../visual-review.md), the `*-compare.png` or render paths, the concept paths, the spec and the evidence folder, and asks for `REVIEW.md` there. The builder never grades its own work, never writes a verdict in its README, and implements only the reviewer's numbered fix list. Owner sign-off comes after the reviewer's PASS, never instead of it.
 4. **A failed Fable check goes to Opus** for the next pass; the Opus pass is re-judged by a fresh Fable reviewer.
 5. One active Claude task at a time; everything scriptable goes to Codex.
 
@@ -43,10 +43,21 @@ One doc per asset kind. **Load only the doc for your asset**, plus this page. Ea
 | House details | `py -3 tools/Run-InEditor.py <evidence>/check_details.py` | `SILL_PLANTERS 140 expected 140 GROUP_DETAIL_OVERLAPS 0 []` |
 | Frame time | `perf_bookmark_game.py <view>` (docstring has the launch line) | `perf-<view>.json` p95 <= 16.7 ms, median <= 13 ms at 1440p Standard |
 | Visual | fresh Fable review of the pairs | `REVIEW.md` with every view PASS |
+The counts above are the whole-town values; a single building in a dev map uses the per-doc values (for example [buildings.md](buildings.md) §6: `FOUNDATION_CHECK 1 failures 0 ...`).
+
+### Worktrees (a feature session in its own checkout)
+1. Sync first: in the worktree `git fetch origin && git merge --ff-only origin/main` (worktrees branch from a HEAD that may lack later config such as the SM6 `DefaultEngine.ini`; never autostash, never reset).
+2. `pwsh tools/Link-WorktreeDeps.ps1` once: junctions `Artifacts/ThirdParty` from the main checkout and gives this worktree's editor its own MCP port (written to `GameClient/Saved/Config/WindowsEditor/EditorPerProjectUserSettings.ini` and this checkout's `.mcp.json`, skip-worktree); restart the Claude session so `.mcp.json` is re-read.
+3. Build (no editor of this checkout open): `& 'C:\Program Files\Epic Games\UE_5.8\Engine\Build\BatchFiles\Build.bat' ShatteredFrontierEditor Win64 Development "-Project=$PWD\GameClient\ShatteredFrontier.uproject" -WaitMutex -NoHotReloadFromIDE` -> `Result: Succeeded`.
+4. Launch this checkout's editor yourself: `$p = Start-Process 'C:\Program Files\Epic Games\UE_5.8\Engine\Binaries\Win64\UnrealEditor.exe' -ArgumentList "`"$PWD\GameClient\ShatteredFrontier.uproject`"" -PassThru`; record `$p.Id`; stop only that PID. `tools/Run-InEditor.py` talks only to the editor opened from its own checkout (`project_root` match, commit `b123aaf`): another checkout's editor is ignored, and a `-game` run is skipped.
+5. Work in a dev map under `/Game/Frontier/Maps/Dev/<Feature>/`; never edit the Silverbrook map or shared art from a worktree. Wiring into Silverbrook happens later in the main editor lane.
+
+### Assets: shared side effects of an import
+`import_silverbrook.py` rebuilds and resaves `M_SB_Scan`, `M_SB_Solid`, the shared `T_SB_*` textures and **every** `MI_SB_*` on each run (~49 assets go `M` after importing one package). Before committing: `git status --short GameClient/Content/Frontier/Environment/Greenlands/Silverbrook/`; revert everything that is not the new package's own files (`Meshes/SM_Silverbrook<Name>*`, `Materials/MI_SB_<Name>_*`, new `Textures/T_SB_<scan>_*`) with `git checkout -- <paths>`; never commit a shared `MI_SB_*`, `M_SB_*` or `T_SB_*` change from a package import. The same applies to `import_nature.py` (`M_GN_*`, `MI_GN_*`) and `Import-HudKit.py` (`DA_HudKit`, `T_Kit_*`): commit only what your task changed on purpose.
 
 ### Engine and repo rules
-- Editor scripts run in the open editor through `py -3 tools/Run-InEditor.py <script> [args]` (needs Project Settings > Plugins > Python > Enable Remote Execution). With the editor open, never run headless commandlets that rewrite maps or assets. Blender scripts run headless: `"C:/Program Files/Blender Foundation/Blender 5.1/blender.exe" -b --factory-startup -P <build>.py`.
-- Serialize the editor and build lane: one editor session at a time; close it before `/build-editor` or use Live Coding. Close it before `-game` captures.
+- Editor scripts run in the open editor through `py -3 tools/Run-InEditor.py <script> [args]` (needs Project Settings > Plugins > Python > Enable Remote Execution). With the editor open, never run headless commandlets that rewrite maps or assets. Blender scripts run headless from the package folder in PowerShell: `& 'C:\Program Files\Blender Foundation\Blender 5.1\blender.exe' -b --factory-startup -P build_<x>.py` (a Bash call with a quoted absolute path is refused by the command guard).
+- Serialize the editor and build lane: one editor session per checkout; close it before `/build-editor` (the Build.bat line above) or use Live Coding. Close it before `-game` captures.
 - Kill only your own PIDs (`Start-Process -PassThru`, `Stop-Process -Id`), never by process name.
 - Write only under `/Game/Frontier/`. Megascans and Fab content is licensed, git-ignored and read-only; nothing committed may reference it. Sources are Poly Haven CC0 (hash-verified via `acquire_sources.py` / `acquire_materials.py`) or Codex-generated.
 - Every tunable is typed `{value, min, max, unit}` JSON with shipped defaults; scripts refuse out-of-bounds values. No console-only overrides.
@@ -61,11 +72,11 @@ git read-tree $base
 git add <your files>
 c=$(git commit-tree $(git write-tree) -p $base -m "<message>
 
-Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>")
+Co-Authored-By: <your session's attribution line>")
 git update-ref HEAD $c $base
 git push
 ```
-Never touch the shared `.git/index`, never autostash, never reset. For files other sessions also edit (`docs/dependency-map.md`), build the blob from HEAD plus your lines and keep LF endings.
+The trailer is **your own model's line** as given in your session's attribution reminder (for example `Co-Authored-By: Claude Haiku 5.5 <noreply@anthropic.com>`), never another model's. Never touch the shared `.git/index`, never autostash, never reset. For files other sessions also edit (`docs/dependency-map.md`), build the blob from HEAD plus your lines and keep LF endings. In a worktree, use its own branch and a normal `git add`/`git commit` with the same trailer.
 
 ### Done means
 A pass is done only when the fresh reviewer's `REVIEW.md` has no FAIL in the pass's domain and every gate above printed its pass line. Report anything else as not done, with the open fix items.
