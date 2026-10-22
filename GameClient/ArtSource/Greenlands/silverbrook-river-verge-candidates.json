@@ -1,0 +1,116 @@
+{
+ "_about": "Gameplay candidates (harvestable trees and stone) from dress_zone.py; produced but not used yet (pipeline stage 3).",
+ "version": "river_verge-1019-1-591922d0b4",
+ "candidates": [
+  {
+   "id": "f36a4b605d703e77",
+   "role": "boulder_large_moss",
+   "resource": "stone",
+   "at": [
+    280.87,
+    435.97,
+    7.02
+   ]
+  },
+  {
+   "id": "0bf73ee33e57f582",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    286.97,
+    278.37,
+    15.85
+   ]
+  },
+  {
+   "id": "3ac47344a1734cf2",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    288.76,
+    275.56,
+    16.24
+   ]
+  },
+  {
+   "id": "e73c6c359ce85e81",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    289.39,
+    280.36,
+    16.14
+   ]
+  },
+  {
+   "id": "48d73e73d56b5eaf",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    240.83,
+    468.08,
+    2.84
+   ]
+  },
+  {
+   "id": "52beb316910db197",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    314.77,
+    455.09,
+    16.19
+   ]
+  },
+  {
+   "id": "e8a1c2dd5549c127",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    -144.45,
+    162.63,
+    15.38
+   ]
+  },
+  {
+   "id": "7acafca2eaf470ab",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    -141.79,
+    163.67,
+    15.32
+   ]
+  },
+  {
+   "id": "b9eb11b671a05814",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    -142.13,
+    161.0,
+    15.33
+   ]
+  },
+  {
+   "id": "3021673d16f78575",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    237.95,
+    486.99,
+    10.1
+   ]
+  },
+  {
+   "id": "1c56155a3a229d09",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    235.36,
+    489.51,
+    10.25
+   ]
+  }
+ ]
+}

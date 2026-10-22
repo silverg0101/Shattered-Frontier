@@ -121,7 +121,7 @@ def build(cfg=None):
     if cfg is None:
         raw = json.loads(CFG.read_text(encoding='utf-8'))
         cfg = {k: v['value'] for k, v in raw.items() if not k.startswith('_')}
-    for name in ('T_LampFlame', 'T_LampSmoke', 'T_LampGlow'):
+    for name in ('T_LampFlame', 'T_LampSmoke', 'T_LampGlow', 'T_ChimneySmoke'):
         _texture(name)
     color = u.LinearColor(*cfg['flame_colour'], 1)
 
@@ -147,10 +147,24 @@ def build(cfg=None):
             u.MaterialProperty.MP_EMISSIVE_COLOR); _save(halo)
 
     smoke = _material('M_LampSmoke', blend=u.BlendMode.BLEND_TRANSLUCENT)
-    image = _sample(smoke, 'T_LampSmoke', pan=-.018)
-    _output(_node(smoke, u.MaterialExpressionConstant3Vector, constant=u.LinearColor(.31, .30, .27, 1)),
-            u.MaterialProperty.MP_EMISSIVE_COLOR)
-    _output(_mul(smoke, _alpha(smoke, image), _constant(smoke, cfg['smoke_opacity'])), u.MaterialProperty.MP_OPACITY)
+    # Parameters default to the lamp wisp; MI_SB_ChimneySmoke (silverbrook_props.py) overrides them for chimney plumes:
+    # SmokeTex (T_ChimneySmoke, make_chimney_smoke.py), PanV (rise speed), Tint, Opacity, EdgeFade (fade the card's ends).
+    image = _node(smoke, u.MaterialExpressionTextureSampleParameter2D, parameter_name='SmokeTex', texture=u.load_asset(DEST + '/T_LampSmoke'))
+    uv = _node(smoke, u.MaterialExpressionTextureCoordinate)
+    pan_v = _node(smoke, u.MaterialExpressionScalarParameter, parameter_name='PanV', default_value=-.018)
+    speed = _node(smoke, u.MaterialExpressionAppendVector)
+    _link(_constant(smoke, .012), speed, 'A'); _link(pan_v, speed, 'B')
+    panner = _node(smoke, u.MaterialExpressionPanner)
+    _link(uv, panner, 'Coordinate'); _link(speed, panner, 'Speed'); _link(panner, image, 'UVs')
+    tint = _node(smoke, u.MaterialExpressionVectorParameter, parameter_name='Tint', default_value=u.LinearColor(.31, .30, .27, 1))
+    _output(tint, u.MaterialProperty.MP_EMISSIVE_COLOR)
+    opacity = _node(smoke, u.MaterialExpressionScalarParameter, parameter_name='Opacity', default_value=cfg['smoke_opacity'])
+    v = _node(smoke, u.MaterialExpressionComponentMask, r=False, g=True, b=False, a=False); _link(uv, v, '')
+    ends = _node(smoke, u.MaterialExpressionSine, period=2.0); _link(v, ends, '')   # 0 at both ends of the card, 1 mid-way
+    fade = _node(smoke, u.MaterialExpressionLinearInterpolate)
+    _link(_constant(smoke, 1), fade, 'A'); _link(ends, fade, 'B')
+    _link(_node(smoke, u.MaterialExpressionScalarParameter, parameter_name='EdgeFade', default_value=0.), fade, 'Alpha')
+    _output(_mul(smoke, _mul(smoke, _alpha(smoke, image), opacity), fade), u.MaterialProperty.MP_OPACITY)
     _save(smoke)
 
     firefly = _material('M_LampFirefly', blend=u.BlendMode.BLEND_ADDITIVE)

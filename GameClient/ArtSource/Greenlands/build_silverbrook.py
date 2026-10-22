@@ -160,14 +160,21 @@ def nearest_water(p):
     return best[1], best[2]
 
 
+_last_mesh = {}  # kind -> mesh of the previously queued lot
+
+
 def model(label, kind, x, y, yaw, folder, z=None):
     """Queue a delivered building mesh, chosen by a stable hash of the label. `yaw` turns the front toward -Y; the
     Blender packages face -Y, which the FBX import flips to +Y, so the actor turns a further 180 degrees.
     The terrain is levelled under it (Heightfield foundations); where a 5 m grid can't hold it level, the building
     stands on the highest ground under its footprint and a stone plinth fills down to below the lowest.
     z: an absolute origin height (the wharf and docks stand at bank level over the water, with no plinth)."""
+    pool = VARIANTS[kind]; i = zlib.crc32(label.encode()) % len(pool)
+    if len(pool) > 1 and pool[i] == _last_mesh.get(kind):  # adjacent lots (queued in order) never draw the same package
+        i = (i + 1) % len(pool)
+    mesh = _last_mesh[kind] = pool[i]
+
     def spawn(yaw=yaw + 180):
-        mesh = VARIANTS[kind][zlib.crc32(label.encode()) % len(VARIANTS[kind])]
         b = mesh.get_bounding_box()
         w, d = (b.max.x - b.min.x) / 100, (b.max.y - b.min.y) / 100
         ox, oy = (b.max.x + b.min.x) / 200, (b.max.y + b.min.y) / 200
@@ -738,7 +745,7 @@ ROAD_RAMP = 2 * HF.step  # m over which the road field falls from 1 to 0, centre
 
 
 STREET_COBBLE_EXTRA_M = 2.0  # cobble runs this far past the nominal street edge (GFX-01 WP6b: grass only at the street margins)
-STREET_EARTH_EXTRA_M = 4.5   # packed earth (B channel) runs this far; paint_street_edges.py repaints an open map to the same fields
+STREET_EARTH_EXTRA_M = 8.0   # packed earth (B channel) runs this far; paint_street_edges.py repaints an open map to the same fields
 
 
 def road_field(tier_filter, extra=0.0):

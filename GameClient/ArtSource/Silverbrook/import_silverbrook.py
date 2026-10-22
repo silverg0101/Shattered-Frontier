@@ -6,6 +6,7 @@ One shared library under /Game/Frontier/Environment/Greenlands/Silverbrook: the 
 textures are imported once; M_SB_Scan (weathering from vertex colour R, lichen from G on UV1 =
 WorldUV, Nanite tessellation displacement from the scan's height map; needs r.Nanite.AllowTessellation=1) and M_SB_Solid are the masters; each palette material is an MI_ instance. Each package
 becomes one Nanite static mesh, SM_<package's unreal_mesh>, with convex simple collision.
+Manifest rows with an `image` (RGBA PNG in the package folder) use M_SB_Card (masked, two-sided); optional `variants` add MI_<name>_<Suffix>.
 No level is touched; the town builder places the meshes.
 """
 import unreal as u,json,math,sys
@@ -100,12 +101,27 @@ def solid_master():
     out(c,'',u.MaterialProperty.MP_BASE_COLOR);out(r,'',u.MaterialProperty.MP_ROUGHNESS);out(me,'',u.MaterialProperty.MP_METALLIC);out(em,'',u.MaterialProperty.MP_EMISSIVE_COLOR)
     mel.recompile_material(m);eal.save_loaded_asset(m);return m
 
-masters=dict(scan=scan_master(),solid=solid_master());instances={}
-def instance(row):
+def card_texture(png):
+    """RGBA PNG shipped in a package folder (alpha-card atlas, sign-board faces) -> /Textures/T_SB_<stem>; re-imported each run so a rebuilt PNG wins."""
+    name='T_SB_'+png.stem.replace('-','_');task=u.AssetImportTask();task.filename=str(png);task.destination_path=LIB+'/Textures';task.destination_name=name;task.automated=True;task.save=True;task.replace_existing=True
+    tools.import_asset_tasks([task]);t=u.load_asset(f'{LIB}/Textures/{name}');assert t,png;t.set_editor_property('srgb',True);eal.save_loaded_asset(t);return t
+
+def card_master():
+    """Masked, two-sided texture material for manifest rows with an `image` (alpha cards, painted boards): RGBA PNG in parameter Atlas."""
+    m=material('M_SB_Card');a=node(m,u.MaterialExpressionTextureSampleParameter2D,-600,0,parameter_name='Atlas',texture=texture('stone_wall_04','Diffuse'))
+    r=node(m,u.MaterialExpressionScalarParameter,-600,250,parameter_name='Roughness',default_value=.8)
+    out(a,'RGB',u.MaterialProperty.MP_BASE_COLOR);out(a,'A',u.MaterialProperty.MP_OPACITY_MASK);out(r,'',u.MaterialProperty.MP_ROUGHNESS)
+    m.set_editor_property('blend_mode',u.BlendMode.BLEND_MASKED);m.set_editor_property('two_sided',True);m.set_editor_property('opacity_mask_clip_value',.5)
+    mel.recompile_material(m);eal.save_loaded_asset(m);return m
+
+masters=dict(scan=scan_master(),solid=solid_master(),card=card_master() if any('image' in r for m in manifests.values() for r in m['materials']) else None);instances={}
+def instance(row,src=None):
     name='MI_'+row['name'];path=f'{LIB}/Materials/{name}'
     mi=u.load_asset(path) if eal.does_asset_exist(path) else tools.create_asset(name,LIB+'/Materials',u.MaterialInstanceConstant,u.MaterialInstanceConstantFactoryNew())
     LC=lambda v:u.LinearColor(*v,1)
-    if 'scan' in row:
+    if 'image' in row:
+        mel.set_material_instance_parent(mi,masters['card']);mel.set_material_instance_texture_parameter_value(mi,'Atlas',card_texture(src/row['image']));mel.set_material_instance_scalar_parameter_value(mi,'Roughness',row['roughness'])
+    elif 'scan' in row:
         mel.set_material_instance_parent(mi,masters['scan'])
         for p,ch in (('Diffuse','Diffuse'),('Roughness','Rough'),('Normal','nor_gl'),('Height','Displacement')):mel.set_material_instance_texture_parameter_value(mi,p,texture(row['scan'],ch))
         mel.set_material_instance_vector_parameter_value(mi,'DarkTint',LC(row['dark']));mel.set_material_instance_scalar_parameter_value(mi,'NormalStrength',row['normal'])
@@ -151,7 +167,10 @@ ue=lambda v,k=100:[round(v[0]*k,2),round(-v[1]*k,2),round(v[2]*k,2)]  # Blender 
 report={}
 for pkg,man in manifests.items():
     for row in man['materials']:
-        if row['name'] not in instances:instances[row['name']]=instance(row)
+        if row['name'] not in instances:
+            instances[row['name']]=instance(row,ROOT/pkg)
+            # Optional colour/image variants of this slot: extra MI_<name>_<Suffix> ({Suffix: png name | [r,g,b]}), assigned to meshes by hand or by the placer.
+            for sfx,v in row.get('variants',{}).items():instance(dict(row,name=f"{row['name']}_{sfx}",**({'image':v} if 'image' in row else {'colour':v})),ROOT/pkg)
     mesh,rep=import_mesh(ROOT/pkg/(man['asset']+'.fbx'),man['unreal_mesh'],'complex' if pkg in WALKABLE else 'convex')
     rep.update(slot_m=man['slot_m'],fits=all(s<=t+.01 for s,t in zip(rep['size_m'],man['slot_m'])))
     # Moving parts: own mesh, origin at the pivot. Unreal values: the mirror flips Y and the sense of swings about Z.

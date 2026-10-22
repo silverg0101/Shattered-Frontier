@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropIvyClump",
+  "size_m": [
+    1.2,
+    1.2,
+    1.0
+  ],
+  "slots": 1,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 240,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 32
+  },
+  "slot_m": [
+    1.2,
+    1.2,
+    1.0
+  ],
+  "fits": true
+}

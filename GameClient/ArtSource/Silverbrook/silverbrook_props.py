@@ -267,9 +267,9 @@ def dress_street_groups(L,c):
         road_counts[road]=0
         for k,(x,y,ux,uy) in enumerate(_stations(pts,step)):
             if total>=val(g['max_groups']) or not _inside(L,c,x,y):continue
-            key=f'group:{road}:{k}';side=1 if k%2 else -1
+            key=f'group:{road}:{k}'
             mesh=meshes[int(_h(key)*len(meshes))%len(meshes)]
-            for side,shift in ((side,0),(side,0.8),(-side,0),(-side,0.8)):
+            for side,shift in ((1,0),(1,0.8),(-1,0),(-1,0.8)):
                 d=width/2+offset+shift
                 px=(x-side*uy*d)*100;py=(y+side*ux*d)*100
                 box=(px-clear,py-clear,px+clear,py+clear)
@@ -278,29 +278,68 @@ def dress_street_groups(L,c):
                 if not hit:continue
                 z=hit[0].z
                 yaw=math.degrees(math.atan2(uy,ux))-90
+                label=f'StreetGroup_{road.replace(" ", "")}_{k:03d}_{"L" if side>0 else "R"}'
                 a=A.spawn_actor_from_class(u.StaticMeshActor,u.Vector(px,py,z),u.Rotator(yaw=yaw))
                 a.static_mesh_component.set_static_mesh(mesh)
-                a.set_actor_label(f'StreetGroup_{road.replace(" ", "")}_{k:03d}')
+                a.set_actor_label(label)
                 a.set_folder_path('Silverbrook/Dressing');a.tags=[TAG]
                 rects.append(box);total+=1;road_counts[road]+=1
-                break
-    print('STREET_GROUPS',total,road_counts)
+                for j in range(1+int(_h(key+'n')*2)):  # one or two barrel/sack satellites make each group a cluster
+                    m2=meshes[int(_h(key+str(j))*2)]
+                    sx,sy=px+side*uy*(60+40*j),py-side*ux*(60+40*j)
+                    sbox=(sx-30,sy-30,sx+30,sy+30)
+                    if not pp._free(sbox,rects):continue
+                    hit=terrain.static_mesh_component.line_trace_component(u.Vector(sx,sy,100000),u.Vector(sx,sy,-100000),True,False)
+                    if not hit:continue
+                    s=A.spawn_actor_from_class(u.StaticMeshActor,u.Vector(sx,sy,hit[0].z),u.Rotator(yaw=yaw+_h(key+'y'+str(j))*360))
+                    s.static_mesh_component.set_static_mesh(m2)
+                    s.set_actor_label(f'{label}_{j}');s.set_folder_path('Silverbrook/Dressing');s.tags=[TAG]
+                    rects.append(sbox)
+    need=sum(1 for road,tier,pts,width in _roads(L,c) for x,y,_,_ in _stations(pts,50) if _inside(L,c,x,y))*6
+    print('STREET_GROUPS',total,'GATE',need,road_counts)
+    assert total>=need,('STREET_GROUPS below 6 per 50 m',total,need)
     return road_counts
 
 def dress_house_details():
-    """Side gardens, small flowering tubs and the existing animated smoke-card VFX."""
+    """Fenced side gardens with crops and firewood, flower tubs at the door and on the stoop, chimney smoke plumes."""
     A=_actors();world=_world();import pcg_dressing
     _,terrain=pcg_dressing._terrain()
     fence=_asset(LIB+'/Meshes/SM_SilverbrookPropFenceSection')
     barrel=_asset(LIB+'/Meshes/SM_SilverbrookPropRainBarrel')
     crop=_asset('/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_HerbBroadleaf_00')
     flower=_asset('/Game/Frontier/Environment/Greenlands/Arrival/Meshes/SM_PH_FloweringClump_0')
-    smoke=_asset('/Game/Frontier/VFX/StreetLamp/M_LampSmoke');plane=_asset('/Engine/BasicShapes/Plane')
-    assert all((fence,barrel,crop,flower,smoke,plane))
+    firewood=_asset(LIB+'/Meshes/SM_SilverbrookPropFirewoodStack')
+    lamp_smoke=_asset('/Game/Frontier/VFX/StreetLamp/M_LampSmoke');plane=_asset('/Engine/BasicShapes/Plane')
+    assert all((fence,barrel,crop,flower,firewood,lamp_smoke,plane))
+    if 'EdgeFade' not in [str(n) for n in mel.get_scalar_parameter_names(lamp_smoke)]:  # older M_LampSmoke without parameters
+        sys.path.insert(0,str(ROOT.parent/'VFX'/'StreetLamp'));import build_materials,importlib;importlib.reload(build_materials).build()
+        assert 'EdgeFade' in [str(n) for n in mel.get_scalar_parameter_names(lamp_smoke)]
+    cs=cfg()['chimney_smoke'];smoke=_instance('MI_SB_ChimneySmoke',lamp_smoke)
+    mel.set_material_instance_scalar_parameter_value(smoke,'Opacity',val(cs['opacity']))
+    mel.set_material_instance_scalar_parameter_value(smoke,'PanV',val(cs['pan_v']))
+    mel.set_material_instance_vector_parameter_value(smoke,'Tint',u.LinearColor(*val(cs['tint']),1))
+    mel.set_material_instance_scalar_parameter_value(smoke,'EdgeFade',val(cs['edge_fade']))
+    tex=_asset(cs['texture']);mel.set_material_instance_texture_parameter_value(smoke,'SmokeTex',tex)
+    assert mel.get_material_instance_texture_parameter_value(smoke,'SmokeTex')==tex,'SmokeTex not set'
+    assert eal.save_loaded_asset(smoke)
+    sign,line,ladder,planter,ivy=(_asset(LIB+'/Meshes/SM_SilverbrookProp'+n) for n in ('ShopSign','WashingLine','Ladder','SillPlanter','IvyClump'))
+    assert all((sign,line,ladder,planter,ivy)),'import the five wall-dressing props (import_silverbrook.py PropShopSign ...)'
+    boards=[_asset(f'{LIB}/Materials/MI_SB_PropShopSignBoard{v}') for v in ('','_Boots','_Ale')]
+    blooms=[_asset(f'{LIB}/Materials/MI_SB_GeraniumBloom{v}') for v in ('','_Pink')]
+    band=val(cfg()['footing']['base_band_cm'])
+    # Bay-window sills (mesh-local cm, measured on the imported mesh): Townhouse6's ground bay and upper oriel.
+    sills={'SM_SilverbrookTownhouse6':[(-116,246,84),(-87,270,432)]}
+    houses=[x for x in A.get_all_level_actors() if isinstance(x,u.StaticMeshActor) and str(x.get_folder_path()).startswith('Districts/')
+            and x.static_mesh_component.static_mesh and x.static_mesh_component.static_mesh.get_name().startswith('SM_Silverbrook')
+            and '_Door' not in x.static_mesh_component.static_mesh.get_name()]
+    lined=set()
+    stoops={x.get_actor_label():x for x in A.get_all_level_actors() if isinstance(x,u.StaticMeshActor) and x.get_actor_label().endswith('_Stoop0')}
     stacks={1:(2.2,1.5,8.85),2:(-2.05,0,8.7),3:(2.45,-.55,8.75),4:(-2.1,.3,8.65),5:(2.25,.55,8.7),6:(-2.15,1.2,8.55)}
-    counts=dict(gardens=0,crops=0,pots=0,smoking=0)
+    counts=dict(gardens=0,crops=0,pots=0,stoop_pots=0,firewood=0,smoking=0,signs=0,washing_lines=0,ladders=0,sill_planters=0,ivy=0)
     def spawn(label,mesh,x,y,z,yaw,scale):
-        a=A.spawn_actor_from_class(u.StaticMeshActor,u.Vector(x,y,z),u.Rotator(pitch=90 if mesh==plane else 0,yaw=yaw))
+        # Smoke card: roll -90 stands the plane up with its local Y (and texture V) pointing down, so scale Y is the
+        # plume height, the sheet reads upright and a +V pan moves the smoke upward.
+        a=A.spawn_actor_from_class(u.StaticMeshActor,u.Vector(x,y,z),u.Rotator(roll=-90 if mesh==plane else 0,yaw=yaw))
         a.static_mesh_component.set_static_mesh(mesh)
         a.set_actor_scale3d(u.Vector(*scale))
         a.set_actor_label(label);a.set_folder_path('Silverbrook/Dressing');a.tags=[TAG]
@@ -319,34 +358,87 @@ def dress_house_details():
         def terrain_z(x,y):
             hit=terrain.static_mesh_component.line_trace_component(u.Vector(x,y,100000),u.Vector(x,y,-100000),True,False)
             return hit[0].z if hit else None
-        if h<.38:
+        def face_y(lx,lz):
+            """Local y of the street (+Y) face at (lx, height lz): bounds include eaves and bays, so trace the mesh."""
+            x0,y0=pt(lx,b.max.y+300);x1,y1=pt(lx,0)
+            hit=a.static_mesh_component.line_trace_component(u.Vector(x0,y0,p.z+lz),u.Vector(x1,y1,p.z+lz),True,False)
+            return -si*(hit[0].x-p.x)+co*(hit[0].y-p.y) if hit else b.max.y
+        if h<.75:
             side=-1 if _h(label+'side')<.5 else 1
             sx=side*((b.max.x-b.min.x)*.42+140)
-            x,y=pt(sx,0);z=terrain_z(x,y)
-            if z is not None:
-                spawn('GardenFence_'+label,fence,x,y,z,yaw,(.82,.82,.72))
-                for i in range(4):
-                    cx,cy=pt(sx+side*(55+(i%2)*85),(i//2-.5)*130)
-                    cz=terrain_z(cx,cy)
-                    if cz is not None:
-                        spawn(f'GardenCrop_{label}_{i}',crop,cx,cy,cz,yaw,(1.15,1.15,1.15));counts['crops']+=1
-                counts['gardens']+=1
+            run=(fence.get_bounding_box().max.x-fence.get_bounding_box().min.x)*.82/2  # half a section along its run (X)
+            # An L of three sections: two along the house axis (X) and one turned 90 degrees at the far corner.
+            for i,(fx,fy,fyaw) in enumerate(((sx,0,0),(sx+side*160,0,0),(sx+side*(160+run),run,90))):
+                x,y=pt(fx,fy);z=terrain_z(x,y)
+                if z is not None:spawn(f'GardenFence_{label}_{i}',fence,x,y,z,yaw+fyaw,(.82,.82,.72))
+            for i in range(10):
+                cx,cy=pt(sx+side*(55+(i%2)*85),(i//2-2)*60)
+                cz=terrain_z(cx,cy)
+                if cz is not None:
+                    spawn(f'GardenCrop_{label}_{i}',crop,cx,cy,cz,yaw,(1.15,1.15,1.15));counts['crops']+=1
+            if h<.5:  # firewood at the rear corner on the other side
+                x,y=pt(-side*((b.max.x-b.min.x)/2+60),b.min.y+60);z=terrain_z(x,y)  # the street face is local +Y
+                if z is not None:spawn('GardenFirewood_'+label,firewood,x,y,z,yaw+90,(.8,.8,.8));counts['firewood']+=1
+            counts['gardens']+=1
         if h<.5:
             side=-1 if _h(label+'pot')<.5 else 1
-            x,y=pt(side*170,b.min.y*.43);z=terrain_z(x,y)
+            lx=side*(b.max.x-b.min.x)*.35;x,y=pt(lx,face_y(lx,40)+45);z=terrain_z(x,y)  # beside the door on the street face (+Y)
             if z is not None:
                 spawn('FlowerTub_'+label,barrel,x,y,z,yaw,(.25,.25,.25))
                 spawn('Flower_'+label,flower,x,y,z+25,yaw,(.35,.35,.35));counts['pots']+=1
+            st=stoops.get(label+'_Stoop0')
+            if st:  # second tub on the top step, off to one side of the tread
+                c0,ext=st.get_actor_bounds(False);r=st.get_actor_rotation().yaw;sc=st.get_actor_scale3d()
+                ang=math.radians(r if sc.x>sc.y else r+90);off=max(sc.x,sc.y)*50-25
+                x,y=c0.x+math.cos(ang)*off*side,c0.y+math.sin(ang)*off*side;z=c0.z+ext.z
+                spawn('StoopTub_'+label,barrel,x,y,z,yaw,(.25,.25,.25))
+                spawn('StoopFlower_'+label,flower,x,y,z+25,yaw,(.35,.35,.35));counts['stoop_pots']+=1
+        if _h(label+'wall')<.4:  # wall dressing on 40 % of houses (WP6b review fix 8)
+            x0,x1,y0,y1=_base_box(mesh,band)
+            doors=[d for d in a.get_attached_actors() if 'Door' in d.get_actor_label()]
+            dlx=(co*(doors[0].get_actor_location().x-p.x)+si*(doors[0].get_actor_location().y-p.y)) if doors else 0
+            lx=dlx+(110 if dlx<0 else -110)  # shop sign beside the door, its bracket 2.6 m up the street face
+            x,y=pt(lx,face_y(lx,260))
+            s_=spawn('ShopSign_'+label,sign,x,y,p.z+260,yaw,(1,1,1))
+            s_.static_mesh_component.set_material(1,boards[int(_h(label+'board')*3)%3]);counts['signs']+=1
+            for lx,ly,lz in sills.get(mesh.get_name(),[]):  # a planter on each bay-window sill
+                x,y=pt(lx,ly);pl=spawn(f'SillPlanter_{label}_{lz}',planter,x,y,p.z+lz,yaw,(1,1,1))
+                pl.static_mesh_component.set_material(0,blooms[int(_h(label+'bloom'+str(lz))*2)%2]);counts['sill_planters']+=1
+            side=-1 if _h(label+'ladder')<.5 else 1  # ladder leaning at 75 degrees against a side wall, at mid depth
+            wx=x1 if side>0 else x0;foot=320*math.sin(math.radians(15))+10
+            x,y=pt(wx+side*foot,(y0+y1)/2);z=terrain_z(x,y)
+            if z is not None:
+                ld=spawn('Ladder_'+label,ladder,x,y,z,yaw+90,(1,1,1))
+                for roll in (15,-15):
+                    ld.set_actor_rotation(u.Rotator(roll=roll,yaw=yaw+90),False)
+                    c,_=ld.get_actor_bounds(False)
+                    if (co*(c.x-x)+si*(c.y-y))*side<0:break  # top leans toward the wall
+                counts['ladders']+=1
+            cx=x0 if _h(label+'ivy')<.5 else x1  # ivy clump at a front plinth corner
+            x,y=pt(cx+(10 if cx>0 else -10),y1+10);z=terrain_z(x,y)
+            if z is not None:spawn('IvyClump_'+label,ivy,x,y,z,yaw+45,(1,1,1));counts['ivy']+=1
+            for o in houses:  # washing line in the gap to a neighbour less than 4 m away (same row)
+                if o==a or o.get_actor_label() in lined:continue
+                op=o.get_actor_location();dx,dy=op.x-p.x,op.y-p.y;ox,oy=co*dx+si*dy,-si*dx+co*dy
+                if abs(oy)>200 or abs(((o.get_actor_rotation().yaw-yaw)+180)%360-180)>15:continue
+                ob=_base_box(o.static_mesh_component.static_mesh,band)
+                gap=(ox+ob[0]-x1) if ox>0 else (x0-(ox+ob[1]))
+                if not 120<=gap<=400:continue
+                gx=(x1+ox+ob[0])/2 if ox>0 else (x0+ox+ob[1])/2
+                x,y=pt(gx,(y0+y1)/2);z=terrain_z(x,y)
+                if z is not None:
+                    spawn('WashingLine_'+label,line,x,y,z,yaw+90,(1,1,1));lined.add(label);counts['washing_lines']+=1
+                break
         if mesh.get_name().startswith('SM_SilverbrookTownhouse') and h<.4:
             number=int(mesh.get_name().removeprefix('SM_SilverbrookTownhouse'))
             sx,sy,sz=stacks[number];x,y=pt(sx*100,sy*100)
-            for k in range(2):spawn(f'ChimneySmoke_{label}_{k}',plane,x,y,p.z+sz*100+80,yaw+35+90*k,(1.6,.8,1))
+            for k in range(2):spawn(f'ChimneySmoke_{label}_{k}',plane,x,y,p.z+sz*100+230,yaw+35+90*k,(1.4,4.2,1))
             counts['smoking']+=1
     print('HOUSE_DETAILS',counts)
     return counts
 
 def vary_house_finishes():
-    """Three shared, subtle roof/plaster tints assigned deterministically per house."""
+    """Five shared roof/plaster tones (>= 20 % luminance spread) assigned deterministically per house."""
     master=_asset(LIB+'/Materials/M_SB_Scan');assert master
     expr=mel.get_material_expressions(master)
     if not any(isinstance(e,u.MaterialExpressionVectorParameter) and str(e.get_editor_property('parameter_name'))=='BaseTint' for e in expr):
@@ -357,8 +449,8 @@ def vary_house_finishes():
         mul=_node(master,u.MaterialExpressionMultiply);_link(source,mul,'A');_link(tint,mul,'B')
         _link(mul,attrs,'BaseColor')
         mel.recompile_material(master);assert eal.save_loaded_asset(master)
-    palettes={'MI_SB_LimePlaster':[(.96,.92,.86),(1.02,.99,.94),(.91,.95,.98)],
-              'MI_SB_Slate':[(.91,.96,1.04),(1.04,.99,.91),(.98,1.0,1.01)]}
+    palettes={'MI_SB_LimePlaster':[(1.00,.93,.80),(.84,.86,.88),(1.00,.86,.66),(.93,.95,.84),(.78,.74,.70)],
+              'MI_SB_Slate':[(.78,.86,1.02),(1.06,.90,.74),(.86,.98,.88),(.66,.68,.72),(1.00,1.00,1.00)]}
     variants={}
     for source,cols in palettes.items():
         parent=_asset(LIB+'/Materials/'+source);assert parent
@@ -373,7 +465,7 @@ def vary_house_finishes():
         if not isinstance(a,u.StaticMeshActor) or not str(a.get_folder_path()).startswith('Districts/'):continue
         mesh=a.static_mesh_component.static_mesh
         if not mesh or not mesh.get_name().startswith('SM_Silverbrook') or '_Door' in mesh.get_name():continue
-        i=int(_h(a.get_actor_label()+'tone')*3)%3
+        i=int(_h(a.get_actor_label()+'tone')*5)%5
         for slot in range(a.static_mesh_component.get_num_materials()):
             mat=a.static_mesh_component.get_material(slot)
             if not mat:continue

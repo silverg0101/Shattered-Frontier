@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropSillPlanter",
+  "size_m": [
+    0.93,
+    0.31,
+    0.44
+  ],
+  "slots": 6,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 2960,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 16
+  },
+  "slot_m": [
+    1.0,
+    0.4,
+    0.5
+  ],
+  "fits": true
+}

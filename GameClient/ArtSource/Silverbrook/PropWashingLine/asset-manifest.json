@@ -1,0 +1,148 @@
+{
+  "asset": "SilverbrookPropWashingLine",
+  "asset_id": "PropWashingLine",
+  "variant": 1,
+  "reference": {
+    "file": "concept/washing-line-sheet.png",
+    "sha256": "9f7f25e918241f52edb1323d8c8faf2498bde3449320dfee8a74b9bebd38057e",
+    "note": "Codex concept sheet for PropWashingLine"
+  },
+  "blender": "5.1.1",
+  "generator": "build_propwashingline.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre between the posts (line along X, props lean towards +Y)",
+  "bounds_m": [
+    3.702,
+    0.709,
+    2.41
+  ],
+  "meshes": {
+    "SM_SBWashingLine_Posts": {
+      "triangles": 192,
+      "materials": [
+        "SB_PostBark"
+      ]
+    },
+    "SM_SBWashingLine_Props": {
+      "triangles": 256,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBWashingLine_Rope": {
+      "triangles": 1456,
+      "materials": [
+        "SB_HempRope"
+      ]
+    },
+    "SM_SBWashingLine_Cloth": {
+      "triangles": 816,
+      "materials": [
+        "SB_IndigoCloth",
+        "SB_UndyedWool",
+        "SB_Linen"
+      ]
+    }
+  },
+  "triangles": 2720,
+  "materials": [
+    {
+      "name": "SB_PostBark",
+      "scan": "bark_brown_02",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_HempRope",
+      "colour": [
+        0.3,
+        0.21,
+        0.11
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_Linen",
+      "scan": "hessian_380",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_UndyedWool",
+      "scan": "curly_teddy_natural",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_IndigoCloth",
+      "scan": "denim_fabric_03",
+      "dark": [
+        0.42,
+        0.36,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans); PNG textures cut from the concept sheet",
+  "unreal_mesh": "SM_SilverbrookPropWashingLine",
+  "slot_m": [
+    3.8,
+    0.8,
+    2.5
+  ],
+  "placement": {
+    "footprint_m": [
+      3.8,
+      0.8
+    ],
+    "front": "-Y",
+    "ground_contact": true,
+    "near": [
+      "cottage",
+      "farmhouse",
+      "yard"
+    ],
+    "clearance_m": 0.6
+  },
+  "outputs": [
+    "SilverbrookPropWashingLine.blend",
+    "SilverbrookPropWashingLine.glb",
+    "SilverbrookPropWashingLine.fbx"
+  ]
+}

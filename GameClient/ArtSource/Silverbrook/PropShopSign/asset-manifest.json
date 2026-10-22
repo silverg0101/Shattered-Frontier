@@ -1,0 +1,116 @@
+{
+  "asset": "SilverbrookPropShopSign",
+  "asset_id": "PropShopSign",
+  "variant": 1,
+  "reference": {
+    "file": "concept/shop-sign-sheet.png",
+    "sha256": "60cfddc76217e308e03fe0ea4155682f21c5038353199ad8a8020481313d7f62",
+    "note": "Codex concept sheet for PropShopSign"
+  },
+  "blender": "5.1.1",
+  "generator": "build_propshopsign.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin centre of the wall plate back face (wall at y=0, arm projects -Y, board faces +-X, hangs below the arm)",
+  "bounds_m": [
+    0.07,
+    0.7,
+    0.831
+  ],
+  "meshes": {
+    "SM_SBShopSign_Iron": {
+      "triangles": 1820,
+      "materials": [
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBShopSign_Board": {
+      "triangles": 26,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBShopSign_BoardFace": {
+      "triangles": 22,
+      "materials": [
+        "SB_PropShopSignBoard"
+      ]
+    }
+  },
+  "triangles": 1868,
+  "materials": [
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_PropShopSignBoard",
+      "image": "PropShopSign-board-bread.png",
+      "roughness": 0.75,
+      "variants": {
+        "Boots": "PropShopSign-board-boots.png",
+        "Ale": "PropShopSign-board-ale.png"
+      }
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans); PNG textures cut from the concept sheet",
+  "unreal_mesh": "SM_SilverbrookPropShopSign",
+  "slot_m": [
+    0.1,
+    0.7,
+    0.9
+  ],
+  "placement": {
+    "footprint_m": [
+      0.1,
+      0.7
+    ],
+    "front": "-Y",
+    "ground_contact": false,
+    "mount": "wall",
+    "near": [
+      "shop",
+      "inn",
+      "bakery",
+      "cobbler"
+    ],
+    "clearance_m": 0.1
+  },
+  "outputs": [
+    "SilverbrookPropShopSign.blend",
+    "SilverbrookPropShopSign.glb",
+    "SilverbrookPropShopSign.fbx"
+  ],
+  "variants": {
+    "board_textures": [
+      "PropShopSign-board-bread.png",
+      "PropShopSign-board-boots.png",
+      "PropShopSign-board-ale.png"
+    ],
+    "note": "one mesh; Boots/Ale are MIs of M_SB_Card on slot SB_PropShopSignBoard"
+  },
+  "pivot_m": [
+    0,
+    0,
+    0
+  ]
+}

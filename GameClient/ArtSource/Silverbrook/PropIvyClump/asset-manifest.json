@@ -1,0 +1,78 @@
+{
+  "asset": "SilverbrookPropIvyClump",
+  "asset_id": "PropIvyClump",
+  "variant": 1,
+  "reference": {
+    "file": "concept/ivy-clump-sheet.png",
+    "sha256": "4d608dca78f6179fb15fa794fd5d78d6723c1d93ea99b17efbc3b69a0a893ea8",
+    "note": "Codex concept sheet for PropIvyClump"
+  },
+  "blender": "5.1.1",
+  "generator": "build_propivyclump.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre, cards rise from z=0",
+  "bounds_m": [
+    1.2,
+    1.2,
+    1.0
+  ],
+  "meshes": {
+    "SM_SBIvyClump_Cards": {
+      "triangles": 240,
+      "materials": [
+        "SB_PropIvyClumpAtlas"
+      ]
+    }
+  },
+  "triangles": 240,
+  "materials": [
+    {
+      "name": "SB_PropIvyClumpAtlas",
+      "image": "PropIvyClump-atlas.png",
+      "roughness": 0.7
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans); PNG textures cut from the concept sheet",
+  "unreal_mesh": "SM_SilverbrookPropIvyClump",
+  "slot_m": [
+    1.2,
+    1.2,
+    1.0
+  ],
+  "placement": {
+    "footprint_m": [
+      1.2,
+      1.2
+    ],
+    "front": "-Y",
+    "ground_contact": true,
+    "near": [
+      "cottage",
+      "wall",
+      "fence",
+      "ruin"
+    ],
+    "clearance_m": 0.0
+  },
+  "outputs": [
+    "SilverbrookPropIvyClump.blend",
+    "SilverbrookPropIvyClump.glb",
+    "SilverbrookPropIvyClump.fbx"
+  ],
+  "atlas": {
+    "file": "PropIvyClump-atlas.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "channels": "RGBA (alpha = keyed grey background)",
+    "source_bbox_px": [
+      9,
+      34,
+      1019,
+      976
+    ],
+    "opaque_fraction": 0.526
+  },
+  "note": "masked two-sided material M_SB_Card; four cards at 0/45/90/135 degrees, odd cards mirrored in U"
+}

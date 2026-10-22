@@ -1,0 +1,88 @@
+{
+  "asset": "SilverbrookPropLadder",
+  "asset_id": "PropLadder",
+  "variant": 1,
+  "reference": {
+    "file": "concept/ladder-sheet.png",
+    "sha256": "f84e4f7f5a957fa3704a9031b8f78f348548824b5a18d22b28b95c83fe63b2b4",
+    "note": "Codex concept sheet for PropLadder"
+  },
+  "blender": "5.1.1",
+  "generator": "build_propladder.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin ground centre between the feet (straight, along +Z, rails along X; the placer leans it)",
+  "bounds_m": [
+    0.498,
+    0.093,
+    3.2
+  ],
+  "meshes": {
+    "SM_SBLadder_Wood": {
+      "triangles": 816,
+      "materials": [
+        "SB_AshLadder"
+      ]
+    },
+    "SM_SBLadder_Lashing": {
+      "triangles": 2000,
+      "materials": [
+        "SB_HempRope"
+      ]
+    }
+  },
+  "triangles": 2816,
+  "materials": [
+    {
+      "name": "SB_AshLadder",
+      "scan": "old_planks_02",
+      "dark": [
+        0.4,
+        0.37,
+        0.34
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_HempRope",
+      "colour": [
+        0.3,
+        0.21,
+        0.11
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans); PNG textures cut from the concept sheet",
+  "unreal_mesh": "SM_SilverbrookPropLadder",
+  "slot_m": [
+    0.5,
+    0.1,
+    3.2
+  ],
+  "placement": {
+    "footprint_m": [
+      0.5,
+      0.1
+    ],
+    "front": "-Y",
+    "ground_contact": true,
+    "near": [
+      "cottage",
+      "barn",
+      "granary",
+      "mill"
+    ],
+    "clearance_m": 0.2,
+    "lean_deg": 75
+  },
+  "outputs": [
+    "SilverbrookPropLadder.blend",
+    "SilverbrookPropLadder.glb",
+    "SilverbrookPropLadder.fbx"
+  ]
+}

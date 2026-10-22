@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropWashingLine",
+  "size_m": [
+    3.7,
+    0.71,
+    2.41
+  ],
+  "slots": 6,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 1802,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 64
+  },
+  "slot_m": [
+    3.8,
+    0.8,
+    2.5
+  ],
+  "fits": true
+}

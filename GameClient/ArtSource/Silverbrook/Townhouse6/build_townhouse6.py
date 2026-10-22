@@ -236,8 +236,9 @@ for s in (-1,1):window(G,M,(s*W2,0,4.2),(s,0,0),.55,.85,shutters=False,band=band
 door(G,M,(DX,YG,STEP),(0,-1,0),DOOR,DS,STONES,band=band())
 G['stone'].box((DX,YG-.175,.15),(1.3,.35,.3),M['stone'],.015)            # two steps up to the sill
 G['stone'].box((DX,YG-.525,.075),(1.3,.35,.15),M['stone'],.015)
-G['stone'].box((2.45,YG-.22,.42),(.4,.44,.84),M['ashlar'],.015,rect=kit.rng.choice(STONES))   # planter pier beside the steps
-G['stone'].box((2.45,YG-.22,.87),(.48,.52,.06),M['ashlar'],.012,rect=kit.rng.choice(STONES))
+kit.rng.choice(STONES);kit.rng.choice(STONES)  # keep the random stream of the single-stone version
+G['stone'].box((2.45,YG-.22,.42),(.4,.44,.84),M['ashlar'],.015)   # planter pier beside the steps: world-projected ashlar (WP6b review fix 7)
+G['stone'].box((2.45,YG-.22,.87),(.48,.52,.06),M['ashlar'],.012)
 G['detail'].box((2.45,YG-.22,.91),(.38,.42,.02),M['soil'],0)
 # ---- downpipes at the front corners, hoppers on the side fascia ------------------------------------
 for s in (-1,1):

@@ -1,0 +1,170 @@
+{
+  "asset": "SilverbrookPropSillPlanter",
+  "asset_id": "PropSillPlanter",
+  "variant": 1,
+  "reference": {
+    "file": "concept/sill-planter-sheet.png",
+    "sha256": "a28a550cb5b118e5b048dd8647fcf92577ce26025127b6a2e8fb139791283776",
+    "note": "Codex concept sheet for PropSillPlanter"
+  },
+  "blender": "5.1.1",
+  "generator": "build_propsillplanter.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin bottom centre of the trough's back edge (back face flush with y=0 on the wall, front -Y, sits on a sill)",
+  "bounds_m": [
+    0.934,
+    0.308,
+    0.443
+  ],
+  "meshes": {
+    "SM_SBSillPlanter_Trough": {
+      "triangles": 168,
+      "materials": [
+        "SB_Terracotta"
+      ]
+    },
+    "SM_SBSillPlanter_Soil": {
+      "triangles": 2,
+      "materials": [
+        "SB_DampSoil"
+      ]
+    },
+    "SM_SBSillPlanter_Leaves": {
+      "triangles": 1984,
+      "materials": [
+        "SB_GeraniumLeaf",
+        "SB_ThymeSprig"
+      ]
+    },
+    "SM_SBSillPlanter_Stems": {
+      "triangles": 420,
+      "materials": [
+        "SB_GeraniumStem"
+      ]
+    },
+    "SM_SBSillPlanter_Blooms": {
+      "triangles": 1800,
+      "materials": [
+        "SB_GeraniumBloom"
+      ]
+    },
+    "SM_SBSillPlanter_Thyme": {
+      "triangles": 1428,
+      "materials": [
+        "SB_ThymeSprig"
+      ]
+    }
+  },
+  "triangles": 5802,
+  "materials": [
+    {
+      "name": "SB_Terracotta",
+      "colour": [
+        0.36,
+        0.14,
+        0.07
+      ],
+      "roughness": 0.8,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_DampSoil",
+      "colour": [
+        0.03,
+        0.021,
+        0.015
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_GeraniumLeaf",
+      "colour": [
+        0.075,
+        0.19,
+        0.04
+      ],
+      "roughness": 0.6,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_GeraniumStem",
+      "colour": [
+        0.07,
+        0.12,
+        0.035
+      ],
+      "roughness": 0.7,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_GeraniumBloom",
+      "colour": [
+        0.5,
+        0.02,
+        0.02
+      ],
+      "roughness": 0.55,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0,
+      "variants": {
+        "Pink": [
+          0.62,
+          0.13,
+          0.2
+        ]
+      }
+    },
+    {
+      "name": "SB_ThymeSprig",
+      "colour": [
+        0.06,
+        0.12,
+        0.05
+      ],
+      "roughness": 0.7,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans); PNG textures cut from the concept sheet",
+  "unreal_mesh": "SM_SilverbrookPropSillPlanter",
+  "slot_m": [
+    1.0,
+    0.4,
+    0.5
+  ],
+  "placement": {
+    "footprint_m": [
+      1.0,
+      0.4
+    ],
+    "front": "-Y",
+    "ground_contact": false,
+    "mount": "sill",
+    "near": [
+      "cottage",
+      "townhouse",
+      "inn"
+    ],
+    "clearance_m": 0.1
+  },
+  "outputs": [
+    "SilverbrookPropSillPlanter.blend",
+    "SilverbrookPropSillPlanter.glb",
+    "SilverbrookPropSillPlanter.fbx"
+  ],
+  "variants": {
+    "note": "flowers are slot SB_GeraniumBloom (red); the Pink MI is MI_SB_GeraniumBloom_Pink"
+  }
+}
