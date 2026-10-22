@@ -1,0 +1,639 @@
+[
+ {
+  "name": "window frame",
+  "rect": [
+   336,
+   115,
+   1249,
+   810
+  ],
+  "found": false,
+  "match": 0.32,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "panelfill",
+    2.7
+   ],
+   [
+    "panelfill",
+    7.1
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "title Settings",
+  "rect": [
+   884,
+   140,
+   161,
+   44
+  ],
+  "found": false,
+  "match": 0.49,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "close x",
+  "rect": [
+   1515,
+   139,
+   46,
+   46
+  ],
+  "found": true,
+  "match": 0.67,
+  "d_left": -8,
+  "d_top": -7,
+  "d_width": 15,
+  "d_height": 15,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "tab Graphics",
+  "rect": [
+   452,
+   207,
+   202,
+   55
+  ],
+  "found": false,
+  "match": 0.46,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "mossfill",
+    3.2
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "tab Audio",
+  "rect": [
+   655,
+   207,
+   198,
+   55
+  ],
+  "found": true,
+  "match": 0.83,
+  "d_left": 0,
+  "d_top": 16,
+  "d_width": -23,
+  "d_height": -16,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "tab Controls",
+  "rect": [
+   852,
+   207,
+   204,
+   55
+  ],
+  "found": true,
+  "match": 0.72,
+  "d_left": 11,
+  "d_top": 2,
+  "d_width": -18,
+  "d_height": -2,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "tab Interface",
+  "rect": [
+   1056,
+   207,
+   196,
+   55
+  ],
+  "found": true,
+  "match": 0.86,
+  "d_left": 1,
+  "d_top": 22,
+  "d_width": -25,
+  "d_height": -22,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "tab Gameplay",
+  "rect": [
+   1253,
+   207,
+   209,
+   55
+  ],
+  "found": true,
+  "match": 0.74,
+  "d_left": 3,
+  "d_top": 22,
+  "d_width": -9,
+  "d_height": -22,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "label Graphics Preset",
+  "rect": [
+   385,
+   292,
+   201,
+   32
+  ],
+  "found": true,
+  "match": 0.52,
+  "d_left": 3,
+  "d_top": 1,
+  "d_width": 5,
+  "d_height": 0,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "button Auto-Detect",
+  "rect": [
+   1277,
+   291,
+   126,
+   36
+  ],
+  "found": true,
+  "match": 0.53,
+  "d_left": -11,
+  "d_top": 0,
+  "d_width": 21,
+  "d_height": 1,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "status Preset",
+  "rect": [
+   1435,
+   299,
+   103,
+   21
+  ],
+  "found": false,
+  "match": 0.37,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "preset Low",
+  "rect": [
+   386,
+   340,
+   215,
+   47
+  ],
+  "found": true,
+  "match": 0.86,
+  "d_left": 0,
+  "d_top": 3,
+  "d_width": -1,
+  "d_height": -3,
+  "de": [
+   [
+    "platefill",
+    1.9
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "preset Medium",
+  "rect": [
+   610,
+   340,
+   222,
+   47
+  ],
+  "found": true,
+  "match": 0.88,
+  "d_left": 0,
+  "d_top": 3,
+  "d_width": -2,
+  "d_height": -3,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "preset High selected",
+  "rect": [
+   842,
+   340,
+   231,
+   47
+  ],
+  "found": true,
+  "match": 0.6,
+  "d_left": 0,
+  "d_top": 4,
+  "d_width": -1,
+  "d_height": -4,
+  "de": [
+   [
+    "mossfill",
+    6.6
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "preset Epic",
+  "rect": [
+   1083,
+   340,
+   223,
+   47
+  ],
+  "found": true,
+  "match": 0.85,
+  "d_left": 0,
+  "d_top": 3,
+  "d_width": -2,
+  "d_height": -3,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "preset Ultra",
+  "rect": [
+   1315,
+   340,
+   220,
+   47
+  ],
+  "found": true,
+  "match": 0.85,
+  "d_left": 0,
+  "d_top": 3,
+  "d_width": 0,
+  "d_height": -3,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "heading Display",
+  "rect": [
+   387,
+   432,
+   94,
+   28
+  ],
+  "found": false,
+  "match": 0.42,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "stepper Resolution",
+  "rect": [
+   669,
+   478,
+   272,
+   37
+  ],
+  "found": true,
+  "match": 0.64,
+  "d_left": -20,
+  "d_top": -10,
+  "d_width": 41,
+  "d_height": 19,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "stepper Window Mode",
+  "rect": [
+   669,
+   531,
+   272,
+   37
+  ],
+  "found": true,
+  "match": 0.65,
+  "d_left": -20,
+  "d_top": -11,
+  "d_width": 41,
+  "d_height": 19,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "stepper Frame Rate",
+  "rect": [
+   669,
+   583,
+   272,
+   37
+  ],
+  "found": true,
+  "match": 0.63,
+  "d_left": -20,
+  "d_top": -11,
+  "d_width": 41,
+  "d_height": 19,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "vsync On",
+  "rect": [
+   669,
+   640,
+   132,
+   39
+  ],
+  "found": true,
+  "match": 0.79,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": -2,
+  "d_height": -1,
+  "de": [],
+  "geometry": "PASS",
+  "colour": "PASS",
+  "verdict": "PASS"
+ },
+ {
+  "name": "vsync Off",
+  "rect": [
+   814,
+   640,
+   129,
+   39
+  ],
+  "found": false,
+  "match": 0.39,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "render scale track",
+  "rect": [
+   440,
+   736,
+   342,
+   21
+  ],
+  "found": false,
+  "match": 0.45,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "render scale value",
+  "rect": [
+   859,
+   726,
+   87,
+   40
+  ],
+  "found": false,
+  "match": 0.43,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "motion blur On",
+  "rect": [
+   669,
+   792,
+   132,
+   39
+  ],
+  "found": true,
+  "match": 0.8,
+  "d_left": 1,
+  "d_top": 1,
+  "d_width": -2,
+  "d_height": -3,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "motion blur Off",
+  "rect": [
+   814,
+   792,
+   129,
+   39
+  ],
+  "found": false,
+  "match": 0.17,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "heading Quality",
+  "rect": [
+   1005,
+   429,
+   87,
+   28
+  ],
+  "found": false,
+  "match": 0.46,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "quality row View Distance",
+  "rect": [
+   1284,
+   475,
+   243,
+   31
+  ],
+  "found": true,
+  "match": 0.52,
+  "d_left": 7,
+  "d_top": 6,
+  "d_width": -14,
+  "d_height": 0,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "quality row Shadows",
+  "rect": [
+   1284,
+   511,
+   243,
+   31
+  ],
+  "found": true,
+  "match": 0.5,
+  "d_left": 7,
+  "d_top": 6,
+  "d_width": -14,
+  "d_height": 0,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "quality row Nanite Tessellation",
+  "rect": [
+   1284,
+   796,
+   243,
+   31
+  ],
+  "found": false,
+  "match": 0.5,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "name": "button Apply",
+  "rect": [
+   683,
+   861,
+   250,
+   54
+  ],
+  "found": true,
+  "match": 0.68,
+  "d_left": 0,
+  "d_top": 1,
+  "d_width": -1,
+  "d_height": 0,
+  "de": [],
+  "geometry": "PASS",
+  "colour": "PASS",
+  "verdict": "PASS"
+ },
+ {
+  "name": "button Revert",
+  "rect": [
+   985,
+   861,
+   248,
+   54
+  ],
+  "found": true,
+  "match": 0.74,
+  "d_left": 0,
+  "d_top": 1,
+  "d_width": -1,
+  "d_height": 0,
+  "de": [
+   [
+    "platefill",
+    8.9
+   ]
+  ],
+  "geometry": "PASS",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ }
+]

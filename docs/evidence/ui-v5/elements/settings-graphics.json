@@ -1,0 +1,333 @@
+{
+ "concept": "14b-settings-graphics.png",
+ "elements": [
+  {
+   "name": "window frame",
+   "rect": [
+    336,
+    115,
+    1249,
+    810
+   ],
+   "samples": [
+    [
+     643,
+     281,
+     "panelfill"
+    ],
+    [
+     1148,
+     850,
+     "panelfill"
+    ]
+   ]
+  },
+  {
+   "name": "title Settings",
+   "rect": [
+    884,
+    140,
+    161,
+    44
+   ]
+  },
+  {
+   "name": "close x",
+   "rect": [
+    1515,
+    139,
+    46,
+    46
+   ]
+  },
+  {
+   "name": "tab Graphics",
+   "rect": [
+    452,
+    207,
+    202,
+    55
+   ],
+   "samples": [
+    [
+     471,
+     247,
+     "mossfill"
+    ]
+   ]
+  },
+  {
+   "name": "tab Audio",
+   "rect": [
+    655,
+    207,
+    198,
+    55
+   ]
+  },
+  {
+   "name": "tab Controls",
+   "rect": [
+    852,
+    207,
+    204,
+    55
+   ]
+  },
+  {
+   "name": "tab Interface",
+   "rect": [
+    1056,
+    207,
+    196,
+    55
+   ]
+  },
+  {
+   "name": "tab Gameplay",
+   "rect": [
+    1253,
+    207,
+    209,
+    55
+   ]
+  },
+  {
+   "name": "label Graphics Preset",
+   "rect": [
+    385,
+    292,
+    201,
+    32
+   ]
+  },
+  {
+   "name": "button Auto-Detect",
+   "rect": [
+    1277,
+    291,
+    126,
+    36
+   ]
+  },
+  {
+   "name": "status Preset",
+   "rect": [
+    1435,
+    299,
+    103,
+    21
+   ]
+  },
+  {
+   "name": "preset Low",
+   "rect": [
+    386,
+    340,
+    215,
+    47
+   ],
+   "samples": [
+    [
+     402,
+     363,
+     "platefill"
+    ]
+   ]
+  },
+  {
+   "name": "preset Medium",
+   "rect": [
+    610,
+    340,
+    222,
+    47
+   ]
+  },
+  {
+   "name": "preset High selected",
+   "rect": [
+    842,
+    340,
+    231,
+    47
+   ],
+   "samples": [
+    [
+     859,
+     363,
+     "mossfill"
+    ]
+   ]
+  },
+  {
+   "name": "preset Epic",
+   "rect": [
+    1083,
+    340,
+    223,
+    47
+   ]
+  },
+  {
+   "name": "preset Ultra",
+   "rect": [
+    1315,
+    340,
+    220,
+    47
+   ]
+  },
+  {
+   "name": "heading Display",
+   "rect": [
+    387,
+    432,
+    94,
+    28
+   ]
+  },
+  {
+   "name": "stepper Resolution",
+   "rect": [
+    669,
+    478,
+    272,
+    37
+   ]
+  },
+  {
+   "name": "stepper Window Mode",
+   "rect": [
+    669,
+    531,
+    272,
+    37
+   ]
+  },
+  {
+   "name": "stepper Frame Rate",
+   "rect": [
+    669,
+    583,
+    272,
+    37
+   ]
+  },
+  {
+   "name": "vsync On",
+   "rect": [
+    669,
+    640,
+    132,
+    39
+   ]
+  },
+  {
+   "name": "vsync Off",
+   "rect": [
+    814,
+    640,
+    129,
+    39
+   ]
+  },
+  {
+   "name": "render scale track",
+   "rect": [
+    440,
+    736,
+    342,
+    21
+   ]
+  },
+  {
+   "name": "render scale value",
+   "rect": [
+    859,
+    726,
+    87,
+    40
+   ]
+  },
+  {
+   "name": "motion blur On",
+   "rect": [
+    669,
+    792,
+    132,
+    39
+   ]
+  },
+  {
+   "name": "motion blur Off",
+   "rect": [
+    814,
+    792,
+    129,
+    39
+   ]
+  },
+  {
+   "name": "heading Quality",
+   "rect": [
+    1005,
+    429,
+    87,
+    28
+   ]
+  },
+  {
+   "name": "quality row View Distance",
+   "rect": [
+    1284,
+    475,
+    243,
+    31
+   ]
+  },
+  {
+   "name": "quality row Shadows",
+   "rect": [
+    1284,
+    511,
+    243,
+    31
+   ]
+  },
+  {
+   "name": "quality row Nanite Tessellation",
+   "rect": [
+    1284,
+    796,
+    243,
+    31
+   ]
+  },
+  {
+   "name": "button Apply",
+   "rect": [
+    683,
+    861,
+    250,
+    54
+   ]
+  },
+  {
+   "name": "button Revert",
+   "rect": [
+    985,
+    861,
+    248,
+    54
+   ],
+   "samples": [
+    [
+     999,
+     890,
+     "platefill"
+    ]
+   ]
+  }
+ ]
+}

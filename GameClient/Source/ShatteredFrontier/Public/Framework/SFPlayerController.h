@@ -15,6 +15,7 @@ class USFMarketBoard;
 class USFTradeWindow;
 class USFInventoryPanel;
 class USFDialoguePanel;
+class USFGraphicsMenu;
 class ASFDialogueNpc;
 enum class ESFDialogueStep : uint8;
 class UInputAction;
@@ -56,6 +57,11 @@ public:
     UFUNCTION(Client, Unreliable) void ClientPilotHit(const FString& Message);
     FString GetPilotMessage() const;
     void ToggleInventoryPanel();
+    // F10 (and SFUi settings): the Settings > Graphics menu. Esc closes the keep prompt or the menu.
+    void ToggleSettingsPanel();
+    bool CloseSettingsPanel();
+    // Development (graphics captures): SFGfx apply|menu <Low..Ultra>, SFGfx custom, SFGfx keep.
+    UFUNCTION(Exec) void SFGfx(const FString& Args);
     // Trading UI: F6 trade window, F7 market board, on the live exchange (the fake only with -ExchangeFake).
     void ToggleTradeDemo();
     void ToggleMarketDemo();
@@ -269,6 +275,7 @@ private:
     void HandleDialogueStep(ESFDialogueStep Step);
     void TickDialogue();
     UPROPERTY(Transient) TObjectPtr<USFDialoguePanel> DialoguePanel;
+    UPROPERTY(Transient) TObjectPtr<USFGraphicsMenu> SettingsPanel;
     TWeakObjectPtr<ASFDialogueNpc> DialogueNpc;
     bool bBuildMode = false;
 };

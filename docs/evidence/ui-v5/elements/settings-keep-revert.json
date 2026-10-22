@@ -1,0 +1,80 @@
+{
+ "concept": "14c-settings-keep-revert.png",
+ "elements": [
+  {
+   "name": "modal frame",
+   "rect": [
+    548,
+    379,
+    824,
+    341
+   ],
+   "samples": [
+    [
+     804,
+     528,
+     "panelfill"
+    ],
+    [
+     1263,
+     689,
+     "panelfill"
+    ]
+   ]
+  },
+  {
+   "name": "modal title",
+   "rect": [
+    700,
+    440,
+    526,
+    48
+   ]
+  },
+  {
+   "name": "modal detail",
+   "rect": [
+    762,
+    503,
+    395,
+    30
+   ]
+  },
+  {
+   "name": "modal countdown",
+   "rect": [
+    837,
+    545,
+    246,
+    30
+   ]
+  },
+  {
+   "name": "modal progress bar",
+   "rect": [
+    630,
+    586,
+    659,
+    18
+   ]
+  },
+  {
+   "name": "button Keep Changes",
+   "rect": [
+    597,
+    629,
+    350,
+    67
+   ]
+  },
+  {
+   "name": "button Revert",
+   "rect": [
+    976,
+    629,
+    347,
+    67
+   ]
+  }
+ ]
+}

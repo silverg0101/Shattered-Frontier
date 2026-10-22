@@ -36,7 +36,9 @@ At 1920x1080 against the concept: geometry +-2 px (position, size, spacing, padd
 
 ## 4. Passing menus
 
-Add a section per menu when, and only when, its Fable review passes: concept, widget file, helper composition, element list, last PASS evidence. (None yet.)
+Add a section per menu when, and only when, its Fable review passes: concept, widget file, helper composition, element list, last PASS evidence. ### Settings > Graphics (Fable review: pending, see docs/evidence/graphics-settings/REVIEW.md)
+
+Concept `14b-settings-graphics.png` (menu) and `14c-settings-keep-revert.png` (15 s keep prompt); widget `Framework/SFGraphicsMenu.*`; composes `Tab`, `Button`/`ApplyButtonStyle`, `KitPanel("stepper_field")`, `Panel`, `StyleBar`, `KitImage` from `SFHudStyle`; elements `settings-graphics.json`, `settings-keep-revert.json`; evidence `docs/evidence/graphics-settings/` (captures at every preset, scene at Low/High/Ultra, diff). Opens with F10 or `SFUi settings`. Known: the Audio/Controls/Interface/Gameplay tabs are inert; pixel diff is not yet inside tolerance (the AI concept proportions differ from the helper sizes).
 
 ## 5. Known failures (never X, always Y)
 

@@ -1320,6 +1320,7 @@ void ASFPlayerController::ToggleGatheringSkillsPanel()
 void ASFPlayerController::HandleEscape()
 {
     if (IsDialogueOpen()) { CloseDialogue(); return; }
+    if (CloseSettingsPanel()) { return; }
     if (GatheringSkillsPanel && GatheringSkillsPanel->GetVisibility()==ESlateVisibility::Visible)
     { GatheringSkillsPanel->SetVisibility(ESlateVisibility::Collapsed); return; }
     // Build mode: the first Esc cancels a pending line start, the next leaves build mode.
@@ -1559,6 +1560,7 @@ void ASFPlayerController::SetupInputComponent()
     Bind(TEXT("IA_MouseLook"),ETriggerEvent::Completed,&ASFPlayerController::EndCameraLook);
     Bind(TEXT("IA_Trade"),ETriggerEvent::Started,&ASFPlayerController::ToggleTradeDemo);
     Bind(TEXT("IA_Market"),ETriggerEvent::Started,&ASFPlayerController::ToggleMarketDemo);
+    InputComponent->BindKey(EKeys::F10,IE_Pressed,this,&ASFPlayerController::ToggleSettingsPanel);
     Bind(TEXT("IA_TargetNext"),ETriggerEvent::Started,&ASFPlayerController::SelectNextCombatTarget);
     // IMC_Build (the character layers it on while build mode is active; it consumes these keys from IMC_Player).
     Bind(TEXT("IA_BuildPlace"),ETriggerEvent::Started,&ASFPlayerController::PlaceFromView);
@@ -2654,6 +2656,7 @@ void ASFPlayerController::SFUi(const FString& Screen)
     else if (Screen.Equals(TEXT("trade"), ESearchCase::IgnoreCase)) { ToggleTradeDemo(); }
     else if (Screen.Equals(TEXT("tradelock"), ESearchCase::IgnoreCase) && TradeWindow) { TradeWindow->CallFunctionByNameWithArguments(TEXT("HandleLock"), *GLog, nullptr, true); }
     else if (Screen.Equals(TEXT("build"), ESearchCase::IgnoreCase)) { ToggleBuildMode(); }
+    else if (Screen.Equals(TEXT("settings"), ESearchCase::IgnoreCase)) { ToggleSettingsPanel(); }
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     else if (Screen.Equals(TEXT("skills"), ESearchCase::IgnoreCase)) { ToggleGatheringSkillsPanel(); }
     else if (Screen.Equals(TEXT("target"), ESearchCase::IgnoreCase))
