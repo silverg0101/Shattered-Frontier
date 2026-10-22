@@ -18,6 +18,15 @@ ROOT=Path(__file__).resolve().parent;LAYOUT=ROOT.parent/'Greenlands'/'silverbroo
 sys.path.insert(0,str(ROOT))
 LIB='/Game/Frontier/Environment/Greenlands/Silverbrook';TAG='SilverbrookDressing'
 mel=u.MaterialEditingLibrary;eal=u.EditorAssetLibrary;tools=u.AssetToolsHelpers.get_asset_tools()
+TERRAIN_LABEL=None
+
+def _terrain():
+    import pcg_dressing
+    return pcg_dressing._terrain(TERRAIN_LABEL)
+
+def _sills():
+    return {m['unreal_mesh']: m.get('sills', []) for p in ROOT.glob('*/asset-manifest.json')
+            for m in [json.loads(p.read_text(encoding='utf-8'))]}
 
 def cfg():
     c=json.loads((ROOT/'silverbrook-props.json').read_text(encoding='utf-8'))
@@ -318,10 +327,10 @@ def _outside_houses(houses,q,band,pad=50):
         if x0-pad<lx<x1+pad and y0-pad<ly<y1+pad:return False
     return True
 
-def dress_house_details():
+def dress_house_details(folder='Districts/'):
     """Fenced side gardens with crops and firewood, flower tubs at the door and on the stoop, chimney smoke plumes."""
     A=_actors();world=_world();import pcg_dressing
-    _,terrain=pcg_dressing._terrain()
+    _,terrain=_terrain()
     fence=_asset(LIB+'/Meshes/SM_SilverbrookPropFenceSection')
     tub=_asset(LIB+'/Meshes/SM_SilverbrookPropFlowerTub')  # oak half-barrel with geraniums (WP6c review fix 7)
     crop=_asset('/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_HerbBroadleaf_00')
@@ -348,10 +357,8 @@ def dress_house_details():
     # Bay-window sills (WP6d review fix 3), mesh-local cm traced on the imported meshes (the import recentres each mesh on its
     # bounds, so Blender coordinates are off by up to 26 cm): x = bay centre, y = outermost frame/sill face + 2 cm (the planter's
     # origin is the back edge of its trough), z = apron top / sill line.
-    sills={'SM_SilverbrookTownhouse1':[(140,330,95)],             # canted bay: front 160 cm, frame and sill face y 328
-           'SM_SilverbrookTownhouse3':[(0,276,92)],               # canted bay: sill face 273, centre mullion 274
-           'SM_SilverbrookTownhouse6':[(-120,260,84),(-90,280,435)]}  # ground bay posts at 258; oriel mullion 278 on its 305 base
-    houses=[x for x in A.get_all_level_actors() if isinstance(x,u.StaticMeshActor) and str(x.get_folder_path()).startswith('Districts/')
+    sills=_sills()
+    houses=[x for x in A.get_all_level_actors() if isinstance(x,u.StaticMeshActor) and str(x.get_folder_path()).startswith(folder)
             and x.static_mesh_component.static_mesh and x.static_mesh_component.static_mesh.get_name().startswith('SM_Silverbrook')
             and '_Door' not in x.static_mesh_component.static_mesh.get_name()]
     lined=set()
@@ -371,7 +378,7 @@ def dress_house_details():
             a.static_mesh_component.set_editor_property('cast_shadow',False)
         return a
     for a in A.get_all_level_actors():
-        if not isinstance(a,u.StaticMeshActor) or not str(a.get_folder_path()).startswith('Districts/'):continue
+        if not isinstance(a,u.StaticMeshActor) or not str(a.get_folder_path()).startswith(folder):continue
         mesh=a.static_mesh_component.static_mesh
         if not mesh or not mesh.get_name().startswith('SM_Silverbrook') or '_Door' in mesh.get_name():continue
         label=a.get_actor_label();h=_h(label);b=mesh.get_bounding_box();p=a.get_actor_location()
@@ -421,7 +428,7 @@ def dress_house_details():
             pl.static_mesh_component.set_material(0,blooms[int(_h(label+'bloom'+str(lz))*2)%2]);counts['sill_planters']+=1
             fx,fy=pt(lx,ly+150)  # a hit means the house wall stands between the street and the planter
             assert not a.static_mesh_component.line_trace_component(u.Vector(fx,fy,p.z+lz+15),u.Vector(x,y,p.z+lz+15),True,False),('sill planter inside the wall',label,lz)
-        if _h(label+'wall')<.4:  # wall dressing on 40 % of houses (WP6b review fix 8)
+        if _h(label+'wall')<.4 or folder!='Districts/':  # a dev-map review always has a sign view
             doors=[d for d in a.get_attached_actors() if 'Door' in d.get_actor_label()]
             dlx=(co*(doors[0].get_actor_location().x-p.x)+si*(doors[0].get_actor_location().y-p.y)) if doors else 0
             lx=dlx+(110 if dlx<0 else -110)  # shop sign beside the door, its bracket 2.6 m up the street face
@@ -529,7 +536,7 @@ def _base_box(mesh,band):
                     _edge(sorted(p.y for p in near),True),_edge(sorted(p.y for p in near),False))
     return _BASE[key]
 
-def dress_footings(c):
+def dress_footings(c, folder='Districts/'):
     """A matte stone course under every house, including level lots; repeatable after a rebuild."""
     f=c['footing'];path=f['material'];m=_asset(path)
     if not m:
@@ -562,7 +569,7 @@ def dress_footings(c):
     mel.recompile_material(m);assert eal.save_loaded_asset(m)
     sys.path.insert(0,str(ROOT.parent/'Greenlands'))
     import pcg_dressing
-    _,terrain=pcg_dressing._terrain()
+    _,terrain=_terrain()
     A=_actors();actors=A.get_all_level_actors();by_label={a.get_actor_label():a for a in actors}
     cube=_asset('/Engine/BasicShapes/Cube');n=0;created=0
     def ground(x,y):
@@ -570,7 +577,7 @@ def dress_footings(c):
         assert hit,(x,y)
         return hit[0].z
     for building in actors:
-        if not isinstance(building,u.StaticMeshActor) or not str(building.get_folder_path()).startswith('Districts/'):
+        if not isinstance(building,u.StaticMeshActor) or not str(building.get_folder_path()).startswith(folder):
             continue
         mesh=building.static_mesh_component.static_mesh
         if not mesh or not mesh.get_name().startswith('SM_Silverbrook') or '_Door' in mesh.get_name():continue
@@ -642,9 +649,17 @@ def hide_debug_actors():
             a.set_actor_hidden_in_game(True);n+=1
     print("DEBUG_HIDDEN_IN_GAME",n)
 
-def dress_all():
+def dress_all(folder='Districts/'):
     c=cfg();L=json.loads(LAYOUT.read_text(encoding='utf-8'));_clear(_actors())
-    dress_footings(c);hide_debug_actors();vary_house_finishes();dress_roads(c);gate_windows(c);dress_verge(L,c);dress_props(L,c);dress_house_details();dress_street_groups(L,c)  # groups keep clear of tubs (WP6d fix 4a)
+    dress_footings(c,folder)
+    if folder!='Districts/':
+        dress_house_details(folder)
+        assert u.get_editor_subsystem(u.LevelEditorSubsystem).save_current_level()
+        return
+    hide_debug_actors();vary_house_finishes();dress_roads(c);gate_windows(c);dress_verge(L,c);dress_props(L,c);dress_house_details();dress_street_groups(L,c)  # groups keep clear of tubs (WP6d fix 4a)
 
 if __name__=='__main__':
-    dress_all()
+    import argparse
+    parser=argparse.ArgumentParser();parser.add_argument('--folder',default='Districts/');parser.add_argument('--terrain')
+    args=parser.parse_args();TERRAIN_LABEL=args.terrain
+    dress_all(args.folder)
