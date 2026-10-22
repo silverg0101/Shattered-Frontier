@@ -20,3 +20,7 @@ The intended visual identity is high-fantasy realism at an epic MMO scale. Its c
 
 These images are concept direction, not a promise that the corresponding systems or locations are already playable. Together they set the aspiration: players build, fight, trade, craft, and shape the future of the world.
 
+
+## Working documentation
+
+Start with [the dependency map](docs/dependency-map.md), then read the owning area file. The split routes mixed entries by their main file or subject; cross-area pointers are at the end of each area file. Completed work-plan checkpoints and completed queue rows are in [the archive](docs/design-work-plan-archive.md), while open work and decisions remain in [the active plan](docs/design-work-plan.md).

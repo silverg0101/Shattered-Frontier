@@ -80,7 +80,7 @@ Co-Authored-By: <your session's attribution line>")
 git update-ref HEAD $c $base
 git push
 ```
-The trailer is **your own model's line** as given in your session's attribution reminder (for example `Co-Authored-By: Claude Haiku 5.5 <noreply@anthropic.com>`), never another model's. Never touch the shared `.git/index`, never autostash, never reset. For files other sessions also edit (`docs/dependency-map.md`), build the blob from HEAD plus your lines and keep LF endings. In a worktree, use its own branch and a normal `git add`/`git commit` with the same trailer.
+The trailer is **your own model's line** as given in your session's attribution reminder (for example `Co-Authored-By: Claude Haiku 5.5 <noreply@anthropic.com>`), never another model's. Never touch the shared `.git/index`, never autostash, never reset. For files other sessions also edit (`docs/dependency-map/<area>.md`), build the blob from HEAD plus your lines and keep LF endings. In a worktree, use its own branch and a normal `git add`/`git commit` with the same trailer.
 
 ### Done means
 A pass is done only when the fresh reviewer's `REVIEW.md` has no FAIL in the pass's domain and every gate above printed its pass line. Report anything else as not done, with the open fix items.

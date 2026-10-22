@@ -84,7 +84,7 @@ Body, in order: load the `.r16`/`.r8` files (`FFileHelper::LoadFileToArray`; ass
 | `check_dressing_grounded.py`, `docs/evidence/.../wp6-town/check_ground.py` | unchanged (they go through `_terrain()` and `ray()`); the evidence copy is historical and is not re-run |
 | `build_silverbrook.surface_z`, `perf_bookmark_game.ground_z`, `townsfolk_lanes`, `silverbrook_props.dress_all` | unchanged: visibility traces or `HF.at()` |
 | `docs/evidence/graphics/2026-10-21-wp6-town/capture_game.py` | finds the ground by mesh name; new captures use `review_silverbrook_in_game.py`, which does not |
-| `docs/dependency-map.md` rows "Silverbrook ground, roads, river" and "Zone dressing" | rewritten to point here |
+| `docs/dependency-map/world-art.md` rows "Silverbrook ground, roads, river" and "Zone dressing" | rewritten to point here |
 
 ## J1b: natural mountains and the outer region
 
