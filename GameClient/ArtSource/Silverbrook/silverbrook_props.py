@@ -199,6 +199,9 @@ def _clear(A):
 def dress_verge(L,c):
     world=_world();v=c['verge'];A=_actors();pp,rects=_obstacles(A)
     meshes=[_asset(f'/Game/Frontier/Environment/Greenlands/Nature/Meshes/{n}') for n in v['meshes']];meshes=[m for m in meshes if m]
+    for path in eal.list_assets(LIB+'/Foliage',recursive=False,include_folder=False):  # also clears types dropped from the list
+        ft=u.load_asset(path)
+        if isinstance(ft,u.FoliageType_InstancedStaticMesh) and ft.get_name().startswith('FT_SBVerge_'):u.InstancedFoliageActor.remove_all_instances(world,ft)
     types=[]
     for mesh in meshes:
         name=f'FT_SBVerge_{mesh.get_name()}';path=f'{LIB}/Foliage/{name}'
@@ -263,10 +266,13 @@ def dress_street_groups(L,c):
     meshes=[_asset(LIB+'/Meshes/SM_SilverbrookProp'+n) for n in names]
     assert all(meshes),names
     total=0;road_counts={}
+    # Each street gets its share of max_groups by length inside the wall, so the cap is not spent on the first streets.
+    share={road:sum(1 for x,y,_,_ in _stations(pts,step) if _inside(L,c,x,y)) for road,tier,pts,width in _roads(L,c)}
+    quota={road:math.ceil(val(g['max_groups'])*n/max(1,sum(share.values()))) for road,n in share.items()}
     for road,tier,pts,width in _roads(L,c):
         road_counts[road]=0
         for k,(x,y,ux,uy) in enumerate(_stations(pts,step)):
-            if total>=val(g['max_groups']) or not _inside(L,c,x,y):continue
+            if total>=val(g['max_groups']) or road_counts[road]>=quota[road] or not _inside(L,c,x,y):continue
             key=f'group:{road}:{k}'
             mesh=meshes[int(_h(key)*len(meshes))%len(meshes)]
             for side,shift in ((1,0),(1,0.8),(-1,0),(-1,0.8)):
@@ -298,27 +304,38 @@ def dress_street_groups(L,c):
     need=sum(1 for road,tier,pts,width in _roads(L,c) for x,y,_,_ in _stations(pts,50) if _inside(L,c,x,y))*6
     print('STREET_GROUPS',total,'GATE',need,road_counts)
     assert total>=need,('STREET_GROUPS below 6 per 50 m',total,need)
+    assert min(road_counts[r] for r,n in share.items() if n)>0,road_counts  # no street inside the wall is left bare
     return road_counts
+
+def _outside_houses(houses,q,band,pad=50):
+    """True when world point q (cm) is outside every house's wall-base box grown by `pad` cm."""
+    for o in houses:
+        op=o.get_actor_location();oy=math.radians(o.get_actor_rotation().yaw);dx,dy=q[0]-op.x,q[1]-op.y
+        lx,ly=math.cos(oy)*dx+math.sin(oy)*dy,-math.sin(oy)*dx+math.cos(oy)*dy
+        if abs(lx)>3000 or abs(ly)>3000:continue
+        x0,x1,y0,y1=_base_box(o.static_mesh_component.static_mesh,band)
+        if x0-pad<lx<x1+pad and y0-pad<ly<y1+pad:return False
+    return True
 
 def dress_house_details():
     """Fenced side gardens with crops and firewood, flower tubs at the door and on the stoop, chimney smoke plumes."""
     A=_actors();world=_world();import pcg_dressing
     _,terrain=pcg_dressing._terrain()
     fence=_asset(LIB+'/Meshes/SM_SilverbrookPropFenceSection')
-    barrel=_asset(LIB+'/Meshes/SM_SilverbrookPropRainBarrel')
+    tub=_asset(LIB+'/Meshes/SM_SilverbrookPropFlowerTub')  # oak half-barrel with geraniums (WP6c review fix 7)
     crop=_asset('/Game/Frontier/Environment/Greenlands/Nature/Meshes/SM_HerbBroadleaf_00')
-    flower=_asset('/Game/Frontier/Environment/Greenlands/Arrival/Meshes/SM_PH_FloweringClump_0')
     firewood=_asset(LIB+'/Meshes/SM_SilverbrookPropFirewoodStack')
     lamp_smoke=_asset('/Game/Frontier/VFX/StreetLamp/M_LampSmoke');plane=_asset('/Engine/BasicShapes/Plane')
-    assert all((fence,barrel,crop,flower,firewood,lamp_smoke,plane))
-    if 'EdgeFade' not in [str(n) for n in mel.get_scalar_parameter_names(lamp_smoke)]:  # older M_LampSmoke without parameters
+    assert all((fence,tub,crop,firewood,lamp_smoke,plane)),'import PropFlowerTub (import_silverbrook.py PropFlowerTub)'
+    if 'ViewFade' not in [str(n) for n in mel.get_scalar_parameter_names(lamp_smoke)]:  # older M_LampSmoke without ViewFade
         sys.path.insert(0,str(ROOT.parent/'VFX'/'StreetLamp'));import build_materials,importlib;importlib.reload(build_materials).build()
-        assert 'EdgeFade' in [str(n) for n in mel.get_scalar_parameter_names(lamp_smoke)]
+        assert 'ViewFade' in [str(n) for n in mel.get_scalar_parameter_names(lamp_smoke)]
     cs=cfg()['chimney_smoke'];smoke=_instance('MI_SB_ChimneySmoke',lamp_smoke)
     mel.set_material_instance_scalar_parameter_value(smoke,'Opacity',val(cs['opacity']))
     mel.set_material_instance_scalar_parameter_value(smoke,'PanV',val(cs['pan_v']))
     mel.set_material_instance_vector_parameter_value(smoke,'Tint',u.LinearColor(*val(cs['tint']),1))
     mel.set_material_instance_scalar_parameter_value(smoke,'EdgeFade',val(cs['edge_fade']))
+    mel.set_material_instance_scalar_parameter_value(smoke,'ViewFade',1.)  # edge-on cards vanish (WP6c review fix 1)
     tex=_asset(cs['texture']);mel.set_material_instance_texture_parameter_value(smoke,'SmokeTex',tex)
     assert mel.get_material_instance_texture_parameter_value(smoke,'SmokeTex')==tex,'SmokeTex not set'
     assert eal.save_loaded_asset(smoke)
@@ -353,6 +370,7 @@ def dress_house_details():
         mesh=a.static_mesh_component.static_mesh
         if not mesh or not mesh.get_name().startswith('SM_Silverbrook') or '_Door' in mesh.get_name():continue
         label=a.get_actor_label();h=_h(label);b=mesh.get_bounding_box();p=a.get_actor_location()
+        x0,x1,y0,y1=_base_box(mesh,band)
         yaw=a.get_actor_rotation().yaw;co,si=math.cos(math.radians(yaw)),math.sin(math.radians(yaw))
         def pt(lx,ly):return p.x+co*lx-si*ly,p.y+si*lx+co*ly
         def terrain_z(x,y):
@@ -384,26 +402,25 @@ def dress_house_details():
             side=-1 if _h(label+'pot')<.5 else 1
             lx=side*(b.max.x-b.min.x)*.35;x,y=pt(lx,face_y(lx,40)+45);z=terrain_z(x,y)  # beside the door on the street face (+Y)
             if z is not None:
-                spawn('FlowerTub_'+label,barrel,x,y,z,yaw,(.25,.25,.25))
-                spawn('Flower_'+label,flower,x,y,z+25,yaw,(.35,.35,.35));counts['pots']+=1
+                t_=spawn('FlowerTub_'+label,tub,x,y,z,yaw,(1,1,1));counts['pots']+=1
+                t_.static_mesh_component.set_material_by_name('SB_GeraniumBloom',blooms[int(_h(label+'bloom')*2)%2])
             st=stoops.get(label+'_Stoop0')
             if st:  # second tub on the top step, off to one side of the tread
                 c0,ext=st.get_actor_bounds(False);r=st.get_actor_rotation().yaw;sc=st.get_actor_scale3d()
                 ang=math.radians(r if sc.x>sc.y else r+90);off=max(sc.x,sc.y)*50-25
                 x,y=c0.x+math.cos(ang)*off*side,c0.y+math.sin(ang)*off*side;z=c0.z+ext.z
-                spawn('StoopTub_'+label,barrel,x,y,z,yaw,(.25,.25,.25))
-                spawn('StoopFlower_'+label,flower,x,y,z+25,yaw,(.35,.35,.35));counts['stoop_pots']+=1
+                t_=spawn('StoopTub_'+label,tub,x,y,z,yaw,(.75,.75,.75));counts['stoop_pots']+=1  # 0.42 m: fits the 0.4 m tread
+                t_.static_mesh_component.set_material_by_name('SB_GeraniumBloom',blooms[int(_h(label+'stoopbloom')*2)%2])
+        for lx,ly,lz in sills.get(mesh.get_name(),[]):  # a planter on every bay-window sill (WP6c review fix 6)
+            x,y=pt(lx,ly);pl=spawn(f'SillPlanter_{label}_{lz}',planter,x,y,p.z+lz,yaw,(1,1,1))
+            pl.static_mesh_component.set_material(0,blooms[int(_h(label+'bloom'+str(lz))*2)%2]);counts['sill_planters']+=1
         if _h(label+'wall')<.4:  # wall dressing on 40 % of houses (WP6b review fix 8)
-            x0,x1,y0,y1=_base_box(mesh,band)
             doors=[d for d in a.get_attached_actors() if 'Door' in d.get_actor_label()]
             dlx=(co*(doors[0].get_actor_location().x-p.x)+si*(doors[0].get_actor_location().y-p.y)) if doors else 0
             lx=dlx+(110 if dlx<0 else -110)  # shop sign beside the door, its bracket 2.6 m up the street face
             x,y=pt(lx,face_y(lx,260))
             s_=spawn('ShopSign_'+label,sign,x,y,p.z+260,yaw,(1,1,1))
             s_.static_mesh_component.set_material(1,boards[int(_h(label+'board')*3)%3]);counts['signs']+=1
-            for lx,ly,lz in sills.get(mesh.get_name(),[]):  # a planter on each bay-window sill
-                x,y=pt(lx,ly);pl=spawn(f'SillPlanter_{label}_{lz}',planter,x,y,p.z+lz,yaw,(1,1,1))
-                pl.static_mesh_component.set_material(0,blooms[int(_h(label+'bloom'+str(lz))*2)%2]);counts['sill_planters']+=1
             side=-1 if _h(label+'ladder')<.5 else 1  # ladder leaning at 75 degrees against a side wall, at mid depth
             wx=x1 if side>0 else x0;foot=320*math.sin(math.radians(15))+10
             x,y=pt(wx+side*foot,(y0+y1)/2);z=terrain_z(x,y)
@@ -417,22 +434,31 @@ def dress_house_details():
             cx=x0 if _h(label+'ivy')<.5 else x1  # ivy clump at a front plinth corner
             x,y=pt(cx+(10 if cx>0 else -10),y1+10);z=terrain_z(x,y)
             if z is not None:spawn('IvyClump_'+label,ivy,x,y,z,yaw+45,(1,1,1));counts['ivy']+=1
-            for o in houses:  # washing line in the gap to a neighbour less than 4 m away (same row)
-                if o==a or o.get_actor_label() in lined:continue
+        if _h(label+'line')<.5:  # washing line on half the houses (WP6c review fix 5)
+            gside=(-1 if _h(label+'side')<.5 else 1) if h<.75 else 0   # this house's garden side
+            spot=None
+            for o in houses:  # a free gap to a same-row neighbour: lots are 5.1 m apart, so the line (3.7 m) scales to the gap
+                if o==a:continue
                 op=o.get_actor_location();dx,dy=op.x-p.x,op.y-p.y;ox,oy=co*dx+si*dy,-si*dx+co*dy
                 if abs(oy)>200 or abs(((o.get_actor_rotation().yaw-yaw)+180)%360-180)>15:continue
+                toward=1 if ox>0 else -1;ol=o.get_actor_label()
+                if toward==gside or ol in lined:continue                                   # our garden fills that gap
+                if _h(ol)<.75 and (-1 if _h(ol+'side')<.5 else 1)==-toward:continue        # the neighbour's garden fills it
                 ob=_base_box(o.static_mesh_component.static_mesh,band)
                 gap=(ox+ob[0]-x1) if ox>0 else (x0-(ox+ob[1]))
-                if not 120<=gap<=400:continue
+                if not 300<=gap<=800:continue
                 gx=(x1+ox+ob[0])/2 if ox>0 else (x0+ox+ob[1])/2
-                x,y=pt(gx,(y0+y1)/2);z=terrain_z(x,y)
-                if z is not None:
-                    spawn('WashingLine_'+label,line,x,y,z,yaw+90,(1,1,1));lined.add(label);counts['washing_lines']+=1
-                break
+                spot=(gx,(y0+y1)/2,yaw,max(.8,min(1.3,(gap-100)/370)));lined.add(ol);break
+            if spot is None:spot=(-gside*100,y0-230,yaw,1.0)   # rear yard on its own post pair, parallel to the back wall
+            gx,gy,lyaw,sx_=spot;x,y=pt(gx,gy);z=terrain_z(x,y)
+            # Posts and mid-point clear of every house's own wall base (+50 cm): world AABBs of turned houses cover the gaps.
+            ends=[pt(gx+d*185*sx_,gy) for d in (-1,0,1)]
+            if z is not None and all(_outside_houses(houses,q,band) for q in ends):
+                spawn('WashingLine_'+label,line,x,y,z,lyaw,(sx_,1,1));lined.add(label);counts['washing_lines']+=1
         if mesh.get_name().startswith('SM_SilverbrookTownhouse') and h<.4:
             number=int(mesh.get_name().removeprefix('SM_SilverbrookTownhouse'))
             sx,sy,sz=stacks[number];x,y=pt(sx*100,sy*100)
-            for k in range(2):spawn(f'ChimneySmoke_{label}_{k}',plane,x,y,p.z+sz*100+230,yaw+35+90*k,(1.4,4.2,1))
+            for k in range(2):spawn(f'ChimneySmoke_{label}_{k}',plane,x,y,p.z+sz*100+320,yaw+35+90*k,(2.2,6.0,1))
             counts['smoking']+=1
     print('HOUSE_DETAILS',counts)
     return counts
@@ -603,7 +629,8 @@ def hide_debug_actors():
     """Authoring visualisers never render in game (GFX-02 J1b); build_silverbrook.py sets the same on a fresh build."""
     n=0
     for a in _actors().get_all_level_actors():
-        marker=isinstance(a,u.StaticMeshActor) and str(a.get_folder_path())=="Places" and a.static_mesh_component.get_material(0) and a.static_mesh_component.get_material(0).get_name()=="MI_Graybox_Marker"
+        # Every graybox authoring box in Places/Plots (markers, waystone, yards, ruins, plots), whatever its colour (WP6c fix 2).
+        marker=isinstance(a,u.StaticMeshActor) and str(a.get_folder_path()) in ("Places","Plots") and a.static_mesh_component.get_material(0) is not None and a.static_mesh_component.get_material(0).get_name().startswith("MI_Graybox")
         if marker or a.get_class().get_name() in ("TextRenderActor","ZoneShape","ZoneGraphData") or str(a.get_folder_path()) in ("Labels","Townsfolk/Lanes"):
             a.set_actor_hidden_in_game(True);n+=1
     print("DEBUG_HIDDEN_IN_GAME",n)

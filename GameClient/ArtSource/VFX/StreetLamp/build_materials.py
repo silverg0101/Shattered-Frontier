@@ -164,7 +164,15 @@ def build(cfg=None):
     fade = _node(smoke, u.MaterialExpressionLinearInterpolate)
     _link(_constant(smoke, 1), fade, 'A'); _link(ends, fade, 'B')
     _link(_node(smoke, u.MaterialExpressionScalarParameter, parameter_name='EdgeFade', default_value=0.), fade, 'Alpha')
-    _output(_mul(smoke, _mul(smoke, _alpha(smoke, image), opacity), fade), u.MaterialProperty.MP_OPACITY)
+    # ViewFade (chimney cards only): an edge-on card is invisible, 0 within 15 deg of edge-on, 1 beyond ~37 deg.
+    cam = _node(smoke, u.MaterialExpressionCameraVectorWS); nrm = _node(smoke, u.MaterialExpressionVertexNormalWS)
+    dot = _node(smoke, u.MaterialExpressionDotProduct); _link(cam, dot, 'A'); _link(nrm, dot, 'B')
+    facing = _node(smoke, u.MaterialExpressionAbs); _link(dot, facing, '')
+    view = _node(smoke, u.MaterialExpressionSaturate)
+    _link(_mul(smoke, _add(smoke, facing, _constant(smoke, -.25)), _constant(smoke, 1.8)), view, '')
+    vf = _node(smoke, u.MaterialExpressionLinearInterpolate); _link(_constant(smoke, 1), vf, 'A'); _link(view, vf, 'B')
+    _link(_node(smoke, u.MaterialExpressionScalarParameter, parameter_name='ViewFade', default_value=0.), vf, 'Alpha')
+    _output(_mul(smoke, _mul(smoke, _mul(smoke, _alpha(smoke, image), opacity), fade), vf), u.MaterialProperty.MP_OPACITY)
     _save(smoke)
 
     firefly = _material('M_LampFirefly', blend=u.BlendMode.BLEND_ADDITIVE)

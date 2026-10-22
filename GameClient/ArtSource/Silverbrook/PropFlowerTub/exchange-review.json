@@ -1,0 +1,72 @@
+{
+  "source": {
+    "meshes": 7,
+    "triangles": 5588,
+    "size_m": [
+      0.561,
+      0.545,
+      0.748
+    ],
+    "materials": [
+      "SB_DampSoil",
+      "SB_ForgedIron",
+      "SB_GeraniumBloom",
+      "SB_GeraniumLeaf",
+      "SB_GeraniumStem",
+      "SB_OakTimber",
+      "SB_ThymeSprig"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 3
+  },
+  "glb": {
+    "meshes": 7,
+    "triangles": 5588,
+    "size_m": [
+      0.561,
+      0.545,
+      0.748
+    ],
+    "materials": [
+      "SB_DampSoil",
+      "SB_ForgedIron",
+      "SB_GeraniumBloom",
+      "SB_GeraniumLeaf",
+      "SB_GeraniumStem",
+      "SB_OakTimber",
+      "SB_ThymeSprig"
+    ],
+    "colour_attributes": [
+      "Color",
+      "Color.001"
+    ],
+    "images_missing": [],
+    "images": 0
+  },
+  "fbx": {
+    "meshes": 7,
+    "triangles": 5588,
+    "size_m": [
+      0.561,
+      0.545,
+      0.748
+    ],
+    "materials": [
+      "SB_DampSoil",
+      "SB_ForgedIron",
+      "SB_GeraniumBloom",
+      "SB_GeraniumLeaf",
+      "SB_GeraniumStem",
+      "SB_OakTimber",
+      "SB_ThymeSprig"
+    ],
+    "colour_attributes": [
+      "Weathering"
+    ],
+    "images_missing": [],
+    "images": 1
+  }
+}

@@ -1,0 +1,187 @@
+{
+  "asset": "SilverbrookPropFlowerTub",
+  "asset_id": "PropFlowerTub",
+  "variant": 1,
+  "reference": {
+    "file": "concept/flower-tub-sheet.png",
+    "sha256": "1219f15a1d9e6ae74076b200c5844cbd46acf38cbbcf34928214bc6bc2c0fb0e",
+    "note": "Codex concept sheet for PropFlowerTub"
+  },
+  "blender": "5.1.1",
+  "generator": "build_propflowertub.py",
+  "method": "procedural original geometry (concept interpretation, not image reconstruction)",
+  "units": "metres, Z up, front -Y, origin bottom centre (round tub, front -Y)",
+  "bounds_m": [
+    0.561,
+    0.545,
+    0.748
+  ],
+  "meshes": {
+    "SM_SBFlowerTub_Staves": {
+      "triangles": 1138,
+      "materials": [
+        "SB_OakTimber"
+      ]
+    },
+    "SM_SBFlowerTub_Hoops": {
+      "triangles": 864,
+      "materials": [
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBFlowerTub_Soil": {
+      "triangles": 18,
+      "materials": [
+        "SB_DampSoil"
+      ]
+    },
+    "SM_SBFlowerTub_Leaves": {
+      "triangles": 432,
+      "materials": [
+        "SB_GeraniumLeaf"
+      ]
+    },
+    "SM_SBFlowerTub_Stems": {
+      "triangles": 336,
+      "materials": [
+        "SB_GeraniumStem"
+      ]
+    },
+    "SM_SBFlowerTub_Blooms": {
+      "triangles": 1200,
+      "materials": [
+        "SB_GeraniumBloom"
+      ]
+    },
+    "SM_SBFlowerTub_Thyme": {
+      "triangles": 1600,
+      "materials": [
+        "SB_ThymeSprig"
+      ]
+    }
+  },
+  "triangles": 5588,
+  "materials": [
+    {
+      "name": "SB_OakTimber",
+      "scan": "weathered_brown_planks",
+      "dark": [
+        0.32,
+        0.3,
+        0.28
+      ],
+      "lichen": null,
+      "normal": 1.0,
+      "metal": false
+    },
+    {
+      "name": "SB_ForgedIron",
+      "colour": [
+        0.03,
+        0.026,
+        0.022
+      ],
+      "roughness": 0.6,
+      "metallic": 0.9,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_DampSoil",
+      "colour": [
+        0.03,
+        0.021,
+        0.015
+      ],
+      "roughness": 0.95,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_GeraniumLeaf",
+      "colour": [
+        0.075,
+        0.19,
+        0.04
+      ],
+      "roughness": 0.6,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_GeraniumStem",
+      "colour": [
+        0.07,
+        0.12,
+        0.035
+      ],
+      "roughness": 0.7,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    },
+    {
+      "name": "SB_GeraniumBloom",
+      "colour": [
+        0.5,
+        0.02,
+        0.02
+      ],
+      "roughness": 0.55,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0,
+      "variants": {
+        "Pink": [
+          0.62,
+          0.13,
+          0.2
+        ]
+      }
+    },
+    {
+      "name": "SB_ThymeSprig",
+      "colour": [
+        0.06,
+        0.12,
+        0.05
+      ],
+      "roughness": 0.7,
+      "metallic": 0,
+      "emission": null,
+      "strength": 0
+    }
+  ],
+  "sources": "../materials-provenance.json (CC0 Poly Haven scans); PNG textures cut from the concept sheet",
+  "unreal_mesh": "SM_SilverbrookPropFlowerTub",
+  "slot_m": [
+    0.6,
+    0.6,
+    0.8
+  ],
+  "placement": {
+    "footprint_m": [
+      0.6,
+      0.6
+    ],
+    "front": "-Y",
+    "ground_contact": true,
+    "near": [
+      "cottage",
+      "townhouse",
+      "inn",
+      "market"
+    ],
+    "clearance_m": 0.2
+  },
+  "outputs": [
+    "SilverbrookPropFlowerTub.blend",
+    "SilverbrookPropFlowerTub.glb",
+    "SilverbrookPropFlowerTub.fbx"
+  ],
+  "variants": {
+    "note": "flowers are slot SB_GeraniumBloom (red); the Pink MI is MI_SB_GeraniumBloom_Pink"
+  }
+}

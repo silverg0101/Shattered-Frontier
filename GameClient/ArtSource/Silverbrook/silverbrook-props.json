@@ -103,9 +103,7 @@
       "SM_HerbBroadleaf_01",
       "SM_HerbBroadleaf_02",
       "SM_CobblePebbleScatter_00",
-      "SM_CobblePebbleScatter_01",
-      "SM_MossPatch_00",
-      "SM_MossPatch_01"
+      "SM_CobblePebbleScatter_01"
     ]
   },
   "wall_margin_m": {
@@ -365,14 +363,14 @@
     }
   },
   "street_groups": {
-    "spacing_m": {"value": 4, "min": 3, "max": 9, "unit": "metres between street-side group candidates"},
+    "spacing_m": {"value": 5, "min": 3, "max": 9, "unit": "metres between street-side group candidates"},
     "offset_m": {"value": 1.2, "min": 0.8, "max": 3.5, "unit": "metres beyond the painted road edge"},
     "clear_m": {"value": 0.55, "min": 0.4, "max": 1.2, "unit": "metres of footprint clearance"},
-    "max_groups": {"value": 700, "min": 100, "max": 700, "unit": "groups in the whole town"}
+    "max_groups": {"value": 1500, "min": 100, "max": 2000, "unit": "groups in the whole town"}
   },
   "chimney_smoke": {
-    "opacity": {"value": 0.45, "min": 0.2, "max": 0.7, "unit": "plume opacity (MI_SB_ChimneySmoke Opacity)"},
-    "tint": {"value": [0.80, 0.80, 0.83], "min": 0.0, "max": 1.0, "unit": "linear emissive colour"},
+    "opacity": {"value": 0.7, "min": 0.2, "max": 0.7, "unit": "plume opacity (MI_SB_ChimneySmoke Opacity)"},
+    "tint": {"value": [0.58, 0.58, 0.62], "min": 0.0, "max": 1.0, "unit": "linear emissive colour"},
     "pan_v": {"value": 0.12, "min": -0.3, "max": 0.3, "unit": "UV per second along V (plume rise)"},
     "edge_fade": {"value": 1.0, "min": 0.0, "max": 1.0, "unit": "fraction: fade the card's top and bottom ends"},
     "texture": "/Game/Frontier/VFX/StreetLamp/T_ChimneySmoke"

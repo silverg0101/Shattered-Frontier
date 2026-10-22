@@ -107,8 +107,8 @@ def _box(label, x, y, w, d, h, mat, z0, yaw, collide, folder, ground, pitch=0.0)
         a.static_mesh_component.set_editor_property('cast_shadow', False)
     if not collide:
         a.static_mesh_component.set_collision_profile_name('NoCollision')  # the profile is reapplied on load; a bare flag is not kept
-    if mat == 'Marker':
-        a.set_actor_hidden_in_game(True)  # authoring marker (GFX-02 J1b): never drawn in game; check_hidden_in_game.py asserts it
+    if mat == 'Marker' or folder in ('Places', 'Plots'):
+        a.set_actor_hidden_in_game(True)  # authoring box (GFX-02 J1b, WP6c fix 2): never drawn in game; check_hidden_in_game.py asserts it
     return a
 
 

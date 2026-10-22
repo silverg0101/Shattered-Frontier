@@ -1,0 +1,23 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookPropFlowerTub",
+  "size_m": [
+    0.56,
+    0.54,
+    0.75
+  ],
+  "slots": 7,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 1,
+  "nanite_fallback_triangles": 4310,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 16
+  },
+  "slot_m": [
+    0.6,
+    0.6,
+    0.8
+  ],
+  "fits": true
+}
