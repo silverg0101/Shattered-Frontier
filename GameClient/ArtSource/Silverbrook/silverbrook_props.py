@@ -136,9 +136,11 @@ def build_glow_master(c):
     q=_node(m,u.MaterialExpressionDivide);_link(num,q,'A');_link(den,q,'B')
     night=_node(m,u.MaterialExpressionSaturate);_link(q,night,'')
     gate=param(u.MaterialExpressionScalarParameter,'Gate',0.)
+    scale=param(u.MaterialExpressionScalarParameter,'GlowScale',1.)   # WP6i review fix 4: lit windows clipped the jetty soffits at dusk
     one=_node(m,u.MaterialExpressionConstant,r=1.)
     k=_node(m,u.MaterialExpressionLinearInterpolate);_link(one,k,'A');_link(night,k,'B');_link(gate,k,'Alpha')
-    out=_node(m,u.MaterialExpressionMultiply);_link(em,out,'A');_link(k,out,'B')
+    ks=_node(m,u.MaterialExpressionMultiply);_link(k,ks,'A');_link(scale,ks,'B')
+    out=_node(m,u.MaterialExpressionMultiply);_link(em,out,'A');_link(ks,out,'B')
     for node,prop in ((col,'MP_BASE_COLOR'),(rg,'MP_ROUGHNESS'),(me,'MP_METALLIC'),(out,'MP_EMISSIVE_COLOR')):
         assert mel.connect_material_property(node,'',getattr(u.MaterialProperty,prop))
     mel.recompile_material(m);assert eal.save_loaded_asset(m);return m
@@ -156,6 +158,7 @@ def gate_windows(c):
         mel.set_material_instance_parent(mi,master)
         mel.set_material_instance_vector_parameter_value(mi,'Emission',em);mel.set_material_instance_scalar_parameter_value(mi,'EmissionStrength',st)
         mel.set_material_instance_scalar_parameter_value(mi,'Gate',1. if is_win else 0.)
+        mel.set_material_instance_scalar_parameter_value(mi,'GlowScale',val(c['windows']['glow_strength_scale']) if is_win else 1.)
         eal.save_loaded_asset(mi);(gated if is_win else free).append(mi.get_name())
     print('WINDOWS_GATED',gated,'ALWAYS_LIT',free);return gated
 
@@ -210,6 +213,15 @@ def _clear(A):
     for a in A.get_all_level_actors():
         if TAG in [str(t) for t in a.tags]:A.destroy_actor(a)
 
+def _cobble(L,c,x,y,extra=2.0,ramp=5.0):
+    """build_silverbrook.road_field's street cobble (G) at (x, y) m: 1 to the road edge + `extra`, then a one-ramp (grid step) fall."""
+    best=0.
+    for _,_,pts,w in _roads(L,c):
+        for a,b in zip(pts,pts[1:]):
+            dx,dy=b[0]-a[0],b[1]-a[1];t=max(0.,min(1.,((x-a[0])*dx+(y-a[1])*dy)/((dx*dx+dy*dy) or 1)))
+            best=max(best,min(1.,max(0.,1-(math.hypot(x-a[0]-dx*t,y-a[1]-dy*t)-w/2-extra)/ramp)))
+    return best
+
 def dress_verge(L,c):
     world=_world();v=c['verge'];A=_actors();pp,rects=_obstacles(A)
     meshes=[_asset(f'/Game/Frontier/Environment/Greenlands/Nature/Meshes/{n}') for n in v['meshes']];meshes=[m for m in meshes if m]
@@ -234,6 +246,7 @@ def dress_verge(L,c):
                 z=pp._ground(world,px*100,py*100,0)
                 if z is None:continue
                 ft,tx=types[int(_h(key+'t')*len(types))%len(types)]
+                if 'Pebble' in ft.get_name() and _cobble(L,c,px,py)>=.5:continue   # WP6i review fix 8: field stones stay off the carriageway
                 s=lo+(hi-lo)*_h(key+'s')
                 tx.append(u.Transform(location=u.Vector(px*100,py*100,z),rotation=u.Rotator(yaw=_h(key+'y')*360),scale=u.Vector(s,s,s)))
     total=0

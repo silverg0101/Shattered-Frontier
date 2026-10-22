@@ -45,6 +45,7 @@
     ]
   },
   "windows": {
+    "glow_strength_scale": {"value": 0.6, "min": 0.1, "max": 1.0, "unit": "x imported window EmissionStrength (M_SB_WindowGlow GlowScale; WP6i review fix 4)"},
     "glow_begins_sun_elevation_deg": {
       "value": 4,
       "min": -10,
@@ -371,13 +372,13 @@
   },
   "chimney_smoke": {
     "_note": "NS_ChimneySmoke User parameters, pushed per NiagaraActor by dress_house_details (WP6g review; docs/blueprints/vfx.md section 2)",
-    "spawn_rate": {"value": 3.5, "min": 2, "max": 12, "unit": "puffs per second (User.SpawnRate)"},
+    "spawn_rate": {"value": 5, "min": 2, "max": 12, "unit": "puffs per second (User.SpawnRate)"},
     "lifetime": {"value": 5.5, "min": 2.5, "max": 6.0, "unit": "seconds per puff (User.Lifetime)"},
     "rise_speed": {"value": 2.4, "min": 0.8, "max": 3.0, "unit": "m/s initial rise (User.RiseSpeed, cm/s)"},
     "wind": {"value": [0.35, 0.0, 0.0], "min": -2.0, "max": 2.0, "unit": "m/s world wind per axis (User.Wind, cm/s)"},
     "start_size": {"value": 0.35, "min": 0.3, "max": 1.0, "unit": "m puff size at the pot (User.StartSize, cm)"},
     "end_size": {"value": 2.8, "min": 1.2, "max": 3.5, "unit": "m puff size at end of life (User.EndSize, cm)"},
-    "opacity": {"value": 0.22, "min": 0.2, "max": 0.8, "unit": "sprite opacity (User.Opacity -> M_ChimneySmokeSprite Opacity)"},
+    "opacity": {"value": 0.5, "min": 0.2, "max": 0.8, "unit": "sprite opacity (User.Opacity -> M_ChimneySmokeSprite Opacity)"},
     "tint": {"value": [0.24, 0.24, 0.26], "min": 0.0, "max": 1.0, "unit": "linear base colour (User.Tint)"}
   }
 }

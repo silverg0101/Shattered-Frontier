@@ -188,14 +188,14 @@ def build(cfg=None):
     flame = _material('M_LampFlame', blend=u.BlendMode.BLEND_ADDITIVE)
     image = _sample(flame, 'T_LampFlame')
     tint = _node(flame, u.MaterialExpressionConstant3Vector, constant=color)
-    energy = _mul(flame, _mul(flame, tint, _alpha(flame, image)),
-                  _mul(flame, _flicker(flame, cfg), _constant(flame, 5)))
+    energy = _mul(flame, _mul(flame, _mul(flame, tint, _alpha(flame, image)),
+                  _mul(flame, _flicker(flame, cfg), _constant(flame, 5))), _night(flame, cfg))   # WP6i review fix 3: out by day
     _output(energy, u.MaterialProperty.MP_EMISSIVE_COLOR); _save(flame)
 
     halo = _material('M_LampHalo', blend=u.BlendMode.BLEND_ADDITIVE)
     image = _sample(halo, 'T_LampGlow')
     tint = _node(halo, u.MaterialExpressionConstant3Vector, constant=color)
-    _output(_mul(halo, _mul(halo, _alpha(halo, image), tint), _mul(halo, _flicker(halo, cfg), _constant(halo, 1.4))),
+    _output(_mul(halo, _mul(halo, _mul(halo, _alpha(halo, image), tint), _mul(halo, _flicker(halo, cfg), _constant(halo, 1.4))), _night(halo, cfg)),
             u.MaterialProperty.MP_EMISSIVE_COLOR); _save(halo)
 
     smoke = _material('M_LampSmoke', blend=u.BlendMode.BLEND_TRANSLUCENT)
@@ -247,7 +247,7 @@ def build(cfg=None):
     off = _node(smoke, u.MaterialExpressionAbs); _link(_add(smoke, cu, _constant(smoke, -.5)), off, '')
     sides = _node(smoke, u.MaterialExpressionSaturate)
     _link(_mul(smoke, _sub(smoke, _constant(smoke, .5), off), _constant(smoke, 10.)), sides, '')
-    _output(_mul(smoke, _mul(smoke, _mul(smoke, _mul(smoke, _mul(smoke, _alpha(smoke, image), opacity), fade), vf), far), _mul(smoke, sides, thin)),
+    _output(_mul(smoke, _mul(smoke, _mul(smoke, _mul(smoke, _mul(smoke, _mul(smoke, _alpha(smoke, image), opacity), fade), vf), far), _mul(smoke, sides, thin)), _night(smoke, cfg)),
             u.MaterialProperty.MP_OPACITY)
     _save(smoke)
 

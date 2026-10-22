@@ -64,3 +64,19 @@ With these values, the plume at 14 m is almost invisible. Peak per-puff opacity 
 | chimney | 3.268 / 3.677 / 3.589 / 3.583 | -0.202 | 0.100 / 0.086 | 0.293 / 0.304 | 9 |
 | street | 3.352 / 3.558 / 3.487 / 3.272 | +0.005 | 0.084 / 0.154 | 0.328 / 0.326 | 9 |
 | far | 3.811 | | 0.068 | 0 | 0 |
+
+## Round 2: REVIEW.md fix list (r1 scored 9 PASS / 10 FAIL)
+
+Run order is now: `build_silverbrook.py --discard-unsaved`, then `paint_street_edges.py`, then `pcg_dressing.py` (rerun until `DRESSING_SAVED`, every volume `instances == expected`; the builder logs `PCG_FINISH_REQUIRED`), then gates, then captures. All gates are unchanged from the table above (`VERGE_INSTANCES 220`).
+
+1. PCG finished before capture. `context-overview-se` has 14,962 px with L < 70. The 24,000 target was set for the WP6h eye at 230 m; fix 6 raises both overview eyes to 330 m.
+2. `chimney_smoke` `opacity` 0.5 and `spawn_rate` 5. `capture_game.py` hides every non-player Character from `chimney-smoke` through the motion set. `measure_plume.py` item 5 now uses the new definition.
+3. `M_LampFlame`, `M_LampHalo` and `M_LampSmoke` are multiplied by `_night()`.
+4. `light_intensity` is 450 lm (street lamps) and wall lanterns are x 0.33 (150 lm). Window glow is x 0.6 via the new `M_SB_WindowGlow` `GlowScale` parameter: `windows.glow_strength_scale` 0.6 is set by `gate_windows` on window MIs, and `lamp_fx` keeps the lantern pane at 1.
+5. Night row: sun pitch +12, sky light 0, PPV exposure bias +0.25 at runtime (`WP6_NIGHT_ROW`). The blueprint row said "-12", which in UE puts the sun 12 deg up; `lighting-and-atmosphere.md` now gives +12 with the sign rule. Sky L in the top 60 rows: 13.3 / 8.5 / 4.3 (house-frontage / side-b / lamp-wall dusk).
+6. Overview eye raised in 50 m steps until the bottom-centre ray clears the terrain: both at 330 m (`WP6_OVERVIEW_FRAME_CLEAR`).
+7. The plots near (470, 215) are `ConstructionPlot_*`, already hidden in game. The grey slabs are their levelled pads, so each plot rectangle is added to `FIELDS` (tilled A paint).
+8. `dress_verge` skips `*Pebble*` instances where `_cobble()` (road_field's cobble: edge + 2 m, then a 5 m fall) is >= 0.5.
+9. Street-lamp family is marked "owner to confirm": not changed, left open for the owner.
+
+Round 2 plume numbers: origin y 550 x 960-1457; y 150 span 863 (ratio 1.73); veil max 19 columns per row; peak |excess| 18.0 at y 380-540 and 13.7 at y 100; core L/ref (y 380-540, x 840-960) 0.993-1.0; L/ref 0.954 at y 150; sky rows max 0.972; motion up 101.6 px/s, drift 3.7, MAD min 0.88. The near plume still matches the field's luminance; only puffs 3-4 m up read darker, against the haze. Perf (1440p, on - off): chimney -0.162 ms, street -0.020 ms.

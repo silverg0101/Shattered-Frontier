@@ -140,8 +140,8 @@ def _point_light(subsystem, position, cfg, material, label, owner, u):
     light.set_editor_property('mobility', u.ComponentMobility.MOVABLE)
     light.set_editor_property('intensity_units', u.LightUnits.LUMENS)
     wall = not owner.get_actor_label().startswith('StreetLamp_')
-    # WP6h review 3b: a wall lantern at full output clipped the stone beside it; half the lumens and a 6 cm source.
-    light.set_editor_property('intensity', cfg['light_intensity'] * (.5 if wall else 1.))
+    # WP6h review 3b / WP6i fix 4: a wall lantern at full output clipped the stone beside it; a third of the lumens, 6 cm source.
+    light.set_editor_property('intensity', cfg['light_intensity'] * (.33 if wall else 1.))
     if wall:
         light.set_editor_property('source_radius', 6.)
     light.set_editor_property('attenuation_radius', cfg['light_radius'] * 100)
@@ -224,6 +224,7 @@ def apply(world=None, save=False):
             mel.set_material_instance_vector_parameter_value(mi, 'Emission', u.LinearColor(*cfg['flame_colour'], 1))
             mel.set_material_instance_scalar_parameter_value(mi, 'EmissionStrength', cfg['glass_emission_strength'])
             mel.set_material_instance_scalar_parameter_value(mi, 'Gate', 1. if cfg['lit'] == 'time-of-day' else 0.)
+            mel.set_material_instance_scalar_parameter_value(mi, 'GlowScale', 1.)   # the window scale (gate_windows) is not for the pane
             assert u.EditorAssetLibrary.save_loaded_asset(mi); lanterns.append(mi.get_name())
     assert lanterns, 'no building lantern glow instances under ' + LANTERN_MATS
     print('LANTERN_PANES', lanterns)

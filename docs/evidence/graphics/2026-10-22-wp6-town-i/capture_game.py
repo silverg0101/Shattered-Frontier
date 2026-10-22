@@ -60,19 +60,27 @@ chimney = (u.Vector(sp.x + 300, sp.y + 1370, sp.z + 300), u.Vector(sp.x, sp.y, s
 add('chimney-smoke', chimney[0], chimney[1], 55)
 add('chimney-smoke-ref', chimney[0], chimney[1], 55)   # smoke hidden: measure_plume.py's background
 REF = len(views) - 1
+CHIMNEY = REF - 1
+# Night row (lighting-and-atmosphere.md section 3): UE pitch +12 = sun 12 deg below the horizon, sky light 0, exposure bias +0.25 EV.
+NIGHT = {'sun_pitch': 12., 'sky': 0., 'exposure': .25}
+others = [c for c in u.GameplayStatics.get_all_actors_of_class(world, u.Character) if c != pawn]   # WP6i fix 2: no people in the plume frames
 MOTION = REF   # the motion set follows the reference frame (smoke shown again) without moving the camera
 
 rng = random.Random(20261022)
 # Overviews (WP6h review fix 6): 230 m above the town-centre ground (not the local ground: the NW eye sat 200 m over the
 # northern ridge and looked at its own slope), and no terrain between the eye and the aim point.
+# WP6i review fix 6: raise the eye until the ray through the bottom-centre of the frame clears the terrain.
+VFOV = 2 * math.degrees(math.atan(math.tan(math.radians(80 / 2)) * 9 / 16))   # 50.5 deg for FOV 80 at 16:9
 for name, (bx, by), alt, pitch in (('context-overview-se', (520, 640), 230, 38), ('context-overview-nw', (-430, -470), 230, 42)):
-    e = u.Vector(bx*100, by*100, ground(0, -30) + alt*100); tx, ty = 0, -30; dist = alt / math.tan(math.radians(pitch))
-    dx, dy = tx - bx, ty - by; n = math.hypot(dx, dy); look = u.Vector((bx + dx/n*dist)*100, (by + dy/n*dist)*100, e.z - alt*100)
-    aim = u.Vector(look.x, look.y, ground(look.x/100, look.y/100) + 500)   # 5 m above the ground at the aim point
-    hit = terrain.static_mesh_component.line_trace_component(e, aim, True, False)
-    assert not hit, f'{name}: terrain between the eye and the town'
-    u.log(f'WP6_OVERVIEW_SIGHTLINE_CLEAR {name}')
-    add(name, e, look, 80)
+    tx, ty = 0, -30; dx, dy = tx - bx, ty - by; n = math.hypot(dx, dy)
+    for alt in range(alt, 601, 50):
+        e = u.Vector(bx*100, by*100, ground(0, -30) + alt*100); pitch = math.degrees(math.atan2(alt, n))
+        down = math.radians(pitch + VFOV / 2)   # the ray through the bottom-centre of the frame
+        bottom = u.Vector((bx + dx/n*math.cos(down)*400)*100, (by + dy/n*math.cos(down)*400)*100, e.z - math.sin(down)*40000)
+        if not terrain.static_mesh_component.line_trace_component(e, bottom, True, False): break
+    else: raise AssertionError(f'{name}: terrain inside the frame bottom up to 600 m')
+    u.log(f'WP6_OVERVIEW_FRAME_CLEAR {name} alt {alt}')
+    add(name, e, u.Vector(tx*100, ty*100, e.z - alt*100), 80)
 # Ground spots on each road out of town (outside the wall), random point and random heading along the road.
 roads = LAYOUT['roads']['primary']
 for road in ('Silvermere Road', 'Everwood Road', 'Valemere Road'):
@@ -145,6 +153,7 @@ def tick(_delta):
             if len(state['times']) == 14:
                 (OUT / 'motion-times.json').write_text(json.dumps({'world_time_s': state['times']}, indent=1) + '\n')
                 state['motion'] = None; state['frame'] = 60 + 138   # local 139 on the next tick: advance
+                for c in others: c.set_actor_hidden_in_game(False)
         return
     local = (state['frame'] - 60) % 140
     name, e, t, fov, subject = views[state['index']]
@@ -155,12 +164,18 @@ def tick(_delta):
                 raise AssertionError((name, 'prop within 1.5 m of the sight line in the first 10 m', block[:3]))
             if block: u.log(f'WP6_SIGHTLINE_BLOCKED {name} {block[:3]}')
         u.log(f'WP6_SIGHTLINE_CLEAR {name} props {len(props)}')
+        if state['index'] == CHIMNEY:
+            for c in others: c.set_actor_hidden_in_game(True)
         if state['index'] == REF:
             for a in smokes: a.set_actor_hidden_in_game(True)
-        if name.endswith('-dusk'):
+        if name.endswith('-dusk'):   # lighting-and-atmosphere.md section 3 night row (WP6i review fix 5)
             sun.root_component.set_mobility(u.ComponentMobility.MOVABLE)   # a stationary sun ignores runtime rotation
-            r = sun.get_actor_rotation(); sun.set_actor_rotation(u.Rotator(roll=r.roll, pitch=6, yaw=r.yaw), False)
-            u.log(f'WP6_SUN_PITCH {sun.get_actor_rotation().pitch}')
+            r = sun.get_actor_rotation(); sun.set_actor_rotation(u.Rotator(roll=r.roll, pitch=NIGHT['sun_pitch'], yaw=r.yaw), False)
+            for s in u.GameplayStatics.get_all_actors_of_class(world, u.SkyLight): s.light_component.set_intensity(NIGHT['sky'])
+            for v in u.GameplayStatics.get_all_actors_of_class(world, u.PostProcessVolume):
+                ps = v.get_editor_property('settings'); ps.set_editor_property('override_auto_exposure_bias', True)
+                ps.set_editor_property('auto_exposure_bias', NIGHT['exposure']); v.set_editor_property('settings', ps)
+            u.log(f'WP6_NIGHT_ROW sun_pitch {sun.get_actor_rotation().pitch} sky {NIGHT["sky"]} exposure {NIGHT["exposure"]}')
         d = t - e
         camera.set_actor_location(e, False, False)
         camera.set_actor_rotation(u.Rotator(pitch=math.degrees(math.atan2(d.z, math.hypot(d.x, d.y))), yaw=math.degrees(math.atan2(d.y, d.x))), False)

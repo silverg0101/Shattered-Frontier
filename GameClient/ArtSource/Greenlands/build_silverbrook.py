@@ -578,6 +578,7 @@ for i, (x, y) in enumerate(L['construction_plots']['centres']):
         blocked.append(f'ConstructionPlot_{i} at {x},{y}')
         continue
     placed.append((x, y, size * 0.71))
+    FIELDS.append((x, y, size, size))  # WP6i review fix 7: the reserved (hidden) plot reads as tilled ground, not a levelled slab
     box(f'ConstructionPlot_{i}', x, y, size, size, 0.05, 'Plot', collide=False, folder='Plots', ground='centre')
 
 assert not blocked, f'Blocked places (move them in the layout): {blocked}'
@@ -930,6 +931,7 @@ for district in DRESS_DISTRICTS:
 u.log(f'SILVERBROOK_PROPS {place_props.place_all()}')  # wells, carts, benches... beside buildings; reruns replace them
 u.log(f'SILVERBROOK_TOWNSFOLK_LANES {townsfolk_lanes.build_in_editor(*townsfolk_lanes.plan(L), ground=HF.at, wet=lambda x, y: water_gap((x, y)) < 0)}')  # footways for the townsfolk prototype
 u.log(f'SILVERBROOK_TOWNSFOLK_SMARTOBJECTS {townsfolk_smartobjects.build_in_editor(L)}')  # doors, stalls and benches residents claim
+u.log('PCG_FINISH_REQUIRED run pcg_dressing.py before capture')  # WP6i review fix 1: PCG volumes generate after this script
 import silverbrook_props; importlib.reload(silverbrook_props); silverbrook_props.dress_all()  # WP6: re-materials Roads/Primary and Roads/Secondary by folder path, adds verges and props
 # The editor opens over the market square, 30 m up and 35 m back, looking up the main street (the map keeps its viewport on save).
 _cam = u.Vector(ax * 100 - 35 * 100 * math.cos(math.radians(yaw)), ay * 100 - 35 * 100 * math.sin(math.radians(yaw)), (surface_z(ax, ay) + 30) * 100)
