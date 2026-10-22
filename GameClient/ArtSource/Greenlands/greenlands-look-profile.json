@@ -109,7 +109,7 @@
       "share": 0.0,
       "where": "slopes and forest floor",
       "have": ["SM_BoulderLargeMoss_00", "SM_BoulderLargeMoss_01", "SM_BoulderLargeMoss_02", "SM_BoulderLargeMoss_03"],
-      "place": {"per_ha": 6, "spacing": 8, "slope": [8, 90], "valley": [0, 999], "light": "any", "clear": 3, "scale": [1.0, 1.6], "sink": 0.25, "fallback": "rock_medium", "harvest": "stone"}
+      "place": {"per_ha": 6, "spacing": 8, "slope": [8, 90], "valley": [0, 999], "light": "any", "clear": 4.5, "scale": [1.0, 1.6], "sink": 0.25, "fallback": "rock_medium", "harvest": "stone"}
     },
     {
       "layer": "rocks",
@@ -119,7 +119,7 @@
       "share": 0.0,
       "where": "slope above 30 degrees, rises",
       "have": ["SM_BedrockSlab_00", "SM_BedrockSlab_01", "SM_BedrockSlab_02", "SM_BedrockSlab_03"],
-      "place": {"per_ha": 40, "spacing": 5, "slope": [30, 90], "valley": [0, 999], "light": "any", "clear": 3, "scale": [1.5, 2.6], "sink": 0.35, "fallback": "rock_medium"}
+      "place": {"per_ha": 40, "spacing": 5, "slope": [30, 90], "valley": [0, 999], "light": "any", "clear": 4.5, "scale": [1.5, 2.6], "sink": 0.35, "fallback": "rock_medium"}
     },
     {
       "layer": "rocks",
@@ -129,9 +129,9 @@
       "share": 0.0,
       "where": "everywhere, clustered",
       "have": ["SM_PH_rock_moss_set_01_00", "SM_PH_rock_moss_set_01_01", "SM_PH_rock_moss_set_01_02", "SM_PH_rock_moss_set_01_03", "SM_PH_rock_moss_set_01_04", "SM_PH_rock_moss_set_01_05", "SM_Boulder_00", "SM_Boulder_01", "SM_Boulder_02"],
-      "place": {"per_ha": 14, "spacing": 2, "slope": [0, 90], "valley": [0, 999], "light": "any", "clear": 2, "scale": [0.25, 0.5], "sink": 0.2, "cluster": 3, "harvest": "stone"}
+      "place": {"per_ha": 14, "spacing": 2, "slope": [0, 90], "valley": [0, 999], "light": "any", "clear": 4.5, "scale": [0.25, 0.5], "sink": 0.2, "cluster": 3, "harvest": "stone"}
     },
-    {"layer": "litter", "role": "cobble_pebble_scatter", "desc": "Cobbles and pebbles 5-30 cm, grey-blue granite", "variants": 6, "share": 0.0, "where": "paths, dry ground, stream beds", "have": ["SM_CobblePebbleScatter_00", "SM_CobblePebbleScatter_01", "SM_CobblePebbleScatter_02", "SM_CobblePebbleScatter_03", "SM_CobblePebbleScatter_04", "SM_CobblePebbleScatter_05"], "place": {"per_ha": 220, "spacing": 0, "slope": [0, 30], "valley": [0, 999], "light": "any", "clear": 0.3, "path": 4, "scale": [0.8, 1.5], "cluster": 3, "cull_m": 25}},
+    {"layer": "litter", "role": "cobble_pebble_scatter", "desc": "Cobbles and pebbles 5-30 cm, grey-blue granite", "variants": 6, "share": 0.0, "where": "paths, dry ground, stream beds", "have": ["SM_CobblePebbleScatter_00", "SM_CobblePebbleScatter_01", "SM_CobblePebbleScatter_02", "SM_CobblePebbleScatter_03", "SM_CobblePebbleScatter_04", "SM_CobblePebbleScatter_05"], "place": {"per_ha": 220, "spacing": 0, "slope": [0, 30], "valley": [0, 999], "light": "any", "clear": 4.5, "path": 9, "scale": [0.8, 1.5], "cluster": 3, "cull_m": 25}},
     {"layer": "litter", "role": "leaf_needle_litter", "desc": "Fallen pine needles and brown leaves, as decals or small meshes", "variants": 3, "share": 0.0, "where": "under canopy, paths", "have": ["SM_LeafNeedleLitter_00", "SM_LeafNeedleLitter_01", "SM_LeafNeedleLitter_02"], "place": {"per_ha": 500, "spacing": 0, "slope": [0, 35], "valley": [0, 999], "light": "shade", "clear": 0.5, "scale": [1.0, 2.0], "cluster": 3, "cull_m": 25}},
     {"layer": "surface", "role": "material_forest_floor", "desc": "Rocky soil with litter, blended by slope with grass and rock materials", "variants": 1, "share": 0.0, "where": "terrain material", "have": ["MI_GN_ForestFloor"]},
     {"layer": "surface", "role": "material_bedrock", "desc": "Weathered granite with lichen, for steep terrain", "variants": 1, "share": 0.0, "where": "terrain material, slope above 30 degrees", "have": ["MI_GN_Bedrock"]},

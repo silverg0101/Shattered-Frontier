@@ -109,8 +109,9 @@ class Site:
         return j * self.nx + i if 0 <= i < self.nx and 0 <= j < self.ny else None
 
 
-def dress(L, P, hf, placed, district, seed):
-    """Returns {version, roles: {role: [dict(mesh, x, y, z, yaw, scale)]}, gaps, area_ha}."""
+def dress(L, P, hf, placed, district, seed, paved=None):
+    """Returns {version, roles: {role: [dict(mesh, x, y, z, yaw, scale)]}, gaps, area_ha}.
+    paved(x, y): 0..1 painted cobble (the builder's ROAD_G); rocks and litter skip points where it is >= 0.5 (WP6i review r2 fix 1)."""
     site = Site(L, hf, placed, district)
     roles = {l['role']: l for l in P['layers']}
     out, gaps, canopy = {}, {}, []
@@ -165,6 +166,8 @@ def dress(L, P, hf, placed, district, seed):
                     if k is None or not site.inside[k] or site.clear[k] < rule['clear']:
                         continue
                     if site.road[k] > rule.get('path', 99.0):  # 'path': only within this many metres of a road edge
+                        continue
+                    if paved and layer in ('rocks', 'litter') and paved(x, y) >= 0.5:  # no stones on the cobbles
                         continue
                     if not (rule['slope'][0] <= site.slope[k] <= rule['slope'][1] and rule['valley'][0] <= site.valley[k] <= rule['valley'][1]):
                         continue

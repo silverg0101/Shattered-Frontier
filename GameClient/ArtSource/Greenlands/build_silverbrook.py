@@ -578,7 +578,6 @@ for i, (x, y) in enumerate(L['construction_plots']['centres']):
         blocked.append(f'ConstructionPlot_{i} at {x},{y}')
         continue
     placed.append((x, y, size * 0.71))
-    FIELDS.append((x, y, size, size))  # WP6i review fix 7: the reserved (hidden) plot reads as tilled ground, not a levelled slab
     box(f'ConstructionPlot_{i}', x, y, size, size, 0.05, 'Plot', collide=False, folder='Plots', ground='centre')
 
 assert not blocked, f'Blocked places (move them in the layout): {blocked}'
@@ -905,17 +904,24 @@ L['districts']['River Verge'] = dict(
     exclude_polygons=[d['polygon'] for name, d in L['districts'].items() if name != 'River Verge'],
     inside_wall=True, dress=dict(canopy=0, rocks=.15, understory=.25, ground_cover=.9, litter=.5))
 DRESS_DISTRICTS.append('River Verge')
+# The Silvermere road's cutting through the northern ridge (WP6i review r2 fix 7): forest and rocks on its 30 deg banks.
+L['districts']['Outer North'] = dict(
+    polygon=[[-220, -520], [260, -520], [240, -1100], [-200, -1100]],
+    exclude_polygons=[d['polygon'] for d in L['districts'].values()], outside_wall=True,
+    inside_wall=False, dress=dict(canopy=.22, rocks=.35, understory=.75, ground_cover=.1, litter=.1))  # thin cosmetic layers: the map package must stay under GitHub's 100 MB file limit
+DRESS_DISTRICTS.append('Outer North')
 dressing = {}
 for district in DRESS_DISTRICTS:
     look = PROFILE
-    if district == 'River Verge':
+    if district in ('River Verge', 'Outer North'):
         look = json.loads(json.dumps(PROFILE))
         for role in look['layers']:
             if role['role'] in ('grass_clump', 'herb_broadleaf', 'fern'):
                 role['place']['slope'][1] = 35  # river banks are steeper than forest clearings
-            if role['role'] in ('herb_broadleaf', 'fern'):
+            if role['role'] in ('herb_broadleaf', 'fern') and district == 'River Verge':
                 role['place']['light'] = 'any'  # the open bank has little canopy shade
-    result = dress_zone.dress(L, look, HF, placed, district, L['seed'])
+    result = dress_zone.dress(L, look, HF, placed, district, L['seed'],
+                              paved=lambda x, y: ROAD_G.get(round((y - HF.y0) / HF.step) * HF.nx + round((x - HF.x0) / HF.step), 0.0))
     cands = dress_zone.candidates(result, look)
     dress_problems = dress_zone.check(L, result, cands, placed)
     assert not dress_problems, f'{district} dressing failed its checks: {dress_problems}'

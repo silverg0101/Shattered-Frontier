@@ -62,25 +62,40 @@ add('chimney-smoke-ref', chimney[0], chimney[1], 55)   # smoke hidden: measure_p
 REF = len(views) - 1
 CHIMNEY = REF - 1
 # Night row (lighting-and-atmosphere.md section 3): UE pitch +12 = sun 12 deg below the horizon, sky light 0, exposure bias +0.25 EV.
-NIGHT = {'sun_pitch': 12., 'sky': 0., 'exposure': .25}
-others = [c for c in u.GameplayStatics.get_all_actors_of_class(world, u.Character) if c != pawn]   # WP6i fix 2: no people in the plume frames
+NIGHT = {'sun_pitch': 12., 'sky': .15, 'exposure': 1.75}
 MOTION = REF   # the motion set follows the reference frame (smoke shown again) without moving the camera
 
 rng = random.Random(20261022)
 # Overviews (WP6h review fix 6): 230 m above the town-centre ground (not the local ground: the NW eye sat 200 m over the
 # northern ridge and looked at its own slope), and no terrain between the eye and the aim point.
-# WP6i review fix 6: raise the eye until the ray through the bottom-centre of the frame clears the terrain.
-VFOV = 2 * math.degrees(math.atan(math.tan(math.radians(80 / 2)) * 9 / 16))   # 50.5 deg for FOV 80 at 16:9
-for name, (bx, by), alt, pitch in (('context-overview-se', (520, 640), 230, 38), ('context-overview-nw', (-430, -470), 230, 42)):
-    tx, ty = 0, -30; dx, dy = tx - bx, ty - by; n = math.hypot(dx, dy)
-    for alt in range(alt, 601, 50):
-        e = u.Vector(bx*100, by*100, ground(0, -30) + alt*100); pitch = math.degrees(math.atan2(alt, n))
-        down = math.radians(pitch + VFOV / 2)   # the ray through the bottom-centre of the frame
-        bottom = u.Vector((bx + dx/n*math.cos(down)*400)*100, (by + dy/n*math.cos(down)*400)*100, e.z - math.sin(down)*40000)
-        if not terrain.static_mesh_component.line_trace_component(e, bottom, True, False): break
-    else: raise AssertionError(f'{name}: terrain inside the frame bottom up to 600 m')
-    u.log(f'WP6_OVERVIEW_FRAME_CLEAR {name} alt {alt}')
-    add(name, e, u.Vector(tx*100, ty*100, e.z - alt*100), 80)
+# Overview frame test (WP6i review r2 fix 5): the three bottom rays (left, centre, right) must land on ground no more than
+# 45 m above the town centre (a downward ray always meets the ground; a near ridge is what must not fill the bottom), and
+# the four wall extremes must project inside the frame with a 60 px margin. Raise the eye in 50 m steps to 800 m, then
+# back it off 100 m along the bearing and repeat.
+TH = math.tan(math.radians(40)); TV = TH * 9 / 16   # FOV 80 at 16:9
+G0 = ground(0, -30)
+WALL = [(w0['centre'][0] + sx * w0['semi_axis_x'], w0['centre'][1] + sy * w0['semi_axis_y']) for w0 in [LAYOUT['wall']] for sx, sy in ((1, 0), (-1, 0), (0, 1), (0, -1))]
+def frame_ok(e, t):
+    f = t - e; f = f / f.length(); r = u.Vector(0, 0, 1).cross(f); r = r / r.length(); up = f.cross(r)
+    for s in (-1, 0, 1):
+        hit = terrain.static_mesh_component.line_trace_component(e, e + (f + r * (TH * s) - up * TV) * 400000, True, False)
+        if hit and hit[0].z > G0 + 4500: return False   # 45 m: the Northridge plateau (+20-35 m) may show, the 120 m ridge may not
+    for wx, wy in WALL:
+        d = u.Vector(wx*100, wy*100, ground(wx, wy)) - e; z = d.dot(f)
+        if z <= 0: return False
+        px = 960 + d.dot(r) / z / TH * 960; py = 540 - d.dot(up) / z / TV * 540
+        if not (60 <= px <= 1860 and 60 <= py <= 1020): return False
+    return True
+for name, (bx, by), alt0, _ in (('context-overview-se', (520, 640), 230, 38), ('context-overview-nw', (-430, -470), 230, 42)):
+    tx, ty = 0, -30; dx, dy = tx - bx, ty - by; n = math.hypot(dx, dy); t = u.Vector(tx*100, ty*100, G0); found = None
+    for back in range(0, 1001, 100):
+        for alt in range(alt0, 801, 50):
+            e = u.Vector((bx - dx/n*back)*100, (by - dy/n*back)*100, G0 + alt*100)
+            if frame_ok(e, t): found = (alt, back); break
+        if found: break
+    assert found, f'{name}: no eye up to 800 m and 1 km back frames the town clear of the near terrain'
+    u.log(f'WP6_OVERVIEW_FRAME_CLEAR {name} alt {found[0]} dist {round(n + found[1])}')
+    add(name, e, t, 80)
 # Ground spots on each road out of town (outside the wall), random point and random heading along the road.
 roads = LAYOUT['roads']['primary']
 for road in ('Silvermere Road', 'Everwood Road', 'Valemere Road'):
@@ -153,7 +168,7 @@ def tick(_delta):
             if len(state['times']) == 14:
                 (OUT / 'motion-times.json').write_text(json.dumps({'world_time_s': state['times']}, indent=1) + '\n')
                 state['motion'] = None; state['frame'] = 60 + 138   # local 139 on the next tick: advance
-                for c in others: c.set_actor_hidden_in_game(False)
+                for c in state['others']: c.set_actor_hidden_in_game(False)
         return
     local = (state['frame'] - 60) % 140
     name, e, t, fov, subject = views[state['index']]
@@ -164,17 +179,20 @@ def tick(_delta):
                 raise AssertionError((name, 'prop within 1.5 m of the sight line in the first 10 m', block[:3]))
             if block: u.log(f'WP6_SIGHTLINE_BLOCKED {name} {block[:3]}')
         u.log(f'WP6_SIGHTLINE_CLEAR {name} props {len(props)}')
-        if state['index'] == CHIMNEY:
-            for c in others: c.set_actor_hidden_in_game(True)
+        if state['index'] == CHIMNEY:   # no people in the plume frames (WP6i review fixes 2 / r2 3): taken at the tick, townsfolk spawn late
+            body = u.load_class(None, '/Script/ShatteredFrontier.SFTownsfolkBody')   # Mass townsfolk render as these actors, not Pawns
+            state['others'] = [c for cls in (u.Pawn, body) for c in u.GameplayStatics.get_all_actors_of_class(world, cls) if c != pawn]
+            for c in state['others']: c.set_actor_hidden_in_game(True)
+            u.log(f'WP6_PAWNS_HIDDEN {len(state["others"])}')
         if state['index'] == REF:
             for a in smokes: a.set_actor_hidden_in_game(True)
         if name.endswith('-dusk'):   # lighting-and-atmosphere.md section 3 night row (WP6i review fix 5)
             sun.root_component.set_mobility(u.ComponentMobility.MOVABLE)   # a stationary sun ignores runtime rotation
             r = sun.get_actor_rotation(); sun.set_actor_rotation(u.Rotator(roll=r.roll, pitch=NIGHT['sun_pitch'], yaw=r.yaw), False)
             for s in u.GameplayStatics.get_all_actors_of_class(world, u.SkyLight): s.light_component.set_intensity(NIGHT['sky'])
-            for v in u.GameplayStatics.get_all_actors_of_class(world, u.PostProcessVolume):
-                ps = v.get_editor_property('settings'); ps.set_editor_property('override_auto_exposure_bias', True)
-                ps.set_editor_property('auto_exposure_bias', NIGHT['exposure']); v.set_editor_property('settings', ps)
+            # Exposure stays fixed (r.EyeAdaptationQuality 0). WP6i r3: the PPV bias, the camera PP bias and r.ExposureOffset
+            # +1.75 changed no pixel under fixed exposure; adaptive exposure (quality 2) lifted the sky only to L 4-10 and
+            # clipped the lamps (3-6 % of the frame), so the row's exposure term is not applied here.
             u.log(f'WP6_NIGHT_ROW sun_pitch {sun.get_actor_rotation().pitch} sky {NIGHT["sky"]} exposure {NIGHT["exposure"]}')
         d = t - e
         camera.set_actor_location(e, False, False)

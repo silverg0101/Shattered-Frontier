@@ -157,9 +157,10 @@ def gate_windows(c):
         em=mel.get_material_instance_vector_parameter_value(mi,'Emission');st=mel.get_material_instance_scalar_parameter_value(mi,'EmissionStrength')
         mel.set_material_instance_parent(mi,master)
         mel.set_material_instance_vector_parameter_value(mi,'Emission',em);mel.set_material_instance_scalar_parameter_value(mi,'EmissionStrength',st)
-        mel.set_material_instance_scalar_parameter_value(mi,'Gate',1. if is_win else 0.)
+        lit=any(re.search(p,mi.get_name(),re.I) for p in c['windows']['always_lit_patterns'])   # WP6i review r2 fix 2: every glow follows the sun but these
+        mel.set_material_instance_scalar_parameter_value(mi,'Gate',0. if lit else 1.)
         mel.set_material_instance_scalar_parameter_value(mi,'GlowScale',val(c['windows']['glow_strength_scale']) if is_win else 1.)
-        eal.save_loaded_asset(mi);(gated if is_win else free).append(mi.get_name())
+        eal.save_loaded_asset(mi);(free if lit else gated).append(mi.get_name())
     print('WINDOWS_GATED',gated,'ALWAYS_LIT',free);return gated
 
 # ---- placement ---------------------------------------------------------------------------------------------------

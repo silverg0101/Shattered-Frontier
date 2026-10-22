@@ -1,49 +1,19 @@
 {
  "_about": "Gameplay candidates (harvestable trees and stone) from dress_zone.py; produced but not used yet (pipeline stage 3).",
- "version": "the_commons-1019-1-b7b553c6a8",
+ "version": "the_commons-1019-1-6ef15c257c",
  "candidates": [
   {
-   "id": "43334288fa0bfb1a",
+   "id": "2773712a7a0c21dc",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
-    -175.93,
-    -52.68,
-    18.62
+    190.8,
+    78.33,
+    12.52
    ]
   },
   {
-   "id": "912db78e74682883",
-   "role": "rock_medium",
-   "resource": "stone",
-   "at": [
-    188.14,
-    76.1,
-    13.04
-   ]
-  },
-  {
-   "id": "17ba6f209dbc85ca",
-   "role": "rock_medium",
-   "resource": "stone",
-   "at": [
-    190.0,
-    73.52,
-    13.17
-   ]
-  },
-  {
-   "id": "71660496c24ec5ba",
-   "role": "rock_medium",
-   "resource": "stone",
-   "at": [
-    -50.4,
-    -121.01,
-    18.4
-   ]
-  },
-  {
-   "id": "cbcd2dc67d64aa06",
+   "id": "ded9f5efc6860297",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -53,37 +23,27 @@
    ]
   },
   {
-   "id": "6978f968c74da9b7",
+   "id": "40a59077415e621c",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
-    -10.72,
-    25.4,
-    13.35
+    66.2,
+    116.63,
+    12.66
    ]
   },
   {
-   "id": "4a21631a8491bb8a",
+   "id": "5730bce5449b8281",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
-    144.14,
-    -133.69,
-    17.76
+    69.59,
+    114.43,
+    12.84
    ]
   },
   {
-   "id": "ee05fe3ab2dc4e40",
-   "role": "rock_medium",
-   "resource": "stone",
-   "at": [
-    141.31,
-    -135.66,
-    17.64
-   ]
-  },
-  {
-   "id": "a2356d00027d2006",
+   "id": "fb2ad01e87c410ee",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -93,17 +53,17 @@
    ]
   },
   {
-   "id": "5048863fc6c20b5a",
+   "id": "b7d86ebae78d6d76",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
-    -34.02,
-    145.68,
-    12.53
+    -33.99,
+    143.17,
+    12.6
    ]
   },
   {
-   "id": "fb2b515c1ca2c90b",
+   "id": "6b641c5d2cafd91d",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -113,7 +73,7 @@
    ]
   },
   {
-   "id": "6414383887b6e105",
+   "id": "4f54e122fbea5b8c",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -123,7 +83,17 @@
    ]
   },
   {
-   "id": "9b5497220ba8ff96",
+   "id": "6cbab15b2c39f095",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    235.13,
+    17.02,
+    14.64
+   ]
+  },
+  {
+   "id": "6e3e736d0ca01a9a",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -133,37 +103,27 @@
    ]
   },
   {
-   "id": "f88d18e29cdd5715",
+   "id": "8197344a5b365c7e",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
-    -157.72,
-    43.75,
-    18.59
+    -156.07,
+    112.44,
+    16.63
    ]
   },
   {
-   "id": "78f1b0f9a4789bff",
+   "id": "67749f190570b2d7",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
-    -157.15,
-    46.25,
-    18.5
+    -158.11,
+    41.1,
+    18.67
    ]
   },
   {
-   "id": "9fe9a98f8b6378d6",
-   "role": "rock_medium",
-   "resource": "stone",
-   "at": [
-    -154.92,
-    41.51,
-    18.55
-   ]
-  },
-  {
-   "id": "c5a972ee061a95d3",
+   "id": "141aa1ea2b246362",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -173,17 +133,17 @@
    ]
   },
   {
-   "id": "77763eb2d237b9c0",
+   "id": "7bbe8a744f9506f0",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
-    115.11,
-    -108.58,
-    18.98
+    115.53,
+    -108.97,
+    19.0
    ]
   },
   {
-   "id": "1bc89314800df358",
+   "id": "198ed6d7ee0332d2",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
@@ -193,23 +153,43 @@
    ]
   },
   {
-   "id": "51698bed5a1a0d01",
+   "id": "4510bdec897573ba",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
-    -200.1,
-    22.99,
-    19.51
+    -199.49,
+    25.62,
+    19.47
    ]
   },
   {
-   "id": "b0552f0f88ddb995",
+   "id": "337b897736d0796f",
    "role": "rock_medium",
    "resource": "stone",
    "at": [
-    73.84,
-    -67.43,
-    16.44
+    -130.07,
+    -170.65,
+    16.94
+   ]
+  },
+  {
+   "id": "427e82d014a1401b",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    -31.49,
+    8.72,
+    13.76
+   ]
+  },
+  {
+   "id": "86854e7e5d63c0b4",
+   "role": "rock_medium",
+   "resource": "stone",
+   "at": [
+    -31.74,
+    11.65,
+    14.0
    ]
   }
  ]
