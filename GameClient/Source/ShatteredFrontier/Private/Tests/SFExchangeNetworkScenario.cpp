@@ -1,4 +1,5 @@
 #include "Exchange/SFExchangeComponent.h"
+#include "Exchange/SFMarketBoardActor.h"
 
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
 #include "Services/SFBackpackComponent.h"
@@ -28,7 +29,7 @@ void USFExchangeComponent::TickComponent(float Delta, ELevelTick Type, FActorCom
 void USFExchangeComponent::TickScenario()
 {
     if (!GetOwner() || !GetOwner()->HasAuthority() || ScenarioStep >= ExchangeScenarioDone || !FParse::Param(FCommandLine::Get(), TEXT("ExchangeScenario"))) { return; }
-    const UWorld* World = GetWorld();
+    UWorld* World = GetWorld();
     TArray<APlayerController*> Players;
     for (FConstPlayerControllerIterator It = World->GetPlayerControllerIterator(); It; ++It) { if (It->Get()) { Players.Add(It->Get()); } }
     if (Players.Num() < 2 || Players[0] != GetOwner()) { return; }  // the first player's component drives both
@@ -54,6 +55,29 @@ void USFExchangeComponent::TickScenario()
         static bool bAnnounced = false;
         if (!bAnnounced) { bAnnounced = true; UE_LOG(LogTemp, Display, TEXT("EXCHANGE_SCENARIO_START A=%s ABag=%s B=%s BBag=%s"), *PackA->GetCharacterId(), *PackA->GetContainerId(), *PackB->GetCharacterId(), *PackB->GetContainerId()); }
         if (!Gate.IsEmpty() && !IFileManager::Get().FileExists(*Gate)) { return; }
+        APawn* PawnA = Players[0]->GetPawn();
+        APawn* PawnB = Players[1]->GetPawn();
+        if (!PawnA || !PawnB) { return; }
+        PawnB->SetActorLocation(PawnA->GetActorLocation() + FVector(100, 0, 0));
+        World->SpawnActor<ASFMarketBoardActor>(PawnA->GetActorLocation(), FRotator::ZeroRotator);
+        auto RefusedBeforeRpc = [A](const FString& MarketId, uint32 Nonce)
+        {
+            bool bRefused = false;
+            const FDelegateHandle Handle = A->OnServerResult.AddLambda([&](uint32 ResultNonce, bool bCommitted)
+            { if (ResultNonce == Nonce) { bRefused = !bCommitted; } });
+            FSFExchangeIntent Probe; Probe.Kind = ESFExchangeIntentKind::ListItem; Probe.Nonce = Nonce;
+            Probe.MarketId = MarketId; Probe.ListingId = TEXT("lst_probe"); Probe.ItemId = TEXT("item/iron_ore"); Probe.Quantity = 1; Probe.UnitPrice = 5;
+            A->ServerRun(Probe);
+            A->OnServerResult.Remove(Handle);
+            return bRefused;
+        };
+        if (!RefusedBeforeRpc(TEXT("market/eastford"), 90)) { Fail(TEXT("ForgedMarketAccepted")); return; }
+        const FVector Original = PawnA->GetActorLocation();
+        PawnA->SetActorLocation(Original + FVector(600, 0, 0));
+        const bool bReachRefused = RefusedBeforeRpc(TEXT("market/silverbrook"), 91);
+        PawnA->SetActorLocation(Original);
+        if (!bReachRefused) { Fail(TEXT("DistantMarketAccepted")); return; }
+        UE_LOG(LogTemp, Display, TEXT("EXCHANGE_SCENARIO_DENIAL Forged=1 Reach=1"));
         A->OnServerResult.AddWeakLambda(this, [this](uint32 Nonce, bool bCommitted)
         {
             if (Nonce != ScenarioWaitNonce) { return; }
@@ -84,10 +108,10 @@ void USFExchangeComponent::TickScenario()
         Intent.Kind = ESFExchangeIntentKind::AcceptTrade; Intent.TradeId = ExchangeScenarioTrade;
         Run(B, Intent, 102); break;
     case 3:  // A lists one iron ore at 5 gold
-        Intent.Kind = ESFExchangeIntentKind::ListItem; Intent.ListingId = ExchangeScenarioListing; Intent.ItemId = TEXT("item/iron_ore"); Intent.Quantity = 1; Intent.UnitPrice = 5;
+        Intent.Kind = ESFExchangeIntentKind::ListItem; Intent.MarketId = TEXT("market/silverbrook"); Intent.ListingId = ExchangeScenarioListing; Intent.ItemId = TEXT("item/iron_ore"); Intent.Quantity = 1; Intent.UnitPrice = 5;
         Run(A, Intent, 103); break;
     case 4:  // B buys it (a new listing is revision 0: exchange.listings.revision defaults to 0)
-        Intent.Kind = ESFExchangeIntentKind::BuyListing; Intent.ListingId = ExchangeScenarioListing; Intent.Quantity = 1; Intent.UnitPrice = 5; Intent.ExpectedRevision = 0;
+        Intent.Kind = ESFExchangeIntentKind::BuyListing; Intent.MarketId = TEXT("market/silverbrook"); Intent.ListingId = ExchangeScenarioListing; Intent.Quantity = 1; Intent.UnitPrice = 5; Intent.ExpectedRevision = 0;
         Run(B, Intent, 104); break;
     case 5:  // read B's wallet, then replay accept and buy under the same derived operation ids
         Intent.Kind = ESFExchangeIntentKind::Wallet; Run(B, Intent, 105); break;
@@ -96,7 +120,7 @@ void USFExchangeComponent::TickScenario()
         UE_LOG(LogTemp, Display, TEXT("EXCHANGE_SCENARIO_WALLET Phase=Before B=%lld Reserved=%lld"), WalletBeforeReplay.Balance, WalletBeforeReplay.Reserved);
         Intent.Kind = ESFExchangeIntentKind::AcceptTrade; Intent.TradeId = ExchangeScenarioTrade; Run(B, Intent, 106); break;
     case 7:
-        Intent.Kind = ESFExchangeIntentKind::BuyListing; Intent.ListingId = ExchangeScenarioListing; Intent.Quantity = 1; Intent.UnitPrice = 5; Intent.ExpectedRevision = 0; Run(B, Intent, 107); break;
+        Intent.Kind = ESFExchangeIntentKind::BuyListing; Intent.MarketId = TEXT("market/silverbrook"); Intent.ListingId = ExchangeScenarioListing; Intent.Quantity = 1; Intent.UnitPrice = 5; Intent.ExpectedRevision = 0; Run(B, Intent, 107); break;
     case 8:
         Intent.Kind = ESFExchangeIntentKind::Wallet; Run(B, Intent, 108); break;
     case 9:

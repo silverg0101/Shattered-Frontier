@@ -134,9 +134,9 @@ bool FSFExchangeMarketTest::RunTest(const FString& Parameters)
     TestFalse(TEXT("A zero price is not listable"),Market.SetSellPriceText(TEXT("0")));
     TestTrue(TEXT("A typed sign is stripped like the gold field"),Market.SetSellPriceText(TEXT("-3")));
     TestTrue(TEXT("Valid draft"),Market.SetSellQuantityText(TEXT("4"),10) && Market.SetSellPriceText(TEXT("30")));
-    TestEqual(TEXT("Listing fee preview"),Market.ListingFee(),(int64)6);
-    TestFalse(TEXT("Cannot list without the fee"),Market.CanList(5));
-    TestTrue(TEXT("List commits"),Market.ListSelected(TEXT("item/oak_log"),100) && Exchange.Lists==1 && Exchange.LastListFee==6);
+    TestEqual(TEXT("Listing fee preview"),Market.ListingFee(),(int64)1);
+    TestFalse(TEXT("Cannot list without the fee"),Market.CanList(0));
+    TestTrue(TEXT("List commits"),Market.ListSelected(TEXT("item/oak_log"),100) && Exchange.Lists==1 && Exchange.LastListFee==1);
     return true;
 }
 

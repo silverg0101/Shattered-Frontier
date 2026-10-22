@@ -311,7 +311,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         sf::exchange::v1::ListItemRequest M;
         M.set_operation_id(Utf8(Q.OperationId)); M.set_listing_id(Utf8(E.ListingId)); M.set_seller_id(Utf8(E.SellerId));
         M.set_source_container_id(Utf8(E.SourceContainerId)); M.set_escrow_container_id(Utf8(E.EscrowContainerId));
-        M.set_item_id(Utf8(E.ItemId)); M.set_quantity(E.Quantity); M.set_unit_price(E.UnitPrice); M.set_listing_fee(E.Fee); M.set_created_at_unix_ms(E.CreatedAtUnixMs);
+        M.set_item_id(Utf8(E.ItemId)); M.set_quantity(E.Quantity); M.set_unit_price(E.UnitPrice); M.set_listing_fee(E.Fee); M.set_created_at_unix_ms(E.CreatedAtUnixMs); M.set_market_id(Utf8(E.MarketId));
         auto* Call = new TCall<sf::exchange::v1::ExchangeReply>(); Call->Copy = &CopyExchange;
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Exchange->AsyncListItem(C, M, &Channel->Queue); });
         break;
@@ -322,6 +322,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         sf::exchange::v1::BuyListingRequest M;
         M.set_operation_id(Utf8(Q.OperationId)); M.set_listing_id(Utf8(E.ListingId)); M.set_buyer_id(Utf8(Q.CharacterId));
         M.set_destination_container_id(Utf8(E.DestinationContainerId)); M.set_expected_revision(E.ExpectedRevision);
+        M.set_market_id(Utf8(E.MarketId));
         M.set_expected_unit_price(E.ExpectedUnitPrice); M.set_transaction_fee(E.Fee);
         auto* Call = new TCall<sf::exchange::v1::ExchangeReply>(); Call->Copy = &CopyExchange;
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Exchange->AsyncBuyListing(C, M, &Channel->Queue); });
@@ -331,6 +332,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
     {
         sf::exchange::v1::ListingActionRequest M;
         M.set_operation_id(Utf8(Q.OperationId)); M.set_listing_id(Utf8(Q.Exchange.ListingId)); M.set_seller_id(Utf8(Q.Exchange.SellerId));
+        M.set_market_id(Utf8(Q.Exchange.MarketId));
         auto* Call = new TCall<sf::exchange::v1::ExchangeReply>(); Call->Copy = &CopyExchange;
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Exchange->AsyncCancelListing(C, M, &Channel->Queue); });
         break;

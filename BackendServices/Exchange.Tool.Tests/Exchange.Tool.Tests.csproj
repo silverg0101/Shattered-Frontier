@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup><Compile Include="../Gameplay.Host/MarketCatalog.cs" Link="MarketCatalog.cs" /></ItemGroup>
+</Project>

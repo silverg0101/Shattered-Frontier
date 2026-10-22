@@ -1,8 +1,10 @@
 #include "Exchange/SFExchangeComponent.h"
+#include "Exchange/SFMarketBoardActor.h"
 
 #include "Services/SFBackpackComponent.h"
 #include "Services/SFGameplayServicesClient.h"
 #include "Engine/World.h"
+#include "EngineUtils.h"
 #include "GameFramework/PlayerController.h"
 #include "Net/UnrealNetwork.h"
 
@@ -62,7 +64,7 @@ void USFExchangeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
     Super::GetLifetimeReplicatedProps(Out);
 }
 
-bool USFExchangeComponent::BuildRequest(const FSFExchangeIntent& Intent, const FSFExchangeParties& Parties, int32 FeeBasisPoints, int64 NowUnixMs, FSFGameplayRequest& Out)
+bool USFExchangeComponent::BuildRequest(const FSFExchangeIntent& Intent, const FSFExchangeParties& Parties, int32 FeeBasisPoints, int64 NowUnixMs, FSFGameplayRequest& Out, int32 ListingFeeBasisPoints)
 {
     auto GoldOk = [](int64 Gold) { return Gold >= 0 && Gold <= SFGold::MaxAmount; };
     switch (Intent.Kind)
@@ -93,7 +95,7 @@ bool USFExchangeComponent::BuildRequest(const FSFExchangeIntent& Intent, const F
     {
         if (Intent.ListingId.IsEmpty() || Intent.ItemId.IsEmpty() || Intent.Quantity <= 0 || Intent.UnitPrice <= 0 || !GoldOk(Intent.UnitPrice)) { return false; }
         // The fee is the server's: the client's preview is never trusted.
-        Out = SFExchangeRequests::List(Parties, Intent.ListingId, Intent.ItemId, Intent.Quantity, Intent.UnitPrice, SFGold::FeeFor(Intent.UnitPrice * Intent.Quantity, FeeBasisPoints), NowUnixMs);
+        Out = SFExchangeRequests::List(Parties, Intent.ListingId, Intent.ItemId, Intent.Quantity, Intent.UnitPrice, SFGold::FeeFor(Intent.UnitPrice * Intent.Quantity, ListingFeeBasisPoints), NowUnixMs, Intent.MarketId);
         return true;
     }
     case ESFExchangeIntentKind::BuyListing:
@@ -101,11 +103,13 @@ bool USFExchangeComponent::BuildRequest(const FSFExchangeIntent& Intent, const F
         if (Intent.ListingId.IsEmpty() || Intent.Quantity <= 0 || Intent.UnitPrice <= 0) { return false; }
         FSFListing Listing; Listing.ListingId = Intent.ListingId; Listing.Quantity = Intent.Quantity; Listing.UnitPrice = Intent.UnitPrice; Listing.Revision = Intent.ExpectedRevision;
         Out = SFExchangeRequests::Buy(Listing, Parties.MyId, Parties.MyContainerId, SFGold::FeeFor(Intent.UnitPrice * Intent.Quantity, FeeBasisPoints));
+        Out.Exchange.MarketId = Intent.MarketId;
         return true;
     }
     case ESFExchangeIntentKind::CancelListing:
         if (Intent.ListingId.IsEmpty()) { return false; }
         Out = SFExchangeRequests::CancelListing(Intent.ListingId, Parties.MyId);
+        Out.Exchange.MarketId = Intent.MarketId;
         return true;
     }
     return false;
@@ -125,6 +129,7 @@ void USFExchangeComponent::ServerIntent_Implementation(const FSFExchangeIntent& 
 
 void USFExchangeComponent::Reply(uint32 Nonce, bool bCommitted, const FString& Message, const FSFWalletView& InWallet)
 {
+    if (!bCommitted) { UE_LOG(LogTemp, Warning, TEXT("EXCHANGE_INTENT_REJECTED Nonce=%u Reason=%s"), Nonce, *Message); }
     Wallet = InWallet;  // the server keeps the last wallet it told the client, for server-side callers
     OnServerResult.Broadcast(Nonce, bCommitted);
     FSFExchangeResultWire Result; Result.Nonce = Nonce; Result.bCommitted = bCommitted; Result.Message = Message;
@@ -174,6 +179,21 @@ void USFExchangeComponent::ExecuteIntent(const FSFExchangeIntent& Intent)
     USFBackpackComponent* Pack = Controller ? USFBackpackComponent::FindOrCreate(Controller) : nullptr;
     if (!Settings->bExchangeEnabled || !Services || !Pack) { Reply(Intent.Nonce, false, TEXT("Exchange unavailable"), Wallet); return; }
 
+    if (Intent.Kind == ESFExchangeIntentKind::ListItem || Intent.Kind == ESFExchangeIntentKind::BuyListing || Intent.Kind == ESFExchangeIntentKind::CancelListing)
+    {
+        bool bAtBoard = false;
+        const APawn* Pawn = Controller ? Controller->GetPawn() : nullptr;
+        if (Pawn && GetWorld())
+        {
+            for (TActorIterator<ASFMarketBoardActor> It(GetWorld()); It; ++It)
+            {
+                if (It->MarketId == Intent.MarketId && FVector::DistSquared(Pawn->GetActorLocation(), It->GetActorLocation()) <= FMath::Square(Settings->MarketReachM * 100.0f))
+                { bAtBoard = true; break; }
+            }
+        }
+        if (!bAtBoard) { Reply(Intent.Nonce, false, TEXT("market_out_of_reach"), Wallet); return; }
+    }
+
     FSFExchangeParties Parties;
     Parties.MyId = Pack->GetCharacterId(); Parties.MyContainerId = Pack->GetContainerId(); Parties.MyEscrowId = EscrowFor(Parties.MyContainerId);
     if (Intent.Kind == ESFExchangeIntentKind::OfferTrade)
@@ -184,7 +204,7 @@ void USFExchangeComponent::ExecuteIntent(const FSFExchangeIntent& Intent)
         Parties.TheirId = PartnerPack->GetCharacterId(); Parties.TheirContainerId = PartnerPack->GetContainerId(); Parties.TheirEscrowId = EscrowFor(Parties.TheirContainerId);
     }
     FSFGameplayRequest Request;
-    if (!BuildRequest(Intent, Parties, Settings->ExchangeFeeBasisPoints, FDateTime::UtcNow().ToUnixTimestamp() * 1000, Request))
+    if (!BuildRequest(Intent, Parties, Settings->ExchangeFeeBasisPoints, FDateTime::UtcNow().ToUnixTimestamp() * 1000, Request, Settings->ExchangeListingFeeBasisPoints))
     { Reply(Intent.Nonce, false, TEXT("Invalid request"), Wallet); return; }
 
     if (Intent.Kind == ESFExchangeIntentKind::Wallet)
@@ -264,20 +284,20 @@ void FSFExchangeClientService::CancelTrade(const FString& TradeId, FDone Done)
 
 void FSFExchangeClientService::ListItem(const FString& ItemId, int32 Quantity, int64 UnitPrice, int64, FDone Done)
 {
-    FSFExchangeIntent Intent; Intent.Kind = ESFExchangeIntentKind::ListItem; Intent.ListingId = FGuid::NewGuid().ToString(EGuidFormats::DigitsLower);
+    FSFExchangeIntent Intent; Intent.Kind = ESFExchangeIntentKind::ListItem; Intent.MarketId = TEXT("market/silverbrook"); Intent.ListingId = FGuid::NewGuid().ToString(EGuidFormats::DigitsLower);
     Intent.ItemId = ItemId; Intent.Quantity = Quantity; Intent.UnitPrice = UnitPrice;
     Dispatch(MoveTemp(Intent), MoveTemp(Done));
 }
 
 void FSFExchangeClientService::BuyListing(const FSFListing& Listing, int64, FDone Done)
 {
-    FSFExchangeIntent Intent; Intent.Kind = ESFExchangeIntentKind::BuyListing; Intent.ListingId = Listing.ListingId;
+    FSFExchangeIntent Intent; Intent.Kind = ESFExchangeIntentKind::BuyListing; Intent.MarketId = TEXT("market/silverbrook"); Intent.ListingId = Listing.ListingId;
     Intent.Quantity = Listing.Quantity; Intent.UnitPrice = Listing.UnitPrice; Intent.ExpectedRevision = Listing.Revision;
     Dispatch(MoveTemp(Intent), MoveTemp(Done));
 }
 
 void FSFExchangeClientService::CancelListing(const FString& ListingId, FDone Done)
 {
-    FSFExchangeIntent Intent; Intent.Kind = ESFExchangeIntentKind::CancelListing; Intent.ListingId = ListingId;
+    FSFExchangeIntent Intent; Intent.Kind = ESFExchangeIntentKind::CancelListing; Intent.MarketId = TEXT("market/silverbrook"); Intent.ListingId = ListingId;
     Dispatch(MoveTemp(Intent), MoveTemp(Done));
 }

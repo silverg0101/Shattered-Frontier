@@ -125,8 +125,8 @@ private:
 class SHATTEREDFRONTIER_API FSFMarketViewModel
 {
 public:
-    explicit FSFMarketViewModel(ISFExchangeService& InService, int32 InFeeBasisPoints = 500)
-        : Service(InService), FeeBasisPoints(InFeeBasisPoints) { WalletState = Service.GetWallet(); }
+    explicit FSFMarketViewModel(ISFExchangeService& InService, int32 InFeeBasisPoints = 500, int32 InListingFeeBasisPoints = 100)
+        : Service(InService), FeeBasisPoints(InFeeBasisPoints), ListingFeeBasisPoints(InListingFeeBasisPoints) { WalletState = Service.GetWallet(); }
 
     void SetListings(TArray<FSFListing> InListings) { Listings = MoveTemp(InListings); }
     FSFMarketFilter& Filter() { return FilterState; }
@@ -148,13 +148,14 @@ public:
     // Listing draft: quantity and price fields accept digits only and must be positive; the fee is previewed.
     bool SetSellQuantityText(const FString& Text, int32 MaxQuantity);
     bool SetSellPriceText(const FString& Text);
-    int64 ListingFee() const { return SFGold::FeeFor(SellPrice * SellQuantity, FeeBasisPoints); }
+    int64 ListingFee() const { return SFGold::FeeFor(SellPrice * SellQuantity, ListingFeeBasisPoints); }
     bool CanList(int64 AvailableToPayFee) const { return SellQuantity > 0 && SellPrice > 0 && AvailableToPayFee >= ListingFee(); }
     bool ListSelected(const FString& ItemId, int64 AvailableToPayFee);
 
 private:
     ISFExchangeService& Service;
     int32 FeeBasisPoints;
+    int32 ListingFeeBasisPoints;
     FSFWalletView WalletState;
     TArray<FSFListing> Listings;
     FSFMarketFilter FilterState;

@@ -60,6 +60,7 @@ if (questIssues.Count != 0) throw new InvalidOperationException("Quest content i
 IReadOnlyDictionary<string, QuestDefinition> quests = questFiles.ToDictionary(f => f.Quest.Id, f => f.Quest, StringComparer.Ordinal);
 var zone = ProtectedZone.Load(Path.Combine(contentRoot, "world", "zones", "greenlands_silverbrook.json"));
 var recipes = RecipeCatalog.LoadFiles([Path.Combine(contentRoot, "crafting", "recipes_greenlands_starter.json")]);
+var markets = MarketCatalog.Load(Path.Combine(contentRoot, "markets"));
 var ledgerStore = new PostgresInventoryLedgerStore(ledgerConnection);
 // Alpha Starter Kit purse (MKT-01 owner answer): off unless the realm enables it, like the ledger host kit switch.
 var kitSwitch = Environment.GetEnvironmentVariable("GAMEPLAY_ALPHA_STARTER_KIT") ?? "";
@@ -89,6 +90,7 @@ builder.Services.AddSingleton(quests);
 builder.Services.AddSingleton(zone);
 builder.Services.AddSingleton(new ClaimSettings());
 builder.Services.AddSingleton(recipes);
+builder.Services.AddSingleton(markets);
 builder.Services.AddSingleton(new CraftAttemptService(recipes, new DomLedger(ledgerStore)));
 builder.Services.AddGrpc(o => o.Interceptors.Add<AuthInterceptor>());
 var app = builder.Build();

@@ -2,7 +2,8 @@
 param(
     [string]$EngineRoot = 'C:\Program Files\Epic Games\UE_5.8',
     [ValidateRange(12000,65000)][int]$Port = 17881,
-    [ValidateRange(60,900)][int]$TimeoutSeconds = 300
+    [ValidateRange(60,900)][int]$TimeoutSeconds = 300,
+    [switch]$Market
 )
 # Two-client Exchange run on an owned PostgreSQL, InventoryLedger.Host and Gameplay.Host (same fixture as
 # Test-QuestPilot -Leg Full -Services). Two clients connect to Silverbrook; the server's -ExchangeScenario driver plays both
@@ -107,6 +108,13 @@ try {
     if ($left -ne 0) { throw "A should hold none of the traded items, found $left." }
     $result.evidence = [ordered]@{ tradeSettlements=$trades; listingSettlements=$listings; bOakLogs=$oak; bIronOre=$ore; aRemaining=$left
         bBalance=[int64](Query "SELECT balance FROM exchange.wallets WHERE owner_id='$b'"); aBalance=[int64](Query "SELECT balance FROM exchange.wallets WHERE owner_id='$a'") }
+    if ($Market) {
+        if ((Read-Log 'server') -notmatch 'EXCHANGE_SCENARIO_DENIAL Forged=1 Reach=1') { throw 'Zone server did not refuse forged and distant boards.' }
+        $marketRows = [int](Query "SELECT count(*) FROM exchange.listings WHERE market_id='market/silverbrook' AND id='lst_scenario' AND state='sold'")
+        $fees = [int](Query "SELECT COALESCE(sum(-delta),0) FROM exchange.wallet_entries WHERE code IN ('market_listing_fee','market_transaction_fee') AND owner_id='$a'")
+        if ($marketRows -ne 1 -or $fees -ne 2) { throw "Market isolation/fees failed: listing=$marketRows fees=$fees" }
+        $result.evidence.marketRows = $marketRows; $result.evidence.feesCopper = $fees
+    }
     if ((Read-Log 'server') -match 'Fatal error:|Assertion failed:') { throw 'Server failed.' }
     $result.status = 'Passed'
 } catch { $result.status = 'Failed'; $result.error = $_.Exception.Message; throw }

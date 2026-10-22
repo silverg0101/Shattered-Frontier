@@ -87,6 +87,20 @@ class Exchange final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ExchangeReply>> PrepareAsyncCancelListing(::grpc::ClientContext* context, const ::sf::exchange::v1::ListingActionRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ExchangeReply>>(PrepareAsyncCancelListingRaw(context, request, cq));
     }
+    virtual ::grpc::Status ListListings(::grpc::ClientContext* context, const ::sf::exchange::v1::ListListingsRequest& request, ::sf::exchange::v1::ListListingsReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ListListingsReply>> AsyncListListings(::grpc::ClientContext* context, const ::sf::exchange::v1::ListListingsRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ListListingsReply>>(AsyncListListingsRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ListListingsReply>> PrepareAsyncListListings(::grpc::ClientContext* context, const ::sf::exchange::v1::ListListingsRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ListListingsReply>>(PrepareAsyncListListingsRaw(context, request, cq));
+    }
+    virtual ::grpc::Status ListTrades(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest& request, ::sf::exchange::v1::ListTradesReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ListTradesReply>> AsyncListTrades(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ListTradesReply>>(AsyncListTradesRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ListTradesReply>> PrepareAsyncListTrades(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ListTradesReply>>(PrepareAsyncListTradesRaw(context, request, cq));
+    }
     class async_interface {
      public:
       virtual ~async_interface() {}
@@ -104,6 +118,10 @@ class Exchange final {
       virtual void BuyListing(::grpc::ClientContext* context, const ::sf::exchange::v1::BuyListingRequest* request, ::sf::exchange::v1::ExchangeReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void CancelListing(::grpc::ClientContext* context, const ::sf::exchange::v1::ListingActionRequest* request, ::sf::exchange::v1::ExchangeReply* response, std::function<void(::grpc::Status)>) = 0;
       virtual void CancelListing(::grpc::ClientContext* context, const ::sf::exchange::v1::ListingActionRequest* request, ::sf::exchange::v1::ExchangeReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void ListListings(::grpc::ClientContext* context, const ::sf::exchange::v1::ListListingsRequest* request, ::sf::exchange::v1::ListListingsReply* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ListListings(::grpc::ClientContext* context, const ::sf::exchange::v1::ListListingsRequest* request, ::sf::exchange::v1::ListListingsReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void ListTrades(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest* request, ::sf::exchange::v1::ListTradesReply* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ListTrades(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest* request, ::sf::exchange::v1::ListTradesReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -123,6 +141,10 @@ class Exchange final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ExchangeReply>* PrepareAsyncBuyListingRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::BuyListingRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ExchangeReply>* AsyncCancelListingRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::ListingActionRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ExchangeReply>* PrepareAsyncCancelListingRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::ListingActionRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ListListingsReply>* AsyncListListingsRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::ListListingsRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ListListingsReply>* PrepareAsyncListListingsRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::ListListingsRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ListTradesReply>* AsyncListTradesRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ListTradesReply>* PrepareAsyncListTradesRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -176,6 +198,20 @@ class Exchange final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ExchangeReply>> PrepareAsyncCancelListing(::grpc::ClientContext* context, const ::sf::exchange::v1::ListingActionRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ExchangeReply>>(PrepareAsyncCancelListingRaw(context, request, cq));
     }
+    ::grpc::Status ListListings(::grpc::ClientContext* context, const ::sf::exchange::v1::ListListingsRequest& request, ::sf::exchange::v1::ListListingsReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ListListingsReply>> AsyncListListings(::grpc::ClientContext* context, const ::sf::exchange::v1::ListListingsRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ListListingsReply>>(AsyncListListingsRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ListListingsReply>> PrepareAsyncListListings(::grpc::ClientContext* context, const ::sf::exchange::v1::ListListingsRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ListListingsReply>>(PrepareAsyncListListingsRaw(context, request, cq));
+    }
+    ::grpc::Status ListTrades(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest& request, ::sf::exchange::v1::ListTradesReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ListTradesReply>> AsyncListTrades(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ListTradesReply>>(AsyncListTradesRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ListTradesReply>> PrepareAsyncListTrades(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ListTradesReply>>(PrepareAsyncListTradesRaw(context, request, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
@@ -193,6 +229,10 @@ class Exchange final {
       void BuyListing(::grpc::ClientContext* context, const ::sf::exchange::v1::BuyListingRequest* request, ::sf::exchange::v1::ExchangeReply* response, ::grpc::ClientUnaryReactor* reactor) override;
       void CancelListing(::grpc::ClientContext* context, const ::sf::exchange::v1::ListingActionRequest* request, ::sf::exchange::v1::ExchangeReply* response, std::function<void(::grpc::Status)>) override;
       void CancelListing(::grpc::ClientContext* context, const ::sf::exchange::v1::ListingActionRequest* request, ::sf::exchange::v1::ExchangeReply* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void ListListings(::grpc::ClientContext* context, const ::sf::exchange::v1::ListListingsRequest* request, ::sf::exchange::v1::ListListingsReply* response, std::function<void(::grpc::Status)>) override;
+      void ListListings(::grpc::ClientContext* context, const ::sf::exchange::v1::ListListingsRequest* request, ::sf::exchange::v1::ListListingsReply* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void ListTrades(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest* request, ::sf::exchange::v1::ListTradesReply* response, std::function<void(::grpc::Status)>) override;
+      void ListTrades(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest* request, ::sf::exchange::v1::ListTradesReply* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -218,6 +258,10 @@ class Exchange final {
     ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ExchangeReply>* PrepareAsyncBuyListingRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::BuyListingRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ExchangeReply>* AsyncCancelListingRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::ListingActionRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ExchangeReply>* PrepareAsyncCancelListingRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::ListingActionRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ListListingsReply>* AsyncListListingsRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::ListListingsRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ListListingsReply>* PrepareAsyncListListingsRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::ListListingsRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ListTradesReply>* AsyncListTradesRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ListTradesReply>* PrepareAsyncListTradesRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_Wallet_;
     const ::grpc::internal::RpcMethod rpcmethod_OfferTrade_;
     const ::grpc::internal::RpcMethod rpcmethod_AcceptTrade_;
@@ -225,6 +269,8 @@ class Exchange final {
     const ::grpc::internal::RpcMethod rpcmethod_ListItem_;
     const ::grpc::internal::RpcMethod rpcmethod_BuyListing_;
     const ::grpc::internal::RpcMethod rpcmethod_CancelListing_;
+    const ::grpc::internal::RpcMethod rpcmethod_ListListings_;
+    const ::grpc::internal::RpcMethod rpcmethod_ListTrades_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -239,6 +285,8 @@ class Exchange final {
     virtual ::grpc::Status ListItem(::grpc::ServerContext* context, const ::sf::exchange::v1::ListItemRequest* request, ::sf::exchange::v1::ExchangeReply* response);
     virtual ::grpc::Status BuyListing(::grpc::ServerContext* context, const ::sf::exchange::v1::BuyListingRequest* request, ::sf::exchange::v1::ExchangeReply* response);
     virtual ::grpc::Status CancelListing(::grpc::ServerContext* context, const ::sf::exchange::v1::ListingActionRequest* request, ::sf::exchange::v1::ExchangeReply* response);
+    virtual ::grpc::Status ListListings(::grpc::ServerContext* context, const ::sf::exchange::v1::ListListingsRequest* request, ::sf::exchange::v1::ListListingsReply* response);
+    virtual ::grpc::Status ListTrades(::grpc::ServerContext* context, const ::sf::exchange::v1::ListTradesRequest* request, ::sf::exchange::v1::ListTradesReply* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_Wallet : public BaseClass {
@@ -380,7 +428,47 @@ class Exchange final {
       ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_Wallet<WithAsyncMethod_OfferTrade<WithAsyncMethod_AcceptTrade<WithAsyncMethod_CancelTrade<WithAsyncMethod_ListItem<WithAsyncMethod_BuyListing<WithAsyncMethod_CancelListing<Service > > > > > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_ListListings : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_ListListings() {
+      ::grpc::Service::MarkMethodAsync(7);
+    }
+    ~WithAsyncMethod_ListListings() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListListings(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::ListListingsRequest* /*request*/, ::sf::exchange::v1::ListListingsReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestListListings(::grpc::ServerContext* context, ::sf::exchange::v1::ListListingsRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::exchange::v1::ListListingsReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_ListTrades : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_ListTrades() {
+      ::grpc::Service::MarkMethodAsync(8);
+    }
+    ~WithAsyncMethod_ListTrades() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListTrades(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::ListTradesRequest* /*request*/, ::sf::exchange::v1::ListTradesReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestListTrades(::grpc::ServerContext* context, ::sf::exchange::v1::ListTradesRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::exchange::v1::ListTradesReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_Wallet<WithAsyncMethod_OfferTrade<WithAsyncMethod_AcceptTrade<WithAsyncMethod_CancelTrade<WithAsyncMethod_ListItem<WithAsyncMethod_BuyListing<WithAsyncMethod_CancelListing<WithAsyncMethod_ListListings<WithAsyncMethod_ListTrades<Service > > > > > > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_Wallet : public BaseClass {
    private:
@@ -570,7 +658,61 @@ class Exchange final {
     virtual ::grpc::ServerUnaryReactor* CancelListing(
       ::grpc::CallbackServerContext* /*context*/, const ::sf::exchange::v1::ListingActionRequest* /*request*/, ::sf::exchange::v1::ExchangeReply* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_Wallet<WithCallbackMethod_OfferTrade<WithCallbackMethod_AcceptTrade<WithCallbackMethod_CancelTrade<WithCallbackMethod_ListItem<WithCallbackMethod_BuyListing<WithCallbackMethod_CancelListing<Service > > > > > > > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_ListListings : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_ListListings() {
+      ::grpc::Service::MarkMethodCallback(7,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::ListListingsRequest, ::sf::exchange::v1::ListListingsReply>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::exchange::v1::ListListingsRequest* request, ::sf::exchange::v1::ListListingsReply* response) { return this->ListListings(context, request, response); }));}
+    void SetMessageAllocatorFor_ListListings(
+        ::grpc::MessageAllocator< ::sf::exchange::v1::ListListingsRequest, ::sf::exchange::v1::ListListingsReply>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(7);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::ListListingsRequest, ::sf::exchange::v1::ListListingsReply>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_ListListings() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListListings(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::ListListingsRequest* /*request*/, ::sf::exchange::v1::ListListingsReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ListListings(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::exchange::v1::ListListingsRequest* /*request*/, ::sf::exchange::v1::ListListingsReply* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_ListTrades : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_ListTrades() {
+      ::grpc::Service::MarkMethodCallback(8,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::ListTradesRequest, ::sf::exchange::v1::ListTradesReply>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::exchange::v1::ListTradesRequest* request, ::sf::exchange::v1::ListTradesReply* response) { return this->ListTrades(context, request, response); }));}
+    void SetMessageAllocatorFor_ListTrades(
+        ::grpc::MessageAllocator< ::sf::exchange::v1::ListTradesRequest, ::sf::exchange::v1::ListTradesReply>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(8);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::ListTradesRequest, ::sf::exchange::v1::ListTradesReply>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_ListTrades() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListTrades(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::ListTradesRequest* /*request*/, ::sf::exchange::v1::ListTradesReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ListTrades(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::exchange::v1::ListTradesRequest* /*request*/, ::sf::exchange::v1::ListTradesReply* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_Wallet<WithCallbackMethod_OfferTrade<WithCallbackMethod_AcceptTrade<WithCallbackMethod_CancelTrade<WithCallbackMethod_ListItem<WithCallbackMethod_BuyListing<WithCallbackMethod_CancelListing<WithCallbackMethod_ListListings<WithCallbackMethod_ListTrades<Service > > > > > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_Wallet : public BaseClass {
@@ -687,6 +829,40 @@ class Exchange final {
     }
     // disable synchronous version of this method
     ::grpc::Status CancelListing(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::ListingActionRequest* /*request*/, ::sf::exchange::v1::ExchangeReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_ListListings : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_ListListings() {
+      ::grpc::Service::MarkMethodGeneric(7);
+    }
+    ~WithGenericMethod_ListListings() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListListings(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::ListListingsRequest* /*request*/, ::sf::exchange::v1::ListListingsReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_ListTrades : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_ListTrades() {
+      ::grpc::Service::MarkMethodGeneric(8);
+    }
+    ~WithGenericMethod_ListTrades() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListTrades(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::ListTradesRequest* /*request*/, ::sf::exchange::v1::ListTradesReply* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -829,6 +1005,46 @@ class Exchange final {
     }
     void RequestCancelListing(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_ListListings : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_ListListings() {
+      ::grpc::Service::MarkMethodRaw(7);
+    }
+    ~WithRawMethod_ListListings() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListListings(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::ListListingsRequest* /*request*/, ::sf::exchange::v1::ListListingsReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestListListings(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_ListTrades : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_ListTrades() {
+      ::grpc::Service::MarkMethodRaw(8);
+    }
+    ~WithRawMethod_ListTrades() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListTrades(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::ListTradesRequest* /*request*/, ::sf::exchange::v1::ListTradesReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestListTrades(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -983,6 +1199,50 @@ class Exchange final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* CancelListing(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_ListListings : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_ListListings() {
+      ::grpc::Service::MarkMethodRawCallback(7,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ListListings(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_ListListings() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListListings(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::ListListingsRequest* /*request*/, ::sf::exchange::v1::ListListingsReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ListListings(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_ListTrades : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_ListTrades() {
+      ::grpc::Service::MarkMethodRawCallback(8,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ListTrades(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_ListTrades() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListTrades(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::ListTradesRequest* /*request*/, ::sf::exchange::v1::ListTradesReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ListTrades(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -1174,9 +1434,63 @@ class Exchange final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedCancelListing(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::exchange::v1::ListingActionRequest,::sf::exchange::v1::ExchangeReply>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_Wallet<WithStreamedUnaryMethod_OfferTrade<WithStreamedUnaryMethod_AcceptTrade<WithStreamedUnaryMethod_CancelTrade<WithStreamedUnaryMethod_ListItem<WithStreamedUnaryMethod_BuyListing<WithStreamedUnaryMethod_CancelListing<Service > > > > > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_ListListings : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_ListListings() {
+      ::grpc::Service::MarkMethodStreamed(7,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::exchange::v1::ListListingsRequest, ::sf::exchange::v1::ListListingsReply>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::exchange::v1::ListListingsRequest, ::sf::exchange::v1::ListListingsReply>* streamer) {
+                       return this->StreamedListListings(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_ListListings() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status ListListings(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::ListListingsRequest* /*request*/, ::sf::exchange::v1::ListListingsReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedListListings(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::exchange::v1::ListListingsRequest,::sf::exchange::v1::ListListingsReply>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_ListTrades : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_ListTrades() {
+      ::grpc::Service::MarkMethodStreamed(8,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::exchange::v1::ListTradesRequest, ::sf::exchange::v1::ListTradesReply>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::exchange::v1::ListTradesRequest, ::sf::exchange::v1::ListTradesReply>* streamer) {
+                       return this->StreamedListTrades(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_ListTrades() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status ListTrades(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::ListTradesRequest* /*request*/, ::sf::exchange::v1::ListTradesReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedListTrades(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::exchange::v1::ListTradesRequest,::sf::exchange::v1::ListTradesReply>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_Wallet<WithStreamedUnaryMethod_OfferTrade<WithStreamedUnaryMethod_AcceptTrade<WithStreamedUnaryMethod_CancelTrade<WithStreamedUnaryMethod_ListItem<WithStreamedUnaryMethod_BuyListing<WithStreamedUnaryMethod_CancelListing<WithStreamedUnaryMethod_ListListings<WithStreamedUnaryMethod_ListTrades<Service > > > > > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_Wallet<WithStreamedUnaryMethod_OfferTrade<WithStreamedUnaryMethod_AcceptTrade<WithStreamedUnaryMethod_CancelTrade<WithStreamedUnaryMethod_ListItem<WithStreamedUnaryMethod_BuyListing<WithStreamedUnaryMethod_CancelListing<Service > > > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_Wallet<WithStreamedUnaryMethod_OfferTrade<WithStreamedUnaryMethod_AcceptTrade<WithStreamedUnaryMethod_CancelTrade<WithStreamedUnaryMethod_ListItem<WithStreamedUnaryMethod_BuyListing<WithStreamedUnaryMethod_CancelListing<WithStreamedUnaryMethod_ListListings<WithStreamedUnaryMethod_ListTrades<Service > > > > > > > > > StreamedService;
 };
 
 }  // namespace v1

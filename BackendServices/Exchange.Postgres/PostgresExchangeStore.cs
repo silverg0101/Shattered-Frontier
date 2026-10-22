@@ -9,7 +9,7 @@ namespace ShatteredFrontier.Exchange.Postgres;
 public sealed class ExchangeUnavailableException(string message, Exception inner) : Exception(message, inner);
 public sealed class ExchangeSchemaCompatibilityException(string message) : Exception(message);
 public sealed class ExchangeRejectedException(string message) : InvalidOperationException(message);
-public sealed record DurableListing(string Id, string SellerId, string SellerContainerId, string EscrowId, string ItemId, long Quantity, long Price, long Fee, DateTimeOffset ExpiresAt, string State, long Revision);
+public sealed record DurableListing(string Id, string SellerId, string SellerContainerId, string EscrowId, string ItemId, long Quantity, long Price, long Fee, DateTimeOffset ExpiresAt, string State, long Revision, string MarketId = "market/global");
 public sealed record DurableSettlement(string OperationId, string Kind, string SubjectId, string? PayerId, string? PayeeId,
     long Amount, long Fee, IReadOnlyList<EscrowDelivery> Deliveries, string State, ExchangeReceipt Receipt);
 public sealed record ListingIntent(string Command, string Id, string Seller, string SellerContainer, string Escrow,
@@ -97,8 +97,8 @@ public sealed class PostgresExchangeStore(string connectionString)
     });
     private static DurableListing? ReadListing(NpgsqlConnection c,NpgsqlTransaction t,string id,bool forUpdate=false)
     {
-        using var cmd=Cmd(c,t,"SELECT id,seller_id,seller_container_id,escrow_id,item_id,quantity,price,fee,expires_at,state,revision FROM exchange.listings WHERE id=$1"+(forUpdate?" FOR UPDATE":""),id);
-        using var r=cmd.ExecuteReader(); return r.Read()?new(r.GetString(0),r.GetString(1),r.GetString(2),r.GetString(3),r.GetString(4),r.GetInt64(5),r.GetInt64(6),r.GetInt64(7),r.GetFieldValue<DateTimeOffset>(8),r.GetString(9),r.GetInt64(10)):null;
+        using var cmd=Cmd(c,t,"SELECT id,seller_id,seller_container_id,escrow_id,item_id,quantity,price,fee,expires_at,state,revision,market_id FROM exchange.listings WHERE id=$1"+(forUpdate?" FOR UPDATE":""),id);
+        using var r=cmd.ExecuteReader(); return r.Read()?new(r.GetString(0),r.GetString(1),r.GetString(2),r.GetString(3),r.GetString(4),r.GetInt64(5),r.GetInt64(6),r.GetInt64(7),r.GetFieldValue<DateTimeOffset>(8),r.GetString(9),r.GetInt64(10),r.GetString(11)):null;
     }
     public DurableListing? Listing(string id)=>Run((c,t)=>ReadListing(c,t,id));
     private static int PageSize(int size)

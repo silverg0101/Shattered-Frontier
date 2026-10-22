@@ -1,0 +1,20 @@
+{
+  "id": "market/silverbrook",
+  "zone_id": "zone/greenlands_silverbrook",
+  "board": "market_board/silverbrook",
+  "open": true,
+  "grade_multipliers": { "crude": 0.5, "fine": 1.5, "superior": 2.5, "masterwork": 4.0 },
+  "items": [
+    { "definition_id": "item/oak_log", "fair_value_copper": 3 },
+    { "definition_id": "item/iron_ore", "fair_value_copper": 5 },
+    { "definition_id": "item/rough_stone", "fair_value_copper": 2 },
+    { "definition_id": "item/boar_hide", "fair_value_copper": 5 },
+    { "definition_id": "item/rough_timber", "fair_value_copper": 6, "grades": true },
+    { "definition_id": "item/iron_ingot", "fair_value_copper": 12, "grades": true },
+    { "definition_id": "item/iron_nails", "fair_value_copper": 8, "grades": true },
+    { "definition_id": "item/hide_strips", "fair_value_copper": 5, "grades": true },
+    { "definition_id": "item/worked_timber", "fair_value_copper": 14, "grades": true },
+    { "definition_id": "item/iron_brackets", "fair_value_copper": 16, "grades": true },
+    { "definition_id": "item/recipe_scroll_iron_brackets", "fair_value_copper": 120 }
+  ]
+}

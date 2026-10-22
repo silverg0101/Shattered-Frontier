@@ -21,7 +21,7 @@ namespace SFExchangeRequests
     SHATTEREDFRONTIER_API FSFGameplayRequest Offer(const FSFTradeSnapshot& Trade, const FSFExchangeParties& Parties);
     SHATTEREDFRONTIER_API FSFGameplayRequest Accept(const FString& TradeId, const FString& ActorId);
     SHATTEREDFRONTIER_API FSFGameplayRequest Cancel(const FString& TradeId, const FString& ActorId);
-    SHATTEREDFRONTIER_API FSFGameplayRequest List(const FSFExchangeParties& Parties, const FString& ListingId, const FString& ItemId, int32 Quantity, int64 UnitPrice, int64 ListingFee, int64 NowUnixMs);
+    SHATTEREDFRONTIER_API FSFGameplayRequest List(const FSFExchangeParties& Parties, const FString& ListingId, const FString& ItemId, int32 Quantity, int64 UnitPrice, int64 ListingFee, int64 NowUnixMs, const FString& MarketId = TEXT("market/silverbrook"));
     SHATTEREDFRONTIER_API FSFGameplayRequest Buy(const FSFListing& Listing, const FString& BuyerId, const FString& DestinationContainerId, int64 TransactionFee);
     SHATTEREDFRONTIER_API FSFGameplayRequest CancelListing(const FString& ListingId, const FString& SellerId);
     // True for an Ok reply the server applied: committed, or a "pending" settlement (an open trade offer awaiting the

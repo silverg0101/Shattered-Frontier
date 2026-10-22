@@ -16,10 +16,11 @@ public static class ExchangeControls
         new("tune.economy.market_listing_fee_rate_regional", "Regional listing fee", "fraction", .02m, 0m, .10m, "economy.tuning.publish", "new listings"),
         new("tune.economy.market_transaction_fee_rate", "Sale fee", "fraction", .05m, 0m, .20m, "economy.tuning.publish", "new listings"),
         new("tune.economy.market_expiry_fee_rate", "Expired listing fee", "fraction", .01m, 0m, .10m, "economy.tuning.publish", "new listings"),
-        new("tune.economy.market_fee_min_copper", "Minimum fee", "copper", 100m, 0m, 10000m, "economy.tuning.publish", "new listings"),
+        new("tune.economy.market_fee_min_copper", "Minimum fee", "copper", 1m, 0m, 10000m, "economy.tuning.publish", "new listings"),
         new("tune.economy.market_max_listings_per_character", "Active listing limit", "listings", 100m, 1m, 100m, "economy.tuning.publish", "new listings"),
         new("tune.economy.market_listing_durations_hours", "Listing duration", "hours", 48m, 12m, 48m, "economy.tuning.publish", "new listings"),
-        new("tune.economy.market_min_level", "Minimum listing level", "levels", 10m, 1m, 100m, "economy.tuning.publish", "new listings"),
+        new("tune.economy.market_min_level", "Minimum listing level", "levels", 1m, 1m, 100m, "economy.tuning.publish", "new listings"),
+        new("tune.economy.market_max_quantity_per_listing", "Maximum units in a listing", "units", 100m, 1m, 1000m, "economy.tuning.publish", "new listings"),
         new("tune.economy.market_price_cap_mult", "Price cap above fair value", "multiplier", 20m, 1m, 50m, "economy.tuning.publish", "new listings"),
         new("tune.economy.market_price_cap_abs_copper", "Minimum price ceiling", "copper", 100000m, 10000m, 10000000m, "economy.tuning.publish", "new listings")
     ];
@@ -35,7 +36,7 @@ public sealed class ExchangeSettings
         {
             var control = ExchangeControls.Keys.SingleOrDefault(x => x.Key == key) ?? throw new ArgumentException("Unknown exchange setting.");
             if (value < control.Min || value > control.Max ||
-                (control.Unit is "copper" or "listings" or "hours" or "levels" && value != decimal.Truncate(value)) ||
+                (control.Unit is "copper" or "listings" or "hours" or "levels" or "units" && value != decimal.Truncate(value)) ||
                 (control.Unit == "hours" && value is not (12m or 24m or 48m)))
                 throw new ArgumentOutOfRangeException(nameof(snapshot), key);
             values[key] = value;
@@ -176,7 +177,7 @@ public sealed class ExchangeService(InventoryService inventory, ExchangeSettings
             eligibility.SellerLevel < settings.Get("tune.economy.market_min_level") || eligibility.FairValueCopper <= 0 ||
             (commodity ? scope != MarketScope.GlobalExchange : scope != MarketScope.Regional) ||
             !seller.StartsWith("chr_", StringComparison.Ordinal) || !definitionId.StartsWith("item/", StringComparison.Ordinal) ||
-            quantity <= 0 || unitPriceCopper <= 0 || !Owns(sourceContainer, seller) || !Owns(escrowContainer, seller) ||
+            quantity <= 0 || quantity > settings.Get("tune.economy.market_max_quantity_per_listing") || unitPriceCopper <= 0 || !Owns(sourceContainer, seller) || !Owns(escrowContainer, seller) ||
             !IsEscrow(escrowContainer) ||
             listings.Values.Count(x => x.Seller == seller && x.State == "active") >= settings.Get("tune.economy.market_max_listings_per_character"))
             return Reject(op, "invalid_listing", id);
@@ -186,7 +187,7 @@ public sealed class ExchangeService(InventoryService inventory, ExchangeSettings
         catch (OverflowException) { return Reject(op, "overflow", id); }
         if (unitPriceCopper >= Math.Max(settings.Get("tune.economy.market_price_cap_mult") * eligibility.FairValueCopper,
             settings.Get("tune.economy.market_price_cap_abs_copper"))) return Reject(op, "price_above_cap", id);
-        if (total < settings.Fee("tune.economy.market_transaction_fee_rate", total)) return Reject(op, "price_below_fee", id);
+        if (total <= settings.Fee("tune.economy.market_transaction_fee_rate", total)) return Reject(op, "price_below_fee", id);
         if (Wallet(seller).Spendable < fee) return Reject(op, "insufficient_gold", id);
         try { inventory.Transfer(op + ":escrow", sourceContainer, inventory.Read(sourceContainer).Revision,
             escrowContainer, inventory.Read(escrowContainer).Revision, definitionId, quantity); }

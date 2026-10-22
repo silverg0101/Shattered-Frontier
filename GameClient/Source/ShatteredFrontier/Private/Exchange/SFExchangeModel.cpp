@@ -32,7 +32,7 @@ FString SFGold::Format(int64 Amount)
 int64 SFGold::FeeFor(int64 Amount, int32 BasisPoints)
 {
     if (Amount <= 0 || BasisPoints <= 0) { return 0; }
-    return (Amount * BasisPoints + 9999) / 10000;
+    return FMath::Max<int64>(1, (Amount * BasisPoints + 5000) / 10000);
 }
 
 FSFTradeViewModel::FSFTradeViewModel(ISFExchangeService& InService, FSFTradeSnapshot Initial, bool bInInitiator)

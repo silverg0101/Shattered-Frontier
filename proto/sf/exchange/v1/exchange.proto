@@ -38,6 +38,7 @@ message BuyListingRequest {
   string operation_id = 1; string listing_id = 2; string buyer_id = 3;
   string destination_container_id = 4; int64 expected_revision = 5;
   int64 expected_unit_price = 6; int64 transaction_fee = 7;
+  string market_id = 8;
 }
-message ListingActionRequest { string operation_id = 1; string listing_id = 2; string seller_id = 3; }
+message ListingActionRequest { string operation_id = 1; string listing_id = 2; string seller_id = 3; string market_id = 4; }
 message ExchangeReply { string operation_id = 1; string subject_id = 2; string state = 3; bool committed = 4; int64 amount = 5; int64 fee = 6; }

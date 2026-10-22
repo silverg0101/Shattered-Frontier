@@ -3,6 +3,7 @@
 #include "Construction/SFConstructionNetwork.h"
 #include "Characters/SFE1Character.h"
 #include "Interaction/SFE1InteractionTarget.h"
+#include "Exchange/SFMarketBoardActor.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
 #include "GameFramework/PlayerController.h"
@@ -39,6 +40,22 @@ void ASFGameMode::StartPlay()
         ASFE1InteractionTarget* Target = GetWorld()->SpawnActor<ASFE1InteractionTarget>(
             FVector(-300.0, -750.0, 60.0), FRotator::ZeroRotator, Spawn);
         if (!Target) { UE_LOG(LogTemp, Fatal, TEXT("E1 interaction fixture failed to spawn")); }
+    }
+    if (GetWorld()->GetMapName().EndsWith(TEXT("Greenlands_Silverbrook")))
+    {
+        bool bBoardExists = false;
+        for (TActorIterator<ASFMarketBoardActor> It(GetWorld()); It; ++It) { bBoardExists = true; break; }
+        if (!bBoardExists)
+        {
+            // Authored Market Square south edge [0,-8] metres; trace terrain so the marker follows the built map.
+            FHitResult Ground;
+            const FVector Above(0, -800, 50000), Below(0, -800, -50000);
+            if (GetWorld()->LineTraceSingleByChannel(Ground, Above, Below, ECC_WorldStatic))
+            {
+                GetWorld()->SpawnActor<ASFMarketBoardActor>(Ground.Location + FVector(0, 0, 50), FRotator::ZeroRotator);
+            }
+            else { UE_LOG(LogTemp, Error, TEXT("MARKET_BOARD_GROUND_MISSING Silverbrook")); }
+        }
     }
     UE_LOG(LogTemp, Display, TEXT("E1_WORLD_READY Map=%s NetMode=%d LocalDevelopmentOnly=1"), *GetWorld()->GetMapName(), static_cast<int32>(GetNetMode()));
 #if WITH_DEV_AUTOMATION_TESTS

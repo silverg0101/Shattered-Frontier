@@ -88,6 +88,38 @@ extern const ::google::protobuf::internal::ClassDataFull ListItemRequest_class_d
 #else
 extern const ListItemRequestGlobalsTypeInternal ListItemRequest_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
+class ListListingsReply;
+struct ListListingsReplyGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern ListListingsReplyGlobalsTypeInternal ListListingsReply_globals_;
+extern const ::google::protobuf::internal::ClassDataFull ListListingsReply_class_data_;
+#else
+extern const ListListingsReplyGlobalsTypeInternal ListListingsReply_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+class ListListingsRequest;
+struct ListListingsRequestGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern ListListingsRequestGlobalsTypeInternal ListListingsRequest_globals_;
+extern const ::google::protobuf::internal::ClassDataFull ListListingsRequest_class_data_;
+#else
+extern const ListListingsRequestGlobalsTypeInternal ListListingsRequest_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+class ListTradesReply;
+struct ListTradesReplyGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern ListTradesReplyGlobalsTypeInternal ListTradesReply_globals_;
+extern const ::google::protobuf::internal::ClassDataFull ListTradesReply_class_data_;
+#else
+extern const ListTradesReplyGlobalsTypeInternal ListTradesReply_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+class ListTradesRequest;
+struct ListTradesRequestGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern ListTradesRequestGlobalsTypeInternal ListTradesRequest_globals_;
+extern const ::google::protobuf::internal::ClassDataFull ListTradesRequest_class_data_;
+#else
+extern const ListTradesRequestGlobalsTypeInternal ListTradesRequest_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
 class ListingActionRequest;
 struct ListingActionRequestGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -95,6 +127,14 @@ extern ListingActionRequestGlobalsTypeInternal ListingActionRequest_globals_;
 extern const ::google::protobuf::internal::ClassDataFull ListingActionRequest_class_data_;
 #else
 extern const ListingActionRequestGlobalsTypeInternal ListingActionRequest_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+class ListingView;
+struct ListingViewGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern ListingViewGlobalsTypeInternal ListingView_globals_;
+extern const ::google::protobuf::internal::ClassDataFull ListingView_class_data_;
+#else
+extern const ListingViewGlobalsTypeInternal ListingView_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class TradeActionRequest;
 struct TradeActionRequestGlobalsTypeInternal;
@@ -111,6 +151,14 @@ extern TradeOfferRequestGlobalsTypeInternal TradeOfferRequest_globals_;
 extern const ::google::protobuf::internal::ClassDataFull TradeOfferRequest_class_data_;
 #else
 extern const TradeOfferRequestGlobalsTypeInternal TradeOfferRequest_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+class TradeView;
+struct TradeViewGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern TradeViewGlobalsTypeInternal TradeView_globals_;
+extern const ::google::protobuf::internal::ClassDataFull TradeView_class_data_;
+#else
+extern const TradeViewGlobalsTypeInternal TradeView_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class WalletReply;
 struct WalletReplyGlobalsTypeInternal;
@@ -588,6 +636,292 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED WalletReply final : public ::google
 };
 // -------------------------------------------------------------------
 
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED TradeView final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.exchange.v1.TradeView) */ {
+ public:
+  inline TradeView() : TradeView(nullptr) {}
+  ~TradeView() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(TradeView* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(TradeView));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr TradeView(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline TradeView(const TradeView& from) : TradeView(nullptr, from) {}
+  inline TradeView(TradeView&& from) noexcept : TradeView(nullptr, ::std::move(from)) {}
+  inline TradeView& operator=(const TradeView& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline TradeView& operator=(TradeView&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const TradeView& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<TradeView>(&TradeView_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 10;
+  friend void swap(TradeView& a, TradeView& b) { a.Swap(&b); }
+  inline void Swap(TradeView* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(TradeView* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] TradeView* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<TradeView>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const TradeView& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const TradeView& from) { TradeView::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(TradeView* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.exchange.v1.TradeView"; }
+
+  explicit TradeView(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  TradeView(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const TradeView& from);
+  TradeView(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, TradeView&& from) noexcept
+      : TradeView(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kTradeIdFieldNumber = 1,
+    kOfferOperationIdFieldNumber = 2,
+    kPartyAFieldNumber = 3,
+    kPartyBFieldNumber = 4,
+    kStateFieldNumber = 5,
+    kCreatedAtUnixMsFieldNumber = 6,
+  };
+  // string trade_id = 1;
+  void clear_trade_id() ;
+  [[nodiscard]] const ::std::string& trade_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_trade_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_trade_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_trade_id();
+  void set_allocated_trade_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_trade_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_trade_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_trade_id();
+
+  public:
+  // string offer_operation_id = 2;
+  void clear_offer_operation_id() ;
+  [[nodiscard]] const ::std::string& offer_operation_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_offer_operation_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_offer_operation_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_offer_operation_id();
+  void set_allocated_offer_operation_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_offer_operation_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_offer_operation_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_offer_operation_id();
+
+  public:
+  // string party_a = 3;
+  void clear_party_a() ;
+  [[nodiscard]] const ::std::string& party_a() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_party_a(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_party_a();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_party_a();
+  void set_allocated_party_a(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_party_a() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_party_a(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_party_a();
+
+  public:
+  // string party_b = 4;
+  void clear_party_b() ;
+  [[nodiscard]] const ::std::string& party_b() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_party_b(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_party_b();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_party_b();
+  void set_allocated_party_b(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_party_b() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_party_b(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_party_b();
+
+  public:
+  // string state = 5;
+  void clear_state() ;
+  [[nodiscard]] const ::std::string& state() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_state(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_state();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_state();
+  void set_allocated_state(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_state() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_state(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_state();
+
+  public:
+  // int64 created_at_unix_ms = 6;
+  void clear_created_at_unix_ms() ;
+  [[nodiscard]] ::int64_t created_at_unix_ms() const;
+  void set_created_at_unix_ms(::int64_t value);
+
+  private:
+  ::int64_t _internal_created_at_unix_ms() const;
+  void _internal_set_created_at_unix_ms(::int64_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.exchange.v1.TradeView)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<3, 6,
+                          0, 78,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const TradeView& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr trade_id_;
+    ::google::protobuf::internal::ArenaStringPtr offer_operation_id_;
+    ::google::protobuf::internal::ArenaStringPtr party_a_;
+    ::google::protobuf::internal::ArenaStringPtr party_b_;
+    ::google::protobuf::internal::ArenaStringPtr state_;
+    ::int64_t created_at_unix_ms_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2fexchange_2fv1_2fexchange_2eproto;
+};
+// -------------------------------------------------------------------
+
 class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED TradeActionRequest final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:sf.exchange.v1.TradeActionRequest) */ {
  public:
@@ -845,6 +1179,294 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED TradeActionRequest final : public :
 };
 // -------------------------------------------------------------------
 
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListingView final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.exchange.v1.ListingView) */ {
+ public:
+  inline ListingView() : ListingView(nullptr) {}
+  ~ListingView() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(ListingView* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(ListingView));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr ListingView(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline ListingView(const ListingView& from) : ListingView(nullptr, from) {}
+  inline ListingView(ListingView&& from) noexcept : ListingView(nullptr, ::std::move(from)) {}
+  inline ListingView& operator=(const ListingView& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ListingView& operator=(ListingView&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const ListingView& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<ListingView>(&ListingView_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 7;
+  friend void swap(ListingView& a, ListingView& b) { a.Swap(&b); }
+  inline void Swap(ListingView* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ListingView* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] ListingView* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<ListingView>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const ListingView& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const ListingView& from) { ListingView::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(ListingView* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.exchange.v1.ListingView"; }
+
+  explicit ListingView(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  ListingView(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const ListingView& from);
+  ListingView(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, ListingView&& from) noexcept
+      : ListingView(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kIdFieldNumber = 1,
+    kSellerIdFieldNumber = 2,
+    kItemIdFieldNumber = 3,
+    kQuantityFieldNumber = 4,
+    kUnitPriceFieldNumber = 5,
+    kListingFeeFieldNumber = 6,
+    kCreatedAtUnixMsFieldNumber = 7,
+  };
+  // string id = 1;
+  void clear_id() ;
+  [[nodiscard]] const ::std::string& id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_id();
+  void set_allocated_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_id();
+
+  public:
+  // string seller_id = 2;
+  void clear_seller_id() ;
+  [[nodiscard]] const ::std::string& seller_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_seller_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_seller_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_seller_id();
+  void set_allocated_seller_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_seller_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_seller_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_seller_id();
+
+  public:
+  // string item_id = 3;
+  void clear_item_id() ;
+  [[nodiscard]] const ::std::string& item_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_item_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_item_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_item_id();
+  void set_allocated_item_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_item_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_item_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_item_id();
+
+  public:
+  // int64 quantity = 4;
+  void clear_quantity() ;
+  [[nodiscard]] ::int64_t quantity() const;
+  void set_quantity(::int64_t value);
+
+  private:
+  ::int64_t _internal_quantity() const;
+  void _internal_set_quantity(::int64_t value);
+
+  public:
+  // int64 unit_price = 5;
+  void clear_unit_price() ;
+  [[nodiscard]] ::int64_t unit_price() const;
+  void set_unit_price(::int64_t value);
+
+  private:
+  ::int64_t _internal_unit_price() const;
+  void _internal_set_unit_price(::int64_t value);
+
+  public:
+  // int64 listing_fee = 6;
+  void clear_listing_fee() ;
+  [[nodiscard]] ::int64_t listing_fee() const;
+  void set_listing_fee(::int64_t value);
+
+  private:
+  ::int64_t _internal_listing_fee() const;
+  void _internal_set_listing_fee(::int64_t value);
+
+  public:
+  // int64 created_at_unix_ms = 7;
+  void clear_created_at_unix_ms() ;
+  [[nodiscard]] ::int64_t created_at_unix_ms() const;
+  void set_created_at_unix_ms(::int64_t value);
+
+  private:
+  ::int64_t _internal_created_at_unix_ms() const;
+  void _internal_set_created_at_unix_ms(::int64_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.exchange.v1.ListingView)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<3, 7,
+                          0, 53,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const ListingView& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr id_;
+    ::google::protobuf::internal::ArenaStringPtr seller_id_;
+    ::google::protobuf::internal::ArenaStringPtr item_id_;
+    ::int64_t quantity_;
+    ::int64_t unit_price_;
+    ::int64_t listing_fee_;
+    ::int64_t created_at_unix_ms_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2fexchange_2fv1_2fexchange_2eproto;
+};
+// -------------------------------------------------------------------
+
 class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListingActionRequest final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:sf.exchange.v1.ListingActionRequest) */ {
  public:
@@ -901,7 +1523,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListingActionRequest final : public
   [[nodiscard]] static const ListingActionRequest& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<ListingActionRequest>(&ListingActionRequest_globals_);
   }
-  static constexpr int kIndexInFileMessages = 7;
+  static constexpr int kIndexInFileMessages = 13;
   friend void swap(ListingActionRequest& a, ListingActionRequest& b) { a.Swap(&b); }
   inline void Swap(ListingActionRequest* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -996,6 +1618,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListingActionRequest final : public
     kOperationIdFieldNumber = 1,
     kListingIdFieldNumber = 2,
     kSellerIdFieldNumber = 3,
+    kMarketIdFieldNumber = 4,
   };
   // string operation_id = 1;
   void clear_operation_id() ;
@@ -1042,12 +1665,27 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListingActionRequest final : public
   ::std::string* PROTOBUF_NONNULL _internal_mutable_seller_id();
 
   public:
+  // string market_id = 4;
+  void clear_market_id() ;
+  [[nodiscard]] const ::std::string& market_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_market_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_market_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_market_id();
+  void set_allocated_market_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_market_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_market_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_market_id();
+
+  public:
   // @@protoc_insertion_point(class_scope:sf.exchange.v1.ListingActionRequest)
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<2, 3,
-                          0, 75,
+      ::google::protobuf::internal::TcParseTable<2, 4,
+                          0, 84,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
       const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
@@ -1078,6 +1716,494 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListingActionRequest final : public
     ::google::protobuf::internal::ArenaStringPtr operation_id_;
     ::google::protobuf::internal::ArenaStringPtr listing_id_;
     ::google::protobuf::internal::ArenaStringPtr seller_id_;
+    ::google::protobuf::internal::ArenaStringPtr market_id_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2fexchange_2fv1_2fexchange_2eproto;
+};
+// -------------------------------------------------------------------
+
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListTradesRequest final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.exchange.v1.ListTradesRequest) */ {
+ public:
+  inline ListTradesRequest() : ListTradesRequest(nullptr) {}
+  ~ListTradesRequest() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(ListTradesRequest* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(ListTradesRequest));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr ListTradesRequest(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline ListTradesRequest(const ListTradesRequest& from) : ListTradesRequest(nullptr, from) {}
+  inline ListTradesRequest(ListTradesRequest&& from) noexcept : ListTradesRequest(nullptr, ::std::move(from)) {}
+  inline ListTradesRequest& operator=(const ListTradesRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ListTradesRequest& operator=(ListTradesRequest&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const ListTradesRequest& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<ListTradesRequest>(&ListTradesRequest_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 9;
+  friend void swap(ListTradesRequest& a, ListTradesRequest& b) { a.Swap(&b); }
+  inline void Swap(ListTradesRequest* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ListTradesRequest* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] ListTradesRequest* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<ListTradesRequest>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const ListTradesRequest& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const ListTradesRequest& from) { ListTradesRequest::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(ListTradesRequest* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.exchange.v1.ListTradesRequest"; }
+
+  explicit ListTradesRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  ListTradesRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const ListTradesRequest& from);
+  ListTradesRequest(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, ListTradesRequest&& from) noexcept
+      : ListTradesRequest(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kCharacterIdFieldNumber = 1,
+    kPageTokenFieldNumber = 2,
+    kPageSizeFieldNumber = 3,
+  };
+  // string character_id = 1;
+  void clear_character_id() ;
+  [[nodiscard]] const ::std::string& character_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_character_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_character_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_character_id();
+  void set_allocated_character_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_character_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_character_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_character_id();
+
+  public:
+  // string page_token = 2;
+  void clear_page_token() ;
+  [[nodiscard]] const ::std::string& page_token() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_page_token(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_page_token();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_page_token();
+  void set_allocated_page_token(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_page_token() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_page_token(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_page_token();
+
+  public:
+  // int32 page_size = 3;
+  void clear_page_size() ;
+  [[nodiscard]] ::int32_t page_size() const;
+  void set_page_size(::int32_t value);
+
+  private:
+  ::int32_t _internal_page_size() const;
+  void _internal_set_page_size(::int32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.exchange.v1.ListTradesRequest)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<2, 3,
+                          0, 63,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const ListTradesRequest& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr character_id_;
+    ::google::protobuf::internal::ArenaStringPtr page_token_;
+    ::int32_t page_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2fexchange_2fv1_2fexchange_2eproto;
+};
+// -------------------------------------------------------------------
+
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListListingsRequest final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.exchange.v1.ListListingsRequest) */ {
+ public:
+  inline ListListingsRequest() : ListListingsRequest(nullptr) {}
+  ~ListListingsRequest() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(ListListingsRequest* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(ListListingsRequest));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr ListListingsRequest(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline ListListingsRequest(const ListListingsRequest& from) : ListListingsRequest(nullptr, from) {}
+  inline ListListingsRequest(ListListingsRequest&& from) noexcept : ListListingsRequest(nullptr, ::std::move(from)) {}
+  inline ListListingsRequest& operator=(const ListListingsRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ListListingsRequest& operator=(ListListingsRequest&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const ListListingsRequest& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<ListListingsRequest>(&ListListingsRequest_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 6;
+  friend void swap(ListListingsRequest& a, ListListingsRequest& b) { a.Swap(&b); }
+  inline void Swap(ListListingsRequest* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ListListingsRequest* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] ListListingsRequest* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<ListListingsRequest>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const ListListingsRequest& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const ListListingsRequest& from) { ListListingsRequest::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(ListListingsRequest* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.exchange.v1.ListListingsRequest"; }
+
+  explicit ListListingsRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  ListListingsRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const ListListingsRequest& from);
+  ListListingsRequest(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, ListListingsRequest&& from) noexcept
+      : ListListingsRequest(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kMarketIdFieldNumber = 1,
+    kItemIdFieldNumber = 2,
+    kPageTokenFieldNumber = 3,
+    kPageSizeFieldNumber = 4,
+  };
+  // string market_id = 1;
+  void clear_market_id() ;
+  [[nodiscard]] const ::std::string& market_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_market_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_market_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_market_id();
+  void set_allocated_market_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_market_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_market_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_market_id();
+
+  public:
+  // string item_id = 2;
+  void clear_item_id() ;
+  [[nodiscard]] const ::std::string& item_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_item_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_item_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_item_id();
+  void set_allocated_item_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_item_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_item_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_item_id();
+
+  public:
+  // string page_token = 3;
+  void clear_page_token() ;
+  [[nodiscard]] const ::std::string& page_token() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_page_token(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_page_token();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_page_token();
+  void set_allocated_page_token(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_page_token() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_page_token(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_page_token();
+
+  public:
+  // int32 page_size = 4;
+  void clear_page_size() ;
+  [[nodiscard]] ::int32_t page_size() const;
+  void set_page_size(::int32_t value);
+
+  private:
+  ::int32_t _internal_page_size() const;
+  void _internal_set_page_size(::int32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.exchange.v1.ListListingsRequest)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<2, 4,
+                          0, 69,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const ListListingsRequest& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr market_id_;
+    ::google::protobuf::internal::ArenaStringPtr item_id_;
+    ::google::protobuf::internal::ArenaStringPtr page_token_;
+    ::int32_t page_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -1239,6 +2365,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListItemRequest final : public ::go
     kSourceContainerIdFieldNumber = 4,
     kEscrowContainerIdFieldNumber = 5,
     kItemIdFieldNumber = 6,
+    kMarketIdFieldNumber = 11,
     kQuantityFieldNumber = 7,
     kUnitPriceFieldNumber = 8,
     kListingFeeFieldNumber = 9,
@@ -1334,6 +2461,21 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListItemRequest final : public ::go
   ::std::string* PROTOBUF_NONNULL _internal_mutable_item_id();
 
   public:
+  // string market_id = 11;
+  void clear_market_id() ;
+  [[nodiscard]] const ::std::string& market_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_market_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_market_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_market_id();
+  void set_allocated_market_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_market_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_market_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_market_id();
+
+  public:
   // int64 quantity = 7;
   void clear_quantity() ;
   [[nodiscard]] ::int64_t quantity() const;
@@ -1378,8 +2520,8 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListItemRequest final : public ::go
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<4, 10,
-                          0, 123,
+      ::google::protobuf::internal::TcParseTable<4, 11,
+                          0, 132,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
       const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
@@ -1413,6 +2555,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListItemRequest final : public ::go
     ::google::protobuf::internal::ArenaStringPtr source_container_id_;
     ::google::protobuf::internal::ArenaStringPtr escrow_container_id_;
     ::google::protobuf::internal::ArenaStringPtr item_id_;
+    ::google::protobuf::internal::ArenaStringPtr market_id_;
     ::int64_t quantity_;
     ::int64_t unit_price_;
     ::int64_t listing_fee_;
@@ -1732,7 +2875,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ExchangeReply final : public ::goog
   [[nodiscard]] static const ExchangeReply& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<ExchangeReply>(&ExchangeReply_globals_);
   }
-  static constexpr int kIndexInFileMessages = 8;
+  static constexpr int kIndexInFileMessages = 14;
   friend void swap(ExchangeReply& a, ExchangeReply& b) { a.Swap(&b); }
   inline void Swap(ExchangeReply* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -2008,7 +3151,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED BuyListingRequest final : public ::
   [[nodiscard]] static const BuyListingRequest& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<BuyListingRequest>(&BuyListingRequest_globals_);
   }
-  static constexpr int kIndexInFileMessages = 6;
+  static constexpr int kIndexInFileMessages = 12;
   friend void swap(BuyListingRequest& a, BuyListingRequest& b) { a.Swap(&b); }
   inline void Swap(BuyListingRequest* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -2104,6 +3247,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED BuyListingRequest final : public ::
     kListingIdFieldNumber = 2,
     kBuyerIdFieldNumber = 3,
     kDestinationContainerIdFieldNumber = 4,
+    kMarketIdFieldNumber = 8,
     kExpectedRevisionFieldNumber = 5,
     kExpectedUnitPriceFieldNumber = 6,
     kTransactionFeeFieldNumber = 7,
@@ -2168,6 +3312,21 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED BuyListingRequest final : public ::
   ::std::string* PROTOBUF_NONNULL _internal_mutable_destination_container_id();
 
   public:
+  // string market_id = 8;
+  void clear_market_id() ;
+  [[nodiscard]] const ::std::string& market_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_market_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_market_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_market_id();
+  void set_allocated_market_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_market_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_market_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_market_id();
+
+  public:
   // int64 expected_revision = 5;
   void clear_expected_revision() ;
   [[nodiscard]] ::int64_t expected_revision() const;
@@ -2202,8 +3361,8 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED BuyListingRequest final : public ::
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<3, 7,
-                          0, 95,
+      ::google::protobuf::internal::TcParseTable<3, 8,
+                          0, 112,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
       const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
@@ -2235,6 +3394,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED BuyListingRequest final : public ::
     ::google::protobuf::internal::ArenaStringPtr listing_id_;
     ::google::protobuf::internal::ArenaStringPtr buyer_id_;
     ::google::protobuf::internal::ArenaStringPtr destination_container_id_;
+    ::google::protobuf::internal::ArenaStringPtr market_id_;
     ::int64_t expected_revision_;
     ::int64_t expected_unit_price_;
     ::int64_t transaction_fee_;
@@ -2542,6 +3702,464 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED TradeOfferRequest final : public ::
     ::google::protobuf::internal::ArenaStringPtr party_b_;
     ::int64_t gold_a_;
     ::int64_t gold_b_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2fexchange_2fv1_2fexchange_2eproto;
+};
+// -------------------------------------------------------------------
+
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListTradesReply final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.exchange.v1.ListTradesReply) */ {
+ public:
+  inline ListTradesReply() : ListTradesReply(nullptr) {}
+  ~ListTradesReply() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(ListTradesReply* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(ListTradesReply));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr ListTradesReply(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline ListTradesReply(const ListTradesReply& from) : ListTradesReply(nullptr, from) {}
+  inline ListTradesReply(ListTradesReply&& from) noexcept : ListTradesReply(nullptr, ::std::move(from)) {}
+  inline ListTradesReply& operator=(const ListTradesReply& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ListTradesReply& operator=(ListTradesReply&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const ListTradesReply& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<ListTradesReply>(&ListTradesReply_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 11;
+  friend void swap(ListTradesReply& a, ListTradesReply& b) { a.Swap(&b); }
+  inline void Swap(ListTradesReply* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ListTradesReply* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] ListTradesReply* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<ListTradesReply>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const ListTradesReply& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const ListTradesReply& from) { ListTradesReply::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(ListTradesReply* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.exchange.v1.ListTradesReply"; }
+
+  explicit ListTradesReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  ListTradesReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const ListTradesReply& from);
+  ListTradesReply(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, ListTradesReply&& from) noexcept
+      : ListTradesReply(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kTradesFieldNumber = 1,
+    kNextPageTokenFieldNumber = 2,
+  };
+  // repeated .sf.exchange.v1.TradeView trades = 1;
+  [[nodiscard]] int trades_size()
+      const;
+  private:
+  int _internal_trades_size() const;
+
+  public:
+  void clear_trades() ;
+  [[nodiscard]] const ::sf::exchange::v1::TradeView& trades(int index) const;
+  [[nodiscard]] ::sf::exchange::v1::TradeView* PROTOBUF_NONNULL mutable_trades(int index);
+  ::sf::exchange::v1::TradeView* PROTOBUF_NONNULL add_trades();
+  [[nodiscard]] const ::google::protobuf::RepeatedPtrField<::sf::exchange::v1::TradeView>&
+  trades() const;
+  [[nodiscard]] ::google::protobuf::RepeatedPtrField<::sf::exchange::v1::TradeView>* PROTOBUF_NONNULL
+  mutable_trades();
+
+  private:
+  const ::google::protobuf::RepeatedPtrField<::sf::exchange::v1::TradeView>& _internal_trades() const;
+  ::google::protobuf::RepeatedPtrField<::sf::exchange::v1::TradeView>* PROTOBUF_NONNULL _internal_mutable_trades();
+
+  public:
+  // string next_page_token = 2;
+  void clear_next_page_token() ;
+  [[nodiscard]] const ::std::string& next_page_token() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_next_page_token(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_next_page_token();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_next_page_token();
+  void set_allocated_next_page_token(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_next_page_token() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_next_page_token(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_next_page_token();
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.exchange.v1.ListTradesReply)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<1, 2,
+                          1, 54,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const ListTradesReply& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::RepeatedPtrField< ::sf::exchange::v1::TradeView > trades_;
+    ::google::protobuf::internal::ArenaStringPtr next_page_token_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2fexchange_2fv1_2fexchange_2eproto;
+};
+// -------------------------------------------------------------------
+
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListListingsReply final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.exchange.v1.ListListingsReply) */ {
+ public:
+  inline ListListingsReply() : ListListingsReply(nullptr) {}
+  ~ListListingsReply() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(ListListingsReply* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(ListListingsReply));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr ListListingsReply(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline ListListingsReply(const ListListingsReply& from) : ListListingsReply(nullptr, from) {}
+  inline ListListingsReply(ListListingsReply&& from) noexcept : ListListingsReply(nullptr, ::std::move(from)) {}
+  inline ListListingsReply& operator=(const ListListingsReply& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ListListingsReply& operator=(ListListingsReply&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const ListListingsReply& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<ListListingsReply>(&ListListingsReply_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 8;
+  friend void swap(ListListingsReply& a, ListListingsReply& b) { a.Swap(&b); }
+  inline void Swap(ListListingsReply* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ListListingsReply* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] ListListingsReply* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<ListListingsReply>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const ListListingsReply& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const ListListingsReply& from) { ListListingsReply::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(ListListingsReply* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.exchange.v1.ListListingsReply"; }
+
+  explicit ListListingsReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  ListListingsReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const ListListingsReply& from);
+  ListListingsReply(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, ListListingsReply&& from) noexcept
+      : ListListingsReply(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kListingsFieldNumber = 1,
+    kNextPageTokenFieldNumber = 2,
+  };
+  // repeated .sf.exchange.v1.ListingView listings = 1;
+  [[nodiscard]] int listings_size()
+      const;
+  private:
+  int _internal_listings_size() const;
+
+  public:
+  void clear_listings() ;
+  [[nodiscard]] const ::sf::exchange::v1::ListingView& listings(int index) const;
+  [[nodiscard]] ::sf::exchange::v1::ListingView* PROTOBUF_NONNULL mutable_listings(int index);
+  ::sf::exchange::v1::ListingView* PROTOBUF_NONNULL add_listings();
+  [[nodiscard]] const ::google::protobuf::RepeatedPtrField<::sf::exchange::v1::ListingView>&
+  listings() const;
+  [[nodiscard]] ::google::protobuf::RepeatedPtrField<::sf::exchange::v1::ListingView>* PROTOBUF_NONNULL
+  mutable_listings();
+
+  private:
+  const ::google::protobuf::RepeatedPtrField<::sf::exchange::v1::ListingView>& _internal_listings() const;
+  ::google::protobuf::RepeatedPtrField<::sf::exchange::v1::ListingView>* PROTOBUF_NONNULL _internal_mutable_listings();
+
+  public:
+  // string next_page_token = 2;
+  void clear_next_page_token() ;
+  [[nodiscard]] const ::std::string& next_page_token() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_next_page_token(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_next_page_token();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_next_page_token();
+  void set_allocated_next_page_token(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_next_page_token() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_next_page_token(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_next_page_token();
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.exchange.v1.ListListingsReply)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<1, 2,
+                          1, 56,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const ListListingsReply& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::RepeatedPtrField< ::sf::exchange::v1::ListingView > listings_;
+    ::google::protobuf::internal::ArenaStringPtr next_page_token_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -3963,7 +5581,7 @@ inline void ListItemRequest::set_allocated_item_id(::std::string* PROTOBUF_NULLA
 inline void ListItemRequest::clear_quantity() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.quantity_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
 }
 inline ::int64_t ListItemRequest::quantity() const {
   // @@protoc_insertion_point(field_get:sf.exchange.v1.ListItemRequest.quantity)
@@ -3971,7 +5589,7 @@ inline ::int64_t ListItemRequest::quantity() const {
 }
 inline void ListItemRequest::set_quantity(::int64_t value) {
   _internal_set_quantity(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
   // @@protoc_insertion_point(field_set:sf.exchange.v1.ListItemRequest.quantity)
 }
 inline ::int64_t ListItemRequest::_internal_quantity() const {
@@ -3987,7 +5605,7 @@ inline void ListItemRequest::_internal_set_quantity(::int64_t value) {
 inline void ListItemRequest::clear_unit_price() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.unit_price_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000100U);
 }
 inline ::int64_t ListItemRequest::unit_price() const {
   // @@protoc_insertion_point(field_get:sf.exchange.v1.ListItemRequest.unit_price)
@@ -3995,7 +5613,7 @@ inline ::int64_t ListItemRequest::unit_price() const {
 }
 inline void ListItemRequest::set_unit_price(::int64_t value) {
   _internal_set_unit_price(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000100U);
   // @@protoc_insertion_point(field_set:sf.exchange.v1.ListItemRequest.unit_price)
 }
 inline ::int64_t ListItemRequest::_internal_unit_price() const {
@@ -4011,7 +5629,7 @@ inline void ListItemRequest::_internal_set_unit_price(::int64_t value) {
 inline void ListItemRequest::clear_listing_fee() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.listing_fee_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000100U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000200U);
 }
 inline ::int64_t ListItemRequest::listing_fee() const {
   // @@protoc_insertion_point(field_get:sf.exchange.v1.ListItemRequest.listing_fee)
@@ -4019,7 +5637,7 @@ inline ::int64_t ListItemRequest::listing_fee() const {
 }
 inline void ListItemRequest::set_listing_fee(::int64_t value) {
   _internal_set_listing_fee(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000100U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000200U);
   // @@protoc_insertion_point(field_set:sf.exchange.v1.ListItemRequest.listing_fee)
 }
 inline ::int64_t ListItemRequest::_internal_listing_fee() const {
@@ -4035,7 +5653,7 @@ inline void ListItemRequest::_internal_set_listing_fee(::int64_t value) {
 inline void ListItemRequest::clear_created_at_unix_ms() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.created_at_unix_ms_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000200U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000400U);
 }
 inline ::int64_t ListItemRequest::created_at_unix_ms() const {
   // @@protoc_insertion_point(field_get:sf.exchange.v1.ListItemRequest.created_at_unix_ms)
@@ -4043,7 +5661,7 @@ inline ::int64_t ListItemRequest::created_at_unix_ms() const {
 }
 inline void ListItemRequest::set_created_at_unix_ms(::int64_t value) {
   _internal_set_created_at_unix_ms(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000200U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000400U);
   // @@protoc_insertion_point(field_set:sf.exchange.v1.ListItemRequest.created_at_unix_ms)
 }
 inline ::int64_t ListItemRequest::_internal_created_at_unix_ms() const {
@@ -4053,6 +5671,1332 @@ inline ::int64_t ListItemRequest::_internal_created_at_unix_ms() const {
 inline void ListItemRequest::_internal_set_created_at_unix_ms(::int64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.created_at_unix_ms_ = value;
+}
+
+// string market_id = 11;
+inline void ListItemRequest::clear_market_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.market_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+}
+inline const ::std::string& ListItemRequest::market_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListItemRequest.market_id)
+  return _internal_market_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void ListItemRequest::set_market_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  _impl_.market_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.ListItemRequest.market_id)
+}
+inline ::std::string* PROTOBUF_NONNULL ListItemRequest::mutable_market_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  ::std::string* _s = _internal_mutable_market_id();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.ListItemRequest.market_id)
+  return _s;
+}
+inline const ::std::string& ListItemRequest::_internal_market_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.market_id_.Get();
+}
+inline void ListItemRequest::_internal_set_market_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.market_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL ListItemRequest::_internal_mutable_market_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.market_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE ListItemRequest::release_market_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.ListItemRequest.market_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000040U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+  auto* released = _impl_.market_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.market_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void ListItemRequest::set_allocated_market_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+  }
+  _impl_.market_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.market_id_.IsDefault()) {
+    _impl_.market_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.ListItemRequest.market_id)
+}
+
+// -------------------------------------------------------------------
+
+// ListListingsRequest
+
+// string market_id = 1;
+inline void ListListingsRequest::clear_market_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.market_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& ListListingsRequest::market_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListListingsRequest.market_id)
+  return _internal_market_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void ListListingsRequest::set_market_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.market_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.ListListingsRequest.market_id)
+}
+inline ::std::string* PROTOBUF_NONNULL ListListingsRequest::mutable_market_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_market_id();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.ListListingsRequest.market_id)
+  return _s;
+}
+inline const ::std::string& ListListingsRequest::_internal_market_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.market_id_.Get();
+}
+inline void ListListingsRequest::_internal_set_market_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.market_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL ListListingsRequest::_internal_mutable_market_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.market_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE ListListingsRequest::release_market_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.ListListingsRequest.market_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.market_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.market_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void ListListingsRequest::set_allocated_market_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.market_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.market_id_.IsDefault()) {
+    _impl_.market_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.ListListingsRequest.market_id)
+}
+
+// string item_id = 2;
+inline void ListListingsRequest::clear_item_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.item_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& ListListingsRequest::item_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListListingsRequest.item_id)
+  return _internal_item_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void ListListingsRequest::set_item_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.item_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.ListListingsRequest.item_id)
+}
+inline ::std::string* PROTOBUF_NONNULL ListListingsRequest::mutable_item_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_item_id();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.ListListingsRequest.item_id)
+  return _s;
+}
+inline const ::std::string& ListListingsRequest::_internal_item_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.item_id_.Get();
+}
+inline void ListListingsRequest::_internal_set_item_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.item_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL ListListingsRequest::_internal_mutable_item_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.item_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE ListListingsRequest::release_item_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.ListListingsRequest.item_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.item_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.item_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void ListListingsRequest::set_allocated_item_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.item_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.item_id_.IsDefault()) {
+    _impl_.item_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.ListListingsRequest.item_id)
+}
+
+// string page_token = 3;
+inline void ListListingsRequest::clear_page_token() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.page_token_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline const ::std::string& ListListingsRequest::page_token() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListListingsRequest.page_token)
+  return _internal_page_token();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void ListListingsRequest::set_page_token(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  _impl_.page_token_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.ListListingsRequest.page_token)
+}
+inline ::std::string* PROTOBUF_NONNULL ListListingsRequest::mutable_page_token()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ::std::string* _s = _internal_mutable_page_token();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.ListListingsRequest.page_token)
+  return _s;
+}
+inline const ::std::string& ListListingsRequest::_internal_page_token() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.page_token_.Get();
+}
+inline void ListListingsRequest::_internal_set_page_token(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.page_token_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL ListListingsRequest::_internal_mutable_page_token() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.page_token_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE ListListingsRequest::release_page_token() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.ListListingsRequest.page_token)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  auto* released = _impl_.page_token_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.page_token_.Set("", GetArena());
+  }
+  return released;
+}
+inline void ListListingsRequest::set_allocated_page_token(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  }
+  _impl_.page_token_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.page_token_.IsDefault()) {
+    _impl_.page_token_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.ListListingsRequest.page_token)
+}
+
+// int32 page_size = 4;
+inline void ListListingsRequest::clear_page_size() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.page_size_ = 0;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline ::int32_t ListListingsRequest::page_size() const {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListListingsRequest.page_size)
+  return _internal_page_size();
+}
+inline void ListListingsRequest::set_page_size(::int32_t value) {
+  _internal_set_page_size(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.ListListingsRequest.page_size)
+}
+inline ::int32_t ListListingsRequest::_internal_page_size() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.page_size_;
+}
+inline void ListListingsRequest::_internal_set_page_size(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.page_size_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// ListingView
+
+// string id = 1;
+inline void ListingView::clear_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& ListingView::id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListingView.id)
+  return _internal_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void ListingView::set_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.ListingView.id)
+}
+inline ::std::string* PROTOBUF_NONNULL ListingView::mutable_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_id();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.ListingView.id)
+  return _s;
+}
+inline const ::std::string& ListingView::_internal_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.id_.Get();
+}
+inline void ListingView::_internal_set_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL ListingView::_internal_mutable_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE ListingView::release_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.ListingView.id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void ListingView::set_allocated_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.id_.IsDefault()) {
+    _impl_.id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.ListingView.id)
+}
+
+// string seller_id = 2;
+inline void ListingView::clear_seller_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.seller_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& ListingView::seller_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListingView.seller_id)
+  return _internal_seller_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void ListingView::set_seller_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.seller_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.ListingView.seller_id)
+}
+inline ::std::string* PROTOBUF_NONNULL ListingView::mutable_seller_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_seller_id();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.ListingView.seller_id)
+  return _s;
+}
+inline const ::std::string& ListingView::_internal_seller_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.seller_id_.Get();
+}
+inline void ListingView::_internal_set_seller_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.seller_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL ListingView::_internal_mutable_seller_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.seller_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE ListingView::release_seller_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.ListingView.seller_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.seller_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.seller_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void ListingView::set_allocated_seller_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.seller_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.seller_id_.IsDefault()) {
+    _impl_.seller_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.ListingView.seller_id)
+}
+
+// string item_id = 3;
+inline void ListingView::clear_item_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.item_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline const ::std::string& ListingView::item_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListingView.item_id)
+  return _internal_item_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void ListingView::set_item_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  _impl_.item_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.ListingView.item_id)
+}
+inline ::std::string* PROTOBUF_NONNULL ListingView::mutable_item_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ::std::string* _s = _internal_mutable_item_id();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.ListingView.item_id)
+  return _s;
+}
+inline const ::std::string& ListingView::_internal_item_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.item_id_.Get();
+}
+inline void ListingView::_internal_set_item_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.item_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL ListingView::_internal_mutable_item_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.item_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE ListingView::release_item_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.ListingView.item_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  auto* released = _impl_.item_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.item_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void ListingView::set_allocated_item_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  }
+  _impl_.item_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.item_id_.IsDefault()) {
+    _impl_.item_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.ListingView.item_id)
+}
+
+// int64 quantity = 4;
+inline void ListingView::clear_quantity() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quantity_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline ::int64_t ListingView::quantity() const {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListingView.quantity)
+  return _internal_quantity();
+}
+inline void ListingView::set_quantity(::int64_t value) {
+  _internal_set_quantity(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.ListingView.quantity)
+}
+inline ::int64_t ListingView::_internal_quantity() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.quantity_;
+}
+inline void ListingView::_internal_set_quantity(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quantity_ = value;
+}
+
+// int64 unit_price = 5;
+inline void ListingView::clear_unit_price() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.unit_price_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+}
+inline ::int64_t ListingView::unit_price() const {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListingView.unit_price)
+  return _internal_unit_price();
+}
+inline void ListingView::set_unit_price(::int64_t value) {
+  _internal_set_unit_price(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.ListingView.unit_price)
+}
+inline ::int64_t ListingView::_internal_unit_price() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.unit_price_;
+}
+inline void ListingView::_internal_set_unit_price(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.unit_price_ = value;
+}
+
+// int64 listing_fee = 6;
+inline void ListingView::clear_listing_fee() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.listing_fee_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+}
+inline ::int64_t ListingView::listing_fee() const {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListingView.listing_fee)
+  return _internal_listing_fee();
+}
+inline void ListingView::set_listing_fee(::int64_t value) {
+  _internal_set_listing_fee(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.ListingView.listing_fee)
+}
+inline ::int64_t ListingView::_internal_listing_fee() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.listing_fee_;
+}
+inline void ListingView::_internal_set_listing_fee(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.listing_fee_ = value;
+}
+
+// int64 created_at_unix_ms = 7;
+inline void ListingView::clear_created_at_unix_ms() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.created_at_unix_ms_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+}
+inline ::int64_t ListingView::created_at_unix_ms() const {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListingView.created_at_unix_ms)
+  return _internal_created_at_unix_ms();
+}
+inline void ListingView::set_created_at_unix_ms(::int64_t value) {
+  _internal_set_created_at_unix_ms(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.ListingView.created_at_unix_ms)
+}
+inline ::int64_t ListingView::_internal_created_at_unix_ms() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.created_at_unix_ms_;
+}
+inline void ListingView::_internal_set_created_at_unix_ms(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.created_at_unix_ms_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// ListListingsReply
+
+// repeated .sf.exchange.v1.ListingView listings = 1;
+inline int ListListingsReply::_internal_listings_size() const {
+  return _internal_listings().size();
+}
+inline int ListListingsReply::listings_size() const {
+  return _internal_listings_size();
+}
+inline void ListListingsReply::clear_listings() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.listings_.Clear();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::sf::exchange::v1::ListingView& ListListingsReply::listings(int index) const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListListingsReply.listings)
+  return _internal_listings().Get(index);
+}
+inline ::sf::exchange::v1::ListingView* PROTOBUF_NONNULL ListListingsReply::mutable_listings(int index)
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.ListListingsReply.listings)
+  return _internal_mutable_listings()->Mutable(index);
+}
+inline ::sf::exchange::v1::ListingView* PROTOBUF_NONNULL ListListingsReply::add_listings()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::sf::exchange::v1::ListingView* _add =
+      _internal_mutable_listings()->InternalAddWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), GetArena());
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_add:sf.exchange.v1.ListListingsReply.listings)
+  return _add;
+}
+inline const ::google::protobuf::RepeatedPtrField<::sf::exchange::v1::ListingView>& ListListingsReply::listings() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_list:sf.exchange.v1.ListListingsReply.listings)
+  return _internal_listings();
+}
+inline ::google::protobuf::RepeatedPtrField<::sf::exchange::v1::ListingView>* PROTOBUF_NONNULL
+ListListingsReply::mutable_listings() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_mutable_list:sf.exchange.v1.ListListingsReply.listings)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _internal_mutable_listings();
+}
+inline const ::google::protobuf::RepeatedPtrField<::sf::exchange::v1::ListingView>&
+ListListingsReply::_internal_listings() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.listings_;
+}
+inline ::google::protobuf::RepeatedPtrField<::sf::exchange::v1::ListingView>* PROTOBUF_NONNULL
+ListListingsReply::_internal_mutable_listings() {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return &_impl_.listings_;
+}
+
+// string next_page_token = 2;
+inline void ListListingsReply::clear_next_page_token() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.next_page_token_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& ListListingsReply::next_page_token() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListListingsReply.next_page_token)
+  return _internal_next_page_token();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void ListListingsReply::set_next_page_token(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.next_page_token_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.ListListingsReply.next_page_token)
+}
+inline ::std::string* PROTOBUF_NONNULL ListListingsReply::mutable_next_page_token()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_next_page_token();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.ListListingsReply.next_page_token)
+  return _s;
+}
+inline const ::std::string& ListListingsReply::_internal_next_page_token() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.next_page_token_.Get();
+}
+inline void ListListingsReply::_internal_set_next_page_token(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.next_page_token_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL ListListingsReply::_internal_mutable_next_page_token() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.next_page_token_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE ListListingsReply::release_next_page_token() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.ListListingsReply.next_page_token)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.next_page_token_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.next_page_token_.Set("", GetArena());
+  }
+  return released;
+}
+inline void ListListingsReply::set_allocated_next_page_token(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.next_page_token_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.next_page_token_.IsDefault()) {
+    _impl_.next_page_token_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.ListListingsReply.next_page_token)
+}
+
+// -------------------------------------------------------------------
+
+// ListTradesRequest
+
+// string character_id = 1;
+inline void ListTradesRequest::clear_character_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.character_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& ListTradesRequest::character_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListTradesRequest.character_id)
+  return _internal_character_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void ListTradesRequest::set_character_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.character_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.ListTradesRequest.character_id)
+}
+inline ::std::string* PROTOBUF_NONNULL ListTradesRequest::mutable_character_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_character_id();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.ListTradesRequest.character_id)
+  return _s;
+}
+inline const ::std::string& ListTradesRequest::_internal_character_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.character_id_.Get();
+}
+inline void ListTradesRequest::_internal_set_character_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.character_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL ListTradesRequest::_internal_mutable_character_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.character_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE ListTradesRequest::release_character_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.ListTradesRequest.character_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.character_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.character_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void ListTradesRequest::set_allocated_character_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.character_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.character_id_.IsDefault()) {
+    _impl_.character_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.ListTradesRequest.character_id)
+}
+
+// string page_token = 2;
+inline void ListTradesRequest::clear_page_token() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.page_token_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& ListTradesRequest::page_token() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListTradesRequest.page_token)
+  return _internal_page_token();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void ListTradesRequest::set_page_token(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.page_token_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.ListTradesRequest.page_token)
+}
+inline ::std::string* PROTOBUF_NONNULL ListTradesRequest::mutable_page_token()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_page_token();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.ListTradesRequest.page_token)
+  return _s;
+}
+inline const ::std::string& ListTradesRequest::_internal_page_token() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.page_token_.Get();
+}
+inline void ListTradesRequest::_internal_set_page_token(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.page_token_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL ListTradesRequest::_internal_mutable_page_token() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.page_token_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE ListTradesRequest::release_page_token() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.ListTradesRequest.page_token)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.page_token_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.page_token_.Set("", GetArena());
+  }
+  return released;
+}
+inline void ListTradesRequest::set_allocated_page_token(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.page_token_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.page_token_.IsDefault()) {
+    _impl_.page_token_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.ListTradesRequest.page_token)
+}
+
+// int32 page_size = 3;
+inline void ListTradesRequest::clear_page_size() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.page_size_ = 0;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline ::int32_t ListTradesRequest::page_size() const {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListTradesRequest.page_size)
+  return _internal_page_size();
+}
+inline void ListTradesRequest::set_page_size(::int32_t value) {
+  _internal_set_page_size(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.ListTradesRequest.page_size)
+}
+inline ::int32_t ListTradesRequest::_internal_page_size() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.page_size_;
+}
+inline void ListTradesRequest::_internal_set_page_size(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.page_size_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// TradeView
+
+// string trade_id = 1;
+inline void TradeView::clear_trade_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.trade_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& TradeView::trade_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.TradeView.trade_id)
+  return _internal_trade_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void TradeView::set_trade_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.trade_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.TradeView.trade_id)
+}
+inline ::std::string* PROTOBUF_NONNULL TradeView::mutable_trade_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_trade_id();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.TradeView.trade_id)
+  return _s;
+}
+inline const ::std::string& TradeView::_internal_trade_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.trade_id_.Get();
+}
+inline void TradeView::_internal_set_trade_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.trade_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL TradeView::_internal_mutable_trade_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.trade_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE TradeView::release_trade_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.TradeView.trade_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.trade_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.trade_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void TradeView::set_allocated_trade_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.trade_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.trade_id_.IsDefault()) {
+    _impl_.trade_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.TradeView.trade_id)
+}
+
+// string offer_operation_id = 2;
+inline void TradeView::clear_offer_operation_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.offer_operation_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& TradeView::offer_operation_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.TradeView.offer_operation_id)
+  return _internal_offer_operation_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void TradeView::set_offer_operation_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.offer_operation_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.TradeView.offer_operation_id)
+}
+inline ::std::string* PROTOBUF_NONNULL TradeView::mutable_offer_operation_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_offer_operation_id();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.TradeView.offer_operation_id)
+  return _s;
+}
+inline const ::std::string& TradeView::_internal_offer_operation_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.offer_operation_id_.Get();
+}
+inline void TradeView::_internal_set_offer_operation_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.offer_operation_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL TradeView::_internal_mutable_offer_operation_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.offer_operation_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE TradeView::release_offer_operation_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.TradeView.offer_operation_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.offer_operation_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.offer_operation_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void TradeView::set_allocated_offer_operation_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.offer_operation_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.offer_operation_id_.IsDefault()) {
+    _impl_.offer_operation_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.TradeView.offer_operation_id)
+}
+
+// string party_a = 3;
+inline void TradeView::clear_party_a() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.party_a_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline const ::std::string& TradeView::party_a() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.TradeView.party_a)
+  return _internal_party_a();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void TradeView::set_party_a(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  _impl_.party_a_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.TradeView.party_a)
+}
+inline ::std::string* PROTOBUF_NONNULL TradeView::mutable_party_a()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ::std::string* _s = _internal_mutable_party_a();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.TradeView.party_a)
+  return _s;
+}
+inline const ::std::string& TradeView::_internal_party_a() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.party_a_.Get();
+}
+inline void TradeView::_internal_set_party_a(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.party_a_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL TradeView::_internal_mutable_party_a() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.party_a_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE TradeView::release_party_a() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.TradeView.party_a)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  auto* released = _impl_.party_a_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.party_a_.Set("", GetArena());
+  }
+  return released;
+}
+inline void TradeView::set_allocated_party_a(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  }
+  _impl_.party_a_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.party_a_.IsDefault()) {
+    _impl_.party_a_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.TradeView.party_a)
+}
+
+// string party_b = 4;
+inline void TradeView::clear_party_b() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.party_b_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline const ::std::string& TradeView::party_b() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.TradeView.party_b)
+  return _internal_party_b();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void TradeView::set_party_b(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  _impl_.party_b_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.TradeView.party_b)
+}
+inline ::std::string* PROTOBUF_NONNULL TradeView::mutable_party_b()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ::std::string* _s = _internal_mutable_party_b();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.TradeView.party_b)
+  return _s;
+}
+inline const ::std::string& TradeView::_internal_party_b() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.party_b_.Get();
+}
+inline void TradeView::_internal_set_party_b(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.party_b_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL TradeView::_internal_mutable_party_b() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.party_b_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE TradeView::release_party_b() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.TradeView.party_b)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000008U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  auto* released = _impl_.party_b_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.party_b_.Set("", GetArena());
+  }
+  return released;
+}
+inline void TradeView::set_allocated_party_b(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  }
+  _impl_.party_b_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.party_b_.IsDefault()) {
+    _impl_.party_b_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.TradeView.party_b)
+}
+
+// string state = 5;
+inline void TradeView::clear_state() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.state_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+}
+inline const ::std::string& TradeView::state() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.TradeView.state)
+  return _internal_state();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void TradeView::set_state(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  _impl_.state_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.TradeView.state)
+}
+inline ::std::string* PROTOBUF_NONNULL TradeView::mutable_state()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ::std::string* _s = _internal_mutable_state();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.TradeView.state)
+  return _s;
+}
+inline const ::std::string& TradeView::_internal_state() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.state_.Get();
+}
+inline void TradeView::_internal_set_state(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.state_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL TradeView::_internal_mutable_state() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.state_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE TradeView::release_state() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.TradeView.state)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000010U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  auto* released = _impl_.state_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.state_.Set("", GetArena());
+  }
+  return released;
+}
+inline void TradeView::set_allocated_state(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  }
+  _impl_.state_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.state_.IsDefault()) {
+    _impl_.state_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.TradeView.state)
+}
+
+// int64 created_at_unix_ms = 6;
+inline void TradeView::clear_created_at_unix_ms() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.created_at_unix_ms_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+}
+inline ::int64_t TradeView::created_at_unix_ms() const {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.TradeView.created_at_unix_ms)
+  return _internal_created_at_unix_ms();
+}
+inline void TradeView::set_created_at_unix_ms(::int64_t value) {
+  _internal_set_created_at_unix_ms(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.TradeView.created_at_unix_ms)
+}
+inline ::int64_t TradeView::_internal_created_at_unix_ms() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.created_at_unix_ms_;
+}
+inline void TradeView::_internal_set_created_at_unix_ms(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.created_at_unix_ms_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// ListTradesReply
+
+// repeated .sf.exchange.v1.TradeView trades = 1;
+inline int ListTradesReply::_internal_trades_size() const {
+  return _internal_trades().size();
+}
+inline int ListTradesReply::trades_size() const {
+  return _internal_trades_size();
+}
+inline void ListTradesReply::clear_trades() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.trades_.Clear();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::sf::exchange::v1::TradeView& ListTradesReply::trades(int index) const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListTradesReply.trades)
+  return _internal_trades().Get(index);
+}
+inline ::sf::exchange::v1::TradeView* PROTOBUF_NONNULL ListTradesReply::mutable_trades(int index)
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.ListTradesReply.trades)
+  return _internal_mutable_trades()->Mutable(index);
+}
+inline ::sf::exchange::v1::TradeView* PROTOBUF_NONNULL ListTradesReply::add_trades()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::sf::exchange::v1::TradeView* _add =
+      _internal_mutable_trades()->InternalAddWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), GetArena());
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_add:sf.exchange.v1.ListTradesReply.trades)
+  return _add;
+}
+inline const ::google::protobuf::RepeatedPtrField<::sf::exchange::v1::TradeView>& ListTradesReply::trades() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_list:sf.exchange.v1.ListTradesReply.trades)
+  return _internal_trades();
+}
+inline ::google::protobuf::RepeatedPtrField<::sf::exchange::v1::TradeView>* PROTOBUF_NONNULL
+ListTradesReply::mutable_trades() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_mutable_list:sf.exchange.v1.ListTradesReply.trades)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _internal_mutable_trades();
+}
+inline const ::google::protobuf::RepeatedPtrField<::sf::exchange::v1::TradeView>&
+ListTradesReply::_internal_trades() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.trades_;
+}
+inline ::google::protobuf::RepeatedPtrField<::sf::exchange::v1::TradeView>* PROTOBUF_NONNULL
+ListTradesReply::_internal_mutable_trades() {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return &_impl_.trades_;
+}
+
+// string next_page_token = 2;
+inline void ListTradesReply::clear_next_page_token() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.next_page_token_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& ListTradesReply::next_page_token() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListTradesReply.next_page_token)
+  return _internal_next_page_token();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void ListTradesReply::set_next_page_token(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.next_page_token_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.ListTradesReply.next_page_token)
+}
+inline ::std::string* PROTOBUF_NONNULL ListTradesReply::mutable_next_page_token()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_next_page_token();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.ListTradesReply.next_page_token)
+  return _s;
+}
+inline const ::std::string& ListTradesReply::_internal_next_page_token() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.next_page_token_.Get();
+}
+inline void ListTradesReply::_internal_set_next_page_token(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.next_page_token_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL ListTradesReply::_internal_mutable_next_page_token() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.next_page_token_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE ListTradesReply::release_next_page_token() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.ListTradesReply.next_page_token)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.next_page_token_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.next_page_token_.Set("", GetArena());
+  }
+  return released;
+}
+inline void ListTradesReply::set_allocated_next_page_token(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.next_page_token_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.next_page_token_.IsDefault()) {
+    _impl_.next_page_token_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.ListTradesReply.next_page_token)
 }
 
 // -------------------------------------------------------------------
@@ -4319,7 +7263,7 @@ inline void BuyListingRequest::set_allocated_destination_container_id(::std::str
 inline void BuyListingRequest::clear_expected_revision() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.expected_revision_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
 }
 inline ::int64_t BuyListingRequest::expected_revision() const {
   // @@protoc_insertion_point(field_get:sf.exchange.v1.BuyListingRequest.expected_revision)
@@ -4327,7 +7271,7 @@ inline ::int64_t BuyListingRequest::expected_revision() const {
 }
 inline void BuyListingRequest::set_expected_revision(::int64_t value) {
   _internal_set_expected_revision(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
   // @@protoc_insertion_point(field_set:sf.exchange.v1.BuyListingRequest.expected_revision)
 }
 inline ::int64_t BuyListingRequest::_internal_expected_revision() const {
@@ -4343,7 +7287,7 @@ inline void BuyListingRequest::_internal_set_expected_revision(::int64_t value) 
 inline void BuyListingRequest::clear_expected_unit_price() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.expected_unit_price_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
 }
 inline ::int64_t BuyListingRequest::expected_unit_price() const {
   // @@protoc_insertion_point(field_get:sf.exchange.v1.BuyListingRequest.expected_unit_price)
@@ -4351,7 +7295,7 @@ inline ::int64_t BuyListingRequest::expected_unit_price() const {
 }
 inline void BuyListingRequest::set_expected_unit_price(::int64_t value) {
   _internal_set_expected_unit_price(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
   // @@protoc_insertion_point(field_set:sf.exchange.v1.BuyListingRequest.expected_unit_price)
 }
 inline ::int64_t BuyListingRequest::_internal_expected_unit_price() const {
@@ -4367,7 +7311,7 @@ inline void BuyListingRequest::_internal_set_expected_unit_price(::int64_t value
 inline void BuyListingRequest::clear_transaction_fee() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.transaction_fee_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
 }
 inline ::int64_t BuyListingRequest::transaction_fee() const {
   // @@protoc_insertion_point(field_get:sf.exchange.v1.BuyListingRequest.transaction_fee)
@@ -4375,7 +7319,7 @@ inline ::int64_t BuyListingRequest::transaction_fee() const {
 }
 inline void BuyListingRequest::set_transaction_fee(::int64_t value) {
   _internal_set_transaction_fee(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
   // @@protoc_insertion_point(field_set:sf.exchange.v1.BuyListingRequest.transaction_fee)
 }
 inline ::int64_t BuyListingRequest::_internal_transaction_fee() const {
@@ -4385,6 +7329,70 @@ inline ::int64_t BuyListingRequest::_internal_transaction_fee() const {
 inline void BuyListingRequest::_internal_set_transaction_fee(::int64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.transaction_fee_ = value;
+}
+
+// string market_id = 8;
+inline void BuyListingRequest::clear_market_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.market_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+}
+inline const ::std::string& BuyListingRequest::market_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.BuyListingRequest.market_id)
+  return _internal_market_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void BuyListingRequest::set_market_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  _impl_.market_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.BuyListingRequest.market_id)
+}
+inline ::std::string* PROTOBUF_NONNULL BuyListingRequest::mutable_market_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ::std::string* _s = _internal_mutable_market_id();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.BuyListingRequest.market_id)
+  return _s;
+}
+inline const ::std::string& BuyListingRequest::_internal_market_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.market_id_.Get();
+}
+inline void BuyListingRequest::_internal_set_market_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.market_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL BuyListingRequest::_internal_mutable_market_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.market_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE BuyListingRequest::release_market_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.BuyListingRequest.market_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000010U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  auto* released = _impl_.market_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.market_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void BuyListingRequest::set_allocated_market_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  }
+  _impl_.market_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.market_id_.IsDefault()) {
+    _impl_.market_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.BuyListingRequest.market_id)
 }
 
 // -------------------------------------------------------------------
@@ -4581,6 +7589,70 @@ inline void ListingActionRequest::set_allocated_seller_id(::std::string* PROTOBU
     _impl_.seller_id_.Set("", GetArena());
   }
   // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.ListingActionRequest.seller_id)
+}
+
+// string market_id = 4;
+inline void ListingActionRequest::clear_market_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.market_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline const ::std::string& ListingActionRequest::market_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.ListingActionRequest.market_id)
+  return _internal_market_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void ListingActionRequest::set_market_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  _impl_.market_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.ListingActionRequest.market_id)
+}
+inline ::std::string* PROTOBUF_NONNULL ListingActionRequest::mutable_market_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ::std::string* _s = _internal_mutable_market_id();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.ListingActionRequest.market_id)
+  return _s;
+}
+inline const ::std::string& ListingActionRequest::_internal_market_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.market_id_.Get();
+}
+inline void ListingActionRequest::_internal_set_market_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.market_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL ListingActionRequest::_internal_mutable_market_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.market_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE ListingActionRequest::release_market_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.ListingActionRequest.market_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000008U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  auto* released = _impl_.market_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.market_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void ListingActionRequest::set_allocated_market_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  }
+  _impl_.market_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.market_id_.IsDefault()) {
+    _impl_.market_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.ListingActionRequest.market_id)
 }
 
 // -------------------------------------------------------------------

@@ -32,6 +32,8 @@ static const char* Exchange_method_names[] = {
   "/sf.exchange.v1.Exchange/ListItem",
   "/sf.exchange.v1.Exchange/BuyListing",
   "/sf.exchange.v1.Exchange/CancelListing",
+  "/sf.exchange.v1.Exchange/ListListings",
+  "/sf.exchange.v1.Exchange/ListTrades",
 };
 
 std::unique_ptr< Exchange::Stub> Exchange::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -48,6 +50,8 @@ Exchange::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, 
   , rpcmethod_ListItem_(Exchange_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_BuyListing_(Exchange_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_CancelListing_(Exchange_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ListListings_(Exchange_method_names[7], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ListTrades_(Exchange_method_names[8], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status Exchange::Stub::Wallet(::grpc::ClientContext* context, const ::sf::exchange::v1::WalletRequest& request, ::sf::exchange::v1::WalletReply* response) {
@@ -211,6 +215,52 @@ void Exchange::Stub::async::CancelListing(::grpc::ClientContext* context, const 
   return result;
 }
 
+::grpc::Status Exchange::Stub::ListListings(::grpc::ClientContext* context, const ::sf::exchange::v1::ListListingsRequest& request, ::sf::exchange::v1::ListListingsReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::exchange::v1::ListListingsRequest, ::sf::exchange::v1::ListListingsReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ListListings_, context, request, response);
+}
+
+void Exchange::Stub::async::ListListings(::grpc::ClientContext* context, const ::sf::exchange::v1::ListListingsRequest* request, ::sf::exchange::v1::ListListingsReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::exchange::v1::ListListingsRequest, ::sf::exchange::v1::ListListingsReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ListListings_, context, request, response, std::move(f));
+}
+
+void Exchange::Stub::async::ListListings(::grpc::ClientContext* context, const ::sf::exchange::v1::ListListingsRequest* request, ::sf::exchange::v1::ListListingsReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ListListings_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ListListingsReply>* Exchange::Stub::PrepareAsyncListListingsRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::ListListingsRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::exchange::v1::ListListingsReply, ::sf::exchange::v1::ListListingsRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ListListings_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ListListingsReply>* Exchange::Stub::AsyncListListingsRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::ListListingsRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncListListingsRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status Exchange::Stub::ListTrades(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest& request, ::sf::exchange::v1::ListTradesReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::exchange::v1::ListTradesRequest, ::sf::exchange::v1::ListTradesReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ListTrades_, context, request, response);
+}
+
+void Exchange::Stub::async::ListTrades(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest* request, ::sf::exchange::v1::ListTradesReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::exchange::v1::ListTradesRequest, ::sf::exchange::v1::ListTradesReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ListTrades_, context, request, response, std::move(f));
+}
+
+void Exchange::Stub::async::ListTrades(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest* request, ::sf::exchange::v1::ListTradesReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ListTrades_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ListTradesReply>* Exchange::Stub::PrepareAsyncListTradesRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::exchange::v1::ListTradesReply, ::sf::exchange::v1::ListTradesRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ListTrades_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ListTradesReply>* Exchange::Stub::AsyncListTradesRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncListTradesRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 Exchange::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Exchange_method_names[0],
@@ -282,6 +332,26 @@ Exchange::Service::Service() {
              ::sf::exchange::v1::ExchangeReply* resp) {
                return service->CancelListing(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Exchange_method_names[7],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Exchange::Service, ::sf::exchange::v1::ListListingsRequest, ::sf::exchange::v1::ListListingsReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Exchange::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::exchange::v1::ListListingsRequest* req,
+             ::sf::exchange::v1::ListListingsReply* resp) {
+               return service->ListListings(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Exchange_method_names[8],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Exchange::Service, ::sf::exchange::v1::ListTradesRequest, ::sf::exchange::v1::ListTradesReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Exchange::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::exchange::v1::ListTradesRequest* req,
+             ::sf::exchange::v1::ListTradesReply* resp) {
+               return service->ListTrades(ctx, req, resp);
+             }, this)));
 }
 
 Exchange::Service::~Service() {
@@ -330,6 +400,20 @@ Exchange::Service::~Service() {
 }
 
 ::grpc::Status Exchange::Service::CancelListing(::grpc::ServerContext* context, const ::sf::exchange::v1::ListingActionRequest* request, ::sf::exchange::v1::ExchangeReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Exchange::Service::ListListings(::grpc::ServerContext* context, const ::sf::exchange::v1::ListListingsRequest* request, ::sf::exchange::v1::ListListingsReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Exchange::Service::ListTrades(::grpc::ServerContext* context, const ::sf::exchange::v1::ListTradesRequest* request, ::sf::exchange::v1::ListTradesReply* response) {
   (void) context;
   (void) request;
   (void) response;

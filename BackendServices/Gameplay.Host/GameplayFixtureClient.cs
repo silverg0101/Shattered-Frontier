@@ -186,26 +186,52 @@ internal static class GameplayFixtureClient
                 break;
             case "fixture-exchange-market":
                 var market = new ExchangePb.Exchange.ExchangeClient(invoker);
+                foreach (var (caseKey, item, marketId, quantity, price, refusal) in new[]
+                {
+                    ("gear", "item/iron_axe", "market/silverbrook", 1L, 8L, "invalid_listing"),
+                    ("wrong-market", "item/iron_ore", "market/eastford", 1L, 8L, "invalid_listing"),
+                    ("quantity", "item/iron_ore", "market/silverbrook", 101L, 8L, "quantity_above_limit"),
+                    ("cap", "item/iron_ore", "market/silverbrook", 1L, 101L, "price_above_cap"),
+                    ("fee", "item/iron_ore", "market/silverbrook", 1L, 1L, "price_below_fee")
+                })
+                {
+                    try
+                    {
+                        market.ListItem(new ExchangePb.ListItemRequest { OperationId = "exchange/refuse-" + caseKey, ListingId = "lst_refuse_" + caseKey,
+                            SellerId = "chr_exchange_seller", SourceContainerId = "ctn_chr_exchange_seller", EscrowContainerId = "ctn_chr_exchange_seller:escrow",
+                            ItemId = item, Quantity = quantity, UnitPrice = price, MarketId = marketId }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                        throw new Exception("Market accepted " + caseKey);
+                    }
+                    catch (RpcException ex) when (ex.Status.Detail == refusal) { }
+                }
                 var listed = market.ListItem(new ExchangePb.ListItemRequest { OperationId = "exchange/list", ListingId = "lst_wire",
                     SellerId = "chr_exchange_seller", SourceContainerId = "ctn_chr_exchange_seller", EscrowContainerId = "ctn_chr_exchange_seller:escrow",
-                    ItemId = "item/iron_ore", Quantity = 1, UnitPrice = 20, CreatedAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
-                Check(listed.State == "active", "Listing not active.");
+                    ItemId = "item/iron_ore", Quantity = 1, UnitPrice = 20, MarketId = "market/silverbrook", CreatedAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                Check(listed.State == "active" && listed.Fee == 1, "Listing fee or state incorrect.");
                 Check(ledger.Read("ctn_chr_exchange_seller:escrow").Spec.Kind == ContainerKind.Escrow &&
-                    market.ListListings(new ExchangePb.ListListingsRequest { MarketId = "market/global", PageSize = 10 }, headers,
+                    market.ListListings(new ExchangePb.ListListingsRequest { MarketId = "market/silverbrook", PageSize = 10 }, headers,
                         deadline: DateTime.UtcNow.AddSeconds(10)).Listings.Any(x => x.Id == "lst_wire"), "Host did not create and list escrow.");
+                try
+                {
+                    market.ListListings(new ExchangePb.ListListingsRequest { MarketId = "market/eastford", PageSize = 10 }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                    throw new Exception("Unknown market exposed listings.");
+                }
+                catch (RpcException ex) when (ex.Status.Detail == "invalid_market") { }
                 var start = new ManualResetEventSlim();
                 var buys = new[] { "a", "b" }.Select(buyer => Task.Run(() =>
                 {
                     start.Wait();
                     try { return market.BuyListing(new ExchangePb.BuyListingRequest { OperationId = "exchange/buy-" + buyer, ListingId = "lst_wire",
                         BuyerId = "chr_exchange_" + buyer, DestinationContainerId = "ctn_chr_exchange_" + buyer,
-                        ExpectedRevision = 0, ExpectedUnitPrice = 20 }, headers, deadline: DateTime.UtcNow.AddSeconds(10)).State == "committed"; }
+                        ExpectedRevision = 0, ExpectedUnitPrice = 20, MarketId = "market/silverbrook" }, headers, deadline: DateTime.UtcNow.AddSeconds(10)).State == "committed"; }
                     catch (RpcException ex) when (ex.StatusCode == StatusCode.FailedPrecondition) { return false; }
                 })).ToArray();
                 start.Set(); Task.WaitAll(buys);
                 Check(buys.Count(t => t.Result) == 1 &&
                     ledger.Read("ctn_chr_exchange_a").Quantities.GetValueOrDefault("item/iron_ore") +
-                    ledger.Read("ctn_chr_exchange_b").Quantities.GetValueOrDefault("item/iron_ore") == 2, "Concurrent buyers did not yield one sale.");
+                    ledger.Read("ctn_chr_exchange_b").Quantities.GetValueOrDefault("item/iron_ore") == 2 &&
+                    market.Wallet(new ExchangePb.WalletRequest { OwnerId = "chr_exchange_seller" }, headers, deadline: DateTime.UtcNow.AddSeconds(10)).Balance == 28,
+                    "Concurrent buyers or 1%/5% fees incorrect.");
                 Console.WriteLine("PASS two concurrent buyers yielded one sale");
                 break;
             case "fixture-exchange-cancel":
@@ -221,9 +247,16 @@ internal static class GameplayFixtureClient
                     "Trade cancellation did not return escrow.");
                 cancelClient.ListItem(new ExchangePb.ListItemRequest { OperationId = "exchange/list-cancel", ListingId = "lst_cancel_wire",
                     SellerId = "chr_exchange_seller", SourceContainerId = "ctn_chr_exchange_seller", EscrowContainerId = "ctn_cancel_escrow",
-                    ItemId = "item/iron_ore", Quantity = 1, UnitPrice = 20, CreatedAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                    ItemId = "item/iron_ore", Quantity = 1, UnitPrice = 20, MarketId = "market/silverbrook", CreatedAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                try
+                {
+                    cancelClient.CancelListing(new ExchangePb.ListingActionRequest { OperationId = "exchange/cancel-wrong-market",
+                        ListingId = "lst_cancel_wire", SellerId = "chr_exchange_seller", MarketId = "market/eastford" }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                    throw new Exception("Cross-market cancellation accepted.");
+                }
+                catch (RpcException ex) when (ex.Status.Detail == "invalid_market") { }
                 var unlisted = cancelClient.CancelListing(new ExchangePb.ListingActionRequest { OperationId = "exchange/cancel-list",
-                    ListingId = "lst_cancel_wire", SellerId = "chr_exchange_seller" }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                    ListingId = "lst_cancel_wire", SellerId = "chr_exchange_seller", MarketId = "market/silverbrook" }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
                 Check(unlisted.State == "cancelled" && ledger.Read("ctn_cancel_escrow").Quantities.GetValueOrDefault("item/iron_ore") == 0,
                     "Listing cancellation did not return escrow.");
                 Console.WriteLine("PASS trade and listing cancellation returned escrow");
@@ -253,9 +286,9 @@ internal static class GameplayFixtureClient
                 var faultMarket = new ExchangePb.Exchange.ExchangeClient(invoker);
                 faultMarket.ListItem(new ExchangePb.ListItemRequest { OperationId = "exchange/list-fault", ListingId = "lst_fault",
                     SellerId = "chr_exchange_seller", SourceContainerId = "ctn_chr_exchange_seller", EscrowContainerId = "ctn_fault_escrow",
-                    ItemId = "item/iron_ore", Quantity = 1, UnitPrice = 20, CreatedAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                    ItemId = "item/iron_ore", Quantity = 1, UnitPrice = 20, MarketId = "market/silverbrook", CreatedAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
                 try { faultMarket.BuyListing(new ExchangePb.BuyListingRequest { OperationId = "exchange/buy-fault", ListingId = "lst_fault",
-                    BuyerId = "chr_exchange_b", DestinationContainerId = "ctn_chr_exchange_b", ExpectedRevision = 0, ExpectedUnitPrice = 20 },
+                    BuyerId = "chr_exchange_b", DestinationContainerId = "ctn_chr_exchange_b", ExpectedRevision = 0, ExpectedUnitPrice = 20, MarketId = "market/silverbrook" },
                     headers, deadline: DateTime.UtcNow.AddSeconds(10)); throw new Exception("Exchange fault did not fire."); }
                 catch (RpcException) { }
                 Console.WriteLine("PASS exchange host killed after delivery");
@@ -263,7 +296,7 @@ internal static class GameplayFixtureClient
             case "fixture-exchange-replay":
                 var replayMarket = new ExchangePb.Exchange.ExchangeClient(invoker);
                 var sale = replayMarket.BuyListing(new ExchangePb.BuyListingRequest { OperationId = "exchange/buy-fault", ListingId = "lst_fault",
-                    BuyerId = "chr_exchange_b", DestinationContainerId = "ctn_chr_exchange_b", ExpectedRevision = 0, ExpectedUnitPrice = 20 },
+                    BuyerId = "chr_exchange_b", DestinationContainerId = "ctn_chr_exchange_b", ExpectedRevision = 0, ExpectedUnitPrice = 20, MarketId = "market/silverbrook" },
                     headers, deadline: DateTime.UtcNow.AddSeconds(10));
                 Check(sale.State == "committed" && ledger.Read("ctn_chr_exchange_b").Quantities.GetValueOrDefault("item/iron_ore") >= 1,
                     "Exchange settlement did not recover.");

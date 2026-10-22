@@ -9,6 +9,7 @@
 #include "Inventory/SFInventoryPanel.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Exchange/SFExchangeComponent.h"
+#include "Exchange/SFMarketBoardActor.h"
 #include "Services/SFGameplayServicesClient.h"
 #include "Exchange/SFExchangeWidgets.h"
 #include "Exchange/SFFakeExchange.h"
@@ -351,6 +352,15 @@ void ASFPlayerController::InteractWithSelectedTarget()
     if (InteractionInputAttempts != MAX_uint64) { ++InteractionInputAttempts; }
 #endif
     if (TryOpenDialogue() || USFQuestBoardPanel::TryOpenBoard(this)) { return; }
+    if (IsLocalController() && GetPawn() && GetWorld() && GetDefault<USFGameplayServicesSettings>()->bExchangeEnabled)
+    {
+        const float ReachCm = GetDefault<USFGameplayServicesSettings>()->MarketReachM * 100.0f;
+        for (TActorIterator<ASFMarketBoardActor> It(GetWorld()); It; ++It)
+        {
+            if (FVector::DistSquared(GetPawn()->GetActorLocation(), It->GetActorLocation()) <= FMath::Square(ReachCm))
+            { ToggleMarketDemo(); return; }
+        }
+    }
     if (!IsLocalController() || !bSettingsCaptured) { return; }
     const double Now = GetWorld()->GetTimeSeconds();
     if (!LocalFeedback.TryBeginRequest(Now)) { return; }
@@ -428,11 +438,11 @@ void ASFPlayerController::ToggleMarketDemo()
         DemoExchange = DemoExchange ? DemoExchange : ExchangeServiceFor(this);
         if (!DemoExchange) { return; }
         DemoMarket = MakeShared<FSFMarketViewModel>(*DemoExchange);
-        DemoMarket->SetListings(FSFFakeExchange::DemoListings());
+        if (FParse::Param(FCommandLine::Get(), TEXT("ExchangeFake"))) { DemoMarket->SetListings(FSFFakeExchange::DemoListings()); }
         MarketBoard = CreateWidget<USFMarketBoard>(this, USFMarketBoard::StaticClass());
         if (!MarketBoard) { return; }
         MarketBoard->Bind(DemoMarket);
-        MarketBoard->SetSellItem(TEXT("item/oak_log"), TEXT("Oak Log"), 24);
+        if (FParse::Param(FCommandLine::Get(), TEXT("ExchangeFake"))) { MarketBoard->SetSellItem(TEXT("item/oak_log"), TEXT("Oak Log"), 24); }
         MarketBoard->AddToViewport(30);
         MarketBoard->SetVisibility(ESlateVisibility::Collapsed);
     }

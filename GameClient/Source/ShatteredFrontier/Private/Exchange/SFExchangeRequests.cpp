@@ -37,12 +37,12 @@ FSFGameplayRequest SFExchangeRequests::Cancel(const FString& TradeId, const FStr
     return Q;
 }
 
-FSFGameplayRequest SFExchangeRequests::List(const FSFExchangeParties& Parties, const FString& ListingId, const FString& ItemId, int32 Quantity, int64 UnitPrice, int64 ListingFee, int64 NowUnixMs)
+FSFGameplayRequest SFExchangeRequests::List(const FSFExchangeParties& Parties, const FString& ListingId, const FString& ItemId, int32 Quantity, int64 UnitPrice, int64 ListingFee, int64 NowUnixMs, const FString& MarketId)
 {
     FSFGameplayRequest Q = ExchangeBase(ESFGameplayRpc::ListItem, FString::Printf(TEXT("list/%s"), *ListingId), Parties.MyId);
     Q.Exchange.ListingId = ListingId; Q.Exchange.SellerId = Parties.MyId; Q.Exchange.SourceContainerId = Parties.MyContainerId;
     Q.Exchange.EscrowContainerId = Parties.MyEscrowId; Q.Exchange.ItemId = ItemId; Q.Exchange.Quantity = Quantity;
-    Q.Exchange.UnitPrice = UnitPrice; Q.Exchange.Fee = ListingFee; Q.Exchange.CreatedAtUnixMs = NowUnixMs;
+    Q.Exchange.UnitPrice = UnitPrice; Q.Exchange.Fee = ListingFee; Q.Exchange.CreatedAtUnixMs = NowUnixMs; Q.Exchange.MarketId = MarketId;
     return Q;
 }
 

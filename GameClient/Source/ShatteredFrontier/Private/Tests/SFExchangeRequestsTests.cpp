@@ -34,8 +34,9 @@ bool FSFExchangeRequestsTest::RunTest(const FString& Parameters)
     const FSFGameplayRequest Buy=SFExchangeRequests::Buy(Listing,TEXT("char/b"),TEXT("bag/b"),6);
     TestTrue(TEXT("Buy carries the expected revision, price and fee"),Buy.Exchange.ExpectedRevision==7 && Buy.Exchange.ExpectedUnitPrice==5 && Buy.Exchange.Fee==6 && Buy.Exchange.DestinationContainerId==TEXT("bag/b"));
     TestNotEqual(TEXT("A second buyer is a different operation"),SFExchangeRequests::Buy(Listing,TEXT("char/c"),TEXT("bag/c"),6).OperationId,Buy.OperationId);
-    const FSFGameplayRequest List=SFExchangeRequests::List(Parties,TEXT("l9"),TEXT("item/oak_log"),4,30,6,1000);
+    const FSFGameplayRequest List=SFExchangeRequests::List(Parties,TEXT("l9"),TEXT("item/oak_log"),4,30,6,1000,TEXT("market/silverbrook"));
     TestTrue(TEXT("List moves the item from the backpack into escrow"),List.Rpc==ESFGameplayRpc::ListItem && List.Exchange.SourceContainerId==TEXT("bag/a") && List.Exchange.EscrowContainerId==TEXT("escrow/a") && List.Exchange.UnitPrice==30 && List.Exchange.Fee==6);
+    TestEqual(TEXT("Listing carries the board market"),List.Exchange.MarketId,FString(TEXT("market/silverbrook")));
 
     FSFGameplayResponse Reply; Reply.Status=ESFGameplayStatus::Ok; Reply.Exchange.bCommitted=true; Reply.Exchange.Balance=100; Reply.Exchange.Reserved=30; Reply.Exchange.Available=70;
     TestTrue(TEXT("Ok and committed counts"),SFExchangeRequests::Committed(Reply));
@@ -80,8 +81,8 @@ bool FSFExchangeIntentTest::RunTest(const FString& Parameters)
     Bad=Offer; for (int32 I=0; I<20; ++I) { Bad.MyItems.Add(Stack); }
     TestFalse(TEXT("Too many stacks are refused"),Build(Bad));
 
-    FSFExchangeIntent List; List.Kind=ESFExchangeIntentKind::ListItem; List.ListingId=TEXT("l1"); List.ItemId=TEXT("item/oak_log"); List.Quantity=4; List.UnitPrice=30;
-    TestTrue(TEXT("List builds with the server's fee"),Build(List) && Q.Exchange.Fee==6 && Q.Exchange.CreatedAtUnixMs==1000);
+    FSFExchangeIntent List; List.Kind=ESFExchangeIntentKind::ListItem; List.MarketId=TEXT("market/silverbrook"); List.ListingId=TEXT("l1"); List.ItemId=TEXT("item/oak_log"); List.Quantity=4; List.UnitPrice=30;
+    TestTrue(TEXT("List builds with the server's fee and market"),Build(List) && Q.Exchange.Fee==1 && Q.Exchange.CreatedAtUnixMs==1000 && Q.Exchange.MarketId==TEXT("market/silverbrook"));
     List.UnitPrice=0;
     TestFalse(TEXT("A free listing is refused"),Build(List));
 

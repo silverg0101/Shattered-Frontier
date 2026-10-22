@@ -3,11 +3,16 @@ using ShatteredFrontier.Exchange.Postgres;
 using ShatteredFrontier.InventoryLedger;
 using ShatteredFrontier.InventoryLedger.Postgres;
 using Npgsql;
+using ShatteredFrontier.Exchange;
+using ShatteredFrontier.CharacterState.Postgres;
+using ShatteredFrontier.Progression;
 using Pb = ShatteredFrontier.Exchange.V1;
 
 internal sealed class ExchangeGrpcService(PostgresExchangeStore exchange, PostgresInventoryLedgerStore inventoryStore,
-    GameplayRecoverySettings recoverySettings, DatabasePoolSettings pools) : Pb.Exchange.ExchangeBase
+    GameplayRecoverySettings recoverySettings, DatabasePoolSettings pools, MarketCatalog markets,
+    PostgresCharacterStateStore characters) : Pb.Exchange.ExchangeBase
 {
+    private static readonly ExchangeSettings MarketSettings = new();
     private InventoryLedger Ledger => new(inventoryStore);
     private static void Require(bool condition, string message)
     { if (!condition) throw new GameplayRejectedException(message, StatusCode.InvalidArgument); }
@@ -54,6 +59,7 @@ internal sealed class ExchangeGrpcService(PostgresExchangeStore exchange, Postgr
     });
     public override Task<Pb.ListListingsReply> ListListings(Pb.ListListingsRequest request, ServerCallContext context) => GrpcRun.Call(context, () =>
     {
+        Require(markets.HasOpenMarket(request.MarketId), "invalid_market");
         var page = exchange.ListListings(request.MarketId, request.ItemId, request.PageToken, request.PageSize);
         var reply = new Pb.ListListingsReply { NextPageToken = page.NextToken };
         reply.Listings.AddRange(page.Items.Select(x => new Pb.ListingView { Id = x.Id, SellerId = x.SellerId,
@@ -119,6 +125,18 @@ internal sealed class ExchangeGrpcService(PostgresExchangeStore exchange, Postgr
     });
     public override Task<Pb.ExchangeReply> ListItem(Pb.ListItemRequest request, ServerCallContext context) => GrpcRun.Call(context, () =>
     {
+        var fair = markets.FairValue(request.MarketId, request.ItemId);
+        if (fair is not { } fairValue) throw new GameplayRejectedException("invalid_listing", StatusCode.InvalidArgument);
+        Require(request.Quantity > 0 && request.Quantity <= MarketSettings.Get("tune.economy.market_max_quantity_per_listing"), "quantity_above_limit");
+        Require(request.UnitPrice > 0 && request.UnitPrice <= checked(fairValue * (long)MarketSettings.Get("tune.economy.market_price_cap_mult")), "price_above_cap");
+        long total;
+        try { total = checked(request.UnitPrice * request.Quantity); }
+        catch (OverflowException) { throw new GameplayRejectedException("price_above_cap", StatusCode.InvalidArgument); }
+        var fee = MarketSettings.Fee("tune.economy.market_listing_fee_rate", total);
+        Require(total > fee, "price_below_fee");
+        var snapshot = characters.ReadProgression(request.SellerId);
+        var level = snapshot is null ? 1 : new CharacterProgression(request.SellerId, TimeProvider.System, () => .5, snapshot: snapshot.Result).Level;
+        Require(level >= MarketSettings.Get("tune.economy.market_min_level"), "level_too_low");
         var source = Owned(request.SourceContainerId, request.SellerId);
         Require(request.Quantity > 0 && request.UnitPrice > 0 && request.SourceContainerId != request.EscrowContainerId, "Invalid listing item.");
         var escrow = request.EscrowContainerId == source.Spec.Id + ":escrow"
@@ -126,8 +144,8 @@ internal sealed class ExchangeGrpcService(PostgresExchangeStore exchange, Postgr
                 request.SellerId, ContainerKind.Escrow, source.Spec.Capacity))
             : Owned(request.EscrowContainerId, request.SellerId, ContainerKind.Escrow);
         var intent = exchange.BeginListing(request.OperationId, request.ListingId, request.SellerId, source.Spec.Id, escrow.Spec.Id,
-            request.ItemId, request.Quantity, request.UnitPrice, request.ListingFee, DateTimeOffset.FromUnixTimeMilliseconds(request.CreatedAtUnixMs),
-            market: string.IsNullOrEmpty(request.MarketId) ? "market/global" : request.MarketId);
+            request.ItemId, request.Quantity, request.UnitPrice, fee, DateTimeOffset.UtcNow,
+            settings: MarketSettings, market: request.MarketId);
         if (intent.Code == "pending")
         {
             try { Ledger.Transfer(request.OperationId + "/escrow", source.Spec.Id, source.Revision, escrow.Spec.Id, escrow.Revision, request.ItemId, request.Quantity); }
@@ -140,18 +158,20 @@ internal sealed class ExchangeGrpcService(PostgresExchangeStore exchange, Postgr
     });
     public override Task<Pb.ExchangeReply> BuyListing(Pb.BuyListingRequest request, ServerCallContext context) => GrpcRun.Call(context, () =>
     {
+        var listing = exchange.Listing(request.ListingId) ?? throw new GameplayRejectedException("Listing missing.", StatusCode.NotFound);
+        Require(markets.HasOpenMarket(request.MarketId) && listing.MarketId == request.MarketId, "invalid_market");
         var previous = exchange.Settlement(request.OperationId);
         if (previous is not null)
         {
             exchange.BeginPurchase(request.OperationId, request.ListingId, request.BuyerId,
-                request.ExpectedRevision, request.ExpectedUnitPrice, request.TransactionFee, previous.Deliveries);
+                request.ExpectedRevision, request.ExpectedUnitPrice, previous.Fee, previous.Deliveries);
             return Reply(exchange.Reconcile(request.OperationId, inventoryStore));
         }
-        var listing = exchange.Listing(request.ListingId) ?? throw new GameplayRejectedException("Listing missing.", StatusCode.NotFound);
         var destination = Owned(request.DestinationContainerId, request.BuyerId);
         var escrow = Ledger.Read(listing.EscrowId);
         var pending = exchange.BeginPurchase(request.OperationId, request.ListingId, request.BuyerId,
-            request.ExpectedRevision, request.ExpectedUnitPrice, request.TransactionFee,
+            request.ExpectedRevision, request.ExpectedUnitPrice,
+            MarketSettings.Fee("tune.economy.market_transaction_fee_rate", checked(listing.Price * listing.Quantity)),
             [new EscrowDelivery(listing.EscrowId, escrow.Revision, destination.Spec.Id, destination.Revision, listing.ItemId, listing.Quantity)]);
         Ledger.DeliverEscrowBatch(request.OperationId + "/settle", pending.Deliveries);
         if (Environment.GetEnvironmentVariable("SF_GAMEPLAY_FAULT_AFTER_EXCHANGE_DELIVERY") == request.OperationId)
@@ -159,5 +179,9 @@ internal sealed class ExchangeGrpcService(PostgresExchangeStore exchange, Postgr
         return Reply(exchange.Reconcile(request.OperationId, inventoryStore));
     });
     public override Task<Pb.ExchangeReply> CancelListing(Pb.ListingActionRequest request, ServerCallContext context) => GrpcRun.Call(context, () =>
-        Reply(exchange.CancelListing(request.OperationId, request.ListingId, request.SellerId, inventoryStore), "cancelled"));
+    {
+        var listing = exchange.Listing(request.ListingId) ?? throw new GameplayRejectedException("Listing missing.", StatusCode.NotFound);
+        Require(markets.HasOpenMarket(request.MarketId) && listing.MarketId == request.MarketId, "invalid_market");
+        return Reply(exchange.CancelListing(request.OperationId, request.ListingId, request.SellerId, inventoryStore), "cancelled");
+    });
 }

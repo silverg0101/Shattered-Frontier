@@ -23,9 +23,17 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Reconnect", meta=(ToolTip="INT-05: restore a dev character's backpack, skills, quest step and position on connect, and drain a disconnected controller's in-flight commits. Needs Enabled and the guarded dev identity. Release authors; next world start."))
     bool bRestoreOnConnect = false;
     UPROPERTY(Config, EditAnywhere, Category="Exchange", meta=(ToolTip="Route the trading UI (direct trades, market listings, wallet) through Gameplay.Host Exchange. Off keeps the fake demo service. Release authors; next world start."))
-    bool bExchangeEnabled = false;
+    bool bExchangeEnabled = true;
+    UPROPERTY(Config, EditAnywhere, Category="Exchange", meta=(ClampMin="1.0", ClampMax="10.0", Units="m", ToolTip="Maximum player distance from a settlement market board. Release authors; next world start."))
+    float MarketReachM = 3.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Exchange", meta=(ClampMin="10", ClampMax="200", ToolTip="Listings per market page. Release authors; next world start."))
+    int32 MarketPageSize = 50;
+    UPROPERTY(Config, EditAnywhere, Category="Exchange", meta=(ClampMin="1.0", ClampMax="60.0", Units="s", ToolTip="Refresh interval while the market is open. Release authors; next world start."))
+    float MarketRefreshSeconds = 5.0f;
     UPROPERTY(Config, EditAnywhere, Category="Exchange", meta=(ClampMin="0", ClampMax="2000", ToolTip="Market fee in basis points (1 bp = 0.01%), computed by the server (the client only previews it). Release authors; next world start."))
     int32 ExchangeFeeBasisPoints = 500;
+    UPROPERTY(Config, EditAnywhere, Category="Exchange", meta=(ClampMin="0", ClampMax="1000", ToolTip="Commodity listing fee preview in basis points; Gameplay.Host remains authoritative. Release authors; next world start."))
+    int32 ExchangeListingFeeBasisPoints = 100;
     UPROPERTY(Config, EditAnywhere, Category="Reconnect", meta=(ClampMin="5", ClampMax="600", Units="s", ToolTip="Server saves a moved character's position this often (and once at logout)."))
     float PositionSaveIntervalSeconds = 30;
     UPROPERTY(Config, EditAnywhere, Category="Reconnect", meta=(ClampMin="5", ClampMax="120", Units="s", ToolTip="Longest a disconnected controller stays in the world while its in-flight commits resolve."))
@@ -44,7 +52,7 @@ struct FSFExchangeRequest
     FString TradeId, PartyA, PartyB, OfferOperationId;
     int64 GoldA = 0, GoldB = 0;
     TArray<FSFExchangeDelivery> Deliveries;
-    FString ListingId, SellerId, SourceContainerId, EscrowContainerId, ItemId;
+    FString ListingId, SellerId, SourceContainerId, EscrowContainerId, ItemId, MarketId;
     int64 Quantity = 0, UnitPrice = 0, Fee = 0, CreatedAtUnixMs = 0;
     FString DestinationContainerId;  // BuyListing
     int64 ExpectedRevision = 0, ExpectedUnitPrice = 0;

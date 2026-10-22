@@ -32,6 +32,7 @@ struct FSFExchangeIntent
     UPROPERTY() TArray<FSFExchangeStackWire> MyItems;
     UPROPERTY() TArray<FSFExchangeStackWire> TheirItems;
     UPROPERTY() FString ListingId;                      // BuyListing, CancelListing, ListItem (the new listing's id)
+    UPROPERTY() FString MarketId;                       // Claimed board; server confirms nearby matching actor
     UPROPERTY() FString ItemId;                         // ListItem
     UPROPERTY() int32 Quantity = 0;
     UPROPERTY() int64 UnitPrice = 0;                    // ListItem price, or BuyListing's expected price
@@ -71,7 +72,7 @@ public:
     void ServerRun(const FSFExchangeIntent& Intent) { ExecuteIntent(Intent); }  // server-side entry (scenario, tests)
 
     // Server: the Gameplay.Host request for an intent, or false when the intent is malformed. Pure, so it is unit tested.
-    static bool BuildRequest(const FSFExchangeIntent& Intent, const FSFExchangeParties& Parties, int32 FeeBasisPoints, int64 NowUnixMs, FSFGameplayRequest& Out);
+    static bool BuildRequest(const FSFExchangeIntent& Intent, const FSFExchangeParties& Parties, int32 FeeBasisPoints, int64 NowUnixMs, FSFGameplayRequest& Out, int32 ListingFeeBasisPoints = 100);
     // Escrow container for a backpack: "<backpack>:escrow" (the ledger creates it with the backpack).
     static FString EscrowFor(const FString& BackpackContainerId) { return BackpackContainerId + TEXT(":escrow"); }
 
