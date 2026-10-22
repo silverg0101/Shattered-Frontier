@@ -1382,6 +1382,7 @@ void ASFPlayerController::HandleEscape()
 {
     if (IsDialogueOpen()) { CloseDialogue(); return; }
     if (CloseSettingsPanel()) { return; }
+    if (InventoryWidget && InventoryWidget->GetVisibility() != ESlateVisibility::Collapsed) { ToggleInventoryPanel(); return; }
     if (GatheringSkillsPanel && GatheringSkillsPanel->GetVisibility()==ESlateVisibility::Visible)
     { GatheringSkillsPanel->SetVisibility(ESlateVisibility::Collapsed); return; }
     // Build mode: the first Esc cancels a pending line start, the next leaves build mode.
