@@ -2,6 +2,33 @@
 
 Spec: `docs/decisions/GFX-02-photoreal-ground-pipeline.md` section 2a (Interim J2-pre). No verdict here; the reviewer writes `REVIEW.md`.
 
+## Round 10 (after REVIEW-r9.md: 11 PASS, 4 FAIL)
+Implemented from the r9 fix list:
+1. Moss weight from `MaskLow` (same Displacement map, `mip_value_mode` MIP_LEVEL, `const_mip_value` 6), `Low` 0.4 -> 0.415, `InvRange` 32 -> 256; the trail stones `sw` keep the full-res `mk`.
+2. `hexlayer()` takes an expression for `Rot`; mud T: `Rot = lerp(RotTNear 0.5, RotTFar 1.0, saturate((PixelDepth - 2000) / 6000))`.
+3. Recaptured all views, measure frames, sun twins (`SUN_TWIN_DIFF` 56.8 / 38.2 / 44.7); gate; pairs; timing.
+4. Docs: GFX-02 "J2-pre as shipped (r10)", blueprint 2a row, dependency-map row.
+
+Windows (`sharp.py` sharpness / std, before -> r9 -> r10): 04 16.95 / 27.4 -> 14.99 / 26.2 -> 16.16 / 28.2; 04-sun20 18.40 -> 18.36 -> 19.98; ctx-ground-1 9.73 -> 9.25 -> 9.34; ctx-ground-2 8.74 -> 7.67 -> 7.85; ctx-ground-3 9.15 -> 9.00 -> 9.12; ctx-ground-4 mud 11.15 -> 9.80 -> 9.79; ctx-ground-4-sun20 10.49 -> 10.31 -> 10.31.
+ctx-ground-1 [503,1006,63,24] mean RGB (142.8, 128.6, 60.2) vs surround [400,950,300,130] (145.4, 130.4, 62.3). Moss coverage (G - R > 8, y >= 500): ctx-ground-2 0.090, ctx-ground-3 0.039, 04 0.000.
+Rib-angle `R` (r10): A2 earth [815,600,64,256] 32 px 0.18; A3 strip [884,600,32,100] 16 px 0.41 vs the same frame's cobble crop [925,600,55,215] 0.61.
+
+### Repeat gate, round 10
+`GROUND_REPEAT PASS crops 9 max_peak 0.1972 limit 0.25` (before `FAIL max_peak 0.665`).
+| crop | before | r10 after (lag px) |
+|---|---|---|
+| A1 cobble | 0.225 | 0.114 (11,-30) |
+| A1 earth | 0.544 | 0.074 (-20,-10) |
+| A1 grass | 0.244 | 0.197 (17,-1) |
+| A2 cobble | 0.583 | 0.114 (7,-4) |
+| A2 earth | 0.665 | 0.100 (2,-24) |
+| A2 grass | 0.342 | 0.066 (-12,-10) |
+| A3 cobble | 0.628 | 0.071 (5,-55) |
+| A3 earth | 0.500 | 0.113 (0,-27) |
+| A3 grass | 0.433 | 0.083 (-27,-25) |
+
+### Timing at bookmark 01, round 10 material
+Frame time: before 7.33 / 9.67 ms median / p95, after 7.26 / 8.87 ms. ProfileGPU (one frame): GPU frame 5.43 -> 6.23 ms, BasePass 0.84 -> 1.26 ms (+0.42).
 ## Round 9 (after REVIEW-r8.md: 9 PASS, 6 FAIL)
 Implemented from the r8 fix list:
 1. Lattice warp `scale` 0.004 -> 0.001, `levels` 2 -> 1, `HexWarp` 0.25 -> 0.15 (bounds 0-0.2, slope comment). Control `bisect-warp0/` (`HexWarp` 0, `Rot` 1.0 on A and T, `BlendSharp` 24): 04 13.29 std 20.6, the same as `bisect-base` (`BlendSharp` 7, no warp: 13.26 std 20.6).

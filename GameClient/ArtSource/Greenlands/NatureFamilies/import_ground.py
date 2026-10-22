@@ -120,7 +120,7 @@ def ground():
         if height: pins.append(('H', 'Height', height, S.SAMPLERTYPE_MASKS, 250))
         for pin, nm, path, kind, dy in pins:
             link(node(m, u.MaterialExpressionTextureObjectParameter, -1300, y + dy, parameter_name=nm + p, texture=tex(path), sampler_type=kind), '', call, pin)
-        link(node(m, u.MaterialExpressionConstant, -1300, y + 300, r=rot), '', call, 'Rot')
+        link(rot if isinstance(rot, u.MaterialExpression) else node(m, u.MaterialExpressionConstant, -1300, y + 300, r=rot), '', call, 'Rot')  # a layer may pass an expression (depth-ramped Rot)
         link(node(m, u.MaterialExpressionConstant, -1300, y + 340, r=cell), '', call, 'CellTiles')
         link(node(m, u.MaterialExpressionConstant, -1300, y + 380, r=snap), '', call, 'Snap')
         link(g.sc('HeightSharp' + p, hsharp, -1300, y + 420), '', call, 'HeightSharp')
@@ -135,7 +135,7 @@ def ground():
                 pick('M', y + 500, r=True, g=False, b=False, a=False))
 
     # J2-pre r8: MF_GN_HexTile returns a world-space normal in the world-x/y frame of the UV (tangent_space_normal False below; at Rot 0 the +y frame read
-    # 15.8 at 04, -y 11.2). BlendSharp 24 + a ~10 m lattice warp narrow the overlap bands. Rot is per layer (A 0.15, T 0.5, S/B 1.0, R 0.0): see the calls.
+    # 15.8 at 04, -y 11.2). BlendSharp 24 + a ~10 m lattice warp narrow the overlap bands. Rot is per layer (A 0.15, T 0.5 -> 1.0 over 20-80 m, S/B 1.0, R 0.0): see the calls.
     def layer(p, base, nor, rough, tile_cm, tint, y, hex=False, rot=1.0, cell=1.0, snap=0.0, height=None, hsharp=0.0, bsharp=24.0):
         t = g.sc('TileCm' + p, tile_cm, -1800, y + 150)
         uv = g.uv(xy, t, -1650, y)
@@ -161,12 +161,17 @@ def ground():
     wxy = node(m, u.MaterialExpressionAppendVector, -1500, 2900); link(nzA, '', wxy, 'A'); link(warp_noise(3050, 'B'), '', wxy, 'B')
     warp = g.mul(wxy, g.sc('MaskWarp', 0.3, -1500, 3000), -1350, 2900)
     muv = g.op(u.MaterialExpressionAdd, g.uv(xy, g.sc('TileCmMask', 900, -1800, 2700), -1650, 2600), warp, -1250, 2600)
-    mk = g.mask(g.smp('Mask', tex(T + 'forest_ground_04_Displacement'), S.SAMPLERTYPE_MASKS, muv, -1100, 2600), True, False, False, -800, 2600)
+    mk = g.mask(g.smp('Mask', tex(T + 'forest_ground_04_Displacement'), S.SAMPLERTYPE_MASKS, muv, -1100, 2600), True, False, False, -800, 2600)  # full-res: trail stones (sw) only
+    # r9 review fix 1: the moss weight thresholded the full-res map at its own median (Low 0.4 x InvRange 32), so 10-14 % of the ground was a texel-dithered
+    # A/B crossfade with a lerped, flat normal (the translucent patches at 04). Mip 6 of the same map, a hard ramp and Low 0.415 keep the coverage (mean wm
+    # 0.196 vs 0.221) with ~2 % of the tile in the ramp. Bounds: Low 0.40-0.43, InvRange 128-512.
+    mkl_s = g.smp('MaskLow', tex(T + 'forest_ground_04_Displacement'), S.SAMPLERTYPE_MASKS, muv, -1100, 2800)
+    mkl_s.set_editor_property('mip_value_mode', u.TextureMipValueMode.TMVM_MIP_LEVEL); mkl_s.set_editor_property('const_mip_value', 6)
+    mkl = g.mask(mkl_s, True, False, False, -800, 2800)
     wm = node(m, u.MaterialExpressionSaturate, 0, 2600)
-    # J2-pre r2 fix 2: the first warp noise also moves the threshold, so moss patches range from absent to twice the size over ~25 m (MaskNoise 0-0.03: coverage at ctx-ground-2 is 0.053 + 2.0 x MaskNoise; 0.15 flooded 04 and the plain with layer B)
-    mkv = g.op(u.MaterialExpressionAdd, mk, g.mul(nzA, g.sc('MaskNoise', 0.02, -900, 2750), -850, 2700), -700, 2600)
-    sub = g.op(u.MaterialExpressionSubtract, mkv, g.sc('Low', 0.4, -600, 2700), -500, 2600)
-    link(g.mul(sub, g.sc('InvRange', 32, -600, 2800), -300, 2600), '', wm, '')
+    mkv = g.op(u.MaterialExpressionAdd, mkl, g.mul(nzA, g.sc('MaskNoise', 0.02, -900, 2750), -850, 2700), -700, 2600)  # J2-pre r2 fix 2: the first warp noise moves the threshold (MaskNoise 0-0.03)
+    sub = g.op(u.MaterialExpressionSubtract, mkv, g.sc('Low', 0.415, -600, 2700), -500, 2600)
+    link(g.mul(sub, g.sc('InvRange', 256, -600, 2800), -300, 2600), '', wm, '')
     forest = g.lerp(fa, fb, wm, 200, 0); fn = g.lerp(na, nb, wm, 200, 250); fr = g.lerp(ra, rb, wm, 200, 500)
 
     # bedrock: triplanar colour/roughness, top-projected normal
@@ -208,7 +213,14 @@ def ground():
     rc, rn, rr, _ = layer('R', SB + 'Diffuse', SB + 'nor_gl', SB + 'Rough', 240, (1, 1, 1), 6000, hex=True, rot=0.0, cell=1.0, snap=14.0)  # 14 stone courses per 2.4 m tile
     # trails: packed dark earth from the forest-floor scan with pale mossy stones pushed through it where a mask passes a high threshold
     import_scan('brown_mud_02'); import_scan('rocky_trail')  # dirt with roots and sticks; pale stones
-    dc, dn, dr, _ = layer('T', T + 'brown_mud_02_Diffuse', T + 'brown_mud_02_nor_gl', T + 'brown_mud_02_Rough', 200, (0.85, 0.75, 0.65), 8000, hex=True, rot=0.5)  # r9: mud [100,850,300,150] / A3 top-strip rib R: Rot 1.0 8.61 / 0.48, 0.75 9.03 / 0.61, 0.5 9.93 / 0.61 (0.5 dominates 0.75)
+    # r9 review fix 2: mud Rot ramps with depth: 0.5 inside 20 m keeps its relief at 1-5 m (mud 9.9 at 0.5, 8.6 at 1.0), 1.0 beyond 80 m breaks the
+    # one-angle rib rows on the A3 margin (strip R 0.76 at 0.5, 0.48 at 1.0). Bounds: RotTNear 0-1, RotTFar 0-1, ramp 2000-8000 cm.
+    depthT = node(m, u.MaterialExpressionPixelDepth, -2000, 7800)
+    rampT = node(m, u.MaterialExpressionSaturate, -1450, 7800)
+    link(g.op(u.MaterialExpressionDivide, g.op(u.MaterialExpressionSubtract, depthT, node(m, u.MaterialExpressionConstant, -1900, 7850, r=2000.0), -1800, 7800),
+              node(m, u.MaterialExpressionConstant, -1750, 7850, r=6000.0), -1600, 7800), '', rampT, '')
+    rotT = g.lerp(g.sc('RotTNear', 0.5, -1500, 7700), g.sc('RotTFar', 1.0, -1500, 7900), rampT, -1300, 7800)
+    dc, dn, dr, _ = layer('T', T + 'brown_mud_02_Diffuse', T + 'brown_mud_02_nor_gl', T + 'brown_mud_02_Rough', 200, (0.85, 0.75, 0.65), 8000, hex=True, rot=rotT)
     sc_, sn, sr, _ = layer('S', T + 'rocky_trail_Diffuse', T + 'rocky_trail_nor_gl', T + 'rocky_trail_Rough', 150, (0.9, 0.88, 0.84), 9600, hex=True)
     def clamp01(value, x, y):
         return g.op(u.MaterialExpressionMax,
