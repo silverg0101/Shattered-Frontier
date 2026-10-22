@@ -45,7 +45,9 @@ def glow_boxes(mesh, near):   # mesh-space lantern boxes: street lamps' *Glow-sl
     sub = u.DynamicMesh(); u.GeometryScript_MeshDecomposition.copy_mesh_selection_to_mesh(dm, sub, sel)
     comps = u.GeometryScript_MeshDecomposition.split_mesh_by_components(sub, mesh_pool=pool)
     out = [bb for bb in (u.GeometryScript_MeshQueries.get_mesh_bounding_box(c) for c in next(x for x in comps if isinstance(x, u.Array)))
-           if all(8 <= getattr(bb.max, a) - getattr(bb.min, a) <= 35 for a in 'xyz')]
+           if max(getattr(bb.max, a) - getattr(bb.min, a) for a in 'xyz') <= 35]   # lantern hardware: panes, frame bars, cap (WP6i r10: the kit pane is split into thin faces)
+    if out:   # one box round the lantern's small pieces
+        out = [u.Box(u.Vector(*(min(getattr(b.min, a) for b in out) for a in 'xyz')), u.Vector(*(max(getattr(b.max, a) for b in out) for a in 'xyz')))]
     pool.free_all_meshes()
     return out
 

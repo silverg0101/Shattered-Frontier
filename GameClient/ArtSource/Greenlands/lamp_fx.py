@@ -61,16 +61,16 @@ def _lantern(slot):   # lantern and street-lamp glass only: a window's light is 
 
 
 LANTERN_AXES = (8., 35.)   # a kit lantern pane is a 15 x 15 x 24 cm box (silverbrook_kit.lantern; the cage variant 12 x 12 x 22)
-PANE_CLEAR = 14.   # cm outward from the pane centre: the 6 cm light source clears the opaque 7.5 cm half-box (WP6i r8 fix 1)
+PANE_CLEAR = 14.   # cm: the light sits PANE_CLEAR + 2 cm below the pane centre, under the 24 cm opaque pane (WP6i r8-r10)
 
 
 def glass_sockets(mesh, u, sockets=None):
     """Mesh-space cm light positions. Street lamps: the connected pieces of the *Glow slots merged within 60 cm (translucent
     M_LampGlass; GLB sockets matched to 0 cm). Buildings: the committed lamp-sockets.json point (Blender metres; UE's FBX
-    import mirrors Y, so (x, -y, z) x 100) confirmed by a lantern-sized connected piece of ANY material slot within 40 cm.
+    import mirrors Y, so (x, -y, z) x 100): the light goes at the socket; a lantern-sized piece within 40 cm only confirms a lantern is there.
     The dynamic-mesh material IDs of the merged building meshes do not line up with static_materials (WP6i r8: the 'glow'
     ID returned Townhouse2/4's banner and Townhouse1's sill), so the slot scan is not used on buildings. The kit pane is an
-    opaque emissive box, so the light sits PANE_CLEAR cm outward of it along the axis the lantern overhangs the house on."""
+    opaque emissive box, so the light sits just under it (PANE_CLEAR + 2 cm below its centre)."""
     name = mesh.get_name()
     if name in _GLASS:
         return _GLASS[name]
@@ -109,9 +109,6 @@ def glass_sockets(mesh, u, sockets=None):
                 merged.append(list(b))
         out = [[(m[i] + m[i + 3]) / 2 for i in range(3)] for m in merged]
     else:
-        box = mesh.get_bounding_box()
-        centre = [(box.min.x + box.max.x) / 2, (box.min.y + box.max.y) / 2]
-        half = [max((box.max.x - box.min.x) / 2, 1), max((box.max.y - box.min.y) / 2, 1)]
         for p in (sockets or load_sockets())[name]:
             t = [p[0] * 100, -p[1] * 100, p[2] * 100]
             # only the triangles inside a 120 cm box round the socket, split into pieces: lantern-sized ones are the pane
@@ -122,12 +119,14 @@ def glass_sockets(mesh, u, sockets=None):
             boxes = [b for b in pieces(sub) if all(LANTERN_AXES[0] <= b[i + 3] - b[i] <= LANTERN_AXES[1] for i in range(3))]
             near = sorted(((sum(((b[i] + b[i + 3]) / 2 - t[i]) ** 2 for i in range(3)) ** .5, b) for b in boxes), key=lambda n: n[0])
             d, b = near[0] if near else (1e9, None)
-            c = [(b[i] + b[i + 3]) / 2 for i in range(3)] if b else None
-            u.log(f'LAMP_MATCH {name} json {[round(v) for v in t]} pane {c and [round(v) for v in c]} size {b and [round(b[i + 3] - b[i]) for i in range(3)]} dist {round(d)}')
+            u.log(f'LAMP_MATCH {name} json {[round(v) for v in t]} piece {b and [round((b[i] + b[i + 3]) / 2) for i in range(3)]} size {b and [round(b[i + 3] - b[i]) for i in range(3)]} dist {round(d)}')
+            u.log(f'LAMP_PIECES {name} ' + ' '.join(f'{[round((q[i] + q[i + 3]) / 2 - t[i]) for i in range(3)]}:{[round(q[i + 3] - q[i]) for i in range(3)]}' for q in pieces(sub)))
             if d > 40:   # no kit lantern there (e.g. SM_SilverbrookWeaponsVendor's z 112 socket, nearest piece 208 cm): no light from nowhere
                 u.log(f'LAMP_NOMATCH {name} json {[round(v) for v in t]}'); continue
-            a = max(range(2), key=lambda i: abs(c[i] - centre[i]) / half[i])   # the horizontal axis the lantern overhangs on
-            c[a] += PANE_CLEAR if c[a] >= centre[a] else -PANE_CLEAR
+            c = list(t)   # the socket is the pane centre (extract_sockets: the *LanternGlow island centre); WP6i r9 lit the cap by using the matched piece
+            # WP6i r10: PANE_CLEAR below the pane, not outward of it. Outward, the opaque pane stood between the shadowed light and
+            # the wall (pools gone: warm 94 / 1193 px); below, the wall and street get the pool and the pane shields the cap.
+            c[2] -= PANE_CLEAR + 2
             out.append(c)
     pool.free_all_meshes()
     _GLASS[name] = out

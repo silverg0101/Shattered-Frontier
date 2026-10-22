@@ -176,3 +176,35 @@ Perf (1440p, on - off): chimney -0.24 ms; street +0.72 ms (on-2 5.39 outlier; on
    - **Open:** the hot pixels and cap blobs at frontage / lamp-wall, and side-b under 2000. The side-b corner lantern is on the neighbouring house, so the subject's own wall gets little.
 
 Plume unchanged (core 0.972 / 1.021 / 1.067, dense R - B -4.1, 0 thin rows). Perf (1440p, on - off): chimney -0.21 ms, street -0.03 ms with 731 lights.
+
+## Round 10: REVIEW-r9.md fix list (r9 scored 17 PASS / 2 FAIL)
+
+1. The building light now sits at the json socket, which is the pane centre; the matched lantern piece only confirms there is a lantern. `LAMP_PIECES` is logged per socket.
+   - **Deviation:** the review put the light PANE_CLEAR 14 cm outward of the pane. Measured that way, the opaque pane stood between the shadow-casting light and the wall, and the pools went (warm 94 / 1193 px, frontage pool R - B -23). The light now sits 16 cm below the pane centre, under the pane, so the pane shields the cap.
+   - `LAMP_MATCH` (dist 20; the matched piece is the 10 x 20 x 10 cap 19 cm above the socket):
+     - Townhouse1 (-216, 310, 228)
+     - Townhouse2 (-178, 268, 203)
+     - Townhouse3 (+-130, 262, 213)
+     - Townhouse4 (-222, 267, 198)
+     - Townhouse5 (122, 239, 238)
+     - Townhouse6 (231, 244, 188)
+   - `LAMP_PIECES`: the pane is split into thin faces (e.g. Townhouse1 `[0,-16,30]:[1,33,8]`, `[0,0,35]:[3,1,2]`), so no single 15 x 15 x 24 piece exists.
+   - `LAMP_FX` 731 lights.
+2. `check_dusk_blobs.py`:
+   - The orange test uses L > 200. `--selftest` paints an L 224 orange patch on the frontage frame and catches it.
+   - The warm ring excludes every pane and window box. Side-b needs 50.
+   - `DUSK_CAP` p90 <= 120 per cap box.
+3. `dusk-panes.json` is rewritten (it never changed in r9: the edit did not apply). Side-b now lists the far lamp panes and far windows from the review, and every view has a cap box.
+4. `SM_SilverbrookWeaponsVendor`: `extract_sockets.py` re-run; its two entries equal the committed ones (-0.465, -0.247, 1.12) and (2.565, -0.127, 2.476). There is no lantern-sized piece within 40 cm (nearest 208 cm): the glow is the vendor's sign. Both sockets are removed from `lamp-sockets.json` (only that block; the re-extraction's 12 new entries for other meshes were not kept). No `LAMP_NOMATCH` remains.
+5. `vfx.md` line 17 describes the r10 placement and counts.
+6. `check_lights.py`: the pane is split into thin faces, so the 8-35 cm piece rule orphaned 572 lights. A building light must now be within 20 cm of the box round the small pieces (<= 35 cm) within 40 cm of it. This is weaker than a pane test. `LIGHT_CHECK lights 731 on_glass 731 orphans 0 in_wall 0 unshadowed_wall 0 shadowed 586`.
+
+`check_dusk_blobs.py` (exit 1). Open items are side-b warm 0 (< 50) and frontage two 27 px blobs at x 490-494, y 448-459 (L 203):
+
+| View | Blobs outside | Orange outside | Warm px (need) | Hot px | Cap p90 |
+|---|---|---|---|---|---|
+| house-frontage-dusk | 2 | 2 | 11359 (3000) | 0 | 82.3 |
+| context-house-side-b-dusk | 0 | 0 | 0 (50) | 0 | 39.7 |
+| context-lamp-wall-dusk | 0 | 0 | 5312 (3000) | 0 | 19.3 |
+
+Pools: frontage x 430-560 / y 280-500 median R - B -9 (band >= +20, open); lamp-wall x 520-700 / y 900-1080 median L 31, R - B -25 (band L >= 80, open). Assets: only the map and `MI_SB_LanternGlow` differ from `af48e04f`.
