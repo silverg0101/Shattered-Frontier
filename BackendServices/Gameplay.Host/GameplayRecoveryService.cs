@@ -24,7 +24,8 @@ internal sealed record GameplayRecoverySettings
 
 internal sealed class GameplayRecoveryService(GameplayRecoverySettings settings, DatabasePoolSettings pools,
     PostgresCharacterStateStore characters, PostgresHousingStore housing,
-    PostgresInventoryLedgerStore ledger, QuestRewardPayout payout, PostgresExchangeStore exchange) : BackgroundService
+    PostgresInventoryLedgerStore ledger, QuestRewardPayout payout, PostgresExchangeStore exchange,
+    RecipeLearning learning) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -79,6 +80,13 @@ internal sealed class GameplayRecoveryService(GameplayRecoverySettings settings,
                 {
                     Console.Out.WriteLine($"GAMEPLAY_SWEEP reward {intent.OperationId} Pending");
                 }
+            }
+            foreach (var intent in characters.PendingRecipeLearns())
+            {
+                try { learning.Complete(intent); Console.Out.WriteLine($"GAMEPLAY_SWEEP recipe {intent.OperationId} Complete"); }
+                catch (Exception ex) when (ex is ExchangeUnavailableException or CharacterStoreUnavailableException or
+                    ShatteredFrontier.InventoryLedger.Postgres.LedgerStoreUnavailableException or LedgerRejectedException)
+                { Console.Out.WriteLine($"GAMEPLAY_SWEEP recipe {intent.OperationId} Pending"); }
             }
             var settlements = new List<string>();
             using (var cmd = new NpgsqlCommand("SELECT operation_id FROM exchange.settlements WHERE kind='listing' AND state='pending' AND created_at <= $1 ORDER BY created_at LIMIT 100", connection))

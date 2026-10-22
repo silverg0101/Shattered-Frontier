@@ -7,7 +7,8 @@
     { "kind": "item", "definition_id": "item/boar_hide", "quantity": { "min": 2, "max": 2 } }
   ],
   "entries": [
-    { "kind": "nothing", "weight": 95 },
-    { "kind": "item", "definition_id": "item/boar_hide", "quantity": { "min": 1, "max": 1 }, "weight": 5 }
+    { "kind": "nothing", "weight": 94 },
+    { "kind": "item", "definition_id": "item/boar_hide", "quantity": { "min": 1, "max": 1 }, "weight": 5 },
+    { "kind": "item", "definition_id": "item/recipe_scroll_iron_brackets", "quantity": { "min": 1, "max": 1 }, "weight": 1 }
   ]
 }

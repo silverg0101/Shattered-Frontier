@@ -19,6 +19,10 @@ Check(!progress.Apply(harvest).Applied && progress.LifetimeXp == first.XpGain, "
 Check(!progress.Apply(harvest with { ReceiptId = "rejected", Accepted = false }).Applied, "rejected receipt ignored");
 var craft = progress.Apply(new("craft-1", "chr_test", ReceiptKind.CraftConvert, true, ProgressionRules.Smithing, 25, 6, 12));
 Check(craft.SkillGain == 1 && progress.Skills[ProgressionRules.Smithing] == 1, "craft skill mapping");
+var carpentry = progress.Apply(new("craft-carpentry", "chr_test", ReceiptKind.CraftConvert, true,
+    ProgressionRules.Carpentry, 25, 6, 13));
+Check(carpentry.Applied && progress.Skills.ContainsKey(ProgressionRules.Carpentry) &&
+    progress.Skills.ContainsKey(ProgressionRules.Leatherworking), "crafting skill registry");
 var nearCap = new CharacterProgression("chr_cap", clock, () => 0, initialSkills: new Dictionary<string, int> { [ProgressionRules.Mining] = 900 });
 Check(nearCap.Apply(new("cap", "chr_cap", ReceiptKind.GatheringHarvest, true, ProgressionRules.Mining, 925)).SkillGain == 0, "unspecialized cap");
 var level = new CharacterProgression("chr_level", clock, () => 0, initialXp: CharacterProgression.TotalFor(2) - 1);

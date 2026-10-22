@@ -91,6 +91,10 @@ builder.Services.AddSingleton(zone);
 builder.Services.AddSingleton(new ClaimSettings());
 builder.Services.AddSingleton(recipes);
 builder.Services.AddSingleton(markets);
+var craftingControls = new CraftingControls(); craftingControls.Validate();
+builder.Services.AddSingleton(craftingControls);
+builder.Services.AddSingleton(new CraftSeedSecret(SHA256.HashData(Encoding.UTF8.GetBytes(token))));
+builder.Services.AddSingleton<RecipeLearning>();
 builder.Services.AddSingleton(new CraftAttemptService(recipes, new DomLedger(ledgerStore)));
 builder.Services.AddGrpc(o => o.Interceptors.Add<AuthInterceptor>());
 var app = builder.Build();
@@ -104,6 +108,7 @@ app.Run();
 
 internal sealed record AuthOptions(byte[] Expected);
 internal sealed record StarterKitOptions(ShatteredFrontier.InventoryLedger.AlphaStarterKitSettings? Kit);
+internal sealed record CraftSeedSecret(byte[] Bytes);
 internal sealed class GameplayRejectedException(string message, StatusCode code) : InvalidOperationException(message)
 {
     public StatusCode Code { get; } = code;

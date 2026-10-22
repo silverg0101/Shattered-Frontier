@@ -41,7 +41,7 @@ public:
     bool Validate(FString& Error) const;
 };
 
-enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition,
+enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, LearnRecipe, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition,
     // Exchange (proto/sf/exchange/v1), carried by the Backend transport over the same Gameplay.Host channel.
     ExchangeWallet, OfferTrade, AcceptTrade, CancelTrade, ListItem, BuyListing, CancelListing };
 
@@ -90,6 +90,8 @@ struct FSFGameplayRequest
     FString ZoneId; FVector Position = FVector::ZeroVector; float Yaw = 0; int64 ExpectedPositionRevision = 0;  // SavePosition
     // Crafting
     FString RecipeId; int32 Count = 1;
+    TMap<FString, FString> InputGrades;  // base definition -> selected grade definition
+    FString LearnSource, TrainerNpc, ScrollContainer;
     FSFExchangeRequest Exchange;
 };
 
@@ -111,6 +113,7 @@ struct FSFGameplayResponse
     FString QuestReason;  // ApplyReceipt: why quest evidence (or an accept/abandon) was not accepted
     struct FQuestState { FString QuestId, State, ActiveStepId; TMap<FString, int32> Counts; int64 Revision = 0; bool bRewardPending = false; };
     TArray<FQuestState> Quests;  // GetCharacterState: every quest row (QST-02)
+    TArray<FString> KnownRecipes;
     bool bHasPosition = false; FString ZoneId; FVector Position = FVector::ZeroVector; float Yaw = 0; int64 PositionRevision = 0;
     // Housing
     FString State, StructureId, OwnerId; int64 StructureRevision = 0, Revision = 0, PermissionRevision = 0;
@@ -118,6 +121,7 @@ struct FSFGameplayResponse
     TArray<FStructure> Structures;  // ListStructures; StructureRevision then holds the claim's structure revision
     // Crafting
     TMap<FString, int64> Changes;
+    int32 QualityScore = 0; FString Grade, DiscoveredRecipeId;
     FSFExchangeResponse Exchange;
 };
 

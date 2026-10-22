@@ -31,6 +31,8 @@ PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
     file_reflection_data[] = {
         // ::sf::crafting::v1::CraftRequest
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fcrafting_2fv1_2fcrafting_2eproto, /* tracker*/ nullptr,},
+        // ::sf::crafting::v1::InputGrade
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fcrafting_2fv1_2fcrafting_2eproto, /* tracker*/ nullptr,},
         // ::sf::crafting::v1::CraftReply
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fcrafting_2fv1_2fcrafting_2eproto, /* tracker*/ nullptr,},
         // ::sf::crafting::v1::ItemChange
@@ -143,7 +145,7 @@ constexpr auto ItemChange::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[2],
+      &file_reflection_data[3],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fcrafting_2fv1_2fcrafting_2eproto,
@@ -194,6 +196,162 @@ const ::_pbi::ClassData* ItemChange_get_class_data() {
 }
 }  // namespace
 #endif  // PROTOBUF_CUSTOM_VTABLE
+class InputGrade::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<InputGrade>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(InputGrade, _impl_._has_bits_);
+};
+
+constexpr InputGrade::ParseTableT_ InputGrade::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(InputGrade, _impl_._has_bits_),
+      0, // no _extensions_
+      2, 8,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967292,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      2,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::crafting::v1::InputGrade>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      // string selected_definition_id = 2;
+      {::_pbi::TcParser::FastUS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(InputGrade, _impl_.selected_definition_id_)}},
+      // string definition_id = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(InputGrade, _impl_.definition_id_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string definition_id = 1;
+      {PROTOBUF_FIELD_OFFSET(InputGrade, _impl_.definition_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string selected_definition_id = 2;
+      {PROTOBUF_FIELD_OFFSET(InputGrade, _impl_.selected_definition_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    }},
+    // no aux_entries
+    {{
+      "\31\15\26\0\0\0\0\0"
+      "sf.crafting.v1.InputGrade"
+      "definition_id"
+      "selected_definition_id"
+    }},
+  };
+}
+
+
+inline constexpr InputGrade::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        definition_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        selected_definition_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()) {}
+
+template <typename>
+constexpr InputGrade::InputGrade(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL InputGrade::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) InputGrade(arena);
+}
+constexpr auto InputGrade::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(InputGrade), alignof(InputGrade));
+}
+constexpr auto InputGrade::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &InputGrade::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<InputGrade>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &InputGrade::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<InputGrade>(), &InputGrade::ByteSizeLong,
+              &InputGrade::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(InputGrade, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[1],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2fcrafting_2fv1_2fcrafting_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct InputGradeGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr InputGradeGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 InputGrade_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(InputGrade::InternalGenerateClassData_(
+            _default, &InputGrade_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<InputGrade>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~InputGradeGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) InputGrade _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<InputGrade>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(InputGradeGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST InputGradeGlobalsTypeInternal InputGrade_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* InputGrade_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return InputGrade_globals_.GetClassData();
+#else
+  return InputGrade_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
 class CraftRequest::_Internal {
  public:
   using HasBits = decltype(::std::declval<CraftRequest>()._impl_._has_bits_);
@@ -206,13 +364,13 @@ constexpr CraftRequest::ParseTableT_ CraftRequest::InternalGenerateParseTable_(c
     {
       PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_._has_bits_),
       0, // no _extensions_
-      6, 56,  // max_field_number, fast_idx_mask
+      7, 56,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294967232,  // skipmap
+      4294967168,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      6,  // num_field_entries
-      0,  // num_aux_entries
-      offsetof(ParseTableT_, field_names),  // no aux_entries
+      7,  // num_field_entries
+      1,  // num_aux_entries
+      offsetof(ParseTableT_, aux_entries),
       class_data,
       nullptr,  // post_loop_handler
       ::_pbi::TcParser::GenericFallback,  // fallback
@@ -223,46 +381,57 @@ constexpr CraftRequest::ParseTableT_ CraftRequest::InternalGenerateParseTable_(c
       {::_pbi::TcParser::MiniParse, {}},
       // string operation_id = 1;
       {::_pbi::TcParser::FastUS1,
-       {10, 0, 0,
+       {10, 1, 0,
         PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.operation_id_)}},
       // string character_id = 2;
       {::_pbi::TcParser::FastUS1,
-       {18, 1, 0,
+       {18, 2, 0,
         PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.character_id_)}},
       // string container_id = 3;
       {::_pbi::TcParser::FastUS1,
-       {26, 2, 0,
+       {26, 3, 0,
         PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.container_id_)}},
       // string recipe_id = 4;
       {::_pbi::TcParser::FastUS1,
-       {34, 3, 0,
+       {34, 4, 0,
         PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.recipe_id_)}},
       // int64 expected_container_revision = 5;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(CraftRequest, _impl_.expected_container_revision_), 4>(),
-       {40, 4, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(CraftRequest, _impl_.expected_container_revision_), 5>(),
+       {40, 5, 0,
         PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.expected_container_revision_)}},
       // int32 count = 6;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(CraftRequest, _impl_.count_), 5>(),
-       {48, 5, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(CraftRequest, _impl_.count_), 6>(),
+       {48, 6, 0,
         PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.count_)}},
-      {::_pbi::TcParser::MiniParse, {}},
+      // repeated .sf.crafting.v1.InputGrade input_grades = 7;
+      {::_pbi::TcParser::FastMtR1,
+       {58, 0, 0,
+        PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.input_grades_)}},
     }}, {{
       65535, 65535
     }}, {{
       // string operation_id = 1;
-      {PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.operation_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      {PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.operation_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // string character_id = 2;
-      {PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.character_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      {PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.character_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // string container_id = 3;
-      {PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.container_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      {PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.container_id_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // string recipe_id = 4;
-      {PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.recipe_id_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      {PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.recipe_id_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // int64 expected_container_revision = 5;
-      {PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.expected_container_revision_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      {PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.expected_container_revision_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
       // int32 count = 6;
-      {PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.count_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+      {PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.count_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+      // repeated .sf.crafting.v1.InputGrade input_grades = 7;
+      {PROTOBUF_FIELD_OFFSET(CraftRequest, _impl_.input_grades_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
     }},
-    // no aux_entries
+    {{
+        #ifndef PROTOBUF_MESSAGE_GLOBALS
+        {::_pbi::TcParser::GetTable<::sf::crafting::v1::InputGrade>()},
+        #else
+        {::_pbi::FieldAuxMessageGlobals(), &::sf::crafting::v1::InputGrade_globals_},
+        #endif
+    }},
     {{
       "\33\14\14\14\11\0\0\0"
       "sf.crafting.v1.CraftRequest"
@@ -279,6 +448,11 @@ inline constexpr CraftRequest::Impl_::Impl_(
     [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
     ::_pbi::ConstantInitialized) noexcept
       : _cached_size_{0},
+        input_grades_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::crafting::v1::CraftRequest,
+            PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::CraftRequest, _impl_.input_grades_)>()
+         }
+        ,
         operation_id_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
@@ -398,11 +572,11 @@ constexpr CraftReply::ParseTableT_ CraftReply::InternalGenerateParseTable_(const
     {
       PROTOBUF_FIELD_OFFSET(CraftReply, _impl_._has_bits_),
       0, // no _extensions_
-      3, 24,  // max_field_number, fast_idx_mask
+      6, 56,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294967288,  // skipmap
+      4294967232,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      3,  // num_field_entries
+      6,  // num_field_entries
       1,  // num_aux_entries
       offsetof(ParseTableT_, aux_entries),
       class_data,
@@ -418,22 +592,41 @@ constexpr CraftReply::ParseTableT_ CraftReply::InternalGenerateParseTable_(const
        {10, 1, 0,
         PROTOBUF_FIELD_OFFSET(CraftReply, _impl_.operation_id_)}},
       // int64 container_revision = 2;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(CraftReply, _impl_.container_revision_), 2>(),
-       {16, 2, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(CraftReply, _impl_.container_revision_), 4>(),
+       {16, 4, 0,
         PROTOBUF_FIELD_OFFSET(CraftReply, _impl_.container_revision_)}},
       // repeated .sf.crafting.v1.ItemChange changes = 3;
       {::_pbi::TcParser::FastMtR1,
        {26, 0, 0,
         PROTOBUF_FIELD_OFFSET(CraftReply, _impl_.changes_)}},
+      // int32 quality_score = 4;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(CraftReply, _impl_.quality_score_), 5>(),
+       {32, 5, 0,
+        PROTOBUF_FIELD_OFFSET(CraftReply, _impl_.quality_score_)}},
+      // string grade = 5;
+      {::_pbi::TcParser::FastUS1,
+       {42, 2, 0,
+        PROTOBUF_FIELD_OFFSET(CraftReply, _impl_.grade_)}},
+      // string discovered_recipe_id = 6;
+      {::_pbi::TcParser::FastUS1,
+       {50, 3, 0,
+        PROTOBUF_FIELD_OFFSET(CraftReply, _impl_.discovered_recipe_id_)}},
+      {::_pbi::TcParser::MiniParse, {}},
     }}, {{
       65535, 65535
     }}, {{
       // string operation_id = 1;
       {PROTOBUF_FIELD_OFFSET(CraftReply, _impl_.operation_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // int64 container_revision = 2;
-      {PROTOBUF_FIELD_OFFSET(CraftReply, _impl_.container_revision_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      {PROTOBUF_FIELD_OFFSET(CraftReply, _impl_.container_revision_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
       // repeated .sf.crafting.v1.ItemChange changes = 3;
       {PROTOBUF_FIELD_OFFSET(CraftReply, _impl_.changes_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
+      // int32 quality_score = 4;
+      {PROTOBUF_FIELD_OFFSET(CraftReply, _impl_.quality_score_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+      // string grade = 5;
+      {PROTOBUF_FIELD_OFFSET(CraftReply, _impl_.grade_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string discovered_recipe_id = 6;
+      {PROTOBUF_FIELD_OFFSET(CraftReply, _impl_.discovered_recipe_id_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
     }},
     {{
         #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -443,9 +636,11 @@ constexpr CraftReply::ParseTableT_ CraftReply::InternalGenerateParseTable_(const
         #endif
     }},
     {{
-      "\31\14\0\0\0\0\0\0"
+      "\31\14\0\0\0\5\24\0"
       "sf.crafting.v1.CraftReply"
       "operation_id"
+      "grade"
+      "discovered_recipe_id"
     }},
   };
 }
@@ -463,7 +658,14 @@ inline constexpr CraftReply::Impl_::Impl_(
         operation_id_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
-        container_revision_{::int64_t{0}} {}
+        grade_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        discovered_recipe_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        container_revision_{::int64_t{0}},
+        quality_score_{0} {}
 
 template <typename>
 constexpr CraftReply::CraftReply(::_pbi::ConstantInitialized,
@@ -506,7 +708,7 @@ constexpr auto CraftReply::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[1],
+      &file_reflection_data[2],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fcrafting_2fv1_2fcrafting_2eproto,
@@ -569,28 +771,43 @@ const ::uint32_t
         protodesc_cold) = {
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::CraftRequest, _impl_._has_bits_),
-        9, // hasbit index offset
+        10, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::CraftRequest, _impl_.operation_id_),
         PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::CraftRequest, _impl_.character_id_),
         PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::CraftRequest, _impl_.container_id_),
         PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::CraftRequest, _impl_.recipe_id_),
         PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::CraftRequest, _impl_.expected_container_revision_),
         PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::CraftRequest, _impl_.count_),
-        0,
+        PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::CraftRequest, _impl_.input_grades_),
         1,
         2,
         3,
         4,
         5,
+        6,
+        0,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::InputGrade, _impl_._has_bits_),
+        5, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::InputGrade, _impl_.definition_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::InputGrade, _impl_.selected_definition_id_),
+        0,
+        1,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::CraftReply, _impl_._has_bits_),
-        6, // hasbit index offset
+        9, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::CraftReply, _impl_.operation_id_),
         PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::CraftReply, _impl_.container_revision_),
         PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::CraftReply, _impl_.changes_),
+        PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::CraftReply, _impl_.quality_score_),
+        PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::CraftReply, _impl_.grade_),
+        PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::CraftReply, _impl_.discovered_recipe_id_),
         1,
-        2,
+        4,
         0,
+        5,
+        2,
+        3,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::ItemChange, _impl_._has_bits_),
         5, // hasbit index offset
@@ -603,42 +820,48 @@ const ::uint32_t
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, sizeof(::sf::crafting::v1::CraftRequest)},
-        {15, sizeof(::sf::crafting::v1::CraftReply)},
-        {24, sizeof(::sf::crafting::v1::ItemChange)},
+        {17, sizeof(::sf::crafting::v1::InputGrade)},
+        {24, sizeof(::sf::crafting::v1::CraftReply)},
+        {39, sizeof(::sf::crafting::v1::ItemChange)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
         &::sf::crafting::v1::CraftRequest_globals_,
+        &::sf::crafting::v1::InputGrade_globals_,
         &::sf::crafting::v1::CraftReply_globals_,
         &::sf::crafting::v1::ItemChange_globals_,
 };
 const char descriptor_table_protodef_sf_2fcrafting_2fv1_2fcrafting_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
     "\n\035sf/crafting/v1/crafting.proto\022\016sf.craf"
-    "ting.v1\"\227\001\n\014CraftRequest\022\024\n\014operation_id"
+    "ting.v1\"\311\001\n\014CraftRequest\022\024\n\014operation_id"
     "\030\001 \001(\t\022\024\n\014character_id\030\002 \001(\t\022\024\n\014containe"
     "r_id\030\003 \001(\t\022\021\n\trecipe_id\030\004 \001(\t\022#\n\033expecte"
     "d_container_revision\030\005 \001(\003\022\r\n\005count\030\006 \001("
-    "\005\"k\n\nCraftReply\022\024\n\014operation_id\030\001 \001(\t\022\032\n"
+    "\005\0220\n\014input_grades\030\007 \003(\0132\032.sf.crafting.v1"
+    ".InputGrade\"C\n\nInputGrade\022\025\n\rdefinition_"
+    "id\030\001 \001(\t\022\036\n\026selected_definition_id\030\002 \001(\t"
+    "\"\257\001\n\nCraftReply\022\024\n\014operation_id\030\001 \001(\t\022\032\n"
     "\022container_revision\030\002 \001(\003\022+\n\007changes\030\003 \003"
-    "(\0132\032.sf.crafting.v1.ItemChange\"2\n\nItemCh"
-    "ange\022\025\n\rdefinition_id\030\001 \001(\t\022\r\n\005delta\030\002 \001"
-    "(\0032M\n\010Crafting\022A\n\005Craft\022\034.sf.crafting.v1"
-    ".CraftRequest\032\032.sf.crafting.v1.CraftRepl"
-    "yB \252\002\035ShatteredFrontier.Crafting.V1b\006pro"
-    "to3"
+    "(\0132\032.sf.crafting.v1.ItemChange\022\025\n\rqualit"
+    "y_score\030\004 \001(\005\022\r\n\005grade\030\005 \001(\t\022\034\n\024discover"
+    "ed_recipe_id\030\006 \001(\t\"2\n\nItemChange\022\025\n\rdefi"
+    "nition_id\030\001 \001(\t\022\r\n\005delta\030\002 \001(\0032M\n\010Crafti"
+    "ng\022A\n\005Craft\022\034.sf.crafting.v1.CraftReques"
+    "t\032\032.sf.crafting.v1.CraftReplyB \252\002\035Shatte"
+    "redFrontier.Crafting.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2fcrafting_2fv1_2fcrafting_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2fcrafting_2fv1_2fcrafting_2eproto = {
     false,
     false,
-    483,
+    671,
     descriptor_table_protodef_sf_2fcrafting_2fv1_2fcrafting_2eproto,
     "sf/crafting/v1/crafting.proto",
     &descriptor_table_sf_2fcrafting_2fv1_2fcrafting_2eproto_once,
     nullptr,
     0,
-    3,
+    4,
     schemas,
     file_message_globals,
     TableStruct_sf_2fcrafting_2fv1_2fcrafting_2eproto::offsets,
@@ -665,6 +888,13 @@ PROTOBUF_NDEBUG_INLINE CraftRequest::Impl_::Impl_(
     [[maybe_unused]] const ::sf::crafting::v1::CraftRequest& from_msg)
       : _has_bits_{from._has_bits_},
         _cached_size_{0},
+        input_grades_ {
+          visibility, ::_pbi::InternalMetadataOffset::Build<
+              ::sf::crafting::v1::CraftRequest,
+              PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::CraftRequest, _impl_.input_grades_)>()
+          , from.input_grades_
+        }
+        ,
         operation_id_(arena, from.operation_id_),
         character_id_(arena, from.character_id_),
         container_id_(arena, from.container_id_),
@@ -698,6 +928,11 @@ PROTOBUF_NDEBUG_INLINE CraftRequest::Impl_::Impl_(
     [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
     [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
       : _cached_size_{0},
+        input_grades_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::crafting::v1::CraftRequest,
+            PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::CraftRequest, _impl_.input_grades_)>()
+         }
+        ,
         operation_id_(arena),
         character_id_(arena),
         container_id_(arena),
@@ -764,21 +999,24 @@ PROTOBUF_NOINLINE void CraftRequest::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-      _impl_.operation_id_.ClearNonDefaultToEmpty();
+      _impl_.input_grades_.Clear();
     }
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
-      _impl_.character_id_.ClearNonDefaultToEmpty();
+      _impl_.operation_id_.ClearNonDefaultToEmpty();
     }
     if (CheckHasBit(cached_has_bits, 0x00000004U)) {
-      _impl_.container_id_.ClearNonDefaultToEmpty();
+      _impl_.character_id_.ClearNonDefaultToEmpty();
     }
     if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      _impl_.container_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       _impl_.recipe_id_.ClearNonDefaultToEmpty();
     }
   }
-  if (BatchCheckHasBit(cached_has_bits, 0x00000030U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000060U)) {
     ::memset(&_impl_.expected_container_revision_, 0, static_cast<::size_t>(
         reinterpret_cast<char*>(&_impl_.count_) -
         reinterpret_cast<char*>(&_impl_.expected_container_revision_)) + sizeof(_impl_.count_));
@@ -807,7 +1045,7 @@ PROTOBUF_NOINLINE void CraftRequest::Clear() {
 
   cached_has_bits = this_._impl_._has_bits_[0];
   // string operation_id = 1;
-  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
     if (!this_._internal_operation_id().empty()) {
       const ::std::string& _s = this_._internal_operation_id();
       ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
@@ -817,7 +1055,7 @@ PROTOBUF_NOINLINE void CraftRequest::Clear() {
   }
 
   // string character_id = 2;
-  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
     if (!this_._internal_character_id().empty()) {
       const ::std::string& _s = this_._internal_character_id();
       ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
@@ -827,7 +1065,7 @@ PROTOBUF_NOINLINE void CraftRequest::Clear() {
   }
 
   // string container_id = 3;
-  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
     if (!this_._internal_container_id().empty()) {
       const ::std::string& _s = this_._internal_container_id();
       ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
@@ -837,7 +1075,7 @@ PROTOBUF_NOINLINE void CraftRequest::Clear() {
   }
 
   // string recipe_id = 4;
-  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
     if (!this_._internal_recipe_id().empty()) {
       const ::std::string& _s = this_._internal_recipe_id();
       ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
@@ -847,7 +1085,7 @@ PROTOBUF_NOINLINE void CraftRequest::Clear() {
   }
 
   // int64 expected_container_revision = 5;
-  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
     if (this_._internal_expected_container_revision() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<5>(
@@ -856,11 +1094,24 @@ PROTOBUF_NOINLINE void CraftRequest::Clear() {
   }
 
   // int32 count = 6;
-  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
     if (this_._internal_count() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<6>(
               stream, this_._internal_count(), target);
+    }
+  }
+
+  // repeated .sf.crafting.v1.InputGrade input_grades = 7;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    for (unsigned i = 0, n = static_cast<unsigned>(
+                             this_._internal_input_grades_size());
+         i < n; i++) {
+      const auto& repfield = this_._internal_input_grades().Get(i);
+      target =
+          ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+              7, repfield, repfield.GetCachedSize(),
+              target, stream);
     }
   }
 
@@ -889,44 +1140,51 @@ PROTOBUF_NOINLINE void CraftRequest::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
-    // string operation_id = 1;
+  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
+    // repeated .sf.crafting.v1.InputGrade input_grades = 7;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      total_size += 1UL * this_._internal_input_grades_size();
+      for (const auto& msg : this_._internal_input_grades()) {
+        total_size += ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
+      }
+    }
+    // string operation_id = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       if (!this_._internal_operation_id().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                         this_._internal_operation_id());
       }
     }
     // string character_id = 2;
-    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
       if (!this_._internal_character_id().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                         this_._internal_character_id());
       }
     }
     // string container_id = 3;
-    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       if (!this_._internal_container_id().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                         this_._internal_container_id());
       }
     }
     // string recipe_id = 4;
-    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       if (!this_._internal_recipe_id().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                         this_._internal_recipe_id());
       }
     }
     // int64 expected_container_revision = 5;
-    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       if (this_._internal_expected_container_revision() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_expected_container_revision());
       }
     }
     // int32 count = 6;
-    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (this_._internal_count() != 0) {
         total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
             this_._internal_count());
@@ -944,14 +1202,20 @@ void CraftRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
   if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
     from.CheckHasBitConsistency();
   }
+  ::google::protobuf::Arena* arena = _this->GetArena();
   // @@protoc_insertion_point(class_specific_merge_from_start:sf.crafting.v1.CraftRequest)
   ABSL_DCHECK_NE(&from, _this);
   ::uint32_t cached_has_bits = 0;
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _this->_internal_mutable_input_grades()->InternalMergeFromWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), arena,
+          from._internal_input_grades());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       if (!from._internal_operation_id().empty()) {
         _this->_internal_set_operation_id(from._internal_operation_id());
       } else {
@@ -960,7 +1224,7 @@ void CraftRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
         }
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
       if (!from._internal_character_id().empty()) {
         _this->_internal_set_character_id(from._internal_character_id());
       } else {
@@ -969,7 +1233,7 @@ void CraftRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
         }
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       if (!from._internal_container_id().empty()) {
         _this->_internal_set_container_id(from._internal_container_id());
       } else {
@@ -978,7 +1242,7 @@ void CraftRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
         }
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       if (!from._internal_recipe_id().empty()) {
         _this->_internal_set_recipe_id(from._internal_recipe_id());
       } else {
@@ -987,12 +1251,12 @@ void CraftRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
         }
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       if (from._internal_expected_container_revision() != 0) {
         _this->_impl_.expected_container_revision_ = from._impl_.expected_container_revision_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (from._internal_count() != 0) {
         _this->_impl_.count_ = from._impl_.count_;
       }
@@ -1017,6 +1281,7 @@ void CraftRequest::InternalSwap(CraftRequest* PROTOBUF_RESTRICT PROTOBUF_NONNULL
   ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  _impl_.input_grades_.InternalSwap(&other->_impl_.input_grades_);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.operation_id_, &other->_impl_.operation_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.character_id_, &other->_impl_.character_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.container_id_, &other->_impl_.container_id_, arena);
@@ -1030,6 +1295,258 @@ void CraftRequest::InternalSwap(CraftRequest* PROTOBUF_RESTRICT PROTOBUF_NONNULL
 }
 
 ::google::protobuf::Metadata CraftRequest::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+InputGrade::InputGrade(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, InputGrade_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.crafting.v1.InputGrade)
+}
+PROTOBUF_NDEBUG_INLINE InputGrade::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::crafting::v1::InputGrade& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        definition_id_(arena, from.definition_id_),
+        selected_definition_id_(arena, from.selected_definition_id_) {}
+
+InputGrade::InputGrade(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const InputGrade& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, InputGrade_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  InputGrade* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+
+  // @@protoc_insertion_point(copy_constructor:sf.crafting.v1.InputGrade)
+}
+PROTOBUF_NDEBUG_INLINE InputGrade::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        definition_id_(arena),
+        selected_definition_id_(arena) {}
+
+inline void InputGrade::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+}
+InputGrade::~InputGrade() {
+  // @@protoc_insertion_point(destructor:sf.crafting.v1.InputGrade)
+  SharedDtor(*this);
+}
+inline void InputGrade::SharedDtor(MessageLite& self) {
+  InputGrade& this_ = static_cast<InputGrade&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.definition_id_.Destroy();
+  this_._impl_.selected_definition_id_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull InputGrade_class_data_ =
+        InputGrade::InternalGenerateClassData_(InputGrade_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+InputGrade::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&InputGrade_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(InputGrade_class_data_.tc_table);
+  return InputGrade_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+InputGrade::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&InputGrade_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&InputGrade_globals_));
+  return InputGrade_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const InputGrade::ParseTableT_
+    InputGrade::_table_ =
+        InputGrade::InternalGenerateParseTable_(InputGrade_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void InputGrade::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.crafting.v1.InputGrade)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.definition_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.selected_definition_id_.ClearNonDefaultToEmpty();
+    }
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL InputGrade::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const InputGrade& this_ = static_cast<const InputGrade&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL InputGrade::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const InputGrade& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.crafting.v1.InputGrade)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string definition_id = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_definition_id().empty()) {
+      const ::std::string& _s = this_._internal_definition_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.crafting.v1.InputGrade.definition_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string selected_definition_id = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (!this_._internal_selected_definition_id().empty()) {
+      const ::std::string& _s = this_._internal_selected_definition_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.crafting.v1.InputGrade.selected_definition_id");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.crafting.v1.InputGrade)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t InputGrade::ByteSizeLong(const MessageLite& base) {
+  const InputGrade& this_ = static_cast<const InputGrade&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t InputGrade::ByteSizeLong() const {
+  const InputGrade& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.crafting.v1.InputGrade)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+    // string definition_id = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_definition_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_definition_id());
+      }
+    }
+    // string selected_definition_id = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!this_._internal_selected_definition_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_selected_definition_id());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void InputGrade::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<InputGrade*>(&to_msg);
+  auto& from = static_cast<const InputGrade&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.crafting.v1.InputGrade)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_definition_id().empty()) {
+        _this->_internal_set_definition_id(from._internal_definition_id());
+      } else {
+        if (_this->_impl_.definition_id_.IsDefault()) {
+          _this->_internal_set_definition_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!from._internal_selected_definition_id().empty()) {
+        _this->_internal_set_selected_definition_id(from._internal_selected_definition_id());
+      } else {
+        if (_this->_impl_.selected_definition_id_.IsDefault()) {
+          _this->_internal_set_selected_definition_id("");
+        }
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void InputGrade::CopyFrom(const InputGrade& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.crafting.v1.InputGrade)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void InputGrade::InternalSwap(InputGrade* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.definition_id_, &other->_impl_.definition_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.selected_definition_id_, &other->_impl_.selected_definition_id_, arena);
+}
+
+::google::protobuf::Metadata InputGrade::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // ===================================================================
@@ -1056,7 +1573,9 @@ PROTOBUF_NDEBUG_INLINE CraftReply::Impl_::Impl_(
           , from.changes_
         }
         ,
-        operation_id_(arena, from.operation_id_) {}
+        operation_id_(arena, from.operation_id_),
+        grade_(arena, from.grade_),
+        discovered_recipe_id_(arena, from.discovered_recipe_id_) {}
 
 CraftReply::CraftReply(
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
@@ -1072,7 +1591,13 @@ CraftReply::CraftReply(
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
-  _impl_.container_revision_ = from._impl_.container_revision_;
+  ::memcpy(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, container_revision_),
+           reinterpret_cast<const char*>(&from._impl_) +
+               offsetof(Impl_, container_revision_),
+           offsetof(Impl_, quality_score_) -
+               offsetof(Impl_, container_revision_) +
+               sizeof(Impl_::quality_score_));
 
   // @@protoc_insertion_point(copy_constructor:sf.crafting.v1.CraftReply)
 }
@@ -1085,11 +1610,18 @@ PROTOBUF_NDEBUG_INLINE CraftReply::Impl_::Impl_(
             PROTOBUF_FIELD_OFFSET(::sf::crafting::v1::CraftReply, _impl_.changes_)>()
          }
         ,
-        operation_id_(arena) {}
+        operation_id_(arena),
+        grade_(arena),
+        discovered_recipe_id_(arena) {}
 
 inline void CraftReply::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
-  _impl_.container_revision_ = {};
+  ::memset(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, container_revision_),
+           0,
+           offsetof(Impl_, quality_score_) -
+               offsetof(Impl_, container_revision_) +
+               sizeof(Impl_::quality_score_));
 }
 CraftReply::~CraftReply() {
   // @@protoc_insertion_point(destructor:sf.crafting.v1.CraftReply)
@@ -1103,6 +1635,8 @@ inline void CraftReply::SharedDtor(MessageLite& self) {
   this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   ABSL_DCHECK(this_.GetArena() == nullptr);
   this_._impl_.operation_id_.Destroy();
+  this_._impl_.grade_.Destroy();
+  this_._impl_.discovered_recipe_id_.Destroy();
   this_._impl_.~Impl_();
 }
 
@@ -1140,15 +1674,25 @@ PROTOBUF_NOINLINE void CraftReply::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _impl_.changes_.Clear();
     }
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       _impl_.operation_id_.ClearNonDefaultToEmpty();
     }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _impl_.grade_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      _impl_.discovered_recipe_id_.ClearNonDefaultToEmpty();
+    }
   }
-  _impl_.container_revision_ = ::int64_t{0};
+  if (BatchCheckHasBit(cached_has_bits, 0x00000030U)) {
+    ::memset(&_impl_.container_revision_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.quality_score_) -
+        reinterpret_cast<char*>(&_impl_.container_revision_)) + sizeof(_impl_.quality_score_));
+  }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -1183,7 +1727,7 @@ PROTOBUF_NOINLINE void CraftReply::Clear() {
   }
 
   // int64 container_revision = 2;
-  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
     if (this_._internal_container_revision() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<2>(
@@ -1201,6 +1745,35 @@ PROTOBUF_NOINLINE void CraftReply::Clear() {
           ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
               3, repfield, repfield.GetCachedSize(),
               target, stream);
+    }
+  }
+
+  // int32 quality_score = 4;
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (this_._internal_quality_score() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<4>(
+              stream, this_._internal_quality_score(), target);
+    }
+  }
+
+  // string grade = 5;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (!this_._internal_grade().empty()) {
+      const ::std::string& _s = this_._internal_grade();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.crafting.v1.CraftReply.grade");
+      target = stream->WriteStringMaybeAliased(5, _s, target);
+    }
+  }
+
+  // string discovered_recipe_id = 6;
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (!this_._internal_discovered_recipe_id().empty()) {
+      const ::std::string& _s = this_._internal_discovered_recipe_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.crafting.v1.CraftReply.discovered_recipe_id");
+      target = stream->WriteStringMaybeAliased(6, _s, target);
     }
   }
 
@@ -1229,7 +1802,7 @@ PROTOBUF_NOINLINE void CraftReply::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
     // repeated .sf.crafting.v1.ItemChange changes = 3;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       total_size += 1UL * this_._internal_changes_size();
@@ -1244,11 +1817,32 @@ PROTOBUF_NOINLINE void CraftReply::Clear() {
                                         this_._internal_operation_id());
       }
     }
-    // int64 container_revision = 2;
+    // string grade = 5;
     if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!this_._internal_grade().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_grade());
+      }
+    }
+    // string discovered_recipe_id = 6;
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (!this_._internal_discovered_recipe_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_discovered_recipe_id());
+      }
+    }
+    // int64 container_revision = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       if (this_._internal_container_revision() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_container_revision());
+      }
+    }
+    // int32 quality_score = 4;
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      if (this_._internal_quality_score() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+            this_._internal_quality_score());
       }
     }
   }
@@ -1270,7 +1864,7 @@ void CraftReply::MergeImpl(::google::protobuf::MessageLite& to_msg,
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _this->_internal_mutable_changes()->InternalMergeFromWithArena(
           ::google::protobuf::MessageLite::internal_visibility(), arena,
@@ -1286,8 +1880,31 @@ void CraftReply::MergeImpl(::google::protobuf::MessageLite& to_msg,
       }
     }
     if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!from._internal_grade().empty()) {
+        _this->_internal_set_grade(from._internal_grade());
+      } else {
+        if (_this->_impl_.grade_.IsDefault()) {
+          _this->_internal_set_grade("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (!from._internal_discovered_recipe_id().empty()) {
+        _this->_internal_set_discovered_recipe_id(from._internal_discovered_recipe_id());
+      } else {
+        if (_this->_impl_.discovered_recipe_id_.IsDefault()) {
+          _this->_internal_set_discovered_recipe_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       if (from._internal_container_revision() != 0) {
         _this->_impl_.container_revision_ = from._impl_.container_revision_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      if (from._internal_quality_score() != 0) {
+        _this->_impl_.quality_score_ = from._impl_.quality_score_;
       }
     }
   }
@@ -1312,7 +1929,14 @@ void CraftReply::InternalSwap(CraftReply* PROTOBUF_RESTRICT PROTOBUF_NONNULL oth
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   _impl_.changes_.InternalSwap(&other->_impl_.changes_);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.operation_id_, &other->_impl_.operation_id_, arena);
-  swap(_impl_.container_revision_, other->_impl_.container_revision_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.grade_, &other->_impl_.grade_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.discovered_recipe_id_, &other->_impl_.discovered_recipe_id_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(CraftReply, _impl_.quality_score_)
+      + sizeof(CraftReply::_impl_.quality_score_)
+      - PROTOBUF_FIELD_OFFSET(CraftReply, _impl_.container_revision_)>(
+          reinterpret_cast<char*>(&_impl_.container_revision_),
+          reinterpret_cast<char*>(&other->_impl_.container_revision_));
 }
 
 ::google::protobuf::Metadata CraftReply::GetMetadata() const {

@@ -48,6 +48,8 @@ public:
     float InventoryWeightKg = 24;
     UPROPERTY(Config, EditAnywhere, Category="Material defaults (Content Generation)", meta=(ClampMin="1", ClampMax="100", ToolTip="Units per stack. Applied when generating new pilot item assets for a compatible release, not at runtime."))
     int32 MaterialStackUnits = 20;
+    UPROPERTY(Config, EditAnywhere, Category="Refining", meta=(ToolTip="Show the server quality range for selected materials. Release authors; next world start."))
+    bool bCraftGradePreviewEnabled = true;
     UPROPERTY(Config, EditAnywhere, Category="Material defaults (Content Generation)", meta=(ClampMin="0.01", ClampMax="50", Units="kg", ToolTip="Weight per unit. Applied only when generating new pilot item assets for a compatible release."))
     float MaterialUnitWeightKg = 1;
     UPROPERTY(Config, EditAnywhere, Category="Refining", meta=(ClampMin="0.5", ClampMax="30", Units="s"))
@@ -204,6 +206,10 @@ public:
     const FSFGatheringSkillSnapshot& GetSkillSnapshot() const { return Skills; }
     // Server, INT-05 restore: Progression skill values ("skill/<name>", tenths) replace the session values.
     void RestoreSkills(const TMap<FString, int32>& ServiceSkills);
+    void RestoreKnownRecipes(const TArray<FString>& Recipes);
+    void AddKnownRecipe(const FString& RecipeId);
+    bool KnowsRecipe(const FSFStationRecipe& Recipe) const;
+    const TArray<FString>& GetKnownRecipes() const { return KnownRecipes; }
     // Read-only views for the gathering HUD (ring, toast, recipe panel).
     const FSFGatheringPilotFeedback& GetFeedback() const { return Feedback; }
     ASFGatheringPilotNode* FindAimedNode(const FVector& Start, const FVector& Direction) const { return FindNode(Start, Direction); }
@@ -278,6 +284,7 @@ private:
     FString PendingCraftOperation;  // "craft/<guid>", reused on every retry until a terminal outcome
     FString CommittedOperation;     // ledger or craft operation behind the outcome being broadcast
     UPROPERTY(Replicated) TArray<FString> StationRecipes;  // selected recipe id per station kind
+    UPROPERTY(Replicated) TArray<FString> KnownRecipes;  // restored owner-only from CharacterState
 
     FString PendingLedgerOperation;  // "gather/<guid>", reused on every retry until a terminal outcome
 

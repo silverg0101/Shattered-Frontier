@@ -8,7 +8,7 @@
       "choices": [
         { "label": "Tell me more", "next": "more" },
         { "label": "I'll help", "action": "accept" },
-        { "label": "What is the reward?", "next": "reward" },
+        { "label": "Learn: Worked Timber (120 copper)", "action": "learn:recipe/worked_timber" },
         { "label": "Farewell", "action": "end" }
       ]
     },

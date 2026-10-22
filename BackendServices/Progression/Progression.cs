@@ -5,7 +5,8 @@ public static class ProgressionRules
     public const int FormulaVersion = 1;
     public const int LevelCap = 100, SkillMax = 1000, UnspecializedCap = 900;
     public const int GlobalSkillCap = 7200, TrackSkillCap = 4000;
-    public const string Logging = "skill/logging", Mining = "skill/mining", Smithing = "skill/smithing";
+    public const string Logging = "skill/logging", Mining = "skill/mining", Smithing = "skill/smithing",
+        Carpentry = "skill/carpentry", Leatherworking = "skill/leatherworking";
     public static int XpToNext(int level) => level < 1 ? throw new ArgumentOutOfRangeException(nameof(level))
         : checked((int)(10 * Math.Round((400 * Math.Pow(level, 1.5) + 600) / 10, MidpointRounding.AwayFromZero)));
     public static double SkillFactor(int value) => 1 / Math.Max(1, value / 100d);
@@ -45,7 +46,9 @@ public sealed record ActionReceipt(string ReceiptId, string CharacterId, Receipt
     bool Success = true, int EnemyLevel = 1, double EnemyTierMultiplier = 1, int EligiblePartySize = 1);
 public sealed record ProgressionResult(bool Applied, int SkillGain, int XpGain, int Level, double GainChance);
 public sealed record ProgressionSnapshot(long LifetimeXp, Dictionary<string, int> Skills, ProgressionSettings Settings, string[] Receipts,
-    Dictionary<string, long[]> ActiveMinutes, PracticeSnapshot[] Practices, GainSnapshot[] Gains);
+    Dictionary<string, long[]> ActiveMinutes, PracticeSnapshot[] Practices, GainSnapshot[] Gains,
+    KnownRecipe[]? KnownRecipes = null);
+public sealed record KnownRecipe(string RecipeId, string Source, DateTimeOffset LearnedAt);
 public sealed record PracticeSnapshot(DateTimeOffset At, string Skill, ulong Context);
 public sealed record GainSnapshot(DateTimeOffset At, string Skill);
 
@@ -53,7 +56,9 @@ public sealed class CharacterProgression
 {
     private readonly HashSet<string> receipts = new(StringComparer.Ordinal);
     private readonly Dictionary<string, int> skills = new(StringComparer.Ordinal)
-        { [ProgressionRules.Logging] = 0, [ProgressionRules.Mining] = 0, [ProgressionRules.Smithing] = 0 };
+        { [ProgressionRules.Logging] = 0, [ProgressionRules.Mining] = 0, [ProgressionRules.Smithing] = 0,
+            [ProgressionRules.Carpentry] = 0, [ProgressionRules.Leatherworking] = 0 };
+    private readonly List<KnownRecipe> knownRecipes = [];
     private readonly Dictionary<string, HashSet<long>> activeMinutes = new(StringComparer.Ordinal);
     private readonly List<(DateTimeOffset At, string Skill, ulong Context)> practices = [];
     private readonly List<(DateTimeOffset At, string Skill)> gains = [];
@@ -80,6 +85,7 @@ public sealed class CharacterProgression
         while (Level < ProgressionRules.LevelCap && LifetimeXp >= TotalFor(Level + 1)) Level++;
         if (snapshot is not null)
         {
+            knownRecipes.AddRange(snapshot.KnownRecipes ?? []);
             foreach (var id in snapshot.Receipts) receipts.Add(id);
             foreach (var (id, minutes) in snapshot.ActiveMinutes) activeMinutes.Add(id, new HashSet<long>(minutes));
             practices.AddRange(snapshot.Practices.Select(p => (p.At, p.Skill, p.Context)));
@@ -90,7 +96,7 @@ public sealed class CharacterProgression
     public ProgressionSnapshot Snapshot() => new(LifetimeXp, new(skills, StringComparer.Ordinal), settings, [.. receipts],
         activeMinutes.ToDictionary(p => p.Key, p => p.Value.ToArray(), StringComparer.Ordinal),
         practices.Select(p => new PracticeSnapshot(p.At, p.Skill, p.Context)).ToArray(),
-        gains.Select(g => new GainSnapshot(g.At, g.Skill)).ToArray());
+        gains.Select(g => new GainSnapshot(g.At, g.Skill)).ToArray(), knownRecipes.ToArray());
 
     public static long TotalFor(int level)
     {
@@ -106,7 +112,8 @@ public sealed class CharacterProgression
         if (receipt.Kind is ReceiptKind.GatheringHarvest or ReceiptKind.CraftConvert)
         {
             string skill = receipt.SkillId ?? "";
-            if (receipt.Kind == ReceiptKind.GatheringHarvest ? skill is not (ProgressionRules.Logging or ProgressionRules.Mining) : skill != ProgressionRules.Smithing)
+            if (receipt.Kind == ReceiptKind.GatheringHarvest ? skill is not (ProgressionRules.Logging or ProgressionRules.Mining) :
+                skill is not (ProgressionRules.Smithing or ProgressionRules.Carpentry or ProgressionRules.Leatherworking))
                 throw new ArgumentException("Receipt skill does not match accepted action");
             if (receipt.Difficulty is < 0 or > 1100 || !double.IsFinite(receipt.ActionSeconds) || receipt.ActionSeconds <= 0) throw new ArgumentOutOfRangeException(nameof(receipt));
         }

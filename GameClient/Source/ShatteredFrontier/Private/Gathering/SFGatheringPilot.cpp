@@ -35,6 +35,19 @@
 
 namespace
 {
+#if SF_WITH_MINIMAL_INVENTORY
+    FString ChooseInputGrade(UInventoryComponent* Inventory, const FSFItemStack& Input)
+    {
+        static const TCHAR* Grades[] = {TEXT("crude"), TEXT(""), TEXT("fine"), TEXT("superior"), TEXT("masterwork")};
+        for (const TCHAR* Grade : Grades)
+        {
+            const FString Id = *Grade ? Input.DefinitionId + TEXT("/") + Grade : Input.DefinitionId;
+            const auto Asset = TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Id)));
+            if (Inventory && UInventoryTransactionLibrary::GetItemQuantity(Inventory, Asset) >= Input.Quantity) { return Id; }
+        }
+        return Input.DefinitionId;
+    }
+#endif
     const TCHAR* ItemPath(ESFGatheringPilotKind Kind)
     {
         switch (Kind)
@@ -343,6 +356,7 @@ void USFGatheringPilotComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProp
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,bPrimaryRole,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,bRoleAssigned,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,StationRecipes,COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,KnownRecipes,COND_OwnerOnly);
 }
 
 float USFGatheringPilotComponent::GetSkillLockCooldownRemaining(ESFGatheringSkill Skill) const
@@ -548,13 +562,13 @@ ESFGatheringPilotResult USFGatheringPilotComponent::ApplyInventory(ESFGatheringP
         // The player's selected station recipe, from the same content the crafting service validates.
         const FSFStationRecipe* Recipe=ActiveStationRecipe(Kind);
         if (!Recipe) { return ESFGatheringPilotResult::Unavailable; }
-        const auto Stack=[](const FSFItemStack& Item)
+        const auto Stack=[Inventory](const FSFItemStack& Item, bool bInput)
         {
-            FInventoryItemQuantity Out; Out.Item=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Item.DefinitionId)));
+            FInventoryItemQuantity Out; Out.Item=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(bInput ? ChooseInputGrade(Inventory, Item) : Item.DefinitionId)));
             Out.Quantity=int32(Item.Quantity); return Out;
         };
-        for (const FSFItemStack& Input : Recipe->Inputs) { Change.RemoveItems.Add(Stack(Input)); }
-        for (const FSFItemStack& Output : Recipe->Outputs) { Change.AddItems.Add(Stack(Output)); }
+        for (const FSFItemStack& Input : Recipe->Inputs) { Change.RemoveItems.Add(Stack(Input, true)); }
+        for (const FSFItemStack& Output : Recipe->Outputs) { Change.AddItems.Add(Stack(Output, false)); }
     }
     else { Change.AddItems.Add(Reward); }
     const auto Result=bCommit ? UInventoryTransactionLibrary::ExecuteInventoryTransaction({Change})
@@ -882,25 +896,36 @@ void USFGatheringPilotComponent::BeginCraftCommit()
     const FSFStationRecipe* Recipe=ActiveStationRecipe(ActiveKind);
     if (!Pack || !Recipe || !USFBackpackComponent::Services())
     { PendingCraftOperation.Reset(); Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::Unavailable); return; }
+    if (!KnowsRecipe(*Recipe))
+    { PendingCraftOperation.Reset(); Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::InvalidContext); return; }
     const FString Operation=PendingCraftOperation, RecipeId=Recipe->Id;
+    TMap<FString,FString> InputGrades;
+#if SF_WITH_MINIMAL_INVENTORY
+    auto* Bag = GetOwner()->FindComponentByClass<UInventoryComponent>();
+    for (const FSFItemStack& Input : Recipe->Inputs)
+    { InputGrades.Add(Input.DefinitionId, ChooseInputGrade(Bag, Input)); }
+#endif
     TSharedRef<TMap<FString,int64>> Changes=MakeShared<TMap<FString,int64>>();
+    TSharedRef<FString> Discovered=MakeShared<FString>();
     TWeakObjectPtr<USFGatheringPilotComponent> Weak(this);
     FSFBackpackMutation Mutation; Mutation.Label=TEXT("craft"); Mutation.OperationId=Operation;
-    Mutation.Run=[Weak,RecipeId,Changes](const FString& Op,int64 Expected,TFunction<void(ESFBackpackOutcome,int64)> Report)
+    Mutation.Run=[Weak,RecipeId,InputGrades,Changes,Discovered](const FString& Op,int64 Expected,TFunction<void(ESFBackpackOutcome,int64)> Report)
     {
         USFGatheringPilotComponent* Self=Weak.Get(); USFBackpackComponent* Owner=Self ? Self->Backpack.Get() : nullptr;
         if (!Owner) { Report(ESFBackpackOutcome::Unavailable,-1); return; }
         FSFGameplayRequest Craft; Craft.Rpc=ESFGameplayRpc::Craft; Craft.OperationId=Op; Craft.CharacterId=Owner->GetCharacterId();
         Craft.ContainerId=Owner->GetContainerId(); Craft.RecipeId=RecipeId; Craft.ExpectedContainerRevision=Expected; Craft.Count=1;
-        USFBackpackComponent::Services()->Call(Craft,[Changes,Report](const FSFGameplayResponse& Response)
+        Craft.InputGrades=InputGrades;
+        USFBackpackComponent::Services()->Call(Craft,[Changes,Discovered,Report](const FSFGameplayResponse& Response)
         {
             *Changes=Response.Changes;
+            *Discovered=Response.DiscoveredRecipeId;
             // FAILED_PRECONDITION covers a stale container revision: the backpack re-reads and retries once.
             Report(Response.Status==ESFGameplayStatus::Ok ? ESFBackpackOutcome::Committed : Response.Status==ESFGameplayStatus::Unavailable ? ESFBackpackOutcome::Unavailable
                 : Response.GrpcCode==9 ? ESFBackpackOutcome::Stale : ESFBackpackOutcome::Rejected, Response.Status==ESFGameplayStatus::Ok ? Response.ContainerRevision : -1);
         });
     };
-    Mutation.Finished=[Weak,Operation,RecipeId,Changes](ESFBackpackOutcome Outcome)
+    Mutation.Finished=[Weak,Operation,RecipeId,Changes,Discovered](ESFBackpackOutcome Outcome)
     {
         USFGatheringPilotComponent* Self=Weak.Get();
         if (!Self || Self->Feedback.Phase!=ESFGatheringPilotPhase::Committing || Self->PendingCraftOperation!=Operation)
@@ -912,6 +937,7 @@ void USFGatheringPilotComponent::BeginCraftCommit()
         { Self->Finish(ESFGatheringPilotPhase::Rejected,Outcome==ESFBackpackOutcome::Unavailable ? ESFGatheringPilotResult::Unavailable : ESFGatheringPilotResult::MissingMaterials); return; }
         // The receipt is the truth: project exactly its item changes into the session bag.
         if (USFBackpackComponent* Owner=Self->Backpack.Get()) { Owner->ApplyToBag(*Changes); }
+        if (!Discovered->IsEmpty()) { Self->AddKnownRecipe(*Discovered); }
         Self->CommittedOperation=Operation;
         if (!IsValid(Self->Feedback.Node)) { Self->Finish(ESFGatheringPilotPhase::Committed,ESFGatheringPilotResult::Refined); return; }
         Self->CompleteHarvest(true);
@@ -936,7 +962,9 @@ const FSFStationRecipe* USFGatheringPilotComponent::ActiveStationRecipe(ESFGathe
     if (Recipes.IsEmpty()) { return nullptr; }
     const FString Selected=StationRecipes.IsValidIndex(int32(Station)) ? StationRecipes[int32(Station)] : FString();
     const FSFStationRecipe* const* Match=Recipes.FindByPredicate([&](const FSFStationRecipe* Recipe) { return Recipe->Id==Selected; });
-    return Match ? *Match : Recipes[0];
+    if (Match && KnowsRecipe(**Match)) { return *Match; }
+    const FSFStationRecipe* const* FirstKnown = Recipes.FindByPredicate([this](const FSFStationRecipe* R) { return KnowsRecipe(*R); });
+    return FirstKnown ? *FirstKnown : nullptr;
 }
 
 FString USFGatheringPilotComponent::GetStationRecipe(ESFGatheringPilotKind Station) const
@@ -953,10 +981,28 @@ void USFGatheringPilotComponent::SelectStationRecipe(ESFGatheringPilotKind Stati
 
 void USFGatheringPilotComponent::CycleStationRecipe(ESFGatheringPilotKind Station)
 {
-    const TArray<const FSFStationRecipe*> Recipes=SFStationRecipes::ForStation(StationName(Station));
+    const TArray<const FSFStationRecipe*> Recipes=SFStationRecipes::ForStation(StationName(Station)).FilterByPredicate(
+        [this](const FSFStationRecipe* R) { return KnowsRecipe(*R); });
     if (Recipes.Num()<2) { return; }
     const int32 Current=Recipes.IndexOfByKey(ActiveStationRecipe(Station));
     SelectStationRecipe(Station,Recipes[(Current+1)%Recipes.Num()]->Id);
+}
+
+bool USFGatheringPilotComponent::KnowsRecipe(const FSFStationRecipe& Recipe) const
+{ return Recipe.bDefaultKnown || KnownRecipes.Contains(Recipe.Id); }
+
+void USFGatheringPilotComponent::RestoreKnownRecipes(const TArray<FString>& Recipes)
+{
+    if (!GetOwner()->HasAuthority()) { return; }
+    KnownRecipes.Reset();
+    for (const FString& Id : Recipes) { if (SFStationRecipes::Find(Id)) { KnownRecipes.AddUnique(Id); } }
+    GetOwner()->ForceNetUpdate();
+}
+
+void USFGatheringPilotComponent::AddKnownRecipe(const FString& RecipeId)
+{
+    if (GetOwner()->HasAuthority() && SFStationRecipes::Find(RecipeId))
+    { KnownRecipes.AddUnique(RecipeId); GetOwner()->ForceNetUpdate(); }
 }
 
 bool USFGatheringPilotComponent::CycleRecipeFromRay(const FVector& Start, const FVector& Direction)
@@ -982,7 +1028,7 @@ void USFGatheringPilotComponent::ServerSelectRecipe_Implementation(ESFGatheringP
     // Only a recipe this station ships, and never mid-craft: the commit uses the recipe chosen when it started.
     if (!IsAuthoritativePilotWorld() || !bEnabled || Feedback.Phase==ESFGatheringPilotPhase::Harvesting || Feedback.Phase==ESFGatheringPilotPhase::Committing) { return; }
     const FSFStationRecipe* Recipe=SFStationRecipes::Find(RecipeId);
-    if (!Recipe || Recipe->Station!=StationName(Station)) { return; }
+    if (!Recipe || Recipe->Station!=StationName(Station) || !KnowsRecipe(*Recipe)) { return; }
     StationRecipes.SetNum(int32(ESFGatheringPilotKind::Workbench)+1);
     StationRecipes[int32(Station)]=RecipeId;
     GetOwner()->ForceNetUpdate();

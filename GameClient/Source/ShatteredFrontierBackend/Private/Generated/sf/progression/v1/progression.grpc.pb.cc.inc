@@ -28,6 +28,7 @@ static const char* Progression_method_names[] = {
   "/sf.progression.v1.Progression/ApplyReceipt",
   "/sf.progression.v1.Progression/GetCharacterState",
   "/sf.progression.v1.Progression/SavePosition",
+  "/sf.progression.v1.Progression/LearnRecipe",
 };
 
 std::unique_ptr< Progression::Stub> Progression::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -40,6 +41,7 @@ Progression::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channe
   : channel_(channel), rpcmethod_ApplyReceipt_(Progression_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_GetCharacterState_(Progression_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_SavePosition_(Progression_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_LearnRecipe_(Progression_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status Progression::Stub::ApplyReceipt(::grpc::ClientContext* context, const ::sf::progression::v1::ApplyReceiptRequest& request, ::sf::progression::v1::ApplyReceiptReply* response) {
@@ -111,6 +113,29 @@ void Progression::Stub::async::SavePosition(::grpc::ClientContext* context, cons
   return result;
 }
 
+::grpc::Status Progression::Stub::LearnRecipe(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest& request, ::sf::progression::v1::LearnRecipeReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::progression::v1::LearnRecipeRequest, ::sf::progression::v1::LearnRecipeReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_LearnRecipe_, context, request, response);
+}
+
+void Progression::Stub::async::LearnRecipe(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest* request, ::sf::progression::v1::LearnRecipeReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::progression::v1::LearnRecipeRequest, ::sf::progression::v1::LearnRecipeReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_LearnRecipe_, context, request, response, std::move(f));
+}
+
+void Progression::Stub::async::LearnRecipe(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest* request, ::sf::progression::v1::LearnRecipeReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_LearnRecipe_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::progression::v1::LearnRecipeReply>* Progression::Stub::PrepareAsyncLearnRecipeRaw(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::progression::v1::LearnRecipeReply, ::sf::progression::v1::LearnRecipeRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_LearnRecipe_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::progression::v1::LearnRecipeReply>* Progression::Stub::AsyncLearnRecipeRaw(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncLearnRecipeRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 Progression::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Progression_method_names[0],
@@ -142,6 +167,16 @@ Progression::Service::Service() {
              ::sf::progression::v1::SavePositionReply* resp) {
                return service->SavePosition(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Progression_method_names[3],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Progression::Service, ::sf::progression::v1::LearnRecipeRequest, ::sf::progression::v1::LearnRecipeReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Progression::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::progression::v1::LearnRecipeRequest* req,
+             ::sf::progression::v1::LearnRecipeReply* resp) {
+               return service->LearnRecipe(ctx, req, resp);
+             }, this)));
 }
 
 Progression::Service::~Service() {
@@ -162,6 +197,13 @@ Progression::Service::~Service() {
 }
 
 ::grpc::Status Progression::Service::SavePosition(::grpc::ServerContext* context, const ::sf::progression::v1::SavePositionRequest* request, ::sf::progression::v1::SavePositionReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Progression::Service::LearnRecipe(::grpc::ServerContext* context, const ::sf::progression::v1::LearnRecipeRequest* request, ::sf::progression::v1::LearnRecipeReply* response) {
   (void) context;
   (void) request;
   (void) response;

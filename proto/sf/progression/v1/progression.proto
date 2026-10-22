@@ -6,7 +6,19 @@ service Progression {
   rpc ApplyReceipt(ApplyReceiptRequest) returns (ApplyReceiptReply);
   rpc GetCharacterState(GetCharacterStateRequest) returns (CharacterStateReply);
   rpc SavePosition(SavePositionRequest) returns (SavePositionReply);
+  rpc LearnRecipe(LearnRecipeRequest) returns (LearnRecipeReply);
 }
+message LearnRecipeRequest {
+  string operation_id = 1;
+  string character_id = 2;
+  string recipe_id = 3;
+  string source = 4;
+  string trainer_npc = 5;
+  string scroll_container = 6;
+  int64 expected_container_revision = 7;
+}
+message LearnRecipeReply { string recipe_id = 1; int64 progression_revision = 2; int64 cost_copper = 3; }
+message KnownRecipe { string recipe_id = 1; string source = 2; int64 learned_at_unix_ms = 3; }
 
 message ApplyReceiptRequest {
   string source_receipt_id = 1;
@@ -84,6 +96,7 @@ message CharacterStateReply {
   int64 position_revision = 10;
   // QST-02: every quest row of the character (fields 5-8 describe quest/frontier_founder only).
   repeated QuestState quests = 11;
+  repeated KnownRecipe known_recipes = 12;
 }
 message QuestState {
   string quest_id = 1;

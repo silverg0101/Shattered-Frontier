@@ -4,9 +4,13 @@ using ShatteredFrontier.InventoryLedger;
 
 namespace ShatteredFrontier.CraftingContent;
 
-public sealed record RecipeQuantity(string DefinitionId, int Quantity);
+public sealed record RecipeQuantity(string DefinitionId, int Quantity, bool QualityInput = false);
+public sealed record RecipeLearn(string[] Sources, int? LearnSkillMin = null, string[]? Trainers = null);
+public sealed record RecipeDiscovery(string RecipeId, int Weight);
 public sealed record Recipe(string Id, string Station, int DurationSeconds,
-    IReadOnlyList<RecipeQuantity> Inputs, IReadOnlyList<RecipeQuantity> Outputs);
+    IReadOnlyList<RecipeQuantity> Inputs, IReadOnlyList<RecipeQuantity> Outputs,
+    string Skill = "", int Difficulty = 0, RecipeLearn? Learn = null,
+    IReadOnlyList<RecipeDiscovery>? Discovers = null);
 public sealed record RecipeFile(IReadOnlyList<Recipe> Recipes);
 public sealed class CraftContentException(string message) : InvalidOperationException(message);
 
@@ -37,6 +41,11 @@ public sealed class RecipeCatalog
             }
         }
         if (all.Count == 0) throw new CraftContentException("No recipe files found.");
+        foreach (var recipe in all.Values)
+            foreach (var discovery in recipe.Discovers ?? [])
+                if (!all.TryGetValue(discovery.RecipeId, out var target) ||
+                    target.Learn?.Sources.Contains("discovery", StringComparer.Ordinal) != true)
+                    throw new CraftContentException($"Invalid discovery target: {discovery.RecipeId}");
         CheckCycles(all.Values);
         return new RecipeCatalog(all);
     }
@@ -56,6 +65,17 @@ public sealed class RecipeCatalog
         }
         if (recipe.Inputs.Any(i => recipe.Outputs.Any(o => i.DefinitionId == o.DefinitionId)))
             throw new CraftContentException($"Recipe transforms an item into itself: {recipe.Id}.");
+        if (recipe.Skill is not ("carpentry" or "smithing" or "leatherworking") || recipe.Difficulty is < 0 or > 1100 ||
+            recipe.Learn is null || recipe.Learn.Sources is null || recipe.Learn.Sources.Length == 0 ||
+            recipe.Learn.Sources.Distinct(StringComparer.Ordinal).Count() != recipe.Learn.Sources.Length ||
+            recipe.Learn.Sources.Any(s => s is not ("default" or "trainer" or "scroll" or "discovery")) ||
+            recipe.Learn.LearnSkillMin is < 0 or > 1000 ||
+            (recipe.Learn.Sources.Contains("trainer") && (recipe.Learn.Trainers is null || recipe.Learn.Trainers.Length == 0)) ||
+            (recipe.Learn.Trainers?.Any(t => !ValidId(t, "npc")) ?? false) ||
+            recipe.Outputs.Any(o => o.QualityInput) ||
+            recipe.Discovers?.Any(d => !ValidId(d.RecipeId, "recipe") || d.Weight is < 1 or > 100) == true ||
+            (recipe.Discovers?.Sum(d => d.Weight) ?? 0) > 100)
+            throw new CraftContentException($"Invalid crafting skill, learning, or quality fields in {recipe.Id}.");
     }
 
     private static bool ValidId(string? id, string kind) => id is not null && IdPattern.IsMatch(id) && id.StartsWith(kind + "/", StringComparison.Ordinal);
@@ -86,9 +106,33 @@ public sealed class RecipeCatalog
 
 public sealed record CraftAttempt(string OperationId, string ContainerId, long ExpectedRevision,
     string RecipeId, string Station, int Count);
+public sealed record GradedCraftResult(LedgerReceipt Receipt, int QualityScore, CraftGrade Grade);
 
 public sealed class CraftAttemptService(RecipeCatalog catalog, InventoryLedger.InventoryLedger ledger)
 {
+    public GradedCraftResult ExecuteGraded(CraftAttempt attempt, int skill,
+        IReadOnlyDictionary<string, string> inputGrades, byte[] secret, CraftingControls controls,
+        int? replayScore = null, string discoveryId = "")
+    {
+        if (attempt.Count is < 1 or > 20) throw new CraftContentException("Craft count must be 1–20.");
+        var recipe = catalog.Get(attempt.RecipeId);
+        if (attempt.Station != recipe.Station || inputGrades.Keys.Any(k => !recipe.Inputs.Any(i => i.DefinitionId == k)))
+            throw new CraftContentException("Wrong station or input grade key.");
+        var inputs = recipe.Inputs.Select(i => new ItemQuantity(
+            inputGrades.TryGetValue(i.DefinitionId, out var selected)
+                ? CraftingQuality.DefinitionId(i.DefinitionId, CraftingQuality.ParseGrade(i.DefinitionId, selected))
+                : i.DefinitionId, checked((long)i.Quantity * attempt.Count))).ToArray();
+        var seed = CraftingQuality.Roll(attempt.OperationId, secret, controls);
+        var score = replayScore ?? CraftingQuality.Score(skill, recipe.Difficulty,
+            CraftingQuality.MaterialMidpoint(recipe, inputGrades), seed.Variance, controls);
+        if (score is < 0 or > 100) throw new CraftContentException("Invalid replay quality score.");
+        var grade = CraftingQuality.Grade(score);
+        var outputs = recipe.Outputs.Select(o => new ItemQuantity(CraftingQuality.DefinitionId(o.DefinitionId, grade),
+            checked((long)o.Quantity * attempt.Count))).ToArray();
+        var receipt = ledger.Convert(attempt.OperationId, attempt.ContainerId, attempt.ExpectedRevision,
+            $"{recipe.Id}|quality={score}|discovery={(discoveryId == "" ? "none" : discoveryId)}", inputs, outputs);
+        return new(receipt, score, grade);
+    }
     public LedgerReceipt Execute(CraftAttempt attempt)
     {
         if (attempt.Count is < 1 or > 20) throw new CraftContentException("Craft count must be 1–20.");

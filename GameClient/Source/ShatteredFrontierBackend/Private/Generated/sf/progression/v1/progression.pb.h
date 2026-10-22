@@ -132,6 +132,30 @@ extern const ::google::protobuf::internal::ClassDataFull GrantedItem_class_data_
 #else
 extern const GrantedItemGlobalsTypeInternal GrantedItem_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
+class KnownRecipe;
+struct KnownRecipeGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern KnownRecipeGlobalsTypeInternal KnownRecipe_globals_;
+extern const ::google::protobuf::internal::ClassDataFull KnownRecipe_class_data_;
+#else
+extern const KnownRecipeGlobalsTypeInternal KnownRecipe_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+class LearnRecipeReply;
+struct LearnRecipeReplyGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern LearnRecipeReplyGlobalsTypeInternal LearnRecipeReply_globals_;
+extern const ::google::protobuf::internal::ClassDataFull LearnRecipeReply_class_data_;
+#else
+extern const LearnRecipeReplyGlobalsTypeInternal LearnRecipeReply_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+class LearnRecipeRequest;
+struct LearnRecipeRequestGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern LearnRecipeRequestGlobalsTypeInternal LearnRecipeRequest_globals_;
+extern const ::google::protobuf::internal::ClassDataFull LearnRecipeRequest_class_data_;
+#else
+extern const LearnRecipeRequestGlobalsTypeInternal LearnRecipeRequest_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
 class QuestEvidence;
 struct QuestEvidenceGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -245,7 +269,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED SavePositionReply final : public ::
   [[nodiscard]] static const SavePositionReply& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<SavePositionReply>(&SavePositionReply_globals_);
   }
-  static constexpr int kIndexInFileMessages = 8;
+  static constexpr int kIndexInFileMessages = 11;
   friend void swap(SavePositionReply& a, SavePositionReply& b) { a.Swap(&b); }
   inline void Swap(SavePositionReply* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -495,7 +519,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED QuestEvidence final : public ::goog
   [[nodiscard]] static const QuestEvidence& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<QuestEvidence>(&QuestEvidence_globals_);
   }
-  static constexpr int kIndexInFileMessages = 2;
+  static constexpr int kIndexInFileMessages = 5;
   friend void swap(QuestEvidence& a, QuestEvidence& b) { a.Swap(&b); }
   inline void Swap(QuestEvidence* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -737,6 +761,774 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED QuestEvidence final : public ::goog
 };
 // -------------------------------------------------------------------
 
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED LearnRecipeRequest final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.progression.v1.LearnRecipeRequest) */ {
+ public:
+  inline LearnRecipeRequest() : LearnRecipeRequest(nullptr) {}
+  ~LearnRecipeRequest() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(LearnRecipeRequest* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(LearnRecipeRequest));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr LearnRecipeRequest(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline LearnRecipeRequest(const LearnRecipeRequest& from) : LearnRecipeRequest(nullptr, from) {}
+  inline LearnRecipeRequest(LearnRecipeRequest&& from) noexcept : LearnRecipeRequest(nullptr, ::std::move(from)) {}
+  inline LearnRecipeRequest& operator=(const LearnRecipeRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline LearnRecipeRequest& operator=(LearnRecipeRequest&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const LearnRecipeRequest& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<LearnRecipeRequest>(&LearnRecipeRequest_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 0;
+  friend void swap(LearnRecipeRequest& a, LearnRecipeRequest& b) { a.Swap(&b); }
+  inline void Swap(LearnRecipeRequest* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(LearnRecipeRequest* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] LearnRecipeRequest* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<LearnRecipeRequest>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const LearnRecipeRequest& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const LearnRecipeRequest& from) { LearnRecipeRequest::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(LearnRecipeRequest* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.progression.v1.LearnRecipeRequest"; }
+
+  explicit LearnRecipeRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  LearnRecipeRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const LearnRecipeRequest& from);
+  LearnRecipeRequest(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, LearnRecipeRequest&& from) noexcept
+      : LearnRecipeRequest(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kOperationIdFieldNumber = 1,
+    kCharacterIdFieldNumber = 2,
+    kRecipeIdFieldNumber = 3,
+    kSourceFieldNumber = 4,
+    kTrainerNpcFieldNumber = 5,
+    kScrollContainerFieldNumber = 6,
+    kExpectedContainerRevisionFieldNumber = 7,
+  };
+  // string operation_id = 1;
+  void clear_operation_id() ;
+  [[nodiscard]] const ::std::string& operation_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_operation_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_operation_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_operation_id();
+  void set_allocated_operation_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_operation_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_operation_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_operation_id();
+
+  public:
+  // string character_id = 2;
+  void clear_character_id() ;
+  [[nodiscard]] const ::std::string& character_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_character_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_character_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_character_id();
+  void set_allocated_character_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_character_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_character_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_character_id();
+
+  public:
+  // string recipe_id = 3;
+  void clear_recipe_id() ;
+  [[nodiscard]] const ::std::string& recipe_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_recipe_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_recipe_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_recipe_id();
+  void set_allocated_recipe_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_recipe_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_recipe_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_recipe_id();
+
+  public:
+  // string source = 4;
+  void clear_source() ;
+  [[nodiscard]] const ::std::string& source() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_source(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_source();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_source();
+  void set_allocated_source(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_source() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_source(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_source();
+
+  public:
+  // string trainer_npc = 5;
+  void clear_trainer_npc() ;
+  [[nodiscard]] const ::std::string& trainer_npc() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_trainer_npc(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_trainer_npc();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_trainer_npc();
+  void set_allocated_trainer_npc(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_trainer_npc() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_trainer_npc(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_trainer_npc();
+
+  public:
+  // string scroll_container = 6;
+  void clear_scroll_container() ;
+  [[nodiscard]] const ::std::string& scroll_container() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_scroll_container(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_scroll_container();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_scroll_container();
+  void set_allocated_scroll_container(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_scroll_container() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_scroll_container(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_scroll_container();
+
+  public:
+  // int64 expected_container_revision = 7;
+  void clear_expected_container_revision() ;
+  [[nodiscard]] ::int64_t expected_container_revision() const;
+  void set_expected_container_revision(::int64_t value);
+
+  private:
+  ::int64_t _internal_expected_container_revision() const;
+  void _internal_set_expected_container_revision(::int64_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.progression.v1.LearnRecipeRequest)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<3, 7,
+                          0, 111,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const LearnRecipeRequest& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr operation_id_;
+    ::google::protobuf::internal::ArenaStringPtr character_id_;
+    ::google::protobuf::internal::ArenaStringPtr recipe_id_;
+    ::google::protobuf::internal::ArenaStringPtr source_;
+    ::google::protobuf::internal::ArenaStringPtr trainer_npc_;
+    ::google::protobuf::internal::ArenaStringPtr scroll_container_;
+    ::int64_t expected_container_revision_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2fprogression_2fv1_2fprogression_2eproto;
+};
+// -------------------------------------------------------------------
+
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED LearnRecipeReply final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.progression.v1.LearnRecipeReply) */ {
+ public:
+  inline LearnRecipeReply() : LearnRecipeReply(nullptr) {}
+  ~LearnRecipeReply() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(LearnRecipeReply* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(LearnRecipeReply));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr LearnRecipeReply(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline LearnRecipeReply(const LearnRecipeReply& from) : LearnRecipeReply(nullptr, from) {}
+  inline LearnRecipeReply(LearnRecipeReply&& from) noexcept : LearnRecipeReply(nullptr, ::std::move(from)) {}
+  inline LearnRecipeReply& operator=(const LearnRecipeReply& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline LearnRecipeReply& operator=(LearnRecipeReply&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const LearnRecipeReply& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<LearnRecipeReply>(&LearnRecipeReply_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 1;
+  friend void swap(LearnRecipeReply& a, LearnRecipeReply& b) { a.Swap(&b); }
+  inline void Swap(LearnRecipeReply* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(LearnRecipeReply* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] LearnRecipeReply* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<LearnRecipeReply>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const LearnRecipeReply& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const LearnRecipeReply& from) { LearnRecipeReply::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(LearnRecipeReply* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.progression.v1.LearnRecipeReply"; }
+
+  explicit LearnRecipeReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  LearnRecipeReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const LearnRecipeReply& from);
+  LearnRecipeReply(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, LearnRecipeReply&& from) noexcept
+      : LearnRecipeReply(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kRecipeIdFieldNumber = 1,
+    kProgressionRevisionFieldNumber = 2,
+    kCostCopperFieldNumber = 3,
+  };
+  // string recipe_id = 1;
+  void clear_recipe_id() ;
+  [[nodiscard]] const ::std::string& recipe_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_recipe_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_recipe_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_recipe_id();
+  void set_allocated_recipe_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_recipe_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_recipe_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_recipe_id();
+
+  public:
+  // int64 progression_revision = 2;
+  void clear_progression_revision() ;
+  [[nodiscard]] ::int64_t progression_revision() const;
+  void set_progression_revision(::int64_t value);
+
+  private:
+  ::int64_t _internal_progression_revision() const;
+  void _internal_set_progression_revision(::int64_t value);
+
+  public:
+  // int64 cost_copper = 3;
+  void clear_cost_copper() ;
+  [[nodiscard]] ::int64_t cost_copper() const;
+  void set_cost_copper(::int64_t value);
+
+  private:
+  ::int64_t _internal_cost_copper() const;
+  void _internal_set_cost_copper(::int64_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.progression.v1.LearnRecipeReply)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<2, 3,
+                          0, 52,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const LearnRecipeReply& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr recipe_id_;
+    ::int64_t progression_revision_;
+    ::int64_t cost_copper_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2fprogression_2fv1_2fprogression_2eproto;
+};
+// -------------------------------------------------------------------
+
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED KnownRecipe final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.progression.v1.KnownRecipe) */ {
+ public:
+  inline KnownRecipe() : KnownRecipe(nullptr) {}
+  ~KnownRecipe() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(KnownRecipe* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(KnownRecipe));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr KnownRecipe(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline KnownRecipe(const KnownRecipe& from) : KnownRecipe(nullptr, from) {}
+  inline KnownRecipe(KnownRecipe&& from) noexcept : KnownRecipe(nullptr, ::std::move(from)) {}
+  inline KnownRecipe& operator=(const KnownRecipe& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline KnownRecipe& operator=(KnownRecipe&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const KnownRecipe& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<KnownRecipe>(&KnownRecipe_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 2;
+  friend void swap(KnownRecipe& a, KnownRecipe& b) { a.Swap(&b); }
+  inline void Swap(KnownRecipe* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(KnownRecipe* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] KnownRecipe* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<KnownRecipe>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const KnownRecipe& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const KnownRecipe& from) { KnownRecipe::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(KnownRecipe* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.progression.v1.KnownRecipe"; }
+
+  explicit KnownRecipe(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  KnownRecipe(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const KnownRecipe& from);
+  KnownRecipe(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, KnownRecipe&& from) noexcept
+      : KnownRecipe(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kRecipeIdFieldNumber = 1,
+    kSourceFieldNumber = 2,
+    kLearnedAtUnixMsFieldNumber = 3,
+  };
+  // string recipe_id = 1;
+  void clear_recipe_id() ;
+  [[nodiscard]] const ::std::string& recipe_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_recipe_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_recipe_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_recipe_id();
+  void set_allocated_recipe_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_recipe_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_recipe_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_recipe_id();
+
+  public:
+  // string source = 2;
+  void clear_source() ;
+  [[nodiscard]] const ::std::string& source() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_source(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_source();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_source();
+  void set_allocated_source(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_source() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_source(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_source();
+
+  public:
+  // int64 learned_at_unix_ms = 3;
+  void clear_learned_at_unix_ms() ;
+  [[nodiscard]] ::int64_t learned_at_unix_ms() const;
+  void set_learned_at_unix_ms(::int64_t value);
+
+  private:
+  ::int64_t _internal_learned_at_unix_ms() const;
+  void _internal_set_learned_at_unix_ms(::int64_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.progression.v1.KnownRecipe)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<2, 3,
+                          0, 53,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const KnownRecipe& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr recipe_id_;
+    ::google::protobuf::internal::ArenaStringPtr source_;
+    ::int64_t learned_at_unix_ms_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2fprogression_2fv1_2fprogression_2eproto;
+};
+// -------------------------------------------------------------------
+
 class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GrantedItem final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:sf.progression.v1.GrantedItem) */ {
  public:
@@ -793,7 +1585,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GrantedItem final : public ::google
   [[nodiscard]] static const GrantedItem& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<GrantedItem>(&GrantedItem_globals_);
   }
-  static constexpr int kIndexInFileMessages = 4;
+  static constexpr int kIndexInFileMessages = 7;
   friend void swap(GrantedItem& a, GrantedItem& b) { a.Swap(&b); }
   inline void Swap(GrantedItem* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -1011,7 +1803,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GetCharacterStateRequest final : pu
   [[nodiscard]] static const GetCharacterStateRequest& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<GetCharacterStateRequest>(&GetCharacterStateRequest_globals_);
   }
-  static constexpr int kIndexInFileMessages = 5;
+  static constexpr int kIndexInFileMessages = 8;
   friend void swap(GetCharacterStateRequest& a, GetCharacterStateRequest& b) { a.Swap(&b); }
   inline void Swap(GetCharacterStateRequest* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -1315,7 +2107,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterPosition final : public ::
   [[nodiscard]] static const CharacterPosition& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<CharacterPosition>(&CharacterPosition_globals_);
   }
-  static constexpr int kIndexInFileMessages = 6;
+  static constexpr int kIndexInFileMessages = 9;
   friend void swap(CharacterPosition& a, CharacterPosition& b) { a.Swap(&b); }
   inline void Swap(CharacterPosition* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -1569,7 +2361,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActionPayload final : public ::goog
   [[nodiscard]] static const ActionPayload& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<ActionPayload>(&ActionPayload_globals_);
   }
-  static constexpr int kIndexInFileMessages = 1;
+  static constexpr int kIndexInFileMessages = 4;
   friend void swap(ActionPayload& a, ActionPayload& b) { a.Swap(&b); }
   inline void Swap(ActionPayload* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -1859,7 +2651,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED SavePositionRequest final : public 
   [[nodiscard]] static const SavePositionRequest& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<SavePositionRequest>(&SavePositionRequest_globals_);
   }
-  static constexpr int kIndexInFileMessages = 7;
+  static constexpr int kIndexInFileMessages = 10;
   friend void swap(SavePositionRequest& a, SavePositionRequest& b) { a.Swap(&b); }
   inline void Swap(SavePositionRequest* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -2095,7 +2887,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED QuestState final : public ::google:
   [[nodiscard]] static const QuestState& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<QuestState>(&QuestState_globals_);
   }
-  static constexpr int kIndexInFileMessages = 13;
+  static constexpr int kIndexInFileMessages = 16;
   friend void swap(QuestState& a, QuestState& b) { a.Swap(&b); }
   inline void Swap(QuestState* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -2389,7 +3181,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ApplyReceiptRequest final : public 
   [[nodiscard]] static const ApplyReceiptRequest& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<ApplyReceiptRequest>(&ApplyReceiptRequest_globals_);
   }
-  static constexpr int kIndexInFileMessages = 0;
+  static constexpr int kIndexInFileMessages = 3;
   friend void swap(ApplyReceiptRequest& a, ApplyReceiptRequest& b) { a.Swap(&b); }
   inline void Swap(ApplyReceiptRequest* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -2689,7 +3481,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ApplyReceiptReply final : public ::
   [[nodiscard]] static const ApplyReceiptReply& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<ApplyReceiptReply>(&ApplyReceiptReply_globals_);
   }
-  static constexpr int kIndexInFileMessages = 3;
+  static constexpr int kIndexInFileMessages = 6;
   friend void swap(ApplyReceiptReply& a, ApplyReceiptReply& b) { a.Swap(&b); }
   inline void Swap(ApplyReceiptReply* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -3060,7 +3852,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public 
   [[nodiscard]] static const CharacterStateReply& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<CharacterStateReply>(&CharacterStateReply_globals_);
   }
-  static constexpr int kIndexInFileMessages = 11;
+  static constexpr int kIndexInFileMessages = 14;
   friend void swap(CharacterStateReply& a, CharacterStateReply& b) { a.Swap(&b); }
   inline void Swap(CharacterStateReply* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -3153,6 +3945,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public 
   // accessors -------------------------------------------------------
   enum : int {
     kQuestsFieldNumber = 11,
+    kKnownRecipesFieldNumber = 12,
     kActiveStepIdFieldNumber = 6,
     kPositionFieldNumber = 9,
     kProgressionRevisionFieldNumber = 1,
@@ -3183,6 +3976,27 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public 
   private:
   const ::google::protobuf::RepeatedPtrField<::sf::progression::v1::QuestState>& _internal_quests() const;
   ::google::protobuf::RepeatedPtrField<::sf::progression::v1::QuestState>* PROTOBUF_NONNULL _internal_mutable_quests();
+
+  public:
+  // repeated .sf.progression.v1.KnownRecipe known_recipes = 12;
+  [[nodiscard]] int known_recipes_size()
+      const;
+  private:
+  int _internal_known_recipes_size() const;
+
+  public:
+  void clear_known_recipes() ;
+  [[nodiscard]] const ::sf::progression::v1::KnownRecipe& known_recipes(int index) const;
+  [[nodiscard]] ::sf::progression::v1::KnownRecipe* PROTOBUF_NONNULL mutable_known_recipes(int index);
+  ::sf::progression::v1::KnownRecipe* PROTOBUF_NONNULL add_known_recipes();
+  [[nodiscard]] const ::google::protobuf::RepeatedPtrField<::sf::progression::v1::KnownRecipe>&
+  known_recipes() const;
+  [[nodiscard]] ::google::protobuf::RepeatedPtrField<::sf::progression::v1::KnownRecipe>* PROTOBUF_NONNULL
+  mutable_known_recipes();
+
+  private:
+  const ::google::protobuf::RepeatedPtrField<::sf::progression::v1::KnownRecipe>& _internal_known_recipes() const;
+  ::google::protobuf::RepeatedPtrField<::sf::progression::v1::KnownRecipe>* PROTOBUF_NONNULL _internal_mutable_known_recipes();
 
   public:
   // string active_step_id = 6;
@@ -3312,8 +4126,8 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public 
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<4, 11,
-                          4, 90,
+      ::google::protobuf::internal::TcParseTable<4, 12,
+                          5, 90,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
       const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
@@ -3342,6 +4156,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public 
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::RepeatedPtrField< ::sf::progression::v1::QuestState > quests_;
+    ::google::protobuf::RepeatedPtrField< ::sf::progression::v1::KnownRecipe > known_recipes_;
     ::google::protobuf::internal::ArenaStringPtr active_step_id_;
     ::sf::progression::v1::CharacterPosition* PROTOBUF_NULLABLE position_;
     ::int64_t progression_revision_;
@@ -3370,6 +4185,690 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// LearnRecipeRequest
+
+// string operation_id = 1;
+inline void LearnRecipeRequest::clear_operation_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.operation_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& LearnRecipeRequest::operation_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.LearnRecipeRequest.operation_id)
+  return _internal_operation_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void LearnRecipeRequest::set_operation_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.operation_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.progression.v1.LearnRecipeRequest.operation_id)
+}
+inline ::std::string* PROTOBUF_NONNULL LearnRecipeRequest::mutable_operation_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_operation_id();
+  // @@protoc_insertion_point(field_mutable:sf.progression.v1.LearnRecipeRequest.operation_id)
+  return _s;
+}
+inline const ::std::string& LearnRecipeRequest::_internal_operation_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.operation_id_.Get();
+}
+inline void LearnRecipeRequest::_internal_set_operation_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.operation_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL LearnRecipeRequest::_internal_mutable_operation_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.operation_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE LearnRecipeRequest::release_operation_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.progression.v1.LearnRecipeRequest.operation_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.operation_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.operation_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void LearnRecipeRequest::set_allocated_operation_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.operation_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.operation_id_.IsDefault()) {
+    _impl_.operation_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.progression.v1.LearnRecipeRequest.operation_id)
+}
+
+// string character_id = 2;
+inline void LearnRecipeRequest::clear_character_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.character_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& LearnRecipeRequest::character_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.LearnRecipeRequest.character_id)
+  return _internal_character_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void LearnRecipeRequest::set_character_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.character_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.progression.v1.LearnRecipeRequest.character_id)
+}
+inline ::std::string* PROTOBUF_NONNULL LearnRecipeRequest::mutable_character_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_character_id();
+  // @@protoc_insertion_point(field_mutable:sf.progression.v1.LearnRecipeRequest.character_id)
+  return _s;
+}
+inline const ::std::string& LearnRecipeRequest::_internal_character_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.character_id_.Get();
+}
+inline void LearnRecipeRequest::_internal_set_character_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.character_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL LearnRecipeRequest::_internal_mutable_character_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.character_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE LearnRecipeRequest::release_character_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.progression.v1.LearnRecipeRequest.character_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.character_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.character_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void LearnRecipeRequest::set_allocated_character_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.character_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.character_id_.IsDefault()) {
+    _impl_.character_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.progression.v1.LearnRecipeRequest.character_id)
+}
+
+// string recipe_id = 3;
+inline void LearnRecipeRequest::clear_recipe_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.recipe_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline const ::std::string& LearnRecipeRequest::recipe_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.LearnRecipeRequest.recipe_id)
+  return _internal_recipe_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void LearnRecipeRequest::set_recipe_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  _impl_.recipe_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.progression.v1.LearnRecipeRequest.recipe_id)
+}
+inline ::std::string* PROTOBUF_NONNULL LearnRecipeRequest::mutable_recipe_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ::std::string* _s = _internal_mutable_recipe_id();
+  // @@protoc_insertion_point(field_mutable:sf.progression.v1.LearnRecipeRequest.recipe_id)
+  return _s;
+}
+inline const ::std::string& LearnRecipeRequest::_internal_recipe_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.recipe_id_.Get();
+}
+inline void LearnRecipeRequest::_internal_set_recipe_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.recipe_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL LearnRecipeRequest::_internal_mutable_recipe_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.recipe_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE LearnRecipeRequest::release_recipe_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.progression.v1.LearnRecipeRequest.recipe_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  auto* released = _impl_.recipe_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.recipe_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void LearnRecipeRequest::set_allocated_recipe_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  }
+  _impl_.recipe_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.recipe_id_.IsDefault()) {
+    _impl_.recipe_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.progression.v1.LearnRecipeRequest.recipe_id)
+}
+
+// string source = 4;
+inline void LearnRecipeRequest::clear_source() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.source_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline const ::std::string& LearnRecipeRequest::source() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.LearnRecipeRequest.source)
+  return _internal_source();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void LearnRecipeRequest::set_source(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  _impl_.source_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.progression.v1.LearnRecipeRequest.source)
+}
+inline ::std::string* PROTOBUF_NONNULL LearnRecipeRequest::mutable_source()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ::std::string* _s = _internal_mutable_source();
+  // @@protoc_insertion_point(field_mutable:sf.progression.v1.LearnRecipeRequest.source)
+  return _s;
+}
+inline const ::std::string& LearnRecipeRequest::_internal_source() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.source_.Get();
+}
+inline void LearnRecipeRequest::_internal_set_source(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.source_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL LearnRecipeRequest::_internal_mutable_source() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.source_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE LearnRecipeRequest::release_source() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.progression.v1.LearnRecipeRequest.source)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000008U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  auto* released = _impl_.source_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.source_.Set("", GetArena());
+  }
+  return released;
+}
+inline void LearnRecipeRequest::set_allocated_source(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  }
+  _impl_.source_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.source_.IsDefault()) {
+    _impl_.source_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.progression.v1.LearnRecipeRequest.source)
+}
+
+// string trainer_npc = 5;
+inline void LearnRecipeRequest::clear_trainer_npc() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.trainer_npc_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+}
+inline const ::std::string& LearnRecipeRequest::trainer_npc() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.LearnRecipeRequest.trainer_npc)
+  return _internal_trainer_npc();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void LearnRecipeRequest::set_trainer_npc(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  _impl_.trainer_npc_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.progression.v1.LearnRecipeRequest.trainer_npc)
+}
+inline ::std::string* PROTOBUF_NONNULL LearnRecipeRequest::mutable_trainer_npc()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ::std::string* _s = _internal_mutable_trainer_npc();
+  // @@protoc_insertion_point(field_mutable:sf.progression.v1.LearnRecipeRequest.trainer_npc)
+  return _s;
+}
+inline const ::std::string& LearnRecipeRequest::_internal_trainer_npc() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.trainer_npc_.Get();
+}
+inline void LearnRecipeRequest::_internal_set_trainer_npc(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.trainer_npc_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL LearnRecipeRequest::_internal_mutable_trainer_npc() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.trainer_npc_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE LearnRecipeRequest::release_trainer_npc() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.progression.v1.LearnRecipeRequest.trainer_npc)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000010U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  auto* released = _impl_.trainer_npc_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.trainer_npc_.Set("", GetArena());
+  }
+  return released;
+}
+inline void LearnRecipeRequest::set_allocated_trainer_npc(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  }
+  _impl_.trainer_npc_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.trainer_npc_.IsDefault()) {
+    _impl_.trainer_npc_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.progression.v1.LearnRecipeRequest.trainer_npc)
+}
+
+// string scroll_container = 6;
+inline void LearnRecipeRequest::clear_scroll_container() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.scroll_container_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+}
+inline const ::std::string& LearnRecipeRequest::scroll_container() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.LearnRecipeRequest.scroll_container)
+  return _internal_scroll_container();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void LearnRecipeRequest::set_scroll_container(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  _impl_.scroll_container_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.progression.v1.LearnRecipeRequest.scroll_container)
+}
+inline ::std::string* PROTOBUF_NONNULL LearnRecipeRequest::mutable_scroll_container()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  ::std::string* _s = _internal_mutable_scroll_container();
+  // @@protoc_insertion_point(field_mutable:sf.progression.v1.LearnRecipeRequest.scroll_container)
+  return _s;
+}
+inline const ::std::string& LearnRecipeRequest::_internal_scroll_container() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.scroll_container_.Get();
+}
+inline void LearnRecipeRequest::_internal_set_scroll_container(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.scroll_container_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL LearnRecipeRequest::_internal_mutable_scroll_container() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.scroll_container_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE LearnRecipeRequest::release_scroll_container() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.progression.v1.LearnRecipeRequest.scroll_container)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000020U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+  auto* released = _impl_.scroll_container_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.scroll_container_.Set("", GetArena());
+  }
+  return released;
+}
+inline void LearnRecipeRequest::set_allocated_scroll_container(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+  }
+  _impl_.scroll_container_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.scroll_container_.IsDefault()) {
+    _impl_.scroll_container_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.progression.v1.LearnRecipeRequest.scroll_container)
+}
+
+// int64 expected_container_revision = 7;
+inline void LearnRecipeRequest::clear_expected_container_revision() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.expected_container_revision_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+}
+inline ::int64_t LearnRecipeRequest::expected_container_revision() const {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.LearnRecipeRequest.expected_container_revision)
+  return _internal_expected_container_revision();
+}
+inline void LearnRecipeRequest::set_expected_container_revision(::int64_t value) {
+  _internal_set_expected_container_revision(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  // @@protoc_insertion_point(field_set:sf.progression.v1.LearnRecipeRequest.expected_container_revision)
+}
+inline ::int64_t LearnRecipeRequest::_internal_expected_container_revision() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.expected_container_revision_;
+}
+inline void LearnRecipeRequest::_internal_set_expected_container_revision(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.expected_container_revision_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// LearnRecipeReply
+
+// string recipe_id = 1;
+inline void LearnRecipeReply::clear_recipe_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.recipe_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& LearnRecipeReply::recipe_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.LearnRecipeReply.recipe_id)
+  return _internal_recipe_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void LearnRecipeReply::set_recipe_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.recipe_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.progression.v1.LearnRecipeReply.recipe_id)
+}
+inline ::std::string* PROTOBUF_NONNULL LearnRecipeReply::mutable_recipe_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_recipe_id();
+  // @@protoc_insertion_point(field_mutable:sf.progression.v1.LearnRecipeReply.recipe_id)
+  return _s;
+}
+inline const ::std::string& LearnRecipeReply::_internal_recipe_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.recipe_id_.Get();
+}
+inline void LearnRecipeReply::_internal_set_recipe_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.recipe_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL LearnRecipeReply::_internal_mutable_recipe_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.recipe_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE LearnRecipeReply::release_recipe_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.progression.v1.LearnRecipeReply.recipe_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.recipe_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.recipe_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void LearnRecipeReply::set_allocated_recipe_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.recipe_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.recipe_id_.IsDefault()) {
+    _impl_.recipe_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.progression.v1.LearnRecipeReply.recipe_id)
+}
+
+// int64 progression_revision = 2;
+inline void LearnRecipeReply::clear_progression_revision() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.progression_revision_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline ::int64_t LearnRecipeReply::progression_revision() const {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.LearnRecipeReply.progression_revision)
+  return _internal_progression_revision();
+}
+inline void LearnRecipeReply::set_progression_revision(::int64_t value) {
+  _internal_set_progression_revision(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  // @@protoc_insertion_point(field_set:sf.progression.v1.LearnRecipeReply.progression_revision)
+}
+inline ::int64_t LearnRecipeReply::_internal_progression_revision() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.progression_revision_;
+}
+inline void LearnRecipeReply::_internal_set_progression_revision(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.progression_revision_ = value;
+}
+
+// int64 cost_copper = 3;
+inline void LearnRecipeReply::clear_cost_copper() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.cost_copper_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline ::int64_t LearnRecipeReply::cost_copper() const {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.LearnRecipeReply.cost_copper)
+  return _internal_cost_copper();
+}
+inline void LearnRecipeReply::set_cost_copper(::int64_t value) {
+  _internal_set_cost_copper(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  // @@protoc_insertion_point(field_set:sf.progression.v1.LearnRecipeReply.cost_copper)
+}
+inline ::int64_t LearnRecipeReply::_internal_cost_copper() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.cost_copper_;
+}
+inline void LearnRecipeReply::_internal_set_cost_copper(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.cost_copper_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// KnownRecipe
+
+// string recipe_id = 1;
+inline void KnownRecipe::clear_recipe_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.recipe_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& KnownRecipe::recipe_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.KnownRecipe.recipe_id)
+  return _internal_recipe_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void KnownRecipe::set_recipe_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.recipe_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.progression.v1.KnownRecipe.recipe_id)
+}
+inline ::std::string* PROTOBUF_NONNULL KnownRecipe::mutable_recipe_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_recipe_id();
+  // @@protoc_insertion_point(field_mutable:sf.progression.v1.KnownRecipe.recipe_id)
+  return _s;
+}
+inline const ::std::string& KnownRecipe::_internal_recipe_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.recipe_id_.Get();
+}
+inline void KnownRecipe::_internal_set_recipe_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.recipe_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL KnownRecipe::_internal_mutable_recipe_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.recipe_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE KnownRecipe::release_recipe_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.progression.v1.KnownRecipe.recipe_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.recipe_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.recipe_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void KnownRecipe::set_allocated_recipe_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.recipe_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.recipe_id_.IsDefault()) {
+    _impl_.recipe_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.progression.v1.KnownRecipe.recipe_id)
+}
+
+// string source = 2;
+inline void KnownRecipe::clear_source() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.source_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& KnownRecipe::source() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.KnownRecipe.source)
+  return _internal_source();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void KnownRecipe::set_source(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.source_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.progression.v1.KnownRecipe.source)
+}
+inline ::std::string* PROTOBUF_NONNULL KnownRecipe::mutable_source()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_source();
+  // @@protoc_insertion_point(field_mutable:sf.progression.v1.KnownRecipe.source)
+  return _s;
+}
+inline const ::std::string& KnownRecipe::_internal_source() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.source_.Get();
+}
+inline void KnownRecipe::_internal_set_source(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.source_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL KnownRecipe::_internal_mutable_source() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.source_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE KnownRecipe::release_source() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.progression.v1.KnownRecipe.source)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.source_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.source_.Set("", GetArena());
+  }
+  return released;
+}
+inline void KnownRecipe::set_allocated_source(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.source_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.source_.IsDefault()) {
+    _impl_.source_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.progression.v1.KnownRecipe.source)
+}
+
+// int64 learned_at_unix_ms = 3;
+inline void KnownRecipe::clear_learned_at_unix_ms() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.learned_at_unix_ms_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline ::int64_t KnownRecipe::learned_at_unix_ms() const {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.KnownRecipe.learned_at_unix_ms)
+  return _internal_learned_at_unix_ms();
+}
+inline void KnownRecipe::set_learned_at_unix_ms(::int64_t value) {
+  _internal_set_learned_at_unix_ms(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  // @@protoc_insertion_point(field_set:sf.progression.v1.KnownRecipe.learned_at_unix_ms)
+}
+inline ::int64_t KnownRecipe::_internal_learned_at_unix_ms() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.learned_at_unix_ms_;
+}
+inline void KnownRecipe::_internal_set_learned_at_unix_ms(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.learned_at_unix_ms_ = value;
+}
+
 // -------------------------------------------------------------------
 
 // ApplyReceiptRequest
@@ -5423,7 +6922,7 @@ inline void SavePositionReply::_internal_set_position_revision(::int64_t value) 
 inline void CharacterStateReply::clear_progression_revision() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.progression_revision_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
 }
 inline ::int64_t CharacterStateReply::progression_revision() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.CharacterStateReply.progression_revision)
@@ -5431,7 +6930,7 @@ inline ::int64_t CharacterStateReply::progression_revision() const {
 }
 inline void CharacterStateReply::set_progression_revision(::int64_t value) {
   _internal_set_progression_revision(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.CharacterStateReply.progression_revision)
 }
 inline ::int64_t CharacterStateReply::_internal_progression_revision() const {
@@ -5447,7 +6946,7 @@ inline void CharacterStateReply::_internal_set_progression_revision(::int64_t va
 inline void CharacterStateReply::clear_lifetime_xp() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.lifetime_xp_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
 }
 inline ::int64_t CharacterStateReply::lifetime_xp() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.CharacterStateReply.lifetime_xp)
@@ -5455,7 +6954,7 @@ inline ::int64_t CharacterStateReply::lifetime_xp() const {
 }
 inline void CharacterStateReply::set_lifetime_xp(::int64_t value) {
   _internal_set_lifetime_xp(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.CharacterStateReply.lifetime_xp)
 }
 inline ::int64_t CharacterStateReply::_internal_lifetime_xp() const {
@@ -5471,7 +6970,7 @@ inline void CharacterStateReply::_internal_set_lifetime_xp(::int64_t value) {
 inline void CharacterStateReply::clear_level() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.level_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
 }
 inline ::int32_t CharacterStateReply::level() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.CharacterStateReply.level)
@@ -5479,7 +6978,7 @@ inline ::int32_t CharacterStateReply::level() const {
 }
 inline void CharacterStateReply::set_level(::int32_t value) {
   _internal_set_level(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.CharacterStateReply.level)
 }
 inline ::int32_t CharacterStateReply::_internal_level() const {
@@ -5501,7 +7000,7 @@ inline int CharacterStateReply::skills_size() const {
 inline void CharacterStateReply::clear_skills() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.skills_.Clear();
-  ClearHasBit(_impl_._has_bits_[0], 0x00000200U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000400U);
 }
 inline const ::google::protobuf::Map<::std::string, ::int32_t>& CharacterStateReply::_internal_skills() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
@@ -5517,7 +7016,7 @@ inline ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL Chara
 }
 inline ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL CharacterStateReply::mutable_skills()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000200U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000400U);
   // @@protoc_insertion_point(field_mutable_map:sf.progression.v1.CharacterStateReply.skills)
   return _internal_mutable_skills();
 }
@@ -5526,7 +7025,7 @@ inline ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL Chara
 inline void CharacterStateReply::clear_quest_revision() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.quest_revision_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
 }
 inline ::int64_t CharacterStateReply::quest_revision() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.CharacterStateReply.quest_revision)
@@ -5534,7 +7033,7 @@ inline ::int64_t CharacterStateReply::quest_revision() const {
 }
 inline void CharacterStateReply::set_quest_revision(::int64_t value) {
   _internal_set_quest_revision(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.CharacterStateReply.quest_revision)
 }
 inline ::int64_t CharacterStateReply::_internal_quest_revision() const {
@@ -5550,7 +7049,7 @@ inline void CharacterStateReply::_internal_set_quest_revision(::int64_t value) {
 inline void CharacterStateReply::clear_active_step_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.active_step_id_.ClearToEmpty();
-  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
 }
 inline const ::std::string& CharacterStateReply::active_step_id() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -5560,13 +7059,13 @@ inline const ::std::string& CharacterStateReply::active_step_id() const
 template <typename Arg_, typename... Args_>
 PROTOBUF_ALWAYS_INLINE void CharacterStateReply::set_active_step_id(Arg_&& arg, Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
   _impl_.active_step_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
   // @@protoc_insertion_point(field_set:sf.progression.v1.CharacterStateReply.active_step_id)
 }
 inline ::std::string* PROTOBUF_NONNULL CharacterStateReply::mutable_active_step_id()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
   ::std::string* _s = _internal_mutable_active_step_id();
   // @@protoc_insertion_point(field_mutable:sf.progression.v1.CharacterStateReply.active_step_id)
   return _s;
@@ -5586,10 +7085,10 @@ inline ::std::string* PROTOBUF_NONNULL CharacterStateReply::_internal_mutable_ac
 inline ::std::string* PROTOBUF_NULLABLE CharacterStateReply::release_active_step_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   // @@protoc_insertion_point(field_release:sf.progression.v1.CharacterStateReply.active_step_id)
-  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
     return nullptr;
   }
-  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
   auto* released = _impl_.active_step_id_.Release();
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
     _impl_.active_step_id_.Set("", GetArena());
@@ -5599,9 +7098,9 @@ inline ::std::string* PROTOBUF_NULLABLE CharacterStateReply::release_active_step
 inline void CharacterStateReply::set_allocated_active_step_id(::std::string* PROTOBUF_NULLABLE value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (value != nullptr) {
-    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
   } else {
-    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
   }
   _impl_.active_step_id_.SetAllocated(value, GetArena());
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.active_step_id_.IsDefault()) {
@@ -5614,7 +7113,7 @@ inline void CharacterStateReply::set_allocated_active_step_id(::std::string* PRO
 inline void CharacterStateReply::clear_quest_completed() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.quest_completed_ = false;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000100U);
 }
 inline bool CharacterStateReply::quest_completed() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.CharacterStateReply.quest_completed)
@@ -5622,7 +7121,7 @@ inline bool CharacterStateReply::quest_completed() const {
 }
 inline void CharacterStateReply::set_quest_completed(bool value) {
   _internal_set_quest_completed(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000100U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.CharacterStateReply.quest_completed)
 }
 inline bool CharacterStateReply::_internal_quest_completed() const {
@@ -5644,7 +7143,7 @@ inline int CharacterStateReply::objective_counts_size() const {
 inline void CharacterStateReply::clear_objective_counts() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.objective_counts_.Clear();
-  ClearHasBit(_impl_._has_bits_[0], 0x00000400U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000800U);
 }
 inline const ::google::protobuf::Map<::std::string, ::int32_t>& CharacterStateReply::_internal_objective_counts() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
@@ -5660,21 +7159,21 @@ inline ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL Chara
 }
 inline ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL CharacterStateReply::mutable_objective_counts()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000400U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000800U);
   // @@protoc_insertion_point(field_mutable_map:sf.progression.v1.CharacterStateReply.objective_counts)
   return _internal_mutable_objective_counts();
 }
 
 // .sf.progression.v1.CharacterPosition position = 9;
 inline bool CharacterStateReply::has_position() const {
-  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000004U);
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000008U);
   PROTOBUF_ASSUME(!value || _impl_.position_ != nullptr);
   return value;
 }
 inline void CharacterStateReply::clear_position() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (_impl_.position_ != nullptr) _impl_.position_->Clear();
-  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
 }
 inline const ::sf::progression::v1::CharacterPosition& CharacterStateReply::_internal_position() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
@@ -5693,16 +7192,16 @@ inline void CharacterStateReply::unsafe_arena_set_allocated_position(
   }
   _impl_.position_ = reinterpret_cast<::sf::progression::v1::CharacterPosition*>(value);
   if (value != nullptr) {
-    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+    SetHasBit(_impl_._has_bits_[0], 0x00000008U);
   } else {
-    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+    ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
   }
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:sf.progression.v1.CharacterStateReply.position)
 }
 inline ::sf::progression::v1::CharacterPosition* PROTOBUF_NULLABLE CharacterStateReply::release_position() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
 
-  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
   ::sf::progression::v1::CharacterPosition* released = _impl_.position_;
   _impl_.position_ = nullptr;
   if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
@@ -5722,7 +7221,7 @@ inline ::sf::progression::v1::CharacterPosition* PROTOBUF_NULLABLE CharacterStat
   ::google::protobuf::internal::TSanWrite(&_impl_);
   // @@protoc_insertion_point(field_release:sf.progression.v1.CharacterStateReply.position)
 
-  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
   ::sf::progression::v1::CharacterPosition* temp = _impl_.position_;
   _impl_.position_ = nullptr;
   return temp;
@@ -5737,7 +7236,7 @@ inline ::sf::progression::v1::CharacterPosition* PROTOBUF_NONNULL CharacterState
 }
 inline ::sf::progression::v1::CharacterPosition* PROTOBUF_NONNULL CharacterStateReply::mutable_position()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
   ::sf::progression::v1::CharacterPosition* _msg = _internal_mutable_position();
   // @@protoc_insertion_point(field_mutable:sf.progression.v1.CharacterStateReply.position)
   return _msg;
@@ -5754,9 +7253,9 @@ inline void CharacterStateReply::set_allocated_position(::sf::progression::v1::C
     if (message_arena != submessage_arena) {
       value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
     }
-    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+    SetHasBit(_impl_._has_bits_[0], 0x00000008U);
   } else {
-    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+    ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
   }
 
   _impl_.position_ = reinterpret_cast<::sf::progression::v1::CharacterPosition*>(value);
@@ -5767,7 +7266,7 @@ inline void CharacterStateReply::set_allocated_position(::sf::progression::v1::C
 inline void CharacterStateReply::clear_position_revision() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.position_revision_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000100U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000200U);
 }
 inline ::int64_t CharacterStateReply::position_revision() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.CharacterStateReply.position_revision)
@@ -5775,7 +7274,7 @@ inline ::int64_t CharacterStateReply::position_revision() const {
 }
 inline void CharacterStateReply::set_position_revision(::int64_t value) {
   _internal_set_position_revision(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000100U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000200U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.CharacterStateReply.position_revision)
 }
 inline ::int64_t CharacterStateReply::_internal_position_revision() const {
@@ -5840,6 +7339,61 @@ inline ::google::protobuf::RepeatedPtrField<::sf::progression::v1::QuestState>* 
 CharacterStateReply::_internal_mutable_quests() {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return &_impl_.quests_;
+}
+
+// repeated .sf.progression.v1.KnownRecipe known_recipes = 12;
+inline int CharacterStateReply::_internal_known_recipes_size() const {
+  return _internal_known_recipes().size();
+}
+inline int CharacterStateReply::known_recipes_size() const {
+  return _internal_known_recipes_size();
+}
+inline void CharacterStateReply::clear_known_recipes() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.known_recipes_.Clear();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::sf::progression::v1::KnownRecipe& CharacterStateReply::known_recipes(int index) const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.CharacterStateReply.known_recipes)
+  return _internal_known_recipes().Get(index);
+}
+inline ::sf::progression::v1::KnownRecipe* PROTOBUF_NONNULL CharacterStateReply::mutable_known_recipes(int index)
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable:sf.progression.v1.CharacterStateReply.known_recipes)
+  return _internal_mutable_known_recipes()->Mutable(index);
+}
+inline ::sf::progression::v1::KnownRecipe* PROTOBUF_NONNULL CharacterStateReply::add_known_recipes()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::sf::progression::v1::KnownRecipe* _add =
+      _internal_mutable_known_recipes()->InternalAddWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), GetArena());
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  // @@protoc_insertion_point(field_add:sf.progression.v1.CharacterStateReply.known_recipes)
+  return _add;
+}
+inline const ::google::protobuf::RepeatedPtrField<::sf::progression::v1::KnownRecipe>& CharacterStateReply::known_recipes() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_list:sf.progression.v1.CharacterStateReply.known_recipes)
+  return _internal_known_recipes();
+}
+inline ::google::protobuf::RepeatedPtrField<::sf::progression::v1::KnownRecipe>* PROTOBUF_NONNULL
+CharacterStateReply::mutable_known_recipes() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  // @@protoc_insertion_point(field_mutable_list:sf.progression.v1.CharacterStateReply.known_recipes)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _internal_mutable_known_recipes();
+}
+inline const ::google::protobuf::RepeatedPtrField<::sf::progression::v1::KnownRecipe>&
+CharacterStateReply::_internal_known_recipes() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.known_recipes_;
+}
+inline ::google::protobuf::RepeatedPtrField<::sf::progression::v1::KnownRecipe>* PROTOBUF_NONNULL
+CharacterStateReply::_internal_mutable_known_recipes() {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return &_impl_.known_recipes_;
 }
 
 // -------------------------------------------------------------------

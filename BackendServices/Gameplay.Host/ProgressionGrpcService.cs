@@ -7,8 +7,17 @@ using Pb = ShatteredFrontier.Progression.V1;
 
 internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, IReadOnlyDictionary<string, QuestDefinition> quests, QuestRewardPayout payout,
     ShatteredFrontier.InventoryLedger.Postgres.PostgresInventoryLedgerStore ledgerStore,
-    ShatteredFrontier.Exchange.Postgres.PostgresExchangeStore exchange, StarterKitOptions starterKit) : Pb.Progression.ProgressionBase
+    ShatteredFrontier.Exchange.Postgres.PostgresExchangeStore exchange, StarterKitOptions starterKit,
+    RecipeLearning learning) : Pb.Progression.ProgressionBase
 {
+    public override Task<Pb.LearnRecipeReply> LearnRecipe(Pb.LearnRecipeRequest request, ServerCallContext context) =>
+        GrpcRun.Call(context, () =>
+        {
+            var result = learning.Learn(request.OperationId, request.CharacterId, request.RecipeId,
+                request.Source, request.TrainerNpc, request.ScrollContainer, request.ExpectedContainerRevision);
+            return new Pb.LearnRecipeReply { RecipeId = request.RecipeId, ProgressionRevision = result.Revision,
+                CostCopper = result.Cost };
+        });
     public override Task<Pb.SavePositionReply> SavePosition(Pb.SavePositionRequest request, ServerCallContext context) =>
         GrpcRun.Call(context, () =>
         {
@@ -122,7 +131,13 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
             state.Level = progression is null ? 1 : new CharacterProgression(request.CharacterId,
                 TimeProvider.System, () => .5, snapshot: progression.Result).Level;
             if (progression is not null)
+            {
                 foreach (var (id, value) in progression.Result.Skills) state.Skills.Add(id, value);
+                state.KnownRecipes.AddRange((progression.Result.KnownRecipes ?? []).Select(k => new Pb.KnownRecipe
+                {
+                    RecipeId = k.RecipeId, Source = k.Source, LearnedAtUnixMs = k.LearnedAt.ToUnixTimeMilliseconds()
+                }));
+            }
             var pending = store.PendingRewardQuests(request.CharacterId);
             foreach (var row in store.ReadQuests(request.CharacterId))
             {

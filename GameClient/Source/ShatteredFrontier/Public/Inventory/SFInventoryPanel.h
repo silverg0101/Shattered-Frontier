@@ -19,6 +19,7 @@ enum class ESFInventoryTab : uint8 { All, Materials, Gear, Consumables };
 struct FSFInventoryEntry
 {
     FText Name;
+    FString DefinitionId;
     int32 Count = 0;
     ESFInventoryTab Category = ESFInventoryTab::Materials;
     FText Description;

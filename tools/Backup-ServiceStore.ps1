@@ -11,16 +11,22 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+function FileSha256([string]$Path) {
+    $stream = [IO.File]::OpenRead($Path)
+    $hasher = [Security.Cryptography.SHA256]::Create()
+    try { return [BitConverter]::ToString($hasher.ComputeHash($stream)).Replace('-','').ToLowerInvariant() }
+    finally { $stream.Dispose(); $hasher.Dispose() }
+}
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $pg = Join-Path $repo 'Artifacts/Persistence/Toolchains/postgresql-18.6/pgsql/bin'
 $pins = Get-Content (Join-Path $repo 'BackendServices/toolchain-lock.json') -Raw | ConvertFrom-Json
-if ((Get-FileHash (Join-Path $pg 'postgres.exe') -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pins.postgres.executableSha256) { throw 'Pinned PostgreSQL mismatch.' }
+if ((FileSha256 (Join-Path $pg 'postgres.exe')) -ne $pins.postgres.executableSha256) { throw 'Pinned PostgreSQL mismatch.' }
 if (-not $env:PGPASSWORD) { throw 'Set a synthetic PGPASSWORD in the calling process.' }
 $OutputDirectory = [IO.Path]::GetFullPath($OutputDirectory)
 if (Test-Path -LiteralPath $OutputDirectory) { throw 'Backup destination must be new.' }
 $tables = switch ($Store) {
     InventoryLedger { @('inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts','inventory.receipt_outbox') }
-    CharacterState { @('character_state.schema_version','character_state.progression','character_state.quests','character_state.source_receipts','character_state.reward_receipts','character_state.positions') }
+    CharacterState { @('character_state.schema_version','character_state.progression','character_state.quests','character_state.source_receipts','character_state.reward_receipts','character_state.positions','character_state.recipe_intents') }
     Housing { @('housing.schema_version','housing.claims','housing.claim_operations','housing.claim_structure_revisions','housing.placements','housing.claim_geometry','housing.removals','inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts','inventory.receipt_outbox') }
     Exchange { @('exchange.schema_version','exchange.wallets','exchange.wallet_entries','exchange.operations','exchange.listings','exchange.settlements') }
     TerrainDelta { @('terrain_delta.schema_version','terrain_delta.regions','terrain_delta.operations') }
@@ -42,7 +48,7 @@ function Snapshot {
 }
 foreach ($schema in $schemas) {
     $version = (Query "SELECT version FROM $schema.schema_version WHERE singleton=true").Trim()
-    $expectedVersion = if ($schema -eq 'housing') { '6' } elseif ($schema -eq 'exchange' -or $schema -eq 'character_state') { '3' } elseif ($schema -eq 'inventory') { '2' } else { '1' }
+    $expectedVersion = if ($schema -eq 'housing') { '6' } elseif ($schema -eq 'character_state') { '4' } elseif ($schema -eq 'exchange') { '3' } elseif ($schema -eq 'inventory') { '2' } else { '1' }
     if ($version -ne $expectedVersion) { throw "Unsupported source schema version: $schema=$version" }
 }
 if ($Store -eq 'Housing') {
@@ -62,7 +68,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'pg_dump failed.' }
     $after = Snapshot
     if (($before | ConvertTo-Json -Depth 5 -Compress) -cne ($after | ConvertTo-Json -Depth 5 -Compress)) { throw 'Source changed during backup; quiesce writes and retry.' }
-    @{ format=2; store=$Store; schemaVersion=$(if ($Store -eq 'Housing') { 5 } elseif ($Store -eq 'Exchange' -or $Store -eq 'CharacterState') { 3 } else { 2 }); dumpSha256=(Get-FileHash $dump -Algorithm SHA256).Hash.ToLowerInvariant(); tables=$before } |
+    $dumpHash = FileSha256 $dump
+    @{ format=2; store=$Store; schemaVersion=$(if ($Store -eq 'Housing') { 5 } elseif ($Store -eq 'CharacterState') { 4 } elseif ($Store -eq 'Exchange') { 3 } else { 2 }); dumpSha256=$dumpHash; tables=$before } |
         ConvertTo-Json -Depth 6 | Set-Content (Join-Path $OutputDirectory 'manifest.json')
     Write-Output "$Store backup complete: $OutputDirectory"
 } catch {

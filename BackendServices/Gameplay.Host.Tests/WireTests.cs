@@ -3,6 +3,9 @@ using Grpc.Net.Client;
 using ShatteredFrontier.InventoryLedger;
 using ShatteredFrontier.InventoryLedger.Postgres;
 using ShatteredFrontier.CraftingContent;
+using ShatteredFrontier.Progression;
+using Npgsql;
+using System.Text.Json;
 using RewardPb = ShatteredFrontier.Rewards.V1;
 using ProgressPb = ShatteredFrontier.Progression.V1;
 using HousingPb = ShatteredFrontier.Housing.V1;
@@ -112,7 +115,16 @@ if (mode == "journey")
     var progress = new ProgressPb.Progression.ProgressionClient(channel);
     var housing = new HousingPb.Housing.HousingClient(channel);
     var rewards = new RewardPb.Rewards.RewardsClient(channel);
-    long progressionRevision = 0, questRevision = 0;
+    // This journey starts with the modest trade skills needed for Common starter goods.
+    using (var db = new NpgsqlConnection(Environment.GetEnvironmentVariable("GAMEPLAY_CHARACTER_CONNECTION")))
+    {
+        db.Open();
+        var seeded = new CharacterProgression("chr_journey", TimeProvider.System, () => .5,
+            initialSkills: new Dictionary<string, int> { ["skill/carpentry"] = 100, ["skill/smithing"] = 100 }).Snapshot();
+        using var cmd = new NpgsqlCommand("INSERT INTO character_state.progression VALUES ('chr_journey',1,$1::jsonb)", db);
+        cmd.Parameters.AddWithValue(JsonSerializer.Serialize(seeded)); cmd.ExecuteNonQuery();
+    }
+    long progressionRevision = 1, questRevision = 0;
     Check(progress.ApplyReceipt(new ProgressPb.ApplyReceiptRequest { SourceReceiptId = "accept/journey", Kind = "quest", CharacterId = "chr_journey",
         Quest = new ProgressPb.QuestEvidence { QuestId = "quest/frontier_founder", Kind = "accept", OccurredAtUnixMs = 1792540800000 } },
         headers, deadline: Deadline()).QuestAccepted, "Journey accept failed.");
@@ -202,6 +214,105 @@ if (mode == "journey")
         beforeQuestReward.Quantities.GetValueOrDefault(i.Key) == i.Value), "Quest reward was not paid exactly once.");
     Console.WriteLine("PASS journey harvest, craft, place, boar reward, quest completion and replay");
     return;
+}
+if (mode == "recipes")
+{
+    var ledger = new InventoryLedger(new PostgresInventoryLedgerStore(connection));
+    ledger.CreateContainer(new ContainerSpec("ctn_recipe", OwnerKind.Character, "chr_recipe", ContainerKind.Backpack, 100));
+    ledger.CreateContainer(new ContainerSpec("ctn_recipe_low", OwnerKind.Character, "chr_recipe_low", ContainerKind.Backpack, 10));
+    using (var db = new NpgsqlConnection(connection))
+    {
+        db.Open();
+        var seeded = new CharacterProgression("chr_recipe", TimeProvider.System, () => .5,
+            initialSkills: new Dictionary<string, int> { ["skill/carpentry"] = 150, ["skill/smithing"] = 80 }).Snapshot();
+        using var cmd = new NpgsqlCommand("INSERT INTO character_state.progression VALUES ('chr_recipe',1,$1::jsonb)", db);
+        cmd.Parameters.AddWithValue(JsonSerializer.Serialize(seeded)); cmd.ExecuteNonQuery();
+    }
+    var exchange = new ShatteredFrontier.Exchange.Postgres.PostgresExchangeStore(connection);
+    exchange.Credit("recipe/seed-wallet", "chr_recipe", 500, "gm_grant");
+    exchange.Credit("recipe/low-wallet", "chr_recipe_low", 500, "gm_grant");
+    var progression = new ProgressPb.Progression.ProgressionClient(channel);
+    var crafting = new ShatteredFrontier.Crafting.V1.Crafting.CraftingClient(channel);
+    Code(() => crafting.Craft(new ShatteredFrontier.Crafting.V1.CraftRequest { OperationId = "recipe/unknown-craft",
+        CharacterId = "chr_recipe", ContainerId = "ctn_recipe", RecipeId = "recipe/worked_timber", Count = 1 },
+        headers, deadline: Deadline()), StatusCode.FailedPrecondition);
+    var low = new ProgressPb.LearnRecipeRequest { OperationId = "recipe/low-learn", CharacterId = "chr_recipe_low",
+        RecipeId = "recipe/worked_timber", Source = "trainer", TrainerNpc = "npc/millwarden_oswin" };
+    Code(() => progression.LearnRecipe(low, headers, deadline: Deadline()), StatusCode.FailedPrecondition);
+    Check(exchange.Wallet("chr_recipe_low").Balance == 500, "low-skill trainer debited wallet");
+    var trainer = new ProgressPb.LearnRecipeRequest { OperationId = "recipe/trainer", CharacterId = "chr_recipe",
+        RecipeId = "recipe/worked_timber", Source = "trainer", TrainerNpc = "npc/millwarden_oswin" };
+    var taught = progression.LearnRecipe(trainer, headers, deadline: Deadline());
+    Check(taught.Equals(progression.LearnRecipe(trainer, headers, deadline: Deadline())) && taught.CostCopper == 125,
+        "trainer replay or fee");
+    Check(exchange.Wallet("chr_recipe").Balance == 375, "trainer charged more than once");
+    ledger.GrantBundle("recipe/seed-items", "ctn_recipe", 0,
+        [new ItemQuantity("item/rough_timber", 4), new ItemQuantity("item/iron_nails", 2),
+         new ItemQuantity("item/recipe_scroll_iron_brackets", 1), new ItemQuantity("item/iron_ingot", 2)], "fixture", "fixture");
+    var craft = new ShatteredFrontier.Crafting.V1.CraftRequest { OperationId = "recipe/known-craft",
+        CharacterId = "chr_recipe", ContainerId = "ctn_recipe", RecipeId = "recipe/worked_timber",
+        ExpectedContainerRevision = 1, Count = 1 };
+    var made = crafting.Craft(craft, headers, deadline: Deadline());
+    Check(made.Grade == "crude" && made.Changes.Any(c => c.DefinitionId == "item/worked_timber/crude" && c.Delta == 2),
+        "below-difficulty craft must commit Crude");
+    Check(made.Equals(crafting.Craft(craft, headers, deadline: Deadline())), "graded craft replay changed");
+    craft.Count = 2; Code(() => crafting.Craft(craft, headers, deadline: Deadline()), StatusCode.AlreadyExists);
+    var scroll = new ProgressPb.LearnRecipeRequest { OperationId = "recipe/scroll", CharacterId = "chr_recipe",
+        RecipeId = "recipe/iron_brackets", Source = "scroll", ScrollContainer = "ctn_recipe",
+        ExpectedContainerRevision = ledger.Read("ctn_recipe").Revision };
+    var learned = progression.LearnRecipe(scroll, headers, deadline: Deadline());
+    Check(learned.Equals(progression.LearnRecipe(scroll, headers, deadline: Deadline())), "scroll replay changed");
+    Check(ledger.Read("ctn_recipe").Quantities.GetValueOrDefault("item/recipe_scroll_iron_brackets") == 0,
+        "scroll not consumed exactly once");
+    var state = progression.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_recipe" }, headers, deadline: Deadline());
+    Check(state.KnownRecipes.Any(k => k.RecipeId == "recipe/worked_timber") &&
+        state.KnownRecipes.Any(k => k.RecipeId == "recipe/iron_brackets"), "learned recipes absent from snapshot");
+    ledger.Grant("recipe/second-scroll", "ctn_recipe", ledger.Read("ctn_recipe").Revision,
+        "item/recipe_scroll_iron_brackets", 1, "fixture", "fixture");
+    scroll.OperationId = "recipe/scroll-again"; scroll.ExpectedContainerRevision = ledger.Read("ctn_recipe").Revision;
+    Code(() => progression.LearnRecipe(scroll, headers, deadline: Deadline()), StatusCode.FailedPrecondition);
+    Check(ledger.Read("ctn_recipe").Quantities.GetValueOrDefault("item/recipe_scroll_iron_brackets") == 1,
+        "already-known recipe consumed a second scroll");
+    Console.WriteLine("PASS recipe trainer, scroll, grade, replay, and snapshot");
+    return;
+}
+if (mode == "recipes-replay")
+{
+    var progression = new ProgressPb.Progression.ProgressionClient(channel);
+    var state = progression.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_recipe" }, headers, deadline: Deadline());
+    Check(state.KnownRecipes.Any(k => k.RecipeId == "recipe/worked_timber") &&
+        state.KnownRecipes.Any(k => k.RecipeId == "recipe/iron_brackets"), "learned recipes lost after restart");
+    var recovered = progression.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_recipe_crash" }, headers, deadline: Deadline());
+    Check(recovered.KnownRecipes.Any(k => k.RecipeId == "recipe/iron_brackets"), "scroll knowledge recovery failed");
+    Console.WriteLine("PASS recipe knowledge survived host restart"); return;
+}
+if (mode == "recipes-crash")
+{
+    var ledger = new InventoryLedger(new PostgresInventoryLedgerStore(connection));
+    ledger.CreateContainer(new ContainerSpec("ctn_recipe_crash", OwnerKind.Character, "chr_recipe_crash", ContainerKind.Backpack, 10));
+    ledger.Grant("recipe/scroll-crash-seed", "ctn_recipe_crash", 0,
+        "item/recipe_scroll_iron_brackets", 1, "fixture", "fixture");
+    using (var db = new NpgsqlConnection(connection))
+    {
+        db.Open();
+        var seeded = new CharacterProgression("chr_recipe_crash", TimeProvider.System, () => .5,
+            initialSkills: new Dictionary<string, int> { ["skill/smithing"] = 80 }).Snapshot();
+        using var cmd = new NpgsqlCommand("INSERT INTO character_state.progression VALUES ('chr_recipe_crash',1,$1::jsonb)", db);
+        cmd.Parameters.AddWithValue(JsonSerializer.Serialize(seeded)); cmd.ExecuteNonQuery();
+    }
+    try
+    {
+        new ProgressPb.Progression.ProgressionClient(channel).LearnRecipe(new ProgressPb.LearnRecipeRequest
+        {
+            OperationId = "recipe/scroll-crash", CharacterId = "chr_recipe_crash", RecipeId = "recipe/iron_brackets",
+            Source = "scroll", ScrollContainer = "ctn_recipe_crash", ExpectedContainerRevision = 1
+        }, headers, deadline: Deadline());
+        throw new Exception("Scroll interruption did not stop the host.");
+    }
+    catch (RpcException ex) when (ex.StatusCode is StatusCode.Unavailable or StatusCode.DeadlineExceeded) { }
+    Check(ledger.Read("ctn_recipe_crash").Quantities.GetValueOrDefault("item/recipe_scroll_iron_brackets") == 0,
+        "interrupted scroll was not consumed");
+    Console.WriteLine("PASS scroll consumed before host interruption"); return;
 }
 
 if (mode == "rewards")
@@ -369,5 +480,3 @@ else if (mode == "housing")
 }
 else throw new Exception("Unknown test mode.");
 Console.WriteLine($"PASS {mode} wire auth, deadline, status, replay");
-
-

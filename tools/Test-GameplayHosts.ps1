@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][string]$EvidenceRoot)
+param([Parameter(Mandatory)][string]$EvidenceRoot, [switch]$RecipesOnly)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -16,7 +16,7 @@ $run = [guid]::NewGuid().ToString('N'); $private = Join-Path $EvidenceRoot 'priv
 $rng = [Security.Cryptography.RandomNumberGenerator]::Create(); $bytes = [byte[]]::new(32)
 $rng.GetBytes($bytes); $adminPassword = [BitConverter]::ToString($bytes).Replace('-','')
 $rng.GetBytes($bytes); $servicePassword = [BitConverter]::ToString($bytes).Replace('-',''); $rng.Dispose()
-$port = 0; $started = $false; $attempted = $false; $removed = $false; $failure = ''; $token = ''; $hostProcess = $null; $hostProcess2 = $null; $currentStep = 'setup'
+$port = 0; $started = $false; $attempted = $false; $removed = $false; $failure = ''; $token = ''; $hostProcess = $null; $hostProcess2 = $null; $ledgerHost = $null; $currentStep = 'setup'
 function Invoke-Checked([string]$Executable,[string[]]$Arguments,[hashtable]$Environment = @{}) {
     $info = [Diagnostics.ProcessStartInfo]::new(); $info.FileName = $Executable; $info.UseShellExecute = $false; $info.CreateNoWindow = $true
     $info.RedirectStandardOutput = $true; $info.RedirectStandardError = $true
@@ -68,7 +68,8 @@ try {
     [void](Invoke-Checked 'icacls.exe' @($private,'/inheritance:r','/grant:r',"${account}:(OI)(CI)F"))
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $port = $listener.LocalEndpoint.Port; $listener.Stop()
     @{run=$run;data=$data;port=$port} | ConvertTo-Json | Set-Content (Join-Path $private 'owner.json')
-    $projects = @('Rewards','Progression','Housing') | ForEach-Object { Join-Path $repo "BackendServices/Gameplay.Host.Tests/$_/$_.Host.Tests.csproj" }
+    $projects = $(if ($RecipesOnly) { @('Progression') } else { @('Rewards','Progression','Housing') }) |
+        ForEach-Object { Join-Path $repo "BackendServices/Gameplay.Host.Tests/$_/$_.Host.Tests.csproj" }
     $buildOutput = (Join-Path $private 'build') + [IO.Path]::DirectorySeparatorChar
     foreach ($project in $projects) {
         $currentStep = "restore $project"
@@ -90,6 +91,7 @@ try {
     $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Geometry.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Construction.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Position.sql') -Raw
+    $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Recipes.sql') -Raw
     [void](Sql ("SET ROLE gameplay_owner;`n" + ($schemas -join "`n")) "gameplay_$run")
     [void](Sql 'GRANT USAGE ON SCHEMA inventory,character_state,housing,exchange TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA character_state TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA housing TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA exchange TO gameplay_svc;' "gameplay_$run")
     $connection = "Host=127.0.0.1;Port=$port;Database=gameplay_$run;Username=gameplay_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
@@ -104,6 +106,7 @@ try {
     Copy-Item -LiteralPath (Join-Path $repo 'content') -Destination $fixtureContent -Recurse
     $env:GAMEPLAY_CONTENT_ROOT = $fixtureContent
     $env:SF_GAMEPLAY_TOKEN = $token
+    $env:SF_GAMEPLAY_FAULT_AFTER_SCROLL_CONSUME = 'recipe/scroll-crash'
     $hostDll = Join-Path $buildOutput 'Gameplay.Host.dll'
     $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host.out') -RedirectStandardError (Join-Path $private 'host.err')
     $ready = $false
@@ -114,6 +117,8 @@ try {
     }
     if (-not $ready) { throw 'Gameplay host readiness timeout.' }
     $results = [Collections.Generic.List[string]]::new()
+    $journeyDll = Join-Path $buildOutput 'Progression.Host.Tests.dll'
+    if (-not $RecipesOnly) {
     foreach ($name in @('Rewards','Progression','Housing')) {
         $currentStep = "wire $name"
         $dll = Join-Path $buildOutput "$name.Host.Tests.dll"
@@ -121,13 +126,24 @@ try {
             GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
         }))
     }
-    $journeyDll = Join-Path $buildOutput 'Progression.Host.Tests.dll'
     $currentStep = 'journey'
     $results.Add((Invoke-Checked $dotnet @($journeyDll,'journey') @{
         GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection;
-        GAMEPLAY_CONTENT_ROOT=(Join-Path $repo 'content'); SF_GAMEPLAY_TOKEN=$token
+        GAMEPLAY_CHARACTER_CONNECTION=$connection; GAMEPLAY_CONTENT_ROOT=(Join-Path $repo 'content'); SF_GAMEPLAY_TOKEN=$token
     }))
-    Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+    }
+    $currentStep = 'recipe learning and grades'
+    $results.Add((Invoke-Checked $dotnet @($journeyDll,'recipes') @{
+        GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection;
+        GAMEPLAY_CHARACTER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
+    }))
+    $currentStep = 'recipe scroll interruption'
+    $results.Add((Invoke-Checked $dotnet @($journeyDll,'recipes-crash') @{
+        GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection;
+        GAMEPLAY_CHARACTER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
+    }))
+    if (-not $hostProcess.WaitForExit(10000)) { throw 'Recipe fault did not stop the host.' }
+    Remove-Item Env:SF_GAMEPLAY_FAULT_AFTER_SCROLL_CONSUME
     $currentStep = 'housing restart persistence'
     Cluster stop
     Cluster start
@@ -139,6 +155,10 @@ try {
         Start-Sleep -Milliseconds 100
     }
     if (-not $ready) { throw 'Gameplay host restart timeout.' }
+    $results.Add((Invoke-Checked $dotnet @($journeyDll,'recipes-replay') @{
+        GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
+    }))
+    if (-not $RecipesOnly) {
     foreach ($name in @('Rewards','Progression','Housing')) {
         $dll = Join-Path $buildOutput "$name.Host.Tests.dll"
         $results.Add((Invoke-Checked $dotnet @($dll,($name.ToLowerInvariant() + '-replay')) @{
@@ -356,6 +376,7 @@ try {
             GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
         }))
     }
+    }
     $results | Set-Content (Join-Path $EvidenceRoot 'results.txt')
 }
 catch {
@@ -369,7 +390,7 @@ catch {
     }
 }
 finally {
-    foreach ($key in @('SF_GAMEPLAY_TOKEN','SF_GAMEPLAY_FAULT_AFTER_REMOVE_GRANT','SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT','SF_GAMEPLAY_FAULT_AFTER_PLACE_DECISION','SF_GAMEPLAY_FAULT_AFTER_QUEST_GRANT','SF_GAMEPLAY_FAULT_AFTER_LISTING_ESCROW','SF_GAMEPLAY_FAULT_BEFORE_OUTBOX_SEND','GAMEPLAY_LEDGER_CONNECTION','GAMEPLAY_LEDGER_PORT','INVENTORY_LEDGER_PORT','INVENTORY_LEDGER_CONNECTION','SF_INVENTORY_LEDGER_TOKEN','GAMEPLAY_CHARACTER_CONNECTION','GAMEPLAY_HOUSING_CONNECTION')) {
+    foreach ($key in @('SF_GAMEPLAY_TOKEN','SF_GAMEPLAY_FAULT_AFTER_SCROLL_CONSUME','SF_GAMEPLAY_FAULT_AFTER_REMOVE_GRANT','SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT','SF_GAMEPLAY_FAULT_AFTER_PLACE_DECISION','SF_GAMEPLAY_FAULT_AFTER_QUEST_GRANT','SF_GAMEPLAY_FAULT_AFTER_LISTING_ESCROW','SF_GAMEPLAY_FAULT_BEFORE_OUTBOX_SEND','GAMEPLAY_LEDGER_CONNECTION','GAMEPLAY_LEDGER_PORT','INVENTORY_LEDGER_PORT','INVENTORY_LEDGER_CONNECTION','SF_INVENTORY_LEDGER_TOKEN','GAMEPLAY_CHARACTER_CONNECTION','GAMEPLAY_HOUSING_CONNECTION')) {
         Remove-Item "Env:$key" -ErrorAction SilentlyContinue
     }
     try {
@@ -387,4 +408,3 @@ finally {
 }
 if ($failure -ne '') { throw $failure }
 Get-Content (Join-Path $EvidenceRoot 'results.txt')
-

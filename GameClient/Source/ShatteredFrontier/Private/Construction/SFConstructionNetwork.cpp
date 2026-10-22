@@ -15,6 +15,8 @@
 #include "Gathering/SFGatheringSkillsPanel.h"
 #if SF_WITH_MINIMAL_INVENTORY
 #include "InventoryComponent.h"
+#include "InventoryItemDefinition.h"
+#include "InventoryTransactionLibrary.h"
 #endif
 #include "SFConstructionNetworkProjection.h"
 #include "ProceduralMeshComponent.h"
@@ -1093,7 +1095,21 @@ void ASFGameMode::CommitHousing(ASFPlayerController* Controller, const FString& 
         if (!Plot || !Plot->bClaimed || !Pack || !Cost || (bRemove && !Existing)) { Done(ESFConstructionNetworkResult::ServiceUnavailable,FString()); return; }
         const FString Operation=(bRemove ? TEXT("remove/") : TEXT("place/"))+FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower);
         const FString Structure=bRemove ? *Existing : FString::Printf(TEXT("str_%s_x%d_y%d_z%d"),*ClaimId.RightChop(4),Cell.X,Cell.Y,Cell.Z);
-        const FSFItemStack Material=Cost->Outputs[0];
+        FSFItemStack Material=Cost->Outputs[0];
+#if SF_WITH_MINIMAL_INVENTORY
+        if (!bRemove)
+        {
+            static const TCHAR* Grades[] = {TEXT("crude"), TEXT(""), TEXT("fine"), TEXT("superior"), TEXT("masterwork")};
+            auto* Bag=Pack->GetOwner()->FindComponentByClass<UInventoryComponent>();
+            for (const TCHAR* Grade : Grades)
+            {
+                const FString Id=*Grade ? Material.DefinitionId+TEXT("/")+Grade : Material.DefinitionId;
+                const auto Asset=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Id)));
+                if (Bag && UInventoryTransactionLibrary::GetItemQuantity(Bag,Asset)>=Material.Quantity)
+                { Material.DefinitionId=Id; break; }
+            }
+        }
+#endif
         TSharedRef<FSFGameplayResponse> Receipt=MakeShared<FSFGameplayResponse>();
         FSFBackpackMutation Mutation; Mutation.Label=bRemove ? TEXT("housing_remove") : TEXT("housing_place"); Mutation.OperationId=Operation;
         Mutation.Run=[Weak,Receipt,ClaimId,Cell,bRemove,Shape,Rotation,Structure,Material,WeakPack=TWeakObjectPtr<USFBackpackComponent>(Pack)](const FString& Op,int64 Expected,TFunction<void(ESFBackpackOutcome,int64)> Report)

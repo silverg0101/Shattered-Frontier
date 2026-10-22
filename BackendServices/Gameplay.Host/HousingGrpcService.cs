@@ -101,7 +101,8 @@ internal sealed class HousingGrpcService(PostgresHousingStore store, ProtectedZo
             if (kind is not ("foundation" or "wall" or "door" or "roof"))
                 throw new ArgumentException("Unknown piece kind.");
             var cost = recipes.Get($"recipe/{kind}_material_bundle").Outputs.Single();
-            if (request.MaterialId != cost.DefinitionId || request.MaterialQuantity != cost.Quantity)
+            _ = CraftingQuality.ParseGrade(cost.DefinitionId, request.MaterialId);
+            if (request.MaterialQuantity != cost.Quantity)
                 throw new ArgumentException("Placement cost differs from shipped recipe.");
             var container = ledger.Read(request.ContainerId);
             if (container.Spec.OwnerKind != OwnerKind.Character || container.Spec.OwnerId != request.ActorId)

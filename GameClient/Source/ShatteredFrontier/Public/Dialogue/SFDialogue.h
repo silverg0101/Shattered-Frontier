@@ -33,7 +33,7 @@ struct SHATTEREDFRONTIER_API FSFDialogueTree
     static bool Load(const FString& File, FSFDialogueTree& Out, FString& Error);
 };
 
-enum class ESFDialogueStep : uint8 { Stay, Closed, Accepted, Declined };
+enum class ESFDialogueStep : uint8 { Stay, Closed, Accepted, Declined, Learn };
 
 // Where a conversation stands. Choices and the offer buttons advance it; it never reads the world.
 struct SHATTEREDFRONTIER_API FSFDialogueSession
@@ -41,12 +41,14 @@ struct SHATTEREDFRONTIER_API FSFDialogueSession
     TSharedPtr<const FSFDialogueTree> Tree;
     FString NodeId;
     bool bAccepted = false;
+    FString LastAction;
 
     /** bAlreadyAccepted: the speaker's quest is held or finished, so the conversation opens on its accepted line. */
     void Begin(TSharedPtr<const FSFDialogueTree> InTree, bool bAlreadyAccepted = false)
     {
         Tree = InTree; bAccepted = bAlreadyAccepted && InTree.IsValid() && InTree->bHasOffer;
         NodeId = !InTree.IsValid() ? FString() : bAccepted ? InTree->Offer.AcceptedNode : InTree->Start;
+        LastAction.Reset();
     }
     const FSFDialogueNode* Node() const { return Tree.IsValid() ? Tree->Nodes.Find(NodeId) : nullptr; }
     ESFDialogueStep Choose(int32 Index);

@@ -167,6 +167,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
             Out.ProgressionRevision = R.progression_revision(); Out.Level = R.level(); Out.QuestRevision = R.quest_revision();
             Out.ActiveStepId = FromUtf8(R.active_step_id()); Out.bQuestCompleted = R.quest_completed();
             for (const auto& Skill : R.skills()) { Out.Skills.Add(FromUtf8(Skill.first), Skill.second); }
+            for (const auto& Known : R.known_recipes()) { Out.KnownRecipes.Add(FromUtf8(Known.recipe_id())); }
             for (const auto& Count : R.objective_counts()) { Out.ObjectiveCounts.Add(FromUtf8(Count.first), Count.second); }
             for (const auto& Quest : R.quests())
             {
@@ -179,6 +180,18 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
             { Out.ZoneId = FromUtf8(R.position().zone_id()); Out.Position = FVector(R.position().x(), R.position().y(), R.position().z()); Out.Yaw = R.position().yaw(); }
         };
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Progression->AsyncGetCharacterState(C, M, &Channel->Queue); });
+        break;
+    }
+    case ESFGameplayRpc::LearnRecipe:
+    {
+        sf::progression::v1::LearnRecipeRequest M;
+        M.set_operation_id(Utf8(Q.OperationId)); M.set_character_id(Utf8(Q.CharacterId)); M.set_recipe_id(Utf8(Q.RecipeId));
+        M.set_source(Utf8(Q.LearnSource)); M.set_trainer_npc(Utf8(Q.TrainerNpc));
+        M.set_scroll_container(Utf8(Q.ScrollContainer)); M.set_expected_container_revision(Q.ExpectedContainerRevision);
+        auto* Call = new TCall<sf::progression::v1::LearnRecipeReply>();
+        Call->Copy = [](const sf::progression::v1::LearnRecipeReply& R, FSFGameplayResponse& Out)
+        { Out.ProgressionRevision = R.progression_revision(); };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Progression->AsyncLearnRecipe(C, M, &Channel->Queue); });
         break;
     }
     case ESFGameplayRpc::SavePosition:
@@ -261,10 +274,12 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         sf::crafting::v1::CraftRequest M;
         M.set_operation_id(Utf8(Q.OperationId)); M.set_character_id(Utf8(Q.CharacterId)); M.set_container_id(Utf8(Q.ContainerId));
         M.set_recipe_id(Utf8(Q.RecipeId)); M.set_expected_container_revision(Q.ExpectedContainerRevision); M.set_count(Q.Count);
+        for (const auto& Grade : Q.InputGrades) { auto* I = M.add_input_grades(); I->set_definition_id(Utf8(Grade.Key)); I->set_selected_definition_id(Utf8(Grade.Value)); }
         auto* Call = new TCall<sf::crafting::v1::CraftReply>();
         Call->Copy = [](const sf::crafting::v1::CraftReply& R, FSFGameplayResponse& Out)
         {
             Out.ContainerRevision = R.container_revision();
+            Out.QualityScore = R.quality_score(); Out.Grade = FromUtf8(R.grade()); Out.DiscoveredRecipeId = FromUtf8(R.discovered_recipe_id());
             for (const auto& Change : R.changes()) { Out.Changes.FindOrAdd(FromUtf8(Change.definition_id())) += Change.delta(); }
         };
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Crafting->AsyncCraft(C, M, &Channel->Queue); });

@@ -4,12 +4,17 @@
 
 // Typed station recipes from content/crafting (the same file CraftingContent and Gameplay.Host load), and the pilot
 // item catalogue rule that maps a definition id to its bag asset. Code reads the data; content owns the numbers.
-struct FSFItemStack { FString DefinitionId; int64 Quantity = 0; };
+struct FSFItemStack { FString DefinitionId; int64 Quantity = 0; bool bQualityInput = false; };
 
 struct FSFStationRecipe
 {
     FString Id;          // recipe/iron_nails
     FString Station;     // sawmill | forge | workbench
+    FString Skill;
+    int32 Difficulty = 0;
+    bool bDefaultKnown = true;
+    FString LearnHint;
+    TArray<FString> Trainers;
     TArray<FSFItemStack> Inputs;
     TArray<FSFItemStack> Outputs;
     // The single output's display line, e.g. "8 Iron Nails".

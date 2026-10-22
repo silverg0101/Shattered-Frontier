@@ -65,7 +65,7 @@ bool FSFDialogueTree::Parse(const FString& Json, FSFDialogueTree& Out, FString& 
     {
         for (const FSFDialogueChoice& Choice : Entry.Value.Choices)
         {
-            const bool bTerminal = Choice.Action == TEXT("end") || Choice.Action == TEXT("accept");
+            const bool bTerminal = Choice.Action == TEXT("end") || Choice.Action == TEXT("accept") || Choice.Action.StartsWith(TEXT("learn:recipe/"));
             if (!bTerminal && !Tree.Nodes.Contains(Choice.Next)) { Error = FString::Printf(TEXT("node %s points at missing node '%s'"), *Entry.Key, *Choice.Next); return false; }
             if (Choice.Action == TEXT("accept") && !Tree.bHasOffer) { Error = FString::Printf(TEXT("node %s accepts an offer the tree does not have"), *Entry.Key); return false; }
         }
@@ -88,8 +88,10 @@ ESFDialogueStep FSFDialogueSession::Choose(int32 Index)
     const FSFDialogueNode* Current = Node();
     if (!Current || !Current->Choices.IsValidIndex(Index)) { return ESFDialogueStep::Stay; }
     const FSFDialogueChoice& Choice = Current->Choices[Index];
+    LastAction = Choice.Action;
     if (Choice.Action == TEXT("end")) { return ESFDialogueStep::Closed; }
     if (Choice.Action == TEXT("accept")) { return Accept(); }
+    if (Choice.Action.StartsWith(TEXT("learn:recipe/"))) { return ESFDialogueStep::Learn; }
     NodeId = Choice.Next;
     return ESFDialogueStep::Stay;
 }

@@ -9,8 +9,13 @@
 #include "EngineUtils.h"
 #include "GameFramework/Pawn.h"
 #include "InputCoreTypes.h"
-#include "Misc/Paths.h"
 #include "Quest/SFQuestPilot.h"
+#include "Gathering/SFGatheringPilot.h"
+#include "Gathering/SFStationRecipes.h"
+#include "Services/SFBackpackComponent.h"
+#include "Services/SFGameplayServicesClient.h"
+#include "Misc/Guid.h"
+#include "Misc/Paths.h"
 
 namespace
 {
@@ -101,6 +106,11 @@ void ASFPlayerController::CloseDialogue()
 
 void ASFPlayerController::HandleDialogueStep(ESFDialogueStep Step)
 {
+    if (Step == ESFDialogueStep::Learn && DialoguePanel && DialogueNpc.IsValid())
+    {
+        const FString Action = DialoguePanel->GetSession().LastAction;
+        if (Action.StartsWith(TEXT("learn:"))) { ServerLearnRecipe(DialogueNpc.Get(), Action.Mid(6)); }
+    }
     if (Step == ESFDialogueStep::Accepted)
     {
         const FSFDialogueSession& Session = DialoguePanel->GetSession();
@@ -110,6 +120,63 @@ void ASFPlayerController::HandleDialogueStep(ESFDialogueStep Step)
         if (USFQuestPilotComponent* Quests = FindComponentByClass<USFQuestPilotComponent>()) { Quests->ServerAcceptQuest(QuestId, Giver); }
     }
     if (Step == ESFDialogueStep::Closed || Step == ESFDialogueStep::Declined) { CloseDialogue(); }
+}
+
+void ASFPlayerController::ServerLearnRecipe_Implementation(ASFDialogueNpc* Npc, const FString& RecipeId)
+{
+    const FSFStationRecipe* Recipe = SFStationRecipes::Find(RecipeId);
+    APawn* Body = GetPawn();
+    if (!Npc || !Body || !Recipe || Recipe->Trainers.IsEmpty() ||
+        FVector::Dist2D(Npc->GetActorLocation(), Body->GetActorLocation()) > Npc->TalkRangeCm ||
+        !Recipe->Trainers.Contains(TEXT("npc/") + FPaths::GetBaseFilename(Npc->DialogueFile))) { return; }
+    USFBackpackComponent* Pack = USFBackpackComponent::FindOrCreate(this);
+    if (!Pack || !USFBackpackComponent::Services()) { return; }
+    FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::LearnRecipe;
+    Request.OperationId = TEXT("learn/") + FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower);
+    Request.CharacterId = Pack->GetCharacterId(); Request.RecipeId = RecipeId;
+    Request.LearnSource = TEXT("trainer"); Request.TrainerNpc = TEXT("npc/") + FPaths::GetBaseFilename(Npc->DialogueFile);
+    USFBackpackComponent::Services()->Call(Request, [Weak = TWeakObjectPtr<ASFPlayerController>(this), RecipeId](const FSFGameplayResponse& Response)
+    {
+        if (Response.Status == ESFGameplayStatus::Ok)
+            if (auto* Self = Weak.Get()) if (Self->GatheringPilot) { Self->GatheringPilot->AddKnownRecipe(RecipeId); }
+    });
+}
+
+void ASFPlayerController::UseRecipeScroll(const FString& RecipeId)
+{ ServerUseRecipeScroll(RecipeId); }
+
+void ASFPlayerController::ServerUseRecipeScroll_Implementation(const FString& RecipeId)
+{
+    const FSFStationRecipe* Recipe = SFStationRecipes::Find(RecipeId);
+    if (!Recipe || Recipe->LearnHint != TEXT("Learn from a recipe scroll")) { return; }
+    USFBackpackComponent* Pack = USFBackpackComponent::FindOrCreate(this);
+    if (!Pack || !USFBackpackComponent::Services()) { return; }
+    FSFBackpackMutation Mutation; Mutation.Label = TEXT("recipe_scroll");
+    Mutation.OperationId = TEXT("learn/") + FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower);
+    Mutation.bRetryStale = false;  // a failed consume is not a committed receipt; UI may request again after a refresh.
+    Mutation.Run = [Weak = TWeakObjectPtr<ASFPlayerController>(this), RecipeId](const FString& Op, int64 Expected,
+        TFunction<void(ESFBackpackOutcome, int64)> Report)
+    {
+        ASFPlayerController* Self = Weak.Get();
+        USFBackpackComponent* Owner = Self ? USFBackpackComponent::FindOrCreate(Self) : nullptr;
+        if (!Owner) { Report(ESFBackpackOutcome::Unavailable, -1); return; }
+        FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::LearnRecipe;
+        Request.OperationId = Op; Request.CharacterId = Owner->GetCharacterId(); Request.RecipeId = RecipeId;
+        Request.LearnSource = TEXT("scroll"); Request.ScrollContainer = Owner->GetContainerId(); Request.ExpectedContainerRevision = Expected;
+        USFBackpackComponent::Services()->Call(Request, [Report](const FSFGameplayResponse& Response)
+        { Report(Response.Status == ESFGameplayStatus::Ok ? ESFBackpackOutcome::Committed :
+            Response.Status == ESFGameplayStatus::Unavailable ? ESFBackpackOutcome::Unavailable : ESFBackpackOutcome::Rejected, -1); });
+    };
+    Mutation.Finished = [Weak = TWeakObjectPtr<ASFPlayerController>(this), RecipeId](ESFBackpackOutcome Result)
+    {
+        if (Result == ESFBackpackOutcome::Committed)
+            if (auto* Self = Weak.Get())
+            {
+                if (Self->GatheringPilot) { Self->GatheringPilot->AddKnownRecipe(RecipeId); }
+                if (auto* Owner = USFBackpackComponent::FindOrCreate(Self)) { Owner->Reconcile(); }
+            }
+    };
+    Pack->Enqueue(MoveTemp(Mutation));
 }
 
 void ASFPlayerController::TickDialogue()

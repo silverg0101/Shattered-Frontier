@@ -1,6 +1,7 @@
 #include "Inventory/SFInventoryPanel.h"
 
 #include "Gathering/SFGatheringPilot.h"
+#include "Framework/SFPlayerController.h"
 #include "Framework/SFHudStyle.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
@@ -293,6 +294,14 @@ void USFInventoryPanel::StyleTabs()
 
 FReply USFInventoryPanel::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
+    if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
+        for (int32 Index = 0; Index < SlotFrames.Num() && Index < ShownItems.Num(); ++Index)
+            if (SlotFrames[Index]->GetCachedGeometry().IsUnderLocation(InMouseEvent.GetScreenSpacePosition()) &&
+                ShownItems[Index].DefinitionId == TEXT("item/recipe_scroll_iron_brackets"))
+            {
+                if (auto* Controller = Cast<ASFPlayerController>(GetOwningPlayer()))
+                { Controller->UseRecipeScroll(TEXT("recipe/iron_brackets")); return FReply::Handled(); }
+            }
     if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
     {
         for (int32 Index = 0; Index < TabBorders.Num(); ++Index)
@@ -341,7 +350,13 @@ TArray<FSFInventoryEntry> USFInventoryPanel::CollectEntries() const
     auto Add = [&Items](const TSoftObjectPtr<UInventoryItemDefinition>& Item, int32 Quantity, bool bEquipped)
     {
         if (Quantity <= 0 || Item.IsNull()) { return; }
-        if (const UInventoryItemDefinition* Definition = Item.LoadSynchronous()) { Items.Add(MakeEntry(*Definition, Item.GetAssetName(), Quantity, bEquipped)); }
+        if (const UInventoryItemDefinition* Definition = Item.LoadSynchronous())
+        {
+            FSFInventoryEntry Entry = MakeEntry(*Definition, Item.GetAssetName(), Quantity, bEquipped);
+            if (Item.GetAssetName() == TEXT("DA_RecipeScrollIronBrackets"))
+            { Entry.DefinitionId = TEXT("item/recipe_scroll_iron_brackets"); }
+            Items.Add(MoveTemp(Entry));
+        }
     };
     for (int32 I = 0; I < FMath::Clamp(Inventory->NumSlots, 0, 64); ++I)
     {

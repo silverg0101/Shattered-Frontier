@@ -29,6 +29,12 @@ namespace _fl = ::google::protobuf::internal::field_layout;
 namespace {
 PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
     file_reflection_data[] = {
+        // ::sf::progression::v1::LearnRecipeRequest
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto, /* tracker*/ nullptr,},
+        // ::sf::progression::v1::LearnRecipeReply
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto, /* tracker*/ nullptr,},
+        // ::sf::progression::v1::KnownRecipe
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto, /* tracker*/ nullptr,},
         // ::sf::progression::v1::ApplyReceiptRequest
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto, /* tracker*/ nullptr,},
         // ::sf::progression::v1::ActionPayload
@@ -153,7 +159,7 @@ constexpr auto SavePositionReply::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[8],
+      &file_reflection_data[11],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -289,7 +295,7 @@ constexpr auto QuestState_CountsEntry_DoNotUse::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[12],
+      &file_reflection_data[15],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -490,7 +496,7 @@ constexpr auto QuestEvidence::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[2],
+      &file_reflection_data[5],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -537,6 +543,535 @@ const ::_pbi::ClassData* QuestEvidence_get_class_data() {
   return QuestEvidence_globals_.GetClassData();
 #else
   return QuestEvidence_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
+class LearnRecipeRequest::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<LearnRecipeRequest>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(LearnRecipeRequest, _impl_._has_bits_);
+};
+
+constexpr LearnRecipeRequest::ParseTableT_ LearnRecipeRequest::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(LearnRecipeRequest, _impl_._has_bits_),
+      0, // no _extensions_
+      7, 56,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967168,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      7,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::progression::v1::LearnRecipeRequest>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      {::_pbi::TcParser::MiniParse, {}},
+      // string operation_id = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(LearnRecipeRequest, _impl_.operation_id_)}},
+      // string character_id = 2;
+      {::_pbi::TcParser::FastUS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(LearnRecipeRequest, _impl_.character_id_)}},
+      // string recipe_id = 3;
+      {::_pbi::TcParser::FastUS1,
+       {26, 2, 0,
+        PROTOBUF_FIELD_OFFSET(LearnRecipeRequest, _impl_.recipe_id_)}},
+      // string source = 4;
+      {::_pbi::TcParser::FastUS1,
+       {34, 3, 0,
+        PROTOBUF_FIELD_OFFSET(LearnRecipeRequest, _impl_.source_)}},
+      // string trainer_npc = 5;
+      {::_pbi::TcParser::FastUS1,
+       {42, 4, 0,
+        PROTOBUF_FIELD_OFFSET(LearnRecipeRequest, _impl_.trainer_npc_)}},
+      // string scroll_container = 6;
+      {::_pbi::TcParser::FastUS1,
+       {50, 5, 0,
+        PROTOBUF_FIELD_OFFSET(LearnRecipeRequest, _impl_.scroll_container_)}},
+      // int64 expected_container_revision = 7;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(LearnRecipeRequest, _impl_.expected_container_revision_), 6>(),
+       {56, 6, 0,
+        PROTOBUF_FIELD_OFFSET(LearnRecipeRequest, _impl_.expected_container_revision_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string operation_id = 1;
+      {PROTOBUF_FIELD_OFFSET(LearnRecipeRequest, _impl_.operation_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string character_id = 2;
+      {PROTOBUF_FIELD_OFFSET(LearnRecipeRequest, _impl_.character_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string recipe_id = 3;
+      {PROTOBUF_FIELD_OFFSET(LearnRecipeRequest, _impl_.recipe_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string source = 4;
+      {PROTOBUF_FIELD_OFFSET(LearnRecipeRequest, _impl_.source_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string trainer_npc = 5;
+      {PROTOBUF_FIELD_OFFSET(LearnRecipeRequest, _impl_.trainer_npc_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string scroll_container = 6;
+      {PROTOBUF_FIELD_OFFSET(LearnRecipeRequest, _impl_.scroll_container_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // int64 expected_container_revision = 7;
+      {PROTOBUF_FIELD_OFFSET(LearnRecipeRequest, _impl_.expected_container_revision_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+    }},
+    // no aux_entries
+    {{
+      "\44\14\14\11\6\13\20\0"
+      "sf.progression.v1.LearnRecipeRequest"
+      "operation_id"
+      "character_id"
+      "recipe_id"
+      "source"
+      "trainer_npc"
+      "scroll_container"
+    }},
+  };
+}
+
+
+inline constexpr LearnRecipeRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        operation_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        character_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        recipe_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        source_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        trainer_npc_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        scroll_container_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        expected_container_revision_{::int64_t{0}} {}
+
+template <typename>
+constexpr LearnRecipeRequest::LearnRecipeRequest(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL LearnRecipeRequest::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) LearnRecipeRequest(arena);
+}
+constexpr auto LearnRecipeRequest::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(LearnRecipeRequest), alignof(LearnRecipeRequest));
+}
+constexpr auto LearnRecipeRequest::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &LearnRecipeRequest::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<LearnRecipeRequest>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &LearnRecipeRequest::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<LearnRecipeRequest>(), &LearnRecipeRequest::ByteSizeLong,
+              &LearnRecipeRequest::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(LearnRecipeRequest, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[0],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct LearnRecipeRequestGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr LearnRecipeRequestGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 LearnRecipeRequest_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(LearnRecipeRequest::InternalGenerateClassData_(
+            _default, &LearnRecipeRequest_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<LearnRecipeRequest>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~LearnRecipeRequestGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) LearnRecipeRequest _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<LearnRecipeRequest>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(LearnRecipeRequestGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST LearnRecipeRequestGlobalsTypeInternal LearnRecipeRequest_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* LearnRecipeRequest_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return LearnRecipeRequest_globals_.GetClassData();
+#else
+  return LearnRecipeRequest_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
+class LearnRecipeReply::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<LearnRecipeReply>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(LearnRecipeReply, _impl_._has_bits_);
+};
+
+constexpr LearnRecipeReply::ParseTableT_ LearnRecipeReply::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(LearnRecipeReply, _impl_._has_bits_),
+      0, // no _extensions_
+      3, 24,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967288,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      3,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::progression::v1::LearnRecipeReply>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      {::_pbi::TcParser::MiniParse, {}},
+      // string recipe_id = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(LearnRecipeReply, _impl_.recipe_id_)}},
+      // int64 progression_revision = 2;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(LearnRecipeReply, _impl_.progression_revision_), 1>(),
+       {16, 1, 0,
+        PROTOBUF_FIELD_OFFSET(LearnRecipeReply, _impl_.progression_revision_)}},
+      // int64 cost_copper = 3;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(LearnRecipeReply, _impl_.cost_copper_), 2>(),
+       {24, 2, 0,
+        PROTOBUF_FIELD_OFFSET(LearnRecipeReply, _impl_.cost_copper_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string recipe_id = 1;
+      {PROTOBUF_FIELD_OFFSET(LearnRecipeReply, _impl_.recipe_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // int64 progression_revision = 2;
+      {PROTOBUF_FIELD_OFFSET(LearnRecipeReply, _impl_.progression_revision_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      // int64 cost_copper = 3;
+      {PROTOBUF_FIELD_OFFSET(LearnRecipeReply, _impl_.cost_copper_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+    }},
+    // no aux_entries
+    {{
+      "\42\11\0\0\0\0\0\0"
+      "sf.progression.v1.LearnRecipeReply"
+      "recipe_id"
+    }},
+  };
+}
+
+
+inline constexpr LearnRecipeReply::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        recipe_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        progression_revision_{::int64_t{0}},
+        cost_copper_{::int64_t{0}} {}
+
+template <typename>
+constexpr LearnRecipeReply::LearnRecipeReply(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL LearnRecipeReply::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) LearnRecipeReply(arena);
+}
+constexpr auto LearnRecipeReply::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(LearnRecipeReply), alignof(LearnRecipeReply));
+}
+constexpr auto LearnRecipeReply::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &LearnRecipeReply::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<LearnRecipeReply>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &LearnRecipeReply::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<LearnRecipeReply>(), &LearnRecipeReply::ByteSizeLong,
+              &LearnRecipeReply::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(LearnRecipeReply, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[1],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct LearnRecipeReplyGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr LearnRecipeReplyGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 LearnRecipeReply_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(LearnRecipeReply::InternalGenerateClassData_(
+            _default, &LearnRecipeReply_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<LearnRecipeReply>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~LearnRecipeReplyGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) LearnRecipeReply _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<LearnRecipeReply>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(LearnRecipeReplyGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST LearnRecipeReplyGlobalsTypeInternal LearnRecipeReply_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* LearnRecipeReply_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return LearnRecipeReply_globals_.GetClassData();
+#else
+  return LearnRecipeReply_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
+class KnownRecipe::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<KnownRecipe>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(KnownRecipe, _impl_._has_bits_);
+};
+
+constexpr KnownRecipe::ParseTableT_ KnownRecipe::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(KnownRecipe, _impl_._has_bits_),
+      0, // no _extensions_
+      3, 24,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967288,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      3,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::progression::v1::KnownRecipe>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      {::_pbi::TcParser::MiniParse, {}},
+      // string recipe_id = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(KnownRecipe, _impl_.recipe_id_)}},
+      // string source = 2;
+      {::_pbi::TcParser::FastUS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(KnownRecipe, _impl_.source_)}},
+      // int64 learned_at_unix_ms = 3;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(KnownRecipe, _impl_.learned_at_unix_ms_), 2>(),
+       {24, 2, 0,
+        PROTOBUF_FIELD_OFFSET(KnownRecipe, _impl_.learned_at_unix_ms_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string recipe_id = 1;
+      {PROTOBUF_FIELD_OFFSET(KnownRecipe, _impl_.recipe_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string source = 2;
+      {PROTOBUF_FIELD_OFFSET(KnownRecipe, _impl_.source_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // int64 learned_at_unix_ms = 3;
+      {PROTOBUF_FIELD_OFFSET(KnownRecipe, _impl_.learned_at_unix_ms_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+    }},
+    // no aux_entries
+    {{
+      "\35\11\6\0\0\0\0\0"
+      "sf.progression.v1.KnownRecipe"
+      "recipe_id"
+      "source"
+    }},
+  };
+}
+
+
+inline constexpr KnownRecipe::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        recipe_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        source_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        learned_at_unix_ms_{::int64_t{0}} {}
+
+template <typename>
+constexpr KnownRecipe::KnownRecipe(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL KnownRecipe::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) KnownRecipe(arena);
+}
+constexpr auto KnownRecipe::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(KnownRecipe), alignof(KnownRecipe));
+}
+constexpr auto KnownRecipe::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &KnownRecipe::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<KnownRecipe>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &KnownRecipe::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<KnownRecipe>(), &KnownRecipe::ByteSizeLong,
+              &KnownRecipe::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(KnownRecipe, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[2],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct KnownRecipeGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr KnownRecipeGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 KnownRecipe_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(KnownRecipe::InternalGenerateClassData_(
+            _default, &KnownRecipe_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<KnownRecipe>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~KnownRecipeGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) KnownRecipe _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<KnownRecipe>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(KnownRecipeGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST KnownRecipeGlobalsTypeInternal KnownRecipe_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* KnownRecipe_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return KnownRecipe_globals_.GetClassData();
+#else
+  return KnownRecipe_class_data_.base();
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 }
 }  // namespace
@@ -643,7 +1178,7 @@ constexpr auto GrantedItem::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[4],
+      &file_reflection_data[7],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -789,7 +1324,7 @@ constexpr auto GetCharacterStateRequest::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[5],
+      &file_reflection_data[8],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -925,7 +1460,7 @@ constexpr auto CharacterStateReply_SkillsEntry_DoNotUse::InternalGenerateClassDa
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[9],
+      &file_reflection_data[12],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -1061,7 +1596,7 @@ constexpr auto CharacterStateReply_ObjectiveCountsEntry_DoNotUse::InternalGenera
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[10],
+      &file_reflection_data[13],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -1238,7 +1773,7 @@ constexpr auto CharacterPosition::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[6],
+      &file_reflection_data[9],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -1433,7 +1968,7 @@ constexpr auto ActionPayload::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[1],
+      &file_reflection_data[4],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -1600,7 +2135,7 @@ constexpr auto SavePositionRequest::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[7],
+      &file_reflection_data[10],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -1800,7 +2335,7 @@ constexpr auto QuestState::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[13],
+      &file_reflection_data[16],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -2006,7 +2541,7 @@ constexpr auto ApplyReceiptRequest::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[0],
+      &file_reflection_data[3],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -2251,7 +2786,7 @@ constexpr auto ApplyReceiptReply::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[3],
+      &file_reflection_data[6],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -2314,12 +2849,12 @@ constexpr CharacterStateReply::ParseTableT_ CharacterStateReply::InternalGenerat
     {
       PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_._has_bits_),
       0, // no _extensions_
-      11, 120,  // max_field_number, fast_idx_mask
+      12, 120,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294965248,  // skipmap
+      4294963200,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      11,  // num_field_entries
-      4,  // num_aux_entries
+      12,  // num_field_entries
+      5,  // num_aux_entries
       offsetof(ParseTableT_, aux_entries),
       class_data,
       nullptr,  // post_loop_handler
@@ -2330,44 +2865,47 @@ constexpr CharacterStateReply::ParseTableT_ CharacterStateReply::InternalGenerat
     }, {{
       {::_pbi::TcParser::MiniParse, {}},
       // int64 progression_revision = 1;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(CharacterStateReply, _impl_.progression_revision_), 3>(),
-       {8, 3, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(CharacterStateReply, _impl_.progression_revision_), 4>(),
+       {8, 4, 0,
         PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.progression_revision_)}},
       // int64 lifetime_xp = 2;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(CharacterStateReply, _impl_.lifetime_xp_), 4>(),
-       {16, 4, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(CharacterStateReply, _impl_.lifetime_xp_), 5>(),
+       {16, 5, 0,
         PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.lifetime_xp_)}},
       // int32 level = 3;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(CharacterStateReply, _impl_.level_), 6>(),
-       {24, 6, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(CharacterStateReply, _impl_.level_), 7>(),
+       {24, 7, 0,
         PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.level_)}},
       {::_pbi::TcParser::MiniParse, {}},
       // int64 quest_revision = 5;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(CharacterStateReply, _impl_.quest_revision_), 5>(),
-       {40, 5, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(CharacterStateReply, _impl_.quest_revision_), 6>(),
+       {40, 6, 0,
         PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.quest_revision_)}},
       // string active_step_id = 6;
       {::_pbi::TcParser::FastUS1,
-       {50, 1, 0,
+       {50, 2, 0,
         PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.active_step_id_)}},
       // bool quest_completed = 7;
-      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(CharacterStateReply, _impl_.quest_completed_), 7>(),
-       {56, 7, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(CharacterStateReply, _impl_.quest_completed_), 8>(),
+       {56, 8, 0,
         PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.quest_completed_)}},
       {::_pbi::TcParser::MiniParse, {}},
       // .sf.progression.v1.CharacterPosition position = 9;
       {::_pbi::TcParser::FastMtS1,
-       {74, 2, 0,
+       {74, 3, 0,
         PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.position_)}},
       // int64 position_revision = 10;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(CharacterStateReply, _impl_.position_revision_), 8>(),
-       {80, 8, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(CharacterStateReply, _impl_.position_revision_), 9>(),
+       {80, 9, 0,
         PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.position_revision_)}},
       // repeated .sf.progression.v1.QuestState quests = 11;
       {::_pbi::TcParser::FastMtR1,
        {90, 0, 1,
         PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.quests_)}},
-      {::_pbi::TcParser::MiniParse, {}},
+      // repeated .sf.progression.v1.KnownRecipe known_recipes = 12;
+      {::_pbi::TcParser::FastMtR1,
+       {98, 1, 2,
+        PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.known_recipes_)}},
       {::_pbi::TcParser::MiniParse, {}},
       {::_pbi::TcParser::MiniParse, {}},
       {::_pbi::TcParser::MiniParse, {}},
@@ -2375,27 +2913,29 @@ constexpr CharacterStateReply::ParseTableT_ CharacterStateReply::InternalGenerat
       65535, 65535
     }}, {{
       // int64 progression_revision = 1;
-      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.progression_revision_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.progression_revision_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
       // int64 lifetime_xp = 2;
-      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.lifetime_xp_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.lifetime_xp_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
       // int32 level = 3;
-      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.level_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.level_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
       // map<string, int32> skills = 4;
-      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.skills_), _Internal::kHasBitsOffset + 9, 2, (0 | ::_fl::kFcRepeated | ::_fl::kMap)},
+      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.skills_), _Internal::kHasBitsOffset + 10, 3, (0 | ::_fl::kFcRepeated | ::_fl::kMap)},
       // int64 quest_revision = 5;
-      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.quest_revision_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.quest_revision_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
       // string active_step_id = 6;
-      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.active_step_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.active_step_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // bool quest_completed = 7;
-      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.quest_completed_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.quest_completed_), _Internal::kHasBitsOffset + 8, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
       // map<string, int32> objective_counts = 8;
-      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.objective_counts_), _Internal::kHasBitsOffset + 10, 3, (0 | ::_fl::kFcRepeated | ::_fl::kMap)},
+      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.objective_counts_), _Internal::kHasBitsOffset + 11, 4, (0 | ::_fl::kFcRepeated | ::_fl::kMap)},
       // .sf.progression.v1.CharacterPosition position = 9;
-      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.position_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.position_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
       // int64 position_revision = 10;
-      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.position_revision_), _Internal::kHasBitsOffset + 8, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.position_revision_), _Internal::kHasBitsOffset + 9, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
       // repeated .sf.progression.v1.QuestState quests = 11;
       {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.quests_), _Internal::kHasBitsOffset + 0, 1, (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
+      // repeated .sf.progression.v1.KnownRecipe known_recipes = 12;
+      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.known_recipes_), _Internal::kHasBitsOffset + 1, 2, (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
     }},
     {{
         #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -2407,6 +2947,11 @@ constexpr CharacterStateReply::ParseTableT_ CharacterStateReply::InternalGenerat
         {::_pbi::TcParser::GetTable<::sf::progression::v1::QuestState>()},
         #else
         {::_pbi::FieldAuxMessageGlobals(), &::sf::progression::v1::QuestState_globals_},
+        #endif
+        #ifndef PROTOBUF_MESSAGE_GLOBALS
+        {::_pbi::TcParser::GetTable<::sf::progression::v1::KnownRecipe>()},
+        #else
+        {::_pbi::FieldAuxMessageGlobals(), &::sf::progression::v1::KnownRecipe_globals_},
         #endif
         {::_pbi::TcParser::GetMapAuxInfo(
             1, 0, 9, 5, 0)},
@@ -2431,6 +2976,11 @@ inline constexpr CharacterStateReply::Impl_::Impl_(
         quests_ { visibility, ::_pbi::InternalMetadataOffset::Build<
             ::sf::progression::v1::CharacterStateReply,
             PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.quests_)>()
+         }
+        ,
+        known_recipes_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::progression::v1::CharacterStateReply,
+            PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.known_recipes_)>()
          }
         ,
         active_step_id_(
@@ -2495,7 +3045,7 @@ constexpr auto CharacterStateReply::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[11],
+      &file_reflection_data[14],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -2556,6 +3106,41 @@ static constexpr const ::_pb::ServiceDescriptor* PROTOBUF_NONNULL* PROTOBUF_NULL
 const ::uint32_t
     TableStruct_sf_2fprogression_2fv1_2fprogression_2eproto::offsets[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
         protodesc_cold) = {
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::LearnRecipeRequest, _impl_._has_bits_),
+        10, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::LearnRecipeRequest, _impl_.operation_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::LearnRecipeRequest, _impl_.character_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::LearnRecipeRequest, _impl_.recipe_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::LearnRecipeRequest, _impl_.source_),
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::LearnRecipeRequest, _impl_.trainer_npc_),
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::LearnRecipeRequest, _impl_.scroll_container_),
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::LearnRecipeRequest, _impl_.expected_container_revision_),
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::LearnRecipeReply, _impl_._has_bits_),
+        6, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::LearnRecipeReply, _impl_.recipe_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::LearnRecipeReply, _impl_.progression_revision_),
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::LearnRecipeReply, _impl_.cost_copper_),
+        0,
+        1,
+        2,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::KnownRecipe, _impl_._has_bits_),
+        6, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::KnownRecipe, _impl_.recipe_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::KnownRecipe, _impl_.source_),
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::KnownRecipe, _impl_.learned_at_unix_ms_),
+        0,
+        1,
+        2,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::ApplyReceiptRequest, _impl_._has_bits_),
         10, // hasbit index offset
@@ -2691,7 +3276,7 @@ const ::uint32_t
         1,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_._has_bits_),
-        14, // hasbit index offset
+        15, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.progression_revision_),
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.lifetime_xp_),
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.level_),
@@ -2703,17 +3288,19 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.position_),
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.position_revision_),
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.quests_),
-        3,
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.known_recipes_),
         4,
-        6,
-        9,
         5,
-        1,
         7,
         10,
+        6,
         2,
         8,
+        11,
+        3,
+        9,
         0,
+        1,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::QuestState_CountsEntry_DoNotUse, _impl_._has_bits_),
         5, // hasbit index offset
@@ -2742,23 +3329,29 @@ const ::uint32_t
 
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-        {0, sizeof(::sf::progression::v1::ApplyReceiptRequest)},
-        {17, sizeof(::sf::progression::v1::ActionPayload)},
-        {36, sizeof(::sf::progression::v1::QuestEvidence)},
-        {53, sizeof(::sf::progression::v1::ApplyReceiptReply)},
-        {80, sizeof(::sf::progression::v1::GrantedItem)},
-        {87, sizeof(::sf::progression::v1::GetCharacterStateRequest)},
-        {92, sizeof(::sf::progression::v1::CharacterPosition)},
-        {105, sizeof(::sf::progression::v1::SavePositionRequest)},
-        {114, sizeof(::sf::progression::v1::SavePositionReply)},
-        {119, sizeof(::sf::progression::v1::CharacterStateReply_SkillsEntry_DoNotUse)},
-        {126, sizeof(::sf::progression::v1::CharacterStateReply_ObjectiveCountsEntry_DoNotUse)},
-        {133, sizeof(::sf::progression::v1::CharacterStateReply)},
-        {158, sizeof(::sf::progression::v1::QuestState_CountsEntry_DoNotUse)},
-        {165, sizeof(::sf::progression::v1::QuestState)},
+        {0, sizeof(::sf::progression::v1::LearnRecipeRequest)},
+        {17, sizeof(::sf::progression::v1::LearnRecipeReply)},
+        {26, sizeof(::sf::progression::v1::KnownRecipe)},
+        {35, sizeof(::sf::progression::v1::ApplyReceiptRequest)},
+        {52, sizeof(::sf::progression::v1::ActionPayload)},
+        {71, sizeof(::sf::progression::v1::QuestEvidence)},
+        {88, sizeof(::sf::progression::v1::ApplyReceiptReply)},
+        {115, sizeof(::sf::progression::v1::GrantedItem)},
+        {122, sizeof(::sf::progression::v1::GetCharacterStateRequest)},
+        {127, sizeof(::sf::progression::v1::CharacterPosition)},
+        {140, sizeof(::sf::progression::v1::SavePositionRequest)},
+        {149, sizeof(::sf::progression::v1::SavePositionReply)},
+        {154, sizeof(::sf::progression::v1::CharacterStateReply_SkillsEntry_DoNotUse)},
+        {161, sizeof(::sf::progression::v1::CharacterStateReply_ObjectiveCountsEntry_DoNotUse)},
+        {168, sizeof(::sf::progression::v1::CharacterStateReply)},
+        {195, sizeof(::sf::progression::v1::QuestState_CountsEntry_DoNotUse)},
+        {202, sizeof(::sf::progression::v1::QuestState)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
+        &::sf::progression::v1::LearnRecipeRequest_globals_,
+        &::sf::progression::v1::LearnRecipeReply_globals_,
+        &::sf::progression::v1::KnownRecipe_globals_,
         &::sf::progression::v1::ApplyReceiptRequest_globals_,
         &::sf::progression::v1::ActionPayload_globals_,
         &::sf::progression::v1::QuestEvidence_globals_,
@@ -2777,81 +3370,93 @@ static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
 const char descriptor_table_protodef_sf_2fprogression_2fv1_2fprogression_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
     "\n#sf/progression/v1/progression.proto\022\021s"
-    "f.progression.v1\"\200\002\n\023ApplyReceiptRequest"
-    "\022\031\n\021source_receipt_id\030\001 \001(\t\022\014\n\004kind\030\002 \001("
-    "\t\022\024\n\014character_id\030\003 \001(\t\022%\n\035expected_prog"
-    "ression_revision\030\004 \001(\003\022\037\n\027expected_quest"
-    "_revision\030\005 \001(\003\0221\n\007payload\030\006 \001(\0132 .sf.pr"
-    "ogression.v1.ActionPayload\022/\n\005quest\030\007 \001("
-    "\0132 .sf.progression.v1.QuestEvidence\"\305\001\n\r"
-    "ActionPayload\022\020\n\010skill_id\030\001 \001(\t\022\022\n\ndiffi"
-    "culty\030\002 \001(\005\022\026\n\016action_seconds\030\003 \001(\001\022\024\n\014c"
-    "ontext_hash\030\004 \001(\004\022\017\n\007success\030\005 \001(\010\022\023\n\013en"
-    "emy_level\030\006 \001(\005\022\035\n\025enemy_tier_multiplier"
-    "\030\007 \001(\001\022\033\n\023eligible_party_size\030\010 \001(\005\"\223\001\n\r"
-    "QuestEvidence\022\020\n\010quest_id\030\001 \001(\t\022\017\n\007step_"
-    "id\030\002 \001(\t\022\014\n\004kind\030\003 \001(\t\022\021\n\ttarget_id\030\004 \001("
-    "\t\022\017\n\007node_id\030\005 \001(\t\022\020\n\010quantity\030\006 \001(\005\022\033\n\023"
-    "occurred_at_unix_ms\030\007 \001(\003\"\313\002\n\021ApplyRecei"
-    "ptReply\022\033\n\023progression_applied\030\001 \001(\010\022\022\n\n"
-    "skill_gain\030\002 \001(\005\022\017\n\007xp_gain\030\003 \001(\005\022\r\n\005lev"
-    "el\030\004 \001(\005\022\034\n\024progression_revision\030\005 \001(\003\022\026"
-    "\n\016quest_accepted\030\006 \001(\010\022\026\n\016active_step_id"
-    "\030\007 \001(\t\022\027\n\017quest_completed\030\010 \001(\010\022\026\n\016quest"
-    "_revision\030\t \001(\003\022\031\n\021reward_bundle_ids\030\n \003"
-    "(\t\0225\n\rgranted_items\030\013 \003(\0132\036.sf.progressi"
-    "on.v1.GrantedItem\022\024\n\014quest_reason\030\014 \001(\t\""
-    "6\n\013GrantedItem\022\025\n\rdefinition_id\030\001 \001(\t\022\020\n"
-    "\010quantity\030\002 \001(\003\"0\n\030GetCharacterStateRequ"
-    "est\022\024\n\014character_id\030\001 \001(\t\"R\n\021CharacterPo"
-    "sition\022\017\n\007zone_id\030\001 \001(\t\022\t\n\001x\030\002 \001(\001\022\t\n\001y\030"
-    "\003 \001(\001\022\t\n\001z\030\004 \001(\001\022\013\n\003yaw\030\005 \001(\002\"\207\001\n\023SavePo"
-    "sitionRequest\022\024\n\014character_id\030\001 \001(\t\022\"\n\032e"
-    "xpected_position_revision\030\002 \001(\003\0226\n\010posit"
-    "ion\030\003 \001(\0132$.sf.progression.v1.CharacterP"
-    "osition\".\n\021SavePositionReply\022\031\n\021position"
-    "_revision\030\001 \001(\003\"\244\004\n\023CharacterStateReply\022"
-    "\034\n\024progression_revision\030\001 \001(\003\022\023\n\013lifetim"
-    "e_xp\030\002 \001(\003\022\r\n\005level\030\003 \001(\005\022B\n\006skills\030\004 \003("
-    "\01322.sf.progression.v1.CharacterStateRepl"
-    "y.SkillsEntry\022\026\n\016quest_revision\030\005 \001(\003\022\026\n"
-    "\016active_step_id\030\006 \001(\t\022\027\n\017quest_completed"
-    "\030\007 \001(\010\022U\n\020objective_counts\030\010 \003(\0132;.sf.pr"
-    "ogression.v1.CharacterStateReply.Objecti"
-    "veCountsEntry\0226\n\010position\030\t \001(\0132$.sf.pro"
-    "gression.v1.CharacterPosition\022\031\n\021positio"
-    "n_revision\030\n \001(\003\022-\n\006quests\030\013 \003(\0132\035.sf.pr"
-    "ogression.v1.QuestState\032-\n\013SkillsEntry\022\013"
-    "\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001\0326\n\024Object"
-    "iveCountsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001"
-    "(\005:\0028\001\"\363\001\n\nQuestState\022\020\n\010quest_id\030\001 \001(\t\022"
-    "\r\n\005state\030\002 \001(\t\022\026\n\016active_step_id\030\003 \001(\t\0229"
-    "\n\006counts\030\004 \003(\0132).sf.progression.v1.Quest"
-    "State.CountsEntry\022\030\n\020content_revision\030\005 "
-    "\001(\005\022\020\n\010revision\030\006 \001(\003\022\026\n\016reward_pending\030"
-    "\007 \001(\010\032-\n\013CountsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005val"
-    "ue\030\002 \001(\005:\0028\0012\263\002\n\013Progression\022\\\n\014ApplyRec"
-    "eipt\022&.sf.progression.v1.ApplyReceiptReq"
-    "uest\032$.sf.progression.v1.ApplyReceiptRep"
-    "ly\022h\n\021GetCharacterState\022+.sf.progression"
-    ".v1.GetCharacterStateRequest\032&.sf.progre"
-    "ssion.v1.CharacterStateReply\022\\\n\014SavePosi"
-    "tion\022&.sf.progression.v1.SavePositionReq"
-    "uest\032$.sf.progression.v1.SavePositionRep"
-    "lyB#\252\002 ShatteredFrontier.Progression.V1b"
-    "\006proto3"
+    "f.progression.v1\"\267\001\n\022LearnRecipeRequest\022"
+    "\024\n\014operation_id\030\001 \001(\t\022\024\n\014character_id\030\002 "
+    "\001(\t\022\021\n\trecipe_id\030\003 \001(\t\022\016\n\006source\030\004 \001(\t\022\023"
+    "\n\013trainer_npc\030\005 \001(\t\022\030\n\020scroll_container\030"
+    "\006 \001(\t\022#\n\033expected_container_revision\030\007 \001"
+    "(\003\"X\n\020LearnRecipeReply\022\021\n\trecipe_id\030\001 \001("
+    "\t\022\034\n\024progression_revision\030\002 \001(\003\022\023\n\013cost_"
+    "copper\030\003 \001(\003\"L\n\013KnownRecipe\022\021\n\trecipe_id"
+    "\030\001 \001(\t\022\016\n\006source\030\002 \001(\t\022\032\n\022learned_at_uni"
+    "x_ms\030\003 \001(\003\"\200\002\n\023ApplyReceiptRequest\022\031\n\021so"
+    "urce_receipt_id\030\001 \001(\t\022\014\n\004kind\030\002 \001(\t\022\024\n\014c"
+    "haracter_id\030\003 \001(\t\022%\n\035expected_progressio"
+    "n_revision\030\004 \001(\003\022\037\n\027expected_quest_revis"
+    "ion\030\005 \001(\003\0221\n\007payload\030\006 \001(\0132 .sf.progress"
+    "ion.v1.ActionPayload\022/\n\005quest\030\007 \001(\0132 .sf"
+    ".progression.v1.QuestEvidence\"\305\001\n\rAction"
+    "Payload\022\020\n\010skill_id\030\001 \001(\t\022\022\n\ndifficulty\030"
+    "\002 \001(\005\022\026\n\016action_seconds\030\003 \001(\001\022\024\n\014context"
+    "_hash\030\004 \001(\004\022\017\n\007success\030\005 \001(\010\022\023\n\013enemy_le"
+    "vel\030\006 \001(\005\022\035\n\025enemy_tier_multiplier\030\007 \001(\001"
+    "\022\033\n\023eligible_party_size\030\010 \001(\005\"\223\001\n\rQuestE"
+    "vidence\022\020\n\010quest_id\030\001 \001(\t\022\017\n\007step_id\030\002 \001"
+    "(\t\022\014\n\004kind\030\003 \001(\t\022\021\n\ttarget_id\030\004 \001(\t\022\017\n\007n"
+    "ode_id\030\005 \001(\t\022\020\n\010quantity\030\006 \001(\005\022\033\n\023occurr"
+    "ed_at_unix_ms\030\007 \001(\003\"\313\002\n\021ApplyReceiptRepl"
+    "y\022\033\n\023progression_applied\030\001 \001(\010\022\022\n\nskill_"
+    "gain\030\002 \001(\005\022\017\n\007xp_gain\030\003 \001(\005\022\r\n\005level\030\004 \001"
+    "(\005\022\034\n\024progression_revision\030\005 \001(\003\022\026\n\016ques"
+    "t_accepted\030\006 \001(\010\022\026\n\016active_step_id\030\007 \001(\t"
+    "\022\027\n\017quest_completed\030\010 \001(\010\022\026\n\016quest_revis"
+    "ion\030\t \001(\003\022\031\n\021reward_bundle_ids\030\n \003(\t\0225\n\r"
+    "granted_items\030\013 \003(\0132\036.sf.progression.v1."
+    "GrantedItem\022\024\n\014quest_reason\030\014 \001(\t\"6\n\013Gra"
+    "ntedItem\022\025\n\rdefinition_id\030\001 \001(\t\022\020\n\010quant"
+    "ity\030\002 \001(\003\"0\n\030GetCharacterStateRequest\022\024\n"
+    "\014character_id\030\001 \001(\t\"R\n\021CharacterPosition"
+    "\022\017\n\007zone_id\030\001 \001(\t\022\t\n\001x\030\002 \001(\001\022\t\n\001y\030\003 \001(\001\022"
+    "\t\n\001z\030\004 \001(\001\022\013\n\003yaw\030\005 \001(\002\"\207\001\n\023SavePosition"
+    "Request\022\024\n\014character_id\030\001 \001(\t\022\"\n\032expecte"
+    "d_position_revision\030\002 \001(\003\0226\n\010position\030\003 "
+    "\001(\0132$.sf.progression.v1.CharacterPositio"
+    "n\".\n\021SavePositionReply\022\031\n\021position_revis"
+    "ion\030\001 \001(\003\"\333\004\n\023CharacterStateReply\022\034\n\024pro"
+    "gression_revision\030\001 \001(\003\022\023\n\013lifetime_xp\030\002"
+    " \001(\003\022\r\n\005level\030\003 \001(\005\022B\n\006skills\030\004 \003(\01322.sf"
+    ".progression.v1.CharacterStateReply.Skil"
+    "lsEntry\022\026\n\016quest_revision\030\005 \001(\003\022\026\n\016activ"
+    "e_step_id\030\006 \001(\t\022\027\n\017quest_completed\030\007 \001(\010"
+    "\022U\n\020objective_counts\030\010 \003(\0132;.sf.progress"
+    "ion.v1.CharacterStateReply.ObjectiveCoun"
+    "tsEntry\0226\n\010position\030\t \001(\0132$.sf.progressi"
+    "on.v1.CharacterPosition\022\031\n\021position_revi"
+    "sion\030\n \001(\003\022-\n\006quests\030\013 \003(\0132\035.sf.progress"
+    "ion.v1.QuestState\0225\n\rknown_recipes\030\014 \003(\013"
+    "2\036.sf.progression.v1.KnownRecipe\032-\n\013Skil"
+    "lsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001\032"
+    "6\n\024ObjectiveCountsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005"
+    "value\030\002 \001(\005:\0028\001\"\363\001\n\nQuestState\022\020\n\010quest_"
+    "id\030\001 \001(\t\022\r\n\005state\030\002 \001(\t\022\026\n\016active_step_i"
+    "d\030\003 \001(\t\0229\n\006counts\030\004 \003(\0132).sf.progression"
+    ".v1.QuestState.CountsEntry\022\030\n\020content_re"
+    "vision\030\005 \001(\005\022\020\n\010revision\030\006 \001(\003\022\026\n\016reward"
+    "_pending\030\007 \001(\010\032-\n\013CountsEntry\022\013\n\003key\030\001 \001"
+    "(\t\022\r\n\005value\030\002 \001(\005:\0028\0012\216\003\n\013Progression\022\\\n"
+    "\014ApplyReceipt\022&.sf.progression.v1.ApplyR"
+    "eceiptRequest\032$.sf.progression.v1.ApplyR"
+    "eceiptReply\022h\n\021GetCharacterState\022+.sf.pr"
+    "ogression.v1.GetCharacterStateRequest\032&."
+    "sf.progression.v1.CharacterStateReply\022\\\n"
+    "\014SavePosition\022&.sf.progression.v1.SavePo"
+    "sitionRequest\032$.sf.progression.v1.SavePo"
+    "sitionReply\022Y\n\013LearnRecipe\022%.sf.progress"
+    "ion.v1.LearnRecipeRequest\032#.sf.progressi"
+    "on.v1.LearnRecipeReplyB#\252\002 ShatteredFron"
+    "tier.Progression.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto = {
     false,
     false,
-    2527,
+    3027,
     descriptor_table_protodef_sf_2fprogression_2fv1_2fprogression_2eproto,
     "sf/progression/v1/progression.proto",
     &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto_once,
     nullptr,
     0,
-    14,
+    17,
     schemas,
     file_message_globals,
     TableStruct_sf_2fprogression_2fv1_2fprogression_2eproto::offsets,
@@ -2861,6 +3466,975 @@ PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2fprogressi
 namespace sf {
 namespace progression {
 namespace v1 {
+// ===================================================================
+
+LearnRecipeRequest::LearnRecipeRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, LearnRecipeRequest_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.progression.v1.LearnRecipeRequest)
+}
+PROTOBUF_NDEBUG_INLINE LearnRecipeRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::progression::v1::LearnRecipeRequest& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        operation_id_(arena, from.operation_id_),
+        character_id_(arena, from.character_id_),
+        recipe_id_(arena, from.recipe_id_),
+        source_(arena, from.source_),
+        trainer_npc_(arena, from.trainer_npc_),
+        scroll_container_(arena, from.scroll_container_) {}
+
+LearnRecipeRequest::LearnRecipeRequest(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const LearnRecipeRequest& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, LearnRecipeRequest_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  LearnRecipeRequest* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  _impl_.expected_container_revision_ = from._impl_.expected_container_revision_;
+
+  // @@protoc_insertion_point(copy_constructor:sf.progression.v1.LearnRecipeRequest)
+}
+PROTOBUF_NDEBUG_INLINE LearnRecipeRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        operation_id_(arena),
+        character_id_(arena),
+        recipe_id_(arena),
+        source_(arena),
+        trainer_npc_(arena),
+        scroll_container_(arena) {}
+
+inline void LearnRecipeRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.expected_container_revision_ = {};
+}
+LearnRecipeRequest::~LearnRecipeRequest() {
+  // @@protoc_insertion_point(destructor:sf.progression.v1.LearnRecipeRequest)
+  SharedDtor(*this);
+}
+inline void LearnRecipeRequest::SharedDtor(MessageLite& self) {
+  LearnRecipeRequest& this_ = static_cast<LearnRecipeRequest&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.operation_id_.Destroy();
+  this_._impl_.character_id_.Destroy();
+  this_._impl_.recipe_id_.Destroy();
+  this_._impl_.source_.Destroy();
+  this_._impl_.trainer_npc_.Destroy();
+  this_._impl_.scroll_container_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull LearnRecipeRequest_class_data_ =
+        LearnRecipeRequest::InternalGenerateClassData_(LearnRecipeRequest_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+LearnRecipeRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&LearnRecipeRequest_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(LearnRecipeRequest_class_data_.tc_table);
+  return LearnRecipeRequest_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+LearnRecipeRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&LearnRecipeRequest_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&LearnRecipeRequest_globals_));
+  return LearnRecipeRequest_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const LearnRecipeRequest::ParseTableT_
+    LearnRecipeRequest::_table_ =
+        LearnRecipeRequest::InternalGenerateParseTable_(LearnRecipeRequest_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void LearnRecipeRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.progression.v1.LearnRecipeRequest)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.operation_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.character_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _impl_.recipe_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      _impl_.source_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      _impl_.trainer_npc_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      _impl_.scroll_container_.ClearNonDefaultToEmpty();
+    }
+  }
+  _impl_.expected_container_revision_ = ::int64_t{0};
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL LearnRecipeRequest::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const LearnRecipeRequest& this_ = static_cast<const LearnRecipeRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL LearnRecipeRequest::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const LearnRecipeRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.progression.v1.LearnRecipeRequest)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string operation_id = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_operation_id().empty()) {
+      const ::std::string& _s = this_._internal_operation_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.progression.v1.LearnRecipeRequest.operation_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string character_id = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (!this_._internal_character_id().empty()) {
+      const ::std::string& _s = this_._internal_character_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.progression.v1.LearnRecipeRequest.character_id");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  // string recipe_id = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (!this_._internal_recipe_id().empty()) {
+      const ::std::string& _s = this_._internal_recipe_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.progression.v1.LearnRecipeRequest.recipe_id");
+      target = stream->WriteStringMaybeAliased(3, _s, target);
+    }
+  }
+
+  // string source = 4;
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (!this_._internal_source().empty()) {
+      const ::std::string& _s = this_._internal_source();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.progression.v1.LearnRecipeRequest.source");
+      target = stream->WriteStringMaybeAliased(4, _s, target);
+    }
+  }
+
+  // string trainer_npc = 5;
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (!this_._internal_trainer_npc().empty()) {
+      const ::std::string& _s = this_._internal_trainer_npc();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.progression.v1.LearnRecipeRequest.trainer_npc");
+      target = stream->WriteStringMaybeAliased(5, _s, target);
+    }
+  }
+
+  // string scroll_container = 6;
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (!this_._internal_scroll_container().empty()) {
+      const ::std::string& _s = this_._internal_scroll_container();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.progression.v1.LearnRecipeRequest.scroll_container");
+      target = stream->WriteStringMaybeAliased(6, _s, target);
+    }
+  }
+
+  // int64 expected_container_revision = 7;
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (this_._internal_expected_container_revision() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<7>(
+              stream, this_._internal_expected_container_revision(), target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.progression.v1.LearnRecipeRequest)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t LearnRecipeRequest::ByteSizeLong(const MessageLite& base) {
+  const LearnRecipeRequest& this_ = static_cast<const LearnRecipeRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t LearnRecipeRequest::ByteSizeLong() const {
+  const LearnRecipeRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.progression.v1.LearnRecipeRequest)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
+    // string operation_id = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_operation_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_operation_id());
+      }
+    }
+    // string character_id = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!this_._internal_character_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_character_id());
+      }
+    }
+    // string recipe_id = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!this_._internal_recipe_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_recipe_id());
+      }
+    }
+    // string source = 4;
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (!this_._internal_source().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_source());
+      }
+    }
+    // string trainer_npc = 5;
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (!this_._internal_trainer_npc().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_trainer_npc());
+      }
+    }
+    // string scroll_container = 6;
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      if (!this_._internal_scroll_container().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_scroll_container());
+      }
+    }
+    // int64 expected_container_revision = 7;
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+      if (this_._internal_expected_container_revision() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+            this_._internal_expected_container_revision());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void LearnRecipeRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<LearnRecipeRequest*>(&to_msg);
+  auto& from = static_cast<const LearnRecipeRequest&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.progression.v1.LearnRecipeRequest)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_operation_id().empty()) {
+        _this->_internal_set_operation_id(from._internal_operation_id());
+      } else {
+        if (_this->_impl_.operation_id_.IsDefault()) {
+          _this->_internal_set_operation_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!from._internal_character_id().empty()) {
+        _this->_internal_set_character_id(from._internal_character_id());
+      } else {
+        if (_this->_impl_.character_id_.IsDefault()) {
+          _this->_internal_set_character_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!from._internal_recipe_id().empty()) {
+        _this->_internal_set_recipe_id(from._internal_recipe_id());
+      } else {
+        if (_this->_impl_.recipe_id_.IsDefault()) {
+          _this->_internal_set_recipe_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (!from._internal_source().empty()) {
+        _this->_internal_set_source(from._internal_source());
+      } else {
+        if (_this->_impl_.source_.IsDefault()) {
+          _this->_internal_set_source("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (!from._internal_trainer_npc().empty()) {
+        _this->_internal_set_trainer_npc(from._internal_trainer_npc());
+      } else {
+        if (_this->_impl_.trainer_npc_.IsDefault()) {
+          _this->_internal_set_trainer_npc("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      if (!from._internal_scroll_container().empty()) {
+        _this->_internal_set_scroll_container(from._internal_scroll_container());
+      } else {
+        if (_this->_impl_.scroll_container_.IsDefault()) {
+          _this->_internal_set_scroll_container("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+      if (from._internal_expected_container_revision() != 0) {
+        _this->_impl_.expected_container_revision_ = from._impl_.expected_container_revision_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void LearnRecipeRequest::CopyFrom(const LearnRecipeRequest& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.progression.v1.LearnRecipeRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void LearnRecipeRequest::InternalSwap(LearnRecipeRequest* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.operation_id_, &other->_impl_.operation_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.character_id_, &other->_impl_.character_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.recipe_id_, &other->_impl_.recipe_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.source_, &other->_impl_.source_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.trainer_npc_, &other->_impl_.trainer_npc_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.scroll_container_, &other->_impl_.scroll_container_, arena);
+  swap(_impl_.expected_container_revision_, other->_impl_.expected_container_revision_);
+}
+
+::google::protobuf::Metadata LearnRecipeRequest::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+LearnRecipeReply::LearnRecipeReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, LearnRecipeReply_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.progression.v1.LearnRecipeReply)
+}
+PROTOBUF_NDEBUG_INLINE LearnRecipeReply::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::progression::v1::LearnRecipeReply& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        recipe_id_(arena, from.recipe_id_) {}
+
+LearnRecipeReply::LearnRecipeReply(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const LearnRecipeReply& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, LearnRecipeReply_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  LearnRecipeReply* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::memcpy(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, progression_revision_),
+           reinterpret_cast<const char*>(&from._impl_) +
+               offsetof(Impl_, progression_revision_),
+           offsetof(Impl_, cost_copper_) -
+               offsetof(Impl_, progression_revision_) +
+               sizeof(Impl_::cost_copper_));
+
+  // @@protoc_insertion_point(copy_constructor:sf.progression.v1.LearnRecipeReply)
+}
+PROTOBUF_NDEBUG_INLINE LearnRecipeReply::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        recipe_id_(arena) {}
+
+inline void LearnRecipeReply::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, progression_revision_),
+           0,
+           offsetof(Impl_, cost_copper_) -
+               offsetof(Impl_, progression_revision_) +
+               sizeof(Impl_::cost_copper_));
+}
+LearnRecipeReply::~LearnRecipeReply() {
+  // @@protoc_insertion_point(destructor:sf.progression.v1.LearnRecipeReply)
+  SharedDtor(*this);
+}
+inline void LearnRecipeReply::SharedDtor(MessageLite& self) {
+  LearnRecipeReply& this_ = static_cast<LearnRecipeReply&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.recipe_id_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull LearnRecipeReply_class_data_ =
+        LearnRecipeReply::InternalGenerateClassData_(LearnRecipeReply_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+LearnRecipeReply::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&LearnRecipeReply_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(LearnRecipeReply_class_data_.tc_table);
+  return LearnRecipeReply_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+LearnRecipeReply::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&LearnRecipeReply_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&LearnRecipeReply_globals_));
+  return LearnRecipeReply_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const LearnRecipeReply::ParseTableT_
+    LearnRecipeReply::_table_ =
+        LearnRecipeReply::InternalGenerateParseTable_(LearnRecipeReply_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void LearnRecipeReply::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.progression.v1.LearnRecipeReply)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    _impl_.recipe_id_.ClearNonDefaultToEmpty();
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x00000006U)) {
+    ::memset(&_impl_.progression_revision_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.cost_copper_) -
+        reinterpret_cast<char*>(&_impl_.progression_revision_)) + sizeof(_impl_.cost_copper_));
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL LearnRecipeReply::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const LearnRecipeReply& this_ = static_cast<const LearnRecipeReply&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL LearnRecipeReply::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const LearnRecipeReply& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.progression.v1.LearnRecipeReply)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string recipe_id = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_recipe_id().empty()) {
+      const ::std::string& _s = this_._internal_recipe_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.progression.v1.LearnRecipeReply.recipe_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // int64 progression_revision = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (this_._internal_progression_revision() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<2>(
+              stream, this_._internal_progression_revision(), target);
+    }
+  }
+
+  // int64 cost_copper = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (this_._internal_cost_copper() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<3>(
+              stream, this_._internal_cost_copper(), target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.progression.v1.LearnRecipeReply)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t LearnRecipeReply::ByteSizeLong(const MessageLite& base) {
+  const LearnRecipeReply& this_ = static_cast<const LearnRecipeReply&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t LearnRecipeReply::ByteSizeLong() const {
+  const LearnRecipeReply& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.progression.v1.LearnRecipeReply)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    // string recipe_id = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_recipe_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_recipe_id());
+      }
+    }
+    // int64 progression_revision = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (this_._internal_progression_revision() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+            this_._internal_progression_revision());
+      }
+    }
+    // int64 cost_copper = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (this_._internal_cost_copper() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+            this_._internal_cost_copper());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void LearnRecipeReply::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<LearnRecipeReply*>(&to_msg);
+  auto& from = static_cast<const LearnRecipeReply&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.progression.v1.LearnRecipeReply)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_recipe_id().empty()) {
+        _this->_internal_set_recipe_id(from._internal_recipe_id());
+      } else {
+        if (_this->_impl_.recipe_id_.IsDefault()) {
+          _this->_internal_set_recipe_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (from._internal_progression_revision() != 0) {
+        _this->_impl_.progression_revision_ = from._impl_.progression_revision_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (from._internal_cost_copper() != 0) {
+        _this->_impl_.cost_copper_ = from._impl_.cost_copper_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void LearnRecipeReply::CopyFrom(const LearnRecipeReply& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.progression.v1.LearnRecipeReply)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void LearnRecipeReply::InternalSwap(LearnRecipeReply* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.recipe_id_, &other->_impl_.recipe_id_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(LearnRecipeReply, _impl_.cost_copper_)
+      + sizeof(LearnRecipeReply::_impl_.cost_copper_)
+      - PROTOBUF_FIELD_OFFSET(LearnRecipeReply, _impl_.progression_revision_)>(
+          reinterpret_cast<char*>(&_impl_.progression_revision_),
+          reinterpret_cast<char*>(&other->_impl_.progression_revision_));
+}
+
+::google::protobuf::Metadata LearnRecipeReply::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+KnownRecipe::KnownRecipe(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, KnownRecipe_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.progression.v1.KnownRecipe)
+}
+PROTOBUF_NDEBUG_INLINE KnownRecipe::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::progression::v1::KnownRecipe& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        recipe_id_(arena, from.recipe_id_),
+        source_(arena, from.source_) {}
+
+KnownRecipe::KnownRecipe(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const KnownRecipe& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, KnownRecipe_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  KnownRecipe* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  _impl_.learned_at_unix_ms_ = from._impl_.learned_at_unix_ms_;
+
+  // @@protoc_insertion_point(copy_constructor:sf.progression.v1.KnownRecipe)
+}
+PROTOBUF_NDEBUG_INLINE KnownRecipe::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        recipe_id_(arena),
+        source_(arena) {}
+
+inline void KnownRecipe::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.learned_at_unix_ms_ = {};
+}
+KnownRecipe::~KnownRecipe() {
+  // @@protoc_insertion_point(destructor:sf.progression.v1.KnownRecipe)
+  SharedDtor(*this);
+}
+inline void KnownRecipe::SharedDtor(MessageLite& self) {
+  KnownRecipe& this_ = static_cast<KnownRecipe&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.recipe_id_.Destroy();
+  this_._impl_.source_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull KnownRecipe_class_data_ =
+        KnownRecipe::InternalGenerateClassData_(KnownRecipe_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+KnownRecipe::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&KnownRecipe_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(KnownRecipe_class_data_.tc_table);
+  return KnownRecipe_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+KnownRecipe::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&KnownRecipe_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&KnownRecipe_globals_));
+  return KnownRecipe_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const KnownRecipe::ParseTableT_
+    KnownRecipe::_table_ =
+        KnownRecipe::InternalGenerateParseTable_(KnownRecipe_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void KnownRecipe::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.progression.v1.KnownRecipe)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.recipe_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.source_.ClearNonDefaultToEmpty();
+    }
+  }
+  _impl_.learned_at_unix_ms_ = ::int64_t{0};
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL KnownRecipe::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const KnownRecipe& this_ = static_cast<const KnownRecipe&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL KnownRecipe::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const KnownRecipe& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.progression.v1.KnownRecipe)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string recipe_id = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_recipe_id().empty()) {
+      const ::std::string& _s = this_._internal_recipe_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.progression.v1.KnownRecipe.recipe_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string source = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (!this_._internal_source().empty()) {
+      const ::std::string& _s = this_._internal_source();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.progression.v1.KnownRecipe.source");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  // int64 learned_at_unix_ms = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (this_._internal_learned_at_unix_ms() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<3>(
+              stream, this_._internal_learned_at_unix_ms(), target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.progression.v1.KnownRecipe)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t KnownRecipe::ByteSizeLong(const MessageLite& base) {
+  const KnownRecipe& this_ = static_cast<const KnownRecipe&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t KnownRecipe::ByteSizeLong() const {
+  const KnownRecipe& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.progression.v1.KnownRecipe)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    // string recipe_id = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_recipe_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_recipe_id());
+      }
+    }
+    // string source = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!this_._internal_source().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_source());
+      }
+    }
+    // int64 learned_at_unix_ms = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (this_._internal_learned_at_unix_ms() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+            this_._internal_learned_at_unix_ms());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void KnownRecipe::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<KnownRecipe*>(&to_msg);
+  auto& from = static_cast<const KnownRecipe&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.progression.v1.KnownRecipe)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_recipe_id().empty()) {
+        _this->_internal_set_recipe_id(from._internal_recipe_id());
+      } else {
+        if (_this->_impl_.recipe_id_.IsDefault()) {
+          _this->_internal_set_recipe_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!from._internal_source().empty()) {
+        _this->_internal_set_source(from._internal_source());
+      } else {
+        if (_this->_impl_.source_.IsDefault()) {
+          _this->_internal_set_source("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (from._internal_learned_at_unix_ms() != 0) {
+        _this->_impl_.learned_at_unix_ms_ = from._impl_.learned_at_unix_ms_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void KnownRecipe::CopyFrom(const KnownRecipe& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.progression.v1.KnownRecipe)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void KnownRecipe::InternalSwap(KnownRecipe* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.recipe_id_, &other->_impl_.recipe_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.source_, &other->_impl_.source_, arena);
+  swap(_impl_.learned_at_unix_ms_, other->_impl_.learned_at_unix_ms_);
+}
+
+::google::protobuf::Metadata KnownRecipe::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
 // ===================================================================
 
 ApplyReceiptRequest::ApplyReceiptRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
@@ -5954,6 +7528,13 @@ PROTOBUF_NDEBUG_INLINE CharacterStateReply::Impl_::Impl_(
           , from.quests_
         }
         ,
+        known_recipes_ {
+          visibility, ::_pbi::InternalMetadataOffset::Build<
+              ::sf::progression::v1::CharacterStateReply,
+              PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.known_recipes_)>()
+          , from.known_recipes_
+        }
+        ,
         active_step_id_(arena, from.active_step_id_),
         skills_ {
           visibility, ::_pbi::InternalMetadataOffset::Build<
@@ -5985,7 +7566,7 @@ CharacterStateReply::CharacterStateReply(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
   ::uint32_t cached_has_bits = _impl_._has_bits_[0];
-  _impl_.position_ = (CheckHasBit(cached_has_bits, 0x00000004U))
+  _impl_.position_ = (CheckHasBit(cached_has_bits, 0x00000008U))
                 ? ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.position_)
                 : nullptr;
   ::memcpy(reinterpret_cast<char*>(&_impl_) +
@@ -6005,6 +7586,11 @@ PROTOBUF_NDEBUG_INLINE CharacterStateReply::Impl_::Impl_(
         quests_ { visibility, ::_pbi::InternalMetadataOffset::Build<
             ::sf::progression::v1::CharacterStateReply,
             PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.quests_)>()
+         }
+        ,
+        known_recipes_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::progression::v1::CharacterStateReply,
+            PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.known_recipes_)>()
          }
         ,
         active_step_id_(arena),
@@ -6078,29 +7664,34 @@ PROTOBUF_NOINLINE void CharacterStateReply::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _impl_.quests_.Clear();
     }
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
-      _impl_.active_step_id_.ClearNonDefaultToEmpty();
+      _impl_.known_recipes_.Clear();
     }
     if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _impl_.active_step_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       ABSL_DCHECK(_impl_.position_ != nullptr);
       _impl_.position_->Clear();
     }
   }
-  if (BatchCheckHasBit(cached_has_bits, 0x000000f8U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x000000f0U)) {
     ::memset(&_impl_.progression_revision_, 0, static_cast<::size_t>(
-        reinterpret_cast<char*>(&_impl_.quest_completed_) -
-        reinterpret_cast<char*>(&_impl_.progression_revision_)) + sizeof(_impl_.quest_completed_));
+        reinterpret_cast<char*>(&_impl_.level_) -
+        reinterpret_cast<char*>(&_impl_.progression_revision_)) + sizeof(_impl_.level_));
   }
-  if (BatchCheckHasBit(cached_has_bits, 0x00000700U)) {
-    _impl_.position_revision_ = ::int64_t{0};
-    if (CheckHasBit(cached_has_bits, 0x00000200U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000f00U)) {
+    ::memset(&_impl_.quest_completed_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.position_revision_) -
+        reinterpret_cast<char*>(&_impl_.quest_completed_)) + sizeof(_impl_.position_revision_));
+    if (CheckHasBit(cached_has_bits, 0x00000400U)) {
       _impl_.skills_.Clear();
     }
-    if (CheckHasBit(cached_has_bits, 0x00000400U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000800U)) {
       _impl_.objective_counts_.Clear();
     }
   }
@@ -6128,7 +7719,7 @@ PROTOBUF_NOINLINE void CharacterStateReply::Clear() {
 
   cached_has_bits = this_._impl_._has_bits_[0];
   // int64 progression_revision = 1;
-  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
     if (this_._internal_progression_revision() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<1>(
@@ -6137,7 +7728,7 @@ PROTOBUF_NOINLINE void CharacterStateReply::Clear() {
   }
 
   // int64 lifetime_xp = 2;
-  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
     if (this_._internal_lifetime_xp() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<2>(
@@ -6146,7 +7737,7 @@ PROTOBUF_NOINLINE void CharacterStateReply::Clear() {
   }
 
   // int32 level = 3;
-  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
     if (this_._internal_level() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<3>(
@@ -6155,7 +7746,7 @@ PROTOBUF_NOINLINE void CharacterStateReply::Clear() {
   }
 
   // map<string, int32> skills = 4;
-  if (CheckHasBit(cached_has_bits, 0x00000200U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000400U)) {
     if (!this_._internal_skills().empty()) {
       using MapType = ::google::protobuf::Map<::std::string, ::int32_t>;
       using WireHelper = _pbi::MapEntryFuncs<::std::string, ::int32_t,
@@ -6184,7 +7775,7 @@ PROTOBUF_NOINLINE void CharacterStateReply::Clear() {
   }
 
   // int64 quest_revision = 5;
-  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
     if (this_._internal_quest_revision() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<5>(
@@ -6193,7 +7784,7 @@ PROTOBUF_NOINLINE void CharacterStateReply::Clear() {
   }
 
   // string active_step_id = 6;
-  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
     if (!this_._internal_active_step_id().empty()) {
       const ::std::string& _s = this_._internal_active_step_id();
       ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
@@ -6203,7 +7794,7 @@ PROTOBUF_NOINLINE void CharacterStateReply::Clear() {
   }
 
   // bool quest_completed = 7;
-  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000100U)) {
     if (this_._internal_quest_completed() != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteBoolToArray(
@@ -6212,7 +7803,7 @@ PROTOBUF_NOINLINE void CharacterStateReply::Clear() {
   }
 
   // map<string, int32> objective_counts = 8;
-  if (CheckHasBit(cached_has_bits, 0x00000400U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000800U)) {
     if (!this_._internal_objective_counts().empty()) {
       using MapType = ::google::protobuf::Map<::std::string, ::int32_t>;
       using WireHelper = _pbi::MapEntryFuncs<::std::string, ::int32_t,
@@ -6241,14 +7832,14 @@ PROTOBUF_NOINLINE void CharacterStateReply::Clear() {
   }
 
   // .sf.progression.v1.CharacterPosition position = 9;
-  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
     target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
         9, *this_._impl_.position_, this_._impl_.position_->GetCachedSize(), target,
         stream);
   }
 
   // int64 position_revision = 10;
-  if (CheckHasBit(cached_has_bits, 0x00000100U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000200U)) {
     if (this_._internal_position_revision() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<10>(
@@ -6265,6 +7856,19 @@ PROTOBUF_NOINLINE void CharacterStateReply::Clear() {
       target =
           ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
               11, repfield, repfield.GetCachedSize(),
+              target, stream);
+    }
+  }
+
+  // repeated .sf.progression.v1.KnownRecipe known_recipes = 12;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    for (unsigned i = 0, n = static_cast<unsigned>(
+                             this_._internal_known_recipes_size());
+         i < n; i++) {
+      const auto& repfield = this_._internal_known_recipes().Get(i);
+      target =
+          ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+              12, repfield, repfield.GetCachedSize(),
               target, stream);
     }
   }
@@ -6302,63 +7906,70 @@ PROTOBUF_NOINLINE void CharacterStateReply::Clear() {
         total_size += ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
       }
     }
-    // string active_step_id = 6;
+    // repeated .sf.progression.v1.KnownRecipe known_recipes = 12;
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      total_size += 1UL * this_._internal_known_recipes_size();
+      for (const auto& msg : this_._internal_known_recipes()) {
+        total_size += ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
+      }
+    }
+    // string active_step_id = 6;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
       if (!this_._internal_active_step_id().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                         this_._internal_active_step_id());
       }
     }
     // .sf.progression.v1.CharacterPosition position = 9;
-    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       total_size += 1 +
                     ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.position_);
     }
     // int64 progression_revision = 1;
-    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       if (this_._internal_progression_revision() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_progression_revision());
       }
     }
     // int64 lifetime_xp = 2;
-    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       if (this_._internal_lifetime_xp() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_lifetime_xp());
       }
     }
     // int64 quest_revision = 5;
-    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (this_._internal_quest_revision() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_quest_revision());
       }
     }
     // int32 level = 3;
-    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
       if (this_._internal_level() != 0) {
         total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
             this_._internal_level());
       }
     }
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x00000f00U)) {
     // bool quest_completed = 7;
-    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000100U)) {
       if (this_._internal_quest_completed() != 0) {
         total_size += 2;
       }
     }
-  }
-  if (BatchCheckHasBit(cached_has_bits, 0x00000700U)) {
     // int64 position_revision = 10;
-    if (CheckHasBit(cached_has_bits, 0x00000100U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000200U)) {
       if (this_._internal_position_revision() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_position_revision());
       }
     }
     // map<string, int32> skills = 4;
-    if (CheckHasBit(cached_has_bits, 0x00000200U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000400U)) {
       total_size +=
           1 * ::google::protobuf::internal::FromIntSize(this_._internal_skills_size());
       for (const auto& entry : this_._internal_skills()) {
@@ -6368,7 +7979,7 @@ PROTOBUF_NOINLINE void CharacterStateReply::Clear() {
       }
     }
     // map<string, int32> objective_counts = 8;
-    if (CheckHasBit(cached_has_bits, 0x00000400U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000800U)) {
       total_size +=
           1 * ::google::protobuf::internal::FromIntSize(this_._internal_objective_counts_size());
       for (const auto& entry : this_._internal_objective_counts()) {
@@ -6403,6 +8014,11 @@ void CharacterStateReply::MergeImpl(::google::protobuf::MessageLite& to_msg,
           from._internal_quests());
     }
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _this->_internal_mutable_known_recipes()->InternalMergeFromWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), arena,
+          from._internal_known_recipes());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
       if (!from._internal_active_step_id().empty()) {
         _this->_internal_set_active_step_id(from._internal_active_step_id());
       } else {
@@ -6411,7 +8027,7 @@ void CharacterStateReply::MergeImpl(::google::protobuf::MessageLite& to_msg,
         }
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       ABSL_DCHECK(from._impl_.position_ != nullptr);
       if (_this->_impl_.position_ == nullptr) {
         _this->_impl_.position_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.position_);
@@ -6419,42 +8035,42 @@ void CharacterStateReply::MergeImpl(::google::protobuf::MessageLite& to_msg,
         _this->_impl_.position_->MergeFrom(*from._impl_.position_);
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       if (from._internal_progression_revision() != 0) {
         _this->_impl_.progression_revision_ = from._impl_.progression_revision_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       if (from._internal_lifetime_xp() != 0) {
         _this->_impl_.lifetime_xp_ = from._impl_.lifetime_xp_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (from._internal_quest_revision() != 0) {
         _this->_impl_.quest_revision_ = from._impl_.quest_revision_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
       if (from._internal_level() != 0) {
         _this->_impl_.level_ = from._impl_.level_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x00000f00U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000100U)) {
       if (from._internal_quest_completed() != 0) {
         _this->_impl_.quest_completed_ = from._impl_.quest_completed_;
       }
     }
-  }
-  if (BatchCheckHasBit(cached_has_bits, 0x00000700U)) {
-    if (CheckHasBit(cached_has_bits, 0x00000100U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000200U)) {
       if (from._internal_position_revision() != 0) {
         _this->_impl_.position_revision_ = from._impl_.position_revision_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000200U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000400U)) {
       _this->_impl_.skills_.MergeFrom(from._impl_.skills_);
     }
-    if (CheckHasBit(cached_has_bits, 0x00000400U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000800U)) {
       _this->_impl_.objective_counts_.MergeFrom(from._impl_.objective_counts_);
     }
   }
@@ -6478,6 +8094,7 @@ void CharacterStateReply::InternalSwap(CharacterStateReply* PROTOBUF_RESTRICT PR
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   _impl_.quests_.InternalSwap(&other->_impl_.quests_);
+  _impl_.known_recipes_.InternalSwap(&other->_impl_.known_recipes_);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.active_step_id_, &other->_impl_.active_step_id_, arena);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.position_revision_)

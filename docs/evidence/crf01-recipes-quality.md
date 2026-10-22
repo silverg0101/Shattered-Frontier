@@ -1,0 +1,13 @@
+# CRF-01 nonvisual implementation evidence — 2026-10-22
+
+Scope: 12 validated recipes; Crude/Common/Fine/Superior/Masterwork definition ids; deterministic HMAC quality and selected input grade conversion; CharacterState v4 known recipes and learning intents; trainer wallet sink, scroll consume, practice discovery; owner-only Unreal knowledge data, dialogue/scroll server actions, and generated item metadata. Common retains the base id. A skill below recipe difficulty always yields Crude. The first trainer recipe costs 125 copper at the shipped 0.5 copper per difficulty point, within the owner's approximate 120 copper target.
+
+Verification before integration:
+
+- `CraftingContent.Tool -- content/crafting`: 12 recipes valid. `CraftingContent.Tests`: quality examples, thresholds, grade conservation/replay, discovery and malformed content passed. `Progression.Tests` and `Rewards.Tests`: passed.
+- `tools/Test-GameplayHosts.ps1 -EvidenceRoot Artifacts/Persistence/GameplayHosts/crf01-crash`: passed, including unknown-recipe refusal, trainer fee and replay, scroll use and already-known refusal, Crude craft/replay, host kill immediately after scroll consume, and recovery after restart. The per-run host output and credentials stayed in its private evidence root and were removed by the fixture. Earlier full pass: `crf01-recipes`.
+- `tools/Test-GameplayHosts.ps1 -RecipesOnly -EvidenceRoot Artifacts/Persistence/GameplayHosts/crf01-focused-3`: passed the three recipe, interruption and restart cases with a private host build.
+- `tools/Test-CharacterStateDurable.ps1 -EvidenceRoot Artifacts/Persistence/CharacterStateDurable/crf01-fourth`: passed schema, restart, replay, backup/restore, outage and newer-version checks; private storage removed.
+- `Build.bat ShatteredFrontierEditor Win64 Development -Project=C:\Projects\SF-wt-crf01\GameClient\ShatteredFrontier.uproject`: succeeded after C++ changes. `ShatteredFrontier.Crafting.Recipes` server-context automation: 1/1 passed. `Check-ItemIds.py`: all 56 expected definitions matched in a headless editor run; that commandlet exited 1 because of two pre-existing GameFeatureData asset-manager startup errors after the Python check completed successfully.
+
+The visual station panel, grade preview controls, inventory grade styling and captures are deferred to the UI session. The original `Test-GatheringPilot.ps1 -Refining` uses the session-only transaction route and cannot assert service-backed grades; GameplayHosts covers the graded durable path. No new art was created.

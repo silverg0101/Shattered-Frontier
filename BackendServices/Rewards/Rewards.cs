@@ -98,7 +98,7 @@ public sealed class BoarRewardService
         LootCatalog.Validate(table);
         if (table.Id != "loot/greenlands_silverbrook_boar" ||
             table.Guaranteed.Any(e => e.DefinitionId != "item/boar_hide") ||
-            table.Entries.Any(e => e.Kind == "item" && e.DefinitionId != "item/boar_hide") ||
+            table.Entries.Any(e => e.Kind == "item" && e.DefinitionId is not ("item/boar_hide" or "item/recipe_scroll_iron_brackets")) ||
             table.Guaranteed.Sum(e => e.Quantity!.Min) != 2)
             throw new RewardContentException("Boar reward table must ship two guaranteed boar hides.");
     }

@@ -27,6 +27,7 @@ namespace
             if (!Stack || !Stack->TryGetStringField(TEXT("definition_id"), Item.DefinitionId) || !Stack->TryGetNumberField(TEXT("quantity"), Quantity)
                 || !ValidId(Item.DefinitionId, TEXT("item")) || Quantity < 1 || Quantity > 1000 || Quantity != FMath::FloorToDouble(Quantity)) { return false; }
             Item.Quantity = int64(Quantity);
+            Stack->TryGetBoolField(TEXT("quality_input"), Item.bQualityInput);
             Out.Add(Item);
         }
         return true;
@@ -65,6 +66,19 @@ bool SFStationRecipes::Parse(const FString& Json, TArray<FSFStationRecipe>& Out,
             || !(Recipe.Station == TEXT("sawmill") || Recipe.Station == TEXT("forge") || Recipe.Station == TEXT("workbench"))
             || !ParseStacks(R, TEXT("inputs"), Recipe.Inputs) || !ParseStacks(R, TEXT("outputs"), Recipe.Outputs))
         { Error = FString::Printf(TEXT("recipe invalid: %s"), *Recipe.Id); return false; }
+        if (!R->TryGetStringField(TEXT("skill"), Recipe.Skill) || !R->TryGetNumberField(TEXT("difficulty"), Recipe.Difficulty))
+        { Error = FString::Printf(TEXT("recipe skill missing: %s"), *Recipe.Id); return false; }
+        const TSharedPtr<FJsonObject>* Learn = nullptr;
+        if (!R->TryGetObjectField(TEXT("learn"), Learn)) { Error = TEXT("recipe learning missing"); return false; }
+        const TArray<TSharedPtr<FJsonValue>>* Sources = nullptr;
+        if (!(*Learn)->TryGetArrayField(TEXT("sources"), Sources)) { Error = TEXT("recipe sources missing"); return false; }
+        Recipe.bDefaultKnown = Sources->ContainsByPredicate([](const TSharedPtr<FJsonValue>& V) { return V->AsString() == TEXT("default"); });
+        Recipe.LearnHint = Sources->ContainsByPredicate([](const TSharedPtr<FJsonValue>& V) { return V->AsString() == TEXT("trainer"); })
+            ? TEXT("Learn from a trainer") : Sources->ContainsByPredicate([](const TSharedPtr<FJsonValue>& V) { return V->AsString() == TEXT("scroll"); })
+            ? TEXT("Learn from a recipe scroll") : TEXT("Discover through practice");
+        const TArray<TSharedPtr<FJsonValue>>* Trainers = nullptr;
+        if ((*Learn)->TryGetArrayField(TEXT("trainers"), Trainers))
+        { for (const auto& Trainer : *Trainers) { Recipe.Trainers.Add(Trainer->AsString()); } }
         Ids.Add(Recipe.Id);
         Parsed.Add(MoveTemp(Recipe));
     }
@@ -99,12 +113,23 @@ const FSFStationRecipe* SFStationRecipes::Find(const FString& RecipeId)
 
 FString SFStationRecipes::ItemAssetPath(const FString& DefinitionId)
 {
-    const FString Name = TEXT("DA_") + PascalTail(DefinitionId, false);
+    FString Base = DefinitionId, Grade;
+    if (DefinitionId.StartsWith(TEXT("item/")))
+    {
+        const FString Tail = DefinitionId.Mid(5);
+        FString Slug;
+        if (Tail.Split(TEXT("/"), &Slug, &Grade)) { Base = TEXT("item/") + Slug; }
+    }
+    const FString Name = TEXT("DA_") + PascalTail(Base, false) + (Grade.IsEmpty() ? TEXT("") : TEXT("_") + PascalTail(TEXT("item/") + Grade, false));
     return FString::Printf(TEXT("/Game/Frontier/Gameplay/Pilot/%s.%s"), *Name, *Name);
 }
 
 FString SFStationRecipes::ItemDisplayName(const FString& DefinitionId)
 {
+    FString Base = DefinitionId, Grade;
+    if (DefinitionId.StartsWith(TEXT("item/")))
+    { const FString Tail = DefinitionId.Mid(5); FString Slug; if (Tail.Split(TEXT("/"), &Slug, &Grade)) { Base = TEXT("item/") + Slug; } }
+    if (!Grade.IsEmpty()) { return ItemDisplayName(Base) + TEXT(" (") + PascalTail(TEXT("item/") + Grade, false) + TEXT(")"); }
     if (DefinitionId == TEXT("item/foundation_material_bundle")) { return TEXT("Foundation Bundle"); }
     if (DefinitionId == TEXT("item/wall_material_bundle")) { return TEXT("Wall Bundle"); }
     if (DefinitionId == TEXT("item/door_material_bundle")) { return TEXT("Door Bundle"); }

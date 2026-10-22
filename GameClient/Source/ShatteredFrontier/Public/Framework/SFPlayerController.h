@@ -77,6 +77,9 @@ public:
     UFUNCTION(Exec) void SFTalk();
     UFUNCTION(Exec) void SFSpawnDialogueNpc();  // development: stands the Millwarden 4 m ahead and opens his board
     UFUNCTION(Exec) void SFDialogueChoose(int32 Index);  // development: picks response Index (0-3)
+    UFUNCTION(Server, Reliable) void ServerLearnRecipe(ASFDialogueNpc* Npc, const FString& RecipeId);
+    UFUNCTION(Server, Reliable) void ServerUseRecipeScroll(const FString& RecipeId);
+    void UseRecipeScroll(const FString& RecipeId);
     UFUNCTION(Exec) void SFStageAt(float XMetres, float YMetres, float YawDegrees);  // development: stands the pawn on the ground at X,Y facing Yaw (UI captures)
     bool IsStationPanelOpen() const;  // the crafting-station panel is on screen
     void ToggleBuildMode();

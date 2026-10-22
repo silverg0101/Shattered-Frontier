@@ -12,6 +12,8 @@ public sealed class CharacterSchemaCompatibilityException(string message) : Exce
 public sealed class CharacterStoreRejectedException(string message) : Exception(message);
 public sealed record VersionedResult<T>(long Revision, T Result);
 public sealed record CharacterPositionSnapshot(string ZoneId, double X, double Y, double Z, float Yaw);
+public sealed record RecipeLearnIntent(string OperationId, string CharacterId, string RecipeId, string Source,
+    string SourceId, string ContainerId, long ExpectedContainerRevision, long CostCopper, string Fingerprint, string State);
 
 // Migration identity installs Schema.sql. Runtime uses DML and marker SELECT only.
 public sealed class PostgresCharacterStateStore(string connectionString)
@@ -39,6 +41,92 @@ public sealed class PostgresCharacterStateStore(string connectionString)
         using var cmd = Command(c, t, "SELECT revision,state::text FROM character_state.progression WHERE character_id=$1", characterId);
         using var r = cmd.ExecuteReader();
         return r.Read() ? new(r.GetInt64(0), JsonSerializer.Deserialize<ProgressionSnapshot>(r.GetString(1)) ?? throw new CharacterStoreRejectedException("Invalid stored progression state.")) : null;
+    });
+
+    public RecipeLearnIntent BeginRecipeLearn(string operationId, string characterId, string recipeId, string source,
+        string sourceId, string containerId, long expectedContainerRevision, long costCopper, string skillId, int minimumSkill, int maxKnown)
+        => Transaction((c, t) =>
+    {
+        LockCharacter(c, t, characterId);
+        var fingerprint = Fingerprint(new { characterId, recipeId, source, sourceId, containerId, expectedContainerRevision, costCopper });
+        using (var existing = Command(c, t, "SELECT operation_id,character_id,recipe_id,source,source_id,container_id,expected_container_revision,cost_copper,fingerprint,state FROM character_state.recipe_intents WHERE operation_id=$1", operationId))
+        using (var r = existing.ExecuteReader())
+            if (r.Read())
+            {
+                var prior = ReadRecipeIntent(r);
+                if (prior.Fingerprint != fingerprint) throw new CharacterStoreRejectedException("Operation ID reused with different payload.");
+                return prior;
+            }
+        ProgressionSnapshot? snapshot = null;
+        using (var cmd = Command(c, t, "SELECT state::text FROM character_state.progression WHERE character_id=$1", characterId))
+        using (var r = cmd.ExecuteReader()) if (r.Read()) snapshot = JsonSerializer.Deserialize<ProgressionSnapshot>(r.GetString(0));
+        if ((snapshot?.KnownRecipes ?? []).Any(k => k.RecipeId == recipeId)) throw new CharacterStoreRejectedException("already_known");
+        if ((snapshot?.KnownRecipes?.Length ?? 0) >= maxKnown) throw new CharacterStoreRejectedException("known_recipe_limit");
+        if ((snapshot?.Skills.GetValueOrDefault(skillId) ?? 0) < minimumSkill) throw new CharacterStoreRejectedException("skill_too_low");
+        using (var pending = Command(c, t, "SELECT 1 FROM character_state.recipe_intents WHERE character_id=$1 AND recipe_id=$2 AND state='Pending'", characterId, recipeId))
+            if (pending.ExecuteScalar() is not null) throw new CharacterStoreRejectedException("recipe_learning_pending");
+        using var insert = Command(c, t, "INSERT INTO character_state.recipe_intents(operation_id,character_id,recipe_id,source,source_id,container_id,expected_container_revision,cost_copper,fingerprint) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+            operationId, characterId, recipeId, source, sourceId, containerId, expectedContainerRevision, costCopper, fingerprint);
+        insert.ExecuteNonQuery();
+        return new RecipeLearnIntent(operationId, characterId, recipeId, source, sourceId, containerId, expectedContainerRevision, costCopper, fingerprint, "Pending");
+    });
+
+    private static RecipeLearnIntent ReadRecipeIntent(NpgsqlDataReader r) => new(r.GetString(0), r.GetString(1), r.GetString(2),
+        r.GetString(3), r.GetString(4), r.GetString(5), r.GetInt64(6), r.GetInt64(7), r.GetString(8), r.GetString(9));
+
+    public IReadOnlyList<RecipeLearnIntent> PendingRecipeLearns() => Transaction((c, t) =>
+    {
+        var result = new List<RecipeLearnIntent>();
+        using var cmd = Command(c, t, "SELECT operation_id,character_id,recipe_id,source,source_id,container_id,expected_container_revision,cost_copper,fingerprint,state FROM character_state.recipe_intents WHERE state='Pending' ORDER BY created_at LIMIT 100");
+        using var r = cmd.ExecuteReader(); while (r.Read()) result.Add(ReadRecipeIntent(r));
+        return (IReadOnlyList<RecipeLearnIntent>)result;
+    });
+
+    public RecipeLearnIntent? RecipeIntent(string operationId) => Transaction<RecipeLearnIntent?>((c, t) =>
+    {
+        using var cmd = Command(c, t, "SELECT operation_id,character_id,recipe_id,source,source_id,container_id,expected_container_revision,cost_copper,fingerprint,state FROM character_state.recipe_intents WHERE operation_id=$1", operationId);
+        using var r = cmd.ExecuteReader(); return r.Read() ? ReadRecipeIntent(r) : null;
+    });
+
+    public long CompleteRecipeLearn(RecipeLearnIntent intent, DateTimeOffset learnedAt) => Transaction((c, t) =>
+    {
+        LockCharacter(c, t, intent.CharacterId);
+        using (var check = Command(c, t, "SELECT fingerprint,state FROM character_state.recipe_intents WHERE operation_id=$1 FOR UPDATE", intent.OperationId))
+        using (var r = check.ExecuteReader())
+        {
+            if (!r.Read() || r.GetString(0) != intent.Fingerprint) throw new CharacterStoreRejectedException("Recipe intent changed.");
+        }
+        long revision = 0; ProgressionSnapshot? snapshot = null;
+        using (var read = Command(c, t, "SELECT revision,state::text FROM character_state.progression WHERE character_id=$1", intent.CharacterId))
+        using (var r = read.ExecuteReader()) if (r.Read()) { revision = r.GetInt64(0); snapshot = JsonSerializer.Deserialize<ProgressionSnapshot>(r.GetString(1)); }
+        if ((snapshot?.KnownRecipes ?? []).Any(k => k.RecipeId == intent.RecipeId))
+        {
+            using var done = Command(c, t, "UPDATE character_state.recipe_intents SET state='Complete' WHERE operation_id=$1", intent.OperationId);
+            done.ExecuteNonQuery(); return revision;
+        }
+        snapshot ??= new CharacterProgression(intent.CharacterId, TimeProvider.System, () => .5).Snapshot();
+        var known = (snapshot.KnownRecipes ?? []).Append(new KnownRecipe(intent.RecipeId, intent.Source, learnedAt)).ToArray();
+        var state = JsonSerializer.Serialize(snapshot with { KnownRecipes = known });
+        if (revision == 0)
+        {
+            using var insert = Command(c, t, "INSERT INTO character_state.progression VALUES ($1,1,$2::jsonb)", intent.CharacterId, state);
+            insert.ExecuteNonQuery(); revision = 1;
+        }
+        else
+        {
+            using var update = Command(c, t, "UPDATE character_state.progression SET revision=revision+1,state=$2::jsonb WHERE character_id=$1 RETURNING revision", intent.CharacterId, state);
+            revision = (long)(update.ExecuteScalar() ?? throw new CharacterStoreRejectedException("Progression update lost."));
+        }
+        using var complete = Command(c, t, "UPDATE character_state.recipe_intents SET state='Complete' WHERE operation_id=$1", intent.OperationId);
+        complete.ExecuteNonQuery(); return revision;
+    });
+
+    public void CancelRecipeLearn(RecipeLearnIntent intent) => Transaction((c, t) =>
+    {
+        LockCharacter(c, t, intent.CharacterId);
+        using var cmd = Command(c, t, "DELETE FROM character_state.recipe_intents WHERE operation_id=$1 AND fingerprint=$2 AND state='Pending'",
+            intent.OperationId, intent.Fingerprint);
+        cmd.ExecuteNonQuery(); return 0;
     });
 
     public VersionedResult<QuestProgressSnapshot>? ReadQuest(QuestDefinition quest, string characterId) => Transaction<VersionedResult<QuestProgressSnapshot>?>((c, t) =>
@@ -73,7 +161,7 @@ public sealed class PostgresCharacterStateStore(string connectionString)
             {
                 using var marker = Command(c, t, "SELECT version,migration_id,compatible_build_min,compatible_build_max FROM character_state.schema_version WHERE singleton=true FOR SHARE");
                 using var row = marker.ExecuteReader();
-                if (!row.Read() || row.GetInt32(0) != 3 || row.GetString(1) != "character-state-003" || row.GetInt32(2) > 3 || row.GetInt32(3) < 3)
+                if (!row.Read() || row.GetInt32(0) != 4 || row.GetString(1) != "character-state-004" || row.GetInt32(2) > 4 || row.GetInt32(3) < 4)
                     throw new CharacterSchemaCompatibilityException("Unsupported character state schema version.");
             }
             catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501")

@@ -95,6 +95,15 @@ public sealed class PostgresExchangeStore(string connectionString)
         Post(c,t,op,owner,amount,"faucet",source);
         var receipt=new ExchangeReceipt(op,true,"ok",owner,amount); Save(c,t,op,fingerprint,receipt); return receipt;
     });
+    public ExchangeReceipt TrainingDebit(string op,string owner,long amount) => Mutate(op,(c,t)=>
+    {
+        RequireId(op); var fingerprint=JsonSerializer.Serialize(new { command="training_debit",owner,amount });
+        if(Replay(c,t,op,fingerprint) is { } prior) return prior;
+        if(!owner.StartsWith("chr_",StringComparison.Ordinal) || amount<=0 || amount>100000)
+            throw new ExchangeRejectedException("Invalid training fee.");
+        Post(c,t,op,owner,-amount,"sink","training_cost");
+        var receipt=new ExchangeReceipt(op,true,"ok",owner,amount); Save(c,t,op,fingerprint,receipt); return receipt;
+    });
     private static DurableListing? ReadListing(NpgsqlConnection c,NpgsqlTransaction t,string id,bool forUpdate=false)
     {
         using var cmd=Cmd(c,t,"SELECT id,seller_id,seller_container_id,escrow_id,item_id,quantity,price,fee,expires_at,state,revision,market_id FROM exchange.listings WHERE id=$1"+(forUpdate?" FOR UPDATE":""),id);
