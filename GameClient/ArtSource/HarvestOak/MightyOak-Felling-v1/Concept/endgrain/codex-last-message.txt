@@ -1,0 +1,3 @@
+Created [T_Oak_Endgrain_BaseColor.png](</C:/Projects/Shattered-Frontier/.claude/worktrees/agent-acdec12284f5bd462/GameClient/ArtSource/HarvestOak/MightyOak-Felling-v1/Concept/endgrain/T_Oak_Endgrain_BaseColor.png>) with the built-in image generation tool.
+
+The final texture is 1024×1024, has matching opposite-edge pixels, and averages RGB (204, 165, 120). An independent visual review passed it against the concept crop. The final generation prompt called for softer oak growth rings, sparse faint rays, pale cream and light tan color, and even shadow-free lighting.

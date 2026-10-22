@@ -1,0 +1,1 @@
+Saved [T_Oak_Splinter_BaseColor.png](</C:/Projects/Shattered-Frontier/.claude/worktrees/agent-acdec12284f5bd462/GameClient/ArtSource/HarvestOak/MightyOak-Felling-v1/Concept/splinter/T_Oak_Splinter_BaseColor.png>). It is 1024×1024, has matching opposite edges for tiling, and has an average color of RGB (205, 165, 120).

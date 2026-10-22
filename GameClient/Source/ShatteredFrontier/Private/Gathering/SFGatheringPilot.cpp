@@ -271,12 +271,17 @@ void ASFGatheringPilotNode::OnRep_State()
     if (HarvestVisuals&&HarvestVisuals->IsReady())
     {
         HarvestVisuals->ApplyState(State.Cuts,State.Charges==0,State.Generation,State.FallingTree);
-        Mesh->SetVisibility(false); Label->SetVisibility(false);
+        Mesh->SetVisibility(false); if (Label) { Label->SetVisibility(false); }
     }
     if (IsRefinery())
     {
         if (UStaticMesh* Prop=StationPropMesh(Kind)) { Mesh->SetStaticMesh(Prop); Mesh->SetRelativeScale3D(FVector(1.0)); }
         else { Mesh->SetStaticMesh(StationMesh); Mesh->SetRelativeScale3D(FVector(1.4,0.8,0.8)); }
+    }
+    // A map-placed node on a dedicated server has no label: servers do not load text render components.
+    if (!Label) {}
+    else if (IsRefinery())
+    {
         // Recipes are content (content/crafting); a station with several lists them and C chooses.
         TArray<FString> Recipes;
         for (const FSFStationRecipe* Recipe : SFStationRecipes::ForStation(USFGatheringPilotComponent::StationName(Kind))) { Recipes.Add(Recipe->Describe()); }
@@ -290,7 +295,7 @@ void ASFGatheringPilotNode::OnRep_State()
             State.Charges==0 ? TEXT("Depleted") : State.bBusy ? TEXT("In use") : TEXT("E: harvest"),State.Charges)));
         Label->SetTextRenderColor(State.Charges==0 ? FColor::Silver : Kind==ESFGatheringPilotKind::Oak ? FColor::Green : FColor::Cyan);
     }
-    if (!ShowStationLabels()) { Label->SetVisibility(false); }
+    if (Label&&!ShowStationLabels()) { Label->SetVisibility(false); }
     if (HasActorBegunPlay() && GetNetMode()!=NM_DedicatedServer) { RefreshResourcePresentation(GetPresentationState()); }
 }
 
@@ -697,6 +702,7 @@ void USFGatheringPilotComponent::TickComponent(float Delta, ELevelTick Type, FAc
     TickFiniteNetworkScenario();
     TickArtReviewScenario();
     TickFellingNetworkScenario();
+    TickFellingReviewScenario();
     TickSkillChoicesNetworkScenario();
 #endif
     if (!GetOwner()->HasAuthority() || !bEnabled || Feedback.Phase!=ESFGatheringPilotPhase::Harvesting) { return; }

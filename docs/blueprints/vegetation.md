@@ -65,3 +65,32 @@ District `dress` scale (`silverbrook-town-layout.json`): forest 1, town canopy 0
 
 ## 5. Concept refs
 `docs/Game-Design/concept-art/Greenlands-Forest-Look-v1.webp` (mixed woodland, undergrowth, mossy boulders, roots), `concept-art/UI/v5/gameplay-hud.png` (forest path foreground, density and colour), `<Family>/Concept/concept-sheet.png` where present.
+
+## 6. Tree felling (harvest oak): recipe
+
+The accepted state is described in [gameplay-harvest-felling-wip.md](../gameplay-harvest-felling-wip.md); the accepting review is `docs/evidence/graphics/2026-10-22-tree-felling-r10/REVIEW.md`. Run every step from the worktree root. Close the editor before any build or capture.
+
+| # | Step | Command | Done when |
+|---|---|---|---|
+| 1 | Build the smooth lower trunk | `& 'C:/Program Files/Blender Foundation/Blender 5.1/blender.exe' --background --factory-startup --python GameClient/ArtSource/HarvestOak/MightyOak-Felling-v1/tools/Build-SmoothLowerTrunk.py` | prints `SMOOTH_LOWER_TRUNK_READY`, triangles 576 |
+| 2 | Apply the felling art (open editor) | `py -3 tools/Run-InEditor.py tools/Update-HarvestOakFellingArt.py` | prints `FELLING_ART_UPDATED lower_tris 576`; the editor log has no `Failed to compile Material` |
+| 3 | Dev maps (open editor, first time only) | `py -3 tools/Run-InEditor.py tools/Create-TreeFellingDevMap.py`, then `git checkout -- GameClient/Content/Frontier/Core/PostProcess/T_Grade_Silverbrook_LUT.uasset` | prints `DEV_MAP_READY` twice; `git status` shows no shared asset |
+| 4 | Build | `/build-editor` | `Result: Succeeded` |
+| 5 | Tests | `/test ShatteredFrontier.Gathering.TreeSplit+ShatteredFrontier.Gathering.LocalizedGeometry+ShatteredFrontier.Gathering.LocalizedImportedContact+ShatteredFrontier.Gathering.FellingAuthority` | 4 passed, 0 failed |
+| 6 | Network | `pwsh -File tools/Test-HarvestFellingNetwork.ps1` | `... | Passed` |
+| 7 | Capture | `& ./tools/Test-HarvestFellingReview.ps1 -Ground Level -OutputDirectory <abs new dir>/level`, then the same with `-Ground Slope` and `/slope` | `| Passed`, 11 PNGs per ground. If a lean frame is missing (the machine hitched), delete that folder and rerun it |
+| 8 | Pairs | copy `docs/evidence/graphics/2026-10-22-tree-felling-r10/make_pairs.py` into the new evidence folder and run `py -3 make_pairs.py <capture root>` | `PAIRS level 11` and `PAIRS slope 11` |
+| 9 | Review | a fresh Fable reviewer with the brief in [visual-review.md](../visual-review.md) | `REVIEW.md` with every view PASS |
+
+Values and their files:
+
+- `DefaultGame.ini` `[SFHarvestTreeFallSettings]`: `bEnablePreparedOakFelling=True`, `CrownYieldRadiusCm=60`, `SettleAngularDamping=3`, `SettleLinearDamping=1`, `MaxSettleSeconds=4`.
+- `DefaultGame.ini` harvest presentation: `WoodRadiusCm=25`, `WoodDepthCm=18`.
+- Code constants: hinge at 0.9 x the collar radius on the fall side; `BalanceDegrees=8`; `TrunkAxis(0,-36)` cm in `SFHarvestFallingTree.cpp`. In `SFHarvestLocalizedGeometry.cpp`: notch prism 0.6 R; tear `Grid=17`, amplitude clamped to 8-22 cm.
+
+Do / never:
+
+- Never change the notch cutter shape or split into two surfaces. Both were tried and broke the boolean split for real strikes (see the WIP doc).
+- A lower trunk denser than 24 x 12 breaks the runtime split. Rerun step 5 after any trunk change.
+- The upper structure's join cap is bark at runtime (`PrepareVisualSource`). Never show its slot 1 on the log.
+- A review camera that has not seen the notch is not a pass. The capture driver frames 40 deg off the radial mouth direction and moves the review sun to the camera side.

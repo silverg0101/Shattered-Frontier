@@ -1,17 +1,28 @@
-# Tree felling work in progress
+# Tree felling
 
-Last accepted gameplay checkpoint: `835b17d` (localized harvesting and session skill practice). Experimental felling remains disabled by default and has not passed visual acceptance.
+Status: accepted 2026-10-22. A fresh Fable review passed 8/8 views in round 10: `docs/evidence/graphics/2026-10-22-tree-felling-r10/REVIEW.md`, with rounds 1-9 beside it. `bEnablePreparedOakFelling=True` ships in `DefaultGame.ini`. The build recipe is [blueprints/vegetation.md](blueprints/vegetation.md) §6.
 
-Goal: final approved oak extraction leaves a notch-aligned torn stump and hands the complementary upper collar, upper wood and foliage to a server-owned fall. Preserve material grants, replay protection, owner-only progression and resource-generation cleanup.
+Goal: the final approved oak extraction leaves a torn stump and hands the upper collar, wood and foliage to a server-owned fall. Material grants, replay protection, owner-only progression and resource-generation cleanup are preserved. There is no fall damage and no new loot.
 
-Owner decision 2026-10-19 ([GAT-01](decisions/GAT-01-growing-resource-nodes.md)): there is no persistent stump. A felled tree is gone until a new one grows at a pool point. The torn stump stays only as transient fall presentation, removed with the fallen tree. Drop it entirely if it blocks this checkpoint.
+Owner decision 2026-10-19 ([GAT-01](decisions/GAT-01-growing-resource-nodes.md)): there is no persistent stump. The torn stump is transient fall presentation, removed with the fallen tree when the node renews.
 
-Changed runtime: `SFHarvestFallingTree.h/.cpp`, `SFHarvestPresentation.h/.cpp`, `SFGatheringPilot.h/.cpp`, private `SFHarvestLocalizedGeometry.h/.cpp`, `SFHarvestTreeSplitTests.cpp`, and declared defaults in `DefaultGame.ini`. The split partitions the current notched lower trunk into matched closed halves; the new actor uses a retained hinge followed by static-world-only physics, ignores pawns/dynamic gameplay bodies and navigation, and freezes an observed supported rest pose. No fall damage or new loot is added. Actor lifetime follows the depleted generation; final fallen-log readability/removal treatment remains an art review issue.
+## Mechanism
 
-Source work: the corrected local branch-contour candidate is in `ArtSource/HarvestOak/MightyOak-Felling-v1/CollisionCandidate-v1/`. It uses52 closed UCX pieces for measured trunk/major-limb bands and local fork junctions; limbs below6cm equivalent radius remain excluded. `tools/Import-HarvestOakFellingCandidate.py` imported it into the fresh `Gameplay/Harvest/MightyOakFallV2` asset, verified all52 hulls and alignment against the accepted Unreal upper mesh, and preserved the original package hash. Evidence: `Artifacts/HarvestArt/mighty-felling-v2-import-01/import.json`. Runtime uses a64-piece ceiling for this one development encounter; forest cost and rendered contact remain unproven. First import rejected a Blender/Unreal handedness comparison; the corrected check compares both meshes in their actual Unreal attachment coordinates.
+- **Fall (`SFHarvestFallingTree`).** The retained hinge sits at the collar's fall-side edge. The lean is driven until the trunk is past balance (8 deg), then the hinge releases at 25 deg. The body is then locked to the fall plane: no roll and no skating. On first static contact (ground or stump), crown hulls further than `CrownYieldRadiusCm` (60 cm) from the trunk axis stop colliding. That radius replicates, so clients release the same hulls. Linear damping applies at once and angular damping 0.6 s later. The pose freezes after the quiet test or `MaxSettleSeconds` (4 s). A welded sphere on the collar keeps the butt out of the ground, and the frozen pose is lifted onto the surface.
+- **Split (`SFHarvestLocalizedGeometry::SplitTree`).** The notch cutter is a 0.6 R prism. Over the front band the split surface drops below the notch, so the stump keeps a chopped plane with a splinter band behind it. The collar is cut from the pristine trunk, so the log has a clean torn butt. If no profile gives matching caps, the same six profiles run on the notched trunk. Cutter booleans retry with small deterministic nudges.
+- **Stump (`SFHarvestPresentation`).** The stump collision box is world-static, has a slick physical material, and its top sits at the cut. The falling butt slides off it.
 
-Current evidence: `harvest-felling-build-05.log` succeeded; `harvest-tree-split-03/Report/index.json` passed the actual-source matched split case, including bounded deterministic retries when a Boolean leaves an open edge. `harvest-tree-fall-authority-01/Report/index.json` passed actual harvesting, hinge release, supported rest, replay and generation renewal. This mechanism check used a visually rejected collision candidate; it does not accept that asset.
+## Rejected (do not retry)
 
-Collision review rejected the engine's48-hull decomposition for spanning branch gaps. Capping source terminals retained nonmanifold forks; the closed voxel trial lost major limbs and was also rejected. A measured geodesic branch-contour prototype now follows local limb bands instead. Rejected outputs must not enter an accepted content checkpoint.
+These were tried and failed:
 
-`SFHarvestFellingNetworkScenario.cpp` and `tools/Test-HarvestFellingNetwork.ps1` add a bounded server/two-client/fresh-late-join check. Only the diagnostic server enables the typed felling setting; clients must follow replicated state while retaining shipped defaults. Build06 succeeded in39.36s. The network check passed at `Artifacts/ConstructionSandbox/harvest-felling-network-20261019-043133-404/results.json`: three real grants/practices, observer privacy, replay, matching rest pose and late join without historical fragments. Next review a credible collision candidate and rendered motion on level/sloped ground, stump/collar continuity and fallen-log readability. Do not infer final quality from closed-mesh or NullRHI checks.
+- A level-floor wedge cutter and an open-face (vertical V) cutter: repeated strikes left near-coincident faces, and the weld or the split failed.
+- A two-surface split: the collar boolean left open edges.
+- Per-column copies of the upper structure's UVs: they striped the bark. Bark is object-space triplanar instead.
+- Crown yield at 60 cm without the plane lock: the trunk rolled onto its back.
+
+## Owner flags
+
+- The tree falls away from the notch face (`TreeSplitFor`: `FallDirection = -Cut.Normal`). Real felling and the concept drop it toward the notch.
+- The log carries no notch faces, because the notch volume is restored on the log.
+- The shared `MightyOakV1` art changed: smooth lower trunk, object-space cut wood and bark, foliage subsurface. Standing harvest oaks in every map now use it.

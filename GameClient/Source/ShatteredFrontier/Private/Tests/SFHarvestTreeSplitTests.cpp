@@ -92,6 +92,16 @@ bool FSFHarvestTreeSplitTest::RunTest(const FString& Parameters)
         TestTrue(TEXT("Original surviving wood volume is conserved"),FMath::Abs(TreeVolume(Current)-TreeVolume(Stump)-TreeVolume(Collar))<=FMath::Max(0.1,TreeVolume(Current)*1.e-5));
         TestTrue(TEXT("Stump separation follows working notch below 1m authored join"),Stump.GetBounds().Max.Z<98.0&&Stump.GetBounds().Max.Z>Cut.Center.Z-8.0);
         TestTrue(TEXT("Complementary collar retains original 1m attachment"),FMath::Abs(Collar.GetBounds().Max.Z-Current.GetBounds().Max.Z)<0.001);
+        // Runtime felling cuts the log from the uncut trunk: same deterministic stump, the log keeps no notch faces.
+        FDynamicMesh3 PristineStump,PristineCollar,PristineReplayStump,PristineReplayCollar;
+        if (TestTrue(TEXT("Split with a pristine collar source succeeds"),SplitTree(Current,Split,PristineStump,PristineCollar,&Failure,&Base)))
+        {
+            TestTrue(TEXT("Pristine-collar split replays identically"),SplitTree(Current,Split,PristineReplayStump,PristineReplayCollar,&Failure,&Base)
+                &&TreeGeometryEqual(PristineStump,PristineReplayStump)&&TreeGeometryEqual(PristineCollar,PristineReplayCollar));
+            TestTrue(TEXT("Pristine collar holds at least the notched collar's wood"),TreeVolume(PristineCollar)>=TreeVolume(Collar)-0.1);
+            TestTrue(TEXT("Pristine collar closed and valid"),PristineCollar.IsClosed()&&PristineCollar.CheckValidity(FDynamicMesh3::FValidityOptions(),EValidityCheckFailMode::ReturnOnly));
+        }
+        else { AddError(Failure); }
         TArray<FVector3d> CapNormals;
         for (const int32 T : Stump.TriangleIndicesItr())
         {

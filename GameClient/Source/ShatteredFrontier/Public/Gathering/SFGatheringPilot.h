@@ -10,6 +10,7 @@
 
 struct FSFHarvestArtReviewState;
 struct FSFHarvestTreeFallNetworkState;
+struct FSFHarvestFellingReviewState;
 
 class UStaticMesh;
 class UStaticMeshComponent;
@@ -228,12 +229,14 @@ public:
     void TickFiniteNetworkScenario();
     void TickArtReviewScenario();
     void TickFellingNetworkScenario();
+    void TickFellingReviewScenario();
     void TickSkillChoicesNetworkScenario();
     int32 SkillChoiceScenarioStep=0;
     double SkillChoiceScenarioStarted=0;
     double SkillChoiceCaptureAt=0;
     TSharedPtr<FSFHarvestArtReviewState> ArtReviewState;
     TSharedPtr<FSFHarvestTreeFallNetworkState> FellingNetworkState;
+    TSharedPtr<FSFHarvestFellingReviewState> FellingReviewState;
     int32 ScenarioStep = 0;
     double ScenarioStarted = 0;
     double ScenarioReplayedAt = 0;

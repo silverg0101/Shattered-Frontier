@@ -1,6 +1,9 @@
 #include "Gathering/SFGatheringPilot.h"
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
 #include "Gathering/SFHarvestPresentation.h"
+#include "Gathering/SFHarvestFallingTree.h"
+#include "Camera/CameraActor.h"
+#include "Camera/CameraComponent.h"
 #include "EngineUtils.h"
 #include "Engine/World.h"
 #include "GameFramework/Character.h"
@@ -33,6 +36,50 @@
 #include "InventoryComponent.h"
 #include "InventoryItemDefinition.h"
 #include "InventoryTransactionLibrary.h"
+#endif
+
+#if WITH_EDITOR
+// Finishes shaders and streams every texture used by gathering nodes and their falling trees, so a review frame never
+// shows proxy materials or low mips. Returns the failure reason, or nullptr when ready.
+static const TCHAR* PrepareHarvestReviewResources(UWorld* World,const AActor* Extra=nullptr)
+{
+    TSet<UMaterialInterface*> Materials;
+    const auto Collect=[&Materials](const AActor* Actor)
+    {
+        TArray<UPrimitiveComponent*> Components; Actor->GetComponents(Components);
+        for (const auto* Component:Components)
+        {
+            TArray<UMaterialInterface*> Used; Component->GetUsedMaterials(Used);
+            for (auto* Material:Used) { if (Material) { Materials.Add(Material); } }
+        }
+    };
+    for (TActorIterator<ASFGatheringPilotNode> It(World);It;++It) { Collect(*It); }
+    if (Extra) { Collect(Extra); }
+    FAssetCompilingManager::Get().FinishAllCompilation();
+    TSet<UTexture2D*> Textures;
+    for (auto* Material:Materials)
+    {
+        const auto* Resource=Material->GetMaterial()->GetMaterialResource(GMaxRHIShaderPlatform);
+        if (!Resource || !Resource->IsCompilationFinished() || !Resource->GetCompileErrors().IsEmpty()) { return TEXT("ArtShaderNotReady"); }
+        TArray<UTexture*> Used; Material->GetUsedTextures(Used);
+        for (auto* Texture:Used) { if (auto* TwoD=Cast<UTexture2D>(Texture)) { Textures.Add(TwoD); } }
+    }
+    if (Textures.IsEmpty()) { return TEXT("NoCompiledArtTextures"); }
+    for (auto* Texture:Textures)
+    {
+        Texture->BlockOnAnyAsyncBuild(); Texture->SetForceMipLevelsToBeResident(120.0f);
+        Texture->WaitForStreaming();
+    }
+    FlushRenderingCommands();
+    for (auto* Texture:Textures)
+    {
+        if (Texture->IsDefaultTexture() || !Texture->IsAsyncCacheComplete() || !Texture->GetResource()
+            || Texture->HasPendingInitOrStreaming() || !Texture->IsFullyStreamedIn()) { return TEXT("ArtTextureNotReady"); }
+        UE_LOG(LogTemp,Display,TEXT("HARVEST_ART_TEXTURE_READY Asset=%s ResidentMips=%d"),*Texture->GetPathName(),Texture->GetNumResidentMips());
+    }
+    UE_LOG(LogTemp,Display,TEXT("HARVEST_ART_RESOURCES_READY Materials=%d Textures=%d"),Materials.Num(),Textures.Num());
+    return nullptr;
+}
 #endif
 
 struct FSFHarvestArtReviewState
@@ -128,42 +175,7 @@ void USFGatheringPilotComponent::TickArtReviewScenario()
             Fill->SetIntensity(1.5f); Fill->SetCastShadows(false); Fill->SetLightColor(FLinearColor(0.8f,0.9f,1.0f));
             Fill->RegisterComponent(); Fill->SetWorldRotation((Aim-Eye).Rotation());
             if (auto* HUD=PC->GetHUD()) { HUD->bShowHUD=false; }
-            TSet<UMaterialInterface*> Materials;
-            for (TActorIterator<ASFGatheringPilotNode> It(GetWorld());It;++It)
-            {
-                TArray<UPrimitiveComponent*> Components; It->GetComponents(Components);
-                for (const auto* Component:Components)
-                {
-                    TArray<UMaterialInterface*> Used; Component->GetUsedMaterials(Used);
-                    for (auto* Material:Used) { if (Material) { Materials.Add(Material); } }
-                }
-            }
-            FAssetCompilingManager::Get().FinishAllCompilation();
-            TSet<UTexture2D*> Textures;
-            for (auto* Material:Materials)
-            {
-                const auto* Resource=Material->GetMaterial()->GetMaterialResource(GMaxRHIShaderPlatform);
-                if (!Resource || !Resource->IsCompilationFinished() || !Resource->GetCompileErrors().IsEmpty())
-                { Fail(TEXT("ArtShaderNotReady")); return; }
-                TArray<UTexture*> Used; Material->GetUsedTextures(Used);
-                for (auto* Texture:Used) { if (auto* TwoD=Cast<UTexture2D>(Texture)) { Textures.Add(TwoD); } }
-            }
-            if (Textures.IsEmpty()) { Fail(TEXT("NoCompiledArtTextures")); return; }
-            for (auto* Texture:Textures)
-            {
-                Texture->BlockOnAnyAsyncBuild(); Texture->SetForceMipLevelsToBeResident(120.0f);
-                Texture->WaitForStreaming();
-            }
-            FlushRenderingCommands();
-            for (auto* Texture:Textures)
-            {
-                if (Texture->IsDefaultTexture() || !Texture->IsAsyncCacheComplete() || !Texture->GetResource()
-                    || Texture->HasPendingInitOrStreaming() || !Texture->IsFullyStreamedIn())
-                { Fail(TEXT("ArtTextureNotReady")); return; }
-                UE_LOG(LogTemp,Display,TEXT("HARVEST_ART_TEXTURE_READY Asset=%s ResidentMips=%d"),
-                    *Texture->GetPathName(),Texture->GetNumResidentMips());
-            }
-            UE_LOG(LogTemp,Display,TEXT("HARVEST_ART_RESOURCES_READY Materials=%d Textures=%d"),Materials.Num(),Textures.Num());
+            if (const TCHAR* Failure=PrepareHarvestReviewResources(GetWorld())) { Fail(Failure); return; }
 #endif
             Review.bResourcesPrepared=true; Review.ResourceReadyFrame=GFrameCounter; return;
         }
@@ -217,6 +229,159 @@ void USFGatheringPilotComponent::TickArtReviewScenario()
         || Review.Captures!=4 || Feedback.Phase!=ESFGatheringPilotPhase::Committed || bKeyConflict)
     { Fail(TEXT("FinalOrReplayInvariant")); return; }
     Review.bDone=true; UE_LOG(LogTemp,Display,TEXT("HARVEST_ART_DONE Ore=3 Cuts=3 Revision=3 Charges=0 Captures=4 ReplayUnchanged=1"));
+    FPlatformMisc::RequestExitWithStatus(false,0);
+#endif
+}
+
+struct FSFHarvestFellingReviewState
+{
+    double Started=0,StableSince=0,RestSince=0;
+    FVector LastPosition=FVector::ZeroVector,Base=FVector::ZeroVector,FallDir=FVector::ForwardVector,Side=FVector::RightVector;
+    FString Output,Pending;
+    TWeakObjectPtr<ACameraActor> Camera;
+    uint64 WaitUntilFrame=0;
+    int32 Completed=0,NextLean=0,CloseUps=0,Shots=0;
+    bool bToolRequested=false,bWaiting=false,bPrepared=false,bNotched=false,bDone=false;
+};
+
+// Rendered client of a real dedicated-server felling (tools/Test-HarvestFellingReview.ps1): three owned strikes on the
+// map's oak, then timed 1920x1080 frames by lean angle, the supported rest, and stump/log close-ups. Collection only.
+void USFGatheringPilotComponent::TickFellingReviewScenario()
+{
+#if SF_WITH_MINIMAL_INVENTORY && WITH_EDITOR
+    auto* PC=Cast<APlayerController>(GetOwner());
+    if (GetNetMode()!=NM_Client || !PC || !PC->IsLocalController() || !bEnabled || !bRoleAssigned
+        || !PC->GetPawn() || !FParse::Param(FCommandLine::Get(),TEXT("HarvestFellingReview"))) { return; }
+    if (!FellingReviewState) { FellingReviewState=MakeShared<FSFHarvestFellingReviewState>(); }
+    auto& R=*FellingReviewState; if (R.bDone) { return; }
+    const double Now=GetWorld()->GetTimeSeconds();
+    const auto Fail=[&](const TCHAR* Reason)
+    {
+        R.bDone=true; UE_LOG(LogTemp,Error,TEXT("HARVEST_FELLING_REVIEW_FAILED Reason=%s Cuts=%d Shots=%d"),Reason,R.Completed,R.Shots);
+        FPlatformMisc::RequestExitWithStatus(false,1);
+    };
+    if (R.Started==0)
+    {
+        R.Started=Now;
+        if (!FParse::Value(FCommandLine::Get(),TEXT("HarvestFellingReviewOutput="),R.Output)
+            || FPaths::IsRelative(R.Output) || !IFileManager::Get().DirectoryExists(*R.Output)) { Fail(TEXT("OutputDirectory")); return; }
+    }
+    if (Now-R.Started>150) { Fail(TEXT("Timeout")); return; }
+    ASFGatheringPilotNode* Wood=nullptr;
+    for (TActorIterator<ASFGatheringPilotNode> It(GetWorld());It;++It) { if (It->Kind==ESFGatheringPilotKind::Oak) { Wood=*It; break; } }
+    if (!Wood || Wood->GetState().Capacity==0) { return; }
+    if (!Wood->HarvestVisuals || !Wood->HarvestVisuals->IsReady()) { Fail(TEXT("ActualOakSourceUnavailable")); return; }
+    const auto& State=Wood->GetState();
+    if (!R.Pending.IsEmpty())
+    {
+        if (GIsHighResScreenshot || IFileManager::Get().FileSize(*R.Pending)<=0) { return; }
+        ++R.Shots; R.Pending.Reset();
+    }
+    if (GFrameCounter<R.WaitUntilFrame) { return; }
+    auto* Tree=State.FallingTree.Get();
+    const auto Shot=[&](const FString& Name)
+    {
+        R.Pending=FPaths::Combine(R.Output,Name+TEXT(".png"));
+        if (IFileManager::Get().FileExists(*R.Pending)) { Fail(TEXT("CaptureAlreadyExists")); return; }
+        PC->ConsoleCommand(FString::Printf(TEXT("HighResShot 1920x1080 filename=%s"),*R.Pending.Replace(TEXT("\\"),TEXT("/"))));
+        const FTransform Body=Tree&&Tree->GetFallBody()?Tree->GetFallBody()->GetComponentTransform():FTransform::Identity;
+        UE_LOG(LogTemp,Display,TEXT("HARVEST_FELLING_SHOT Name=%s Cuts=%d LeanDeg=%.1f BodyLocation=%s Resting=%d"),*Name,State.Cuts.Num(),
+            FMath::RadiansToDegrees(FMath::Acos(FMath::Clamp(Body.GetUnitAxis(EAxis::Z).Z,-1.0,1.0))),*Body.GetLocation().ToString(),Tree&&Tree->IsResting());
+    };
+    const auto View=[&](const FVector& Eye,const FVector& Look,float Fov)
+    {
+        R.Camera->SetActorLocationAndRotation(Eye,(Look-Eye).Rotation()); R.Camera->GetCameraComponent()->SetFieldOfView(Fov);
+        PC->SetViewTarget(R.Camera.Get()); R.WaitUntilFrame=GFrameCounter+45;  // temporal history settles on the new view
+    };
+    if (!R.bPrepared)
+    {
+        if (!HasRequiredTool(ESFGatheringPilotKind::Oak)) { if (!R.bToolRequested) { R.bToolRequested=TryEquipTool(true); } return; }
+        const auto* Character=Cast<ACharacter>(PC->GetPawn()); const FVector Position=PC->GetPawn()->GetActorLocation();
+        if (!Character || !Character->GetCharacterMovement()->IsMovingOnGround() || !Character->GetVelocity().IsNearlyZero(1)
+            || FVector::DistSquared(Position,R.LastPosition)>1) { R.StableSince=0; R.LastPosition=Position; return; }
+        if (R.StableSince==0) { R.StableSince=Now; }
+        if (Now-R.StableSince<1) { return; }
+        if (State.Charges!=3 || !State.Cuts.IsEmpty()) { Fail(TEXT("ExpectedFreshThreeChargeOak")); return; }
+        if (auto* HUD=PC->GetHUD()) { HUD->bShowHUD=false; }
+        for (const TCHAR* Command:{TEXT("r.EyeAdaptationQuality 0"),TEXT("r.DefaultFeature.AutoExposure 0"),TEXT("r.MotionBlurQuality 0"),TEXT("r.ScreenPercentage 100")})
+        { GEngine->Exec(GetWorld(),Command); }
+        if (const TCHAR* Failure=PrepareHarvestReviewResources(GetWorld())) { Fail(Failure); return; }
+        R.Base=Wood->GetActorLocation()-FVector(0,0,70);
+        R.Camera=GetWorld()->SpawnActor<ACameraActor>();
+        if (!R.Camera.IsValid()) { Fail(TEXT("ReviewCamera")); return; }
+        R.bPrepared=true; return;
+    }
+    if (R.Completed<3)
+    {
+        if (R.bWaiting)
+        {
+            if (Feedback.Phase==ESFGatheringPilotPhase::Rejected || Feedback.Phase==ESFGatheringPilotPhase::Canceled) { Fail(TEXT("HarvestRejected")); return; }
+            if (Feedback.Phase!=ESFGatheringPilotPhase::Committed || State.Cuts.Num()!=R.Completed+1) { return; }
+            ++R.Completed; R.bWaiting=false;
+            if (R.Completed==2)
+            {
+                // Frame the side of the fall: the tree falls away from the notch face (SFHarvestPresentation TreeSplitFor).
+                // The mouth faces radially from the trunk axis to the cut (a facet normal of the trunk can be far off).
+                const FVector CutPoint=R.Base+Wood->GetActorRotation().RotateVector(FVector(State.Cuts.Last().Point));
+                const FVector Radial=FVector(CutPoint.X-R.Base.X,CutPoint.Y-R.Base.Y,0).GetSafeNormal();
+                R.FallDir=-Radial;
+                R.Side=FVector::CrossProduct(FVector::UpVector,R.FallDir);
+                // Like the concept, the camera stands 35 deg toward the notch side so the wedge is seen open, and the
+                // review sun comes from behind the camera at 30 deg elevation to light the cut face.
+                const FVector SeqDir=(Radial*FMath::Cos(FMath::DegreesToRadians(40.f))-R.Side*FMath::Sin(FMath::DegreesToRadians(40.f))).GetSafeNormal();
+                UE_LOG(LogTemp,Display,TEXT("HARVEST_REVIEW_NOTCH_VIEW RadialToViewDeg=%.1f"),
+                    FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(Radial,SeqDir.GetSafeNormal2D()))));
+                for (TActorIterator<ADirectionalLight> It(GetWorld());It;++It)
+                {
+                    It->GetLightComponent()->SetMobility(EComponentMobility::Movable);
+                    It->SetActorRotation((-SeqDir).Rotation()+FRotator(-30,0,0));
+                    UE_LOG(LogTemp,Display,TEXT("HARVEST_REVIEW_SUN Rot=%s"),*It->GetActorRotation().ToString());
+                }
+                const FVector Frame=R.Base+FVector(0,0,450);
+                View(Frame+SeqDir*1500,Frame,65); R.bNotched=true;
+            }
+            return;
+        }
+        if (R.bNotched) { R.bNotched=false; Shot(TEXT("00-notched")); return; }
+        const FVector Eye=PC->GetPawn()->GetPawnViewLocation(); FVector Contact,Normal;
+        // Cut ~55 cm above the base (node origin is base+70): the concept stump proportion, room for the hinge tear.
+        if (!Wood->HarvestVisuals->TraceSurface(Eye,(Wood->GetActorLocation()-FVector(0,0,15)-Eye).GetSafeNormal(),Contact,Normal)
+            || !InteractFromRay(Eye,(Contact-Eye).GetSafeNormal()) || !bWaitingHadSurface) { Fail(TEXT("SurfaceInteraction")); return; }
+        R.bWaiting=true; return;
+    }
+    if (!IsValid(Tree) || !Tree->IsVisualSourceReady() || !Wood->HarvestVisuals->IsTreeDetachedTo(Tree)) { return; }
+    static constexpr int32 Leans[]={2,10,22,36,50,64,78};
+    const double Lean=FMath::RadiansToDegrees(FMath::Acos(FMath::Clamp(Tree->GetFallBody()->GetUpVector().Z,-1.0,1.0)));
+    if (R.NextLean<UE_ARRAY_COUNT(Leans) && !Tree->IsResting())
+    {
+        if (Lean>=Leans[R.NextLean]) { Shot(FString::Printf(TEXT("%02d-lean-%02d"),R.NextLean+1,Leans[R.NextLean])); ++R.NextLean; }
+        return;
+    }
+    if (!Tree->IsResting()) { return; }
+    if (R.RestSince==0) { R.RestSince=Now; return; }
+    if (Now-R.RestSince<1.5) { return; }
+    const FTransform Rest=Tree->GetFallBody()->GetComponentTransform();
+    if (R.CloseUps==0)
+    {
+        FVector Lowest(0,0,BIG_NUMBER);
+        for (const UActorComponent* Component:Tree->GetComponents())
+        { if (const auto* Part=Cast<UPrimitiveComponent>(Component); Part && Part->IsVisible()) { Lowest.Z=FMath::Min(Lowest.Z,Part->Bounds.GetBox().Min.Z); } }
+        UE_LOG(LogTemp,Display,TEXT("HARVEST_FELLING_REST Transform=%s LowestVisibleZ=%.1f BaseZ=%.1f SkippedLeans=%d"),
+            *Rest.ToString(),Lowest.Z,R.Base.Z,int32(UE_ARRAY_COUNT(Leans))-R.NextLean);
+        ++R.CloseUps; R.WaitUntilFrame=GFrameCounter+5; Shot(TEXT("08-rest")); return;
+    }
+    PC->GetPawn()->SetActorHiddenInGame(true);
+    if (R.CloseUps==1) { View(R.Base-R.FallDir*260+R.Side*120+FVector(0,0,140),R.Base+FVector(0,0,45),45); ++R.CloseUps; return; }
+    if (R.CloseUps==2) { ++R.CloseUps; Shot(TEXT("09-stump-close")); return; }
+    if (R.CloseUps==3)
+    {
+        const FVector Butt=Rest.TransformPosition(FVector(0,0,40));
+        const FVector Mid=(Butt+R.Base+FVector(0,0,40))*0.5;   // butt and stump both in frame
+        View(Mid+R.Side*500+FVector(0,0,150),Mid,60); ++R.CloseUps; return;
+    }
+    if (R.CloseUps==4) { ++R.CloseUps; Shot(TEXT("10-log-close")); return; }
+    R.bDone=true;
+    UE_LOG(LogTemp,Display,TEXT("HARVEST_FELLING_REVIEW_DONE Shots=%d Cuts=%d Charges=%d"),R.Shots,State.Cuts.Num(),State.Charges);
     FPlatformMisc::RequestExitWithStatus(false,0);
 #endif
 }

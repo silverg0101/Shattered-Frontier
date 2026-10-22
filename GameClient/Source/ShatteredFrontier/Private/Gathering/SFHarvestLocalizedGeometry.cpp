@@ -152,14 +152,16 @@ bool SFHarvestLocalizedGeometry::Subtract(const FDynamicMesh3& Source, const FCu
     }
     else
     {
-        // Triangular-prism chisel: wide at the bark, narrowing to the deepest cut.
+        // Triangular-prism chisel: wide face just outside the bark, narrowing to the deepest cut, 0.6 R tall each way so
+        // a felling notch reads at gameplay distance. Level-floor and open-face (vertical V) wedges were tried and
+        // rejected: repeated strikes on the notch faces left near-coincident faces the boolean weld or split could not close.
         const FVector3d Local[] = {
-            {-Cut.Radius, -Cut.Radius * 0.35, Cut.Depth}, {Cut.Radius, -Cut.Radius * 0.35, Cut.Depth},
-            {0, -Cut.Radius * 0.35, -Cut.Depth}, {-Cut.Radius, Cut.Radius * 0.35, Cut.Depth},
-            {Cut.Radius, Cut.Radius * 0.35, Cut.Depth}, {0, Cut.Radius * 0.35, -Cut.Depth}};
+            {-Cut.Radius, -Cut.Radius * 0.6, Cut.Depth * 0.15}, {Cut.Radius, -Cut.Radius * 0.6, Cut.Depth * 0.15},
+            {0, -Cut.Radius * 0.6, -Cut.Depth}, {-Cut.Radius, Cut.Radius * 0.6, Cut.Depth * 0.15},
+            {Cut.Radius, Cut.Radius * 0.6, Cut.Depth * 0.15}, {0, Cut.Radius * 0.6, -Cut.Depth}};
         for (const FVector3d& P : Local) { Cutter.AppendVertex(Cut.Center + U * P.X + V * P.Y + N * P.Z); }
         const FIndex3i Faces[] = {{0,1,2},{3,5,4},{0,3,4},{0,4,1},{1,4,5},{1,5,2},{2,5,3},{2,3,0}};
-        const FVector3d Centroid = Cut.Center + N * (Cut.Depth / 3.0);
+        const FVector3d Centroid = Cut.Center + N * (Cut.Depth * (0.3 - 1.0) / 3.0);
         for (FIndex3i F : Faces)
         {
             const FVector3d A = Cutter.GetVertex(F.A), B = Cutter.GetVertex(F.B), C = Cutter.GetVertex(F.C);
@@ -195,7 +197,19 @@ bool SFHarvestLocalizedGeometry::Subtract(const FDynamicMesh3& Source, const FCu
     FMeshBoolean Boolean(&Prepared, &Cutter, &Staged, FMeshBoolean::EBooleanOp::Difference);
     Boolean.bPutResultInInputSpace = true;
     Boolean.TrackPerTriangleSourceMesh.Emplace();
-    if (!Boolean.Compute()) { return Reject(TEXT("Boolean cut/weld operation failed")); }
+    // Near-coincident faces from an earlier notch can defeat the weld: retry with sub-millimetre deterministic nudges.
+    bool bComputed = Boolean.Compute();
+    for (int32 Nudge = 1; !bComputed && Nudge <= 5; ++Nudge)
+    {
+        const FVector3d Shift = (N * 0.37 + V * 0.23 + U * 0.11) * double(Nudge);
+        for (const int32 ID : Cutter.VertexIndicesItr()) { Cutter.SetVertex(ID, Cutter.GetVertex(ID) + Shift); }
+        Staged = FDynamicMesh3();
+        FMeshBoolean Retry(&Prepared, &Cutter, &Staged, FMeshBoolean::EBooleanOp::Difference);
+        Retry.bPutResultInInputSpace = true; Retry.TrackPerTriangleSourceMesh.Emplace();
+        bComputed = Retry.Compute();
+        if (bComputed) { Boolean.CreatedBoundaryEdges = Retry.CreatedBoundaryEdges; Boolean.TrackPerTriangleSourceMesh = Retry.TrackPerTriangleSourceMesh; }
+    }
+    if (!bComputed) { return Reject(TEXT("Boolean cut/weld operation failed")); }
     if (!Boolean.CreatedBoundaryEdges.IsEmpty()) { return Reject(TEXT("Boolean produced unclosed cut boundaries")); }
     if (!SafeMesh(Staged))
     {
@@ -257,7 +271,7 @@ bool SFHarvestLocalizedGeometry::Subtract(const FDynamicMesh3& Source, const FCu
 namespace SFHarvestLocalizedGeometry { namespace
 {
 bool TrySplitTree(const FDynamicMesh3& Source,const FTreeSplit& Split,
-    FDynamicMesh3& OutStump,FDynamicMesh3& OutUpperCollar,FString* Failure,uint32 ProfileAttempt)
+    FDynamicMesh3& OutStump,FDynamicMesh3& OutUpperCollar,FString* Failure,uint32 ProfileAttempt,const FDynamicMesh3* Pristine)
 {
     const auto Reject=[Failure](const TCHAR* Why) { if (Failure) { *Failure=Why; } return false; };
     const FCut& Cut=Split.FinalCut;
@@ -287,12 +301,24 @@ bool TrySplitTree(const FDynamicMesh3& Source,const FTreeSplit& Split,
     { return Reject(TEXT("Split contact is outside the lower trunk")); }
     const double Margin=FMath::Max(10.0,Cut.Radius);
     MinU-=Margin; MaxU+=Margin; MinV-=Margin; MaxV+=Margin;
-    constexpr int32 Grid=9,Cells=Grid-1;
+    constexpr int32 Grid=17,Cells=Grid-1;
     const double StepU=(MaxU-MinU)/Cells,StepV=(MaxV-MinV)/Cells;
     double Noise[Grid*Grid],Delta[Grid*Grid];
     FRandomStream Random(static_cast<int32>(Cut.FractureSeed^0x5D83A291u^(ProfileAttempt*0x9E3779B9u)));
     for (double& N : Noise) { N=Random.FRandRange(-1.0f,1.0f); }
-    const double CU=(ContactU-MinU)/StepU,CV=(ContactV-MinV)/StepV;
+    {
+        // 3x3 box smoothing: neighbouring cells differ by at most ~2/3 of the amplitude, so torn faces lean as shards
+        // instead of standing as vertical socket walls.
+        double Smooth[Grid*Grid];
+        for (int32 Y=0;Y<Grid;++Y) { for (int32 X=0;X<Grid;++X)
+        {
+            double Sum=0; int32 Count=0;
+            for (int32 DY=-1;DY<=1;++DY) { for (int32 DX=-1;DX<=1;++DX)
+            { const int32 NX=X+DX,NY=Y+DY; if (NX>=0&&NX<Grid&&NY>=0&&NY<Grid) { Sum+=Noise[NY*Grid+NX]; ++Count; } } }
+            Smooth[Y*Grid+X]=Sum/Count*1.6;   // restore the range the averaging removes
+        } }
+        FMemory::Memcpy(Noise,Smooth,sizeof(Noise));
+    }    const double CU=(ContactU-MinU)/StepU,CV=(ContactV-MinV)/StepV;
     const int32 I=FMath::Clamp(FMath::FloorToInt(CU),0,Cells-1),J=FMath::Clamp(FMath::FloorToInt(CV),0,Cells-1);
     const double A=CU-I,B=CV-J;
     const auto Index=[](int32 X,int32 Y) { return Y*Grid+X; };
@@ -301,20 +327,48 @@ bool TrySplitTree(const FDynamicMesh3& Source,const FTreeSplit& Split,
     const double ContactNoise=B<=A
         ?Noise[Index(I,J)]*(1-A)+Noise[Index(I+1,J)]*(A-B)+Noise[Index(I+1,J+1)]*B
         :Noise[Index(I,J)]*(1-B)+Noise[Index(I+1,J+1)]*A+Noise[Index(I,J+1)]*(B-A);
-    const double Amplitude=FMath::Clamp(FMath::Min(Cut.Radius*0.25,Cut.Depth*0.5),1.0,6.0);
-    double Highest=0,Lowest=0;
+    // Felling tear: splinters up to 30 cm tall, as tall as the cut leaves room for (HeightScale below).
+    const double Amplitude=FMath::Clamp(FMath::Max(Cut.Radius*0.8,Cut.Depth),8.0,22.0);
+    double Tear[Grid*Grid];
+    const double Rise=(ProfileAttempt%2?-1.0:1.0)*((ProfileAttempt+1)/2)*1.7;   // retries shift the surface +-1.7 cm steps; keep it inside the room
     for (int32 Y=0;Y<Grid;++Y) { for (int32 X=0;X<Grid;++X)
     {
         const int32 ID=Index(X,Y);
         const FVector3d FromNotch=U*(MinU+X*StepU-ContactU)+V*(MinV+Y*StepV-ContactV);
-        Delta[ID]=Amplitude*(Noise[ID]-ContactNoise)+0.025*FromNotch.Dot(U)-0.04*FromNotch.Dot(WorkingFace);
-        Highest=FMath::Max(Highest,Delta[ID]); Lowest=FMath::Min(Lowest,Delta[ID]);
+        const double W=FromNotch.Dot(WorkingFace);   // + toward the chopped face, - toward the far side
+        // Full tear only in a ~0.4 R band behind the notch; level elsewhere, and the chopped face past the band is a plane.
+        // The splinter band sits behind the notch apex (the notch footprint ends at W=-1.3 Depth).
+        const double BandCentre=-(1.3*Cut.Depth+0.2*Cut.Radius);
+        const double Band=FMath::Max(0.03,1.0-FMath::Clamp((FMath::Abs(W-BandCentre)-0.2*Cut.Radius)/(0.25*Cut.Radius),0.0,1.0));
+        const double Chop=FMath::Max(0.0,W-0.3*Cut.Radius);
+        // Over the front band holding the notch the split drops below the slot's floor, so the slot's cut-wood walls leave with the
+        // log and the stump front is the chopped plane (W is negative inside the trunk from the contact). A second,
+        // raised collar surface (no notch faces on the log) was tried: its boolean left open edges on the slot roof.
+        const double InFootprint=FMath::Clamp((W+Cut.Depth+0.35*Cut.Radius)/(0.25*Cut.Radius),0.0,1.0)*FMath::Clamp((Cut.Radius*1.4-FMath::Abs(FromNotch.Dot(U)))/(0.2*Cut.Radius),0.0,1.0);   // a front band across the whole width (a lateral-only footprint left a V pit)
+        const double Plane=-(0.6*Cut.Radius+6.0)*InFootprint+0.025*FromNotch.Dot(U)-0.04*W-0.45*Chop;
+
+        Delta[ID]=FMath::Clamp(Plane,-LowerRoom-Rise+1.0,UpperRoom-Rise-1.0);
+        Tear[ID]=Chop>0?0.0:Amplitude*Band*(Noise[ID]-ContactNoise)*(1.0-InFootprint);
     } }
-    const double HeightScale=FMath::Min(1.0,FMath::Min(UpperRoom/FMath::Max(Highest,0.001),LowerRoom/FMath::Max(-Lowest,0.001)));
+    // Only the tear scales to the room left in the trunk; the chopped plane and tilt keep their shape.
+    double HeightScale=1.0;
+    for (int32 ID=0;ID<Grid*Grid;++ID)
+    {
+        if (Tear[ID]>0.001) { HeightScale=FMath::Min(HeightScale,(UpperRoom-Rise-1.0-Delta[ID])/Tear[ID]); }
+        else if (Tear[ID]<-0.001) { HeightScale=FMath::Min(HeightScale,(LowerRoom+Rise-1.0+Delta[ID])/-Tear[ID]); }
+    }
+    HeightScale=FMath::Max(0.0,HeightScale);
+    UE_LOG(LogTemp,Display,TEXT("TREE_SPLIT_SURFACE Seed=%u Attempt=%u UpperRoom=%.1f LowerRoom=%.1f TearScale=%.3f Amplitude=%.1f"),
+        Cut.FractureSeed,ProfileAttempt,UpperRoom,LowerRoom,HeightScale,Amplitude);
+    for (int32 ID=0;ID<Grid*Grid;++ID) { Delta[ID]+=Tear[ID]*HeightScale; }
+    const double TextureScale=FMath::Max(5.0,FMath::Max(Bounds.Max.X-Bounds.Min.X,Bounds.Max.Y-Bounds.Min.Y));
+    const FVector3d UVOrigin(Bounds.Center().X-TextureScale*0.5,Bounds.Center().Y-TextureScale*0.5,0);
     FDynamicMesh3 SplitVolume;
+    const double* Surface=Delta;
     for (int32 Layer=0;Layer<2;++Layer) { for (int32 Y=0;Y<Grid;++Y) { for (int32 X=0;X<Grid;++X)
     {
-        const double Z=Layer==0?Cut.Center.Z+Delta[Index(X,Y)]*HeightScale:Bounds.Max.Z+Margin;
+        // Each retry also shifts the surface, away from notch faces that a contact on them makes near-coincident.
+        const double Z=Layer==0?Cut.Center.Z+Rise+Surface[Index(X,Y)]:Bounds.Max.Z+Margin;
         SplitVolume.AppendVertex(U*(MinU+X*StepU)+V*(MinV+Y*StepV)+FVector3d::UnitZ()*Z);
     } } }
     const auto Face=[&SplitVolume](int32 AID,int32 BID,int32 CID,const FVector3d& Outward)
@@ -338,23 +392,29 @@ bool TrySplitTree(const FDynamicMesh3& Source,const FTreeSplit& Split,
         Side(Index(0,K),Index(0,K+1),-U); Side(Index(Cells,K),Index(Cells,K+1),U);
     }
     SplitVolume.EnableTriangleGroups(0); SplitVolume.EnableAttributes(); SplitVolume.Attributes()->EnableMaterialID();
-    const double TextureScale=FMath::Max(5.0,FMath::Max(Bounds.Max.X-Bounds.Min.X,Bounds.Max.Y-Bounds.Min.Y));
-    const FVector3d UVOrigin(Bounds.Center().X-TextureScale*0.5,Bounds.Center().Y-TextureScale*0.5,0);
     for (const int32 T : SplitVolume.TriangleIndicesItr())
     { SetFaceAttributes(SplitVolume,T,UVOrigin,FVector3d::UnitX(),FVector3d::UnitY(),TextureScale); }
     if (!SafeMesh(SplitVolume)) { return Reject(TEXT("Torn split volume failed manifold validation")); }
-    FDynamicMesh3 Prepared(Source); Prepared.EnableAttributes(); Prepared.Attributes()->EnableMaterialID();
-    if (SignedVolume(Prepared)>0)
+    const auto PrepareInput=[](const FDynamicMesh3& Input)
     {
-        TArray<int32> Triangles; for (const int32 T : Prepared.TriangleIndicesItr()) { Triangles.Add(T); }
-        FDynamicMeshEditor Editor(&Prepared); Editor.ReverseTriangleOrientations(Triangles,true);
-    }
+        FDynamicMesh3 Out(Input); Out.EnableAttributes(); Out.Attributes()->EnableMaterialID();
+        if (SignedVolume(Out)>0)
+        {
+            TArray<int32> Triangles; for (const int32 T : Out.TriangleIndicesItr()) { Triangles.Add(T); }
+            FDynamicMeshEditor Editor(&Out); Editor.ReverseTriangleOrientations(Triangles,true);
+        }
+        return Out;
+    };
+    const FDynamicMesh3 Prepared=PrepareInput(Source);
+    // With a pristine trunk the collar is cut from it: the whole notch lies below the split surface (the front band
+    // drop), so the log keeps unbroken bark at the notch mouth and one torn butt face.
+    const FDynamicMesh3 PreparedCollar=Pristine?PrepareInput(*Pristine):FDynamicMesh3();
     FDynamicMesh3 Stump,Collar;
     TArray<FVector3d> CapVertices[2];
     FString SplitFailure;
     const auto BuildPart=[&](FDynamicMesh3& Part,FMeshBoolean::EBooleanOp Operation,int32 PartIndex)
     {
-        FMeshBoolean Boolean(&Prepared,&SplitVolume,&Part,Operation); Boolean.bPutResultInInputSpace=true;
+        FMeshBoolean Boolean(PartIndex==1&&Pristine?&PreparedCollar:&Prepared,&SplitVolume,&Part,Operation); Boolean.bPutResultInInputSpace=true;
         Boolean.TrackPerTriangleSourceMesh.Emplace();
         const bool bComputed=Boolean.Compute();
         if (!bComputed||!Boolean.CreatedBoundaryEdges.IsEmpty()||!SafeMesh(Part))
@@ -405,8 +465,10 @@ bool TrySplitTree(const FDynamicMesh3& Source,const FTreeSplit& Split,
     const double Before=Volume(Source),StumpVolume=Volume(Stump),CollarVolume=Volume(Collar);
     const double Tolerance=FMath::Max(0.1,Before*1.e-5);
     if (!FMath::IsFinite(Before)||!FMath::IsFinite(StumpVolume)||!FMath::IsFinite(CollarVolume)
-        ||StumpVolume<=Tolerance||CollarVolume<=Tolerance||FMath::Abs(Before-StumpVolume-CollarVolume)>Tolerance)
-    { return Reject(TEXT("Tree split failed complementary-volume conservation")); }
+        ||StumpVolume<=Tolerance||CollarVolume<=Tolerance
+        ||(Pristine?(StumpVolume+CollarVolume<Before-Tolerance||StumpVolume+CollarVolume>Volume(*Pristine)+Tolerance)
+                   :FMath::Abs(Before-StumpVolume-CollarVolume)>Tolerance))
+    { return Reject(*FString::Printf(TEXT("Tree split failed complementary-volume conservation source=%.0f stump=%.0f collar=%.0f"),Before,StumpVolume,CollarVolume)); }
     for (int32 Part=0;Part<2;++Part) { for (const FVector3d& P : CapVertices[Part])
     {
         bool bMatch=false;
@@ -420,22 +482,26 @@ bool TrySplitTree(const FDynamicMesh3& Source,const FTreeSplit& Split,
 } }
 
 bool SFHarvestLocalizedGeometry::SplitTree(const FDynamicMesh3& Source,const FTreeSplit& Split,
-    FDynamicMesh3& OutStump,FDynamicMesh3& OutUpperCollar,FString* Failure)
+    FDynamicMesh3& OutStump,FDynamicMesh3& OutUpperCollar,FString* Failure,const FDynamicMesh3* PristineCollarSource)
 {
     // Fixed versioned topology algorithm: reject singular intersections instead
     // of filling unknown holes. Each retry derives a new torn surface from the
     // same event seed and retains the exact approved contact-height pin.
+    // A pristine collar needs the whole notch below the split surface (matching caps); when no profile achieves that,
+    // the same six profiles run again on the notched trunk, so felling never fails for want of a clean log butt.
     FString FirstFailure,LastFailure;
-    for (uint32 Attempt=0;Attempt<4;++Attempt)
+    for (uint32 Attempt=0;Attempt<(PristineCollarSource?12u:6u);++Attempt)
     {
-        if (TrySplitTree(Source,Split,OutStump,OutUpperCollar,&LastFailure,Attempt))
+        const FDynamicMesh3* Pristine=Attempt<6?PristineCollarSource:nullptr;
+        if (TrySplitTree(Source,Split,OutStump,OutUpperCollar,&LastFailure,Attempt%6,Pristine))
         {
-            UE_LOG(LogTemp,Verbose,TEXT("TREE_SPLIT_PROFILE_ACCEPTED Seed=%u Attempt=%u"),Split.FinalCut.FractureSeed,Attempt);
+            UE_LOG(LogTemp,Display,TEXT("TREE_SPLIT_PROFILE_ACCEPTED Seed=%u Attempt=%u PristineCollar=%d"),Split.FinalCut.FractureSeed,Attempt%6,Pristine!=nullptr);
             if (Failure) { Failure->Reset(); }
             return true;
         }
+        UE_LOG(LogTemp,Display,TEXT("TREE_SPLIT_PROFILE_REJECTED Seed=%u Attempt=%u %s"),Split.FinalCut.FractureSeed,Attempt,*LastFailure.Left(160));
         if (Attempt==0) { FirstFailure=LastFailure; }
     }
-    if (Failure) { *Failure=TEXT("All4 deterministic tree split profiles rejected. First: ")+FirstFailure+TEXT(" Last: ")+LastFailure; }
+    if (Failure) { *Failure=TEXT("All deterministic tree split profiles rejected. First: ")+FirstFailure+TEXT(" Last: ")+LastFailure; }
     return false;
 }

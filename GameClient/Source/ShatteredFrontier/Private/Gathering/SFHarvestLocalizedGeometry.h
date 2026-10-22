@@ -39,5 +39,7 @@ struct FTreeSplit
 // complementary collar stays in original local coordinates for authored upper
 // trunk attachment. Both outputs are staged; no output changes on failure.
 bool SplitTree(const UE::Geometry::FDynamicMesh3& CurrentLowerTrunk,const FTreeSplit& Split,
-    UE::Geometry::FDynamicMesh3& OutStump,UE::Geometry::FDynamicMesh3& OutUpperCollar,FString* Failure=nullptr);
+    UE::Geometry::FDynamicMesh3& OutStump,UE::Geometry::FDynamicMesh3& OutUpperCollar,FString* Failure=nullptr,
+    // Optional uncut trunk: the collar is cut from it, so the log carries no notch faces (the notch stays on the stump).
+    const UE::Geometry::FDynamicMesh3* PristineCollarSource=nullptr);
 }

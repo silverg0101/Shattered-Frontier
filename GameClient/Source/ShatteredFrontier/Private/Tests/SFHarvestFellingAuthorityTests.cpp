@@ -8,6 +8,8 @@
 #include "Characters/SFE1Character.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/WorldSettings.h"
 #include "EngineUtils.h"
@@ -93,6 +95,24 @@ bool FSFHarvestFellingAuthorityTest::RunTest(const FString& Parameters)
         return false;
     }
     TestFalse(TEXT("Server ends simulation at observed resting pose"),Tree->GetFallBody()->IsSimulatingPhysics());
+    // Stump and log end state: the log lies down, its butt rests on (not in) the ground, the stump blocks as static world.
+    TestTrue(TEXT("Crown yielded on landing"),Tree->bCrownYielded&&Tree->YieldedCrownRadiusCm>0);
+    const FTransform Rest=Tree->GetAuthoritativeRestingTransform();
+    TestTrue(TEXT("Replicated rest pose is the frozen body pose"),Rest.Equals(Tree->GetFallBody()->GetComponentTransform(),0.1));
+    const double RestLean=FMath::RadiansToDegrees(FMath::Acos(FMath::Clamp(Rest.GetUnitAxis(EAxis::Z).Z,-1.0,1.0)));
+    if (!TestTrue(TEXT("Felled log lies near horizontal (>= 60 deg from vertical)"),RestLean>=60)) { AddError(FString::Printf(TEXT("Rest lean %.1f"),RestLean)); }
+    if (TestNotNull(TEXT("Collar support welded to the log"),Tree->CollarSupport.Get()))
+    {
+        const double Bottom=Tree->CollarSupport->GetComponentLocation().Z-Tree->CollarSupport->GetScaledSphereRadius();
+        TestTrue(TEXT("Log butt does not sink into the ground"),Bottom>=-3.0);
+    }
+    const UBoxComponent* Stump=nullptr;
+    for (const UActorComponent* Component:Node->GetComponents()) { if (const auto* Box=Cast<UBoxComponent>(Component)) { Stump=Box; } }
+    if (TestNotNull(TEXT("Stump collision spawned"),Stump))
+    {
+        TestEqual(TEXT("Stump is static world so the falling butt cannot pass through it"),Stump->GetCollisionObjectType(),ECC_WorldStatic);
+        TestTrue(TEXT("Stump collision top stays at or below the final cut"),Stump->Bounds.GetBox().Max.Z<=Node->GetActorLocation().Z-70+Node->State.Cuts.Last().Point.Z+1);
+    }
     World->GetTimerManager().ClearTimer(Node->RecoveryTimer); Node->State.RecoveryAtServerSeconds=World->GetTimeSeconds(); Node->Recover(); Tick(2);
     TestEqual(TEXT("Renewal clears detached actor"),Falls(),0);
     TestNull(TEXT("Renewed node has no old-generation fall"),Node->State.FallingTree.Get());

@@ -11,3 +11,6 @@
 !/BranchContours/CorrectedRootLinks/branch-contour-audit.json
 !/BranchContours/CorrectedRootLinks/LocalHullPrototype-r06/
 *.blend1
+!/Concept/
+!/SmoothLowerTrunk/
+!/tools/

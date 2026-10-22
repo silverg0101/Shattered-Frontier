@@ -3,6 +3,7 @@
 #include "Gathering/SFHarvestImpactAudio.h"
 #include "Gathering/SFHarvestFallingTree.h"
 #include "Components/BoxComponent.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Gathering/SFHarvestLocalizedGeometry.h"
 #include "Framework/SFE1Settings.h"
 #include "Components/StaticMeshComponent.h"
@@ -260,7 +261,7 @@ bool USFHarvestPresentation::PrepareCut(const FVector& Eye,const FVector& Reques
     if (bSupportsTreeFelling&&Node->GetState().Charges==1)
     {
         FDynamicMesh3 Stump,Collar;
-        if (!SFHarvestLocalizedGeometry::SplitTree(Staged,TreeSplitFor(Candidate),Stump,Collar,&Failure))
+        if (!SFHarvestLocalizedGeometry::SplitTree(Staged,TreeSplitFor(Candidate),Stump,Collar,&Failure,&Runtime->Base))
         { UE_LOG(LogTemp,Warning,TEXT("HARVEST_TREE_SPLIT_PREFLIGHT_REJECTED %s"),*Failure); return false; }
     }
     Cut=Candidate; return true;
@@ -307,7 +308,7 @@ void USFHarvestPresentation::ApplyState(const TArray<FSFHarvestVisualCut>& Cuts,
         if (bDetach)
         {
             FDynamicMesh3 Stump; FString Failure;
-            if (!SFHarvestLocalizedGeometry::SplitTree(Staged,TreeSplitFor(Cuts.Last()),Stump,Collar,&Failure))
+            if (!SFHarvestLocalizedGeometry::SplitTree(Staged,TreeSplitFor(Cuts.Last()),Stump,Collar,&Failure,&Runtime->Base))
             { UE_LOG(LogTemp,Warning,TEXT("HARVEST_TREE_HANDOFF_REJECTED %s"),*Failure); return; }
             Staged=MoveTemp(Stump);
         }
@@ -320,6 +321,9 @@ void USFHarvestPresentation::ApplyState(const TArray<FSFHarvestVisualCut>& Cuts,
         if (bDetach)
         {
             DetachedTree=FallingTree;
+            const auto CollarBounds=Collar.GetBounds(); const double CollarRadius=0.5*FMath::Min(CollarBounds.Width(),CollarBounds.Height());
+            // Sphere bottom just above the cut plane: clear of the world-static stump box until the butt slides off.
+            FallingTree->SetCollarSupport(FVector(CollarBounds.Center().X,CollarBounds.Center().Y,FMath::Max(CollarBounds.Min.Z,double(Cuts.Last().Point.Z))+CollarRadius+1),CollarRadius);
             if (GetNetMode()!=NM_DedicatedServer)
             {
                 if (!FallingCollar)
@@ -336,12 +340,19 @@ void USFHarvestPresentation::ApplyState(const TArray<FSFHarvestVisualCut>& Cuts,
             if (!StumpCollision)
             {
                 StumpCollision=NewObject<UBoxComponent>(GetOwner(),TEXT("DepletedOakCollision"));
-                StumpCollision->SetCollisionProfileName(TEXT("BlockAllDynamic"));
+                // World-static, so the falling collar (which blocks only static world) slides off the stump instead of through it.
+                StumpCollision->SetCollisionProfileName(TEXT("BlockAll"));
+                // A slick top: the collar sphere slides off the stump edge under the trunk's weight.
+                auto* Slick=NewObject<UPhysicalMaterial>(StumpCollision,TEXT("StumpSlick")); Slick->Friction=0.05f;
+                Slick->FrictionCombineMode=EFrictionCombineMode::Min; Slick->Restitution=0.f; StumpCollision->SetPhysMaterialOverride(Slick);
                 StumpCollision->SetCanEverAffectNavigation(false); StumpCollision->RegisterComponent();
             }
-            const auto Bounds=Staged.GetBounds(); const FVector Center((Bounds.Min+Bounds.Max)*0.5);
-            StumpCollision->SetBoxExtent(FVector((Bounds.Max-Bounds.Min)*0.5));
-            StumpCollision->SetWorldLocationAndRotation(Runtime->Transform.TransformPosition(Center),Runtime->Transform.GetRotation());
+            // Box top at the cut plane, not the tear tips, so the butt slides off at the real stump height.
+            // Box top at the cut plane, not the tear tips, and only as wide as the trunk at the cut (the collar's
+            // section), not the root flare, so the butt slides off at the real stump height and edge.
+            const auto Bounds=Staged.GetBounds(); const double TopZ=FMath::Min(Bounds.Max.Z,double(Cuts.Last().Point.Z));
+            StumpCollision->SetBoxExtent(FVector(CollarBounds.Width()*0.5,CollarBounds.Height()*0.5,(TopZ-Bounds.Min.Z)*0.5));
+            StumpCollision->SetWorldLocationAndRotation(Runtime->Transform.TransformPosition(FVector(CollarBounds.Center().X,CollarBounds.Center().Y,(Bounds.Min.Z+TopZ)*0.5)),Runtime->Transform.GetRotation());
             StumpCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
             if (auto* Proxy=Cast<UPrimitiveComponent>(GetOwner()->GetRootComponent())) { Proxy->SetCollisionEnabled(ECollisionEnabled::NoCollision); }
         }
@@ -381,10 +392,11 @@ ASFHarvestFallingTree* USFHarvestPresentation::BeginTreeFall(uint32 Generation,c
     ApplyState(Node->GetState().Cuts,true,Generation);
     FDynamicMesh3 Stump,Collar; FString Failure;
     const auto Split=TreeSplitFor(FinalCut);
-    if (!SFHarvestLocalizedGeometry::SplitTree(Runtime->Current,Split,Stump,Collar,&Failure))
+    if (!SFHarvestLocalizedGeometry::SplitTree(Runtime->Current,Split,Stump,Collar,&Failure,&Runtime->Base))
     { UE_LOG(LogTemp,Warning,TEXT("HARVEST_TREE_FALL_REJECTED %s"),*Failure); return nullptr; }
-    const auto Bounds=Runtime->Base.GetBounds(); const auto Center=(Bounds.Min+Bounds.Max)*0.5;
-    const FVector Pivot(Center.X,Center.Y,FinalCut.Point.Z);
+    // The hinge wood is at the fall-side edge of the trunk: the butt lifts off the stump as the tree tips.
+    const auto Bounds=Collar.GetBounds(); const auto Center=Bounds.Center(); const double Radius=0.5*FMath::Min(Bounds.Width(),Bounds.Height());
+    const FVector Pivot=FVector(Center.X,Center.Y,FinalCut.Point.Z)+FVector(Split.FallDirection)*Radius*0.9;
     FActorSpawnParameters Spawn; Spawn.Owner=Node; Spawn.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     auto* Tree=GetWorld()->SpawnActor<ASFHarvestFallingTree>(ASFHarvestFallingTree::StaticClass(),Runtime->Transform,Spawn);
     if (Tree&&!Tree->InitializeFall(Node,Generation,Runtime->Transform,Pivot,
