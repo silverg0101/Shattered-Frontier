@@ -76,7 +76,7 @@ private:
     TWeakObjectPtr<UTextBlock> StatusText, ScaleText, KeepTitle, KeepDetailText, KeepCountdown;
     TWeakObjectPtr<UButton> ApplyButton;
     TWeakObjectPtr<USlider> ScaleSlider;
-    TWeakObjectPtr<UProgressBar> KeepBar;
+    TWeakObjectPtr<UProgressBar> KeepBar, ScaleFillBar;
     TWeakObjectPtr<UWidget> KeepLayer;
     bool bRefreshingSlider = false;
     bool bSuppressEngineApply = false;

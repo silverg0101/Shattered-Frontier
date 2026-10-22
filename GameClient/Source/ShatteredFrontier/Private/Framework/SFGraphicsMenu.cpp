@@ -153,7 +153,7 @@ void USFGraphicsMenu::NativeOnInitialized()
     Click(Detect.Button, [Self]() { if (USFGraphicsMenu* Menu = Self.Get()) { Menu->DoAutoDetect(); } });
     Put(Stage, Detect.Root, 1112.f, 253.f, 110.f, 31.f);
     Put(Stage, Panel(WidgetTree, Hairline(), Hairline(), FMargin(0.f), 0.f), 1241.f, 258.f, 1.f / S, 22.f);
-    UTextBlock* Status = Text(WidgetTree, TEXT("Preset: High"), 20, Ivory());
+    UTextBlock* Status = Text(WidgetTree, TEXT("Preset: High"), 18, Ivory());
     StatusText = Status;
     PutText(Stage, Status, 1250.f, 269.f);
     for (int32 Index = 0; Index < 5; ++Index)
@@ -182,7 +182,7 @@ void USFGraphicsMenu::NativeOnInitialized()
         ValueSlot->SetHorizontalAlignment(HAlign_Center); ValueSlot->SetVerticalAlignment(VAlign_Center);
         for (int32 Dir : {-1, 1})
         {
-            UTextBlock* Arrow = Text(WidgetTree, Dir < 0 ? TEXT("<") : TEXT(">"), FontSize + 2, Ivory()); Arrow->SetJustification(ETextJustify::Center); Arrow->SetRenderTranslation(FVector2D(0.f, -4.f));
+            UTextBlock* Arrow = Text(WidgetTree, Dir < 0 ? TEXT("<") : TEXT(">"), FontSize + 2, Ivory()); Arrow->SetJustification(ETextJustify::Center);
             USizeBox* Hit = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
             Hit->SetWidthOverride(36.f); Hit->SetContent(Arrow);
             UBorder* Center = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
@@ -191,6 +191,15 @@ void USFGraphicsMenu::NativeOnInitialized()
             Click(ArrowButton, [Self, Step, Dir]() { Step(Dir); if (USFGraphicsMenu* Menu = Self.Get()) { Menu->Refresh(); } });
             UOverlaySlot* ArrowSlot = Box->AddChildToOverlay(ArrowButton);
             ArrowSlot->SetHorizontalAlignment(Dir < 0 ? HAlign_Left : HAlign_Right); ArrowSlot->SetVerticalAlignment(VAlign_Fill); ArrowSlot->SetPadding(FMargin(4.f, 0.f));
+        }
+        for (const bool bLeft : {true, false})
+        {
+            USizeBox* Divider = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+            Divider->SetWidthOverride(1.f); Divider->SetContent(Panel(WidgetTree, Hairline(), Hairline(), FMargin(0.f), 0.f));
+            Divider->SetVisibility(ESlateVisibility::HitTestInvisible);
+            UOverlaySlot* DividerSlot = Box->AddChildToOverlay(Divider);
+            DividerSlot->SetHorizontalAlignment(bLeft ? HAlign_Left : HAlign_Right); DividerSlot->SetVerticalAlignment(VAlign_Fill);
+            DividerSlot->SetPadding(FMargin(bLeft ? 40.f : 0.f, 4.f, bLeft ? 0.f : 40.f, 4.f));
         }
         Steppers.Add({ValueText, MoveTemp(Value)});
         return Box;
@@ -208,6 +217,7 @@ void USFGraphicsMenu::NativeOnInitialized()
             UHorizontalBox* Content = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
             Content->SetVisibility(ESlateVisibility::HitTestInvisible);
             USizeBox* Glyph = SFHudStyle::KitImage(WidgetTree, bOnSide ? TEXT("status_tick") : TEXT("status_cross"), 24.f);
+            if (UImage* GlyphImage = Cast<UImage>(Glyph->GetContent())) { GlyphImage->SetColorAndOpacity(SFHudStyle::Ivory()); }
             Content->AddChildToHorizontalBox(Glyph)->SetVerticalAlignment(VAlign_Center);
             Content->AddChildToHorizontalBox(SFHudStyle::Text(WidgetTree, bOnSide ? TEXT("On") : TEXT("Off"), 20, SFHudStyle::Ivory()))->SetPadding(FMargin(8.f, 0.f, 0.f, 0.f));
             UOverlaySlot* ContentSlot = Face->AddChildToOverlay(Content);
@@ -258,11 +268,16 @@ void USFGraphicsMenu::NativeOnInitialized()
     Slider->SetMinValue(67.f); Slider->SetMaxValue(100.f); Slider->SetStepSize(1.f);
     FSliderStyle SliderStyle = Slider->GetWidgetStyle();
     if (const FSFHudKitElement* Track = Kit(TEXT("slider_track"))) { SliderStyle.NormalBarImage = SliderStyle.HoveredBarImage = SliderStyle.DisabledBarImage = KitBrush(*Track); }
-    if (const FSFHudKitElement* Thumb = Kit(TEXT("slider_thumb"))) { SliderStyle.NormalThumbImage = SliderStyle.HoveredThumbImage = SliderStyle.DisabledThumbImage = KitBrush(*Thumb); }
+    if (const FSFHudKitElement* Thumb = Kit(TEXT("slider_thumb"))) { FSlateBrush ThumbBrush = KitBrush(*Thumb); ThumbBrush.ImageSize = FVector2D(22.f, 22.f); SliderStyle.NormalThumbImage = SliderStyle.HoveredThumbImage = SliderStyle.DisabledThumbImage = ThumbBrush; }
     SliderStyle.BarThickness = 12.f;
     Slider->SetWidgetStyle(SliderStyle);
     Slider->OnValueChanged.AddDynamic(this, &USFGraphicsMenu::HandleSlider);
     ScaleSlider = Slider;
+    UProgressBar* ScaleFill = WidgetTree->ConstructWidget<UProgressBar>(UProgressBar::StaticClass());
+    StyleBar(ScaleFill, Moss());
+    FProgressBarStyle FillStyle = ScaleFill->GetWidgetStyle(); FillStyle.BackgroundImage = FSlateNoResource(); ScaleFill->SetWidgetStyle(FillStyle);
+    ScaleFillBar = ScaleFill;
+    Put(Stage, ScaleFill, 389.f, 646.f, 286.f, 8.f);
     Put(Stage, Slider, 383.f, 638.f, 298.f, 24.f);
     PutText(Stage, Text(WidgetTree, TEXT("100%"), 19, Ivory()), 693.f, 650.f);
     UOverlay* ScaleBox = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
@@ -353,25 +368,27 @@ void USFGraphicsMenu::NativeOnInitialized()
     UBorder* Dim = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
     Dim->SetBrush(Frame(FLinearColor(0.f, 0.f, 0.f, 0.55f), FLinearColor::Transparent, 0.f));
     UCanvasPanelSlot* DimSlot = Prompt->AddChildToCanvas(Dim); DimSlot->SetAnchors(FAnchors(0.f, 0.f, 1.f, 1.f)); DimSlot->SetOffsets(FMargin(0.f));
-    UBorder* Modal = KitPanel(WidgetTree, TEXT("modal_frame"), 1.f, Slate(0.96f), Brass(), FMargin(40.f, 28.f), 6.f);
+    UBorder* Modal = KitPanel(WidgetTree, TEXT("modal_frame"), 1.f, Slate(0.96f), Brass(), FMargin(40.f, 48.f), 6.f);
     UVerticalBox* Body = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     Modal->SetContent(Body);
-    UTextBlock* KeepHead = Heading(WidgetTree, TEXT("Keep these display settings?"), 36, Ivory()); KeepHead->SetJustification(ETextJustify::Center);
+    UTextBlock* KeepHead = Heading(WidgetTree, TEXT("Keep these display settings?"), 35, Ivory()); KeepHead->SetJustification(ETextJustify::Center);
     KeepTitle = KeepHead;
     Body->AddChildToVerticalBox(KeepHead)->SetHorizontalAlignment(HAlign_Center);
     UTextBlock* KeepDetail = Text(WidgetTree, TEXT(""), 22, Ivory()); KeepDetail->SetJustification(ETextJustify::Center);
     KeepDetailText = KeepDetail;
     Body->AddChildToVerticalBox(KeepDetail)->SetPadding(FMargin(0.f, 14.f, 0.f, 0.f));
-    UTextBlock* Countdown = Text(WidgetTree, TEXT(""), 20, Hex(TEXT("BDB6A2"))); Countdown->SetJustification(ETextJustify::Center);
+    UTextBlock* Countdown = Text(WidgetTree, TEXT(""), 20, Ivory()); Countdown->SetJustification(ETextJustify::Center);
     KeepCountdown = Countdown;
     Body->AddChildToVerticalBox(Countdown)->SetPadding(FMargin(0.f, 8.f, 0.f, 12.f));
     UProgressBar* Bar = WidgetTree->ConstructWidget<UProgressBar>(UProgressBar::StaticClass());
     StyleBar(Bar, Moss()); Bar->SetPercent(1.f); KeepBar = Bar;
     USizeBox* BarSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    BarSize->SetWidthOverride(574.f * S); BarSize->SetHeightOverride(14.f); BarSize->SetContent(Bar);
+    BarSize->SetWidthOverride(574.f * S); BarSize->SetHeightOverride(18.f);
+    UBorder* BarFrame = Panel(WidgetTree, WellFill(), Hairline(), FMargin(2.f), 3.f); BarFrame->SetContent(Bar); BarSize->SetContent(BarFrame);
     Body->AddChildToVerticalBox(BarSize)->SetPadding(FMargin(0.f, 0.f, 0.f, 24.f));
     UHorizontalBox* Buttons = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    const FSFHudButton Keep = Button(WidgetTree, TEXT("Keep Changes"), EButtonKind::Primary, 305.f * S);
+    const FSFHudButton Keep = Button(WidgetTree, TEXT("Keep Changes"), EButtonKind::Secondary, 305.f * S);
+    ApplyButtonStyle(Keep.Button, EButtonKind::Secondary, true);
     Keep.Root->SetHeightOverride(58.f * S);
     Click(Keep.Button, [Self]() { if (USFGraphicsMenu* Menu = Self.Get()) { Menu->DoKeep(); } });
     const FSFHudButton Undo = Button(WidgetTree, TEXT("Revert"), EButtonKind::Secondary, 302.f * S);
@@ -454,7 +471,7 @@ void USFGraphicsMenu::Refresh()
         if (Entry.OnTick.IsValid()) { Entry.OnTick->SetVisibility(bOn ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed); }
         if (Entry.OffCross.IsValid()) { Entry.OffCross->SetVisibility(bOn ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible); }
     }
-    if (ScaleSlider.IsValid()) { bRefreshingSlider = true; ScaleSlider->SetValue(static_cast<float>(Pending.RenderScale)); bRefreshingSlider = false; }
+    if (ScaleSlider.IsValid()) { bRefreshingSlider = true; ScaleSlider->SetValue(static_cast<float>(Pending.RenderScale)); if (ScaleFillBar.IsValid()) { ScaleFillBar->SetPercent((Pending.RenderScale - 67) / 33.f); } bRefreshingSlider = false; }
     if (ScaleText.IsValid()) { ScaleText->SetText(FText::FromString(FString::Printf(TEXT("%d%%"), Pending.RenderScale))); }
     int32 All = -1;
     if (Pending.ViewDistance == Pending.Shadows && Pending.Shadows == Pending.GlobalIllumination && Pending.GlobalIllumination == Pending.Reflections && Pending.Reflections == Pending.Textures
