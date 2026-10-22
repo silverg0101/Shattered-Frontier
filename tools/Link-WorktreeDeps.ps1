@@ -14,7 +14,7 @@ foreach ($rel in 'Artifacts\ThirdParty') {
 
 # Give this worktree's editor its own MCP port, so it doesn't collide with the main editor on 8000
 # and this session's .mcp.json reaches its own editor, not another checkout's.
-$md5 = [Security.Cryptography.MD5]::HashData([Text.Encoding]::UTF8.GetBytes($here.ToLower()))
+$md5 = [Security.Cryptography.MD5]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($here.ToLower()))
 $port = 8001 + ([BitConverter]::ToUInt16($md5, 0) % 900)  # stable per path (GetHashCode is randomized)
 $cfg = Join-Path $here 'GameClient\Saved\Config\WindowsEditor\EditorPerProjectUserSettings.ini'
 New-Item -ItemType Directory -Force (Split-Path $cfg) | Out-Null
