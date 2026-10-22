@@ -1,0 +1,56 @@
+{
+  "speaker": "Millwarden Oswin",
+  "portrait": "portrait_millwarden_oswin",
+  "start": "greeting",
+  "nodes": {
+    "greeting": {
+      "line": "The mill needs fresh timber before the rains.",
+      "choices": [
+        { "label": "Tell me more", "next": "more" },
+        { "label": "I'll help", "action": "accept" },
+        { "label": "What is the reward?", "next": "reward" },
+        { "label": "Farewell", "action": "end" }
+      ]
+    },
+    "more": {
+      "line": "The wheel is idle until I can saw the oak. Six logs from the river road will keep the stones turning through the wet season.",
+      "choices": [
+        { "label": "I'll help", "action": "accept" },
+        { "label": "What is the reward?", "next": "reward" },
+        { "label": "Farewell", "action": "end" }
+      ]
+    },
+    "reward": {
+      "line": "Coin from the mill's purse, and the thanks of Silverbrook besides. Fair pay for honest work.",
+      "choices": [
+        { "label": "Tell me more", "next": "more" },
+        { "label": "I'll help", "action": "accept" },
+        { "label": "Farewell", "action": "end" }
+      ]
+    },
+    "accepted": {
+      "line": "Good. Bring the oak logs to me at the mill before the rain.",
+      "choices": [
+        { "label": "Where do I find oak?", "next": "oak" },
+        { "label": "Farewell", "action": "end" }
+      ]
+    },
+    "oak": {
+      "line": "Along the river trail. The old oaks by the bridge are sound, and any axe will do.",
+      "choices": [
+        { "label": "Farewell", "action": "end" }
+      ]
+    }
+  },
+  "offer": {
+    "title": "The Mill's Supply",
+    "summary": "Bring oak logs to the mill before the rain.",
+    "art": "/Game/Frontier/UI/Dialogue/T_Quest_MillsSupply.T_Quest_MillsSupply",
+    "accepted_node": "accepted",
+    "objectives": [
+      { "label": "Gather Oak Logs", "need": 6 },
+      { "label": "Deliver to Oswin", "need": 1 }
+    ],
+    "rewards": { "xp": 120, "coin": 20 }
+  }
+}

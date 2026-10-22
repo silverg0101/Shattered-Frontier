@@ -1307,6 +1307,7 @@ void ASFPlayerController::ToggleGatheringSkillsPanel()
 
 void ASFPlayerController::HandleEscape()
 {
+    if (IsDialogueOpen()) { CloseDialogue(); return; }
     if (GatheringSkillsPanel && GatheringSkillsPanel->GetVisibility()==ESlateVisibility::Visible)
     { GatheringSkillsPanel->SetVisibility(ESlateVisibility::Collapsed); return; }
     // Build mode: the first Esc cancels a pending line start, the next leaves build mode.

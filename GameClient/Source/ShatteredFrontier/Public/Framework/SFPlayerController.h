@@ -14,6 +14,9 @@ class USFHudLayout;
 class USFMarketBoard;
 class USFTradeWindow;
 class USFInventoryPanel;
+class USFDialoguePanel;
+class ASFDialogueNpc;
+enum class ESFDialogueStep : uint8;
 class UInputAction;
 
 UENUM()
@@ -63,6 +66,11 @@ public:
 #endif
     // B toggles build mode where a construction state exists; the character layers IMC_Build on while it lasts.
     bool IsBuildModeActive() const { return bBuildMode; }
+    // CTL-02 NPC dialogue (Dialogue/SFPlayerControllerDialogue.cpp): E near an ASFDialogueNpc opens its board; keys 1-4, the rows, Esc and walking away drive it.
+    bool IsDialogueOpen() const;
+    UFUNCTION(Exec) void SFTalk();
+    UFUNCTION(Exec) void SFSpawnDialogueNpc();  // development: stands the Millwarden 4 m ahead and opens his board
+    UFUNCTION(Exec) void SFDialogueChoose(int32 Index);  // development: picks response Index (0-3)
     bool IsStationPanelOpen() const;  // the crafting-station panel is on screen
     void ToggleBuildMode();
 protected:
@@ -255,5 +263,11 @@ private:
     void TickInteraction();
     void SetBuildMode(bool bActive);
     void CloseSidePanelsForModal();
+    bool TryOpenDialogue();
+    void CloseDialogue();
+    void HandleDialogueStep(ESFDialogueStep Step);
+    void TickDialogue();
+    UPROPERTY(Transient) TObjectPtr<USFDialoguePanel> DialoguePanel;
+    TWeakObjectPtr<ASFDialogueNpc> DialogueNpc;
     bool bBuildMode = false;
 };
