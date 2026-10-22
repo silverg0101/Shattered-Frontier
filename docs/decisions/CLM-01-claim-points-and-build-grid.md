@@ -1,6 +1,6 @@
 # CLM-01 — Claim points and the build grid
 
-Status: proposed, 2026-10-22, from the owner's idea in the Task Runner session. Extends [Building and Territory] §2 and [BLD-02](BLD-02-terrain-anchored-construction.md); the digging half is [TER-02](TER-02-digging-limits.md). Nothing here is implemented.
+Status: proposed, 2026-10-22, from the owner's idea in the Task Runner session; owner answers 1–4 of the closing section are applied, grid colours still open. Extends [Building and Territory] §2 and [BLD-02](BLD-02-terrain-anchored-construction.md); the digging half is [TER-02](TER-02-digging-limits.md). Nothing here is implemented.
 
 Owner, 2026-10-22: "Closer to a town you are limited on size, but as you adventure away your available claim points can be spent. This would allow higher population close to established towns and then larger houses or even someone wanting to build a castle out in the middle of nowhere. We could put a grid on the ground showing the available area based on where you are and your budget ... once an object is placed, it would extend from the placed objects ... a little more defined with a fade effect once it reaches the limit or show red in blocked areas."
 
@@ -22,7 +22,9 @@ Reference: [building-claim-grid-reference.webp](../Game-Design/concept-art/UI/bu
 | Expansion through the claim map (§2.1) | Expansion is placing a piece; shrinking is removing one (§4). The map stays the view, not the tool. | Owner: "it would always show the limits and update each placed item." |
 | `Construction` §13: "a larger claim vertical band permits taller structures, not deeper excavation" | Unchanged for height. Depth is TER-02's `claim_dig_below_anchor_m` (8 m under the anchor base). | TER-02. |
 
-Unchanged: 5 m clear spacing between unrelated claims, the protected town plus 5 m clearance, first-winner reservation, upkeep/grace/delinquent/notice/archive lifecycle (§2.2, §4), permissions and presets (§3), the §15 cell/object ceilings, 7-day public healing and claim adoption (DEC-03, TER-02), siege rules (personal claims are never capturable), the `cba_` action protocol (DEC-02).
+| Claim anchor maintenance reserve, hourly charges on elapsed real time, 7-day grace → 30-day delinquency → 7-day notice → archive (§2.2, §4) | The **claim storehouse** is the reserve (§9). Charges accrue only while the owner is offline, at a rate derived from the materials actually in that claim; a depleted storehouse starts a 30-day offline countdown (7 days without decay, then decay), then the existing 7-day final notice and archive. Off in alpha behind `tune.building.upkeep.enabled`. | Owner's answer 4. |
+
+Unchanged: 5 m clear spacing between unrelated claims, the protected town plus 5 m clearance, first-winner reservation, the archive/recovery-store path (§2.2), permissions and presets (§3), the §15 cell/object ceilings, 7-day public healing and claim adoption (DEC-03, TER-02), siege rules (personal claims are never capturable), the `cba_` action protocol (DEC-02).
 
 ## 3. Claim points
 
@@ -47,15 +49,15 @@ A cell's cost is fixed by the **band** it lies in. Band distance is the shortest
 | --- | ---: | ---: | ---: | ---: | --- |
 | Near | 0–`near_m` (150 m) | `near_cost` 2.0 pt/m² | `near_cap_m2` 400 m² (20 × 20) | 20 m | Dense suburb; a house and yard |
 | Middle | `near_m`–`middle_m` (150–500 m) | `middle_cost` 1.0 pt/m² | `middle_cap_m2` 1,600 m² (40 × 40, the existing entitlement) | 30 m (the existing personal band) | Farmstead, workshop |
-| Wilderness | > `middle_m` | `wild_cost` 0.25 pt/m² | none below the §15 ceilings | 60 m (the existing guild band) | Castle, mine, tower |
+| Wilderness | > `middle_m` | `wild_cost` 0.75 pt/m² | `wild_cap_m2` 3,600 m² (60 × 60, owner's answer) | 60 m (the existing guild band) | Keep, mine, tower |
 
-Worked examples at the shipped progression: a new character (400 pt) buys 200 m² near town (a 10 × 10 house with a 2 m yard) or 1,600 m² in the wilderness. At level 50 (2,400 pt) the wilderness buys 9,600 m² (about 98 × 98 m, castle scale) and the near band is still capped at 400 m². Alpha (1,200 pt) reaches 4,800 m² in the wilderness, 1,200 m² in the middle band and the near cap.
+Worked examples at the shipped progression (owner's answer: 400 + 40 per level; the level cap is 100, so 4,400 pt at cap): a new character (400 pt) buys 200 m² near town (a 10 × 10 house with a 2 m yard) or 533 m² in the wilderness. At level 100 the full 60 × 60 m keep costs 2,700 pt and the remaining 1,700 pt still buys the whole 40 × 40 farm; the near band is capped at 400 m² at every level. Alpha (1,200 pt fixed, owner's answer) reaches 1,600 m² (40 × 40) in the wilderness, 1,200 m² in the middle band and the near cap.
 
 | Key | Unit | Default | Safe bounds | Step | Effective |
 | --- | ---: | ---: | ---: | ---: | --- |
 | `near_m` / `middle_m` | m | 150 / 500 | 50–400 / 200–1,500, `near_m < middle_m` | 25 | New cells |
-| `near_cost` / `middle_cost` / `wild_cost` | pt/m² | 2.0 / 1.0 / 0.25 | 0.1–10, non-increasing with distance | 0.05 | New cells |
-| `near_cap_m2` / `middle_cap_m2` | m² | 400 / 1,600 | 100–1,600 / 400–10,000, `near ≤ middle` | 100 | New cells |
+| `near_cost` / `middle_cost` / `wild_cost` | pt/m² | 2.0 / 1.0 / 0.75 | 0.1–10, non-increasing with distance | 0.05 | New cells |
+| `near_cap_m2` / `middle_cap_m2` / `wild_cap_m2` | m² | 400 / 1,600 / 3,600 | 100–1,600 / 400–10,000 / 1,600–10,000, non-decreasing | 100 | New cells |
 | `band_height_m` near / middle / wild | m | 20 / 30 / 60 | 10–60 each, non-decreasing | 5 | New claims (an existing claim keeps its band) |
 | `reach_m` | m | 4 | 2–8 | 1 | New placements |
 | `spacing_m` | m | 5 (existing `SpacingMetres`) | 5–20 | 1 | New cells |
@@ -89,11 +91,11 @@ Clearances are `tune.building.claim.*` keys, metres, bounds 2–50, step 1, effe
 
 - **Start.** A claim begins with the first foundation placed on unblocked, unclaimed ground while the character has a free claim slot. The foundation's base level becomes `anchor_base_z`; its band is read once. The BLD-02 integer anchor is the foundation's minimum cell.
 - **Grow.** Every placed piece claims the 1 m cells under its footprint plus every cell within `reach_m` (4 m) of that footprint, at the cell's band price, skipping cells already owned. A piece may only be placed inside the claim or inside that reach ring of the claim. Cells that cannot be claimed (blocked, over budget, over cap, outside the band) refuse the placement with the first failing reason; the grid already showed them red or faded.
-- **Cap.** Near and middle bands cap a claim's total footprint; the wilderness is bounded only by points and the §15 ceilings (50,000 structural cells, 100,000 altered terrain cells). The cell under a piece is always part of the footprint, so a cap also caps the building.
+- **Cap.** Every band caps a claim's total footprint (400 / 1,600 / 3,600 m²), and the §15 ceilings (50,000 structural cells, 100,000 altered terrain cells) bind as well. The cell under a piece is always part of the footprint, so a cap also caps the building.
 - **Shrink.** Removing a piece releases every cell that is no longer within `reach_m` of any remaining piece, returns its points, and hands its committed terrain edits back to the public 7-day healing clock, starting at the release. A removal that would strand another piece's support follows Construction §3.4. A claim may become two parts after removals; it stays one record (one id, one band, one anchor).
 - **Empty claim.** A claim whose last piece is removed archives after `empty_claim_hours` = 24 h (bounds 1–168) through the ordinary archive path, releasing its land and points. Until then the owner can place again on it.
 - **Multiple claims.** A foundation placed outside every own claim's reach starts a new claim if a slot is free (`max_claims`); inside the reach of an own claim it extends it. Two own claims never overlap; one placement within reach of two own claims extends the nearer and the other is unchanged.
-- **Leaving and inactivity.** Unchanged from §2.2 and §4: funded reserve, 7-day grace, delinquent at 30 days, 7-day notice, archive to the owner's recovery store, then release. Points return at archive. The empty-land minimum upkeep (1 worked timber + 1 stone per day) applies per claim. Alpha publishes upkeep at 0% (owner question 3); the lifecycle code ships either way.
+- **Leaving and inactivity.** Upkeep is §9: nothing in alpha; later the claim storehouse pays a daily charge derived from the materials in the claim while the owner is offline, and a depleted storehouse starts a 30-day countdown to archive. Points return at archive.
 - **Healing and adoption.** Each growth adopts committed public edits under the new cells at the same `cba_` action (DEC-03 "legal claim creation atomically adopts", now per growth), with the point and allowance accounting of §3.3. Public edits outside the footprint keep their own 7-day deadline.
 
 ## 5. The build grid
@@ -189,7 +191,7 @@ Everything is a client preview from the replicated voxel density and the zone ma
 
 ## 6. Server authority and durable owner
 
-- **Durable owner.** ClaimTerritory keeps claims; its record changes from centre + side to `cells` (a sparse set of 1 m cell keys with pinned band and price), `anchor_base_z`, `band`, `points_allocated`, plus the per-character `points_total` and `points_allocated` sums. `Reserve` becomes `Grow(op, claimId | new, cells[], expectedRevision)` and `Shrink`. Settings move from `ClaimSettings` to the `tune.building.claim.*` snapshot. `Check`, `Grant`, `Revoke`, `Pay`, `Recover` and the lifecycle are unchanged.
+- **Durable owner.** ClaimTerritory keeps claims; its record changes from centre + side to `cells` (a sparse set of 1 m cell keys with pinned band and price), `anchor_base_z`, `band`, `points_allocated`, plus the per-character `points_total` and `points_allocated` sums. `Reserve` becomes `Grow(op, claimId | new, cells[], expectedRevision)` and `Shrink`. Settings move from `ClaimSettings` to the `tune.building.claim.*` snapshot. `Check`, `Grant`, `Revoke` and `Recover` are unchanged; `Pay` becomes a storehouse deposit and the lifecycle follows §8 (offline-attributed ticks, `depleted_at`, stages).
 - **One action.** Placement is one Building `cba_` action per DEC-02: Housing validates the piece (BLD-01 geometry, support, reach), asks ClaimTerritory to grow with the exact cells, debits materials through Inventory, adopts public terrain edits (World), records the immutable decision, then activates. A denial consumes nothing. The client sends the piece and cell list; the server recomputes band, price, cap, blocked mask and engulfment from its own zone record and never trusts the client's grid.
 - **Replication.** The claim's cell mask and bounding box replicate on `ASFConstructionNetworkState` next to `AnchorCell`; remaining points replicate on the player state. The blocked mask and band map are derived on both sides from the zone record shipped with the content version.
 - **Anti-abuse.**
@@ -212,8 +214,73 @@ Everything is a client preview from the replicated voxel density and the zone ma
 10. **Levelled pad adoption.** A 2 m public cut of 200 m³ is levelled without a claim; a foundation on it claims the pad cells at the band price with no extra points, the 200 m³ leaves the player's 1,000 m³ public allowance and the edits leave the healing list; removing the foundation puts them back with a fresh 7-day deadline.
 11. **Grid visual.** Fresh Fable review of `build-grid-<view>-compare.png` against the reference and `build-mode.png` per `docs/visual-review.md`: owned ivory, affordable moss, limit fade over 3 m, crimson hatch by the road, no grid past the limit.
 12. **Terrain preview.** Captures per `docs/blueprints/building-mode.md` §C: each brush size on flat ground, the Medium brush on a slope, at a road buffer and at the claim edge; the ghost, readout and gauge match the Codex concept and the preview equals the server result (cut volume, clipped columns, refused columns) within one voxel.
+13. **Upkeep charge and pause.** With `enabled`, a claim listing 320 timber and 80 ingot at 1% debits 3.2 timber and 0.8 ingot per offline day from the storehouse, nothing while the owner is logged in, and whole units only once the fractions reach one.
+14. **Depletion stages.** An empty storehouse pins `depleted_at`; at offline day 7 condition starts falling 1 per day with a floor of 1 and no collapse; at day 30 the final notice is sent; at day 37 the claim archives, its stock, structures and edits land in the recovery store, and its cells and points are released. A deposit on day 20 returns it to Provisioned and resumes growth.
+15. **Storehouse rules.** A second storehouse is refused; removing a stocked one is refused; a visitor can deposit and cannot withdraw; a non-listed item is refused. With `enabled` false none of 13–14 happens and the plaque reads "Provisioned".
 
-## 8. Jobs, in order
+## 8. Upkeep: the claim storehouse
+
+Owner, 2026-10-22: "nothing during alpha, but planned upkeep later. a special container can be used to keep materials in that would prevent degrading after the defined time. materials required will be based on materials used for that specific claim. if you are online, it doesnt degrade. offline degrades and reduced stored materials. once materials are depleted, 30 days."
+
+### 8.1 The storehouse
+
+- **What it is.** A placeable functional object, one per claim, that replaces the old claim anchor's maintenance reserve. Recipe content default: 30 rough timber, 10 iron ingot (Crafting owns the definition). It occupies 2 × 2 × 2 BLD-01 cells (1 × 1 × 1 m), origin bottom centre, and must stand inside the claim; it is the only container that upkeep draws from. A second storehouse on the same claim is refused (`storehouse_exists`); removing a stocked storehouse is refused until it is emptied (`storehouse_not_empty`); archive moves its stock to the recovery store with everything else.
+- **Look.** An oak strongbox with iron straps, a hinged lid and a brass plaque on the front bearing the deer crest and the claim's state text (§8.5); weathered-brown plank material and forged iron from the Silverbrook kit, built like any prop from a Codex sheet (`docs/blueprints/props-and-dressing.md` §A).
+- **Capacity.** `storehouse_slots` = 24 stacks; it accepts only materials that appear on the claim's upkeep list (§8.2) and refuses everything else with "The storehouse keeps only this claim's building materials." Stack sizes are Itemization's.
+- **Who may deposit and withdraw.** Deposit: anyone with Visitor rights or above (the existing "Deposit maintenance materials: Yes" row of [Building and Territory] §3), so friends can keep a claim provisioned. Withdraw: the owner and Stewards. Upkeep debits need no rights. Container grants (`UseContainers`) do not apply to it.
+
+### 8.2 The charge
+
+The claim's **upkeep list** is the sum of the recipe material bundles of every structural piece and functional object placed in it, from the same Placement receipts that priced them; decorative furnishings and the storehouse itself are excluded (existing §4 rule). The daily charge per material is `list quantity × upkeep_rate_pct_per_day / 100`. Example: a house of 40 walls at 8 rough timber and 2 iron ingot each lists 320 timber and 80 ingot; at 1% per day that is 3.2 timber and 0.8 ingot per offline day, so 30 offline days need 96 timber and 24 ingot. The §4 rounding rule stays: fractions accumulate per material and are debited whole, so splitting pieces cannot lower the charge; quantities come from authored recipes, never market prices.
+
+### 8.3 Online and offline time
+
+- An owner's claims are **paused** while the owner is logged in: no charge, no countdown, no decay. The server attributes each hourly tick's seconds to online or offline from the character's session records; the charge for the tick is the daily charge × offline seconds / 86,400. Logging in for a minute pauses only that minute.
+- While offline, each tick debits every material on the list from the storehouse. While every material is covered the claim is **Provisioned** and nothing changes in the world.
+- The first tick in which any required material is short pins `depleted_at` and the claim becomes **Depleted**; the tick takes no partial payment for that material (existing rule). All later deadlines count **offline days** from `depleted_at`.
+
+### 8.4 Stages after depletion
+
+| Offline days since `depleted_at` | Stage (ClaimTerritory state) | What happens |
+| ---: | --- | --- |
+| 0–`depleted_grace_days` (7) | Grace | Intact. Growth and new placement paused (`claim_unprovisioned`); repair, removal, doors, containers and automation work. |
+| 7–`depleted_days` (30) | Delinquent | Condition of every listed piece falls `decay_condition_per_day` (1) per offline day, prorated per tick, floor 1; never collapse (existing neglect rule). Shelter and devices may fail with the visible cause. |
+| 30–30 + `final_notice_days` (7) | Notice | Final notice. Decay continues. |
+| 37 | Archived | Existing archive: terrain delta, structures, contents and storehouse stock to the owner's recovery store; land, cells and points released; adopted edits archived, then the baseline restored safely. |
+
+Restocking the storehouse so that every material is covered at the next tick returns the claim to Provisioned at any stage before archive, clears `depleted_at` and resumes growth; damaged condition stays until repaired. Payment of the old `Pay` RPC becomes a deposit.
+
+| Key (`tune.building.upkeep.*`) | Unit | Default | Safe bounds | Step | Effective |
+| --- | ---: | ---: | ---: | ---: | --- |
+| `enabled` | bool | false (alpha) | — | — | Next hourly tick; switching on gives every existing claim `switch_on_provision_days` of free cover |
+| `upkeep_rate_pct_per_day` | % of the upkeep list per day | 1.0 | 0–5 | 0.25 | Next tick; 72-hour notice for increases (existing §7 rule) |
+| `depleted_grace_days` | offline days | 7 | 0–30 | 1 | New depletion episodes; existing deadlines stay pinned |
+| `depleted_days` | offline days | 30 | 7–90, ≥ grace | 1 | New depletion episodes |
+| `final_notice_days` | offline days | 7 | 7–30 | 1 | New depletion episodes |
+| `decay_condition_per_day` | condition/offline day | 1 | 0–5 | 1 | Next tick |
+| `storehouse_slots` | stacks | 24 | 8–64 | 4 | New storehouses |
+| `warn_days` | days of cover | 7 | 1–30 | 1 | Next login |
+| `switch_on_provision_days` | days | 30 | 0–90 | 1 | At switch-on only |
+
+Realm-scoped, economy tier 3, declared through DOC-05; these replace ClaimTerritory's `GraceDays` / `ReclamationDays` / `FinalNoticeDays` and the existing `tune.building.*` keys of the same names. The charge algorithm, online attribution, stage order, floor of 1 and archive-before-release stay release-bound code.
+
+### 8.5 What other players see
+
+- The storehouse plaque reads the claim's state: "Provisioned", "Provisioned · 12 days of cover", "Depleted · day 9 of 30", "Final notice · 5 days". Anyone can read it and deposit.
+- Decayed pieces show Construction's condition weathering; nothing collapses and nobody can enter or take anything that the permissions did not already allow. A Notice-stage claim shows a "lapsing" marker on the world map and in the build grid's status line when another player's grid touches its spacing ring ("Someone's lapsing claim"), so neighbours know the land may free up; the cells stay red until the archive actually releases them.
+- Nothing is visible on open land after archive except the restored baseline.
+
+### 8.6 Notifications
+
+Claim panel plus the account notification inbox (existing §2.2 channels, no external messaging): on login when any claim has less than `warn_days` of cover ("Riverside claim: 5 days of upkeep left"); at depletion; at the end of grace (decay starting); at the final notice; at archive, with the recovery-store contents. Each is sent once per episode.
+
+### 8.7 Healing, adoption and alpha
+
+- Adopted terrain edits stay claimed through every stage; healing never touches a live claim. Growth is paused from depletion, so no new adoption happens until the claim is Provisioned again. Archive archives the edits before restoring the baseline, as DEC-03 and TER-02 already require, and never entombs or overwrites a surviving structure.
+- Points stay allocated until archive; release is the same receipt as the land release.
+- In alpha `enabled` is false: no charge, no stages, no decay, claims last until the test wipe. The storehouse can still be crafted, placed and filled so the UI and deposit permissions get tested. When the flag turns on, every existing claim starts Provisioned with `switch_on_provision_days` of free cover, and the login notice tells the owner to stock the storehouse.
+
+## 9. Jobs, in order
 
 | Job | Size | Scope |
 | --- | --- | --- |
@@ -226,28 +293,18 @@ Everything is a client preview from the replicated voxel density and the zone ma
 | J7 Two-client runner | M | `tools/Test-ClaimGrid.ps1` on owned PostgreSQL covering tests 2–9 |
 | J8 Dependency map, Building and Territory v1.1 note | S | Record §2's changes in the design doc's §2.1 and the map |
 | J9 Terrain section and result preview | M | Dig / Raise Ground / Level tiles and size tiles in the catalogue, `[`/`]`/`Ctrl`+wheel/`T` input, `UDynamicMeshComponent` ghost with `MI_TerrainGhost`, cut/fill readout, depth gauge, Codex concept and Fable review (test 12); needs TER-01/DEC-03 digging to exist on the server |
+| J10 Upkeep and storehouse | M | Storehouse object and Codex sheet, upkeep list from Placement receipts, hourly offline-attributed charge, stages, notifications, plaque, map marker, `enabled` flag and switch-on cover; `ClaimTerritory.Tests` for tests 13–15; after J2 and only when `enabled` is planned for a release |
 
-## Owner questions
+## Owner answers and open questions
 
-1. **How should claim points grow?**
-   - a) Fixed for everyone in alpha (1,200), and later tied to character level (400 at start, +40 per level). **Recommended**: testers can try every band now, and later players earn bigger land by playing.
-   - b) Everyone always has the same fixed budget. Simple, but a new player and a veteran get the same land.
-   - c) Points come only from quests and deeds. Strong story hook, but a player who skips quests never gets a home.
+Answered 2026-10-22 (recorded in [OWNER-2026-10-22-decisions.md](OWNER-2026-10-22-decisions.md)):
 
-2. **How many separate claims can one character hold?**
-   - a) Three, sharing one budget (a town house, a farm and a far keep). **Recommended.**
-   - b) One. Simplest, but a castle in the wilderness means giving up the town house.
-   - c) As many as the budget allows. Risks scattered single-slab claims blocking land.
+1. Claim points: fixed 1,200 in alpha, then 400 + 40 per level (§3.1).
+2. Three claims per character, sharing one budget (§3.1, §4).
+3. Largest wilderness claim about 60 × 60 m: `wild_cost` 0.75 pt/m² and `wild_cap_m2` 3,600 m² (§3.2).
+4. Upkeep: nothing in alpha, then the claim storehouse, charges from the materials used in that claim, no decay while online, a 30-day countdown once depleted (§8).
 
-3. **What happens to a claim while a player is away?**
-   - a) In alpha, nothing: claims last until the test wipe, and the designed upkeep (materials per day, 7-day grace, 30-day reclaim) switches on later. **Recommended** for a small invited group.
-   - b) Upkeep from day one, as the design says. Realistic, but testers who miss a week lose the build they came back to check.
-   - c) No upkeep ever; a claim is archived after 30 days without a login. Easier to understand, but it has no cost for holding land near town.
-
-4. **How big should the largest wilderness claim be at max level?**
-   - a) About 100 × 100 m (a real castle with walls and a courtyard). **Recommended**: the 2,400-point budget at level 50 reaches it with the quarter-point wilderness price.
-   - b) About 60 × 60 m (a keep and a yard). Cheaper to serve, less epic.
-   - c) About 150 × 150 m (a small town). Needs raising the 50,000-structural-cell ceiling and a server profile first.
+Still open:
 
 5. **Grid colours.**
    - a) Ivory for owned, moss for "you can still afford this", fade at the limit, crimson hatch for blocked, as in the HUD style. **Recommended**: matches the v5 UI and reads for colour-blind players because blocked is hatched and named.
