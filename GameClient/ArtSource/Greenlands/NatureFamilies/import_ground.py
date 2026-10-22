@@ -9,7 +9,11 @@ Reuses the textures import_terrain.py imported; run that first. Writes /Game/Fro
   M_GN_River   -> MI_GN_River   Single Layer Water, two panning normal layers.
 Values below are material defaults; MI_* instances override them.
 """
+import sys
+from pathlib import Path
 import unreal as u
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import hex_tile
 LIB = '/Game/Frontier/Environment/Greenlands/Nature'
 ARR = '/Game/Frontier/Environment/Greenlands/Arrival/Textures'
 tools = u.AssetToolsHelpers.get_asset_tools(); mel = u.MaterialEditingLibrary; eal = u.EditorAssetLibrary
@@ -97,21 +101,52 @@ def ground():
     yz = node(m, u.MaterialExpressionAppendVector, -2100, 300); link(py, '', yz, 'A'); link(pz, '', yz, 'B')
     xz = node(m, u.MaterialExpressionAppendVector, -2100, 400); link(px, '', xz, 'A'); link(pz, '', xz, 'B')
 
-    def layer(p, base, nor, rough, tile_cm, tint, y):
+    HEX = hex_tile.build()  # GFX-02 2a: MF_GN_HexTile exists before any layer calls it
+
+    def hexlayer(p, base, nor, rough, uv, tint, y, rot, cell, snap):
+        """One MF_GN_HexTile call in place of the three plain samples (D, N, M = Rough; H stays on its default)."""
+        call = node(m, u.MaterialExpressionMaterialFunctionCall, -1100, y)
+        call.set_material_function(HEX)
+        link(uv, '', call, 'UV')
+        for pin, nm, path, kind, dy in (('D', 'Base', base, S.SAMPLERTYPE_COLOR, 0), ('N', 'Normal', nor, S.SAMPLERTYPE_NORMAL, 100), ('M', 'Rough', rough, S.SAMPLERTYPE_MASKS, 200)):
+            link(node(m, u.MaterialExpressionTextureObjectParameter, -1300, y + dy, parameter_name=nm + p, texture=tex(path), sampler_type=kind), '', call, pin)
+        link(node(m, u.MaterialExpressionConstant, -1300, y + 300, r=rot), '', call, 'Rot')
+        link(node(m, u.MaterialExpressionConstant, -1300, y + 340, r=cell), '', call, 'CellTiles')
+        link(node(m, u.MaterialExpressionConstant, -1300, y + 380, r=snap), '', call, 'Snap')
+
+        def pick(pin, yy, **ch):
+            c = node(m, u.MaterialExpressionComponentMask, -950, yy, **ch); link(call, pin, c, ''); return c
+        rgb = dict(r=True, g=True, b=True, a=False)
+        return (g.mul(pick('D', y, **rgb), g.vec('Tint' + p, tint, -900, y - 100), -500, y), pick('N', y + 250, **rgb),
+                pick('M', y + 500, r=True, g=False, b=False, a=False))
+
+    def layer(p, base, nor, rough, tile_cm, tint, y, hex=False, rot=1.0, cell=1.0, snap=0.0):
         t = g.sc('TileCm' + p, tile_cm, -1800, y + 150)
         uv = g.uv(xy, t, -1650, y)
+        if hex:
+            return (*hexlayer(p, base, nor, rough, uv, tint, y, rot, cell, snap), t)
         col = g.smp('Base' + p, tex(base), S.SAMPLERTYPE_COLOR, uv, -1100, y)
         n = g.smp('Normal' + p, tex(nor), S.SAMPLERTYPE_NORMAL, uv, -1100, y + 250)
         r = g.mask(g.smp('Rough' + p, tex(rough), S.SAMPLERTYPE_MASKS, uv, -1100, y + 500), True, False, False, -800, y + 500)
         return g.mul(col, g.vec('Tint' + p, tint, -900, y - 100), -500, y), n, r, t
     T = f'{LIB}/Textures/T_GN_'
-    fa, na, ra, _ = layer('A', T + 'forest_ground_04_Diffuse', T + 'forest_ground_04_nor_gl', T + 'forest_ground_04_Rough', 200, (0.50, 0.66, 0.34), 0)
+    fa, na, ra, _ = layer('A', T + 'forest_ground_04_Diffuse', T + 'forest_ground_04_nor_gl', T + 'forest_ground_04_Rough', 200, (0.50, 0.66, 0.34), 0, hex=True)
     fb, nb, rb, _ = layer('B', T + 'mossy_rock_Diffuse', T + 'mossy_rock_nor_gl', T + 'mossy_rock_Rough', 150, (0.34, 0.46, 0.20), 1200)
-    mk = g.mask(g.smp('Mask', tex(T + 'forest_ground_04_Displacement'), S.SAMPLERTYPE_MASKS, g.uv(xy, g.sc('TileCmMask', 900, -1800, 2700), -1650, 2600), -1100, 2600), True, False, False, -800, 2600)
+    # J2-pre review fix 1: the Mask stays a plain 9 m sample (hex-tiling it put the moss patches on the hex lattice); its UV is domain-warped by two
+    # world-space Simplex noises (+-0.3 tile = +-2.7 m, ~25 m features) so the 9 m period never lines up on a grid.
+    wp = node(m, u.MaterialExpressionWorldPosition, -2000, 2900)
+
+    def warp_noise(y, off):
+        nz = node(m, u.MaterialExpressionNoise, -1700, y, noise_function=u.NoiseFunction.NOISEFUNCTION_SIMPLEX_TEX, scale=0.0004, levels=2, output_min=-1.0, output_max=1.0, quality=2, turbulence=False)
+        link(g.op(u.MaterialExpressionAdd, wp, node(m, u.MaterialExpressionConstant3Vector, -1900, y, constant=u.LinearColor(0.0, 0.0, 4096.0 if off else 0.0, 0.0)), -1800, y), '', nz, 'World Position'); return nz
+    wxy = node(m, u.MaterialExpressionAppendVector, -1500, 2900); link(warp_noise(2900, ''), '', wxy, 'A'); link(warp_noise(3050, 'B'), '', wxy, 'B')
+    warp = g.mul(wxy, g.sc('MaskWarp', 0.3, -1500, 3000), -1350, 2900)
+    muv = g.op(u.MaterialExpressionAdd, g.uv(xy, g.sc('TileCmMask', 900, -1800, 2700), -1650, 2600), warp, -1250, 2600)
+    mk = g.mask(g.smp('Mask', tex(T + 'forest_ground_04_Displacement'), S.SAMPLERTYPE_MASKS, muv, -1100, 2600), True, False, False, -800, 2600)
     wm = node(m, u.MaterialExpressionSaturate, 0, 2600)
     sub = g.op(u.MaterialExpressionSubtract, mk, g.sc('Low', 0.4, -600, 2700), -500, 2600)
     link(g.mul(sub, g.sc('InvRange', 32, -600, 2800), -300, 2600), '', wm, '')
-    forest = g.lerp(fa, fb, wm, 200, 0); fn = g.lerp(na, nb, wm, 200, 250, 'RGB', 'RGB'); fr = g.lerp(ra, rb, wm, 200, 500)
+    forest = g.lerp(fa, fb, wm, 200, 0); fn = g.lerp(na, nb, wm, 200, 250, '', 'RGB'); fr = g.lerp(ra, rb, wm, 200, 500)
 
     # bedrock: triplanar colour/roughness, top-projected normal
     def tri(name, path, kind, ymid):
@@ -143,18 +178,18 @@ def ground():
     # a fine noise moves the threshold so the edge is worn and ragged instead of a seam. Earth under the cobble; cobble wins where G is high
     # (earth is blended first, cobble on top, so the cobble's soft edge lands on earth, not grass: WP6e review fix 2a).
     SB = '/Game/Frontier/Environment/Greenlands/Silverbrook/Textures/T_SB_cobblestone_pavement_'
-    rc, rn, rr, _ = layer('R', SB + 'Diffuse', SB + 'nor_gl', SB + 'Rough', 240, (1, 1, 1), 6000)
+    rc, rn, rr, _ = layer('R', SB + 'Diffuse', SB + 'nor_gl', SB + 'Rough', 240, (1, 1, 1), 6000, hex=True, rot=0.0, cell=1.0, snap=14.0)  # 14 stone courses per 2.4 m tile
     # trails: packed dark earth from the forest-floor scan with pale mossy stones pushed through it where a mask passes a high threshold
     import_scan('brown_mud_02'); import_scan('rocky_trail')  # dirt with roots and sticks; pale stones
-    dc, dn, dr, _ = layer('T', T + 'brown_mud_02_Diffuse', T + 'brown_mud_02_nor_gl', T + 'brown_mud_02_Rough', 200, (0.85, 0.75, 0.65), 8000)
-    sc_, sn, sr, _ = layer('S', T + 'rocky_trail_Diffuse', T + 'rocky_trail_nor_gl', T + 'rocky_trail_Rough', 150, (0.9, 0.88, 0.84), 9600)
+    dc, dn, dr, _ = layer('T', T + 'brown_mud_02_Diffuse', T + 'brown_mud_02_nor_gl', T + 'brown_mud_02_Rough', 200, (0.85, 0.75, 0.65), 8000, hex=True)
+    sc_, sn, sr, _ = layer('S', T + 'rocky_trail_Diffuse', T + 'rocky_trail_nor_gl', T + 'rocky_trail_Rough', 150, (0.9, 0.88, 0.84), 9600, hex=True)
     def clamp01(value, x, y):
         return g.op(u.MaterialExpressionMax,
                     g.op(u.MaterialExpressionMin, value, node(m, u.MaterialExpressionConstant, x - 150, y, r=1.0), x, y),
                     node(m, u.MaterialExpressionConstant, x - 150, y + 100, r=0.0), x + 150, y)
     sw = clamp01(g.mul(g.op(u.MaterialExpressionSubtract, mk, g.sc('StoneLow', 0.6, 300, 8000), 450, 8000),
                        g.sc('StoneSharp', 14, 300, 8100), 500, 8000), 600, 8000)
-    tc, tn, tr = g.lerp(dc, sc_, sw, 800, 8000), g.lerp(dn, sn, sw, 800, 8250, '', 'RGB'), g.lerp(dr, sr, sw, 800, 8500)
+    tc, tn, tr = g.lerp(dc, sc_, sw, 800, 8000), g.lerp(dn, sn, sw, 800, 8250), g.lerp(dr, sr, sw, 800, 8500)
     vcn = node(m, u.MaterialExpressionVertexColor, -600, 9000)
     edge = g.mask(g.smp('EdgeNoise', tex(T + 'forest_ground_04_Displacement'), S.SAMPLERTYPE_MASKS, g.uv(xy, g.sc('EdgeTileCm', 350, -1800, 9300), -1650, 9300), -1100, 9300), True, False, False, -800, 9300)
     wob = g.mul(g.op(u.MaterialExpressionSubtract, edge, half, -600, 9300), g.sc('EdgeAmp', 0.9, -600, 9400), -400, 9300)

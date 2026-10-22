@@ -308,7 +308,8 @@ void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
         auto* Player = Cast<ASFE1Character>(Weak->GetPawn());
         auto* Boar = ActiveBoars.FindRef(TEXT("boar_farm_edge:0")).Get();
         if (!Player || !Boar) { return; }
-        const FVector Near = Grounded(GetWorld(), Boar->GetActorLocation()+FVector(180,0,0), Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+        const bool bUiEvidence = FParse::Param(FCommandLine::Get(), TEXT("UiEvidenceHud")) || FParse::Param(FCommandLine::Get(), TEXT("UiEvidenceDefeat"));
+        const FVector Near = Grounded(GetWorld(), Boar->GetActorLocation()+FVector(bUiEvidence ? 600 : 180,0,0), Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
         Player->SetActorLocation(Near, false, nullptr, ETeleportType::TeleportPhysics);
         UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_SCENARIO_START Pawn=%s"), *Player->GetName());
     }), 2.0f, false);
@@ -405,18 +406,26 @@ void ASFGameMode::TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim)
         Boar->Health() <= 0 || Victim->CombatHealth() <= 0 || IsSafe(Boar->GetActorLocation()) ||
         IsSafe(Victim->GetActorLocation()) ||
         FVector::Dist2D(Boar->GetActorLocation(), Victim->GetActorLocation()) > CapturedSettings->MeleeRangeMetres*100) return;
-    Victim->CombatSetHealth(SFCombatPilotRules::RemainingHealth(Victim->CombatHealth(), CapturedSettings->BoarMeleeDamage));
+    HitPlayer(Boar, Victim, CapturedSettings->BoarMeleeDamage);
+}
+
+void ASFGameMode::HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage)
+{
+    if (!IsValid(Victim) || !Victim->HasAuthority() || Victim->CombatHealth() <= 0) return;
+    Victim->CombatSetHealth(SFCombatPilotRules::RemainingHealth(Victim->CombatHealth(), Damage));
     if (ASFPlayerController* PC = Cast<ASFPlayerController>(Victim->GetController())) { PC->ClientPilotHit(TEXT("Hit")); }
-    if (!Victim->GetCombatTarget() && Victim->CombatHealth() > 0) { Victim->SetCombatTarget(Boar); }
-    UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_PLAYER_HIT HP=%d"), Victim->CombatHealth());
+    if (!Victim->GetCombatTarget() && Victim->CombatHealth() > 0) { Victim->SetCombatTarget(Source); }
+    UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_PLAYER_HIT HP=%d By=%s"), Victim->CombatHealth(), *GetNameSafe(Source));
     if (Victim->CombatHealth() == 0)
     {
         Victim->GetCharacterMovement()->DisableMovement();
         UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_PLAYER_DEAD Pawn=%s"), *Victim->GetName());
+        ASFGameMode* Mode = Victim->GetWorld()->GetAuthGameMode<ASFGameMode>();
+        if (!Mode || !Mode->bPilotActive) { return; }
         FTimerHandle Timer;
-        GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateWeakLambda(this,
-            [this, Weak = TWeakObjectPtr<ASFE1Character>(Victim)]() { RespawnPlayer(Weak); }),
-            CapturedSettings->PlayerRespawnDelaySeconds, false);
+        Mode->GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateWeakLambda(Mode,
+            [Mode, Weak = TWeakObjectPtr<ASFE1Character>(Victim)]() { Mode->RespawnPlayer(Weak); }),
+            Mode->CapturedSettings->PlayerRespawnDelaySeconds, false);
     }
 }
 

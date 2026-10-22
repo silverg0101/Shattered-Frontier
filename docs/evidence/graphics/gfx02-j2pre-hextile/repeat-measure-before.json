@@ -1,0 +1,132 @@
+{
+  "limit": 0.25,
+  "passed": false,
+  "crops": {
+    "A1-south-approach-30m/cobble": {
+      "peak": 0.1943,
+      "lag_px": [
+        44,
+        -21
+      ],
+      "rect": [
+        876,
+        816,
+        256,
+        256
+      ],
+      "passed": true
+    },
+    "A1-south-approach-30m/earth": {
+      "peak": 0.5595,
+      "lag_px": [
+        -23,
+        -13
+      ],
+      "rect": [
+        700,
+        715,
+        128,
+        112
+      ],
+      "passed": false
+    },
+    "A1-south-approach-30m/grass": {
+      "peak": 0.2442,
+      "lag_px": [
+        17,
+        -1
+      ],
+      "rect": [
+        175,
+        440,
+        128,
+        128
+      ],
+      "passed": true
+    },
+    "A2-south-approach-100m/cobble": {
+      "peak": 0.4359,
+      "lag_px": [
+        20,
+        -16
+      ],
+      "rect": [
+        885,
+        790,
+        160,
+        256
+      ],
+      "passed": false
+    },
+    "A2-south-approach-100m/earth": {
+      "peak": 0.665,
+      "lag_px": [
+        -2,
+        21
+      ],
+      "rect": [
+        815,
+        600,
+        64,
+        256
+      ],
+      "passed": false
+    },
+    "A2-south-approach-100m/grass": {
+      "peak": 0.3418,
+      "lag_px": [
+        -20,
+        -14
+      ],
+      "rect": [
+        1230,
+        800,
+        256,
+        256
+      ],
+      "passed": false
+    },
+    "A3-south-approach-250m/cobble": {
+      "peak": 0.5919,
+      "lag_px": [
+        -9,
+        -9
+      ],
+      "rect": [
+        915,
+        600,
+        85,
+        256
+      ],
+      "passed": false
+    },
+    "A3-south-approach-250m/earth": {
+      "peak": 0.2426,
+      "lag_px": [
+        1,
+        -14
+      ],
+      "rect": [
+        884,
+        600,
+        32,
+        256
+      ],
+      "passed": true
+    },
+    "A3-south-approach-250m/grass": {
+      "peak": 0.4332,
+      "lag_px": [
+        -7,
+        -7
+      ],
+      "rect": [
+        1075,
+        520,
+        190,
+        190
+      ],
+      "passed": false
+    }
+  }
+}

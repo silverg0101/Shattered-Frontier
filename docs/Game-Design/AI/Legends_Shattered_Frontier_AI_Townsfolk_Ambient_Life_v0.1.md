@@ -340,7 +340,7 @@ The census validator checks:
 
      Anything else is dropped and logged as `TOWNSFOLK_HANDOFF_DENIED`. Exact positions can't be matched: each client's doors, slots and sidesteps are its own.
    - *The NPC.* The server spawns `ASFTownsfolkNpc` at the seen position. It is a replicated, always-relevant character that moves like the pilot boar, with `ResidentHealth` (40) and the combat pilot's crowd-control component.
-     - Each hit uses the combat pilot's melee rules and damage, marks a danger cell, and makes the resident flee for `FleeSeconds` (section 5.4). Fighting back and guards are step 5.
+     - Each hit uses the combat pilot's melee rules and damage, marks a danger cell, and makes the resident flee for `FleeSeconds` (section 5.4). Step 5 adds fighting back and guards.
      - At 0 health the resident is hidden until the next dawn.
      - The replicated NPC actors are the set of handed-off residents (section 5.1), so the town state needs no list of them.
    - *Clients.* While the NPC exists, each client hides its Mass copy and frees that copy's Smart Object slots. When the server releases the NPC (`HandoffQuietSeconds` without a hit and no player within `HandoffReleaseMetres`, 30 m), each client resumes the resident's schedule from the NPC's last position, so it doesn't jump back.
@@ -373,6 +373,13 @@ The census validator checks:
      - Founder chain: `Artifacts/QuestPilot/full-20261021-181120-131`.
    - *Next:* step 5 (fighting back, guards, crime).
 5. **Reactions, crime and guards.** Fear at drawn weapons, annoyed barks, residents fighting back, roaming guards on patrol loops, witnessed crime making the player an offender, respawn at dawn. *Exit:* attacking a resident in view of a guard makes the player an offender and the guard engages; an unwitnessed attack in a back street gets reported only if a resident reaches a guard.
+   **Step 5 first slice (2026-10-21): fighting back, guards, crime.**
+   - A hit resident fights back above `FleeHealthPct` (35 %) for `FightBackSeconds`, then flees.
+   - `ASFTownGuard` witnesses crimes in sight (30 m, line of sight), and an unwitnessed victim runs to the nearest guard within 80 m to report it.
+   - Offenders are replicated on `ASFTownState` for `GuardGrudgeSeconds` (600 s), and guards engage them on sight.
+   - Killed residents return home at dawn.
+   - *Exit met* in tests (`ShatteredFrontier.Townsfolk.Crime`) and on the `TownsfolkGuards` dev map; see [evidence](../../evidence/townsfolk-crime-guards.md).
+   - *Open:* guards in Silverbrook (lane patrols, `guards_per_100_houses`), attacking guards, fear at drawn weapons and offenders, and annoyed barks.
 
 ## 10. Risks
 

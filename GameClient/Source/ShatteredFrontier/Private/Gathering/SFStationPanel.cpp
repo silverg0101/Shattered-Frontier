@@ -109,7 +109,7 @@ void USFStationPanel::NativeOnInitialized()
     int32 TabIndex = 0;
     for (const TCHAR* Label : TabLabels)
     {
-        UBorder* Tab = StationFrame(WidgetTree, TabIndex == 0 ? TEXT("tab_selected") : TEXT("tab_normal"), FMargin(0.f));
+        UBorder* Tab = SFHudStyle::Tab(WidgetTree, TabIndex == 0);
         UTextBlock* TabText = Text(WidgetTree, Label, 18, Ivory());
         Tab->SetContent(TabText); Tab->SetHorizontalAlignment(HAlign_Center); Tab->SetVerticalAlignment(VAlign_Center);
         UHorizontalBoxSlot* TabSlot = Tabs->AddChildToHorizontalBox(StationSized(WidgetTree, Tab, 0.f, 44.f));
@@ -222,9 +222,8 @@ void USFStationPanel::Rebuild(USFGatheringPilotComponent* Pilot, const ASFGather
     {
         if (Recipe->Outputs.IsEmpty()) { continue; }
         const bool bSelected = Recipe == Selected;
-        // Selected: the row tinted moss (state colour), with a brighter brass edge from the tint's lift.
         UBorder* Row = StationFrame(WidgetTree, TEXT("recipe_row"), FMargin(14.f, 2.f, 10.f, 2.f));
-        if (bSelected) { Row->SetBrushColor(FLinearColor(0.55f, 0.85f, 0.5f)); }
+        SFHudStyle::SetRowSelected(Row, bSelected);
         UHorizontalBox* Line = StationNew<UHorizontalBox>(WidgetTree);
         Line->AddChildToHorizontalBox(StationSized(WidgetTree, StationIcon(WidgetTree, IconStem(Recipe->Outputs[0].DefinitionId), 40.f), 40.f, 40.f))->SetVerticalAlignment(VAlign_Center);
         UTextBlock* RecipeName = Text(WidgetTree, SFStationRecipes::ItemDisplayName(Recipe->Outputs[0].DefinitionId), 18, Ivory());

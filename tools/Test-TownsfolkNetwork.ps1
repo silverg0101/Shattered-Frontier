@@ -32,7 +32,7 @@ $settings = '-ini:Game:[/Script/ShatteredFrontier.SFTownsfolkSettings]:'
 $results = [ordered]@{
     status='Running'
     leg=$Leg
-    scope='Mechanism only: dedicated editor server town state (clock, markets, one danger cell) replicated to two NullRHI NM_Client clients simulating residents. Attack hand-off and release (flee only). No rendering, looks, fighting back or quest hand-off.'
+    scope='Mechanism only: dedicated editor server town state (clock, markets, one danger cell) replicated to two NullRHI NM_Client clients simulating residents. Attack hand-off and release (the resident fights back, then flees; no guards in Silverbrook yet). No rendering, looks or quest hand-off.'
     serverOverrides="GameDayMinutes=$DayMinutes StartHour=10 MarketCloseHour=12 DangerSeconds=1800 HandoffReleaseMetres=10 HandoffQuietSeconds=8, danger cell at (20,-20) m; clients keep shipped settings"
     timeoutSeconds=$TimeoutSeconds
     runs=@()

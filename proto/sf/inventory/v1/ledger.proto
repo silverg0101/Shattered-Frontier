@@ -16,6 +16,8 @@ service InventoryLedger {
   rpc GetContainer(GetContainerRequest) returns (ContainerView);
   // Idempotent on operation_id: a retry returns the original receipt.
   rpc Grant(GrantRequest) returns (LedgerReceipt);
+  // Older hosts return UNIMPLEMENTED before a gather item can be committed.
+  rpc GrantWithIntent(GrantRequest) returns (LedgerReceipt);
 }
 
 enum OwnerKind {

@@ -28,6 +28,7 @@ static const char* InventoryLedger_method_names[] = {
   "/sf.inventory.v1.InventoryLedger/EnsureContainer",
   "/sf.inventory.v1.InventoryLedger/GetContainer",
   "/sf.inventory.v1.InventoryLedger/Grant",
+  "/sf.inventory.v1.InventoryLedger/GrantWithIntent",
 };
 
 std::unique_ptr< InventoryLedger::Stub> InventoryLedger::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -40,6 +41,7 @@ InventoryLedger::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& ch
   : channel_(channel), rpcmethod_EnsureContainer_(InventoryLedger_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_GetContainer_(InventoryLedger_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_Grant_(InventoryLedger_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_GrantWithIntent_(InventoryLedger_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status InventoryLedger::Stub::EnsureContainer(::grpc::ClientContext* context, const ::sf::inventory::v1::EnsureContainerRequest& request, ::sf::inventory::v1::ContainerView* response) {
@@ -111,6 +113,29 @@ void InventoryLedger::Stub::async::Grant(::grpc::ClientContext* context, const :
   return result;
 }
 
+::grpc::Status InventoryLedger::Stub::GrantWithIntent(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::sf::inventory::v1::LedgerReceipt* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::inventory::v1::GrantRequest, ::sf::inventory::v1::LedgerReceipt, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GrantWithIntent_, context, request, response);
+}
+
+void InventoryLedger::Stub::async::GrantWithIntent(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::inventory::v1::GrantRequest, ::sf::inventory::v1::LedgerReceipt, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GrantWithIntent_, context, request, response, std::move(f));
+}
+
+void InventoryLedger::Stub::async::GrantWithIntent(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GrantWithIntent_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>* InventoryLedger::Stub::PrepareAsyncGrantWithIntentRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::inventory::v1::LedgerReceipt, ::sf::inventory::v1::GrantRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GrantWithIntent_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>* InventoryLedger::Stub::AsyncGrantWithIntentRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncGrantWithIntentRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 InventoryLedger::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       InventoryLedger_method_names[0],
@@ -142,6 +167,16 @@ InventoryLedger::Service::Service() {
              ::sf::inventory::v1::LedgerReceipt* resp) {
                return service->Grant(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      InventoryLedger_method_names[3],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< InventoryLedger::Service, ::sf::inventory::v1::GrantRequest, ::sf::inventory::v1::LedgerReceipt, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](InventoryLedger::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::inventory::v1::GrantRequest* req,
+             ::sf::inventory::v1::LedgerReceipt* resp) {
+               return service->GrantWithIntent(ctx, req, resp);
+             }, this)));
 }
 
 InventoryLedger::Service::~Service() {
@@ -162,6 +197,13 @@ InventoryLedger::Service::~Service() {
 }
 
 ::grpc::Status InventoryLedger::Service::Grant(::grpc::ServerContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status InventoryLedger::Service::GrantWithIntent(::grpc::ServerContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response) {
   (void) context;
   (void) request;
   (void) response;

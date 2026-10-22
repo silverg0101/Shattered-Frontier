@@ -7,6 +7,8 @@ ZoneGraphData. Gate (WP6c fix 2): every StaticMeshActor not hidden inside the to
 import json
 from pathlib import Path
 import unreal as u
+import argparse
+parser=argparse.ArgumentParser();parser.add_argument('--all',action='store_true');args=parser.parse_args()
 
 actors = u.get_editor_subsystem(u.EditorActorSubsystem).get_all_level_actors()
 CLASSES = {'TextRenderActor', 'ZoneShape', 'ZoneGraphData'}
@@ -30,9 +32,9 @@ def default_slots(a):
 checked = [a for a in actors if debug(a)]
 bad = [a.get_actor_label() for a in checked if not a.get_editor_property('hidden')]
 print('HIDDEN_IN_GAME_CHECK', 'checked', len(checked), 'visible_in_game', len(bad), bad[:10])
-assert checked and not bad, bad
+assert (checked or args.all) and not bad, bad
 town = [a for a in actors if isinstance(a, u.StaticMeshActor) and not a.get_editor_property('hidden') and a.static_mesh_component.static_mesh
-        and (a.get_actor_location().x / 100 / WALL['semi_axis_x']) ** 2 + (a.get_actor_location().y / 100 / WALL['semi_axis_y']) ** 2 < 1]
+        and (args.all or (a.get_actor_location().x / 100 / WALL['semi_axis_x']) ** 2 + (a.get_actor_location().y / 100 / WALL['semi_axis_y']) ** 2 < 1)]
 grey = [(a.get_actor_label(), default_slots(a)) for a in town if default_slots(a)]
 print('DEFAULT_MATERIAL_CHECK', 'visible_in_town', len(town), 'default_or_graybox', len(grey), grey[:10])
 assert not grey, grey

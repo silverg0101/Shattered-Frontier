@@ -97,7 +97,7 @@ void USFHudLayout::NativeOnInitialized()
     BuildHotbar(Root);
 
     // Prompt bar: auto width, 52 tall, bottom edge at 85% (action_bar in build mode, button_normal plate otherwise).
-    PromptFrame = KitPanel(WidgetTree, TEXT("button_normal"), 1.f, Slate(0.9f), Brass(), FMargin(8.f, 0.f), 3.f);
+    PromptFrame = KitPanel(WidgetTree, TEXT("button_normal"), 1.f, Slate(0.9f), Brass(), FMargin(8.f, 0.f), 3.f);  // plate art only; the state brush is ButtonBrush
     PromptRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     PromptFrame->SetVerticalAlignment(VAlign_Center);
     PromptFrame->SetContent(PromptRow);
@@ -166,6 +166,7 @@ void USFHudLayout::NativeOnInitialized()
     UBorder* ZoneFrame = KitPanel(WidgetTree, TEXT("minimap_footer"), 1.f, Slate(0.85f), Brass(), FMargin(4.f, 0.f), 3.f);
     ZoneText = Text(WidgetTree, ZoneFromMapName(UGameplayStatics::GetCurrentLevelName(this, true)), 18, Ivory());
     ZoneText->SetJustification(ETextJustify::Center);
+    ZoneText->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
     ZoneFrame->SetVerticalAlignment(VAlign_Center); ZoneFrame->SetContent(ZoneText);
     USizeBox* ZoneSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
     ZoneSize->SetWidthOverride(180.f); ZoneSize->SetHeightOverride(32.f); ZoneSize->SetContent(ZoneFrame);
@@ -235,7 +236,7 @@ void USFHudLayout::SetPrompts(ESFPromptContext Context)
     }
     if (USizeBox* BarSize = Cast<USizeBox>(PromptBox)) { BarSize->SetHeightOverride(Context == ESFPromptContext::Build ? 44.f : 52.f); }
     PromptBox->SetVisibility(Segments.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
-    PromptFrame->SetBrush(KitOrFrame(Context == ESFPromptContext::Build ? TEXT("action_bar") : TEXT("button_normal"), Slate(0.9f), Brass(), 3.f));
+    PromptFrame->SetBrush(Context == ESFPromptContext::Build ? KitOrFrame(TEXT("action_bar"), Slate(0.9f), Brass(), 3.f) : ButtonBrush(EButtonKind::Secondary, EHudState::Normal));
     for (int32 Index = 0; Index < Segments.Num(); ++Index)
     {
         const FSFPromptSegment& Segment = Segments[Index];
@@ -266,7 +267,7 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     {
         ShownActiveKey = ActiveKey;
         for (int32 Index = 0; Index < SlotFrames.Num(); ++Index)
-        { SlotFrames[Index]->SetBrush(KitOrFrame(Index + 1 == ActiveKey ? TEXT("slot_hotbar_selected") : TEXT("slot_hotbar_normal"), Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), 3.f)); }
+        { SetSlotSelected(SlotFrames[Index], TEXT("slot_hotbar_normal"), Index + 1 == ActiveKey); }
     }
 
     // Stack counts, bottom-right: the pilot item whose name contains the slot label, shown from 2 up (tools are single items).
@@ -291,6 +292,9 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     // While the station panel is open it carries its own title and Craft key: no prompt bar and no target frame over it.
     const bool bStation = Cast<ASFPlayerController>(Controller) && Cast<ASFPlayerController>(Controller)->IsStationPanelOpen();
     if (bStation) { Context = ESFPromptContext::None; }
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (GetWorld() && GetWorld()->GetTimeSeconds() < CapturePromptUntil) { Context = ESFPromptContext::Harvest; HarvestVerb = TEXT("Harvest"); }
+#endif
     AActor* CombatTarget = Cast<ASFPlayerController>(Controller) ? Cast<ASFPlayerController>(Controller)->GetSelectedCombatTarget() : nullptr;
     int32 Health = 0, MaxHealth = 0;
     FString Name;
@@ -324,7 +328,7 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
             double Nearest = TNumericLimits<double>::Max();
             for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It; ++It)
             { if (!It->IsRefinery()) { Nearest = FMath::Min(Nearest, FVector::Dist2D(It->GetActorLocation(), Controller->GetPawn()->GetActorLocation())); } }
-            if (Nearest < TNumericLimits<double>::Max()) { Footer = FString::Printf(TEXT("%s 00B7 %d m"), *ZoneName, FMath::RoundToInt(Nearest / 100.0)); }
+            if (Nearest < TNumericLimits<double>::Max()) { Footer = FString::Printf(TEXT("%s · %d m"), *ZoneName, FMath::RoundToInt(Nearest / 100.0)); }
         }
         ZoneText->SetText(FText::FromString(Footer));
     }

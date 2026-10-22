@@ -294,31 +294,99 @@ inline USizeBox* KitImage(UWidgetTree* Tree, const TCHAR* Name, float Width = 0.
         Box->SetWidthOverride(Width > 0.f ? Width : static_cast<float>(Design.X));
         Box->SetHeightOverride(Height > 0.f ? Height : (Width > 0.f ? Width : static_cast<float>(Design.Y)));
     }
-    else if (Width > 0.f) { Box->SetWidthOverride(Width); Box->SetHeightOverride(Height > 0.f ? Height : Width); }
+    else { Image->SetVisibility(ESlateVisibility::Collapsed); if (Width > 0.f) { Box->SetWidthOverride(Width); Box->SetHeightOverride(Height > 0.f ? Height : Width); } }
     Box->SetContent(Image);
     return Box;
 }
 
+// ---- Control states (docs/blueprints/ui-hud.md "Controls"). ONE art piece per control kind; a state is a tint or an outline on that
+// piece, so every screen reads as the same family. Screens never pick their own tab/button/slot/row brushes or selection colours:
+// they call these (tools/Check-HudStyle.ps1 fails a build of a button/tab brush or selection colour outside this header).
+enum class EHudState : uint8 { Normal, Hover, Pressed, Selected, Disabled };
 enum class EButtonKind : uint8 { Secondary, Primary, Destructive };
+
+inline FLinearColor MossFill() { return Hex(TEXT("2B3B2C")); }          // selected / pressed fill
+inline FLinearColor SelectEdge() { return Hex(TEXT("E6D08A")); }        // pale-gold 2 px outline on a selected slot or tile
+inline FLinearColor WellFill() { return Hex(TEXT("0E171C"), 0.85f); }   // unselected slot / tab fallback fill
+inline FLinearColor CardSelectTint() { return FLinearColor(0.55f, 0.85f, 0.5f); }  // moss-green outline on a chosen image card (respawn points)
+inline FLinearColor CardEdge(bool bSelected) { return bSelected ? Moss() : Brass(); }
+inline FLinearColor Hairline() { return Hex(TEXT("3A4348")); }          // unselected edge on fallbacks
+
+inline FSlateBrush StateTint(FSlateBrush Brush, EHudState State)
+{
+    if (State == EHudState::Hover) { Brush.TintColor = FSlateColor(FLinearColor(1.35f, 1.25f, 1.f, 1.f)); }
+    else if (State == EHudState::Disabled) { Brush.TintColor = FSlateColor(FLinearColor(0.5f, 0.5f, 0.5f, 0.8f)); }
+    return Brush;
+}
+
+// Tab and rail row: tab_normal; Selected/Pressed = tab_selected (moss fill, brass edge).
+inline FSlateBrush TabBrush(EHudState State)
+{
+    const bool bOn = State == EHudState::Selected || State == EHudState::Pressed;
+    return StateTint(KitOrFrame(bOn ? TEXT("tab_selected") : TEXT("tab_normal"), bOn ? MossFill() : WellFill(), bOn ? Brass() : Hairline(), 3.f), State);
+}
+
+// Button: Secondary = button_normal, Primary = button_primary_brass, Destructive = button_destructive. Pressed/Selected (a toggled button
+// such as Offer Locked) is the tab_selected moss plate for Secondary and a darkened piece for the others.
+inline FSlateBrush ButtonBrush(EButtonKind Kind, EHudState State)
+{
+    const TCHAR* Piece = Kind == EButtonKind::Primary ? TEXT("button_primary_brass") : Kind == EButtonKind::Destructive ? TEXT("button_destructive") : TEXT("button_normal");
+    const FLinearColor Fill = Kind == EButtonKind::Primary ? Brass() : WellFill();
+    if ((State == EHudState::Pressed || State == EHudState::Selected) && Kind == EButtonKind::Secondary) { return TabBrush(EHudState::Selected); }
+    FSlateBrush Brush = StateTint(KitOrFrame(Piece, Fill, Hairline(), 3.f), State);
+    if (State == EHudState::Pressed || State == EHudState::Selected) { Brush.TintColor = FSlateColor(FLinearColor(0.8f, 0.8f, 0.8f, 1.f)); }
+    return Brush;
+}
+
+// Slot or tile (bag, equipment, hotbar, catalogue): its own normal piece; Selected = the same piece with a pale-gold 2 px outline.
+inline FSlateBrush SlotBrush(const TCHAR* NormalPiece, bool bSelected)
+{
+    if (!bSelected) { return KitOrFrame(NormalPiece, WellFill(), Hairline(), 3.f); }
+    FSlateBrush Brush = Frame(Hex(TEXT("0E171C"), 0.95f), SelectEdge(), 4.f);
+    Brush.OutlineSettings.Width = 2.f;
+    return Brush;
+}
+
+// List row (market rows, station recipes, quest rows): Selected = the tab_selected moss plate; otherwise a faint hairline row.
+inline FSlateBrush RowBrush(bool bSelected)
+{
+    return bSelected ? TabBrush(EHudState::Selected) : Frame(Hex(TEXT("17232A"), 0.6f), Hairline(), 3.f);
+}
+
+// A tab (or rail row): a Border carrying TabBrush; call SetTabState to change it.
+inline UBorder* Tab(UWidgetTree* Tree, bool bSelected, const FMargin& Padding = FMargin(0.f), bool bInset = true)
+{
+    UBorder* Border = KitPanel(Tree, bSelected ? TEXT("tab_selected") : TEXT("tab_normal"), 1.f, WellFill(), Hairline(), Padding, 3.f, bInset);
+    Border->SetBrush(TabBrush(bSelected ? EHudState::Selected : EHudState::Normal));
+    return Border;
+}
+inline void SetTabState(UBorder* Tab, EHudState State) { Tab->SetBrush(TabBrush(State)); Tab->SetBrushColor(FLinearColor::White); }
+inline void SetSlotSelected(UBorder* Slot, const TCHAR* NormalPiece, bool bSelected) { Slot->SetBrush(SlotBrush(NormalPiece, bSelected)); Slot->SetBrushColor(FLinearColor::White); }
+inline void SetRowSelected(UBorder* Row, bool bSelected) { Row->SetBrush(RowBrush(bSelected)); Row->SetBrushColor(FLinearColor::White); }
+
 struct FSFHudButton { USizeBox* Root = nullptr; UButton* Button = nullptr; UTextBlock* Label = nullptr; };
 
 // The one text button (IMPLEMENTATION-FIX G3): 56 tall, at least MinWidth wide, 24 px side padding, EB Garamond 24 label.
 // Secondary = button_normal/hover/pressed/disabled, Primary = button_primary_brass, Destructive = button_destructive.
 // Bind OnClicked on .Button; hit-testing and hover come with it. Frames are never button backgrounds.
+// Sets all five state brushes of a button from ButtonBrush; bToggledOn makes the resting look the Selected one (Offer Locked).
+inline void ApplyButtonStyle(UButton* Control, EButtonKind Kind, bool bToggledOn)
+{
+    FButtonStyle Style = Control->GetStyle();
+    Style.Normal = ButtonBrush(Kind, bToggledOn ? EHudState::Selected : EHudState::Normal);
+    Style.Hovered = ButtonBrush(Kind, bToggledOn ? EHudState::Selected : EHudState::Hover);
+    Style.Pressed = ButtonBrush(Kind, EHudState::Pressed);
+    Style.Disabled = ButtonBrush(Kind, EHudState::Disabled);
+    Style.NormalPadding = FMargin(0.f); Style.PressedPadding = FMargin(0.f);
+    Control->SetStyle(Style);
+}
+
 inline FSFHudButton Button(UWidgetTree* Tree, const FString& Label, EButtonKind Kind = EButtonKind::Secondary, float MinWidth = 160.f)
 {
     FSFHudButton Result;
     UButton* Control = Tree->ConstructWidget<USFHudButton>(USFHudButton::StaticClass());
     const bool bPrimary = Kind == EButtonKind::Primary;
-    const TCHAR* Normal = bPrimary ? TEXT("button_primary_brass") : Kind == EButtonKind::Destructive ? TEXT("button_destructive") : TEXT("button_normal");
-    const FLinearColor Fill = bPrimary ? Brass() : Hex(TEXT("0E171C"), 0.85f);
-    FButtonStyle Style = Control->GetStyle();
-    Style.Normal = KitOrFrame(Normal, Fill, Hex(TEXT("3A4348")), 3.f);
-    Style.Hovered = KitOrFrame(Kit(TEXT("button_hover")) && !bPrimary ? TEXT("button_hover") : Normal, Fill, Brass(), 3.f);
-    Style.Pressed = KitOrFrame(Kit(TEXT("button_pressed")) && !bPrimary ? TEXT("button_pressed") : Normal, Hex(TEXT("2B3B2C")), Brass(), 3.f);
-    Style.Disabled = KitOrFrame(Kit(TEXT("button_disabled")) && !bPrimary ? TEXT("button_disabled") : Normal, Fill, Hex(TEXT("3A4348")), 3.f);
-    Style.NormalPadding = FMargin(0.f); Style.PressedPadding = FMargin(0.f);
-    Control->SetStyle(Style);
+    ApplyButtonStyle(Control, Kind, false);
     // Primary buttons carry dark ink (#2A1E10) on the brass, as in the concepts; secondary buttons use ivory.
     UTextBlock* Caption = Text(Tree, Label, 24, bPrimary ? Hex(TEXT("2A1E10")) : Ivory(), bPrimary);
     Caption->SetJustification(ETextJustify::Center);

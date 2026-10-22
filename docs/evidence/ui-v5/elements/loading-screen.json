@@ -1,0 +1,134 @@
+{
+ "concept": "9-loading-screen.png",
+ "elements": [
+  {
+   "name": "stag emblem with diamond frame",
+   "rect": [
+    834,
+    322,
+    247,
+    267
+   ]
+  },
+  {
+   "name": "stag head",
+   "rect": [
+    860,
+    322,
+    200,
+    241
+   ],
+   "samples": [
+    [
+     960,
+     530,
+     "stag ivory"
+    ]
+   ]
+  },
+  {
+   "name": "zone title Silverbrook",
+   "rect": [
+    712,
+    582,
+    508,
+    89
+   ]
+  },
+  {
+   "name": "title divider with centre ornament",
+   "rect": [
+    712,
+    679,
+    493,
+    29
+   ]
+  },
+  {
+   "name": "divider centre diamond",
+   "rect": [
+    943,
+    679,
+    35,
+    29
+   ]
+  },
+  {
+   "name": "tip text",
+   "rect": [
+    719,
+    870,
+    485,
+    30
+   ]
+  },
+  {
+   "name": "progress bar frame",
+   "rect": [
+    609,
+    915,
+    701,
+    35
+   ]
+  },
+  {
+   "name": "progress bar left cap",
+   "rect": [
+    609,
+    915,
+    36,
+    35
+   ]
+  },
+  {
+   "name": "progress bar right cap",
+   "rect": [
+    1274,
+    915,
+    36,
+    35
+   ]
+  },
+  {
+   "name": "progress bar fill",
+   "rect": [
+    644,
+    925,
+    321,
+    16
+   ],
+   "samples": [
+    [
+     800,
+     931,
+     "brass fill"
+    ]
+   ]
+  },
+  {
+   "name": "progress bar empty track",
+   "rect": [
+    966,
+    925,
+    316,
+    16
+   ],
+   "samples": [
+    [
+     1100,
+     933,
+     "track fill"
+    ]
+   ]
+  },
+  {
+   "name": "spinner ring",
+   "rect": [
+    939,
+    972,
+    42,
+    43
+   ]
+  }
+ ]
+}

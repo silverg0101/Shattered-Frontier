@@ -14,6 +14,9 @@ class USFHudLayout;
 class USFMarketBoard;
 class USFTradeWindow;
 class USFInventoryPanel;
+class USFDialoguePanel;
+class ASFDialogueNpc;
+enum class ESFDialogueStep : uint8;
 class UInputAction;
 
 UENUM()
@@ -44,6 +47,8 @@ public:
     // Console (development): grant chr_dev_<name> build rights on the plot the pawn stands in, or claim that plot.
     UFUNCTION(Exec) void SFGrantBuild(const FString& DevName);
     UFUNCTION(Exec) void SFClaimPlot();
+    // Console (development, UI evidence captures): stage named panels and pilot views.
+    UFUNCTION(Exec) void SFUi(const FString& Screen);
     void InteractWithSelectedTarget();
     void SelectNextCombatTarget();
     AActor* GetSelectedCombatTarget() const;
@@ -61,6 +66,12 @@ public:
 #endif
     // B toggles build mode where a construction state exists; the character layers IMC_Build on while it lasts.
     bool IsBuildModeActive() const { return bBuildMode; }
+    // CTL-02 NPC dialogue (Dialogue/SFPlayerControllerDialogue.cpp): E near an ASFDialogueNpc opens its board; keys 1-4, the rows, Esc and walking away drive it.
+    bool IsDialogueOpen() const;
+    UFUNCTION(Exec) void SFTalk();
+    UFUNCTION(Exec) void SFSpawnDialogueNpc();  // development: stands the Millwarden 4 m ahead and opens his board
+    UFUNCTION(Exec) void SFDialogueChoose(int32 Index);  // development: picks response Index (0-3)
+    UFUNCTION(Exec) void SFStageAt(float XMetres, float YMetres, float YawDegrees);  // development: stands the pawn on the ground at X,Y facing Yaw (UI captures)
     bool IsStationPanelOpen() const;  // the crafting-station panel is on screen
     void ToggleBuildMode();
 protected:
@@ -253,5 +264,11 @@ private:
     void TickInteraction();
     void SetBuildMode(bool bActive);
     void CloseSidePanelsForModal();
+    bool TryOpenDialogue();
+    void CloseDialogue();
+    void HandleDialogueStep(ESFDialogueStep Step);
+    void TickDialogue();
+    UPROPERTY(Transient) TObjectPtr<USFDialoguePanel> DialoguePanel;
+    TWeakObjectPtr<ASFDialogueNpc> DialogueNpc;
     bool bBuildMode = false;
 };

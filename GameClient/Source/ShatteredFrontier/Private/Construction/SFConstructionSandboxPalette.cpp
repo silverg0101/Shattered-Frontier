@@ -104,7 +104,7 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
     UHorizontalBox* Tabs = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     for (int32 Index = 0; Index < 2; ++Index)
     {
-        UBorder* Tab = KitPanel(WidgetTree, Index == 0 ? TEXT("tab_selected") : TEXT("tab_normal"), 1.f, Well, Hex(TEXT("3A4348")), FMargin(4.f, 0.f), 3.f);
+        UBorder* Tab = SFHudStyle::Tab(WidgetTree, Index == 0, FMargin(4.f, 0.f));
         UTextBlock* Label = Text(WidgetTree, Index == 0 ? TEXT("Voxel Objects") : TEXT("Blueprints"), 20, Index == 0 ? Ivory() : Dim, Index == 0);
         Label->SetJustification(ETextJustify::Center);
         Tab->SetVerticalAlignment(VAlign_Center); Tab->SetContent(Label); Tab->SetVisibility(ESlateVisibility::HitTestInvisible);
@@ -126,7 +126,7 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
     static const TCHAR* const RailLabels[4] = {TEXT("Structures"), TEXT("Decor"), TEXT("Terrain"), TEXT("Favourites")};
     for (int32 Category = 0; Category < 4; ++Category)
     {
-        UBorder* Entry = KitPanel(WidgetTree, Category == 0 ? TEXT("tab_selected") : TEXT("tab_normal"), 1.f, Well, Hex(TEXT("3A4348")), FMargin(0.f), 3.f, false);
+        UBorder* Entry = SFHudStyle::Tab(WidgetTree, Category == 0, FMargin(0.f), false);
         UVerticalBox* Stack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
         Stack->AddChildToVerticalBox(KitImage(WidgetTree, RailIcons[Category], 32.f))->SetHorizontalAlignment(HAlign_Center);
         UTextBlock* Label = Text(WidgetTree, RailLabels[Category], 16, Category == 0 ? Ivory() : Dim);
@@ -244,9 +244,7 @@ void USFConstructionSandboxPalette::SelectTile(int32 Tile)
     for (int32 Index = 0; Index < TileFrames.Num(); ++Index)
     {
         const bool bSelected = Index == SelectedTile;
-        TileFrames[Index]->SetBrush(SFHudStyle::KitOrFrame(bSelected ? TEXT("slot_catalogue_selected") : TEXT("slot_catalogue_normal"),
-            bSelected ? SFHudStyle::Hex(TEXT("2B3B2C"), 1.f) : SFHudStyle::Hex(TEXT("0E171C"), 0.85f),
-            bSelected ? SFHudStyle::Brass() : SFHudStyle::Hex(TEXT("3A4348")), 3.f));
+        SFHudStyle::SetSlotSelected(TileFrames[Index], TEXT("slot_catalogue_normal"), bSelected);
     }
 }
 

@@ -1,0 +1,575 @@
+[
+ {
+  "widget": "SizeBox:SizeBox_7",
+  "name": "defeated modal frame",
+  "rect": [
+   535,
+   191,
+   843,
+   630
+  ],
+  "found": true,
+  "match": 0.95,
+  "d_left": 4,
+  "d_top": -22,
+  "d_width": -1,
+  "d_height": 25,
+  "de": [
+   [
+    "modal fill",
+    4.2
+   ],
+   [
+    "modal fill",
+    4.3
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "TextBlock:TextBlock_3",
+  "name": "title Defeated",
+  "rect": [
+   813,
+   236,
+   292,
+   66
+  ],
+  "found": true,
+  "match": 0.36,
+  "d_left": -34,
+  "d_top": -67,
+  "d_width": 69,
+  "d_height": 60,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "Overlay:Overlay_7",
+  "name": "flourish divider with stag",
+  "rect": [
+   688,
+   316,
+   545,
+   30
+  ],
+  "found": true,
+  "match": 0.37,
+  "d_left": -8,
+  "d_top": -21,
+  "d_width": 15,
+  "d_height": 10,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "TextBlock:TextBlock_4",
+  "name": "subtitle Defeated by Wild Boar",
+  "rect": [
+   816,
+   355,
+   286,
+   34
+  ],
+  "found": true,
+  "match": 0.58,
+  "d_left": -10,
+  "d_top": -16,
+  "d_width": 22,
+  "d_height": 13,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_10",
+  "name": "respawn card Silverbrook Shrine (selected)",
+  "rect": [
+   620,
+   409,
+   333,
+   241
+  ],
+  "found": true,
+  "match": 0.91,
+  "d_left": -12,
+  "d_top": -5,
+  "d_width": 7,
+  "d_height": -1,
+  "de": [
+   [
+    "card fill",
+    3.8
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_10",
+  "name": "shrine card image",
+  "rect": [
+   626,
+   416,
+   320,
+   160
+  ],
+  "found": true,
+  "match": 0.63,
+  "d_left": -18,
+  "d_top": -12,
+  "d_width": 20,
+  "d_height": 80,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_9",
+  "name": "shrine check badge",
+  "rect": [
+   894,
+   423,
+   46,
+   46
+  ],
+  "found": true,
+  "match": 0.55,
+  "d_left": 2,
+  "d_top": -5,
+  "d_width": -8,
+  "d_height": -8,
+  "de": [
+   [
+    "badge fill",
+    25.7
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "TextBlock:TextBlock_5",
+  "name": "shrine card name",
+  "rect": [
+   684,
+   576,
+   212,
+   28
+  ],
+  "found": true,
+  "match": 0.35,
+  "d_left": -62,
+  "d_top": 4,
+  "d_width": 100,
+  "d_height": 15,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "shrine card status Available now",
+  "rect": [
+   726,
+   608,
+   124,
+   24
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "SizeBox:SizeBox_13",
+  "name": "respawn card Bedroll",
+  "rect": [
+   974,
+   410,
+   324,
+   238
+  ],
+  "found": true,
+  "match": 0.92,
+  "d_left": -2,
+  "d_top": -6,
+  "d_width": 16,
+  "d_height": 2,
+  "de": [
+   [
+    "card fill",
+    1.2
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_12",
+  "name": "bedroll clock badge",
+  "rect": [
+   1242,
+   424,
+   46,
+   46
+  ],
+  "found": true,
+  "match": 0.34,
+  "d_left": 18,
+  "d_top": -6,
+  "d_width": -8,
+  "d_height": -8,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "bedroll card name",
+  "rect": [
+   1100,
+   576,
+   76,
+   28
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "",
+  "name": "bedroll timer 00:30",
+  "rect": [
+   1110,
+   608,
+   56,
+   24
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "Overlay:Overlay_12",
+  "name": "Hold to Respawn button",
+  "rect": [
+   709,
+   675,
+   501,
+   78
+  ],
+  "found": true,
+  "match": 0.56,
+  "d_left": 11,
+  "d_top": -7,
+  "d_width": -21,
+  "d_height": -22,
+  "de": [
+   [
+    "brass fill",
+    22.1
+   ],
+   [
+    "brass fill",
+    22.0
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "hold ring",
+  "rect": [
+   785,
+   682,
+   62,
+   62
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "TextBlock:TextBlock_11",
+  "name": "footer note",
+  "rect": [
+   800,
+   776,
+   318,
+   22
+  ],
+  "found": true,
+  "match": 0.63,
+  "d_left": 16,
+  "d_top": 0,
+  "d_width": -31,
+  "d_height": 10,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_1",
+  "name": "vitals HP bar empty",
+  "rect": [
+   145,
+   949,
+   332,
+   26
+  ],
+  "found": true,
+  "match": 0.59,
+  "d_left": 19,
+  "d_top": -7,
+  "d_width": 48,
+  "d_height": 6,
+  "de": [
+   [
+    "empty hp fill",
+    24.5
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_4",
+  "name": "vitals stamina bar",
+  "rect": [
+   145,
+   986,
+   332,
+   26
+  ],
+  "found": true,
+  "match": 0.54,
+  "d_left": 19,
+  "d_top": 3,
+  "d_width": 48,
+  "d_height": 6,
+  "de": [
+   [
+    "stamina amber fill",
+    6.0
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "Overlay:Overlay_0",
+  "name": "vitals level badge",
+  "rect": [
+   28,
+   908,
+   102,
+   130
+  ],
+  "found": true,
+  "match": 0.66,
+  "d_left": 10,
+  "d_top": 13,
+  "d_width": 14,
+  "d_height": -14,
+  "de": [
+   [
+    "badge fill",
+    1.5
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_1",
+  "name": "hotbar slot 1 (sword)",
+  "rect": [
+   690,
+   938,
+   82,
+   86
+  ],
+  "found": true,
+  "match": 0.48,
+  "d_left": -24,
+  "d_top": 11,
+  "d_width": 6,
+  "d_height": 2,
+  "de": [
+   [
+    "slot fill",
+    3.3
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_11",
+  "name": "hotbar slot 6 (torch)",
+  "rect": [
+   1150,
+   938,
+   82,
+   86
+  ],
+  "found": true,
+  "match": 0.5,
+  "d_left": 16,
+  "d_top": 11,
+  "d_width": 6,
+  "d_height": 2,
+  "de": [
+   [
+    "slot fill",
+    4.9
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "Image:Image_9",
+  "name": "minimap ring",
+  "rect": [
+   1660,
+   15,
+   234,
+   231
+  ],
+  "found": true,
+  "match": 0.86,
+  "d_left": 1,
+  "d_top": 17,
+  "d_width": -4,
+  "d_height": -1,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_0",
+  "name": "quest tracker frame",
+  "rect": [
+   1645,
+   305,
+   258,
+   196
+  ],
+  "found": true,
+  "match": 0.59,
+  "d_left": -32,
+  "d_top": 33,
+  "d_width": 22,
+  "d_height": -66,
+  "de": [
+   [
+    "dim fill",
+    2.6
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "loot toast Raw Boar Meat",
+  "rect": [
+   1647,
+   530,
+   246,
+   48
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "toast fill",
+    11.6
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "loot toast Tough Hide",
+  "rect": [
+   1647,
+   588,
+   246,
+   48
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "toast fill",
+    9.3
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ }
+]

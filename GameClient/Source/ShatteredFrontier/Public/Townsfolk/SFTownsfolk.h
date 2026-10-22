@@ -23,6 +23,7 @@ class AGameModeBase;
 class APlayerController;
 class USFCrowdControlComponent;
 class ASFTownsfolkNpc;
+class ASFTownGuard;
 
 // Townsfolk prototype, AI Townsfolk doc section 9 steps 2-3: census residents walking their day on ZoneGraph footways
 // across the town, drawn by MassRepresentation, stepping aside for each other and the player.
@@ -137,6 +138,42 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Hand-off", meta=(ClampMin="1.0", ClampMax="10.0", Units="m/s"))
     float FleeSpeedMetresPerSecond = 4.5f;
 
+    UPROPERTY(Config, EditAnywhere, Category="Crime and guards", meta=(ClampMin="0", ClampMax="100", Units="%", ToolTip="tune.townsfolk.flee_health_pct: an attacked resident fights back above this share of its health and flees at or below it."))
+    int32 FleeHealthPct = 35;
+
+    UPROPERTY(Config, EditAnywhere, Category="Crime and guards", meta=(ClampMin="1.0", ClampMax="30.0", Units="s", ToolTip="Real seconds a resident fights back after each hit before it breaks off and flees."))
+    float FightBackSeconds = 6.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Crime and guards", meta=(ClampMin="1", ClampMax="100", ToolTip="The townsfolk combat profile's bare-fist damage (pilot scale: player health 80)."))
+    int32 ResidentMeleeDamage = 4;
+
+    UPROPERTY(Config, EditAnywhere, Category="Crime and guards", meta=(ClampMin="0.5", ClampMax="5.0", Units="s"))
+    float ResidentMeleeCooldownSeconds = 1.6f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Crime and guards", meta=(ClampMin="30.0", ClampMax="3600.0", Units="s", ToolTip="tune.ai.guard_grudge_s: how long a witnessed crime keeps the player an offender in the zone."))
+    float GuardGrudgeSeconds = 600.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Crime and guards", meta=(ClampMin="5.0", ClampMax="60.0", Units="m", ToolTip="A guard witnesses a crime, or spots an offender, this close and in line of sight."))
+    float GuardSightMetres = 30.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Crime and guards", meta=(ClampMin="10.0", ClampMax="300.0", Units="m", ToolTip="An unwitnessed victim runs to report to the nearest guard this close; a crime further from every guard goes unreported."))
+    float ReportMaxMetres = 80.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Crime and guards", meta=(ClampMin="1.0", ClampMax="10.0", Units="m", ToolTip="How close a reporting resident gets to the guard before the report counts."))
+    float ReportReachMetres = 3.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Crime and guards", meta=(ClampMin="1", ClampMax="100"))
+    int32 GuardMeleeDamage = 18;
+
+    UPROPERTY(Config, EditAnywhere, Category="Crime and guards", meta=(ClampMin="0.5", ClampMax="5.0", Units="s"))
+    float GuardMeleeCooldownSeconds = 1.4f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Crime and guards", meta=(ClampMin="0.5", ClampMax="3.0", Units="m/s"))
+    float GuardPatrolSpeedMetresPerSecond = 1.4f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Crime and guards", meta=(ClampMin="1.0", ClampMax="10.0", Units="m/s"))
+    float GuardChaseSpeedMetresPerSecond = 5.0f;
+
     bool Validate(FString& OutError) const;
 };
 
@@ -178,6 +215,26 @@ struct FSFTownDangerCell
     UPROPERTY() double Until=0;  // server world seconds
 };
 
+/** A player who committed a witnessed crime (doc section 5.5): its player state, or the pawn when it has none. */
+USTRUCT()
+struct FSFTownOffender
+{
+    GENERATED_BODY()
+    UPROPERTY() TObjectPtr<AActor> Who;
+    UPROPERTY() double Until=0;  // server world seconds
+};
+
+/** Crime rules (doc section 5.5), kept free of actors so tests can drive them. */
+namespace SFTownCrime
+{
+    /** Offenders are keyed by player state so the status survives a respawned pawn. */
+    SHATTEREDFRONTIER_API const AActor* OffenderKey(const AActor* Attacker);
+    SHATTEREDFRONTIER_API bool IsOffender(const TArray<FSFTownOffender>& Offenders, const AActor* Key, double Now);
+    SHATTEREDFRONTIER_API void Mark(TArray<FSFTownOffender>& Offenders, const AActor* Key, double Until);
+    /** An attacked resident fights back above FleePct of its health and flees at or below it. */
+    SHATTEREDFRONTIER_API bool FightsBack(int32 Health, int32 MaxHealth, int32 FleePct);
+}
+
 /** Server-owned town state (AI Townsfolk doc section 5.1), replicated to every client: the town clock, which markets are
   * open and the danger cells. A few bytes per change and nothing per resident; clients derive the hour from the
   * GameState's synced server time, so the clock costs no traffic once it starts. Spawned by USFTownsfolkSubsystem on the
@@ -200,6 +257,15 @@ public:
     int32 DangerCount() const;
     /** Authority: the cell around At (cm) is dangerous for the settings' DangerSeconds. */
     void MarkDanger(const FVector& At);
+    /** The world's town state, or null. */
+    static ASFTownState* Find(const UWorld* World);
+    /** Any machine: is the attacker (or its player) an offender in this zone? */
+    bool IsOffender(const AActor* Attacker) const;
+    /** Authority: the attacker is an offender for GuardGrudgeSeconds; Why is logged (witnessed, reported). */
+    void MarkOffender(const AActor* Attacker, const TCHAR* Why);
+    /** Authority: Attacker hit Victim. A guard who sees either makes the attacker an offender now. Otherwise returns the
+      * nearest guard within ReportMaxMetres for the victim to run and tell, or null: the crime goes unreported. */
+    ASFTownGuard* ReportCrime(const AActor* Attacker, const AActor* Victim);
 private:
     double ServerSeconds() const;
     UPROPERTY(Replicated) float StartHour=6;
@@ -208,12 +274,13 @@ private:
     UPROPERTY(Replicated) float DangerCellCm=5000;
     UPROPERTY(Replicated) int32 OpenMarkets=0;  // bit per census market; all open or all closed by the hours today
     UPROPERTY(Replicated) TArray<FSFTownDangerCell> Danger;
+    UPROPERTY(Replicated) TArray<FSFTownOffender> Offenders;  // zone memory, never persisted (NPC Behavior section 6.3)
     float OpenHour=7, CloseHour=19, DangerSeconds=120;
 };
 
 /** A handed-off resident (doc section 2): a server-authoritative actor replicated to every client while gameplay needs that
   * resident (an attack, or a quest step). Each client hides its own Mass copy while this exists and resumes it from here
-  * when the server releases it. An attacked resident flees (section 5.4); fighting back is step 5. Moves kinematically
+  * when the server releases it. An attacked resident fights back, then flees or runs to tell a guard (section 5.5). Moves kinematically
   * like the combat pilot's boar. */
 UCLASS(NotBlueprintable)
 class SHATTEREDFRONTIER_API ASFTownsfolkNpc : public ACharacter
@@ -227,11 +294,13 @@ public:
     virtual void Tick(float DeltaSeconds) override;
     /** Authority, before BeginPlay. */
     void Init(const FString& Id, FName InArchetype, int32 Serial, int32 Health, bool bQuest);
-    /** Authority: takes the hit and runs from the attacker; at 0 health the resident is gone until the next dawn. */
+    /** Authority: takes the hit, reports the crime, then fights back or flees; at 0 health it is gone until the next dawn. */
     void ReceiveHit(const AActor* Attacker, int32 Damage);
     const FString& Id() const { return ResidentId; }
     int32 Serial() const { return HandoffSerial; }
     int32 Health() const { return CurrentHealth; }
+    bool IsFighting() const { return GetWorld()->GetTimeSeconds()<FightUntil; }
+    bool IsReporting() const { return ReportTo.IsValid(); }
     int32 QuestHolds=0;  // authority: quest players holding it (they share one resident); released at 0
     FName ArchetypeName() const { return Archetype; }
     double LastActiveSeconds=0;  // authority: last hit or hand-off
@@ -242,7 +311,35 @@ private:
     UPROPERTY(Replicated) FName Archetype;
     UPROPERTY(Replicated) int32 HandoffSerial=0;
     UPROPERTY(Replicated) int32 CurrentHealth=0;
-    FVector FleeFrom=FVector::ZeroVector; double FleeUntil=0;
+    FVector FleeFrom=FVector::ZeroVector; double FleeUntil=0, FightUntil=0, NextSwingAt=0; int32 MaxHealth=0;
+    TWeakObjectPtr<AActor> Foe;  // whom it fights back
+    TWeakObjectPtr<ASFTownGuard> ReportTo; TWeakObjectPtr<const AActor> CrimeBy;  // an unwitnessed crime it runs to report
+    void Step(const FVector& Direction, float SpeedCm, float DeltaSeconds);
+    FVector LastAt=FVector::ZeroVector; int8 Playing=-1; bool bLookApplied=false;
+    UPROPERTY() TObjectPtr<UAnimSequence> Walk;
+    UPROPERTY() TObjectPtr<UAnimSequence> Idle;
+};
+
+/** A town guard (doc section 5.5): a server NPC replicated to every client. It walks its patrol loop, witnesses crimes
+  * it sees, and chases and strikes any offender it sees until the offender is down, out of reach or forgiven.
+  * ponytail: guards can't be attacked yet and the spawner hands in the patrol; lane-generated loops come with the
+  * Silverbrook wiring. */
+UCLASS(NotBlueprintable)
+class SHATTEREDFRONTIER_API ASFTownGuard : public ACharacter
+{
+    GENERATED_BODY()
+public:
+    ASFTownGuard();
+    virtual void Tick(float DeltaSeconds) override;
+    /** Authority: the loop it walks (cm). */
+    void SetPatrol(const TArray<FVector>& Points) { Patrol=Points; NextPoint=0; }
+    /** Is Who within GuardSightMetres and in line of sight? */
+    bool Sees(const AActor* Who) const;
+    ASFE1Character* Engaged() const { return Target.Get(); }
+    int32 Hits=0;  // authority: strikes landed, for the dev scenario
+private:
+    TArray<FVector> Patrol; int32 NextPoint=0;
+    TWeakObjectPtr<ASFE1Character> Target; double NextSwingAt=0;
     FVector LastAt=FVector::ZeroVector; int8 Playing=-1; bool bLookApplied=false;
     UPROPERTY() TObjectPtr<UAnimSequence> Walk;
     UPROPERTY() TObjectPtr<UAnimSequence> Idle;
@@ -401,6 +498,11 @@ private:
     ASFTownsfolkNpc* SpawnNpc(int32 Resident, const FVector& At, bool bQuest);
     void TickScenario();
     void TickQuestScenario();
+    /** Dev map TownsfolkGuards with -TownsfolkCrimeScenario: town state, a guard, three residents and their attackers. */
+    void StartCrimeScenario(UWorld& World);
+    void TickCrimeScenario();
+    TArray<TWeakObjectPtr<AActor>> CrimeCast;  // guard, residents A B C, the player, fixture attackers F1 F2
+    double CrimeScenarioStart=0; FTimerHandle CrimeScenarioTimer; uint8 CrimeScenarioPhase=0;
     TMap<int32,TWeakObjectPtr<ASFTownsfolkNpc>> Npcs;  // handed-off residents, by index
     TMap<int32,FVector> Resume;
     TMap<FString,int32> Ids;

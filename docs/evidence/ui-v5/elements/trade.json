@@ -1,0 +1,336 @@
+{
+ "concept": "trade.png",
+ "elements": [
+  {
+   "name": "trade window frame",
+   "rect": [
+    506,
+    142,
+    908,
+    780
+   ],
+   "samples": [
+    [
+     560,
+     160,
+     "window fill"
+    ],
+    [
+     1380,
+     300,
+     "window fill"
+    ]
+   ]
+  },
+  {
+   "name": "title Direct Trade with flourishes",
+   "rect": [
+    733,
+    160,
+    457,
+    42
+   ]
+  },
+  {
+   "name": "portrait well You",
+   "rect": [
+    545,
+    221,
+    103,
+    94
+   ]
+  },
+  {
+   "name": "name You",
+   "rect": [
+    668,
+    251,
+    55,
+    29
+   ]
+  },
+  {
+   "name": "portrait well Elira",
+   "rect": [
+    1000,
+    221,
+    103,
+    94
+   ]
+  },
+  {
+   "name": "name Elira",
+   "rect": [
+    1123,
+    251,
+    69,
+    28
+   ]
+  },
+  {
+   "name": "column divider diamond",
+   "rect": [
+    950,
+    225,
+    22,
+    545
+   ]
+  },
+  {
+   "name": "my offer slot 1 Iron Axe",
+   "rect": [
+    534,
+    327,
+    95,
+    95
+   ],
+   "samples": [
+    [
+     542,
+     336,
+     "slot fill"
+    ]
+   ]
+  },
+  {
+   "name": "my offer slot 2 Oak Planks",
+   "rect": [
+    635,
+    327,
+    95,
+    95
+   ],
+   "samples": [
+    [
+     643,
+     336,
+     "slot fill"
+    ]
+   ]
+  },
+  {
+   "name": "my offer slot 4 River Herbs",
+   "rect": [
+    836,
+    327,
+    95,
+    95
+   ],
+   "samples": [
+    [
+     844,
+     336,
+     "slot fill"
+    ]
+   ]
+  },
+  {
+   "name": "my offer item names row",
+   "rect": [
+    552,
+    427,
+    372,
+    16
+   ]
+  },
+  {
+   "name": "my empty slot row 2 col 1",
+   "rect": [
+    534,
+    452,
+    95,
+    91
+   ],
+   "samples": [
+    [
+     545,
+     465,
+     "empty slot fill"
+    ]
+   ]
+  },
+  {
+   "name": "my empty slot row 3 col 4",
+   "rect": [
+    836,
+    548,
+    95,
+    90
+   ],
+   "samples": [
+    [
+     850,
+     565,
+     "empty slot fill"
+    ]
+   ]
+  },
+  {
+   "name": "their offer slot 1 Wolf Pelt",
+   "rect": [
+    989,
+    327,
+    95,
+    95
+   ],
+   "samples": [
+    [
+     997,
+     336,
+     "slot fill"
+    ]
+   ]
+  },
+  {
+   "name": "their offer slot 4 Iron Ingot",
+   "rect": [
+    1291,
+    327,
+    95,
+    95
+   ],
+   "samples": [
+    [
+     1299,
+     336,
+     "slot fill"
+    ]
+   ]
+  },
+  {
+   "name": "my gold offered field",
+   "rect": [
+    545,
+    648,
+    360,
+    46
+   ],
+   "samples": [
+    [
+     700,
+     670,
+     "field fill"
+    ]
+   ]
+  },
+  {
+   "name": "their gold offered field",
+   "rect": [
+    1015,
+    648,
+    360,
+    46
+   ],
+   "samples": [
+    [
+     1170,
+     670,
+     "field fill"
+    ]
+   ]
+  },
+  {
+   "name": "Offer Locked button (pressed)",
+   "rect": [
+    585,
+    704,
+    300,
+    70
+   ],
+   "samples": [
+    [
+     860,
+     740,
+     "moss fill"
+    ]
+   ]
+  },
+  {
+   "name": "Reviewing offer status plate",
+   "rect": [
+    1036,
+    704,
+    300,
+    70
+   ],
+   "samples": [
+    [
+     1055,
+     760,
+     "plate fill"
+    ]
+   ]
+  },
+  {
+   "name": "warning line",
+   "rect": [
+    780,
+    794,
+    360,
+    29
+   ]
+  },
+  {
+   "name": "Cancel Trade button",
+   "rect": [
+    539,
+    842,
+    323,
+    61
+   ],
+   "samples": [
+    [
+     830,
+     860,
+     "button fill"
+    ]
+   ]
+  },
+  {
+   "name": "Hold to Accept Trade button",
+   "rect": [
+    965,
+    839,
+    419,
+    67
+   ],
+   "samples": [
+    [
+     1370,
+     885,
+     "brass fill"
+    ],
+    [
+     1130,
+     855,
+     "brass fill"
+    ]
+   ]
+  },
+  {
+   "name": "minimap ring",
+   "rect": [
+    1610,
+    22,
+    284,
+    284
+   ]
+  },
+  {
+   "name": "quest tracker frame",
+   "rect": [
+    1612,
+    338,
+    286,
+    160
+   ],
+   "samples": [
+    [
+     1850,
+     360,
+     "dimmed fill"
+    ]
+   ]
+  }
+ ]
+}

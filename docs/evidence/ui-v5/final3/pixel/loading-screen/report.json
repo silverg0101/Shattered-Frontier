@@ -1,0 +1,257 @@
+[
+ {
+  "widget": "",
+  "name": "stag emblem with diamond frame",
+  "rect": [
+   834,
+   322,
+   247,
+   267
+  ],
+  "found": true,
+  "match": 0.06,
+  "d_left": 0,
+  "d_top": 3,
+  "d_width": 1,
+  "d_height": 16,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "stag head",
+  "rect": [
+   860,
+   322,
+   200,
+   241
+  ],
+  "found": false,
+  "match": 0.03,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "stag ivory",
+    71.1
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "zone title Silverbrook",
+  "rect": [
+   712,
+   582,
+   508,
+   89
+  ],
+  "found": false,
+  "match": 0.02,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "",
+  "name": "title divider with centre ornament",
+  "rect": [
+   712,
+   679,
+   493,
+   29
+  ],
+  "found": true,
+  "match": 0.05,
+  "d_left": 0,
+  "d_top": -18,
+  "d_width": 4,
+  "d_height": 38,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "divider centre diamond",
+  "rect": [
+   943,
+   679,
+   35,
+   29
+  ],
+  "found": true,
+  "match": 0.11,
+  "d_left": 14,
+  "d_top": 9,
+  "d_width": 2,
+  "d_height": -5,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "tip text",
+  "rect": [
+   719,
+   870,
+   485,
+   30
+  ],
+  "found": true,
+  "match": 0.75,
+  "d_left": -5,
+  "d_top": 1,
+  "d_width": 34,
+  "d_height": -25,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "progress bar frame",
+  "rect": [
+   609,
+   915,
+   701,
+   35
+  ],
+  "found": true,
+  "match": 0.15,
+  "d_left": 16,
+  "d_top": 7,
+  "d_width": -14,
+  "d_height": -10,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "progress bar left cap",
+  "rect": [
+   609,
+   915,
+   36,
+   35
+  ],
+  "found": true,
+  "match": 0.15,
+  "d_left": 16,
+  "d_top": -28,
+  "d_width": -5,
+  "d_height": 26,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "progress bar right cap",
+  "rect": [
+   1274,
+   915,
+   36,
+   35
+  ],
+  "found": true,
+  "match": 0.06,
+  "d_left": -7,
+  "d_top": -2,
+  "d_width": 9,
+  "d_height": -8,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "progress bar fill",
+  "rect": [
+   644,
+   925,
+   321,
+   16
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "brass fill",
+    19.9
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "progress bar empty track",
+  "rect": [
+   966,
+   925,
+   316,
+   16
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "track fill",
+    25.2
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "spinner ring",
+  "rect": [
+   939,
+   972,
+   42,
+   43
+  ],
+  "found": true,
+  "match": 0.17,
+  "d_left": 1,
+  "d_top": -1,
+  "d_width": -3,
+  "d_height": -3,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ }
+]

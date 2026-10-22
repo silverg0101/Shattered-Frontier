@@ -1360,7 +1360,7 @@
       ],
       "intended_1080p_px": [
         420,
-        8
+        12
       ],
       "screens": [
         "build-mode",
@@ -1377,7 +1377,8 @@
         "14-settings",
         "15-world-map",
         "16-quest-journal"
-      ]
+      ],
+      "notes": "Brass rule with a centered 12 px at 1080p lozenge; 2x source pixels."
     },
     "section_rule": {
       "file": "section_rule.png",
@@ -1393,7 +1394,8 @@
       ],
       "screens": [
         "16-quest-journal"
-      ]
+      ],
+      "notes": "Plain 1 px at 1080p brass hairline; stretch horizontally."
     },
     "cost_short_underline": {
       "file": "cost_short_underline.png",
@@ -2290,7 +2292,7 @@
         "10-npc-dialogue",
         "16-quest-journal"
       ],
-      "notes": "gpt-image generated; mechanically sliced from transparent atlas"
+      "notes": "Brass-rimmed XP roundel with ivory EB Garamond lettering."
     },
     "icon_closed_padlock": {
       "file": "icon_closed_padlock.png",

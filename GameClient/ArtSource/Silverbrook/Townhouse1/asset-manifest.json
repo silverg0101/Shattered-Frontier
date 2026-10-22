@@ -244,6 +244,7 @@
   ],
   "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
   "unreal_mesh": "SM_SilverbrookTownhouse1",
+  "sills": [[140, 330, 95]],
   "parts": [
     {
       "name": "Door1",

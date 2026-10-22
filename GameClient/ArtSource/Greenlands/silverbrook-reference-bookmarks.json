@@ -41,6 +41,34 @@
       "look_xy_m": [35, -65],
       "look_height_m": 3,
       "fov_deg": 70
+    },
+    {
+      "name": "A1-south-approach-30m",
+      "xy_m": [181, 661],
+      "eye_height_m": 30,
+      "look_xy_m": [90, 574],
+      "look_height_m": 0,
+      "fov_deg": 70,
+      "repeat_crops": {"cobble": [876, 816, 256, 256], "earth": [700, 715, 128, 112], "grass": [175, 440, 128, 128]},
+      "repeat_min_radius_px": 12
+    },
+    {
+      "name": "A2-south-approach-100m",
+      "xy_m": [181, 661],
+      "eye_height_m": 100,
+      "look_xy_m": [90, 574],
+      "look_height_m": 0,
+      "fov_deg": 70,
+      "repeat_crops": {"cobble": [885, 790, 160, 256], "earth": [815, 600, 64, 256], "grass": [1230, 800, 256, 256]}
+    },
+    {
+      "name": "A3-south-approach-250m",
+      "xy_m": [181, 661],
+      "eye_height_m": 250,
+      "look_xy_m": [90, 574],
+      "look_height_m": 0,
+      "fov_deg": 70,
+      "repeat_crops": {"cobble": [915, 600, 85, 256], "earth": [884, 600, 32, 256], "grass": [1075, 520, 190, 190]}
     }
   ]
 }

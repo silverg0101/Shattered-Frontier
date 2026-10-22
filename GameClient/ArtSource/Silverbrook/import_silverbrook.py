@@ -16,7 +16,17 @@ WALKABLE={'StoneBridge','RiversideDocks','FishermansWharf','WallSection','Gateho
 DISPLACEMENT_CM=0  # off: displacing kit boxes opens seams at hard edges (6 cm review, Cottage1/review); normal maps carry the depth
 tools=u.AssetToolsHelpers.get_asset_tools();mel=u.MaterialEditingLibrary;eal=u.EditorAssetLibrary;sme=u.get_editor_subsystem(u.StaticMeshEditorSubsystem)
 assert sme,'Full editor required'
-packages=[a for a in sys.argv[1:] if (ROOT/a/'asset-manifest.json').exists()] or sorted(p.parent.name for p in ROOT.glob('*/asset-manifest.json'))
+package_only='--package-only' in sys.argv
+requested=[a for a in sys.argv[1:] if a!='--package-only']
+if package_only and (len(requested)!=1 or not (ROOT/requested[0]/'asset-manifest.json').exists()):
+    raise ValueError('--package-only requires exactly one package')
+packages=[a for a in requested if (ROOT/a/'asset-manifest.json').exists()] or sorted(p.parent.name for p in ROOT.glob('*/asset-manifest.json'))
+def save(asset):
+    if package_only and (asset.get_name() in ('M_SB_Scan','M_SB_Solid','M_SB_Card') or asset.get_name().startswith('T_SB_')):
+        return True
+    result=eal.save_loaded_asset(asset)
+    if package_only and result:print('RESAVED',asset.get_path_name())
+    return result
 manifests={p:json.loads((ROOT/p/'asset-manifest.json').read_text()) for p in packages}
 
 def texture(asset,channel):
@@ -30,7 +40,7 @@ def texture(asset,channel):
         if channel=='Displacement':t.set_editor_property('compression_settings',u.TextureCompressionSettings.TC_GRAYSCALE)
         elif channel=='nor_gl':t.set_editor_property('compression_settings',u.TextureCompressionSettings.TC_NORMALMAP);t.set_editor_property('flip_green_channel',True)  # OpenGL -> DirectX
         elif channel=='Rough':t.set_editor_property('compression_settings',u.TextureCompressionSettings.TC_MASKS)
-        eal.save_loaded_asset(t)
+        save(t)
     return u.load_asset(path)
 
 def material(name):
@@ -88,7 +98,7 @@ def scan_master():
     m.set_editor_property('use_material_attributes',True);out(attrs,'',u.MaterialProperty.MP_MATERIAL_ATTRIBUTES)
     m.set_editor_property('enable_tessellation',DISPLACEMENT_CM>0)
     scale=m.get_editor_property('displacement_scaling');scale.set_editor_property('magnitude',DISPLACEMENT_CM);scale.set_editor_property('center',.5);m.set_editor_property('displacement_scaling',scale)
-    mel.recompile_material(m);eal.save_loaded_asset(m);return m
+    mel.recompile_material(m);save(m);return m
 
 def solid_master():
     m=material('M_SB_Solid')
@@ -99,12 +109,12 @@ def solid_master():
     s=node(m,u.MaterialExpressionScalarParameter,-700,400,parameter_name='EmissionStrength',default_value=0)
     em=node(m,u.MaterialExpressionMultiply,-400,300);link(e,'',em,'A');link(s,'',em,'B')
     out(c,'',u.MaterialProperty.MP_BASE_COLOR);out(r,'',u.MaterialProperty.MP_ROUGHNESS);out(me,'',u.MaterialProperty.MP_METALLIC);out(em,'',u.MaterialProperty.MP_EMISSIVE_COLOR)
-    mel.recompile_material(m);eal.save_loaded_asset(m);return m
+    mel.recompile_material(m);save(m);return m
 
 def card_texture(png):
     """RGBA PNG shipped in a package folder (alpha-card atlas, sign-board faces) -> /Textures/T_SB_<stem>; re-imported each run so a rebuilt PNG wins."""
     name='T_SB_'+png.stem.replace('-','_');task=u.AssetImportTask();task.filename=str(png);task.destination_path=LIB+'/Textures';task.destination_name=name;task.automated=True;task.save=True;task.replace_existing=True
-    tools.import_asset_tasks([task]);t=u.load_asset(f'{LIB}/Textures/{name}');assert t,png;t.set_editor_property('srgb',True);eal.save_loaded_asset(t);return t
+    tools.import_asset_tasks([task]);t=u.load_asset(f'{LIB}/Textures/{name}');assert t,png;t.set_editor_property('srgb',True);save(t);return t
 
 def card_master():
     """Masked, two-sided texture material for manifest rows with an `image` (alpha cards, painted boards): RGBA PNG in parameter Atlas."""
@@ -112,9 +122,10 @@ def card_master():
     r=node(m,u.MaterialExpressionScalarParameter,-600,250,parameter_name='Roughness',default_value=.8)
     out(a,'RGB',u.MaterialProperty.MP_BASE_COLOR);out(a,'A',u.MaterialProperty.MP_OPACITY_MASK);out(r,'',u.MaterialProperty.MP_ROUGHNESS)
     m.set_editor_property('blend_mode',u.BlendMode.BLEND_MASKED);m.set_editor_property('two_sided',True);m.set_editor_property('opacity_mask_clip_value',.5)
-    mel.recompile_material(m);eal.save_loaded_asset(m);return m
+    mel.recompile_material(m);save(m);return m
 
-masters=dict(scan=scan_master(),solid=solid_master(),card=card_master() if any('image' in r for m in manifests.values() for r in m['materials']) else None);instances={}
+masters=(dict(scan=u.load_asset(LIB+'/Materials/M_SB_Scan'),solid=u.load_asset(LIB+'/Materials/M_SB_Solid'),card=u.load_asset(LIB+'/Materials/M_SB_Card')) if package_only else dict(scan=scan_master(),solid=solid_master(),card=card_master() if any('image' in r for m in manifests.values() for r in m['materials']) else None));instances={}
+assert masters['scan'] and masters['solid'], 'Import shared masters in a full run first'
 def instance(row,src=None):
     name='MI_'+row['name'];path=f'{LIB}/Materials/{name}'
     mi=u.load_asset(path) if eal.does_asset_exist(path) else tools.create_asset(name,LIB+'/Materials',u.MaterialInstanceConstant,u.MaterialInstanceConstantFactoryNew())
@@ -133,7 +144,7 @@ def instance(row,src=None):
         mel.set_material_instance_vector_parameter_value(mi,'Colour',LC(row['colour']))
         for p,k in (('Roughness','roughness'),('Metallic','metallic')):mel.set_material_instance_scalar_parameter_value(mi,p,row[k])
         if row['emission']:mel.set_material_instance_vector_parameter_value(mi,'Emission',LC(row['emission']));mel.set_material_instance_scalar_parameter_value(mi,'EmissionStrength',row['strength'])
-    eal.save_loaded_asset(mi);return mi
+    save(mi);return mi
 
 def import_mesh(fbx,name,collision):
     """One FBX -> Nanite static mesh with palette MIs, lightmap UVs and the given simple collision ('complex', 'convex' or 'box')."""
@@ -158,7 +169,7 @@ def import_mesh(fbx,name,collision):
     bs=sme.get_lod_build_settings(mesh,0);bs.generate_lightmap_u_vs=True;bs.src_lightmap_index=0;bs.dst_lightmap_index=2
     res=min(1024,2**math.ceil(math.log2(max(size)*16)));bs.min_lightmap_resolution=res;sme.set_lod_build_settings(mesh,0,bs)
     mesh.set_editor_property('light_map_coordinate_index',2);mesh.set_editor_property('light_map_resolution',res)
-    eal.save_loaded_asset(mesh)
+    save(mesh)
     return mesh,dict(mesh=f'{LIB}/Meshes/{name}',size_m=size,slots=len(mesh.static_materials),
         nanite=mesh.get_editor_property('nanite_settings').get_editor_property('enabled'),collision=collision,convex_hulls=len(bs_.get_editor_property('agg_geom').get_editor_property('convex_elems')),
         nanite_fallback_triangles=mesh.get_num_triangles(0),lightmap=dict(uv=mesh.get_editor_property('light_map_coordinate_index'),resolution=res))

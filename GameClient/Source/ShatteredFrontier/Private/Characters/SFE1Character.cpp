@@ -339,6 +339,12 @@ void ASFE1Character::TickCameraControls(float Dt)
         DesiredArmCm, S->CombatFramingMaxZoomCm);
     if (FrameTarget && FrameTarget != LastFramingTarget.Get())
     {
+        // A dialogue speaker is framed at once, beside the board (x 20 % of the screen) at eye level, rather than eased in.
+        if (FrameTarget == DialogueFramingTarget.Get())
+        {
+            CameraRotation.Yaw = (FrameTarget->GetActorLocation() - FollowCamera->GetComponentLocation()).Rotation().Yaw + S->DialogueFramingYawDegrees;
+            CameraRotation.Pitch = S->DialogueFramingPitchDegrees;
+        }
         // Keep the shoulder continuous; the new yaw and focus ease from their current values.
         FramingOccludedSince = -1.0;
         LastFramingProbeAt = -100.0;
@@ -366,7 +372,15 @@ void ASFE1Character::TickCameraControls(float Dt)
     }
     const bool bOccluded = !bFramingVisible && FramingOccludedSince >= 0.0
         && Now - FramingOccludedSince > S->CombatOcclusionGraceSeconds;
-    if (FrameTarget && bWanted && !bOccluded && !bSteering
+    if (FrameTarget && FrameTarget == DialogueFramingTarget.Get() && bWanted && !bSteering)
+    {
+        // Dialogue holds the speaker beside the board (about x 20 % of the screen) at eye level. The board is modal, so there is
+        // no deadzone or occlusion release; the angle is measured from the camera, so it is the speaker's place on screen.
+        const float AimYaw = (FrameTarget->GetActorLocation() - FollowCamera->GetComponentLocation()).Rotation().Yaw + S->DialogueFramingYawDegrees;
+        CameraRotation.Yaw += FMath::FInterpTo(0.0f, FRotator::NormalizeAxis(AimYaw - CameraRotation.Yaw), Dt, S->CombatFramingYawSpeed);
+        CameraRotation.Pitch = FMath::FInterpTo(CameraRotation.Pitch, S->DialogueFramingPitchDegrees, Dt, S->CombatFramingYawSpeed);
+    }
+    else if (FrameTarget && bWanted && !bOccluded && !bSteering
         && Now - LastFramingSteerAt >= S->CombatFramingSteerHoldSeconds)
     {
         const FRotator ToTarget = (FrameTarget->GetActorLocation() - CameraBoom->GetComponentLocation()).Rotation();

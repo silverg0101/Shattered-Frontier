@@ -68,6 +68,14 @@ class InventoryLedger final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>> PrepareAsyncGrant(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>>(PrepareAsyncGrantRaw(context, request, cq));
     }
+    // Older hosts return UNIMPLEMENTED before a gather item can be committed.
+    virtual ::grpc::Status GrantWithIntent(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::sf::inventory::v1::LedgerReceipt* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>> AsyncGrantWithIntent(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>>(AsyncGrantWithIntentRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>> PrepareAsyncGrantWithIntent(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>>(PrepareAsyncGrantWithIntentRaw(context, request, cq));
+    }
     class async_interface {
      public:
       virtual ~async_interface() {}
@@ -79,6 +87,9 @@ class InventoryLedger final {
       // Idempotent on operation_id: a retry returns the original receipt.
       virtual void Grant(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response, std::function<void(::grpc::Status)>) = 0;
       virtual void Grant(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      // Older hosts return UNIMPLEMENTED before a gather item can be committed.
+      virtual void GrantWithIntent(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GrantWithIntent(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -90,6 +101,8 @@ class InventoryLedger final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::ContainerView>* PrepareAsyncGetContainerRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::GetContainerRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>* AsyncGrantRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>* PrepareAsyncGrantRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>* AsyncGrantWithIntentRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>* PrepareAsyncGrantWithIntentRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -115,6 +128,13 @@ class InventoryLedger final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>> PrepareAsyncGrant(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>>(PrepareAsyncGrantRaw(context, request, cq));
     }
+    ::grpc::Status GrantWithIntent(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::sf::inventory::v1::LedgerReceipt* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>> AsyncGrantWithIntent(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>>(AsyncGrantWithIntentRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>> PrepareAsyncGrantWithIntent(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>>(PrepareAsyncGrantWithIntentRaw(context, request, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
@@ -124,6 +144,8 @@ class InventoryLedger final {
       void GetContainer(::grpc::ClientContext* context, const ::sf::inventory::v1::GetContainerRequest* request, ::sf::inventory::v1::ContainerView* response, ::grpc::ClientUnaryReactor* reactor) override;
       void Grant(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response, std::function<void(::grpc::Status)>) override;
       void Grant(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void GrantWithIntent(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response, std::function<void(::grpc::Status)>) override;
+      void GrantWithIntent(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -141,9 +163,12 @@ class InventoryLedger final {
     ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::ContainerView>* PrepareAsyncGetContainerRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::GetContainerRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>* AsyncGrantRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>* PrepareAsyncGrantRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>* AsyncGrantWithIntentRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>* PrepareAsyncGrantWithIntentRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_EnsureContainer_;
     const ::grpc::internal::RpcMethod rpcmethod_GetContainer_;
     const ::grpc::internal::RpcMethod rpcmethod_Grant_;
+    const ::grpc::internal::RpcMethod rpcmethod_GrantWithIntent_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -156,6 +181,8 @@ class InventoryLedger final {
     virtual ::grpc::Status GetContainer(::grpc::ServerContext* context, const ::sf::inventory::v1::GetContainerRequest* request, ::sf::inventory::v1::ContainerView* response);
     // Idempotent on operation_id: a retry returns the original receipt.
     virtual ::grpc::Status Grant(::grpc::ServerContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response);
+    // Older hosts return UNIMPLEMENTED before a gather item can be committed.
+    virtual ::grpc::Status GrantWithIntent(::grpc::ServerContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_EnsureContainer : public BaseClass {
@@ -217,7 +244,27 @@ class InventoryLedger final {
       ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_EnsureContainer<WithAsyncMethod_GetContainer<WithAsyncMethod_Grant<Service > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_GrantWithIntent : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_GrantWithIntent() {
+      ::grpc::Service::MarkMethodAsync(3);
+    }
+    ~WithAsyncMethod_GrantWithIntent() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GrantWithIntent(::grpc::ServerContext* /*context*/, const ::sf::inventory::v1::GrantRequest* /*request*/, ::sf::inventory::v1::LedgerReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestGrantWithIntent(::grpc::ServerContext* context, ::sf::inventory::v1::GrantRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::inventory::v1::LedgerReceipt>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_EnsureContainer<WithAsyncMethod_GetContainer<WithAsyncMethod_Grant<WithAsyncMethod_GrantWithIntent<Service > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_EnsureContainer : public BaseClass {
    private:
@@ -299,7 +346,34 @@ class InventoryLedger final {
     virtual ::grpc::ServerUnaryReactor* Grant(
       ::grpc::CallbackServerContext* /*context*/, const ::sf::inventory::v1::GrantRequest* /*request*/, ::sf::inventory::v1::LedgerReceipt* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_EnsureContainer<WithCallbackMethod_GetContainer<WithCallbackMethod_Grant<Service > > > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_GrantWithIntent : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_GrantWithIntent() {
+      ::grpc::Service::MarkMethodCallback(3,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::inventory::v1::GrantRequest, ::sf::inventory::v1::LedgerReceipt>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response) { return this->GrantWithIntent(context, request, response); }));}
+    void SetMessageAllocatorFor_GrantWithIntent(
+        ::grpc::MessageAllocator< ::sf::inventory::v1::GrantRequest, ::sf::inventory::v1::LedgerReceipt>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(3);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::inventory::v1::GrantRequest, ::sf::inventory::v1::LedgerReceipt>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_GrantWithIntent() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GrantWithIntent(::grpc::ServerContext* /*context*/, const ::sf::inventory::v1::GrantRequest* /*request*/, ::sf::inventory::v1::LedgerReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* GrantWithIntent(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::inventory::v1::GrantRequest* /*request*/, ::sf::inventory::v1::LedgerReceipt* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_EnsureContainer<WithCallbackMethod_GetContainer<WithCallbackMethod_Grant<WithCallbackMethod_GrantWithIntent<Service > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_EnsureContainer : public BaseClass {
@@ -348,6 +422,23 @@ class InventoryLedger final {
     }
     // disable synchronous version of this method
     ::grpc::Status Grant(::grpc::ServerContext* /*context*/, const ::sf::inventory::v1::GrantRequest* /*request*/, ::sf::inventory::v1::LedgerReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_GrantWithIntent : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_GrantWithIntent() {
+      ::grpc::Service::MarkMethodGeneric(3);
+    }
+    ~WithGenericMethod_GrantWithIntent() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GrantWithIntent(::grpc::ServerContext* /*context*/, const ::sf::inventory::v1::GrantRequest* /*request*/, ::sf::inventory::v1::LedgerReceipt* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -410,6 +501,26 @@ class InventoryLedger final {
     }
     void RequestGrant(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_GrantWithIntent : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_GrantWithIntent() {
+      ::grpc::Service::MarkMethodRaw(3);
+    }
+    ~WithRawMethod_GrantWithIntent() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GrantWithIntent(::grpc::ServerContext* /*context*/, const ::sf::inventory::v1::GrantRequest* /*request*/, ::sf::inventory::v1::LedgerReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestGrantWithIntent(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -476,6 +587,28 @@ class InventoryLedger final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* Grant(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_GrantWithIntent : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_GrantWithIntent() {
+      ::grpc::Service::MarkMethodRawCallback(3,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GrantWithIntent(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_GrantWithIntent() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GrantWithIntent(::grpc::ServerContext* /*context*/, const ::sf::inventory::v1::GrantRequest* /*request*/, ::sf::inventory::v1::LedgerReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* GrantWithIntent(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -559,9 +692,36 @@ class InventoryLedger final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedGrant(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::inventory::v1::GrantRequest,::sf::inventory::v1::LedgerReceipt>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_EnsureContainer<WithStreamedUnaryMethod_GetContainer<WithStreamedUnaryMethod_Grant<Service > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_GrantWithIntent : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_GrantWithIntent() {
+      ::grpc::Service::MarkMethodStreamed(3,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::inventory::v1::GrantRequest, ::sf::inventory::v1::LedgerReceipt>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::inventory::v1::GrantRequest, ::sf::inventory::v1::LedgerReceipt>* streamer) {
+                       return this->StreamedGrantWithIntent(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_GrantWithIntent() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status GrantWithIntent(::grpc::ServerContext* /*context*/, const ::sf::inventory::v1::GrantRequest* /*request*/, ::sf::inventory::v1::LedgerReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedGrantWithIntent(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::inventory::v1::GrantRequest,::sf::inventory::v1::LedgerReceipt>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_EnsureContainer<WithStreamedUnaryMethod_GetContainer<WithStreamedUnaryMethod_Grant<WithStreamedUnaryMethod_GrantWithIntent<Service > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_EnsureContainer<WithStreamedUnaryMethod_GetContainer<WithStreamedUnaryMethod_Grant<Service > > > StreamedService;
+  typedef WithStreamedUnaryMethod_EnsureContainer<WithStreamedUnaryMethod_GetContainer<WithStreamedUnaryMethod_Grant<WithStreamedUnaryMethod_GrantWithIntent<Service > > > > StreamedService;
 };
 
 }  // namespace v1

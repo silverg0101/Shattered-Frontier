@@ -1,0 +1,726 @@
+[
+ {
+  "widget": "CanvasPanel:VitalsCanvas",
+  "name": "station window frame",
+  "rect": [
+   631,
+   97,
+   866,
+   797
+  ],
+  "found": true,
+  "match": 0.33,
+  "d_left": -631,
+  "d_top": -97,
+  "d_width": 1054,
+  "d_height": 283,
+  "de": [
+   [
+    "window fill",
+    39.4
+   ],
+   [
+    "window fill",
+    35.8
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "title Sawmill",
+  "rect": [
+   663,
+   117,
+   131,
+   33
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "",
+  "name": "search recipes field",
+  "rect": [
+   655,
+   183,
+   301,
+   44
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "field fill",
+    28.4
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "filter tab All (selected)",
+  "rect": [
+   655,
+   243,
+   100,
+   38
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "selected tab fill",
+    37.5
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "filter tab Lumber",
+  "rect": [
+   760,
+   243,
+   96,
+   38
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "tab fill",
+    7.5
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "filter tab Parts",
+  "rect": [
+   862,
+   243,
+   94,
+   38
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "tab fill",
+    7.6
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "recipe row Oak Planks (selected)",
+  "rect": [
+   655,
+   297,
+   300,
+   64
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "selected row fill",
+    16.0
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "recipe row Timber Beam",
+  "rect": [
+   655,
+   367,
+   300,
+   64
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "row fill",
+    49.2
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "recipe row Wooden Pegs",
+  "rect": [
+   655,
+   437,
+   300,
+   64
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "row fill",
+    42.2
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "recipe row Treated Board",
+  "rect": [
+   655,
+   507,
+   300,
+   64
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "row fill",
+    90.0
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "detail title Oak Planks",
+  "rect": [
+   998,
+   187,
+   165,
+   33
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "",
+  "name": "detail description",
+  "rect": [
+   1000,
+   228,
+   438,
+   45
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "",
+  "name": "detail item image",
+  "rect": [
+   1100,
+   279,
+   264,
+   129
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "image well fill",
+    43.5
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "ingredients heading",
+  "rect": [
+   1000,
+   419,
+   98,
+   19
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "",
+  "name": "ingredient row Oak Logs",
+  "rect": [
+   1000,
+   446,
+   470,
+   52
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "row fill",
+    41.3
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "ingredient row Iron Nails (short)",
+  "rect": [
+   1000,
+   504,
+   470,
+   52
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "row fill",
+    48.6
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "quantity stepper",
+  "rect": [
+   1131,
+   572,
+   184,
+   46
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "field fill",
+    47.1
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "craft time label",
+  "rect": [
+   1156,
+   626,
+   130,
+   22
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "",
+  "name": "Hold Craft button",
+  "rect": [
+   1041,
+   655,
+   371,
+   60
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "brass fill",
+    17.5
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "crafting queue heading",
+  "rect": [
+   660,
+   737,
+   175,
+   22
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "",
+  "name": "queue row Timber Beam 60%",
+  "rect": [
+   660,
+   765,
+   808,
+   54
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "row fill",
+    34.4
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "queue row Wooden Pegs 25%",
+  "rect": [
+   660,
+   824,
+   808,
+   55
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "row fill",
+    13.3
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "queue progress bar Timber Beam",
+  "rect": [
+   944,
+   787,
+   408,
+   12
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "SizeBox:SizeBox_1",
+  "name": "hotbar slot 1 (sword)",
+  "rect": [
+   677,
+   929,
+   89,
+   89
+  ],
+  "found": true,
+  "match": 0.52,
+  "d_left": -11,
+  "d_top": 20,
+  "d_width": -1,
+  "d_height": -1,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_11",
+  "name": "hotbar slot 6 (bandage)",
+  "rect": [
+   1161,
+   929,
+   88,
+   89
+  ],
+  "found": true,
+  "match": 0.58,
+  "d_left": 5,
+  "d_top": 20,
+  "d_width": 0,
+  "d_height": -1,
+  "de": [
+   [
+    "slot fill",
+    5.1
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_1",
+  "name": "vitals HP bar",
+  "rect": [
+   136,
+   938,
+   365,
+   38
+  ],
+  "found": true,
+  "match": 0.71,
+  "d_left": 28,
+  "d_top": 4,
+  "d_width": 15,
+  "d_height": -6,
+  "de": [
+   [
+    "hp red fill",
+    10.9
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "Overlay:Overlay_0",
+  "name": "vitals level badge",
+  "rect": [
+   27,
+   903,
+   100,
+   130
+  ],
+  "found": true,
+  "match": 0.6,
+  "d_left": 11,
+  "d_top": 18,
+  "d_width": 16,
+  "d_height": -14,
+  "de": [
+   [
+    "badge fill",
+    20.3
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "Image:Image_9",
+  "name": "minimap ring",
+  "rect": [
+   1674,
+   12,
+   217,
+   220
+  ],
+  "found": true,
+  "match": 0.76,
+  "d_left": -13,
+  "d_top": 20,
+  "d_width": 13,
+  "d_height": 10,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "minimap footer text",
+  "rect": [
+   1732,
+   237,
+   100,
+   43
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "SizeBox:SizeBox_0",
+  "name": "quest tracker frame",
+  "rect": [
+   1636,
+   308,
+   264,
+   198
+  ],
+  "found": true,
+  "match": 0.6,
+  "d_left": -23,
+  "d_top": 30,
+  "d_width": 16,
+  "d_height": -68,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "toast Oak Logs",
+  "rect": [
+   1646,
+   541,
+   254,
+   62
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "fill dark",
+    33.1
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ }
+]

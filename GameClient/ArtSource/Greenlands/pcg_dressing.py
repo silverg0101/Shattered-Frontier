@@ -44,13 +44,18 @@ def build(result, layers, zone):
     return vol, expected
 
 
-def _terrain():
+def _terrain(label=None):
     """The final terrain mesh actor, found by its mesh, so placement is projected onto what the player walks on."""
     world = u.EditorLevelLibrary.get_editor_world()
+    fallback = None
     for a in u.GameplayStatics.get_all_actors_of_class(world, u.StaticMeshActor):
         m = a.static_mesh_component.static_mesh
         if m and m.get_name() == 'SM_Silverbrook_Terrain':
             return world, a
+        if a.get_actor_label() == (label or 'Terrain') and m:
+            fallback = a
+    if fallback:
+        return world, fallback
     raise AssertionError('SM_Silverbrook_Terrain is not in the open map')
 
 

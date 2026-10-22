@@ -1,10 +1,16 @@
 #include "Construction/SFConstructionNetwork.h"
+#include "Exchange/SFExchangeWidgets.h"
 #include "Framework/SFPlayerController.h"
 #include "Framework/SFHudLayout.h"
 #include "Inventory/SFInventoryPanel.h"
 #include "EnhancedInputComponent.h"
 #include "InputAction.h"
 #include "Combat/SFCombatPilot.h"
+#include "Blueprint/UserWidget.h"
+#include "Blueprint/WidgetTree.h"
+#include "Misc/FileHelper.h"
+#include "Misc/Paths.h"
+#include "Gathering/SFGatheringHud.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Gathering/SFGatheringSkillsPanel.h"
 #if SF_WITH_MINIMAL_INVENTORY
@@ -829,7 +835,8 @@ void ASFGameMode::PlaceForZoneScenario(APawn* Pawn, bool bPrimary) const
         return;
     }
     // The finite network scenario only: put each test pawn 2 m from its node.
-    if (!Pawn || !FParse::Param(FCommandLine::Get(),TEXT("GatheringPilotScenario"))) { return; }
+    const bool bUiStation = FParse::Param(FCommandLine::Get(), TEXT("UiEvidenceStation"));
+    if (!Pawn || (!FParse::Param(FCommandLine::Get(),TEXT("GatheringPilotScenario")) && !bUiStation)) { return; }
     // Same choice as the client scenario: the oak nearest the origin, and the rock nearest that oak.
     const ASFGatheringPilotNode* Oak=nullptr; const ASFGatheringPilotNode* Rock=nullptr;
     for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It; ++It)
@@ -840,6 +847,11 @@ void ASFGameMode::PlaceForZoneScenario(APawn* Pawn, bool bPrimary) const
         { Rock=*It; }
     }
     const ASFGatheringPilotNode* Target=bPrimary ? Oak : Rock;
+    if (bUiStation)
+    {
+        for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It; ++It)
+        { if (It->Kind==ESFGatheringPilotKind::Sawmill) { Target=*It; break; } }
+    }
     if (!Target) { return; }
     const FVector Node=Target->GetActorLocation(); const FVector Away=(-Node*FVector(1,1,0)).GetSafeNormal();
     Pawn->SetActorLocation(Node+Away*200+FVector(0,0,80),false,nullptr,ETeleportType::TeleportPhysics);
@@ -1306,6 +1318,7 @@ void ASFPlayerController::ToggleGatheringSkillsPanel()
 
 void ASFPlayerController::HandleEscape()
 {
+    if (IsDialogueOpen()) { CloseDialogue(); return; }
     if (GatheringSkillsPanel && GatheringSkillsPanel->GetVisibility()==ESlateVisibility::Visible)
     { GatheringSkillsPanel->SetVisibility(ESlateVisibility::Collapsed); return; }
     // Build mode: the first Esc cancels a pending line start, the next leaves build mode.
@@ -2590,3 +2603,90 @@ void ASFPlayerController::TickClaimScenario()
     }
 }
 #endif
+
+
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+// Dev (UI evidence): every visible widget of every viewport UserWidget with its real Slate rect in 1920x1080 viewport pixels, written to
+// Saved/UiRects.json for tools/ui_pixel_diff.py (exact live geometry, including dark-on-dark edges).
+static void WriteUiRects(UWorld* World)
+{
+    struct FEntry { FString Owner, Name, Class; FVector2D Pos, Size; };
+    TArray<FEntry> Entries;
+    FVector2D Origin = FVector2D::ZeroVector; double Scale = 1.0, BestArea = 0.0;
+    for (TObjectIterator<UUserWidget> It; It; ++It)
+    {
+        UUserWidget* Root = *It;
+        if (!Root->IsInViewport() || !Root->IsVisible() || Root->GetWorld() != World || !Root->WidgetTree) { continue; }
+        const FGeometry RootGeometry = Root->GetCachedGeometry();
+        const double Area = RootGeometry.GetAbsoluteSize().X * RootGeometry.GetAbsoluteSize().Y;
+        if (Area > BestArea) { BestArea = Area; Origin = FVector2D(RootGeometry.GetAbsolutePosition()); Scale = RootGeometry.GetAbsoluteSize().X > 0.f ? 1920.0 / RootGeometry.GetAbsoluteSize().X : 1.0; }
+        Root->WidgetTree->ForEachWidget([&](UWidget* Widget)
+        {
+            if (!Widget) { return; }
+            for (const UWidget* Node = Widget; Node; Node = Node->GetParent()) { if (!Node->IsVisible()) { return; } }  // a collapsed ancestor leaves stale geometry
+            const FGeometry Geometry = Widget->GetCachedGeometry();
+            if (Geometry.GetAbsoluteSize().X < 1.f || Geometry.GetAbsoluteSize().Y < 1.f) { return; }
+            Entries.Add({Root->GetName(), Widget->GetName(), Widget->GetClass()->GetName(), FVector2D(Geometry.GetAbsolutePosition()), FVector2D(Geometry.GetAbsoluteSize())});
+        });
+    }
+    FString Json = TEXT("[\n");
+    for (const FEntry& Entry : Entries)
+    {
+        const FVector2D Pos = (Entry.Pos - Origin) * Scale, Size = Entry.Size * Scale;
+        Json += FString::Printf(TEXT("{\"owner\":\"%s\",\"name\":\"%s\",\"class\":\"%s\",\"rect\":[%.1f,%.1f,%.1f,%.1f]},\n"), *Entry.Owner, *Entry.Name, *Entry.Class, Pos.X, Pos.Y, Size.X, Size.Y);
+    }
+    Json += TEXT("{}]\n");
+    FFileHelper::SaveStringToFile(Json, *(FPaths::ProjectSavedDir() / TEXT("UiRects.json")));
+    UE_LOG(LogTemp, Display, TEXT("UI_RECTS_WRITTEN %d"), Entries.Num());
+}
+#endif
+
+void ASFPlayerController::SFUi(const FString& Screen)
+{
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (Screen.Equals(TEXT("rects"), ESearchCase::IgnoreCase)) { WriteUiRects(GetWorld()); return; }
+#endif
+    if (Screen.Equals(TEXT("inventory"), ESearchCase::IgnoreCase)) { ToggleInventoryPanel(); }
+    else if (Screen.Equals(TEXT("market"), ESearchCase::IgnoreCase)) { ToggleMarketDemo(); }
+    else if (Screen.Equals(TEXT("trade"), ESearchCase::IgnoreCase)) { ToggleTradeDemo(); }
+    else if (Screen.Equals(TEXT("tradelock"), ESearchCase::IgnoreCase) && TradeWindow) { TradeWindow->CallFunctionByNameWithArguments(TEXT("HandleLock"), *GLog, nullptr, true); }
+    else if (Screen.Equals(TEXT("build"), ESearchCase::IgnoreCase)) { ToggleBuildMode(); }
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    else if (Screen.Equals(TEXT("skills"), ESearchCase::IgnoreCase)) { ToggleGatheringSkillsPanel(); }
+    else if (Screen.Equals(TEXT("target"), ESearchCase::IgnoreCase))
+    {
+        ASFPilotBoar* NearestBoar = nullptr;
+        double BestBoar = TNumericLimits<double>::Max();
+        for (TActorIterator<ASFPilotBoar> It(GetWorld()); It && GetPawn(); ++It)
+        {
+            const double Distance = FVector::DistSquared(GetPawn()->GetActorLocation(), It->GetActorLocation());
+            if (Distance < BestBoar) { BestBoar = Distance; NearestBoar = *It; }
+        }
+        if (NearestBoar && GetPawn()) { SetControlRotation((NearestBoar->GetActorLocation() - GetPawn()->GetPawnViewLocation()).Rotation()); }
+        SelectNextCombatTarget();
+        if (GatheringHud) { GatheringHud->CaptureToast(); }
+        if (HudLayout) { HudLayout->CapturePrompt(); }
+    }
+    else if ((Screen.Equals(TEXT("station"), ESearchCase::IgnoreCase) || Screen.Equals(TEXT("aim"), ESearchCase::IgnoreCase))
+        && GatheringPilot && GatheringPilot->IsEnabled() && GetPawn())
+    {
+        const bool bStation = Screen.Equals(TEXT("station"), ESearchCase::IgnoreCase);
+        ASFGatheringPilotNode* Nearest = nullptr;
+        double Best = TNumericLimits<double>::Max();
+        for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It; ++It)
+        {
+            if (bStation ? !It->IsRefinery() : It->Kind != ESFGatheringPilotKind::Oak) { continue; }
+            const double Distance = FVector::DistSquared(GetPawn()->GetActorLocation(), It->GetActorLocation());
+            if (Distance < Best) { Best = Distance; Nearest = *It; }
+        }
+        if (Nearest)
+        {
+            const FVector Start = GetPawn()->GetPawnViewLocation();
+            const FVector Direction = (Nearest->GetActorLocation() - Start).GetSafeNormal();
+            SetControlRotation(Direction.Rotation());
+            FVector2D ScreenLocation;
+            if (ProjectWorldLocationToScreen(Nearest->GetActorLocation(), ScreenLocation)) { SetMouseLocation(FMath::RoundToInt(ScreenLocation.X), FMath::RoundToInt(ScreenLocation.Y)); }
+        }
+    }
+#endif
+}

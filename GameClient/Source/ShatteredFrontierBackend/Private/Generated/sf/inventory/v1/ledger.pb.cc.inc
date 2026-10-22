@@ -1900,20 +1900,22 @@ const char descriptor_table_protodef_sf_2finventory_2fv1_2fledger_2eproto[] ABSL
     "N_GRANT\020\001\022\031\n\025LEDGER_ACTION_CONSUME\020\002\022\032\n\026"
     "LEDGER_ACTION_TRANSFER\020\003\022\031\n\025LEDGER_ACTIO"
     "N_CONVERT\020\004\022\032\n\026LEDGER_ACTION_EXCHANGE\020\0052"
-    "\213\002\n\017InventoryLedger\022Z\n\017EnsureContainer\022\'"
+    "\335\002\n\017InventoryLedger\022Z\n\017EnsureContainer\022\'"
     ".sf.inventory.v1.EnsureContainerRequest\032"
     "\036.sf.inventory.v1.ContainerView\022T\n\014GetCo"
     "ntainer\022$.sf.inventory.v1.GetContainerRe"
     "quest\032\036.sf.inventory.v1.ContainerView\022F\n"
     "\005Grant\022\035.sf.inventory.v1.GrantRequest\032\036."
-    "sf.inventory.v1.LedgerReceiptB\'\252\002$Shatte"
-    "redFrontier.InventoryLedger.V1b\006proto3"
+    "sf.inventory.v1.LedgerReceipt\022P\n\017GrantWi"
+    "thIntent\022\035.sf.inventory.v1.GrantRequest\032"
+    "\036.sf.inventory.v1.LedgerReceiptB\'\252\002$Shat"
+    "teredFrontier.InventoryLedger.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2finventory_2fv1_2fledger_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2finventory_2fv1_2fledger_2eproto = {
     false,
     false,
-    2198,
+    2280,
     descriptor_table_protodef_sf_2finventory_2fv1_2fledger_2eproto,
     "sf/inventory/v1/ledger.proto",
     &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto_once,

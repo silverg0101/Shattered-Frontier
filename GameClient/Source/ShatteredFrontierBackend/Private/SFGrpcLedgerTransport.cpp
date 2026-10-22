@@ -131,7 +131,9 @@ void FSFGrpcLedgerTransport::Send(const FSFLedgerRequest& Request, float Deadlin
             Intent->set_payload(Request.FollowUpPayload.GetData(), Request.FollowUpPayload.Num());
             Intent->set_payload_digest(Utf8(Request.FollowUpDigest));
         }
-        Call->ReceiptReader = Channel->Stub->AsyncGrant(&Call->Context, Message, &Channel->Queue);
+        Call->ReceiptReader = Request.FollowUpPayload.IsEmpty()
+            ? Channel->Stub->AsyncGrant(&Call->Context, Message, &Channel->Queue)
+            : Channel->Stub->AsyncGrantWithIntent(&Call->Context, Message, &Channel->Queue);
         Call->ReceiptReader->Finish(&Call->Receipt, &Call->Status, Call);
         break;
     }

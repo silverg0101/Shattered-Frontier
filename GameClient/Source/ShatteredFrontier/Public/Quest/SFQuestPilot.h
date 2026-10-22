@@ -158,6 +158,9 @@ public:
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;
     virtual void Deinitialize() override;
     virtual void Tick(float DeltaTime) override;
+    // Dialogue shows an offered quest on the tracker while its board is open; RestoreTracker returns to the pilot view.
+    void PresentOffer(const FSFQuestView& View) { OfferView = View; bOfferShown = true; }
+    void RestoreTracker() { bOfferShown = false; }
     virtual TStatId GetStatId() const override { RETURN_QUICK_DECLARE_CYCLE_STAT(USFQuestPilotSubsystem, STATGROUP_Tickables); }
 protected:
     virtual bool DoesSupportWorldType(const EWorldType::Type WorldType) const override
@@ -167,4 +170,6 @@ private:
     TSharedPtr<const FSFQuestDefinition> Quest;
     FDelegateHandle GatheredHandle, PlacedHandle, BoarHandle;
     UPROPERTY(Transient) TObjectPtr<USFQuestTrackerHud> Hud;
+    FSFQuestView OfferView;
+    bool bOfferShown = false;
 };

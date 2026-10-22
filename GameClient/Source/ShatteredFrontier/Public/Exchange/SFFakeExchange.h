@@ -23,9 +23,9 @@ public:
     static FSFTradeSnapshot DemoTrade(double ExpiresAtSeconds)
     {
         FSFTradeSnapshot Trade; Trade.TradeId = TEXT("demo-trade"); Trade.ExpiresAtSeconds = ExpiresAtSeconds;
-        Trade.Mine.PlayerName = TEXT("Your offer"); Trade.Theirs.PlayerName = TEXT("Rowan's offer");
+        Trade.Mine.PlayerName = TEXT("Your offer"); Trade.Theirs.PlayerName = TEXT("Rowan");
         Trade.Theirs.Items = {{TEXT("item/iron_ingot"), TEXT("Iron Ingot"), 6}, {TEXT("item/boar_hide"), TEXT("Boar Hide"), 3}};
-        Trade.Theirs.Gold = 50; Trade.Theirs.bLocked = true;
+        Trade.Theirs.Gold = 50; Trade.Theirs.bLocked = false;
         return Trade;
     }
     static TArray<FSFListing> DemoListings()

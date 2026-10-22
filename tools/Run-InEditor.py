@@ -6,7 +6,7 @@ Usage (any Python 3, e.g. UE's Engine/Binaries/ThirdParty/Python3/Win64/python.e
     python tools/Run-InEditor.py <script.py> [args...] [--engine "C:/Program Files/Epic Games/UE_5.8"]
 Prints the editor's log output for the run; exits 0 on success, 1 on script failure, 2 if no editor answers.
 """
-import sys, time
+import socket, sys, time
 from pathlib import Path
 
 args = sys.argv[1:]
@@ -20,7 +20,11 @@ import remote_execution as rx  # noqa: E402  (ships with the engine)
 
 script = Path(args[0]).resolve()
 here = (Path(__file__).resolve().parents[1] / 'GameClient').resolve()
-remote = rx.RemoteExecution()
+config = rx.RemoteExecutionConfig()
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as port_probe:
+    port_probe.bind(('127.0.0.1', 0))
+    config.command_endpoint = port_probe.getsockname()
+remote = rx.RemoteExecution(config)
 remote.start()
 try:
     deadline = time.time() + 5

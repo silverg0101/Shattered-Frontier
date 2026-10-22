@@ -2,7 +2,11 @@
 #include "Algo/Sort.h"
 #include "Animation/AnimSequence.h"
 #include "Characters/SFE1Character.h"
+#include "Framework/SFGameMode.h"
 #include "Framework/SFPlayerController.h"
+#include "EngineUtils.h"
+#include "GameFramework/PlayerState.h"
+#include "TimerManager.h"
 #include "Combat/SFCombatPilot.h"
 #include "Combat/SFCrowdControlComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -49,6 +53,7 @@
 namespace
 {
     const TCHAR* ZoneMap=TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
+    const TCHAR* DevMap=TEXT("/Game/Frontier/Maps/Dev/TownsfolkGuards/TownsfolkGuards");  // step 5 crime check, no census
     constexpr float CellCm=200;  // sidestep neighbour grid
     constexpr float WalkClipCmPerSecond=150;  // ponytail: ThirdPersonWalk's stride speed, judged by eye
 
@@ -87,7 +92,13 @@ bool USFTownsfolkSettings::Validate(FString& OutError) const
         && SidestepSpeedShare>=0.1f && SidestepSpeedShare<=2 && DoorDwellSeconds>=0.2f && DoorDwellSeconds<=10
         && WorkIndoorShare>=0 && WorkIndoorShare<=1 && BenchShare>=0 && BenchShare<=1 && BenchSearchMetres>=5 && BenchSearchMetres<=100
         && MarketOpenHour>=0 && MarketOpenHour<=24 && MarketCloseHour>=0 && MarketCloseHour<=24
-        && DangerCellMetres>=10 && DangerCellMetres<=200 && DangerSeconds>=5 && DangerSeconds<=1800;
+        && DangerCellMetres>=10 && DangerCellMetres<=200 && DangerSeconds>=5 && DangerSeconds<=1800
+        && FleeHealthPct>=0 && FleeHealthPct<=100 && FightBackSeconds>=1 && FightBackSeconds<=30
+        && ResidentMeleeDamage>=1 && ResidentMeleeDamage<=100 && ResidentMeleeCooldownSeconds>=0.5f && ResidentMeleeCooldownSeconds<=5
+        && GuardGrudgeSeconds>=30 && GuardGrudgeSeconds<=3600 && GuardSightMetres>=5 && GuardSightMetres<=60
+        && ReportMaxMetres>=10 && ReportMaxMetres<=300 && ReportReachMetres>=1 && ReportReachMetres<=10
+        && GuardMeleeDamage>=1 && GuardMeleeDamage<=100 && GuardMeleeCooldownSeconds>=0.5f && GuardMeleeCooldownSeconds<=5
+        && GuardPatrolSpeedMetresPerSecond>=0.5f && GuardPatrolSpeedMetresPerSecond<=3 && GuardChaseSpeedMetresPerSecond>=1 && GuardChaseSpeedMetresPerSecond<=10;
     bool bLooksOk=true;
     for (const FSFTownsfolkLook& L:Looks)
     { bLooksOk=bLooksOk && !L.Archetypes.IsEmpty() && !L.Mesh.IsNull() && !L.Walk.IsNull() && !L.Idle.IsNull()
@@ -123,6 +134,75 @@ void ASFTownState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ASFTownState,StartHour); DOREPLIFETIME(ASFTownState,StartServerSeconds); DOREPLIFETIME(ASFTownState,SecondsPerGameHour);
     DOREPLIFETIME(ASFTownState,DangerCellCm); DOREPLIFETIME(ASFTownState,OpenMarkets); DOREPLIFETIME(ASFTownState,Danger);
+    DOREPLIFETIME(ASFTownState,Offenders);
+}
+
+const AActor* SFTownCrime::OffenderKey(const AActor* Attacker)
+{
+    const APawn* Pawn=Cast<APawn>(Attacker);
+    const APlayerState* Player=Pawn ? Pawn->GetPlayerState() : nullptr;
+    return Player ? Player : Attacker;
+}
+
+bool SFTownCrime::IsOffender(const TArray<FSFTownOffender>& Offenders, const AActor* Key, double Now)
+{
+    return Key && Offenders.ContainsByPredicate([&](const FSFTownOffender& O){ return O.Who==Key && O.Until>Now; });
+}
+
+void SFTownCrime::Mark(TArray<FSFTownOffender>& Offenders, const AActor* Key, double Until)
+{
+    if (!Key) { return; }
+    if (FSFTownOffender* O=Offenders.FindByPredicate([&](const FSFTownOffender& E){ return E.Who==Key; })) { O->Until=FMath::Max(O->Until,Until); return; }
+    FSFTownOffender Added; Added.Who=const_cast<AActor*>(Key); Added.Until=Until; Offenders.Add(Added);
+}
+
+bool SFTownCrime::FightsBack(int32 Health, int32 MaxHealth, int32 FleePct)
+{
+    return Health>0 && int64(Health)*100>int64(MaxHealth)*FleePct;
+}
+
+ASFTownState* ASFTownState::Find(const UWorld* World)
+{
+    if (!World) { return nullptr; }
+    TActorIterator<ASFTownState> It(const_cast<UWorld*>(World));
+    return It ? *It : nullptr;
+}
+
+bool ASFTownState::IsOffender(const AActor* Attacker) const
+{
+    return SFTownCrime::IsOffender(Offenders,SFTownCrime::OffenderKey(Attacker),ServerSeconds());
+}
+
+void ASFTownState::MarkOffender(const AActor* Attacker, const TCHAR* Why)
+{
+    check(HasAuthority());
+    const AActor* Key=SFTownCrime::OffenderKey(Attacker);
+    if (!Key) { return; }
+    const bool bWas=IsOffender(Attacker); const double Until=ServerSeconds()+GetDefault<USFTownsfolkSettings>()->GuardGrudgeSeconds;
+    SFTownCrime::Mark(Offenders,Key,Until); ForceNetUpdate();
+    UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_OFFENDER Who=%s Why=%s New=%d Until=%.0f"),*Key->GetName(),Why,!bWas,Until);
+}
+
+ASFTownGuard* ASFTownState::ReportCrime(const AActor* Attacker, const AActor* Victim)
+{
+    if (!HasAuthority() || !IsValid(Attacker) || !IsValid(Victim)) { return nullptr; }
+    const USFTownsfolkSettings* S=GetDefault<USFTownsfolkSettings>();
+    ASFTownGuard* Nearest=nullptr; double Best=S->ReportMaxMetres*100.0;
+    for (TActorIterator<ASFTownGuard> It(GetWorld()); It; ++It)
+    {   // ponytail: every guard in the zone each crime; a spatial query once a zone has hundreds
+        if (It->Sees(Attacker) || It->Sees(Victim))
+        {
+            UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_CRIME Attacker=%s Victim=%s Witness=%s"),*Attacker->GetName(),*Victim->GetName(),*It->GetName());
+            MarkOffender(Attacker,TEXT("witnessed"));
+            return nullptr;
+        }
+        const double D=FVector::Dist2D(It->GetActorLocation(),Victim->GetActorLocation());
+        if (D<=Best) { Best=D; Nearest=*It; }
+    }
+    if (IsOffender(Attacker)) { return nullptr; }  // the guards already know
+    UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_CRIME Attacker=%s Victim=%s Witness=none Report=%s"),*Attacker->GetName(),*Victim->GetName(),
+        Nearest ? *Nearest->GetName() : TEXT("unreported"));
+    return Nearest;
 }
 
 void ASFTownState::BeginPlay()
@@ -159,7 +239,8 @@ void ASFTownState::Tick(float DeltaSeconds)
     const bool bOpen=OpenHour<=CloseHour ? H>=OpenHour && H<CloseHour : H>=OpenHour || H<CloseHour;  // a close past midnight wraps
     const int32 Open=bOpen ? -1 : 0;
     const double Now=ServerSeconds();
-    const int32 Expired=Danger.RemoveAll([Now](const FSFTownDangerCell& C){ return C.Until<=Now; });
+    const int32 Expired=Danger.RemoveAll([Now](const FSFTownDangerCell& C){ return C.Until<=Now; })
+        +Offenders.RemoveAll([Now](const FSFTownOffender& O){ return O.Until<=Now || !O.Who; });
     if (Open!=OpenMarkets || Expired)
     {
         OpenMarkets=Open; ForceNetUpdate();
@@ -692,6 +773,10 @@ void USFTownsfolkSubsystem::PlanStop(int32 Resident, ESFTownsfolkGoal Goal, int3
 void USFTownsfolkSubsystem::OnWorldBeginPlay(UWorld& World)
 {
     Super::OnWorldBeginPlay(World);
+#if !UE_BUILD_SHIPPING
+    if (World.GetOutermost()->GetName()==DevMap && World.GetNetMode()!=NM_Client && FParse::Param(FCommandLine::Get(),TEXT("TownsfolkCrimeScenario")))
+    { StartCrimeScenario(World); return; }
+#endif
     if (World.GetOutermost()->GetName()!=ZoneMap) { return; }
     const USFTownsfolkSettings* Settings=GetDefault<USFTownsfolkSettings>();
     FString Error;
@@ -872,7 +957,7 @@ void ASFTownsfolkNpc::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 void ASFTownsfolkNpc::Init(const FString& Id, FName InArchetype, int32 Serial, int32 Health, bool bQuest)
 {
-    ResidentId=Id; Archetype=InArchetype; HandoffSerial=Serial; CurrentHealth=Health; QuestHolds=bQuest ? 1 : 0;
+    ResidentId=Id; Archetype=InArchetype; HandoffSerial=Serial; CurrentHealth=MaxHealth=Health; QuestHolds=bQuest ? 1 : 0;
     LastActiveSeconds=GetWorld()->GetTimeSeconds();
 }
 
@@ -896,18 +981,34 @@ void ASFTownsfolkNpc::ReceiveHit(const AActor* Attacker, int32 Damage)
     CurrentHealth=SFCombatPilotRules::RemainingHealth(CurrentHealth,Damage); ForceNetUpdate();
     if (CurrentHealth > 0)
     { if (ASFE1Character* Player = Cast<ASFE1Character>(const_cast<AActor*>(Attacker)); Player && !Player->GetCombatTarget()) { Player->SetCombatTarget(this); } }
-    LastActiveSeconds=GetWorld()->GetTimeSeconds(); FleeFrom=Attacker->GetActorLocation(); FleeUntil=LastActiveSeconds+S->FleeSeconds;
-    USFTownsfolkSubsystem* Town=GetWorld()->GetSubsystem<USFTownsfolkSubsystem>();
-    if (ASFTownState* State=Town ? Town->TownState() : nullptr)
+    const double Now=GetWorld()->GetTimeSeconds();
+    LastActiveSeconds=Now; FleeFrom=Attacker->GetActorLocation(); Foe=const_cast<AActor*>(Attacker);
+    // Section 5.5: fight back while not badly hurt, then break off and flee.
+    const bool bFight=SFTownCrime::FightsBack(CurrentHealth,MaxHealth,S->FleeHealthPct);
+    FightUntil=bFight ? Now+S->FightBackSeconds : 0; FleeUntil=FMath::Max(FightUntil,Now)+S->FleeSeconds;
+    if (ASFTownState* State=ASFTownState::Find(GetWorld()))
     {   // Combat in town: residents keep away from this cell (section 5.4).
         State->MarkDanger(GetActorLocation());
         if (CurrentHealth==0) { State->Hour(DeathDay); }
+        // A crime: a guard who sees it knows now; otherwise this resident runs to tell the nearest guard once it breaks off.
+        if (ASFTownGuard* Tell=State->ReportCrime(Attacker,this)) { ReportTo=Tell; CrimeBy=Attacker; }
     }
-    UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_HANDOFF_HIT Id=%s Serial=%d Health=%d"),*ResidentId,HandoffSerial,CurrentHealth);
+    UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_HANDOFF_HIT Id=%s Serial=%d Health=%d Reaction=%s"),*ResidentId,HandoffSerial,CurrentHealth,
+        CurrentHealth==0 ? TEXT("dead") : bFight ? TEXT("fight") : ReportTo.IsValid() ? TEXT("report") : TEXT("flee"));
     if (CurrentHealth==0)
-    {   // ponytail: gone until the next dawn, then back on its schedule from here; respawning at home comes with section 5.5.
-        SetActorHiddenInGame(true); SetActorEnableCollision(false);
+    {   // Gone until the next dawn, then back at home (NoteNpc). A crime it alone saw dies with it.
+        if (ReportTo.IsValid()) { UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_CRIME_UNREPORTED Id=%s Reason=dead"),*ResidentId); }
+        ReportTo=nullptr; SetActorHiddenInGame(true); SetActorEnableCollision(false);
     }
+}
+
+void ASFTownsfolkNpc::Step(const FVector& Direction, float SpeedCm, float DeltaSeconds)
+{
+    // Slowed by any snare. ponytail: no sweep (a slope or the attacker stopped it dead); runs through walls until it has a path
+    const FVector Dir=Direction.GetSafeNormal2D();
+    const float Speed=SpeedCm*CrowdControl->GetSpeedMultBp()/10000.0f;
+    SetActorLocation(OnGround(GetWorld(),GetActorLocation()+Dir*FMath::Min(Speed*DeltaSeconds,float(Direction.Size2D())),GetCapsuleComponent()->GetScaledCapsuleHalfHeight(),this));
+    SetActorRotation(Dir.Rotation());
 }
 
 void ASFTownsfolkNpc::Tick(float DeltaSeconds)
@@ -917,12 +1018,36 @@ void ASFTownsfolkNpc::Tick(float DeltaSeconds)
     if (HasAuthority())
     {
         const double Now=GetWorld()->GetTimeSeconds();
-        if (CurrentHealth>0 && Now<FleeUntil && !CrowdControl->IsImmobilised())
-        {   // Run straight away from the attacker, slowed by any snare.
-            const FVector Away=(GetActorLocation()-FleeFrom).GetSafeNormal2D();
-            const float Speed=GetDefault<USFTownsfolkSettings>()->FleeSpeedMetresPerSecond*100.0f*CrowdControl->GetSpeedMultBp()/10000.0f;
-            const FVector To=OnGround(GetWorld(),GetActorLocation()+Away*Speed*DeltaSeconds,GetCapsuleComponent()->GetScaledCapsuleHalfHeight(),this);
-            SetActorLocation(To); SetActorRotation(Away.Rotation());  // ponytail: no sweep (a slope or the attacker stopped it dead); runs through walls until it has a path
+        const USFTownsfolkSettings* S=GetDefault<USFTownsfolkSettings>(); const float RunCm=S->FleeSpeedMetresPerSecond*100.0f;
+        AActor* F=Foe.Get(); ASFE1Character* FoePlayer=Cast<ASFE1Character>(F);
+        if (CurrentHealth>0 && !CrowdControl->IsImmobilised())
+        {
+            if (Now<FightUntil && F && (!FoePlayer || FoePlayer->CombatHealth()>0))
+            {   // Fight back: close in and swing bare-fisted (section 5.5).
+                LastActiveSeconds=Now;
+                const FVector To=F->GetActorLocation()-GetActorLocation();
+                const double Reach=GetDefault<USFCombatPilotSettings>()->MeleeRangeMetres*100.0;
+                if (To.Size2D()>Reach*0.8) { Step(To,RunCm,DeltaSeconds); }
+                else if (Now>=NextSwingAt)
+                {
+                    NextSwingAt=Now+S->ResidentMeleeCooldownSeconds; SetActorRotation(To.GetSafeNormal2D().Rotation());
+                    UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_FIGHT_BACK Id=%s Serial=%d Foe=%s"),*ResidentId,HandoffSerial,*F->GetName());
+                    if (FoePlayer) { ASFGameMode::HitPlayer(this,FoePlayer,S->ResidentMeleeDamage); }
+                }
+            }
+            else if (ASFTownGuard* Guard=ReportTo.Get())
+            {   // Run to the guard; the report counts only on arrival, so a remote crime takes its travel time.
+                LastActiveSeconds=Now;
+                const FVector To=Guard->GetActorLocation()-GetActorLocation();
+                if (To.Size2D()>S->ReportReachMetres*100.0f) { Step(To,RunCm,DeltaSeconds); }
+                else
+                {
+                    UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_CRIME_REPORTED Id=%s Serial=%d Guard=%s"),*ResidentId,HandoffSerial,*Guard->GetName());
+                    if (ASFTownState* State=ASFTownState::Find(GetWorld()); State && CrimeBy.IsValid()) { State->MarkOffender(CrimeBy.Get(),TEXT("reported")); }
+                    ReportTo=nullptr; FleeUntil=0;
+                }
+            }
+            else if (Now<FleeUntil) { Step(GetActorLocation()-FleeFrom,RunCm,DeltaSeconds); }  // straight away from the attacker
         }
         if (Town && Town->ReleaseDue(*this))
         {
@@ -941,6 +1066,90 @@ void ASFTownsfolkNpc::Tick(float DeltaSeconds)
     const bool bWalking=FVector::DistSquared2D(GetActorLocation(),LastAt)>FMath::Square(20.0f*DeltaSeconds);
     LastAt=GetActorLocation();
     if (Playing!=int8(bWalking)) { GetMesh()->PlayAnimation(bWalking ? Walk.Get() : Idle.Get(),true); Playing=int8(bWalking); }
+}
+
+ASFTownGuard::ASFTownGuard()
+{
+    bReplicates=true; SetReplicateMovement(true);
+    bAlwaysRelevant=true;  // ponytail: like the hand-off actors, every client in the zone sees it
+    PrimaryActorTick.bCanEverTick=true;
+    GetCapsuleComponent()->InitCapsuleSize(35,90);
+    GetMesh()->SetRelativeLocationAndRotation(FVector(0,0,-90),FRotator(0,-90,0));
+    GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    GetMesh()->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+    if (!IsRunningDedicatedServer())
+    {
+        static ConstructorHelpers::FObjectFinder<USkeletalMesh> Manny(TEXT("/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
+        static ConstructorHelpers::FObjectFinder<UAnimSequence> WalkClip(TEXT("/Game/Mannequin/Animations/ThirdPersonWalk.ThirdPersonWalk"));
+        static ConstructorHelpers::FObjectFinder<UAnimSequence> IdleClip(TEXT("/Game/Mannequin/Animations/ThirdPersonIdle.ThirdPersonIdle"));
+        GetMesh()->SetSkeletalMeshAsset(Manny.Object); Walk=WalkClip.Object; Idle=IdleClip.Object;
+    }
+}
+
+bool ASFTownGuard::Sees(const AActor* Who) const
+{
+    if (!IsValid(Who) || FVector::Dist2D(Who->GetActorLocation(),GetActorLocation())>GetDefault<USFTownsfolkSettings>()->GuardSightMetres*100.0f) { return false; }
+    FCollisionQueryParams Params(TEXT("TownGuardSight"),true,this); Params.AddIgnoredActor(Who);
+    return !GetWorld()->LineTraceTestByChannel(GetActorLocation()+FVector(0,0,60),Who->GetActorLocation()+FVector(0,0,40),ECC_Visibility,Params);
+}
+
+void ASFTownGuard::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+    if (!HasAuthority())
+    {   // Clients: the guard archetype's look, walking or standing as for residents.
+        USFTownsfolkSubsystem* Town=GetWorld()->GetSubsystem<USFTownsfolkSubsystem>();
+        if (!bLookApplied && Town)
+        {
+            if (const FSFTownsfolkResolvedLook* L=Town->LookFor(TEXT("guard")))
+            { GetMesh()->SetSkeletalMeshAsset(L->Mesh); GetMesh()->SetRelativeRotation(FRotator(0,L->YawOffset,0)); Walk=L->Walk; Idle=L->Idle; }
+            bLookApplied=true;
+        }
+        const bool bWalking=FVector::DistSquared2D(GetActorLocation(),LastAt)>FMath::Square(20.0f*DeltaSeconds);
+        LastAt=GetActorLocation();
+        if (Playing!=int8(bWalking)) { GetMesh()->PlayAnimation(bWalking ? Walk.Get() : Idle.Get(),true); Playing=int8(bWalking); }
+        return;
+    }
+    const ASFTownState* State=ASFTownState::Find(GetWorld());
+    if (!State) { return; }
+    const USFTownsfolkSettings* S=GetDefault<USFTownsfolkSettings>(); const double Now=GetWorld()->GetTimeSeconds();
+    ASFE1Character* T=Target.Get();
+    if (T && (T->CombatHealth()<=0 || !State->IsOffender(T) || FVector::Dist2D(T->GetActorLocation(),GetActorLocation())>S->GuardSightMetres*200.0f))
+    {   // Down, forgiven or got away (twice the sight distance).
+        UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_GUARD_DISENGAGE Guard=%s Offender=%s HP=%d"),*GetName(),*T->GetName(),T->CombatHealth());
+        Target=nullptr; T=nullptr;
+    }
+    for (TActorIterator<ASFE1Character> It(GetWorld()); !T && It; ++It)
+    {   // Offenders are engaged on sight (section 5.5).
+        if (It->CombatHealth()>0 && State->IsOffender(*It) && Sees(*It))
+        { T=*It; Target=T; UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_GUARD_ENGAGE Guard=%s Offender=%s"),*GetName(),*T->GetName()); }
+    }
+    FVector To; float Speed;
+    if (T)
+    {
+        To=T->GetActorLocation()-GetActorLocation(); Speed=S->GuardChaseSpeedMetresPerSecond*100.0f;
+        const double Reach=GetDefault<USFCombatPilotSettings>()->MeleeRangeMetres*100.0;
+        if (To.Size2D()<=Reach*0.8)
+        {
+            SetActorRotation(To.GetSafeNormal2D().Rotation());
+            if (Now>=NextSwingAt)
+            {
+                NextSwingAt=Now+S->GuardMeleeCooldownSeconds; ++Hits;
+                ASFGameMode::HitPlayer(this,T,S->GuardMeleeDamage);
+                UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_GUARD_HIT Guard=%s Offender=%s HP=%d"),*GetName(),*T->GetName(),T->CombatHealth());
+            }
+            return;
+        }
+    }
+    else if (!Patrol.IsEmpty())
+    {
+        To=Patrol[NextPoint]-GetActorLocation(); Speed=S->GuardPatrolSpeedMetresPerSecond*100.0f;
+        if (To.Size2D()<50) { NextPoint=(NextPoint+1)%Patrol.Num(); return; }
+    }
+    else { return; }
+    const FVector Dir=To.GetSafeNormal2D();
+    SetActorLocation(OnGround(GetWorld(),GetActorLocation()+Dir*FMath::Min(Speed*DeltaSeconds,float(To.Size2D())),GetCapsuleComponent()->GetScaledCapsuleHalfHeight(),this));
+    SetActorRotation(Dir.Rotation());
 }
 
 USFTownsfolkHandoffComponent::USFTownsfolkHandoffComponent()
@@ -1101,7 +1310,10 @@ void USFTownsfolkSubsystem::NoteNpc(ASFTownsfolkNpc* Npc, bool bPresent)
     }
     Npcs.Remove(I);
     if (!bActive) { return; }
-    Resume.Add(I,Npc->GetActorLocation()-FVector(0,0,Npc->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()-10));
+    FVector At=Npc->GetActorLocation()-FVector(0,0,Npc->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()-10);
+    TArray<FVector> Home;  // killed residents come back at home at dawn (section 5.5), on the footway as at world start
+    if (Npc->Health()<=0 && PlanRoute(Residents[I].Home,Residents[I].Home,Home) && !Home.IsEmpty()) { At=Home.Last(); }
+    Resume.Add(I,At);
     LastReturned=I; LastReturnedAt=FPlatformTime::Seconds();
     UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_HANDOFF_RETURN Net=%d Id=%s Serial=%d At=%s"),int32(GetWorld()->GetNetMode()),*Npc->Id(),Npc->Serial(),*Npc->GetActorLocation().ToCompactString());
 }
@@ -1230,4 +1442,61 @@ void USFTownsfolkSubsystem::TickQuestScenario()
     const FVector D=(To-Me->GetActorLocation())*FVector(1,1,0);
     PC->SetControlRotation(D.Rotation());
     Me->AddMovementInput(D.GetSafeNormal(),1.0f);
+}
+
+void USFTownsfolkSubsystem::StartCrimeScenario(UWorld& World)
+{
+    const USFTownsfolkSettings* Settings=GetDefault<USFTownsfolkSettings>(); FString Error;
+    if (!Settings->Validate(Error)) { UE_LOG(LogTemp,Error,TEXT("TOWNSFOLK_DISABLED %s"),*Error); return; }
+    State=World.SpawnActor<ASFTownState>(); State->Start(*Settings);
+    CrimeScenarioStart=World.GetTimeSeconds();
+    World.GetTimerManager().SetTimer(CrimeScenarioTimer,FTimerDelegate::CreateUObject(this,&USFTownsfolkSubsystem::TickCrimeScenario),0.25f,true);
+    UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_CRIME_SCENARIO_START Net=%d"),int32(World.GetNetMode()));
+}
+
+void USFTownsfolkSubsystem::TickCrimeScenario()
+{
+    // Development check of doc section 9 step 5 on the TownsfolkGuards dev map: the player hits resident A beside the guard
+    // (witnessed: offender, the guard engages); fixture F1 hits B 51 m from the guard (B fights back, then runs to report);
+    // fixture F2 hits C 150 m from any guard (unreported).
+    UWorld* World=GetWorld(); const double T=World->GetTimeSeconds()-CrimeScenarioStart;
+    const USFCombatPilotSettings* Combat=GetDefault<USFCombatPilotSettings>(); const int32 Full=Combat->PlayerHealth;
+    APlayerController* PC=World->GetFirstPlayerController();
+    ASFE1Character* Me=PC ? Cast<ASFE1Character>(PC->GetPawn()) : nullptr;
+    if (CrimeScenarioPhase==0)
+    {
+        if (T<1.0 || !Me) { if (T>20.0) { UE_LOG(LogTemp,Error,TEXT("TOWNSFOLK_CRIME_SCENARIO_RESULT Passed=0 Reason=no-player")); CrimeScenarioPhase=2; FPlatformMisc::RequestExit(false,TEXT("TownsfolkCrimeScenario")); } return; }
+        const auto Ground=[World](double X, double Y){ return OnGround(World,FVector(X,Y,0),90); };
+        FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+        ASFTownGuard* Guard=World->SpawnActor<ASFTownGuard>(Ground(0,0),FRotator::ZeroRotator,Spawn);
+        Guard->SetPatrol({Ground(0,0),Ground(600,0)});
+        const auto Resident=[&](const TCHAR* Id, double X, double Y)
+        {
+            const FTransform Where(Ground(X,Y));
+            ASFTownsfolkNpc* Npc=World->SpawnActorDeferred<ASFTownsfolkNpc>(ASFTownsfolkNpc::StaticClass(),Where,nullptr,nullptr,ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+            Npc->Init(Id,TEXT("labourer"),++HandoffSerial,GetDefault<USFTownsfolkSettings>()->ResidentHealth,false);
+            Npc->FinishSpawning(Where);
+            return Npc;
+        };
+        ASFTownsfolkNpc* A=Resident(TEXT("dev_resident_a"),300,400); ASFTownsfolkNpc* B=Resident(TEXT("dev_resident_b"),5150,0); ASFTownsfolkNpc* C=Resident(TEXT("dev_resident_c"),15150,0);
+        ASFE1Character* F1=World->SpawnActor<ASFE1Character>(Ground(5000,0),FRotator::ZeroRotator,Spawn);
+        ASFE1Character* F2=World->SpawnActor<ASFE1Character>(Ground(15000,0),FRotator::ZeroRotator,Spawn);
+        Me->SetActorLocation(Ground(300,250),false,nullptr,ETeleportType::TeleportPhysics);
+        for (ASFE1Character* P:{Me,F1,F2}) { P->CombatSetHealth(Full); }
+        CrimeCast={Guard,A,B,C,Me,F1,F2};
+        UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_CRIME_SCENARIO_CAST Guard=%s Player=%s F1=%s F2=%s"),*Guard->GetName(),*Me->GetName(),*F1->GetName(),*F2->GetName());
+        A->ReceiveHit(Me,Combat->PlayerMeleeDamage); B->ReceiveHit(F1,Combat->PlayerMeleeDamage); C->ReceiveHit(F2,Combat->PlayerMeleeDamage);
+        CrimeScenarioPhase=1;
+        return;
+    }
+    if (CrimeScenarioPhase!=1 || T<35.0) { return; }
+    CrimeScenarioPhase=2;
+    const ASFTownGuard* Guard=Cast<ASFTownGuard>(CrimeCast[0].Get());
+    const ASFE1Character* Hit=Cast<ASFE1Character>(CrimeCast[4].Get()); const ASFE1Character* F1=Cast<ASFE1Character>(CrimeCast[5].Get()); const ASFE1Character* F2=Cast<ASFE1Character>(CrimeCast[6].Get());
+    const bool bWitnessed=State->IsOffender(Hit), bGuardHit=Guard && Guard->Hits>0, bFoughtBack=F1 && F1->CombatHealth()<Full;
+    const bool bReported=State->IsOffender(F1), bUnreported=F2 && !State->IsOffender(F2);
+    const bool bPassed=bWitnessed && bGuardHit && bFoughtBack && bReported && bUnreported;
+    UE_LOG(LogTemp,Display,TEXT("TOWNSFOLK_CRIME_SCENARIO_RESULT Witnessed=%d GuardHits=%d PlayerHP=%d FoughtBack=%d F1HP=%d Reported=%d Unreported=%d Passed=%d"),
+        bWitnessed,Guard ? Guard->Hits : 0,Hit ? Hit->CombatHealth() : -1,bFoughtBack,F1 ? F1->CombatHealth() : -1,bReported,bUnreported,bPassed);
+    FPlatformMisc::RequestExit(false,TEXT("TownsfolkCrimeScenario"));
 }

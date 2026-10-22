@@ -1,11 +1,18 @@
 #include "Framework/SFLoadingScreen.h"
 
 #include "Framework/SFHudStyle.h"
+#include "ImageUtils.h"
 #include "Framework/SFLoadingScreenSettings.h"
 #include "Engine/Texture2D.h"
 #include "MoviePlayer.h"
 #include "Misc/App.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
+#include "Misc/FileHelper.h"
 #include "RHI.h"
+#include "Slate/WidgetRenderer.h"
+#include "Containers/Ticker.h"
+#include "Engine/TextureRenderTarget2D.h"
 #include "UObject/UObjectGlobals.h"
 #include "Widgets/Images/SImage.h"
 #include "Widgets/Layout/SBox.h"
@@ -21,8 +28,14 @@
 namespace
 {
 FDelegateHandle LoadingScreenPreLoadHandle;
+FDelegateHandle LoadingScreenPostLoadHandle;
 TArray<TStrongObjectPtr<UTexture2D>> LoadingScreenTextures;
 TMap<FString, TStrongObjectPtr<UFont>> LoadingScreenFonts;
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+bool bCaptureLoadingShot = false;
+TSharedPtr<SWidget> LoadingShotWidget;
+FString LoadingShotPath;
+#endif
 
 UTexture2D* LoadingScreenLoadTexture(const FSoftObjectPath& Path)
 {
@@ -72,6 +85,9 @@ public:
         TipSeconds = Settings.TipSeconds;
         FirstTip = FMath::RandRange(0, Tips.Num() - 1);
         StartTime = FPlatformTime::Seconds();
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+        if (bCaptureLoadingShot) { UE_LOG(LogTemp, Display, TEXT("UI_LOADING_SHOT_ARMED %s"), *LoadingShotPath); }
+#endif
 
         UTexture2D* Splash = LoadingScreenLoadTexture(Settings.Splash);
         if (Splash)
@@ -123,6 +139,7 @@ public:
         ];
     }
 
+
 private:
     double Elapsed() const { return FPlatformTime::Seconds() - StartTime; }
 
@@ -144,9 +161,14 @@ private:
     FSlateBrush BackgroundBrush, VignetteBrush, EmblemBrush, RuleBrush, BarFrameBrush, BarFillBrush, SpinnerBrush;
 };
 
-void LoadingScreenOnPreLoadMap(const FString&)
+void LoadingScreenOnPreLoadMap(const FString& MapName)
 {
     if (!GetMoviePlayer()) { return; }
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    bCaptureLoadingShot = MapName.StartsWith(TEXT("/Game/Frontier/Maps/"))
+        && FParse::Value(FCommandLine::Get(), TEXT("LoadingShot="), LoadingShotPath)
+        && !LoadingShotPath.IsEmpty();
+#endif
     const USFLoadingScreenSettings::FValues Values = GetDefault<USFLoadingScreenSettings>()->Sanitised();
     LoadingScreenTextures.Reset();
     LoadingScreenFont(TEXT("FontFace_EBGaramondRegular"), 12);
@@ -156,8 +178,40 @@ void LoadingScreenOnPreLoadMap(const FString&)
     Attributes.bMoviesAreSkippable = false;
     Attributes.bWaitForManualStop = false;
     Attributes.MinimumLoadingScreenDisplayTime = Values.MinimumDisplaySeconds;
-    Attributes.WidgetLoadingScreen = SNew(SSFLoadingScreen, Values);
+    TSharedRef<SSFLoadingScreen> Widget = SNew(SSFLoadingScreen, Values);
+    Attributes.WidgetLoadingScreen = Widget;
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (bCaptureLoadingShot) { LoadingShotWidget = Widget; }
+#endif
     GetMoviePlayer()->SetupLoadingScreen(Attributes);
+}
+
+void LoadingScreenOnPostLoadMap(UWorld*)
+{
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (!LoadingShotWidget.IsValid() || LoadingShotPath.IsEmpty()) { return; }
+    FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([](float)
+    {
+        if (!LoadingShotWidget.IsValid()) { return false; }
+        if (GetMoviePlayer() && GetMoviePlayer()->IsMovieCurrentlyPlaying()) { return true; }
+        FWidgetRenderer Renderer(false);
+        UTextureRenderTarget2D* Target = Renderer.DrawWidget(LoadingShotWidget.ToSharedRef(), FVector2D(1920, 1080));
+        FlushRenderingCommands();
+        TArray<FColor> Pixels;
+        const bool bRead = Target && Target->GameThread_GetRenderTargetResource()->ReadPixels(Pixels) && Pixels.Num() == 1920 * 1080;
+        if (bRead)
+        {
+            TArray64<uint8> Png;
+            FImageUtils::PNGCompressImageArray(1920, 1080, MakeArrayView(Pixels), Png);
+            if (FFileHelper::SaveArrayToFile(Png, *LoadingShotPath))
+            { UE_LOG(LogTemp, Display, TEXT("UI_LOADING_SHOT_SAVED %s"), *LoadingShotPath); }
+            else { UE_LOG(LogTemp, Warning, TEXT("UI_LOADING_SHOT_WRITE_FAILED %s"), *LoadingShotPath); }
+        }
+        else { UE_LOG(LogTemp, Warning, TEXT("UI_LOADING_SHOT_RENDER_FAILED")); }
+        LoadingShotWidget.Reset();
+        return false;
+    }), 0.25f);
+#endif
 }
 }
 
@@ -165,11 +219,16 @@ void SFLoadingScreen::Register()
 {
     if (IsRunningDedicatedServer() || IsRunningCommandlet() || GIsEditor || !FApp::CanEverRender() || GUsingNullRHI) { return; }
     LoadingScreenPreLoadHandle = FCoreUObjectDelegates::PreLoadMap.AddStatic(&LoadingScreenOnPreLoadMap);
+    LoadingScreenPostLoadHandle = FCoreUObjectDelegates::PostLoadMapWithWorld.AddStatic(&LoadingScreenOnPostLoadMap);
 }
 
 void SFLoadingScreen::Unregister()
 {
     if (LoadingScreenPreLoadHandle.IsValid()) { FCoreUObjectDelegates::PreLoadMap.Remove(LoadingScreenPreLoadHandle); LoadingScreenPreLoadHandle.Reset(); }
+    if (LoadingScreenPostLoadHandle.IsValid()) { FCoreUObjectDelegates::PostLoadMapWithWorld.Remove(LoadingScreenPostLoadHandle); LoadingScreenPostLoadHandle.Reset(); }
     LoadingScreenTextures.Reset();
     LoadingScreenFonts.Reset();
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    LoadingShotWidget.Reset();
+#endif
 }

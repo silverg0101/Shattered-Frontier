@@ -1,0 +1,364 @@
+{
+ "concept": "market-board.png",
+ "elements": [
+  {
+   "name": "modal frame",
+   "rect": [
+    246,
+    109,
+    1430,
+    803
+   ],
+   "samples": [
+    [
+     600,
+     130,
+     "modal fill"
+    ],
+    [
+     1500,
+     130,
+     "modal fill"
+    ]
+   ]
+  },
+  {
+   "name": "emblem and title Market Board",
+   "rect": [
+    292,
+    132,
+    392,
+    76
+   ]
+  },
+  {
+   "name": "tab Browse (selected)",
+   "rect": [
+    286,
+    221,
+    207,
+    52
+   ],
+   "samples": [
+    [
+     300,
+     255,
+     "selected tab fill"
+    ]
+   ]
+  },
+  {
+   "name": "tab My Listings",
+   "rect": [
+    502,
+    221,
+    208,
+    52
+   ],
+   "samples": [
+    [
+     515,
+     255,
+     "tab fill"
+    ]
+   ]
+  },
+  {
+   "name": "tab Sell",
+   "rect": [
+    719,
+    221,
+    208,
+    52
+   ],
+   "samples": [
+    [
+     735,
+     255,
+     "tab fill"
+    ]
+   ]
+  },
+  {
+   "name": "rail All Items (selected)",
+   "rect": [
+    279,
+    294,
+    222,
+    58
+   ],
+   "samples": [
+    [
+     480,
+     320,
+     "selected rail fill"
+    ]
+   ]
+  },
+  {
+   "name": "rail Weapons",
+   "rect": [
+    279,
+    353,
+    222,
+    58
+   ],
+   "samples": [
+    [
+     480,
+     385,
+     "rail fill"
+    ]
+   ]
+  },
+  {
+   "name": "rail Materials",
+   "rect": [
+    279,
+    412,
+    222,
+    58
+   ],
+   "samples": [
+    [
+     480,
+     445,
+     "rail fill"
+    ]
+   ]
+  },
+  {
+   "name": "rail Consumables",
+   "rect": [
+    279,
+    471,
+    222,
+    58
+   ]
+  },
+  {
+   "name": "rail Tools",
+   "rect": [
+    279,
+    531,
+    222,
+    58
+   ]
+  },
+  {
+   "name": "search field",
+   "rect": [
+    522,
+    295,
+    720,
+    48
+   ],
+   "samples": [
+    [
+     1200,
+     320,
+     "field fill"
+    ]
+   ]
+  },
+  {
+   "name": "table header row",
+   "rect": [
+    522,
+    360,
+    720,
+    56
+   ],
+   "samples": [
+    [
+     700,
+     388,
+     "header fill"
+    ]
+   ]
+  },
+  {
+   "name": "table row Iron Axe (selected)",
+   "rect": [
+    522,
+    418,
+    720,
+    70
+   ],
+   "samples": [
+    [
+     760,
+     470,
+     "selected row fill"
+    ],
+    [
+     1220,
+     470,
+     "selected row fill"
+    ]
+   ]
+  },
+  {
+   "name": "table row Oak Planks",
+   "rect": [
+    522,
+    489,
+    720,
+    70
+   ],
+   "samples": [
+    [
+     760,
+     545,
+     "row fill"
+    ]
+   ]
+  },
+  {
+   "name": "table row River Herbs",
+   "rect": [
+    522,
+    780,
+    720,
+    70
+   ],
+   "samples": [
+    [
+     760,
+     830,
+     "row fill"
+    ]
+   ]
+  },
+  {
+   "name": "detail card frame",
+   "rect": [
+    1257,
+    290,
+    388,
+    592
+   ],
+   "samples": [
+    [
+     1270,
+     600,
+     "card fill"
+    ]
+   ]
+  },
+  {
+   "name": "detail item image well",
+   "rect": [
+    1283,
+    314,
+    338,
+    198
+   ],
+   "samples": [
+    [
+     1330,
+     330,
+     "well fill"
+    ]
+   ]
+  },
+  {
+   "name": "detail name Iron Axe",
+   "rect": [
+    1282,
+    526,
+    132,
+    36
+   ]
+  },
+  {
+   "name": "detail stat rows",
+   "rect": [
+    1283,
+    598,
+    340,
+    112
+   ]
+  },
+  {
+   "name": "Hold to Buy button",
+   "rect": [
+    1281,
+    780,
+    342,
+    78
+   ],
+   "samples": [
+    [
+     1580,
+     820,
+     "brass fill"
+    ]
+   ]
+  },
+  {
+   "name": "hotbar slot 1 (sword)",
+   "rect": [
+    716,
+    962,
+    77,
+    81
+   ],
+   "samples": [
+    [
+     725,
+     970,
+     "slot fill"
+    ]
+   ]
+  },
+  {
+   "name": "hotbar slot 6 (herbs)",
+   "rect": [
+    1127,
+    962,
+    76,
+    81
+   ],
+   "samples": [
+    [
+     1135,
+     970,
+     "slot fill"
+    ]
+   ]
+  },
+  {
+   "name": "vitals HP bar",
+   "rect": [
+    135,
+    970,
+    392,
+    32
+   ],
+   "samples": [
+    [
+     250,
+     988,
+     "hp red fill"
+    ]
+   ]
+  },
+  {
+   "name": "vitals level badge",
+   "rect": [
+    29,
+    930,
+    106,
+    114
+   ],
+   "samples": [
+    [
+     50,
+     1000,
+     "badge fill"
+    ]
+   ]
+  }
+ ]
+}

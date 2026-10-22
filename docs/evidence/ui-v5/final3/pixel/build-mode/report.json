@@ -1,0 +1,595 @@
+[
+ {
+  "widget": "SizeBox:SizeBox_0",
+  "name": "catalogue panel frame",
+  "rect": [
+   33,
+   39,
+   523,
+   845
+  ],
+  "found": true,
+  "match": 0.91,
+  "d_left": 5,
+  "d_top": -7,
+  "d_width": -43,
+  "d_height": 13,
+  "de": [
+   [
+    "panel fill",
+    41.2
+   ],
+   [
+    "panel fill",
+    4.0
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "TextBlock:TextBlock_0",
+  "name": "title Build Catalogue",
+  "rect": [
+   62,
+   52,
+   298,
+   40
+  ],
+  "found": true,
+  "match": 0.46,
+  "d_left": 38,
+  "d_top": -6,
+  "d_width": 27,
+  "d_height": 24,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "Overlay:Overlay_0",
+  "name": "search field",
+  "rect": [
+   53,
+   111,
+   480,
+   41
+  ],
+  "found": true,
+  "match": 0.38,
+  "d_left": 7,
+  "d_top": 17,
+  "d_width": -44,
+  "d_height": -1,
+  "de": [
+   [
+    "field fill",
+    2.2
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_5",
+  "name": "tab Voxel Objects (selected)",
+  "rect": [
+   52,
+   161,
+   259,
+   41
+  ],
+  "found": true,
+  "match": 0.33,
+  "d_left": 8,
+  "d_top": 17,
+  "d_width": -49,
+  "d_height": 3,
+  "de": [
+   [
+    "selected tab fill",
+    9.9
+   ],
+   [
+    "selected tab fill",
+    12.0
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_6",
+  "name": "tab Blueprints",
+  "rect": [
+   322,
+   161,
+   214,
+   41
+  ],
+  "found": true,
+  "match": 0.29,
+  "d_left": -40,
+  "d_top": 17,
+  "d_width": -4,
+  "d_height": 3,
+  "de": [
+   [
+    "tab fill",
+    3.1
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_8",
+  "name": "rail Structures (selected)",
+  "rect": [
+   43,
+   215,
+   95,
+   78
+  ],
+  "found": true,
+  "match": 0.49,
+  "d_left": 17,
+  "d_top": 19,
+  "d_width": -15,
+  "d_height": 2,
+  "de": [
+   [
+    "selected rail fill",
+    12.3
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_10",
+  "name": "rail Decor",
+  "rect": [
+   43,
+   305,
+   95,
+   83
+  ],
+  "found": true,
+  "match": 0.5,
+  "d_left": 17,
+  "d_top": 21,
+  "d_width": -15,
+  "d_height": -3,
+  "de": [
+   [
+    "rail fill",
+    3.2
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_12",
+  "name": "rail Terrain",
+  "rect": [
+   43,
+   398,
+   95,
+   83
+  ],
+  "found": true,
+  "match": 0.52,
+  "d_left": 17,
+  "d_top": 20,
+  "d_width": -15,
+  "d_height": -3,
+  "de": [
+   [
+    "rail fill",
+    3.2
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_14",
+  "name": "rail Favourites",
+  "rect": [
+   43,
+   490,
+   95,
+   83
+  ],
+  "found": true,
+  "match": 0.52,
+  "d_left": 17,
+  "d_top": 20,
+  "d_width": -15,
+  "d_height": -3,
+  "de": [
+   [
+    "rail fill",
+    3.1
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_16",
+  "name": "tile Timber Block",
+  "rect": [
+   155,
+   213,
+   123,
+   111
+  ],
+  "found": true,
+  "match": 0.55,
+  "d_left": 3,
+  "d_top": 27,
+  "d_width": -23,
+  "d_height": -11,
+  "de": [
+   [
+    "tile fill",
+    3.1
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_22",
+  "name": "tile Wall (selected)",
+  "rect": [
+   155,
+   327,
+   123,
+   106
+  ],
+  "found": true,
+  "match": 0.54,
+  "d_left": 3,
+  "d_top": 25,
+  "d_width": -23,
+  "d_height": -6,
+  "de": [
+   [
+    "selected tile fill",
+    12.4
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_23",
+  "name": "tile Floor",
+  "rect": [
+   285,
+   327,
+   121,
+   106
+  ],
+  "found": true,
+  "match": 0.43,
+  "d_left": -15,
+  "d_top": 25,
+  "d_width": -21,
+  "d_height": -6,
+  "de": [
+   [
+    "tile fill",
+    3.9
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_30",
+  "name": "tile Window",
+  "rect": [
+   413,
+   555,
+   123,
+   107
+  ],
+  "found": true,
+  "match": 0.34,
+  "d_left": -31,
+  "d_top": 21,
+  "d_width": -23,
+  "d_height": -7,
+  "de": [
+   [
+    "tile fill",
+    2.2
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_33",
+  "name": "material dropdown",
+  "rect": [
+   43,
+   673,
+   497,
+   50
+  ],
+  "found": true,
+  "match": 0.42,
+  "d_left": 17,
+  "d_top": 21,
+  "d_width": -61,
+  "d_height": -10,
+  "de": [
+   [
+    "field fill",
+    2.9
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "Border:Border_21",
+  "name": "required materials box",
+  "rect": [
+   43,
+   729,
+   497,
+   148
+  ],
+  "found": true,
+  "match": 0.78,
+  "d_left": 17,
+  "d_top": 15,
+  "d_width": -61,
+  "d_height": -16,
+  "de": [
+   [
+    "inset fill",
+    2.0
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "HorizontalBox:HorizontalBox_1",
+  "name": "action bar",
+  "rect": [
+   722,
+   882,
+   493,
+   38
+  ],
+  "found": true,
+  "match": 0.71,
+  "d_left": -28,
+  "d_top": -2,
+  "d_width": 38,
+  "d_height": -6,
+  "de": [
+   [
+    "bar fill",
+    3.5
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_1",
+  "name": "hotbar slot 1 (axe)",
+  "rect": [
+   688,
+   938,
+   92,
+   92
+  ],
+  "found": true,
+  "match": 0.49,
+  "d_left": -22,
+  "d_top": 11,
+  "d_width": -4,
+  "d_height": -4,
+  "de": [
+   [
+    "slot fill",
+    10.6
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_11",
+  "name": "hotbar slot 6 (sack)",
+  "rect": [
+   1154,
+   938,
+   92,
+   92
+  ],
+  "found": true,
+  "match": 0.67,
+  "d_left": 12,
+  "d_top": 11,
+  "d_width": -4,
+  "d_height": -4,
+  "de": [
+   [
+    "slot fill",
+    10.7
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "Overlay:Overlay_1",
+  "name": "vitals HP bar",
+  "rect": [
+   123,
+   948,
+   367,
+   34
+  ],
+  "found": true,
+  "match": 0.61,
+  "d_left": 41,
+  "d_top": -6,
+  "d_width": 13,
+  "d_height": 3,
+  "de": [
+   [
+    "hp red fill",
+    10.2
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "Overlay:Overlay_0",
+  "name": "vitals level badge",
+  "rect": [
+   24,
+   919,
+   102,
+   123
+  ],
+  "found": true,
+  "match": 0.64,
+  "d_left": 14,
+  "d_top": 2,
+  "d_width": 14,
+  "d_height": -7,
+  "de": [
+   [
+    "badge fill",
+    4.5
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_17",
+  "name": "minimap ring",
+  "rect": [
+   1640,
+   27,
+   250,
+   245
+  ],
+  "found": true,
+  "match": 0.9,
+  "d_left": 11,
+  "d_top": -5,
+  "d_width": 0,
+  "d_height": 5,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_19",
+  "name": "minimap footer",
+  "rect": [
+   1677,
+   276,
+   188,
+   20
+  ],
+  "found": true,
+  "match": 0.6,
+  "d_left": 9,
+  "d_top": 0,
+  "d_width": -8,
+  "d_height": 12,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_0",
+  "name": "quest tracker frame",
+  "rect": [
+   1629,
+   320,
+   274,
+   182
+  ],
+  "found": true,
+  "match": 0.66,
+  "d_left": -16,
+  "d_top": 18,
+  "d_width": 6,
+  "d_height": -52,
+  "de": [
+   [
+    "fill dark",
+    2.0
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "toast Rough Timber",
+  "rect": [
+   1631,
+   525,
+   269,
+   67
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "fill dark",
+    39.9
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ }
+]

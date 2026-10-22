@@ -1,0 +1,640 @@
+[
+ {
+  "widget": "Border:Border_0",
+  "name": "inventory panel frame",
+  "rect": [
+   85,
+   31,
+   575,
+   887
+  ],
+  "found": true,
+  "match": 0.97,
+  "d_left": -8,
+  "d_top": 1,
+  "d_width": 1,
+  "d_height": -1,
+  "de": [
+   [
+    "panel fill",
+    7.5
+   ],
+   [
+    "panel fill",
+    2.3
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "TextBlock:TextBlock_0",
+  "name": "title Inventory",
+  "rect": [
+   103,
+   50,
+   204,
+   48
+  ],
+  "found": true,
+  "match": 0.48,
+  "d_left": 52,
+  "d_top": -2,
+  "d_width": -4,
+  "d_height": 16,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_2",
+  "name": "equip slot head",
+  "rect": [
+   134,
+   127,
+   78,
+   78
+  ],
+  "found": true,
+  "match": 0.26,
+  "d_left": -27,
+  "d_top": -15,
+  "d_width": 22,
+  "d_height": -34,
+  "de": [
+   [
+    "slot fill",
+    24.3
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_7",
+  "name": "equip slot chest",
+  "rect": [
+   134,
+   215,
+   78,
+   78
+  ],
+  "found": true,
+  "match": 0.26,
+  "d_left": -27,
+  "d_top": 25,
+  "d_width": -6,
+  "d_height": -6,
+  "de": [
+   [
+    "slot fill",
+    2.7
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_10",
+  "name": "equip slot boots",
+  "rect": [
+   134,
+   463,
+   78,
+   56
+  ],
+  "found": true,
+  "match": 0.26,
+  "d_left": -27,
+  "d_top": 11,
+  "d_width": -6,
+  "d_height": 16,
+  "de": [
+   [
+    "slot fill",
+    2.5
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "equip slot main hand (selected)",
+  "rect": [
+   490,
+   128,
+   80,
+   80
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "selected slot fill",
+    2.1
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "",
+  "name": "equip slot shield",
+  "rect": [
+   490,
+   217,
+   80,
+   80
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "slot fill",
+    4.0
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "equip slot ring",
+  "rect": [
+   490,
+   397,
+   80,
+   80
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "slot fill",
+    11.1
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_11",
+  "name": "paperdoll adventurer",
+  "rect": [
+   272,
+   118,
+   158,
+   390
+  ],
+  "found": true,
+  "match": 0.59,
+  "d_left": -17,
+  "d_top": 49,
+  "d_width": 62,
+  "d_height": -10,
+  "de": [
+   [
+    "backdrop fill",
+    8.2
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_16",
+  "name": "bag slot 1 Oak Log",
+  "rect": [
+   108,
+   527,
+   62,
+   61
+  ],
+  "found": true,
+  "match": 0.32,
+  "d_left": 0,
+  "d_top": 30,
+  "d_width": 0,
+  "d_height": 3,
+  "de": [
+   [
+    "slot fill",
+    3.2
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_17",
+  "name": "bag slot 2 Stone",
+  "rect": [
+   174,
+   527,
+   62,
+   61
+  ],
+  "found": true,
+  "match": 0.31,
+  "d_left": -2,
+  "d_top": 30,
+  "d_width": 0,
+  "d_height": 3,
+  "de": [
+   [
+    "slot fill",
+    2.8
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "Overlay:Overlay_49",
+  "name": "bag grid 8x5",
+  "rect": [
+   108,
+   527,
+   527,
+   327
+  ],
+  "found": true,
+  "match": 0.81,
+  "d_left": -1,
+  "d_top": 29,
+  "d_width": -11,
+  "d_height": 3,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_55",
+  "name": "bag slot last (stick)",
+  "rect": [
+   573,
+   793,
+   62,
+   61
+  ],
+  "found": true,
+  "match": 0.26,
+  "d_left": -14,
+  "d_top": 28,
+  "d_width": 0,
+  "d_height": 3,
+  "de": [
+   [
+    "slot fill",
+    3.1
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "weight footer text",
+  "rect": [
+   121,
+   876,
+   156,
+   20
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "",
+  "name": "gold footer",
+  "rect": [
+   503,
+   873,
+   116,
+   22
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "",
+  "name": "tooltip frame Iron Axe",
+  "rect": [
+   587,
+   120,
+   410,
+   326
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "tooltip fill",
+    36.7
+   ],
+   [
+    "tooltip fill",
+    51.6
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "tooltip title Iron Axe",
+  "rect": [
+   742,
+   141,
+   103,
+   27
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "",
+  "name": "tooltip item art",
+  "rect": [
+   602,
+   140,
+   120,
+   178
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "",
+  "name": "tooltip stat rows",
+  "rect": [
+   742,
+   213,
+   220,
+   107
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "",
+  "name": "tooltip description",
+  "rect": [
+   614,
+   353,
+   256,
+   67
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [],
+  "geometry": "UNMEASURED",
+  "colour": "PASS",
+  "verdict": "REVIEW"
+ },
+ {
+  "widget": "SizeBox:SizeBox_17",
+  "name": "minimap ring",
+  "rect": [
+   1651,
+   22,
+   243,
+   248
+  ],
+  "found": true,
+  "match": 0.96,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 7,
+  "d_height": 2,
+  "de": [],
+  "geometry": "FAIL",
+  "colour": "PASS",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_0",
+  "name": "quest tracker frame",
+  "rect": [
+   1626,
+   315,
+   275,
+   273
+  ],
+  "found": true,
+  "match": 0.45,
+  "d_left": -13,
+  "d_top": 23,
+  "d_width": 5,
+  "d_height": -143,
+  "de": [
+   [
+    "fill dark",
+    4.4
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "",
+  "name": "toast River Herbs",
+  "rect": [
+   1627,
+   603,
+   274,
+   67
+  ],
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
+  "de": [
+   [
+    "fill dark",
+    33.7
+   ]
+  ],
+  "geometry": "UNMEASURED",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_1",
+  "name": "hotbar slot 1 (selected axe)",
+  "rect": [
+   670,
+   946,
+   92,
+   89
+  ],
+  "found": true,
+  "match": 0.83,
+  "d_left": -4,
+  "d_top": 3,
+  "d_width": -4,
+  "d_height": -1,
+  "de": [
+   [
+    "slot fill",
+    4.7
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "SizeBox:SizeBox_11",
+  "name": "hotbar slot 6 (campfire)",
+  "rect": [
+   1159,
+   946,
+   89,
+   89
+  ],
+  "found": true,
+  "match": 0.82,
+  "d_left": 7,
+  "d_top": 3,
+  "d_width": -1,
+  "d_height": -1,
+  "de": [
+   [
+    "slot fill",
+    3.3
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "Overlay:Overlay_1",
+  "name": "vitals HP bar",
+  "rect": [
+   134,
+   950,
+   392,
+   36
+  ],
+  "found": true,
+  "match": 0.59,
+  "d_left": 30,
+  "d_top": -8,
+  "d_width": -12,
+  "d_height": 1,
+  "de": [
+   [
+    "hp red fill",
+    8.3
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "Overlay:Overlay_0",
+  "name": "vitals level badge",
+  "rect": [
+   32,
+   940,
+   116,
+   110
+  ],
+  "found": true,
+  "match": 0.68,
+  "d_left": 6,
+  "d_top": -19,
+  "d_width": 0,
+  "d_height": 6,
+  "de": [
+   [
+    "badge fill",
+    6.4
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ }
+]

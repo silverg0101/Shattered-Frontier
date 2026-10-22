@@ -60,3 +60,7 @@ Scope: the Kit-v5 art kit, nine-slice import, typography, layout, widget code (`
 
 ## 6. Concept refs
 `docs/Game-Design/concept-art/UI/v5/*.png` (16 approved screens; `gameplay-hud.png` master; `kit-v5-contact.png`, `kit-v5-hud-mock.png` previews), `concept-art/UI/HUD-v1/` (kit look origin).
+
+## Controls and acceptance
+
+Button, tab, slot, row and selection specs, the pixel-perfect acceptance rule and the new-menu recipe live in [menus.md](menus.md) (shared by the HUD and every menu).

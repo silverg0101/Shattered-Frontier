@@ -66,6 +66,7 @@ private:
     UPROPERTY(Transient) TObjectPtr<UButton> LockButton;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> LockLabel;
     UPROPERTY(Transient) TObjectPtr<UBorder> LockPlate;
+    UPROPERTY(Transient) TObjectPtr<UTextBlock> LockHint;
     UPROPERTY(Transient) TObjectPtr<UWidget> LockTick;
     UPROPERTY(Transient) TObjectPtr<UButton> CancelButton;
     UPROPERTY(Transient) TObjectPtr<UButton> AcceptButton;
