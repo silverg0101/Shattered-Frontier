@@ -1,5 +1,7 @@
-"""Capture five review views in -game: <PascalName> <output directory>."""
+"""Capture the five building views plus six context views in -game: <PascalName> <output directory>."""
+import json
 import math
+import random
 import sys
 from pathlib import Path
 import unreal as u
@@ -19,7 +21,9 @@ w, d, h = 2*ext.x/100, 2*ext.y/100, 2*ext.z/100
 origin = house.get_actor_location()
 signs = [a for a in u.GameplayStatics.get_all_actors_of_class(world, u.StaticMeshActor)
          if a.get_actor_label().startswith('ShopSign_'+house.get_actor_label())]
-sign = signs[0].get_actor_location() if signs else u.Vector(origin.x, origin.y+d*50, origin.z+260)
+manifest = Path(__file__).resolve().parents[1]/'GameClient/ArtSource/Silverbrook'/name/'asset-manifest.json'
+sm = json.loads(manifest.read_text()).get('sign_m') if manifest.exists() else None  # baked sign board centre, Blender frame (m)
+sign = signs[0].get_actor_location() if signs else (origin+u.Vector(sm[0]*100, -sm[1]*100, sm[2]*100) if sm else u.Vector(origin.x, origin.y+d*50, origin.z+260))  # import flips Y
 views = [
     ('frontage', (.55*w,d/2+5.3,2.2), (0,d/2,2.4),72.4),
     ('foundation-close',(.55*w,d/2+5.3,1.0),(0,d/2,.65),54.1),
@@ -27,7 +31,14 @@ views = [
     ('rear',(-.4*w,-(d/2+12),2.0),(0,-d/2,3.0),60),
     ('sign-close',((sign.x-origin.x)/100+1.5,(sign.y-origin.y)/100+2.6,(sign.z-origin.z)/100),
      ((sign.x-origin.x)/100,(sign.y-origin.y)/100,(sign.z-origin.z)/100),45),
+    # context views (docs/visual-review.md step 1): two high overviews, four ground-level views at seeded random spots
+    ('context-overview-a',(w+14,d/2+18,16),(0,0,.3*h),60),
+    ('context-overview-b',(-(w+12),-(d/2+16),18),(0,0,.3*h),60),
 ]
+rng = random.Random(name)
+for k in range(4):
+    a = math.tau*(k+rng.random())/4; r = rng.uniform(16, 26)
+    views.append((f'context-ground-{k+1}',(r*math.cos(a),r*math.sin(a),1.7),(0,0,.35*h),70))
 camera = next((a for a in u.GameplayStatics.get_all_actors_of_class(world,u.CameraActor)
                if a.get_actor_label()=='BuildingReviewCamera'),None)
 assert camera

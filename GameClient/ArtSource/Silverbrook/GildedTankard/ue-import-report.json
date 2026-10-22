@@ -1,0 +1,121 @@
+{
+  "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookGildedTankard",
+  "size_m": [
+    10.59,
+    9.11,
+    12.07
+  ],
+  "slots": 12,
+  "nanite": true,
+  "collision": "convex",
+  "convex_hulls": 12,
+  "nanite_fallback_triangles": 52878,
+  "lightmap": {
+    "uv": 2,
+    "resolution": 256
+  },
+  "slot_m": [
+    14,
+    12,
+    14
+  ],
+  "fits": true,
+  "parts": [
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookGildedTankard_Door1",
+      "size_m": [
+        2.6,
+        0.11,
+        3.0
+      ],
+      "slots": 3,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 256,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 64
+      },
+      "name": "Door1",
+      "motion": "swing",
+      "pivot_cm": [
+        -154.75,
+        244.01,
+        0.0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "travel": -90,
+      "travel_unit": "deg",
+      "modelled": "closed"
+    },
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookGildedTankard_Barrels",
+      "size_m": [
+        1.67,
+        1.02,
+        1.1
+      ],
+      "slots": 2,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 719,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 32
+      },
+      "name": "Barrels",
+      "motion": "static",
+      "pivot_cm": [
+        -287.25,
+        337.51,
+        0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "travel": 0,
+      "travel_unit": null,
+      "modelled": null
+    },
+    {
+      "mesh": "/Game/Frontier/Environment/Greenlands/Silverbrook/Meshes/SM_SilverbrookGildedTankard_Bench",
+      "size_m": [
+        1.8,
+        0.42,
+        0.49
+      ],
+      "slots": 1,
+      "nanite": true,
+      "collision": "box",
+      "convex_hulls": 0,
+      "nanite_fallback_triangles": 84,
+      "lightmap": {
+        "uv": 2,
+        "resolution": 32
+      },
+      "name": "Bench",
+      "motion": "static",
+      "pivot_cm": [
+        245.25,
+        322.51,
+        0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "travel": 0,
+      "travel_unit": null,
+      "modelled": null
+    }
+  ]
+}

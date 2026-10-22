@@ -1,54 +1,71 @@
 # Gilded Tankard: Opus takeover notes
 
-Values and methods that the blueprints (`docs/blueprints/buildings.md`, `README.md`) got wrong or left out, as settled in this pass. `B` = `GameClient/ArtSource/Silverbrook/GildedTankard/build_gilded_tankard.py`, `K` = `GameClient/ArtSource/Silverbrook/silverbrook_kit.py`. Line numbers are at the Blender-stage PASS commit.
+Values and methods the blueprints (`docs/blueprints/buildings.md`, `README.md`) got wrong or left out, as settled in this pass. `B` = `GameClient/ArtSource/Silverbrook/GildedTankard/build_gilded_tankard.py`, `K` = `GameClient/ArtSource/Silverbrook/silverbrook_kit.py`, `P` = `GameClient/ArtSource/Silverbrook/silverbrook_props.py`, `I` = `GameClient/ArtSource/Silverbrook/import_silverbrook.py`, `M` = `GameClient/ArtSource/Greenlands/missing_assets.py`. Line numbers are at the final commit.
 
 ## Review log
-| Round | File | Verdict | Implemented |
+| Stage, round | File | Verdict | Implemented |
 |---|---|---|---|
-| r1, r2 (Haiku builder) | `review/REVIEW-blender.md`, `-r2.md` | 0/5 PASS | r2 fixes 1-9, with the corrections below |
-| r3 | `review/REVIEW-blender-r3.md` | 4 PASS / 1 FAIL (chimney inside the right-side window) | fixes 1-6 |
-| r4 | `review/REVIEW-blender-r4.md` | 5 PASS / 1 FAIL (Front: two strap systems on the door) | fixes 1-5 (fix 1 needs the kit opt-in) |
-| r5 | `review/REVIEW-blender-r5.md` | 6 PASS / 0 FAIL | non-blocking items 1, 2 and 4 applied after the PASS; item 3 (true two-leaf door, needs `K` `door(leaves=2)` plus `split_doors` hinge flag) deferred |
+| Blender r1, r2 (Haiku builder) | `GildedTankard/review/REVIEW-blender.md`, `-r2.md` | 0/5 PASS | r2 fixes 1-9, with the corrections below |
+| Blender r3 | `review/REVIEW-blender-r3.md` | 4/1 (chimney inside the right window) | all 6 |
+| Blender r4 | `review/REVIEW-blender-r4.md` | 5/1 (two strap systems on the door) | all 5 |
+| Blender r5 | `review/REVIEW-blender-r5.md` | **6/0 PASS** | polish items 1, 2, 4 applied; 3 (true two-leaf door) deferred |
+| Engine r1 | `engine/REVIEW-r1.md` | 3/8 | 2-7, 9; fix 1 replaced (see Foundations); 8 conditional, not needed |
+| Engine r2 | `engine/REVIEW-r2.md` | 8/3 | both |
+| Engine r3 | `engine/REVIEW-r3.md` | 4/7 (chimney floats, double riser, flat emblem) | all 4 |
+| Engine r4 | `engine/REVIEW-r4.md` | 9/2 (faceted lemon emblem) | all 3 |
+| Engine r5 | `engine/REVIEW.md` | **11/0 PASS** | empty list |
 
-## Roof (gable) and ridge formula
-- Gable on the Blacksmith convention: `EX,EY,RX=W2+.4,D2+.4,W2+.4` (B:46). The ridge half-length `RX` equals `EX` for a gable; `KF=(RIDGE-EAVE)/EY`, `KS=1e9` (B:47) so `main_z` (B:56) has no hip slope inside |x| <= RX.
-- The blueprint's `RIDGE = EAVE + (W2+.4)*tan(pitch)` is wrong for a gable whose ridge runs along x. The rise is over the **front-to-back** half-depth: `RIDGE = EAVE + EY*tan(pitch)`. Here `EAVE 7.4`, `EY 4.0`, 42 deg -> `RIDGE 11.0` (B:45). The blueprint's "`RX = W2 + .4`" line is the eave overhang (`EX`), not the ridge half-length.
-- Only two `plane()` calls (front and rear, B:71-72); delete the side planes. Gable ends get barge boards `beam((sx*(EX+.02),sy*EY,EAVE-.07),(sx*(EX+.02),0,RIDGE-.07),.05,.24)` (B:78-79) instead of hip caps.
-- Gable triangle: `prism` at `s*(W2-.15)` thickness .3 (B:105) is already flush with the `wall()` face (`Geo.prism` is centred on its points; `wall()` builds inward from the outer face). The r2 instruction `s*W2-(.3 if s>0 else 0)` would have made one gable 15 cm proud and the other recessed; not applied.
-- Roof share: the reviewer accepted 0.36 of the width against the concept's 0.22, because the §3 depth floor (D2 >= 0.6 x SLOT d / 2) plus pitch >= 40 deg forces a rise >= 3.36 m. Write that into §3 as an expected deviation for narrow-fronted, deep concepts.
+## Roof and ridge (gable)
+- Gable: `EX,EY,RX=W2+.4,D2+.4,W2+.4` (B:46); `KF=(RIDGE-EAVE)/EY`, `KS=1e9` so `main_z` has no hip slope inside |x| <= RX. Only front and rear `plane()` calls; gable ends get barge boards `beam((sx*(EX+.02),sy*EY,EAVE-.07),(sx*(EX+.02),0,RIDGE-.07),.05,.24)` (B:79).
+- Formula fix: for a ridge along x the rise is over the half-**depth**: `RIDGE = EAVE + EY*tan(pitch)` (7.4 + 4.0 x tan 42 deg = 11.0, B:45). §3's `EAVE + (W2+.4)*tan(pitch)` is wrong, and its "`RX = W2 + .4`" is the eave overhang `EX`, not the ridge half-length.
+- Gable triangle `prism` at `s*(W2-.15)`, thickness .3 (B:105), is flush with the `wall()` face: `Geo.prism` is centred on its points, and `wall()` builds inward from the outer face. The r2 suggestion `s*W2-(.3 if s>0 else 0)` would have made one gable 15 cm proud.
+- Accepted deviation: the roof is 0.36 of the width against the concept's 0.22, because the §3 depth floor (D2 >= 0.6 x d/2) plus pitch >= 40 deg forces a rise >= 3.36 m.
 
-## Footprint ratios
-- `W2,D2=4.6,3.6` (B:44): 0.66 and 0.60 of SLOT 14 x 12. The §3 example "Tankard 4.5/3.2" (0.53 deep) does not exist and contradicts the 0.6-0.8 rule; delete it. Final bounds 10.585 x 8.925 x 12.07 m, 51.6 k triangles.
-
-## Two-storey fronts
-- Storeys: ashlar `STONE_TOP 3.7` (B:49); plaster storey to `PLATE=main_z(0,-D2)-.04` = 7.72 (B:57).
-- Upper windows: `WIN,WH,WZ=1.15,1.6,4.6` (B:53), sill 0.9 m above `STONE_TOP`. §3's "sill 1.0-1.3 m" applies to the ground storey only; add "upper storey: sill = STONE_TOP + 0.9, plaster opening `WO` relative to STONE_TOP" (B:54).
-- Door: `DS` spring 1.5 (B:52), not §3's 2.0. Rule: the voussoir top `STEP+DS+DWID/2+.30` must leave >= 0.3 m of ashlar under the jetty soffit (`STONE_TOP-.06`); with DS 1.8 it left 4 cm (r3 fix 4).
-- Sign on a two-storey front (r3 fix 2, B:143-157): arm at **z 5.45** (upper-window mid-height), 1.2 m long; wall plate 6x10x100 cm centred 0.4 m below the arm; strut from 0.85 m below the arm with its foot 5 cm **inside** the plaster face (`-D2+.05`), never ending at the face (it floated); 8-segment scroll r .17 centred 0.5 m out and 0.2 m below the arm; board 0.8 x 1.15 m shield bottom 4.05. §5's "3.45-3.75 m, above the door head, below the upper sills" is only for one-storey fronts; on two storeys the band between the door head and the upper sills is the jetty.
-- Emblem (B:154-157): body + lid + foot + open D handle as separate abutting polygons (never overlapping, or the coplanar faces fight), each a 2 cm prism at `SY +- .035`. Body ~50 % of the shield width (r5 item 2); a solid silhouette with the handle reads as a blob, a narrow body reads as a letter.
+## Footprint and storeys
+- `W2,D2=4.6,3.6`: 0.66 / 0.60 of SLOT 14 x 12. The §3 "Tankard 4.5/3.2, 34 k, 2.6/2.0/0.2" examples never existed; final bounds are 10.585 x 9.11 x 12.07 m, 53.1 k triangles.
+- Ashlar `STONE_TOP 3.7`; upper windows `WIN,WH,WZ=1.15,1.6,4.6` (B:53), with the sill 0.9 m above `STONE_TOP`. §3's "sill 1.0-1.3 m" applies to the ground storey only.
+- Door `DS 1.7, STEP 0` (B:52): the crown is 3.0 m and leaves 0.34 m of ashlar under the jetty soffit (rule: voussoir top `STEP+DS+DWID/2+.30` at least 0.3 m below `STONE_TOP-.06`). **Bake no doorstep**: the footing pass builds the stoop to the wall base, and a baked step doubles the top riser (engine r3).
+- Sign on a two-storey front (B:143-157): arm at z 5.45 (upper-window mid-height), 1.2 m long; wall plate 6x10x100 cm, 0.4 m below the arm; strut foot 5 cm inside the plaster (`-D2+.05`); 8-segment scroll r .17; shield 0.8 x 1.15 m with its bottom at 4.05. §5's 3.45-3.75 m bracket applies to one-storey fronts only.
+- Emblem: a round `vessel` through the board (relief on both faces), `segments=96` because `Geo.object` never welds and `smooth=True` alone leaves facets; domed lid; D handle as five convex quads (B:156-157). Gilt `kit.solid((.60,.38,.09),.3,.6)` (r2's `.85` metallic mirrored the sky and read olive, `(.90,.66,.22)` read lemon).
 
 ## Jetty, corbels, framing
-- Jetty (B:48, r2 fix 2): `JET=.45; DF=D2-JET`. Only the **front ashlar** moves back to `-DF`; the plaster storey stays at `-D2`. Side stone walls `wall(...,(s*W2,JET/2,0),(s,0,0),D2-JET/2,...)`. Everything at street level uses `-DF`: door, step, bench, barrels, lanterns (B:132-160).
-- Jetty beam 0.36 x 0.30 at `STONE_TOP+.15`, `y=-D2-.18` (B:119); corbels `box((x,-D2+.1,STONE_TOP-.22),(.2,.7,.44))` reach from the ashlar face to under the beam (B:120); x at +-4.5 (corners) and +-2.6 (clear of the arch: radius + 0.3 voussoir < 2.6-0.1); soffit `box((0,-D2+JET/2,STONE_TOP-.03),(2*W2+.4,JET,.06))` closes the underside (B:121).
-- Framing on all four walls (B:115-127): posts 0.2 x 0.13 from `STONE_TOP` to `PLATE-.1`; front and rear at x +-4.5 (corner) and +-1.1; sides at y +-3.5 and +-1.5. Check posts against open shutters: a window of width w puts shutters out to `w/2+t+sw` = 1.345 m for w 1.15 (K:303-305), so the r2 side posts at +-1.2 sat on the shutters. Sill rail 0.13 x 0.12 at `WZ-.17` and plate rail at `PLATE-.3` on every wall.
-- Eave corbels must touch the fascia: `box((x,-D2-.17,EAVE-.33),(.16,.4,.3))` (B:82); at `EAVE-.36` a 2 cm sky slit showed. Keep their x 0.2 m clear of the posts (+-1.5, not +-1.3).
+- `JET=.45; DF=D2-JET` (B:48). Only the front ashlar moves back to `-DF`; the side stone walls are `wall(...,(s*W2,JET/2,0),(s,0,0),D2-JET/2,...)` (B:102). Street-level items use `-DF`.
+- Jetty beam 0.36 x 0.30 at `STONE_TOP+.15`, `y=-D2-.18` (B:119); corbels `box((x,-D2+.1,STONE_TOP-.22),(.2,.7,.44))` at x +-4.5 / +-2.6 (B:120); soffit `box((0,-D2+JET/2,STONE_TOP-.03),(2*W2+.4,JET,.06))` (B:121).
+- Framing on all walls (B:115-127): posts 0.2 x 0.13, front/rear x +-4.5 (corners) and +-1.1, sides y +-3.5 and +-1.5. Keep posts clear of open shutters, which reach `w/2+t+sw` = 1.345 m for w 1.15 (K window). Eave corbels must reach the fascia (`EAVE-.33`, B:82) and stay 0.2 m clear of posts.
 
-## Dormer recipe (centred front dormer on a gable)
-- Use the Blacksmith dormer (Blacksmith `build_blacksmith.py` lines 128-141), not a solid box: B:59-61 `YD=-2.8; DB=main_z(0,YD)-.1; DH,DW=.82,.7; DE=DB+1.35; DR=DE+.75`; `in_dormer` covers main-slope slates under the dormer roof; the dormer planes use `[under_main]` and run back to `YR=-(RIDGE-DR)/KF`, where the dormer ridge meets the main slope; front `wall()` with a window opening, gable prism, cheek prisms back to `ym`, posts and bressumer (B:83-96). The r2 box version left the dormer ridge 1.1 m above the main slope at its back and buried the glass inside solid plaster.
-- Window 0.6 x 0.8 (concept: about a third of the dormer width), `shutters=False`, `wall_th=.14`.
+## Dormer (centred, on a gable)
+- Use the Blacksmith recipe (`build_blacksmith.py` 128-141), not a solid box: `YD=-2.8; DB=main_z(0,YD)-.1; DH,DW=.82,.7; DE=DB+1.35; DR=DE+.75` (B:59); `in_dormer` covers main slates; the dormer planes use `[under_main]` and run back to `YR=-(RIDGE-DR)/KF` (B:83-96). Window 0.6 x 0.8, `wall_th=.14`, no shutters.
 
 ## Chimney on a gable wall
-- Stack against the gable wall, 1 cm into it: `XC=W2+.44`, on the **rear** half `YC=2.2` (B:51) so it clears the side window and the post at y 1.5; `in_stack` on the rear plane only (B:63, B:72), y half-width .6 for a 1.1 m stack. Top `CT=RIDGE+.5`, one pot (B:107-110). §3's "stack 0.9x0.6 m, two pots" is for ridge stacks only.
+- `XC=W2+.44` (1 cm into the wall), `YC=2.2` on the rear half, clear of the side window (B:51). `in_stack` y half-width .6, on the rear plane only. Top `CT=RIDGE+.5`, one pot (B:107-110). §3's "0.9 x 0.6, two pots" is for ridge stacks only.
+- An external stack stands outside the wall-base footing, so it needs its own footing: manifest `footings_cm` (B:209), built by `P:636` as `<House>_Footing<k>`.
 
-## Door ironwork and the kit opt-in
-- `K` `door(..., straps=True)` (K:314, K:321): `straps=False` drops the kit's two full-width ledges so a package can lay per-leaf straps. Default unchanged. Verified by rebuilding the Blacksmith: bounds `[12.391, 9.055, 13.39]`, 80 160 triangles, every mesh count identical before and after (Masonry 1380, Plaster 844, Timber 4236, Roof 62008, Details 11416, Door1 276); the rebuilt outputs were reverted with `git checkout`.
-- Package ironwork goes on the leaf mesh `G[f"{G['detail'].name}_Door1"]` so it travels with the door part (B:133-140): straps 1.0 x .12 at `|x| = DWID/2-.55`, z `STEP+.55` and `STEP+1.65`, `y=-DF+.16`; second ring mirrored; meeting stile 6 x 2 cm at x 0.
+## Shared-code changes (all opt-in; other buildings unchanged)
+- `K:314/321` `door(..., straps=True)`: `straps=False` drops the kit ledges so a package lays per-leaf straps on `G[f"{G['detail'].name}_Door1"]` (B:133-141).
+- `K:337/347` `lantern(..., cage=True)`: 3.5 cm bars, inset glass, cone roof.
+- Blacksmith regression after each kit change: bounds `[12.391, 9.055, 13.39]`, 80 160 triangles, every mesh identical; outputs reverted.
+- Package-local materials instead of shared ones: `SB_GildedTankard_LitGlass` strength 1.2 and `SB_GildedTankard_LanternGlow` 1.5 (B:29-30), because changing `SB_LitGlass` would rewrite the shared `MI_SB_LitGlass`.
+- `I:159` `nanite_fallback_percent` (manifest): `-game -RenderOffscreen` captures draw the Nanite **fallback**, and the Auto fallback (15 k of 51 k triangles) erased the flat emblem. 1.0 keeps the full mesh. Check other packages' small details in captures for the same loss.
 
-## Ashlar scale knob
-- No kit parameter: the package multiplies the kit's measured-size table, `kit.SCALE['SB_Ashlar']*=1.6` (B:35), before any geometry. Safe because each build is its own Blender process; it changes only this package's UV scale for `SB_Ashlar`. The blueprint should name it as the per-package knob (`kit.SCALE[<material name>] *= f`, set right after `M`).
+## Foundations and street props
+- The footing pass lifts the house 65 cm, so anything baked at z 0 outside the walls floats. Barrels and bench are separate `static` parts (B:160-170, exported with `kit.export_parts` at each group's base centre, B:184-187); `place_parts.attach` places them, and `P:391` drops `static` parts to the terrain. All house loops skip `static` actors.
+- Manifest `base_cm` (B:210): the ashlar wall-base box after import (x as built, y negated, both minus the Blender recentring); `_base_box` uses it when present (P:532-544). Verified by tracing the imported faces (0.1 cm). The r1 "wall above within 20 cm" filter was rejected: it left this box unchanged (the eaves overhang the barrels) and moved the Adventurers' Guild, both vendors and the Granary.
+- `tools/check_foundations.py` now calls `_base_box` and reloads `silverbrook_props`, because the editor keeps modules between Run-InEditor calls (a stale cache gave `proud_cm 649`).
+- New `tools/check_ground.py --terrain <label>` (the WP6 copy hard-codes `SM_Silverbrook_Terrain`); it also checks `static` parts.
+- Dev-map gate lines at PASS: `FOUNDATION_CHECK 1 failures 0 min_visible_cm 65.0 max_abs_gap_cm 0.0 proud_cm 4.0 4.0`, `SILL_PLANTERS 0 expected 0 GROUP_DETAIL_OVERLAPS 0 []`, `HIDDEN_IN_GAME_CHECK checked 0 visible_in_game 0 []`, `DEFAULT_MATERIAL_CHECK visible_in_town 26 default_or_graybox 0 []`, `DRESSING_GROUND {'checked': 18, 'floating': 0, ...}`.
 
-## Review captures
-- Ortho cameras z 6.6, `ortho_scale 15.4` (B: `cam(...)` line near the end) keep the ground and barrels inside the frame. Add a fifth view `SideR` (`cam('SideR',(40,0,6.6),(90,0,90),15.4)`): the r3 blocker (chimney through the right window) was invisible in the four standard views. `review_gilded_tankard.py` turns the sun to yaw 145 deg for Rear and SideR (otherwise in full shadow).
+## Dressing and dev map
+- `P:435` `baked_sign`: no `ShopSign_` on a mesh with a `*SignBoard` slot (§5 "never both").
+- `P:409` crops at y 25..125 cm, inside the fence L.
+- `tools/Create-BuildingDevMap.py`: review sun yaw -135 (the town's 135 shades the +Y street face).
+- Save the level explicitly after `silverbrook_props.py` (`LevelEditorSubsystem.save_current_level()`): the r1 washing line was counted but missing from the capture.
+- To redo a dev map, close the editor and delete `Content/Frontier/Maps/Dev/<Name>/`: `EditorAssetLibrary.delete_asset` returned True while the file stayed on disk.
+- `tools/capture_building.py`: six context views (two overviews, four seeded ground spots) per visual-review.md, and `sign-close` aims at manifest `sign_m` (B:211, Y negated on import) when no dressing sign exists.
+
+## Capture and review hygiene
+- Blender review: add `SideR` (`cam('SideR',(40,0,6.6),(90,0,90),15.4)`), ortho z 6.6 and scale 15.4; turn the sun to yaw 145 for Rear and SideR (`review_gilded_tankard.py`). The r3 blocker was invisible in the four standard views.
+- Run git checkouts of shared `MI_SB_*` only after the editor PID has fully exited (wait ~15 s), or `unlink ... Invalid argument` leaves two files modified.
 
 ## Registration (missing_assets.py)
-- See the Unreal-stage section below (filled in when the dev map and README row are done).
+- A new kind must be in `LAYOUT_TYPES` (`'tavern': 'The Gilded Tankard'`, M:35) or `DEFINITION_TYPES`, plus `building_types.tavern` in `silverbrook-town-layout.json`, or the regenerated concept README drops its row. `_core()` (M:56) matches package folders to display names without a leading "The", which also fixed the Golden Stag row. Asset ID becomes `BLD-GreenlandsTheGildedTankard-01`. Running the script also rewrites batch 42 and `asset-catalog.md`; those were reverted here because the change was unrelated (three vegetation rows had landed).
+- Town placement (§7: a `tavern` lot, look profile `have`, `KIND_BUILDING`) is the main editor lane's job and is not done.

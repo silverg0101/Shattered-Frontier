@@ -354,7 +354,7 @@ def dress_house_details(folder='Districts/'):
     sills=_sills()
     houses=[x for x in A.get_all_level_actors() if isinstance(x,u.StaticMeshActor) and str(x.get_folder_path()).startswith(folder)
             and x.static_mesh_component.static_mesh and x.static_mesh_component.static_mesh.get_name().startswith('SM_Silverbrook')
-            and '_Door' not in x.static_mesh_component.static_mesh.get_name()]
+            and '_Door' not in x.static_mesh_component.static_mesh.get_name() and 'static' not in [str(t) for t in x.tags]]  # static parts (street barrels) are not houses
     lined=set()
     stoops={x.get_actor_label():x for x in A.get_all_level_actors() if isinstance(x,u.StaticMeshActor) and x.get_actor_label().endswith('_Stoop0')}
     stacks={1:(2.2,1.5,8.85),2:(-2.05,0,8.7),3:(2.45,-.55,8.75),4:(-2.1,.3,8.65),5:(2.25,.55,8.7),6:(-2.15,1.2,8.55)}
@@ -378,7 +378,7 @@ def dress_house_details(folder='Districts/'):
     for a in A.get_all_level_actors():
         if not isinstance(a,u.StaticMeshActor) or not str(a.get_folder_path()).startswith(folder):continue
         mesh=a.static_mesh_component.static_mesh
-        if not mesh or not mesh.get_name().startswith('SM_Silverbrook') or '_Door' in mesh.get_name():continue
+        if not mesh or not mesh.get_name().startswith('SM_Silverbrook') or '_Door' in mesh.get_name() or 'static' in [str(t) for t in a.tags]:continue
         label=a.get_actor_label();h=_h(label);b=mesh.get_bounding_box();p=a.get_actor_location()
         x0,x1,y0,y1=_base_box(mesh,band)
         yaw=a.get_actor_rotation().yaw;co,si=math.cos(math.radians(yaw)),math.sin(math.radians(yaw))
@@ -386,6 +386,10 @@ def dress_house_details(folder='Districts/'):
         def terrain_z(x,y):
             hit=terrain.static_mesh_component.line_trace_component(u.Vector(x,y,100000),u.Vector(x,y,-100000),True,False)
             return hit[0].z if hit else None
+        for part in a.get_attached_actors():  # 'static' package parts (barrels, benches) stand on the street, not on the lifted house
+            if 'static' in [str(t) for t in part.tags]:
+                q=part.get_actor_location();z=terrain_z(q.x,q.y)
+                if z is not None:part.set_actor_location(u.Vector(q.x,q.y,z),False,False)
         def face_y(lx,lz):
             """Local y of the street (+Y) face at (lx, height lz): bounds include eaves and bays, so trace the mesh."""
             x0,y0=pt(lx,b.max.y+300);x1,y1=pt(lx,0)
@@ -400,7 +404,7 @@ def dress_house_details(folder='Districts/'):
                 x,y=pt(fx,fy);z=terrain_z(x,y)
                 if z is not None:spawn(f'GardenFence_{label}_{i}',fence,x,y,z,yaw+fyaw,(.82,.82,.72))
             for i in range(10):
-                cx,cy=pt(sx+side*(55+(i%2)*85),(i//2-2)*60)
+                cx,cy=pt(sx+side*(55+(i%2)*85),25+(i//2)*25)  # inside the fence L (sections along y 0, return toward +y)
                 cz=terrain_z(cx,cy)
                 if cz is not None:
                     spawn(f'GardenCrop_{label}_{i}',crop,cx,cy,cz,yaw,(1.15,1.15,1.15));counts['crops']+=1
@@ -426,13 +430,15 @@ def dress_house_details(folder='Districts/'):
             pl.static_mesh_component.set_material(0,blooms[int(_h(label+'bloom'+str(lz))*2)%2]);counts['sill_planters']+=1
             fx,fy=pt(lx,ly+150)  # a hit means the house wall stands between the street and the planter
             assert not a.static_mesh_component.line_trace_component(u.Vector(fx,fy,p.z+lz+15),u.Vector(x,y,p.z+lz+15),True,False),('sill planter inside the wall',label,lz)
+        baked_sign=any('SignBoard' in str(s.material_slot_name) for s in mesh.static_materials)  # buildings.md §5: never both signs on one building
         if _h(label+'wall')<.4 or folder!='Districts/':  # a dev-map review always has a sign view
             doors=[d for d in a.get_attached_actors() if 'Door' in d.get_actor_label()]
             dlx=(co*(doors[0].get_actor_location().x-p.x)+si*(doors[0].get_actor_location().y-p.y)) if doors else 0
             lx=dlx+(110 if dlx<0 else -110)  # shop sign beside the door, its bracket 2.6 m up the street face
             x,y=pt(lx,face_y(lx,260))
-            s_=spawn('ShopSign_'+label,sign,x,y,p.z+260,yaw,(1,1,1))
-            s_.static_mesh_component.set_material(1,boards[int(_h(label+'board')*3)%3]);counts['signs']+=1
+            if not baked_sign:
+                s_=spawn('ShopSign_'+label,sign,x,y,p.z+260,yaw,(1,1,1))
+                s_.static_mesh_component.set_material(1,boards[int(_h(label+'board')*3)%3]);counts['signs']+=1
             side=-1 if _h(label+'ladder')<.5 else 1  # ladder leaning at 75 degrees against a side wall, at mid depth
             wx=x1 if side>0 else x0;foot=320*math.sin(math.radians(15))+10
             x,y=pt(wx+side*foot,(y0+y1)/2);z=terrain_z(x,y)
@@ -502,7 +508,7 @@ def vary_house_finishes():
     for a in _actors().get_all_level_actors():
         if not isinstance(a,u.StaticMeshActor) or not str(a.get_folder_path()).startswith('Districts/'):continue
         mesh=a.static_mesh_component.static_mesh
-        if not mesh or not mesh.get_name().startswith('SM_Silverbrook') or '_Door' in mesh.get_name():continue
+        if not mesh or not mesh.get_name().startswith('SM_Silverbrook') or '_Door' in mesh.get_name() or 'static' in [str(t) for t in a.tags]:continue
         i=int(_h(a.get_actor_label()+'tone')*5)%5
         for slot in range(a.static_mesh_component.get_num_materials()):
             mat=a.static_mesh_component.get_material(slot)
@@ -521,9 +527,23 @@ def _edge(v,low,mass=.08,band=6.):
     for i in range(len(v)-n+1):
         if abs(v[i+n-1]-v[i])<=band:return v[i]
     return v[0]
+def _base_cm():
+    """Opt-in wall-base boxes from package manifests (`base_cm`, mesh-local cm): for buildings whose baked street props
+    (barrels, benches under an overhang) would otherwise become the lowest-band edge."""
+    if '_' not in _BASE_CM:_BASE_CM['_']={m['unreal_mesh']:m['base_cm'] for p in ROOT.glob('*/asset-manifest.json')
+                                           for m in [json.loads(p.read_text(encoding='utf-8'))] if 'base_cm' in m}
+    return _BASE_CM['_']
+_BASE_CM={}
+def _footings_cm():
+    """Opt-in extra footing boxes per mesh from package manifests (`footings_cm`, mesh-local cm [[x0,x1,y0,y1], ...])."""
+    if 'f' not in _BASE_CM:_BASE_CM['f']={m['unreal_mesh']:m['footings_cm'] for p in ROOT.glob('*/asset-manifest.json')
+                                           for m in [json.loads(p.read_text(encoding='utf-8'))] if 'footings_cm' in m}
+    return _BASE_CM['f']
 def _base_box(mesh,band):
-    """(xmin,xmax,ymin,ymax) in mesh space (cm) of the vertices within `band` cm of the mesh's lowest point."""
+    """(xmin,xmax,ymin,ymax) in mesh space (cm) of the vertices within `band` cm of the mesh's lowest point,
+    or the manifest `base_cm` when the package declares one."""
     key=(mesh.get_name(),band)
+    if key not in _BASE and mesh.get_name() in _base_cm():_BASE[key]=tuple(_base_cm()[mesh.get_name()])
     if key not in _BASE:
         dm=u.DynamicMesh()
         dm,out=u.GeometryScript_AssetUtils.copy_mesh_from_static_mesh(mesh,dm,u.GeometryScriptCopyMeshFromAssetOptions(),u.GeometryScriptMeshReadLOD())
@@ -639,7 +659,7 @@ def dress_footings(c, folder='Districts/'):
         if not isinstance(building,u.StaticMeshActor) or not str(building.get_folder_path()).startswith(folder):
             continue
         mesh=building.static_mesh_component.static_mesh
-        if not mesh or not mesh.get_name().startswith('SM_Silverbrook') or '_Door' in mesh.get_name():continue
+        if not mesh or not mesh.get_name().startswith('SM_Silverbrook') or '_Door' in mesh.get_name() or 'static' in [str(t) for t in building.tags]:continue
         b=mesh.get_bounding_box();s=building.get_actor_scale3d();loc=building.get_actor_location()
         # Footprint = the ground-floor wall shell traced on the house's own mesh, plus a few cm of proud edge. (Whole-mesh
         # bounds include eaves, bays and signs, which left one-sided ledges; the lowest-band box covered only the front strip.)
@@ -675,6 +695,16 @@ def dress_footings(c, folder='Districts/'):
         plinth.set_actor_rotation(building.get_actor_rotation(),False)
         plinth.set_actor_scale3d(u.Vector(w/100,d/100,(wall_base-bottom)/100))
         plinth.static_mesh_component.set_material(0,m)
+        # Opt-in extra footings (manifest footings_cm, mesh-local cm boxes): wall-base parts outside base_cm, e.g. an external chimney.
+        for k,(fx0,fx1,fy0,fy1) in enumerate(_footings_cm().get(mesh.get_name(),[])):
+            lab=f'{building.get_actor_label()}_Footing{k}';ft=by_label.get(lab)
+            fcx,fcy=(fx0+fx1)/2*s.x,(fy0+fy1)/2*s.y;fx,fy=loc.x+co*fcx-si*fcy,loc.y+si*fcx+co*fcy
+            if not ft:
+                ft=A.spawn_actor_from_class(u.StaticMeshActor,u.Vector(fx,fy,0),building.get_actor_rotation())
+                ft.static_mesh_component.set_static_mesh(cube);ft.set_actor_label(lab);ft.set_folder_path(building.get_folder_path())
+            fb=ground(fx,fy)-val(f['burial_cm'])
+            ft.set_actor_location(u.Vector(fx,fy,(fb+wall_base)/2),False,False);ft.set_actor_rotation(building.get_actor_rotation(),False)
+            ft.set_actor_scale3d(u.Vector((fx1-fx0)*s.x/100,(fy1-fy0)*s.y/100,(wall_base-fb)/100));ft.static_mesh_component.set_material(0,m)
         # Stoop: equal low risers from the doorstep down to the street, so the raised doorway stays walkable.
         for old in [x for x in by_label.values() if x.get_actor_label().startswith(building.get_actor_label()+'_Stoop')]:A.destroy_actor(old)
         # The mesh's own doorsteps/porch outside the walls stand on stone too (owner: floating houses), same top and burial.

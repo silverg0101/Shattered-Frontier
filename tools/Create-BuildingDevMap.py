@@ -29,6 +29,8 @@ camera.set_actor_label('BuildingReviewCamera')
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'GameClient/ArtSource/Greenlands'))
 import lighting
 lighting.apply()
+# Review fixture only: the town sun (yaw 135) leaves the +Y street face in shade; yaw -135 lights the +X and +Y faces.
+lighting._one(u.DirectionalLight).set_actor_rotation(u.Rotator(roll=0, pitch=lighting.load_config()['sun.pitch_deg'], yaw=-135), False)
 building = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(0, 0, 0), u.Rotator())
 building.static_mesh_component.set_static_mesh(mesh)
 building.set_actor_label(name)

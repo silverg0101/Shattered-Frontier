@@ -26,11 +26,11 @@ M=dict(
     sign=kit.scan('SB_GildedTankard_SignBoard','old_planks_02',dark=(.10,.10,.11),damp=False,aged=.8),
     iron=kit.solid('SB_ForgedIron',(.03,.026,.022),.6,.9),
     lead=kit.solid('SB_LeadCame',(.05,.05,.05),.45,.8),
-    glass=kit.solid('SB_LitGlass',(.02,.02,.02),.15,0,(1.0,.5,.14),3),
-    lamp=kit.solid('SB_LanternGlow',(.3,.2,.1),.3,0,(1.0,.38,.08),5),
+    glass=kit.solid('SB_GildedTankard_LitGlass',(.02,.02,.02),.15,0,(1.0,.5,.14),1.2),   # package-local: strength 1.2 stops clipping in engine; shared SB_LitGlass (3) untouched
+    lamp=kit.solid('SB_GildedTankard_LanternGlow',(.3,.2,.1),.3,0,(1.0,.38,.08),1.5),   # package-local: strength 1.5 (shared SB_LanternGlow 5 untouched)
     soil=kit.solid('SB_PlanterSoil',(.06,.04,.025),.95),
     pot=kit.solid('SB_ChimneyPot',(.20,.085,.05),.75),
-    gilt=kit.solid('SB_GildedTankard_Gilt',(.62,.45,.18),.4,.85))
+    gilt=kit.solid('SB_GildedTankard_Gilt',(.60,.38,.09),.3,.6))
 M['ashlar']=M['stone'];M['planks']=M['timber'];M['shutter']=M['timber']   # concept shutters are dark oak like the frame
 kit.SCALE['SB_Ashlar']*=1.6   # ashlar blocks ~0.53 x 0.26 m, not coursed rubble
 SLATES=kit.patches('grey_roof_tiles_02',(.07,.045))
@@ -49,7 +49,7 @@ JET=.45;DF=D2-JET                # front jetty: plaster storey face -D2 oversail
 STONE_TOP=3.7                    # ashlar ground storey; oak-framed plaster above
 TILE=dict(size=(.42,.58,.028),exposure=.27)
 XC,YC=W2+.44,2.2                 # chimney stack: full height against the right gable wall, rear half (clear of the side window, |y| <= 1.35)
-XDOOR,DWID,DS,STEP=0.0,2.6,1.5,.2   # double door: width, spring above the step (head 3.2 m, 0.34 m of ashlar under the jetty), step top
+XDOOR,DWID,DS,STEP=0.0,2.6,1.7,0.0   # double door: width, spring (crown 3.0 m, 0.34 m of ashlar under the jetty); STEP 0: the footing pass builds the stoop
 WIN,WH,WZ=1.15,1.6,4.6           # upper windows: width, height, sill
 WO=(WIN+.18,WZ-.09-STONE_TOP,WZ-STONE_TOP+WH+.09)   # plaster-wall opening (a is set per use), relative to STONE_TOP
 SY=-D2-1.2                       # hanging sign board plane, 1.2 m out from the street face
@@ -99,7 +99,7 @@ wall(G['plaster'],M['plaster'],(0,-D2,STONE_TOP),(0,-1,0),W2,PLATE-STONE_TOP,[(-
 wall(G['stone'],M['stone'],(0,D2,0),(0,1,0),W2,STONE_TOP,[])
 wall(G['plaster'],M['plaster'],(0,D2,STONE_TOP),(0,1,0),W2,PLATE-STONE_TOP,[(-2.6,*WO),(2.6,*WO)])
 for s in (-1,1):
-    wall(G['stone'],M['stone'],(s*W2,JET/2,0),(s,0,0),D2-JET/2,STONE_TOP,[])
+    wall(G['stone'],M['stone'],(s*W2,JET/2,0),(s,0,0),D2-JET/2,STONE_TOP,[(-1.9,.88,1.51,2.59)] if s>0 else [])   # small ground-storey light on the right wall
     wall(G['plaster'],M['plaster'],(s*W2,0,STONE_TOP),(s,0,0),D2,PLATE-STONE_TOP,[(0,*WO)])
     top=[(y/10,main_z(W2,y/10)-.05) for y in range(-round(D2*10),round(D2*10)+1) if main_z(W2,y/10)-.05>PLATE+.01]
     G['plaster'].prism([(s*(W2-.15),y,z) for y,z in [(top[-1][0],PLATE),(top[0][0],PLATE)]+top],(1,0,0),.3,M['plaster'])   # gable triangle, flush with the wall face
@@ -129,6 +129,7 @@ for s in (-1,1):rail((s*(W2+.04),-D2,PLATE-.3),(s*(W2+.04),D2,PLATE-.3),.16)
 for x in (-2.6,2.6):window(G,M,(x,-D2,WZ),(0,-1,0),WIN,WH,band=band())
 for x in (-2.6,2.6):window(G,M,(x,D2,WZ),(0,1,0),WIN,WH,band=band())
 for s in (-1,1):window(G,M,(s*W2,0,WZ),(s,0,0),WIN,WH,band=band())
+window(G,M,(W2,JET/2-1.9,1.6),(1,0,0),.7,.9,shutters=False,band=band())   # ground-storey light, right wall (concept 3/4 view)
 door(G,M,(XDOOR,-DF,STEP),(0,-1,0),DWID,DS,STONES,band=band(),straps=False)
 DL=G[f"{G['detail'].name}_Door1"]   # door ironwork on the leaf mesh so it travels with the door part
 for s in (-1,1):
@@ -137,8 +138,7 @@ R0=frame((0,0,0),(0,-1,0))[1]
 for k in range(10):   # second ring, mirrored from kit.door's
     t=math.tau*k/10;DL.box((-DWID/2*.55+.06*math.cos(t),-DF+.13,STEP+1.0+.06*math.sin(t)),(.04,.014,.014),M['iron'],0,R0@Matrix.Rotation(t,3,'Y'))
 DL.box((-DWID/2*.55,-DF+.155,STEP+1.06),(.07,.01,.07),M['iron'],.004)
-DL.box((0,-DF+.155,STEP+1.38),(.06,.02,2.72),M['timber'],.004,grain=True,band=band())   # meeting stile on the leaf: z 0.22..2.94 under the 3.0 m crown
-G['stone'].box((XDOOR,-DF-.225,STEP/2),(DWID+.8,.45,STEP),M['ashlar'],.015,rect=kit.rng.choice(STONES))
+DL.box((0,-DF+.155,STEP+1.48),(.06,.02,2.92),M['timber'],.004,grain=True,band=band())   # meeting stile on the leaf: z 0.02..2.94 under the 3.0 m crown
 # ---- hanging tankard sign: iron bracket, navy-black board, gilt tankard both faces --------------
 AZ=5.45   # arm: upper-window mid-height, as drawn; plate 6x10x100, scroll r .17 (Golden Stag Inn lines 219-225)
 G['detail'].box((0,-D2-.03,AZ-.4),(.1,.06,1.0),M['iron'],.004)
@@ -151,19 +151,24 @@ G['detail'].beam((-.32,SY,AZ),(.32,SY,AZ),.03,.03,M['iron'],grain=False)
 for x in (-.32,.32):G['detail'].beam((x,SY,AZ-.03),(x,SY,5.19),.02,.02,M['iron'],grain=False)
 board=[(-.4,5.2),(.4,5.2),(.4,4.45),(0,4.05),(-.4,4.45)]   # 0.8 x 1.15 m shield, bottom 3.85 m above the step
 G['detail'].prism([(x,SY,z) for x,z in board],(0,1,0),.05,M['sign'])
-body=[(-.27,4.47),(.13,4.47),(.13,5.05),(-.27,5.05)]   # tankard: 0.40 x 0.58 body (concept body 53 % of the shield width), open D handle abutting at x .13
-lid=[(-.30,5.05),(.15,5.05),(.15,5.12),(-.30,5.12)];foot=[(-.30,4.40),(.15,4.40),(.15,4.47),(-.30,4.47)]
-handle=[(.13,4.55),(.22,4.55),(.31,4.65),(.31,4.93),(.22,5.03),(.13,5.03),(.13,4.97),(.19,4.97),(.25,4.91),(.25,4.67),(.19,4.61),(.13,4.61)]
-for poly in (body,lid,foot,handle):
+HO=[(.11,4.55),(.22,4.55),(.31,4.65),(.31,4.93),(.22,5.03),(.11,5.03)];HI=[(.11,4.61),(.19,4.61),(.25,4.67),(.25,4.91),(.19,4.97),(.11,4.97)]   # D handle outer/inner rims
+# five convex quads: Unreal's FBX import fan-triangulates n-gons from their first vertex, which breaks a concave outline
+handle=[[HO[k],HO[k+1],HI[k+1],HI[k]] for k in range(5)]
+G['detail'].vessel((-.06,SY,4.40),[(0,0),(.23,0),(.23,.07),(.21,.07),(.19,.65),(.22,.65),(.22,.72),(.18,.76),(.10,.79),(0,.80)],M['gilt'],segments=96)   # round gilt tankard through the board (relief on both faces)
+for poly in handle:
     for dy in (-.035,.035):G['detail'].prism([(x,SY+dy,z) for x,z in poly],(0,1,0),.02,M['gilt'])
 # ---- street dressing: bench and two barrels; wall lanterns either side of the door ---------------
-BY=-DF-.55
-G['timber'].box((2.7,BY,.45),(1.8,.42,.07),M['planks'],.01,grain=True,band=band())
-for lx in (2.7-.75,2.7+.75):G['timber'].box((lx,BY,.21),(.08,.36,.42),M['timber'],.01,grain=True,band=band())
-for bx,by in ((-3.05,-DF-.8),(-2.2,-DF-.6)):
-    G['timber'].vessel((bx,by,0),[(.28,0),(.36,.25),(.40,.55),(.36,.85),(.28,1.1),(0,1.1)],M['timber'])
-    for hoop in ([(.321,.09),(.340,.15)],[(.408,.52),(.408,.58)],[(.340,.95),(.321,1.01)]):G['detail'].vessel((bx,by,0),hoop,M['iron'])   # three iron bands, 12 mm proud of the staves
-for x in (-2.3,2.3):lantern(G,M,(x,-DF-.42,2.55),arm=((x,-DF-.03,2.55),(0,-1,0)))
+# Barrels and bench are their own static parts (not in the house mesh): the footing pass lifts the house onto a 65 cm
+# plinth, and silverbrook_props grounds 'static' parts on the terrain at their pivot (each group's base centre).
+BY=-DF-.55;BARRELS=((-3.05,-DF-.8),(-2.2,-DF-.6))
+G['Barrels']=Geo('SM_SBGildedTankard_Barrels',asset);G['Bench']=Geo('SM_SBGildedTankard_Bench',asset)
+G['Bench'].box((2.7,BY,.45),(1.8,.42,.07),M['planks'],.01,grain=True,band=band())
+for lx in (2.7-.75,2.7+.75):G['Bench'].box((lx,BY,.21),(.08,.36,.42),M['timber'],.01,grain=True,band=band())
+for bx,by in BARRELS:
+    G['Barrels'].vessel((bx,by,0),[(.28,0),(.36,.25),(.40,.55),(.36,.85),(.28,1.1),(0,1.1)],M['timber'])
+    for hoop in ([(.321,.09),(.340,.15)],[(.408,.52),(.408,.58)],[(.340,.95),(.321,1.01)]):G['Barrels'].vessel((bx,by,0),hoop,M['iron'])   # three iron bands, 12 mm proud of the staves
+STREET={'Barrels':(sum(x for x,_ in BARRELS)/2,sum(y for _,y in BARRELS)/2),'Bench':(2.7,BY)}   # part pivots (model space, before centring)
+for x in (-2.3,2.3):lantern(G,M,(x,-DF-.42,2.55),arm=((x,-DF-.03,2.55),(0,-1,0)),cage=True)
 # ---- export, preview scene, manifest ---------------------------------------------
 objs=[g.object() for g in G.values()]
 from mathutils import Matrix
@@ -177,6 +182,9 @@ bpy.context.view_layer.objects.active=objs[0]
 # Textures stay in ../Textures (FBX references them relatively); embedding 2k scans makes a huge GLB.
 bpy.ops.export_scene.gltf(filepath=str(OUT)+'.glb',export_format='GLB',use_selection=True,export_image_format='NONE')
 DOORS=kit.split_doors(str(OUT),'SM_SilverbrookGildedTankard')  # door leaves: own meshes, hinged
+sp=[(bpy.data.objects[G[n].name],n,(x-(lo[0]+hi[0])/2,y-(lo[1]+hi[1])/2,0),(0,0,1),'static',0) for n,(x,y) in STREET.items()]
+DOORS+=kit.export_parts(sp,str(OUT),'SM_SilverbrookGildedTankard')   # street props: own meshes, grounded by silverbrook_props
+for o,*_ in sp:o.select_set(False)
 bpy.ops.export_scene.fbx(filepath=str(OUT)+'.fbx',use_selection=True,path_mode='RELATIVE',colors_type='LINEAR',add_leaf_bones=False)
 pre=bpy.data.collections.new('Preview');scene.collection.children.link(pre)
 ground=bpy.data.meshes.new('Ground');ground.from_pydata([(-40,-40,0),(40,-40,0),(40,40,0),(-40,40,0)],[],[(0,1,2,3)]);g=bpy.data.objects.new('Ground',ground);pre.objects.link(g);g.data.materials.append(kit.solid('Preview_Ground',(.11,.12,.07),.95))
@@ -197,6 +205,9 @@ manifest=dict(asset='SilverbrookGildedTankard',reference=dict(file='GildedTankar
     blender=bpy.app.version_string,generator='build_gilded_tankard.py',method='procedural original geometry (concept interpretation, not image reconstruction)',
     units='metres, Z up, front -Y, origin ground centre',bounds_m=[round(v,3) for v in maxs-mins],
     meshes={o.name:dict(triangles=sum(len(p.vertices)-2 for p in o.data.polygons),materials=[m.name for m in o.data.materials]) for o in objs},triangles=tris,
-    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookGildedTankard',parts=DOORS,slot_m=list(SLOT),outputs=['SilverbrookGildedTankard.blend','SilverbrookGildedTankard.glb','SilverbrookGildedTankard.fbx'])
+    materials=[r for r in kit.ROWS if not r['name'].startswith('Preview_')],sources='../materials-provenance.json (CC0 Poly Haven scans)',unreal_mesh='SM_SilverbrookGildedTankard',parts=DOORS,slot_m=list(SLOT),nanite_fallback_percent=1.0,   # full fallback: the coarse Auto fallback erased the gilt emblem in -game captures
+    footings_cm=[[round(100*(XC+a*.45-(lo[0]+hi[0])/2),1) for a in (-1,1)]+[round(-100*(YC+a*.55-(lo[1]+hi[1])/2),1) for a in (1,-1)]],   # external chimney stack outside base_cm
+    base_cm=[round(100*(s-(lo[0]+hi[0])/2),1) for s in (-W2,W2)]+[round(-100*(s-(lo[1]+hi[1])/2),1) for s in (D2,-DF)],   # ashlar wall base after import (x, then y flipped): the barrels/bench must not set the plinth edge
+    sign_m=[round(-(lo[0]+hi[0])/2,3),round(SY-(lo[1]+hi[1])/2,3),round((4.05+5.2)/2,3)],outputs=['SilverbrookGildedTankard.blend','SilverbrookGildedTankard.glb','SilverbrookGildedTankard.fbx'])
 (HERE/'asset-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print('GILDEDTANKARD_BUILT',manifest['bounds_m'],tris)

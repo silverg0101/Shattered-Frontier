@@ -6,9 +6,8 @@ Owner-supplied concept images for the Silverbrook buildings. One image is one de
 |---|---|---|---|---|---|
 | [Town Hall.png](Town%20Hall.png) | Town Hall | BLD-GreenlandsTownHall-01 | 22 × 18 × 28 | `GameClient/ArtSource/Silverbrook/TownHall` | delivered |
 | [Adventurers Guild.png](Adventurers%20Guild.png) | Adventurers' Guild | BLD-GreenlandsAdventurersGuild-01 | 16 × 13 × 18 | `GameClient/ArtSource/Silverbrook/AdventurersGuild` | delivered |
-| [The Golden Stag Inn.png](The%20Golden%20Stag%20Inn.png) | The Golden Stag Inn | BLD-GreenlandsTheGoldenStagInn-01 | 14 × 12 × 14 | — | delivered |
+| [The Golden Stag Inn.png](The%20Golden%20Stag%20Inn.png) | The Golden Stag Inn | BLD-GreenlandsTheGoldenStagInn-01 | 14 × 12 × 14 | `GameClient/ArtSource/Silverbrook/GoldenStagInn` | delivered |
 | [Blacksmith.png](Blacksmith.png) | Blacksmith | BLD-GreenlandsBlacksmith-01 | 14 × 12 × 14 | `GameClient/ArtSource/Silverbrook/Blacksmith` | delivered |
-| [The Gilded Tankard.png](The%20Gilded%20Tankard.png) | The Gilded Tankard | BLD-GreenlandsGildedTankard-01 | 14 × 12 × 14 | `GameClient/ArtSource/Silverbrook/GildedTankard` | Blender review FAIL (2 rounds); not imported |
 | [Temple of the Dawn.png](Temple%20of%20the%20Dawn.png) | Temple of the Dawn | BLD-GreenlandsTempleOfTheDawn-01 | 14 × 24 × 20 | `GameClient/ArtSource/Silverbrook/TempleOfTheDawn` | delivered |
 | [Market Stall.png](Market%20Stall.png) | Market stall | BLD-GreenlandsMarketStall-01 | 4 × 4 × 4 | `GameClient/ArtSource/Silverbrook/MarketStall` | delivered |
 | [Watchtower.png](Watchtower.png) | Watchtower | BLD-GreenlandsWatchtower-01 | 8 × 8 × 9 | `GameClient/ArtSource/Silverbrook/Watchtower` | delivered |
@@ -38,6 +37,7 @@ Owner-supplied concept images for the Silverbrook buildings. One image is one de
 | [Granary.png](Granary.png) | Granary | BLD-GreenlandsGranary-01 | 8 × 8 × 10 | `GameClient/ArtSource/Silverbrook/Granary` | delivered |
 | [Fishermans Wharf.png](Fishermans%20Wharf.png) | Fisherman's wharf | BLD-GreenlandsFishermansWharf-01 | 20 × 8 × 1 | `GameClient/ArtSource/Silverbrook/FishermansWharf` | delivered |
 | [Riverside Docks.png](Riverside%20Docks.png) | Riverside docks | BLD-GreenlandsRiversideDocks-01 | 30 × 10 × 1 | `GameClient/ArtSource/Silverbrook/RiversideDocks` | delivered |
+| [The Gilded Tankard.png](The%20Gilded%20Tankard.png) | The Gilded Tankard | BLD-GreenlandsTheGildedTankard-01 | 14 × 12 × 14 | `GameClient/ArtSource/Silverbrook/GildedTankard` | modelling |
 | [Wall Section.png](Wall%20Section.png) | Wall section | BLD-GreenlandsWallSection-01 | 20 × 3 × 8 | `GameClient/ArtSource/Silverbrook/WallSection` | delivered |
 | [Gatehouse.png](Gatehouse.png) | Gatehouse | BLD-GreenlandsGatehouse-01 | 10 m opening, towers 8 × 8 × 12 | `GameClient/ArtSource/Silverbrook/Gatehouse` | delivered |
 | [Wall Tower.png](Wall%20Tower.png) | Wall tower | BLD-GreenlandsWallTower-01 | 8 × 8 × 12 | `GameClient/ArtSource/Silverbrook/WallTower` | delivered |
@@ -47,3 +47,5 @@ Owner-supplied concept images for the Silverbrook buildings. One image is one de
 | [Street Lamp-4.png](Street%20Lamp-4.png) | Street lamp | BLD-GreenlandsStreetLamp-01 | — | `GameClient/ArtSource/Silverbrook/StreetLamp4` | delivered |
 | [Armor Vendor.png](Armor%20Vendor.png) | Armor vendor | BLD-GreenlandsArmorVendor-01 | — | `GameClient/ArtSource/Silverbrook/ArmorVendor` | delivered |
 | [Weapons Vendor.png](Weapons%20Vendor.png) | Weapons vendor | BLD-GreenlandsWeaponsVendor-01 | — | `GameClient/ArtSource/Silverbrook/WeaponsVendor` | delivered |
+
+**Not matched to a building** (name the file after a building in definition §8 or §10, or the layout): Street Props.png

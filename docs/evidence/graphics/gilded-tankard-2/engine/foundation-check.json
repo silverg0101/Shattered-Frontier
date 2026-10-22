@@ -1,0 +1,18 @@
+{
+ "count": 1,
+ "failures": [],
+ "min_visible_cm": 65.0,
+ "min_proud_cm": 4.0,
+ "max_proud_cm": 4.0,
+ "max_abs_gap_cm": 0.0,
+ "houses": [
+  {
+   "house": "GildedTankard",
+   "gap_cm": 0.0,
+   "min_proud_cm": 4.0,
+   "max_proud_cm": 4.0,
+   "min_visible_cm": 65.0,
+   "min_buried_cm": 100.0
+  }
+ ]
+}

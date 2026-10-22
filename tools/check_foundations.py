@@ -18,7 +18,7 @@ rows=[]
 for house in actors:
     if not isinstance(house,u.StaticMeshActor) or not str(house.get_folder_path()).startswith('Districts/'):continue
     mesh=house.static_mesh_component.static_mesh
-    if not mesh or not mesh.get_name().startswith('SM_Silverbrook') or '_Door' in mesh.get_name():continue
+    if not mesh or not mesh.get_name().startswith('SM_Silverbrook') or '_Door' in mesh.get_name() or 'static' in [str(t) for t in house.tags]:continue
     plinth=by.get(house.get_actor_label()+'_Plinth')
     if not plinth:
         rows.append(dict(house=house.get_actor_label(),error='missing plinth'));continue
@@ -27,13 +27,10 @@ for house in actors:
     yaw=math.radians(plinth.get_actor_rotation().yaw);co,si=math.cos(yaw),math.sin(yaw)
     levels=[ground(p.x+co*x-si*y,p.y+si*x+co*y) for x in (-50*s.x,50*s.x) for y in (-50*s.y,50*s.y)]
     levels.append(ground(p.x,p.y))
-    dm=u.DynamicMesh();dm,_=u.GeometryScript_AssetUtils.copy_mesh_from_static_mesh(mesh,dm,u.GeometryScriptCopyMeshFromAssetOptions(),u.GeometryScriptMeshReadLOD())
-    pts=u.GeometryScript_List.convert_vector_list_to_array(u.GeometryScript_MeshQueries.get_all_vertex_positions(dm,False)[1])
-    low=min(q.z for q in pts);near=[q for q in pts if q.z<=low+25];hs=house.get_actor_scale3d()
+    hs=house.get_actor_scale3d()
     # Local axes of plinth and building share the actor rotation, so proud edges compare in mesh space.
-    sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'GameClient/ArtSource/Silverbrook'));import silverbrook_props as sp
-    X=sorted(q.x for q in near);Y=sorted(q.y for q in near)  # wall base = outermost vertex plane holding >=8% of the base band
-    bx0,bx1,by0,by1=sp._edge(X,True)*hs.x,sp._edge(X,False)*hs.x,sp._edge(Y,True)*hs.y,sp._edge(Y,False)*hs.y
+    sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'GameClient/ArtSource/Silverbrook'));import importlib,silverbrook_props as sp;importlib.reload(sp)  # the editor keeps modules between runs: never use a stale _BASE cache
+    bx0,bx1,by0,by1=[v*s for v,s in zip(sp._base_box(mesh,25),(hs.x,hs.x,hs.y,hs.y))]  # the same wall-base box dress_footings uses
     hyaw=math.radians(house.get_actor_rotation().yaw);hc,hsn=math.cos(hyaw),math.sin(hyaw)
     dx,dy=p.x-house.get_actor_location().x,p.y-house.get_actor_location().y;lx,ly=hc*dx+hsn*dy,-hsn*dx+hc*dy
     sides=[(lx-50*s.x)-bx0,bx1-(lx+50*s.x),(ly-50*s.y)-by0,by1-(ly+50*s.y)]  # + = plinth stands proud on that side

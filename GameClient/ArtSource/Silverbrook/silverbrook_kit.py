@@ -334,8 +334,9 @@ def door(G,M,c,o,w,spring,stone_rects,wall_th=.3,band=None,straps=True):
         t=math.pi*(k+.5)/n;rm=rad-.012+depth/2;radial=R@Vector((math.cos(t),0,math.sin(t)));tang=R@Vector((-math.sin(t),0,math.cos(t)));o_=Vector(o).normalized()
         G['stone'].box(P(rm*math.cos(t),-wall_th/2+.025,spring+rm*math.sin(t)),(math.pi*rm/n-.014,wall_th+.05,depth),M['ashlar'],.012,Matrix((tang,o_,radial)).transposed(),rect=rng.choice(stone_rects))
 
-def lantern(G,M,top,arm=None):
-    """Forged-iron lantern hanging from `top`; with arm=(wall point, outward vector) a wall bracket."""
+def lantern(G,M,top,arm=None,cage=False):
+    """Forged-iron lantern hanging from `top`; with arm=(wall point, outward vector) a wall bracket.
+    cage=True: 3.5 cm corner bars, glass inset behind them and a taller cone roof, so the cage reads at 1080p (opt-in)."""
     top=Vector(top)
     if arm:
         base,out=Vector(arm[0]),Vector(arm[1]).normalized();tip=top+UP*.08
@@ -343,6 +344,13 @@ def lantern(G,M,top,arm=None):
         G['detail'].box(base-UP*.12,(.08,.08,.36),M['iron'],.004)
     G['detail'].beam(top+UP*.08,top-UP*.06,.012,.012,M['iron'],grain=False)
     body=top-UP*.27
+    if cage:
+        G['detail'].box(body,(.12,.12,.22),M['lamp'],0)
+        for x in (-1,1):
+            for y in (-1,1):G['detail'].box(body+Vector((x*.075,y*.075,0)),(.035,.035,.26),M['iron'],0)
+        for dz,s in ((-.14,.22),(.14,.22)):G['detail'].box(body+UP*dz,(s,s,.035),M['iron'],.004)
+        G['detail'].prism([body+Vector((-.12,0,.155)),body+Vector((.12,0,.155)),body+Vector((0,0,.30))],(0,1,0),.24,M['iron'])
+        return
     G['detail'].box(body,(.15,.15,.24),M['lamp'],0)
     for x in (-1,1):
         for y in (-1,1):G['detail'].box(body+Vector((x*.075,y*.075,0)),(.016,.016,.25),M['iron'],0)

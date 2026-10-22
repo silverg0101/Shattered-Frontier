@@ -1,10 +1,10 @@
 {
   "source": {
-    "meshes": 7,
-    "triangles": 51626,
+    "meshes": 9,
+    "triangles": 54454,
     "size_m": [
       10.585,
-      8.925,
+      9.11,
       12.07
     ],
     "materials": [
@@ -14,11 +14,11 @@
       "SB_EntryRoom",
       "SB_ForgedIron",
       "SB_GildedTankard_Gilt",
+      "SB_GildedTankard_LanternGlow",
+      "SB_GildedTankard_LitGlass",
       "SB_GildedTankard_SignBoard",
-      "SB_LanternGlow",
       "SB_LeadCame",
       "SB_LimePlaster",
-      "SB_LitGlass",
       "SB_OakTimber",
       "SB_Slate"
     ],
@@ -29,11 +29,11 @@
     "images": 16
   },
   "glb": {
-    "meshes": 6,
-    "triangles": 51616,
+    "meshes": 8,
+    "triangles": 54444,
     "size_m": [
       10.585,
-      8.925,
+      9.11,
       12.07
     ],
     "materials": [
@@ -42,11 +42,11 @@
       "SB_DoorBoards",
       "SB_ForgedIron",
       "SB_GildedTankard_Gilt",
+      "SB_GildedTankard_LanternGlow",
+      "SB_GildedTankard_LitGlass",
       "SB_GildedTankard_SignBoard",
-      "SB_LanternGlow",
       "SB_LeadCame",
       "SB_LimePlaster",
-      "SB_LitGlass",
       "SB_OakTimber",
       "SB_Slate"
     ],
@@ -59,10 +59,10 @@
   },
   "fbx": {
     "meshes": 6,
-    "triangles": 51118,
+    "triangles": 53094,
     "size_m": [
       10.585,
-      8.925,
+      9.11,
       12.07
     ],
     "materials": [
@@ -71,11 +71,11 @@
       "SB_EntryRoom",
       "SB_ForgedIron",
       "SB_GildedTankard_Gilt",
+      "SB_GildedTankard_LanternGlow",
+      "SB_GildedTankard_LitGlass",
       "SB_GildedTankard_SignBoard",
-      "SB_LanternGlow",
       "SB_LeadCame",
       "SB_LimePlaster",
-      "SB_LitGlass",
       "SB_OakTimber",
       "SB_Slate"
     ],

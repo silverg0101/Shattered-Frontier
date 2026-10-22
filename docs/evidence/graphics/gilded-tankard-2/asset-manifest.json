@@ -10,12 +10,12 @@
   "units": "metres, Z up, front -Y, origin ground centre",
   "bounds_m": [
     10.585,
-    8.925,
+    9.11,
     12.07
   ],
   "meshes": {
     "SM_SBGildedTankard_Masonry": {
-      "triangles": 772,
+      "triangles": 824,
       "materials": [
         "SB_Ashlar"
       ]
@@ -27,7 +27,7 @@
       ]
     },
     "SM_SBGildedTankard_Timber": {
-      "triangles": 3084,
+      "triangles": 2688,
       "materials": [
         "SB_OakTimber"
       ]
@@ -40,16 +40,16 @@
       ]
     },
     "SM_SBGildedTankard_Details": {
-      "triangles": 14664,
+      "triangles": 16984,
       "materials": [
-        "SB_LitGlass",
+        "SB_GildedTankard_LitGlass",
         "SB_LeadCame",
         "SB_ChimneyPot",
         "SB_OakTimber",
         "SB_ForgedIron",
         "SB_GildedTankard_SignBoard",
         "SB_GildedTankard_Gilt",
-        "SB_LanternGlow"
+        "SB_GildedTankard_LanternGlow"
       ]
     },
     "SM_SBGildedTankard_Details_Door1": {
@@ -59,9 +59,22 @@
         "SB_ForgedIron",
         "SB_OakTimber"
       ]
+    },
+    "SM_SBGildedTankard_Barrels": {
+      "triangles": 768,
+      "materials": [
+        "SB_OakTimber",
+        "SB_ForgedIron"
+      ]
+    },
+    "SM_SBGildedTankard_Bench": {
+      "triangles": 84,
+      "materials": [
+        "SB_OakTimber"
+      ]
     }
   },
-  "triangles": 51616,
+  "triangles": 54444,
   "materials": [
     {
       "name": "SB_Slate",
@@ -160,7 +173,7 @@
       "strength": 0
     },
     {
-      "name": "SB_LitGlass",
+      "name": "SB_GildedTankard_LitGlass",
       "colour": [
         0.02,
         0.02,
@@ -173,10 +186,10 @@
         0.5,
         0.14
       ],
-      "strength": 3
+      "strength": 1.2
     },
     {
-      "name": "SB_LanternGlow",
+      "name": "SB_GildedTankard_LanternGlow",
       "colour": [
         0.3,
         0.2,
@@ -189,7 +202,7 @@
         0.38,
         0.08
       ],
-      "strength": 5
+      "strength": 1.5
     },
     {
       "name": "SB_PlanterSoil",
@@ -218,12 +231,12 @@
     {
       "name": "SB_GildedTankard_Gilt",
       "colour": [
-        0.62,
-        0.45,
-        0.18
+        0.6,
+        0.38,
+        0.09
       ],
-      "roughness": 0.4,
-      "metallic": 0.85,
+      "roughness": 0.3,
+      "metallic": 0.6,
       "emission": null,
       "strength": 0
     },
@@ -249,8 +262,8 @@
       "unreal_mesh": "SM_SilverbrookGildedTankard_Door1",
       "pivot_m": [
         -1.5475,
-        -2.5326,
-        0.2
+        -2.4401,
+        0.0
       ],
       "axis": [
         0,
@@ -260,12 +273,68 @@
       "motion": "swing",
       "travel": 90,
       "modelled": "closed"
+    },
+    {
+      "name": "Barrels",
+      "fbx": "SilverbrookGildedTankard_Barrels.fbx",
+      "unreal_mesh": "SM_SilverbrookGildedTankard_Barrels",
+      "pivot_m": [
+        -2.8725,
+        -3.3751,
+        0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "static",
+      "travel": 0,
+      "modelled": null
+    },
+    {
+      "name": "Bench",
+      "fbx": "SilverbrookGildedTankard_Bench.fbx",
+      "unreal_mesh": "SM_SilverbrookGildedTankard_Bench",
+      "pivot_m": [
+        2.4525,
+        -3.2251,
+        0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "motion": "static",
+      "travel": 0,
+      "modelled": null
     }
   ],
   "slot_m": [
     14,
     12,
     14
+  ],
+  "nanite_fallback_percent": 1.0,
+  "footings_cm": [
+    [
+      434.3,
+      524.3,
+      -322.5,
+      -212.5
+    ]
+  ],
+  "base_cm": [
+    -484.7,
+    435.3,
+    -407.5,
+    267.5
+  ],
+  "sign_m": [
+    -0.247,
+    -4.325,
+    4.625
   ],
   "outputs": [
     "SilverbrookGildedTankard.blend",

@@ -146,7 +146,7 @@ def instance(row,src=None):
         if row['emission']:mel.set_material_instance_vector_parameter_value(mi,'Emission',LC(row['emission']));mel.set_material_instance_scalar_parameter_value(mi,'EmissionStrength',row['strength'])
     save(mi);return mi
 
-def import_mesh(fbx,name,collision):
+def import_mesh(fbx,name,collision,fallback_percent=None):
     """One FBX -> Nanite static mesh with palette MIs, lightmap UVs and the given simple collision ('complex', 'convex' or 'box')."""
     task=u.AssetImportTask();task.filename=str(fbx);task.destination_path=LIB+'/Meshes';task.destination_name=name
     task.automated=True;task.save=True;task.replace_existing=True
@@ -155,7 +155,10 @@ def import_mesh(fbx,name,collision):
     task.options=opts;tools.import_asset_tasks([task]);mesh=u.load_asset(f'{LIB}/Meshes/{name}');assert mesh,name
     for i,slot in enumerate(mesh.static_materials):
         mi=instances.get(str(slot.material_slot_name));assert mi,f'{name}: unmapped slot {slot.material_slot_name}';mesh.set_material(i,mi)
-    nanite=mesh.get_editor_property('nanite_settings');nanite.set_editor_property('enabled',True);mesh.set_editor_property('nanite_settings',nanite)
+    nanite=mesh.get_editor_property('nanite_settings');nanite.set_editor_property('enabled',True)
+    if fallback_percent is not None:  # opt-in (manifest nanite_fallback_percent): -game RenderOffscreen captures draw the fallback, whose Auto simplification erases flat emblems
+        nanite.set_editor_property('fallback_target',u.NaniteFallbackTarget.PERCENT_TRIANGLES);nanite.set_editor_property('fallback_percent_triangles',fallback_percent)
+    mesh.set_editor_property('nanite_settings',nanite)
     sme.remove_collisions(mesh)
     bs_=mesh.get_editor_property('body_setup')
     if collision=='complex':  # decks, wall-walks and arches: convex hulls would fill the spaces people walk through
@@ -182,7 +185,7 @@ for pkg,man in manifests.items():
             instances[row['name']]=instance(row,ROOT/pkg)
             # Optional colour/image variants of this slot: extra MI_<name>_<Suffix> ({Suffix: png name | [r,g,b]}), assigned to meshes by hand or by the placer.
             for sfx,v in row.get('variants',{}).items():instance(dict(row,name=f"{row['name']}_{sfx}",**({'image':v} if 'image' in row else {'colour':v})),ROOT/pkg)
-    mesh,rep=import_mesh(ROOT/pkg/(man['asset']+'.fbx'),man['unreal_mesh'],'complex' if pkg in WALKABLE else 'convex')
+    mesh,rep=import_mesh(ROOT/pkg/(man['asset']+'.fbx'),man['unreal_mesh'],'complex' if pkg in WALKABLE else 'convex',man.get('nanite_fallback_percent'))
     rep.update(slot_m=man['slot_m'],fits=all(s<=t+.01 for s,t in zip(rep['size_m'],man['slot_m'])))
     # Moving parts: own mesh, origin at the pivot. Unreal values: the mirror flips Y and the sense of swings about Z.
     parts=[]

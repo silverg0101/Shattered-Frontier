@@ -32,7 +32,7 @@ DEFINITION_TYPES = {'Town Hall': 'town_hall', "Adventurers' Guild": 'adventurers
                     'Blacksmith': 'blacksmith', 'Temple of the Dawn': 'temple', 'Market stall': 'market_stall', 'Watchtower': 'watchtower',
                     'Cottage': 'cottage', 'Stables': 'stables', 'Workshop': 'workshop', 'Farmhouse': 'farmhouse'}
 LAYOUT_TYPES = {'townhouse': 'Townhouse', 'elite_house': 'Northridge house', 'mill': 'Mill', 'granary': 'Granary',
-                'wharf': "Fisherman's wharf", 'docks': 'Riverside docks'}
+                'wharf': "Fisherman's wharf", 'docks': 'Riverside docks', 'tavern': 'The Gilded Tankard'}
 
 
 def library_index():
@@ -53,10 +53,15 @@ def _norm(text):
     return re.sub(r'[^a-z0-9]', '', text.lower())
 
 
+def _core(text):
+    """Normalised name without a leading 'The': display names keep it, package folders drop it (GoldenStagInn)."""
+    return re.sub(r'^the', '', _norm(text))
+
+
 def building_work(name):
     """Owner-supplied concept images and Blender package folders already made for a building, as repo paths."""
     key = _norm(name)
-    match = lambda stem: _norm(stem) == key or re.fullmatch(key + r'\d+', _norm(stem))
+    match = lambda stem: _core(stem) == _core(name) or re.fullmatch(key + r'\d+', _norm(stem))
     concepts = sorted(p.relative_to(REPO).as_posix() for p in CONCEPTS.glob('*.png') if match(p.stem)) if CONCEPTS.is_dir() else []
     models = sorted(p.relative_to(REPO).as_posix() for p in MODELS.iterdir() if p.is_dir() and match(p.name)) if MODELS.is_dir() else []
     return concepts, models
@@ -160,7 +165,7 @@ def write_index(rows):
         for c in concepts:
             seen.add(c)
             stem = Path(c).stem
-            pkg = next((m for m in models if _norm(Path(m).name) == _norm(stem)), None)
+            pkg = next((m for m in models if _core(Path(m).name) == _core(stem)), None)
             status = 'delivered' if not row else ('modelling' if pkg else 'waiting for a model')
             link = f"[{Path(c).name}]({Path(c).name.replace(' ', '%20')})"
             lines.append(f"| {link} | {name} | {asset_id('BLD', name)} | {footprint(L, name)} | "
