@@ -74,12 +74,12 @@ void USFGatheringSkillsPanel::NativeOnInitialized()
 
     UOverlay* Root = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
     WidgetTree->RootWidget = Root;
-    UBorder* Panel = KitPanel(WidgetTree, TEXT("panel_frame"), 1.f, Slate(0.85f), Brass(), FMargin(6.f, 0.f, 6.f, 4.f), 0.f);
+    UBorder* Panel = KitPanel(WidgetTree, TEXT("panel_frame"), 1.f, Slate(1.f), Brass(), FMargin(0.f, 0.f, 0.f, 4.f), 0.f);
     UOverlaySlot* PanelSlot = Root->AddChildToOverlay(Panel);
     PanelSlot->SetHorizontalAlignment(HAlign_Fill); PanelSlot->SetVerticalAlignment(VAlign_Fill);
     UVerticalBox* Contents = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     Panel->SetContent(Contents);
-    Contents->AddChildToVerticalBox(Heading(WidgetTree, TEXT("Gathering Skills"), 34, Ivory()))->SetPadding(FMargin(14.f, 0.f, 0.f, 8.f));
+    Contents->AddChildToVerticalBox(Heading(WidgetTree, TEXT("Gathering Skills"), 38, Ivory()))->SetPadding(FMargin(14.f, 10.f, 0.f, 22.f));
     // Every window carries a 40 px close X top-right inside the frame (IMPLEMENTATION-FIX G5); M and Esc still close it.
     UButton* Close = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass());
     FButtonStyle CloseStyle = Close->GetStyle();
@@ -100,8 +100,9 @@ void USFGatheringSkillsPanel::NativeOnInitialized()
         Frame->SetBrush(RowBrush(false));
         Frame->SetPadding(FMargin(11.f, 8.f, 22.f, 8.f));
         USizeBox* RowBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        RowBox->SetHeightOverride(143.f); RowBox->SetContent(Frame);
-        Contents->AddChildToVerticalBox(RowBox)->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
+        RowBox->SetWidthOverride(494.f); RowBox->SetHeightOverride(144.f); RowBox->SetContent(Frame);
+        UVerticalBoxSlot* RowSlot = Contents->AddChildToVerticalBox(RowBox);
+        RowSlot->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f)); RowSlot->SetHorizontalAlignment(HAlign_Left);
         UHorizontalBox* Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
         Frame->SetContent(Line);
 
@@ -110,7 +111,7 @@ void USFGatheringSkillsPanel::NativeOnInitialized()
         USizeBox* IconBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
         IconBox->SetWidthOverride(56.f); IconBox->SetHeightOverride(56.f); IconBox->SetContent(SkillIconImage(WidgetTree, Art.Icon, 56.f));
         Badge->AddChildToVerticalBox(IconBox)->SetHorizontalAlignment(HAlign_Center);
-        Levels[Row] = Text(WidgetTree, TEXT("0"), 32, Ivory());
+        Levels[Row] = Text(WidgetTree, TEXT("0"), 38, Ivory());
         Badge->AddChildToVerticalBox(Levels[Row])->SetHorizontalAlignment(HAlign_Center);
         UBorder* Well = KitPanel(WidgetTree, TEXT("slot_catalogue_normal"), 1.f, Slate(0.85f), Hex(TEXT("3A4348")), FMargin(0.f, 4.f, 0.f, 0.f), 0.f);
         Well->SetContent(Badge);
@@ -137,6 +138,7 @@ void USFGatheringSkillsPanel::NativeOnInitialized()
         LockIconBox->SetWidthOverride(28.f); LockIconBox->SetHeightOverride(28.f); LockIconBox->SetContent(LockIcons[Row]);
         LockLine->AddChildToHorizontalBox(LockIconBox)->SetVerticalAlignment(VAlign_Center);
         LockTexts[Row] = Text(WidgetTree, TEXT(""), 16, Hex(TEXT("BDB6A2")));
+        LockTexts[Row]->SetVisibility(ESlateVisibility::Collapsed);  // the concept shows only the glyph
         LockLine->AddChildToHorizontalBox(LockTexts[Row])->SetPadding(FMargin(6.f, 0.f, 0.f, 0.f));
         Lock->SetContent(LockLine);
         FScriptDelegate Click; Click.BindUFunction(this, FName(Handlers[Row])); Lock->OnClicked.Add(Click);
@@ -145,26 +147,17 @@ void USFGatheringSkillsPanel::NativeOnInitialized()
         Body->AddChildToVerticalBox(NameLine);
 
         UHorizontalBox* BarLine = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-        // Kit-v5 framed moss XP bar; the styled UProgressBar when the kit is missing.
-        XpBars[Row] = MakeFramedBar(WidgetTree, TEXT("bar_xp"), 336.f);
+        // Plain 253 x 18 moss bar with "420 / 1,000" on the same line, right-aligned (gathering.png).
+        Bars[Row] = WidgetTree->ConstructWidget<UProgressBar>(UProgressBar::StaticClass());
+        StyleBar(Bars[Row], Moss());
         USizeBox* BarBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        if (XpBars[Row].Root) { BarBox->SetContent(XpBars[Row].Root); }
-        else
-        {
-            Bars[Row] = WidgetTree->ConstructWidget<UProgressBar>(UProgressBar::StaticClass());
-            StyleBar(Bars[Row], Moss());
-            BarBox->SetHeightOverride(12.f); BarBox->SetContent(Bars[Row]);
-        }
-        UHorizontalBoxSlot* BarSlot = BarLine->AddChildToHorizontalBox(BarBox);
-        BarSlot->SetSize(FSlateChildSize(XpBars[Row].Root ? ESlateSizeRule::Automatic : ESlateSizeRule::Fill)); BarSlot->SetVerticalAlignment(VAlign_Center);
-        Body->AddChildToVerticalBox(BarLine)->SetPadding(FMargin(0.f, 4.f, 0.f, 0.f));
-        // "420 / 1,000" on its own line under the bar's right end, never across the bar.
+        BarBox->SetWidthOverride(253.f); BarBox->SetHeightOverride(18.f); BarBox->SetContent(Bars[Row]);
+        BarLine->AddChildToHorizontalBox(BarBox)->SetVerticalAlignment(VAlign_Center);
         Points[Row] = Num(WidgetTree, TEXT(""), 18, Ivory(), false);
         Points[Row]->SetJustification(ETextJustify::Right);
-        USizeBox* PointsBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        if (XpBars[Row].Root) { PointsBox->SetWidthOverride(336.f); }
-        PointsBox->SetContent(Points[Row]);
-        Body->AddChildToVerticalBox(PointsBox)->SetHorizontalAlignment(XpBars[Row].Root ? HAlign_Left : HAlign_Fill);
+        UHorizontalBoxSlot* PointsSlot = BarLine->AddChildToHorizontalBox(Points[Row]);
+        PointsSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); PointsSlot->SetVerticalAlignment(VAlign_Center); PointsSlot->SetHorizontalAlignment(HAlign_Right);
+        Body->AddChildToVerticalBox(BarLine)->SetPadding(FMargin(0.f, 4.f, 0.f, 0.f));
 
         UHorizontalBox* NextLine = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
         NextLine->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Next:"), 18, Hex(TEXT("BDB6A2"))))->SetVerticalAlignment(VAlign_Center);

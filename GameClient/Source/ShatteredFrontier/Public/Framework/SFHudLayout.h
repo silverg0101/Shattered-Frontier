@@ -69,6 +69,7 @@ private:
     UPROPERTY(Transient) TObjectPtr<UWidget> TargetBoxRoot;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> TargetName;
     UPROPERTY(Transient) TObjectPtr<UTextBlock> TargetCharges;
+    UPROPERTY(Transient) TObjectPtr<UTextBlock> TargetMessage;  // pilot hit message, own line under the frame
     UPROPERTY(Transient) TObjectPtr<UWidget> TargetBar;
     UPROPERTY(Transient) TObjectPtr<USizeBox> TargetFillClip;
     float TargetFillWidth = 0.f;

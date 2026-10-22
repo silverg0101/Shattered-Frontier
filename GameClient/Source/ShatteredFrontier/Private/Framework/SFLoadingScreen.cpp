@@ -103,7 +103,7 @@ public:
         BarFrameBrush = LoadingScreenBrush(TEXT("T_LS_BarFrame"));
         BarFrameBrush.DrawAs = ESlateBrushDrawType::Box;  // 3-slice: keep the diamond end caps undistorted
         BarFrameBrush.Margin = FMargin(0.05f, 0.f, 0.05f, 0.f);
-        BarFillBrush = LoadingScreenBrush(TEXT("T_LS_BarFill")); BarFillBrush.TintColor = FSlateColor(SFHudStyle::Hex(TEXT("C9A45C")));
+        BarFillBrush = LoadingScreenBrush(TEXT("T_LS_BarFill"));  // art is already brass: no tint
         SpinnerBrush = LoadingScreenBrush(TEXT("T_LS_Spinner"));
         const FLinearColor Shadow(0.f, 0.f, 0.f, 0.9f);
         constexpr float BarWidth = 629.f, BarHeight = 35.f, BarInset = 10.f, CapWidth = 36.f;  // trough 629 + a 36 px diamond cap each side = the 701x35 frame at (609, 915)
@@ -122,12 +122,12 @@ public:
                         SNew(SCanvas)
                         + SCanvas::Slot().Position(FVector2D(836.f, 322.f)).Size(FVector2D(247.f, 267.f))
                         [ SNew(SImage).Image(&EmblemBrush) ]
-                        + SCanvas::Slot().Position(FVector2D(0.f, 578.f)).Size(FVector2D(1920.f, 120.f))
-                        [ SNew(STextBlock).Text(FText::FromString(Settings.ZoneTitle)).Font(LoadingScreenFont(TEXT("FontFace_EBGaramondBold"), 104)).Justification(ETextJustify::Center).ColorAndOpacity(SFHudStyle::Ivory()).ShadowOffset(FVector2D(3, 3)).ShadowColorAndOpacity(Shadow) ]
+                        + SCanvas::Slot().Position(FVector2D(0.f, 566.f)).Size(FVector2D(1920.f, 120.f))
+                        [ SNew(STextBlock).Text(FText::FromString(Settings.ZoneTitle)).Font(LoadingScreenFont(TEXT("FontFace_EBGaramondBold"), 128)).Justification(ETextJustify::Center).ColorAndOpacity(SFHudStyle::Ivory()).ShadowOffset(FVector2D(3, 3)).ShadowColorAndOpacity(Shadow) ]
                         + SCanvas::Slot().Position(FVector2D(713.f, 679.f)).Size(FVector2D(493.f, 29.f))
                         [ SNew(SImage).Image(&RuleBrush) ]
-                        + SCanvas::Slot().Position(FVector2D(610.f, 870.f)).Size(FVector2D(700.f, 36.f))
-                        [ SNew(STextBlock).Text(this, &SSFLoadingScreen::CurrentTip).Font(LoadingScreenFont(TEXT("FontFace_EBGaramondRegular"), 22)).WrapTextAt(700.f).Justification(ETextJustify::Center).ColorAndOpacity(SFHudStyle::Ivory()).ShadowOffset(FVector2D(2, 2)).ShadowColorAndOpacity(Shadow) ]
+                        + SCanvas::Slot().Position(FVector2D(700.f, 862.f)).Size(FVector2D(520.f, 44.f))
+                        [ SNew(STextBlock).Text(this, &SSFLoadingScreen::CurrentTip).Font(LoadingScreenFont(TEXT("FontFace_EBGaramondRegular"), 28)).WrapTextAt(520.f).Justification(ETextJustify::Center).ColorAndOpacity(SFHudStyle::Ivory()).ShadowOffset(FVector2D(2, 2)).ShadowColorAndOpacity(Shadow) ]
                         + SCanvas::Slot().Position(FVector2D(609.f, 915.f)).Size(FVector2D(BarWidth + 2.f * CapWidth, BarHeight))  // the diamond end caps draw outside the trough
                         [ SNew(SImage).Image(&BarFrameBrush) ]
                         + SCanvas::Slot().Position(FVector2D(609.f + CapWidth + BarInset, 915.f + (BarHeight - 16.f) / 2.f)).Size(FVector2D(BarWidth - 2.f * BarInset, 16.f))

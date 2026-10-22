@@ -17,11 +17,11 @@
   "de": [
    [
     "window fill",
-    2.2
+    4.9
    ],
    [
     "window fill",
-    8.2
+    3.6
    ]
   ],
   "geometry": "PASS",
@@ -38,11 +38,11 @@
    42
   ],
   "found": true,
-  "match": 0.65,
-  "d_left": 62,
+  "match": 0.62,
+  "d_left": 44,
   "d_top": -2,
-  "d_width": -127,
-  "d_height": 6,
+  "d_width": -90,
+  "d_height": 15,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -58,11 +58,11 @@
    94
   ],
   "found": true,
-  "match": 0.83,
-  "d_left": 3,
-  "d_top": -7,
-  "d_width": -7,
-  "d_height": 2,
+  "match": 0.66,
+  "d_left": -19,
+  "d_top": 2,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -78,11 +78,11 @@
    29
   ],
   "found": true,
-  "match": 0.45,
-  "d_left": -10,
-  "d_top": -8,
-  "d_width": -9,
-  "d_height": 9,
+  "match": 0.27,
+  "d_left": -25,
+  "d_top": -4,
+  "d_width": 1,
+  "d_height": 18,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -98,11 +98,11 @@
    94
   ],
   "found": true,
-  "match": 0.46,
+  "match": 0.54,
   "d_left": -29,
-  "d_top": -7,
-  "d_width": -7,
-  "d_height": 2,
+  "d_top": 2,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -118,18 +118,18 @@
    28
   ],
   "found": true,
-  "match": 0.27,
-  "d_left": -42,
-  "d_top": -8,
-  "d_width": 11,
-  "d_height": 10,
+  "match": 0.37,
+  "d_left": -35,
+  "d_top": -4,
+  "d_width": 30,
+  "d_height": 19,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_94",
+  "widget": "SizeBox:SizeBox_92",
   "name": "column divider diamond",
   "rect": [
    950,
@@ -140,9 +140,9 @@
   "found": true,
   "match": 0.88,
   "d_left": -1,
-  "d_top": -11,
+  "d_top": -2,
   "d_width": 0,
-  "d_height": 1,
+  "d_height": -15,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -158,9 +158,9 @@
    95
   ],
   "found": true,
-  "match": 0.63,
-  "d_left": 17,
-  "d_top": -6,
+  "match": 0.88,
+  "d_left": -5,
+  "d_top": 1,
   "d_width": 0,
   "d_height": 0,
   "de": [
@@ -183,9 +183,9 @@
    95
   ],
   "found": true,
-  "match": 0.63,
-  "d_left": 17,
-  "d_top": -6,
+  "match": 0.88,
+  "d_left": -5,
+  "d_top": 1,
   "d_width": 0,
   "d_height": 0,
   "de": [
@@ -208,9 +208,9 @@
    95
   ],
   "found": true,
-  "match": 0.61,
-  "d_left": 18,
-  "d_top": -6,
+  "match": 0.9,
+  "d_left": -4,
+  "d_top": 1,
   "d_width": 0,
   "d_height": 0,
   "de": [
@@ -253,9 +253,9 @@
    91
   ],
   "found": true,
-  "match": 0.58,
-  "d_left": 17,
-  "d_top": -10,
+  "match": 0.84,
+  "d_left": -5,
+  "d_top": -3,
   "d_width": 0,
   "d_height": 0,
   "de": [
@@ -278,9 +278,9 @@
    90
   ],
   "found": true,
-  "match": 0.58,
-  "d_left": 18,
-  "d_top": -9,
+  "match": 0.89,
+  "d_left": -4,
+  "d_top": -2,
   "d_width": 0,
   "d_height": 1,
   "de": [
@@ -294,7 +294,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_51",
+  "widget": "SizeBox:SizeBox_50",
   "name": "their offer slot 1 Wolf Pelt",
   "rect": [
    989,
@@ -303,9 +303,9 @@
    95
   ],
   "found": true,
-  "match": 0.65,
+  "match": 0.71,
   "d_left": -15,
-  "d_top": -6,
+  "d_top": 1,
   "d_width": 0,
   "d_height": 0,
   "de": [
@@ -319,7 +319,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_60",
+  "widget": "SizeBox:SizeBox_59",
   "name": "their offer slot 4 Iron Ingot",
   "rect": [
    1291,
@@ -328,9 +328,9 @@
    95
   ],
   "found": true,
-  "match": 0.66,
+  "match": 0.73,
   "d_left": -14,
-  "d_top": -6,
+  "d_top": 1,
   "d_width": 0,
   "d_height": 0,
   "de": [
@@ -353,34 +353,9 @@
    46
   ],
   "found": true,
-  "match": 0.73,
-  "d_left": 3,
-  "d_top": -7,
-  "d_width": 0,
-  "d_height": 0,
-  "de": [
-   [
-    "field fill",
-    4.5
-   ]
-  ],
-  "geometry": "FAIL",
-  "colour": "FAIL",
-  "verdict": "FAIL"
- },
- {
-  "widget": "SizeBox:SizeBox_88",
-  "name": "their gold offered field",
-  "rect": [
-   1015,
-   648,
-   360,
-   46
-  ],
-  "found": true,
-  "match": 0.59,
-  "d_left": -44,
-  "d_top": -7,
+  "match": 0.93,
+  "d_left": 12,
+  "d_top": 0,
   "d_width": 0,
   "d_height": 0,
   "de": [
@@ -394,7 +369,32 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "Border:Border_17",
+  "widget": "SizeBox:SizeBox_87",
+  "name": "their gold offered field",
+  "rect": [
+   1015,
+   648,
+   360,
+   46
+  ],
+  "found": true,
+  "match": 0.93,
+  "d_left": -12,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
+  "de": [
+   [
+    "field fill",
+    3.9
+   ]
+  ],
+  "geometry": "FAIL",
+  "colour": "FAIL",
+  "verdict": "FAIL"
+ },
+ {
+  "widget": "Overlay:Overlay_14",
   "name": "Offer Locked button (pressed)",
   "rect": [
    585,
@@ -403,23 +403,23 @@
    70
   ],
   "found": true,
-  "match": 0.76,
-  "d_left": -37,
+  "match": 0.98,
+  "d_left": 2,
   "d_top": 0,
-  "d_width": 8,
-  "d_height": 4,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "moss fill",
-    6.2
+    10.7
    ]
   ],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_91",
+  "widget": "SizeBox:SizeBox_89",
   "name": "Reviewing offer status plate",
   "rect": [
    1036,
@@ -428,15 +428,15 @@
    70
   ],
   "found": true,
-  "match": 0.64,
-  "d_left": -65,
-  "d_top": 0,
+  "match": 0.92,
+  "d_left": -4,
+  "d_top": -2,
   "d_width": 0,
   "d_height": 0,
   "de": [
    [
     "plate fill",
-    5.5
+    5.7
    ]
   ],
   "geometry": "FAIL",
@@ -474,14 +474,14 @@
   ],
   "found": true,
   "match": 0.52,
-  "d_left": 17,
-  "d_top": -24,
+  "d_left": 7,
+  "d_top": -18,
   "d_width": 0,
-  "d_height": 11,
+  "d_height": 0,
   "de": [
    [
     "button fill",
-    2.8
+    2.6
    ]
   ],
   "geometry": "FAIL",
@@ -498,19 +498,19 @@
    67
   ],
   "found": true,
-  "match": 0.54,
-  "d_left": -20,
+  "match": 0.56,
+  "d_left": -10,
   "d_top": -21,
   "d_width": 0,
   "d_height": 5,
   "de": [
    [
     "brass fill",
-    6.7
+    8.8
    ],
    [
     "brass fill",
-    21.2
+    24.1
    ]
   ],
   "geometry": "FAIL",
@@ -555,7 +555,7 @@
   "de": [
    [
     "dimmed fill",
-    2.3
+    2.4
    ]
   ],
   "geometry": "UNMEASURED",

@@ -1,6 +1,6 @@
 [
  {
-  "widget": "CanvasPanel:VitalsCanvas",
+  "widget": "SFStationPanel:SFStationPanel_0",
   "name": "station window frame",
   "rect": [
    631,
@@ -9,22 +9,22 @@
    797
   ],
   "found": true,
-  "match": 0.33,
-  "d_left": -631,
-  "d_top": -97,
-  "d_width": 1054,
-  "d_height": 283,
+  "match": 1.0,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "window fill",
-    35.5
+    4.0
    ],
    [
     "window fill",
-    44.4
+    1.1
    ]
   ],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
@@ -66,7 +66,7 @@
   "de": [
    [
     "field fill",
-    28.3
+    3.2
    ]
   ],
   "geometry": "UNMEASURED",
@@ -91,7 +91,7 @@
   "de": [
    [
     "selected tab fill",
-    37.8
+    12.2
    ]
   ],
   "geometry": "UNMEASURED",
@@ -116,7 +116,7 @@
   "de": [
    [
     "tab fill",
-    7.6
+    9.7
    ]
   ],
   "geometry": "UNMEASURED",
@@ -141,7 +141,7 @@
   "de": [
    [
     "tab fill",
-    7.7
+    12.5
    ]
   ],
   "geometry": "UNMEASURED",
@@ -166,7 +166,7 @@
   "de": [
    [
     "selected row fill",
-    16.9
+    4.9
    ]
   ],
   "geometry": "UNMEASURED",
@@ -191,7 +191,7 @@
   "de": [
    [
     "row fill",
-    51.1
+    4.5
    ]
   ],
   "geometry": "UNMEASURED",
@@ -216,7 +216,7 @@
   "de": [
    [
     "row fill",
-    41.4
+    3.7
    ]
   ],
   "geometry": "UNMEASURED",
@@ -241,7 +241,7 @@
   "de": [
    [
     "row fill",
-    84.0
+    6.0
    ]
   ],
   "geometry": "UNMEASURED",
@@ -306,7 +306,7 @@
   "de": [
    [
     "image well fill",
-    45.5
+    3.6
    ]
   ],
   "geometry": "UNMEASURED",
@@ -351,7 +351,7 @@
   "de": [
    [
     "row fill",
-    45.4
+    4.7
    ]
   ],
   "geometry": "UNMEASURED",
@@ -376,7 +376,7 @@
   "de": [
    [
     "row fill",
-    47.1
+    13.4
    ]
   ],
   "geometry": "UNMEASURED",
@@ -401,7 +401,7 @@
   "de": [
    [
     "field fill",
-    45.5
+    4.4
    ]
   ],
   "geometry": "UNMEASURED",
@@ -446,7 +446,7 @@
   "de": [
    [
     "brass fill",
-    17.9
+    25.0
    ]
   ],
   "geometry": "UNMEASURED",
@@ -491,7 +491,7 @@
   "de": [
    [
     "row fill",
-    40.7
+    3.2
    ]
   ],
   "geometry": "UNMEASURED",
@@ -516,7 +516,7 @@
   "de": [
    [
     "row fill",
-    40.4
+    3.6
    ]
   ],
   "geometry": "UNMEASURED",
@@ -589,7 +589,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "VerticalBox:VerticalBox_0",
+  "widget": "Overlay:Overlay_1",
   "name": "vitals HP bar",
   "rect": [
    136,
@@ -598,15 +598,15 @@
    38
   ],
   "found": true,
-  "match": 0.39,
+  "match": 0.71,
   "d_left": 27,
-  "d_top": -22,
+  "d_top": 3,
   "d_width": 15,
-  "d_height": 46,
+  "d_height": -6,
   "de": [
    [
     "hp red fill",
-    29.9
+    10.9
    ]
   ],
   "geometry": "FAIL",
@@ -625,13 +625,13 @@
   "found": true,
   "match": 0.59,
   "d_left": 11,
-  "d_top": -24,
+  "d_top": -9,
   "d_width": 15,
   "d_height": 28,
   "de": [
    [
     "badge fill",
-    28.1
+    4.1
    ]
   ],
   "geometry": "FAIL",
@@ -716,7 +716,7 @@
   "de": [
    [
     "fill dark",
-    35.1
+    39.6
    ]
   ],
   "geometry": "UNMEASURED",

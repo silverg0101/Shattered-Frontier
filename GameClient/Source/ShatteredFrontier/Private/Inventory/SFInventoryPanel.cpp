@@ -34,7 +34,7 @@ void USFInventoryPanel::NativeOnInitialized()
     SetIsFocusable(false);
     using namespace SFHudStyle;
 
-    UBorder* Frame = Panel(WidgetTree, Slate(0.92f), Brass(), FMargin(0.f), 6.f);
+    UBorder* Frame = Panel(WidgetTree, Slate(1.f), Brass(), FMargin(0.f), 6.f);
     // Full-viewport canvas root; the panel is the concept rect (85,31) 575 x 887 at 1920x1080 and its children are placed in panel coordinates.
     Frame->SetClipping(EWidgetClipping::ClipToBounds);
     UCanvasPanel* Root = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass());
@@ -52,16 +52,16 @@ void USFInventoryPanel::NativeOnInitialized()
     };
 
     // Title: ornament (24 px at x 88), regular heading (concept cap 19 = 30 px) at x 103; no tab row in the concept (categories remain in code only).
-    Put(KitImage(WidgetTree, TEXT("icon_stag_emblem"), 24.f), 3.f, 31.f);
-    Put(Heading(WidgetTree, TEXT("Inventory"), 30, Ivory()), 18.f, 26.f);
+    Put(KitImage(WidgetTree, TEXT("icon_stag_emblem"), 24.f), -13.f, 21.f);
+    Put(Heading(WidgetTree, TEXT("Inventory"), 33, Ivory()), 2.f, 18.f);
     Put(KitImage(WidgetTree, TEXT("close_x"), 40.f), 575.f - 52.f, 12.f);  // I or Esc closes
 
-    // Equipment (v5 inventory.png): five armour slots left (x 134), the paperdoll centre, four slots right (x 490); 78 px plates, 10 px gaps.
+    // Equipment (v5 inventory.png): five armour slots left (x 134), the paperdoll centre, four slots right (x 490); 72 px plates, 8 px gaps.
     // Empty slots show a 60 px grey ghost icon; only the main hand is live today (the equipped tool). ponytail: no armour system yet.
     auto EquipmentSlot = [this](const TCHAR* GhostName, TObjectPtr<UBorder>* OutFrame, TObjectPtr<UImage>* OutIcon)
     {
         USizeBox* Box = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        Box->SetWidthOverride(78.f); Box->SetHeightOverride(78.f);
+        Box->SetWidthOverride(72.f); Box->SetHeightOverride(72.f);
         UBorder* SlotFrame = KitPanel(WidgetTree, TEXT("slot_equipment_normal"), 1.f, Hex(TEXT("0E171C"), 0.85f), Hex(TEXT("3A4348")), FMargin(0.f), 3.f);
         UImage* Ghost = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
         if (const FSFHudKitElement* Art = SFHudStyle::Kit(GhostName)) { Ghost->SetBrush(SFHudStyle::KitBrush(*Art)); }
@@ -78,18 +78,18 @@ void USFInventoryPanel::NativeOnInitialized()
     };
     UVerticalBox* LeftColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     for (const TCHAR* Ghost : {TEXT("ghost_head"), TEXT("ghost_chest"), TEXT("ghost_hands"), TEXT("ghost_legs"), TEXT("ghost_feet")})
-    { LeftColumn->AddChildToVerticalBox(EquipmentSlot(Ghost, nullptr, nullptr))->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f)); }
-    Put(LeftColumn, 49.f, 96.f);
+    { LeftColumn->AddChildToVerticalBox(EquipmentSlot(Ghost, nullptr, nullptr))->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f)); }
+    Put(LeftColumn, 33.f, 88.f);
     UImage* Paperdoll = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
     if (const FSFHudKitElement* Doll = SFHudStyle::Kit(TEXT("paperdoll_adventurer"))) { Paperdoll->SetBrush(SFHudStyle::KitBrush(*Doll)); Paperdoll->SetDesiredSizeOverride(FVector2D(158.f, 390.f)); }
     USizeBox* DollBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());  // a fixed box: the image fills it, so the art cannot size the row
     DollBox->SetWidthOverride(158.f); DollBox->SetHeightOverride(390.f); DollBox->SetContent(Paperdoll);
-    Put(DollBox, 187.f, 87.f);
+    Put(DollBox, 171.f, 79.f);
     UVerticalBox* RightColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    RightColumn->AddChildToVerticalBox(EquipmentSlot(TEXT("ghost_main_hand"), &MainHandFrame, &MainHandIcon))->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
+    RightColumn->AddChildToVerticalBox(EquipmentSlot(TEXT("ghost_main_hand"), &MainHandFrame, &MainHandIcon))->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
     for (const TCHAR* Ghost : {TEXT("ghost_off_hand"), TEXT("ghost_neck"), TEXT("ghost_ring")})
-    { RightColumn->AddChildToVerticalBox(EquipmentSlot(Ghost, nullptr, nullptr))->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f)); }
-    Put(RightColumn, 405.f, 96.f);
+    { RightColumn->AddChildToVerticalBox(EquipmentSlot(Ghost, nullptr, nullptr))->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f)); }
+    Put(RightColumn, 389.f, 88.f);
 
     // 8 x 5 slot grid, 62 px cells at 4 px gaps from (108,527). ponytail: fixed 40 cells, no scrolling; pilot capacity is 8 slots, raise rows if that grows.
     UUniformGridPanel* Grid = WidgetTree->ConstructWidget<UUniformGridPanel>(UUniformGridPanel::StaticClass());
@@ -113,7 +113,8 @@ void USFInventoryPanel::NativeOnInitialized()
         NameSlot->SetHorizontalAlignment(HAlign_Fill); NameSlot->SetVerticalAlignment(VAlign_Center);
         UTextBlock* Count = Num(WidgetTree, TEXT(""), 18, Ivory());
         UOverlaySlot* CountSlot = Stack->AddChildToOverlay(Count);
-        CountSlot->SetHorizontalAlignment(HAlign_Right); CountSlot->SetVerticalAlignment(VAlign_Bottom);
+        CountSlot->SetHorizontalAlignment(HAlign_Right); CountSlot->SetVerticalAlignment(VAlign_Bottom); CountSlot->SetPadding(FMargin(0.f, 0.f, 8.f, 5.f));
+        { FSlateFontInfo CountFont = Count->GetFont(); CountFont.OutlineSettings.OutlineSize = 1; CountFont.OutlineSettings.OutlineColor = Hex(TEXT("0E171C")); Count->SetFont(CountFont); }
         SlotNames.Add(Name); SlotCounts.Add(Count);
         Grid->AddChildToUniformGrid(Cell, Index / GridColumns, Index % GridColumns);
     }
@@ -123,18 +124,18 @@ void USFInventoryPanel::NativeOnInitialized()
     GridStack->AddChildToOverlay(Grid);
     UOverlaySlot* EmptySlot = GridStack->AddChildToOverlay(EmptyText);
     EmptySlot->SetHorizontalAlignment(HAlign_Center); EmptySlot->SetVerticalAlignment(VAlign_Center);
-    Put(GridStack, 21.f, 494.f);  // cells start at (108,527); the 2 px slot padding is part of the grid
+    Put(GridStack, 7.f, 488.f);  // cells start at (108,527); the 2 px slot padding is part of the grid
 
     // Footer (20 px): weight at (121,876); "Gold N" + 20 px coin right-aligned at x 619, shown only when this controller has an exchange wallet.
     WeightText = Text(WidgetTree, TEXT(""), 20, Ivory());
-    Put(WeightText, 36.f, 845.f);
+    Put(WeightText, 20.f, 837.f);
     UHorizontalBox* Gold = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     GoldText = Num(WidgetTree, TEXT(""), 20, Ivory());
     Gold->AddChildToHorizontalBox(GoldText)->SetPadding(FMargin(0.f, 0.f, 8.f, 0.f));
     Gold->AddChildToHorizontalBox(KitImage(WidgetTree, Kit(TEXT("icon_coin")) ? TEXT("icon_coin") : TEXT("icon_coin_stack"), 20.f))->SetVerticalAlignment(VAlign_Center);
     Gold->SetVisibility(ESlateVisibility::Collapsed);
     GoldRow = Gold;
-    Put(Gold, 534.f, 842.f)->SetAlignment(FVector2D(1.f, 0.f));
+    Put(Gold, 518.f, 834.f)->SetAlignment(FVector2D(1.f, 0.f));
 
     // One panel-owned tooltip beside the panel (587,120): 410 x 326 frame, 120 x 178 art, title 27, type 18 grey, stat rows, rule, description.
     TooltipPanel = KitPanel(WidgetTree, TEXT("tooltip_frame"), 1.f, Slate(0.96f), Brass(), FMargin(16.f, 12.f), 3.f);

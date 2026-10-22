@@ -17,15 +17,15 @@
   "de": [
    [
     "modal fill",
-    1.7
+    3.7
    ],
    [
     "modal fill",
-    3.0
+    3.9
    ]
   ],
   "geometry": "FAIL",
-  "colour": "PASS",
+  "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
@@ -38,11 +38,11 @@
    76
   ],
   "found": true,
-  "match": 0.51,
+  "match": 0.84,
   "d_left": 12,
-  "d_top": -6,
-  "d_width": -82,
-  "d_height": -18,
+  "d_top": 0,
+  "d_width": -35,
+  "d_height": -6,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -58,9 +58,9 @@
    52
   ],
   "found": true,
-  "match": 0.28,
-  "d_left": 18,
-  "d_top": -27,
+  "match": 0.62,
+  "d_left": 0,
+  "d_top": 12,
   "d_width": 0,
   "d_height": 0,
   "de": [
@@ -83,15 +83,15 @@
    52
   ],
   "found": true,
-  "match": 0.28,
-  "d_left": 21,
-  "d_top": -27,
+  "match": 0.61,
+  "d_left": 3,
+  "d_top": 12,
   "d_width": -1,
   "d_height": 0,
   "de": [
    [
     "tab fill",
-    1.3
+    1.6
    ]
   ],
   "geometry": "FAIL",
@@ -108,9 +108,9 @@
    52
   ],
   "found": true,
-  "match": 0.27,
-  "d_left": 23,
-  "d_top": -27,
+  "match": 0.61,
+  "d_left": 5,
+  "d_top": 12,
   "d_width": -1,
   "d_height": 0,
   "de": [
@@ -124,7 +124,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_9",
+  "widget": "SizeBox:SizeBox_7",
   "name": "rail All Items (selected)",
   "rect": [
    279,
@@ -133,15 +133,15 @@
    58
   ],
   "found": true,
-  "match": 0.38,
-  "d_left": 8,
-  "d_top": 25,
+  "match": 0.66,
+  "d_left": 0,
+  "d_top": 12,
   "d_width": 0,
   "d_height": 0,
   "de": [
    [
     "selected rail fill",
-    10.2
+    5.4
    ]
   ],
   "geometry": "FAIL",
@@ -149,7 +149,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_11",
+  "widget": "SizeBox:SizeBox_9",
   "name": "rail Weapons",
   "rect": [
    279,
@@ -158,15 +158,15 @@
    58
   ],
   "found": true,
-  "match": 0.39,
-  "d_left": 8,
-  "d_top": 24,
+  "match": 0.68,
+  "d_left": 0,
+  "d_top": 11,
   "d_width": 0,
   "d_height": 0,
   "de": [
    [
     "rail fill",
-    3.8
+    5.2
    ]
   ],
   "geometry": "FAIL",
@@ -174,7 +174,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_13",
+  "widget": "SizeBox:SizeBox_11",
   "name": "rail Materials",
   "rect": [
    279,
@@ -183,15 +183,15 @@
    58
   ],
   "found": true,
-  "match": 0.41,
-  "d_left": 8,
-  "d_top": 23,
+  "match": 0.7,
+  "d_left": 0,
+  "d_top": 10,
   "d_width": 0,
   "d_height": 0,
   "de": [
    [
     "rail fill",
-    3.1
+    5.0
    ]
   ],
   "geometry": "FAIL",
@@ -199,7 +199,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_15",
+  "widget": "SizeBox:SizeBox_13",
   "name": "rail Consumables",
   "rect": [
    279,
@@ -208,9 +208,9 @@
    58
   ],
   "found": true,
-  "match": 0.43,
-  "d_left": 8,
-  "d_top": 22,
+  "match": 0.73,
+  "d_left": 0,
+  "d_top": 9,
   "d_width": 0,
   "d_height": 0,
   "de": [],
@@ -219,7 +219,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "",
+  "widget": "SizeBox:SizeBox_15",
   "name": "rail Tools",
   "rect": [
    279,
@@ -227,19 +227,19 @@
    222,
    58
   ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.78,
+  "d_left": 0,
+  "d_top": 7,
+  "d_width": 0,
+  "d_height": 0,
   "de": [],
-  "geometry": "UNMEASURED",
+  "geometry": "FAIL",
   "colour": "PASS",
-  "verdict": "REVIEW"
+  "verdict": "FAIL"
  },
  {
-  "widget": "HorizontalBox:HorizontalBox_8",
+  "widget": "SizeBox:SizeBox_18",
   "name": "search field",
   "rect": [
    522,
@@ -248,15 +248,15 @@
    48
   ],
   "found": true,
-  "match": 0.29,
-  "d_left": 16,
-  "d_top": 24,
-  "d_width": 0,
-  "d_height": 8,
+  "match": 0.62,
+  "d_left": 0,
+  "d_top": 11,
+  "d_width": 8,
+  "d_height": 0,
   "de": [
    [
     "field fill",
-    1.6
+    2.8
    ]
   ],
   "geometry": "FAIL",
@@ -264,7 +264,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "HorizontalBox:HorizontalBox_23",
+  "widget": "SizeBox:SizeBox_30",
   "name": "table header row",
   "rect": [
    522,
@@ -273,15 +273,15 @@
    56
   ],
   "found": true,
-  "match": 0.41,
-  "d_left": 16,
-  "d_top": 19,
-  "d_width": -8,
-  "d_height": 14,
+  "match": 0.85,
+  "d_left": 8,
+  "d_top": 4,
+  "d_width": 0,
+  "d_height": 0,
   "de": [
    [
     "header fill",
-    16.3
+    4.9
    ]
   ],
   "geometry": "FAIL",
@@ -289,7 +289,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "HorizontalBox:HorizontalBox_31",
+  "widget": "SizeBox:SizeBox_60",
   "name": "table row Iron Axe (selected)",
   "rect": [
    522,
@@ -298,19 +298,19 @@
    70
   ],
   "found": true,
-  "match": 0.36,
-  "d_left": 16,
-  "d_top": 32,
-  "d_width": -8,
+  "match": 0.83,
+  "d_left": 0,
+  "d_top": 6,
+  "d_width": 8,
   "d_height": 0,
   "de": [
    [
     "selected row fill",
-    8.9
+    5.9
    ],
    [
     "selected row fill",
-    10.2
+    5.4
    ]
   ],
   "geometry": "FAIL",
@@ -318,7 +318,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "HorizontalBox:HorizontalBox_39",
+  "widget": "SizeBox:SizeBox_73",
   "name": "table row Oak Planks",
   "rect": [
    522,
@@ -327,15 +327,15 @@
    70
   ],
   "found": true,
-  "match": 0.36,
-  "d_left": 16,
-  "d_top": 32,
-  "d_width": -8,
+  "match": 0.83,
+  "d_left": 0,
+  "d_top": 6,
+  "d_width": 8,
   "d_height": 0,
   "de": [
    [
     "row fill",
-    4.8
+    5.0
    ]
   ],
   "geometry": "FAIL",
@@ -343,7 +343,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "",
+  "widget": "HorizontalBox:HorizontalBox_63",
   "name": "table row River Herbs",
   "rect": [
    522,
@@ -351,24 +351,24 @@
    720,
    70
   ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.96,
+  "d_left": 8,
+  "d_top": -1,
+  "d_width": -8,
+  "d_height": 0,
   "de": [
    [
     "row fill",
-    4.6
+    4.9
    ]
   ],
-  "geometry": "UNMEASURED",
+  "geometry": "FAIL",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_42",
+  "widget": "SizeBox:SizeBox_44",
   "name": "detail card frame",
   "rect": [
    1257,
@@ -377,23 +377,23 @@
    592
   ],
   "found": true,
-  "match": 0.87,
-  "d_left": 15,
-  "d_top": -29,
+  "match": 0.83,
+  "d_left": 7,
+  "d_top": 45,
   "d_width": 0,
-  "d_height": 16,
+  "d_height": 0,
   "de": [
    [
     "card fill",
-    2.7
+    4.9
    ]
   ],
   "geometry": "FAIL",
-  "colour": "PASS",
+  "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_31",
+  "widget": "SizeBox:SizeBox_32",
   "name": "detail item image well",
   "rect": [
    1283,
@@ -402,15 +402,15 @@
    198
   ],
   "found": true,
-  "match": 0.67,
-  "d_left": 14,
-  "d_top": -33,
+  "match": 0.61,
+  "d_left": 6,
+  "d_top": 45,
   "d_width": 0,
   "d_height": 0,
   "de": [
    [
     "well fill",
-    2.6
+    2.3
    ]
   ],
   "geometry": "FAIL",
@@ -438,7 +438,7 @@
   "verdict": "REVIEW"
  },
  {
-  "widget": "HorizontalBox:HorizontalBox_20",
+  "widget": "",
   "name": "detail stat rows",
   "rect": [
    1283,
@@ -446,19 +446,19 @@
    340,
    112
   ],
-  "found": true,
-  "match": 0.26,
-  "d_left": 14,
-  "d_top": 1,
-  "d_width": -2,
-  "d_height": -81,
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
   "de": [],
-  "geometry": "FAIL",
+  "geometry": "UNMEASURED",
   "colour": "PASS",
-  "verdict": "FAIL"
+  "verdict": "REVIEW"
  },
  {
-  "widget": "Overlay:Overlay_2",
+  "widget": "SizeBox:SizeBox_43",
   "name": "Hold to Buy button",
   "rect": [
    1281,
@@ -467,15 +467,15 @@
    78
   ],
   "found": true,
-  "match": 0.29,
-  "d_left": 16,
-  "d_top": -37,
+  "match": 0.5,
+  "d_left": 8,
+  "d_top": 11,
   "d_width": -4,
-  "d_height": -6,
+  "d_height": -38,
   "de": [
    [
     "brass fill",
-    18.0
+    9.7
    ]
   ],
   "geometry": "FAIL",
@@ -500,7 +500,7 @@
   "de": [
    [
     "slot fill",
-    14.6
+    7.6
    ]
   ],
   "geometry": "UNMEASURED",
@@ -542,9 +542,9 @@
    32
   ],
   "found": true,
-  "match": 0.78,
+  "match": 0.39,
   "d_left": 28,
-  "d_top": -2,
+  "d_top": 13,
   "d_width": -12,
   "d_height": 0,
   "de": [
@@ -567,15 +567,15 @@
    114
   ],
   "found": true,
-  "match": 0.52,
+  "match": 0.57,
   "d_left": 9,
-  "d_top": -51,
+  "d_top": -36,
   "d_width": 9,
   "d_height": 44,
   "de": [
    [
     "badge fill",
-    5.8
+    4.5
    ]
   ],
   "geometry": "FAIL",

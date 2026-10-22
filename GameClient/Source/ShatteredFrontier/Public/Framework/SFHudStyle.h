@@ -131,7 +131,7 @@ inline FSFFramedBar MakeFramedBar(UWidgetTree* Tree, const TCHAR* Base, float De
     const FVector2D FrameDesign = KitDesignSize(*Frame);  // declared design size, never the imported texture's own dimensions
     const float Scale = DesignWidth / static_cast<float>(FrameDesign.X);  // design px of the art -> px at DesignWidth
     const float FrameHeight = static_cast<float>(FrameDesign.Y) * Scale;
-    Bar.FillWidth = (InsetRight - InsetLeft) * Scale;
+    Bar.FillWidth = (InsetRight - InsetLeft) * Scale - 6.f;  // keep the fill inside the frame chamfer
     const float FillHeight = (InsetBottom - InsetTop) * Scale;
 
     USizeBox* Box = Tree->ConstructWidget<USizeBox>(USizeBox::StaticClass());

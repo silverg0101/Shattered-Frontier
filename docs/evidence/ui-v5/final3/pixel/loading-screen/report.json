@@ -13,7 +13,7 @@
   "d_left": 0,
   "d_top": 5,
   "d_width": 1,
-  "d_height": -3,
+  "d_height": 10,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -76,9 +76,9 @@
   "found": true,
   "match": 0.12,
   "d_left": 0,
-  "d_top": -12,
+  "d_top": -9,
   "d_width": 4,
-  "d_height": 8,
+  "d_height": -3,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -96,9 +96,9 @@
   "found": true,
   "match": 0.21,
   "d_left": 11,
-  "d_top": 15,
+  "d_top": 19,
   "d_width": -19,
-  "d_height": -7,
+  "d_height": -32,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -114,11 +114,11 @@
    30
   ],
   "found": true,
-  "match": 0.79,
-  "d_left": 4,
-  "d_top": 3,
-  "d_width": 18,
-  "d_height": -28,
+  "match": 0.75,
+  "d_left": -4,
+  "d_top": -1,
+  "d_width": 9,
+  "d_height": -26,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -136,9 +136,9 @@
   "found": true,
   "match": 0.08,
   "d_left": -1,
-  "d_top": -25,
+  "d_top": 6,
   "d_width": 19,
-  "d_height": 30,
+  "d_height": -10,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -202,7 +202,7 @@
   "de": [
    [
     "brass fill",
-    32.4
+    12.4
    ]
   ],
   "geometry": "UNMEASURED",
@@ -227,7 +227,7 @@
   "de": [
    [
     "track fill",
-    24.0
+    35.4
    ]
   ],
   "geometry": "UNMEASURED",
@@ -244,7 +244,7 @@
    43
   ],
   "found": false,
-  "match": 0.01,
+  "match": 0.02,
   "d_left": null,
   "d_top": null,
   "d_width": null,

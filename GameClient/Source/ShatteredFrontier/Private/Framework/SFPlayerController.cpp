@@ -427,6 +427,7 @@ void ASFPlayerController::ToggleTradeDemo()
     const bool bOpeningTrade = TradeWindow->GetVisibility() == ESlateVisibility::Collapsed;
     if (bOpeningTrade) { CloseSidePanelsForModal(); }
     TradeWindow->SetVisibility(bOpeningTrade ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    if (GatheringHud) { GatheringHud->SetStationModal(TradeWindow); }
     FillViewport(this, TradeWindow);  // modal root: dims the scene and places the window at 26-74% x 14-78% itself
 }
 
@@ -449,6 +450,7 @@ void ASFPlayerController::ToggleMarketDemo()
     const bool bOpeningMarket = MarketBoard->GetVisibility() == ESlateVisibility::Collapsed;
     if (bOpeningMarket) { CloseSidePanelsForModal(); }
     MarketBoard->SetVisibility(bOpeningMarket ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    if (GatheringHud) { GatheringHud->SetStationModal(MarketBoard); }
     FillViewport(this, MarketBoard);  // modal: the board dims the whole scene and centres itself
 }
 

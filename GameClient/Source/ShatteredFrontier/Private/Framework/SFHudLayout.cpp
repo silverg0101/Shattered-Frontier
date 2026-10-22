@@ -116,7 +116,7 @@ void USFHudLayout::NativeOnInitialized()
     TargetFrame->SetContent(TargetStack);
     UVerticalBox* TargetBox = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     UOverlaySlot* TargetBoxSlot = TargetStack->AddChildToOverlay(TargetBox);
-    TargetBoxSlot->SetHorizontalAlignment(HAlign_Fill); TargetBoxSlot->SetVerticalAlignment(VAlign_Center); TargetBoxSlot->SetPadding(FMargin(15.f, 0.f));
+    TargetBoxSlot->SetHorizontalAlignment(HAlign_Fill); TargetBoxSlot->SetVerticalAlignment(VAlign_Center); TargetBoxSlot->SetPadding(FMargin(15.f, 0.f, 15.f, 6.f));
     TargetName = Text(WidgetTree, TEXT(""), 26, Ivory());
     TargetName->SetJustification(ETextJustify::Center);
     TargetBox->AddChildToVerticalBox(TargetName)->SetHorizontalAlignment(HAlign_Center);
@@ -139,11 +139,15 @@ void USFHudLayout::NativeOnInitialized()
     UOverlaySlot* LevelSlot = Diamond->AddChildToOverlay(Num(WidgetTree, TEXT("1"), 24, Ivory()));
     LevelSlot->SetHorizontalAlignment(HAlign_Center); LevelSlot->SetVerticalAlignment(VAlign_Center);
     UOverlaySlot* DiamondSlot = TargetStack->AddChildToOverlay(Diamond);
-    DiamondSlot->SetHorizontalAlignment(HAlign_Left); DiamondSlot->SetVerticalAlignment(VAlign_Center);    USizeBox* TargetSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+    DiamondSlot->SetHorizontalAlignment(HAlign_Left); DiamondSlot->SetVerticalAlignment(VAlign_Top); DiamondSlot->SetPadding(FMargin(0.f));  // flush with the frame's top-left corner
+    USizeBox* TargetSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
     TargetSize->SetWidthOverride(433.f); TargetSize->SetHeightOverride(74.f); TargetSize->SetContent(TargetFrame);
     TargetSize->SetVisibility(ESlateVisibility::Collapsed);
     TargetBoxRoot = TargetSize;
-    HudAnchor(Root, TargetSize, 0.5f, 0.0296f, 0.5f, 0.f);
+    HudAnchor(Root, TargetSize, 0.4956f, 0.0296f, 0.5f, 0.f);  // centre 951.5 -> left edge 735
+    TargetMessage = Text(WidgetTree, TEXT(""), 20, Amber());
+    TargetMessage->SetVisibility(ESlateVisibility::Collapsed);
+    HudAnchor(Root, TargetMessage, 0.4956f, 0.1f, 0.5f, 0.f);
 
     // Minimap: a fixed 250 px disc at the right edge (x 99%, y 2%); the ring art bakes in the N cap. No map is rendered into it yet.
     UVerticalBox* MapColumn = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
@@ -174,7 +178,7 @@ void USFHudLayout::NativeOnInitialized()
         UOverlaySlot* RingSlot = Disc->AddChildToOverlay(Ring);
         RingSlot->SetHorizontalAlignment(HAlign_Fill); RingSlot->SetVerticalAlignment(VAlign_Fill);
     }
-    USizeBox* Arrow = KitImage(WidgetTree, TEXT("player_arrow"), 18.f);
+    USizeBox* Arrow = KitImage(WidgetTree, TEXT("player_arrow"), 24.f);
     if (UImage* ArrowImage = Cast<UImage>(Arrow->GetContent())) { ArrowImage->SetColorAndOpacity(FLinearColor::White); }  // the piece drew grey
     UOverlaySlot* MarkerSlot = Disc->AddChildToOverlay(Arrow);
     MarkerSlot->SetHorizontalAlignment(HAlign_Center); MarkerSlot->SetVerticalAlignment(VAlign_Center);
@@ -204,15 +208,22 @@ void USFHudLayout::BuildHotbar(UCanvasPanel* Root)
         UImage* Icon = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
         if (UTexture2D* Texture = HudIcon(HotSlot.IconStem)) { Icon->SetBrushFromTexture(Texture, false); }
         USizeBox* IconSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        IconSize->SetWidthOverride(64.f); IconSize->SetHeightOverride(64.f); IconSize->SetContent(Icon);
+        IconSize->SetWidthOverride(56.f); IconSize->SetHeightOverride(56.f); IconSize->SetContent(Icon);
         UOverlaySlot* IconSlot = Stack->AddChildToOverlay(IconSize);
         IconSlot->SetHorizontalAlignment(HAlign_Center); IconSlot->SetVerticalAlignment(VAlign_Center);
-        UTextBlock* Key = Num(WidgetTree, FString::FromInt(HotSlot.Key), 18, Ivory());
+        auto Outlined = [](UTextBlock* Block)
+        {
+            Block->SetShadowOffset(FVector2D(1.f, 1.f)); Block->SetShadowColorAndOpacity(SFHudStyle::Hex(TEXT("0E171C")));
+            FSlateFontInfo Font = Block->GetFont(); Font.OutlineSettings.OutlineSize = 1; Font.OutlineSettings.OutlineColor = SFHudStyle::Hex(TEXT("0E171C")); Block->SetFont(Font);
+        };
+        UTextBlock* Key = Num(WidgetTree, FString::FromInt(HotSlot.Key), 32, Ivory());
+        Outlined(Key);
         UOverlaySlot* KeySlot = Stack->AddChildToOverlay(Key);
-        KeySlot->SetHorizontalAlignment(HAlign_Left); KeySlot->SetVerticalAlignment(VAlign_Top); KeySlot->SetPadding(FMargin(8.f, 4.f, 0.f, 0.f));
-        UTextBlock* Count = Num(WidgetTree, TEXT(""), 18, Ivory());
+        KeySlot->SetHorizontalAlignment(HAlign_Left); KeySlot->SetVerticalAlignment(VAlign_Top); KeySlot->SetPadding(FMargin(10.f, 6.f, 0.f, 0.f));
+        UTextBlock* Count = Num(WidgetTree, TEXT(""), 24, Ivory());
+        Outlined(Count);
         UOverlaySlot* CountSlot = Stack->AddChildToOverlay(Count);
-        CountSlot->SetHorizontalAlignment(HAlign_Right); CountSlot->SetVerticalAlignment(VAlign_Bottom); CountSlot->SetPadding(FMargin(0.f, 0.f, 8.f, 4.f));
+        CountSlot->SetHorizontalAlignment(HAlign_Right); CountSlot->SetVerticalAlignment(VAlign_Bottom); CountSlot->SetPadding(FMargin(0.f, 0.f, 10.f, 6.f));
         SlotCounts.Add(Count);
         USizeBox* CellSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
         CellSize->SetWidthOverride(88.f); CellSize->SetHeightOverride(88.f); CellSize->SetContent(Cell);
@@ -327,12 +338,15 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     else if (const ASFTownsfolkNpc* Npc = Cast<ASFTownsfolkNpc>(CombatTarget))
     { Health = Npc->Health(); MaxHealth = GetDefault<USFTownsfolkSettings>()->ResidentHealth; Name = Npc->Id(); }
     TargetBoxRoot->SetVisibility(CombatTarget && !bStation ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+    if (!CombatTarget || bStation) { TargetMessage->SetVisibility(ESlateVisibility::Collapsed); }
     if (CombatTarget)
     {
         TargetName->SetText(FText::FromString(Name));
         const ASFPlayerController* Player = Cast<ASFPlayerController>(Controller);
         const FString Message = Player ? Player->GetPilotMessage() : FString();
-        TargetCharges->SetText(FText::FromString(Message.IsEmpty() ? FString::Printf(TEXT("%d / %d"), Health, MaxHealth) : Message));
+        TargetCharges->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), Health, MaxHealth)));
+        TargetMessage->SetText(FText::FromString(Message));
+        TargetMessage->SetVisibility(Message.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
         if (TargetBar) { TargetBar->SetVisibility(ESlateVisibility::HitTestInvisible); }
         if (TargetFillClip) { TargetFillClip->SetWidthOverride(TargetFillWidth * ChargeFraction(Health, MaxHealth)); }
     }

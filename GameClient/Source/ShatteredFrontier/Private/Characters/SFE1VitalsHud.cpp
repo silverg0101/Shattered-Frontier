@@ -72,16 +72,16 @@ void USFE1VitalsHud::NativeOnInitialized()
     // framed bars 10 px apart with centred Source Sans 20 numerals. No plate behind them.
     UHorizontalBox* Row = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
     UCanvasPanelSlot* RowSlot = Canvas->AddChildToCanvas(Row);
-    RowSlot->SetAnchors(FAnchors(0.02f, 0.96f)); RowSlot->SetAlignment(FVector2D(0.f, 1.f)); RowSlot->SetAutoSize(true);
+    RowSlot->SetAnchors(FAnchors(0.02f, 0.974f)); RowSlot->SetAlignment(FVector2D(0.f, 1.f)); RowSlot->SetAutoSize(true);
     // Level badge: the numeral sits in the lower plate. ponytail: no character level stat exists yet, so it shows 1 until Character gains one.
     UOverlay* BadgeStack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
     BadgeStack->AddChildToOverlay(KitImage(WidgetTree, TEXT("hex_level_badge"), 115.f, 158.f));
-    UTextBlock* LevelText = Num(WidgetTree, TEXT("1"), 24, Ivory());
+    UTextBlock* LevelText = Num(WidgetTree, TEXT("1"), 28, Ivory());
     LevelText->SetShadowOffset(FVector2D(1.f, 1.f)); LevelText->SetShadowColorAndOpacity(Hex(TEXT("0E171C")));
     FSlateFontInfo LevelFont = LevelText->GetFont(); LevelFont.OutlineSettings.OutlineSize = 1; LevelFont.OutlineSettings.OutlineColor = Hex(TEXT("0E171C"));
     LevelText->SetFont(LevelFont);
     UOverlaySlot* LevelSlot = BadgeStack->AddChildToOverlay(LevelText);
-    LevelSlot->SetHorizontalAlignment(HAlign_Center); LevelSlot->SetVerticalAlignment(VAlign_Bottom); LevelSlot->SetPadding(FMargin(0.f, 0.f, 0.f, 14.f));
+    LevelSlot->SetHorizontalAlignment(HAlign_Center); LevelSlot->SetVerticalAlignment(VAlign_Bottom); LevelSlot->SetPadding(FMargin(0.f, 0.f, 0.f, 18.f));
     Row->AddChildToHorizontalBox(BadgeStack)->SetVerticalAlignment(VAlign_Center);
     UVerticalBox* Bars = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     UHorizontalBoxSlot* BarsSlot = Row->AddChildToHorizontalBox(Bars);
@@ -122,12 +122,12 @@ void USFE1VitalsHud::NativeOnInitialized()
     DimSlot->SetAnchors(FAnchors(0.f, 0.f, 1.f, 1.f)); DimSlot->SetOffsets(FMargin(0.f));
     UBorder* Window = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
     Window->SetBrush(KitOrFrame(TEXT("window_frame"), Slate(0.92f), Brass(), 0.f));
-    Window->SetPadding(FMargin(40.f, 45.f, 40.f, 18.f));
+    Window->SetPadding(FMargin(40.f, 36.f, 40.f, 18.f));
     UCanvasPanelSlot* WindowSlot = DefeatedRoot->AddChildToCanvas(Window);
-    WindowSlot->SetAnchors(FAnchors(0.26f, 0.177f, 0.74f, 0.76f)); WindowSlot->SetOffsets(FMargin(0.f));  // x 499-1421, y 191-821 at 1080p
+    WindowSlot->SetAnchors(FAnchors(0.2786f, 0.177f, 0.7177f, 0.76f)); WindowSlot->SetOffsets(FMargin(0.f));  // x 535-1378, y 191-821 at 1080p
     UVerticalBox* Stack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     USizeBox* WindowWidth = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    WindowWidth->SetWidthOverride(842.f);  // 922 minus the window padding
+    WindowWidth->SetWidthOverride(763.f);  // 843 minus the window padding
     WindowWidth->SetContent(Stack);
     Window->SetContent(WindowWidth);
     auto AddCentred = [Stack](UWidget* Child, const FMargin& Pad)
@@ -146,7 +146,7 @@ void USFE1VitalsHud::NativeOnInitialized()
         Image->SetColorAndOpacity(FLinearColor(Shade, Shade, Shade, 1.f));
         return Image;
     };
-    AddCentred(Text(WidgetTree, TEXT("Defeated"), 76, Ivory(), true), FMargin(0.f));  // mixed-case serif as in defeated.png (Cinzel has no lowercase)
+    AddCentred(Text(WidgetTree, TEXT("Defeated"), 80, Ivory(), true), FMargin(0.f));  // mixed-case serif as in defeated.png (Cinzel has no lowercase)
     // Crimson engraved rule with the stag at its centre: the kit divider and stag emblem, tinted crimson.
     auto KitPicture = [this](const TCHAR* Piece, const FVector2D& Size, const FLinearColor& Tint)
     {
@@ -156,8 +156,10 @@ void USFE1VitalsHud::NativeOnInitialized()
         return Image;
     };
     UOverlay* Rule = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
-    UOverlaySlot* RuleLine = Rule->AddChildToOverlay(KitPicture(TEXT("divider"), FVector2D(545.f, 2.f), Crimson()));
-    RuleLine->SetVerticalAlignment(VAlign_Center);
+    UBorder* RuleBar = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+    RuleBar->SetBrush(Frame(Crimson(), Crimson(), 0.f));  // plain 545x2 crimson rule (the kit divider art collapses at 2 px)
+    UOverlaySlot* RuleLine = Rule->AddChildToOverlay(Sized(RuleBar, 545.f, 2.f));
+    RuleLine->SetHorizontalAlignment(HAlign_Center); RuleLine->SetVerticalAlignment(VAlign_Center);
     UOverlaySlot* RuleStag = Rule->AddChildToOverlay(KitPicture(TEXT("icon_stag_emblem"), FVector2D(30.f, 30.f), Crimson()));
     RuleStag->SetHorizontalAlignment(HAlign_Center);
     AddCentred(Rule, FMargin(0.f, 0.f, 0.f, 4.f));
@@ -169,7 +171,9 @@ void USFE1VitalsHud::NativeOnInitialized()
     auto AddCard = [&](bool bSelected, const TCHAR* Art, const TCHAR* TitleText, const TCHAR* StatusText) -> UTextBlock*
     {
         // 333x241 well: the 320x160 picture on top, name (26) and status (20) centred on the slate plate below it.
-        UBorder* Well = KitPanel(WidgetTree, TEXT("respawn_image_well"), 1.f, Hex(TEXT("17232A")), CardEdge(bSelected), FMargin(6.5f, 6.f, 6.5f, 0.f), 0.f, false);
+        UBorder* Well = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+        Well->SetBrush(Frame(Hex(TEXT("17232A")), FLinearColor::Transparent, 4.f));  // no kit frame: the Edge overlay below is the only outline
+        Well->SetPadding(FMargin(6.5f, 6.f, 6.5f, 0.f));
         UVerticalBox* Lines = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
         Lines->AddChildToVerticalBox(Sized(Picture(Art, FVector2D(320.f, 160.f), bSelected ? 1.f : 0.55f), 320.f, 160.f));
         UTextBlock* Title = Text(WidgetTree, TitleText, 26, Ivory());
@@ -181,14 +185,14 @@ void USFE1VitalsHud::NativeOnInitialized()
         WellSlot->SetHorizontalAlignment(HAlign_Fill); WellSlot->SetVerticalAlignment(VAlign_Fill);
         // Selection is an outline on its own layer (2 px moss, else a 1 px brass hairline); never a brush tint.
         UBorder* Edge = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
-        FSlateBrush EdgeBrush = Frame(FLinearColor::Transparent, CardEdge(bSelected), 4.f); EdgeBrush.OutlineSettings.Width = bSelected ? 2.f : 1.f;
+        FSlateBrush EdgeBrush = Frame(FLinearColor::Transparent, bSelected ? Hex(TEXT("8FBF6A")) : Brass(), 4.f); EdgeBrush.OutlineSettings.Width = bSelected ? 2.f : 1.f;
         Edge->SetBrush(EdgeBrush);
         UOverlaySlot* EdgeSlot = Card->AddChildToOverlay(Edge);
         EdgeSlot->SetHorizontalAlignment(HAlign_Fill); EdgeSlot->SetVerticalAlignment(VAlign_Fill);
         // 46 px roundel at the top right: solid green tick on the chosen card, dark clock on the other.
         UOverlay* Roundel = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
         UBorder* Disc = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
-        FSlateBrush DiscBrush = Frame(bSelected ? Hex(TEXT("5B8A4A")) : Hex(TEXT("17232A")), Ivory(), 23.f); DiscBrush.OutlineSettings.Width = 1.f;
+        FSlateBrush DiscBrush = Frame(Hex(TEXT("17232A")), bSelected ? Hex(TEXT("8FBF6A")) : Ivory(), 23.f); DiscBrush.OutlineSettings.Width = 2.f;
         Disc->SetBrush(DiscBrush);
         UOverlaySlot* DiscSlot = Roundel->AddChildToOverlay(Disc);
         DiscSlot->SetHorizontalAlignment(HAlign_Fill); DiscSlot->SetVerticalAlignment(VAlign_Fill);
@@ -208,7 +212,7 @@ void USFE1VitalsHud::NativeOnInitialized()
     const FSFHudHoldButton Respawn = SFHudStyle::HoldButton(WidgetTree, TEXT("Hold to Respawn"), 501.f);
     RespawnRing = Respawn.Ring;
     AddCentred(Respawn.Face, FMargin(0.f, 0.f, 0.f, 8.f));
-    CountdownText = Text(WidgetTree, TEXT(""), 22, Hex(TEXT("BDB6A2")));
+    CountdownText = Text(WidgetTree, TEXT(""), 18, Hex(TEXT("BDB6A2")));
     AddCentred(CountdownText, FMargin(0.f));
     DefeatedLayer->SetVisibility(ESlateVisibility::Collapsed);
 }
@@ -227,7 +231,7 @@ void USFE1VitalsHud::Present(const FSFE1VitalsModel& Model, int32 MaxHealth, flo
     bDefeatShown = Model.IsDefeated();
     DefeatedLayer->SetVisibility(bDefeatShown ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
     if (!bDefeatShown) { return; }
-    CountdownText->SetText(FText::FromString(RemainingSeconds > 0.f ? TEXT("Respawning in ") + FSFE1VitalsModel::Countdown(RemainingSeconds) + TEXT(" 00B7 you keep everything you carry") : FString(TEXT("Respawning"))));
+    CountdownText->SetText(FText::FromString(RemainingSeconds > 0.f ? TEXT("Respawning in ") + FSFE1VitalsModel::Countdown(RemainingSeconds) + TEXT(" · dropped items remain at the defeat site") : FString(TEXT("Respawning"))));
     CauseText->SetText(FText::FromString(Defeat.Cause.IsEmpty() ? FString(TEXT("You have fallen")) : TEXT("Defeated by ") + Defeat.Cause));
     if (!Defeat.RespawnPoint.IsEmpty()) { PointText->SetText(FText::FromString(Defeat.RespawnPoint)); }
     RespawnProgress = Defeat.DelaySeconds > 0.f ? FMath::Clamp(1.f - RemainingSeconds / Defeat.DelaySeconds, 0.f, 1.f) : 1.f;

@@ -56,7 +56,11 @@ private:
     UPROPERTY(Transient) TObjectPtr<UTextBlock> RingLabel;
     UPROPERTY(Transient) TObjectPtr<USFStationPanel> StationPanel;
 
+    TWeakObjectPtr<const UWidget> StationModal;
+
 public:
+    // While this modal (market, trade) is visible the station panel stays hidden.
+    void SetStationModal(const UWidget* Modal) { StationModal = Modal; }
     // True while the crafting-station panel is on screen (the target frame and prompt bar step aside for it).
     bool IsStationShown() const;
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST

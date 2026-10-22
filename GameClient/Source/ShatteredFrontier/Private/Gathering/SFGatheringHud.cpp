@@ -41,7 +41,7 @@ namespace
 // Ring side and its moss track (gathering.png: 110 px ring; track radius and width measured on gathering_channel_ring).
 constexpr float GatherRingSide = 110.f;
 constexpr float GatherRingTrackRadius = 51.f;
-constexpr float GatherRingTrackWidth = 7.f;
+constexpr float GatherRingTrackWidth = 9.f;
 
 const TCHAR* ToastIconStem(const FString& ToastText)
 {
@@ -105,8 +105,8 @@ void USFGatheringHud::NativeOnInitialized()
     Place(RingPercent, FVector2D(0.5f, 0.5f));
     RingPlate = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
     RingPlate->SetBrush(KitOrFrame(TEXT("progress_plate"), Slate(0.9f), Brass(), 0.f));
-    RingPlate->SetPadding(FMargin(18.f, 3.f, 18.f, 5.f));
-    RingLabel = Text(WidgetTree, TEXT(""), 19, Ivory());
+    RingPlate->SetPadding(FMargin(20.f, 5.f, 20.f, 6.f));
+    RingLabel = Text(WidgetTree, TEXT(""), 22, Ivory());
     RingPlate->SetContent(RingLabel); RingPlate->SetVisibility(ESlateVisibility::Collapsed);
     Place(RingPlate, FVector2D(0.5f, 0.f));
 
@@ -183,6 +183,7 @@ void USFGatheringHud::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     if (!Controller->DeprojectMousePositionToWorld(Start, Direction)) { FRotator Rotation; Controller->GetPlayerViewPoint(Start, Rotation); Direction = Rotation.Vector(); }
     if (const ASFGatheringPilotNode* Node = Pilot->FindAimedNode(Start, Direction)) { Station = Node->IsRefinery() ? Node : nullptr; }
     if (!Station && (bHarvesting || bFinishing) && Feedback.Node->IsRefinery()) { Station = Feedback.Node; }  // keep the queue in view while crafting
+    if (StationModal.IsValid() && StationModal->GetVisibility() != ESlateVisibility::Collapsed) { Station = nullptr; }
     StationPanel->Present(Station ? Pilot.Get() : nullptr, Station);
 }
 
@@ -194,10 +195,10 @@ int32 USFGatheringHud::NativePaint(const FPaintArgs& Args, const FGeometry& Allo
     {
         const float Half = GatherRingSide * 0.5f;
         const FVector2f Center(static_cast<float>(RingCenter.X), static_cast<float>(RingCenter.Y));
-        FSlateDrawElement::MakeBox(OutDrawElements, LayerId + 1, AllottedGeometry.ToPaintGeometry(FVector2f(GatherRingSide, GatherRingSide) * 0.92f, FSlateLayoutTransform(Center - FVector2f(Half, Half) * 0.92f)), &RingBack, ESlateDrawEffect::None, RingBack.TintColor.GetSpecifiedColor());  // MakeBox ignores the brush tint
+        FSlateDrawElement::MakeBox(OutDrawElements, LayerId, AllottedGeometry.ToPaintGeometry(FVector2f(GatherRingSide, GatherRingSide) * 0.92f, FSlateLayoutTransform(Center - FVector2f(Half, Half) * 0.92f)), &RingBack, ESlateDrawEffect::None, RingBack.TintColor.GetSpecifiedColor());  // MakeBox ignores the brush tint
         if (bHasRingBrush)
         {
-            FSlateDrawElement::MakeBox(OutDrawElements, LayerId + 2, AllottedGeometry.ToPaintGeometry(FVector2f(GatherRingSide, GatherRingSide), FSlateLayoutTransform(Center - FVector2f(Half, Half))), &RingBrush, ESlateDrawEffect::None, FLinearColor::White);
+            FSlateDrawElement::MakeBox(OutDrawElements, LayerId + 1, AllottedGeometry.ToPaintGeometry(FVector2f(GatherRingSide, GatherRingSide),FSlateLayoutTransform(Center - FVector2f(Half, Half))), &RingBrush, ESlateDrawEffect::None, FLinearColor::White);
         }
         TArray<FVector2f> Progress;
         const float Fraction = FMath::Max(RingProgress, 0.01f);
@@ -207,10 +208,10 @@ int32 USFGatheringHud::NativePaint(const FPaintArgs& Args, const FGeometry& Allo
             const float Angle = -HALF_PI + TWO_PI * Fraction * I / Count;  // clockwise from 12 o'clock
             Progress.Add(Center + FVector2f(FMath::Cos(Angle), FMath::Sin(Angle)) * GatherRingTrackRadius);
         }
-        FSlateDrawElement::MakeLines(OutDrawElements, LayerId + 3, AllottedGeometry.ToPaintGeometry(), Progress, ESlateDrawEffect::None, SFHudStyle::Hex(TEXT("7FA07A")), true, GatherRingTrackWidth);
+        FSlateDrawElement::MakeLines(OutDrawElements, LayerId + 2, AllottedGeometry.ToPaintGeometry(), Progress, ESlateDrawEffect::None, SFHudStyle::Hex(TEXT("5B8A4A")), true, GatherRingTrackWidth);
         LayerId += 3;
     }
-    return Super::NativePaint(Args, AllottedGeometry, MyCullingRect, OutDrawElements, LayerId + 1, InWidgetStyle, bParentEnabled);
+    return Super::NativePaint(Args, AllottedGeometry, MyCullingRect, OutDrawElements, LayerId, InWidgetStyle, bParentEnabled);
 }
 
 bool USFGatheringHud::IsStationShown() const

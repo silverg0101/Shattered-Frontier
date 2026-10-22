@@ -38,11 +38,11 @@
    38
   ],
   "found": true,
-  "match": 0.32,
-  "d_left": -1,
-  "d_top": -18,
-  "d_width": 196,
-  "d_height": 9,
+  "match": 0.41,
+  "d_left": -7,
+  "d_top": -8,
+  "d_width": 208,
+  "d_height": 14,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -58,11 +58,11 @@
    143
   ],
   "found": true,
-  "match": 0.7,
-  "d_left": 6,
-  "d_top": -24,
-  "d_width": -11,
-  "d_height": 0,
+  "match": 0.93,
+  "d_left": 0,
+  "d_top": 5,
+  "d_width": 0,
+  "d_height": 1,
   "de": [
    [
     "card fill",
@@ -74,7 +74,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_21",
+  "widget": "SizeBox:SizeBox_13",
   "name": "skill card Foraging",
   "rect": [
    66,
@@ -83,11 +83,11 @@
    132
   ],
   "found": true,
-  "match": 0.9,
-  "d_left": 6,
-  "d_top": -9,
-  "d_width": -11,
-  "d_height": 11,
+  "match": 0.67,
+  "d_left": 0,
+  "d_top": 22,
+  "d_width": 0,
+  "d_height": 12,
   "de": [
    [
     "card fill",
@@ -99,7 +99,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_11",
+  "widget": "SizeBox:SizeBox_7",
   "name": "skill card Mining",
   "rect": [
    66,
@@ -108,11 +108,11 @@
    133
   ],
   "found": true,
-  "match": 0.82,
-  "d_left": 6,
-  "d_top": -17,
-  "d_width": -11,
-  "d_height": 10,
+  "match": 0.77,
+  "d_left": 0,
+  "d_top": 13,
+  "d_width": 0,
+  "d_height": 11,
   "de": [
    [
     "card fill",
@@ -124,7 +124,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_31",
+  "widget": "SizeBox:SizeBox_19",
   "name": "skill card Fishing",
   "rect": [
    66,
@@ -133,11 +133,11 @@
    140
   ],
   "found": true,
-  "match": 0.96,
-  "d_left": 6,
-  "d_top": -1,
-  "d_width": -11,
-  "d_height": 3,
+  "match": 0.63,
+  "d_left": 0,
+  "d_top": 31,
+  "d_width": 0,
+  "d_height": 4,
   "de": [
    [
     "card fill",
@@ -158,9 +158,9 @@
    110
   ],
   "found": true,
-  "match": 0.61,
-  "d_left": 6,
-  "d_top": -22,
+  "match": 0.87,
+  "d_left": 0,
+  "d_top": 8,
   "d_width": 0,
   "d_height": 0,
   "de": [
@@ -174,7 +174,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_9",
+  "widget": "",
   "name": "Woodcutting XP bar",
   "rect": [
    198,
@@ -182,24 +182,24 @@
    336,
    18
   ],
-  "found": true,
-  "match": 0.68,
-  "d_left": 6,
-  "d_top": -6,
-  "d_width": -7,
-  "d_height": 8,
+  "found": false,
+  "match": 0.0,
+  "d_left": null,
+  "d_top": null,
+  "d_width": null,
+  "d_height": null,
   "de": [
    [
     "xp green fill",
     38.9
    ]
   ],
-  "geometry": "FAIL",
+  "geometry": "UNMEASURED",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
-  "widget": "SizeBox:SizeBox_19",
+  "widget": "HorizontalBox:HorizontalBox_6",
   "name": "Mining XP bar",
   "rect": [
    198,
@@ -208,11 +208,11 @@
    18
   ],
   "found": true,
-  "match": 0.54,
-  "d_left": 6,
-  "d_top": 2,
-  "d_width": -7,
-  "d_height": 8,
+  "match": 0.41,
+  "d_left": 0,
+  "d_top": -17,
+  "d_width": 4,
+  "d_height": 14,
   "de": [
    [
     "xp green fill",
@@ -241,7 +241,7 @@
   "de": [
    [
     "frame fill",
-    6.2
+    6.1
    ],
    [
     "frame fill",
@@ -290,7 +290,7 @@
   "de": [
    [
     "hp red fill",
-    34.0
+    34.2
    ]
   ],
   "geometry": "UNMEASURED",
@@ -360,7 +360,7 @@
   "de": [
    [
     "label plate fill",
-    3.8
+    3.1
    ]
   ],
   "geometry": "UNMEASURED",
@@ -385,7 +385,7 @@
   "de": [
    [
     "fill dark",
-    8.9
+    8.5
    ]
   ],
   "geometry": "UNMEASURED",
@@ -483,7 +483,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "VerticalBox:VerticalBox_0",
+  "widget": "Overlay:Overlay_1",
   "name": "vitals HP bar",
   "rect": [
    151,
@@ -492,15 +492,15 @@
    33
   ],
   "found": true,
-  "match": 0.39,
+  "match": 0.83,
   "d_left": 12,
-  "d_top": -27,
+  "d_top": -2,
   "d_width": -13,
-  "d_height": 51,
+  "d_height": -1,
   "de": [
    [
     "hp red fill",
-    13.5
+    10.8
    ]
   ],
   "geometry": "FAIL",
@@ -517,15 +517,15 @@
    141
   ],
   "found": true,
-  "match": 0.71,
+  "match": 0.76,
   "d_left": 5,
-  "d_top": -23,
+  "d_top": -8,
   "d_width": 7,
   "d_height": 17,
   "de": [
    [
     "badge fill",
-    41.3
+    14.0
    ]
   ],
   "geometry": "FAIL",
@@ -590,7 +590,7 @@
   "de": [
    [
     "fill dark",
-    5.0
+    4.9
    ]
   ],
   "geometry": "FAIL",
@@ -615,7 +615,7 @@
   "de": [
    [
     "fill dark",
-    6.8
+    6.9
    ]
   ],
   "geometry": "UNMEASURED",

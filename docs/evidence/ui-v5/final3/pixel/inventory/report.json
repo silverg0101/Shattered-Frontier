@@ -17,7 +17,7 @@
   "de": [
    [
     "panel fill",
-    5.5
+    3.8
    ],
    [
     "panel fill",
@@ -38,11 +38,11 @@
    48
   ],
   "found": true,
-  "match": 0.37,
-  "d_left": 16,
-  "d_top": 15,
-  "d_width": -85,
-  "d_height": -7,
+  "match": 0.5,
+  "d_left": 0,
+  "d_top": 7,
+  "d_width": -80,
+  "d_height": -4,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -58,19 +58,19 @@
    78
   ],
   "found": true,
-  "match": 0.55,
-  "d_left": 16,
-  "d_top": 8,
-  "d_width": 0,
-  "d_height": 0,
+  "match": 0.85,
+  "d_left": 0,
+  "d_top": 0,
+  "d_width": -6,
+  "d_height": -6,
   "de": [
    [
     "slot fill",
-    3.0
+    3.4
    ]
   ],
   "geometry": "FAIL",
-  "colour": "PASS",
+  "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
@@ -83,23 +83,23 @@
    78
   ],
   "found": true,
-  "match": 0.55,
-  "d_left": 16,
-  "d_top": 8,
-  "d_width": 0,
-  "d_height": 0,
+  "match": 0.69,
+  "d_left": 0,
+  "d_top": -8,
+  "d_width": -6,
+  "d_height": -6,
   "de": [
    [
     "slot fill",
-    2.9
+    3.5
    ]
   ],
   "geometry": "FAIL",
-  "colour": "PASS",
+  "colour": "FAIL",
   "verdict": "FAIL"
  },
  {
-  "widget": "",
+  "widget": "SizeBox:SizeBox_6",
   "name": "equip slot boots",
   "rect": [
    134,
@@ -107,20 +107,20 @@
    78,
    56
   ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.73,
+  "d_left": 0,
+  "d_top": -16,
+  "d_width": -6,
+  "d_height": 16,
   "de": [
    [
     "slot fill",
-    5.6
+    3.0
    ]
   ],
-  "geometry": "UNMEASURED",
-  "colour": "FAIL",
+  "geometry": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  },
  {
@@ -133,15 +133,15 @@
    80
   ],
   "found": true,
-  "match": 0.6,
-  "d_left": 16,
-  "d_top": 7,
-  "d_width": -2,
-  "d_height": -2,
+  "match": 0.79,
+  "d_left": 0,
+  "d_top": -1,
+  "d_width": -8,
+  "d_height": -8,
   "de": [
    [
     "selected slot fill",
-    3.2
+    33.2
    ]
   ],
   "geometry": "FAIL",
@@ -158,15 +158,15 @@
    80
   ],
   "found": true,
-  "match": 0.61,
-  "d_left": 16,
-  "d_top": 6,
-  "d_width": -2,
-  "d_height": -2,
+  "match": 0.63,
+  "d_left": 0,
+  "d_top": -10,
+  "d_width": -8,
+  "d_height": -8,
   "de": [
    [
     "slot fill",
-    12.6
+    7.5
    ]
   ],
   "geometry": "FAIL",
@@ -183,15 +183,15 @@
    80
   ],
   "found": true,
-  "match": 0.67,
-  "d_left": 16,
-  "d_top": 2,
-  "d_width": -2,
-  "d_height": -2,
+  "match": 0.35,
+  "d_left": 0,
+  "d_top": -30,
+  "d_width": -8,
+  "d_height": -8,
   "de": [
    [
     "slot fill",
-    12.8
+    7.7
    ]
   ],
   "geometry": "FAIL",
@@ -208,18 +208,18 @@
    390
   ],
   "found": true,
-  "match": 0.79,
-  "d_left": 16,
-  "d_top": 8,
+  "match": 1.0,
+  "d_left": 0,
+  "d_top": 0,
   "d_width": 0,
   "d_height": 0,
   "de": [
    [
     "backdrop fill",
-    4.4
+    4.9
    ]
   ],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
@@ -233,9 +233,9 @@
    61
   ],
   "found": true,
-  "match": 0.47,
-  "d_left": 16,
-  "d_top": 8,
+  "match": 0.87,
+  "d_left": 2,
+  "d_top": 2,
   "d_width": 0,
   "d_height": 1,
   "de": [
@@ -244,7 +244,7 @@
     7.0
    ]
   ],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
@@ -258,9 +258,9 @@
    61
   ],
   "found": true,
-  "match": 0.47,
-  "d_left": 16,
-  "d_top": 8,
+  "match": 0.87,
+  "d_left": 2,
+  "d_top": 2,
   "d_width": 0,
   "d_height": 1,
   "de": [
@@ -269,7 +269,7 @@
     7.5
    ]
   ],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
@@ -283,9 +283,9 @@
    327
   ],
   "found": true,
-  "match": 0.91,
-  "d_left": 14,
-  "d_top": 6,
+  "match": 0.99,
+  "d_left": 0,
+  "d_top": 0,
   "d_width": 1,
   "d_height": 3,
   "de": [],
@@ -303,9 +303,9 @@
    61
   ],
   "found": true,
-  "match": 0.55,
-  "d_left": 13,
-  "d_top": 6,
+  "match": 0.95,
+  "d_left": -1,
+  "d_top": 0,
   "d_width": 0,
   "d_height": 1,
   "de": [
@@ -314,7 +314,7 @@
     7.2
    ]
   ],
-  "geometry": "FAIL",
+  "geometry": "PASS",
   "colour": "FAIL",
   "verdict": "FAIL"
  },
@@ -328,9 +328,9 @@
    20
   ],
   "found": true,
-  "match": 0.32,
-  "d_left": 16,
-  "d_top": 8,
+  "match": 0.7,
+  "d_left": 0,
+  "d_top": 0,
   "d_width": -12,
   "d_height": 7,
   "de": [],
@@ -339,7 +339,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "",
+  "widget": "HorizontalBox:HorizontalBox_0",
   "name": "gold footer",
   "rect": [
    503,
@@ -347,16 +347,16 @@
    116,
    22
   ],
-  "found": false,
-  "match": 0.0,
-  "d_left": null,
-  "d_top": null,
-  "d_width": null,
-  "d_height": null,
+  "found": true,
+  "match": 0.62,
+  "d_left": 33,
+  "d_top": 0,
+  "d_width": -33,
+  "d_height": 5,
   "de": [],
-  "geometry": "UNMEASURED",
+  "geometry": "FAIL",
   "colour": "PASS",
-  "verdict": "REVIEW"
+  "verdict": "FAIL"
  },
  {
   "widget": "",
@@ -376,11 +376,11 @@
   "de": [
    [
     "tooltip fill",
-    36.5
+    35.8
    ],
    [
     "tooltip fill",
-    48.7
+    48.9
    ]
   ],
   "geometry": "UNMEASURED",
@@ -505,7 +505,7 @@
   "de": [
    [
     "fill dark",
-    22.1
+    20.1
    ]
   ],
   "geometry": "UNMEASURED",
@@ -530,7 +530,7 @@
   "de": [
    [
     "fill dark",
-    35.5
+    35.8
    ]
   ],
   "geometry": "UNMEASURED",
@@ -555,7 +555,7 @@
   "de": [
    [
     "slot fill",
-    4.7
+    4.3
    ]
   ],
   "geometry": "FAIL",
@@ -588,7 +588,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "VerticalBox:VerticalBox_0",
+  "widget": "Overlay:Overlay_1",
   "name": "vitals HP bar",
   "rect": [
    134,
@@ -597,15 +597,15 @@
    36
   ],
   "found": true,
-  "match": 0.4,
+  "match": 0.46,
   "d_left": 29,
-  "d_top": -34,
+  "d_top": -9,
   "d_width": -12,
-  "d_height": 48,
+  "d_height": -4,
   "de": [
    [
     "hp red fill",
-    14.9
+    8.3
    ]
   ],
   "geometry": "FAIL",
@@ -622,19 +622,19 @@
    110
   ],
   "found": true,
-  "match": 0.52,
+  "match": 0.64,
   "d_left": 6,
-  "d_top": -61,
+  "d_top": -46,
   "d_width": -1,
   "d_height": 48,
   "de": [
    [
     "badge fill",
-    6.3
+    1.9
    ]
   ],
   "geometry": "FAIL",
-  "colour": "FAIL",
+  "colour": "PASS",
   "verdict": "FAIL"
  }
 ]
