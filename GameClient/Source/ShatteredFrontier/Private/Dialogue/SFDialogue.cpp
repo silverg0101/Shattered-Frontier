@@ -302,7 +302,10 @@ void USFDialoguePanel::NativeOnInitialized()
     Box(Board, Flow, 513.f, 332.f, 472.f, 500.f);
 
     // Right half: the offered quest in its inset card.
-    Box(Offer, KitPanel(WidgetTree, TEXT("detail_card_frame"), 0.5f, Hex(TEXT("0F1517")), Brass(), FMargin(0.f), 0.f), 1016.f, 244.f, 400.f, 522.f);
+    UBorder* CardBacking = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());  // the card is an inset darker than the board (r33)
+    CardBacking->SetBrush(FSlateColorBrush(FLinearColor::White)); CardBacking->SetBrushColor(Hex(TEXT("0F1518")));
+    Box(Offer, CardBacking, 1018.f, 246.f, 396.f, 518.f);
+    Box(Offer, KitPanel(WidgetTree, TEXT("detail_card_frame"), 1.f, Hex(TEXT("0F1518")), Brass(), FMargin(0.f), 0.f), 1016.f, 244.f, 400.f, 522.f);
     USizeBox* WellFrame = KitImage(WidgetTree, TEXT("respawn_image_well"), 1.f, 1.f);
     WellFrame->ClearWidthOverride(); WellFrame->ClearHeightOverride();
     WellFrame->SetVisibility(ESlateVisibility::HitTestInvisible);
@@ -435,7 +438,13 @@ void USFDialoguePanel::Refresh()
     StyledSelected = -1;
     if (Session.Tree.IsValid() && Session.Tree->bHasOffer)
     {
-        AcceptButton->SetIsEnabled(!Session.bAccepted);
+        ApplyButtonStyle(AcceptButton, EButtonKind::Primary, false);
+        if (Session.bAccepted)  // HandleAccept is a no-op once accepted; only the plate shows the disabled state
+        {
+            FButtonStyle Done = AcceptButton->GetStyle();
+            Done.Normal = Done.Hovered = Done.Pressed = ButtonBrush(EButtonKind::Primary, EHudState::Disabled);
+            AcceptButton->SetStyle(Done);
+        }
         AcceptLabel->SetText(FText::FromString(Session.bAccepted ? TEXT("Accepted") : TEXT("Accept")));
     }
     StyleRows();

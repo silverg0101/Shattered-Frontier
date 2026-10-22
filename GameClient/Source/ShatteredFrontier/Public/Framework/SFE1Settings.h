@@ -98,9 +98,9 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ClampMin="-20", ClampMax="20", Units="deg"))
     float CombatPitchBiasDegrees = -5.0f;
     UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ClampMin="0", ClampMax="60", Units="deg", ToolTip="Dialogue: camera yaw past the speaker, so the speaker stands left of the board."))
-    float DialogueFramingYawDegrees = 34.0f;
-    UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ClampMin="0", ClampMax="25", Units="deg", ToolTip="Dialogue: how far above the screen centre the speaker's head is held; 14 is y ~32 % at the dialogue arm, as the concept."))
-    float DialogueHeadAboveCentreDegrees = 14.0f;
+    float DialogueFramingYawDegrees = 30.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ClampMin="0", ClampMax="25", Units="deg", ToolTip="Dialogue: how far above the screen centre the speaker's head is held; 18 puts it near y 30 % at the dialogue arm (r33 measured), as the concept."))
+    float DialogueHeadAboveCentreDegrees = 18.0f;
     UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ClampMin="150", ClampMax="600", Units="cm", ToolTip="Dialogue: camera distance while the board is open (close and near eye level, as the concept); the player's zoom returns on close."))
     float DialogueArmCm = 230.0f;
     UPROPERTY(Config, EditAnywhere, Category="Camera|Combat Framing", meta=(ClampMin="0", ClampMax="3", Units="s"))
