@@ -1,0 +1,7 @@
+# Songs of the Greenlands
+
+Nine settlement compositions were supplied by the project owner on 2026-10-21 in `Shattered Frontier.zip`. The WAV masters are kept locally in ignored `masters/`; only the OGG Vorbis q6 stereo imports and `manifest.json` are versioned. Conversion keeps each source sample rate, with no gain, EQ, dynamics, or time changes. The manifest records source and import SHA-256 hashes, duration, sample rate, channel count, WAV true peak and integrated LUFS. These are owned project audio.
+
+The short Silverbrook and Valemere pieces encode below 5 MB at q6; Highcrest is near 10 MB. Quality is held fixed rather than padding the files. `tools/Import-SettlementMusic.py` imports the OGGs as non-looping streaming SoundWaves under `/Game/Frontier/Audio/Music/Greenlands/` and assigns the Music sound class.
+
+Release authors control linear volume (0–1, default 0.6), fade in/out (0–20 s, defaults 4/6), and optional random loop silence (0–120 s per bound, defaults 20–60) through `USFSettlementMusicSettings` in `DefaultGame.ini`; values are captured at world launch. The nine track keys are stable `zone/greenlands_*` IDs. Only Silverbrook has a built map: its map-local town footprint uses a 400 m radius around the origin, matching the authored wall circle. Future settlements need their own `Areas` entries once their maps and settlement shapes are built. Wilderness is silent. No combat/UI sound mix exists yet, so music ducking awaits that mix; the import uses a dedicated Music sound class for the eventual mix.
