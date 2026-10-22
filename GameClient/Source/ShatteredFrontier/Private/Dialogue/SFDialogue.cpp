@@ -118,7 +118,10 @@ ASFDialogueNpc::ASFDialogueNpc()
     bReplicates = false;
     Body = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Body"));
     SetRootComponent(Body);
-    Body->SetCollisionProfileName(TEXT("NoCollision"));
+    // Nothing collides with the speaker; it answers visibility traces only, so the framing camera can see it.
+    Body->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    Body->SetCollisionResponseToAllChannels(ECR_Ignore);
+    Body->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
     // The mannequin and its AnimBP idle, as the player character renders them (SFE1Character).
     static ConstructorHelpers::FObjectFinder<USkeletalMesh> Mesh(TEXT("/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
     static ConstructorHelpers::FClassFinder<UAnimInstance> Anim(TEXT("/Game/Mannequin/Animations/ThirdPerson_AnimBP"));
@@ -169,16 +172,6 @@ UWidget* SectionRule(UWidgetTree* Tree)
     return Box;
 }
 
-// A section heading with an engraved rule filling the rest of the row ("Objectives ----").
-UWidget* SectionHeading(UWidgetTree* Tree, const FString& Label)
-{
-    UHorizontalBox* Row = Tree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    Row->AddChildToHorizontalBox(Text(Tree, Label, 22, Brass(), true))->SetVerticalAlignment(VAlign_Center);
-    UHorizontalBoxSlot* Line = Row->AddChildToHorizontalBox(SectionRule(Tree));
-    Line->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); Line->SetPadding(FMargin(12.f, 0.f, 0.f, 0.f)); Line->SetVerticalAlignment(VAlign_Center);
-    return Row;
-}
-
 UTexture2D* TextureFor(const FString& Path)
 {
     if (Path.IsEmpty()) { return nullptr; }
@@ -196,51 +189,89 @@ void SetArt(UImage* Image, UTexture2D* Texture, const FVector2D& Size)
 }
 }
 
+// Concept 10-npc-dialogue measured at 1080p: board x 486-1437, y 219-841. Rule 12 places the board at x 26-74 % y 14-78 %
+// (922 x 691 at 1080p), so a concept position maps by the board's own scale around its centre; type sizes do not scale.
+namespace DialogueLayout
+{
+constexpr float KX = 922.f / 951.f, KY = 691.f / 622.f;
+inline float X(float ConceptX) { return 461.f + (ConceptX - 961.5f) * KX; }
+inline float Y(float ConceptY) { return (ConceptY - 219.f) * KY; }
+// EB Garamond: the cap top sits this many px below the text block's top per px of font size.
+constexpr float CapLift = 0.43f;
+
+// Places a widget by its concept rectangle; Width/Height override the mapped size when given. A fixed Height keeps the
+// concept's centre line (Top + Height / 2), since positions scale with the board and fixed heights do not.
+UCanvasPanelSlot* Box(UCanvasPanel* Into, UWidget* Widget, float Left, float Top, float Right, float Bottom, float Width = 0.f, float Height = 0.f)
+{
+    UCanvasPanelSlot* Slot = Into->AddChildToCanvas(Widget);
+    Slot->SetPosition(FVector2D(X(Left), Height > 0.f ? Y(Top + Height * 0.5f) - Height * 0.5f : Y(Top)));
+    Slot->SetSize(FVector2D(Width > 0.f ? Width : X(Right) - X(Left), Height > 0.f ? Height : Y(Bottom) - Y(Top)));
+    return Slot;
+}
+
+// Places a text block so its cap top lands on the concept's cap top.
+UCanvasPanelSlot* Line(UCanvasPanel* Into, UTextBlock* Label, int32 Size, float Left, float CapTop)
+{
+    UCanvasPanelSlot* Slot = Into->AddChildToCanvas(Label);
+    Slot->SetAutoSize(true);
+    Slot->SetPosition(FVector2D(X(Left), Y(CapTop) - CapLift * Size));
+    return Slot;
+}
+}
+
 void USFDialoguePanel::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
     SetIsFocusable(false);
+    using namespace DialogueLayout;
 
     UCanvasPanel* Root = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass());
     WidgetTree->RootWidget = Root;
     ShadeScene(Root, WidgetTree);
-    UBorder* Frame = KitPanel(WidgetTree, TEXT("window_frame"), 1.f, Slate(1.f), Brass(), FMargin(10.f, 6.f), 6.f);
+    const FAnchors BoardAnchors(0.26f, 0.14f, 0.74f, 0.78f);  // family rule 12
+    // The window_frame art is 84 % opaque inside; an opaque backing keeps the speaker from showing through the board.
+    UBorder* Backing = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+    Backing->SetBrush(FSlateColorBrush(FLinearColor::White)); Backing->SetBrushColor(Hex(TEXT("10171A")));
+    UCanvasPanelSlot* BackingSlot = Root->AddChildToCanvas(Backing);
+    BackingSlot->SetAnchors(BoardAnchors); BackingSlot->SetOffsets(FMargin(8.f));
+    UBorder* Frame = KitPanel(WidgetTree, TEXT("window_frame"), 1.f, Slate(1.f), Brass(), FMargin(0.f), 6.f);
     UCanvasPanelSlot* FrameSlot = Root->AddChildToCanvas(Frame);
-    FrameSlot->SetAnchors(FAnchors(0.26f, 0.14f, 0.74f, 0.78f)); FrameSlot->SetOffsets(FMargin(0.f));  // family rule 12
-    UHorizontalBox* Columns = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    Frame->SetContent(Columns);
+    FrameSlot->SetAnchors(BoardAnchors); FrameSlot->SetOffsets(FMargin(0.f));
+    UCanvasPanel* Board = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass());
+    UCanvasPanelSlot* BoardSlot = Root->AddChildToCanvas(Board);
+    BoardSlot->SetAnchors(BoardAnchors); BoardSlot->SetOffsets(FMargin(0.f));
+    UCanvasPanel* Offer = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass());
+    UCanvasPanelSlot* OfferSlot = Board->AddChildToCanvas(Offer);
+    OfferSlot->SetAnchors(FAnchors(0.f, 0.f, 1.f, 1.f)); OfferSlot->SetOffsets(FMargin(0.f));
+    OfferColumn = Offer;
 
-    // Left half: portrait + name + line, engraved divider, four numbered response rows.
-    UVerticalBox* Left = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    UHorizontalBox* Head = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+    // Left half: portrait 124 x 128, name and speech, divider, four response rows.
     UOverlay* Portrait = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
-    Portrait->AddChildToOverlay(KitImage(WidgetTree, TEXT("portrait_well"), 120.f));
+    UOverlaySlot* WellSlot = Portrait->AddChildToOverlay(KitImage(WidgetTree, TEXT("portrait_well"), 124.f, 128.f));
+    WellSlot->SetHorizontalAlignment(HAlign_Fill); WellSlot->SetVerticalAlignment(VAlign_Fill);
     USizeBox* FaceBox = nullptr;
-    PortraitImage = ArtImage(WidgetTree, FaceBox, 104.f, 104.f);
+    PortraitImage = ArtImage(WidgetTree, FaceBox, 108.f, 112.f);
     UOverlaySlot* FaceSlot = Portrait->AddChildToOverlay(FaceBox);
     FaceSlot->SetHorizontalAlignment(HAlign_Center); FaceSlot->SetVerticalAlignment(VAlign_Center);
-    Head->AddChildToHorizontalBox(Portrait)->SetVerticalAlignment(VAlign_Top);
-    UVerticalBox* Speech = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    NameText = Heading(WidgetTree, TEXT(""), 28, Ivory());
-    Speech->AddChildToVerticalBox(NameText)->SetPadding(FMargin(0.f, 6.f, 0.f, 8.f));
-    LineText = Text(WidgetTree, TEXT(""), 22, Ivory());
-    LineText->SetLineHeightPercentage(0.9f);
-    LineText->SetAutoWrapText(true);
-    Speech->AddChildToVerticalBox(LineText);
-    UHorizontalBoxSlot* SpeechSlot = Head->AddChildToHorizontalBox(Speech);
-    SpeechSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); SpeechSlot->SetPadding(FMargin(22.f, 0.f, 0.f, 0.f));
-    Left->AddChildToVerticalBox(Head)->SetPadding(FMargin(0.f, 0.f, 0.f, 14.f));
-    Left->AddChildToVerticalBox(Rule(WidgetTree))->SetPadding(FMargin(0.f, 0.f, 0.f, 28.f));
+    Box(Board, Portrait, 514.f, 264.f, 0.f, 0.f, 124.f, 128.f);
+    NameText = Heading(WidgetTree, TEXT(""), 25, Ivory());
+    Line(Board, NameText, 25, 662.f, 286.f);
+    LineText = Text(WidgetTree, TEXT(""), 20, Ivory());
+    LineText->SetWrapTextAt(X(982.f) - X(662.f));
+    LineText->SetLineHeightPercentage(0.93f);  // the concept's 31 px line pitch, scaled with the board (34 px)
+    Line(Board, LineText, 20, 662.f, 341.f);
+    Box(Board, Rule(WidgetTree), 516.f, 425.f, 982.f, 0.f, 0.f, 8.f);
 
     static const TCHAR* const Keycaps[FSFDialogueTree::MaxChoices] = {TEXT("keycap_1"), TEXT("keycap_2"), TEXT("keycap_3"), TEXT("keycap_4")};
+    static const float RowTops[FSFDialogueTree::MaxChoices] = {458.f, 544.f, 630.f, 716.f};
     for (int32 Index = 0; Index < FSFDialogueTree::MaxChoices; ++Index)
     {
-        // A response row is the kit quest_row (a plain brass-edged 56 px row), not a text button; the selected one is moss-tinted.
+        // A response row is the kit quest_row (a plain brass-edged row), not a text button; the selected one is moss-filled.
         UButton* Control = WidgetTree->ConstructWidget<USFHudButton>(USFHudButton::StaticClass());
-        UTextBlock* RowLabel = Text(WidgetTree, TEXT(""), 24, Ivory());
+        UTextBlock* RowLabel = Text(WidgetTree, TEXT(""), 21, Ivory());
         RowLabel->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
         UBorder* Pad = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
-        Pad->SetBrush(FSlateNoResource()); Pad->SetPadding(FMargin(78.f, 0.f, 24.f, 0.f)); Pad->SetVerticalAlignment(VAlign_Center); Pad->SetHorizontalAlignment(HAlign_Left);
+        Pad->SetBrush(FSlateNoResource()); Pad->SetPadding(FMargin(X(606.f) - X(511.f) - 6.f, 0.f, 24.f, 0.f)); Pad->SetVerticalAlignment(VAlign_Center); Pad->SetHorizontalAlignment(HAlign_Left);
         Pad->SetContent(RowLabel);
         UBorder* Wash = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());  // selection fill under the label, over the row art
         Wash->SetBrush(FSlateColorBrush(FLinearColor::White)); Wash->SetBrushColor(FLinearColor(0.f, 0.f, 0.f, 0.f)); Wash->SetVisibility(ESlateVisibility::HitTestInvisible);
@@ -255,84 +286,62 @@ void USFDialoguePanel::NativeOnInitialized()
         FScriptDelegate Clicked;
         Clicked.BindUFunction(this, *FString::Printf(TEXT("HandleChoice%d"), Index));
         Control->OnClicked.Add(Clicked);
-        USizeBox* RowBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        RowBox->SetHeightOverride(64.f); RowBox->SetContent(Control);
         UOverlay* Stack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
-        Stack->AddChildToOverlay(RowBox)->SetHorizontalAlignment(HAlign_Fill);
-        UWidget* Cap = KitImage(WidgetTree, Keycaps[Index], 40.f);
+        UOverlaySlot* ControlSlot = Stack->AddChildToOverlay(Control);
+        ControlSlot->SetHorizontalAlignment(HAlign_Fill); ControlSlot->SetVerticalAlignment(VAlign_Fill);
+        UWidget* Cap = KitImage(WidgetTree, Keycaps[Index], 54.f);
         Cap->SetVisibility(ESlateVisibility::HitTestInvisible);
         UOverlaySlot* CapSlot = Stack->AddChildToOverlay(Cap);
-        CapSlot->SetHorizontalAlignment(HAlign_Left); CapSlot->SetVerticalAlignment(VAlign_Center); CapSlot->SetPadding(FMargin(14.f, 0.f, 0.f, 0.f));
-        Left->AddChildToVerticalBox(Stack)->SetPadding(FMargin(0.f, 0.f, 0.f, 24.f));
+        CapSlot->SetHorizontalAlignment(HAlign_Left); CapSlot->SetVerticalAlignment(VAlign_Center); CapSlot->SetPadding(FMargin(X(528.f) - X(511.f), 0.f, 0.f, 0.f));
+        Box(Board, Stack, 511.f, RowTops[Index], 988.f, 0.f, 0.f, 75.f);
         RowButtons.Add(Control); RowLabels.Add(RowLabel); RowRoots.Add(Stack);
     }
-    UHorizontalBoxSlot* LeftSlot = Columns->AddChildToHorizontalBox(Left);
-    LeftSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); LeftSlot->SetPadding(FMargin(14.f, 36.f, 14.f, 0.f));
 
-    // Engraved vertical rule between the halves.
-    USizeBox* Split = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    Split->SetWidthOverride(2.f); Split->SetContent(KitPanel(WidgetTree, TEXT("divider"), 1.f, Brass(), Brass(), FMargin(0.f), 0.f));
-    Columns->AddChildToHorizontalBox(Split)->SetPadding(FMargin(0.f, 6.f, 0.f, 6.f));
-
-    // Right half: the offered quest.
-    UVerticalBox* Right = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    OfferColumn = Right;
-    USizeBox* ArtBox = nullptr;
-    OfferArt = ArtImage(WidgetTree, ArtBox, 280.f, 170.f);
-    UOverlay* Well = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
-    USizeBox* WellFrame = KitImage(WidgetTree, TEXT("respawn_image_well"), 300.f, 184.f);
+    // Right half: the offered quest in its inset card.
+    Box(Offer, KitPanel(WidgetTree, TEXT("detail_card_frame"), 1.f, Slate(0.85f), Brass(), FMargin(0.f), 0.f), 1022.f, 241.f, 1415.f, 755.f);
+    USizeBox* WellFrame = KitImage(WidgetTree, TEXT("respawn_image_well"), 1.f, 1.f);
+    WellFrame->ClearWidthOverride(); WellFrame->ClearHeightOverride();
     WellFrame->SetVisibility(ESlateVisibility::HitTestInvisible);
-    UOverlaySlot* WellSlot = Well->AddChildToOverlay(WellFrame);  // the well is opaque inside: the art goes over it
-    WellSlot->SetHorizontalAlignment(HAlign_Center); WellSlot->SetVerticalAlignment(VAlign_Center);
-    UOverlaySlot* ArtSlot = Well->AddChildToOverlay(ArtBox);
-    ArtSlot->SetHorizontalAlignment(HAlign_Center); ArtSlot->SetVerticalAlignment(VAlign_Center);
-    Right->AddChildToVerticalBox(Well)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
-    OfferTitle = Heading(WidgetTree, TEXT(""), 26, Ivory());
-    Right->AddChildToVerticalBox(OfferTitle)->SetPadding(FMargin(0.f, 0.f, 0.f, 4.f));
-    OfferSummary = Text(WidgetTree, TEXT(""), 18, Ivory());
-    OfferSummary->SetAutoWrapText(true);
-    Right->AddChildToVerticalBox(OfferSummary)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
-    Right->AddChildToVerticalBox(SectionHeading(WidgetTree, TEXT("Objectives")))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
+    Box(Offer, WellFrame, 1024.f, 243.f, 1414.f, 441.f);
+    USizeBox* ArtBox = nullptr;
+    OfferArt = ArtImage(WidgetTree, ArtBox, 1.f, 1.f);
+    ArtBox->ClearWidthOverride(); ArtBox->ClearHeightOverride();
+    Box(Offer, ArtBox, 1028.f, 247.f, 1410.f, 437.f);
+    OfferTitle = Heading(WidgetTree, TEXT(""), 23, Ivory());
+    Line(Offer, OfferTitle, 23, 1044.f, 457.f);
+    OfferSummary = Text(WidgetTree, TEXT(""), 16, Ivory());
+    Line(Offer, OfferSummary, 16, 1044.f, 499.f);
+    Line(Offer, Text(WidgetTree, TEXT("Objectives"), 17, Brass(), true), 17, 1044.f, 549.f);
+    Box(Offer, SectionRule(WidgetTree), 1159.f, 553.f, 1396.f, 0.f, 0.f, 8.f);
+    static const float ObjectiveTops[3] = {584.f, 620.f, 656.f};
     for (int32 Index = 0; Index < 3; ++Index)
     {
         UHorizontalBox* Row = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
         Row->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("objective_checkbox"), 24.f))->SetVerticalAlignment(VAlign_Center);
-        UTextBlock* Label = Text(WidgetTree, TEXT(""), 20, Ivory());
+        UTextBlock* Label = Text(WidgetTree, TEXT(""), 18, Ivory());
         UHorizontalBoxSlot* LabelSlot = Row->AddChildToHorizontalBox(Label);
-        LabelSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); LabelSlot->SetPadding(FMargin(14.f, 0.f, 0.f, 0.f)); LabelSlot->SetVerticalAlignment(VAlign_Center);
-        UTextBlock* Count = Num(WidgetTree, TEXT(""), 20, Ivory(), false);
-        Row->AddChildToHorizontalBox(Count)->SetVerticalAlignment(VAlign_Center);
-        Right->AddChildToVerticalBox(Row)->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
+        LabelSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); LabelSlot->SetPadding(FMargin(X(1088.f) - X(1068.f), 0.f, 0.f, 8.f)); LabelSlot->SetVerticalAlignment(VAlign_Center);  // EB Garamond sits low in its line box
+        UTextBlock* Count = Text(WidgetTree, TEXT(""), 18, Ivory());
+        UHorizontalBoxSlot* CountSlot = Row->AddChildToHorizontalBox(Count);
+        CountSlot->SetVerticalAlignment(VAlign_Center); CountSlot->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
+        Box(Offer, Row, 1044.f, ObjectiveTops[Index], 1386.f, 0.f, 0.f, 24.f);
         ObjectiveLabels.Add(Label); ObjectiveCounts.Add(Count); ObjectiveRows.Add(Row);
     }
-    Right->AddChildToVerticalBox(SectionHeading(WidgetTree, TEXT("Rewards")))->SetPadding(FMargin(0.f, 6.f, 0.f, 8.f));
-    UHorizontalBox* Rewards = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    Rewards->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("icon_xp_roundel"), 44.f))->SetVerticalAlignment(VAlign_Center);
-    XpText = Text(WidgetTree, TEXT(""), 20, Ivory());
-    Rewards->AddChildToHorizontalBox(XpText)->SetPadding(FMargin(12.f, 0.f, 32.f, 0.f));
-    Cast<UHorizontalBoxSlot>(XpText->Slot)->SetVerticalAlignment(VAlign_Center);
-    Rewards->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("icon_coin_stack"), 44.f))->SetVerticalAlignment(VAlign_Center);
-    CoinText = Text(WidgetTree, TEXT(""), 20, Ivory());
-    Rewards->AddChildToHorizontalBox(CoinText)->SetPadding(FMargin(12.f, 0.f, 0.f, 0.f));
-    Cast<UHorizontalBoxSlot>(CoinText->Slot)->SetVerticalAlignment(VAlign_Center);
-    Right->AddChildToVerticalBox(Rewards)->SetPadding(FMargin(0.f, 0.f, 0.f, 14.f));
-    UVerticalBox* Spacer = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    Right->AddChildToVerticalBox(Spacer)->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-    UHorizontalBox* Buttons = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    const FSFHudButton Accept = Button(WidgetTree, TEXT("Accept"), EButtonKind::Primary, 200.f);
+    Line(Offer, Text(WidgetTree, TEXT("Rewards"), 17, Brass(), true), 17, 1044.f, 668.f);
+    Box(Offer, SectionRule(WidgetTree), 1141.f, 674.f, 1396.f, 0.f, 0.f, 8.f);
+    Box(Offer, KitImage(WidgetTree, TEXT("icon_xp_roundel"), 45.f), 1044.f, 701.f, 0.f, 0.f, 45.f, 45.f);
+    XpText = Text(WidgetTree, TEXT(""), 17, Ivory());
+    Line(Offer, XpText, 17, 1110.f, 713.f);
+    Box(Offer, KitImage(WidgetTree, TEXT("icon_coin_stack"), 43.f), 1231.f, 701.f, 0.f, 0.f, 43.f, 43.f);
+    CoinText = Text(WidgetTree, TEXT(""), 17, Ivory());
+    Line(Offer, CoinText, 17, 1293.f, 713.f);
+    const FSFHudButton Accept = Button(WidgetTree, TEXT("Accept"), EButtonKind::Primary, 0.f);
     AcceptButton = Accept.Button; AcceptLabel = Accept.Label;
     FScriptDelegate AcceptClicked; AcceptClicked.BindUFunction(this, TEXT("HandleAccept")); AcceptButton->OnClicked.Add(AcceptClicked);
-    UHorizontalBoxSlot* AcceptSlot = Buttons->AddChildToHorizontalBox(Accept.Root);
-    AcceptSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); AcceptSlot->SetPadding(FMargin(0.f, 0.f, 18.f, 0.f));
-    const FSFHudButton Decline = Button(WidgetTree, TEXT("Decline"), EButtonKind::Secondary, 160.f);
+    Box(Offer, Accept.Root, 1029.f, 764.f, 1235.f, 0.f, 0.f, 56.f);
+    const FSFHudButton Decline = Button(WidgetTree, TEXT("Decline"), EButtonKind::Secondary, 0.f);
     FScriptDelegate DeclineClicked; DeclineClicked.BindUFunction(this, TEXT("HandleDecline")); Decline.Button->OnClicked.Add(DeclineClicked);
-    Buttons->AddChildToHorizontalBox(Decline.Root);
-    Right->AddChildToVerticalBox(Buttons);
-    USizeBox* RightBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    UBorder* Card = KitPanel(WidgetTree, TEXT("detail_card_frame"), 1.f, Slate(0.85f), Brass(), FMargin(14.f, 12.f), 0.f);
-    Card->SetContent(Right);
-    RightBox->SetWidthOverride(372.f); RightBox->SetContent(Card);  // the art well sets the column width; the speech side takes the rest
-    Columns->AddChildToHorizontalBox(RightBox)->SetPadding(FMargin(16.f, 6.f, 14.f, 0.f));
+    Box(Offer, Decline.Root, 1247.f, 764.f, 1413.f, 0.f, 0.f, 56.f);
 }
 
 void USFDialoguePanel::Open(TSharedPtr<const FSFDialogueTree> InTree)
@@ -341,12 +350,12 @@ void USFDialoguePanel::Open(TSharedPtr<const FSFDialogueTree> InTree)
     Selected = 0; StyledSelected = -1;
     if (!InTree.IsValid()) { return; }
     NameText->SetText(FText::FromString(InTree->Speaker));
-    SetArt(PortraitImage, TextureFor(InTree->Portrait), FVector2D(104.f, 104.f));
+    SetArt(PortraitImage, TextureFor(InTree->Portrait), FVector2D(108.f, 112.f));
     const FSFDialogueOffer& Offer = InTree->Offer;
     OfferColumn->SetVisibility(InTree->bHasOffer ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
     if (InTree->bHasOffer)
     {
-        SetArt(OfferArt, TextureFor(Offer.ArtPath), FVector2D(280.f, 170.f));
+        SetArt(OfferArt, TextureFor(Offer.ArtPath), FVector2D(382.f, 211.f));
         OfferTitle->SetText(FText::FromString(Offer.Title)); OfferSummary->SetText(FText::FromString(Offer.Summary));
         for (int32 Index = 0; Index < ObjectiveRows.Num(); ++Index)
         {

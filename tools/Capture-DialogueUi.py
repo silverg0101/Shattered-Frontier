@@ -1,6 +1,6 @@
 """In-engine capture of the v5 NPC dialogue board. Launch a -game client (see docs/blueprints/ui-hud.md section 4):
     UnrealEditor.exe <uproject> /Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook -game -windowed -ResX=1920 -ResY=1080 -ForceRes
-        -nosound -nop4 -UserDir=<dir> "-ExecCmds=py tools/Capture-DialogueUi.py <out folder>"
+        -nosound -nop4 -UserDir=<dir> "-ExecCmds=py tools/Capture-DialogueUi.py <out folder> ["x y yaw" metres/deg]"
 Once the pawn exists it stands the Millwarden ahead (SFSpawnDialogueNpc opens his board), waits for the framing camera to settle,
 shoots 'Shot showui' as dialogue-open, picks response 1 ('Tell me more') and shoots dialogue-more, accepts the offer and shoots
 dialogue-accepted, then quits. The engine writes PNGs under Saved/Screenshots; they are moved to <out>/<name>.png."""
@@ -11,8 +11,9 @@ import unreal as u
 OUT = Path(sys.argv[1]); OUT.mkdir(parents=True, exist_ok=True)
 SHOTS = Path(u.Paths.screen_shot_dir())
 # (seconds after the pawn appeared, console command, shot name or None)
-PLAN = [(2.0, 'SFSpawnDialogueNpc', None), (9.0, 'Shot showui', 'dialogue-open'), (10.0, 'SFDialogueChoose 0', None),
-        (12.0, 'Shot showui', 'dialogue-more'), (13.0, 'SFDialogueChoose 0', None), (15.0, 'Shot showui', 'dialogue-accepted'), (17.0, 'quit', None)]
+STAGE = sys.argv[2] if len(sys.argv) > 2 else '-138 300 0'  # Silverbrook river trail west of the mill, facing east (ui-hud.md section 4)
+PLAN = [(2.0, 'SFStageAt ' + STAGE, None), (4.0, 'SFSpawnDialogueNpc', None), (11.0, 'Shot showui', 'dialogue-open'), (12.0, 'SFDialogueChoose 0', None),
+        (14.0, 'Shot showui', 'dialogue-more'), (15.0, 'SFDialogueChoose 0', None), (17.0, 'Shot showui', 'dialogue-accepted'), (19.0, 'quit', None)]
 state = dict(world=None, elapsed=0.0, step=0, pending=[], handle=None)
 
 

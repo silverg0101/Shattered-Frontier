@@ -123,6 +123,21 @@ void ASFPlayerController::SFDialogueChoose(int32 Index)
 #endif
 }
 
+void ASFPlayerController::SFStageAt(float XMetres, float YMetres, float YawDegrees)
+{
+#if !UE_BUILD_SHIPPING
+    APawn* Body = GetPawn();
+    if (!IsLocalController() || !Body || !GetWorld()) { return; }
+    const FVector Column(XMetres * 100.f, YMetres * 100.f, 0.f);
+    FHitResult Ground;
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(SFStageAt), false, Body);
+    if (!GetWorld()->LineTraceSingleByChannel(Ground, Column + FVector(0.f, 0.f, 50000.f), Column - FVector(0.f, 0.f, 50000.f), ECC_Visibility, Query)) { return; }
+    Body->TeleportTo(Ground.ImpactPoint + FVector(0.f, 0.f, Body->GetSimpleCollisionHalfHeight() + 5.f), FRotator(0.f, YawDegrees, 0.f));
+    SetControlRotation(FRotator(-6.f, YawDegrees, 0.f));
+    UE_LOG(LogTemp, Display, TEXT("STAGE_AT %s"), *Ground.ImpactPoint.ToString());
+#endif
+}
+
 void ASFPlayerController::SFSpawnDialogueNpc()
 {
 #if !UE_BUILD_SHIPPING
