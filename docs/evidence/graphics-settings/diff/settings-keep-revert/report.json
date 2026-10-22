@@ -1,6 +1,6 @@
 [
  {
-  "widget": "SizeBox:SizeBox_149",
+  "widget": "SizeBox:SizeBox_156",
   "name": "modal frame",
   "rect": [
    548,
@@ -89,7 +89,7 @@
   "verdict": "REVIEW"
  },
  {
-  "widget": "SizeBox:SizeBox_146",
+  "widget": "SizeBox:SizeBox_153",
   "name": "modal progress bar",
   "rect": [
    630,
@@ -109,7 +109,7 @@
   "verdict": "PASS"
  },
  {
-  "widget": "SizeBox:SizeBox_147",
+  "widget": "SizeBox:SizeBox_154",
   "name": "button Keep Changes",
   "rect": [
    597,
@@ -129,7 +129,7 @@
   "verdict": "PASS"
  },
  {
-  "widget": "SizeBox:SizeBox_148",
+  "widget": "SizeBox:SizeBox_155",
   "name": "button Revert",
   "rect": [
    976,

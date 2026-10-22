@@ -1,0 +1,14 @@
+sg.ViewDistanceQuality=4.0
+sg.ShadowQuality=4.0
+sg.GlobalIlluminationQuality=4.0
+sg.ReflectionQuality=4.0
+sg.TextureQuality=4.0
+sg.EffectsQuality=4.0
+sg.FoliageQuality=4.0
+sg.PostProcessQuality=4.0
+sg.AntiAliasingQuality=4.0
+r.Nanite.Tessellation=1.0
+r.DefaultFeature.MotionBlur=1.0
+r.Shadow.Virtual.Enable=1.0
+grass.DensityScale=1.0
+r.ScreenPercentage=100.0

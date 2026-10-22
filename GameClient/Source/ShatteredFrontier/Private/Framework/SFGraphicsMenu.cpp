@@ -131,13 +131,13 @@ void USFGraphicsMenu::NativeOnInitialized()
 
     // Header: crest, title, flanking rules, close, tabs with the LB/RB keycaps.
     Put(Stage, KitImage(WidgetTree, TEXT("window_crest"), 150.f, 60.f), 774.f, 65.f, 150.f / S, 60.f / S);  // arch with the stag, centred on the title
-    UTextBlock* Title = Heading(WidgetTree, TEXT("Settings"), 52, Ivory()); Title->SetJustification(ETextJustify::Center);
+    UTextBlock* Title = Heading(WidgetTree, TEXT("Settings"), 49, Ivory()); Title->SetJustification(ETextJustify::Center);
     PutText(Stage, Title, 839.f, 140.6f, 0.5f);
-    // Title rules: a section_rule and a quest_diamond each side of "Settings".
-    Put(Stage, KitImage(WidgetTree, TEXT("section_rule"), 110.f, 4.f), 640.f, 139.f, 110.f / S, 4.f / S);
+    // Title rules: a plain hairline and a quest_diamond each side of "Settings".
+    Put(Stage, Hairline1(WidgetTree, 2.f), 640.f, 140.f, 110.f / S, 2.f / S);
     Put(Stage, KitImage(WidgetTree, TEXT("quest_diamond"), 12.f), 745.f, 135.f, 12.f / S, 12.f / S);
     Put(Stage, KitImage(WidgetTree, TEXT("quest_diamond"), 12.f), 925.f, 135.f, 12.f / S, 12.f / S);
-    Put(Stage, KitImage(WidgetTree, TEXT("section_rule"), 110.f, 4.f), 937.f, 139.f, 110.f / S, 4.f / S);
+    Put(Stage, Hairline1(WidgetTree, 2.f), 937.f, 140.f, 110.f / S, 2.f / S);
     UBorder* CloseBox = Panel(WidgetTree, WellFill(), Brass(), FMargin(9.f), 4.f);
     CloseBox->SetContent(KitImage(WidgetTree, TEXT("close_x"), 24.f));
     UButton* Close = FlatButton(WidgetTree, CloseBox);
@@ -153,6 +153,7 @@ void USFGraphicsMenu::NativeOnInitialized()
         UBorder* Tab = SFHudStyle::Tab(WidgetTree, Index == 0);
         UTextBlock* Label = Text(WidgetTree, TabNames[Index], 25, Ivory()); Label->SetJustification(ETextJustify::Center);
         Tab->SetVerticalAlignment(VAlign_Center); Tab->SetHorizontalAlignment(HAlign_Center); Tab->SetContent(Label);
+        Tab->SetPadding(FMargin(0.f, 0.f, 0.f, 9.f));  // the concept sets tab labels above the plate centre
         Put(Stage, Tab, TabEdges[Index], 180.f, TabEdges[Index + 1] - TabEdges[Index], 48.f);
     }
 
@@ -295,14 +296,14 @@ void USFGraphicsMenu::NativeOnInitialized()
     FProgressBarStyle FillStyle = ScaleFill->GetWidgetStyle(); FillStyle.BackgroundImage = FSlateNoResource(); FillStyle.FillImage = Frame(FLinearColor::White, FLinearColor::Transparent, 2.f);
     ScaleFill->SetWidgetStyle(FillStyle); ScaleFill->SetFillColorAndOpacity(Hex(TEXT("465A41")));  // flat concept moss, not the lit bar_fill_moss
     ScaleFillBar = ScaleFill;
-    Put(Stage, KitPanel(WidgetTree, TEXT("slider_track"), 1.f, WellFill(), Hairline(), FMargin(0.f), 3.f, false), 389.f, 644.f, 286.f, 12.f);
+    Put(Stage, KitPanel(WidgetTree, TEXT("slider_track"), 1.f, WellFill(), Hairline(), FMargin(0.f), 3.f, false), 386.f, 644.f, 292.f, 12.f);
     Put(Stage, ScaleFill, 391.f, 646.f, 282.f, 8.f);
     Put(Stage, Slider, 383.f, 641.f, 298.f, 18.f);
     PutText(Stage, Text(WidgetTree, TEXT("100%"), 20, Ivory()), 693.f, 650.f);
     UOverlay* ScaleBox = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
     UBorder* ScalePlate = KitPanel(WidgetTree, TEXT("field_well"), 1.f, WellFill(), Brass(), FMargin(0.f), 3.f, false);
     UOverlaySlot* ScalePlateSlot = ScaleBox->AddChildToOverlay(ScalePlate); ScalePlateSlot->SetHorizontalAlignment(HAlign_Fill); ScalePlateSlot->SetVerticalAlignment(VAlign_Fill);
-    UTextBlock* ScaleValue = Num(WidgetTree, TEXT("75%"), 27, Ivory()); ScaleText = ScaleValue;
+    UTextBlock* ScaleValue = Num(WidgetTree, TEXT("75%"), 23, Ivory()); ScaleText = ScaleValue;
     UOverlaySlot* ScaleValueSlot = ScaleBox->AddChildToOverlay(ScaleValue); ScaleValueSlot->SetHorizontalAlignment(HAlign_Center); ScaleValueSlot->SetVerticalAlignment(VAlign_Center);
     Put(Stage, ScaleBox, 748.f, 632.f, 76.f, 35.f);
     Put(Stage, Hairline1(WidgetTree), 337.f, 684.f, 483.f, 1.f / S);
@@ -346,9 +347,13 @@ void USFGraphicsMenu::NativeOnInitialized()
     UScrollBox* List = WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass());
     FScrollBarStyle BarStyle = List->GetWidgetBarStyle();
     BarStyle.NormalThumbImage = BarStyle.HoveredThumbImage = BarStyle.DraggedThumbImage = Frame(Amber(), Amber(), 3.f);
-    BarStyle.HorizontalBackgroundImage = BarStyle.VerticalBackgroundImage = BarStyle.VerticalTopSlotImage = BarStyle.VerticalBottomSlotImage = Frame(FLinearColor::Transparent, FLinearColor::Transparent, 0.f);
+    BarStyle.HorizontalBackgroundImage = BarStyle.VerticalBackgroundImage = Frame(Hairline(), FLinearColor::Transparent, 3.f);
+    BarStyle.VerticalTopSlotImage = BarStyle.VerticalBottomSlotImage = Frame(FLinearColor::Transparent, FLinearColor::Transparent, 0.f);
+    // A brush draws at least its ImageSize, so the 6 px bar needs 6 px brushes (the default 32 px made it 26 wide).
+    for (FSlateBrush* Brush : {&BarStyle.NormalThumbImage, &BarStyle.HoveredThumbImage, &BarStyle.DraggedThumbImage, &BarStyle.VerticalBackgroundImage, &BarStyle.HorizontalBackgroundImage, &BarStyle.VerticalTopSlotImage, &BarStyle.VerticalBottomSlotImage, &BarStyle.HorizontalTopSlotImage, &BarStyle.HorizontalBottomSlotImage}) { Brush->ImageSize = FVector2D(6.f, 6.f); }
+    BarStyle.Thickness = 6.f;
     List->SetWidgetBarStyle(BarStyle);
-    List->SetScrollbarThickness(FVector2D(6.f, 6.f));
+    List->SetScrollbarThickness(FVector2D(6.f, 6.f)); List->SetAlwaysShowScrollbar(true);
     for (const FLevelRow& Row : LevelRows)
     {
         UHorizontalBox* Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
@@ -371,7 +376,9 @@ void USFGraphicsMenu::NativeOnInitialized()
         RowSize->SetContent(RowStack);
         List->AddChild(RowSize);
     }
-    Put(Stage, List, 871.f, 411.f, 469.f, 312.f);
+    // The always-shown bar sits outside the rows: 11 px gap, 6 px bar at x 1550-1556 (concept 1350-1356), rows keep their 539 px.
+    List->SetScrollbarPadding(FMargin(11.f, 0.f, 0.f, 0.f));
+    Put(Stage, List, 871.f, 411.f, 556.f / S, 312.f);
 
     // ---- Footer
     Put(Stage, Hairline1(WidgetTree), 300.f, 739.f, 1072.f, 1.f / S);
@@ -386,6 +393,8 @@ void USFGraphicsMenu::NativeOnInitialized()
     Click(Revert.Button, [Self]() { if (USFGraphicsMenu* Menu = Self.Get()) { Menu->DoRevert(); } });
     Put(Stage, Revert.Root, 858.f, 750.f, 216.f, 47.f);
     Put(Stage, KitImage(WidgetTree, TEXT("quest_diamond"), 16.f), 828.f, 767.f, 16.f / S, 16.f / S);
+    Put(Stage, Hairline1(WidgetTree, 2.f), 815.f, 774.f, 12.f / S, 2.f / S);
+    Put(Stage, Hairline1(WidgetTree, 2.f), 845.f, 774.f, 12.f / S, 2.f / S);
 
     // ---- Keep-or-revert prompt over a dimmed window
     UCanvasPanel* Prompt = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass());
@@ -394,9 +403,19 @@ void USFGraphicsMenu::NativeOnInitialized()
     UBorder* Dim = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
     Dim->SetBrush(Frame(FLinearColor(0.f, 0.f, 0.f, 0.55f), FLinearColor::Transparent, 0.f));
     UCanvasPanelSlot* DimSlot = Prompt->AddChildToCanvas(Dim); DimSlot->SetAnchors(FAnchors(0.f, 0.f, 1.f, 1.f)); DimSlot->SetOffsets(FMargin(0.f));
-    UBorder* Modal = KitPanel(WidgetTree, TEXT("modal_frame"), 1.f, Slate(0.96f), Brass(), FMargin(29.f, 41.f, 29.f, 30.f), 6.f);
+    UBorder* Modal = KitPanel(WidgetTree, TEXT("modal_frame"), 1.f, Slate(0.96f), Brass(), FMargin(29.f, 25.f, 29.f, 30.f), 6.f);
     UVerticalBox* Body = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
     Modal->SetContent(Body);
+    // Ornament across the top of the modal body: hairline, diamond, hairline (concept x 760-1160).
+    UHorizontalBox* Ornament = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+    for (int32 Part = 0; Part < 3; ++Part)
+    {
+        if (Part == 1) { Ornament->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("quest_diamond"), 16.f))->SetVerticalAlignment(VAlign_Center); continue; }
+        USizeBox* Rule = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        Rule->SetWidthOverride(192.f); Rule->SetContent(Hairline1(WidgetTree, 2.f));
+        Ornament->AddChildToHorizontalBox(Rule)->SetVerticalAlignment(VAlign_Center);
+    }
+    Body->AddChildToVerticalBox(Ornament)->SetHorizontalAlignment(HAlign_Center);
     UTextBlock* KeepHead = Heading(WidgetTree, TEXT("Keep these display settings?"), 48, Ivory()); KeepHead->SetJustification(ETextJustify::Center);
     KeepTitle = KeepHead;
     Body->AddChildToVerticalBox(KeepHead)->SetHorizontalAlignment(HAlign_Center);

@@ -38,11 +38,11 @@
    46
   ],
   "found": true,
-  "match": 0.67,
-  "d_left": 2,
-  "d_top": -17,
-  "d_width": -5,
-  "d_height": 22,
+  "match": 0.68,
+  "d_left": 4,
+  "d_top": -15,
+  "d_width": -9,
+  "d_height": 17,
   "de": [],
   "geometry": "FAIL",
   "colour": "PASS",
@@ -69,7 +69,7 @@
   "verdict": "PASS"
  },
  {
-  "widget": "Border:Border_3",
+  "widget": "Border:Border_5",
   "name": "tab Graphics",
   "rect": [
    452,
@@ -94,7 +94,7 @@
   "verdict": "FAIL"
  },
  {
-  "widget": "Border:Border_4",
+  "widget": "Border:Border_6",
   "name": "tab Audio",
   "rect": [
    655,
@@ -114,7 +114,7 @@
   "verdict": "PASS"
  },
  {
-  "widget": "Border:Border_5",
+  "widget": "Border:Border_7",
   "name": "tab Controls",
   "rect": [
    852,
@@ -134,7 +134,7 @@
   "verdict": "PASS"
  },
  {
-  "widget": "Border:Border_6",
+  "widget": "Border:Border_8",
   "name": "tab Interface",
   "rect": [
    1056,
@@ -154,7 +154,7 @@
   "verdict": "PASS"
  },
  {
-  "widget": "Border:Border_7",
+  "widget": "Border:Border_9",
   "name": "tab Gameplay",
   "rect": [
    1253,

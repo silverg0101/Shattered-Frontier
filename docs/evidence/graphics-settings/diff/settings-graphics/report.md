@@ -5,13 +5,13 @@ REVIEW = the element could not be measured (no live widget overlaps it, or no vi
 | element | concept rect | live widget | dx | dy | dw | dh | IoU/edge | colour dE | verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | window frame | [336, 115, 1249, 810] | CanvasPanel:CanvasPanel_1 | +0 | +0 | +0 | +0 | 1.00 | panelfill 1.8, panelfill 2.5 | PASS |
-| title Settings | [885, 144, 157, 46] | TextBlock:TextBlock_0 | +2 | -17 | -5 | +22 | 0.67 | - | FAIL |
+| title Settings | [885, 144, 157, 46] | TextBlock:TextBlock_0 | +4 | -15 | -9 | +17 | 0.68 | - | FAIL |
 | close x | [1515, 139, 46, 46] | SFHudButton:SFHudButton_0 | +0 | +0 | +0 | +0 | 0.97 | - | PASS |
-| tab Graphics | [452, 207, 202, 55] | Border:Border_3 | +0 | +0 | +0 | +0 | 0.99 | mossfill 7.7 | FAIL |
-| tab Audio | [655, 207, 198, 55] | Border:Border_4 | -1 | +0 | +0 | +0 | 0.99 | - | PASS |
-| tab Controls | [852, 207, 204, 55] | Border:Border_5 | +0 | +0 | +0 | +0 | 0.99 | - | PASS |
-| tab Interface | [1056, 207, 196, 55] | Border:Border_6 | +0 | +0 | +0 | +0 | 0.99 | - | PASS |
-| tab Gameplay | [1253, 207, 209, 55] | Border:Border_7 | +0 | +0 | +0 | +0 | 0.99 | - | PASS |
+| tab Graphics | [452, 207, 202, 55] | Border:Border_5 | +0 | +0 | +0 | +0 | 0.99 | mossfill 7.7 | FAIL |
+| tab Audio | [655, 207, 198, 55] | Border:Border_6 | -1 | +0 | +0 | +0 | 0.99 | - | PASS |
+| tab Controls | [852, 207, 204, 55] | Border:Border_7 | +0 | +0 | +0 | +0 | 0.99 | - | PASS |
+| tab Interface | [1056, 207, 196, 55] | Border:Border_8 | +0 | +0 | +0 | +0 | 0.99 | - | PASS |
+| tab Gameplay | [1253, 207, 209, 55] | Border:Border_9 | +0 | +0 | +0 | +0 | 0.99 | - | PASS |
 | label Graphics Preset | [386, 293, 199, 31] | TextBlock:TextBlock_6 | +0 | +1 | -3 | +2 | 0.69 | - | FAIL |
 | button Auto-Detect | [1277, 291, 126, 36] | SizeBox:SizeBox_8 | +0 | +0 | +0 | +0 | 0.98 | - | PASS |
 | status Preset | [1444, 301, 93, 19] | TextBlock:TextBlock_8 | +0 | +1 | +1 | +1 | 0.68 | - | PASS |
