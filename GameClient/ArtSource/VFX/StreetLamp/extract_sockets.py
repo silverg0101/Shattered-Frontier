@@ -97,6 +97,9 @@ def extract(package):
     return sorted(sockets)
 
 
+SKIP = {'SM_SilverbrookWeaponsVendor': 'its *Glow islands are the vendor sign, 208 cm from any lantern-sized piece (WP6i r9-r10)'}
+
+
 def build():
     result = {}
     for package in sorted(PACKAGES.iterdir()):
@@ -104,6 +107,8 @@ def build():
         if not manifest_path.exists():
             continue
         manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+        if manifest['unreal_mesh'] in SKIP:
+            continue
         sockets = extract(package)
         if sockets:
             result[manifest['unreal_mesh']] = sockets

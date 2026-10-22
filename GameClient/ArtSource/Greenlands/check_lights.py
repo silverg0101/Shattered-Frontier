@@ -2,7 +2,7 @@
 reads the lantern glass straight from the meshes.
 
 Every PointLight must be attached to a visible lamp/building actor, sit within 20 cm of a lantern-sized piece around that actor's *Glow
-material pieces near it (one lantern's panes) (lamp_fx puts wall-panel lights 30 cm in front of the pane), and not be inside any other actor's mesh
+material pieces near it (one lantern's panes) (lamp_fx puts building lights 30 cm below and 12 cm outward of the pane centre), and not be inside any other actor's mesh
 (3 cm sphere overlap). Wall-mounted lights (owner not a StreetLamp_) must cast shadows so they cannot light through walls.
 Run in the open Silverbrook editor: py -3 tools/Run-InEditor.py GameClient/ArtSource/Greenlands/check_lights.py
 Prints LIGHT_CHECK lights N on_glass N orphans N in_wall N unshadowed_wall N shadowed N; any orphan, in-wall light or

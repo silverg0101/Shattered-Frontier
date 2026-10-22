@@ -208,3 +208,22 @@ Plume unchanged (core 0.972 / 1.021 / 1.067, dense R - B -4.1, 0 thin rows). Per
 | context-lamp-wall-dusk | 0 | 0 | 5312 (3000) | 0 | 19.3 |
 
 Pools: frontage x 430-560 / y 280-500 median R - B -9 (band >= +20, open); lamp-wall x 520-700 / y 900-1080 median L 31, R - B -25 (band L >= 80, open). Assets: only the map and `MI_SB_LanternGlow` differ from `af48e04f`.
+
+## Round 11: REVIEW-r10.md fix list (r10 scored 16 PASS / 3 FAIL)
+
+1. Building light: 30 cm below and 12 cm outward of the pane centre (`PLATE_DROP`, `PLATE_CLEAR`), along the overhang axis, below and outside the bottom plate. `LAMP_FX` 731; `LIGHT_CHECK lights 731 on_glass 731 orphans 0 in_wall 0 unshadowed_wall 0 shadowed 586`.
+   - `LAMP_MATCH` for Townhouse1 / 4 / 2: json (-216, 310, 228) / (-222, 267, 198) / (-178, 268, 203), each matched to a 10 x 20 x 10 piece at dist 20.
+   - `LAMP_PIECES` (offset from socket : size, cm), first entries for Townhouse1: `[0,-33,27]:[3,1,2] [0,0,35]:[3,1,2] [0,-16,30]:[1,33,8] ... [0,-23,14]:[1,18,34] ...`. Townhouse2 is the same; Townhouse4 is the same with 38 cm plates. The pane imports as thin faces.
+2. `dusk-panes.json` adds the plate boxes to `cap` plus `pool` boxes, with side-b WARM 0. `check_dusk_blobs.py` adds `DUSK_POOL`.
+3. `extract_sockets.py` `SKIP` = {`SM_SilverbrookWeaponsVendor`}. The regenerated json equals the script output. Its one re-added entry beyond r10 is `SM_SilverbrookGildedTankard`, not placed in this map, so no `LAMP_MATCH` / `NOMATCH` for it. No `LAMP_NOMATCH` lines.
+4. `plume-measure.json` re-run on the committed r11 frames (chimney set recaptured): core 0.959 / 1.008 / 1.038; p5 0.925; hill 0.958-1.033; dense puffs R - B -3.4; thin rows 0 in all 15 frames; MAD min 1.41; up 79.4 px/s; main-street thread 13 columns, L/sky 0.907. Motion frame spacing is 0.278-0.357 s (no 0.068 s gap this run). **Open:** growth y 300 / y 550 = 155 / 84 = 1.85, under the 2.0 band.
+
+`check_dusk_blobs.py --selftest` (exit 1; the selftest catches the orange patch):
+
+| View | Blobs / orange outside | Warm px (need) | Hot px | Cap p90 (cap, plate) | Pool median L / R - B |
+|---|---|---|---|---|---|
+| house-frontage-dusk | 0 / 0 | 15787 (3000) | 0 | 82.1, 93.7 | 98 / 78 (min 60 / 20, met); 33 / -4 (min 40, **open**: the ashlar beside the pane at pane level) |
+| context-house-side-b-dusk | 0 / 0 | 224 (0) | 0 | 48.6, 89.3 | none |
+| context-lamp-wall-dusk | 0 / 0 | 15077 (3000) | 0 | 20.5, 110.0 | 86 / 85 (min 60 / 30, met) |
+
+Assets: only the map and `MI_SB_LanternGlow` differ from HEAD. The r7-r10 reverts checked out `af48e04f` blobs; the audit of commits r7-r10 shows they touched only this pipeline's assets, never other sessions' files. From now on the revert restores HEAD.

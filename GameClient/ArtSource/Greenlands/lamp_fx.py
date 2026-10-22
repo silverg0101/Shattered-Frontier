@@ -61,7 +61,8 @@ def _lantern(slot):   # lantern and street-lamp glass only: a window's light is 
 
 
 LANTERN_AXES = (8., 35.)   # a kit lantern pane is a 15 x 15 x 24 cm box (silverbrook_kit.lantern; the cage variant 12 x 12 x 22)
-PANE_CLEAR = 14.   # cm: the light sits PANE_CLEAR + 2 cm below the pane centre, under the 24 cm opaque pane (WP6i r8-r10)
+PLATE_DROP = 30.   # cm below the pane centre: 15.75 cm under the 19 cm bottom plate (body - 0.1425 m), so no iron face is lit point-blank (WP6i r11)
+PLATE_CLEAR = 12.   # cm outward of the pane centre along the overhang axis: 2.5 cm beyond the plate's edge (WP6i r11)
 
 
 def glass_sockets(mesh, u, sockets=None):
@@ -70,7 +71,8 @@ def glass_sockets(mesh, u, sockets=None):
     import mirrors Y, so (x, -y, z) x 100): the light goes at the socket; a lantern-sized piece within 40 cm only confirms a lantern is there.
     The dynamic-mesh material IDs of the merged building meshes do not line up with static_materials (WP6i r8: the 'glow'
     ID returned Townhouse2/4's banner and Townhouse1's sill), so the slot scan is not used on buildings. The kit pane is an
-    opaque emissive box, so the light sits just under it (PANE_CLEAR + 2 cm below its centre)."""
+    opaque emissive box and the light casts shadows, so the light sits PLATE_DROP cm below the pane centre and PLATE_CLEAR cm
+    outward of it, below and outside the bottom plate."""
     name = mesh.get_name()
     if name in _GLASS:
         return _GLASS[name]
@@ -109,6 +111,9 @@ def glass_sockets(mesh, u, sockets=None):
                 merged.append(list(b))
         out = [[(m[i] + m[i + 3]) / 2 for i in range(3)] for m in merged]
     else:
+        box = mesh.get_bounding_box()
+        centre = [(box.min.x + box.max.x) / 2, (box.min.y + box.max.y) / 2]
+        half = [max((box.max.x - box.min.x) / 2, 1), max((box.max.y - box.min.y) / 2, 1)]
         for p in (sockets or load_sockets())[name]:
             t = [p[0] * 100, -p[1] * 100, p[2] * 100]
             # only the triangles inside a 120 cm box round the socket, split into pieces: lantern-sized ones are the pane
@@ -124,9 +129,12 @@ def glass_sockets(mesh, u, sockets=None):
             if d > 40:   # no kit lantern there (e.g. SM_SilverbrookWeaponsVendor's z 112 socket, nearest piece 208 cm): no light from nowhere
                 u.log(f'LAMP_NOMATCH {name} json {[round(v) for v in t]}'); continue
             c = list(t)   # the socket is the pane centre (extract_sockets: the *LanternGlow island centre); WP6i r9 lit the cap by using the matched piece
-            # WP6i r10: PANE_CLEAR below the pane, not outward of it. Outward, the opaque pane stood between the shadowed light and
-            # the wall (pools gone: warm 94 / 1193 px); below, the wall and street get the pool and the pane shields the cap.
-            c[2] -= PANE_CLEAR + 2
+            # WP6i r9-r11: the pane is an opaque emissive box and the light casts shadows. Level with the cap (r9) the cap's
+            # outward slope glowed; outward of the pane (r10 try) the pane shadowed the wall; 1.75 cm under the bottom plate (r10)
+            # the plate glowed and shadowed the wall above it. Below and just outside the plate every iron face is >= 17 cm away.
+            a = max(range(2), key=lambda i: abs(c[i] - centre[i]) / half[i])   # the horizontal axis the lantern overhangs on
+            c[a] += PLATE_CLEAR if c[a] >= centre[a] else -PLATE_CLEAR
+            c[2] -= PLATE_DROP
             out.append(c)
     pool.free_all_meshes()
     _GLASS[name] = out

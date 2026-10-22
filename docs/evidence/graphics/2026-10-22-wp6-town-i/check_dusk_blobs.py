@@ -4,7 +4,7 @@ py -3 check_dusk_blobs.py   (beside the captures; reads dusk-panes.json)
 For each dusk view: label connected pixels with L > 200 (L = 0.2126 R + 0.7152 G + 0.0722 B); a component of >= 20 px
 whose bbox is not inside a pane box grown by 10 px is "outside". Orange test: R > B + 80 and L > 200, >= 20 px, outside
 the panes. DUSK_WASH: within 150 px of the subject lantern (first lantern box), outside every pane and window box grown by
-10 px, warm = R >= B + 10 and L >= 30 (>= WARM[view]) and hot = L > 235 (0). DUSK_CAP: p90 L of each cap box <= 120.
+10 px, warm = R >= B + 10 and L >= 30 (>= WARM[view]) and hot = L > 235 (0). DUSK_CAP: p90 L of each cap and plate box <= 120. DUSK_POOL: median L and R - B of each pool box at or above its minimums.
 Exits 1 on any failure.
 """
 import json, sys
@@ -15,8 +15,7 @@ from scipy import ndimage as nd
 
 HERE = Path(__file__).resolve().parent
 PANES = json.loads((HERE / 'dusk-panes.json').read_text(encoding='utf-8'))
-# REVIEW-r9 fix 2: side-b's lantern lights a face the eye cannot see; 50 is the soffit glint and the stoop riser.
-WARM = {'house-frontage-dusk': 3000, 'context-lamp-wall-dusk': 3000, 'context-house-side-b-dusk': 50}
+WARM = {'house-frontage-dusk': 3000, 'context-lamp-wall-dusk': 3000, 'context-house-side-b-dusk': 0}   # side-b: the lantern lights a face the eye cannot see and the soffit is in the plate's shadow; judged on the lantern itself
 
 
 def inside(x0, x1, y0, y1, boxes):
@@ -52,6 +51,9 @@ def check(view, a, p):
     for c in p.get('cap', []):
         p90 = float(np.percentile(L[c[2]:c[3], c[0]:c[1]], 90))
         print('DUSK_CAP', view, c, 'p90', round(p90, 1)); bad += int(p90 > 120)
+    for c in p.get('pool', []):   # [x0, x1, y0, y1, min median L, min median R - B]: the wall the lantern lights
+        sub = a[c[2]:c[3], c[0]:c[1]]; mL = float(np.median(L[c[2]:c[3], c[0]:c[1]])); mRB = float(np.median(sub[..., 0] - sub[..., 2]))
+        print('DUSK_POOL', view, c[:4], 'L', round(mL), 'R-B', round(mRB)); bad += int(mL < c[4] or mRB < c[5])
     return bad
 
 
