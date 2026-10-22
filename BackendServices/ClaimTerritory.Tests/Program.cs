@@ -68,6 +68,32 @@ var lapsed = recovery.Claims.Single();
 Check(lapsed.State == ClaimState.Grace, "lapsed state");
 Check(recovery.Pay("pay", lapsed.Id, "owner", lapsed.Revision, 3).Claim?.State == ClaimState.Active, "payment restores active");
 Check(recovery.Check(lapsed.Id, "owner", ClaimRight.Build).Allowed, "build restored");
+var gridSettings = new ClaimGridSettings();
+var bandMap = ClaimBandMap.Load("content/world/zones/greenlands_silverbrook.json",
+    "GameClient/ArtSource/Greenlands/silverbrook-town-layout.json", gridSettings);
+Check(bandMap.Band(new ClaimCell(900, 900)) == ClaimBand.Wilderness &&
+    bandMap.BlockReason(new ClaimCell(900, 900)) == "", "authored wilderness band");
+Check(bandMap.BlockReason(new ClaimCell(0, 0)) != "", "town clearance");
+var grid = new ClaimGridService(bandMap, clock, gridSettings);
+var footprint = new[] { new ClaimCell(900, 900), new ClaimCell(901, 900), new ClaimCell(900, 901), new ClaimCell(901, 901) };
+var firstGrid = grid.Grow("g1", "clm_grid1", "owner", 1, footprint, 0, 100);
+Check(firstGrid.Accepted && firstGrid.Claim!.Cells.Count == 4 && grid.Allocated("owner") == 3m, "four priced cells");
+Check(grid.Grow("g1", "clm_grid1", "owner", 1, footprint, 0, 100) == firstGrid, "growth replay");
+Check(grid.Grow("g1", "clm_grid1", "owner", 1, footprint[..1], 0, 100).Reason == "operation_conflict", "growth conflict");
+Check(grid.Contains("clm_grid1", footprint[0], 152) && !grid.Contains("clm_grid1", footprint[0], 161), "TER-02 vertical band");
+Check(grid.Grow("far", "clm_grid1", "owner", 1, [new ClaimCell(920, 900)], 1, 100).Reason == "outside_reach", "reach gate");
+var secondGrid = grid.Grow("g2", "clm_grid2", "owner", 1, [new ClaimCell(1050, 800)], grid.Revision, 100);
+var thirdGrid = grid.Grow("g3", "clm_grid3", "owner", 1, [new ClaimCell(600, 800)], grid.Revision, 100);
+Check(secondGrid.Accepted && thirdGrid.Accepted, "three claims share budget");
+Check(grid.Grow("g4", "clm_grid4", "owner", 1, [new ClaimCell(1100, 800)], grid.Revision, 100).Reason == "claim_slots", "fourth claim denied");
+Check(grid.Grow("contend", "clm_other", "other", 1, footprint, grid.Revision, 100).Reason == "claim_spacing", "other owner spacing");
+var shrunk = grid.Shrink("shrink", "clm_grid1", "owner", footprint[..1], firstGrid.Claim!.Revision);
+Check(shrunk.Accepted && grid.Allocated("owner") == 2.25m, "shrink returns points");
+var empty = grid.Shrink("empty", "clm_grid1", "owner", [], shrunk.Claim!.Revision);
+Check(empty.Accepted && grid.Claims.Count == 3, "empty claim waits");
+clock.Advance(TimeSpan.FromHours(25));
+Check(grid.Claims.Count == 2, "empty claim archives");
+Check(new ClaimGridSettings(AlphaFixedPoints: 0).Budget(100) == 4400, "shipped level budget");
 Console.WriteLine("ClaimTerritory: focused assertions passed");
 
 sealed class FakeClock(DateTimeOffset initial) : TimeProvider
