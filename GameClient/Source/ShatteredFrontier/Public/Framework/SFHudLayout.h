@@ -33,6 +33,9 @@ public:
     void Configure(USFGatheringPilotComponent* InPilot) { Pilot = InPilot; }
     // Build mode shows the build action bar ("LMB Place - R Rotate - X Remove - Esc Cancel"); outside it no build prompt shows.
     void SetBuildModeActive(bool bActive) { bBuildMode = bActive; }
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    void CapturePrompt() { CapturePromptUntil = GetWorld() ? GetWorld()->GetTimeSeconds() + 3.0 : 0.0; }
+#endif
 
     static constexpr int32 HotbarCount = 6;
     // Keys 1-6 as bound today: 1 Wall, 2 Foundation, 3 Roof, 4 Door (construction shapes) and 5 axe, 6 pickaxe (gathering tools).
@@ -77,6 +80,9 @@ private:
     FString HarvestVerb, ShownVerb;  // the aimed node's verb ("Chop", "Mine", ...) for the Harvest prompt
     FString ZoneName;
     double NextFooterSeconds = 0.0;
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    double CapturePromptUntil = 0.0;
+#endif
     int32 ShownActiveKey = -1;
     FVector2D ShownViewport = FVector2D::ZeroVector;
 };
