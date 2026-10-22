@@ -2,6 +2,33 @@
 
 Spec: `docs/decisions/GFX-02-photoreal-ground-pipeline.md` section 2a (Interim J2-pre). No verdict here; the reviewer writes `REVIEW.md`.
 
+## Round 9 (after REVIEW-r8.md: 9 PASS, 6 FAIL)
+Implemented from the r8 fix list:
+1. Lattice warp `scale` 0.004 -> 0.001, `levels` 2 -> 1, `HexWarp` 0.25 -> 0.15 (bounds 0-0.2, slope comment). Control `bisect-warp0/` (`HexWarp` 0, `Rot` 1.0 on A and T, `BlendSharp` 24): 04 13.29 std 20.6, the same as `bisect-base` (`BlendSharp` 7, no warp: 13.26 std 20.6).
+2. Rule run at `Rot` 1.0 on A and T with the corrected warp (`bisect-r9rot1/`): 04 [600,450,400,250] 12.89 std 19.9 (below 14: stop and report, per the rule); 04-sun20 15.35; ctx-ground-4 mud 8.61; A3 top strip [884,600,32,100] rib `R` 0.48. With the warp-0 control beside it, narrow bands do not recover 04 at full rotation. Shipped values therefore keep the measured interim: A `Rot` 0.15; T: the rule's fallback 0.75 was built and captured (mud 9.03, A3 strip `R` 0.61; `bisect-T075r9/ctx-ground-4.jpg`) and is no better than 0.5 on either number (mud 9.93 / 9.80, `R` 0.61 / 0.76 between two 0.5 captures), so T is 0.5; S and B 1.0; cobble R 0.0 + `Snap` 14.
+3. Recaptured all views and measure frames; pairs (`SUN_TWIN_DIFF` 57.1 / 38.3 / 44.7); gate; timing.
+4. Docs: GFX-02 "J2-pre as shipped (r9)", blueprint 2a row, dependency-map row.
+5. r3-r8 committed as `fccc5c62` before this round; r9 is its own commit.
+
+Windows (`sharp.py` sharpness / std, before -> r9): 04 16.95 / 27.4 -> 14.99 / 26.2; 04-sun20 18.40 -> 18.36; ctx-ground-1 9.73 -> 9.25; ctx-ground-2 8.74 -> 7.67; ctx-ground-3 9.15 -> 9.00; ctx-ground-4 mud 11.15 -> 9.80; ctx-ground-4-sun20 10.49 -> 10.31.
+Rib-angle `R` (before -> r9): A1 earth 0.95 -> 0.93; A2 earth [815,600,64,256] 32 px 0.92 -> 0.27; A3 earth [884,600,32,215] 16 px 0.76 -> 0.70; A3 top strip [884,600,32,100] 0.76 (r8 0.61). The 16 px blocks on a 32 px strip give 12-26 samples; repeated captures of one build differ by up to 0.15.
+
+### Repeat gate, round 9
+`GROUND_REPEAT PASS crops 9 max_peak 0.1882 limit 0.25` (before `FAIL max_peak 0.665`).
+| crop | before | r9 after (lag px) |
+|---|---|---|
+| A1 cobble | 0.225 | 0.114 (11,-30) |
+| A1 earth | 0.544 | 0.093 (22,-13) |
+| A1 grass | 0.244 | 0.188 (17,-1) |
+| A2 cobble | 0.583 | 0.113 (7,-4) |
+| A2 earth | 0.665 | 0.110 (-10,-43) |
+| A2 grass | 0.342 | 0.067 (14,-11) |
+| A3 cobble | 0.628 | 0.068 (-9,3) |
+| A3 earth | 0.500 | 0.131 (-2,-17) |
+| A3 grass | 0.433 | 0.082 (-27,-25) |
+
+### Timing at bookmark 01, round 9 material
+Frame time: before 7.33 / 9.67 ms median / p95, after 7.33 / 8.63 ms. ProfileGPU (one frame): GPU frame 5.43 -> 6.40 ms, BasePass 0.84 -> 1.24 ms (+0.40).
 ## Round 8 (after REVIEW-r7.md: 11 PASS, 4 FAIL)
 Implemented from the r7 fix list; `rib_angle.py` (structure-tensor rib-angle coherence `R`, 3 px high-pass) added for fix 2's acceptance.
 1. `hex_tile.py` inputs `BlendSharp` (default 7) and `Warp` (lattice warp, tiles); lattice from `pw = p + Warp / CellTiles`, texels from `p`; `pow(w, BlendSharp)`. `import_ground.py`: shared lattice warp `hwarp` (two Simplex noises, `scale` 0.004 = 2.5 m, `HexWarp` 0.25) and `BlendSharp<p>` 24 on every hex layer.

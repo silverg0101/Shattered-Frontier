@@ -3,9 +3,9 @@
   "passed": true,
   "crops": {
     "A1-south-approach-30m/cobble": {
-      "peak": 0.1189,
+      "peak": 0.1137,
       "lag_px": [
-        12,
+        11,
         -30
       ],
       "rect": [
@@ -17,10 +17,10 @@
       "passed": true
     },
     "A1-south-approach-30m/earth": {
-      "peak": 0.1237,
+      "peak": 0.0928,
       "lag_px": [
-        -15,
-        -6
+        22,
+        -13
       ],
       "rect": [
         705,
@@ -31,10 +31,10 @@
       "passed": true
     },
     "A1-south-approach-30m/grass": {
-      "peak": 0.1666,
+      "peak": 0.1882,
       "lag_px": [
-        -15,
-        0
+        17,
+        -1
       ],
       "rect": [
         175,
@@ -45,7 +45,7 @@
       "passed": true
     },
     "A2-south-approach-100m/cobble": {
-      "peak": 0.0964,
+      "peak": 0.1129,
       "lag_px": [
         7,
         -4
@@ -59,10 +59,10 @@
       "passed": true
     },
     "A2-south-approach-100m/earth": {
-      "peak": 0.0948,
+      "peak": 0.1096,
       "lag_px": [
-        -1,
-        -26
+        -10,
+        -43
       ],
       "rect": [
         815,
@@ -73,10 +73,10 @@
       "passed": true
     },
     "A2-south-approach-100m/grass": {
-      "peak": 0.0617,
+      "peak": 0.0669,
       "lag_px": [
-        -57,
-        -15
+        14,
+        -11
       ],
       "rect": [
         1230,
@@ -87,10 +87,10 @@
       "passed": true
     },
     "A3-south-approach-250m/cobble": {
-      "peak": 0.0705,
+      "peak": 0.0683,
       "lag_px": [
-        4,
-        -27
+        -9,
+        3
       ],
       "rect": [
         925,
@@ -101,10 +101,10 @@
       "passed": true
     },
     "A3-south-approach-250m/earth": {
-      "peak": 0.1222,
+      "peak": 0.131,
       "lag_px": [
         -2,
-        -18
+        -17
       ],
       "rect": [
         884,
@@ -115,10 +115,10 @@
       "passed": true
     },
     "A3-south-approach-250m/grass": {
-      "peak": 0.083,
+      "peak": 0.0816,
       "lag_px": [
-        24,
-        18
+        -27,
+        -25
       ],
       "rect": [
         1075,

@@ -105,11 +105,11 @@ def ground():
     HEX = hex_tile.build()  # GFX-02 2a: MF_GN_HexTile exists before any layer calls it
     hwp = node(m, u.MaterialExpressionWorldPosition, -2000, 11000)
 
-    def hex_noise(y, zoff):  # r7 review fix 1: hex lattice warp, 2.5 m features, +-HexWarp tile
-        nz = node(m, u.MaterialExpressionNoise, -1700, y, noise_function=u.NoiseFunction.NOISEFUNCTION_SIMPLEX_TEX, scale=0.004, levels=2, output_min=-1.0, output_max=1.0, quality=2, turbulence=False)
+    def hex_noise(y, zoff):  # r7/r8 review: hex lattice warp, ~10 m features (scale 0.001, 1 level), +-HexWarp tile
+        nz = node(m, u.MaterialExpressionNoise, -1700, y, noise_function=u.NoiseFunction.NOISEFUNCTION_SIMPLEX_TEX, scale=0.001, levels=1, output_min=-1.0, output_max=1.0, quality=2, turbulence=False)
         link(g.op(u.MaterialExpressionAdd, hwp, node(m, u.MaterialExpressionConstant3Vector, -1900, y, constant=u.LinearColor(0.0, 0.0, zoff, 0.0)), -1800, y), '', nz, 'World Position'); return nz
     hxy = node(m, u.MaterialExpressionAppendVector, -1500, 11000); link(hex_noise(11000, 0.0), '', hxy, 'A'); link(hex_noise(11150, 8192.0), '', hxy, 'B')
-    hwarp = g.mul(hxy, g.sc('HexWarp', 0.25, -1500, 11100), -1350, 11000)  # tiles; bounds 0-0.4 (above 0.4 adjacent borders cross)
+    hwarp = g.mul(hxy, g.sc('HexWarp', 0.15, -1500, 11100), -1350, 11000)  # tiles; bounds 0-0.2: the warp's slope (HexWarp x feature frequency) must stay well under 1 lattice unit per unit or the lattice folds into wide blend patches (r8 review: 0.25 at 2.5 m folded)
 
     def hexlayer(p, base, nor, rough, uv, tint, y, rot, cell, snap, height, hsharp, bsharp):
         """One MF_GN_HexTile call in place of the three plain samples (D, N, M = Rough; H = the scan's Displacement when it has one, else default)."""
@@ -135,7 +135,7 @@ def ground():
                 pick('M', y + 500, r=True, g=False, b=False, a=False))
 
     # J2-pre r8: MF_GN_HexTile returns a world-space normal in the world-x/y frame of the UV (tangent_space_normal False below; at Rot 0 the +y frame read
-    # 15.8 at 04, -y 11.2). BlendSharp 24 + a 2.5 m lattice warp narrow the overlap bands. Rot is per layer (A 0.15, T 0.5, S/B 1.0, R 0.0): see the calls.
+    # 15.8 at 04, -y 11.2). BlendSharp 24 + a ~10 m lattice warp narrow the overlap bands. Rot is per layer (A 0.15, T 0.5, S/B 1.0, R 0.0): see the calls.
     def layer(p, base, nor, rough, tile_cm, tint, y, hex=False, rot=1.0, cell=1.0, snap=0.0, height=None, hsharp=0.0, bsharp=24.0):
         t = g.sc('TileCm' + p, tile_cm, -1800, y + 150)
         uv = g.uv(xy, t, -1650, y)
@@ -146,7 +146,7 @@ def ground():
         r = g.mask(g.smp('Rough' + p, tex(rough), S.SAMPLERTYPE_MASKS, uv, -1100, y + 500), True, False, False, -800, y + 500)
         return g.mul(col, g.vec('Tint' + p, tint, -900, y - 100), -500, y), n, r, t
     T = f'{LIB}/Textures/T_GN_'
-    fa, na, ra, _ = layer('A', T + 'forest_ground_04_Diffuse', T + 'forest_ground_04_nor_gl', T + 'forest_ground_04_Rough', 200, (0.50, 0.66, 0.34), 0, hex=True, rot=0.15,  # r8: 04 13.2 at Rot 1.0 with BlendSharp 24 or 32 (bands ruled out), 16.1 at 0.15
+    fa, na, ra, _ = layer('A', T + 'forest_ground_04_Diffuse', T + 'forest_ground_04_nor_gl', T + 'forest_ground_04_Rough', 200, (0.50, 0.66, 0.34), 0, hex=True, rot=0.15,  # r9 rule run at Rot 1.0: 04 12.89 std 19.9 (warp slope ~0.1); HexWarp 0 control 13.29 std 20.6 = BlendSharp 7 (13.26): not the bands; 0.15 reads 16.1
                           height=T + 'forest_ground_04_Displacement', hsharp=96.0)  # J2-pre r2 fix 3 / r3 fix 2: height tie-break (HeightSharp 0-160; the map's stone/soil step is 0.03-0.05), stones win over soil in the overlaps
     # J2-pre r2 fix 1: B hex too; it fills the moss patches on open ground, and its plain 1.5 m tile showed as the same stripes in every patch
     fb, nb, rb, _ = layer('B', T + 'mossy_rock_Diffuse', T + 'mossy_rock_nor_gl', T + 'mossy_rock_Rough', 150, (0.34, 0.46, 0.20), 1200, hex=True, rot=1.0)  # r6 review fix 3: B keeps full rotation (its crack dashes are the moss-patch motif at A2/A3)
@@ -208,7 +208,7 @@ def ground():
     rc, rn, rr, _ = layer('R', SB + 'Diffuse', SB + 'nor_gl', SB + 'Rough', 240, (1, 1, 1), 6000, hex=True, rot=0.0, cell=1.0, snap=14.0)  # 14 stone courses per 2.4 m tile
     # trails: packed dark earth from the forest-floor scan with pale mossy stones pushed through it where a mask passes a high threshold
     import_scan('brown_mud_02'); import_scan('rocky_trail')  # dirt with roots and sticks; pale stones
-    dc, dn, dr, _ = layer('T', T + 'brown_mud_02_Diffuse', T + 'brown_mud_02_nor_gl', T + 'brown_mud_02_Rough', 200, (0.85, 0.75, 0.65), 8000, hex=True, rot=0.5)  # r8: mud ribs need rotation (A2 rib R 0.03 at 0.5), full rotation smears it at 1-5 m (mud 9.1 at 1.0, 9.85 at 0.5)
+    dc, dn, dr, _ = layer('T', T + 'brown_mud_02_Diffuse', T + 'brown_mud_02_nor_gl', T + 'brown_mud_02_Rough', 200, (0.85, 0.75, 0.65), 8000, hex=True, rot=0.5)  # r9: mud [100,850,300,150] / A3 top-strip rib R: Rot 1.0 8.61 / 0.48, 0.75 9.03 / 0.61, 0.5 9.93 / 0.61 (0.5 dominates 0.75)
     sc_, sn, sr, _ = layer('S', T + 'rocky_trail_Diffuse', T + 'rocky_trail_nor_gl', T + 'rocky_trail_Rough', 150, (0.9, 0.88, 0.84), 9600, hex=True)
     def clamp01(value, x, y):
         return g.op(u.MaterialExpressionMax,
