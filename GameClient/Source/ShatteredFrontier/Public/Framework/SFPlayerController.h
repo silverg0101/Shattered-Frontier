@@ -97,12 +97,18 @@ public:
     UFUNCTION(Server, Reliable) void ServerUseRecipeScroll(const FString& RecipeId);
     void UseRecipeScroll(const FString& RecipeId);
     UFUNCTION(Exec) void SFStageAt(float XMetres, float YMetres, float YawDegrees);  // development: stands the pawn on the ground at X,Y facing Yaw (UI captures)
+    // Development frame-cost gate (tools/Measure-PlayerCrowd.ps1): Count idle player bodies (each its MetaHuman + hidden mannequin)
+    // in rows about 10 m ahead, facing the pawn; 0 removes them. SFFrameSample logs CROWD_SAMPLE with the average frame, game, render
+    // and GPU milliseconds over Seconds (editor builds only, where RenderCore/RHI are linked).
+    UFUNCTION(Exec) void SFCrowdTest(int32 Count);
+    UFUNCTION(Exec) void SFFrameSample(float Seconds, const FString& Label);
     bool IsStationPanelOpen() const;  // the crafting-station panel is on screen
     void ToggleBuildMode();
 protected:
     // The standalone construction sandbox subclass owns its own build input, palette and cursor; it returns false.
     virtual bool HostsBuildMode() const { return true; }
 private:
+    UPROPERTY(Transient) TArray<TObjectPtr<AActor>> CrowdTestBodies;
     friend class USFQuestPilotComponent;  // dev scenario driver sends the same placement RPC the cursor does
     UPROPERTY(VisibleAnywhere) TObjectPtr<USFGatheringPilotComponent> GatheringPilot;
     UPROPERTY() TObjectPtr<UActorComponent> PilotInventory;
