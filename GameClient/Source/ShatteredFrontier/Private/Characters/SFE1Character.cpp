@@ -7,6 +7,11 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Animation/AnimInstance.h"
 #include "Engine/SkeletalMesh.h"
+#if SF_WITH_MUTABLE
+#include "MuCO/CustomizableObject.h"
+#include "MuCO/CustomizableObjectInstance.h"
+#include "MuCO/CustomizableSkeletalComponent.h"
+#endif
 #include "Engine/LocalPlayer.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedPlayerInput.h"
@@ -68,7 +73,7 @@ ASFE1Character::ASFE1Character()
         GetMesh()->SetAnimInstanceClass(Locomotion.Class);
         MetaHumanClass = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("/Game/Frontier/Characters/Player/Built/MHC_Orlando/BP_MHC_Orlando.BP_MHC_Orlando_C")));
         MetaHumanRetargeter = TSoftObjectPtr<UIKRetargeter>(FSoftObjectPath(TEXT("/Game/Frontier/Characters/Player/Retarget/RTG_SF_MannequinToMetaHuman.RTG_SF_MannequinToMetaHuman")));
-        GarmentMesh = TSoftObjectPtr<USkeletalMesh>(FSoftObjectPath(TEXT("/Game/Frontier/Characters/Player/Garments/SKM_Tunic_Leggings.SKM_Tunic_Leggings")));
+        Outfit = TSoftObjectPtr<UObject>(FSoftObjectPath(TEXT("/Game/Frontier/Characters/Player/Outfit/CO_PlayerOutfit.CO_PlayerOutfit")));
     }
 
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -114,20 +119,34 @@ AActor* ASFE1Character::SpawnPosedMetaHuman(USceneComponent* Parent, const FTran
     Skin->SetAnimInstanceClass(USFMetaHumanRetargetAnimInstance::StaticClass());
     if (auto* Pose = Cast<USFMetaHumanRetargetAnimInstance>(Skin->GetAnimInstance())) { Pose->SetSource(GetMesh(), Retargeter); }
     Skin->AddTickPrerequisiteComponent(GetMesh());
-    if (USkeletalMesh* Garment = GarmentMesh.IsNull() ? nullptr : GarmentMesh.LoadSynchronous())
+#if SF_WITH_MUTABLE
+    if (UCustomizableObject* Object = Cast<UCustomizableObject>(Outfit.IsNull() ? nullptr : Outfit.LoadSynchronous()))
     {
-        // The preset's default clothes (the BP's outfit component) give way to the starter garment, which follows the Body's pose.
+        // Mutable generates the outfit mesh onto the Body component (keeping its retarget pose); the preset's own clothes give way to it.
         for (USkeletalMeshComponent* Part : TInlineComponentArray<USkeletalMeshComponent*>(Body))
         {
             if (Part != Skin && Part->GetSkeletalMeshAsset() && Part->GetSkeletalMeshAsset()->GetName().Contains(TEXT("_Outfits"))) { Part->SetVisibility(false, true); }
         }
-        USkeletalMeshComponent* Wear = NewObject<USkeletalMeshComponent>(Body, TEXT("StarterGarment"));
-        Wear->SetSkeletalMeshAsset(Garment);
-        Wear->SetupAttachment(Skin);
-        Wear->RegisterComponent();
-        Wear->AttachToComponent(Skin, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-        Wear->SetLeaderPoseComponent(Skin);
+        UCustomizableObjectInstance* Instance = Object->CreateInstance();
+        UCustomizableSkeletalComponent* Usage = NewObject<UCustomizableSkeletalComponent>(Body, TEXT("PlayerOutfit"));
+        Usage->SetCustomizableObjectInstance(Instance);
+        Usage->SetupAttachment(Skin);
+        Usage->RegisterComponent();
+        // The component name comes from the compiled data, so it is read when generating.
+        auto Generate = [Instance, Object, Usage = TWeakObjectPtr<UCustomizableSkeletalComponent>(Usage)]()
+        {
+            if (!Usage.IsValid()) { return; }
+            Usage->SetComponentName(Object->GetComponentName(0));
+            Instance->UpdateSkeletalMeshAsync(/*bIgnoreCloseDist*/ true, /*bForceHighPriority*/ true);
+        };
+#if WITH_EDITORONLY_DATA
+        // A cooked game ships the object compiled; an editor -game run compiles it on first use, and an update asked for before that fails.
+        if (!Object->IsCompiled()) { Object->GetPostCompileDelegate().AddWeakLambda(Instance, Generate); }
+        else
+#endif
+        { Generate(); }
     }
+#endif
     return Body;
 }
 

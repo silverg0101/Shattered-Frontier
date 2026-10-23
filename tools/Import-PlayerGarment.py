@@ -117,16 +117,7 @@ def make_instance(name, master, base, normal, rough, tint, tiling, tex_amount):
     return mi
 
 
-def run():
-    fbx = Path(os.environ.get('SF_GARMENT_FBX', Path(unreal.Paths.project_dir()).parent / 'Artifacts/Characters/PlayerBase/garment_tunic_leggings.fbx'))
-    body = lib.load_asset(BODY)
-    if body is None:
-        raise RuntimeError('No built body: run tools/Build-PlayerMetaHumans.py')
-    skeleton = body.get_editor_property('skeleton')
-    master = make_master()
-    linen = make_instance('MI_PlayerLinen', master, 'T_SB_denim_fabric_04_Diffuse', 'T_SB_denim_fabric_04_nor_gl', 'T_SB_denim_fabric_04_Rough', (0.55, 0.43, 0.26, 1), 2.0, 0.35)
-    legs = make_instance('MI_PlayerLeggings', master, 'T_SB_denim_fabric_04_Diffuse', 'T_SB_denim_fabric_04_nor_gl', 'T_SB_denim_fabric_04_Rough', (0.34, 0.18, 0.08, 1), 3.0, 1.0)
-
+def import_skeletal(fbx, name, skeleton):
     ui = unreal.FbxImportUI()
     ui.set_editor_property('import_mesh', True)
     ui.set_editor_property('import_as_skeletal', True)
@@ -140,15 +131,32 @@ def run():
     task = unreal.AssetImportTask()
     task.set_editor_property('filename', str(fbx))
     task.set_editor_property('destination_path', ROOT)
-    task.set_editor_property('destination_name', 'SKM_Tunic_Leggings')
+    task.set_editor_property('destination_name', name)
     task.set_editor_property('replace_existing', True)
     task.set_editor_property('automated', True)
     task.set_editor_property('save', False)
     task.set_editor_property('options', ui)
     tools.import_asset_tasks([task])
-    mesh = lib.load_asset(f'{ROOT}/SKM_Tunic_Leggings')
+    mesh = lib.load_asset(f'{ROOT}/{name}')
     if mesh is None:
-        raise RuntimeError('Garment import produced no mesh')
+        raise RuntimeError(f'{fbx.name} import produced no mesh')
+    lib.save_loaded_asset(mesh)
+    return mesh
+
+
+def run():
+    fbx = Path(os.environ.get('SF_GARMENT_FBX', Path(unreal.Paths.project_dir()).parent / 'Artifacts/Characters/PlayerBase/garment_tunic_leggings.fbx'))
+    body = lib.load_asset(BODY)
+    if body is None:
+        raise RuntimeError('No built body: run tools/Build-PlayerMetaHumans.py')
+    skeleton = body.get_editor_property('skeleton')
+    master = make_master()
+    linen = make_instance('MI_PlayerLinen', master, 'T_SB_denim_fabric_04_Diffuse', 'T_SB_denim_fabric_04_nor_gl', 'T_SB_denim_fabric_04_Rough', (0.55, 0.43, 0.26, 1), 2.0, 0.35)
+    legs = make_instance('MI_PlayerLeggings', master, 'T_SB_denim_fabric_04_Diffuse', 'T_SB_denim_fabric_04_nor_gl', 'T_SB_denim_fabric_04_Rough', (0.34, 0.18, 0.08, 1), 3.0, 1.0)
+
+    mesh = import_skeletal(fbx, 'SKM_Tunic_Leggings', skeleton)
+    # The body patch the garment covers (tools/Build-GarmentBodyClip.py), removed from the body by Mutable (tools/Create-PlayerOutfit.py).
+    import_skeletal(fbx.with_name(fbx.stem + '_bodyclip.fbx'), 'SKM_Tunic_Leggings_BodyClip', skeleton)
     mats = []
     for slot in mesh.get_editor_property('materials'):
         name = str(slot.get_editor_property('material_slot_name'))
