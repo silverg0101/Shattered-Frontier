@@ -731,7 +731,7 @@ void ScrollListLayout(UWidgetTree* T)
     UScrollBox* Scroll = N<UScrollBox>(T, TEXT("Scroll"));
     Scroll->SetScrollbarThickness(FVector2D(36.f, 36.f));
     Scroll->SetScrollbarPadding(FMargin(12.f, 0.f, 0.f, 0.f));
-    Scroll->SetAlwaysShowScrollbar(true);
+    Scroll->SetAlwaysShowScrollbar(false);  // the bar (and its track) appears only while the content overflows
     Scroll->SetAlwaysShowScrollbarTrack(true);
     FScrollBarStyle Bar = Scroll->GetWidgetBarStyle();
     Bar.SetVerticalBackgroundImage(KBox(TEXT("scrollbar_track"), 10.f, 20.f, 10.f, 20.f, 36.f, 600.f));
@@ -1551,7 +1551,7 @@ void QuestBoardLayout(UWidgetTree* T)
     Pay->AddChildToHorizontalBox(Caption(T, TEXT("NoReward"), TEXT("No item reward"), 34.f, true))->SetVerticalAlignment(VAlign_Center);
     Detail->AddChildToVerticalBox(Pay)->SetPadding(FMargin(0.f, 8.f, 0.f, 0.f));
     UBorder* DetailPad = Plain(T, nullptr, FMargin(48.f, 0.f, 0.f, 0.f));
-    DetailPad->SetContent(Sized(T, nullptr, Detail, 1000.f, 0.f));
+    DetailPad->SetContent(ListOf(T, TEXT("DetailScroll"), Detail, 1000.f, 900.f));  // long quest text scrolls; the bar shows only then
     Fill(Window, TEXT("SidePanel"), DetailPad);
 
     UHorizontalBox* Foot = A<UHorizontalBox>(T);
@@ -1587,16 +1587,18 @@ void DialogueLayout(UWidgetTree* T)
 
     UVerticalBox* Offer = N<UVerticalBox>(T, TEXT("OfferColumn"));
     Offer->AddChildToVerticalBox(Sized(T, nullptr, InvImage(T, TEXT("OfferArt"), FSlateBrush(), true), 836.f, 400.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
-    Offer->AddChildToVerticalBox(Caption(T, TEXT("OfferTitle"), TEXT("Quest"), 52.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
+    UVerticalBox* OfferText = A<UVerticalBox>(T);  // title, summary, objectives, rewards: scrolls when the quest text is long
+    OfferText->AddChildToVerticalBox(Caption(T, TEXT("OfferTitle"), TEXT("Quest"), 52.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
     UTextBlock* Summary = Caption(T, TEXT("OfferSummary"), TEXT(""), 32.f, true);
     Summary->SetAutoWrapText(true);
-    Offer->AddChildToVerticalBox(Summary)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
-    Offer->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
-    Offer->AddChildToVerticalBox(Caption(T, nullptr, TEXT("Objectives"), 38.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
-    ObjectiveRows(T, Offer);
-    Offer->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 4.f, 0.f, 12.f));
-    Offer->AddChildToVerticalBox(Caption(T, nullptr, TEXT("Rewards"), 38.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
-    Offer->AddChildToVerticalBox(RewardSlotRow(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    OfferText->AddChildToVerticalBox(Summary)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    OfferText->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    OfferText->AddChildToVerticalBox(Caption(T, nullptr, TEXT("Objectives"), 38.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
+    ObjectiveRows(T, OfferText);
+    OfferText->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 4.f, 0.f, 12.f));
+    OfferText->AddChildToVerticalBox(Caption(T, nullptr, TEXT("Rewards"), 38.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
+    OfferText->AddChildToVerticalBox(RewardSlotRow(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    Offer->AddChildToVerticalBox(ListOf(T, TEXT("OfferScroll"), OfferText, 836.f, 780.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
     UHorizontalBox* Buttons = A<UHorizontalBox>(T);
     UHorizontalBoxSlot* Spacer = Buttons->AddChildToHorizontalBox(A<USpacer>(T));
     Spacer->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
