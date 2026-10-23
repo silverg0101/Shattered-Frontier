@@ -1,5 +1,6 @@
 {
   "faces": [
-    {"id": "Orlando", "preset": "Orlando", "gender": "male", "hair": "WI_Hair_M_Layered", "beard": "WI_Beard_L_Full", "mustache": "WI_Mustache_L_Full"}
+    {"id": "Orlando", "preset": "Orlando", "gender": "male", "hair": "WI_Hair_M_Layered", "beard": "WI_Beard_L_Full", "mustache": "WI_Mustache_L_Full"},
+    {"id": "OrlandoBare", "preset": "Orlando", "gender": "male", "bare": true}
   ]
 }

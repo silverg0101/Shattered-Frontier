@@ -41,6 +41,11 @@ def build_face(face, subsystem, library):
                 raise RuntimeError(f"Unknown {slot} groom {wanted}")
             key = character.internal_collection.try_add_item_from_wardrobe_item(slot, item) if item else unreal.MetaHumanPaletteItemKey()
             instance.set_single_slot_selection(slot, key)
+    if fresh and face.get('bare'):
+        # "bare": no preset clothing, so the body keeps the torso and thighs the default garments hide (authoring base for tools/Export-PlayerBaseBody.py).
+        for slot in ('Outfits', 'Top Garment', 'Bottom Garment'):
+            if slot in [str(s) for s in character.internal_collection.get_slot_names()]:
+                instance.set_single_slot_selection(slot, unreal.MetaHumanPaletteItemKey())
     if not subsystem.try_add_object_to_edit(character=character):
         raise RuntimeError(f'{path} is open for edit elsewhere')
     try:

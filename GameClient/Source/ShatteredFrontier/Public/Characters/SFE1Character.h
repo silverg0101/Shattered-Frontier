@@ -6,6 +6,7 @@
 
 class UCameraComponent;
 class UIKRetargeter;
+class USkeletalMesh;
 class UInputAction;
 class UInputMappingContext;
 class USFCrowdControlComponent;
@@ -40,6 +41,9 @@ public:
     // animation driver; when the MetaHuman is missing (not built on this machine) the mannequin shows as before.
     UPROPERTY(EditDefaultsOnly, Category="Appearance") TSoftClassPtr<AActor> MetaHumanClass;
     UPROPERTY(EditDefaultsOnly, Category="Appearance") TSoftObjectPtr<UIKRetargeter> MetaHumanRetargeter;
+    // Dev test: the starter tunic and leggings (tools/Build-PlayerGarment.py, tools/Import-PlayerGarment.py) worn over the Body, which hides the
+    // MetaHuman's default outfit. The skin is not hidden under it yet (Mutable will), so skin can poke through.
+    UPROPERTY(EditDefaultsOnly, Category="Appearance") TSoftObjectPtr<USkeletalMesh> GarmentMesh;
     AActor* GetMetaHuman() const { return MetaHuman; }
     // A MetaHuman of this character's class, attached under Parent at Relative and posed from this character's mannequin
     // (the world body, and the Equipment window's preview). Null when the class or retargeter is not built here.

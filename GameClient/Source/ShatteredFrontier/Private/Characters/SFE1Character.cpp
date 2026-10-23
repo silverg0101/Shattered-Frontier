@@ -68,6 +68,7 @@ ASFE1Character::ASFE1Character()
         GetMesh()->SetAnimInstanceClass(Locomotion.Class);
         MetaHumanClass = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("/Game/Frontier/Characters/Player/Built/MHC_Orlando/BP_MHC_Orlando.BP_MHC_Orlando_C")));
         MetaHumanRetargeter = TSoftObjectPtr<UIKRetargeter>(FSoftObjectPath(TEXT("/Game/Frontier/Characters/Player/Retarget/RTG_SF_MannequinToMetaHuman.RTG_SF_MannequinToMetaHuman")));
+        GarmentMesh = TSoftObjectPtr<USkeletalMesh>(FSoftObjectPath(TEXT("/Game/Frontier/Characters/Player/Garments/SKM_Tunic_Leggings.SKM_Tunic_Leggings")));
     }
 
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -113,6 +114,20 @@ AActor* ASFE1Character::SpawnPosedMetaHuman(USceneComponent* Parent, const FTran
     Skin->SetAnimInstanceClass(USFMetaHumanRetargetAnimInstance::StaticClass());
     if (auto* Pose = Cast<USFMetaHumanRetargetAnimInstance>(Skin->GetAnimInstance())) { Pose->SetSource(GetMesh(), Retargeter); }
     Skin->AddTickPrerequisiteComponent(GetMesh());
+    if (USkeletalMesh* Garment = GarmentMesh.IsNull() ? nullptr : GarmentMesh.LoadSynchronous())
+    {
+        // The preset's default clothes (the BP's outfit component) give way to the starter garment, which follows the Body's pose.
+        for (USkeletalMeshComponent* Part : TInlineComponentArray<USkeletalMeshComponent*>(Body))
+        {
+            if (Part != Skin && Part->GetSkeletalMeshAsset() && Part->GetSkeletalMeshAsset()->GetName().Contains(TEXT("_Outfits"))) { Part->SetVisibility(false, true); }
+        }
+        USkeletalMeshComponent* Wear = NewObject<USkeletalMeshComponent>(Body, TEXT("StarterGarment"));
+        Wear->SetSkeletalMeshAsset(Garment);
+        Wear->SetupAttachment(Skin);
+        Wear->RegisterComponent();
+        Wear->AttachToComponent(Skin, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+        Wear->SetLeaderPoseComponent(Skin);
+    }
     return Body;
 }
 
