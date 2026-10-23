@@ -252,7 +252,14 @@ void USFTabBarWidget::SetTabs(const TArray<FSFTabSpec>& Specs)
         if (Spec.Icon.GetResourceObject()) { Tab->SetIcon(Spec.Icon); }
         Tab->OnClicked.AddDynamic(this, &USFTabBarWidget::HandleTab);
         UPanelSlot* PanelSlot = TabRow->AddChild(Tab);
-        if (UHorizontalBoxSlot* Cell = Cast<UHorizontalBoxSlot>(PanelSlot)) { Cell->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); Cell->SetPadding(TabPadding); }
+        // Width shared by label length, so "Consumables" gets more room than "All"; the WBP_Tab label shrinks if it still cannot fit.
+        if (UHorizontalBoxSlot* Cell = Cast<UHorizontalBoxSlot>(PanelSlot))
+        {
+            FSlateChildSize Size(ESlateSizeRule::Fill);
+            Size.Value = 6 + Spec.Label.ToString().Len();  // the constant keeps short tabs from getting too narrow
+            Cell->SetSize(Size);
+            Cell->SetPadding(TabPadding);
+        }
         Tabs.Add(Tab);
     }
     SelectTab(Tabs.IsEmpty() ? INDEX_NONE : 0, false);

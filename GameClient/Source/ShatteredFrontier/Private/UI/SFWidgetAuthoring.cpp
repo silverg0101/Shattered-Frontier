@@ -636,7 +636,12 @@ void KitTabLayout(UWidgetTree* T)
     Stack->AddChildToVerticalBox(Sized(T, nullptr, N<UImage>(T, TEXT("TabIcon")), 44.f, 44.f))->SetHorizontalAlignment(HAlign_Center);
     UTextBlock* Label = SizedText(T, TEXT("Label"), TEXT("Tab"), 34.f);
     Label->SetJustification(ETextJustify::Center);
-    Stack->AddChildToVerticalBox(Label)->SetHorizontalAlignment(HAlign_Center);
+    // A label longer than its tab shrinks to fit instead of spilling over the border (never grows past its set size).
+    UScaleBox* Fit = A<UScaleBox>(T);
+    Fit->SetStretch(EStretch::ScaleToFit);
+    Fit->SetStretchDirection(EStretchDirection::DownOnly);
+    Fit->SetContent(Label);
+    Stack->AddChildToVerticalBox(Fit)->SetHorizontalAlignment(HAlign_Fill);
     UBorder* Pad = Plain(T, nullptr, FMargin(12.f, 8.f));
     Pad->SetVerticalAlignment(VAlign_Center); Pad->SetHorizontalAlignment(HAlign_Center);
     Pad->SetContent(Stack);
