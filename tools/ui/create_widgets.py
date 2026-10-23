@@ -1,7 +1,8 @@
 """Create the shared, HUD and unit-frame Widget Blueprints (WBP_*) under /Game/Frontier/UI/Widgets/.
 
 Run in the open editor:   py -3 tools/Run-InEditor.py tools/ui/create_widgets.py [--force] [--only WBP_Name]
-Or headless:   UnrealEditor-Cmd.exe <uproject> -run=pythonscript -script=<this file> -unattended -nosplash
+Or headless:   UnrealEditor-Cmd.exe <uproject> -run=pythonscript -script=<this file> -unattended -nosplash (no argv there: set env SF_UI_FORCE=1 and SF_UI_ONLY=WBP_Name instead of the flags)
+Inventory (UI/Widgets/Inventory: WBP_InventoryTab, WBP_InventorySlot, WBP_Inventory) needs tools/ui/import_inventory.py run first; rebuild the panel with SF_UI_FORCE=1 SF_UI_ONLY=WBP_Inventory.
 
 Each WBP gets a first-draft layout and the BindWidget names its C++ base expects (Public/UI/SFUiWidgets.h, SFHudWidgets.h;
 the layouts are in Private/UI/SFWidgetAuthoring.cpp). Existing assets are skipped: the owner rearranges them in the UMG
@@ -16,8 +17,9 @@ import sys
 
 import unreal
 
-force = '--force' in sys.argv
-only = sys.argv[sys.argv.index('--only') + 1] if '--only' in sys.argv else ''
+import os
+force = '--force' in sys.argv or os.environ.get('SF_UI_FORCE') == '1'  # headless runs get no argv: use SF_UI_FORCE=1 / SF_UI_ONLY=<WBP name>
+only = sys.argv[sys.argv.index('--only') + 1] if '--only' in sys.argv else os.environ.get('SF_UI_ONLY', '')
 lib = unreal.EditorAssetLibrary
 OLD = '/Game/Frontier/UI/Widgets/Hud/WBP_HudVitals'
 FRAME = '/Game/Frontier/UI/Widgets/Unit/WBP_UnitFrame'

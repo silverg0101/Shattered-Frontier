@@ -52,13 +52,15 @@ bool FSFInventoryPanelTabsTest::RunTest(const FString& Parameters)
     if (TestEqual(TEXT("Gear tab"),Gear.Num(),1)) { TestEqual(TEXT("Gear is the axe"),Gear[0].Name.ToString(),FString(TEXT("Iron axe"))); }
     TestEqual(TEXT("Materials tab"),USFInventoryWidget::FilterByTab(Entries,ESFInventoryTab::Materials).Num(),1);
     TestEqual(TEXT("Consumables tab"),USFInventoryWidget::FilterByTab(Entries,ESFInventoryTab::Consumables).Num(),1);
-    TestEqual(TEXT("Tab label"),USFInventoryWidget::TabLabel(ESFInventoryTab::Consumables),FString(TEXT("Food")));
+    TestEqual(TEXT("Misc tab is empty here"),USFInventoryWidget::FilterByTab(Entries,ESFInventoryTab::Misc).Num(),0);
+    TestEqual(TEXT("Tab label"),USFInventoryWidget::TabLabel(ESFInventoryTab::Consumables),FString(TEXT("Consumables")));
 
     const FSFInventoryTooltip Tip=USFInventoryWidget::BuildTooltip(Gear[0]);
     TestEqual(TEXT("Tooltip name"),Tip.Title,FString(TEXT("Iron axe")));
+    TestEqual(TEXT("Tooltip rarity"),Tip.RarityLine,FString(TEXT("Common")));
     TestEqual(TEXT("Tooltip description"),Tip.Description,FString(TEXT("Desc")));
-    TestEqual(TEXT("Tooltip category, rarity and state"),Tip.TypeLine,FString(TEXT("Tools  -  Common  -  Equipped")));
-    TestEqual(TEXT("Tooltip weight"),Tip.WeightLine,FString(TEXT("Weight  1.5 kg")));
+    TestEqual(TEXT("Tooltip type and state"),Tip.TypeLine,FString(TEXT("Gear  -  Equipped")));
+    TestEqual(TEXT("Tooltip weight"),Tip.WeightLine,FString(TEXT("Weight  1.5 kg (per 1)")));
     return true;
 }
 
@@ -78,7 +80,7 @@ bool FSFInventoryWidgetTest::RunTest(const FString& Parameters)
     if (!TestNotNull(TEXT("WBP_Inventory loads"),Class.Get())) { return false; }
     USFInventoryWidget* Panel=CreateWidget<USFInventoryWidget>(World,Class);
     if (!TestNotNull(TEXT("WBP_Inventory constructs"),Panel)) { return false; }
-    for (const TCHAR* Name : {TEXT("SlotGrid"),TEXT("TabAll"),TEXT("TabMaterials"),TEXT("TabTools"),TEXT("TabFood"),TEXT("MainHandSlot"),TEXT("CloseButton"),TEXT("WeightText"),TEXT("Tooltip")})
+    for (const TCHAR* Name : {TEXT("SlotGrid"),TEXT("TabAll"),TEXT("TabMaterials"),TEXT("TabGear"),TEXT("TabConsumables"),TEXT("TabMisc"),TEXT("WeightText"),TEXT("WeightPercentText"),TEXT("WeightBar"),TEXT("Tooltip"),TEXT("TipTitle"),TEXT("TipRarity")})
     { TestNotNull(FString::Printf(TEXT("%s bound"),Name),Panel->GetWidgetFromName(Name)); }
 
     auto Entry=[](const TCHAR* Name,int32 Count,ESFInventoryTab Category,bool bEquipped=false)
@@ -96,6 +98,11 @@ bool FSFInventoryWidgetTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Empty cell has no count"),Panel->GetCell(3)->GetCountText().ToString(),FString());
     if (Panel->GetMainHand()) { TestTrue(TEXT("Main hand shows the equipped tool"),Panel->GetMainHand()->IsSelected()); }
     TestEqual(TEXT("Weight line"),Panel->GetWeightLine().ToString(),FString(TEXT("Weight 3.0 / 40 kg")));
+    TestEqual(TEXT("Weight percent"),Panel->GetWeightPercentLine().ToString(),FString(TEXT("8%")));
+    Panel->SelectCell(1);
+    TestFalse(TEXT("Click moves the selection off the first cell"),Panel->GetCell(0)->IsSelected());
+    TestTrue(TEXT("Clicked cell is selected"),Panel->GetCell(1)->IsSelected());
+    TestEqual(TEXT("Selected stack name"),Panel->GetSelectedName(),FString(TEXT("Oak log")));
     Panel->SelectTab(ESFInventoryTab::Materials);
     Panel->Present(Entries,12,3.f,40.f);
     TestEqual(TEXT("Materials tab keeps the stack count"),Panel->GetCell(0)->GetCountText().ToString(),FString(TEXT("5")));
@@ -158,6 +165,8 @@ bool FSFInventoryPanelDefinitionTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Equip is Gear"),USFInventoryWidget::CategoryOf(*Tool),ESFInventoryTab::Gear);
     TestEqual(TEXT("Eat is Consumables"),USFInventoryWidget::CategoryOf(*Food),ESFInventoryTab::Consumables);
     TestEqual(TEXT("No use type is Materials"),USFInventoryWidget::CategoryOf(*Ore),ESFInventoryTab::Materials);
+    UInventoryItemDefinition* Bundle=NewObject<UInventoryItemDefinition>(GetTransientPackage()); Bundle->UniqueId=TEXT("item/wall_material_bundle");
+    TestEqual(TEXT("Building bundle is Misc"),USFInventoryWidget::CategoryOf(*Bundle),ESFInventoryTab::Misc);
     const FSFInventoryEntry Entry=USFInventoryWidget::MakeEntry(*Tool,TEXT("Fallback"),1,false);
     TestEqual(TEXT("Name from definition"),Entry.Name.ToString(),FString(TEXT("Test axe")));
     TestEqual(TEXT("Weight from definition"),Entry.UnitWeight,2.f);

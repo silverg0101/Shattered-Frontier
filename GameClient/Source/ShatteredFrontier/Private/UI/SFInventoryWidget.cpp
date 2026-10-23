@@ -1,7 +1,10 @@
 #include "UI/SFInventoryWidget.h"
 
 #include "Components/Image.h"
+#include "Components/Border.h"
+#include "Components/Button.h"
 #include "Components/PanelWidget.h"
+#include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Components/UniformGridPanel.h"
 #include "Engine/Texture2D.h"
@@ -19,16 +22,15 @@ void USFInventoryWidget::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
     SetIsFocusable(false);
-    if (!SlotClass) { SlotClass = LoadClass<USFSlotWidget>(nullptr, TEXT("/Game/Frontier/UI/Widgets/Common/WBP_Slot.WBP_Slot_C")); }
-    const ESFInventoryTab Tabs[4] = {ESFInventoryTab::All, ESFInventoryTab::Materials, ESFInventoryTab::Gear, ESFInventoryTab::Consumables};
-    USFTabWidget* Controls[4] = {TabAll, TabMaterials, TabTools, TabFood};
-    for (int32 Index = 0; Index < 4; ++Index)
+    if (!SlotClass) { SlotClass = LoadClass<USFSlotWidget>(nullptr, TEXT("/Game/Frontier/UI/Widgets/Inventory/WBP_InventorySlot.WBP_InventorySlot_C")); }
+    const TArray<USFTabWidget*> Controls = TabControls();
+    for (int32 Index = 0; Index < Controls.Num(); ++Index)
     {
         if (!Controls[Index]) { continue; }
-        Controls[Index]->SetLabel(FText::FromString(TabLabel(Tabs[Index])));
+        Controls[Index]->SetLabel(FText::FromString(TabLabel(static_cast<ESFInventoryTab>(Index))));
         Controls[Index]->OnClicked.AddDynamic(this, &USFInventoryWidget::HandleTab);
     }
-    if (CloseButton) { CloseButton->SetLabel(NSLOCTEXT("SFInventory", "Close", "Close")); CloseButton->OnClicked.AddDynamic(this, &USFInventoryWidget::HandleClose); }
+    if (CloseButton) { CloseButton->OnClicked.AddDynamic(this, &USFInventoryWidget::HandleClose); }  // its label is the Designer's
     if (Tooltip) { Tooltip->SetVisibility(ESlateVisibility::Collapsed); }
     SelectTab(ESFInventoryTab::All);
 }
@@ -36,7 +38,7 @@ void USFInventoryWidget::NativeOnInitialized()
 void USFInventoryWidget::ApplyKitStyle()
 {
     // Fill-only (project family where the Designer left the default); sizes and colours the Designer set stay.
-    for (UTextBlock* Text : {WeightText.Get(), GoldText.Get(), EmptyText.Get(), TipTitle.Get(), TipType.Get(), TipQuantity.Get(), TipWeight.Get(), TipDescription.Get()}) { TextStyle.Apply(Text); }
+    for (UTextBlock* Text : {TitleText.Get(), WeightText.Get(), WeightPercentText.Get(), GoldText.Get(), EmptyText.Get(), TipTitle.Get(), TipRarity.Get(), TipType.Get(), TipQuantity.Get(), TipWeight.Get(), TipDescription.Get()}) { TextStyle.Apply(Text); }
 }
 
 void USFInventoryWidget::Configure(USFGatheringPilotComponent* InPilot)
@@ -73,6 +75,7 @@ void USFInventoryWidget::EnsureCells(int32 Count)
         USFSlotWidget* Cell = CreateWidget<USFSlotWidget>(this, SlotClass);
         if (!Cell) { continue; }
         if (Uniform) { Uniform->AddChildToUniformGrid(Cell, Index / GridColumns, Index % GridColumns); } else { SlotGrid->AddChild(Cell); }
+        if (USFInventorySlotWidget* Inventory = Cast<USFInventorySlotWidget>(Cell)) { Inventory->OnSlotClicked.AddDynamic(this, &USFInventoryWidget::HandleSlotClicked); }
         Cells.Add(Cell);
     }
 }
@@ -81,6 +84,8 @@ void USFInventoryWidget::Present(const TArray<FSFInventoryEntry>& All, int32 Slo
 {
     EnsureCells(SlotCount);
     const TArray<FSFInventoryEntry> Items = FilterByTab(All, ActiveTab);
+    // Selection follows the stack name; it falls back to the first shown stack when its stack left the tab.
+    if (!Items.ContainsByPredicate([this](const FSFInventoryEntry& E) { return E.Name.ToString() == SelectedKey; })) { SelectedKey = Items.IsEmpty() ? FString() : Items[0].Name.ToString(); }
     for (int32 Index = 0; Index < Cells.Num(); ++Index)
     {
         USFSlotWidget* Cell = Cells[Index];
@@ -89,8 +94,8 @@ void USFInventoryWidget::Present(const TArray<FSFInventoryEntry>& All, int32 Slo
         Cell->SetIcon(Icon);
         // The name is the fallback for items without an icon; the tooltip always carries it.
         Cell->SetKeyText(bFilled && !Icon ? Items[Index].Name : FText::GetEmpty());
-        Cell->SetCount(bFilled ? Items[Index].Count : 0);
-        Cell->SetSelected(bFilled && Items[Index].bEquipped);
+        if (USFInventorySlotWidget* Inventory = Cast<USFInventorySlotWidget>(Cell)) { Inventory->SetStackCount(bFilled ? Items[Index].Count : 0); } else { Cell->SetCount(bFilled ? Items[Index].Count : 0); }
+        Cell->SetSelected(bFilled && Items[Index].Name.ToString() == SelectedKey);
     }
     ShownItems = Items;  // the hover tooltip reads these by cell index
     const FSFInventoryEntry* Equipped = All.FindByPredicate([](const FSFInventoryEntry& E) { return E.bEquipped; });
@@ -110,21 +115,37 @@ void USFInventoryWidget::Present(const TArray<FSFInventoryEntry>& All, int32 Slo
     {
         WeightText->SetText(FText::FromString(MaxKg > 0.f ? FString::Printf(TEXT("Weight %.1f / %.0f kg"), TotalKg, MaxKg) : FString::Printf(TEXT("Weight %.1f kg"), TotalKg)));
     }
+    if (MaxKg >= 0.f)
+    {
+        const float Fraction = MaxKg > 0.f ? FMath::Clamp(TotalKg / MaxKg, 0.f, 1.f) : 0.f;
+        if (WeightBar) { WeightBar->SetPercent(Fraction); }
+        if (WeightPercentText) { WeightPercentText->SetText(MaxKg > 0.f ? FText::FromString(FString::Printf(TEXT("%d%%"), FMath::RoundToInt(Fraction * 100.f))) : FText::GetEmpty()); }
+    }
 }
 
 FText USFInventoryWidget::GetWeightLine() const { return WeightText ? WeightText->GetText() : FText::GetEmpty(); }
+FText USFInventoryWidget::GetWeightPercentLine() const { return WeightPercentText ? WeightPercentText->GetText() : FText::GetEmpty(); }
+
+void USFInventoryWidget::SelectCell(int32 Index)
+{
+    if (!ShownItems.IsValidIndex(Index)) { return; }
+    SelectedKey = ShownItems[Index].Name.ToString();
+    for (int32 Cell = 0; Cell < Cells.Num(); ++Cell) { Cells[Cell]->SetSelected(Cell == Index); }
+}
+
+void USFInventoryWidget::HandleSlotClicked(USFInventorySlotWidget* Source) { SelectCell(Cells.IndexOfByKey(Source)); }
 
 void USFInventoryWidget::SelectTab(ESFInventoryTab Tab)
 {
     ActiveTab = Tab;
-    USFTabWidget* Controls[4] = {TabAll, TabMaterials, TabTools, TabFood};
-    for (int32 Index = 0; Index < 4; ++Index) { if (Controls[Index]) { Controls[Index]->SetSelected(Index == static_cast<int32>(Tab)); } }
+    const TArray<USFTabWidget*> Controls = TabControls();
+    for (int32 Index = 0; Index < Controls.Num(); ++Index) { if (Controls[Index]) { Controls[Index]->SetSelected(Index == static_cast<int32>(Tab)); } }
 }
 
 void USFInventoryWidget::HandleTab(USFButtonWidget* Source)
 {
-    USFTabWidget* Controls[4] = {TabAll, TabMaterials, TabTools, TabFood};
-    for (int32 Index = 0; Index < 4; ++Index) { if (Controls[Index] == Source) { SelectTab(static_cast<ESFInventoryTab>(Index)); return; } }
+    const TArray<USFTabWidget*> Controls = TabControls();
+    for (int32 Index = 0; Index < Controls.Num(); ++Index) { if (Controls[Index] == Source) { SelectTab(static_cast<ESFInventoryTab>(Index)); return; } }
 }
 
 void USFInventoryWidget::HandleClose(USFButtonWidget* Source)
@@ -158,8 +179,9 @@ FString USFInventoryWidget::TabLabel(ESFInventoryTab Tab)
     switch (Tab)
     {
     case ESFInventoryTab::Materials: return TEXT("Materials");
-    case ESFInventoryTab::Gear: return TEXT("Tools");  // v5 tab names
-    case ESFInventoryTab::Consumables: return TEXT("Food");
+    case ESFInventoryTab::Gear: return TEXT("Gear");
+    case ESFInventoryTab::Consumables: return TEXT("Consumables");
+    case ESFInventoryTab::Misc: return TEXT("Misc");
     default: return TEXT("All");
     }
 }
@@ -186,6 +208,17 @@ TArray<FSFInventoryEntry> USFInventoryWidget::FilterByTab(const TArray<FSFInvent
     return Items.FilterByPredicate([Tab](const FSFInventoryEntry& E) { return Tab == ESFInventoryTab::All || E.Category == Tab; });
 }
 
+static FString TypeName(ESFInventoryTab Tab)
+{
+    switch (Tab)
+    {
+    case ESFInventoryTab::Gear: return TEXT("Gear");
+    case ESFInventoryTab::Consumables: return TEXT("Consumable");
+    case ESFInventoryTab::Misc: return TEXT("Misc");
+    default: return TEXT("Material");
+    }
+}
+
 FSFInventoryTooltip USFInventoryWidget::BuildTooltip(const FSFInventoryEntry& Entry)
 {
     FSFInventoryTooltip Tip;
@@ -193,8 +226,9 @@ FSFInventoryTooltip USFInventoryWidget::BuildTooltip(const FSFInventoryEntry& En
     Tip.Title = Entry.Name.ToString();
     Tip.Description = Entry.Description.ToString();
     // ponytail: the plugin item definition has no rarity field, so every item reads Common until a game-side definition adds one.
-    Tip.TypeLine = FString::Printf(TEXT("%s  -  Common%s"), *TabLabel(Entry.Category), Entry.bEquipped ? TEXT("  -  Equipped") : TEXT(""));
-    Tip.WeightLine = FString::Printf(TEXT("Weight  %.1f kg"), Entry.UnitWeight);
+    Tip.RarityLine = TEXT("Common");
+    Tip.TypeLine = FString::Printf(TEXT("%s%s"), *TypeName(Entry.Category), Entry.bEquipped ? TEXT("  -  Equipped") : TEXT(""));
+    Tip.WeightLine = FString::Printf(TEXT("Weight  %.1f kg (per 1)"), Entry.UnitWeight);
     return Tip;
 }
 
@@ -222,7 +256,9 @@ ESFInventoryTab USFInventoryWidget::CategoryOf(const UInventoryItemDefinition& D
     {
     case EInventoryItemUseType::Equip: return ESFInventoryTab::Gear;
     case EInventoryItemUseType::Usable: case EInventoryItemUseType::Eat: case EInventoryItemUseType::Consume: return ESFInventoryTab::Consumables;
-    default: return ESFInventoryTab::Materials;
+    default:
+        // ponytail: the definition has no category field, so building bundles and recipe scrolls are told apart by their unique id.
+        return Definition.UniqueId.Contains(TEXT("bundle")) || Definition.UniqueId.Contains(TEXT("scroll")) ? ESFInventoryTab::Misc : ESFInventoryTab::Materials;
     }
 }
 
@@ -232,6 +268,7 @@ FSFInventoryEntry USFInventoryWidget::MakeEntry(const UInventoryItemDefinition& 
     Entry.Name = Definition.DisplayName.IsEmpty() ? FText::FromString(FallbackName) : Definition.DisplayName;
     Entry.Count = Count; Entry.bEquipped = bEquipped;
     Entry.Category = CategoryOf(Definition);
+    Entry.DefinitionId = Definition.UniqueId;
     Entry.Description = Definition.Description;
     Entry.UnitWeight = Definition.Weight;
     Entry.Icon = Definition.Icon;
@@ -269,7 +306,7 @@ TArray<FSFInventoryEntry> USFInventoryWidget::CollectEntries(int32& OutSlots) co
     return BuildEntries(Items);
 }
 
-// Shows the tooltip for the bag slot (or the main hand) under the cursor and hides it elsewhere.
+// Shows the tooltip for the bag slot (or the main hand) under the cursor, else for the selected stack; hidden when nothing is shown.
 void USFInventoryWidget::UpdateTooltip()
 {
     if (!Tooltip || !FSlateApplication::IsInitialized()) { return; }
@@ -280,13 +317,14 @@ void USFInventoryWidget::UpdateTooltip()
         if (ShownItems.IsValidIndex(Index) && Cells[Index]->GetCachedGeometry().IsUnderLocation(CursorPos)) { Hovered = Index; break; }
     }
     const bool bMainHand = Hovered == INDEX_NONE && bHasMainHand && MainHandSlot && MainHandSlot->GetCachedGeometry().IsUnderLocation(CursorPos);
-    if (Hovered == INDEX_NONE && !bMainHand) { Tooltip->SetVisibility(ESlateVisibility::Collapsed); return; }
-    const FSFInventoryEntry& Entry = bMainHand ? MainHandEntry : ShownItems[Hovered];
+    const FSFInventoryEntry* Shown = bMainHand ? &MainHandEntry : ShownItems.IsValidIndex(Hovered) ? &ShownItems[Hovered] : nullptr;
+    if (!Shown) { Shown = ShownItems.FindByPredicate([this](const FSFInventoryEntry& E) { return E.Name.ToString() == SelectedKey; }); }
+    if (!Shown) { Tooltip->SetVisibility(ESlateVisibility::Collapsed); return; }
+    const FSFInventoryEntry& Entry = *Shown;
     const FSFInventoryTooltip Tip = BuildTooltip(Entry);
     auto Set = [](UTextBlock* Block, const FString& Value) { if (Block) { Block->SetText(FText::FromString(Value)); } };
-    Set(TipTitle, Tip.Title); Set(TipType, Tip.TypeLine); Set(TipDescription, Tip.Description);
-    if (TipQuantity) { TipQuantity->SetText(FText::AsNumber(Entry.Count)); }
-    Set(TipWeight, FString::Printf(TEXT("%.1f kg"), Entry.UnitWeight));
+    Set(TipTitle, Tip.Title); Set(TipRarity, Tip.RarityLine); Set(TipType, Tip.TypeLine); Set(TipDescription, Tip.Description); Set(TipWeight, Tip.WeightLine);
+    if (TipQuantity) { TipQuantity->SetText(FText::FromString(FString::Printf(TEXT("Owned  %d"), Entry.Count))); }
     if (TipDescription) { TipDescription->SetVisibility(Tip.Description.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible); }
     if (TipIcon)
     {
@@ -295,4 +333,57 @@ void USFInventoryWidget::UpdateTooltip()
         TipIcon->SetVisibility(Art ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
     }
     Tooltip->SetVisibility(ESlateVisibility::HitTestInvisible);
+}
+
+// ---- inventory tab and slot parts
+
+void USFInventoryTabWidget::ApplyKitStyle()
+{
+    if (Button)
+    {
+        FButtonStyle Style = Button->GetStyle();
+        const FSlateBrush& Rest = bSelected ? SelectedBrush : NormalBrush;
+        const FSlateBrush& Over = bSelected ? SelectedBrush : HoverBrush;
+        if (Rest.GetResourceObject()) { Style.Normal = Rest; }
+        if (Over.GetResourceObject()) { Style.Hovered = Over; }
+        if (SelectedBrush.GetResourceObject()) { Style.Pressed = SelectedBrush; }
+        Style.NormalPadding = FMargin(0.f); Style.PressedPadding = FMargin(0.f);
+        Button->SetStyle(Style);
+    }
+    if (Label) { LabelStyle.Apply(Label); if (!LabelText.IsEmpty()) { Label->SetText(LabelText); } }
+    if (TabIcon)
+    {
+        if (IconBrush.GetResourceObject()) { TabIcon->SetBrush(IconBrush); TabIcon->SetVisibility(ESlateVisibility::HitTestInvisible); }
+        else { TabIcon->SetVisibility(ESlateVisibility::Collapsed); }
+    }
+}
+
+void USFInventorySlotWidget::SetStackCount(int32 Count)
+{
+    if (CountLabel) { CountLabel->SetText(Count > 0 ? FText::AsNumber(Count) : FText::GetEmpty()); }
+}
+
+void USFInventorySlotWidget::RefreshFrame()
+{
+    if (!Frame || !bApplyKitStyle) { return; }
+    const FSlateBrush& Brush = bSelected && SelectedBrush.GetResourceObject() ? SelectedBrush : (bHovered && HoverBrush.GetResourceObject() ? HoverBrush : NormalBrush);
+    if (Brush.GetResourceObject()) { Frame->SetBrush(Brush); Frame->SetBrushColor(FLinearColor::White); }
+}
+
+void USFInventorySlotWidget::ApplyKitStyle()
+{
+    RefreshFrame();
+    if (Icon && !Icon->GetBrush().GetResourceObject()) { Icon->SetVisibility(ESlateVisibility::Collapsed); }
+    KeyStyle.Apply(KeyLabel);
+    CountStyle.Apply(CountLabel);
+}
+
+void USFInventorySlotWidget::OnSelectedChanged_Implementation(bool bNowSelected) { RefreshFrame(); }
+void USFInventorySlotWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) { Super::NativeOnMouseEnter(InGeometry, InMouseEvent); bHovered = true; RefreshFrame(); }
+void USFInventorySlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent) { Super::NativeOnMouseLeave(InMouseEvent); bHovered = false; RefreshFrame(); }
+
+FReply USFInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+    if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton) { OnSlotClicked.Broadcast(this); return FReply::Handled(); }
+    return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }

@@ -9,6 +9,9 @@
 #include "Components/CanvasPanel.h"
 #include "Components/ContentWidget.h"
 #include "Components/PanelWidget.h"
+#include "Components/ProgressBar.h"
+#include "Components/ScaleBox.h"
+#include "Components/ScrollBox.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
@@ -483,7 +486,9 @@ void HudLayout(UWidgetTree* T)
     T->RootWidget = Root;
 }
 
-// ---- inventory (WBP_Inventory, rough start from the old code-built panel and v5 inventory.png; the owner lays it out in the Designer)
+// ---- inventory (WBP_Inventory, WBP_InventoryTab, WBP_InventorySlot): Inventory-v6 art, tools/ui/import_inventory.py.
+// Slate draws a 9-slice corner at texture-pixel size, so the 2x art is authored at its own pixel size (every number below is 2x) and the
+// panel and the tooltip sit in a ScaleBox of 0.5. Margins are the README table in source pixels; the brush size is the art size.
 UUserWidget* Inst(UWidgetTree* T, const TCHAR* Dir, const TCHAR* Wbp, const TCHAR* Name)
 {
     UClass* Class = SharedClass(Dir, Wbp);
@@ -492,74 +497,231 @@ UUserWidget* Inst(UWidgetTree* T, const TCHAR* Dir, const TCHAR* Wbp, const TCHA
     return Widget;
 }
 
+constexpr const TCHAR* InventoryKitDir = TEXT("/Game/Frontier/UI/Kit/Inventory");
+constexpr float InventoryScale = 0.5f;  // 2x art shown at 1x
+
+// A part at W x H (its art size unless stretched). SrcW > 0 makes it a Box with margins L,T,R,B in pixels of the SrcW x SrcH art (a 3-slice
+// passes 0 for the unsliced axis).
+FSlateBrush InvBrush(const TCHAR* Part, float W, float H, float L = 0.f, float Top = 0.f, float R = 0.f, float B = 0.f, float SrcW = 0.f, float SrcH = 0.f)
+{
+    FSlateBrush Brush;
+    Brush.ImageSize = FVector2D(W, H);
+    if (UTexture2D* Tex = LoadObject<UTexture2D>(nullptr, *FString::Printf(TEXT("%s/T_Inventory_%s.T_Inventory_%s"), InventoryKitDir, Part, Part))) { Brush.SetResourceObject(Tex); }
+    if (SrcW > 0.f)
+    {
+        Brush.DrawAs = ESlateBrushDrawType::Box;
+        Brush.Margin = FMargin(L / SrcW, Top / SrcH, R / SrcW, B / SrcH);
+    }
+    return Brush;
+}
+
+UImage* InvImage(UWidgetTree* T, const TCHAR* Name, const FSlateBrush& Brush)
+{
+    UImage* Img = Name ? N<UImage>(T, Name) : A<UImage>(T);
+    Img->SetBrush(Brush);
+    return Img;
+}
+
+UTextBlock* SizedText(UWidgetTree* T, const TCHAR* Name, const TCHAR* Default, float Size)
+{
+    UTextBlock* Block = Txt(T, Name, Default);
+    FSlateFontInfo Font = Block->GetFont();
+    Font.Size = Size;  // size only; the project family is filled in by the C++ base
+    Block->SetFont(Font);
+    return Block;
+}
+
+UCanvasPanelSlot* At(UCanvasPanel* Canvas, UWidget* Child, float X, float Y, float W = 0.f, float H = 0.f)
+{
+    UCanvasPanelSlot* Placed = Canvas->AddChildToCanvas(Child);
+    Placed->SetPosition(FVector2D(X, Y));
+    if (W > 0.f && H > 0.f) { Placed->SetSize(FVector2D(W, H)); Placed->SetAutoSize(false); } else { Placed->SetAutoSize(true); }
+    return Placed;
+}
+
+UScaleBox* Half(UWidgetTree* T, UWidget* Child)
+{
+    UScaleBox* Box = A<UScaleBox>(T);
+    Box->SetStretch(EStretch::UserSpecified);
+    Box->SetUserSpecifiedScale(InventoryScale);
+    Box->SetContent(Child);
+    return Box;
+}
+
+// Art slices from the README (source pixels).
+FSlateBrush InvSlot(const TCHAR* Part, float Margin) { return InvBrush(Part, 208.f, 208.f, Margin, Margin, Margin, Margin, 208.f, 208.f); }
+FSlateBrush InvTabPlate(const TCHAR* Part) { return InvBrush(Part, 216.f, 120.f, 28.f, 28.f, 28.f, 24.f, 216.f, 120.f); }
+FSlateBrush InvRule(const TCHAR* Part, float W, float H, float Cap) { return InvBrush(Part, W, H, Cap, 0.f, Cap, 0.f, W, H); }
+
+void InventorySlotDefaults(UObject* Cdo)
+{
+    USFInventorySlotWidget* Slot = Cast<USFInventorySlotWidget>(Cdo);
+    Slot->NormalBrush = InvSlot(TEXT("slot_normal"), 30.f);
+    Slot->HoverBrush = InvSlot(TEXT("slot_hover"), 30.f);
+    Slot->SelectedBrush = InvSlot(TEXT("slot_selected"), 34.f);
+    Slot->CountStyle = FSFUiTextStyle(36, Ivory(), false, true);
+    Slot->KeyStyle = FSFUiTextStyle(26, Ivory());
+}
+
+// 208 x 208 (2x): icon centred, stack count bottom right, the item name over it while an item has no icon.
+void InventorySlotLayout(UWidgetTree* T)
+{
+    UBorder* Plate = N<UBorder>(T, TEXT("Frame"));
+    Plate->SetBrush(InvSlot(TEXT("slot_normal"), 30.f));
+    Plate->SetPadding(FMargin(0.f));
+    UOverlay* Stack = A<UOverlay>(T);
+    Put(Stack, Sized(T, nullptr, N<UImage>(T, TEXT("Icon")), 168.f, 168.f), HAlign_Center, VAlign_Center);
+    UTextBlock* Name = SizedText(T, TEXT("KeyLabel"), TEXT(""), 26.f);
+    Name->SetJustification(ETextJustify::Center); Name->SetAutoWrapText(true);
+    Put(Stack, Name, HAlign_Fill, VAlign_Center, FMargin(16.f, 0.f));
+    Put(Stack, SizedText(T, TEXT("CountLabel"), TEXT(""), 36.f), HAlign_Right, VAlign_Bottom, FMargin(0.f, 0.f, 24.f, 16.f));
+    Plate->SetContent(Stack);
+    T->RootWidget = Sized(T, TEXT("RootSize"), Plate, 208.f, 208.f);
+}
+
+void InventoryTabDefaults(UObject* Cdo)
+{
+    USFInventoryTabWidget* Tab = Cast<USFInventoryTabWidget>(Cdo);
+    Tab->HoverBrush = InvTabPlate(TEXT("tab_normal"));
+    Tab->SelectedBrush = InvTabPlate(TEXT("tab_selected"));
+    Tab->LabelStyle = FSFUiTextStyle(30, Ivory());
+}
+
+// Plate button (no resting plate), icon above the label. The width follows the parent slot; 2x units.
+void InventoryTabLayout(UWidgetTree* T)
+{
+    UButton* Control = N<UButton>(T, TEXT("Button"));
+    FButtonStyle Style = Control->GetStyle();
+    Style.Normal = FSlateNoResource(); Style.Hovered = FSlateNoResource(); Style.Pressed = FSlateNoResource(); Style.Disabled = FSlateNoResource();
+    Style.NormalPadding = FMargin(0.f); Style.PressedPadding = FMargin(0.f);
+    Control->SetStyle(Style);
+    UVerticalBox* Stack = A<UVerticalBox>(T);
+    Stack->AddChildToVerticalBox(Sized(T, nullptr, N<UImage>(T, TEXT("TabIcon")), 44.f, 44.f))->SetHorizontalAlignment(HAlign_Center);
+    UTextBlock* Label = SizedText(T, TEXT("Label"), TEXT("Tab"), 30.f);
+    Label->SetJustification(ETextJustify::Center);
+    Stack->AddChildToVerticalBox(Label)->SetHorizontalAlignment(HAlign_Center);
+    UBorder* Pad = Plain(T, nullptr, FMargin(8.f, 4.f));
+    Pad->SetVerticalAlignment(VAlign_Center); Pad->SetHorizontalAlignment(HAlign_Center);
+    Pad->SetContent(Stack);
+    Control->SetContent(Pad);
+    T->RootWidget = Sized(T, TEXT("RootSize"), Control, 0.f, 112.f);
+}
+
 void InventoryLayout(UWidgetTree* T)
 {
     UCanvasPanel* Root = N<UCanvasPanel>(T, TEXT("Root"));
-    // The panel frame (WBP_PanelFrame) at the concept rect (85,31) 575 x 887 of 1920 x 1080, the body over it.
-    UUserWidget* Frame = Inst(T, CommonDir, TEXT("WBP_PanelFrame"), TEXT("Panel"));
+    // Panel 1360 x 1600 (shown 680 x 800): the frame art, then the body canvas over it.
+    UOverlay* PanelStack = A<UOverlay>(T);
+    Put(PanelStack, InvImage(T, TEXT("PanelFrame"), InvBrush(TEXT("panel_frame"), 1360.f, 1600.f, 80.f, 80.f, 80.f, 80.f, 1360.f, 1600.f)), HAlign_Fill, VAlign_Fill);
     UCanvasPanel* Body = A<UCanvasPanel>(T);
-    auto Place = [Body](UWidget* Child, float X, float Y)
-    {
-        if (!Child) { return; }
-        UCanvasPanelSlot* Placed = Body->AddChildToCanvas(Child);
-        Placed->SetAutoSize(true); Placed->SetPosition(FVector2D(X, Y));
-    };
-    // Tabs and close.
+    Put(PanelStack, Body, HAlign_Fill, VAlign_Fill);
+
+    // Header: crest, title, divider.
+    At(Body, InvImage(T, nullptr, InvBrush(TEXT("crest_stag"), 96.f, 96.f)), 104.f, 92.f, 96.f, 96.f);
+    At(Body, SizedText(T, TEXT("TitleText"), TEXT("Inventory"), 60.f), 232.f, 100.f);
+    At(Body, InvImage(T, nullptr, InvRule(TEXT("header_divider"), 1200.f, 20.f, 36.f)), 80.f, 204.f, 1200.f, 20.f);
+
+    // Tab bar: five tabs with dividers between, over the strip.
+    At(Body, InvImage(T, nullptr, InvBrush(TEXT("tab_bar_back"), 1200.f, 130.f, 40.f, 32.f, 40.f, 32.f, 1200.f, 130.f)), 80.f, 230.f, 1200.f, 130.f);
     UHorizontalBox* Tabs = A<UHorizontalBox>(T);
-    for (const TCHAR* Name : {TEXT("TabAll"), TEXT("TabMaterials"), TEXT("TabTools"), TEXT("TabFood")})
-    { if (UUserWidget* Tab = Inst(T, CommonDir, TEXT("WBP_Tab"), Name)) { Tabs->AddChildToHorizontalBox(Tab)->SetPadding(FMargin(0.f, 0.f, 6.f, 0.f)); } }
-    Place(Tabs, 0.f, 0.f);
-    Place(Inst(T, CommonDir, TEXT("WBP_Button"), TEXT("CloseButton")), 440.f, 0.f);
-    // Equipment: five armour slots left, the paperdoll, the main hand (the equipped tool) and three more right. Only the main hand is live today.
-    UVerticalBox* Left = A<UVerticalBox>(T);
-    for (int32 Index = 0; Index < 5; ++Index) { if (UUserWidget* Cell = Inst(T, CommonDir, TEXT("WBP_Slot"), nullptr)) { Left->AddChildToVerticalBox(Cell)->SetPadding(FMargin(0.f, 0.f, 0.f, 4.f)); } }
-    Place(Left, 0.f, 60.f);
-    Place(Piece(T, nullptr, TEXT("paperdoll_adventurer"), 158.f, 390.f), 180.f, 70.f);
-    UVerticalBox* Right = A<UVerticalBox>(T);
-    for (int32 Index = 0; Index < 4; ++Index) { if (UUserWidget* Cell = Inst(T, CommonDir, TEXT("WBP_Slot"), Index == 0 ? TEXT("MainHandSlot") : nullptr)) { Right->AddChildToVerticalBox(Cell)->SetPadding(FMargin(0.f, 0.f, 0.f, 4.f)); } }
-    Place(Right, 400.f, 60.f);
-    // The bag: C++ fills SlotGrid with one WBP_Slot per backpack slot.
-    UUniformGridPanel* Grid = N<UUniformGridPanel>(T, TEXT("SlotGrid"));
-    Grid->SetSlotPadding(FMargin(2.f));
-    UOverlay* GridStack = A<UOverlay>(T);
-    GridStack->AddChildToOverlay(Grid);
-    UTextBlock* Empty = Txt(T, TEXT("EmptyText"), TEXT("Your pack is empty."));
-    Put(GridStack, Empty, HAlign_Center, VAlign_Center);
-    Place(GridStack, 0.f, 540.f);
-    // Footer.
-    Place(Txt(T, TEXT("WeightText"), TEXT("Weight 0.0 kg")), 0.f, 760.f);
-    UHorizontalBox* Gold = N<UHorizontalBox>(T, TEXT("GoldRow"));
-    Gold->AddChildToHorizontalBox(Txt(T, TEXT("GoldText"), TEXT("Gold 0")))->SetPadding(FMargin(0.f, 0.f, 8.f, 0.f));
-    Gold->AddChildToHorizontalBox(Piece(T, nullptr, Kit(TEXT("icon_coin")) ? TEXT("icon_coin") : TEXT("icon_coin_stack"), 20.f))->SetVerticalAlignment(VAlign_Center);
-    Gold->SetVisibility(ESlateVisibility::Collapsed);
-    Place(Gold, 380.f, 760.f);
-    if (Frame)
+    struct FTabSpec { const TCHAR* Name; const TCHAR* Label; const TCHAR* Icon; };
+    const FTabSpec Specs[5] = {{TEXT("TabAll"), TEXT("All"), nullptr}, {TEXT("TabMaterials"), TEXT("Materials"), TEXT("icon_tab_materials")},
+        {TEXT("TabGear"), TEXT("Gear"), TEXT("icon_tab_gear")}, {TEXT("TabConsumables"), TEXT("Consumables"), TEXT("icon_tab_consumables")},
+        {TEXT("TabMisc"), TEXT("Misc"), TEXT("icon_tab_misc")}};
+    for (int32 Index = 0; Index < 5; ++Index)
     {
-        // A nested WBP cannot hold tree widgets in its NamedSlot from here, so the shared frame is the backdrop and the body sits over it.
-        if (USFPanelFrameWidget* Titled = Cast<USFPanelFrameWidget>(Frame)) { Titled->TitleText = FText::FromString(TEXT("Inventory")); }
-        UCanvasPanelSlot* FrameSlot = Root->AddChildToCanvas(Sized(T, nullptr, Frame, 575.f, 887.f));
-        FrameSlot->SetAnchors(FAnchors(85.f / 1920.f, 31.f / 1080.f)); FrameSlot->SetOffsets(FMargin(0.f)); FrameSlot->SetAutoSize(true);
+        if (Index > 0) { Tabs->AddChildToHorizontalBox(Sized(T, nullptr, InvImage(T, nullptr, InvBrush(TEXT("tab_divider"), 8.f, 110.f, 0.f, 12.f, 0.f, 12.f, 8.f, 110.f)), 8.f, 110.f))->SetVerticalAlignment(VAlign_Center); }
+        UUserWidget* Tab = Inst(T, InventoryDir, TEXT("WBP_InventoryTab"), Specs[Index].Name);
+        if (!Tab) { continue; }
+        if (USFInventoryTabWidget* Typed = Cast<USFInventoryTabWidget>(Tab))
+        {
+            Typed->LabelText = FText::FromString(Specs[Index].Label);
+            if (Specs[Index].Icon) { Typed->IconBrush = InvBrush(Specs[Index].Icon, 48.f, 48.f); }
+        }
+        UHorizontalBoxSlot* TabSlot = Tabs->AddChildToHorizontalBox(Tab);
+        TabSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); TabSlot->SetVerticalAlignment(VAlign_Center); TabSlot->SetPadding(FMargin(4.f, 0.f));
     }
-    UCanvasPanelSlot* BodySlot = Root->AddChildToCanvas(Body);
-    BodySlot->SetAnchors(FAnchors(85.f / 1920.f, 31.f / 1080.f)); BodySlot->SetOffsets(FMargin(24.f, 70.f, 0.f, 0.f)); BodySlot->SetAutoSize(true);
-    // The tooltip sits beside the panel (587,120): art, name, type line, quantity and weight rows, description.
-    UBorder* Tip = KitPanel(T, TEXT("tooltip_frame"), 1.f, Slate(0.96f), Brass(), FMargin(16.f, 12.f), 3.f);
-    Tip->Rename(TEXT("Tooltip")); Tip->bIsVariable = true;
-    UHorizontalBox* TipLayout = A<UHorizontalBox>(T);
-    TipLayout->AddChildToHorizontalBox(Sized(T, nullptr, N<UImage>(T, TEXT("TipIcon")), 120.f, 178.f))->SetVerticalAlignment(VAlign_Top);
-    UVerticalBox* TipText = A<UVerticalBox>(T);
-    TipText->AddChildToVerticalBox(Txt(T, TEXT("TipTitle"), TEXT("Item")));
-    TipText->AddChildToVerticalBox(Txt(T, TEXT("TipType"), TEXT("Type")));
-    TipText->AddChildToVerticalBox(Txt(T, TEXT("TipQuantity"), TEXT("0")));
-    TipText->AddChildToVerticalBox(Txt(T, TEXT("TipWeight"), TEXT("0.0 kg")));
-    UTextBlock* Description = Txt(T, TEXT("TipDescription"), TEXT(""));
-    Description->SetAutoWrapText(true);
-    TipText->AddChildToVerticalBox(Sized(T, nullptr, Description, 300.f, 0.f));
-    TipLayout->AddChildToHorizontalBox(TipText)->SetPadding(FMargin(14.f, 0.f, 0.f, 0.f));
-    Tip->SetContent(TipLayout);
+    At(Body, Tabs, 100.f, 242.f, 1160.f, 106.f);
+
+    // The bag: C++ fills SlotGrid with one WBP_InventorySlot per backpack slot, 5 wide; the ScrollBox shows 5 rows and scrolls.
+    UUniformGridPanel* Grid = N<UUniformGridPanel>(T, TEXT("SlotGrid"));
+    Grid->SetSlotPadding(FMargin(3.f));
+    UScrollBox* Scroll = N<UScrollBox>(T, TEXT("SlotScroll"));
+    Scroll->SetScrollbarThickness(FVector2D(12.f, 12.f));
+    Scroll->SetScrollbarPadding(FMargin(12.f, 0.f, 0.f, 0.f));
+    Scroll->SetAlwaysShowScrollbar(true);
+    Scroll->SetAlwaysShowScrollbarTrack(true);
+    FScrollBarStyle Bar = Scroll->GetWidgetBarStyle();
+    Bar.SetVerticalBackgroundImage(InvBrush(TEXT("scrollbar_track"), 12.f, 1100.f, 0.f, 18.f, 0.f, 18.f, 12.f, 1100.f));
+    const FSlateBrush Thumb = InvBrush(TEXT("scrollbar_thumb"), 10.f, 130.f, 0.f, 18.f, 0.f, 18.f, 10.f, 130.f);
+    Bar.SetNormalThumbImage(Thumb).SetHoveredThumbImage(Thumb).SetDraggedThumbImage(Thumb).SetThickness(12.f);
+    Scroll->SetWidgetBarStyle(Bar);
+    Scroll->AddChild(Sized(T, nullptr, Grid, 1070.f, 0.f));  // 5 cells of 208 + 2 x 3 padding; not stretched to the scroll width
+    At(Body, Scroll, 110.f, 372.f, 1094.f, 1070.f);
+    At(Body, SizedText(T, TEXT("EmptyText"), TEXT("Your pack is empty."), 40.f), 440.f, 800.f);
+
+    // Footer: rule, weight icon, text, bar, percent.
+    At(Body, InvImage(T, nullptr, InvRule(TEXT("header_divider"), 1200.f, 20.f, 36.f)), 80.f, 1450.f, 1200.f, 20.f);
+    At(Body, InvImage(T, nullptr, InvBrush(TEXT("icon_weight"), 40.f, 40.f)), 108.f, 1476.f, 40.f, 40.f);
+    At(Body, SizedText(T, TEXT("WeightText"), TEXT("Weight 0.0 / 0 kg"), 34.f), 170.f, 1472.f);
+    UOverlay* Meter = A<UOverlay>(T);
+    Put(Meter, InvImage(T, nullptr, InvBrush(TEXT("progress_track"), 680.f, 26.f, 18.f, 8.f, 18.f, 8.f, 680.f, 26.f)), HAlign_Fill, VAlign_Fill);
+    UProgressBar* Fill = N<UProgressBar>(T, TEXT("WeightBar"));
+    FProgressBarStyle FillStyle = Fill->GetWidgetStyle();
+    FillStyle.SetBackgroundImage(FSlateNoResource());
+    FillStyle.SetFillImage(InvBrush(TEXT("progress_fill_green"), 680.f, 22.f, 16.f, 7.f, 16.f, 7.f, 680.f, 22.f));
+    Fill->SetWidgetStyle(FillStyle);
+    Fill->SetPercent(0.f);
+    Put(Meter, Fill, HAlign_Fill, VAlign_Fill, FMargin(0.f, 2.f));
+    At(Body, Meter, 560.f, 1486.f, 570.f, 26.f);
+    UTextBlock* Percent = SizedText(T, TEXT("WeightPercentText"), TEXT("0%"), 34.f);
+    Percent->SetJustification(ETextJustify::Right);
+    At(Body, Percent, 1140.f, 1472.f, 110.f, 48.f);
+
+    UScaleBox* PanelScaled = Half(T, Sized(T, TEXT("Panel"), PanelStack, 1360.f, 1600.f));
+    UCanvasPanelSlot* PanelSlot = Root->AddChildToCanvas(PanelScaled);
+    PanelSlot->SetAnchors(FAnchors(85.f / 1920.f, 31.f / 1080.f)); PanelSlot->SetOffsets(FMargin(0.f)); PanelSlot->SetAutoSize(true);
+
+    // The tooltip sits over the panel's right edge, level with the grid. Flowing content (the frame grows with the description):
+    // art + name + description, rule, rarity . type, weight and owned count.
+    UOverlay* Tip = N<UOverlay>(T, TEXT("Tooltip"));
+    Put(Tip, InvImage(T, nullptr, InvBrush(TEXT("tooltip_frame"), 760.f, 430.f, 34.f, 34.f, 34.f, 34.f, 760.f, 430.f)), HAlign_Fill, VAlign_Fill);
+    UVerticalBox* TipBody = A<UVerticalBox>(T);
+    UHorizontalBox* Head = A<UHorizontalBox>(T);
+    Head->AddChildToHorizontalBox(Sized(T, nullptr, N<UImage>(T, TEXT("TipIcon")), 184.f, 184.f))->SetVerticalAlignment(VAlign_Top);
+    UVerticalBox* Words = A<UVerticalBox>(T);
+    Words->AddChildToVerticalBox(SizedText(T, TEXT("TipTitle"), TEXT("Item"), 48.f));
+    UTextBlock* Description = SizedText(T, TEXT("TipDescription"), TEXT(""), 30.f);
+    Description->SetWrapTextAt(440.f);
+    Words->AddChildToVerticalBox(Description)->SetPadding(FMargin(0.f, 12.f, 0.f, 0.f));
+    Head->AddChildToHorizontalBox(Words)->SetPadding(FMargin(32.f, 0.f, 0.f, 0.f));
+    TipBody->AddChildToVerticalBox(Head);
+    TipBody->AddChildToVerticalBox(Sized(T, nullptr, InvImage(T, nullptr, InvRule(TEXT("tooltip_divider"), 680.f, 12.f, 28.f)), 660.f, 12.f))->SetPadding(FMargin(0.f, 28.f, 0.f, 20.f));
+    UHorizontalBox* Kind = A<UHorizontalBox>(T);
+    UTextBlock* Rarity = SizedText(T, TEXT("TipRarity"), TEXT("Common"), 30.f);
+    Rarity->SetColorAndOpacity(FSlateColor(Moss()));
+    Kind->AddChildToHorizontalBox(Rarity);
+    UBorder* Dot = Plain(T, nullptr, FMargin(0.f));
+    Dot->SetBrush(FSlateColorBrush(Brass()));
+    Kind->AddChildToHorizontalBox(Sized(T, nullptr, Dot, 6.f, 6.f))->SetPadding(FMargin(16.f, 0.f));
+    Kind->AddChildToHorizontalBox(SizedText(T, TEXT("TipType"), TEXT("Material"), 30.f));
+    TipBody->AddChildToVerticalBox(Kind);
+    UHorizontalBox* Load = A<UHorizontalBox>(T);
+    Load->AddChildToHorizontalBox(Sized(T, nullptr, InvImage(T, nullptr, InvBrush(TEXT("icon_weight"), 36.f, 36.f)), 36.f, 36.f))->SetVerticalAlignment(VAlign_Center);
+    Load->AddChildToHorizontalBox(SizedText(T, TEXT("TipWeight"), TEXT("Weight  0.0 kg (per 1)"), 30.f))->SetPadding(FMargin(16.f, 0.f, 0.f, 0.f));
+    UTextBlock* Owned = SizedText(T, TEXT("TipQuantity"), TEXT("Owned  0"), 28.f);
+    Owned->SetJustification(ETextJustify::Right);
+    UHorizontalBoxSlot* OwnedSlot = Load->AddChildToHorizontalBox(Owned);
+    OwnedSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); OwnedSlot->SetHorizontalAlignment(HAlign_Right); OwnedSlot->SetVerticalAlignment(VAlign_Center);
+    TipBody->AddChildToVerticalBox(Load)->SetPadding(FMargin(0.f, 16.f, 0.f, 0.f));
+    UBorder* TipPad = Plain(T, nullptr, FMargin(56.f, 52.f, 56.f, 48.f));
+    TipPad->SetContent(TipBody);
+    Put(Tip, TipPad, HAlign_Fill, VAlign_Fill);
     Tip->SetVisibility(ESlateVisibility::Collapsed);
-    UCanvasPanelSlot* TipSlot = Root->AddChildToCanvas(Tip);
-    TipSlot->SetAnchors(FAnchors(587.f / 1920.f, 120.f / 1080.f)); TipSlot->SetAutoSize(true); TipSlot->SetOffsets(FMargin(0.f));
+    USizeBox* TipSize = Sized(T, nullptr, Tip, 780.f, 0.f);
+    TipSize->SetMinDesiredHeight(400.f);
+    UCanvasPanelSlot* TipSlot = Root->AddChildToCanvas(Half(T, TipSize));
+    TipSlot->SetAnchors(FAnchors(85.f / 1920.f, 31.f / 1080.f)); TipSlot->SetOffsets(FMargin(634.f, 140.f, 0.f, 0.f)); TipSlot->SetAutoSize(true);
     T->RootWidget = Root;
 }
 
@@ -613,6 +775,8 @@ TArray<FSpec> Specs()
         {HudDir, TEXT("WBP_HudQuestTracker"), USFHudQuestTrackerWidget::StaticClass(), QuestTrackerLayout, nullptr},
         {HudDir, TEXT("WBP_HudToasts"), USFHudToastsWidget::StaticClass(), ToastsLayout, nullptr},
         {HudDir, TEXT("WBP_Hud"), USFHudWidget::StaticClass(), HudLayout, nullptr},
+        {InventoryDir, TEXT("WBP_InventoryTab"), USFInventoryTabWidget::StaticClass(), InventoryTabLayout, InventoryTabDefaults},
+        {InventoryDir, TEXT("WBP_InventorySlot"), USFInventorySlotWidget::StaticClass(), InventorySlotLayout, InventorySlotDefaults},
         {InventoryDir, TEXT("WBP_Inventory"), USFInventoryWidget::StaticClass(), InventoryLayout, nullptr},
     };
 }
