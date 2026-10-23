@@ -38,6 +38,10 @@ private:
     UPROPERTY(Transient) TObjectPtr<USFStationPanel> StationPanel;
 
     TWeakObjectPtr<const UWidget> StationModal;
+    void UpdateStationWindow(const class ASFGatheringPilotNode* Station);
+    TWeakObjectPtr<const ASFGatheringPilotNode> LastStation;
+    bool bStationOpenedByUs = false;
+    bool bStationDismissed = false;  // Esc closed the panel; it stays closed until the aim leaves the station
 
 public:
     // While this modal (market, trade) is visible the station panel stays hidden.

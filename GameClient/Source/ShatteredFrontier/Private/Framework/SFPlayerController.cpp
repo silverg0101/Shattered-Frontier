@@ -155,7 +155,8 @@ void ASFPlayerController::ClientInteractionResult_Implementation(ESFE1Interactio
 void ASFPlayerController::TickInteraction()
 {
     TickDialogue();
-    if (IsLocalController() && !GatheringHud)
+    const bool bHasPlayer = GetLocalPlayer() != nullptr;  // CreateWidget needs an attached player (a controller made local without one, as the cursor tests do, has no HUD)
+    if (bHasPlayer && IsLocalController() && !GatheringHud)
     {
         // The pilot component arrives after BeginPlay, so install the gathering HUD on first sight of an enabled pilot.
         USFGatheringPilotComponent* Pilot = FindComponentByClass<USFGatheringPilotComponent>();
@@ -167,7 +168,7 @@ void ASFPlayerController::TickInteraction()
         }
     }
     // The target frame is also needed in combat-only sessions without a gathering pilot.
-    if (IsLocalController() && !HudLayout)
+    if (bHasPlayer && IsLocalController() && !HudLayout)
     {
         USFGatheringPilotComponent* Pilot = FindComponentByClass<USFGatheringPilotComponent>();
         const ASFE1Character* E1Character = Cast<ASFE1Character>(GetPawn());
@@ -183,7 +184,7 @@ void ASFPlayerController::TickInteraction()
         }
     }
     // The persistent HUD is a Widget Blueprint (layout and look in the Designer); C++ feeds it.
-    if (IsLocalController() && !HudWidget && (Cast<ASFE1Character>(GetPawn()) || FindComponentByClass<USFGatheringPilotComponent>()))
+    if (bHasPlayer && IsLocalController() && !HudWidget && (Cast<ASFE1Character>(GetPawn()) || FindComponentByClass<USFGatheringPilotComponent>()))
     {
         const TSubclassOf<USFHudWidget> HudClass = LoadClass<USFHudWidget>(nullptr, USFHudWidget::AssetPath);
         static bool bMissingReported = false;
@@ -354,8 +355,6 @@ void ASFPlayerController::ToggleInventoryPanel()
     // A window: sized by its content and placed by the window stack (Visible so tabs, slots and tooltips take the mouse).
     const bool bOpen = !GetWindowStack()->IsOpen(InventoryWidget);
     if (bOpen) { GetWindowStack()->Open(InventoryWidget); } else { GetWindowStack()->Close(InventoryWidget); }
-    // The build catalogue shares the left column: hidden while the inventory is open, back with build mode on close.
-    if (Palette) { Palette->SetBuildModeActive(!bOpen && bBuildMode); }
 }
 
 void ASFPlayerController::InteractWithSelectedTarget()
@@ -391,22 +390,15 @@ void PlaceCentered(APlayerController* Controller, UUserWidget* Widget)
     Widget->SetPositionInViewport(FVector2D((Width - Desired.X * Scale) * 0.5f, (Height - Desired.Y * Scale) * 0.5f), true);
 }
 
-void FillViewport(APlayerController* Controller, UUserWidget* Widget)
-{
-    int32 Width = 0, Height = 0; Controller->GetViewportSize(Width, Height);
-    const float Scale = FMath::Max(0.01f, UWidgetLayoutLibrary::GetViewportScale(Controller));
-    Widget->SetDesiredSizeInViewport(FVector2D(Width / Scale, Height / Scale));
-    Widget->SetPositionInViewport(FVector2D::ZeroVector, false);
-}
 
 // The live client service when the server gave this controller an exchange component; the in-memory fake only on
 // request (-ExchangeFake, development builds), never silently; otherwise none and the screen stays closed.
 TSharedPtr<ISFExchangeService> ExchangeServiceFor(APlayerController* Controller)
 {
-    if (USFExchangeComponent* Live = Controller->FindComponentByClass<USFExchangeComponent>()) { return MakeShared<FSFExchangeClientService>(Live); }
 #if !UE_BUILD_SHIPPING
-    if (FParse::Param(FCommandLine::Get(), TEXT("ExchangeFake"))) { return MakeShared<FSFFakeExchange>(); }
+    if (FParse::Param(FCommandLine::Get(), TEXT("ExchangeFake"))) { return MakeShared<FSFFakeExchange>(); }  // the explicit dev flag wins over a live component
 #endif
+    if (USFExchangeComponent* Live = Controller->FindComponentByClass<USFExchangeComponent>()) { return MakeShared<FSFExchangeClientService>(Live); }
     UE_LOG(LogTemp, Display, TEXT("EXCHANGE_UNAVAILABLE No exchange service on this controller"));
     return nullptr;
 }
@@ -425,6 +417,7 @@ void ASFPlayerController::CloseSidePanelsForModal()
     if (Palette) { Palette->SetBuildModeActive(false); }
 }
 
+// Trade and market are windows of the stack like the inventory: they line up with the other open windows and Esc closes the newest.
 void ASFPlayerController::ToggleTradeDemo()
 {
     if (!IsLocalController()) { return; }
@@ -432,21 +425,20 @@ void ASFPlayerController::ToggleTradeDemo()
     {
         DemoExchange = DemoExchange ? DemoExchange : ExchangeServiceFor(this);
         if (!DemoExchange) { return; }
+        const TSubclassOf<USFTradeWindow> TradeClass = LoadClass<USFTradeWindow>(nullptr, USFTradeWindow::AssetPath);
+        if (!TradeClass) { UE_LOG(LogTemp, Error, TEXT("TRADE_WBP_MISSING %s: run tools/ui/create_widgets.py"), USFTradeWindow::AssetPath); return; }
         const double Now = GetWorld()->GetTimeSeconds();
         DemoTrade = MakeShared<FSFTradeViewModel>(*DemoExchange, FSFFakeExchange::DemoTrade(Now + 108.0), true);
         DemoTrade->AddMyItem({TEXT("item/oak_log"), TEXT("Oak Log"), 24});
         DemoTrade->AddMyItem({TEXT("item/iron_ore"), TEXT("Iron Ore"), 12});
-        TradeWindow = CreateWidget<USFTradeWindow>(this, USFTradeWindow::StaticClass());
+        TradeWindow = CreateWidget<USFTradeWindow>(this, TradeClass);
         if (!TradeWindow) { return; }
         TradeWindow->Bind(DemoTrade);
         TradeWindow->AddToViewport(30);
         TradeWindow->SetVisibility(ESlateVisibility::Collapsed);
     }
-    const bool bOpeningTrade = TradeWindow->GetVisibility() == ESlateVisibility::Collapsed;
-    if (bOpeningTrade) { CloseSidePanelsForModal(); }
-    TradeWindow->SetVisibility(bOpeningTrade ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    if (GetWindowStack()->IsOpen(TradeWindow)) { GetWindowStack()->Close(TradeWindow); } else { GetWindowStack()->Open(TradeWindow); }
     if (GatheringHud) { GatheringHud->SetStationModal(TradeWindow); }
-    FillViewport(this, TradeWindow);  // modal root: dims the scene and places the window at 26-74% x 14-78% itself
 }
 
 void ASFPlayerController::ToggleMarketDemo()
@@ -456,20 +448,19 @@ void ASFPlayerController::ToggleMarketDemo()
     {
         DemoExchange = DemoExchange ? DemoExchange : ExchangeServiceFor(this);
         if (!DemoExchange) { return; }
+        const TSubclassOf<USFMarketBoard> MarketClass = LoadClass<USFMarketBoard>(nullptr, USFMarketBoard::AssetPath);
+        if (!MarketClass) { UE_LOG(LogTemp, Error, TEXT("MARKET_WBP_MISSING %s: run tools/ui/create_widgets.py"), USFMarketBoard::AssetPath); return; }
         DemoMarket = MakeShared<FSFMarketViewModel>(*DemoExchange);
         if (FParse::Param(FCommandLine::Get(), TEXT("ExchangeFake"))) { DemoMarket->SetListings(FSFFakeExchange::DemoListings()); }
-        MarketBoard = CreateWidget<USFMarketBoard>(this, USFMarketBoard::StaticClass());
+        MarketBoard = CreateWidget<USFMarketBoard>(this, MarketClass);
         if (!MarketBoard) { return; }
         MarketBoard->Bind(DemoMarket);
         if (FParse::Param(FCommandLine::Get(), TEXT("ExchangeFake"))) { MarketBoard->SetSellItem(TEXT("item/oak_log"), TEXT("Oak Log"), 24); }
         MarketBoard->AddToViewport(30);
         MarketBoard->SetVisibility(ESlateVisibility::Collapsed);
     }
-    const bool bOpeningMarket = MarketBoard->GetVisibility() == ESlateVisibility::Collapsed;
-    if (bOpeningMarket) { CloseSidePanelsForModal(); }
-    MarketBoard->SetVisibility(bOpeningMarket ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    if (GetWindowStack()->IsOpen(MarketBoard)) { GetWindowStack()->Close(MarketBoard); } else { GetWindowStack()->Open(MarketBoard); }
     if (GatheringHud) { GatheringHud->SetStationModal(MarketBoard); }
-    FillViewport(this, MarketBoard);  // modal: the board dims the whole scene and centres itself
 }
 
 bool ASFPlayerController::IsStationPanelOpen() const

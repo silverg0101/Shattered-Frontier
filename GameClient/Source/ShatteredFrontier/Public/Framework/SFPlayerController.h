@@ -98,7 +98,6 @@ private:
     UPROPERTY() TObjectPtr<UActorComponent> PilotInventory;
     void InitializeLocalControls();
     void ApplyCursorMode();
-    void LayoutPalette();
     void EnsureGatheringSkillsPanel();
     void ToggleGatheringSkillsPanel();
     void HandleEscape();
@@ -180,8 +179,6 @@ private:
     uint64 SampledRevision = MAX_uint64;
     FString CachedPaletteStatus;
     FString CachedPaletteShown;
-    FIntPoint PaletteViewportSize = FIntPoint::ZeroValue;
-    float PaletteViewportScale = 0;
     bool bLayerPlacement = false;
     int32 PlacementLayer = 0; // Local selection on the released Z0..19 construction lattice.
     bool bDemolitionMode = false;

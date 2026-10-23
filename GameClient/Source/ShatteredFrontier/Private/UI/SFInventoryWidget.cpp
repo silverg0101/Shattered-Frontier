@@ -1,4 +1,5 @@
 #include "UI/SFInventoryWidget.h"
+#include "UI/SFItemTooltip.h"
 
 #include "Components/Image.h"
 #include "Components/Border.h"
@@ -307,24 +308,8 @@ void USFInventoryWidget::UpdateTooltip()
     }
     const bool bMainHand = Hovered == INDEX_NONE && bHasMainHand && MainHandSlot && MainHandSlot->GetCachedGeometry().IsUnderLocation(CursorPos);
     const FSFInventoryEntry* Shown = bMainHand ? &MainHandEntry : ShownItems.IsValidIndex(Hovered) ? &ShownItems[Hovered] : nullptr;
-    if (!Shown) { Tooltip->SetVisibility(ESlateVisibility::Collapsed); return; }
-    // Follow the cursor: translate the tooltip's holder (its parent) within the holder's own parent, offset down-right of the pointer.
-    UWidget* Holder = Tooltip->GetParent() ? static_cast<UWidget*>(Tooltip->GetParent()) : Tooltip.Get();
-    if (const UWidget* Space = Holder->GetParent())
-    {
-        Holder->SetRenderTranslation(Space->GetCachedGeometry().AbsoluteToLocal(CursorPos) + FVector2D(12.f, 12.f));
-    }
-    const FSFInventoryEntry& Entry = *Shown;
-    const FSFInventoryTooltip Tip = BuildTooltip(Entry);
-    auto Set = [](UTextBlock* Block, const FString& Value) { if (Block) { Block->SetText(FText::FromString(Value)); } };
-    Set(TipTitle, Tip.Title); Set(TipRarity, Tip.RarityLine); Set(TipType, Tip.TypeLine); Set(TipDescription, Tip.Description); Set(TipWeight, Tip.WeightLine);
-    if (TipQuantity) { TipQuantity->SetText(FText::FromString(FString::Printf(TEXT("Owned  %d"), Entry.Count))); }
-    if (TipDescription) { TipDescription->SetVisibility(Tip.Description.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible); }
-    if (TipIcon)
-    {
-        UTexture2D* Art = Entry.Icon.LoadSynchronous();
-        if (Art) { TipIcon->SetBrushFromTexture(Art, false); }
-        TipIcon->SetVisibility(Art ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
-    }
-    Tooltip->SetVisibility(ESlateVisibility::HitTestInvisible);
+    FSFItemTooltipParts Parts;
+    Parts.Root = Tooltip; Parts.Icon = TipIcon; Parts.Title = TipTitle; Parts.Rarity = TipRarity; Parts.Type = TipType;
+    Parts.Quantity = TipQuantity; Parts.Weight = TipWeight; Parts.Description = TipDescription;
+    SFItemTooltip::Present(Parts, Shown, CursorPos);
 }

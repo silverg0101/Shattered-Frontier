@@ -1341,11 +1341,11 @@ void ASFPlayerController::InitializeLocalControls()
     if (!bOwnsLookSuppression) { SetIgnoreLookInput(true); bOwnsLookSuppression=true; }
     if (!Palette && GetLocalPlayer() && GetLocalPlayer()->ViewportClient)
     {
-        Palette=CreateWidget<USFConstructionSandboxPalette>(this,USFConstructionSandboxPalette::StaticClass());
+        Palette=USFConstructionSandboxPalette::Create(this);
         if (Palette)
         {
             Palette->ConfigureNetworkPresentation(); Palette->OnAction.BindUObject(this,&ASFPlayerController::PaletteAction);
-            Palette->AddToViewport(); Palette->SetBuildModeActive(bBuildMode); LayoutPalette();
+            Palette->AddToViewport(20); Palette->SetVisibility(ESlateVisibility::Collapsed); Palette->SetBuildModeActive(bBuildMode);
         }
         bool bRegisterFocus=true;
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
@@ -1383,11 +1383,9 @@ void ASFPlayerController::HandleEscape()
 {
     if (IsDialogueOpen()) { CloseDialogue(); return; }
     if (CloseSettingsPanel()) { return; }
-    if (GetWindowStack()->CloseTop())  // Esc closes the newest menu window; the build catalogue comes back with the last one
-    {
-        if (Palette) { Palette->SetBuildModeActive(GetWindowStack()->Num() == 0 && bBuildMode); }
-        return;
-    }
+    // The build catalogue is a window too: while it is the newest, Esc cancels a pending line start, then leaves build mode (which closes it).
+    if (Palette && GetWindowStack()->Top()==Palette) { if (bBuildMode && !bHasLineSeed) { SetBuildMode(false); } else { CancelCursorAction(); } return; }
+    if (GetWindowStack()->CloseTop()) { return; }  // Esc closes the newest menu window
     if (GatheringSkillsPanel && GatheringSkillsPanel->GetVisibility()==ESlateVisibility::Visible)
     { GatheringSkillsPanel->SetVisibility(ESlateVisibility::Collapsed); return; }
     // Build mode: the first Esc cancels a pending line start, the next leaves build mode.
@@ -1406,26 +1404,9 @@ void ASFPlayerController::SetBuildMode(bool bActive)
 {
     if (!bActive) { CancelLine(); bDemolitionMode=false; bHasPlacementPreview=false; bHasRemovalPreview=false; bHasDoorTarget=false; }
     bBuildMode=bActive;
-    if (Palette)
-    {
-        if (bActive) { PaletteViewportSize=FIntPoint::ZeroValue; }  // LayoutPalette measures the content again
-        Palette->SetBuildModeActive(bActive && !(InventoryWidget && InventoryWidget->GetVisibility()==ESlateVisibility::Visible));
-    }
+    if (Palette) { Palette->SetBuildModeActive(bActive); }
     if (HudLayout) { HudLayout->SetBuildModeActive(bActive); }
     UE_LOG(LogTemp,Display,TEXT("BUILD_MODE Enabled=%d"),bActive);
-}
-
-void ASFPlayerController::LayoutPalette()
-{
-    if (!Palette) { return; }
-    int32 Width=0,Height=0; GetViewportSize(Width,Height);
-    const float Scale=UWidgetLayoutLibrary::GetViewportScale(this);
-    if (Width<=0 || Height<=0 || !FMath::IsFinite(Scale) || Scale<=0) { return; }
-    if (PaletteViewportSize==FIntPoint(Width,Height) && FMath::IsNearlyEqual(PaletteViewportScale,Scale)) { return; }
-    PaletteViewportSize=FIntPoint(Width,Height); PaletteViewportScale=Scale;
-    // UI v5: the palette's canvas root fills the viewport and places the catalogue by percent anchors itself.
-    Palette->SetDesiredSizeInViewport(FVector2D(Width/Scale,Height/Scale));
-    Palette->SetPositionInViewport(FVector2D::ZeroVector,false);
 }
 
 void ASFPlayerController::ClientRestart_Implementation(APawn* NewPawn)
@@ -2110,7 +2091,6 @@ void ASFPlayerController::Tick(float DeltaSeconds)
         else { bHasPlacementPreview=false; bHasRemovalPreview=false; bHasDoorTarget=false; }
         if (Palette && bBuildMode)
         {
-            LayoutPalette();
             // The player-facing line only; the full status block stays in the sf.HudDebugText overlay (GetBuildStatusText).
             const FString Status=PreviewStatus.IsEmpty() ? FString(TEXT("Select a piece, then place it.")) : PreviewStatus;
             // The panel shows only the validity word; the full line (target cell, reach) goes to the log and sf.HudDebugText.
@@ -2722,7 +2702,7 @@ void ASFPlayerController::SFUi(const FString& Screen)
     if (Screen.Equals(TEXT("inventory"), ESearchCase::IgnoreCase)) { ToggleInventoryPanel(); }
     else if (Screen.Equals(TEXT("market"), ESearchCase::IgnoreCase)) { ToggleMarketDemo(); }
     else if (Screen.Equals(TEXT("trade"), ESearchCase::IgnoreCase)) { ToggleTradeDemo(); }
-    else if (Screen.Equals(TEXT("tradelock"), ESearchCase::IgnoreCase) && TradeWindow) { TradeWindow->CallFunctionByNameWithArguments(TEXT("HandleLock"), *GLog, nullptr, true); }
+    else if (Screen.Equals(TEXT("tradelock"), ESearchCase::IgnoreCase) && TradeWindow) { TradeWindow->ToggleLock(); }
     else if (Screen.Equals(TEXT("build"), ESearchCase::IgnoreCase)) { ToggleBuildMode(); }
     else if (Screen.Equals(TEXT("settings"), ESearchCase::IgnoreCase)) { ToggleSettingsPanel(); }
     else if (Screen.Equals(TEXT("journal"), ESearchCase::IgnoreCase) || Screen.Equals(TEXT("board"), ESearchCase::IgnoreCase)) { USFQuestBoardPanel::OpenForCapture(this, Screen.ToLower()); }

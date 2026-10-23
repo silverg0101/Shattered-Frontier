@@ -57,6 +57,9 @@ protected:
     virtual void NativeOnInitialized() override;
     virtual void NativePreConstruct() override;
     virtual void ApplyKitStyle() {}
+    // Gives every text block of this widget (including the content it puts into the kit window slots) the project font family where the Designer
+    // left the UMG default; sizes and colours the Designer set stay (FSFUiTextStyle::Apply is fill-only).
+    void ApplyFamilyToAllText(const FSFUiTextStyle& Style);
 };
 
 // Hover and selection behaviour shared by slots, list rows and tiles. Binds, all optional: HoverFrame (shown while the pointer is over an
@@ -138,6 +141,11 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "SF UI") void SetLabel(const FText& InLabel);
     UFUNCTION(BlueprintCallable, Category = "SF UI") void SetButtonEnabled(bool bEnabled);
+    UFUNCTION(BlueprintPure, Category = "SF UI") bool IsButtonEnabled() const;
+    // Turns the hold behaviour on or off at runtime (buy, accept) and shows or hides HoldFill with it.
+    UFUNCTION(BlueprintCallable, Category = "SF UI") void SetHoldMode(bool bHold, float Seconds);
+    // Fills HoldFill to a fraction from outside (a running craft); 0 hides it again unless the button is a hold button.
+    UFUNCTION(BlueprintCallable, Category = "SF UI") void SetProgress(float Fraction);
     // Drives the hold fill by hand (the tick calls it). Returns true when this call fired OnActivated.
     UFUNCTION(BlueprintCallable, Category = "SF UI") bool AdvanceHold(float DeltaSeconds, bool bHeld);
     UFUNCTION(BlueprintPure, Category = "SF UI") float GetHoldProgress() const { return Hold.Progress; }
@@ -247,6 +255,8 @@ class SHATTEREDFRONTIER_API USFSlotWidget : public USFSelectableWidget
 public:
     UFUNCTION(BlueprintCallable, Category = "SF UI") void SetIcon(UTexture2D* Texture);
     UFUNCTION(BlueprintCallable, Category = "SF UI") void SetKeyText(const FText& Key);
+    // The tile caption under the icon (build catalogue); empty collapses it.
+    UFUNCTION(BlueprintCallable, Category = "SF UI") void SetCaption(const FText& InCaption);
     UFUNCTION(BlueprintCallable, Category = "SF UI") void SetCount(int32 Count);
     UFUNCTION(BlueprintPure, Category = "SF UI") FText GetCountText() const;
     // Count rule: shown from 2 up (tools are single items), empty otherwise; bShowSingleCount shows from 1 up (the bag).
@@ -267,6 +277,7 @@ protected:
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UImage> Icon;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> KeyLabel;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> CountLabel;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> CaptionLabel;
 };
 
 // List row (quest objective, toast card, recipe or market row). Binds, all optional: Frame (Border), Icon (Image), Caption, Label, Value
@@ -302,6 +313,40 @@ protected:
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> DoneMark;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> Rule;
     bool bHeadingShown = false;
+};
+
+// Kit list row (WBP_KitRow: row_back, icon well, name, up to two text cells, price, an action button, chevron, gold select / dim hover
+// frame). One parent for the market listing, recipe, ingredient and trade rows. Binds, all optional on top of USFListRowWidget: Cell1, Cell2
+// (TextBlocks inside the column containers Cell1Box, Cell2Box; a container collapses while its text is empty), PriceBox (the coin and Value;
+// collapsed by SetPrice(empty)), Action (WBP_Button inside ActionBox), Chevron, IconBox. Value is the price or count text.
+UCLASS(Abstract)
+class SHATTEREDFRONTIER_API USFKitRowWidget : public USFListRowWidget
+{
+    GENERATED_BODY()
+public:
+    // Empty text collapses that column.
+    UFUNCTION(BlueprintCallable, Category = "SF UI") void SetCells(const FText& InCell1, const FText& InCell2);
+    UFUNCTION(BlueprintCallable, Category = "SF UI") void SetPrice(const FText& InPrice);
+    UFUNCTION(BlueprintCallable, Category = "SF UI") void ShowAction(bool bShown);
+    UFUNCTION(BlueprintCallable, Category = "SF UI") void ShowChevron(bool bShown);
+    // The item art in the icon well (null collapses the icon); a runtime state tint of Value (have / need, affordability) is data.
+    UFUNCTION(BlueprintCallable, Category = "SF UI") void SetIconTexture(UTexture2D* Texture);
+    UFUNCTION(BlueprintCallable, Category = "SF UI") void SetValueTint(const FLinearColor& Color);
+    UFUNCTION(BlueprintCallable, Category = "SF UI") void SetCellTint(const FLinearColor& Color);  // Cell1 (a have / need count)
+    USFButtonWidget* GetAction() const { return Action; }
+    UPROPERTY(EditAnywhere, Category = "SF Style") FSFUiTextStyle CellStyle = FSFUiTextStyle(34, SFHudStyle::Ivory());
+
+protected:
+    virtual void NativeOnInitialized() override;
+    virtual void ApplyKitStyle() override;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> Cell1;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> Cell2;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> Cell1Box;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> Cell2Box;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> PriceBox;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> ActionBox;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFButtonWidget> Action;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> Chevron;
 };
 
 // ---- shared menu kit v7 parts (docs/dependency-map/ui.md "Shared menu kit v7"). Each has ONE parent WBP in /Game/Frontier/UI/Widgets/Common/.

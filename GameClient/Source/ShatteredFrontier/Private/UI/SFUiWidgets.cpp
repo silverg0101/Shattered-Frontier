@@ -1,5 +1,6 @@
 #include "UI/SFUiWidgets.h"
 
+#include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
 #include "Components/Button.h"
 #include "Components/ComboBoxString.h"
@@ -46,6 +47,12 @@ void USFUiWidget::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
     if (bApplyKitStyle) { ApplyKitStyle(); }  // once at creation, before any data setter runs
+}
+
+void USFUiWidget::ApplyFamilyToAllText(const FSFUiTextStyle& Style)
+{
+    if (!WidgetTree) { return; }
+    WidgetTree->ForEachWidget([&Style](UWidget* Widget) { if (UTextBlock* Text = Cast<UTextBlock>(Widget)) { Style.Apply(Text); } });
 }
 
 void USFUiWidget::NativePreConstruct()
@@ -156,6 +163,21 @@ void USFButtonWidget::SetButtonEnabled(bool bEnabled)
     if (Button) { Button->SetIsEnabled(bEnabled); }
     if (!bEnabled) { bHolding = false; }
     SetState(bEnabled ? ESFUiState::Normal : ESFUiState::Disabled);
+}
+
+bool USFButtonWidget::IsButtonEnabled() const { return Button && Button->GetIsEnabled(); }
+
+void USFButtonWidget::SetHoldMode(bool bHold, float Seconds)
+{
+    bHoldToActivate = bHold; HoldSeconds = Seconds; Hold.HoldSeconds = Seconds;
+    if (HoldFill) { HoldFill->SetVisibility(bHold ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed); }
+}
+
+void USFButtonWidget::SetProgress(float Fraction)
+{
+    if (!HoldFill) { return; }
+    HoldFill->SetPercent(FMath::Clamp(Fraction, 0.f, 1.f));
+    HoldFill->SetVisibility(Fraction > 0.f || bHoldToActivate ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
 }
 
 void USFButtonWidget::SetState(ESFUiState NewState)
@@ -295,6 +317,12 @@ void USFSlotWidget::SetIcon(UTexture2D* Texture)
 }
 
 void USFSlotWidget::SetKeyText(const FText& Key) { if (KeyLabel) { KeyLabel->SetText(Key); } }
+void USFSlotWidget::SetCaption(const FText& InCaption)
+{
+    if (!CaptionLabel) { return; }
+    CaptionLabel->SetText(InCaption);
+    CaptionLabel->SetVisibility(InCaption.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
+}
 void USFSlotWidget::SetCount(int32 Count)
 {
     if (CountLabel) { CountLabel->SetText(bShowSingleCount ? (Count > 0 ? FText::AsNumber(Count) : FText::GetEmpty()) : CountText(Count)); }
@@ -311,6 +339,7 @@ void USFSlotWidget::ApplyKitStyle()
     if (Icon && !Icon->GetBrush().GetResourceObject()) { Icon->SetVisibility(ESlateVisibility::Collapsed); }  // an empty slot draws no white square; SetIcon shows it again
     KeyStyle.Apply(KeyLabel);
     CountStyle.Apply(CountLabel);
+    KeyStyle.Apply(CaptionLabel);
 }
 
 // ---- list row
@@ -350,6 +379,48 @@ void USFListRowWidget::ApplyKitStyle()
     ValueStyle.Apply(Value);
     CaptionStyle.Apply(Caption);
 }
+
+// ---- kit row
+
+void USFKitRowWidget::NativeOnInitialized()
+{
+    Super::NativeOnInitialized();
+    for (UWidget* Box : {Cell1Box.Get(), Cell2Box.Get(), PriceBox.Get(), ActionBox.Get(), Chevron.Get()}) { if (Box) { Box->SetVisibility(ESlateVisibility::Collapsed); } }
+}
+
+void USFKitRowWidget::ApplyKitStyle()
+{
+    Super::ApplyKitStyle();
+    CellStyle.Apply(Cell1);
+    CellStyle.Apply(Cell2);
+}
+
+void USFKitRowWidget::SetCells(const FText& InCell1, const FText& InCell2)
+{
+    if (Cell1) { Cell1->SetText(InCell1); }
+    if (Cell2) { Cell2->SetText(InCell2); }
+    if (Cell1Box) { Cell1Box->SetVisibility(InCell1.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible); }
+    if (Cell2Box) { Cell2Box->SetVisibility(InCell2.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible); }
+}
+
+void USFKitRowWidget::SetPrice(const FText& InPrice)
+{
+    if (Value) { Value->SetText(InPrice); }
+    if (PriceBox) { PriceBox->SetVisibility(InPrice.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible); }
+}
+
+void USFKitRowWidget::ShowAction(bool bShown) { if (ActionBox) { ActionBox->SetVisibility(bShown ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed); } }
+void USFKitRowWidget::SetIconTexture(UTexture2D* Texture)
+{
+    if (!Icon) { return; }
+    if (Texture) { Icon->SetBrushFromTexture(Texture, false); Icon->SetVisibility(ESlateVisibility::HitTestInvisible); }
+    else { Icon->SetVisibility(ESlateVisibility::Collapsed); }
+}
+
+void USFKitRowWidget::SetValueTint(const FLinearColor& Color) { if (Value) { Value->SetColorAndOpacity(FSlateColor(Color)); } }
+void USFKitRowWidget::SetCellTint(const FLinearColor& Color) { if (Cell1) { Cell1->SetColorAndOpacity(FSlateColor(Color)); } }
+
+void USFKitRowWidget::ShowChevron(bool bShown) { if (Chevron) { Chevron->SetVisibility(bShown ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed); } }
 
 // ---- stepper
 

@@ -1,30 +1,32 @@
 #include "Construction/SFConstructionSandboxPalette.h"
 
-#include "Construction/SFConstructionSandboxSettings.h"
-#include "Framework/SFHudStyle.h"
-#include "Blueprint/WidgetTree.h"
-#include "Components/Border.h"
 #include "Components/Button.h"
-#include "Components/CanvasPanel.h"
-#include "Components/CanvasPanelSlot.h"
-#include "Components/EditableTextBox.h"
-#include "Components/HorizontalBox.h"
-#include "Components/HorizontalBoxSlot.h"
-#include "Components/Overlay.h"
-#include "Components/OverlaySlot.h"
-#include "Components/Image.h"
-#include "Components/SizeBox.h"
+#include "Components/PanelWidget.h"
 #include "Components/TextBlock.h"
 #include "Components/UniformGridPanel.h"
-#include "Components/VerticalBox.h"
-#include "Components/VerticalBoxSlot.h"
+#include "Construction/SFConstructionSandboxSettings.h"
+#include "Framework/SFPlayerController.h"
 #include "GameFramework/PlayerController.h"
 #include "Input/Reply.h"
 #include "Layout/Geometry.h"
+#include "UI/SFItemTooltip.h"
+#include "UI/SFWindowStack.h"
+#include "Framework/Application/SlateApplication.h"
 
-USFConstructionPaletteButton::USFConstructionPaletteButton(const FObjectInitializer& ObjectInitializer)
-    : Super(ObjectInitializer)
-{ InitIsFocusable(false); }
+namespace
+{
+// Tile -> shape action and the kit icon stem (icon_<stem>); Slab = Foundation, Cube = Wall, Slope = Roof.
+constexpr ESFConstructionPaletteAction TileActions[USFConstructionSandboxPalette::TileCount] =
+    {ESFConstructionPaletteAction::Slab, ESFConstructionPaletteAction::Cube, ESFConstructionPaletteAction::Door, ESFConstructionPaletteAction::Slope};
+const TCHAR* const TileIconStems[USFConstructionSandboxPalette::TileCount] = {TEXT("timber_floor"), TEXT("timber_wall"), TEXT("wooden_door"), TEXT("timber_roof")};
+}
+
+USFConstructionSandboxPalette* USFConstructionSandboxPalette::Create(APlayerController* Owner)
+{
+    const TSubclassOf<USFConstructionSandboxPalette> Class = LoadClass<USFConstructionSandboxPalette>(nullptr, AssetPath);
+    if (!Class) { UE_LOG(LogTemp, Error, TEXT("BUILD_CATALOGUE_WBP_MISSING %s: run tools/ui/create_widgets.py"), AssetPath); return nullptr; }
+    return CreateWidget<USFConstructionSandboxPalette>(Owner, Class);
+}
 
 int32 USFConstructionSandboxPalette::TileForAction(ESFConstructionPaletteAction Action)
 {
@@ -44,189 +46,105 @@ const TCHAR* USFConstructionSandboxPalette::TileLabel(int32 Tile)
     return Labels[FMath::Clamp(Tile, 0, TileCount - 1)];
 }
 
-// Build Catalogue (docs/Game-Design/concept-art/UI/v5/build-mode.png, IMPLEMENTATION-FIX table 2): a 480 px panel frame,
-// title, search, Voxel Objects / Blueprints tabs, category rail beside a 3-column piece grid, material row and required
-// materials. The mode and layer actions live on keys (L, X, R, P, PgUp/PgDn); only the four real pieces are populated.
 void USFConstructionSandboxPalette::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
-    using namespace SFHudStyle;
-
     SetIsFocusable(false);
     CachedStatusText = FText::FromString(TEXT("Valid placement"));
-    const FLinearColor Dim = Hex(TEXT("A9A593"));
-    const FLinearColor Well = Hex(TEXT("0E171C"), 0.85f);
-
-    UVerticalBox* Contents = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("PaletteContents"));
-    PalettePanel = KitPanel(WidgetTree, TEXT("panel_frame"), 1.f, Slate(1.f), Brass(), FMargin(0.f), 6.f);
-    PalettePanel->SetVisibility(ESlateVisibility::Visible);
-    PalettePanel->SetContent(Contents);
-    // The root is a full-viewport canvas (the controller fills the viewport with it) so the panel is placed by percent anchors:
-    // 480 px wide, left edge at 2%, top at 4%. The canvas itself is never hit-tested, so clicks outside the panel reach the world.
-    UCanvasPanel* Root = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass());
-    WidgetTree->RootWidget = Root;
-    USizeBox* PanelSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    PanelSize->SetWidthOverride(523.f); PanelSize->SetContent(PalettePanel);
-    UCanvasPanelSlot* PanelSlot = Root->AddChildToCanvas(PanelSize);
-    PanelSlot->SetAnchors(FAnchors(0.0172f, 0.036f)); PanelSlot->SetAlignment(FVector2D(0.f, 0.f)); PanelSlot->SetAutoSize(true); PanelSlot->SetOffsets(FMargin(0.f));
-
-    // Title row, with the 2 px rule under it.
-    UHorizontalBox* Title = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    Title->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("icon_hammer"), 44.f))->SetVerticalAlignment(VAlign_Center);
-    Title->AddChildToHorizontalBox(Heading(WidgetTree, TEXT("Build Catalogue"), 32, Ivory()))->SetPadding(FMargin(12.f, 0.f, 0.f, 0.f));
-    Contents->AddChildToVerticalBox(Title)->SetPadding(FMargin(19.f, 0.f, 0.f, 4.f));
-    USizeBox* Rule = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    Rule->SetHeightOverride(2.f); Rule->SetContent(KitPanel(WidgetTree, TEXT("divider"), 1.f, Brass(), Brass(), FMargin(0.f), 0.f));
-    Contents->AddChildToVerticalBox(Rule)->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
-
-    // Search: filters the piece grid by name.
-    UEditableTextBox* Search = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
-    Search->SetHintText(FText::FromString(TEXT("Search objects")));
-    FEditableTextBoxStyle SearchStyle = Search->WidgetStyle;
-    const FSlateBrush Field = KitOrFrame(TEXT("search_field"), Well, Hex(TEXT("3A4348")), 3.f);
-    SearchStyle.BackgroundImageNormal = Field; SearchStyle.BackgroundImageHovered = Field; SearchStyle.BackgroundImageFocused = Field; SearchStyle.BackgroundImageReadOnly = Field;
-    SearchStyle.ForegroundColor = FSlateColor(Ivory()); SearchStyle.FocusedForegroundColor = FSlateColor(Ivory());
-    SearchStyle.TextStyle.Font = RoleFont(TextFamily(), 18, false);
-    SearchStyle.Padding = FMargin(44.f, 4.f, 12.f, 4.f);
-    Search->WidgetStyle = SearchStyle;
-    FScriptDelegate SearchChanged; SearchChanged.BindUFunction(this, TEXT("HandleSearchChanged")); Search->OnTextChanged.Add(SearchChanged);
-    UOverlay* SearchStack = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass());
-    USizeBox* SearchSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    SearchSize->SetWidthOverride(480.f); SearchSize->SetHeightOverride(41.f); SearchSize->SetContent(Search);
-    UOverlaySlot* SearchFill = SearchStack->AddChildToOverlay(SearchSize);
-    SearchFill->SetHorizontalAlignment(HAlign_Fill); SearchFill->SetVerticalAlignment(VAlign_Fill);
-    UWidget* SearchGlyph = KitImage(WidgetTree, TEXT("icon_search"), 24.f);
-    SearchGlyph->SetVisibility(ESlateVisibility::HitTestInvisible);
-    UOverlaySlot* GlyphSlot = SearchStack->AddChildToOverlay(SearchGlyph);
-    GlyphSlot->SetHorizontalAlignment(HAlign_Left); GlyphSlot->SetVerticalAlignment(VAlign_Center); GlyphSlot->SetPadding(FMargin(14.f, 0.f, 0.f, 0.f));
-    Contents->AddChildToVerticalBox(SearchStack)->SetPadding(FMargin(0.f, 0.f, 0.f, 9.f));
-
-    // Voxel Objects / Blueprints tabs (Blueprints stays disabled until blueprints exist).
-    UHorizontalBox* Tabs = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    for (int32 Index = 0; Index < 2; ++Index)
+    if (StatusText) { StatusColour = StatusText->GetColorAndOpacity(); StatusText->SetText(CachedStatusText); }
+    if (TabBar)
     {
-        UBorder* Tab = SFHudStyle::Tab(WidgetTree, Index == 0, FMargin(4.f, 0.f));
-        UTextBlock* Label = Text(WidgetTree, Index == 0 ? TEXT("Voxel Objects") : TEXT("Blueprints"), 20, Index == 0 ? Ivory() : Dim, false);
-        Label->SetJustification(ETextJustify::Center);
-        Tab->SetVerticalAlignment(VAlign_Center); Tab->SetContent(Label); Tab->SetVisibility(ESlateVisibility::HitTestInvisible);
-        USizeBox* TabSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        TabSize->SetWidthOverride(Index == 0 ? 259.f : 214.f); TabSize->SetHeightOverride(41.f); TabSize->SetContent(Tab);
-        Tabs->AddChildToHorizontalBox(TabSize)->SetPadding(FMargin(Index == 0 ? 0.f : 11.f, 0.f, 0.f, 0.f));
+        FSFTabSpec Voxel(FText::FromString(TEXT("Voxel Objects"))), Blueprints(FText::FromString(TEXT("Blueprints")));
+        if (TabIcons.IsValidIndex(0)) { Voxel.Icon = TabIcons[0]; }
+        if (TabIcons.IsValidIndex(1)) { Blueprints.Icon = TabIcons[1]; }
+        TabBar->SetTabs({Voxel, Blueprints});
+        TabBar->OnTabSelected.AddDynamic(this, &USFConstructionSandboxPalette::HandleTab);
     }
-    Contents->AddChildToVerticalBox(Tabs)->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
-
-    auto Bind = [this](UButton* Button, const FName& Handler)
+    if (SearchField) { SearchField->OnTextChanged.AddDynamic(this, &USFConstructionSandboxPalette::HandleSearchChanged); }
+    // ponytail: one material until a materials model exists.
+    if (MaterialDropdown) { MaterialDropdown->SetOptions({TEXT("Rough Timber")}, 0); }
+    if (FavouriteButton) { FavouriteButton->OnClicked.AddDynamic(this, &USFConstructionSandboxPalette::HandleFavourite); }
+    if (CostText)
     {
-        FScriptDelegate ClickHandler; ClickHandler.BindUFunction(this, Handler); Button->OnClicked.Add(ClickHandler);
-    };
-
-    // Body: category rail (80 px tiles, Structures is the only populated category) beside the piece grid.
-    UHorizontalBox* Body = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    UVerticalBox* Rail = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    static const TCHAR* const RailIcons[4] = {TEXT("icon_structures"), TEXT("icon_decor"), TEXT("icon_terrain"), TEXT("icon_favourites")};
-    static const TCHAR* const RailLabels[4] = {TEXT("Structures"), TEXT("Decor"), TEXT("Terrain"), TEXT("Favourites")};
-    for (int32 Category = 0; Category < 4; ++Category)
-    {
-        UBorder* Entry = SFHudStyle::Tab(WidgetTree, Category == 0, FMargin(0.f), false);
-        UVerticalBox* Stack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-        USizeBox* RailGlyph = KitImage(WidgetTree, RailIcons[Category], 40.f);
-        if (UImage* GlyphImage = Cast<UImage>(RailGlyph->GetContent())) { GlyphImage->SetColorAndOpacity(Ivory()); }  // flat ivory line glyphs
-        Stack->AddChildToVerticalBox(RailGlyph)->SetHorizontalAlignment(HAlign_Center);
-        UTextBlock* Label = Text(WidgetTree, RailLabels[Category], 18, Category == 0 ? Ivory() : Dim);
-        Label->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
-        Label->SetJustification(ETextJustify::Center);
-        Stack->AddChildToVerticalBox(Label)->SetHorizontalAlignment(HAlign_Center);
-        Entry->SetVerticalAlignment(VAlign_Center); Entry->SetContent(Stack); Entry->SetVisibility(ESlateVisibility::HitTestInvisible);
-        USizeBox* RailBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        RailBox->SetWidthOverride(95.f); RailBox->SetHeightOverride(Category == 0 ? 78.f : 83.f); RailBox->SetContent(Entry);
-        Rail->AddChildToVerticalBox(RailBox)->SetPadding(FMargin(0.f, 0.f, 0.f, 9.f));
+        // Every pilot piece costs one wall bundle from the backpack (DEC-02); unpaid only under the dev stock fixture. ponytail: one fixed cost;
+        // per-piece costs follow BLD-01.
+        CostText->SetText(FText::FromString(USFConstructionSandboxSettings::AllowsUnpaidEdits() ? TEXT("Unlimited dev stock") : TEXT("1 Wall Material Bundle")));
     }
-    Body->AddChildToHorizontalBox(Rail)->SetPadding(FMargin(0.f, 0.f, 12.f, 0.f));
 
-    // Piece grid: 3 columns of 100 px slots, 12 px gap, thumbnail above the caption. Slab = Foundation, Cube = Wall, Slope = Roof.
-    static const TCHAR* const TileHandlers[TileCount] = {TEXT("HandleSlab"), TEXT("HandleCube"), TEXT("HandleDoor"), TEXT("HandleSlope")};
-    static const TCHAR* const TileIcons[TileCount] = {TEXT("icon_timber_floor"), TEXT("icon_timber_wall"), TEXT("icon_wooden_door"), TEXT("icon_timber_roof")};
-    UUniformGridPanel* Catalogue = WidgetTree->ConstructWidget<UUniformGridPanel>(UUniformGridPanel::StaticClass());
-    Catalogue->SetSlotPadding(FMargin(3.5f)); Catalogue->SetMinDesiredSlotWidth(123.f); Catalogue->SetMinDesiredSlotHeight(111.f);
-    for (int32 Tile = 0; Tile < TileCount; ++Tile)
+    TSubclassOf<USFSlotWidget> SlotClass = LoadClass<USFSlotWidget>(nullptr, TEXT("/Game/Frontier/UI/Widgets/Common/WBP_ItemSlot.WBP_ItemSlot_C"));
+    if (TileGrid && SlotClass)
     {
-        UButton* Button = WidgetTree->ConstructWidget<USFConstructionPaletteButton>(USFConstructionPaletteButton::StaticClass(), TileHandlers[Tile]);
-        FButtonStyle Flat = Button->GetStyle();
-        Flat.Normal = Flat.Hovered = Flat.Pressed = FSlateNoResource();
-        Flat.NormalPadding = FMargin(0.f); Flat.PressedPadding = FMargin(0.f);
-        Button->SetStyle(Flat);
-        UBorder* Frame = KitPanel(WidgetTree, TEXT("slot_catalogue_normal"), 1.f, Well, Hex(TEXT("3A4348")), FMargin(4.f, 6.f, 4.f, 8.f), 3.f, false);  // selection state drawn by SelectTile
-        UVerticalBox* Stack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-        Stack->AddChildToVerticalBox(KitImage(WidgetTree, TileIcons[Tile], 68.f))->SetHorizontalAlignment(HAlign_Center);
-        UTextBlock* Label = Text(WidgetTree, TileLabel(Tile), 18, Ivory());
-        Label->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
-        Label->SetJustification(ETextJustify::Center);
-        Stack->AddChildToVerticalBox(Label)->SetHorizontalAlignment(HAlign_Center);
-        Frame->SetVerticalAlignment(VAlign_Center); Frame->SetHorizontalAlignment(HAlign_Center); Frame->SetContent(Stack); Frame->SetVisibility(ESlateVisibility::HitTestInvisible);
-        Button->SetContent(Frame);
-        Bind(Button, TileHandlers[Tile]);
-        TileFrames.Add(Frame); TileButtons.Add(Button);
-        USizeBox* TileBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());  // fixed 100 px cell so labels never widen a column
-        TileBox->SetWidthOverride(123.f); TileBox->SetHeightOverride(111.f); TileBox->SetContent(Button);
-        Catalogue->AddChildToUniformGrid(TileBox, Tile / 3, Tile % 3);
+        UUniformGridPanel* Uniform = Cast<UUniformGridPanel>(TileGrid.Get());
+        for (int32 Tile = 0; Tile < TileCount; ++Tile)
+        {
+            USFSlotWidget* Cell = CreateWidget<USFSlotWidget>(this, SlotClass);
+            if (!Cell) { continue; }
+            if (Uniform) { Uniform->AddChildToUniformGrid(Cell, Tile / GridColumns, Tile % GridColumns); } else { TileGrid->AddChild(Cell); }
+            Cell->SetIcon(SFItemTooltip::ItemTexture(TileIconStems[Tile]));
+            Cell->SetKeyText(FText::GetEmpty());
+            Cell->SetCaption(FText::FromString(TileLabel(Tile)));
+            Cell->SetCount(0);
+            Cell->OnClicked.AddDynamic(this, &USFConstructionSandboxPalette::HandleTileClicked);
+            Cells.Add(Cell);
+        }
     }
-    // The other cells of the 3 x 4 grid are empty slots until more pieces exist.
-    for (int32 Cell = TileCount; Cell < 12; ++Cell)
-    {
-        USizeBox* EmptyBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-        EmptyBox->SetWidthOverride(123.f); EmptyBox->SetHeightOverride(111.f);
-        EmptyBox->SetContent(KitPanel(WidgetTree, TEXT("slot_catalogue_normal"), 0.6f, Well, Hex(TEXT("3A4348")), FMargin(0.f), 3.f, false));
-        Catalogue->AddChildToUniformGrid(EmptyBox, Cell / 3, Cell % 3);
-    }
-    Body->AddChildToHorizontalBox(Catalogue)->SetVerticalAlignment(VAlign_Top);
-    Contents->AddChildToVerticalBox(Body)->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
     SelectTile(SelectedTile);
-
-    // Material row. ponytail: one material until a materials model exists.
-    UBorder* Material = KitPanel(WidgetTree, TEXT("dropdown_field"), 1.f, Well, Hex(TEXT("3A4348")), FMargin(8.f, 0.f), 3.f);
-    UHorizontalBox* MaterialRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    MaterialRow->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("icon_timber_board"), 40.f))->SetVerticalAlignment(VAlign_Center);
-    MaterialRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Material:"), 20, Ivory(), true))->SetPadding(FMargin(12.f, 0.f, 8.f, 0.f));
-    UHorizontalBoxSlot* NameSlot = MaterialRow->AddChildToHorizontalBox(Text(WidgetTree, TEXT("Rough Timber"), 20, Ivory()));
-    NameSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-    MaterialRow->AddChildToHorizontalBox(KitImage(WidgetTree, Kit(TEXT("dropdown_arrow")) ? TEXT("dropdown_arrow") : TEXT("row_chevron"), 24.f))->SetVerticalAlignment(VAlign_Center);
-    Material->SetVerticalAlignment(VAlign_Center); Material->SetContent(MaterialRow); Material->SetVisibility(ESlateVisibility::HitTestInvisible);
-    USizeBox* MaterialSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    MaterialSize->SetHeightOverride(50.f); MaterialSize->SetContent(Material);
-    Contents->AddChildToVerticalBox(MaterialSize)->SetPadding(FMargin(0.f, 4.f, 0.f, 6.f));
-
-    // Required materials: every pilot piece costs one wall bundle from the backpack (DEC-02); unpaid only under the dev stock fixture.
-    // ponytail: one fixed row; have / need rows per piece follow BLD-01 piece costs.
-    UBorder* Cost = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
-    Cost->SetBrush(Frame(Well, Hex(TEXT("3A4348")), 3.f)); Cost->SetPadding(FMargin(14.f, 8.f));
-    UVerticalBox* CostStack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    CostStack->AddChildToVerticalBox(Text(WidgetTree, TEXT("Required Materials"), 18, Ivory()))->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
-    UHorizontalBox* CostRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    UHorizontalBoxSlot* CostName = CostRow->AddChildToHorizontalBox(Text(WidgetTree, USFConstructionSandboxSettings::AllowsUnpaidEdits() ? TEXT("Unlimited dev stock") : TEXT("1 Wall Material Bundle"), 18, Ivory()));
-    CostName->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-    CostRow->AddChildToHorizontalBox(KitImage(WidgetTree, TEXT("status_tick"), 20.f))->SetVerticalAlignment(VAlign_Center);
-    CostStack->AddChildToVerticalBox(CostRow)->SetPadding(FMargin(0.f, 0.f, 0.f, 6.f));
-    UHorizontalBox* StatusRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-    USizeBox* GlyphBox = KitImage(WidgetTree, TEXT("status_tick"), 20.f);
-    StatusGlyph = Cast<UImage>(GlyphBox->GetContent());
-    StatusRow->AddChildToHorizontalBox(GlyphBox)->SetVerticalAlignment(VAlign_Center);
-    StatusTextBlock = Text(WidgetTree, TEXT(""), 18, Ivory());
-    StatusTextBlock->SetText(CachedStatusText);
-    UHorizontalBoxSlot* StatusSlot = StatusRow->AddChildToHorizontalBox(StatusTextBlock);
-    StatusSlot->SetPadding(FMargin(12.f, 0.f, 0.f, 0.f)); StatusSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-    CostStack->AddChildToVerticalBox(StatusRow);
-    Cost->SetContent(CostStack);
-    Contents->AddChildToVerticalBox(Cost);
 }
 
-void USFConstructionSandboxPalette::HandleSearchChanged(const FText& Text)
+void USFConstructionSandboxPalette::ApplyKitStyle()
 {
-    const FString Query = Text.ToString().TrimStartAndEnd();
-    for (int32 Tile = 0; Tile < TileButtons.Num(); ++Tile)
+    ApplyFamilyToAllText(TextStyle);
+}
+
+void USFConstructionSandboxPalette::HandleTileClicked(USFSelectableWidget* Source)
+{
+    const int32 Tile = Cells.IndexOfByPredicate([Source](const TObjectPtr<USFSlotWidget>& Cell) { return Cell == Source; });
+    if (Tile != INDEX_NONE) { ClickTile(Tile); }
+}
+
+void USFConstructionSandboxPalette::ClickTile(int32 Tile)
+{
+    if (Tile >= 0 && Tile < TileCount) { Dispatch(TileActions[Tile]); }
+}
+
+void USFConstructionSandboxPalette::HandleSearchChanged(const FText& Text) { Search = Text.ToString().TrimStartAndEnd(); RefreshTiles(); }
+void USFConstructionSandboxPalette::HandleTab(int32 Index) { ActiveTab = Index; RefreshTiles(); }
+
+void USFConstructionSandboxPalette::HandleFavourite()
+{
+    if (Favourites.Contains(SelectedTile)) { Favourites.Remove(SelectedTile); } else { Favourites.Add(SelectedTile); }
+    RefreshDetail();
+}
+
+// The tile grid shows the matching pieces of the Voxel Objects tab (the Blueprints tab has none yet).
+void USFConstructionSandboxPalette::RefreshTiles()
+{
+    int32 Shown = 0;
+    for (int32 Tile = 0; Tile < Cells.Num(); ++Tile)
     {
-        const bool bShown = Query.IsEmpty() || FString(TileLabel(Tile)).Contains(Query, ESearchCase::IgnoreCase);
-        TileButtons[Tile]->SetVisibility(bShown ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+        const bool bShown = ActiveTab == 0 && (Search.IsEmpty() || FString(TileLabel(Tile)).Contains(Search, ESearchCase::IgnoreCase));
+        Cells[Tile]->SetVisibility(bShown ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+        Shown += bShown ? 1 : 0;
     }
+    if (EmptyText)
+    {
+        EmptyText->SetText(FText::FromString(ActiveTab == 1 ? TEXT("No blueprints yet.") : TEXT("No matching objects.")));
+        EmptyText->SetVisibility(Shown == 0 ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+    }
+}
+
+void USFConstructionSandboxPalette::RefreshDetail()
+{
+    if (DetailName) { DetailName->SetText(FText::FromString(TileLabel(SelectedTile))); }
+    if (DetailSlot)
+    {
+        DetailSlot->SetIcon(SFItemTooltip::ItemTexture(TileIconStems[FMath::Clamp(SelectedTile, 0, TileCount - 1)]));
+        DetailSlot->SetKeyText(FText::GetEmpty());
+        DetailSlot->SetCount(0);
+    }
+    const bool bFavourite = Favourites.Contains(SelectedTile);
+    if (FavouriteOn) { FavouriteOn->SetVisibility(bFavourite ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed); }
+    if (FavouriteOff) { FavouriteOff->SetVisibility(bFavourite ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible); }
 }
 
 void USFConstructionSandboxPalette::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -245,50 +163,48 @@ void USFConstructionSandboxPalette::NativeTick(const FGeometry& MyGeometry, floa
 void USFConstructionSandboxPalette::SelectTile(int32 Tile)
 {
     SelectedTile = Tile;
-    for (int32 Index = 0; Index < TileFrames.Num(); ++Index)
-    {
-        const bool bSelected = Index == SelectedTile;
-        SFHudStyle::SetSlotSelected(TileFrames[Index], TEXT("slot_catalogue_normal"), bSelected);
-    }
+    for (int32 Index = 0; Index < Cells.Num(); ++Index) { Cells[Index]->SetSelected(Index == SelectedTile); }
+    RefreshDetail();
+    RefreshTiles();
 }
 
 void USFConstructionSandboxPalette::ConfigureNetworkPresentation()
 {
-    // Presentation capability subset only. The controller retains all actions
-    // and authority; the standalone palette keeps its complete default layout.
-    for (const FName Name : {FName(TEXT("HandleConfirm")),FName(TEXT("HandleSave")),FName(TEXT("HandleLoad"))})
-    { if (auto* Button=WidgetTree->FindWidget(Name)) { Button->SetVisibility(ESlateVisibility::Collapsed); } }
+    // Presentation capability subset only. The controller retains all actions and authority; the standalone palette keeps its complete layout.
 }
 
 void USFConstructionSandboxPalette::SetBuildModeActive(bool bActive)
 {
-    SetVisibility(bActive ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);  // the viewport-filling canvas must not catch world clicks
+    if (ASFPlayerController* Player = Cast<ASFPlayerController>(GetOwningPlayer()))
+    {
+        if (bActive) { Player->GetWindowStack()->Open(this); } else { Player->GetWindowStack()->Close(this); }
+        return;
+    }
+    SetVisibility(bActive ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 }
 
 void USFConstructionSandboxPalette::SetPlacementValid(bool bValid)
 {
-    if (const FSFHudKitElement* Glyph = SFHudStyle::Kit(bValid ? TEXT("status_tick") : TEXT("status_cross"))) { if (StatusGlyph) { StatusGlyph->SetBrush(SFHudStyle::KitBrush(*Glyph)); } }
+    bStatusValid = bValid;
+    if (StatusOk) { StatusOk->SetVisibility(bValid ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed); }
+    if (StatusText) { StatusText->SetColorAndOpacity(bValid ? StatusColour : FSlateColor(SFHudStyle::Crimson())); }  // state tint
 }
 
 void USFConstructionSandboxPalette::SetStatusText(const FText& InStatusText)
 {
     CachedStatusText = InStatusText;
-    if (StatusTextBlock)
-    {
-        StatusTextBlock->SetText(CachedStatusText);
-    }
+    if (StatusText) { StatusText->SetText(CachedStatusText); }
 }
 
 bool USFConstructionSandboxPalette::IsPointerOverPalette() const
 {
-    return PalettePanel
-        && PalettePanel->GetVisibility() == ESlateVisibility::Visible
-        && PalettePanel->IsHovered();
+    return GetVisibility() != ESlateVisibility::Collapsed && FSlateApplication::IsInitialized()
+        && GetCachedGeometry().IsUnderLocation(FSlateApplication::Get().GetCursorPos());
 }
 
 FReply USFConstructionSandboxPalette::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-    return FReply::Handled();
+    return FReply::Handled();  // a click on the window never reaches the world behind it
 }
 
 FReply USFConstructionSandboxPalette::NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -302,20 +218,3 @@ void USFConstructionSandboxPalette::Dispatch(ESFConstructionPaletteAction Action
     if (Tile != INDEX_NONE) { SelectTile(Tile); }
     OnAction.ExecuteIfBound(Action);
 }
-
-void USFConstructionSandboxPalette::HandleCube() { Dispatch(ESFConstructionPaletteAction::Cube); }
-void USFConstructionSandboxPalette::HandleSlab() { Dispatch(ESFConstructionPaletteAction::Slab); }
-void USFConstructionSandboxPalette::HandleSlope() { Dispatch(ESFConstructionPaletteAction::Slope); }
-void USFConstructionSandboxPalette::HandleDoor() { Dispatch(ESFConstructionPaletteAction::Door); }
-void USFConstructionSandboxPalette::HandleSingle() { Dispatch(ESFConstructionPaletteAction::Single); }
-void USFConstructionSandboxPalette::HandleLine() { Dispatch(ESFConstructionPaletteAction::Line); }
-void USFConstructionSandboxPalette::HandleDemolish() { Dispatch(ESFConstructionPaletteAction::Demolish); }
-void USFConstructionSandboxPalette::HandleRotate() { Dispatch(ESFConstructionPaletteAction::Rotate); }
-void USFConstructionSandboxPalette::HandleSurface() { Dispatch(ESFConstructionPaletteAction::Surface); }
-void USFConstructionSandboxPalette::HandleLayer() { Dispatch(ESFConstructionPaletteAction::Layer); }
-void USFConstructionSandboxPalette::HandleLayerDown() { Dispatch(ESFConstructionPaletteAction::LayerDown); }
-void USFConstructionSandboxPalette::HandleLayerUp() { Dispatch(ESFConstructionPaletteAction::LayerUp); }
-void USFConstructionSandboxPalette::HandleConfirm() { Dispatch(ESFConstructionPaletteAction::Confirm); }
-void USFConstructionSandboxPalette::HandleCancel() { Dispatch(ESFConstructionPaletteAction::Cancel); }
-void USFConstructionSandboxPalette::HandleSave() { Dispatch(ESFConstructionPaletteAction::Save); }
-void USFConstructionSandboxPalette::HandleLoad() { Dispatch(ESFConstructionPaletteAction::Load); }

@@ -1,6 +1,7 @@
 #include "Gathering/SFGatheringHud.h"
 #include "Framework/SFPlayerController.h"
 #include "UI/SFHudWidgets.h"
+#include "UI/SFWindowStack.h"
 
 #include "Framework/SFScreenArt.h"
 #include "Gathering/SFGatheringProgression.h"
@@ -60,11 +61,7 @@ void USFGatheringHud::NativeOnInitialized()
     RingPlate->SetContent(RingLabel); RingPlate->SetVisibility(ESlateVisibility::Collapsed);
     Place(RingPlate, FVector2D(0.5f, 0.f));
 
-    // Station panel at x33-78% y9-82% (crafting-station.png): 866 x 797 at (631,97) at 1080p.
-    StationPanel = CreateWidget<USFStationPanel>(this, USFStationPanel::StaticClass());
-    UCanvasPanelSlot* StationSlot = Root->AddChildToCanvas(StationPanel);
-    StationSlot->SetAnchors(FAnchors(0.554f, 0.09f)); StationSlot->SetAlignment(FVector2D(0.5f, 0.f)); StationSlot->SetSize(FVector2D(866.f, 797.f));
-    StationPanel->SetVisibility(ESlateVisibility::Collapsed);
+    // The station panel is a window (WBP_StationPanel): created on first use, opened and closed through the window stack.
 }
 
 void USFGatheringHud::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -117,8 +114,39 @@ void USFGatheringHud::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     if (!Controller->DeprojectMousePositionToWorld(Start, Direction)) { FRotator Rotation; Controller->GetPlayerViewPoint(Start, Rotation); Direction = Rotation.Vector(); }
     if (const ASFGatheringPilotNode* Node = Pilot->FindAimedNode(Start, Direction)) { Station = Node->IsRefinery() ? Node : nullptr; }
     if (!Station && (bHarvesting || bFinishing) && Feedback.Node->IsRefinery()) { Station = Feedback.Node; }  // keep the queue in view while crafting
+    // The cursor on the open panel keeps its station (the aim ray passes through the panel to the scene behind it).
+    if (Station) { LastStation = Station; }
+    else if (StationPanel && StationPanel->IsPointerOver() && LastStation.IsValid()) { Station = LastStation.Get(); }
     if (StationModal.IsValid() && StationModal->GetVisibility() != ESlateVisibility::Collapsed) { Station = nullptr; }
+    UpdateStationWindow(Station);
+}
+
+// A window on the shared kit: opened while the player aims at a station (or keeps the cursor on the panel), closed when the aim leaves.
+// Esc closes it like any window and keeps it closed until the aim leaves the station.
+void USFGatheringHud::UpdateStationWindow(const ASFGatheringPilotNode* Station)
+{
+    ASFPlayerController* Player = Cast<ASFPlayerController>(GetOwningPlayer());
+    if (!Player || !Pilot) { return; }
+    if (!StationPanel && Station)
+    {
+        const TSubclassOf<USFStationPanel> PanelClass = LoadClass<USFStationPanel>(nullptr, USFStationPanel::AssetPath);
+        if (!PanelClass) { UE_LOG(LogTemp, Error, TEXT("STATION_WBP_MISSING %s: run tools/ui/create_widgets.py"), USFStationPanel::AssetPath); return; }
+        StationPanel = CreateWidget<USFStationPanel>(Player, PanelClass);
+        if (!StationPanel) { return; }
+        StationPanel->AddToViewport(20);
+        StationPanel->SetVisibility(ESlateVisibility::Collapsed);
+    }
+    if (!StationPanel) { return; }
+    USFWindowStack* Stack = Player->GetWindowStack();
+    const bool bOpen = Stack->IsOpen(StationPanel);
+    if (bStationOpenedByUs && !bOpen) { bStationDismissed = true; }  // closed from outside (Esc)
+    bStationOpenedByUs = bOpen;
+    if (!Station) { bStationDismissed = false; }
     StationPanel->Present(Station ? Pilot.Get() : nullptr, Station);
+    const bool bWant = Station && !bStationDismissed;
+    if (bWant != bOpen) { UE_LOG(LogTemp, Display, TEXT("STATION_PANEL %s station=%s"), bWant ? TEXT("open") : TEXT("close"), Station ? *Station->GetName() : TEXT("none")); }
+    if (bWant && !bOpen) { Stack->Open(StationPanel); bStationOpenedByUs = true; }
+    else if (!bWant && bOpen) { Stack->Close(StationPanel); bStationOpenedByUs = false; }
 }
 
 int32 USFGatheringHud::NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect,

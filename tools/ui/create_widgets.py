@@ -5,7 +5,7 @@ Or headless:   UnrealEditor-Cmd.exe <uproject> -run=pythonscript -script=<this f
 Shared menu kit v7 (Common: WBP_WindowFrame, WBP_Button, WBP_Tab, WBP_TabBar, WBP_ItemSlot, WBP_Separator, WBP_ScrollList, WBP_GoldDisplay,
 WBP_SearchField, WBP_InputField, WBP_Dropdown, WBP_Stepper) and WBP_Inventory (Inventory/, built on the kit) need tools/ui/import_kit_v7.py and
 tools/ui/import_inventory.py (tooltip and weight-bar art) run first. Rebuild the kit with
-SF_UI_FORCE=1 SF_UI_ONLY=WBP_Separator,WBP_Button,WBP_Tab,WBP_TabBar,WBP_ItemSlot,WBP_ScrollList,WBP_GoldDisplay,WBP_SearchField,WBP_InputField,WBP_Dropdown,WBP_Stepper,WBP_WindowFrame,WBP_Inventory
+SF_UI_FORCE=1 SF_UI_ONLY=WBP_Separator,WBP_Button,WBP_Tab,WBP_TabBar,WBP_ItemSlot,WBP_ScrollList,WBP_GoldDisplay,WBP_SearchField,WBP_InputField,WBP_Dropdown,WBP_Stepper,WBP_WindowFrame,WBP_KitRow,WBP_Inventory,WBP_MarketBoard,WBP_TradeWindow,WBP_StationPanel,WBP_BuildCatalogue
 (SF_UI_ONLY takes one name or a comma list; a forced rebuild discards Designer edits of those assets).
 
 Each WBP gets a first-draft layout and the BindWidget names its C++ base expects (Public/UI/SFUiWidgets.h, SFHudWidgets.h;

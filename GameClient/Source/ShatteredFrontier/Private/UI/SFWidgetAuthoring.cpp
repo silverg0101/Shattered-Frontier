@@ -35,6 +35,9 @@
 #include "Misc/PackageName.h"
 #include "UI/SFHudWidgets.h"
 #include "UI/SFInventoryWidget.h"
+#include "Exchange/SFExchangeWidgets.h"
+#include "Gathering/SFStationPanel.h"
+#include "Construction/SFConstructionSandboxPalette.h"
 #include "UI/SFUiWidgets.h"
 #include "UObject/SavePackage.h"
 #include "WidgetBlueprint.h"
@@ -48,6 +51,9 @@ constexpr const TCHAR* CommonDir = TEXT("/Game/Frontier/UI/Widgets/Common");
 constexpr const TCHAR* HudDir = TEXT("/Game/Frontier/UI/Widgets/Hud");
 constexpr const TCHAR* UnitFramesDir = TEXT("/Game/Frontier/UI/Widgets/Unit");
 constexpr const TCHAR* InventoryDir = TEXT("/Game/Frontier/UI/Widgets/Inventory");
+constexpr const TCHAR* ExchangeDir = TEXT("/Game/Frontier/UI/Widgets/Exchange");
+constexpr const TCHAR* GatheringDir = TEXT("/Game/Frontier/UI/Widgets/Gathering");
+constexpr const TCHAR* BuildDir = TEXT("/Game/Frontier/UI/Widgets/Build");
 
 // ---- tree helpers. Named widgets are Designer variables so the C++ BindWidget lookups find them. Fonts are never baked (the family is a
 // runtime composite font); the C++ base applies them, so seeds only set text.
@@ -675,6 +681,9 @@ void ItemSlotLayout(UWidgetTree* T)
     Name->SetJustification(ETextJustify::Center); Name->SetAutoWrapText(true);
     Put(Stack, Name, HAlign_Fill, VAlign_Center, FMargin(16.f, 0.f));
     Put(Stack, SizedText(T, TEXT("CountLabel"), TEXT(""), 36.f), HAlign_Right, VAlign_Bottom, FMargin(0.f, 0.f, 24.f, 16.f));
+    UTextBlock* TileCaption = SizedText(T, TEXT("CaptionLabel"), TEXT(""), 26.f);  // tile caption (build catalogue); collapsed while empty
+    TileCaption->SetJustification(ETextJustify::Center); TileCaption->SetVisibility(ESlateVisibility::Collapsed);
+    Put(Stack, TileCaption, HAlign_Fill, VAlign_Bottom, FMargin(10.f, 0.f, 10.f, 10.f));
     Put(Stack, InvImage(T, TEXT("HoverFrame"), KBox(TEXT("hover_frame"), 18.f, 18.f, 18.f, 18.f, 208.f, 208.f), true), HAlign_Fill, VAlign_Fill);
     Put(Stack, InvImage(T, TEXT("SelectFrame"), KBox(TEXT("select_frame"), 18.f, 18.f, 18.f, 18.f, 208.f, 208.f), true), HAlign_Fill, VAlign_Fill);
     T->RootWidget = Sized(T, TEXT("RootSize"), Stack, 208.f, 208.f);
@@ -848,6 +857,54 @@ void Fill(UUserWidget* Host, const TCHAR* Slot, UWidget* Content)
     if (FObjectProperty* Object = CastField<FObjectProperty>(Item->Struct->FindPropertyByName(TEXT("Content")))) { Object->SetObjectPropertyValue(Object->ContainerPtrToValuePtr<void>(Element), Content); }
 }
 
+// The item tooltip every menu window shares (Tooltip, TipIcon, TipTitle, ...): beside the window, not in it. Flowing content: art + name + description,
+// rule, rarity . type, weight and owned count. Inventory v6 tooltip art. Pinned top-left in the window's root overlay; the C++ (SFItemTooltip) moves its
+// holder to the cursor each tick, so the window never resizes or moves.
+UScaleBox* ItemTooltipLayout(UWidgetTree* T)
+{
+    UBorder* TipHolder = N<UBorder>(T, TEXT("Tooltip"));
+    TipHolder->SetBrush(FSlateNoResource());
+    TipHolder->SetPadding(FMargin(32.f, 0.f, 0.f, 0.f));
+    UOverlay* Tip = A<UOverlay>(T);
+    Put(Tip, InvImage(T, nullptr, InvBrush(TEXT("tooltip_frame"), 760.f, 430.f, 34.f, 34.f, 34.f, 34.f, 760.f, 430.f)), HAlign_Fill, VAlign_Fill);
+    UVerticalBox* TipBody = A<UVerticalBox>(T);
+    UHorizontalBox* Head = A<UHorizontalBox>(T);
+    Head->AddChildToHorizontalBox(Sized(T, nullptr, N<UImage>(T, TEXT("TipIcon")), 184.f, 184.f))->SetVerticalAlignment(VAlign_Top);
+    UVerticalBox* Words = A<UVerticalBox>(T);
+    Words->AddChildToVerticalBox(SizedText(T, TEXT("TipTitle"), TEXT("Item"), 48.f));
+    UTextBlock* Description = SizedText(T, TEXT("TipDescription"), TEXT(""), 30.f);
+    Description->SetWrapTextAt(440.f);
+    Words->AddChildToVerticalBox(Description)->SetPadding(FMargin(0.f, 12.f, 0.f, 0.f));
+    Head->AddChildToHorizontalBox(Words)->SetPadding(FMargin(32.f, 0.f, 0.f, 0.f));
+    TipBody->AddChildToVerticalBox(Head);
+    TipBody->AddChildToVerticalBox(Sized(T, nullptr, InvImage(T, nullptr, InvRule(TEXT("tooltip_divider"), 680.f, 12.f, 28.f)), 660.f, 12.f))->SetPadding(FMargin(0.f, 28.f, 0.f, 20.f));
+    UHorizontalBox* Kind = A<UHorizontalBox>(T);
+    UTextBlock* Rarity = SizedText(T, TEXT("TipRarity"), TEXT("Common"), 30.f);
+    Rarity->SetColorAndOpacity(FSlateColor(Moss()));
+    Kind->AddChildToHorizontalBox(Rarity);
+    UBorder* Dot = Plain(T, nullptr, FMargin(0.f));
+    Dot->SetBrush(FSlateColorBrush(Brass()));
+    Kind->AddChildToHorizontalBox(Sized(T, nullptr, Dot, 6.f, 6.f))->SetPadding(FMargin(16.f, 0.f));
+    Kind->AddChildToHorizontalBox(SizedText(T, TEXT("TipType"), TEXT("Material"), 30.f));
+    TipBody->AddChildToVerticalBox(Kind);
+    UHorizontalBox* Load = A<UHorizontalBox>(T);
+    Load->AddChildToHorizontalBox(Sized(T, nullptr, InvImage(T, nullptr, InvBrush(TEXT("icon_weight"), 36.f, 36.f)), 36.f, 36.f))->SetVerticalAlignment(VAlign_Center);
+    Load->AddChildToHorizontalBox(SizedText(T, TEXT("TipWeight"), TEXT("Weight  0.0 kg (per 1)"), 30.f))->SetPadding(FMargin(16.f, 0.f, 0.f, 0.f));
+    UTextBlock* Owned = SizedText(T, TEXT("TipQuantity"), TEXT("Owned  0"), 28.f);
+    Owned->SetJustification(ETextJustify::Right);
+    UHorizontalBoxSlot* OwnedSlot = Load->AddChildToHorizontalBox(Owned);
+    OwnedSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); OwnedSlot->SetHorizontalAlignment(HAlign_Right); OwnedSlot->SetVerticalAlignment(VAlign_Center);
+    TipBody->AddChildToVerticalBox(Load)->SetPadding(FMargin(0.f, 16.f, 0.f, 0.f));
+    UBorder* TipPad = Plain(T, nullptr, FMargin(56.f, 52.f, 56.f, 48.f));
+    TipPad->SetContent(TipBody);
+    Put(Tip, TipPad, HAlign_Fill, VAlign_Fill);
+    USizeBox* TipSize = Sized(T, nullptr, Tip, 780.f, 0.f);
+    TipSize->SetMinDesiredHeight(400.f);
+    TipHolder->SetContent(TipSize);
+    TipHolder->SetVisibility(ESlateVisibility::Collapsed);
+    return Half(T, TipHolder);
+}
+
 // WBP_Inventory: a WBP_WindowFrame (emblem, title, rules) holding a WBP_TabBar, the grid in a WBP_ScrollList, the item tooltip in the
 // SidePanel and the weight / gold footer. C++ fills SlotGrid with WBP_ItemSlot cells, 5 wide.
 void InventoryLayout(UWidgetTree* T)
@@ -896,53 +953,369 @@ void InventoryLayout(UWidgetTree* T)
     GoldSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); GoldSlot->SetHorizontalAlignment(HAlign_Right); GoldSlot->SetVerticalAlignment(VAlign_Center);
     Fill(Window, TEXT("Footer"), Foot);
 
-    // Tooltip beside the window, not in it. Flowing content: art + name + description,
-    // rule, rarity . type, weight and owned count. Inventory v6 tooltip art.
-    UBorder* TipHolder = N<UBorder>(T, TEXT("Tooltip"));
-    TipHolder->SetBrush(FSlateNoResource());
-    TipHolder->SetPadding(FMargin(32.f, 0.f, 0.f, 0.f));
-    UOverlay* Tip = A<UOverlay>(T);
-    Put(Tip, InvImage(T, nullptr, InvBrush(TEXT("tooltip_frame"), 760.f, 430.f, 34.f, 34.f, 34.f, 34.f, 760.f, 430.f)), HAlign_Fill, VAlign_Fill);
-    UVerticalBox* TipBody = A<UVerticalBox>(T);
-    UHorizontalBox* Head = A<UHorizontalBox>(T);
-    Head->AddChildToHorizontalBox(Sized(T, nullptr, N<UImage>(T, TEXT("TipIcon")), 184.f, 184.f))->SetVerticalAlignment(VAlign_Top);
-    UVerticalBox* Words = A<UVerticalBox>(T);
-    Words->AddChildToVerticalBox(SizedText(T, TEXT("TipTitle"), TEXT("Item"), 48.f));
-    UTextBlock* Description = SizedText(T, TEXT("TipDescription"), TEXT(""), 30.f);
-    Description->SetWrapTextAt(440.f);
-    Words->AddChildToVerticalBox(Description)->SetPadding(FMargin(0.f, 12.f, 0.f, 0.f));
-    Head->AddChildToHorizontalBox(Words)->SetPadding(FMargin(32.f, 0.f, 0.f, 0.f));
-    TipBody->AddChildToVerticalBox(Head);
-    TipBody->AddChildToVerticalBox(Sized(T, nullptr, InvImage(T, nullptr, InvRule(TEXT("tooltip_divider"), 680.f, 12.f, 28.f)), 660.f, 12.f))->SetPadding(FMargin(0.f, 28.f, 0.f, 20.f));
-    UHorizontalBox* Kind = A<UHorizontalBox>(T);
-    UTextBlock* Rarity = SizedText(T, TEXT("TipRarity"), TEXT("Common"), 30.f);
-    Rarity->SetColorAndOpacity(FSlateColor(Moss()));
-    Kind->AddChildToHorizontalBox(Rarity);
-    UBorder* Dot = Plain(T, nullptr, FMargin(0.f));
-    Dot->SetBrush(FSlateColorBrush(Brass()));
-    Kind->AddChildToHorizontalBox(Sized(T, nullptr, Dot, 6.f, 6.f))->SetPadding(FMargin(16.f, 0.f));
-    Kind->AddChildToHorizontalBox(SizedText(T, TEXT("TipType"), TEXT("Material"), 30.f));
-    TipBody->AddChildToVerticalBox(Kind);
-    UHorizontalBox* Load = A<UHorizontalBox>(T);
-    Load->AddChildToHorizontalBox(Sized(T, nullptr, InvImage(T, nullptr, InvBrush(TEXT("icon_weight"), 36.f, 36.f)), 36.f, 36.f))->SetVerticalAlignment(VAlign_Center);
-    Load->AddChildToHorizontalBox(SizedText(T, TEXT("TipWeight"), TEXT("Weight  0.0 kg (per 1)"), 30.f))->SetPadding(FMargin(16.f, 0.f, 0.f, 0.f));
-    UTextBlock* Owned = SizedText(T, TEXT("TipQuantity"), TEXT("Owned  0"), 28.f);
-    Owned->SetJustification(ETextJustify::Right);
-    UHorizontalBoxSlot* OwnedSlot = Load->AddChildToHorizontalBox(Owned);
-    OwnedSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); OwnedSlot->SetHorizontalAlignment(HAlign_Right); OwnedSlot->SetVerticalAlignment(VAlign_Center);
-    TipBody->AddChildToVerticalBox(Load)->SetPadding(FMargin(0.f, 16.f, 0.f, 0.f));
-    UBorder* TipPad = Plain(T, nullptr, FMargin(56.f, 52.f, 56.f, 48.f));
-    TipPad->SetContent(TipBody);
-    Put(Tip, TipPad, HAlign_Fill, VAlign_Fill);
-    USizeBox* TipSize = Sized(T, nullptr, Tip, 780.f, 0.f);
-    TipSize->SetMinDesiredHeight(400.f);
-    TipHolder->SetContent(TipSize);
-    TipHolder->SetVisibility(ESlateVisibility::Collapsed);
-    // Outside the frame, pinned top-left; USFInventoryWidget moves it to the cursor each tick, so the window never resizes or moves.
-    UScaleBox* TipScale = Half(T, TipHolder);
+    UScaleBox* TipScale = ItemTooltipLayout(T);
     UOverlay* Root = A<UOverlay>(T);
     Put(Root, Window, HAlign_Fill, VAlign_Fill);
     Put(Root, TipScale, HAlign_Left, VAlign_Top);
+    T->RootWidget = Root;
+}
+
+// ---- menus on the shared kit (market board, trade, recipes, build catalogue). Every screen is a WBP_WindowFrame instance filled through its
+// NamedSlots, built only from the kit parents (button, tab bar, stepper, separator, item slot, scroll list, fields, dropdown, gold) and the one
+// shared row. C++ fills the lists; widths are art pixels (the window draws them at half).
+FLinearColor DimInk() { return Hex(TEXT("A9A593")); }
+
+USFWindowFrameWidget* WindowOf(UUserWidget* Window, const TCHAR* Title, const TCHAR* Icon, float Width)
+{
+    USFWindowFrameWidget* Frame = Cast<USFWindowFrameWidget>(Window);
+    if (!Frame) { return nullptr; }
+    Frame->TitleText = FText::FromString(Title);
+    Frame->WindowIcon = KImg(Icon, 96.f, 96.f);
+    Frame->WindowWidth = Width;
+    return Frame;
+}
+
+UUserWidget* KitButton(UWidgetTree* T, const TCHAR* Name, const TCHAR* Label)
+{
+    UUserWidget* Instance = Inst(T, CommonDir, TEXT("WBP_Button"), Name);
+    if (USFButtonWidget* Face = Cast<USFButtonWidget>(Instance)) { Face->LabelText = FText::FromString(Label); }
+    return Instance;
+}
+
+UUserWidget* KitRule(UWidgetTree* T, bool bVertical = false)
+{
+    UUserWidget* Instance = Inst(T, CommonDir, TEXT("WBP_Separator"), nullptr);
+    if (USFSeparatorWidget* Line = Cast<USFSeparatorWidget>(Instance)) { Line->bVertical = bVertical; }
+    return Instance;
+}
+
+UWidget* KitField(UWidgetTree* T, const TCHAR* Wbp, const TCHAR* Name, const TCHAR* Hint, bool bDigits)
+{
+    UUserWidget* Instance = Inst(T, CommonDir, Wbp, Name);
+    if (USFTextFieldWidget* Input = Cast<USFTextFieldWidget>(Instance)) { Input->HintText = FText::FromString(Hint); Input->bDigitsOnly = bDigits; }
+    return Instance;
+}
+
+// A window root: the frame, with the shared item tooltip pinned outside it.
+UOverlay* WindowRoot(UWidgetTree* T, UUserWidget* Window, bool bTooltip)
+{
+    UOverlay* Root = A<UOverlay>(T);
+    Put(Root, Window, HAlign_Fill, VAlign_Fill);
+    if (bTooltip) { Put(Root, ItemTooltipLayout(T), HAlign_Left, VAlign_Top); }
+    T->RootWidget = Root;
+    return Root;
+}
+
+UTextBlock* Caption(UWidgetTree* T, const TCHAR* Name, const TCHAR* Text, float Size, bool bDim = false)
+{
+    UTextBlock* Block = SizedText(T, Name, Text, Size);
+    if (bDim) { Block->SetColorAndOpacity(FSlateColor(DimInk())); }
+    return Block;
+}
+
+// WBP_KitRow: row_back with the item in its slot well, a name, up to two text cells, a price with the coin, an action button and a chevron; the gold
+// select frame and the dim hover frame over it. Cells the screen does not use collapse (USFKitRowWidget).
+void KitRowLayout(UWidgetTree* T)
+{
+    UOverlay* Stack = A<UOverlay>(T);
+    UBorder* Plate = N<UBorder>(T, TEXT("Frame"));
+    Plate->SetBrush(KBox(TEXT("row_back"), 16.f, 16.f, 16.f, 16.f));
+    Plate->SetPadding(FMargin(0.f));
+    Put(Stack, Plate, HAlign_Fill, VAlign_Fill);
+    UHorizontalBox* Line = A<UHorizontalBox>(T);
+    UOverlay* Well = A<UOverlay>(T);
+    Put(Well, InvImage(T, nullptr, KBox(TEXT("slot_back"), 18.f, 18.f, 18.f, 18.f, 104.f, 104.f), true), HAlign_Fill, VAlign_Fill);
+    Put(Well, Sized(T, nullptr, N<UImage>(T, TEXT("Icon")), 88.f, 88.f), HAlign_Center, VAlign_Center);
+    Line->AddChildToHorizontalBox(Sized(T, TEXT("IconBox"), Well, 104.f, 104.f))->SetVerticalAlignment(VAlign_Center);
+    UTextBlock* Name = SizedText(T, TEXT("Label"), TEXT("Item"), 38.f);
+    Name->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
+    UHorizontalBoxSlot* NameSlot = Line->AddChildToHorizontalBox(Name);
+    NameSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); NameSlot->SetVerticalAlignment(VAlign_Center); NameSlot->SetPadding(FMargin(24.f, 0.f, 12.f, 0.f));
+    UTextBlock* Cell1 = SizedText(T, TEXT("Cell1"), TEXT(""), 34.f);
+    Cell1->SetJustification(ETextJustify::Center);
+    Line->AddChildToHorizontalBox(Sized(T, TEXT("Cell1Box"), Cell1, 200.f, 0.f))->SetVerticalAlignment(VAlign_Center);
+    UTextBlock* Cell2 = SizedText(T, TEXT("Cell2"), TEXT(""), 34.f);
+    Cell2->SetJustification(ETextJustify::Center);
+    Line->AddChildToHorizontalBox(Sized(T, TEXT("Cell2Box"), Cell2, 260.f, 0.f))->SetVerticalAlignment(VAlign_Center);
+    UHorizontalBox* Price = A<UHorizontalBox>(T);
+    Price->AddChildToHorizontalBox(Sized(T, nullptr, InvImage(T, nullptr, KImg(TEXT("icon_gold_coin"), 48.f, 48.f), true), 48.f, 48.f))->SetVerticalAlignment(VAlign_Center);
+    Price->AddChildToHorizontalBox(SizedText(T, TEXT("Value"), TEXT(""), 36.f))->SetPadding(FMargin(12.f, 0.f, 0.f, 0.f));
+    Cast<UHorizontalBoxSlot>(Price->GetChildAt(1)->Slot)->SetVerticalAlignment(VAlign_Center);
+    Line->AddChildToHorizontalBox(Sized(T, TEXT("PriceBox"), Price, 0.f, 0.f, 240.f))->SetVerticalAlignment(VAlign_Center);
+    UHorizontalBoxSlot* ActionSlot = Line->AddChildToHorizontalBox(Sized(T, TEXT("ActionBox"), KitButton(T, TEXT("Action"), TEXT("Buy")), 240.f, 88.f));
+    ActionSlot->SetVerticalAlignment(VAlign_Center); ActionSlot->SetPadding(FMargin(12.f, 0.f, 0.f, 0.f));
+    UImage* Arrow = InvImage(T, TEXT("Chevron"), KImg(TEXT("icon_chevron_down"), 48.f, 48.f), true);
+    Arrow->SetRenderTransformAngle(-90.f);
+    Line->AddChildToHorizontalBox(Sized(T, nullptr, Arrow, 56.f, 56.f))->SetVerticalAlignment(VAlign_Center);
+    UBorder* Pad = Plain(T, nullptr, FMargin(20.f, 12.f, 20.f, 12.f));
+    Pad->SetContent(Line);
+    Put(Stack, Pad, HAlign_Fill, VAlign_Fill);
+    Put(Stack, InvImage(T, TEXT("HoverFrame"), KBox(TEXT("hover_frame"), 18.f, 18.f, 18.f, 18.f), true), HAlign_Fill, VAlign_Fill);
+    Put(Stack, InvImage(T, TEXT("SelectFrame"), KBox(TEXT("select_frame"), 18.f, 18.f, 18.f, 18.f), true), HAlign_Fill, VAlign_Fill);
+    T->RootWidget = Sized(T, TEXT("RootSize"), Stack, 0.f, 128.f);
+}
+
+// A scroll list of the shared style holding Content of a fixed width, VisibleHeight tall.
+UWidget* ListOf(UWidgetTree* T, const TCHAR* ScrollName, UWidget* Content, float Width, float VisibleHeight)
+{
+    UUserWidget* Scroll = Inst(T, CommonDir, TEXT("WBP_ScrollList"), ScrollName);
+    if (!Scroll) { return nullptr; }
+    Fill(Scroll, TEXT("Content"), Sized(T, nullptr, Content, Width, 0.f));
+    return Sized(T, nullptr, Scroll, 0.f, VisibleHeight);
+}
+
+// WBP_MarketBoard (reference-market): tabs + search + sort on top, the listing table, "Sell an item" at the side, gold in the footer.
+void MarketLayout(UWidgetTree* T)
+{
+    UUserWidget* Window = Inst(T, CommonDir, TEXT("WBP_WindowFrame"), TEXT("Window"));
+    if (!Window) { return; }
+    WindowOf(Window, TEXT("Market Board"), TEXT("icon_window_market"), 2400.f);
+
+    UHorizontalBox* Top = A<UHorizontalBox>(T);
+    Top->AddChildToHorizontalBox(Sized(T, nullptr, Inst(T, CommonDir, TEXT("WBP_TabBar"), TEXT("TabBar")), 1040.f, 0.f))->SetVerticalAlignment(VAlign_Center);
+    Top->AddChildToHorizontalBox(A<USizeBox>(T))->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+    Top->AddChildToHorizontalBox(Sized(T, nullptr, KitField(T, TEXT("WBP_SearchField"), TEXT("SearchField"), TEXT("Search items..."), false), 560.f, 84.f))->SetVerticalAlignment(VAlign_Center);
+    Top->AddChildToHorizontalBox(Sized(T, nullptr, Inst(T, CommonDir, TEXT("WBP_Dropdown"), TEXT("SortDropdown")), 480.f, 84.f))->SetPadding(FMargin(24.f, 0.f, 0.f, 0.f));
+    Fill(Window, TEXT("Tabs"), Top);
+
+    // Table: header over the rows. The header cells line up with the row cells (icon well 104 + pad 20 + 24 before the name).
+    UVerticalBox* Table = A<UVerticalBox>(T);
+    UHorizontalBox* Head = A<UHorizontalBox>(T);
+    Head->AddChildToHorizontalBox(Sized(T, nullptr, A<USizeBox>(T), 148.f, 0.f));
+    Head->AddChildToHorizontalBox(Caption(T, nullptr, TEXT("Item"), 32.f, true))->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+    const TCHAR* const Columns[3] = {TEXT("Quantity"), TEXT("Seller"), TEXT("Price")};
+    const float Widths[3] = {200.f, 260.f, 240.f};
+    for (int32 Index = 0; Index < 3; ++Index)
+    {
+        UTextBlock* Heading = Caption(T, nullptr, Columns[Index], 32.f, true);
+        Heading->SetJustification(ETextJustify::Center);
+        Head->AddChildToHorizontalBox(Sized(T, nullptr, Heading, Widths[Index], 0.f));
+    }
+    Head->AddChildToHorizontalBox(Sized(T, nullptr, A<USizeBox>(T), 272.f, 0.f));
+    UVerticalBoxSlot* HeadSlot = Table->AddChildToVerticalBox(Sized(T, nullptr, Head, 1568.f, 0.f));  // left: the cells line up with the rows (a width override does not shrink a Fill slot)
+    HeadSlot->SetHorizontalAlignment(HAlign_Left); HeadSlot->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
+    Table->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
+    UOverlay* Pack = A<UOverlay>(T);
+    Put(Pack, ListOf(T, TEXT("ListScroll"), N<UVerticalBox>(T, TEXT("ListingRows")), 1568.f, 896.f), HAlign_Fill, VAlign_Fill);
+    UTextBlock* Empty = Caption(T, TEXT("EmptyText"), TEXT("No listings."), 40.f, true);
+    Empty->SetVisibility(ESlateVisibility::Collapsed);
+    Put(Pack, Empty, HAlign_Center, VAlign_Center);
+    Table->AddChildToVerticalBox(Pack);
+    Fill(Window, TEXT("Content"), Table);
+
+    // Side panel: Sell an item.
+    UVerticalBox* Sell = A<UVerticalBox>(T);
+    Sell->AddChildToVerticalBox(Caption(T, nullptr, TEXT("Sell an item"), 48.f));
+    Sell->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 12.f, 0.f, 20.f));
+    UOverlay* SlotStack = A<UOverlay>(T);
+    Put(SlotStack, InvImage(T, TEXT("SellEmpty"), KBox(TEXT("plus_slot"), 18.f, 18.f, 18.f, 18.f), true), HAlign_Fill, VAlign_Fill);
+    if (UUserWidget* Offer = Inst(T, CommonDir, TEXT("WBP_ItemSlot"), TEXT("SellSlot"))) { Put(SlotStack, Offer, HAlign_Fill, VAlign_Fill); }
+    Sell->AddChildToVerticalBox(Sized(T, nullptr, SlotStack, 208.f, 208.f))->SetHorizontalAlignment(HAlign_Center);
+    UTextBlock* Hint = Caption(T, TEXT("SellItemText"), TEXT("Select an item from your inventory"), 30.f, true);
+    Hint->SetJustification(ETextJustify::Center); Hint->SetAutoWrapText(true);
+    Sell->AddChildToVerticalBox(Hint)->SetPadding(FMargin(0.f, 14.f, 0.f, 24.f));
+    Sell->AddChildToVerticalBox(Caption(T, nullptr, TEXT("Quantity"), 34.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
+    Sell->AddChildToVerticalBox(KitField(T, TEXT("WBP_InputField"), TEXT("QuantityField"), TEXT("1"), true))->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
+    Sell->AddChildToVerticalBox(Caption(T, nullptr, TEXT("Price (per item)"), 34.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
+    Sell->AddChildToVerticalBox(KitField(T, TEXT("WBP_InputField"), TEXT("PriceField"), TEXT("0"), true))->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
+    Sell->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
+    UHorizontalBox* Fee = A<UHorizontalBox>(T);
+    Fee->AddChildToHorizontalBox(Caption(T, TEXT("FeeText"), TEXT("Fee 0 g"), 34.f, true))->SetVerticalAlignment(VAlign_Center);
+    Fee->AddChildToHorizontalBox(Sized(T, nullptr, InvImage(T, nullptr, KImg(TEXT("icon_gold_coin"), 40.f, 40.f), true), 40.f, 40.f))->SetPadding(FMargin(12.f, 0.f, 0.f, 0.f));
+    Sell->AddChildToVerticalBox(Fee)->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
+    Sell->AddChildToVerticalBox(KitButton(T, TEXT("ListButton"), TEXT("List item")));
+    UBorder* SellPad = Plain(T, nullptr, FMargin(48.f, 0.f, 0.f, 0.f));
+    SellPad->SetContent(Sized(T, nullptr, Sell, 600.f, 0.f));
+    Fill(Window, TEXT("SidePanel"), SellPad);
+
+    UHorizontalBox* Foot = A<UHorizontalBox>(T);
+    UHorizontalBoxSlot* GoldSlot = Foot->AddChildToHorizontalBox(Inst(T, CommonDir, TEXT("WBP_GoldDisplay"), TEXT("Gold")));
+    GoldSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); GoldSlot->SetHorizontalAlignment(HAlign_Right); GoldSlot->SetVerticalAlignment(VAlign_Center);
+    Fill(Window, TEXT("Footer"), Foot);
+    WindowRoot(T, Window, true);
+}
+
+// WBP_TradeWindow (hud-trade): your offer and theirs side by side, gold lines, lock state, Cancel, hold to accept.
+UWidget* TradeColumn(UWidgetTree* T, bool bMine)
+{
+    UVerticalBox* Column = A<UVerticalBox>(T);
+    Column->AddChildToVerticalBox(Caption(T, bMine ? TEXT("MyName") : TEXT("TheirName"), bMine ? TEXT("You") : TEXT("Partner"), 48.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    Column->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
+    UUniformGridPanel* Grid = N<UUniformGridPanel>(T, bMine ? TEXT("MySlots") : TEXT("TheirSlots"));
+    Grid->SetSlotPadding(FMargin(3.f));
+    UVerticalBoxSlot* GridSlot = Column->AddChildToVerticalBox(Sized(T, nullptr, Grid, 856.f, 0.f));
+    GridSlot->SetHorizontalAlignment(HAlign_Center); GridSlot->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
+    UHorizontalBox* Gold = A<UHorizontalBox>(T);
+    UHorizontalBoxSlot* GoldLabel = Gold->AddChildToHorizontalBox(Caption(T, nullptr, TEXT("Gold Offered"), 36.f));
+    GoldLabel->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); GoldLabel->SetVerticalAlignment(VAlign_Center);
+    if (bMine) { Gold->AddChildToHorizontalBox(Sized(T, nullptr, KitField(T, TEXT("WBP_InputField"), TEXT("MyGold"), TEXT("0"), true), 360.f, 84.f)); }
+    else { Gold->AddChildToHorizontalBox(Inst(T, CommonDir, TEXT("WBP_GoldDisplay"), TEXT("TheirGold")))->SetVerticalAlignment(VAlign_Center); }
+    UVerticalBoxSlot* GoldRow = Column->AddChildToVerticalBox(Sized(T, nullptr, Gold, 856.f, 0.f));
+    GoldRow->SetHorizontalAlignment(HAlign_Center); GoldRow->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
+    UHorizontalBox* State = A<UHorizontalBox>(T);
+    if (bMine)
+    {
+        State->AddChildToHorizontalBox(Sized(T, nullptr, KitButton(T, TEXT("LockButton"), TEXT("Lock Offer")), 480.f, 96.f));
+        UTextBlock* Undo = Caption(T, TEXT("LockHint"), TEXT("Press again to unlock"), 30.f, true);
+        Undo->SetVisibility(ESlateVisibility::Collapsed);
+        UHorizontalBoxSlot* UndoSlot = State->AddChildToHorizontalBox(Undo);
+        UndoSlot->SetPadding(FMargin(24.f, 0.f, 0.f, 0.f)); UndoSlot->SetVerticalAlignment(VAlign_Center);
+    }
+    else
+    {
+        UImage* Mark = InvImage(T, TEXT("TheirLockMark"), KImg(TEXT("icon_check_ok"), 64.f, 64.f), true);
+        Mark->SetVisibility(ESlateVisibility::Collapsed);
+        State->AddChildToHorizontalBox(Sized(T, nullptr, Mark, 64.f, 64.f))->SetVerticalAlignment(VAlign_Center);
+        UHorizontalBoxSlot* StatusSlot = State->AddChildToHorizontalBox(Caption(T, TEXT("TheirStatus"), TEXT("Reviewing offer"), 36.f));
+        StatusSlot->SetPadding(FMargin(16.f, 0.f, 0.f, 0.f)); StatusSlot->SetVerticalAlignment(VAlign_Center);
+    }
+    Column->AddChildToVerticalBox(Sized(T, nullptr, State, 856.f, 96.f))->SetHorizontalAlignment(HAlign_Center);
+    return Column;
+}
+
+void TradeLayout(UWidgetTree* T)
+{
+    UUserWidget* Window = Inst(T, CommonDir, TEXT("WBP_WindowFrame"), TEXT("Window"));
+    if (!Window) { return; }
+    WindowOf(Window, TEXT("Direct Trade"), TEXT("icon_window_trade"), 1930.f);
+    UHorizontalBox* Columns = A<UHorizontalBox>(T);
+    Columns->AddChildToHorizontalBox(TradeColumn(T, true))->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+    UHorizontalBoxSlot* Split = Columns->AddChildToHorizontalBox(KitRule(T, true));
+    Split->SetPadding(FMargin(24.f, 0.f)); Split->SetVerticalAlignment(VAlign_Fill);
+    Columns->AddChildToHorizontalBox(TradeColumn(T, false))->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+    Fill(Window, TEXT("Content"), Columns);
+
+    UHorizontalBox* Foot = A<UHorizontalBox>(T);
+    Foot->AddChildToHorizontalBox(Sized(T, nullptr, KitButton(T, TEXT("CancelButton"), TEXT("Cancel Trade")), 440.f, 96.f));
+    UVerticalBox* Notes = A<UVerticalBox>(T);
+    UTextBlock* Review = Caption(T, nullptr, TEXT("Review both offers before accepting."), 30.f);
+    Review->SetColorAndOpacity(FSlateColor(Amber())); Review->SetJustification(ETextJustify::Center);
+    Notes->AddChildToVerticalBox(Review);
+    UTextBlock* Status = Caption(T, TEXT("StatusText"), TEXT(""), 30.f, true);
+    Status->SetJustification(ETextJustify::Center);
+    Notes->AddChildToVerticalBox(Status);
+    UHorizontalBoxSlot* NotesSlot = Foot->AddChildToHorizontalBox(Notes);
+    NotesSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); NotesSlot->SetVerticalAlignment(VAlign_Center); NotesSlot->SetPadding(FMargin(24.f, 0.f));
+    Foot->AddChildToHorizontalBox(Sized(T, nullptr, KitButton(T, TEXT("AcceptButton"), TEXT("Hold to Accept Trade")), 600.f, 96.f));
+    Fill(Window, TEXT("Footer"), Foot);
+    WindowRoot(T, Window, true);
+}
+
+// WBP_StationPanel (reference-recipes): tabs, recipe list left, the selected recipe's detail right.
+void StationLayout(UWidgetTree* T)
+{
+    UUserWidget* Window = Inst(T, CommonDir, TEXT("WBP_WindowFrame"), TEXT("Window"));
+    if (!Window) { return; }
+    WindowOf(Window, TEXT("Recipes"), TEXT("icon_window_recipes"), 2100.f);
+    UHorizontalBox* Top = A<UHorizontalBox>(T);
+    Top->AddChildToHorizontalBox(Sized(T, nullptr, Inst(T, CommonDir, TEXT("WBP_TabBar"), TEXT("TabBar")), 1100.f, 0.f));
+    Fill(Window, TEXT("Tabs"), Top);
+
+    UOverlay* Pack = A<UOverlay>(T);
+    Put(Pack, ListOf(T, TEXT("RecipeScroll"), N<UVerticalBox>(T, TEXT("RecipeList")), 860.f, 768.f), HAlign_Fill, VAlign_Fill);
+    UTextBlock* Empty = Caption(T, TEXT("EmptyText"), TEXT("No recipes."), 40.f, true);
+    Empty->SetVisibility(ESlateVisibility::Collapsed);
+    Put(Pack, Empty, HAlign_Center, VAlign_Center);
+    Fill(Window, TEXT("Content"), Pack);
+
+    UVerticalBox* Detail = A<UVerticalBox>(T);
+    UHorizontalBox* Output = A<UHorizontalBox>(T);
+    Output->AddChildToHorizontalBox(Sized(T, nullptr, N<UImage>(T, TEXT("OutputIcon")), 256.f, 256.f))->SetVerticalAlignment(VAlign_Center);
+    UVerticalBox* Words = A<UVerticalBox>(T);
+    Words->AddChildToVerticalBox(Caption(T, nullptr, TEXT("Output:"), 34.f, true));
+    Words->AddChildToVerticalBox(Caption(T, TEXT("OutputName"), TEXT("Recipe"), 52.f));
+    UTextBlock* Description = Caption(T, TEXT("OutputText"), TEXT(""), 32.f, true);
+    Description->SetAutoWrapText(true);
+    Words->AddChildToVerticalBox(Description)->SetPadding(FMargin(0.f, 8.f, 0.f, 0.f));
+    UHorizontalBoxSlot* WordsSlot = Output->AddChildToHorizontalBox(Words);
+    WordsSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); WordsSlot->SetVerticalAlignment(VAlign_Center); WordsSlot->SetPadding(FMargin(32.f, 0.f, 0.f, 0.f));
+    Detail->AddChildToVerticalBox(Output)->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
+    Detail->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
+    Detail->AddChildToVerticalBox(Caption(T, nullptr, TEXT("Ingredients (Have / Need)"), 38.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    Detail->AddChildToVerticalBox(N<UVerticalBox>(T, TEXT("Ingredients")))->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
+    UHorizontalBox* Station = A<UHorizontalBox>(T);
+    Station->AddChildToHorizontalBox(Sized(T, nullptr, InvImage(T, nullptr, KImg(TEXT("icon_window_build"), 80.f, 80.f), true), 80.f, 80.f))->SetVerticalAlignment(VAlign_Center);
+    UVerticalBox* StationWords = A<UVerticalBox>(T);
+    StationWords->AddChildToVerticalBox(Caption(T, TEXT("StationText"), TEXT("Station"), 38.f));
+    StationWords->AddChildToVerticalBox(Caption(T, TEXT("StationHint"), TEXT(""), 30.f, true));
+    Station->AddChildToHorizontalBox(StationWords)->SetPadding(FMargin(24.f, 0.f, 0.f, 0.f));
+    Detail->AddChildToVerticalBox(Station)->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
+    Detail->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
+    UHorizontalBox* Quantity = A<UHorizontalBox>(T);
+    UHorizontalBoxSlot* QuantityLabel = Quantity->AddChildToHorizontalBox(Caption(T, nullptr, TEXT("Quantity"), 38.f));
+    QuantityLabel->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); QuantityLabel->SetVerticalAlignment(VAlign_Center);
+    Quantity->AddChildToHorizontalBox(Inst(T, CommonDir, TEXT("WBP_Stepper"), TEXT("QuantityStepper")));
+    Detail->AddChildToVerticalBox(Quantity)->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
+    UTextBlock* Time = Caption(T, TEXT("CraftTime"), TEXT(""), 30.f, true);
+    Time->SetJustification(ETextJustify::Center);
+    Detail->AddChildToVerticalBox(Time)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    Detail->AddChildToVerticalBox(KitButton(T, TEXT("CraftButton"), TEXT("Craft")));
+    UBorder* DetailPad = Plain(T, nullptr, FMargin(48.f, 0.f, 0.f, 0.f));
+    DetailPad->SetContent(Sized(T, nullptr, Detail, 1000.f, 0.f));
+    Fill(Window, TEXT("SidePanel"), DetailPad);
+    WindowRoot(T, Window, true);
+}
+
+// WBP_BuildCatalogue (reference-build-catalogue): search, tabs, tile grid with the gold select frame, material, the selected object's detail.
+void BuildLayout(UWidgetTree* T)
+{
+    UUserWidget* Window = Inst(T, CommonDir, TEXT("WBP_WindowFrame"), TEXT("Window"));
+    if (!Window) { return; }
+    WindowOf(Window, TEXT("Build Catalogue"), TEXT("icon_window_build"), 950.f);
+    UVerticalBox* Body = A<UVerticalBox>(T);
+    Body->AddChildToVerticalBox(KitField(T, TEXT("WBP_SearchField"), TEXT("SearchField"), TEXT("Search objects..."), false))->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
+    Body->AddChildToVerticalBox(Inst(T, CommonDir, TEXT("WBP_TabBar"), TEXT("TabBar")))->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
+    UUniformGridPanel* Grid = N<UUniformGridPanel>(T, TEXT("TileGrid"));
+    Grid->SetSlotPadding(FMargin(3.f));
+    UOverlay* Pack = A<UOverlay>(T);
+    Put(Pack, ListOf(T, TEXT("TileScroll"), Grid, 642.f, 440.f), HAlign_Fill, VAlign_Fill);
+    UTextBlock* Empty = Caption(T, TEXT("EmptyText"), TEXT("No matching objects."), 36.f, true);
+    Empty->SetVisibility(ESlateVisibility::Collapsed);
+    Put(Pack, Empty, HAlign_Center, VAlign_Center);
+    Body->AddChildToVerticalBox(Pack)->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
+    Body->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
+    UHorizontalBox* Material = A<UHorizontalBox>(T);
+    Material->AddChildToHorizontalBox(Sized(T, nullptr, InvImage(T, nullptr, KImg(TEXT("icon_material_log"), 72.f, 72.f), true), 72.f, 72.f))->SetVerticalAlignment(VAlign_Center);
+    UHorizontalBoxSlot* MaterialLabel = Material->AddChildToHorizontalBox(Caption(T, nullptr, TEXT("Material"), 36.f));
+    MaterialLabel->SetPadding(FMargin(16.f, 0.f, 24.f, 0.f)); MaterialLabel->SetVerticalAlignment(VAlign_Center);
+    UHorizontalBoxSlot* Pick = Material->AddChildToHorizontalBox(Inst(T, CommonDir, TEXT("WBP_Dropdown"), TEXT("MaterialDropdown")));
+    Pick->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); Pick->SetVerticalAlignment(VAlign_Center);
+    Body->AddChildToVerticalBox(Material)->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
+    Body->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
+
+    UHorizontalBox* Detail = A<UHorizontalBox>(T);
+    if (UUserWidget* Preview = Inst(T, CommonDir, TEXT("WBP_ItemSlot"), TEXT("DetailSlot"))) { Detail->AddChildToHorizontalBox(Preview)->SetVerticalAlignment(VAlign_Top); }
+    UVerticalBox* Words = A<UVerticalBox>(T);
+    UHorizontalBox* Title = A<UHorizontalBox>(T);
+    UHorizontalBoxSlot* NameSlot = Title->AddChildToHorizontalBox(Caption(T, TEXT("DetailName"), TEXT("Wall"), 48.f));
+    NameSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); NameSlot->SetVerticalAlignment(VAlign_Center);
+    UButton* Star = N<UButton>(T, TEXT("FavouriteButton"));
+    StyleFace(Star, FSlateNoResource(), FSlateNoResource(), FSlateNoResource(), FSlateNoResource());
+    UOverlay* StarStack = A<UOverlay>(T);
+    Put(StarStack, InvImage(T, TEXT("FavouriteOff"), KImg(TEXT("icon_favorite_star"), 72.f, 72.f), true), HAlign_Fill, VAlign_Fill);
+    UImage* StarOn = InvImage(T, TEXT("FavouriteOn"), KImg(TEXT("icon_favorite_star_filled"), 72.f, 72.f), true);
+    StarOn->SetVisibility(ESlateVisibility::Collapsed);
+    Put(StarStack, StarOn, HAlign_Fill, VAlign_Fill);
+    Star->SetContent(Sized(T, nullptr, StarStack, 72.f, 72.f));
+    Title->AddChildToHorizontalBox(Star);
+    Words->AddChildToVerticalBox(Title)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    UHorizontalBox* Cost = A<UHorizontalBox>(T);
+    Cost->AddChildToHorizontalBox(Caption(T, nullptr, TEXT("Cost"), 34.f, true))->SetPadding(FMargin(0.f, 0.f, 20.f, 0.f));
+    Cost->AddChildToHorizontalBox(Caption(T, TEXT("CostText"), TEXT("1 Wall Material Bundle"), 34.f));
+    Words->AddChildToVerticalBox(Cost)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    UHorizontalBox* Ready = A<UHorizontalBox>(T);
+    Ready->AddChildToHorizontalBox(Sized(T, nullptr, InvImage(T, TEXT("StatusOk"), KImg(TEXT("icon_check_ok"), 56.f, 56.f), true), 56.f, 56.f))->SetVerticalAlignment(VAlign_Center);
+    UTextBlock* Status = Caption(T, TEXT("StatusText"), TEXT("Valid placement"), 34.f);
+    Status->SetColorAndOpacity(FSlateColor(Hex(TEXT("8FBF6A"))));
+    UHorizontalBoxSlot* StatusSlot = Ready->AddChildToHorizontalBox(Status);
+    StatusSlot->SetPadding(FMargin(16.f, 0.f, 0.f, 0.f)); StatusSlot->SetVerticalAlignment(VAlign_Center);
+    Words->AddChildToVerticalBox(Ready);
+    UHorizontalBoxSlot* WordsSlot = Detail->AddChildToHorizontalBox(Words);
+    WordsSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); WordsSlot->SetVerticalAlignment(VAlign_Top); WordsSlot->SetPadding(FMargin(24.f, 0.f, 0.f, 0.f));
+    Body->AddChildToVerticalBox(Detail);
+    Fill(Window, TEXT("Content"), Sized(T, nullptr, Body, 678.f, 0.f));
+    UOverlay* Root = A<UOverlay>(T);
+    Put(Root, Window, HAlign_Fill, VAlign_Fill);
     T->RootWidget = Root;
 }
 
@@ -987,6 +1360,7 @@ TArray<FSpec> Specs()
         {CommonDir, TEXT("WBP_Dropdown"), USFDropdownWidget::StaticClass(), DropdownLayout, nullptr},
         {CommonDir, TEXT("WBP_Stepper"), USFStepperWidget::StaticClass(), StepperLayout, nullptr},
         {CommonDir, TEXT("WBP_WindowFrame"), USFWindowFrameWidget::StaticClass(), WindowFrameLayout, nullptr},
+        {CommonDir, TEXT("WBP_KitRow"), USFKitRowWidget::StaticClass(), KitRowLayout, nullptr},
         {HudDir, TEXT("WBP_HudQuestRow"), USFListRowWidget::StaticClass(), ListRowLayout, nullptr},
         {HudDir, TEXT("WBP_HudToastCard"), USFListRowWidget::StaticClass(), ToastCardLayout,
             [Row](UObject* Cdo)
@@ -1007,6 +1381,11 @@ TArray<FSpec> Specs()
         {HudDir, TEXT("WBP_HudToasts"), USFHudToastsWidget::StaticClass(), ToastsLayout, nullptr},
         {HudDir, TEXT("WBP_Hud"), USFHudWidget::StaticClass(), HudLayout, nullptr},
         {InventoryDir, TEXT("WBP_Inventory"), USFInventoryWidget::StaticClass(), InventoryLayout, nullptr},
+        {ExchangeDir, TEXT("WBP_MarketBoard"), USFMarketBoard::StaticClass(), MarketLayout, nullptr},
+        {ExchangeDir, TEXT("WBP_TradeWindow"), USFTradeWindow::StaticClass(), TradeLayout, nullptr},
+        {GatheringDir, TEXT("WBP_StationPanel"), USFStationPanel::StaticClass(), StationLayout, nullptr},
+        {BuildDir, TEXT("WBP_BuildCatalogue"), USFConstructionSandboxPalette::StaticClass(), BuildLayout,
+            [](UObject* Cdo) { Cast<USFConstructionSandboxPalette>(Cdo)->TabIcons = {KImg(TEXT("icon_tab_voxel"), 44.f, 44.f), KImg(TEXT("icon_tab_blueprints"), 44.f, 44.f)}; }},
     };
 }
 }

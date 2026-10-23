@@ -38,12 +38,11 @@ void ASFConstructionSandboxController::BeginPlay()
 #endif
     if (GetLocalPlayer() && GetLocalPlayer()->ViewportClient)
     {
-        SandboxPalette = CreateWidget<USFConstructionSandboxPalette>(this,USFConstructionSandboxPalette::StaticClass());
+        SandboxPalette = USFConstructionSandboxPalette::Create(this);
         if (SandboxPalette)
         {
             SandboxPalette->OnAction.BindUObject(this,&ThisClass::PaletteAction);
             SandboxPalette->AddToViewport(); SandboxPalette->SetPositionInViewport(FVector2D(16,16));
-            SandboxPalette->SetDesiredSizeInViewport(FVector2D(320,560));
         }
         if (FSlateApplication::IsInitialized())
         { ActivationHandle = FSlateApplication::Get().OnApplicationActivationStateChanged().AddUObject(this,&ThisClass::ApplicationActivationChanged); }

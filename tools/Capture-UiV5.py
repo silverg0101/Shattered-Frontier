@@ -25,8 +25,11 @@ plans = {
             (26, 'cmd:SFUi trade'), (28, 'cmd:SFUi tradelock'), (30, 'shot:trade')],
     'gameplay-hud': [(4, 'cmd:SFUi target'), (5, 'shot')],
     'gathering': [(1.5, 'cmd:SFUi skills'), (2.0, 'cmd:SFUi aim'), (3, 'shot')],
-    'crafting-station': [(4, 'cmd:SFUi station'), (6, 'shot')],
+    'crafting-station': [(4, 'cmd:SFUi station'), (4.5, 'cursor:990,470'), (7, 'shot'), (7.6, 'cursor:300,346'), (8.8, 'shot:crafting-station-tooltip')],
     'inventory': [(6, 'cmd:SFUi inventory'), (8, 'cursor:180,312'), (9, 'shot')],
+    'market-board': [(6, 'cmd:SFUi market'), (8, 'cursor:1900,1040'), (10, 'shot'), (10.6, 'cursor:300,357'), (11.6, 'shot:market-board-tooltip')],
+    'trade': [(6, 'cmd:SFUi trade'), (8, 'cmd:SFUi tradelock'), (9, 'cursor:1900,1040'), (11, 'shot')],
+    'build-catalogue': [(6, 'cmd:SFUi build'), (9, 'cursor:1900,1040'), (10, 'shot')],
     'defeated': [],
 }
 steps = plans[name] + [(35 if name == 'defeated' else 32 if name == 'all' else 12, 'quit')]
