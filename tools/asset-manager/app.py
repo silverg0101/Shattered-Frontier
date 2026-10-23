@@ -737,7 +737,7 @@ def run_prompt(host, jid, graph, started, timeout_min, extra_data=None):
         raise RuntimeError(json.dumps(r.get("node_errors") or r.get("error") or r)[:800])
     pid = r["prompt_id"]
     update_job(jid, prompt_id=pid)
-    last_seen = time.time()
+    last_seen, misses = time.time(), 0
     while True:
         time.sleep(5)
         try:
@@ -748,10 +748,18 @@ def run_prompt(host, jid, graph, started, timeout_min, extra_data=None):
             comfy(host, "/queue", {"delete": [pid]})
             comfy(host, "/interrupt", {})
             raise InterruptedError
-        h = comfy(host, f"/history/{pid}").get(pid)
+        try:  # a busy host can miss one poll (curl timeout); give up only after several misses in a row
+            h = comfy(host, f"/history/{pid}").get(pid)
+            q = None if h else comfy(host, "/queue")
+            misses = 0
+        except RuntimeError:
+            misses += 1
+            if misses >= 6:
+                raise
+            last_seen = time.time()
+            continue
         if h:
             break
-        q = comfy(host, "/queue")
         if any(pid in item for item in q.get("queue_running", []) + q.get("queue_pending", [])):
             last_seen = time.time()
         elif time.time() - last_seen > 30:

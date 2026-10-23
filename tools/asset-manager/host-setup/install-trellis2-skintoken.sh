@@ -36,6 +36,9 @@ grep -q '"merge_distance": 0.0' ComfyUI-SkinToken/sktn_nodes.py || sed -i \
 # tokens and the node fails with "assert res.skin_pred is not None".
 sed -i 's/^        "max_length": 2048,$/        "max_length": 4096,  # sfam patch: 2048 runs out before every bone gets skin tokens on big skeletons/' \
     ComfyUI-SkinToken/sktn_nodes.py
+# After an FBX rig export the node reloads its output with trimesh, which cannot read FBX; return the input mesh.
+sed -i 's/^        output_mesh = _load_output_trimesh(output_path)$/        output_mesh = _as_single_trimesh(trimesh) if output_path.suffix.lower() == ".fbx" else _load_output_trimesh(output_path)  # sfam patch: trimesh cannot read FBX/' \
+    ComfyUI-SkinToken/sktn_nodes.py
 # Blender's remove_doubles clamps a 0 threshold up and still collapses dense meshes, so skip it at 0.
 grep -q 'sfam patch: Blender clamps' ComfyUI-SkinToken/vendor/skintokens/rig_package/parser/bpy.py || sed -i \
     's/^        bpy.ops.mesh.remove_doubles(threshold=merge_distance)$/        if merge_distance > 0:  # sfam patch: Blender clamps 0 up, which still collapses dense meshes\n            bpy.ops.mesh.remove_doubles(threshold=merge_distance)/' \
