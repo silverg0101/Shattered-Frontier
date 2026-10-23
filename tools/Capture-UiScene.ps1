@@ -8,6 +8,7 @@
 param([Parameter(Mandatory)][string]$Name, [string]$Map = 'Greenlands/Greenlands_Silverbrook', [string[]]$ServerFlags = @(), [string[]]$ClientFlags = @(), [int]$Seconds = 40, [double]$Interval = 0.5, [int]$Port = 17931, [switch]$Final3)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
+# Final3 states: gameplay-hud, gathering (skills window), inventory, market-board, trade, build-catalogue, crafting-station, quest-journal, quest-board, dialogue, settings, settings-keep, game-menu, defeated, 9-loading-screen.
 $ed = 'C:\Program Files\Epic Games\UE_5.8\Engine\Binaries\Win64\UnrealEditor.exe'
 $up = Join-Path $root 'GameClient\ShatteredFrontier.uproject'
 $out = Join-Path $root "Artifacts\ui-v5-final\$Name"; $null = New-Item -ItemType Directory -Force $out
@@ -34,6 +35,7 @@ if ($Final3) {
         'trade' { $ServerFlags = @('-GatheringPilot','-GatheringPilotScenario','-QuestPilot'); $ClientFlags = @('-GatheringPilot','-GatheringPilotScenario','-ExchangeFake') }
         'build-catalogue' { $ServerFlags = @('-GatheringPilot','-GatheringPilotScenario','-QuestPilot'); $ClientFlags = @('-GatheringPilot','-GatheringPilotScenario') }
         'crafting-station' { $ServerFlags = @('-GatheringPilot','-QuestPilot','-UiEvidenceStation'); $ClientFlags = @('-GatheringPilot') }
+        { $_ -in 'quest-journal','quest-board','settings','settings-keep','game-menu','dialogue' } { $ServerFlags = @('-GatheringPilot','-GatheringPilotScenario','-QuestPilot'); $ClientFlags = @('-GatheringPilot','-GatheringPilotScenario') }
         'defeated' { $ServerFlags = @('-CombatPilot','-CombatPilotScenario','-QuestPilot','-UiEvidenceDefeat'); $ClientFlags = @('-CombatPilot') }
         default { throw "Unsupported final3 state: $Name" }
     }

@@ -1,24 +1,26 @@
 #pragma once
 
-#include "Blueprint/UserWidget.h"
-#include "Framework/SFHudStyle.h"
 #include "Gathering/SFGatheringProgression.h"
+#include "UI/SFUiWidgets.h"
 #include "SFGatheringSkillsPanel.generated.h"
 
-class UButton;
 class UImage;
 class UProgressBar;
 class UTextBlock;
 class USFGatheringPilotComponent;
 
-// v5 Gathering Skills panel (docs/Game-Design/concept-art/UI/v5/gathering.png): one row per gathering skill with its
-// whole-point numeral, a moss bar of points toward the 100.0 cap, the next material tier it unlocks, and the skill's
-// raise / hold / lower choice as one toggle that cycles through the server-checked lock request.
-UCLASS()
-class SHATTEREDFRONTIER_API USFGatheringSkillsPanel : public UUserWidget
+// Gathering Skills window (WBP_GatheringSkills, docs/blueprints/menus.md section 0): a WBP_WindowFrame (emblem icon_window_recipes) with one row per
+// gathering skill (logging, mining, herbalism, fishing): icon, name, whole-point numeral, a bar of points toward the 100.0 cap in the inventory weight
+// bar style, the points text, the next material tier it unlocks and the skill's raise / hold / lower choice as one WBP_Button that cycles through
+// the server-checked lock request. A window of USFWindowStack (M toggles it, Esc closes it).
+// Parts per row i = 0..3, looked up by name: Skill<i>Icon (Image), Skill<i>Name, Skill<i>Level, Skill<i>Points, Skill<i>Next (TextBlocks),
+// Skill<i>NextIcon (Image), Skill<i>Bar (ProgressBar), Skill<i>Lock (WBP_Button). The window frame and the rows are the WBP's.
+UCLASS(Abstract)
+class SHATTEREDFRONTIER_API USFGatheringSkillsPanel : public USFUiWidget
 {
     GENERATED_BODY()
 public:
+    static constexpr const TCHAR* AssetPath = TEXT("/Game/Frontier/UI/Widgets/Gathering/WBP_GatheringSkills.WBP_GatheringSkills_C");
     void Configure(USFGatheringPilotComponent* InPilot);
 
     static constexpr int32 RowCount = 4;
@@ -30,17 +32,15 @@ public:
     // Up -> Locked -> Down -> Up.
     static ESFGatheringSkillLock NextLock(ESFGatheringSkillLock Lock);
 
+    UPROPERTY(EditAnywhere, Category = "SF Style") FSFUiTextStyle TextStyle = FSFUiTextStyle(34, SFHudStyle::Ivory());
+
 protected:
     virtual void NativeOnInitialized() override;
     virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+    virtual void ApplyKitStyle() override;
 
 private:
-    UFUNCTION() void ClosePanel();
-    UFUNCTION() void CycleRow0();
-    UFUNCTION() void CycleRow1();
-    UFUNCTION() void CycleRow2();
-    UFUNCTION() void CycleRow3();
-    void CycleLock(int32 Row);
+    UFUNCTION() void HandleLock(USFButtonWidget* Source);
     void Refresh();
 
     UPROPERTY(Transient) TObjectPtr<USFGatheringPilotComponent> Pilot;
@@ -48,8 +48,5 @@ private:
     UPROPERTY(Transient) TObjectPtr<UProgressBar> Bars[4];
     UPROPERTY(Transient) TObjectPtr<UTextBlock> Points[4];
     UPROPERTY(Transient) TObjectPtr<UTextBlock> NextTexts[4];
-    UPROPERTY(Transient) TObjectPtr<UButton> LockButtons[4];
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> LockTexts[4];
-    UPROPERTY(Transient) TObjectPtr<UImage> LockIcons[4];
-    SFHudStyle::FSFFramedBar XpBars[4];  // widgets owned by WidgetTree; Root null when the kit is missing
+    UPROPERTY(Transient) TObjectPtr<USFButtonWidget> LockButtons[4];
 };

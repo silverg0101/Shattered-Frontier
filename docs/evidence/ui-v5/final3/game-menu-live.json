@@ -1,0 +1,17 @@
+[
+{"owner":"SFGatheringHud_0","name":"CanvasPanel_0","class":"CanvasPanel","rect":[0.0,0.0,1920.0,1080.0]},
+{"owner":"SFHudLayout_0","name":"CanvasPanel_0","class":"CanvasPanel","rect":[0.0,0.0,1920.0,1080.0]},
+{"owner":"WBP_GameMenu_C_0","name":"Overlay_0","class":"Overlay","rect":[48.0,242.0,456.0,456.0]},
+{"owner":"WBP_GameMenu_C_0","name":"Window","class":"WBP_WindowFrame_C","rect":[48.0,242.0,456.0,456.0]},
+{"owner":"WBP_GameMenu_C_0","name":"SizeBox_0","class":"SizeBox","rect":[84.0,390.0,384.0,276.0]},
+{"owner":"WBP_GameMenu_C_0","name":"VerticalBox_0","class":"VerticalBox","rect":[84.0,390.0,384.0,276.0]},
+{"owner":"WBP_GameMenu_C_0","name":"ResumeButton","class":"WBP_Button_C","rect":[84.0,390.0,384.0,48.0]},
+{"owner":"WBP_GameMenu_C_0","name":"SettingsButton","class":"WBP_Button_C","rect":[84.0,448.0,384.0,48.0]},
+{"owner":"WBP_GameMenu_C_0","name":"LogOutButton","class":"WBP_Button_C","rect":[84.0,506.0,384.0,48.0]},
+{"owner":"WBP_GameMenu_C_0","name":"QuitButton","class":"WBP_Button_C","rect":[84.0,564.0,384.0,48.0]},
+{"owner":"WBP_Hud_C_0","name":"Root","class":"CanvasPanel","rect":[0.0,0.0,1920.0,1080.0]},
+{"owner":"WBP_Hud_C_0","name":"Hotbar","class":"WBP_HudHotbar_C","rect":[660.0,938.0,600.0,88.0]},
+{"owner":"WBP_Hud_C_0","name":"Minimap","class":"WBP_HudMinimap_C","rect":[1650.8,21.6,250.0,286.0]},
+{"owner":"WBP_Hud_C_0","name":"QuestTracker","class":"WBP_HudQuestTracker_C","rect":[1612.8,338.0,286.0,114.0]},
+{"owner":"WBP_Hud_C_0","name":"Vitals","class":"WBP_PlayerFrame_C","rect":[38.4,893.9,446.0,158.0]},
+{}]

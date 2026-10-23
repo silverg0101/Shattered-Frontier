@@ -4,6 +4,7 @@
 #include "Components/PanelWidget.h"
 #include "Components/TextBlock.h"
 #include "Components/UniformGridPanel.h"
+#include "Components/UniformGridSlot.h"
 #include "Construction/SFConstructionSandboxSettings.h"
 #include "Framework/SFPlayerController.h"
 #include "GameFramework/PlayerController.h"
@@ -71,7 +72,7 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
         CostText->SetText(FText::FromString(USFConstructionSandboxSettings::AllowsUnpaidEdits() ? TEXT("Unlimited dev stock") : TEXT("1 Wall Material Bundle")));
     }
 
-    TSubclassOf<USFSlotWidget> SlotClass = LoadClass<USFSlotWidget>(nullptr, TEXT("/Game/Frontier/UI/Widgets/Common/WBP_ItemSlot.WBP_ItemSlot_C"));
+    TSubclassOf<USFSlotWidget> SlotClass = LoadClass<USFSlotWidget>(nullptr, TEXT("/Game/Frontier/UI/Widgets/Common/WBP_ItemTile.WBP_ItemTile_C"));
     if (TileGrid && SlotClass)
     {
         UUniformGridPanel* Uniform = Cast<UUniformGridPanel>(TileGrid.Get());
@@ -79,7 +80,7 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
         {
             USFSlotWidget* Cell = CreateWidget<USFSlotWidget>(this, SlotClass);
             if (!Cell) { continue; }
-            if (Uniform) { Uniform->AddChildToUniformGrid(Cell, Tile / GridColumns, Tile % GridColumns); } else { TileGrid->AddChild(Cell); }
+            if (Uniform) { UUniformGridSlot* Placed = Uniform->AddChildToUniformGrid(Cell, Tile / GridColumns, Tile % GridColumns); Placed->SetHorizontalAlignment(HAlign_Fill); Placed->SetVerticalAlignment(VAlign_Fill); } else { TileGrid->AddChild(Cell); }
             Cell->SetIcon(SFItemTooltip::ItemTexture(TileIconStems[Tile]));
             Cell->SetKeyText(FText::GetEmpty());
             Cell->SetCaption(FText::FromString(TileLabel(Tile)));

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Blueprint/UserWidget.h"
+#include "UI/SFUiWidgets.h"
 #include "Framework/SFHudStyle.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "SFE1VitalsHud.generated.h"
@@ -36,27 +36,35 @@ struct FSFE1DefeatView
     float DelaySeconds = 0.f;
 };
 
-// Full-screen canvas with the v5 defeated window (docs/Game-Design/concept-art/UI/v5/defeated.png): title, stag divider, cause,
-// two respawn cards and the respawn button whose ring fills as the server's respawn delay runs. The health and stamina bars are
-// in WBP_Hud (USFUnitFrameWidget); the subsystem below feeds both.
-UCLASS()
-class SHATTEREDFRONTIER_API USFE1VitalsHud : public UUserWidget
+// The defeated screen (WBP_Defeated, docs/blueprints/menus.md section 0): the HUD dims and a centred WBP_WindowFrame (emblem icon_window_quests, the
+// closest existing one; title "Defeated") shows the cause, the respawn point, the countdown and the Respawn button, whose fill runs over the
+// server's respawn delay (the server respawns on its own, so nothing is pressed). The health and stamina bars are in WBP_Hud (USFUnitFrameWidget);
+// the subsystem below feeds both.
+// Binds (required): DefeatedLayer (the whole screen; collapsed unless defeated). Optional: CauseText, PointText, CountdownText (TextBlocks), RespawnButton (WBP_Button).
+UCLASS(Abstract)
+class SHATTEREDFRONTIER_API USFE1VitalsHud : public USFUiWidget
 {
     GENERATED_BODY()
 public:
+    static constexpr const TCHAR* AssetPath = TEXT("/Game/Frontier/UI/Widgets/Hud/WBP_Defeated.WBP_Defeated_C");
     void Present(const FSFE1VitalsModel& Model, float RemainingSeconds, const FSFE1DefeatView& Defeat = FSFE1DefeatView());
+    float GetRespawnProgress() const { return RespawnProgress; }
+    bool IsDefeatShown() const { return bDefeatShown; }
 
 protected:
     virtual void NativeOnInitialized() override;
-    virtual int32 NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect,
-        FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const override;
+    virtual void ApplyKitStyle() override;
+
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidget)) TObjectPtr<UWidget> DefeatedLayer;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> CountdownText;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> CauseText;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> PointText;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFButtonWidget> RespawnButton;
+
+public:
+    UPROPERTY(EditAnywhere, Category = "SF Style") FSFUiTextStyle TextStyle = FSFUiTextStyle(34, SFHudStyle::Ivory());
 
 private:
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> CountdownText;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> CauseText;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> PointText;
-    UPROPERTY(Transient) TObjectPtr<UImage> RespawnRing;
-    UPROPERTY(Transient) TObjectPtr<UWidget> DefeatedLayer;
     float RespawnProgress = 0.f;
     bool bDefeatShown = false;
 };
@@ -71,6 +79,9 @@ public:
     virtual TStatId GetStatId() const override { RETURN_QUICK_DECLARE_CYCLE_STAT(USFE1VitalsHudSubsystem, STATGROUP_Tickables); }
     virtual void Deinitialize() override;
 
+    // Development captures (SFUi defeated): shows the defeated screen as if the local pawn had just fallen.
+    void StageDefeat() { bStagedDefeat = true; }
+
 protected:
     virtual bool DoesSupportWorldType(const EWorldType::Type WorldType) const override
     { return WorldType == EWorldType::Game || WorldType == EWorldType::PIE; }
@@ -79,6 +90,7 @@ private:
     FSFE1VitalsModel Model;
     FSFE1DefeatView Defeat;
     double DefeatSeenAt = -1;
+    bool bStagedDefeat = false;
     UPROPERTY(Transient) TObjectPtr<USFE1VitalsHud> Hud;
     // Local, unbound desaturation while defeated; never replicated.
     UPROPERTY(Transient) TObjectPtr<APostProcessVolume> DefeatGrade;

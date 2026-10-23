@@ -30,9 +30,15 @@ plans = {
     'market-board': [(6, 'cmd:SFUi market'), (8, 'cursor:1900,1040'), (10, 'shot'), (10.6, 'cursor:300,357'), (11.6, 'shot:market-board-tooltip')],
     'trade': [(6, 'cmd:SFUi trade'), (8, 'cmd:SFUi tradelock'), (9, 'cursor:1900,1040'), (11, 'shot')],
     'build-catalogue': [(6, 'cmd:SFUi build'), (9, 'cursor:1900,1040'), (10, 'shot')],
-    'defeated': [],
+    'quest-journal': [(6, 'cmd:SFUi journal'), (8, 'cursor:1900,1040'), (10, 'shot')],
+    'quest-board': [(6, 'cmd:SFUi board'), (8, 'cursor:1900,1040'), (10, 'shot')],
+    'settings': [(6, 'cmd:SFUi settings'), (8, 'cursor:1900,1040'), (10, 'shot')],
+    'settings-keep': [(6, 'cmd:SFGfx keep'), (8, 'cursor:1900,1040'), (10, 'shot')],
+    'game-menu': [(6, 'cmd:SFUi menu'), (8, 'cursor:1900,1040'), (10, 'shot')],
+    'dialogue': [(2, 'cmd:SFStageAt -138 300 0'), (3, 'cursor:960,1060'), (4, 'cmd:SFSpawnDialogueNpc'), (11, 'shot')],
+    'defeated': [(6, 'cmd:SFUi defeated'), (8, 'shot')],
 }
-steps = plans[name] + [(35 if name == 'defeated' else 32 if name == 'all' else 12, 'quit')]
+steps = plans[name] + [(32 if name == 'all' else max(12, plans[name][-1][0] + 3) if plans[name] else 12, 'quit')]
 state = {'world': None, 'time': 0.0, 'index': 0, 'pending': False,
          'pending_name': None, 'defeat_seen': None, 'defeat_shot': False}
 
@@ -77,12 +83,12 @@ def tick(delta):
         state['world'] = world
         state['time'] += delta
         collect()
-        if name == 'defeated' and state['defeat_seen'] is None and state['time'] >= 3:
+        if name == 'defeated-pilot' and state['defeat_seen'] is None and state['time'] >= 3:
             pawn = u.GameplayStatics.get_player_controller(world, 0).get_controlled_pawn()
             if pawn.get_pilot_health_for_capture() == 0:
                 state['defeat_seen'] = state['time']
                 u.log('UI_CAPTURE_DEFEATED_HEALTH_ZERO')
-        if name == 'defeated' and state['defeat_seen'] is not None and not state['defeat_shot'] and state['time'] >= state['defeat_seen'] + 0.35:
+        if name == 'defeated-pilot' and state['defeat_seen'] is not None and not state['defeat_shot'] and state['time'] >= state['defeat_seen'] + 1.5:
             state['pending'] = True
             state['pending_name'] = name
             state['defeat_shot'] = True

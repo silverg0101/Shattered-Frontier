@@ -1,6 +1,7 @@
 #include "Construction/SFConstructionNetwork.h"
 #include "Exchange/SFExchangeWidgets.h"
 #include "Framework/SFPlayerController.h"
+#include "Characters/SFE1VitalsHud.h"
 #include "Framework/SFHudLayout.h"
 #include "UI/SFInventoryWidget.h"
 #include "UI/SFWindowStack.h"
@@ -1362,11 +1363,12 @@ void ASFPlayerController::EnsureGatheringSkillsPanel()
 {
     if (GatheringSkillsPanel || !IsLocalController() || !GetLocalPlayer()
         || !GetLocalPlayer()->ViewportClient || !GatheringPilot || !GatheringPilot->IsEnabled()) { return; }
-    GatheringSkillsPanel=CreateWidget<USFGatheringSkillsPanel>(this,USFGatheringSkillsPanel::StaticClass());
+    const TSubclassOf<USFGatheringSkillsPanel> SkillsClass=LoadClass<USFGatheringSkillsPanel>(nullptr,USFGatheringSkillsPanel::AssetPath);
+    if (!SkillsClass) { UE_LOG(LogTemp,Error,TEXT("SKILLS_WBP_MISSING %s: run tools/ui/create_widgets.py"),USFGatheringSkillsPanel::AssetPath); return; }
+    GatheringSkillsPanel=CreateWidget<USFGatheringSkillsPanel>(this,SkillsClass);
     if (!GatheringSkillsPanel) { return; }
     GatheringSkillsPanel->Configure(GatheringPilot);
     GatheringSkillsPanel->AddToViewport(20);
-    GatheringSkillsPanel->SetDesiredSizeInViewport(FVector2D(500,470));
     GatheringSkillsPanel->SetVisibility(ESlateVisibility::Collapsed);
 }
 
@@ -1374,9 +1376,8 @@ void ASFPlayerController::ToggleGatheringSkillsPanel()
 {
     EnsureGatheringSkillsPanel();
     if (!GatheringSkillsPanel || !GatheringPilot || !GatheringPilot->IsEnabled() || bCameraLookHeld) { return; }
-    const bool bOpen=GatheringSkillsPanel->GetVisibility()!=ESlateVisibility::Visible;
-    GatheringSkillsPanel->SetVisibility(bOpen ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
-    if (bOpen) { SkillsPanelViewportSize=FIntPoint::ZeroValue; }
+    // A window of the stack like the inventory: it lines up at the left and Esc closes the newest.
+    if (GetWindowStack()->IsOpen(GatheringSkillsPanel)) { GetWindowStack()->Close(GatheringSkillsPanel); } else { GetWindowStack()->Open(GatheringSkillsPanel); }
 }
 
 void ASFPlayerController::HandleEscape()
@@ -1390,7 +1391,8 @@ void ASFPlayerController::HandleEscape()
     { GatheringSkillsPanel->SetVisibility(ESlateVisibility::Collapsed); return; }
     // Build mode: the first Esc cancels a pending line start, the next leaves build mode.
     if (bBuildMode && !bHasLineSeed) { SetBuildMode(false); return; }
-    CancelCursorAction();
+    if (CancelCursorAction()) { return; }
+    ToggleGameMenu(true);  // nothing else wanted Esc: the game menu
 }
 
 void ASFPlayerController::ToggleBuildMode()
@@ -1547,9 +1549,12 @@ bool ASFPlayerController::GetLayerPoint(const FVector& Start, const FVector& Dir
     OutPoint=Point; return true;
 }
 
-void ASFPlayerController::CancelCursorAction()
+bool ASFPlayerController::CancelCursorAction()
 {
-    if (GatheringPilot) { GatheringPilot->CancelLocalHarvest(); } if (CanUseConstructionControls()) { CancelLine(); LastPlacementStatus=TEXT("Line start canceled."); } }
+    bool bCancelled=GatheringPilot && GatheringPilot->CancelLocalHarvest();
+    if (CanUseConstructionControls()) { bCancelled=bCancelled || bHasLineSeed; CancelLine(); LastPlacementStatus=TEXT("Line start canceled."); }
+    return bCancelled;
+}
 
 void ASFPlayerController::PaletteAction(ESFConstructionPaletteAction Action)
 {
@@ -2068,23 +2073,6 @@ void ASFPlayerController::Tick(float DeltaSeconds)
     if (IsLocalController())
     {
         EnsureGatheringSkillsPanel();
-        if (GatheringSkillsPanel && GatheringSkillsPanel->GetVisibility()==ESlateVisibility::Visible)
-        {
-            int32 Width=0,Height=0; GetViewportSize(Width,Height);
-            const float Scale=UWidgetLayoutLibrary::GetViewportScale(this);
-            if (Width>0 && Height>0 && FMath::IsFinite(Scale) && Scale>0
-                && (SkillsPanelViewportSize!=FIntPoint(Width,Height) || !FMath::IsNearlyEqual(SkillsPanelViewportScale,Scale)))
-            {
-                SkillsPanelViewportSize=FIntPoint(Width,Height); SkillsPanelViewportScale=Scale;
-                const float PanelWidth=FMath::Min(500.f,FMath::Max(1.f,float(Width)-16.f));
-                const float PanelHeight=FMath::Min(470.f,FMath::Max(1.f,float(Height)-16.f));
-                GatheringSkillsPanel->SetDesiredSizeInViewport(FVector2D(PanelWidth,PanelHeight));
-                GatheringSkillsPanel->SetRenderTransformPivot(FVector2D::ZeroVector);
-                GatheringSkillsPanel->SetRenderScale(FVector2D(1.f/Scale));
-                GatheringSkillsPanel->SetPositionInViewport(FVector2D(FMath::Clamp((Width-PanelWidth)/2.f,8.f,FMath::Max(8.f,float(Width)-PanelWidth-8.f)),
-                    FMath::Clamp((Height-PanelHeight)/2.f,8.f,FMath::Max(8.f,float(Height)-PanelHeight-8.f))));
-            }
-        }
         if (GEngine) { GEngine->RemoveOnScreenDebugMessage(uint64(GetUniqueID())); }
         // Previews and outlines only in build mode; outside it LMB, E and F belong to IMC_Player (attack, strafe, interact).
         if (bBuildMode) { RefreshPlacementPreview(true); }
@@ -2705,9 +2693,11 @@ void ASFPlayerController::SFUi(const FString& Screen)
     else if (Screen.Equals(TEXT("tradelock"), ESearchCase::IgnoreCase) && TradeWindow) { TradeWindow->ToggleLock(); }
     else if (Screen.Equals(TEXT("build"), ESearchCase::IgnoreCase)) { ToggleBuildMode(); }
     else if (Screen.Equals(TEXT("settings"), ESearchCase::IgnoreCase)) { ToggleSettingsPanel(); }
+    else if (Screen.Equals(TEXT("menu"), ESearchCase::IgnoreCase)) { ToggleGameMenu(!IsGameMenuOpen()); }
     else if (Screen.Equals(TEXT("journal"), ESearchCase::IgnoreCase) || Screen.Equals(TEXT("board"), ESearchCase::IgnoreCase)) { USFQuestBoardPanel::OpenForCapture(this, Screen.ToLower()); }
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     else if (Screen.Equals(TEXT("skills"), ESearchCase::IgnoreCase)) { ToggleGatheringSkillsPanel(); }
+    else if (Screen.Equals(TEXT("defeated"), ESearchCase::IgnoreCase)) { if (USFE1VitalsHudSubsystem* Vitals = GetWorld() ? GetWorld()->GetSubsystem<USFE1VitalsHudSubsystem>() : nullptr) { Vitals->StageDefeat(); } }
     else if (Screen.Equals(TEXT("target"), ESearchCase::IgnoreCase))
     {
         ASFPilotBoar* NearestBoar = nullptr;

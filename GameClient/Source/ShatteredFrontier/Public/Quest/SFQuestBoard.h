@@ -1,15 +1,12 @@
 #pragma once
 
-#include "Blueprint/UserWidget.h"
 #include "GameFramework/Actor.h"
+#include "UI/SFUiWidgets.h"
 #include "SFQuestBoard.generated.h"
 
-class UBorder;
-class UButton;
-class UImage;
 class UStaticMeshComponent;
 class UTextBlock;
-class UVerticalBox;
+class UWidget;
 class APlayerController;
 class USFQuestPilotComponent;
 
@@ -31,14 +28,23 @@ private:
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> Mesh;
 };
 
-/** The quest book (16-quest-journal.png): left page lists quests, right page shows the selected one.
- *  Journal mode (J): active quests, Track toggle, hold-to-abandon. Board mode (interact at a board): every quest posted there,
- *  locked ones greyed with the reason, Accept / Close. Local presentation; requests go through the quest log's server RPCs. */
-UCLASS()
-class SHATTEREDFRONTIER_API USFQuestBoardPanel : public UUserWidget
+/** The quest window (WBP_QuestBoard, docs/blueprints/menus.md section 0): a WBP_WindowFrame (emblem icon_window_quests) with the quest list
+ *  (WBP_KitRow rows in a WBP_ScrollList) beside the selected quest in the SidePanel (description, objectives with progress, rewards as item
+ *  slots and gold) and the buttons in the Footer. Journal mode (J): active quests, Track toggle, hold-to-abandon. Board mode (interact at a
+ *  board): every quest posted there, locked ones greyed with the reason, Accept. A window of USFWindowStack (Esc closes it); local presentation,
+ *  requests go through the quest log's server RPCs.
+ *  Binds (required): QuestList (VerticalBox in a WBP_ScrollList; C++ adds one WBP_KitRow per quest).
+ *  Optional: Window (the frame; its title is the journal or the board), Detail (the right-hand column), QuestTitle, Summary, Reason, EmptyText,
+ *  Objective0..2Row / Label / Count / Tick (looked up by name), Reward0..3 (WBP_ItemSlot), RewardGold (WBP_GoldDisplay, shown for a gold reward),
+ *  NoReward, AcceptButton, TrackButton, AbandonButton (WBP_Button; Abandon is a hold button), Tooltip with TipIcon, TipTitle, TipRarity, TipType,
+ *  TipQuantity, TipWeight, TipDescription (the item tooltip over a reward slot). */
+UCLASS(Abstract)
+class SHATTEREDFRONTIER_API USFQuestBoardPanel : public USFUiWidget
 {
     GENERATED_BODY()
 public:
+    static constexpr const TCHAR* AssetPath = TEXT("/Game/Frontier/UI/Widgets/Quest/WBP_QuestBoard.WBP_QuestBoard_C");
+
     void OpenJournal(USFQuestPilotComponent* InLog);
     void OpenBoard(USFQuestPilotComponent* InLog, const FString& InBoardId, const FString& InTitle);
     void Close();
@@ -46,67 +52,65 @@ public:
     bool IsBoard() const { return !BoardId.IsEmpty(); }
     const FString& GetSelectedQuest() const { return SelectedQuest; }
     void Select(const FString& QuestId) { SelectedQuest = QuestId; Rebuild(); }
-    /** Client tick from the quest subsystem: J toggles the journal, Esc or walking away closes, state changes redraw. */
+    int32 RowCount() const { return RowQuests.Num(); }
+    /** Client tick from the quest subsystem: J toggles the journal, walking away closes a board visit, state changes redraw. */
     static void TickClient(APlayerController* Local, USFQuestPilotComponent* Log);
     /** Interact at a board: opens it; true when the key was used. */
     static bool TryOpenBoard(APlayerController* Local);
     /** Development: open a screen for captures ("journal" or "board"). */
     static void OpenForCapture(APlayerController* Local, const FString& Screen);
 
+    UPROPERTY(EditAnywhere, Category = "SF Style") FSFUiTextStyle TextStyle = FSFUiTextStyle(34, SFHudStyle::Ivory());
+
 protected:
     virtual void NativeOnInitialized() override;
     virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-    virtual int32 NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect,
-        FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const override;
+    virtual void ApplyKitStyle() override;
+
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidget)) TObjectPtr<UPanelWidget> QuestList;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFWindowFrameWidget> Window;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> Detail;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> QuestTitle;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> Summary;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> Reason;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> EmptyText;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> NoReward;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFGoldDisplayWidget> RewardGold;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFButtonWidget> AcceptButton;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFButtonWidget> TrackButton;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFButtonWidget> AbandonButton;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> Tooltip;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UImage> TipIcon;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> TipTitle;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> TipRarity;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> TipType;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> TipQuantity;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> TipWeight;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> TipDescription;
 
 private:
-    UFUNCTION() void HandlePrimary();
-    UFUNCTION() void HandleSecondary();
-    UFUNCTION() void HandleHoldStart();
-    UFUNCTION() void HandleHoldEnd();
-    UFUNCTION() void HandleRow0() { SelectRow(0); }
-    UFUNCTION() void HandleRow1() { SelectRow(1); }
-    UFUNCTION() void HandleRow2() { SelectRow(2); }
-    UFUNCTION() void HandleRow3() { SelectRow(3); }
-    UFUNCTION() void HandleRow4() { SelectRow(4); }
-    UFUNCTION() void HandleRow5() { SelectRow(5); }
-    void SelectRow(int32 Index);
+    UFUNCTION() void HandleRowClicked(USFSelectableWidget* Source);
+    UFUNCTION() void HandlePrimary(USFButtonWidget* Source);
+    UFUNCTION() void HandleTrack(USFButtonWidget* Source);
+    UFUNCTION() void HandleAbandon(USFButtonWidget* Source);
     void Show();
     void Rebuild();
+    void UpdateTooltip();
     FString StateKey() const;
     struct FRow { FString QuestId, Section, Reason; bool bLocked = false; };
     TArray<FRow> ListRows() const;
 
     TWeakObjectPtr<USFQuestPilotComponent> Log;
     FString BoardId, SelectedQuest, LastKey;
-    FSlateFontInfo JournalTitleFont;
     TArray<FString> RowQuests;
-    double HoldStartedAt = -1.0;
-    float HoldFraction = 0.f;
+    TSubclassOf<USFKitRowWidget> RowClass;
+    bool bFrozeMovement = false;
+    bool bCaptureVisit = false;  // development captures: a board visit that does not end when no board is near
     static constexpr int32 MaxRows = 6;
     static constexpr int32 MaxObjectiveRows = 3;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> PageTitle;
-    UPROPERTY(Transient) TObjectPtr<UVerticalBox> List;
-    UPROPERTY(Transient) TArray<TObjectPtr<UButton>> RowButtons;
-    UPROPERTY(Transient) TObjectPtr<UWidget> Detail;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> QuestTitle;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> Summary;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> Reason;
-    UPROPERTY(Transient) TArray<TObjectPtr<UWidget>> ObjectiveRows;
-    UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> ObjectiveLabels;
-    UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> ObjectiveCounts;
-    UPROPERTY(Transient) TArray<TObjectPtr<UWidget>> ObjectiveTicks;
-    UPROPERTY(Transient) TArray<TObjectPtr<UImage>> RewardIcons;
-    UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> RewardTexts;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> NoReward;
-    UPROPERTY(Transient) TObjectPtr<UButton> PrimaryButton;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> PrimaryLabel;
-    UPROPERTY(Transient) TObjectPtr<UWidget> PrimaryRoot;
-    UPROPERTY(Transient) TObjectPtr<UButton> SecondaryButton;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> SecondaryLabel;
-    UPROPERTY(Transient) TObjectPtr<UWidget> AbandonRoot;
-    UPROPERTY(Transient) TObjectPtr<UButton> AbandonButton;
-    UPROPERTY(Transient) TObjectPtr<UWidget> HoldHint;
-    UPROPERTY(Transient) TObjectPtr<UImage> HoldRing;
-    UPROPERTY(Transient) TObjectPtr<UWidget> Emblem;
+    static constexpr int32 MaxRewardSlots = 4;
+    UPROPERTY(Transient) TArray<TObjectPtr<USFKitRowWidget>> Rows;
+    UPROPERTY(Transient) TArray<TObjectPtr<USFSlotWidget>> RewardSlots;
+    TArray<FString> RewardIds;  // the item id of each shown reward slot (tooltip)
+    TArray<int32> RewardCounts;
 };

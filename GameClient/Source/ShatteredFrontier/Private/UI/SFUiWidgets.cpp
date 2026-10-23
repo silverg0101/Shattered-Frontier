@@ -412,6 +412,7 @@ void USFKitRowWidget::SetPrice(const FText& InPrice)
 void USFKitRowWidget::ShowAction(bool bShown) { if (ActionBox) { ActionBox->SetVisibility(bShown ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed); } }
 void USFKitRowWidget::SetIconTexture(UTexture2D* Texture)
 {
+    if (IconBox) { IconBox->SetVisibility(Texture ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed); }  // no art, no empty well
     if (!Icon) { return; }
     if (Texture) { Icon->SetBrushFromTexture(Texture, false); Icon->SetVisibility(ESlateVisibility::HitTestInvisible); }
     else { Icon->SetVisibility(ESlateVisibility::Collapsed); }
@@ -602,6 +603,19 @@ void USFDropdownWidget::NativeOnInitialized()
     if (Combo) { Combo->OnSelectionChanged.AddUniqueDynamic(this, &USFDropdownWidget::HandleSelection); }
 }
 
+void USFDropdownWidget::ApplyKitStyle()
+{
+    if (!Combo) { return; }
+    PRAGMA_DISABLE_DEPRECATION_WARNINGS
+    if (!Combo->Font.FontObject || Combo->Font.FontObject == GetDefault<UComboBoxString>()->Font.FontObject)  // fill-only: a family the Designer picked stays
+    {
+        const float Size = Combo->Font.Size;
+        Combo->Font = SFHudStyle::RoleFont(SFHudStyle::TextFamily(), 34, false);
+        if (Size > 0.f && !FMath::IsNearlyEqual(Size, GetDefault<UComboBoxString>()->Font.Size)) { Combo->Font.Size = Size; }
+    }
+    PRAGMA_ENABLE_DEPRECATION_WARNINGS
+}
+
 void USFDropdownWidget::SetOptions(const TArray<FString>& Options, int32 SelectedIndex)
 {
     if (!Combo) { return; }
@@ -625,3 +639,59 @@ void USFGoldDisplayWidget::SetAmount(int64 Gold)
 }
 
 void USFGoldDisplayWidget::ApplyKitStyle() { TextStyle.Apply(AmountText); }
+
+// ---- toggle
+
+void USFToggleWidget::NativeOnInitialized()
+{
+    Super::NativeOnInitialized();
+    OnClicked.AddUniqueDynamic(this, &USFToggleWidget::HandleClicked);
+    if (Check) { Check->SetVisibility(bSelected ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed); }
+}
+
+void USFToggleWidget::SetChecked(bool bInChecked, bool bNotify)
+{
+    const bool bChanged = bSelected != bInChecked;
+    SetSelected(bInChecked);
+    if (bChanged && bNotify) { OnToggled.Broadcast(bSelected); }
+}
+
+void USFToggleWidget::OnSelectedChanged_Implementation(bool bNowSelected)
+{
+    if (Check) { Check->SetVisibility(bNowSelected ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed); }
+}
+
+void USFToggleWidget::HandleClicked(USFSelectableWidget*) { SetChecked(!bSelected, true); }
+
+// ---- settings row
+
+void USFSettingRowWidget::NativeOnInitialized()
+{
+    Super::NativeOnInitialized();
+    if (HeadingBox) { HeadingBox->SetVisibility(ESlateVisibility::Collapsed); }
+}
+
+void USFSettingRowWidget::ApplyKitStyle()
+{
+    LabelStyle.Apply(Label);
+    HeadingStyle.Apply(Heading);
+}
+
+void USFSettingRowWidget::SetLabel(const FText& InLabel)
+{
+    if (Label) { Label->SetText(InLabel); }
+    if (RowBody) { RowBody->SetVisibility(ESlateVisibility::SelfHitTestInvisible); }
+    if (HeadingBox) { HeadingBox->SetVisibility(ESlateVisibility::Collapsed); }
+}
+
+void USFSettingRowWidget::SetHeading(const FText& InHeading)
+{
+    if (Heading) { Heading->SetText(InHeading); }
+    if (RowBody) { RowBody->SetVisibility(ESlateVisibility::Collapsed); }
+    if (HeadingBox) { HeadingBox->SetVisibility(ESlateVisibility::SelfHitTestInvisible); }
+}
+
+void USFSettingRowWidget::SetControl(UWidget* InControl)
+{
+    if (Control) { Control->SetContent(InControl); }
+}

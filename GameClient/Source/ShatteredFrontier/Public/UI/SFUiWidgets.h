@@ -347,6 +347,7 @@ protected:
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> ActionBox;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFButtonWidget> Action;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> Chevron;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> IconBox;
 };
 
 // ---- shared menu kit v7 parts (docs/dependency-map/ui.md "Shared menu kit v7"). Each has ONE parent WBP in /Game/Frontier/UI/Widgets/Common/.
@@ -503,6 +504,7 @@ public:
 
 protected:
     virtual void NativeOnInitialized() override;
+    virtual void ApplyKitStyle() override;  // selected text and list items get the menu text family (the composite font only exists at runtime)
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidget)) TObjectPtr<UComboBoxString> Combo;
 
 private:
@@ -524,4 +526,50 @@ protected:
     virtual void ApplyKitStyle() override;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidget)) TObjectPtr<UTextBlock> AmountText;
     int64 Amount = 0;
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSFToggleChanged, bool, bChecked);
+
+// On / off check box (WBP_Toggle) on USFSelectableWidget: the kit select frame (gold, shown while on) and hover frame come from the base, plus Check
+// (Image: the icon_check_ok glyph, shown while on). A click flips it and raises OnToggled; SetChecked changes it quietly unless bNotify.
+UCLASS(Abstract)
+class SHATTEREDFRONTIER_API USFToggleWidget : public USFSelectableWidget
+{
+    GENERATED_BODY()
+public:
+    UPROPERTY(BlueprintAssignable, Category = "SF") FSFToggleChanged OnToggled;
+    UFUNCTION(BlueprintCallable, Category = "SF UI") void SetChecked(bool bInChecked, bool bNotify = false);
+    UFUNCTION(BlueprintPure, Category = "SF UI") bool IsChecked() const { return bSelected; }
+
+protected:
+    virtual void NativeOnInitialized() override;
+    virtual void OnSelectedChanged_Implementation(bool bNowSelected) override;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> Check;
+
+private:
+    UFUNCTION() void HandleClicked(USFSelectableWidget* Source);
+};
+
+// One settings row (WBP_SettingRow): a label on the left, the control on the right (a WBP_Dropdown, WBP_Stepper or WBP_Toggle put into Control), a
+// separator under it. SetHeading turns it into a group heading (Heading text, no label or control). Binds, all optional: Label, Heading (TextBlocks),
+// Control (NamedSlot), RowBody (the label + control line, hidden for a heading), HeadingBox (shown for a heading).
+UCLASS(Abstract)
+class SHATTEREDFRONTIER_API USFSettingRowWidget : public USFUiWidget
+{
+    GENERATED_BODY()
+public:
+    UFUNCTION(BlueprintCallable, Category = "SF UI") void SetLabel(const FText& InLabel);
+    UFUNCTION(BlueprintCallable, Category = "SF UI") void SetHeading(const FText& InHeading);
+    UFUNCTION(BlueprintCallable, Category = "SF UI") void SetControl(UWidget* InControl);
+    UPROPERTY(EditAnywhere, Category = "SF Style") FSFUiTextStyle LabelStyle = FSFUiTextStyle(36, SFHudStyle::Ivory());
+    UPROPERTY(EditAnywhere, Category = "SF Style") FSFUiTextStyle HeadingStyle = FSFUiTextStyle(44, SFHudStyle::Brass());
+
+protected:
+    virtual void NativeOnInitialized() override;
+    virtual void ApplyKitStyle() override;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> Label;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> Heading;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UNamedSlot> Control;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> RowBody;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> HeadingBox;
 };

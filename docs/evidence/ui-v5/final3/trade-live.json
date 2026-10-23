@@ -1,5 +1,4 @@
 [
-{"owner":"SFE1VitalsHud_0","name":"VitalsCanvas","class":"CanvasPanel","rect":[0.0,0.0,1920.0,1080.0]},
 {"owner":"SFGatheringHud_0","name":"CanvasPanel_0","class":"CanvasPanel","rect":[0.0,0.0,1920.0,1080.0]},
 {"owner":"SFHudLayout_0","name":"CanvasPanel_0","class":"CanvasPanel","rect":[0.0,0.0,1920.0,1080.0]},
 {"owner":"WBP_TradeWindow_C_0","name":"Overlay_0","class":"Overlay","rect":[48.0,90.5,965.0,759.0]},

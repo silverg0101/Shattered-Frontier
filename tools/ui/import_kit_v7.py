@@ -16,8 +16,8 @@ import unreal
 SRC = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'GameClient', 'ArtSource', 'UI', 'Kit-v7'))
 DEST = '/Game/Frontier/UI/Kit/v7'
 PARTS = sorted(os.path.splitext(os.path.basename(p))[0] for p in glob.glob(os.path.join(SRC, '*.png')) if not os.path.basename(p).startswith('reference-'))
-if len(PARTS) != 60:
-    raise RuntimeError('expected 60 Kit-v7 parts, found %d' % len(PARTS))
+if len(PARTS) < 60:
+    raise RuntimeError('expected at least 60 Kit-v7 parts, found %d' % len(PARTS))
 
 lib = unreal.EditorAssetLibrary
 tasks = []

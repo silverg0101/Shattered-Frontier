@@ -1,16 +1,12 @@
 #pragma once
 
-#include "Blueprint/UserWidget.h"
+#include "UI/SFUiWidgets.h"
 #include "GameFramework/Actor.h"
 #include "SFDialogue.generated.h"
 
-class UBorder;
-class UButton;
 class UImage;
 class USkeletalMeshComponent;
 class UTextBlock;
-class UVerticalBox;
-class USizeBox;
 
 // ---- Pure model: one conversation tree per speaker, authored in content/dialogue/<file>.json (CTL-02 NPC dialogue). ----
 
@@ -73,12 +69,21 @@ private:
     UPROPERTY(VisibleAnywhere) TObjectPtr<USkeletalMeshComponent> Body;
 };
 
-// The v5 dialogue board (10-npc-dialogue): centre window x26-74% y14-78% over the dimmed HUD. Local presentation only.
-UCLASS()
-class SHATTEREDFRONTIER_API USFDialoguePanel : public UUserWidget
+// The dialogue window (WBP_Dialogue, docs/blueprints/menus.md section 0): a WBP_WindowFrame (emblem icon_window_quests, title = the speaker) with the
+// speaker's portrait and line, a separator and the response options (WBP_KitRow rows, keys 1-4 in the cell), and the offered quest beside it in
+// the SidePanel (art, summary, objectives, reward item slots, Accept / Decline). A window of USFWindowStack; Esc ends the conversation.
+// Local presentation only.
+// Binds (required): Choices (VerticalBox; C++ adds the four response rows).
+// Optional: Window, Portrait (Image), LineText, OfferColumn (the offer card; collapsed without an offer), OfferArt (Image), OfferTitle, OfferSummary,
+// Objective0..2Row / Label / Count (by name), Reward0..3 (WBP_ItemSlot), AcceptButton, DeclineButton (WBP_Button), Tooltip with TipIcon, TipTitle,
+// TipRarity, TipType, TipQuantity, TipWeight, TipDescription.
+UCLASS(Abstract)
+class SHATTEREDFRONTIER_API USFDialoguePanel : public USFUiWidget
 {
     GENERATED_BODY()
 public:
+    static constexpr const TCHAR* AssetPath = TEXT("/Game/Frontier/UI/Widgets/Dialogue/WBP_Dialogue.WBP_Dialogue_C");
+
     /** Quest: the offered quest record (null hides the offer column); bOffered false when it is held, finished or locked. */
     void Open(TSharedPtr<const FSFDialogueTree> InTree, const struct FSFQuestDefinition* Quest = nullptr, bool bOffered = true);
     // Keys 1-4 and the response rows; false when the index is not a response.
@@ -87,43 +92,47 @@ public:
     DECLARE_DELEGATE_OneParam(FStepDelegate, ESFDialogueStep);
     FStepDelegate OnStep;
     const FSFDialogueSession& GetSession() const { return Session; }
+    int32 ChoiceCount() const { return ChoiceRows.Num(); }
+    USFKitRowWidget* GetChoiceRow(int32 Index) const { return ChoiceRows.IsValidIndex(Index) ? ChoiceRows[Index].Get() : nullptr; }
+
+    UPROPERTY(EditAnywhere, Category = "SF Style") FSFUiTextStyle TextStyle = FSFUiTextStyle(34, SFHudStyle::Ivory());
 
 protected:
     virtual void NativeOnInitialized() override;
     virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+    virtual void ApplyKitStyle() override;
+
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidget)) TObjectPtr<UPanelWidget> Choices;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFWindowFrameWidget> Window;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UImage> Portrait;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> LineText;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> OfferColumn;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UImage> OfferArt;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> OfferTitle;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> OfferSummary;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFButtonWidget> AcceptButton;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFButtonWidget> DeclineButton;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> Tooltip;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UImage> TipIcon;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> TipTitle;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> TipRarity;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> TipType;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> TipQuantity;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> TipWeight;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> TipDescription;
 
 private:
-    UFUNCTION() void HandleChoice0() { ChooseIndex(0); }
-    UFUNCTION() void HandleChoice1() { ChooseIndex(1); }
-    UFUNCTION() void HandleChoice2() { ChooseIndex(2); }
-    UFUNCTION() void HandleChoice3() { ChooseIndex(3); }
-    UFUNCTION() void HandleAccept();
-    UFUNCTION() void HandleDecline();
+    UFUNCTION() void HandleChoiceClicked(USFSelectableWidget* Source);
+    UFUNCTION() void HandleAccept(USFButtonWidget* Source);
+    UFUNCTION() void HandleDecline(USFButtonWidget* Source);
     void Apply(ESFDialogueStep Step);
     void Refresh();
-    void StyleRows();
+    void UpdateTooltip();
 
     FSFDialogueSession Session;
-    int32 Selected = 0;
-    int32 StyledSelected = -1;
-    FVector2D LastMouse = FVector2D(-1.f, -1.f);
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> NameText;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> LineText;
-    UPROPERTY(Transient) TObjectPtr<UImage> PortraitImage;
-    UPROPERTY(Transient) TArray<TObjectPtr<UButton>> RowButtons;
-    UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> RowLabels;
-    UPROPERTY(Transient) TArray<TObjectPtr<UWidget>> RowRoots;
-    UPROPERTY(Transient) TArray<TObjectPtr<UBorder>> RowPlates;
-    UPROPERTY(Transient) TObjectPtr<UWidget> OfferColumn;
-    UPROPERTY(Transient) TObjectPtr<UImage> OfferArt;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> OfferTitle;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> OfferSummary;
-    UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> ObjectiveLabels;
-    UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> ObjectiveCounts;
-    UPROPERTY(Transient) TArray<TObjectPtr<UWidget>> ObjectiveRows;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> XpText;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> CoinText;
-    UPROPERTY(Transient) TArray<TObjectPtr<UImage>> RewardIcons;  // item icons beside XpText / CoinText
-    UPROPERTY(Transient) TObjectPtr<UButton> AcceptButton;
-    UPROPERTY(Transient) TObjectPtr<UTextBlock> AcceptLabel;
+    TSubclassOf<USFKitRowWidget> RowClass;
+    UPROPERTY(Transient) TArray<TObjectPtr<USFKitRowWidget>> ChoiceRows;
+    UPROPERTY(Transient) TArray<TObjectPtr<USFSlotWidget>> RewardSlots;
+    TArray<FString> RewardIds;
+    TArray<int32> RewardCounts;
 };

@@ -65,8 +65,8 @@ All sizes and 9-slice margins are source pixels. Margins are L,T,R,B; `—` mean
 | `plus_slot.png` | 208x208 | 18,18,18,18 | Empty sell slot with gold plus | market | fields |
 | `separator.png` | 1200x24 | 40,0,40,0 | Horizontal thin brass rule | separator; market; build catalogue | overlays |
 | `separator_vertical.png` | 24x1000 | 0,40,0,40 | Vertical thin brass rule | separator; market; build catalogue | overlays |
-| `select_frame.png` | 1600x120 | 18,18,18,18 | Bright gold selected-row outline | separator; market; build catalogue | overlays |
-| `hover_frame.png` | 1600x120 | 18,18,18,18 | Dim gold hovered-row outline | separator; market; build catalogue | overlays |
+| `select_frame.png` | 84x84 | 14,14,14,14 | Bright gold four-sided selected outline (clear centre) | separator; market; build catalogue | overlays |
+| `hover_frame.png` | 84x84 | 14,14,14,14 | Bronze four-sided hovered outline (clear centre) | separator; market; build catalogue | overlays |
 | `scrollbar_track.png` | 36x600 | 10,20,10,20 | Shared menu scrollbar track | separator; market; build catalogue | overlays |
 | `scrollbar_thumb.png` | 32x160 | 10,20,10,20 | Shared menu scrollbar thumb | separator; market; build catalogue | overlays |
 | `scrollbar_arrow_up.png` | 48x48 | — | Shared scrollbar up arrow | separator; market; build catalogue | overlays |

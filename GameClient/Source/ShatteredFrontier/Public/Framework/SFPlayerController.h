@@ -18,6 +18,8 @@ class USFInventoryWidget;
 class USFWindowStack;
 class USFDialoguePanel;
 class USFGraphicsMenu;
+class USFGameMenu;
+enum class ESFGameMenuAction : uint8;
 class ASFDialogueNpc;
 enum class ESFDialogueStep : uint8;
 class UInputAction;
@@ -66,6 +68,9 @@ public:
     // F10 (and SFUi settings): the Settings > Graphics menu. Esc closes the keep prompt or the menu.
     void ToggleSettingsPanel();
     bool CloseSettingsPanel();
+    // The Esc game menu (Resume, Settings, Log Out, Quit): a window of the stack, opened by Esc when nothing else used it.
+    void ToggleGameMenu(bool bOpen);
+    bool IsGameMenuOpen() const;
     // Development (graphics captures): SFGfx apply|menu <Low..Ultra>, SFGfx custom, SFGfx keep.
     UFUNCTION(Exec) void SFGfx(const FString& Args);
     // Trading UI: F6 trade window, F7 market board, on the live exchange (the fake only with -ExchangeFake).
@@ -113,7 +118,7 @@ private:
     void LayerUp();
     FString GetPlaneStatusText() const;
     bool GetLayerPoint(const FVector& Start, const FVector& Direction, double RayLength, const FHitResult* Hit, FVector& OutPoint) const;
-    void CancelCursorAction();
+    bool CancelCursorAction();  // true when it cancelled a harvest or a pending line start
     void PaletteAction(ESFConstructionPaletteAction Action);
     void PlaceFromView();
     void RemoveFromView();
@@ -169,8 +174,6 @@ private:
     uint8 SelectedYaw = 0;
     UPROPERTY(Transient) TObjectPtr<USFConstructionSandboxPalette> Palette;
     UPROPERTY(Transient) TObjectPtr<USFGatheringSkillsPanel> GatheringSkillsPanel;
-    FIntPoint SkillsPanelViewportSize = FIntPoint::ZeroValue;
-    float SkillsPanelViewportScale = 0;
     bool bCameraLookHeld = false;
     bool bOwnsLookSuppression = false;
     bool bApplicationActive = true;
@@ -284,6 +287,8 @@ private:
     void TickDialogue();
     UPROPERTY(Transient) TObjectPtr<USFDialoguePanel> DialoguePanel;
     UPROPERTY(Transient) TObjectPtr<USFGraphicsMenu> SettingsPanel;
+    UPROPERTY(Transient) TObjectPtr<USFGameMenu> GameMenu;
+    void HandleGameMenuChoice(ESFGameMenuAction Action);
     TWeakObjectPtr<ASFDialogueNpc> DialogueNpc;
     bool bBuildMode = false;
 };

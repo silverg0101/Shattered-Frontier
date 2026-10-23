@@ -23,6 +23,7 @@
 #include "Components/OverlaySlot.h"
 #include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
+#include "Components/Spacer.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
@@ -38,6 +39,12 @@
 #include "Exchange/SFExchangeWidgets.h"
 #include "Gathering/SFStationPanel.h"
 #include "Construction/SFConstructionSandboxPalette.h"
+#include "Characters/SFE1VitalsHud.h"
+#include "Dialogue/SFDialogue.h"
+#include "Framework/SFGraphicsMenu.h"
+#include "Gathering/SFGatheringSkillsPanel.h"
+#include "Quest/SFQuestBoard.h"
+#include "UI/SFGameMenu.h"
 #include "UI/SFUiWidgets.h"
 #include "UObject/SavePackage.h"
 #include "WidgetBlueprint.h"
@@ -54,6 +61,10 @@ constexpr const TCHAR* InventoryDir = TEXT("/Game/Frontier/UI/Widgets/Inventory"
 constexpr const TCHAR* ExchangeDir = TEXT("/Game/Frontier/UI/Widgets/Exchange");
 constexpr const TCHAR* GatheringDir = TEXT("/Game/Frontier/UI/Widgets/Gathering");
 constexpr const TCHAR* BuildDir = TEXT("/Game/Frontier/UI/Widgets/Build");
+constexpr const TCHAR* QuestDir = TEXT("/Game/Frontier/UI/Widgets/Quest");
+constexpr const TCHAR* DialogueDir = TEXT("/Game/Frontier/UI/Widgets/Dialogue");
+constexpr const TCHAR* SettingsDir = TEXT("/Game/Frontier/UI/Widgets/Settings");
+constexpr const TCHAR* MenuDir = TEXT("/Game/Frontier/UI/Widgets/Menu");
 
 // ---- tree helpers. Named widgets are Designer variables so the C++ BindWidget lookups find them. Fonts are never baked (the family is a
 // runtime composite font); the C++ base applies them, so seeds only set text.
@@ -684,9 +695,31 @@ void ItemSlotLayout(UWidgetTree* T)
     UTextBlock* TileCaption = SizedText(T, TEXT("CaptionLabel"), TEXT(""), 26.f);  // tile caption (build catalogue); collapsed while empty
     TileCaption->SetJustification(ETextJustify::Center); TileCaption->SetVisibility(ESlateVisibility::Collapsed);
     Put(Stack, TileCaption, HAlign_Fill, VAlign_Bottom, FMargin(10.f, 0.f, 10.f, 10.f));
-    Put(Stack, InvImage(T, TEXT("HoverFrame"), KBox(TEXT("hover_frame"), 18.f, 18.f, 18.f, 18.f, 208.f, 208.f), true), HAlign_Fill, VAlign_Fill);
-    Put(Stack, InvImage(T, TEXT("SelectFrame"), KBox(TEXT("select_frame"), 18.f, 18.f, 18.f, 18.f, 208.f, 208.f), true), HAlign_Fill, VAlign_Fill);
+    Put(Stack, InvImage(T, TEXT("HoverFrame"), KBox(TEXT("hover_frame"), 14.f, 14.f, 14.f, 14.f, 84.f, 84.f), true), HAlign_Fill, VAlign_Fill);
+    Put(Stack, InvImage(T, TEXT("SelectFrame"), KBox(TEXT("select_frame"), 14.f, 14.f, 14.f, 14.f, 84.f, 84.f), true), HAlign_Fill, VAlign_Fill);
     T->RootWidget = Sized(T, TEXT("RootSize"), Stack, 208.f, 208.f);
+}
+
+// WBP_ItemTile (art width follows its grid cell, 250 tall): the item slot as a catalogue tile. slot_back, the icon above and the caption in its own row
+// below it (never over the icon), hover and select frames. Same USFSlotWidget API as WBP_ItemSlot.
+void ItemTileLayout(UWidgetTree* T)
+{
+    UOverlay* Stack = A<UOverlay>(T);
+    UBorder* Plate = N<UBorder>(T, TEXT("Frame"));
+    Plate->SetBrush(KBox(TEXT("slot_back"), 18.f, 18.f, 18.f, 18.f));
+    Plate->SetPadding(FMargin(0.f));
+    Put(Stack, Plate, HAlign_Fill, VAlign_Fill);
+    UVerticalBox* Column = A<UVerticalBox>(T);
+    UVerticalBoxSlot* IconSlot = Column->AddChildToVerticalBox(Sized(T, nullptr, N<UImage>(T, TEXT("Icon")), 150.f, 150.f));
+    IconSlot->SetHorizontalAlignment(HAlign_Center); IconSlot->SetPadding(FMargin(0.f, 18.f, 0.f, 6.f));
+    UTextBlock* TileCaption = SizedText(T, TEXT("CaptionLabel"), TEXT(""), 30.f);
+    TileCaption->SetJustification(ETextJustify::Center);
+    UVerticalBoxSlot* CaptionSlot = Column->AddChildToVerticalBox(TileCaption);
+    CaptionSlot->SetHorizontalAlignment(HAlign_Center); CaptionSlot->SetPadding(FMargin(8.f, 0.f, 8.f, 14.f));
+    Put(Stack, Column, HAlign_Fill, VAlign_Fill);
+    Put(Stack, InvImage(T, TEXT("HoverFrame"), KBox(TEXT("hover_frame"), 14.f, 14.f, 14.f, 14.f), true), HAlign_Fill, VAlign_Fill);
+    Put(Stack, InvImage(T, TEXT("SelectFrame"), KBox(TEXT("select_frame"), 14.f, 14.f, 14.f, 14.f), true), HAlign_Fill, VAlign_Fill);
+    T->RootWidget = Sized(T, TEXT("RootSize"), Stack, 0.f, 250.f);
 }
 
 // WBP_ScrollList: the one scrollbar style (scrollbar_track / scrollbar_thumb) around a Content slot.
@@ -747,6 +780,15 @@ void DropdownLayout(UWidgetTree* T)
     Style.ComboButtonStyle.ButtonStyle = Face;
     Style.ComboButtonStyle.DownArrowImage = FSlateNoResource();
     Combo->SetWidgetStyle(Style);
+    // Open list: slate rows, the kit hover/select frames, ivory text (the font family is filled at runtime by USFDropdownWidget::ApplyKitStyle).
+    FTableRowStyle Item = Combo->GetItemStyle();
+    const FSlateBrush Frame = KBox(TEXT("hover_frame"), 14.f, 14.f, 14.f, 14.f);
+    const FSlateBrush Gold = KBox(TEXT("select_frame"), 14.f, 14.f, 14.f, 14.f);
+    const FSlateColorBrush Dark(Slate(1.f));
+    Item.SetEvenRowBackgroundBrush(Dark).SetOddRowBackgroundBrush(Dark).SetEvenRowBackgroundHoveredBrush(Frame).SetOddRowBackgroundHoveredBrush(Frame);
+    Item.SetActiveBrush(Gold).SetActiveHoveredBrush(Gold).SetInactiveBrush(Dark).SetInactiveHoveredBrush(Frame).SetSelectorFocusedBrush(Frame);
+    Item.SetTextColor(FSlateColor(Ivory())).SetSelectedTextColor(FSlateColor(Ivory()));
+    Combo->SetItemStyle(Item);
     Combo->SetContentPadding(FMargin(28.f, 0.f, 96.f, 0.f));
     PRAGMA_DISABLE_DEPRECATION_WARNINGS
     Combo->Font.Size = 34.f;
@@ -1050,8 +1092,8 @@ void KitRowLayout(UWidgetTree* T)
     UBorder* Pad = Plain(T, nullptr, FMargin(20.f, 12.f, 20.f, 12.f));
     Pad->SetContent(Line);
     Put(Stack, Pad, HAlign_Fill, VAlign_Fill);
-    Put(Stack, InvImage(T, TEXT("HoverFrame"), KBox(TEXT("hover_frame"), 18.f, 18.f, 18.f, 18.f), true), HAlign_Fill, VAlign_Fill);
-    Put(Stack, InvImage(T, TEXT("SelectFrame"), KBox(TEXT("select_frame"), 18.f, 18.f, 18.f, 18.f), true), HAlign_Fill, VAlign_Fill);
+    Put(Stack, InvImage(T, TEXT("HoverFrame"), KBox(TEXT("hover_frame"), 14.f, 14.f, 14.f, 14.f), true), HAlign_Fill, VAlign_Fill);
+    Put(Stack, InvImage(T, TEXT("SelectFrame"), KBox(TEXT("select_frame"), 14.f, 14.f, 14.f, 14.f), true), HAlign_Fill, VAlign_Fill);
     T->RootWidget = Sized(T, TEXT("RootSize"), Stack, 0.f, 128.f);
 }
 
@@ -1266,9 +1308,9 @@ void BuildLayout(UWidgetTree* T)
     Body->AddChildToVerticalBox(KitField(T, TEXT("WBP_SearchField"), TEXT("SearchField"), TEXT("Search objects..."), false))->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
     Body->AddChildToVerticalBox(Inst(T, CommonDir, TEXT("WBP_TabBar"), TEXT("TabBar")))->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
     UUniformGridPanel* Grid = N<UUniformGridPanel>(T, TEXT("TileGrid"));
-    Grid->SetSlotPadding(FMargin(3.f));
+    Grid->SetSlotPadding(FMargin(6.f));
     UOverlay* Pack = A<UOverlay>(T);
-    Put(Pack, ListOf(T, TEXT("TileScroll"), Grid, 642.f, 440.f), HAlign_Fill, VAlign_Fill);
+    Put(Pack, ListOf(T, TEXT("TileScroll"), Grid, 642.f, 540.f), HAlign_Fill, VAlign_Fill);
     UTextBlock* Empty = Caption(T, TEXT("EmptyText"), TEXT("No matching objects."), 36.f, true);
     Empty->SetVisibility(ESlateVisibility::Collapsed);
     Put(Pack, Empty, HAlign_Center, VAlign_Center);
@@ -1319,6 +1361,362 @@ void BuildLayout(UWidgetTree* T)
     T->RootWidget = Root;
 }
 
+// ---- screens converted to the kit in the second pass: quests, dialogue, gathering skills, settings, game menu, defeated. Same rule as above: a
+// WBP_WindowFrame instance filled through its NamedSlots, built only from the kit parents; C++ owns data and events.
+
+// WBP_Toggle (84 x 84): the field back, the gold select frame while on and the bronze hover frame, with the check glyph while on.
+void ToggleLayout(UWidgetTree* T)
+{
+    UOverlay* Stack = A<UOverlay>(T);
+    Put(Stack, InvImage(T, nullptr, KBox(TEXT("number_field"), 12.f, 12.f, 12.f, 12.f), true), HAlign_Fill, VAlign_Fill);
+    Put(Stack, Sized(T, nullptr, InvImage(T, TEXT("Check"), KImg(TEXT("icon_check_ok"), 56.f, 56.f), true), 56.f, 56.f), HAlign_Center, VAlign_Center);
+    Put(Stack, InvImage(T, TEXT("HoverFrame"), KBox(TEXT("hover_frame"), 14.f, 14.f, 14.f, 14.f), true), HAlign_Fill, VAlign_Fill);
+    Put(Stack, InvImage(T, TEXT("SelectFrame"), KBox(TEXT("select_frame"), 14.f, 14.f, 14.f, 14.f), true), HAlign_Fill, VAlign_Fill);
+    T->RootWidget = Sized(T, TEXT("RootSize"), Stack, 84.f, 84.f);
+}
+
+// WBP_SettingRow: the label on the left, the control (a NamedSlot) on the right, a separator under the line. A heading row shows Heading instead.
+void SettingRowLayout(UWidgetTree* T)
+{
+    UVerticalBox* Column = A<UVerticalBox>(T);
+    UOverlay* Stack = A<UOverlay>(T);
+    UHorizontalBox* Body = N<UHorizontalBox>(T, TEXT("RowBody"));
+    UHorizontalBoxSlot* LabelSlot = Body->AddChildToHorizontalBox(SizedText(T, TEXT("Label"), TEXT("Setting"), 36.f));
+    LabelSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); LabelSlot->SetVerticalAlignment(VAlign_Center);
+    UHorizontalBoxSlot* ControlSlot = Body->AddChildToHorizontalBox(N<UNamedSlot>(T, TEXT("Control")));
+    ControlSlot->SetVerticalAlignment(VAlign_Center); ControlSlot->SetHorizontalAlignment(HAlign_Right);
+    Put(Stack, Body, HAlign_Fill, VAlign_Center);
+    UBorder* HeadingBox = Plain(T, TEXT("HeadingBox"), FMargin(0.f, 24.f, 0.f, 0.f));
+    HeadingBox->SetContent(SizedText(T, TEXT("Heading"), TEXT("Group"), 44.f));
+    Put(Stack, HeadingBox, HAlign_Fill, VAlign_Center);
+    Column->AddChildToVerticalBox(Sized(T, nullptr, Stack, 0.f, 0.f))->SetPadding(FMargin(0.f, 10.f, 0.f, 10.f));
+    Column->AddChildToVerticalBox(KitRule(T));
+    T->RootWidget = Column;
+}
+
+// Objective rows 0..2 (tick, label, count), named Objective<i>Row / Tick / Label / Count (USFQuestBoardPanel, USFDialoguePanel).
+void ObjectiveRows(UWidgetTree* T, UVerticalBox* Into)
+{
+    for (int32 Index = 0; Index < 3; ++Index)
+    {
+        const FString Prefix = FString::Printf(TEXT("Objective%d"), Index);
+        UHorizontalBox* Row = N<UHorizontalBox>(T, *(Prefix + TEXT("Row")));
+        UImage* Tick = InvImage(T, *(Prefix + TEXT("Tick")), KImg(TEXT("icon_check_ok"), 56.f, 56.f), true);
+        Tick->SetVisibility(ESlateVisibility::Hidden);
+        Row->AddChildToHorizontalBox(Sized(T, nullptr, Tick, 56.f, 56.f))->SetVerticalAlignment(VAlign_Center);
+        UTextBlock* Label = SizedText(T, *(Prefix + TEXT("Label")), TEXT(""), 34.f);
+        Label->SetAutoWrapText(true);
+        UHorizontalBoxSlot* LabelSlot = Row->AddChildToHorizontalBox(Label);
+        LabelSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); LabelSlot->SetVerticalAlignment(VAlign_Center); LabelSlot->SetPadding(FMargin(20.f, 0.f, 20.f, 0.f));
+        UTextBlock* Count = SizedText(T, *(Prefix + TEXT("Count")), TEXT(""), 34.f);
+        Count->SetJustification(ETextJustify::Right);
+        Row->AddChildToHorizontalBox(Count)->SetVerticalAlignment(VAlign_Center);
+        Into->AddChildToVerticalBox(Row)->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
+    }
+}
+
+// Reward item slots Reward0..3 (WBP_ItemSlot), hidden until a quest shows rewards.
+UHorizontalBox* RewardSlotRow(UWidgetTree* T)
+{
+    UHorizontalBox* Row = A<UHorizontalBox>(T);
+    for (int32 Index = 0; Index < 4; ++Index)
+    {
+        if (UUserWidget* Slot = Inst(T, CommonDir, TEXT("WBP_ItemSlot"), *FString::Printf(TEXT("Reward%d"), Index)))
+        {
+            Slot->SetVisibility(ESlateVisibility::Collapsed);
+            Row->AddChildToHorizontalBox(Slot)->SetPadding(FMargin(0.f, 0.f, 16.f, 0.f));
+        }
+    }
+    return Row;
+}
+
+// A button of the footer: a fixed-width WBP_Button, right of the line.
+void FooterButton(UWidgetTree* T, UHorizontalBox* Line, const TCHAR* Name, const TCHAR* Label, float Width)
+{
+    Line->AddChildToHorizontalBox(Sized(T, nullptr, KitButton(T, Name, Label), Width, 0.f))->SetPadding(FMargin(24.f, 0.f, 0.f, 0.f));
+}
+
+// WBP_QuestBoard: quest list left, the selected quest right (description, objectives, rewards), Accept / Track / hold-to-Abandon in the footer.
+void QuestBoardLayout(UWidgetTree* T)
+{
+    UUserWidget* Window = Inst(T, CommonDir, TEXT("WBP_WindowFrame"), TEXT("Window"));
+    if (!Window) { return; }
+    WindowOf(Window, TEXT("Quest Journal"), TEXT("icon_window_quests"), 2100.f);
+    UOverlay* Pack = A<UOverlay>(T);
+    Put(Pack, ListOf(T, TEXT("QuestScroll"), N<UVerticalBox>(T, TEXT("QuestList")), 860.f, 900.f), HAlign_Fill, VAlign_Fill);
+    UTextBlock* Empty = Caption(T, TEXT("EmptyText"), TEXT("No quests yet."), 40.f, true);
+    Empty->SetVisibility(ESlateVisibility::Collapsed);
+    Put(Pack, Empty, HAlign_Center, VAlign_Center);
+    Fill(Window, TEXT("Content"), Pack);
+
+    UVerticalBox* Detail = N<UVerticalBox>(T, TEXT("Detail"));
+    Detail->AddChildToVerticalBox(Caption(T, TEXT("QuestTitle"), TEXT("Quest"), 56.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    UTextBlock* Summary = Caption(T, TEXT("Summary"), TEXT(""), 32.f, true);
+    Summary->SetAutoWrapText(true);
+    Detail->AddChildToVerticalBox(Summary)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    UTextBlock* Reason = Caption(T, TEXT("Reason"), TEXT(""), 30.f);
+    Reason->SetColorAndOpacity(FSlateColor(Amber()));
+    Reason->SetVisibility(ESlateVisibility::Collapsed);
+    Detail->AddChildToVerticalBox(Reason)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    Detail->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 4.f, 0.f, 16.f));
+    Detail->AddChildToVerticalBox(Caption(T, nullptr, TEXT("Objectives"), 40.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    ObjectiveRows(T, Detail);
+    Detail->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 8.f, 0.f, 16.f));
+    Detail->AddChildToVerticalBox(Caption(T, nullptr, TEXT("Rewards"), 40.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    Detail->AddChildToVerticalBox(RewardSlotRow(T));
+    UHorizontalBox* Pay = A<UHorizontalBox>(T);
+    Pay->AddChildToHorizontalBox(Inst(T, CommonDir, TEXT("WBP_GoldDisplay"), TEXT("RewardGold")))->SetVerticalAlignment(VAlign_Center);
+    Pay->AddChildToHorizontalBox(Caption(T, TEXT("NoReward"), TEXT("No item reward"), 34.f, true))->SetVerticalAlignment(VAlign_Center);
+    Detail->AddChildToVerticalBox(Pay)->SetPadding(FMargin(0.f, 8.f, 0.f, 0.f));
+    UBorder* DetailPad = Plain(T, nullptr, FMargin(48.f, 0.f, 0.f, 0.f));
+    DetailPad->SetContent(Sized(T, nullptr, Detail, 1000.f, 0.f));
+    Fill(Window, TEXT("SidePanel"), DetailPad);
+
+    UHorizontalBox* Foot = A<UHorizontalBox>(T);
+    UHorizontalBoxSlot* Spacer = Foot->AddChildToHorizontalBox(A<USpacer>(T));
+    Spacer->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+    FooterButton(T, Foot, TEXT("AbandonButton"), TEXT("Hold to Abandon"), 520.f);
+    FooterButton(T, Foot, TEXT("TrackButton"), TEXT("Track"), 420.f);
+    FooterButton(T, Foot, TEXT("AcceptButton"), TEXT("Accept"), 420.f);
+    Fill(Window, TEXT("Footer"), Foot);
+    WindowRoot(T, Window, true);
+}
+
+// WBP_Dialogue: the speaker's portrait and line, the responses as kit rows; the offered quest beside it (art, summary, objectives, rewards, buttons).
+void DialogueLayout(UWidgetTree* T)
+{
+    UUserWidget* Window = Inst(T, CommonDir, TEXT("WBP_WindowFrame"), TEXT("Window"));
+    if (!Window) { return; }
+    WindowOf(Window, TEXT("Speaker"), TEXT("icon_window_quests"), 2152.f);  // the quests emblem is the closest existing one
+    UVerticalBox* Body = A<UVerticalBox>(T);
+    UHorizontalBox* Speech = A<UHorizontalBox>(T);
+    UOverlay* Well = A<UOverlay>(T);
+    Put(Well, InvImage(T, nullptr, KBox(TEXT("slot_back"), 18.f, 18.f, 18.f, 18.f), true), HAlign_Fill, VAlign_Fill);
+    Put(Well, Sized(T, nullptr, N<UImage>(T, TEXT("Portrait")), 224.f, 224.f), HAlign_Center, VAlign_Center);
+    Speech->AddChildToHorizontalBox(Sized(T, nullptr, Well, 256.f, 256.f))->SetVerticalAlignment(VAlign_Top);
+    UTextBlock* Line = Caption(T, TEXT("LineText"), TEXT(""), 42.f);
+    Line->SetAutoWrapText(true);
+    UHorizontalBoxSlot* LineSlot = Speech->AddChildToHorizontalBox(Line);
+    LineSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); LineSlot->SetVerticalAlignment(VAlign_Center); LineSlot->SetPadding(FMargin(40.f, 0.f, 0.f, 0.f));
+    Body->AddChildToVerticalBox(Speech)->SetPadding(FMargin(0.f, 0.f, 0.f, 24.f));
+    Body->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 24.f));
+    Body->AddChildToVerticalBox(N<UVerticalBox>(T, TEXT("Choices")));
+    Fill(Window, TEXT("Content"), Sized(T, nullptr, Body, 1060.f, 0.f));
+
+    UVerticalBox* Offer = N<UVerticalBox>(T, TEXT("OfferColumn"));
+    Offer->AddChildToVerticalBox(Sized(T, nullptr, InvImage(T, TEXT("OfferArt"), FSlateBrush(), true), 836.f, 400.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
+    Offer->AddChildToVerticalBox(Caption(T, TEXT("OfferTitle"), TEXT("Quest"), 52.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
+    UTextBlock* Summary = Caption(T, TEXT("OfferSummary"), TEXT(""), 32.f, true);
+    Summary->SetAutoWrapText(true);
+    Offer->AddChildToVerticalBox(Summary)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    Offer->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    Offer->AddChildToVerticalBox(Caption(T, nullptr, TEXT("Objectives"), 38.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
+    ObjectiveRows(T, Offer);
+    Offer->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 4.f, 0.f, 12.f));
+    Offer->AddChildToVerticalBox(Caption(T, nullptr, TEXT("Rewards"), 38.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
+    Offer->AddChildToVerticalBox(RewardSlotRow(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    UHorizontalBox* Buttons = A<UHorizontalBox>(T);
+    UHorizontalBoxSlot* Spacer = Buttons->AddChildToHorizontalBox(A<USpacer>(T));
+    Spacer->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+    FooterButton(T, Buttons, TEXT("DeclineButton"), TEXT("Decline"), 380.f);
+    FooterButton(T, Buttons, TEXT("AcceptButton"), TEXT("Accept"), 380.f);
+    Offer->AddChildToVerticalBox(Buttons);
+    UBorder* OfferPad = Plain(T, nullptr, FMargin(48.f, 0.f, 0.f, 0.f));
+    OfferPad->SetContent(Sized(T, nullptr, Offer, 900.f, 0.f));
+    Fill(Window, TEXT("SidePanel"), OfferPad);
+    WindowRoot(T, Window, true);
+}
+
+// WBP_GatheringSkills: four skill rows (icon over the whole-point numeral, name, raise / hold / lower button, the points bar in the inventory weight
+// bar style, the next material tier).
+void GatheringSkillsLayout(UWidgetTree* T)
+{
+    UUserWidget* Window = Inst(T, CommonDir, TEXT("WBP_WindowFrame"), TEXT("Window"));
+    if (!Window) { return; }
+    WindowOf(Window, TEXT("Gathering Skills"), TEXT("icon_window_recipes"), 1294.f);  // the recipes emblem is the closest existing one
+    UVerticalBox* Column = A<UVerticalBox>(T);
+    const TCHAR* const Names[4] = {TEXT("Logging"), TEXT("Mining"), TEXT("Herbalism"), TEXT("Fishing")};
+    for (int32 Index = 0; Index < 4; ++Index)
+    {
+        const auto Part = [Index](const TCHAR* Suffix) { return FString::Printf(TEXT("Skill%d%s"), Index, Suffix); };
+        UOverlay* Row = A<UOverlay>(T);
+        UHorizontalBox* Line = A<UHorizontalBox>(T);
+        UOverlay* Badge = A<UOverlay>(T);
+        Put(Badge, InvImage(T, nullptr, KBox(TEXT("slot_back"), 18.f, 18.f, 18.f, 18.f), true), HAlign_Fill, VAlign_Fill);
+        UVerticalBox* BadgeBody = A<UVerticalBox>(T);
+        BadgeBody->AddChildToVerticalBox(Sized(T, nullptr, N<UImage>(T, *Part(TEXT("Icon"))), 112.f, 112.f))->SetHorizontalAlignment(HAlign_Center);
+        UTextBlock* Level = SizedText(T, *Part(TEXT("Level")), TEXT("0"), 52.f);
+        Level->SetJustification(ETextJustify::Center);
+        BadgeBody->AddChildToVerticalBox(Level)->SetHorizontalAlignment(HAlign_Center);
+        Put(Badge, BadgeBody, HAlign_Center, VAlign_Center, FMargin(0.f, 8.f));
+        Line->AddChildToHorizontalBox(Sized(T, nullptr, Badge, 168.f, 208.f))->SetVerticalAlignment(VAlign_Center);
+
+        UVerticalBox* Words = A<UVerticalBox>(T);
+        UHorizontalBox* NameLine = A<UHorizontalBox>(T);
+        UHorizontalBoxSlot* NameSlot = NameLine->AddChildToHorizontalBox(SizedText(T, *Part(TEXT("Name")), Names[Index], 44.f));
+        NameSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); NameSlot->SetVerticalAlignment(VAlign_Center);
+        NameLine->AddChildToHorizontalBox(Sized(T, nullptr, KitButton(T, *Part(TEXT("Lock")), TEXT("Raising")), 400.f, 0.f))->SetVerticalAlignment(VAlign_Center);
+        Words->AddChildToVerticalBox(NameLine)->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
+        UHorizontalBox* BarLine = A<UHorizontalBox>(T);
+        UOverlay* Meter = A<UOverlay>(T);
+        Put(Meter, InvImage(T, nullptr, InvBrush(TEXT("progress_track"), 680.f, 26.f, 18.f, 8.f, 18.f, 8.f, 680.f, 26.f)), HAlign_Fill, VAlign_Fill);
+        UProgressBar* Bar = N<UProgressBar>(T, *Part(TEXT("Bar")));
+        FProgressBarStyle BarStyle = Bar->GetWidgetStyle();
+        BarStyle.SetBackgroundImage(FSlateNoResource());
+        BarStyle.SetFillImage(InvBrush(TEXT("progress_fill_green"), 680.f, 22.f, 16.f, 7.f, 16.f, 7.f, 680.f, 22.f));
+        Bar->SetWidgetStyle(BarStyle);
+        Bar->SetPercent(0.f);
+        Put(Meter, Bar, HAlign_Fill, VAlign_Fill, FMargin(0.f, 2.f));
+        UHorizontalBoxSlot* MeterSlot = BarLine->AddChildToHorizontalBox(Sized(T, nullptr, Meter, 0.f, 26.f));
+        MeterSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); MeterSlot->SetVerticalAlignment(VAlign_Center);
+        UTextBlock* Points = SizedText(T, *Part(TEXT("Points")), TEXT(""), 32.f);
+        Points->SetJustification(ETextJustify::Right);
+        BarLine->AddChildToHorizontalBox(Sized(T, nullptr, Points, 260.f, 0.f))->SetPadding(FMargin(20.f, 0.f, 0.f, 0.f));
+        Words->AddChildToVerticalBox(BarLine)->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
+        UHorizontalBox* NextLine = A<UHorizontalBox>(T);
+        NextLine->AddChildToHorizontalBox(Caption(T, nullptr, TEXT("Next:"), 32.f, true))->SetVerticalAlignment(VAlign_Center);
+        NextLine->AddChildToHorizontalBox(Sized(T, nullptr, N<UImage>(T, *Part(TEXT("NextIcon"))), 56.f, 56.f))->SetPadding(FMargin(16.f, 0.f, 16.f, 0.f));
+        UTextBlock* Next = SizedText(T, *Part(TEXT("Next")), TEXT(""), 32.f);
+        Next->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
+        UHorizontalBoxSlot* NextSlot = NextLine->AddChildToHorizontalBox(Next);
+        NextSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); NextSlot->SetVerticalAlignment(VAlign_Center);
+        Words->AddChildToVerticalBox(NextLine);
+        UHorizontalBoxSlot* WordsSlot = Line->AddChildToHorizontalBox(Words);
+        WordsSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); WordsSlot->SetVerticalAlignment(VAlign_Center); WordsSlot->SetPadding(FMargin(32.f, 0.f, 0.f, 0.f));
+        UBorder* RowPad = Plain(T, nullptr, FMargin(24.f, 20.f, 32.f, 32.f));
+        RowPad->SetContent(Line);
+        Put(Row, RowPad, HAlign_Fill, VAlign_Fill);
+        Column->AddChildToVerticalBox(Row)->SetPadding(FMargin(0.f, 0.f, 0.f, 4.f));
+        if (Index < 3) { Column->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f)); }
+    }
+    Fill(Window, TEXT("Content"), Sized(T, nullptr, Column, 1150.f, 0.f));
+    WindowRoot(T, Window, false);
+}
+
+// A weight-bar-styled progress meter named Name (the keep countdown).
+UWidget* MeterBar(UWidgetTree* T, const TCHAR* Name, float Width)
+{
+    UOverlay* Meter = A<UOverlay>(T);
+    Put(Meter, InvImage(T, nullptr, InvBrush(TEXT("progress_track"), 680.f, 26.f, 18.f, 8.f, 18.f, 8.f, 680.f, 26.f)), HAlign_Fill, VAlign_Fill);
+    UProgressBar* Bar = N<UProgressBar>(T, Name);
+    FProgressBarStyle Style = Bar->GetWidgetStyle();
+    Style.SetBackgroundImage(FSlateNoResource());
+    Style.SetFillImage(InvBrush(TEXT("progress_fill_green"), 680.f, 22.f, 16.f, 7.f, 16.f, 7.f, 680.f, 22.f));
+    Bar->SetWidgetStyle(Style);
+    Bar->SetPercent(1.f);
+    Put(Meter, Bar, HAlign_Fill, VAlign_Fill, FMargin(0.f, 2.f));
+    return Sized(T, nullptr, Meter, Width, 26.f);
+}
+
+// WBP_Settings: tabs, the preset dropdown with Auto-Detect, the setting rows (C++ adds WBP_SettingRow rows into Rows), Apply / Reset in the footer,
+// and the keep-or-revert prompt as a framed card over a dim.
+void SettingsLayout(UWidgetTree* T)
+{
+    UUserWidget* Window = Inst(T, CommonDir, TEXT("WBP_WindowFrame"), TEXT("Window"));
+    if (!Window) { return; }
+    WindowOf(Window, TEXT("Settings"), TEXT("icon_window_settings"), 1352.f);
+    if (UUserWidget* Tabs = Inst(T, CommonDir, TEXT("WBP_TabBar"), TEXT("TabBar"))) { Fill(Window, TEXT("Tabs"), Tabs); }
+
+    UOverlay* Pack = A<UOverlay>(T);
+    UVerticalBox* Page = N<UVerticalBox>(T, TEXT("GraphicsPage"));
+    UHorizontalBox* Preset = A<UHorizontalBox>(T);
+    UHorizontalBoxSlot* PresetLabel = Preset->AddChildToHorizontalBox(Caption(T, nullptr, TEXT("Graphics Preset"), 44.f));
+    PresetLabel->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); PresetLabel->SetVerticalAlignment(VAlign_Center);
+    Preset->AddChildToHorizontalBox(Inst(T, CommonDir, TEXT("WBP_Dropdown"), TEXT("PresetDropdown")))->SetVerticalAlignment(VAlign_Center);
+    Preset->AddChildToHorizontalBox(Sized(T, nullptr, KitButton(T, TEXT("AutoDetectButton"), TEXT("Auto-Detect")), 380.f, 0.f))->SetPadding(FMargin(24.f, 0.f, 0.f, 0.f));
+    Page->AddChildToVerticalBox(Preset)->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
+    Page->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
+    Page->AddChildToVerticalBox(ListOf(T, TEXT("SettingsScroll"), N<UVerticalBox>(T, TEXT("Rows")), 1160.f, 1000.f));
+    Put(Pack, Page, HAlign_Fill, VAlign_Fill);
+    UTextBlock* Soon = Caption(T, TEXT("ComingSoon"), TEXT("Coming soon."), 48.f, true);
+    Soon->SetVisibility(ESlateVisibility::Collapsed);
+    Put(Pack, Soon, HAlign_Center, VAlign_Center);
+    Fill(Window, TEXT("Content"), Sized(T, nullptr, Pack, 1208.f, 0.f));
+
+    UHorizontalBox* Foot = A<UHorizontalBox>(T);
+    UHorizontalBoxSlot* Spacer = Foot->AddChildToHorizontalBox(A<USpacer>(T));
+    Spacer->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+    FooterButton(T, Foot, TEXT("ResetButton"), TEXT("Reset"), 420.f);
+    FooterButton(T, Foot, TEXT("ApplyButton"), TEXT("Apply"), 420.f);
+    Fill(Window, TEXT("Footer"), Foot);
+
+    UOverlay* Root = A<UOverlay>(T);
+    Put(Root, Window, HAlign_Fill, VAlign_Fill);
+    // The keep prompt: dims the settings window, a small framed card in the middle.
+    UOverlay* Keep = N<UOverlay>(T, TEXT("KeepLayer"));
+    UBorder* Dim = Plain(T, nullptr, FMargin(0.f));
+    Dim->SetBrush(FSlateColorBrush(FLinearColor(0.f, 0.f, 0.f, 0.55f)));
+    Put(Keep, Dim, HAlign_Fill, VAlign_Fill);
+    if (UUserWidget* Card = Inst(T, CommonDir, TEXT("WBP_WindowFrame"), TEXT("KeepWindow")))
+    {
+        WindowOf(Card, TEXT("Keep these settings?"), TEXT("icon_window_settings"), 1000.f);
+        UVerticalBox* Ask = A<UVerticalBox>(T);
+        UTextBlock* Detail = Caption(T, TEXT("KeepDetailText"), TEXT(""), 40.f);
+        Detail->SetJustification(ETextJustify::Center);
+        Ask->AddChildToVerticalBox(Detail)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+        UTextBlock* Countdown = Caption(T, TEXT("KeepCountdown"), TEXT(""), 34.f, true);
+        Countdown->SetJustification(ETextJustify::Center);
+        Ask->AddChildToVerticalBox(Countdown)->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
+        Ask->AddChildToVerticalBox(MeterBar(T, TEXT("KeepBar"), 0.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 28.f));
+        UHorizontalBox* Choice = A<UHorizontalBox>(T);
+        Choice->AddChildToHorizontalBox(Sized(T, nullptr, KitButton(T, TEXT("KeepButton"), TEXT("Keep Changes")), 400.f, 0.f))->SetPadding(FMargin(0.f, 0.f, 24.f, 0.f));
+        Choice->AddChildToHorizontalBox(Sized(T, nullptr, KitButton(T, TEXT("UndoButton"), TEXT("Revert")), 400.f, 0.f));
+        Ask->AddChildToVerticalBox(Choice)->SetHorizontalAlignment(HAlign_Center);
+        Fill(Card, TEXT("Content"), Sized(T, nullptr, Ask, 840.f, 0.f));
+        Put(Keep, Card, HAlign_Center, VAlign_Center);
+    }
+    Keep->SetVisibility(ESlateVisibility::Collapsed);
+    Put(Root, Keep, HAlign_Fill, VAlign_Fill);
+    T->RootWidget = Root;
+}
+
+// WBP_GameMenu: the small Esc menu, four buttons under a frame header.
+void GameMenuLayout(UWidgetTree* T)
+{
+    UUserWidget* Window = Inst(T, CommonDir, TEXT("WBP_WindowFrame"), TEXT("Window"));
+    if (!Window) { return; }
+    WindowOf(Window, TEXT("Menu"), TEXT("icon_window_settings"), 784.f);
+    UVerticalBox* Column = A<UVerticalBox>(T);
+    const TCHAR* const Buttons[4][2] = {{TEXT("ResumeButton"), TEXT("Resume")}, {TEXT("SettingsButton"), TEXT("Settings")}, {TEXT("LogOutButton"), TEXT("Log Out")}, {TEXT("QuitButton"), TEXT("Quit")}};
+    for (const TCHAR* const* Entry : Buttons) { Column->AddChildToVerticalBox(KitButton(T, Entry[0], Entry[1]))->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f)); }
+    Fill(Window, TEXT("Content"), Sized(T, nullptr, Column, 640.f, 0.f));
+    UOverlay* Root = A<UOverlay>(T);
+    Put(Root, Window, HAlign_Fill, VAlign_Fill);
+    T->RootWidget = Root;
+}
+
+// WBP_Defeated: the whole-screen layer (a dim and a centred frame): cause, respawn point, countdown and the Respawn button.
+void DefeatedLayout(UWidgetTree* T)
+{
+    UOverlay* Layer = N<UOverlay>(T, TEXT("DefeatedLayer"));
+    UBorder* Dim = Plain(T, nullptr, FMargin(0.f));
+    Dim->SetBrush(FSlateColorBrush(FLinearColor(0.f, 0.f, 0.f, 0.4f)));
+    Put(Layer, Dim, HAlign_Fill, VAlign_Fill);
+    UUserWidget* Window = Inst(T, CommonDir, TEXT("WBP_WindowFrame"), TEXT("Window"));
+    if (Window)
+    {
+        WindowOf(Window, TEXT("Defeated"), TEXT("icon_window_quests"), 1444.f);  // no defeat emblem in the kit: the quests scroll is the closest existing one
+        UVerticalBox* Column = A<UVerticalBox>(T);
+        UTextBlock* Cause = Caption(T, TEXT("CauseText"), TEXT("You have fallen"), 56.f);
+        Cause->SetJustification(ETextJustify::Center);
+        Column->AddChildToVerticalBox(Cause)->SetPadding(FMargin(0.f, 0.f, 0.f, 24.f));
+        Column->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 24.f));
+        UTextBlock* Label = Caption(T, nullptr, TEXT("Respawn point"), 34.f, true);
+        Label->SetJustification(ETextJustify::Center);
+        Column->AddChildToVerticalBox(Label);
+        UTextBlock* Point = Caption(T, TEXT("PointText"), TEXT("Nearest respawn"), 48.f);
+        Point->SetJustification(ETextJustify::Center);
+        Column->AddChildToVerticalBox(Point)->SetPadding(FMargin(0.f, 0.f, 0.f, 36.f));
+        Column->AddChildToVerticalBox(Sized(T, nullptr, KitButton(T, TEXT("RespawnButton"), TEXT("Respawn")), 640.f, 0.f))->SetHorizontalAlignment(HAlign_Center);
+        UTextBlock* Countdown = Caption(T, TEXT("CountdownText"), TEXT(""), 30.f, true);
+        Countdown->SetJustification(ETextJustify::Center);
+        Column->AddChildToVerticalBox(Countdown)->SetPadding(FMargin(0.f, 20.f, 0.f, 0.f));
+        Fill(Window, TEXT("Content"), Sized(T, nullptr, Column, 1300.f, 0.f));
+        Put(Layer, Window, HAlign_Center, VAlign_Center);
+    }
+    T->RootWidget = Layer;
+}
+
 struct FSpec
 {
     const TCHAR* Dir;
@@ -1351,6 +1749,7 @@ TArray<FSpec> Specs()
         {CommonDir, TEXT("WBP_TabBar"), USFTabBarWidget::StaticClass(), TabBarLayout, nullptr},
         {CommonDir, TEXT("WBP_Slot"), USFSlotWidget::StaticClass(), SlotLayout, nullptr},
         {CommonDir, TEXT("WBP_ItemSlot"), USFSlotWidget::StaticClass(), ItemSlotLayout, ItemSlotDefaults},
+        {CommonDir, TEXT("WBP_ItemTile"), USFSlotWidget::StaticClass(), ItemTileLayout, ItemSlotDefaults},
         {CommonDir, TEXT("WBP_ListRow"), USFListRowWidget::StaticClass(), ListRowLayout, nullptr},
         {CommonDir, TEXT("WBP_Separator"), USFSeparatorWidget::StaticClass(), SeparatorLayout, SeparatorDefaults},
         {CommonDir, TEXT("WBP_ScrollList"), USFScrollListWidget::StaticClass(), ScrollListLayout, nullptr},
@@ -1361,6 +1760,8 @@ TArray<FSpec> Specs()
         {CommonDir, TEXT("WBP_Stepper"), USFStepperWidget::StaticClass(), StepperLayout, nullptr},
         {CommonDir, TEXT("WBP_WindowFrame"), USFWindowFrameWidget::StaticClass(), WindowFrameLayout, nullptr},
         {CommonDir, TEXT("WBP_KitRow"), USFKitRowWidget::StaticClass(), KitRowLayout, nullptr},
+        {CommonDir, TEXT("WBP_Toggle"), USFToggleWidget::StaticClass(), ToggleLayout, nullptr},
+        {CommonDir, TEXT("WBP_SettingRow"), USFSettingRowWidget::StaticClass(), SettingRowLayout, nullptr},
         {HudDir, TEXT("WBP_HudQuestRow"), USFListRowWidget::StaticClass(), ListRowLayout, nullptr},
         {HudDir, TEXT("WBP_HudToastCard"), USFListRowWidget::StaticClass(), ToastCardLayout,
             [Row](UObject* Cdo)
@@ -1386,6 +1787,12 @@ TArray<FSpec> Specs()
         {GatheringDir, TEXT("WBP_StationPanel"), USFStationPanel::StaticClass(), StationLayout, nullptr},
         {BuildDir, TEXT("WBP_BuildCatalogue"), USFConstructionSandboxPalette::StaticClass(), BuildLayout,
             [](UObject* Cdo) { Cast<USFConstructionSandboxPalette>(Cdo)->TabIcons = {KImg(TEXT("icon_tab_voxel"), 44.f, 44.f), KImg(TEXT("icon_tab_blueprints"), 44.f, 44.f)}; }},
+        {QuestDir, TEXT("WBP_QuestBoard"), USFQuestBoardPanel::StaticClass(), QuestBoardLayout, nullptr},
+        {DialogueDir, TEXT("WBP_Dialogue"), USFDialoguePanel::StaticClass(), DialogueLayout, nullptr},
+        {GatheringDir, TEXT("WBP_GatheringSkills"), USFGatheringSkillsPanel::StaticClass(), GatheringSkillsLayout, nullptr},
+        {SettingsDir, TEXT("WBP_Settings"), USFGraphicsMenu::StaticClass(), SettingsLayout, nullptr},
+        {MenuDir, TEXT("WBP_GameMenu"), USFGameMenu::StaticClass(), GameMenuLayout, nullptr},
+        {HudDir, TEXT("WBP_Defeated"), USFE1VitalsHud::StaticClass(), DefeatedLayout, nullptr},
     };
 }
 }

@@ -193,7 +193,8 @@ public:
     virtual void TickComponent(float Delta, ELevelTick Type, FActorComponentTickFunction* Function) override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out) const override;
     bool InteractFromRay(const FVector& Start, const FVector& Direction);
-    void CancelLocalHarvest();
+    // Cancels the harvest in progress or waiting; true when there was one to cancel.
+    bool CancelLocalHarvest();
     void EquipAxe();
     void EquipPickaxe();
     // Station recipes come from content/crafting; the first is the default. The choice is per player and server-held.

@@ -16,6 +16,7 @@
 #include "Services/SFGameplayServicesClient.h"
 #include "Misc/Guid.h"
 #include "Misc/Paths.h"
+#include "UI/SFWindowStack.h"
 
 namespace
 {
@@ -58,10 +59,13 @@ bool ASFPlayerController::TryOpenDialogue()
     if (!Tree.IsValid()) { return false; }
     if (!DialoguePanel)
     {
-        DialoguePanel = CreateWidget<USFDialoguePanel>(this, USFDialoguePanel::StaticClass());
+        const TSubclassOf<USFDialoguePanel> PanelClass = LoadClass<USFDialoguePanel>(nullptr, USFDialoguePanel::AssetPath);
+        if (!PanelClass) { UE_LOG(LogTemp, Error, TEXT("DIALOGUE_WBP_MISSING %s: run tools/ui/create_widgets.py"), USFDialoguePanel::AssetPath); return false; }
+        DialoguePanel = CreateWidget<USFDialoguePanel>(this, PanelClass);
         if (!DialoguePanel) { return false; }
         DialoguePanel->OnStep.BindUObject(this, &ASFPlayerController::HandleDialogueStep);
         DialoguePanel->AddToViewport(30);
+        DialoguePanel->SetVisibility(ESlateVisibility::Collapsed);
     }
     CloseSidePanelsForModal();
     // The speaker's quest is offered only while the player can take it; held, finished or locked opens on the accepted line.
@@ -70,11 +74,7 @@ bool ASFPlayerController::TryOpenDialogue()
     const bool bOffered = Quest && (!Quests || FSFQuestCatalog::Get().OfferState(*Quest, Quests->ActiveIds(), Quests->CompletedIds()) == ESFQuestOfferState::Available);
     DialoguePanel->Open(Tree, Quest.Get(), bOffered);
     if (Quests) { Quests->ServerTalkedTo(TEXT("npc/") + FPaths::GetBaseFilename(Best->DialogueFile)); }
-    int32 Width = 0, Height = 0; GetViewportSize(Width, Height);
-    const float Scale = FMath::Max(0.01f, UWidgetLayoutLibrary::GetViewportScale(this));
-    DialoguePanel->SetDesiredSizeInViewport(FVector2D(Width / Scale, Height / Scale));  // modal root: dims the scene, places the board itself
-    DialoguePanel->SetPositionInViewport(FVector2D::ZeroVector, false);
-    DialoguePanel->SetVisibility(ESlateVisibility::Visible);
+    GetWindowStack()->Open(DialoguePanel);  // a window like the others: lines up at the left, Esc ends the conversation
     DialogueNpc = Best;
     if (bOffered)
     {
@@ -95,7 +95,7 @@ void ASFPlayerController::CloseDialogue()
 {
     if (!DialoguePanel) { return; }
     const bool bWasOpen = IsDialogueOpen();
-    DialoguePanel->SetVisibility(ESlateVisibility::Collapsed);
+    GetWindowStack()->Close(DialoguePanel);
     if (!bWasOpen) { return; }
     SetIgnoreMoveInput(false);
     if (ASFE1Character* Hero = Cast<ASFE1Character>(GetPawn())) { Hero->SetDialogueFramingTarget(nullptr); }

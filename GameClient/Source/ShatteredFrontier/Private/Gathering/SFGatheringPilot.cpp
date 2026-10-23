@@ -1080,11 +1080,12 @@ bool USFGatheringPilotComponent::InteractFromRay(const FVector& Start, const FVe
     return true;
 }
 
-void USFGatheringPilotComponent::CancelLocalHarvest()
+bool USFGatheringPilotComponent::CancelLocalHarvest()
 {
-    if (!bEnabled) { return; }
-    if (WaitingOperation!=0) { ServerCancelHarvest(WaitingOperation); }
-    else if (Feedback.Phase==ESFGatheringPilotPhase::Harvesting) { ServerCancelHarvest(Feedback.Operation); }
+    if (!bEnabled) { return false; }
+    if (WaitingOperation!=0) { ServerCancelHarvest(WaitingOperation); return true; }
+    if (Feedback.Phase==ESFGatheringPilotPhase::Harvesting) { ServerCancelHarvest(Feedback.Operation); return true; }
+    return false;
 }
 
 void USFGatheringPilotComponent::OnRep_Feedback()
