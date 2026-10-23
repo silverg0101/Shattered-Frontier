@@ -416,8 +416,9 @@ def list_dir(rel):
         e = {"name": p.name, "path": p.relative_to(ROOT).as_posix(), "kind": k, "size": st.st_size, "mtime": st.st_mtime}
         if k == "image":
             e["thumb"] = e["path"]
-        elif k == "model":  # generated models get a same-stem copy of their source image as thumbnail
-            sib = next((s for s in (p.with_suffix(x) for x in (".png", ".jpg", ".webp")) if s.exists()), None)
+        elif k == "model":  # generated models share one copy of their source image (same stem, minus _rigged)
+            stems = [p.stem, p.stem.replace("_rigged", "", 1)]
+            sib = next((s for s in (p.with_name(st + x) for st in stems for x in (".png", ".jpg", ".webp")) if s.exists()), None)
             e["thumb"] = sib.relative_to(ROOT).as_posix() if sib else None
         entries.append(e)
     return {"path": d.relative_to(ROOT).as_posix() if d != ROOT else "", "entries": entries}
@@ -608,7 +609,9 @@ def run_job(jid, host):
                 raise TimeoutError(f"timed out after {s['job_timeout_min']} min")
         st = h.get("status", {})
         if st.get("status_str") == "error":
-            msg = next((m[1].get("exception_message") for m in st.get("messages", []) if m[0] == "execution_error"), "ComfyUI error")
+            err = next((m[1] for m in st.get("messages", []) if m[0] == "execution_error"), {})
+            where = f"{err.get('node_type', '?')} (node {err.get('node_id', '?')})"
+            msg = f"{where}: {err.get('exception_type', 'error')}: {err.get('exception_message', '').strip() or 'no message'}"
             raise RuntimeError(msg)
         files = [f for out in h.get("outputs", {}).values() for f in out.get("3d", [])]
         for text in h.get("outputs", {}).get("1271", {}).get("text", []):
@@ -618,19 +621,22 @@ def run_job(jid, host):
             raise RuntimeError("job finished without a 3D output")
         out_dir = safe_path(s["output_folder"])
         out_dir.mkdir(parents=True, exist_ok=True)
-        saved = []
-        for f in files:
+        saved, base = [], None
+        for f in files:  # the unrigged model comes first; the rigged one is named after it
             rp = f"{f.get('subfolder', '')}/{f['filename']}".strip("/")
             if not rp.startswith("sfam/"):
                 raise RuntimeError(f"unexpected output path {rp}")
             remote_out.append(rp[5:])
-            suffix = "_rigged" if "_rigged" in f["filename"] else ""
-            dest = unique(out_dir / f"{safe_name}{suffix}{Path(f['filename']).suffix}")
+            ext = Path(f["filename"]).suffix
+            rigged = "_rigged" in f["filename"] and base is not None
+            dest = unique(out_dir / (f"{base}_rigged{ext}" if rigged else f"{safe_name}{ext}"))
             dest.write_bytes(get_output(host, rp[5:]))
-            thumb = dest.with_suffix(src.suffix.lower())
-            shutil.copyfile(src, thumb)  # thumbnail + record of the source
-            saved += [dest.relative_to(ROOT).as_posix(), thumb.relative_to(ROOT).as_posix()]
-        saved = sorted(set(saved), key=saved.index)
+            saved.append(dest.relative_to(ROOT).as_posix())
+            if not rigged:
+                base = dest.stem
+                thumb = dest.with_suffix(src.suffix.lower())  # one copy of the source per job: thumbnail + record
+                shutil.copyfile(src, thumb)
+                saved.append(thumb.relative_to(ROOT).as_posix())
         update_job(jid, status="done", output=saved[0], files=json.dumps(saved), finished=time.time())
     except InterruptedError:
         update_job(jid, status="cancelled", finished=time.time())
@@ -797,7 +803,7 @@ class Handler(BaseHTTPRequestHandler):
                 if action == "cancel" and st in ("queued", "running"):
                     update_job(jid, status="cancelled" if st == "queued" else "cancelling")
                 elif action == "retry" and st in ("failed", "cancelled", "done"):
-                    update_job(jid, status="queued", host=None, error=None, log=None, output=None, started=None, finished=None)
+                    update_job(jid, status="queued", host=None, error=None, log=None, output=None, files=None, started=None, finished=None)
                 elif st not in ("running", "cancelling"):
                     with DB_LOCK, db() as c:
                         c.execute("DELETE FROM jobs WHERE id=?", (jid,))
