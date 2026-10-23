@@ -24,6 +24,7 @@ plans = {
             (19, 'cmd:SFUi market'), (23, 'shot:market-board'), (24, 'cmd:SFUi market'),
             (26, 'cmd:SFUi trade'), (28, 'cmd:SFUi tradelock'), (30, 'shot:trade')],
     'gameplay-hud': [(4, 'cmd:SFUi target'), (5, 'shot')],
+    'minimap': [(4, 'cmd:SFStageAt 0 0 0'), (7, 'shot:minimap-a'), (8, 'cmd:SFStageAt 150 500 90'), (12, 'shot')],
     'gathering': [(1.5, 'cmd:SFUi skills'), (2.0, 'cmd:SFUi aim'), (3, 'shot')],
     'crafting-station': [(4, 'cmd:SFUi station'), (4.5, 'cursor:990,470'), (7, 'shot'), (7.6, 'cursor:300,346'), (8.8, 'shot:crafting-station-tooltip')],
     'inventory': [(6, 'cmd:SFUi inventory'), (8, 'cursor:180,312'), (9, 'shot')],

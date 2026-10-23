@@ -2151,6 +2151,7 @@ FString USFWidgetAuthoring::DumpTree(const FString& AssetPath)
 
 FString USFWidgetAuthoring::BuildAll(bool bOverwrite, const FString& Only)
 {
+    USFHudKit::AllowInCommandlet();
     FString Report;
     TArray<FString> OnlyList;  // Only may be one name or a comma-separated list
     Only.ParseIntoArray(OnlyList, TEXT(","));

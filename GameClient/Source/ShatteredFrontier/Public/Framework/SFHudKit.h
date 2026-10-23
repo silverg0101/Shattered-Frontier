@@ -31,4 +31,7 @@ public:
     UPROPERTY(EditAnywhere) TMap<FName, FSFHudKitElement> Elements;
 
     static const USFHudKit* Get();
+    // Widget authoring runs as a commandlet but needs the kit art: lets Get() load it there.
+    static void AllowInCommandlet() { bAllowInCommandlet = true; }
+    inline static bool bAllowInCommandlet = false;
 };

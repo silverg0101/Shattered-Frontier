@@ -36,6 +36,7 @@ if ($Final3) {
         return
     }
     switch ($Name) {
+        'minimap' { $ServerFlags = @('-GatheringPilot','-QuestPilot'); $ClientFlags = @('-QuestPilot') }
         'gameplay-hud' { $ServerFlags = @('-CombatPilot','-CombatPilotScenario','-GatheringPilot','-QuestPilot','-UiEvidenceHud'); $ClientFlags = @('-CombatPilot','-QuestPilot') }
         'gathering' { $ServerFlags = @('-GatheringPilot','-GatheringPilotScenario','-QuestPilot'); $ClientFlags = @('-GatheringPilot','-GatheringPilotScenario') }
         { $_ -in 'inventory','equipment','equipment-stack' } { $ServerFlags = @('-GatheringPilot','-GatheringPilotScenario','-QuestPilot'); $ClientFlags = @('-GatheringPilot','-GatheringPilotScenario') }
