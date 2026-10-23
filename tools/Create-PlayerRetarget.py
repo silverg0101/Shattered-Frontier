@@ -49,6 +49,18 @@ controller.remove_all_ops()
 controller.add_default_ops()
 controller.assign_ik_rig_to_all_ops(unreal.RetargetSourceOrTarget.TARGET, target)
 controller.auto_map_chains(unreal.AutoMapChainType.FUZZY, True)
+# The mannequin has no metacarpals; fuzzy mapping hands each finger's curl to its MetaHuman palm bone too (clawed hands).
+for chain in [c.chain_name for c in unreal.IKRigController.get_controller(target).get_retarget_chains()]:
+    if 'Metacarpal' in str(chain):
+        controller.set_source_chain('None', chain)
+    unreal.log(f'PLAYER_RETARGET_MAP {chain} <- {controller.get_source_chain(chain)}')
 controller.auto_align_all_bones(unreal.RetargetSourceOrTarget.TARGET)  # both rest in an A-pose; align the limb directions
+# Arms copy rotations only: the default IK op pins the MetaHuman's hands to the mannequin's hand positions, and the different
+# arm lengths bend the elbows to reach them. Legs keep IK so the feet stay planted.
+ik = controller.get_op_controller(controller.get_index_of_op_by_name('Run IK Rig'))
+settings = ik.get_settings()
+settings.chains = [c for c in settings.chains if 'Arm' not in str(c.target_chain_name)]
+ik.set_settings(settings)
+unreal.log(f'PLAYER_RETARGET_IK {[str(c.target_chain_name) for c in ik.get_settings().chains]}')
 library.save_loaded_asset(retargeter)
 unreal.log(f'PLAYER_RETARGET_READY ops={controller.get_num_retarget_ops()}')
