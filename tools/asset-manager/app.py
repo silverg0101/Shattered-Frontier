@@ -4,7 +4,7 @@ Stdlib only. Assets live under ASSET_ROOT, the queue in DATA_DIR/queue.db.
 GPU hosts are reached over SSH (their ComfyUI listens on 127.0.0.1 only).
 Run `python app.py --check` for the self-check.
 """
-import json, mimetypes, os, random, re, shlex, shutil, sqlite3, subprocess, sys, threading, time, traceback, uuid, urllib.error, urllib.parse, urllib.request
+import array, json, math, mimetypes, os, random, re, shlex, shutil, sqlite3, struct, subprocess, sys, threading, time, traceback, uuid, urllib.error, urllib.parse, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -610,6 +610,84 @@ def gpu_check(host):
     return ok, (f"[asset-manager] {host['name']}: ComfyUI pid {pid} (CUDA_VISIBLE_DEVICES={cvd}) is on {where}; "
                 f"expected GPU {host['gpu']} -> {'OK' if ok else 'MISMATCH'}")
 
+# ---------------------------------------------------------------- GLB normals
+# TRELLIS/Pixal3D exports carry only POSITION and TEXCOORD_0. Without normals, Unreal and viewers derive their
+# own from split vertices, so the thousands of UV seams show as hard lines. add_glb_normals writes smooth,
+# area-weighted normals shared by every vertex at the same position (seams included).
+GLB_COMPONENT = {5126: "f", 5125: "I", 5123: "H", 5121: "B"}
+
+def _accessor_values(gltf, binary, i, width):
+    acc = gltf["accessors"][i]
+    view = gltf["bufferViews"][acc["bufferView"]]
+    code = GLB_COMPONENT[acc["componentType"]]
+    item = array.array(code).itemsize
+    start = view.get("byteOffset", 0) + acc.get("byteOffset", 0)
+    stride = view.get("byteStride") or item * width
+    if stride == item * width:
+        vals = array.array(code)
+        vals.frombytes(binary[start:start + acc["count"] * stride])
+        return vals
+    vals = array.array(code)
+    for k in range(acc["count"]):
+        vals.frombytes(binary[start + k * stride:start + k * stride + item * width])
+    return vals
+
+def add_glb_normals(path: Path) -> bool:
+    """Add smooth NORMALs to every primitive that lacks them. Returns True when the file changed."""
+    data = path.read_bytes()
+    magic, version, _ = struct.unpack_from("<4sII", data, 0)
+    if magic != b"glTF" or version != 2:
+        return False
+    jlen, jtype = struct.unpack_from("<I4s", data, 12)
+    gltf = json.loads(data[20:20 + jlen])
+    rest = data[20 + jlen:]
+    binary = bytearray(rest[8:8 + struct.unpack_from("<I", rest, 0)[0]]) if len(rest) >= 8 and rest[4:8] == b"BIN\0" else None
+    if binary is None or not gltf.get("buffers"):
+        return False
+    changed = False
+    for mesh in gltf.get("meshes", []):
+        for prim in mesh["primitives"]:
+            attrs = prim["attributes"]
+            if "NORMAL" in attrs or "POSITION" not in attrs or prim.get("mode", 4) != 4:
+                continue
+            pos = _accessor_values(gltf, binary, attrs["POSITION"], 3)
+            n = len(pos) // 3
+            idx = _accessor_values(gltf, binary, prim["indices"], 1) if "indices" in prim else range(n)
+            key, ids = [0] * n, {}
+            for v in range(n):  # weld by position (1e-5 grid) so seam duplicates share one normal
+                k = (round(pos[3 * v] * 1e5), round(pos[3 * v + 1] * 1e5), round(pos[3 * v + 2] * 1e5))
+                key[v] = ids.setdefault(k, len(ids))
+            acc = [0.0] * (3 * len(ids))
+            for t in range(0, len(idx) - 2, 3):
+                a, b, c = idx[t], idx[t + 1], idx[t + 2]
+                ux, uy, uz = pos[3 * b] - pos[3 * a], pos[3 * b + 1] - pos[3 * a + 1], pos[3 * b + 2] - pos[3 * a + 2]
+                vx, vy, vz = pos[3 * c] - pos[3 * a], pos[3 * c + 1] - pos[3 * a + 1], pos[3 * c + 2] - pos[3 * a + 2]
+                nx, ny, nz = uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx  # length = 2x area
+                for v in (a, b, c):
+                    s3 = 3 * key[v]
+                    acc[s3] += nx; acc[s3 + 1] += ny; acc[s3 + 2] += nz
+            out = array.array("f", [0.0] * (3 * n))
+            for v in range(n):
+                s3 = 3 * key[v]
+                x, y, z = acc[s3], acc[s3 + 1], acc[s3 + 2]
+                ln = math.sqrt(x * x + y * y + z * z) or 1.0
+                out[3 * v], out[3 * v + 1], out[3 * v + 2] = x / ln, y / ln, z / ln
+            binary.extend(b"\0" * (-len(binary) % 4))
+            gltf["bufferViews"].append({"buffer": 0, "byteOffset": len(binary), "byteLength": 12 * n, "target": 34962})
+            binary.extend(out.tobytes())
+            gltf["accessors"].append({"bufferView": len(gltf["bufferViews"]) - 1, "componentType": 5126, "count": n, "type": "VEC3"})
+            attrs["NORMAL"] = len(gltf["accessors"]) - 1
+            changed = True
+    if not changed:
+        return False
+    binary.extend(b"\0" * (-len(binary) % 4))
+    gltf["buffers"][0]["byteLength"] = len(binary)
+    js = json.dumps(gltf, separators=(",", ":")).encode()
+    js += b" " * (-len(js) % 4)
+    body = struct.pack("<I4s", len(js), b"JSON") + js + struct.pack("<I4s", len(binary), b"BIN\0") + bytes(binary)
+    path.write_bytes(struct.pack("<4sII", b"glTF", 2, 12 + len(body)) + body)
+    return True
+
 LIVE = {}  # job id -> {"metrics": {...}, "log": [...]} while running
 CPU_PREV = {}
 
@@ -808,6 +886,8 @@ def run_job(jid, host):
             rigged = "_rigged" in f["filename"] and base is not None
             dest = unique(out_dir / (f"{base}_rigged{ext}" if rigged else f"{safe_name}{ext}"))
             dest.write_bytes(get_output(host, rp[5:]))
+            if dest.suffix.lower() == ".glb":
+                add_glb_normals(dest)
             saved.append(dest.relative_to(ROOT).as_posix())
             if not rigged:
                 base = dest.stem
@@ -1022,6 +1102,20 @@ class Handler(BaseHTTPRequestHandler):
     do_POST = lambda self: self.route("POST")
     do_PUT = lambda self: self.route("PUT")
 
+def _test_glb(path):
+    """Two triangles of a quad with the shared edge split (a UV seam), no normals."""
+    pos = array.array("f", [0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0.5, 0, 1, 0])
+    idx = array.array("I", [0, 1, 2, 3, 4, 5])
+    binary = pos.tobytes() + idx.tobytes()
+    gltf = {"asset": {"version": "2.0"}, "buffers": [{"byteLength": len(binary)}],
+            "bufferViews": [{"buffer": 0, "byteOffset": 0, "byteLength": 72}, {"buffer": 0, "byteOffset": 72, "byteLength": 24}],
+            "accessors": [{"bufferView": 0, "componentType": 5126, "count": 6, "type": "VEC3"},
+                          {"bufferView": 1, "componentType": 5125, "count": 6, "type": "SCALAR"}],
+            "meshes": [{"primitives": [{"attributes": {"POSITION": 0}, "indices": 1}]}]}
+    js = json.dumps(gltf).encode(); js += b" " * (-len(js) % 4)
+    body = struct.pack("<I4s", len(js), b"JSON") + js + struct.pack("<I4s", len(binary), b"BIN\0") + binary
+    path.write_bytes(struct.pack("<4sII", b"glTF", 2, 12 + len(body)) + body)
+
 def check():
     g = build_graph({"seed": -1, "target_face_num": 0, "texture_size": 4096, "tex_double": 1}, "in.png", "sfam/1_x", "TencentARC/Pixal3D")
     assert 0 <= g["272"]["inputs"]["seed"] == g["1261"]["inputs"]["seed"]
@@ -1052,6 +1146,14 @@ def check():
     assert mv["317"]["inputs"]["images"] == ["652", 0] and mv["602"]["inputs"]["image"] == "b.png"
     for nid, n in mv.items():
         assert all(v[0] in mv for v in n["inputs"].values() if isinstance(v, list)), nid
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:
+        f = Path(tmp, "t.glb"); _test_glb(f)
+        assert add_glb_normals(f) and not add_glb_normals(f)  # adds once, then leaves it alone
+        d = f.read_bytes(); jl = struct.unpack_from("<I", d, 12)[0]; g = json.loads(d[20:20 + jl])
+        nrm = _accessor_values(g, d[20 + jl + 8:], g["meshes"][0]["primitives"][0]["attributes"]["NORMAL"], 3)
+        assert nrm[3:6] == nrm[9:12] and nrm[6:9] == nrm[15:18]  # seam duplicates share a normal
+        assert abs(math.hypot(*nrm[0:3]) - 1) < 1e-6 and nrm[2] > 0.9  # unit length, facing +Z on the flat part
     assert build_graph({}, "", "", "")["257"]["inputs"]["method"] == "Meshlib"  # Cumesh there produces spikes
     assert "1270" not in build_graph({"rig_format": "fbx"}, "", "", "")
     lo = build_graph({"preset": "low", "target_face_num": 50000}, "", "", "")
