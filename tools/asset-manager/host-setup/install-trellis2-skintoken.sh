@@ -32,6 +32,10 @@ git -C ComfyUI-SkinToken checkout -q 4a83157
 grep -q '"merge_distance": 0.0' ComfyUI-SkinToken/sktn_nodes.py || sed -i \
     's/        "export_yup": use_transfer,/        "export_yup": use_transfer,\n        "merge_distance": 0.0,  # sfam patch: the 1e-4 default welds Pixal3D meshes down to a few thousand faces/' \
     ComfyUI-SkinToken/sktn_nodes.py
+# Blender's remove_doubles clamps a 0 threshold up and still collapses dense meshes, so skip it at 0.
+grep -q 'sfam patch: Blender clamps' ComfyUI-SkinToken/vendor/skintokens/rig_package/parser/bpy.py || sed -i \
+    's/^        bpy.ops.mesh.remove_doubles(threshold=merge_distance)$/        if merge_distance > 0:  # sfam patch: Blender clamps 0 up, which still collapses dense meshes\n            bpy.ops.mesh.remove_doubles(threshold=merge_distance)/' \
+    ComfyUI-SkinToken/vendor/skintokens/rig_package/parser/bpy.py
 
 # 2. CUDA 13.0 compiler from pip, kept outside the venv. nvcc, nvvm and crt must share one
 #    version, or ptxas rejects the PTX ("Unsupported .version").
