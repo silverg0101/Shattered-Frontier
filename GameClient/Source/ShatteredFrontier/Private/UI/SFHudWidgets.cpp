@@ -6,6 +6,8 @@
 #include "Townsfolk/SFTownsfolk.h"
 #include "Components/WrapBox.h"
 #include "Framework/SFScreenArt.h"
+#include "Framework/SFGameUserSettings.h"
+#include "Engine/Engine.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Components/HorizontalBox.h"
 #include "Components/Image.h"
@@ -149,16 +151,22 @@ void USFHudHotbarWidget::NativeOnInitialized()
     for (UWidget* Child : SlotRow->GetAllChildren())
     {
         USFSlotWidget* Cell = Cast<USFSlotWidget>(Child);
-        if (!Cell || !Defs.IsValidIndex(Cells.Num())) { continue; }
-        const FSFHotbarSlot& Def = Defs[Cells.Num()];
-        Cell->SetKeyText(FText::AsNumber(Def.Key));
-        Cell->SetIcon(LoadObject<UTexture2D>(nullptr, *FString::Printf(TEXT("/Game/Frontier/UI/Icons/T_Icon_%s.T_Icon_%s"), *Def.IconStem, *Def.IconStem), nullptr, LOAD_NoWarn | LOAD_Quiet));
+        if (!Cell) { continue; }
+        Cell->SetKeyText(FText::AsNumber((Cells.Num() + 1) % 10));  // the tenth key is 0
+        if (Defs.IsValidIndex(Cells.Num()))
+        {
+            const FSFHotbarSlot& Def = Defs[Cells.Num()];
+            Cell->SetIcon(LoadObject<UTexture2D>(nullptr, *FString::Printf(TEXT("/Game/Frontier/UI/Icons/T_Icon_%s.T_Icon_%s"), *Def.IconStem, *Def.IconStem), nullptr, LOAD_NoWarn | LOAD_Quiet));
+        }
         Cells.Add(Cell);
     }
 }
 
 void USFHudHotbarWidget::Present(const TArray<TPair<FText, int32>>& InventoryItems)
 {
+    const USFGameUserSettings* User = GEngine ? Cast<USFGameUserSettings>(GEngine->GetGameUserSettings()) : nullptr;
+    const int32 Shown = FMath::Clamp(User ? User->HotbarSlots : 6, USFGameUserSettings::MinHotbarSlots, USFGameUserSettings::MaxHotbarSlots);
+    for (int32 Index = 0; Index < Cells.Num(); ++Index) { Cells[Index]->SetVisibility(Index < Shown ? ESlateVisibility::Visible : ESlateVisibility::Collapsed); }
     const int32 Key = ActiveToolKey(InventoryItems);
     if (Key != ActiveKey)
     {

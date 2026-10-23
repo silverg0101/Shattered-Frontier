@@ -79,13 +79,14 @@ protected:
     virtual void ApplyKitStyle() override;
 };
 
-// Six-slot hotbar. Binds: SlotRow (HorizontalBox whose children are the WBP_Slot cells, in key order; required).
+// Hotbar of up to SlotCount cells; Settings > Gameplay picks how many show (USFGameUserSettings::HotbarSlots, 2-10). Binds: SlotRow
+// (HorizontalBox whose children are the WBP_Slot cells, in key order; required).
 UCLASS(Abstract)
 class SHATTEREDFRONTIER_API USFHudHotbarWidget : public USFUiWidget
 {
     GENERATED_BODY()
 public:
-    static constexpr int32 SlotCount = 6;
+    static constexpr int32 SlotCount = 10;  // cells authored; keys 1-9, 0
     // Keys 1-6 as bound today: 1 Wall, 2 Foundation, 3 Roof, 4 Door (construction shapes) and 5 axe, 6 pickaxe (gathering tools).
     static TArray<FSFHotbarSlot> Slots();
     // The equipped tool's key (5 axe, 6 pickaxe) from the pilot's item list, or 0 when none is equipped.

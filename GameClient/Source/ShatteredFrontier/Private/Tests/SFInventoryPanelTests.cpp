@@ -88,14 +88,13 @@ bool FSFInventoryWidgetTest::RunTest(const FString& Parameters)
     const TArray<FSFInventoryEntry> Entries=USFInventoryWidget::BuildEntries({
         Entry(TEXT("Oak log"),5,ESFInventoryTab::Materials),Entry(TEXT("Iron axe"),1,ESFInventoryTab::Gear,true),Entry(TEXT("Stew"),2,ESFInventoryTab::Consumables)});
     Panel->Present(Entries,12,3.f,40.f);
-    TestEqual(TEXT("One cell per backpack slot"),Panel->CellCount(),12);
-    if (Panel->CellCount()!=12) { return false; }
+    TestEqual(TEXT("One cell per shown stack, no empty cells"),Panel->CellCount(),2);
+    if (Panel->CellCount()!=2) { return false; }
     // Sorted by name, bag stacks only (the equipped axe is on the Equipment window): Oak log, Stew.
     TestTrue(TEXT("First bag cell is selected"),Panel->GetCell(0)->IsSelected());
     TestFalse(TEXT("Stew cell is not selected"),Panel->GetCell(1)->IsSelected());
     TestEqual(TEXT("Oak stack count"),Panel->GetCell(0)->GetCountText().ToString(),FString(TEXT("5")));
     TestEqual(TEXT("Stew stack count"),Panel->GetCell(1)->GetCountText().ToString(),FString(TEXT("2")));
-    TestEqual(TEXT("Empty cell has no count"),Panel->GetCell(2)->GetCountText().ToString(),FString());
     if (Panel->GetMainHand()) { TestTrue(TEXT("Main hand shows the equipped tool"),Panel->GetMainHand()->IsSelected()); }
     TestEqual(TEXT("Weight line"),Panel->GetWeightLine().ToString(),FString(TEXT("Weight 3.0 / 40 kg")));
     TestEqual(TEXT("Weight percent"),Panel->GetWeightPercentLine().ToString(),FString(TEXT("8%")));
@@ -106,9 +105,7 @@ bool FSFInventoryWidgetTest::RunTest(const FString& Parameters)
     Panel->SelectTab(ESFInventoryTab::Materials);
     Panel->Present(Entries,12,3.f,40.f);
     TestEqual(TEXT("Materials tab keeps the stack count"),Panel->GetCell(0)->GetCountText().ToString(),FString(TEXT("5")));
-    TestEqual(TEXT("Materials tab drops the stew"),Panel->GetCell(1)->GetCountText().ToString(),FString());
-    Panel->Present(Entries,6,3.f,40.f);
-    TestEqual(TEXT("Cells follow a smaller backpack"),Panel->CellCount(),6);
+    TestEqual(TEXT("Materials tab drops the stew"),Panel->CellCount(),1);
     return true;
 }
 

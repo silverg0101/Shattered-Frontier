@@ -31,7 +31,7 @@
 {"owner":"WBP_Settings_C_0","name":"ApplyButton","class":"WBP_Button_C","rect":[478.0,768.0,210.0,48.0]},
 {"owner":"WBP_Settings_C_0","name":"TabBar","class":"WBP_TabBar_C","rect":[84.0,240.0,604.0,42.0]},
 {"owner":"WBP_Hud_C_0","name":"Root","class":"CanvasPanel","rect":[0.0,0.0,1920.0,1080.0]},
-{"owner":"WBP_Hud_C_0","name":"Hotbar","class":"WBP_HudHotbar_C","rect":[660.0,938.0,600.0,88.0]},
+{"owner":"WBP_Hud_C_0","name":"Hotbar","class":"WBP_HudHotbar_C","rect":[708.0,954.0,504.0,72.0]},
 {"owner":"WBP_Hud_C_0","name":"Minimap","class":"WBP_HudMinimap_C","rect":[1650.8,21.6,250.0,286.0]},
 {"owner":"WBP_Hud_C_0","name":"QuestTracker","class":"WBP_HudQuestTracker_C","rect":[1612.8,338.0,286.0,114.0]},
 {"owner":"WBP_Hud_C_0","name":"Vitals","class":"WBP_PlayerFrame_C","rect":[38.4,893.9,446.0,158.0]},

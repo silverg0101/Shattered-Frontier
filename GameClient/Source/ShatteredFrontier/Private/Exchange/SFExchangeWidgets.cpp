@@ -36,8 +36,6 @@ void USFTradeWindow::NativeOnInitialized()
     Super::NativeOnInitialized();
     SetIsFocusable(false);
     SlotClass = LoadClass<USFSlotWidget>(nullptr, TEXT("/Game/Frontier/UI/Widgets/Common/WBP_ItemSlot.WBP_ItemSlot_C"));
-    EnsureCells(MySlots, MyCells);
-    EnsureCells(TheirSlots, TheirCells);
     if (MyGold) { MyGold->bDigitsOnly = true; MyGold->OnTextChanged.AddDynamic(this, &USFTradeWindow::HandleGoldChanged); }
     if (LockButton) { LockButton->OnActivated.AddDynamic(this, &USFTradeWindow::HandleLock); }
     if (CancelButton) { CancelButton->OnActivated.AddDynamic(this, &USFTradeWindow::HandleCancel); }
@@ -50,14 +48,15 @@ void USFTradeWindow::ApplyKitStyle()
     ApplyFamilyToAllText(TextStyle);
 }
 
-// SlotCount WBP_ItemSlot cells per side, filled once.
-void USFTradeWindow::EnsureCells(UPanelWidget* Grid, TArray<TObjectPtr<USFSlotWidget>>& Cells)
+// One WBP_ItemSlot per offered stack (no empty cells, at most SlotCount), rebuilt when that count changes.
+void USFTradeWindow::EnsureCells(UPanelWidget* Grid, TArray<TObjectPtr<USFSlotWidget>>& Cells, int32 Count)
 {
-    if (!Grid || !SlotClass || Cells.Num() == SlotCount) { return; }
+    Count = FMath::Clamp(Count, 0, SlotCount);
+    if (!Grid || !SlotClass || Cells.Num() == Count) { return; }
     Grid->ClearChildren();
     Cells.Reset();
     UUniformGridPanel* Uniform = Cast<UUniformGridPanel>(Grid);
-    for (int32 Index = 0; Index < SlotCount; ++Index)
+    for (int32 Index = 0; Index < Count; ++Index)
     {
         USFSlotWidget* Cell = CreateWidget<USFSlotWidget>(this, SlotClass);
         if (!Cell) { continue; }
@@ -67,12 +66,13 @@ void USFTradeWindow::EnsureCells(UPanelWidget* Grid, TArray<TObjectPtr<USFSlotWi
     }
 }
 
-void USFTradeWindow::FillCells(const FSFTradeSide& Source, TArray<TObjectPtr<USFSlotWidget>>& Cells, FString& Signature)
+void USFTradeWindow::FillCells(const FSFTradeSide& Source, UPanelWidget* Grid, TArray<TObjectPtr<USFSlotWidget>>& Cells, FString& Signature)
 {
     FString Current = Source.PlayerName;
     for (const FSFTradeStack& Stack : Source.Items) { Current += FString::Printf(TEXT("|%s:%d"), *Stack.ItemId, Stack.Count); }
     if (Current == Signature) { return; }
     Signature = Current;
+    EnsureCells(Grid, Cells, Source.Items.Num());
     for (int32 Index = 0; Index < Cells.Num(); ++Index)
     {
         const bool bFilled = Source.Items.IsValidIndex(Index);
@@ -99,8 +99,8 @@ void USFTradeWindow::Refresh()
 {
     if (!Model.IsValid()) { return; }
     const FSFTradeSnapshot& Trade = Model->Snapshot();
-    FillCells(Trade.Mine, MyCells, MySignature);
-    FillCells(Trade.Theirs, TheirCells, TheirSignature);
+    FillCells(Trade.Mine, MySlots, MyCells, MySignature);
+    FillCells(Trade.Theirs, TheirSlots, TheirCells, TheirSignature);
     SetText(MyName, TEXT("You"));
     SetText(TheirName, Trade.Theirs.PlayerName);
     if (TheirGold) { TheirGold->SetAmount(Trade.Theirs.Gold); }

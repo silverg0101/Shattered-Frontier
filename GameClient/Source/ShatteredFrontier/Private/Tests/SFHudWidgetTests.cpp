@@ -6,6 +6,8 @@
 #include "Components/Widget.h"
 #include "Components/TextBlock.h"
 #include "Editor.h"
+#include "Engine/Engine.h"
+#include "Framework/SFGameUserSettings.h"
 #include "Misc/AutomationTest.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFHudWidgetTest,
@@ -82,14 +84,25 @@ bool FSFHudWidgetTest::RunTest(const FString& Parameters)
     Hud->ClearParty();
     TestEqual(TEXT("Party cleared"),Hud->PartyCount(),0);
 
-    // Hotbar from the pilot's item list: six cells, the equipped axe lights key 5, stacks show their count.
+    // Hotbar from the pilot's item list: the equipped axe lights key 5, stacks show their count; Settings picks how many cells show.
     auto Item=[](const TCHAR* Name,int32 Count) { return TPair<FText,int32>(FText::FromString(Name),Count); };
     Hud->Hotbar->Present({Item(TEXT("Iron Axe (pilot) (equipped)"),1),Item(TEXT("Wall piece"),3)});
     TestEqual(TEXT("Equipped axe is key 5"),Hud->Hotbar->GetActiveKey(),5);
     if (TestNotNull(TEXT("Cell 5 exists"),Hud->Hotbar->GetCell(4))) { TestTrue(TEXT("Cell 5 selected"),Hud->Hotbar->GetCell(4)->IsSelected()); }
-    TestNotNull(TEXT("Cell 6 exists"),Hud->Hotbar->GetCell(USFHudHotbarWidget::SlotCount-1));
-    TestNull(TEXT("No seventh cell"),Hud->Hotbar->GetCell(USFHudHotbarWidget::SlotCount));
+    TestNotNull(TEXT("The last authored cell exists"),Hud->Hotbar->GetCell(USFHudHotbarWidget::SlotCount-1));
+    TestNull(TEXT("No cell past the authored ones"),Hud->Hotbar->GetCell(USFHudHotbarWidget::SlotCount));
     if (USFSlotWidget* Wall=Hud->Hotbar->GetCell(0)) { TestEqual(TEXT("Wall stack count"),Wall->GetCountText().ToString(),FString(TEXT("3"))); }
+    if (USFGameUserSettings* User=GEngine ? Cast<USFGameUserSettings>(GEngine->GetGameUserSettings()) : nullptr)
+    {
+        const int32 Saved=User->HotbarSlots;
+        User->HotbarSlots=3; Hud->Hotbar->Present({});
+        TestTrue(TEXT("Three cells show"),Hud->Hotbar->GetCell(2)->GetVisibility()==ESlateVisibility::Visible && Hud->Hotbar->GetCell(3)->GetVisibility()!=ESlateVisibility::Visible);
+        User->HotbarSlots=40; Hud->Hotbar->Present({});
+        TestTrue(TEXT("At most ten"),Hud->Hotbar->GetCell(9)->GetVisibility()==ESlateVisibility::Visible);
+        User->HotbarSlots=0; Hud->Hotbar->Present({});
+        TestTrue(TEXT("At least two"),Hud->Hotbar->GetCell(1)->GetVisibility()==ESlateVisibility::Visible && Hud->Hotbar->GetCell(2)->GetVisibility()!=ESlateVisibility::Visible);
+        User->HotbarSlots=Saved; Hud->Hotbar->Present({});
+    }
     Hud->Hotbar->Present({});
     TestEqual(TEXT("Nothing equipped"),Hud->Hotbar->GetActiveKey(),0);
 

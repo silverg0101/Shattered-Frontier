@@ -29,10 +29,9 @@ bool FSFEquipmentWidgetTest::RunTest(const FString& Parameters)
     const TArray<FSFInventoryEntry> Bag = {Entry(TEXT("Helm"), TEXT("Head")), Entry(TEXT("Sword"), TEXT("MainHand")), Entry(TEXT("Ring"), TEXT("Ring")), Entry(TEXT("Log"), nullptr)};
     TMap<FName, FSFInventoryEntry> Equipped; Equipped.Add(TEXT("MainHand"), Entry(TEXT("Axe"), TEXT("MainHand"), true));
     Window->Present(Bag, Equipped, 8, 4.f, 24.f);
-    TestEqual(TEXT("One cell per bag slot"), Window->CellCount(), 8);
+    TestEqual(TEXT("One cell per shown item, no empty cells"), Window->CellCount(), 3);
     TestEqual(TEXT("Only the equippable items show"), Window->ShownCount(), 3);
     TestTrue(TEXT("A shown item can be dragged"), Window->GetCell(0) && Window->GetCell(0)->CanDrag());
-    TestFalse(TEXT("An empty cell cannot be dragged"), Window->GetCell(5) && Window->GetCell(5)->CanDrag());
     if (USFSlotWidget* Hand = Window->GetDollSlot(TEXT("MainHand"))) { TestTrue(TEXT("The equipped main hand can be dragged off"), Hand->CanDrag()); }
     if (USFSlotWidget* Head = Window->GetDollSlot(TEXT("Head")))
     {
@@ -51,9 +50,12 @@ bool FSFEquipmentWidgetTest::RunTest(const FString& Parameters)
     const FSoftObjectPath Helm(TEXT("/Game/Test/Helm.Helm"));
     TestTrue(TEXT("A bag item onto its own slot equips"), USFEquipmentWidget::ResolveDrop(Helm, TEXT("Head"), NAME_None, TEXT("Head"), false) == ESFEquipDrop::Equip);
     TestTrue(TEXT("A bag item onto another slot does nothing"), USFEquipmentWidget::ResolveDrop(Helm, TEXT("Head"), NAME_None, TEXT("Chest"), false) == ESFEquipDrop::None);
-    TestTrue(TEXT("A doll item onto a grid unequips"), USFEquipmentWidget::ResolveDrop(FSoftObjectPath(), NAME_None, TEXT("Head"), NAME_None, true) == ESFEquipDrop::Unequip);
+    TestTrue(TEXT("A doll item onto the grid unequips"), USFEquipmentWidget::ResolveDrop(FSoftObjectPath(), NAME_None, TEXT("Head"), NAME_None, true) == ESFEquipDrop::Unequip);
     TestTrue(TEXT("A doll item onto a doll slot does nothing"), USFEquipmentWidget::ResolveDrop(FSoftObjectPath(), NAME_None, TEXT("Head"), TEXT("Chest"), false) == ESFEquipDrop::None);
     TestTrue(TEXT("A bag item onto the grid does nothing"), USFEquipmentWidget::ResolveDrop(Helm, TEXT("Head"), NAME_None, NAME_None, true) == ESFEquipDrop::None);
+    TestTrue(TEXT("A bag item released off the grid is worn in its own slot"), USFEquipmentWidget::ResolveDrop(Helm, TEXT("Head"), NAME_None, NAME_None, false) == ESFEquipDrop::Equip);
+    TestTrue(TEXT("A doll item released anywhere else unequips"), USFEquipmentWidget::ResolveDrop(FSoftObjectPath(), NAME_None, TEXT("Head"), NAME_None, false) == ESFEquipDrop::Unequip);
+    TestTrue(TEXT("A non-equippable item does nothing"), USFEquipmentWidget::ResolveDrop(Helm, NAME_None, NAME_None, NAME_None, false) == ESFEquipDrop::None);
     return true;
 }
 

@@ -12,7 +12,7 @@ class UTextBlock;
 // Direct trade window (WBP_TradeWindow, docs/blueprints/menus.md section 0): a WBP_WindowFrame (emblem icon_window_trade, title "Direct Trade")
 // with your offer and theirs side by side (12 WBP_ItemSlot cells each, a gold line, the lock state), Cancel Trade, a review line and the
 // hold-to-accept button in the footer. Display and input only: every decision lives in FSFTradeViewModel. Esc hides it (USFWindowStack).
-// Binds (required): MySlots, TheirSlots (UniformGridPanel or WrapBox; C++ fills them with SlotCount WBP_ItemSlot cells, 4 wide).
+// Binds (required): MySlots, TheirSlots (WrapBox or UniformGridPanel; C++ fills them with one WBP_ItemSlot per offered stack, no empty cells).
 // Optional: MyName, TheirName, MyGold (WBP_InputField, digits only), TheirGold (WBP_GoldDisplay), LockButton (WBP_Button: Lock Offer / Offer
 // Locked), LockHint, TheirStatus (text, tinted), TheirLockMark, CancelButton, AcceptButton (WBP_Button, hold), StatusText, Tooltip
 // with TipIcon, TipTitle, TipRarity, TipType, TipQuantity, TipWeight, TipDescription.
@@ -21,7 +21,7 @@ class SHATTEREDFRONTIER_API USFTradeWindow : public USFUiWidget
 {
     GENERATED_BODY()
 public:
-    static constexpr int32 SlotCount = 12;  // 4 x 3 per side
+    static constexpr int32 SlotCount = 12;  // most stacks per side
     static constexpr int32 GridColumns = 4;
     static constexpr double HoldSeconds = 1.0;
     static constexpr const TCHAR* AssetPath = TEXT("/Game/Frontier/UI/Widgets/Exchange/WBP_TradeWindow.WBP_TradeWindow_C");
@@ -69,8 +69,8 @@ private:
     UFUNCTION() void HandleCancel(USFButtonWidget* Source);
     UFUNCTION() void HandleAccept(USFButtonWidget* Source);
     void Refresh();
-    void EnsureCells(UPanelWidget* Grid, TArray<TObjectPtr<USFSlotWidget>>& Cells);
-    void FillCells(const FSFTradeSide& Source, TArray<TObjectPtr<USFSlotWidget>>& Cells, FString& Signature);
+    void EnsureCells(UPanelWidget* Grid, TArray<TObjectPtr<USFSlotWidget>>& Cells, int32 Count);
+    void FillCells(const FSFTradeSide& Source, UPanelWidget* Grid, TArray<TObjectPtr<USFSlotWidget>>& Cells, FString& Signature);
     void UpdateTooltip();
 
     TSharedPtr<FSFTradeViewModel> Model;

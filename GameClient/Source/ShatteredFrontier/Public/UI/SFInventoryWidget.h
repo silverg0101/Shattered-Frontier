@@ -34,7 +34,7 @@ struct FSFInventoryTooltip { FString Title, Description, RarityLine, TypeLine, W
 // separators) with a WBP_TabBar, a WBP_ScrollList holding the grid, a tooltip beside the frame (outside it) and a footer. C++ owns the data (merged stacks, tabs,
 // weight, gold, tooltip text) and the one server call (a recipe scroll on right click); the WBP owns layout and look. Local view of the
 // owner replicated pilot inventory. Esc closes it (USFWindowStack); there is no close button.
-// Binds: SlotGrid (UniformGridPanel or WrapBox, required; C++ fills it with one WBP_ItemSlot per backpack slot, GridColumns wide; it sits
+// Binds: SlotGrid (WrapBox or UniformGridPanel, required; C++ fills it with one WBP_ItemSlot per backpack slot, GridColumns wide; it sits
 // in a WBP_ScrollList). Optional: TabBar (USFTabBarWidget: All / Materials / Gear / Consumables / Misc), MainHandSlot (the equipped tool),
 // WeightText, WeightPercentText, WeightBar (ProgressBar: fraction of the weight limit), Gold (USFGoldDisplayWidget), EmptyText,
 // Tooltip (any widget: the hovered item, else the selected one) with TipIcon, TipTitle, TipRarity, TipType, TipQuantity, TipWeight,
@@ -45,7 +45,7 @@ class SHATTEREDFRONTIER_API USFInventoryWidget : public USFUiWidget
 {
     GENERATED_BODY()
 public:
-    static constexpr int32 GridColumns = 5;
+    static constexpr int32 GridColumns = 7;
     static constexpr int32 MaxSlots = 64;
     static constexpr const TCHAR* AssetPath = TEXT("/Game/Frontier/UI/Widgets/Inventory/WBP_Inventory.WBP_Inventory_C");
 

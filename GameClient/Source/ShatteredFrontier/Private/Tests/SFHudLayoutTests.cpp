@@ -11,7 +11,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFHudLayoutModelTest,
 bool FSFHudLayoutModelTest::RunTest(const FString& Parameters)
 {
     const TArray<FSFHotbarSlot> Slots=USFHudHotbarWidget::Slots();
-    if (!TestEqual(TEXT("Six hotbar slots"),Slots.Num(),USFHudHotbarWidget::SlotCount)) { return false; }
+    if (!TestEqual(TEXT("Six bound hotbar actions"),Slots.Num(),6) || !TestTrue(TEXT("They fit the authored cells"),Slots.Num()<=USFHudHotbarWidget::SlotCount)) { return false; }
     for (int32 I=0; I<Slots.Num(); ++I) { TestEqual(FString::Printf(TEXT("Slot %d key"),I+1),Slots[I].Key,I+1); TestFalse(TEXT("Every slot has an icon"),Slots[I].IconStem.IsEmpty()); }
     TestEqual(TEXT("Key 5 is the axe"),Slots[4].IconStem,FString(TEXT("iron_axe")));
     TestEqual(TEXT("Key 6 is the pickaxe"),Slots[5].IconStem,FString(TEXT("iron_pickaxe")));

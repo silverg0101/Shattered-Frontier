@@ -185,7 +185,9 @@ bool USFEquipmentWidget::InTab(FName SlotName, ESFEquipmentTab Tab)
 ESFEquipDrop USFEquipmentWidget::ResolveDrop(const FSoftObjectPath& Item, FName ItemSlot, FName FromEquipSlot, FName TargetSlot, bool bOnGrid)
 {
     if (!TargetSlot.IsNone()) { return !Item.IsNull() && ItemSlot == TargetSlot ? ESFEquipDrop::Equip : ESFEquipDrop::None; }
-    return bOnGrid && !FromEquipSlot.IsNone() ? ESFEquipDrop::Unequip : ESFEquipDrop::None;
+    // Released anywhere else in the window: a doll item goes back to the bag, a bag item off the grid is worn in its own slot.
+    if (!FromEquipSlot.IsNone()) { return ESFEquipDrop::Unequip; }
+    return !bOnGrid && !Item.IsNull() && !ItemSlot.IsNone() ? ESFEquipDrop::Equip : ESFEquipDrop::None;
 }
 
 void USFEquipmentWidget::NativeOnInitialized()
@@ -320,9 +322,9 @@ void USFEquipmentWidget::EnsureCells(int32 Count)
 
 void USFEquipmentWidget::Present(const TArray<FSFInventoryEntry>& Bag, const TMap<FName, FSFInventoryEntry>& Equipped, int32 SlotCount, float TotalKg, float MaxKg)
 {
-    // The grid: equippable, unequipped bag stacks of the active tab, one cell per bag slot so it reads like the inventory.
+    // The grid: equippable, unequipped bag stacks of the active tab, one cell per shown stack (no empty cells).
     ShownItems = Bag.FilterByPredicate([this](const FSFInventoryEntry& E) { return !E.bEquipped && InTab(E.EquipSlot, ActiveTab); });
-    EnsureCells(SlotCount);
+    EnsureCells(ShownItems.Num());
     for (int32 Index = 0; Index < Cells.Num(); ++Index)
     {
         USFSlotWidget* Cell = Cells[Index];
@@ -408,7 +410,7 @@ bool USFEquipmentWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDr
     const bool bOnGrid = Grid && Grid->GetCachedGeometry().IsUnderLocation(At);
     switch (ResolveDrop(Drag->Item, Drag->ItemSlot, Drag->FromEquipSlot, Target, bOnGrid))
     {
-    case ESFEquipDrop::Equip: if (Pilot) { Pilot->RequestEquip(Drag->Item, Target); } break;
+    case ESFEquipDrop::Equip: if (Pilot) { Pilot->RequestEquip(Drag->Item, Target.IsNone() ? Drag->ItemSlot : Target); } break;
     case ESFEquipDrop::Unequip: if (Pilot) { Pilot->RequestUnequip(Drag->FromEquipSlot); } break;
     default: break;  // an invalid drop does nothing
     }

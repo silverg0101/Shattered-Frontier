@@ -70,6 +70,8 @@ protected:
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFTabBarWidget> TabBar;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> GraphicsPage;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> ComingSoon;
+    // The Gameplay tab's rows (hotbar slots); applied and saved as they change, no Apply step.
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UPanelWidget> GameplayRows;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFDropdownWidget> PresetDropdown;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFButtonWidget> AutoDetectButton;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFButtonWidget> ApplyButton;
@@ -89,6 +91,7 @@ private:
     USFGameUserSettings* LiveSettings() const;
     USFGraphicsClick* Handler();
     USFSettingRowWidget* AddRow(const TCHAR* Label);
+    UPanelWidget* RowTarget = nullptr;  // where AddRow puts rows; Rows when null
     void AddDropdown(const TCHAR* Label, const TArray<FString>& Options, TFunction<int32()> Get, TFunction<void(int32)> Set);
     void AddStepper(const TCHAR* Label, int32 Min, int32 Max, int32 Step, TFunction<int32()> Get, TFunction<void(int32)> Set);
     void AddToggle(const TCHAR* Label, TFunction<bool()> Get, TFunction<void(bool)> Set);

@@ -46,7 +46,7 @@ USFSettingRowWidget* USFGraphicsMenu::AddRow(const TCHAR* Label)
 {
     USFSettingRowWidget* Row = SettingRowClass ? CreateWidget<USFSettingRowWidget>(this, SettingRowClass) : nullptr;
     if (!Row) { return nullptr; }
-    Rows->AddChild(Row);
+    (RowTarget ? RowTarget : Rows.Get())->AddChild(Row);
     if (Label) { Row->SetLabel(FText::FromString(Label)); }
     ++RowCount;
     return Row;
@@ -201,6 +201,21 @@ void USFGraphicsMenu::NativeOnInitialized()
         AddDropdown(LevelRow.Label, Names, [Edit, Field]() { return Edit->Pending().*Field; },
             [Edit, Field](int32 Index) { Edit->EditPending().*Field = FMath::Clamp(Index, 0, FSFGraphicsOptions::MaxLevel); });
     }
+    if (GameplayRows)
+    {
+        RowTarget = GameplayRows;
+        if (USFSettingRowWidget* Heading = AddRow(nullptr)) { Heading->SetHeading(FText::FromString(TEXT("Interface"))); }
+        AddStepper(TEXT("Hotbar Slots"), USFGameUserSettings::MinHotbarSlots, USFGameUserSettings::MaxHotbarSlots, 1,
+            [Self]() { const USFGraphicsMenu* Menu = Self.Get(); const USFGameUserSettings* Live = Menu ? Menu->LiveSettings() : nullptr; return Live ? Live->HotbarSlots : 6; },
+            [Self](int32 Value)
+            {
+                USFGraphicsMenu* Menu = Self.Get();
+                if (USFGameUserSettings* Live = Menu ? Menu->LiveSettings() : nullptr)
+                { Live->HotbarSlots = FMath::Clamp(Value, USFGameUserSettings::MinHotbarSlots, USFGameUserSettings::MaxHotbarSlots); Live->SaveSettings(); }
+            });
+        RowTarget = nullptr;
+        GameplayRows->SetVisibility(ESlateVisibility::Collapsed);
+    }
     bRefreshing = false;
     Refresh();
 }
@@ -235,13 +250,14 @@ bool USFGraphicsMenu::HandleEscape()
 
 void USFGraphicsMenu::HandleTab(int32 Index)
 {
-    const bool bGraphics = Index == 0;
+    const bool bGraphics = Index == 0, bGameplay = Index == 3 && GameplayRows;
     if (GraphicsPage) { GraphicsPage->SetVisibility(bGraphics ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed); }
+    if (GameplayRows) { GameplayRows->SetVisibility(bGameplay ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed); }
     if (ComingSoon)
     {
         static const TCHAR* const Names[4] = {TEXT("Graphics"), TEXT("Audio"), TEXT("Controls"), TEXT("Gameplay")};
         ComingSoon->SetText(FText::FromString(FString::Printf(TEXT("%s settings are coming soon."), Names[FMath::Clamp(Index, 0, 3)])));
-        ComingSoon->SetVisibility(bGraphics ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
+        ComingSoon->SetVisibility(bGraphics || bGameplay ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
     }
     if (ApplyButton) { ApplyButton->SetVisibility(bGraphics ? ESlateVisibility::Visible : ESlateVisibility::Collapsed); }
     if (ResetButton) { ResetButton->SetVisibility(bGraphics ? ESlateVisibility::Visible : ESlateVisibility::Collapsed); }

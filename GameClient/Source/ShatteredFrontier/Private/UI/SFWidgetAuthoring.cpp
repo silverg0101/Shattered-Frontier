@@ -171,11 +171,11 @@ void SlotLayout(UWidgetTree* T)
     UBorder* Plate = N<UBorder>(T, TEXT("Frame"));
     Plate->SetBrush(KitOrFrame(TEXT("slot_hotbar_normal"), WellFill(), Hairline(), 3.f));
     UOverlay* Stack = A<UOverlay>(T);
-    Put(Stack, Sized(T, nullptr, N<UImage>(T, TEXT("Icon")), 56.f, 56.f), HAlign_Center, VAlign_Center);
+    Put(Stack, Sized(T, nullptr, N<UImage>(T, TEXT("Icon")), USFSlotWidget::ItemIconArt * 0.5f, USFSlotWidget::ItemIconArt * 0.5f), HAlign_Center, VAlign_Center);
     Put(Stack, Txt(T, TEXT("KeyLabel"), TEXT("")), HAlign_Left, VAlign_Top, FMargin(10.f, 6.f, 0.f, 0.f));
     Put(Stack, Txt(T, TEXT("CountLabel"), TEXT("")), HAlign_Right, VAlign_Bottom, FMargin(0.f, 0.f, 10.f, 6.f));
     Plate->SetContent(Stack);
-    T->RootWidget = Sized(T, TEXT("RootSize"), Plate, 88.f, 88.f);
+    T->RootWidget = Sized(T, TEXT("RootSize"), Plate, USFSlotWidget::ItemSlotArt * 0.5f, USFSlotWidget::ItemSlotArt * 0.5f);  // HUD units: half the window art
 }
 
 // Checkbox + label + count, with a hairline rule under headings.
@@ -676,7 +676,7 @@ void KitTabLayout(UWidgetTree* T)
 
 void TabBarLayout(UWidgetTree* T) { T->RootWidget = N<UHorizontalBox>(T, TEXT("TabRow")); }
 
-// WBP_ItemSlot (208 x 208): slot_back, icon, hover and select frames (toggled by USFSelectableWidget), name fallback, stack count.
+// WBP_ItemSlot (ItemSlotArt square): slot_back, icon, hover and select frames (toggled by USFSelectableWidget), name fallback, stack count.
 void ItemSlotDefaults(UObject* Cdo)
 {
     USFSlotWidget* Slot = Cast<USFSlotWidget>(Cdo);
@@ -693,17 +693,17 @@ void ItemSlotLayout(UWidgetTree* T)
     Plate->SetBrush(KBox(TEXT("slot_back"), 18.f, 18.f, 18.f, 18.f));
     Plate->SetPadding(FMargin(0.f));
     Put(Stack, Plate, HAlign_Fill, VAlign_Fill);
-    Put(Stack, Sized(T, nullptr, N<UImage>(T, TEXT("Icon")), 160.f, 160.f), HAlign_Center, VAlign_Center);
+    Put(Stack, Sized(T, nullptr, N<UImage>(T, TEXT("Icon")), USFSlotWidget::ItemIconArt, USFSlotWidget::ItemIconArt), HAlign_Center, VAlign_Center);
     UTextBlock* Name = SizedText(T, TEXT("KeyLabel"), TEXT(""), 26.f);
     Name->SetJustification(ETextJustify::Center); Name->SetAutoWrapText(true);
     Put(Stack, Name, HAlign_Fill, VAlign_Center, FMargin(16.f, 0.f));
-    Put(Stack, SizedText(T, TEXT("CountLabel"), TEXT(""), 36.f), HAlign_Right, VAlign_Bottom, FMargin(0.f, 0.f, 24.f, 16.f));
+    Put(Stack, SizedText(T, TEXT("CountLabel"), TEXT(""), 36.f), HAlign_Right, VAlign_Bottom, FMargin(0.f, 0.f, 16.f, 8.f));
     UTextBlock* TileCaption = SizedText(T, TEXT("CaptionLabel"), TEXT(""), 26.f);  // tile caption (build catalogue); collapsed while empty
     TileCaption->SetJustification(ETextJustify::Center); TileCaption->SetVisibility(ESlateVisibility::Collapsed);
     Put(Stack, TileCaption, HAlign_Fill, VAlign_Bottom, FMargin(10.f, 0.f, 10.f, 10.f));
     Put(Stack, InvImage(T, TEXT("HoverFrame"), KBox(TEXT("hover_frame"), 14.f, 14.f, 14.f, 14.f, 84.f, 84.f), true), HAlign_Fill, VAlign_Fill);
     Put(Stack, InvImage(T, TEXT("SelectFrame"), KBox(TEXT("select_frame"), 14.f, 14.f, 14.f, 14.f, 84.f, 84.f), true), HAlign_Fill, VAlign_Fill);
-    T->RootWidget = Sized(T, TEXT("RootSize"), Stack, 208.f, 208.f);
+    T->RootWidget = Sized(T, TEXT("RootSize"), Stack, USFSlotWidget::ItemSlotArt, USFSlotWidget::ItemSlotArt);
 }
 
 // WBP_ItemTile (art width follows its grid cell, 250 tall): the item slot as a catalogue tile. slot_back, the icon above and the caption in its own row
@@ -991,13 +991,16 @@ void InventoryLayout(UWidgetTree* T)
     }
     if (UUserWidget* Tabs = Inst(T, CommonDir, TEXT("WBP_TabBar"), TEXT("TabBar"))) { Fill(Window, TEXT("Tabs"), Tabs); }
 
-    UUniformGridPanel* Grid = N<UUniformGridPanel>(T, TEXT("SlotGrid"));
-    Grid->SetSlotPadding(FMargin(3.f));
+    // A wrap box, not a uniform grid: cells keep the one slot size and fill left to right, row by row (no empty cells).
+    UWrapBox* Grid = N<UWrapBox>(T, TEXT("SlotGrid"));
+    Grid->SetInnerSlotPadding(FVector2D(6.f, 6.f));
+    Grid->SetExplicitWrapSize(true); Grid->SetWrapSize(USFInventoryWidget::GridColumns * (USFSlotWidget::ItemSlotArt + 6.f));
     if (UUserWidget* Scroll = Inst(T, CommonDir, TEXT("WBP_ScrollList"), TEXT("SlotScroll")))
     {
-        Fill(Scroll, TEXT("Content"), Sized(T, nullptr, Grid, 1070.f, 0.f));  // 5 cells of 208 + 2 x 3 padding
+        constexpr float Pitch = USFSlotWidget::ItemSlotArt + 6.f;  // cell + 2 x 3 padding
+        Fill(Scroll, TEXT("Content"), Sized(T, nullptr, Grid, USFInventoryWidget::GridColumns * Pitch, 0.f));
         UOverlay* Pack = A<UOverlay>(T);
-        Put(Pack, Sized(T, nullptr, Scroll, 0.f, 1070.f), HAlign_Fill, VAlign_Fill);  // the grid scrolls inside 5 rows
+        Put(Pack, Sized(T, nullptr, Scroll, 0.f, 7.f * Pitch), HAlign_Fill, VAlign_Fill);  // the grid scrolls inside 7 rows
         UTextBlock* Empty = SizedText(T, TEXT("EmptyText"), TEXT("Your pack is empty."), 40.f);
         Empty->SetVisibility(ESlateVisibility::Collapsed);
         Put(Pack, Empty, HAlign_Center, VAlign_Center);
@@ -1067,7 +1070,7 @@ UTextBlock* Caption(UWidgetTree* T, const TCHAR* Name, const TCHAR* Text, float 
     return Block;
 }
 
-// WBP_EquipSlot (120 x 120): the paper-doll slot. equip_slot_back, the slot's ghost (the per-instance GhostBrush; shown only while empty), the
+// WBP_EquipSlot (ItemSlotArt square, like every item slot): the paper-doll slot. equip_slot_back, the slot's ghost (the per-instance GhostBrush; shown only while empty), the
 // item icon, the name fallback, the dim hover and gold select frames (USFSlotWidget, same API as WBP_ItemSlot).
 void EquipSlotLayout(UWidgetTree* T)
 {
@@ -1076,14 +1079,14 @@ void EquipSlotLayout(UWidgetTree* T)
     Plate->SetBrush(KBox(TEXT("equip_slot_back"), 24.f, 24.f, 24.f, 24.f));
     Plate->SetPadding(FMargin(0.f));
     Put(Stack, Plate, HAlign_Fill, VAlign_Fill);
-    Put(Stack, Sized(T, nullptr, InvImage(T, TEXT("Ghost"), KImg(TEXT("slotghost_head"), 84.f, 84.f), true), 84.f, 84.f), HAlign_Center, VAlign_Center);
-    Put(Stack, Sized(T, nullptr, N<UImage>(T, TEXT("Icon")), 96.f, 96.f), HAlign_Center, VAlign_Center);
+    Put(Stack, Sized(T, nullptr, InvImage(T, TEXT("Ghost"), KImg(TEXT("slotghost_head"), 100.f, 100.f), true), 100.f, 100.f), HAlign_Center, VAlign_Center);
+    Put(Stack, Sized(T, nullptr, N<UImage>(T, TEXT("Icon")), USFSlotWidget::ItemIconArt, USFSlotWidget::ItemIconArt), HAlign_Center, VAlign_Center);
     UTextBlock* Name = SizedText(T, TEXT("KeyLabel"), TEXT(""), 22.f);
     Name->SetJustification(ETextJustify::Center); Name->SetAutoWrapText(true);
     Put(Stack, Name, HAlign_Fill, VAlign_Center, FMargin(10.f, 0.f));
     Put(Stack, InvImage(T, TEXT("HoverFrame"), KBox(TEXT("hover_frame"), 14.f, 14.f, 14.f, 14.f, 84.f, 84.f), true), HAlign_Fill, VAlign_Fill);
     Put(Stack, InvImage(T, TEXT("SelectFrame"), KBox(TEXT("select_frame"), 14.f, 14.f, 14.f, 14.f, 84.f, 84.f), true), HAlign_Fill, VAlign_Fill);
-    T->RootWidget = Sized(T, TEXT("RootSize"), Stack, 120.f, 120.f);
+    T->RootWidget = Sized(T, TEXT("RootSize"), Stack, USFSlotWidget::ItemSlotArt, USFSlotWidget::ItemSlotArt);
 }
 
 // WBP_Equipment (reference-equipment): the paper doll (Head, Chest, Hands, Legs, Feet left; MainHand, OffHand, Back, Neck, Ring right) around the
@@ -1093,8 +1096,8 @@ void EquipmentLayout(UWidgetTree* T)
 {
     UUserWidget* Window = Inst(T, CommonDir, TEXT("WBP_WindowFrame"), TEXT("Window"));
     if (!WindowOf(Window, TEXT("Equipment"), TEXT("icon_window_equipment"), 1262.f)) { return; }
-    constexpr float SlotSize = 120.f, SlotGap = 10.f;
-    const float DollHeight = 5.f * SlotSize + 4.f * SlotGap;  // 640: the window stays above the HUD player frame
+    constexpr float SlotSize = USFSlotWidget::ItemSlotArt, SlotGap = 10.f;
+    const float DollHeight = 5.f * SlotSize + 4.f * SlotGap;  // 760: the window stays above the HUD player frame
     auto Column = [&](std::initializer_list<const TCHAR*> Slots)
     {
         UVerticalBox* Box = A<UVerticalBox>(T);
@@ -1102,7 +1105,7 @@ void EquipmentLayout(UWidgetTree* T)
         for (const TCHAR* Slot : Slots)
         {
             UUserWidget* Doll = Inst(T, EquipmentDir, TEXT("WBP_EquipSlot"), *FString::Printf(TEXT("%sSlot"), Slot));
-            if (USFSlotWidget* Part = Cast<USFSlotWidget>(Doll)) { Part->GhostBrush = KImg(*FString::Printf(TEXT("slotghost_%s"), *FString(Slot).ToLower()), 84.f, 84.f); }
+            if (USFSlotWidget* Part = Cast<USFSlotWidget>(Doll)) { Part->GhostBrush = KImg(*FString::Printf(TEXT("slotghost_%s"), *FString(Slot).ToLower()), 100.f, 100.f); }
             if (Doll) { Box->AddChildToVerticalBox(Doll)->SetPadding(FMargin(0.f, Index++ ? SlotGap : 0.f, 0.f, 0.f)); }
         }
         return Box;
@@ -1123,13 +1126,16 @@ void EquipmentLayout(UWidgetTree* T)
     UVerticalBox* Body = A<UVerticalBox>(T);
     Body->AddChildToVerticalBox(Sized(T, nullptr, Doll, 1118.f, DollHeight));
     if (UUserWidget* Tabs = Inst(T, CommonDir, TEXT("WBP_TabBar"), TEXT("TabBar"))) { Body->AddChildToVerticalBox(Tabs)->SetPadding(FMargin(0.f, 28.f, 0.f, 16.f)); }
-    UUniformGridPanel* Grid = N<UUniformGridPanel>(T, TEXT("ItemGrid"));
-    Grid->SetSlotPadding(FMargin(3.f));
+    // A wrap box, not a uniform grid: cells keep the one slot size and fill left to right, row by row (no empty cells).
+    UWrapBox* Grid = N<UWrapBox>(T, TEXT("ItemGrid"));
+    Grid->SetInnerSlotPadding(FVector2D(6.f, 6.f));
+    Grid->SetExplicitWrapSize(true); Grid->SetWrapSize(USFEquipmentWidget::GridColumns * (USFSlotWidget::ItemSlotArt + 6.f));
     if (UUserWidget* Scroll = Inst(T, CommonDir, TEXT("WBP_ScrollList"), TEXT("GridScroll")))
     {
-        Fill(Scroll, TEXT("Content"), Sized(T, nullptr, Grid, 1070.f, 0.f));
+        constexpr float Pitch = USFSlotWidget::ItemSlotArt + 6.f;  // cell + 2 x 3 padding
+        Fill(Scroll, TEXT("Content"), Sized(T, nullptr, Grid, USFEquipmentWidget::GridColumns * Pitch, 0.f));
         UOverlay* Pack = A<UOverlay>(T);
-        Put(Pack, Sized(T, nullptr, Scroll, 0.f, 428.f), HAlign_Fill, VAlign_Fill);  // two rows, then it scrolls
+        Put(Pack, Sized(T, nullptr, Scroll, 0.f, 2.f * Pitch), HAlign_Fill, VAlign_Fill);  // two rows, then it scrolls
         UTextBlock* Empty = SizedText(T, TEXT("EmptyText"), TEXT("Nothing to equip here."), 40.f);
         Empty->SetVisibility(ESlateVisibility::Collapsed);
         Put(Pack, Empty, HAlign_Center, VAlign_Center);
@@ -1268,9 +1274,11 @@ UWidget* TradeColumn(UWidgetTree* T, bool bMine)
     UVerticalBox* Column = A<UVerticalBox>(T);
     Column->AddChildToVerticalBox(Caption(T, bMine ? TEXT("MyName") : TEXT("TheirName"), bMine ? TEXT("You") : TEXT("Partner"), 48.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
     Column->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
-    UUniformGridPanel* Grid = N<UUniformGridPanel>(T, bMine ? TEXT("MySlots") : TEXT("TheirSlots"));
-    Grid->SetSlotPadding(FMargin(3.f));
-    UVerticalBoxSlot* GridSlot = Column->AddChildToVerticalBox(Sized(T, nullptr, Grid, 856.f, 0.f));
+    // The offered stacks only (no empty cells), left to right; three rows of room so the window does not jump as stacks come and go.
+    UWrapBox* Grid = N<UWrapBox>(T, bMine ? TEXT("MySlots") : TEXT("TheirSlots"));
+    Grid->SetInnerSlotPadding(FVector2D(6.f, 6.f));
+    Grid->SetExplicitWrapSize(true); Grid->SetWrapSize(856.f);
+    UVerticalBoxSlot* GridSlot = Column->AddChildToVerticalBox(Sized(T, nullptr, Grid, 856.f, 3.f * (USFSlotWidget::ItemSlotArt + 6.f)));
     GridSlot->SetHorizontalAlignment(HAlign_Center); GridSlot->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
     UHorizontalBox* Gold = A<UHorizontalBox>(T);
     UHorizontalBoxSlot* GoldLabel = Gold->AddChildToHorizontalBox(Caption(T, nullptr, TEXT("Gold Offered"), 36.f));
@@ -1715,6 +1723,9 @@ void SettingsLayout(UWidgetTree* T)
     Page->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
     Page->AddChildToVerticalBox(ListOf(T, TEXT("SettingsScroll"), N<UVerticalBox>(T, TEXT("Rows")), 1160.f, 760.f));
     Put(Pack, Page, HAlign_Fill, VAlign_Fill);
+    UVerticalBox* Gameplay = N<UVerticalBox>(T, TEXT("GameplayRows"));  // the Gameplay tab (C++ adds its rows)
+    Gameplay->SetVisibility(ESlateVisibility::Collapsed);
+    Put(Pack, Gameplay, HAlign_Fill, VAlign_Top);
     UTextBlock* Soon = Caption(T, TEXT("ComingSoon"), TEXT("Coming soon."), 48.f, true);
     Soon->SetVisibility(ESlateVisibility::Collapsed);
     Put(Pack, Soon, HAlign_Center, VAlign_Center);

@@ -50,7 +50,7 @@ private:
 // Feet; right MainHand, OffHand, Back, Neck, Ring) around the character preview, then tabs and a grid of the EQUIPPABLE bag items,
 // then weight and gold. C++ owns the data, the drag / double-click requests (server validated, USFGatheringPilotComponent::RequestEquip /
 // RequestUnequip), the preview studio and its rotation; the WBP owns layout and look.
-// Binds: ItemGrid (UniformGridPanel, required; C++ fills it with WBP_ItemSlot cells, GridColumns wide). Optional, by name: <Slot>Slot for each
+// Binds: ItemGrid (WrapBox or UniformGridPanel, required; C++ fills it with WBP_ItemSlot cells, GridColumns wide). Optional, by name: <Slot>Slot for each
 // equipment slot (USFSlotWidget: WBP_EquipSlot, ghost shown while empty, a click selects it), Preview (Image whose Designer brush is
 // M_EquipmentPreview, which samples RT_EquipmentPreview; drag rotates the character),
 // GridScroll (the grid's WBP_ScrollList: dropping a paper-doll item there unequips it), TabBar (All / Weapons / Armor / Accessories),
@@ -60,7 +60,7 @@ class SHATTEREDFRONTIER_API USFEquipmentWidget : public USFUiWidget
 {
     GENERATED_BODY()
 public:
-    static constexpr int32 GridColumns = 5;
+    static constexpr int32 GridColumns = 7;
     static constexpr const TCHAR* AssetPath = TEXT("/Game/Frontier/UI/Widgets/Equipment/WBP_Equipment.WBP_Equipment_C");
 
     void Configure(USFGatheringPilotComponent* InPilot);

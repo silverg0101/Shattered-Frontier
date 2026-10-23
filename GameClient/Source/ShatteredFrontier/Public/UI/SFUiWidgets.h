@@ -267,6 +267,10 @@ class SHATTEREDFRONTIER_API USFSlotWidget : public USFSelectableWidget
 {
     GENERATED_BODY()
 public:
+    // The one size of every box a player drags an item into or out of (bag grids, paper doll, trade / market / reward slots, the
+    // hotbar), in kit art px: windows show art at 0.5, so 72 px on screen; the HUD hotbar is authored at half (also 72 px).
+    static constexpr float ItemSlotArt = 144.f;
+    static constexpr float ItemIconArt = 112.f;  // the icon inside it
     UFUNCTION(BlueprintCallable, Category = "SF UI") void SetIcon(UTexture2D* Texture);
     UFUNCTION(BlueprintCallable, Category = "SF UI") void SetKeyText(const FText& Key);
     // The tile caption under the icon (build catalogue); empty collapses it.

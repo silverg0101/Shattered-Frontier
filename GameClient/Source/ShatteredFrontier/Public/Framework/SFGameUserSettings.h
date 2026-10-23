@@ -13,6 +13,12 @@ class SHATTEREDFRONTIER_API USFGameUserSettings : public UGameUserSettings
 {
     GENERATED_BODY()
 public:
+    // HUD hotbar cells shown (keys 1-9, 0); the rest collapse. Settings > Gameplay.
+    static constexpr int32 MinHotbarSlots = 2;
+    static constexpr int32 MaxHotbarSlots = 10;
+    UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Interface", meta=(DisplayName="Hotbar slots", ClampMin="2", ClampMax="10"))
+    int32 HotbarSlots = 6;
+
     UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Camera|Combat Framing", meta=(DisplayName="Combat framing", ToolTip="Frame your selected combat target or dialogue speaker when zoomed in."))
     bool bCombatFraming = true;
 

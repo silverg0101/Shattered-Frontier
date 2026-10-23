@@ -62,7 +62,7 @@ void USFInventoryWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
     UpdateTooltip();
 }
 
-// One WBP_Slot per backpack slot, rebuilt only when the real slot count changes.
+// One cell per shown stack (no empty cells), rebuilt only when that count changes.
 void USFInventoryWidget::EnsureCells(int32 Count)
 {
     Count = FMath::Clamp(Count, 0, MaxSlots);
@@ -83,9 +83,9 @@ void USFInventoryWidget::EnsureCells(int32 Count)
 
 void USFInventoryWidget::Present(const TArray<FSFInventoryEntry>& All, int32 SlotCount, float TotalKg, float MaxKg)
 {
-    EnsureCells(SlotCount);
     // The bag grid shows bag stacks only; equipped items live on the Equipment window (and the main-hand slot here).
     const TArray<FSFInventoryEntry> Items = FilterByTab(All, ActiveTab).FilterByPredicate([](const FSFInventoryEntry& E) { return !E.bEquipped; });
+    EnsureCells(Items.Num());
     // Selection follows the stack name; it falls back to the first shown stack when its stack left the tab.
     if (!Items.ContainsByPredicate([this](const FSFInventoryEntry& E) { return E.Name.ToString() == SelectedKey; })) { SelectedKey = Items.IsEmpty() ? FString() : Items[0].Name.ToString(); }
     for (int32 Index = 0; Index < Cells.Num(); ++Index)
