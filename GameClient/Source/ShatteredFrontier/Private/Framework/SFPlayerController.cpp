@@ -8,6 +8,7 @@
 #include "UI/SFHudWidgets.h"
 #include "Gathering/SFGatheringHud.h"
 #include "UI/SFInventoryWidget.h"
+#include "UI/SFEquipmentWidget.h"
 #include "UI/SFWindowStack.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Exchange/SFExchangeComponent.h"
@@ -355,6 +356,23 @@ void ASFPlayerController::ToggleInventoryPanel()
     // A window: sized by its content and placed by the window stack (Visible so tabs, slots and tooltips take the mouse).
     const bool bOpen = !GetWindowStack()->IsOpen(InventoryWidget);
     if (bOpen) { GetWindowStack()->Open(InventoryWidget); } else { GetWindowStack()->Close(InventoryWidget); }
+}
+
+void ASFPlayerController::ToggleEquipmentPanel()
+{
+    USFGatheringPilotComponent* Pilot = FindComponentByClass<USFGatheringPilotComponent>();
+    if (!IsLocalController() || !Pilot || !Pilot->IsEnabled()) { return; }
+    if (!EquipmentWidget)
+    {
+        const TSubclassOf<USFEquipmentWidget> EquipmentClass = LoadClass<USFEquipmentWidget>(nullptr, USFEquipmentWidget::AssetPath);
+        if (!EquipmentClass) { UE_LOG(LogTemp, Error, TEXT("EQUIPMENT_WBP_MISSING %s: run tools/ui/create_widgets.py"), USFEquipmentWidget::AssetPath); return; }
+        EquipmentWidget = CreateWidget<USFEquipmentWidget>(this, EquipmentClass);
+        if (!EquipmentWidget) { return; }
+        EquipmentWidget->Configure(Pilot);
+        EquipmentWidget->AddToViewport(20);
+        EquipmentWidget->SetVisibility(ESlateVisibility::Collapsed);
+    }
+    if (GetWindowStack()->IsOpen(EquipmentWidget)) { GetWindowStack()->Close(EquipmentWidget); } else { GetWindowStack()->Open(EquipmentWidget); }
 }
 
 void ASFPlayerController::InteractWithSelectedTarget()

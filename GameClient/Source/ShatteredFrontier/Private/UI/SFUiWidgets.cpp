@@ -1,5 +1,6 @@
 #include "UI/SFUiWidgets.h"
 
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
 #include "Components/Button.h"
@@ -311,9 +312,51 @@ FText USFSlotWidget::GetCountText() const { return CountLabel ? CountLabel->GetT
 
 void USFSlotWidget::SetIcon(UTexture2D* Texture)
 {
+    if (Ghost) { Ghost->SetVisibility(Texture ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible); }
     if (!Icon) { return; }
     if (Texture) { Icon->SetBrushFromTexture(Texture, false); Icon->SetVisibility(ESlateVisibility::HitTestInvisible); }
     else { Icon->SetVisibility(ESlateVisibility::Collapsed); }
+}
+
+bool USFSlotWidget::HasIcon() const { return Icon && Icon->GetVisibility() != ESlateVisibility::Collapsed; }
+
+void USFSlotWidget::NativePreConstruct()
+{
+    Super::NativePreConstruct();
+    if (Ghost && GhostBrush.GetResourceObject()) { Ghost->SetBrush(GhostBrush); }  // per-instance art (Designer preview too)
+}
+
+FReply USFSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+    if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton && CanDrag())
+    {
+        if (OnClicked.IsBound()) { OnClicked.Broadcast(this); }
+        return FReply::Handled().DetectDrag(TakeWidget(), EKeys::LeftMouseButton);
+    }
+    return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+}
+
+FReply USFSlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+    if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton && OnDoubleClicked.IsBound()) { OnDoubleClicked.Broadcast(this); return FReply::Handled(); }
+    return Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
+}
+
+void USFSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
+{
+    if (!CanDrag()) { return; }
+    USFItemDragOperation* Operation = NewObject<USFItemDragOperation>(this);
+    Operation->Item = DragItem; Operation->ItemSlot = DragItemSlot; Operation->FromEquipSlot = DragFromEquipSlot;
+    if (Icon && Icon->GetBrush().GetResourceObject())  // the dragged icon under the cursor, at the slot's on-screen icon size
+    {
+        UImage* Visual = WidgetTree->ConstructWidget<UImage>();
+        FSlateBrush Brush = Icon->GetBrush();
+        Brush.ImageSize = Icon->GetCachedGeometry().GetAbsoluteSize() / FMath::Max(0.1f, UWidgetLayoutLibrary::GetViewportScale(this));
+        Visual->SetBrush(Brush);
+        Operation->DefaultDragVisual = Visual;
+        Operation->Pivot = EDragPivot::CenterCenter;
+    }
+    OutOperation = Operation;
 }
 
 void USFSlotWidget::SetKeyText(const FText& Key) { if (KeyLabel) { KeyLabel->SetText(Key); } }

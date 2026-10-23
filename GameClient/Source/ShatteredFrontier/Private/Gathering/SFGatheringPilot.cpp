@@ -487,7 +487,7 @@ bool USFGatheringPilotComponent::HasRequiredTool(ESFGatheringPilotKind Kind) con
     const auto* Inventory=GetOwner()->FindComponentByClass<UInventoryComponent>();
     TSoftObjectPtr<UInventoryItemDefinition> Equipped; int32 Quantity=0;
     // These two released definitions are the pilot's tier-one axe/pickaxe catalogue.
-    return Inventory && Inventory->GetEquippedItem(TEXT("tool"),Equipped,Quantity) && Quantity==1
+    return Inventory && Inventory->GetEquippedItem(MainHandSlot(),Equipped,Quantity) && Quantity==1
         && Equipped.ToSoftObjectPath()==FSoftObjectPath(ToolPath(Kind==ESFGatheringPilotKind::Oak));
 #else
     return false;
@@ -497,21 +497,98 @@ bool USFGatheringPilotComponent::HasRequiredTool(ESFGatheringPilotKind Kind) con
 bool USFGatheringPilotComponent::TryEquipTool(bool bAxe)
 {
     if (!bEnabled) { return false; }
-    const auto* PC=Cast<APlayerController>(GetOwner());
-    if (!PC || (!PC->HasAuthority() && !PC->IsLocalController()) || (PC->HasAuthority() && !IsAuthoritativePilotWorld())) { return false; }
     if (HasRequiredTool(bAxe ? ESFGatheringPilotKind::Oak : ESFGatheringPilotKind::Iron)) { return true; }
+    // Tools are main-hand items: the same validated request the Equipment window sends.
+    return RequestEquip(FSoftObjectPath(ToolPath(bAxe)),MainHandSlot());
+}
+
+const TArray<FName>& USFGatheringPilotComponent::EquipmentSlots()
+{
+    static const TArray<FName> Slots={TEXT("Head"),TEXT("Chest"),TEXT("Hands"),TEXT("Legs"),TEXT("Feet"),TEXT("MainHand"),TEXT("OffHand"),TEXT("Neck"),TEXT("Ring"),TEXT("Back")};
+    return Slots;
+}
+
+int32 USFGatheringPilotComponent::FindBagSlot(const FSoftObjectPath& Item) const
+{
 #if SF_WITH_MINIMAL_INVENTORY
-    auto* Inventory=GetOwner()->FindComponentByClass<UInventoryComponent>();
-    if (!Inventory) { return false; }
-    const FSoftObjectPath Desired(ToolPath(bAxe));
-    for (int32 I=0; I<FMath::Clamp(Inventory->NumSlots,0,64); ++I)
+    const auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+    for (int32 I=0; Inventory && !Item.IsNull() && I<FMath::Clamp(Inventory->NumSlots,0,64); ++I)
     {
-        TSoftObjectPtr<UInventoryItemDefinition> Item; int32 Quantity=0;
-        if (Inventory->GetSlot(I,Item,Quantity) && Quantity>0 && Item.ToSoftObjectPath()==Desired)
-        { CancelLocalHarvest(); return Inventory->EquipFromSlot(I); }
+        TSoftObjectPtr<UInventoryItemDefinition> Held; int32 Quantity=0;
+        if (Inventory->GetSlot(I,Held,Quantity) && Quantity>0 && Held.ToSoftObjectPath()==Item) { return I; }
     }
 #endif
-    return false;
+    return INDEX_NONE;
+}
+
+FSoftObjectPath USFGatheringPilotComponent::GetEquipped(FName Slot) const
+{
+#if SF_WITH_MINIMAL_INVENTORY
+    const auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+    TSoftObjectPtr<UInventoryItemDefinition> Equipped; int32 Quantity=0;
+    if (Inventory && Inventory->GetEquippedItem(Slot,Equipped,Quantity)) { return Equipped.ToSoftObjectPath(); }
+#endif
+    return FSoftObjectPath();
+}
+
+bool USFGatheringPilotComponent::RequestEquip(const FSoftObjectPath& Item, FName Slot)
+{
+    const auto* PC=Cast<APlayerController>(GetOwner());
+    if (!bEnabled || !PC || !EquipmentSlots().Contains(Slot) || FindBagSlot(Item)==INDEX_NONE) { return false; }
+    if (Slot==MainHandSlot()) { CancelLocalHarvest(); }  // a tool change ends the channel (the server revalidates the tool anyway)
+    if (PC->HasAuthority()) { return ApplyEquip(Item,Slot)==ESFEquipResult::Ok; }
+    if (!PC->IsLocalController()) { return false; }
+    ServerEquip(Item,Slot);
+    return true;
+}
+
+bool USFGatheringPilotComponent::RequestUnequip(FName Slot)
+{
+    const auto* PC=Cast<APlayerController>(GetOwner());
+    if (!bEnabled || !PC || GetEquipped(Slot).IsNull()) { return false; }
+    if (Slot==MainHandSlot()) { CancelLocalHarvest(); }
+    if (PC->HasAuthority()) { return ApplyUnequip(Slot)==ESFEquipResult::Ok; }
+    if (!PC->IsLocalController()) { return false; }
+    ServerUnequip(Slot);
+    return true;
+}
+
+void USFGatheringPilotComponent::ServerEquip_Implementation(const FSoftObjectPath& Item, FName Slot) { ApplyEquip(Item,Slot); }
+void USFGatheringPilotComponent::ServerUnequip_Implementation(FName Slot) { ApplyUnequip(Slot); }
+
+ESFEquipResult USFGatheringPilotComponent::ApplyEquip(const FSoftObjectPath& Item, FName Slot)
+{
+    ESFEquipResult Result=ESFEquipResult::Disabled;
+#if SF_WITH_MINIMAL_INVENTORY
+    auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+    const int32 BagSlot=FindBagSlot(Item);  // ownership: the item must be in this player's own bag
+    const UInventoryItemDefinition* Definition=BagSlot!=INDEX_NONE ? TSoftObjectPtr<UInventoryItemDefinition>(Item).LoadSynchronous() : nullptr;
+    if (!bEnabled || !Inventory || !IsAuthoritativePilotWorld()) { Result=ESFEquipResult::Disabled; }
+    else if (!EquipmentSlots().Contains(Slot)) { Result=ESFEquipResult::InvalidSlot; }
+    else if (BagSlot==INDEX_NONE) { Result=ESFEquipResult::NotOwned; }
+    else if (!Definition || Definition->UseType!=EInventoryItemUseType::Equip) { Result=ESFEquipResult::NotEquippable; }
+    else if (Definition->EquipmentSlot!=Slot) { Result=ESFEquipResult::WrongSlot; }
+    // The plugin moves it atomically: the old item returns to the bag, refused when that does not fit (space or weight).
+    else { Result=Inventory->EquipFromSlot(BagSlot) ? ESFEquipResult::Ok : ESFEquipResult::NoSpace; }
+    if (Result==ESFEquipResult::Ok) { GetOwner()->ForceNetUpdate(); }
+#endif
+    UE_LOG(LogTemp,Display,TEXT("EQUIP_APPLIED Slot=%s Item=%s Result=%d"),*Slot.ToString(),*Item.GetAssetName(),int32(Result));
+    return Result;
+}
+
+ESFEquipResult USFGatheringPilotComponent::ApplyUnequip(FName Slot)
+{
+    ESFEquipResult Result=ESFEquipResult::Disabled;
+#if SF_WITH_MINIMAL_INVENTORY
+    auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+    if (!bEnabled || !Inventory || !IsAuthoritativePilotWorld()) { Result=ESFEquipResult::Disabled; }
+    else if (!EquipmentSlots().Contains(Slot)) { Result=ESFEquipResult::InvalidSlot; }
+    else if (GetEquipped(Slot).IsNull()) { Result=ESFEquipResult::NotEquipped; }
+    else { Result=Inventory->UnequipSlot(Slot) ? ESFEquipResult::Ok : ESFEquipResult::NoSpace; }
+    if (Result==ESFEquipResult::Ok) { GetOwner()->ForceNetUpdate(); }
+#endif
+    UE_LOG(LogTemp,Display,TEXT("UNEQUIP_APPLIED Slot=%s Result=%d"),*Slot.ToString(),int32(Result));
+    return Result;
 }
 
 bool USFGatheringPilotComponent::GetInventoryWeight(float& TotalKg, float& MaxKg) const
@@ -541,8 +618,11 @@ TArray<TPair<FText,int32>> USFGatheringPilotComponent::GetInventoryItems() const
         TSoftObjectPtr<UInventoryItemDefinition> Item; int32 Quantity=0;
         if (Inventory->GetSlot(I,Item,Quantity)) { Add(Item,Quantity,TEXT("")); }
     }
-    TSoftObjectPtr<UInventoryItemDefinition> Equipped; int32 Quantity=0;
-    if (Inventory->GetEquippedItem(TEXT("tool"),Equipped,Quantity)) { Add(Equipped,Quantity,TEXT(" (equipped)")); }
+    for (const FName Slot : EquipmentSlots())
+    {
+        TSoftObjectPtr<UInventoryItemDefinition> Equipped; int32 Quantity=0;
+        if (Inventory->GetEquippedItem(Slot,Equipped,Quantity)) { Add(Equipped,Quantity,TEXT(" (equipped)")); }
+    }
 #endif
     return Items;
 }
@@ -1195,6 +1275,11 @@ void USFGatheringPilotComponent::TickFiniteNetworkScenario()
         {
             if (!bScenarioToolRequested) { bScenarioToolRequested=TryEquipTool(bPrimaryRole); }
             return;
+        }
+        if (bScenarioToolRequested)  // the client's equip request came back through replication (tools/Test-GatheringPilot.ps1 checks this)
+        {
+            UE_LOG(LogTemp,Display,TEXT("EQUIP_REPLICATED Slot=%s Item=%s"),*MainHandSlot().ToString(),*GetEquipped(MainHandSlot()).GetAssetName());
+            bScenarioToolRequested=false;
         }
         const auto* Character=Cast<ACharacter>(PC->GetPawn());
         const FVector Position=PC->GetPawn()->GetActorLocation();

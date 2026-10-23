@@ -76,6 +76,7 @@ void USFInventoryWidget::EnsureCells(int32 Count)
         if (!Cell) { continue; }
         if (Uniform) { Uniform->AddChildToUniformGrid(Cell, Index / GridColumns, Index % GridColumns); } else { SlotGrid->AddChild(Cell); }
         Cell->OnClicked.AddDynamic(this, &USFInventoryWidget::HandleSlotClicked);
+        Cell->OnDoubleClicked.AddDynamic(this, &USFInventoryWidget::HandleSlotDoubleClicked);
         Cells.Add(Cell);
     }
 }
@@ -96,6 +97,8 @@ void USFInventoryWidget::Present(const TArray<FSFInventoryEntry>& All, int32 Slo
         Cell->SetKeyText(bFilled && !Icon ? Items[Index].Name : FText::GetEmpty());
         Cell->SetCount(bFilled ? Items[Index].Count : 0);  // the bag slot shows single counts too (bShowSingleCount)
         Cell->SetSelected(bFilled && Items[Index].Name.ToString() == SelectedKey);
+        const bool bEquippable = bFilled && !Items[Index].bEquipped && !Items[Index].EquipSlot.IsNone();
+        Cell->SetDragPayload(bEquippable ? Items[Index].ItemPath : FSoftObjectPath(), bEquippable ? Items[Index].EquipSlot : NAME_None, NAME_None);
     }
     ShownItems = Items;  // the hover tooltip reads these by cell index
     const FSFInventoryEntry* Equipped = All.FindByPredicate([](const FSFInventoryEntry& E) { return E.bEquipped; });
@@ -134,6 +137,20 @@ void USFInventoryWidget::SelectCell(int32 Index)
 }
 
 void USFInventoryWidget::HandleSlotClicked(USFSelectableWidget* Source) { SelectCell(Cells.IndexOfByKey(Cast<USFSlotWidget>(Source))); }
+
+void USFInventoryWidget::HandleSlotDoubleClicked(USFSelectableWidget* Source)
+{
+    const int32 Index = Cells.IndexOfByKey(Cast<USFSlotWidget>(Source));
+    if (Pilot && ShownItems.IsValidIndex(Index) && !ShownItems[Index].bEquipped && !ShownItems[Index].EquipSlot.IsNone())
+    { Pilot->RequestEquip(ShownItems[Index].ItemPath, ShownItems[Index].EquipSlot); }
+}
+
+bool USFInventoryWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+{
+    const USFItemDragOperation* Drag = Cast<USFItemDragOperation>(InOperation);
+    if (Drag && Pilot && !Drag->FromEquipSlot.IsNone()) { Pilot->RequestUnequip(Drag->FromEquipSlot); return true; }
+    return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+}
 
 void USFInventoryWidget::SelectTab(ESFInventoryTab Tab)
 {
@@ -262,6 +279,8 @@ FSFInventoryEntry USFInventoryWidget::MakeEntry(const UInventoryItemDefinition& 
     Entry.Description = Definition.Description;
     Entry.UnitWeight = Definition.Weight;
     Entry.Icon = Definition.Icon;
+    Entry.ItemPath = FSoftObjectPath(&Definition);
+    Entry.EquipSlot = Definition.UseType == EInventoryItemUseType::Equip ? Definition.EquipmentSlot : NAME_None;
     return Entry;
 }
 #endif
@@ -291,7 +310,7 @@ TArray<FSFInventoryEntry> USFInventoryWidget::CollectEntries(int32& OutSlots) co
         if (Inventory->GetSlot(I, Item, Quantity)) { Add(Item, Quantity, false); }
     }
     TSoftObjectPtr<UInventoryItemDefinition> Equipped; int32 Quantity = 0;
-    if (Inventory->GetEquippedItem(TEXT("tool"), Equipped, Quantity)) { Add(Equipped, Quantity, true); }
+    if (Inventory->GetEquippedItem(USFGatheringPilotComponent::MainHandSlot(), Equipped, Quantity)) { Add(Equipped, Quantity, true); }  // the main hand, as before the Equipment window
 #endif
     return BuildEntries(Items);
 }

@@ -44,7 +44,7 @@ for asset_name, unique_id, display_name in ITEMS:
     asset.set_editor_property('MaxStackSize', 1)
     asset.set_editor_property('Weight', weight)
     asset.set_editor_property('UseType', unreal.InventoryItemUseType.EQUIP)
-    asset.set_editor_property('EquipmentSlot', 'tool')
+    asset.set_editor_property('EquipmentSlot', 'MainHand')  # tools are main-hand items (Equipment window)
     if not asset_library.save_loaded_asset(asset):
         raise RuntimeError('Could not save ' + OUTPUT_PATH + '/' + asset_name)
     created.append(asset.get_path_name())

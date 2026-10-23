@@ -9,7 +9,7 @@ param([Parameter(Mandatory)][string]$Name, [string]$Map = 'Greenlands/Greenlands
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 # Front-end states (title, login, account, character-select, character-creator) start only a client on the front-end game mode; no server.
-# Final3 states: title, login, account, character-select, character-creator, gameplay-hud, gathering (skills window), inventory, market-board, trade, build-catalogue, crafting-station, quest-journal, quest-board, dialogue, settings, settings-keep, game-menu, defeated, 9-loading-screen.
+# Final3 states: title, login, account, character-select, character-creator, gameplay-hud, gathering (skills window), inventory, equipment, equipment-stack (inventory + equipment), market-board, trade, build-catalogue, crafting-station, quest-journal, quest-board, dialogue, settings, settings-keep, game-menu, defeated, 9-loading-screen.
 $ed = 'C:\Program Files\Epic Games\UE_5.8\Engine\Binaries\Win64\UnrealEditor.exe'
 $up = Join-Path $root 'GameClient\ShatteredFrontier.uproject'
 $out = Join-Path $root "Artifacts\ui-v5-final\$Name"; $null = New-Item -ItemType Directory -Force $out
@@ -38,7 +38,7 @@ if ($Final3) {
     switch ($Name) {
         'gameplay-hud' { $ServerFlags = @('-CombatPilot','-CombatPilotScenario','-GatheringPilot','-QuestPilot','-UiEvidenceHud'); $ClientFlags = @('-CombatPilot','-QuestPilot') }
         'gathering' { $ServerFlags = @('-GatheringPilot','-GatheringPilotScenario','-QuestPilot'); $ClientFlags = @('-GatheringPilot','-GatheringPilotScenario') }
-        'inventory' { $ServerFlags = @('-GatheringPilot','-GatheringPilotScenario','-QuestPilot'); $ClientFlags = @('-GatheringPilot','-GatheringPilotScenario') }
+        { $_ -in 'inventory','equipment','equipment-stack' } { $ServerFlags = @('-GatheringPilot','-GatheringPilotScenario','-QuestPilot'); $ClientFlags = @('-GatheringPilot','-GatheringPilotScenario') }
         'market-board' { $ServerFlags = @('-GatheringPilot','-GatheringPilotScenario','-QuestPilot'); $ClientFlags = @('-GatheringPilot','-GatheringPilotScenario','-ExchangeFake') }
         'trade' { $ServerFlags = @('-GatheringPilot','-GatheringPilotScenario','-QuestPilot'); $ClientFlags = @('-GatheringPilot','-GatheringPilotScenario','-ExchangeFake') }
         'build-catalogue' { $ServerFlags = @('-GatheringPilot','-GatheringPilotScenario','-QuestPilot'); $ClientFlags = @('-GatheringPilot','-GatheringPilotScenario') }

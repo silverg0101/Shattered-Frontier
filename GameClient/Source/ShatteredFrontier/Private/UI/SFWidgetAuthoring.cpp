@@ -36,6 +36,7 @@
 #include "Misc/PackageName.h"
 #include "UI/SFHudWidgets.h"
 #include "UI/SFInventoryWidget.h"
+#include "UI/SFEquipmentWidget.h"
 #include "Exchange/SFExchangeWidgets.h"
 #include "Gathering/SFStationPanel.h"
 #include "Construction/SFConstructionSandboxPalette.h"
@@ -59,6 +60,7 @@ constexpr const TCHAR* CommonDir = TEXT("/Game/Frontier/UI/Widgets/Common");
 constexpr const TCHAR* HudDir = TEXT("/Game/Frontier/UI/Widgets/Hud");
 constexpr const TCHAR* UnitFramesDir = TEXT("/Game/Frontier/UI/Widgets/Unit");
 constexpr const TCHAR* InventoryDir = TEXT("/Game/Frontier/UI/Widgets/Inventory");
+constexpr const TCHAR* EquipmentDir = TEXT("/Game/Frontier/UI/Widgets/Equipment");
 constexpr const TCHAR* ExchangeDir = TEXT("/Game/Frontier/UI/Widgets/Exchange");
 constexpr const TCHAR* GatheringDir = TEXT("/Game/Frontier/UI/Widgets/Gathering");
 constexpr const TCHAR* BuildDir = TEXT("/Game/Frontier/UI/Widgets/Build");
@@ -948,6 +950,30 @@ UScaleBox* ItemTooltipLayout(UWidgetTree* T)
     return Half(T, TipHolder);
 }
 
+// The inventory footer (Inventory and Equipment): weight icon, text, bar, percent; gold at the right.
+UHorizontalBox* WeightGoldFooter(UWidgetTree* T)
+{
+    UHorizontalBox* Foot = A<UHorizontalBox>(T);
+    Foot->AddChildToHorizontalBox(Sized(T, nullptr, InvImage(T, nullptr, InvBrush(TEXT("icon_weight"), 40.f, 40.f)), 40.f, 40.f))->SetVerticalAlignment(VAlign_Center);
+    Foot->AddChildToHorizontalBox(SizedText(T, TEXT("WeightText"), TEXT("Weight 0.0 / 0 kg"), 34.f))->SetPadding(FMargin(18.f, 0.f, 24.f, 0.f));
+    UOverlay* Meter = A<UOverlay>(T);
+    Put(Meter, InvImage(T, nullptr, InvBrush(TEXT("progress_track"), 680.f, 26.f, 18.f, 8.f, 18.f, 8.f, 680.f, 26.f)), HAlign_Fill, VAlign_Fill);
+    UProgressBar* Weight = N<UProgressBar>(T, TEXT("WeightBar"));
+    FProgressBarStyle WeightStyle = Weight->GetWidgetStyle();
+    WeightStyle.SetBackgroundImage(FSlateNoResource());
+    WeightStyle.SetFillImage(InvBrush(TEXT("progress_fill_green"), 680.f, 22.f, 16.f, 7.f, 16.f, 7.f, 680.f, 22.f));
+    Weight->SetWidgetStyle(WeightStyle);
+    Weight->SetPercent(0.f);
+    Put(Meter, Weight, HAlign_Fill, VAlign_Fill, FMargin(0.f, 2.f));
+    Foot->AddChildToHorizontalBox(Sized(T, nullptr, Meter, 360.f, 26.f))->SetVerticalAlignment(VAlign_Center);
+    UTextBlock* Percent = SizedText(T, TEXT("WeightPercentText"), TEXT("0%"), 34.f);
+    Percent->SetJustification(ETextJustify::Right);
+    Foot->AddChildToHorizontalBox(Sized(T, nullptr, Percent, 110.f, 0.f))->SetPadding(FMargin(18.f, 0.f, 0.f, 0.f));
+    UHorizontalBoxSlot* GoldSlot = Foot->AddChildToHorizontalBox(Inst(T, CommonDir, TEXT("WBP_GoldDisplay"), TEXT("Gold")));
+    GoldSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); GoldSlot->SetHorizontalAlignment(HAlign_Right); GoldSlot->SetVerticalAlignment(VAlign_Center);
+    return Foot;
+}
+
 // WBP_Inventory: a WBP_WindowFrame (emblem, title, rules) holding a WBP_TabBar, the grid in a WBP_ScrollList, the item tooltip in the
 // SidePanel and the weight / gold footer. C++ fills SlotGrid with WBP_ItemSlot cells, 5 wide.
 void InventoryLayout(UWidgetTree* T)
@@ -975,25 +1001,7 @@ void InventoryLayout(UWidgetTree* T)
         Fill(Window, TEXT("Content"), Pack);
     }
 
-    // Footer: weight icon, text, bar, percent; gold at the right.
-    UHorizontalBox* Foot = A<UHorizontalBox>(T);
-    Foot->AddChildToHorizontalBox(Sized(T, nullptr, InvImage(T, nullptr, InvBrush(TEXT("icon_weight"), 40.f, 40.f)), 40.f, 40.f))->SetVerticalAlignment(VAlign_Center);
-    Foot->AddChildToHorizontalBox(SizedText(T, TEXT("WeightText"), TEXT("Weight 0.0 / 0 kg"), 34.f))->SetPadding(FMargin(18.f, 0.f, 24.f, 0.f));
-    UOverlay* Meter = A<UOverlay>(T);
-    Put(Meter, InvImage(T, nullptr, InvBrush(TEXT("progress_track"), 680.f, 26.f, 18.f, 8.f, 18.f, 8.f, 680.f, 26.f)), HAlign_Fill, VAlign_Fill);
-    UProgressBar* Weight = N<UProgressBar>(T, TEXT("WeightBar"));
-    FProgressBarStyle WeightStyle = Weight->GetWidgetStyle();
-    WeightStyle.SetBackgroundImage(FSlateNoResource());
-    WeightStyle.SetFillImage(InvBrush(TEXT("progress_fill_green"), 680.f, 22.f, 16.f, 7.f, 16.f, 7.f, 680.f, 22.f));
-    Weight->SetWidgetStyle(WeightStyle);
-    Weight->SetPercent(0.f);
-    Put(Meter, Weight, HAlign_Fill, VAlign_Fill, FMargin(0.f, 2.f));
-    Foot->AddChildToHorizontalBox(Sized(T, nullptr, Meter, 360.f, 26.f))->SetVerticalAlignment(VAlign_Center);
-    UTextBlock* Percent = SizedText(T, TEXT("WeightPercentText"), TEXT("0%"), 34.f);
-    Percent->SetJustification(ETextJustify::Right);
-    Foot->AddChildToHorizontalBox(Sized(T, nullptr, Percent, 110.f, 0.f))->SetPadding(FMargin(18.f, 0.f, 0.f, 0.f));
-    UHorizontalBoxSlot* GoldSlot = Foot->AddChildToHorizontalBox(Inst(T, CommonDir, TEXT("WBP_GoldDisplay"), TEXT("Gold")));
-    GoldSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); GoldSlot->SetHorizontalAlignment(HAlign_Right); GoldSlot->SetVerticalAlignment(VAlign_Center);
+    UHorizontalBox* Foot = WeightGoldFooter(T);
     Fill(Window, TEXT("Footer"), Foot);
 
     UScaleBox* TipScale = ItemTooltipLayout(T);
@@ -1054,6 +1062,79 @@ UTextBlock* Caption(UWidgetTree* T, const TCHAR* Name, const TCHAR* Text, float 
     UTextBlock* Block = SizedText(T, Name, Text, Size);
     if (bDim) { Block->SetColorAndOpacity(FSlateColor(DimInk())); }
     return Block;
+}
+
+// WBP_EquipSlot (120 x 120): the paper-doll slot. equip_slot_back, the slot's ghost (the per-instance GhostBrush; shown only while empty), the
+// item icon, the name fallback, the dim hover and gold select frames (USFSlotWidget, same API as WBP_ItemSlot).
+void EquipSlotLayout(UWidgetTree* T)
+{
+    UOverlay* Stack = A<UOverlay>(T);
+    UBorder* Plate = N<UBorder>(T, TEXT("Frame"));
+    Plate->SetBrush(KBox(TEXT("equip_slot_back"), 24.f, 24.f, 24.f, 24.f));
+    Plate->SetPadding(FMargin(0.f));
+    Put(Stack, Plate, HAlign_Fill, VAlign_Fill);
+    Put(Stack, Sized(T, nullptr, InvImage(T, TEXT("Ghost"), KImg(TEXT("slotghost_head"), 84.f, 84.f), true), 84.f, 84.f), HAlign_Center, VAlign_Center);
+    Put(Stack, Sized(T, nullptr, N<UImage>(T, TEXT("Icon")), 96.f, 96.f), HAlign_Center, VAlign_Center);
+    UTextBlock* Name = SizedText(T, TEXT("KeyLabel"), TEXT(""), 22.f);
+    Name->SetJustification(ETextJustify::Center); Name->SetAutoWrapText(true);
+    Put(Stack, Name, HAlign_Fill, VAlign_Center, FMargin(10.f, 0.f));
+    Put(Stack, InvImage(T, TEXT("HoverFrame"), KBox(TEXT("hover_frame"), 14.f, 14.f, 14.f, 14.f, 84.f, 84.f), true), HAlign_Fill, VAlign_Fill);
+    Put(Stack, InvImage(T, TEXT("SelectFrame"), KBox(TEXT("select_frame"), 14.f, 14.f, 14.f, 14.f, 84.f, 84.f), true), HAlign_Fill, VAlign_Fill);
+    T->RootWidget = Sized(T, TEXT("RootSize"), Stack, 120.f, 120.f);
+}
+
+// WBP_Equipment (reference-equipment): the paper doll (Head, Chest, Hands, Legs, Feet left; MainHand, OffHand, Neck, Ring right) around the
+// character preview (preview_backdrop under M_EquipmentPreview), then the shared tabs and the grid of equippable bag items, then the inventory
+// footer. Same width as the inventory so the two line up in the window stack.
+void EquipmentLayout(UWidgetTree* T)
+{
+    UUserWidget* Window = Inst(T, CommonDir, TEXT("WBP_WindowFrame"), TEXT("Window"));
+    if (!WindowOf(Window, TEXT("Equipment"), TEXT("icon_window_equipment"), 1262.f)) { return; }
+    constexpr float SlotSize = 120.f, SlotGap = 10.f;
+    const float DollHeight = 5.f * SlotSize + 4.f * SlotGap;  // 640: the window stays above the HUD player frame
+    auto Column = [&](std::initializer_list<const TCHAR*> Slots)
+    {
+        UVerticalBox* Box = A<UVerticalBox>(T);
+        int32 Index = 0;
+        for (const TCHAR* Slot : Slots)
+        {
+            UUserWidget* Doll = Inst(T, EquipmentDir, TEXT("WBP_EquipSlot"), *FString::Printf(TEXT("%sSlot"), Slot));
+            if (USFSlotWidget* Part = Cast<USFSlotWidget>(Doll)) { Part->GhostBrush = KImg(*FString::Printf(TEXT("slotghost_%s"), *FString(Slot).ToLower()), 84.f, 84.f); }
+            if (Doll) { Box->AddChildToVerticalBox(Doll)->SetPadding(FMargin(0.f, Index++ ? SlotGap : 0.f, 0.f, 0.f)); }
+        }
+        return Box;
+    };
+    UHorizontalBox* Doll = A<UHorizontalBox>(T);
+    Doll->AddChildToHorizontalBox(Column({TEXT("Head"), TEXT("Chest"), TEXT("Hands"), TEXT("Legs"), TEXT("Feet")}))->SetVerticalAlignment(VAlign_Top);
+    // The character: the backdrop vignette, the captured player over it (5:7, alpha from the capture), drag to turn.
+    UOverlay* Stage = A<UOverlay>(T);
+    Put(Stage, InvImage(T, nullptr, KImg(TEXT("preview_backdrop"), 458.f, DollHeight), true), HAlign_Fill, VAlign_Fill);
+    FSlateBrush Captured;
+    if (UMaterialInterface* Material = LoadObject<UMaterialInterface>(nullptr, ASFEquipmentPreviewStudio::MaterialPath)) { Captured.SetResourceObject(Material); }
+    Captured.ImageSize = FVector2D(458.f, DollHeight);
+    Put(Stage, InvImage(T, TEXT("Preview"), Captured), HAlign_Fill, VAlign_Fill);
+    UHorizontalBoxSlot* StageSlot = Doll->AddChildToHorizontalBox(Sized(T, nullptr, Stage, 458.f, DollHeight));
+    StageSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); StageSlot->SetHorizontalAlignment(HAlign_Center);
+    Doll->AddChildToHorizontalBox(Column({TEXT("MainHand"), TEXT("OffHand"), TEXT("Neck"), TEXT("Ring")}))->SetVerticalAlignment(VAlign_Top);
+
+    UVerticalBox* Body = A<UVerticalBox>(T);
+    Body->AddChildToVerticalBox(Sized(T, nullptr, Doll, 1118.f, DollHeight));
+    if (UUserWidget* Tabs = Inst(T, CommonDir, TEXT("WBP_TabBar"), TEXT("TabBar"))) { Body->AddChildToVerticalBox(Tabs)->SetPadding(FMargin(0.f, 28.f, 0.f, 16.f)); }
+    UUniformGridPanel* Grid = N<UUniformGridPanel>(T, TEXT("ItemGrid"));
+    Grid->SetSlotPadding(FMargin(3.f));
+    if (UUserWidget* Scroll = Inst(T, CommonDir, TEXT("WBP_ScrollList"), TEXT("GridScroll")))
+    {
+        Fill(Scroll, TEXT("Content"), Sized(T, nullptr, Grid, 1070.f, 0.f));
+        UOverlay* Pack = A<UOverlay>(T);
+        Put(Pack, Sized(T, nullptr, Scroll, 0.f, 428.f), HAlign_Fill, VAlign_Fill);  // two rows, then it scrolls
+        UTextBlock* Empty = SizedText(T, TEXT("EmptyText"), TEXT("Nothing to equip here."), 40.f);
+        Empty->SetVisibility(ESlateVisibility::Collapsed);
+        Put(Pack, Empty, HAlign_Center, VAlign_Center);
+        Body->AddChildToVerticalBox(Pack);
+    }
+    Fill(Window, TEXT("Content"), Body);
+    Fill(Window, TEXT("Footer"), WeightGoldFooter(T));
+    WindowRoot(T, Window, true);
 }
 
 // WBP_KitRow: row_back with the item in its slot well, a name, up to two text cells, a price with the coin, an action button and a chevron; the gold
@@ -2016,6 +2097,8 @@ TArray<FSpec> Specs()
         {HudDir, TEXT("WBP_HudToasts"), USFHudToastsWidget::StaticClass(), ToastsLayout, nullptr},
         {HudDir, TEXT("WBP_Hud"), USFHudWidget::StaticClass(), HudLayout, nullptr},
         {InventoryDir, TEXT("WBP_Inventory"), USFInventoryWidget::StaticClass(), InventoryLayout, nullptr},
+        {EquipmentDir, TEXT("WBP_EquipSlot"), USFSlotWidget::StaticClass(), EquipSlotLayout, ItemSlotDefaults},
+        {EquipmentDir, TEXT("WBP_Equipment"), USFEquipmentWidget::StaticClass(), EquipmentLayout, nullptr},
         {ExchangeDir, TEXT("WBP_MarketBoard"), USFMarketBoard::StaticClass(), MarketLayout, nullptr},
         {ExchangeDir, TEXT("WBP_TradeWindow"), USFTradeWindow::StaticClass(), TradeLayout, nullptr},
         {GatheringDir, TEXT("WBP_StationPanel"), USFStationPanel::StaticClass(), StationLayout, nullptr},

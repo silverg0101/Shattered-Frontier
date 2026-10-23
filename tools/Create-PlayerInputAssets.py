@@ -34,7 +34,8 @@ ACTIONS = {
     'IA_Skills': (T.BOOLEAN, ['M']),
     'IA_EquipAxe': (T.BOOLEAN, ['Five']),
     'IA_EquipPickaxe': (T.BOOLEAN, ['Six']),
-    'IA_CycleRecipe': (T.BOOLEAN, ['C']),
+    'IA_CycleRecipe': (T.BOOLEAN, ['V']),  # C is the Equipment window; the station panel's recipe list is the main path
+    'IA_Equipment': (T.BOOLEAN, ['C']),
     'IA_ClaimPlot': (T.BOOLEAN, ['K']),
     'IA_Escape': (T.BOOLEAN, ['Escape']),
     'IA_Trade': (T.BOOLEAN, ['F6']),

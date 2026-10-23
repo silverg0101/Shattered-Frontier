@@ -24,6 +24,8 @@ struct FSFInventoryEntry
     float UnitWeight = 0.f;
     bool bEquipped = false;
     TSoftObjectPtr<UTexture2D> Icon;
+    FSoftObjectPath ItemPath;  // the item definition (equip / drag requests name it)
+    FName EquipSlot;           // the definition's equip slot; None when not equippable
 };
 
 struct FSFInventoryTooltip { FString Title, Description, RarityLine, TypeLine, WeightLine; };
@@ -36,7 +38,8 @@ struct FSFInventoryTooltip { FString Title, Description, RarityLine, TypeLine, W
 // in a WBP_ScrollList). Optional: TabBar (USFTabBarWidget: All / Materials / Gear / Consumables / Misc), MainHandSlot (the equipped tool),
 // WeightText, WeightPercentText, WeightBar (ProgressBar: fraction of the weight limit), Gold (USFGoldDisplayWidget), EmptyText,
 // Tooltip (any widget: the hovered item, else the selected one) with TipIcon, TipTitle, TipRarity, TipType, TipQuantity, TipWeight,
-// TipDescription. A click selects a slot; select and hover frames are the slot's own.
+// TipDescription. A click selects a slot; select and hover frames are the slot's own. Equippable items drag onto the Equipment window's
+// paper doll or equip on a double click; a paper-doll item dropped here is unequipped (both are server requests).
 UCLASS(Abstract)
 class SHATTEREDFRONTIER_API USFInventoryWidget : public USFUiWidget
 {
@@ -78,6 +81,8 @@ protected:
     virtual void NativeOnInitialized() override;
     virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
     virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+    // An equipped item dragged from the Equipment window's paper doll onto this window goes back to the bag (a server request).
+    virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
     virtual void ApplyKitStyle() override;
 
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidget)) TObjectPtr<UPanelWidget> SlotGrid;
@@ -100,6 +105,7 @@ protected:
 private:
     UFUNCTION() void HandleTab(int32 Index);
     UFUNCTION() void HandleSlotClicked(USFSelectableWidget* Source);
+    UFUNCTION() void HandleSlotDoubleClicked(USFSelectableWidget* Source);  // equips an equippable bag item
     void EnsureCells(int32 Count);
     void UpdateTooltip();
     TArray<FSFInventoryEntry> CollectEntries(int32& OutSlots) const;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Blueprint/DragDropOperation.h"
 #include "Blueprint/UserWidget.h"
 #include "Framework/SFHudStyle.h"
 #include "Types/SlateEnums.h"
@@ -246,8 +247,21 @@ private:
     int32 Selected = INDEX_NONE;
 };
 
+// An item dragged out of a slot (inventory / equipment grids, paper-doll slots). The drop target asks the server; it never moves items itself.
+UCLASS()
+class SHATTEREDFRONTIER_API USFItemDragOperation : public UDragDropOperation
+{
+    GENERATED_BODY()
+public:
+    FSoftObjectPath Item;   // a bag item (its definition)
+    FName ItemSlot;         // that item's equip slot
+    FName FromEquipSlot;    // set when the drag left an equipped paper-doll slot
+};
+
 // Slot or tile (bag, equipment, hotbar, catalogue; menu slots are WBP_ItemSlot). Binds, all optional: Frame (Border), Icon (Image),
-// KeyLabel, CountLabel (TextBlocks), plus HoverFrame / SelectFrame from USFSelectableWidget.
+// KeyLabel, CountLabel (TextBlocks), Ghost (Image shown only while Icon is empty: the paper-doll slot guide), plus HoverFrame / SelectFrame
+// from USFSelectableWidget. A slot whose owner set a drag payload (DragItem or DragFromEquipSlot) can be dragged; OnDoubleClicked fires on a
+// left double click.
 UCLASS(Abstract)
 class SHATTEREDFRONTIER_API USFSlotWidget : public USFSelectableWidget
 {
@@ -259,6 +273,13 @@ public:
     UFUNCTION(BlueprintCallable, Category = "SF UI") void SetCaption(const FText& InCaption);
     UFUNCTION(BlueprintCallable, Category = "SF UI") void SetCount(int32 Count);
     UFUNCTION(BlueprintPure, Category = "SF UI") FText GetCountText() const;
+    UFUNCTION(BlueprintPure, Category = "SF UI") bool HasIcon() const;
+    // Drag payload, set by the owning window each refresh; clear both to make the slot not draggable.
+    void SetDragPayload(const FSoftObjectPath& Item, FName ItemSlot, FName FromEquipSlot) { DragItem = Item; DragItemSlot = ItemSlot; DragFromEquipSlot = FromEquipSlot; }
+    bool CanDrag() const { return !DragItem.IsNull() || !DragFromEquipSlot.IsNone(); }
+    UPROPERTY(BlueprintAssignable, Category = "SF") FSFUiSelectableClicked OnDoubleClicked;
+    // The ghost art of an empty paper-doll slot (per instance in the Designer); applied to Ghost.
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SF Style") FSlateBrush GhostBrush;
     // Count rule: shown from 2 up (tools are single items), empty otherwise; bShowSingleCount shows from 1 up (the bag).
     static FText CountText(int32 Count);
 
@@ -273,8 +294,16 @@ public:
 protected:
     virtual void ApplyKitStyle() override;
     virtual void OnSelectedChanged_Implementation(bool bNowSelected) override;
+    virtual void NativePreConstruct() override;
+    virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+    virtual FReply NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+    virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UBorder> Frame;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UImage> Icon;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UImage> Ghost;
+    FSoftObjectPath DragItem;
+    FName DragItemSlot;
+    FName DragFromEquipSlot;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> KeyLabel;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> CountLabel;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> CaptionLabel;

@@ -15,6 +15,7 @@ class USFHudWidget;
 class USFMarketBoard;
 class USFTradeWindow;
 class USFInventoryWidget;
+class USFEquipmentWidget;
 class USFWindowStack;
 class USFDialoguePanel;
 class USFGraphicsMenu;
@@ -63,6 +64,8 @@ public:
     UFUNCTION(Client, Unreliable) void ClientPilotHit(const FString& Message);
     FString GetPilotMessage() const;
     void ToggleInventoryPanel();
+    // C (and SFUi equipment): the Equipment window (paper doll, character preview, equippable bag items), a window of the stack.
+    void ToggleEquipmentPanel();
     // Open menu windows (inventory now; market, recipes, equipment later). Esc closes the newest; created on first use.
     USFWindowStack* GetWindowStack();
     // F10 (and SFUi settings): the Settings > Graphics menu. Esc closes the keep prompt or the menu.
@@ -251,6 +254,7 @@ private:
     void RefreshLocalFeedback();
 
     UPROPERTY(Transient) TObjectPtr<USFInventoryWidget> InventoryWidget;
+    UPROPERTY(Transient) TObjectPtr<USFEquipmentWidget> EquipmentWidget;
     UPROPERTY(Transient) TObjectPtr<USFWindowStack> WindowStack;
     UPROPERTY(Transient) TObjectPtr<USFGatheringHud> GatheringHud;
     UPROPERTY(Transient) TObjectPtr<USFHudLayout> HudLayout;

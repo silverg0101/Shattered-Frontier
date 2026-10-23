@@ -191,6 +191,10 @@ try {
     if (-not $serverLog) { $serverLog='server.log' }
     $serverText=Get-Content -LiteralPath (Join-Path $root $serverLog) -Raw
     if ([regex]::Matches($serverText,'GATHERING_PILOT_OUTCOME Operation=1 Result=2').Count -ne 2) { throw 'Server did not commit exactly two harvests.' }
+    # Equipment: each client's main-hand request is applied by the server (Result=0) and comes back to that client by replication.
+    if ($serverText -notmatch 'EQUIP_APPLIED Slot=MainHand Item=DA_IronAxe Result=0' -or $serverText -notmatch 'EQUIP_APPLIED Slot=MainHand Item=DA_IronPickaxe Result=0' -or
+        $all -notmatch 'EQUIP_REPLICATED Slot=MainHand Item=DA_IronAxe' -or $all -notmatch 'EQUIP_REPLICATED Slot=MainHand Item=DA_IronPickaxe') { throw 'Client equip requests were not applied on the server and replicated back.' }
+    $results.equipReplicated=$true
     if ($Refining) {
         if ($all -notmatch 'REFINING_PILOT_CLIENT_DONE Primary=1 Wood=0 Ore=0 Timber=4 Ingots=0 SawmillRevision=1 ForgeRevision=1' -or
             $all -notmatch 'REFINING_PILOT_CLIENT_DONE Primary=0 Wood=0 Ore=0 Timber=0 Ingots=1 SawmillRevision=1 ForgeRevision=1' -or

@@ -1,0 +1,151 @@
+#include "UI/SFEquipmentWidget.h"
+
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+#include "Blueprint/UserWidget.h"
+#include "Editor.h"
+#include "Misc/AutomationTest.h"
+
+// WBP_Equipment binds its parts, fills the grid with only the equippable bag items (per tab), shows equipped items on the paper doll and the
+// slot ghost while empty, and resolves drops. Needs WBP_Equipment (tools/ui/create_widgets.py, SF_UI_ONLY=WBP_EquipSlot,WBP_Equipment).
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFEquipmentWidgetTest, "ShatteredFrontier.Equipment.Widget", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSFEquipmentWidgetTest::RunTest(const FString& Parameters)
+{
+    UWorld* World = GEditor ? GEditor->GetEditorWorldContext().World() : nullptr;
+    const TSubclassOf<USFEquipmentWidget> Class = LoadClass<USFEquipmentWidget>(nullptr, USFEquipmentWidget::AssetPath);
+    if (!TestNotNull(TEXT("WBP_Equipment loads"), Class.Get()) || !World) { return false; }
+    USFEquipmentWidget* Window = CreateWidget<USFEquipmentWidget>(World, Class);
+    if (!TestNotNull(TEXT("WBP_Equipment constructs"), Window)) { return false; }
+    for (const TCHAR* Name : {TEXT("ItemGrid"), TEXT("GridScroll"), TEXT("Preview"), TEXT("TabBar"), TEXT("Gold"), TEXT("WeightText"), TEXT("WeightBar"), TEXT("Tooltip"), TEXT("TipTitle")})
+    { TestNotNull(FString::Printf(TEXT("%s bound"), Name), Window->GetWidgetFromName(Name)); }
+    for (const TCHAR* Slot : {TEXT("Head"), TEXT("Chest"), TEXT("Hands"), TEXT("Legs"), TEXT("Feet"), TEXT("MainHand"), TEXT("OffHand"), TEXT("Neck"), TEXT("Ring")})
+    { TestNotNull(FString::Printf(TEXT("%s paper-doll slot"), Slot), Window->GetDollSlot(Slot)); }
+
+    auto Entry = [](const TCHAR* Name, const TCHAR* Slot, bool bEquipped = false)
+    {
+        FSFInventoryEntry E; E.Name = FText::FromString(Name); E.Count = 1; E.bEquipped = bEquipped; E.UnitWeight = 1.f;
+        E.EquipSlot = Slot ? FName(Slot) : NAME_None; E.ItemPath = FSoftObjectPath(FString::Printf(TEXT("/Game/Test/%s.%s"), Name, Name));
+        E.Category = Slot ? ESFInventoryTab::Gear : ESFInventoryTab::Materials; return E;
+    };
+    const TArray<FSFInventoryEntry> Bag = {Entry(TEXT("Helm"), TEXT("Head")), Entry(TEXT("Sword"), TEXT("MainHand")), Entry(TEXT("Ring"), TEXT("Ring")), Entry(TEXT("Log"), nullptr)};
+    TMap<FName, FSFInventoryEntry> Equipped; Equipped.Add(TEXT("MainHand"), Entry(TEXT("Axe"), TEXT("MainHand"), true));
+    Window->Present(Bag, Equipped, 8, 4.f, 24.f);
+    TestEqual(TEXT("One cell per bag slot"), Window->CellCount(), 8);
+    TestEqual(TEXT("Only the equippable items show"), Window->ShownCount(), 3);
+    TestTrue(TEXT("A shown item can be dragged"), Window->GetCell(0) && Window->GetCell(0)->CanDrag());
+    TestFalse(TEXT("An empty cell cannot be dragged"), Window->GetCell(5) && Window->GetCell(5)->CanDrag());
+    if (USFSlotWidget* Hand = Window->GetDollSlot(TEXT("MainHand"))) { TestTrue(TEXT("The equipped main hand can be dragged off"), Hand->CanDrag()); }
+    if (USFSlotWidget* Head = Window->GetDollSlot(TEXT("Head")))
+    {
+        TestFalse(TEXT("An empty doll slot cannot be dragged"), Head->CanDrag());
+        TestFalse(TEXT("An empty doll slot shows no icon (its ghost instead)"), Head->HasIcon());
+        TestNotNull(TEXT("The doll slot has a ghost"), Head->GetWidgetFromName(TEXT("Ghost")));
+    }
+    TestEqual(TEXT("Weight line"), Window->GetWeightLine().ToString(), FString(TEXT("Weight 4.0 / 24 kg")));
+    for (const TPair<ESFEquipmentTab, int32>& Tab : TArray<TPair<ESFEquipmentTab, int32>>{{ESFEquipmentTab::Weapons, 1}, {ESFEquipmentTab::Armor, 1}, {ESFEquipmentTab::Accessories, 1}})
+    {
+        Window->SelectTab(Tab.Key);
+        Window->Present(Bag, Equipped, 8, 4.f, 24.f);
+        TestEqual(FString::Printf(TEXT("%s tab"), *USFEquipmentWidget::TabLabel(Tab.Key)), Window->ShownCount(), Tab.Value);
+    }
+
+    const FSoftObjectPath Helm(TEXT("/Game/Test/Helm.Helm"));
+    TestTrue(TEXT("A bag item onto its own slot equips"), USFEquipmentWidget::ResolveDrop(Helm, TEXT("Head"), NAME_None, TEXT("Head"), false) == ESFEquipDrop::Equip);
+    TestTrue(TEXT("A bag item onto another slot does nothing"), USFEquipmentWidget::ResolveDrop(Helm, TEXT("Head"), NAME_None, TEXT("Chest"), false) == ESFEquipDrop::None);
+    TestTrue(TEXT("A doll item onto a grid unequips"), USFEquipmentWidget::ResolveDrop(FSoftObjectPath(), NAME_None, TEXT("Head"), NAME_None, true) == ESFEquipDrop::Unequip);
+    TestTrue(TEXT("A doll item onto a doll slot does nothing"), USFEquipmentWidget::ResolveDrop(FSoftObjectPath(), NAME_None, TEXT("Head"), TEXT("Chest"), false) == ESFEquipDrop::None);
+    TestTrue(TEXT("A bag item onto the grid does nothing"), USFEquipmentWidget::ResolveDrop(Helm, TEXT("Head"), NAME_None, NAME_None, true) == ESFEquipDrop::None);
+    return true;
+}
+
+#if SF_WITH_MINIMAL_INVENTORY
+#include "Tests/AutomationCommon.h"
+#include "Characters/SFE1Character.h"
+#include "Framework/SFPlayerController.h"
+#include "Gathering/SFGatheringPilot.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/WorldSettings.h"
+#include "InventoryComponent.h"
+#include "InventoryItemDefinition.h"
+#include "InventoryTransactionLibrary.h"
+
+// Server-side equip validation on the real plugin inventory: slot match, ownership (only this player's bag), swap back to the bag, unequip to the
+// bag and its space rule, and the gathering tools on the main hand.
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFEquipmentValidationTest, "ShatteredFrontier.Equipment.Validation", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSFEquipmentValidationTest::RunTest(const FString& Parameters)
+{
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) { return false; }
+    UWorld* World = Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
+    auto* PC = World->SpawnActor<ASFPlayerController>();
+    auto* Other = World->SpawnActor<ASFPlayerController>();
+    FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    auto* Pawn = World->SpawnActor<ASFE1Character>(FVector(0, 0, 100), FRotator::ZeroRotator, Spawn);
+    if (!PC || !Other || !Pawn) { return false; }
+    PC->Possess(Pawn); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
+    auto* Gear = PC->FindComponentByClass<USFGatheringPilotComponent>();
+    auto* OtherGear = Other->FindComponentByClass<USFGatheringPilotComponent>();
+    auto* Bag = PC->FindComponentByClass<UInventoryComponent>();
+    auto* OtherBag = Other->FindComponentByClass<UInventoryComponent>();
+    if (!Gear || !OtherGear || !Bag || !OtherBag) { return false; }
+    for (USFGatheringPilotComponent* Component : {Gear, OtherGear})
+    {
+        Component->CapturedSettings = DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(), Component);
+        Component->bEnabled = true; Component->bTestWorldAdmission = true;
+    }
+    // Test-only definitions (never assets): the slot is data on the definition.
+    auto Define = [](const TCHAR* Name, FName Slot)
+    {
+        UInventoryItemDefinition* Item = NewObject<UInventoryItemDefinition>(GetTransientPackage(), MakeUniqueObjectName(GetTransientPackage(), UInventoryItemDefinition::StaticClass(), Name), RF_Transient);
+        Item->UseType = Slot.IsNone() ? EInventoryItemUseType::None : EInventoryItemUseType::Equip;
+        Item->EquipmentSlot = Slot; Item->MaxStackSize = 1; Item->Weight = 1.f; Item->DisplayName = FText::FromString(Name);
+        return Item;
+    };
+    UInventoryItemDefinition* Helm = Define(TEXT("SFTestHelm"), TEXT("Head"));
+    UInventoryItemDefinition* Cap = Define(TEXT("SFTestCap"), TEXT("Head"));
+    UInventoryItemDefinition* Ring = Define(TEXT("SFTestRing"), TEXT("Ring"));
+    UInventoryItemDefinition* Stone = Define(TEXT("SFTestStone"), NAME_None);
+    auto Grant = [](UInventoryComponent* Into, std::initializer_list<UInventoryItemDefinition*> Items)
+    {
+        TArray<FInventoryItemQuantity> Adds;
+        for (UInventoryItemDefinition* Item : Items) { FInventoryItemQuantity Q; Q.Item = TSoftObjectPtr<UInventoryItemDefinition>(Item); Q.Quantity = 1; Adds.Add(Q); }
+        return UInventoryTransactionLibrary::ExchangeInventoryItems(Into, {}, Adds) == EInventoryTransactionResult::Success;
+    };
+    if (!TestTrue(TEXT("Grant the test gear"), Grant(Bag, {Helm, Cap, Stone}) && Grant(OtherBag, {Ring}))) { return false; }
+    const FSoftObjectPath HelmPath(Helm), CapPath(Cap), RingPath(Ring), StonePath(Stone);
+    const FName Head(TEXT("Head"));
+
+    TestEqual(TEXT("Wrong slot is refused"), Gear->ApplyEquip(HelmPath, TEXT("Chest")), ESFEquipResult::WrongSlot);
+    TestEqual(TEXT("Unknown slot is refused"), Gear->ApplyEquip(HelmPath, TEXT("Tail")), ESFEquipResult::InvalidSlot);
+    TestEqual(TEXT("Another player's item is refused"), Gear->ApplyEquip(RingPath, TEXT("Ring")), ESFEquipResult::NotOwned);
+    TestTrue(TEXT("The other player's ring stays in their bag"), OtherGear->FindBagSlot(RingPath) != INDEX_NONE && OtherGear->GetEquipped(TEXT("Ring")).IsNull());
+    TestEqual(TEXT("A non-equippable item is refused"), Gear->ApplyEquip(StonePath, Head), ESFEquipResult::NotEquippable);
+    TestTrue(TEXT("Refusals changed nothing"), Gear->GetEquipped(Head).IsNull() && Gear->FindBagSlot(HelmPath) != INDEX_NONE);
+
+    TestEqual(TEXT("Helm equips into Head"), Gear->ApplyEquip(HelmPath, Head), ESFEquipResult::Ok);
+    TestTrue(TEXT("Head holds the helm"), Gear->GetEquipped(Head) == HelmPath);
+    TestEqual(TEXT("The helm left the bag"), Gear->FindBagSlot(HelmPath), int32(INDEX_NONE));
+    TestEqual(TEXT("Cap swaps in"), Gear->ApplyEquip(CapPath, Head), ESFEquipResult::Ok);
+    TestTrue(TEXT("Head holds the cap"), Gear->GetEquipped(Head) == CapPath);
+    TestTrue(TEXT("The swapped helm is back in the bag"), Gear->FindBagSlot(HelmPath) != INDEX_NONE);
+    TestEqual(TEXT("Unequip to the bag"), Gear->ApplyUnequip(Head), ESFEquipResult::Ok);
+    TestTrue(TEXT("Head is empty and the cap is in the bag"), Gear->GetEquipped(Head).IsNull() && Gear->FindBagSlot(CapPath) != INDEX_NONE);
+    TestEqual(TEXT("Unequipping an empty slot is refused"), Gear->ApplyUnequip(Head), ESFEquipResult::NotEquipped);
+
+    TestTrue(TEXT("Request path equips on the server"), Gear->RequestEquip(HelmPath, Head));
+    const int32 Slots = Bag->NumSlots;
+    Bag->NumSlots = 2;  // cap + stone fill it
+    TestEqual(TEXT("Unequip into a full bag is refused"), Gear->ApplyUnequip(Head), ESFEquipResult::NoSpace);
+    TestTrue(TEXT("The helm stays equipped"), Gear->GetEquipped(Head) == HelmPath);
+    Bag->NumSlots = Slots;
+    TestTrue(TEXT("Request path unequips"), Gear->RequestUnequip(Head) && Gear->GetEquipped(Head).IsNull());
+
+    // Gathering tools are main-hand items through the same path.
+    TestTrue(TEXT("Starter tools"), Gear->InitializeStarterTools());
+    TestTrue(TEXT("Axe equips"), Gear->TryEquipTool(true));
+    TestTrue(TEXT("The axe satisfies the oak tool rule"), Gear->HasRequiredTool(ESFGatheringPilotKind::Oak));
+    TestEqual(TEXT("The axe is in the main hand"), Gear->GetEquipped(USFGatheringPilotComponent::MainHandSlot()).GetAssetName(), FString(TEXT("DA_IronAxe")));
+    TestTrue(TEXT("Pickaxe swaps in"), Gear->TryEquipTool(false) && Gear->HasRequiredTool(ESFGatheringPilotKind::Iron) && !Gear->HasRequiredTool(ESFGatheringPilotKind::Oak));
+    return true;
+}
+#endif
+#endif

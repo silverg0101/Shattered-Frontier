@@ -1310,7 +1310,7 @@ ASFPlayerController::ASFPlayerController()
     PilotInventory=Inventory;
     Inventory->bUseBuiltInInteraction=false; Inventory->bEnableLookPrompt=false;
     Inventory->bUseExternalInventoryUI=true; Inventory->bEnableEquipment=true;
-    Inventory->AllowedEquipmentSlots={FName(TEXT("tool"))};
+    Inventory->AllowedEquipmentSlots=USFGatheringPilotComponent::EquipmentSlots();
     Inventory->bGrantStartupItems=false; Inventory->bAutoLoadOnBeginPlay=false;
     Inventory->bAutoSaveOnInventoryChanged=false; Inventory->bAutoSaveLoadInNetworkedGames=false;
     Inventory->bAutoCreateHotbarOnOwningClient=false; Inventory->bAutoShowUIOnOwningClient=false;
@@ -1603,6 +1603,7 @@ void ASFPlayerController::SetupInputComponent()
     // IMC_Player (always on; CTL-01 key map). The camera itself is polled by ASFE1Character.
     Bind(TEXT("IA_BuildMode"),ETriggerEvent::Started,&ASFPlayerController::ToggleBuildMode);
     Bind(TEXT("IA_Inventory"),ETriggerEvent::Started,&ASFPlayerController::ToggleInventoryPanel);
+    Bind(TEXT("IA_Equipment"),ETriggerEvent::Started,&ASFPlayerController::ToggleEquipmentPanel);
     Bind(TEXT("IA_Skills"),ETriggerEvent::Started,&ASFPlayerController::ToggleGatheringSkillsPanel);
     Bind(TEXT("IA_EquipAxe"),ETriggerEvent::Started,&ASFPlayerController::EquipGatheringAxe);
     Bind(TEXT("IA_EquipPickaxe"),ETriggerEvent::Started,&ASFPlayerController::EquipGatheringPickaxe);
@@ -2688,6 +2689,7 @@ void ASFPlayerController::SFUi(const FString& Screen)
     if (Screen.Equals(TEXT("rects"), ESearchCase::IgnoreCase)) { WriteUiRects(GetWorld()); return; }
 #endif
     if (Screen.Equals(TEXT("inventory"), ESearchCase::IgnoreCase)) { ToggleInventoryPanel(); }
+    else if (Screen.Equals(TEXT("equipment"), ESearchCase::IgnoreCase)) { ToggleEquipmentPanel(); }
     else if (Screen.Equals(TEXT("market"), ESearchCase::IgnoreCase)) { ToggleMarketDemo(); }
     else if (Screen.Equals(TEXT("trade"), ESearchCase::IgnoreCase)) { ToggleTradeDemo(); }
     else if (Screen.Equals(TEXT("tradelock"), ESearchCase::IgnoreCase) && TradeWindow) { TradeWindow->ToggleLock(); }

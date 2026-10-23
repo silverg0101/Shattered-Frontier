@@ -166,6 +166,10 @@ enum class ESFGatheringPilotResult : uint8
     OutOfReach, Occluded, Moved, Canceled, InventoryFull, Unavailable, KeyConflict, Refined, MissingMaterials, ToolRequired, SkillRequired
 };
 
+// Why an equip / unequip request was refused (Ok = applied). Server-side answer; the client only sees the replicated result.
+UENUM()
+enum class ESFEquipResult : uint8 { Ok, Disabled, InvalidSlot, NotOwned, NotEquippable, WrongSlot, NotEquipped, NoSpace };
+
 USTRUCT()
 struct FSFGatheringPilotFeedback
 {
@@ -197,6 +201,19 @@ public:
     bool CancelLocalHarvest();
     void EquipAxe();
     void EquipPickaxe();
+    // Equipment (Equipment window, gathering tools). The state is the plugin inventory's replicated EquippedItems; an item's slot is its
+    // definition's EquipmentSlot (data). Requests come from the owning client and are validated here on the server: the slot exists, the
+    // item is in this player's bag, it is equippable into exactly that slot, and a swap / unequip fits the bag (space and weight).
+    static const TArray<FName>& EquipmentSlots();  // Head, Chest, Hands, Legs, Feet, MainHand, OffHand, Neck, Ring, Back
+    static FName MainHandSlot() { return FName(TEXT("MainHand")); }
+    // Owner (client or server): ask to equip one owned bag item into Slot / return Slot to the bag. False when refused before sending.
+    bool RequestEquip(const FSoftObjectPath& Item, FName Slot);
+    bool RequestUnequip(FName Slot);
+    // Server: validate and apply. Ok or the reason; nothing changes unless Ok.
+    ESFEquipResult ApplyEquip(const FSoftObjectPath& Item, FName Slot);
+    ESFEquipResult ApplyUnequip(FName Slot);
+    // The item in Slot (owner view), empty when the slot is empty.
+    FSoftObjectPath GetEquipped(FName Slot) const;
     // Station recipes come from content/crafting; the first is the default. The choice is per player and server-held.
     void SelectStationRecipe(ESFGatheringPilotKind Station, const FString& RecipeId);
     void CycleStationRecipe(ESFGatheringPilotKind Station);
@@ -257,12 +274,16 @@ private:
     friend class FSFGatheringPilotSurfaceProtocolTest;
     friend class FSFGatheringPilotProgressionTest;
     friend class FSFGatheringPilotLedgerTest;
+    friend class FSFEquipmentValidationTest;
     UFUNCTION(Server, Reliable) void ServerGatheringAction(ASFGatheringPilotNode* Node, uint32 Revision, uint32 Operation);
     UFUNCTION(Server, Reliable) void ServerGatheringActionAtSurface(ASFGatheringPilotNode* Node, uint32 Revision, uint32 Operation,FVector_NetQuantize10 RequestedPoint);
     void ProcessGatheringAction(ASFGatheringPilotNode* Node,uint32 Revision,uint32 Operation,bool bSurface,const FVector& RequestedPoint);
     bool MatchesRequestBinding(ASFGatheringPilotNode* Node,uint32 Revision,bool bSurface,const FVector& Point) const;
     bool TryBeginGeometryAttempt(double Now);
     UFUNCTION(Server, Reliable) void ServerCancelHarvest(uint32 Operation);
+    UFUNCTION(Server, Reliable) void ServerEquip(const FSoftObjectPath& Item, FName Slot);
+    UFUNCTION(Server, Reliable) void ServerUnequip(FName Slot);
+    int32 FindBagSlot(const FSoftObjectPath& Item) const;
     UFUNCTION(Server, Reliable) void ServerSelectRecipe(ESFGatheringPilotKind Station, const FString& RecipeId);
     const FSFStationRecipe* ActiveStationRecipe(ESFGatheringPilotKind Station) const;
     void BeginCraftCommit();

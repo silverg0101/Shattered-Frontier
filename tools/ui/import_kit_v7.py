@@ -1,4 +1,4 @@
-"""Import the shared menu kit v7 parts (GameClient/ArtSource/UI/Kit-v7, 60 PNGs) as UI textures.
+"""Import the shared menu kit v7 parts (GameClient/ArtSource/UI/Kit-v7, 73 PNGs incl. the 13 Equipment parts) as UI textures.
 
 Run in the open editor:   py -3 tools/Run-InEditor.py tools/ui/import_kit_v7.py
 Or headless:   UnrealEditor-Cmd.exe <uproject> -run=pythonscript -script=<this file> -unattended -nosplash -NullRHI
@@ -18,6 +18,9 @@ DEST = '/Game/Frontier/UI/Kit/v7'
 PARTS = sorted(os.path.splitext(os.path.basename(p))[0] for p in glob.glob(os.path.join(SRC, '*.png')) if not os.path.basename(p).startswith('reference-'))
 if len(PARTS) < 60:
     raise RuntimeError('expected at least 60 Kit-v7 parts, found %d' % len(PARTS))
+ONLY = [p for p in os.environ.get('SF_KIT_ONLY', '').split(',') if p]  # import only these parts (e.g. the 13 Equipment parts) and leave the rest untouched
+if ONLY:
+    PARTS = [p for p in PARTS if p in ONLY]
 
 lib = unreal.EditorAssetLibrary
 tasks = []
