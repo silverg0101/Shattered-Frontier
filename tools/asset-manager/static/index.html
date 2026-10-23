@@ -511,17 +511,17 @@ async function renderSettings() {
   crumbs([['Settings', '#/settings']]);
   let s; try { s = await api('/api/settings'); } catch (e) { return fail(e); }
   const row = (h, i) => {
-    const agent = h.kind === 'agent', inp = (f, v, t = 'text') => `<input type="${t}" data-f="${f}" value="${esc(v ?? '')}">`;
+    const direct = h.kind === 'http', inp = (f, v, t = 'text') => `<input type="${t}" data-f="${f}" value="${esc(v ?? '')}">`;
     return `<tr data-i="${i}">
     <td><span class="dot" data-dot></span></td>
     <td><input type="checkbox" data-f="enabled" ${h.enabled ? 'checked' : ''}></td>
     <td>${inp('name', h.name)}</td>
-    <td style="width:100px"><select data-f="kind" data-kind><option value="ssh" ${agent ? '' : 'selected'}>SSH</option><option value="agent" ${agent ? 'selected' : ''}>Agent</option></select></td>
-    <td>${agent ? inp('url', h.url || 'http://host:8291') : inp('ssh', h.ssh)}</td>
+    <td style="width:110px"><select data-f="kind" data-kind><option value="ssh" ${direct ? '' : 'selected'}>SSH</option><option value="http" ${direct ? 'selected' : ''}>ComfyUI URL</option></select></td>
+    <td>${direct ? inp('url', h.url || 'http://host:8188') : inp('ssh', h.ssh)}</td>
     <td style="width:70px">${inp('gpu', h.gpu ?? 0, 'number')}</td>
-    <td style="width:90px">${agent ? '<span class="muted">—</span>' : inp('port', h.port, 'number')}</td>
-    <td>${agent ? '<span class="muted">set on the agent</span>' : inp('comfy_dir', h.comfy_dir)}</td>
-    <td>${agent ? `<input type="password" data-f="token" value="${esc(h.token || '')}" placeholder="agent token">` : inp('unit', h.unit)}</td>
+    <td style="width:90px">${direct ? '<span class="muted">in URL</span>' : inp('port', h.port, 'number')}</td>
+    <td>${direct ? '<span class="muted">—</span>' : inp('comfy_dir', h.comfy_dir)}</td>
+    <td>${direct ? '<span class="muted">ComfyUI log</span>' : inp('unit', h.unit)}</td>
     <td><button class="btn icon sm danger" data-rm title="Remove">×</button></td></tr>`;
   };
   $('#view').innerHTML = `
@@ -537,7 +537,7 @@ async function renderSettings() {
     <div class="card fade" style="--i:3;margin-top:18px;overflow-x:auto">
       <div style="display:flex;align-items:center;gap:10px"><h3>GPU hosts</h3><span class="muted" style="font-size:12px">ComfyUI servers reached over SSH. One job per host at a time.</span>
         <button class="btn sm" id="test" style="margin-left:auto">Test hosts</button><button class="btn sm" id="add">+ Add host</button></div>
-      <table class="hosts"><thead><tr><th></th><th>On</th><th>Name</th><th>Type</th><th>SSH target / agent URL</th><th>GPU</th><th>Port</th><th>ComfyUI dir</th><th>Log unit / token</th><th></th></tr></thead>
+      <table class="hosts"><thead><tr><th></th><th>On</th><th>Name</th><th>Type</th><th>SSH target / ComfyUI URL</th><th>GPU</th><th>Port</th><th>ComfyUI dir</th><th>Log unit</th><th></th></tr></thead>
         <tbody id="hrows">${s.hosts.map(row).join('')}</tbody></table>
       <div id="hstat" class="muted" style="font-size:12px;margin-top:10px"></div>
     </div>
@@ -580,7 +580,7 @@ setQueueOpen(store.get('queueOpen', true));
 $('#qtoggle').onclick = () => setQueueOpen($('#queue').classList.contains('closed'));
 $('#vtab').onclick = () => setQueueOpen(true);
 $('#qclear').onclick = () => post('/api/jobs/clear').then(pollQueue, fail);
-const metric = (lbl, pct, extra) => `<div class="metric"><div class="lbl">${lbl}<b>${extra || pct + '%'}</b></div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
+const metric = (lbl, pct, extra) => `<div class="metric"><div class="lbl">${lbl}<b>${pct == null ? '—' : extra || pct + '%'}</b></div><div class="bar"><i style="width:${pct ?? 0}%"></i></div></div>`;
 let qTimer;
 async function pollQueue() {
   clearTimeout(qTimer);

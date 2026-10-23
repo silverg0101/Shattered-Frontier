@@ -4,7 +4,7 @@ Stdlib only. Assets live under ASSET_ROOT, the queue in DATA_DIR/queue.db.
 GPU hosts are reached over SSH (their ComfyUI listens on 127.0.0.1 only).
 Run `python app.py --check` for the self-check.
 """
-import json, mimetypes, os, random, re, shlex, shutil, sqlite3, subprocess, sys, threading, time, traceback, urllib.error, urllib.parse, urllib.request
+import json, mimetypes, os, random, re, shlex, shutil, sqlite3, subprocess, sys, threading, time, traceback, uuid, urllib.error, urllib.parse, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -25,8 +25,8 @@ DEFAULT_SETTINGS = {
          "comfy_dir": "/home/raadmin/comfy-h3/ComfyUI", "unit": f"comfy-h3@{g}", "enabled": True}
         for g in (1, 2)  # GPU 0 belongs to another container: never use it.
     ] + [
-        {"name": "Desktop RTX 3060", "kind": "agent", "url": "http://192.168.50.92:8291", "token": "", "gpu": 0, "port": 0,
-         "comfy_dir": "", "unit": "", "enabled": False},  # needs host_agent.py running on the desktop
+        {"name": "Desktop RTX 3060", "kind": "http", "url": "http://192.168.50.92:18190", "gpu": 0, "port": 0,
+         "comfy_dir": "", "unit": "", "enabled": False},  # its ComfyUI must listen on the LAN (--listen 0.0.0.0)
     ],
 }
 
@@ -175,9 +175,9 @@ def save_settings(s):
     for h in s.get("hosts", []):
         h["kind"] = h.get("kind", "ssh")
         h["gpu"], h["port"] = int(h.get("gpu", 0)), int(h.get("port", 0))
-        if h["kind"] == "agent":
+        if h["kind"] == "http":
             if not re.fullmatch(r"https?://[\w.-]+(:\d+)?/?", h.get("url", "")):
-                raise ValueError(f"bad agent url {h.get('url')!r}")
+                raise ValueError(f"bad ComfyUI url {h.get('url')!r}")
         elif not re.fullmatch(r"[\w.-]+@[\w.-]+", h.get("ssh", "")):
             raise ValueError(f"bad ssh target {h.get('ssh')!r}")
     for k in ("output_folder", "input_folder"):
@@ -238,20 +238,20 @@ def ssh(host, cmd, data=None, timeout=60):
         raise RuntimeError((r.stderr or r.stdout).decode(errors="replace").strip()[-400:] or f"ssh exit {r.returncode}")
     return r.stdout
 
-def agent(host, path, data=None, method=None, timeout=60):
-    req = urllib.request.Request(host["url"].rstrip("/") + path, data, {"X-Agent-Token": host.get("token", "")}, method=method)
+def http(host, path, data=None, headers=None, timeout=60):
+    req = urllib.request.Request(host["url"].rstrip("/") + path, data, headers or {})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
             return r.read()
     except urllib.error.HTTPError as e:
-        body = e.read()
-        if e.code == 400 and path.startswith("/comfy/"):
-            return body  # ComfyUI explains rejected prompts in the body
-        raise RuntimeError(f"agent {e.code}: {body.decode(errors='replace')[:300]}")
+        if e.code == 400:
+            return e.read()  # ComfyUI explains rejected prompts in the body
+        raise RuntimeError(f"ComfyUI {e.code}: {e.read().decode(errors='replace')[:300]}")
 
 def comfy(host, path, body=None, timeout=60):
-    if host.get("kind") == "agent":
-        return json.loads(agent(host, "/comfy" + path, None if body is None else json.dumps(body).encode(), timeout=timeout) or b"{}")
+    if host.get("kind") == "http":
+        data = None if body is None else json.dumps(body).encode()
+        return json.loads(http(host, path, data, {"Content-Type": "application/json"} if data else None, timeout) or b"{}")
     url = shlex.quote(f"http://127.0.0.1:{host['port']}{path}")
     if body is None:
         out = ssh(host, f"curl -s -m {timeout} {url}", timeout=timeout + 15)
@@ -283,19 +283,28 @@ def host_status(host):
 
 # Job files live in ComfyUI's input/sfam and output/sfam; `name` is relative to those folders.
 def put_input(host, name, data):
-    if host.get("kind") == "agent":
-        return agent(host, f"/input/{name}", data, "PUT", 300)
+    if host.get("kind") == "http":
+        b = uuid.uuid4().hex
+        form = lambda k, v: f'--{b}\r\nContent-Disposition: form-data; name="{k}"\r\n\r\n{v}\r\n'.encode()
+        body = (f'--{b}\r\nContent-Disposition: form-data; name="image"; filename="{name}"\r\n'
+                'Content-Type: application/octet-stream\r\n\r\n').encode() + data + b"\r\n" + \
+            form("subfolder", "sfam") + form("type", "input") + form("overwrite", "true") + f"--{b}--\r\n".encode()
+        return http(host, "/upload/image", body, {"Content-Type": f"multipart/form-data; boundary={b}"}, 300)
     p = f"{host['comfy_dir']}/input/sfam/{name}"
     ssh(host, f"mkdir -p {shlex.quote(str(Path(p).parent))} && cat > {shlex.quote(p)}", data, 300)
 
 def get_output(host, name):
-    if host.get("kind") == "agent":
-        return agent(host, "/output/" + urllib.parse.quote(name), timeout=900)
+    if host.get("kind") == "http":
+        sub = "/".join(["sfam", *name.split("/")[:-1]])
+        q = urllib.parse.urlencode({"filename": name.split("/")[-1], "subfolder": sub, "type": "output"})
+        return http(host, f"/view?{q}", timeout=900)
     return ssh(host, f"cat {shlex.quote(host['comfy_dir'] + '/output/sfam/' + name)}", timeout=900)
 
 def cleanup(host, inputs, outputs):
-    if host.get("kind") == "agent":
-        return agent(host, "/cleanup", json.dumps({"input": inputs, "output": outputs}).encode(), "POST")
+    if host.get("kind") == "http":
+        # ponytail: ComfyUI's HTTP API cannot delete files, so job files stay in its input/sfam and output/sfam;
+        # needs SSH (or a file-delete endpoint) on that host to clean them.
+        return
     paths = [f"{host['comfy_dir']}/input/sfam/{n}" for n in inputs] + [f"{host['comfy_dir']}/output/sfam/{n}" for n in outputs]
     ssh(host, "rm -f " + " ".join(shlex.quote(p) for p in paths))
 
@@ -303,9 +312,17 @@ LIVE = {}  # job id -> {"metrics": {...}, "log": [...]} while running
 CPU_PREV = {}
 
 def poll_metrics(host, jid, since):
-    if host.get("kind") == "agent":
-        m = json.loads(agent(host, "/metrics", timeout=20))
-        LIVE[jid] = {"log": m.pop("log"), "metrics": m}
+    if host.get("kind") == "http":  # ComfyUI reports RAM/VRAM and its log, not CPU/GPU load
+        st = comfy(host, "/system_stats", timeout=20)
+        ram_t, ram_f = st["system"]["ram_total"], st["system"]["ram_free"]
+        dev = st["devices"][0]
+        v_t, v_f = dev["vram_total"], dev["vram_free"]
+        logs = comfy(host, "/internal/logs/raw", timeout=20).get("entries", [])
+        lines = [re.sub(r"\x1b\[[0-9;]*m", "", ln.split("\r")[-1]).rstrip() for e in logs for ln in e.get("m", "").splitlines()]
+        LIVE[jid] = {"metrics": {"cpu": None, "gpu": None, "ram": round(100 * (ram_t - ram_f) / ram_t),
+                                 "ram_gb": [round((ram_t - ram_f) / 2**30, 1), round(ram_t / 2**30, 1)],
+                                 "vram": round(100 * (v_t - v_f) / v_t), "vram_gb": [round((v_t - v_f) / 2**30, 1), round(v_t / 2**30, 1)]},
+                     "log": [ln for ln in lines if ln][-200:]}
         return
     cmd = (f"nvidia-smi -i {int(host['gpu'])} --query-gpu=utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits;"
            " echo @@; free -m | awk '/Mem:/{print $2, $3}'; echo @@; head -1 /proc/stat; echo @@;"
