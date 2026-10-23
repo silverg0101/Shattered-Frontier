@@ -7,7 +7,9 @@
 #include "Components/Border.h"
 #include "Components/Button.h"
 #include "Components/CanvasPanel.h"
+#include "Components/ComboBoxString.h"
 #include "Components/ContentWidget.h"
+#include "Components/EditableText.h"
 #include "Components/PanelWidget.h"
 #include "Components/ProgressBar.h"
 #include "Components/ScaleBox.h"
@@ -486,9 +488,10 @@ void HudLayout(UWidgetTree* T)
     T->RootWidget = Root;
 }
 
-// ---- inventory (WBP_Inventory, WBP_InventoryTab, WBP_InventorySlot): Inventory-v6 art, tools/ui/import_inventory.py.
-// Slate draws a 9-slice corner at texture-pixel size, so the 2x art is authored at its own pixel size (every number below is 2x) and the
-// panel and the tooltip sit in a ScaleBox of 0.5. Margins are the README table in source pixels; the brush size is the art size.
+// ---- shared menu kit v7 (docs/dependency-map/ui.md "Shared menu kit v7"): art from tools/ui/import_kit_v7.py.
+// Scale convention: the kit art is 2x. Slate draws Box 9-slice margins in texture pixels (never in brush ImageSize), so every kit widget
+// is authored in ART PIXELS and WBP_WindowFrame draws its whole content at 0.5 (a ScaleBox at the window root). A kit widget used outside a
+// window sits in its own 0.5 ScaleBox. Margins below are the README table (source pixels, L,T,R,B).
 UUserWidget* Inst(UWidgetTree* T, const TCHAR* Dir, const TCHAR* Wbp, const TCHAR* Name)
 {
     UClass* Class = SharedClass(Dir, Wbp);
@@ -497,11 +500,36 @@ UUserWidget* Inst(UWidgetTree* T, const TCHAR* Dir, const TCHAR* Wbp, const TCHA
     return Widget;
 }
 
-constexpr const TCHAR* InventoryKitDir = TEXT("/Game/Frontier/UI/Kit/Inventory");
-constexpr float InventoryScale = 0.5f;  // 2x art shown at 1x
+constexpr const TCHAR* KitV7Dir = TEXT("/Game/Frontier/UI/Kit/v7");
+constexpr const TCHAR* InventoryKitDir = TEXT("/Game/Frontier/UI/Kit/Inventory");  // v6: tooltip frame, weight bar (not in kit v7)
+constexpr float KitScale = 0.5f;
 
-// A part at W x H (its art size unless stretched). SrcW > 0 makes it a Box with margins L,T,R,B in pixels of the SrcW x SrcH art (a 3-slice
-// passes 0 for the unsliced axis).
+UTexture2D* KitTex(const TCHAR* Part) { return LoadObject<UTexture2D>(nullptr, *FString::Printf(TEXT("%s/T_KitV7_%s.T_KitV7_%s"), KitV7Dir, Part, Part)); }
+
+// A kit part as a plain image at its art size (or W x H).
+FSlateBrush KImg(const TCHAR* Part, float W = 0.f, float H = 0.f)
+{
+    FSlateBrush Brush;
+    if (UTexture2D* Tex = KitTex(Part))
+    {
+        Brush.SetResourceObject(Tex);
+        Brush.ImageSize = FVector2D(W > 0.f ? W : Tex->Source.GetSizeX(), H > 0.f ? H : Tex->Source.GetSizeY());
+    }
+    return Brush;
+}
+
+// A 9-slice part: margins L,T,R,B in source pixels; ImageSize is the art size unless W x H is given.
+FSlateBrush KBox(const TCHAR* Part, float L, float Top, float R, float B, float W = 0.f, float H = 0.f)
+{
+    FSlateBrush Brush = KImg(Part, W, H);
+    if (const UTexture2D* Tex = Cast<UTexture2D>(Brush.GetResourceObject()))
+    {
+        Brush.DrawAs = ESlateBrushDrawType::Box;
+        Brush.Margin = FMargin(L / Tex->Source.GetSizeX(), Top / Tex->Source.GetSizeY(), R / Tex->Source.GetSizeX(), B / Tex->Source.GetSizeY());
+    }
+    return Brush;
+}
+
 FSlateBrush InvBrush(const TCHAR* Part, float W, float H, float L = 0.f, float Top = 0.f, float R = 0.f, float B = 0.f, float SrcW = 0.f, float SrcH = 0.f)
 {
     FSlateBrush Brush;
@@ -515,10 +543,11 @@ FSlateBrush InvBrush(const TCHAR* Part, float W, float H, float L = 0.f, float T
     return Brush;
 }
 
-UImage* InvImage(UWidgetTree* T, const TCHAR* Name, const FSlateBrush& Brush)
+UImage* InvImage(UWidgetTree* T, const TCHAR* Name, const FSlateBrush& Brush, bool bHitInvisible = false)
 {
     UImage* Img = Name ? N<UImage>(T, Name) : A<UImage>(T);
     Img->SetBrush(Brush);
+    if (bHitInvisible) { Img->SetVisibility(ESlateVisibility::HitTestInvisible); }
     return Img;
 }
 
@@ -531,160 +560,343 @@ UTextBlock* SizedText(UWidgetTree* T, const TCHAR* Name, const TCHAR* Default, f
     return Block;
 }
 
-UCanvasPanelSlot* At(UCanvasPanel* Canvas, UWidget* Child, float X, float Y, float W = 0.f, float H = 0.f)
-{
-    UCanvasPanelSlot* Placed = Canvas->AddChildToCanvas(Child);
-    Placed->SetPosition(FVector2D(X, Y));
-    if (W > 0.f && H > 0.f) { Placed->SetSize(FVector2D(W, H)); Placed->SetAutoSize(false); } else { Placed->SetAutoSize(true); }
-    return Placed;
-}
-
 UScaleBox* Half(UWidgetTree* T, UWidget* Child)
 {
     UScaleBox* Box = A<UScaleBox>(T);
     Box->SetStretch(EStretch::UserSpecified);
-    Box->SetUserSpecifiedScale(InventoryScale);
+    Box->SetUserSpecifiedScale(KitScale);
     Box->SetContent(Child);
     return Box;
 }
 
-// Art slices from the README (source pixels).
-FSlateBrush InvSlot(const TCHAR* Part, float Margin) { return InvBrush(Part, 208.f, 208.f, Margin, Margin, Margin, Margin, 208.f, 208.f); }
-FSlateBrush InvTabPlate(const TCHAR* Part) { return InvBrush(Part, 216.f, 120.f, 28.f, 28.f, 28.f, 24.f, 216.f, 120.f); }
 FSlateBrush InvRule(const TCHAR* Part, float W, float H, float Cap) { return InvBrush(Part, W, H, Cap, 0.f, Cap, 0.f, W, H); }
 
-void InventorySlotDefaults(UObject* Cdo)
+void StyleFace(UButton* Control, const FSlateBrush& Normal, const FSlateBrush& Hover, const FSlateBrush& Pressed, const FSlateBrush& Disabled)
 {
-    USFInventorySlotWidget* Slot = Cast<USFInventorySlotWidget>(Cdo);
-    Slot->NormalBrush = InvSlot(TEXT("slot_normal"), 30.f);
-    Slot->HoverBrush = InvSlot(TEXT("slot_hover"), 30.f);
-    Slot->SelectedBrush = InvSlot(TEXT("slot_selected"), 34.f);
+    FButtonStyle Style = Control->GetStyle();
+    Style.Normal = Normal; Style.Hovered = Hover; Style.Pressed = Pressed; Style.Disabled = Disabled;
+    Style.NormalPadding = FMargin(0.f); Style.PressedPadding = FMargin(0.f);
+    Control->SetStyle(Style);
+}
+
+UProgressBar* FillBar(UWidgetTree* T, const TCHAR* Name, const FSlateBrush& Fill)
+{
+    UProgressBar* Bar = N<UProgressBar>(T, Name);
+    FProgressBarStyle Style = Bar->GetWidgetStyle();
+    Style.SetBackgroundImage(FSlateNoResource());
+    Style.SetFillImage(Fill);
+    Bar->SetWidgetStyle(Style);
+    Bar->SetPercent(0.f);
+    return Bar;
+}
+
+// WBP_Separator: a thin brass rule; the horizontal brush is the seed, the vertical one is a class default picked by bVertical.
+void SeparatorLayout(UWidgetTree* T) { T->RootWidget = InvImage(T, TEXT("Line"), KBox(TEXT("separator"), 40.f, 0.f, 40.f, 0.f, 1.f, 24.f)); }
+void SeparatorDefaults(UObject* Cdo)
+{
+    USFSeparatorWidget* Rule = Cast<USFSeparatorWidget>(Cdo);
+    Rule->HorizontalBrush = KBox(TEXT("separator"), 40.f, 0.f, 40.f, 0.f, 1.f, 24.f);
+    Rule->VerticalBrush = KBox(TEXT("separator_vertical"), 0.f, 40.f, 0.f, 40.f, 24.f, 1.f);
+}
+
+// WBP_Button: the face over the hold fill. The face is semi-transparent; button_hold_fill (HoldFill) sits UNDER it.
+void KitButtonLayout(UWidgetTree* T)
+{
+    UOverlay* Stack = A<UOverlay>(T);
+    Put(Stack, FillBar(T, TEXT("HoldFill"), KBox(TEXT("button_hold_fill"), 18.f, 18.f, 18.f, 18.f)), HAlign_Fill, VAlign_Fill);
+    UButton* Control = N<UButton>(T, TEXT("Button"));
+    StyleFace(Control, KBox(TEXT("button_normal"), 20.f, 18.f, 20.f, 18.f), KBox(TEXT("button_hover"), 20.f, 18.f, 20.f, 18.f),
+        KBox(TEXT("button_pressed"), 20.f, 18.f, 20.f, 18.f), KBox(TEXT("button_disabled"), 20.f, 18.f, 20.f, 18.f));
+    UBorder* Pad = Plain(T, nullptr, FMargin(40.f, 0.f));
+    Pad->SetVerticalAlignment(VAlign_Center); Pad->SetHorizontalAlignment(HAlign_Center);
+    UTextBlock* Label = SizedText(T, TEXT("Label"), TEXT("Button"), 38.f);
+    Label->SetJustification(ETextJustify::Center);
+    Pad->SetContent(Label);
+    Control->SetContent(Pad);
+    Put(Stack, Control, HAlign_Fill, VAlign_Fill);
+    T->RootWidget = Sized(T, TEXT("RootSize"), Stack, 0.f, 96.f, 240.f);
+}
+
+// WBP_Tab: tab_normal / tab_hover / tab_selected (class defaults below), icon above the label (the WBP can move it left).
+void TabDefaults(UObject* Cdo)
+{
+    USFTabWidget* Tab = Cast<USFTabWidget>(Cdo);
+    Tab->NormalBrush = KBox(TEXT("tab_normal"), 18.f, 16.f, 18.f, 16.f);
+    Tab->HoverBrush = KBox(TEXT("tab_hover"), 18.f, 16.f, 18.f, 16.f);
+    Tab->SelectedBrush = KBox(TEXT("tab_selected"), 18.f, 16.f, 18.f, 16.f);
+    Tab->LabelStyle = FSFUiTextStyle(34, Ivory());
+}
+
+void KitTabLayout(UWidgetTree* T)
+{
+    UButton* Control = N<UButton>(T, TEXT("Button"));
+    StyleFace(Control, KBox(TEXT("tab_normal"), 18.f, 16.f, 18.f, 16.f), KBox(TEXT("tab_hover"), 18.f, 16.f, 18.f, 16.f),
+        KBox(TEXT("tab_selected"), 18.f, 16.f, 18.f, 16.f), KBox(TEXT("tab_normal"), 18.f, 16.f, 18.f, 16.f));
+    UVerticalBox* Stack = A<UVerticalBox>(T);
+    Stack->AddChildToVerticalBox(Sized(T, nullptr, N<UImage>(T, TEXT("TabIcon")), 44.f, 44.f))->SetHorizontalAlignment(HAlign_Center);
+    UTextBlock* Label = SizedText(T, TEXT("Label"), TEXT("Tab"), 34.f);
+    Label->SetJustification(ETextJustify::Center);
+    Stack->AddChildToVerticalBox(Label)->SetHorizontalAlignment(HAlign_Center);
+    UBorder* Pad = Plain(T, nullptr, FMargin(12.f, 8.f));
+    Pad->SetVerticalAlignment(VAlign_Center); Pad->SetHorizontalAlignment(HAlign_Center);
+    Pad->SetContent(Stack);
+    Control->SetContent(Pad);
+    USizeBox* Root = Sized(T, TEXT("RootSize"), Control, 0.f, 0.f);
+    Root->SetMinDesiredHeight(84.f);
+    T->RootWidget = Root;
+}
+
+void TabBarLayout(UWidgetTree* T) { T->RootWidget = N<UHorizontalBox>(T, TEXT("TabRow")); }
+
+// WBP_ItemSlot (208 x 208): slot_back, icon, hover and select frames (toggled by USFSelectableWidget), name fallback, stack count.
+void ItemSlotDefaults(UObject* Cdo)
+{
+    USFSlotWidget* Slot = Cast<USFSlotWidget>(Cdo);
+    Slot->bKitFrameSwap = false;
+    Slot->bShowSingleCount = true;
     Slot->CountStyle = FSFUiTextStyle(36, Ivory(), false, true);
     Slot->KeyStyle = FSFUiTextStyle(26, Ivory());
 }
 
-// 208 x 208 (2x): icon centred, stack count bottom right, the item name over it while an item has no icon.
-void InventorySlotLayout(UWidgetTree* T)
+void ItemSlotLayout(UWidgetTree* T)
 {
-    UBorder* Plate = N<UBorder>(T, TEXT("Frame"));
-    Plate->SetBrush(InvSlot(TEXT("slot_normal"), 30.f));
-    Plate->SetPadding(FMargin(0.f));
     UOverlay* Stack = A<UOverlay>(T);
-    Put(Stack, Sized(T, nullptr, N<UImage>(T, TEXT("Icon")), 168.f, 168.f), HAlign_Center, VAlign_Center);
+    UBorder* Plate = N<UBorder>(T, TEXT("Frame"));
+    Plate->SetBrush(KBox(TEXT("slot_back"), 18.f, 18.f, 18.f, 18.f));
+    Plate->SetPadding(FMargin(0.f));
+    Put(Stack, Plate, HAlign_Fill, VAlign_Fill);
+    Put(Stack, Sized(T, nullptr, N<UImage>(T, TEXT("Icon")), 160.f, 160.f), HAlign_Center, VAlign_Center);
     UTextBlock* Name = SizedText(T, TEXT("KeyLabel"), TEXT(""), 26.f);
     Name->SetJustification(ETextJustify::Center); Name->SetAutoWrapText(true);
     Put(Stack, Name, HAlign_Fill, VAlign_Center, FMargin(16.f, 0.f));
     Put(Stack, SizedText(T, TEXT("CountLabel"), TEXT(""), 36.f), HAlign_Right, VAlign_Bottom, FMargin(0.f, 0.f, 24.f, 16.f));
-    Plate->SetContent(Stack);
-    T->RootWidget = Sized(T, TEXT("RootSize"), Plate, 208.f, 208.f);
+    Put(Stack, InvImage(T, TEXT("HoverFrame"), KBox(TEXT("hover_frame"), 18.f, 18.f, 18.f, 18.f, 208.f, 208.f), true), HAlign_Fill, VAlign_Fill);
+    Put(Stack, InvImage(T, TEXT("SelectFrame"), KBox(TEXT("select_frame"), 18.f, 18.f, 18.f, 18.f, 208.f, 208.f), true), HAlign_Fill, VAlign_Fill);
+    T->RootWidget = Sized(T, TEXT("RootSize"), Stack, 208.f, 208.f);
 }
 
-void InventoryTabDefaults(UObject* Cdo)
+// WBP_ScrollList: the one scrollbar style (scrollbar_track / scrollbar_thumb) around a Content slot.
+void ScrollListLayout(UWidgetTree* T)
 {
-    USFInventoryTabWidget* Tab = Cast<USFInventoryTabWidget>(Cdo);
-    Tab->HoverBrush = InvTabPlate(TEXT("tab_normal"));
-    Tab->SelectedBrush = InvTabPlate(TEXT("tab_selected"));
-    Tab->LabelStyle = FSFUiTextStyle(30, Ivory());
-}
-
-// Plate button (no resting plate), icon above the label. The width follows the parent slot; 2x units.
-void InventoryTabLayout(UWidgetTree* T)
-{
-    UButton* Control = N<UButton>(T, TEXT("Button"));
-    FButtonStyle Style = Control->GetStyle();
-    Style.Normal = FSlateNoResource(); Style.Hovered = FSlateNoResource(); Style.Pressed = FSlateNoResource(); Style.Disabled = FSlateNoResource();
-    Style.NormalPadding = FMargin(0.f); Style.PressedPadding = FMargin(0.f);
-    Control->SetStyle(Style);
-    UVerticalBox* Stack = A<UVerticalBox>(T);
-    Stack->AddChildToVerticalBox(Sized(T, nullptr, N<UImage>(T, TEXT("TabIcon")), 44.f, 44.f))->SetHorizontalAlignment(HAlign_Center);
-    UTextBlock* Label = SizedText(T, TEXT("Label"), TEXT("Tab"), 30.f);
-    Label->SetJustification(ETextJustify::Center);
-    Stack->AddChildToVerticalBox(Label)->SetHorizontalAlignment(HAlign_Center);
-    UBorder* Pad = Plain(T, nullptr, FMargin(8.f, 4.f));
-    Pad->SetVerticalAlignment(VAlign_Center); Pad->SetHorizontalAlignment(HAlign_Center);
-    Pad->SetContent(Stack);
-    Control->SetContent(Pad);
-    T->RootWidget = Sized(T, TEXT("RootSize"), Control, 0.f, 112.f);
-}
-
-void InventoryLayout(UWidgetTree* T)
-{
-    UCanvasPanel* Root = N<UCanvasPanel>(T, TEXT("Root"));
-    // Panel 1360 x 1600 (shown 680 x 800): the frame art, then the body canvas over it.
-    UOverlay* PanelStack = A<UOverlay>(T);
-    Put(PanelStack, InvImage(T, TEXT("PanelFrame"), InvBrush(TEXT("panel_frame"), 1360.f, 1600.f, 80.f, 80.f, 80.f, 80.f, 1360.f, 1600.f)), HAlign_Fill, VAlign_Fill);
-    UCanvasPanel* Body = A<UCanvasPanel>(T);
-    Put(PanelStack, Body, HAlign_Fill, VAlign_Fill);
-
-    // Header: crest, title, divider.
-    At(Body, InvImage(T, nullptr, InvBrush(TEXT("crest_stag"), 96.f, 96.f)), 104.f, 92.f, 96.f, 96.f);
-    At(Body, SizedText(T, TEXT("TitleText"), TEXT("Inventory"), 60.f), 232.f, 100.f);
-    At(Body, InvImage(T, nullptr, InvRule(TEXT("header_divider"), 1200.f, 20.f, 36.f)), 80.f, 204.f, 1200.f, 20.f);
-
-    // Tab bar: five tabs with dividers between, over the strip.
-    At(Body, InvImage(T, nullptr, InvBrush(TEXT("tab_bar_back"), 1200.f, 130.f, 40.f, 32.f, 40.f, 32.f, 1200.f, 130.f)), 80.f, 230.f, 1200.f, 130.f);
-    UHorizontalBox* Tabs = A<UHorizontalBox>(T);
-    struct FTabSpec { const TCHAR* Name; const TCHAR* Label; const TCHAR* Icon; };
-    const FTabSpec Specs[5] = {{TEXT("TabAll"), TEXT("All"), nullptr}, {TEXT("TabMaterials"), TEXT("Materials"), TEXT("icon_tab_materials")},
-        {TEXT("TabGear"), TEXT("Gear"), TEXT("icon_tab_gear")}, {TEXT("TabConsumables"), TEXT("Consumables"), TEXT("icon_tab_consumables")},
-        {TEXT("TabMisc"), TEXT("Misc"), TEXT("icon_tab_misc")}};
-    for (int32 Index = 0; Index < 5; ++Index)
-    {
-        if (Index > 0) { Tabs->AddChildToHorizontalBox(Sized(T, nullptr, InvImage(T, nullptr, InvBrush(TEXT("tab_divider"), 8.f, 110.f, 0.f, 12.f, 0.f, 12.f, 8.f, 110.f)), 8.f, 110.f))->SetVerticalAlignment(VAlign_Center); }
-        UUserWidget* Tab = Inst(T, InventoryDir, TEXT("WBP_InventoryTab"), Specs[Index].Name);
-        if (!Tab) { continue; }
-        if (USFInventoryTabWidget* Typed = Cast<USFInventoryTabWidget>(Tab))
-        {
-            Typed->LabelText = FText::FromString(Specs[Index].Label);
-            if (Specs[Index].Icon) { Typed->IconBrush = InvBrush(Specs[Index].Icon, 48.f, 48.f); }
-        }
-        UHorizontalBoxSlot* TabSlot = Tabs->AddChildToHorizontalBox(Tab);
-        TabSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); TabSlot->SetVerticalAlignment(VAlign_Center); TabSlot->SetPadding(FMargin(4.f, 0.f));
-    }
-    At(Body, Tabs, 100.f, 242.f, 1160.f, 106.f);
-
-    // The bag: C++ fills SlotGrid with one WBP_InventorySlot per backpack slot, 5 wide; the ScrollBox shows 5 rows and scrolls.
-    UUniformGridPanel* Grid = N<UUniformGridPanel>(T, TEXT("SlotGrid"));
-    Grid->SetSlotPadding(FMargin(3.f));
-    UScrollBox* Scroll = N<UScrollBox>(T, TEXT("SlotScroll"));
-    Scroll->SetScrollbarThickness(FVector2D(12.f, 12.f));
+    UScrollBox* Scroll = N<UScrollBox>(T, TEXT("Scroll"));
+    Scroll->SetScrollbarThickness(FVector2D(36.f, 36.f));
     Scroll->SetScrollbarPadding(FMargin(12.f, 0.f, 0.f, 0.f));
     Scroll->SetAlwaysShowScrollbar(true);
     Scroll->SetAlwaysShowScrollbarTrack(true);
     FScrollBarStyle Bar = Scroll->GetWidgetBarStyle();
-    Bar.SetVerticalBackgroundImage(InvBrush(TEXT("scrollbar_track"), 12.f, 1100.f, 0.f, 18.f, 0.f, 18.f, 12.f, 1100.f));
-    const FSlateBrush Thumb = InvBrush(TEXT("scrollbar_thumb"), 10.f, 130.f, 0.f, 18.f, 0.f, 18.f, 10.f, 130.f);
-    Bar.SetNormalThumbImage(Thumb).SetHoveredThumbImage(Thumb).SetDraggedThumbImage(Thumb).SetThickness(12.f);
+    Bar.SetVerticalBackgroundImage(KBox(TEXT("scrollbar_track"), 10.f, 20.f, 10.f, 20.f, 36.f, 600.f));
+    const FSlateBrush Thumb = KBox(TEXT("scrollbar_thumb"), 10.f, 20.f, 10.f, 20.f, 32.f, 160.f);
+    Bar.SetNormalThumbImage(Thumb).SetHoveredThumbImage(Thumb).SetDraggedThumbImage(Thumb).SetThickness(36.f);
     Scroll->SetWidgetBarStyle(Bar);
-    Scroll->AddChild(Sized(T, nullptr, Grid, 1070.f, 0.f));  // 5 cells of 208 + 2 x 3 padding; not stretched to the scroll width
-    At(Body, Scroll, 110.f, 372.f, 1094.f, 1070.f);
-    At(Body, SizedText(T, TEXT("EmptyText"), TEXT("Your pack is empty."), 40.f), 440.f, 800.f);
+    UBorder* Centre = Plain(T, nullptr, FMargin(0.f));  // the content sits centred under the top edge
+    Centre->SetHorizontalAlignment(HAlign_Center); Centre->SetVerticalAlignment(VAlign_Top);
+    Centre->SetContent(N<UNamedSlot>(T, TEXT("Content")));
+    Scroll->AddChild(Centre);
+    T->RootWidget = Scroll;
+}
 
-    // Footer: rule, weight icon, text, bar, percent.
-    At(Body, InvImage(T, nullptr, InvRule(TEXT("header_divider"), 1200.f, 20.f, 36.f)), 80.f, 1450.f, 1200.f, 20.f);
-    At(Body, InvImage(T, nullptr, InvBrush(TEXT("icon_weight"), 40.f, 40.f)), 108.f, 1476.f, 40.f, 40.f);
-    At(Body, SizedText(T, TEXT("WeightText"), TEXT("Weight 0.0 / 0 kg"), 34.f), 170.f, 1472.f);
+void GoldDisplayLayout(UWidgetTree* T)
+{
+    UHorizontalBox* Row = A<UHorizontalBox>(T);
+    Row->AddChildToHorizontalBox(Sized(T, nullptr, InvImage(T, nullptr, KImg(TEXT("icon_gold_coin"), 56.f, 56.f)), 56.f, 56.f))->SetVerticalAlignment(VAlign_Center);
+    UTextBlock* Amount = SizedText(T, TEXT("AmountText"), TEXT("0"), 36.f);
+    Amount->SetColorAndOpacity(FSlateColor(Amber()));
+    UHorizontalBoxSlot* Slot = Row->AddChildToHorizontalBox(Amount);
+    Slot->SetVerticalAlignment(VAlign_Center); Slot->SetPadding(FMargin(12.f, 0.f, 0.f, 0.f));
+    T->RootWidget = Row;
+}
+
+// WBP_SearchField / WBP_InputField: the field art with an EditableText over it (and the magnifier for search).
+void FieldLayout(UWidgetTree* T, const TCHAR* Part, float Width, bool bSearchIcon)
+{
+    UOverlay* Stack = A<UOverlay>(T);
+    Put(Stack, InvImage(T, nullptr, KBox(Part, 14.f, 14.f, 14.f, 14.f)), HAlign_Fill, VAlign_Fill);
+    if (bSearchIcon) { Put(Stack, Sized(T, nullptr, InvImage(T, nullptr, KImg(TEXT("icon_search"), 44.f, 44.f), true), 44.f, 44.f), HAlign_Left, VAlign_Center, FMargin(28.f, 0.f, 0.f, 0.f)); }
+    UEditableText* Input = N<UEditableText>(T, TEXT("Input"));
+    FSlateFontInfo Font = Input->GetFont(); Font.Size = 34.f; Input->SetFont(Font);
+    FEditableTextStyle Style = Input->WidgetStyle; Style.ColorAndOpacity = FSlateColor(Ivory()); Input->SetWidgetStyle(Style);
+    Put(Stack, Input, HAlign_Fill, VAlign_Center, FMargin(bSearchIcon ? 96.f : 28.f, 0.f, 28.f, 0.f));
+    T->RootWidget = Sized(T, TEXT("RootSize"), Stack, 0.f, 84.f, Width);
+}
+
+void SearchDefaults(UObject* Cdo) { Cast<USFTextFieldWidget>(Cdo)->HintText = FText::FromString(TEXT("Search")); }
+
+// WBP_Dropdown: dropdown_field with the ComboBox transparent over it and the chevron on top.
+void DropdownLayout(UWidgetTree* T)
+{
+    UOverlay* Stack = A<UOverlay>(T);
+    Put(Stack, InvImage(T, nullptr, KBox(TEXT("dropdown_field"), 14.f, 14.f, 14.f, 14.f)), HAlign_Fill, VAlign_Fill);
+    UComboBoxString* Combo = N<UComboBoxString>(T, TEXT("Combo"));
+    FComboBoxStyle Style = Combo->GetWidgetStyle();
+    FButtonStyle Face = Style.ComboButtonStyle.ButtonStyle;
+    Face.Normal = FSlateNoResource(); Face.Hovered = FSlateNoResource(); Face.Pressed = FSlateNoResource(); Face.Disabled = FSlateNoResource();
+    Style.ComboButtonStyle.ButtonStyle = Face;
+    Style.ComboButtonStyle.DownArrowImage = FSlateNoResource();
+    Combo->SetWidgetStyle(Style);
+    Combo->SetContentPadding(FMargin(28.f, 0.f, 96.f, 0.f));
+    PRAGMA_DISABLE_DEPRECATION_WARNINGS
+    Combo->Font.Size = 34.f;
+    Combo->ForegroundColor = FSlateColor(Ivory());
+    PRAGMA_ENABLE_DEPRECATION_WARNINGS
+    Put(Stack, Combo, HAlign_Fill, VAlign_Fill);
+    Put(Stack, Sized(T, nullptr, InvImage(T, nullptr, KImg(TEXT("icon_chevron_down"), 40.f, 40.f), true), 40.f, 40.f), HAlign_Right, VAlign_Center, FMargin(0.f, 0.f, 28.f, 0.f));
+    T->RootWidget = Sized(T, TEXT("RootSize"), Stack, 0.f, 84.f, 360.f);
+}
+
+// WBP_Stepper: [-] number [+]. The click fill (stepper_fill) sits over each button face; + fills left to right, - right to left.
+UWidget* StepperButton(UWidgetTree* T, const TCHAR* ButtonName, const TCHAR* FillName, const TCHAR* Glyph, bool bRightToLeft)
+{
+    UOverlay* Stack = A<UOverlay>(T);
+    UButton* Control = N<UButton>(T, ButtonName);
+    const FSlateBrush Face = KBox(TEXT("stepper_button_normal"), 12.f, 12.f, 12.f, 12.f);
+    const FSlateBrush Hover = KBox(TEXT("stepper_button_hover"), 12.f, 12.f, 12.f, 12.f);
+    StyleFace(Control, Face, Hover, Hover, Face);
+    Put(Stack, Control, HAlign_Fill, VAlign_Fill);
+    UProgressBar* Fill = FillBar(T, FillName, KBox(TEXT("stepper_fill"), 10.f, 10.f, 10.f, 10.f));
+    Fill->SetBarFillType(bRightToLeft ? EProgressBarFillType::RightToLeft : EProgressBarFillType::LeftToRight);
+    Fill->SetVisibility(ESlateVisibility::HitTestInvisible);
+    Put(Stack, Fill, HAlign_Fill, VAlign_Fill);
+    Put(Stack, Sized(T, nullptr, InvImage(T, nullptr, KImg(Glyph, 44.f, 44.f), true), 44.f, 44.f), HAlign_Center, VAlign_Center);
+    return Sized(T, nullptr, Stack, 84.f, 84.f);
+}
+
+void StepperLayout(UWidgetTree* T)
+{
+    UHorizontalBox* Row = A<UHorizontalBox>(T);
+    Row->AddChildToHorizontalBox(StepperButton(T, TEXT("MinusButton"), TEXT("MinusFill"), TEXT("glyph_minus"), true));
+    UOverlay* Field = A<UOverlay>(T);
+    Put(Field, InvImage(T, nullptr, KBox(TEXT("number_field"), 12.f, 12.f, 12.f, 12.f)), HAlign_Fill, VAlign_Fill);
+    UTextBlock* Number = SizedText(T, TEXT("ValueText"), TEXT("1"), 40.f);
+    Number->SetJustification(ETextJustify::Center);
+    Put(Field, Number, HAlign_Center, VAlign_Center);
+    Row->AddChildToHorizontalBox(Sized(T, nullptr, Field, 180.f, 84.f))->SetPadding(FMargin(8.f, 0.f));
+    Row->AddChildToHorizontalBox(StepperButton(T, TEXT("PlusButton"), TEXT("PlusFill"), TEXT("glyph_plus"), false));
+    T->RootWidget = Row;
+}
+
+// WBP_WindowFrame: tiled slate fill, four rails (136 px in from each corner, so 24 px under the 160 px corners), the body, then the four
+// corners last. Art pixels throughout; the root ScaleBox draws it at half. Header: banner shield + emblem + title, then the rule.
+// NamedSlots: Tabs, Content, SidePanel, Footer (a rule above the Footer).
+void WindowFrameLayout(UWidgetTree* T)
+{
+    UOverlay* Chrome = A<UOverlay>(T);
+    FSlateBrush Fill = KImg(TEXT("frame_fill"));
+    Fill.Tiling = ESlateBrushTileType::Both;
+    Put(Chrome, InvImage(T, nullptr, Fill, true), HAlign_Fill, VAlign_Fill);
+    auto Rail = [&](const TCHAR* Part, ESlateBrushTileType::Type Tile, EHorizontalAlignment H, EVerticalAlignment V, const FMargin& Pad)
+    {
+        FSlateBrush Brush = KImg(Part);
+        Brush.Tiling = Tile;
+        Put(Chrome, InvImage(T, nullptr, Brush, true), H, V, Pad);
+    };
+    Rail(TEXT("frame_edge_top"), ESlateBrushTileType::Horizontal, HAlign_Fill, VAlign_Top, FMargin(136.f, 0.f));
+    Rail(TEXT("frame_edge_bottom"), ESlateBrushTileType::Horizontal, HAlign_Fill, VAlign_Bottom, FMargin(136.f, 0.f));
+    Rail(TEXT("frame_edge_left"), ESlateBrushTileType::Vertical, HAlign_Left, VAlign_Fill, FMargin(0.f, 136.f));
+    Rail(TEXT("frame_edge_right"), ESlateBrushTileType::Vertical, HAlign_Right, VAlign_Fill, FMargin(0.f, 136.f));
+
+    UVerticalBox* Body = A<UVerticalBox>(T);
+    UHorizontalBox* Head = A<UHorizontalBox>(T);
+    UOverlay* Banner = A<UOverlay>(T);
+    Banner->AddChildToOverlay(InvImage(T, nullptr, KImg(TEXT("header_banner_shield"), 160.f, 192.f), true));
+    Put(Banner, Sized(T, nullptr, InvImage(T, TEXT("Emblem"), FSlateBrush(), true), 96.f, 96.f), HAlign_Center, VAlign_Top, FMargin(0.f, 30.f, 0.f, 0.f));
+    Head->AddChildToHorizontalBox(Sized(T, nullptr, Banner, 160.f, 192.f))->SetVerticalAlignment(VAlign_Center);
+    UHorizontalBoxSlot* TitleSlot = Head->AddChildToHorizontalBox(SizedText(T, TEXT("Title"), TEXT("Window"), 60.f));
+    TitleSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); TitleSlot->SetVerticalAlignment(VAlign_Center); TitleSlot->SetPadding(FMargin(28.f, 0.f, 0.f, 0.f));
+    Body->AddChildToVerticalBox(Head);
+    Body->AddChildToVerticalBox(Inst(T, CommonDir, TEXT("WBP_Separator"), TEXT("HeaderRule")))->SetPadding(FMargin(0.f, 10.f, 0.f, 14.f));
+    Body->AddChildToVerticalBox(N<UNamedSlot>(T, TEXT("Tabs")))->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
+    UHorizontalBox* Middle = A<UHorizontalBox>(T);
+    UHorizontalBoxSlot* ContentSlot = Middle->AddChildToHorizontalBox(N<UNamedSlot>(T, TEXT("Content")));
+    ContentSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); ContentSlot->SetVerticalAlignment(VAlign_Fill);
+    Middle->AddChildToHorizontalBox(N<UNamedSlot>(T, TEXT("SidePanel")))->SetVerticalAlignment(VAlign_Top);
+    UVerticalBoxSlot* MiddleSlot = Body->AddChildToVerticalBox(Middle);
+    MiddleSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); MiddleSlot->SetVerticalAlignment(VAlign_Fill);
+    Body->AddChildToVerticalBox(Inst(T, CommonDir, TEXT("WBP_Separator"), TEXT("FooterRule")))->SetPadding(FMargin(0.f, 14.f, 0.f, 14.f));
+    Body->AddChildToVerticalBox(N<UNamedSlot>(T, TEXT("Footer")));
+    UBorder* BodyPad = Plain(T, nullptr, FMargin(72.f, 56.f, 72.f, 64.f));
+    BodyPad->SetContent(Body);
+    Put(Chrome, BodyPad, HAlign_Fill, VAlign_Fill);
+
+    auto Corner = [&](const TCHAR* Part, EHorizontalAlignment H, EVerticalAlignment V) { Put(Chrome, InvImage(T, nullptr, KImg(Part, 160.f, 160.f), true), H, V); };
+    Corner(TEXT("frame_corner_tl"), HAlign_Left, VAlign_Top);
+    Corner(TEXT("frame_corner_tr"), HAlign_Right, VAlign_Top);
+    Corner(TEXT("frame_corner_bl"), HAlign_Left, VAlign_Bottom);
+    Corner(TEXT("frame_corner_br"), HAlign_Right, VAlign_Bottom);
+
+    USizeBox* Size = N<USizeBox>(T, TEXT("WindowSize"));
+    Size->SetMinDesiredWidth(1360.f);
+    Size->SetContent(Chrome);
+    T->RootWidget = Half(T, Size);
+}
+
+// Puts Content into a NamedSlot of a nested widget by writing its NamedSlotBindings (UUserWidget::SetContentForSlot drops the content while the
+// template has a widget tree without that slot). GetAllWidgets, the compiler and the instance then all find it.
+void Fill(UUserWidget* Host, const TCHAR* Slot, UWidget* Content)
+{
+    FArrayProperty* Bindings = CastField<FArrayProperty>(UUserWidget::StaticClass()->FindPropertyByName(TEXT("NamedSlotBindings")));
+    FStructProperty* Item = Bindings ? CastField<FStructProperty>(Bindings->Inner) : nullptr;
+    if (!Item) { return; }
+    FScriptArrayHelper Array(Bindings, Bindings->ContainerPtrToValuePtr<void>(Host));
+    const int32 Index = Array.AddValue();
+    void* Element = Array.GetRawPtr(Index);
+    if (FNameProperty* Name = CastField<FNameProperty>(Item->Struct->FindPropertyByName(TEXT("Name")))) { Name->SetPropertyValue_InContainer(Element, FName(Slot)); }
+    if (FObjectProperty* Object = CastField<FObjectProperty>(Item->Struct->FindPropertyByName(TEXT("Content")))) { Object->SetObjectPropertyValue(Object->ContainerPtrToValuePtr<void>(Element), Content); }
+}
+
+// WBP_Inventory: a WBP_WindowFrame (emblem, title, rules) holding a WBP_TabBar, the grid in a WBP_ScrollList, the item tooltip in the
+// SidePanel and the weight / gold footer. C++ fills SlotGrid with WBP_ItemSlot cells, 5 wide.
+void InventoryLayout(UWidgetTree* T)
+{
+    UUserWidget* Window = Inst(T, CommonDir, TEXT("WBP_WindowFrame"), TEXT("Window"));
+    if (!Window) { return; }
+    if (USFWindowFrameWidget* Frame = Cast<USFWindowFrameWidget>(Window))
+    {
+        Frame->TitleText = FText::FromString(TEXT("Inventory"));
+        Frame->WindowIcon = KImg(TEXT("icon_window_inventory"), 96.f, 96.f);
+        Frame->WindowWidth = 1300.f;
+    }
+    if (UUserWidget* Tabs = Inst(T, CommonDir, TEXT("WBP_TabBar"), TEXT("TabBar"))) { Fill(Window, TEXT("Tabs"), Tabs); }
+
+    UUniformGridPanel* Grid = N<UUniformGridPanel>(T, TEXT("SlotGrid"));
+    Grid->SetSlotPadding(FMargin(3.f));
+    if (UUserWidget* Scroll = Inst(T, CommonDir, TEXT("WBP_ScrollList"), TEXT("SlotScroll")))
+    {
+        Fill(Scroll, TEXT("Content"), Sized(T, nullptr, Grid, 1070.f, 0.f));  // 5 cells of 208 + 2 x 3 padding
+        UOverlay* Pack = A<UOverlay>(T);
+        Put(Pack, Sized(T, nullptr, Scroll, 0.f, 1070.f), HAlign_Fill, VAlign_Fill);  // the grid scrolls inside 5 rows
+        UTextBlock* Empty = SizedText(T, TEXT("EmptyText"), TEXT("Your pack is empty."), 40.f);
+        Empty->SetVisibility(ESlateVisibility::Collapsed);
+        Put(Pack, Empty, HAlign_Center, VAlign_Center);
+        Fill(Window, TEXT("Content"), Pack);
+    }
+
+    // Footer: weight icon, text, bar, percent; gold at the right.
+    UHorizontalBox* Foot = A<UHorizontalBox>(T);
+    Foot->AddChildToHorizontalBox(Sized(T, nullptr, InvImage(T, nullptr, InvBrush(TEXT("icon_weight"), 40.f, 40.f)), 40.f, 40.f))->SetVerticalAlignment(VAlign_Center);
+    Foot->AddChildToHorizontalBox(SizedText(T, TEXT("WeightText"), TEXT("Weight 0.0 / 0 kg"), 34.f))->SetPadding(FMargin(18.f, 0.f, 24.f, 0.f));
     UOverlay* Meter = A<UOverlay>(T);
     Put(Meter, InvImage(T, nullptr, InvBrush(TEXT("progress_track"), 680.f, 26.f, 18.f, 8.f, 18.f, 8.f, 680.f, 26.f)), HAlign_Fill, VAlign_Fill);
-    UProgressBar* Fill = N<UProgressBar>(T, TEXT("WeightBar"));
-    FProgressBarStyle FillStyle = Fill->GetWidgetStyle();
-    FillStyle.SetBackgroundImage(FSlateNoResource());
-    FillStyle.SetFillImage(InvBrush(TEXT("progress_fill_green"), 680.f, 22.f, 16.f, 7.f, 16.f, 7.f, 680.f, 22.f));
-    Fill->SetWidgetStyle(FillStyle);
-    Fill->SetPercent(0.f);
-    Put(Meter, Fill, HAlign_Fill, VAlign_Fill, FMargin(0.f, 2.f));
-    At(Body, Meter, 560.f, 1486.f, 570.f, 26.f);
+    UProgressBar* Weight = N<UProgressBar>(T, TEXT("WeightBar"));
+    FProgressBarStyle WeightStyle = Weight->GetWidgetStyle();
+    WeightStyle.SetBackgroundImage(FSlateNoResource());
+    WeightStyle.SetFillImage(InvBrush(TEXT("progress_fill_green"), 680.f, 22.f, 16.f, 7.f, 16.f, 7.f, 680.f, 22.f));
+    Weight->SetWidgetStyle(WeightStyle);
+    Weight->SetPercent(0.f);
+    Put(Meter, Weight, HAlign_Fill, VAlign_Fill, FMargin(0.f, 2.f));
+    Foot->AddChildToHorizontalBox(Sized(T, nullptr, Meter, 360.f, 26.f))->SetVerticalAlignment(VAlign_Center);
     UTextBlock* Percent = SizedText(T, TEXT("WeightPercentText"), TEXT("0%"), 34.f);
     Percent->SetJustification(ETextJustify::Right);
-    At(Body, Percent, 1140.f, 1472.f, 110.f, 48.f);
+    Foot->AddChildToHorizontalBox(Sized(T, nullptr, Percent, 110.f, 0.f))->SetPadding(FMargin(18.f, 0.f, 0.f, 0.f));
+    UHorizontalBoxSlot* GoldSlot = Foot->AddChildToHorizontalBox(Inst(T, CommonDir, TEXT("WBP_GoldDisplay"), TEXT("Gold")));
+    GoldSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); GoldSlot->SetHorizontalAlignment(HAlign_Right); GoldSlot->SetVerticalAlignment(VAlign_Center);
+    Fill(Window, TEXT("Footer"), Foot);
 
-    UScaleBox* PanelScaled = Half(T, Sized(T, TEXT("Panel"), PanelStack, 1360.f, 1600.f));
-    UCanvasPanelSlot* PanelSlot = Root->AddChildToCanvas(PanelScaled);
-    PanelSlot->SetAnchors(FAnchors(85.f / 1920.f, 31.f / 1080.f)); PanelSlot->SetOffsets(FMargin(0.f)); PanelSlot->SetAutoSize(true);
-
-    // The tooltip sits over the panel's right edge, level with the grid. Flowing content (the frame grows with the description):
-    // art + name + description, rule, rarity . type, weight and owned count.
-    UOverlay* Tip = N<UOverlay>(T, TEXT("Tooltip"));
+    // Tooltip in the SidePanel (collapses while nothing is shown, so the window narrows again). Flowing content: art + name + description,
+    // rule, rarity . type, weight and owned count. Inventory v6 tooltip art.
+    UBorder* TipHolder = N<UBorder>(T, TEXT("Tooltip"));
+    TipHolder->SetBrush(FSlateNoResource());
+    TipHolder->SetPadding(FMargin(32.f, 0.f, 0.f, 0.f));
+    UOverlay* Tip = A<UOverlay>(T);
     Put(Tip, InvImage(T, nullptr, InvBrush(TEXT("tooltip_frame"), 760.f, 430.f, 34.f, 34.f, 34.f, 34.f, 760.f, 430.f)), HAlign_Fill, VAlign_Fill);
     UVerticalBox* TipBody = A<UVerticalBox>(T);
     UHorizontalBox* Head = A<UHorizontalBox>(T);
@@ -717,12 +929,12 @@ void InventoryLayout(UWidgetTree* T)
     UBorder* TipPad = Plain(T, nullptr, FMargin(56.f, 52.f, 56.f, 48.f));
     TipPad->SetContent(TipBody);
     Put(Tip, TipPad, HAlign_Fill, VAlign_Fill);
-    Tip->SetVisibility(ESlateVisibility::Collapsed);
     USizeBox* TipSize = Sized(T, nullptr, Tip, 780.f, 0.f);
     TipSize->SetMinDesiredHeight(400.f);
-    UCanvasPanelSlot* TipSlot = Root->AddChildToCanvas(Half(T, TipSize));
-    TipSlot->SetAnchors(FAnchors(85.f / 1920.f, 31.f / 1080.f)); TipSlot->SetOffsets(FMargin(634.f, 140.f, 0.f, 0.f)); TipSlot->SetAutoSize(true);
-    T->RootWidget = Root;
+    TipHolder->SetContent(TipSize);
+    TipHolder->SetVisibility(ESlateVisibility::Collapsed);
+    Fill(Window, TEXT("SidePanel"), TipHolder);
+    T->RootWidget = Window;
 }
 
 struct FSpec
@@ -750,12 +962,22 @@ TArray<FSpec> Specs()
     };
     return {
         {CommonDir, TEXT("WBP_PanelFrame"), USFPanelFrameWidget::StaticClass(), PanelFrame, nullptr},
-        {CommonDir, TEXT("WBP_Button"), USFButtonWidget::StaticClass(), [](UWidgetTree* T) { ButtonLayout(T, 56.f, 160.f, TEXT("Button")); }, nullptr},
+        {CommonDir, TEXT("WBP_Button"), USFButtonWidget::StaticClass(), KitButtonLayout, nullptr},
         {CommonDir, TEXT("WBP_ButtonPrimary"), USFButtonWidget::StaticClass(), [](UWidgetTree* T) { ButtonLayout(T, 72.f, 160.f, TEXT("Primary")); },
             [](UObject* Cdo) { Cast<USFButtonWidget>(Cdo)->Kind = ESFUiButtonKind::Primary; }},
-        {CommonDir, TEXT("WBP_Tab"), USFTabWidget::StaticClass(), [](UWidgetTree* T) { ButtonLayout(T, 44.f, 100.f, TEXT("Tab")); }, nullptr},
+        {CommonDir, TEXT("WBP_Tab"), USFTabWidget::StaticClass(), KitTabLayout, TabDefaults},
+        {CommonDir, TEXT("WBP_TabBar"), USFTabBarWidget::StaticClass(), TabBarLayout, nullptr},
         {CommonDir, TEXT("WBP_Slot"), USFSlotWidget::StaticClass(), SlotLayout, nullptr},
+        {CommonDir, TEXT("WBP_ItemSlot"), USFSlotWidget::StaticClass(), ItemSlotLayout, ItemSlotDefaults},
         {CommonDir, TEXT("WBP_ListRow"), USFListRowWidget::StaticClass(), ListRowLayout, nullptr},
+        {CommonDir, TEXT("WBP_Separator"), USFSeparatorWidget::StaticClass(), SeparatorLayout, SeparatorDefaults},
+        {CommonDir, TEXT("WBP_ScrollList"), USFScrollListWidget::StaticClass(), ScrollListLayout, nullptr},
+        {CommonDir, TEXT("WBP_GoldDisplay"), USFGoldDisplayWidget::StaticClass(), GoldDisplayLayout, nullptr},
+        {CommonDir, TEXT("WBP_SearchField"), USFTextFieldWidget::StaticClass(), [](UWidgetTree* T) { FieldLayout(T, TEXT("search_field"), 400.f, true); }, SearchDefaults},
+        {CommonDir, TEXT("WBP_InputField"), USFTextFieldWidget::StaticClass(), [](UWidgetTree* T) { FieldLayout(T, TEXT("input_field"), 300.f, false); }, nullptr},
+        {CommonDir, TEXT("WBP_Dropdown"), USFDropdownWidget::StaticClass(), DropdownLayout, nullptr},
+        {CommonDir, TEXT("WBP_Stepper"), USFStepperWidget::StaticClass(), StepperLayout, nullptr},
+        {CommonDir, TEXT("WBP_WindowFrame"), USFWindowFrameWidget::StaticClass(), WindowFrameLayout, nullptr},
         {HudDir, TEXT("WBP_HudQuestRow"), USFListRowWidget::StaticClass(), ListRowLayout, nullptr},
         {HudDir, TEXT("WBP_HudToastCard"), USFListRowWidget::StaticClass(), ToastCardLayout,
             [Row](UObject* Cdo)
@@ -775,8 +997,6 @@ TArray<FSpec> Specs()
         {HudDir, TEXT("WBP_HudQuestTracker"), USFHudQuestTrackerWidget::StaticClass(), QuestTrackerLayout, nullptr},
         {HudDir, TEXT("WBP_HudToasts"), USFHudToastsWidget::StaticClass(), ToastsLayout, nullptr},
         {HudDir, TEXT("WBP_Hud"), USFHudWidget::StaticClass(), HudLayout, nullptr},
-        {InventoryDir, TEXT("WBP_InventoryTab"), USFInventoryTabWidget::StaticClass(), InventoryTabLayout, InventoryTabDefaults},
-        {InventoryDir, TEXT("WBP_InventorySlot"), USFInventorySlotWidget::StaticClass(), InventorySlotLayout, InventorySlotDefaults},
         {InventoryDir, TEXT("WBP_Inventory"), USFInventoryWidget::StaticClass(), InventoryLayout, nullptr},
     };
 }
@@ -809,7 +1029,10 @@ FString USFWidgetAuthoring::DumpTree(const FString& AssetPath)
 FString USFWidgetAuthoring::BuildAll(bool bOverwrite, const FString& Only)
 {
     FString Report;
-    if (Only.IsEmpty() || Only == TEXT("WBP_UnitFrame"))  // the owner hand-laid WBP_UnitFrame (duplicated from WBP_HudVitals): add the new named parts
+    TArray<FString> OnlyList;  // Only may be one name or a comma-separated list
+    Only.ParseIntoArray(OnlyList, TEXT(","));
+    auto Wanted = [&OnlyList](const FString& Name) { return OnlyList.IsEmpty() || OnlyList.Contains(Name); };
+    if (Wanted(TEXT("WBP_UnitFrame")))  // the owner hand-laid WBP_UnitFrame (duplicated from WBP_HudVitals): add the new named parts
     {
         UWidgetBlueprint* Frame = bOverwrite ? nullptr : LoadObject<UWidgetBlueprint>(nullptr, *FString::Printf(TEXT("%s/WBP_UnitFrame.WBP_UnitFrame"), UnitFramesDir));
         // Kit style is fill-only now (project font family where the Designer left the default; never sizes, colours or layout), so it is on.
@@ -820,7 +1043,7 @@ FString USFWidgetAuthoring::BuildAll(bool bOverwrite, const FString& Only)
     }
     for (const FSpec& Spec : Specs())
     {
-        if (!Only.IsEmpty() && Only != Spec.Name) { continue; }
+        if (!Wanted(Spec.Name)) { continue; }
         const FString PackageName = FString::Printf(TEXT("%s/%s"), Spec.Dir, Spec.Name);
         const bool bExists = FPackageName::DoesPackageExist(PackageName);
         if (bExists && !bOverwrite) { Report += FString::Printf(TEXT("skip   %s (exists; --force rebuilds it and discards layout edits)\n"), *PackageName); continue; }
@@ -833,6 +1056,7 @@ FString USFWidgetAuthoring::BuildAll(bool bOverwrite, const FString& Only)
             if (!Blueprint) { Report += FString::Printf(TEXT("FAIL   %s (cannot load)\n"), *PackageName); continue; }
             Package = Blueprint->GetPackage();
             Blueprint->WidgetTree = NewObject<UWidgetTree>(Blueprint, NAME_None, RF_Transactional);  // the old tree is garbage collected
+            Blueprint->WidgetVariableNameToGuidMap.Empty();  // the new tree registers its own variables
         }
         else
         {
@@ -848,7 +1072,7 @@ FString USFWidgetAuthoring::BuildAll(bool bOverwrite, const FString& Only)
         // Register every named widget as a Designer variable (GUID map), or the compiler finds no BindWidget targets.
         TArray<UWidget*> Widgets;
         Blueprint->WidgetTree->GetAllWidgets(Widgets);
-        for (UWidget* Widget : Widgets) { if (Widget->bIsVariable) { Blueprint->OnVariableAdded(Widget->GetFName()); } }
+        for (UWidget* Widget : Widgets) { Blueprint->OnVariableAdded(Widget->GetFName()); }  // every widget, not only the variables: the compiler wants a GUID for each
         FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(Blueprint);
         FKismetEditorUtilities::CompileBlueprint(Blueprint);
         if (Spec.Defaults && Blueprint->GeneratedClass) { Spec.Defaults(Blueprint->GeneratedClass->GetDefaultObject()); }
@@ -861,7 +1085,7 @@ FString USFWidgetAuthoring::BuildAll(bool bOverwrite, const FString& Only)
         Report += FString::Printf(TEXT("%s %s%s\n"), bOk ? (bExists ? TEXT("rebuilt") : TEXT("created")) : TEXT("FAIL   "), *PackageName,
             Blueprint->Status == BS_Error || Blueprint->Status == BS_UpToDateWithWarnings ? TEXT(" (compile errors or warnings: open the asset)") : bSaved ? TEXT("") : TEXT(" (save failed)"));
     }
-    if (Only.IsEmpty() || Only == TEXT("WBP_Hud")) { Report += MigrateHud(); }
+    if (Wanted(TEXT("WBP_Hud"))) { Report += MigrateHud(); }
     return Report;
 }
 #endif

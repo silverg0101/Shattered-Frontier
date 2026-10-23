@@ -4,9 +4,8 @@ Run in the open editor:   py -3 tools/Run-InEditor.py tools/ui/import_inventory.
 Or headless:   UnrealEditor-Cmd.exe <uproject> -run=pythonscript -script=<this file> -unattended -nosplash -NullRHI
 
 Writes /Game/Frontier/UI/Kit/Inventory/T_Inventory_<part> (UI texture group, no mips, never streamed; progress_fill_mask is linear
-grayscale). Rerun replaces them in place. Draw-As-Box margins and sizes are brush settings of the widgets, set by
-UI/SFWidgetAuthoring.cpp (InventoryLayout) from the README table. Then: tools/ui/create_widgets.py (creates WBP_InventoryTab and
-WBP_InventorySlot) and the same with SF_UI_FORCE=1 SF_UI_ONLY=WBP_Inventory to rebuild the panel layout.
+grayscale). Rerun replaces them in place. WBP_Inventory is now built on the kit v7 (tools/ui/import_kit_v7.py); only the tooltip frame and
+divider, the weight icon and the progress track/fill from these parts are still used (UI/SFWidgetAuthoring.cpp InventoryLayout).
 """
 import os
 

@@ -8,6 +8,7 @@
 #include "UI/SFHudWidgets.h"
 #include "Gathering/SFGatheringHud.h"
 #include "UI/SFInventoryWidget.h"
+#include "UI/SFWindowStack.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Exchange/SFExchangeComponent.h"
 #include "Exchange/SFMarketBoardActor.h"
@@ -350,17 +351,9 @@ void ASFPlayerController::ToggleInventoryPanel()
         InventoryWidget->AddToViewport(20);
         InventoryWidget->SetVisibility(ESlateVisibility::Collapsed);
     }
-    // Visible (hit-testable) so the category tabs and item tooltips work; it only covers its own slot.
-    const bool bOpen = InventoryWidget->GetVisibility() == ESlateVisibility::Collapsed;
-    if (bOpen)
-    {
-        // UI v5: fill the viewport; the canvas root places the 576 x 886 panel at 4% x 3% itself.
-        int32 Width = 0, Height = 0; GetViewportSize(Width, Height);
-        const float Scale = FMath::Max(0.01f, UWidgetLayoutLibrary::GetViewportScale(this));
-        InventoryWidget->SetDesiredSizeInViewport(FVector2D(Width / Scale, Height / Scale));
-        InventoryWidget->SetPositionInViewport(FVector2D::ZeroVector, false);
-    }
-    InventoryWidget->SetVisibility(bOpen ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    // A window: sized by its content and placed by the window stack (Visible so tabs, slots and tooltips take the mouse).
+    const bool bOpen = !GetWindowStack()->IsOpen(InventoryWidget);
+    if (bOpen) { GetWindowStack()->Open(InventoryWidget); } else { GetWindowStack()->Close(InventoryWidget); }
     // The build catalogue shares the left column: hidden while the inventory is open, back with build mode on close.
     if (Palette) { Palette->SetBuildModeActive(!bOpen && bBuildMode); }
 }
@@ -420,9 +413,15 @@ TSharedPtr<ISFExchangeService> ExchangeServiceFor(APlayerController* Controller)
 }
 
 // A modal (trade, market) opens over the dimmed HUD only: the inventory and the build catalogue close first.
+USFWindowStack* ASFPlayerController::GetWindowStack()
+{
+    if (!WindowStack) { WindowStack = NewObject<USFWindowStack>(this); }
+    return WindowStack;
+}
+
 void ASFPlayerController::CloseSidePanelsForModal()
 {
-    if (InventoryWidget) { InventoryWidget->SetVisibility(ESlateVisibility::Collapsed); }
+    GetWindowStack()->CloseAll();
     if (Palette) { Palette->SetBuildModeActive(false); }
 }
 

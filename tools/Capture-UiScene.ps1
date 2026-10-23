@@ -29,6 +29,7 @@ if ($Final3) {
     switch ($Name) {
         'gameplay-hud' { $ServerFlags = @('-CombatPilot','-CombatPilotScenario','-GatheringPilot','-QuestPilot','-UiEvidenceHud'); $ClientFlags = @('-CombatPilot','-QuestPilot') }
         'gathering' { $ServerFlags = @('-GatheringPilot','-GatheringPilotScenario','-QuestPilot'); $ClientFlags = @('-GatheringPilot','-GatheringPilotScenario') }
+        'inventory' { $ServerFlags = @('-GatheringPilot','-GatheringPilotScenario','-QuestPilot'); $ClientFlags = @('-GatheringPilot','-GatheringPilotScenario') }
         'crafting-station' { $ServerFlags = @('-GatheringPilot','-QuestPilot','-UiEvidenceStation'); $ClientFlags = @('-GatheringPilot') }
         'defeated' { $ServerFlags = @('-CombatPilot','-CombatPilotScenario','-QuestPilot','-UiEvidenceDefeat'); $ClientFlags = @('-CombatPilot') }
         default { throw "Unsupported final3 state: $Name" }

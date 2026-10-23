@@ -3,6 +3,7 @@
 #include "Framework/SFPlayerController.h"
 #include "Framework/SFHudLayout.h"
 #include "UI/SFInventoryWidget.h"
+#include "UI/SFWindowStack.h"
 #include "EnhancedInputComponent.h"
 #include "InputAction.h"
 #include "Combat/SFCombatPilot.h"
@@ -1382,7 +1383,11 @@ void ASFPlayerController::HandleEscape()
 {
     if (IsDialogueOpen()) { CloseDialogue(); return; }
     if (CloseSettingsPanel()) { return; }
-    if (InventoryWidget && InventoryWidget->GetVisibility() != ESlateVisibility::Collapsed) { ToggleInventoryPanel(); return; }
+    if (GetWindowStack()->CloseTop())  // Esc closes the newest menu window; the build catalogue comes back with the last one
+    {
+        if (Palette) { Palette->SetBuildModeActive(GetWindowStack()->Num() == 0 && bBuildMode); }
+        return;
+    }
     if (GatheringSkillsPanel && GatheringSkillsPanel->GetVisibility()==ESlateVisibility::Visible)
     { GatheringSkillsPanel->SetVisibility(ESlateVisibility::Collapsed); return; }
     // Build mode: the first Esc cancels a pending line start, the next leaves build mode.
@@ -2060,6 +2065,7 @@ void ASFPlayerController::ClientPlacementResult_Implementation(ESFConstructionNe
 void ASFPlayerController::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+    if (WindowStack && WindowStack->Num() > 0) { WindowStack->Relayout(); }  // a window may have grown (tooltip side panel) or the viewport changed
     TickInteraction();
     if (!HostsBuildMode()) { return; }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST

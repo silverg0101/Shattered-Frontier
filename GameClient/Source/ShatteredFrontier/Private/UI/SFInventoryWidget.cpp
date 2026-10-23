@@ -22,15 +22,14 @@ void USFInventoryWidget::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
     SetIsFocusable(false);
-    if (!SlotClass) { SlotClass = LoadClass<USFSlotWidget>(nullptr, TEXT("/Game/Frontier/UI/Widgets/Inventory/WBP_InventorySlot.WBP_InventorySlot_C")); }
-    const TArray<USFTabWidget*> Controls = TabControls();
-    for (int32 Index = 0; Index < Controls.Num(); ++Index)
+    if (!SlotClass) { SlotClass = LoadClass<USFSlotWidget>(nullptr, TEXT("/Game/Frontier/UI/Widgets/Common/WBP_ItemSlot.WBP_ItemSlot_C")); }
+    if (TabBar)
     {
-        if (!Controls[Index]) { continue; }
-        Controls[Index]->SetLabel(FText::FromString(TabLabel(static_cast<ESFInventoryTab>(Index))));
-        Controls[Index]->OnClicked.AddDynamic(this, &USFInventoryWidget::HandleTab);
+        TArray<FSFTabSpec> Specs;
+        for (int32 Index = 0; Index <= static_cast<int32>(ESFInventoryTab::Misc); ++Index) { Specs.Add(FSFTabSpec(FText::FromString(TabLabel(static_cast<ESFInventoryTab>(Index))))); }
+        TabBar->SetTabs(Specs);
+        TabBar->OnTabSelected.AddDynamic(this, &USFInventoryWidget::HandleTab);
     }
-    if (CloseButton) { CloseButton->OnClicked.AddDynamic(this, &USFInventoryWidget::HandleClose); }  // its label is the Designer's
     if (Tooltip) { Tooltip->SetVisibility(ESlateVisibility::Collapsed); }
     SelectTab(ESFInventoryTab::All);
 }
@@ -38,7 +37,7 @@ void USFInventoryWidget::NativeOnInitialized()
 void USFInventoryWidget::ApplyKitStyle()
 {
     // Fill-only (project family where the Designer left the default); sizes and colours the Designer set stay.
-    for (UTextBlock* Text : {TitleText.Get(), WeightText.Get(), WeightPercentText.Get(), GoldText.Get(), EmptyText.Get(), TipTitle.Get(), TipRarity.Get(), TipType.Get(), TipQuantity.Get(), TipWeight.Get(), TipDescription.Get()}) { TextStyle.Apply(Text); }
+    for (UTextBlock* Text : {WeightText.Get(), WeightPercentText.Get(), EmptyText.Get(), TipTitle.Get(), TipRarity.Get(), TipType.Get(), TipQuantity.Get(), TipWeight.Get(), TipDescription.Get()}) { TextStyle.Apply(Text); }
 }
 
 void USFInventoryWidget::Configure(USFGatheringPilotComponent* InPilot)
@@ -55,10 +54,10 @@ void USFInventoryWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
     float Total = 0.f, Max = 0.f;
     const bool bWeight = Pilot->GetInventoryWeight(Total, Max);
     Present(All, Slots, Total, bWeight ? Max : -1.f);
-    // Gold readout from the exchange wallet when this controller has one (the row stays collapsed otherwise).
+    // Gold readout from the exchange wallet when this controller has one (the display stays collapsed otherwise).
     const USFExchangeComponent* Exchange = GetOwningPlayer() ? GetOwningPlayer()->FindComponentByClass<USFExchangeComponent>() : nullptr;
-    if (Exchange && GoldText) { GoldText->SetText(FText::FromString(FString::Printf(TEXT("Gold %s"), *FText::AsNumber(Exchange->GetWallet().Available).ToString()))); }
-    if (GoldRow) { GoldRow->SetVisibility(Exchange ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed); }
+    if (Exchange && Gold) { Gold->SetAmount(Exchange->GetWallet().Available); }
+    if (Gold) { Gold->SetVisibility(Exchange ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed); }
     UpdateTooltip();
 }
 
@@ -75,7 +74,7 @@ void USFInventoryWidget::EnsureCells(int32 Count)
         USFSlotWidget* Cell = CreateWidget<USFSlotWidget>(this, SlotClass);
         if (!Cell) { continue; }
         if (Uniform) { Uniform->AddChildToUniformGrid(Cell, Index / GridColumns, Index % GridColumns); } else { SlotGrid->AddChild(Cell); }
-        if (USFInventorySlotWidget* Inventory = Cast<USFInventorySlotWidget>(Cell)) { Inventory->OnSlotClicked.AddDynamic(this, &USFInventoryWidget::HandleSlotClicked); }
+        Cell->OnClicked.AddDynamic(this, &USFInventoryWidget::HandleSlotClicked);
         Cells.Add(Cell);
     }
 }
@@ -94,7 +93,7 @@ void USFInventoryWidget::Present(const TArray<FSFInventoryEntry>& All, int32 Slo
         Cell->SetIcon(Icon);
         // The name is the fallback for items without an icon; the tooltip always carries it.
         Cell->SetKeyText(bFilled && !Icon ? Items[Index].Name : FText::GetEmpty());
-        if (USFInventorySlotWidget* Inventory = Cast<USFInventorySlotWidget>(Cell)) { Inventory->SetStackCount(bFilled ? Items[Index].Count : 0); } else { Cell->SetCount(bFilled ? Items[Index].Count : 0); }
+        Cell->SetCount(bFilled ? Items[Index].Count : 0);  // the bag slot shows single counts too (bShowSingleCount)
         Cell->SetSelected(bFilled && Items[Index].Name.ToString() == SelectedKey);
     }
     ShownItems = Items;  // the hover tooltip reads these by cell index
@@ -133,25 +132,15 @@ void USFInventoryWidget::SelectCell(int32 Index)
     for (int32 Cell = 0; Cell < Cells.Num(); ++Cell) { Cells[Cell]->SetSelected(Cell == Index); }
 }
 
-void USFInventoryWidget::HandleSlotClicked(USFInventorySlotWidget* Source) { SelectCell(Cells.IndexOfByKey(Source)); }
+void USFInventoryWidget::HandleSlotClicked(USFSelectableWidget* Source) { SelectCell(Cells.IndexOfByKey(Cast<USFSlotWidget>(Source))); }
 
 void USFInventoryWidget::SelectTab(ESFInventoryTab Tab)
 {
     ActiveTab = Tab;
-    const TArray<USFTabWidget*> Controls = TabControls();
-    for (int32 Index = 0; Index < Controls.Num(); ++Index) { if (Controls[Index]) { Controls[Index]->SetSelected(Index == static_cast<int32>(Tab)); } }
+    if (TabBar) { TabBar->SelectTab(static_cast<int32>(Tab), false); }
 }
 
-void USFInventoryWidget::HandleTab(USFButtonWidget* Source)
-{
-    const TArray<USFTabWidget*> Controls = TabControls();
-    for (int32 Index = 0; Index < Controls.Num(); ++Index) { if (Controls[Index] == Source) { SelectTab(static_cast<ESFInventoryTab>(Index)); return; } }
-}
-
-void USFInventoryWidget::HandleClose(USFButtonWidget* Source)
-{
-    if (ASFPlayerController* Controller = Cast<ASFPlayerController>(GetOwningPlayer())) { Controller->ToggleInventoryPanel(); }
-}
+void USFInventoryWidget::HandleTab(int32 Index) { SelectTab(static_cast<ESFInventoryTab>(FMath::Clamp(Index, 0, static_cast<int32>(ESFInventoryTab::Misc)))); }
 
 TArray<TPair<FText,int32>> USFInventoryWidget::BuildRows(const TArray<TPair<FText,int32>>& Items)
 {
@@ -333,57 +322,4 @@ void USFInventoryWidget::UpdateTooltip()
         TipIcon->SetVisibility(Art ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
     }
     Tooltip->SetVisibility(ESlateVisibility::HitTestInvisible);
-}
-
-// ---- inventory tab and slot parts
-
-void USFInventoryTabWidget::ApplyKitStyle()
-{
-    if (Button)
-    {
-        FButtonStyle Style = Button->GetStyle();
-        const FSlateBrush& Rest = bSelected ? SelectedBrush : NormalBrush;
-        const FSlateBrush& Over = bSelected ? SelectedBrush : HoverBrush;
-        if (Rest.GetResourceObject()) { Style.Normal = Rest; }
-        if (Over.GetResourceObject()) { Style.Hovered = Over; }
-        if (SelectedBrush.GetResourceObject()) { Style.Pressed = SelectedBrush; }
-        Style.NormalPadding = FMargin(0.f); Style.PressedPadding = FMargin(0.f);
-        Button->SetStyle(Style);
-    }
-    if (Label) { LabelStyle.Apply(Label); if (!LabelText.IsEmpty()) { Label->SetText(LabelText); } }
-    if (TabIcon)
-    {
-        if (IconBrush.GetResourceObject()) { TabIcon->SetBrush(IconBrush); TabIcon->SetVisibility(ESlateVisibility::HitTestInvisible); }
-        else { TabIcon->SetVisibility(ESlateVisibility::Collapsed); }
-    }
-}
-
-void USFInventorySlotWidget::SetStackCount(int32 Count)
-{
-    if (CountLabel) { CountLabel->SetText(Count > 0 ? FText::AsNumber(Count) : FText::GetEmpty()); }
-}
-
-void USFInventorySlotWidget::RefreshFrame()
-{
-    if (!Frame || !bApplyKitStyle) { return; }
-    const FSlateBrush& Brush = bSelected && SelectedBrush.GetResourceObject() ? SelectedBrush : (bHovered && HoverBrush.GetResourceObject() ? HoverBrush : NormalBrush);
-    if (Brush.GetResourceObject()) { Frame->SetBrush(Brush); Frame->SetBrushColor(FLinearColor::White); }
-}
-
-void USFInventorySlotWidget::ApplyKitStyle()
-{
-    RefreshFrame();
-    if (Icon && !Icon->GetBrush().GetResourceObject()) { Icon->SetVisibility(ESlateVisibility::Collapsed); }
-    KeyStyle.Apply(KeyLabel);
-    CountStyle.Apply(CountLabel);
-}
-
-void USFInventorySlotWidget::OnSelectedChanged_Implementation(bool bNowSelected) { RefreshFrame(); }
-void USFInventorySlotWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) { Super::NativeOnMouseEnter(InGeometry, InMouseEvent); bHovered = true; RefreshFrame(); }
-void USFInventorySlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent) { Super::NativeOnMouseLeave(InMouseEvent); bHovered = false; RefreshFrame(); }
-
-FReply USFInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-{
-    if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton) { OnSlotClicked.Broadcast(this); return FReply::Handled(); }
-    return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }

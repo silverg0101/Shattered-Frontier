@@ -80,7 +80,7 @@ bool FSFInventoryWidgetTest::RunTest(const FString& Parameters)
     if (!TestNotNull(TEXT("WBP_Inventory loads"),Class.Get())) { return false; }
     USFInventoryWidget* Panel=CreateWidget<USFInventoryWidget>(World,Class);
     if (!TestNotNull(TEXT("WBP_Inventory constructs"),Panel)) { return false; }
-    for (const TCHAR* Name : {TEXT("SlotGrid"),TEXT("TabAll"),TEXT("TabMaterials"),TEXT("TabGear"),TEXT("TabConsumables"),TEXT("TabMisc"),TEXT("WeightText"),TEXT("WeightPercentText"),TEXT("WeightBar"),TEXT("Tooltip"),TEXT("TipTitle"),TEXT("TipRarity")})
+    for (const TCHAR* Name : {TEXT("SlotGrid"),TEXT("TabBar"),TEXT("Gold"),TEXT("WeightText"),TEXT("WeightPercentText"),TEXT("WeightBar"),TEXT("Tooltip"),TEXT("TipTitle"),TEXT("TipRarity")})
     { TestNotNull(FString::Printf(TEXT("%s bound"),Name),Panel->GetWidgetFromName(Name)); }
 
     auto Entry=[](const TCHAR* Name,int32 Count,ESFInventoryTab Category,bool bEquipped=false)
