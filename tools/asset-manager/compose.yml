@@ -9,19 +9,16 @@ services:
 
   # Optional: joins the tailnet inside the app's network namespace so it can reach GPU hosts on
   # other networks; the steam-server itself is untouched. The app runs with or without it.
-  # Enable: put TS_AUTHKEY=... in .env, then `docker compose -p asset-manager --profile tailnet up -d`.
+  # Enable: `docker compose -p asset-manager --profile tailnet up -d`, then log in once (state persists):
+  #   docker exec -it asset-manager-tailscale-1 tailscale up --hostname=asset-manager --accept-routes \
+  #     --login-server=https://vpn-tailscale.realauction.com
+  # --accept-routes reaches GPU hosts through the tailnet's subnet routes (e.g. 192.168.0.0/24).
   tailscale:
     image: tailscale/tailscale:v1.84.0
     profiles: [tailnet]
     restart: unless-stopped
     network_mode: service:asset-manager
-    environment:
-      TS_AUTHKEY: ${TS_AUTHKEY:-}
-      TS_HOSTNAME: asset-manager
-      # --accept-routes: reach GPU hosts through the tailnet's subnet routes (e.g. 192.168.0.0/24)
-      TS_EXTRA_ARGS: --login-server=${TS_LOGIN_SERVER:-https://vpn-tailscale.realauction.com} --accept-routes
-      TS_STATE_DIR: /var/lib/tailscale
-      TS_USERSPACE: "false"
+    entrypoint: ["tailscaled", "--state=/var/lib/tailscale/tailscaled.state", "--tun=tailscale0"]
     volumes:
       - ${DATA_ROOT:-/mnt/ssd2/asset-manager/data}/tailscale:/var/lib/tailscale
     devices: ["/dev/net/tun:/dev/net/tun"]
