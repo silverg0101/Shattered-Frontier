@@ -26,7 +26,7 @@ plans = {
     'gameplay-hud': [(4, 'cmd:SFUi target'), (5, 'shot')],
     'gathering': [(1.5, 'cmd:SFUi skills'), (2.0, 'cmd:SFUi aim'), (3, 'shot')],
     'crafting-station': [(4, 'cmd:SFUi station'), (6, 'shot')],
-    'inventory': [(6, 'cmd:SFUi inventory'), (8, 'cursor:720,380'), (9, 'shot')],
+    'inventory': [(6, 'cmd:SFUi inventory'), (8, 'cursor:180,312'), (9, 'shot')],
     'defeated': [],
 }
 steps = plans[name] + [(35 if name == 'defeated' else 32 if name == 'all' else 12, 'quit')]

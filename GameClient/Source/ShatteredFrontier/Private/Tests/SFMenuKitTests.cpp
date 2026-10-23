@@ -42,24 +42,15 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFKitWindowLayoutTest, "ShatteredFrontier.Hud.
 bool FSFKitWindowLayoutTest::RunTest(const FString& Parameters)
 {
     const FVector2D View(1920.f, 1080.f);
-    auto Slot = [](float W, float H, bool bEquipment = false) { FSFWindowSlot S; S.Size = FVector2D(W, H); S.bEquipment = bEquipment; return S; };
-    // No Equipment: one centred group, left to right in opening order.
-    const TArray<FVector2D> Plain = SFComputeWindowLayout({Slot(600, 800), Slot(400, 600)}, View, 24.f, 16.f);
-    TestEqual(TEXT("Group starts at (1920 - 1016) / 2"), static_cast<float>(Plain[0].X), 452.f);
-    TestEqual(TEXT("Second follows after the gap"), static_cast<float>(Plain[1].X), 452.f + 600.f + 16.f);
-    TestEqual(TEXT("Vertically centred"), static_cast<float>(Plain[0].Y), 140.f);
-    // Equipment anchors right; the others line up to its left, the newest nearest it.
-    const TArray<FVector2D> Eq = SFComputeWindowLayout({Slot(600, 800), Slot(800, 700), Slot(400, 900, true)}, View, 24.f, 16.f);
-    TestEqual(TEXT("Equipment at the right margin"), static_cast<float>(Eq[2].X), 1920.f - 24.f - 400.f);
-    TestEqual(TEXT("Newest window ends a gap left of Equipment"), static_cast<float>(Eq[1].X) + 800.f + 16.f, static_cast<float>(Eq[2].X));
-    TestEqual(TEXT("Oldest window ends a gap left of the next"), static_cast<float>(Eq[0].X) + 600.f + 16.f, static_cast<float>(Eq[1].X));
-    // Equipment listed first still anchors right and does not enter the line.
-    const TArray<FVector2D> First = SFComputeWindowLayout({Slot(400, 900, true), Slot(600, 800)}, View, 24.f, 16.f);
-    TestEqual(TEXT("Equipment first still right"), static_cast<float>(First[0].X), 1496.f);
-    TestEqual(TEXT("Other window left of it"), static_cast<float>(First[1].X) + 600.f + 16.f, static_cast<float>(First[0].X));
-    // Too wide for the screen: clamped to the margin, never off the left edge.
-    const TArray<FVector2D> Wide = SFComputeWindowLayout({Slot(1500, 800), Slot(1500, 800)}, View, 24.f, 16.f);
-    TestEqual(TEXT("Clamped to the margin"), static_cast<float>(Wide[0].X), 24.f);
+    // Left to right in opening order from the left margin, each centred in the space above the hotbar.
+    const TArray<FVector2D> Two = SFComputeWindowLayout({FVector2D(600, 800), FVector2D(400, 600)}, View, 48.f, 16.f, 140.f);
+    TestEqual(TEXT("First at the left margin"), static_cast<float>(Two[0].X), 48.f);
+    TestEqual(TEXT("Second a gap to its right"), static_cast<float>(Two[1].X), 48.f + 600.f + 16.f);
+    TestEqual(TEXT("Centred above the hotbar"), static_cast<float>(Two[0].Y), (1080.f - 140.f - 800.f) * 0.5f);
+    TestEqual(TEXT("Each window centred on its own height"), static_cast<float>(Two[1].Y), (1080.f - 140.f - 600.f) * 0.5f);
+    // Taller than the space: held at the top margin.
+    const TArray<FVector2D> Tall = SFComputeWindowLayout({FVector2D(600, 1000)}, View, 48.f, 16.f, 140.f);
+    TestEqual(TEXT("Clamped to the top margin"), static_cast<float>(Tall[0].Y), 48.f);
     return true;
 }
 
@@ -73,7 +64,7 @@ bool FSFKitWindowStackTest::RunTest(const FString& Parameters)
     UUserWidget* C = MakeKitWidget<UUserWidget>(World, TEXT("WBP_Separator"));
     if (!TestNotNull(TEXT("Widgets"), A) || !B || !C) { return false; }
     USFWindowStack* Stack = NewObject<USFWindowStack>(GetTransientPackage());
-    Stack->Open(A); Stack->Open(B); Stack->Open(C, true);
+    Stack->Open(A); Stack->Open(B); Stack->Open(C);
     TestEqual(TEXT("Three windows open at once"), Stack->Num(), 3);
     TestTrue(TEXT("Open shows the window"), A->GetVisibility() == ESlateVisibility::Visible);
     TestTrue(TEXT("Top is the newest"), Stack->Top() == C);

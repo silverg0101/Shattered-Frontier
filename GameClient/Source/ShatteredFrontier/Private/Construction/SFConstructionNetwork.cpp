@@ -2065,7 +2065,7 @@ void ASFPlayerController::ClientPlacementResult_Implementation(ESFConstructionNe
 void ASFPlayerController::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
-    if (WindowStack && WindowStack->Num() > 0) { WindowStack->Relayout(); }  // a window may have grown (tooltip side panel) or the viewport changed
+    if (WindowStack && WindowStack->Num() > 0) { WindowStack->Relayout(DeltaSeconds); }  // slide windows into place; sizes or the viewport may have changed
     TickInteraction();
     if (!HostsBuildMode()) { return; }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST

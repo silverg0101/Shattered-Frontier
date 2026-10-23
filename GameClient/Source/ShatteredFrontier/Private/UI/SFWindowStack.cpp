@@ -4,35 +4,23 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "GameFramework/PlayerController.h"
 
-TArray<FVector2D> SFComputeWindowLayout(const TArray<FSFWindowSlot>& Windows, const FVector2D& Viewport, float Margin, float Gap)
+TArray<FVector2D> SFComputeWindowLayout(const TArray<FVector2D>& Sizes, const FVector2D& Viewport, float Margin, float Gap, float BottomReserve)
 {
     TArray<FVector2D> Out;
-    Out.Init(FVector2D::ZeroVector, Windows.Num());
-    const int32 Equipment = Windows.IndexOfByPredicate([](const FSFWindowSlot& W) { return W.bEquipment; });
-    float Total = 0.f; int32 Count = 0;
-    for (int32 I = 0; I < Windows.Num(); ++I) { if (I != Equipment) { Total += Windows[I].Size.X; ++Count; } }
-    Total += Gap * FMath::Max(0, Count - 1);
-    float X;
-    if (Equipment != INDEX_NONE)
+    float X = Margin;
+    for (const FVector2D& Size : Sizes)
     {
-        Out[Equipment].X = Viewport.X - Margin - Windows[Equipment].Size.X;
-        X = FMath::Max(Margin, Out[Equipment].X - Gap - Total);  // the group ends one gap left of Equipment
-    }
-    else { X = FMath::Max(Margin, (Viewport.X - Total) * 0.5f); }
-    for (int32 I = 0; I < Windows.Num(); ++I)
-    {
-        if (I != Equipment) { Out[I].X = X; X += Windows[I].Size.X + Gap; }
-        Out[I].Y = FMath::Max(0.f, (Viewport.Y - Windows[I].Size.Y) * 0.5f);
+        Out.Emplace(X, FMath::Max(Margin, (Viewport.Y - BottomReserve - Size.Y) * 0.5f));
+        X += Size.X + Gap;
     }
     return Out;
 }
 
-void USFWindowStack::Register(UUserWidget* Window, bool bEquipment)
+void USFWindowStack::Register(UUserWidget* Window)
 {
     if (!Window) { return; }
     Unregister(Window);
-    FSFWindowEntry& Entry = Windows.AddDefaulted_GetRef();
-    Entry.Widget = Window; Entry.bEquipment = bEquipment;
+    Windows.AddDefaulted_GetRef().Widget = Window;
 }
 
 bool USFWindowStack::Unregister(UUserWidget* Window)
@@ -52,10 +40,10 @@ TArray<UUserWidget*> USFWindowStack::GetOrder() const
     return Out;
 }
 
-void USFWindowStack::Open(UUserWidget* Window, bool bEquipment)
+void USFWindowStack::Open(UUserWidget* Window)
 {
     if (!Window) { return; }
-    Register(Window, bEquipment);
+    Register(Window);
     Window->SetVisibility(ESlateVisibility::Visible);
     Relayout();
 }
@@ -82,7 +70,7 @@ void USFWindowStack::CloseAll()
     Windows.Reset();
 }
 
-void USFWindowStack::Relayout()
+void USFWindowStack::Relayout(float DeltaSeconds)
 {
     APlayerController* Controller = Cast<APlayerController>(GetOuter());
     if (!Controller || !Controller->IsLocalController()) { return; }
@@ -90,17 +78,21 @@ void USFWindowStack::Relayout()
     Controller->GetViewportSize(Width, Height);
     if (Width <= 0 || Height <= 0) { return; }
     const float Scale = FMath::Max(0.01f, UWidgetLayoutLibrary::GetViewportScale(Controller));
-    TArray<FSFWindowSlot> Slots;
-    TArray<UUserWidget*> Placed;
-    for (const FSFWindowEntry& E : Windows)
+    TArray<FVector2D> Sizes;
+    TArray<FSFWindowEntry*> Placed;
+    for (FSFWindowEntry& E : Windows)
     {
         if (!E.Widget || !E.Widget->IsInViewport()) { continue; }
         E.Widget->ForceLayoutPrepass();
-        FSFWindowSlot& Slot = Slots.AddDefaulted_GetRef();
-        Slot.Size = E.Widget->GetDesiredSize() * Scale;  // screen pixels
-        Slot.bEquipment = E.bEquipment;
-        Placed.Add(E.Widget);
+        Sizes.Add(E.Widget->GetDesiredSize() * Scale);  // screen pixels
+        Placed.Add(&E);
     }
-    const TArray<FVector2D> Positions = SFComputeWindowLayout(Slots, FVector2D(Width, Height), ScreenMargin * Scale, WindowGap * Scale);
-    for (int32 I = 0; I < Placed.Num(); ++I) { Placed[I]->SetPositionInViewport(Positions[I], true); }
+    const TArray<FVector2D> Targets = SFComputeWindowLayout(Sizes, FVector2D(Width, Height), ScreenMargin * Scale, WindowGap * Scale, HotbarReserve * Scale);
+    for (int32 I = 0; I < Placed.Num(); ++I)
+    {
+        FSFWindowEntry& E = *Placed[I];
+        E.Position = E.bPlaced ? FMath::Vector2DInterpTo(E.Position, Targets[I], DeltaSeconds, SlideSpeed) : Targets[I];
+        E.bPlaced = true;
+        E.Widget->SetPositionInViewport(E.Position, true);
+    }
 }
