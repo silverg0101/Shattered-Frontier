@@ -29,7 +29,7 @@ struct FSFInventoryEntry
 struct FSFInventoryTooltip { FString Title, Description, RarityLine, TypeLine, WeightLine; };
 
 // Player inventory (WBP_Inventory, docs/blueprints/menus.md section 0), a window on the shared kit: WBP_WindowFrame (emblem, title,
-// separators) with a WBP_TabBar, a WBP_ScrollList holding the grid, a SidePanel tooltip and a footer. C++ owns the data (merged stacks, tabs,
+// separators) with a WBP_TabBar, a WBP_ScrollList holding the grid, a tooltip beside the frame (outside it) and a footer. C++ owns the data (merged stacks, tabs,
 // weight, gold, tooltip text) and the one server call (a recipe scroll on right click); the WBP owns layout and look. Local view of the
 // owner replicated pilot inventory. Esc closes it (USFWindowStack); there is no close button.
 // Binds: SlotGrid (UniformGridPanel or WrapBox, required; C++ fills it with one WBP_ItemSlot per backpack slot, GridColumns wide; it sits

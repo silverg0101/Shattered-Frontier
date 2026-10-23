@@ -295,7 +295,7 @@ TArray<FSFInventoryEntry> USFInventoryWidget::CollectEntries(int32& OutSlots) co
     return BuildEntries(Items);
 }
 
-// Shows the tooltip for the bag slot (or the main hand) under the cursor, else for the selected stack; hidden when nothing is shown.
+// Shows the tooltip for the bag slot (or the main hand) under the cursor, beside the cursor; hidden when nothing is hovered.
 void USFInventoryWidget::UpdateTooltip()
 {
     if (!Tooltip || !FSlateApplication::IsInitialized()) { return; }
@@ -307,8 +307,13 @@ void USFInventoryWidget::UpdateTooltip()
     }
     const bool bMainHand = Hovered == INDEX_NONE && bHasMainHand && MainHandSlot && MainHandSlot->GetCachedGeometry().IsUnderLocation(CursorPos);
     const FSFInventoryEntry* Shown = bMainHand ? &MainHandEntry : ShownItems.IsValidIndex(Hovered) ? &ShownItems[Hovered] : nullptr;
-    if (!Shown) { Shown = ShownItems.FindByPredicate([this](const FSFInventoryEntry& E) { return E.Name.ToString() == SelectedKey; }); }
     if (!Shown) { Tooltip->SetVisibility(ESlateVisibility::Collapsed); return; }
+    // Follow the cursor: translate the tooltip's holder (its parent) within the holder's own parent, offset down-right of the pointer.
+    UWidget* Holder = Tooltip->GetParent() ? static_cast<UWidget*>(Tooltip->GetParent()) : Tooltip.Get();
+    if (const UWidget* Space = Holder->GetParent())
+    {
+        Holder->SetRenderTranslation(Space->GetCachedGeometry().AbsoluteToLocal(CursorPos) + FVector2D(12.f, 12.f));
+    }
     const FSFInventoryEntry& Entry = *Shown;
     const FSFInventoryTooltip Tip = BuildTooltip(Entry);
     auto Set = [](UTextBlock* Block, const FString& Value) { if (Block) { Block->SetText(FText::FromString(Value)); } };

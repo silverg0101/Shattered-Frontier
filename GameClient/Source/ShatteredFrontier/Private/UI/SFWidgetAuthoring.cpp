@@ -853,7 +853,7 @@ void InventoryLayout(UWidgetTree* T)
     {
         Frame->TitleText = FText::FromString(TEXT("Inventory"));
         Frame->WindowIcon = KImg(TEXT("icon_window_inventory"), 96.f, 96.f);
-        Frame->WindowWidth = 1300.f;
+        Frame->WindowWidth = 1262.f;  // 72 + 1070 grid + 12 + 36 scrollbar + 72: the frame ends at the scrollbar
     }
     if (UUserWidget* Tabs = Inst(T, CommonDir, TEXT("WBP_TabBar"), TEXT("TabBar"))) { Fill(Window, TEXT("Tabs"), Tabs); }
 
@@ -891,7 +891,7 @@ void InventoryLayout(UWidgetTree* T)
     GoldSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); GoldSlot->SetHorizontalAlignment(HAlign_Right); GoldSlot->SetVerticalAlignment(VAlign_Center);
     Fill(Window, TEXT("Footer"), Foot);
 
-    // Tooltip in the SidePanel (collapses while nothing is shown, so the window narrows again). Flowing content: art + name + description,
+    // Tooltip beside the window, not in it. Flowing content: art + name + description,
     // rule, rarity . type, weight and owned count. Inventory v6 tooltip art.
     UBorder* TipHolder = N<UBorder>(T, TEXT("Tooltip"));
     TipHolder->SetBrush(FSlateNoResource());
@@ -933,8 +933,12 @@ void InventoryLayout(UWidgetTree* T)
     TipSize->SetMinDesiredHeight(400.f);
     TipHolder->SetContent(TipSize);
     TipHolder->SetVisibility(ESlateVisibility::Collapsed);
-    Fill(Window, TEXT("SidePanel"), TipHolder);
-    T->RootWidget = Window;
+    // Outside the frame, pinned top-left; USFInventoryWidget moves it to the cursor each tick, so the window never resizes or moves.
+    UScaleBox* TipScale = Half(T, TipHolder);
+    UOverlay* Root = A<UOverlay>(T);
+    Put(Root, Window, HAlign_Fill, VAlign_Fill);
+    Put(Root, TipScale, HAlign_Left, VAlign_Top);
+    T->RootWidget = Root;
 }
 
 struct FSpec
