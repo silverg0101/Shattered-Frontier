@@ -679,6 +679,18 @@ def run_prompt(host, jid, graph, started, timeout_min, extra_data=None):
         raise RuntimeError(msg)
     return h
 
+def release_vram(host, need_gb=10, wait_s=60):
+    """Ask ComfyUI to unload its models and wait until the GPU has room for the tracker. ComfyUI handles /free on
+    its next worker loop, not at once, so starting the tracker straight after it runs out of memory."""
+    comfy(host, "/free", {"unload_models": True, "free_memory": True})
+    query = f"nvidia-smi -i {int(host['gpu'])} --query-gpu=memory.free,memory.total --format=csv,noheader,nounits"
+    deadline = time.time() + wait_s
+    while True:
+        free, total = (int(x) / 1024 for x in ssh(host, query, timeout=20).decode().split(","))
+        if free >= need_gb or time.time() > deadline:
+            return f"{free:.1f} of {total:.1f} GB free for tracking after unloading ComfyUI's models"
+        time.sleep(3)
+
 def run_motion(jid, host):
     job = job_row(jid)
     p = motion_params(json.loads(job["params"]))
@@ -687,7 +699,7 @@ def run_motion(jid, host):
     work, q = f"{host['comfy_dir']}/input/sfam/{jid}", shlex.quote
     py, blender = f"{host['comfy_dir']}/.venv/bin/python", host.get("blender") or DEFAULT_BLENDER
     # PCI order, as the ComfyUI units use: CUDA's default order can differ and land on GPU 0, which isn't ours.
-    gpu = f"CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES={int(host['gpu'])}"
+    gpu = f"CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES={int(host['gpu'])} PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True"
     def step(note):
         if job_row(jid)["status"] == "cancelling":
             raise InterruptedError
@@ -718,7 +730,8 @@ def run_motion(jid, host):
                         for out in h.get("outputs", {}).values() for v in out.get("images", []) if v.get("type") == "output")
         if not videos:
             raise RuntimeError("the video model returned no videos")
-        comfy(host, "/free", {"unload_models": True, "free_memory": True})  # H3 holds ~16 GB; the tracker needs ~7
+        step("unloading MiniMax H3")
+        GPU_NOTES[jid].append(f"[asset-manager] {host['name']}: {release_vram(host)}")
         takes = []
         for i, v in enumerate(videos, 1):
             step(f"tracking and baking take {i} of {len(videos)}")

@@ -29,19 +29,35 @@ def read_video(path):
     return frames, fps
 
 
-def track(frames, uv):
+def track(model, frames, uv):
     """frames (T,H,W,3) uint8, uv (N,2) normalized to the frames -> tracks (T,N,2) normalized, visible (T,N)."""
     import torch
     T, h, w, _ = frames.shape
-    model = torch.hub.load(COTRACKER, "cotracker3_offline", trust_repo=True).cuda().eval()  # no GPU: fails here
-    print(f"track device: {torch.cuda.get_device_name()}")
     video = torch.from_numpy(frames).permute(0, 3, 1, 2)[None].float().cuda()
     q = torch.zeros(1, len(uv), 3, device="cuda")
     q[0, :, 1], q[0, :, 2] = torch.tensor(uv[:, 0] * w), torch.tensor(uv[:, 1] * h)  # (frame, x, y)
     with torch.no_grad():
         tr, vis = model(video, queries=q)
     tr = tr[0].cpu().numpy() / np.array([w, h])
+    del video
+    torch.cuda.empty_cache()
     return tr, vis[0].cpu().numpy().astype(np.float32)
+
+
+def track_views(frames, j):
+    """Front and side halves tracked one at a time: CoTracker scales its input to 512 px wide, so a half gets
+    twice the detail of the whole frame, and only one half is on the GPU at once. Tracks come back in each
+    half's own 0..1 coordinates."""
+    import torch
+    model = torch.hub.load(COTRACKER, "cotracker3_offline", trust_repo=True).cuda().eval()  # no GPU: fails here
+    print(f"track device: {torch.cuda.get_device_name()}")
+    half = frames.shape[2] // 2
+    out = []
+    for panel, key in enumerate(("front", "side")):
+        uv = (np.array(j["uv"][key]) - [0.5 * panel, 0]) * [2, 1]
+        out.append(track(model, np.ascontiguousarray(frames[:, :, panel * half:(panel + 1) * half]), uv))
+    print(f"track peak GPU memory: {torch.cuda.max_memory_allocated() / 2**30:.1f} GB")
+    return out
 
 
 def solve(front, side, vis_f, vis_s, calib):
@@ -94,19 +110,18 @@ def run(video, joints, out):
     out.mkdir(parents=True, exist_ok=True)
     j = json.loads(Path(joints).read_text())
     frames, fps = read_video(video)
-    uv = np.array(j["uv"]["front"] + j["uv"]["side"])
-    tr, vis = track(frames, uv)
+    (front, vis_f), (side, vis_s) = track_views(frames, j)
     n = len(j["points"])
-    front, side = tr[:, :n] * [2, 1], (tr[:, n:] - [0.5, 0]) * [2, 1]   # each half's own 0..1
-    pos, err = solve(front, side, vis[:, :n], vis[:, n:], j["calib"])
+    pos, err = solve(front, side, vis_f, vis_s, j["calib"])
     pos = smooth(pos)
     seen = j.get("seen") or [True] * n  # points on empty background steer nothing: don't score or draw them
     on = np.array(seen)
-    s, err_pct = score(err[:, on], vis[:, :n][:, on], vis[:, n:][:, on], j["calib"]["model_height"])
+    s, err_pct = score(err[:, on], vis_f[:, on], vis_s[:, on], j["calib"]["model_height"])
     (out / "motion.json").write_text(json.dumps({
         "fps": fps, "frames": len(pos), "score": round(s, 3), "height_error_pct": round(err_pct, 2),
         "positions": np.round(pos, 5).tolist()}))
-    overlay(frames, tr, np.concatenate([err, err], 1), seen + seen, j["calib"]["model_height"], out / "overlay.mp4", fps)
+    full = np.concatenate([front / [2, 1], side / [2, 1] + [0.5, 0]], 1)  # back to whole-frame coordinates
+    overlay(frames, full, np.concatenate([err, err], 1), seen + seen, j["calib"]["model_height"], out / "overlay.mp4", fps)
     print(f"motion: {len(pos)} frames, score {s:.2f}, height error {err_pct:.1f}% of model height")
 
 
