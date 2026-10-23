@@ -6,7 +6,7 @@
 <title>Frontier Assets</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+<script type="importmap">{"imports": {"three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
 <style>
 :root {
   --background: hsl(220, 14%, 8%);
@@ -106,7 +106,14 @@ input[type=checkbox] { accent-color: var(--primary); width: 16px; height: 16px; 
 .preview { position: sticky; top: 0; align-self: start; border: 1px solid var(--border); border-radius: 16px; background: var(--card-elevated); overflow: hidden; max-height: calc(100vh - 120px); display: flex; flex-direction: column; }
 .preview .stage { aspect-ratio: 1; background: radial-gradient(circle at 50% 35%, hsl(220, 12%, 20%), var(--deep)); display: grid; place-items: center; }
 .preview .stage img { max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in; }
-.preview model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
+.viewer { position: relative; width: 100%; height: 100%; align-self: stretch; justify-self: stretch; }
+.viewer canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.viewer .vbusy { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted-foreground); font-size: 13px; }
+.vmodes { display: flex; flex-wrap: wrap; gap: 4px; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.vmodes button { border: 1px solid var(--border); background: var(--card); color: var(--muted-foreground); border-radius: 999px; padding: 3px 10px; font: 600 11px var(--sans); cursor: pointer; transition: background .2s, color .2s, border-color .2s; }
+.vmodes button:hover:not(:disabled) { border-color: var(--primary-30); color: var(--foreground); }
+.vmodes button.on { background: var(--primary); border-color: var(--primary); color: #fff; }
+.vmodes button:disabled { opacity: .35; cursor: default; }
 .preview .info { padding: 18px 20px; overflow: auto; }
 .preview dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 14px 0; font-size: 12px; }
 .preview dt { color: var(--muted-foreground); }
@@ -385,17 +392,20 @@ function syncSel() {
 function drawPreview(e) {
   const box = $('#preview'); if (!box) return;
   $('#assets').classList.toggle('nopreview', !e);
+  if (!e || box.dataset.path !== e.path) { viewer?.dispose(); viewer = null; }
   if (!e) { box.innerHTML = ''; return; }
   if (box.dataset.path === e.path && box.innerHTML) return;
   box.dataset.path = e.path;
   const url = fileUrl(e.path), ext = e.name.split('.').pop().toLowerCase();
   const stage = e.kind === 'image' ? `<img src="${url}" alt="" id="zoom">`
     : e.kind === 'video' ? `<video src="${url}" controls loop muted autoplay playsinline style="max-width:100%;max-height:100%"></video>`
-    : e.kind === 'model' && ['glb', 'gltf'].includes(ext) ? `<model-viewer src="${url}" camera-controls auto-rotate autoplay shadow-intensity="1" exposure="1.1" environment-image="neutral" ${e.thumb ? `poster="${fileUrl(e.thumb)}"` : ''}></model-viewer>`
+    : e.kind === 'model' && ['glb', 'gltf'].includes(ext) ? `<div class="viewer" id="viewer"></div>`
     : e.thumb ? `<img src="${fileUrl(e.thumb)}" alt="">` : `<div class="muted" style="text-align:center">${ICON[e.kind].replace('<svg', '<svg width="64" height="64"')}<br>No preview for .${esc(ext)}</div>`;
   box.innerHTML = `<div class="preview fade">
     <div class="stage">${stage}</div>
+    ${stage.includes('id="viewer"') ? `<div class="vmodes">${VIEW_MODES.map(([k, l]) => `<button data-vmode="${k}">${l}</button>`).join('')}</div>` : ''}
     <div class="info"><div class="eyebrow">${esc(e.kind === 'dir' ? 'Folder' : e.kind)}</div><h3 style="margin-top:8px;word-break:break-all">${esc(e.name)}</h3>
+      <div id="vstats"></div>
       <dl><dt>Size</dt><dd>${e.kind === 'dir' ? '—' : fmtSize(e.size)}</dd><dt>Modified</dt><dd>${fmtTime(e.mtime)}</dd><dt>Path</dt><dd>${esc(e.path)}</dd></dl>
       <div class="acts">
         ${e.kind === 'dir' ? `<a class="btn primary" href="${assetHref(e.path)}">Open folder</a>` : `<a class="btn" href="${url}" download>Download</a>`}
@@ -403,11 +413,126 @@ function drawPreview(e) {
         ${e.kind === 'model' && /_rigged\.(glb|fbx)$/i.test(e.name) ? `<button class="btn primary" id="animate">Animate: walk</button>` : ''}
       </div></div></div>`;
   $('#zoom') && ($('#zoom').onclick = () => lightbox(url));
+  $('#viewer') && mountViewer($('#viewer'), url, e).catch(err => { $('#viewer').textContent = 'Viewer failed: ' + err.message; });
   $('#animate') && ($('#animate').onclick = async () => {
     try { await post('/api/jobs', { kind: 'motion', params: { model: e.path } }); toast('Added to queue'); setQueueOpen(true); pollQueue(); } catch (err) { fail(err); }
   });
   $('#use') && ($('#use').onclick = () => { setCreateImage(e.path); location.hash = '#/create'; });
 }
+/* ---------------- 3D viewer (three.js): textured / clay / wireframe / UV checker / UV layout / normals / skeleton */
+let viewer = null;
+const VIEW_MODES = [['textured', 'Textured'], ['clay', 'Clay'], ['wire', 'Wireframe'], ['uvcheck', 'UV checker'], ['uvlayout', 'UV layout'], ['normals', 'Normals'], ['skeleton', 'Skeleton']];
+function checkerTexture(THREE) {
+  const c = document.createElement('canvas'); c.width = c.height = 1024;
+  const g = c.getContext('2d'), n = 16, s = 1024 / n;
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+    g.fillStyle = (x + y) % 2 ? `hsl(${(x * 22 + y * 9) % 360},55%,62%)` : '#f2f2f2'; g.fillRect(x * s, y * s, s, s);
+  }
+  g.fillStyle = '#222'; g.font = 'bold 18px sans-serif';
+  for (let y = 0; y < n; y += 2) for (let x = 0; x < n; x += 2) g.fillText(`${String.fromCharCode(65 + x / 2)}${y / 2 + 1}`, x * s + 6, y * s + 22);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.flipY = false;
+  return t;
+}
+function uvIslands(geo) {  // connected triangles sharing vertex indices; glTF splits vertices at UV seams
+  const idx = geo.index ? geo.index.array : null, n = geo.attributes.position.count;
+  if (!idx) return geo.attributes.position.count / 3;
+  const p = new Int32Array(n).map((_, i) => i), find = i => { while (p[i] !== i) i = p[i] = p[p[i]]; return i; };
+  for (let t = 0; t < idx.length; t += 3) { const a = find(idx[t]); p[find(idx[t + 1])] = a; p[find(idx[t + 2])] = a; }
+  const used = new Set(); for (let t = 0; t < idx.length; t++) used.add(find(idx[t]));
+  return used.size;
+}
+async function mountViewer(el, url, entry) {
+  viewer?.dispose(); viewer = null;
+  el.innerHTML = `<canvas class="v3d"></canvas><canvas class="vuv" hidden></canvas><div class="vbusy">Loading model…</div>`;
+  const THREE = await import('three');
+  const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
+  const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
+  const canvas = $('.v3d', el), uvCanvas = $('.vuv', el);
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.outputColorSpace = THREE.SRGBColorSpace;
+  const scene = new THREE.Scene(); scene.background = new THREE.Color(0x14171d);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x30343c, 1.4));
+  const sun = new THREE.DirectionalLight(0xffffff, 2.2); sun.position.set(2, 3, 4); scene.add(sun);
+  const camera = new THREE.PerspectiveCamera(35, 1, 0.001, 1000);
+  const controls = new OrbitControls(camera, canvas); controls.enableDamping = true;
+  let raf = 0, dead = false, mixer = null;
+  const clock = new THREE.Clock();
+  const resize = () => { const w = el.clientWidth, h = el.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); };
+  const ro = new ResizeObserver(resize); ro.observe(el); resize();
+  const loop = () => { if (dead) return; raf = requestAnimationFrame(loop); mixer?.update(clock.getDelta()); controls.update(); renderer.render(scene, camera); };
+  viewer = { dispose() { dead = true; cancelAnimationFrame(raf); ro.disconnect(); renderer.dispose(); } };
+  let gltf;
+  try { gltf = await new GLTFLoader().loadAsync(url); } catch (err) { $('.vbusy', el).textContent = 'Could not load: ' + err.message; return; }
+  if (dead) return;
+  $('.vbusy', el).remove();
+  const root = gltf.scene; scene.add(root);
+  const meshes = []; root.traverse(o => { if (o.isMesh) meshes.push(o); });
+  const box = new THREE.Box3(); meshes.forEach(m => box.expandByObject(m));
+  const size = box.getSize(new THREE.Vector3()), center = box.getCenter(new THREE.Vector3()), r = size.length() / 2 || 1;
+  controls.target.copy(center); camera.position.copy(center).add(new THREE.Vector3(0, r * 0.25, r * 2.6)); camera.near = r / 100; camera.far = r * 100; camera.updateProjectionMatrix();
+  if (gltf.animations.length) { mixer = new THREE.AnimationMixer(root); mixer.clipAction(gltf.animations[0]).play(); }
+  // per-mode materials and overlays
+  const orig = new Map(meshes.map(m => [m, m.material]));
+  const clay = new THREE.MeshStandardMaterial({ color: 0xb8b8b8, roughness: 0.85, metalness: 0, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+  const check = new THREE.MeshBasicMaterial({ map: checkerTexture(THREE) });
+  const normals = new THREE.MeshNormalMaterial();
+  const ghost = new THREE.MeshStandardMaterial({ color: 0xb8b8b8, roughness: 0.85, transparent: true, opacity: 0.28, depthWrite: false });
+  const wires = meshes.map(m => { const w = new THREE.LineSegments(new THREE.WireframeGeometry(m.geometry), new THREE.LineBasicMaterial({ color: 0x0a90ff, transparent: true, opacity: 0.55 })); w.visible = false; m.add(w); return w; });
+  const skel = new THREE.SkeletonHelper(root); skel.material.depthTest = false; skel.material.transparent = true; skel.visible = false; scene.add(skel);
+  // stats
+  let tris = 0, verts = 0, islands = 0, uv = true;
+  for (const m of meshes) {
+    const g = m.geometry; verts += g.attributes.position.count; tris += (g.index ? g.index.count : g.attributes.position.count) / 3;
+    if (g.attributes.uv) islands += uvIslands(g); else uv = false;
+  }
+  const texs = new Map();
+  meshes.forEach(m => [].concat(m.material).forEach(mt => ['map', 'normalMap', 'metalnessMap', 'roughnessMap', 'aoMap', 'emissiveMap'].forEach(k => {
+    const t = mt[k]; if (t?.image) texs.set(t.uuid, `${k === 'map' ? 'base colour' : k === 'metalnessMap' || k === 'roughnessMap' ? 'metal/rough' : k.replace('Map', '')} ${t.image.width}×${t.image.height}`);
+  })));
+  const bones = new Set(); meshes.forEach(m => m.skeleton?.bones.forEach(b => bones.add(b.uuid)));
+  const mats = new Set(meshes.flatMap(m => [].concat(m.material).map(x => x.uuid)));
+  const stats = $('#vstats');
+  if (stats) stats.innerHTML = `<dl>
+    <dt>Triangles</dt><dd>${tris.toLocaleString()}</dd><dt>Vertices</dt><dd>${verts.toLocaleString()}</dd>
+    <dt>UV islands</dt><dd>${uv ? islands.toLocaleString() : 'no UVs'}</dd><dt>Meshes</dt><dd>${meshes.length} · ${mats.size} material${mats.size === 1 ? '' : 's'}</dd>
+    <dt>Textures</dt><dd>${[...new Set(texs.values())].join('<br>') || 'none'}</dd>
+    <dt>Bones</dt><dd>${bones.size || 'none'}</dd>${gltf.animations.length ? `<dt>Animations</dt><dd>${gltf.animations.map(a => esc(a.name || 'clip') + ` (${a.duration.toFixed(1)}s)`).join(', ')}</dd>` : ''}
+    </dl>`;
+  const drawUV = () => {
+    const w = uvCanvas.width = el.clientWidth * devicePixelRatio, h = uvCanvas.height = el.clientHeight * devicePixelRatio;
+    const g = uvCanvas.getContext('2d'), s = Math.min(w, h) * 0.94, ox = (w - s) / 2, oy = (h - s) / 2;
+    g.fillStyle = '#14171d'; g.fillRect(0, 0, w, h);
+    const base = meshes.map(m => [].concat(m.material)[0]).find(mt => mt.map?.image)?.map.image;
+    if (base) { g.globalAlpha = 0.85; g.drawImage(base, ox, oy, s, s); g.globalAlpha = 1; } else { g.fillStyle = '#1d2129'; g.fillRect(ox, oy, s, s); }
+    g.strokeStyle = 'rgba(10,144,255,0.35)'; g.lineWidth = Math.max(0.5, devicePixelRatio * 0.5); g.beginPath();
+    for (const m of meshes) {
+      const a = m.geometry.attributes.uv; if (!a) continue;
+      const ix = m.geometry.index?.array, n = ix ? ix.length : a.count;
+      for (let t = 0; t < n; t += 3) for (let k = 0; k < 3; k++) {
+        const i = ix ? ix[t + k] : t + k, j = ix ? ix[t + (k + 1) % 3] : t + (k + 1) % 3;
+        g.moveTo(ox + a.getX(i) * s, oy + a.getY(i) * s); g.lineTo(ox + a.getX(j) * s, oy + a.getY(j) * s);
+      }
+    }
+    g.stroke(); g.strokeStyle = '#555'; g.strokeRect(ox, oy, s, s);
+  };
+  const setMode = mode => {
+    meshes.forEach(m => { m.material = mode === 'textured' ? orig.get(m) : mode === 'uvcheck' ? check : mode === 'normals' ? normals : mode === 'skeleton' ? ghost : clay; });
+    wires.forEach(w => { w.visible = mode === 'wire'; });
+    skel.visible = mode === 'skeleton';
+    uvCanvas.hidden = mode !== 'uvlayout'; canvas.hidden = mode === 'uvlayout';
+    if (mode === 'uvlayout') drawUV();
+    document.querySelectorAll('[data-vmode]').forEach(b => b.classList.toggle('on', b.dataset.vmode === mode));
+    store.set('viewMode', mode);
+  };
+  document.querySelectorAll('[data-vmode]').forEach(b => {
+    b.disabled = (b.dataset.vmode === 'skeleton' && !bones.size) || (['uvcheck', 'uvlayout'].includes(b.dataset.vmode) && !uv);
+    b.onclick = () => setMode(b.dataset.vmode);
+  });
+  const want = store.get('viewMode', 'textured'), btn = document.querySelector(`[data-vmode="${want}"]`);
+  setMode(btn && !btn.disabled ? want : 'textured');
+  loop();
+}
+
 function lightbox(url) {
   const o = Object.assign(document.createElement('div'), { className: 'overlay lightbox', innerHTML: `<img src="${url}" alt="">` });
   o.onclick = () => o.remove(); document.body.append(o);
