@@ -35,9 +35,10 @@ DEFAULT_SETTINGS = {
 def base_graph(image, prefix, pixal_model):
     def model(name):
         return {"class_type": "Trellis2LoadModel", "inputs": {
-            "modelname": name, "backend": "flash_attn", "device": "cuda", "low_vram": True,
+            # The source workflow uses flash_attn; hosts without it run sdpa (sparse attention falls back to sdpa itself).
+            "modelname": name, "backend": "sdpa", "device": "cuda", "low_vram": True,
             "keep_models_loaded": False, "conv_backend": "flex_gemm", "sparse_backend": "flash_attn",
-            "use_reconviagen": False}}
+            "use_reconviagen": False, "pixal3d_multiview": False}}
     sampling = lambda p, steps, g, resc, rt, sampler, i0, i1, lock, sub, cap: {
         f"{p}steps": steps, f"{p}guidance_strength": g, f"{p}guidance_rescale": resc, f"{p}rescale_t": rt,
         f"{p}sampler": sampler, f"{p}guidance_interval_start": i0, f"{p}guidance_interval_end": i1,
@@ -84,50 +85,128 @@ def base_graph(image, prefix, pixal_model):
         "1262": {"class_type": "Trellis2ExportMesh", "inputs": {"trimesh": ["1261", 0], "filename_prefix": prefix, "file_format": "glb"}},
     }
 
+def rig_nodes(prefix):
+    return {
+        "1270": {"class_type": "SkinTokenRigTrimesh", "inputs": {
+            "trimesh": ["1261", 0], "ckpt_name": "experiments/articulation_xl_quantization_256_token_4/grpo_1400.ckpt",
+            "device": "cuda", "save_file": True, "filename_prefix": f"{prefix}_rigged", "file_format": "glb",
+            "use_transfer": False, "use_postprocess": False, "group_per_vertex": 4, "bottom_center_origin": False,
+            "smooth_angle": 55.0, "skeleton_template": "Keep model names", "top_k": 5, "top_p": 0.95,
+            "temperature": 1.0, "repetition_penalty": 2.0, "num_beams": 10}},
+        "1271": {"class_type": "PreviewAny", "inputs": {"source": ["1270", 1]}},
+    }
+
 SAMPLERS = ["euler", "heun", "rk4", "rk5"]
+F01 = {"min": 0, "max": 1, "step": 0.01}
+
+def sampling(prefix, key, node, inp=None):
+    """The sampler controls every Trellis2 generator shares; `inp` is the node's input-name prefix."""
+    inp = prefix if inp is None else inp
+    return [
+        (f"{key}_steps", "Steps", "int", {"min": 1, "max": 100}, [(node, f"{inp}steps")]),
+        (f"{key}_guidance", "Guidance strength", "float", {"min": 0, "max": 99.99, "step": 0.01}, [(node, f"{inp}guidance_strength")]),
+        (f"{key}_guidance_rescale", "Guidance rescale", "float", F01, [(node, f"{inp}guidance_rescale")]),
+        (f"{key}_rescale_t", "Rescale t", "float", {"min": 0, "max": 9.99, "step": 0.01}, [(node, f"{inp}rescale_t")]),
+        (f"{key}_sampler", "Sampler", "choice", {"options": SAMPLERS}, [(node, f"{inp}sampler" if inp != "texture_" else "sampler")]),
+        (f"{key}_interval_start", "Guidance interval start", "float", F01, [(node, f"{inp}guidance_interval_start")]),
+        (f"{key}_interval_end", "Guidance interval end", "float", F01, [(node, f"{inp}guidance_interval_end")]),
+        (f"{key}_dino_lock", "DINO lock", "float", F01, [(node, "dino_lock")]),
+        (f"{key}_dino_substeps", "DINO substeps", "int", {"min": 1, "max": 99}, [(node, "dino_substeps")]),
+        (f"{key}_dino_cap", "DINO foundation cap", "float", {"min": 0.01, "max": 1, "step": 0.01}, [(node, "dino_foundation_cap")]),
+    ]
+
+def section(name, rows):
+    return [(k, lbl, name, kind, extra, t) for k, lbl, kind, extra, t in rows]
+
 # (key, label, section, kind, extra, targets) — targets are (node, input) the value is written to.
-PARAMS = [
-    ("seed", "Seed (-1 = random)", "Basics", "int", {"min": -1, "max": 0x7fffffff}, [("272", "seed"), ("1261", "seed")]),
-    ("target_face_num", "Target faces", "Basics", "int", {"min": 1000, "max": 30000000, "step": 1000}, [("218", "target_face_num"), ("257", "target_face_num")]),
-    ("texture_size", "Texture size", "Basics", "choice", {"options": [512, 1024, 2048, 4096, 8192]}, [("1261", "texture_size")]),
-    ("remove_background", "Remove background", "Image", "bool", {}, [("194", "remove_background")]),
-    ("padding", "Padding (px)", "Image", "int", {"min": 0, "max": 1024}, [("194", "padding")]),
-    ("max_size", "Max image size", "Image", "int", {"min": 512, "max": 8192, "step": 128}, [("194", "max_size")]),
-    ("ss_steps", "Steps", "Sparse structure", "int", {"min": 1, "max": 100}, [("272", "sparse_structure_steps")]),
-    ("ss_guidance", "Guidance", "Sparse structure", "float", {"min": 0, "max": 99.99, "step": 0.1}, [("272", "sparse_structure_guidance_strength")]),
-    ("ss_sampler", "Sampler", "Sparse structure", "choice", {"options": SAMPLERS}, [("272", "sparse_structure_sampler")]),
-    ("ss_resolution", "Resolution", "Sparse structure", "int", {"min": 32, "max": 128, "step": 4}, [("272", "sparse_structure_resolution")]),
-    ("ss_fill", "Fill holes", "Sparse structure", "choice", {"options": ["morphological_closing", "flood_fill", "remove_small_holes"]}, [("272", "hole_fill_algorithm")]),
-    ("ss_shell", "Keep only shell", "Sparse structure", "bool", {}, [("272", "keep_only_shell")]),
-    ("shape_resolution", "Resolution", "Shape", "choice", {"options": [512, 1024]}, [("215", "resolution")]),
-    ("shape_steps", "Steps", "Shape", "int", {"min": 1, "max": 100}, [("215", "shape_steps")]),
-    ("shape_guidance", "Guidance", "Shape", "float", {"min": 0, "max": 99.99, "step": 0.1}, [("215", "shape_guidance_strength")]),
-    ("shape_sampler", "Sampler", "Shape", "choice", {"options": SAMPLERS}, [("215", "shape_sampler")]),
-    ("cascade_resolution", "Resolution", "Cascade", "choice", {"options": [1024, 1536]}, [("274", "to_resolution")]),
-    ("cascade_steps", "Steps", "Cascade", "int", {"min": 1, "max": 100}, [("274", "shape_steps")]),
-    ("cascade_guidance", "Guidance", "Cascade", "float", {"min": 0, "max": 99.99, "step": 0.1}, [("274", "shape_guidance_strength")]),
-    ("cascade_sampler", "Sampler", "Cascade", "choice", {"options": SAMPLERS}, [("274", "shape_sampler")]),
-    ("quad_resolution", "Remesh resolution", "Refine", "choice", {"options": [128, 256, 512, 1024, 2048]}, [("161", "resolution")]),
-    ("remove_floaters", "Remove floaters", "Refine", "bool", {}, [("161", "remove_floaters")]),
-    ("remove_inner_faces", "Remove inner faces", "Refine", "bool", {}, [("161", "remove_inner_faces")]),
-    ("simplify_method", "Simplify method", "Refine", "choice", {"options": ["Cumesh", "Meshlib"]}, [("218", "method"), ("257", "method")]),
-    ("reorient", "Reorient", "Refine", "choice", {"options": ["None", "90 degrees", "-90 degrees"]}, [("202", "reorient_vertices")]),
-    ("tex_steps", "Steps", "Texture", "int", {"min": 1, "max": 100}, [("1261", "texture_steps")]),
-    ("tex_guidance", "Guidance", "Texture", "float", {"min": 0, "max": 99.99, "step": 0.1}, [("1261", "texture_guidance_strength")]),
-    ("tex_resolution", "Resolution", "Texture", "choice", {"options": [512, 1024, 1536, 2048]}, [("1261", "resolution")]),
-    ("tex_sampler", "Sampler", "Texture", "choice", {"options": SAMPLERS}, [("1261", "sampler")]),
-    ("tex_alpha", "Alpha mode", "Texture", "choice", {"options": ["OPAQUE", "MASK", "BLEND"]}, [("1261", "texture_alpha_mode")]),
-    ("tex_double", "Double-sided", "Texture", "bool", {}, [("1261", "double_side_material")]),
-    ("tex_views", "Max views", "Texture", "int", {"min": 1, "max": 16}, [("1261", "max_views")]),
-]
+# Ranges are the node's own bounds (ComfyUI-Trellis2 b0e84c0). Fixed on purpose, not exposed: model names,
+# device (cuda), attention/conv backends (what the hosts have installed), verbose, image-cond max_views
+# (one source image) and links between nodes.
+PARAMS = (
+    section("Basics", [
+        ("seed", "Seed (-1 = random)", "int", {"min": -1, "max": 0x7fffffff}, [("272", "seed"), ("1261", "seed")]),
+        ("target_face_num", "Target faces", "int", {"min": 1, "max": 30000000, "step": 1000}, [("218", "target_face_num"), ("257", "target_face_num")]),
+        ("texture_size", "Texture size (px)", "int", {"min": 512, "max": 16384, "step": 512}, [("1261", "texture_size")]),
+        ("file_format", "File format", "choice", {"options": ["glb", "obj", "ply", "stl", "3mf", "dae"]}, [("1262", "file_format")]),
+    ])
+    + section("Models", [
+        ("low_vram", "Low VRAM mode", "bool", {}, [("39", "low_vram"), ("1039", "low_vram")]),
+        ("keep_models_loaded", "Keep models loaded", "bool", {}, [("39", "keep_models_loaded"), ("1039", "keep_models_loaded")]),
+    ])
+    + section("Image", [
+        ("remove_background", "Remove background", "bool", {}, [("194", "remove_background")]),
+        ("padding", "Padding (px)", "int", {"min": 0, "max": 1024}, [("194", "padding")]),
+        ("max_size", "Max image size (px)", "int", {"min": 512, "max": 8192, "step": 128}, [("194", "max_size")]),
+    ])
+    + section("Sparse structure", [
+        ("ss_resolution", "Resolution", "int", {"min": 32, "max": 128, "step": 4}, [("272", "sparse_structure_resolution")]),
+        ("ss_fill_holes", "Fill holes", "bool", {}, [("272", "fill_holes")]),
+        ("ss_hole_iterations", "Hole iterations", "int", {"min": 1, "max": 9}, [("272", "hole_iterations")]),
+        ("ss_fill", "Hole fill algorithm", "choice", {"options": ["morphological_closing", "flood_fill", "remove_small_holes"]}, [("272", "hole_fill_algorithm")]),
+        ("ss_shell", "Keep only shell", "bool", {}, [("272", "keep_only_shell")]),
+        *sampling("sparse_structure_", "ss", "272"),
+    ])
+    + section("Shape", [
+        ("shape_resolution", "Resolution", "choice", {"options": [512, 1024]}, [("215", "resolution")]),
+        *sampling("shape_", "shape", "215"),
+    ])
+    + section("Cascade", [
+        ("cascade_resolution", "Resolution", "choice", {"options": [1024, 1536]}, [("274", "to_resolution")]),
+        ("cascade_max_tokens", "Max tokens", "int", {"min": 0, "max": 999999}, [("274", "max_num_tokens")]),
+        *sampling("shape_", "cascade", "274"),
+    ])
+    + section("Refine", [
+        ("tiled_decoder", "Tiled decoder", "bool", {}, [("217", "use_tiled_decoder")]),
+        ("fill_holes_perimeter", "Fill holes max perimeter", "float", {"min": 0.001, "max": 99.999, "step": 0.001}, [("193", "max_permieters")]),
+        ("remesh_band", "Remesh band", "float", {"min": 0, "max": 10, "step": 0.1}, [("161", "remesh_band")]),
+        ("quad_resolution", "Remesh resolution", "choice", {"options": [128, 256, 512, 1024, 2048]}, [("161", "resolution")]),
+        ("remove_floaters", "Remove floaters", "bool", {}, [("161", "remove_floaters")]),
+        ("remove_inner_faces", "Remove inner faces", "bool", {}, [("161", "remove_inner_faces")]),
+        ("simplify_method", "Simplify method", "choice", {"options": ["Cumesh", "Meshlib"]}, [("218", "method"), ("257", "method")]),
+        ("reorient", "Reorient", "choice", {"options": ["None", "90 degrees", "-90 degrees"]}, [("202", "reorient_vertices")]),
+    ])
+    + section("Rig", [
+        ("rig", "Rig the model (SkinTokens)", "bool", {}, []),
+        ("rig_format", "Rigged file format", "choice", {"options": ["glb", "fbx"]}, [("1270", "file_format")]),
+        ("rig_skeleton", "Skeleton naming", "choice", {"options": ["Keep model names", "Mixamo", "Unreal Engine 5"]}, [("1270", "skeleton_template")]),
+        ("rig_weights_per_vertex", "Bone weights per vertex", "int", {"min": 1, "max": 32}, [("1270", "group_per_vertex")]),
+        ("rig_transfer", "Transfer weights to the original mesh", "bool", {}, [("1270", "use_transfer")]),
+        ("rig_postprocess", "Post-process skeleton", "bool", {}, [("1270", "use_postprocess")]),
+        ("rig_origin_bottom", "Origin at bottom centre", "bool", {}, [("1270", "bottom_center_origin")]),
+        ("rig_smooth_angle", "Smooth-shading angle", "float", {"min": 0, "max": 180, "step": 1}, [("1270", "smooth_angle")]),
+        ("rig_top_k", "Sampling top-k", "int", {"min": 1, "max": 200}, [("1270", "top_k")]),
+        ("rig_top_p", "Sampling top-p", "float", {"min": 0.1, "max": 1, "step": 0.01}, [("1270", "top_p")]),
+        ("rig_temperature", "Sampling temperature", "float", {"min": 0.1, "max": 2, "step": 0.1}, [("1270", "temperature")]),
+        ("rig_repetition_penalty", "Repetition penalty", "float", {"min": 0.5, "max": 3, "step": 0.1}, [("1270", "repetition_penalty")]),
+        ("rig_beams", "Beam count", "int", {"min": 1, "max": 20}, [("1270", "num_beams")]),
+    ])
+    + section("Texture", [
+        ("tex_resolution", "Resolution", "choice", {"options": [512, 1024, 1536, 2048]}, [("1261", "resolution")]),
+        ("tex_alpha", "Alpha mode", "choice", {"options": ["OPAQUE", "MASK", "BLEND"]}, [("1261", "texture_alpha_mode")]),
+        ("tex_double", "Double-sided material", "bool", {}, [("1261", "double_side_material")]),
+        ("tex_views", "Max views", "int", {"min": 1, "max": 16}, [("1261", "max_views")]),
+        ("tex_bake_vertices", "Bake on vertices", "bool", {}, [("1261", "bake_on_vertices")]),
+        ("tex_custom_normals", "Use custom normals", "bool", {}, [("1261", "use_custom_normals")]),
+        ("tex_cone_angle", "Cluster cone half-angle", "float", {"min": 0, "max": 359.9, "step": 0.1}, [("1261", "mesh_cluster_threshold_cone_half_angle_rad")]),
+        ("tex_inpainting", "Inpainting", "choice", {"options": ["telea", "ns"]}, [("1261", "inpainting")]),
+        *sampling("texture_", "tex", "1261"),
+    ])
+)
+PARAM_KEYS = {p[0] for p in PARAMS} | {"image"}
 
 def param_schema():
-    g = base_graph("", "", "")
-    return [{"key": k, "label": lbl, "section": sec, "kind": kind, "default": g[t[0][0]]["inputs"][t[0][1]], **extra}
+    g = {**base_graph("", "", ""), **rig_nodes("")}
+    return [{"key": k, "label": lbl, "section": sec, "kind": kind,
+             "default": g[t[0][0]]["inputs"][t[0][1]] if t else False, **extra}
             for k, lbl, sec, kind, extra, t in PARAMS]
 
 def build_graph(params, image, prefix, pixal_model):
+    unknown = set(params) - PARAM_KEYS
+    if unknown:
+        raise ValueError(f"unknown options: {sorted(unknown)} (see GET /api/schema)")
     g = base_graph(image, prefix, pixal_model)
+    if params.get("rig"):
+        g.update(rig_nodes(prefix))
     for key, _, _, kind, extra, targets in PARAMS:
         if key not in params:
             continue
@@ -141,7 +220,8 @@ def build_graph(params, image, prefix, pixal_model):
         elif v not in extra["options"]:
             raise ValueError(f"{key}: {v!r} is not one of {extra['options']}")
         for node, inp in targets:
-            g[node]["inputs"][inp] = v
+            if node in g:  # rig options only apply when rigging is on
+                g[node]["inputs"][inp] = v
     return g
 
 # ---------------------------------------------------------------- storage
@@ -161,6 +241,8 @@ def init_db():
             status TEXT, host TEXT, prompt_id TEXT, output TEXT, error TEXT, log TEXT, note TEXT,
             created REAL, started REAL, finished REAL)""")
         c.execute("CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT)")
+        if "files" not in {r[1] for r in c.execute("PRAGMA table_info(jobs)")}:
+            c.execute("ALTER TABLE jobs ADD COLUMN files TEXT")
         # ponytail: a restart orphans running jobs (and their files on the host); resume by prompt_id if it matters.
         c.execute("UPDATE jobs SET status='failed', error='asset manager restarted mid-job', finished=? "
                   "WHERE status IN ('running','cancelling')", (time.time(),))
@@ -383,6 +465,9 @@ def run_job(jid, host):
             msg = next((m[1].get("exception_message") for m in st.get("messages", []) if m[0] == "execution_error"), "ComfyUI error")
             raise RuntimeError(msg)
         files = [f for out in h.get("outputs", {}).values() for f in out.get("3d", [])]
+        for text in h.get("outputs", {}).get("1271", {}).get("text", []):
+            rel = text.replace("\\", "/").split("/output/", 1)[-1]
+            files.append({"subfolder": rel.rsplit("/", 1)[0], "filename": rel.rsplit("/", 1)[-1]})
         if not files:
             raise RuntimeError("job finished without a 3D output")
         out_dir = safe_path(s["output_folder"])
@@ -393,11 +478,14 @@ def run_job(jid, host):
             if not rp.startswith("sfam/"):
                 raise RuntimeError(f"unexpected output path {rp}")
             remote_out.append(rp[5:])
-            dest = unique(out_dir / f"{safe_name}{Path(f['filename']).suffix}")
+            suffix = "_rigged" if "_rigged" in f["filename"] else ""
+            dest = unique(out_dir / f"{safe_name}{suffix}{Path(f['filename']).suffix}")
             dest.write_bytes(get_output(host, rp[5:]))
-            shutil.copyfile(src, dest.with_suffix(src.suffix.lower()))  # thumbnail + record of the source
-            saved.append(dest.relative_to(ROOT).as_posix())
-        update_job(jid, status="done", output=saved[0], finished=time.time())
+            thumb = dest.with_suffix(src.suffix.lower())
+            shutil.copyfile(src, thumb)  # thumbnail + record of the source
+            saved += [dest.relative_to(ROOT).as_posix(), thumb.relative_to(ROOT).as_posix()]
+        saved = sorted(set(saved), key=saved.index)
+        update_job(jid, status="done", output=saved[0], files=json.dumps(saved), finished=time.time())
     except InterruptedError:
         update_job(jid, status="cancelled", finished=time.time())
     except Exception as e:
@@ -434,15 +522,27 @@ def worker():
         time.sleep(3)
 
 # ---------------------------------------------------------------- HTTP
-def jobs_view():
+STATUSES = ["queued", "running", "cancelling", "done", "failed", "cancelled"]
+
+def jobs_view(where="", args=(), limit=100, base=""):
     with db() as c:
-        rows = [dict(r) for r in c.execute("SELECT * FROM jobs ORDER BY id DESC LIMIT 100")]
+        rows = [dict(r) for r in c.execute(f"SELECT * FROM jobs {where} ORDER BY id DESC LIMIT ?", (*args, limit))]
     for r in rows:
         r["params"] = json.loads(r["params"])
         live = LIVE.get(r["id"])
         r["metrics"] = live and live["metrics"]
         r["log"] = live["log"] if live else (r["log"] or "").splitlines()
+        r["files"] = [{"path": p, "kind": kind_of(ROOT / p), "url": base + "/files/" + urllib.parse.quote(p)}
+                      for p in json.loads(r["files"] or "[]")]
     return rows
+
+def queue_status(status=None, limit=100, base=""):
+    with db() as c:
+        counts = dict(c.execute("SELECT status, COUNT(*) FROM jobs GROUP BY status").fetchall())
+    if status and status not in STATUSES:
+        raise ValueError(f"status must be one of {STATUSES}")
+    jobs = jobs_view("WHERE status=?" if status else "", (status,) if status else (), limit, base)
+    return {"counts": {s: counts.get(s, 0) for s in STATUSES}, "jobs": jobs}
 
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, *a):
@@ -470,6 +570,12 @@ class Handler(BaseHTTPRequestHandler):
                 return self.file(safe_path(urllib.parse.unquote(p[7:])))
             if method == "GET" and p == "/api/ls":
                 return self.send(list_dir(q.get("path", "")))
+            base = f"http://{self.headers.get('Host', f'localhost:{PORT}')}"
+            if method == "GET" and p == "/api/jobs":
+                return self.send(queue_status(q.get("status"), min(int(q.get("limit", 100)), 1000), base))
+            if method == "GET" and (m := re.fullmatch(r"/api/jobs/(\d+)", p)):
+                rows = jobs_view("WHERE id=?", (int(m[1]),), 1, base)
+                return self.send(rows[0]) if rows else self.send({"error": "no such job"}, 404)
             if method == "GET" and p == "/api/queue":
                 return self.send(jobs_view())
             if method == "GET" and p == "/api/schema":
@@ -538,7 +644,7 @@ class Handler(BaseHTTPRequestHandler):
                 with DB_LOCK, db() as c:
                     jid = c.execute("INSERT INTO jobs (kind, name, params, status, created) VALUES ('3d', ?, ?, 'queued', ?)",
                                     (name, json.dumps(params), time.time())).lastrowid
-                return self.send({"id": jid})
+                return self.send({"id": jid, "status": "queued", "status_url": f"{base}/api/jobs/{jid}"})
             m = re.fullmatch(r"/api/jobs/(\d+)/(cancel|retry|remove)", p)
             if method == "POST" and m:
                 jid, action = int(m[1]), m[2]
@@ -578,12 +684,17 @@ class Handler(BaseHTTPRequestHandler):
     do_PUT = lambda self: self.route("PUT")
 
 def check():
-    g = build_graph({"seed": -1, "target_face_num": 500, "texture_size": 4096, "tex_double": 1}, "in.png", "sfam/1_x", "TencentARC/Pixal3D")
+    g = build_graph({"seed": -1, "target_face_num": 0, "texture_size": 4096, "tex_double": 1}, "in.png", "sfam/1_x", "TencentARC/Pixal3D")
     assert 0 <= g["272"]["inputs"]["seed"] == g["1261"]["inputs"]["seed"]
-    assert g["218"]["inputs"]["target_face_num"] == g["257"]["inputs"]["target_face_num"] == 1000  # clamped
+    assert g["218"]["inputs"]["target_face_num"] == g["257"]["inputs"]["target_face_num"] == 1  # clamped
     assert g["1261"]["inputs"]["texture_size"] == 4096 and g["1261"]["inputs"]["double_side_material"] is True
     for nid, n in g.items():  # every link points at an existing node
         assert all(v[0] in g for v in n["inputs"].values() if isinstance(v, list)), nid
+    try:
+        build_graph({"no_such_option": 1}, "", "", "")
+        raise AssertionError("unknown option accepted")
+    except ValueError:
+        pass
     try:
         build_graph({"tex_sampler": "bogus"}, "", "", "")
         raise AssertionError("bad choice accepted")
@@ -594,6 +705,10 @@ def check():
         raise AssertionError("escape accepted")
     except ValueError:
         pass
+    assert "1270" not in build_graph({"rig_format": "fbx"}, "", "", "")
+    rg = build_graph({"rig": True, "rig_format": "fbx", "rig_skeleton": "Unreal Engine 5"}, "", "sfam/1_x", "")
+    assert rg["1270"]["inputs"]["file_format"] == "fbx" and rg["1271"]["inputs"]["source"] == ["1270", 1]
+    assert rg["1270"]["inputs"]["filename_prefix"] == "sfam/1_x_rigged"
     assert [p["key"] for p in param_schema()][:3] == ["seed", "target_face_num", "texture_size"]
     print("check ok")
 
