@@ -182,7 +182,7 @@ Rigging (`rig: true`) runs SkinTokens (ComfyUI-SkinToken) on the textured mesh a
 | `rig_format` | Rigged file format | choice | `glb`, `fbx` | `glb` |
 | `rig_skeleton` | Skeleton naming | choice | `Keep model names`, `Mixamo`, `Unreal Engine 5` | `Keep model names` |
 | `rig_weights_per_vertex` | Bone weights per vertex | int | 1 to 32 | `4` |
-| `rig_transfer` | Transfer weights to the original mesh | bool | `true` / `false` | `false` |
+| `rig_transfer` | Transfer weights to the original mesh (keeps the texture; off gives an untextured mesh) | bool | `true` / `false` | `true` |
 | `rig_postprocess` | Post-process skeleton | bool | `true` / `false` | `false` |
 | `rig_origin_bottom` | Origin at bottom centre | bool | `true` / `false` | `false` |
 | `rig_smooth_angle` | Smooth-shading angle | float | 0 to 180 (step 1) | `55.0` |

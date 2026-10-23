@@ -90,7 +90,8 @@ def rig_nodes(prefix):
         "1270": {"class_type": "SkinTokenRigTrimesh", "inputs": {
             "trimesh": ["1261", 0], "ckpt_name": "experiments/articulation_xl_quantization_256_token_4/grpo_1400.ckpt",
             "device": "cuda", "save_file": True, "filename_prefix": f"{prefix}_rigged", "file_format": "glb",
-            "use_transfer": False, "use_postprocess": False, "group_per_vertex": 4, "bottom_center_origin": False,
+            # use_transfer keeps the textured mesh and its material; without it the rigged file is untextured.
+            "use_transfer": True, "use_postprocess": False, "group_per_vertex": 4, "bottom_center_origin": False,
             "smooth_angle": 55.0, "skeleton_template": "Keep model names", "top_k": 5, "top_p": 0.95,
             "temperature": 1.0, "repetition_penalty": 2.0, "num_beams": 10}},
         "1271": {"class_type": "PreviewAny", "inputs": {"source": ["1270", 1]}},
