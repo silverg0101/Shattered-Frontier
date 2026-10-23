@@ -73,7 +73,9 @@ def base_graph(image, prefix, pixal_model):
             "mesh": ["193", 0], "remesh_band": 1, "resolution": 1024, "remove_floaters": True, "remove_inner_faces": True}},
         "218": {"class_type": "Trellis2SimplifyMesh", "inputs": {"mesh": ["161", 0], "target_face_num": 1000000, "method": "Cumesh"}},
         "250": {"class_type": "Trellis2FillHolesNicelyWithMeshlib", "inputs": {"mesh": ["218", 0]}},
-        "257": {"class_type": "Trellis2SimplifyMesh", "inputs": {"mesh": ["250", 0], "target_face_num": 1000000, "method": "Cumesh"}},
+        # Meshlib, not Cumesh: Cumesh simplify of the dense mesh FillHolesNicely produces collapses it into
+        # spikes (bisect 2026-10-23: area 1.88 -> 0.019; Meshlib keeps 1.88).
+        "257": {"class_type": "Trellis2SimplifyMesh", "inputs": {"mesh": ["250", 0], "target_face_num": 1000000, "method": "Meshlib"}},
         "202": {"class_type": "Trellis2MeshWithVoxelToTrimesh", "inputs": {"mesh": ["257", 0], "reorient_vertices": "None"}},
         "1261": {"class_type": "Trellis2MeshTexturing", "inputs": {
             "pipeline": ["1039", 0], "image": ["6", 2], "trimesh": ["202", 0], "seed": 12345,
@@ -199,7 +201,8 @@ PARAMS = (
         ("quad_resolution", "Remesh resolution", "choice", {"options": [128, 256, 512, 1024, 2048]}, [("161", "resolution")]),
         ("remove_floaters", "Remove floaters", "bool", {}, [("161", "remove_floaters")]),
         ("remove_inner_faces", "Remove inner faces", "bool", {}, [("161", "remove_inner_faces")]),
-        ("simplify_method", "Simplify method", "choice", {"options": ["Cumesh", "Meshlib"]}, [("218", "method"), ("257", "method")]),
+        ("simplify_method", "Simplify method (after remesh)", "choice", {"options": ["Cumesh", "Meshlib"]}, [("218", "method")]),
+        ("final_simplify_method", "Simplify method (after hole fill)", "choice", {"options": ["Meshlib", "Cumesh"]}, [("257", "method")]),
         ("reorient", "Reorient", "choice", {"options": ["None", "90 degrees", "-90 degrees"]}, [("202", "reorient_vertices")]),
     ])
     + section("Rig", [
@@ -1036,6 +1039,7 @@ def check():
     assert mv["317"]["inputs"]["images"] == ["652", 0] and mv["602"]["inputs"]["image"] == "b.png"
     for nid, n in mv.items():
         assert all(v[0] in mv for v in n["inputs"].values() if isinstance(v, list)), nid
+    assert build_graph({}, "", "", "")["257"]["inputs"]["method"] == "Meshlib"  # Cumesh there produces spikes
     assert "1270" not in build_graph({"rig_format": "fbx"}, "", "", "")
     lo = build_graph({"preset": "low", "target_face_num": 50000}, "", "", "")
     assert lo["218"]["inputs"]["target_face_num"] == 50000 and lo["1261"]["inputs"]["texture_size"] == 1024  # explicit wins
