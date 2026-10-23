@@ -5,6 +5,7 @@
 #include "SFE1Character.generated.h"
 
 class UCameraComponent;
+class UIKRetargeter;
 class UInputAction;
 class UInputMappingContext;
 class USFCrowdControlComponent;
@@ -19,6 +20,7 @@ class SHATTEREDFRONTIER_API ASFE1Character : public ACharacter
 public:
     ASFE1Character();
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type Reason) override;
     virtual void PossessedBy(AController* NewController) override;
     virtual void PawnClientRestart() override;
     virtual void Tick(float DeltaSeconds) override;
@@ -33,9 +35,20 @@ public:
     void SetDialogueFramingTarget(AActor* Speaker);
     static FVector DialogueHeadPoint(const AActor* Speaker);
     UPROPERTY(VisibleAnywhere) TObjectPtr<USFCrowdControlComponent> CrowdControl;
+    // The visible body (not on a dedicated server): a player MetaHuman built by tools/Build-PlayerMetaHumans.py, attached to the
+    // mannequin and posed from it through MetaHumanRetargeter (tools/Create-PlayerRetarget.py). The mannequin stays the hidden
+    // animation driver; when the MetaHuman is missing (not built on this machine) the mannequin shows as before.
+    UPROPERTY(EditDefaultsOnly, Category="Appearance") TSoftClassPtr<AActor> MetaHumanClass;
+    UPROPERTY(EditDefaultsOnly, Category="Appearance") TSoftObjectPtr<UIKRetargeter> MetaHumanRetargeter;
+    AActor* GetMetaHuman() const { return MetaHuman; }
+    // A MetaHuman of this character's class, attached under Parent at Relative and posed from this character's mannequin
+    // (the world body, and the Equipment window's preview). Null when the class or retargeter is not built here.
+    AActor* SpawnPosedMetaHuman(USceneComponent* Parent, const FTransform& Relative) const;
 
 private:
     friend class USFQuestPilotComponent;  // dev scenario driver swings through the same PilotAttack as the key
+    void SpawnMetaHuman();
+    UPROPERTY(Transient) TObjectPtr<AActor> MetaHuman;
     UPROPERTY(Replicated) int32 PilotHealth = 0;  // shown by the vitals HUD (SFE1VitalsHud), not in the world
     UPROPERTY(Replicated) TObjectPtr<AActor> CombatTarget;
     FTimerHandle CombatScenarioTimer;

@@ -14,5 +14,6 @@ public class ShatteredFrontier : ModuleRules
         if (Target.bBuildEditor) PrivateDependencyModuleNames.AddRange(new[] { "RenderCore", "RHI", "UnrealEd", "UMGEditor", "AssetRegistry" });  // UnrealEd/UMGEditor/AssetRegistry: UI/SFWidgetAuthoring.cpp seeds the WBP_ assets
         PrivateDependencyModuleNames.AddRange(new[] { "ProceduralMeshComponent", "PhysicsCore", "Chaos", "ChaosCore", "Slate", "SlateCore", "GeometryCore", "MeshConversionEngineTypes", "NetCore", "Json", "MassCore", "MassEntity", "MassCommon", "MassSpawner", "MassLOD", "MassRepresentation", "MassActors", "MassCrowd", "ZoneGraph", "SmartObjectsModule", "GameplayTags", "MoviePlayer" });
         PrivateDependencyModuleNames.Add("EnhancedInput");  // CTL-01 player controls (polled IMC_Player)
+        PrivateDependencyModuleNames.Add("IKRig");  // player MetaHuman body posed from the mannequin (SFMetaHumanRetarget)
     }
 }

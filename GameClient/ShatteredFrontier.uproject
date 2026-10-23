@@ -19,6 +19,8 @@
     { "Name": "ZoneGraph", "Enabled": true },
     { "Name": "StateTree", "Enabled": true },
     { "Name": "GameplayStateTree", "Enabled": true },
-    { "Name": "SmartObjects", "Enabled": true }
+    { "Name": "SmartObjects", "Enabled": true },
+    { "Name": "MetaHumanCharacter", "Enabled": true, "TargetDenyList": ["Server"] },
+    { "Name": "Mutable", "Enabled": true, "TargetDenyList": ["Server"] }
   ]
 }

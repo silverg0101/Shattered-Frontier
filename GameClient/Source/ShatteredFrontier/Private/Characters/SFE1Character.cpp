@@ -1,4 +1,6 @@
 #include "Characters/SFE1Character.h"
+#include "Characters/SFMetaHumanRetarget.h"
+#include "Retargeter/IKRetargeter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -64,6 +66,8 @@ ASFE1Character::ASFE1Character()
         static ConstructorHelpers::FClassFinder<UAnimInstance> Locomotion(TEXT("/Game/Mannequin/Animations/ThirdPerson_AnimBP"));
         GetMesh()->SetSkeletalMeshAsset(Body.Object);
         GetMesh()->SetAnimInstanceClass(Locomotion.Class);
+        MetaHumanClass = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("/Game/Frontier/Characters/Player/Built/MHC_Orlando/BP_MHC_Orlando.BP_MHC_Orlando_C")));
+        MetaHumanRetargeter = TSoftObjectPtr<UIKRetargeter>(FSoftObjectPath(TEXT("/Game/Frontier/Characters/Player/Retarget/RTG_SF_MannequinToMetaHuman.RTG_SF_MannequinToMetaHuman")));
     }
 
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -86,10 +90,46 @@ void ASFE1Character::BeginPlay()
         UE_LOG(LogTemp, Fatal, TEXT("E1 fixture requires finite downward world gravity"));
     }
     GetCharacterMovement()->GravityScale = GetDefault<USFE1Settings>()->GravityMetresPerSecondSquared * 100.0f / -WorldGravity;
+    if (GetNetMode() != NM_DedicatedServer) { SpawnMetaHuman(); }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (GetNetMode() == NM_Client && FParse::Param(FCommandLine::Get(), TEXT("CombatPilotScenario")))
     { GetWorldTimerManager().SetTimer(CombatScenarioTimer, this, &ASFE1Character::TickCombatScenario, 1.0f, true); }
 #endif
+}
+
+AActor* ASFE1Character::SpawnPosedMetaHuman(USceneComponent* Parent, const FTransform& Relative) const
+{
+    UClass* Class = MetaHumanClass.IsNull() ? nullptr : MetaHumanClass.LoadSynchronous();
+    UIKRetargeter* Retargeter = MetaHumanRetargeter.IsNull() ? nullptr : MetaHumanRetargeter.LoadSynchronous();
+    if (!Class || !Retargeter || !Parent) { UE_LOG(LogTemp, Warning, TEXT("PLAYER_METAHUMAN_MISSING %s (run tools/Build-PlayerMetaHumans.py); showing the mannequin"), *MetaHumanClass.ToString()); return nullptr; }
+    FActorSpawnParameters Spawn; Spawn.Owner = const_cast<ASFE1Character*>(this); Spawn.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    AActor* Body = GetWorld()->SpawnActor<AActor>(Class, Parent->GetComponentTransform(), Spawn);
+    if (!Body) { return nullptr; }
+    Body->AttachToComponent(Parent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+    Body->GetRootComponent()->SetRelativeTransform(Relative);
+    USkeletalMeshComponent* Skin = nullptr;
+    for (USkeletalMeshComponent* Part : TInlineComponentArray<USkeletalMeshComponent*>(Body)) { if (Part->GetFName() == TEXT("Body")) { Skin = Part; } }
+    if (!Skin) { UE_LOG(LogTemp, Warning, TEXT("PLAYER_METAHUMAN_NO_BODY %s"), *GetNameSafe(Class)); Body->Destroy(); return nullptr; }
+    Skin->SetAnimInstanceClass(USFMetaHumanRetargetAnimInstance::StaticClass());
+    if (auto* Pose = Cast<USFMetaHumanRetargetAnimInstance>(Skin->GetAnimInstance())) { Pose->SetSource(GetMesh(), Retargeter); }
+    Skin->AddTickPrerequisiteComponent(GetMesh());
+    return Body;
+}
+
+void ASFE1Character::SpawnMetaHuman()
+{
+    MetaHuman = SpawnPosedMetaHuman(GetMesh(), FTransform::Identity);
+    if (!MetaHuman) { return; }
+    // The mannequin keeps animating unseen: it is the pose source.
+    GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+    GetMesh()->SetHiddenInGame(true);
+    UE_LOG(LogTemp, Display, TEXT("PLAYER_METAHUMAN_SPAWNED %s"), *GetNameSafe(MetaHuman->GetClass()));
+}
+
+void ASFE1Character::EndPlay(const EEndPlayReason::Type Reason)
+{
+    if (MetaHuman) { MetaHuman->Destroy(); MetaHuman = nullptr; }
+    Super::EndPlay(Reason);
 }
 
 void ASFE1Character::TickCombatScenario()
@@ -330,7 +370,11 @@ void ASFE1Character::TickCameraControls(float Dt)
     CameraBoom->TargetArmLength = FMath::FInterpTo(CameraBoom->TargetArmLength, ArmGoal, Dt, S->CameraZoomInterpSpeed);
     // The own body is hidden in first person, and while a dialogue board is open (it would show behind the board).
     const bool bHideBody = (bFirstPerson && CameraBoom->TargetArmLength < S->CameraZoomMinCm * 0.5f) || IsValid(DialogueFramingTarget.Get());
-    if (GetMesh()->bOwnerNoSee != bHideBody) { GetMesh()->SetOwnerNoSee(bHideBody); }
+    if (GetMesh()->bOwnerNoSee != bHideBody)
+    {
+        GetMesh()->SetOwnerNoSee(bHideBody);
+        if (MetaHuman) { for (UPrimitiveComponent* Part : TInlineComponentArray<UPrimitiveComponent*>(MetaHuman)) { Part->SetOwnerNoSee(bHideBody); } }
+    }
     CameraBoom->bEnableCameraLag = S->CameraLagSpeed > 0.0f && !bFirstPerson;
 
     // CTL-02: all camera changes are local. The owner-only CombatTarget is also the selected Tab target.

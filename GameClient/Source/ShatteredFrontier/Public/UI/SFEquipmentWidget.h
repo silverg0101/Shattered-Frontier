@@ -37,12 +37,14 @@ public:
     void AddYaw(float Degrees);
     UTextureRenderTarget2D* GetTarget() const { return Target; }
     int32 CopiedMeshCount() const { return Copies.Num(); }
+    virtual void EndPlay(const EEndPlayReason::Type Reason) override;
 
 private:
     UPROPERTY() TObjectPtr<USceneComponent> Turntable;
     UPROPERTY() TObjectPtr<USceneCaptureComponent2D> Capture;
     UPROPERTY() TArray<TObjectPtr<UPointLightComponent>> Lights;
     UPROPERTY() TArray<TObjectPtr<UPrimitiveComponent>> Copies;
+    UPROPERTY() TObjectPtr<AActor> Figure;  // the player's MetaHuman copy (ASFE1Character::SpawnPosedMetaHuman), when there is one
     UPROPERTY() TObjectPtr<UTextureRenderTarget2D> Target;
 };
 

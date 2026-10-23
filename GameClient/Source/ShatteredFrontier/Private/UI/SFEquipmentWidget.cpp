@@ -1,5 +1,6 @@
 #include "UI/SFEquipmentWidget.h"
 #include "UI/SFItemTooltip.h"
+#include "Characters/SFE1Character.h"
 
 #include "Components/Image.h"
 #include "Components/PointLightComponent.h"
@@ -82,6 +83,7 @@ void ASFEquipmentPreviewStudio::CopyFrom(const APawn* Pawn)
 {
     for (UPrimitiveComponent* Old : Copies) { if (Old) { Old->DestroyComponent(); } }
     Copies.Reset();
+    if (Figure) { Figure->Destroy(); Figure = nullptr; }
     if (!Target)
     {
         Target = LoadObject<UTextureRenderTarget2D>(nullptr, TargetPath, nullptr, LOAD_NoWarn | LOAD_Quiet);
@@ -137,6 +139,18 @@ void ASFEquipmentPreviewStudio::CopyFrom(const APawn* Pawn)
         if (Part && Part->IsVisible() && !Part->bHiddenInGame) { Copy(Part, Body, Part->GetAttachSocketName(), Part->GetRelativeTransform()); }
     }
 
+    // A player MetaHuman: its own copy stands on the turntable, posed from the same mannequin; the mannequin copy stays for framing.
+    if (const ASFE1Character* Player = Cast<ASFE1Character>(Pawn); Player && Player->GetMetaHuman())
+    {
+        Figure = Player->SpawnPosedMetaHuman(Body, FTransform::Identity);  // on the mannequin copy, as in the world
+        if (Figure)
+        {
+            Body->SetVisibility(false, false);
+            Capture->ShowOnlyActors.Add(Figure);
+            for (UPrimitiveComponent* Part : TInlineComponentArray<UPrimitiveComponent*>(Figure)) { StudioChannel(Part->LightingChannels); Part->MarkRenderStateDirty(); }
+        }
+    }
+
     // Frame the full figure: the camera looks at the front (+X) from a distance that fits the height in the 5:7 target, lights around it.
     const FBox Box = Body->Bounds.GetBox();
     const float Height = FMath::Max(100.f, float(Box.Max.Z - Box.Min.Z));
@@ -151,6 +165,12 @@ void ASFEquipmentPreviewStudio::CopyFrom(const APawn* Pawn)
         Lights[1]->SetWorldLocation(Centre + FVector(Distance * 0.7f, Height * 0.9f, Height * 0.1f));
         Lights[2]->SetWorldLocation(Centre + FVector(-Height * 0.9f, Height * 0.4f, Height * 0.7f));
     }
+}
+
+void ASFEquipmentPreviewStudio::EndPlay(const EEndPlayReason::Type Reason)
+{
+    if (Figure) { Figure->Destroy(); Figure = nullptr; }
+    Super::EndPlay(Reason);
 }
 
 void ASFEquipmentPreviewStudio::AddYaw(float Degrees) { Turntable->AddLocalRotation(FRotator(0.f, Degrees, 0.f)); }
