@@ -73,6 +73,9 @@ if [ ! -x "$B/blender" ]; then
   curl -sfL $M/blender-4.2.3.sha256 | grep linux-x64.tar.xz | sha256sum -c -
   tar xf blender-4.2.3-linux-x64.tar.xz && rm blender-4.2.3-linux-x64.tar.xz
 fi
+# SkinToken hands Blender numpy-2 pickles; Blender 4.2 bundles numpy 1.x, which has no numpy._core.
+printf "%s\n" 'import sys, numpy.core, numpy.core.multiarray, numpy.core.numeric; sys.modules.setdefault("numpy._core", numpy.core); sys.modules.setdefault("numpy._core.multiarray", numpy.core.multiarray); sys.modules.setdefault("numpy._core.numeric", numpy.core.numeric)' \
+    > "$B/4.2/python/lib/python3.11/site-packages/sfam_numpy2_pickles.pth"
 UNIT=${UNIT:-comfy-h3@}
 mkdir -p "$HOME/.config/systemd/user/$UNIT.service.d"
 printf "[Service]\nEnvironment=SKINTOKEN_BLENDER_BIN=%s\n" "$B/blender" > "$HOME/.config/systemd/user/$UNIT.service.d/sfam-skintoken.conf"
