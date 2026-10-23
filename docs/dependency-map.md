@@ -8,7 +8,8 @@ The browser path is `server/index.js` → `server/world.js` → `public/{index.h
 | :--- | :--- | :--- | :--- |
 | UI | [ui.md](dependency-map/ui.md) | HUD, menus, SFHudStyle, kit art, dialogue, settings, capture | Interface and client presentation |
 | HUD vitals v6 art | [HudVitals-v6/README.md](../GameClient/ArtSource/UI/HudVitals-v6/README.md) | Owner-reference redraws: badge, bar frame/fills/mask, icons and source prompts | HUD vitals sprite handoff; no Unreal import |
-| Inventory v6 art | [Inventory-v6/README.md](../GameClient/ArtSource/UI/Inventory-v6/README.md) | Owner-reference redraws: panel, tabs, slots, tooltip, footer and icons | Inventory sprite handoff; no Unreal import |\n| World art | [world-art.md](dependency-map/world-art.md) | Town, Silverbrook, buildings, vegetation, terrain, lighting, VFX, nature | Environment and settlement work |
+| Inventory v6 art | [Inventory-v6/README.md](../GameClient/ArtSource/UI/Inventory-v6/README.md) | Owner-reference redraws: panel, tabs, slots, tooltip, footer and icons | Inventory sprite handoff; no Unreal import |\n| Shared menu kit v7 art | [Kit-v7/README.md](../GameClient/ArtSource/UI/Kit-v7/README.md) | Shared shell, emblems, tabs, buttons, rows, fields, glyphs and 9-slice source margins | Art-source handoff for all menu windows; no Unreal import |
+| World art | [world-art.md](dependency-map/world-art.md) | Town, Silverbrook, buildings, vegetation, terrain, lighting, VFX, nature | Environment and settlement work |
 | Gameplay | [gameplay.md](dependency-map/gameplay.md) | Gathering, felling, crafting, construction, claims, quests, market, combat | Player rules and interactions |
 | Characters | [characters.md](dependency-map/characters.md) | Player/NPC models, CHR-01, appearance, Pixal/AutoRig NPC pipeline | Character and animation work |
 | Backend | [backend.md](dependency-map/backend.md) | BackendServices, persistence, gateway, hosts, fixtures | Service and durable-state work |
