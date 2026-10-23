@@ -5,9 +5,9 @@ fails with "Couldn't find baked texture"). Run it from PowerShell:
   UnrealEditor.exe <uproject> -RenderOffscreen -unattended -nosplash -ExecCmds="py <abs path of this file>"
 It starts on the editor's first tick, builds, then quits the editor.
 
-Reads GameClient/ArtSource/Characters/Player/faces.json ({"faces": [{"id", "preset", "gender", "hair"}]}).
-Each face's preset is copied to /Game/Frontier/Characters/Player/Faces/MHC_<id> and given its hair (a WI_Hair_* wardrobe
-item). MetaHuman's cloud auto-rig and texture download run only when the copy cannot build yet (they use the editor's
+Reads GameClient/ArtSource/Characters/Player/faces.json ({"faces": [{"id", "preset", "gender", "hair", "beard", "mustache"}]}).
+Each face's preset is copied to /Game/Frontier/Characters/Player/Faces/MHC_<id> and given its grooms (WI_* wardrobe
+items). MetaHuman's cloud auto-rig and texture download run only when the copy cannot build yet (they use the editor's
 signed-in Epic account). The optimized, medium-quality assembly goes to /Game/Frontier/Characters/Player/Built/MHC_<id>,
 with shared assets in .../Built/Common. Env SF_FACES=<id,id> limits the run. Logs PLAYER_METAHUMAN_BUILT / _FAILED.
 """
@@ -19,7 +19,7 @@ import unreal
 
 ROOT = '/Game/Frontier/Characters/Player'
 PRESETS = '/MetaHumanCharacter/Optional/Presets'
-HAIR = '/MetaHumanCharacter/Optional/Grooms/Bindings/Hair'
+GROOMS = '/MetaHumanCharacter/Optional/Grooms/Bindings'
 
 
 def build_face(face, subsystem, library):
@@ -30,14 +30,17 @@ def build_face(face, subsystem, library):
         raise RuntimeError(f"Could not copy preset {face['preset']} to {path}")
     instance = character.internal_collection.default_instance
     if fresh:
-        # The face's own grooms: its hair replaces the preset's, and facial hair is cleared unless the face lists it.
-        for slot in ('Beard', 'Mustache'):
-            if slot in [str(s) for s in character.internal_collection.get_slot_names()] and not face.get(slot.lower()):
-                instance.set_single_slot_selection(slot, unreal.MetaHumanPaletteItemKey())
-        if face.get('hair'):
-            item = library.load_asset(f"{HAIR}/{face['hair']}")
-            key = character.internal_collection.try_add_item_from_wardrobe_item('Hair', item)
-            instance.set_single_slot_selection('Hair', key)
+        # The face's own grooms replace the preset's: "hair", "beard", "mustache" name WI_* wardrobe items; a slot not listed is cleared.
+        slots = [str(s) for s in character.internal_collection.get_slot_names()]
+        for slot in ('Hair', 'Beard', 'Mustache'):
+            if slot not in slots:
+                continue
+            wanted = face.get(slot.lower())
+            item = library.load_asset(f"{GROOMS}/{slot}s/{wanted}" if slot != 'Hair' else f"{GROOMS}/Hair/{wanted}") if wanted else None
+            if wanted and item is None:
+                raise RuntimeError(f"Unknown {slot} groom {wanted}")
+            key = character.internal_collection.try_add_item_from_wardrobe_item(slot, item) if item else unreal.MetaHumanPaletteItemKey()
+            instance.set_single_slot_selection(slot, key)
     if not subsystem.try_add_object_to_edit(character=character):
         raise RuntimeError(f'{path} is open for edit elsewhere')
     try:
@@ -88,7 +91,7 @@ def run():
     subsystem = unreal.get_editor_subsystem(unreal.MetaHumanCharacterEditorSubsystem)
     library = unreal.EditorAssetLibrary
     # Plugin content is not in the registry of a fresh run until scanned; duplicate_asset needs it there.
-    unreal.AssetRegistryHelpers.get_asset_registry().scan_paths_synchronous([PRESETS, HAIR], True)
+    unreal.AssetRegistryHelpers.get_asset_registry().scan_paths_synchronous([PRESETS, GROOMS], True)
     for face in faces:
         if only and face['id'] not in only:
             continue
