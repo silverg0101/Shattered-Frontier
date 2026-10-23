@@ -272,6 +272,7 @@ const ICON = {
   model: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>',
   file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/></svg>',
   image: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>',
+  video: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9l5 3-5 3z"/></svg>',
 };
 
 /* ---------------- router */
@@ -389,7 +390,8 @@ function drawPreview(e) {
   box.dataset.path = e.path;
   const url = fileUrl(e.path), ext = e.name.split('.').pop().toLowerCase();
   const stage = e.kind === 'image' ? `<img src="${url}" alt="" id="zoom">`
-    : e.kind === 'model' && ['glb', 'gltf'].includes(ext) ? `<model-viewer src="${url}" camera-controls auto-rotate shadow-intensity="1" exposure="1.1" environment-image="neutral" ${e.thumb ? `poster="${fileUrl(e.thumb)}"` : ''}></model-viewer>`
+    : e.kind === 'video' ? `<video src="${url}" controls loop muted autoplay playsinline style="max-width:100%;max-height:100%"></video>`
+    : e.kind === 'model' && ['glb', 'gltf'].includes(ext) ? `<model-viewer src="${url}" camera-controls auto-rotate autoplay shadow-intensity="1" exposure="1.1" environment-image="neutral" ${e.thumb ? `poster="${fileUrl(e.thumb)}"` : ''}></model-viewer>`
     : e.thumb ? `<img src="${fileUrl(e.thumb)}" alt="">` : `<div class="muted" style="text-align:center">${ICON[e.kind].replace('<svg', '<svg width="64" height="64"')}<br>No preview for .${esc(ext)}</div>`;
   box.innerHTML = `<div class="preview fade">
     <div class="stage">${stage}</div>
@@ -398,8 +400,12 @@ function drawPreview(e) {
       <div class="acts">
         ${e.kind === 'dir' ? `<a class="btn primary" href="${assetHref(e.path)}">Open folder</a>` : `<a class="btn" href="${url}" download>Download</a>`}
         ${e.kind === 'image' ? `<button class="btn primary" id="use">Use in Create</button>` : ''}
+        ${e.kind === 'model' && /_rigged\.(glb|fbx)$/i.test(e.name) ? `<button class="btn primary" id="animate">Animate: walk</button>` : ''}
       </div></div></div>`;
   $('#zoom') && ($('#zoom').onclick = () => lightbox(url));
+  $('#animate') && ($('#animate').onclick = async () => {
+    try { await post('/api/jobs', { kind: 'motion', params: { model: e.path } }); toast('Added to queue'); setQueueOpen(true); pollQueue(); } catch (err) { fail(err); }
+  });
   $('#use') && ($('#use').onclick = () => { setCreateImage(e.path); location.hash = '#/create'; });
 }
 function lightbox(url) {
@@ -680,7 +686,7 @@ function drawQueue(jobs) {
     const time = j.started ? dur((j.finished || now) - j.started) : 'queued ' + fmtTime(j.created);
     return `<div class="job ${live ? 'running' : ''}" style="animation:none">
       <div class="row"><span class="title" title="${esc(j.name)}">${esc(j.name)}</span><span class="pill ${j.status}">${j.status}</span></div>
-      <div class="sub">3D Asset · #${j.id}${j.host ? ' · ' + esc(j.host) : ''} · ${time}${j.note && j.status === 'queued' ? ' · ' + esc(j.note) : ''}</div>
+      <div class="sub">${j.kind === 'motion' ? 'Motion' : '3D Asset'} · #${j.id}${j.host ? ' · ' + esc(j.host) : ''} · ${time}${j.note && (j.status === 'queued' || live) ? ' · ' + esc(j.note) : ''}</div>
       ${j.error ? `<div class="err">${esc(j.error)}</div>` : ''}
       ${live && m ? `<div class="metrics">${metric('CPU', m.cpu)}${metric('RAM', m.ram, m.ram_gb.join(' / ') + ' GB')}${metric('GPU', m.gpu)}${metric('VRAM', m.vram, m.vram_gb.join(' / ') + ' GB')}</div>` : ''}
       ${j.log.length || live ? `<div class="log ${open ? 'open' : ''}"><pre data-id="${j.id}">${esc(open ? j.log.join('\n') : j.log.at(-1) || 'waiting for output…')}</pre>

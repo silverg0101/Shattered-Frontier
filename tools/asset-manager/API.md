@@ -26,14 +26,14 @@ Base URL: `http://192.168.50.133:8090`. JSON in and out, no login. Errors return
    # {"id": 7, "status": "queued", "status_url": "http://192.168.50.133:8090/api/jobs/7"}
    ```
 
-   - `kind`: `"3d"` (3D Asset) is the only job type. It runs in one of two modes, chosen by which source field you send:
+   - `kind`: `"3d"` (3D Asset, below) or `"motion"` (animate a rigged model, see [Motion jobs](#motion-jobs)). A 3D job runs in one of two modes, chosen by which source field you send:
      - **Single view**: send `params.image`, an image path in the asset library. Pixal3D builds the geometry and TRELLIS.2-4B paints the texture from that one image.
      - **Multi-view**: send `params.views` instead, mapping positions to image paths: `{"front": ..., "left": ..., "back": ..., "right": ...}`.
        - `front` is required, plus at least one more. The other positions are optional.
        - `left` is the character's left side facing the camera (the figure faces image-left). `right` is the reverse.
        - Pixal3D's multi-view weights build both the geometry and the texture from every view, so the back and sides are painted from their own images instead of guessed.
        - Make the views of one identical figure, as if a camera orbits a statue: same pose, scale and feet height, white background, flat light. See `docs/art-templates/character-view-prompt.md`.
-   - `name` (optional, max 80 chars): the output file name. It defaults to the (front) image's name.
+   - `name` (optional, max 80 chars): the output file name. It defaults to the (front) image's name, or a motion job's model name.
    - Every other `params` key is optional. A missing key uses the workflow default.
    - Each option applies to single mode, multi mode or both, as listed in `modes` in `GET /api/schema`. An option for the other mode is accepted and ignored.
 
@@ -62,7 +62,7 @@ Job object:
 |---|---|
 | `id`, `kind`, `name`, `params` | As submitted |
 | `status` | `queued`, `running`, `cancelling`, `done`, `failed` or `cancelled` |
-| `note` | Why a queued job is waiting, for example "waiting for a free GPU host" |
+| `note` | Why a queued job is waiting, for example "waiting for a free GPU host"; for a running motion job, its current step |
 | `host` | GPU host running or that ran it |
 | `created`, `started`, `finished` | Unix seconds (`null` until reached) |
 | `metrics` | While running: `cpu`, `gpu`, `ram`, `vram` (percent, `null` where the host can't report it), `ram_gb` and `vram_gb` as `[used, total]` |
@@ -88,6 +88,41 @@ Poll `status_url` every few seconds until `status` is `done`, `failed` or `cance
 - **`POST /api/move`** with `{"paths": [...], "dest"}`: move items into a folder.
 - **`POST /api/rename`** with `{"path", "name"}`: rename an item.
 - **`POST /api/delete`** with `{"paths": [...]}`: delete permanently. Folders are deleted with everything in them.
+
+## Motion jobs
+
+A motion job animates a rigged model (`.glb` or `.fbx`, such as a 3D job's `<name>_rigged.glb`). The GPU host:
+
+1. renders the model's rest pose in Blender, front view on the left and left-side view on the right, on grey;
+2. films it with the host's local MiniMax H3 (quantized, in its ComfyUI) from that image as the first frame, with a prompt to perform the action on the spot, once per take;
+3. unloads H3, then tracks every bone point through both halves of each video with CoTracker3, combines front (x, height) and side (y, height) into 3D, and bakes it onto the skeleton in Blender.
+
+```bash
+curl -X POST http://192.168.50.133:8090/api/jobs -H 'Content-Type: application/json' -d '{
+  "kind": "motion",
+  "params": {"model": "Generated/Griffin_rigged.glb", "action": "walk", "takes": 2}
+}'
+```
+
+On an RTX 3090 a 5-second turbo take takes about 9 minutes including loading H3 (later takes in the same job reuse the loaded model), then about 40 seconds to track and bake. Without turbo (20 steps) expect several times longer.
+
+Per take, `files` holds `<name>_<action>_take<n>.glb` (the model with the baked animation), `.png` (its thumbnail, the first frame), `.mp4` (the generated video) and `_overlay.mp4` (the video with the tracked points: cyan where front and side agree on height, red where they disagree by more than 5% of the model's height). Takes are listed best first. `log` gives each take's score (1 = perfect agreement, 0 = 5% of model height or worse) and its height disagreement; a low score usually means the video model moved the cameras or changed the character's size.
+
+`log` also records which GPU did each step: the host's ComfyUI (the same placement check as 3D jobs), the render and the tracking. Motion jobs run on SSH hosts only, prepared with `host-setup/install-motion.sh`; the H3 model files are the ones named in `H3` in `app.py`.
+
+The model must face -Y in Blender (glTF +Z, how the 3D jobs export); otherwise set `turn`. This first version bakes the skeleton only: no foot locking, loop matching or root motion yet, and the animation is GLB only.
+
+| Key | What it sets | Type | Range / options | Default |
+|---|---|---|---|---|
+| `model` (required) | Rigged model in the asset library | path | `.glb`, `.fbx` | |
+| `action` | Action to film | choice | `walk` | `walk` |
+| `turbo` | Use H3's 8-step turbo LoRA; off runs the full model, slower, and can be cleaner on fast motion | bool | `true` / `false` | `true` |
+| `steps` | Sampling steps (0 = 8 with turbo, 20 without) | int | 0 to 60 | `0` |
+| `seconds` | Clip length; rounded up to H3's frame grid (17k + 5 frames at 24 fps) | int | 2 to 10 | `5` |
+| `takes` | Videos to generate | int | 1 to 4 | `2` |
+| `seed` | Seed of the first take, later takes count up (-1 = random) | int | -1 to 2147483647 | `-1` |
+| `turn` | Turn the model about its vertical axis before filming (degrees) | choice | `0`, `90`, `180`, `-90` | `0` |
+| `prompt` | Replaces the built-in prompt (max 2000 chars) | string | | the action's prompt |
 
 ## 3D Asset options (`params`)
 

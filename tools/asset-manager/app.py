@@ -15,6 +15,7 @@ PORT = int(os.environ.get("PORT", "8090"))
 STATIC = Path(__file__).with_name("static")
 IMAGE_EXT = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"}
 MODEL_EXT = {".glb", ".gltf", ".obj", ".fbx", ".stl", ".ply", ".usdz", ".3mf"}
+VIDEO_EXT = {".mp4", ".webm", ".mov"}
 
 DEFAULT_SETTINGS = {
     "output_folder": "Generated",
@@ -323,18 +324,96 @@ def build_graph(params, image, prefix, pixal_model, views=None):
     for key, _, _, kind, extra, targets in PARAMS:
         if key not in params:
             continue
-        v = params[key]
-        if kind == "bool":
-            v = bool(v)
-        elif kind in ("int", "float"):
-            v = min(max((int if kind == "int" else float)(v), extra["min"]), extra["max"])
-            if key == "seed" and v < 0:
-                v = random.randint(0, 0x7fffffff)
-        elif v not in extra["options"]:
-            raise ValueError(f"{key}: {v!r} is not one of {extra['options']}")
+        v = coerce(key, kind, extra, params[key])
         for node, inp in targets:
             if node in g:  # rig options only apply when rigging is on
                 g[node]["inputs"][inp] = v
+    return g
+
+def coerce(key, kind, extra, v):
+    """An option value checked against its schema row: numbers clamped, choices must be listed."""
+    if kind == "bool":
+        return bool(v)
+    if kind in ("int", "float"):
+        v = min(max((int if kind == "int" else float)(v), extra["min"]), extra["max"])
+        return random.randint(0, 0x7fffffff) if key == "seed" and v < 0 else v
+    if v not in extra["options"]:
+        raise ValueError(f"{key}: {v!r} is not one of {extra['options']}")
+    return v
+
+# ---------------------------------------------------------------- Motion workflow
+# A rigged model's rest pose, filmed front | left side, is the first frame of a local MiniMax H3 clip of it
+# doing the action. motion/*.py then runs on the host: CoTracker3 follows every bone point in both halves,
+# front and side combine into 3D (both measure height, so their agreement scores the take), and Blender
+# bakes the result onto the skeleton.
+MOTION_DIR = Path(__file__).with_name("motion")
+DEFAULT_BLENDER = "~/blender/blender-4.2.3-linux-x64/blender"
+ACTIONS = {"walk": "walks slowly on the spot, as if on a treadmill, in a steady looping walk cycle"}
+MOTION_PROMPT = (
+    "Split-screen video of the character in <Picture 1> in a plain grey studio, filmed by two fixed orthographic "
+    "cameras: the left panel shows it from the front, the right panel shows its left side. Both panels show the "
+    "same moment in every frame. The character {action}. The cameras never move, zoom or cut, the character stays "
+    "centred and the same size in both panels, and nothing else appears.")
+# The RA-SIEMS hosts run a quantized MiniMax H3 (ComfyUI-GGUF-Loader): first/last-frame model, Qwen3-VL-4B text
+# encoder projected into H3's space, and the matching turbo LoRA. Sampler, schedule and guidance follow ComfyUI's
+# own "video_minimax_h3_i2v" template; turbo only adds the LoRA and fewer steps.
+H3 = {"unet": "minimax_h3_fl2va_pruned_fp8_Q4_0.gguf", "clip": "qwen3-vl-4b-heretic-Q4_K_M.gguf",
+      "proj": "mmh3-4b-ClipProj-v3.1.safetensors", "video_vae": "minimax_h3_video_vae_fp16.safetensors",
+      "audio_vae": "minimax_h3_audio_vae_fp32.safetensors",
+      "turbo_lora": "minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors"}
+H3_SIZE = (1344, 768)  # H3's 16:9 canvas; the first frame is stretched to it, not cropped, so joint uv still holds
+H3_FPS = 24
+
+# (key, label, kind, extra, default)
+MOTION_PARAMS = (
+    ("action", "Action", "choice", {"options": list(ACTIONS)}, "walk"),
+    ("turbo", "Turbo LoRA (fewer steps, may smear fast motion)", "bool", {}, True),
+    ("steps", "Steps (0 = 8 with turbo, 20 without)", "int", {"min": 0, "max": 60}, 0),
+    ("seconds", "Clip length (seconds)", "int", {"min": 2, "max": 10}, 5),
+    ("takes", "Takes", "int", {"min": 1, "max": 4}, 2),
+    ("seed", "Seed (-1 = random)", "int", {"min": -1, "max": 0x7fffffff}, -1),
+    ("turn", "Turn the model before filming (degrees)", "choice", {"options": [0, 90, 180, -90]}, 0),
+)
+
+def motion_params(params):
+    """Checked motion options with defaults filled in. `model` is a rigged model; `prompt` overrides the action text."""
+    unknown = set(params) - {p[0] for p in MOTION_PARAMS} - {"model", "prompt"}
+    if unknown:
+        raise ValueError(f"unknown options: {sorted(unknown)} (see GET /api/schema)")
+    out = {k: coerce(k, kind, extra, params.get(k, d)) for k, _, kind, extra, d in MOTION_PARAMS}
+    out["model"] = params.get("model", "")
+    out["prompt"] = str(params.get("prompt") or MOTION_PROMPT.format(action=ACTIONS[out["action"]]))[:2000]
+    return out
+
+def motion_graph(p, image, prefix):
+    """One video per take from the same first frame and models; seeds count up from the job's seed."""
+    frames = round(p["seconds"] * H3_FPS)
+    frames += (5 - frames % 17) % 17  # H3 clips are 17k + 5 frames
+    model = ["3", 0] if p["turbo"] else ["2", 0]
+    g = {
+        "1": {"class_type": "LoadImage", "inputs": {"image": image}},
+        "2": {"class_type": "UnetLoaderGGUF", "inputs": {"unet_name": H3["unet"]}},
+        "4": {"class_type": "CCTechClipProjLoader", "inputs": {"clip_name": H3["clip"], "type": "auto", "projection": H3["proj"]}},
+        "5": {"class_type": "CCTechDualVAELoader", "inputs": {"video_vae_name": H3["video_vae"], "audio_vae_name": H3["audio_vae"]}},
+        "6": {"class_type": "MiniMaxH3ImageToVideo", "inputs": {
+            "clip": ["4", 0], "vae": ["5", 0], "prompt": p["prompt"], "width": H3_SIZE[0], "height": H3_SIZE[1],
+            "length": frames, "first_frame": ["1", 0]}},
+        "7": {"class_type": "KSamplerSelect", "inputs": {"sampler_name": "res_multistep"}},
+        "8": {"class_type": "BasicScheduler", "inputs": {
+            "model": model, "scheduler": "simple", "steps": p["steps"] or (8 if p["turbo"] else 20), "denoise": 1}},
+        "9": {"class_type": "BasicGuider", "inputs": {"model": model, "conditioning": ["6", 0]}},
+    }
+    if p["turbo"]:
+        g["3"] = {"class_type": "LoraLoaderModelOnly", "inputs": {"model": ["2", 0], "lora_name": H3["turbo_lora"], "strength_model": 1.0}}
+    for i in range(p["takes"]):
+        n = f"1{i}"
+        g[n + "0"] = {"class_type": "RandomNoise", "inputs": {"noise_seed": (p["seed"] + i) & 0x7fffffff}}
+        g[n + "1"] = {"class_type": "SamplerCustomAdvanced", "inputs": {
+            "noise": [n + "0", 0], "guider": ["9", 0], "sampler": ["7", 0], "sigmas": ["8", 0], "latent_image": ["6", 1]}}
+        g[n + "2"] = {"class_type": "VAEDecode", "inputs": {"samples": [n + "1", 0], "vae": ["5", 0]}}
+        g[n + "3"] = {"class_type": "CreateVideo", "inputs": {"images": [n + "2", 0], "fps": H3_FPS}}
+        g[n + "4"] = {"class_type": "SaveVideo", "inputs": {
+            "video": [n + "3", 0], "filename_prefix": f"{prefix}{i + 1}", "format": "mp4", "format.codec": "h264"}}
     return g
 
 # ---------------------------------------------------------------- storage
@@ -404,7 +483,9 @@ def unique(p: Path):
     return out
 
 def kind_of(p: Path):
-    return "dir" if p.is_dir() else "image" if p.suffix.lower() in IMAGE_EXT else "model" if p.suffix.lower() in MODEL_EXT else "file"
+    ext = p.suffix.lower()
+    return ("dir" if p.is_dir() else "image" if ext in IMAGE_EXT else "model" if ext in MODEL_EXT
+            else "video" if ext in VIDEO_EXT else "file")
 
 def list_dir(rel):
     d = safe_path(rel)
@@ -502,7 +583,7 @@ def cleanup(host, inputs, outputs):
         # needs SSH (or a file-delete endpoint) on that host to clean them.
         return
     paths = [f"{host['comfy_dir']}/input/sfam/{n}" for n in inputs] + [f"{host['comfy_dir']}/output/sfam/{n}" for n in outputs]
-    ssh(host, "rm -f " + " ".join(shlex.quote(p) for p in paths))
+    ssh(host, "rm -rf " + " ".join(shlex.quote(p) for p in paths))  # motion jobs leave a folder per job
 
 GPU_NOTES = {}  # job id -> lines proving which GPU ran it, shown above the host log
 
@@ -558,6 +639,118 @@ def poll_metrics(host, jid, since):
                              "gpu": round(g_util), "vram": round(100 * v_used / v_total), "vram_gb": [round(v_used / 1024, 1), round(v_total / 1024, 1)]},
                  "log": [ln for ln in lines if ln][-200:]}
 
+def run_prompt(host, jid, graph, started, timeout_min, extra_data=None):
+    """Queue a graph on the host and wait for it; returns its history entry. Honours cancel and the timeout."""
+    r = comfy(host, "/prompt", {"prompt": graph, "client_id": f"sfam-{jid}", **({"extra_data": extra_data} if extra_data else {})})
+    if "prompt_id" not in r:
+        raise RuntimeError(json.dumps(r.get("node_errors") or r.get("error") or r)[:800])
+    pid = r["prompt_id"]
+    update_job(jid, prompt_id=pid)
+    last_seen = time.time()
+    while True:
+        time.sleep(5)
+        try:
+            poll_metrics(host, jid, started)
+        except Exception:
+            pass  # metrics are best effort
+        if job_row(jid)["status"] == "cancelling":
+            comfy(host, "/queue", {"delete": [pid]})
+            comfy(host, "/interrupt", {})
+            raise InterruptedError
+        h = comfy(host, f"/history/{pid}").get(pid)
+        if h:
+            break
+        q = comfy(host, "/queue")
+        if any(pid in item for item in q.get("queue_running", []) + q.get("queue_pending", [])):
+            last_seen = time.time()
+        elif time.time() - last_seen > 30:
+            raise RuntimeError("job vanished from the host (ComfyUI restarted?) — retry it")
+        if time.time() - started > timeout_min * 60:
+            comfy(host, "/interrupt", {})
+            raise TimeoutError(f"timed out after {timeout_min} min")
+    st = h.get("status", {})
+    if st.get("status_str") == "error":
+        err = next((m[1] for m in st.get("messages", []) if m[0] == "execution_error"), {})
+        where = f"{err.get('node_type', '?')} (node {err.get('node_id', '?')})"
+        msg = f"{where}: {err.get('exception_type', 'error')}: {err.get('exception_message', '').strip() or 'no message'}"
+        raise RuntimeError(msg)
+    return h
+
+def run_motion(jid, host):
+    job = job_row(jid)
+    p = motion_params(json.loads(job["params"]))
+    s = get_settings()
+    started = time.time()
+    work, q = f"{host['comfy_dir']}/input/sfam/{jid}", shlex.quote
+    py, blender = f"{host['comfy_dir']}/.venv/bin/python", host.get("blender") or DEFAULT_BLENDER
+    # PCI order, as the ComfyUI units use: CUDA's default order can differ and land on GPU 0, which isn't ours.
+    gpu = f"CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES={int(host['gpu'])}"
+    def step(note):
+        if job_row(jid)["status"] == "cancelling":
+            raise InterruptedError
+        update_job(jid, note=note)
+    def device_lines(out, label):  # the scripts print the GPU they ran on; keep that as proof in the job log
+        GPU_NOTES.setdefault(jid, []).extend(
+            f"[asset-manager] {host['name']}: {label} on {ln.split(':', 1)[1].strip()}"
+            for ln in out.decode(errors="replace").splitlines() if ln.startswith(("render device:", "track device:")))
+    log = []
+    try:
+        src = safe_path(p["model"])
+        model = f"model{src.suffix.lower()}"
+        step("uploading the model")
+        for f in MOTION_DIR.glob("*.py"):
+            put_input(host, f"{jid}/{f.name}", f.read_bytes())
+        put_input(host, f"{jid}/{model}", src.read_bytes())
+        step("rendering the front and side views")
+        device_lines(ssh(host, f"cd {q(work)} && {gpu} {blender} -b -P render_views.py -- {model} . --turn {p['turn']}",
+                         timeout=900), "render")
+        ok, line = gpu_check(host)  # the video runs in the host's ComfyUI: make sure it sits on this host's GPU
+        GPU_NOTES[jid].append(line)
+        if not ok:
+            raise RuntimeError(line)
+        steps = p["steps"] or (8 if p["turbo"] else 20)
+        step(f"generating {p['takes']} take(s) with MiniMax H3 ({'turbo, ' if p['turbo'] else ''}{steps} steps)")
+        h = run_prompt(host, jid, motion_graph(p, f"sfam/{jid}/views.png", f"sfam/{jid}/take"), started, s["job_timeout_min"])
+        videos = sorted(f"{v.get('subfolder', '')}/{v['filename']}".strip("/")
+                        for out in h.get("outputs", {}).values() for v in out.get("images", []) if v.get("type") == "output")
+        if not videos:
+            raise RuntimeError("the video model returned no videos")
+        comfy(host, "/free", {"unload_models": True, "free_memory": True})  # H3 holds ~16 GB; the tracker needs ~7
+        takes = []
+        for i, v in enumerate(videos, 1):
+            step(f"tracking and baking take {i} of {len(videos)}")
+            d, video = f"take{i}", f"{host['comfy_dir']}/output/{v}"
+            device_lines(ssh(host, f"cd {q(work)} && {gpu} {py} track_solve.py {q(video)} joints.json {d}"
+                                   f" && {gpu} {blender} -b -P bake.py -- {model} joints.json {d}/motion.json {d}/anim.glb",
+                             timeout=1800), f"take {i} tracking")
+            m = json.loads(ssh(host, f"{py} -c \"import json; m=json.load(open('{work}/{d}/motion.json')); m.pop('positions'); print(json.dumps(m))\""))
+            takes.append((m["score"], m["height_error_pct"], i, video))
+        step("saving")
+        out_dir = safe_path(s["output_folder"])
+        out_dir.mkdir(parents=True, exist_ok=True)
+        safe_name = re.sub(r"[^\w-]+", "_", job["name"]).strip("_") or f"asset{jid}"
+        views = ssh(host, f"cat {q(work + '/views.png')}")
+        saved = []
+        for score, err, i, video in sorted(takes, reverse=True):  # best take first
+            stem = f"{safe_name}_{p['action']}_take{i}"
+            for remote, ext in ((f"{work}/take{i}/anim.glb", ".glb"), (video, ".mp4"), (f"{work}/take{i}/overlay.mp4", "_overlay.mp4")):
+                dest = unique(out_dir / f"{stem}{ext}")
+                dest.write_bytes(ssh(host, f"cat {q(remote)}", timeout=900))
+                saved.append(dest.relative_to(ROOT).as_posix())
+            (out_dir / f"{Path(saved[-3]).stem}.png").write_bytes(views)  # thumbnail for the animated model
+            log.append(f"take {i}: score {score:.2f}, front/side height disagreement {err:.1f}% of model height")
+        update_job(jid, status="done", output=saved[0], files=json.dumps(saved), note="", finished=time.time())
+    except InterruptedError:
+        update_job(jid, status="cancelled", note="", finished=time.time())
+    except Exception as e:
+        update_job(jid, status="failed", error=str(e)[-1000:], note="", finished=time.time())
+    finally:
+        update_job(jid, log="\n".join(GPU_NOTES.pop(jid, []) + log + LIVE.pop(jid, {}).get("log", [])[-100:]))
+        try:
+            cleanup(host, [str(jid)], [str(jid)])
+        except Exception:
+            pass
+
 def run_job(jid, host):
     job = job_row(jid)
     params = json.loads(job["params"])
@@ -580,39 +773,7 @@ def run_job(jid, host):
         GPU_NOTES[jid] = [line]
         if not ok:
             raise RuntimeError(line)
-        r = comfy(host, "/prompt", {"prompt": graph, "client_id": f"sfam-{jid}"})
-        if "prompt_id" not in r:
-            raise RuntimeError(json.dumps(r.get("node_errors") or r.get("error") or r)[:800])
-        pid = r["prompt_id"]
-        update_job(jid, prompt_id=pid)
-        last_seen, limit = time.time(), s["job_timeout_min"] * 60
-        while True:
-            time.sleep(5)
-            try:
-                poll_metrics(host, jid, started)
-            except Exception:
-                pass  # metrics are best effort
-            if job_row(jid)["status"] == "cancelling":
-                comfy(host, "/queue", {"delete": [pid]})
-                comfy(host, "/interrupt", {})
-                raise InterruptedError
-            h = comfy(host, f"/history/{pid}").get(pid)
-            if h:
-                break
-            q = comfy(host, "/queue")
-            if any(pid in item for item in q.get("queue_running", []) + q.get("queue_pending", [])):
-                last_seen = time.time()
-            elif time.time() - last_seen > 30:
-                raise RuntimeError("job vanished from the host (ComfyUI restarted?) — retry it")
-            if time.time() - started > limit:
-                comfy(host, "/interrupt", {})
-                raise TimeoutError(f"timed out after {s['job_timeout_min']} min")
-        st = h.get("status", {})
-        if st.get("status_str") == "error":
-            err = next((m[1] for m in st.get("messages", []) if m[0] == "execution_error"), {})
-            where = f"{err.get('node_type', '?')} (node {err.get('node_id', '?')})"
-            msg = f"{where}: {err.get('exception_type', 'error')}: {err.get('exception_message', '').strip() or 'no message'}"
-            raise RuntimeError(msg)
+        h = run_prompt(host, jid, graph, started, s["job_timeout_min"])
         files = [f for out in h.get("outputs", {}).values() for f in out.get("3d", [])]
         for text in h.get("outputs", {}).get("1271", {}).get("text", []):
             rel = text.replace("\\", "/").split("/output/", 1)[-1]
@@ -658,17 +819,19 @@ def worker():
         try:
             s = get_settings()
             with db() as c:
-                queued = c.execute("SELECT id FROM jobs WHERE status='queued' ORDER BY id").fetchall()
+                queued = c.execute("SELECT id, kind FROM jobs WHERE status='queued' ORDER BY id").fetchall()
                 taken = {r[0] for r in c.execute("SELECT host FROM jobs WHERE status IN ('running','cancelling')")}
             free = [h for h in s["hosts"] if h.get("enabled") and h["name"] not in taken]
-            for (jid,) in queued:
-                host = next((h for h in free if (st := host_status(h))["ok"] and not st["busy"] and st["trellis"]), None)
+            for jid, kind in queued:
+                # Motion runs Blender and the tracker over SSH; it needs no Trellis2 nodes.
+                fits = (lambda h, st: h.get("kind") == "ssh") if kind == "motion" else (lambda h, st: st["trellis"])
+                host = next((h for h in free if (st := host_status(h))["ok"] and not st["busy"] and fits(h, st)), None)
                 if not host:
                     update_job(jid, note="waiting for a free GPU host")
                     break
                 free.remove(host)
                 update_job(jid, status="running", host=host["name"], started=time.time(), note="")
-                threading.Thread(target=run_job, args=(jid, host), daemon=True).start()
+                threading.Thread(target=run_motion if kind == "motion" else run_job, args=(jid, host), daemon=True).start()
         except Exception:
             traceback.print_exc()
         time.sleep(3)
@@ -731,7 +894,9 @@ class Handler(BaseHTTPRequestHandler):
             if method == "GET" and p == "/api/queue":
                 return self.send(jobs_view())
             if method == "GET" and p == "/api/schema":
-                return self.send({"3d": param_schema(), "presets": PRESET_LEVELS, "default_preset": DEFAULT_PRESET})
+                return self.send({"3d": param_schema(), "presets": PRESET_LEVELS, "default_preset": DEFAULT_PRESET, "motion": [
+                    {"key": k, "label": lbl, "section": "Motion", "kind": kind, "default": d, **extra}
+                    for k, lbl, kind, extra, d in MOTION_PARAMS]})
             if method == "GET" and p == "/api/settings":
                 return self.send(get_settings())
             if method == "PUT" and p == "/api/settings":
@@ -786,15 +951,22 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send({"path": dest.relative_to(ROOT).as_posix()})
             if method == "POST" and p == "/api/jobs":
                 b = self.body()
-                if b.get("kind") != "3d":
+                kind, params = b.get("kind"), b.get("params", {})
+                if kind == "3d":
+                    views = job_views(params)
+                    build_graph(params, "x", "x", "x", views if "views" in params else None)  # validate now, not on the host
+                    src = views["front"]
+                elif kind == "motion":
+                    if Path(params.get("model", "")).suffix.lower() not in (".glb", ".fbx") or not safe_path(params["model"]).is_file():
+                        raise ValueError("pick a rigged .glb or .fbx model")
+                    motion_params(params)
+                    src = params["model"]
+                else:
                     raise ValueError("unknown job type")
-                params = b.get("params", {})
-                views = job_views(params)
-                build_graph(params, "x", "x", "x", views if "views" in params else None)  # validate now, not on the host
-                name = (b.get("name") or Path(views["front"]).stem).strip()[:80]
+                name = (b.get("name") or Path(src).stem).strip()[:80]
                 with DB_LOCK, db() as c:
-                    jid = c.execute("INSERT INTO jobs (kind, name, params, status, created) VALUES ('3d', ?, ?, 'queued', ?)",
-                                    (name, json.dumps(params), time.time())).lastrowid
+                    jid = c.execute("INSERT INTO jobs (kind, name, params, status, created) VALUES (?, ?, ?, 'queued', ?)",
+                                    (kind, name, json.dumps(params), time.time())).lastrowid
                 return self.send({"id": jid, "status": "queued", "status_url": f"{base}/api/jobs/{jid}"})
             m = re.fullmatch(r"/api/jobs/(\d+)/(cancel|retry|remove)", p)
             if method == "POST" and m:
@@ -873,6 +1045,25 @@ def check():
     assert rg["1270"]["inputs"]["file_format"] == "fbx" and rg["1271"]["inputs"]["source"] == ["1270", 1]
     assert rg["1270"]["inputs"]["filename_prefix"] == "sfam/1_x_rigged"
     assert [p["key"] for p in param_schema()][:3] == ["seed", "target_face_num", "texture_size"]
+    mp = motion_params({"model": "Generated/x_rigged.glb", "takes": 9, "seed": 7})
+    assert mp["takes"] == 4 and mp["action"] == "walk" and mp["turbo"] and "treadmill" in mp["prompt"]  # clamped, defaults
+    mg = motion_graph(mp, "sfam/1/views.png", "sfam/1/take")
+    assert [mg[f"1{i}0"]["inputs"]["noise_seed"] for i in range(4)] == [7, 8, 9, 10]
+    assert mg["134"]["inputs"]["filename_prefix"] == "sfam/1/take4" and mg["8"]["inputs"]["steps"] == 8
+    assert mg["6"]["inputs"]["length"] == 124 and mg["9"]["inputs"]["model"] == ["3", 0]  # 5 s -> 17k+5 frames; LoRA in
+    full = motion_graph(motion_params({"turbo": False, "seconds": 2}), "x", "y")
+    assert "3" not in full and full["8"]["inputs"]["steps"] == 20 and full["9"]["inputs"]["model"] == ["2", 0]
+    assert full["6"]["inputs"]["length"] % 17 == 5
+    for g_ in (mg, full):
+        for nid, n in g_.items():
+            assert all(v[0] in g_ for v in n["inputs"].values() if isinstance(v, list)), nid
+    for bad in ({"takes": 1, "nope": 1}, {"turn": 45}):
+        try:
+            motion_params(bad)
+            raise AssertionError(f"bad motion options accepted: {bad}")
+        except ValueError:
+            pass
+    assert {f.name for f in MOTION_DIR.glob("*.py")} >= {"bake.py", "render_views.py", "track_solve.py"}
     print("check ok")
 
 if __name__ == "__main__":
