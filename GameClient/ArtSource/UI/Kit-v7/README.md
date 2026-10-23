@@ -6,7 +6,7 @@ Painted 2x art sources for all menu windows. Every visible pixel in every part c
 
 The split frame composes as: `frame_fill` first, edges second, corners last. Corners are **160x160 px**, edge strips are **24 px thick**. Put each corner at the corresponding window corner with **0 px outward offset**; its flourish reaches inward beyond the rail. Start each rail **136 px** from its window corner, giving **24 px overlap** under each 160 px corner. Stretch/tile the straight middle of each rail. Keep `window_shell` as the 9-slice fallback.
 
-All sizes and 9-slice margins are source pixels. Margins are L,T,R,B; `—` means no 9-slice. A zero on the separator's narrow axis means stretch only along its length. Source reference abbreviations: market = `reference-market.webp`, recipes = `reference-recipes.webp`, build catalogue = `reference-build-catalogue.png`, separator = `reference-separator.png`. The `image_gen` column names the prompt below.
+All sizes and 9-slice margins are source pixels. Margins are L,T,R,B; `—` means no 9-slice. A zero on the separator's narrow axis means stretch only along its length. Source reference abbreviations: market = `reference-market.webp`, recipes = `reference-recipes.webp`, build catalogue = `reference-build-catalogue.png`, separator = `reference-separator.png`, equipment = `reference-equipment.webp`. The Equipment title is live text and reads **Equipment**. The `image_gen` column names the prompt below.
 
 | File | Size | 9-slice margins | Use | Source reference | image_gen |
 | --- | ---: | --- | --- | --- | --- |
@@ -22,6 +22,7 @@ All sizes and 9-slice margins are source pixels. Margins are L,T,R,B; `—` mean
 | `frame_edge_right.png` | 24x640 | — | Seamless split-frame brass rail | separator; market | frame |
 | `header_banner_shield.png` | 160x192 | — | Empty heraldic mount; layer emblem above | market | panels |
 | `icon_window_inventory.png` | 96x96 | — | Leather backpack window emblem | market; recipes; build catalogue | icons |
+| `icon_window_equipment.png` | 96x96 | — | Helmet over crossed swords window emblem | equipment; inventory emblem | equipment emblem |
 | `icon_window_market.png` | 96x96 | — | Balance scales window emblem | market; recipes; build catalogue | icons |
 | `icon_window_recipes.png` | 96x96 | — | Anvil and hammer window emblem | market; recipes; build catalogue | icons |
 | `icon_window_trade.png` | 96x96 | — | Handshake window emblem | market; recipes; build catalogue | icons |
@@ -48,6 +49,18 @@ All sizes and 9-slice margins are source pixels. Margins are L,T,R,B; `—` mean
 | `ingredient_row.png` | 1000x112 | 14,14,14,14 | Ingredient list row | market; recipes | panels |
 | `section_panel.png` | 800x900 | 22,22,22,22 | Subtle optional list panel | market; recipes | panels |
 | `slot_back.png` | 208x208 | 18,18,18,18 | Item icon backing | market; recipes | panels |
+| `equip_slot_back.png` | 224x224 | 24,24,24,24 | Framed equipment-slot backing; layer ghost above only when empty | equipment; slot_back | equipment slot |
+| `slotghost_head.png` | 96x96 | — | Faint empty head-slot guide | equipment; slot_back | equipment ghosts |
+| `slotghost_chest.png` | 96x96 | — | Faint empty chest-slot guide | equipment; slot_back | equipment ghosts |
+| `slotghost_hands.png` | 96x96 | — | Faint empty hands-slot guide | equipment; slot_back | equipment ghosts |
+| `slotghost_legs.png` | 96x96 | — | Faint empty legs-slot guide | equipment; slot_back | equipment ghosts |
+| `slotghost_feet.png` | 96x96 | — | Faint empty feet-slot guide | equipment; slot_back | equipment ghosts |
+| `slotghost_mainhand.png` | 96x96 | — | Faint empty main-hand sword guide | equipment; slot_back | equipment ghosts |
+| `slotghost_offhand.png` | 96x96 | — | Faint empty off-hand shield guide | equipment; slot_back | equipment ghosts |
+| `slotghost_neck.png` | 96x96 | — | Faint empty necklace guide | equipment; slot_back | equipment ghosts |
+| `slotghost_ring.png` | 96x96 | — | Faint empty ring guide | equipment; slot_back | equipment ghosts |
+| `slotghost_back.png` | 96x96 | — | Faint empty cloak guide | equipment; slot_back | equipment ghosts |
+| `preview_backdrop.png` | 1000x1400 | — | Transparent-edge character-preview vignette and floor glow over frame fill | equipment; frame_fill | equipment backdrop |
 | `footer_gold_row.png` | 1600x88 | 20,18,20,18 | Wallet footer | market; recipes | panels |
 | `plus_slot.png` | 208x208 | 18,18,18,18 | Empty sell slot with gold plus | market | fields |
 | `separator.png` | 1200x24 | 40,0,40,0 | Horizontal thin brass rule | separator; market; build catalogue | overlays |
@@ -74,6 +87,24 @@ All sizes and 9-slice margins are source pixels. Margins are L,T,R,B; `—` mean
 ## Built-in image_gen prompts
 
 Each source was generated with the reference images named in its rows as style input. All listed final parts are crops/resizes of these outputs. The prompts are reproduced exactly:
+
+### equipment emblem
+
+> Use case: ui-mockup. Generate one isolated fantasy MMO window emblem: a medieval helmet centered OVER TWO CROSSED SWORDS, in the same small engraved antique gold, painted metallic depth, warm highlights, worn dark recesses, and silhouette scale as the supplied Kit-v7 backpack emblem. The equipment screenshot is a composition and palette reference only. Front-on orthographic icon, centered with generous transparent padding, no shield or backing, no text, no circular border, no other objects, true transparent RGBA background. Designed to read clearly when resized to 96x96 source pixels.
+
+### equipment ghosts
+
+> Use case: ui-mockup. Create a NEW sprite sheet of exactly TEN empty-equipment-slot ghost motifs in a precise 5-column by 2-row grid. Equal square cells, wide truly transparent gutters, every motif separate and centered. Row 1 left to right: medieval helmet/head armor, chest cuirass, gauntlets/hands, leg armor/trousers, boots/feet. Row 2 left to right: one-handed sword/mainhand, round shield/offhand, necklace/neck, signet ring, cloak/back. These are EMPTY SLOT GUIDES, not equipped item art: very faint engraved grey-gold single silhouettes with restrained warm edge highlights, low opacity, no dark tile or border behind, no text, no labels, no item textures or color fills, no shadow outside silhouettes. Match the supplied Kit-v7 antiqued brass/slate painting style and the equipment screenshot's slot proportions. True transparent RGBA outside each individual ghost. Each must read as a distinct shape when resized to 96x96.
+
+### equipment slot
+
+> Use case: ui-mockup. Generate ONE standalone EMPTY square fantasy MMO EQUIPMENT SLOT backing sprite, front-on orthographic, genuinely transparent RGBA outside its square silhouette. Match the supplied equipment screenshot closely: a slightly larger, more framed square than the Kit-v7 item slot, thin worn antique-brass outer line and tiny chamfered/ornamental corners, dark desaturated blue-green slate interior with subtle irregular painterly texture. Empty center, no icon, no garment, no text, no glow, no cast shadow. Straight uniform central segments on all four sides, suitable for 9-slice scaling at source size 224x224 with 24-pixel margins. Preserve sharp corners and consistent four-side symmetry.
+
+### equipment backdrop
+
+> Use case: ui-mockup. Paint a standalone portrait-format CHARACTER PREVIEW BACKDROP sprite for the supplied fantasy MMO Equipment window, approximately 5:7 aspect ratio. No character, no gear, no UI border, no text, no floor object. A very subtle soft near-black blue-green slate vignette behind a full standing character, gently lighter in the middle, with a faint diffuse muted warm-grey floor glow beneath where boots would stand in the lower quarter. Extremely restrained, painterly fine irregular texture matching the Kit-v7 slate. All four outer edges must smoothly feather to genuine transparent RGBA alpha; no hard rectangular boundary, no cast shadows, no symbols, no ornament. Designed to layer over an existing dark window fill at about 1000x1400 source pixels.
+
+The ghosts were split from the generated atlas and their alpha reduced to 24% for a faint empty-slot guide. The emblem and slot were cropped, centered and resized; the backdrop was resized with low-alpha edge cleanup. No reference pixels or programmatic art were used.
 
 ### frame
 
@@ -117,4 +148,4 @@ Each source was generated with the reference images named in its rows as style i
 
 ## Verification and handoff
 
-`Artifacts/kit7-sheet.png` is a local mid-grey contact sheet and is intentionally not committed. All 60 delivered sprites are RGBA PNGs at the listed sizes. Every border, emblem and control has genuine transparent pixels; `frame_fill` alone is intentionally fully opaque for tiled window coverage. Button-face interiors are capped at alpha 150–175 (with opaque generated brass borders), allowing the gold hold fill to show beneath. The parts are art sources; Unreal import, in-engine visual review and owner sign-off are separate work.
+`Artifacts/kit7-sheet.png` is a local mid-grey contact sheet and is intentionally not committed. All 73 delivered sprites are RGBA PNGs at the listed sizes. Every border, emblem and control has genuine transparent pixels; `frame_fill` alone is intentionally fully opaque for tiled window coverage. Button-face interiors are capped at alpha 150–175 (with opaque generated brass borders), allowing the gold hold fill to show beneath. The parts are art sources; Unreal import, in-engine visual review and owner sign-off are separate work.
