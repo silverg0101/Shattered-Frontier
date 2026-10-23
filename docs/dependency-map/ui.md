@@ -41,3 +41,5 @@ HUD v4 layout: `Framework/SFHudLayout.*` (`USFHudLayout`, installed by `SFE1Play
 Item icon art: `GameClient/ArtSource/UI/ItemIcons-v1/` maps all 15 enumerated gameplay item IDs to transparent 256 px import sources and 64 px previews in `manifest.json`; its README lists editor imports and `prompts.md` records new generation and legacy-source provenance. Art only; no Unreal import or runtime binding.
 
 For server-owned trade and dialogue state, see [backend](backend.md) and [gameplay](gameplay.md).
+
+Minimap map (in progress): `USFHudMinimapWidget` scrolls a baked top-down level capture under the player (`MapWindowUV`, config `MapBoundsCm`/`WindowCm`, `MapImage` UV region, `PlayerArrow` rotated to pawn yaw); `WBP_HudMinimap` uses `/Game/Frontier/UI/Minimap/T_Minimap_Silverbrook` when present, else the kit placeholder. `tools/Bake-Minimap.py` makes it in two phases (-game capture, then commandlet import). Test: `ShatteredFrontier.Hud.Minimap.Uv`. Blocked: no Python spawn API for a SceneCapture in a game world.

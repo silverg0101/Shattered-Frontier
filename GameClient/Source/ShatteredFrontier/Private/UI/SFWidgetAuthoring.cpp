@@ -440,10 +440,13 @@ void MinimapLayout(UWidgetTree* T)
     UBorder* Fill = A<UBorder>(T);
     Fill->SetBrush(Frame(Hex(TEXT("0E171C"), 0.92f), FLinearColor(0.f, 0.f, 0.f, 0.f), 125.f));
     Put(Disc, Fill, HAlign_Fill, VAlign_Fill);
-    if (const FSFHudKitElement* MapArt = Kit(TEXT("greenlands_map_base")))
+    // The baked top-down level capture (tools/Bake-Minimap.py) when it exists, else the kit's placeholder map.
+    UTexture2D* Baked = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Frontier/UI/Minimap/T_Minimap_Silverbrook.T_Minimap_Silverbrook"));
+    const FSFHudKitElement* MapArt = Kit(TEXT("greenlands_map_base"));
+    if (Baked || MapArt)
     {
         UImage* Map = N<UImage>(T, TEXT("MapImage"));
-        FSlateBrush Brush; Brush.SetResourceObject(MapArt->Texture); Brush.ImageSize = FVector2D(250.f, 250.f);
+        FSlateBrush Brush; Brush.SetResourceObject(Baked ? static_cast<UObject*>(Baked) : MapArt->Texture); Brush.ImageSize = FVector2D(250.f, 250.f);
         Brush.DrawAs = ESlateBrushDrawType::RoundedBox;
         Brush.OutlineSettings.RoundingType = ESlateBrushRoundingType::FixedRadius; Brush.OutlineSettings.CornerRadii = FVector4(125.f, 125.f, 125.f, 125.f);
         Map->SetBrush(Brush);

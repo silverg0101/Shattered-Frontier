@@ -108,8 +108,9 @@ private:
     int32 ActiveKey = -1;
 };
 
-// Minimap frame footer ("Silverbrook · 120 m"). Binds: ZoneText (optional). The disc, ring and arrow art are the WBP's.
-UCLASS(Abstract)
+// Minimap: footer ("Silverbrook · 120 m") plus a baked top-down capture of the level scrolled under the player (tools/Bake-Minimap.py).
+// Binds: ZoneText, MapImage, PlayerArrow (all optional). The disc, ring and arrow art are the WBP's; the bounds below are the bake's.
+UCLASS(Abstract, Config = Game)
 class SHATTEREDFRONTIER_API USFHudMinimapWidget : public USFUiWidget
 {
     GENERATED_BODY()
@@ -119,9 +120,18 @@ public:
     // "<zone> · <n> m", or just the zone for a negative distance.
     static FString FooterText(const FString& Zone, int32 Metres);
     UFUNCTION(BlueprintCallable, Category = "SF HUD") void SetFooter(const FString& Text);
+    // UV rectangle (u0,v0,u1,v1) of the baked map to show around a world position. Map image: up = +X, right = +Y.
+    // Bounds = (MinX,MinY,MaxX,MaxY) in cm; the window is clamped inside the map so edges never sample outside it.
+    static FBox2f MapWindowUV(const FVector4& BoundsCm, double WindowCm, double WorldX, double WorldY);
+
+    // The bake's world rectangle in cm (Bake-Minimap.py prints it; DefaultGame.ini carries it) and the world span shown across the disc.
+    UPROPERTY(Config, EditAnywhere, Category = "SF Minimap") FVector4 MapBoundsCm = FVector4(-150000.0, -150000.0, 150000.0, 150000.0);
+    UPROPERTY(Config, EditAnywhere, Category = "SF Minimap", meta = (Units = "cm", ClampMin = "1000")) double WindowCm = 15000.0;
 
     UPROPERTY(EditAnywhere, Category = "SF Style") FSFUiTextStyle ZoneStyle = FSFUiTextStyle(18, SFHudStyle::Ivory());
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> ZoneText;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UImage> MapImage;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> PlayerArrow;
 
 protected:
     virtual void ApplyKitStyle() override;

@@ -182,6 +182,15 @@ FString USFHudMinimapWidget::FooterText(const FString& Zone, int32 Metres)
     return Metres < 0 ? Zone : FString::Printf(TEXT("%s · %d m"), *Zone, Metres);
 }
 
+FBox2f USFHudMinimapWidget::MapWindowUV(const FVector4& B, double WindowCm, double WorldX, double WorldY)
+{
+    const double Span = FMath::Max(B.Z - B.X, B.W - B.Y);
+    const double Half = FMath::Clamp(WindowCm / FMath::Max(Span, 1.0), 0.0, 1.0) * 0.5;
+    const double U = FMath::Clamp((WorldY - B.Y) / Span, Half, 1.0 - Half);        // right = +Y
+    const double V = FMath::Clamp(1.0 - (WorldX - B.X) / Span, Half, 1.0 - Half);  // up = +X
+    return FBox2f(FVector2f(U - Half, V - Half), FVector2f(U + Half, V + Half));
+}
+
 void USFHudMinimapWidget::SetFooter(const FString& Line)
 {
     if (ZoneText) { ZoneText->SetText(FText::FromString(Line)); }
@@ -195,6 +204,17 @@ void USFHudMinimapWidget::ApplyKitStyle()
 void USFHudMinimapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
+    if (const APawn* Pawn = GetOwningPlayer() ? GetOwningPlayer()->GetPawn() : nullptr)
+    {
+        const FVector At = Pawn->GetActorLocation();
+        if (MapImage)
+        {
+            FSlateBrush Brush = MapImage->GetBrush();
+            Brush.SetUVRegion(MapWindowUV(MapBoundsCm, WindowCm, At.X, At.Y));
+            MapImage->SetBrush(Brush);
+        }
+        if (PlayerArrow) { PlayerArrow->SetRenderTransformAngle(Pawn->GetActorRotation().Yaw); }  // 0 deg = +X = up
+    }
     // Footer: "<zone> · <n> m" while a pawn exists (distance to the nearest gathering node), else the zone. Once a second.
     // ponytail: quest objectives name a node id that the node actors do not expose, so the nearest node stands in for the tracked one.
     APlayerController* Controller = GetOwningPlayer();

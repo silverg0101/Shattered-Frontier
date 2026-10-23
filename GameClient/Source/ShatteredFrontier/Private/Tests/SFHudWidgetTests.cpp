@@ -146,4 +146,19 @@ bool FSFHudLevelTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("A target without a level collapses its numeral"),Hud->Target->LevelText->GetVisibility(),ESlateVisibility::Collapsed);
     return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFHudMinimapUvTest,
+    "ShatteredFrontier.Hud.Minimap.Uv",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+
+bool FSFHudMinimapUvTest::RunTest(const FString& Parameters)
+{
+    const FVector4 Bounds(-1000.0,-1000.0,1000.0,1000.0);  // 2000 cm square; window 500 cm = a quarter of it
+    FBox2f Mid=USFHudMinimapWidget::MapWindowUV(Bounds,500.0,0.0,0.0);
+    TestEqual(TEXT("Centre u0"),Mid.Min.X,0.375f); TestEqual(TEXT("Centre v1"),Mid.Max.Y,0.625f);
+    FBox2f East=USFHudMinimapWidget::MapWindowUV(Bounds,500.0,500.0,500.0);  // +X is up, +Y is right
+    TestEqual(TEXT("+Y moves the window right"),East.Min.X,0.625f); TestEqual(TEXT("+X moves the window up"),East.Max.Y,0.375f);
+    FBox2f Edge=USFHudMinimapWidget::MapWindowUV(Bounds,500.0,9999.0,-9999.0);
+    TestEqual(TEXT("Clamped inside the map"),Edge.Min.X,0.0f); TestEqual(TEXT("Clamped top"),Edge.Min.Y,0.0f);
+    return true;
+}
 #endif
