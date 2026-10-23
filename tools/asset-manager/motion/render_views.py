@@ -40,8 +40,15 @@ def load(model, turn=0.0):
     return arm
 
 
-def bounds():
-    pts = [o.matrix_world @ Vector(c) for o in bpy.context.scene.objects if o.type == "MESH" for c in o.bound_box]
+def bounds(arm):
+    """Bounds of the meshes the skeleton moves. Anything else (a rig's bone-shape widget, a stray helper) is
+    hidden from the render and ignored, or a 2 m widget sphere shrinks the character to a corner of the frame."""
+    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    skinned = [o for o in meshes if o.parent == arm or any(m.type == "ARMATURE" and m.object == arm for m in o.modifiers)]
+    for o in meshes:
+        if skinned and o not in skinned:
+            o.hide_render = True
+    pts = [o.matrix_world @ Vector(c) for o in (skinned or meshes) for c in o.bound_box]
     lo = Vector([min(p[i] for p in pts) for i in range(3)])
     hi = Vector([max(p[i] for p in pts) for i in range(3)])
     return lo, hi
@@ -153,9 +160,10 @@ def seen(image, uv):
     out = []
     for i in range(len(uv["front"])):
         on = False
-        for u, v in (uv["front"][i], uv["side"][i]):
-            x, y = min(int(u * 2 * W), 2 * W - 1), min(max(int(v * H), 0), H - 1)
-            on |= bool(np.abs(image[y, x, :3] - bg).max() > 0.02)
+        for panel, (u, v) in enumerate((uv["front"][i], uv["side"][i])):
+            x, y = int(u * 2 * W), int(v * H)
+            if panel * W <= x < (panel + 1) * W and 0 <= y < H:  # off its own panel (an IK target far away): unseen
+                on |= bool(np.abs(image[y, x, :3] - bg).max() > 0.02)
         out.append(on)
     return out
 
@@ -166,7 +174,7 @@ def main():
     turn = float(argv[argv.index("--turn") + 1]) if "--turn" in argv else 0.0
     out.mkdir(parents=True, exist_ok=True)
     arm = load(model, turn)
-    lo, hi = bounds()
+    lo, hi = bounds(arm)
     pts, bones = points(arm)
     cams, calib = setup(lo, hi)
     image = render(cams, out / "views.png")

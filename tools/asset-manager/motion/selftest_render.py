@@ -23,7 +23,7 @@ def main():
     amp = float(argv[3]) if len(argv) > 3 else 1.0  # 1 = up to 12° per bone, compounding down each chain
     out.mkdir(parents=True, exist_ok=True)
     arm = rv.load(model)
-    lo, hi = rv.bounds()
+    lo, hi = rv.bounds(arm)
     pts, bones = rv.points(arm)
     cams, calib = rv.setup(lo, hi)
     image = rv.render(cams, out / "views.png")
