@@ -1310,7 +1310,7 @@ void BuildLayout(UWidgetTree* T)
     UUniformGridPanel* Grid = N<UUniformGridPanel>(T, TEXT("TileGrid"));
     Grid->SetSlotPadding(FMargin(6.f));
     UOverlay* Pack = A<UOverlay>(T);
-    Put(Pack, ListOf(T, TEXT("TileScroll"), Grid, 642.f, 540.f), HAlign_Fill, VAlign_Fill);
+    Put(Pack, ListOf(T, TEXT("TileScroll"), Grid, 758.f, 540.f), HAlign_Fill, VAlign_Fill);  // 950 window - 2x72 frame - 48 scrollbar: the 3 tiles fill the row
     UTextBlock* Empty = Caption(T, TEXT("EmptyText"), TEXT("No matching objects."), 36.f, true);
     Empty->SetVisibility(ESlateVisibility::Collapsed);
     Put(Pack, Empty, HAlign_Center, VAlign_Center);
@@ -1626,7 +1626,7 @@ void SettingsLayout(UWidgetTree* T)
     Preset->AddChildToHorizontalBox(Sized(T, nullptr, KitButton(T, TEXT("AutoDetectButton"), TEXT("Auto-Detect")), 380.f, 0.f))->SetPadding(FMargin(24.f, 0.f, 0.f, 0.f));
     Page->AddChildToVerticalBox(Preset)->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
     Page->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
-    Page->AddChildToVerticalBox(ListOf(T, TEXT("SettingsScroll"), N<UVerticalBox>(T, TEXT("Rows")), 1160.f, 1000.f));
+    Page->AddChildToVerticalBox(ListOf(T, TEXT("SettingsScroll"), N<UVerticalBox>(T, TEXT("Rows")), 1160.f, 760.f));
     Put(Pack, Page, HAlign_Fill, VAlign_Fill);
     UTextBlock* Soon = Caption(T, TEXT("ComingSoon"), TEXT("Coming soon."), 48.f, true);
     Soon->SetVisibility(ESlateVisibility::Collapsed);

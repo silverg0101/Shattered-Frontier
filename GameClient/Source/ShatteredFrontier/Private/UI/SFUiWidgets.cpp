@@ -568,9 +568,10 @@ void USFTextFieldWidget::NativeOnInitialized()
 void USFTextFieldWidget::ApplyKitStyle()
 {
     if (!Input) { return; }
-    // EditableText has no text-style helper: only an untouched (default-size) field gets the family and size; colour is the Designer's.
+    // EditableText has no text-style helper. Fill-only: a field still on the engine font gets the menu family (the composite font only
+    // exists at runtime); a size the Designer set stays, and colour is the Designer's.
     FSlateFontInfo Font = Input->GetFont();
-    if (!Font.FontObject || FMath::IsNearlyEqual(Font.Size, GetDefault<UEditableText>()->GetFont().Size))
+    if (!Font.FontObject || Font.FontObject == GetDefault<UEditableText>()->GetFont().FontObject)
     {
         const float DesignerSize = Font.Size;
         const bool bSizeUnset = FMath::IsNearlyEqual(DesignerSize, GetDefault<UEditableText>()->GetFont().Size);
