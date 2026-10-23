@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "gear": [
+    {"definition_id": "item/hide_cap", "slot": "Head", "armor": 1, "damage": 0, "weight_kg": 0.6},
+    {"definition_id": "item/hide_jerkin", "slot": "Chest", "armor": 3, "damage": 0, "weight_kg": 2.4},
+    {"definition_id": "item/hide_gloves", "slot": "Hands", "armor": 1, "damage": 0, "weight_kg": 0.4},
+    {"definition_id": "item/hide_leggings", "slot": "Legs", "armor": 2, "damage": 0, "weight_kg": 1.6},
+    {"definition_id": "item/hide_boots", "slot": "Feet", "armor": 1, "damage": 0, "weight_kg": 0.9},
+    {"definition_id": "item/hide_cloak", "slot": "Back", "armor": 1, "damage": 0, "weight_kg": 1.2},
+    {"definition_id": "item/iron_ring", "slot": "Ring", "armor": 0, "damage": 1, "weight_kg": 0.1},
+    {"definition_id": "item/iron_buckler", "slot": "OffHand", "armor": 2, "damage": 0, "weight_kg": 3.0},
+    {"definition_id": "item/iron_shortsword", "slot": "MainHand", "armor": 0, "damage": 6, "weight_kg": 2.2}
+  ]
+}

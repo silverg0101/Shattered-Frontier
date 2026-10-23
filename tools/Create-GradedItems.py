@@ -9,6 +9,7 @@ import unreal
 
 root = Path(unreal.Paths.project_dir()).parent
 recipes = json.loads((root / 'content/crafting/recipes_greenlands_starter.json').read_text())['recipes']
+gear = {g['definition_id']: g for g in json.loads((root / 'content/items/gear_greenlands_starter.json').read_text())['gear']}
 outputs = {line['definition_id'] for recipe in recipes for line in recipe['outputs']}
 scrolls = {'item/recipe_scroll_' + recipe['id'].split('/')[1]
            for recipe in recipes if 'scroll' in recipe['learn']['sources']}
@@ -56,6 +57,14 @@ for item_id in sorted(outputs | scrolls):
         asset.set_editor_property('Weight', weight)
         if base:
             asset.set_editor_property('Icon', base.get_editor_property('Icon'))
+        piece = gear.get(item_id)
+        if piece:  # one per stack, equips into its content slot
+            asset.set_editor_property('MaxStackSize', 1)
+            asset.set_editor_property('Weight', piece['weight_kg'])
+            asset.set_editor_property('UseType', unreal.InventoryItemUseType.EQUIP)
+            asset.set_editor_property('EquipmentSlot', piece['slot'])
+            stats = [f"+{piece[k]} {k.title()}" for k in ('armor', 'damage') if piece[k]]
+            asset.set_editor_property('Description', unreal.Text(', '.join(stats) + '.'))
         if identity in scrolls:
             asset.set_editor_property('UseType', unreal.InventoryItemUseType.CONSUME)
             asset.set_editor_property('Description', unreal.Text('Use to learn a crafting recipe.'))

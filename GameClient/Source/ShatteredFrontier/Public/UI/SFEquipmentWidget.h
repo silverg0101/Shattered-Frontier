@@ -47,7 +47,7 @@ private:
 };
 
 // Equipment window (WBP_Equipment, docs/blueprints/menus.md section 0) on WBP_WindowFrame: the paper doll (left Head, Chest, Hands, Legs,
-// Feet; right MainHand, OffHand, Neck, Ring; optional Back) around the character preview, then tabs and a grid of the EQUIPPABLE bag items,
+// Feet; right MainHand, OffHand, Back, Neck, Ring) around the character preview, then tabs and a grid of the EQUIPPABLE bag items,
 // then weight and gold. C++ owns the data, the drag / double-click requests (server validated, USFGatheringPilotComponent::RequestEquip /
 // RequestUnequip), the preview studio and its rotation; the WBP owns layout and look.
 // Binds: ItemGrid (UniformGridPanel, required; C++ fills it with WBP_ItemSlot cells, GridColumns wide). Optional, by name: <Slot>Slot for each

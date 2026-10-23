@@ -76,6 +76,14 @@ class InventoryLedger final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>> PrepareAsyncGrantWithIntent(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>>(PrepareAsyncGrantWithIntentRaw(context, request, cq));
     }
+    // Moves items between two containers of the same owner (equip / unequip); idempotent on operation_id.
+    virtual ::grpc::Status Transfer(::grpc::ClientContext* context, const ::sf::inventory::v1::TransferRequest& request, ::sf::inventory::v1::LedgerReceipt* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>> AsyncTransfer(::grpc::ClientContext* context, const ::sf::inventory::v1::TransferRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>>(AsyncTransferRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>> PrepareAsyncTransfer(::grpc::ClientContext* context, const ::sf::inventory::v1::TransferRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>>(PrepareAsyncTransferRaw(context, request, cq));
+    }
     class async_interface {
      public:
       virtual ~async_interface() {}
@@ -90,6 +98,9 @@ class InventoryLedger final {
       // Older hosts return UNIMPLEMENTED before a gather item can be committed.
       virtual void GrantWithIntent(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response, std::function<void(::grpc::Status)>) = 0;
       virtual void GrantWithIntent(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      // Moves items between two containers of the same owner (equip / unequip); idempotent on operation_id.
+      virtual void Transfer(::grpc::ClientContext* context, const ::sf::inventory::v1::TransferRequest* request, ::sf::inventory::v1::LedgerReceipt* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void Transfer(::grpc::ClientContext* context, const ::sf::inventory::v1::TransferRequest* request, ::sf::inventory::v1::LedgerReceipt* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -103,6 +114,8 @@ class InventoryLedger final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>* PrepareAsyncGrantRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>* AsyncGrantWithIntentRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>* PrepareAsyncGrantWithIntentRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>* AsyncTransferRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::TransferRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::inventory::v1::LedgerReceipt>* PrepareAsyncTransferRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::TransferRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -135,6 +148,13 @@ class InventoryLedger final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>> PrepareAsyncGrantWithIntent(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>>(PrepareAsyncGrantWithIntentRaw(context, request, cq));
     }
+    ::grpc::Status Transfer(::grpc::ClientContext* context, const ::sf::inventory::v1::TransferRequest& request, ::sf::inventory::v1::LedgerReceipt* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>> AsyncTransfer(::grpc::ClientContext* context, const ::sf::inventory::v1::TransferRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>>(AsyncTransferRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>> PrepareAsyncTransfer(::grpc::ClientContext* context, const ::sf::inventory::v1::TransferRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>>(PrepareAsyncTransferRaw(context, request, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
@@ -146,6 +166,8 @@ class InventoryLedger final {
       void Grant(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response, ::grpc::ClientUnaryReactor* reactor) override;
       void GrantWithIntent(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response, std::function<void(::grpc::Status)>) override;
       void GrantWithIntent(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void Transfer(::grpc::ClientContext* context, const ::sf::inventory::v1::TransferRequest* request, ::sf::inventory::v1::LedgerReceipt* response, std::function<void(::grpc::Status)>) override;
+      void Transfer(::grpc::ClientContext* context, const ::sf::inventory::v1::TransferRequest* request, ::sf::inventory::v1::LedgerReceipt* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -165,10 +187,13 @@ class InventoryLedger final {
     ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>* PrepareAsyncGrantRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>* AsyncGrantWithIntentRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>* PrepareAsyncGrantWithIntentRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::GrantRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>* AsyncTransferRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::TransferRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::inventory::v1::LedgerReceipt>* PrepareAsyncTransferRaw(::grpc::ClientContext* context, const ::sf::inventory::v1::TransferRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_EnsureContainer_;
     const ::grpc::internal::RpcMethod rpcmethod_GetContainer_;
     const ::grpc::internal::RpcMethod rpcmethod_Grant_;
     const ::grpc::internal::RpcMethod rpcmethod_GrantWithIntent_;
+    const ::grpc::internal::RpcMethod rpcmethod_Transfer_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -183,6 +208,8 @@ class InventoryLedger final {
     virtual ::grpc::Status Grant(::grpc::ServerContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response);
     // Older hosts return UNIMPLEMENTED before a gather item can be committed.
     virtual ::grpc::Status GrantWithIntent(::grpc::ServerContext* context, const ::sf::inventory::v1::GrantRequest* request, ::sf::inventory::v1::LedgerReceipt* response);
+    // Moves items between two containers of the same owner (equip / unequip); idempotent on operation_id.
+    virtual ::grpc::Status Transfer(::grpc::ServerContext* context, const ::sf::inventory::v1::TransferRequest* request, ::sf::inventory::v1::LedgerReceipt* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_EnsureContainer : public BaseClass {
@@ -264,7 +291,27 @@ class InventoryLedger final {
       ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_EnsureContainer<WithAsyncMethod_GetContainer<WithAsyncMethod_Grant<WithAsyncMethod_GrantWithIntent<Service > > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_Transfer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_Transfer() {
+      ::grpc::Service::MarkMethodAsync(4);
+    }
+    ~WithAsyncMethod_Transfer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Transfer(::grpc::ServerContext* /*context*/, const ::sf::inventory::v1::TransferRequest* /*request*/, ::sf::inventory::v1::LedgerReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestTransfer(::grpc::ServerContext* context, ::sf::inventory::v1::TransferRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::inventory::v1::LedgerReceipt>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_EnsureContainer<WithAsyncMethod_GetContainer<WithAsyncMethod_Grant<WithAsyncMethod_GrantWithIntent<WithAsyncMethod_Transfer<Service > > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_EnsureContainer : public BaseClass {
    private:
@@ -373,7 +420,34 @@ class InventoryLedger final {
     virtual ::grpc::ServerUnaryReactor* GrantWithIntent(
       ::grpc::CallbackServerContext* /*context*/, const ::sf::inventory::v1::GrantRequest* /*request*/, ::sf::inventory::v1::LedgerReceipt* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_EnsureContainer<WithCallbackMethod_GetContainer<WithCallbackMethod_Grant<WithCallbackMethod_GrantWithIntent<Service > > > > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_Transfer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_Transfer() {
+      ::grpc::Service::MarkMethodCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::inventory::v1::TransferRequest, ::sf::inventory::v1::LedgerReceipt>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::inventory::v1::TransferRequest* request, ::sf::inventory::v1::LedgerReceipt* response) { return this->Transfer(context, request, response); }));}
+    void SetMessageAllocatorFor_Transfer(
+        ::grpc::MessageAllocator< ::sf::inventory::v1::TransferRequest, ::sf::inventory::v1::LedgerReceipt>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::inventory::v1::TransferRequest, ::sf::inventory::v1::LedgerReceipt>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_Transfer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Transfer(::grpc::ServerContext* /*context*/, const ::sf::inventory::v1::TransferRequest* /*request*/, ::sf::inventory::v1::LedgerReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* Transfer(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::inventory::v1::TransferRequest* /*request*/, ::sf::inventory::v1::LedgerReceipt* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_EnsureContainer<WithCallbackMethod_GetContainer<WithCallbackMethod_Grant<WithCallbackMethod_GrantWithIntent<WithCallbackMethod_Transfer<Service > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_EnsureContainer : public BaseClass {
@@ -439,6 +513,23 @@ class InventoryLedger final {
     }
     // disable synchronous version of this method
     ::grpc::Status GrantWithIntent(::grpc::ServerContext* /*context*/, const ::sf::inventory::v1::GrantRequest* /*request*/, ::sf::inventory::v1::LedgerReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_Transfer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_Transfer() {
+      ::grpc::Service::MarkMethodGeneric(4);
+    }
+    ~WithGenericMethod_Transfer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Transfer(::grpc::ServerContext* /*context*/, const ::sf::inventory::v1::TransferRequest* /*request*/, ::sf::inventory::v1::LedgerReceipt* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -521,6 +612,26 @@ class InventoryLedger final {
     }
     void RequestGrantWithIntent(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_Transfer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_Transfer() {
+      ::grpc::Service::MarkMethodRaw(4);
+    }
+    ~WithRawMethod_Transfer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Transfer(::grpc::ServerContext* /*context*/, const ::sf::inventory::v1::TransferRequest* /*request*/, ::sf::inventory::v1::LedgerReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestTransfer(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -609,6 +720,28 @@ class InventoryLedger final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* GrantWithIntent(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_Transfer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_Transfer() {
+      ::grpc::Service::MarkMethodRawCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->Transfer(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_Transfer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Transfer(::grpc::ServerContext* /*context*/, const ::sf::inventory::v1::TransferRequest* /*request*/, ::sf::inventory::v1::LedgerReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* Transfer(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -719,9 +852,36 @@ class InventoryLedger final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedGrantWithIntent(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::inventory::v1::GrantRequest,::sf::inventory::v1::LedgerReceipt>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_EnsureContainer<WithStreamedUnaryMethod_GetContainer<WithStreamedUnaryMethod_Grant<WithStreamedUnaryMethod_GrantWithIntent<Service > > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_Transfer : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_Transfer() {
+      ::grpc::Service::MarkMethodStreamed(4,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::inventory::v1::TransferRequest, ::sf::inventory::v1::LedgerReceipt>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::inventory::v1::TransferRequest, ::sf::inventory::v1::LedgerReceipt>* streamer) {
+                       return this->StreamedTransfer(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_Transfer() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status Transfer(::grpc::ServerContext* /*context*/, const ::sf::inventory::v1::TransferRequest* /*request*/, ::sf::inventory::v1::LedgerReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedTransfer(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::inventory::v1::TransferRequest,::sf::inventory::v1::LedgerReceipt>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_EnsureContainer<WithStreamedUnaryMethod_GetContainer<WithStreamedUnaryMethod_Grant<WithStreamedUnaryMethod_GrantWithIntent<WithStreamedUnaryMethod_Transfer<Service > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_EnsureContainer<WithStreamedUnaryMethod_GetContainer<WithStreamedUnaryMethod_Grant<WithStreamedUnaryMethod_GrantWithIntent<Service > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_EnsureContainer<WithStreamedUnaryMethod_GetContainer<WithStreamedUnaryMethod_Grant<WithStreamedUnaryMethod_GrantWithIntent<WithStreamedUnaryMethod_Transfer<Service > > > > > StreamedService;
 };
 
 }  // namespace v1

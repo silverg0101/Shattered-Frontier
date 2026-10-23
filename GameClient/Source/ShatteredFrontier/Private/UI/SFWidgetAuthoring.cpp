@@ -1083,7 +1083,7 @@ void EquipSlotLayout(UWidgetTree* T)
     T->RootWidget = Sized(T, TEXT("RootSize"), Stack, 120.f, 120.f);
 }
 
-// WBP_Equipment (reference-equipment): the paper doll (Head, Chest, Hands, Legs, Feet left; MainHand, OffHand, Neck, Ring right) around the
+// WBP_Equipment (reference-equipment): the paper doll (Head, Chest, Hands, Legs, Feet left; MainHand, OffHand, Back, Neck, Ring right) around the
 // character preview (preview_backdrop under M_EquipmentPreview), then the shared tabs and the grid of equippable bag items, then the inventory
 // footer. Same width as the inventory so the two line up in the window stack.
 void EquipmentLayout(UWidgetTree* T)
@@ -1115,7 +1115,7 @@ void EquipmentLayout(UWidgetTree* T)
     Put(Stage, InvImage(T, TEXT("Preview"), Captured), HAlign_Fill, VAlign_Fill);
     UHorizontalBoxSlot* StageSlot = Doll->AddChildToHorizontalBox(Sized(T, nullptr, Stage, 458.f, DollHeight));
     StageSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); StageSlot->SetHorizontalAlignment(HAlign_Center);
-    Doll->AddChildToHorizontalBox(Column({TEXT("MainHand"), TEXT("OffHand"), TEXT("Neck"), TEXT("Ring")}))->SetVerticalAlignment(VAlign_Top);
+    Doll->AddChildToHorizontalBox(Column({TEXT("MainHand"), TEXT("OffHand"), TEXT("Back"), TEXT("Neck"), TEXT("Ring")}))->SetVerticalAlignment(VAlign_Top);
 
     UVerticalBox* Body = A<UVerticalBox>(T);
     Body->AddChildToVerticalBox(Sized(T, nullptr, Doll, 1118.f, DollHeight));

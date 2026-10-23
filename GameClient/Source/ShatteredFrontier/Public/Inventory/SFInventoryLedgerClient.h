@@ -24,7 +24,7 @@ public:
     bool Validate(FString& Error) const;
 };
 
-enum class ESFLedgerRpc : uint8 { EnsureContainer, GetContainer, Grant };
+enum class ESFLedgerRpc : uint8 { EnsureContainer, GetContainer, Grant, Transfer };
 // Ok; Stale = ABORTED; Rejected = ALREADY_EXISTS/FAILED_PRECONDITION/NOT_FOUND/INVALID_ARGUMENT/UNAUTHENTICATED;
 // Unavailable = UNAVAILABLE or DEADLINE_EXCEEDED (retryable with the same operation id).
 enum class ESFLedgerStatus : uint8 { Ok, Stale, Rejected, Unavailable };
@@ -33,9 +33,10 @@ struct FSFLedgerRequest
 {
     ESFLedgerRpc Rpc = ESFLedgerRpc::GetContainer;
     FString ContainerId;
-    // EnsureContainer: character-owned backpack.
+    // EnsureContainer: character-owned backpack, or the equipment container.
     FString OwnerId;
     int32 Capacity = 0;
+    bool bEquipmentContainer = false;
     // Grant.
     FString OperationId;
     int64 ExpectedRevision = 0;
@@ -46,6 +47,9 @@ struct FSFLedgerRequest
     // INT-06: complete, immutable ApplyReceiptRequest bytes, captured before Grant.
     TArray<uint8> FollowUpPayload;
     FString FollowUpDigest;
+    // Transfer: ContainerId / ExpectedRevision are the source; both containers share one owner.
+    FString ToContainerId;
+    int64 ToExpectedRevision = 0;
 };
 
 struct FSFLedgerResponse
@@ -58,6 +62,7 @@ struct FSFLedgerResponse
     TMap<FString, int64> Quantities;
     FString OperationId;
     int64 GrantedDelta = 0;
+    int64 ToRevision = 0;  // Transfer: the destination revision after
 };
 
 // Sends one attempt and calls back on the game thread. Never blocks the caller.

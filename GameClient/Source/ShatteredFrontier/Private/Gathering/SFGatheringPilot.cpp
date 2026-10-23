@@ -23,6 +23,7 @@
 #include "Quest/SFQuestPilotEvents.h"
 #include "Quest/SFQuestPilot.h"
 #include "Gathering/SFStationRecipes.h"
+#include "Inventory/SFGear.h"
 #include "Services/SFBackpackComponent.h"
 #include "Services/SFCharacterSession.h"
 #include "Services/SFGameplayServicesClient.h"
@@ -46,6 +47,12 @@ namespace
             if (Inventory && UInventoryTransactionLibrary::GetItemQuantity(Inventory, Asset) >= Input.Quantity) { return Id; }
         }
         return Input.DefinitionId;
+    }
+    // The ledger id of a gear item (content/items), or "" for tools, other items and an empty path.
+    FString GearId(const FSoftObjectPath& Item)
+    {
+        const UInventoryItemDefinition* Definition = Item.IsNull() ? nullptr : TSoftObjectPtr<UInventoryItemDefinition>(Item).LoadSynchronous();
+        return Definition && SFGear::Find(Definition->UniqueId) ? Definition->UniqueId : FString();
     }
 #endif
     const TCHAR* ItemPath(ESFGatheringPilotKind Kind)
@@ -536,7 +543,7 @@ bool USFGatheringPilotComponent::RequestEquip(const FSoftObjectPath& Item, FName
     const auto* PC=Cast<APlayerController>(GetOwner());
     if (!bEnabled || !PC || !EquipmentSlots().Contains(Slot) || FindBagSlot(Item)==INDEX_NONE) { return false; }
     if (Slot==MainHandSlot()) { CancelLocalHarvest(); }  // a tool change ends the channel (the server revalidates the tool anyway)
-    if (PC->HasAuthority()) { return ApplyEquip(Item,Slot)==ESFEquipResult::Ok; }
+    if (PC->HasAuthority()) { const ESFEquipResult R=ApplyEquip(Item,Slot); return R==ESFEquipResult::Ok || R==ESFEquipResult::Pending; }
     if (!PC->IsLocalController()) { return false; }
     ServerEquip(Item,Slot);
     return true;
@@ -547,7 +554,7 @@ bool USFGatheringPilotComponent::RequestUnequip(FName Slot)
     const auto* PC=Cast<APlayerController>(GetOwner());
     if (!bEnabled || !PC || GetEquipped(Slot).IsNull()) { return false; }
     if (Slot==MainHandSlot()) { CancelLocalHarvest(); }
-    if (PC->HasAuthority()) { return ApplyUnequip(Slot)==ESFEquipResult::Ok; }
+    if (PC->HasAuthority()) { const ESFEquipResult R=ApplyUnequip(Slot); return R==ESFEquipResult::Ok || R==ESFEquipResult::Pending; }
     if (!PC->IsLocalController()) { return false; }
     ServerUnequip(Slot);
     return true;
@@ -568,6 +575,30 @@ ESFEquipResult USFGatheringPilotComponent::ApplyEquip(const FSoftObjectPath& Ite
     else if (BagSlot==INDEX_NONE) { Result=ESFEquipResult::NotOwned; }
     else if (!Definition || Definition->UseType!=EInventoryItemUseType::Equip) { Result=ESFEquipResult::NotEquippable; }
     else if (Definition->EquipmentSlot!=Slot) { Result=ESFEquipResult::WrongSlot; }
+    else if (USFBackpackComponent* Pack=(GearId(Item).IsEmpty() && GearId(GetEquipped(Slot)).IsEmpty()) ? nullptr : USFBackpackComponent::FindOrCreate(Cast<APlayerController>(GetOwner())))
+    {
+        // The ledger moves first (the old gear back to the backpack, then the new gear in); the slot follows the last commit.
+        // Anything else re-reads the ledger, which projects both containers again.
+        TWeakObjectPtr<USFGatheringPilotComponent> Weak(this);
+        const auto Resync=[Weak]() { if (auto* Self=Weak.Get()) { if (auto* P=USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Self->GetOwner()))) { P->Reconcile(); } } };
+        const auto Apply=[Weak,Item,Resync](ESFBackpackOutcome Outcome)
+        {
+            USFGatheringPilotComponent* Self=Weak.Get();
+            auto* Inv=Self ? Self->GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+            const int32 Bag=Inv && Outcome==ESFBackpackOutcome::Committed ? Self->FindBagSlot(Item) : INDEX_NONE;
+            if (Bag!=INDEX_NONE && Inv->EquipFromSlot(Bag)) { Self->GetOwner()->ForceNetUpdate(); UE_LOG(LogTemp,Display,TEXT("EQUIP_COMMITTED Item=%s"),*Item.GetAssetName()); return; }
+            Resync();
+        };
+        const FString NewGear=GearId(Item), OldGear=GearId(GetEquipped(Slot));
+        const auto EquipNew=[Weak,NewGear,Apply]()
+        {
+            USFBackpackComponent* P=Weak.IsValid() ? USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Weak->GetOwner())) : nullptr;
+            if (NewGear.IsEmpty() || !P) { Apply(P ? ESFBackpackOutcome::Committed : ESFBackpackOutcome::Unavailable); } else { P->TransferEquipment(NewGear,true,Apply); }
+        };
+        if (OldGear.IsEmpty()) { EquipNew(); }
+        else { Pack->TransferEquipment(OldGear,false,[EquipNew,Resync](ESFBackpackOutcome Outcome) { if (Outcome==ESFBackpackOutcome::Committed) { EquipNew(); } else { Resync(); } }); }
+        Result=ESFEquipResult::Pending;
+    }
     // The plugin moves it atomically: the old item returns to the bag, refused when that does not fit (space or weight).
     else { Result=Inventory->EquipFromSlot(BagSlot) ? ESFEquipResult::Ok : ESFEquipResult::NoSpace; }
     if (Result==ESFEquipResult::Ok) { GetOwner()->ForceNetUpdate(); }
@@ -584,11 +615,54 @@ ESFEquipResult USFGatheringPilotComponent::ApplyUnequip(FName Slot)
     if (!bEnabled || !Inventory || !IsAuthoritativePilotWorld()) { Result=ESFEquipResult::Disabled; }
     else if (!EquipmentSlots().Contains(Slot)) { Result=ESFEquipResult::InvalidSlot; }
     else if (GetEquipped(Slot).IsNull()) { Result=ESFEquipResult::NotEquipped; }
+    else if (USFBackpackComponent* Pack=GearId(GetEquipped(Slot)).IsEmpty() ? nullptr : USFBackpackComponent::FindOrCreate(Cast<APlayerController>(GetOwner())))
+    {
+        // ponytail: bag space is checked when the slot empties, after the ledger moved it; a full bag ends in a re-read.
+        Pack->TransferEquipment(GearId(GetEquipped(Slot)),false,[Weak=TWeakObjectPtr<USFGatheringPilotComponent>(this),Slot](ESFBackpackOutcome Outcome)
+        {
+            USFGatheringPilotComponent* Self=Weak.Get();
+            auto* Inv=Self ? Self->GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+            if (Inv && Outcome==ESFBackpackOutcome::Committed && Inv->UnequipSlot(Slot)) { Self->GetOwner()->ForceNetUpdate(); return; }
+            if (auto* P=Self ? USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Self->GetOwner())) : nullptr) { P->Reconcile(); }
+        });
+        Result=ESFEquipResult::Pending;
+    }
     else { Result=Inventory->UnequipSlot(Slot) ? ESFEquipResult::Ok : ESFEquipResult::NoSpace; }
     if (Result==ESFEquipResult::Ok) { GetOwner()->ForceNetUpdate(); }
 #endif
     UE_LOG(LogTemp,Display,TEXT("UNEQUIP_APPLIED Slot=%s Result=%d"),*Slot.ToString(),int32(Result));
     return Result;
+}
+
+void USFGatheringPilotComponent::ProjectEquipment(const TMap<FString,int64>& Equipment)
+{
+#if SF_WITH_MINIMAL_INVENTORY
+    auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+    if (!Inventory) { return; }
+    // The backpack projection already counts unequipped gear in the bag, so gear moves in and out of the slots here.
+    const auto Change=[Inventory](const FString& Id, bool bAdd)
+    {
+        FInventoryTransactionChange Delta; Delta.Inventory=Inventory;
+        FInventoryItemQuantity One; One.Item=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Id))); One.Quantity=1;
+        (bAdd ? Delta.AddItems : Delta.RemoveItems).Add(One);
+        return UInventoryTransactionLibrary::ExecuteInventoryTransaction({Delta})==EInventoryTransactionResult::Success;
+    };
+    int32 Mismatches=0;
+    for (const FName& Slot : EquipmentSlots())
+    {
+        const FString Gear=GearId(GetEquipped(Slot));
+        if (!Gear.IsEmpty() && Equipment.FindRef(Gear)<=0 && !(Inventory->UnequipSlot(Slot) && Change(Gear,false))) { ++Mismatches; }
+    }
+    for (const TPair<FString,int64>& Held : Equipment)
+    {
+        const FSFGearStats* Stats=SFGear::Find(Held.Key);
+        if (Held.Value<=0 || !Stats || GearId(GetEquipped(Stats->Slot))==Held.Key) { continue; }
+        const int32 Bag=Change(Held.Key,true) ? FindBagSlot(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Held.Key))) : INDEX_NONE;
+        if (Bag==INDEX_NONE || !Inventory->EquipFromSlot(Bag)) { ++Mismatches; }
+    }
+    GetOwner()->ForceNetUpdate();
+    UE_LOG(LogTemp,Display,TEXT("EQUIPMENT_PROJECTED Items=%d Mismatches=%d"),Equipment.Num(),Mismatches);
+#endif
 }
 
 bool USFGatheringPilotComponent::GetInventoryWeight(float& TotalKg, float& MaxKg) const

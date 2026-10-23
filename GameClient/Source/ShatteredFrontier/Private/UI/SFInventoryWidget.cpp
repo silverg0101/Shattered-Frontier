@@ -84,7 +84,8 @@ void USFInventoryWidget::EnsureCells(int32 Count)
 void USFInventoryWidget::Present(const TArray<FSFInventoryEntry>& All, int32 SlotCount, float TotalKg, float MaxKg)
 {
     EnsureCells(SlotCount);
-    const TArray<FSFInventoryEntry> Items = FilterByTab(All, ActiveTab);
+    // The bag grid shows bag stacks only; equipped items live on the Equipment window (and the main-hand slot here).
+    const TArray<FSFInventoryEntry> Items = FilterByTab(All, ActiveTab).FilterByPredicate([](const FSFInventoryEntry& E) { return !E.bEquipped; });
     // Selection follows the stack name; it falls back to the first shown stack when its stack left the tab.
     if (!Items.ContainsByPredicate([this](const FSFInventoryEntry& E) { return E.Name.ToString() == SelectedKey; })) { SelectedKey = Items.IsEmpty() ? FString() : Items[0].Name.ToString(); }
     for (int32 Index = 0; Index < Cells.Num(); ++Index)

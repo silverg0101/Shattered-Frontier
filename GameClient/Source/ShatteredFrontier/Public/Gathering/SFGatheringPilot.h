@@ -166,9 +166,10 @@ enum class ESFGatheringPilotResult : uint8
     OutOfReach, Occluded, Moved, Canceled, InventoryFull, Unavailable, KeyConflict, Refined, MissingMaterials, ToolRequired, SkillRequired
 };
 
-// Why an equip / unequip request was refused (Ok = applied). Server-side answer; the client only sees the replicated result.
+// Why an equip / unequip request was refused (Ok = applied; Pending = a ledger transfer is queued and the slot changes when it
+// commits). Server-side answer; the client only sees the replicated result.
 UENUM()
-enum class ESFEquipResult : uint8 { Ok, Disabled, InvalidSlot, NotOwned, NotEquippable, WrongSlot, NotEquipped, NoSpace };
+enum class ESFEquipResult : uint8 { Ok, Disabled, InvalidSlot, NotOwned, NotEquippable, WrongSlot, NotEquipped, NoSpace, Pending };
 
 USTRUCT()
 struct FSFGatheringPilotFeedback
@@ -209,11 +210,14 @@ public:
     // Owner (client or server): ask to equip one owned bag item into Slot / return Slot to the bag. False when refused before sending.
     bool RequestEquip(const FSoftObjectPath& Item, FName Slot);
     bool RequestUnequip(FName Slot);
-    // Server: validate and apply. Ok or the reason; nothing changes unless Ok.
+    // Server: validate and apply. Ok or the reason; nothing changes unless Ok. With the ledger on, gear (content/items) first moves
+    // between the backpack and equipment containers (Pending), so equipped gear survives a restart.
     ESFEquipResult ApplyEquip(const FSoftObjectPath& Item, FName Slot);
     ESFEquipResult ApplyUnequip(FName Slot);
     // The item in Slot (owner view), empty when the slot is empty.
     FSoftObjectPath GetEquipped(FName Slot) const;
+    // Server: makes the equipped gear match the ledger equipment container (definition id -> quantity); tools are left alone.
+    void ProjectEquipment(const TMap<FString, int64>& Equipment);
     // Station recipes come from content/crafting; the first is the default. The choice is per player and server-held.
     void SelectStationRecipe(ESFGatheringPilotKind Station, const FString& RecipeId);
     void CycleStationRecipe(ESFGatheringPilotKind Station);
@@ -275,6 +279,7 @@ private:
     friend class FSFGatheringPilotProgressionTest;
     friend class FSFGatheringPilotLedgerTest;
     friend class FSFEquipmentValidationTest;
+    friend class FSFEquipmentLedgerTest;
     UFUNCTION(Server, Reliable) void ServerGatheringAction(ASFGatheringPilotNode* Node, uint32 Revision, uint32 Operation);
     UFUNCTION(Server, Reliable) void ServerGatheringActionAtSurface(ASFGatheringPilotNode* Node, uint32 Revision, uint32 Operation,FVector_NetQuantize10 RequestedPoint);
     void ProcessGatheringAction(ASFGatheringPilotNode* Node,uint32 Revision,uint32 Operation,bool bSurface,const FVector& RequestedPoint);

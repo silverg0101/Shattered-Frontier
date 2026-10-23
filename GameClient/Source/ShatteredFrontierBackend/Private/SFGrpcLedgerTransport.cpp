@@ -19,6 +19,7 @@ namespace
         ESFLedgerRpc Rpc = ESFLedgerRpc::GetContainer;
         FString OperationId;
         FString ContainerId;
+        FString ToContainerId;  // Transfer
         v1::ContainerView View;
         v1::LedgerReceipt Receipt;
         std::unique_ptr<grpc::ClientAsyncResponseReader<v1::ContainerView>> ViewReader;
@@ -41,11 +42,15 @@ namespace
         default: Out.Status = ESFLedgerStatus::Rejected; break;
         }
         if (Out.Status != ESFLedgerStatus::Ok) { return Out; }
-        if (Call.Rpc == ESFLedgerRpc::Grant)
+        if (Call.Rpc == ESFLedgerRpc::Grant || Call.Rpc == ESFLedgerRpc::Transfer)
         {
             Out.OperationId = FromUtf8(Call.Receipt.operation_id());
             for (const auto& Revision : Call.Receipt.revisions())
-            { if (FromUtf8(Revision.container_id()) == Call.ContainerId) { Out.Revision = Revision.after(); } }
+            {
+                const FString Id = FromUtf8(Revision.container_id());
+                if (Id == Call.ContainerId) { Out.Revision = Revision.after(); }
+                else if (Id == Call.ToContainerId) { Out.ToRevision = Revision.after(); }
+            }
             for (const auto& Change : Call.Receipt.changes())
             {
                 if (FromUtf8(Change.container_id()) != Call.ContainerId) { continue; }
@@ -91,7 +96,8 @@ FSFGrpcLedgerTransport::~FSFGrpcLedgerTransport()
 void FSFGrpcLedgerTransport::Send(const FSFLedgerRequest& Request, float DeadlineSeconds, TFunction<void(const FSFLedgerResponse&)> Done)
 {
     FCall* Call = new FCall();
-    Call->Rpc = Request.Rpc; Call->OperationId = Request.OperationId; Call->ContainerId = Request.ContainerId; Call->Done = MoveTemp(Done);
+    Call->Rpc = Request.Rpc; Call->OperationId = Request.OperationId; Call->ContainerId = Request.ContainerId; Call->ToContainerId = Request.ToContainerId;
+    Call->Done = MoveTemp(Done);
     Call->Context.set_deadline(std::chrono::system_clock::now() + std::chrono::milliseconds(int64(FMath::Max(0.001f, DeadlineSeconds) * 1000.0f)));
     Call->Context.AddMetadata("authorization", "Bearer " + Channel->Token);
     {
@@ -105,7 +111,7 @@ void FSFGrpcLedgerTransport::Send(const FSFLedgerRequest& Request, float Deadlin
         v1::EnsureContainerRequest Message;
         auto* Spec = Message.mutable_spec();
         Spec->set_id(Utf8(Request.ContainerId)); Spec->set_owner_kind(v1::OWNER_KIND_CHARACTER); Spec->set_owner_id(Utf8(Request.OwnerId));
-        Spec->set_kind(v1::CONTAINER_KIND_BACKPACK); Spec->set_capacity(Request.Capacity);
+        Spec->set_kind(Request.bEquipmentContainer ? v1::CONTAINER_KIND_EQUIPMENT : v1::CONTAINER_KIND_BACKPACK); Spec->set_capacity(Request.Capacity);
         Call->ViewReader = Channel->Stub->AsyncEnsureContainer(&Call->Context, Message, &Channel->Queue);
         Call->ViewReader->Finish(&Call->View, &Call->Status, Call);
         break;
@@ -134,6 +140,17 @@ void FSFGrpcLedgerTransport::Send(const FSFLedgerRequest& Request, float Deadlin
         Call->ReceiptReader = Request.FollowUpPayload.IsEmpty()
             ? Channel->Stub->AsyncGrant(&Call->Context, Message, &Channel->Queue)
             : Channel->Stub->AsyncGrantWithIntent(&Call->Context, Message, &Channel->Queue);
+        Call->ReceiptReader->Finish(&Call->Receipt, &Call->Status, Call);
+        break;
+    }
+    case ESFLedgerRpc::Transfer:
+    {
+        v1::TransferRequest Message;
+        Message.set_operation_id(Utf8(Request.OperationId));
+        Message.set_from_container_id(Utf8(Request.ContainerId)); Message.set_from_expected_revision(Request.ExpectedRevision);
+        Message.set_to_container_id(Utf8(Request.ToContainerId)); Message.set_to_expected_revision(Request.ToExpectedRevision);
+        Message.set_definition_id(Utf8(Request.DefinitionId)); Message.set_quantity(Request.Quantity);
+        Call->ReceiptReader = Channel->Stub->AsyncTransfer(&Call->Context, Message, &Channel->Queue);
         Call->ReceiptReader->Finish(&Call->Receipt, &Call->Status, Call);
         break;
     }

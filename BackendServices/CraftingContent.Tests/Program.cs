@@ -3,7 +3,7 @@ using ShatteredFrontier.InventoryLedger;
 
 var path = args.Length == 1 ? args[0] : "content/crafting/recipes_greenlands_starter.json";
 var catalog = RecipeCatalog.LoadFiles([path]);
-Check(catalog.Recipes.Count == 12, "starter and learned recipe count");
+Check(catalog.Recipes.Count == 21, "starter, learned and gear recipe count");
 var store = new InMemoryInventoryLedgerStore();
 var ledger = new InventoryLedger(store);
 ledger.CreateContainer(new ContainerSpec("ctn_craft_test", OwnerKind.Character, "chr_test", ContainerKind.Backpack, 1000));

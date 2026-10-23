@@ -90,19 +90,19 @@ bool FSFInventoryWidgetTest::RunTest(const FString& Parameters)
     Panel->Present(Entries,12,3.f,40.f);
     TestEqual(TEXT("One cell per backpack slot"),Panel->CellCount(),12);
     if (Panel->CellCount()!=12) { return false; }
-    // Sorted by name: Iron axe, Oak log, Stew.
-    TestTrue(TEXT("Equipped axe cell is selected"),Panel->GetCell(0)->IsSelected());
-    TestFalse(TEXT("Oak cell is not selected"),Panel->GetCell(1)->IsSelected());
-    TestEqual(TEXT("Oak stack count"),Panel->GetCell(1)->GetCountText().ToString(),FString(TEXT("5")));
-    TestEqual(TEXT("Stew stack count"),Panel->GetCell(2)->GetCountText().ToString(),FString(TEXT("2")));
-    TestEqual(TEXT("Empty cell has no count"),Panel->GetCell(3)->GetCountText().ToString(),FString());
+    // Sorted by name, bag stacks only (the equipped axe is on the Equipment window): Oak log, Stew.
+    TestTrue(TEXT("First bag cell is selected"),Panel->GetCell(0)->IsSelected());
+    TestFalse(TEXT("Stew cell is not selected"),Panel->GetCell(1)->IsSelected());
+    TestEqual(TEXT("Oak stack count"),Panel->GetCell(0)->GetCountText().ToString(),FString(TEXT("5")));
+    TestEqual(TEXT("Stew stack count"),Panel->GetCell(1)->GetCountText().ToString(),FString(TEXT("2")));
+    TestEqual(TEXT("Empty cell has no count"),Panel->GetCell(2)->GetCountText().ToString(),FString());
     if (Panel->GetMainHand()) { TestTrue(TEXT("Main hand shows the equipped tool"),Panel->GetMainHand()->IsSelected()); }
     TestEqual(TEXT("Weight line"),Panel->GetWeightLine().ToString(),FString(TEXT("Weight 3.0 / 40 kg")));
     TestEqual(TEXT("Weight percent"),Panel->GetWeightPercentLine().ToString(),FString(TEXT("8%")));
     Panel->SelectCell(1);
     TestFalse(TEXT("Click moves the selection off the first cell"),Panel->GetCell(0)->IsSelected());
     TestTrue(TEXT("Clicked cell is selected"),Panel->GetCell(1)->IsSelected());
-    TestEqual(TEXT("Selected stack name"),Panel->GetSelectedName(),FString(TEXT("Oak log")));
+    TestEqual(TEXT("Selected stack name"),Panel->GetSelectedName(),FString(TEXT("Stew")));
     Panel->SelectTab(ESFInventoryTab::Materials);
     Panel->Present(Entries,12,3.f,40.f);
     TestEqual(TEXT("Materials tab keeps the stack count"),Panel->GetCell(0)->GetCountText().ToString(),FString(TEXT("5")));

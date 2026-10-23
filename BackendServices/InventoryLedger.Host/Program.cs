@@ -184,6 +184,24 @@ sealed class LedgerService(Dom.InventoryLedger ledger, PostgresInventoryLedgerSt
         finally { Console.Out.WriteLine($"INVENTORY_LEDGER_GRANT op={r.OperationId} container={r.ContainerId} status={Name(code)}"); }
     }
 
+    public override Task<Pb.LedgerReceipt> Transfer(Pb.TransferRequest r, ServerCallContext context)
+    {
+        var code = StatusCode.OK;
+        try
+        {
+            return Run(context, () =>
+            {
+                Dom.ContainerSpec from = ledger.Read(r.FromContainerId).Spec, to = ledger.Read(r.ToContainerId).Spec;
+                if (from.OwnerKind != to.OwnerKind || from.OwnerId != to.OwnerId)
+                    throw new RpcException(new Status(StatusCode.FailedPrecondition, "Transfer containers must share one owner."));
+                return ToPb(ledger.Transfer(r.OperationId, r.FromContainerId, r.FromExpectedRevision, r.ToContainerId,
+                    r.ToExpectedRevision, r.DefinitionId, r.Quantity));
+            });
+        }
+        catch (RpcException ex) { code = ex.StatusCode; throw; }
+        finally { Console.Out.WriteLine($"INVENTORY_LEDGER_TRANSFER op={r.OperationId} from={r.FromContainerId} to={r.ToContainerId} status={Name(code)}"); }
+    }
+
     private static string Name(StatusCode c) => c switch
     {
         StatusCode.OK => "OK",

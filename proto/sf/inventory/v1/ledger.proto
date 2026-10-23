@@ -18,6 +18,8 @@ service InventoryLedger {
   rpc Grant(GrantRequest) returns (LedgerReceipt);
   // Older hosts return UNIMPLEMENTED before a gather item can be committed.
   rpc GrantWithIntent(GrantRequest) returns (LedgerReceipt);
+  // Moves items between two containers of the same owner (equip / unequip); idempotent on operation_id.
+  rpc Transfer(TransferRequest) returns (LedgerReceipt);
 }
 
 enum OwnerKind {
@@ -103,6 +105,16 @@ message GrantRequest {
   string causation_id = 7;
   // Immutable progression/quest request committed with this grant, when supplied.
   FollowUpIntent follow_up_intent = 8;
+}
+
+message TransferRequest {
+  string operation_id = 1;
+  string from_container_id = 2;
+  int64 from_expected_revision = 3;
+  string to_container_id = 4;
+  int64 to_expected_revision = 5;
+  string definition_id = 6;
+  int64 quantity = 7;
 }
 
 message FollowUpIntent {

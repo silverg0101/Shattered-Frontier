@@ -1,4 +1,5 @@
 #include "Combat/SFCombatPilot.h"
+#include "Inventory/SFGear.h"
 #include "Framework/SFGameMode.h"
 #include "Combat/SFCombatPilotRewards.h"
 #include "Characters/SFE1Character.h"
@@ -397,7 +398,7 @@ void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarg
     }
     if (!Best) { return; }
     PlayerNextSwing.Add(Attacker, Now + CapturedSettings->PlayerMeleeCooldownSeconds);
-    Best->ReceivePilotDamage(Attacker, CapturedSettings->PlayerMeleeDamage);
+    Best->ReceivePilotDamage(Attacker, CapturedSettings->PlayerMeleeDamage + SFGear::Equipped(Attacker->GetController()).Damage);
 }
 
 void ASFGameMode::TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim)
@@ -412,6 +413,7 @@ void ASFGameMode::TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim)
 void ASFGameMode::HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage)
 {
     if (!IsValid(Victim) || !Victim->HasAuthority() || Victim->CombatHealth() <= 0) return;
+    Damage = SFGear::MitigatedDamage(Damage, SFGear::Equipped(Victim->GetController()).Armor);
     Victim->CombatSetHealth(SFCombatPilotRules::RemainingHealth(Victim->CombatHealth(), Damage));
     if (ASFPlayerController* PC = Cast<ASFPlayerController>(Victim->GetController())) { PC->ClientPilotHit(TEXT("Hit")); }
     if (!Victim->GetCombatTarget() && Victim->CombatHealth() > 0) { Victim->SetCombatTarget(Source); }

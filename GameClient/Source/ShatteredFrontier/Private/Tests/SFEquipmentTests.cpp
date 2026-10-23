@@ -17,7 +17,7 @@ bool FSFEquipmentWidgetTest::RunTest(const FString& Parameters)
     if (!TestNotNull(TEXT("WBP_Equipment constructs"), Window)) { return false; }
     for (const TCHAR* Name : {TEXT("ItemGrid"), TEXT("GridScroll"), TEXT("Preview"), TEXT("TabBar"), TEXT("Gold"), TEXT("WeightText"), TEXT("WeightBar"), TEXT("Tooltip"), TEXT("TipTitle")})
     { TestNotNull(FString::Printf(TEXT("%s bound"), Name), Window->GetWidgetFromName(Name)); }
-    for (const TCHAR* Slot : {TEXT("Head"), TEXT("Chest"), TEXT("Hands"), TEXT("Legs"), TEXT("Feet"), TEXT("MainHand"), TEXT("OffHand"), TEXT("Neck"), TEXT("Ring")})
+    for (const TCHAR* Slot : {TEXT("Head"), TEXT("Chest"), TEXT("Hands"), TEXT("Legs"), TEXT("Feet"), TEXT("MainHand"), TEXT("OffHand"), TEXT("Back"), TEXT("Neck"), TEXT("Ring")})
     { TestNotNull(FString::Printf(TEXT("%s paper-doll slot"), Slot), Window->GetDollSlot(Slot)); }
 
     auto Entry = [](const TCHAR* Name, const TCHAR* Slot, bool bEquipped = false)
@@ -148,4 +148,97 @@ bool FSFEquipmentValidationTest::RunTest(const FString& Parameters)
     return true;
 }
 #endif
+#endif
+
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR && SF_WITH_MINIMAL_INVENTORY
+#include "Containers/Ticker.h"
+#include "Inventory/SFGear.h"
+#include "Inventory/SFInventoryLedgerClient.h"
+#include "Services/SFBackpackComponent.h"
+
+// With the ledger on, gear moves backpack <-> equipment container before the slot changes, and a re-read projects the
+// equipment container back onto the slots (the restore path). A fake ledger holds both containers.
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFEquipmentLedgerTest, "ShatteredFrontier.Equipment.Ledger", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSFEquipmentLedgerTest::RunTest(const FString& Parameters)
+{
+    struct FContainer { int64 Revision = 0; TMap<FString, int64> Items; };
+    TSharedRef<TMap<FString, FContainer>> Ledger = MakeShared<TMap<FString, FContainer>>();
+    FSFInventoryLedgerClient::SetSendOverrideForTests([Ledger](const FSFLedgerRequest& R, float, TFunction<void(const FSFLedgerResponse&)> Done)
+    {
+        FSFLedgerResponse Out; Out.GrpcCode = 0; Out.Status = ESFLedgerStatus::Ok;
+        if (R.Rpc == ESFLedgerRpc::Transfer)
+        {
+            FContainer& From = Ledger->FindOrAdd(R.ContainerId); FContainer& To = Ledger->FindOrAdd(R.ToContainerId);
+            if (From.Revision != R.ExpectedRevision || To.Revision != R.ToExpectedRevision) { Out.Status = ESFLedgerStatus::Stale; Out.GrpcCode = 10; }
+            else if (From.Items.FindRef(R.DefinitionId) < R.Quantity) { Out.Status = ESFLedgerStatus::Rejected; Out.GrpcCode = 9; }
+            else { From.Items[R.DefinitionId] -= R.Quantity; To.Items.FindOrAdd(R.DefinitionId) += R.Quantity; Out.Revision = ++From.Revision; Out.ToRevision = ++To.Revision; }
+        }
+        else { const FContainer& View = Ledger->FindOrAdd(R.ContainerId); Out.Revision = View.Revision; Out.Quantities = View.Items; }
+        Done(Out);
+    });
+    auto* Settings = DuplicateObject<USFInventoryLedgerSettings>(GetDefault<USFInventoryLedgerSettings>(), GetTransientPackage());
+    Settings->bEnabled = true; Settings->Endpoint = TEXT("127.0.0.1:50071");
+    TSharedPtr<FSFInventoryLedgerClient> Client = FSFInventoryLedgerClient::Create(*Settings);
+    FSFInventoryLedgerClient::SetSendOverrideForTests(nullptr);
+
+    FTestWorldWrapper Fixture;
+    if (!TestTrue(TEXT("Stubbed client"), Client.IsValid()) || !Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) { return false; }
+    UWorld* World = Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
+    auto* PC = World->SpawnActor<ASFPlayerController>();
+    auto* Gear = PC ? PC->FindComponentByClass<USFGatheringPilotComponent>() : nullptr;
+    auto* Bag = PC ? PC->FindComponentByClass<UInventoryComponent>() : nullptr;
+    if (!Gear || !Bag) { return false; }
+    Gear->CapturedSettings = DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(), Gear);
+    Gear->bEnabled = true; Gear->bTestWorldAdmission = true;
+    USFBackpackComponent* Pack = USFBackpackComponent::CreateForTests(PC, Client);
+    const auto Tick = [&Fixture](int32 Count) { for (int32 I = 0; I < Count; ++I) { Fixture.TickTestWorld(0.05f); FTSTicker::GetCoreTicker().Tick(0.3f); } };
+
+    const FSoftObjectPath CapPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_HideCap.DA_HideCap"));
+    FInventoryItemQuantity Cap; Cap.Item = TSoftObjectPtr<UInventoryItemDefinition>(CapPath); Cap.Quantity = 1;
+    if (!TestTrue(TEXT("The cap asset is in the bag"), UInventoryTransactionLibrary::ExchangeInventoryItems(Bag, {}, {Cap}) == EInventoryTransactionResult::Success)) { return false; }
+    Ledger->FindOrAdd(Pack->GetContainerId()).Items.Add(TEXT("item/hide_cap"), 1);
+    const FString EquipmentId = Pack->GetEquipmentContainerId();
+    const FName Head(TEXT("Head"));
+
+    TestEqual(TEXT("Gear equip waits for the ledger"), Gear->ApplyEquip(CapPath, Head), ESFEquipResult::Pending);
+    Tick(6);
+    TestEqual(TEXT("The cap is worn after the transfer"), Gear->GetEquipped(Head), CapPath);
+    TestEqual(TEXT("The ledger holds it as equipped"), Ledger->FindOrAdd(EquipmentId).Items.FindRef(TEXT("item/hide_cap")), int64(1));
+    TestEqual(TEXT("Worn armour counts"), SFGear::Equipped(PC).Armor, 1);
+
+    TestEqual(TEXT("Gear unequip waits for the ledger"), Gear->ApplyUnequip(Head), ESFEquipResult::Pending);
+    Tick(6);
+    TestTrue(TEXT("Unequipped back to the bag"), Gear->GetEquipped(Head).IsNull() && Gear->FindBagSlot(CapPath) != INDEX_NONE);
+    TestEqual(TEXT("The ledger holds it in the backpack"), Ledger->FindOrAdd(Pack->GetContainerId()).Items.FindRef(TEXT("item/hide_cap")), int64(1));
+
+    // Restore: a fresh session sees the cap in the equipment container; the re-read wears it again.
+    Ledger->FindOrAdd(Pack->GetContainerId()).Items.Add(TEXT("item/hide_cap"), 0);
+    Ledger->FindOrAdd(EquipmentId).Items.Add(TEXT("item/hide_cap"), 1);
+    Pack->Reconcile(); Tick(6);
+    TestEqual(TEXT("Reconcile wears the saved cap"), Gear->GetEquipped(Head), CapPath);
+    TestEqual(TEXT("And the bag does not keep a copy"), Gear->FindBagSlot(CapPath), int32(INDEX_NONE));
+    return true;
+}
+#endif
+
+#if WITH_DEV_AUTOMATION_TESTS
+#include "Inventory/SFGear.h"
+#include "Misc/AutomationTest.h"
+
+// Gear stats come from content/items; graded ids share the base stats, armour never takes a hit below 1.
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFGearStatsTest, "ShatteredFrontier.Equipment.GearStats", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSFGearStatsTest::RunTest(const FString& Parameters)
+{
+    const FSFGearStats* Jerkin = SFGear::Find(TEXT("item/hide_jerkin"));
+    if (!TestNotNull(TEXT("Shipped gear loads"), Jerkin)) { return false; }
+    TestEqual(TEXT("Jerkin is chest armour"), Jerkin->Slot, FName(TEXT("Chest")));
+    TestEqual(TEXT("A graded id shares its base stats"), SFGear::Find(TEXT("item/hide_jerkin/fine")), Jerkin);
+    TestNull(TEXT("Tools are not gear"), SFGear::Find(TEXT("item/iron_axe")));
+    TestEqual(TEXT("Armour lowers a hit"), SFGear::MitigatedDamage(14, 5), 9);
+    TestEqual(TEXT("A hit always lands for at least 1"), SFGear::MitigatedDamage(14, 40), 1);
+    TMap<FString, FSFGearStats> Parsed; FString Error;
+    TestFalse(TEXT("Negative armour is refused"), SFGear::Parse(TEXT("{\"gear\":[{\"definition_id\":\"item/x\",\"slot\":\"Head\",\"armor\":-1,\"damage\":0}]}"), Parsed, Error));
+    TestFalse(TEXT("Duplicate ids are refused"), SFGear::Parse(TEXT("{\"gear\":[{\"definition_id\":\"item/x\",\"slot\":\"Head\",\"armor\":1,\"damage\":0},{\"definition_id\":\"item/x\",\"slot\":\"Head\",\"armor\":1,\"damage\":0}]}"), Parsed, Error));
+    return true;
+}
 #endif

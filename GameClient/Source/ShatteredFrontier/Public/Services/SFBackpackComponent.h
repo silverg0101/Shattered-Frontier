@@ -5,6 +5,7 @@
 
 class APlayerController;
 class FSFInventoryLedgerClient;
+struct FSFLedgerResponse;
 class FSFGameplayServicesClient;
 
 enum class ESFBackpackOutcome : uint8 { Committed, Stale, Rejected, Unavailable };
@@ -48,6 +49,10 @@ public:
     // Queued read: rebuilds the bag projection from the ledger view (after a payout or refund whose items the reply omits,
     // and on an INT-05 restore). Done, when given, reports whether the read succeeded.
     void Reconcile(TFunction<void(bool)> Done = nullptr);
+    // Server: moves one ledger item between the backpack and this character's equipment container (equip / unequip), queued
+    // like every mutation. The equipment container is created on first use; Reconcile projects it onto the equipped slots.
+    void TransferEquipment(const FString& DefinitionId, bool bEquip, TFunction<void(ESFBackpackOutcome)> Finished);
+    FString GetEquipmentContainerId() { BindIdentity(); return ContainerId + TEXT("_equipment"); }
 #if WITH_DEV_AUTOMATION_TESTS
     // Test hook: a backpack over a stubbed ledger client, without the settings lookup.
     static USFBackpackComponent* CreateForTests(APlayerController* Controller, TSharedPtr<FSFInventoryLedgerClient> InLedger);
@@ -61,6 +66,7 @@ private:
     void Pump();
     void Execute(int32 Attempt);
     void Refresh(TFunction<void(bool)> Done);
+    void EnsureEquipment(TFunction<void(const FSFLedgerResponse&)> Done);
     TSharedPtr<FSFInventoryLedgerClient> Ledger;
     FString ContainerId, CharacterId;
     int32 Capacity = 0;

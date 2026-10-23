@@ -47,6 +47,8 @@ PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2finventory_2fv1_2fledger_2eproto, /* tracker*/ nullptr,},
         // ::sf::inventory::v1::GrantRequest
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2finventory_2fv1_2fledger_2eproto, /* tracker*/ nullptr,},
+        // ::sf::inventory::v1::TransferRequest
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2finventory_2fv1_2fledger_2eproto, /* tracker*/ nullptr,},
         // ::sf::inventory::v1::FollowUpIntent
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2finventory_2fv1_2fledger_2eproto, /* tracker*/ nullptr,},
 };
@@ -55,6 +57,204 @@ PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
 namespace sf {
 namespace inventory {
 namespace v1 {
+class TransferRequest::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<TransferRequest>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_._has_bits_);
+};
+
+constexpr TransferRequest::ParseTableT_ TransferRequest::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_._has_bits_),
+      0, // no _extensions_
+      7, 56,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967168,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      7,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::inventory::v1::TransferRequest>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      {::_pbi::TcParser::MiniParse, {}},
+      // string operation_id = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.operation_id_)}},
+      // string from_container_id = 2;
+      {::_pbi::TcParser::FastUS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.from_container_id_)}},
+      // int64 from_expected_revision = 3;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(TransferRequest, _impl_.from_expected_revision_), 4>(),
+       {24, 4, 0,
+        PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.from_expected_revision_)}},
+      // string to_container_id = 4;
+      {::_pbi::TcParser::FastUS1,
+       {34, 2, 0,
+        PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.to_container_id_)}},
+      // int64 to_expected_revision = 5;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(TransferRequest, _impl_.to_expected_revision_), 5>(),
+       {40, 5, 0,
+        PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.to_expected_revision_)}},
+      // string definition_id = 6;
+      {::_pbi::TcParser::FastUS1,
+       {50, 3, 0,
+        PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.definition_id_)}},
+      // int64 quantity = 7;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(TransferRequest, _impl_.quantity_), 6>(),
+       {56, 6, 0,
+        PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.quantity_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string operation_id = 1;
+      {PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.operation_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string from_container_id = 2;
+      {PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.from_container_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // int64 from_expected_revision = 3;
+      {PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.from_expected_revision_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      // string to_container_id = 4;
+      {PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.to_container_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // int64 to_expected_revision = 5;
+      {PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.to_expected_revision_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      // string definition_id = 6;
+      {PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.definition_id_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // int64 quantity = 7;
+      {PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.quantity_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+    }},
+    // no aux_entries
+    {{
+      "\37\14\21\0\17\0\15\0"
+      "sf.inventory.v1.TransferRequest"
+      "operation_id"
+      "from_container_id"
+      "to_container_id"
+      "definition_id"
+    }},
+  };
+}
+
+
+inline constexpr TransferRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        operation_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        from_container_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        to_container_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        definition_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        from_expected_revision_{::int64_t{0}},
+        to_expected_revision_{::int64_t{0}},
+        quantity_{::int64_t{0}} {}
+
+template <typename>
+constexpr TransferRequest::TransferRequest(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL TransferRequest::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) TransferRequest(arena);
+}
+constexpr auto TransferRequest::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(TransferRequest), alignof(TransferRequest));
+}
+constexpr auto TransferRequest::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &TransferRequest::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<TransferRequest>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &TransferRequest::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<TransferRequest>(), &TransferRequest::ByteSizeLong,
+              &TransferRequest::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[9],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct TransferRequestGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr TransferRequestGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 TransferRequest_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(TransferRequest::InternalGenerateClassData_(
+            _default, &TransferRequest_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<TransferRequest>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~TransferRequestGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) TransferRequest _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<TransferRequest>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(TransferRequestGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST TransferRequestGlobalsTypeInternal TransferRequest_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* TransferRequest_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return TransferRequest_globals_.GetClassData();
+#else
+  return TransferRequest_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
 class RevisionChange::_Internal {
  public:
   using HasBits = decltype(::std::declval<RevisionChange>()._impl_._has_bits_);
@@ -638,7 +838,7 @@ constexpr auto FollowUpIntent::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[9],
+      &file_reflection_data[10],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
@@ -1815,6 +2015,23 @@ const ::uint32_t
         4,
         5,
         0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::TransferRequest, _impl_._has_bits_),
+        10, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::TransferRequest, _impl_.operation_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::TransferRequest, _impl_.from_container_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::TransferRequest, _impl_.from_expected_revision_),
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::TransferRequest, _impl_.to_container_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::TransferRequest, _impl_.to_expected_revision_),
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::TransferRequest, _impl_.definition_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::TransferRequest, _impl_.quantity_),
+        0,
+        1,
+        4,
+        2,
+        5,
+        3,
+        6,
+        0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::FollowUpIntent, _impl_._has_bits_),
         6, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::FollowUpIntent, _impl_.payload_version_),
@@ -1836,7 +2053,8 @@ static const ::_pbi::MigrationSchema
         {58, sizeof(::sf::inventory::v1::EnsureContainerRequest)},
         {63, sizeof(::sf::inventory::v1::GetContainerRequest)},
         {68, sizeof(::sf::inventory::v1::GrantRequest)},
-        {87, sizeof(::sf::inventory::v1::FollowUpIntent)},
+        {87, sizeof(::sf::inventory::v1::TransferRequest)},
+        {104, sizeof(::sf::inventory::v1::FollowUpIntent)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
@@ -1849,6 +2067,7 @@ static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
         &::sf::inventory::v1::EnsureContainerRequest_globals_,
         &::sf::inventory::v1::GetContainerRequest_globals_,
         &::sf::inventory::v1::GrantRequest_globals_,
+        &::sf::inventory::v1::TransferRequest_globals_,
         &::sf::inventory::v1::FollowUpIntent_globals_,
 };
 const char descriptor_table_protodef_sf_2finventory_2fv1_2fledger_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
@@ -1880,48 +2099,55 @@ const char descriptor_table_protodef_sf_2finventory_2fv1_2fledger_2eproto[] ABSL
     "ition_id\030\004 \001(\t\022\020\n\010quantity\030\005 \001(\003\022\016\n\006sour"
     "ce\030\006 \001(\t\022\024\n\014causation_id\030\007 \001(\t\0229\n\020follow"
     "_up_intent\030\010 \001(\0132\037.sf.inventory.v1.Follo"
-    "wUpIntent\"R\n\016FollowUpIntent\022\027\n\017payload_v"
-    "ersion\030\001 \001(\r\022\017\n\007payload\030\002 \001(\014\022\026\n\016payload"
-    "_digest\030\003 \001(\t*\206\001\n\tOwnerKind\022\032\n\026OWNER_KIN"
-    "D_UNSPECIFIED\020\000\022\030\n\024OWNER_KIND_CHARACTER\020"
-    "\001\022\026\n\022OWNER_KIND_ACCOUNT\020\002\022\024\n\020OWNER_KIND_"
-    "GUILD\020\003\022\025\n\021OWNER_KIND_SYSTEM\020\004*\377\002\n\rConta"
-    "inerKind\022\036\n\032CONTAINER_KIND_UNSPECIFIED\020\000"
-    "\022\034\n\030CONTAINER_KIND_EQUIPMENT\020\001\022\033\n\027CONTAI"
-    "NER_KIND_BACKPACK\020\002\022\026\n\022CONTAINER_KIND_BA"
-    "G\020\003\022\027\n\023CONTAINER_KIND_BANK\020\004\022\037\n\033CONTAINE"
-    "R_KIND_ACCOUNT_BANK\020\005\022\035\n\031CONTAINER_KIND_"
-    "GUILD_BANK\020\006\022\032\n\026CONTAINER_KIND_MAILBOX\020\007"
-    "\022\031\n\025CONTAINER_KIND_ESCROW\020\010\022\032\n\026CONTAINER"
-    "_KIND_BUYBACK\020\t\022%\n!CONTAINER_KIND_CONSTR"
-    "UCTION_CACHE\020\n\022(\n$CONTAINER_KIND_CONSTRU"
-    "CTION_RECOVERY\020\013*\264\001\n\014LedgerAction\022\035\n\031LED"
-    "GER_ACTION_UNSPECIFIED\020\000\022\027\n\023LEDGER_ACTIO"
-    "N_GRANT\020\001\022\031\n\025LEDGER_ACTION_CONSUME\020\002\022\032\n\026"
-    "LEDGER_ACTION_TRANSFER\020\003\022\031\n\025LEDGER_ACTIO"
-    "N_CONVERT\020\004\022\032\n\026LEDGER_ACTION_EXCHANGE\020\0052"
-    "\335\002\n\017InventoryLedger\022Z\n\017EnsureContainer\022\'"
-    ".sf.inventory.v1.EnsureContainerRequest\032"
-    "\036.sf.inventory.v1.ContainerView\022T\n\014GetCo"
-    "ntainer\022$.sf.inventory.v1.GetContainerRe"
-    "quest\032\036.sf.inventory.v1.ContainerView\022F\n"
-    "\005Grant\022\035.sf.inventory.v1.GrantRequest\032\036."
-    "sf.inventory.v1.LedgerReceipt\022P\n\017GrantWi"
-    "thIntent\022\035.sf.inventory.v1.GrantRequest\032"
-    "\036.sf.inventory.v1.LedgerReceiptB\'\252\002$Shat"
-    "teredFrontier.InventoryLedger.V1b\006proto3"
+    "wUpIntent\"\302\001\n\017TransferRequest\022\024\n\014operati"
+    "on_id\030\001 \001(\t\022\031\n\021from_container_id\030\002 \001(\t\022\036"
+    "\n\026from_expected_revision\030\003 \001(\003\022\027\n\017to_con"
+    "tainer_id\030\004 \001(\t\022\034\n\024to_expected_revision\030"
+    "\005 \001(\003\022\025\n\rdefinition_id\030\006 \001(\t\022\020\n\010quantity"
+    "\030\007 \001(\003\"R\n\016FollowUpIntent\022\027\n\017payload_vers"
+    "ion\030\001 \001(\r\022\017\n\007payload\030\002 \001(\014\022\026\n\016payload_di"
+    "gest\030\003 \001(\t*\206\001\n\tOwnerKind\022\032\n\026OWNER_KIND_U"
+    "NSPECIFIED\020\000\022\030\n\024OWNER_KIND_CHARACTER\020\001\022\026"
+    "\n\022OWNER_KIND_ACCOUNT\020\002\022\024\n\020OWNER_KIND_GUI"
+    "LD\020\003\022\025\n\021OWNER_KIND_SYSTEM\020\004*\377\002\n\rContaine"
+    "rKind\022\036\n\032CONTAINER_KIND_UNSPECIFIED\020\000\022\034\n"
+    "\030CONTAINER_KIND_EQUIPMENT\020\001\022\033\n\027CONTAINER"
+    "_KIND_BACKPACK\020\002\022\026\n\022CONTAINER_KIND_BAG\020\003"
+    "\022\027\n\023CONTAINER_KIND_BANK\020\004\022\037\n\033CONTAINER_K"
+    "IND_ACCOUNT_BANK\020\005\022\035\n\031CONTAINER_KIND_GUI"
+    "LD_BANK\020\006\022\032\n\026CONTAINER_KIND_MAILBOX\020\007\022\031\n"
+    "\025CONTAINER_KIND_ESCROW\020\010\022\032\n\026CONTAINER_KI"
+    "ND_BUYBACK\020\t\022%\n!CONTAINER_KIND_CONSTRUCT"
+    "ION_CACHE\020\n\022(\n$CONTAINER_KIND_CONSTRUCTI"
+    "ON_RECOVERY\020\013*\264\001\n\014LedgerAction\022\035\n\031LEDGER"
+    "_ACTION_UNSPECIFIED\020\000\022\027\n\023LEDGER_ACTION_G"
+    "RANT\020\001\022\031\n\025LEDGER_ACTION_CONSUME\020\002\022\032\n\026LED"
+    "GER_ACTION_TRANSFER\020\003\022\031\n\025LEDGER_ACTION_C"
+    "ONVERT\020\004\022\032\n\026LEDGER_ACTION_EXCHANGE\020\0052\253\003\n"
+    "\017InventoryLedger\022Z\n\017EnsureContainer\022\'.sf"
+    ".inventory.v1.EnsureContainerRequest\032\036.s"
+    "f.inventory.v1.ContainerView\022T\n\014GetConta"
+    "iner\022$.sf.inventory.v1.GetContainerReque"
+    "st\032\036.sf.inventory.v1.ContainerView\022F\n\005Gr"
+    "ant\022\035.sf.inventory.v1.GrantRequest\032\036.sf."
+    "inventory.v1.LedgerReceipt\022P\n\017GrantWithI"
+    "ntent\022\035.sf.inventory.v1.GrantRequest\032\036.s"
+    "f.inventory.v1.LedgerReceipt\022L\n\010Transfer"
+    "\022 .sf.inventory.v1.TransferRequest\032\036.sf."
+    "inventory.v1.LedgerReceiptB\'\252\002$Shattered"
+    "Frontier.InventoryLedger.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2finventory_2fv1_2fledger_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2finventory_2fv1_2fledger_2eproto = {
     false,
     false,
-    2280,
+    2555,
     descriptor_table_protodef_sf_2finventory_2fv1_2fledger_2eproto,
     "sf/inventory/v1/ledger.proto",
     &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto_once,
     nullptr,
     0,
-    10,
+    11,
     schemas,
     file_message_globals,
     TableStruct_sf_2finventory_2fv1_2fledger_2eproto::offsets,
@@ -4393,6 +4619,411 @@ void GrantRequest::InternalSwap(GrantRequest* PROTOBUF_RESTRICT PROTOBUF_NONNULL
 }
 
 ::google::protobuf::Metadata GrantRequest::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+TransferRequest::TransferRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, TransferRequest_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.inventory.v1.TransferRequest)
+}
+PROTOBUF_NDEBUG_INLINE TransferRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::inventory::v1::TransferRequest& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        operation_id_(arena, from.operation_id_),
+        from_container_id_(arena, from.from_container_id_),
+        to_container_id_(arena, from.to_container_id_),
+        definition_id_(arena, from.definition_id_) {}
+
+TransferRequest::TransferRequest(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const TransferRequest& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, TransferRequest_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  TransferRequest* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::memcpy(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, from_expected_revision_),
+           reinterpret_cast<const char*>(&from._impl_) +
+               offsetof(Impl_, from_expected_revision_),
+           offsetof(Impl_, quantity_) -
+               offsetof(Impl_, from_expected_revision_) +
+               sizeof(Impl_::quantity_));
+
+  // @@protoc_insertion_point(copy_constructor:sf.inventory.v1.TransferRequest)
+}
+PROTOBUF_NDEBUG_INLINE TransferRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        operation_id_(arena),
+        from_container_id_(arena),
+        to_container_id_(arena),
+        definition_id_(arena) {}
+
+inline void TransferRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, from_expected_revision_),
+           0,
+           offsetof(Impl_, quantity_) -
+               offsetof(Impl_, from_expected_revision_) +
+               sizeof(Impl_::quantity_));
+}
+TransferRequest::~TransferRequest() {
+  // @@protoc_insertion_point(destructor:sf.inventory.v1.TransferRequest)
+  SharedDtor(*this);
+}
+inline void TransferRequest::SharedDtor(MessageLite& self) {
+  TransferRequest& this_ = static_cast<TransferRequest&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.operation_id_.Destroy();
+  this_._impl_.from_container_id_.Destroy();
+  this_._impl_.to_container_id_.Destroy();
+  this_._impl_.definition_id_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull TransferRequest_class_data_ =
+        TransferRequest::InternalGenerateClassData_(TransferRequest_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+TransferRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&TransferRequest_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(TransferRequest_class_data_.tc_table);
+  return TransferRequest_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+TransferRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&TransferRequest_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&TransferRequest_globals_));
+  return TransferRequest_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const TransferRequest::ParseTableT_
+    TransferRequest::_table_ =
+        TransferRequest::InternalGenerateParseTable_(TransferRequest_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void TransferRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.inventory.v1.TransferRequest)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.operation_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.from_container_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _impl_.to_container_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      _impl_.definition_id_.ClearNonDefaultToEmpty();
+    }
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x00000070U)) {
+    ::memset(&_impl_.from_expected_revision_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.quantity_) -
+        reinterpret_cast<char*>(&_impl_.from_expected_revision_)) + sizeof(_impl_.quantity_));
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL TransferRequest::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const TransferRequest& this_ = static_cast<const TransferRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL TransferRequest::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const TransferRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.inventory.v1.TransferRequest)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string operation_id = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_operation_id().empty()) {
+      const ::std::string& _s = this_._internal_operation_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.inventory.v1.TransferRequest.operation_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string from_container_id = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (!this_._internal_from_container_id().empty()) {
+      const ::std::string& _s = this_._internal_from_container_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.inventory.v1.TransferRequest.from_container_id");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  // int64 from_expected_revision = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (this_._internal_from_expected_revision() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<3>(
+              stream, this_._internal_from_expected_revision(), target);
+    }
+  }
+
+  // string to_container_id = 4;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (!this_._internal_to_container_id().empty()) {
+      const ::std::string& _s = this_._internal_to_container_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.inventory.v1.TransferRequest.to_container_id");
+      target = stream->WriteStringMaybeAliased(4, _s, target);
+    }
+  }
+
+  // int64 to_expected_revision = 5;
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (this_._internal_to_expected_revision() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<5>(
+              stream, this_._internal_to_expected_revision(), target);
+    }
+  }
+
+  // string definition_id = 6;
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (!this_._internal_definition_id().empty()) {
+      const ::std::string& _s = this_._internal_definition_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.inventory.v1.TransferRequest.definition_id");
+      target = stream->WriteStringMaybeAliased(6, _s, target);
+    }
+  }
+
+  // int64 quantity = 7;
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (this_._internal_quantity() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<7>(
+              stream, this_._internal_quantity(), target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.inventory.v1.TransferRequest)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t TransferRequest::ByteSizeLong(const MessageLite& base) {
+  const TransferRequest& this_ = static_cast<const TransferRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t TransferRequest::ByteSizeLong() const {
+  const TransferRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.inventory.v1.TransferRequest)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
+    // string operation_id = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_operation_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_operation_id());
+      }
+    }
+    // string from_container_id = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!this_._internal_from_container_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_from_container_id());
+      }
+    }
+    // string to_container_id = 4;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!this_._internal_to_container_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_to_container_id());
+      }
+    }
+    // string definition_id = 6;
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (!this_._internal_definition_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_definition_id());
+      }
+    }
+    // int64 from_expected_revision = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (this_._internal_from_expected_revision() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+            this_._internal_from_expected_revision());
+      }
+    }
+    // int64 to_expected_revision = 5;
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      if (this_._internal_to_expected_revision() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+            this_._internal_to_expected_revision());
+      }
+    }
+    // int64 quantity = 7;
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+      if (this_._internal_quantity() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+            this_._internal_quantity());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void TransferRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<TransferRequest*>(&to_msg);
+  auto& from = static_cast<const TransferRequest&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.inventory.v1.TransferRequest)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_operation_id().empty()) {
+        _this->_internal_set_operation_id(from._internal_operation_id());
+      } else {
+        if (_this->_impl_.operation_id_.IsDefault()) {
+          _this->_internal_set_operation_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!from._internal_from_container_id().empty()) {
+        _this->_internal_set_from_container_id(from._internal_from_container_id());
+      } else {
+        if (_this->_impl_.from_container_id_.IsDefault()) {
+          _this->_internal_set_from_container_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!from._internal_to_container_id().empty()) {
+        _this->_internal_set_to_container_id(from._internal_to_container_id());
+      } else {
+        if (_this->_impl_.to_container_id_.IsDefault()) {
+          _this->_internal_set_to_container_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (!from._internal_definition_id().empty()) {
+        _this->_internal_set_definition_id(from._internal_definition_id());
+      } else {
+        if (_this->_impl_.definition_id_.IsDefault()) {
+          _this->_internal_set_definition_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (from._internal_from_expected_revision() != 0) {
+        _this->_impl_.from_expected_revision_ = from._impl_.from_expected_revision_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      if (from._internal_to_expected_revision() != 0) {
+        _this->_impl_.to_expected_revision_ = from._impl_.to_expected_revision_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+      if (from._internal_quantity() != 0) {
+        _this->_impl_.quantity_ = from._impl_.quantity_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void TransferRequest::CopyFrom(const TransferRequest& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.inventory.v1.TransferRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void TransferRequest::InternalSwap(TransferRequest* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.operation_id_, &other->_impl_.operation_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.from_container_id_, &other->_impl_.from_container_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.to_container_id_, &other->_impl_.to_container_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.definition_id_, &other->_impl_.definition_id_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.quantity_)
+      + sizeof(TransferRequest::_impl_.quantity_)
+      - PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.from_expected_revision_)>(
+          reinterpret_cast<char*>(&_impl_.from_expected_revision_),
+          reinterpret_cast<char*>(&other->_impl_.from_expected_revision_));
+}
+
+::google::protobuf::Metadata TransferRequest::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // ===================================================================
