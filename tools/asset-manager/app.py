@@ -208,7 +208,7 @@ PARAMS = (
     + section("Rig", [
         ("rig", "Rig the model (SkinTokens)", "bool", {}, []),
         ("rig_format", "Rigged file format", "choice", {"options": ["glb", "fbx"]}, [("1270", "file_format")]),
-        ("rig_skeleton", "Skeleton naming", "choice", {"options": ["Keep model names", "Mixamo", "Unreal Engine 5"]}, [("1270", "skeleton_template")]),
+        ("rig_skeleton", "Skeleton naming (UE5/Mixamo: humanoids only)", "choice", {"options": ["Keep model names", "Mixamo", "Unreal Engine 5"]}, [("1270", "skeleton_template")]),
         ("rig_weights_per_vertex", "Bone weights per vertex", "int", {"min": 1, "max": 32}, [("1270", "group_per_vertex")]),
         ("rig_transfer", "Transfer weights to the original mesh", "bool", {}, [("1270", "use_transfer")]),
         ("rig_postprocess", "Post-process skeleton", "bool", {}, [("1270", "use_postprocess")]),
@@ -278,6 +278,13 @@ PRESETS = {
     "tex_resolution": _levels(1024, 1024, 1024, 1536),
     "rig_origin_bottom": _levels(True, True, True, True),  # props and characters stand on their origin in UE5
 }
+# Rigged meshes are skinned per vertex every frame and Nanite doesn't make that cheap, so with "rig" on the
+# presets use skinned-mesh budgets instead (owner request 2026-10-23): Low = critter, Normal = regular NPC or
+# creature, High = detailed NPC, Ultra = hero/player cap. These also keep SkinTokens and the motion pipeline fast.
+RIG_PRESETS = {
+    "target_face_num": _levels(10000, 30000, 50000, 100000),
+    "texture_size": _levels(1024, 2048, 2048, 2048),
+}
 # Everything else is a pipeline internal, a research knob or has no UE5 benefit; the web app hides it.
 UI_VISIBLE = {"seed", "target_face_num", "texture_size", "remove_background", "mv_remove_background",
               "rig", "rig_format", "rig_skeleton"}
@@ -294,7 +301,7 @@ def param_schema():
         default = next((g[n]["inputs"][i] for n, i in t if n in g), False) if t else False
         default = PRESETS[k][DEFAULT_PRESET] if k in PRESETS else default
         out.append({"key": k, "label": lbl, "section": sec, "kind": kind, "modes": modes, "default": default,
-                    "presets": PRESETS.get(k), "hidden": k in UI_HIDDEN, **extra})
+                    "presets": PRESETS.get(k), "rig_presets": RIG_PRESETS.get(k), "hidden": k in UI_HIDDEN, **extra})
     return out
 
 def job_views(params):
@@ -323,7 +330,10 @@ def build_graph(params, image, prefix, pixal_model, views=None):
     level = params.get("preset", DEFAULT_PRESET)
     if level not in PRESET_LEVELS:
         raise ValueError(f"preset must be one of {PRESET_LEVELS}")
-    params = {**{k: v[level] for k, v in PRESETS.items()}, **params}
+    preset = {k: v[level] for k, v in PRESETS.items()}
+    if params.get("rig"):
+        preset.update({k: v[level] for k, v in RIG_PRESETS.items()})
+    params = {**preset, **params}
     for key, _, _, kind, extra, targets in PARAMS:
         if key not in params:
             continue
@@ -1159,7 +1169,12 @@ def check():
     lo = build_graph({"preset": "low", "target_face_num": 50000}, "", "", "")
     assert lo["218"]["inputs"]["target_face_num"] == 50000 and lo["1261"]["inputs"]["texture_size"] == 1024  # explicit wins
     assert build_graph({}, "", "", "")["274"]["inputs"]["shape_steps"] == 12  # Normal by default
-    assert all(set(v) == set(PRESET_LEVELS) and k in PARAM_KEYS for k, v in PRESETS.items())
+    assert all(set(v) == set(PRESET_LEVELS) and k in PARAM_KEYS for k, v in {**PRESETS, **RIG_PRESETS}.items())
+    rigged = build_graph({"preset": "low", "rig": True}, "", "sfam/1_x", "")
+    assert rigged["218"]["inputs"]["target_face_num"] == 10000 and rigged["1261"]["inputs"]["texture_size"] == 1024
+    assert build_graph({"preset": "normal", "rig": True, "target_face_num": 77000}, "", "", "")["218"]["inputs"]["target_face_num"] == 77000
+    assert build_graph({"preset": "normal"}, "", "", "")["218"]["inputs"]["target_face_num"] == 300000  # unrigged unchanged
+    assert rigged["1270"]["inputs"]["skeleton_template"] == "Keep model names"  # UE5 names only when asked
     rg = build_graph({"rig": True, "rig_format": "fbx", "rig_skeleton": "Unreal Engine 5"}, "", "sfam/1_x", "")
     assert rg["1270"]["inputs"]["file_format"] == "fbx" and rg["1271"]["inputs"]["source"] == ["1270", 1]
     assert rg["1270"]["inputs"]["filename_prefix"] == "sfam/1_x_rigged"

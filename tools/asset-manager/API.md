@@ -146,6 +146,17 @@ Rigging (`rig: true`) runs SkinTokens (ComfyUI-SkinToken) on the textured mesh a
 - **High:** more detail, about 15 to 18 min.
 - **Ultra:** Nanite static meshes only, about 25 to 35 min. It can run out of VRAM, and with multi-view plus rigging it can hit the 60-minute timeout.
 
+With `rig: true` the preset uses skinned-mesh budgets for `target_face_num` and `texture_size` instead. Rigged meshes are skinned per vertex every frame, and Nanite doesn't make that cheap:
+
+| Preset | Rigged faces | Rigged texture | Typical use |
+|---|---|---|---|
+| low | 10,000 | 1024 | small creature or critter |
+| normal | 30,000 | 2048 | regular NPC or creature |
+| high | 50,000 | 2048 | detailed NPC |
+| ultra | 100,000 | 2048 | hero or player character (cap) |
+
+For `rig_skeleton`, `Unreal Engine 5` and `Mixamo` map bones onto a human template, so use them only for humanoids. Keep the default, `Keep model names`, for animals, mounts and other non-humanoids.
+
 These times are estimates for single view without rigging, and model loading adds a few minutes. The preset values come from a review of the ComfyUI-Trellis2 source (b0e84c0), the node author's example workflows and measured timings on RA-SIEMS.
 
 The web app shows only the preset and the options marked **(web app)**. Every other option is still available through the API.
@@ -246,7 +257,7 @@ The web app shows only the preset and the options marked **(web app)**. Every ot
 |---|---|---|---|---|---|
 | `rig` | Rig the model (SkinTokens) **(web app)** | bool | `true` / `false` | `false` |  |
 | `rig_format` | Rigged file format **(web app)** | choice | `glb`, `fbx` | `glb` |  |
-| `rig_skeleton` | Skeleton naming **(web app)** | choice | `Keep model names`, `Mixamo`, `Unreal Engine 5` | `Keep model names` |  |
+| `rig_skeleton` | Skeleton naming (UE5/Mixamo: humanoids only) **(web app)** | choice | `Keep model names`, `Mixamo`, `Unreal Engine 5` | `Keep model names` |  |
 | `rig_weights_per_vertex` | Bone weights per vertex | int | 1 to 32 | `4` |  |
 | `rig_transfer` | Transfer weights to the original mesh (keeps the texture; off gives an untextured mesh) | bool | `true` / `false` | `true` |  |
 | `rig_postprocess` | Post-process skeleton | bool | `true` / `false` | `false` |  |

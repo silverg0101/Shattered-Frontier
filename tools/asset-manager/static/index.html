@@ -681,18 +681,21 @@ async function renderCreate() {
       : 'Front + side/back views → textured GLB · Pixal3D multi-view geometry and texture';
   };
   const NOTES = { low: 'quick drafts · 100k faces', normal: 'game-ready · 300k faces', high: 'detailed · 500k faces', ultra: 'Nanite statics only · 1M faces, slow' };
-  const setPreset = (l, apply) => {
+  const RIG_NOTES = { low: 'rigged critter · 10k faces', normal: 'rigged NPC · 30k faces', high: 'rigged, detailed · 50k faces', ultra: 'rigged hero · 100k faces' };
+  const rigOn = () => !!$('#p_rig')?.checked;
+  const setPreset = (l, apply) => {  // with Rig ticked, face count and texture size follow the skinned-mesh budgets
     preset = l; store.set('createPreset', l);
     document.querySelectorAll('[data-preset]').forEach(b => b.classList.toggle('on', b.dataset.preset === l));
-    $('#presetnote').textContent = NOTES[l] || '';
+    $('#presetnote').textContent = (rigOn() ? RIG_NOTES : NOTES)[l] || '';
     if (!apply) return;
     for (const p of schema) {
       if (!p.presets) continue;
-      const el = $('#p_' + p.key), v = p.presets[l];
+      const el = $('#p_' + p.key), v = (rigOn() && p.rig_presets ? p.rig_presets : p.presets)[l];
       p.kind === 'bool' ? (el.checked = v) : (el.value = v);
     }
   };
   document.querySelectorAll('[data-preset]').forEach(b => b.onclick = () => setPreset(b.dataset.preset, true));
+  $('#p_rig') && $('#p_rig').addEventListener('change', () => setPreset(preset, true));
   drawSrc(); drawViews(); setMode(mode); setPreset(preset, !Object.keys(saved).length);
   document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => setMode(b.dataset.mode));
   const settings = await api('/api/settings').catch(() => ({ input_folder: 'Inputs' }));
