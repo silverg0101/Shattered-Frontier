@@ -3,6 +3,8 @@ services:
     build: .
     restart: unless-stopped
     ports: ["8090:8090"]
+    # Motion jobs call paid ComfyUI API nodes (Seedance, MiniMax). Put the comfy.org key in .env next to this file.
+    environment: [COMFY_ORG_API_KEY]
     volumes:
       - ${DATA_ROOT:-/mnt/ssd2/asset-manager/data}:/data
       - ${SSH_DIR:-./ssh}:/ssh:ro

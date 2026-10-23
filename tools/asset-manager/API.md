@@ -26,7 +26,7 @@ Base URL: `http://192.168.50.133:8090`. JSON in and out, no login. Errors return
    # {"id": 7, "status": "queued", "status_url": "http://192.168.50.133:8090/api/jobs/7"}
    ```
 
-   - `kind`: `"3d"` (3D Asset: Pixal3D geometry, Trellis2 4B texture) is the only job type.
+   - `kind`: `"3d"` (3D Asset: Pixal3D geometry, Trellis2 4B texture) or `"motion"` (animate a rigged model, see [Motion jobs](#motion-jobs)).
    - `name` (optional, max 80 chars): the output file name. It defaults to the image's name.
    - `params.image` (required): an image path in the asset library.
    - Every other `params` key is optional. A missing key uses the workflow default.
@@ -45,7 +45,7 @@ Job object:
 |---|---|
 | `id`, `kind`, `name`, `params` | As submitted |
 | `status` | `queued`, `running`, `cancelling`, `done`, `failed` or `cancelled` |
-| `note` | Why a queued job is waiting, for example "waiting for a free GPU host" |
+| `note` | Why a queued job is waiting, for example "waiting for a free GPU host"; for a running motion job, its current step |
 | `host` | GPU host running or that ran it |
 | `created`, `started`, `finished` | Unix seconds (`null` until reached) |
 | `metrics` | While running: `cpu`, `gpu`, `ram`, `vram` (percent, `null` where the host can't report it), `ram_gb` and `vram_gb` as `[used, total]` |
@@ -71,6 +71,38 @@ Poll `status_url` every few seconds until `status` is `done`, `failed` or `cance
 - **`POST /api/move`** with `{"paths": [...], "dest"}`: move items into a folder.
 - **`POST /api/rename`** with `{"path", "name"}`: rename an item.
 - **`POST /api/delete`** with `{"paths": [...]}`: delete permanently. Folders are deleted with everything in them.
+
+## Motion jobs
+
+A motion job animates a rigged model (`.glb` or `.fbx`, such as a 3D job's `<name>_rigged.glb`). The GPU host:
+
+1. renders the model's rest pose in Blender, front view on the left and left-side view on the right, on grey;
+2. sends that image as the first frame to a paid video model (ComfyUI API node) with a prompt to perform the action on the spot, once per take;
+3. tracks every bone point through both halves of each video with CoTracker3, combines front (x, height) and side (y, height) into 3D, and bakes it onto the skeleton in Blender.
+
+```bash
+curl -X POST http://192.168.50.133:8090/api/jobs -H 'Content-Type: application/json' -d '{
+  "kind": "motion",
+  "params": {"model": "Generated/Griffin_rigged.glb", "action": "walk", "video_model": "Seedance 1.0 Pro Fast", "takes": 2}
+}'
+```
+
+Per take, `files` holds `<name>_<action>_take<n>.glb` (the model with the baked animation), `.png` (its thumbnail, the first frame), `.mp4` (the generated video) and `_overlay.mp4` (the video with the tracked points: cyan where front and side agree on height, red where they disagree by more than 5% of the model's height). Takes are listed best first. `log` gives each take's score (1 = perfect agreement, 0 = 5% of model height or worse) and its height disagreement; a low score usually means the video model moved the cameras or changed the character's size.
+
+Each take is one paid video, billed to the comfy.org account whose key is set as `COMFY_ORG_API_KEY` on the asset manager; without it, motion jobs are rejected with 400. Motion jobs run on SSH hosts only, prepared with `host-setup/install-motion.sh`.
+
+The model must face -Y in Blender (glTF +Z, how the 3D jobs export); otherwise set `turn`. This first version bakes the skeleton only: no foot locking, loop matching or root motion yet, and the animation is GLB only.
+
+| Key | What it sets | Type | Range / options | Default |
+|---|---|---|---|---|
+| `model` (required) | Rigged model in the asset library | path | `.glb`, `.fbx` | |
+| `action` | Action to film | choice | `walk` | `walk` |
+| `video_model` | Video model | choice | `Seedance 1.0 Pro Fast`, `Seedance 1.5 Pro`, `MiniMax H3`, `MiniMax Hailuo 02` | `Seedance 1.0 Pro Fast` |
+| `takes` | Videos to generate (each is billed) | int | 1 to 4 | `2` |
+| `seed` | Seed of the first take, later takes count up (-1 = random) | int | -1 to 2147483647 | `-1` |
+| `resolution` | Video resolution (Hailuo always uses 768P) | choice | `480p`, `720p` | `720p` |
+| `turn` | Turn the model about its vertical axis before filming (degrees) | choice | `0`, `90`, `180`, `-90` | `0` |
+| `prompt` | Replaces the built-in prompt (max 2000 chars) | string | | the action's prompt |
 
 ## 3D Asset options (`params`)
 
