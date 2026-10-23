@@ -441,6 +441,21 @@ function uvIslands(geo) {  // connected triangles sharing vertex indices; glTF s
   const used = new Set(); for (let t = 0; t < idx.length; t++) used.add(find(idx[t]));
   return used.size;
 }
+function smoothNormals(THREE, geo) {  // area-weighted normals shared across vertices split at UV seams
+  const pos = geo.attributes.position, idx = geo.index ? geo.index.array : null, n = pos.count, key = new Int32Array(n), sums = [];
+  const ids = new Map(), q = v => Math.round(v * 1e5);
+  for (let i = 0; i < n; i++) { const k = `${q(pos.getX(i))},${q(pos.getY(i))},${q(pos.getZ(i))}`; let id = ids.get(k); if (id === undefined) { id = ids.size; ids.set(k, id); sums.push(0, 0, 0); } key[i] = id; }
+  const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(), cnt = idx ? idx.length : n;
+  for (let t = 0; t < cnt; t += 3) {
+    const i0 = idx ? idx[t] : t, i1 = idx ? idx[t + 1] : t + 1, i2 = idx ? idx[t + 2] : t + 2;
+    a.fromBufferAttribute(pos, i0); b.fromBufferAttribute(pos, i1); c.fromBufferAttribute(pos, i2);
+    c.sub(b); a.sub(b); c.cross(a);  // unnormalised = area weighted
+    for (const i of [i0, i1, i2]) { const s = key[i] * 3; sums[s] += c.x; sums[s + 1] += c.y; sums[s + 2] += c.z; }
+  }
+  const out = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) { const s = key[i] * 3, l = Math.hypot(sums[s], sums[s + 1], sums[s + 2]) || 1; out[i * 3] = sums[s] / l; out[i * 3 + 1] = sums[s + 1] / l; out[i * 3 + 2] = sums[s + 2] / l; }
+  geo.setAttribute('normal', new THREE.BufferAttribute(out, 3));
+}
 async function mountViewer(el, url, entry) {
   viewer?.dispose(); viewer = null;
   el.innerHTML = `<canvas class="v3d"></canvas><canvas class="vuv" hidden></canvas><div class="vbusy">Loading model…</div>`;
@@ -451,30 +466,36 @@ async function mountViewer(el, url, entry) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.outputColorSpace = THREE.SRGBColorSpace;
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x14171d);
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x30343c, 1.4));
-  const sun = new THREE.DirectionalLight(0xffffff, 2.2); sun.position.set(2, 3, 4); scene.add(sun);
-  const camera = new THREE.PerspectiveCamera(35, 1, 0.001, 1000);
+  // Studio lighting: a soft room environment for fill and reflections, plus a key and rim light that move with
+  // the camera so the shape always reads, whichever side you orbit to.
+  const { RoomEnvironment } = await import('three/addons/environments/RoomEnvironment.js');
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.3;
+  const camera = new THREE.PerspectiveCamera(35, 1, 0.001, 1000); scene.add(camera);
+  const key = new THREE.DirectionalLight(0xfff4e8, 1.8); key.position.set(-1.2, 1.4, 0.6); camera.add(key); camera.add(key.target); key.target.position.set(0, 0, -1);
+  const rim = new THREE.DirectionalLight(0xbfd6ff, 0.9); rim.position.set(1.5, 0.8, -1.5); camera.add(rim); camera.add(rim.target); rim.target.position.set(0, 0, -1);
   const controls = new OrbitControls(camera, canvas); controls.enableDamping = true;
   let raf = 0, dead = false, mixer = null;
   const clock = new THREE.Clock();
   const resize = () => { const w = el.clientWidth, h = el.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); };
   const ro = new ResizeObserver(resize); ro.observe(el); resize();
   const loop = () => { if (dead) return; raf = requestAnimationFrame(loop); mixer?.update(clock.getDelta()); controls.update(); renderer.render(scene, camera); };
-  viewer = { dispose() { dead = true; cancelAnimationFrame(raf); ro.disconnect(); renderer.dispose(); } };
+  viewer = { dispose() { dead = true; cancelAnimationFrame(raf); ro.disconnect(); pmrem.dispose(); renderer.dispose(); } };
   let gltf;
   try { gltf = await new GLTFLoader().loadAsync(url); } catch (err) { $('.vbusy', el).textContent = 'Could not load: ' + err.message; return; }
   if (dead) return;
   $('.vbusy', el).remove();
   const root = gltf.scene; scene.add(root);
   const meshes = []; root.traverse(o => { if (o.isMesh) meshes.push(o); });
+  meshes.forEach(m => { if (!m.geometry.attributes.normal) smoothNormals(THREE, m.geometry); });  // TRELLIS exports carry no normals
   const box = new THREE.Box3(); meshes.forEach(m => box.expandByObject(m));
   const size = box.getSize(new THREE.Vector3()), center = box.getCenter(new THREE.Vector3()), r = size.length() / 2 || 1;
   controls.target.copy(center); camera.position.copy(center).add(new THREE.Vector3(0, r * 0.25, r * 2.6)); camera.near = r / 100; camera.far = r * 100; camera.updateProjectionMatrix();
   if (gltf.animations.length) { mixer = new THREE.AnimationMixer(root); mixer.clipAction(gltf.animations[0]).play(); }
   // per-mode materials and overlays
   const orig = new Map(meshes.map(m => [m, m.material]));
-  const clay = new THREE.MeshStandardMaterial({ color: 0xb8b8b8, roughness: 0.85, metalness: 0, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
-  const check = new THREE.MeshBasicMaterial({ map: checkerTexture(THREE) });
+  const clay = new THREE.MeshStandardMaterial({ color: 0x8f8f8f, roughness: 0.55, metalness: 0, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+  const check = new THREE.MeshStandardMaterial({ map: checkerTexture(THREE), roughness: 0.8, metalness: 0 });
   const normals = new THREE.MeshNormalMaterial();
   const ghost = new THREE.MeshStandardMaterial({ color: 0xb8b8b8, roughness: 0.85, transparent: true, opacity: 0.28, depthWrite: false });
   const wires = meshes.map(m => { const w = new THREE.LineSegments(new THREE.WireframeGeometry(m.geometry), new THREE.LineBasicMaterial({ color: 0x0a90ff, transparent: true, opacity: 0.55 })); w.visible = false; m.add(w); return w; });
