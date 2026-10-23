@@ -19,6 +19,12 @@
 #include "EngineUtils.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/PlayerState.h"
+#include "Gathering/SFStationRecipes.h"
+#if SF_WITH_MINIMAL_INVENTORY
+#include "InventoryComponent.h"
+#include "InventoryItemDefinition.h"
+#endif
 
 using namespace SFHudStyle;
 
@@ -118,63 +124,149 @@ void USFUnitFrameWidget::ApplyKitStyle()
 
 // ---- hotbar
 
-TArray<FSFHotbarSlot> USFHudHotbarWidget::Slots()
+const TArray<FString>& USFHudHotbarWidget::BuildPieces()
 {
-    return {{1, TEXT("build_wall"), TEXT("Wall")}, {2, TEXT("build_foundation"), TEXT("Foundation")}, {3, TEXT("build_roof"), TEXT("Roof")},
-        {4, TEXT("build_door"), TEXT("Door")}, {5, TEXT("iron_axe"), TEXT("Axe")}, {6, TEXT("iron_pickaxe"), TEXT("Pickaxe")}};
+    static const TArray<FString> Pieces = {TEXT("build/wall"), TEXT("build/foundation"), TEXT("build/roof"), TEXT("build/door")};
+    return Pieces;
 }
 
-int32 USFHudHotbarWidget::ActiveToolKey(const TArray<TPair<FText, int32>>& InventoryItems)
+TArray<FString> USFHudHotbarWidget::DefaultLayout()
 {
-    for (const TPair<FText, int32>& Item : InventoryItems)
+    TArray<FString> Out = BuildPieces();
+    Out.Append({TEXT("item/iron_axe"), TEXT("item/iron_pickaxe")});
+    Out.SetNum(SlotCount);
+    return Out;
+}
+
+int32 USFHudHotbarWidget::CountFor(const FString& Assignment, const FSFHotbarStock& Stock)
+{
+    static const TCHAR* const Bundles[4] = {TEXT("item/wall_material_bundle"), TEXT("item/foundation_material_bundle"), TEXT("item/roof_material_bundle"), TEXT("item/door_material_bundle")};
+    const int32 Piece = BuildPieces().IndexOfByKey(Assignment);
+    return Stock.Counts.FindRef(Piece != INDEX_NONE ? FString(Bundles[Piece]) : Assignment);
+}
+
+FSFHotbarStock USFHudHotbarWidget::StockOf(const APlayerController* Controller)
+{
+    FSFHotbarStock Stock;
+    if (const ASFPlayerController* Player = Cast<ASFPlayerController>(Controller)) { Stock.BuildPiece = Player->GetBuildPiece(); }
+#if SF_WITH_MINIMAL_INVENTORY
+    const UInventoryComponent* Inventory = Controller ? Controller->FindComponentByClass<UInventoryComponent>() : nullptr;
+    for (int32 Index = 0; Inventory && Index < FMath::Clamp(Inventory->NumSlots, 0, 256); ++Index)
     {
-        const FString Name = Item.Key.ToString();
-        if (!Name.EndsWith(TEXT(" (equipped)"))) { continue; }
-        if (Name.Contains(TEXT("Pickaxe"))) { return 6; }
-        if (Name.Contains(TEXT("Axe"))) { return 5; }
+        TSoftObjectPtr<UInventoryItemDefinition> Item; int32 Quantity = 0;
+        const UInventoryItemDefinition* Definition = Inventory->GetSlot(Index, Item, Quantity) && Quantity > 0 ? Item.LoadSynchronous() : nullptr;
+        if (Definition) { Stock.Counts.FindOrAdd(Definition->UniqueId) += Quantity; }
     }
-    return 0;
-}
-
-int32 USFHudHotbarWidget::StackCount(const TArray<TPair<FText, int32>>& InventoryItems, const FString& Label)
-{
-    int32 Total = 0;
-    for (const TPair<FText, int32>& Item : InventoryItems) { if (Item.Key.ToString().Contains(Label)) { Total += Item.Value; } }
-    return Total;
+    for (const FInventoryEquippedSlotRep& Worn : Inventory ? Inventory->EquippedItems : TArray<FInventoryEquippedSlotRep>())
+    {
+        if (const UInventoryItemDefinition* Definition = Worn.Item.LoadSynchronous())
+        { Stock.Counts.FindOrAdd(Definition->UniqueId) += FMath::Max(1, Worn.Quantity); Stock.Worn.Add(Definition->UniqueId); }
+    }
+#endif
+    return Stock;
 }
 
 void USFHudHotbarWidget::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
+    Layout = DefaultLayout();
     if (!SlotRow) { return; }
-    const TArray<FSFHotbarSlot> Defs = Slots();
     for (UWidget* Child : SlotRow->GetAllChildren())
     {
         USFSlotWidget* Cell = Cast<USFSlotWidget>(Child);
-        if (!Cell) { continue; }
+        if (!Cell || Cells.Num() >= SlotCount) { continue; }
         Cell->SetKeyText(FText::AsNumber((Cells.Num() + 1) % 10));  // the tenth key is 0
-        if (Defs.IsValidIndex(Cells.Num()))
-        {
-            const FSFHotbarSlot& Def = Defs[Cells.Num()];
-            Cell->SetIcon(LoadObject<UTexture2D>(nullptr, *FString::Printf(TEXT("/Game/Frontier/UI/Icons/T_Icon_%s.T_Icon_%s"), *Def.IconStem, *Def.IconStem), nullptr, LOAD_NoWarn | LOAD_Quiet));
-        }
         Cells.Add(Cell);
     }
+    ShownIds.Init(TEXT("?"), Cells.Num());  // matches no assignment, so the first Present draws every icon
 }
 
-void USFHudHotbarWidget::Present(const TArray<TPair<FText, int32>>& InventoryItems)
+void USFHudHotbarWidget::LoadLayout(const FString& Character)
 {
-    const USFGameUserSettings* User = GEngine ? Cast<USFGameUserSettings>(GEngine->GetGameUserSettings()) : nullptr;
-    const int32 Shown = FMath::Clamp(User ? User->HotbarSlots : 6, USFGameUserSettings::MinHotbarSlots, USFGameUserSettings::MaxHotbarSlots);
-    for (int32 Index = 0; Index < Cells.Num(); ++Index) { Cells[Index]->SetVisibility(Index < Shown ? ESlateVisibility::Visible : ESlateVisibility::Collapsed); }
-    const int32 Key = ActiveToolKey(InventoryItems);
-    if (Key != ActiveKey)
+    CharacterKey = Character.IsEmpty() ? FString(TEXT("default")) : Character;
+    const USFHotbarSave* Saved = Cast<USFHotbarSave>(UGameplayStatics::LoadGameFromSlot(TEXT("Hotbar_") + CharacterKey, 0));
+    Layout = Saved ? Saved->Layout : DefaultLayout();
+    Layout.SetNum(SlotCount);
+}
+
+void USFHudHotbarWidget::SaveLayout() const
+{
+    if (CharacterKey.IsEmpty()) { return; }
+    USFHotbarSave* Save = Cast<USFHotbarSave>(UGameplayStatics::CreateSaveGameObject(USFHotbarSave::StaticClass()));
+    if (!Save) { return; }
+    Save->Layout = Layout;
+    UGameplayStatics::SaveGameToSlot(Save, TEXT("Hotbar_") + CharacterKey, 0);
+}
+
+void USFHudHotbarWidget::Assign(int32 Index, const FString& Id)
+{
+    if (!Layout.IsValidIndex(Index)) { return; }
+    Layout[Index] = Id;
+    SaveLayout();
+}
+
+void USFHudHotbarWidget::SwapSlots(int32 A, int32 B)
+{
+    if (!Layout.IsValidIndex(A) || !Layout.IsValidIndex(B) || A == B) { return; }
+    Layout.Swap(A, B);
+    SaveLayout();
+}
+
+bool USFHudHotbarWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+{
+    const USFItemDragOperation* Drag = Cast<USFItemDragOperation>(InOperation);
+    const FVector2D At = InDragDropEvent.GetScreenSpacePosition();
+    const int32 Index = Cells.IndexOfByPredicate([&At](const USFSlotWidget* Cell) { return Cell->IsVisible() && Cell->GetCachedGeometry().IsUnderLocation(At); });
+    if (!Drag || Index == INDEX_NONE) { return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation); }
+    if (Drag->FromHotbar != INDEX_NONE) { SwapSlots(Drag->FromHotbar, Index); return true; }
+#if SF_WITH_MINIMAL_INVENTORY
+    if (const UInventoryItemDefinition* Definition = TSoftObjectPtr<UInventoryItemDefinition>(Drag->Item).LoadSynchronous())
+    { Assign(Index, Definition->UniqueId); return true; }
+#endif
+    return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+}
+
+void USFHudHotbarWidget::Present(const FSFHotbarStock& Stock)
+{
+    if (CharacterKey.IsEmpty())
     {
-        ActiveKey = Key;
-        for (int32 Index = 0; Index < Cells.Num(); ++Index) { Cells[Index]->SetSelected(Index + 1 == Key); }
+        const APlayerController* Owner = GetOwningPlayer();
+        if (Owner && Owner->PlayerState) { LoadLayout(Owner->PlayerState->GetPlayerName()); }
     }
-    const TArray<FSFHotbarSlot> Defs = Slots();
-    for (int32 Index = 0; Index < Cells.Num() && Index < Defs.Num(); ++Index) { Cells[Index]->SetCount(StackCount(InventoryItems, Defs[Index].Label)); }
+    const USFGameUserSettings* User = GEngine ? Cast<USFGameUserSettings>(GEngine->GetGameUserSettings()) : nullptr;
+    ShownCount = FMath::Clamp(User ? User->HotbarSlots : 6, USFGameUserSettings::MinHotbarSlots, USFGameUserSettings::MaxHotbarSlots);
+    ActiveKey = 0;
+    for (int32 Index = 0; Index < Cells.Num(); ++Index)
+    {
+        USFSlotWidget* Cell = Cells[Index];
+        Cell->SetVisibility(Index < ShownCount ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+        const FString Id = Layout.IsValidIndex(Index) ? Layout[Index] : FString();
+        if (ShownIds[Index] != Id)
+        {
+            ShownIds[Index] = Id;
+            const int32 Piece = BuildPieces().IndexOfByKey(Id);
+            UTexture2D* Art = nullptr;
+            if (Piece != INDEX_NONE)
+            {
+                const FString Stem = Id.Replace(TEXT("/"), TEXT("_"));  // build/wall -> T_Icon_build_wall
+                Art = LoadObject<UTexture2D>(nullptr, *FString::Printf(TEXT("/Game/Frontier/UI/Icons/T_Icon_%s.T_Icon_%s"), *Stem, *Stem), nullptr, LOAD_NoWarn | LOAD_Quiet);
+            }
+#if SF_WITH_MINIMAL_INVENTORY
+            else if (!Id.IsEmpty())
+            {
+                const UInventoryItemDefinition* Definition = TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Id))).LoadSynchronous();
+                Art = Definition ? Definition->Icon.LoadSynchronous() : nullptr;
+            }
+#endif
+            Cell->SetIcon(Art);
+            Cell->SetHotbarDrag(Id.IsEmpty() ? INDEX_NONE : Index);
+        }
+        Cell->SetCount(Id.IsEmpty() ? 0 : CountFor(Id, Stock));
+        const int32 Piece = BuildPieces().IndexOfByKey(Id);
+        const bool bLit = !Id.IsEmpty() && ((Piece != INDEX_NONE && Piece == Stock.BuildPiece) || Stock.Worn.Contains(Id));
+        Cell->SetSelected(bLit);
+        if (bLit && !ActiveKey) { ActiveKey = Index + 1; }
+    }
 }
 
 // ---- minimap
@@ -422,7 +514,7 @@ void USFHudWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
     SyncLevel();
-    if (Hotbar) { Hotbar->Present(Pilot && Pilot->IsEnabled() ? Pilot->GetInventoryItems() : TArray<TPair<FText, int32>>()); }
+    if (Hotbar) { Hotbar->Present(USFHudHotbarWidget::StockOf(GetOwningPlayer())); }
     // Target frame: the controller's selected combat target (boar or townsfolk), hidden while the station panel is open.
     const ASFPlayerController* Player = Cast<ASFPlayerController>(GetOwningPlayer());
     const AActor* CombatTarget = Player ? Player->GetSelectedCombatTarget() : nullptr;

@@ -16,17 +16,17 @@ OUT.mkdir(parents=True, exist_ok=True)
 EXPECT_KEYS = {  # action -> keys that must still be mapped (IMC_Player / IMC_Build)
     'MoveForward': ['W'], 'MoveBack': ['S'], 'StrafeLeft': ['Q'], 'StrafeRight': ['E'], 'TurnLeft': ['A'], 'TurnRight': ['D'],
     'Look': ['Mouse2D'], 'Zoom': ['MouseWheelAxis'], 'MouseLook': ['RightMouseButton'], 'Orbit': ['LeftMouseButton'], 'Jump': ['SpaceBar'],
-    'Interact': ['F'], 'TargetNext': ['Tab'], 'BuildMode': ['B'], 'Inventory': ['I'], 'Skills': ['M'], 'EquipAxe': ['Five'],
-    'EquipPickaxe': ['Six'], 'CycleRecipe': ['C'], 'ClaimPlot': ['K'], 'Escape': ['Escape'], 'Trade': ['F6'], 'Market': ['F7'],
-    'BuildPlace': ['LeftMouseButton'], 'BuildDemolish': ['X', 'Delete'], 'BuildShape1': ['One'], 'BuildShape2': ['Two'],
-    'BuildShape3': ['Three'], 'BuildShape4': ['Four'], 'BuildRotate': ['R'], 'BuildLine': ['L'], 'BuildPlane': ['P'],
+    'Interact': ['F'], 'TargetNext': ['Tab'], 'BuildMode': ['B'], 'Inventory': ['I'], 'Skills': ['M'], 'Hotbar5': ['Five'],
+    'Hotbar6': ['Six'], 'CycleRecipe': ['V'], 'ClaimPlot': ['K'], 'Escape': ['Escape'], 'Trade': ['F6'], 'Market': ['F7'],
+    'BuildPlace': ['LeftMouseButton'], 'BuildDemolish': ['X', 'Delete'], 'Hotbar1': ['One'], 'Hotbar2': ['Two'],
+    'Hotbar3': ['Three'], 'Hotbar4': ['Four'], 'BuildRotate': ['R'], 'BuildLine': ['L'], 'BuildPlane': ['P'],
     'BuildLayerUp': ['PageUp'], 'BuildLayerDown': ['PageDown'], 'BuildDoor': ['E', 'F']}
-BUILD_NAMES = [n for n in ['BuildPlace', 'BuildDemolish', 'BuildShape1', 'BuildShape2', 'BuildShape3', 'BuildShape4', 'BuildRotate', 'BuildLine', 'BuildPlane', 'BuildLayerUp', 'BuildLayerDown', 'BuildDoor']]
+BUILD_NAMES = [n for n in ['BuildPlace', 'BuildDemolish', 'BuildRotate', 'BuildLine', 'BuildPlane', 'BuildLayerUp', 'BuildLayerDown', 'BuildDoor']]
 IA = {n: u.load_asset(f'/Game/Frontier/Input/IA_{n}') for n in EXPECT_KEYS}
 # (frame, action, frames held). Always-on controller actions first, then B, then the build actions.
-ALWAYS = ['Inventory', 'Inventory', 'Skills', 'Skills', 'EquipAxe', 'EquipPickaxe', 'CycleRecipe', 'ClaimPlot', 'Trade', 'Trade',
+ALWAYS = ['Inventory', 'Inventory', 'Skills', 'Skills', 'Hotbar5', 'Hotbar6', 'CycleRecipe', 'ClaimPlot', 'Trade', 'Trade',
           'Market', 'Market', 'TargetNext']
-BUILD = ['BuildShape1', 'BuildShape2', 'BuildShape3', 'BuildShape4', 'BuildRotate', 'BuildLine', 'BuildLine', 'BuildPlane', 'BuildPlane',
+BUILD = ['Hotbar1', 'Hotbar2', 'Hotbar3', 'Hotbar4', 'BuildRotate', 'BuildLine', 'BuildLine', 'BuildPlane', 'BuildPlane',
          'BuildLayerUp', 'BuildLayerDown', 'BuildDemolish', 'BuildDemolish', 'BuildDoor', 'BuildPlace']
 done = set()
 tick = dict(frame=0, mark={}, handle=None)

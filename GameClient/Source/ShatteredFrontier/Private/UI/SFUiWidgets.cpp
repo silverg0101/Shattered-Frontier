@@ -1,4 +1,5 @@
 #include "UI/SFUiWidgets.h"
+#include "UI/SFHudWidgets.h"
 
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Blueprint/WidgetTree.h"
@@ -346,7 +347,7 @@ void USFSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPoi
 {
     if (!CanDrag()) { return; }
     USFItemDragOperation* Operation = NewObject<USFItemDragOperation>(this);
-    Operation->Item = DragItem; Operation->ItemSlot = DragItemSlot; Operation->FromEquipSlot = DragFromEquipSlot;
+    Operation->Item = DragItem; Operation->ItemSlot = DragItemSlot; Operation->FromEquipSlot = DragFromEquipSlot; Operation->FromHotbar = DragFromHotbar;
     if (Icon && Icon->GetBrush().GetResourceObject())  // the dragged icon under the cursor, at the slot's on-screen icon size
     {
         UImage* Visual = WidgetTree->ConstructWidget<UImage>();
@@ -357,6 +358,14 @@ void USFSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPoi
         Operation->Pivot = EDragPivot::CenterCenter;
     }
     OutOperation = Operation;
+}
+
+// A hotbar slot dragged off the bar (nothing took the drop) is cleared.
+void USFSlotWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+{
+    Super::NativeOnDragCancelled(InDragDropEvent, InOperation);
+    if (DragFromHotbar == INDEX_NONE) { return; }
+    if (USFHudHotbarWidget* Bar = GetTypedOuter<USFHudHotbarWidget>()) { Bar->Assign(DragFromHotbar, FString()); }
 }
 
 void USFSlotWidget::SetKeyText(const FText& Key) { if (KeyLabel) { KeyLabel->SetText(Key); } }

@@ -47,12 +47,15 @@ for item_id, stem in stems.items():
     texture.set_editor_property('never_stream', True)
     library.save_loaded_asset(texture)
     done.append(stem)
-    definition_path = ITEM_PATH + '/DA_' + ''.join(part.capitalize() for part in stem.split('_'))
-    if library.does_asset_exist(definition_path):
+    base_path = ITEM_PATH + '/DA_' + ''.join(part.capitalize() for part in stem.split('_'))
+    # The base definition and its crafted grades (DA_<Item>_Crude ... _Masterwork) share the icon.
+    for definition_path in [base_path] + [base_path + '_' + grade for grade in ('Crude', 'Fine', 'Superior', 'Masterwork')]:
+        if not library.does_asset_exist(definition_path):
+            continue
         definition = library.load_asset(definition_path)
         definition.set_editor_property('icon', texture)
         if not library.save_loaded_asset(definition):
             raise RuntimeError('Could not save ' + definition_path)
-        linked.append(stem)
+        linked.append(definition_path.rsplit('/', 1)[1])
 
 unreal.log('ITEM_ICONS_IMPORTED ' + ', '.join(done) + '; linked ' + ', '.join(linked))

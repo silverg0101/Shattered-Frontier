@@ -84,26 +84,34 @@ bool FSFHudWidgetTest::RunTest(const FString& Parameters)
     Hud->ClearParty();
     TestEqual(TEXT("Party cleared"),Hud->PartyCount(),0);
 
-    // Hotbar from the pilot's item list: the equipped axe lights key 5, stacks show their count; Settings picks how many cells show.
-    auto Item=[](const TCHAR* Name,int32 Count) { return TPair<FText,int32>(FText::FromString(Name),Count); };
-    Hud->Hotbar->Present({Item(TEXT("Iron Axe (pilot) (equipped)"),1),Item(TEXT("Wall piece"),3)});
+    // Hotbar: the worn axe lights key 5, build pieces count their bundles, the selected piece lights in build mode; layout edits;
+    // Settings picks how many cells show.
+    FSFHotbarStock Stock; Stock.Worn.Add(TEXT("item/iron_axe")); Stock.Counts.Add(TEXT("item/iron_axe"),1); Stock.Counts.Add(TEXT("item/wall_material_bundle"),3);
+    Hud->Hotbar->Present(Stock);
     TestEqual(TEXT("Equipped axe is key 5"),Hud->Hotbar->GetActiveKey(),5);
     if (TestNotNull(TEXT("Cell 5 exists"),Hud->Hotbar->GetCell(4))) { TestTrue(TEXT("Cell 5 selected"),Hud->Hotbar->GetCell(4)->IsSelected()); }
     TestNotNull(TEXT("The last authored cell exists"),Hud->Hotbar->GetCell(USFHudHotbarWidget::SlotCount-1));
     TestNull(TEXT("No cell past the authored ones"),Hud->Hotbar->GetCell(USFHudHotbarWidget::SlotCount));
     if (USFSlotWidget* Wall=Hud->Hotbar->GetCell(0)) { TestEqual(TEXT("Wall stack count"),Wall->GetCountText().ToString(),FString(TEXT("3"))); }
+    Stock.BuildPiece=1; Hud->Hotbar->Present(Stock);
+    TestEqual(TEXT("The selected build piece lights first"),Hud->Hotbar->GetActiveKey(),2);
+    Hud->Hotbar->Assign(6,TEXT("item/stew"));
+    Hud->Hotbar->SwapSlots(6,0);
+    TestTrue(TEXT("Swap moves both slots"),Hud->Hotbar->GetLayout()[0]==TEXT("item/stew") && Hud->Hotbar->GetLayout()[6]==TEXT("build/wall"));
+    Hud->Hotbar->SwapSlots(6,0); Hud->Hotbar->Assign(6,FString());
+    TestTrue(TEXT("Clearing empties the slot"),Hud->Hotbar->GetLayout()[6].IsEmpty() && Hud->Hotbar->GetLayout()[0]==TEXT("build/wall"));
     if (USFGameUserSettings* User=GEngine ? Cast<USFGameUserSettings>(GEngine->GetGameUserSettings()) : nullptr)
     {
         const int32 Saved=User->HotbarSlots;
-        User->HotbarSlots=3; Hud->Hotbar->Present({});
+        User->HotbarSlots=3; Hud->Hotbar->Present(FSFHotbarStock());
         TestTrue(TEXT("Three cells show"),Hud->Hotbar->GetCell(2)->GetVisibility()==ESlateVisibility::Visible && Hud->Hotbar->GetCell(3)->GetVisibility()!=ESlateVisibility::Visible);
-        User->HotbarSlots=40; Hud->Hotbar->Present({});
+        User->HotbarSlots=40; Hud->Hotbar->Present(FSFHotbarStock());
         TestTrue(TEXT("At most ten"),Hud->Hotbar->GetCell(9)->GetVisibility()==ESlateVisibility::Visible);
-        User->HotbarSlots=0; Hud->Hotbar->Present({});
+        User->HotbarSlots=0; Hud->Hotbar->Present(FSFHotbarStock());
         TestTrue(TEXT("At least two"),Hud->Hotbar->GetCell(1)->GetVisibility()==ESlateVisibility::Visible && Hud->Hotbar->GetCell(2)->GetVisibility()!=ESlateVisibility::Visible);
-        User->HotbarSlots=Saved; Hud->Hotbar->Present({});
+        User->HotbarSlots=Saved; Hud->Hotbar->Present(FSFHotbarStock());
     }
-    Hud->Hotbar->Present({});
+    Hud->Hotbar->Present(FSFHotbarStock());
     TestEqual(TEXT("Nothing equipped"),Hud->Hotbar->GetActiveKey(),0);
 
     // Quest tracker rows from a quest view: heading plus one row per objective line.

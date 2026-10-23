@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Quest/SFQuestPilot.h"
+#include "GameFramework/SaveGame.h"
 #include "UI/SFUiWidgets.h"
 #include "SFHudWidgets.generated.h"
 
@@ -17,8 +18,18 @@ class USFGatheringPilotComponent;
 // In-game HUD as Widget Blueprints on C++ bases (docs/blueprints/menus.md). C++ owns the data and rules here; WBP_Hud and its child
 // WBPs under /Game/Frontier/UI/Widgets/Hud own layout and look. Every BindWidget below must keep its name and type in the WBP.
 
-// One hotbar cell: the key that selects it, the icon stem (/Game/Frontier/UI/Icons/T_Icon_<IconStem>) and the inventory name it counts.
-struct FSFHotbarSlot { int32 Key = 0; FString IconStem; FString Label; };
+// What the hotbar draws from: item counts by definition id (bag + worn), the worn ids, and the build piece selected in build mode
+// (-1 outside it; 0 wall .. 3 door, USFHudHotbarWidget::BuildPieces).
+struct FSFHotbarStock { TMap<FString, int32> Counts; TSet<FString> Worn; int32 BuildPiece = -1; };
+
+// A character's hotbar layout, saved locally (slot "Hotbar_<character>"): one assignment per slot, "" for empty.
+UCLASS()
+class SHATTEREDFRONTIER_API USFHotbarSave : public USaveGame
+{
+    GENERATED_BODY()
+public:
+    UPROPERTY() TArray<FString> Layout;
+};
 
 // Short-lived skill-gain toasts, newest last; MaxVisible caps what is drawn.
 struct FSFToastQueue
@@ -87,26 +98,42 @@ class SHATTEREDFRONTIER_API USFHudHotbarWidget : public USFUiWidget
     GENERATED_BODY()
 public:
     static constexpr int32 SlotCount = 10;  // cells authored; keys 1-9, 0
-    // Keys 1-6 as bound today: 1 Wall, 2 Foundation, 3 Roof, 4 Door (construction shapes) and 5 axe, 6 pickaxe (gathering tools).
-    static TArray<FSFHotbarSlot> Slots();
-    // The equipped tool's key (5 axe, 6 pickaxe) from the pilot's item list, or 0 when none is equipped.
-    static int32 ActiveToolKey(const TArray<TPair<FText, int32>>& InventoryItems);
-    // Stack count of one slot: the pilot items whose name contains the slot label, summed.
-    static int32 StackCount(const TArray<TPair<FText, int32>>& InventoryItems, const FString& Label);
+    // A slot holds a build piece (these ids; index = piece) or an item definition id ("item/iron_axe"); "" is empty.
+    static const TArray<FString>& BuildPieces();
+    // A new character's bar: 1-4 the build pieces, 5 axe, 6 pickaxe.
+    static TArray<FString> DefaultLayout();
+    // The number under a slot: the item's count, or a build piece's material bundles.
+    static int32 CountFor(const FString& Assignment, const FSFHotbarStock& Stock);
+    // The owning controller's plugin inventory (bag + worn) and build selection.
+    static FSFHotbarStock StockOf(const APlayerController* Controller);
+    // Layout edits (drag and drop); each saves the character's layout.
+    void Assign(int32 Index, const FString& Id);
+    void SwapSlots(int32 A, int32 B);
+    // Loads Character's saved layout, else the default. Present loads the owning player's on first use.
+    void LoadLayout(const FString& Character);
+    const TArray<FString>& GetLayout() const { return Layout; }
+    bool IsSlotShown(int32 Index) const { return Cells.IsValidIndex(Index) && Index < ShownCount; }
 
-    // Selects the equipped tool's cell and sets every cell's stack count.
-    void Present(const TArray<TPair<FText, int32>>& InventoryItems);
+    // Icons and counts from the layout, the worn items and the build piece lit, and how many cells show (Settings > Gameplay).
+    void Present(const FSFHotbarStock& Stock);
     UFUNCTION(BlueprintPure, Category = "SF HUD") USFSlotWidget* GetCell(int32 Index) const { return Cells.IsValidIndex(Index) ? Cells[Index].Get() : nullptr; }
-    int32 GetActiveKey() const { return ActiveKey; }
+    int32 GetActiveKey() const { return ActiveKey; }  // the first lit slot's key (1-10), 0 when none
 
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidget)) TObjectPtr<UHorizontalBox> SlotRow;
 
 protected:
     virtual void NativeOnInitialized() override;
+    // An item dropped on a slot is put there; a slot dropped on a slot swaps them.
+    virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
 private:
+    void SaveLayout() const;
     UPROPERTY(Transient) TArray<TObjectPtr<USFSlotWidget>> Cells;
-    int32 ActiveKey = -1;
+    TArray<FString> Layout;
+    TArray<FString> ShownIds;  // the assignment each cell's icon was drawn for
+    FString CharacterKey;
+    int32 ShownCount = 6;
+    int32 ActiveKey = 0;
 };
 
 // Minimap: footer ("Silverbrook · 120 m") plus a baked top-down capture of the level scrolled under the player (tools/Bake-Minimap.py).

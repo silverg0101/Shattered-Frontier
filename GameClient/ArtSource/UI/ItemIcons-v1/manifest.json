@@ -13,6 +13,30 @@
       "256": "foundation_material_bundle_256.png",
       "64": "foundation_material_bundle_64.png"
     },
+    "item/hide_boots": {
+      "256": "hide_boots_256.png",
+      "64": "hide_boots_64.png"
+    },
+    "item/hide_cap": {
+      "256": "hide_cap_256.png",
+      "64": "hide_cap_64.png"
+    },
+    "item/hide_cloak": {
+      "256": "hide_cloak_256.png",
+      "64": "hide_cloak_64.png"
+    },
+    "item/hide_gloves": {
+      "256": "hide_gloves_256.png",
+      "64": "hide_gloves_64.png"
+    },
+    "item/hide_jerkin": {
+      "256": "hide_jerkin_256.png",
+      "64": "hide_jerkin_64.png"
+    },
+    "item/hide_leggings": {
+      "256": "hide_leggings_256.png",
+      "64": "hide_leggings_64.png"
+    },
     "item/hide_strips": {
       "256": "hide_strips_256.png",
       "64": "hide_strips_64.png"
@@ -20,6 +44,10 @@
     "item/iron_axe": {
       "256": "iron_axe_256.png",
       "64": "iron_axe_64.png"
+    },
+    "item/iron_buckler": {
+      "256": "iron_buckler_256.png",
+      "64": "iron_buckler_64.png"
     },
     "item/iron_ingot": {
       "256": "iron_ingot_256.png",
@@ -36,6 +64,14 @@
     "item/iron_pickaxe": {
       "256": "iron_pickaxe_256.png",
       "64": "iron_pickaxe_64.png"
+    },
+    "item/iron_ring": {
+      "256": "iron_ring_256.png",
+      "64": "iron_ring_64.png"
+    },
+    "item/iron_shortsword": {
+      "256": "iron_shortsword_256.png",
+      "64": "iron_shortsword_64.png"
     },
     "item/oak_log": {
       "256": "oak_log_256.png",

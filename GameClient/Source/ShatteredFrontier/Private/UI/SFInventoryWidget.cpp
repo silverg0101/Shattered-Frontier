@@ -98,8 +98,8 @@ void USFInventoryWidget::Present(const TArray<FSFInventoryEntry>& All, int32 Slo
         Cell->SetKeyText(bFilled && !Icon ? Items[Index].Name : FText::GetEmpty());
         Cell->SetCount(bFilled ? Items[Index].Count : 0);  // the bag slot shows single counts too (bShowSingleCount)
         Cell->SetSelected(bFilled && Items[Index].Name.ToString() == SelectedKey);
-        const bool bEquippable = bFilled && !Items[Index].bEquipped && !Items[Index].EquipSlot.IsNone();
-        Cell->SetDragPayload(bEquippable ? Items[Index].ItemPath : FSoftObjectPath(), bEquippable ? Items[Index].EquipSlot : NAME_None, NAME_None);
+        // Every bag stack can be dragged (onto the hotbar; wearables also onto the paper doll).
+        Cell->SetDragPayload(bFilled ? Items[Index].ItemPath : FSoftObjectPath(), bFilled ? Items[Index].EquipSlot : NAME_None, NAME_None);
     }
     ShownItems = Items;  // the hover tooltip reads these by cell index
     const FSFInventoryEntry* Equipped = All.FindByPredicate([](const FSFInventoryEntry& E) { return E.bEquipped; });
@@ -149,6 +149,7 @@ void USFInventoryWidget::HandleSlotDoubleClicked(USFSelectableWidget* Source)
 bool USFInventoryWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
     const USFItemDragOperation* Drag = Cast<USFItemDragOperation>(InOperation);
+    if (Drag && Drag->FromHotbar != INDEX_NONE) { return false; }  // off the bar: the hotbar slot clears
     if (Drag && Pilot && !Drag->FromEquipSlot.IsNone()) { Pilot->RequestUnequip(Drag->FromEquipSlot); return true; }
     return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 }

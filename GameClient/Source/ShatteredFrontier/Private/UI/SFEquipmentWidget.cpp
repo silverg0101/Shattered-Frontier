@@ -404,6 +404,7 @@ bool USFEquipmentWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDr
 {
     const USFItemDragOperation* Drag = Cast<USFItemDragOperation>(InOperation);
     if (!Drag) { return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation); }
+    if (Drag->FromHotbar != INDEX_NONE) { return false; }  // off the bar: the hotbar slot clears
     const FVector2D At = InDragDropEvent.GetScreenSpacePosition();
     const FName Target = DollSlotAt(At);
     const UWidget* Grid = GridScroll ? GridScroll.Get() : ItemGrid.Get();

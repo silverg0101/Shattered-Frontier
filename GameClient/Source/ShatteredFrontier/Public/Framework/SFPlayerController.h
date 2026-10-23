@@ -86,6 +86,8 @@ public:
 #endif
     // B toggles build mode where a construction state exists; the character layers IMC_Build on while it lasts.
     bool IsBuildModeActive() const { return bBuildMode; }
+    // The build piece selected while building (0 wall, 1 foundation, 2 roof, 3 door; USFHudHotbarWidget::BuildPieces), else -1.
+    int32 GetBuildPiece() const { return !bBuildMode ? -1 : bDoorSelected ? 3 : int32(SelectedShape); }
     // CTL-02 NPC dialogue (Dialogue/SFPlayerControllerDialogue.cpp): E near an ASFDialogueNpc opens its board; keys 1-4, the rows, Esc and walking away drive it.
     bool IsDialogueOpen() const;
     UFUNCTION(Exec) void SFTalk();
@@ -126,8 +128,8 @@ private:
     void PlaceFromView();
     void RemoveFromView();
     void ToggleDoorFromView();
-    void EquipGatheringAxe();
-    void EquipGatheringPickaxe();
+    // Hotbar key (slot 0-9): a build piece enters build mode with that piece; a wearable is equipped; anything else says it can't be used yet.
+    void UseHotbarSlot(int32 Index);
     void CycleGatheringRecipe();
     void ClaimPlotFromView();  // K: claim the build plot the pawn stands in
     // BLD-02 A2: claim a plot and grant build rights through Housing; the server checks everything with the service.

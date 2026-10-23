@@ -32,24 +32,21 @@ ACTIONS = {
     'IA_BuildMode': (T.BOOLEAN, ['B']),
     'IA_Inventory': (T.BOOLEAN, ['I']),
     'IA_Skills': (T.BOOLEAN, ['M']),
-    'IA_EquipAxe': (T.BOOLEAN, ['Five']),
-    'IA_EquipPickaxe': (T.BOOLEAN, ['Six']),
     'IA_CycleRecipe': (T.BOOLEAN, ['V']),  # C is the Equipment window; the station panel's recipe list is the main path
     'IA_Equipment': (T.BOOLEAN, ['C']),
     'IA_ClaimPlot': (T.BOOLEAN, ['K']),
     'IA_Escape': (T.BOOLEAN, ['Escape']),
     'IA_Trade': (T.BOOLEAN, ['F6']),
     'IA_Market': (T.BOOLEAN, ['F7']),
+    # The hotbar keys 1-9, 0 (ASFPlayerController::UseHotbarSlot): each slot holds a build piece or an item the player put there.
+    **{f'IA_Hotbar{n}': (T.BOOLEAN, [key]) for n, key in enumerate(
+        ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Zero'], start=1)},
 }
 # Build mode (GM-01, B): added at a higher priority while build mode lasts, so these keys place, demolish and toggle
 # doors instead of orbiting (LMB), strafing (E) or interacting (F). Never maps the wheel, so zoom works in build mode.
 BUILD_ACTIONS = {
     'IA_BuildPlace': (T.BOOLEAN, ['LeftMouseButton']),
     'IA_BuildDemolish': (T.BOOLEAN, ['X', 'Delete']),
-    'IA_BuildShape1': (T.BOOLEAN, ['One']),
-    'IA_BuildShape2': (T.BOOLEAN, ['Two']),
-    'IA_BuildShape3': (T.BOOLEAN, ['Three']),
-    'IA_BuildShape4': (T.BOOLEAN, ['Four']),
     'IA_BuildRotate': (T.BOOLEAN, ['R']),
     'IA_BuildLine': (T.BOOLEAN, ['L']),
     'IA_BuildPlane': (T.BOOLEAN, ['P']),

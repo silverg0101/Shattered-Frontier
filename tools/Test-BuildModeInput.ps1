@@ -24,8 +24,8 @@ try {
     if (-not $process.HasExited) { Stop-Process -Id $process.Id -Force }
 }
 $text = Get-Content -LiteralPath $log -Raw
-$always = 'IA_Inventory','IA_Skills','IA_EquipAxe','IA_EquipPickaxe','IA_CycleRecipe','IA_ClaimPlot','IA_Trade','IA_Market','IA_TargetNext','IA_BuildMode',
-    'IA_Escape','IA_BuildShape1','IA_BuildShape2','IA_BuildShape3','IA_BuildShape4','IA_BuildRotate','IA_BuildLine','IA_BuildPlane','IA_BuildLayerUp',
+$always = 'IA_Inventory','IA_Skills','IA_Hotbar5','IA_Hotbar6','IA_CycleRecipe','IA_ClaimPlot','IA_Trade','IA_Market','IA_TargetNext','IA_BuildMode',
+    'IA_Escape','IA_Hotbar1','IA_Hotbar2','IA_Hotbar3','IA_Hotbar4','IA_BuildRotate','IA_BuildLine','IA_BuildPlane','IA_BuildLayerUp',
     'IA_BuildLayerDown','IA_BuildDemolish','IA_BuildDoor','IA_BuildPlace'
 $missing = @($always | Where-Object { $text -notmatch "INPUT_ACTION $_ Event=" })
 # IA_BuildPlace was injected once before B (must not fire) and once in build mode (must fire exactly once).

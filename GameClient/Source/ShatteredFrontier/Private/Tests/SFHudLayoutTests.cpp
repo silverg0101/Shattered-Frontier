@@ -10,18 +10,17 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFHudLayoutModelTest,
 
 bool FSFHudLayoutModelTest::RunTest(const FString& Parameters)
 {
-    const TArray<FSFHotbarSlot> Slots=USFHudHotbarWidget::Slots();
-    if (!TestEqual(TEXT("Six bound hotbar actions"),Slots.Num(),6) || !TestTrue(TEXT("They fit the authored cells"),Slots.Num()<=USFHudHotbarWidget::SlotCount)) { return false; }
-    for (int32 I=0; I<Slots.Num(); ++I) { TestEqual(FString::Printf(TEXT("Slot %d key"),I+1),Slots[I].Key,I+1); TestFalse(TEXT("Every slot has an icon"),Slots[I].IconStem.IsEmpty()); }
-    TestEqual(TEXT("Key 5 is the axe"),Slots[4].IconStem,FString(TEXT("iron_axe")));
-    TestEqual(TEXT("Key 6 is the pickaxe"),Slots[5].IconStem,FString(TEXT("iron_pickaxe")));
-
-    auto Item=[](const TCHAR* Name,int32 Count) { return TPair<FText,int32>(FText::FromString(Name),Count); };
-    TestEqual(TEXT("No tool equipped"),USFHudHotbarWidget::ActiveToolKey({Item(TEXT("Oak Log"),3)}),0);
-    TestEqual(TEXT("An unequipped axe in the bag does not light the slot"),USFHudHotbarWidget::ActiveToolKey({Item(TEXT("Iron Axe (pilot)"),1)}),0);
-    TestEqual(TEXT("Equipped axe"),USFHudHotbarWidget::ActiveToolKey({Item(TEXT("Iron Axe (pilot) (equipped)"),1)}),5);
-    TestEqual(TEXT("Equipped pickaxe is not mistaken for the axe"),USFHudHotbarWidget::ActiveToolKey({Item(TEXT("Iron Pickaxe (pilot) (equipped)"),1)}),6);
-    TestEqual(TEXT("Stack counts sum the matching items"),USFHudHotbarWidget::StackCount({Item(TEXT("Wall piece"),2),Item(TEXT("Wall post"),3),Item(TEXT("Oak Log"),9)},TEXT("Wall")),5);
+    const TArray<FString> Layout=USFHudHotbarWidget::DefaultLayout();
+    if (!TestEqual(TEXT("Ten hotbar slots"),Layout.Num(),USFHudHotbarWidget::SlotCount)) { return false; }
+    TestEqual(TEXT("1 is the wall piece"),Layout[0],FString(TEXT("build/wall")));
+    TestEqual(TEXT("4 is the door piece"),Layout[3],FString(TEXT("build/door")));
+    TestEqual(TEXT("5 is the axe"),Layout[4],FString(TEXT("item/iron_axe")));
+    TestEqual(TEXT("6 is the pickaxe"),Layout[5],FString(TEXT("item/iron_pickaxe")));
+    TestTrue(TEXT("7-0 start empty"),Layout[6].IsEmpty() && Layout[9].IsEmpty());
+    FSFHotbarStock Stock; Stock.Counts.Add(TEXT("item/wall_material_bundle"),3); Stock.Counts.Add(TEXT("item/stew"),2);
+    TestEqual(TEXT("A build piece counts its material bundles"),USFHudHotbarWidget::CountFor(TEXT("build/wall"),Stock),3);
+    TestEqual(TEXT("An item counts itself"),USFHudHotbarWidget::CountFor(TEXT("item/stew"),Stock),2);
+    TestEqual(TEXT("An item not held counts 0"),USFHudHotbarWidget::CountFor(TEXT("item/iron_ring"),Stock),0);
     TestEqual(TEXT("A single item shows no count"),USFSlotWidget::CountText(1).ToString(),FString());
     TestEqual(TEXT("A stack shows its count"),USFSlotWidget::CountText(7).ToString(),FString(TEXT("7")));
 

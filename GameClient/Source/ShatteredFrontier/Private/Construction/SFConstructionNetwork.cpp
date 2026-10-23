@@ -72,6 +72,7 @@
 #include "Quest/SFQuestPilotEvents.h"
 #include "Quest/SFQuestBoard.h"
 #include "Gathering/SFStationRecipes.h"
+#include "UI/SFHudWidgets.h"
 #include "Services/SFBackpackComponent.h"
 #include "Services/SFCharacterSession.h"
 #include "Services/SFGameplayServicesClient.h"
@@ -1605,8 +1606,6 @@ void ASFPlayerController::SetupInputComponent()
     Bind(TEXT("IA_Inventory"),ETriggerEvent::Started,&ASFPlayerController::ToggleInventoryPanel);
     Bind(TEXT("IA_Equipment"),ETriggerEvent::Started,&ASFPlayerController::ToggleEquipmentPanel);
     Bind(TEXT("IA_Skills"),ETriggerEvent::Started,&ASFPlayerController::ToggleGatheringSkillsPanel);
-    Bind(TEXT("IA_EquipAxe"),ETriggerEvent::Started,&ASFPlayerController::EquipGatheringAxe);
-    Bind(TEXT("IA_EquipPickaxe"),ETriggerEvent::Started,&ASFPlayerController::EquipGatheringPickaxe);
     Bind(TEXT("IA_CycleRecipe"),ETriggerEvent::Started,&ASFPlayerController::CycleGatheringRecipe);
     Bind(TEXT("IA_ClaimPlot"),ETriggerEvent::Started,&ASFPlayerController::ClaimPlotFromView);
     Bind(TEXT("IA_Escape"),ETriggerEvent::Started,&ASFPlayerController::HandleEscape);
@@ -1619,22 +1618,50 @@ void ASFPlayerController::SetupInputComponent()
     // IMC_Build (the character layers it on while build mode is active; it consumes these keys from IMC_Player).
     Bind(TEXT("IA_BuildPlace"),ETriggerEvent::Started,&ASFPlayerController::PlaceFromView);
     Bind(TEXT("IA_BuildDemolish"),ETriggerEvent::Started,&ASFPlayerController::ToggleDemolition);
-    Bind(TEXT("IA_BuildShape1"),ETriggerEvent::Started,&ASFPlayerController::SelectCube);
-    Bind(TEXT("IA_BuildShape2"),ETriggerEvent::Started,&ASFPlayerController::SelectSlab);
-    Bind(TEXT("IA_BuildShape3"),ETriggerEvent::Started,&ASFPlayerController::SelectSlope);
-    Bind(TEXT("IA_BuildShape4"),ETriggerEvent::Started,&ASFPlayerController::SelectDoor);
     Bind(TEXT("IA_BuildRotate"),ETriggerEvent::Started,&ASFPlayerController::RotatePiece);
     Bind(TEXT("IA_BuildLine"),ETriggerEvent::Started,&ASFPlayerController::ToggleLineMode);
     Bind(TEXT("IA_BuildPlane"),ETriggerEvent::Started,&ASFPlayerController::TogglePlacementPlane);
     Bind(TEXT("IA_BuildLayerUp"),ETriggerEvent::Started,&ASFPlayerController::LayerUp);
     Bind(TEXT("IA_BuildLayerDown"),ETriggerEvent::Started,&ASFPlayerController::LayerDown);
     Bind(TEXT("IA_BuildDoor"),ETriggerEvent::Started,&ASFPlayerController::ToggleDoorFromView);
+    // The hotbar keys 1-9, 0 (IMC_Player; build mode no longer takes 1-4, the hotbar's build pieces do that).
+    for (int32 Slot=0; Slot<USFHudHotbarWidget::SlotCount; ++Slot)
+    {
+        const FString Name=FString::Printf(TEXT("IA_Hotbar%d"),Slot+1);
+        if (const UInputAction* Action=LoadObject<UInputAction>(nullptr,*FString::Printf(TEXT("/Game/Frontier/Input/%s.%s"),*Name,*Name)))
+        {
+            Input->BindActionInstanceLambda(Action,ETriggerEvent::Started,[this,Slot,Name](const FInputActionInstance&)
+            { UE_LOG(LogTemp,Display,TEXT("INPUT_ACTION %s Event=%d"),*Name,(int32)ETriggerEvent::Started); UseHotbarSlot(Slot); });
+        }
+        else { UE_LOG(LogTemp,Error,TEXT("GM-01 input action %s missing; run tools/Create-PlayerInputAssets.py"),*Name); }
+    }
 }
 
-void ASFPlayerController::EquipGatheringAxe()
-{ if (CanUseConstructionControls() && GatheringPilot) { GatheringPilot->EquipAxe(); } }
-void ASFPlayerController::EquipGatheringPickaxe()
-{ if (CanUseConstructionControls() && GatheringPilot) { GatheringPilot->EquipPickaxe(); } }
+void ASFPlayerController::UseHotbarSlot(int32 Index)
+{
+    const USFHudHotbarWidget* Bar=HudWidget ? HudWidget->Hotbar.Get() : nullptr;
+    if (!Bar || !Bar->IsSlotShown(Index) || !CanUseConstructionControls()) { return; }
+    const FString Id=Bar->GetLayout().IsValidIndex(Index) ? Bar->GetLayout()[Index] : FString();
+    const int32 Piece=USFHudHotbarWidget::BuildPieces().IndexOfByKey(Id);
+    if (Piece!=INDEX_NONE)
+    {
+        if (!bBuildMode) { ToggleBuildMode(); }
+        if (Piece==3) { SelectDoor(); } else { SelectShape(uint8(Piece)); }
+        return;
+    }
+#if SF_WITH_MINIMAL_INVENTORY
+    if (Id.IsEmpty() || !GatheringPilot) { return; }
+    const FSoftObjectPath Path(SFStationRecipes::ItemAssetPath(Id));
+    const UInventoryItemDefinition* Definition=TSoftObjectPtr<UInventoryItemDefinition>(Path).LoadSynchronous();
+    if (Definition && Definition->UseType==EInventoryItemUseType::Equip)
+    {
+        // Already worn: nothing to do. The server validates ownership and the slot.
+        if (GatheringPilot->GetEquipped(Definition->EquipmentSlot)!=Path) { GatheringPilot->RequestEquip(Path,Definition->EquipmentSlot); }
+        return;
+    }
+    if (HudWidget) { HudWidget->PushToast(FString::Printf(TEXT("%s can't be used yet."),Definition ? *Definition->DisplayName.ToString() : *Id)); }
+#endif
+}
 void ASFPlayerController::CycleGatheringRecipe()
 {
     FVector Start, Direction;
