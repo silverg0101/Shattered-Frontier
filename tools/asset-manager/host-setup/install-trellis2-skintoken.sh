@@ -27,6 +27,11 @@ cd "$COMFY/custom_nodes"
 git -C ComfyUI-Trellis2 checkout -q b0e84c0f29857a444e8bcb5b9be2ea218e96efd0
 [ -d ComfyUI-SkinToken ] || git clone -q https://github.com/Rizzlord/ComfyUI-SkinToken
 git -C ComfyUI-SkinToken checkout -q 4a83157
+# The rig export welds vertices closer than 1e-4, which collapses Pixal3D meshes (89,886 -> 5,997 faces).
+# Pass 0 so only exactly coincident vertices merge.
+grep -q '"merge_distance": 0.0' ComfyUI-SkinToken/sktn_nodes.py || sed -i \
+    's/        "export_yup": use_transfer,/        "export_yup": use_transfer,\n        "merge_distance": 0.0,  # sfam patch: the 1e-4 default welds Pixal3D meshes down to a few thousand faces/' \
+    ComfyUI-SkinToken/sktn_nodes.py
 
 # 2. CUDA 13.0 compiler from pip, kept outside the venv. nvcc, nvvm and crt must share one
 #    version, or ptxas rejects the PTX ("Unsupported .version").

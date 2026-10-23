@@ -120,7 +120,8 @@ input[type=checkbox] { accent-color: var(--primary); width: 16px; height: 16px; 
 .type:disabled { opacity: .45; cursor: default; }
 .type svg { color: var(--primary); }
 .type h3 { margin: 12px 0 4px; }
-.form { display: grid; grid-template-columns: 340px 1fr; gap: 24px; align-items: start; }
+.form { display: grid; grid-template-columns: minmax(300px, 440px) minmax(0, 1fr); gap: 24px; align-items: start; }
+.form > *, .views > * { min-width: 0; }
 .card { border: 1px solid var(--border); border-radius: 16px; background: var(--card-elevated); padding: 22px; }
 .src { aspect-ratio: 1; border-radius: 12px; border: 1px dashed var(--border); display: grid; place-items: center; overflow: hidden; background: var(--card); margin: 14px 0; color: var(--muted-foreground); text-align: center; transition: border-color .2s, background .2s; }
 .src.drop { border-color: var(--primary); background: var(--primary-12); }
@@ -133,6 +134,18 @@ details.sec { border-top: 1px solid var(--border); padding: 14px 0 4px; margin-t
 details.sec summary { cursor: pointer; font: 600 15px var(--display); list-style: none; display: flex; align-items: center; gap: 8px; }
 details.sec summary::before { content: '›'; color: var(--primary); font-size: 18px; transition: transform .25s; }
 details.sec[open] summary::before { transform: rotate(90deg); }
+
+.seg { display: inline-flex; padding: 3px; border-radius: 999px; border: 1px solid var(--border); background: var(--card); }
+.seg button { border: 0; background: none; padding: 5px 14px; border-radius: 999px; font: 600 12px var(--sans); color: var(--muted-foreground); cursor: pointer; transition: background .25s, color .25s; }
+.seg button.on { background: var(--primary); color: #fff; box-shadow: 0 0 16px var(--primary-30); }
+.views { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+.slot .src { margin: 6px 0; font-size: 12px; }
+.slotlbl { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; font-size: 12px; }
+.slotlbl b { font: 600 13px var(--display); }
+.slotlbl span { color: var(--muted-foreground); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.slotacts { display: flex; flex-wrap: wrap; gap: 6px; }
+.slotacts .btn:not(.icon) { flex: 1 1 auto; justify-content: center; padding: 0 8px; }
+[hidden] { display: none !important; }
 
 /* ---- settings */
 table.hosts { width: 100%; border-collapse: collapse; margin-top: 12px; }
@@ -174,8 +187,8 @@ aside.queue.closed .vtab { display: block; }
 .bar { height: 4px; border-radius: 4px; background: var(--card-elevated); overflow: hidden; margin-top: 4px; }
 .bar i { display: block; height: 100%; background: var(--primary); border-radius: 4px; transition: width .6s var(--ease); }
 .log { margin-top: 10px; border-radius: 8px; background: var(--deep); border: 1px solid var(--border); font: 11px/1.5 ui-monospace, Consolas, monospace; color: hsl(210, 16%, 80%); }
-.log pre { margin: 0; padding: 8px 10px; white-space: pre-wrap; word-break: break-all; max-height: 1.5em; overflow: hidden; }
-.log.open pre { max-height: 320px; overflow: auto; }
+.log pre { margin: 0; padding: 8px 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.log.open pre { white-space: pre-wrap; word-break: break-all; max-height: 320px; overflow: auto; }
 .log .lbar { display: flex; align-items: center; gap: 10px; padding: 4px 8px; border-top: 1px solid var(--border); font: 11px var(--sans); color: var(--muted-foreground); }
 .log .lbar label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
 .log .lbar input { width: 13px; height: 13px; }
@@ -259,7 +272,6 @@ const ICON = {
   model: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>',
   file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/></svg>',
   image: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>',
-  video: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9l5 3-5 3z"/></svg>',
 };
 
 /* ---------------- router */
@@ -377,8 +389,7 @@ function drawPreview(e) {
   box.dataset.path = e.path;
   const url = fileUrl(e.path), ext = e.name.split('.').pop().toLowerCase();
   const stage = e.kind === 'image' ? `<img src="${url}" alt="" id="zoom">`
-    : e.kind === 'video' ? `<video src="${url}" controls loop muted autoplay playsinline style="max-width:100%;max-height:100%"></video>`
-    : e.kind === 'model' && ['glb', 'gltf'].includes(ext) ? `<model-viewer src="${url}" camera-controls auto-rotate autoplay shadow-intensity="1" exposure="1.1" environment-image="neutral" ${e.thumb ? `poster="${fileUrl(e.thumb)}"` : ''}></model-viewer>`
+    : e.kind === 'model' && ['glb', 'gltf'].includes(ext) ? `<model-viewer src="${url}" camera-controls auto-rotate shadow-intensity="1" exposure="1.1" environment-image="neutral" ${e.thumb ? `poster="${fileUrl(e.thumb)}"` : ''}></model-viewer>`
     : e.thumb ? `<img src="${fileUrl(e.thumb)}" alt="">` : `<div class="muted" style="text-align:center">${ICON[e.kind].replace('<svg', '<svg width="64" height="64"')}<br>No preview for .${esc(ext)}</div>`;
   box.innerHTML = `<div class="preview fade">
     <div class="stage">${stage}</div>
@@ -387,13 +398,8 @@ function drawPreview(e) {
       <div class="acts">
         ${e.kind === 'dir' ? `<a class="btn primary" href="${assetHref(e.path)}">Open folder</a>` : `<a class="btn" href="${url}" download>Download</a>`}
         ${e.kind === 'image' ? `<button class="btn primary" id="use">Use in Create</button>` : ''}
-        ${e.kind === 'model' && /_rigged\.(glb|fbx)$/i.test(e.name) ? `<button class="btn primary" id="animate">Animate: walk</button>` : ''}
       </div></div></div>`;
   $('#zoom') && ($('#zoom').onclick = () => lightbox(url));
-  $('#animate') && ($('#animate').onclick = async () => {
-    if (!confirm('Film a walk with Seedance 1.0 Pro Fast? This bills 2 videos to the comfy.org account.')) return;
-    try { await post('/api/jobs', { kind: 'motion', params: { model: e.path } }); toast('Added to queue'); setQueueOpen(true); pollQueue(); } catch (err) { fail(err); }
-  });
   $('#use') && ($('#use').onclick = () => { setCreateImage(e.path); location.hash = '#/create'; });
 }
 function lightbox(url) {
@@ -453,12 +459,18 @@ const pickFolder = t => picker(t, false);
 
 /* ---------------- create */
 let schema = null;
+const POSITIONS = [['front', 'Front', 'required'], ['left', 'Left side', 'faces image-left'], ['back', 'Back', ''], ['right', 'Right side', 'faces image-right']];
 const setCreateImage = p => { state.createImage = p; store.set('createImage', p); };
+const createViews = () => store.get('createViews', {});
+const setCreateView = (pos, p) => { const v = createViews(); p ? (v[pos] = p) : delete v[pos]; store.set('createViews', v); };
 async function renderCreate() {
   crumbs([['Create', '#/create'], ['3D Asset', '#/create']]);
-  schema = schema || (await api('/api/schema').catch(e => (fail(e), {})))['3d'] || [];
+  if (!schema) { const r = await api('/api/schema').catch(e => (fail(e), {})); schema = (r['3d'] || []).filter(p => !p.hidden); schema.levels = r.presets || []; }
+  let preset = store.get('createPreset', 'normal');
   const saved = store.get('createParams', {});
+  let mode = store.get('createMode', 'single');
   const sections = [...new Set(schema.map(p => p.section))];
+  const modesOf = s => schema.find(p => p.section === s).modes || ['single', 'multi'];
   const field = p => {
     const v = saved[p.key] ?? p.default, id = 'p_' + p.key;
     if (p.kind === 'bool') return `<div class="field check"><input type="checkbox" id="${id}" ${v ? 'checked' : ''}><label for="${id}">${esc(p.label)}</label></div>`;
@@ -469,46 +481,107 @@ async function renderCreate() {
     <div class="eyebrow fade">New job</div>
     <h2 class="fade" style="--i:1">Create</h2>
     <div class="types fade" style="--i:2">
-      <button class="type on">${ICON.model.replace('<svg', '<svg width="28" height="28"')}<h3>3D Asset</h3><div class="muted" style="font-size:12px">Image → textured GLB · Pixal3D geometry, Trellis2 4B texture</div></button>
+      <button class="type on">${ICON.model.replace('<svg', '<svg width="28" height="28"')}<h3>3D Asset</h3><div class="muted" style="font-size:12px" id="typedesc"></div></button>
     </div>
     <div class="form">
       <div class="card fade" style="--i:3">
-        <div class="eyebrow">Source image</div>
-        <div class="src" id="src"></div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="pick">Choose from assets</button><button class="btn" id="up">Upload</button><input type="file" id="srcfile" accept="image/*" hidden></div>
-        <div class="field" style="margin-top:18px"><label for="jname">Asset name</label><input type="text" id="jname" placeholder="Defaults to the image name" value="${esc(saved._name || '')}"></div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div class="eyebrow">Source image</div>
+          <div class="seg" role="tablist"><button data-mode="single">Single</button><button data-mode="multi">Multi-view</button></div></div>
+        <div id="single">
+          <div class="src" id="src"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="pick">Choose from assets</button><button class="btn" id="up">Upload</button><input type="file" id="srcfile" accept="image/*" hidden></div>
+        </div>
+        <div id="multi">
+          <div class="muted" style="font-size:12px;margin-top:12px">Same character in every view, as if a camera orbits a statue. Front plus at least one more.</div>
+          <div class="views">${POSITIONS.map(([pos, label, hint]) => `
+            <div class="slot" data-pos="${pos}">
+              <div class="slotlbl"><b>${label}</b>${hint ? `<span>${hint}</span>` : ''}</div>
+              <div class="src" data-drop="${pos}"></div>
+              <div class="slotacts"><button class="btn sm" data-pick="${pos}">Choose</button><button class="btn sm" data-up="${pos}">Upload</button><button class="btn sm icon danger" data-clear="${pos}" title="Clear">×</button></div>
+            </div>`).join('')}
+          </div>
+          <input type="file" id="viewfile" accept="image/*" hidden>
+        </div>
+        <div class="field" style="margin-top:18px"><label for="jname">Asset name</label><input type="text" id="jname" placeholder="Defaults to the front image name" value="${esc(saved._name || '')}"></div>
         <button class="btn primary" id="submit" style="width:100%;justify-content:center;margin-top:18px;height:44px">Add to queue</button>
       </div>
       <div class="card fade" style="--i:4">
-        ${sections.map((s, i) => i === 0
-          ? `<div class="eyebrow">${esc(s)}</div><div class="fields">${schema.filter(p => p.section === s).map(field).join('')}</div>`
-          : `<details class="sec"><summary>${esc(s)}</summary><div class="fields">${schema.filter(p => p.section === s).map(field).join('')}</div></details>`).join('')}
-        <div style="margin-top:18px;display:flex;justify-content:flex-end"><button class="btn sm" id="reset">Reset to workflow defaults</button></div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px"><div class="eyebrow">Quality</div>
+          <div class="seg">${schema.levels.map(l => `<button data-preset="${l}">${l[0].toUpperCase() + l.slice(1)}</button>`).join('')}</div>
+          <span class="muted" style="font-size:12px" id="presetnote"></span></div>
+        ${sections.map((s, i) => {
+          const rows = `<div class="fields">${schema.filter(p => p.section === s).map(field).join('')}</div>`;
+          return i === 0 ? `<div data-sec="${esc(s)}"><div class="eyebrow">${esc(s)}</div>${rows}</div>`
+            : `<details class="sec" data-sec="${esc(s)}"><summary>${esc(s)}</summary>${rows}</details>`;
+        }).join('')}
+        <div style="margin-top:18px;display:flex;justify-content:flex-end"><button class="btn sm" id="reset">Reset to preset</button></div>
       </div>
     </div>`;
-  const drawSrc = () => $('#src').innerHTML = state.createImage
-    ? `<img src="${fileUrl(state.createImage)}" alt="" title="${esc(state.createImage)}">`
-    : `<div>Drop an image here<br><span style="font-size:12px">plain background, flat light, no shadows</span></div>`;
-  drawSrc();
-  const src = $('#src');
-  src.ondragover = e => { e.preventDefault(); src.classList.add('drop'); };
-  src.ondragleave = () => src.classList.remove('drop');
+  const thumb = (p, empty) => p ? `<img src="${fileUrl(p)}" alt="" title="${esc(p)}">` : `<div>${empty}</div>`;
+  const drawSrc = () => $('#src').innerHTML = thumb(state.createImage, 'Drop an image here<br><span style="font-size:12px">plain background, flat light, no shadows</span>');
+  const drawViews = () => { const v = createViews(); POSITIONS.forEach(([pos]) => { $(`[data-drop="${pos}"]`).innerHTML = thumb(v[pos], 'Drop or choose'); }); };
+  const setMode = m => {
+    mode = m; store.set('createMode', m);
+    document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('on', b.dataset.mode === m));
+    $('#single').hidden = m !== 'single'; $('#multi').hidden = m !== 'multi';
+    sections.forEach(s => { document.querySelector(`[data-sec="${CSS.escape(s)}"]`).hidden = !modesOf(s).includes(m); });
+    $('#typedesc').textContent = m === 'single' ? 'One image → textured GLB · Pixal3D geometry, Trellis2 4B texture'
+      : 'Front + side/back views → textured GLB · Pixal3D multi-view geometry and texture';
+  };
+  const NOTES = { low: 'quick drafts · 100k faces', normal: 'game-ready · 300k faces', high: 'detailed · 500k faces', ultra: 'Nanite statics only · 1M faces, slow' };
+  const setPreset = (l, apply) => {
+    preset = l; store.set('createPreset', l);
+    document.querySelectorAll('[data-preset]').forEach(b => b.classList.toggle('on', b.dataset.preset === l));
+    $('#presetnote').textContent = NOTES[l] || '';
+    if (!apply) return;
+    for (const p of schema) {
+      if (!p.presets) continue;
+      const el = $('#p_' + p.key), v = p.presets[l];
+      p.kind === 'bool' ? (el.checked = v) : (el.value = v);
+    }
+  };
+  document.querySelectorAll('[data-preset]').forEach(b => b.onclick = () => setPreset(b.dataset.preset, true));
+  drawSrc(); drawViews(); setMode(mode); setPreset(preset, !Object.keys(saved).length);
+  document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => setMode(b.dataset.mode));
   const settings = await api('/api/settings').catch(() => ({ input_folder: 'Inputs' }));
-  const take = async files => { const [p] = await uploadFiles(files.slice(0, 1), settings.input_folder); if (p) { setCreateImage(p); drawSrc(); } };
-  src.ondrop = e => { e.preventDefault(); src.classList.remove('drop'); take([...e.dataTransfer.files]); };
+  const upload = async files => (await uploadFiles(files.slice(0, 1), settings.input_folder))[0];
+  const dropZone = (el, onFile) => {
+    el.ondragover = e => { e.preventDefault(); el.classList.add('drop'); };
+    el.ondragleave = () => el.classList.remove('drop');
+    el.ondrop = async e => { e.preventDefault(); el.classList.remove('drop'); const p = await upload([...e.dataTransfer.files]); if (p) onFile(p); };
+  };
+  dropZone($('#src'), p => { setCreateImage(p); drawSrc(); });
   $('#pick').onclick = () => picker('Choose a source image', true).then(p => { if (p) { setCreateImage(p); drawSrc(); } });
   $('#up').onclick = () => $('#srcfile').click();
-  $('#srcfile').onchange = e => take([...e.target.files]);
-  $('#reset').onclick = () => { store.set('createParams', {}); renderCreate(); };
+  $('#srcfile').onchange = async e => { const p = await upload([...e.target.files]); if (p) { setCreateImage(p); drawSrc(); } };
+  let upPos = null;
+  POSITIONS.forEach(([pos, label]) => {
+    const done = p => { if (p) { setCreateView(pos, p); drawViews(); } };
+    dropZone($(`[data-drop="${pos}"]`), done);
+    $(`[data-pick="${pos}"]`).onclick = () => picker(`Choose the ${label.toLowerCase()} view`, true).then(done);
+    $(`[data-up="${pos}"]`).onclick = () => { upPos = pos; $('#viewfile').value = ''; $('#viewfile').click(); };
+    $(`[data-clear="${pos}"]`).onclick = () => { setCreateView(pos, null); drawViews(); };
+  });
+  $('#viewfile').onchange = async e => { const p = await upload([...e.target.files]); if (p && upPos) { setCreateView(upPos, p); drawViews(); } };
+  $('#reset').onclick = () => { store.set('createParams', {}); renderCreate(); };  // no saved values: the preset applies
   $('#submit').onclick = async () => {
-    if (!state.createImage) return toast('Pick a source image first', true);
-    const params = { image: state.createImage };
+    const params = { preset };
+    if (mode === 'single') {
+      if (!state.createImage) return toast('Pick a source image first', true);
+      params.image = state.createImage;
+    } else {
+      const v = createViews();
+      if (!v.front) return toast('Add a front view', true);
+      if (Object.keys(v).length < 2) return toast('Add at least one more view besides the front', true);
+      params.views = v;
+    }
     for (const p of schema) {
+      if (!(p.modes || ['single', 'multi']).includes(mode)) continue;
       const el = $('#p_' + p.key);
       params[p.key] = p.kind === 'bool' ? el.checked : p.kind === 'choice' ? (typeof p.default === 'number' ? +el.value : el.value) : +el.value;
     }
     const name = $('#jname').value.trim();
-    store.set('createParams', { ...params, image: undefined, _name: '' });
+    store.set('createParams', { ...store.get('createParams', {}), ...params, image: undefined, views: undefined, preset: undefined, _name: '' });
     try { await post('/api/jobs', { kind: '3d', name, params }); toast('Added to queue'); setQueueOpen(true); pollQueue(); } catch (e) { fail(e); }
   };
 }
@@ -607,7 +680,7 @@ function drawQueue(jobs) {
     const time = j.started ? dur((j.finished || now) - j.started) : 'queued ' + fmtTime(j.created);
     return `<div class="job ${live ? 'running' : ''}" style="animation:none">
       <div class="row"><span class="title" title="${esc(j.name)}">${esc(j.name)}</span><span class="pill ${j.status}">${j.status}</span></div>
-      <div class="sub">${j.kind === 'motion' ? 'Motion' : '3D Asset'} · #${j.id}${j.host ? ' · ' + esc(j.host) : ''} · ${time}${j.note && (j.status === 'queued' || live) ? ' · ' + esc(j.note) : ''}</div>
+      <div class="sub">3D Asset · #${j.id}${j.host ? ' · ' + esc(j.host) : ''} · ${time}${j.note && j.status === 'queued' ? ' · ' + esc(j.note) : ''}</div>
       ${j.error ? `<div class="err">${esc(j.error)}</div>` : ''}
       ${live && m ? `<div class="metrics">${metric('CPU', m.cpu)}${metric('RAM', m.ram, m.ram_gb.join(' / ') + ' GB')}${metric('GPU', m.gpu)}${metric('VRAM', m.vram, m.vram_gb.join(' / ') + ' GB')}</div>` : ''}
       ${j.log.length || live ? `<div class="log ${open ? 'open' : ''}"><pre data-id="${j.id}">${esc(open ? j.log.join('\n') : j.log.at(-1) || 'waiting for output…')}</pre>

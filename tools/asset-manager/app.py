@@ -15,7 +15,6 @@ PORT = int(os.environ.get("PORT", "8090"))
 STATIC = Path(__file__).with_name("static")
 IMAGE_EXT = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"}
 MODEL_EXT = {".glb", ".gltf", ".obj", ".fbx", ".stl", ".ply", ".usdz", ".3mf"}
-VIDEO_EXT = {".mp4", ".webm", ".mov"}
 
 DEFAULT_SETTINGS = {
     "output_folder": "Generated",
@@ -86,10 +85,45 @@ def base_graph(image, prefix, pixal_model):
         "1262": {"class_type": "Trellis2ExportMesh", "inputs": {"trimesh": ["1261", 0], "filename_prefix": prefix, "file_format": "glb"}},
     }
 
-def rig_nodes(prefix):
+VIEW_AZIMUTHS = {"front": 0, "left": 90, "back": 180, "right": 270}  # Pixal3D convention; front must come first
+
+def mv_graph(views, prefix, pixal_model):
+    """Multi-view version of base_graph. `views` maps position -> ComfyUI input image name; front is required."""
+    g = base_graph(views["front"], prefix, pixal_model)
+    del g["1039"], g["1261"]  # TRELLIS.2-4B front-only texturing is replaced by Pixal3D multi-view texturing
+    g["39"]["inputs"]["pixal3d_multiview"] = True
+    order = [p for p in VIEW_AZIMUTHS if p in views]
+    batch = ["6", 2]
+    for i, pos in enumerate(order[1:], 1):
+        g[f"60{i}"] = {"class_type": "Trellis2LoadImageWithTransparency", "inputs": {"image": views[pos]}}
+        g[f"65{i}"] = {"class_type": "ImageBatch", "inputs": {"image1": batch, "image2": [f"60{i}", 2]}}
+        batch = [f"65{i}", 0]
+    g["303"] = {"class_type": "Trellis2FovMoGeCameraConfig", "inputs": {"fov": 0.1, "unit": "rad", "extend_pixel": 0, "mesh_scale": 1.0}}
+    g["317"] = {"class_type": "Trellis2Pixal3DMultiViewConfig", "inputs": {
+        "images": batch, "azimuths": ",".join(str(VIEW_AZIMUTHS[p]) for p in order), "elevations": ",".join("0" for _ in order),
+        "fov": 20.0, "fov_unit": "deg", "mesh_scale": 1.0, "distance": 0.0, "remove_background": True,
+        "invert_mask": False, "framing": "auto", "moge_camera_config": ["303", 0]}}
+    g["213"]["inputs"]["max_views"] = 16
+    for n in ("272", "215", "274"):
+        g[n]["inputs"].update(moge_camera_config=["317", 1], pixal3d_mv_views=["317", 0])
+    g["1264"] = {"class_type": "Trellis2MeshTexturingPixal3DMultiView", "inputs": {
+        "pipeline": ["274", 2], "trimesh": ["202", 0], "pixal3d_mv_views": ["317", 0], "image": ["194", 0],
+        "moge_camera_config": ["317", 1], "seed": 12345, "texture_steps": 12, "texture_guidance_strength": 1.0,
+        "texture_guidance_rescale": 0.5, "texture_rescale_t": 3.0, "resolution": 1024, "texture_size": 2048,
+        "texture_alpha_mode": "OPAQUE", "double_side_material": False, "texture_guidance_interval_start": 0.6,
+        "texture_guidance_interval_end": 0.9, "bake_on_vertices": False, "use_custom_normals": False,
+        "mesh_cluster_threshold_cone_half_angle_rad": 60.0, "mesh_orientation": "auto", "sampler": "euler",
+        "inpainting": "telea", "verbose": False, "dino_lock": 0.0, "dino_substeps": 5, "dino_foundation_cap": 1.0}}
+    g["1262"]["inputs"]["trimesh"] = ["1264", 0]
+    return g
+
+def textured_node(g):
+    return "1264" if "1264" in g else "1261"
+
+def rig_nodes(prefix, textured="1261"):
     return {
         "1270": {"class_type": "SkinTokenRigTrimesh", "inputs": {
-            "trimesh": ["1261", 0], "ckpt_name": "experiments/articulation_xl_quantization_256_token_4/grpo_1400.ckpt",
+            "trimesh": [textured, 0], "ckpt_name": "experiments/articulation_xl_quantization_256_token_4/grpo_1400.ckpt",
             "device": "cuda", "save_file": True, "filename_prefix": f"{prefix}_rigged", "file_format": "glb",
             # use_transfer keeps the textured mesh and its material; without it the rigged file is untextured.
             "use_transfer": True, "use_postprocess": False, "group_per_vertex": 4, "bottom_center_origin": False,
@@ -126,9 +160,9 @@ def section(name, rows):
 # (one source image) and links between nodes.
 PARAMS = (
     section("Basics", [
-        ("seed", "Seed (-1 = random)", "int", {"min": -1, "max": 0x7fffffff}, [("272", "seed"), ("1261", "seed")]),
+        ("seed", "Seed (-1 = random)", "int", {"min": -1, "max": 0x7fffffff}, [("272", "seed"), ("1261", "seed"), ("1264", "seed")]),
         ("target_face_num", "Target faces", "int", {"min": 1, "max": 30000000, "step": 1000}, [("218", "target_face_num"), ("257", "target_face_num")]),
-        ("texture_size", "Texture size (px)", "int", {"min": 512, "max": 16384, "step": 512}, [("1261", "texture_size")]),
+        ("texture_size", "Texture size (px)", "int", {"min": 512, "max": 16384, "step": 512}, [("1261", "texture_size"), ("1264", "texture_size")]),
         ("file_format", "File format", "choice", {"options": ["glb", "obj", "ply", "stl", "3mf", "dae"]}, [("1262", "file_format")]),
     ])
     + section("Models", [
@@ -182,6 +216,24 @@ PARAMS = (
         ("rig_repetition_penalty", "Repetition penalty", "float", {"min": 0.5, "max": 3, "step": 0.1}, [("1270", "repetition_penalty")]),
         ("rig_beams", "Beam count", "int", {"min": 1, "max": 20}, [("1270", "num_beams")]),
     ])
+    + section("Views", [
+        ("mv_remove_background", "Remove view backgrounds", "bool", {}, [("317", "remove_background")]),
+        ("mv_framing", "Camera framing", "choice", {"options": ["auto", "pixal3d_rig", "fill_frame", "camera_config"]}, [("317", "framing")]),
+        ("mv_camera_fov", "Camera FOV (radians, 0.1 is near orthographic)", "float", {"min": 0.001, "max": 3.14, "step": 0.001}, [("303", "fov")]),
+        ("mv_mesh_scale", "Mesh scale", "float", {"min": 0.1, "max": 9.9, "step": 0.1}, [("303", "mesh_scale")]),
+        ("mv_cond_views", "Conditioning views", "int", {"min": 1, "max": 999}, [("213", "max_views")]),
+    ])
+    + section("Texture (multi-view)", [
+        ("mv_tex_resolution", "Resolution", "choice", {"options": [1024, 1536]}, [("1264", "resolution")]),
+        ("mv_tex_orientation", "Mesh orientation", "choice", {"options": ["auto", "none", "90 degrees", "-90 degrees"]}, [("1264", "mesh_orientation")]),
+        ("mv_tex_alpha", "Alpha mode", "choice", {"options": ["OPAQUE", "MASK", "BLEND"]}, [("1264", "texture_alpha_mode")]),
+        ("mv_tex_double", "Double-sided material", "bool", {}, [("1264", "double_side_material")]),
+        ("mv_tex_bake_vertices", "Bake on vertices", "bool", {}, [("1264", "bake_on_vertices")]),
+        ("mv_tex_custom_normals", "Use custom normals", "bool", {}, [("1264", "use_custom_normals")]),
+        ("mv_tex_cone_angle", "Cluster cone half-angle", "float", {"min": 0, "max": 359.9, "step": 0.1}, [("1264", "mesh_cluster_threshold_cone_half_angle_rad")]),
+        ("mv_tex_inpainting", "Inpainting", "choice", {"options": ["telea", "ns"]}, [("1264", "inpainting")]),
+        *sampling("texture_", "mv_tex", "1264"),
+    ])
     + section("Texture", [
         ("tex_resolution", "Resolution", "choice", {"options": [512, 1024, 1536, 2048]}, [("1261", "resolution")]),
         ("tex_alpha", "Alpha mode", "choice", {"options": ["OPAQUE", "MASK", "BLEND"]}, [("1261", "texture_alpha_mode")]),
@@ -194,98 +246,95 @@ PARAMS = (
         *sampling("texture_", "tex", "1261"),
     ])
 )
-PARAM_KEYS = {p[0] for p in PARAMS} | {"image"}
+PARAM_KEYS = {p[0] for p in PARAMS} | {"image", "views", "preset"}
+
+# Quality presets: option key -> value per level. An option a preset doesn't list keeps the workflow default;
+# options sent explicitly always win. UI_HIDDEN options stay in the API but aren't shown in the web app.
+PRESET_LEVELS = ["low", "normal", "high", "ultra"]
+DEFAULT_PRESET = "normal"
+# Values from an independent review (2026-10-23) against the ComfyUI-Trellis2 b0e84c0 source, the node author's
+# example workflows and measured host timings (single view: 1M faces + 2048 texture = 21 min, mostly CPU UV
+# unwrap, which scales with faces). Low/Normal suit skeletal and game-ready meshes; Ultra is Nanite statics only.
+# Ultra risks 24 GB VRAM (uncapped 1536 cascade + 2048 remesh) and, with multi-view + rig, the job timeout.
+def _levels(low, normal, high, ultra):
+    return dict(zip(PRESET_LEVELS, (low, normal, high, ultra)))
+
+PRESETS = {
+    "target_face_num": _levels(100000, 300000, 500000, 1000000),
+    "texture_size": _levels(1024, 2048, 2048, 4096),
+    "cascade_resolution": _levels(1024, 1024, 1536, 1536),
+    "cascade_max_tokens": _levels(999999, 999999, 49152, 999999),  # only bites at 1536: High falls back instead of OOM
+    "quad_resolution": _levels(512, 1024, 1024, 2048),
+    "ss_steps": _levels(12, 25, 25, 25),
+    **{k: _levels(12, 12, 25, 25) for k in ("shape_steps", "cascade_steps", "tex_steps")},
+    **{k: _levels("euler", "heun", "heun", "heun") for k in ("ss_sampler", "cascade_sampler", "tex_sampler")},
+    "shape_sampler": _levels("euler", "euler", "heun", "heun"),
+    **{k: _levels(0, 0.65, 0.65, 0.65) for k in ("ss_dino_lock", "shape_dino_lock", "cascade_dino_lock")},
+    "tex_dino_lock": _levels(0, 0.35, 0.35, 0.35),
+    "tex_resolution": _levels(1024, 1024, 1024, 1536),
+    "rig_origin_bottom": _levels(True, True, True, True),  # props and characters stand on their origin in UE5
+}
+# Everything else is a pipeline internal, a research knob or has no UE5 benefit; the web app hides it.
+UI_VISIBLE = {"seed", "target_face_num", "texture_size", "remove_background", "mv_remove_background",
+              "rig", "rig_format", "rig_skeleton"}
+UI_HIDDEN = {p[0] for p in PARAMS} - UI_VISIBLE
+SECTION_MODES = {"Views": ["multi"], "Texture (multi-view)": ["multi"], "Texture": ["single"]}  # others: both
 
 def param_schema():
-    g = {**base_graph("", "", ""), **rig_nodes("")}
-    return [{"key": k, "label": lbl, "section": sec, "kind": kind,
-             "default": g[t[0][0]]["inputs"][t[0][1]] if t else False, **extra}
-            for k, lbl, sec, kind, extra, t in PARAMS]
+    single = {**base_graph("", "", ""), **rig_nodes("")}
+    multi = {**mv_graph({"front": "", "back": ""}, "", ""), **rig_nodes("", "1264")}
+    out = []
+    for k, lbl, sec, kind, extra, t in PARAMS:
+        modes = SECTION_MODES.get(sec, ["single", "multi"])
+        g = single if "single" in modes else multi
+        default = next((g[n]["inputs"][i] for n, i in t if n in g), False) if t else False
+        default = PRESETS[k][DEFAULT_PRESET] if k in PRESETS else default
+        out.append({"key": k, "label": lbl, "section": sec, "kind": kind, "modes": modes, "default": default,
+                    "presets": PRESETS.get(k), "hidden": k in UI_HIDDEN, **extra})
+    return out
 
-def build_graph(params, image, prefix, pixal_model):
+def job_views(params):
+    """Source images by position: multi-view jobs list `views`; single-view jobs use `image` as the front."""
+    views = params.get("views") or {"front": params.get("image", "")}
+    bad = set(views) - set(VIEW_AZIMUTHS)
+    if bad:
+        raise ValueError(f"unknown view positions {sorted(bad)}; use {list(VIEW_AZIMUTHS)}")
+    if not views.get("front"):
+        raise ValueError("a front image is required")
+    if "views" in params and len(views) < 2:
+        raise ValueError("multi-view needs the front plus at least one more view")
+    for pos, rel in views.items():
+        if kind_of(safe_path(rel)) != "image":
+            raise ValueError(f"{pos} view is not an image in the asset library: {rel!r}")
+    return views
+
+def build_graph(params, image, prefix, pixal_model, views=None):
+    """`views` (position -> ComfyUI input name) selects the multi-view graph; otherwise `image` is the single view."""
     unknown = set(params) - PARAM_KEYS
     if unknown:
         raise ValueError(f"unknown options: {sorted(unknown)} (see GET /api/schema)")
-    g = base_graph(image, prefix, pixal_model)
+    g = mv_graph(views, prefix, pixal_model) if views else base_graph(image, prefix, pixal_model)
     if params.get("rig"):
-        g.update(rig_nodes(prefix))
+        g.update(rig_nodes(prefix, textured_node(g)))
+    level = params.get("preset", DEFAULT_PRESET)
+    if level not in PRESET_LEVELS:
+        raise ValueError(f"preset must be one of {PRESET_LEVELS}")
+    params = {**{k: v[level] for k, v in PRESETS.items()}, **params}
     for key, _, _, kind, extra, targets in PARAMS:
         if key not in params:
             continue
-        v = coerce(key, kind, extra, params[key])
+        v = params[key]
+        if kind == "bool":
+            v = bool(v)
+        elif kind in ("int", "float"):
+            v = min(max((int if kind == "int" else float)(v), extra["min"]), extra["max"])
+            if key == "seed" and v < 0:
+                v = random.randint(0, 0x7fffffff)
+        elif v not in extra["options"]:
+            raise ValueError(f"{key}: {v!r} is not one of {extra['options']}")
         for node, inp in targets:
             if node in g:  # rig options only apply when rigging is on
                 g[node]["inputs"][inp] = v
-    return g
-
-def coerce(key, kind, extra, v):
-    """An option value checked against its schema row: numbers clamped, choices must be listed."""
-    if kind == "bool":
-        return bool(v)
-    if kind in ("int", "float"):
-        v = min(max((int if kind == "int" else float)(v), extra["min"]), extra["max"])
-        return random.randint(0, 0x7fffffff) if key == "seed" and v < 0 else v
-    if v not in extra["options"]:
-        raise ValueError(f"{key}: {v!r} is not one of {extra['options']}")
-    return v
-
-# ---------------------------------------------------------------- Motion workflow
-# A rigged model's rest pose, filmed front | left side, is the first frame of a video model's clip of it
-# doing the action. motion/*.py then runs on the host: CoTracker3 follows every bone point in both halves,
-# front and side combine into 3D (both measure height, so their agreement scores the take), and Blender
-# bakes the result onto the skeleton.
-MOTION_DIR = Path(__file__).with_name("motion")
-DEFAULT_BLENDER = "~/blender/blender-4.2.3-linux-x64/blender"
-COMFY_ORG_API_KEY = os.environ.get("COMFY_ORG_API_KEY", "")  # paid ComfyUI API nodes bill this comfy.org account
-ACTIONS = {"walk": "walks slowly on the spot, as if on a treadmill, in a steady looping walk cycle"}
-MOTION_PROMPT = (
-    "Split-screen video of one character in a plain grey studio, filmed by two fixed orthographic cameras: "
-    "the left panel shows it from the front, the right panel shows its left side. Both panels show the same "
-    "moment in every frame. The character {action}. The cameras never move, zoom or cut, the character stays "
-    "centred and the same size in both panels, and nothing else appears.")
-
-def video_node(model, image, prompt, seed, resolution):
-    if model.startswith("Seedance"):
-        return {"class_type": "ByteDanceImageToVideoNode", "inputs": {
-            "model": {"Seedance 1.0 Pro Fast": "seedance-1-0-pro-fast-251015", "Seedance 1.5 Pro": "seedance-1-5-pro-251215"}[model],
-            "prompt": prompt, "image": image, "resolution": resolution, "aspect_ratio": "16:9", "duration": 5,
-            "seed": seed, "camera_fixed": True, "watermark": False, "generate_audio": False}}
-    if model == "MiniMax H3":
-        return {"class_type": "ComfyCloudMiniMaxH3ImageToVideoNode", "inputs": {
-            "first_frame": image, "prompt": prompt, "seed": seed, "aspect_ratio": "16:9",
-            "resolution": resolution, "duration_seconds": 5}}
-    return {"class_type": "MinimaxHailuoVideoNode", "inputs": {  # Hailuo picks its own size: 768P, 6 s
-        "prompt_text": prompt, "seed": seed, "first_frame_image": image, "prompt_optimizer": False,
-        "duration": 6, "resolution": "768P"}}
-
-# (key, label, kind, extra, default)
-MOTION_PARAMS = (
-    ("action", "Action", "choice", {"options": list(ACTIONS)}, "walk"),
-    ("video_model", "Video model", "choice",
-     {"options": ["Seedance 1.0 Pro Fast", "Seedance 1.5 Pro", "MiniMax H3", "MiniMax Hailuo 02"]}, "Seedance 1.0 Pro Fast"),
-    ("takes", "Takes (each is a paid video)", "int", {"min": 1, "max": 4}, 2),
-    ("seed", "Seed (-1 = random)", "int", {"min": -1, "max": 0x7fffffff}, -1),
-    ("resolution", "Video resolution", "choice", {"options": ["480p", "720p"]}, "720p"),
-    ("turn", "Turn the model before filming (degrees)", "choice", {"options": [0, 90, 180, -90]}, 0),
-)
-
-def motion_params(params):
-    """Checked motion options with defaults filled in. `model` is a rigged model; `prompt` overrides the action text."""
-    unknown = set(params) - {p[0] for p in MOTION_PARAMS} - {"model", "prompt"}
-    if unknown:
-        raise ValueError(f"unknown options: {sorted(unknown)} (see GET /api/schema)")
-    out = {k: coerce(k, kind, extra, params.get(k, d)) for k, _, kind, extra, d in MOTION_PARAMS}
-    out["model"] = params.get("model", "")
-    out["prompt"] = str(params.get("prompt") or MOTION_PROMPT.format(action=ACTIONS[out["action"]]))[:2000]
-    return out
-
-def motion_graph(p, image, prefix):
-    """One video per take from the same first frame; seeds count up from the job's seed."""
-    g = {"1": {"class_type": "LoadImage", "inputs": {"image": image}}}
-    for i in range(p["takes"]):
-        g[f"{10 + i}"] = video_node(p["video_model"], ["1", 0], p["prompt"], (p["seed"] + i) & 0x7fffffff, p["resolution"])
-        g[f"{20 + i}"] = {"class_type": "SaveVideo", "inputs": {
-            "video": [f"{10 + i}", 0], "filename_prefix": f"{prefix}{i + 1}", "format": "mp4", "format.codec": "h264"}}
     return g
 
 # ---------------------------------------------------------------- storage
@@ -355,9 +404,7 @@ def unique(p: Path):
     return out
 
 def kind_of(p: Path):
-    ext = p.suffix.lower()
-    return ("dir" if p.is_dir() else "image" if ext in IMAGE_EXT else "model" if ext in MODEL_EXT
-            else "video" if ext in VIDEO_EXT else "file")
+    return "dir" if p.is_dir() else "image" if p.suffix.lower() in IMAGE_EXT else "model" if p.suffix.lower() in MODEL_EXT else "file"
 
 def list_dir(rel):
     d = safe_path(rel)
@@ -454,7 +501,29 @@ def cleanup(host, inputs, outputs):
         # needs SSH (or a file-delete endpoint) on that host to clean them.
         return
     paths = [f"{host['comfy_dir']}/input/sfam/{n}" for n in inputs] + [f"{host['comfy_dir']}/output/sfam/{n}" for n in outputs]
-    ssh(host, "rm -rf " + " ".join(shlex.quote(p) for p in paths))  # motion jobs leave a folder per job
+    ssh(host, "rm -f " + " ".join(shlex.quote(p) for p in paths))
+
+GPU_NOTES = {}  # job id -> lines proving which GPU ran it, shown above the host log
+
+def gpu_check(host):
+    """(ok, line): which physical GPU the host's ComfyUI process holds, against the GPU this host is set to."""
+    if host.get("kind") == "http":  # no shell: report what ComfyUI says; physical placement can't be verified
+        dev = comfy(host, "/system_stats", timeout=20)["devices"][0]
+        return True, (f"[asset-manager] {host['name']}: ComfyUI reports {dev.get('name')} (device index {dev.get('index')}); "
+                      "physical GPU not verifiable over HTTP")
+    unit = shlex.quote(host["unit"])
+    out = ssh(host, f"p=$(systemctl --user show -p MainPID --value {unit}); echo $p; "
+                    "tr '\\0' '\\n' < /proc/$p/environ | grep '^CUDA_VISIBLE_DEVICES=' || echo CUDA_VISIBLE_DEVICES=unset; echo @@; "
+                    "nvidia-smi --query-gpu=index,pci.bus_id,name --format=csv,noheader; echo @@; "
+                    "nvidia-smi --query-compute-apps=pid,gpu_bus_id,used_memory --format=csv,noheader", timeout=30).decode()
+    head, gpus, apps = out.split("@@\n")
+    pid, cvd = head.split()[0], head.split()[1].split("=", 1)[1]
+    by_bus = {b.strip(): (int(i), n.strip()) for i, b, n in (l.split(",", 2) for l in gpus.strip().splitlines())}
+    held = sorted({by_bus[a.split(",")[1].strip()] for a in apps.strip().splitlines() if a.split(",")[0].strip() == pid})
+    ok = [i for i, _ in held] == [int(host["gpu"])]
+    where = ", ".join(f"GPU {i} {n}" for i, n in held) or "no GPU"
+    return ok, (f"[asset-manager] {host['name']}: ComfyUI pid {pid} (CUDA_VISIBLE_DEVICES={cvd}) is on {where}; "
+                f"expected GPU {host['gpu']} -> {'OK' if ok else 'MISMATCH'}")
 
 LIVE = {}  # job id -> {"metrics": {...}, "log": [...]} while running
 CPU_PREV = {}
@@ -483,121 +552,64 @@ def poll_metrics(host, jid, since):
     p_idle, p_total = CPU_PREV.get(host["name"], (idle, total))
     CPU_PREV[host["name"]] = (idle, total)
     cpu_pct = 100 * (1 - (idle - p_idle) / (total - p_total)) if total > p_total else 0
-    lines = [ln.split("\r")[-1].rstrip() for ln in log.splitlines()]
+    lines = [re.sub(r"\x1b\[[0-9;]*m", "", ln.split("\r")[-1]).rstrip() for ln in log.splitlines()]
     LIVE[jid] = {"metrics": {"cpu": round(cpu_pct), "ram": round(100 * m_used / m_total), "ram_gb": [round(m_used / 1024, 1), round(m_total / 1024, 1)],
                              "gpu": round(g_util), "vram": round(100 * v_used / v_total), "vram_gb": [round(v_used / 1024, 1), round(v_total / 1024, 1)]},
                  "log": [ln for ln in lines if ln][-200:]}
-
-def run_prompt(host, jid, graph, started, timeout_min, extra_data=None):
-    """Queue a graph on the host and wait for it; returns its history entry. Honours cancel and the timeout."""
-    r = comfy(host, "/prompt", {"prompt": graph, "client_id": f"sfam-{jid}", **({"extra_data": extra_data} if extra_data else {})})
-    if "prompt_id" not in r:
-        raise RuntimeError(json.dumps(r.get("node_errors") or r.get("error") or r)[:800])
-    pid = r["prompt_id"]
-    update_job(jid, prompt_id=pid)
-    last_seen = time.time()
-    while True:
-        time.sleep(5)
-        try:
-            poll_metrics(host, jid, started)
-        except Exception:
-            pass  # metrics are best effort
-        if job_row(jid)["status"] == "cancelling":
-            comfy(host, "/queue", {"delete": [pid]})
-            comfy(host, "/interrupt", {})
-            raise InterruptedError
-        h = comfy(host, f"/history/{pid}").get(pid)
-        if h:
-            break
-        q = comfy(host, "/queue")
-        if any(pid in item for item in q.get("queue_running", []) + q.get("queue_pending", [])):
-            last_seen = time.time()
-        elif time.time() - last_seen > 30:
-            raise RuntimeError("job vanished from the host (ComfyUI restarted?) — retry it")
-        if time.time() - started > timeout_min * 60:
-            comfy(host, "/interrupt", {})
-            raise TimeoutError(f"timed out after {timeout_min} min")
-    st = h.get("status", {})
-    if st.get("status_str") == "error":
-        msg = next((m[1].get("exception_message") for m in st.get("messages", []) if m[0] == "execution_error"), "ComfyUI error")
-        raise RuntimeError(msg)
-    return h
-
-def run_motion(jid, host):
-    job = job_row(jid)
-    p = motion_params(json.loads(job["params"]))
-    s = get_settings()
-    started = time.time()
-    work, q = f"{host['comfy_dir']}/input/sfam/{jid}", shlex.quote
-    py, blender = f"{host['comfy_dir']}/.venv/bin/python", host.get("blender") or DEFAULT_BLENDER
-    # PCI order, as the ComfyUI units use: CUDA's default order can differ and land on GPU 0, which isn't ours.
-    gpu = f"CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES={int(host['gpu'])}"
-    def step(note):
-        if job_row(jid)["status"] == "cancelling":
-            raise InterruptedError
-        update_job(jid, note=note)
-    try:
-        src = safe_path(p["model"])
-        model = f"model{src.suffix.lower()}"
-        step("uploading the model")
-        for f in MOTION_DIR.glob("*.py"):
-            put_input(host, f"{jid}/{f.name}", f.read_bytes())
-        put_input(host, f"{jid}/{model}", src.read_bytes())
-        step("rendering the front and side views")
-        ssh(host, f"cd {q(work)} && {gpu} {blender} -b -P render_views.py -- {model} . --turn {p['turn']}", timeout=900)
-        step(f"generating {p['takes']} video take(s) with {p['video_model']}")
-        h = run_prompt(host, jid, motion_graph(p, f"sfam/{jid}/views.png", f"sfam/{jid}/take"), started,
-                       s["job_timeout_min"], {"api_key_comfy_org": COMFY_ORG_API_KEY})
-        videos = sorted(f"{v.get('subfolder', '')}/{v['filename']}".strip("/")
-                        for out in h.get("outputs", {}).values() for v in out.get("images", []) if v.get("type") == "output")
-        if not videos:
-            raise RuntimeError("the video model returned no videos")
-        takes = []
-        for i, v in enumerate(videos, 1):
-            step(f"tracking and baking take {i} of {len(videos)}")
-            d, video = f"take{i}", f"{host['comfy_dir']}/output/{v}"
-            ssh(host, f"cd {q(work)} && {gpu} {py} track_solve.py {q(video)} joints.json {d}"
-                      f" && {gpu} {blender} -b -P bake.py -- {model} joints.json {d}/motion.json {d}/anim.glb", timeout=1800)
-            m = json.loads(ssh(host, f"{py} -c \"import json; m=json.load(open('{work}/{d}/motion.json')); m.pop('positions'); print(json.dumps(m))\""))
-            takes.append((m["score"], m["height_error_pct"], i, video))
-        step("saving")
-        out_dir = safe_path(s["output_folder"])
-        out_dir.mkdir(parents=True, exist_ok=True)
-        safe_name = re.sub(r"[^\w-]+", "_", job["name"]).strip("_") or f"asset{jid}"
-        views = ssh(host, f"cat {q(work + '/views.png')}")
-        saved, log = [], []
-        for score, err, i, video in sorted(takes, reverse=True):  # best take first
-            stem = f"{safe_name}_{p['action']}_take{i}"
-            for remote, ext in ((f"{work}/take{i}/anim.glb", ".glb"), (video, ".mp4"), (f"{work}/take{i}/overlay.mp4", "_overlay.mp4")):
-                dest = unique(out_dir / f"{stem}{ext}")
-                dest.write_bytes(ssh(host, f"cat {q(remote)}", timeout=900))
-                saved.append(dest.relative_to(ROOT).as_posix())
-            (out_dir / f"{Path(saved[-3]).stem}.png").write_bytes(views)  # thumbnail for the animated model
-            log.append(f"take {i}: score {score:.2f}, front/side height disagreement {err:.1f}% of model height")
-        update_job(jid, status="done", output=saved[0], files=json.dumps(saved), log="\n".join(log), note="", finished=time.time())
-    except InterruptedError:
-        update_job(jid, status="cancelled", note="", finished=time.time())
-    except Exception as e:
-        update_job(jid, status="failed", error=str(e)[-1000:], note="", finished=time.time())
-    finally:
-        LIVE.pop(jid, None)
-        try:
-            cleanup(host, [str(jid)], [str(jid)])
-        except Exception:
-            pass
 
 def run_job(jid, host):
     job = job_row(jid)
     params = json.loads(job["params"])
     s = get_settings()
-    remote_in, remote_out = f"{jid}.png", []
+    remote_in, remote_out = [], []
     started = time.time()
     try:
-        src = safe_path(params["image"])
-        put_input(host, remote_in, src.read_bytes())
+        views = job_views(params)
+        names = {}
+        for pos, rel in views.items():
+            name = f"{jid}_{pos}{safe_path(rel).suffix.lower()}"
+            put_input(host, name, safe_path(rel).read_bytes())
+            remote_in.append(name)
+            names[pos] = f"sfam/{name}"
+        src = safe_path(views["front"])
         safe_name = re.sub(r"[^\w-]+", "_", job["name"]).strip("_") or f"asset{jid}"
-        graph = build_graph(params, f"sfam/{jid}.png", f"sfam/{jid}_{safe_name}", pixal_model(host))
-        h = run_prompt(host, jid, graph, started, s["job_timeout_min"])
+        graph = build_graph(params, names["front"], f"sfam/{jid}_{safe_name}", pixal_model(host),
+                            names if "views" in params else None)
+        ok, line = gpu_check(host)
+        GPU_NOTES[jid] = [line]
+        if not ok:
+            raise RuntimeError(line)
+        r = comfy(host, "/prompt", {"prompt": graph, "client_id": f"sfam-{jid}"})
+        if "prompt_id" not in r:
+            raise RuntimeError(json.dumps(r.get("node_errors") or r.get("error") or r)[:800])
+        pid = r["prompt_id"]
+        update_job(jid, prompt_id=pid)
+        last_seen, limit = time.time(), s["job_timeout_min"] * 60
+        while True:
+            time.sleep(5)
+            try:
+                poll_metrics(host, jid, started)
+            except Exception:
+                pass  # metrics are best effort
+            if job_row(jid)["status"] == "cancelling":
+                comfy(host, "/queue", {"delete": [pid]})
+                comfy(host, "/interrupt", {})
+                raise InterruptedError
+            h = comfy(host, f"/history/{pid}").get(pid)
+            if h:
+                break
+            q = comfy(host, "/queue")
+            if any(pid in item for item in q.get("queue_running", []) + q.get("queue_pending", [])):
+                last_seen = time.time()
+            elif time.time() - last_seen > 30:
+                raise RuntimeError("job vanished from the host (ComfyUI restarted?) — retry it")
+            if time.time() - started > limit:
+                comfy(host, "/interrupt", {})
+                raise TimeoutError(f"timed out after {s['job_timeout_min']} min")
+        st = h.get("status", {})
+        if st.get("status_str") == "error":
+            msg = next((m[1].get("exception_message") for m in st.get("messages", []) if m[0] == "execution_error"), "ComfyUI error")
+            raise RuntimeError(msg)
         files = [f for out in h.get("outputs", {}).values() for f in out.get("3d", [])]
         for text in h.get("outputs", {}).get("1271", {}).get("text", []):
             rel = text.replace("\\", "/").split("/output/", 1)[-1]
@@ -625,10 +637,10 @@ def run_job(jid, host):
     except Exception as e:
         update_job(jid, status="failed", error=str(e)[-1000:], finished=time.time())
     finally:
-        log = LIVE.pop(jid, {}).get("log", [])
+        log = GPU_NOTES.pop(jid, []) + LIVE.pop(jid, {}).get("log", [])
         update_job(jid, log="\n".join(log))
         try:  # outputs now live here; clean the host
-            cleanup(host, [remote_in], remote_out)
+            cleanup(host, remote_in, remote_out)
             with db() as c:
                 if not c.execute("SELECT 1 FROM jobs WHERE status='queued'").fetchone():
                     comfy(host, "/free", {"unload_models": True, "free_memory": True})
@@ -640,19 +652,17 @@ def worker():
         try:
             s = get_settings()
             with db() as c:
-                queued = c.execute("SELECT id, kind FROM jobs WHERE status='queued' ORDER BY id").fetchall()
+                queued = c.execute("SELECT id FROM jobs WHERE status='queued' ORDER BY id").fetchall()
                 taken = {r[0] for r in c.execute("SELECT host FROM jobs WHERE status IN ('running','cancelling')")}
             free = [h for h in s["hosts"] if h.get("enabled") and h["name"] not in taken]
-            for jid, kind in queued:
-                # Motion runs Blender and the tracker over SSH; it needs no Trellis2 nodes.
-                fits = (lambda h, st: h.get("kind") == "ssh") if kind == "motion" else (lambda h, st: st["trellis"])
-                host = next((h for h in free if (st := host_status(h))["ok"] and not st["busy"] and fits(h, st)), None)
+            for (jid,) in queued:
+                host = next((h for h in free if (st := host_status(h))["ok"] and not st["busy"] and st["trellis"]), None)
                 if not host:
                     update_job(jid, note="waiting for a free GPU host")
                     break
                 free.remove(host)
                 update_job(jid, status="running", host=host["name"], started=time.time(), note="")
-                threading.Thread(target=run_motion if kind == "motion" else run_job, args=(jid, host), daemon=True).start()
+                threading.Thread(target=run_job, args=(jid, host), daemon=True).start()
         except Exception:
             traceback.print_exc()
         time.sleep(3)
@@ -667,7 +677,7 @@ def jobs_view(where="", args=(), limit=100, base=""):
         r["params"] = json.loads(r["params"])
         live = LIVE.get(r["id"])
         r["metrics"] = live and live["metrics"]
-        r["log"] = live["log"] if live else (r["log"] or "").splitlines()
+        r["log"] = GPU_NOTES.get(r["id"], []) + live["log"] if live else GPU_NOTES.get(r["id"], []) or (r["log"] or "").splitlines()
         r["files"] = [{"path": p, "kind": kind_of(ROOT / p), "url": base + "/files/" + urllib.parse.quote(p)}
                       for p in json.loads(r["files"] or "[]")]
     return rows
@@ -715,9 +725,7 @@ class Handler(BaseHTTPRequestHandler):
             if method == "GET" and p == "/api/queue":
                 return self.send(jobs_view())
             if method == "GET" and p == "/api/schema":
-                return self.send({"3d": param_schema(), "motion": [
-                    {"key": k, "label": lbl, "section": "Motion", "kind": kind, "default": d, **extra}
-                    for k, lbl, kind, extra, d in MOTION_PARAMS]})
+                return self.send({"3d": param_schema(), "presets": PRESET_LEVELS, "default_preset": DEFAULT_PRESET})
             if method == "GET" and p == "/api/settings":
                 return self.send(get_settings())
             if method == "PUT" and p == "/api/settings":
@@ -772,25 +780,15 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send({"path": dest.relative_to(ROOT).as_posix()})
             if method == "POST" and p == "/api/jobs":
                 b = self.body()
-                kind, params = b.get("kind"), b.get("params", {})
-                if kind == "3d":
-                    if kind_of(safe_path(params.get("image", ""))) != "image":
-                        raise ValueError("pick a source image")
-                    build_graph(params, "x", "x", "x")  # validate now, not on the host
-                    src = params["image"]
-                elif kind == "motion":
-                    if Path(params.get("model", "")).suffix.lower() not in (".glb", ".fbx") or not safe_path(params["model"]).is_file():
-                        raise ValueError("pick a rigged .glb or .fbx model")
-                    if not COMFY_ORG_API_KEY:
-                        raise ValueError("motion jobs need COMFY_ORG_API_KEY set on the asset manager (paid ComfyUI API nodes)")
-                    motion_params(params)
-                    src = params["model"]
-                else:
+                if b.get("kind") != "3d":
                     raise ValueError("unknown job type")
-                name = (b.get("name") or Path(src).stem).strip()[:80]
+                params = b.get("params", {})
+                views = job_views(params)
+                build_graph(params, "x", "x", "x", views if "views" in params else None)  # validate now, not on the host
+                name = (b.get("name") or Path(views["front"]).stem).strip()[:80]
                 with DB_LOCK, db() as c:
-                    jid = c.execute("INSERT INTO jobs (kind, name, params, status, created) VALUES (?, ?, ?, 'queued', ?)",
-                                    (kind, name, json.dumps(params), time.time())).lastrowid
+                    jid = c.execute("INSERT INTO jobs (kind, name, params, status, created) VALUES ('3d', ?, ?, 'queued', ?)",
+                                    (name, json.dumps(params), time.time())).lastrowid
                 return self.send({"id": jid, "status": "queued", "status_url": f"{base}/api/jobs/{jid}"})
             m = re.fullmatch(r"/api/jobs/(\d+)/(cancel|retry|remove)", p)
             if method == "POST" and m:
@@ -852,25 +850,23 @@ def check():
         raise AssertionError("escape accepted")
     except ValueError:
         pass
+    mv = build_graph({"seed": 7, "mv_tex_resolution": 1536, "rig": True}, "", "sfam/1_x", "P",
+                     {"front": "f.png", "back": "b.png", "left": "l.png"})
+    assert mv["317"]["inputs"]["azimuths"] == "0,90,180" and mv["39"]["inputs"]["pixal3d_multiview"] is True
+    assert "1261" not in mv and mv["1264"]["inputs"]["seed"] == 7 and mv["1264"]["inputs"]["resolution"] == 1536
+    assert mv["1262"]["inputs"]["trimesh"] == ["1264", 0] and mv["1270"]["inputs"]["trimesh"] == ["1264", 0]
+    assert mv["317"]["inputs"]["images"] == ["652", 0] and mv["602"]["inputs"]["image"] == "b.png"
+    for nid, n in mv.items():
+        assert all(v[0] in mv for v in n["inputs"].values() if isinstance(v, list)), nid
     assert "1270" not in build_graph({"rig_format": "fbx"}, "", "", "")
+    lo = build_graph({"preset": "low", "target_face_num": 50000}, "", "", "")
+    assert lo["218"]["inputs"]["target_face_num"] == 50000 and lo["1261"]["inputs"]["texture_size"] == 1024  # explicit wins
+    assert build_graph({}, "", "", "")["274"]["inputs"]["shape_steps"] == 12  # Normal by default
+    assert all(set(v) == set(PRESET_LEVELS) and k in PARAM_KEYS for k, v in PRESETS.items())
     rg = build_graph({"rig": True, "rig_format": "fbx", "rig_skeleton": "Unreal Engine 5"}, "", "sfam/1_x", "")
     assert rg["1270"]["inputs"]["file_format"] == "fbx" and rg["1271"]["inputs"]["source"] == ["1270", 1]
     assert rg["1270"]["inputs"]["filename_prefix"] == "sfam/1_x_rigged"
     assert [p["key"] for p in param_schema()][:3] == ["seed", "target_face_num", "texture_size"]
-    mp = motion_params({"model": "Generated/x_rigged.glb", "takes": 9, "seed": 7, "video_model": "MiniMax H3"})
-    assert mp["takes"] == 4 and mp["action"] == "walk" and "treadmill" in mp["prompt"]  # clamped, defaults filled
-    mg = motion_graph(mp, "sfam/1/views.png", "sfam/1/take")
-    assert [mg[f"{10 + i}"]["inputs"]["seed"] for i in range(4)] == [7, 8, 9, 10]
-    assert mg["13"]["class_type"] == "ComfyCloudMiniMaxH3ImageToVideoNode" and mg["23"]["inputs"]["filename_prefix"] == "sfam/1/take4"
-    for nid, n in mg.items():
-        assert all(v[0] in mg for v in n["inputs"].values() if isinstance(v, list)), nid
-    for bad in ({"takes": 1, "nope": 1}, {"video_model": "Sora"}):
-        try:
-            motion_params(bad)
-            raise AssertionError(f"bad motion options accepted: {bad}")
-        except ValueError:
-            pass
-    assert {f.name for f in MOTION_DIR.glob("*.py")} >= {"bake.py", "render_views.py", "track_solve.py"}
     print("check ok")
 
 if __name__ == "__main__":
