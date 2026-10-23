@@ -45,6 +45,8 @@ public:
     bool IsKeepPromptOpen() const;
     // Esc: closes the keep prompt as Revert, else hides the window. Returns true when anything closed.
     bool HandleEscape();
+    // Raised when the window closes itself (Esc, or the keep prompt resolving into a close); the front end, which has no ASFPlayerController window stack, listens.
+    FSimpleMulticastDelegate OnClosed;
     FSFGraphicsEditSession& Session() { return *EditSession; }
     // Development captures (SFGfx): select a preset, make one option Custom, or raise the keep prompt without touching the real display.
     void StagePreset(ESFGraphicsPreset Preset);

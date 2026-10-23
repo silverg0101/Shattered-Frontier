@@ -37,7 +37,21 @@ plans = {
     'game-menu': [(6, 'cmd:SFUi menu'), (8, 'cursor:1900,1040'), (10, 'shot')],
     'dialogue': [(2, 'cmd:SFStageAt -138 300 0'), (3, 'cursor:960,1060'), (4, 'cmd:SFSpawnDialogueNpc'), (11, 'shot')],
     'defeated': [(6, 'cmd:SFUi defeated'), (8, 'shot')],
+    # Front end (Capture-UiScene.ps1 starts a client only, on the SFFrontEndGameMode; dev identity seeded by -SFFrontEndSeed).
+    # Scouting the front-end vantage: SFFrontEndShow cam <x m> <y m> <height cm> <pitch> <yaw>, one shot each.
+    'explore': [(12, 'cmd:SFFrontEndShow cam -40 -330 350 -8 90'), (16, 'shot:cam1'), (17, 'cmd:SFFrontEndShow cam 40 -330 500 -10 100'), (21, 'shot:cam2'),
+                (22, 'cmd:SFFrontEndShow cam -120 -300 300 -6 70'), (26, 'shot:cam3'), (27, 'cmd:SFFrontEndShow cam 0 -400 600 -12 90'), (31, 'shot:cam4'),
+                (32, 'cmd:SFFrontEndShow cam -200 -260 400 -8 45'), (36, 'shot:cam5'), (37, 'cmd:SFFrontEndShow cam 60 -250 250 -5 110'), (41, 'shot:cam6'),
+                (42, 'cmd:SFFrontEndShow cam -60 -280 200 -4 80'), (46, 'shot:cam7'), (47, 'cmd:SFFrontEndShow cam -30 -360 420 -9 85'), (51, 'shot:explore')],
+    'title': [(12, 'cmd:SFFrontEndShow title'), (13, 'cursor:1900,1040'), (15, 'shot')],
+    'login': [(12, 'cmd:SFFrontEndShow login'), (13, 'cursor:1900,1040'), (15, 'shot')],
+    'account': [(12, 'cmd:SFFrontEndShow account'), (13, 'cursor:1900,1040'), (15, 'shot')],
+    'character-select': [(12, 'cmd:SFFrontEndShow select'), (13, 'cursor:1900,1040'), (15, 'shot')],
+    'character-creator': [(12, 'cmd:SFFrontEndShow create 1'), (13, 'cursor:1900,1040'), (15, 'shot'),
+                          (16, 'cmd:SFFrontEndShow create 2'), (18, 'shot:character-creator-body'),
+                          (19, 'cmd:SFFrontEndShow create 7 Aldren'), (21, 'shot:character-creator-name')],
 }
+FRONT_END = name in ('title', 'login', 'account', 'character-select', 'character-creator', 'explore')
 steps = plans[name] + [(32 if name == 'all' else max(12, plans[name][-1][0] + 3) if plans[name] else 12, 'quit')]
 state = {'world': None, 'time': 0.0, 'index': 0, 'pending': False,
          'pending_name': None, 'defeat_seen': None, 'defeat_shot': False}
@@ -77,7 +91,7 @@ def tick(delta):
     try:
         world = state['world'] or next((w for w in u.ObjectIterator(u.World)
             if u.GameplayStatics.get_player_controller(w, 0)
-            and u.GameplayStatics.get_player_controller(w, 0).get_controlled_pawn()), None)
+            and (FRONT_END or u.GameplayStatics.get_player_controller(w, 0).get_controlled_pawn())), None)
         if not world:
             return
         state['world'] = world

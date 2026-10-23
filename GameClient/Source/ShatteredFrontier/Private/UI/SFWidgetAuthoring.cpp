@@ -45,6 +45,7 @@
 #include "Gathering/SFGatheringSkillsPanel.h"
 #include "Quest/SFQuestBoard.h"
 #include "UI/SFGameMenu.h"
+#include "FrontEnd/SFFrontEndWidgets.h"
 #include "UI/SFUiWidgets.h"
 #include "UObject/SavePackage.h"
 #include "WidgetBlueprint.h"
@@ -1717,6 +1718,239 @@ void DefeatedLayout(UWidgetTree* T)
     T->RootWidget = Layer;
 }
 
+// ---- front end (title, sign-in, account, character select, creator, credits). Every panel is a WBP_WindowFrame or kit parents only; kit parts that sit
+// outside a window are drawn in a 0.5 ScaleBox (art pixels). Layout references: concept art UI v5 11-title-menu, 12-character-select, 13-character-creator.
+constexpr const TCHAR* FrontEndDir = TEXT("/Game/Frontier/UI/Widgets/FrontEnd");
+
+FSlateBrush StagBrush(float Size)
+{
+    FSlateBrush Brush;
+    Brush.ImageSize = FVector2D(Size, Size);
+    if (UTexture2D* Tex = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Frontier/UI/Kit/T_Kit_icon_stag_emblem.T_Kit_icon_stag_emblem"))) { Brush.SetResourceObject(Tex); }
+    return Brush;
+}
+
+// A window whose emblem is the stag (the kit has no stag emblem; the HUD kit one is used as the window icon).
+void StagWindowOf(UUserWidget* Window, const TCHAR* Title, float Width)
+{
+    if (USFWindowFrameWidget* Frame = WindowOf(Window, Title, TEXT("icon_window_settings"), Width)) { Frame->WindowIcon = StagBrush(96.f); }
+}
+
+UTextBlock* OverScene(UTextBlock* Text)  // text drawn straight over the scene (no panel behind it) gets a dark drop shadow
+{
+    Text->SetShadowOffset(FVector2D(4.f, 4.f));
+    Text->SetShadowColorAndOpacity(FLinearColor(0.f, 0.f, 0.f, 0.85f));
+    return Text;
+}
+
+UWidget* DimLayer(UWidgetTree* T)
+{
+    UBorder* Dim = Plain(T, nullptr, FMargin(0.f));
+    Dim->SetBrush(FSlateColorBrush(FLinearColor(0.f, 0.f, 0.f, 0.5f)));
+    return Dim;
+}
+
+// WBP_FrontEndTitle: logo and four kit buttons left, the news window right with the realm line in its footer, the version bottom left.
+void FrontEndTitleLayout(UWidgetTree* T)
+{
+    UOverlay* Root = A<UOverlay>(T);
+    UVerticalBox* Left = A<UVerticalBox>(T);
+    FSlateBrush Emblem;
+    Emblem.ImageSize = FVector2D(296.f, 320.f);
+    if (UTexture2D* Tex = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Frontier/UI/LoadingScreen/T_LS_Emblem.T_LS_Emblem"))) { Emblem.SetResourceObject(Tex); }
+    UVerticalBoxSlot* EmblemSlot = Left->AddChildToVerticalBox(Sized(T, nullptr, InvImage(T, TEXT("Emblem"), Emblem, true), 296.f, 320.f));
+    EmblemSlot->SetHorizontalAlignment(HAlign_Center);
+    UTextBlock* Legends = OverScene(SizedText(T, TEXT("TitleText"), TEXT("Legends:"), 200.f));
+    Legends->SetJustification(ETextJustify::Center);
+    Left->AddChildToVerticalBox(Legends);
+    UTextBlock* Sub = OverScene(SizedText(T, TEXT("SubtitleText"), TEXT("Shattered Frontier"), 84.f));
+    Sub->SetJustification(ETextJustify::Center);
+    Left->AddChildToVerticalBox(Sub)->SetPadding(FMargin(0.f, 0.f, 0.f, 80.f));
+    const TCHAR* const Buttons[4][2] = {{TEXT("PlayButton"), TEXT("Play")}, {TEXT("SettingsButton"), TEXT("Settings")}, {TEXT("CreditsButton"), TEXT("Credits")}, {TEXT("QuitButton"), TEXT("Quit")}};
+    for (const TCHAR* const* Entry : Buttons) { Left->AddChildToVerticalBox(Sized(T, nullptr, KitButton(T, Entry[0], Entry[1]), 700.f, 0.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 36.f)); }
+    Put(Root, Half(T, Left), HAlign_Left, VAlign_Top, FMargin(100.f, 30.f, 0.f, 0.f));
+
+    if (UUserWidget* News = Inst(T, CommonDir, TEXT("WBP_WindowFrame"), TEXT("NewsWindow")))
+    {
+        StagWindowOf(News, TEXT("Frontier News"), 900.f);
+        UVerticalBox* Body = A<UVerticalBox>(T);
+        Body->AddChildToVerticalBox(SizedText(T, TEXT("NewsTitle"), TEXT("Silverbrook awaits."), 48.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
+        Body->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
+        UTextBlock* Text = Caption(T, TEXT("NewsText"), TEXT(""), 34.f, true);
+        Text->SetAutoWrapText(true);
+        Body->AddChildToVerticalBox(Text);
+        Fill(News, TEXT("Content"), Sized(T, nullptr, Body, 740.f, 0.f));
+        UHorizontalBox* Realm = A<UHorizontalBox>(T);
+        Realm->AddChildToHorizontalBox(Sized(T, nullptr, InvImage(T, TEXT("RealmMark"), KImg(TEXT("icon_check_ok"), 56.f, 56.f), true), 56.f, 56.f))->SetVerticalAlignment(VAlign_Center);
+        UHorizontalBoxSlot* RealmLabel = Realm->AddChildToHorizontalBox(SizedText(T, TEXT("RealmText"), TEXT("Realm"), 36.f));
+        RealmLabel->SetVerticalAlignment(VAlign_Center); RealmLabel->SetPadding(FMargin(20.f, 0.f, 0.f, 0.f));
+        Fill(News, TEXT("Footer"), Realm);
+        Put(Root, News, HAlign_Right, VAlign_Top, FMargin(0.f, 130.f, 70.f, 0.f));
+    }
+    Put(Root, Half(T, OverScene(SizedText(T, TEXT("VersionText"), TEXT("Version"), 40.f))), HAlign_Left, VAlign_Bottom, FMargin(60.f, 0.f, 0.f, 40.f));
+    T->RootWidget = Root;
+}
+
+// A centred window over a dim: Title, Width and a filler for its Content (and Footer when given).
+UOverlay* CentredWindow(UWidgetTree* T, const TCHAR* Title, float Width, UWidget* Content, float ContentWidth, UWidget* Footer, bool bDim = true)
+{
+    UOverlay* Root = A<UOverlay>(T);
+    if (bDim) { Put(Root, DimLayer(T), HAlign_Fill, VAlign_Fill); }
+    if (UUserWidget* Window = Inst(T, CommonDir, TEXT("WBP_WindowFrame"), TEXT("Window")))
+    {
+        StagWindowOf(Window, Title, Width);
+        Fill(Window, TEXT("Content"), Sized(T, nullptr, Content, ContentWidth, 0.f));
+        if (Footer) { Fill(Window, TEXT("Footer"), Footer); }
+        Put(Root, Window, HAlign_Center, VAlign_Center);
+    }
+    T->RootWidget = Root;
+    return Root;
+}
+
+UHorizontalBox* RightButton(UWidgetTree* T, const TCHAR* Name, const TCHAR* Label, float Width)
+{
+    UHorizontalBox* Line = A<UHorizontalBox>(T);
+    Line->AddChildToHorizontalBox(A<USpacer>(T))->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+    Line->AddChildToHorizontalBox(Sized(T, nullptr, KitButton(T, Name, Label), Width, 0.f));
+    return Line;
+}
+
+// WBP_FrontEndLogin: account name, masked password, Remember account, a status line; Sign In in the footer.
+void FrontEndLoginLayout(UWidgetTree* T)
+{
+    UVerticalBox* Column = A<UVerticalBox>(T);
+    Column->AddChildToVerticalBox(Caption(T, nullptr, TEXT("Account name"), 34.f, true))->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
+    Column->AddChildToVerticalBox(KitField(T, TEXT("WBP_InputField"), TEXT("AccountField"), TEXT("Account name"), false))->SetPadding(FMargin(0.f, 0.f, 0.f, 24.f));
+    Column->AddChildToVerticalBox(Caption(T, nullptr, TEXT("Password"), 34.f, true))->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
+    UWidget* Password = KitField(T, TEXT("WBP_InputField"), TEXT("PasswordField"), TEXT("Password"), false);
+    if (USFTextFieldWidget* Field = Cast<USFTextFieldWidget>(Password)) { Field->bPassword = true; }
+    Column->AddChildToVerticalBox(Password)->SetPadding(FMargin(0.f, 0.f, 0.f, 28.f));
+    Column->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
+    UHorizontalBox* Remember = A<UHorizontalBox>(T);
+    Remember->AddChildToHorizontalBox(Inst(T, CommonDir, TEXT("WBP_Toggle"), TEXT("RememberToggle")))->SetVerticalAlignment(VAlign_Center);
+    UHorizontalBoxSlot* RememberLabel = Remember->AddChildToHorizontalBox(Caption(T, nullptr, TEXT("Remember account"), 36.f));
+    RememberLabel->SetVerticalAlignment(VAlign_Center); RememberLabel->SetPadding(FMargin(24.f, 0.f, 0.f, 0.f));
+    Column->AddChildToVerticalBox(Remember)->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
+    UTextBlock* Status = Caption(T, TEXT("StatusText"), TEXT(""), 34.f);
+    Status->SetAutoWrapText(true);
+    Column->AddChildToVerticalBox(Status);
+    CentredWindow(T, TEXT("Sign In"), 1100.f, Column, 900.f, RightButton(T, TEXT("SignInButton"), TEXT("Sign In"), 480.f), false);
+}
+
+// WBP_FrontEndAccount: the account name, the realm and Sign Out.
+void FrontEndAccountLayout(UWidgetTree* T)
+{
+    UVerticalBox* Column = A<UVerticalBox>(T);
+    Column->AddChildToVerticalBox(Caption(T, nullptr, TEXT("Signed in as"), 34.f, true));
+    Column->AddChildToVerticalBox(SizedText(T, TEXT("AccountText"), TEXT("Account"), 56.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
+    Column->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
+    Column->AddChildToVerticalBox(Caption(T, nullptr, TEXT("Realm"), 34.f, true));
+    Column->AddChildToVerticalBox(SizedText(T, TEXT("RealmText"), TEXT("Realm"), 44.f));
+    CentredWindow(T, TEXT("Account"), 1000.f, Column, 800.f, RightButton(T, TEXT("SignOutButton"), TEXT("Sign Out"), 480.f));
+}
+
+// WBP_FrontEndCredits: a window of text lines.
+void FrontEndCreditsLayout(UWidgetTree* T)
+{
+    UVerticalBox* Column = A<UVerticalBox>(T);
+    const TCHAR* const Lines[] = {TEXT("Legends: Shattered Frontier"), TEXT("Design and development by the Shattered Frontier team."), TEXT("Typefaces: EB Garamond and Cinzel, SIL Open Font License."), TEXT("Built with Unreal Engine.")};
+    for (int32 Index = 0; Index < 4; ++Index)
+    {
+        UTextBlock* Line = Caption(T, nullptr, Lines[Index], Index == 0 ? 48.f : 34.f, Index != 0);
+        Line->SetAutoWrapText(true);
+        Column->AddChildToVerticalBox(Line)->SetPadding(FMargin(0.f, 0.f, 0.f, Index == 0 ? 20.f : 14.f));
+    }
+    CentredWindow(T, TEXT("Credits"), 1200.f, Column, 1000.f, nullptr);
+}
+
+// WBP_FrontEndCharacters: the Characters window at the left, realm and Account top right, the big Enter World button at the bottom centre.
+void FrontEndSelectLayout(UWidgetTree* T)
+{
+    UOverlay* Root = A<UOverlay>(T);
+    if (UUserWidget* Window = Inst(T, CommonDir, TEXT("WBP_WindowFrame"), TEXT("Window")))
+    {
+        StagWindowOf(Window, TEXT("Characters"), 1040.f);
+        Fill(Window, TEXT("Content"), ListOf(T, TEXT("CharScroll"), N<UVerticalBox>(T, TEXT("Rows")), 880.f, 700.f));
+        UVerticalBox* Foot = A<UVerticalBox>(T);
+        Foot->AddChildToVerticalBox(KitButton(T, TEXT("CreateButton"), TEXT("Create New")))->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
+        Foot->AddChildToVerticalBox(KitButton(T, TEXT("DeleteButton"), TEXT("Delete")));
+        Fill(Window, TEXT("Footer"), Foot);
+        Put(Root, Window, HAlign_Left, VAlign_Center, FMargin(48.f, 0.f, 0.f, 0.f));
+    }
+    UVerticalBox* Realm = A<UVerticalBox>(T);
+    UHorizontalBox* RealmLine = A<UHorizontalBox>(T);
+    RealmLine->AddChildToHorizontalBox(Sized(T, nullptr, InvImage(T, nullptr, StagBrush(72.f), true), 72.f, 72.f))->SetVerticalAlignment(VAlign_Center);
+    UHorizontalBoxSlot* RealmLabel = RealmLine->AddChildToHorizontalBox(OverScene(SizedText(T, TEXT("RealmText"), TEXT("Realm"), 48.f)));
+    RealmLabel->SetVerticalAlignment(VAlign_Center); RealmLabel->SetPadding(FMargin(20.f, 0.f, 20.f, 0.f));
+    RealmLine->AddChildToHorizontalBox(Sized(T, nullptr, InvImage(T, TEXT("RealmMark"), KImg(TEXT("icon_check_ok"), 56.f, 56.f), true), 56.f, 56.f))->SetVerticalAlignment(VAlign_Center);
+    Realm->AddChildToVerticalBox(RealmLine)->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+    Realm->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
+    Realm->AddChildToVerticalBox(KitButton(T, TEXT("AccountButton"), TEXT("Account")));
+    Put(Root, Half(T, Realm), HAlign_Right, VAlign_Top, FMargin(0.f, 40.f, 60.f, 0.f));
+
+    UVerticalBox* Bottom = A<UVerticalBox>(T);
+    UTextBlock* Status = OverScene(SizedText(T, TEXT("StatusText"), TEXT(""), 38.f));
+    Status->SetJustification(ETextJustify::Center);
+    Bottom->AddChildToVerticalBox(Status)->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
+    Bottom->AddChildToVerticalBox(Sized(T, nullptr, KitButton(T, TEXT("EnterButton"), TEXT("Enter World")), 760.f, 0.f))->SetHorizontalAlignment(HAlign_Center);
+    UScaleBox* Big = A<UScaleBox>(T);  // the one big button of the screen: the same kit button at 0.75
+    Big->SetStretch(EStretch::UserSpecified);
+    Big->SetUserSpecifiedScale(0.75f);
+    Big->SetContent(Bottom);
+    Put(Root, Big, HAlign_Center, VAlign_Bottom, FMargin(0.f, 0.f, 0.f, 44.f));
+    T->RootWidget = Root;
+}
+
+// WBP_FrontEndCreator: the Create step list at the left, the step window at the right, "Step N of 7" at the bottom centre.
+void FrontEndCreatorLayout(UWidgetTree* T)
+{
+    UOverlay* Root = A<UOverlay>(T);
+    if (UUserWidget* Window = Inst(T, CommonDir, TEXT("WBP_WindowFrame"), TEXT("Window")))
+    {
+        StagWindowOf(Window, TEXT("Create"), 760.f);
+        Fill(Window, TEXT("Content"), Sized(T, nullptr, N<UVerticalBox>(T, TEXT("StepList")), 560.f, 0.f));
+        Put(Root, Window, HAlign_Left, VAlign_Center, FMargin(48.f, 0.f, 0.f, 0.f));
+    }
+    if (UUserWidget* Window = Inst(T, CommonDir, TEXT("WBP_WindowFrame"), TEXT("PageWindow")))
+    {
+        StagWindowOf(Window, TEXT("Gender"), 1240.f);
+        UOverlay* Pages = A<UOverlay>(T);
+        UVerticalBox* Gender = N<UVerticalBox>(T, TEXT("GenderPage"));
+        UUniformGridPanel* Grid = N<UUniformGridPanel>(T, TEXT("GenderTiles"));
+        Grid->SetSlotPadding(FMargin(8.f));
+        Gender->AddChildToVerticalBox(Grid);
+        Put(Pages, Gender, HAlign_Fill, VAlign_Top);
+        UVerticalBox* Options = N<UVerticalBox>(T, TEXT("OptionsPage"));
+        Options->AddChildToVerticalBox(N<UVerticalBox>(T, TEXT("OptionRows")));
+        Put(Pages, Options, HAlign_Fill, VAlign_Top);
+        UVerticalBox* NamePage = N<UVerticalBox>(T, TEXT("NamePage"));
+        NamePage->AddChildToVerticalBox(Caption(T, nullptr, TEXT("Choose a name"), 40.f, true))->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
+        NamePage->AddChildToVerticalBox(KitField(T, TEXT("WBP_InputField"), TEXT("NameField"), TEXT("Character name"), false))->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
+        UTextBlock* NameStatus = Caption(T, TEXT("NameStatus"), TEXT(""), 34.f);
+        NameStatus->SetAutoWrapText(true);
+        NamePage->AddChildToVerticalBox(NameStatus);
+        NamePage->AddChildToVerticalBox(Caption(T, nullptr, TEXT("3 to 16 letters; one apostrophe or hyphen at most."), 30.f, true))->SetPadding(FMargin(0.f, 16.f, 0.f, 0.f));
+        Put(Pages, NamePage, HAlign_Fill, VAlign_Top);
+        UVerticalBox* Column = A<UVerticalBox>(T);
+        Column->AddChildToVerticalBox(Sized(T, nullptr, Pages, 0.f, 620.f))->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
+        Column->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 16.f));
+        Column->AddChildToVerticalBox(Caption(T, TEXT("RotateHint"), TEXT("Drag to rotate"), 34.f, true));
+        Fill(Window, TEXT("Content"), Sized(T, nullptr, Column, 1000.f, 0.f));
+        UHorizontalBox* Foot = A<UHorizontalBox>(T);
+        const TCHAR* const Buttons[3][2] = {{TEXT("RandomizeButton"), TEXT("Randomize")}, {TEXT("BackButton"), TEXT("Back")}, {TEXT("NextButton"), TEXT("Next")}};
+        for (const TCHAR* const* Entry : Buttons)
+        {
+            UHorizontalBoxSlot* Cell = Foot->AddChildToHorizontalBox(KitButton(T, Entry[0], Entry[1]));
+            Cell->SetSize(FSlateChildSize(ESlateSizeRule::Fill)); Cell->SetPadding(FMargin(8.f, 0.f));
+        }
+        Fill(Window, TEXT("Footer"), Foot);
+        Put(Root, Window, HAlign_Right, VAlign_Center, FMargin(0.f, 0.f, 48.f, 0.f));
+    }
+    UTextBlock* Step = OverScene(SizedText(T, TEXT("StepText"), TEXT("Step 1 of 7"), 48.f));
+    Put(Root, Half(T, Step), HAlign_Center, VAlign_Bottom, FMargin(0.f, 0.f, 0.f, 36.f));
+    T->RootWidget = Root;
+}
+
 struct FSpec
 {
     const TCHAR* Dir;
@@ -1793,6 +2027,12 @@ TArray<FSpec> Specs()
         {SettingsDir, TEXT("WBP_Settings"), USFGraphicsMenu::StaticClass(), SettingsLayout, nullptr},
         {MenuDir, TEXT("WBP_GameMenu"), USFGameMenu::StaticClass(), GameMenuLayout, nullptr},
         {HudDir, TEXT("WBP_Defeated"), USFE1VitalsHud::StaticClass(), DefeatedLayout, nullptr},
+        {FrontEndDir, TEXT("WBP_FrontEndTitle"), USFFrontEndTitle::StaticClass(), FrontEndTitleLayout, nullptr},
+        {FrontEndDir, TEXT("WBP_FrontEndLogin"), USFFrontEndLogin::StaticClass(), FrontEndLoginLayout, nullptr},
+        {FrontEndDir, TEXT("WBP_FrontEndAccount"), USFFrontEndAccount::StaticClass(), FrontEndAccountLayout, nullptr},
+        {FrontEndDir, TEXT("WBP_FrontEndCredits"), USFFrontEndCredits::StaticClass(), FrontEndCreditsLayout, nullptr},
+        {FrontEndDir, TEXT("WBP_FrontEndCharacters"), USFFrontEndSelect::StaticClass(), FrontEndSelectLayout, nullptr},
+        {FrontEndDir, TEXT("WBP_FrontEndCreator"), USFFrontEndCreator::StaticClass(), FrontEndCreatorLayout, nullptr},
     };
 }
 }

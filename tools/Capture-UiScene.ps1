@@ -8,7 +8,8 @@
 param([Parameter(Mandatory)][string]$Name, [string]$Map = 'Greenlands/Greenlands_Silverbrook', [string[]]$ServerFlags = @(), [string[]]$ClientFlags = @(), [int]$Seconds = 40, [double]$Interval = 0.5, [int]$Port = 17931, [switch]$Final3)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
-# Final3 states: gameplay-hud, gathering (skills window), inventory, market-board, trade, build-catalogue, crafting-station, quest-journal, quest-board, dialogue, settings, settings-keep, game-menu, defeated, 9-loading-screen.
+# Front-end states (title, login, account, character-select, character-creator) start only a client on the front-end game mode; no server.
+# Final3 states: title, login, account, character-select, character-creator, gameplay-hud, gathering (skills window), inventory, market-board, trade, build-catalogue, crafting-station, quest-journal, quest-board, dialogue, settings, settings-keep, game-menu, defeated, 9-loading-screen.
 $ed = 'C:\Program Files\Epic Games\UE_5.8\Engine\Binaries\Win64\UnrealEditor.exe'
 $up = Join-Path $root 'GameClient\ShatteredFrontier.uproject'
 $out = Join-Path $root "Artifacts\ui-v5-final\$Name"; $null = New-Item -ItemType Directory -Force $out
@@ -25,6 +26,13 @@ if ($Final3) {
         } finally { if (-not $client.HasExited) { Stop-Process -Id $client.Id -Force } }
         if (-not ((Test-Path -LiteralPath $shot) -and (Select-String -LiteralPath "$out\client.log" -Pattern 'UI_LOADING_SHOT_SAVED' -Quiet))) { throw 'Loading widget screenshot was not saved.' }
         Write-Output "Loading screenshot saved: $shot"
+        return
+    }
+    if ($Name -in 'title','login','account','character-select','character-creator','explore') {
+        $client = Start-Process $ed -ArgumentList @("`"$up`"", "/Game/Frontier/Maps/$Map`?game=/Script/ShatteredFrontier.SFFrontEndGameMode", '-game', '-windowed', '-ResX=1920', '-ResY=1080', '-ForceRes', '-nosound', '-nop4', '-SFFrontEndSeed', "-UserDir=`"$out\client-user`"", "-abslog=`"$out\client.log`"", "-ExecCmds=`"py $root/tools/Capture-UiV5.py $Name $evidence`"") -PassThru
+        try { $client.WaitForExit(240 * 1000) | Out-Null } finally { if (-not $client.HasExited) { Stop-Process -Id $client.Id -Force } }
+        if (-not (Test-Path -LiteralPath $shot)) { throw "Missing UI capture: $shot" }
+        Write-Output "Screenshot saved: $shot"
         return
     }
     switch ($Name) {

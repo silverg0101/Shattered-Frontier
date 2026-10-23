@@ -23,8 +23,8 @@
 #include "Widgets/SOverlay.h"
 #include "Widgets/Text/STextBlock.h"
 
-// Layout follows docs/Game-Design/concept-art/UI/v5/9-loading-screen.png in a 1920x1080 design space (scaled to fit):
-// stag emblem in a brass diamond, mixed-case EB Garamond zone title, engraved rule, tip line, 620x14 brass bar, 40 px ring spinner.
+// Layout follows docs/Game-Design/concept-art/UI/v5/9-loading-screen.png in a 1920x1080 design space (scaled to fit): stag emblem in a brass diamond,
+// mixed-case EB Garamond zone title, the kit v7 separator, the flavour line and the inventory weight-bar progress bar (kit track and green fill).
 namespace
 {
 FDelegateHandle LoadingScreenPreLoadHandle;
@@ -43,6 +43,19 @@ UTexture2D* LoadingScreenLoadTexture(const FSoftObjectPath& Path)
     if (Texture) { LoadingScreenTextures.Emplace(Texture); }
     else { UE_LOG(LogTemp, Warning, TEXT("Loading screen art %s is missing."), *Path.ToString()); }
     return Texture;
+}
+
+// A 9-slice kit brush: ImageSize is the art size, margins L,T,R,B in source pixels.
+FSlateBrush LoadingScreenBoxBrush(const TCHAR* Path, float W, float H, float L, float Top, float R, float B)
+{
+    FSlateBrush Brush;
+    UTexture2D* Texture = LoadingScreenLoadTexture(FSoftObjectPath(Path));
+    if (!Texture) { Brush.DrawAs = ESlateBrushDrawType::NoDrawType; return Brush; }
+    Brush.SetResourceObject(Texture);
+    Brush.ImageSize = FVector2D(W, H);
+    Brush.DrawAs = ESlateBrushDrawType::Box;
+    Brush.Margin = FMargin(L / W, Top / H, R / W, B / H);
+    return Brush;
 }
 
 FSlateBrush LoadingScreenBrush(const TCHAR* Name)
@@ -99,14 +112,11 @@ public:
         else { BackgroundBrush = SFHudStyle::Frame(SFHudStyle::Hex(TEXT("0E171C")), FLinearColor::Transparent, 0.f); }
         VignetteBrush = LoadingScreenBrush(TEXT("T_LS_Vignette"));
         EmblemBrush = LoadingScreenBrush(TEXT("T_LS_Emblem"));
-        RuleBrush = LoadingScreenBrush(TEXT("T_LS_Rule"));
-        BarFrameBrush = LoadingScreenBrush(TEXT("T_LS_BarFrame"));
-        BarFrameBrush.DrawAs = ESlateBrushDrawType::Box;  // 3-slice: keep the diamond end caps undistorted
-        BarFrameBrush.Margin = FMargin(0.05f, 0.f, 0.05f, 0.f);
-        BarFillBrush = LoadingScreenBrush(TEXT("T_LS_BarFill"));  // art is already brass: no tint
-        SpinnerBrush = LoadingScreenBrush(TEXT("T_LS_Spinner"));
+        RuleBrush = LoadingScreenBoxBrush(TEXT("/Game/Frontier/UI/Kit/v7/T_KitV7_separator.T_KitV7_separator"), 1200.f, 24.f, 40.f, 0.f, 40.f, 0.f);  // kit v7 separator
+        BarFrameBrush = LoadingScreenBoxBrush(TEXT("/Game/Frontier/UI/Kit/Inventory/T_Inventory_progress_track.T_Inventory_progress_track"), 680.f, 26.f, 18.f, 8.f, 18.f, 8.f);  // the inventory weight bar
+        BarFillBrush = LoadingScreenBoxBrush(TEXT("/Game/Frontier/UI/Kit/Inventory/T_Inventory_progress_fill_green.T_Inventory_progress_fill_green"), 680.f, 22.f, 16.f, 7.f, 16.f, 7.f);
         const FLinearColor Shadow(0.f, 0.f, 0.f, 0.9f);
-        constexpr float BarWidth = 629.f, BarHeight = 35.f, BarInset = 10.f, CapWidth = 36.f;  // trough 629 + a 36 px diamond cap each side = the 701x35 frame at (609, 915)
+        constexpr float BarWidth = 680.f, BarHeight = 26.f;  // drawn at 1:1 in the 1920x1080 design space, bottom centre
 
         ChildSlot
         [
@@ -122,18 +132,16 @@ public:
                         SNew(SCanvas)
                         + SCanvas::Slot().Position(FVector2D(836.f, 322.f)).Size(FVector2D(247.f, 267.f))
                         [ SNew(SImage).Image(&EmblemBrush) ]
-                        + SCanvas::Slot().Position(FVector2D(0.f, 566.f)).Size(FVector2D(1920.f, 120.f))
+                        + SCanvas::Slot().Position(FVector2D(0.f, 566.f)).Size(FVector2D(1920.f, 150.f))
                         [ SNew(STextBlock).Text(FText::FromString(Settings.ZoneTitle)).Font(LoadingScreenFont(TEXT("FontFace_EBGaramondBold"), 128)).Justification(ETextJustify::Center).ColorAndOpacity(SFHudStyle::Ivory()).ShadowOffset(FVector2D(3, 3)).ShadowColorAndOpacity(Shadow) ]
-                        + SCanvas::Slot().Position(FVector2D(713.f, 679.f)).Size(FVector2D(493.f, 29.f))
+                        + SCanvas::Slot().Position(FVector2D(660.f, 706.f)).Size(FVector2D(600.f, 24.f))
                         [ SNew(SImage).Image(&RuleBrush) ]
                         + SCanvas::Slot().Position(FVector2D(700.f, 862.f)).Size(FVector2D(520.f, 44.f))
                         [ SNew(STextBlock).Text(this, &SSFLoadingScreen::CurrentTip).Font(LoadingScreenFont(TEXT("FontFace_EBGaramondRegular"), 28)).WrapTextAt(520.f).Justification(ETextJustify::Center).ColorAndOpacity(SFHudStyle::Ivory()).ShadowOffset(FVector2D(2, 2)).ShadowColorAndOpacity(Shadow) ]
-                        + SCanvas::Slot().Position(FVector2D(609.f, 915.f)).Size(FVector2D(BarWidth + 2.f * CapWidth, BarHeight))  // the diamond end caps draw outside the trough
+                        + SCanvas::Slot().Position(FVector2D((1920.f - BarWidth) / 2.f, 932.f)).Size(FVector2D(BarWidth, BarHeight))
                         [ SNew(SImage).Image(&BarFrameBrush) ]
-                        + SCanvas::Slot().Position(FVector2D(609.f + CapWidth + BarInset, 915.f + (BarHeight - 16.f) / 2.f)).Size(FVector2D(BarWidth - 2.f * BarInset, 16.f))
+                        + SCanvas::Slot().Position(FVector2D((1920.f - BarWidth) / 2.f + 2.f, 932.f + 2.f)).Size(FVector2D(BarWidth - 4.f, BarHeight - 4.f))
                         [ SNew(SBox).HAlign(HAlign_Left).WidthOverride(this, &SSFLoadingScreen::FillWidth)[ SNew(SImage).Image(&BarFillBrush) ] ]
-                        + SCanvas::Slot().Position(FVector2D(939.f, 972.f)).Size(FVector2D(42.f, 42.f))
-                        [ SNew(SImage).Image(&SpinnerBrush).ColorAndOpacity(SFHudStyle::Brass()).RenderTransformPivot(FVector2D(0.5f, 0.5f)).RenderTransform(this, &SSFLoadingScreen::SpinnerTransform) ]
                     ]
                 ]
             ]
@@ -151,15 +159,13 @@ private:
     }
 
     // MoviePlayer reports no load progress to the widget: ease towards 92 % so the bar always moves and never claims done early.
-    FOptionalSize FillWidth() const { return FOptionalSize(static_cast<float>(0.92 * (1.0 - FMath::Exp(-Elapsed() / 2.5))) * (629.f - 20.f)); }
-
-    TOptional<FSlateRenderTransform> SpinnerTransform() const { return FSlateRenderTransform(FQuat2D(FMath::DegreesToRadians(static_cast<float>(FMath::Fmod(Elapsed() * 270.0, 360.0))))); }
+    FOptionalSize FillWidth() const { return FOptionalSize(FMath::Max(32.f, static_cast<float>(0.92 * (1.0 - FMath::Exp(-Elapsed() / 2.5))) * (680.f - 4.f))); }
 
     TArray<FString> Tips;
     float TipSeconds = 6.f;
     int32 FirstTip = 0;
     double StartTime = 0.0;
-    FSlateBrush BackgroundBrush, VignetteBrush, EmblemBrush, RuleBrush, BarFrameBrush, BarFillBrush, SpinnerBrush;
+    FSlateBrush BackgroundBrush, VignetteBrush, EmblemBrush, RuleBrush, BarFrameBrush, BarFillBrush;
 };
 
 void LoadingScreenOnPreLoadMap(const FString& MapName)

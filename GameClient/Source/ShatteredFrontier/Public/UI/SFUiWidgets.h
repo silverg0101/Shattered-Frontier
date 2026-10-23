@@ -473,6 +473,7 @@ public:
     UPROPERTY(BlueprintAssignable, Category = "SF") FSFTextFieldCommitted OnTextCommitted;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SF", meta = (ExposeOnSpawn)) FText HintText;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SF") bool bDigitsOnly = false;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SF") bool bPassword = false;  // masks the text (the sign-in password field)
     UPROPERTY(EditAnywhere, Category = "SF Style") FSFUiTextStyle TextStyle = FSFUiTextStyle(34, SFHudStyle::Ivory());
 
     UFUNCTION(BlueprintCallable, Category = "SF UI") void SetText(const FText& InText);

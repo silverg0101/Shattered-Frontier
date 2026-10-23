@@ -561,6 +561,7 @@ void USFTextFieldWidget::NativeOnInitialized()
     Super::NativeOnInitialized();
     if (!Input) { return; }
     if (!HintText.IsEmpty()) { Input->SetHintText(HintText); }
+    if (bPassword) { Input->SetIsPassword(true); }
     Input->OnTextChanged.AddUniqueDynamic(this, &USFTextFieldWidget::HandleChanged);
     Input->OnTextCommitted.AddUniqueDynamic(this, &USFTextFieldWidget::HandleCommitted);
 }

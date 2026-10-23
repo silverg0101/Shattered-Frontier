@@ -222,6 +222,7 @@ void USFGraphicsMenu::CloseMenu()
 {
     if (ASFPlayerController* PC = Cast<ASFPlayerController>(GetOwningPlayer())) { PC->GetWindowStack()->Close(this); }
     else { SetVisibility(ESlateVisibility::Collapsed); }
+    OnClosed.Broadcast();
 }
 
 bool USFGraphicsMenu::HandleEscape()
