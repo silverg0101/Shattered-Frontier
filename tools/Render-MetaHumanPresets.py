@@ -44,7 +44,7 @@ def make_backdrop_material():
     m = unreal.AssetToolsHelpers.get_asset_tools().create_asset("M_Backdrop", SCRATCH, unreal.Material, unreal.MaterialFactoryNew())
     m.set_editor_property("shading_model", unreal.MaterialShadingModel.MSM_UNLIT)
     n = unreal.MaterialEditingLibrary.create_material_expression(m, unreal.MaterialExpressionConstant3Vector, -300, 0)
-    n.set_editor_property("constant", unreal.LinearColor(0.30, 0.30, 0.32, 1))
+    n.set_editor_property("constant", unreal.LinearColor(0.62, 0.62, 0.62, 1))
     unreal.MaterialEditingLibrary.connect_material_property(n, "", unreal.MaterialProperty.MP_EMISSIVE_COLOR)
     unreal.MaterialEditingLibrary.recompile_material(m)
     return m
@@ -58,17 +58,19 @@ def set_up_stage():
     plane.static_mesh_component.set_editor_property("mobility", unreal.ComponentMobility.MOVABLE)
     plane.static_mesh_component.set_material(0, make_backdrop_material())
     plane.static_mesh_component.set_cast_shadow(False)
-    for pitch, yaw, inten in ((-25, -120, 3.0), (-10, -55, 2.2), (-60, -90, 0.8)):
+    for pitch, yaw, inten in ((-25, -125, 4.0), (-10, -55, 3.0), (-50, -90, 2.0)):
         d = A(unreal.DirectionalLight, unreal.Vector(0, 0, 400), unreal.Rotator(0, pitch, yaw))
         c = d.get_component_by_class(unreal.DirectionalLightComponent)
         c.set_editor_property("mobility", unreal.ComponentMobility.MOVABLE)
         c.set_editor_property("intensity", inten)
         c.set_editor_property("light_source_angle", 6.0)
+        c.set_editor_property("light_color", unreal.Color(255, 255, 255, 255))
+        c.set_editor_property("use_temperature", False)
     sky = A(unreal.SkyLight, unreal.Vector(0, 0, 300), unreal.Rotator())
     sc = sky.get_component_by_class(unreal.SkyLightComponent)
     sc.set_editor_property("mobility", unreal.ComponentMobility.MOVABLE)
     sc.set_editor_property("real_time_capture", True)
-    sc.set_editor_property("intensity", 1.0)
+    sc.set_editor_property("intensity", 3.0)
 
 
 rt = unreal.RenderingLibrary.create_render_target2d(world, 1024, 1280, unreal.TextureRenderTargetFormat.RTF_RGBA8)
@@ -85,7 +87,7 @@ pp.dynamic_global_illumination_method = unreal.DynamicGlobalIlluminationMethod.N
 pp.override_auto_exposure_method = True
 pp.auto_exposure_method = unreal.AutoExposureMethod.AEM_MANUAL
 pp.override_auto_exposure_bias = True
-pp.auto_exposure_bias = float(os.environ.get("MH_EV", "9.5"))
+pp.auto_exposure_bias = float(os.environ.get("MH_EV", "9.0"))
 cap.post_process_settings = pp
 cap.post_process_blend_weight = 1.0
 set_up_stage()
@@ -110,7 +112,7 @@ def shoot(actor, name, yaw):
         pos0 = unreal.Vector(origin.x, origin.y, origin.z + ext.z - 14)
     fwd = actor.get_actor_forward_vector()
     log("head", name, pos0, "bone", bone, "fwd", fwd, "actor", actor.get_actor_location())
-    tgt = unreal.Vector(pos0.x, pos0.y, pos0.z + float(os.environ.get("MH_HEADUP", "10")))
+    tgt = unreal.Vector(pos0.x, pos0.y, pos0.z + float(os.environ.get("MH_HEADUP", "-2")))
     base = math.atan2(fwd.y, fwd.x) + math.pi / 2  # face mesh looks along actor +Y
     r = base + math.radians(yaw) + (math.pi if os.environ.get("MH_FLIP") else 0)
     dist = float(os.environ.get("MH_DIST", "110"))
