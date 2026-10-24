@@ -90,7 +90,7 @@ input[type=checkbox] { accent-color: var(--primary); width: 16px; height: 16px; 
 .tile { position: relative; overflow: hidden; border-radius: 12px; border: 1px solid var(--border); background: var(--card); cursor: pointer; user-select: none; transition: border-color .25s, box-shadow .25s; }
 .tile:hover { border-color: var(--primary-30); }
 .tile.sel { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary), 0 0 24px var(--primary-12); }
-.tile .thumb { aspect-ratio: 1; display: grid; place-items: center; overflow: hidden; background: radial-gradient(circle at 50% 30%, var(--card-elevated), var(--card)); }
+.tile .thumb { position: relative; aspect-ratio: 1; display: grid; place-items: center; overflow: hidden; background: radial-gradient(circle at 50% 30%, var(--card-elevated), var(--card)); }
 .tile .thumb img { width: 100%; height: 100%; object-fit: contain; transition: transform .7s var(--ease); }
 .tile:hover .thumb img { transform: scale(1.05); }
 .tile .thumb svg { width: 44px; height: 44px; color: var(--muted-foreground); transition: transform .7s var(--ease), color .25s; }
@@ -102,6 +102,19 @@ input[type=checkbox] { accent-color: var(--primary); width: 16px; height: 16px; 
 .tile:hover .check, .tile.sel .check, .grid.multi .check { opacity: 1; }
 .badge { position: absolute; top: 8px; right: 8px; border-radius: 999px; padding: 2px 8px; font: 600 10px/1.6 var(--sans); letter-spacing: .08em; text-transform: uppercase; background: hsla(220, 14%, 8%, .8); backdrop-filter: blur(6px); color: var(--muted-foreground); }
 .badge.model { background: var(--primary); color: #fff; }
+/* joint detector state on rigged models: good / usable / failed, neutral while none, queued or training */
+.det { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 2px 8px; font: 600 10px/1.6 var(--sans); letter-spacing: .08em; text-transform: uppercase; background: hsla(220, 14%, 8%, .8); backdrop-filter: blur(6px); color: var(--muted-foreground); white-space: nowrap; }
+.tile .det { position: absolute; left: 8px; bottom: 8px; cursor: pointer; }
+.det.good { background: var(--success); color: #04180f; }
+.det.usable { background: var(--warn); color: #241600; }
+.det.failed { background: var(--danger); color: #fff; }
+.det .spin { width: 8px; height: 8px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.dettab { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; margin-top: 8px; }
+.dettab th, .dettab td { text-align: right; padding: 3px 6px; border-bottom: 1px solid var(--border); }
+.dettab th:first-child, .dettab td:first-child { text-align: left; }
+.dettab th { font-weight: 500; color: var(--muted-foreground); }
+.dettab .good { color: var(--success); } .dettab .usable { color: var(--warn); } .dettab .failed { color: var(--danger); }
 .empty { grid-column: 1 / -1; text-align: center; padding: 70px 20px; color: var(--muted-foreground); border: 1px dashed var(--border); border-radius: 16px; }
 
 .preview { position: sticky; top: 0; align-self: start; border: 1px solid var(--border); border-radius: 16px; background: var(--card-elevated); overflow: hidden; max-height: calc(100vh - 120px); display: flex; flex-direction: column; }
@@ -115,7 +128,8 @@ input[type=checkbox] { accent-color: var(--primary); width: 16px; height: 16px; 
 .vmodes button:hover:not(:disabled) { border-color: var(--primary-30); color: var(--foreground); }
 .vmodes button.on { background: var(--primary); border-color: var(--primary); color: #fff; }
 .vmodes button:disabled { opacity: .35; cursor: default; }
-.preview .info { padding: 18px 20px; overflow: auto; }
+.preview .info { padding: 18px 20px; overflow: auto; min-height: 0; }  /* min-height lets it shrink and scroll */
+.preview .stage, .preview .vmodes { flex-shrink: 0; }
 .preview dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 14px 0; font-size: 12px; }
 .preview dt { color: var(--muted-foreground); }
 .preview dd { margin: 0; font-variant-numeric: tabular-nums; word-break: break-all; }
@@ -357,12 +371,12 @@ function drawGrid() {
     <div class="tile fade" style="--i:${Math.min(i, 20)}" data-path="${esc(e.path)}" draggable="false">
       <input type="checkbox" class="check" tabindex="-1">
       ${e.kind === 'model' ? `<span class="badge model">${esc(e.name.split('.').pop())}</span>` : e.kind === 'dir' ? '' : `<span class="badge">${esc(e.name.split('.').pop())}</span>`}
-      <div class="thumb">${e.thumb ? `<img loading="lazy" src="${fileUrl(e.thumb)}" alt="">` : ICON[e.kind]}</div>
+      <div class="thumb">${e.thumb ? `<img loading="lazy" src="${fileUrl(e.thumb)}" alt="">` : ICON[e.kind]}${e.detector ? detBadge(e.detector.state, true) : ''}</div>
       <div class="meta"><div class="name" title="${esc(e.name)}">${esc(e.name)}</div>
         <div class="sub">${e.kind === 'dir' ? 'Folder' : fmtSize(e.size)} · ${fmtTime(e.mtime)}</div></div>
     </div>`).join('') : `<div class="empty">${state.filter ? 'Nothing matches the filter.' : 'This folder is empty. Drop files here or use Upload.'}</div>`;
   $('#grid').querySelectorAll('.tile').forEach(t => {
-    t.onclick = ev => select(t.dataset.path, ev);
+    t.onclick = ev => { select(t.dataset.path, ev); if (ev.target.closest('.det')) setTimeout(() => $('#det')?.scrollIntoView({ behavior: 'smooth' }), 300); };
     t.ondblclick = () => { const e = byPath(t.dataset.path); if (e.kind === 'dir') location.hash = assetHref(e.path); };
   });
   syncSel();
@@ -406,7 +420,7 @@ function drawPreview(e) {
     <div class="stage">${stage}</div>
     ${stage.includes('id="viewer"') ? `<div class="vmodes">${VIEW_MODES.map(([k, l]) => `<button data-vmode="${k}">${l}</button>`).join('')}</div>` : ''}
     <div class="info"><div class="eyebrow">${esc(e.kind === 'dir' ? 'Folder' : e.kind)}</div><h3 style="margin-top:8px;word-break:break-all">${esc(e.name)}</h3>
-      <div id="vstats"></div>
+      <div id="vstats"></div>${e.detector ? '<div id="det" style="margin:14px 0"></div>' : ''}
       <dl><dt>Size</dt><dd>${e.kind === 'dir' ? '—' : fmtSize(e.size)}</dd><dt>Modified</dt><dd>${fmtTime(e.mtime)}</dd><dt>Path</dt><dd>${esc(e.path)}</dd></dl>
       <div class="acts">
         ${e.kind === 'dir' ? `<a class="btn primary" href="${assetHref(e.path)}">Open folder</a>` : `<a class="btn" href="${url}" download>Download</a>`}
@@ -415,6 +429,7 @@ function drawPreview(e) {
         ${e.kind === 'model' && ext === 'glb' && !/_rigged$/i.test(e.name.slice(0, -4)) ? `<button class="btn primary" id="rig">Rig…</button>` : ''}
       </div></div></div>`;
   $('#zoom') && ($('#zoom').onclick = () => lightbox(url));
+  e.detector && drawDetector(e.path);
   $('#viewer') && mountViewer($('#viewer'), `${url}?v=${e.mtime}`, e).catch(err => { $('#viewer').textContent = 'Viewer failed: ' + err.message; });
   const queueJob = async (kind, title, keys, from) => {
     try {
@@ -427,6 +442,42 @@ function drawPreview(e) {
   $('#rig') && ($('#rig').onclick = () => queueJob('rig', 'Rig ' + e.name, ['rig_format', 'rig_skeleton'], '3d'));
   $('#use') && ($('#use').onclick = () => { setCreateImage(e.path); location.hash = '#/create'; });
 }
+/* ---------------- joint detector (rigged models; it drives motion jobs) */
+const DET_LABEL = { none: 'No detector', queued: 'Detector queued', training: 'Training', good: 'Detector good', usable: 'Detector usable', failed: 'Detector failed' };
+const detBadge = (st, onTile) => `<span class="det ${esc(st)}" title="Joint detector: ${esc(st)}">${st === 'training' ? '<i class="spin"></i>' : ''}${onTile ? esc(DET_LABEL[st] || st) : esc(st)}</span>`;
+const EXAM_ROWS = [['median', 'Median error'], ['p95', '95th percentile'], ['worst_joint', 'Worst joint'], ['pair_spacing', 'Left/right spacing']];
+async function drawDetector(path) {
+  const box = $('#det'); if (!box) return;
+  let d, s;
+  try { [d, s] = await Promise.all([api('/api/detector?model=' + encodeURIComponent(path)), api('/api/settings')]); }
+  catch (err) { box.textContent = 'Detector: ' + err.message; return; }
+  if (box !== $('#det')) return;  // another model was opened meanwhile
+  const lim = s.detector_limits, x = s.detector_usable_x, busy = d.state === 'queued' || d.state === 'training';
+  const band = (k, v) => v == null ? 'failed' : v <= lim[k] ? 'good' : v <= lim[k] * x ? 'usable' : 'failed';
+  const pct = v => v == null ? '—' : (+v).toFixed(2) + '%';
+  box.innerHTML = `<div style="display:flex;align-items:center;gap:10px"><div class="eyebrow">Joint detector</div>${detBadge(d.state)}</div>
+    ${d.exam ? `<table class="dettab"><tr><th>Exam (% of height)</th><th>Result</th><th>Good ≤</th><th>Usable ≤</th></tr>
+      ${EXAM_ROWS.map(([k, l]) => `<tr><td>${l}</td><td class="${band(k, d.exam[k])}">${pct(d.exam[k])}</td><td>${pct(lim[k])}</td><td>${pct(lim[k] * x)}</td></tr>`).join('')}</table>
+      ${d.worst_joints?.length ? `<table class="dettab"><tr><th>Worst joints</th><th>Mean</th><th title="front view only">x</th><th title="side view only: depth">y (depth)</th><th title="both views">z</th></tr>
+        ${d.worst_joints.map(j => `<tr><td>${esc(j.joint)}</td><td>${pct(j.mean)}</td><td>${pct(j.x)}</td><td>${pct(j.y)}</td><td>${pct(j.z)}</td></tr>`).join('')}</table>` : ''}
+      <dl style="margin-top:8px">
+        ${d.last_take ? `<dt>Last take</dt><dd>score ${(+d.last_take.score).toFixed(2)} · height error ${pct(d.last_take.height_error_pct)} · job #${d.last_take.job}</dd>` : ''}
+        <dt>Trained</dt><dd>${d.trained ? fmtTime(d.trained) : '—'}</dd>
+        ${d.settings ? `<dt>Settings</dt><dd>${d.settings.images} renders · ${d.settings.epochs} epochs · ${esc(d.settings.backbone)}${d.settings.turn ? ` · turned ${d.settings.turn}°` : ''}</dd>` : ''}
+      </dl>`
+    : `<div class="muted" style="font-size:12px;margin-top:6px">${busy ? 'Training a detector for this model: about 20 minutes.' : 'No detector yet. A motion job trains one first; training it now saves that time.'}</div>`}
+    <button class="btn sm" id="retrain" style="margin-top:10px" ${busy ? 'disabled' : ''}>${d.exam ? 'Retrain detector' : 'Train detector'}</button>
+    ${d.exam ? '<div class="muted" style="font-size:11px;margin-top:4px">A retrain defaults to twice the Settings renders and 60 epochs, about 35 minutes. The better detector of the old and new is kept.</div>' : ''}`;
+  $('#retrain').onclick = async () => {
+    try {
+      const r = await api('/api/schema'), params = await optionsModal((d.exam ? 'Retrain' : 'Train') + ' detector', r.detector || []);
+      if (!params) return;
+      await post('/api/jobs', { kind: 'detector', params: { ...params, model: path } });
+      toast('Added to queue'); setQueueOpen(true); pollQueue(); drawDetector(path);
+    } catch (err) { fail(err); }
+  };
+}
+
 /* ---------------- 3D viewer (three.js): textured / clay / wireframe / UV checker / UV layout / normals / skeleton */
 let viewer = null;
 const VIEW_MODES = [['textured', 'Textured'], ['clay', 'Clay'], ['wire', 'Wireframe'], ['uvcheck', 'UV checker'], ['uvlayout', 'UV layout'], ['normals', 'Normals'], ['skeleton', 'Skeleton']];
@@ -636,13 +687,14 @@ function optionsModal(title, fields) {
     o.innerHTML = `<div class="modal"><h3>${esc(title)}</h3><div style="display:grid;gap:14px;margin:16px 0">
       ${fields.map(p => `<div class="field"><label for="m_${p.key}">${esc(p.label)}</label>${p.kind === 'choice'
         ? `<select id="m_${p.key}">${p.options.map(v => `<option ${String(v) === String(p.default) ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select>`
-        : `<input type="number" id="m_${p.key}" value="${p.default}" min="${p.min}" max="${p.max}">`}</div>`).join('')}</div>
+        : `<input type="number" id="m_${p.key}" value="${p.default ?? ''}" min="${p.min}" max="${p.max}" placeholder="${p.default == null ? 'automatic' : ''}">`}</div>`).join('')}</div>
       <div class="foot"><button class="btn" data-x>Cancel</button><button class="btn primary" data-ok>Add to queue</button></div></div>`;
     document.body.append(o);
     $('[data-x]', o).onclick = () => done(null);
-    $('[data-ok]', o).onclick = () => done(Object.fromEntries(fields.map(p => {
+    $('[data-ok]', o).onclick = () => done(Object.fromEntries(fields.flatMap(p => {
       const v = $('#m_' + p.key, o).value;
-      return [p.key, p.kind === 'choice' && typeof p.default !== 'number' ? v : +v];
+      if (v === '') return [];  // left blank: the server picks
+      return [[p.key, p.kind === 'choice' && typeof p.default !== 'number' ? v : +v]];
     })));
   });
 }
@@ -865,6 +917,17 @@ async function renderSettings() {
         <div class="field"><label>Job timeout (minutes)</label><input type="number" id="s_to" value="${s.job_timeout_min}" min="5" max="600"></div>
       </div>
     </div>
+    <div class="card fade" style="--i:3;margin-top:18px">
+      <h3>Joint detectors</h3>
+      <div class="muted" style="font-size:12px;margin:4px 0 12px">Each rigged model's detector finds its joints in motion-job videos. Its exam errors are in % of the model's height: within the limits it's good, within the usable multiple it's usable, beyond that motion jobs fall back to point tracking.</div>
+      <div class="fields">
+        <div class="field"><label>Training renders (300–5000)</label><input type="number" id="s_dimg" value="${s.detector_images}" min="300" max="5000" step="100"></div>
+        <div class="field"><label>Training epochs (10–120)</label><input type="number" id="s_dep" value="${s.detector_epochs}" min="10" max="120"></div>
+        ${EXAM_ROWS.map(([k, l]) => `<div class="field"><label>Good: ${l} ≤ % (0.5–20)</label><input type="number" data-lim="${k}" value="${s.detector_limits[k]}" min="0.5" max="20" step="0.1"></div>`).join('')}
+        <div class="field"><label>Usable up to × the limits (1–4)</label><input type="number" id="s_dux" value="${s.detector_usable_x}" min="1" max="4" step="0.1"></div>
+        <div class="field check"><input type="checkbox" id="s_dauto" ${s.detector_auto_train ? 'checked' : ''}><label for="s_dauto">Train a detector when a model is rigged</label></div>
+      </div>
+    </div>
     <div class="card fade" style="--i:3;margin-top:18px;overflow-x:auto">
       <div style="display:flex;align-items:center;gap:10px"><h3>GPU hosts</h3><span class="muted" style="font-size:12px">ComfyUI servers reached over SSH. One job per host at a time.</span>
         <button class="btn sm" id="test" style="margin-left:auto">Test hosts</button><button class="btn sm" id="add">+ Add host</button></div>
@@ -877,6 +940,9 @@ async function renderSettings() {
   drawCodex();
   const read = () => ({
     output_folder: $('#s_out').value.trim(), input_folder: $('#s_in').value.trim(), job_timeout_min: +$('#s_to').value,
+    detector_images: +$('#s_dimg').value, detector_epochs: +$('#s_dep').value, detector_usable_x: +$('#s_dux').value,
+    detector_auto_train: $('#s_dauto').checked,
+    detector_limits: Object.fromEntries([...document.querySelectorAll('[data-lim]')].map(el => [el.dataset.lim, +el.value])),
     hosts: [...document.querySelectorAll('#hrows tr')].map(rowData),
   });
   const rowData = tr => Object.fromEntries([...tr.querySelectorAll('[data-f]')].map(el =>
@@ -951,7 +1017,11 @@ async function pollQueue() {
   try { drawQueue(await api('/api/queue')); } catch {}
   qTimer = setTimeout(pollQueue, 2000);
 }
+let detJobs = null;
 function drawQueue(jobs) {
+  const det = jobs.filter(j => j.kind === 'detector').map(j => j.id + j.status).join();  // badges follow detector jobs
+  if (detJobs !== null && det !== detJobs && (location.hash.startsWith('#/assets') || !location.hash)) renderAssets();
+  detJobs = det;
   const active = jobs.filter(j => ['queued', 'running', 'cancelling'].includes(j.status));
   $('#qcount').textContent = active.length;
   $('#qcount').style.visibility = active.length ? 'visible' : 'hidden';
@@ -964,9 +1034,9 @@ function drawQueue(jobs) {
     const time = j.started ? dur((j.finished || now) - j.started) : 'queued ' + fmtTime(j.created);
     return `<div class="job ${live ? 'running' : ''}" style="animation:none">
       <div class="row"><span class="title" title="${esc(j.name)}">${esc(j.name)}</span><span class="pill ${j.status}">${j.status}</span></div>
-      <div class="sub">${{ motion: 'Motion', rig: 'Rig', image: 'Images' }[j.kind] || '3D Asset'} · #${j.id}${j.host ? ' · ' + esc(j.host) : ''} · ${time}${j.note && (j.status === 'queued' || live) ? ' · ' + esc(j.note) : ''}</div>
+      <div class="sub">${{ motion: 'Motion', rig: 'Rig', image: 'Images', detector: 'Detector' }[j.kind] || '3D Asset'} · #${j.id}${j.host ? ' · ' + esc(j.host) : ''} · ${time}${j.note && (j.status === 'queued' || live) ? ' · ' + esc(j.note) : ''}</div>
       ${j.error ? `<div class="err">${esc(j.error)}</div>` : ''}
-      ${live && m ? `<div class="metrics">${metric('CPU', m.cpu)}${metric('RAM', m.ram, m.ram_gb.join(' / ') + ' GB')}${metric('GPU', m.gpu)}${metric('VRAM', m.vram, m.vram_gb.join(' / ') + ' GB')}</div>` : ''}
+      ${j.kind === 'motion' && j.detector?.state === 'failed' ? `<div class="err">The model's joint detector failed its exam, so this job tracked with CoTracker: the legs may move together. Its files include the exam overlay video.</div>` : ''}      ${live && m ? `<div class="metrics">${metric('CPU', m.cpu)}${metric('RAM', m.ram, m.ram_gb.join(' / ') + ' GB')}${metric('GPU', m.gpu)}${metric('VRAM', m.vram, m.vram_gb.join(' / ') + ' GB')}</div>` : ''}
       ${j.log.length || live ? `<div class="log ${open ? 'open' : ''}"><pre data-id="${j.id}">${esc(open ? j.log.join('\n') : j.log.at(-1) || 'waiting for output…')}</pre>
         <div class="lbar"><a href="#" data-log="${j.id}">${open ? 'Collapse log' : 'Expand log'}</a>${open ? `<label><input type="checkbox" data-auto ${qOpen.auto ? 'checked' : ''}>Auto-scroll</label>` : ''}<span style="margin-left:auto">${j.log.length} lines</span></div></div>` : ''}
       <div class="acts">
