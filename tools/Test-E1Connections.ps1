@@ -5,7 +5,8 @@ param(
     [ValidatePattern('^/Game/Frontier/[A-Za-z0-9_/]+$')][string]$Map = '/Game/Frontier/Maps/Greenlands_E1',
     [ValidateRange(1, 2)][int]$Clients = 2,
     [switch]$CastingScenario,
-    [switch]$EvadeScenario
+    [switch]$EvadeScenario,
+    [switch]$ThreatScenario
 )
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -21,7 +22,7 @@ function Launch([string[]]$LaunchArguments) {
     Write-Output "Started PID $($process.Id)"
 }
 function Wait-Log([string]$Path, [string]$Pattern, [int]$Count = 1) {
-    $deadline = (Get-Date).AddSeconds($(if ($EvadeScenario) { 240 } else { 120 }))
+    $deadline = (Get-Date).AddSeconds($(if ($EvadeScenario -or $ThreatScenario) { 240 } else { 120 }))
     while ((Get-Date) -lt $deadline) {
         foreach ($process in $ownedProcesses) { if ($process.HasExited) { throw "Network process $($process.Id) exited before $Pattern" } }
         if (Test-Path -LiteralPath $Path) {
@@ -65,10 +66,14 @@ try {
     if ($EvadeScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Evade' -or $Clients -ne 2 -or $CastingScenario)) {
         throw 'EvadeScenario requires SB_Evade, two clients, and no CastingScenario'
     }
+    if ($ThreatScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Threat' -or $Clients -ne 2 -or $CastingScenario -or $EvadeScenario)) {
+        throw 'ThreatScenario requires SB_Threat, two clients, and no other scenario'
+    }
     if (Get-NetUDPEndpoint -LocalPort $Port -ErrorAction SilentlyContinue) { throw "UDP $Port is already in use" }
     $serverLog = Join-Path $logs 'Server.log'
     $serverArgs = @($Map, '-server', '-NullRHI', '-unattended', '-nosound', '-nop4', "-port=$Port", '-MULTIHOME=127.0.0.1', ('-abslog="' + $serverLog + '"'))
     if ($EvadeScenario) { $serverArgs += '-CombatEvadeScenario' }
+    if ($ThreatScenario) { $serverArgs += '-CombatThreatScenario' }
     Launch $serverArgs
     Wait-Log $serverLog 'E1_WORLD_READY.*NetMode=1'
     foreach ($index in 1..$Clients) {
@@ -76,6 +81,7 @@ try {
         $clientArgs = @("127.0.0.1:$Port", '-game', '-NullRHI', '-unattended', '-nosound', '-nop4', ('-abslog="' + $clientLog + '"'))
         if ($CastingScenario -and $index -eq 1) { $clientArgs += '-CastingScenario' }
         if ($EvadeScenario) { $clientArgs += @('-CombatEvadeScenario', ('-CombatEvadeRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
+        if ($ThreatScenario) { $clientArgs += @('-CombatThreatScenario', ('-CombatThreatRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         Launch $clientArgs
         Wait-Log $clientLog 'Welcomed by server'
     }
@@ -106,8 +112,30 @@ try {
         $observerSpeed = Assert-EvadeClient $observerLog 'Observer'
         Write-Output "PASS: boar evade aggro, >60m leash, replicated 1.5x return, threat clear, full reset and re-engagement on both clients ($driverSpeed/$observerSpeed cm/s). Logs: $logs"
     }
+    if ($ThreatScenario) {
+        $driverLog = Join-Path $logs 'Client1.log'
+        $observerLog = Join-Path $logs 'Client2.log'
+        Wait-Log $driverLog 'BOAR_THREAT_STICK Role=Driver HP=20'
+        Wait-Log $observerLog 'BOAR_THREAT_STICK Role=Observer HP=20'
+        Wait-Log $serverLog 'BOAR_THREAT_TARGET Group=threat_sandbox' 2
+        $hits = @(Select-String -LiteralPath $serverLog -Pattern 'COMBAT_PILOT_BOAR_HIT Group=threat_sandbox Slot=0 HP=(40|20) Attacker=(\S+)')
+        if ($hits.Count -ne 2 -or @($hits | ForEach-Object { $_.Matches[0].Groups[2].Value } | Select-Object -Unique).Count -ne 2) {
+            throw 'Two distinct authoritative clients did not land the expected damage sequence'
+        }
+        foreach ($role in @('Driver','Observer')) {
+            $path = $(if ($role -eq 'Driver') { $driverLog } else { $observerLog })
+            $initial = @(Select-String -LiteralPath $path -Pattern "BOAR_THREAT_INITIAL Role=$role HP=60")
+            $switch = @(Select-String -LiteralPath $path -Pattern "BOAR_THREAT_SWITCH Role=$role HP=40")
+            $stick = @(Select-String -LiteralPath $path -Pattern "BOAR_THREAT_STICK Role=$role HP=20")
+            if ($initial.Count -ne 1 -or $switch.Count -ne 1 -or $stick.Count -ne 1 -or
+                $initial[0].LineNumber -ge $switch[0].LineNumber -or $switch[0].LineNumber -ge $stick[0].LineNumber) {
+                throw "$role did not observe ordered pull, switch and retained target"
+            }
+        }
+        Write-Output "PASS: two clients pulled, landed distinct server-accepted hits, observed threat switch and retained target. Logs: $logs"
+    }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
-    if (-not $CastingScenario -and -not $EvadeScenario) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
+    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
 } finally {
     foreach ($process in $ownedProcesses) {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue }

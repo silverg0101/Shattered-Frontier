@@ -283,6 +283,68 @@ void ASFE1Character::TickEvadeScenario()
 #endif
 }
 
+void ASFE1Character::TickThreatScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    FString ScenarioRoleName;
+    FParse::Value(FCommandLine::Get(), TEXT("CombatThreatRole="), ScenarioRoleName);
+    if (ScenarioRoleName != TEXT("Driver") && ScenarioRoleName != TEXT("Observer")) { return; }
+    ASFPilotBoar* Boar = nullptr;
+    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    { if (It->GroupId() == TEXT("threat_sandbox")) { Boar = *It; break; } }
+    if (!Boar || !Controller || PilotHealth <= 0) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    const ASFE1Character* Victim = Boar->ThreatTarget();
+    const TCHAR* TargetRole = Victim == this ? TEXT("Self") : Victim ? TEXT("Other") : TEXT("None");
+    if (Now >= NextEvadeSampleAt)
+    {
+        NextEvadeSampleAt = Now + 0.2;
+        UE_LOG(LogTemp, Display, TEXT("BOAR_THREAT_SAMPLE Role=%s T=%.3f HP=%d Target=%s SelfHP=%d PawnX=%.0f BoarX=%.0f"),
+            *ScenarioRoleName, Now, Boar->Health(), TargetRole, PilotHealth,
+            GetActorLocation().X, Boar->GetActorLocation().X);
+    }
+    const FVector Toward = (Boar->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
+    if (ScenarioRoleName == TEXT("Driver"))
+    {
+        if (ThreatScenarioStage == 0)
+        {
+            if (Victim != this) { AddMovementInput(Toward, 1.0f); return; }
+            ThreatScenarioStage = 1;
+            UE_LOG(LogTemp, Display, TEXT("BOAR_THREAT_INITIAL Role=Driver HP=%d"), Boar->Health());
+        }
+        else if (ThreatScenarioStage == 1 && Victim && Victim != this && Boar->Health() == 40)
+        { ThreatScenarioStage = 2; UE_LOG(LogTemp, Display, TEXT("BOAR_THREAT_SWITCH Role=Driver HP=%d"), Boar->Health()); }
+        else if (ThreatScenarioStage == 2)
+        {
+            if (FVector::Dist2D(GetActorLocation(), Boar->GetActorLocation()) > 230)
+            { AddMovementInput(Toward, 1.0f); return; }
+            Controller->SetControlRotation(Toward.Rotation());
+            if (Now >= CombatScenarioNextAttackAt)
+            { PilotAttack(); CombatScenarioNextAttackAt = Now + 0.9; ThreatScenarioStage = 3; }
+        }
+        else if (ThreatScenarioStage == 3 && Boar->Health() == 20 && Victim && Victim != this)
+        { ThreatScenarioStage = 4; UE_LOG(LogTemp, Display, TEXT("BOAR_THREAT_STICK Role=Driver HP=%d"), Boar->Health()); }
+    }
+    else
+    {
+        if (ThreatScenarioStage == 0 && Victim && Victim != this)
+        { ThreatScenarioStage = 1; UE_LOG(LogTemp, Display, TEXT("BOAR_THREAT_INITIAL Role=Observer HP=%d"), Boar->Health()); }
+        else if (ThreatScenarioStage == 1)
+        {
+            if (FVector::Dist2D(GetActorLocation(), Boar->GetActorLocation()) > 230)
+            { AddMovementInput(Toward, 1.0f); return; }
+            Controller->SetControlRotation(Toward.Rotation());
+            if (Now >= CombatScenarioNextAttackAt)
+            { PilotAttack(); CombatScenarioNextAttackAt = Now + 0.9; ThreatScenarioStage = 2; }
+        }
+        else if (ThreatScenarioStage == 2 && Boar->Health() == 40 && Victim == this)
+        { ThreatScenarioStage = 3; UE_LOG(LogTemp, Display, TEXT("BOAR_THREAT_SWITCH Role=Observer HP=%d"), Boar->Health()); }
+        else if (ThreatScenarioStage == 3 && Boar->Health() == 20 && Victim == this)
+        { ThreatScenarioStage = 4; UE_LOG(LogTemp, Display, TEXT("BOAR_THREAT_STICK Role=Observer HP=%d"), Boar->Health()); }
+    }
+#endif
+}
+
 void ASFE1Character::TickCombatScenario()
 {
     if (FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")))
@@ -552,6 +614,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("CombatEvadeScenario"))) { TickEvadeScenario(); }
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("CombatThreatScenario"))) { TickThreatScenario(); }
 #endif
 }
 

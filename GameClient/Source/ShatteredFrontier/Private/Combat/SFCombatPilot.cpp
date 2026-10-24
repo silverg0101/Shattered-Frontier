@@ -65,6 +65,16 @@ FVector Grounded(UWorld* World, const FVector& XY, float HalfHeight)
     { return FVector(XY.X, XY.Y, Hit.ImpactPoint.Z + HalfHeight + 4); }
     return FVector(XY.X, XY.Y, XY.Z + HalfHeight + 4);
 }
+
+FString ThreatIdentity(APlayerController* Controller)
+{
+    if (!IsValid(Controller) || !Controller->HasAuthority()) { return {}; }
+    if (USFBackpackComponent* Bag = USFBackpackComponent::FindOrCreate(Controller))
+    { return Bag->GetCharacterId(); }
+    // The service-disabled combat pilot has no durable character identity. Its threat
+    // table is session-only; the authority's distinct controller name is stable for it.
+    return TEXT("chr_session_") + Controller->GetName();
+}
 }
 
 bool SFCombatPilotRules::CanMelee(double DistanceCm, double FacingDot, double Now,
@@ -84,6 +94,58 @@ bool SFCombatPilotRules::LeashAbuseSignal(const TArray<double>& EvadeTimes, doub
     int32 Recent = 0;
     for (double Time : EvadeTimes) { if (Time >= Now - 120.0 && Time <= Now) { ++Recent; } }
     return Recent == 3;
+}
+
+void FSFBoarThreatTable::Add(const FString& CharacterId, double Amount, int32 MaxEntries)
+{
+    if (CharacterId.IsEmpty() || !FMath::IsFinite(Amount) || Amount <= 0 || MaxEntries < 1) { return; }
+    for (FEntry& Entry : Entries)
+    { if (Entry.Id == CharacterId) { Entry.Threat += Amount; return; } }
+    if (Entries.Num() >= MaxEntries)
+    {
+        int32 Lowest = 0;
+        for (int32 I = 1; I < Entries.Num(); ++I)
+        {
+            if (Entries[I].Threat < Entries[Lowest].Threat ||
+                (Entries[I].Threat == Entries[Lowest].Threat && Entries[I].Id > Entries[Lowest].Id)) { Lowest = I; }
+        }
+        Entries.RemoveAt(Lowest);
+    }
+    Entries.Add({CharacterId, Amount});
+}
+
+void FSFBoarThreatTable::Remove(const FString& CharacterId)
+{ Entries.RemoveAll([&](const FEntry& Entry) { return Entry.Id == CharacterId; }); }
+
+bool FSFBoarThreatTable::Contains(const FString& CharacterId) const
+{ return Entries.ContainsByPredicate([&](const FEntry& Entry) { return Entry.Id == CharacterId; }); }
+
+FString FSFBoarThreatTable::Select(const FString& CurrentId, const TMap<FString, double>& ReachableDistancesCm,
+    double MeleeThreshold, double RangedThreshold) const
+{
+    const FEntry* Best = nullptr;
+    const FEntry* Current = nullptr;
+    for (const FEntry& Entry : Entries)
+    {
+        if (!ReachableDistancesCm.Contains(Entry.Id)) { continue; }
+        if (Entry.Id == CurrentId) { Current = &Entry; }
+        if (!Best || Entry.Threat > Best->Threat ||
+            (Entry.Threat == Best->Threat && Entry.Id < Best->Id)) { Best = &Entry; }
+    }
+    if (!Best) { return {}; }
+    if (!Current) { return Best->Id; }
+    const FEntry* Qualified = nullptr;
+    for (const FEntry& Entry : Entries)
+    {
+        if (Entry.Id == Current->Id) { continue; }
+        const double* Distance = ReachableDistancesCm.Find(Entry.Id);
+        if (!Distance) { continue; }
+        const double Threshold = *Distance <= 500.0 ? MeleeThreshold : RangedThreshold;
+        if (Entry.Threat <= Current->Threat * Threshold) { continue; }
+        if (!Qualified || Entry.Threat > Qualified->Threat ||
+            (Entry.Threat == Qualified->Threat && Entry.Id < Qualified->Id)) { Qualified = &Entry; }
+    }
+    return Qualified ? Qualified->Id : Current->Id;
 }
 
 void ASFGameMode::RecordBoarEvade(const FString& Group, const FString& CharacterId)
@@ -117,6 +179,10 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
         !FMath::IsWithinInclusive(BoarAggroRadiusMetres, 4.0f, 18.0f) ||
         !FMath::IsWithinInclusive(BoarNearNoticeRadiusMetres, 1.0f, 10.0f) ||
         BoarNearNoticeRadiusMetres > BoarAggroRadiusMetres ||
+        !FMath::IsWithinInclusive(ThreatSwitchMelee, 1.01f, 3.0f) ||
+        !FMath::IsWithinInclusive(ThreatSwitchRanged, ThreatSwitchMelee, 3.0f) ||
+        ThreatTableMax < 1 || ThreatTableMax > 40 ||
+        !FMath::IsWithinInclusive(ThreatDecisionSeconds, 0.05f, 1.0f) ||
         !FMath::IsWithinInclusive(BoarLeashRadiusMetres, 20.0f, 100.0f) ||
         !FMath::IsWithinInclusive(BoarFieldOfViewDegrees, 60.0f, 360.0f) ||
         !FMath::IsWithinInclusive(BoarWanderRadiusMetres, 2.0f, 40.0f) ||
@@ -159,6 +225,7 @@ void ASFPilotBoar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
     DOREPLIFETIME(ASFPilotBoar, SpawnGroup);
     DOREPLIFETIME(ASFPilotBoar, Slot);
     DOREPLIFETIME(ASFPilotBoar, bReturning);
+    DOREPLIFETIME(ASFPilotBoar, ReplicatedTarget);
 }
 
 void ASFPilotBoar::Initialize(ASFGameMode* OwnerMode, const FString& Group, int32 InSlot,
@@ -168,6 +235,8 @@ void ASFPilotBoar::Initialize(ASFGameMode* OwnerMode, const FString& Group, int3
     PilotMode = OwnerMode; SpawnGroup = Group; Slot = InSlot; Territory = Area; SpawnSerial = Serial;
     Anchor = GetActorLocation(); AnchorFacing = GetActorRotation(); CurrentHealth = Health; OnRep_Health();
     LastDamageAt = GetWorld()->GetTimeSeconds();
+    Threat.Clear(); ThreatActors.Empty(); OutsideLeashSince.Empty(); TargetCharacterId.Empty();
+    ReplicatedTarget = nullptr; NextThreatDecisionAt = 0;
 }
 
 void ASFPilotBoar::EnterEvade()
@@ -180,7 +249,9 @@ void ASFPilotBoar::EnterEvade()
         { TopCharacterId = Bag->GetCharacterId(); }
     }
     if (PilotMode.IsValid()) { PilotMode->RecordBoarEvade(SpawnGroup, TopCharacterId); }
-    Target.Reset(); WanderDestination = Anchor; bReturning = true; UnreachableSince = -1;
+    Target.Reset(); ReplicatedTarget = nullptr; TargetCharacterId.Empty();
+    Threat.Clear(); ThreatActors.Empty(); OutsideLeashSince.Empty();
+    WanderDestination = Anchor; bReturning = true; UnreachableSince = -1;
     UE_LOG(LogTemp, Display, TEXT("BOAR_EVADE_START Group=%s Slot=%d X=%.1f Y=%.1f HP=%d"),
         *SpawnGroup, Slot, GetActorLocation().X, GetActorLocation().Y, CurrentHealth);
     for (auto It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
@@ -201,16 +272,21 @@ void ASFPilotBoar::OnRep_Health()
 void ASFPilotBoar::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage)
 {
     if (!HasAuthority() || CurrentHealth <= 0 || bReturning || !IsValid(Attacker) || Damage <= 0) { return; }
-    Target = Attacker;
-    bReturning = false;
+    const int32 EffectiveDamage = FMath::Min(CurrentHealth, Damage);
+    const FString AttackerId = ThreatIdentity(Cast<APlayerController>(Attacker->GetController()));
+    if (!AttackerId.IsEmpty())
+    {
+        Threat.Add(AttackerId, EffectiveDamage, PilotMode->CombatSettings()->ThreatTableMax);
+        ThreatActors.Add(AttackerId, Attacker);
+    }
     CurrentHealth = SFCombatPilotRules::RemainingHealth(CurrentHealth, Damage);
     LastDamageAt = GetWorld()->GetTimeSeconds(); UnreachableSince = -1;
     if (!Attacker->GetCombatTarget() && CurrentHealth > 0) { Attacker->SetCombatTarget(this); }
     OnRep_Health(); ForceNetUpdate();
-    USFBackpackComponent* AttackerBag = USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Attacker->GetController()));
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_HIT Group=%s Slot=%d HP=%d Attacker=%s"),
-        *SpawnGroup, Slot, CurrentHealth, AttackerBag ? *AttackerBag->GetCharacterId() : TEXT("none"));
-    if (CurrentHealth == 0 && PilotMode.IsValid()) { PilotMode->BoarDied(this, Attacker); }
+        *SpawnGroup, Slot, CurrentHealth, AttackerId.IsEmpty() ? TEXT("none") : *AttackerId);
+    if (CurrentHealth == 0 && PilotMode.IsValid())
+    { Threat.Clear(); ThreatActors.Empty(); OutsideLeashSince.Empty(); ReplicatedTarget = nullptr; Target.Reset(); PilotMode->BoarDied(this, Attacker); }
 }
 
 void ASFPilotBoar::Tick(float DeltaSeconds)
@@ -224,9 +300,7 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
     auto* Mode = PilotMode.Get();
     const double Now = GetWorld()->GetTimeSeconds();
     ASFE1Character* Victim = Target.Get();
-    if (Victim && (Victim->CombatHealth() <= 0 || Mode->IsSafe(Victim->GetActorLocation()) ||
-        !Mode->IsInsideTerritory(Victim->GetActorLocation(), Territory) ||
-        FVector::Dist2D(Anchor, GetActorLocation()) > Mode->CombatSettings()->BoarLeashRadiusMetres*100))
+    if (Victim && FVector::Dist2D(Anchor, GetActorLocation()) > Mode->CombatSettings()->BoarLeashRadiusMetres*100)
     { EnterEvade(); Victim = nullptr; }
     if (Victim && UnreachableSince >= 0 &&
         SFCombatPilotRules::UnreachableEvade(Now - UnreachableSince, Now - LastDamageAt))
@@ -240,8 +314,9 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
         UE_LOG(LogTemp, Display, TEXT("BOAR_EVADE_RESET Group=%s Slot=%d X=%.1f Y=%.1f HP=%d"),
             *SpawnGroup, Slot, GetActorLocation().X, GetActorLocation().Y, CurrentHealth);
     }
-    if (!Victim && !bReturning && Mode->CombatSettings()->bCombatAvailable)
+    if (!bReturning && Mode->CombatSettings()->bCombatAvailable)
     {
+        // Perception enters nearby characters with one initial threat. Damage enters them separately.
         for (auto It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
         {
             auto* Candidate = Cast<ASFE1Character>(It->Get()->GetPawn());
@@ -256,7 +331,60 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
                 (Distance <= Mode->CombatSettings()->BoarNearNoticeRadiusMetres*100 ||
                     FVector::DotProduct(GetActorForwardVector(), Toward.GetSafeNormal2D()) >=
                     FMath::Cos(FMath::DegreesToRadians(Mode->CombatSettings()->BoarFieldOfViewDegrees*0.5f))))
-            { Target = Candidate; Victim = Candidate; break; }
+            {
+                const FString Id = ThreatIdentity(Cast<APlayerController>(It->Get()));
+                if (!Id.IsEmpty())
+                {
+                    if (!Threat.Contains(Id)) { Threat.Add(Id, 1.0, Mode->CombatSettings()->ThreatTableMax); }
+                    ThreatActors.Add(Id, Candidate);
+                }
+            }
+        }
+        if (Now >= NextThreatDecisionAt)
+        {
+            NextThreatDecisionAt = Now + Mode->CombatSettings()->ThreatDecisionSeconds;
+            TMap<FString, double> Reachable;
+            TArray<FString> Ids;
+            ThreatActors.GetKeys(Ids);
+            for (const FString& Id : Ids)
+            {
+                ASFE1Character* Character = ThreatActors.FindRef(Id).Get();
+                if (!IsValid(Character) || Character->CombatHealth() <= 0 ||
+                    Mode->IsSafe(Character->GetActorLocation()))
+                { Threat.Remove(Id); ThreatActors.Remove(Id); OutsideLeashSince.Remove(Id); continue; }
+                const double AnchorDistance = FVector::Dist2D(Anchor, Character->GetActorLocation());
+                if (AnchorDistance > Mode->CombatSettings()->BoarLeashRadiusMetres * 100.0)
+                {
+                    double& Since = OutsideLeashSince.FindOrAdd(Id, Now);
+                    if (Now - Since >= 5.0)
+                    { Threat.Remove(Id); ThreatActors.Remove(Id); OutsideLeashSince.Remove(Id); }
+                    else if (Mode->IsInsideTerritory(Character->GetActorLocation(), Territory))
+                    { Reachable.Add(Id, FVector::Dist2D(GetActorLocation(), Character->GetActorLocation())); }
+                    continue;
+                }
+                OutsideLeashSince.Remove(Id);
+                if (Mode->IsInsideTerritory(Character->GetActorLocation(), Territory))
+                { Reachable.Add(Id, FVector::Dist2D(GetActorLocation(), Character->GetActorLocation())); }
+            }
+            const FString NextId = Threat.Select(TargetCharacterId, Reachable,
+                Mode->CombatSettings()->ThreatSwitchMelee, Mode->CombatSettings()->ThreatSwitchRanged);
+            if (NextId != TargetCharacterId)
+            {
+                const bool bLostEngagement = NextId.IsEmpty() && !TargetCharacterId.IsEmpty();
+                if (bLostEngagement) { EnterEvade(); }
+                else
+                {
+                    UE_LOG(LogTemp, Display, TEXT("BOAR_THREAT_TARGET Group=%s Slot=%d From=%s To=%s"),
+                        *SpawnGroup, Slot, TargetCharacterId.IsEmpty() ? TEXT("none") : *TargetCharacterId,
+                        NextId.IsEmpty() ? TEXT("none") : *NextId);
+                    TargetCharacterId = NextId;
+                    Target = ThreatActors.FindRef(NextId);
+                    ReplicatedTarget = Target.Get();
+                    ForceNetUpdate();
+                }
+            }
+            Victim = Target.Get();
+            if (!Victim && !NextId.IsEmpty()) { TargetCharacterId.Empty(); }
         }
     }
     FVector Destination = WanderDestination;
@@ -367,22 +495,26 @@ void ASFGameMode::StartCombat()
 {
     const FString MapName = GetWorld()->GetOutermost()->GetName();
     const bool bEvadeSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Evade");
+    const bool bThreatSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Threat");
     bCompanionSandbox = GetNetMode() != NM_Client &&
-        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox);
+        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox);
     if (bCompanionSandbox)
     {
         CapturedSettings = GetDefault<USFCombatPilotSettings>();
         FString Error;
         if (!CapturedSettings->Validate(Error))
         { UE_LOG(LogTemp, Error, TEXT("COMPANION_SANDBOX_DISABLED Invalid combat settings: %s"), *Error); return; }
-        const double Extent = bEvadeSandbox ? 85.0 : 45.0;
+        const double Extent = (bEvadeSandbox || bThreatSandbox) ? 85.0 : 45.0;
         const TArray<FVector2D> SandboxArea = { FVector2D(-Extent, -Extent), FVector2D(Extent, -Extent),
             FVector2D(Extent, Extent), FVector2D(-Extent, Extent) };
         int32 Slot = 0;
         for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
         {
-            if (!It->ActorHasTag(bEvadeSandbox ? TEXT("SF_EvadeSandboxWildlife") : TEXT("SF_CompanionSandboxWildlife"))) { continue; }
-            It->Initialize(this, bEvadeSandbox ? TEXT("evade_sandbox") : TEXT("companions_sandbox"), Slot++, SandboxArea,
+            const FName Tag = bEvadeSandbox ? TEXT("SF_EvadeSandboxWildlife") :
+                bThreatSandbox ? TEXT("SF_ThreatSandboxWildlife") : TEXT("SF_CompanionSandboxWildlife");
+            if (!It->ActorHasTag(Tag)) { continue; }
+            It->Initialize(this, bEvadeSandbox ? TEXT("evade_sandbox") :
+                bThreatSandbox ? TEXT("threat_sandbox") : TEXT("companions_sandbox"), Slot++, SandboxArea,
                 CapturedSettings->BoarHealth, ++NextBoarSerial);
         }
         bPilotActive = Slot > 0;

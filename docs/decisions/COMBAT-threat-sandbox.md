@@ -1,0 +1,5 @@
+# Open-world boar threat sandbox
+
+Combat, *Damage, Mitigation and NPCs* §Threat & Aggro System specifies 1 threat per effective damage, initial threat 1 on detection, target switching only above 110% of the current target within 5 m or 130% beyond, a 10 Hz decision tick, ascending character-ID tie breaks, a 40-entry cap, removal on death or after 5 s beyond leash, and clearing on evade. AI, *NPC Behavior and Memory* §3.3 supplies the open-world common boar's 12 m equal-level detection radius; its existing pilot perception remains in use. The sandbox exercises the existing pilot boar with two real clients and server-owned threat decisions.
+
+This slice covers detection and effective-damage threat for the common boar. Healing, taunt, effects, pets and pack sharing need their respective gameplay routes before they can generate threat. The thresholds, cadence and cap are declared bounded pilot configuration, adopted at zone start. Service-disabled sessions use a server-generated controller identity while durable character IDs remain unavailable; this identity is only used by the in-memory threat table. No owner decision is needed for this slice.

@@ -143,4 +143,55 @@ bool FSFCombatEvadeTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Evading creature is damage immune"), Boar->Health(), 45);
     return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFCombatThreatTest,
+    "ShatteredFrontier.Combat.Pilot.Threat",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFCombatThreatTest::RunTest(const FString& Parameters)
+{
+    const auto* Settings = GetDefault<USFCombatPilotSettings>();
+    TestEqual(TEXT("Melee switch threshold"), Settings->ThreatSwitchMelee, 1.10f);
+    TestEqual(TEXT("Ranged switch threshold"), Settings->ThreatSwitchRanged, 1.30f);
+    TestEqual(TEXT("Ten decisions per second"), Settings->ThreatDecisionSeconds, 0.1f);
+    TestEqual(TEXT("Threat table cap"), Settings->ThreatTableMax, 40);
+    FSFBoarThreatTable Table;
+    Table.Add(TEXT("chr_b"), 1, 40);
+    Table.Add(TEXT("chr_a"), 1, 40);
+    TMap<FString, double> Near = {{TEXT("chr_a"), 400}, {TEXT("chr_b"), 400}};
+    TestEqual(TEXT("Equal initial threat breaks by ascending ID"), Table.Select({}, Near, 1.10, 1.30), FString(TEXT("chr_a")));
+    Table.Add(TEXT("chr_b"), 10, 40);
+    TestEqual(TEXT("Effective damage adds one threat per point and switches"), Table.Select(TEXT("chr_a"), Near, 1.10, 1.30), FString(TEXT("chr_b")));
+    Table.Add(TEXT("chr_a"), 11, 40);
+    TestEqual(TEXT("Challenger below 110 percent stays put"), Table.Select(TEXT("chr_b"), Near, 1.10, 1.30), FString(TEXT("chr_b")));
+    Table.Add(TEXT("chr_a"), 1, 40);
+    TestEqual(TEXT("Challenger over 110 percent switches"), Table.Select(TEXT("chr_b"), Near, 1.10, 1.30), FString(TEXT("chr_a")));
+    Near[TEXT("chr_b")] = 600;
+    Table.Add(TEXT("chr_b"), 4, 40);
+    TestEqual(TEXT("Ranged challenger below 130 percent stays put"), Table.Select(TEXT("chr_a"), Near, 1.10, 1.30), FString(TEXT("chr_a")));
+    Table.Add(TEXT("chr_b"), 2, 40);
+    TestEqual(TEXT("Ranged challenger over 130 percent switches"), Table.Select(TEXT("chr_a"), Near, 1.10, 1.30), FString(TEXT("chr_b")));
+    Table.Remove(TEXT("chr_b"));
+    TestEqual(TEXT("Dead or leashed entry cannot retain target"), Table.Select(TEXT("chr_b"), Near, 1.10, 1.30), FString(TEXT("chr_a")));
+    Table.Clear();
+    TestTrue(TEXT("Evade clears threat"), Table.Select({}, Near, 1.10, 1.30).IsEmpty());
+    FSFBoarThreatTable MixedRange;
+    MixedRange.Add(TEXT("chr_current"), 100, 40);
+    MixedRange.Add(TEXT("chr_far"), 120, 40);
+    MixedRange.Add(TEXT("chr_near"), 115, 40);
+    TMap<FString, double> MixedDistances;
+    MixedDistances.Add(TEXT("chr_current"), 200);
+    MixedDistances.Add(TEXT("chr_far"), 600);
+    MixedDistances.Add(TEXT("chr_near"), 400);
+    TestEqual(TEXT("A nearer qualifying challenger wins despite a farther higher raw threat"),
+        MixedRange.Select(TEXT("chr_current"), MixedDistances, 1.10, 1.30), FString(TEXT("chr_near")));
+    FSFBoarThreatTable Capped;
+    for (int32 I = 0; I < 40; ++I) { Capped.Add(FString::Printf(TEXT("chr_%02d"), I), I + 1, 40); }
+    Capped.Add(TEXT("chr_new"), 1, 40);
+    TestFalse(TEXT("Lowest entry evicted at cap"), Capped.Contains(TEXT("chr_00")));
+    TestTrue(TEXT("New entrant retained"), Capped.Contains(TEXT("chr_new")));
+    Capped.Add(TEXT("chr_new"), -1, 40);
+    TestTrue(TEXT("Invalid negative threat ignored"), Capped.Contains(TEXT("chr_new")));
+    return true;
+}
 #endif

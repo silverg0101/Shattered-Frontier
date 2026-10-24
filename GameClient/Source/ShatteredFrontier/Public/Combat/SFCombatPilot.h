@@ -22,6 +22,21 @@ namespace SFCombatPilotRules
     SHATTEREDFRONTIER_API bool LeashAbuseSignal(const TArray<double>& EvadeTimes, double Now);
 }
 
+/** Server-owned, per-creature threat. IDs are stable character IDs, never client-supplied damage. */
+class SHATTEREDFRONTIER_API FSFBoarThreatTable
+{
+public:
+    void Add(const FString& CharacterId, double Amount, int32 MaxEntries);
+    void Remove(const FString& CharacterId);
+    void Clear() { Entries.Empty(); }
+    bool Contains(const FString& CharacterId) const;
+    FString Select(const FString& CurrentId, const TMap<FString, double>& ReachableDistancesCm,
+        double MeleeThreshold, double RangedThreshold) const;
+private:
+    struct FEntry { FString Id; double Threat = 0; };
+    TArray<FEntry> Entries;
+};
+
 UENUM()
 enum class ESFPlayerRespawnPointRule : uint8 { NearestToDeath, FirstAuthored };
 
@@ -71,6 +86,14 @@ public:
     float BoarAggroRadiusMetres = 12.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="1.0", ClampMax="10.0", Units="m"))
     float BoarNearNoticeRadiusMetres = 4.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar Threat", meta=(ClampMin="1.01", ClampMax="3.0", ToolTip="Challenger threat divided by current threat within five metres; adopted at next zone start."))
+    float ThreatSwitchMelee = 1.10f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar Threat", meta=(ClampMin="1.01", ClampMax="3.0", ToolTip="Challenger threat divided by current threat beyond five metres; adopted at next zone start."))
+    float ThreatSwitchRanged = 1.30f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar Threat", meta=(ClampMin="1", ClampMax="40", ToolTip="Maximum remembered attackers per creature; adopted at next zone start."))
+    int32 ThreatTableMax = 40;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar Threat", meta=(ClampMin="0.05", ClampMax="1.0", Units="s", ToolTip="Server target-decision interval; adopted at next zone start."))
+    float ThreatDecisionSeconds = 0.1f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="20.0", ClampMax="100.0", Units="m"))
     float BoarLeashRadiusMetres = 60.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="60.0", ClampMax="360.0", Units="deg"))
@@ -109,6 +132,7 @@ public:
     FString DeathId() const { return FString::Printf(TEXT("%s:%d:%d"), *SpawnGroup, Slot, SpawnSerial); }
     int32 Health() const { return CurrentHealth; }
     bool IsLeashing() const { return bReturning; }
+    ASFE1Character* ThreatTarget() const { return ReplicatedTarget; }
 private:
     UFUNCTION() void OnRep_Health();
     UPROPERTY(ReplicatedUsing=OnRep_Health) int32 CurrentHealth = 0;
@@ -116,6 +140,12 @@ private:
     UPROPERTY(VisibleAnywhere) TObjectPtr<UTextRenderComponent> Label;
     TWeakObjectPtr<class ASFGameMode> PilotMode;
     TWeakObjectPtr<ASFE1Character> Target;
+    UPROPERTY(Replicated) TObjectPtr<ASFE1Character> ReplicatedTarget;
+    FSFBoarThreatTable Threat;
+    TMap<FString, TWeakObjectPtr<ASFE1Character>> ThreatActors;
+    TMap<FString, double> OutsideLeashSince;
+    FString TargetCharacterId;
+    double NextThreatDecisionAt = 0;
     UPROPERTY(Replicated) FString SpawnGroup;
     UPROPERTY(Replicated) int32 Slot = INDEX_NONE;
     int32 SpawnSerial = 0;

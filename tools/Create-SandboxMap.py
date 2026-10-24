@@ -102,15 +102,15 @@ def main():
             marker.static_mesh_component.set_static_mesh(cube)
             marker.static_mesh_component.set_collision_profile_name('NoCollision')
             marker.set_actor_scale3d(u.Vector(0.5, 0.5, 1))
-    if names[0] == 'Evade':
+    if names[0] in ('Evade', 'Threat'):
         boar = u.load_class(None, '/Script/ShatteredFrontier.SFPilotBoar')
         interaction = u.load_class(None, '/Script/ShatteredFrontier.SFE1InteractionTarget')
         if not boar or not interaction:
-            raise RuntimeError('Evade sandbox requires boar and network probe classes')
+            raise RuntimeError('Combat sandbox requires boar and network probe classes')
         actors.spawn_actor_from_class(interaction, u.Vector(-300, -750, 60)).set_actor_label('NetworkProbe')
         creature = actors.spawn_actor_from_class(boar, u.Vector(1800, 0, 115))
-        creature.set_actor_label('EvadeBoar')
-        creature.set_editor_property('tags', [u.Name('SF_EvadeSandboxWildlife')])
+        creature.set_actor_label(names[0] + 'Boar')
+        creature.set_editor_property('tags', [u.Name('SF_' + names[0] + 'SandboxWildlife')])
     saved = u.EditorLoadingAndSavingUtils.save_map(world, path) if replacing else levels.save_current_level()
     if not saved:
         raise RuntimeError('Could not save ' + path)
