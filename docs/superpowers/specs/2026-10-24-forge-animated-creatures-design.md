@@ -70,7 +70,7 @@ New job kind `creature`. Stages, each visible in the job's status:
 What the owner is after: each creature is a small project, not one output file. Every animation can be looked at on its own, kept or dropped, and more can be added later. What goes into the game is a single file built from the chosen clips, and it can be rebuilt any time the choice changes.
 
 ```
-Generated/<Name>/
+Generated/Creatures/<Name>/
   <Name>.glb             primary: textured and rigged, no animation
   <Name>_animated.glb    final: rig + every chosen clip as a named animation
   <Name>.json            manifest: animal, match score, scale, clip list, which clips are in _animated and why

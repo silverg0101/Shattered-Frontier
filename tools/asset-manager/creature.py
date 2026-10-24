@@ -218,18 +218,17 @@ def retarget_clip(jid, host, rig_glb, animal_dir, clip, size_cm) -> dict:
     step(f"drawing the {clip} sheet")
     a.run_blender(jid, host, "clip_sheet.py", [glb, mj, sheet], [glb, mj], [sheet], 1800)
     checks = checks_pass(json.loads(a.ssh(host, f"cat {q(work + '/' + mj)}")), s)
-    checks["review"] = "skipped: no Anthropic API key"
+    checks["review"] = []  # [{verdict, reason}] per Claude review, in order; empty without an Anthropic API key
     if a.anthropic_key():
-        said = []
         for n in (1, 2):  # the review is not deterministic: a clip whose numbers pass gets a second look after a FAIL
             step(f"checking the {clip} sheet with Claude{' again' if n > 1 else ''}")
             out = a.ssh_anthropic(host, f"cd {q(work)} && {py} clip_sheet.py --review {q(sheet)} {q(mj)}", timeout=1800)
             verdict = next((ln[7:] for ln in out.decode(errors="replace").splitlines() if ln.startswith("REVIEW ")), "FAIL: no verdict")
-            said.append(verdict)
-            if verdict.upper().startswith("PASS") or not checks["passed"]:
+            ok = verdict.upper().startswith("PASS")
+            checks["review"].append({"verdict": "PASS" if ok else "FAIL", "reason": verdict.split(":", 1)[1].strip() if ":" in verdict else ""})
+            if ok or not checks["passed"]:
                 break
-        checks["review"] = verdict if n == 1 else f"{verdict} (second review; the first said: {said[0]})"
-        if not verdict.upper().startswith("PASS"):
+        if not ok:
             checks["reason"] = "; ".join(filter(None, [checks["reason"], f"review: {verdict}"]))
             checks["passed"] = False
     return {"glb": glb, "sheet": sheet, "checks": checks}
@@ -275,7 +274,10 @@ def creature_params(b) -> dict:
     """A creature request ({name, prompt | image, animal?, clips, fill_missing, bake?, size_cm?, preset}) checked
     and filled in. Raises ValueError."""
     a = _app()
-    name = safe_name(b.get("name"))
+    for k in ("name", "prompt", "image", "animal", "preset"):
+        if not isinstance(b.get(k) or "", str):
+            raise ValueError(f"{k} must be a string")
+    name = safe_name(b.get("name") or "")
     if not name:
         raise ValueError("give the creature a name (letters, digits, _ and -)")
     if bool(b.get("prompt")) == bool(b.get("image")):
@@ -285,20 +287,31 @@ def creature_params(b) -> dict:
     if b.get("animal") and b["animal"] not in {e["id"] for e in json.loads(CATALOGUE.read_text(encoding="utf-8"))}:
         raise ValueError("animal must be an id from /api/animals")
     clips = b.get("clips", "all")
-    if clips != "all" and (not isinstance(clips, list) or not clips or any(safe_name(c) != c for c in clips)):
+    if clips != "all" and (not isinstance(clips, list) or not clips or
+                           any(not isinstance(c, str) or safe_name(c) != c for c in clips)):
         raise ValueError('clips is "all" or a list of clip names (letters, digits, _ and -)')
     bake = b.get("bake")
-    if bake is not None and (not isinstance(bake, list) or (clips != "all" and set(bake) - set(clips))):
-        raise ValueError("bake is a list of the requested clips")
+    if bake is not None and (not isinstance(bake, list) or any(not isinstance(c, str) for c in bake)
+                             or (clips != "all" and set(bake) - set(clips))):
+        raise ValueError("bake is a list of the requested clips' names")
+    fill = b.get("fill_missing", True)
+    fill = {"true": True, "false": False}.get(fill.lower()) if isinstance(fill, str) else fill
+    if not isinstance(fill, bool):
+        raise ValueError("fill_missing is true or false")
     preset = b.get("preset", a.DEFAULT_PRESET)
     if preset not in a.PRESET_LEVELS:
         raise ValueError(f"preset must be one of {a.PRESET_LEVELS}")
     size = b.get("size_cm")
-    if size is not None and not 1 <= float(size) <= 2000:
-        raise ValueError("size_cm is the creature's length in cm, 1-2000")
+    if size is not None:
+        try:  # a number or a numeric string; anything else (true, a list) fails the range check as NaN
+            size = float(size) if isinstance(size, (int, float, str)) and not isinstance(size, bool) else float("nan")
+        except ValueError:
+            size = float("nan")
+        if not 1 <= size <= 2000:
+            raise ValueError("size_cm is the creature's length in cm, 1-2000")
     return {"name": name, "prompt": str(b.get("prompt") or ""), "image": b.get("image") or "", "animal": b.get("animal") or "",
-            "clips": clips, "fill_missing": bool(b.get("fill_missing", True)), "bake": bake,
-            "size_cm": None if size is None else float(size), "preset": preset}
+            "clips": clips, "fill_missing": fill, "bake": bake, "size_cm": size,
+            "preset": preset}
 
 
 def pick_animal(p, s):
@@ -517,9 +530,11 @@ def combine_model(name: str, clips: list, folder=None) -> dict:
     in the manifest. Refuses (ValueError naming the clip) a clip without a file or on another skeleton; the old file is
     only replaced once the new one is complete. -> the manifest."""
     folder = Path(folder) if folder else model_dir(name)
+    if not (folder / f"{name}.json").is_file():
+        raise ValueError(f"no such model: {name}")
     man = json.loads((folder / f"{name}.json").read_text())
-    if not clips:
-        raise ValueError("pick at least one clip to combine")
+    if not isinstance(clips, list) or not clips or any(not isinstance(c, str) for c in clips):
+        raise ValueError("clips is a list of at least one clip name")
     base, bbin = glb_read((folder / f"{name}.glb").read_bytes())
     bones, by = glb_bones(base), {c["name"]: c for c in man["clips"]}
     parts = []
@@ -546,6 +561,31 @@ def combine_model(name: str, clips: list, folder=None) -> dict:
     return man
 
 
+def place_model(build, out_dir, stem) -> Path:
+    """Move the finished folder `build` (files named <stem>...) to out_dir/<unique name>, renaming the files and the
+    manifest when the name took a suffix. os.rename never moves into an existing folder: a same-named creature that
+    landed first makes it fail, and the next free name is tried."""
+    old = stem
+    for _ in range(100):
+        n = model_name(out_dir, stem)
+        if n != old:
+            for f in sorted(build.rglob(f"{old}*"), key=lambda f: -len(f.parts)):
+                f.rename(f.with_name(n + f.name[len(old):]))
+            man = json.loads((build / f"{n}.json").read_text(encoding="utf-8"))
+            man["name"] = n
+            for c in man["clips"]:
+                c["file"] = f"animations/{n}_{c['name']}.glb"
+            write_manifest(build, man)
+            old = n
+        try:
+            os.rename(build, out_dir / n)
+            return out_dir / n
+        except OSError:
+            if not (out_dir / n).exists():
+                raise
+    raise RuntimeError(f"no free folder name for {stem} in {out_dir}")
+
+
 def run_creature(jid, host):
     """A "creature" job (creature_params): match the animal and curate it if needed, concept image, 3D model and rig,
     the shared skeleton, then every requested clip (library retarget, else UniMate when fill_missing), each checked;
@@ -554,6 +594,7 @@ def run_creature(jid, host):
     p, s = json.loads(a.job_row(jid)["params"]), a.get_settings()
     work, _, _, _, step, _ = a.host_tools(jid, host)
     q, log = shlex.quote, []
+    a.LIVE[jid] = {"metrics": None, "log": log}
     build = Path(tempfile.mkdtemp(prefix=f".creature{jid}_", dir=a.DATA))
     try:
         step("matching the animal")
@@ -595,7 +636,7 @@ def run_creature(jid, host):
         step("saving the model folder")
         out_dir = a.safe_path(f"{s['output_folder']}/{a.ASSET_TYPES['creature']['folder']}")
         out_dir.mkdir(parents=True, exist_ok=True)
-        n = model_name(out_dir, p["name"])
+        n = safe_name(p["name"])  # the files' stem; the folder's unique name is chosen at the move
         get = lambda f: a.ssh(host, f"cat {q(work + '/' + f)}", timeout=900)
         for d in ("source", "animations", ".thumbs"):
             (build / d).mkdir()
@@ -612,15 +653,18 @@ def run_creature(jid, host):
         man = {"name": n, "animal": entry["id"], "match": {"score": m["score"], "reason": m["reason"]},
                "body_plan": entry["body_plan"], "size_cm": size, "skeleton": SKELETON,
                "clips": [{"name": c["name"], "file": f"animations/{n}_{c['name']}.glb", "source": c["source"],
-                          "checks": c["checks"], "baked": False} for c in clips],
+                          "checks": c["checks"], "baked": False,
+                          **({k: c[k] for k in ("seed", "prompt")} if c["source"] == "text" else {})} for c in clips],
                "unavailable": unavailable, "unreal": {"state": "pending", "reason": ""}, "job": jid}
         write_manifest(build, man)
         bake = [c["name"] for c in clips if c["checks"]["passed"] and (p["bake"] is None or c["name"] in p["bake"])]
+        if p["bake"] and (not_made := sorted(set(p["bake"]) - {c["name"] for c in clips})):
+            log.append(f"bake: {', '.join(not_made)} not made, so not baked")
         if bake:
             combine_model(n, bake, build)
         log.append(f"baked into {n}_animated.glb: {', '.join(bake)}" if bake else "no clip passed: nothing baked")
-        dest = out_dir / n
-        shutil.move(str(build), str(dest))
+        dest = place_model(build, out_dir, n)
+        n, man = dest.name, json.loads((dest / f"{dest.name}.json").read_text(encoding="utf-8"))
         rel = lambda f: (dest / f).relative_to(a.ROOT).as_posix()
         files = [rel(f"{n}_animated.glb")] * bool(bake) + [rel(f"{n}.glb"), rel(f"{n}.json")] + \
                 [rel(c["file"]) for c in man["clips"]]
@@ -630,7 +674,8 @@ def run_creature(jid, host):
     except Exception as e:
         a.update_job(jid, status="failed", error=str(e)[-1000:], note="", finished=time.time())
     finally:
-        a.update_job(jid, log="\n".join(a.GPU_NOTES.pop(jid, []) + log + a.LIVE.pop(jid, {}).get("log", [])[-100:]))
+        live = a.LIVE.pop(jid, {}).get("log") or []  # run_prompt's polling replaces it with the host log
+        a.update_job(jid, log="\n".join(a.GPU_NOTES.pop(jid, []) + log + ([] if live is log else live[-100:])))
         a.JOB_BLENDER.pop(jid, None)
         shutil.rmtree(build, ignore_errors=True)  # gone after the move; left over only when a stage failed
         try:

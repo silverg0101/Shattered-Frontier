@@ -150,7 +150,7 @@ curl -X POST http://192.168.50.133:8090/api/jobs -H "Content-Type: application/j
 }'
 ```
 
-The result is a folder `Generated/Creatures/<Name>/` (a second creature of the same name gets `_2`): `<Name>.glb` (rigged, no animation), `<Name>_animated.glb`, the manifest `<Name>.json` (animal, match, size, `skeleton: "quadruped_v1"`, each clip's `file`, `source`, `checks` and `baked`, clips that could not be made under `unavailable`, `unreal.state`), `source/` and `animations/<Name>_<Clip>.glb` with its contact sheet `.png`.
+The result is a folder `Generated/Creatures/<Name>/` (a second creature of the same name gets `_2`): `<Name>.glb` (rigged, no animation), `<Name>_animated.glb`, the manifest `<Name>.json` (animal, match, size, `skeleton: "quadruped_v1"`, each clip's `file`, `source`, `checks` (with `review`: each Claude verdict as `{verdict, reason}`, a second one when the numbers passed and the first said FAIL) and `baked`, plus `seed` and `prompt` for UniMate (`source: "text"`) clips, clips that could not be made under `unavailable`, `unreal.state`), `source/` and `animations/<Name>_<Clip>.glb` with its contact sheet `.png`.
 
 - `GET /api/models/<Name>`: the manifest.
 - `POST /api/models/<Name>/combine` with `{"clips": ["Trottle", "Walk"]}`: rebuilds `<Name>_animated.glb` from those clips and returns the manifest. It refuses a clip without a file or on a different skeleton (400, naming the clip).

@@ -2135,14 +2135,15 @@ def mvadapter_views(jid, host, p, hero, front, log):
 
 def draw_hero(prompt, model, log, extra=""):
     """The side-view design image; one whose far legs show is redrawn, as it would put a second paw on every leg."""
+    legs = ""  # added to the caller's extra, which may carry a reviewer's fix
     for n in range(1, 4):
         log.append(f"hero: drawing the side-view design image (try {n}/3)")
-        hero = codex_image(MV_HERO.format(prompt=prompt) + extra, model, log=log)
+        hero = codex_image(MV_HERO.format(prompt=prompt) + extra + legs, model, log=log)
         contacts = hero_ground_contacts(hero)
         if contacts <= 2:
             return hero
         log.append(f"hero: {contacts} feet on the ground, so the far legs show")
-        extra = HERO_LEGS_FIX.format(n=contacts)
+        legs = HERO_LEGS_FIX.format(n=contacts)
     log.append("hero: kept the last try although the far legs still show")
     return hero
 
@@ -2404,7 +2405,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send({"id": jid, "status": "queued", "status_url": f"{base}/api/jobs/{jid}"})
             if (m := re.fullmatch(r"/api/models/([\w-]+)(/combine)?", p)) and (method, bool(m[2])) in (("GET", False), ("POST", True)):
                 if m[2]:  # rebuild <Name>_animated.glb from the ticked clips
-                    return self.send(creature.combine_model(m[1], list(self.body().get("clips") or [])))
+                    return self.send(creature.combine_model(m[1], self.body().get("clips")))
                 f = creature.model_dir(m[1]) / f"{m[1]}.json"
                 if not f.is_file():
                     return self.send({"error": "no such model"}, 404)
@@ -2886,12 +2887,32 @@ def check():
         except ValueError as e:
             assert bad in str(e), e
     assert (m / "Rat_animated.glb").read_bytes() == before
-    for bad in ({"name": "x", "prompt": "a", "image": "b"}, {"name": "!!", "prompt": "a"},
-                {"name": "x", "prompt": "a", "clips": ["Walk"], "bake": ["Run"]}):
+    try:
+        creature.combine_model("Rat", [["Walk"]], m); raise AssertionError("unhashable clip")
+    except ValueError:
+        pass
+    for bad in ({"name": "x", "prompt": "a", "image": "b"}, {"name": "!!", "prompt": "a"}, {"name": 5, "prompt": "a"},
+                {"name": "x", "prompt": "a", "clips": ["Walk"], "bake": ["Run"]}, {"name": "x", "prompt": "a", "clips": [1]},
+                {"name": "x", "prompt": "a", "bake": [["Walk"]]}, {"name": "x", "prompt": "a", "fill_missing": "maybe"},
+                {"name": "x", "prompt": "a", "size_cm": "abc"}, {"name": "x", "prompt": "a", "size_cm": [30]},
+                {"name": "x", "prompt": "a", "size_cm": True}, {"name": "x", "prompt": "a", "animal": ["Rat"]}):
         try:
             creature.creature_params(bad); raise AssertionError(bad)
         except ValueError:
             pass
+    ok = creature.creature_params({"name": "x", "prompt": "a", "fill_missing": "false", "size_cm": "30"})
+    assert ok["fill_missing"] is False and ok["size_cm"] == 30.0
+    # place_model: a name taken while the job ran gets the next suffix, files and manifest renamed; never nested
+    b = td / "build"
+    (b / "animations").mkdir(parents=True)
+    for f in ("Rat.glb", "Rat_animated.glb", "animations/Rat_Walk.glb"):
+        (b / f).write_bytes(b"x")
+    creature.write_manifest(b, {"name": "Rat", "clips": [{"name": "Walk", "file": "animations/Rat_Walk.glb"}]})
+    dest = creature.place_model(b, td, "Rat")  # td/Rat exists (the combine test's)
+    assert dest == td / "Rat_2" and not b.exists() and not (td / "Rat" / "build").exists()
+    assert sorted(f.relative_to(dest).as_posix() for f in dest.rglob("*.*")) == \
+        ["Rat_2.glb", "Rat_2.json", "Rat_2_animated.glb", "animations/Rat_2_Walk.glb"]
+    assert json.loads((dest / "Rat_2.json").read_text())["clips"][0]["file"] == "animations/Rat_2_Walk.glb"
     (td / "animal.json").write_text(json.dumps({"clips": []}))
     with DB_LOCK, db() as c:
         jid = c.execute("INSERT INTO jobs (kind, name, params, status, created) VALUES ('creature', 'Swamp_Rat', ?, 'running', ?)",
@@ -2908,6 +2929,7 @@ def check():
     assert not any((ROOT / get_settings()["output_folder"]).glob("**/Swamp_Rat*")) and not any(DATA.glob(f".creature{jid}_*"))
     with DB_LOCK, db() as c:
         c.execute("DELETE FROM jobs WHERE id=?", (jid,))
+    shutil.rmtree(td)
     print("check ok")
 
 if __name__ == "__main__":
