@@ -894,11 +894,22 @@ namespace
 
     FFullTarget Node(ESFGatheringPilotKind Kind, const TCHAR* Recipe = TEXT("")) { FFullTarget T; T.Action = EFullAction::Node; T.Kind = Kind; T.Recipe = Recipe; return T; }
 
-    int64 BagQuantity(const AActor* Owner, const TCHAR* Item)
+    int64 BagQuantity(const AActor* Owner, const TCHAR* Item, bool bOneGrade = false)
     {
 #if SF_WITH_MINIMAL_INVENTORY
         auto* Bag = Owner ? Owner->FindComponentByClass<UInventoryComponent>() : nullptr;
-        return Bag ? UInventoryTransactionLibrary::GetItemQuantity(Bag, TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Item)))) : 0;
+        if (!Bag) { return 0; }
+        int64 Quantity = UInventoryTransactionLibrary::GetItemQuantity(Bag,
+            TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Item))));
+        int64 Maximum = Quantity;
+        for (const TCHAR* Grade : {TEXT("crude"), TEXT("fine"), TEXT("superior"), TEXT("masterwork")})
+        {
+            const FString GradedId = FString(Item) + TEXT("/") + Grade;
+            const int64 Count = UInventoryTransactionLibrary::GetItemQuantity(Bag,
+                TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(GradedId))));
+            Quantity += Count; Maximum = FMath::Max(Maximum, Count);
+        }
+        return bOneGrade ? Maximum : Quantity;
 #else
         return 0;
 #endif
@@ -919,7 +930,7 @@ namespace
         int64 Timber = 0, Nails = 0;
         for (const FSFItemStack& Input : Bundle->Inputs)
         { (Input.DefinitionId == TEXT("item/rough_timber") ? Timber : Nails) = Input.Quantity; }
-        const bool bTimber = BagQuantity(Owner, TEXT("item/rough_timber")) >= Timber, bNails = BagQuantity(Owner, TEXT("item/iron_nails")) >= Nails;
+        const bool bTimber = BagQuantity(Owner, TEXT("item/rough_timber"), true) >= Timber, bNails = BagQuantity(Owner, TEXT("item/iron_nails")) >= Nails;
         if (bTimber && bNails) { return Node(ESFGatheringPilotKind::Workbench, TEXT("recipe/wall_material_bundle")); }
         if (!bNails)
         {
@@ -984,7 +995,8 @@ void USFQuestPilotComponent::TickFullServer()
     const FEntry* Entry = Find(ScenarioQuestId());
     const FSFQuestObjective* Objective = Entry ? NextObjective(*Entry->Quest, Entry->Progress) : nullptr;
     // A restoring character keeps its restored position; the fixture places it once progress is known.
-    if (!Pawn || !Objective || USFCharacterSessionComponent::IsRestoring(PC)) { return; }
+    if (!Pawn || !Objective || USFCharacterSessionComponent::IsRestoring(PC) ||
+        (Cast<ASFE1Character>(Pawn) && Cast<ASFE1Character>(Pawn)->CombatHealth() <= 0)) { return; }
     // Nodes: the one nearest the world origin (oak, iron) or the only station; the claim pad for the wall; the nearest boar.
     const FFullTarget Next = Resolve(Objective->Kind, Objective->TargetId, PC, USFBackpackComponent::Services().IsValid());
     FVector Target = FVector::ZeroVector, Where = FVector::ZeroVector;
@@ -1030,7 +1042,8 @@ void USFQuestPilotComponent::TickFullClient(double Now)
     auto* PC = Cast<APlayerController>(GetOwner());
     APawn* Pawn = PC ? PC->GetPawn() : nullptr;
     const FSFQuestView* View = FindView(ScenarioQuestId());
-    if (!PC || !PC->IsLocalController() || !Pawn || !View || bFullDone) { return; }
+    if (!PC || !PC->IsLocalController() || !Pawn || !View || bFullDone ||
+        (Cast<ASFE1Character>(Pawn) && Cast<ASFE1Character>(Pawn)->CombatHealth() <= 0)) { return; }
     if (View->bComplete)
     { bFullDone = true; UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_DONE Steps=%d"), View->StepTotal); return; }
     const FSFQuestLine* Line = View->Lines.FindByPredicate([](const FSFQuestLine& L) { return L.Count < L.Target; });
@@ -1111,9 +1124,14 @@ void USFQuestPilotComponent::TickFullClient(double Now)
     {
         // One interaction per attempt: a second one during the channel would cancel it.
         const FVector Eye = Pawn->GetPawnViewLocation();
-        Gathering->InteractFromRay(Eye, (NodeActor->GetActorLocation() - Eye).GetSafeNormal());
+        const FBox Bounds = NodeActor->GetComponentsBoundingBox(true);
+        bool bHit = false;
+        for (const FVector Aim : {NodeActor->GetActorLocation(), Bounds.GetCenter(), Bounds.GetCenter() + FVector(0, 0, Bounds.GetExtent().Z * 0.5)})
+        {
+            if (Gathering->InteractFromRay(Eye, (Aim - Eye).GetSafeNormal())) { bHit = true; break; }
+        }
         FullAttemptAt = Now;
-        UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_ACTION Objective=%s Input=InteractFromRay"), *Key);
+        UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_ACTION Objective=%s Input=InteractFromRay Hit=%d"), *Key, bHit);
     }
 #endif
 }

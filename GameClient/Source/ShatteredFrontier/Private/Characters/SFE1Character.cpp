@@ -385,6 +385,22 @@ void ASFE1Character::SetMouseCaptured(bool bCaptured)
 void ASFE1Character::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    static bool bReconnectSawAlive = false;
+    static bool bReconnectTravelled = false;
+    FString ReconnectUrl;
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Value(FCommandLine::Get(), TEXT("ReconnectUrl="), ReconnectUrl))
+    {
+        if (PilotHealth > 0) bReconnectSawAlive = true;
+        if (bReconnectSawAlive && !bReconnectTravelled && PilotHealth == 0)
+        {
+            bReconnectTravelled = true;
+            UE_LOG(LogTemp, Display, TEXT("RECONNECT_CLIENT_TRAVEL Face=%s"), *FaceId.ToString());
+            if (auto* PC = Cast<APlayerController>(Controller)) PC->ClientTravel(ReconnectUrl, TRAVEL_Absolute);
+        }
+    }
+#endif
     if (HasAuthority() && CombatTarget)
     {
         const ASFPilotBoar* Boar = Cast<ASFPilotBoar>(CombatTarget);

@@ -4,6 +4,7 @@
 #include "Combat/SFCombatPilotRewards.h"
 #include "Characters/SFE1Character.h"
 #include "Framework/SFPlayerController.h"
+#include "Gathering/SFGatheringPilot.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/TextRenderComponent.h"
@@ -88,7 +89,7 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
         !FMath::IsWithinInclusive(TabTargetDropRangeMetres, TabTargetRangeMetres, 100.0f) ||
         !FMath::IsWithinInclusive(TabTargetConeDegrees, 60.0f, 360.0f) ||
         !FMath::IsWithinInclusive(TabTargetCycleResetSeconds, 0.5f, 5.0f) ||
-        !FMath::IsWithinInclusive(PlayerRespawnDelaySeconds, 1.0f, 15.0f) ||
+        !FMath::IsWithinInclusive(PlayerRespawnDelaySeconds, 1.0f, 60.0f) ||
         (PlayerRespawnPointRule != ESFPlayerRespawnPointRule::NearestToDeath && PlayerRespawnPointRule != ESFPlayerRespawnPointRule::FirstAuthored) ||
         !FMath::IsWithinInclusive(BoarAggroRadiusMetres, 4.0f, 18.0f) ||
         !FMath::IsWithinInclusive(BoarNearNoticeRadiusMetres, 1.0f, 10.0f) ||
@@ -357,6 +358,26 @@ void ASFGameMode::RestartCombat(AController* NewPlayer)
 
 void ASFGameMode::TickCombat()
 {
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (bPilotActive && !bReconnectDeathTriggered && FParse::Param(FCommandLine::Get(), TEXT("ReconnectDeathScenario")))
+    {
+        for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+        {
+            APlayerController* Controller = It->Get();
+            auto* Pack = Controller ? Controller->FindComponentByClass<USFBackpackComponent>() : nullptr;
+            const auto* Gathering = Controller ? Controller->FindComponentByClass<USFGatheringPilotComponent>() : nullptr;
+            auto* Player = Controller ? Cast<ASFE1Character>(Controller->GetPawn()) : nullptr;
+            if (!Pack || Pack->GetCharacterId() != TEXT("chr_dev_alpha") || !Gathering || !Player ||
+                Gathering->GetSkillSnapshot().Get(ESFGatheringSkill::Logging) < 1 || Player->CombatHealth() <= 0 ||
+                USFCharacterSessionComponent::IsRestoring(Controller)) continue;
+            bReconnectDeathTriggered = true;
+            UE_LOG(LogTemp, Display, TEXT("RECONNECT_DEATH_TRIGGERED Character=chr_dev_alpha Logging=%d Face=%s"),
+                Gathering->GetSkillSnapshot().Get(ESFGatheringSkill::Logging), *Player->GetFaceId().ToString());
+            HitPlayer(nullptr, Player, 100000);
+            break;
+        }
+    }
+#endif
     if (!bPilotActive || !CapturedSettings->bSilverbrookHostileSpawning || !bSlotBridgeHealthy) { return; }
     if (GetWorld()->GetTimeSeconds() >= NextSlotTick)
     { NextSlotTick = GetWorld()->GetTimeSeconds() + 2.0; bSlotBridgeHealthy = RunWorldSlots(TEXT("tick")); }

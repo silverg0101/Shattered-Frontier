@@ -166,7 +166,7 @@ sealed class LedgerService(Dom.InventoryLedger ledger, PostgresInventoryLedgerSt
                     var container = ledger.Read(r.ContainerId);
                     if (container.Spec.OwnerKind != Dom.OwnerKind.Character || parsed.CharacterId != container.Spec.OwnerId ||
                         parsed.SourceReceiptId != r.OperationId || parsed.Kind != "gather" || parsed.Payload is null ||
-                        parsed.Quest is null || parsed.Quest.OccurredAtUnixMs <= 0)
+                        (parsed.Quest is not null && parsed.Quest.OccurredAtUnixMs <= 0))
                         throw new RpcException(new Status(StatusCode.InvalidArgument, "Follow-up identity or payload mismatch."));
                     intent = new(r.OperationId, parsed.CharacterId, (int)supplied.PayloadVersion, bytes, supplied.PayloadDigest);
                 }

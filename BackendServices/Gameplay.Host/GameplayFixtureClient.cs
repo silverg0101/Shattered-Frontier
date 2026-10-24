@@ -9,6 +9,7 @@ using ShatteredFrontier.InventoryLedger.Postgres;
 using ShatteredFrontier.Exchange.Postgres;
 using ShatteredFrontier.CharacterState.Postgres;
 using ShatteredFrontier.Housing.Postgres;
+using CharacterAppearance;
 using Pb = ShatteredFrontier.Housing.V1;
 using ProgressPb = ShatteredFrontier.Progression.V1;
 using ExchangePb = ShatteredFrontier.Exchange.V1;
@@ -72,6 +73,20 @@ internal static class GameplayFixtureClient
         static void Check(bool ok, string message) { if (!ok) throw new Exception(message); }
         switch (mode)
         {
+            case "fixture-reconnect-appearance":
+            {
+                var reconnectProgress = new ProgressPb.Progression.ProgressionClient(channel);
+                var packet = AppearanceCodec.Pack(new Appearance(2, 0, 1, 1, 128, 128,
+                    new byte[8], new ushort[4], new byte[4], [], 6));
+                var created = reconnectProgress.CreateCharacter(new ProgressPb.CreateCharacterRequest
+                { CharacterId = "chr_dev_alpha", AppearancePacket = ByteString.CopyFrom(packet) },
+                    headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                var state = reconnectProgress.GetCharacterState(new ProgressPb.GetCharacterStateRequest
+                { CharacterId = "chr_dev_alpha" }, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                Check(created.AppearanceRevision == 1 && state.FaceId == "Aelfwyn", "Reconnect appearance seed failed.");
+                Console.WriteLine("PASS reconnect appearance seed");
+                break;
+            }
             case "fixture-outbox-seed":
             case "fixture-outbox-replay":
             case "fixture-outbox-conflict":

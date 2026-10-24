@@ -88,7 +88,19 @@ void USFCharacterSessionComponent::TickComponent(float Delta, ELevelTick Type, F
         return;
     }
     // The pawn leaves before the controller's EndPlay, so the final save uses the last pose seen here.
-    if (APawn* Pawn = Cast<APlayerController>(GetOwner())->GetPawn()) { if (auto* Hero = Cast<ASFE1Character>(Pawn); Hero && !PendingFaceId.IsNone()) { Hero->SetFaceId(PendingFaceId); PendingFaceId = NAME_None; } LastKnownLocation = Pawn->GetActorLocation(); LastKnownYaw = Pawn->GetActorRotation().Yaw; bHasKnownPose = true; }
+    if (APawn* Pawn = Cast<APlayerController>(GetOwner())->GetPawn())
+    {
+        if (auto* Hero = Cast<ASFE1Character>(Pawn); Hero && !PendingFaceId.IsNone())
+        {
+            Hero->SetFaceId(PendingFaceId);
+            if (Hero->GetFaceId() == PendingFaceId)
+            {
+                UE_LOG(LogTemp, Display, TEXT("CHARACTER_FACE_APPLIED Character=%s Face=%s"), *CharacterId, *PendingFaceId.ToString());
+                PendingFaceId = NAME_None;
+            }
+        }
+        LastKnownLocation = Pawn->GetActorLocation(); LastKnownYaw = Pawn->GetActorRotation().Yaw; bHasKnownPose = true;
+    }
     if (Now >= NextSaveAt) { SavePosition(false); }
 }
 

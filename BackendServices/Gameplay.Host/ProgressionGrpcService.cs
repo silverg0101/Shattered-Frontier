@@ -67,7 +67,7 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
             if (string.IsNullOrWhiteSpace(request.CharacterId) || !Guid.TryParse(request.DeathEventId, out _) ||
                 !ValidPosition(request.DeathPosition) || !ValidPosition(request.RespawnPosition) ||
                 request.DeathPosition.ZoneId != request.RespawnPosition.ZoneId ||
-                request.RespawnDelayMs is < 1000 or > 15000 || request.OccurredAtUnixMs < 0)
+                request.RespawnDelayMs is < 1000 or > 60000 || request.OccurredAtUnixMs < 0)
                 throw new ArgumentException("Invalid death event.");
             var d = request.DeathPosition; var p = request.RespawnPosition;
             return WireDeath(store.ReportDeath(request.DeathEventId, request.CharacterId, request.OccurredAtUnixMs,

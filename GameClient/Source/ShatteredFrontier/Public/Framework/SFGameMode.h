@@ -127,4 +127,5 @@ private:
     double NextSlotTick = 0;
     bool bScenario = false;
     bool bScenarioFirstBoarDied = false;
+    bool bReconnectDeathTriggered = false;
 };

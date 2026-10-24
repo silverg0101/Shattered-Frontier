@@ -81,7 +81,13 @@ builder.Services.AddSingleton(ledgerStore);
 builder.Services.AddSingleton(new DomLedger(ledgerStore));
 builder.Services.AddSingleton(new BoarRewardService(new DomLedger(ledgerStore), boar));
 builder.Services.AddSingleton(new PostgresCharacterStateStore(characterConnection));
-builder.Services.AddSingleton<Func<double>>(() => Random.Shared.NextDouble());
+// Owned reconnect fixtures can seed skill rolls without changing the production roll source.
+var fixtureSkillSeed = Environment.GetEnvironmentVariable("GAMEPLAY_FIXTURE_SKILL_SEED");
+if (fixtureSkillSeed is not null && (!int.TryParse(fixtureSkillSeed, out _) ||
+    Environment.GetEnvironmentVariable("GAMEPLAY_FIXTURE_MODE") != "reconnect"))
+    throw new InvalidOperationException("GAMEPLAY_FIXTURE_SKILL_SEED requires the reconnect fixture mode and an integer seed.");
+var skillRandom = fixtureSkillSeed is null ? null : new Random(int.Parse(fixtureSkillSeed));
+builder.Services.AddSingleton<Func<double>>(() => skillRandom?.NextDouble() ?? Random.Shared.NextDouble());
 var progressionSettings = new ShatteredFrontier.Progression.ProgressionSettings(); progressionSettings.Validate();
 builder.Services.AddSingleton(progressionSettings);
 builder.Services.AddSingleton(appearanceAllowlist);

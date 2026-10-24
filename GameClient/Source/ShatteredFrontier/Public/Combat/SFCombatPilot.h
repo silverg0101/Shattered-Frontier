@@ -57,7 +57,7 @@ public:
     bool bTabTargetRequireLineOfSight = true;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Targeting", meta=(ClampMin="0.5", ClampMax="5", Units="s"))
     float TabTargetCycleResetSeconds = 1.5f;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="1.0", ClampMax="15.0", Units="s", ToolTip="Server respawn delay; adopted at next zone start."))
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="1.0", ClampMax="60.0", Units="s", ToolTip="Server respawn delay; adopted at next zone start."))
     float PlayerRespawnDelaySeconds = 4.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ToolTip="Choose the nearest authored respawn point to the death, or the first authored point; adopted at next zone start."))
     ESFPlayerRespawnPointRule PlayerRespawnPointRule = ESFPlayerRespawnPointRule::NearestToDeath;
