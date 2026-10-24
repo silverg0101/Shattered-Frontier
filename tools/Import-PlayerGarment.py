@@ -78,7 +78,7 @@ def make_master():
     mel.connect_material_expressions(const(1.0, -250, -300), '', lerp, 'A')
     mel.connect_material_expressions(bright, '', lerp, 'B')
     mel.connect_material_expressions(param('TexAmount', 1.0, -250, -350), '', lerp, 'Alpha')
-    grid_uv = node(M, -700, 700, A=coord, B=param('WeaveFreq', 60.0, -900, 750))
+    grid_uv = node(M, -700, 700, A=coord, B=param('WeaveFreq', 40.0, -900, 750))
     masks = []
     for ch in ('r', 'g'):
         mk = mel.create_material_expression(m, unreal.MaterialExpressionComponentMask, -550, 700)
@@ -90,8 +90,8 @@ def make_master():
         mel.connect_material_expressions(mk, '', s, '')
         masks.append(s)
     cross = node(M, -250, 700, A=masks[0], B=masks[1])
-    soft = node(M, -100, 700, A=cross, B=const(0.08, -250, 800))
-    weave = node(unreal.MaterialExpressionAdd, 50, 700, A=soft, B=const(0.92, -100, 800))
+    soft = node(M, -100, 700, A=cross, B=const(0.18, -250, 800))
+    weave = node(unreal.MaterialExpressionAdd, 50, 700, A=soft, B=const(0.82, -100, 800))
     cloth = node(M, 200, -250, A=lerp, B=weave)
     tm = node(M, 350, -250, A=cloth, B=tint)
     mel.connect_material_property(tm, '', unreal.MaterialProperty.MP_BASE_COLOR)
@@ -151,8 +151,8 @@ def run():
         raise RuntimeError('No built body: run tools/Build-PlayerMetaHumans.py')
     skeleton = body.get_editor_property('skeleton')
     master = make_master()
-    linen = make_instance('MI_PlayerLinen', master, 'T_SB_denim_fabric_04_Diffuse', 'T_SB_denim_fabric_04_nor_gl', 'T_SB_denim_fabric_04_Rough', (0.55, 0.43, 0.26, 1), 2.0, 0.35)
-    legs = make_instance('MI_PlayerLeggings', master, 'T_SB_denim_fabric_04_Diffuse', 'T_SB_denim_fabric_04_nor_gl', 'T_SB_denim_fabric_04_Rough', (0.34, 0.18, 0.08, 1), 3.0, 1.0)
+    linen = make_instance('MI_PlayerLinen', master, 'T_SB_denim_fabric_04_Diffuse', 'T_SB_denim_fabric_04_nor_gl', 'T_SB_denim_fabric_04_Rough', (0.46, 0.37, 0.25, 1), 2.0, 0.5)
+    legs = make_instance('MI_PlayerLeggings', master, 'T_SB_denim_fabric_04_Diffuse', 'T_SB_denim_fabric_04_nor_gl', 'T_SB_denim_fabric_04_Rough', (0.27, 0.19, 0.12, 1), 3.0, 1.0)
 
     mesh = import_skeletal(fbx, 'SKM_Tunic_Leggings', skeleton)
     # The body patch the garment covers (tools/Build-GarmentBodyClip.py), removed from the body by Mutable (tools/Create-PlayerOutfit.py).

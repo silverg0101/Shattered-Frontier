@@ -9,11 +9,11 @@ A normal build omits the torso and thighs its default clothing hides, so it cann
 Output: <out>.fbx (empty + armature "root" + ONE skinned mesh "SKM_Tunic_Leggings") and <out>.blend (adds the body, for review).
 
 How it is built (all lengths cm, in the body's own frame):
-- Leggings (material slot 1, "M_Leggings"): the body surface from the ankle to the hips, arms removed, pushed out along normals
+- Leggings (material slot 1, "M_Leggings"): the body surface from the ankle to just under the skirt join, arms removed, pushed out along normals
   (--leggings-offset) and cut cleanly with bisect planes.
 - Tunic (slot 0, "M_Tunic"): the body surface from the hips to the neck opening and to --sleeve-t of the upper arm, pushed out
   (--tunic-offset, extra on the sleeves), smoothed so it hangs looser than the muscles, then kept --clearance off the skin.
-  The sleeve ends get a raised band (rolled cuff). A V-split is cut into the front of the neck opening. Below the hips a skirt is lofted
+  The sleeve ends get a raised band (rolled cuff). A neckband rises from the neck seam (higher at the back), and a V-split is cut into the front of the neck opening. Below the hips a skirt is lofted
   from the hip border down to --hem (fraction of the thigh) as ONE tube around both thighs: each ring is the convex hull of the body's
   cross-section plus ease and flare. Two side slits are left open.
 - Weights: nearest body triangle, barycentric, for every vertex; skirt weights are then smoothed so the tube does not tear between
@@ -40,16 +40,19 @@ def parse():
     p.add_argument('--out', required=True)
     p.add_argument('--render', default='')
     p.add_argument('--tunic-offset', type=float, default=1.2)
-    p.add_argument('--sleeve-extra', type=float, default=0.8)
-    p.add_argument('--leggings-offset', type=float, default=0.6)
+    p.add_argument('--sleeve-extra', type=float, default=0.5)
+    p.add_argument('--leggings-offset', type=float, default=0.8)
     p.add_argument('--clearance', type=float, default=0.9, help='minimum tunic distance from the skin')
-    p.add_argument('--sleeve-t', type=float, default=0.80, help='sleeve end along shoulder to elbow')
+    p.add_argument('--sleeve-t', type=float, default=1.2, help='sleeve end along shoulder to elbow (>1: past the elbow, the rolled 3/4 sleeve)')
     p.add_argument('--cuff-width', type=float, default=3.5)
     p.add_argument('--cuff-bulge', type=float, default=1.3)
-    p.add_argument('--hem', type=float, default=0.5, help='hem as a fraction of the thigh length down from the hip')
-    p.add_argument('--skirt-ease', type=float, default=2.5)
-    p.add_argument('--skirt-flare', type=float, default=3.5)
-    p.add_argument('--slit-height', type=float, default=16.0)
+    p.add_argument('--hem', type=float, default=0.6, help='hem as a fraction of the thigh length down from the hip')
+    p.add_argument('--skirt-ease', type=float, default=1.2)
+    p.add_argument('--skirt-flare', type=float, default=1.0)
+    p.add_argument('--slit-height', type=float, default=12.0)
+    p.add_argument('--collar-front', type=float, default=4.5, help='cm the neckband rises above the body neck seam at the front')
+    p.add_argument('--collar-back', type=float, default=4.0)
+    p.add_argument('--neck-radius', type=float, default=7.5, help='cm: the neckband closes in to this radius (the head mesh carries the neck)')
     p.add_argument('--v-depth', type=float, default=10.0)
     p.add_argument('--v-half-angle', type=float, default=18.0)
     p.add_argument('--ankle-above-foot', type=float, default=2.5)
@@ -256,7 +259,7 @@ def loft_skirt(bm, src, args, z_hem):
         targets.append([ray_hull(poly, (cx, cy), a) + margin for a in th])
     radii = [r0] + targets
     radii[1] = [0.3 * a + 0.7 * b for a, b in zip(r0, targets[0])]
-    for _ in range(8):  # smooth around the ring, then down the rows
+    for _ in range(24):  # smooth around the ring (the hull steps read as pleats), then down the rows
         for row in radii[1:]:
             row[:] = [(row[i - 1] + 2 * row[i] + row[(i + 1) % n]) / 4 for i in range(n)]
     for k in range(1, rows):
@@ -284,6 +287,27 @@ def loft_skirt(bm, src, args, z_hem):
             j = (i + 1) % n
             bm.faces.new((ring[k][i], ring[k + 1][i], ring[k + 1][j], ring[k][j]))
     return [v for row in ring[1:] for v in row]
+
+
+def raise_collar(bm, args):
+    """A neckband rising from the neck opening and closing in round the neck: the body mesh stops at the collarbones (the head mesh
+    carries the neck), so its seam alone leaves a wide scoop."""
+    border = {v for v in bm.verts if v.is_boundary and v.co.z > 140}
+    cx = sum(v.co.x for v in border) / len(border)
+    cy = sum(v.co.y for v in border) / len(border)
+    r = max(abs(v.co.y - cy) for v in border) or 1.0
+    top = {}
+    for v in border:
+        back = min(1.0, max(0.0, 0.5 + 0.5 * (v.co.y - cy) / r))  # front is -y
+        out = Vector((v.co.x - cx, v.co.y - cy, 0))
+        rise = args.collar_front + (args.collar_back - args.collar_front) * back
+        p = Vector((cx, cy, v.co.z + rise)) + out.normalized() * min(out.length, args.neck_radius) if out.length > 1e-6 else v.co
+        top[v] = bm.verts.new(p)
+    for e in [e for e in bm.edges if e.is_boundary and e.verts[0] in top and e.verts[1] in top]:
+        a, b = e.verts
+        bm.faces.new((a, b, top[b], top[a]))
+    bm.verts.ensure_lookup_table()
+    bm.verts.index_update()
 
 
 def add_v_split(bm, args):
@@ -336,7 +360,8 @@ def build(args, src, arm):
     # --- leggings: ankle to hip, no arms ---
     legs = shell(src, args.leggings_offset, clearance=0.35)
     cut(legs, Vector((0, 0, z_ankle)), Vector((0, 0, 1)), keep_negative=False)
-    cut(legs, Vector((0, 0, head('spine_01').z)), Vector((0, 0, 1)), keep_negative=True)
+    # Ends just under the skirt join: higher, the leggings shell meets the tunic shell and shows through it at the waist.
+    cut(legs, Vector((0, 0, z_join - 1.0)), Vector((0, 0, 1)), keep_negative=True)
     armv = vert_arm(src, legs)
     drop(legs, [v for v in legs.verts if armv[v.index] > 0.4])
     keep_largest(legs)
@@ -355,6 +380,7 @@ def build(args, src, arm):
     armv = vert_arm(src, tun)
     for a, d, dist in cuff:
         rolled_cuff(tun, a, d, dist, args.cuff_width, args.cuff_bulge, armv)
+    raise_collar(tun, args)
     add_v_split(tun, args)
     skirt = loft_skirt(tun, src, args, z_hem)
     tun.verts.index_update()
