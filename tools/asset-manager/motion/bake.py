@@ -7,17 +7,20 @@ head when the tail isn't tracked. A bone with another child off its axis (pelvis
 clavicles) also turns about that axis so that child lands where it was tracked; other bones keep the twist
 their parent gives them. Only the hips (the root's children) follow their tracked head; every other bone
 stays where its parent puts it, so bone lengths never change. Points that are not tracked (motion.json
-"seen": empty background, or not covered by the detector) steer nothing. The model is exported as GLB with
-that one animation.
+"seen": empty background, or not covered by the detector) steer nothing. A looping action (motion.json "loop")
+has its feet planted on the floor (track_solve.feet finds them). The model is exported as GLB with that one
+animation.
 """
 import json, math, sys
 from pathlib import Path
 
 import bpy
+import numpy as np
 from mathutils import Matrix, Vector
 
 sys.path.insert(0, str(Path(__file__).parent))
 from render_views import load  # same import and turn, so world positions line up
+from track_solve import fabrik, feet
 
 MIN_OFFSET = 0.1  # an off-axis child counts for twist when it sits this far (x bone length) from the axis
 
@@ -63,11 +66,17 @@ def main():
         if best[0] > MIN_OFFSET * axis.length:
             twist[pb.name] = best[1]
 
+    legs = feet(j) if m.get("loop") else []  # a looping action (walk, run, idle) stands on the floor
+    for chain, _ in legs:  # a leg aims joint to joint, so its joints land exactly where planting puts them
+        for c, nxt in zip(chain, chain[1:]):
+            aim[c["name"]] = nxt["head"]
+            twist.pop(c["name"], None)
+
     arm.animation_data_clear()  # an imported pose action would fight the keys
     order = [pb for pb in arm.pose.bones]
     order.sort(key=lambda pb: len(pb.parent_recursive))
-    for f, frame in enumerate(m["positions"], 1):
-        pts = [to_arm @ Vector(p) for p in frame]
+
+    def pose(pts):
         want = {}  # bone -> desired armature-space matrix this frame
         for pb in order:
             b = bones[pb.name]
@@ -93,6 +102,31 @@ def main():
             else:
                 rot = (spin @ a0).rotation_difference(a).to_matrix() @ spin
             want[pb.name] = Matrix.Translation(head) @ rot.to_4x4() @ Matrix.Translation(-h0) @ rest[pb.name]
+        return want
+
+    frames = [[to_arm @ Vector(p) for p in frame] for frame in m["positions"]]
+    wants = [pose(pts) for pts in frames]
+    # Feet on the floor: a foot that never comes down (a height error) is lowered by its lowest tenth of heights,
+    # one that sinks through the floor is lifted onto it, and its leg bends to follow, hip or shoulder fixed.
+    # ponytail: the lowest tenth counts as standing; a motion mostly in mid-air (a leap) would be pulled down
+    up = np.array(to_arm.to_3x3() @ Vector((0, 0, 1)))  # a world metre up, in armature space
+    for chain, sub in legs:
+        lengths = [(pts0[n["head"]] - pts0[c["head"]]).length for c, n in zip(chain, chain[1:])]
+        foot = [(c["name"], i) for c in sub for i in (c["head"], c["tail"])]
+        low = lambda w: min((arm.matrix_world @ (w[n] @ rest[n].inverted() @ pts0[i])).z for n, i in foot)
+        d = np.array([low(w) for w in wants]) - min((arm.matrix_world @ pts0[i]).z for _, i in foot)
+        dz = np.maximum(d - np.percentile(d, 10), 0) - d
+        print(f"planting {chain[-1]['name']}: moved up to {np.abs(dz).max() / j['calib']['model_height'] * 100:.1f}% of height")
+        for t, w in enumerate(wants):
+            old = np.array([w[c["name"]].to_translation() for c in chain])
+            new = fabrik(old, lengths, old[-1] + up * dz[t])
+            for k, c in enumerate(chain[1:], 1):
+                frames[t][c["head"]] = Vector(new[k])
+            for i in {i for _, i in foot} - {chain[-1]["head"]}:  # the foot moves with its ankle
+                frames[t][i] = frames[t][i] + Vector(new[-1] - old[-1])
+    if legs:
+        wants = [pose(pts) for pts in frames]
+    for f, want in enumerate(wants, 1):
         for pb in order:
             if pb.parent:
                 parent = want[pb.parent.name] @ pb.parent.bone.matrix_local.inverted() @ pb.bone.matrix_local

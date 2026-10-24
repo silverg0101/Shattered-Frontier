@@ -147,6 +147,46 @@ def close_loop(pos):
     return pos[:-1] - d * (np.arange(len(pos) - 1) / (len(pos) - 1))[:, None, None]
 
 
+def feet(j):
+    """Per foot touching the floor at rest: (leg chain bones from the limb's root down to the ankle, the bones
+    of the ankle's subtree). The limb's root is the top bone off the centre line (a hip, a shoulder); the ankle
+    is the first bone down the chain that branches (into toes), else the leaf itself. bake.py plants them."""
+    P, h = np.array(j["points"]), j["calib"]["model_height"]
+    floor = P[:, 2].min()
+    by = {b["name"]: b for b in j["bones"]}
+    kids = {n: [b for b in j["bones"] if b["parent"] == n] for n in by}
+    out = {}
+    for b in j["bones"]:
+        if kids[b["name"]] or P[b["tail"], 2] - floor > 0.08 * h:
+            continue
+        chain = [b]  # leaf up to the limb's root
+        while chain[-1]["parent"] and abs(P[by[chain[-1]["parent"]]["head"], 0]) > 0.01 * h:
+            chain.append(by[chain[-1]["parent"]])
+        chain = chain[::-1]
+        if abs(P[chain[0]["head"], 0]) <= 0.01 * h:  # a tail or a snout tip, not a leg
+            continue
+        k = next((i for i, c in enumerate(chain) if len(kids[c["name"]]) > 1), len(chain) - 1)
+        sub, stack = [], [chain[k]]
+        while stack:
+            sub.append(stack.pop())
+            stack += kids[sub[-1]["name"]]
+        out[chain[k]["name"]] = (chain[:k + 1], sub)
+    return list(out.values())
+
+
+def fabrik(p, lengths, target, rounds=12):
+    """Joint chain p (n,3) with its root fixed, bones kept at their lengths, its end pulled towards target."""
+    p = p.copy()
+    for _ in range(rounds):
+        root, p[-1] = p[0].copy(), target
+        for i in range(len(p) - 2, -1, -1):
+            p[i] = p[i + 1] + (p[i] - p[i + 1]) / max(np.linalg.norm(p[i] - p[i + 1]), 1e-9) * lengths[i]
+        p[0] = root
+        for i in range(1, len(p)):
+            p[i] = p[i - 1] + (p[i] - p[i - 1]) / max(np.linalg.norm(p[i] - p[i - 1]), 1e-9) * lengths[i - 1]
+    return p
+
+
 def run(video, joints, out, detector=None, loop=False):
     out.mkdir(parents=True, exist_ok=True)
     j = json.loads(Path(joints).read_text())
@@ -206,6 +246,19 @@ def check():
     clip = close_loop(walk[a:b + 1] + np.linspace(0, 0.1, b - a + 1)[:, None, None])  # plus a slow drift
     seam = np.abs(clip[0] - clip[-1]).max()  # the last frame leads into the first like any other step
     assert seam <= np.abs(np.diff(clip, axis=0)).max() + 1e-9, seam
+    # A leg (hip, knee, ankle, toe) off a centre spine, and a tail: one foot, its chain hip to ankle (no branch,
+    # so the leaf); lifted 5 cm, the chain keeps its root and bone lengths and reaches the target.
+    rest = np.array([[0, 0, 1], [0.2, 0, 1], [0.2, 0.1, 0.5], [0.2, 0, 0.05], [0.2, -0.1, 0], [0, 0.5, 0.02]])
+    leg = {"calib": {"model_height": 1.0}, "points": rest.tolist(), "bones": [
+        {"name": "spine", "head": 0, "tail": 1, "parent": None}, {"name": "hip", "head": 1, "tail": 2, "parent": "spine"},
+        {"name": "shin", "head": 2, "tail": 3, "parent": "hip"}, {"name": "foot", "head": 3, "tail": 4, "parent": "shin"},
+        {"name": "tail", "head": 0, "tail": 5, "parent": "spine"}]}
+    assert [([c["name"] for c in ch], [c["name"] for c in s]) for ch, s in feet(leg)] == [(["hip", "shin", "foot"], ["foot"])]
+    chain = rest[[1, 2, 3]] + [0, 0.02, 0]
+    lengths = [np.linalg.norm(rest[2] - rest[1]), np.linalg.norm(rest[3] - rest[2])]
+    p = fabrik(chain, lengths, rest[3] + [0, 0, 0.05])
+    assert np.allclose(p[0], chain[0]) and np.allclose(p[-1], rest[3] + [0, 0, 0.05], atol=1e-3), p
+    assert np.allclose(np.linalg.norm(np.diff(p, axis=0), axis=-1), lengths)
     print("check ok")
 
 
