@@ -84,6 +84,7 @@ input[type=checkbox] { accent-color: var(--primary); width: 16px; height: 16px; 
 .pane { min-width: 0; display: flex; flex-direction: column; }
 .toolbar { position: sticky; top: -28px; z-index: 5; margin: 0 -28px; padding: 14px 28px; background: hsla(220, 14%, 8%, .95); backdrop-filter: blur(10px); border-block: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .toolbar .search { width: 220px; margin-left: auto; }
+.toolbar .sort { width: auto; }
 .toolbar .count { font-size: 12px; color: var(--muted-foreground); }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--tile, 168px), 1fr)); gap: 16px; padding: 20px 0; align-content: start; flex: 1; border-radius: 16px; transition: background .2s, outline-color .2s; outline: 2px dashed transparent; outline-offset: -2px; }
 .grid.drop { background: var(--primary-12); outline-color: var(--primary); }
@@ -339,6 +340,8 @@ async function renderAssets() {
           <button class="btn danger" id="del" disabled>Delete</button>
           <span class="count" id="count"></span>
           <input type="search" class="search" id="filter" placeholder="Filter this folder…" value="${esc(state.filter)}">
+          <select class="sort" id="sort" title="Sort (folders stay first)">${[['name', 'Name A–Z'], ['-name', 'Name Z–A'], ['-mtime', 'Newest first'], ['mtime', 'Oldest first']]
+            .map(([v, t]) => `<option value="${v}" ${v === store.get('assetSort', 'name') ? 'selected' : ''}>${t}</option>`).join('')}</select>
         </div>
         <div class="grid" id="grid"></div>
       </div>
@@ -360,6 +363,7 @@ async function renderAssets() {
   };
   $('#del').onclick = deleteSel;
   $('#filter').oninput = e => { state.filter = e.target.value; drawGrid(); };
+  $('#sort').onchange = e => { store.set('assetSort', e.target.value); drawGrid(); };
   const grid = $('#grid');
   grid.addEventListener('dragover', e => { if (e.dataTransfer.types.includes('Files')) { e.preventDefault(); grid.classList.add('drop'); } });
   grid.addEventListener('dragleave', e => { if (!grid.contains(e.relatedTarget)) grid.classList.remove('drop'); });
@@ -367,7 +371,12 @@ async function renderAssets() {
   grid.addEventListener('click', e => { if (e.target === grid) { state.sel.clear(); syncSel(); } });
 }
 const join = (a, b) => [a, b].filter(Boolean).join('/');
-const visible = () => state.entries.filter(e => e.name.toLowerCase().includes(state.filter.toLowerCase()));
+const visible = () => {
+  const k = store.get('assetSort', 'name'), f = k.replace('-', ''), dir = k[0] === '-' ? -1 : 1;
+  const by = f === 'mtime' ? (a, b) => (a.mtime - b.mtime) || a.name.localeCompare(b.name) : (a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
+  return state.entries.filter(e => e.name.toLowerCase().includes(state.filter.toLowerCase()))
+    .sort((a, b) => ((b.kind === 'dir') - (a.kind === 'dir')) || dir * by(a, b));
+};
 
 function drawGrid() {
   const list = visible();
