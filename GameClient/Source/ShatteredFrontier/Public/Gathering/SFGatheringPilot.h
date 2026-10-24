@@ -211,6 +211,7 @@ private:
     FTimerHandle ServiceRefreshTimer;
     FString ServiceNodeId;
     TSharedPtr<FSFGameplayServicesClient> ServiceClient;
+    uint64 ServiceSnapshotSerial = 0; // Invalidates older GetNode replies after a newer read or harvest receipt.
     bool bServiceStateReady = false;
     bool bUsesServices = false;
     TArray<FSFGrowthStageDef> GrowthStages;

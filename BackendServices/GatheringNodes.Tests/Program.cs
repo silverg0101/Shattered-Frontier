@@ -85,10 +85,20 @@ Check(young is { Generation: 2, Charges: 2, GrowthStage: "young" }, "young stage
 Check(young.StageStartedAt == growthClock.GetUtcNow(), "stage start exposed");
 Check(young.NextTransitionAt == growthClock.GetUtcNow().AddSeconds(7.5), "young stage transition deadline exposed");
 Check(growth.Harvest(new("iron-young", "p1", iron.Id, 2)).RemainingCharges == 1, "young charge consumed");
+var restartedGrowth = new GatheringNodeService(zone, [ironDefinition], growthClock, "growth-test", new(30, 0, RegrowthMode.FullRespawn));
+restartedGrowth.ImportState(growth.ExportState());
+Check(restartedGrowth.Snapshot().Single(n => n.Id == iron.Id) is
+    { Generation: 2, Charges: 1, GrowthStage: "young" }, "mid-growth restart retains the consumed charge");
+Check(restartedGrowth.Snapshot().Single(n => n.Id == iron.Id).NextTransitionAt == young.NextTransitionAt,
+    "mid-growth restart retains the host-owned stage deadline");
 growthClock.Set(maturity.AddSeconds(-7.5));
 Check(growth.Snapshot().Single(n => n.Id == iron.Id) is { Charges: 2, GrowthStage: "growing" }, "half rounding and prior harvest retained");
+Check(restartedGrowth.Snapshot().Single(n => n.Id == iron.Id) is { Charges: 2, GrowthStage: "growing" },
+    "restarted node advances with the saved consumed charge");
 growthClock.Set(maturity);
 Check(growth.Snapshot().Single(n => n.Id == iron.Id) is { Charges: 4, GrowthStage: "mature" }, "maturity reaches full cap less prior harvest");
+Check(restartedGrowth.Snapshot().Single(n => n.Id == iron.Id) is { Charges: 4, GrowthStage: "mature" },
+    "restarted node reaches the same mature charge count");
 Check(growth.Snapshot().Single(n => n.Id == iron.Id).NextTransitionAt is null, "mature stage has no pending transition");
 var floorClock = new ManualClock();
 try { _ = new GatheringNodeService(zone, [ironDefinition with { Charges = 1 }], floorClock, "bad-floor", new(30, 0, RegrowthMode.FullRespawn)); throw new Exception("rounded early advantage accepted"); }

@@ -423,7 +423,12 @@ bool ASFGatheringPilotNode::ApplyServiceSnapshot(const FSFGameplayResponse& Snap
         GetWorldTimerManager().SetTimer(ServiceRefreshTimer,this,&ASFGatheringPilotNode::RefreshServiceState,
             GetDefault<USFGameplayServicesSettings>()->GatheringNodeRetrySeconds,false);
     }
-    if (bChanged) { ++State.Revision; OnRep_State(); ForceNetUpdate(); }
+    if (bChanged)
+    {
+        UE_LOG(LogTemp,Display,TEXT("GATHERING_NODE_HOST_STATE Id=%s Generation=%u Stage=%s Charges=%d NextTransition=%lld"),
+            *ServiceNodeId,State.Generation,*State.GrowthStage.ToString(),State.Charges,Snapshot.NodeNextTransitionUnixMs);
+        ++State.Revision; OnRep_State(); ForceNetUpdate();
+    }
     return true;
 }
 
@@ -438,10 +443,12 @@ void ASFGatheringPilotNode::RefreshServiceState()
     {
         FSFGameplayRequest Request; Request.Rpc=ESFGameplayRpc::GetGatheringNode; Request.NodeId=ServiceNodeId;
         TWeakObjectPtr<ASFGatheringPilotNode> Weak(this);
-        ServiceClient->Call(Request,[Weak](const FSFGameplayResponse& Response)
+        const uint64 Serial=++ServiceSnapshotSerial;
+        ServiceClient->Call(Request,[Weak,Serial](const FSFGameplayResponse& Response)
         {
             if (ASFGatheringPilotNode* Self=Weak.Get())
             {
+                if (Serial!=Self->ServiceSnapshotSerial) { return; }
                 if (Response.Status==ESFGameplayStatus::Ok && Self->ApplyServiceSnapshot(Response)) { return; }
                 UE_LOG(LogTemp,Warning,TEXT("GATHERING_NODE_SNAPSHOT_FAILED Id=%s Code=%d"),*Self->ServiceNodeId,Response.GrpcCode);
                 Self->State.Charges=0; Self->bServiceStateReady=false; ++Self->State.Revision; Self->OnRep_State(); Self->ForceNetUpdate();
@@ -1310,6 +1317,7 @@ void USFGatheringPilotComponent::OnNodeHarvest(const FSFGameplayResponse& Respon
         Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::Unavailable); return;
     }
     ASFGatheringPilotNode* Node=Feedback.Node;
+    ++Node->ServiceSnapshotSerial; // A GetNode requested before this committed harvest cannot rewind its charges or stage.
     if (Response.Status!=ESFGameplayStatus::Ok || !Node->ApplyServiceSnapshot(Response) ||
         Response.HarvestStatus!=TEXT("granted") || Response.ResourceId!=LedgerItemId(ActiveKind) ||
         Response.HarvestQuantity!=CapturedSettings->UnitsPerCharge)

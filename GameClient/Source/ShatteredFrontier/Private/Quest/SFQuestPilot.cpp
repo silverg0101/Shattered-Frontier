@@ -984,6 +984,18 @@ void USFQuestPilotComponent::TickFullServer()
     APawn* Pawn = PC ? PC->GetPawn() : nullptr;
     const FEntry* Entry = Find(ScenarioQuestId());
     const FSFQuestObjective* Objective = Entry ? NextObjective(*Entry->Quest, Entry->Progress) : nullptr;
+    if (!Objective && Entry && Entry->Progress.IsComplete(*Entry->Quest) &&
+        FParse::Param(FCommandLine::Get(), TEXT("Gat01GrowthRestart")) && Pawn)
+    {
+        // Development fixture: keep the completed-quest player beside the same iron node for depletion.
+        if (const auto* Iron = NearestNode(GetWorld(), ESFGatheringPilotKind::Iron, FVector::ZeroVector))
+        {
+            const FVector Target = Iron->GetActorLocation();
+            if (FVector::Dist2D(Pawn->GetActorLocation(), Target) > 350)
+            { Pawn->SetActorLocation(Target + (-Target * FVector(1, 1, 0)).GetSafeNormal() * 200 + FVector(0, 0, 80), false, nullptr, ETeleportType::TeleportPhysics); }
+        }
+        return;
+    }
     // A restoring character keeps its restored position; the fixture places it once progress is known.
     if (!Pawn || !Objective || USFCharacterSessionComponent::IsRestoring(PC) ||
         (Cast<ASFE1Character>(Pawn) && Cast<ASFE1Character>(Pawn)->CombatHealth() <= 0)) { return; }
@@ -1032,10 +1044,29 @@ void USFQuestPilotComponent::TickFullClient(double Now)
     auto* PC = Cast<APlayerController>(GetOwner());
     APawn* Pawn = PC ? PC->GetPawn() : nullptr;
     const FSFQuestView* View = FindView(ScenarioQuestId());
-    if (!PC || !PC->IsLocalController() || !Pawn || !View || bFullDone ||
+    if (!PC || !PC->IsLocalController() || !Pawn || !View ||
         (Cast<ASFE1Character>(Pawn) && Cast<ASFE1Character>(Pawn)->CombatHealth() <= 0)) { return; }
     if (View->bComplete)
-    { bFullDone = true; UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_DONE Steps=%d"), View->StepTotal); return; }
+    {
+        if (!bFullDone) { bFullDone = true; FullEquipAt = 0; FullLastSwingAt = 0;
+            UE_LOG(LogTemp, Display, TEXT("QUEST_FULL_DONE Steps=%d"), View->StepTotal); }
+        if (!FParse::Param(FCommandLine::Get(), TEXT("Gat01GrowthRestart"))) { return; }
+        auto* Gathering = PC->FindComponentByClass<USFGatheringPilotComponent>();
+        ASFGatheringPilotNode* Iron = NearestNode(GetWorld(), ESFGatheringPilotKind::Iron, Pawn->GetActorLocation());
+        if (!Gathering || !Gathering->IsEnabled() || !Iron ||
+            FVector::Dist2D(Pawn->GetActorLocation(), Iron->GetActorLocation()) > 350 || Iron->GetState().Charges <= 0) { return; }
+        if (FullEquipAt == 0) { Gathering->EquipPickaxe(); FullEquipAt = Now; return; }
+        if (Now - FullEquipAt < 2 || Now - FullLastSwingAt < 4 ||
+            Gathering->GetFeedback().Phase == ESFGatheringPilotPhase::Harvesting ||
+            Gathering->GetFeedback().Phase == ESFGatheringPilotPhase::Committing) { return; }
+        const FVector Eye = Pawn->GetPawnViewLocation();
+        const FBox Bounds = Iron->GetComponentsBoundingBox(true);
+        for (const FVector Aim : {Iron->GetActorLocation(), Bounds.GetCenter(), Bounds.GetCenter() + FVector(0, 0, Bounds.GetExtent().Z * 0.5)})
+        { if (Gathering->InteractFromRay(Eye, (Aim - Eye).GetSafeNormal())) { break; } }
+        FullLastSwingAt = Now;
+        return;
+    }
+    if (bFullDone) { return; }
     const FSFQuestLine* Line = View->Lines.FindByPredicate([](const FSFQuestLine& L) { return L.Count < L.Target; });
     const TSharedPtr<const FSFQuestDefinition> Quest = FSFQuestCatalog::Get().Find(ScenarioQuestId());
     if (!Line || !Quest) { return; }

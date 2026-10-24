@@ -556,7 +556,9 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFGatheringPilotServiceTest,
 
 bool FSFGatheringPilotServiceTest::RunTest(const FString& Parameters)
 {
-    struct FFakeNode { int32 Charges=2, Harvests=0; bool bPendingFirst=true; TArray<FSFGameplayRequest> Requests; TSet<FString> Receipts; };
+    struct FFakeNode { int32 Charges=2, Harvests=0; bool bPendingFirst=true, bDelayNextRead=false;
+        TArray<FSFGameplayRequest> Requests; TSet<FString> Receipts;
+        FSFGameplayResponse DelayedReply; TFunction<void(const FSFGameplayResponse&)> DelayedDone; };
     TSharedRef<FFakeNode> NodeHost=MakeShared<FFakeNode>();
     USFGameplayServicesSettings* ServiceSettings=NewObject<USFGameplayServicesSettings>();
     ServiceSettings->bEnabled=true;
@@ -576,7 +578,10 @@ bool FSFGatheringPilotServiceTest::RunTest(const FString& Parameters)
             if (NodeHost->bPendingFirst) { NodeHost->bPendingFirst=false; Reply.HarvestStatus=TEXT("pending"); }
             Reply.GrowthStage=NodeHost->Charges>0 ? TEXT("young") : TEXT("");
         }
-        Reply.NodeCharges=NodeHost->Charges; Done(Reply);
+        Reply.NodeCharges=NodeHost->Charges;
+        if (Request.Rpc==ESFGameplayRpc::GetGatheringNode && NodeHost->bDelayNextRead)
+        { NodeHost->bDelayNextRead=false; NodeHost->DelayedReply=Reply; NodeHost->DelayedDone=MoveTemp(Done); return; }
+        Done(Reply);
     });
     TSharedPtr<FSFGameplayServicesClient> Service=FSFGameplayServicesClient::Create(*ServiceSettings);
     FSFGameplayServicesClient::SetSendOverrideForTests(nullptr);
@@ -607,6 +612,15 @@ bool FSFGatheringPilotServiceTest::RunTest(const FString& Parameters)
     Iron->SetServiceNodeId(TEXT("zone/greenlands_silverbrook/eastwood_iron_ore/0")); Iron->FinishSpawning(At);
     Iron->bUsesServices=true; Iron->ServiceClient=Service; Iron->RefreshServiceState();
     TestTrue(TEXT("Immature snapshot projects two of five charges"),Iron->State.Charges==2 && Iron->State.Capacity==5 && Iron->State.GrowthStage==TEXT("young"));
+    FSFGameplayResponse TimedSnapshot; TimedSnapshot.bHasNode=true;
+    TimedSnapshot.NodeId=TEXT("zone/greenlands_silverbrook/eastwood_iron_ore/0");
+    TimedSnapshot.NodeDefinitionId=TEXT("gathering_node/iron_vein"); TimedSnapshot.NodeGeneration=2;
+    TimedSnapshot.NodeCapacity=5; TimedSnapshot.NodeCharges=2; TimedSnapshot.GrowthStage=TEXT("young");
+    TimedSnapshot.NodeNextTransitionUnixMs=(FDateTime::UtcNow()-FDateTime::FromUnixTimestamp(0)).GetTotalMilliseconds()+1000;
+    TestTrue(TEXT("Host transition deadline schedules the next server read"),Iron->ApplyServiceSnapshot(TimedSnapshot) &&
+        World->GetTimerManager().GetTimerRemaining(Iron->ServiceRefreshTimer)>0.05f &&
+        World->GetTimerManager().GetTimerRemaining(Iron->ServiceRefreshTimer)<2.f);
+    TimedSnapshot.NodeNextTransitionUnixMs=0; Iron->ApplyServiceSnapshot(TimedSnapshot);
     PC->Possess(Pawn); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
     auto* Gather=PC->FindComponentByClass<USFGatheringPilotComponent>();
     if (!Gather) { return false; }
@@ -618,8 +632,12 @@ bool FSFGatheringPilotServiceTest::RunTest(const FString& Parameters)
     const auto Tick=[&Fixture](int32 Count=12) { for (int32 I=0; I<Count; ++I) { Fixture.TickTestWorld(0.05f); FTSTicker::GetCoreTicker().Tick(0.3f); } };
     Gather->ServerGatheringAction_Implementation(Iron,Iron->State.Revision,1); Tick(32);
     TestTrue(TEXT("First host harvest reduces immature charge"),Iron->State.Charges==1 && NodeHost->Harvests==1 && Gather->Feedback.Result==ESFGatheringPilotResult::Granted);
+    NodeHost->bDelayNextRead=true; Iron->RefreshServiceState();
+    if (!TestTrue(TEXT("Older node read is held while the next harvest commits"),bool(NodeHost->DelayedDone))) { return false; }
     Gather->ServerGatheringAction_Implementation(Iron,Iron->State.Revision,2); Tick();
     TestTrue(TEXT("Second host harvest depletes and replicates stage"),Iron->State.Charges==0 && Iron->State.GrowthStage.IsNone() && NodeHost->Harvests==2);
+    NodeHost->DelayedDone(NodeHost->DelayedReply);
+    TestTrue(TEXT("Pre-harvest node read cannot restore depleted charges"),Iron->State.Charges==0 && Iron->State.GrowthStage.IsNone());
     Gather->ServerGatheringAction_Implementation(Iron,Iron->State.Revision,3); Tick();
     TestEqual(TEXT("Host-owned harvest never issues a separate ledger grant"),LedgerGrants,0);
     const auto Harvests=NodeHost->Requests.FilterByPredicate([](const FSFGameplayRequest& R) { return R.Rpc==ESFGameplayRpc::HarvestGatheringNode; });

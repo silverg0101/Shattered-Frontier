@@ -8,7 +8,8 @@ param(
     # -Leg Full: commit through owned InventoryLedger.Host + Gameplay.Host (INT-04), with a host-down phase.
     # -Leg Board (QST-02): board accept, 3 oak, server restart keeps 3/6, then abandon and re-accept from Oswin; services required.
     [switch]$Services,
-    [switch]$Int06KillAfterGrant
+    [switch]$Int06KillAfterGrant,
+    [switch]$Gat01Restart  # Full + Services: deplete iron through the pilot, restart server and hosts during regrowth.
 )
 # The gathering and combat pilots run in different game modes, so each leg proves its own events reach the quest
 # (real server-side harvest/boar outcomes, no synthetic events) and the owning client's tracker view follows.
@@ -24,6 +25,7 @@ $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
 if ($Services -and $Leg -notin 'Full','Board') { throw '-Services applies to -Leg Full and -Leg Board only.' }
 if ($Leg -eq 'Board' -and -not $Services) { throw '-Leg Board needs -Services (durable quest state).' }
 if ($Int06KillAfterGrant -and (-not $Services -or $Leg -ne 'Full')) { throw '-Int06KillAfterGrant requires -Leg Full -Services.' }
+if ($Gat01Restart -and (-not $Services -or $Leg -ne 'Full' -or $Int06KillAfterGrant)) { throw '-Gat01Restart requires -Leg Full -Services without -Int06KillAfterGrant.' }
 $fx = @{}
 if ($Services) { . (Join-Path $PSScriptRoot 'InventoryLedgerHostFixture.ps1') }
 $result = [ordered]@{ status='Running'; leg=$Leg; runs=@() }
@@ -65,17 +67,21 @@ function Initialize-QuestServices {
     $ledgerIni = '-ini:Game:[/Script/ShatteredFrontier.SFInventoryLedgerSettings]'
     $script:serviceFlags = @(($ledgerIni+':bEnabled=True'),($ledgerIni+':Endpoint=127.0.0.1:'+$fx.hostPort),($script:servicesIni+':bEnabled=True'),($script:servicesIni+':Endpoint=127.0.0.1:'+$script:gameplayPort))
     $script:serverEnv = @{ SF_INVENTORY_LEDGER_TOKEN=$fx.token; SF_GAMEPLAY_TOKEN=$script:gameplayToken }
+    $script:gameplayRuns = 0
 }
 function Start-QuestHosts {
     Start-LedgerHost $fx ''
     $gameplayEnv = @{ GAMEPLAY_HOST_PORT="$script:gameplayPort"; SF_GAMEPLAY_TOKEN=$script:gameplayToken; GAMEPLAY_LEDGER_CONNECTION=$fx.connection; GAMEPLAY_CHARACTER_CONNECTION=$fx.connection
         GAMEPLAY_HOUSING_CONNECTION=$fx.connection; GAMEPLAY_EXCHANGE_CONNECTION=$fx.connection; GAMEPLAY_CONTENT_ROOT=(Join-Path $repo 'content') }
+    if ($Gat01Restart) { $gameplayEnv.GAMEPLAY_FIXTURE_MODE='gathering'; $gameplayEnv.GAMEPLAY_FIXTURE_GATHERING_RESPAWN_SECONDS='30' }
     $gameplayDll = Join-Path $script:gameplayOut 'Gameplay.Host.dll'
+    $script:gameplayRuns++; $gameplayLog = Join-Path $root "gameplay-$script:gameplayRuns.stdout.txt"
+    $gameplayErr = Join-Path $root "gameplay-$script:gameplayRuns.stderr.txt"
     Invoke-WithEnv $gameplayEnv { $script:gameplay = Start-Process -FilePath $fx.dotnet -ArgumentList @(('"'+$gameplayDll+'"')) -WindowStyle Hidden -PassThru `
-        -RedirectStandardOutput (Join-Path $root 'gameplay.stdout.txt') -RedirectStandardError (Join-Path $root 'gameplay.stderr.txt') }
+        -RedirectStandardOutput $gameplayLog -RedirectStandardError $gameplayErr }
     $null = $script:gameplay.Handle; $owned.Add($script:gameplay)
     $watch = [Diagnostics.Stopwatch]::StartNew()
-    while (-not ((Test-Path (Join-Path $root 'gameplay.stdout.txt')) -and (Get-Content (Join-Path $root 'gameplay.stdout.txt') -Raw) -match 'GAMEPLAY_HOST_READY')) {
+    while (-not ((Test-Path $gameplayLog) -and (Get-Content $gameplayLog -Raw) -match 'GAMEPLAY_HOST_READY')) {
         if ($script:gameplay.HasExited -or $watch.Elapsed.TotalSeconds -gt 60) { throw 'Gameplay host did not become ready.' }
         Start-Sleep -Milliseconds 200
     }
@@ -151,19 +157,28 @@ try {
             Initialize-QuestServices
             $flags += $script:serviceFlags
             $clientFlags += '-QuestFullEconomy'
+            if ($Gat01Restart) {
+                $flags += '-Gat01GrowthRestart'; $flags += '-SFDevIdentity'
+                $flags += ($script:servicesIni+':bRestoreOnConnect=True')
+                # Fixture bag room for the four additional iron charges after the completed quest payout.
+                $flags += '-ini:Game:[/Script/ShatteredFrontier.SFGatheringPilotSettings]:InventorySlots=64'
+                $flags += '-ini:Game:[/Script/ShatteredFrontier.SFGatheringPilotSettings]:InventoryWeightKg=1000'
+                $clientFlags += '-Gat01GrowthRestart'
+            }
             $serverEnv = $script:serverEnv
             if ($Int06KillAfterGrant) {
                 $flags += '-GatheringLedgerExitAfterCommit'
                 $flags += '-SFDevIdentity'
             }
+            if ($Gat01Restart) { Start-QuestHosts }
         }
         $url = $silverbrook
         if ($Services) { Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server' $url $flags } } else { $server = Start-Owned 'server' $url $flags }
         Wait-Log $server 'server' 'QUEST_PILOT_READY Quests='
         Wait-Log $server 'server' 'COMBAT_PILOT_READY Boars=10'
-        $clientUrl = if ($Int06KillAfterGrant) { '127.0.0.1:'+$Port+'?SFDevCharacter=alpha' } else { '127.0.0.1:'+$Port }
+        $clientUrl = if ($Int06KillAfterGrant -or $Gat01Restart) { '127.0.0.1:'+$Port+'?SFDevCharacter=alpha' } else { '127.0.0.1:'+$Port }
         $client = Start-Owned 'client' $clientUrl $clientFlags
-        if ($Services) {
+        if ($Services -and -not $Gat01Restart) {
             # Without Gameplay.Host the durable node snapshot is unavailable, so no harvest can start.
             Wait-Log $server 'server' 'GATHERING_NODE_SNAPSHOT_FAILED Id=zone/greenlands_silverbrook/westfields_wood/0 Code=14'
             $beforeHost = (Invoke-LedgerSql $fx "SELECT count(*) FROM inventory.operation_receipts WHERE operation_id LIKE 'gather/%'" $fx.db).Trim()
@@ -219,19 +234,21 @@ try {
                 return
             }
         }
-        Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=gather Target=item/oak_log .* Result=0 Step=1 '
-        Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=gather Target=item/iron_ore .* Result=0 Step=2 '
-        Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=craft Target=item/rough_timber .* Result=0 Step=2 '
-        Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=craft Target=item/iron_ingot .* Result=0 Step=3 '
-        Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=build Target=structure_tag/wall .* Result=0 Step=4 '  # a real anchored placement on the Silverbrook claim pad
-        Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=defeat Target=npc/boar .* Result=0 '
+        if (-not $Gat01Restart) {
+            Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=gather Target=item/oak_log .* Result=0 Step=1 '
+            Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=gather Target=item/iron_ore .* Result=0 Step=2 '
+            Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=craft Target=item/rough_timber .* Result=0 Step=2 '
+            Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=craft Target=item/iron_ingot .* Result=0 Step=3 '
+            Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=build Target=structure_tag/wall .* Result=0 Step=4 '  # a real anchored placement on the Silverbrook claim pad
+            Wait-Log $server 'server' 'QUEST_PILOT_EVENT Kind=defeat Target=npc/boar .* Result=0 '
+        }
         Wait-Log $server 'server' 'QUEST_PILOT_COMPLETE Quest=quest/frontier_founder'
         Wait-Log $server 'server' 'QUEST_PILOT_REWARD Bundle=reward/frontier_founder_completion'
         Wait-Log $client 'client' 'QUEST_FULL_DONE'
         Start-Sleep -Seconds 3
         if ([regex]::Matches((Read-Log 'server'),'QUEST_PILOT_REWARD Bundle=').Count -ne 1) { throw 'Chain reward was not granted exactly once.' }
         if ((Read-Log 'client') -match 'QUEST_FULL_FAILED') { throw 'Client driver reported a failure.' }
-        if ($Services) {
+        if ($Services -and -not $Gat01Restart) {
             # The durable stores, read back once the run is idle: one of everything the chain produced.
             $text = Read-Log 'server'
             if ($text -notmatch 'BACKPACK_OUTCOME Label=gather Op=\S+ Outcome=0 Container=(ctn_dev_\w+)') { throw 'No committed backpack harvest.' }
@@ -252,6 +269,25 @@ try {
             # Progression receipts: oak x2, iron, sawmill x2, forge ingot, forge nails, workbench, boar defeat.
             if ($counts.Trim() -ne '9,1,1,1,1') { throw "Durable counts (progression,payout complete,payouts,placements,quests) = $counts, expected 9,1,1,1,1." }
             $result.ledger = $view.Line; $result.durableCounts = $counts.Trim()
+        }
+        if ($Gat01Restart) {
+            Wait-Log $server 'server' 'GATHERING_NODE_HOST_STATE Id=zone/greenlands_silverbrook/eastwood_iron_ore/\d+ Generation=1 Stage=None Charges=0'
+            $depleted = [regex]::Match((Read-Log 'server'), 'GATHERING_NODE_HOST_STATE Id=(zone/greenlands_silverbrook/eastwood_iron_ore/\d+) Generation=1 Stage=None Charges=0')
+            $nodeId = $depleted.Groups[1].Value
+            $saved = (Invoke-LedgerSql $fx "SELECT (node->>'Charges')||','||(node->>'RegrowAt')||','||(node->>'ScheduledRespawnSeconds') FROM inventory.gathering_node_state, jsonb_array_elements(state) node WHERE node->>'Id'='$nodeId'" $fx.db).Trim().Split(',')
+            $harvests = (Invoke-LedgerSql $fx "SELECT count(*) FROM inventory.gathering_harvest_receipts WHERE node_id='$nodeId' AND resource_id='item/iron_ore'" $fx.db).Trim()
+            if ($saved.Count -ne 3 -or $saved[0] -ne '0' -or $harvests -ne '5') { throw "Pilot did not durably deplete five iron charges: state=$($saved -join ',') receipts=$harvests" }
+            $emergeAt = [DateTimeOffset]::Parse($saved[1]).AddSeconds(-[double]::Parse($saved[2]) * 0.5)
+            if ($emergeAt -le [DateTimeOffset]::UtcNow.AddSeconds(3)) { throw 'Iron emergence deadline passed before restart could begin.' }
+            foreach ($process in @($client,$server,$script:gameplay)) { if (-not $process.HasExited) { Stop-Process -Id $process.Id -Force; $process.WaitForExit() } }
+            Stop-LedgerHost $fx
+            Start-QuestHosts
+            Invoke-WithEnv $serverEnv { $script:restart = Start-Owned 'restart-server' $url $flags }
+            Wait-Log $restart 'restart-server' 'QUEST_PILOT_READY Quests='
+            Wait-Log $restart 'restart-server' ("GATHERING_NODE_HOST_STATE Id=" + [regex]::Escape($nodeId) + ' Generation=2 Stage=(young Charges=2|growing Charges=3|mature Charges=5)')
+            $after = (Invoke-LedgerSql $fx "SELECT (node->>'Generation')||','||(node->>'Charges')||','||(SELECT count(*) FROM inventory.gathering_harvest_receipts WHERE node_id='$nodeId' AND resource_id='item/iron_ore') FROM inventory.gathering_node_state, jsonb_array_elements(state) node WHERE node->>'Id'='$nodeId'" $fx.db).Trim()
+            if ($after -notin '2,2,5','2,3,5','2,5,5') { throw "Restarted node and receipts differ: $after" }
+            $result.growthRestart = [ordered]@{ node=$nodeId; before='generation 1, depleted'; after=$after; emergenceDeadline=$emergeAt.ToString('o') }
         }
     } else {
         $url = $silverbrook

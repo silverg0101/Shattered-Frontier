@@ -138,7 +138,21 @@ if (mode is "gathering-backup-seed" or "gathering-replay" or "gathering-fault" o
     if (mode == "gathering-replay")
     {
         var before = client.GetNode(new() { NodeId = iron }, headers, deadline: Deadline());
-        Check(before.Generation >= 2, "Restart lost iron generation.");
+        Check(before.Generation == 2 && before.Charges == 0 && before.GrowthStage == "" &&
+            before.NextTransitionUnixMs > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+            "Restart lost the depleted young node or its next emergence deadline.");
+        using (var db = new NpgsqlConnection(connection))
+        {
+            db.Open();
+            using var cmd = new NpgsqlCommand("SELECT state::text FROM inventory.gathering_node_state WHERE realm_id='zone/greenlands_silverbrook'", db);
+            using var saved = JsonDocument.Parse((string)cmd.ExecuteScalar()!);
+            var state = saved.RootElement.EnumerateArray().Single(n => n.GetProperty("Id").GetString() == iron);
+            var matureAt = state.GetProperty("RegrowAt").GetDateTimeOffset();
+            var respawnSeconds = state.GetProperty("ScheduledRespawnSeconds").GetDouble();
+            var emergeAt = matureAt.AddSeconds(-respawnSeconds * .5);
+            Check(before.NextTransitionUnixMs == emergeAt.ToUnixTimeMilliseconds(),
+                "Restart recalculated the backend emergence deadline instead of using persisted node state.");
+        }
         var prior = Request("gathering/mature/4", "chr_gathering", iron, "ctn_gathering", "skill/mining");
         prior.FollowUpPayload = ByteString.CopyFrom(new ProgressPb.ApplyReceiptRequest { SourceReceiptId = prior.OperationId,
             CharacterId = prior.CharacterId, Kind = "gather", ExpectedProgressionRevision = 4,
@@ -147,7 +161,14 @@ if (mode is "gathering-backup-seed" or "gathering-replay" or "gathering-fault" o
         var replay = client.HarvestWithIntent(prior, headers, deadline: Deadline());
         Check(replay.Status == "granted" && replay.Node.Generation == 1 && replay.Node.Charges == 0,
             "Restart changed the saved harvest receipt.");
-        Console.WriteLine("PASS gathering node state and receipt survive host restart");
+        var emergenceUntil = DateTime.UtcNow.AddSeconds(25);
+        GatheringPb.NodeReply emerged;
+        do { Thread.Sleep(100); emerged = client.GetNode(new() { NodeId = iron }, headers, deadline: Deadline()); }
+        while (emerged.GrowthStage != "young" && DateTime.UtcNow < emergenceUntil);
+        Check(emerged.Generation == 3 && emerged.Charges == 2 && emerged.GrowthStage == "young" &&
+            emerged.NextTransitionUnixMs > before.NextTransitionUnixMs,
+            "Restarted host did not advance depleted young iron from its saved deadline.");
+        Console.WriteLine("PASS depleted young node, saved deadline, receipt and next stage survive PostgreSQL and host restart");
         return;
     }
     if (mode == "gathering-backup-seed")
