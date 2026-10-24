@@ -4,7 +4,7 @@ Blender 5.1, headless:
   "C:\\Program Files\\Blender Foundation\\Blender 5.1\\blender.exe" --factory-startup --background --python tools/Build-PlayerGarment.py -- \
       --body Artifacts/Characters/PlayerBase/OrlandoBare_body.fbx --out Artifacts/Characters/PlayerBase/garment_tunic_leggings.fbx \
       --render GameClient/ArtSource/Characters/Player/garments/tunic-leggings-blender.png \
-      --head Artifacts/Characters/PlayerBase/{OrlandoBare,Orlando,Godric,Edwin,Wulfric,Osric}_head.obj --head-clearance 1.8
+      --head Artifacts/Characters/PlayerBase/{OrlandoBare,Orlando,Godric,Edwin,Wulfric,Osric}_head.obj --head-clearance 1.8 --head-subdiv 2
 Input: the FBX that tools/Export-PlayerBaseBody.py writes from a "bare" build (tools/Build-PlayerMetaHumans.py, faces.json "bare": true).
 A normal build omits the torso and thighs its default clothing hides, so it cannot be fitted. Rerun with the female body's FBX for her fit.
 --head: every face of the fit's gender (female: HildaBare, Hilda, Aelfwyn, Eadgyth, Ebba, at the default
@@ -58,8 +58,8 @@ def parse():
     p.add_argument('--skirt-ease', type=float, default=1.2)
     p.add_argument('--skirt-flare', type=float, default=1.0)
     p.add_argument('--slit-height', type=float, default=12.0)
-    p.add_argument('--collar-front', type=float, default=4.5, help='cm the neckband rises above the body neck seam at the front')
-    p.add_argument('--collar-back', type=float, default=4.0)
+    p.add_argument('--collar-front', type=float, default=0.0, help='cm the neckband rises above the body neck seam at the front (0: a standing band shows its black inner wall beside the neck)')
+    p.add_argument('--collar-back', type=float, default=0.0)
     p.add_argument('--neck-radius', type=float, default=6.5, help='cm: the neckband closes in to this radius (the head mesh carries the neck)')
     p.add_argument('--v-depth', type=float, default=10.0)
     p.add_argument('--v-half-angle', type=float, default=18.0)
@@ -83,6 +83,7 @@ def parse():
     p.add_argument('--cuff-fold', type=float, default=0.0, help='cm: taper the last cm of the sleeve to the forearm before the folded cuff band')
     p.add_argument('--head', nargs='*', default=[], help="head mesh OBJs (tools/Export-PlayerBaseBody.py) of every face that wears this fit: the tunic is kept outside their necks and chest bibs")
     p.add_argument('--head-clearance', type=float, default=1.0, help='cm the tunic keeps off the head meshes')
+    p.add_argument('--head-subdiv', type=int, default=0, help='edge-split passes on the tunic over the bib before the push (smooth neckline)')
     return p.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else [])
 
 
@@ -396,6 +397,15 @@ def load_head(path):
     return BVHTree.FromBMesh(head), min(c[2] for c in vs)
 
 
+def split_over_bib(bm, paths, passes):
+    """The tunic is coarser than the bib: its flat triangles cut across the bib between pushed vertices (a saw-tooth neckline), so split the edges over it first."""
+    zmin = min(load_head(p)[1] for p in paths)
+    for _ in range(passes):
+        bmesh.ops.subdivide_edges(bm, edges=[e for e in bm.edges if all(v.co.z >= zmin - 1.0 for v in e.verts)], cuts=1, use_grid_fill=True)
+    bm.verts.ensure_lookup_table()
+    bm.verts.index_update()
+
+
 def push_off_head(bm, paths, clearance):
     """The head mesh carries the neck and a chest bib down over the collarbones, ~9 cm below the body's neck seam; a tunic fitted to
     the body alone runs inside it, so the bib shows through the neckband and upper chest. Every face shares this tunic and each bib
@@ -424,6 +434,15 @@ def push_off_head(bm, paths, clearance):
         moved |= {v for v in bm.verts if v.co.z >= zmin - 1.0 and push(v)}
         band = {o for v in moved for e in v.link_edges for o in e.verts if not o.is_boundary}  # smoothing an open edge lowers the neckline
         bmesh.ops.smooth_vert(bm, verts=list(band), factor=0.5, use_axis_x=True, use_axis_y=True, use_axis_z=True)
+    border = [v for v in bm.verts if v.is_boundary and v.co.z >= zmin - 1.0]  # the push moves border vertices unevenly (a stair-step neckline): even them out along the edge
+    for _ in range(4):
+        even = {}
+        for v in border:
+            nb = [e.other_vert(v) for e in v.link_edges if e.is_boundary]
+            if len(nb) == 2:
+                even[v] = v.co.lerp((nb[0].co + nb[1].co) / 2, 0.5)
+        for v, p in even.items():
+            v.co = p
     for _ in range(2):  # final passes: nothing inside any head (one head's push can land inside another)
         for v in bm.verts:
             if v.co.z >= zmin - 1.0:
@@ -629,6 +648,8 @@ def build(args, src, arm):
         rolled_cuff(tun, a, d, dist, args.cuff_width, args.cuff_bulge, armv)
     raise_collar(tun, args)
     add_v_split(tun, args)
+    if args.head and args.head_subdiv:
+        split_over_bib(tun, args.head, args.head_subdiv)
     if args.neck_trim or args.thickness:  # close the body mesh's pinholes first, or they get trims and rims (a dash on the shoulder)
         bmesh.ops.holes_fill(tun, edges=[e for e in tun.edges if e.is_boundary], sides=12)
     if args.neck_trim:
