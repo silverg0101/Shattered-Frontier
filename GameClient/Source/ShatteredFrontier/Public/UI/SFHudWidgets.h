@@ -14,6 +14,7 @@ class UVerticalBox;
 class UWidget;
 class UWrapBox;
 class USFGatheringPilotComponent;
+struct FSFCastView;
 
 // In-game HUD as Widget Blueprints on C++ bases (docs/blueprints/menus.md). C++ owns the data and rules here; WBP_Hud and its child
 // WBPs under /Game/Frontier/UI/Widgets/Hud own layout and look. Every BindWidget below must keep its name and type in the WBP.
@@ -215,6 +216,22 @@ private:
     FSFToastQueue Queue;
 };
 
+// Cast/channel data from the owner-replicated casting component. Layout belongs to WBP_HudCastBar.
+UCLASS(Abstract)
+class SHATTEREDFRONTIER_API USFHudCastBarWidget : public USFUiWidget
+{
+    GENERATED_BODY()
+public:
+    void Present(const FSFCastView& View, float Progress);
+    UPROPERTY(BlueprintReadOnly, Category="SF", meta=(BindWidget)) TObjectPtr<UProgressBar> CastProgress;
+    UPROPERTY(BlueprintReadOnly, Category="SF", meta=(BindWidget)) TObjectPtr<UTextBlock> AbilityName;
+    UPROPERTY(BlueprintReadOnly, Category="SF", meta=(BindWidget)) TObjectPtr<UTextBlock> CastState;
+private:
+    int32 LastLoggedQuarter = -1;
+    uint8 LastLoggedPhase = 0;
+    bool bLastLoggedInterrupted = false;
+};
+
 // The HUD root. Binds (required): Vitals (WBP_PlayerFrame), Target (WBP_TargetFrame; hidden without a target), Hotbar, Minimap, QuestTracker, Toasts;
 // optional PartyList (VerticalBox) and RaidGrid (WrapBox), empty and collapsed until a party system fills them. ASFPlayerController creates WBP_Hud and feeds it.
 UCLASS(Abstract)
@@ -227,6 +244,8 @@ public:
     // The player badge: the character level. SyncLevel (each tick) reads it from the pilot component and pushes only when it changes.
     void PresentLevel(int32 Level);
     void SyncLevel();
+    void SyncRestedMinutes();
+    UFUNCTION(BlueprintPure, Category="SF|Progression") double GetRestedMinutes() const { return ShownRestedMinutes; }
     void PresentQuests(const TArray<FSFQuestView>& Shown);
     void PushToast(const FString& Text);
     // Shows the target frame with this data, or hides it (bShow false).
@@ -244,6 +263,7 @@ public:
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidget)) TObjectPtr<USFHudMinimapWidget> Minimap;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidget)) TObjectPtr<USFHudQuestTrackerWidget> QuestTracker;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidget)) TObjectPtr<USFHudToastsWidget> Toasts;
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFHudCastBarWidget> CastBar;
 
     /** Where the WBP lives. */
     static constexpr const TCHAR* AssetPath = TEXT("/Game/Frontier/UI/Widgets/Hud/WBP_Hud.WBP_Hud_C");
@@ -257,4 +277,5 @@ private:
     USFUnitFrameWidget* MakeFrame(TSubclassOf<USFUnitFrameWidget>& Cached, const TCHAR* Path);
     UPROPERTY(Transient) TObjectPtr<USFGatheringPilotComponent> Pilot;
     int32 ShownLevel = 0;
+    double ShownRestedMinutes = 0;
 };

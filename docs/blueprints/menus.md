@@ -16,7 +16,8 @@ The always-on HUD is [ui-hud.md](ui-hud.md). Everything here is for screens the 
 
 | WBP | Required | Optional |
 | --- | --- | --- |
-| `WBP_Hud` (`USFHudWidget`) | `Vitals` (`WBP_PlayerFrame`), `Target` (`WBP_TargetFrame`, collapsed without a target), `Hotbar`, `Minimap`, `QuestTracker`, `Toasts` (the child WBP instances) | `PartyList` (VerticalBox, left, empty and collapsed), `RaidGrid` (WrapBox, empty and collapsed) |
+| `WBP_Hud` (`USFHudWidget`) | `Vitals` (`WBP_PlayerFrame`), `Target` (`WBP_TargetFrame`, collapsed without a target), `Hotbar`, `Minimap`, `QuestTracker`, `Toasts` (the child WBP instances) | `CastBar` (`WBP_HudCastBar`), `PartyList` (VerticalBox, left, empty and collapsed), `RaidGrid` (WrapBox, empty and collapsed) |
+| `WBP_HudCastBar` (`USFHudCastBarWidget`) | `CastProgress` (ProgressBar), `AbilityName`, `CastState` (TextBlocks) | |
 | `WBP_UnitFrame` (`USFUnitFrameWidget`) and its children | `HealthBar` (Image drawing the masked-fill material) | `LevelText`, `NameText`, `StaminaBar`, `HealthText`, `StaminaText`, `BadgeRoot` (the badge container), `StaminaRow` (the stamina row container) |
 | `WBP_HudHotbar` | `SlotRow` (HorizontalBox; its `WBP_Slot` children are keys 1-6 in order) | |
 | `WBP_HudMinimap` | | `ZoneText` |

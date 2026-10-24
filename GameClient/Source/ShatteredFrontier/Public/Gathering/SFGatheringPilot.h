@@ -315,6 +315,8 @@ public:
     // Server, INT-05 restore: the Progression character level (derived from lifetime XP by progression-service); owner-replicated for the HUD badge.
     void RestoreLevel(int32 ServiceLevel);
     int32 GetCharacterLevel() const { return CharacterLevel; }
+    double GetRestedMinutes() const { return RestedMinutes; }
+    void RestoreRestedMinutes(double ServiceMinutes);
     void RestoreKnownRecipes(const TArray<FString>& Recipes);
     void AddKnownRecipe(const FString& RecipeId);
     bool KnowsRecipe(const FSFStationRecipe& Recipe) const;
@@ -417,6 +419,7 @@ private:
     UPROPERTY(Transient) TObjectPtr<USFGatheringProgressionSettings> CapturedProgressionSettings;
     UPROPERTY(Replicated) FSFGatheringSkillSnapshot Skills;
     UPROPERTY(Replicated) int32 CharacterLevel = 1;
+    UPROPERTY(Replicated) double RestedMinutes = 0;
     UPROPERTY(Replicated) TArray<double> SkillLockReadyAt = {0,0,0,0,0,0};
     TArray<double> LocalSkillLockReadyAt = {0,0,0,0,0,0};
     TArray<bool> SkillLockPending = {false,false,false,false,false,false};

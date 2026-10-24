@@ -32,6 +32,7 @@ static const char* Progression_method_names[] = {
   "/sf.progression.v1.Progression/ReportDeath",
   "/sf.progression.v1.Progression/ClearDeath",
   "/sf.progression.v1.Progression/LearnRecipe",
+  "/sf.progression.v1.Progression/EndSession",
 };
 
 std::unique_ptr< Progression::Stub> Progression::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -48,6 +49,7 @@ Progression::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channe
   , rpcmethod_ReportDeath_(Progression_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_ClearDeath_(Progression_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_LearnRecipe_(Progression_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_EndSession_(Progression_method_names[7], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status Progression::Stub::CreateCharacter(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest& request, ::sf::progression::v1::CreateCharacterReply* response) {
@@ -211,6 +213,29 @@ void Progression::Stub::async::LearnRecipe(::grpc::ClientContext* context, const
   return result;
 }
 
+::grpc::Status Progression::Stub::EndSession(::grpc::ClientContext* context, const ::sf::progression::v1::EndSessionRequest& request, ::sf::progression::v1::EndSessionReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::progression::v1::EndSessionRequest, ::sf::progression::v1::EndSessionReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_EndSession_, context, request, response);
+}
+
+void Progression::Stub::async::EndSession(::grpc::ClientContext* context, const ::sf::progression::v1::EndSessionRequest* request, ::sf::progression::v1::EndSessionReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::progression::v1::EndSessionRequest, ::sf::progression::v1::EndSessionReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_EndSession_, context, request, response, std::move(f));
+}
+
+void Progression::Stub::async::EndSession(::grpc::ClientContext* context, const ::sf::progression::v1::EndSessionRequest* request, ::sf::progression::v1::EndSessionReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_EndSession_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::progression::v1::EndSessionReply>* Progression::Stub::PrepareAsyncEndSessionRaw(::grpc::ClientContext* context, const ::sf::progression::v1::EndSessionRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::progression::v1::EndSessionReply, ::sf::progression::v1::EndSessionRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_EndSession_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::progression::v1::EndSessionReply>* Progression::Stub::AsyncEndSessionRaw(::grpc::ClientContext* context, const ::sf::progression::v1::EndSessionRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncEndSessionRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 Progression::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Progression_method_names[0],
@@ -282,6 +307,16 @@ Progression::Service::Service() {
              ::sf::progression::v1::LearnRecipeReply* resp) {
                return service->LearnRecipe(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Progression_method_names[7],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Progression::Service, ::sf::progression::v1::EndSessionRequest, ::sf::progression::v1::EndSessionReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Progression::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::progression::v1::EndSessionRequest* req,
+             ::sf::progression::v1::EndSessionReply* resp) {
+               return service->EndSession(ctx, req, resp);
+             }, this)));
 }
 
 Progression::Service::~Service() {
@@ -330,6 +365,13 @@ Progression::Service::~Service() {
 }
 
 ::grpc::Status Progression::Service::LearnRecipe(::grpc::ServerContext* context, const ::sf::progression::v1::LearnRecipeRequest* request, ::sf::progression::v1::LearnRecipeReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Progression::Service::EndSession(::grpc::ServerContext* context, const ::sf::progression::v1::EndSessionRequest* request, ::sf::progression::v1::EndSessionReply* response) {
   (void) context;
   (void) request;
   (void) response;

@@ -226,8 +226,9 @@ void ASFPlayerController::TickInteraction()
         if (Pilot && Pilot->IsEnabled())
         {
             if (HudLayout) { HudLayout->Configure(Pilot); }
-            if (HudWidget) { HudWidget->Configure(Pilot); }
         }
+        // Progression state is restored on this component even in combat-only sessions.
+        if (HudWidget && Pilot) { HudWidget->Configure(Pilot); }
     }
     if (IsLocalController() && GetWorld()->GetTimeSeconds() >= NextLocalRefreshSeconds)
     {

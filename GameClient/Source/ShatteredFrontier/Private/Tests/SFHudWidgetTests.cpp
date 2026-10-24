@@ -9,6 +9,7 @@
 #include "Engine/Engine.h"
 #include "Framework/SFGameUserSettings.h"
 #include "Misc/AutomationTest.h"
+#include "Combat/SFCastingComponent.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFHudWidgetTest,
     "ShatteredFrontier.Hud.Widget",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
@@ -165,6 +166,54 @@ bool FSFHudLevelTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("A level-up reaches the badge"),Hud->Vitals->LevelText->GetText().ToString(),FString(TEXT("13")));
     Hud->PresentTarget(true,TEXT("Boar"),0,30,60);
     TestEqual(TEXT("A target without a level collapses its numeral"),Hud->Target->LevelText->GetVisibility(),ESlateVisibility::Collapsed);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFHudRestedTest,
+    "ShatteredFrontier.Hud.Rested",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FSFHudRestedTest::RunTest(const FString& Parameters)
+{
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) return false;
+    UWorld* World = Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
+    ASFPlayerController* PC = World->SpawnActor<ASFPlayerController>();
+    USFGatheringPilotComponent* Pilot = PC ? PC->FindComponentByClass<USFGatheringPilotComponent>() : nullptr;
+    const TSubclassOf<USFHudWidget> HudClass = LoadClass<USFHudWidget>(nullptr, USFHudWidget::AssetPath);
+    USFHudWidget* Hud = HudClass ? CreateWidget<USFHudWidget>(World, HudClass) : nullptr;
+    if (!TestNotNull(TEXT("Pilot"), Pilot) || !TestNotNull(TEXT("HUD"), Hud)) return false;
+    Hud->Configure(Pilot);
+    Pilot->RestoreRestedMinutes(37.5);
+    Hud->SyncRestedMinutes();
+    TestEqual(TEXT("Owner progression pool reaches HUD API"), Hud->GetRestedMinutes(), 37.5);
+    Pilot->RestoreRestedMinutes(-4);
+    Hud->SyncRestedMinutes();
+    TestEqual(TEXT("Invalid negative pool is clamped"), Hud->GetRestedMinutes(), 0.0);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFHudCastBarTest,
+    "ShatteredFrontier.Hud.CastBar",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FSFHudCastBarTest::RunTest(const FString& Parameters)
+{
+    UWorld* World = GEditor ? GEditor->GetEditorWorldContext().World() : nullptr;
+    const TSubclassOf<USFHudWidget> HudClass = LoadClass<USFHudWidget>(nullptr, USFHudWidget::AssetPath);
+    USFHudWidget* Hud = World && HudClass ? CreateWidget<USFHudWidget>(World, HudClass) : nullptr;
+    if (!TestNotNull(TEXT("HUD"), Hud) || !TestNotNull(TEXT("CastBar bound"), Hud->CastBar.Get())) return false;
+    FSFCastView View; View.Phase = ESFCastPhase::Casting; View.AbilityId = 1;
+    Hud->CastBar->Present(View, 0.25f);
+    TestEqual(TEXT("Cast progress"), Hud->CastBar->CastProgress->GetPercent(), 0.25f);
+    TestEqual(TEXT("Ability name"), Hud->CastBar->AbilityName->GetText().ToString(), FString(TEXT("Training Cast")));
+    View.Phase = ESFCastPhase::Channeling; View.AbilityId = 2;
+    Hud->CastBar->Present(View, 0.75f);
+    TestEqual(TEXT("Channel progress"), Hud->CastBar->CastProgress->GetPercent(), 0.75f);
+    TestEqual(TEXT("Channel state"), Hud->CastBar->CastState->GetText().ToString(), FString(TEXT("Channeling")));
+    View.Phase = ESFCastPhase::Idle; View.bInterrupted = true;
+    Hud->CastBar->Present(View, 0.f);
+    TestEqual(TEXT("Interrupted state"), Hud->CastBar->CastState->GetText().ToString(), FString(TEXT("Interrupted")));
+    TestNotEqual(TEXT("Interrupted remains visible"), Hud->CastBar->GetVisibility(), ESlateVisibility::Collapsed);
+    View.bInterrupted = false;
+    Hud->CastBar->Present(View, 0.f);
+    TestEqual(TEXT("Idle hides cast bar"), Hud->CastBar->GetVisibility(), ESlateVisibility::Collapsed);
     return true;
 }
 

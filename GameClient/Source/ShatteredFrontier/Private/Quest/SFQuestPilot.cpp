@@ -550,6 +550,11 @@ void USFQuestPilotComponent::PumpServices()
         FEntry* Entry = Event.QuestId.IsEmpty() ? nullptr : Self->Find(Event.QuestId);
         if (R.Status == ESFGameplayStatus::Ok)
         {
+            if (R.bProgressionApplied)
+            {
+                if (auto* Pilot = Self->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>())
+                { Pilot->RestoreLevel(R.Level); Pilot->RestoreRestedMinutes(R.RestedMinutes); }
+            }
             if (R.ProgressionRevision > 0) { Self->ProgressionRevision = R.ProgressionRevision; }
             if (R.Level > 0)
             { if (auto* Pilot = Self->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>()) { Pilot->RestoreLevel(R.Level); } }
@@ -608,6 +613,8 @@ void USFQuestPilotComponent::PumpServices()
                 if (State.Status == ESFGameplayStatus::Ok)
                 {
                     Again->ProgressionRevision = State.ProgressionRevision;
+                    if (auto* Pilot = Again->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>())
+                    { Pilot->RestoreLevel(State.Level); Pilot->RestoreRestedMinutes(State.RestedMinutes); }
                     for (const FSFGameplayResponse::FQuestState& Row : State.Quests)
                     { if (FEntry* Stale = Again->Find(Row.QuestId); Stale && Row.QuestId == Event.QuestId) { Stale->Revision = Row.Revision; } }
                 }
@@ -652,7 +659,8 @@ void USFQuestPilotComponent::Refresh()
         if (State.Status == ESFGameplayStatus::Ok && !Self->HasPendingServiceWork())
         {
             Self->Restore(State.Quests, State.ProgressionRevision);
-            if (auto* Gathering = Self->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>()) Gathering->RestoreSkills(State.Skills);
+            if (auto* Gathering = Self->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>())
+            { Gathering->RestoreSkills(State.Skills); Gathering->RestoreLevel(State.Level); Gathering->RestoreRestedMinutes(State.RestedMinutes); }
         }
     });
 }

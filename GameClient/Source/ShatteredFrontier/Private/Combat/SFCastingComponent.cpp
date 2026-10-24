@@ -139,6 +139,7 @@ void USFCastingComponent::TryUse(uint8 AbilityId)
     const auto Result = State.Request(Definition(AbilityId), Now(), HasteFraction, Tune);
     if (Result == SFCastRules::EStart::Started)
     {
+        View.bInterrupted = false;
         Resource -= ResourceCost;
         StartLocation = Owner->GetActorLocation();
         Target = Best;
@@ -201,6 +202,7 @@ void USFCastingComponent::TickComponent(float Dt, ELevelTick TickType, FActorCom
                 Tune.MoveToleranceCm, Definition(State.ActiveId).bCastWhileMoving))
         {
             Resource = FMath::Min(ResourceMax, Resource + SFCastRules::Refund(ResourceCost, true, CancelRefundPercent));
+            View.bInterrupted = true;
             State.Cancel(); State.QueuedId = 0; SyncView();
             UE_LOG(LogTemp, Display, TEXT("CASTING_SERVER_CANCEL Cause=MovementOrControl"));
         }
@@ -214,6 +216,7 @@ void USFCastingComponent::TickComponent(float Dt, ELevelTick TickType, FActorCom
             if (bCast && bCompleted) ResolveTick(Id);
             if (Due || bCompleted)
             {
+                if (bCompleted) View.bInterrupted = false;
                 SyncView();
                 if (bCompleted) UE_LOG(LogTemp, Display, TEXT("CASTING_SERVER_COMPLETE Ability=%d"), Id);
             }
@@ -248,6 +251,7 @@ void USFCastingComponent::ServerCancelCast_Implementation()
 {
     if (State.Phase == SFCastRules::EPhase::Idle) return;
     Resource = FMath::Min(ResourceMax, Resource + SFCastRules::Refund(ResourceCost, false, CancelRefundPercent));
+    View.bInterrupted = true;
     State.Cancel(); State.QueuedId = 0; SyncView();
 }
 
@@ -256,6 +260,7 @@ void USFCastingComponent::Interrupt()
     if (!GetOwner()->HasAuthority() || State.Phase == SFCastRules::EPhase::Idle) return;
     Resource = FMath::Min(ResourceMax, Resource + SFCastRules::Refund(ResourceCost, true, CancelRefundPercent));
     State.Interrupt(Now(), LockoutSeconds, 1);
+    View.bInterrupted = true;
     SyncView();
 }
 
@@ -268,7 +273,7 @@ void USFCastingComponent::NotifyDamage()
 void USFCastingComponent::SyncView()
 {
     View.Phase = static_cast<ESFCastPhase>(State.Phase);
-    View.AbilityId = State.ActiveId;
+    if (State.Phase != SFCastRules::EPhase::Idle || !View.bInterrupted) View.AbilityId = State.ActiveId;
     View.StartedAt = State.StartedAt;
     View.EndsAt = State.EndsAt;
     View.GcdEndsAt = State.GcdEndsAt;

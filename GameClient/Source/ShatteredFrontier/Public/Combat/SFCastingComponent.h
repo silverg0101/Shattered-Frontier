@@ -50,6 +50,7 @@ struct FSFCastView
     UPROPERTY(BlueprintReadOnly) float EndsAt = 0;
     UPROPERTY(BlueprintReadOnly) float GcdEndsAt = 0;
     UPROPERTY(BlueprintReadOnly) int32 TicksDone = 0;
+    UPROPERTY(BlueprintReadOnly) bool bInterrupted = false;
 };
 
 /** Lives on ASFE1Character. Only the server changes timing or target health. */

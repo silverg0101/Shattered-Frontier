@@ -2,6 +2,8 @@
 
 #include "Characters/SFE1VitalsHud.h"
 #include "Combat/SFCombatPilot.h"
+#include "Combat/SFCastingComponent.h"
+#include "Characters/SFE1Character.h"
 #include "Framework/SFPlayerController.h"
 #include "Townsfolk/SFTownsfolk.h"
 #include "Components/WrapBox.h"
@@ -22,6 +24,8 @@
 #include "GameFramework/PlayerState.h"
 #include "Gathering/SFStationRecipes.h"
 #include "Inventory/SFInventory.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
 
 using namespace SFHudStyle;
 
@@ -436,6 +440,35 @@ void USFHudToastsWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
 
 // ---- root
 
+void USFHudCastBarWidget::Present(const FSFCastView& View, float Progress)
+{
+    const bool bActive = View.Phase != ESFCastPhase::Idle;
+    SetVisibility(bActive || View.bInterrupted ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+    if (!bActive && !View.bInterrupted) return;
+    if (CastProgress) CastProgress->SetPercent(FMath::Clamp(Progress, 0.f, 1.f));
+    if (AbilityName)
+    {
+        const TCHAR* Name = View.AbilityId == 1 ? TEXT("Training Cast") : View.AbilityId == 2 ? TEXT("Training Channel") : TEXT("Ability");
+        AbilityName->SetText(FText::FromString(Name));
+    }
+    if (CastState)
+    {
+        CastState->SetText(FText::FromString(View.bInterrupted ? TEXT("Interrupted")
+            : View.Phase == ESFCastPhase::Channeling ? TEXT("Channeling") : TEXT("Casting")));
+    }
+    if (FParse::Param(FCommandLine::Get(), TEXT("CastingScenario")))
+    {
+        const int32 Quarter = FMath::Clamp(FMath::FloorToInt(Progress * 4.f), 0, 4);
+        const uint8 Phase = static_cast<uint8>(View.Phase);
+        if (Quarter != LastLoggedQuarter || Phase != LastLoggedPhase || View.bInterrupted != bLastLoggedInterrupted)
+        {
+            UE_LOG(LogTemp, Display, TEXT("CASTING_HUD Phase=%d Ability=%d Progress=%.2f Interrupted=%d"),
+                Phase, View.AbilityId, Progress, View.bInterrupted);
+            LastLoggedQuarter = Quarter; LastLoggedPhase = Phase; bLastLoggedInterrupted = View.bInterrupted;
+        }
+    }
+}
+
 void USFHudWidget::PresentVitals(int32 Health, int32 MaxHealth, int32 Stamina, int32 MaxStamina)
 {
     if (Vitals) { Vitals->SetVitals(Health, MaxHealth, Stamina, MaxStamina); }
@@ -449,6 +482,11 @@ void USFHudWidget::PresentLevel(int32 Level)
 void USFHudWidget::SyncLevel()
 {
     if (Pilot && Pilot->GetCharacterLevel() != ShownLevel) { ShownLevel = Pilot->GetCharacterLevel(); PresentLevel(ShownLevel); }
+}
+
+void USFHudWidget::SyncRestedMinutes()
+{
+    if (Pilot) ShownRestedMinutes = Pilot->GetRestedMinutes();
 }
 
 void USFHudWidget::PresentTarget(bool bShow, const FString& Name, int32 Level, int32 Health, int32 MaxHealth)
@@ -505,6 +543,14 @@ void USFHudWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
     SyncLevel();
+    SyncRestedMinutes();
+    if (CastBar)
+    {
+        const ASFE1Character* Hero = Cast<ASFE1Character>(GetOwningPlayerPawn());
+        const USFCastingComponent* Casting = Hero ? Hero->Casting : nullptr;
+        if (Casting) CastBar->Present(Casting->GetCastView(), Casting->GetCastProgress());
+        else CastBar->SetVisibility(ESlateVisibility::Collapsed);
+    }
     if (Hotbar) { Hotbar->Present(USFHudHotbarWidget::StockOf(GetOwningPlayer())); }
     // Target frame: the controller's selected combat target (boar or townsfolk), hidden while the station panel is open.
     const ASFPlayerController* Player = Cast<ASFPlayerController>(GetOwningPlayer());

@@ -335,7 +335,7 @@ void UnitFrameLayout(UWidgetTree* T)
     AddUnitParts(T, nullptr);
 }
 
-// Hud additions: Target (WBP_TargetFrame, top centre, hidden), PartyList (left, empty) and RaidGrid (empty). True when something was added.
+// Hud additions preserve the owner's existing placement; CastBar is only a functional placeholder for Designer layout.
 bool AddHudParts(UWidgetTree* T, UCanvasPanel* Root, UWidgetBlueprint* Blueprint)
 {
     bool bChanged = false;
@@ -366,6 +366,17 @@ bool AddHudParts(UWidgetTree* T, UCanvasPanel* Root, UWidgetBlueprint* Blueprint
         Anchor(Root, Grid, 0.02f, 0.45f, 0.f, 0.f);
         if (Blueprint) { Blueprint->OnVariableAdded(Grid->GetFName()); }
         bChanged = true;
+    }
+    if (!T->FindWidget(TEXT("CastBar")))
+    {
+        if (UClass* Class = SharedClass(HudDir, TEXT("WBP_HudCastBar")))
+        {
+            UUserWidget* Bar = T->ConstructWidget<UUserWidget>(TSubclassOf<UUserWidget>(Class), FName(TEXT("CastBar")));
+            Bar->bIsVariable = true; Bar->SetVisibility(ESlateVisibility::Collapsed);
+            Anchor(Root, Bar, 0.5f, 0.82f, 0.5f, 0.5f);
+            if (Blueprint) Blueprint->OnVariableAdded(Bar->GetFName());
+            bChanged = true;
+        }
     }
     return bChanged;
 }
@@ -611,6 +622,20 @@ UProgressBar* FillBar(UWidgetTree* T, const TCHAR* Name, const FSlateBrush& Fill
     Bar->SetWidgetStyle(Style);
     Bar->SetPercent(0.f);
     return Bar;
+}
+
+void CastBarLayout(UWidgetTree* T)
+{
+    UVerticalBox* Root = A<UVerticalBox>(T);
+    Root->AddChildToVerticalBox(Txt(T, TEXT("AbilityName"), TEXT("Training Cast")));
+    UOverlay* Track = A<UOverlay>(T);
+    Track->AddChildToOverlay(Piece(T, nullptr, TEXT("bar_channel_back"), 320.f, 30.f));
+    const FSFHudKitElement* FillArt = Kit(TEXT("bar_channel_fill"));
+    Put(Track, FillBar(T, TEXT("CastProgress"), FillArt ? KitBrush(*FillArt) : FSlateBrush()), HAlign_Fill, VAlign_Fill);
+    Track->AddChildToOverlay(Piece(T, nullptr, TEXT("bar_channel_frame"), 320.f, 30.f));
+    Root->AddChildToVerticalBox(Track);
+    Root->AddChildToVerticalBox(Txt(T, TEXT("CastState"), TEXT("Casting")));
+    T->RootWidget = Root;
 }
 
 // WBP_Separator: a thin brass rule; the horizontal brush is the seed, the vertical one is a class default picked by bVertical.
@@ -2108,6 +2133,7 @@ TArray<FSpec> Specs()
         {UnitFramesDir, TEXT("WBP_PartyFrame"), nullptr, nullptr, Parts(true, true, true, false), TEXT("WBP_UnitFrame")},
         {UnitFramesDir, TEXT("WBP_RaidFrame"), nullptr, nullptr, Parts(false, true, false, false), TEXT("WBP_UnitFrame")},
         {HudDir, TEXT("WBP_HudHotbar"), USFHudHotbarWidget::StaticClass(), HotbarLayout, nullptr},
+        {HudDir, TEXT("WBP_HudCastBar"), USFHudCastBarWidget::StaticClass(), CastBarLayout, nullptr},
         {HudDir, TEXT("WBP_HudMinimap"), USFHudMinimapWidget::StaticClass(), MinimapLayout, nullptr},
         {HudDir, TEXT("WBP_HudQuestTracker"), USFHudQuestTrackerWidget::StaticClass(), QuestTrackerLayout, nullptr},
         {HudDir, TEXT("WBP_HudToasts"), USFHudToastsWidget::StaticClass(), ToastsLayout, nullptr},

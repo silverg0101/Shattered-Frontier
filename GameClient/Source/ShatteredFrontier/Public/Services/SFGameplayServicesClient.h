@@ -43,7 +43,7 @@ public:
     bool Validate(FString& Error) const;
 };
 
-enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, CreateCharacter, LearnRecipe, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition, ReportDeath, ClearDeath,
+enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, EndSession, CreateCharacter, LearnRecipe, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition, ReportDeath, ClearDeath,
     // Exchange (proto/sf/exchange/v1), carried by the Backend transport over the same Gameplay.Host channel.
     ExchangeWallet, OfferTrade, AcceptTrade, CancelTrade, ListItem, BuyListing, CancelListing, ListListings,
     GetGatheringNode, ListGatheringZoneNodes, HarvestGatheringNode, AdvanceWorldSlots };
@@ -81,6 +81,7 @@ struct FSFGameplayRequest
     // Progression
     FString Kind;                 // gather | craft | defeat | quest
     int64 ExpectedProgressionRevision = 0, ExpectedQuestRevision = 0;
+    bool bSessionEnd = false, bInRestArea = false;
     FString SkillId; int32 Difficulty = 0; double ActionSeconds = 0; uint64 ContextHash = 0; bool bSuccess = true;
     int32 EnemyLevel = 0; double EnemyTierMultiplier = 0; int32 PartySize = 0; int32 ReferencePartyLevel = 0;
     bool bHasQuest = false;
@@ -116,6 +117,7 @@ struct FSFGameplayResponse
     bool bProgressionApplied = false, bQuestAccepted = false, bQuestCompleted = false;
     int32 SkillGain = 0, XpGain = 0, Level = 0;
     int64 ProgressionRevision = 0, QuestRevision = 0;
+    double RestedMinutes = 0;
     int64 AppearanceRevision = 0;  // CreateCharacter
     FString ActiveStepId; TArray<FString> RewardBundleIds; TMap<FString, int32> Skills;
     TMap<FString, int64> GrantedItems;  // the quest payout lines committed with this receipt
