@@ -1,4 +1,6 @@
 #include "Framework/SFGameMode.h"
+#include "FrontEnd/SFFrontEnd.h"
+#include "Services/SFBackpackComponent.h"
 #include "Framework/SFPlayerController.h"
 #include "Construction/SFConstructionNetwork.h"
 #include "Characters/SFE1Character.h"
@@ -12,6 +14,71 @@
 #include "TimerManager.h"
 #include "ProfilingDebugging/CsvProfiler.h"
 #include "Tests/SFE1NetworkScenario.h"
+#include "HttpModule.h"
+#include "Interfaces/IHttpRequest.h"
+#include "Interfaces/IHttpResponse.h"
+#include "Dom/JsonObject.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
+#include "Kismet/GameplayStatics.h"
+#include "Misc/SecureHash.h"
+
+FString ASFGameMode::TakeGatewayCharacter(const FString& Ticket)
+{
+    FString Id;
+    PendingGatewayCharacters.RemoveAndCopyValue(FMD5::HashAnsiString(*Ticket), Id);
+    return Id;
+}
+
+bool ASFGameMode::UsesGatewayAdmission() const
+{
+#if UE_BUILD_SHIPPING
+    return true;
+#else
+    return GetDefault<USFFrontEndSettings>()->IdentitySource == ESFFrontEndIdentitySource::Gateway ||
+        FParse::Param(FCommandLine::Get(), TEXT("SFIdentityGateway"));
+#endif
+}
+
+void ASFGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
+{
+    Super::PreLogin(Options, Address, UniqueId, ErrorMessage);
+    if (!ErrorMessage.IsEmpty() || !UsesGatewayAdmission()) { return; }
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    const FString Dev = UGameplayStatics::ParseOption(Options, TEXT("SFDevCharacter"));
+    if (IsAdmitted() && FParse::Param(FCommandLine::Get(), TEXT("SFDevIdentity")) && USFBackpackComponent::IsValidDevName(Dev)) { return; }
+#endif
+    const FString Ticket = UGameplayStatics::ParseOption(Options, TEXT("SFIdentityTicket"));
+    if (Ticket.IsEmpty() || Ticket.Len() > 4096) { ErrorMessage = TEXT("A valid world ticket is required."); UE_LOG(LogTemp, Warning, TEXT("GATEWAY_TICKET_REJECTED Reason=missing")); return; }
+    const FString Key = FPlatformMisc::GetEnvironmentVariable(TEXT("SF_IDENTITY_VERIFIER_KEY"));
+    const FString Url = GetDefault<USFFrontEndSettings>()->SafeGatewayBaseUrl();
+    if (Key.Len() < 32 || Url.IsEmpty()) { ErrorMessage = TEXT("World admission is unavailable."); UE_LOG(LogTemp, Warning, TEXT("GATEWAY_TICKET_REJECTED Reason=config")); return; }
+    TSharedRef<FJsonObject> Payload = MakeShared<FJsonObject>();
+    Payload->SetStringField(TEXT("ticket"), Ticket);
+    Payload->SetStringField(TEXT("server_id"), GetDefault<USFFrontEndSettings>()->WorldServerId);
+    FString Body;
+    FJsonSerializer::Serialize(Payload, TJsonWriterFactory<>::Create(&Body));
+    TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FHttpModule::Get().CreateRequest();
+    Request->SetURL(Url + TEXT("/v1/world/verify-ticket"));
+    Request->SetVerb(TEXT("POST"));
+    Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+    Request->SetHeader(TEXT("X-World-Verifier-Key"), Key);
+    Request->SetContentAsString(Body);
+    Request->SetTimeout(4.f);
+    Request->ProcessRequestUntilComplete();
+    const FHttpResponsePtr Response = Request->GetResponse();
+    TSharedPtr<FJsonObject> Result;
+    if (!Response.IsValid() || Response->GetResponseCode() != 200 ||
+        !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Response->GetContentAsString()), Result) || !Result.IsValid())
+    { ErrorMessage = TEXT("World ticket was rejected."); UE_LOG(LogTemp, Warning, TEXT("GATEWAY_TICKET_REJECTED Reason=verify")); return; }
+    FString CharacterId;
+    if (!Result->TryGetStringField(TEXT("character_id"), CharacterId) || !CharacterId.StartsWith(TEXT("chr_")) || CharacterId.Len() > 80)
+    { ErrorMessage = TEXT("World ticket was rejected."); UE_LOG(LogTemp, Warning, TEXT("GATEWAY_TICKET_REJECTED Reason=claims")); return; }
+    const FString TicketHash = FMD5::HashAnsiString(*Ticket);
+    PendingGatewayCharacters.Add(TicketHash, CharacterId);
+    FTimerHandle Expiry;
+    GetWorldTimerManager().SetTimer(Expiry, FTimerDelegate::CreateWeakLambda(this, [this, TicketHash]() { PendingGatewayCharacters.Remove(TicketHash); }), 120.f, false);
+}
 
 ASFGameMode::ASFGameMode()
 {

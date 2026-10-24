@@ -1,4 +1,5 @@
 #include "FrontEnd/SFFrontEnd.h"
+#include "FrontEnd/SFFrontEndGateway.h"
 #include "Services/SFGameplayServicesClient.h"
 
 #include "Dom/JsonObject.h"
@@ -13,6 +14,26 @@
 
 FString USFFrontEndSettings::SafeRealmName() const { return RealmName.IsEmpty() ? FString(TEXT("Realm")) : RealmName.Left(40); }
 FString USFFrontEndSettings::SafeNewsBody() const { return NewsBody.Left(240); }
+FString USFFrontEndSettings::SafeGatewayBaseUrl() const
+{
+    FString Url = GatewayBaseUrl.TrimStartAndEnd();
+    while (Url.EndsWith(TEXT("/"))) { Url.LeftChopInline(1); }
+    if (Url.Len() > 256 || Url.Contains(TEXT("?")) || Url.Contains(TEXT("#")) || Url.Contains(TEXT("@")) || Url.Contains(TEXT("\\")) || Url.Contains(TEXT(" "))) { return {}; }
+    const bool bTls = Url.StartsWith(TEXT("https://"));
+    const bool bHttp = Url.StartsWith(TEXT("http://"));
+    if (!bTls && !bHttp) { return {}; }
+    const FString Authority = Url.RightChop(bTls ? 8 : 7);
+    if (Authority.IsEmpty() || Authority.Contains(TEXT("/"))) { return {}; }
+    if (bHttp)
+    {
+        FString Host, Port;
+        if (!Authority.Split(TEXT(":"), &Host, &Port) || (Host != TEXT("127.0.0.1") && Host != TEXT("localhost")) || Port.IsEmpty()) { return {}; }
+        for (TCHAR C : Port) { if (C < '0' || C > '9') { return {}; } }
+        const int32 Number = FCString::Atoi(*Port);
+        if (Number < 1 || Number > 65535) { return {}; }
+    }
+    return Url;
+}
 
 namespace
 {
@@ -59,7 +80,8 @@ bool SFFrontEnd::ValidateCharacterName(const FString& Name, FString& OutError)
 
 bool SFFrontEnd::ValidateAccountName(const FString& Name, FString& OutError)
 {
-    if (Name.Len() < 3 || Name.Len() > 24) { OutError = TEXT("An account name is 3 to 24 characters."); return false; }
+    if (Name.Len() < 3 || Name.Len() > 32) { OutError = TEXT("An account name is 3 to 32 characters."); return false; }
+    if (!FChar::IsAlpha(Name[0]) || Name[0] > 127) { OutError = TEXT("Start the account name with a letter."); return false; }
     for (const TCHAR C : Name)
     {
         if (!((C >= 'a' && C <= 'z') || (C >= 'A' && C <= 'Z') || (C >= '0' && C <= '9') || C == '_')) { OutError = TEXT("Use letters, digits and underscores only."); return false; }
@@ -389,9 +411,15 @@ private:
 
 TSharedRef<ISFFrontEndIdentity> SFMakeFrontEndIdentity()
 {
+#if UE_BUILD_SHIPPING
+    return SFMakeGatewayIdentity(SFMakeIdentityHttp(GetDefault<USFFrontEndSettings>()->SafeGatewayBaseUrl()));
+#else
+    if (GetDefault<USFFrontEndSettings>()->IdentitySource == ESFFrontEndIdentitySource::Gateway)
+    { return SFMakeGatewayIdentity(SFMakeIdentityHttp(GetDefault<USFFrontEndSettings>()->SafeGatewayBaseUrl())); }
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     return MakeShared<FDevIdentity>();
 #else
     return MakeShared<FUnavailableIdentity>();
+#endif
 #endif
 }

@@ -1,4 +1,5 @@
 #include "FrontEnd/SFFrontEnd.h"
+#include "FrontEnd/SFFrontEndGateway.h"
 #include "Services/SFGameplayServicesClient.h"
 #include "FrontEnd/SFFrontEndWidgets.h"
 
@@ -59,6 +60,8 @@ bool FSFFrontEndNameTest::RunTest(const FString& Parameters)
     TestTrue(TEXT("Account name"), SFFrontEnd::ValidateAccountName(TEXT("greg_01"), Error));
     TestFalse(TEXT("Account with a space"), SFFrontEnd::ValidateAccountName(TEXT("greg 01"), Error));
     TestFalse(TEXT("Short account"), SFFrontEnd::ValidateAccountName(TEXT("ab"), Error));
+    TestFalse(TEXT("Account starts with a digit"), SFFrontEnd::ValidateAccountName(TEXT("1alice"), Error));
+    TestTrue(TEXT("Gateway accepts 32 characters"), SFFrontEnd::ValidateAccountName(TEXT("abcdefghabcdefghabcdefghabcdefgh"), Error));
     return true;
 }
 
@@ -206,6 +209,67 @@ bool FSFFrontEndIdentityTest::RunTest(const FString& Parameters)
     return true;
 }
 #endif
+
+namespace
+{
+class FFakeIdentityHttp final : public ISFIdentityHttp
+{
+public:
+    TArray<FSFIdentityHttpReply> Replies;
+    TArray<FString> Paths;
+    TArray<FString> Bodies;
+    TArray<FString> Bearers;
+    void Send(const FString&, const FString& Path, const FString& Body, const FString& Bearer,
+        TFunction<void(FSFIdentityHttpReply)> Done) override
+    {
+        Paths.Add(Path); Bodies.Add(Body); Bearers.Add(Bearer);
+        FSFIdentityHttpReply Reply;
+        if (!Replies.IsEmpty()) { Reply = Replies[0]; Replies.RemoveAt(0); }
+        Done(MoveTemp(Reply));
+    }
+};
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFFrontEndGatewayTest, "ShatteredFrontier.FrontEnd.Gateway", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSFFrontEndGatewayTest::RunTest(const FString& Parameters)
+{
+    TSharedRef<FFakeIdentityHttp> Http = MakeShared<FFakeIdentityHttp>();
+    TSharedRef<ISFFrontEndIdentity> Identity = SFMakeGatewayIdentity(Http);
+    Http->Replies = {{200, TEXT("{\"login_id\":\"login_1\"}")}, {200, TEXT("{\"session_token\":\"opaque-session\"}")},
+        {200, TEXT("{\"characters\":[{\"character_id\":\"chr_1\",\"name\":\"Aldren\"}]}")},
+        {201, TEXT("{\"character_id\":\"chr_2\",\"name\":\"Mira\"}")},
+        {200, TEXT("{\"address\":\"127.0.0.1:7777\",\"ticket\":\"opaque.ticket\"}")}};
+    bool Ok = false;
+    Identity->SignIn(TEXT("alice"), TEXT("private-password"), [&Ok](bool bOk, const FString&, const FString&) { Ok = bOk; });
+    TestTrue(TEXT("Two-step login succeeds"), Ok);
+    TestEqual(TEXT("Login begin route"), Http->Paths[0], FString(TEXT("/v1/login/begin")));
+    TestEqual(TEXT("Login complete route"), Http->Paths[1], FString(TEXT("/v1/login/complete")));
+    TestFalse(TEXT("Password absent from complete request"), Http->Bodies[1].Contains(TEXT("private-password")));
+    TArray<FSFCharacterSummary> Characters;
+    Identity->ListCharacters([&](bool bOk, const TArray<FSFCharacterSummary>& List, const FString&) { Ok = bOk; Characters = List; });
+    TestTrue(TEXT("List succeeds"), Ok);
+    TestEqual(TEXT("One character"), Characters.Num(), 1);
+    TestEqual(TEXT("Session sent as bearer"), Http->Bearers[2], FString(TEXT("opaque-session")));
+    FSFCharacterSummary Made;
+    Identity->CreateCharacter(TEXT("Mira"), FSFAppearance(), [&](bool bOk, const FSFCharacterSummary& Created, const FString&) { Ok = bOk; Made = Created; });
+    TestTrue(TEXT("Creation succeeds"), Ok);
+    TestEqual(TEXT("New character ID"), Made.Id, FString(TEXT("chr_2")));
+    FString Url;
+    Identity->EnterWorld(Made, [&](bool bOk, const FString& Travel, const FString&) { Ok = bOk; Url = Travel; });
+    TestTrue(TEXT("Enter succeeds"), Ok);
+    TestEqual(TEXT("Travel carries ticket"), Url, FString(TEXT("127.0.0.1:7777?SFIdentityTicket=opaque.ticket")));
+    Http->Replies = {{401, TEXT("{\"reason\":\"SESSION_EXPIRED\"}")}};
+    Identity->ListCharacters([&](bool bOk, const TArray<FSFCharacterSummary>&, const FString&) { Ok = bOk; });
+    TestFalse(TEXT("Expired session fails closed"), Ok);
+    Http->Replies = {{503, TEXT("{\"reason\":\"UNAVAILABLE\"}")}};
+    Identity->EnterWorld(Made, [&](bool bOk, const FString&, const FString&) { Ok = bOk; });
+    TestFalse(TEXT("Ticket issue failure does not travel"), Ok);
+    Http->Replies = {{401, TEXT("{\"reason\":\"TICKET_EXPIRED\"}")}};
+    Identity->EnterWorld(Made, [&](bool bOk, const FString&, const FString&) { Ok = bOk; });
+    TestFalse(TEXT("Expired ticket response does not travel"), Ok);
+    Identity->SignOut();
+    return true;
+}
 
 #if WITH_EDITOR
 #include "Blueprint/UserWidget.h"

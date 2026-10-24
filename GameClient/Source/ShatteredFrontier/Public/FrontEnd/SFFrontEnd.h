@@ -6,6 +6,9 @@
 
 class FJsonObject;
 
+UENUM()
+enum class ESFFrontEndIdentitySource : uint8 { DevStore, Gateway };
+
 // Front end (title, sign-in, character select, character creator): pure model, settings and the identity interface. No UObject state
 // here except the settings, so the flow and the validators are tested without a world. Widgets: FrontEnd/SFFrontEndWidgets.h; the scene and
 // the screen flow: FrontEnd/SFFrontEndController.h. Design: docs/decisions/CHR-01-character-creation-and-appearance.md section 3.6 and the
@@ -17,6 +20,15 @@ class SHATTEREDFRONTIER_API USFFrontEndSettings : public UDeveloperSettings
 {
     GENERATED_BODY()
 public:
+    UPROPERTY(Config, EditAnywhere, Category = "Front End|Identity", meta = (ToolTip = "Development uses the local store by default. Shipping always uses the gateway."))
+    ESFFrontEndIdentitySource IdentitySource = ESFFrontEndIdentitySource::DevStore;
+
+    UPROPERTY(Config, EditAnywhere, Category = "Front End|Identity", meta = (ToolTip = "Gateway root URL. HTTPS is required except for loopback development."))
+    FString GatewayBaseUrl = TEXT("http://127.0.0.1:5084");
+
+    UPROPERTY(Config, EditAnywhere, Category = "Front End|Identity", meta = (ToolTip = "Server binding expected in enter-world tickets."))
+    FString WorldServerId = TEXT("srvi_dev_local");
+
     UPROPERTY(Config, EditAnywhere, Category = "Front End", meta = (ToolTip = "Realm line on the title, character select and account screens (dev text until the gateway reports realms)."))
     FString RealmName = TEXT("Greenlands Realm");
 
@@ -54,6 +66,7 @@ public:
     FString SafeRealmName() const;
     FString SafeNewsBody() const;
     int32 SafeSlots() const { return FMath::Clamp(MaxCharacterSlots, 1, 8); }
+    FString SafeGatewayBaseUrl() const;
 };
 
 namespace SFFrontEnd
@@ -61,7 +74,7 @@ namespace SFFrontEnd
 // Backend 4.3 (client pre-check; the server is authoritative: NFKC folding, confusable skeletons and the full denylist run there).
 // 3-16 characters, starts with a letter, letters plus at most one apostrophe or hyphen, one script, no reserved staff prefix.
 SHATTEREDFRONTIER_API bool ValidateCharacterName(const FString& Name, FString& OutError);
-// Dev account names: 3-24 of [A-Za-z0-9_].
+// Gateway account names: 3-32 ASCII letters, digits and underscores, beginning with a letter.
 SHATTEREDFRONTIER_API bool ValidateAccountName(const FString& Name, FString& OutError);
 struct FFaceChoice { FString Id; int32 Index = INDEX_NONE; };
 // Ordered entries from content/appearance/human.json, filtered by body.

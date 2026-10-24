@@ -51,11 +51,26 @@ void USFBackpackComponent::AssignDevIdentity(APlayerController* Controller, cons
     UE_LOG(LogTemp, Display, TEXT("DEV_IDENTITY_BOUND Character=%s Container=%s"), *Backpack->CharacterId, *Backpack->ContainerId);
 }
 
+void USFBackpackComponent::AssignGatewayIdentity(APlayerController* Controller, const FString& Id)
+{
+    if (!Id.StartsWith(TEXT("chr_")) || Id.Len() > 80) { return; }
+    USFBackpackComponent* Backpack = FindOrCreate(Controller);
+    if (!Backpack || Backpack->bIdentityUsed) { return; }
+    Backpack->VerifiedCharacterId = Id;
+    Backpack->BindIdentity();
+}
+
 void USFBackpackComponent::BindIdentity()
 {
     // Development key per server connection (INT-03 6.3); character identity arrives with DEC-04. A controller gets its
     // connection after its components begin play, so the key is (re)bound until the first mutation uses it.
     if (bIdentityUsed) { return; }
+    if (!VerifiedCharacterId.IsEmpty())
+    {
+        CharacterId = VerifiedCharacterId;
+        ContainerId = TEXT("ctn_") + VerifiedCharacterId.RightChop(4);
+        return;
+    }
     const auto* Controller = Cast<APlayerController>(GetOwner());
     const UNetConnection* Connection = Controller ? Controller->GetNetConnection() : nullptr;
     ContainerId = !DevName.IsEmpty() ? TEXT("ctn_dev_") + DevName

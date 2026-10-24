@@ -2573,6 +2573,23 @@ void ASFPlayerController::TickFiniteScenario()
 FString ASFGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal)
 {
     const FString Result=Super::InitNewPlayer(NewPlayerController,UniqueId,Options,Portal);
+    if (UsesGatewayAdmission())
+    {
+        const FString Ticket=UGameplayStatics::ParseOption(Options,TEXT("SFIdentityTicket"));
+        const FString Verified=TakeGatewayCharacter(Ticket);
+        if (!Verified.IsEmpty())
+        {
+            USFBackpackComponent::AssignGatewayIdentity(NewPlayerController,Verified);
+            if (APlayerState* State=NewPlayerController ? NewPlayerController->GetPlayerState<APlayerState>() : nullptr) { State->SetPlayerName(Verified); }
+            UE_LOG(LogTemp,Display,TEXT("GATEWAY_IDENTITY_BOUND Character=%s"),*Verified);
+            return Result;
+        }
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+        const FString Dev=UGameplayStatics::ParseOption(Options,TEXT("SFDevCharacter"));
+        if (!(IsAdmitted() && FParse::Param(FCommandLine::Get(),TEXT("SFDevIdentity")) && USFBackpackComponent::IsValidDevName(Dev)))
+#endif
+        { return TEXT("World ticket was not verified."); }
+    }
     const FString Name=UGameplayStatics::ParseOption(Options,TEXT("SFDevCharacter"));
     if (Name.IsEmpty()) { return Result; }
     // Development fixture until DEC-04: a stable character across server restarts for the claim runner. Honoured only in a

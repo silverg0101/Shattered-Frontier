@@ -15,6 +15,8 @@ var connection = builder.Configuration["Identity:Connection"] ?? throw new Inval
 var encodedKey = builder.Configuration["Identity:TicketSigningKey"] ?? throw new InvalidOperationException("Identity:TicketSigningKey is required.");
 var signingKey = Convert.FromBase64String(encodedKey);
 if (signingKey.Length < 32) throw new InvalidOperationException("Ticket signing key must be at least 32 bytes.");
+var verifierKey = builder.Configuration["Identity:WorldVerifierKey"] ?? throw new InvalidOperationException("Identity:WorldVerifierKey is required.");
+if (verifierKey.Length < 32) throw new InvalidOperationException("World verifier key must be at least 32 characters.");
 var repoAllowlist = Path.Combine(builder.Environment.ContentRootPath, "content/appearance/human.json");
 var allowlistPath = builder.Configuration["Identity:AppearanceAllowlist"] ??
     (File.Exists(repoAllowlist) ? repoAllowlist : Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "../../content/appearance/human.json")));
@@ -88,6 +90,17 @@ app.MapPost("/v1/characters/{characterId}/enter-world", (string characterId, Htt
     var (address, ticket, expires) = service.EnterWorld(service.RequireSession(http.Request.Headers.Authorization), characterId);
     return Results.Ok(new { address, ticket, expires_at_unix_s = expires });
 });
+app.MapPost("/v1/world/verify-ticket", (VerifyTicketRequest request, HttpContext http, TicketVerifier verifier) =>
+{
+    var supplied = System.Text.Encoding.UTF8.GetBytes(http.Request.Headers["X-World-Verifier-Key"].ToString());
+    var expected = System.Text.Encoding.UTF8.GetBytes(verifierKey);
+    if (supplied.Length != expected.Length || !System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(supplied, expected))
+        return Results.Json(new ErrorBody("UNAUTHENTICATED", "WORLD_VERIFIER_UNAUTHORIZED"), statusCode: 401);
+    if (string.IsNullOrWhiteSpace(request.Ticket)) return Results.BadRequest(new ErrorBody("INVALID_ARGUMENT", "TICKET_REQUIRED"));
+    if (request.ServerId != options.WorldServerId) return Results.Json(new ErrorBody("UNAUTHENTICATED", "SERVER_MISMATCH"), statusCode: 401);
+    var claims = verifier.VerifyAndConsume(request.Ticket, options.WorldServerId);
+    return claims is null ? Results.Json(new ErrorBody("UNAUTHENTICATED", "TICKET_INVALID"), statusCode: 401) : Results.Ok(new { character_id = claims.CharacterId });
+});
 app.Run();
 
 static void RequireKey(HttpContext context)
@@ -106,4 +119,5 @@ public sealed record AccountCreateRequest(string? AccountName, string? Password)
 public sealed record LoginBeginRequest(string? AccountName, string? Password);
 public sealed record LoginCompleteRequest(string? LoginId);
 public sealed record CharacterCreateRequest(string? RealmId, string? Name, string? AppearanceV2Base64);
+public sealed record VerifyTicketRequest(string? Ticket, string? ServerId);
 public sealed record ErrorBody(string Code, string Reason, int? RetryAfterS = null);

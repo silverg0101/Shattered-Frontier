@@ -37,6 +37,7 @@ public:
     // Development fixture until DEC-04: a stable dev character name for a connection (see ASFGameMode::InitNewPlayer).
     static bool IsValidDevName(const FString& Name);
     static void AssignDevIdentity(APlayerController* Controller, const FString& Name);
+    static void AssignGatewayIdentity(APlayerController* Controller, const FString& CharacterId);
     const FString& GetContainerId() { BindIdentity(); return ContainerId; }
     const FString& GetCharacterId() { BindIdentity(); return CharacterId; }
     TSharedPtr<FSFInventoryLedgerClient> GetLedger() const { return Ledger; }
@@ -63,6 +64,7 @@ private:
     void BindIdentity();
     bool bIdentityUsed = false;
     FString DevName;  // "" uses the connection id
+    FString VerifiedCharacterId;
     void Pump();
     void Execute(int32 Attempt);
     void Refresh(TFunction<void(bool)> Done);
