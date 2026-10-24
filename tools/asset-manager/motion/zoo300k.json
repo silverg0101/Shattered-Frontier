@@ -1,0 +1,1075 @@
+[
+ {
+  "id": "AnacondaALL",
+  "name": "Anaconda",
+  "aliases": [
+   "anaconda",
+   "python",
+   "boa",
+   "giant snake",
+   "serpent"
+  ],
+  "body_plan": "snake",
+  "size_cm": [
+   300,
+   600
+  ],
+  "pack_mb": 1534,
+  "file": "AnacondaALL.zip"
+ },
+ {
+  "id": "Ant",
+  "name": "Ant",
+  "aliases": [
+   "ant",
+   "worker ant",
+   "soldier ant"
+  ],
+  "body_plan": "insect",
+  "size_cm": [
+   0.5,
+   3
+  ],
+  "pack_mb": 1363,
+  "file": "Ant.zip"
+ },
+ {
+  "id": "BEAR",
+  "name": "Bear",
+  "aliases": [
+   "bear",
+   "brown bear",
+   "grizzly",
+   "black bear"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   150,
+   280
+  ],
+  "pack_mb": 2229,
+  "file": "BEAR.zip"
+ },
+ {
+  "id": "BIRD",
+  "name": "Bird",
+  "aliases": [
+   "bird",
+   "songbird",
+   "sparrow",
+   "finch"
+  ],
+  "body_plan": "bird",
+  "size_cm": [
+   10,
+   30
+  ],
+  "pack_mb": 2339,
+  "file": "BIRD.zip"
+ },
+ {
+  "id": "BUZZARD",
+  "name": "Buzzard",
+  "aliases": [
+   "buzzard",
+   "vulture",
+   "hawk",
+   "raptor bird"
+  ],
+  "body_plan": "bird",
+  "size_cm": [
+   50,
+   70
+  ],
+  "pack_mb": 1137,
+  "file": "BUZZARD.zip"
+ },
+ {
+  "id": "Bat",
+  "name": "Bat",
+  "aliases": [
+   "bat",
+   "fruit bat",
+   "vampire bat"
+  ],
+  "body_plan": "bird",
+  "size_cm": [
+   10,
+   40
+  ],
+  "pack_mb": 869,
+  "file": "Bat.zip"
+ },
+ {
+  "id": "Buffalo",
+  "name": "Buffalo",
+  "aliases": [
+   "buffalo",
+   "bison",
+   "ox",
+   "bull"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   200,
+   380
+  ],
+  "pack_mb": 1934,
+  "file": "Buffalo.zip"
+ },
+ {
+  "id": "Camel",
+  "name": "Camel",
+  "aliases": [
+   "camel",
+   "dromedary",
+   "bactrian"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   250,
+   350
+  ],
+  "pack_mb": 1926,
+  "file": "Camel.zip"
+ },
+ {
+  "id": "Cat",
+  "name": "Cat",
+  "aliases": [
+   "cat",
+   "kitten",
+   "house cat",
+   "wildcat",
+   "tabby"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   45,
+   90
+  ],
+  "pack_mb": 1497,
+  "file": "Cat.zip"
+ },
+ {
+  "id": "Centipede",
+  "name": "Centipede",
+  "aliases": [
+   "centipede",
+   "millipede",
+   "myriapod"
+  ],
+  "body_plan": "insect",
+  "size_cm": [
+   3,
+   30
+  ],
+  "pack_mb": 2376,
+  "file": "Centipede.zip"
+ },
+ {
+  "id": "Chicken",
+  "name": "Chicken",
+  "aliases": [
+   "chicken",
+   "hen",
+   "rooster",
+   "fowl"
+  ],
+  "body_plan": "bird",
+  "size_cm": [
+   35,
+   70
+  ],
+  "pack_mb": 457,
+  "file": "Chicken.zip"
+ },
+ {
+  "id": "Cobra",
+  "name": "Cobra",
+  "aliases": [
+   "cobra",
+   "king cobra",
+   "viper",
+   "snake",
+   "serpent"
+  ],
+  "body_plan": "snake",
+  "size_cm": [
+   100,
+   550
+  ],
+  "pack_mb": 507,
+  "file": "Cobra.zip"
+ },
+ {
+  "id": "ComodoaALL",
+  "name": "Komodo Dragon",
+  "aliases": [
+   "komodo dragon",
+   "komodo",
+   "monitor lizard",
+   "lizard"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   150,
+   300
+  ],
+  "pack_mb": 1766,
+  "file": "ComodoaALL.zip"
+ },
+ {
+  "id": "Coyote",
+  "name": "Coyote",
+  "aliases": [
+   "coyote",
+   "prairie wolf",
+   "jackal"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   75,
+   100
+  ],
+  "pack_mb": 992,
+  "file": "Coyote.zip"
+ },
+ {
+  "id": "Crab",
+  "name": "Crab",
+  "aliases": [
+   "crab",
+   "shore crab",
+   "hermit crab"
+  ],
+  "body_plan": "crustacean",
+  "size_cm": [
+   5,
+   40
+  ],
+  "pack_mb": 1199,
+  "file": "Crab.zip"
+ },
+ {
+  "id": "CrabAll",
+  "name": "Giant Crab",
+  "aliases": [
+   "giant crab",
+   "spider crab",
+   "king crab"
+  ],
+  "body_plan": "crustacean",
+  "size_cm": [
+   10,
+   100
+  ],
+  "pack_mb": 2072,
+  "file": "CrabAll.zip"
+ },
+ {
+  "id": "Cricket",
+  "name": "Cricket",
+  "aliases": [
+   "cricket",
+   "grasshopper",
+   "locust"
+  ],
+  "body_plan": "insect",
+  "size_cm": [
+   1,
+   5
+  ],
+  "pack_mb": 1714,
+  "file": "Cricket.zip"
+ },
+ {
+  "id": "Crocodile",
+  "name": "Crocodile",
+  "aliases": [
+   "crocodile",
+   "alligator",
+   "caiman",
+   "gator"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   200,
+   500
+  ],
+  "pack_mb": 1055,
+  "file": "Crocodile.zip"
+ },
+ {
+  "id": "CrowALL",
+  "name": "Crow",
+  "aliases": [
+   "crow",
+   "raven",
+   "rook",
+   "blackbird"
+  ],
+  "body_plan": "bird",
+  "size_cm": [
+   40,
+   60
+  ],
+  "pack_mb": 436,
+  "file": "CrowALL.zip"
+ },
+ {
+  "id": "DEER",
+  "name": "Deer",
+  "aliases": [
+   "deer",
+   "stag",
+   "doe",
+   "buck",
+   "elk"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   130,
+   230
+  ],
+  "pack_mb": 1279,
+  "file": "DEER.zip"
+ },
+ {
+  "id": "Dog",
+  "name": "Dog",
+  "aliases": [
+   "dog",
+   "canine",
+   "mutt",
+   "hound dog"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   50,
+   120
+  ],
+  "pack_mb": 797,
+  "file": "Dog.zip"
+ },
+ {
+  "id": "Eagle",
+  "name": "Eagle",
+  "aliases": [
+   "eagle",
+   "bald eagle",
+   "golden eagle",
+   "hawk",
+   "falcon"
+  ],
+  "body_plan": "bird",
+  "size_cm": [
+   70,
+   100
+  ],
+  "pack_mb": 1243,
+  "file": "Eagle.zip"
+ },
+ {
+  "id": "Elephant",
+  "name": "Elephant",
+  "aliases": [
+   "elephant",
+   "pachyderm"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   550,
+   750
+  ],
+  "pack_mb": 1321,
+  "file": "Elephant.zip"
+ },
+ {
+  "id": "Fire_ant",
+  "name": "Fire Ant",
+  "aliases": [
+   "fire ant",
+   "soldier ant"
+  ],
+  "body_plan": "insect",
+  "size_cm": [
+   0.3,
+   1
+  ],
+  "pack_mb": 1221,
+  "file": "Fire_ant.zip"
+ },
+ {
+  "id": "Flamingo",
+  "name": "Flamingo",
+  "aliases": [
+   "flamingo",
+   "wading bird"
+  ],
+  "body_plan": "bird",
+  "size_cm": [
+   90,
+   150
+  ],
+  "pack_mb": 659,
+  "file": "Flamingo.zip"
+ },
+ {
+  "id": "Fox",
+  "name": "Fox",
+  "aliases": [
+   "fox",
+   "red fox",
+   "vixen",
+   "arctic fox"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   60,
+   110
+  ],
+  "pack_mb": 1314,
+  "file": "Fox.zip"
+ },
+ {
+  "id": "Gazelle",
+  "name": "Gazelle",
+  "aliases": [
+   "gazelle",
+   "antelope",
+   "impala"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   100,
+   170
+  ],
+  "pack_mb": 775,
+  "file": "Gazelle.zip"
+ },
+ {
+  "id": "Giantbee",
+  "name": "Giant Bee",
+  "aliases": [
+   "giant bee",
+   "bee",
+   "wasp",
+   "hornet",
+   "bumblebee"
+  ],
+  "body_plan": "insect",
+  "size_cm": [
+   1,
+   5
+  ],
+  "pack_mb": 1055,
+  "file": "Giantbee.zip"
+ },
+ {
+  "id": "Goat",
+  "name": "Goat",
+  "aliases": [
+   "goat",
+   "billy goat",
+   "ram",
+   "sheep"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   100,
+   160
+  ],
+  "pack_mb": 690,
+  "file": "Goat.zip"
+ },
+ {
+  "id": "Hamster",
+  "name": "Hamster",
+  "aliases": [
+   "hamster",
+   "gerbil",
+   "guinea pig",
+   "vole"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   10,
+   20
+  ],
+  "pack_mb": 481,
+  "file": "Hamster.zip"
+ },
+ {
+  "id": "Hippopotamus",
+  "name": "Hippopotamus",
+  "aliases": [
+   "hippopotamus",
+   "hippo",
+   "river horse"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   300,
+   500
+  ],
+  "pack_mb": 1046,
+  "file": "Hippopotamus.zip"
+ },
+ {
+  "id": "HorseALL",
+  "name": "Horse",
+  "aliases": [
+   "horse",
+   "stallion",
+   "mare",
+   "pony",
+   "steed"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   200,
+   300
+  ],
+  "pack_mb": 4860,
+  "file": "HorseALL.zip"
+ },
+ {
+  "id": "Hound",
+  "name": "Hound",
+  "aliases": [
+   "hound",
+   "wolfhound",
+   "hunting dog",
+   "greyhound"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   80,
+   150
+  ],
+  "pack_mb": 1188,
+  "file": "Hound.zip"
+ },
+ {
+  "id": "Isopetra",
+  "name": "Isopod",
+  "aliases": [
+   "isopod",
+   "woodlouse",
+   "pill bug",
+   "roly poly"
+  ],
+  "body_plan": "crustacean",
+  "size_cm": [
+   1,
+   5
+  ],
+  "pack_mb": 1114,
+  "file": "Isopetra.zip"
+ },
+ {
+  "id": "Jaguar",
+  "name": "Jaguar",
+  "aliases": [
+   "jaguar",
+   "panther",
+   "black panther",
+   "big cat"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   150,
+   250
+  ],
+  "pack_mb": 1198,
+  "file": "Jaguar.zip"
+ },
+ {
+  "id": "Leopard",
+  "name": "Leopard",
+  "aliases": [
+   "leopard",
+   "snow leopard",
+   "cheetah",
+   "big cat"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   130,
+   230
+  ],
+  "pack_mb": 1536,
+  "file": "Leopard.zip"
+ },
+ {
+  "id": "LionAll",
+  "name": "Lion",
+  "aliases": [
+   "lion",
+   "lioness",
+   "big cat"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   240,
+   330
+  ],
+  "pack_mb": 1144,
+  "file": "LionAll.zip"
+ },
+ {
+  "id": "Lynx",
+  "name": "Lynx",
+  "aliases": [
+   "lynx",
+   "bobcat",
+   "wildcat"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   80,
+   130
+  ],
+  "pack_mb": 925,
+  "file": "Lynx.zip"
+ },
+ {
+  "id": "Mammoth",
+  "name": "Mammoth",
+  "aliases": [
+   "mammoth",
+   "mastodon",
+   "woolly mammoth"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   500,
+   750
+  ],
+  "pack_mb": 1704,
+  "file": "Mammoth.zip"
+ },
+ {
+  "id": "Monkey",
+  "name": "Monkey",
+  "aliases": [
+   "monkey",
+   "ape",
+   "primate",
+   "baboon",
+   "chimp"
+  ],
+  "body_plan": "biped",
+  "size_cm": [
+   40,
+   100
+  ],
+  "pack_mb": 2144,
+  "file": "Monkey.zip"
+ },
+ {
+  "id": "Ostrich",
+  "name": "Ostrich",
+  "aliases": [
+   "ostrich",
+   "emu",
+   "flightless bird"
+  ],
+  "body_plan": "bird",
+  "size_cm": [
+   180,
+   270
+  ],
+  "pack_mb": 1235,
+  "file": "Ostrich.zip"
+ },
+ {
+  "id": "Parrot",
+  "name": "Parrot",
+  "aliases": [
+   "parrot",
+   "macaw",
+   "cockatoo"
+  ],
+  "body_plan": "bird",
+  "size_cm": [
+   25,
+   100
+  ],
+  "pack_mb": 2335,
+  "file": "Parrot.zip"
+ },
+ {
+  "id": "Pigeon",
+  "name": "Pigeon",
+  "aliases": [
+   "pigeon",
+   "dove"
+  ],
+  "body_plan": "bird",
+  "size_cm": [
+   30,
+   40
+  ],
+  "pack_mb": 173,
+  "file": "Pigeon.zip"
+ },
+ {
+  "id": "Piranna",
+  "name": "Piranha",
+  "aliases": [
+   "piranha",
+   "fish"
+  ],
+  "body_plan": "fish",
+  "size_cm": [
+   15,
+   35
+  ],
+  "pack_mb": 419,
+  "file": "Piranna.zip"
+ },
+ {
+  "id": "PolarBear",
+  "name": "Polar Bear",
+  "aliases": [
+   "polar bear",
+   "white bear"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   200,
+   300
+  ],
+  "pack_mb": 984,
+  "file": "PolarBear.zip"
+ },
+ {
+  "id": "Pteranodon",
+  "name": "Pteranodon",
+  "aliases": [
+   "pteranodon",
+   "pterosaur",
+   "pterodactyl"
+  ],
+  "body_plan": "bird",
+  "size_cm": [
+   180,
+   600
+  ],
+  "pack_mb": 798,
+  "file": "Pteranodon.zip"
+ },
+ {
+  "id": "Puppy",
+  "name": "Puppy",
+  "aliases": [
+   "puppy",
+   "pup",
+   "dog",
+   "wolf pup"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   30,
+   60
+  ],
+  "pack_mb": 734,
+  "file": "Puppy.zip"
+ },
+ {
+  "id": "Raindeer",
+  "name": "Reindeer",
+  "aliases": [
+   "reindeer",
+   "caribou",
+   "deer"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   180,
+   220
+  ],
+  "pack_mb": 778,
+  "file": "Raindeer.zip"
+ },
+ {
+  "id": "Raptor",
+  "name": "Raptor",
+  "aliases": [
+   "raptor",
+   "velociraptor",
+   "dinosaur"
+  ],
+  "body_plan": "biped",
+  "size_cm": [
+   180,
+   300
+  ],
+  "pack_mb": 1218,
+  "file": "Raptor.zip"
+ },
+ {
+  "id": "Rat",
+  "name": "Rat",
+  "aliases": [
+   "rat",
+   "rodent",
+   "sewer rat",
+   "swamp rat",
+   "mouse",
+   "giant rat"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   20,
+   50
+  ],
+  "pack_mb": 158,
+  "file": "Rat.zip"
+ },
+ {
+  "id": "Rhino",
+  "name": "Rhinoceros",
+  "aliases": [
+   "rhinoceros",
+   "rhino"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   300,
+   400
+  ],
+  "pack_mb": 1159,
+  "file": "Rhino.zip"
+ },
+ {
+  "id": "SABREALL",
+  "name": "Sabre-toothed Cat",
+  "aliases": [
+   "sabre-toothed cat",
+   "saber tooth",
+   "smilodon",
+   "sabertooth tiger"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   180,
+   250
+  ],
+  "pack_mb": 3313,
+  "file": "SABREALL.zip"
+ },
+ {
+  "id": "SandMouse",
+  "name": "Sand Mouse",
+  "aliases": [
+   "sand mouse",
+   "desert mouse",
+   "jerboa",
+   "mouse"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   8,
+   20
+  ],
+  "pack_mb": 1390,
+  "file": "SandMouse.zip"
+ },
+ {
+  "id": "Shark",
+  "name": "Shark",
+  "aliases": [
+   "shark",
+   "great white",
+   "fish"
+  ],
+  "body_plan": "fish",
+  "size_cm": [
+   150,
+   600
+  ],
+  "pack_mb": 243,
+  "file": "Shark.zip"
+ },
+ {
+  "id": "Skunk",
+  "name": "Skunk",
+  "aliases": [
+   "skunk",
+   "polecat",
+   "badger",
+   "weasel"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   50,
+   80
+  ],
+  "pack_mb": 585,
+  "file": "Skunk.zip"
+ },
+ {
+  "id": "Spider",
+  "name": "Spider",
+  "aliases": [
+   "spider",
+   "tarantula",
+   "giant spider"
+  ],
+  "body_plan": "arachnid",
+  "size_cm": [
+   1,
+   30
+  ],
+  "pack_mb": 3978,
+  "file": "Spider.zip"
+ },
+ {
+  "id": "Stego",
+  "name": "Stegosaurus",
+  "aliases": [
+   "stegosaurus",
+   "stego",
+   "dinosaur"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   600,
+   900
+  ],
+  "pack_mb": 920,
+  "file": "Stego.zip"
+ },
+ {
+  "id": "T",
+  "name": "T-Rex Small",
+  "aliases": [
+   "t-rex",
+   "tyrannosaur",
+   "dinosaur"
+  ],
+  "body_plan": "biped",
+  "size_cm": [
+   300,
+   1200
+  ],
+  "pack_mb": 114,
+  "file": "T.zip"
+ },
+ {
+  "id": "TUKANALL",
+  "name": "Toucan",
+  "aliases": [
+   "toucan",
+   "tropical bird"
+  ],
+  "body_plan": "bird",
+  "size_cm": [
+   40,
+   65
+  ],
+  "pack_mb": 115,
+  "file": "TUKANALL.zip"
+ },
+ {
+  "id": "Tricera",
+  "name": "Triceratops",
+  "aliases": [
+   "triceratops",
+   "tricera",
+   "dinosaur"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   600,
+   900
+  ],
+  "pack_mb": 754,
+  "file": "Tricera.zip"
+ },
+ {
+  "id": "Turtle",
+  "name": "Turtle",
+  "aliases": [
+   "turtle",
+   "tortoise",
+   "terrapin"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   20,
+   120
+  ],
+  "pack_mb": 1498,
+  "file": "Turtle.zip"
+ },
+ {
+  "id": "Tyranno",
+  "name": "Tyrannosaurus",
+  "aliases": [
+   "tyrannosaurus",
+   "tyrannosaurus rex",
+   "t-rex",
+   "trex",
+   "dinosaur"
+  ],
+  "body_plan": "biped",
+  "size_cm": [
+   1000,
+   1250
+  ],
+  "pack_mb": 1470,
+  "file": "Tyranno.zip"
+ },
+ {
+  "id": "Wyvern",
+  "name": "Wyvern",
+  "aliases": [
+   "wyvern",
+   "dragon",
+   "drake"
+  ],
+  "body_plan": "quadruped",
+  "size_cm": [
+   300,
+   1000
+  ],
+  "pack_mb": 6446,
+  "file": "Wyvern.zip"
+ },
+ {
+  "id": "roach",
+  "name": "Cockroach",
+  "aliases": [
+   "cockroach",
+   "roach",
+   "beetle",
+   "bug"
+  ],
+  "body_plan": "insect",
+  "size_cm": [
+   2,
+   6
+  ],
+  "pack_mb": 320,
+  "file": "roach.zip"
+ },
+ {
+  "id": "scorpion",
+  "name": "Scorpion",
+  "aliases": [
+   "scorpion",
+   "desert scorpion"
+  ],
+  "body_plan": "arachnid",
+  "size_cm": [
+   5,
+   25
+  ],
+  "pack_mb": 1056,
+  "file": "scorpion.zip"
+ }
+]

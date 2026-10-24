@@ -7,6 +7,7 @@ Run `python app.py --check` for the self-check.
 import array, base64, glob, hashlib, io, ipaddress, json, math, mimetypes, os, random, re, shlex, shutil, sqlite3, struct, subprocess, sys, threading, time, traceback, uuid, urllib.error, urllib.parse, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+import creature
 
 ROOT = Path(os.environ.get("ASSET_ROOT", "./data/assets")).resolve()
 DATA = Path(os.environ.get("DATA_DIR", "./data")).resolve()
@@ -2191,6 +2192,10 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(rows[0]) if rows else self.send({"error": "no such job"}, 404)
             if method == "GET" and p == "/api/queue":
                 return self.send(jobs_view())
+            if method == "GET" and p == "/api/animals":
+                return self.send({"animals": creature.load_catalogue(DATA / "MotionLibrary")})
+            if method == "GET" and p == "/api/animals/match":
+                return self.send({"candidates": creature.match(q.get("q", ""), creature.load_catalogue(DATA / "MotionLibrary"))})
             if method == "GET" and p == "/api/schema":
                 return self.send({"3d": param_schema(), "presets": PRESET_LEVELS, "default_preset": DEFAULT_PRESET, "motion": [
                     {"key": k, "label": lbl, "section": "Motion", "kind": kind, "default": d, **extra}
@@ -2650,6 +2655,13 @@ def check():
         for f in made:
             shutil.rmtree(f)
         lib.rmdir()
+    import creature, tempfile
+    cat = creature.load_catalogue(Path(tempfile.mkdtemp()))
+    assert any(a["id"] == "Rat" and a["body_plan"] == "quadruped" and not a["curated"] for a in cat)
+    top = creature.match("swamp rat", cat)
+    assert top[0]["id"] == "Rat" and top[0]["score"] >= 0.5 and len(top) <= 5
+    assert creature.match("teapot", cat)[0]["score"] < 0.5
+    assert creature.match("Rat", cat)[0]["score"] == 1.0
     print("check ok")
 
 if __name__ == "__main__":
