@@ -5,8 +5,8 @@
                                       a second call reviews the map against OUT_DIR/skeleton.png; writes role_map.json,
                                       or prints "FAIL: <reason>" and exits 1.
 
-Scoring is ported from proof/pick.py: a clip must keep moving (every 5 consecutive frames average >= MIN_BLOCK deg/frame
-of rotation change) and close well (start vs end pose rotation + paw distance, paws relative to the root). Cyclic motions
+Scoring is ported from proof/pick.py: a clip must keep moving (every BLOCK consecutive frames of a cyclic clip, every
+STALL frames of a non-cyclic one, average >= MIN_BLOCK deg/frame of rotation change) and close well (start vs end pose rotation + paw distance, paws relative to the root). Cyclic motions
 get the best loop window (>= MIN_LOOP frames, every paw must lift), cut, residual spread so the last frame equals frame 0,
 and are written in place; travel_cm_s keeps their speed. BVH units are taken as cm, Y up.
 """
@@ -16,7 +16,8 @@ from pathlib import Path
 import numpy as np
 
 MIN_BLOCK = 0.05  # deg/frame: a block below this is a stall
-BLOCK = 5  # frames, sliding, as proof/pick.py
+BLOCK = 5  # frames, sliding, as proof/pick.py: cyclic clips
+STALL = 20  # frames: non-cyclic actions hold poses naturally; only a hold this long is a stall
 MIN_LOOP = 15  # frames
 MAX_LOOP_DEG = 4.0  # a cyclic clip whose best loop still differs by more than this mean rotation (deg) is dropped
 MIN_SWING = 0.1  # every paw lifts at least this share of its leg (root to paw tip) in a loop: sitting and grooming are no cycle
@@ -113,13 +114,13 @@ def _wrap(d):
 
 
 # ---------------------------------------------------------------- scoring
-def blocks(R):
-    """Mean rotation change (deg/frame) of every BLOCK-frame sliding window."""
+def blocks(R, n=BLOCK):
+    """Mean rotation change (deg/frame) of every n-frame sliding window."""
     d = _wrap(np.diff(R, axis=0)).mean(1)
-    if len(d) <= BLOCK:
+    if len(d) <= n:
         return [float(d.mean())] if len(d) else [0.0]
     c = np.concatenate([[0], np.cumsum(d)])
-    return list((c[BLOCK:] - c[:-BLOCK]) / BLOCK)
+    return list((c[n:] - c[:-n]) / n)
 
 
 def score(joints, frames, cyclic):
@@ -127,7 +128,7 @@ def score(joints, frames, cyclic):
     MIN_LOOP frames that closes within MAX_LOOP_DEG."""
     rcols = [c for jt in joints[1:] for c, k in jt["channels"] if k.endswith("rotation")]
     R = frames[:, rcols]
-    if len(R) < 2 or min(blocks(R)) < MIN_BLOCK:
+    if len(R) < 2 or min(blocks(R, BLOCK if cyclic else STALL)) < MIN_BLOCK:
         return None
     P = fk(joints, frames)
     feet = P[:, paws(joints, fk(joints, None)[0])] - P[:, :1]  # paws relative to the root
