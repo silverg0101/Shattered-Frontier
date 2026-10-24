@@ -113,11 +113,23 @@ bool ASFE1Character::IsAllowedFaceId(FName Id)
     return !Id.IsNone() && GetDefault<USFE1Settings>()->PlayerFaceIds.Contains(Id);
 }
 
+// GEAR-01 dev switch: -SFOutfitAssetTest shows the builds of tools/Create-PlayerOutfitAsset.py (tunic as a MetaHuman outfit, no Mutable).
+static bool IsOutfitAssetTest()
+{
+#if UE_BUILD_SHIPPING
+    return false;
+#else
+    static const bool bTest = FParse::Param(FCommandLine::Get(), TEXT("SFOutfitAssetTest"));
+    return bTest;
+#endif
+}
+
 FSoftClassPath ASFE1Character::FaceClassPath(FName Id)
 {
     if (!IsAllowedFaceId(Id)) { return FSoftClassPath(); }
     const FString Name = Id.ToString();
-    return FSoftClassPath(FString::Printf(TEXT("/Game/Frontier/Characters/Player/Built/MHC_%s/BP_MHC_%s.BP_MHC_%s_C"), *Name, *Name, *Name));
+    const TCHAR* Root = IsOutfitAssetTest() ? TEXT("OutfitAsset/Built") : TEXT("Built");
+    return FSoftClassPath(FString::Printf(TEXT("/Game/Frontier/Characters/Player/%s/MHC_%s/BP_MHC_%s.BP_MHC_%s_C"), Root, *Name, *Name, *Name));
 }
 
 void ASFE1Character::SetFaceId(FName NewFaceId)
@@ -160,7 +172,7 @@ AActor* ASFE1Character::SpawnPosedMetaHuman(USceneComponent* Parent, const FTran
     Skin->AddTickPrerequisiteComponent(GetMesh());
 #if SF_WITH_MUTABLE
     const TSoftObjectPtr<UObject>& Wear = GetDefault<USFE1Settings>()->FemaleFaceIds.Contains(FaceId) ? OutfitFemale : Outfit;
-    if (UCustomizableObject* Object = Cast<UCustomizableObject>(Wear.IsNull() ? nullptr : Wear.LoadSynchronous()))
+    if (UCustomizableObject* Object = Cast<UCustomizableObject>(Wear.IsNull() || IsOutfitAssetTest() ? nullptr : Wear.LoadSynchronous()))
     {
         // Mutable generates the outfit mesh onto the Body component (keeping its retarget pose); the preset's own clothes give way to it.
         for (USkeletalMeshComponent* Part : TInlineComponentArray<USkeletalMeshComponent*>(Body))

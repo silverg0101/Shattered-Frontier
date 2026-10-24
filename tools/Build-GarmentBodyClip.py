@@ -25,7 +25,38 @@ def parse():
     p.add_argument('--out', required=True)
     p.add_argument('--reach', type=float, default=4.0, help='cm along the skin normal to look for cloth')
     p.add_argument('--margin', type=int, default=2, help='rings of covered skin kept next to garment edges')
+    p.add_argument('--mask', help='also write the patch as a body-UV PNG (black = hidden, white = kept): a MetaHuman hidden face map')
+    p.add_argument('--mask-size', type=int, default=1024)
     return p.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else [])
+
+
+def write_mask(bm, path, size):
+    """Rasterize the patch's faces in UV channel 0: black where the garment hides the skin, white elsewhere."""
+    import numpy as np
+    img = np.ones((size, size), np.float32)
+    uv = bm.loops.layers.uv[0]
+    ys, xs = np.mgrid[0:size, 0:size]
+    for f in bm.faces:
+        pts = [(l[uv].uv.x % 1.0 * size, l[uv].uv.y % 1.0 * size) for l in f.loops]  # MetaHuman body UVs sit in UDIM 1002
+        for k in range(1, len(pts) - 1):  # fan triangles
+            (ax, ay), (bx, by), (cx, cy) = pts[0], pts[k], pts[k + 1]
+            x0, x1 = int(max(min(ax, bx, cx) - 1, 0)), int(min(max(ax, bx, cx) + 2, size))
+            y0, y1 = int(max(min(ay, by, cy) - 1, 0)), int(min(max(ay, by, cy) + 2, size))
+            if x0 >= x1 or y0 >= y1:
+                continue
+            px, py = xs[y0:y1, x0:x1] + 0.5, ys[y0:y1, x0:x1] + 0.5
+            e0 = (bx - ax) * (py - ay) - (by - ay) * (px - ax)
+            e1 = (cx - bx) * (py - by) - (cy - by) * (px - bx)
+            e2 = (ax - cx) * (py - cy) - (ay - cy) * (px - cx)
+            inside = ((e0 >= -1) & (e1 >= -1) & (e2 >= -1)) | ((e0 <= 1) & (e1 <= 1) & (e2 <= 1))  # either winding, ~1 px dilation
+            img[y0:y1, x0:x1][inside] = 0.0
+    rgba = np.repeat(img.reshape(-1, 1), 4, axis=1); rgba[:, 3] = 1.0  # Blender image rows run bottom-up, like UV v
+    im = bpy.data.images.new('mask', size, size, alpha=False)
+    im.pixels.foreach_set(rgba.ravel())
+    im.filepath_raw = os.path.abspath(path); im.file_format = 'PNG'
+    os.makedirs(os.path.dirname(im.filepath_raw), exist_ok=True)
+    im.save()
+    print(f'BODYCLIP_MASK hidden_px={int((img == 0).sum())} out={im.filepath_raw}')
 
 
 def main():
@@ -57,6 +88,8 @@ def main():
     bmesh.ops.delete(bm, geom=doomed, context='FACES')
     bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context='VERTS')
     kept = len(bm.faces)
+    if args.mask:
+        write_mask(bm, args.mask, args.mask_size)
     bm.to_mesh(body.data)
     body.data.update()
     body.name = os.path.splitext(os.path.basename(args.out))[0]
