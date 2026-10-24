@@ -4,6 +4,7 @@
 #include "Tests/AutomationCommon.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Inventory/SFInventoryLedgerClient.h"
+#include "Quest/SFQuestPilot.h"
 #include "Services/SFBackpackComponent.h"
 #include "Containers/Ticker.h"
 #include "Construction/SFConstructionNetwork.h"
@@ -405,6 +406,9 @@ bool FSFGatheringPilotLedgerTest::RunTest(const FString& Parameters)
     // INT-04: the controller backpack is the single ledger writer the harvest commit goes through.
     USFBackpackComponent* Pack=USFBackpackComponent::CreateForTests(PC,Client);
     Gather->Backpack=Pack;
+    // INT-06 requires the quest snapshot before Grant; the generic test world has no Silverbrook quest subsystem to attach it.
+    USFQuestPilotComponent* Quest=NewObject<USFQuestPilotComponent>(PC);
+    Quest->RegisterComponent();
 
     const TSoftObjectPtr<UInventoryItemDefinition> WoodItem(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_OakLog.DA_OakLog")));
     const auto Tick=[&Fixture](int32 Count) { for (int32 I=0; I<Count; ++I) { Fixture.TickTestWorld(0.05f); FTSTicker::GetCoreTicker().Tick(0.3f); } };
@@ -420,6 +424,7 @@ bool FSFGatheringPilotLedgerTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Causation is container:client operation"),First.CausationId,FString(TEXT("ctn_dev_local:1")));
     TestTrue(TEXT("Grant payload"),First.ContainerId==TEXT("ctn_dev_local") && First.ExpectedRevision==0 && First.DefinitionId==TEXT("item/oak_log")
         && First.Quantity==1 && First.Source==TEXT("gathering"));
+    TestTrue(TEXT("Grant carries the captured follow-up intent"),!First.FollowUpPayload.IsEmpty() && First.FollowUpDigest.Len()==64);
     TestEqual(TEXT("Container capacity from typed settings"),Fake->Requests[0].Capacity,Gather->CapturedSettings->InventorySlots*Gather->CapturedSettings->MaterialStackUnits);
 
     Fake->bDropFirstGrantReply=true;
@@ -448,15 +453,20 @@ bool FSFGatheringPilotLedgerTest::RunTest(const FString& Parameters)
     Fake->bAllUnavailable=false; Pack->Revision=Fake->Revision; Fake->Revision+=5;  // another writer moved the container
     const int32 CommitsBefore=Fake->Commits;
     Gather->ServerGatheringAction_Implementation(Wood,2,4); Tick(14);
-    const FString Retried=Fake->Requests.Last().OperationId;
-    TestEqual(TEXT("A stale revision re-reads and retries once"),Gather->Feedback.Result,ESFGatheringPilotResult::Granted);
-    TestTrue(TEXT("The retry uses the derived <op>:r1 id"),Retried.EndsWith(TEXT(":r1")) && Grants(Retried.LeftChop(3))==1 && Grants(Retried)==1);
-    TestEqual(TEXT("Exactly one commit for the stale harvest"),Fake->Commits,CommitsBefore+1);
-    TestTrue(TEXT("The charge is consumed once after the retried receipt"),Wood->State.Charges==0 && !Wood->State.bBusy);
+    const FString StaleOperation=Fake->Requests.Last().OperationId;
+    TestEqual(TEXT("Stale revision rejects the captured intent"),Gather->Feedback.Result,ESFGatheringPilotResult::Stale);
+    TestEqual(TEXT("Stale intent is sent once with its original operation id"),Grants(StaleOperation),1);
+    TestEqual(TEXT("Stale grant does not commit"),Fake->Commits,CommitsBefore);
+    TestTrue(TEXT("Stale grant preserves charge and releases lock"),Wood->State.Charges==1 && !Wood->State.bBusy);
+    Gather->ServerGatheringAction_Implementation(Wood,2,5); Tick(14);
+    TestEqual(TEXT("New harvest refreshes the revision and commits"),Gather->Feedback.Result,ESFGatheringPilotResult::Granted);
+    TestNotEqual(TEXT("New harvest captures a distinct intent"),Fake->Requests.Last().OperationId,StaleOperation);
+    TestEqual(TEXT("Exactly one commit after refresh"),Fake->Commits,CommitsBefore+1);
+    TestTrue(TEXT("Successful new harvest consumes one charge"),Wood->State.Charges==0 && !Wood->State.bBusy);
     Wood->State.Charges=1;
 
     Fake->bHold=true;
-    Gather->ServerGatheringAction_Implementation(Wood,Wood->State.Revision,5); Tick(12);
+    Gather->ServerGatheringAction_Implementation(Wood,Wood->State.Revision,6); Tick(12);
     if (!TestEqual(TEXT("Disconnect case reaches committing"),Fake->Held.Num(),1)) { return false; }
     PC->Destroy();
     TestFalse(TEXT("Disconnect releases the node lock"),Wood->State.bBusy);
