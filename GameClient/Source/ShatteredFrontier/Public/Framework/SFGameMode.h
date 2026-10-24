@@ -65,6 +65,7 @@ public:
     bool IsInsideTerritory(const FVector& Location, const TArray<FVector2D>& Polygon) const;
     bool IsCombatActive() const { return bPilotActive; }
     const USFCombatPilotSettings* CombatSettings() const { return CapturedSettings; }
+    void RecordBoarEvade(const FString& Group, const FString& CharacterId);
 
 private:
     TMap<FString, FString> PendingGatewayCharacters;
@@ -150,6 +151,7 @@ private:
     TArray<TArray<FVector2D>> ProtectedAreas;
     TArray<FVector> RespawnPoints;
     TMap<FString, TWeakObjectPtr<ASFPilotBoar>> ActiveBoars;
+    TMap<FString, TArray<double>> LeashEvadesByGroupAndCharacter;
     TMap<TWeakObjectPtr<ASFE1Character>, double> PlayerNextSwing;
     TMap<TWeakObjectPtr<ASFE1Character>, FString> PlayerDeathEvents;
     TMap<TWeakObjectPtr<ASFE1Character>, FVector> PlayerDeathRespawnPoints;

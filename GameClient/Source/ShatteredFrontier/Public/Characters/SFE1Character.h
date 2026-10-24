@@ -77,10 +77,13 @@ private:
     bool bM3ClientStopQueued = false;
     TWeakObjectPtr<class ASFPilotBoar> M3ClientTarget;
     int32 TargetScenarioStage = 0;
+    int32 EvadeScenarioStage = 0;
+    double NextEvadeSampleAt = 0;
     TWeakObjectPtr<AActor> TargetScenarioFirst;
     TWeakObjectPtr<AActor> TargetScenarioSecond;
     void TickCombatScenario();
     void TickTargetScenario();
+    void TickEvadeScenario();
     UFUNCTION(Server, Reliable) void ServerTargetScenarioStep(int32 Step);
     UFUNCTION(Server, Reliable) void ServerPilotAttack(AActor* SelectedCombatTarget);
     void PilotAttack();

@@ -118,6 +118,13 @@ bool FSFCombatEvadeTest::RunTest(const FString& Parameters)
 {
     TestEqual(TEXT("Return travel is 1.5 times chase speed"),
         SFCombatPilotRules::EvadeReturnSpeedCmPerSecond(3.5), 525.0);
+    TestFalse(TEXT("Unreachable timer waits for ten seconds"), SFCombatPilotRules::UnreachableEvade(9.99, 11.0));
+    TestFalse(TEXT("Recent damage suppresses unreachable evade"), SFCombatPilotRules::UnreachableEvade(10.0, 9.99));
+    TestTrue(TEXT("Ten unreachable seconds without damage evades"), SFCombatPilotRules::UnreachableEvade(10.0, 10.0));
+    TestFalse(TEXT("Two evades do not signal"), SFCombatPilotRules::LeashAbuseSignal({ 0.0, 10.0 }, 20.0));
+    TestTrue(TEXT("Three evades in 120 seconds signal"), SFCombatPilotRules::LeashAbuseSignal({ 0.0, 10.0, 120.0 }, 120.0));
+    TestFalse(TEXT("Expired evade leaves two in window"), SFCombatPilotRules::LeashAbuseSignal({ 0.0, 10.0, 120.0 }, 131.0));
+    TestFalse(TEXT("Fourth evade does not duplicate signal"), SFCombatPilotRules::LeashAbuseSignal({ 0.0, 10.0, 20.0, 30.0 }, 30.0));
     FTestWorldWrapper Fixture;
     if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) return false;
     UWorld* World = Fixture.GetTestWorld();

@@ -17,6 +17,9 @@ namespace SFCombatPilotRules
     /** AI NPC Behavior §8.2: returning creatures travel at 1.5 times pursuit speed. */
     constexpr double EvadeReturnSpeedCmPerSecond(double ChaseMetresPerSecond)
     { return ChaseMetresPerSecond * 150.0; }
+    constexpr bool UnreachableEvade(double UnreachableSeconds, double LastDamageSeconds)
+    { return UnreachableSeconds >= 10.0 && LastDamageSeconds >= 10.0; }
+    SHATTEREDFRONTIER_API bool LeashAbuseSignal(const TArray<double>& EvadeTimes, double Now);
 }
 
 UENUM()
@@ -122,5 +125,7 @@ private:
     FVector WanderDestination = FVector::ZeroVector;
     double NextWanderAt = 0;
     double NextSwingAt = 0;
+    double LastDamageAt = 0;
+    double UnreachableSince = -1;
     UPROPERTY(Replicated) bool bReturning = false;
 };

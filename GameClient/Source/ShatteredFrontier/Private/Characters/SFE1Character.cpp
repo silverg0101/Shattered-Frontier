@@ -227,6 +227,62 @@ void ASFE1Character::EndPlay(const EEndPlayReason::Type Reason)
     Super::EndPlay(Reason);
 }
 
+void ASFE1Character::TickEvadeScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    FString ScenarioRoleName;
+    FParse::Value(FCommandLine::Get(), TEXT("CombatEvadeRole="), ScenarioRoleName);
+    if (ScenarioRoleName != TEXT("Driver") && ScenarioRoleName != TEXT("Observer")) { return; }
+    ASFPilotBoar* Boar = nullptr;
+    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    { if (It->GroupId() == TEXT("evade_sandbox")) { Boar = *It; break; } }
+    if (!Boar || !Controller) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (Now >= NextEvadeSampleAt)
+    {
+        NextEvadeSampleAt = Now + 0.2;
+        UE_LOG(LogTemp, Display, TEXT("BOAR_EVADE_SAMPLE Role=%s T=%.3f X=%.1f Y=%.1f HP=%d Returning=%d PawnX=%.1f Target=%d"),
+            *ScenarioRoleName, Now, Boar->GetActorLocation().X, Boar->GetActorLocation().Y,
+            Boar->Health(), Boar->IsLeashing() ? 1 : 0, GetActorLocation().X, CombatTarget == Boar ? 1 : 0);
+    }
+    if (ScenarioRoleName != TEXT("Driver") || PilotHealth <= 0) { return; }
+    const FVector Anchor(1800, 0, 0); // Authored SB_Evade boar anchor; only this fixture uses it.
+    if (EvadeScenarioStage == 0)
+    {
+        const FVector ToBoar = (Boar->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
+        if (FVector::Dist2D(GetActorLocation(), Boar->GetActorLocation()) > 230)
+        { AddMovementInput(ToBoar, 1.0f); return; }
+        if (FVector::DotProduct(Controller->GetControlRotation().Vector().GetSafeNormal2D(), ToBoar) < 0.9)
+        { Controller->SetControlRotation(ToBoar.Rotation()); return; }
+        if (Now >= CombatScenarioNextAttackAt)
+        { PilotAttack(); CombatScenarioNextAttackAt = Now + 0.9; }
+        if (Boar->Health() < GetDefault<USFCombatPilotSettings>()->BoarHealth)
+        { EvadeScenarioStage = 1; UE_LOG(LogTemp, Display, TEXT("BOAR_EVADE_AGGRO HP=%d"), Boar->Health()); }
+    }
+    else if (EvadeScenarioStage == 1)
+    {
+        if (GetActorLocation().X < 8400) { AddMovementInput(FVector::ForwardVector, 1.0f); }
+        else { EvadeScenarioStage = 2; UE_LOG(LogTemp, Display, TEXT("BOAR_EVADE_LEASH_CROSSED PawnX=%.1f"), GetActorLocation().X); }
+    }
+    else if (EvadeScenarioStage == 2 && Boar->IsLeashing())
+    { EvadeScenarioStage = 3; UE_LOG(LogTemp, Display, TEXT("BOAR_EVADE_RETURNING HP=%d Target=%d"), Boar->Health(), CombatTarget == Boar ? 1 : 0); }
+    else if (EvadeScenarioStage == 3 && !Boar->IsLeashing() &&
+        Boar->Health() == GetDefault<USFCombatPilotSettings>()->BoarHealth)
+    { EvadeScenarioStage = 4; UE_LOG(LogTemp, Display, TEXT("BOAR_EVADE_FULL_RESET HP=%d"), Boar->Health()); }
+    else if (EvadeScenarioStage == 4)
+    {
+        const FVector ToBoar = (Boar->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
+        if (FVector::Dist2D(GetActorLocation(), Boar->GetActorLocation()) > 230)
+        { AddMovementInput(ToBoar, 1.0f); return; }
+        Controller->SetControlRotation(ToBoar.Rotation());
+        if (Now >= CombatScenarioNextAttackAt)
+        { PilotAttack(); CombatScenarioNextAttackAt = Now + 0.9; }
+        if (Boar->Health() < GetDefault<USFCombatPilotSettings>()->BoarHealth)
+        { EvadeScenarioStage = 5; UE_LOG(LogTemp, Display, TEXT("BOAR_EVADE_REENGAGED HP=%d"), Boar->Health()); }
+    }
+#endif
+}
+
 void ASFE1Character::TickCombatScenario()
 {
     if (FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")))
@@ -493,6 +549,10 @@ void ASFE1Character::Tick(float DeltaSeconds)
         }
     }
     if (IsLocallyControlled() && PlayerMapping && UsesCameraControls()) { TickCameraControls(DeltaSeconds); }
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("CombatEvadeScenario"))) { TickEvadeScenario(); }
+#endif
 }
 
 void ASFE1Character::TickCameraControls(float Dt)

@@ -79,6 +79,28 @@ int32 SFCombatPilotRules::RemainingHealth(int32 Current, int32 Damage)
     return Damage > 0 ? FMath::Max(0, Current - Damage) : Current;
 }
 
+bool SFCombatPilotRules::LeashAbuseSignal(const TArray<double>& EvadeTimes, double Now)
+{
+    int32 Recent = 0;
+    for (double Time : EvadeTimes) { if (Time >= Now - 120.0 && Time <= Now) { ++Recent; } }
+    return Recent == 3;
+}
+
+void ASFGameMode::RecordBoarEvade(const FString& Group, const FString& CharacterId)
+{
+    if (!HasAuthority() || CharacterId.IsEmpty()) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    TArray<double>& Times = LeashEvadesByGroupAndCharacter.FindOrAdd(Group + TEXT(":") + CharacterId);
+    Times.RemoveAll([Now](double Time) { return Time < Now - 120.0; });
+    Times.Add(Now);
+    if (SFCombatPilotRules::LeashAbuseSignal(Times, Now))
+    {
+        // Structured authority signal; anticheat-service transport is not present in this pilot.
+        UE_LOG(LogTemp, Warning, TEXT("LEASH_ABUSE_SIGNAL Type=leash_abuse Group=%s Character=%s Evades=3 WindowSeconds=120"),
+            *Group, *CharacterId);
+    }
+}
+
 bool USFCombatPilotSettings::Validate(FString& Error) const
 {
     if (PlayerHealth < 20 || PlayerHealth > 500 || BoarHealth < 10 || BoarHealth > 500 ||
@@ -145,12 +167,22 @@ void ASFPilotBoar::Initialize(ASFGameMode* OwnerMode, const FString& Group, int3
     check(HasAuthority());
     PilotMode = OwnerMode; SpawnGroup = Group; Slot = InSlot; Territory = Area; SpawnSerial = Serial;
     Anchor = GetActorLocation(); AnchorFacing = GetActorRotation(); CurrentHealth = Health; OnRep_Health();
+    LastDamageAt = GetWorld()->GetTimeSeconds();
 }
 
 void ASFPilotBoar::EnterEvade()
 {
     if (!HasAuthority() || bReturning || CurrentHealth <= 0) { return; }
-    Target.Reset(); WanderDestination = Anchor; bReturning = true;
+    FString TopCharacterId;
+    if (ASFE1Character* Victim = Target.Get())
+    {
+        if (USFBackpackComponent* Bag = USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Victim->GetController())))
+        { TopCharacterId = Bag->GetCharacterId(); }
+    }
+    if (PilotMode.IsValid()) { PilotMode->RecordBoarEvade(SpawnGroup, TopCharacterId); }
+    Target.Reset(); WanderDestination = Anchor; bReturning = true; UnreachableSince = -1;
+    UE_LOG(LogTemp, Display, TEXT("BOAR_EVADE_START Group=%s Slot=%d X=%.1f Y=%.1f HP=%d"),
+        *SpawnGroup, Slot, GetActorLocation().X, GetActorLocation().Y, CurrentHealth);
     for (auto It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
     {
         if (ASFE1Character* Character = Cast<ASFE1Character>(It->Get()->GetPawn()))
@@ -172,6 +204,7 @@ void ASFPilotBoar::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage)
     Target = Attacker;
     bReturning = false;
     CurrentHealth = SFCombatPilotRules::RemainingHealth(CurrentHealth, Damage);
+    LastDamageAt = GetWorld()->GetTimeSeconds(); UnreachableSince = -1;
     if (!Attacker->GetCombatTarget() && CurrentHealth > 0) { Attacker->SetCombatTarget(this); }
     OnRep_Health(); ForceNetUpdate();
     USFBackpackComponent* AttackerBag = USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Attacker->GetController()));
@@ -195,12 +228,17 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
         !Mode->IsInsideTerritory(Victim->GetActorLocation(), Territory) ||
         FVector::Dist2D(Anchor, GetActorLocation()) > Mode->CombatSettings()->BoarLeashRadiusMetres*100))
     { EnterEvade(); Victim = nullptr; }
+    if (Victim && UnreachableSince >= 0 &&
+        SFCombatPilotRules::UnreachableEvade(Now - UnreachableSince, Now - LastDamageAt))
+    { EnterEvade(); Victim = nullptr; }
     if (bReturning && FVector::Dist2D(GetActorLocation(),Anchor) < 100)
     {
         SetActorLocation(Anchor, false);
         SetActorRotation(AnchorFacing);
         CurrentHealth = Mode->CombatSettings()->BoarHealth;
         bReturning = false; OnRep_Health(); ForceNetUpdate();
+        UE_LOG(LogTemp, Display, TEXT("BOAR_EVADE_RESET Group=%s Slot=%d X=%.1f Y=%.1f HP=%d"),
+            *SpawnGroup, Slot, GetActorLocation().X, GetActorLocation().Y, CurrentHealth);
     }
     if (!Victim && !bReturning && Mode->CombatSettings()->bCombatAvailable)
     {
@@ -227,7 +265,7 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
     {
         Destination = Victim->GetActorLocation(); Speed = Mode->CombatSettings()->BoarChaseSpeedMetresPerSecond*100;
         if (FVector::Dist2D(GetActorLocation(), Destination) <= Mode->CombatSettings()->MeleeRangeMetres * 100 && Now >= NextSwingAt)
-        { NextSwingAt = Now + Mode->CombatSettings()->BoarMeleeCooldownSeconds; Mode->TryBoarAttack(this, Victim); }
+        { NextSwingAt = Now + Mode->CombatSettings()->BoarMeleeCooldownSeconds; Mode->TryBoarAttack(this, Victim); LastDamageAt = Now; UnreachableSince = -1; }
     }
     else if (bReturning)
     { Destination = Anchor; Speed = SFCombatPilotRules::EvadeReturnSpeedCmPerSecond(
@@ -251,7 +289,15 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
     if (!bReturning && (!Mode->IsInsideTerritory(Candidate, Territory) || Mode->IsSafe(Candidate)))
     { EnterEvade(); return; }
     const FVector Ground = Grounded(GetWorld(), Candidate, GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+    const FVector BeforeMove = GetActorLocation();
     SetActorLocation(Ground, true);
+    if (Victim && !bReturning)
+    {
+        const bool bBlocked = FVector::Dist2D(BeforeMove, GetActorLocation()) < 1.0 &&
+            FVector::Dist2D(GetActorLocation(), Victim->GetActorLocation()) > Mode->CombatSettings()->MeleeRangeMetres * 100;
+        if (bBlocked) { if (UnreachableSince < 0) { UnreachableSince = Now; } }
+        else { UnreachableSince = -1; }
+    }
     SetActorRotation(Direction.Rotation());
 }
 
