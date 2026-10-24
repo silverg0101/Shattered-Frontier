@@ -1,6 +1,7 @@
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
 #include "Combat/SFCombatPilot.h"
 #include "Combat/SFCombatPilotRewards.h"
+#include "Characters/SFE1Character.h"
 #include "Services/SFGameplayServicesClient.h"
 #include "GameFramework/PlayerController.h"
 #include "Misc/AutomationTest.h"
@@ -107,6 +108,32 @@ bool FSFCombatPilotRewardTest::RunTest(const FString& Parameters)
     }
     TestEqual(TEXT("Bag holds one death's hides"), SFCombatPilotRewards::CountHides(Controller), PerBoar);
     TestFalse(TEXT("No bag, no grant"), SFCombatPilotRewards::GrantHides(nullptr, PerBoar));
+    return true;
+}
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFCombatEvadeTest,
+    "ShatteredFrontier.Combat.Pilot.Evade",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFCombatEvadeTest::RunTest(const FString& Parameters)
+{
+    TestEqual(TEXT("Return travel is 1.5 times chase speed"),
+        SFCombatPilotRules::EvadeReturnSpeedCmPerSecond(3.5), 525.0);
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) return false;
+    UWorld* World = Fixture.GetTestWorld();
+    ASFGameMode* Mode = World->SpawnActor<ASFGameMode>();
+    ASFPilotBoar* Boar = World->SpawnActor<ASFPilotBoar>(FVector(300, 0, 115), FRotator(0, 45, 0));
+    APlayerController* Controller = World->SpawnActor<APlayerController>();
+    ASFE1Character* Character = World->SpawnActor<ASFE1Character>();
+    if (!Mode || !Boar || !Controller || !Character) return false;
+    Controller->Possess(Character);
+    Boar->Initialize(Mode, TEXT("evade_test"), 0, {}, 45, 1);
+    Character->SetCombatTarget(Boar);
+    Boar->EnterEvade();
+    TestTrue(TEXT("Evade begins on authority"), Boar->IsLeashing());
+    TestNull(TEXT("Server clears the player's selected target"), Character->GetCombatTarget());
+    Boar->ReceivePilotDamage(Character, 10);
+    TestEqual(TEXT("Evading creature is damage immune"), Boar->Health(), 45);
     return true;
 }
 #endif

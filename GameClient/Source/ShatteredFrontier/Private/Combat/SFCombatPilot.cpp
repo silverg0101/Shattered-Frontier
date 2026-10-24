@@ -136,6 +136,7 @@ void ASFPilotBoar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
     DOREPLIFETIME(ASFPilotBoar, CurrentHealth);
     DOREPLIFETIME(ASFPilotBoar, SpawnGroup);
     DOREPLIFETIME(ASFPilotBoar, Slot);
+    DOREPLIFETIME(ASFPilotBoar, bReturning);
 }
 
 void ASFPilotBoar::Initialize(ASFGameMode* OwnerMode, const FString& Group, int32 InSlot,
@@ -143,7 +144,19 @@ void ASFPilotBoar::Initialize(ASFGameMode* OwnerMode, const FString& Group, int3
 {
     check(HasAuthority());
     PilotMode = OwnerMode; SpawnGroup = Group; Slot = InSlot; Territory = Area; SpawnSerial = Serial;
-    Anchor = GetActorLocation(); CurrentHealth = Health; OnRep_Health();
+    Anchor = GetActorLocation(); AnchorFacing = GetActorRotation(); CurrentHealth = Health; OnRep_Health();
+}
+
+void ASFPilotBoar::EnterEvade()
+{
+    if (!HasAuthority() || bReturning || CurrentHealth <= 0) { return; }
+    Target.Reset(); WanderDestination = Anchor; bReturning = true;
+    for (auto It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+    {
+        if (ASFE1Character* Character = Cast<ASFE1Character>(It->Get()->GetPawn()))
+        { if (Character->GetCombatTarget() == this) { Character->SetCombatTarget(nullptr); } }
+    }
+    ForceNetUpdate();
 }
 
 void ASFPilotBoar::OnRep_Health()
@@ -155,7 +168,7 @@ void ASFPilotBoar::OnRep_Health()
 
 void ASFPilotBoar::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage)
 {
-    if (!HasAuthority() || CurrentHealth <= 0 || !IsValid(Attacker) || Damage <= 0) { return; }
+    if (!HasAuthority() || CurrentHealth <= 0 || bReturning || !IsValid(Attacker) || Damage <= 0) { return; }
     Target = Attacker;
     bReturning = false;
     CurrentHealth = SFCombatPilotRules::RemainingHealth(CurrentHealth, Damage);
@@ -181,9 +194,14 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
     if (Victim && (Victim->CombatHealth() <= 0 || Mode->IsSafe(Victim->GetActorLocation()) ||
         !Mode->IsInsideTerritory(Victim->GetActorLocation(), Territory) ||
         FVector::Dist2D(Anchor, GetActorLocation()) > Mode->CombatSettings()->BoarLeashRadiusMetres*100))
-    { Target.Reset(); Victim = nullptr; WanderDestination = Anchor; bReturning = true; }
+    { EnterEvade(); Victim = nullptr; }
     if (bReturning && FVector::Dist2D(GetActorLocation(),Anchor) < 100)
-    { bReturning = false; CurrentHealth = Mode->CombatSettings()->BoarHealth; OnRep_Health(); ForceNetUpdate(); }
+    {
+        SetActorLocation(Anchor, false);
+        SetActorRotation(AnchorFacing);
+        CurrentHealth = Mode->CombatSettings()->BoarHealth;
+        bReturning = false; OnRep_Health(); ForceNetUpdate();
+    }
     if (!Victim && !bReturning && Mode->CombatSettings()->bCombatAvailable)
     {
         for (auto It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
@@ -212,7 +230,8 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
         { NextSwingAt = Now + Mode->CombatSettings()->BoarMeleeCooldownSeconds; Mode->TryBoarAttack(this, Victim); }
     }
     else if (bReturning)
-    { Destination = Anchor; Speed = Mode->CombatSettings()->BoarChaseSpeedMetresPerSecond*100; }
+    { Destination = Anchor; Speed = SFCombatPilotRules::EvadeReturnSpeedCmPerSecond(
+        Mode->CombatSettings()->BoarChaseSpeedMetresPerSecond); }
     else if (Now >= NextWanderAt || Destination.IsNearlyZero() || FVector::Dist2D(GetActorLocation(), Destination) < 80)
     {
         NextWanderAt = Now + FMath::FRandRange(double(Mode->CombatSettings()->BoarWanderMinSeconds),
@@ -229,7 +248,8 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
     FVector Direction = Destination - GetActorLocation(); Direction.Z = 0;
     if (Direction.SizeSquared2D() < 2500) { return; }
     const FVector Candidate = GetActorLocation() + Direction.GetSafeNormal2D() * FMath::Min(Speed * DeltaSeconds, Direction.Size2D());
-    if (!Mode->IsInsideTerritory(Candidate, Territory) || Mode->IsSafe(Candidate)) { Target.Reset(); return; }
+    if (!bReturning && (!Mode->IsInsideTerritory(Candidate, Territory) || Mode->IsSafe(Candidate)))
+    { EnterEvade(); return; }
     const FVector Ground = Grounded(GetWorld(), Candidate, GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
     SetActorLocation(Ground, true);
     SetActorRotation(Direction.Rotation());
@@ -299,26 +319,29 @@ bool ASFGameMode::LoadZoneRecord()
 
 void ASFGameMode::StartCombat()
 {
+    const FString MapName = GetWorld()->GetOutermost()->GetName();
+    const bool bEvadeSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Evade");
     bCompanionSandbox = GetNetMode() != NM_Client &&
-        GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions");
+        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox);
     if (bCompanionSandbox)
     {
         CapturedSettings = GetDefault<USFCombatPilotSettings>();
         FString Error;
         if (!CapturedSettings->Validate(Error))
         { UE_LOG(LogTemp, Error, TEXT("COMPANION_SANDBOX_DISABLED Invalid combat settings: %s"), *Error); return; }
-        const TArray<FVector2D> SandboxArea = { FVector2D(-45, -45), FVector2D(45, -45),
-            FVector2D(45, 45), FVector2D(-45, 45) };
+        const double Extent = bEvadeSandbox ? 85.0 : 45.0;
+        const TArray<FVector2D> SandboxArea = { FVector2D(-Extent, -Extent), FVector2D(Extent, -Extent),
+            FVector2D(Extent, Extent), FVector2D(-Extent, Extent) };
         int32 Slot = 0;
         for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
         {
-            if (!It->ActorHasTag(TEXT("SF_CompanionSandboxWildlife"))) { continue; }
-            It->Initialize(this, TEXT("companions_sandbox"), Slot++, SandboxArea,
+            if (!It->ActorHasTag(bEvadeSandbox ? TEXT("SF_EvadeSandboxWildlife") : TEXT("SF_CompanionSandboxWildlife"))) { continue; }
+            It->Initialize(this, bEvadeSandbox ? TEXT("evade_sandbox") : TEXT("companions_sandbox"), Slot++, SandboxArea,
                 CapturedSettings->BoarHealth, ++NextBoarSerial);
         }
         bPilotActive = Slot > 0;
         RespawnPoints.Add(FVector(0, 0, 110));
-        UE_LOG(LogTemp, Display, TEXT("COMPANION_SANDBOX_READY Boars=%d"), Slot);
+        UE_LOG(LogTemp, Display, TEXT("COMBAT_SANDBOX_READY Map=%s Boars=%d"), *MapName, Slot);
         return;
     }
     // GM-01: on wherever the zone record has boar groups (Silverbrook), on any authority (dedicated, listen, standalone).
@@ -559,7 +582,7 @@ void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarg
     const FVector Facing = Attacker->GetActorForwardVector().GetSafeNormal2D();
     for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
     {
-        if (!IsValid(*It) || It->IsActorBeingDestroyed() || It->Health() <= 0 || IsSafe(It->GetActorLocation())
+        if (!IsValid(*It) || It->IsActorBeingDestroyed() || It->Health() <= 0 || It->IsLeashing() || IsSafe(It->GetActorLocation())
             || (SelectedTarget && SelectedTarget != *It)) { continue; }
         const FVector Delta = It->GetActorLocation() - Attacker->GetActorLocation();
         const double Distance = Delta.Size2D();

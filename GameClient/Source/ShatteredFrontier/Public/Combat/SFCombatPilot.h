@@ -14,6 +14,9 @@ namespace SFCombatPilotRules
     SHATTEREDFRONTIER_API bool CanMelee(double DistanceCm, double FacingDot, double Now,
         double NextAllowed, double RangeCm);
     SHATTEREDFRONTIER_API int32 RemainingHealth(int32 Current, int32 Damage);
+    /** AI NPC Behavior §8.2: returning creatures travel at 1.5 times pursuit speed. */
+    constexpr double EvadeReturnSpeedCmPerSecond(double ChaseMetresPerSecond)
+    { return ChaseMetresPerSecond * 150.0; }
 }
 
 UENUM()
@@ -95,6 +98,8 @@ public:
     void Initialize(class ASFGameMode* OwnerMode, const FString& Group, int32 Slot,
         const TArray<FVector2D>& Area, int32 Health, int32 Serial);
     void ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage);
+    /** Authority-only transition when the open-world leash or safe-zone rule fires. */
+    void EnterEvade();
     const FString& GroupId() const { return SpawnGroup; }
     int32 SlotIndex() const { return Slot; }
     /** One id per spawned boar, so its death rewards once. */
@@ -113,8 +118,9 @@ private:
     int32 SpawnSerial = 0;
     TArray<FVector2D> Territory;
     FVector Anchor = FVector::ZeroVector;
+    FRotator AnchorFacing = FRotator::ZeroRotator;
     FVector WanderDestination = FVector::ZeroVector;
     double NextWanderAt = 0;
     double NextSwingAt = 0;
-    bool bReturning = false;
+    UPROPERTY(Replicated) bool bReturning = false;
 };

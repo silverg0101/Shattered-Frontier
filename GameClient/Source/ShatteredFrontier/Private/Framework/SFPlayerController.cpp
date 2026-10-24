@@ -246,7 +246,7 @@ namespace
 bool IsLiveCombatTarget(const AActor* Actor)
 {
     if (!IsValid(Actor) || Actor->IsActorBeingDestroyed()) { return false; }
-    if (const ASFPilotBoar* Boar = Cast<ASFPilotBoar>(Actor)) { return Boar->Health() > 0; }
+    if (const ASFPilotBoar* Boar = Cast<ASFPilotBoar>(Actor)) { return Boar->Health() > 0 && !Boar->IsLeashing(); }
     if (const ASFTownsfolkNpc* Npc = Cast<ASFTownsfolkNpc>(Actor)) { return Npc->Health() > 0; }
     return false;
 }
