@@ -234,10 +234,12 @@ void ASFE1Character::TickCombatScenario()
         if (!IsLocallyControlled()) { return; }
         int32 ScenarioRole = 0;
         FParse::Value(FCommandLine::Get(), TEXT("CombatGroupRole="), ScenarioRole);
+        const bool bPartyXp = FParse::Param(FCommandLine::Get(), TEXT("PartyXpScenario"));
         ASFPilotBoar* Boar = nullptr;
         double NearestDistance = TNumericLimits<double>::Max();
         for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
         {
+            if (bPartyXp && (It->GroupId() != TEXT("boar_farm_edge") || It->SlotIndex() != 0)) { continue; }
             const double Distance = FVector::Dist2D(GetActorLocation(), It->GetActorLocation());
             if (It->Health() > 0 && Distance < NearestDistance) { Boar = *It; NearestDistance = Distance; }
         }
@@ -263,20 +265,24 @@ void ASFE1Character::TickCombatScenario()
                 }), 1.0f, false);
             }
         }
-        if (ScenarioRole < 1 || ScenarioRole > 3 || CombatScenarioAttackCount > 0 || PilotHealth <= 0) { return; }
+        const int32 MaxAttacks = bPartyXp && ScenarioRole == 1 ? 2 : 1;
+        if (ScenarioRole < 1 || ScenarioRole > 3 || CombatScenarioAttackCount >= MaxAttacks || PilotHealth <= 0 ||
+            GetWorld()->GetTimeSeconds() < CombatScenarioNextAttackAt) { return; }
         float AttackDelaySeconds = 0.0f;
         if (ScenarioRole == 3 && FParse::Value(FCommandLine::Get(), TEXT("CombatGroupAttackDelaySeconds="), AttackDelaySeconds) &&
             GetGameTimeSinceCreation() < AttackDelaySeconds) { return; }
         if (!Boar || NearestDistance > 300.0) { return; }
         auto* PC = Cast<ASFPlayerController>(Controller);
         if (!PC) { return; }
+        if (bPartyXp && (FParse::Param(FCommandLine::Get(), TEXT("PartyXpHoldAttack")) || PC->PartyMemberCount() != 3)) { return; }
         const FVector Aim = (Boar->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
         if (FVector::DotProduct(Controller->GetControlRotation().Vector().GetSafeNormal2D(), Aim) < 0.9)
         { Controller->SetControlRotation(Aim.Rotation()); return; }
         if (CombatTarget != Boar) { PC->SelectNextCombatTarget(); return; }
         UE_LOG(LogTemp, Display, TEXT("COMBAT_GROUP_TARGET Role=%d Target=%s"), ScenarioRole, *GetNameSafe(CombatTarget));
         PilotAttack();
-        CombatScenarioAttackCount = 1;
+        CombatScenarioAttackCount++;
+        CombatScenarioNextAttackAt = GetWorld()->GetTimeSeconds() + 1.0;
         UE_LOG(LogTemp, Display, TEXT("COMBAT_GROUP_ATTACK Role=%d"), ScenarioRole);
         return;
     }

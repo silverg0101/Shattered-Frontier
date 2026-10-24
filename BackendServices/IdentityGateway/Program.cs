@@ -99,7 +99,7 @@ app.MapPost("/v1/world/verify-ticket", (VerifyTicketRequest request, HttpContext
     if (string.IsNullOrWhiteSpace(request.Ticket)) return Results.BadRequest(new ErrorBody("INVALID_ARGUMENT", "TICKET_REQUIRED"));
     if (request.ServerId != options.WorldServerId) return Results.Json(new ErrorBody("UNAUTHENTICATED", "SERVER_MISMATCH"), statusCode: 401);
     var claims = verifier.VerifyAndConsume(request.Ticket, options.WorldServerId);
-    return claims is null ? Results.Json(new ErrorBody("UNAUTHENTICATED", "TICKET_INVALID"), statusCode: 401) : Results.Ok(new { character_id = claims.CharacterId });
+    return claims is null ? Results.Json(new ErrorBody("UNAUTHENTICATED", "TICKET_INVALID"), statusCode: 401) : Results.Ok(new { character_id = claims.CharacterId, account_id = claims.AccountId, realm_id = claims.RealmId });
 });
 app.Run();
 

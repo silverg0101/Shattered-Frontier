@@ -1,6 +1,7 @@
 #include "Framework/SFGameMode.h"
 #include "FrontEnd/SFFrontEnd.h"
 #include "Services/SFBackpackComponent.h"
+#include "Services/SFGameplayServicesClient.h"
 #include "Framework/SFPlayerController.h"
 #include "Construction/SFConstructionNetwork.h"
 #include "Characters/SFE1Character.h"
@@ -23,10 +24,13 @@
 #include "Kismet/GameplayStatics.h"
 #include "Misc/SecureHash.h"
 
-FString ASFGameMode::TakeGatewayCharacter(const FString& Ticket)
+FString ASFGameMode::TakeGatewayCharacter(const FString& Ticket, FString& Account, FString& Realm)
 {
     FString Id;
-    PendingGatewayCharacters.RemoveAndCopyValue(FMD5::HashAnsiString(*Ticket), Id);
+    const FString Key = FMD5::HashAnsiString(*Ticket);
+    PendingGatewayCharacters.RemoveAndCopyValue(Key, Id);
+    PendingGatewayAccounts.RemoveAndCopyValue(Key, Account);
+    PendingGatewayRealms.RemoveAndCopyValue(Key, Realm);
     return Id;
 }
 
@@ -71,13 +75,18 @@ void ASFGameMode::PreLogin(const FString& Options, const FString& Address, const
     if (!Response.IsValid() || Response->GetResponseCode() != 200 ||
         !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Response->GetContentAsString()), Result) || !Result.IsValid())
     { ErrorMessage = TEXT("World ticket was rejected."); UE_LOG(LogTemp, Warning, TEXT("GATEWAY_TICKET_REJECTED Reason=verify")); return; }
-    FString CharacterId;
+    FString CharacterId, AccountId, RealmId;
     if (!Result->TryGetStringField(TEXT("character_id"), CharacterId) || !CharacterId.StartsWith(TEXT("chr_")) || CharacterId.Len() > 80)
     { ErrorMessage = TEXT("World ticket was rejected."); UE_LOG(LogTemp, Warning, TEXT("GATEWAY_TICKET_REJECTED Reason=claims")); return; }
+    if (!Result->TryGetStringField(TEXT("account_id"), AccountId) || !AccountId.StartsWith(TEXT("acct_")) || AccountId.Len() > 80 ||
+        !Result->TryGetStringField(TEXT("realm_id"), RealmId) || RealmId.IsEmpty() || RealmId.Len() > 32)
+    { ErrorMessage = TEXT("World ticket was rejected."); UE_LOG(LogTemp, Warning, TEXT("GATEWAY_TICKET_REJECTED Reason=group-claims")); return; }
     const FString TicketHash = FMD5::HashAnsiString(*Ticket);
     PendingGatewayCharacters.Add(TicketHash, CharacterId);
+    PendingGatewayAccounts.Add(TicketHash, AccountId);
+    PendingGatewayRealms.Add(TicketHash, RealmId);
     FTimerHandle Expiry;
-    GetWorldTimerManager().SetTimer(Expiry, FTimerDelegate::CreateWeakLambda(this, [this, TicketHash]() { PendingGatewayCharacters.Remove(TicketHash); }), 120.f, false);
+    GetWorldTimerManager().SetTimer(Expiry, FTimerDelegate::CreateWeakLambda(this, [this, TicketHash]() { PendingGatewayCharacters.Remove(TicketHash); PendingGatewayAccounts.Remove(TicketHash); PendingGatewayRealms.Remove(TicketHash); }), 120.f, false);
 }
 
 ASFGameMode::ASFGameMode()
@@ -144,12 +153,35 @@ void ASFGameMode::PostLogin(APlayerController* NewPlayer)
     ScheduleLifecycleAudit(NewPlayer, false);
     PostLoginConstruction(NewPlayer);
     PostLoginCombat(NewPlayer);
+    if (ASFPlayerController* PartyPlayer = Cast<ASFPlayerController>(NewPlayer)) { RestorePartyForPlayer(PartyPlayer); }
 }
 
 void ASFGameMode::Logout(AController* Exiting)
 {
     if (ASFPlayerController* PartyPlayer = Cast<ASFPlayerController>(Exiting))
     {
+        const int32 Leaving = PartyPlayer->GetUniqueID();
+        if (const auto* Party = PartyModel.FindParty(Leaving); Party && Party->Leader == Leaving && Party->Members.Num() > 1)
+        {
+            const int32 Successor = Party->Assistant ? Party->Assistant : Party->Members[Party->Members[0] == Leaving ? 1 : 0];
+            const FString PartyId = DurablePartyBySessionId.FindRef(Party->Id);
+            auto* LeavingBag = PartyPlayer->FindComponentByClass<USFBackpackComponent>();
+            ASFPlayerController* SuccessorPlayer = nullptr;
+            for (auto It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+            { if (auto* Candidate = Cast<ASFPlayerController>(It->Get()); Candidate && Candidate->GetUniqueID() == Successor) { SuccessorPlayer = Candidate; break; } }
+            auto* SuccessorBag = SuccessorPlayer ? SuccessorPlayer->FindComponentByClass<USFBackpackComponent>() : nullptr;
+            if (!PartyId.IsEmpty() && LeavingBag && SuccessorBag)
+            {
+                if (auto Service = USFBackpackComponent::Services())
+                {
+                    FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::GroupPromote;
+                    Request.OperationId = FString::Printf(TEXT("group:disconnect:%s:%s"), *LeavingBag->GetCharacterId(), *FGuid::NewGuid().ToString(EGuidFormats::Digits));
+                    Request.GroupPartyId = PartyId; Request.GroupActorId = LeavingBag->GetCharacterId(); Request.GroupMemberId = SuccessorBag->GetCharacterId();
+                    Service->Call(Request, [PartyId](const FSFGameplayResponse& Reply)
+                    { UE_LOG(LogTemp, Display, TEXT("PARTY_DISCONNECT_PROMOTE Party=%s Status=%d"), *PartyId, int32(Reply.Status)); });
+                }
+            }
+        }
         PartyModel.RemoveConnection(PartyPlayer->GetUniqueID());
         RefreshPartyViews();
     }

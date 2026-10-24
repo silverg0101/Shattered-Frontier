@@ -9,5 +9,6 @@
     <EmbeddedResource Include="../Exchange.Postgres/Schema.*.sql" LogicalName="exchange.%(Filename)%(Extension)" />
     <EmbeddedResource Include="../IdentityGateway/Schema.*.sql" LogicalName="identity.%(Filename)%(Extension)" />
     <EmbeddedResource Include="../IdentityGateway/Schema.sql" LogicalName="identity.Schema.sql" />
+    <EmbeddedResource Include="../Group.Postgres/Schema.sql" LogicalName="group.Schema.sql" />
   </ItemGroup>
 </Project>

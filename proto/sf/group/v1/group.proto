@@ -1,0 +1,44 @@
+syntax = "proto3";
+package sf.group.v1;
+option csharp_namespace = "ShatteredFrontier.Group.V1";
+
+// Trusted zone-server calls. Identities are resolved by that server, never by clients.
+service GroupService {
+  rpc CreateParty(CreatePartyRequest) returns (Party);
+  rpc JoinParty(JoinPartyRequest) returns (Party);
+  rpc LeaveParty(MemberActionRequest) returns (Party);
+  rpc KickMember(MemberActionRequest) returns (Party);
+  rpc PromoteLeader(MemberActionRequest) returns (Party);
+  rpc AssignAssistant(MemberActionRequest) returns (Party);
+  rpc GetPartyForCharacter(CharacterRef) returns (Party);
+}
+message CreatePartyRequest {
+  string idempotency_key = 1;
+  string leader_character_id = 2;
+  string account_id = 3;
+  string realm_id = 4;
+  string dc_region = 5;
+}
+message JoinPartyRequest {
+  string idempotency_key = 1;
+  string party_id = 2;
+  string actor_character_id = 3;
+  string character_id = 4;
+  string account_id = 5;
+  string realm_id = 6;
+}
+message MemberActionRequest {
+  string idempotency_key = 1;
+  string party_id = 2;
+  string actor_character_id = 3;
+  string character_id = 4;
+}
+message CharacterRef { string character_id = 1; }
+message Party {
+  string party_id = 1;
+  string leader_character_id = 2;
+  string assistant_character_id = 3;
+  repeated string member_character_ids = 4;
+  int32 version = 5;
+  string state = 6;
+}

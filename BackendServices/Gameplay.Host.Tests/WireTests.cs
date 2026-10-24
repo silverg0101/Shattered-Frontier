@@ -20,6 +20,7 @@ using ProgressPb = ShatteredFrontier.Progression.V1;
 using HousingPb = ShatteredFrontier.Housing.V1;
 using GatheringPb = ShatteredFrontier.Gathering.V1;
 using WorldPb = ShatteredFrontier.World.V1;
+using GroupPb = ShatteredFrontier.Group.V1;
 
 static void Check(bool condition, string message)
 {
@@ -38,6 +39,66 @@ using var channel = GrpcChannel.ForAddress($"http://127.0.0.1:{port}");
 var headers = new Metadata { { "authorization", "Bearer " + token } };
 var bad = new Metadata { { "authorization", "Bearer wrong" } };
 DateTime Deadline() => DateTime.UtcNow.AddSeconds(5);
+
+if (mode is "group" or "group-restart")
+{
+    var group = new GroupPb.GroupService.GroupServiceClient(channel);
+    if (mode == "group")
+    {
+        var created = group.CreateParty(new GroupPb.CreatePartyRequest { IdempotencyKey="group/create", LeaderCharacterId="chr_dev_alpha",
+            AccountId="acct_dev_alpha", RealmId="realm_dev", DcRegion="dc_dev" }, headers, Deadline());
+        Check(created.PartyId.StartsWith("pty_", StringComparison.Ordinal) && created.MemberCharacterIds.SequenceEqual(["chr_dev_alpha"]), "Create failed.");
+        var replay = group.CreateParty(new GroupPb.CreatePartyRequest { IdempotencyKey="group/create", LeaderCharacterId="chr_dev_alpha",
+            AccountId="acct_dev_alpha", RealmId="realm_dev", DcRegion="dc_dev" }, headers, Deadline());
+        Check(replay.PartyId == created.PartyId, "Create replay changed ID.");
+        Code(() => group.CreateParty(new GroupPb.CreatePartyRequest { IdempotencyKey="group/create", LeaderCharacterId="chr_dev_gamma",
+            AccountId="acct_dev_gamma", RealmId="realm_dev", DcRegion="dc_dev" }, headers, Deadline()), StatusCode.InvalidArgument);
+        Code(() => group.CreateParty(new GroupPb.CreatePartyRequest { IdempotencyKey="group/duplicate", LeaderCharacterId="chr_dev_alpha",
+            AccountId="acct_dev_alpha", RealmId="realm_dev", DcRegion="dc_dev" }, headers, Deadline()), StatusCode.FailedPrecondition);
+        var joined = group.JoinParty(new GroupPb.JoinPartyRequest { IdempotencyKey="group/join-beta", PartyId=created.PartyId,
+            ActorCharacterId="chr_dev_alpha", CharacterId="chr_dev_beta", AccountId="acct_dev_beta", RealmId="realm_dev" }, headers, Deadline());
+        Check(joined.MemberCharacterIds.Count == 2 && joined.Version == 1, "Join failed.");
+        Code(() => group.JoinParty(new GroupPb.JoinPartyRequest { IdempotencyKey="group/invalid-join", PartyId=created.PartyId,
+            ActorCharacterId="chr_dev_beta", CharacterId="chr_dev_gamma", AccountId="acct_dev_gamma", RealmId="realm_dev" }, headers, Deadline()), StatusCode.PermissionDenied);
+        joined = group.JoinParty(new GroupPb.JoinPartyRequest { IdempotencyKey="group/join-gamma", PartyId=created.PartyId,
+            ActorCharacterId="chr_dev_alpha", CharacterId="chr_dev_gamma", AccountId="acct_dev_gamma", RealmId="realm_dev" }, headers, Deadline());
+        Check(joined.MemberCharacterIds.Count == 3, "Third member missing.");
+        var promoted = group.PromoteLeader(new GroupPb.MemberActionRequest { IdempotencyKey="group/promote-beta", PartyId=created.PartyId,
+            ActorCharacterId="chr_dev_alpha", CharacterId="chr_dev_beta" }, headers, Deadline());
+        Check(promoted.LeaderCharacterId == "chr_dev_beta", "Explicit promotion failed.");
+        promoted = group.PromoteLeader(new GroupPb.MemberActionRequest { IdempotencyKey="group/promote-alpha", PartyId=created.PartyId,
+            ActorCharacterId="chr_dev_beta", CharacterId="chr_dev_alpha" }, headers, Deadline());
+        Check(promoted.LeaderCharacterId == "chr_dev_alpha", "Return promotion failed.");
+        var assistant = group.AssignAssistant(new GroupPb.MemberActionRequest { IdempotencyKey="group/assistant", PartyId=created.PartyId,
+            ActorCharacterId="chr_dev_alpha", CharacterId="chr_dev_beta" }, headers, Deadline());
+        Check(assistant.AssistantCharacterId == "chr_dev_beta", "Assistant not assigned.");
+        var left = group.LeaveParty(new GroupPb.MemberActionRequest { IdempotencyKey="group/leader-leave", PartyId=created.PartyId,
+            ActorCharacterId="chr_dev_alpha", CharacterId="chr_dev_alpha" }, headers, Deadline());
+        Check(left.LeaderCharacterId == "chr_dev_beta" && left.MemberCharacterIds.Count == 2, "Assistant succession failed.");
+        Code(() => group.KickMember(new GroupPb.MemberActionRequest { IdempotencyKey="group/bad-kick", PartyId=created.PartyId,
+            ActorCharacterId="chr_dev_gamma", CharacterId="chr_dev_beta" }, headers, Deadline()), StatusCode.PermissionDenied);
+        Code(() => group.CreateParty(new GroupPb.CreatePartyRequest { IdempotencyKey="group/occupied", LeaderCharacterId="chr_dev_gamma",
+            AccountId="acct_dev_gamma", RealmId="realm_dev", DcRegion="dc_dev" }, headers, Deadline()), StatusCode.FailedPrecondition);
+        using var db = new NpgsqlConnection(connection); db.Open();
+        try { using var ddl = new NpgsqlCommand("CREATE TABLE \"group\".forbidden_runtime_ddl(id int)", db); ddl.ExecuteNonQuery(); throw new Exception("Runtime role has DDL privilege."); }
+        catch (PostgresException ex) when (ex.SqlState == "42501") { }
+        Console.WriteLine("PASS group create/replay/conflict/join/one-party/permissions/promotion/assistant succession/DML-only (10)");
+    }
+    else
+    {
+        var beta = group.GetPartyForCharacter(new GroupPb.CharacterRef { CharacterId="chr_dev_beta" }, headers, Deadline());
+        Check(beta.MemberCharacterIds.SequenceEqual(["chr_dev_beta", "chr_dev_gamma"]) && beta.LeaderCharacterId == "chr_dev_beta", "Party lost after host restart.");
+        var kicked = group.KickMember(new GroupPb.MemberActionRequest { IdempotencyKey="group/kick-gamma", PartyId=beta.PartyId,
+            ActorCharacterId="chr_dev_beta", CharacterId="chr_dev_gamma" }, headers, Deadline());
+        Check(kicked.MemberCharacterIds.SequenceEqual(["chr_dev_beta"]), "Kick failed.");
+        var disbanded = group.LeaveParty(new GroupPb.MemberActionRequest { IdempotencyKey="group/disband", PartyId=beta.PartyId,
+            ActorCharacterId="chr_dev_beta", CharacterId="chr_dev_beta" }, headers, Deadline());
+        Check(disbanded.State == "disbanded" && disbanded.MemberCharacterIds.Count == 0 &&
+            group.GetPartyForCharacter(new GroupPb.CharacterRef { CharacterId="chr_dev_beta" }, headers, Deadline()).PartyId == "", "Last-member disband failed.");
+        Console.WriteLine("PASS group restart/restore/kick/disband (4)");
+    }
+    return;
+}
 
 if (mode == "gathering-old-host")
 {

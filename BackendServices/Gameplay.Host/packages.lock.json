@@ -101,6 +101,12 @@
           "WorldContent": "[1.0.0, )"
         }
       },
+      "group.postgres": {
+        "type": "Project",
+        "dependencies": {
+          "Npgsql": "[10.0.3, 10.0.3]"
+        }
+      },
       "housing.postgres": {
         "type": "Project",
         "dependencies": {

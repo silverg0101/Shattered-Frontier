@@ -39,7 +39,8 @@ try {
     $verifyHeaders = @{ 'X-World-Verifier-Key' = $env:Identity__WorldVerifierKey }
     $first = Invoke-RestMethod "$url/v1/world/verify-ticket" -Method Post -Headers $verifyHeaders -ContentType 'application/json' -Body (@{ticket=$entry.ticket;server_id='srvi_dev_local'} | ConvertTo-Json)
     $replay = Invoke-WebRequest "$url/v1/world/verify-ticket" -Method Post -Headers $verifyHeaders -ContentType 'application/json' -Body (@{ticket=$entry.ticket;server_id='srvi_dev_local'} | ConvertTo-Json) -SkipHttpErrorCheck
-    if ($first.character_id -ne $character.character_id -or $replay.StatusCode -ne 401) { throw 'World ticket verification or replay guard failed.' }
+    if ($first.character_id -ne $character.character_id -or $first.account_id -ne $account.account_id -or
+        $first.realm_id -ne $character.realm_id -or $replay.StatusCode -ne 401) { throw 'World ticket identity claims or replay guard failed.' }
     Invoke-RestMethod "$url/v1/characters/$($character.character_id)" -Method Delete -Headers $headers | Out-Null
     $after = Invoke-RestMethod "$url/v1/characters" -Headers $headers
     if ($after.characters.Count -ne 0) { throw 'Character deletion failed.' }

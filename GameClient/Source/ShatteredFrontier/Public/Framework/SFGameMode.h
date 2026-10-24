@@ -68,9 +68,14 @@ public:
 
 private:
     TMap<FString, FString> PendingGatewayCharacters;
+    TMap<FString, FString> PendingGatewayAccounts, PendingGatewayRealms;
     bool UsesGatewayAdmission() const;
-    FString TakeGatewayCharacter(const FString& Ticket);
+    FString TakeGatewayCharacter(const FString& Ticket, FString& Account, FString& Realm);
     FSFPartyModel PartyModel;
+    TMap<int32, FString> DurablePartyBySessionId;
+    TMap<FString, int32> SessionPartyByDurableId;
+    TSet<int32> PendingPartyActions;
+    void RestorePartyForPlayer(class ASFPlayerController* Player);
     void RefreshPartyViews();
     class ASFPlayerController* FindPartyPlayer(const FString& Name) const;
     // Opt-in M3 group capture; Unreal CSV supplies frame times, while net totals come from the driver's built-in counters.

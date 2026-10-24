@@ -10,13 +10,15 @@ internal sealed record DatabasePoolSettings
         new("InventoryLedger", 24, 2, 32),
         new("CharacterState", 12, 2, 24),
         new("Housing", 24, 2, 24),
-        new("Exchange", 16, 2, 24)
+        new("Exchange", 16, 2, 24),
+        new("Group", 8, 2, 16)
     ];
 
     public int InventoryLedger { get; init; } = 24;
     public int CharacterState { get; init; } = 12;
     public int Housing { get; init; } = 24;
     public int Exchange { get; init; } = 16;
+    public int Group { get; init; } = 8;
 
     public string For(string service, string connectionString)
     {
@@ -27,6 +29,7 @@ internal sealed record DatabasePoolSettings
             "CharacterState" => CharacterState,
             "Housing" => Housing,
             "Exchange" => Exchange,
+            "Group" => Group,
             _ => throw new InvalidOperationException($"Unknown pool service {service}.")
         };
         if (value < limit.Minimum || value > limit.Maximum)

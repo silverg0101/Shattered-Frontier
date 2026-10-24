@@ -66,6 +66,13 @@ namespace
         Out.Exchange.SubjectId = FromUtf8(R.subject_id()); Out.Exchange.State = FromUtf8(R.state()); Out.Exchange.bCommitted = R.committed();
         Out.Exchange.Amount = R.amount(); Out.Exchange.Fee = R.fee();
     }
+    void CopyGroup(const sf::group::v1::Party& R, FSFGameplayResponse& Out)
+    {
+        Out.GroupPartyId = FromUtf8(R.party_id()); Out.GroupLeaderId = FromUtf8(R.leader_character_id());
+        Out.GroupAssistantId = FromUtf8(R.assistant_character_id()); Out.GroupState = FromUtf8(R.state());
+        Out.GroupVersion = R.version();
+        for (const auto& Id : R.member_character_ids()) { Out.GroupMembers.Add(FromUtf8(Id)); }
+    }
     void CopyNode(const sf::gathering::v1::NodeReply& R, FSFGameplayResponse& Out)
     {
         Out.bHasNode = true; Out.NodeId = FromUtf8(R.node_id()); Out.NodeDefinitionId = FromUtf8(R.definition_id());
@@ -87,6 +94,7 @@ struct FSFGrpcGameplayChannel
     std::unique_ptr<sf::exchange::v1::Exchange::Stub> Exchange;
     std::unique_ptr<sf::gathering::v1::Gathering::Stub> Gathering;
     std::unique_ptr<sf::world::v1::WorldSlots::Stub> WorldSlots;
+    std::unique_ptr<sf::group::v1::GroupService::Stub> Group;
     grpc::CompletionQueue Queue;
     std::string Token;
     FCriticalSection PendingLock;
@@ -104,6 +112,7 @@ FSFGrpcGameplayTransport::FSFGrpcGameplayTransport(const FString& Endpoint) : Ch
     Channel->Exchange = sf::exchange::v1::Exchange::NewStub(Wire);
     Channel->Gathering = sf::gathering::v1::Gathering::NewStub(Wire);
     Channel->WorldSlots = sf::world::v1::WorldSlots::NewStub(Wire);
+    Channel->Group = sf::group::v1::GroupService::NewStub(Wire);
     Channel->Token = Utf8(FPlatformMisc::GetEnvironmentVariable(TEXT("SF_GAMEPLAY_TOKEN")));
     if (Channel->Token.empty()) { UE_LOG(LogTemp, Warning, TEXT("GAMEPLAY_SERVICES_TOKEN_MISSING SF_GAMEPLAY_TOKEN is empty; the host will reject calls.")); }
     Thread = FRunnableThread::Create(this, TEXT("SFGameplayServicesGrpc"));
@@ -136,6 +145,46 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
     };
     switch (Q.Rpc)
     {
+    case ESFGameplayRpc::GroupCreate:
+    {
+        sf::group::v1::CreatePartyRequest M;
+        M.set_idempotency_key(Utf8(Q.OperationId)); M.set_leader_character_id(Utf8(Q.GroupActorId));
+        M.set_account_id(Utf8(Q.GroupAccountId)); M.set_realm_id(Utf8(Q.GroupRealmId)); M.set_dc_region(Utf8(Q.GroupRegionId));
+        auto* Call = new TCall<sf::group::v1::Party>(); Call->Copy = &CopyGroup;
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Group->AsyncCreateParty(C, M, &Channel->Queue); }); break;
+    }
+    case ESFGameplayRpc::GroupJoin:
+    {
+        sf::group::v1::JoinPartyRequest M;
+        M.set_idempotency_key(Utf8(Q.OperationId)); M.set_party_id(Utf8(Q.GroupPartyId)); M.set_actor_character_id(Utf8(Q.GroupActorId));
+        M.set_character_id(Utf8(Q.GroupMemberId)); M.set_account_id(Utf8(Q.GroupAccountId)); M.set_realm_id(Utf8(Q.GroupRealmId));
+        auto* Call = new TCall<sf::group::v1::Party>(); Call->Copy = &CopyGroup;
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Group->AsyncJoinParty(C, M, &Channel->Queue); }); break;
+    }
+    case ESFGameplayRpc::GroupGet:
+    {
+        sf::group::v1::CharacterRef M; M.set_character_id(Utf8(Q.GroupActorId));
+        auto* Call = new TCall<sf::group::v1::Party>(); Call->Copy = &CopyGroup;
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Group->AsyncGetPartyForCharacter(C, M, &Channel->Queue); }); break;
+    }
+    case ESFGameplayRpc::GroupLeave:
+    case ESFGameplayRpc::GroupKick:
+    case ESFGameplayRpc::GroupPromote:
+    case ESFGameplayRpc::GroupAssistant:
+    {
+        sf::group::v1::MemberActionRequest M;
+        M.set_idempotency_key(Utf8(Q.OperationId)); M.set_party_id(Utf8(Q.GroupPartyId));
+        M.set_actor_character_id(Utf8(Q.GroupActorId)); M.set_character_id(Utf8(Q.GroupMemberId));
+        auto* Call = new TCall<sf::group::v1::Party>(); Call->Copy = &CopyGroup;
+        switch (Q.Rpc)
+        {
+        case ESFGameplayRpc::GroupLeave: Start(Call, [&](grpc::ClientContext* C) { return Channel->Group->AsyncLeaveParty(C, M, &Channel->Queue); }); break;
+        case ESFGameplayRpc::GroupKick: Start(Call, [&](grpc::ClientContext* C) { return Channel->Group->AsyncKickMember(C, M, &Channel->Queue); }); break;
+        case ESFGameplayRpc::GroupPromote: Start(Call, [&](grpc::ClientContext* C) { return Channel->Group->AsyncPromoteLeader(C, M, &Channel->Queue); }); break;
+        default: Start(Call, [&](grpc::ClientContext* C) { return Channel->Group->AsyncAssignAssistant(C, M, &Channel->Queue); }); break;
+        }
+        break;
+    }
     case ESFGameplayRpc::AdvanceWorldSlots:
     {
         sf::world::v1::AdvanceSlotsRequest M;

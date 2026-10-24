@@ -108,8 +108,8 @@ private:
     UPROPERTY(VisibleAnywhere) TObjectPtr<UTextRenderComponent> Label;
     TWeakObjectPtr<class ASFGameMode> PilotMode;
     TWeakObjectPtr<ASFE1Character> Target;
-    FString SpawnGroup;
-    int32 Slot = INDEX_NONE;
+    UPROPERTY(Replicated) FString SpawnGroup;
+    UPROPERTY(Replicated) int32 Slot = INDEX_NONE;
     int32 SpawnSerial = 0;
     TArray<FVector2D> Territory;
     FVector Anchor = FVector::ZeroVector;

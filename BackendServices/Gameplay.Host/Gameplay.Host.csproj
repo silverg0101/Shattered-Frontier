@@ -11,6 +11,7 @@
     <ProjectReference Include="../Housing.Postgres/Housing.Postgres.csproj" />
     <ProjectReference Include="../InventoryLedger.Postgres/InventoryLedger.Postgres.csproj" />
     <ProjectReference Include="../Exchange.Postgres/Exchange.Postgres.csproj" />
+    <ProjectReference Include="../Group.Postgres/Group.Postgres.csproj" />
     <ProjectReference Include="../WorldContent/WorldContent.csproj" />
     <PackageReference Include="Grpc.AspNetCore" />
     <PackageReference Include="Grpc.Net.Client" />
@@ -21,6 +22,7 @@
     <Protobuf Include="../../proto/sf/housing/v1/housing.proto" ProtoRoot="../../proto" GrpcServices="Both" />
     <Protobuf Include="../../proto/sf/crafting/v1/crafting.proto" ProtoRoot="../../proto" GrpcServices="Both" />
     <Protobuf Include="../../proto/sf/exchange/v1/exchange.proto" ProtoRoot="../../proto" GrpcServices="Both" />
+    <Protobuf Include="../../proto/sf/group/v1/group.proto" ProtoRoot="../../proto" GrpcServices="Both" />
     <Protobuf Include="../../proto/sf/inventory/v1/ledger.proto" ProtoRoot="../../proto" GrpcServices="Client" />
   </ItemGroup>
 </Project>

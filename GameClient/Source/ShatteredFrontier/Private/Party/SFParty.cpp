@@ -5,6 +5,8 @@
 #include "Characters/SFE1Character.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Combat/SFCombatPilot.h"
+#include "Services/SFBackpackComponent.h"
+#include "Services/SFGameplayServicesClient.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerState.h"
 #include "Misc/CommandLine.h"
@@ -20,6 +22,52 @@ FString PartyName(const ASFPlayerController* Player)
     const APlayerState* State = Player ? Player->GetPlayerState<APlayerState>() : nullptr;
     return State ? State->GetPlayerName() : FString();
 }
+}
+
+void ASFGameMode::RestorePartyForPlayer(ASFPlayerController* Player)
+{
+    const auto Service = USFBackpackComponent::Services();
+    auto* Pack = USFBackpackComponent::FindOrCreate(Player);
+    if (!Service || !Pack || Pack->GetCharacterId().IsEmpty()) { return; }
+    const FString CharacterId = Pack->GetCharacterId();
+    FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::GroupGet; Request.GroupActorId = CharacterId;
+    Service->Call(Request, [WeakMode = TWeakObjectPtr<ASFGameMode>(this), WeakPlayer = TWeakObjectPtr<ASFPlayerController>(Player), CharacterId](const FSFGameplayResponse& Reply)
+    {
+        ASFGameMode* Mode = WeakMode.Get();
+        ASFPlayerController* Connected = WeakPlayer.Get();
+        if (!Mode || !Connected || Reply.Status != ESFGameplayStatus::Ok || Reply.GroupPartyId.IsEmpty() ||
+            !Reply.GroupMembers.Contains(CharacterId)) { return; }
+        int32 SessionId = Mode->SessionPartyByDurableId.FindRef(Reply.GroupPartyId);
+        TMap<FString, int32> ConnectedIds;
+        for (auto It = Mode->GetWorld()->GetPlayerControllerIterator(); It; ++It)
+        {
+            auto* Candidate = Cast<ASFPlayerController>(It->Get());
+            auto* Bag = Candidate ? Candidate->FindComponentByClass<USFBackpackComponent>() : nullptr;
+            if (Candidate && Bag && Reply.GroupMembers.Contains(Bag->GetCharacterId()))
+            { ConnectedIds.Add(Bag->GetCharacterId(), Candidate->GetUniqueID()); }
+        }
+        for (const FString& Member : Reply.GroupMembers)
+        {
+            const int32 ControllerId = ConnectedIds.FindRef(Member);
+            if (!ControllerId) { continue; }
+            if (const auto* Existing = Mode->PartyModel.FindParty(ControllerId))
+            {
+                if (SessionId == 0 && Mode->DurablePartyBySessionId.FindRef(Existing->Id) == Reply.GroupPartyId)
+                { SessionId = Existing->Id; }
+                continue;
+            }
+            const int32 Restored = Mode->PartyModel.RestoreMember(ControllerId, SessionId);
+            if (Restored) { SessionId = Restored; }
+        }
+        if (SessionId)
+        {
+            Mode->SessionPartyByDurableId.Add(Reply.GroupPartyId, SessionId);
+            Mode->DurablePartyBySessionId.Add(SessionId, Reply.GroupPartyId);
+            Mode->PartyModel.RestoreRoles(SessionId, ConnectedIds.FindRef(Reply.GroupLeaderId), ConnectedIds.FindRef(Reply.GroupAssistantId));
+            Mode->RefreshPartyViews();
+            UE_LOG(LogTemp, Display, TEXT("PARTY_RESTORED Character=%s Party=%s Members=%d"), *CharacterId, *Reply.GroupPartyId, Reply.GroupMembers.Num());
+        }
+    });
 }
 
 ASFPlayerController* ASFGameMode::FindPartyPlayer(const FString& Name) const
@@ -46,6 +94,99 @@ void ASFGameMode::PartyAction(ASFPlayerController* Actor, uint8 Action, const FS
     const int32 Other = Target ? Target->GetUniqueID() : 0;
     const double Now = GetWorld()->GetTimeSeconds();
     PartyModel.Expire(Now);
+    const auto Service = USFBackpackComponent::Services();
+    auto* ActorBag = Actor->FindComponentByClass<USFBackpackComponent>();
+    auto* TargetBag = Target ? Target->FindComponentByClass<USFBackpackComponent>() : nullptr;
+    const FSFPartyModel::FParty* Current = PartyModel.FindParty(Self);
+    if (Service && !ActorBag && (Action == Accept || Action == Leave || Action == Kick || Action == Promote || Action == Assistant)) { return; }
+    if (Service && ActorBag && (Action == Accept || Action == Leave || Action == Kick || Action == Promote || Action == Assistant))
+    {
+        if (PendingPartyActions.Contains(Self) || (Action != Leave && !TargetBag)) { return; }
+        FSFGameplayRequest Request;
+        Request.OperationId = FString::Printf(TEXT("group:%s:%s"), *ActorBag->GetCharacterId(), *FGuid::NewGuid().ToString(EGuidFormats::Digits));
+        Request.GroupActorId = ActorBag->GetCharacterId();
+        Request.GroupMemberId = TargetBag ? TargetBag->GetCharacterId() : ActorBag->GetCharacterId();
+        Request.GroupAccountId = TargetBag ? TargetBag->GetAccountId() : ActorBag->GetAccountId();
+        Request.GroupRealmId = TargetBag ? TargetBag->GetRealmId() : ActorBag->GetRealmId();
+        Request.GroupRegionId = GetDefault<USFGameplayServicesSettings>()->GroupRegionId;
+        if (Action == Accept)
+        {
+            const bool bInvited = PartyModel.GetInvites().ContainsByPredicate([=](const FSFPartyModel::FInvite& Pending)
+            { return Pending.From == Other && Pending.To == Self && Now < Pending.ExpiresAt; });
+            if (!bInvited || !Other || !TargetBag) { return; }
+            const auto* Source = PartyModel.FindParty(Other);
+            Request.GroupPartyId = Source ? DurablePartyBySessionId.FindRef(Source->Id) : FString();
+            if (Source && Request.GroupPartyId.IsEmpty()) { return; }
+            Request.GroupActorId = TargetBag->GetCharacterId();
+            Request.GroupMemberId = ActorBag->GetCharacterId();
+            Request.GroupAccountId = ActorBag->GetAccountId();
+            Request.GroupRealmId = ActorBag->GetRealmId();
+            Request.Rpc = Request.GroupPartyId.IsEmpty() ? ESFGameplayRpc::GroupCreate : ESFGameplayRpc::GroupJoin;
+        }
+        else
+        {
+            if (!Current) { return; }
+            Request.GroupPartyId = DurablePartyBySessionId.FindRef(Current->Id);
+            if (Request.GroupPartyId.IsEmpty()) { return; }
+            Request.Rpc = Action == Leave ? ESFGameplayRpc::GroupLeave : Action == Kick ? ESFGameplayRpc::GroupKick :
+                Action == Promote ? ESFGameplayRpc::GroupPromote : ESFGameplayRpc::GroupAssistant;
+        }
+        PendingPartyActions.Add(Self);
+        auto Finish = [WeakMode = TWeakObjectPtr<ASFGameMode>(this), WeakActor = TWeakObjectPtr<ASFPlayerController>(Actor),
+            WeakTarget = TWeakObjectPtr<ASFPlayerController>(Target), Action, Self, Other, TargetName](const FSFGameplayResponse& Reply) mutable
+        {
+            ASFGameMode* Mode = WeakMode.Get();
+            if (!Mode) { return; }
+            Mode->PendingPartyActions.Remove(Self);
+            bool bDone = false;
+            if (Reply.Status == ESFGameplayStatus::Ok && WeakActor.IsValid() && (Action == Leave || WeakTarget.IsValid()))
+            {
+                switch (Action)
+                {
+                case Accept: bDone = Mode->PartyModel.Accept(Other, Self, Mode->GetWorld()->GetTimeSeconds()); break;
+                case Leave: bDone = Mode->PartyModel.Leave(Self); break;
+                case Kick: bDone = Mode->PartyModel.Kick(Self, Other); break;
+                case Promote: bDone = Mode->PartyModel.Promote(Self, Other); break;
+                case Assistant: bDone = Mode->PartyModel.AssignAssistant(Self, Other); break;
+                default: break;
+                }
+                if (bDone && Action == Accept)
+                {
+                    if (const auto* Joined = Mode->PartyModel.FindParty(Self))
+                    {
+                        Mode->DurablePartyBySessionId.Add(Joined->Id, Reply.GroupPartyId);
+                        Mode->SessionPartyByDurableId.Add(Reply.GroupPartyId, Joined->Id);
+                    }
+                }
+            }
+            UE_LOG(LogTemp, Display, TEXT("PARTY_ACTION Actor=%s Action=%d Target=%s Accepted=%d Service=%d"),
+                *PartyName(WeakActor.Get()), int32(Action), *TargetName.Left(64), bDone, int32(Reply.Status));
+            Mode->RefreshPartyViews();
+        };
+        if (Action == Accept && Request.Rpc == ESFGameplayRpc::GroupCreate)
+        {
+            const FString MemberId = Request.GroupMemberId, AccountId = Request.GroupAccountId, RealmId = Request.GroupRealmId;
+            FSFGameplayRequest Create = Request;
+            Create.GroupAccountId = TargetBag->GetAccountId(); Create.GroupRealmId = TargetBag->GetRealmId();
+            FSFGameplayRequest Lookup; Lookup.Rpc = ESFGameplayRpc::GroupGet; Lookup.GroupActorId = Create.GroupActorId;
+            Service->Call(Lookup, [Service, Create, MemberId, AccountId, RealmId, Finish = MoveTemp(Finish)](const FSFGameplayResponse& Found) mutable
+            {
+                if (Found.Status != ESFGameplayStatus::Ok) { Finish(Found); return; }
+                auto JoinExisting = [Service, Create, MemberId, AccountId, RealmId, Finish = MoveTemp(Finish)](const FSFGameplayResponse& Party) mutable
+                {
+                    if (Party.Status != ESFGameplayStatus::Ok) { Finish(Party); return; }
+                    FSFGameplayRequest Join; Join.Rpc = ESFGameplayRpc::GroupJoin; Join.OperationId = Create.OperationId + TEXT(":join");
+                    Join.GroupPartyId = Party.GroupPartyId; Join.GroupActorId = Create.GroupActorId;
+                    Join.GroupMemberId = MemberId; Join.GroupAccountId = AccountId; Join.GroupRealmId = RealmId;
+                    Service->Call(Join, MoveTemp(Finish));
+                };
+                if (Found.GroupPartyId.IsEmpty()) { Service->Call(Create, MoveTemp(JoinExisting)); }
+                else { JoinExisting(Found); }
+            });
+        }
+        else { Service->Call(Request, MoveTemp(Finish)); }
+        return;
+    }
     bool bAccepted = false;
     switch (Action)
     {
@@ -185,6 +326,28 @@ SF_PARTY_CONSOLE(Assistant, Assistant, TEXT("SFPartyAssistant"))
 void ASFPlayerController::TickPartyScenario()
 {
     if (!IsLocalController() || GetNetMode() != NM_Client || !GetWorld()) { return; }
+    if (FParse::Param(FCommandLine::Get(), TEXT("PartyXpScenario")))
+    {
+        int32 ScenarioRole = 0;
+        if (!FParse::Value(FCommandLine::Get(), TEXT("PartyXpScenarioRole="), ScenarioRole) || ScenarioRole < 1 || ScenarioRole > 3) { return; }
+        const double Time = GetWorld()->GetTimeSeconds();
+        if (Time < PartyScenarioNextAt || PartyScenarioStep == 3) { return; }
+        if (PartyView.Num() == 3)
+        {
+            PartyScenarioStep = 3;
+            UE_LOG(LogTemp, Display, TEXT("PARTY_XP_READY Role=%d Members=%d"), ScenarioRole, PartyView.Num());
+            return;
+        }
+        if (FParse::Param(FCommandLine::Get(), TEXT("PartyXpRestoreOnly"))) { return; }
+        if (ScenarioRole == 1)
+        {
+            if (PartyView.IsEmpty()) { SFPartyInvite(TEXT("beta")); PartyScenarioNextAt = Time + 2; }
+            else if (PartyView.Num() == 2) { SFPartyInvite(TEXT("gamma")); PartyScenarioNextAt = Time + 2; }
+        }
+        else if (PartyInvites.Contains(TEXT("alpha")))
+        { SFPartyAccept(TEXT("alpha")); PartyScenarioNextAt = Time + 2; }
+        return;
+    }
     int32 ScenarioRole = 0;
     if (!FParse::Value(FCommandLine::Get(), TEXT("PartyScenarioRole="), ScenarioRole) || ScenarioRole < 1 || ScenarioRole > 3) { return; }
     const double Now = GetWorld()->GetTimeSeconds();

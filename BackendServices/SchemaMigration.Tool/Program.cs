@@ -1,6 +1,6 @@
 using ShatteredFrontier.Persistence;
 
-if (args.Length == 0) { Console.Error.WriteLine("Usage: SchemaMigration.Tool [--role schema_owner] inventory|character_state|housing|exchange ... (SF_MIGRATION_CONNECTION required)"); return 2; }
+if (args.Length == 0) { Console.Error.WriteLine("Usage: SchemaMigration.Tool [--role schema_owner] inventory|character_state|housing|exchange|group ... (SF_MIGRATION_CONNECTION required)"); return 2; }
 var connection = Environment.GetEnvironmentVariable("SF_MIGRATION_CONNECTION")
     ?? throw new InvalidOperationException("SF_MIGRATION_CONNECTION is required.");
 var index = 0;

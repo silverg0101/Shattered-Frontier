@@ -14,6 +14,7 @@ using ShatteredFrontier.GatheringNodes;
 using ShatteredFrontier.WorldContent;
 using ShatteredFrontier.CraftingContent;
 using ShatteredFrontier.Exchange.Postgres;
+using ShatteredFrontier.Group.Postgres;
 using CharacterAppearance;
 using ClaimTerritory;
 using DomLedger = ShatteredFrontier.InventoryLedger.InventoryLedger;
@@ -54,6 +55,8 @@ var ledgerConnection = pools.For("InventoryLedger", Required("GAMEPLAY_LEDGER_CO
 var characterConnection = pools.For("CharacterState", Required("GAMEPLAY_CHARACTER_CONNECTION"));
 var housingConnection = pools.For("Housing", Required("GAMEPLAY_HOUSING_CONNECTION"));
 var exchangeConnection = pools.For("Exchange", Required("GAMEPLAY_EXCHANGE_CONNECTION"));
+var groupRawConnection = Environment.GetEnvironmentVariable("GAMEPLAY_GROUP_CONNECTION");
+var groupConnection = groupRawConnection is { Length: > 0 } ? pools.For("Group", groupRawConnection) : null;
 var token = Required("SF_GAMEPLAY_TOKEN");
 var contentRoot = Required("GAMEPLAY_CONTENT_ROOT");
 var appearanceAllowlist = AppearanceAllowlist.Load(Path.Combine(contentRoot, "appearance", "human.json"));
@@ -109,6 +112,12 @@ builder.Services.AddSingleton(new ReceiptOutboxControls());
 builder.Services.AddHostedService<ReceiptOutboxRelay>();
 builder.Services.AddSingleton(new PostgresHousingStore(housingConnection));
 builder.Services.AddSingleton(new PostgresExchangeStore(exchangeConnection));
+if (groupConnection is not null)
+{
+    var groupControls = new GroupControls(); groupControls.Validate();
+    builder.Services.AddSingleton(groupControls);
+    builder.Services.AddSingleton(new PostgresGroupStore(groupConnection, groupControls));
+}
 builder.Services.AddSingleton(quests);
 builder.Services.AddSingleton(zone);
 builder.Services.AddSingleton(gatheringZone);
@@ -133,6 +142,7 @@ app.MapGrpcService<ProgressionGrpcService>();
 app.MapGrpcService<HousingGrpcService>();
 app.MapGrpcService<CraftingGrpcService>();
 app.MapGrpcService<ExchangeGrpcService>();
+if (groupConnection is not null) app.MapGrpcService<GroupGrpcService>();
 app.Lifetime.ApplicationStarted.Register(() => Console.Out.WriteLine($"GAMEPLAY_HOST_READY port={port}"));
 app.Run();
 

@@ -28,6 +28,27 @@ public:
         return Parties.FindByPredicate([Member](const FParty& P) { return P.Members.Contains(Member); });
     }
     const TArray<FInvite>& GetInvites() const { return Invites; }
+    // Rebuild only connected members from a durable roster; offline IDs never enter the session model.
+    int32 RestoreMember(int32 Member, int32 ExistingPartyId = 0)
+    {
+        if (!Member || FindParty(Member)) { return 0; }
+        FParty* Party = Parties.FindByPredicate([=](const FParty& P) { return P.Id == ExistingPartyId; });
+        if (!Party)
+        {
+            FParty NewParty; NewParty.Id = NextPartyId++; NewParty.Leader = Member; NewParty.Members.Add(Member);
+            Parties.Add(MoveTemp(NewParty)); return Parties.Last().Id;
+        }
+        if (Party->Members.Num() >= MaxMembers) { return 0; }
+        Party->Members.Add(Member); return Party->Id;
+    }
+    void RestoreRoles(int32 PartyId, int32 Leader, int32 Assistant)
+    {
+        if (FParty* Party = Parties.FindByPredicate([=](const FParty& P) { return P.Id == PartyId; }))
+        {
+            Party->Leader = Party->Members.Contains(Leader) ? Leader : Party->Members[0];
+            Party->Assistant = Party->Members.Contains(Assistant) && Assistant != Party->Leader ? Assistant : 0;
+        }
+    }
 
     bool Invite(int32 From, int32 To, double Now, double Ttl)
     {

@@ -555,6 +555,12 @@ void USFQuestPilotComponent::PumpServices()
                 if (auto* Pilot = Self->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>())
                 { Pilot->RestoreLevel(R.Level); Pilot->RestoreRestedMinutes(R.RestedMinutes); }
             }
+            if (Event.ReceiptKind == TEXT("defeat"))
+            {
+                auto* Bag = Self->GetOwner()->FindComponentByClass<USFBackpackComponent>();
+                UE_LOG(LogTemp, Display, TEXT("PARTY_XP_RECEIPT Character=%s Xp=%d PartySize=%d Applied=%d"),
+                    Bag ? *Bag->GetCharacterId() : TEXT("none"), R.XpGain, Event.EligiblePartySize, R.bProgressionApplied);
+            }
             if (R.ProgressionRevision > 0) { Self->ProgressionRevision = R.ProgressionRevision; }
             if (R.Level > 0)
             { if (auto* Pilot = Self->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>()) { Pilot->RestoreLevel(R.Level); } }

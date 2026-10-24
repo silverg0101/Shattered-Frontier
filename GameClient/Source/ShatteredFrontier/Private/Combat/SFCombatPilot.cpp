@@ -134,6 +134,8 @@ void ASFPilotBoar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ASFPilotBoar, CurrentHealth);
+    DOREPLIFETIME(ASFPilotBoar, SpawnGroup);
+    DOREPLIFETIME(ASFPilotBoar, Slot);
 }
 
 void ASFPilotBoar::Initialize(ASFGameMode* OwnerMode, const FString& Group, int32 InSlot,
@@ -366,13 +368,26 @@ void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
         {
             const int32 PlayerIndex = GetNumPlayers();
             const double Angle = 2.0 * PI * double(CapacitySlot - 1) / 12.0;
-            const FVector Offset = bCapacitySlots
+            FVector Offset = bCapacitySlots
                 ? FVector(180.0 * FMath::Cos(Angle), 180.0 * FMath::Sin(Angle), 0)
                 : (PlayerIndex == 1 ? FVector(180,0,0) :
                     PlayerIndex == 2 ? FVector(180,180,0) : FVector(180,-180,0));
+            if (FParse::Param(FCommandLine::Get(), TEXT("PartyXpScenario")))
+            {
+                auto* Bag = Weak->FindComponentByClass<USFBackpackComponent>();
+                if (Bag && Bag->GetCharacterId() == TEXT("chr_dev_gamma")) { Offset = FVector(8000,0,0); }
+                else if (Bag && Bag->GetCharacterId() == TEXT("chr_dev_beta")) { Offset = FVector(180,80,0); }
+                else { Offset = FVector(180,-80,0); }
+            }
             const FVector Near = Grounded(GetWorld(), Boar->GetActorLocation()+Offset,
                 Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
             Player->SetActorLocation(Near, false, nullptr, ETeleportType::TeleportPhysics);
+            if (FParse::Param(FCommandLine::Get(), TEXT("PartyXpScenario")))
+            {
+                auto* Bag = Weak->FindComponentByClass<USFBackpackComponent>();
+                UE_LOG(LogTemp, Display, TEXT("PARTY_XP_RANGE Character=%s DistanceCm=%.0f"),
+                    Bag ? *Bag->GetCharacterId() : TEXT("none"), FVector::Dist(Near, Boar->GetActorLocation()));
+            }
             UE_LOG(LogTemp, Display, TEXT("COMBAT_GROUP_READY Pawn=%s"), *Player->GetName());
             return;
         }

@@ -26,6 +26,8 @@ public:
     bool bRestoreOnConnect = false;
     UPROPERTY(Config, EditAnywhere, Category="Exchange", meta=(ToolTip="Route the trading UI (direct trades, market listings, wallet) through Gameplay.Host Exchange. Off keeps the fake demo service. Release authors; next world start."))
     bool bExchangeEnabled = true;
+    UPROPERTY(Config, EditAnywhere, Category="Group", meta=(ToolTip="Data-center region for premade party records. Release authors; next world start."))
+    FString GroupRegionId = TEXT("dc_dev");
     UPROPERTY(Config, EditAnywhere, Category="Exchange", meta=(ClampMin="1.0", ClampMax="10.0", Units="m", ToolTip="Maximum player distance from a settlement market board. Release authors; next world start."))
     float MarketReachM = 3.0f;
     UPROPERTY(Config, EditAnywhere, Category="Exchange", meta=(ClampMin="10", ClampMax="200", ToolTip="Listings per market page. Release authors; next world start."))
@@ -46,7 +48,8 @@ public:
 enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, EndSession, CreateCharacter, LearnRecipe, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition, ReportDeath, ClearDeath,
     // Exchange (proto/sf/exchange/v1), carried by the Backend transport over the same Gameplay.Host channel.
     ExchangeWallet, OfferTrade, AcceptTrade, CancelTrade, ListItem, BuyListing, CancelListing, ListListings,
-    GetGatheringNode, ListGatheringZoneNodes, HarvestGatheringNode, AdvanceWorldSlots };
+    GetGatheringNode, ListGatheringZoneNodes, HarvestGatheringNode, AdvanceWorldSlots,
+    GroupCreate, GroupJoin, GroupLeave, GroupKick, GroupPromote, GroupAssistant, GroupGet };
 
 // Exchange request fields (each RPC reads only its own). Amounts are whole gold, as in the proto.
 struct FSFExchangeDelivery { FString EscrowId, DestinationId, ItemId; int64 Quantity = 0; };
@@ -103,6 +106,7 @@ struct FSFGameplayRequest
     int32 NodeGeneration = 0;  // HarvestGatheringNode: server-observed generation
     FString SlotCommand, SlotGroupId; int32 SlotIndex = 0, PlayersInArea = 0; bool bHostileSpawning = true;
     TArray<uint8> FollowUpPayload; FString FollowUpDigest; int32 FollowUpVersion = 0;
+    FString GroupPartyId, GroupActorId, GroupMemberId, GroupAccountId, GroupRealmId, GroupRegionId;
 };
 
 struct FSFGameplayResponse
@@ -153,6 +157,9 @@ struct FSFGameplayResponse
     TArray<FZoneNode> ZoneNodes;
     struct FBoarSlot { FString GroupId, PointId; int32 SlotIndex = 0, Cycle = 0; bool bActive = false; double XMetres = 0, YMetres = 0, FacingDegrees = 0; };
     TArray<FBoarSlot> BoarSlots;
+    FString GroupPartyId, GroupLeaderId, GroupAssistantId, GroupState;
+    TArray<FString> GroupMembers;
+    int32 GroupVersion = 0;
 };
 
 using FSFGameplaySend = TFunction<void(const FSFGameplayRequest&, float DeadlineSeconds, TFunction<void(const FSFGameplayResponse&)>)>;

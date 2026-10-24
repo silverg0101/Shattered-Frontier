@@ -50,6 +50,7 @@ class SHATTEREDFRONTIER_API ASFPlayerController : public APlayerController
 {
     GENERATED_BODY()
 public:
+    int32 PartyMemberCount() const { return PartyView.Num(); }
     ASFPlayerController();
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type Reason) override;

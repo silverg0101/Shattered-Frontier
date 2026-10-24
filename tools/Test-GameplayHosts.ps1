@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][string]$EvidenceRoot, [switch]$RecipesOnly, [switch]$AppearanceOnly, [switch]$GatheringOnly, [switch]$ProgressionOnly)
+param([Parameter(Mandatory)][string]$EvidenceRoot, [switch]$RecipesOnly, [switch]$AppearanceOnly, [switch]$GatheringOnly, [switch]$ProgressionOnly, [switch]$GroupOnly)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -72,7 +72,7 @@ try {
     [void](Invoke-Checked 'icacls.exe' @($private,'/inheritance:r','/grant:r',"${account}:(OI)(CI)F"))
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $port = $listener.LocalEndpoint.Port; $listener.Stop()
     @{run=$run;data=$data;port=$port} | ConvertTo-Json | Set-Content (Join-Path $private 'owner.json')
-    $projects = $(if ($RecipesOnly -or $AppearanceOnly -or $GatheringOnly -or $ProgressionOnly) { @('Progression') } else { @('Rewards','Progression','Housing') }) |
+    $projects = $(if ($GroupOnly) { @('Group') } elseif ($RecipesOnly -or $AppearanceOnly -or $GatheringOnly -or $ProgressionOnly) { @('Progression') } else { @('Rewards','Progression','Housing') }) |
         ForEach-Object { Join-Path $repo "BackendServices/Gameplay.Host.Tests/$_/$_.Host.Tests.csproj" }
     $buildOutput = (Join-Path $private 'build') + [IO.Path]::DirectorySeparatorChar
     foreach ($project in $projects) {
@@ -105,6 +105,10 @@ try {
     [void](Sql ("SET ROLE gameplay_owner;`n" + ($schemas -join "`n")) "gameplay_$run")
     $migrationConnection = "Host=127.0.0.1;Port=$port;Database=gameplay_$run;Username=fixture_admin;Password=$adminPassword;Pooling=false"
     & (Join-Path $repo 'tools/Invoke-SchemaMigrations.ps1') -Connection $migrationConnection -Schemas inventory,character_state,housing,exchange -Role gameplay_owner -Dotnet $dotnet -Nuget $nuget | Out-Null
+    if ($GroupOnly) {
+        & (Join-Path $repo 'tools/Invoke-SchemaMigrations.ps1') -Connection $migrationConnection -Schemas group -Role gameplay_owner -Dotnet $dotnet -Nuget $nuget | Out-Null
+        [void](Sql 'GRANT USAGE ON SCHEMA "group" TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA "group" TO gameplay_svc;' "gameplay_$run")
+    }
     [void](Sql 'GRANT USAGE ON SCHEMA inventory,character_state,housing,exchange TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA character_state TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA housing TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA exchange TO gameplay_svc;' "gameplay_$run")
     $connection = "Host=127.0.0.1;Port=$port;Database=gameplay_$run;Username=gameplay_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $hostPort = $listener.LocalEndpoint.Port; $listener.Stop()
@@ -114,6 +118,7 @@ try {
     $env:GAMEPLAY_CHARACTER_CONNECTION = $connection
     $env:GAMEPLAY_HOUSING_CONNECTION = $connection
     $env:GAMEPLAY_EXCHANGE_CONNECTION = $connection
+    if ($GroupOnly) { $env:GAMEPLAY_GROUP_CONNECTION = $connection }
     $fixtureContent = Join-Path $private 'content'
     Copy-Item -LiteralPath (Join-Path $repo 'content') -Destination $fixtureContent -Recurse
     $env:GAMEPLAY_CONTENT_ROOT = $fixtureContent
@@ -132,7 +137,22 @@ try {
     if (-not $ready) { throw 'Gameplay host readiness timeout.' }
     $results = [Collections.Generic.List[string]]::new()
     $journeyDll = Join-Path $buildOutput 'Progression.Host.Tests.dll'
-    if ($ProgressionOnly) {
+    if ($GroupOnly) {
+        $groupDll = Join-Path $buildOutput 'Group.Host.Tests.dll'
+        $currentStep = 'group wire'
+        $results.Add((Invoke-Checked $dotnet @($groupDll,'group') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+        Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+        $currentStep = 'group restart'
+        $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-group-restart.out') -RedirectStandardError (Join-Path $private 'host-group-restart.err')
+        $ready = $false
+        for ($i=0; $i -lt 100; $i++) {
+            if ($hostProcess.HasExited) { throw 'Gameplay group host exited after restart.' }
+            if ((Test-Path (Join-Path $private 'host-group-restart.out')) -and (Get-Content (Join-Path $private 'host-group-restart.out') -Raw) -match 'GAMEPLAY_HOST_READY') { $ready = $true; break }
+            Start-Sleep -Milliseconds 100
+        }
+        if (-not $ready) { throw 'Gameplay group host restart timeout.' }
+        $results.Add((Invoke-Checked $dotnet @($groupDll,'group-restart') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+    } elseif ($ProgressionOnly) {
         $currentStep = 'progression wire'
         $results.Add((Invoke-Checked $dotnet @($journeyDll,'progression') @{
             GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token

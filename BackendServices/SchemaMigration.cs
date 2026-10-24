@@ -31,6 +31,8 @@ public static class SchemaMigration
                 ("Schema.Reads.sql", "SELECT to_regclass('exchange.exchange_active_market_page') IS NOT NULL AND to_regclass('exchange.exchange_pending_trade_a_page') IS NOT NULL") },
             "identity" => new (string File, string Installed)[] {
                 ("Schema.sql", "SELECT to_regclass('identity.schema_version') IS NOT NULL") },
+            "group" => new (string File, string Installed)[] {
+                ("Schema.sql", "SELECT to_regclass('\"group\".schema_version') IS NOT NULL") },
             _ => throw new ArgumentException($"Unknown schema: {schema}")
         };
         if (role is not null && !System.Text.RegularExpressions.Regex.IsMatch(role, "^[a-z_][a-z0-9_]*$"))
@@ -55,24 +57,25 @@ public static class SchemaMigration
                 lockCommand.ExecuteNonQuery();
             }
             // The identity slice bootstraps its own base schema under the owner role.
-            if (schema == "identity" && file == "Schema.sql")
+            if ((schema == "identity" || schema == "group") && file == "Schema.sql")
             {
-                using var bootstrap = new NpgsqlCommand("CREATE SCHEMA IF NOT EXISTS identity", connection, transaction);
+                using var bootstrap = new NpgsqlCommand(schema == "group" ? "CREATE SCHEMA IF NOT EXISTS \"group\"" : "CREATE SCHEMA IF NOT EXISTS identity", connection, transaction);
                 bootstrap.ExecuteNonQuery();
             }
             using (var check = new NpgsqlCommand("SELECT to_regclass($1) IS NOT NULL", connection, transaction))
             {
-                check.Parameters.AddWithValue(schema + ".schema_version");
-                if (check.ExecuteScalar() is not true && !(schema == "identity" && file == "Schema.sql"))
+                check.Parameters.AddWithValue(schema == "group" ? "\"group\".schema_version" : schema + ".schema_version");
+                if (check.ExecuteScalar() is not true && !((schema == "identity" || schema == "group") && file == "Schema.sql"))
                     throw new InvalidOperationException($"{schema} base schema is not installed.");
             }
-            using (var create = new NpgsqlCommand($"CREATE TABLE IF NOT EXISTS {schema}.applied_schema_files (file_name text PRIMARY KEY, sha256 text NOT NULL, applied_at timestamptz NOT NULL DEFAULT now())", connection, transaction))
+            var quotedSchema = schema == "group" ? "\"group\"" : schema;
+            using (var create = new NpgsqlCommand($"CREATE TABLE IF NOT EXISTS {quotedSchema}.applied_schema_files (file_name text PRIMARY KEY, sha256 text NOT NULL, applied_at timestamptz NOT NULL DEFAULT now())", connection, transaction))
                 create.ExecuteNonQuery();
             using var stream = typeof(SchemaMigration).Assembly.GetManifestResourceStream(resources[file])!;
             using var reader = new StreamReader(stream);
             var sql = reader.ReadToEnd();
             var checksum = Convert.ToHexString(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(sql))).ToLowerInvariant();
-            using (var recorded = new NpgsqlCommand($"SELECT sha256 FROM {schema}.applied_schema_files WHERE file_name=$1", connection, transaction))
+            using (var recorded = new NpgsqlCommand($"SELECT sha256 FROM {quotedSchema}.applied_schema_files WHERE file_name=$1", connection, transaction))
             {
                 recorded.Parameters.AddWithValue(file);
                 if (recorded.ExecuteScalar() is string previous)
@@ -98,7 +101,7 @@ public static class SchemaMigration
                 using var apply = new NpgsqlCommand(sql, connection, transaction);
                 apply.ExecuteNonQuery();
             }
-            using var mark = new NpgsqlCommand($"INSERT INTO {schema}.applied_schema_files(file_name,sha256) VALUES ($1,$2)", connection, transaction);
+            using var mark = new NpgsqlCommand($"INSERT INTO {quotedSchema}.applied_schema_files(file_name,sha256) VALUES ($1,$2)", connection, transaction);
             mark.Parameters.AddWithValue(file);
             mark.Parameters.AddWithValue(checksum);
             mark.ExecuteNonQuery();

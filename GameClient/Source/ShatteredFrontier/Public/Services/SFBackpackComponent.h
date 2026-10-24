@@ -37,9 +37,11 @@ public:
     // Development fixture until DEC-04: a stable dev character name for a connection (see ASFGameMode::InitNewPlayer).
     static bool IsValidDevName(const FString& Name);
     static void AssignDevIdentity(APlayerController* Controller, const FString& Name);
-    static void AssignGatewayIdentity(APlayerController* Controller, const FString& CharacterId);
+    static void AssignGatewayIdentity(APlayerController* Controller, const FString& CharacterId, const FString& AccountId, const FString& RealmId);
     const FString& GetContainerId() { BindIdentity(); return ContainerId; }
     const FString& GetCharacterId() { BindIdentity(); return CharacterId; }
+    const FString& GetAccountId() { BindIdentity(); return AccountId; }
+    const FString& GetRealmId() { BindIdentity(); return RealmId; }
     TSharedPtr<FSFInventoryLedgerClient> GetLedger() const { return Ledger; }
     void Enqueue(FSFBackpackMutation Mutation);
     // Applies committed ledger deltas to the session bag projection, by definition id. Unknown items are logged.
@@ -65,12 +67,13 @@ private:
     bool bIdentityUsed = false;
     FString DevName;  // "" uses the connection id
     FString VerifiedCharacterId;
+    FString VerifiedAccountId, VerifiedRealmId;
     void Pump();
     void Execute(int32 Attempt);
     void Refresh(TFunction<void(bool)> Done);
     void EnsureEquipment(TFunction<void(const FSFLedgerResponse&)> Done);
     TSharedPtr<FSFInventoryLedgerClient> Ledger;
-    FString ContainerId, CharacterId;
+    FString ContainerId, CharacterId, AccountId, RealmId;
     int32 Capacity = 0;
     int64 Revision = -1;  // -1: unknown, read (or ensure) before the next mutation
     bool bBusy = false;

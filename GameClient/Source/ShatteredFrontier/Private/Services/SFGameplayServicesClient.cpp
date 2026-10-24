@@ -14,6 +14,9 @@ bool USFGameplayServicesSettings::Validate(FString& Error) const
     { Error = TEXT("Endpoint must be 127.0.0.1:<port> in the development topology."); return false; }
     if (!FMath::IsFinite(TimeoutSeconds) || TimeoutSeconds < 1 || TimeoutSeconds > 30) { Error = TEXT("TimeoutSeconds must be 1-30."); return false; }
     if (MaxAttempts < 1 || MaxAttempts > 5) { Error = TEXT("MaxAttempts must be 1-5."); return false; }
+    if (GroupRegionId.IsEmpty() || GroupRegionId.Len() > 32) { Error = TEXT("GroupRegionId must be 1-32 characters."); return false; }
+    for (TCHAR C : GroupRegionId)
+    { if (!((C >= 'a' && C <= 'z') || (C >= '0' && C <= '9') || C == '_')) { Error = TEXT("GroupRegionId must use lowercase letters, digits or underscores."); return false; } }
     if (!FMath::IsFinite(GatheringNodeRetrySeconds) || GatheringNodeRetrySeconds < 1 || GatheringNodeRetrySeconds > 30)
     { Error = TEXT("GatheringNodeRetrySeconds must be 1-30."); return false; }
     if (ExchangeFeeBasisPoints < 0 || ExchangeFeeBasisPoints > 2000 || ExchangeListingFeeBasisPoints < 0 || ExchangeListingFeeBasisPoints > 1000)

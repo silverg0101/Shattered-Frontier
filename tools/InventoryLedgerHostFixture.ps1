@@ -46,7 +46,7 @@ function New-LedgerFixture([hashtable]$Fx,[string]$RepoRoot,[string]$EvidenceRoo
     # A worktree can reuse the pinned, ignored toolchain from the main checkout.
     $toolchainRoot = if ($env:SF_FIXTURE_TOOLCHAIN_ROOT) { [IO.Path]::GetFullPath($env:SF_FIXTURE_TOOLCHAIN_ROOT) } else { $RepoRoot }
     $Fx.dotnet = Join-Path $toolchainRoot 'Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotnet.exe'
-    $Fx.nuget = Join-Path $toolchainRoot 'Artifacts/Persistence/Toolchains/nuget'
+    $Fx.nuget = if ($env:SF_FIXTURE_NUGET_ROOT) { [IO.Path]::GetFullPath($env:SF_FIXTURE_NUGET_ROOT) } else { Join-Path $toolchainRoot 'Artifacts/Persistence/Toolchains/nuget' }
     $Fx.pg = Join-Path $toolchainRoot 'Artifacts/Persistence/Toolchains/postgresql-18.6/pgsql/bin'
     $Fx.project = Join-Path $RepoRoot 'BackendServices/InventoryLedger.Host/InventoryLedger.Host.csproj'
     $Fx.dll = Join-Path $EvidenceRoot 'private/host-build/InventoryLedger.Host.dll'

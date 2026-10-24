@@ -51,12 +51,15 @@ void USFBackpackComponent::AssignDevIdentity(APlayerController* Controller, cons
     UE_LOG(LogTemp, Display, TEXT("DEV_IDENTITY_BOUND Character=%s Container=%s"), *Backpack->CharacterId, *Backpack->ContainerId);
 }
 
-void USFBackpackComponent::AssignGatewayIdentity(APlayerController* Controller, const FString& Id)
+void USFBackpackComponent::AssignGatewayIdentity(APlayerController* Controller, const FString& Id, const FString& Account, const FString& Realm)
 {
-    if (!Id.StartsWith(TEXT("chr_")) || Id.Len() > 80) { return; }
+    if (!Id.StartsWith(TEXT("chr_")) || Id.Len() > 80 || !Account.StartsWith(TEXT("acct_")) || Account.Len() > 80 ||
+        Realm.IsEmpty() || Realm.Len() > 32) { return; }
     USFBackpackComponent* Backpack = FindOrCreate(Controller);
     if (!Backpack || Backpack->bIdentityUsed) { return; }
     Backpack->VerifiedCharacterId = Id;
+    Backpack->VerifiedAccountId = Account;
+    Backpack->VerifiedRealmId = Realm;
     Backpack->BindIdentity();
 }
 
@@ -68,6 +71,8 @@ void USFBackpackComponent::BindIdentity()
     if (!VerifiedCharacterId.IsEmpty())
     {
         CharacterId = VerifiedCharacterId;
+        AccountId = VerifiedAccountId;
+        RealmId = VerifiedRealmId;
         ContainerId = TEXT("ctn_") + VerifiedCharacterId.RightChop(4);
         return;
     }
@@ -76,6 +81,8 @@ void USFBackpackComponent::BindIdentity()
     ContainerId = !DevName.IsEmpty() ? TEXT("ctn_dev_") + DevName
         : Connection ? FString::Printf(TEXT("ctn_dev_%u"), Connection->GetConnectionHandle().GetParentConnectionId()) : FString(TEXT("ctn_dev_local"));
     CharacterId = TEXT("chr_dev_") + ContainerId.RightChop(8);
+    AccountId = TEXT("acct_dev_") + ContainerId.RightChop(8);
+    RealmId = TEXT("realm_dev");
 }
 
 void USFBackpackComponent::Enqueue(FSFBackpackMutation Mutation)

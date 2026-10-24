@@ -6,6 +6,7 @@ param(
     [ValidateRange(1,10)][int]$Clients = 1,
     [switch]$TargetScenario,
     [switch]$PartyScenario,
+    [switch]$PartyXpScenario,
     [switch]$Services,
     [string]$ServerExe,
     [switch]$SpawnOnly
@@ -19,6 +20,7 @@ $sdk = Join-Path $repo 'Artifacts\Persistence\Toolchains\dotnet-10.0.402\dotnet.
 if ($Services -and $TargetScenario) { throw 'Services ledger assertion requires the combat reward scenario.' }
 if ($SpawnOnly -and (-not $Services -or -not $ServerExe)) { throw '-SpawnOnly requires -Services and -ServerExe.' }
 if ($PartyScenario -and ($Clients -ne 3 -or $Services -or $TargetScenario -or $SpawnOnly)) { throw '-PartyScenario requires -Clients 3 without services or other scenarios.' }
+if ($PartyXpScenario -and ($Clients -ne 3 -or -not $Services -or $PartyScenario -or $TargetScenario -or $SpawnOnly)) { throw '-PartyXpScenario requires -Clients 3 -Services.' }
 if ($Clients -gt 1 -and -not $PartyScenario -and (-not $Services -or $TargetScenario)) { throw 'Group combat requires -Services and does not combine with -TargetScenario.' }
 $requiredInputs = @($editor,$project,$ServerExe) | Where-Object { $_ }
 if (-not $Services) { $requiredInputs += @($bridge,$sdk) }
@@ -33,7 +35,8 @@ $null = New-Item -ItemType Directory -Path $root
 if ($Services) { . (Join-Path $PSScriptRoot 'InventoryLedgerHostFixture.ps1') }
 $fx = @{}
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
-$scope = if ($PartyScenario) { 'Three clients: invite, decline, accept, leader handoff, kick, leave and party HUD' }
+$scope = if ($PartyXpScenario) { 'Three-client party: server restart, two in-range kill XP recipients, out-of-range exclusion and killer-only loot' }
+    elseif ($PartyScenario) { 'Three clients: invite, decline, accept, leader handoff, kick, leave and party HUD' }
     elseif ($SpawnOnly) { 'Packaged dedicated server, Gameplay.Host, five boars in each authored group' }
     elseif ($Clients -gt 1) { "$Clients clients, one boar, one mid-fight reconnect, owner targeting and durable killer reward" }
     elseif ($TargetScenario) { 'One dedicated server, one client; Tab selection, owner replication, death and range drops' }
@@ -48,7 +51,7 @@ function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
     $executable = if ($Name -eq 'server' -and $ServerExe) { $ServerExe } else { $editor }
     $projectArg = if ($executable -eq $editor) { @(('"'+$project+'"')) } else { @() }
     $arguments = @($projectArg)+@($Url,'-unattended','-NullRHI','-nosound','-nop4',('-UserDir="'+$user+'/"'),('-abslog="'+$log+'"'))+$Extra
-    if ($Clients -gt 1 -and -not $PartyScenario -and $Name -like 'client*') {
+    if ($Clients -gt 1 -and -not $PartyScenario -and -not $PartyXpScenario -and $Name -like 'client*') {
         $clientCsvDir = Join-Path $root ($Name+'-csv')
         $null = New-Item -ItemType Directory -Path $clientCsvDir
         $arguments += ('-M3CsvDir="'+$clientCsvDir+'"')
@@ -60,10 +63,11 @@ function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
     $result.runs += [ordered]@{ name=$Name; pid=$process.Id; log=$log; arguments=$arguments }
     return $process
 }
-function Wait-Log([Diagnostics.Process]$Process,[string]$Name,[string]$Pattern) {
+function Wait-Log([Diagnostics.Process]$Process,[string]$Name,[string]$Pattern,[int]$LimitSeconds = 0) {
     $watch = [Diagnostics.Stopwatch]::StartNew()
     $log = Join-Path $root ($Name+'.log')
-    while ($watch.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
+    $limit = if ($LimitSeconds -gt 0) { $LimitSeconds } else { $TimeoutSeconds }
+    while ($watch.Elapsed.TotalSeconds -lt $limit) {
         if ((Test-Path -LiteralPath $log) -and (Select-String -LiteralPath $log -Pattern $Pattern -Quiet)) { return }
         if ($Process.HasExited) { throw "$Name exited before $Pattern." }
         Start-Sleep -Milliseconds 300
@@ -112,10 +116,16 @@ function Get-M3FrameStats([string]$Path) {
 try {
     if ($Services) {
         New-LedgerFixture $fx $repo $root
-        $schemas = @('CharacterState.Postgres/Schema.sql','CharacterState.Postgres/Schema.Position.sql','CharacterState.Postgres/Schema.Recipes.sql','CharacterState.Postgres/Schema.Appearance.sql','CharacterState.Postgres/Schema.GatheringSkills.sql','CharacterState.Postgres/Schema.Death.sql','CharacterState.Postgres/Schema.Rested.sql','Housing.Postgres/Schema.sql','Exchange.Postgres/Schema.sql','Housing.Postgres/Schema.Gameplay.sql','Housing.Postgres/Schema.Geometry.sql','Housing.Postgres/Schema.Construction.sql') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_") -Raw }
+        $schemaFiles = @('CharacterState.Postgres/Schema.sql','CharacterState.Postgres/Schema.Position.sql','CharacterState.Postgres/Schema.Recipes.sql','CharacterState.Postgres/Schema.Appearance.sql','CharacterState.Postgres/Schema.GatheringSkills.sql','CharacterState.Postgres/Schema.Death.sql','CharacterState.Postgres/Schema.Rested.sql','Housing.Postgres/Schema.sql','Exchange.Postgres/Schema.sql','Housing.Postgres/Schema.Gameplay.sql','Housing.Postgres/Schema.Geometry.sql','Housing.Postgres/Schema.Construction.sql')
+        if ($PartyXpScenario) { $schemaFiles += 'Group.Postgres/Schema.sql' }
+        $schemas = $schemaFiles | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_") -Raw }
         [void](Invoke-LedgerSql $fx ("SET ROLE ledger_owner;`n" + ($schemas -join "`n")) $fx.db)
-        Invoke-LedgerSchemaMigrations $fx @('character_state','housing','exchange')
-        [void](Invoke-LedgerSql $fx ('GRANT USAGE ON SCHEMA character_state,housing,exchange TO ledger_svc; ' + ((@('character_state','housing','exchange') | ForEach-Object { "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA $_ TO ledger_svc;" }) -join ' ')) $fx.db)
+        $migrationSchemas = @('character_state','housing','exchange')
+        if ($PartyXpScenario) { $migrationSchemas += 'group' }
+        Invoke-LedgerSchemaMigrations $fx $migrationSchemas
+        $grants = 'GRANT USAGE ON SCHEMA character_state,housing,exchange TO ledger_svc; ' + ((@('character_state','housing','exchange') | ForEach-Object { "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA $_ TO ledger_svc;" }) -join ' ')
+        if ($PartyXpScenario) { $grants += ' GRANT USAGE ON SCHEMA "group" TO ledger_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA "group" TO ledger_svc;' }
+        [void](Invoke-LedgerSql $fx $grants $fx.db)
         $gameplayProject = Join-Path $repo 'BackendServices/Gameplay.Host/Gameplay.Host.csproj'
         $gameplayOut = Join-Path $fx.base 'gameplay-host'
         [void](Invoke-FxOk $fx $fx.dotnet @('restore',$gameplayProject,'--locked-mode','--packages',$fx.nuget,'--verbosity','quiet'))
@@ -126,6 +136,7 @@ try {
         Start-LedgerHost $fx ''
         $gameplayEnv = @{ GAMEPLAY_HOST_PORT="$gameplayPort"; SF_GAMEPLAY_TOKEN=$gameplayToken; GAMEPLAY_LEDGER_CONNECTION=$fx.connection; GAMEPLAY_CHARACTER_CONNECTION=$fx.connection
             GAMEPLAY_HOUSING_CONNECTION=$fx.connection; GAMEPLAY_EXCHANGE_CONNECTION=$fx.connection; GAMEPLAY_CONTENT_ROOT=(Join-Path $repo 'content') }
+        if ($PartyXpScenario) { $gameplayEnv.GAMEPLAY_GROUP_CONNECTION = $fx.connection }
         Invoke-WithEnv $gameplayEnv { $script:gameplay = Start-Process -FilePath $fx.dotnet -ArgumentList @(('"'+(Join-Path $gameplayOut 'Gameplay.Host.dll')+'"')) -WindowStyle Hidden -PassThru `
             -RedirectStandardOutput (Join-Path $root 'gameplay.stdout.txt') -RedirectStandardError (Join-Path $root 'gameplay.stderr.txt') }
         $null = $gameplay.Handle; $owned.Add($gameplay)
@@ -139,8 +150,9 @@ try {
     $scenarioArg = if ($PartyScenario) { '-PartyScenario' } elseif ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
     $serverFlags = @('-server',('-port='+$Port),'-multihome=127.0.0.1',$scenarioArg)
     if ($PartyScenario) { $serverFlags += '-SFDevIdentity' }
+    if ($PartyXpScenario) { $serverFlags += '-PartyXpScenario' }
     if ($Clients -gt 3) { $serverFlags += '-CombatGroupCapacitySlots' }
-    if ($Clients -gt 1 -and -not $PartyScenario) {
+    if ($Clients -gt 1 -and -not $PartyScenario -and -not $PartyXpScenario) {
         $csvDir = Join-Path $root 'server-csv'
         $null = New-Item -ItemType Directory -Path $csvDir
         $serverFlags += ('-M3CsvDir="'+$csvDir+'"')
@@ -153,6 +165,58 @@ try {
         Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server' $url $serverFlags }
     } else { $server = Start-Owned 'server' $url $serverFlags }
     Wait-Log $server 'server' 'COMBAT_PILOT_READY Boars=10'
+    if ($PartyXpScenario) {
+        $names = @('alpha','beta','gamma')
+        for ($role = 1; $role -le 3; $role++) {
+            $identity = $names[$role - 1]
+            $null = Start-Owned "client$role" ("127.0.0.1:$Port`?SFDevCharacter=$identity") @('-game','-CombatGroupScenario','-PartyXpScenario','-PartyXpHoldAttack',"-PartyXpScenarioRole=$role",("-CombatGroupRole=" + $(if ($role -eq 3) { 0 } else { $role })))
+        }
+        for ($role = 1; $role -le 3; $role++) {
+            $process = @($owned | Where-Object { $_.Id -eq (@($result.runs | Where-Object name -eq "client$role")[0].pid) })[0]
+            Wait-Log $process "client$role" "PARTY_XP_READY Role=$role Members=3"
+        }
+        $before = Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw
+        if ($before -notmatch 'PARTY_ACTION Actor=gamma Action=2 Target=alpha Accepted=1 Service=0') { throw 'Party did not persist before restart.' }
+        $leaderBefore = Invoke-LedgerSql $fx 'SELECT leader_character_id FROM "group".parties WHERE state=''active''' $fx.db
+        if ($leaderBefore -ne 'chr_dev_alpha') { throw "Unexpected durable leader before restart: $leaderBefore" }
+        Stop-Process -Id $server.Id -Force; $server.WaitForExit()
+        foreach ($name in @('client1','client2','client3')) {
+            $p = @($owned | Where-Object { $_.Id -eq (@($result.runs | Where-Object name -eq $name)[0].pid) })[0]
+            if (-not $p.HasExited) { Stop-Process -Id $p.Id -Force; $p.WaitForExit() }
+        }
+        Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server2' $url $serverFlags }
+        Wait-Log $server 'server2' 'COMBAT_PILOT_READY Boars=10'
+        for ($role = 1; $role -le 3; $role++) {
+            $identity = $names[$role - 1]
+            $null = Start-Owned "client$role-rejoin" ("127.0.0.1:$Port`?SFDevCharacter=$identity") @('-game','-CombatGroupScenario','-PartyXpScenario','-PartyXpRestoreOnly',"-PartyXpScenarioRole=$role",("-CombatGroupRole=" + $(if ($role -eq 3) { 0 } else { $role })))
+        }
+        for ($role = 1; $role -le 3; $role++) {
+            $name = "client$role-rejoin"
+            $p = @($owned | Where-Object { $_.Id -eq (@($result.runs | Where-Object name -eq $name)[0].pid) })[0]
+            Wait-Log $p $name "PARTY_XP_READY Role=$role Members=3"
+        }
+        Wait-Log $server 'server2' 'COMBAT_PILOT_BOAR_DEAD Group=boar_farm_edge Slot=0' 90
+        Wait-Log $server 'server2' 'COMBAT_PILOT_REWARD Death=boar_farm_edge:0:\d+ Source=service Outcome=0 Granted=1' 90
+        Wait-Log $server 'server2' 'PARTY_XP_RECEIPT Character=chr_dev_alpha Xp=[1-9]' 90
+        Wait-Log $server 'server2' 'PARTY_XP_RECEIPT Character=chr_dev_beta Xp=[1-9]' 90
+        $text = Get-Content -LiteralPath (Join-Path $root 'server2.log') -Raw
+        $far = [regex]::Match($text,'PARTY_XP_RANGE Character=chr_dev_gamma DistanceCm=(\d+)')
+        if (-not $far.Success -or [int]$far.Groups[1].Value -le 6000) { throw 'Gamma was not outside the 60 m XP radius.' }
+        if ([regex]::Matches($text,'PARTY_RESTORED Character=chr_dev_\w+ Party=pty_').Count -lt 3 -or
+            [regex]::Matches($text,'PARTY_XP_RECEIPT Character=chr_dev_(alpha|beta) Xp=[1-9]\d* PartySize=2 Applied=1').Count -ne 2 -or
+            $text -match 'PARTY_XP_RECEIPT Character=chr_dev_gamma|Fatal error:|Assertion failed:') { throw 'Party restore or two-in-range XP evidence failed.' }
+        $xpRows = Invoke-LedgerSql $fx "SELECT string_agg(DISTINCT character_id,',' ORDER BY character_id) FROM character_state.source_receipts WHERE domain='progression' AND operation_id LIKE 'boar:%'" $fx.db
+        if ($xpRows -notmatch 'chr_dev_alpha,chr_dev_beta' -or $xpRows -match 'gamma') { throw "Durable XP recipients incorrect: $xpRows" }
+        $leaderAfter = Invoke-LedgerSql $fx 'SELECT leader_character_id FROM "group".parties WHERE state=''active''' $fx.db
+        if ($leaderAfter -ne 'chr_dev_alpha') { throw "Durable leader changed across restart: $leaderAfter" }
+        $hides = 0
+        foreach ($identity in $names) { $view = Get-LedgerView $fx "ctn_dev_$identity"; $hides += [int]$view.items['item/boar_hide'] }
+        if ($hides -lt 2 -or $hides -gt 9) { throw "Killer-only hide total incorrect: $hides" }
+        $result.status = 'Passed'
+        $result.xpRecipients = $xpRows
+        $result.hidesTotal = $hides
+        return
+    }
     if ($PartyScenario) {
         $names = @('alpha','beta','gamma')
         for ($role = 1; $role -le 3; $role++) {
