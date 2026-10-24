@@ -70,7 +70,7 @@ Check(recovery.Pay("pay", lapsed.Id, "owner", lapsed.Revision, 3).Claim?.State =
 Check(recovery.Check(lapsed.Id, "owner", ClaimRight.Build).Allowed, "build restored");
 var gridSettings = new ClaimGridSettings();
 var bandMap = ClaimBandMap.Load("content/world/zones/greenlands_silverbrook.json",
-    "GameClient/ArtSource/Greenlands/silverbrook-town-layout.json", gridSettings);
+    "GameClient/Content/RuntimeData/Greenlands/silverbrook-town-layout.json", gridSettings);
 Check(bandMap.Band(new ClaimCell(900, 900)) == ClaimBand.Wilderness &&
     bandMap.BlockReason(new ClaimCell(900, 900)) == "", "authored wilderness band");
 Check(bandMap.BlockReason(new ClaimCell(0, 0)) != "", "town clearance");

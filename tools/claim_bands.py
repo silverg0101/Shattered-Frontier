@@ -33,7 +33,7 @@ def main():
     args = parser.parse_args()
     point = (args.x + .5, args.y + .5)
     zone = json.loads((ROOT / "content/world/zones/greenlands_silverbrook.json").read_text())
-    layout = json.loads((ROOT / "GameClient/ArtSource/Greenlands/silverbrook-town-layout.json").read_text())
+    layout = json.loads((ROOT / "GameClient/Content/RuntimeData/Greenlands/silverbrook-town-layout.json").read_text())
     towns = [a["polygon"] for a in zone["areas"] if a.get("purpose") == "settlement" and a.get("safety") == "protected"]
     town_distance = min(0 if inside(point, polygon) else distance(point, polygon, True) for polygon in towns)
     band = "near" if town_distance <= 150 else "middle" if town_distance <= 500 else "wilderness"

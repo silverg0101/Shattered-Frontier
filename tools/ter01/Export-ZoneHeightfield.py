@@ -10,10 +10,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'GameClient/ArtSource/Greenlands'))
 from heightfield import Heightfield, zone_region  # noqa: E402
+from validate_layout import SILVERBROOK_LAYOUT  # noqa: E402
 
 out = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / 'GameClient/Saved/TerrainSpike/silverbrook-hf.bin'
 name = 'silverbrook-town-layout.json'
-L = json.loads((ROOT / 'GameClient/ArtSource/Greenlands' / name).read_text(encoding='utf-8'))
+L = json.loads(SILVERBROOK_LAYOUT.read_text(encoding='utf-8'))
 region, _, _ = zone_region(name)
 hf = Heightfield(L, region=region)
 out.parent.mkdir(parents=True, exist_ok=True)

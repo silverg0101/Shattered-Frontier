@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 from heightfield import in_polygon, _dist  # noqa: E402
-from validate_layout import waters  # noqa: E402
+from validate_layout import SILVERBROOK_LAYOUT, waters  # noqa: E402
 
 RULES_VERSION = 1  # bump when a rule here changes meaning; part of the content version
 CELL = 2.5         # m, raster for clearances, slope and valley height
@@ -237,7 +237,7 @@ def transforms_hash(result):
 if __name__ == '__main__':
     from heightfield import Heightfield, zone_region
     district = sys.argv[1] if len(sys.argv) > 1 else 'Eastwood'
-    L = json.loads((ROOT / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))
+    L = json.loads(SILVERBROOK_LAYOUT.read_text(encoding='utf-8'))
     P = json.loads((ROOT / 'greenlands-look-profile.json').read_text(encoding='utf-8'))
     region, _, _ = zone_region('silverbrook-town-layout.json')
     hf = Heightfield(L, region=region)  # no building pads here; the builder passes its own

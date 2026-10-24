@@ -6,6 +6,7 @@ ZoneGraphData. Gate (WP6c fix 2): every StaticMeshActor not hidden inside the to
 """
 import json
 from pathlib import Path
+from validate_layout import SILVERBROOK_LAYOUT
 import unreal as u
 import argparse
 parser=argparse.ArgumentParser();parser.add_argument('--all',action='store_true');args=parser.parse_args()
@@ -13,7 +14,7 @@ parser=argparse.ArgumentParser();parser.add_argument('--all',action='store_true'
 actors = u.get_editor_subsystem(u.EditorActorSubsystem).get_all_level_actors()
 CLASSES = {'TextRenderActor', 'ZoneShape', 'ZoneGraphData'}
 FOLDERS = {'Labels', 'Townsfolk/Lanes'}
-WALL = json.loads((Path(__file__).resolve().parent / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))['wall']
+WALL = json.loads(SILVERBROOK_LAYOUT.read_text(encoding='utf-8'))['wall']
 
 def debug(a):
     if a.get_class().get_name() in CLASSES or str(a.get_folder_path()) in FOLDERS:

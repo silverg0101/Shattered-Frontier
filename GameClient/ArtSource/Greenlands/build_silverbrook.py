@@ -24,9 +24,9 @@ import townsfolk_smartobjects; importlib.reload(townsfolk_smartobjects)  # noqa:
 import importlib, validate_layout, validate_region, region_heightfield, heightfield, dress_zone, pcg_dressing  # an open editor
 for _m in (validate_layout, validate_region, region_heightfield, heightfield, dress_zone, pcg_dressing):        # keeps modules between
     importlib.reload(_m)                                                                                         # runs; take the files' state
-from validate_layout import validate, waters
+from validate_layout import SILVERBROOK_LAYOUT, validate, waters
 from heightfield import SHOULDER, _samples as _hf_samples, Heightfield, backdrop, check as check_terrain, crossings, in_polygon, water_level, zone_region
-L = json.loads((ROOT / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))
+L = json.loads(SILVERBROOK_LAYOUT.read_text(encoding='utf-8'))
 _problems = validate(L)
 assert not _problems, f'Layout is invalid; run validate_layout.py: {_problems}'
 ZONE = '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook'

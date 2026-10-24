@@ -13,7 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 from validate_region import in_polygon, tile_of, validate  # noqa: E402
-from validate_layout import intersection, line_dist  # noqa: E402
+from validate_layout import intersection, line_dist, zone_layout_path  # noqa: E402
 
 DATUM_WEIGHT = 4  # settlement datums and zone markers count this many times a river or coast point
 
@@ -65,7 +65,7 @@ class RegionHeightfield:
         ctrl = [(tuple(s['at']), s['datum'], DATUM_WEIGHT) for s in R['settlements'].values()]
         for s in R['settlements'].values():
             if 'zone_layout' in s:
-                Z = json.loads((ROOT / s['zone_layout']).read_text(encoding='utf-8'))
+                Z = json.loads(zone_layout_path(s['zone_layout']).read_text(encoding='utf-8'))
                 ctrl += [((s['at'][0] + p[0], s['at'][1] + p[1]), s['datum'] + h, DATUM_WEIGHT) for p, h in Z['elevation']['markers'].values()]
         for r in R['rivers'].values():
             ctrl += [((x, y), lv + 3, 1) for x, y, lv in _river_samples(r, 250)]

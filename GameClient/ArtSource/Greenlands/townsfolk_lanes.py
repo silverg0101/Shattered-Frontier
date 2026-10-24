@@ -12,6 +12,7 @@ a standalone run traces them in SFTownsfolkLaneLibrary. Reruns replace the earli
 """
 import json, math, sys
 from pathlib import Path
+from validate_layout import SILVERBROOK_LAYOUT
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
@@ -201,7 +202,7 @@ def build_in_editor(edges, junctions, ground=None, wet=lambda x, y: False):
 
 
 if __name__ == '__main__':
-    L = json.loads((ROOT / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))
+    L = json.loads(SILVERBROOK_LAYOUT.read_text(encoding='utf-8'))
     edges, junctions = plan(L)
     problems = check(edges, junctions)
     for p in problems:

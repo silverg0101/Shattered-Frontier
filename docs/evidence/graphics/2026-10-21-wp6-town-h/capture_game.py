@@ -10,7 +10,7 @@ from pathlib import Path
 import unreal as u
 
 OUT = Path(__file__).resolve().parent
-LAYOUT = json.loads((OUT.parents[3] / 'GameClient/ArtSource/Greenlands/silverbrook-town-layout.json').read_text(encoding='utf-8'))
+LAYOUT = json.loads((OUT.parents[3] / 'GameClient/Content/RuntimeData/Greenlands/silverbrook-town-layout.json').read_text(encoding='utf-8'))
 world = u.load_asset('/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook')
 pc = u.GameplayStatics.get_player_controller(world, 0)
 pawn = u.GameplayStatics.get_player_character(world, 0)

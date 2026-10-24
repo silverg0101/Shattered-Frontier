@@ -53,7 +53,7 @@ A zone's backdrop is the region terrain beyond the zone's edge. Never invent it 
 
 ## Stage 1 — Layout file and validator
 
-The layout file is one JSON per settlement, `GameClient/ArtSource/<Biome>/<settlement>-town-layout.json`. It is written in metres, in the zone frame (north −Y, east +X, origin at the town centre). Trace it by hand from the board using the board's scale, then reconcile it to the definition.
+The layout file is one JSON per settlement, `GameClient/Content/RuntimeData/<Biome>/<settlement>-town-layout.json`. It is written in metres, in the zone frame (north −Y, east +X, origin at the town centre). Trace it by hand from the board using the board's scale, then reconcile it to the definition.
 
 **Contents:**
 - **Polylines:** primary and secondary roads, trails, rivers and brooks, and walls.

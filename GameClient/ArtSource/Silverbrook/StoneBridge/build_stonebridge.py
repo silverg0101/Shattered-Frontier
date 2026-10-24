@@ -34,7 +34,7 @@ G=dict(stone=Geo('SM_SBStoneBridge_Masonry',asset),dressed=Geo('SM_SBStoneBridge
        deck=Geo('SM_SBStoneBridge_Deck',asset),detail=Geo('SM_SBStoneBridge_Details',asset))
 S,D=G['stone'],G['detail']
 # ---- measured layout (metres) -------------------------------------------------
-# Town layout (GameClient/ArtSource/Greenlands/silverbrook-town-layout.json): river 24 m wide,
+# Town layout (GameClient/Content/RuntimeData/Greenlands/silverbrook-town-layout.json): river 24 m wide,
 # bridge_length 30, bridge_width 7; heightfield.py puts the bank 1.5 m above the water
 # (WATER_BANK) and the channel bed 2 m below it (CHANNEL_DEPTH). z=0 is that bank.
 SLOT=(30,7,10)                 # deck 30 x 7; height not in the layout: 6 m above water (concept) + footings

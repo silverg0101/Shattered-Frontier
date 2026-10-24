@@ -9,7 +9,7 @@ import copy, json, math, sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from validate_layout import DIRECTIONS, line_dist, self_intersects, waters  # noqa: E402
+from validate_layout import DIRECTIONS, line_dist, self_intersects, waters, zone_layout_path  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
 
@@ -118,7 +118,7 @@ def validate(R, zones=None):
 
     # 5. Zones built so far agree with the region.
     if zones is None:
-        zones = {n: json.loads((ROOT / s['zone_layout']).read_text(encoding='utf-8')) for n, s in S.items() if 'zone_layout' in s}
+        zones = {n: json.loads(zone_layout_path(s['zone_layout']).read_text(encoding='utf-8')) for n, s in S.items() if 'zone_layout' in s}
     for name, Z in zones.items():
         s = S[name]
         cx = x0 + (tile_of(R, s['at'])[0] + 0.5) * ts

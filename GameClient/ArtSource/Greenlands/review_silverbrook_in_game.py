@@ -8,11 +8,12 @@ silverbrook-game-review.json and captures (arrival plus one per ReviewCamera_*) 
 """
 import json, math, os, time, sys
 from pathlib import Path
+from validate_layout import SILVERBROOK_LAYOUT
 import unreal as u
 
 ROOT = Path(__file__).resolve().parent
 EVIDENCE = ROOT.parents[2] / 'docs/evidence/graphics' / os.environ.get('GFX_EVIDENCE_DIR', '2026-10-21-before')
-LAYOUT = json.loads((ROOT / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))
+LAYOUT = json.loads(SILVERBROOK_LAYOUT.read_text(encoding='utf-8'))
 ROUTE = LAYOUT['review_route']
 world = u.load_asset('/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook')
 pc = u.GameplayStatics.get_player_controller(world, 0)

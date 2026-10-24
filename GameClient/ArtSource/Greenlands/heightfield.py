@@ -12,7 +12,7 @@ from array import array
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from validate_layout import waters  # noqa: E402
+from validate_layout import SILVERBROOK_LAYOUT, waters  # noqa: E402
 
 WATER_BANK = 1.5     # m above water where water meets the land
 CHANNEL_DEPTH = 2.0  # m below water at a channel centre
@@ -474,7 +474,7 @@ def zone_region(zone_file):
 
 
 if __name__ == '__main__':
-    path = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent / 'silverbrook-town-layout.json'
+    path = Path(sys.argv[1]) if len(sys.argv) > 1 else SILVERBROOK_LAYOUT
     layout = json.loads(path.read_text(encoding='utf-8'))
     region, datum, sea = zone_region(path.name)
     hf = Heightfield(layout, region=region)

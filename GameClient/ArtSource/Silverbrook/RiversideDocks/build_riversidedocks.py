@@ -36,7 +36,7 @@ G=dict(stone=Geo('SM_SBRiversideDocks_Masonry',asset),deck=Geo('SM_SBRiversideDo
        timber=Geo('SM_SBRiversideDocks_Timber',asset),crane=Geo('SM_SBRiversideDocks_Crane',asset),detail=Geo('SM_SBRiversideDocks_Details',asset))
 S,T,K,D=G['stone'],G['timber'],G['crane'],G['detail']
 # ---- measured layout (metres) -------------------------------------------------
-# Town layout (GameClient/ArtSource/Greenlands/silverbrook-town-layout.json): docks slot 30 x 10 x 1 on the
+# Town layout (GameClient/Content/RuntimeData/Greenlands/silverbrook-town-layout.json): docks slot 30 x 10 x 1 on the
 # Riverside Harbour basin (level 0.3). heightfield.py puts the bank 1.5 m above the water (WATER_BANK);
 # z=0 is that bank. The layout's 1 m height is the deck; the crane and banner post need 10 m in all.
 SLOT=(30,10,10)

@@ -6,6 +6,7 @@ so a rebuild gives the identical paint; this just avoids a full rebuild. Idempot
 """
 import json, math, sys
 from pathlib import Path
+from validate_layout import SILVERBROOK_LAYOUT
 import unreal as u
 
 ROOT = Path(__file__).resolve().parent
@@ -13,7 +14,7 @@ sys.path.insert(0, str(ROOT.parent / 'Silverbrook'))
 import silverbrook_props as sp  # _h (garden side hash) and _base_box (wall base), same as dress_house_details
 COBBLE_EXTRA, EARTH_EXTRA = 2.0, 8.0
 TERRAIN = '/Game/Frontier/Environment/Greenlands/Terrain/SM_Silverbrook_Terrain'
-L = json.loads((ROOT / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))
+L = json.loads(SILVERBROOK_LAYOUT.read_text(encoding='utf-8'))
 sm = u.load_asset(TERRAIN)
 mesh = u.DynamicMesh()
 mesh, outcome = u.GeometryScript_AssetUtils.copy_mesh_from_static_mesh(sm, mesh, u.GeometryScriptCopyMeshFromAssetOptions(), u.GeometryScriptMeshReadLOD())

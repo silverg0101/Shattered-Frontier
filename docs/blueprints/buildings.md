@@ -79,7 +79,7 @@ Rule from the dependency map: a feature worktree works in its own map under `/Ga
 4. `GameClient/ArtSource/Silverbrook/import_silverbrook.py --package-only`: skip `save_loaded_asset` for `M_SB_Scan`, `M_SB_Solid`, the shared textures and every `MI_SB_*` not named in the given package's manifest, and print `RESAVED <asset>` for anything it does save.
 
 ## 7. Town registration (replaces "runbook §8"; that section is only the table of Silverbrook-only hard-coded values)
-1. `GameClient/ArtSource/Greenlands/silverbrook-town-layout.json`: `building_types.<kind>` = `[w, d, h]` and at least one lot or place of that `kind`.
+1. `GameClient/Content/RuntimeData/Greenlands/silverbrook-town-layout.json`: `building_types.<kind>` = `[w, d, h]` and at least one lot or place of that `kind`.
 2. `GameClient/ArtSource/Greenlands/greenlands-look-profile.json` `buildings["<Display Name>"].have = ["SM_Silverbrook<PascalName>"]`.
 3. `GameClient/ArtSource/Greenlands/missing_assets.py`: a new kind goes into `LAYOUT_TYPES` (`'tavern': 'The Gilded Tankard'`) or `DEFINITION_TYPES`, or the regenerated concept README drops its row; display names may keep a leading `The` (package folders drop it).
 4. `GameClient/ArtSource/Greenlands/build_silverbrook.py` `KIND_BUILDING[<kind>] = "<Display Name>"` (line 47 table); `python GameClient/ArtSource/Greenlands/missing_assets.py` reports no stand-in for it.

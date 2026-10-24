@@ -11,9 +11,10 @@ so the door sits d/2 along (-sin yaw, cos yaw) from its centre. `facing` is the 
 """
 import json, math, sys
 from pathlib import Path
+from validate_layout import SILVERBROOK_LAYOUT, SILVERBROOK_CENSUS, SILVERBROOK_SMARTOBJECTS
 
 ROOT = Path(__file__).resolve().parent
-OUT = ROOT / 'silverbrook-smartobjects.json'
+OUT = SILVERBROOK_SMARTOBJECTS
 STALLS = {'market_stall', 'armor_vendor', 'weapons_vendor'}
 NO_DOOR = {'docks', 'wharf'} | STALLS
 
@@ -67,7 +68,7 @@ def write(objs):
 def build_in_editor(L=None):
     """Writes the file with the benches found in the open level; returns a summary."""
     import unreal as u
-    L = L or json.loads((ROOT / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))
+    L = L or json.loads(SILVERBROOK_LAYOUT.read_text(encoding='utf-8'))
     buildings = json.loads((ROOT / 'silverbrook-buildings.json').read_text(encoding='utf-8'))['buildings']
     benches = []
     for a in u.get_editor_subsystem(u.EditorActorSubsystem).get_all_level_actors():
@@ -77,13 +78,13 @@ def build_in_editor(L=None):
             benches.append((p.x / 100, p.y / 100, math.degrees(math.atan2(fy, fx))))
     benches.sort()
     objs = plan(L, buildings, benches)
-    problems = check(objs, json.loads((ROOT / "silverbrook-census.json").read_text(encoding="utf-8")), buildings)
+    problems = check(objs, json.loads(SILVERBROOK_CENSUS.read_text(encoding="utf-8")), buildings)
     write(objs)  # a stale census (rerun townsfolk_census.py) is reported, not fatal to a map rebuild
     return f'problems={problems} doors={sum(o["kind"] == "door" for o in objs)} stalls={sum(o["kind"] == "stall" for o in objs)} benches={len(benches)}'
 
 
 if __name__ == '__main__':
-    L = json.loads((ROOT / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))
+    L = json.loads(SILVERBROOK_LAYOUT.read_text(encoding='utf-8'))
     try:
         import unreal  # noqa: F401
     except ImportError:
@@ -94,7 +95,7 @@ if __name__ == '__main__':
         old = json.loads(OUT.read_text(encoding='utf-8'))['objects'] if OUT.exists() else []
         benches = [(o['at'][0], o['at'][1], o['facing']) for o in old if o['kind'] == 'bench']  # kept from the last editor run
         objs = plan(L, buildings, benches)
-        problems = check(objs, json.loads((ROOT / "silverbrook-census.json").read_text(encoding="utf-8")), buildings)
+        problems = check(objs, json.loads(SILVERBROOK_CENSUS.read_text(encoding="utf-8")), buildings)
         for p in problems:
             print('FAIL', p)
         if problems:

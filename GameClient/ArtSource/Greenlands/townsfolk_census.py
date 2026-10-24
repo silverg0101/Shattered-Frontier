@@ -9,6 +9,7 @@ hash(layout seed, label), so an unchanged building keeps its household when othe
 """
 import hashlib, json, math, random, sys, zlib
 from pathlib import Path
+from validate_layout import SILVERBROOK_LAYOUT, SILVERBROOK_CENSUS
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
@@ -137,7 +138,7 @@ def check(L, buildings, C):
 
 
 def main():
-    L = json.loads((ROOT / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))
+    L = json.loads(SILVERBROOK_LAYOUT.read_text(encoding='utf-8'))
     src = ROOT / 'silverbrook-buildings.json'
     assert src.exists(), 'silverbrook-buildings.json is missing: rebuild the map with build_silverbrook.py first'
     buildings = json.loads(src.read_text(encoding='utf-8'))['buildings']
@@ -152,7 +153,7 @@ def main():
         print('FAIL', p)
     if problems:
         sys.exit(1)
-    (ROOT / 'silverbrook-census.json').write_text(json.dumps(C, indent=1) + '\n', encoding='utf-8', newline='\n')
+    (SILVERBROOK_CENSUS).write_text(json.dumps(C, indent=1) + '\n', encoding='utf-8', newline='\n')
     per = {}
     for res in C['residents']:
         per[res['district']] = per.get(res['district'], 0) + 1

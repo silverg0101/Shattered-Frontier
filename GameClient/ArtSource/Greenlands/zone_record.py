@@ -15,7 +15,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT.parents[2] / 'content' / 'world' / 'zones' / 'greenlands_silverbrook.json'
 sys.path.insert(0, str(ROOT))
-from validate_layout import waters  # noqa: E402
+from validate_layout import SILVERBROOK_LAYOUT, waters  # noqa: E402
 from heightfield import in_polygon  # noqa: E402
 
 NODE = {'tree_pine_tall': 'gathering_node/pine_tree', 'tree_oak': 'gathering_node/oak_tree',
@@ -182,7 +182,7 @@ def check(L, Z):
 
 
 def main():
-    L = json.loads((ROOT / 'silverbrook-town-layout.json').read_text(encoding='utf-8'))
+    L = json.loads(SILVERBROOK_LAYOUT.read_text(encoding='utf-8'))
     candidates = {}
     for d in L['districts']:
         f = ROOT / f"silverbrook-{d.lower().replace(' ', '-')}-candidates.json"

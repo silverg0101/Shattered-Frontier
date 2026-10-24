@@ -1,12 +1,22 @@
 """Validate a settlement layout file (stage 1 of docs/settlement-world-pipeline.md).
 
 Standard library only. Usage:
-    python validate_layout.py [layout.json]      # default: silverbrook-town-layout.json beside this file
+    python validate_layout.py [layout.json]      # default: packaged Silverbrook runtime layout
 Prints each problem and exits 1 if any; running it also self-tests that broken copies fail.
 Frame: metres, north is -Y, east is +X, origin at the town centre.
 """
 import copy, json, math, sys
 from pathlib import Path
+
+SILVERBROOK_DATA = Path(__file__).resolve().parents[2] / 'Content' / 'RuntimeData' / 'Greenlands'
+SILVERBROOK_LAYOUT = SILVERBROOK_DATA / 'silverbrook-town-layout.json'
+SILVERBROOK_CENSUS = SILVERBROOK_DATA / 'silverbrook-census.json'
+SILVERBROOK_SMARTOBJECTS = SILVERBROOK_DATA / 'silverbrook-smartobjects.json'
+
+
+def zone_layout_path(name):
+    return SILVERBROOK_LAYOUT if name == SILVERBROOK_LAYOUT.name else Path(__file__).resolve().parent / name
+
 
 DIRECTIONS = {'N': -90, 'NE': -45, 'E': 0, 'SE': 45, 'S': 90, 'SW': 135, 'W': 180, 'NW': -135}  # degrees, atan2(y, x) with -Y north
 
@@ -173,7 +183,7 @@ def _self_test(L):
 
 
 if __name__ == '__main__':
-    path = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent / 'silverbrook-town-layout.json'
+    path = Path(sys.argv[1]) if len(sys.argv) > 1 else SILVERBROOK_LAYOUT
     layout = json.loads(path.read_text(encoding='utf-8'))
     problems = validate(layout)
     for p in problems:

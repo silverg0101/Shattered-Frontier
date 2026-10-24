@@ -6,9 +6,10 @@ Each actor keeps its offset from the player start and its height above the groun
 """
 import json, math
 from pathlib import Path
+from validate_layout import SILVERBROOK_LAYOUT
 import unreal
 
-L = json.loads((Path(__file__).with_name('silverbrook-town-layout.json')).read_text(encoding='utf-8'))
+L = json.loads(SILVERBROOK_LAYOUT.read_text(encoding='utf-8'))
 ax, ay = L['arrival']['at']; fx, fy = L['arrival']['face']
 yaw = math.degrees(math.atan2(fy - ay, fx - ax))
 actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
