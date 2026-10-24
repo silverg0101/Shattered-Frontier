@@ -68,9 +68,21 @@ def plan_turned(bones, h, turn):
     # limbs.group wants the centre line at x = 0; generated rigs wobble about it by a centimetre or so
     x0 = float(np.median([head[n][0] for n in names]))
     snap = lambda p: [0.0 if abs(p[0] - x0) < 0.03 * h else p[0] - x0, p[1], p[2]]
-    pts = [snap(p) for n in names for p in (head[n], tail[n])]
-    limb, _ = limbs.group({"points": pts, "bones": [{"name": n, "parent": parent[n], "head": 2 * i, "tail": 2 * i + 1}
-                                                    for i, n in enumerate(names)], "calib": {"model_height": h}})
+    def group(keep):
+        pts = [snap(p) for n in keep for p in (head[n], tail[n])]
+        return limbs.group({"points": pts, "bones": [{"name": n, "parent": parent[n], "head": 2 * i, "tail": 2 * i + 1}
+                                                     for i, n in enumerate(keep)], "calib": {"model_height": h}})[0]
+    limb = group(names)
+    arms = {l for l in limb.values() if l.endswith("arm")}
+    if arms and len({l for l in limb.values() if l.endswith("leg")}) == 4:
+        # a pair that never reaches the floor (long ears, whiskers) is no leg on a quadruped: group without it, then
+        # each of its bones goes with the bone it hangs off
+        limb = group([n for n in names if limb[n] not in arms])
+        for n in names:
+            m = n
+            while m not in limb:
+                m = parent[m]
+            limb[n] = limb[m]
     top = lambda kind: [n for n in names if limb[n] == kind and limb.get(parent[n]) != kind]
     size = {}
     def subtree(n):  # bone length below n, n included
@@ -359,6 +371,34 @@ def clean(W, segs, limb, root, co):
     return cleaned, int(move.sum())
 
 
+def floaters(co, edges, h, gap=0.05):
+    """Vertex indices of mesh islands more than gap*h from the largest one: image-to-3D debris such as a stray paw on
+    the floor. Skinned to a body bone, it stays put while the legs move, and reads as a dislocated paw."""
+    co = np.asarray(co, float)
+    parent = np.arange(len(co))
+    def find(i):
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+    _, same = np.unique(np.round(co, 5), axis=0, return_inverse=True)  # weld: glTF splits islands along UV seams
+    first = {}
+    for a, b in [*map(tuple, edges), *((first.setdefault(s, i), i) for i, s in enumerate(same.ravel()))]:
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            parent[ra] = rb
+    root = np.array([find(i) for i in range(len(co))])
+    ids, n = np.unique(root, return_counts=True)
+    main = co[root == ids[n.argmax()]]
+    out = []
+    for r in ids[ids != ids[n.argmax()]]:
+        idx = np.flatnonzero(root == r)
+        d = min(np.linalg.norm(main[None] - co[idx[k:k + 64], None], axis=-1).min() for k in range(0, len(idx), 64))
+        if d > gap * h:
+            out += idx.tolist()
+    return out
+
+
 def build_main(model, labels_path, out):
     import bpy
     from mathutils import Matrix
@@ -371,6 +411,18 @@ def build_main(model, labels_path, out):
     R = Matrix.Rotation(math.radians(p["turn"]), 4, "Z")
     for o in meshes:  # bake the turn and every object transform into the mesh: the export stands at the origin
         o.data.transform(R @ o.matrix_world, shape_keys=True)
+        e = np.zeros(len(o.data.edges) * 2, int)
+        o.data.edges.foreach_get("vertices", e)
+        drop = floaters([v.co for v in o.data.vertices], e.reshape(-1, 2), h)
+        if drop:
+            import bmesh
+            bm = bmesh.new()
+            bm.from_mesh(o.data)
+            bm.verts.ensure_lookup_table()
+            bmesh.ops.delete(bm, geom=[bm.verts[i] for i in drop], context="VERTS")
+            bm.to_mesh(o.data)
+            bm.free()
+            print(f"BUILD {o.name}: removed {len(drop)} vertices of loose islands floating off the body")
     arm.animation_data_clear()
     arm.matrix_world = Matrix.Identity(4)
     for o in meshes:

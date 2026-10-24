@@ -47,6 +47,8 @@ DEFAULT_SETTINGS = {
     "creature_height_scale": 0.65,
     "creature_slide_cm": 1.0,
     "creature_seam_deg": 3.0,
+    "creature_match_threshold": 0.5,
+    "creature_unimate_seeds": 4,
 }
 # key: (unit, type, min, max). detector_limits are the exam's "good" bar in % of the model's height, each 0.5-20;
 # "usable" is within detector_usable_x times them; auto-train trains a detector when a model is rigged.
@@ -57,7 +59,9 @@ LIMIT_RANGE = (0.5, 20.0)
 # vertical bob kept from the library clip; planted-paw slide and loop seam a clip may have and still pass
 CREATURE_SETTINGS = {"creature_height_scale": ("x the source bob", float, 0.2, 1.0),
                      "creature_slide_cm": ("cm", float, 0.0, 10.0),
-                     "creature_seam_deg": ("degrees", float, 0.0, 30.0)}
+                     "creature_seam_deg": ("degrees", float, 0.0, 30.0),
+                     "creature_match_threshold": ("match score 0-1", float, 0.0, 1.0),  # below it a creature job fails
+                     "creature_unimate_seeds": ("UniMate seeds per missing clip", int, 1, 8)}
 
 # ---------------------------------------------------------------- 3D Asset workflow
 # API-format version of "Trellis2 + Pixal3d.json": Pixal3D geometry, UltraTex texturing.
@@ -644,7 +648,8 @@ def list_dir(rel):
         elif k == "model":
             sib = next(iter(thumbs_of(p)), None)
             e["thumb"] = sib.relative_to(ROOT).as_posix() if sib else None
-            if "_rigged" in p.stem and p.suffix.lower() in (".glb", ".fbx"):  # what the Forge's detector badge shows
+            # what the Forge's detector badge shows: rigged by name, or a creature folder's model (by its manifest)
+            if ("_rigged" in p.stem and p.suffix.lower() in (".glb", ".fbx")) or creature.is_model(p):
                 e["detector"] = detector_state(p)
         entries.append(e)
     return {"path": d.relative_to(ROOT).as_posix() if d != ROOT else "", "entries": entries}
@@ -719,7 +724,7 @@ def put_input(host, name, data):
             form("subfolder", "sfam") + form("type", "input") + form("overwrite", "true") + f"--{b}--\r\n".encode()
         return http(host, "/upload/image", body, {"Content-Type": f"multipart/form-data; boundary={b}"}, 300)
     p = f"{host['comfy_dir']}/input/sfam/{name}"
-    ssh(host, f"mkdir -p {shlex.quote(str(Path(p).parent))} && cat > {shlex.quote(p)}", data, 300)
+    ssh(host, f"mkdir -p {shlex.quote(p.rsplit('/', 1)[0])} && cat > {shlex.quote(p)}", data, 300)  # a POSIX path, also from Windows
 
 def get_output(host, name):
     if host.get("kind") == "http":
@@ -1545,6 +1550,7 @@ def worker():
                 # Motion and detector jobs run Blender and the tracker over SSH; they need no Trellis2 nodes.
                 over_ssh = kind in ("motion", "detector", "curate")
                 fits = ((lambda h, st: h.get("kind") == "ssh") if over_ssh else (lambda h, st: st["mvadapter"]) if multi
+                        else (lambda h, st: st["trellis"] and h.get("kind") == "ssh") if kind == "creature"  # 3D, then Blender
                         else (lambda h, st: st["trellis"]))
                 host = next((h for h in free if (st := host_status(h))["ok"] and not st["busy"] and fits(h, st)), None)
                 if not host:
@@ -1553,7 +1559,7 @@ def worker():
                 free.remove(host)
                 update_job(jid, status="running", host=host["name"], started=time.time(), note="")
                 run = {"motion": run_motion, "detector": run_detector, "image": run_image,
-                       "curate": creature.run_curate}.get(kind, run_job)
+                       "curate": creature.run_curate, "creature": creature.run_creature}.get(kind, run_job)
                 threading.Thread(target=run, args=(jid, host), daemon=True).start()
         except Exception:
             traceback.print_exc()
@@ -2127,6 +2133,37 @@ def mvadapter_views(jid, host, p, hero, front, log):
         cleanup(host, [ref], [f"{jid}_mv"])
     return views
 
+def draw_hero(prompt, model, log, extra=""):
+    """The side-view design image; one whose far legs show is redrawn, as it would put a second paw on every leg."""
+    for n in range(1, 4):
+        log.append(f"hero: drawing the side-view design image (try {n}/3)")
+        hero = codex_image(MV_HERO.format(prompt=prompt) + extra, model, log=log)
+        contacts = hero_ground_contacts(hero)
+        if contacts <= 2:
+            return hero
+        log.append(f"hero: {contacts} feet on the ground, so the far legs show")
+        extra = HERO_LEGS_FIX.format(n=contacts)
+    log.append("hero: kept the last try although the far legs still show")
+    return hero
+
+def hero_views(jid, prompt, model, hero, log):
+    """(front, views): the hero redrawn from the front, then front | left (the hero) | right (its mirror), aligned. A
+    failed set redraws the front with the reviewer's fix; the hero stays the design."""
+    extra, tries = "", 3
+    for n in range(1, tries + 1):
+        if job_row(jid)["status"] == "cancelling":
+            raise InterruptedError
+        log.append(f"hero: drawing it from the front (try {n}/{tries})")
+        front = codex_image(MV_FRONT.format(prompt=prompt) + extra, model, refs=[hero], log=log)
+        views, notes = align_uploads({"front": front, "left": hero, "right": mirrored(hero)})
+        log.extend(n for n in notes if "of the front's height" not in n)  # each image has its own framing
+        passed, extra = review_views(views, prompt, log)
+        if passed:
+            break
+    else:
+        log.append("views: kept the last try although the review still failed")
+    return front, views
+
 def run_image(jid, host=None):
     job = job_row(jid)
     p = image_params(json.loads(job["params"]))
@@ -2146,35 +2183,13 @@ def run_image(jid, host=None):
             log.append("generating the image (sent as written)")
             save(codex_image(p["prompt"], p["model"], log=log), "")
         else:  # a side-view hero and its front from ChatGPT; views from those two, or MV-Adapter around the front
-            extra = ""
-            for n in range(1, 4):  # a hero whose far legs show is redrawn; it would put a second paw on every leg
-                log.append(f"hero: drawing the side-view design image (try {n}/3)")
-                hero = codex_image(MV_HERO.format(prompt=p["prompt"]) + extra, p["model"], log=log)
-                contacts = hero_ground_contacts(hero)
-                if contacts <= 2:
-                    break
-                log.append(f"hero: {contacts} feet on the ground, so the far legs show")
-                extra = HERO_LEGS_FIX.format(n=contacts)
-            else:
-                log.append("hero: kept the last try although the far legs still show")
+            hero = draw_hero(p["prompt"], p["model"], log)
             if p["views"] == "mv-adapter":
                 log.append("hero: drawing it from the front")
                 front = codex_image(MV_FRONT.format(prompt=p["prompt"]), p["model"], refs=[hero], log=log)
                 views = mvadapter_views(jid, host, p, hero, front, log)
-            else:  # a failed set redraws the front with the reviewer's fix; the hero stays the design
-                extra, tries = "", 3
-                for n in range(1, tries + 1):
-                    if job_row(jid)["status"] == "cancelling":
-                        raise InterruptedError
-                    log.append(f"hero: drawing it from the front (try {n}/{tries})")
-                    front = codex_image(MV_FRONT.format(prompt=p["prompt"]) + extra, p["model"], refs=[hero], log=log)
-                    views, notes = align_uploads({"front": front, "left": hero, "right": mirrored(hero)})
-                    log.extend(n for n in notes if "of the front's height" not in n)  # each image has its own framing
-                    passed, extra = review_views(views, p["prompt"], log)
-                    if passed:
-                        break
-                else:
-                    log.append("views: kept the last try although the review still failed")
+            else:
+                front, views = hero_views(jid, p["prompt"], p["model"], hero, log)
             for pos in VIEW_AZIMUTHS:
                 if pos in views:
                     save(views[pos], f"-{pos}")
@@ -2367,7 +2382,7 @@ class Handler(BaseHTTPRequestHandler):
                     src = b["name"]
                 elif kind == "rig":
                     m = params.get("model", "")
-                    if Path(m).suffix.lower() != ".glb" or "_rigged" in Path(m).stem or not safe_path(m).is_file():
+                    if Path(m).suffix.lower() != ".glb" or "_rigged" in Path(m).stem or not safe_path(m).is_file() or creature.is_model(safe_path(m)):
                         raise ValueError("pick an unrigged .glb model")
                     rig_graph(params, "x", "x")
                     src = m
@@ -2377,6 +2392,9 @@ class Handler(BaseHTTPRequestHandler):
                         raise ValueError("pick an animal from /api/animals")
                     params = {"animal": params["animal"]}
                     src = f"{params['animal']} curation"
+                elif kind == "creature":  # model folder under <output>/Creatures/; the request's fields sit beside kind
+                    params = creature.creature_params({**params, **{k: v for k, v in b.items() if k not in ("kind", "params")}})
+                    src = params["name"]
                 else:
                     raise ValueError("unknown job type")
                 name = (b.get("name") or Path(src).stem + (" detector" if kind == "detector" else "")).strip()[:80]
@@ -2384,6 +2402,13 @@ class Handler(BaseHTTPRequestHandler):
                     jid = c.execute("INSERT INTO jobs (kind, name, params, status, created) VALUES (?, ?, ?, 'queued', ?)",
                                     (kind, name, json.dumps(params), time.time())).lastrowid
                 return self.send({"id": jid, "status": "queued", "status_url": f"{base}/api/jobs/{jid}"})
+            if (m := re.fullmatch(r"/api/models/([\w-]+)(/combine)?", p)) and (method, bool(m[2])) in (("GET", False), ("POST", True)):
+                if m[2]:  # rebuild <Name>_animated.glb from the ticked clips
+                    return self.send(creature.combine_model(m[1], list(self.body().get("clips") or [])))
+                f = creature.model_dir(m[1]) / f"{m[1]}.json"
+                if not f.is_file():
+                    return self.send({"error": "no such model"}, 404)
+                return self.send({**json.loads(f.read_text()), "folder": f.parent.relative_to(ROOT).as_posix()})
             m = re.fullmatch(r"/api/jobs/(\d+)/(cancel|retry|remove)", p)
             if method == "POST" and m:
                 jid, action = int(m[1]), m[2]
@@ -2814,6 +2839,75 @@ def check():
     assert p["bones"]["spine_02"]["sources"] == [] and p["bones"]["FL_01"]["parent"] == "spine_03"
     assert max(abs(a - b) for a, b in zip(p["bones"]["pelvis"]["head"], [c, 0.3, 0.6])) < 1e-9 and p["bones"]["root"]["head"] == [0, 0, 0]
     assert any("tail" in w for w in p["warnings"]), p["warnings"]
+    long_ears = [(n, pa, h, (t[0], t[1], t[2] + 0.12) if n in ("b5", "b6") else t) for n, pa, h, t in bones]  # read as arms
+    L = rs.plan([{"name": n, "parent": pa, "head": h, "tail": t} for n, pa, h, t in long_ears], 0.94)["labels"]
+    assert (L["b4"], L["b5"], L["b6"], L["fl_paw"]) == ("head", "head", "head", "FL_04"), L
+    # floaters: a triangle 0.2 off a two-triangle body (split along a seam) goes; one 0.01 off (an eye) stays
+    body = [(0, 0, 0), (1, 0, 0), (0, 1, 0), (1, 0, 0), (0, 1, 0), (1, 1, 0)]
+    co = body + [(0, 0, 0.01), (0.1, 0, 0.01), (0, 0.1, 0.01)] + [(2.2, 0, 0), (2.3, 0, 0), (2.2, 0.1, 0)]
+    edges = [(0, 1), (1, 2), (3, 4), (4, 5), (6, 7), (7, 8), (9, 10), (10, 11)]
+    assert rs.floaters(co, edges, 1.0) == [9, 10, 11], rs.floaters(co, edges, 1.0)
+    # creature jobs: folder names, combine and its refusals, a cancel leaves no folder behind
+    assert creature.safe_name("Swamp Rat #2") == "Swamp_Rat_2"
+    td = Path(tempfile.mkdtemp())
+    assert creature.model_name(td, "Swamp Rat #2") == "Swamp_Rat_2"
+    (td / "Swamp_Rat_2").mkdir()
+    assert creature.model_name(td, "Swamp Rat #2") == "Swamp_Rat_2_2"
+    def tiny_glb(bones, anim=None, w=1.0):  # 2 keys of one rotation channel on the second bone
+        b = array.array("f", [0, 1, 0, 0, 0, w, 0, 0, 0, w]).tobytes()
+        js = {"asset": {"version": "2.0"}, "buffers": [{"byteLength": len(b)}], "nodes": [{"name": n} for n in bones],
+              "skins": [{"joints": list(range(len(bones)))}],
+              "bufferViews": [{"buffer": 0, "byteOffset": 0, "byteLength": 8}, {"buffer": 0, "byteOffset": 8, "byteLength": 32}],
+              "accessors": [{"bufferView": 0, "componentType": 5126, "count": 2, "type": "SCALAR", "min": [0], "max": [1]},
+                            {"bufferView": 1, "componentType": 5126, "count": 2, "type": "VEC4"}]}
+        if anim:
+            js["animations"] = [{"name": anim, "samplers": [{"input": 0, "output": 1}],
+                                 "channels": [{"sampler": 0, "target": {"node": 1, "path": "rotation"}}]}]
+        return creature.glb_write(js, b)
+    m = td / "Rat"
+    (m / "animations").mkdir(parents=True)
+    (m / "Rat.glb").write_bytes(tiny_glb(["root", "pelvis", "spine_01"], w=0.5))
+    (m / "animations/Rat_Walk.glb").write_bytes(tiny_glb(["root", "pelvis", "spine_01"], "Walk_s1"))
+    (m / "animations/Rat_Odd.glb").write_bytes(tiny_glb(["root", "hips", "spine_01"], "Odd"))
+    creature.write_manifest(m, {"name": "Rat", "clips": [{"name": c, "file": f"animations/Rat_{c}.glb", "baked": False}
+                                                          for c in ("Walk", "Odd", "Gone")]})
+    man = creature.combine_model("Rat", ["Walk"], m)
+    js, binary = creature.glb_read((m / "Rat_animated.glb").read_bytes())
+    assert [x["name"] for x in js["animations"]] == ["Walk"] and js["animations"][0]["channels"][0]["target"]["node"] == 1
+    acc = js["accessors"][js["animations"][0]["samplers"][0]["output"]]
+    off = js["bufferViews"][acc["bufferView"]]["byteOffset"]
+    assert struct.unpack_from("<8f", binary, off) == (0, 0, 0, 1, 0, 0, 0, 1)  # the clip's keys, not the model's bytes
+    assert [c["baked"] for c in man["clips"]] == [True, False, False]
+    assert json.loads((m / "Rat.json").read_text())["clips"][0]["baked"] is True
+    before = (m / "Rat_animated.glb").read_bytes()
+    for bad in ("Odd", "Gone"):  # a different skeleton, a missing file
+        try:
+            creature.combine_model("Rat", ["Walk", bad], m); raise AssertionError(bad)
+        except ValueError as e:
+            assert bad in str(e), e
+    assert (m / "Rat_animated.glb").read_bytes() == before
+    for bad in ({"name": "x", "prompt": "a", "image": "b"}, {"name": "!!", "prompt": "a"},
+                {"name": "x", "prompt": "a", "clips": ["Walk"], "bake": ["Run"]}):
+        try:
+            creature.creature_params(bad); raise AssertionError(bad)
+        except ValueError:
+            pass
+    (td / "animal.json").write_text(json.dumps({"clips": []}))
+    with DB_LOCK, db() as c:
+        jid = c.execute("INSERT INTO jobs (kind, name, params, status, created) VALUES ('creature', 'Swamp_Rat', ?, 'running', ?)",
+                        (json.dumps(creature.creature_params({"name": "Swamp Rat", "prompt": "a swamp rat"})), time.time())).lastrowid
+    def stop(*a, **k):
+        raise InterruptedError
+    stubs = creature.ensure_curated, creature.concept_image
+    creature.ensure_curated, creature.concept_image = (lambda *a: td), stop
+    try:
+        creature.run_creature(jid, {"name": "t", "kind": "http", "comfy_dir": "/x", "gpu": 1})
+    finally:
+        creature.ensure_curated, creature.concept_image = stubs
+    assert job_row(jid)["status"] == "cancelled", dict(job_row(jid))
+    assert not any((ROOT / get_settings()["output_folder"]).glob("**/Swamp_Rat*")) and not any(DATA.glob(f".creature{jid}_*"))
+    with DB_LOCK, db() as c:
+        c.execute("DELETE FROM jobs WHERE id=?", (jid,))
     print("check ok")
 
 if __name__ == "__main__":

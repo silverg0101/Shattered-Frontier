@@ -140,6 +140,21 @@ curl -X POST http://192.168.50.133:8090/api/jobs -H "Content-Type: application/j
 }'
 ```
 
+## Creature jobs
+
+A creature job makes an animated quadruped from a prompt (or an `image` in the library). It matches a Zoo-300K animal (`animal` names one; otherwise the name, then the prompt, must score at least the `creature_match_threshold` setting), curates it if needed, draws the multi-view heroes concept (a side-on hero reviewed for body plan and stance, its front and its mirror; an own `image` is the single view), builds and rigs the model, moves the rig onto the shared quadruped skeleton and retargets each clip. With `fill_missing` (the default), a clip the library lacks is made with UniMate. Every clip is checked; the clips that pass (only those listed in `bake`, if given) go into `<Name>_animated.glb`. Fields sit beside `kind`: `name`, `prompt` | `image`, `animal`, `clips` (`"all"` or a list), `fill_missing`, `bake`, `size_cm` (length; default the middle of the animal's range), `preset`.
+
+```bash
+curl -X POST http://192.168.50.133:8090/api/jobs -H "Content-Type: application/json" -d '{
+  "kind": "creature", "name": "Swamp Rat", "prompt": "A large swamp rat with mossy fur", "clips": "all", "size_cm": 30
+}'
+```
+
+The result is a folder `Generated/Creatures/<Name>/` (a second creature of the same name gets `_2`): `<Name>.glb` (rigged, no animation), `<Name>_animated.glb`, the manifest `<Name>.json` (animal, match, size, `skeleton: "quadruped_v1"`, each clip's `file`, `source`, `checks` and `baked`, clips that could not be made under `unavailable`, `unreal.state`), `source/` and `animations/<Name>_<Clip>.glb` with its contact sheet `.png`.
+
+- `GET /api/models/<Name>`: the manifest.
+- `POST /api/models/<Name>/combine` with `{"clips": ["Trottle", "Walk"]}`: rebuilds `<Name>_animated.glb` from those clips and returns the manifest. It refuses a clip without a file or on a different skeleton (400, naming the clip).
+
 ## Motion jobs
 
 A motion job animates a rigged model (`.glb` or `.fbx`, such as a 3D job's `<name>_rigged.glb`). The GPU host:
