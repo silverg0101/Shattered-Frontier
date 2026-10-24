@@ -7,7 +7,9 @@ param(
     # DEC-02 leg: no seeding; every character spawns with the Alpha Starter Kit, placement reserves and debits it, and
     # the restart hard-kills the UE server and both hosts. Alpha's backpack and hold must be unchanged afterwards.
     [switch]$StarterKit,
-    [switch]$RestAreas
+    [switch]$RestAreas,
+    [switch]$GreenlandsInn,
+    [string]$Map = '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook'
 )
 # BLD-02 A2 + A7 on the network path: real claims and housing persistence through Gameplay.Host (owned PostgreSQL).
 # Phase 1: alpha claims the first Silverbrook build plot, places two pieces and removes one. The UE server then restarts
@@ -27,7 +29,8 @@ $null = New-Item -ItemType Directory -Path $root -Force
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
 $result = [ordered]@{ status='Running'; scope='Development loopback fixture: Win64 editor -server + editor clients, owned PostgreSQL, InventoryLedger.Host + Gameplay.Host, guarded dev identities'; runs=@() }
 $fx = @{}
-$silverbrook = if ($RestAreas) { '/Game/Frontier/Maps/Sandbox/SB_RestAreas' } else { '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' }
+$silverbrook = if ($RestAreas -and -not $GreenlandsInn) { '/Game/Frontier/Maps/Sandbox/SB_RestAreas' } else { $Map }
+if ($GreenlandsInn -and $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook') { throw '-GreenlandsInn requires the Greenlands_Silverbrook map.' }
 $claim = 'clm_greenlands_silverbrook_1'
 function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
     $log = Join-Path $root ($Name+'.log'); $user = Join-Path $root ($Name+'-user')
@@ -88,6 +91,30 @@ try {
     # The kit purse is credited on the character restore (GetCharacterState), so the alpha leg restores on connect.
     if ($StarterKit) { $serverFlags += ($servicesIni+':bRestoreOnConnect=True') }
     $serverEnv = @{ SF_INVENTORY_LEDGER_TOKEN=$fx.token; SF_GAMEPLAY_TOKEN=$gameplayToken }
+
+    if ($GreenlandsInn) {
+        $flags = @($serverFlags | Where-Object { $_ -ne '-ClaimScenario' }) +
+            @(($servicesIni+':bRestoreOnConnect=True'),'-RestAreaScenario=InnOutside')
+        Invoke-WithEnv $serverEnv { $script:restServer = Start-Owned 'server_inn' $silverbrook $flags }
+        Wait-Log $restServer 'server_inn' "HOUSING_CLAIM_LOADED Claim=$claim Claimed=0"
+        foreach ($case in @(
+            @{ name='inn'; person='alpha'; expected='true'; inside='1' },
+            @{ name='outside'; person='bravo'; expected='false'; inside='0' })) {
+            $client = Start-Owned ('client_'+$case.name) ("127.0.0.1:$Port"+'?SFDevCharacter='+$case.person) @('-game')
+            Wait-Log $restServer 'server_inn' ('CHARACTER_RESTORED Character=chr_dev_'+$case.person)
+            Wait-Log $restServer 'server_inn' ('REST_AREA_SCENARIO_PLACED InsideInn='+$case.inside)
+            Start-Sleep -Seconds 2
+            Stop-Owned $client
+            $mode = if ($case.expected -eq 'true') { 'Rest' } else { 'Normal' }
+            Wait-Log $restServer 'server_inn' ('CHARACTER_REST_AREA Character=chr_dev_'+$case.person+' Mode='+$mode+' InsideInn='+$case.inside)
+            Wait-Log $restServer 'server_inn' ('CHARACTER_SESSION_ENDED Character=chr_dev_'+$case.person+' Ok=1')
+            $stored = (Invoke-LedgerSql $fx "SELECT state->>'EndedInRestArea' FROM character_state.progression WHERE character_id='chr_dev_$($case.person)'" $fx.db).Trim().ToLowerInvariant()
+            if ($stored -ne $case.expected) { throw "$($case.name): stored rest mode $stored; expected $($case.expected)." }
+            $result.runs += @{ name=$case.name; storedRestArea=$stored; insideInn=$case.inside }
+        }
+        $result.status = 'Passed'
+        return
+    }
 
     # Phase 1: claim, place two, remove one.
     Invoke-WithEnv $serverEnv { $script:server1 = Start-Owned 'server1' $silverbrook $serverFlags }

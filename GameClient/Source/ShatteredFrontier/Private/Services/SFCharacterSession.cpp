@@ -279,7 +279,9 @@ void USFCharacterSessionComponent::EndPlay(const EEndPlayReason::Type Reason)
             const FString HouseClaim = bHasKnownPose && Mode ? Mode->RestHouseClaimAt(LastKnownLocation) : FString();
             if (bPublicRest || HouseClaim.IsEmpty())
             {
-                UE_LOG(LogTemp, Display, TEXT("CHARACTER_REST_AREA Character=%s Mode=%s"), *CharacterId, bPublicRest ? TEXT("Rest") : TEXT("Normal"));
+                UE_LOG(LogTemp, Display, TEXT("CHARACTER_REST_AREA Character=%s Mode=%s InsideInn=%d"),
+                    *CharacterId, bPublicRest ? TEXT("Rest") : TEXT("Normal"),
+                    bHasKnownPose && ASFRestAreaVolume::IsInsideInn(GetWorld(), LastKnownLocation));
                 CloseProgressionSession(Services, CharacterId, OperationId, bPublicRest);
             }
             else

@@ -1,4 +1,5 @@
 #include "Construction/SFConstructionNetwork.h"
+#include "Creatures/SFRestAreaVolume.h"
 #include "Exchange/SFExchangeWidgets.h"
 #include "Framework/SFPlayerController.h"
 #include "GameFramework/PlayerState.h"
@@ -1329,14 +1330,32 @@ void ASFGameMode::PostLoginConstruction(APlayerController* NewPlayer)
     if (IsZoneGatheringWorld()) { PlaceForZoneScenario(Controller->GetPawn(), bAssignBuilder); }
     if (IsZoneGatheringWorld()) { RefreshZoneGatheringNodes(); }
     FString RestScenario;
+    const bool bRestScenario = FParse::Value(FCommandLine::Get(), TEXT("RestAreaScenario="), RestScenario);
     if (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_RestAreas") && Controller->GetPawn() &&
-        (FParse::Value(FCommandLine::Get(), TEXT("RestAreaScenario="), RestScenario) ||
-            FParse::Param(FCommandLine::Get(), TEXT("ClaimScenario"))))
+        (bRestScenario || FParse::Param(FCommandLine::Get(), TEXT("ClaimScenario"))))
     {
         FVector At = RestScenario == TEXT("Inn") ? FVector(-1200, 0, 150) : FVector(2000, 0, 150);
         if ((RestScenario == TEXT("House") || RestScenario.IsEmpty()) && !ClaimPlots.IsEmpty() && ClaimPlots[0].State.IsValid())
         { At = ClaimPlots[0].State->GetAnchorOffsetCm() + FVector(RestScenario.IsEmpty() ? -175 : 0, -125, 120); }
         Controller->GetPawn()->SetActorLocation(At, false, nullptr, ETeleportType::TeleportPhysics);
+    }
+    if (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook") &&
+        RestScenario == TEXT("InnOutside") && Controller->GetPawn())
+    {
+        FVector At(90000, 90000, 10000);  // wilderness, outside the protected settlement
+        if (bAssignBuilder)
+        {
+            ASFRestAreaVolume* Inn = nullptr;
+            for (TActorIterator<ASFRestAreaVolume> It(GetWorld()); It; ++It)
+            {
+                if (It->Kind == ESFRestAreaKind::Inn) { Inn = *It; break; }
+            }
+            if (!ensureMsgf(Inn, TEXT("Greenlands inn rest volume is missing"))) { return; }
+            At = Inn->GetActorLocation();
+        }
+        Controller->GetPawn()->SetActorLocation(At, false, nullptr, ETeleportType::TeleportPhysics);
+        UE_LOG(LogTemp, Display, TEXT("REST_AREA_SCENARIO_PLACED InsideInn=%d At=%s"),
+            ASFRestAreaVolume::IsInsideInn(GetWorld(), At), *At.ToString());
     }
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_ROLE Builder=%d"),bAssignBuilder);
     USFCharacterSessionComponent::AttachIfEnabled(Controller);

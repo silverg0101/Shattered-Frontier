@@ -945,4 +945,8 @@ u.get_editor_subsystem(u.UnrealEditorSubsystem).set_level_viewport_camera_info(_
 assert u.EditorLoadingAndSavingUtils.save_map(world, ZONE), 'Could not save the zone map'
 import lamp_fx; importlib.reload(lamp_fx); lamp_fx.apply()  # Street-lamp FX; idempotent, replaces FX_StreetLamp_*
 import backdrop as backdrop_ring; importlib.reload(backdrop_ring); backdrop_ring.place(backdrop_ring.config())  # WP5: needs the saved map; hides the white Backdrop above and saves again
+import importlib.util
+_rest_spec = importlib.util.spec_from_file_location('place_rest_areas', ROOT.parents[2] / 'tools' / 'Place-RestAreaVolumes.py')
+_rest = importlib.util.module_from_spec(_rest_spec); _rest_spec.loader.exec_module(_rest)
+_rest.place()  # inn gameplay volume survives a regenerated map
 u.log(f'SILVERBROOK_BUILT Map={ZONE} Datum={DATUM} Bridges={len(bridges)} Fill={fill_report} Terrain={terrain_stats} Foundations={foundation} Dressing={dressing} Counts={counts}')
