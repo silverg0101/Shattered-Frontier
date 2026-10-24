@@ -4,7 +4,7 @@ Stdlib only. Assets live under ASSET_ROOT, the queue in DATA_DIR/queue.db.
 GPU hosts are reached over SSH (their ComfyUI listens on 127.0.0.1 only).
 Run `python app.py --check` for the self-check.
 """
-import array, json, math, mimetypes, os, random, re, shlex, shutil, sqlite3, struct, subprocess, sys, threading, time, traceback, uuid, urllib.error, urllib.parse, urllib.request
+import array, glob, json, math, mimetypes, os, random, re, shlex, shutil, sqlite3, struct, subprocess, sys, threading, time, traceback, uuid, urllib.error, urllib.parse, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -487,6 +487,29 @@ def safe_path(rel):
         raise ValueError("path escapes the asset root")
     return p
 
+def thumbs_of(p: Path):
+    """Thumbnail candidates for a model, best first. Generated models keep theirs in a hidden .thumbs folder (a
+    rigged model shares its base model's); a same-stem image beside the model also counts."""
+    stems = dict.fromkeys([p.stem, p.stem.replace("_rigged", "", 1)])
+    dirs = [p.parent / ".thumbs", p.parent]
+    return [c for d in dirs for st in stems for x in (".png", ".jpg", ".jpeg", ".webp") if (c := d / (st + x)).exists()]
+
+def carry_thumb(src: Path, dst: Path):
+    """Give a moved or renamed model its thumbnail at the new place, named after it."""
+    t = next(iter(thumbs_of(src)), None)
+    if t and src.suffix.lower() in MODEL_EXT and t.parent.name == ".thumbs":
+        (dst.parent / ".thumbs").mkdir(exist_ok=True)
+        shutil.copyfile(t, dst.parent / ".thumbs" / (dst.stem + t.suffix))
+
+def drop_thumb(p: Path):
+    """After deleting a model, delete its hidden thumbnail unless the base or rigged twin still uses it."""
+    if p.suffix.lower() not in MODEL_EXT:
+        return
+    base = p.stem.replace("_rigged", "", 1)
+    if not any(m.suffix.lower() in MODEL_EXT for st in (base, base + "_rigged") for m in p.parent.glob(glob.escape(st) + ".*")):
+        for t in (p.parent / ".thumbs").glob(glob.escape(base) + ".*"):
+            t.unlink()
+
 def unique(p: Path):
     n = 2
     out = p
@@ -510,9 +533,8 @@ def list_dir(rel):
         e = {"name": p.name, "path": p.relative_to(ROOT).as_posix(), "kind": k, "size": st.st_size, "mtime": st.st_mtime}
         if k == "image":
             e["thumb"] = e["path"]
-        elif k == "model":  # generated models share one copy of their source image (same stem, minus _rigged)
-            stems = [p.stem, p.stem.replace("_rigged", "", 1)]
-            sib = next((s for s in (p.with_name(st + x) for st in stems for x in (".png", ".jpg", ".webp")) if s.exists()), None)
+        elif k == "model":
+            sib = next(iter(thumbs_of(p)), None)
             e["thumb"] = sib.relative_to(ROOT).as_posix() if sib else None
         entries.append(e)
     return {"path": d.relative_to(ROOT).as_posix() if d != ROOT else "", "entries": entries}
@@ -641,6 +663,22 @@ def _accessor_values(gltf, binary, i, width):
     for k in range(acc["count"]):
         vals.frombytes(binary[start + k * stride:start + k * stride + item * width])
     return vals
+
+def fix_fbx_texture_names(path: Path) -> bool:
+    """SkinToken's Blender export embeds the PNG texture under the name of its .fbm folder ("x_00002_.fbm"), and
+    importers pick the decoder from that extension, so three.js and Unreal skip it. ".fbm" and ".png" are the same
+    length, so the length-prefixed name strings can be fixed in place."""
+    b = path.read_bytes()
+    if b"\x89PNG" not in b:
+        return False
+    fixed = bytearray(b)
+    for m in re.finditer(rb"File[Nn]ameS(.{4})", b, flags=re.S):  # binary FBX string property: 'S', uint32 length, bytes
+        end = m.end() + int.from_bytes(m.group(1), "little")
+        if b[end - 4:end] == b".fbm":
+            fixed[end - 4:end] = b".png"
+    if fixed != b:
+        path.write_bytes(fixed)
+    return fixed != b
 
 def add_glb_normals(path: Path) -> bool:
     """Add smooth NORMALs to every primitive that lacks them. Returns True when the file changed."""
@@ -849,7 +887,8 @@ def run_motion(jid, host):
                 dest = unique(out_dir / f"{stem}{ext}")
                 dest.write_bytes(ssh(host, f"cat {q(remote)}", timeout=900))
                 saved.append(dest.relative_to(ROOT).as_posix())
-            (out_dir / f"{Path(saved[-3]).stem}.png").write_bytes(views)  # thumbnail for the animated model
+            (out_dir / ".thumbs").mkdir(exist_ok=True)
+            (out_dir / ".thumbs" / f"{Path(saved[-3]).stem}.png").write_bytes(views)  # thumbnail for the animated model
             log.append(f"take {i}: score {score:.2f}, front/side height disagreement {err:.1f}% of model height")
         update_job(jid, status="done", output=saved[0], files=json.dumps(saved), note="", finished=time.time())
     except InterruptedError:
@@ -906,10 +945,13 @@ def run_job(jid, host):
             dest.write_bytes(get_output(host, rp[5:]))
             if dest.suffix.lower() == ".glb":
                 add_glb_normals(dest)
+            elif dest.suffix.lower() == ".fbx":
+                fix_fbx_texture_names(dest)
             saved.append(dest.relative_to(ROOT).as_posix())
             if not rigged:
                 base = dest.stem
-                thumb = dest.with_suffix(src.suffix.lower())  # one copy of the source per job: thumbnail + record
+                thumb = out_dir / ".thumbs" / (dest.stem + src.suffix.lower())  # one hidden copy of the source per job
+                thumb.parent.mkdir(exist_ok=True)
                 shutil.copyfile(src, thumb)
                 saved.append(thumb.relative_to(ROOT).as_posix())
         update_job(jid, status="done", output=saved[0], files=json.dumps(saved), finished=time.time())
@@ -1028,7 +1070,10 @@ class Handler(BaseHTTPRequestHandler):
                     src = safe_path(rel)
                     if src == ROOT or dest == src or src in dest.parents:
                         raise ValueError(f"cannot move {rel} into itself")
-                    shutil.move(src, unique(dest / src.name))
+                    dst = unique(dest / src.name)
+                    carry_thumb(src, dst)
+                    shutil.move(src, dst)
+                    drop_thumb(src)
                 return self.send({"ok": True})
             if method == "POST" and p == "/api/rename":
                 b = self.body()
@@ -1038,7 +1083,9 @@ class Handler(BaseHTTPRequestHandler):
                 dst = safe_path((src.parent / b["name"]).relative_to(ROOT).as_posix())
                 if dst.exists():
                     raise ValueError("name already exists")
+                carry_thumb(src, dst)
                 src.rename(dst)
+                drop_thumb(src)
                 return self.send({"ok": True})
             if method == "POST" and p == "/api/delete":
                 for rel in self.body()["paths"]:
@@ -1046,6 +1093,7 @@ class Handler(BaseHTTPRequestHandler):
                     if t == ROOT:
                         raise ValueError("cannot delete the root")
                     shutil.rmtree(t) if t.is_dir() else t.unlink()
+                    drop_thumb(t)
                 return self.send({"ok": True})
             if method == "PUT" and p == "/api/upload":
                 d = safe_path(q.get("dir", ""))
@@ -1206,6 +1254,16 @@ def check():
         except ValueError:
             pass
     assert {f.name for f in MOTION_DIR.glob("*.py")} >= {"bake.py", "render_views.py", "track_solve.py"}
+    import tempfile  # hidden thumbnails follow their models through rename and delete
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td); (d / ".thumbs").mkdir()
+        for n in ("Rat.glb", "Rat_rigged.fbx", ".thumbs/Rat.png"):
+            (d / n).write_bytes(b"x")
+        assert thumbs_of(d / "Rat_rigged.fbx") == [d / ".thumbs/Rat.png"]
+        carry_thumb(d / "Rat_rigged.fbx", d / "Mouse.fbx"); (d / "Rat_rigged.fbx").rename(d / "Mouse.fbx"); drop_thumb(d / "Rat_rigged.fbx")
+        assert (d / ".thumbs/Mouse.png").exists() and (d / ".thumbs/Rat.png").exists()  # Rat.glb still uses it
+        (d / "Rat.glb").unlink(); drop_thumb(d / "Rat.glb")
+        assert not (d / ".thumbs/Rat.png").exists() and thumbs_of(d / "Mouse.fbx") == [d / ".thumbs/Mouse.png"]
     print("check ok")
 
 if __name__ == "__main__":

@@ -399,7 +399,7 @@ function drawPreview(e) {
   const url = fileUrl(e.path), ext = e.name.split('.').pop().toLowerCase();
   const stage = e.kind === 'image' ? `<img src="${url}" alt="" id="zoom">`
     : e.kind === 'video' ? `<video src="${url}" controls loop muted autoplay playsinline style="max-width:100%;max-height:100%"></video>`
-    : e.kind === 'model' && ['glb', 'gltf'].includes(ext) ? `<div class="viewer" id="viewer"></div>`
+    : e.kind === 'model' && ['glb', 'gltf', 'fbx'].includes(ext) ? `<div class="viewer" id="viewer"></div>`
     : e.thumb ? `<img src="${fileUrl(e.thumb)}" alt="">` : `<div class="muted" style="text-align:center">${ICON[e.kind].replace('<svg', '<svg width="64" height="64"')}<br>No preview for .${esc(ext)}</div>`;
   box.innerHTML = `<div class="preview fade">
     <div class="stage">${stage}</div>
@@ -413,7 +413,7 @@ function drawPreview(e) {
         ${e.kind === 'model' && /_rigged\.(glb|fbx)$/i.test(e.name) ? `<button class="btn primary" id="animate">Animate: walk</button>` : ''}
       </div></div></div>`;
   $('#zoom') && ($('#zoom').onclick = () => lightbox(url));
-  $('#viewer') && mountViewer($('#viewer'), url, e).catch(err => { $('#viewer').textContent = 'Viewer failed: ' + err.message; });
+  $('#viewer') && mountViewer($('#viewer'), `${url}?v=${e.mtime}`, e).catch(err => { $('#viewer').textContent = 'Viewer failed: ' + err.message; });
   $('#animate') && ($('#animate').onclick = async () => {
     try { await post('/api/jobs', { kind: 'motion', params: { model: e.path } }); toast('Added to queue'); setQueueOpen(true); pollQueue(); } catch (err) { fail(err); }
   });
@@ -482,7 +482,18 @@ async function mountViewer(el, url, entry) {
   const loop = () => { if (dead) return; raf = requestAnimationFrame(loop); mixer?.update(clock.getDelta()); controls.update(); renderer.render(scene, camera); };
   viewer = { dispose() { dead = true; cancelAnimationFrame(raf); ro.disconnect(); pmrem.dispose(); renderer.dispose(); } };
   let gltf;
-  try { gltf = await new GLTFLoader().loadAsync(url); } catch (err) { $('.vbusy', el).textContent = 'Could not load: ' + err.message; return; }
+  try {
+    if (/\.fbx$/i.test(entry.name)) {  // FBXLoader returns the scene itself, with its clips on .animations
+      const { FBXLoader } = await import('three/addons/loaders/FBXLoader.js');
+      const mgr = new THREE.LoadingManager(), textures = new Promise(r => { mgr.onLoad = r; });  // embedded textures decode after parse
+      const g = await new FBXLoader(mgr).loadAsync(url); await textures; gltf = { scene: g, animations: g.animations };
+      g.traverse(o => {  // FBX gives Phong, which ignores the environment light; match the GLB look
+        if (!o.isMesh) return;
+        const pbr = m => new THREE.MeshStandardMaterial({ map: m.map, roughness: 0.8, metalness: 0 });
+        o.material = Array.isArray(o.material) ? o.material.map(pbr) : pbr(o.material);
+      });
+    } else gltf = await new GLTFLoader().loadAsync(url);
+  } catch (err) { $('.vbusy', el).textContent = 'Could not load: ' + err.message; return; }
   if (dead) return;
   $('.vbusy', el).remove();
   const root = gltf.scene; scene.add(root);
