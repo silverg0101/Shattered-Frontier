@@ -1558,9 +1558,9 @@ def _subject_mask(img):
     return mask.filter(ImageFilter.MinFilter(5))  # drops stray specks
 
 def _ground(img):
-    """Feet row of an image cropped to its subject: the lowest row whose widest solid run is at least half the widest
-    run in the bottom quarter. A tail, staff or cape tip hanging below the feet is narrower and is ignored, so it
-    doesn't lift that view off the shared feet line (rat v5: the back view's tail reached the floor)."""
+    """Feet row of an image cropped to its subject: the lowest row with a solid run at least a tenth of the subject's
+    width. A tail, staff or cape tip hanging below the feet is thinner and is ignored, so it doesn't lift that view
+    off the shared feet line (rat v5: its back view's tail reached the floor; tail tip ~5% of the width, feet ~19%)."""
     m = _subject_mask(img)
     w, h = m.size
     px = m.load()
@@ -1570,9 +1570,8 @@ def _ground(img):
             cur = cur + 1 if px[x, y] else 0
             best = max(best, cur)
         return best
-    runs = {y: widest(y) for y in range(h * 3 // 4, h)}
-    need = max(runs.values(), default=0) / 2
-    return max((y for y, r in runs.items() if r and r >= need), default=h - 1) + 1
+    need = max(2, w / 10)
+    return next((y + 1 for y in range(h - 1, -1, -1) if widest(y) >= need), h)
 
 def _subject_box(img):
     return _subject_mask(img).getbbox()
@@ -2122,7 +2121,9 @@ def check():
     feet = {pos: _subject_mask(Image.open(io.BytesIO(v)))
             for pos, v in align_uploads({"front": creature(0), "back": creature(1)})[0].items()}
     lowest = lambda m: max(y for y in range(m.height) if m.crop((0, y, m.width // 3, y + 1)).getbbox())
-    assert abs(lowest(feet["front"]) - lowest(feet["back"])) <= 2  # the tail hangs below; the feet share the line
+    # The feet share the line (the mask's 2 px edge erosion, x3.7 at this test's scale, allows 12 px); the tail
+    # overhangs. Measured to the tail tip instead, the back view's feet would sit ~150 px high.
+    assert abs(lowest(feet["front"]) - lowest(feet["back"])) <= 12
     blank = io.BytesIO(); Image.new("RGB", (400, 400), "white").save(blank, "PNG")
     try:
         split_sheet(blank.getvalue()); raise AssertionError("an empty sheet must be refused")
