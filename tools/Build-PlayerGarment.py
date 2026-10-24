@@ -3,9 +3,12 @@
 Blender 5.1, headless:
   "C:\\Program Files\\Blender Foundation\\Blender 5.1\\blender.exe" --factory-startup --background --python tools/Build-PlayerGarment.py -- \
       --body Artifacts/Characters/PlayerBase/OrlandoBare_body.fbx --out Artifacts/Characters/PlayerBase/garment_tunic_leggings.fbx \
-      --render GameClient/ArtSource/Characters/Player/garments/tunic-leggings-blender.png
+      --render GameClient/ArtSource/Characters/Player/garments/tunic-leggings-blender.png \
+      --head Artifacts/Characters/PlayerBase/{OrlandoBare,Orlando,Godric,Edwin,Wulfric,Osric}_head.obj --head-clearance 1.8
 Input: the FBX that tools/Export-PlayerBaseBody.py writes from a "bare" build (tools/Build-PlayerMetaHumans.py, faces.json "bare": true).
 A normal build omits the torso and thighs its default clothing hides, so it cannot be fitted. Rerun with the female body's FBX for her fit.
+--head: every face of the fit's gender (female: HildaBare, Hilda, Aelfwyn, Eadgyth, Ebba, at the default
+--head-clearance 1.0). Each face mesh carries a neck and chest bib below the body's neck seam; without it the bib shows as a flat skin patch inside the neckline.
 Output: <out>.fbx (empty + armature "root" + ONE skinned mesh "SKM_Tunic_Leggings") and <out>.blend (adds the body, for review).
 
 How it is built (all lengths cm, in the body's own frame):
@@ -78,6 +81,8 @@ def parse():
     p.add_argument('--side-even', type=float, default=0.5, help='0..1: at the side slits this part of the own-thigh share becomes even (no bell in a wide stance)')
     p.add_argument('--slit-backing', type=float, default=0.0, help='cm: a cloth facing this far behind the neck slit (no void at its base)')
     p.add_argument('--cuff-fold', type=float, default=0.0, help='cm: taper the last cm of the sleeve to the forearm before the folded cuff band')
+    p.add_argument('--head', nargs='*', default=[], help="head mesh OBJs (tools/Export-PlayerBaseBody.py) of every face that wears this fit: the tunic is kept outside their necks and chest bibs")
+    p.add_argument('--head-clearance', type=float, default=1.0, help='cm the tunic keeps off the head meshes')
     return p.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else [])
 
 
@@ -371,6 +376,61 @@ def drape(bm, src, z_bottom, z_top, amount, bins=72, bridge=False):
             v.co.x, v.co.y = cx + (v.co.x - cx) * floor[v] / r, cy + (v.co.y - cy) * floor[v] / r
 
 
+def load_head(path):
+    """A head OBJ as (BVH with outward normals, lowest z)."""
+    lines = open(path).read().splitlines()
+    vs = [(float(x), -float(y), float(z)) for _, x, y, z in (l.split() for l in lines if l.startswith('v '))]  # Unreal -> FBX-import frame
+    head = bmesh.new()
+    hv = [head.verts.new(c) for c in vs]
+    for l in lines:
+        if l.startswith('f '):
+            try:
+                head.faces.new([hv[int(i) - 1] for i in l.split()[1:4]])
+            except ValueError:
+                pass  # duplicate face
+    head.normal_update()
+    centre = sum((v.co for v in head.verts), Vector()) / len(head.verts)
+    if sum((f.calc_center_median() - centre).dot(f.normal) for f in head.faces) < 0:  # the y flip mirrors the winding: face outward
+        bmesh.ops.reverse_faces(head, faces=head.faces[:])
+        head.normal_update()
+    return BVHTree.FromBMesh(head), min(c[2] for c in vs)
+
+
+def push_off_head(bm, paths, clearance):
+    """The head mesh carries the neck and a chest bib down over the collarbones, ~9 cm below the body's neck seam; a tunic fitted to
+    the body alone runs inside it, so the bib shows through the neckband and upper chest. Every face shares this tunic and each bib
+    differs by a few cm, so push every tunic vertex out of all of them."""
+    heads = [load_head(p) for p in paths]
+    zmin = min(z for _, z in heads)
+
+    def push_one(v, bvh):
+        loc, nor, _i, d = bvh.find_nearest(v.co)
+        if loc is None:
+            return False
+        off = v.co - loc
+        # Only where the vertex lies over the bib (offset along its normal); past the bib's rim the nearest point is on the rim edge.
+        if d > 1e-4 and abs(off.dot(nor)) < 0.9 * d:
+            return False
+        if off.dot(nor) >= clearance:
+            return False
+        v.co = loc + nor * clearance
+        return True
+
+    def push(v):
+        return any([push_one(v, bvh) for bvh, _z in heads])  # a list, not a generator: every head gets its push
+
+    moved = set()
+    for _ in range(3):  # push, smooth the pushed band so the bib's edge leaves no step, push again
+        moved |= {v for v in bm.verts if v.co.z >= zmin - 1.0 and push(v)}
+        band = {o for v in moved for e in v.link_edges for o in e.verts if not o.is_boundary}  # smoothing an open edge lowers the neckline
+        bmesh.ops.smooth_vert(bm, verts=list(band), factor=0.5, use_axis_x=True, use_axis_y=True, use_axis_z=True)
+    for _ in range(2):  # final passes: nothing inside any head (one head's push can land inside another)
+        for v in bm.verts:
+            if v.co.z >= zmin - 1.0:
+                push(v)
+    print('GARMENT_HEAD pushed', len(moved), 'verts')
+
+
 def raise_collar(bm, args):
     """A neckband rising from the neck opening and closing in round the neck: the body mesh stops at the collarbones (the head mesh
     carries the neck), so its seam alone leaves a wide scoop."""
@@ -579,6 +639,8 @@ def build(args, src, arm):
         smooth_join(tun, src, args)
     if args.slit_backing:  # after the smoothing passes: they would pull the loose facing about
         slit_backing(tun, src, args)
+    if args.head:
+        push_off_head(tun, args.head, args.head_clearance)
     bmesh.ops.recalc_face_normals(tun, faces=tun.faces[:])
     skirt = set(skirt)
     hard = set()
