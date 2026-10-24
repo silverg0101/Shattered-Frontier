@@ -1,4 +1,5 @@
 #include "FrontEnd/SFFrontEnd.h"
+#include "Services/SFGameplayServicesClient.h"
 #include "FrontEnd/SFFrontEndWidgets.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
@@ -96,7 +97,73 @@ bool FSFFrontEndCreatorStateTest::RunTest(const FString& Parameters)
     return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFFrontEndAppearancePacketTest, "ShatteredFrontier.FrontEnd.AppearancePacket", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSFFrontEndAppearancePacketTest::RunTest(const FString& Parameters)
+{
+    const TArray<SFFrontEnd::FFaceChoice> Male = SFFrontEnd::FacesForBody(0);
+    const TArray<SFFrontEnd::FFaceChoice> Female = SFFrontEnd::FacesForBody(1);
+    TestEqual(TEXT("Male face count"), Male.Num(), 5);
+    TestEqual(TEXT("Female face count"), Female.Num(), 4);
+    if (Male.Num() != 5 || Female.Num() != 4) { return false; }
+    const TCHAR* MaleIds[] = {TEXT("Orlando"), TEXT("Godric"), TEXT("Edwin"), TEXT("Wulfric"), TEXT("Osric")};
+    const TCHAR* FemaleIds[] = {TEXT("Hilda"), TEXT("Aelfwyn"), TEXT("Eadgyth"), TEXT("Ebba")};
+    for (int32 i = 0; i < Male.Num(); ++i) { TestEqual(TEXT("Male face order"), Male[i].Id, FString(MaleIds[i])); TestEqual(TEXT("Male packet index"), Male[i].Index, i); }
+    for (int32 i = 0; i < Female.Num(); ++i) { TestEqual(TEXT("Female face order"), Female[i].Id, FString(FemaleIds[i])); TestEqual(TEXT("Female packet index"), Female[i].Index, i + 5); }
+    FSFAppearance Look;
+    Look.Face = 4;
+    Look.SetFromGenderTile(3);
+    TestEqual(TEXT("Switching body resets face"), Look.Face, 1);
+    Look.Face = 2; Look.Hair = 3; Look.Beard = 1; Look.Skin = 2; Look.HairColour = 3; Look.Eyes = 4;
+    Look.HeightCm = 200; Look.Build = 100;
+    // README v2: header, eight zero morphs, four LE16 parts, four zero-based palette bytes, zero cosmetics, face index 6 (Aelfwyn).
+    const TArray<uint8> Expected = {2, 0, 1, 1, 255, 255, 8,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 2, 0, 1, 0, 0, 0,
+        1, 2, 2, 3, 0, 6};
+    TestTrue(TEXT("Known v2 packet matches backend byte layout"), Look.PackV2() == Expected);
+    return true;
+}
+
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFFrontEndCreateWireTest, "ShatteredFrontier.FrontEnd.CreateWire", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSFFrontEndCreateWireTest::RunTest(const FString& Parameters)
+{
+    USFGameplayServicesSettings* Settings = GetMutableDefault<USFGameplayServicesSettings>();
+    const bool WasEnabled = Settings->bEnabled;
+    Settings->bEnabled = true;
+    FSFGameplayRequest Sent;
+    int32 Calls = 0;
+    FSFGameplayServicesClient::SetSendOverrideForTests([&](const FSFGameplayRequest& Request, float, TFunction<void(const FSFGameplayResponse&)> Done)
+    {
+        Sent = Request; ++Calls;
+        FSFGameplayResponse Response; Response.Status = ESFGameplayStatus::Ok; Response.AppearanceRevision = 1;
+        Done(Response);
+    });
+    TSharedRef<ISFFrontEndIdentity> Identity = SFMakeFrontEndIdentity();
+    const FString Account = TEXT("tst") + FGuid::NewGuid().ToString(EGuidFormats::Digits).Left(10);
+    FString Name = TEXT("Tstwire");
+    for (const TCHAR Digit : FGuid::NewGuid().ToString(EGuidFormats::Digits).Left(7))
+    {
+        const TCHAR Lower = FChar::ToLower(Digit);
+        Name.AppendChar(static_cast<TCHAR>(TEXT('a') + (Lower >= TEXT('a') ? Lower - TEXT('a') + 10 : Lower - TEXT('0'))));
+    }
+    Identity->SignIn(Account, TEXT("pw"), [](bool, const FString&, const FString&) {});
+    FSFAppearance Look; Look.SetFromGenderTile(3); Look.Face = 2;
+    bool Created = false;
+    FSFCharacterSummary Made;
+    Identity->CreateCharacter(Name, Look, [&](bool Ok, const FSFCharacterSummary& Character, const FString&) { Created = Ok; Made = Character; });
+    TestTrue(TEXT("Create succeeds after service reply"), Created);
+    TestEqual(TEXT("One CreateCharacter RPC"), Calls, 1);
+    TestEqual(TEXT("RPC method"), Sent.Rpc, ESFGameplayRpc::CreateCharacter);
+    TestEqual(TEXT("RPC uses the entering character id"), Sent.CharacterId, Made.Id);
+    TestTrue(TEXT("RPC carries the chosen face packet"), Sent.AppearancePacket == Look.PackV2());
+    if (Created) { Identity->DeleteCharacter(Made.Id, [](bool, const FString&) {}); }
+    Identity->SignOut();
+    FSFGameplayServicesClient::SetSendOverrideForTests(FSFGameplaySend());
+    Settings->bEnabled = WasEnabled;
+    return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFFrontEndIdentityTest, "ShatteredFrontier.FrontEnd.DevIdentity", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSFFrontEndIdentityTest::RunTest(const FString& Parameters)
 {

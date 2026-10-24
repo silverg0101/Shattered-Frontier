@@ -1,10 +1,10 @@
 #include "FrontEnd/SFFrontEnd.h"
+#include "Services/SFGameplayServicesClient.h"
 
 #include "Dom/JsonObject.h"
 #include "HAL/FileManager.h"
 #include "Misc/ConfigCacheIni.h"
 #include "Misc/FileHelper.h"
-#include "Misc/Guid.h"
 #include "Misc/Paths.h"
 #include "Policies/CondensedJsonPrintPolicy.h"
 #include "Serialization/JsonReader.h"
@@ -68,13 +68,46 @@ bool SFFrontEnd::ValidateAccountName(const FString& Name, FString& OutError)
     return true;
 }
 
+TArray<SFFrontEnd::FFaceChoice> SFFrontEnd::FacesForBody(int32 Body)
+{
+    // Other client content readers use the repository's content directory relative to the project.
+    static const TArray<TPair<FString, int32>> Catalogue = []
+    {
+        TArray<TPair<FString, int32>> Faces;
+        FString Text;
+        const FString Path = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectDir(), TEXT("../content/appearance/human.json")));
+        TSharedPtr<FJsonObject> Root;
+        if (!FFileHelper::LoadFileToString(Text, *Path) || !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text), Root) || !Root.IsValid()) { return Faces; }
+        double Version = 0;
+        if (!Root->TryGetNumberField(TEXT("version"), Version) || Version != 2) { return Faces; }
+        const TArray<TSharedPtr<FJsonValue>>* Rows = nullptr;
+        if (!Root->TryGetArrayField(TEXT("faces"), Rows)) { return Faces; }
+        for (const TSharedPtr<FJsonValue>& Row : *Rows)
+        {
+            const TSharedPtr<FJsonObject>* Face = nullptr;
+            FString Id;
+            double FaceBody = -1;
+            if (!Row.IsValid() || !Row->TryGetObject(Face) || !(*Face)->TryGetStringField(TEXT("id"), Id) ||
+                !(*Face)->TryGetNumberField(TEXT("body"), FaceBody) || Id.IsEmpty() || (FaceBody != 0 && FaceBody != 1)) { Faces.Reset(); return Faces; }
+            Faces.Emplace(Id, static_cast<int32>(FaceBody));
+        }
+        return Faces;
+    }();
+    TArray<FFaceChoice> Choices;
+    for (int32 Index = 0; Index < Catalogue.Num(); ++Index)
+    {
+        if (Catalogue[Index].Value == Body) { Choices.Add({Catalogue[Index].Key, Index}); }
+    }
+    return Choices;
+}
+
 void FSFAppearance::Clamp()
 {
     Body = FMath::Clamp(Body, 0, 1);
     Heritage = FMath::Clamp(Heritage, 1, 3);
     HeightCm = FMath::Clamp(HeightCm, MinHeight, MaxHeight);
     Build = FMath::Clamp(Build, 0, 100);
-    Face = FMath::Clamp(Face, 1, MaxFace);
+    Face = FMath::Clamp(Face, 1, FMath::Max(1, SFFrontEnd::FacesForBody(Body).Num()));
     Hair = FMath::Clamp(Hair, 1, MaxHair);
     Beard = FMath::Clamp(Beard, 0, MaxBeard);
     HairColour = FMath::Clamp(HairColour, 1, MaxColour);
@@ -87,7 +120,7 @@ bool FSFAppearance::IsValid() const
 {
     FSFAppearance Copy = *this;
     Copy.Clamp();
-    return Copy == *this;
+    return !SFFrontEnd::FacesForBody(Body).IsEmpty() && Copy == *this;
 }
 
 bool FSFAppearance::operator==(const FSFAppearance& O) const
@@ -100,7 +133,7 @@ void FSFAppearance::Randomize(FRandomStream& Random)
 {
     HeightCm = Random.RandRange(MinHeight, MaxHeight);
     Build = Random.RandRange(0, 100);
-    Face = Random.RandRange(1, MaxFace);
+    Face = Random.RandRange(1, FMath::Max(1, SFFrontEnd::FacesForBody(Body).Num()));
     Hair = Random.RandRange(1, MaxHair);
     Beard = Body == 0 ? Random.RandRange(0, MaxBeard) : 0;
     HairColour = Random.RandRange(1, MaxColour);
@@ -135,6 +168,27 @@ FSFAppearance FSFAppearance::FromJson(const FJsonObject& Json)
     Look.Skin = Get(TEXT("skin"), 1); Look.Eyes = Get(TEXT("eyes"), 1); Look.Outfit = Get(TEXT("outfit"), 1);
     Look.Clamp();
     return Look;
+}
+
+TArray<uint8> FSFAppearance::PackV2() const
+{
+    if (!IsValid()) { return {}; }
+    const TArray<SFFrontEnd::FFaceChoice> Faces = SFFrontEnd::FacesForBody(Body);
+    if (!Faces.IsValidIndex(Face - 1) || Faces[Face - 1].Index > 255) { return {}; }
+    // Version, race, body, heritage, quantized height/build, eight unused morph controls.
+    TArray<uint8> Packet = {2, 0, static_cast<uint8>(Body), static_cast<uint8>(Heritage),
+        static_cast<uint8>(FMath::RoundToInt((HeightCm - MinHeight) * 255.f / (MaxHeight - MinHeight))),
+        static_cast<uint8>(FMath::RoundToInt(Build * 255.f / 100.f)), 8};
+    Packet.AddZeroed(8);
+    // Four little-endian part indices: head, hair, beard, brows. Head and brows have no creator control.
+    for (const uint16 Part : {uint16(0), uint16(Hair - 1), uint16(Beard), uint16(0)})
+    { Packet.Add(static_cast<uint8>(Part & 0xff)); Packet.Add(static_cast<uint8>(Part >> 8)); }
+    // Skin, hair, beard and eyes palette indices. No owned cosmetic override is selected by this creator.
+    Packet.Add(static_cast<uint8>(Skin - 1)); Packet.Add(static_cast<uint8>(HairColour - 1));
+    Packet.Add(static_cast<uint8>(HairColour - 1)); Packet.Add(static_cast<uint8>(Eyes - 1));
+    Packet.Add(0);
+    Packet.Add(static_cast<uint8>(Faces[Face - 1].Index));
+    return Packet;
 }
 
 const TCHAR* FSFCreatorState::StepName(int32 Index)
@@ -190,7 +244,7 @@ namespace
 // Development identity (non-shipping only): any valid account name with a non-empty password signs in; characters live in
 // Saved/FrontEnd/Dev_<account>.json. The password is checked for presence only: never stored, never logged. -SFFrontEndSeed adds two demo
 // characters to an empty account so captures have rows.
-class FDevIdentity final : public ISFFrontEndIdentity
+class FDevIdentity final : public ISFFrontEndIdentity, public TSharedFromThis<FDevIdentity>
 {
 public:
     FString Label() const override { return TEXT("dev"); }
@@ -224,11 +278,25 @@ public:
         if (Characters.Num() >= GetDefault<USFFrontEndSettings>()->SafeSlots()) { Done(false, FSFCharacterSummary(), TEXT("All character slots are used.")); return; }
         if (NameTaken(Name)) { Done(false, FSFCharacterSummary(), TEXT("That name is taken.")); return; }  // NAME_TAKEN: the creator keeps the name
         FSFCharacterSummary Made;
-        Made.Id = TEXT("chr_dev_") + FGuid::NewGuid().ToString(EGuidFormats::Digits).Left(12).ToLower();
+        Made.Id = TEXT("chr_dev_") + DevSlug(Name);  // same id the game server binds from ?SFDevCharacter
+        if (Characters.ContainsByPredicate([&Made](const FSFCharacterSummary& C) { return C.Id == Made.Id; }))
+        { Done(false, FSFCharacterSummary(), TEXT("That name is taken.")); return; }
         Made.Name = Name; Made.Level = 1; Made.Location = TEXT("Silverbrook"); Made.Look = Look;
-        Characters.Add(Made);
-        Save();
-        Done(true, Made, FString());
+        const TArray<uint8> Packet = Look.PackV2();
+        if (Packet.IsEmpty()) { Done(false, FSFCharacterSummary(), TEXT("The selected face is unavailable.")); return; }
+        auto Complete = [Self = AsShared(), Made, Done = MoveTemp(Done)](const FSFGameplayResponse& Response) mutable
+        {
+            if (Response.Status != ESFGameplayStatus::Ok)
+            { Done(false, FSFCharacterSummary(), Response.Message.IsEmpty() ? FString(TEXT("Character creation failed.")) : Response.Message); return; }
+            Self->Characters.Add(Made);
+            Self->Save();
+            Done(true, Made, FString());
+        };
+        if (!GetDefault<USFGameplayServicesSettings>()->bEnabled) { FSFGameplayResponse Local; Local.Status = ESFGameplayStatus::Ok; Complete(Local); return; }
+        TSharedPtr<FSFGameplayServicesClient> Services = FSFGameplayServicesClient::Create(*GetDefault<USFGameplayServicesSettings>());
+        if (!Services.IsValid()) { FSFGameplayResponse Missing; Missing.Message = TEXT("Gameplay services are unavailable."); Complete(Missing); return; }
+        FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::CreateCharacter; Request.CharacterId = Made.Id; Request.AppearancePacket = Packet;
+        Services->Call(Request, MoveTemp(Complete));
     }
 
     void DeleteCharacter(const FString& Id, TFunction<void(bool, const FString&)> Done) override
@@ -241,12 +309,16 @@ public:
     void EnterWorld(const FSFCharacterSummary& Character, TFunction<void(bool, const FString&, const FString&)> Done) override
     {
         // The server's -SFDevIdentity flag binds ?SFDevCharacter=<lowercase letters, digits, underscore, at most 24>.
-        FString Dev = Character.Name.ToLower();
-        for (TCHAR& C : Dev) { if (!((C >= 'a' && C <= 'z') || (C >= '0' && C <= '9'))) { C = '_'; } }
-        Done(true, FString::Printf(TEXT("%s?SFDevCharacter=%s"), *GetDefault<USFFrontEndSettings>()->DevServerAddress, *Dev.Left(24)), FString());
+        Done(true, FString::Printf(TEXT("%s?SFDevCharacter=%s"), *GetDefault<USFFrontEndSettings>()->DevServerAddress, *DevSlug(Character.Name)), FString());
     }
 
 private:
+    static FString DevSlug(const FString& Name)
+    {
+        FString Dev = Name.ToLower();
+        for (TCHAR& C : Dev) { if (!((C >= 'a' && C <= 'z') || (C >= '0' && C <= '9'))) { C = '_'; } }
+        return Dev.Left(24);
+    }
     FString Account;
     TArray<FSFCharacterSummary> Characters;
 

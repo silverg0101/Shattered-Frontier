@@ -63,6 +63,9 @@ namespace SFFrontEnd
 SHATTEREDFRONTIER_API bool ValidateCharacterName(const FString& Name, FString& OutError);
 // Dev account names: 3-24 of [A-Za-z0-9_].
 SHATTEREDFRONTIER_API bool ValidateAccountName(const FString& Name, FString& OutError);
+struct FFaceChoice { FString Id; int32 Index = INDEX_NONE; };
+// Ordered entries from content/appearance/human.json, filtered by body.
+SHATTEREDFRONTIER_API TArray<FFaceChoice> FacesForBody(int32 Body);
 }
 
 // CHR-01 3.1 appearance, the fields the MVP creator edits. Every value is a 1-based index into the race content (0 = none for the beard).
@@ -72,7 +75,7 @@ struct FSFAppearance
     int32 Heritage = 1;   // 1 Valefolk, 2 Northkin, 3 Seaborn (appearance only)
     int32 HeightCm = 172; // 150-200
     int32 Build = 50;     // 0-100, 50 = neutral
-    int32 Face = 1;       // 1-8
+    int32 Face = 1;       // 1-based position among this body's faces
     int32 Hair = 1;       // 1-10
     int32 Beard = 0;      // 0-6
     int32 HairColour = 1; // 1-16
@@ -80,12 +83,12 @@ struct FSFAppearance
     int32 Eyes = 1;       // 1-8
     int32 Outfit = 1;     // 1-3
 
-    static constexpr int32 MinHeight = 150, MaxHeight = 200, MaxFace = 8, MaxHair = 10, MaxBeard = 6, MaxColour = 16, MaxEyes = 8, MaxOutfit = 3;
+    static constexpr int32 MinHeight = 150, MaxHeight = 200, MaxHair = 10, MaxBeard = 5, MaxColour = 16, MaxEyes = 8, MaxOutfit = 3;
 
     void Clamp();
     bool IsValid() const;
     // Gender step tile 0..5: row 0 male, row 1 female; column = heritage.
-    void SetFromGenderTile(int32 Tile) { Body = FMath::Clamp(Tile / 3, 0, 1); Heritage = FMath::Clamp(Tile % 3, 0, 2) + 1; }
+    void SetFromGenderTile(int32 Tile) { const int32 NewBody = FMath::Clamp(Tile / 3, 0, 1); if (Body != NewBody) { Face = 1; } Body = NewBody; Heritage = FMath::Clamp(Tile % 3, 0, 2) + 1; }
     int32 GenderTile() const { return Body * 3 + (Heritage - 1); }
     // Random look; the Gender step choice (body, heritage) stays.
     void Randomize(FRandomStream& Random);
@@ -94,6 +97,8 @@ struct FSFAppearance
     bool operator==(const FSFAppearance& Other) const;
     TSharedRef<FJsonObject> ToJson() const;
     static FSFAppearance FromJson(const FJsonObject& Json);
+    // Backend CharacterAppearance v2. Empty when the selected face/content is invalid.
+    TArray<uint8> PackV2() const;
 };
 
 struct FSFCharacterSummary

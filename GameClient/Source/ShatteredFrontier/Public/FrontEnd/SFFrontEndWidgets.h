@@ -237,7 +237,7 @@ private:
     void Changed();
     void CheckName();
 
-    struct FOption { TWeakObjectPtr<USFStepperWidget> Stepper; int32 FSFAppearance::* Member = nullptr; };
+    struct FOption { TWeakObjectPtr<USFStepperWidget> Stepper; int32 FSFAppearance::* Member = nullptr; TWeakObjectPtr<USFSettingRowWidget> Row; };
     TArray<FOption> Options;
     UPROPERTY(Transient) TArray<TObjectPtr<USFKitRowWidget>> StepRows;
     UPROPERTY(Transient) TArray<TObjectPtr<USFSlotWidget>> Tiles;

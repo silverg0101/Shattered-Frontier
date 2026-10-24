@@ -41,7 +41,7 @@ public:
     bool Validate(FString& Error) const;
 };
 
-enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, LearnRecipe, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition,
+enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, CreateCharacter, LearnRecipe, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition,
     // Exchange (proto/sf/exchange/v1), carried by the Backend transport over the same Gameplay.Host channel.
     ExchangeWallet, OfferTrade, AcceptTrade, CancelTrade, ListItem, BuyListing, CancelListing };
 
@@ -68,6 +68,7 @@ struct FSFGameplayRequest
     ESFGameplayRpc Rpc = ESFGameplayRpc::GetCharacterState;
     FString OperationId;          // also Rewards.defeat_event_id and Progression.source_receipt_id
     FString CharacterId;          // killer/recipient, actor, owner
+    TArray<uint8> AppearancePacket;  // CreateCharacter: CharacterAppearance v2 bytes
     FString ContainerId;
     int64 ExpectedContainerRevision = 0;
     // Rewards
@@ -107,6 +108,7 @@ struct FSFGameplayResponse
     bool bProgressionApplied = false, bQuestAccepted = false, bQuestCompleted = false;
     int32 SkillGain = 0, XpGain = 0, Level = 0;
     int64 ProgressionRevision = 0, QuestRevision = 0;
+    int64 AppearanceRevision = 0;  // CreateCharacter
     FString ActiveStepId; TArray<FString> RewardBundleIds; TMap<FString, int32> Skills;
     TMap<FString, int64> GrantedItems;  // the quest payout lines committed with this receipt
     TMap<FString, int32> ObjectiveCounts;  // GetCharacterState: the active step's counts by objective key

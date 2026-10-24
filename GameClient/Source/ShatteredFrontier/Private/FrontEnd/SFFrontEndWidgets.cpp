@@ -218,7 +218,7 @@ struct FOptionDef { ESFCreatorStep Step; const TCHAR* Label; int32 Min, Max, Str
 const FOptionDef OptionDefs[] = {
     {ESFCreatorStep::Body, TEXT("Height (cm)"), FSFAppearance::MinHeight, FSFAppearance::MaxHeight, 2, &FSFAppearance::HeightCm},
     {ESFCreatorStep::Body, TEXT("Build"), 0, 100, 5, &FSFAppearance::Build},
-    {ESFCreatorStep::Face, TEXT("Face shape"), 1, FSFAppearance::MaxFace, 1, &FSFAppearance::Face},
+    {ESFCreatorStep::Face, TEXT("Face"), 1, 1, 1, &FSFAppearance::Face},
     {ESFCreatorStep::Face, TEXT("Eye colour"), 1, FSFAppearance::MaxEyes, 1, &FSFAppearance::Eyes},
     {ESFCreatorStep::Hair, TEXT("Hairstyle"), 1, FSFAppearance::MaxHair, 1, &FSFAppearance::Hair},
     {ESFCreatorStep::Hair, TEXT("Beard"), 0, FSFAppearance::MaxBeard, 1, &FSFAppearance::Beard},
@@ -304,6 +304,7 @@ void USFFrontEndCreator::Next()
     if (State.Next()) { ShowStep(); Changed(); return; }
     FString Error;
     if (!SFFrontEnd::ValidateCharacterName(State.Name, Error)) { Say(NameStatus, FText::FromString(Error), true); return; }
+    if (!State.Look.IsValid()) { Say(NameStatus, FText::FromString(TEXT("Choose a valid face and appearance.")), true); return; }
     OnCreate.ExecuteIfBound(State.Name, State.Look);
 }
 
@@ -353,13 +354,19 @@ void USFFrontEndCreator::RebuildOptions()
         USFSettingRowWidget* Row = CreateWidget<USFSettingRowWidget>(this, SettingRowClass);
         USFStepperWidget* Stepper = CreateWidget<USFStepperWidget>(this, StepperClass);
         if (!Row || !Stepper) { continue; }
-        Stepper->MinValue = Def.Min; Stepper->MaxValue = Def.Max; Stepper->Step = Def.Stride;
-        Stepper->SetRange(Def.Min, Def.Max);
+        const int32 Max = Def.Member == &FSFAppearance::Face ? FMath::Max(1, SFFrontEnd::FacesForBody(State.Look.Body).Num()) : Def.Max;
+        Stepper->MinValue = Def.Min; Stepper->MaxValue = Max; Stepper->Step = Def.Stride;
+        Stepper->SetRange(Def.Min, Max);
         Stepper->SetValue(State.Look.*Def.Member);
-        Row->SetLabel(FText::FromString(Def.Label));
+        if (Def.Member == &FSFAppearance::Face)
+        {
+            const TArray<SFFrontEnd::FFaceChoice> Faces = SFFrontEnd::FacesForBody(State.Look.Body);
+            Row->SetLabel(FText::FromString(Faces.IsValidIndex(State.Look.Face - 1) ? Faces[State.Look.Face - 1].Id : FString(TEXT("Face unavailable"))));
+        }
+        else { Row->SetLabel(FText::FromString(Def.Label)); }
         Row->SetControl(Stepper);
         OptionRows->AddChild(Row);
-        Options.Add({Stepper, Def.Member});
+        Options.Add({Stepper, Def.Member, Row});
     }
 }
 
@@ -369,7 +376,15 @@ void USFFrontEndCreator::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
     bool bChanged = false;
     for (const FOption& Option : Options)  // the steppers are the input; the state follows them
     {
-        if (Option.Stepper.IsValid() && State.Look.*Option.Member != Option.Stepper->GetValue()) { State.Look.*Option.Member = Option.Stepper->GetValue(); bChanged = true; }
+        if (Option.Stepper.IsValid() && State.Look.*Option.Member != Option.Stepper->GetValue())
+        {
+            State.Look.*Option.Member = Option.Stepper->GetValue(); bChanged = true;
+            if (Option.Member == &FSFAppearance::Face && Option.Row.IsValid())
+            {
+                const TArray<SFFrontEnd::FFaceChoice> Faces = SFFrontEnd::FacesForBody(State.Look.Body);
+                if (Faces.IsValidIndex(State.Look.Face - 1)) { Option.Row->SetLabel(FText::FromString(Faces[State.Look.Face - 1].Id)); }
+            }
+        }
     }
     if (bChanged) { Changed(); }
 }

@@ -157,6 +157,17 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Progression->AsyncApplyReceipt(C, M, &Channel->Queue); });
         break;
     }
+    case ESFGameplayRpc::CreateCharacter:
+    {
+        sf::progression::v1::CreateCharacterRequest M;
+        M.set_character_id(Utf8(Q.CharacterId));
+        M.set_appearance_packet(std::string(reinterpret_cast<const char*>(Q.AppearancePacket.GetData()), Q.AppearancePacket.Num()));
+        auto* Call = new TCall<sf::progression::v1::CreateCharacterReply>();
+        Call->Copy = [](const sf::progression::v1::CreateCharacterReply& R, FSFGameplayResponse& Out)
+        { Out.AppearanceRevision = R.appearance_revision(); };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Progression->AsyncCreateCharacter(C, M, &Channel->Queue); });
+        break;
+    }
     case ESFGameplayRpc::GetCharacterState:
     {
         sf::progression::v1::GetCharacterStateRequest M;
