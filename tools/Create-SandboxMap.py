@@ -47,7 +47,7 @@ def main():
     floor.set_actor_label('Ground')
     floor.static_mesh_component.set_static_mesh(cube)
     floor.static_mesh_component.set_collision_profile_name('BlockAll')
-    floor_size = 180 if names[0] in ('Evade', 'AttackerMemory') else 100
+    floor_size = 180 if names[0] in ('Evade', 'AttackerMemory', 'Regeneration') else 100
     floor.set_actor_scale3d(u.Vector(floor_size, floor_size, 1))
     actors.spawn_actor_from_class(u.PlayerStart, u.Vector(0, 0, 110)).set_actor_label('PlayerStart')
     if names[0] == 'Casting':
@@ -102,7 +102,7 @@ def main():
             marker.static_mesh_component.set_static_mesh(cube)
             marker.static_mesh_component.set_collision_profile_name('NoCollision')
             marker.set_actor_scale3d(u.Vector(0.5, 0.5, 1))
-    if names[0] in ('Evade', 'Threat', 'Aggro', 'AttackerMemory'):
+    if names[0] in ('Evade', 'Threat', 'Aggro', 'AttackerMemory', 'Regeneration'):
         boar = u.load_class(None, '/Script/ShatteredFrontier.SFPilotBoar')
         interaction = u.load_class(None, '/Script/ShatteredFrontier.SFE1InteractionTarget')
         if not boar or not interaction:

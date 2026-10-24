@@ -2,6 +2,7 @@
 
 #include "GameFramework/Character.h"
 #include "TimerManager.h"
+#include "Combat/SFOutOfCombatRegen.h"
 #include "SFE1Character.generated.h"
 
 class UCameraComponent;
@@ -27,7 +28,9 @@ public:
     virtual void Tick(float DeltaSeconds) override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     void CombatSetHealth(int32 Value);
+    void CombatMarkHostile(); // server only; sandbox combat clock
     int32 CombatHealth() const { return PilotHealth; }
+    bool IsPilotInCombat() const { return bPilotInCombat; }
     UFUNCTION(BlueprintPure, Category="Combat") int32 GetPilotHealthForCapture() const { return PilotHealth; }
     AActor* GetCombatTarget() const { return CombatTarget; }
     void SetCombatTarget(AActor* Target);
@@ -69,6 +72,8 @@ private:
     UFUNCTION() void OnRep_FaceId();  // swaps the MetaHuman body for the new face (client side only)
     UPROPERTY(Transient) TObjectPtr<AActor> MetaHuman;
     UPROPERTY(Replicated) int32 PilotHealth = 0;  // shown by the vitals HUD (SFE1VitalsHud), not in the world
+    UPROPERTY(Replicated) bool bPilotInCombat = false;
+    FSFOutOfCombatRegen PilotRegen;
     UPROPERTY(Replicated) TObjectPtr<AActor> CombatTarget;
     FTimerHandle CombatScenarioTimer;
     int32 CombatScenarioAttackCount = 0;
@@ -81,6 +86,8 @@ private:
     int32 ThreatScenarioStage = 0;
     int32 AggroScenarioStage = 0;
     int32 MemoryScenarioStage = 0;
+    int32 RegenScenarioStage = 0;
+    double NextRegenSampleAt = 0;
     bool bMemorySawCombat = false;
     double MemoryScenarioStartedAt = -1;
     double AggroScenarioStartedAt = -1;
@@ -93,6 +100,7 @@ private:
     void TickThreatScenario();
     void TickAggroScenario();
     void TickMemoryScenario();
+    void TickRegenScenario();
     UFUNCTION(Server, Reliable) void ServerTargetScenarioStep(int32 Step);
     UFUNCTION(Server, Reliable) void ServerPilotAttack(AActor* SelectedCombatTarget);
     void PilotAttack();

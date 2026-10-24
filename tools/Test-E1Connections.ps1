@@ -8,7 +8,8 @@ param(
     [switch]$EvadeScenario,
     [switch]$ThreatScenario,
     [switch]$AggroScenario,
-    [switch]$MemoryScenario
+    [switch]$MemoryScenario,
+    [switch]$RegenScenario
 )
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -24,7 +25,7 @@ function Launch([string[]]$LaunchArguments) {
     Write-Output "Started PID $($process.Id)"
 }
 function Wait-Log([string]$Path, [string]$Pattern, [int]$Count = 1) {
-    $deadline = (Get-Date).AddSeconds($(if ($EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario) { 240 } else { 120 }))
+    $deadline = (Get-Date).AddSeconds($(if ($EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or $RegenScenario) { 240 } else { 120 }))
     while ((Get-Date) -lt $deadline) {
         foreach ($process in $ownedProcesses) { if ($process.HasExited) { throw "Network process $($process.Id) exited before $Pattern" } }
         if (Test-Path -LiteralPath $Path) {
@@ -78,6 +79,10 @@ try {
         $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario)) {
         throw 'MemoryScenario requires SB_AttackerMemory, two clients, and no other scenario'
     }
+    if ($RegenScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Regeneration' -or $Clients -ne 2 -or
+        $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario)) {
+        throw 'RegenScenario requires SB_Regeneration, two clients, and no other scenario'
+    }
     if (Get-NetUDPEndpoint -LocalPort $Port -ErrorAction SilentlyContinue) { throw "UDP $Port is already in use" }
     $serverLog = Join-Path $logs 'Server.log'
     $serverArgs = @($Map, '-server', '-NullRHI', '-unattended', '-nosound', '-nop4', "-port=$Port", '-MULTIHOME=127.0.0.1', ('-abslog="' + $serverLog + '"'))
@@ -85,6 +90,7 @@ try {
     if ($ThreatScenario) { $serverArgs += '-CombatThreatScenario' }
     if ($AggroScenario) { $serverArgs += '-CombatAggroScenario' }
     if ($MemoryScenario) { $serverArgs += '-CombatMemoryScenario' }
+    if ($RegenScenario) { $serverArgs += '-CombatRegenScenario' }
     Launch $serverArgs
     Wait-Log $serverLog 'E1_WORLD_READY.*NetMode=1'
     foreach ($index in 1..$Clients) {
@@ -95,6 +101,7 @@ try {
         if ($ThreatScenario) { $clientArgs += @('-CombatThreatScenario', ('-CombatThreatRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($AggroScenario) { $clientArgs += @('-CombatAggroScenario', ('-CombatAggroRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($MemoryScenario) { $clientArgs += @('-CombatMemoryScenario', ('-CombatMemoryRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
+        if ($RegenScenario) { $clientArgs += @('-CombatRegenScenario', ('-CombatRegenRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         Launch $clientArgs
         Wait-Log $clientLog 'Welcomed by server'
     }
@@ -205,8 +212,34 @@ try {
         }
         Write-Output "PASS: server accepted damage, leashed and reset, ignored visible bystander at $distance cm, then gave the original attacker threat 1; both clients observed the sequence. Logs: $logs"
     }
+    if ($RegenScenario) {
+        Wait-Log $serverLog 'COMBAT_PILOT_PLAYER_HIT HP=([1-9][0-9]*) By=SFPilotBoar'
+        Wait-Log $serverLog 'BOAR_EVADE_RESET Group=regeneration_sandbox'
+        Wait-Log $serverLog 'REGEN_COMBAT_EXIT Health='
+        Wait-Log $serverLog 'REGEN_HEALTH_TICK Health=80 '
+        $invariant = [Globalization.CultureInfo]::InvariantCulture
+        foreach ($role in @('Driver', 'Observer')) {
+            $path = Join-Path $logs ('Client' + $(if ($role -eq 'Driver') { '1' } else { '2' }) + '.log')
+            Wait-Log $path "REGEN_SAMPLE Role=$role.*Health=80 Combat=0.*X=8"
+            $samples = @(Select-String -LiteralPath $path -Pattern "REGEN_SAMPLE Role=$role Time=([\d.]+) Health=(\d+) Combat=([01]) X=([-\d.]+)" | ForEach-Object {
+                $g = $_.Matches[0].Groups
+                [pscustomobject]@{ T=[double]::Parse($g[1].Value,$invariant); HP=[int]$g[2].Value; Combat=[int]$g[3].Value;
+                    X=[double]::Parse($g[4].Value,$invariant) }
+            })
+            $hurt = @($samples | Where-Object { $_.HP -lt 80 -and $_.HP -gt 0 -and $_.Combat -eq 1 } | Select-Object -First 1)
+            if ($hurt.Count -ne 1) { throw "$role did not observe replicated combat damage" }
+            $exit = @($samples | Where-Object { $_.T -gt $hurt[0].T -and $_.Combat -eq 0 -and $_.HP -eq $hurt[0].HP } | Select-Object -First 1)
+            if ($exit.Count -ne 1 -or $exit[0].T - $hurt[0].T -lt 4.0) { throw "$role did not observe five-second combat exit without early healing" }
+            $healed = @($samples | Where-Object { $_.T -gt $exit[0].T -and $_.HP -gt $exit[0].HP } | Select-Object -First 1)
+            if ($healed.Count -ne 1 -or $healed[0].T - $exit[0].T -lt 4.0) { throw "$role did not observe delayed regeneration" }
+            if (@($samples | Where-Object { $_.T -lt $healed[0].T -and $_.T -ge $hurt[0].T -and $_.HP -gt $hurt[0].HP }).Count -gt 0) {
+                throw "$role observed health increase during combat or delay"
+            }
+        }
+        Write-Output "PASS: boar damaged client 1; threat cleared on evade, then both clients observed five-second combat exit, five-second regeneration delay, and one-second health ticks to full. Logs: $logs"
+    }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
-    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
+    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
 } finally {
     foreach ($process in $ownedProcesses) {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue }

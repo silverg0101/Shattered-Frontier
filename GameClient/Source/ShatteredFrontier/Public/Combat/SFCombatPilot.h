@@ -95,6 +95,12 @@ public:
     float TabTargetCycleResetSeconds = 1.5f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="1.0", ClampMax="60.0", Units="s", ToolTip="Server respawn delay; adopted at next zone start."))
     float PlayerRespawnDelaySeconds = 4.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Regeneration", meta=(ClampMin="5.0", ClampMax="5.0", Units="s", ToolTip="Combat exit after no hostile action and no threat; adopted at zone start."))
+    float CombatExitSeconds = 5.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Regeneration", meta=(ClampMin="5.0", ClampMax="5.0", Units="s", ToolTip="Delay after leaving combat before health regeneration; adopted at zone start."))
+    float RegenDelaySeconds = 5.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Regeneration", meta=(ClampMin="0.03", ClampMax="0.03", ToolTip="Fraction of maximum health per second before the Constitution factor; adopted at zone start."))
+    float HealthRegenOocPct = 0.03f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ToolTip="Choose the nearest authored respawn point to the death, or the first authored point; adopted at next zone start."))
     ESFPlayerRespawnPointRule PlayerRespawnPointRule = ESFPlayerRespawnPointRule::NearestToDeath;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="4.0", ClampMax="18.0", Units="m"))
@@ -152,6 +158,7 @@ public:
     int32 Health() const { return CurrentHealth; }
     bool IsLeashing() const { return bReturning; }
     ASFE1Character* ThreatTarget() const { return ReplicatedTarget; }
+    bool HasThreatFor(const ASFE1Character* Character) const;
 private:
     UFUNCTION() void OnRep_Health();
     UPROPERTY(ReplicatedUsing=OnRep_Health) int32 CurrentHealth = 0;

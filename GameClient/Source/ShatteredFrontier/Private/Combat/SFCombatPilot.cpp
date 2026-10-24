@@ -219,7 +219,9 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
         !FMath::IsWithinInclusive(BoarChaseSpeedMetresPerSecond, 1.0f, 10.0f) ||
         !FMath::IsWithinInclusive(BoarWanderMinSeconds, 1.0f, 10.0f) ||
         !FMath::IsWithinInclusive(BoarWanderMaxSeconds, BoarWanderMinSeconds, 20.0f) ||
-        HidesPerBoar < 1 || HidesPerBoar > 5)
+        HidesPerBoar < 1 || HidesPerBoar > 5 ||
+        !FMath::IsNearlyEqual(CombatExitSeconds, 5.0f) || !FMath::IsNearlyEqual(RegenDelaySeconds, 5.0f) ||
+        !FMath::IsNearlyEqual(HealthRegenOocPct, 0.03f))
     { Error = TEXT("Combat pilot balance is outside declared bounds"); return false; }
     return true;
 }
@@ -255,6 +257,14 @@ void ASFPilotBoar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
     DOREPLIFETIME(ASFPilotBoar, Slot);
     DOREPLIFETIME(ASFPilotBoar, bReturning);
     DOREPLIFETIME(ASFPilotBoar, ReplicatedTarget);
+}
+
+bool ASFPilotBoar::HasThreatFor(const ASFE1Character* Character) const
+{
+    if (!HasAuthority() || !Character) { return false; }
+    for (const auto& Pair : ThreatActors)
+    { if (Pair.Value.Get() == Character && Threat.Contains(Pair.Key)) { return true; } }
+    return false;
 }
 
 void ASFPilotBoar::Initialize(ASFGameMode* OwnerMode, const FString& Group, int32 InSlot,
@@ -306,6 +316,7 @@ void ASFPilotBoar::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage)
 {
     if (!HasAuthority() || CurrentHealth <= 0 || bReturning || !IsValid(Attacker) || Damage <= 0) { return; }
     const int32 EffectiveDamage = FMath::Min(CurrentHealth, Damage);
+    Attacker->CombatMarkHostile();
     const FString AttackerId = ThreatIdentity(Cast<APlayerController>(Attacker->GetController()));
     if (!AttackerId.IsEmpty())
     {
@@ -409,6 +420,7 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
                         {
                             Threat.Add(Id, 1.0, Settings->ThreatTableMax);
                             ThreatActors.Add(Id, Candidate);
+                            Candidate->CombatMarkHostile();
                             if (bDefensive)
                             { UE_LOG(LogTemp, Display, TEXT("BOAR_MEMORY_REACQUIRED Group=%s Character=%s Threat=1"),
                                 *SpawnGroup, *Id); }
@@ -578,15 +590,16 @@ void ASFGameMode::StartCombat()
     const bool bThreatSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Threat");
     const bool bAggroSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Aggro");
     const bool bMemorySandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_AttackerMemory");
+    const bool bRegenSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Regeneration");
     bCompanionSandbox = GetNetMode() != NM_Client &&
-        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox);
+        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox);
     if (bCompanionSandbox)
     {
         CapturedSettings = GetDefault<USFCombatPilotSettings>();
         FString Error;
         if (!CapturedSettings->Validate(Error))
         { UE_LOG(LogTemp, Error, TEXT("COMPANION_SANDBOX_DISABLED Invalid combat settings: %s"), *Error); return; }
-        const double Extent = (bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox) ? 85.0 : 45.0;
+        const double Extent = (bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox) ? 85.0 : 45.0;
         const TArray<FVector2D> SandboxArea = { FVector2D(-Extent, -Extent), FVector2D(Extent, -Extent),
             FVector2D(Extent, Extent), FVector2D(-Extent, Extent) };
         int32 Slot = 0;
@@ -595,12 +608,14 @@ void ASFGameMode::StartCombat()
             const FName Tag = bEvadeSandbox ? TEXT("SF_EvadeSandboxWildlife") :
                 bThreatSandbox ? TEXT("SF_ThreatSandboxWildlife") :
                 bAggroSandbox ? TEXT("SF_AggroSandboxWildlife") :
-                bMemorySandbox ? TEXT("SF_AttackerMemorySandboxWildlife") : TEXT("SF_CompanionSandboxWildlife");
+                bMemorySandbox ? TEXT("SF_AttackerMemorySandboxWildlife") :
+                bRegenSandbox ? TEXT("SF_RegenerationSandboxWildlife") : TEXT("SF_CompanionSandboxWildlife");
             if (!It->ActorHasTag(Tag)) { continue; }
             It->Initialize(this, bEvadeSandbox ? TEXT("evade_sandbox") :
                 bThreatSandbox ? TEXT("threat_sandbox") :
                 bAggroSandbox ? TEXT("aggro_sandbox") :
-                bMemorySandbox ? TEXT("memory_sandbox") : TEXT("companions_sandbox"), Slot++, SandboxArea,
+                bMemorySandbox ? TEXT("memory_sandbox") :
+                bRegenSandbox ? TEXT("regeneration_sandbox") : TEXT("companions_sandbox"), Slot++, SandboxArea,
                 CapturedSettings->BoarHealth, ++NextBoarSerial, bMemorySandbox);
         }
         bPilotActive = Slot > 0;

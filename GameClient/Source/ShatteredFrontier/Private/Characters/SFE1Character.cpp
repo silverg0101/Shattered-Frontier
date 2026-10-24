@@ -483,6 +483,50 @@ void ASFE1Character::TickMemoryScenario()
 #endif
 }
 
+void ASFE1Character::TickRegenScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    FString ScenarioRoleName;
+    FParse::Value(FCommandLine::Get(), TEXT("CombatRegenRole="), ScenarioRoleName);
+    if (ScenarioRoleName != TEXT("Driver") && ScenarioRoleName != TEXT("Observer")) { return; }
+    ASFPilotBoar* Boar = nullptr;
+    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    { if (It->GroupId() == TEXT("regeneration_sandbox")) { Boar = *It; break; } }
+    if (!Boar || !Controller) { return; }
+    ASFE1Character* Watched = this;
+    if (ScenarioRoleName == TEXT("Observer"))
+    {
+        Watched = nullptr;
+        for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+        { if (*It != this) { Watched = *It; break; } }
+        if (GetActorLocation().Y > -3000) { AddMovementInput(-FVector::RightVector, 1.0f); }
+    }
+    if (!Watched || Watched->CombatHealth() <= 0) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (Now >= NextRegenSampleAt)
+    {
+        NextRegenSampleAt = Now + 1.0;
+        UE_LOG(LogTemp, Display, TEXT("REGEN_SAMPLE Role=%s Time=%.2f Health=%d Combat=%d X=%.0f BoarReturning=%d"),
+            *ScenarioRoleName, Now, Watched->CombatHealth(), Watched->IsPilotInCombat() ? 1 : 0,
+            Watched->GetActorLocation().X, Boar->IsLeashing() ? 1 : 0);
+    }
+    if (ScenarioRoleName == TEXT("Driver"))
+    {
+        if (RegenScenarioStage == 0)
+        {
+            int32 Players = 0;
+            for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It) { ++Players; }
+            if (Players < 2) { return; }
+            if (PilotHealth < GetDefault<USFCombatPilotSettings>()->PlayerHealth)
+            { RegenScenarioStage = 1; UE_LOG(LogTemp, Display, TEXT("REGEN_DRIVER_HURT Health=%d"), PilotHealth); }
+            else { AddMovementInput((Boar->GetActorLocation() - GetActorLocation()).GetSafeNormal2D(), 1.0f); }
+        }
+        if (RegenScenarioStage == 1 && GetActorLocation().X < 8200)
+        { AddMovementInput(FVector::ForwardVector, 1.0f); }
+    }
+#endif
+}
+
 void ASFE1Character::TickCombatScenario()
 {
     if (FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")))
@@ -715,6 +759,29 @@ void ASFE1Character::SetMouseCaptured(bool bCaptured)
 void ASFE1Character::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+    if (HasAuthority() && GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_Regeneration") && PilotHealth > 0)
+    {
+        bool bThreatened = false;
+        for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+        { if (It->HasThreatFor(this)) { bThreatened = true; break; } }
+        const auto* Settings = GetDefault<USFCombatPilotSettings>();
+        const bool bWasInCombat = PilotRegen.bInCombat;
+        // The pilot has no attribute snapshot yet. Its isolated fixture uses the authored ATTRIBUTE_MIN 10.
+        const int32 Regenerated = PilotRegen.Advance(GetWorld()->GetTimeSeconds(), bThreatened,
+            PilotHealth, Settings->PlayerHealth, 10, Settings->CombatExitSeconds,
+            Settings->RegenDelaySeconds, Settings->HealthRegenOocPct);
+        if (bWasInCombat != PilotRegen.bInCombat)
+        {
+            bPilotInCombat = PilotRegen.bInCombat;
+            UE_LOG(LogTemp, Display, TEXT("REGEN_COMBAT_EXIT Health=%d Time=%.2f"), PilotHealth, GetWorld()->GetTimeSeconds());
+            ForceNetUpdate();
+        }
+        if (Regenerated != PilotHealth)
+        {
+            CombatSetHealth(Regenerated);
+            UE_LOG(LogTemp, Display, TEXT("REGEN_HEALTH_TICK Health=%d Time=%.2f"), PilotHealth, GetWorld()->GetTimeSeconds());
+        }
+    }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     static bool bReconnectSawAlive = false;
     static bool bReconnectTravelled = false;
@@ -758,6 +825,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
         FParse::Param(FCommandLine::Get(), TEXT("CombatAggroScenario"))) { TickAggroScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("CombatMemoryScenario"))) { TickMemoryScenario(); }
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("CombatRegenScenario"))) { TickRegenScenario(); }
 #endif
 }
 
@@ -1019,11 +1088,19 @@ void ASFE1Character::CombatSetHealth(int32 Value)
 {
     if (HasAuthority())
     {
+        if (Value < PilotHealth) { CombatMarkHostile(); }
         if (Value < PilotHealth && Casting) { Casting->NotifyDamage(); }
         PilotHealth = Value;
         if (Value <= 0) { SetCombatTarget(nullptr); }
         ForceNetUpdate();
     }
+}
+
+void ASFE1Character::CombatMarkHostile()
+{
+    if (!HasAuthority() || GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Sandbox/SB_Regeneration")) { return; }
+    PilotRegen.Hostile(GetWorld()->GetTimeSeconds());
+    if (!bPilotInCombat) { bPilotInCombat = true; ForceNetUpdate(); }
 }
 
 void ASFE1Character::PilotAttack()
