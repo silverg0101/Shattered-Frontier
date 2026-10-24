@@ -2,14 +2,14 @@
   "faces": [
     {"id": "Orlando", "preset": "Orlando", "gender": "male", "hair": "WI_Hair_M_Layered", "beard": "WI_Beard_L_Full", "mustache": "WI_Mustache_L_Full", "skin": [0.26, 0.50], "hair_color": [0.50, 0.10]},
     {"id": "OrlandoBare", "preset": "Orlando", "gender": "male", "bare": true, "skin": [0.26, 0.50], "hair_color": [0.50, 0.10]},
-    {"id": "Godric", "preset": "Bruce", "gender": "male", "hair": "WI_Hair_L_Straight", "beard": "WI_Beard_L_Messy", "mustache": "WI_Mustache_L_Messy", "skin": [0.08, 0.55], "freckles": 1, "hair_color": [0.45, 0.75]},
-    {"id": "Edwin", "preset": "Victor", "gender": "male", "hair": "WI_Hair_S_Messy", "beard": "WI_Beard_S_Full", "mustache": "WI_Mustache_S_Full", "skin": [0.17, 0.50], "hair_color": [0.20, 0.30]},
-    {"id": "Wulfric", "preset": "Lorenzo", "gender": "male", "hair": "WI_Hair_L_Straight", "beard": "WI_Goatee_L_Wavy", "mustache": "WI_Mustache_L_Handlebar", "skin": [0.26, 0.50], "hair_color": [0.50, 0.10]},
-    {"id": "Osric", "preset": "Trey", "gender": "male", "hair": "WI_Hair_S_Coil", "beard": "WI_Beard_S_Full", "mustache": "WI_Mustache_S_Full", "skin": [0.35, 0.55], "hair_color": [0.80, 0.00]},
-    {"id": "Hilda", "preset": "Jelena", "gender": "female", "hair": "WI_Hair_S_LowPonytail", "makeup": "none", "skin": [0.17, 0.50], "hair_color": [0.20, 0.30]},
+    {"id": "Godric", "preset": "Bruce", "gender": "male", "hair": "WI_Hair_L_Straight", "beard": "WI_Beard_L_Messy", "mustache": "WI_Mustache_L_Messy", "skin": [0.08, 0.55], "freckles": 1, "freckle_strength": 1.0, "hair_color": [0.55, 0.65]},
+    {"id": "Edwin", "preset": "Victor", "gender": "male", "hair": "WI_Hair_S_Messy", "beard": "WI_Beard_S_Full", "mustache": "WI_Mustache_S_Full", "skin": [0.10, 0.45], "hair_color": [0.25, 0.45], "groom_colors": {"Eyebrows": [0.40, 0.40], "Beards": [0.30, 0.55], "Mustaches": [0.30, 0.55]}},
+    {"id": "Wulfric", "preset": "Lorenzo", "gender": "male", "hair": "WI_Hair_L_Straight", "beard": "WI_Goatee_L_Wavy", "mustache": "WI_Mustache_L_Handlebar", "skin": [0.26, 0.50], "hair_color": [0.50, 0.10], "groom_colors": {"Beards": [0.65, 0.10], "Mustaches": [0.65, 0.10]}},
+    {"id": "Osric", "preset": "Trey", "gender": "male", "hair": "WI_Hair_S_Coil", "beard": "WI_Beard_S_Full", "mustache": "WI_Mustache_S_Full", "skin": [0.27, 0.42], "hair_color": [0.65, 0.08]},
+    {"id": "Hilda", "preset": "Jelena", "gender": "female", "hair": "WI_Hair_S_LowPonytail", "makeup": "none", "skin": [0.10, 0.45], "hair_color": [0.25, 0.45], "groom_colors": {"Eyebrows": [0.55, 0.40]}, "accents": {"under_eye": [0.70, 0.40, 0.40]}},
     {"id": "HildaBare", "preset": "Jelena", "gender": "female", "bare": true, "skin": [0.17, 0.50], "hair_color": [0.20, 0.30]},
-    {"id": "Aelfwyn", "preset": "Celeste", "gender": "female", "hair": "WI_Hair_L_Straight", "makeup": "none", "skin": [0.08, 0.55], "freckles": 1, "hair_color": [0.45, 0.75]},
-    {"id": "Eadgyth", "preset": "Vivian", "gender": "female", "hair": "WI_Hair_S_UpdoBraids", "makeup": "none", "skin": [0.26, 0.50], "hair_color": [0.50, 0.10]},
-    {"id": "Ebba", "preset": "Etta", "gender": "female", "hair": "WI_Hair_M_TwistedBraids", "makeup": "none", "skin": [0.35, 0.55], "hair_color": [0.80, 0.00]}
+    {"id": "Aelfwyn", "preset": "Celeste", "gender": "female", "hair": "WI_Hair_L_Straight", "makeup": "none", "skin": [0.08, 0.55], "freckles": 1, "freckle_strength": 1.0, "hair_color": [0.55, 0.65]},
+    {"id": "Eadgyth", "preset": "Vivian", "gender": "female", "hair": "WI_Hair_S_UpdoBraids", "makeup": "none", "skin": [0.22, 0.40], "hair_color": [0.50, 0.10], "accents": {"lips": [0.55, 0.35, 0.40]}},
+    {"id": "Ebba", "preset": "Etta", "gender": "female", "hair": "WI_Hair_M_TwistedBraids", "makeup": "none", "skin": [0.22, 0.40], "hair_color": [0.65, 0.08], "groom_colors": {"Eyebrows": [0.75, 0.08]}, "accents": {"lips": [0.62, 0.40, 0.40]}}
   ]
 }
