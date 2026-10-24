@@ -20,9 +20,11 @@ How it is built (all lengths cm, in the body's own frame):
   the legs; max 8 influences, normalised.
 - UVs: one box projection, 1 UV unit per 40 cm, for a tiling cloth material. Seams fall where the dominant normal axis changes.
 Offset shells follow the body's detail, so pass a larger --tunic-offset for heavier builds.
-Female fit (round 2; each option defaults off, so the male output is unchanged):
-  --drape 1 --drape-top 4 --skirt-ease 2.0 --skirt-flare 0 --skirt-straight 1 --hem 0.7 --join-smooth 6 --slit-height 18 --slit-open 3
-  --thickness 0.3 --neck-trim 1.0 --neck-trim-height 0.25 --v-depth 7 --cuff-width 4 --cuff-bulge 0.4 --leggings-offset 0.4 --pelvis-hem 0.35
+Female fit (round 3; each option defaults off, so the male output is unchanged):
+  --drape 1 --drape-top 8 --skirt-ease 2.0 --skirt-flare 0 --skirt-straight 1 --hem 0.7 --join-smooth 6 --slit-height 18 --slit-open 3
+  --thickness 0.3 --neck-trim 1.0 --neck-trim-height 0.25 --v-depth 7 --neck-radius 5.5 --cuff-width 4 --cuff-bulge 0.7 --cuff-fold 6
+  --leggings-offset 0.4 --hem-thigh 0.95 --hem-blend 12 --side-even 0.15 --slit-backing 0.8
+The --render sheet adds an approximate idle stance (front) and a stride from behind, to check the hem under the game's poses.
 """
 import argparse
 import math
@@ -70,6 +72,12 @@ def parse():
     p.add_argument('--neck-trim', type=float, default=0.0, help='cm width of a raised trim band round the neck opening and slit')
     p.add_argument('--neck-trim-height', type=float, default=0.3)
     p.add_argument('--pelvis-hem', type=float, default=0.0, help='0..1: weight the front/back skirt panels to the pelvis, thighs only near the side slits')
+    # Female round 3 (defaults off):
+    p.add_argument('--hem-thigh', type=float, default=0.0, help='0..1: thigh share at the hem, rest pelvis; each half follows its own thigh (replaces --pelvis-hem)')
+    p.add_argument('--hem-blend', type=float, default=12.0, help='cm either side of the centre line over which the halves blend to an even share of both thighs')
+    p.add_argument('--side-even', type=float, default=0.5, help='0..1: at the side slits this part of the own-thigh share becomes even (no bell in a wide stance)')
+    p.add_argument('--slit-backing', type=float, default=0.0, help='cm: a cloth facing this far behind the neck slit (no void at its base)')
+    p.add_argument('--cuff-fold', type=float, default=0.0, help='cm: taper the last cm of the sleeve to the forearm before the folded cuff band')
     return p.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else [])
 
 
@@ -404,6 +412,7 @@ def add_v_split(bm, args):
     inside = [f for f in bm.faces
               if (f.calc_center_median() - apex).dot(n_right) > 1e-4 and (f.calc_center_median() - apex).dot(n_left) > 1e-4
               and f.calc_center_median().y < cy - 1.0]
+    args.v_faces = [[v.co.copy() for v in f.verts] for f in inside]
     bmesh.ops.delete(bm, geom=inside, context='FACES_ONLY')
     # Drop the verts left loose, then close the V's point.
     loose = [v for v in bm.verts if not v.link_faces]
@@ -421,6 +430,47 @@ def rolled_cuff(bm, a_pt, direction, plane_d, width, bulge, armv):
             if radial.length > 1e-6:
                 s = 1.0 if along > plane_d - width * 0.85 else 0.5  # a step at the band's inner edge
                 v.co += radial.normalized() * bulge * s
+
+
+def taper_cuff(bm, src, a_pt, direction, plane_d, width, length, clearance, armv):
+    """Pull the sleeve's last `length` cm above the cuff band in to `clearance` off the forearm: a cuff close to the arm, no bell."""
+    for v in bm.verts:
+        along = (v.co - a_pt).dot(direction)
+        if not (plane_d - width - length < along <= plane_d + 0.01 and armv[v.index] > 0.3 and (v.co.x - a_pt.x) * direction.x > 0):
+            continue
+        t = min(1.0, (along - (plane_d - width - length)) / length)
+        t = t * t * (3 - 2 * t)
+        _loc, _n, _i, dist = src.nearest(v.co)
+        radial = (v.co - a_pt) - direction * along
+        if dist > clearance and radial.length > 1e-6:
+            v.co -= radial.normalized() * (dist - clearance) * t
+
+
+def slit_backing(bm, src, args):
+    """A facing behind the neck slit: its faces again, pushed toward the skin and widened so its edges sit under the cloth."""
+    polys = args.v_faces
+    if not polys:
+        return
+    pts = [p for f in polys for p in f]
+    c = sum(pts, Vector()) / len(pts)
+    made = {}
+
+    def vert(p):
+        k = tuple(round(x, 4) for x in p)
+        if k not in made:
+            q = Vector((c.x + (p.x - c.x) * 1.6, p.y, p.z))
+            loc, nor, _i, dist = src.nearest(q)
+            d = q - loc
+            out = d.normalized() if d.length > 1e-6 else nor
+            made[k] = bm.verts.new(loc + out * max(0.4, dist - args.slit_backing))
+        return made[k]
+    for f in polys:
+        try:
+            bm.faces.new([vert(p) for p in f])
+        except ValueError:
+            pass
+    bm.verts.ensure_lookup_table()
+    bm.verts.index_update()
 
 
 def away_from_skin(src, v):
@@ -474,10 +524,9 @@ def thicken(bm, t, skirt):
     inner = {v: bm.verts.new(v.co - v.normal * t) for v in bm.verts[:]}
     for f in faces:
         bm.faces.new([inner[v] for v in reversed(f.verts)])
-    for a, b in rim:
-        bm.faces.new((b, a, inner[a], inner[b]))
+    rims = {bm.faces.new((b, a, inner[a], inner[b])) for a, b in rim}
     bm.verts.ensure_lookup_table()
-    return skirt | {inner[v] for v in skirt}
+    return skirt | {inner[v] for v in skirt}, rims
 
 
 def build(args, src, arm):
@@ -489,6 +538,7 @@ def build(args, src, arm):
     # Neck opening search height: 140 cm on the male body, a little under spine_05 (scales to shorter bodies).
     args.zneck = head('spine_05').z - 0.2 * (head('neck_01').z - head('spine_05').z)
     z_hem = head('thigh_l').z - args.hem * (head('thigh_l').z - head('calf_l').z)
+    args.zhem, args.thigh_l_x = z_hem, head('thigh_l').x
 
     # --- leggings: ankle to hip, no arms ---
     legs = shell(src, args.leggings_offset, clearance=0.35)
@@ -514,6 +564,8 @@ def build(args, src, arm):
     keep_largest(tun)
     armv = vert_arm(src, tun)
     for a, d, dist in cuff:
+        if args.cuff_fold:
+            taper_cuff(tun, src, a, d, dist, args.cuff_width, args.cuff_fold, args.clearance, armv)
         rolled_cuff(tun, a, d, dist, args.cuff_width, args.cuff_bulge, armv)
     raise_collar(tun, args)
     add_v_split(tun, args)
@@ -525,10 +577,13 @@ def build(args, src, arm):
     skirt = loft_skirt(tun, src, args, z_hem)
     if args.join_smooth:
         smooth_join(tun, src, args)
+    if args.slit_backing:  # after the smoothing passes: they would pull the loose facing about
+        slit_backing(tun, src, args)
     bmesh.ops.recalc_face_normals(tun, faces=tun.faces[:])
     skirt = set(skirt)
+    hard = set()
     if args.thickness:
-        skirt = thicken(tun, args.thickness, skirt)
+        skirt, hard = thicken(tun, args.thickness, skirt)  # rims shade flat: a lit edge, not a dark smoothed seam
     tun.verts.index_update()
     skirt_idx = {v.index for v in skirt}
 
@@ -541,7 +596,7 @@ def build(args, src, arm):
         for f in part.faces:
             nf = out.faces.new([vmap[v.index] for v in f.verts])
             nf.material_index = slot
-            nf.smooth = True
+            nf.smooth = not (slot == 0 and f in hard)
         if slot == 0:
             skirt_new = {vmap[i] for i in skirt_idx if i in vmap}
     out.verts.ensure_lookup_table()
@@ -576,7 +631,23 @@ def skin(out, src, skirt_ids, args):
             nxt[i] = new
         for i, w in nxt.items():
             W[i] = w
-    if args.pelvis_hem and skirt_ids:  # front/back panels ride the pelvis (no wrap between the thighs); thighs only near the slits
+    if args.hem_thigh and skirt_ids:
+        # Each half of the skirt follows its own thigh (forward leg stays inside the cloth), blending to an even share of both across
+        # the centre (one panel, no split up the back). At the side slits part of the own share turns even: abduction is mirror
+        # symmetric and cancels in an even share, so a wide stance does not swing the sides out into a bell. Ramps in from the join.
+        cx = sum(out.verts[i].co.x for i in skirt_ids) / len(skirt_ids)
+        cy = sum(out.verts[i].co.y for i in skirt_ids) / len(skirt_ids)
+        for i in skirt_ids:
+            c = out.verts[i].co
+            dx, dy = c.x - cx, c.y - cy
+            sideness = abs(math.cos(math.atan2(dy, dx))) ** 4  # 1 at the slits, 0 on the front/back centre line
+            g = min(1.0, abs(dx) / args.hem_blend) * (1 - args.side_even * sideness)
+            k = args.hem_thigh * min(1.0, max(0.0, (args.zjoin - c.z) / max(1.0, 0.25 * (args.zjoin - args.zhem))))  # full from 25% down: the thigh fills the upper skirt
+            own, other = ('thigh_l', 'thigh_r') if dx * args.thigh_l_x > 0 else ('thigh_r', 'thigh_l')
+            new = {'pelvis': 1 - k, own: k * (0.5 + 0.5 * g), other: k * (0.5 - 0.5 * g)}
+            depth = min(1.0, max(0.0, (args.zjoin - c.z) / 12.0))  # upper skirt keeps the body's weights (its corrective bones): no step, no poke at the hip
+            W[i] = {n: depth * new.get(n, 0.0) + (1 - depth) * W[i].get(n, 0.0) for n in set(new) | set(W[i])}
+    elif args.pelvis_hem and skirt_ids:  # front/back panels ride the pelvis (no wrap between the thighs); thighs only near the slits
         cx = sum(out.verts[i].co.x for i in skirt_ids) / len(skirt_ids)
         cy = sum(out.verts[i].co.y for i in skirt_ids) / len(skirt_ids)
         for i in skirt_ids:
@@ -610,7 +681,7 @@ def make_object(out, W, body, arm, name='SKM_Tunic_Leggings'):
             li += 1
     for p, f in zip(mesh.polygons, out.faces):
         p.material_index = f.material_index
-        p.use_smooth = True
+        p.use_smooth = f.smooth
     for slot, (mname, col) in enumerate((('M_Tunic', (0.72, 0.62, 0.45, 1)), ('M_Leggings', (0.20, 0.14, 0.10, 1)))):
         m = bpy.data.materials.new(mname)
         m.diffuse_color = col
@@ -623,6 +694,8 @@ def make_object(out, W, body, arm, name='SKM_Tunic_Leggings'):
     groups = {g.name: ob.vertex_groups.new(name=g.name) for g in body.vertex_groups}
     for i, w in enumerate(W):
         for n, x in w.items():
+            if n not in groups:  # e.g. thigh_l: the body skins only its corrective children
+                groups[n] = ob.vertex_groups.new(name=n)
             groups[n].add([i], x, 'REPLACE')
     mod = ob.modifiers.new('Armature', 'ARMATURE')
     mod.object = arm
@@ -666,6 +739,20 @@ def pose_stride(arm):
     rot('upperarm_r', -18)
 
 
+def pose_idle(arm):
+    """The game's idle stance, roughly (from the in-game captures): knees a little out, the left thigh 20 deg forward."""
+    for pb in arm.pose.bones:
+        pb.matrix_basis = Matrix.Identity(4)
+    bpy.context.view_layer.update()
+    for name in ('thigh_l', 'thigh_r'):
+        pb = arm.pose.bones[name]
+        h = Vector(arm.data.bones[name].head_local)
+        out = -6 if h.x > 0 else 6
+        r = Matrix.Translation(h) @ Matrix.Rotation(math.radians(out), 4, 'Y') @ Matrix.Rotation(math.radians(-20 if name == 'thigh_l' else -3), 4, 'X') @ Matrix.Translation(-h)
+        pb.matrix = r @ pb.matrix
+        bpy.context.view_layer.update()
+
+
 def render(args, body, ob, arm):
     import numpy as np
     sc = bpy.context.scene
@@ -688,10 +775,16 @@ def render(args, body, ob, arm):
     cam.data.ortho_scale = 2.0
     body.hide_render = False
     views = [('front', (0, -5, 0.8), (90, 0, 0), False), ('side', (5, 0, 0.8), (90, 0, 90), False),
-             ('back', (0, 5, 0.8), (90, 0, 180), False), ('stride', (5, 0, 0.8), (90, 0, 90), True)]
+             ('back', (0, 5, 0.8), (90, 0, 180), False), ('idle', (0, -5, 0.8), (90, 0, 0), 'idle'),
+             ('stride', (5, 0, 0.8), (90, 0, 90), True), ('stride_back', (0, 5, 0.8), (90, 0, 180), True)]
     tiles = []
     for name, loc, rotd, stride in views:
-        if stride:
+        if stride == 'idle':
+            pose_idle(arm)
+        elif stride and name == 'stride':
+            for pb in arm.pose.bones:
+                pb.matrix_basis = Matrix.Identity(4)
+            bpy.context.view_layer.update()
             pose_stride(arm)
         cam.location = loc
         cam.rotation_euler = [math.radians(a) for a in rotd]

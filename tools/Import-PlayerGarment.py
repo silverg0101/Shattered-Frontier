@@ -4,7 +4,7 @@ UnrealEditor.exe <uproject> -RenderOffscreen -unattended -nosplash -ExecCmds="py
 Reads Artifacts/Characters/PlayerBase/garment_tunic_leggings.fbx (env SF_GARMENT_FBX overrides; env SF_OUTFIT_SUFFIX, e.g. _F for the
 female fit, is appended to the mesh names). Writes under /Game/Frontier/Characters/Player/Garments:
 SKM_Tunic_Leggings (slots M_Tunic, M_Leggings), M_PlayerCloth (two-sided tiling fabric: base colour x tint, normal x strength, roughness, tiling),
-MI_PlayerLinen and MI_PlayerLeggings, and the cloth textures from GameClient/ArtSource/Characters/Player/garments/:
+MI_PlayerLinen and MI_PlayerLeggings (female: _F instances, coarser tiling, full normal, MacroVariation colour noise), and the cloth textures from GameClient/ArtSource/Characters/Player/garments/:
 T_linen_oatmeal (grey-beige linen) and T_wool_brown_knit, each with a _N normal made from its albedo's luminance (high-passed central difference).
 Garment UVs are 1 unit per 40 cm; the linen image holds ~200 threads, so Tiling 3 gives ~15 threads/cm.
 T_linen_stitch_trim is imported but unused: the garment has no separate trim slot or UV island yet.
@@ -44,9 +44,11 @@ def tex(name):
 
 def make_master(base_default, normal_default):
     path = f'{ROOT}/M_PlayerCloth'
-    if lib.does_asset_exist(path):
-        lib.delete_asset(path)
-    m = tools.create_asset('M_PlayerCloth', ROOT, unreal.Material, unreal.MaterialFactoryNew())
+    if lib.does_asset_exist(path):  # rebuild in place: deleting fails while the instances reference it
+        m = lib.load_asset(path)
+        mel.delete_all_material_expressions(m)
+    else:
+        m = tools.create_asset('M_PlayerCloth', ROOT, unreal.Material, unreal.MaterialFactoryNew())
     m.set_editor_property('two_sided', True)  # slit, neck and cuff insides show cloth, not a grey backface
 
     def node(cls, x, y, **pins):
@@ -78,7 +80,19 @@ def make_master(base_default, normal_default):
     colour = mel.create_material_expression(m, M, 0, -250)
     mel.connect_material_expressions(base, 'RGB', colour, 'A')
     mel.connect_material_expressions(tint, '', colour, 'B')
-    mel.connect_material_property(colour, '', unreal.MaterialProperty.MP_BASE_COLOR)
+    # Macro variation: low-frequency UV-space noise scales the colour by 1 +/- MacroVariation (0 = off, the male instances),
+    # so the cloth is not one flat tone at game distance. UV space, not world: it must ride the skinned mesh.
+    pos = node(unreal.MaterialExpressionAppendVector, -700, -650, A=node(unreal.MaterialExpressionTextureCoordinate, -900, -650),
+               B=mel.create_material_expression(m, unreal.MaterialExpressionConstant, -900, -550))
+    noise = node(unreal.MaterialExpressionNoise, -450, -650, Position=pos)
+    noise.set_editor_property('scale', 5.0)  # UV 1 = 40 cm: blotches ~5-8 cm
+    noise.set_editor_property('levels', 3)
+    noise.set_editor_property('output_min', -1.0)
+    noise.set_editor_property('output_max', 1.0)
+    macro = node(unreal.MaterialExpressionAdd, -150, -600, A=node(M, -300, -600, A=noise, B=param('MacroVariation', 0.0, -450, -500)))
+    macro.set_editor_property('const_b', 1.0)
+    shaded = node(M, 150, -300, A=colour, B=macro)
+    mel.connect_material_property(shaded, '', unreal.MaterialProperty.MP_BASE_COLOR)
     flat = mel.create_material_expression(m, unreal.MaterialExpressionConstant3Vector, -250, 300)
     flat.set_editor_property('constant', unreal.LinearColor(0, 0, 1, 1))
     bend = mel.create_material_expression(m, unreal.MaterialExpressionLinearInterpolate, 0, 150)
@@ -93,7 +107,7 @@ def make_master(base_default, normal_default):
     return m
 
 
-def make_instance(name, master, base, normal, tint, tiling, normal_strength, roughness):
+def make_instance(name, master, base, normal, tint, tiling, normal_strength, roughness, macro=0.0):
     path = f'{ROOT}/{name}'
     mi = lib.load_asset(path) if lib.does_asset_exist(path) else tools.create_asset(name, ROOT, unreal.MaterialInstanceConstant, unreal.MaterialInstanceConstantFactoryNew())
     mi.set_editor_property('parent', master)
@@ -103,6 +117,8 @@ def make_instance(name, master, base, normal, tint, tiling, normal_strength, rou
     mel.set_material_instance_scalar_parameter_value(mi, 'Tiling', tiling)
     mel.set_material_instance_scalar_parameter_value(mi, 'NormalStrength', normal_strength)
     mel.set_material_instance_scalar_parameter_value(mi, 'Roughness', roughness)
+    if macro:
+        mel.set_material_instance_scalar_parameter_value(mi, 'MacroVariation', macro)
     lib.save_loaded_asset(mi)
     return mi
 
@@ -144,9 +160,16 @@ def run():
     wool_tex, wool_n = tex('T_wool_brown_knit'), tex('T_wool_brown_knit_N')
     tex('T_linen_stitch_trim')
     master = make_master(linen_tex, linen_n)
+    # Every instance is re-parented on each run: the master is recreated, so an instance left out would lose its parent.
     linen = make_instance('MI_PlayerLinen', master, linen_tex, linen_n, (1, 1, 1, 1), 3.0, 0.6, 0.85)
     legs = make_instance('MI_PlayerLeggings', master, wool_tex, wool_n, (1, 1, 1, 1), 4.0, 0.35, 0.9)
-    name = 'SKM_Tunic_Leggings' + os.environ.get('SF_OUTFIT_SUFFIX', '')
+    # Female: coarser weave/knit, full normal and macro variation so the cloth reads at the 3-4 m game camera.
+    linen_f = make_instance('MI_PlayerLinen_F', master, linen_tex, linen_n, (1, 1, 1, 1), 1.2, 1.0, 0.85, macro=0.08)
+    legs_f = make_instance('MI_PlayerLeggings_F', master, wool_tex, wool_n, (1, 1, 1, 1), 1.6, 1.0, 0.9, macro=0.1)
+    suffix = os.environ.get('SF_OUTFIT_SUFFIX', '')
+    if suffix == '_F':
+        linen, legs = linen_f, legs_f
+    name = 'SKM_Tunic_Leggings' + suffix
     mesh = import_skeletal(fbx, name, skeleton)
     # The body patch the garment covers (tools/Build-GarmentBodyClip.py), removed from the body by Mutable (tools/Create-PlayerOutfit.py).
     import_skeletal(fbx.with_name(fbx.stem + '_bodyclip.fbx'), name + '_BodyClip', skeleton)
