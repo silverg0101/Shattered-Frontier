@@ -54,7 +54,13 @@ void USFExchangeComponent::TickScenario()
         FString Gate; FParse::Value(FCommandLine::Get(), TEXT("ExchangeScenarioGate="), Gate);
         static bool bAnnounced = false;
         if (!bAnnounced) { bAnnounced = true; UE_LOG(LogTemp, Display, TEXT("EXCHANGE_SCENARIO_START A=%s ABag=%s B=%s BBag=%s"), *PackA->GetCharacterId(), *PackA->GetContainerId(), *PackB->GetCharacterId(), *PackB->GetContainerId()); }
-        if (!Gate.IsEmpty() && !IFileManager::Get().FileExists(*Gate)) { return; }
+        static bool bPrepared = false;
+        if (bPrepared)
+        {
+            if (!Gate.IsEmpty() && !IFileManager::Get().FileExists(*Gate)) { return; }
+            ScenarioStep = 1;
+            return;
+        }
         APawn* PawnA = Players[0]->GetPawn();
         APawn* PawnB = Players[1]->GetPawn();
         if (!PawnA || !PawnB) { return; }
@@ -94,7 +100,8 @@ void USFExchangeComponent::TickScenario()
             if (!bCommitted) { UE_LOG(LogTemp, Error, TEXT("EXCHANGE_SCENARIO_FAILED Step=%d Rejected"), ScenarioStep); ScenarioStep = ExchangeScenarioDone; return; }
             ++ScenarioStep;
         });
-        ScenarioStep = 1;
+        bPrepared = true;
+        UE_LOG(LogTemp, Display, TEXT("EXCHANGE_SCENARIO_BOARD_READY"));
         return;
     }
     FSFExchangeIntent Intent;
@@ -107,12 +114,17 @@ void USFExchangeComponent::TickScenario()
     case 2:  // B accepts
         Intent.Kind = ESFExchangeIntentKind::AcceptTrade; Intent.TradeId = ExchangeScenarioTrade;
         Run(B, Intent, 102); break;
-    case 3:  // A lists one iron ore at 5 gold
+    case 3:  // B lists one iron ore while A's market board is open
         Intent.Kind = ESFExchangeIntentKind::ListItem; Intent.MarketId = TEXT("market/silverbrook"); Intent.ListingId = ExchangeScenarioListing; Intent.ItemId = TEXT("item/iron_ore"); Intent.Quantity = 1; Intent.UnitPrice = 5;
-        Run(A, Intent, 103); break;
-    case 4:  // B buys it (a new listing is revision 0: exchange.listings.revision defaults to 0)
+        Run(B, Intent, 103); break;
+    case 4:  // A buys it (a new listing is revision 0: exchange.listings.revision defaults to 0)
+    {
+        FString Gate; FParse::Value(FCommandLine::Get(), TEXT("ExchangeScenarioGate="), Gate);
+        if (FParse::Param(FCommandLine::Get(), TEXT("ExchangeLiveRefreshScenario")) && !Gate.IsEmpty() &&
+            !IFileManager::Get().FileExists(*(Gate + TEXT(".listing")))) { return; }
         Intent.Kind = ESFExchangeIntentKind::BuyListing; Intent.MarketId = TEXT("market/silverbrook"); Intent.ListingId = ExchangeScenarioListing; Intent.Quantity = 1; Intent.UnitPrice = 5; Intent.ExpectedRevision = 0;
-        Run(B, Intent, 104); break;
+        Run(A, Intent, 104); break;
+    }
     case 5:  // read B's wallet, then replay accept and buy under the same derived operation ids
         Intent.Kind = ESFExchangeIntentKind::Wallet; Run(B, Intent, 105); break;
     case 6:
@@ -120,7 +132,7 @@ void USFExchangeComponent::TickScenario()
         UE_LOG(LogTemp, Display, TEXT("EXCHANGE_SCENARIO_WALLET Phase=Before B=%lld Reserved=%lld"), WalletBeforeReplay.Balance, WalletBeforeReplay.Reserved);
         Intent.Kind = ESFExchangeIntentKind::AcceptTrade; Intent.TradeId = ExchangeScenarioTrade; Run(B, Intent, 106); break;
     case 7:
-        Intent.Kind = ESFExchangeIntentKind::BuyListing; Intent.MarketId = TEXT("market/silverbrook"); Intent.ListingId = ExchangeScenarioListing; Intent.Quantity = 1; Intent.UnitPrice = 5; Intent.ExpectedRevision = 0; Run(B, Intent, 107); break;
+        Intent.Kind = ESFExchangeIntentKind::BuyListing; Intent.MarketId = TEXT("market/silverbrook"); Intent.ListingId = ExchangeScenarioListing; Intent.Quantity = 1; Intent.UnitPrice = 5; Intent.ExpectedRevision = 0; Run(A, Intent, 107); break;
     case 8:
         Intent.Kind = ESFExchangeIntentKind::Wallet; Run(B, Intent, 108); break;
     case 9:

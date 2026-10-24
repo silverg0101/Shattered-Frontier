@@ -99,6 +99,9 @@ public:
     void Bind(TSharedPtr<FSFMarketViewModel> InModel) { Model = InModel; Rebuild(); }
     void StartLiveRefresh(class USFExchangeComponent* Component, class ASFMarketBoardActor* Board);
     void StopLiveRefresh();
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    void ProbeLiveRefresh() { NativeTick(GetCachedGeometry(), 0.016f); }
+#endif
     // The item the sell form offers; the real wiring passes the selected backpack stack.
     void SetSellItem(const FString& ItemId, const FString& Name, int32 MaxQuantity);
     int32 RowCount() const { return Rows.Num(); }

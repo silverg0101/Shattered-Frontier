@@ -157,6 +157,28 @@ void ASFPlayerController::ClientInteractionResult_Implementation(ESFE1Interactio
 void ASFPlayerController::TickInteraction()
 {
     TickDialogue();
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (IsLocalController() && FParse::Param(FCommandLine::Get(), TEXT("ExchangeLiveRefreshProbe")))
+    {
+        static bool bOpened = false;
+        if (!bOpened && GetPawn() && FindComponentByClass<USFExchangeComponent>())
+        {
+            for (TActorIterator<ASFMarketBoardActor> It(GetWorld()); It; ++It)
+            {
+                if (It->MarketId == TEXT("market/silverbrook") &&
+                    FVector::DistSquared(GetPawn()->GetActorLocation(), It->GetActorLocation()) <=
+                        FMath::Square(GetDefault<USFGameplayServicesSettings>()->MarketReachM * 100.0f))
+                {
+                    ToggleMarketDemo();
+                    bOpened = MarketBoard && GetWindowStack()->IsOpen(MarketBoard);
+                    if (bOpened) { UE_LOG(LogTemp, Display, TEXT("EXCHANGE_LIVE_BOARD_OPEN")); }
+                    break;
+                }
+            }
+        }
+        if (bOpened && MarketBoard) { MarketBoard->ProbeLiveRefresh(); }
+    }
+#endif
     if (IsLocalController() && WasInputKeyJustPressed(EKeys::Tab)) { SelectNextCombatTarget(); }
     const bool bHasPlayer = GetLocalPlayer() != nullptr;  // CreateWidget needs an attached player (a controller made local without one, as the cursor tests do, has no HUD)
     if (bHasPlayer && IsLocalController() && !GatheringHud)

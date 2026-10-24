@@ -8,7 +8,7 @@ param(
 # Two-client Exchange run on an owned PostgreSQL, InventoryLedger.Host and Gameplay.Host (same fixture as
 # Test-QuestPilot -Leg Full -Services). Two clients connect to Silverbrook; the server's -ExchangeScenario driver plays both
 # players through the real intent path (USFExchangeComponent::ExecuteIntent -> Gameplay.Host Exchange):
-#   A offers two oak logs for ten gold, B accepts; A lists one iron ore at five gold, B buys it;
+#   A offers two oak logs for ten gold, B accepts; B lists one iron ore at five gold, A sees and buys it;
 #   then the accept and the buy are replayed with the same derived operation ids.
 # The runner seeds the wallets and the escrow containers (after the scenario logs the character ids, before it opens the gate
 # file) and then checks the database: exactly one trade and one listing settlement, items delivered once, and B's wallet
@@ -50,7 +50,7 @@ function Read-Log([string]$Name) { Get-Content -LiteralPath (Join-Path $root ($N
 function Query([string]$Sql) { return (Invoke-LedgerSql $fx $Sql $fx.db).Trim() }
 try {
     New-LedgerFixture $fx $repo $root
-    $schemas = @('CharacterState.Postgres/Schema.sql','Housing.Postgres/Schema.sql','Exchange.Postgres/Schema.sql','Housing.Postgres/Schema.Gameplay.sql','Housing.Postgres/Schema.Geometry.sql','Housing.Postgres/Schema.Construction.sql','CharacterState.Postgres/Schema.Position.sql','CharacterState.Postgres/Schema.Recipes.sql') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_") -Raw }
+    $schemas = @('CharacterState.Postgres/Schema.sql','Housing.Postgres/Schema.sql','Exchange.Postgres/Schema.sql','Housing.Postgres/Schema.Gameplay.sql','Housing.Postgres/Schema.Geometry.sql','Housing.Postgres/Schema.Construction.sql','CharacterState.Postgres/Schema.Position.sql','CharacterState.Postgres/Schema.Recipes.sql','CharacterState.Postgres/Schema.Appearance.sql','CharacterState.Postgres/Schema.GatheringSkills.sql') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_") -Raw }
     [void](Invoke-LedgerSql $fx ("SET ROLE ledger_owner;`n" + ($schemas -join "`n")) $fx.db)
     [void](Invoke-LedgerSql $fx ('GRANT USAGE ON SCHEMA character_state,housing,exchange TO ledger_svc; ' + (@('character_state','housing','exchange') | ForEach-Object { "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA $_ TO ledger_svc;" }) -join ' ') $fx.db)
     $gameplayProject = Join-Path $repo 'BackendServices/Gameplay.Host/Gameplay.Host.csproj'
@@ -75,10 +75,12 @@ try {
     $ledgerIni = '-ini:Game:[/Script/ShatteredFrontier.SFInventoryLedgerSettings]'; $servicesIni = '-ini:Game:[/Script/ShatteredFrontier.SFGameplayServicesSettings]'
     $flags = @('-server',('-port='+$Port),'-multihome=127.0.0.1','-ExchangeScenario',('-ExchangeScenarioGate="'+$gate+'"'),
         ($ledgerIni+':bEnabled=True'),($ledgerIni+':Endpoint=127.0.0.1:'+$fx.hostPort),($servicesIni+':bEnabled=True'),($servicesIni+':bExchangeEnabled=True'),($servicesIni+':Endpoint=127.0.0.1:'+$gameplayPort))
+    if ($Market) { $flags += '-ExchangeLiveRefreshScenario' }
     $serverEnv = @{ SF_INVENTORY_LEDGER_TOKEN=$fx.token; SF_GAMEPLAY_TOKEN=$gameplayToken }
     Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server' $silverbrook $flags }
     Wait-Log $server 'server' 'GATHERING_PILOT_READY'
-    $first = Start-Owned 'first' ('127.0.0.1:'+$Port) @('-game')
+    $firstFlags = @('-game'); if ($Market) { $firstFlags += '-ExchangeLiveRefreshProbe' }
+    $first = Start-Owned 'first' ('127.0.0.1:'+$Port) $firstFlags
     $second = Start-Owned 'second' ('127.0.0.1:'+$Port) @('-game')
     Wait-Log $server 'server' 'EXCHANGE_SCENARIO_START'
     $start = [regex]::Match((Read-Log 'server'),'EXCHANGE_SCENARIO_START A=(\S+) ABag=(\S+) B=(\S+) BBag=(\S+)')
@@ -92,8 +94,13 @@ try {
     [void](Invoke-LedgerSql $fx ("INSERT INTO exchange.wallets(owner_id,balance) VALUES ('$a',0),('$b',100) ON CONFLICT DO NOTHING; " +
         "INSERT INTO inventory.containers(id,owner_kind,owner_id,kind,capacity) VALUES ('$aBag',0,'$a',1,160),('$bBag',0,'$b',1,160) ON CONFLICT DO NOTHING; " +
         "INSERT INTO inventory.containers(id,owner_kind,owner_id,kind,capacity) SELECT id||':escrow',owner_kind,owner_id,7,capacity FROM inventory.containers WHERE id IN ('$aBag','$bBag') ON CONFLICT DO NOTHING; " +
-        "INSERT INTO inventory.entries(container_id,definition_id,quantity) VALUES ('$($aBag):escrow','item/oak_log',2),('$aBag','item/iron_ore',1) ON CONFLICT DO NOTHING;") $fx.db)
+        "INSERT INTO inventory.entries(container_id,definition_id,quantity) VALUES ('$($aBag):escrow','item/oak_log',2),('$bBag','item/iron_ore',1) ON CONFLICT DO NOTHING;") $fx.db)
+    if ($Market) { Wait-Log $first 'first' 'EXCHANGE_LIVE_BOARD_OPEN' }
     Set-Content -LiteralPath $gate -Value 'go'
+    if ($Market) {
+        Wait-Log $first 'first' 'EXCHANGE_LIVE_LISTING_VISIBLE Id=lst_scenario'
+        Set-Content -LiteralPath ($gate+'.listing') -Value 'seen'
+    }
     Wait-Log $server 'server' 'EXCHANGE_SCENARIO_DONE Trade=1 Listing=1 ReplayUnchanged=1'
     if ((Read-Log 'server') -match 'EXCHANGE_SCENARIO_FAILED') { throw 'Scenario reported a failure.' }
     Start-Sleep -Seconds 3  # a duplicated settlement would show up now
@@ -102,16 +109,16 @@ try {
     $listings = [int](Query "SELECT count(*) FROM exchange.settlements WHERE kind='listing'")
     if ($trades -ne 1 -or $listings -ne 1) { throw "Expected one trade and one listing settlement, found $trades and $listings." }
     $oak = [int](Query "SELECT COALESCE(sum(quantity),0) FROM inventory.entries WHERE container_id='$bBag' AND definition_id='item/oak_log'")
-    $ore = [int](Query "SELECT COALESCE(sum(quantity),0) FROM inventory.entries WHERE container_id='$bBag' AND definition_id='item/iron_ore'")
-    if ($oak -ne 2 -or $ore -ne 1) { throw "B should hold exactly 2 oak logs and 1 iron ore, found $oak and $ore." }
-    $left = [int](Query "SELECT COALESCE(sum(quantity),0) FROM inventory.entries WHERE container_id='$aBag' AND definition_id IN ('item/oak_log','item/iron_ore')")
-    if ($left -ne 0) { throw "A should hold none of the traded items, found $left." }
-    $result.evidence = [ordered]@{ tradeSettlements=$trades; listingSettlements=$listings; bOakLogs=$oak; bIronOre=$ore; aRemaining=$left
+    $ore = [int](Query "SELECT COALESCE(sum(quantity),0) FROM inventory.entries WHERE container_id='$aBag' AND definition_id='item/iron_ore'")
+    if ($oak -ne 2 -or $ore -ne 1) { throw "B should hold 2 oak logs and A should hold 1 iron ore, found $oak and $ore." }
+    $left = [int](Query "SELECT COALESCE(sum(quantity),0) FROM inventory.entries WHERE (container_id='$aBag' AND definition_id='item/oak_log') OR (container_id='$bBag' AND definition_id='item/iron_ore')")
+    if ($left -ne 0) { throw "Seller inventory was not cleared, found $left." }
+    $result.evidence = [ordered]@{ tradeSettlements=$trades; listingSettlements=$listings; bOakLogs=$oak; aIronOre=$ore; sellerRemaining=$left
         bBalance=[int64](Query "SELECT balance FROM exchange.wallets WHERE owner_id='$b'"); aBalance=[int64](Query "SELECT balance FROM exchange.wallets WHERE owner_id='$a'") }
     if ($Market) {
         if ((Read-Log 'server') -notmatch 'EXCHANGE_SCENARIO_DENIAL Forged=1 Reach=1') { throw 'Zone server did not refuse forged and distant boards.' }
         $marketRows = [int](Query "SELECT count(*) FROM exchange.listings WHERE market_id='market/silverbrook' AND id='lst_scenario' AND state='sold'")
-        $fees = [int](Query "SELECT COALESCE(sum(-delta),0) FROM exchange.wallet_entries WHERE code IN ('market_listing_fee','market_transaction_fee') AND owner_id='$a'")
+        $fees = [int](Query "SELECT COALESCE(sum(-delta),0) FROM exchange.wallet_entries WHERE code IN ('market_listing_fee','market_transaction_fee') AND owner_id='$b'")
         if ($marketRows -ne 1 -or $fees -ne 2) { throw "Market isolation/fees failed: listing=$marketRows fees=$fees" }
         $result.evidence.marketRows = $marketRows; $result.evidence.feesCopper = $fees
     }

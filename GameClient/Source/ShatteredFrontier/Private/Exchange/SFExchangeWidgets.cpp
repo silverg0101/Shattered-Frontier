@@ -15,6 +15,8 @@
 #include "Framework/Application/SlateApplication.h"
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/Pawn.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
 
 namespace
 {
@@ -372,5 +374,23 @@ void USFMarketBoard::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
         }
     }
     Rebuild();
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (FParse::Param(FCommandLine::Get(), TEXT("ExchangeLiveRefreshProbe")))
+    {
+        static bool bLogged = false;
+        if (!bLogged)
+        {
+            for (const FSFListing& Listing : RowListings)
+            {
+                if (Listing.ListingId == TEXT("lst_scenario"))
+                {
+                    bLogged = true;
+                    UE_LOG(LogTemp, Display, TEXT("EXCHANGE_LIVE_LISTING_VISIBLE Id=%s"), *Listing.ListingId);
+                    break;
+                }
+            }
+        }
+    }
+#endif
     UpdateTooltip();
 }
