@@ -10,7 +10,7 @@ public enum RegrowthMode { FullRespawn, PartialRegrowth }
 public enum HarvestStatus { Granted, Depleted, StaleGeneration, UnknownNode }
 
 public sealed record NodeDefinition(string Id, ResourceKind Kind, string ResourceId, int Charges, int YieldPerHarvest);
-public sealed record NodeSettings(int RespawnSeconds, double JitterFraction, RegrowthMode Regrowth)
+public sealed record NodeSettings(int RespawnSeconds, double JitterFraction, RegrowthMode Regrowth, int PointCooldownCycles = 2)
 {
     public static NodeSettings Shipped { get; } = new(300, .10, RegrowthMode.FullRespawn);
     public void Validate()
@@ -18,6 +18,7 @@ public sealed record NodeSettings(int RespawnSeconds, double JitterFraction, Reg
         if (RespawnSeconds is < 30 or > 3600) throw new ArgumentOutOfRangeException(nameof(RespawnSeconds));
         if (!double.IsFinite(JitterFraction) || JitterFraction is < 0 or > .25) throw new ArgumentOutOfRangeException(nameof(JitterFraction));
         if (!Enum.IsDefined(Regrowth)) throw new ArgumentOutOfRangeException(nameof(Regrowth));
+        if (PointCooldownCycles is < 0 or > 8) throw new ArgumentOutOfRangeException(nameof(PointCooldownCycles));
     }
 }
 public sealed record NodeSnapshot(string Id, string GroupId, string PointId, string DefinitionId,
@@ -28,13 +29,16 @@ public sealed record HarvestResult(HarvestStatus Status, string NodeId, int Gene
     int Quantity, int RemainingCharges, DateTimeOffset? RegrowAt);
 public sealed record DurableNodeState(string Id, string DefinitionId, int MaxCharges, int Generation, int Charges, int Harvested,
     DateTimeOffset? RegrowAt, DateTimeOffset? GrowthStartedAt, DateTimeOffset? StageStartedAt,
-    int StageIndex, double ScheduledRespawnSeconds);
+    int StageIndex, double ScheduledRespawnSeconds, string? PointId = null, NodePointVisit[]? RecentPoints = null);
+public sealed record NodePointVisit(string PointId, int Generation);
 
 public sealed class GatheringNodeService
 {
     private sealed class Node(string id, string groupId, string pointId, NodeDefinition definition, GrowthProfile? growthProfile)
     {
-        public readonly string Id = id, GroupId = groupId, PointId = pointId;
+        public readonly string Id = id, GroupId = groupId;
+        public string PointId = pointId;
+        public readonly List<NodePointVisit> RecentPoints = [new(pointId, 1)];
         public readonly NodeDefinition Definition = definition;
         public readonly GrowthProfile? GrowthProfile = growthProfile;
         public int Generation = 1;
@@ -52,6 +56,8 @@ public sealed class GatheringNodeService
     private readonly string seed;
     private readonly NodeSettings settings;
     private readonly Dictionary<string, Node> nodes = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, string[]> poolPoints = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, string> legacyPointIds = new(StringComparer.Ordinal);
     private readonly Dictionary<string, (HarvestCommand Command, HarvestResult Result)> receipts = new(StringComparer.Ordinal);
 
     public GatheringNodeService(ZoneContent zone, IEnumerable<NodeDefinition> definitions, TimeProvider clock,
@@ -74,13 +80,18 @@ public sealed class GatheringNodeService
                 throw new ArgumentException("Invalid gathering active count", nameof(zone));
             var supported = group.Definitions.Where(d => catalogue.ContainsKey(d.DefinitionId) && d.Weight > 0).ToArray();
             if (supported.Length == 0) continue;
+            poolPoints.Add(group.GroupId, group.Points.Select(p => p.PointId).ToArray());
+            var initialFree = group.Points.ToList();
             for (int i = 0; i < group.ActiveCount; i++)
             {
-                var point = group.Points[i];
+                var pointIndex = Math.Min((int)(Unit($"point|{zone.Id}|{group.GroupId}|{i}|initial") * initialFree.Count), initialFree.Count - 1);
+                var point = initialFree[pointIndex];
+                initialFree.RemoveAt(pointIndex);
                 var total = supported.Sum(d => d.Weight);
                 var pick = Unit($"definition|{zone.Id}|{group.GroupId}|{i}") * total;
                 var selected = supported.First(d => (pick -= d.Weight) < 0);
                 var id = $"{zone.Id}/{group.GroupId}/{i}";
+                legacyPointIds.Add(id, group.Points[i].PointId);
                 if (selected.GrowthProfile is { } profile && !WorldContentValidator.ValidGrowthProfile(profile))
                     throw new ArgumentException("Invalid gathering growth profile", nameof(zone));
                 if (selected.GrowthProfile is not null && this.settings.Regrowth != RegrowthMode.FullRespawn)
@@ -117,7 +128,7 @@ public sealed class GatheringNodeService
     {
         lock (gate) return nodes.Values.OrderBy(n => n.Id, StringComparer.Ordinal)
             .Select(n => new DurableNodeState(n.Id, n.Definition.Id, n.Definition.Charges, n.Generation, n.Charges, n.Harvested, n.RegrowAt,
-                n.GrowthStartedAt, n.StageStartedAt, n.StageIndex, n.ScheduledRespawnSeconds)).ToArray();
+                n.GrowthStartedAt, n.StageStartedAt, n.StageIndex, n.ScheduledRespawnSeconds, n.PointId, n.RecentPoints.ToArray())).ToArray();
     }
 
     public void ImportState(IReadOnlyList<DurableNodeState> saved)
@@ -132,13 +143,22 @@ public sealed class GatheringNodeService
                     state.MaxCharges != node.Definition.Charges || state.Generation < 1 ||
                     state.Charges < 0 || state.Charges > node.Definition.Charges || state.Harvested < 0 ||
                     state.StageIndex < 0 || state.StageIndex >= (node.GrowthProfile?.Stages.Count ?? 1) ||
-                    !double.IsFinite(state.ScheduledRespawnSeconds) || state.ScheduledRespawnSeconds < 0)
+                    !double.IsFinite(state.ScheduledRespawnSeconds) || state.ScheduledRespawnSeconds < 0 ||
+                    !poolPoints[node.GroupId].Contains(state.PointId ?? legacyPointIds[node.Id], StringComparer.Ordinal) ||
+                    (state.RecentPoints is not null && state.RecentPoints.Any(p =>
+                        !poolPoints[node.GroupId].Contains(p.PointId, StringComparer.Ordinal) || p.Generation < 1 || p.Generation > state.Generation)))
                     throw new InvalidOperationException("Invalid saved gathering node state.");
                 node.Generation = state.Generation; node.Charges = state.Charges; node.Harvested = state.Harvested;
                 node.RegrowAt = state.RegrowAt; node.GrowthStartedAt = state.GrowthStartedAt;
                 node.StageStartedAt = state.StageStartedAt; node.StageIndex = state.StageIndex;
                 node.ScheduledRespawnSeconds = state.ScheduledRespawnSeconds;
+                node.PointId = state.PointId ?? legacyPointIds[node.Id];
+                node.RecentPoints.Clear();
+                node.RecentPoints.AddRange(state.RecentPoints ?? [new(node.PointId, node.Generation)]);
             }
+            foreach (var group in nodes.Values.GroupBy(n => n.GroupId))
+                if (group.Where(n => n.Charges > 0).Select(n => n.PointId).Distinct(StringComparer.Ordinal).Count() != group.Count(n => n.Charges > 0))
+                    throw new InvalidOperationException("Saved gathering nodes overlap at an active pool point.");
         }
     }
 
@@ -199,6 +219,22 @@ public sealed class GatheringNodeService
         node.RegrowAt = clock.GetUtcNow().AddSeconds(node.ScheduledRespawnSeconds);
     }
 
+    private void Rotate(Node node)
+    {
+        var occupied = nodes.Values.Where(n => n.GroupId == node.GroupId && n != node && n.Charges > 0)
+            .Select(n => n.PointId).ToHashSet(StringComparer.Ordinal);
+        var available = poolPoints[node.GroupId].Where(p => !occupied.Contains(p)).ToArray();
+        if (available.Length == 0) throw new InvalidOperationException("Gathering pool has no free point.");
+        var recent = node.RecentPoints.Where(p => node.Generation - p.Generation <= settings.PointCooldownCycles)
+            .Select(p => p.PointId).ToHashSet(StringComparer.Ordinal);
+        var preferred = available.Where(p => !recent.Contains(p)).ToArray();
+        if (preferred.Length > 0) available = preferred;
+        var pick = Unit($"point|{node.Id}|{node.Generation}");
+        node.PointId = available[Math.Min((int)(pick * available.Length), available.Length - 1)];
+        node.RecentPoints.Add(new(node.PointId, node.Generation));
+        node.RecentPoints.RemoveAll(p => node.Generation - p.Generation > settings.PointCooldownCycles);
+    }
+
     private void Advance()
     {
         var now = clock.GetUtcNow();
@@ -213,6 +249,7 @@ public sealed class GatheringNodeService
                     if (now >= emergeAt)
                     {
                         node.Generation++;
+                        Rotate(node);
                         node.Harvested = 0;
                         node.GrowthStartedAt = emergeAt;
                         node.RegrowAt = null;
@@ -237,7 +274,9 @@ public sealed class GatheringNodeService
             }
             while (node.RegrowAt is { } due && due <= now)
             {
+                var wasDepleted = node.Charges == 0;
                 node.Generation++;
+                if (wasDepleted) Rotate(node);
                 node.Charges = settings.Regrowth == RegrowthMode.FullRespawn ? node.Definition.Charges : node.Charges + 1;
                 node.RegrowAt = null;
                 node.Harvested = 0;

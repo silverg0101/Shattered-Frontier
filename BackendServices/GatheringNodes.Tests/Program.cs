@@ -26,6 +26,14 @@ Check(secondService.Harvest(new("ore-first", "p1", ore.Id, ore.Generation)).Regr
 clock.Set(first.RegrowAt!.Value);
 var renewed = service.Snapshot().Single(n => n.Id == ore.Id);
 Check(renewed.Generation == 2 && renewed.Charges == 1, "full respawn on injected clock");
+Check(renewed.PointId != ore.PointId, "depleted slot rotates to another free pool point");
+var activeBeforeRestart = service.Snapshot().Where(n => n.Charges > 0)
+    .Select(n => (n.Id, n.PointId, n.Generation)).OrderBy(n => n.Id).ToArray();
+var rotatedRestart = new GatheringNodeService(zone, definitions, clock, "silverbrook-test", settings);
+rotatedRestart.ImportState(service.ExportState());
+Check(rotatedRestart.Snapshot().Where(n => n.Charges > 0)
+    .Select(n => (n.Id, n.PointId, n.Generation)).OrderBy(n => n.Id).SequenceEqual(activeBeforeRestart),
+    "deplete, rotate, restart retains the same active point set");
 Check(service.Harvest(new("old-generation", "p1", ore.Id, 1)).Status == HarvestStatus.StaleGeneration, "stale generation rejected");
 Check(service.Harvest(new("ore-first", "p1", ore.Id, 1)) == first, "old retry retains original result");
 
