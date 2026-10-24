@@ -30,7 +30,8 @@
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
 body { background: var(--background); color: var(--foreground); font: 400 14px/1.6 var(--sans); overflow: hidden; }
-button, input, select { font: inherit; color: inherit; }
+button, input, select, textarea { font: inherit; color: inherit; }
+textarea { padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--card); outline: none; width: 100%; }
 a { color: var(--primary); text-decoration: none; }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; border: 2px solid var(--background); }
@@ -74,7 +75,7 @@ h3 { font: 600 18px/1.2 var(--display); margin: 0; }
 .btn.icon { width: 36px; padding: 0; justify-content: center; }
 .btn.sm { height: 28px; padding: 0 10px; font-size: 12px; }
 input[type=text], input[type=number], input[type=search], select { height: 38px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--card); outline: none; transition: border-color .2s, box-shadow .2s; width: 100%; }
-input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-12); }
+input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-12); }
 input[type=checkbox] { accent-color: var(--primary); width: 16px; height: 16px; }
 
 /* ---- assets */
@@ -288,7 +289,7 @@ function route() {
   const h = location.hash.slice(2) || 'assets';
   const [page, ...rest] = h.split('/');
   document.querySelectorAll('[data-nav]').forEach(a => a.classList.toggle('on', a.dataset.nav === page));
-  if (page === 'create') return renderCreate();
+  if (page === 'create') return rest[0] === 'images' ? renderImages() : renderCreate();
   if (page === 'settings') return renderSettings();
   state.path = rest.map(decodeURIComponent).join('/');
   renderAssets();
@@ -671,6 +672,7 @@ async function renderCreate() {
     <h2 class="fade" style="--i:1">Create</h2>
     <div class="types fade" style="--i:2">
       <button class="type on">${ICON.model.replace('<svg', '<svg width="28" height="28"')}<h3>3D Asset</h3><div class="muted" style="font-size:12px" id="typedesc"></div></button>
+      ${imagesType(false)}
     </div>
     <div class="form">
       <div class="card fade" style="--i:3">
@@ -778,6 +780,63 @@ async function renderCreate() {
   };
 }
 
+/* ---------------- create: images (ChatGPT) */
+const imagesType = on => `<button class="type ${on ? 'on' : ''}" onclick="location.hash='#/create/images'">${ICON.image.replace('<svg', '<svg width="28" height="28"')}<h3>Images</h3>
+  <div class="muted" style="font-size:12px">Prompt → source image(s) · ChatGPT</div></button>`;
+async function renderImages() {
+  crumbs([['Create', '#/create'], ['Images', '#/create/images']]);
+  let cx; try { cx = await api('/api/codex'); } catch (e) { return fail(e); }
+  let mode = store.get('imageMode', 'single');
+  const draft = store.get('imageDraft', {});
+  $('#view').innerHTML = `
+    <div class="eyebrow fade">New job</div>
+    <h2 class="fade" style="--i:1">Create</h2>
+    <div class="types fade" style="--i:2">
+      <button class="type" onclick="location.hash='#/create'">${ICON.model.replace('<svg', '<svg width="28" height="28"')}<h3>3D Asset</h3><div class="muted" style="font-size:12px">Image(s) → textured GLB</div></button>
+      ${imagesType(true)}
+    </div>
+    <div class="card fade" style="--i:3;margin-top:18px;max-width:760px">
+      ${cx.signed_in ? '' : `<div class="err" style="margin-bottom:14px">ChatGPT is not signed in. <a href="#/settings">Sign in under Settings</a> first.</div>`}
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div class="eyebrow">Image(s)</div>
+        <div class="seg"><button data-imode="single">Single</button><button data-imode="multi">Multi-view</button></div></div>
+      <div class="muted" style="font-size:12px;margin-top:10px" id="inote"></div>
+      <div class="fields" style="margin-top:14px">
+        <div class="field"><label for="imodel">Model</label><select id="imodel">${cx.models.map(m => `<option ${m === draft.model ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select></div>
+      </div>
+      <div class="field" style="margin-top:14px"><label for="iprompt">Prompt</label><textarea id="iprompt" rows="6" style="width:100%;resize:vertical">${esc(draft.prompt || '')}</textarea></div>
+      <div class="field" style="margin-top:14px"><label for="iname">Asset name</label><input type="text" id="iname" value="${esc(draft.name || '')}" placeholder="Greenlands - Rat"></div>
+      <button class="btn primary" id="isubmit" style="width:100%;justify-content:center;margin-top:18px;height:44px">Add to queue</button>
+    </div>`;
+  const setMode = m => {
+    mode = m; store.set('imageMode', m);
+    document.querySelectorAll('[data-imode]').forEach(b => b.classList.toggle('on', b.dataset.imode === m));
+    $('#inote').textContent = m === 'single' ? 'One image. The prompt is sent exactly as written.'
+      : 'Four views for a multi-view 3D asset. The front is drawn first from your prompt as an orthographic, eye-level, white-background reference; left, back and right are then drawn from that front at the same scale, so Pixal3D gets one consistent subject.';
+  };
+  document.querySelectorAll('[data-imode]').forEach(b => b.onclick = () => setMode(b.dataset.imode));
+  setMode(mode);
+  const keep = () => store.set('imageDraft', { model: $('#imodel').value, prompt: $('#iprompt').value, name: $('#iname').value });
+  ['#imodel', '#iprompt', '#iname'].forEach(s => $(s).addEventListener('input', keep));
+  $('#isubmit').onclick = async () => {
+    const prompt = $('#iprompt').value.trim(), name = $('#iname').value.trim();
+    if (!prompt) return toast('Write a prompt first', true);
+    if (!name) return toast('Give it an asset name', true);
+    try {
+      await post('/api/jobs', { kind: 'image', name, params: { mode, model: $('#imodel').value, prompt } });
+      toast('Added to queue'); setQueueOpen(true); pollQueue();
+    } catch (e) { fail(e); }
+  };
+}
+// A finished image job's files become the 3D Asset form's source: one image, or views by their -front/-left/... suffix.
+function useImages(job) {
+  const paths = job.files.map(f => f.path);
+  const views = Object.fromEntries(POSITIONS.map(([pos]) => [pos, paths.find(p => p.endsWith(`-${pos}.png`))]).filter(([, p]) => p));
+  if (views.front && Object.keys(views).length > 1) { store.set('createViews', views); store.set('createMode', 'multi'); }
+  else { setCreateImage(paths[0]); store.set('createMode', 'single'); }
+  store.set('createParams', { ...store.get('createParams', {}), _name: job.name });
+  location.hash = '#/create';
+}
+
 /* ---------------- settings */
 async function renderSettings() {
   crumbs([['Settings', '#/settings']]);
@@ -813,7 +872,9 @@ async function renderSettings() {
         <tbody id="hrows">${s.hosts.map(row).join('')}</tbody></table>
       <div id="hstat" class="muted" style="font-size:12px;margin-top:10px"></div>
     </div>
-    <div style="margin-top:18px;display:flex;justify-content:flex-end"><button class="btn primary" id="save">Save settings</button></div>`;
+    <div style="margin-top:18px;display:flex;justify-content:flex-end"><button class="btn primary" id="save">Save settings</button></div>
+    <div class="card fade" style="--i:4;margin-top:18px" id="codex"></div>`;
+  drawCodex();
   const read = () => ({
     output_folder: $('#s_out').value.trim(), input_folder: $('#s_in').value.trim(), job_timeout_min: +$('#s_to').value,
     hosts: [...document.querySelectorAll('#hrows tr')].map(rowData),
@@ -845,6 +906,37 @@ async function renderSettings() {
   };
 }
 
+// ChatGPT subscription sign-in (the Codex CLI's login), used by Images jobs. Tokens stay on the server.
+async function drawCodex() {
+  const box = $('#codex'); if (!box) return;
+  let s; try { s = await api('/api/codex'); } catch (e) { return fail(e); }
+  const until = s.expires ? new Date(s.expires * 1000).toLocaleString() : '';
+  box.innerHTML = `<h3>ChatGPT subscription (Codex login)</h3>
+    <div class="muted" style="font-size:12px;margin:4px 0 14px">Draws the Images jobs with your ChatGPT plan, as the Codex CLI does.</div>
+    ${s.signed_in ? `<dl>
+      <dt>Signed in</dt><dd>${esc(s.email || '—')}</dd><dt>Account id</dt><dd><code>${esc(s.account_id)}</code></dd>
+      <dt>Access token</dt><dd><span class="pill ${s.valid ? 'done' : 'failed'}">${s.valid ? 'valid' : 'expired'}</span> until ${esc(until)}${!s.valid && s.refresh ? ' · refreshes on next use' : ''}</dd>
+      <dt>Refresh token</dt><dd>${s.refresh ? 'stored' : 'none'}</dd></dl>
+      <button class="btn sm danger" id="cx_out" style="margin-top:10px">Sign out</button>
+      <div class="eyebrow" style="margin-top:20px">Sign in again</div>` : '<div class="eyebrow">Sign in</div>'}
+    <button class="btn primary" id="cx_start" style="margin-top:10px">Step 1 · Sign in with ChatGPT</button>
+    <div class="muted" style="font-size:12px;margin-top:6px">Opens the OpenAI sign-in in a popup. Make sure <code>codex login</code> isn't running on your computer at the same time: a CLI listening on port 1455 would take the callback before you can copy it.</div>
+    <div class="field" style="margin-top:16px"><label for="cx_url">Step 2 · Paste the popup's address bar</label><input type="text" id="cx_url" autocomplete="off" placeholder="http://localhost:1455/auth/callback?code=..."></div>
+    <div class="muted" style="font-size:12px;margin-top:6px">After you approve, the popup lands on a page that <b>fails to load</b> at <code>localhost:1455/auth/callback?…</code>. That's expected: nothing listens there. Copy its whole address bar, paste it here within 15 minutes, and close the popup. It's a one-time credential: used immediately, never stored or logged.</div>
+    <button class="btn primary" id="cx_finish" style="margin-top:12px">Finish sign-in</button>
+    <details class="sec" style="margin-top:14px"><summary>Import from the Codex CLI auth.json instead</summary>
+      <textarea id="cx_json" rows="4" style="width:100%;margin-top:10px" placeholder="Paste the whole of ~/.codex/auth.json"></textarea>
+      <button class="btn sm" id="cx_import" style="margin-top:8px">Import</button></details>`;
+  const act = (path, body) => post(path, body).then(() => { toast('ChatGPT login updated'); drawCodex(); }, fail);
+  $('#cx_out') && ($('#cx_out').onclick = () => act('/api/codex/signout'));
+  $('#cx_start').onclick = async () => {
+    const w = window.open('', 'chatgpt-signin', 'width=520,height=720');  // opened in the click, so it isn't blocked
+    try { const r = await post('/api/codex/start'); w.location = r.url; } catch (e) { w?.close(); fail(e); }
+  };
+  $('#cx_finish').onclick = () => { const v = $('#cx_url').value.trim(); $('#cx_url').value = ''; act('/api/codex/finish', { url: v }); };
+  $('#cx_import').onclick = () => { const v = $('#cx_json').value; $('#cx_json').value = ''; act('/api/codex/import', { auth_json: v }); };
+}
+
 /* ---------------- queue flyout */
 const qOpen = { log: new Set(store.get('openLogs', [])), auto: store.get('autoScroll', true) };
 function setQueueOpen(on) { $('#queue').classList.toggle('closed', !on); store.set('queueOpen', on); }
@@ -872,7 +964,7 @@ function drawQueue(jobs) {
     const time = j.started ? dur((j.finished || now) - j.started) : 'queued ' + fmtTime(j.created);
     return `<div class="job ${live ? 'running' : ''}" style="animation:none">
       <div class="row"><span class="title" title="${esc(j.name)}">${esc(j.name)}</span><span class="pill ${j.status}">${j.status}</span></div>
-      <div class="sub">${{ motion: 'Motion', rig: 'Rig' }[j.kind] || '3D Asset'} · #${j.id}${j.host ? ' · ' + esc(j.host) : ''} · ${time}${j.note && (j.status === 'queued' || live) ? ' · ' + esc(j.note) : ''}</div>
+      <div class="sub">${{ motion: 'Motion', rig: 'Rig', image: 'Images' }[j.kind] || '3D Asset'} · #${j.id}${j.host ? ' · ' + esc(j.host) : ''} · ${time}${j.note && (j.status === 'queued' || live) ? ' · ' + esc(j.note) : ''}</div>
       ${j.error ? `<div class="err">${esc(j.error)}</div>` : ''}
       ${live && m ? `<div class="metrics">${metric('CPU', m.cpu)}${metric('RAM', m.ram, m.ram_gb.join(' / ') + ' GB')}${metric('GPU', m.gpu)}${metric('VRAM', m.vram, m.vram_gb.join(' / ') + ' GB')}</div>` : ''}
       ${j.log.length || live ? `<div class="log ${open ? 'open' : ''}"><pre data-id="${j.id}">${esc(open ? j.log.join('\n') : j.log.at(-1) || 'waiting for output…')}</pre>
@@ -881,6 +973,7 @@ function drawQueue(jobs) {
         ${['queued', 'running'].includes(j.status) ? `<button class="btn sm danger" data-act="cancel" data-id="${j.id}">Cancel</button>` : ''}
         ${['failed', 'cancelled'].includes(j.status) ? `<button class="btn sm" data-act="retry" data-id="${j.id}">Retry</button>` : ''}
         ${j.output ? `<a class="btn sm primary" href="${assetHref(j.output.split('/').slice(0, -1).join('/'))}">Open in Assets</a>` : ''}
+        ${j.kind === 'image' && j.status === 'done' ? `<button class="btn sm" data-use="${j.id}">Make 3D asset</button>` : ''}
         ${!live && j.status !== 'queued' ? `<button class="btn sm" data-act="remove" data-id="${j.id}" style="margin-left:auto">Remove</button>` : ''}
       </div></div>`;
   }).join('') : '<div class="empty" style="padding:40px 16px">No jobs yet. Start one from Create.</div>';
@@ -894,6 +987,7 @@ function drawQueue(jobs) {
   });
   body.querySelectorAll('[data-auto]').forEach(c => c.onchange = () => { qOpen.auto = c.checked; store.set('autoScroll', c.checked); });
   body.querySelectorAll('[data-act]').forEach(b => b.onclick = () => post(`/api/jobs/${b.dataset.id}/${b.dataset.act}`).then(pollQueue, fail));
+  body.querySelectorAll('[data-use]').forEach(b => b.onclick = () => useImages(jobs.find(j => j.id === +b.dataset.use)));
 }
 
 window.addEventListener('hashchange', route);

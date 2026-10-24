@@ -89,6 +89,25 @@ Poll `status_url` every few seconds until `status` is `done`, `failed` or `cance
 - **`POST /api/rename`** with `{"path", "name"}`: rename an item.
 - **`POST /api/delete`** with `{"paths": [...]}`: delete permanently. Folders are deleted with everything in them.
 
+## Image jobs
+
+An image job draws source images with ChatGPT (the owner's subscription, signed in under Settings > ChatGPT subscription; `GET /api/codex` says whether it is signed in). It needs no GPU host and saves into the inputs folder (`Inputs/`).
+
+| Param | Values | Default |
+|---|---|---|
+| `mode` | `single`: one image, the prompt sent exactly as written. `multi`: four views for a multi-view 3D job | `single` |
+| `model` | `auto` (ChatGPT's default image model), `gpt-image-2.5-sunburst`, `gpt-image-2.5-flare` | `auto` |
+| `prompt` | Text, required | |
+
+`name` (top level) is required and names the files. Single saves `Inputs/<name>.png`. Multi draws the front first as an orthographic, eye-level, white-background reference, then draws left, back and right from that front at the same scale, saving `Inputs/<name>-front.png`, `-left`, `-back` and `-right`, which is the `views` shape a 3D job takes. In the web app, the finished job's **Make 3D asset** button fills the 3D Asset form with them.
+
+```bash
+curl -X POST http://192.168.50.133:8090/api/jobs -H "Content-Type: application/json" -d '{
+  "kind": "image", "name": "Greenlands - Rat",
+  "params": {"mode": "multi", "prompt": "a hairless grey sewer rat the size of a dog, scarred, pink tail"}
+}'
+```
+
 ## Rig jobs
 
 A rig job rigs a model that already exists, such as a 3D job's model made with `rig: "later"`. Its `params` are `model` (an unrigged `.glb` in the library) plus any `rig_*` option from the Rig table. The rigged file is saved next to the model as `<model>_rigged.glb` or `.fbx`; `files` lists it. A 30k-face model takes about 2 minutes.

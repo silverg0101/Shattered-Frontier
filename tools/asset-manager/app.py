@@ -4,7 +4,7 @@ Stdlib only. Assets live under ASSET_ROOT, the queue in DATA_DIR/queue.db.
 GPU hosts are reached over SSH (their ComfyUI listens on 127.0.0.1 only).
 Run `python app.py --check` for the self-check.
 """
-import array, glob, json, math, mimetypes, os, random, re, shlex, shutil, sqlite3, struct, subprocess, sys, threading, time, traceback, uuid, urllib.error, urllib.parse, urllib.request
+import array, base64, glob, hashlib, json, math, mimetypes, os, random, re, shlex, shutil, sqlite3, struct, subprocess, sys, threading, time, traceback, uuid, urllib.error, urllib.parse, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -1008,6 +1008,10 @@ def worker():
                 taken = {r[0] for r in c.execute("SELECT host FROM jobs WHERE status IN ('running','cancelling')")}
             free = [h for h in s["hosts"] if h.get("enabled") and h["name"] not in taken]
             for jid, kind in queued:
+                if kind == "image":  # ChatGPT draws these; no GPU host, so they never wait behind 3D jobs
+                    update_job(jid, status="running", host="ChatGPT", started=time.time(), note="")
+                    threading.Thread(target=run_image, args=(jid,), daemon=True).start()
+                    continue
                 # Motion runs Blender and the tracker over SSH; it needs no Trellis2 nodes.
                 fits = (lambda h, st: h.get("kind") == "ssh") if kind == "motion" else (lambda h, st: st["trellis"])
                 host = next((h for h in free if (st := host_status(h))["ok"] and not st["busy"] and fits(h, st)), None)
@@ -1023,6 +1027,224 @@ def worker():
 
 # ---------------------------------------------------------------- HTTP
 STATUSES = ["queued", "running", "cancelling", "done", "failed", "cancelled"]
+
+# ---------------------------------------------------------------- ChatGPT images (Codex login)
+# Image jobs use the owner's ChatGPT subscription through the Codex backend, signed in the way the Codex CLI
+# does (copied from Rust & Mercy console/llm/client.py and artwork.py, where it is in daily use). The redirect
+# URI is fixed by the CLI's client registration, so the sign-in is a manual relay: the owner pastes the address
+# bar of the page that fails to load. Tokens live in DATA/codex_auth.json and are never sent to the browser.
+CODEX_AUTH = DATA / "codex_auth.json"
+CODEX_CLIENT_ID = "app_EMoamEEZ73f0CkXaXp7hrann"  # the aud of a real `codex login` id_token
+CODEX_REDIRECT = "http://localhost:1455/auth/callback"
+CODEX_AUTHORIZE = "https://auth.openai.com/oauth/authorize"
+CODEX_TOKEN = "https://auth.openai.com/oauth/token"
+CODEX_RESPONSES = "https://chatgpt.com/backend-api/codex/responses"
+CODEX_DRIVER = "gpt-5.6-luna"  # the text model that calls the image tool; any tool-calling Codex model works
+IMAGE_MODELS = ["auto", "gpt-image-2.5-sunburst", "gpt-image-2.5-flare"]  # auto = the server's default
+CODEX_LOCK = threading.Lock()
+CODEX_PENDING = {}  # state -> (verifier, created): one sign-in in flight, 15 minutes to finish it
+
+def _b64url(b):
+    return base64.urlsafe_b64encode(b).rstrip(b"=").decode()
+
+def _jwt(token):
+    """A JWT's claims, unverified: we just made this exchange over TLS with the issuer, and only read them."""
+    try:
+        seg = token.split(".")[1]
+        return json.loads(base64.urlsafe_b64decode(seg + "=" * (-len(seg) % 4)))
+    except Exception:
+        return {}
+
+def codex_start():
+    verifier, state = _b64url(os.urandom(64)), _b64url(os.urandom(24))
+    CODEX_PENDING.clear()
+    CODEX_PENDING[state] = (verifier, time.time())
+    return CODEX_AUTHORIZE + "?" + urllib.parse.urlencode({
+        "response_type": "code", "client_id": CODEX_CLIENT_ID, "redirect_uri": CODEX_REDIRECT,
+        "scope": "openid profile email offline_access api.connectors.read api.connectors.invoke", "state": state,
+        "code_challenge": _b64url(hashlib.sha256(verifier.encode()).digest()), "code_challenge_method": "S256",
+        # Without id_token_add_organizations the id_token has no account id, and every request needs one.
+        "id_token_add_organizations": "true", "codex_cli_simplified_flow": "true", "originator": "codex_cli_rs"})
+
+def _codex_tokens(form):
+    """POST to the token endpoint. Errors never quote the request or response: both carry credentials."""
+    req = urllib.request.Request(CODEX_TOKEN, urllib.parse.urlencode(form).encode(),
+                                 {"Content-Type": "application/x-www-form-urlencoded"})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return json.load(r)
+    except urllib.error.HTTPError as e:
+        raise ValueError(f"the sign-in server refused the request ({e.code}); start again")
+    except (urllib.error.URLError, OSError):
+        raise ValueError("could not reach auth.openai.com")
+
+def _codex_save(body, old=None):
+    """Store a token response; a refresh may omit the refresh and id tokens, so keep what was stored."""
+    a = dict(old or {})
+    a["access_token"] = body["access_token"]
+    a["refresh_token"] = body.get("refresh_token") or a.get("refresh_token", "")
+    a["id_token"] = body.get("id_token") or a.get("id_token", "")
+    claims = _jwt(a["id_token"]).get("https://api.openai.com/auth") or {}
+    a["account_id"] = claims.get("chatgpt_account_id") or a.get("account_id", "")
+    exp = _jwt(a["access_token"]).get("exp")
+    a["expires"] = exp if isinstance(exp, (int, float)) else time.time() + int(body.get("expires_in") or 3600)
+    if not a["account_id"]:
+        raise ValueError("the login carries no ChatGPT account id; requests are refused without it")
+    CODEX_AUTH.write_text(json.dumps(a))
+    CODEX_AUTH.chmod(0o600)
+    return a
+
+def codex_finish(pasted):
+    q = urllib.parse.parse_qs(urllib.parse.urlparse((pasted or "").strip()).query)
+    code, state = (q.get("code") or [""])[0], (q.get("state") or [""])[0]
+    if "error" in q or not code:
+        raise ValueError("that address has no sign-in code; paste the whole address bar of the page that failed to load")
+    verifier, created = CODEX_PENDING.pop(state, (None, 0))
+    if not verifier or time.time() - created > 900:
+        raise ValueError("that sign-in was not started here or is over 15 minutes old; press Step 1 again")
+    with CODEX_LOCK:
+        _codex_save(_codex_tokens({"grant_type": "authorization_code", "code": code, "redirect_uri": CODEX_REDIRECT,
+                                   "client_id": CODEX_CLIENT_ID, "code_verifier": verifier}))
+
+def codex_import(text):
+    """Seed the login from the Codex CLI's ~/.codex/auth.json, pasted."""
+    try:
+        blob = json.loads(text)
+        t = blob.get("tokens") or blob
+        body = {"access_token": t["access_token"], "refresh_token": t.get("refresh_token", ""), "id_token": t.get("id_token", "")}
+    except Exception:
+        raise ValueError("that is not a Codex auth.json; paste the whole file")
+    with CODEX_LOCK:
+        _codex_save(body, {"account_id": t.get("account_id", "")})
+
+def codex_status():
+    try:
+        a = json.loads(CODEX_AUTH.read_text())
+    except (OSError, ValueError):
+        return {"signed_in": False}
+    return {"signed_in": True, "email": _jwt(a.get("id_token", "")).get("email", ""), "account_id": a.get("account_id", ""),
+            "expires": a.get("expires"), "valid": a.get("expires", 0) > time.time() + 60, "refresh": bool(a.get("refresh_token"))}
+
+def codex_auth():
+    """(access token, account id), refreshed under a lock a minute before it expires."""
+    with CODEX_LOCK:
+        try:
+            a = json.loads(CODEX_AUTH.read_text())
+        except (OSError, ValueError):
+            raise RuntimeError("ChatGPT is not signed in (Settings > ChatGPT)")
+        if a.get("expires", 0) <= time.time() + 60:
+            if not a.get("refresh_token"):
+                raise RuntimeError("the ChatGPT login expired; sign in again in Settings")
+            a = _codex_save(_codex_tokens({"grant_type": "refresh_token", "refresh_token": a["refresh_token"],
+                                           "client_id": CODEX_CLIENT_ID, "scope": "openid profile email offline_access"}), a)
+        return a["access_token"], a["account_id"]
+
+def codex_image(prompt, model="auto", refs=(), size="1024x1024"):
+    """One PNG from the Codex backend's image_generation tool. `refs` are PNG/JPEG bytes the tool draws from."""
+    token, account = codex_auth()
+    tool = {"type": "image_generation", "output_format": "png", "size": size}
+    if model != "auto":
+        tool["model"] = model
+    text = ("Use the image_generation tool to render the following. Do not include explanatory text - produce only "
+            f"the image.\n\n{prompt}")
+    content = [{"type": "input_image", "image_url": f"data:image/png;base64,{base64.b64encode(b).decode()}"} for b in refs]
+    payload = {"model": CODEX_DRIVER, "stream": True, "store": False, "instructions": "You are an image generation assistant.",
+               "input": [{"type": "message", "role": "user", "content": content + [{"type": "input_text", "text": text}]}],
+               "tools": [tool], "tool_choice": "auto", "parallel_tool_calls": False,
+               "reasoning": {"effort": "low"}, "text": {"verbosity": "low"}}
+    req = urllib.request.Request(CODEX_RESPONSES, json.dumps(payload).encode(), {
+        "Authorization": f"Bearer {token}", "chatgpt-account-id": account, "Content-Type": "application/json",
+        "Accept": "text/event-stream", "OpenAI-Beta": "responses=experimental", "originator": "codex_cli_rs"})
+    try:
+        r = urllib.request.urlopen(req, timeout=300)
+    except urllib.error.HTTPError as e:
+        raise RuntimeError(f"ChatGPT answered {e.code}: {e.read()[:300].decode('utf-8', 'replace')}")
+    result, data = None, []
+    with r:
+        for raw in r:  # server-sent events: data: lines, a blank line ends each event
+            line = raw.decode("utf-8", "replace").rstrip("\r\n")
+            if line.startswith("data:"):
+                data.append(line[5:].lstrip())
+                continue
+            if line or not data:
+                continue
+            body, data = "\n".join(data), []
+            if body.strip() == "[DONE]":
+                break
+            try:
+                evt = json.loads(body)
+            except ValueError:
+                continue
+            item = evt.get("item") or {}
+            if evt.get("type") == "response.output_item.done" and item.get("type") == "image_generation_call":
+                result = item.get("result")
+            elif evt.get("type") in ("error", "response.failed"):
+                err = (evt.get("response") or {}).get("error") or evt.get("error") or {}
+                raise RuntimeError(f"ChatGPT failed: {err.get('message') or err.get('code') or evt['type']}")
+    png = base64.b64decode(result or "")
+    if not png.startswith(b"\x89PNG"):
+        raise RuntimeError("ChatGPT returned no image")
+    return png
+
+# Multi-view: the front first, then each other view drawn from it, so all four share one design and one scale.
+# Pixal3D stitches views by camera angle and assumes one orthographic camera distance: a view at another scale or
+# with perspective makes it invent extra limbs (Greenlands rat, 2026-10-23: back view 1.4x the side views).
+MV_FRONT = ("{prompt}\n\nThis is the front view of a 3D-model reference sheet. Show the whole subject, standing in a "
+            "neutral pose, seen straight from the front at eye level through an orthographic camera (no perspective), "
+            "centred with a small margin all round, on a plain pure-white background with soft even studio light. "
+            "No ground shadow, no props, no text.")
+MV_SIDE = ("The attached image is the front view of a 3D-model reference sheet. Draw the exact same subject - same "
+           "design, proportions, colours, materials and pose - seen {view}. Use the same orthographic eye-level camera "
+           "at the same distance: the subject is exactly as tall in pixels as in the front view, its feet on the same "
+           "line, centred, on the same pure-white background and light. No ground shadow, no props, no text.\n\n"
+           "Subject: {prompt}")
+MV_VIEWS = {"left": "from its left side (the camera at the subject's left, so it faces image-left)",
+            "back": "from directly behind",
+            "right": "from its right side (the camera at the subject's right, so it faces image-right)"}
+
+def image_params(params):
+    unknown = set(params) - {"mode", "model", "prompt"}
+    if unknown:
+        raise ValueError(f"unknown options: {sorted(unknown)} (image jobs take mode, model, prompt)")
+    p = {"mode": params.get("mode", "single"), "model": params.get("model", "auto"), "prompt": str(params.get("prompt", "")).strip()}
+    if p["mode"] not in ("single", "multi") or p["model"] not in IMAGE_MODELS or not p["prompt"]:
+        raise ValueError(f"mode is single or multi, model one of {IMAGE_MODELS}, and a prompt is required")
+    return p
+
+def run_image(jid):
+    job = job_row(jid)
+    p = image_params(json.loads(job["params"]))
+    log = []
+    LIVE[jid] = {"metrics": None, "log": log}
+    try:
+        out_dir = safe_path(get_settings()["input_folder"])
+        out_dir.mkdir(parents=True, exist_ok=True)
+        safe_name = re.sub(r"[^\w-]+", "_", job["name"]).strip("_") or f"image{jid}"
+        saved = []
+        def save(png, suffix):
+            dest = unique(out_dir / f"{safe_name}{suffix}.png")
+            dest.write_bytes(png)
+            saved.append(dest.relative_to(ROOT).as_posix())
+            log.append(f"saved {saved[-1]}")
+        if p["mode"] == "single":
+            log.append("generating the image (sent as written)")
+            save(codex_image(p["prompt"], p["model"]), "")
+        else:
+            log.append("generating the front view")
+            front = codex_image(MV_FRONT.format(prompt=p["prompt"]), p["model"])
+            save(front, "-front")
+            for pos, view in MV_VIEWS.items():
+                if job_row(jid)["status"] == "cancelling":
+                    raise InterruptedError
+                log.append(f"generating the {pos} view from the front")
+                save(codex_image(MV_SIDE.format(prompt=p["prompt"], view=view), p["model"], refs=(front,)), f"-{pos}")
+        update_job(jid, status="done", output=saved[0], files=json.dumps(saved), finished=time.time())
+    except InterruptedError:
+        update_job(jid, status="cancelled", finished=time.time())
+    except Exception as e:
+        update_job(jid, status="failed", error=str(e)[-1000:], finished=time.time())
+    finally:
+        update_job(jid, log="\n".join(LIVE.pop(jid, {}).get("log", log)))
 
 def jobs_view(where="", args=(), limit=100, base=""):
     with db() as c:
@@ -1082,6 +1304,19 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send({"3d": param_schema(), "presets": PRESET_LEVELS, "default_preset": DEFAULT_PRESET, "motion": [
                     {"key": k, "label": lbl, "section": "Motion", "kind": kind, "default": d, **extra}
                     for k, lbl, kind, extra, d in MOTION_PARAMS]})
+            if p.startswith("/api/codex"):  # ChatGPT sign-in for image jobs; tokens never leave the server
+                b = self.body() if method == "POST" else {}
+                if method == "POST" and p == "/api/codex/start":
+                    return self.send({"url": codex_start()})
+                if method == "POST" and p == "/api/codex/finish":
+                    codex_finish(b.get("url", ""))
+                elif method == "POST" and p == "/api/codex/import":
+                    codex_import(b.get("auth_json", ""))
+                elif method == "POST" and p == "/api/codex/signout":
+                    CODEX_AUTH.unlink(missing_ok=True)
+                elif not (method == "GET" and p == "/api/codex"):
+                    return self.send({"error": "not found"}, 404)
+                return self.send({**codex_status(), "models": IMAGE_MODELS})
             if method == "GET" and p == "/api/settings":
                 return self.send(get_settings())
             if method == "PUT" and p == "/api/settings":
@@ -1152,6 +1387,11 @@ class Handler(BaseHTTPRequestHandler):
                         raise ValueError("pick a rigged .glb or .fbx model")
                     motion_params(params)
                     src = params["model"]
+                elif kind == "image":
+                    image_params(params)
+                    if not (b.get("name") or "").strip():
+                        raise ValueError("give the image an asset name")
+                    src = b["name"]
                 elif kind == "rig":
                     m = params.get("model", "")
                     if Path(m).suffix.lower() != ".glb" or "_rigged" in Path(m).stem or not safe_path(m).is_file():
@@ -1298,6 +1538,19 @@ def check():
         except ValueError:
             pass
     assert {f.name for f in MOTION_DIR.glob("*.py")} >= {"bake.py", "render_views.py", "track_solve.py"}
+    assert image_params({"prompt": " a rat "}) == {"mode": "single", "model": "auto", "prompt": "a rat"}
+    for bad in ({"prompt": ""}, {"prompt": "x", "mode": "quad"}, {"prompt": "x", "size": 1}):
+        try:
+            image_params(bad); raise AssertionError(f"image_params accepted {bad}")
+        except ValueError:
+            pass
+    assert "faces image-left" in MV_SIDE.format(prompt="rat", view=MV_VIEWS["left"]) and "{" not in MV_FRONT.format(prompt="rat")
+    q = urllib.parse.parse_qs(urllib.parse.urlparse(codex_start()).query)
+    assert q["client_id"] == [CODEX_CLIENT_ID] and q["code_challenge_method"] == ["S256"] and q["state"][0] in CODEX_PENDING
+    try:
+        codex_finish("http://localhost:1455/auth/callback?code=x&state=not-ours"); raise AssertionError("foreign state accepted")
+    except ValueError:
+        pass
     import tempfile  # hidden thumbnails follow their models through rename and delete
     with tempfile.TemporaryDirectory() as td:
         d = Path(td); (d / ".thumbs").mkdir()
