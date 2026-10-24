@@ -7,6 +7,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Animation/AnimInstance.h"
 #include "Engine/SkeletalMesh.h"
+#include "Materials/MaterialInterface.h"
 #if SF_WITH_MUTABLE
 #include "MuCO/CustomizableObject.h"
 #include "MuCO/CustomizableObjectInstance.h"
@@ -163,6 +164,11 @@ AActor* ASFE1Character::SpawnPosedMetaHuman(USceneComponent* Parent, const FTran
             if (Part != Skin && Part->GetSkeletalMeshAsset() && Part->GetSkeletalMeshAsset()->GetName().Contains(TEXT("_Outfits"))) { Part->SetVisibility(false, true); }
         }
         UCustomizableObjectInstance* Instance = Object->CreateInstance();
+        // The outfit's body section carries the bare build's skin; put this face's own body skin back after every update (same topology).
+        Instance->UpdatedNativeDelegate.AddWeakLambda(Skin, [Skin, FaceSkin = TWeakObjectPtr<UMaterialInterface>(Skin->GetMaterial(0))](UCustomizableObjectInstance*)
+        {
+            if (FaceSkin.IsValid()) { Skin->SetMaterial(0, FaceSkin.Get()); }
+        });
         UCustomizableSkeletalComponent* Usage = NewObject<UCustomizableSkeletalComponent>(Body, TEXT("PlayerOutfit"));
         Usage->SetCustomizableObjectInstance(Instance);
         Usage->SetupAttachment(Skin);

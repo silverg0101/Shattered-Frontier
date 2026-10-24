@@ -2,6 +2,7 @@
 
 Run:  UnrealEditor.exe <uproject> -RenderOffscreen -unattended -ExecCmds="py <this file>"
 Env:  MH_MODE=faces|hair|built   MH_OUT=<dir>   MH_ONLY=name1,name2 (faces; ids like Orlando for built: spawns Built/MHC_<id>/BP_MHC_<id>; only the first spawn per launch gets grooms, so one id per launch)   MH_BASE=<preset name for hair mode>   MH_PRESETS=<asset folder>
+MH_WAIT=<seconds> holds the shot by wall time; the first render after a face rebuild may lack head hair, so use MH_WAIT=90-120 then.
 Do not use -ExecutePythonScript: it quits the editor while the tick callback is live and crashes Python.
 Quits the editor when done. Nothing is saved; hair mode edits a scratch duplicate under /Game/Frontier/.
 """

@@ -5,8 +5,9 @@ fails with "Couldn't find baked texture"). Run it from PowerShell:
   UnrealEditor.exe <uproject> -RenderOffscreen -unattended -nosplash -ExecCmds="py <abs path of this file>"
 It starts on the editor's first tick, builds, then quits the editor.
 
-Reads GameClient/ArtSource/Characters/Player/faces.json ({"faces": [{"id", "preset", "gender", "hair", "beard", "mustache", "skin"}]}).
+Reads GameClient/ArtSource/Characters/Player/faces.json ({"faces": [{"id", "preset", "gender", "hair", "beard", "mustache", "skin", "hair_color"}]}).
 Optional "skin": [u, v] sets the skin tone (the Creator's tone picker position); every build logs the face's tone as PLAYER_METAHUMAN_SKIN.
+Optional "freckles": 1-3 picks a freckle mask. Optional "hair_color": [melanin, redness] (0-1) dyes every groom (logs PLAYER_METAHUMAN_HAIR).
 Optional "makeup": "none" clears the preset's foundation, eye shadow/liner, blush and lipstick (logs PLAYER_METAHUMAN_MAKEUP).
 Each face's preset is copied to /Game/Frontier/Characters/Player/Faces/MHC_<id> and given its grooms (WI_* wardrobe
 items). MetaHuman's cloud auto-rig and texture download run only when the copy cannot build yet (they use the editor's
@@ -54,8 +55,28 @@ def build_face(face, subsystem, library):
         skin = character.get_editor_property('skin_settings')
         if face.get('skin'):
             skin.skin.u, skin.skin.v = face['skin']
+        if face.get('freckles'):
+            skin.freckles.mask = getattr(unreal.MetaHumanCharacterFrecklesMask, f"TYPE{face['freckles']}")
+        if face.get('skin') or face.get('freckles'):
             subsystem.commit_skin_settings(character, skin)
-        unreal.log(f"PLAYER_METAHUMAN_SKIN id={face['id']} u={skin.skin.u:.3f} v={skin.skin.v:.3f}")
+        unreal.log(f"PLAYER_METAHUMAN_SKIN id={face['id']} u={skin.skin.u:.3f} v={skin.skin.v:.3f} freckles={skin.freckles.mask}")
+        if face.get('hair_color'):
+            # Groom colour lives in instance parameters, which exist only on the editor's built preview collection;
+            # on_edit_preview_collection copies them into the character for the build. Every groom with Melanin
+            # (hair, eyebrows, beard, mustache, eyelashes, peach fuzz) gets the same colour.
+            subsystem.assemble_for_preview(character=character)
+            preview = subsystem.get_preview_collection(character).default_instance
+            melanin, redness = face['hair_color']
+            grooms = 0
+            for item in preview.get_instance_parameter_item_paths():
+                params = {str(p.name): p for p in preview.get_instance_parameters(item_path=item)}
+                if 'Melanin' in params:
+                    params['Melanin'].set_float(value=melanin)
+                    params['Redness'].set_float(value=redness)
+                    params['Whiteness'].set_float(value=0.0)
+                    grooms += 1
+            subsystem.on_edit_preview_collection(character)
+            unreal.log(f"PLAYER_METAHUMAN_HAIR {face['id']} melanin={melanin:.2f} redness={redness:.2f} grooms={grooms}")
         if face.get('makeup') == 'none':
             makeup = character.get_editor_property('makeup_settings')
             makeup.foundation.apply_foundation = False
