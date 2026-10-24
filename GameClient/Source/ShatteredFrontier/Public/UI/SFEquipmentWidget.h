@@ -5,6 +5,7 @@
 #include "SFEquipmentWidget.generated.h"
 
 class APawn;
+class ASFE1Character;
 class UImage;
 class UPanelWidget;
 class UPointLightComponent;
@@ -46,6 +47,9 @@ private:
     UPROPERTY() TArray<TObjectPtr<UPrimitiveComponent>> Copies;
     UPROPERTY() TObjectPtr<AActor> Figure;  // the player's MetaHuman copy (ASFE1Character::SpawnPosedMetaHuman), when there is one
     UPROPERTY() TObjectPtr<UTextureRenderTarget2D> Target;
+    TWeakObjectPtr<const ASFE1Character> FaceSource;  // the player whose OnFaceChanged rebuilds the copy while this studio exists
+    FDelegateHandle FaceHandle;
+    void UnbindFace();
 };
 
 // Equipment window (WBP_Equipment, docs/blueprints/menus.md section 0) on WBP_WindowFrame: the paper doll (left Head, Chest, Hands, Legs,

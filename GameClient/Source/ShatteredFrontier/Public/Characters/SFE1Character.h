@@ -51,6 +51,8 @@ public:
     // no Mutable, still builds; client-only.
     UPROPERTY(EditDefaultsOnly, Category="Appearance") TSoftObjectPtr<UObject> Outfit;
     AActor* GetMetaHuman() const { return MetaHuman; }
+    DECLARE_MULTICAST_DELEGATE(FOnFaceChanged);
+    mutable FOnFaceChanged OnFaceChanged;  // after the MetaHuman was respawned for a new face (client side; the Equipment preview rebuilds its copy)
     // A MetaHuman of this character's class, attached under Parent at Relative and posed from this character's mannequin
     // (the world body, and the Equipment window's preview). Null when the class or retargeter is not built here.
     AActor* SpawnPosedMetaHuman(USceneComponent* Parent, const FTransform& Relative) const;

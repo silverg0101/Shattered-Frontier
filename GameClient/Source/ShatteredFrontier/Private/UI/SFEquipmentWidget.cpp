@@ -81,6 +81,7 @@ ASFEquipmentPreviewStudio::ASFEquipmentPreviewStudio()
 
 void ASFEquipmentPreviewStudio::CopyFrom(const APawn* Pawn)
 {
+    UnbindFace();
     for (UPrimitiveComponent* Old : Copies) { if (Old) { Old->DestroyComponent(); } }
     Copies.Reset();
     if (Figure) { Figure->Destroy(); Figure = nullptr; }
@@ -140,6 +141,11 @@ void ASFEquipmentPreviewStudio::CopyFrom(const APawn* Pawn)
     }
 
     // A player MetaHuman: its own copy stands on the turntable, posed from the same mannequin; the mannequin copy stays for framing.
+    if (const ASFE1Character* Player = Cast<ASFE1Character>(Pawn))
+    {
+        FaceSource = Player;
+        FaceHandle = Player->OnFaceChanged.AddWeakLambda(this, [this, Player] { CopyFrom(Player); });  // a new face: rebuild the copy
+    }
     if (const ASFE1Character* Player = Cast<ASFE1Character>(Pawn); Player && Player->GetMetaHuman())
     {
         Figure = Player->SpawnPosedMetaHuman(Body, FTransform::Identity);  // on the mannequin copy, as in the world
@@ -167,8 +173,16 @@ void ASFEquipmentPreviewStudio::CopyFrom(const APawn* Pawn)
     }
 }
 
+void ASFEquipmentPreviewStudio::UnbindFace()
+{
+    if (const ASFE1Character* Player = FaceSource.Get()) { Player->OnFaceChanged.Remove(FaceHandle); }
+    FaceSource.Reset();
+    FaceHandle.Reset();
+}
+
 void ASFEquipmentPreviewStudio::EndPlay(const EEndPlayReason::Type Reason)
 {
+    UnbindFace();
     if (Figure) { Figure->Destroy(); Figure = nullptr; }
     Super::EndPlay(Reason);
 }

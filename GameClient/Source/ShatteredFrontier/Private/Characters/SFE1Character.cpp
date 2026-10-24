@@ -132,6 +132,7 @@ void ASFE1Character::OnRep_FaceId()
     if (MetaHuman) { MetaHuman->Destroy(); MetaHuman = nullptr; }
     GetMesh()->SetHiddenInGame(false);  // the mannequin again, should the new face not be built here
     SpawnMetaHuman();
+    OnFaceChanged.Broadcast();
 }
 
 AActor* ASFE1Character::SpawnPosedMetaHuman(USceneComponent* Parent, const FTransform& Relative) const
