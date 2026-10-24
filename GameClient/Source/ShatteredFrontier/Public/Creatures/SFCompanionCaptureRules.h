@@ -5,9 +5,9 @@
 // Companion Gameplay Details §§2-3, §11. Value-only rules; the server supplies world evidence.
 enum class ESFCompanionCaptureReject : uint8
 {
-    None, InvalidSettings, NoAuthority, IneligiblePopulation, OwnedOrReserved, NoStableSlot,
+    None, InvalidSettings, NoAuthority, MissingContent, IneligiblePopulation, OwnedOrReserved, NoStableSlot,
     LevelOrHunting, TooHealthy, MountedOrPetsActive, ForeignEngagement, OutOfRangeOrSight,
-    Moved, OwnerDefeated, OwnerOrPetDamaged, TargetDamagedOrDead, ChannelIncomplete
+    NoSafeOpening, Moved, OwnerDefeated, OwnerOrPetDamaged, TargetDamagedOrDead, ChannelIncomplete
 };
 
 struct FSFCompanionCaptureSettings
@@ -31,11 +31,13 @@ struct FSFCompanionCaptureSettings
 
 struct FSFCompanionCaptureEvidence
 {
-    bool bAuthority = false, bEligiblePopulation = false, bUnownedUnreserved = false, bFreeStableSlot = false;
+    // Supplied by the authority's versioned species/trait/kit validator, never by the client.
+    bool bAuthority = false, bAuthoredContentCompatible = false, bEligiblePopulation = false;
+    bool bUnownedUnreserved = false, bFreeStableSlot = false;
     int32 OwnerLevel = 0, CreatureLevel = 0, Hunting = 0, Difficulty = 0;
     int32 Health = 0, MaxHealth = 0;
     bool bMounted = false, bPetsPassiveRecalled = false, bForeignEngagement = false;
-    bool bStationary = false, bLineOfSight = false, bOwnerDefeated = false;
+    bool bSafeOpeningActive = false, bStationary = false, bLineOfSight = false, bOwnerDefeated = false;
     bool bOwnerOrPetDamaged = false, bTargetDamagedOrDead = false;
     double RangeMetres = 0;
     int32 ElapsedMs = 0;
@@ -48,6 +50,7 @@ namespace SFCompanionCaptureRules
     {
         if (!S.Valid()) return ESFCompanionCaptureReject::InvalidSettings;
         if (!E.bAuthority) return ESFCompanionCaptureReject::NoAuthority;
+        if (!E.bAuthoredContentCompatible) return ESFCompanionCaptureReject::MissingContent;
         if (!E.bEligiblePopulation) return ESFCompanionCaptureReject::IneligiblePopulation;
         if (!E.bUnownedUnreserved) return ESFCompanionCaptureReject::OwnedOrReserved;
         if (!E.bFreeStableSlot) return ESFCompanionCaptureReject::NoStableSlot;
@@ -57,8 +60,10 @@ namespace SFCompanionCaptureRules
             return ESFCompanionCaptureReject::TooHealthy;
         if (E.bMounted || !E.bPetsPassiveRecalled) return ESFCompanionCaptureReject::MountedOrPetsActive;
         if (E.bForeignEngagement) return ESFCompanionCaptureReject::ForeignEngagement;
-        if (!E.bLineOfSight || E.RangeMetres > S.RangeMetres || E.RangeMetres < 0)
+        if (!E.bLineOfSight || !FMath::IsFinite(E.RangeMetres) ||
+            E.RangeMetres > S.RangeMetres || E.RangeMetres < 0)
             return ESFCompanionCaptureReject::OutOfRangeOrSight;
+        if (!E.bSafeOpeningActive) return ESFCompanionCaptureReject::NoSafeOpening;
         if (!E.bStationary) return ESFCompanionCaptureReject::Moved;
         if (E.bOwnerDefeated) return ESFCompanionCaptureReject::OwnerDefeated;
         if (E.bOwnerOrPetDamaged) return ESFCompanionCaptureReject::OwnerOrPetDamaged;

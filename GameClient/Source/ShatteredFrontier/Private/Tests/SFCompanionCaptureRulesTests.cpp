@@ -1,6 +1,7 @@
 #if WITH_DEV_AUTOMATION_TESTS
 #include "Misc/AutomationTest.h"
 #include "Creatures/SFCompanionCaptureRules.h"
+#include <limits>
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFCompanionCaptureRulesTest,
     "ShatteredFrontier.Creatures.Companion.CaptureRules",
@@ -9,18 +10,28 @@ bool FSFCompanionCaptureRulesTest::RunTest(const FString& Parameters)
 {
     FSFCompanionCaptureSettings S;
     FSFCompanionCaptureEvidence E;
-    E.bAuthority = E.bEligiblePopulation = E.bUnownedUnreserved = E.bFreeStableSlot = true;
+    E.bAuthority = E.bAuthoredContentCompatible = E.bEligiblePopulation =
+        E.bUnownedUnreserved = E.bFreeStableSlot = true;
     E.OwnerLevel = E.CreatureLevel = 2; E.Difficulty = 100; E.Hunting = 0;
-    E.MaxHealth = 60; E.Health = 18; E.bPetsPassiveRecalled = E.bStationary = E.bLineOfSight = true;
+    E.MaxHealth = 60; E.Health = 18;
+    E.bPetsPassiveRecalled = E.bSafeOpeningActive = E.bStationary = E.bLineOfSight = true;
     E.RangeMetres = 5; E.ElapsedMs = 8000;
     auto Check = [this, &S](const TCHAR* Label, const FSFCompanionCaptureEvidence& Value, bool Commit,
         ESFCompanionCaptureReject Expected)
     { TestEqual(Label, int32(SFCompanionCaptureRules::Check(S, Value, Commit)), int32(Expected)); };
     TestTrue(TEXT("shipped controls are valid"), S.Valid());
     Check(TEXT("exact health, range, time thresholds admit"), E, true, ESFCompanionCaptureReject::None);
+    E.bAuthoredContentCompatible = false;
+    Check(TEXT("unreleased species content refuses"), E, false, ESFCompanionCaptureReject::MissingContent);
+    E.bAuthoredContentCompatible = true;
+    E.bSafeOpeningActive = false;
+    Check(TEXT("no authored opening refuses"), E, false, ESFCompanionCaptureReject::NoSafeOpening);
+    E.bSafeOpeningActive = true;
     E.Health = 19; Check(TEXT("one HP above threshold refuses"), E, false, ESFCompanionCaptureReject::TooHealthy); E.Health = 18;
     E.ElapsedMs = 7999; Check(TEXT("channel cannot complete early"), E, true, ESFCompanionCaptureReject::ChannelIncomplete); E.ElapsedMs = 8000;
     E.RangeMetres = 5.01; Check(TEXT("range cannot drift"), E, true, ESFCompanionCaptureReject::OutOfRangeOrSight); E.RangeMetres = 5;
+    E.RangeMetres = std::numeric_limits<double>::quiet_NaN();
+    Check(TEXT("nonfinite range refuses"), E, true, ESFCompanionCaptureReject::OutOfRangeOrSight); E.RangeMetres = 5;
     E.bForeignEngagement = true; Check(TEXT("foreign fight refuses"), E, false, ESFCompanionCaptureReject::ForeignEngagement); E.bForeignEngagement = false;
     E.bOwnerOrPetDamaged = true; Check(TEXT("pet taking damage interrupts"), E, true, ESFCompanionCaptureReject::OwnerOrPetDamaged); E.bOwnerOrPetDamaged = false;
     E.bTargetDamagedOrDead = true; Check(TEXT("new damage to target interrupts"), E, true, ESFCompanionCaptureReject::TargetDamagedOrDead); E.bTargetDamagedOrDead = false;
