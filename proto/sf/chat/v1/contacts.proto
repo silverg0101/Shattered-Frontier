@@ -1,0 +1,27 @@
+syntax = "proto3";
+package sf.chat.v1;
+option csharp_namespace = "ShatteredFrontier.Chat.V1";
+
+// Trusted gateway/server calls only. The gateway authenticates the actor.
+service ContactsService {
+  rpc AddContact(ContactMutation) returns (ContactAck);
+  rpc RemoveContact(ContactMutation) returns (ContactAck);
+  rpc ListContacts(CharacterRef) returns (ContactList);
+  rpc IsBlocked(BlockQuery) returns (BlockStatus);
+}
+message ContactMutation {
+  string idempotency_key = 1;
+  string character_id = 2;
+  string other_character_id = 3;
+  string kind = 4; // friend | block
+}
+message CharacterRef { string character_id = 1; }
+message ContactAck { bool applied = 1; }
+message Contact {
+  string other_character_id = 1;
+  string kind = 2;
+  string created_at_utc = 3;
+}
+message ContactList { repeated Contact contacts = 1; }
+message BlockQuery { string character_id = 1; string other_character_id = 2; }
+message BlockStatus { bool blocked = 1; }

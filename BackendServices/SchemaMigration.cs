@@ -33,6 +33,8 @@ public static class SchemaMigration
                 ("Schema.sql", "SELECT to_regclass('identity.schema_version') IS NOT NULL") },
             "group" => new (string File, string Installed)[] {
                 ("Schema.sql", "SELECT to_regclass('\"group\".schema_version') IS NOT NULL") },
+            "chat" => new (string File, string Installed)[] {
+                ("Schema.sql", "SELECT to_regclass('chat.schema_version') IS NOT NULL") },
             _ => throw new ArgumentException($"Unknown schema: {schema}")
         };
         if (role is not null && !System.Text.RegularExpressions.Regex.IsMatch(role, "^[a-z_][a-z0-9_]*$"))
@@ -57,15 +59,15 @@ public static class SchemaMigration
                 lockCommand.ExecuteNonQuery();
             }
             // The identity slice bootstraps its own base schema under the owner role.
-            if ((schema == "identity" || schema == "group") && file == "Schema.sql")
+            if ((schema == "identity" || schema == "group" || schema == "chat") && file == "Schema.sql")
             {
-                using var bootstrap = new NpgsqlCommand(schema == "group" ? "CREATE SCHEMA IF NOT EXISTS \"group\"" : "CREATE SCHEMA IF NOT EXISTS identity", connection, transaction);
+                using var bootstrap = new NpgsqlCommand(schema == "group" ? "CREATE SCHEMA IF NOT EXISTS \"group\"" : $"CREATE SCHEMA IF NOT EXISTS {schema}", connection, transaction);
                 bootstrap.ExecuteNonQuery();
             }
             using (var check = new NpgsqlCommand("SELECT to_regclass($1) IS NOT NULL", connection, transaction))
             {
                 check.Parameters.AddWithValue(schema == "group" ? "\"group\".schema_version" : schema + ".schema_version");
-                if (check.ExecuteScalar() is not true && !((schema == "identity" || schema == "group") && file == "Schema.sql"))
+                if (check.ExecuteScalar() is not true && !((schema == "identity" || schema == "group" || schema == "chat") && file == "Schema.sql"))
                     throw new InvalidOperationException($"{schema} base schema is not installed.");
             }
             var quotedSchema = schema == "group" ? "\"group\"" : schema;
