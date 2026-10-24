@@ -174,3 +174,57 @@ def standardise_rig(jid, host, model_glb):
     labels = json.loads(a.ssh(host, f"cat {q(work + '/' + lab)}"))
     verdict = next((ln for ln in review.decode(errors="replace").splitlines() if ln.startswith("REVIEW")), "REVIEW ?")
     return {k: labels[k] for k in ("labels", "dropped", "warnings")} | {"glb": out, "sheet": sheet, "review": verdict[7:]}
+
+
+CHECKS = ("min_paw_cm", "max_slide_cm", "seam_deg", "flips")
+
+
+def checks_pass(m, settings) -> dict:
+    """A retargeted clip's measurements -> them plus "passed" and "reason" (every failed gate, "; "-joined)."""
+    why = []
+    if m["min_paw_cm"] < 0:
+        why.append(f"min_paw_cm {m['min_paw_cm']} < 0: a paw goes below the floor")
+    if m["max_slide_cm"] > settings["creature_slide_cm"]:
+        why.append(f"max_slide_cm {m['max_slide_cm']} > {settings['creature_slide_cm']}: a planted paw slides")
+    if m["seam_deg"] > settings["creature_seam_deg"]:
+        why.append(f"seam_deg {m['seam_deg']} > {settings['creature_seam_deg']}: the loop pops at its seam")
+    if m["flips"]:
+        bones = f" ({', '.join(m['flip_bones'])})" if m.get("flip_bones") else ""
+        why.append(f"flips {m['flips']}: a joint turns over 90 degrees in one frame{bones}")
+    return {k: m[k] for k in CHECKS} | {"passed": not why, "reason": "; ".join(why)}
+
+
+def retarget_clip(jid, host, rig_glb, animal_dir, clip, size_cm) -> dict:
+    """Retarget library clip `clip` of `animal_dir` (DATA/MotionLibrary/<animal>) onto `rig_glb` (a standardise_rig
+    output in job `jid`'s folder on `host`), clean it up, check it and draw its sheet; with an Anthropic key set,
+    Claude reviews the sheet. -> {"glb": <clip>.glb, "sheet": <clip>_sheet.png, "checks": {..., "passed", "reason",
+    "review"}}, files in the job folder."""
+    a = _app()
+    work, _, py, _, step, _ = a.host_tools(jid, host)
+    s, q, animal_dir = a.get_settings(), shlex.quote, Path(animal_dir)
+    animal = json.loads((animal_dir / "animal.json").read_text())
+    meta = next((c for c in animal["clips"] if c["name"] == clip), None)
+    if not meta:
+        raise ValueError(f"{animal_dir.name} has no clip {clip!r} ({', '.join(c['name'] for c in animal['clips'])})")
+    glb, sheet, mj = f"{clip}.glb", f"{clip}_sheet.png", f"{clip}_retarget.json"
+    for f in [*a.MOTION_DIR.glob("*.py"), Path(__file__)]:  # zoo_retarget.py imports chain_resample from here
+        a.put_input(host, f"{jid}/{f.name}", f.read_bytes())
+    for f in ("animal.json", meta["file"]):
+        a.put_input(host, f"{jid}/zoo/{f}", (animal_dir / f).read_bytes())
+    a.job_blender(jid)
+    step(f"retargeting {clip}")
+    a.run_blender(jid, host, "zoo_retarget.py", [rig_glb, "zoo/animal.json", clip, glb, mj, str(size_cm),
+                                                 str(s["creature_height_scale"])], [rig_glb, "zoo", "creature.py"], [glb, mj], 1800)
+    step(f"drawing the {clip} sheet")
+    a.run_blender(jid, host, "clip_sheet.py", [glb, mj, sheet], [glb, mj], [sheet], 1800)
+    checks = checks_pass(json.loads(a.ssh(host, f"cat {q(work + '/' + mj)}")), s)
+    checks["review"] = "skipped: no Anthropic API key"
+    if a.anthropic_key():
+        step(f"checking the {clip} sheet with Claude")
+        out = a.ssh_anthropic(host, f"cd {q(work)} && {py} clip_sheet.py --review {q(sheet)} {q(mj)}", timeout=1800)
+        verdict = next((ln[7:] for ln in out.decode(errors="replace").splitlines() if ln.startswith("REVIEW ")), "FAIL: no verdict")
+        checks["review"] = verdict
+        if not verdict.upper().startswith("PASS"):
+            checks["reason"] = "; ".join(filter(None, [checks["reason"], f"review: {verdict}"]))
+            checks["passed"] = False
+    return {"glb": glb, "sheet": sheet, "checks": checks}

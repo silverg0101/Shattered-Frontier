@@ -20,7 +20,7 @@ PANEL_ASPECT = W / H
 GREY = 0.5
 
 
-def load(model, turn=0.0):
+def load(model, turn=0.0, fps=None):
     if bpy.app.background:
         bpy.ops.wm.read_factory_settings(use_empty=True)
     else:  # a watched Blender (an MCP host): leave the owner's scenes alone, work in a fresh one
@@ -30,6 +30,8 @@ def load(model, turn=0.0):
                 bpy.data.objects.remove(o)
             bpy.data.scenes.remove(old)
         bpy.context.window_manager.windows[0].scene = bpy.data.scenes.new("Forge job")
+    if fps:  # the glTF importer converts key times at the scene rate
+        bpy.context.scene.render.fps = int(fps)
     ext = Path(model).suffix.lower()
     if ext in (".glb", ".gltf"):
         bpy.ops.import_scene.gltf(filepath=model)

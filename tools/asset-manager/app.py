@@ -43,6 +43,10 @@ DEFAULT_SETTINGS = {
     "blender_hosts": [{"name": "RA-SIEMS", "mode": "python", "ssh": "raadmin@192.168.0.107", "blender": DEFAULT_BLENDER,
                        "gpu": None}],
     "blender_active": "RA-SIEMS",
+    # Creature clips (retarget checks). Bounds and units in CREATURE_SETTINGS.
+    "creature_height_scale": 0.65,
+    "creature_slide_cm": 1.0,
+    "creature_seam_deg": 3.0,
 }
 # key: (unit, type, min, max). detector_limits are the exam's "good" bar in % of the model's height, each 0.5-20;
 # "usable" is within detector_usable_x times them; auto-train trains a detector when a model is rigged.
@@ -50,6 +54,10 @@ DETECTOR_SETTINGS = {"detector_images": ("training renders", int, 300, 5000),
                      "detector_epochs": ("training epochs", int, 10, 120),
                      "detector_usable_x": ("x the limits", float, 1.0, 4.0)}
 LIMIT_RANGE = (0.5, 20.0)
+# vertical bob kept from the library clip; planted-paw slide and loop seam a clip may have and still pass
+CREATURE_SETTINGS = {"creature_height_scale": ("x the source bob", float, 0.2, 1.0),
+                     "creature_slide_cm": ("cm", float, 0.0, 10.0),
+                     "creature_seam_deg": ("degrees", float, 0.0, 30.0)}
 
 # ---------------------------------------------------------------- 3D Asset workflow
 # API-format version of "Trellis2 + Pixal3d.json": Pixal3D geometry, UltraTex texturing.
@@ -555,7 +563,7 @@ def save_settings(s):
     for k in ("output_folder", "input_folder"):
         if k in s:
             safe_path(s[k])
-    for k, (_, typ, lo, hi) in DETECTOR_SETTINGS.items():  # clamped to their bounds, like job options
+    for k, (_, typ, lo, hi) in {**DETECTOR_SETTINGS, **CREATURE_SETTINGS}.items():  # clamped to their bounds, like job options
         if k in s:
             s[k] = min(max(typ(s[k]), lo), hi)
     if "detector_limits" in s:
@@ -2737,6 +2745,14 @@ def check():
     assert creature.chain_resample(["a", "b"], 3, [1, 3]) == [["a"], ["b"], ["b+1"]]
     assert creature.chain_resample(["a"], 1) == [["a"]] and creature.chain_resample([], 2) == [[], []]
     assert creature.standardise_rig
+    # clip checks: a paw under the floor fails and says so; the hamster-run proof's values pass
+    bad = creature.checks_pass({"min_paw_cm": -0.1, "max_slide_cm": 0.09, "seam_deg": 1.9, "flips": 0}, DEFAULT_SETTINGS)
+    assert bad["passed"] is False and "min_paw_cm" in bad["reason"], bad
+    ok = creature.checks_pass({"min_paw_cm": 0.2, "max_slide_cm": 0.09, "seam_deg": 1.9, "flips": 0}, DEFAULT_SETTINGS)
+    assert ok["passed"] is True and ok["reason"] == "", ok
+    assert creature.checks_pass({"min_paw_cm": 0.2, "max_slide_cm": 2, "seam_deg": 9, "flips": 1}, DEFAULT_SETTINGS)["reason"].count(";") == 2
+    assert all(lo <= DEFAULT_SETTINGS[k] <= hi for k, (_, _, lo, hi) in CREATURE_SETTINGS.items())
+    assert creature.retarget_clip
     if not importlib.util.find_spec("numpy"):  # zoo_curate runs on the GPU host; the server image has no numpy
         print("check ok (zoo_curate skipped: no numpy)")
         return
