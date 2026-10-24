@@ -25,6 +25,7 @@
 #include "Combat/SFTabTargetSelection.h"
 #include "Combat/SFCrowdControlComponent.h"
 #include "Framework/SFPlayerController.h"
+#include "Services/SFBackpackComponent.h"
 #include "Engine/World.h"
 #include "Engine/Engine.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -100,7 +101,8 @@ void ASFE1Character::BeginPlay()
     if (GetNetMode() != NM_DedicatedServer) { SpawnMetaHuman(); }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (GetNetMode() == NM_Client && (FParse::Param(FCommandLine::Get(), TEXT("CombatPilotScenario")) ||
-        FParse::Param(FCommandLine::Get(), TEXT("CombatTargetScenario"))))
+        FParse::Param(FCommandLine::Get(), TEXT("CombatTargetScenario")) ||
+        FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario"))))
     { GetWorldTimerManager().SetTimer(CombatScenarioTimer, this, &ASFE1Character::TickCombatScenario, 1.0f, true); }
 #endif
 }
@@ -212,6 +214,32 @@ void ASFE1Character::EndPlay(const EEndPlayReason::Type Reason)
 
 void ASFE1Character::TickCombatScenario()
 {
+    if (FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")))
+    {
+        if (!IsLocallyControlled() || CombatScenarioAttackCount > 0 || PilotHealth <= 0) { return; }
+        int32 ScenarioRole = 0;
+        FParse::Value(FCommandLine::Get(), TEXT("CombatGroupRole="), ScenarioRole);
+        if (ScenarioRole < 1 || ScenarioRole > 3) { return; }
+        ASFPilotBoar* Boar = nullptr;
+        double NearestDistance = TNumericLimits<double>::Max();
+        for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+        {
+            const double Distance = FVector::Dist2D(GetActorLocation(), It->GetActorLocation());
+            if (It->Health() > 0 && Distance < NearestDistance) { Boar = *It; NearestDistance = Distance; }
+        }
+        if (!Boar || NearestDistance > 300.0) { return; }
+        auto* PC = Cast<ASFPlayerController>(Controller);
+        if (!PC) { return; }
+        const FVector Aim = (Boar->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
+        if (FVector::DotProduct(Controller->GetControlRotation().Vector().GetSafeNormal2D(), Aim) < 0.9)
+        { Controller->SetControlRotation(Aim.Rotation()); return; }
+        if (CombatTarget != Boar) { PC->SelectNextCombatTarget(); return; }
+        UE_LOG(LogTemp, Display, TEXT("COMBAT_GROUP_TARGET Role=%d Target=%s"), ScenarioRole, *GetNameSafe(CombatTarget));
+        PilotAttack();
+        CombatScenarioAttackCount = 1;
+        UE_LOG(LogTemp, Display, TEXT("COMBAT_GROUP_ATTACK Role=%d"), ScenarioRole);
+        return;
+    }
     if (FParse::Param(FCommandLine::Get(), TEXT("CombatTargetScenario"))) { TickTargetScenario(); return; }
     if (!IsLocallyControlled() || CombatScenarioAttackCount >= 3) { return; }
     ASFPilotBoar* Nearest = nullptr; double Distance = 300;
@@ -654,6 +682,12 @@ void ASFE1Character::SetCombatTarget(AActor* Target)
         ForceNetUpdate();
         if (Target && FParse::Param(FCommandLine::Get(), TEXT("CombatTargetScenario")))
         { UE_LOG(LogTemp, Display, TEXT("TARGET_PILOT_SERVER_SELECT Target=%s"), *GetNameSafe(Target)); }
+        if (FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")))
+        {
+            USFBackpackComponent* Bag = USFBackpackComponent::FindOrCreate(Cast<APlayerController>(GetController()));
+            UE_LOG(LogTemp, Display, TEXT("COMBAT_GROUP_SERVER_TARGET Character=%s Target=%s"),
+                Bag ? *Bag->GetCharacterId() : TEXT("none"), *GetNameSafe(Target));
+        }
     }
 }
 

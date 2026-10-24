@@ -157,7 +157,9 @@ void ASFPilotBoar::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage)
     CurrentHealth = SFCombatPilotRules::RemainingHealth(CurrentHealth, Damage);
     if (!Attacker->GetCombatTarget() && CurrentHealth > 0) { Attacker->SetCombatTarget(this); }
     OnRep_Health(); ForceNetUpdate();
-    UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_HIT Group=%s Slot=%d HP=%d"), *SpawnGroup, Slot, CurrentHealth);
+    USFBackpackComponent* AttackerBag = USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Attacker->GetController()));
+    UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_HIT Group=%s Slot=%d HP=%d Attacker=%s"),
+        *SpawnGroup, Slot, CurrentHealth, AttackerBag ? *AttackerBag->GetCharacterId() : TEXT("none"));
     if (CurrentHealth == 0 && PilotMode.IsValid()) { PilotMode->BoarDied(this, Attacker); }
 }
 
@@ -165,6 +167,10 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     if (!HasAuthority() || CurrentHealth <= 0 || !PilotMode.IsValid() || !PilotMode->IsCombatActive()) { return; }
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    // Keep one shared target alive across the staged client reconnect in this network fixture.
+    if (FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario"))) { return; }
+#endif
     auto* Mode = PilotMode.Get();
     const double Now = GetWorld()->GetTimeSeconds();
     ASFE1Character* Victim = Target.Get();
@@ -294,7 +300,8 @@ void ASFGameMode::StartCombat()
         GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     bScenario = bPilotActive && (FParse::Param(FCommandLine::Get(), TEXT("CombatPilotScenario")) ||
-        FParse::Param(FCommandLine::Get(), TEXT("CombatTargetScenario")));
+        FParse::Param(FCommandLine::Get(), TEXT("CombatTargetScenario")) ||
+        FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")));
 #endif
     if (!bPilotActive) { return; }
     CapturedSettings = GetDefault<USFCombatPilotSettings>();
@@ -311,7 +318,8 @@ void ASFGameMode::StartCombat()
 void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
 {
     if (bPilotActive && !USFBackpackComponent::Services()) { SFCombatPilotRewards::AddPilotBag(NewPlayer); }
-    if (!bPilotActive || !bScenario || GetNumPlayers() != 1) { return; }
+    if (!bPilotActive || !bScenario ||
+        (!FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")) && GetNumPlayers() != 1)) { return; }
     const TWeakObjectPtr<APlayerController> Weak(NewPlayer);
     FTimerHandle Timer;
     GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateWeakLambda(this, [this, Weak]()
@@ -320,6 +328,17 @@ void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
         auto* Player = Cast<ASFE1Character>(Weak->GetPawn());
         auto* Boar = ActiveBoars.FindRef(TEXT("boar_farm_edge:0")).Get();
         if (!Player || !Boar) { return; }
+        if (FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")))
+        {
+            const int32 PlayerIndex = GetNumPlayers();
+            const FVector Offset = PlayerIndex == 1 ? FVector(180,0,0) :
+                PlayerIndex == 2 ? FVector(180,180,0) : FVector(180,-180,0);
+            const FVector Near = Grounded(GetWorld(), Boar->GetActorLocation()+Offset,
+                Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+            Player->SetActorLocation(Near, false, nullptr, ETeleportType::TeleportPhysics);
+            UE_LOG(LogTemp, Display, TEXT("COMBAT_GROUP_READY Pawn=%s"), *Player->GetName());
+            return;
+        }
         if (FParse::Param(FCommandLine::Get(), TEXT("CombatTargetScenario")))
         {
             ASFPilotBoar* Second = nullptr;
@@ -725,7 +744,7 @@ void ASFGameMode::BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer)
     bSlotBridgeHealthy = RunWorldSlots(TEXT("defeat"), Boar->GroupId(), Boar->SlotIndex());
     ActiveBoars.Remove(Key);
     Boar->Destroy();
-    if (bScenario && !bScenarioFirstBoarDied)
+    if (bScenario && !FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")) && !bScenarioFirstBoarDied)
     {
         bScenarioFirstBoarDied = true;
         FTimerHandle Timer;
