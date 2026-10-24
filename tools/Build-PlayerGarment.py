@@ -20,6 +20,9 @@ How it is built (all lengths cm, in the body's own frame):
   the legs; max 8 influences, normalised.
 - UVs: one box projection, 1 UV unit per 40 cm, for a tiling cloth material. Seams fall where the dominant normal axis changes.
 Offset shells follow the body's detail, so pass a larger --tunic-offset for heavier builds.
+Female fit (round 2; each option defaults off, so the male output is unchanged):
+  --drape 1 --drape-top 4 --skirt-ease 2.0 --skirt-flare 0 --skirt-straight 1 --hem 0.7 --join-smooth 6 --slit-height 18 --slit-open 3
+  --thickness 0.3 --neck-trim 1.0 --neck-trim-height 0.25 --v-depth 7 --cuff-width 4 --cuff-bulge 0.4 --leggings-offset 0.4 --pelvis-hem 0.35
 """
 import argparse
 import math
@@ -58,6 +61,15 @@ def parse():
     p.add_argument('--ankle-above-foot', type=float, default=2.5)
     p.add_argument('--uv-cm', type=float, default=40.0)
     p.add_argument('--drape', type=float, default=0.0, help='0..1: the torso hangs straight down from the chest instead of following the waist (1 for the female fit)')
+    # Female round 2 (defaults leave the male output unchanged):
+    p.add_argument('--drape-top', type=float, default=0.0, help='cm above spine_05 where the drape starts; the drape also bridges hollows per slice (no cling under or between the bust)')
+    p.add_argument('--skirt-straight', type=int, default=0, help='1: skirt rings never narrow going down (hangs straight from the seat, no taper or bell)')
+    p.add_argument('--join-smooth', type=int, default=0, help='smoothing passes across the hip join band (no seam/band where the skirt meets the torso)')
+    p.add_argument('--slit-open', type=float, default=0.0, help='cm the side slits open at the hem (tapering shut at the slit top)')
+    p.add_argument('--thickness', type=float, default=0.0, help='cm: give the tunic an inner layer and rims (backfaces and edges at hem, slits, neck, cuffs)')
+    p.add_argument('--neck-trim', type=float, default=0.0, help='cm width of a raised trim band round the neck opening and slit')
+    p.add_argument('--neck-trim-height', type=float, default=0.3)
+    p.add_argument('--pelvis-hem', type=float, default=0.0, help='0..1: weight the front/back skirt panels to the pelvis, thighs only near the side slits')
     return p.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else [])
 
 
@@ -267,6 +279,9 @@ def loft_skirt(bm, src, args, z_hem):
     for _ in range(24):  # smooth around the ring (the hull steps read as pleats), then down the rows
         for row in radii[1:]:
             row[:] = [(row[i - 1] + 2 * row[i] + row[(i + 1) % n]) / 4 for i in range(n)]
+    if args.skirt_straight:
+        for k in range(1, rows + 1):
+            radii[k] = [max(a, b) for a, b in zip(radii[k], radii[k - 1])]
     for k in range(1, rows):
         radii[k] = [(radii[k - 1][i] * 0.25 + radii[k][i] * 0.5 + radii[k + 1][i] * 0.25) for i in range(n)]
     ring = [border]
@@ -284,6 +299,15 @@ def loft_skirt(bm, src, args, z_hem):
     right = min(range(n), key=lambda i: abs(th[i]))
     left = min(range(n), key=lambda i: abs(abs(th[i]) - math.pi))
     slit_cols = {right, left}
+    if args.slit_open:  # part the slit's two edges round the ring, wide at the hem, shut at the slit top
+        for k in range(1, rows + 1):
+            z = z0 - (z0 - z_hem) * k / rows
+            u = max(0.0, min(1.0, (z_hem + args.slit_height - z) / args.slit_height))
+            for i in slit_cols:
+                for col, sgn in ((i, -1), ((i + 1) % n, 1)):
+                    v = ring[k][col]
+                    t = Vector((-math.sin(th[col]), math.cos(th[col]), 0))
+                    v.co += t * (sgn * 0.5 * args.slit_open * u)
     for k in range(rows):
         zmid = z0 - (z0 - z_hem) * (k + 0.5) / rows
         for i in range(n):
@@ -294,7 +318,7 @@ def loft_skirt(bm, src, args, z_hem):
     return [v for row in ring[1:] for v in row]
 
 
-def drape(bm, src, z_bottom, z_top, amount, bins=72):
+def drape(bm, src, z_bottom, z_top, amount, bins=72, bridge=False):
     """Cloth falls from the widest point above: below z_top each torso vertex is pushed out to the largest radius (around the torso axis,
     per angular bin) of any vertex above it down from z_top, so the tunic hangs off the chest instead of hugging the waist."""
     bm.verts.index_update()
@@ -305,6 +329,21 @@ def drape(bm, src, z_bottom, z_top, amount, bins=72):
     cx = sum(v.co.x for v in band) / len(band)
     cy = sum(v.co.y for v in band) / len(band)
     radius = lambda v: math.hypot(v.co.x - cx, v.co.y - cy)
+    if bridge:  # cloth spans hollows: push each slice out to its convex hull (between and under the bust, along the spine)
+        slices = {}
+        for v in band:
+            slices.setdefault(int(v.co.z // 1.5), []).append(v)
+        for vs in slices.values():
+            if len(vs) < 6:
+                continue
+            poly = hull([(v.co.x, v.co.y) for v in vs])
+            sx, sy = sum(v.co.x for v in vs) / len(vs), sum(v.co.y for v in vs) / len(vs)
+            for v in vs:
+                dx, dy = v.co.x - sx, v.co.y - sy
+                r = math.hypot(dx, dy)
+                h = ray_hull(poly, (sx, sy), math.atan2(dy, dx))
+                if r > 1e-6 and h > r:
+                    v.co.x, v.co.y = sx + dx * h / r, sy + dy * h / r
     floor = {v: radius(v) for v in band}  # the shell is already clear of the skin: never pull cloth inside it
     best = [0.0] * bins
     for v in sorted(band, key=lambda v: -v.co.z):
@@ -384,6 +423,63 @@ def rolled_cuff(bm, a_pt, direction, plane_d, width, bulge, armv):
                 v.co += radial.normalized() * bulge * s
 
 
+def away_from_skin(src, v):
+    loc, nor, _i, _d = src.nearest(v.co)
+    d = v.co - loc
+    return d.normalized() if d.length > 1e-6 else nor
+
+
+def neck_trim(bm, src, args, armv):
+    """A raised band of --neck-trim cm along the neck opening and its slit: the stitched trim."""
+    import heapq
+    edge = [v for v in bm.verts if v.is_boundary and v.co.z > args.zjoin + 4 and armv.get(v.index, 0) < 0.3]
+    dist = {v: 0.0 for v in edge}
+    heap = [(0.0, v.index, v) for v in edge]
+    while heap:
+        d, _i, v = heapq.heappop(heap)
+        if d > dist[v]:
+            continue
+        for e in v.link_edges:
+            o = e.other_vert(v)
+            nd = d + e.calc_length()
+            if nd < args.neck_trim and nd < dist.get(o, 1e9):
+                dist[o] = nd
+                heapq.heappush(heap, (nd, o.index, o))
+    for v, d in dist.items():
+        v.co += away_from_skin(src, v) * args.neck_trim_height * (1.0 if d < args.neck_trim * 0.8 else 0.5)
+
+
+def smooth_join(bm, src, args):
+    """Blend the torso shell into the skirt's top rows so the hip join reads as one panel, not a band."""
+    bm.verts.index_update()
+    armv = vert_arm(src, bm)
+    band = [v for v in bm.verts if abs(v.co.z - args.zjoin) < 8 and armv[v.index] < 0.2 and not v.is_boundary]
+    for _ in range(args.join_smooth):
+        bmesh.ops.smooth_vert(bm, verts=band, factor=0.5, use_axis_x=True, use_axis_y=True, use_axis_z=False)
+    for v in band:
+        loc, nor, _i, dist = src.nearest(v.co)
+        if dist < args.clearance:
+            v.co = loc + away_from_skin(src, v) * args.clearance
+
+
+def thicken(bm, t, skirt):
+    """Inner layer t cm inside the cloth plus rims on every open edge, so hems, slits and the neck show an edge and a back side."""
+    bm.normal_update()
+    rim = []
+    for e in bm.edges:
+        if e.is_boundary:
+            l = e.link_loops[0]
+            rim.append((l.vert, l.link_loop_next.vert))
+    faces = bm.faces[:]
+    inner = {v: bm.verts.new(v.co - v.normal * t) for v in bm.verts[:]}
+    for f in faces:
+        bm.faces.new([inner[v] for v in reversed(f.verts)])
+    for a, b in rim:
+        bm.faces.new((b, a, inner[a], inner[b]))
+    bm.verts.ensure_lookup_table()
+    return skirt | {inner[v] for v in skirt}
+
+
 def build(args, src, arm):
     bones = arm.data.bones
     head = lambda n: Vector(bones[n].head_local)
@@ -407,7 +503,7 @@ def build(args, src, arm):
     tun = shell(src, args.tunic_offset, extra_arm=args.sleeve_extra, smooth=4, clearance=args.clearance)
     cut(tun, Vector((0, 0, z_join)), Vector((0, 0, 1)), keep_negative=False)
     if args.drape:
-        drape(tun, src, z_join, head('spine_05').z, args.drape)
+        drape(tun, src, z_join, head('spine_05').z + args.drape_top, args.drape, bridge=args.drape_top > 0)
     cuff = []
     for side in ('l', 'r'):
         a, e = head(f'upperarm_{side}'), head(f'lowerarm_{side}')
@@ -421,10 +517,20 @@ def build(args, src, arm):
         rolled_cuff(tun, a, d, dist, args.cuff_width, args.cuff_bulge, armv)
     raise_collar(tun, args)
     add_v_split(tun, args)
+    if args.neck_trim or args.thickness:  # close the body mesh's pinholes first, or they get trims and rims (a dash on the shoulder)
+        bmesh.ops.holes_fill(tun, edges=[e for e in tun.edges if e.is_boundary], sides=12)
+    if args.neck_trim:
+        tun.verts.index_update()
+        neck_trim(tun, src, args, vert_arm(src, tun))
     skirt = loft_skirt(tun, src, args, z_hem)
+    if args.join_smooth:
+        smooth_join(tun, src, args)
+    bmesh.ops.recalc_face_normals(tun, faces=tun.faces[:])
+    skirt = set(skirt)
+    if args.thickness:
+        skirt = thicken(tun, args.thickness, skirt)
     tun.verts.index_update()
     skirt_idx = {v.index for v in skirt}
-    bmesh.ops.recalc_face_normals(tun, faces=tun.faces[:])
 
     # --- one bmesh: tunic (slot 0) then leggings (slot 1) ---
     out = bmesh.new()
@@ -455,7 +561,7 @@ def build(args, src, arm):
     return out, skirt_ids
 
 
-def skin(out, src, skirt_ids):
+def skin(out, src, skirt_ids, args):
     W = [src.weights_at(v.co) for v in out.verts]
     for _ in range(14):  # smooth the skirt so it follows both thighs and does not tear between them
         nxt = {}
@@ -469,6 +575,18 @@ def skin(out, src, skirt_ids):
             new = {n: 0.5 * W[i].get(n, 0.0) + 0.5 * acc.get(n, 0.0) for n in set(W[i]) | set(acc)}
             nxt[i] = new
         for i, w in nxt.items():
+            W[i] = w
+    if args.pelvis_hem and skirt_ids:  # front/back panels ride the pelvis (no wrap between the thighs); thighs only near the slits
+        cx = sum(out.verts[i].co.x for i in skirt_ids) / len(skirt_ids)
+        cy = sum(out.verts[i].co.y for i in skirt_ids) / len(skirt_ids)
+        for i in skirt_ids:
+            c = out.verts[i].co
+            side = abs(math.cos(math.atan2(c.y - cy, c.x - cx)))
+            f = (1 - args.pelvis_hem) + args.pelvis_hem * side ** 2
+            depth = min(1.0, max(0.0, (args.zjoin - c.z) / 6.0))  # top rows keep the shell's weights: no step at the join
+            f = 1 - depth * (1 - f)
+            w = {n: x * f for n, x in W[i].items()}
+            w['pelvis'] = w.get('pelvis', 0.0) + (1 - f)
             W[i] = w
     for i, w in enumerate(W):
         top = sorted(w.items(), key=lambda kv: -kv[1])[:8]
@@ -597,7 +715,7 @@ def main():
     body, arm = import_body(args.body)
     src = Source(body)
     bm, skirt_ids = build(args, src, arm)
-    W = skin(bm, src, skirt_ids)
+    W = skin(bm, src, skirt_ids, args)
     ob = make_object(bm, W, body, arm)
     print('GARMENT', len(bm.verts), 'verts', len(bm.faces), 'faces')
     if args.render:
